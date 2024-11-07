@@ -117,26 +117,6 @@ namespace Core::LinAlg
   std::shared_ptr<Core::LinAlg::Graph> enrich_matrix_graph(const SparseMatrix& A, int power);
 
   /*!
-   \brief split a matrix into a 2x2 block system where the rowmap of one of the blocks is given
-          and return a block matrix
-
-   Splits a given matrix into a 2x2 block system where the rowmap of one of the blocks is given
-   on input. Blocks A11 and A22 are assumed to be square.
-   All values on entry have to be nullptr except the given rowmap and matrix A.
-   Note that either A11rowmap or A22rowmap or both have to be nonzero. In case
-   both rowmaps are supplied they have to be an exact and nonoverlapping split of A->RowMap().
-   Matrix blocks are fill_complete() on exit.
-
-   \param A         : Matrix A on input
-   \param Ablock    : Blockmatrix version of A to be calculated
-   \param A11rowmap : rowmap of A11 or null
-   \param A22rowmap : rowmap of A22 or null
-   */
-  bool split_matrix2x2(std::shared_ptr<Epetra_CrsMatrix> A,
-      std::shared_ptr<BlockSparseMatrix<DefaultBlockMatrixStrategy>>& Ablock,
-      std::shared_ptr<Core::LinAlg::Map>& A11rowmap, std::shared_ptr<Core::LinAlg::Map>& A22rowmap);
-
-  /*!
    \brief split a matrix into a 2x2 block system
 
    Splits a given matrix into a 2x2 block system. All values on entry have to be
