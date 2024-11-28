@@ -372,6 +372,8 @@ void Discret::Elements::ScaTraEleCalc<distype, probdim>::scatra_calc_vreman_dt(
   Core::LinAlg::Matrix<1, nen_> ephi2_hat(true);
   Core::LinAlg::Matrix<1, nen_> ephiexpression_hat(true);
   Core::LinAlg::Matrix<nsd_, nsd_> alphaijsc_hat(true);
+
+
   Core::LinAlg::Matrix<nsd_, 1> phi_hat(true);
   Core::LinAlg::Matrix<1, 1> phi2_hat(true);
   Core::LinAlg::Matrix<1, 1> phiexpression_hat(true);
