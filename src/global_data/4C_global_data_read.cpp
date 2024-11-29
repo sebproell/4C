@@ -831,6 +831,7 @@ void Global::read_fields(Global::Problem& problem, Core::IO::InputFile& input, c
 
       break;
     }
+    case Core::ProblemType::reduced_lung:
     case Core::ProblemType::red_airways:  // _reduced D airways
     {
       // create empty discretizations

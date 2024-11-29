@@ -342,24 +342,6 @@ namespace Discret
 
       //@}
 
-      //! get cross-sectional area
-      //  double         getdata(){ return A_;}
-
-      //! get youngs modulus of the wall
-      //  double         getEw(){ return Ew_;}
-
-      //! get youngs modulus of the air
-      //  double         getEa(){ return Ea_;}
-
-      //! get wall thickness
-      //  double         gettw(){ return tw_;}
-
-      //! set qin
-      //  void           setqin (double Qin ){ qin_ = Qin;}
-
-      //! set qout
-      //  void           setqout(double Qout){ qout_ = Qout;}
-
       /*!
        * \brief Get fixed airway parameters of the RedAirway element
        */
@@ -378,7 +360,6 @@ namespace Discret
         get_coupled_values,
         calc_elem_volumes
       };
-
 
 
       //! Element Type
@@ -489,7 +470,6 @@ namespace Discret
         else
         {
           FOUR_C_THROW("Could not determine number of lines");
-          return -1;
         }
       }
 

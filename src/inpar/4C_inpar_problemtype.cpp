@@ -100,6 +100,7 @@ std::map<std::string, Core::ProblemType> Inpar::PROBLEMTYPE::string_to_problem_t
     string2prbtype["Multiphase_Porous_Flow"] = Core::ProblemType::porofluidmultiphase;
     string2prbtype["RedAirways_Tissue"] = Core::ProblemType::redairways_tissue;
     string2prbtype["ReducedDimensionalAirWays"] = Core::ProblemType::red_airways;
+    string2prbtype["Reduced_Lung"] = Core::ProblemType::reduced_lung;
     string2prbtype["Scalar_Thermo_Interaction"] = Core::ProblemType::sti;
     string2prbtype["Scalar_Transport"] = Core::ProblemType::scatra;
     string2prbtype["Structure"] = Core::ProblemType::structure;
