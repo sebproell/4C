@@ -21,6 +21,9 @@
 
 > [!WARNING]
 > We are currently migrating the project from GitLab. Links might be out-dated.
+>
+>
+> DUMMY TEST
 
 4C ("Comprehensive Computational Community Code") is a parallel multiphysics research code
 to address a plethora of physical problems by means of _computational mechanics_.
@@ -95,7 +98,8 @@ A preset name needs to be passed to cmake via the command line argument `--prese
 Use `cmake <path/to/source/dir> --list-presets` to get a list of all available presets.
 Define your own presets in a `CMakeUserPresets.json` file.
 
-More information about CMake presets can be found in the [CMake documentation](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html).
+More information about CMake presets can be found in
+the [CMake documentation](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html).
 
 #### Build
 
@@ -135,27 +139,33 @@ file(s).
 A collection of working `.dat` files is located under `tests/input_files/` in the source code repository.
 
 Input files (`*.dat`) can be generated through various mechanisms.
-Please consult our [user guide](https://4c-multiphysics.github.io/4C/readthedocs/index.html) for further information and detailed instructions.
+Please consult our [user guide](https://4c-multiphysics.github.io/4C/readthedocs/index.html) for further information and
+detailed instructions.
 
 4C can write its simulation output in different formats.
-The [user guide](https://4c-multiphysics.github.io/4C/readthedocs/index.html) outlines the different output format and their necessary steps to actually view the results.
+The [user guide](https://4c-multiphysics.github.io/4C/readthedocs/index.html) outlines the different output format and
+their necessary steps to actually view the results.
 
 ## Where to Ask Questions
 
 If you need help with 4C, feel free to ask questions
-by [creating a GitHub issue](https://github.com/4C-multiphysics/4C/issues). Use an issue template to pre-populate the *Description* field, giving you instructions on submitting the issue.
+by [creating a GitHub issue](https://github.com/4C-multiphysics/4C/issues). Use an issue template to pre-populate the
+*Description* field, giving you instructions on submitting the issue.
 
-For more general questions, you can reach us on the [4C Slack workspace](https://join.slack.com/t/4c-multiphysics/shared_invite/zt-1oi61jgdd-5tZuHku3Tb_BH5UBgojbpQ).
+For more general questions, you can reach us on
+the [4C Slack workspace](https://join.slack.com/t/4c-multiphysics/shared_invite/zt-1oi61jgdd-5tZuHku3Tb_BH5UBgojbpQ).
 
 ## Contributing
 
 If you're interested in contributing to 4C, we welcome your collaboration.
-Read [our contributing guidelines](https://github.com/4C-multiphysics/4C/blob/main/CONTRIBUTING.md) carefully for details on
+Read [our contributing guidelines](https://github.com/4C-multiphysics/4C/blob/main/CONTRIBUTING.md) carefully for
+details on
 our workflow, submitting pull requests, etc.
 
 ## Code of Conduct
 
-All people and activities in and around 4C are subject to our [Code of Conduct](https://github.com/4C-multiphysics/4C/blob/main/CODE_OF_CONDUCT.md).
+All people and activities in and around 4C are subject to
+our [Code of Conduct](https://github.com/4C-multiphysics/4C/blob/main/CODE_OF_CONDUCT.md).
 
 ## How to cite 4C
 
@@ -178,6 +188,8 @@ You could use the following BibTeX entry:
 ```
 
 We kindly ask you to also give credit to the individual methods and algorithms used in 4C.
-References to the relevant publications can be found on the [4C website](https://4c-multiphysics.org) or throughout the source code.
+References to the relevant publications can be found on the [4C website](https://4c-multiphysics.org) or throughout the
+source code.
 If you need any assistance with finding suitable references,
-please feel free to reach out in the [4C Slack workspace](https://join.slack.com/t/4c-multiphysics/shared_invite/zt-1oi61jgdd-5tZuHku3Tb_BH5UBgojbpQ).
+please feel free to reach out in
+the [4C Slack workspace](https://join.slack.com/t/4c-multiphysics/shared_invite/zt-1oi61jgdd-5tZuHku3Tb_BH5UBgojbpQ).
