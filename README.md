@@ -24,6 +24,8 @@
 >
 >
 > DUMMY TEST
+>
+> MORE
 
 4C ("Comprehensive Computational Community Code") is a parallel multiphysics research code
 to address a plethora of physical problems by means of _computational mechanics_.
