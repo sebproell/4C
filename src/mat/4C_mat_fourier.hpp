@@ -16,14 +16,23 @@
 
 FOUR_C_NAMESPACE_OPEN
 
+/* Fourier material according to [1]
+ *
+ * This is a Fourier's law of instationary heat conduction.
+ * The anisotropic version is the extension of the isotropic case with the
+ * thermal conductivity treated as tensor.
+ *
+ * <h3>References</h3>
+ * <ul>
+ * <li> [1] GA Holzapfel, "Nonlinear solid mechanics", Wiley, 2000.
+ * </ul>
+ */
+
 namespace Mat
 {
   namespace PAR
   {
     /// material parameters for Fourier material
-    ///
-    /// <h3>Input line</h3>
-    /// MAT 1 MAT_Fourier CAPA 1.0 NUMSPACEDIM 3 CONDUCT 1.0 0.1 10.0
     class Fourier : public Core::Mat::PAR::Parameter
     {
      public:
@@ -34,6 +43,7 @@ namespace Mat
       //@{
 
       /// volumetric heat capacity
+      /// be careful: capa_ := rho * C_V, e.g contains the density
       const double capa_;
 
       /// heat conductivity
@@ -52,7 +62,7 @@ namespace Mat
   class FourierType : public Core::Communication::ParObjectType
   {
    public:
-    std::string name() const override { return "FourierAnisoType"; }
+    std::string name() const override { return "FourierType"; }
 
     static FourierType& instance() { return instance_; };
 

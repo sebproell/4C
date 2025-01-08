@@ -1,8 +1,7 @@
 Thermo Elements
 ===============
 
-The only material, which is used for thermo elements in the input examples is
+The only materials, which are used for thermo elements in the input examples, are:
 
-- THERM_FourierIso
-
-it seems.
+- MAT_Fourier
+- MAT_Soret

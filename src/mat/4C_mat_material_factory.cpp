@@ -78,7 +78,6 @@
 #include "4C_mat_fluidporo_singlephaselaw.hpp"
 #include "4C_mat_fluidporo_viscosity_law.hpp"
 #include "4C_mat_fourier.hpp"
-#include "4C_mat_fourieriso.hpp"
 #include "4C_mat_growthremodel_elasthyper.hpp"
 #include "4C_mat_herschelbulkley.hpp"
 #include "4C_mat_inelastic_defgrad_factors.hpp"
@@ -902,10 +901,6 @@ std::unique_ptr<Core::Mat::PAR::Parameter> Mat::make_parameter(
     case Core::Materials::m_thermo_fourier:
     {
       return make_parameter_impl<Mat::PAR::Fourier>(id, type, input_data);
-    }
-    case Core::Materials::m_th_fourier_iso:
-    {
-      return make_parameter_impl<Mat::PAR::FourierIso>(id, type, input_data);
     }
     case Core::Materials::m_soret:
     {

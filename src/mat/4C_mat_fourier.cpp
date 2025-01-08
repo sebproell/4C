@@ -17,19 +17,10 @@ FOUR_C_NAMESPACE_OPEN
  *----------------------------------------------------------------------*/
 Mat::PAR::Fourier::Fourier(const Core::Mat::PAR::Parameter::Data& matdata)
     : Parameter(matdata),
-      // be careful: capa_ := rho * C_V, e.g contains the density
       capa_(matdata.parameters.get<double>("CAPA")),
       conduct_(matdata.parameters.get<std::vector<double>>("CONDUCT")),
       conduct_para_num_(matdata.parameters.get<int>("CONDUCT_PARA_NUM"))
 {
-  /*
-  TODO: there are 5 options ...
- - one value is given -> scalar case (this is our default case)
- - two values are given -> 2d diagonal
- - three values are given -> 3d diagonalCONDUCT_PARA_NUM
- - four values are given -> 2d full
- - nine values are given -> 3d full
- */
 }
 
 /*----------------------------------------------------------------------*
@@ -47,9 +38,9 @@ Mat::FourierType Mat::FourierType::instance_;
  *----------------------------------------------------------------------*/
 Core::Communication::ParObject* Mat::FourierType::create(Core::Communication::UnpackBuffer& buffer)
 {
-  auto* fourieraniso = new Mat::Fourier();
-  fourieraniso->unpack(buffer);
-  return fourieraniso;
+  auto* fourier = new Mat::Fourier();
+  fourier->unpack(buffer);
+  return fourier;
 }
 
 /*----------------------------------------------------------------------*
@@ -78,7 +69,6 @@ void Mat::Fourier::unpack(Core::Communication::UnpackBuffer& buffer)
 {
   Core::Communication::extract_and_assert_id(buffer, unique_par_object_id());
 
-  // matid
   int matid;
   extract_from_pack(buffer, matid);
   params_ = nullptr;
