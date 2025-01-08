@@ -167,7 +167,8 @@ namespace Discret::Elements
     {
       return solid_ele_property_.element_technology == ElementTechnology::eas_full ||
              solid_ele_property_.element_technology == ElementTechnology::eas_mild ||
-             solid_ele_property_.element_technology == ElementTechnology::shell_eas;
+             solid_ele_property_.element_technology == ElementTechnology::shell_eas ||
+             solid_ele_property_.element_technology == ElementTechnology::shell_eas_ans;
     }
 
     void vis_names(std::map<std::string, int>& names) override;

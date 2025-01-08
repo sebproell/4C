@@ -19,6 +19,7 @@
 #include "4C_solid_3D_ele_calc_mulf.hpp"
 #include "4C_solid_3D_ele_calc_mulf_fbar.hpp"
 #include "4C_solid_3D_ele_calc_shell_ans.hpp"
+#include "4C_solid_3D_ele_calc_shell_eas_ans.hpp"
 #include "4C_solid_3D_ele_factory_lib.hpp"
 #include "4C_solid_3D_ele_properties.hpp"
 
@@ -67,9 +68,13 @@ namespace Discret::Elements
     using SolidShellEvaluators = Core::FE::apply_celltype_sequence<ANSSolidShellIntegrator,
         Core::FE::CelltypeSequence<Core::FE::CellType::hex8, Core::FE::CellType::wedge6>>;
 
+    using SolidShellEasEvaluators =
+        Core::FE::BaseTypeList<EasAnsSolidShellIntegrator<Core::FE::CellType::hex8,
+            Discret::Elements::EasType::eastype_sh8_7>>;
+
     using SolidEvaluators = Core::FE::Join<DisplacementBasedEvaluators,
         DisplacementBasedLinearKinematicsEvaluators, FbarEvaluators, EASEvaluators, MulfEvaluators,
-        FBarMulfEvaluators, SolidShellEvaluators>;
+        FBarMulfEvaluators, SolidShellEvaluators, SolidShellEasEvaluators>;
   }  // namespace Internal
 
   using SolidCalcVariant = CreateVariantType<Internal::SolidEvaluators>;
