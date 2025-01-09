@@ -638,6 +638,9 @@ template class Discret::Elements::SolidEleCalc<Core::FE::CellType::wedge6,
 template class Discret::Elements::SolidEleCalc<Core::FE::CellType::hex8,
     Discret::Elements::ShellEASANSFormulation<Core::FE::CellType::hex8,
         Discret::Elements::EasType::eastype_sh8_7>>;
+template class Discret::Elements::SolidEleCalc<Core::FE::CellType::wedge6,
+    Discret::Elements::ShellEASANSFormulation<Core::FE::CellType::wedge6,
+        Discret::Elements::EasType::eastype_sw6_1>>;
 
 // explicit instantiations for hex8 with EAS
 template class Discret::Elements::SolidEleCalc<Core::FE::CellType::hex8,

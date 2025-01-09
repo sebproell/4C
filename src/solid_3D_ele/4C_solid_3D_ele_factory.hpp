@@ -70,7 +70,9 @@ namespace Discret::Elements
 
     using SolidShellEasEvaluators =
         Core::FE::BaseTypeList<EasAnsSolidShellIntegrator<Core::FE::CellType::hex8,
-            Discret::Elements::EasType::eastype_sh8_7>>;
+                                   Discret::Elements::EasType::eastype_sh8_7>,
+            EasAnsSolidShellIntegrator<Core::FE::CellType::wedge6,
+                Discret::Elements::EasType::eastype_sw6_1>>;
 
     using SolidEvaluators = Core::FE::Join<DisplacementBasedEvaluators,
         DisplacementBasedLinearKinematicsEvaluators, FbarEvaluators, EASEvaluators, MulfEvaluators,

@@ -41,6 +41,7 @@ namespace Discret::Elements
     eastype_h8_21,
     eastype_sh8_7,
     eastype_sh18_9,
+    eastype_sw6_1,
     eastype_undefined
   };
 
@@ -67,6 +68,11 @@ namespace Discret::Elements
   struct EasTypeToNumEas<Discret::Elements::EasType::eastype_sh18_9>
   {
     static constexpr int num_eas = 9;
+  };
+  template <>
+  struct EasTypeToNumEas<Discret::Elements::EasType::eastype_sw6_1>
+  {
+    static constexpr int num_eas = 1;
   };
   template <>
   struct EasTypeToNumEas<Discret::Elements::EasType::eastype_undefined>
@@ -341,6 +347,21 @@ namespace Discret::Elements
         M(2, 6) = xi(1) * xi(2);
         M(3, 3) = xi(0);
         M(3, 4) = xi(1);
+
+        break;
+      }
+      case Discret::Elements::EasType::eastype_sw6_1:
+      {
+        /* eassosw6 is the EAS interpolation for the Solid-Shell with t=thickness dir.
+        ** consisting of 1 modes, based on
+        **            0
+        **            0
+        **    M =     t
+        **            0
+        **            0
+        **            0
+        */
+        M(2, 0) = xi(2);
 
         break;
       }

@@ -58,8 +58,8 @@ namespace Discret::Elements
       const JacobianMapping<Core::FE::CellType::hex8>& jacobian_mapping,
       const std::array<SamplingPointData<Core::FE::CellType::hex8>, 8>& sampling_point_data)
   {
-    Core::LinAlg::Matrix<num_str<Core::FE::CellType::hex8>,
-        num_dof_per_ele<Core::FE::CellType::hex8>>
+    Core::LinAlg::Matrix<Internal::num_str<Core::FE::CellType::hex8>,
+        Internal::num_dof_per_ele<Core::FE::CellType::hex8>>
         bop_loc{};
     Core::LinAlg::Matrix<3, 3> current_jacobian(jacobian_mapping.jacobian_);
     current_jacobian.multiply(1.0, shape_functions.derivatives_, element_nodes.displacements, 1.0);
@@ -106,16 +106,16 @@ namespace Discret::Elements
 
     return bop_loc;
   }
-  inline Core::LinAlg::Matrix<num_str<Core::FE::CellType::wedge6>,
-      num_dof_per_ele<Core::FE::CellType::wedge6>>
+  inline Core::LinAlg::Matrix<Internal::num_str<Core::FE::CellType::wedge6>,
+      Internal::num_dof_per_ele<Core::FE::CellType::wedge6>>
   evaluate_local_b_operator(const ElementNodes<Core::FE::CellType::wedge6>& element_nodes,
       const Core::LinAlg::Matrix<Core::FE::dim<Core::FE::CellType::wedge6>, 1>& xi,
       const ShapeFunctionsAndDerivatives<Core::FE::CellType::wedge6>& shape_functions,
       const JacobianMapping<Core::FE::CellType::wedge6>& jacobian_mapping,
       const std::array<SamplingPointData<Core::FE::CellType::wedge6>, 5>& sampling_point_data)
   {
-    Core::LinAlg::Matrix<num_str<Core::FE::CellType::wedge6>,
-        num_dof_per_ele<Core::FE::CellType::wedge6>>
+    Core::LinAlg::Matrix<Internal::num_str<Core::FE::CellType::wedge6>,
+        Internal::num_dof_per_ele<Core::FE::CellType::wedge6>>
         bop_loc{};
     Core::LinAlg::Matrix<3, 3> current_jacobian(jacobian_mapping.jacobian_);
     current_jacobian.multiply(1.0, shape_functions.derivatives_, element_nodes.displacements, 1.0);
@@ -157,8 +157,8 @@ namespace Discret::Elements
     return bop_loc;
   }
 
-  inline Core::LinAlg::Matrix<num_str<Core::FE::CellType::hex8>, 1> evaluate_local_glstrain(
-      const ElementNodes<Core::FE::CellType::hex8>& element_nodes,
+  inline Core::LinAlg::Matrix<Internal::num_str<Core::FE::CellType::hex8>, 1>
+  evaluate_local_glstrain(const ElementNodes<Core::FE::CellType::hex8>& element_nodes,
       const Core::LinAlg::Matrix<Core::FE::dim<Core::FE::CellType::hex8>, 1>& xi,
       const ShapeFunctionsAndDerivatives<Core::FE::CellType::hex8>& shape_functions,
       const JacobianMapping<Core::FE::CellType::hex8>& jacobian_mapping,
@@ -167,7 +167,7 @@ namespace Discret::Elements
     Core::LinAlg::Matrix<3, 3> current_jacobian(jacobian_mapping.jacobian_);
     current_jacobian.multiply(1.0, shape_functions.derivatives_, element_nodes.displacements, 1.0);
 
-    Core::LinAlg::Matrix<num_str<Core::FE::CellType::hex8>, 1> glstrain;
+    Core::LinAlg::Matrix<Internal::num_str<Core::FE::CellType::hex8>, 1> glstrain;
     // evaluate glstrains in local(parameter) coords
     // Err = 0.5 * (dx/dr * dx/dr^T - dX/dr * dX/dr^T)
     glstrain(0) =
@@ -267,8 +267,8 @@ namespace Discret::Elements
   }
 
 
-  inline Core::LinAlg::Matrix<num_str<Core::FE::CellType::wedge6>, 1> evaluate_local_glstrain(
-      const ElementNodes<Core::FE::CellType::wedge6>& element_nodes,
+  inline Core::LinAlg::Matrix<Internal::num_str<Core::FE::CellType::wedge6>, 1>
+  evaluate_local_glstrain(const ElementNodes<Core::FE::CellType::wedge6>& element_nodes,
       const Core::LinAlg::Matrix<Core::FE::dim<Core::FE::CellType::wedge6>, 1>& xi,
       const ShapeFunctionsAndDerivatives<Core::FE::CellType::wedge6>& shape_functions,
       const JacobianMapping<Core::FE::CellType::wedge6>& jacobian_mapping,
@@ -277,7 +277,7 @@ namespace Discret::Elements
     Core::LinAlg::Matrix<3, 3> current_jacobian(jacobian_mapping.jacobian_);
     current_jacobian.multiply(1.0, shape_functions.derivatives_, element_nodes.displacements, 1.0);
 
-    Core::LinAlg::Matrix<num_str<Core::FE::CellType::wedge6>, 1> glstrain;
+    Core::LinAlg::Matrix<Internal::num_str<Core::FE::CellType::wedge6>, 1> glstrain;
     // evaluate glstrains in local(parameter) coords
     // Err = 0.5 * (dx/dr * dx/dr^T - dX/dr * dX/dr^T)
     glstrain(0) =
@@ -469,21 +469,6 @@ namespace Discret::Elements
         G_ij(3) = shape_functions.derivatives_(0, inod) * shape_functions.derivatives_(1, jnod) +
                   shape_functions.derivatives_(1, inod) *
                       shape_functions.derivatives_(0, jnod);  // rs-dir
-
-
-        // ANS modification in tt-dir
-        G_ij(2) = 0.25 * (1 - xi(0)) * (1 - xi(1)) *
-                      sampling_point_data[4].shape_functions.derivatives_(2, inod) *
-                      sampling_point_data[4].shape_functions.derivatives_(2, jnod) +
-                  0.25 * (1 + xi(0)) * (1 - xi(1)) *
-                      sampling_point_data[5].shape_functions.derivatives_(2, inod) *
-                      sampling_point_data[5].shape_functions.derivatives_(2, jnod) +
-                  0.25 * (1 + xi(0)) * (1 + xi(1)) *
-                      sampling_point_data[6].shape_functions.derivatives_(2, inod) *
-                      sampling_point_data[6].shape_functions.derivatives_(2, jnod) +
-                  0.25 * (1 - xi(0)) * (1 + xi(1)) *
-                      sampling_point_data[7].shape_functions.derivatives_(2, inod) *
-                      sampling_point_data[7].shape_functions.derivatives_(2, jnod);
 
         // ANS modification in tt-dir
         G_ij(2) = (1 - xi(0) - xi(1)) *

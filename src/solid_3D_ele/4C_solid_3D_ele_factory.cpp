@@ -148,7 +148,7 @@ namespace
   };
 
   /*!
-   * @brief Nonlinear total lagrangian solid-shell formulation with EAS and ANS
+   * @brief Nonlinear total lagrangian hex8 solid-shell formulation with EAS and ANS
    */
   template <Core::FE::CellType celltype>
   struct SolidCalculationFormulation<celltype, Inpar::Solid::KinemType::nonlinearTotLag,
@@ -158,6 +158,19 @@ namespace
   {
     using type = Discret::Elements::EasAnsSolidShellIntegrator<celltype,
         Discret::Elements::EasType::eastype_sh8_7>;
+  };
+
+  /*!
+   * @brief Nonlinear total lagrangian wedge6 solid-shell formulation with EAS and ANS
+   */
+  template <Core::FE::CellType celltype>
+  struct SolidCalculationFormulation<celltype, Inpar::Solid::KinemType::nonlinearTotLag,
+      Discret::Elements::ElementTechnology::shell_eas_ans,
+      Discret::Elements::PrestressTechnology::none,
+      std::enable_if_t<celltype == Core::FE::CellType::wedge6>>
+  {
+    using type = Discret::Elements::EasAnsSolidShellIntegrator<celltype,
+        Discret::Elements::EasType::eastype_sw6_1>;
   };
 
   /*!
