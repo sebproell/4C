@@ -174,9 +174,9 @@ void Inpar::Thermo::set_valid_conditions(
     // --> Tempn (old temperature T_n)
     // or if the exact solution is needed
     // --> Tempnp (current temperature solution T_n+1) with linearisation
-    cond->add_component(std::make_shared<Input::SelectionComponent>("temperature state", "Tempnp",
+    add_named_selection_component(cond, "temperature_state", "temperature state", "Tempnp",
         Teuchos::tuple<std::string>("Tempnp", "Tempn"),
-        Teuchos::tuple<std::string>("Tempnp", "Tempn")));
+        Teuchos::tuple<std::string>("Tempnp", "Tempn"));
     add_named_real(cond, "coeff", "heat transfer coefficient h");
     add_named_real(cond, "surtemp", "surrounding (fluid) temperature T_oo");
     add_named_int(cond, "surtempfunct",
