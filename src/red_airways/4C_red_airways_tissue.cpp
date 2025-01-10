@@ -60,7 +60,7 @@ Airway::RedAirwayTissue::RedAirwayTissue(MPI_Comm comm, const Teuchos::Parameter
     std::vector<double> val(6, 0.0);
     cond->parameters().add("VAL", val);
 
-    int condID = coupcond[i]->parameters().get<int>("coupling id");
+    int condID = coupcond[i]->parameters().get<int>("coupling_id");
     tmp.push_back(condID);
   }
 

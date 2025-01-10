@@ -196,15 +196,15 @@ E 2 - NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
 -------------------------------DESIGN IMMERSED COUPLING SURF CONDITIONS
 DSURF  1
 // cylinder_interface
-E 2 - 1
+E 2 - coupling_id 1
 ----------------------------------DESIGN VOLUME IMMERSED SEARCHBOX
 DVOL   1
 // immersed_searchbox
 E 3 -
 ---------------------------------DESIGN FLOW RATE SURF CONDITIONS
 DSURF    2
-E 4 - 1
-E 1 - 1
+E 4 - COUPLINGID 1
+E 1 - COUPLINGID 1
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    5622 DNODE 1
 NODE    5621 DNODE 2

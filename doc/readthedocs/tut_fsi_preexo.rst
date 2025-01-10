@@ -558,7 +558,7 @@ to be changed:
       ::
 
          sectionname="DESIGN FSI COUPLING SURF CONDITIONS"
-         description="1 "
+         description="coupling_id 1 "
 
 -  ``*ns14="CONDITION"`` the coupling surface from the fluid side
 
@@ -567,7 +567,7 @@ to be changed:
       ::
 
          sectionname="DESIGN FSI COUPLING SURF CONDITIONS"
-         description="1 "
+         description="coupling_id 1 "
 
 -  ``*ns22="CONDITION"`` release the ’coupling-line’ for inplane
    directions

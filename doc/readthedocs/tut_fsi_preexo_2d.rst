@@ -243,7 +243,7 @@ For Dirichlet boundary conditions for structure, fluid and ALE:
       ::
 
                sectionname="DESIGN FSI COUPLING LINE CONDITIONS"
-               description="1"
+               description="coupling_id 1"
 
 -  ``*ns3="CONDITION"``
 
@@ -306,7 +306,7 @@ For Dirichlet boundary conditions for structure, fluid and ALE:
       ::
 
                sectionname="DESIGN FSI COUPLING LINE CONDITIONS"
-               description="1"
+               description="coupling_id 1"
 
 -  ``*ns10="CONDITION"``
 

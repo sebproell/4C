@@ -221,14 +221,13 @@ E 9 - NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL -0.75 0.0 0.0 0.0 0.0 0.0 FUNCT 3 0 0 0 0 0
 DVOL 1
 E 2 - NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL -0.75 0.0 0.0 0.0 0.0 0.0 FUNCT 3 0 0 0 0 0
 -----------------------------------------DESIGN FSI COUPLING SURF CONDITIONS
-// DOBJECT FSI_ID FIELD MESH
 DSURF 6
-E 7 - 1
-E 8 - 1
-E 9 - 1
-E 10 - 1
-E 11 - 1
-E 12 - 1
+E 7 - coupling_id 1
+E 8 - coupling_id 1
+E 9 - coupling_id 1
+E 10 - coupling_id 1
+E 11 - coupling_id 1
+E 12 - coupling_id 1
 ----------------------------------DESIGN XFEM FSI MONOLITHIC SURF CONDITIONS
 // DOBJECT FSI_ID FIELD MESH
 DSURF 6

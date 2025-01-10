@@ -150,8 +150,8 @@ E 9 - COUPLINGID 1 COUPSTRATEGY solid INTLAW noslip
 E 10 - COUPLINGID 1 COUPSTRATEGY solid INTLAW noslip
 -----------------------------------------------DESIGN STRUCTURE ALE COUPLING SURF CONDITIONS
 DSURF 2
-E 12 - 1
-E 11 - 2
+E 12 - coupling_id 1
+E 11 - coupling_id 2
 -----------------------------------------------DESIGN SURF ALE DIRICH CONDITIONS
 DSURF 4
 E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0 0 0  FUNCT 0 0 0

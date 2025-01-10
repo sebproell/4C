@@ -1844,7 +1844,7 @@ void Airway::RedAirwayImplicitTimeInt::setup_for_coupling()
     Core::Conditions::Condition* actcond = nodecond[i];
     if (actcond->type() == Core::Conditions::RedAirwayNodeTissue)
     {
-      auto condID = actcond->parameters().get<int>("coupling id");
+      auto condID = actcond->parameters().get<int>("coupling_id");
       coupcond_[condID] = actcond;
       tmp.push_back(condID);
       pres_[condID] = 0.0;

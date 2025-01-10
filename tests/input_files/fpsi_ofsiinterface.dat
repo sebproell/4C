@@ -273,15 +273,15 @@ E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -------------------------------DESIGN FSI COUPLING SURF CONDITIONS
 DSURF  2
 // structure_coupling_surface
-E 3 - 1
+E 3 - coupling_id 1
 // fluid_coupling_surface
-E 4 - 1
+E 4 - coupling_id 1
 ------------------------------DESIGN FPSI COUPLING SURF CONDITIONS
 DSURF  2
 // structure_coupling_surface
-E 7 - 1
+E 7 - coupling_id 1
 // fluid_coupling_surface
-E 6 - 1
+E 6 - coupling_id 1
 --------------------------DESIGN SURFACE PORO PRESSURE INTEGRATION
 DSURF  2
 // structure_coupling_surface ... fpsi

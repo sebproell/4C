@@ -331,7 +331,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::create_cou
           std::vector<Core::Conditions::Condition*> coupcond;
           arterydis_->get_condition(condname_, coupcond);
           std::string coupling_element_type_ =
-              (coupcond[j])->parameters().get<std::string>("coupling_type");
+              (coupcond[j])->parameters().get<std::string>("COUPLING_TYPE");
 
           // recompute coupling dofs
           recompute_coupled_do_fs_for_ntp(coupcond, j);

@@ -256,7 +256,7 @@ void Inpar::SSI::set_valid_conditions(
   // insert input file line components into condition definitions
   for (const auto& cond : {linessiplain, surfssiplain, volssiplain})
   {
-    cond->add_component(std::make_shared<Input::IntComponent>("coupling id"));
+    add_named_int(cond, "coupling_id");
     condlist.push_back(cond);
   }
 
@@ -278,7 +278,7 @@ void Inpar::SSI::set_valid_conditions(
   // insert input file line components into condition definitions
   for (const auto& cond : {linessi, surfssi, volssi})
   {
-    cond->add_component(std::make_shared<Input::IntComponent>("coupling id"));
+    add_named_int(cond, "coupling_id");
     condlist.push_back(cond);
   }
 
@@ -300,7 +300,7 @@ void Inpar::SSI::set_valid_conditions(
   // insert input file line components into condition definitions
   for (const auto& cond : {linessi2, surfssi2, volssi2})
   {
-    cond->add_component(std::make_shared<Input::IntComponent>("coupling id"));
+    add_named_int(cond, "coupling_id");
     condlist.push_back(cond);
   }
 

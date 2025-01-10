@@ -8,6 +8,7 @@
 #include "4C_inpar_fpsi.hpp"
 
 #include "4C_fem_condition_definition.hpp"
+#include "4C_io_linecomponent.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -139,8 +140,8 @@ void Inpar::FPSI::set_valid_conditions(
           "DESIGN FPSI COUPLING SURF CONDITIONS", "fpsi_coupling", "FPSI Coupling",
           Core::Conditions::fpsi_coupling, true, Core::Conditions::geometry_type_surface);
 
-  linefpsi->add_component(std::make_shared<Input::IntComponent>("coupling id"));
-  surffpsi->add_component(std::make_shared<Input::IntComponent>("coupling id"));
+  add_named_int(linefpsi, "coupling_id");
+  add_named_int(surffpsi, "coupling_id");
 
   condlist.push_back(linefpsi);
   condlist.push_back(surffpsi);

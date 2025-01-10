@@ -407,9 +407,9 @@ E 5 - TYPE_OF_FLOW_DEPENDENCE fixed_pressure ConstCoeff 0.0 LinCoeff 0.0 Initial
 -------------------------------DESIGN FSI COUPLING SURF CONDITIONS
 DSURF  2
 // interface_fluid
-E 6 - 1
+E 6 - coupling_id 1
 // interface_structure
-E 7 - 1
+E 7 - coupling_id 1
 -----------------------TRANSPORT THERMO CONVECTION SURF CONDITIONS
 DSURF  1
 // ConvectionSurface

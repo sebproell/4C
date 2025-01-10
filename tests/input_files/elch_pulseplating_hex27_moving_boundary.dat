@@ -149,7 +149,7 @@ DSURF                           1
 E 1 - NUMDOF 4 ONOFF 1 1 1 1 VAL 0.348 2.408 4.12 0.0 FUNCT 0 0 0 0
 -----------------------------------------DESIGN FSI COUPLING SURF CONDITIONS
 DSURF                           1
-E 2 - 1
+E 2 - coupling_id 1
 ---------------------------------ELECTRODE BOUNDARY KINETICS SURF CONDITIONS
 DSURF                           1
 //                              cathode

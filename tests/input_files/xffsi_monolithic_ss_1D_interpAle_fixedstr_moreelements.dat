@@ -88,9 +88,9 @@ E 2 - NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -----------------------------------------DESIGN FSI COUPLING SURF CONDITIONS
 DSURF 2
 // fluid fsi
-E 1 - 1
+E 1 - coupling_id 1
 // structure fsi
-E 5 - 1
+E 5 - coupling_id 1
 --------------------------------------DESIGN XFEM FLUIDFLUID SURF CONDITIONS
 DSURF 1
 // xfem

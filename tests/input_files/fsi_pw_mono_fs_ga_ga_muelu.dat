@@ -95,10 +95,10 @@ DSURF                           1
 E 3 - NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL 1.3332e4 0.0 0.0 0.0 0.0 0.0 FUNCT 1 1 1 1 1 1 TYPE Live
 -----------------------------------------DESIGN FSI COUPLING SURF CONDITIONS
 DSURF                           4
-E 1 - 1
-E 2 - 1
-E 5 - 1
-E 6 - 1
+E 1 - coupling_id 1
+E 2 - coupling_id 1
+E 5 - coupling_id 1
+E 6 - coupling_id 1
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 726 DNODE 1
 NODE 5513 DNODE 2

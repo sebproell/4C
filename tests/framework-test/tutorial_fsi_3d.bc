@@ -48,7 +48,7 @@ Property Name: none
 has 66 Nodes
 *ns5="CONDITION"
 sectionname="DESIGN FSI COUPLING SURF CONDITIONS"
-description="1 "
+description="coupling_id 1 "
 
 Node Set, named: structure_edge_front_left
 Property Name: none
@@ -139,7 +139,7 @@ Property Name: none
 has 66 Nodes
 *ns14="CONDITION"
 sectionname="DESIGN FSI COUPLING SURF CONDITIONS"
-description="1 "
+description="coupling_id 1 "
 
 Node Set, named: lid
 Property Name: none

@@ -476,7 +476,7 @@ void SSI::SSICouplingMatchingVolumeAndBoundary::init(const int ndim,
 
       std::set<int> couplingids;
       for (auto& cond_struct : conds_struct)
-        couplingids.insert(cond_struct->parameters().get<int>("coupling id"));
+        couplingids.insert(cond_struct->parameters().get<int>("coupling_id"));
 
       std::shared_ptr<Core::DOFSets::DofSetGIDBasedWrapper> structgidmatchingdofset =
           std::make_shared<Core::DOFSets::DofSetGIDBasedWrapper>(
@@ -509,16 +509,16 @@ void SSI::SSICouplingMatchingVolumeAndBoundary::init(const int ndim,
 
       std::set<int> couplingids;
       for (auto& cond_struct : conds_struct)
-        couplingids.insert(cond_struct->parameters().get<int>("coupling id"));
+        couplingids.insert(cond_struct->parameters().get<int>("coupling_id"));
 
       std::shared_ptr<Core::DOFSets::DofSetGIDBasedWrapper> scatragidmatchingdofset =
           std::make_shared<Core::DOFSets::DofSetGIDBasedWrapper>(
               scatradis, scatradis->get_dof_set_proxy());
 
-      for (int couplingid : couplingids)
+      for (int coupling_id : couplingids)
       {
         std::set<int> tempest;
-        tempest.insert(couplingid);
+        tempest.insert(coupling_id);
 
         std::shared_ptr<Core::DOFSets::DofSetDefinedMappingWrapper> newdofset_struct =
             std::make_shared<Core::DOFSets::DofSetDefinedMappingWrapper>(

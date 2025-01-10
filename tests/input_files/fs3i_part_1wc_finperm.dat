@@ -271,9 +271,9 @@ E 8 - NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -------------------------------DESIGN FSI COUPLING SURF CONDITIONS
 DSURF                           2
 // solid fsi
-E 1 - 1
+E 1 - coupling_id 1
 // fluid fsi
-E 4 - 1
+E 4 - coupling_id 1
 ----------------------------DESIGN SCATRA COUPLING SURF CONDITIONS
 DSURF                           2
 // solid fsi

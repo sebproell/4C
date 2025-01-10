@@ -121,9 +121,9 @@ E 13 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -----------------------------------------DESIGN FSI COUPLING LINE CONDITIONS
 // DOBJECT FSI_ID FIELD MESH
 DLINE 3
-E 1 - 1
-E 5 - 1
-E 9 - 1
+E 1 - coupling_id 1
+E 5 - coupling_id 1
+E 9 - coupling_id 1
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 2242 DNODE 1
 NODE 1671 DNODE 2

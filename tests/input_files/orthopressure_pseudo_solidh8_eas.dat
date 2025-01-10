@@ -112,8 +112,8 @@ DSURF                           1
 E 6 - NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL -1.0 0.0 0.0 0.0 0.0 0.0  FUNCT 1 1 1 1 1 1 pseudo_orthopressure
 -----------------------------------------DESIGN FSI COUPLING SURF CONDITIONS
 DSURF                           2
-E 5 - 1
-E 6 - 1
+E 5 - coupling_id 1
+E 6 - coupling_id 1
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 1082 DNODE 1
 NODE 1 DNODE 2

@@ -613,14 +613,14 @@ void Core::FE::Discretization::find_associated_ele_i_ds(
     Core::Conditions::Condition& cond, std::set<int>& VolEleIDs, const std::string& name)
 {
   // determine constraint number
-  int condID = cond.parameters().get<int>("coupling id");
+  int condID = cond.parameters().get<int>("coupling_id");
 
   std::vector<Core::Conditions::Condition*> volconds;
   get_condition(name, volconds);
 
   for (auto& actvolcond : volconds)
   {
-    if (actvolcond->parameters().get<int>("coupling id") == condID)
+    if (actvolcond->parameters().get<int>("coupling_id") == condID)
     {
       // get ptrs to all node ids that have this condition
       const std::vector<int>* nodeids = actvolcond->get_nodes();
