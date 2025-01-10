@@ -1569,20 +1569,6 @@ void Inpar::FLUID::set_valid_conditions(
   }
 
   /*--------------------------------------------------------------------*/
-  // surface tension
-
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surftension =
-      std::make_shared<Core::Conditions::ConditionDefinition>("SURFACE TENSION CONDITIONS",
-          "SurfaceStress", "Surface Stress (ideal water)", Core::Conditions::SurfaceTension, true,
-          Core::Conditions::geometry_type_surface);
-
-  surftension->add_component(
-      std::make_shared<Input::IntComponent>("curve", IntComponentData{0, true, true, false}));
-  Input::add_named_real(surftension, "gamma");
-
-  condlist.push_back(surftension);
-
-  /*--------------------------------------------------------------------*/
   // fluid stress
 
 

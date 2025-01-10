@@ -107,10 +107,6 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "Surf LIFTDRAG condition";
     case Core::Conditions::ALEUPDATECoupling:
       return "Ale update condition";
-    case Core::Conditions::SurfaceTension:
-      return "Surface tension condition";
-    case Core::Conditions::Surfactant:
-      return "Surfactant condition";
     case Core::Conditions::MicroBoundary:
       return "Microscale boundary condition";
     case Core::Conditions::VolumeConstraint_3D:
