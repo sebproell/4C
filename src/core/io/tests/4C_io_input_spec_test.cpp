@@ -432,4 +432,76 @@ namespace
       EXPECT_EQ(out.str(), "a 1 b s [c (c1|c2|)] ");
     }
   }
+
+  TEST(InputSpecTest, EmitMetadata)
+  {
+    auto line = group({
+        entry<int>("a", {.default_value = 42}),
+        entry<std::vector<double>>("b", {.default_value = std::vector{1., 2., 3.}, .size = 3}),
+        one_of({
+            entry<std::pair<int, std::string>>("b", {.default_value = std::pair{1, "abc"}}),
+            group("group",
+                {
+                    entry<std::string>("c"),
+                    entry<double>("d"),
+                }),
+        }),
+        selection<int>("e", {{"e1", 1}, {"e2", 2}}, {.default_value = 1}),
+    });
+
+
+    {
+      std::ostringstream out;
+      YAML::Emitter yaml(out);
+      line.emit_metadata(yaml);
+
+      std::string expected = R"(group {a, b, one_of {b, group}, e}:
+  type: anonymous_group
+  description: group {a, b, one_of {b, group}, e}
+  required: true
+  specs:
+    a:
+      type: int
+      description: ""
+      required: false
+      default: 42
+    b:
+      type: vector<double>
+      description: ""
+      required: false
+      default: [1, 2, 3]
+    one_of {b, group}:
+      type: one_of
+      description: one_of {b, group}
+      required: true
+      specs:
+        b:
+          type: pair<int, string>
+          description: ""
+          required: false
+          default: [1, abc]
+        group:
+          type: scope
+          description: ""
+          required: true
+          specs:
+            c:
+              type: string
+              description: ""
+              required: true
+            d:
+              type: double
+              description: ""
+              required: true
+    e:
+      type: selection
+      description: ""
+      required: false
+      default: 1
+      choices:
+        e1: 1
+        e2: 2)";
+      EXPECT_EQ(out.str(), expected);
+    }
+  }
 }  // namespace

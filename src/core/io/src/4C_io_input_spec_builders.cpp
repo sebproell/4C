@@ -137,13 +137,12 @@ namespace
         [](const Core::IO::InputSpec& spec) { return spec.impl().has_default_value(); });
   }
 
-  [[nodiscard]] const std::string& describe_for_error_handling(const Core::IO::InputSpec& spec)
+  [[nodiscard]] const std::string& describe(const Core::IO::InputSpec& spec)
   {
     return (spec.impl().name().empty()) ? spec.impl().description() : spec.impl().name();
   }
 
-  [[nodiscard]] std::string describe_for_error_handling(
-      const std::vector<Core::IO::InputSpec>& specs)
+  [[nodiscard]] std::string describe(const std::vector<Core::IO::InputSpec>& specs)
   {
     if (specs.empty()) return "{}";
 
@@ -152,7 +151,7 @@ namespace
     {
       // Unnamed InputSpecs are created internally and will have a description that is useful for
       // error messages.
-      description += describe_for_error_handling(spec);
+      description += describe(spec);
       description += ", ";
     }
     description.pop_back();
@@ -209,6 +208,26 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::print(
   }
 }
 
+void Core::IO::InputSpecBuilders::Internal::GroupSpec::emit_metadata(YAML::Emitter& yaml) const
+{
+  {
+    yaml << YAML::Key << (name.empty() ? data.description : name);
+    yaml << YAML::Value << YAML::BeginMap;
+    {
+      yaml << YAML::Key << "type" << YAML::Value << (name.empty() ? "anonymous_group" : "scope");
+      yaml << YAML::Key << "description" << YAML::Value << data.description;
+      yaml << YAML::Key << "required" << YAML::Value << data.required;
+
+      yaml << YAML::Key << "specs" << YAML::Value << YAML::BeginMap;
+      {
+        for (const auto& spec : specs) spec.impl().emit_metadata(yaml);
+      }
+      yaml << YAML::EndMap;
+    }
+    yaml << YAML::EndMap;
+  }
+}
+
 void Core::IO::InputSpecBuilders::Internal::OneOfSpec::parse(
     Core::IO::ValueParser& parser, Core::IO::InputParameterContainer& container) const
 {
@@ -248,8 +267,7 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::parse(
           FOUR_C_THROW(
               "Ambiguous input: both '%s' and '%s' could be parsed, but only one of them is "
               "expected.",
-              describe_for_error_handling(*component).c_str(),
-              describe_for_error_handling(*other).c_str());
+              describe(*component).c_str(), describe(*other).c_str());
         }
       }
 
@@ -284,6 +302,26 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::print(
     stream << ";";
   }
   stream << "}>";
+}
+
+void Core::IO::InputSpecBuilders::Internal::OneOfSpec::emit_metadata(YAML::Emitter& yaml) const
+{
+  {
+    yaml << YAML::Key << data.description;
+    yaml << YAML::Value << YAML::BeginMap;
+    {
+      yaml << YAML::Key << "type" << YAML::Value << "one_of";
+      yaml << YAML::Key << "description" << YAML::Value << data.description;
+      yaml << YAML::Key << "required" << YAML::Value << data.required;
+
+      yaml << YAML::Key << "specs" << YAML::Value << YAML::BeginMap;
+      {
+        for (const auto& spec : specs) spec.impl().emit_metadata(yaml);
+      }
+      yaml << YAML::EndMap;
+    }
+    yaml << YAML::EndMap;
+  }
 }
 
 
@@ -324,7 +362,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(std::vector<InputSpec> sp
   assert_unique_or_empty_names(specs);
 
   // Generate a description of the form "group {a, b, c}".
-  std::string description = "group " + describe_for_error_handling(specs);
+  std::string description = "group " + describe(specs);
 
   IO::Internal::InputSpecTypeErasedBase::CommonData common_data{
       .name = "",
@@ -348,7 +386,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> s
 
   assert_unique_or_empty_names(specs);
 
-  std::string description = "one_of " + describe_for_error_handling(specs);
+  std::string description = "one_of " + describe(specs);
   IO::Internal::InputSpecTypeErasedBase::CommonData common_data{
       .name = "",
       .description = description,
