@@ -225,9 +225,6 @@ DSURF                           2
 E 6 -
 // Surface x-
 E 4 -
------------------------------------------DESIGN FSI COUPLING SURF CONDITIONS
-DSURF                           0
-//E 6 - 1
 ----------------------------------------DESIGN VOLUME POROCOUPLING CONDITION
 DVOL                            1
 E 1 -

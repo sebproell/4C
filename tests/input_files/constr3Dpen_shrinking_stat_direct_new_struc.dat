@@ -92,11 +92,6 @@ E 1 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 E 2 - NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 //connect4
 E 3 - NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
-----------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-// DOBJECT CURVE FLAG FLAG FLAG FLAG FLAG FLAG VAL VAL VAL VAL VAL VAL TYPE NSURF
-DSURF                           0
-//connect9
-//E 5 - 1 0 1 0 0 0 0 0.0 -1.0 0.0 0.0 0.0 0.0
 ---------------------------------------------------------DLINE-NODE TOPOLOGY
 NODE 917 DLINE 1
 NODE 920 DLINE 1
