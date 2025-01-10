@@ -12,12 +12,40 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-void Core::IO::fully_parse(ValueParser& parser, const Core::IO::InputSpec& input_spec,
-    Core::IO::InputParameterContainer& container)
+Core::IO::InputSpec::InputSpec(std::unique_ptr<Internal::InputSpecTypeErasedBase> pimpl)
+    : pimpl_(std::move(pimpl))
 {
-  input_spec.parse(parser, container);
+}
+
+Core::IO::InputSpec::~InputSpec() = default;
+
+Core::IO::InputSpec::InputSpec(const InputSpec& other) : pimpl_(other.pimpl_->clone()) {}
+
+Core::IO::InputSpec& Core::IO::InputSpec::operator=(const InputSpec& other)
+{
+  pimpl_ = other.pimpl_->clone();
+  return *this;
+}
+
+void Core::IO::InputSpec::fully_parse(
+    ValueParser& parser, Core::IO::InputParameterContainer& container) const
+{
+  pimpl_->parse(parser, container);
   FOUR_C_ASSERT_ALWAYS(parser.at_end(), "After parsing, the line still contains '%s'.",
       std::string(parser.get_unparsed_remainder()).c_str());
+}
+
+void Core::IO::InputSpec::print_as_dat(
+    std::ostream& stream, const Core::IO::InputParameterContainer& container) const
+{
+  pimpl_->print(stream, container);
+}
+
+Core::IO::Internal::InputSpecTypeErasedBase& Core::IO::InputSpec::impl() { return *pimpl_; }
+
+const Core::IO::Internal::InputSpecTypeErasedBase& Core::IO::InputSpec::impl() const
+{
+  return *pimpl_;
 }
 
 FOUR_C_NAMESPACE_CLOSE

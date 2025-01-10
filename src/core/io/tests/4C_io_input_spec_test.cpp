@@ -30,7 +30,7 @@ namespace
     InputParameterContainer container;
     std::string stream("marker b 2.0 d true // trailing comment");
     ValueParser parser(stream);
-    fully_parse(parser, line, container);
+    line.fully_parse(parser, container);
     EXPECT_EQ(container.get<int>("a"), 1);
     EXPECT_EQ(container.get<double>("b"), 2.0);
     EXPECT_EQ(container.get_if<std::string>("c"), nullptr);
@@ -47,7 +47,7 @@ namespace
     InputParameterContainer container;
     std::string stream("b 2.0 c string a 1");
     ValueParser parser(stream);
-    fully_parse(parser, line, container);
+    line.fully_parse(parser, container);
     EXPECT_EQ(container.get<int>("a"), 1);
     EXPECT_EQ(container.get<double>("b"), 2.0);
     EXPECT_EQ(container.get<std::string>("c"), "string");
@@ -65,7 +65,7 @@ namespace
       InputParameterContainer container;
       std::string stream("a 1 b 2.0 // c 1");
       ValueParser parser(stream);
-      fully_parse(parser, line, container);
+      line.fully_parse(parser, container);
       EXPECT_EQ(container.get<int>("a"), 1);
       EXPECT_EQ(container.get<double>("b"), 2.0);
       EXPECT_EQ(container.get<std::string>("c"), "default");
@@ -84,7 +84,7 @@ namespace
       InputParameterContainer container;
       std::string stream("a 1 b 2.0");
       ValueParser parser(stream);
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(fully_parse(parser, line, container), Core::Exception,
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(line.fully_parse(parser, container), Core::Exception,
           "Required value 'c' not found in input line");
     }
   }
@@ -101,7 +101,7 @@ namespace
       InputParameterContainer container;
       std::string stream("a 1 b 1.0 2.0 3.0 c string");
       ValueParser parser(stream);
-      fully_parse(parser, line, container);
+      line.fully_parse(parser, container);
       EXPECT_EQ(container.get<int>("a"), 1);
       const auto& b = container.get<std::vector<double>>("b");
       EXPECT_EQ(b.size(), 3);
@@ -115,7 +115,7 @@ namespace
       InputParameterContainer container;
       std::string stream("a 1 b 1.0 2.0 c string");
       ValueParser parser(stream);
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(fully_parse(parser, line, container), Core::Exception,
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(line.fully_parse(parser, container), Core::Exception,
           "Could not parse 'c' as a double value");
     }
   }
@@ -132,7 +132,7 @@ namespace
       InputParameterContainer container;
       std::string stream("a 3 b 1.0 2.0 3.0 c string");
       ValueParser parser(stream);
-      fully_parse(parser, line, container);
+      line.fully_parse(parser, container);
       EXPECT_EQ(container.get<int>("a"), 3);
       const auto& b = container.get<std::vector<double>>("b");
       EXPECT_EQ(b.size(), 3);
@@ -146,7 +146,7 @@ namespace
       InputParameterContainer container;
       std::string stream("a 3 b 1.0 2.0 c string");
       ValueParser parser(stream);
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(fully_parse(parser, line, container), Core::Exception,
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(line.fully_parse(parser, container), Core::Exception,
           "Could not parse 'c' as a double value");
     }
   }
@@ -175,7 +175,7 @@ namespace
       InputParameterContainer container;
       std::string stream("a 1 b 2.0 c _ _ s hello");
       ValueParser parser(stream);
-      fully_parse(parser, line, container);
+      line.fully_parse(parser, container);
       EXPECT_EQ(container.get<int>("a"), 1);
       EXPECT_EQ(container.get<double>("b"), 2.0);
       EXPECT_EQ(container.get<std::string>("c"), "I found c");
@@ -187,7 +187,7 @@ namespace
       std::string stream("a 1 b 2.0 c _ s hello");
       ValueParser parser(stream);
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          fully_parse(parser, line, container), Core::Exception, "expected string '_'");
+          line.fully_parse(parser, container), Core::Exception, "expected string '_'");
     }
   }
 
@@ -204,7 +204,7 @@ namespace
       InputParameterContainer container;
       std::string stream("a 1 b b2 d string c c1");
       ValueParser parser(stream);
-      fully_parse(parser, line, container);
+      line.fully_parse(parser, container);
       EXPECT_EQ(container.get<int>("a"), 1);
       EXPECT_EQ(container.get<int>("b"), 2);
       EXPECT_EQ(container.get<std::string>("c"), "1");
@@ -216,7 +216,7 @@ namespace
       std::string stream("a 1 b b4 c string");
       ValueParser parser(stream);
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          fully_parse(parser, line, container), Core::Exception, "Invalid value 'b4'");
+          line.fully_parse(parser, container), Core::Exception, "Invalid value 'b4'");
     }
   }
 
@@ -231,7 +231,7 @@ namespace
     InputParameterContainer container;
     std::string stream("a 1 b 2.0 c string unparsed unparsed");
     ValueParser parser(stream);
-    FOUR_C_EXPECT_THROW_WITH_MESSAGE(fully_parse(parser, line, container), Core::Exception,
+    FOUR_C_EXPECT_THROW_WITH_MESSAGE(line.fully_parse(parser, container), Core::Exception,
         "line still contains 'unparsed unparsed'");
   }
 
@@ -266,7 +266,7 @@ namespace
       InputParameterContainer container;
       std::string stream("a 1 group1 b 2.0 c string");
       ValueParser parser(stream);
-      fully_parse(parser, line, container);
+      line.fully_parse(parser, container);
       const auto& const_container = container;
       EXPECT_EQ(const_container.get<int>("a"), 1);
       EXPECT_EQ(const_container.group("group1").get<double>("b"), 2.0);
@@ -280,7 +280,7 @@ namespace
       InputParameterContainer container;
       std::string stream("a 1 group2 b 2.0 c string group1 b 4.0 c string");
       ValueParser parser(stream);
-      fully_parse(parser, line, container);
+      line.fully_parse(parser, container);
       const auto& const_container = container;
       EXPECT_EQ(const_container.get<int>("a"), 1);
       EXPECT_EQ(const_container.group("group2").get<double>("b"), 2.0);
@@ -292,7 +292,7 @@ namespace
       InputParameterContainer container;
       std::string stream("a 1 group1 b 4.0 c string");
       ValueParser parser(stream);
-      fully_parse(parser, line, container);
+      line.fully_parse(parser, container);
       const auto& const_container = container;
       EXPECT_EQ(const_container.get<int>("a"), 1);
       EXPECT_ANY_THROW([[maybe_unused]] const auto& c = const_container.group("group2"));
@@ -319,7 +319,7 @@ namespace
       InputParameterContainer container;
       std::string stream("a 1 b 2");
       ValueParser parser(stream);
-      fully_parse(parser, line, container);
+      line.fully_parse(parser, container);
       EXPECT_EQ(container.get<int>("a"), 1);
       EXPECT_EQ(container.get<double>("b"), 2);
     }
@@ -328,7 +328,7 @@ namespace
       InputParameterContainer container;
       std::string stream("group c string d 2.0");
       ValueParser parser(stream);
-      fully_parse(parser, line, container);
+      line.fully_parse(parser, container);
       EXPECT_EQ(container.get<int>("a"), 42);
       EXPECT_EQ(container.group("group").get<std::string>("c"), "string");
       EXPECT_EQ(container.group("group").get<double>("d"), 2);
@@ -339,7 +339,7 @@ namespace
       std::string stream("a 1 group c string d 2.0 b 3.0");
       ValueParser parser(stream);
       // More than one of the one_of entries is present. Refuse to parse any of them.
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(fully_parse(parser, line, container), Core::Exception,
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(line.fully_parse(parser, container), Core::Exception,
           "still contains 'group c string d 2.0 b 3.0'");
     }
 
@@ -350,7 +350,7 @@ namespace
       // The result is that the parts of the group remain unparsed.
       ValueParser parser(stream);
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          fully_parse(parser, line, container), Core::Exception, "still contains 'group c string'");
+          line.fully_parse(parser, container), Core::Exception, "still contains 'group c string'");
     }
 
     {
@@ -358,7 +358,7 @@ namespace
       std::string stream("a 1");
       ValueParser parser(stream);
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          fully_parse(parser, line, container), Core::Exception, "Required 'one_of {b, group}'");
+          line.fully_parse(parser, container), Core::Exception, "Required 'one_of {b, group}'");
     }
   }
 
@@ -382,7 +382,7 @@ namespace
       InputParameterContainer container;
       std::string stream("a 1 b 2");
       ValueParser parser(stream);
-      fully_parse(parser, line, container);
+      line.fully_parse(parser, container);
       EXPECT_EQ(container.get<int>("a"), 1);
       EXPECT_EQ(container.get<double>("b"), 2);
       EXPECT_EQ(container.get<int>("index"), 1);
@@ -392,7 +392,7 @@ namespace
       InputParameterContainer container;
       std::string stream("c string d 2.0");
       ValueParser parser(stream);
-      fully_parse(parser, line, container);
+      line.fully_parse(parser, container);
       EXPECT_EQ(container.get<std::string>("c"), "string");
       EXPECT_EQ(container.get<double>("d"), 2);
       EXPECT_EQ(container.get<int>("index"), 10);
@@ -402,7 +402,7 @@ namespace
       InputParameterContainer container;
       std::string stream("a 1 b 2 c string d 2.0");
       ValueParser parser(stream);
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(fully_parse(parser, line, container), Core::Exception,
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(line.fully_parse(parser, container), Core::Exception,
           "both 'group {a, b}' and 'group {c, d}'");
     }
 
@@ -410,7 +410,7 @@ namespace
       InputParameterContainer container;
       std::string stream("a 1 c string");
       ValueParser parser(stream);
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(fully_parse(parser, line, container), Core::Exception,
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(line.fully_parse(parser, container), Core::Exception,
           "one_of {group {a, b}, group {c, d}}");
     }
   }
@@ -428,7 +428,7 @@ namespace
       container.add("a", 1);
       container.add("b", std::string("s"));
       std::ostringstream out;
-      line.print(out, container);
+      line.print_as_dat(out, container);
       EXPECT_EQ(out.str(), "a 1 b s [c (c1|c2|)] ");
     }
   }

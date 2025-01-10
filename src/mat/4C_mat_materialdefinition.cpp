@@ -9,6 +9,7 @@
 
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_io_input_file.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_mat_par_bundle.hpp"
 
@@ -52,8 +53,8 @@ std::ostream& Mat::MaterialDefinition::print(
   stream << comment << " " << description_ << '\n';
   for (const auto& c : components_)
   {
-    stream << comment << " " << c.name() << (c.required() ? " " : " (optional) ") << c.description()
-           << '\n';
+    stream << comment << " " << c.impl().name() << (c.impl().required() ? " " : " (optional) ")
+           << c.impl().description() << '\n';
   }
 
   // the default line
@@ -61,8 +62,8 @@ std::ostream& Mat::MaterialDefinition::print(
   auto input_line = Core::IO::InputSpecBuilders::group(components_);
 
   Core::IO::InputParameterContainer container;
-  input_line.set_default_value(container);
-  input_line.print(stream, container);
+  input_line.impl().set_default_value(container);
+  input_line.impl().print(stream, container);
 
   stream << '\n';
 
