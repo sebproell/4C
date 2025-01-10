@@ -994,7 +994,7 @@ bool CONTACT::Manager::read_and_check_input(Teuchos::ParameterList& cparams) con
 
       if (Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(contact, "STRATEGY") !=
               Inpar::CONTACT::solution_lagmult &&
-          porodyn.get<bool>("CONTACTNOPEN"))
+          porodyn.get<bool>("CONTACT_NO_PENETRATION"))
         FOUR_C_THROW("POROCONTACT: Use Lagrangean Strategy for poro contact!");
 
       if (Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(contact, "FRICTION") !=
@@ -1013,7 +1013,7 @@ bool CONTACT::Manager::read_and_check_input(Teuchos::ParameterList& cparams) con
       {
         const Teuchos::ParameterList& porodyn =
             Global::Problem::instance()->poroelast_dynamic_params();
-        if (porodyn.get<bool>("CONTACTNOPEN"))
+        if (porodyn.get<bool>("CONTACT_NO_PENETRATION"))
           FOUR_C_THROW("POROCONTACT: PoroContact with no penetration just tested for 3d (and 2d)!");
       }
     }
@@ -1140,7 +1140,8 @@ bool CONTACT::Manager::read_and_check_input(Teuchos::ParameterList& cparams) con
     double porotimefac =
         1 / (stru.sublist("ONESTEPTHETA").get<double>("THETA") * stru.get<double>("TIMESTEP"));
     cparams.set<double>("porotimefac", porotimefac);
-    cparams.set<bool>("CONTACTNOPEN", porodyn.get<bool>("CONTACTNOPEN"));  // used in the integrator
+    cparams.set<bool>("CONTACT_NO_PENETRATION",
+        porodyn.get<bool>("CONTACT_NO_PENETRATION"));  // used in the integrator
   }
   else if (problemtype == Core::ProblemType::fsi_xfem)
   {
@@ -1154,7 +1155,8 @@ bool CONTACT::Manager::read_and_check_input(Teuchos::ParameterList& cparams) con
     double porotimefac =
         1 / (stru.sublist("ONESTEPTHETA").get<double>("THETA") * stru.get<double>("TIMESTEP"));
     cparams.set<double>("porotimefac", porotimefac);
-    cparams.set<bool>("CONTACTNOPEN", porodyn.get<bool>("CONTACTNOPEN"));  // used in the integrator
+    cparams.set<bool>("CONTACT_NO_PENETRATION",
+        porodyn.get<bool>("CONTACT_NO_PENETRATION"));  // used in the integrator
   }
   else
   {
