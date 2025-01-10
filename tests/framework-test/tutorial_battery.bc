@@ -117,100 +117,100 @@ Property Name: none
 has 10 Nodes
 *ns2="CONDITION"
 sectionname="DESIGN SSI INTERFACE MESHTYING SURF CONDITIONS"
-description="0 Slave S2I_KINETICS_ID  0"
+description="ConditionID 0 INTERFACE_SIDE Slave S2I_KINETICS_ID  0"
 *ns2="CONDITION"
 sectionname="DESIGN S2I KINETICS SURF CONDITIONS"
-description="0 Slave KINETIC_MODEL ConstantInterfaceResistance ONOFF 0 1 RESISTANCE 1.0e-5 E- 1 IS_PSEUDO_CONTACT False"
+description="ConditionID 0 INTERFACE_SIDE Slave KINETIC_MODEL ConstantInterfaceResistance ONOFF 0 1 RESISTANCE 1.0e-5 E- 1 IS_PSEUDO_CONTACT False"
 
 Node Set, named: an-side_(ma)_of_an-cc_interface
 Property Name: none
 has 10 Nodes
 *ns3="CONDITION"
 sectionname="DESIGN SSI INTERFACE MESHTYING SURF CONDITIONS"
-description="0 Master S2I_KINETICS_ID  0"
+description="ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID  0"
 *ns3="CONDITION"
 sectionname="DESIGN S2I KINETICS SURF CONDITIONS"
-description="0 Master"
+description="ConditionID 0 INTERFACE_SIDE Master"
 
 Node Set, named: an-side_(sl)_of_an-el_interface
 Property Name: none
 has 8 Nodes
 *ns4="CONDITION"
 sectionname="DESIGN SSI INTERFACE MESHTYING SURF CONDITIONS"
-description="1 Slave S2I_KINETICS_ID  1"
+description="ConditionID 1 INTERFACE_SIDE Slave S2I_KINETICS_ID  1"
 *ns4="CONDITION"
 sectionname="DESIGN S2I KINETICS SURF CONDITIONS"
-description="1 Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1 E- 1 K_R 1.036426957e-3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False"
+description="ConditionID 1 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1 E- 1 K_R 1.036426957e-3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False"
 
 Node Set, named: el-side_(ma)_of_an-el_interface
 Property Name: none
 has 8 Nodes
 *ns5="CONDITION"
 sectionname="DESIGN SSI INTERFACE MESHTYING SURF CONDITIONS"
-description="1 Master S2I_KINETICS_ID  1"
+description="ConditionID 1 INTERFACE_SIDE Master S2I_KINETICS_ID  1"
 *ns5="CONDITION"
 sectionname="DESIGN S2I KINETICS SURF CONDITIONS"
-description="1 Master"
+description="ConditionID 1 INTERFACE_SIDE Master"
 
 Node Set, named: el-side_(ma)_of_cat-el_interface
 Property Name: none
 has 195 Nodes
 *ns6="CONDITION"
 sectionname="DESIGN SSI INTERFACE MESHTYING SURF CONDITIONS"
-description="2 Master S2I_KINETICS_ID  2"
+description="ConditionID 2 INTERFACE_SIDE Master S2I_KINETICS_ID  2"
 *ns6="CONDITION"
 sectionname="DESIGN S2I KINETICS SURF CONDITIONS"
-description="2 Master"
+description="ConditionID 2 INTERFACE_SIDE Master"
 
 Node Set, named: cat-side_(sl)_of_cat-el_interfac
 Property Name: none
 has 195 Nodes
 *ns7="CONDITION"
 sectionname="DESIGN SSI INTERFACE MESHTYING SURF CONDITIONS"
-description="2 Slave S2I_KINETICS_ID  2"
+description="ConditionID 2 INTERFACE_SIDE Slave S2I_KINETICS_ID  2"
 *ns7="CONDITION"
 sectionname="DESIGN S2I KINETICS SURF CONDITIONS"
-description="2 Slave KINETIC_MODEL Butler-Volmer NUMSCAL 1 STOICHIOMETRIES -1 E- 1 K_R 2.07e-5 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False"
+description="ConditionID 2 INTERFACE_SIDE Slave KINETIC_MODEL Butler-Volmer NUMSCAL 1 STOICHIOMETRIES -1 E- 1 K_R 2.07e-5 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False"
 
 Node Set, named: cat-side_(ma)_of_cat-cc_interfac
 Property Name: none
 has 12 Nodes
 *ns8="CONDITION"
 sectionname="DESIGN SSI INTERFACE MESHTYING SURF CONDITIONS"
-description="3 Master S2I_KINETICS_ID  3"
+description="ConditionID 3 INTERFACE_SIDE Master S2I_KINETICS_ID  3"
 *ns8="CONDITION"
 sectionname="DESIGN S2I KINETICS SURF CONDITIONS"
-description="3 Master"
+description="ConditionID 3 INTERFACE_SIDE Master"
 
 Node Set, named: cc-side_(sl)_of_cat-comp_cat-cc_
 Property Name: none
 has 12 Nodes
 *ns9="CONDITION"
 sectionname="DESIGN SSI INTERFACE MESHTYING SURF CONDITIONS"
-description="3 Slave S2I_KINETICS_ID  3"
+description="ConditionID 3 INTERFACE_SIDE Slave S2I_KINETICS_ID  3"
 *ns9="CONDITION"
 sectionname="DESIGN S2I KINETICS SURF CONDITIONS"
-description="3 Slave KINETIC_MODEL ConstantInterfaceResistance ONOFF 0 1 RESISTANCE 1.0e-5 E- 1 IS_PSEUDO_CONTACT False"
+description="ConditionID 3 INTERFACE_SIDE Slave KINETIC_MODEL ConstantInterfaceResistance ONOFF 0 1 RESISTANCE 1.0e-5 E- 1 IS_PSEUDO_CONTACT False"
 
 Node Set, named: sol-el-side_(ma)_of_comp_cat-cc_
 Property Name: none
 has 35 Nodes
 *ns10="CONDITION"
 sectionname="DESIGN SSI INTERFACE MESHTYING SURF CONDITIONS"
-description="4 Master S2I_KINETICS_ID  4"
+description="ConditionID 4 INTERFACE_SIDE Master S2I_KINETICS_ID  4"
 *ns10="CONDITION"
 sectionname="DESIGN S2I KINETICS SURF CONDITIONS"
-description="4 Master"
+description="ConditionID 4 INTERFACE_SIDE Master"
 
 Node Set, named: cc-side_(sl)_of_sol-el-comp_cat-
 Property Name: none
 has 35 Nodes
 *ns11="CONDITION"
 sectionname="DESIGN SSI INTERFACE MESHTYING SURF CONDITIONS"
-description="4 Slave S2I_KINETICS_ID  4"
+description="ConditionID 4 INTERFACE_SIDE Slave S2I_KINETICS_ID  4"
 *ns11="CONDITION"
 sectionname="DESIGN S2I KINETICS SURF CONDITIONS"
-description="4 Slave KINETIC_MODEL NoInterfaceFlux"
+description="ConditionID 4 INTERFACE_SIDE Slave KINETIC_MODEL NoInterfaceFlux"
 
 Node Set, named: cat-side_cc
 Property Name: none

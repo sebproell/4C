@@ -1222,7 +1222,7 @@ void ScaTra::MeshtyingStrategyS2IElchSCL::setup_meshtying()
     if (s2imeshtying_condition->parameters().get<int>("S2I_KINETICS_ID") != -1)
       FOUR_C_THROW("No kinetics condition is allowed for the coupled space-charge layer problem.");
 
-    switch (s2imeshtying_condition->parameters().get<int>("interface side"))
+    switch (s2imeshtying_condition->parameters().get<int>("INTERFACE_SIDE"))
     {
       case Inpar::S2I::side_slave:
       {

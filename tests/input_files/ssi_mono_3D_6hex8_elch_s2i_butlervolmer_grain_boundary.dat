@@ -132,41 +132,41 @@ E 3 - FIELD ScaTra FUNCT 1
 -------------------------------DESIGN S2I KINETICS SURF CONDITIONS
 DSURF  6
 // cathode_electrolyte
-E 2 - 0 Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.0e-5 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
+E 2 - ConditionID 0 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.0e-5 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
 // electrolyte_cathode
-E 3 - 0 Master
+E 3 - ConditionID 0 INTERFACE_SIDE Master
 // electrolyte_grain_boundary_1 (coupling between/over grain boundary with manifold conditions)
-E 4 - 2 Master
+E 4 - ConditionID 2 INTERFACE_SIDE Master
 // electrolyte_grain_boundary_2
-E 5 - 2 Slave KINETIC_MODEL NoInterfaceFlux
+E 5 - ConditionID 2 INTERFACE_SIDE Slave KINETIC_MODEL NoInterfaceFlux
 // electrolyte_anode
-E 6 - 1 Master
+E 6 - ConditionID 1 INTERFACE_SIDE Master
 // anode_electrolyte
-E 7 - 1 Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.0e-5 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
+E 7 - ConditionID 1 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.0e-5 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
 --------------------DESIGN SSI INTERFACE MESHTYING SURF CONDITIONS
 DSURF  6
 // cathode_electrolyte
-E 2 - 0 Slave S2I_KINETICS_ID  0
+E 2 - ConditionID 0 INTERFACE_SIDE Slave S2I_KINETICS_ID  0
 // electrolyte_cathode
-E 3 - 0 Master S2I_KINETICS_ID  0
+E 3 - ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID  0
 // electrolyte_grain_boundary_1
-E 4 - 2 Master S2I_KINETICS_ID  2
+E 4 - ConditionID 2 INTERFACE_SIDE Master S2I_KINETICS_ID  2
 // electrolyte_grain_boundary_2
-E 5 - 2 Slave S2I_KINETICS_ID  2
+E 5 - ConditionID 2 INTERFACE_SIDE Slave S2I_KINETICS_ID  2
 // electrolyte_anode
-E 6 - 1 Master S2I_KINETICS_ID  1
+E 6 - ConditionID 1 INTERFACE_SIDE Master S2I_KINETICS_ID  1
 // anode_electrolyte
-E 7 - 1 Slave S2I_KINETICS_ID  1
+E 7 - ConditionID 1 INTERFACE_SIDE Slave S2I_KINETICS_ID  1
 -------------------------------DESIGN SSI MANIFOLD SURF CONDITIONS
 DSURF  1
 // electrolyte_grain_boundary_2
-E 5 - 1 ImplType ElchDiffCond thickness 1.0
+E 5 - ConditionID 1 ImplType ElchDiffCond thickness 1.0
 ----------------------DESIGN SSI MANIFOLD KINETICS SURF CONDITIONS
 DSURF  2
 // electrolyte_grain_boundary_1
-E 4 - 1 ManifoldConditionID 1 KINETIC_MODEL ConstantInterfaceResistance ONOFF 1 1 RESISTANCE 1.03642731098877849  E- 1
+E 4 - ConditionID 1 ManifoldConditionID 1 KINETIC_MODEL ConstantInterfaceResistance ONOFF 1 1 RESISTANCE 1.03642731098877849  E- 1
 // electrolyte_grain_boundary_2
-E 5 - 2 ManifoldConditionID 1 KINETIC_MODEL ConstantInterfaceResistance ONOFF 1 1 RESISTANCE 1.03642731098877849  E- 1
+E 5 - ConditionID 2 ManifoldConditionID 1 KINETIC_MODEL ConstantInterfaceResistance ONOFF 1 1 RESISTANCE 1.03642731098877849  E- 1
 ----------------------------DESIGN SURF MANIFOLD DIRICH CONDITIONS
 DSURF  1
 // electrolyte_grain_boundary_2

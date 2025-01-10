@@ -136,15 +136,15 @@ E 2 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 -1.0e-3 FUNCT none none 5
 -------------------DESIGN SSI INTERFACE MESHTYING POINT CONDITIONS
 DPOINT  2
 // anode_side_of_an-el_interface
-E 3 - 0 Slave S2I_KINETICS_ID  0
+E 3 - ConditionID 0 INTERFACE_SIDE Slave S2I_KINETICS_ID  0
 // electrolyte_side_of_an-el_interf
-E 4 - 0 Master S2I_KINETICS_ID  0
+E 4 - ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID  0
 ------------------------------DESIGN S2I KINETICS POINT CONDITIONS
 DPOINT  2
 // anode_side_of_an-el_interface
-E 3 - 0 Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.0e-3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
+E 3 - ConditionID 0 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.0e-3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
 // electrolyte_side_of_an-el_interf
-E 4 - 0 Master
+E 4 - ConditionID 0 INTERFACE_SIDE Master
 ------------------------------DESIGN CELL VOLTAGE POINT CONDITIONS
 DPOINT 2
 // anode
