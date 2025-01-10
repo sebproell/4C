@@ -111,15 +111,15 @@ E 5 - coupling_id 1
 --------------------------------------DESIGN XFEM FLUIDFLUID SURF CONDITIONS
 DSURF 1
 // xfem
-E 2 - COUPLINGID 1 xfluid
+E 2 - COUPLINGID 1 COUPSTRATEGY xfluid
 ---------------------------------DESIGN FLUID FLUID COUPLING SURF CONDITIONS
 DSURF 1
 // fluidfluid
-E 4 - 1
+E 4 - COUPLINGID 1
 ------------------------------------------DESIGN FLUID MESH VOL CONDITIONS
 DVOL 1
 // embedded volume
-E 2 - 1
+E 2 - COUPLINGID 1
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 1 DNODE 1
 NODE 2 DNODE 1

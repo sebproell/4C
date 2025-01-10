@@ -94,11 +94,11 @@ E 2 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 --------------------------------------DESIGN XFEM FLUIDFLUID SURF CONDITIONS
 DSURF 1
 // Fluid 2 surfaces
-E 5 - COUPLINGID 1 xfluid
+E 5 - COUPLINGID 1 COUPSTRATEGY xfluid
 ------------------------------------------DESIGN FLUID MESH VOL CONDITIONS
 DVOL 1
 // Fluid 2 volume
-E 2 - 1
+E 2 - COUPLINGID 1
 ---------------------------------------------------------DSURF-NODE TOPOLOGY
 NODE 41 DSURFACE 1
 NODE 42 DSURFACE 1
