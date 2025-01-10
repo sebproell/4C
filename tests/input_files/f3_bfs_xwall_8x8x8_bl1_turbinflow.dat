@@ -177,9 +177,9 @@ E 11 - ID 3 MASTER_OR_SLAVE Slave PLANE xy LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
 -----------------------------DESIGN SURF TURBULENT INFLOW TRANSFER
 DSURF  2
 // inflowslavestream
-E 7 - ID 1 master DIRECTION x 2
+E 7 - ID 1 toggle master DIRECTION x curve 2
 // bfsinlet
-E 5 - ID 1 slave DIRECTION x 2
+E 5 - ID 1 toggle slave DIRECTION x curve 2
 -------------------------------------FLUID TURBULENT INFLOW VOLUME
 DVOL   1
 // inflow

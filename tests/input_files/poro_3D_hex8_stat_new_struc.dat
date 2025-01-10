@@ -243,7 +243,7 @@ DVOL                            1
 E 1 -
 --------------------------------------------DESIGN FLOW RATE SURF CONDITIONS
 DSURF                           1
-E 4 - 1
+E 4 - ConditionID 1
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 5 DNODE 1
 NODE 8 DNODE 2

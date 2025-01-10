@@ -148,13 +148,13 @@ E 4 - coupling_id 1
 --------------------------------------------DESIGN FLOW RATE LINE CONDITIONS
 DLINE                           4
 //                              line_radial_top
-E 1 - 1
+E 1 - ConditionID 1
 //                              line_radial_bottom
-E 2 - 2
+E 2 - ConditionID 2
 //                              inner_circ
-E 3 - 3
+E 3 - ConditionID 3
 //                              outer_circ
-E 4 - 3
+E 4 - ConditionID 3
 ---------------------------------------DESIGN SURFACE POROCOUPLING CONDITION
 DSURF                           1
 //                              surface

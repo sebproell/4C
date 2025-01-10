@@ -203,8 +203,8 @@ DVOL   1
 E 3 -
 ---------------------------------DESIGN FLOW RATE SURF CONDITIONS
 DSURF    2
-E 4 - COUPLINGID 1
-E 1 - COUPLINGID 1
+E 4 - ConditionID 1
+E 1 - ConditionID 1
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    5622 DNODE 1
 NODE    5621 DNODE 2

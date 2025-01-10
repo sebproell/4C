@@ -542,7 +542,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::flow_dep_pressure_bc(
   {
     // decide on whether it is a flow-rate- or flow-volume-based condition
     const std::string& condtype =
-        (*fdp_cond).parameters().get<std::string>("type of flow dependence");
+        (*fdp_cond).parameters().get<std::string>("TYPE_OF_FLOW_DEPENDENCE");
 
     // flow-rate-based condition
     if (condtype == "flow_rate")
@@ -4338,8 +4338,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
   double u_C = hixhybdbc_cond->parameters().get<double>("u_C");
 
   // decide whether to use it or not
-  const std::string& deftauB =
-      (*hixhybdbc_cond).parameters().get<std::string>("Definition of penalty parameter");
+  const std::string& deftauB = (*hixhybdbc_cond).parameters().get<std::string>("PENTYPE");
 
   bool spalding = false;
 
