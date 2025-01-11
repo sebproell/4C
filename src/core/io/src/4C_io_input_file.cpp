@@ -24,6 +24,7 @@
 
 #ifdef FOUR_C_ENABLE_FE_TRAPPING
 #include <cfenv>
+#include <format>
 #endif
 
 
@@ -34,6 +35,12 @@ namespace Core::IO
   namespace
   {
     constexpr double tolerance_n = 1.0e-14;
+
+    /**
+     * Sections that contain at least this number of entries are considered huge and are only
+     * available on rank 0.
+     */
+    constexpr std::size_t huge_section_threshold = 10'000;
 
     /*----------------------------------------------------------------------*/
     /*----------------------------------------------------------------------*/
@@ -55,7 +62,7 @@ namespace Core::IO
     {
       // safety check: Is there a duplicate of the same parameter?
       if (list.isParameter(key))
-        FOUR_C_THROW("Duplicate parameter %s in sublist %s", key.c_str(), list.name().c_str());
+        FOUR_C_THROW("Duplicate parameter '%s' in sublist '%s'", key.c_str(), list.name().c_str());
 
       if (key.empty()) FOUR_C_THROW("Internal error: missing key.", key.c_str());
       // safety check: Is the parameter without any specified value?
@@ -116,48 +123,10 @@ namespace Core::IO
     {
       //! A section that is read directly.
       normal,
-      //! A section that is skipped and read on-the-fly later.
-      on_the_fly,
       //! A section that mentions other files that are included and need to be read.
       include,
     };
 
-    void make_buffer_and_line_views(const std::list<std::string>& content,
-        std::vector<char>& inputfile, std::vector<std::string_view>& lines)
-    {
-      const int array_size = std::accumulate(content.begin(), content.end(), 0,
-          [](int sum, const std::string& line)
-          {
-            // add 1 for the null-terminator that we will add below
-            return sum + line.size() + 1;
-          });
-
-      // allocate space for copy of file
-      inputfile.clear();
-      inputfile.reserve(array_size);
-      lines.clear();
-      lines.reserve(content.size());
-
-      std::size_t pos = 0u;
-      for (const auto& line : content)
-      {
-        inputfile.insert(inputfile.end(), line.begin(), line.end());
-        // This fixup is crucial in the current implementation to get a null-terminated string
-        // we can view with string_view without supplying a length.
-        inputfile.push_back('\0');
-        lines.emplace_back(&inputfile[pos]);
-        // Next entry would begin here.
-        pos = inputfile.size();
-      }
-
-      if (inputfile.size() != static_cast<size_t>(array_size))
-      {
-        FOUR_C_THROW(
-            "internal error in file read: inputfile has %d chars, but was predicted to be %d "
-            "chars long",
-            inputfile.size(), array_size);
-      }
-    }
 
     std::filesystem::path get_include_path(
         const std::string& include_line, const std::filesystem::path& current_file)
@@ -174,37 +143,32 @@ namespace Core::IO
       return included_file;
     }
 
-    std::vector<std::filesystem::path> read_dat_content(const std::filesystem::path& file_path,
-        std::list<std::string>& content,
-        std::map<std::string, Internal::SectionPosition>& exclude_information,
-        std::unordered_map<std::string, std::string>& section_to_file_mapping)
+    void join_lines(std::list<std::string>& list_of_lines, std::vector<char>& raw_content,
+        std::vector<std::string_view>& lines)
     {
-      std::set<std::string> exclude;
+      FOUR_C_ASSERT(raw_content.empty() && lines.empty(),
+          "Implementation error: raw_content and lines must be empty.");
 
-      exclude.emplace("NODE COORDS");
-      exclude.emplace("STRUCTURE ELEMENTS");
-      exclude.emplace("STRUCTURE DOMAIN");
-      exclude.emplace("FLUID ELEMENTS");
-      exclude.emplace("FLUID DOMAIN");
-      exclude.emplace("ALE ELEMENTS");
-      exclude.emplace("ALE DOMAIN");
-      exclude.emplace("ARTERY ELEMENTS");
-      exclude.emplace("REDUCED D AIRWAYS ELEMENTS");
-      exclude.emplace("LUBRICATION ELEMENTS");
-      exclude.emplace("LUBRICATION DOMAIN");
-      exclude.emplace("TRANSPORT ELEMENTS");
-      exclude.emplace("TRANSPORT2 ELEMENTS");
-      exclude.emplace("TRANSPORT DOMAIN");
-      exclude.emplace("THERMO ELEMENTS");
-      exclude.emplace("THERMO DOMAIN");
-      exclude.emplace("ELECTROMAGNETIC ELEMENTS");
-      exclude.emplace("PERIODIC BOUNDINGBOX ELEMENTS");
-      exclude.emplace("CELL ELEMENTS");
-      exclude.emplace("CELL DOMAIN");
-      exclude.emplace("CELLSCATRA ELEMENTS");
-      exclude.emplace("CELLSCATRA DOMAIN");
-      exclude.emplace("PARTICLES");
+      // Sum up the length of all lines to reserve the memory for the raw content.
+      const std::size_t raw_content_size =
+          std::accumulate(list_of_lines.begin(), list_of_lines.end(), std::size_t{0},
+              [](std::size_t sum, const auto& line) { return sum + line.size(); });
 
+      raw_content.reserve(raw_content_size);
+      lines.reserve(list_of_lines.size());
+
+      for (const auto& line : list_of_lines)
+      {
+        FOUR_C_ASSERT(raw_content.data(), "Implementation error: raw_content must be allocated.");
+        const auto* start_of_line = raw_content.data() + raw_content.size();
+        raw_content.insert(raw_content.end(), line.begin(), line.end());
+        lines.emplace_back(start_of_line, line.size());
+      }
+    }
+
+    std::vector<std::filesystem::path> read_dat_content(const std::filesystem::path& file_path,
+        std::unordered_map<std::string, InputFile::SectionContent>& content_by_section)
+    {
       const auto name_of_section = [](const std::string& section_header)
       {
         auto pos = section_header.rfind("--");
@@ -217,51 +181,16 @@ namespace Core::IO
 
       // Tracking variables while walking through the file
       std::vector<std::filesystem::path> included_files;
-      std::string current_excluded_section_name{};
-      int current_section_linecount = 0;
       SectionType current_section_type = SectionType::normal;
+      std::list<std::string> list_of_lines;
+      InputFile::SectionContent* current_section_content = nullptr;
       std::string line;
-
-      const auto finalize_section_read = [&](int number_of_lines)
-      {
-        if (current_section_type == SectionType::on_the_fly)
-        {
-          exclude_information[current_excluded_section_name].length = number_of_lines;
-        }
-
-        // Reset tracking variables
-        current_excluded_section_name.clear();
-        current_section_linecount = 0;
-
-        // Determine what kind of new section we started.
-        const auto name = name_of_section(line);
-        section_to_file_mapping[name] = file_path.string();
-        if (exclude.count(name) > 0)
-        {
-          // Start a new excluded section. This starts at the next line. The correct length
-          // will be set when the section ends.
-          exclude_information.emplace(
-              name, Internal::SectionPosition{.file = file_path, .pos = file.tellg(), .length = 0});
-          current_excluded_section_name = name;
-          current_section_type = SectionType::on_the_fly;
-        }
-        else if (line.rfind("--INCLUDES") != std::string::npos)
-        {
-          current_section_type = SectionType::include;
-        }
-        else
-        {
-          current_section_type = SectionType::normal;
-        }
-      };
 
       // Loop over all input lines. This reads the actual file contents and determines whether a
       // line is to be read immediately or should be excluded because it is in one of the excluded
       // sections.
       while (getline(file, line))
       {
-        ++current_section_linecount;
-
         // In case we are reading an include section, a comment needs to be preceded by
         // whitespace. Otherwise, we would treat double slashes as comments, although they are
         // part of the file path.
@@ -273,7 +202,7 @@ namespace Core::IO
 
           // Additionally check if the first token is a comment to handle the case where the
           // comment starts at the beginning of the line.
-          if (line.find("//") == 0) continue;
+          if (line.starts_with("//")) continue;
         }
         // Remove comments, trailing and leading whitespaces, compact internal whitespaces
         else
@@ -285,43 +214,70 @@ namespace Core::IO
         if (line.size() == 0) continue;
 
         // This line starts a new section
-        if (line.find("--") == 0)
+        if (line.starts_with("--"))
         {
-          // finalize the last excluded section. Subtract the current line which is not part of
-          // the section anymore.
-          finalize_section_read(current_section_linecount - 1);
-        }
-
-        switch (current_section_type)
-        {
-          case SectionType::normal:
+          // Finish the current section.
+          if (current_section_content)
           {
-            // This line contains content that we want to read now.
-            content.push_back(line);
-            break;
+            join_lines(list_of_lines, current_section_content->raw_content,
+                current_section_content->lines);
           }
-          case SectionType::on_the_fly:
-            // We are in an on-the-fly section. Skip the line.
-            break;
-          case SectionType::include:
+          list_of_lines.clear();
+
+          const auto name = name_of_section(line);
+          FOUR_C_ASSERT(name.size() > 0, "Section name must not be empty.");
+
+          // Determine what kind of new section we started.
+          if (line.rfind("--INCLUDES") != std::string::npos)
           {
-            if (line.find("--") != 0)
+            current_section_type = SectionType::include;
+            current_section_content = nullptr;
+          }
+          else
+          {
+            current_section_type = SectionType::normal;
+            FOUR_C_ASSERT_ALWAYS(content_by_section.find(name) == content_by_section.end(),
+                "Section '%s' is defined again in file '%s'.", name.c_str(), file_path.c_str());
+
+            content_by_section[name] = {};
+            current_section_content = &content_by_section[name];
+            current_section_content->file = file_path;
+          }
+        }
+        // The line is part of a section.
+        else
+        {
+          switch (current_section_type)
+          {
+            case SectionType::normal:
             {
-              included_files.emplace_back(get_include_path(line, file_path));
+              list_of_lines.emplace_back(line);
+              break;
             }
-            break;
+            case SectionType::include:
+            {
+              if (!line.starts_with("--"))
+              {
+                included_files.emplace_back(get_include_path(line, file_path));
+              }
+              break;
+            }
           }
         }
       }
-      // Finalize the last section
-      finalize_section_read(current_section_linecount);
+
+      // Finish the current section.
+      if (current_section_content)
+      {
+        join_lines(
+            list_of_lines, current_section_content->raw_content, current_section_content->lines);
+      }
 
       return included_files;
     }
 
     std::vector<std::filesystem::path> read_yaml_content(const std::filesystem::path& file_path,
-        std::list<std::string>& content,
-        std::unordered_map<std::string, std::string>& section_to_file_mapping)
+        std::unordered_map<std::string, InputFile::SectionContent>& content_by_section)
     {
       std::vector<std::filesystem::path> included_files;
 
@@ -343,6 +299,7 @@ namespace Core::IO
           if (entries.IsScalar())
             included_files.emplace_back(get_include_path(entries.as<std::string>(), file_path));
           else if (entries.IsSequence())
+          {
             for (const auto& entry : entries)
             {
               FOUR_C_ASSERT_ALWAYS(
@@ -350,14 +307,19 @@ namespace Core::IO
               const auto line = entry.as<std::string>();
               included_files.emplace_back(get_include_path(line, file_path));
             }
+          }
           else
             FOUR_C_THROW("INCLUDES section must contain a single file or a sequence.");
 
           continue;
         }
 
-        content.emplace_back("--" + section_name);
-        section_to_file_mapping[section_name] = file_path.string();
+        FOUR_C_ASSERT_ALWAYS(content_by_section.find(section_name) == content_by_section.end(),
+            "Section '%s' is defined again in file '%s'.", section_name.c_str(), file_path.c_str());
+
+        auto& current_content = content_by_section[section_name];
+        current_content.file = file_path;
+        std::list<std::string> list_of_lines;
 
         const auto read_flat_sequence = [&](const YAML::Node& node)
         {
@@ -368,7 +330,7 @@ namespace Core::IO
                 "only scalar entries are supported in sequences.",
                 section_name.c_str());
             const auto line = entry.as<std::string>();
-            content.emplace_back(line);
+            list_of_lines.emplace_back(line);
           }
         };
 
@@ -382,7 +344,7 @@ namespace Core::IO
                 section_name.c_str());
             const auto line =
                 entry.first.as<std::string>() + " = " + entry.second.as<std::string>();
-            content.emplace_back(line);
+            list_of_lines.emplace_back(line);
           }
         };
 
@@ -400,130 +362,14 @@ namespace Core::IO
             read_map(entries);
             break;
         }
+
+        // Finish the current section by condensing the lines into the content.
+        join_lines(list_of_lines, current_content.raw_content, current_content.lines);
       }
 
       return included_files;
     }
   }  // namespace
-
-  namespace Internal
-  {
-
-    StreamLineIterator::StreamLineIterator(std::shared_ptr<std::istream> stream)
-        : StreamLineIterator(std::move(stream), std::numeric_limits<int>::max())
-    {
-    }
-
-    StreamLineIterator::StreamLineIterator(std::shared_ptr<std::istream> stream, int max_reads)
-        : stream_(std::move(stream)), max_reads_(max_reads)
-    {
-      ++(*this);
-    }
-
-
-    StreamLineIterator::StreamLineIterator() : line_number_(-1) {}
-
-
-    StreamLineIterator& StreamLineIterator::operator++()
-    {
-      if (stream_)
-      {
-        if (line_number_ < max_reads_ && std::getline(*stream_, line_))
-        {
-          line_ = Core::Utils::strip_comment(line_);
-          line_number_++;
-        }
-        else
-        {
-          // we hit EOF, set special value
-          line_number_ = -1;
-        }
-      }
-
-      return *this;
-    }
-
-
-    StreamLineIterator::reference StreamLineIterator::operator*() const { return line_; }
-    bool StreamLineIterator::operator==(const StreamLineIterator& other) const
-    {
-      return line_number_ == other.line_number_;
-    }
-
-
-    bool StreamLineIterator::operator!=(const StreamLineIterator& other) const
-    {
-      return !(*this == other);
-    }
-
-
-    DatFileLineIterator::DatFileLineIterator(
-        std::variant<StreamLineIterator, PreReadIterator> iterator)
-        : iterator_(std::move(iterator))
-    {
-    }
-
-
-    DatFileLineIterator& DatFileLineIterator::operator++()
-    {
-      std::visit([](auto& it) { ++it; }, iterator_);
-      return *this;
-    }
-
-    DatFileLineIterator DatFileLineIterator::operator++(int)
-    {
-      auto copy = *this;
-      ++(*this);
-      return copy;
-    }
-
-
-    DatFileLineIterator::reference DatFileLineIterator::operator*() const
-    {
-      return std::visit([](const auto& it) -> reference { return *it; }, iterator_);
-    }
-
-
-    bool DatFileLineIterator::operator==(const DatFileLineIterator& other) const
-    {
-      if (other.iterator_.index() != iterator_.index()) return false;
-
-      if (iterator_.index() == 0)
-      {
-        return std::get<0>(iterator_) == std::get<0>(other.iterator_);
-      }
-      else
-      {
-        return std::get<1>(iterator_) == std::get<1>(other.iterator_);
-      }
-    }
-
-
-    bool DatFileLineIterator::operator!=(const DatFileLineIterator& other) const
-    {
-      return !(*this == other);
-    }
-
-
-
-    void SectionPosition::pack(Communication::PackBuffer& data) const
-    {
-      Core::Communication::add_to_pack(data, file.string());
-      Core::Communication::add_to_pack(data, static_cast<unsigned>(pos));
-      Core::Communication::add_to_pack(data, length);
-    }
-
-    void SectionPosition::unpack(Communication::UnpackBuffer& buffer)
-    {
-      std::string file_str;
-      Core::Communication::extract_from_pack(buffer, file_str);
-      file = file_str;
-      unsigned pos_extract;
-      Core::Communication::extract_from_pack(buffer, pos_extract);
-      pos = pos_extract;
-      Core::Communication::extract_from_pack(buffer, length);
-    }
-  }  // namespace Internal
 
   /*----------------------------------------------------------------------*/
   /*----------------------------------------------------------------------*/
@@ -537,12 +383,9 @@ namespace Core::IO
   /*----------------------------------------------------------------------*/
   std::filesystem::path InputFile::file_for_section(const std::string& section_name) const
   {
-    auto entry_it = section_to_file_mapping_.find(section_name);
-    if (entry_it != section_to_file_mapping_.end())
-    {
-      return entry_it->second;
-    }
-    return {};
+    auto it = content_by_section_.find(section_name);
+    if (it == content_by_section_.end()) return std::filesystem::path{};
+    return std::filesystem::path{it->second.file};
   }
 
 
@@ -550,8 +393,10 @@ namespace Core::IO
   /*----------------------------------------------------------------------*/
   bool InputFile::has_section(const std::string& section_name) const
   {
-    auto range = line_range(section_name);
-    return std::ranges::begin(range) != std::ranges::end(range);
+    const bool known_somewhere = Core::Communication::all_reduce<bool>(
+        content_by_section_.contains(section_name),
+        [](const bool& r, const bool& in) { return r || in; }, comm_);
+    return known_somewhere;
   }
 
 
@@ -586,15 +431,15 @@ namespace Core::IO
     std::string sectionname = name + "-NODE TOPOLOGY";
     std::string marker = sectionname;
 
-    for (const auto& l : input.lines_in_section(marker))
+    // Store lines that need special treatment
+    std::vector<std::string> box_face_conditions;
+
+    for (const auto& l : input.lines_in_section_rank_0_only(marker))
     {
       int dobj;
       int nodeid;
       std::string nname;
       std::string dname;
-      std::string disname;
-      std::array<int, 3> dir = {0, 0, 0};
-
       std::istringstream stream{std::string(l)};
       stream >> nname;
       if (not stream) FOUR_C_THROW("Illegal line in section '%s': '%s'", marker.c_str(), l.data());
@@ -606,6 +451,30 @@ namespace Core::IO
       }
       else  // fancy specification of the design nodes by specifying min or max of the domain
       {     // works best on rectangular domains ;)
+        // Store the specification and broadcast it to all processors
+        box_face_conditions.emplace_back(l);
+      }
+    }
+
+    // Broadcast what we have read on rank 0 to all other ranks
+    Core::Communication::broadcast(topology, 0, input.get_comm());
+    Core::Communication::broadcast(box_face_conditions, 0, input.get_comm());
+
+    // Special treatment if we have any box face conditions
+    {
+      for (const auto& l : box_face_conditions)
+      {
+        int dobj;
+        std::string nname;
+        std::string dname;
+        std::string disname;
+        std::array<int, 3> dir = {0, 0, 0};
+
+        std::istringstream stream{l};
+        stream >> nname;
+        if (not stream)
+          FOUR_C_THROW("Illegal line in section '%s': '%s'", marker.c_str(), l.data());
+
         if (nname == "CORNER" && name == "DNODE")
         {
           std::string tmp;
@@ -663,11 +532,7 @@ namespace Core::IO
             std::string dommarker = disname + " DOMAIN";
             std::transform(dommarker.begin(), dommarker.end(), dommarker.begin(), ::toupper);
 
-            FOUR_C_ASSERT_ALWAYS(input.has_section(dommarker),
-                "Inputreader: Couldn't find domain section for discretization %s !",
-                disname.c_str());
-
-            for (const auto& line : input.lines_in_section(dommarker))
+            for (const auto& line : input.lines_in_section_rank_0_only(dommarker))
             {
               std::istringstream t{std::string{line}};
               std::string key;
@@ -765,12 +630,14 @@ namespace Core::IO
         }
         Core::LinAlg::gather_all(dnodes, input.get_comm());
         topology[dobj - 1].insert(dnodes.begin(), dnodes.end());
-      }
 
-      if (dname.substr(0, name.length()) != name)
-        FOUR_C_THROW("Illegal line in section '%s': '%s'\n%s found, where %s was expected",
-            marker.c_str(), l.data(), dname.substr(0, name.length()).c_str(), name.c_str());
+
+        if (dname.substr(0, name.length()) != name)
+          FOUR_C_THROW("Illegal line in section '%s': '%s'\n%s found, where %s was expected",
+              marker.c_str(), l.data(), dname.substr(0, name.length()).c_str(), name.c_str());
+      }
     }
+
     if (topology.size() > 0)
     {
       int max_num_dobj = topology.rbegin()->first;
@@ -1105,9 +972,6 @@ namespace Core::IO
   {
     if (Core::Communication::my_mpi_rank(comm_) == 0)
     {
-      // Gather content from all files
-      std::list<std::string> content;
-
       // Start by "including" the top-level file.
       std::list<std::filesystem::path> included_files{top_level_file};
 
@@ -1123,19 +987,18 @@ namespace Core::IO
               if (file_extension == ".yaml" || file_extension == ".yml" ||
                   file_extension == ".json")
               {
-                return read_yaml_content(*file_it, content, section_to_file_mapping_);
+                return read_yaml_content(*file_it, content_by_section_);
               }
               else
               {
-                return read_dat_content(
-                    *file_it, content, excludepositions_, section_to_file_mapping_);
+                return read_dat_content(*file_it, content_by_section_);
               }
             });
 
         // Check that the file is not included twice
         for (const auto& file : new_include_files)
         {
-          if (std::find(included_files.begin(), included_files.end(), file) != included_files.end())
+          if (std::ranges::find(included_files, file) != included_files.end())
           {
             FOUR_C_THROW(
                 "File '%s' was already included before.\n Cycles are not allowed.", file.c_str());
@@ -1146,93 +1009,34 @@ namespace Core::IO
           }
         }
       }
-
-      make_buffer_and_line_views(content, inputfile_, lines_);
     }
 
-    // Now lets do all the parallel setup. Afterwards all processors
-    // have to be the same.
-    int arraysize = inputfile_.size();
-    if (Core::Communication::num_mpi_ranks(comm_) > 1)
+    if (Core::Communication::my_mpi_rank(comm_) == 0)
     {
-      int num_lines = lines_.size();
-      /* Now that we use a variable number of bytes per line we have to
-       * communicate the buffer size as well. */
-      Core::Communication::broadcast(&arraysize, 1, 0, comm_);
-      Core::Communication::broadcast(&num_lines, 1, 0, comm_);
+      // Temporarily move the sections that are not huge into a separate map.
+      std::unordered_map<std::string, SectionContent> non_huge_sections;
 
-      if (Core::Communication::my_mpi_rank(comm_) > 0)
+      for (auto&& [section_name, content] : content_by_section_)
       {
-        /*--------------------------------------allocate space for copy of file */
-        inputfile_.resize(arraysize);
-        lines_.reserve(num_lines);
-      }
-
-      // Broadcast the input file to all processors.
-      Core::Communication::broadcast(inputfile_.data(), arraysize, 0, comm_);
-
-      if (Core::Communication::my_mpi_rank(comm_) > 0)
-      {
-        // Chunk the raw input file into lines: whenever encountering a null-terminator,
-        // add the line that just ended to the vector of lines.
-        std::size_t pos = 0u;
-        for (std::size_t i = 0; i < inputfile_.size(); ++i)
+        if (content.lines.size() < huge_section_threshold)
         {
-          if (inputfile_[i] == '\0')
-          {
-            lines_.emplace_back(&inputfile_[pos]);
-            pos = i + 1;
-          }
+          non_huge_sections[section_name] = std::move(content);
         }
-
-        FOUR_C_ASSERT_ALWAYS(static_cast<int>(lines_.size()) == num_lines,
-            "line count mismatch: %d lines expected but %d lines received", num_lines,
-            lines_.size());
       }
 
-      FOUR_C_ASSERT((Core::Communication::my_mpi_rank(comm_) == 0 || excludepositions_.empty()),
-          "Internal error.");
+      Core::Communication::broadcast(non_huge_sections, 0, comm_);
 
-      excludepositions_ = Core::Communication::all_reduce(excludepositions_, comm_);
-    }
-
-    // Now finally find the section names. We have to do this on all
-    // processors, so it cannot be done while reading.
-    std::vector<std::pair<std::size_t, std::string>> section_header_lines;
-    for (std::vector<char*>::size_type i = 0; i < lines_.size(); ++i)
-    {
-      const std::string_view l = lines_[i];
-      if (l[0] == '-' and l[1] == '-')
+      // Move the non-huge sections back into the main map.
+      for (auto&& [section_name, content] : non_huge_sections)
       {
-        std::string line(l);
-
-        // take everything after the last "--" as section name
-        std::string::size_type loc = line.rfind("--");
-        std::string sectionname = line.substr(loc + 2);
-        section_header_lines.emplace_back(i, sectionname);
+        content_by_section_[section_name] = std::move(content);
       }
     }
-
-    // Include a past-the-end pseudo section such that the last actual section can use the
-    // past-the-end position for its position
-    section_header_lines.emplace_back(lines_.size(), "unused");
-
-    // Leave out the past-the-end section
-    for (unsigned i = 0; i < section_header_lines.size() - 1; ++i)
+    else
     {
-      const auto& [position, name] = section_header_lines[i];
-      const auto& [next_position, _] = section_header_lines[i + 1];
-
-      if (positions_.find(name) != positions_.end())
-        FOUR_C_THROW("Section '%s' defined more than once", name.c_str());
-
-      // Shift by 1 to start after the header itself
-      positions_[name] = {position + 1, next_position};
-      // Remember the section name to later check if it was ever queried.
-      knownsections_[name] = false;
+      // Other ranks receive the non-huge sections.
+      Core::Communication::broadcast(content_by_section_, 0, comm_);
     }
-
-    Core::Communication::broadcast(section_to_file_mapping_, 0, comm_);
 
     // the following section names are always regarded as valid
     record_section_used("TITLE");
@@ -1296,35 +1100,56 @@ namespace Core::IO
     return printout;
   }
 
+
   void InputFile::record_section_used(const std::string& section_name)
   {
     knownsections_[section_name] = true;
   }
 
-  void InputFile::dump(std::ostream& output, InputFile::Format format) const
+
+  void InputFile::SectionContent::pack(Communication::PackBuffer& data) const
   {
-    if (format == Format::dat)
+    Core::Communication::add_to_pack(data, file);
+    Core::Communication::add_to_pack(data, raw_content);
+
+    // String_views are not packable, so we store offsets.
+    std::vector<std::size_t> offsets;
+    offsets.reserve(lines.size());
+    for (const auto& line : lines)
     {
-      for (const auto& line : lines_)
-      {
-        output << line << '\n';
-      }
+      FOUR_C_ASSERT(line.data() >= raw_content.data() &&
+                        line.data() <= raw_content.data() + raw_content.size(),
+          "Line data out of bounds.");
+      const std::size_t offset = (line.data() - raw_content.data()) / sizeof(char);
+      FOUR_C_ASSERT(offset <= raw_content.size(), "Offset out of bounds.");
+      offsets.push_back(offset);
     }
-    else if (format == Format::yaml)
+    FOUR_C_ASSERT(offsets.empty() || offsets.back() + lines.back().size() == raw_content.size(),
+        "Offset out of bounds.");
+    Core::Communication::add_to_pack(data, offsets);
+  }
+
+
+  void InputFile::SectionContent::unpack(Communication::UnpackBuffer& buffer)
+  {
+    Core::Communication::extract_from_pack(buffer, file);
+    Core::Communication::extract_from_pack(buffer, raw_content);
+
+    std::vector<std::size_t> offsets;
+    Core::Communication::extract_from_pack(buffer, offsets);
+    lines.clear();
+    for (std::size_t i = 0; i < offsets.size(); ++i)
     {
-      YAML::Node config;
-      for (const auto& [section_name, section] : positions_)
-      {
-        YAML::Node section_node;
-        for (std::size_t i = section.first; i < section.second; ++i)
-        {
-          section_node.push_back(lines_[i]);
-        }
-        config[section_name] = section_node;
-      }
-      output << config;
+      const char* start = raw_content.data() + offsets[i];
+      const std::size_t length = (i + 1 < offsets.size() ? (offsets[i + 1] - offsets[i])
+                                                         : (raw_content.size()) - offsets[i]);
+      FOUR_C_ASSERT(
+          start >= raw_content.data() && start + length <= raw_content.data() + raw_content.size(),
+          "Line data out of bounds.");
+      lines.emplace_back(start, length);
     }
   }
+
 
   std::pair<std::string, std::string> read_key_value(const std::string& line)
   {
@@ -1351,6 +1176,7 @@ namespace Core::IO
 
     return {std::move(key), std::move(value)};
   }
+
 }  // namespace Core::IO
 
 FOUR_C_NAMESPACE_CLOSE

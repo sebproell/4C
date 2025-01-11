@@ -45,7 +45,7 @@ void Core::IO::read_nodes(Core::IO::InputFile& input, const std::string& node_se
   std::string tmp2;
 
   int line_count = 0;
-  for (const auto& node_line : input.lines_in_section(node_section_name))
+  for (const auto& node_line : input.lines_in_section_rank_0_only(node_section_name))
   {
     std::istringstream linestream{std::string{node_line}};
     linestream >> tmp;

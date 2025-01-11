@@ -10,6 +10,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_comm_mpi_utils.hpp"
 #include "4C_comm_pack_buffer.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
@@ -39,112 +40,6 @@ namespace Core::FE
 
 namespace Core::IO
 {
-  namespace Internal
-  {
-    /**
-     * An internal iterator that walks over lines in a stream. This iterator is used as an
-     * ingredient for the DatFileLineIterator.
-     */
-    class StreamLineIterator
-    {
-     public:
-      using iterator_category = std::input_iterator_tag;
-      using value_type = std::string_view;
-      using pointer = const value_type*;
-      using reference = value_type;
-      using difference_type = int;
-
-      /**
-       * Read lines from the given @p stream.
-       */
-      explicit StreamLineIterator(std::shared_ptr<std::istream> stream);
-
-      /**
-       * Read lines rom the given @p stream but a maximum of @p max_reads times. After reading
-       * that often, the iterator will be considered past-the-end.
-       *
-       * @note @p max_reads may be zero. The iterator will not read any lines in that case.
-       */
-      StreamLineIterator(std::shared_ptr<std::istream> stream, int max_reads);
-
-      /**
-       * Construct a past-the-end iterator.
-       */
-      StreamLineIterator();
-
-      StreamLineIterator& operator++();
-
-      reference operator*() const;
-
-      bool operator==(const StreamLineIterator& other) const;
-
-      bool operator!=(const StreamLineIterator& other) const;
-
-     private:
-      //! Stream to read from.
-      std::shared_ptr<std::istream> stream_{};
-
-      //! Current line number.
-      int line_number_{};
-
-      //! Maximum number of lines to read.
-      int max_reads_{};
-
-      //! Currently read line.
-      std::string line_;
-    };
-
-    /**
-     * An internal iterator that walks over lines in a dat file. Providing
-     * a custom iterator allows us to abstract away the differences between
-     * reading from a file directly or querying lines from a pre-read vector.
-     */
-    class DatFileLineIterator
-    {
-     public:
-      using PreReadIterator = std::vector<std::string_view>::const_iterator;
-      using iterator_category = StreamLineIterator::iterator_category;
-      using value_type = StreamLineIterator::value_type;
-      using pointer = StreamLineIterator::pointer;
-      using reference = StreamLineIterator::reference;
-      using difference_type = StreamLineIterator::difference_type;
-
-      DatFileLineIterator() = default;
-
-      //! Construct an iterator that reads from the given stream.
-      explicit DatFileLineIterator(std::variant<StreamLineIterator, PreReadIterator> iterator);
-
-      DatFileLineIterator& operator++();
-
-      DatFileLineIterator operator++(int);
-
-      reference operator*() const;
-
-      bool operator==(const DatFileLineIterator& other) const;
-
-      bool operator!=(const DatFileLineIterator& other) const;
-
-     private:
-      //! The two ways to iterate over dat file content are handled by the iterator variants.
-      std::variant<StreamLineIterator, PreReadIterator> iterator_;
-    };
-
-    static_assert(std::input_iterator<DatFileLineIterator>);
-    static_assert(std::sentinel_for<DatFileLineIterator, DatFileLineIterator>);
-
-    //! Helper to store section positions in dat files.
-    struct SectionPosition
-    {
-      std::filesystem::path file;
-      std::ifstream::pos_type pos;
-      unsigned int length;
-
-      void pack(Core::Communication::PackBuffer& data) const;
-
-      void unpack(Core::Communication::UnpackBuffer& buffer);
-    };
-  }  // namespace Internal
-
   /**
    * This class encapsulates input files independent of their format.
    *
@@ -193,21 +88,14 @@ namespace Core::IO
    * @endcode
    *
    *
-   * @note The file is only read on rank 0 and the content is distributed to all ranks.
+   * @note The file is only read on rank 0 to save memory. Sections that are huge are only
+   * distributed to other ranks if they are accessed through line_in_section(). If you only
+   * want to read a section on rank 0, use lines_in_section_rank_0_only().
    */
   class InputFile
   {
    public:
-    /// Format flags for dumping the content of the input file.
-    enum class Format
-    {
-      /// Print the input file as a dat file.
-      dat,
-      /// Print the input file as a yaml file.
-      yaml,
-    };
-
-    /// construct a reader for a given file
+    /// Construct a reader for a given file
     InputFile(std::string filename, MPI_Comm comm);
 
     /**
@@ -228,16 +116,25 @@ namespace Core::IO
      *   }
      * @endcode
      *
-     * Depending on the @p section_name, the lines were either pre-read or are read from the file
-     * on-the-fly.
-     *
      * @return A range of string_views to the lines in this section.
+     *
+     * @note This is a collective call that needs to be called on all MPI ranks in the communicator
+     * associated with this object. Depending on the section size, the content might need to be
+     * distributed from rank 0 to all other ranks. This happens automatically.
      */
     std::ranges::view auto lines_in_section(const std::string& section_name);
 
     /**
-     * Returns whether a section with the given name exists in the input file and contains any
-     * content.
+     * This function is similar to lines_in_section(), but it only returns the lines on rank 0 and
+     * returns an empty range on all other ranks. This is useful for sections that might be huge and
+     * are not necessary on all ranks.
+     */
+    std::ranges::view auto lines_in_section_rank_0_only(const std::string& section_name);
+
+    /**
+     * Returns true if the input file contains a section with the given name.
+     *
+     * @note This is a collective call that needs to be called on all MPI ranks in the communicator.
      */
     [[nodiscard]] bool has_section(const std::string& section_name) const;
 
@@ -255,10 +152,30 @@ namespace Core::IO
     bool print_unknown_sections(std::ostream& out) const;
 
     /**
-     * Dump the content of the input file to the given output stream.
-     * Various output format settings are controlled by the format flags.
+     * Internal storage for the content of a section.
      */
-    void dump(std::ostream& output, Format format) const;
+    struct SectionContent
+    {
+      //! The raw chars of the input.
+      std::vector<char> raw_content;
+      //! String views into #raw_content.
+      std::vector<std::string_view> lines;
+      //! The file the section was read from.
+      std::string file;
+
+      void pack(Core::Communication::PackBuffer& data) const;
+
+      void unpack(Core::Communication::UnpackBuffer& buffer);
+
+      SectionContent() = default;
+
+      // Prevent copies: making a copy would invalidate the string views.
+      SectionContent(const SectionContent&) = delete;
+      SectionContent& operator=(const SectionContent&) = delete;
+
+      SectionContent(SectionContent&&) = default;
+      SectionContent& operator=(SectionContent&&) = default;
+    };
 
    private:
     /**
@@ -269,27 +186,10 @@ namespace Core::IO
     //! Remember that a section was used.
     void record_section_used(const std::string& section_name);
 
-    //! Internal helper to get the range of lines in a section.
-    //! Does not record the section as used.
-    [[nodiscard]] std::ranges::view auto line_range(const std::string& section_name) const;
-
     /// The communicator associated with this object.
     MPI_Comm comm_;
 
-    /// The whole input file.
-    std::vector<char> inputfile_;
-
-    /// The lines of the #input_file_ as std::string_view.
-    std::vector<std::string_view> lines_;
-
-    /// file positions of skipped sections
-    std::map<std::string, Internal::SectionPosition> excludepositions_;
-
-    /// Section positions of all sections inside the #inputfile_ array.
-    std::map<std::string, std::pair<std::size_t, std::size_t>> positions_;
-
-    /// Mapping of section names to the file they were read from.
-    std::unordered_map<std::string, std::string> section_to_file_mapping_;
+    std::unordered_map<std::string, SectionContent> content_by_section_;
 
     /// Protocol of known and unknown section names
     std::map<std::string, bool> knownsections_;
@@ -316,7 +216,8 @@ namespace Core::IO
       InputFile& input, const std::string& section_name, Teuchos::ParameterList& list);
 
   /**
-   * Read a node-design topology section
+   * Read a node-design topology section. This is a collective call that propagates data that
+   * may only be available on rank 0 to all ranks.
    *
    * @param input The input file.
    * @param name Name of the topology to read
@@ -342,45 +243,57 @@ namespace Core::IO
 
   /// -- template and inline functions --- //
 
-  inline std::ranges::view auto InputFile::line_range(const std::string& section_name) const
-  {
-    auto filter = [](std::string_view line)
-    { return !Core::Utils::strip_comment(std::string(line)).empty(); };
-
-    if (excludepositions_.count(section_name) > 0)
-    {
-      const auto [path, start_pos, length] = excludepositions_.at(section_name);
-
-      auto file = std::make_shared<std::ifstream>(path);
-      file->seekg(start_pos);
-
-      return std::views::filter(
-          std::ranges::subrange<Internal::DatFileLineIterator>(
-              Internal::DatFileLineIterator(Internal::StreamLineIterator(std::move(file), length)),
-              Internal::DatFileLineIterator(Internal::StreamLineIterator())),
-          filter);
-    }
-
-    const auto [start_line, end_line] = std::invoke(
-        [&]() -> std::pair<std::size_t, std::size_t>
-        {
-          auto entry_it = positions_.find(section_name);
-          if (entry_it == positions_.end()) return {lines_.size(), lines_.size()};
-          return entry_it->second;
-        });
-
-    return std::views::filter(
-        std::ranges::subrange(Internal::DatFileLineIterator(lines_.begin() + start_line),
-            Internal::DatFileLineIterator(lines_.begin() + end_line)),
-        filter);
-  }
-
   inline std::ranges::view auto InputFile::lines_in_section(const std::string& section_name)
   {
     record_section_used(section_name);
-    return line_range(section_name);
+
+    static const std::vector<std::string_view> empty;
+
+    const bool known_somewhere = has_section(section_name);
+    if (!known_somewhere)
+    {
+      return std::views::all(empty);
+    }
+
+    const bool locally_known = content_by_section_.contains(section_name);
+    const bool known_everywhere = Core::Communication::all_reduce<bool>(
+        locally_known, [](const bool& r, const bool& in) { return r && in; }, comm_);
+    if (known_everywhere)
+    {
+      // Take a const reference to the section content.
+      const auto& lines = content_by_section_.at(section_name).lines;
+      return std::views::all(lines);
+    }
+
+    // Distribute the content of the section to all ranks.
+    {
+      FOUR_C_ASSERT((!locally_known && (Core::Communication::my_mpi_rank(comm_) > 0)) ||
+                        (locally_known && (Core::Communication::my_mpi_rank(comm_) == 0)),
+          "Implementation error: section should be known on rank 0 and unknown on others.");
+
+      auto& content = content_by_section_[section_name];
+      Core::Communication::broadcast(content, 0, comm_);
+    }
+
+    const auto& lines = content_by_section_.at(section_name).lines;
+    return std::views::all(lines);
   }
 
+  inline std::ranges::view auto InputFile::lines_in_section_rank_0_only(
+      const std::string& section_name)
+  {
+    if (Core::Communication::my_mpi_rank(comm_) == 0 && content_by_section_.contains(section_name))
+    {
+      record_section_used(section_name);
+      const auto& lines = content_by_section_.at(section_name).lines;
+      return std::views::all(lines);
+    }
+    else
+    {
+      static const std::vector<std::string_view> empty;
+      return std::views::all(empty);
+    }
+  }
 
 }  // namespace Core::IO
 
