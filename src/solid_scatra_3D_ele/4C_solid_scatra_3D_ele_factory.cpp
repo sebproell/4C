@@ -29,7 +29,7 @@ namespace
    */
   template <Core::FE::CellType celltype, Inpar::Solid::KinemType kinem,
       Discret::Elements::ElementTechnology ele_tech,
-      Discret::Elements::PrestressTechnology prestress_technology, typename Enable = void>
+      Discret::Elements::PrestressTechnology prestress_technology>
   struct SolidScatraCalculationFormulation
   {
   };
@@ -62,9 +62,9 @@ namespace
    * @brief Nonlinear total lagrangian formulation with F-Bar for hex8 and pyramid 5
    */
   template <Core::FE::CellType celltype>
+    requires(celltype == Core::FE::CellType::hex8)
   struct SolidScatraCalculationFormulation<celltype, Inpar::Solid::KinemType::nonlinearTotLag,
-      Discret::Elements::ElementTechnology::fbar, Discret::Elements::PrestressTechnology::none,
-      std::enable_if_t<celltype == Core::FE::CellType::hex8>>
+      Discret::Elements::ElementTechnology::fbar, Discret::Elements::PrestressTechnology::none>
   {
     using type = Discret::Elements::Internal::FBarSolidScatraIntegrator<celltype>;
   };
@@ -73,9 +73,9 @@ namespace
    * @brief EAS full Formulation for hex8
    */
   template <Core::FE::CellType celltype>
+    requires(celltype == Core::FE::CellType::hex8)
   struct SolidScatraCalculationFormulation<celltype, Inpar::Solid::KinemType::nonlinearTotLag,
-      Discret::Elements::ElementTechnology::eas_full, Discret::Elements::PrestressTechnology::none,
-      std::enable_if_t<celltype == Core::FE::CellType::hex8>>
+      Discret::Elements::ElementTechnology::eas_full, Discret::Elements::PrestressTechnology::none>
   {
     using type = Discret::Elements::Internal::EASSolidScatraIntegrator<Core::FE::CellType::hex8,
         Discret::Elements::EasType::eastype_h8_21, Inpar::Solid::KinemType::nonlinearTotLag>;
@@ -85,9 +85,9 @@ namespace
    * @brief EAS mild Formulation for hex8
    */
   template <Core::FE::CellType celltype>
+    requires(celltype == Core::FE::CellType::hex8)
   struct SolidScatraCalculationFormulation<celltype, Inpar::Solid::KinemType::nonlinearTotLag,
-      Discret::Elements::ElementTechnology::eas_mild, Discret::Elements::PrestressTechnology::none,
-      std::enable_if_t<celltype == Core::FE::CellType::hex8>>
+      Discret::Elements::ElementTechnology::eas_mild, Discret::Elements::PrestressTechnology::none>
   {
     using type = Discret::Elements::Internal::EASSolidScatraIntegrator<Core::FE::CellType::hex8,
         Discret::Elements::EasType::eastype_h8_9, Inpar::Solid::KinemType::nonlinearTotLag>;

@@ -68,7 +68,7 @@ namespace Discret::Elements
    * determinant_deformation_gradient) evaluated at the element centroid
    * @return Core::LinAlg::Matrix<num_dof_per_ele, 1> : H-Operator
    */
-  template <Core::FE::CellType celltype, std::enable_if_t<Core::FE::dim<celltype> == 3, int> = 0>
+  template <Core::FE::CellType celltype>
   inline Core::LinAlg::Matrix<Core::FE::dim<celltype> * Core::FE::num_nodes<celltype>, 1>
   evaluate_fbar_h_operator(
       const Core::LinAlg::Matrix<Core::FE::dim<celltype>, Core::FE::num_nodes<celltype>>&
@@ -77,6 +77,7 @@ namespace Discret::Elements
           shape_function_derivs_centroid,
       const Discret::Elements::SpatialMaterialMapping<celltype>& spatial_material_mapping,
       const Discret::Elements::SpatialMaterialMapping<celltype>& spatial_material_mapping_centroid)
+    requires(Core::FE::dim<celltype> == 3)
   {
     // inverse deformation gradient at centroid
     Core::LinAlg::Matrix<Core::FE::dim<celltype>, Core::FE::dim<celltype>> invdefgrd_centroid;

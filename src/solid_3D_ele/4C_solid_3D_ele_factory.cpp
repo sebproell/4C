@@ -38,7 +38,7 @@ namespace
    */
   template <Core::FE::CellType celltype, Inpar::Solid::KinemType kinem,
       Discret::Elements::ElementTechnology ele_tech,
-      Discret::Elements::PrestressTechnology prestress_technology, typename Enable = void>
+      Discret::Elements::PrestressTechnology prestress_technology>
   struct SolidCalculationFormulation
   {
   };
@@ -127,10 +127,9 @@ namespace
    * @brief Nonlinear total lagrangian formulation with F-Bar for hex8 and pyramid 5
    */
   template <Core::FE::CellType celltype>
+    requires(celltype == Core::FE::CellType::hex8 || celltype == Core::FE::CellType::pyramid5)
   struct SolidCalculationFormulation<celltype, Inpar::Solid::KinemType::nonlinearTotLag,
-      Discret::Elements::ElementTechnology::fbar, Discret::Elements::PrestressTechnology::none,
-      std::enable_if_t<celltype == Core::FE::CellType::hex8 ||
-                       celltype == Core::FE::CellType::pyramid5>>
+      Discret::Elements::ElementTechnology::fbar, Discret::Elements::PrestressTechnology::none>
   {
     using type = Discret::Elements::FBarSolidIntegrator<celltype>;
   };
@@ -139,10 +138,9 @@ namespace
    * @brief Nonlinear total lagrangian solid-shell formulation with ANS
    */
   template <Core::FE::CellType celltype>
+    requires(celltype == Core::FE::CellType::hex8 || celltype == Core::FE::CellType::wedge6)
   struct SolidCalculationFormulation<celltype, Inpar::Solid::KinemType::nonlinearTotLag,
-      Discret::Elements::ElementTechnology::shell_ans, Discret::Elements::PrestressTechnology::none,
-      std::enable_if_t<celltype == Core::FE::CellType::hex8 ||
-                       celltype == Core::FE::CellType::wedge6>>
+      Discret::Elements::ElementTechnology::shell_ans, Discret::Elements::PrestressTechnology::none>
   {
     using type = Discret::Elements::ANSSolidShellIntegrator<celltype>;
   };
@@ -151,10 +149,10 @@ namespace
    * @brief Nonlinear total lagrangian hex8 solid-shell formulation with EAS and ANS
    */
   template <Core::FE::CellType celltype>
+    requires(celltype == Core::FE::CellType::hex8)
   struct SolidCalculationFormulation<celltype, Inpar::Solid::KinemType::nonlinearTotLag,
       Discret::Elements::ElementTechnology::shell_eas_ans,
-      Discret::Elements::PrestressTechnology::none,
-      std::enable_if_t<celltype == Core::FE::CellType::hex8>>
+      Discret::Elements::PrestressTechnology::none>
   {
     using type = Discret::Elements::EasAnsSolidShellIntegrator<celltype,
         Discret::Elements::EasType::eastype_sh8_7>;
@@ -164,10 +162,10 @@ namespace
    * @brief Nonlinear total lagrangian wedge6 solid-shell formulation with EAS and ANS
    */
   template <Core::FE::CellType celltype>
+    requires(celltype == Core::FE::CellType::wedge6)
   struct SolidCalculationFormulation<celltype, Inpar::Solid::KinemType::nonlinearTotLag,
       Discret::Elements::ElementTechnology::shell_eas_ans,
-      Discret::Elements::PrestressTechnology::none,
-      std::enable_if_t<celltype == Core::FE::CellType::wedge6>>
+      Discret::Elements::PrestressTechnology::none>
   {
     using type = Discret::Elements::EasAnsSolidShellIntegrator<celltype,
         Discret::Elements::EasType::eastype_sw6_1>;
@@ -177,10 +175,9 @@ namespace
    * @brief Nonlinear formulation with F-Bar and MULF prestressing for hex8 and pyramid5
    */
   template <Core::FE::CellType celltype>
+    requires(celltype == Core::FE::CellType::hex8 || celltype == Core::FE::CellType::pyramid5)
   struct SolidCalculationFormulation<celltype, Inpar::Solid::KinemType::nonlinearTotLag,
-      Discret::Elements::ElementTechnology::fbar, Discret::Elements::PrestressTechnology::mulf,
-      std::enable_if_t<celltype == Core::FE::CellType::hex8 ||
-                       celltype == Core::FE::CellType::pyramid5>>
+      Discret::Elements::ElementTechnology::fbar, Discret::Elements::PrestressTechnology::mulf>
   {
     using type = Discret::Elements::MulfFBarSolidIntegrator<celltype>;
   };

@@ -162,15 +162,12 @@ namespace Discret::Elements
   template <Core::FE::CellType celltype>
   using MulfSolidIntegrator = SolidEleCalc<celltype, MulfFormulation<celltype>>;
 
-  template <typename T, typename AlwaysVoid = void>
-  constexpr bool IsPrestressUpdateable = false;
-
   template <typename T>
-  constexpr bool IsPrestressUpdateable<T,
-      std::void_t<decltype(std::declval<T>()->update_prestress(
-          std::declval<const Core::Elements::Element&>(), std::declval<Mat::So3Material&>(),
-          std::declval<const Core::FE::Discretization&>(), std::declval<const std::vector<int>&>(),
-          std::declval<Teuchos::ParameterList&>()))>> = true;
+  concept IsPrestressUpdateable = requires(T t, const Core::Elements::Element& ele,
+      Mat::So3Material& mat, const Core::FE::Discretization& discretization,
+      const std::vector<int>& lm, Teuchos::ParameterList& params) {
+    t->update_prestress(ele, mat, discretization, lm, params);
+  };
 
   namespace Internal
   {
@@ -183,13 +180,15 @@ namespace Discret::Elements
       {
       }
 
-      template <typename T, std::enable_if_t<IsPrestressUpdateable<T&>, bool> = true>
+      template <typename T>
+        requires(IsPrestressUpdateable<T>)
       void operator()(T& updateable)
       {
         updateable->update_prestress(element, mat, discretization, lm, params);
       }
 
-      template <typename T, std::enable_if_t<!IsPrestressUpdateable<T&>, bool> = true>
+      template <typename T>
+        requires(!IsPrestressUpdateable<T>)
       void operator()(T& other)
       {
         FOUR_C_THROW(

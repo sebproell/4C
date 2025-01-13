@@ -33,6 +33,7 @@
 
 #include <Teuchos_ParameterList.hpp>
 
+#include <concepts>
 #include <memory>
 #include <optional>
 
@@ -40,6 +41,12 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace
 {
+  template <typename SolidFormulation>
+  constexpr bool is_prestress_updatable = requires(SolidFormulation f) {
+    {
+      std::integral_constant<bool, SolidFormulation::is_prestress_updatable>()
+    } -> std::same_as<std::integral_constant<bool, true>>;
+  };
 
   template <typename T>
   T* get_ptr(std::optional<T>& opt)
@@ -386,33 +393,40 @@ void Discret::Elements::SolidEleCalc<celltype, ElementFormulation>::update_prest
     const Core::FE::Discretization& discretization, const std::vector<int>& lm,
     Teuchos::ParameterList& params)
 {
-  const ElementNodes<celltype> nodal_coordinates =
-      evaluate_element_nodes<celltype>(ele, discretization, lm);
+  if constexpr (is_prestress_updatable<ElementFormulation>)
+  {
+    const ElementNodes<celltype> nodal_coordinates =
+        evaluate_element_nodes<celltype>(ele, discretization, lm);
 
-  const PreparationData<ElementFormulation> preparation_data =
-      prepare(ele, nodal_coordinates, history_data_);
+    const PreparationData<ElementFormulation> preparation_data =
+        prepare(ele, nodal_coordinates, history_data_);
 
-  Discret::Elements::update_prestress<ElementFormulation, celltype>(
-      ele, nodal_coordinates, preparation_data, history_data_);
+    Discret::Elements::update_prestress<ElementFormulation, celltype>(
+        ele, nodal_coordinates, preparation_data, history_data_);
 
-  Discret::Elements::for_each_gauss_point(nodal_coordinates, stiffness_matrix_integration_,
-      [&](const Core::LinAlg::Matrix<Internal::num_dim<celltype>, 1>& xi,
-          const ShapeFunctionsAndDerivatives<celltype>& shape_functions,
-          const JacobianMapping<celltype>& jacobian_mapping, double integration_factor, int gp)
-      {
-        evaluate_gp_coordinates_and_add_to_parameter_list(
-            nodal_coordinates, shape_functions, params);
-        evaluate(ele, nodal_coordinates, xi, shape_functions, jacobian_mapping, preparation_data,
-            history_data_, gp,
-            [&](const Core::LinAlg::Matrix<Core::FE::dim<celltype>, Core::FE::dim<celltype>>&
-                    deformation_gradient,
-                const Core::LinAlg::Matrix<num_str_, 1>& gl_strain, const auto& linearization)
-            {
-              Discret::Elements::update_prestress<ElementFormulation, celltype>(ele,
-                  nodal_coordinates, xi, shape_functions, jacobian_mapping, deformation_gradient,
-                  preparation_data, history_data_, gp);
-            });
-      });
+    Discret::Elements::for_each_gauss_point(nodal_coordinates, stiffness_matrix_integration_,
+        [&](const Core::LinAlg::Matrix<Internal::num_dim<celltype>, 1>& xi,
+            const ShapeFunctionsAndDerivatives<celltype>& shape_functions,
+            const JacobianMapping<celltype>& jacobian_mapping, double integration_factor, int gp)
+        {
+          evaluate_gp_coordinates_and_add_to_parameter_list(
+              nodal_coordinates, shape_functions, params);
+          evaluate(ele, nodal_coordinates, xi, shape_functions, jacobian_mapping, preparation_data,
+              history_data_, gp,
+              [&](const Core::LinAlg::Matrix<Core::FE::dim<celltype>, Core::FE::dim<celltype>>&
+                      deformation_gradient,
+                  const Core::LinAlg::Matrix<num_str_, 1>& gl_strain, const auto& linearization)
+              {
+                Discret::Elements::update_prestress<ElementFormulation, celltype>(ele,
+                    nodal_coordinates, xi, shape_functions, jacobian_mapping, deformation_gradient,
+                    preparation_data, history_data_, gp);
+              });
+        });
+  }
+  else
+  {
+    FOUR_C_THROW("The solid formulation does not support to update the prestress!");
+  }
 }
 
 template <Core::FE::CellType celltype, typename ElementFormulation>

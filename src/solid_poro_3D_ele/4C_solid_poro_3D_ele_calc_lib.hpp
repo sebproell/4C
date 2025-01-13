@@ -202,13 +202,13 @@ namespace Discret::Elements
    * @return ddet_defgrd_ddisp: derivative of determinant of deformation gradient w.r.t.
    * the displacements
    */
-  template <Core::FE::CellType celltype,
-      std::enable_if_t<Internal::num_dim<celltype> == 3, int> = 0>
+  template <Core::FE::CellType celltype>
   inline Core::LinAlg::Matrix<1, Internal::num_dof_per_ele<celltype>>
   compute_linearization_of_detdefgrad_wrt_disp(
       const SpatialMaterialMapping<celltype> spatial_material_mapping,
       const JacobianMapping<celltype> jacobian_mapping,
       const Inpar::Solid::KinemType& kinematictype)
+    requires(Internal::num_dim<celltype> == 3)
   {
     Core::LinAlg::Matrix<1, Internal::num_dof_per_ele<celltype>> ddet_defgrd_ddisp;
 
@@ -267,14 +267,14 @@ namespace Discret::Elements
    * @param kinematictype (in): kinematic type of element
    * @return dVolchange_dDisp: derivative of volume change w.r.t. the displacements
    */
-  template <Core::FE::CellType celltype,
-      std::enable_if_t<Internal::num_dim<celltype> == 3, int> = 0>
+  template <Core::FE::CellType celltype>
   inline Core::LinAlg::Matrix<1, Internal::num_dim<celltype> * Internal::num_nodes<celltype>>
   compute_linearization_of_volchange_wrt_disp(
       const Core::LinAlg::Matrix<1, Internal::num_dim<celltype> * Internal::num_nodes<celltype>>
           ddet_defgrd_ddisp,
       const JacobianMapping<celltype>& jacobian_mapping,
       const Inpar::Solid::KinemType& kinematictype)
+    requires(Internal::num_dim<celltype> == 3)
   {
     if (kinematictype == Inpar::Solid::KinemType::linear)
     {
@@ -1767,10 +1767,10 @@ namespace Discret::Elements
    * @return CauchyGreenAndInverse<celltype> : An object holding the right Cauchy-Green deformation
    * tensor and its inverse
    */
-  template <Core::FE::CellType celltype,
-      std::enable_if_t<Internal::num_dim<celltype> == 3, int> = 0>
+  template <Core::FE::CellType celltype>
   CauchyGreenAndInverse<celltype> evaluate_cauchy_green_and_inverse(
       const SpatialMaterialMapping<celltype>& spatial_material_mapping)
+    requires(Internal::num_dim<celltype> == 3)
   {
     CauchyGreenAndInverse<celltype> cauchygreen;
 
@@ -1796,13 +1796,13 @@ namespace Discret::Elements
    * @return dInverseCauchyGreen_dDisp : derivative of the inverse right Cauchy-Green deformation
    * tensor w.r.t. the displacements
    */
-  template <Core::FE::CellType celltype,
-      std::enable_if_t<Internal::num_dim<celltype> == 3, int> = 0>
+  template <Core::FE::CellType celltype>
   Core::LinAlg::Matrix<Internal::num_str<celltype>,
       Internal::num_dim<celltype> * Internal::num_nodes<celltype>>
   evaluate_inverse_cauchy_green_linearization(const CauchyGreenAndInverse<celltype>& cauchygreen,
       const JacobianMapping<celltype>& jacobian_mapping,
       const SpatialMaterialMapping<celltype>& spatial_material_mapping)
+    requires(Internal::num_dim<celltype> == 3)
   {
     // dC^-1/dDisp
     Core::LinAlg::Matrix<Internal::num_str<celltype>,
