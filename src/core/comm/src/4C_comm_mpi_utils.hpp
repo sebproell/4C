@@ -446,7 +446,16 @@ std::vector<T> Core::Communication::all_gather(const T& value, MPI_Comm comm)
         combined_buffer.begin() + accumulated_offset[i] + size_all_data[i]);
 
     UnpackBuffer unpack_buffer(local_buffer);
-    extract_from_pack(unpack_buffer, all_data[i]);
+    if constexpr (std::is_same_v<T, bool>)
+    {
+      bool tmp;
+      extract_from_pack(unpack_buffer, tmp);
+      all_data[i] = tmp;
+    }
+    else
+    {
+      extract_from_pack(unpack_buffer, all_data[i]);
+    }
   }
 
   return all_data;
