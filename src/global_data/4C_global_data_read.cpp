@@ -1614,6 +1614,8 @@ void Global::read_micro_fields(Global::Problem& problem, const std::filesystem::
         micromeshreader.read_and_partition();
 
 
+        read_conditions(*micro_problem, micro_reader);
+
         {
           Core::Utils::FunctionManager function_manager;
           global_legacy_module_callbacks().AttachFunctionDefinitions(function_manager);
@@ -1622,7 +1624,6 @@ void Global::read_micro_fields(Global::Problem& problem, const std::filesystem::
         }
 
         read_result(*micro_problem, micro_reader);
-        read_conditions(*micro_problem, micro_reader);
 
         // At this point, everything for the microscale is read,
         // subsequent reading is only for macroscale
@@ -1738,10 +1739,16 @@ void Global::read_microfields_np_support(Global::Problem& problem)
         Core::IO::ElementReader(structdis_micro, micro_reader, "STRUCTURE ELEMENTS"));
     micromeshreader.read_and_partition();
 
-    // read conditions of microscale
-    // -> note that no time curves and spatial functions can be read!
-
     read_conditions(*micro_problem, micro_reader);
+
+    {
+      Core::Utils::FunctionManager function_manager;
+      global_legacy_module_callbacks().AttachFunctionDefinitions(function_manager);
+      function_manager.read_input(micro_reader);
+      micro_problem->set_function_manager(std::move(function_manager));
+    }
+
+    read_result(*micro_problem, micro_reader);
 
     // At this point, everything for the microscale is read,
     // subsequent reading is only for macroscale
