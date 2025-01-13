@@ -536,14 +536,14 @@ Input::valid_conditions()
 
   for (const auto& cond : {lineperiodic, surfperiodic})
   {
-    add_named_int(cond, "ID", "periodic boundary condition id", 0, false, false, true);
+    add_named_int(cond, "ID", "periodic boundary condition id", 0, false, false);
     add_named_selection_component(cond, "MASTER_OR_SLAVE", "master-slave toggle", "Master",
         Teuchos::tuple<std::string>("Master", "Slave"),
         Teuchos::tuple<std::string>("Master", "Slave"));
     add_named_selection_component(cond, "PLANE", "degrees of freedom for the pbc plane", "xy",
         Teuchos::tuple<std::string>("xy", "yx", "yz", "zy", "xz", "zx", "xyz"),
         Teuchos::tuple<std::string>("xy", "xy", "yz", "yz", "xz", "xz", "xyz"));
-    add_named_int(cond, "LAYER", "layer of periodic boundary condition", 0, false, false, true);
+    add_named_int(cond, "LAYER", "layer of periodic boundary condition", 0, false, false);
     add_named_real(cond, "ANGLE", "angle of rotation");
     add_named_real(cond, "ABSTREETOL", "tolerance for nodematching in octree");
 

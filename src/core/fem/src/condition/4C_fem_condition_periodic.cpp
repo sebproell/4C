@@ -303,11 +303,11 @@ void Core::Conditions::PeriodicBoundaryConditions::put_all_slaves_to_masters_pro
 
           for (auto& mysurfpbc : mysurfpbcs_)
           {
-            const int myid = mysurfpbc->parameters().get<int>("ID");
-            const int mylayer = mysurfpbc->parameters().get<int>("LAYER");
+            const int id_zero_based = mysurfpbc->parameters().get<int>("ID") - 1;
+            const int layer = mysurfpbc->parameters().get<int>("LAYER");
             // yes, I am the condition with id pbcid and in the desired layer
 
-            if (myid == pbcid && (mylayer + 1) == nlayer)
+            if (id_zero_based == pbcid && layer == nlayer)
             {
               const auto& mymasterslavetoggle =
                   mysurfpbc->parameters().get<std::string>("MASTER_OR_SLAVE");
