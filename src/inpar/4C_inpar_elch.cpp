@@ -408,7 +408,7 @@ void Inpar::ElCh::set_valid_conditions(
       electrodedomainkineticscomponents.emplace_back(
           std::make_shared<Input::SeparatorComponent>("FUNCT"));
       electrodedomainkineticscomponents.emplace_back(
-          std::make_shared<Input::IntComponent>("FUNCT", IntComponentData{0, false, true, false}));
+          std::make_shared<Input::IntComponent>("FUNCT", IntComponentData{0, true, false}));
       electrodedomainkineticscomponents.emplace_back(
           std::make_shared<Input::SeparatorComponent>("NUMSCAL"));
 

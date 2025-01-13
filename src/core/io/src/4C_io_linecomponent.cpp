@@ -366,10 +366,6 @@ namespace Input
               snumber, name(), section_name, 1, optional_);
         }
       }
-      if (data_.fortran_style)
-      {
-        if (not data_.none_allowed or number != -1) number -= 1;
-      }
 
       // remove parameter value from stringstream "condline"
       condline->str(
@@ -415,9 +411,8 @@ namespace Input
     const std::string default_value = std::invoke(
         [&]()
         {
-          if (data_.none_allowed) return "none "s;
-          if (data_.fortran_style)
-            return "-1 "s;
+          if (data_.none_allowed)
+            return "none "s;
           else
             return std::to_string(data_.default_value) + " ";
         });
@@ -447,7 +442,7 @@ namespace Input
   std::shared_ptr<std::stringstream> IntVectorComponent::read(const std::string& section_name,
       std::shared_ptr<std::stringstream> condline, Core::IO::InputParameterContainer& container)
   {
-    const int initialize_value = data_.default_value + (data_.fortran_style ? -1 : 0);
+    const int initialize_value = data_.default_value;
     const int dynamic_length = std::visit(LengthVisitor{container}, length_);
     // initialize integer parameter vector to be read
     std::vector<int> nnumbers(dynamic_length, initialize_value);
@@ -481,11 +476,6 @@ namespace Input
         {
           current_number = convert_and_validate_string_to_number<int>(
               snumber, name(), section_name, dynamic_length, optional_);
-        }
-
-        if (data_.fortran_style)
-        {
-          if (not data_.none_allowed or current_number != -1) current_number -= 1;
         }
 
         // remove parameter value from stringstream "condline"

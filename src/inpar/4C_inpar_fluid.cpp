@@ -1381,13 +1381,13 @@ void Inpar::FLUID::set_valid_conditions(
           "TransferTurbulentInflow", Core::Conditions::TransferTurbulentInflow, true,
           Core::Conditions::geometry_type_surface);
 
-  add_named_int(tbc_turb_inflow, "ID", "", 0, false, false, false);
+  add_named_int(tbc_turb_inflow, "ID", "", 0, false, false);
   add_named_selection_component(tbc_turb_inflow, "toggle", "toggle", "master",
       Teuchos::tuple<std::string>("master", "slave"),
       Teuchos::tuple<std::string>("master", "slave"));
   add_named_selection_component(tbc_turb_inflow, "DIRECTION", "transfer direction", "x",
       Teuchos::tuple<std::string>("x", "y", "z"), Teuchos::tuple<int>(0, 1, 2));
-  add_named_int(tbc_turb_inflow, "curve", "curve id", 0, false, true, false);
+  add_named_int(tbc_turb_inflow, "curve", "curve id", 0, false, true);
 
   condlist.push_back(tbc_turb_inflow);
 

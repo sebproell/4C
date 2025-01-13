@@ -577,8 +577,7 @@ void Inpar::Cardiovascular0D::set_valid_conditions(
   Input::add_named_real(cardiovascular0darterialproxdistcond, "y_arp_0");
   Input::add_named_real(cardiovascular0darterialproxdistcond, "p_ard_0");
   Input::add_named_real(cardiovascular0darterialproxdistcond, "p_at_fac");
-  Input::add_named_int(
-      cardiovascular0darterialproxdistcond, "p_at_crv", "curve", 0, false, true, false);
+  Input::add_named_int(cardiovascular0darterialproxdistcond, "p_at_crv", "curve", 0, false, true);
   condlist.push_back(cardiovascular0darterialproxdistcond);
 
   /*--------------------------------------------------------------------*/
