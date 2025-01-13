@@ -1505,7 +1505,7 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_scatra_bc(Artery*
       if (curvenum > 0)
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
                        .evaluate(time);
       }
 

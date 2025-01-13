@@ -83,7 +83,7 @@ namespace
       {
         const auto* curve = condition->parameters().get_if<std::vector<int>>("curve");
         double curvefac = 1.0;
-        const auto* vals = &condition->parameters().get<std::vector<double>>("VAL");
+        const auto vals = condition->parameters().get<std::vector<double>>("VAL");
 
         // -----------------------------------------------------------------
         // Read in the value of the applied BC
@@ -92,12 +92,12 @@ namespace
         // get curve1 and val1
         int curvenum = -1;
         if (curve) curvenum = (*curve)[0];
-        if (curvenum >= 0)
+        if (curvenum > 0)
           curvefac = Global::Problem::instance()
-                         ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
+                         ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
                          .evaluate(time);
 
-        bcVal = (*vals)[0] * curvefac;
+        bcVal = vals[0] * curvefac;
 
         // get funct 1
         const int functnum = condition->parameters().get_or<int>("VAL", -1);
@@ -112,9 +112,9 @@ namespace
         int curve2num = -1;
         double curve2fac = 1.0;
         if (curve) curve2num = (*curve)[1];
-        if (curve2num >= 0)
+        if (curve2num > 0)
           curve2fac = Global::Problem::instance()
-                          ->function_by_id<Core::Utils::FunctionOfTime>(curve2num)
+                          ->function_by_id<Core::Utils::FunctionOfTime>(curve2num - 1)
                           .evaluate(time);
 
         bcVal += functionfac * curve2fac;
@@ -955,7 +955,7 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
             //  Val = curve1*val1 + curve2*func
             // -----------------------------------------------------------------
             const auto* curve = condition->parameters().get_if<std::vector<int>>("curve");
-            const auto* vals = &condition->parameters().get<std::vector<double>>("VAL");
+            const auto vals = condition->parameters().get<std::vector<double>>("VAL");
 
             // get factor of curve1 or curve2
             const auto curvefac = [&](unsigned id)
@@ -963,9 +963,9 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
               int curvenum = -1;
               if (curve)
               {
-                if ((curvenum = (*curve)[id]) >= 0)
+                if ((curvenum = (*curve)[id]) > 0)
                   return Global::Problem::instance()
-                      ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
+                      ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
                       .evaluate(time);
                 else
                   return 1.0;
@@ -992,7 +992,7 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
                     return 0.0;
                 });
 
-            BCin = (*vals)[0] * curvefac(0) + functfac * curvefac(1);
+            BCin = vals[0] * curvefac(0) + functfac * curvefac(1);
           }
           // -----------------------------------------------------------------------------
           // get the local id of the node to whom the bc is prescribed
@@ -1094,21 +1094,20 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
             Bc = (condition->parameters().get<std::string>("phase2"));
           }
 
-          const auto* curve = condition->parameters().get_if<std::vector<int>>("curve");
+          const auto curve = condition->parameters().get<std::vector<int>>("curve");
           double curvefac = 1.0;
-          const auto* vals = &condition->parameters().get<std::vector<double>>("VAL");
+          const auto vals = condition->parameters().get<std::vector<double>>("VAL");
 
           // -----------------------------------------------------------------
           // Read in the value of the applied BC
           // -----------------------------------------------------------------
-          int curvenum = -1;
-          if (curve) curvenum = (*curve)[phase_number];
-          if (curvenum >= 0)
+          int curvenum = curve[phase_number];
+          if (curvenum > 0)
             curvefac = Global::Problem::instance()
-                           ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
+                           ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
                            .evaluate(time);
 
-          BCin = (*vals)[phase_number] * curvefac;
+          BCin = vals[phase_number] * curvefac;
 
           // -----------------------------------------------------------------
           // Compute flow value in case a volume is prescribed in the RedAirwayVentilatorCond
@@ -1118,9 +1117,9 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
             if (fmod(time, period) < period1)
             {
               double Vnp = BCin;
-              double Vn = (*vals)[phase_number] *
+              double Vn = vals[phase_number] *
                           Global::Problem::instance()
-                              ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
+                              ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
                               .evaluate(time - dt);
               BCin = (Vnp - Vn) / dt;
               Bc = "flow";

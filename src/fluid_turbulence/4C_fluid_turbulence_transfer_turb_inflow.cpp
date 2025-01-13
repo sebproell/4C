@@ -80,7 +80,7 @@ FLD::TransferTurbulentInflowCondition::TransferTurbulentInflowCondition(
         }
       }
 
-      if (id != 0)
+      if (id != 1)
       {
         FOUR_C_THROW("expecting only one group of coupling surfaces (up to now), its %d", id);
       }
@@ -319,23 +319,7 @@ void FLD::TransferTurbulentInflowCondition::get_data(
 {
   id = cond->parameters().get<int>("ID");
 
-  const auto mydirection = cond->parameters().get<std::string>("DIRECTION");
-  if (mydirection == "x")
-  {
-    direction = 0;
-  }
-  else if (mydirection == "y")
-  {
-    direction = 1;
-  }
-  else if (mydirection == "z")
-  {
-    direction = 2;
-  }
-  else
-  {
-    FOUR_C_THROW("unknown direction");
-  }
+  direction = cond->parameters().get<int>("DIRECTION");
 
   const auto mytoggle = cond->parameters().get<std::string>("toggle");
   if (mytoggle == "master")
@@ -354,10 +338,10 @@ void FLD::TransferTurbulentInflowCondition::get_data(
   // find out whether we will use a time curve
   if (curve_ == -1)
   {
-    const auto* curve = cond->parameters().get_if<int>("curve");
+    const auto curve = cond->parameters().get<int>("curve");
 
-    // set curve number
-    if (curve) curve_ = *curve;
+    // set zero based curve number
+    curve_ = curve - 1;
   }
 }
 

@@ -412,9 +412,8 @@ void Core::FE::Discretization::evaluate_condition(Teuchos::ParameterList& params
         {
           const auto& function_manager =
               params.get<const Core::Utils::FunctionManager*>("function_manager");
-          curvefac =
-              function_manager->function_by_id<Core::Utils::FunctionOfTime>(curvenum).evaluate(
-                  time);
+          curvefac = function_manager->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
+                         .evaluate(time);
         }
 
         // Get ConditionID of current condition if defined and write value in parameter list

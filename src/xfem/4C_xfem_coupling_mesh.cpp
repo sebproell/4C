@@ -1248,7 +1248,7 @@ void XFEM::MeshCouplingNavierSlip::evaluate_coupling_conditions(Core::LinAlg::Ma
   if (eval_dirich_at_gp)
   {
     // evaluate interface velocity (given by weak Dirichlet condition)
-    robin_id_dirch = cond->parameters().get<int>("ROBIN_DIRICHLET_ID");
+    robin_id_dirch = cond->parameters().get<int>("ROBIN_DIRICHLET_ID") - 1;
     // Check if int is negative (signbit(x) -> x<0 true, x=>0 false)
     if (!std::signbit(static_cast<double>(robin_id_dirch)))
       evaluate_dirichlet_function(
@@ -1265,7 +1265,7 @@ void XFEM::MeshCouplingNavierSlip::evaluate_coupling_conditions(Core::LinAlg::Ma
   }
 
   // evaluate interface traction (given by Neumann condition)
-  robin_id_dirch = cond->parameters().get<int>("ROBIN_NEUMANN_ID");
+  robin_id_dirch = cond->parameters().get<int>("ROBIN_NEUMANN_ID") - 1;
   if (!std::signbit(static_cast<double>(robin_id_dirch)))
   {
     // This is maybe not the most efficient implementation as we evaluate dynvisc as well as the
@@ -1338,14 +1338,14 @@ void XFEM::MeshCouplingNavierSlip::evaluate_coupling_conditions_old_state(
   //  }
 
   // evaluate interface velocity (given by weak Dirichlet condition)
-  int robin_id_dirch = cond->parameters().get<int>("ROBIN_DIRICHLET_ID");
+  int robin_id_dirch = cond->parameters().get<int>("ROBIN_DIRICHLET_ID") - 1;
   // Check if int is negative (signbit(x) -> x<0 true, x=>0 false)
   if (!std::signbit(static_cast<double>(robin_id_dirch)))
     evaluate_dirichlet_function(
         ivel, x, conditionsmap_robin_dirch_.find(robin_id_dirch)->second, time_ - dt_);
 
   // evaluate interface traction (given by Neumann condition)
-  robin_id_dirch = cond->parameters().get<int>("ROBIN_NEUMANN_ID");
+  robin_id_dirch = cond->parameters().get<int>("ROBIN_NEUMANN_ID") - 1;
   if (!std::signbit(static_cast<double>(robin_id_dirch)))
     evaluate_neumann_function(
         itraction, x, conditionsmap_robin_neumann_.find(robin_id_dirch)->second, time_ - dt_);
@@ -1384,10 +1384,10 @@ void XFEM::MeshCouplingNavierSlip::create_robin_id_map(
   for (unsigned i = 0; i < conditions_NS.size(); ++i)
   {
     // Extract its robin id (either dirichlet or neumann)
-    const int tmp_robin_id = conditions_NS[i]->parameters().get<int>(robin_id_name);
+    const int tmp_robin_id = conditions_NS[i]->parameters().get<int>(robin_id_name) - 1;
 
     // Is this robin id active? I.e. is it not 0 or negative?
-    if (!(tmp_robin_id < 0))
+    if (tmp_robin_id >= 0)
     {
       std::vector<Core::Conditions::Condition*> mynewcond;
       get_condition_by_robin_id(conditions_robin, tmp_robin_id, mynewcond);
@@ -1479,7 +1479,7 @@ void XFEM::MeshCouplingNavierSlip::set_condition_specific_parameters()
   //       Robin Dirichlet section (Safety check! (not beautiful structure but could be worse..))
   for (auto* tmp_cond : conditions_NS)
   {
-    const int tmp_robin_id = tmp_cond->parameters().get<int>("ROBIN_DIRICHLET_ID");
+    const int tmp_robin_id = tmp_cond->parameters().get<int>("ROBIN_DIRICHLET_ID") - 1;
     if (!std::signbit(static_cast<double>(tmp_robin_id)))
     {
       if ((conditionsmap_robin_dirch_.find(tmp_robin_id)
@@ -1500,9 +1500,9 @@ void XFEM::MeshCouplingNavierSlip::get_condition_by_robin_id(
   // select the conditions with specified "robin_id"
   for (auto* cond : mycond)
   {
-    const int id = cond->parameters().get<int>("robin_id");
+    const int id_zero_based = cond->parameters().get<int>("robin_id") - 1;
 
-    if (id == coupling_id) mynewcond.push_back(cond);
+    if (id_zero_based == coupling_id) mynewcond.push_back(cond);
   }
 }
 

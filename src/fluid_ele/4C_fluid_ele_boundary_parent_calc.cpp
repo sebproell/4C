@@ -527,14 +527,12 @@ void Discret::Elements::FluidBoundaryParent<distype>::flow_dep_pressure_bc(
   const double time =
       fldparatimint_->time() + (1 - fldparatimint_->alpha_f()) * fldparatimint_->dt();
   if (time < 0.0) usetime = false;
-  const int curve = fdp_cond->parameters().get<int>("curve");
-  int curvenum = -1;
-  if (curve) curvenum = curve;
+  const int curvenum = fdp_cond->parameters().get<int>("curve");
   double curvefac = 1.0;
-  if (curvenum >= 0 and usetime)
-    curvefac =
-        Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfTime>(curvenum).evaluate(
-            time);
+  if (curvenum > 0 and usetime)
+    curvefac = Global::Problem::instance()
+                   ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
+                   .evaluate(time);
 
   // (temporarily) switch off any flow-dependent pressure condition in case of zero
   // time-curve factor
