@@ -197,7 +197,7 @@ void Inpar::Mortar::set_valid_conditions(
         true));
 
     // optional DBC handling
-    cond->add_component(std::make_shared<Input::SelectionComponent>("dbc_handling", "DoNothing",
+    cond->add_component(std::make_shared<Input::SelectionComponent>("DbcHandling", "DoNothing",
         Teuchos::tuple<std::string>("DoNothing", "RemoveDBCSlaveNodes"),
         Teuchos::tuple<int>(static_cast<int>(DBCHandling::do_nothing),
             static_cast<int>(DBCHandling::remove_dbc_nodes_from_slave_side)),

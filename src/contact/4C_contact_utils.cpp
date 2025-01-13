@@ -456,7 +456,7 @@ void CONTACT::Utils::DbcHandler::detect_dbc_slave_nodes_and_elements(
 
       const Core::Conditions::Condition* sl_cond = ccond_grp[i];
 
-      const int dbc_handling_id = sl_cond->parameters().get<int>("dbc_handling");
+      const int dbc_handling_id = sl_cond->parameters().get<int>("DbcHandling");
       const auto dbc_handling = static_cast<Inpar::Mortar::DBCHandling>(dbc_handling_id);
 
       switch (dbc_handling)
