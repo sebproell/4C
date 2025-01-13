@@ -1339,8 +1339,8 @@ void ParticleRigidBody::RigidBodyHandler::broadcast_rigid_body_positions()
 
     data.add_to_pack(rigidbody_k);
 
-    for (int i = 0; i < 3; ++i) data.add_to_pack(pos_k[i]);
-    for (int i = 0; i < 4; ++i) data.add_to_pack(rot_k[i]);
+    add_to_pack(data, pos_k);
+    add_to_pack(data, rot_k);
 
     for (int torank : hostingprocs_k)
       sdata[torank].insert(sdata[torank].end(), data().begin(), data().end());
@@ -1366,8 +1366,8 @@ void ParticleRigidBody::RigidBodyHandler::broadcast_rigid_body_positions()
       std::vector<double>& pos_k = rigidbodydatastate_->get_ref_position()[rigidbody_k];
       std::vector<double>& rot_k = rigidbodydatastate_->get_ref_rotation()[rigidbody_k];
 
-      for (int i = 0; i < 3; ++i) extract_from_pack(buffer, pos_k[i]);
-      for (int i = 0; i < 4; ++i) extract_from_pack(buffer, rot_k[i]);
+      extract_from_pack(buffer, pos_k);
+      extract_from_pack(buffer, rot_k);
     }
   }
 }
@@ -1394,8 +1394,8 @@ void ParticleRigidBody::RigidBodyHandler::broadcast_rigid_body_velocities()
 
     data.add_to_pack(rigidbody_k);
 
-    for (int i = 0; i < 3; ++i) data.add_to_pack(vel_k[i]);
-    for (int i = 0; i < 3; ++i) data.add_to_pack(angvel_k[i]);
+    add_to_pack(data, vel_k);
+    add_to_pack(data, angvel_k);
 
     for (int torank : hostingprocs_k)
       sdata[torank].insert(sdata[torank].end(), data().begin(), data().end());
@@ -1421,8 +1421,8 @@ void ParticleRigidBody::RigidBodyHandler::broadcast_rigid_body_velocities()
       std::vector<double>& vel_k = rigidbodydatastate_->get_ref_velocity()[rigidbody_k];
       std::vector<double>& angvel_k = rigidbodydatastate_->get_ref_angular_velocity()[rigidbody_k];
 
-      for (int i = 0; i < 3; ++i) extract_from_pack(buffer, vel_k[i]);
-      for (int i = 0; i < 3; ++i) extract_from_pack(buffer, angvel_k[i]);
+      extract_from_pack(buffer, vel_k);
+      extract_from_pack(buffer, angvel_k);
     }
   }
 }
@@ -1449,8 +1449,8 @@ void ParticleRigidBody::RigidBodyHandler::broadcast_rigid_body_accelerations()
 
     data.add_to_pack(rigidbody_k);
 
-    for (int i = 0; i < 3; ++i) data.add_to_pack(acc_k[i]);
-    for (int i = 0; i < 3; ++i) data.add_to_pack(angacc_k[i]);
+    add_to_pack(data, acc_k);
+    add_to_pack(data, angacc_k);
 
     for (int torank : hostingprocs_k)
       sdata[torank].insert(sdata[torank].end(), data().begin(), data().end());
@@ -1477,8 +1477,8 @@ void ParticleRigidBody::RigidBodyHandler::broadcast_rigid_body_accelerations()
       std::vector<double>& angacc_k =
           rigidbodydatastate_->get_ref_angular_acceleration()[rigidbody_k];
 
-      for (int i = 0; i < 3; ++i) extract_from_pack(buffer, acc_k[i]);
-      for (int i = 0; i < 3; ++i) extract_from_pack(buffer, angacc_k[i]);
+      extract_from_pack(buffer, acc_k);
+      extract_from_pack(buffer, angacc_k);
     }
   }
 }
