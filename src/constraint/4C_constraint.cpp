@@ -242,10 +242,13 @@ void CONSTRAINTS::Constraint::evaluate_constraint(Teuchos::ParameterList& params
       // Evaluate loadcurve if defined. Put current load factor in parameterlist
       const int curvenum = cond->parameters().get_or<int>("curve", -1);
       double curvefac = 1.0;
-      if (curvenum >= 0)
+      if (curvenum > 0)
+      {
+        // function_by_id takes a zero-based index
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
                        .evaluate(time);
+      }
 
       // global and local ID of this bc in the redundant vectors
       const int offsetID = params.get<int>("OffsetID");

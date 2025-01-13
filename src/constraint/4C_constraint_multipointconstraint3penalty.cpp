@@ -411,16 +411,17 @@ void CONSTRAINTS::MPConstraint3Penalty::evaluate_constraint(
             Core::Communication::my_mpi_rank(disc->get_comm()), eid, err);
 
       // loadcurve business
-      const auto* curve = cond->parameters().get_if<int>("curve");
-      int curvenum = -1;
-      if (curve) curvenum = (*curve);
+      const int curvenum = cond->parameters().get_or<int>("curve", -1);
       double curvefac = 1.0;
       bool usetime = true;
       if (time < 0.0) usetime = false;
-      if (curvenum >= 0 && usetime)
+      if (curvenum > 0 && usetime)
+      {
+        // function_by_id takes a zero-based index
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
                        .evaluate(time);
+      }
 
 
       double diff = (curvefac * (*initerror_)[eid] - (*acterror_)[eid]);
