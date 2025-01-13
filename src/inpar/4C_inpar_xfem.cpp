@@ -498,7 +498,7 @@ void Inpar::XFEM::set_valid_conditions(
   // define which complementary operator is applied after combining the level-set field with a
   // boolean operator with the previous one
   levelsetfield_components.push_back(std::make_shared<Input::SeparatorComponent>("COMPLEMENTARY"));
-  levelsetfield_components.push_back(std::make_shared<Input::IntComponent>("COMPLEMENTARY"));
+  levelsetfield_components.push_back(std::make_shared<Input::BoolComponent>("COMPLEMENTARY"));
 
 
   //*----------------*/
@@ -577,7 +577,7 @@ void Inpar::XFEM::set_valid_conditions(
       std::make_shared<Input::SeparatorComponent>("SLIP_FUNCT", "", true));
   xfem_levelset_navier_slip->add_component(
       std::make_shared<Input::IntComponent>("FUNCT", IntComponentData{0, false, false, true}));
-  add_named_int(xfem_levelset_navier_slip, "FORCE_ONLY_TANG_VEL", "", 0, true, false);
+  add_named_bool(xfem_levelset_navier_slip, "FORCE_ONLY_TANG_VEL", "", false, true);
 
   condlist.push_back(xfem_levelset_navier_slip);
 
@@ -791,7 +791,7 @@ void Inpar::XFEM::set_valid_conditions(
       std::make_shared<Input::SeparatorComponent>("SLIP_FUNCT", "", true));
   xfem_surf_navier_slip->add_component(
       std::make_shared<Input::IntComponent>("FUNCT", IntComponentData{0, false, false, true}));
-  add_named_int(xfem_surf_navier_slip, "FORCE_ONLY_TANG_VEL", "", 0, true, false, false);
+  add_named_bool(xfem_surf_navier_slip, "FORCE_ONLY_TANG_VEL", "", false, true);
 
   condlist.push_back(xfem_surf_navier_slip);
 

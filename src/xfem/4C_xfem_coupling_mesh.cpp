@@ -1465,7 +1465,7 @@ void XFEM::MeshCouplingNavierSlip::set_condition_specific_parameters()
     // Is the slip length constant? Don't call functions at GP-level unnecessary.
     bool slip_bool = (cond->parameters().get<int>("FUNCT") < 1);
 
-    bool force_tangential = (cond->parameters().get<int>("FORCE_ONLY_TANG_VEL") == 1);
+    bool force_tangential = cond->parameters().get<bool>("FORCE_ONLY_TANG_VEL");
 
     if (!sliplength_map_.insert(std::make_pair(cond_int, std::make_pair(sliplength, slip_bool)))
             .second)

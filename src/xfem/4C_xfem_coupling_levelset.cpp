@@ -255,7 +255,7 @@ bool XFEM::LevelSetCoupling::apply_complementary_operator()
         "no element condition for LevelSetCouplingBC set. Not possible to extract BOOLEANTYPE!");
 
   Core::Conditions::Condition* cond = (cutterele_conds_[0]).second;
-  bool complementary = (bool)cond->parameters().get<int>("COMPLEMENTARY");
+  bool complementary = cond->parameters().get<bool>("COMPLEMENTARY");
 
   return complementary;
 }
@@ -1404,8 +1404,7 @@ void XFEM::LevelSetCouplingNavierSlip::set_condition_specific_parameters()
 
   // Project the prescribed velocity in tangential direction, to remove "spurious velocities"
   //  from the geometry approximation.
-  tmp_bool = ((cond->parameters().get<int>("FORCE_ONLY_TANG_VEL")) == 0);
-  forcetangvel_ = (tmp_bool) ? false : true;
+  forcetangvel_ = cond->parameters().get<bool>("FORCE_ONLY_TANG_VEL");
 }
 
 /*--------------------------------------------------------------------------*

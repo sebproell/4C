@@ -572,7 +572,7 @@ void Inpar::ScaTra::set_valid_conditions(
   add_named_real(surfscatracoup, "PERMCOEF");
   add_named_real(surfscatracoup, "CONDUCT");
   add_named_real(surfscatracoup, "FILTR");
-  add_named_int(surfscatracoup, "WSSONOFF");
+  add_named_bool(surfscatracoup, "WSSON", "flag if wall shear stress coupling is on");
   add_named_real_vector(surfscatracoup, "WSSCOEFFS", "", 2);
 
   condlist.emplace_back(surfscatracoup);

@@ -280,7 +280,7 @@ void FS3I::FS3IBase::check_f_s3_i_inputs()
         params->at(0) = iter->parameters().get<double>("PERMCOEF");
         params->at(1) = iter->parameters().get<double>("CONDUCT");
         params->at(2) = iter->parameters().get<double>("FILTR");
-        params->at(3) = (double)iter->parameters().get<int>("WSSONOFF");
+        params->at(3) = (double)iter->parameters().get<bool>("WSSON");
         const auto& mywsscoeffs = iter->parameters().get<std::vector<double>>("WSSCOEFFS");
         params->at(4) = mywsscoeffs.at(0);
         params->at(5) = mywsscoeffs.at(1);
@@ -359,7 +359,7 @@ void FS3I::FS3IBase::check_f_s3_i_inputs()
             ID);
       if (fluid_permcoeffs->at(3) != structure_permcoeffs->at(3))
         FOUR_C_THROW(
-            "WSS onoff flag WSSONOFF of ScaTra couplings with COUPID %i needs to be the same!", ID);
+            "WSS onoff flag WSSON of ScaTra couplings with COUPID %i needs to be the same!", ID);
       if (fluid_permcoeffs->at(4) != structure_permcoeffs->at(4))
         FOUR_C_THROW(
             "First WSS coefficient WSSCOEFFS of ScaTra couplings with COUPID %i needs to be the "
