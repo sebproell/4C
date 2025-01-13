@@ -285,7 +285,7 @@ namespace Input
 
   void LineDefinition::print(std::ostream& stream) const
   {
-    auto line = Core::IO::InputSpecBuilders::group(pimpl_->components_);
+    auto line = Core::IO::InputSpecBuilders::anonymous_group(pimpl_->components_);
     Core::IO::InputParameterContainer container;
     line.print_as_dat(stream, container);
   }
@@ -304,7 +304,7 @@ namespace Input
 
     try
     {
-      auto input_line = Core::IO::InputSpecBuilders::group(pimpl_->components_);
+      auto input_line = Core::IO::InputSpecBuilders::anonymous_group(pimpl_->components_);
       Core::IO::ValueParser parser(line, {.base_path = context.input_file.parent_path()});
       input_line.fully_parse(parser, container);
     }

@@ -214,7 +214,7 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::emit_metadata(YAML::Emitt
     yaml << YAML::Key << (name.empty() ? data.description : name);
     yaml << YAML::Value << YAML::BeginMap;
     {
-      yaml << YAML::Key << "type" << YAML::Value << (name.empty() ? "anonymous_group" : "scope");
+      yaml << YAML::Key << "type" << YAML::Value << (name.empty() ? "anonymous_group" : "group");
       yaml << YAML::Key << "description" << YAML::Value << data.description;
       yaml << YAML::Key << "required" << YAML::Value << data.required;
 
@@ -357,12 +357,12 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
 }
 
 
-Core::IO::InputSpec Core::IO::InputSpecBuilders::group(std::vector<InputSpec> specs)
+Core::IO::InputSpec Core::IO::InputSpecBuilders::anonymous_group(std::vector<InputSpec> specs)
 {
   assert_unique_or_empty_names(specs);
 
   // Generate a description of the form "group {a, b, c}".
-  std::string description = "group " + describe(specs);
+  std::string description = "anonymous_group " + describe(specs);
 
   IO::Internal::InputSpecTypeErasedBase::CommonData common_data{
       .name = "",

@@ -711,7 +711,7 @@ namespace Core::IO
      * Example:
      *
      * @code
-     * group({
+     * anonymous_group({
      *   entry<int>("a"),
      *   entry<double>("b"),
      *   entry<std::string>("c"),
@@ -721,7 +721,7 @@ namespace Core::IO
      * This functions gathers multiple InputSpecs on the same level and treats them as a single
      * InputSpec.
      */
-    [[nodiscard]] InputSpec group(std::vector<InputSpec> specs);
+    [[nodiscard]] InputSpec anonymous_group(std::vector<InputSpec> specs);
 
     /**
      * Exactly one of the given InputSpecs is expected. There is no support for default values and
