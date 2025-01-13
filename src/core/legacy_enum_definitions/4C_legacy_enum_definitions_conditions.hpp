@@ -70,8 +70,6 @@ namespace Core::Conditions
     IMMERSEDCoupling,
     FSICouplingCenterDisp,
     ALEUPDATECoupling,
-    SurfaceTension,
-    Surfactant,
     MicroBoundary,
     XFEM_Surf_Displacement,
     XFEM_Levelset_Weak_Dirichlet,

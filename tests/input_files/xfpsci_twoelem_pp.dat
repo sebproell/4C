@@ -217,9 +217,9 @@ E 3 - 0 Selfcontact Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Solidcontact D
 ------------------------DESIGN XFEM FPI MONOLITHIC SURF CONDITIONS
 DSURF  2
 // all solid red
-E 6 - COUPLINGID 1 BJ_COEFF 1 BJ NIT contact_yes
+E 6 - COUPLINGID 1 BJ_COEFF 1 Variant BJ Method NIT Contact true
 // all poro red
-E 7 - COUPLINGID 1 BJ_COEFF 1 BJ NIT contact_yes
+E 7 - COUPLINGID 1 BJ_COEFF 1 Variant BJ Method NIT Contact true
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    1 DSURFACE 1
 NODE    2 DSURFACE 1

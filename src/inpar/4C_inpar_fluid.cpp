@@ -10,6 +10,7 @@
 #include "4C_fem_condition_definition.hpp"
 #include "4C_io_geometry_type.hpp"
 #include "4C_io_linecomponent.hpp"
+#include "4C_legacy_enum_definitions_conditions.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -1380,17 +1381,14 @@ void Inpar::FLUID::set_valid_conditions(
           "TransferTurbulentInflow", Core::Conditions::TransferTurbulentInflow, true,
           Core::Conditions::geometry_type_surface);
 
-  // we attach all the components of this condition to this weak line DBC
   add_named_int(tbc_turb_inflow, "ID", "", 0, false, false, true);
-  tbc_turb_inflow->add_component(std::make_shared<Input::SelectionComponent>("toggle", "master",
+  add_named_selection_component(tbc_turb_inflow, "toggle", "toggle", "master",
       Teuchos::tuple<std::string>("master", "slave"),
-      Teuchos::tuple<std::string>("master", "slave")));
+      Teuchos::tuple<std::string>("master", "slave"));
   add_named_selection_component(tbc_turb_inflow, "DIRECTION", "transfer direction", "x",
       Teuchos::tuple<std::string>("x", "y", "z"), Teuchos::tuple<std::string>("x", "y", "z"));
-  tbc_turb_inflow->add_component(
-      std::make_shared<Input::IntComponent>("curve", IntComponentData{0, true, true, false}));
+  add_named_int(tbc_turb_inflow, "curve", "curve id", 0, false, true, true);
 
-  // and append it to the list of all conditions
   condlist.push_back(tbc_turb_inflow);
 
   /*--------------------------------------------------------------------*/
@@ -1407,50 +1405,31 @@ void Inpar::FLUID::set_valid_conditions(
   /*--------------------------------------------------------------------*/
   // flow-dependent pressure conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> lineflowdeppressure =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE FLOW-DEPENDENT PRESSURE CONDITIONS", "LineFlowDepPressure",
-          "LineFlowDepPressure", Core::Conditions::LineFlowDepPressure, true,
-          Core::Conditions::geometry_type_line);
-
   std::shared_ptr<Core::Conditions::ConditionDefinition> surfflowdeppressure =
       std::make_shared<Core::Conditions::ConditionDefinition>(
           "DESIGN SURFACE FLOW-DEPENDENT PRESSURE CONDITIONS", "SurfaceFlowDepPressure",
           "SurfaceFlowDepPressure", Core::Conditions::SurfaceFlowDepPressure, true,
           Core::Conditions::geometry_type_surface);
 
-  // we attach all the components of this condition to this weak line DBC
-  for (const auto& cond : {lineflowdeppressure, surfflowdeppressure})
-  {
-    // flow-dependent pressure conditions can be imposed either based on
-    // (out)flow rate or (out)flow volume (e.g., for air-cushion condition)
-    cond->add_component(std::make_shared<Input::SelectionComponent>("type of flow dependence",
-        "flow_rate", Teuchos::tuple<std::string>("flow_rate", "flow_volume", "fixed_pressure"),
-        Teuchos::tuple<std::string>("flow_rate", "flow_volume", "fixed_pressure")));
+  // flow-dependent pressure conditions can be imposed either based on
+  // (out)flow rate or (out)flow volume (e.g., for air-cushion condition)
+  add_named_selection_component(surfflowdeppressure, "TYPE_OF_FLOW_DEPENDENCE",
+      "type of flow dependence", "flow_rate",
+      Teuchos::tuple<std::string>("flow_rate", "flow_volume", "fixed_pressure"),
+      Teuchos::tuple<std::string>("flow_rate", "flow_volume", "fixed_pressure"));
+  add_named_real(surfflowdeppressure, "ConstCoeff",
+      "constant coefficient for (linear) flow-rate-based condition");
+  add_named_real(
+      surfflowdeppressure, "LinCoeff", "linear coefficient for (linear) flow-rate-based condition");
+  add_named_real(
+      surfflowdeppressure, "InitialVolume", "initial (air-cushion) volume outside of boundary");
+  add_named_real(
+      surfflowdeppressure, "ReferencePressure", " reference pressure outside of boundary");
+  add_named_real(surfflowdeppressure, "AdiabaticExponent", "adiabatic exponent");
+  add_named_int(surfflowdeppressure, "curve", "curve id", 0, false, true, true);
 
-    // constant coefficient for (linear) flow-rate-based condition
-    // and constant fixed pressure
-    cond->add_component(std::make_shared<Input::RealComponent>("ConstCoeff"));
+  condlist.emplace_back(surfflowdeppressure);
 
-    // linear coefficient for (linear) flow-rate-based condition
-    cond->add_component(std::make_shared<Input::RealComponent>("LinCoeff"));
-
-    // initial (air-cushion) volume outside of boundary
-    cond->add_component(std::make_shared<Input::RealComponent>("InitialVolume"));
-
-    // reference pressure outside of boundary
-    cond->add_component(std::make_shared<Input::RealComponent>("ReferencePressure"));
-
-    // adiabatic exponent
-    cond->add_component(std::make_shared<Input::RealComponent>("AdiabaticExponent"));
-
-    // values for time curve
-    cond->add_component(
-        std::make_shared<Input::IntComponent>("curve", IntComponentData{0, true, true, false}));
-
-    // and append it to the list of all conditions
-    condlist.emplace_back(cond);
-  }
 
   /*--------------------------------------------------------------------*/
   // Slip Supplemental Curved Boundary conditions
@@ -1540,51 +1519,35 @@ void Inpar::FLUID::set_valid_conditions(
   for (const auto& cond : {linemixhybDirichlet, surfmixhybDirichlet})
   {
     // we provide a vector of 3 values for velocities
-    cond->add_component(std::make_shared<Input::RealVectorComponent>("val", 3));
+    add_named_real_vector(cond, "val", "velocity", 3);
 
     // and optional spatial functions
-    cond->add_component(std::make_shared<Input::IntVectorComponent>(
-        "funct", 3, IntComponentData{0, false, false, true}));
+    add_named_int_vector(cond, "funct", "spatial function", 3, 0, true, false, false);
 
     // characteristic velocity
-    cond->add_component(std::make_shared<Input::RealComponent>("u_C"));
+    add_named_real(cond, "u_C");
 
     // the penalty parameter could be computed dynamically (using Spaldings
     // law of the wall) or using a fixed value (1)
-    cond->add_component(
-        std::make_shared<Input::SelectionComponent>("Definition of penalty parameter", "constant",
-            Teuchos::tuple<std::string>("constant", "Spalding"),
-            Teuchos::tuple<std::string>("constant", "Spalding")));
+    add_named_selection_component(cond, "PENTYPE", "how penalty parameter is computed", "constant",
+        Teuchos::tuple<std::string>("constant", "Spalding"),
+        Teuchos::tuple<std::string>("constant", "Spalding"));
 
     // scaling factor for penalty parameter tauB
-    cond->add_component(std::make_shared<Input::RealComponent>("hB_divided_by"));
+    add_named_real(cond, "hB_divided_by");
 
     // if Spaldings law is used, this defines the way how the traction at y is computed from utau
-    cond->add_component(std::make_shared<Input::SelectionComponent>("utau_computation", "at_wall",
+    add_named_selection_component(cond, "utau_computation",
+        "how traction at y is computed from utau", "at_wall",
         Teuchos::tuple<std::string>("at_wall", "viscous_tangent"),
-        Teuchos::tuple<std::string>("at_wall", "viscous_tangent")));
+        Teuchos::tuple<std::string>("at_wall", "viscous_tangent"));
 
     // we append it to the list of all conditions
     condlist.push_back(cond);
   }
 
   /*--------------------------------------------------------------------*/
-  // surface tension
-
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surftension =
-      std::make_shared<Core::Conditions::ConditionDefinition>("SURFACE TENSION CONDITIONS",
-          "SurfaceStress", "Surface Stress (ideal water)", Core::Conditions::SurfaceTension, true,
-          Core::Conditions::geometry_type_surface);
-
-  surftension->add_component(
-      std::make_shared<Input::IntComponent>("curve", IntComponentData{0, true, true, false}));
-  Input::add_named_real(surftension, "gamma");
-
-  condlist.push_back(surftension);
-
-  /*--------------------------------------------------------------------*/
   // fluid stress
-
 
   std::shared_ptr<Core::Conditions::ConditionDefinition> linefluidstress =
       std::make_shared<Core::Conditions::ConditionDefinition>(
@@ -1602,23 +1565,16 @@ void Inpar::FLUID::set_valid_conditions(
 
   /*--------------------------------------------------------------------*/
   // lift & drag
-  std::shared_ptr<Core::Conditions::ConditionDefinition> lineliftdrag =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN FLUID LINE LIFT&DRAG",
-          "LIFTDRAG", "Line LIFTDRAG", Core::Conditions::LineLIFTDRAG, true,
-          Core::Conditions::geometry_type_line);
   std::shared_ptr<Core::Conditions::ConditionDefinition> surfliftdrag =
       std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN FLUID SURF LIFT&DRAG",
           "LIFTDRAG", "Surface LIFTDRAG", Core::Conditions::SurfLIFTDRAG, true,
           Core::Conditions::geometry_type_surface);
 
-  for (const auto& cond : {lineliftdrag, surfliftdrag})
-  {
-    cond->add_component(std::make_shared<Input::IntComponent>("label"));
-    add_named_real_vector(cond, "CENTER", "", 3);
-    add_named_real_vector(cond, "AXIS", "", 3, 0.0, true);
+  add_named_int(surfliftdrag, "label");
+  add_named_real_vector(surfliftdrag, "CENTER", "", 3);
+  add_named_real_vector(surfliftdrag, "AXIS", "", 3, 0.0, true);
 
-    condlist.push_back(cond);
-  }
+  condlist.push_back(surfliftdrag);
 
   /*--------------------------------------------------------------------*/
   // flow rate through line
@@ -1628,7 +1584,7 @@ void Inpar::FLUID::set_valid_conditions(
           "LineFlowRate", "Line Flow Rate", Core::Conditions::FlowRateThroughLine_2D, true,
           Core::Conditions::geometry_type_line);
 
-  lineflowrate->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
+  add_named_int(lineflowrate, "ConditionID");
 
   condlist.push_back(lineflowrate);
 
@@ -1640,7 +1596,7 @@ void Inpar::FLUID::set_valid_conditions(
           "SurfFlowRate", "Surface Flow Rate", Core::Conditions::FlowRateThroughSurface_3D, true,
           Core::Conditions::geometry_type_surface);
 
-  surfflowrate->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
+  add_named_int(surfflowrate, "ConditionID");
 
   condlist.push_back(surfflowrate);
 
@@ -1652,51 +1608,45 @@ void Inpar::FLUID::set_valid_conditions(
           "volumetric surface flow condition", Core::Conditions::VolumetricSurfaceFlowCond, true,
           Core::Conditions::geometry_type_surface);
 
-  volumetric_surface_flow_cond->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
+  add_named_int(volumetric_surface_flow_cond, "ConditionID");
 
-  volumetric_surface_flow_cond->add_component(std::make_shared<Input::SelectionComponent>(
-      "ConditionType", "WOMERSLEY", Teuchos::tuple<std::string>("WOMERSLEY", "POLYNOMIAL"),
-      Teuchos::tuple<std::string>("WOMERSLEY", "POLYNOMIAL"), true));
+  Input::add_named_selection_component(volumetric_surface_flow_cond, "ConditionType",
+      "condition type", "POLYNOMIAL", Teuchos::tuple<std::string>("POLYNOMIAL", "WOMERSLEY"),
+      Teuchos::tuple<std::string>("POLYNOMIAL", "WOMERSLEY"), true);
 
-  volumetric_surface_flow_cond->add_component(
-      std::make_shared<Input::SelectionComponent>("prebiased", "NOTPREBIASED",
-          Teuchos::tuple<std::string>("NOTPREBIASED", "PREBIASED", "FORCED"),
-          Teuchos::tuple<std::string>("NOTPREBIASED", "PREBIASED", "FORCED"), true));
+  Input::add_named_selection_component(volumetric_surface_flow_cond, "prebiased", "prebiased",
+      "NOTPREBIASED", Teuchos::tuple<std::string>("NOTPREBIASED", "PREBIASED", "FORCED"),
+      Teuchos::tuple<std::string>("NOTPREBIASED", "PREBIASED", "FORCED"), true);
 
+  Input::add_named_selection_component(volumetric_surface_flow_cond, "FlowType", "flow type",
+      "InFlow", Teuchos::tuple<std::string>("InFlow", "OutFlow"),
+      Teuchos::tuple<std::string>("InFlow", "OutFlow"), true);
+  Input::add_named_selection_component(volumetric_surface_flow_cond, "CorrectionFlag",
+      "correction flag", "WithOutCorrection",
+      Teuchos::tuple<std::string>("WithOutCorrection", "WithCorrection"),
+      Teuchos::tuple<std::string>("WithOutCorrection", "WithCorrection"), true);
 
-  volumetric_surface_flow_cond->add_component(std::make_shared<Input::SelectionComponent>(
-      "FlowType", "InFlow", Teuchos::tuple<std::string>("InFlow", "OutFlow"),
-      Teuchos::tuple<std::string>("InFlow", "OutFlow"), true));
-
-  volumetric_surface_flow_cond->add_component(
-      std::make_shared<Input::SelectionComponent>("CorrectionFlag", "WithOutCorrection",
-          Teuchos::tuple<std::string>("WithOutCorrection", "WithCorrection"),
-          Teuchos::tuple<std::string>("WithOutCorrection", "WithCorrection"), true));
   Input::add_named_real(volumetric_surface_flow_cond, "Period");
   Input::add_named_int(volumetric_surface_flow_cond, "Order");
   Input::add_named_int(volumetric_surface_flow_cond, "Harmonics");
   Input::add_named_real(volumetric_surface_flow_cond, "Val");
   Input::add_named_int(volumetric_surface_flow_cond, "Funct");
 
-  volumetric_surface_flow_cond->add_component(
-      std::make_shared<Input::SelectionComponent>("NORMAL", "SelfEvaluateNormal",
-          Teuchos::tuple<std::string>("SelfEvaluateNormal", "UsePrescribedNormal"),
-          Teuchos::tuple<std::string>("SelfEvaluateNormal", "UsePrescribedNormal"), true));
+  Input::add_named_selection_component(volumetric_surface_flow_cond, "NORMAL", "normal",
+      "SelfEvaluateNormal",
+      Teuchos::tuple<std::string>("SelfEvaluateNormal", "UsePrescribedNormal"),
+      Teuchos::tuple<std::string>("SelfEvaluateNormal", "UsePrescribedNormal"), true);
+  Input::add_named_real(volumetric_surface_flow_cond, "n1");
+  Input::add_named_real(volumetric_surface_flow_cond, "n2");
+  Input::add_named_real(volumetric_surface_flow_cond, "n3");
 
-
-  volumetric_surface_flow_cond->add_component(std::make_shared<Input::RealComponent>("n1"));
-  volumetric_surface_flow_cond->add_component(std::make_shared<Input::RealComponent>("n2"));
-  volumetric_surface_flow_cond->add_component(std::make_shared<Input::RealComponent>("n3"));
-
-
-  volumetric_surface_flow_cond->add_component(std::make_shared<Input::SelectionComponent>(
-      "CenterOfMass", "SelfEvaluateCenterOfMass",
+  Input::add_named_selection_component(volumetric_surface_flow_cond, "CenterOfMass",
+      "center of mass", "SelfEvaluateCenterOfMass",
       Teuchos::tuple<std::string>("SelfEvaluateCenterOfMass", "UsePrescribedCenterOfMass"),
-      Teuchos::tuple<std::string>("SelfEvaluateCenterOfMass", "UsePrescribedCenterOfMass"), true));
-
-  volumetric_surface_flow_cond->add_component(std::make_shared<Input::RealComponent>("c1"));
-  volumetric_surface_flow_cond->add_component(std::make_shared<Input::RealComponent>("c2"));
-  volumetric_surface_flow_cond->add_component(std::make_shared<Input::RealComponent>("c3"));
+      Teuchos::tuple<std::string>("SelfEvaluateCenterOfMass", "UsePrescribedCenterOfMass"), true);
+  Input::add_named_real(volumetric_surface_flow_cond, "c1");
+  Input::add_named_real(volumetric_surface_flow_cond, "c2");
+  Input::add_named_real(volumetric_surface_flow_cond, "c3");
 
   condlist.push_back(volumetric_surface_flow_cond);
 
@@ -1711,7 +1661,7 @@ void Inpar::FLUID::set_valid_conditions(
           "volumetric flow border nodes condition", Core::Conditions::VolumetricFlowBorderNodes,
           true, Core::Conditions::geometry_type_line);
 
-  volumetric_border_nodes_cond->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
+  add_named_int(volumetric_border_nodes_cond, "ConditionID");
 
   condlist.push_back(volumetric_border_nodes_cond);
 
@@ -1723,50 +1673,44 @@ void Inpar::FLUID::set_valid_conditions(
           "total traction correction condition", Core::Conditions::TotalTractionCorrectionCond,
           true, Core::Conditions::geometry_type_surface);
 
+  Input::add_named_int(total_traction_correction_cond, "ConditionID");
+  Input::add_named_selection_component(total_traction_correction_cond, "ConditionType",
+      "condition type", "POLYNOMIAL", Teuchos::tuple<std::string>("POLYNOMIAL", "WOMERSLEY"),
+      Teuchos::tuple<std::string>("POLYNOMIAL", "WOMERSLEY"), true);
 
-  total_traction_correction_cond->add_component(
-      std::make_shared<Input::IntComponent>("ConditionID"));
+  Input::add_named_selection_component(total_traction_correction_cond, "prebiased", "prebiased",
+      "NOTPREBIASED", Teuchos::tuple<std::string>("NOTPREBIASED", "PREBIASED", "FORCED"),
+      Teuchos::tuple<std::string>("NOTPREBIASED", "PREBIASED", "FORCED"), true);
 
-  total_traction_correction_cond->add_component(std::make_shared<Input::SelectionComponent>(
-      "ConditionType", "POLYNOMIAL", Teuchos::tuple<std::string>("POLYNOMIAL", "WOMERSLEY"),
-      Teuchos::tuple<std::string>("POLYNOMIAL", "WOMERSLEY"), true));
+  Input::add_named_selection_component(total_traction_correction_cond, "FlowType", "flow type",
+      "InFlow", Teuchos::tuple<std::string>("InFlow", "OutFlow"),
+      Teuchos::tuple<std::string>("InFlow", "OutFlow"), true);
+  Input::add_named_selection_component(total_traction_correction_cond, "CorrectionFlag",
+      "correction flag", "WithOutCorrection",
+      Teuchos::tuple<std::string>("WithOutCorrection", "WithCorrection"),
+      Teuchos::tuple<std::string>("WithOutCorrection", "WithCorrection"), true);
 
-  total_traction_correction_cond->add_component(
-      std::make_shared<Input::SelectionComponent>("prebiased", "NOTPREBIASED",
-          Teuchos::tuple<std::string>("NOTPREBIASED", "PREBIASED", "FORCED"),
-          Teuchos::tuple<std::string>("NOTPREBIASED", "PREBIASED", "FORCED"), true));
-
-  total_traction_correction_cond->add_component(std::make_shared<Input::SelectionComponent>(
-      "FlowType", "InFlow", Teuchos::tuple<std::string>("InFlow", "OutFlow"),
-      Teuchos::tuple<std::string>("InFlow", "OutFlow"), true));
-
-  total_traction_correction_cond->add_component(
-      std::make_shared<Input::SelectionComponent>("CorrectionFlag", "WithOutCorrection",
-          Teuchos::tuple<std::string>("WithOutCorrection", "WithCorrection"),
-          Teuchos::tuple<std::string>("WithOutCorrection", "WithCorrection"), true));
   Input::add_named_real(total_traction_correction_cond, "Period");
   Input::add_named_int(total_traction_correction_cond, "Order");
   Input::add_named_int(total_traction_correction_cond, "Harmonics");
   Input::add_named_real(total_traction_correction_cond, "Val");
   Input::add_named_int(total_traction_correction_cond, "Funct");
 
-  total_traction_correction_cond->add_component(
-      std::make_shared<Input::SelectionComponent>("NORMAL", "SelfEvaluateNormal",
-          Teuchos::tuple<std::string>("SelfEvaluateNormal", "UsePrescribedNormal"),
-          Teuchos::tuple<std::string>("SelfEvaluateNormal", "UsePrescribedNormal"), true));
+  Input::add_named_selection_component(total_traction_correction_cond, "NORMAL", "normal",
+      "SelfEvaluateNormal",
+      Teuchos::tuple<std::string>("SelfEvaluateNormal", "UsePrescribedNormal"),
+      Teuchos::tuple<std::string>("SelfEvaluateNormal", "UsePrescribedNormal"), true);
+  Input::add_named_real(total_traction_correction_cond, "n1");
+  Input::add_named_real(total_traction_correction_cond, "n2");
+  Input::add_named_real(total_traction_correction_cond, "n3");
 
-  total_traction_correction_cond->add_component(std::make_shared<Input::RealComponent>("n1"));
-  total_traction_correction_cond->add_component(std::make_shared<Input::RealComponent>("n2"));
-  total_traction_correction_cond->add_component(std::make_shared<Input::RealComponent>("n3"));
-
-  total_traction_correction_cond->add_component(std::make_shared<Input::SelectionComponent>(
-      "CenterOfMass", "SelfEvaluateCenterOfMass",
+  Input::add_named_selection_component(total_traction_correction_cond, "CenterOfMass",
+      "center of mass", "SelfEvaluateCenterOfMass",
       Teuchos::tuple<std::string>("SelfEvaluateCenterOfMass", "UsePrescribedCenterOfMass"),
-      Teuchos::tuple<std::string>("SelfEvaluateCenterOfMass", "UsePrescribedCenterOfMass"), true));
-
-  total_traction_correction_cond->add_component(std::make_shared<Input::RealComponent>("c1"));
-  total_traction_correction_cond->add_component(std::make_shared<Input::RealComponent>("c2"));
-  total_traction_correction_cond->add_component(std::make_shared<Input::RealComponent>("c3"));
+      Teuchos::tuple<std::string>("SelfEvaluateCenterOfMass", "UsePrescribedCenterOfMass"), true);
+  Input::add_named_real(total_traction_correction_cond, "c1");
+  Input::add_named_real(total_traction_correction_cond, "c2");
+  Input::add_named_real(total_traction_correction_cond, "c3");
 
   condlist.push_back(total_traction_correction_cond);
 
@@ -1781,8 +1725,7 @@ void Inpar::FLUID::set_valid_conditions(
           Core::Conditions::TotalTractionCorrectionBorderNodes, true,
           Core::Conditions::geometry_type_line);
 
-  traction_corrector_border_nodes_cond->add_component(
-      std::make_shared<Input::IntComponent>("ConditionID"));
+  add_named_int(traction_corrector_border_nodes_cond, "ConditionID");
 
   condlist.push_back(traction_corrector_border_nodes_cond);
 

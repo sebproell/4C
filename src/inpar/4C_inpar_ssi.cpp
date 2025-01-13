@@ -256,7 +256,7 @@ void Inpar::SSI::set_valid_conditions(
   // insert input file line components into condition definitions
   for (const auto& cond : {linessiplain, surfssiplain, volssiplain})
   {
-    cond->add_component(std::make_shared<Input::IntComponent>("coupling id"));
+    add_named_int(cond, "coupling_id");
     condlist.push_back(cond);
   }
 
@@ -278,7 +278,7 @@ void Inpar::SSI::set_valid_conditions(
   // insert input file line components into condition definitions
   for (const auto& cond : {linessi, surfssi, volssi})
   {
-    cond->add_component(std::make_shared<Input::IntComponent>("coupling id"));
+    add_named_int(cond, "coupling_id");
     condlist.push_back(cond);
   }
 
@@ -300,7 +300,7 @@ void Inpar::SSI::set_valid_conditions(
   // insert input file line components into condition definitions
   for (const auto& cond : {linessi2, surfssi2, volssi2})
   {
-    cond->add_component(std::make_shared<Input::IntComponent>("coupling id"));
+    add_named_int(cond, "coupling_id");
     condlist.push_back(cond);
   }
 
@@ -331,11 +331,11 @@ void Inpar::SSI::set_valid_conditions(
   for (const auto& cond :
       {pointssiinterfacemeshtying, linessiinterfacemeshtying, surfssiinterfacemeshtying})
   {
-    cond->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
-    cond->add_component(std::make_shared<Input::SelectionComponent>("interface side", "Undefined",
+    add_named_int(cond, "ConditionID");
+    add_named_selection_component(cond, "INTERFACE_SIDE", "interface_side", "Undefined",
         Teuchos::tuple<std::string>("Undefined", "Slave", "Master"),
         Teuchos::tuple<int>(
-            Inpar::S2I::side_undefined, Inpar::S2I::side_slave, Inpar::S2I::side_master)));
+            Inpar::S2I::side_undefined, Inpar::S2I::side_slave, Inpar::S2I::side_master));
     add_named_int(cond, "S2I_KINETICS_ID");
 
     condlist.push_back(cond);
@@ -347,7 +347,7 @@ void Inpar::SSI::set_valid_conditions(
       "DESIGN SSI MANIFOLD SURF CONDITIONS", "SSISurfaceManifold", "scalar transport on manifold",
       Core::Conditions::SSISurfaceManifold, true, Core::Conditions::geometry_type_surface);
 
-  ssisurfacemanifold->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
+  add_named_int(ssisurfacemanifold, "ConditionID");
   add_named_selection_component(ssisurfacemanifold, "ImplType", "implementation type", "Undefined",
       Teuchos::tuple<std::string>("Undefined", "Standard", "ElchElectrode", "ElchDiffCond"),
       Teuchos::tuple<int>(Inpar::ScaTra::impltype_undefined, Inpar::ScaTra::impltype_std,
@@ -377,7 +377,7 @@ void Inpar::SSI::set_valid_conditions(
       Core::Conditions::SSISurfaceManifoldKinetics, true, Core::Conditions::geometry_type_surface);
 
   {
-    surfmanifoldkinetics->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
+    add_named_int(surfmanifoldkinetics, "ConditionID");
     add_named_int(surfmanifoldkinetics, "ManifoldConditionID");
 
     std::map<int, std::pair<std::string, std::vector<std::shared_ptr<Input::LineComponent>>>>
@@ -486,11 +486,11 @@ void Inpar::SSI::set_valid_conditions(
   // insert input file line components into condition definitions
   for (const auto& cond : {linessiinterfacecontact, surfssiinterfacecontact})
   {
-    cond->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
-    cond->add_component(std::make_shared<Input::SelectionComponent>("interface side", "Undefined",
+    add_named_int(cond, "ConditionID");
+    add_named_selection_component(cond, "INTERFACE_SIDE", "interface_side", "Undefined",
         Teuchos::tuple<std::string>("Undefined", "Slave", "Master"),
         Teuchos::tuple<int>(
-            Inpar::S2I::side_undefined, Inpar::S2I::side_slave, Inpar::S2I::side_master)));
+            Inpar::S2I::side_undefined, Inpar::S2I::side_slave, Inpar::S2I::side_master));
     add_named_int(cond, "S2I_KINETICS_ID");
     add_named_int(cond, "CONTACT_CONDITION_ID");
 

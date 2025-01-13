@@ -224,10 +224,6 @@ E 3 - 1 Slave
 DSURF 1
 // all
 E 5 -
-//E 3 -
-//E 2 -
-//E 1 -
-//E 4 -
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    1 DSURFACE 1
 NODE    2 DSURFACE 1

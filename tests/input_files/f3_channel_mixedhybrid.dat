@@ -109,9 +109,9 @@ E 1 - DIS fluid NUMMODES 4 ONOFF 0 0 0 1 WEIGHTVECDEF integration
 ----------------------------DESIGN SURFACE MIXED/HYBRID DIRICHLET CONDITIONS
 DSURF                           2
 // wall top
-E 1 - 0.0 0.0 0.0 0 0 0 -0.5 Spalding 4.0 at_wall
+E 1 - val 0.0 0.0 0.0 funct 0 0 0 u_C -0.5 PENTYPE Spalding hB_divided_by 4.0 utau_computation at_wall
 // wall bottom
-E 2 - 0.0 0.0 0.0 0 0 0 -0.5 Spalding 4.0 at_wall
+E 2 - val 0.0 0.0 0.0 funct 0 0 0 u_C -0.5 PENTYPE Spalding hB_divided_by 4.0 utau_computation at_wall
 ---------------------------------------------------------DSURF-NODE TOPOLOGY
 NODE 1201 DSURFACE 1
 NODE 1202 DSURFACE 1

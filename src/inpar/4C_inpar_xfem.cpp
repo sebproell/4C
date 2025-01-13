@@ -447,7 +447,7 @@ void Inpar::XFEM::set_valid_conditions(
 
   for (const auto& cond : {movingfluid, fluidfluidcoupling, ALEfluidcoupling})
   {
-    cond->add_component(std::make_shared<Input::IntComponent>("COUPLINGID"));
+    add_named_int(cond, "COUPLINGID");
 
     condlist.emplace_back(cond);
   }
@@ -498,7 +498,7 @@ void Inpar::XFEM::set_valid_conditions(
   // define which complementary operator is applied after combining the level-set field with a
   // boolean operator with the previous one
   levelsetfield_components.push_back(std::make_shared<Input::SeparatorComponent>("COMPLEMENTARY"));
-  levelsetfield_components.push_back(std::make_shared<Input::IntComponent>("COMPLEMENTARY"));
+  levelsetfield_components.push_back(std::make_shared<Input::BoolComponent>("COMPLEMENTARY"));
 
 
   //*----------------*/
@@ -577,7 +577,7 @@ void Inpar::XFEM::set_valid_conditions(
       std::make_shared<Input::SeparatorComponent>("SLIP_FUNCT", "", true));
   xfem_levelset_navier_slip->add_component(
       std::make_shared<Input::IntComponent>("FUNCT", IntComponentData{0, false, false, true}));
-  add_named_int(xfem_levelset_navier_slip, "FORCE_ONLY_TANG_VEL", "", 0, true, false);
+  add_named_bool(xfem_levelset_navier_slip, "FORCE_ONLY_TANG_VEL", "", false, true);
 
   condlist.push_back(xfem_levelset_navier_slip);
 
@@ -645,10 +645,10 @@ void Inpar::XFEM::set_valid_conditions(
           Core::Conditions::XFEM_Surf_FluidFluid, true, Core::Conditions::geometry_type_surface);
 
   add_named_int(xfem_surf_fluidfluid, "COUPLINGID");
-  xfem_surf_fluidfluid->add_component(std::make_shared<Input::SelectionComponent>("COUPSTRATEGY",
-      "xfluid", Teuchos::tuple<std::string>("xfluid", "embedded", "mean"),
+  add_named_selection_component(xfem_surf_fluidfluid, "COUPSTRATEGY", "coupling strategy", "xfluid",
+      Teuchos::tuple<std::string>("xfluid", "embedded", "mean"),
       Teuchos::tuple<int>(
-          Inpar::XFEM::Xfluid_Sided, Inpar::XFEM::Embedded_Sided, Inpar::XFEM::Mean)));
+          Inpar::XFEM::Xfluid_Sided, Inpar::XFEM::Embedded_Sided, Inpar::XFEM::Mean));
 
   condlist.push_back(xfem_surf_fluidfluid);
 
@@ -669,10 +669,7 @@ void Inpar::XFEM::set_valid_conditions(
           Inpar::XFEM::navierslip),
       true);
   add_named_real(xfem_surf_fsi_part, "SLIPCOEFFICIENT", "", 0.0, true);
-  xfem_surf_fsi_part->add_component(
-      std::make_shared<Input::SeparatorComponent>("SLIP_FUNCT", "", true));
-  xfem_surf_fsi_part->add_component(
-      std::make_shared<Input::IntComponent>("FUNCT", IntComponentData{0, false, false, true}));
+  add_named_int(xfem_surf_fsi_part, "SLIP_FUNCT", "slip function id", 0, true, false, false);
 
   condlist.push_back(xfem_surf_fsi_part);
 
@@ -697,10 +694,7 @@ void Inpar::XFEM::set_valid_conditions(
           Inpar::XFEM::navierslip, Inpar::XFEM::navierslip_contact),
       true);
   add_named_real(xfem_surf_fsi_mono, "SLIPCOEFFICIENT", "", 0.0, true);
-  xfem_surf_fsi_mono->add_component(
-      std::make_shared<Input::SeparatorComponent>("SLIP_FUNCT", "", true));
-  xfem_surf_fsi_mono->add_component(
-      std::make_shared<Input::IntComponent>("FUNCT", IntComponentData{0, false, false, true}));
+  add_named_int(xfem_surf_fsi_mono, "SLIP_FUNCT", "slip function id", 0, true, false, false);
 
   condlist.push_back(xfem_surf_fsi_mono);
 
@@ -714,16 +708,11 @@ void Inpar::XFEM::set_valid_conditions(
 
   add_named_int(xfem_surf_fpi_mono, "COUPLINGID");
   add_named_real(xfem_surf_fpi_mono, "BJ_COEFF", "", 0, true);
-
-  xfem_surf_fpi_mono->add_component(std::make_shared<Input::SelectionComponent>("Variant", "BJ",
-      Teuchos::tuple<std::string>("BJ", "BJS"), Teuchos::tuple<std::string>("BJ", "BJS"), true));
-
-  xfem_surf_fpi_mono->add_component(std::make_shared<Input::SelectionComponent>("Method", "NIT",
-      Teuchos::tuple<std::string>("NIT", "SUB"), Teuchos::tuple<std::string>("NIT", "SUB"), true));
-
-  xfem_surf_fpi_mono->add_component(std::make_shared<Input::SelectionComponent>("Contact",
-      "contact_no", Teuchos::tuple<std::string>("contact_no", "contact_yes"),
-      Teuchos::tuple<std::string>("contact_no", "contact_yes"), true));
+  add_named_selection_component(xfem_surf_fpi_mono, "Variant", "variant", "BJ",
+      Teuchos::tuple<std::string>("BJ", "BJS"), Teuchos::tuple<std::string>("BJ", "BJS"), true);
+  add_named_selection_component(xfem_surf_fpi_mono, "Method", "method", "NIT",
+      Teuchos::tuple<std::string>("NIT", "SUB"), Teuchos::tuple<std::string>("NIT", "SUB"), true);
+  add_named_bool(xfem_surf_fpi_mono, "Contact", "contact", false, true);
 
   condlist.push_back(xfem_surf_fpi_mono);
 
@@ -774,10 +763,7 @@ void Inpar::XFEM::set_valid_conditions(
   }
 
   // define if we use inflow stabilization on the xfem neumann surf condition
-  xfem_surf_neumann->add_component(
-      std::make_shared<Input::SeparatorComponent>("INFLOW_STAB", "", true));
-  xfem_surf_neumann->add_component(
-      std::make_shared<Input::BoolComponent>("INFLOW_STAB", false, true));
+  add_named_bool(xfem_surf_neumann, "INFLOW_STAB", "toggle inflow stabilization", false, true);
 
   condlist.push_back(xfem_surf_neumann);
 
@@ -805,7 +791,7 @@ void Inpar::XFEM::set_valid_conditions(
       std::make_shared<Input::SeparatorComponent>("SLIP_FUNCT", "", true));
   xfem_surf_navier_slip->add_component(
       std::make_shared<Input::IntComponent>("FUNCT", IntComponentData{0, false, false, true}));
-  add_named_int(xfem_surf_navier_slip, "FORCE_ONLY_TANG_VEL", "", 0, true, false, false);
+  add_named_bool(xfem_surf_navier_slip, "FORCE_ONLY_TANG_VEL", "", false, true);
 
   condlist.push_back(xfem_surf_navier_slip);
 

@@ -97,37 +97,37 @@ E 2 -
 -------------------------------DESIGN FSI COUPLING SURF CONDITIONS
 DSURF  2
 // fluid_fsi_surf
-E 5 - 1
+E 5 - coupling_id 1
 // structure_fsi_surf
-E 6 - 1
+E 6 - coupling_id 1
 -------------------------DESIGN NODE Reduced D AIRWAYS PRESCRIBED CONDITIONS
 DPOINT                          2
-E 1 - flow     1.5E4 1 0
-E 4 - pressure 0.0   1 0
+E 1 - boundarycond flow VAL 1.5E4 curve 1 0
+E 4 - boundarycond pressure VAL 0.0 curve 1 0
 ------------------DESIGN SURF TOTAL TRACTION CORRECTION CONDITIONS
 DSURF  2
 // fluid_inflow_surf
-E 1 - 1 POLYNOMIAL NOTPREBIASED InFlow  WithOutCorrection Period 1.0 Order 2 Harmonics 32 Val 1.5E4 Funct 1 SelfEvaluateNormal 0.0 0.0 1.0 SelfEvaluateCenterOfMass 0.0 0.0 0.0
+E 1 - ConditionID 1 ConditionType POLYNOMIAL prebiased NOTPREBIASED FlowType InFlow CorrectionFlag WithOutCorrection Period 1.0 Order 2 Harmonics 32 Val 1.5E4 Funct 1 NORMAL SelfEvaluateNormal n1 0.0 n2 0.0 n3 1.0 CenterOfMass SelfEvaluateCenterOfMass c1 0.0 c2 0.0 c3 0.0
 // fluid_outflow_surf
-E 2 - 2 POLYNOMIAL NOTPREBIASED OutFlow WithOutCorrection Period 1.0 Order 2 Harmonics 32 Val 1.5E4 Funct 1 SelfEvaluateNormal 0.0 0.0 1.0 SelfEvaluateCenterOfMass 0.0 0.0 0.0
+E 2 - ConditionID 2 ConditionType POLYNOMIAL prebiased NOTPREBIASED FlowType OutFlow CorrectionFlag WithOutCorrection Period 1.0 Order 2 Harmonics 32 Val 1.5E4 Funct 1 NORMAL SelfEvaluateNormal n1 0.0 n2 0.0 n3 1.0 CenterOfMass SelfEvaluateCenterOfMass c1 0.0 c2 0.0 c3 0.0
 ----------------DESIGN LINE TOTAL TRACTION CORRECTION BORDER NODES
 DLINE  2
 // fluid_inflow_ring_NoDBC_slave
-E 1 - 1
+E 1 - ConditionID 1
 // fluid_outflow_ring_NoDBC_slave
-E 2 - 2
+E 2 - ConditionID 2
 ------------DESIGN NODE REDUCED D To 3D FLOW COUPLING CONDITIONS
 DPOINT 2
 // fluid_outflow_node
-E 2 - 1  forced pressure  Tolerance 0.001 MaximumIterations 10
+E 2 - ConditionID 1 CouplingType forced ReturnedVariable pressure Tolerance 0.001 MaximumIterations 10
 // fluid_inflow_node
-E 3 - 2  forced pressure  Tolerance 0.001 MaximumIterations 10
+E 3 - ConditionID 2 CouplingType forced ReturnedVariable pressure Tolerance 0.001 MaximumIterations 10
 ------------DESIGN SURF 3D To REDUCED D FLOW COUPLING CONDITIONS
 DSURF  2
 // fluid_inflow_surf
-E 1 - 1  flow  Tolerance 0.001 MaximumIterations 10
+E 1 - ConditionID 1 ReturnedVariable flow Tolerance 0.001 MaximumIterations 10
 // fluid_outflow_surf
-E 2 - 2  flow  Tolerance 0.001 MaximumIterations 10
+E 2 - ConditionID 2 ReturnedVariable flow Tolerance 0.001 MaximumIterations 10
 -------------------------------------------DESIGN SURF ALE DIRICH CONDITIONS
 DSURF                           2
 E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0

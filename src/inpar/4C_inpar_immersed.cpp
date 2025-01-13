@@ -10,6 +10,7 @@
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_fsi.hpp"
 #include "4C_inpar_structure.hpp"
+#include "4C_io_linecomponent.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -120,19 +121,13 @@ void Inpar::Immersed::set_valid_conditions(
   /*--------------------------------------------------------------------*/
   // IMMERSED COUPLING
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> lineimmersed =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN IMMERSED COUPLING LINE CONDITIONS", "IMMERSEDCoupling", "IMMERSED Coupling",
-          Core::Conditions::IMMERSEDCoupling, true, Core::Conditions::geometry_type_line);
   std::shared_ptr<Core::Conditions::ConditionDefinition> surfimmersed =
       std::make_shared<Core::Conditions::ConditionDefinition>(
           "DESIGN IMMERSED COUPLING SURF CONDITIONS", "IMMERSEDCoupling", "IMMERSED Coupling",
           Core::Conditions::IMMERSEDCoupling, true, Core::Conditions::geometry_type_surface);
 
-  lineimmersed->add_component(std::make_shared<Input::IntComponent>("coupling id"));
-  surfimmersed->add_component(std::make_shared<Input::IntComponent>("coupling id"));
+  add_named_int(surfimmersed, "coupling_id");
 
-  condlist.push_back(lineimmersed);
   condlist.push_back(surfimmersed);
 }
 

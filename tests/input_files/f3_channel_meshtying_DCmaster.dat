@@ -146,19 +146,13 @@ E 6 - 1 Slave
 E 7 - 1 Master
 ---------------------------------DESIGN FLOW RATE SURF CONDITIONS
 DSURF    7
-E 1 - 1
-E 2 - 2
-E 3 - 3
-E 4 - 4
-E 5 - 5
-E 6 - 6
-E 7 - 7
---------------------------------------DESIGN SURF VOLUMETRIC FLOW CONDITIONS
-DSURF 0
-//E 2 - 1 POLYNOMIAL NOTPREBIASED InFlow WithCorrection Period 1.0 Order 2 Harmonics 16 -7.623560e+01 1 self_evaluate_normal 0.0 0.0 0.0 self_evaluate_center_of_mass 0.0 0.0 0.0
-------------------------------------DESIGN LINE VOLUMETRIC FLOW BORDER NODES
-DLINE 0
-//E 3 - 1
+E 1 - ConditionID 1
+E 2 - ConditionID 2
+E 3 - ConditionID 3
+E 4 - ConditionID 4
+E 5 - ConditionID 5
+E 6 - ConditionID 6
+E 7 - ConditionID 7
 ------------------------------------DESIGN FLUID STRESS CALC SURF CONDITIONS
 DSURF 1
 E 5 -

@@ -143,7 +143,7 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
     if (cond == nullptr) FOUR_C_THROW("Cannot access condition 'ThermoConvections'");
 
     // access parameters of the condition
-    const std::string* tempstate = &cond->parameters().get<std::string>("temperature state");
+    const std::string* tempstate = &cond->parameters().get<std::string>("temperature_state");
     double coeff = cond->parameters().get<double>("coeff");
     const int curvenum = cond->parameters().get<int>("funct");
     const double time = params.get<double>("total time");
@@ -362,7 +362,7 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
         if (cond == nullptr) FOUR_C_THROW("Cannot access condition 'ThermoConvections'");
 
         // access parameters of the condition
-        const std::string* tempstate = &cond->parameters().get<std::string>("temperature state");
+        const std::string* tempstate = &cond->parameters().get<std::string>("temperature_state");
         double coeff = cond->parameters().get<double>("coeff");
         const int curvenum = cond->parameters().get<int>("funct");
         const double time = params.get<double>("total time");

@@ -41,7 +41,7 @@ Adapter::StructureRedAirway::StructureRedAirway(std::shared_ptr<Structure> stru)
     Core::Conditions::Condition* actcond = surfneumcond[i];
     if (actcond->type() == Core::Conditions::RedAirwayTissue)
     {
-      int condID = actcond->parameters().get<int>("coupling id");
+      int condID = actcond->parameters().get<int>("coupling_id");
       coupcond_[condID] = actcond;
       tmp.push_back(condID);
       vn_[condID] = 0.0;

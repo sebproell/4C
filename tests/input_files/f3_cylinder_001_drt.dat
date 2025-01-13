@@ -79,10 +79,10 @@ E 25 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 -------------------------------------------------DESIGN FLUID SURF LIFT&DRAG
 // DOBJECT LIFT_DRAG_ID X_CENTER Y_CENTER Z_CENTER ALE_LINE
 DSURF                           4
-E 10 - 3 CENTER 0.5 0.205 0.205 AXIS 0.0 0.0 0.1
-E 11 - 1 CENTER 0.5 0.205 0.205 AXIS 0.0 0.0 0.1
-E 12 - 2 CENTER 0.5 0.205 0.205 AXIS 0.0 0.0 0.1
-E 13 - 0 CENTER 0.5 0.205 0.205 AXIS 0.0 0.0 0.1
+E 10 - label 3 CENTER 0.5 0.205 0.205 AXIS 0.0 0.0 0.1
+E 11 - label 1 CENTER 0.5 0.205 0.205 AXIS 0.0 0.0 0.1
+E 12 - label 2 CENTER 0.5 0.205 0.205 AXIS 0.0 0.0 0.1
+E 13 - label 0 CENTER 0.5 0.205 0.205 AXIS 0.0 0.0 0.1
 --------------------------------------------------------------------SOLVER 1
 NAME                            Fluid_Solver
 SOLVER                          Belos

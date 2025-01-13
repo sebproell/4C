@@ -106,11 +106,11 @@ E 4 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 -------------------------------DESIGN FSI COUPLING LINE CONDITIONS
 DLINE  3
 // struc_fsi
-E 1 - 1
+E 1 - coupling_id 1
 // fluid_fsi
-E 2 - 1
+E 2 - coupling_id 1
 // ale_fsi
-E 3 - 1
+E 3 - coupling_id 1
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    1 DNODE 1
 NODE    2 DNODE 1

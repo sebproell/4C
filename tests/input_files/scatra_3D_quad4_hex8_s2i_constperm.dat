@@ -63,15 +63,15 @@ E 3 - NUMDOF 2 ONOFF 1 1 VAL 1.0 1.0 FUNCT 3 3
 ------------------------------DESIGN S2I MESHTYING LINE CONDITIONS
 DLINE  2
 // coupling_surface
-E 1 - 1 Slave S2I_KINETICS_ID  1
+E 1 - ConditionID 1 INTERFACE_SIDE Slave S2I_KINETICS_ID  1
 // coupling_block
-E 2 - 1 Master S2I_KINETICS_ID  1
+E 2 - ConditionID 1 INTERFACE_SIDE Master S2I_KINETICS_ID  1
 -------------------------------DESIGN S2I KINETICS LINE CONDITIONS
 DLINE  2
 // coupling_surface
-E 1 - 1 Slave KINETIC_MODEL ConstantPermeability NUMSCAL 2 PERMEABILITIES 1.0 0.1 IS_PSEUDO_CONTACT False
+E 1 - ConditionID 1 INTERFACE_SIDE Slave KINETIC_MODEL ConstantPermeability NUMSCAL 2 PERMEABILITIES 1.0 0.1 IS_PSEUDO_CONTACT False
 // coupling_block
-E 2 - 1 Master
+E 2 - ConditionID 1 INTERFACE_SIDE Master
 -----------------------------------------------DLINE-NODE TOPOLOGY
 NODE    1332 DLINE 1
 NODE    1333 DLINE 1

@@ -120,7 +120,7 @@ STI::Algorithm::Algorithm(MPI_Comm comm, const Teuchos::ParameterList& stidyn,
         for (auto& condition : conditions)
         {
           // consider conditions for slave side only
-          if (condition->parameters().get<int>("interface side") == Inpar::S2I::side_slave)
+          if (condition->parameters().get<int>("INTERFACE_SIDE") == Inpar::S2I::side_slave)
           {
             // extract ID of current condition
             const int condid = condition->parameters().get<int>("ConditionID");
@@ -331,7 +331,7 @@ void STI::Algorithm::transfer_scatra_to_thermo(
         for (auto& condition : conditions)
         {
           // consider conditions for slave side only
-          if (condition->parameters().get<int>("interface side") == Inpar::S2I::side_slave)
+          if (condition->parameters().get<int>("INTERFACE_SIDE") == Inpar::S2I::side_slave)
           {
             // extract ID of current condition
             const int condid = condition->parameters().get<int>("ConditionID");
@@ -379,7 +379,7 @@ void STI::Algorithm::transfer_thermo_to_scatra(
     for (auto& condition : conditions)
     {
       // consider conditions for slave side only
-      if (condition->parameters().get<int>("interface side") == Inpar::S2I::side_slave)
+      if (condition->parameters().get<int>("INTERFACE_SIDE") == Inpar::S2I::side_slave)
       {
         // extract ID of current condition
         const int condid = condition->parameters().get<int>("ConditionID");

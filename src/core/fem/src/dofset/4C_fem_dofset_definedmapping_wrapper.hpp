@@ -107,15 +107,15 @@ namespace Core::DOFSets
           -----DESIGN SSI COUPLING SOLIDTOSCATRA VOL CONDITIONS
           DVOL   2
           // scatra volume matching to struct volume
-          E 2 - 1
+          E 2 - coupling_id 1
           // struct volume matching to scatra volume
-          E 1 - 1
+          E 1 - coupling_id 1
           ----DESIGN SSI COUPLING SOLIDTOSCATRA SURF CONDITIONS
           DSURF   2
          // separate surface discretization matching struct volume boundary
-         E 1 - 2
+         E 1 - coupling_id 2
          // struct volume boundary
-         E 2 - 2
+         E 2 - coupling_id 2
 
          We have two matching volume discretizations for structure and scatra, and
          we have a scatra surface discretization matching the boundary of the struct

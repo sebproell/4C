@@ -397,23 +397,23 @@ E 7 -
 ----------------------------DESIGN SCATRA COUPLING SURF CONDITIONS
 DSURF  2
 // interface_fluid
-E 6 - NUMSCAL 1 ONOFF 1 COUPID 1 PERMCOEF 0.0 CONDUCT 0.0 FILTR 0.0 WSSONOFF 0 WSSCOEFFS 0.0 0.0
+E 6 - NUMSCAL 1 ONOFF 1 COUPID 1 PERMCOEF 0.0 CONDUCT 0.0 FILTR 0.0 WSSON false WSSCOEFFS 0.0 0.0
 // interface_structure
-E 7 - NUMSCAL 1 ONOFF 1 COUPID 1 PERMCOEF 0.0 CONDUCT 0.0 FILTR 0.0 WSSONOFF 0 WSSCOEFFS 0.0 0.0
+E 7 - NUMSCAL 1 ONOFF 1 COUPID 1 PERMCOEF 0.0 CONDUCT 0.0 FILTR 0.0 WSSON false WSSCOEFFS 0.0 0.0
 -----------------DESIGN SURFACE FLOW-DEPENDENT PRESSURE CONDITIONS
 DSURF  1
 // outflow
-E 5 - fixed_pressure 0.0 0.0 0.0 0.0 0.0 none
+E 5 - TYPE_OF_FLOW_DEPENDENCE fixed_pressure ConstCoeff 0.0 LinCoeff 0.0 InitialVolume 0.0 ReferencePressure 0.0 AdiabaticExponent 0.0 curve none
 -------------------------------DESIGN FSI COUPLING SURF CONDITIONS
 DSURF  2
 // interface_fluid
-E 6 - 1
+E 6 - coupling_id 1
 // interface_structure
-E 7 - 1
+E 7 - coupling_id 1
 -----------------------TRANSPORT THERMO CONVECTION SURF CONDITIONS
 DSURF  1
 // ConvectionSurface
-E 1 - Tempnp coeff -10.0 surtemp 273.0 surtempfunct none funct none
+E 1 - temperature_state Tempnp coeff -10.0 surtemp 273.0 surtempfunct none funct none
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    523 DNODE 1
 NODE    2263 DNODE 1

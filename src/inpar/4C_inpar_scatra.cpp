@@ -572,7 +572,7 @@ void Inpar::ScaTra::set_valid_conditions(
   add_named_real(surfscatracoup, "PERMCOEF");
   add_named_real(surfscatracoup, "CONDUCT");
   add_named_real(surfscatracoup, "FILTR");
-  add_named_int(surfscatracoup, "WSSONOFF");
+  add_named_bool(surfscatracoup, "WSSON", "flag if wall shear stress coupling is on");
   add_named_real_vector(surfscatracoup, "WSSCOEFFS", "", 2);
 
   condlist.emplace_back(surfscatracoup);
@@ -638,9 +638,9 @@ void Inpar::ScaTra::set_valid_conditions(
     // --> Tempn (old temperature T_n)
     // or if the exact solution is needed
     // --> Tempnp (current temperature solution T_n+1) with linearisation
-    cond->add_component(std::make_shared<Input::SelectionComponent>("temperature state", "Tempnp",
+    add_named_selection_component(cond, "temperature_state", "temperature state", "Tempnp",
         Teuchos::tuple<std::string>("Tempnp", "Tempn"),
-        Teuchos::tuple<std::string>("Tempnp", "Tempn")));
+        Teuchos::tuple<std::string>("Tempnp", "Tempn"));
     add_named_real(cond, "coeff", "heat transfer coefficient h");
     add_named_real(cond, "surtemp", "surrounding (fluid) temperature T_oo");
     add_named_int(cond, "surtempfunct",

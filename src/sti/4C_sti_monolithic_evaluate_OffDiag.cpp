@@ -664,7 +664,7 @@ void STI::ScatraThermoOffDiagCouplingMortarStandard::
   for (const auto& condition : conditions)
   {
     // consider conditions for slave side only
-    if (condition->parameters().get<int>("interface side") == Inpar::S2I::side_slave)
+    if (condition->parameters().get<int>("INTERFACE_SIDE") == Inpar::S2I::side_slave)
     {
       // add condition to parameter list
       condparams.set<Core::Conditions::Condition*>("condition", condition);
@@ -811,7 +811,7 @@ void STI::ScatraThermoOffDiagCouplingMortarStandard::
   for (const auto& condition : conditions)
   {
     // consider conditions for slave side only
-    if (condition->parameters().get<int>("interface side") == Inpar::S2I::side_slave)
+    if (condition->parameters().get<int>("INTERFACE_SIDE") == Inpar::S2I::side_slave)
     {
       // add condition to parameter list
       condparams.set<Core::Conditions::Condition*>("condition", condition);

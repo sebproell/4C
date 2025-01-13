@@ -146,9 +146,9 @@ E 9 - 1 Master
 -------------------------------DESIGN FSI COUPLING LINE CONDITIONS
 DLINE  2
 // structure_fsi_curve
-E 2 - 1
+E 2 - coupling_id 1
 // cavity_fsi_curve
-E 8 - 1
+E 8 - coupling_id 1
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    1 DNODE 1
 NODE    2 DNODE 1

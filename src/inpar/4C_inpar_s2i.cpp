@@ -125,47 +125,11 @@ void Inpar::S2I::set_valid_conditions(
     // insert input file line components into condition definitions
     for (const auto& cond : {s2imeshtyingline, s2imeshtyingsurf})
     {
-      cond->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
-      cond->add_component(std::make_shared<Input::SelectionComponent>("interface side", "Undefined",
+      add_named_int(cond, "ConditionID");
+      add_named_selection_component(cond, "INTERFACE_SIDE", "interface side", "Undefined",
           Teuchos::tuple<std::string>("Undefined", "Slave", "Master"),
           Teuchos::tuple<int>(
-              Inpar::S2I::side_undefined, Inpar::S2I::side_slave, Inpar::S2I::side_master)));
-      add_named_int(cond, "S2I_KINETICS_ID");
-      condlist.push_back(cond);
-    }
-  }
-
-  /*--------------------------------------------------------------------*/
-  // scatra-scatra interface no evaluation condition
-  {
-    // definition of scatra-scatra interface no evaluation line condition
-    auto s2inoevaluationline = std::make_shared<Core::Conditions::ConditionDefinition>(
-        "DESIGN S2I NO EVALUATION LINE CONDITIONS", "S2INoEvaluation",
-        "Scatra-scatra interface no evaluation line condition. This condition can be used to "
-        "deactivate the evaluation of the corresponding `S2IKinetics` condition. Another usage "
-        "is in coupled algorithms, where a specific `S2IKinetics` condition should not be "
-        "evaluated within the scalar transport framework, as it already evaluated elsewhere. "
-        "One example is the SSI contact.",
-        Core::Conditions::S2INoEvaluation, true, Core::Conditions::geometry_type_line);
-
-    // definition of scatra-scatra interface no evaluation surface condition
-    auto s2inoevaluationsurf = std::make_shared<Core::Conditions::ConditionDefinition>(
-        "DESIGN S2I NO EVALUATION SURF CONDITIONS", "S2INoEvaluation",
-        "Scatra-scatra interface no evaluation surface condition. This condition can be used to "
-        "deactivate the evaluation of the corresponding `S2IKinetics` condition. Another usage "
-        "is in coupled algorithms, where a specific `S2IKinetics` condition should not be "
-        "evaluated within the scalar transport framework, as it already evaluated elsewhere. "
-        "One example is the SSI contact.",
-        Core::Conditions::S2INoEvaluation, true, Core::Conditions::geometry_type_surface);
-
-    // insert input file line components into condition definitions
-    for (const auto& cond : {s2inoevaluationline, s2inoevaluationsurf})
-    {
-      cond->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
-      cond->add_component(std::make_shared<Input::SelectionComponent>("interface side", "Undefined",
-          Teuchos::tuple<std::string>("Undefined", "Slave", "Master"),
-          Teuchos::tuple<int>(
-              Inpar::S2I::side_undefined, Inpar::S2I::side_slave, Inpar::S2I::side_master)));
+              Inpar::S2I::side_undefined, Inpar::S2I::side_slave, Inpar::S2I::side_master));
       add_named_int(cond, "S2I_KINETICS_ID");
       condlist.push_back(cond);
     }
@@ -539,11 +503,12 @@ void Inpar::S2I::set_valid_conditions(
     for (const auto& cond : {s2ikineticspoint, s2ikineticsline, s2ikineticssurf})
     {
       // interface ID
-      cond->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
+      add_named_int(cond, "ConditionID");
 
       // insert interface sides as line components
+      cond->add_component(std::make_shared<Input::SeparatorComponent>("INTERFACE_SIDE"));
       cond->add_component(std::make_shared<Input::SwitchComponent>(
-          "interface side", side_undefined, interface_choices));
+          "INTERFACE_SIDE", side_undefined, interface_choices));
 
       // insert condition definitions into global list of valid condition definitions
       condlist.emplace_back(cond);
@@ -607,7 +572,7 @@ void Inpar::S2I::set_valid_conditions(
     for (const auto& cond : {s2igrowthline, s2igrowthsurf})
     {
       // interface ID
-      cond->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
+      add_named_int(cond, "ConditionID");
 
       // add kinetic models as input file line components
       cond->add_component(std::make_shared<Input::SeparatorComponent>("KINETIC_MODEL"));
@@ -628,10 +593,10 @@ void Inpar::S2I::set_valid_conditions(
         "Scatra-scatra surface with SCL micro-macro coupling between",
         Core::Conditions::S2ISCLCoupling, true, Core::Conditions::geometry_type_surface);
 
-    s2isclcond->add_component(std::make_shared<Input::SelectionComponent>("interface side",
-        "Undefined", Teuchos::tuple<std::string>("Undefined", "Slave", "Master"),
+    add_named_selection_component(s2isclcond, "INTERFACE_SIDE", "interface side", "Undefined",
+        Teuchos::tuple<std::string>("Undefined", "Slave", "Master"),
         Teuchos::tuple<int>(
-            Inpar::S2I::side_undefined, Inpar::S2I::side_slave, Inpar::S2I::side_master)));
+            Inpar::S2I::side_undefined, Inpar::S2I::side_slave, Inpar::S2I::side_master));
 
     condlist.emplace_back(s2isclcond);
   }

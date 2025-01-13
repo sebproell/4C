@@ -205,7 +205,7 @@ E 8 -
 ----------------------------------DESIGN XFEM FPI MONOLITHIC SURF CONDITIONS
 DSURF                        1
 // poro_bottom
-E 8 - COUPLINGID 1 BJ_COEFF 17.3205080756888 BJ SUB
+E 8 - COUPLINGID 1 BJ_COEFF 17.3205080756888 Variant BJ Method SUB
 -----------------------------------------------DLINE-NODE TOPOLOGY
 NODE    21 DLINE 1
 NODE    22 DLINE 1

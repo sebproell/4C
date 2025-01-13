@@ -8,6 +8,7 @@
 #include "4C_inpar_fsi.hpp"
 
 #include "4C_fem_condition_definition.hpp"
+#include "4C_io_linecomponent.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -428,8 +429,8 @@ void Inpar::FSI::set_valid_conditions(
           "FSICoupling", "FSI Coupling", Core::Conditions::FSICoupling, true,
           Core::Conditions::geometry_type_surface);
 
-  linefsi->add_component(std::make_shared<Input::IntComponent>("coupling id"));
-  surffsi->add_component(std::make_shared<Input::IntComponent>("coupling id"));
+  add_named_int(linefsi, "coupling_id");
+  add_named_int(surffsi, "coupling_id");
 
   condlist.push_back(linefsi);
   condlist.push_back(surffsi);
@@ -459,36 +460,28 @@ void Inpar::FSI::set_valid_conditions(
           "DESIGN STRUCTURE ALE COUPLING SURF CONDITIONS", "StructAleCoupling", "StructAleCoupling",
           Core::Conditions::StructAleCoupling, true, Core::Conditions::geometry_type_surface);
 
-  surfsac->add_component(std::make_shared<Input::IntComponent>("coupling id"));
-  surfsac->add_component(std::make_shared<Input::SelectionComponent>("field", "structure",
-      Teuchos::tuple<std::string>("structure", "fluid"),
-      Teuchos::tuple<std::string>("structure", "fluid")));
+  add_named_int(surfsac, "coupling_id");
+  add_named_selection_component(surfsac, "field", "field", "structure",
+      Teuchos::tuple<std::string>("structure", "ale"),
+      Teuchos::tuple<std::string>("structure", "ale"), true);
 
   condlist.push_back(surfsac);
 
   /*--------------------------------------------------------------------*/
   // Additional coupling of structure and fluid volumes (for lung fsi)
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfsfv =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN STRUCTURE FLUID VOLUME COUPLING SURF CONDITIONS", "StructFluidSurfCoupling",
-          "StructFluidSurfCoupling", Core::Conditions::StructFluidSurfCoupling, true,
-          Core::Conditions::geometry_type_surface);
   std::shared_ptr<Core::Conditions::ConditionDefinition> volsfv =
       std::make_shared<Core::Conditions::ConditionDefinition>(
           "DESIGN STRUCTURE FLUID VOLUME COUPLING VOL CONDITIONS", "StructFluidVolCoupling",
           "StructFluidVolCoupling", Core::Conditions::StructFluidVolCoupling, false,
           Core::Conditions::geometry_type_volume);
 
-  for (const auto& cond : {surfsfv, volsfv})
-  {
-    cond->add_component(std::make_shared<Input::IntComponent>("coupling id"));
-    cond->add_component(std::make_shared<Input::SelectionComponent>("field", "structure",
-        Teuchos::tuple<std::string>("structure", "fluid"),
-        Teuchos::tuple<std::string>("structure", "fluid")));
+  add_named_int(volsfv, "coupling_id");
+  add_named_selection_component(volsfv, "field", "field", "structure",
+      Teuchos::tuple<std::string>("structure", "ale"),
+      Teuchos::tuple<std::string>("structure", "ale"), true);
 
-    condlist.push_back(cond);
-  }
+  condlist.push_back(volsfv);
 }
 
 FOUR_C_NAMESPACE_CLOSE

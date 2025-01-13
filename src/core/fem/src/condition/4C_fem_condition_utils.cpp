@@ -147,7 +147,7 @@ void Core::Conditions::find_conditioned_nodes(const Core::FE::Discretization& di
   const int myrank = Core::Communication::my_mpi_rank(dis.get_comm());
   for (const auto& cond : conds)
   {
-    int id = use_coupling_id ? cond->parameters().get<int>("coupling id") : 0;
+    int id = use_coupling_id ? cond->parameters().get<int>("coupling_id") : 0;
     for (int gid : *cond->get_nodes())
     {
       if (dis.have_global_node(gid) and dis.g_node(gid)->owner() == myrank)
@@ -173,7 +173,7 @@ void Core::Conditions::find_conditioned_nodes(const Core::FE::Discretization& di
   const int myrank = Core::Communication::my_mpi_rank(dis.get_comm());
   for (auto* cond : conds)
   {
-    int id = cond->parameters().get<int>("coupling id");
+    int id = cond->parameters().get<int>("coupling_id");
     for (int gid : *cond->get_nodes())
     {
       if (dis.have_global_node(gid) and dis.g_node(gid)->owner() == myrank)
@@ -318,7 +318,7 @@ void Core::Conditions::find_condition_objects(const Core::FE::Discretization& di
 
   for (auto& cond : conds)
   {
-    int id = cond->parameters().get<int>("coupling id");
+    int id = cond->parameters().get<int>("coupling_id");
     // get this condition's elements
     std::map<int, std::shared_ptr<Core::Elements::Element>>& geo = cond->geometry();
     std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator iter, pos;

@@ -283,9 +283,9 @@ E 10 -
 -------------------------------DESIGN FSI COUPLING SURF CONDITIONS
 DSURF  2
 // structure_coupling_surface
-E 5 - 1
+E 5 - coupling_id 1
 // fluid_coupling_surface
-E 10 - 1
+E 10 - coupling_id 1
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    111 DNODE 1
 NODE    103 DNODE 2

@@ -154,9 +154,9 @@ E 7 - 1 Slave Inactive
 -----------------------------------------DESIGN FSI COUPLING SURF CONDITIONS
 DSURF                           2
 //                              fluid_fsi_surf
-E 5 - 1
+E 5 - coupling_id 1
 //                              str_fsi_surf
-E 14 - 1
+E 14 - coupling_id 1
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 5 DNODE 1
 NODE 6 DNODE 1

@@ -142,10 +142,10 @@ E 3 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 E 4 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -----------------------------------------DESIGN FSI COUPLING SURF CONDITIONS
 DSURF                           4
-E 1 - 1
-E 2 - 1
-E 5 - 1
-E 6 - 1
+E 1 - coupling_id 1
+E 2 - coupling_id 1
+E 5 - coupling_id 1
+E 6 - coupling_id 1
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 726 DNODE 1
 NODE 5513 DNODE 2

@@ -1937,7 +1937,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
     {
       const int s2ikinetics_cond_id = s2ikinetics_cond->parameters().get<int>("ConditionID");
       const int s2ikinetics_cond_interface_side =
-          s2ikinetics_cond->parameters().get<int>("interface side");
+          s2ikinetics_cond->parameters().get<int>("INTERFACE_SIDE");
 
       if (s2ikinetics_cond_id < 0)
         FOUR_C_THROW("Invalid condition ID %i for S2IKinetics Condition!", s2ikinetics_cond_id);
@@ -1946,7 +1946,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
       if (s2imeshtying_cond->parameters().get<int>("S2I_KINETICS_ID") != s2ikinetics_cond_id)
         continue;
       // only continue if sides match
-      if (s2imeshtying_cond->parameters().get<int>("interface side") !=
+      if (s2imeshtying_cond->parameters().get<int>("INTERFACE_SIDE") !=
           s2ikinetics_cond_interface_side)
         continue;
 
@@ -3332,7 +3332,7 @@ void ScaTra::MeshtyingStrategyS2I::output_interface_flux() const
   for (auto* s2ikinetics_cond : s2ikinetics_conditions)
   {
     // only slave side has relevant information
-    if (s2ikinetics_cond->parameters().get<int>("interface side") ==
+    if (s2ikinetics_cond->parameters().get<int>("INTERFACE_SIDE") ==
         static_cast<int>(Inpar::S2I::side_slave))
     {
       const int condition_id = s2ikinetics_cond->parameters().get<int>("ConditionID");

@@ -345,22 +345,6 @@ E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 E 3 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // fluid_outflow_no_line
 // E 4 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
-// ----------------------------DESIGN SURF VOLUMETRIC FLOW CONDITIONS
-// DSURF  1
-// // fluid_inflow
-// E 1 - 1 POLYNOMIAL NOTPREBIASED InFlow WithCorrection Period 1.0 Order 9 Harmonics 32 -75000.0 1 SelfEvaluateNormal 0.0 0.0 0.0 SelfEvaluateCenterOfMass 0.0 0.0 0.0
-// --------------------------DESIGN LINE VOLUMETRIC FLOW BORDER NODES
-// DLINE  1
-// // fluid_inflow_line
-// E 1 - 1
-// -------------------------------------DESIGN LINE DIRICH CONDITIONS
-// DLINE  1
-// fluid_inflow_line
-// E 1 - NUMDOF 4 ONOFF 1 1 1 0  VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
-// // structure_inflow_line
-// E 3 - NUMDOF 4 ONOFF 0 0 0 0  VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
-// // structure_outflow_line
-// E 4 - NUMDOF 4 ONOFF 0 0 0 0  VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
 DLINE  2
 // fluid_inflow_line
@@ -375,7 +359,7 @@ E 13 - NUMDOF 3 ONOFF 1 1 1 STIFF 5000.0 5000.0 5000.0 TIMEFUNCTSTIFF 0 0 0 VISC
 ----------------------------------DESIGN SURF IMPEDANCE CONDITIONS
 DSURF  1
 // fluid_outflow_all
-E 3 - 1 windkessel R1 0.01 R2 0.01 C 0.01 TIMEPERIOD 1.0 FUNCT -1
+E 3 - ConditionID 1 TYPE windkessel R1 0.01 R2 0.01 C 0.01 TIMEPERIOD 1.0 FUNCT -1
 --------------------------FLUID NEUMANN INFLOW SURF CONDITIONS
 DSURF  1
 // fluid_outflow_all
@@ -385,19 +369,19 @@ DSURF 2
 // // structure_fsi_all
 // E 11 - 1
 // structure_fsi_no_line
-E 12 - 1
+E 12 - coupling_id 1
 // // fluid_fsi_all
 // E 5 - 1
 // fluid_fsi_no_line
-E 6 - 1
+E 6 - coupling_id 1
 --------------------------------------DESIGN SCATRA COUPLING SURF CONDITIONS
 DSURF                           2
 // fluid_fsi_all
-E 5 - NUMSCAL 2 ONOFF 1 1 COUPID 1 PERMCOEF 30.10299957 CONDUCT 0.0 FILTR 0.0 WSSONOFF 1 WSSCOEFFS 1.0 1.0
+E 5 - NUMSCAL 2 ONOFF 1 1 COUPID 1 PERMCOEF 30.10299957 CONDUCT 0.0 FILTR 0.0 WSSON true WSSCOEFFS 1.0 1.0
 // // fluid_fsi_no_line
 // E 6 - COUPID 1 FIELDNUM 1 PERMCOEF 1.0
 // structure_fsi_all
-E 11 - NUMSCAL 2 ONOFF 1 1 COUPID 1 PERMCOEF 30.10299957 CONDUCT 0.0 FILTR 0.0 WSSONOFF 1 WSSCOEFFS 1.0 1.0
+E 11 - NUMSCAL 2 ONOFF 1 1 COUPID 1 PERMCOEF 30.10299957 CONDUCT 0.0 FILTR 0.0 WSSON true WSSCOEFFS 1.0 1.0
 // // structure_fsi_no_line
 // E 12 - COUPID 1 FIELDNUM 2 PERMCOEF 1.0
 -------------------------------------DESIGN SURF TRANSPORT DIRICH CONDITIONS

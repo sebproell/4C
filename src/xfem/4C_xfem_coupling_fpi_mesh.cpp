@@ -726,7 +726,7 @@ void XFEM::MeshCouplingFPI::set_condition_specific_parameters()
   {
     const bool full_BJ = (cond->parameters().get<std::string>("Variant") == "BJ");
     const bool Sub_tang = (cond->parameters().get<std::string>("Method") == "SUB");
-    const bool contact = (cond->parameters().get<std::string>("Contact") == "contact_yes");
+    const bool contact = cond->parameters().get<bool>("Contact");
     if (i != conditions_XFPI.begin())
     {
       if (fabs(bj_coeff_ - cond->parameters().get<double>("BJ_COEFF")) > 1e-16)

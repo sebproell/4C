@@ -439,31 +439,10 @@ namespace Inpar
               "RobinSpring Dashpot Coupling", Core::Conditions::RobinSpringDashpotCoupling, true,
               Core::Conditions::geometry_type_surface);
 
-      springdashpotcoupcond->add_component(std::make_shared<Input::IntComponent>("COUPLING"));
+      add_named_int(springdashpotcoupcond, "COUPLING");
 
       condlist.push_back(springdashpotcoupcond);
-
-
-      /*--------------------------------------------------------------------*/
-      // surfactant
-
-      std::shared_ptr<Core::Conditions::ConditionDefinition> surfactant =
-          std::make_shared<Core::Conditions::ConditionDefinition>("SURFACTANT CONDITIONS",
-              "SurfaceStress", "Surface Stress (surfactant)", Core::Conditions::Surfactant, true,
-              Core::Conditions::geometry_type_surface);
-
-      surfactant->add_component(
-          std::make_shared<Input::IntComponent>("funct", IntComponentData{0, true, true, false}));
-      Input::add_named_real(surfactant, "k1xCbulk");
-      Input::add_named_real(surfactant, "k2");
-      Input::add_named_real(surfactant, "m1");
-      Input::add_named_real(surfactant, "m2");
-      Input::add_named_real(surfactant, "gamma_0");
-      Input::add_named_real(surfactant, "gamma_min");
-
-      condlist.push_back(surfactant);
     }
-
   }  // end of namespace Solid
 }  // end of namespace Inpar
 

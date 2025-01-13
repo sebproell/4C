@@ -232,13 +232,13 @@ E 9 - 1 Slave
 -----------------DESIGN SURFACE FLOW-DEPENDENT PRESSURE CONDITIONS
 DSURF  1
 // outflow
-E 2 - flow_rate 0.0 343.0 0.0 0.0 0.0 0
+E 2 - TYPE_OF_FLOW_DEPENDENCE flow_rate ConstCoeff 0.0 LinCoeff 343.0 InitialVolume 0.0 ReferencePressure 0.0 AdiabaticExponent 0.0 curve 0
 -------------------------------DESIGN FSI COUPLING SURF CONDITIONS
 DSURF  2
 // fluid-bag_surface
-E 3 - 1
+E 3 - coupling_id 1
 // bag-fluid_surface
-E 5 - 1
+E 5 - coupling_id 1
 -----------------------------------------------DLINE-NODE TOPOLOGY
 NODE    17555 DLINE 1
 NODE    17556 DLINE 1

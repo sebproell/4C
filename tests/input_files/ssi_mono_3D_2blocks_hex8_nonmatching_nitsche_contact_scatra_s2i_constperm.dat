@@ -98,9 +98,9 @@ E 2 - FIELD ScaTra FUNCT 2
 ----------------------DESIGN SSI INTERFACE CONTACT SURF CONDITIONS
 DSURF  2
 // left_block_side_of_interface
-E 2 - 0 Slave S2I_KINETICS_ID 1 CONTACT_CONDITION_ID 1
+E 2 - ConditionID 0 INTERFACE_SIDE Slave S2I_KINETICS_ID 1 CONTACT_CONDITION_ID 1
 // right_block_side_of_interface
-E 3 - 0 Master S2I_KINETICS_ID 1 CONTACT_CONDITION_ID 1
+E 3 - ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID 1 CONTACT_CONDITION_ID 1
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
 DSURF  2
 // left_block_side_of_interface
@@ -110,9 +110,9 @@ E 3 - 1 Master Inactive
 -------------------------------DESIGN S2I KINETICS SURF CONDITIONS
 DSURF  2
 // left_block_side_of_interface
-E 2 - 1 Slave KINETIC_MODEL ConstantPermeability NUMSCAL 1 PERMEABILITIES 5.0e-2 IS_PSEUDO_CONTACT False
+E 2 - ConditionID 1 INTERFACE_SIDE Slave KINETIC_MODEL ConstantPermeability NUMSCAL 1 PERMEABILITIES 5.0e-2 IS_PSEUDO_CONTACT False
 // right_block_side_of_interface
-E 3 - 1 Master
+E 3 - ConditionID 1 INTERFACE_SIDE Master
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    1 DSURFACE 1
 NODE    2 DSURFACE 1

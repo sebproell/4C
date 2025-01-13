@@ -115,11 +115,11 @@ E 4 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -------------------------------DESIGN FSI COUPLING SURF CONDITIONS
 DSURF  3
 // fsi_fluid_interface
-E 1 - 1
+E 1 - coupling_id 1
 // fsi_structure_interface
-E 2 - 1
+E 2 - coupling_id 1
 // fsi_ale_interface
-E 5 - 1
+E 5 - coupling_id 1
 ------------------------------------------------RESULT DESCRIPTION
 // point - fluid (-1.5,0,0)
 FLUID DIS     fluid     NODE 13  QUANTITY velx     VALUE -8.10948520488054547e-01 TOLERANCE 1e-12

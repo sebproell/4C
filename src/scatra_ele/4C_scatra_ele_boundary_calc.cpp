@@ -1808,9 +1808,9 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::evaluate_surfac
 
   const auto perm = cond->parameters().get<double>("PERMCOEF");
 
-  // get flag if concentration flux across membrane is affected by local wall shear stresses: 0->no
-  // 1->yes
-  const bool wss_onoff = (bool)cond->parameters().get<int>("WSSONOFF");
+  // get flag if concentration flux across membrane is affected by local wall shear stresses:
+  // false->no, true->yes
+  const bool wss_onoff = cond->parameters().get<bool>("WSSON");
 
   const auto* coeffs = &cond->parameters().get<std::vector<double>>("WSSCOEFFS");
 
@@ -1967,7 +1967,7 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::evaluate_kedem_
 
   // get flag if concentration flux across membrane is affected by local wall shear stresses: 0->no
   // 1->yes
-  const bool wss_onoff = (bool)cond->parameters().get<int>("WSSONOFF");
+  const bool wss_onoff = cond->parameters().get<bool>("WSSON");
   const auto* coeffs = &cond->parameters().get<std::vector<double>>("WSSCOEFFS");
 
   // hydraulic conductivity at interface

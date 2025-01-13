@@ -157,11 +157,11 @@ void Inpar::SSTI::set_valid_conditions(
   // insert input file line components into condition definitions
   for (const auto& cond : {linesstiinterfacemeshtying, surfsstiinterfacemeshtying})
   {
-    cond->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
-    cond->add_component(std::make_shared<Input::SelectionComponent>("interface side", "Undefined",
+    add_named_int(cond, "ConditionID");
+    add_named_selection_component(cond, "INTERFACE_SIDE", "interface side", "Undefined",
         Teuchos::tuple<std::string>("Undefined", "Slave", "Master"),
         Teuchos::tuple<int>(
-            Inpar::S2I::side_undefined, Inpar::S2I::side_slave, Inpar::S2I::side_master)));
+            Inpar::S2I::side_undefined, Inpar::S2I::side_slave, Inpar::S2I::side_master));
     add_named_int(cond, "S2I_KINETICS_ID");
     condlist.push_back(cond);
   }

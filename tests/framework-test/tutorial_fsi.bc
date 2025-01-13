@@ -28,7 +28,7 @@ Property Name: none
 has 33 Nodes
 *ns2="CONDITION"
 sectionname="DESIGN FSI COUPLING LINE CONDITIONS"
-description="1"
+description="coupling_id 1"
 
 Node Set, named: structure_vertices
 Property Name: none
@@ -77,7 +77,7 @@ Property Name: none
 has 33 Nodes
 *ns9="CONDITION"
 sectionname="DESIGN FSI COUPLING LINE CONDITIONS"
-description="1"
+description="coupling_id 1"
 
 Node Set, named: inflow_vertices_top
 Property Name: none

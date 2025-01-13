@@ -139,18 +139,18 @@ E 1 - NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
 -----------------------------------------DESIGN FSI COUPLING SURF CONDITIONS
 DSURF 2
 // Fluid FSI
-E 1 - 1
+E 1 - coupling_id 1
 // Structure FSI
-E 3 - 1
+E 3 - coupling_id 1
 --------------------------------------DESIGN XFEM FLUIDFLUID SURF CONDITIONS
 DSURF 1
-E 2 - COUPLINGID 1 xfluid
+E 2 - COUPLINGID 1 COUPSTRATEGY xfluid
 ---------------------------------DESIGN FLUID FLUID COUPLING SURF CONDITIONS
 DSURF 1
-E 2 - 1
+E 2 - COUPLINGID 1
 ------------------------------------------DESIGN FLUID MESH VOL CONDITIONS
 DVOL 1
-E 1 - 1
+E 1 - COUPLINGID 1
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 33 DNODE 1
 NODE 34 DNODE 1

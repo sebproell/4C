@@ -111,27 +111,27 @@ E 2 -
 ------------------DESIGN SSI COUPLING SOLIDTOSCATRA VOL CONDITIONS
 DVOL   2
 // volume_scatra
-E 1 - 1
+E 1 - coupling_id 1
 // volume
-E 2 - 1
+E 2 - coupling_id 1
 -----------------DESIGN SSI COUPLING SOLIDTOSCATRA SURF CONDITIONS
 DSURF  2
 // surface
-E 2 - 2
+E 2 - coupling_id 2
 // surface_structure
-E 3 - 2
+E 3 - coupling_id 2
 ------------------DESIGN SSI COUPLING SCATRATOSOLID VOL CONDITIONS
 DVOL   2
 // volume_scatra
-E 1 - 1
+E 1 - coupling_id 1
 // volume
-E 2 - 1
+E 2 - coupling_id 1
 -----------------DESIGN SSI COUPLING SCATRATOSOLID SURF CONDITIONS
 DSURF  2
 // surface
-E 2 - 2
+E 2 - coupling_id 2
 // surface_structure
-E 3 - 2
+E 3 - coupling_id 2
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    73 DNODE 1
 NODE    84 DNODE 2
