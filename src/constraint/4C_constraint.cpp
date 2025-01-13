@@ -41,17 +41,10 @@ CONSTRAINTS::Constraint::Constraint(std::shared_ptr<Core::FE::Discretization> di
         minID = condID;
       }
 
-      auto* const myinittime = i->parameters().get_if<double>("activeTime");
-      if (myinittime)
-      {
-        inittimes_.insert(std::pair<int, double>(condID, *myinittime));
-        activecons_.insert(std::pair<int, bool>(condID, false));
-      }
-      else
-      {
-        inittimes_.insert(std::pair<int, double>(condID, 0.0));
-        activecons_.insert(std::pair<int, bool>(condID, false));
-      }
+      auto const myinittime = i->parameters().get<double>("activeTime");
+
+      inittimes_.insert(std::pair<int, double>(condID, myinittime));
+      activecons_.insert(std::pair<int, bool>(condID, false));
     }
   }
   else
@@ -76,17 +69,10 @@ CONSTRAINTS::Constraint::Constraint(
     for (auto& i : constrcond_)
     {
       int condID = i->parameters().get<int>("ConditionID");
-      auto* const myinittime = i->parameters().get_if<double>("activeTime");
-      if (myinittime)
-      {
-        inittimes_.insert(std::pair<int, double>(condID, *myinittime));
-        activecons_.insert(std::pair<int, bool>(condID, false));
-      }
-      else
-      {
-        inittimes_.insert(std::pair<int, double>(condID, 0.0));
-        activecons_.insert(std::pair<int, bool>(condID, false));
-      }
+      auto const myinittime = i->parameters().get<double>("activeTime");
+
+      inittimes_.insert(std::pair<int, double>(condID, myinittime));
+      activecons_.insert(std::pair<int, bool>(condID, false));
     }
   }
   else
@@ -254,9 +240,7 @@ void CONSTRAINTS::Constraint::evaluate_constraint(Teuchos::ParameterList& params
       }
 
       // Evaluate loadcurve if defined. Put current load factor in parameterlist
-      const auto* curve = cond->parameters().get_if<int>("curve");
-      int curvenum = -1;
-      if (curve) curvenum = *curve;
+      const int curvenum = cond->parameters().get_or<int>("curve", -1);
       double curvefac = 1.0;
       if (curvenum >= 0)
         curvefac = Global::Problem::instance()

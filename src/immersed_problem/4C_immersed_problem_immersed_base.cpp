@@ -387,7 +387,7 @@ void Immersed::ImmersedBase::evaluate_scatra_with_internal_communication(
 /// proc as the interpolating element providing this quantity.  rauch 05/14
 void Immersed::ImmersedBase::evaluate_interpolation_condition(Core::FE::Discretization& evaldis,
     Teuchos::ParameterList& params, Core::FE::AssembleStrategy& strategy,
-    const std::string& condstring, const int condid)
+    const std::string& condstring)
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (!(evaldis.filled())) FOUR_C_THROW("fill_complete() was not called");
@@ -417,107 +417,92 @@ void Immersed::ImmersedBase::evaluate_interpolation_condition(Core::FE::Discreti
     if (fool->first == condstring)
     {
       Core::Conditions::Condition& cond = *(fool->second);
-      if (condid == -1 || condid == cond.parameters().get<int>("ConditionID"))
+
+      std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = cond.geometry();
+      if (geom.empty())
+        FOUR_C_THROW("evaluation of condition with empty geometry on proc %d",
+            Core::Communication::my_mpi_rank(evaldis.get_comm()));
+
+      std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator curr;
+
+      // Evaluate Loadcurve if defined. Put current load factor in parameterlist
+      const int curvenum = cond.parameters().get_or<int>("curve", -1);
+      double curvefac = 1.0;
+      if (curvenum >= 0 && usetime)
       {
-        std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = cond.geometry();
-        if (geom.empty())
-          FOUR_C_THROW("evaluation of condition with empty geometry on proc %d",
-              Core::Communication::my_mpi_rank(evaldis.get_comm()));
+        curvefac = Global::Problem::instance()
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
+                       .evaluate(time);
+      }
 
-        std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator curr;
+      constexpr unsigned character_length = 30;
+      char factorname[character_length];
+      snprintf(factorname, character_length, "LoadCurveFactor");
+      params.set(factorname, curvefac);
+      params.set<std::shared_ptr<Core::Conditions::Condition>>("condition", fool->second);
 
-        // Evaluate Loadcurve if defined. Put current load factor in parameterlist
-        const auto* curve = cond.parameters().get_if<int>("curve");
-        int curvenum = -1;
-        if (curve) curvenum = *curve;
-        double curvefac = 1.0;
-        if (curvenum >= 0 && usetime)
-        {
-          curvefac = Global::Problem::instance()
-                         ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
-                         .evaluate(time);
-        }
-
-        // Get ConditionID of current condition if defined and write value in parameterlist
-        const auto* CondID = cond.parameters().get_if<int>("ConditionID");
-        if (CondID)
-        {
-          params.set("ConditionID", *CondID);
-          constexpr unsigned character_length = 30;
-          char factorname[character_length];
-          snprintf(factorname, character_length, "LoadCurveFactor %d", *CondID);
-          params.set(factorname, curvefac);
-        }
-        else
-        {
-          params.set("LoadCurveFactor", curvefac);
-        }
-        params.set<std::shared_ptr<Core::Conditions::Condition>>("condition", fool->second);
-
-        int mygeometrysize = -1234;
-        if (geom.empty() == true)
-          mygeometrysize = 0;
-        else
-          mygeometrysize = geom.size();
-        int maxgeometrysize = -1234;
-        Core::Communication::max_all(&mygeometrysize, &maxgeometrysize, 1, evaldis.get_comm());
-        curr = geom.begin();
+      int mygeometrysize = -1234;
+      if (geom.empty())
+        mygeometrysize = 0;
+      else
+        mygeometrysize = geom.size();
+      int maxgeometrysize = -1234;
+      Core::Communication::max_all(&mygeometrysize, &maxgeometrysize, 1, evaldis.get_comm());
+      curr = geom.begin();
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-        std::cout << "PROC " << Core::Communication::my_mpi_rank(evaldis.get_comm())
-                  << ": mygeometrysize = " << mygeometrysize
-                  << " maxgeometrysize = " << maxgeometrysize << std::endl;
+      std::cout << "PROC " << Core::Communication::my_mpi_rank(evaldis.get_comm())
+                << ": mygeometrysize = " << mygeometrysize
+                << " maxgeometrysize = " << maxgeometrysize << std::endl;
 #endif
 
 
-        // enter loop on every proc until the last proc evaluated his last geometry element
-        // because there is communication happening inside
-        for (int i = 0; i < maxgeometrysize; ++i)
+      // enter loop on every proc until the last proc evaluated his last geometry element
+      // because there is communication happening inside
+      for (int i = 0; i < maxgeometrysize; ++i)
+      {
+        if (i >= mygeometrysize) params.set<int>("dummy_call", 1);
+
+        // get element location vector and ownerships
+        // the LocationVector method will return the the location vector
+        // of the dofs this condition is meant to assemble into.
+        // These dofs do not need to be the same as the dofs of the element
+        // (this is the standard case, though). Special boundary conditions,
+        // like weak dirichlet conditions, assemble into the dofs of the parent element.
+        curr->second->location_vector(evaldis, la, false, condstring, params);
+
+        // get dimension of element matrices and vectors
+        // Reshape element matrices and vectors and init to zero
+
+        strategy.clear_element_storage(la[row].size(), la[col].size());
+
+        // call the element specific evaluate method
+        int err = curr->second->evaluate(params, evaldis, la[0].lm_, strategy.elematrix1(),
+            strategy.elematrix2(), strategy.elevector1(), strategy.elevector2(),
+            strategy.elevector3());
+        if (err) FOUR_C_THROW("error while evaluating elements");
+
+        // assemble every element contribution only once
+        // do not assemble after dummy call for internal communication
+        if (i < mygeometrysize)
         {
-          if (i >= mygeometrysize) params.set<int>("dummy_call", 1);
+          // assembly
+          int eid = curr->second->id();
+          strategy.assemble_matrix1(
+              eid, la[row].lm_, la[col].lm_, la[row].lmowner_, la[col].stride_);
+          strategy.assemble_matrix2(
+              eid, la[row].lm_, la[col].lm_, la[row].lmowner_, la[col].stride_);
+          strategy.assemble_vector1(la[row].lm_, la[row].lmowner_);
+          strategy.assemble_vector2(la[row].lm_, la[row].lmowner_);
+          strategy.assemble_vector3(la[row].lm_, la[row].lmowner_);
+        }
 
-          // get element location vector and ownerships
-          // the LocationVector method will return the the location vector
-          // of the dofs this condition is meant to assemble into.
-          // These dofs do not need to be the same as the dofs of the element
-          // (this is the standard case, though). Special boundary conditions,
-          // like weak dirichlet conditions, assemble into the dofs of the parent element.
-          curr->second->location_vector(evaldis, la, false, condstring, params);
+        // go to next element
+        if (i < (mygeometrysize - 1)) ++curr;
 
-          // get dimension of element matrices and vectors
-          // Reshape element matrices and vectors and init to zero
-
-          strategy.clear_element_storage(la[row].size(), la[col].size());
-
-          // call the element specific evaluate method
-          int err = curr->second->evaluate(params, evaldis, la[0].lm_, strategy.elematrix1(),
-              strategy.elematrix2(), strategy.elevector1(), strategy.elevector2(),
-              strategy.elevector3());
-          if (err) FOUR_C_THROW("error while evaluating elements");
-
-          // assemble every element contribution only once
-          // do not assemble after dummy call for internal communication
-          if (i < mygeometrysize)
-          {
-            // assembly
-            int eid = curr->second->id();
-            strategy.assemble_matrix1(
-                eid, la[row].lm_, la[col].lm_, la[row].lmowner_, la[col].stride_);
-            strategy.assemble_matrix2(
-                eid, la[row].lm_, la[col].lm_, la[row].lmowner_, la[col].stride_);
-            strategy.assemble_vector1(la[row].lm_, la[row].lmowner_);
-            strategy.assemble_vector2(la[row].lm_, la[row].lmowner_);
-            strategy.assemble_vector3(la[row].lm_, la[row].lmowner_);
-          }
-
-          // go to next element
-          if (i < (mygeometrysize - 1)) ++curr;
-
-        }  // for 0 to max. geometrysize over all procs
-      }  // if check of condid successful
+      }  // for 0 to max. geometrysize over all procs
     }  // if condstring found
   }  // for (fool=condition_.begin(); fool!=condition_.end(); ++fool)
-  return;
 }  // evaluate_interpolation_condition
 
 /*----------------------------------------------------------------------*/

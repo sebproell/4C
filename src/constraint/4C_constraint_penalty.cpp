@@ -29,20 +29,12 @@ CONSTRAINTS::ConstraintPenalty::ConstraintPenalty(
   {
     for (auto* i : constrcond_)
     {
-      const double* mypenalty = i->parameters().get_if<double>("penalty");
-      const double* myrho = i->parameters().get_if<double>("rho");
+      const double mypenalty = i->parameters().get<double>("penalty");
+      const double myrho = i->parameters().get<double>("rho");
       int condID = i->parameters().get<int>("ConditionID");
-      if (mypenalty and myrho)
-      {
-        penalties_.insert(std::pair<int, double>(condID, *mypenalty));
-        rho_.insert(std::pair<int, double>(condID, *myrho));
-      }
-      else
-      {
-        FOUR_C_THROW(
-            "you should not turn up in penalty controlled constraint without penalty parameter and "
-            "rho!");
-      }
+
+      penalties_.insert(std::pair<int, double>(condID, mypenalty));
+      rho_.insert(std::pair<int, double>(condID, myrho));
     }
     int nummyele = 0;
     int numele = penalties_.size();

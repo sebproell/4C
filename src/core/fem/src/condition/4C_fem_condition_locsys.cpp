@@ -44,16 +44,8 @@ Core::Conditions::LocsysManager::LocsysManager(Core::FE::Discretization& discret
     // Assign internal locsys id (is this still being used?)
     id_[i] = locsysconds_[i]->id();
 
-    // Check for already existing ConditionID and add it, if not already existing
-    const int* locsysId = locsysconds_[i]->parameters().get_if<int>("ConditionID");
-    if (locsysId)
-    {
-      if ((*locsysId) != i) FOUR_C_THROW("Locsys condition has non-matching ID");
-    }
-    else
-    {
-      locsysconds_[i]->parameters().add("ConditionID", i);
-    }
+    // ConditionID not supplied via the input line, thus adding it here
+    locsysconds_[i]->parameters().add("ConditionID", i);
   }
 
   // Set boolean that indicates, if a locsys warning has already been thrown, to false
@@ -126,35 +118,30 @@ void Core::Conditions::LocsysManager::update(const double time,
       {
         typelocsys_[i] = currlocsys->type();
 
-        const auto* rotangle = &currlocsys->parameters().get<std::vector<double>>("ROTANGLE");
-        const auto* funct = &currlocsys->parameters().get<std::vector<int>>("FUNCT");
-        const auto* useUpdatedNodePos = &currlocsys->parameters().get<int>("USEUPDATEDNODEPOS");
-
-        const auto* useConsistentNodeNormal =
-            (currlocsys->type() == Core::Conditions::SurfaceLocsys or
-                currlocsys->type() == Core::Conditions::LineLocsys)
-                ? currlocsys->parameters().get_if<int>("USECONSISTENTNODENORMAL")
-                : nullptr;
-
+        const auto rotangle = currlocsys->parameters().get<std::vector<double>>("ROTANGLE");
+        const auto funct = currlocsys->parameters().get<std::vector<int>>("FUNCT");
+        const auto useUpdatedNodePos = currlocsys->parameters().get<int>("USEUPDATEDNODEPOS");
         const std::vector<int>* nodes = currlocsys->get_nodes();
+        const auto useConsistentNodeNormal =
+            currlocsys->parameters().get_or<int>("USECONSISTENTNODENORMAL", -1);
 
         if (currlocsys->type() == Core::Conditions::SurfaceLocsys or
             currlocsys->type() == Core::Conditions::LineLocsys)
         {
           // Check, if we have time dependent locsys conditions (through functions)
-          if (((*funct)[0] > 0 or (*funct)[1] > 0 or (*funct)[2] > 0) or
-              (((*useConsistentNodeNormal) == 1) and ((*useUpdatedNodePos) == 1)))
+          if (((funct)[0] > 0 or (funct)[1] > 0 or (funct)[2] > 0) or
+              ((useConsistentNodeNormal == 1) and (useUpdatedNodePos == 1)))
             locsysfunct_ = true;
         }
         else if (currlocsys->type() == Core::Conditions::VolumeLocsys or
                  currlocsys->type() == Core::Conditions::PointLocsys)
         {
           // Check, if we have time dependent locsys conditions (through functions)
-          if (((*funct)[0] > 0 or (*funct)[1] > 0 or (*funct)[2] > 0)) locsysfunct_ = true;
+          if (((funct)[0] > 0 or (funct)[1] > 0 or (funct)[2] > 0)) locsysfunct_ = true;
         }
 
         // Here we have the convention that 2D problems "live" in the global xy-plane.
-        if (n_dim() == 2 and ((*rotangle)[0] != 0 or (*rotangle)[1] != 0))
+        if (n_dim() == 2 and ((rotangle)[0] != 0 or (rotangle)[1] != 0))
         {
           FOUR_C_THROW(
               "For 2D problems (xy-plane) the vector ROTANGLE has to be parallel to the global "
@@ -163,14 +150,14 @@ void Core::Conditions::LocsysManager::update(const double time,
 
         if ((currlocsys->type() == Core::Conditions::SurfaceLocsys or
                 currlocsys->type() == Core::Conditions::LineLocsys) and
-            (*useConsistentNodeNormal) == 1)
+            (useConsistentNodeNormal == 1))
           calc_rotation_vector_for_normal_system(i, time);
         else
         {
           // Check, if the updated node positions shall be used for evaluation of the functions
           // 'funct'
           std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp;
-          if (((*useUpdatedNodePos) == 1) && (time >= 0.0))
+          if (((useUpdatedNodePos) == 1) && (time >= 0.0))
           {
             dispnp = discret().get_state("dispnp");
             if (dispnp == nullptr)
@@ -196,13 +183,13 @@ void Core::Conditions::LocsysManager::update(const double time,
             {
               // factor given by spatial function
               double functfac = 1.0;
-              if ((*funct)[j] > 0)
+              if ((funct)[j] > 0)
               {
                 Core::Nodes::Node* node = discret().g_node(nodeGID);
 
                 // Determine node position, which shall be used for evaluating the function, and
                 // evaluate it
-                if (((*useUpdatedNodePos) == 1) && (time >= 0.0))
+                if (((useUpdatedNodePos) == 1) && (time >= 0.0))
                 {
                   // Obtain current displacement for node
                   std::vector<int> lm;
@@ -222,18 +209,18 @@ void Core::Conditions::LocsysManager::update(const double time,
 
                   // Evaluate function with current node position
                   functfac = (function_manager.function_by_id<Core::Utils::FunctionOfSpaceTime>(
-                                  (*funct)[j] - 1))
+                                  (funct)[j] - 1))
                                  .evaluate(currPos.data(), time, j);
                 }
                 else
                 {
                   // Evaluate function with reference node position
                   functfac = (function_manager.function_by_id<Core::Utils::FunctionOfSpaceTime>(
-                                  (*funct)[j] - 1))
+                                  (funct)[j] - 1))
                                  .evaluate(node->x().data(), time, j);
                 }
               }
-              currotangle(j) = (*rotangle)[j] * functfac;
+              currotangle(j) = (rotangle)[j] * functfac;
             }
 
             nodalrotvectors_[nodeGID] = currotangle;

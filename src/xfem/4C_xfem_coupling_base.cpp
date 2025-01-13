@@ -564,9 +564,8 @@ void XFEM::CouplingBase::evaluate_function(std::vector<double>& final_values, co
   const auto* functions = cond->parameters().get_if<std::vector<int>>("FUNCT");
 
   // uniformly distributed random noise
-
   auto& secondary = const_cast<Core::Conditions::Condition&>(*cond);
-  const auto* percentage = secondary.parameters().get_if<double>("RANDNOISE");
+  const auto percentage = secondary.parameters().get_or<double>("RANDNOISE", 0.0);
 
   if (time < -1e-14) FOUR_C_THROW("Negative time in curve/function evaluation: time = %f", time);
 
@@ -593,17 +592,11 @@ void XFEM::CouplingBase::evaluate_function(std::vector<double>& final_values, co
 
     // uniformly distributed noise
     double noise = 0.0;
-    if (percentage != nullptr)
+    if (fabs(percentage) > 1e-14)
     {
-      const double perc = *percentage;
-
-      if (fabs(perc) > 1e-14)
-      {
-        const double randomnumber = Global::Problem::instance()
-                                        ->random()
-                                        ->uni();  // uniformly distributed between -1.0, 1.0
-        noise = perc * randomnumber;
-      }
+      const double randomnumber =
+          Global::Problem::instance()->random()->uni();  // uniformly distributed between -1.0, 1.0
+      noise = percentage * randomnumber;
     }
 
     final_values[dof] = num * (functionfac + noise);
@@ -619,11 +612,11 @@ void XFEM::CouplingBase::evaluate_scalar_function(double& final_values, const do
 
   //---------------------------------------
   // get values and switches from the condition
-  const auto* function = cond->parameters().get_if<int>("FUNCT");
+  const auto functnum = cond->parameters().get_or<int>("FUNCT", -1);
 
   // uniformly distributed random noise
   auto& secondary = const_cast<Core::Conditions::Condition&>(*cond);
-  const auto* percentage = secondary.parameters().get_if<double>("RANDNOISE");
+  const auto percentage = secondary.parameters().get_or<double>("RANDNOISE", 0.0);
 
   if (time < -1e-14) FOUR_C_THROW("Negative time in curve/function evaluation: time = %f", time);
 
@@ -632,10 +625,6 @@ void XFEM::CouplingBase::evaluate_scalar_function(double& final_values, const do
   //---------------------------------------
   for (int dof = 0; dof < numdof; ++dof)
   {
-    // get factor given by spatial function
-    int functnum = -1;
-    if (function) functnum = *function;
-
     // initialization of time-curve factor and function factor
     double functionfac = 1.0;
 
@@ -650,17 +639,11 @@ void XFEM::CouplingBase::evaluate_scalar_function(double& final_values, const do
 
     // uniformly distributed noise
     double noise = 0.0;
-    if (percentage != nullptr)
+    if (fabs(percentage) > 1e-14)
     {
-      const double perc = *percentage;
-
-      if (fabs(perc) > 1e-14)
-      {
-        const double randomnumber = Global::Problem::instance()
-                                        ->random()
-                                        ->uni();  // uniformly distributed between -1.0, 1.0
-        noise = perc * randomnumber;
-      }
+      const double randomnumber =
+          Global::Problem::instance()->random()->uni();  // uniformly distributed between -1.0, 1.0
+      noise = percentage * randomnumber;
     }
 
     final_values = num * (functionfac + noise);
@@ -684,7 +667,6 @@ void XFEM::CouplingBase::get_viscosity_master(Core::Elements::Element* xfele,  /
     visc_m = std::dynamic_pointer_cast<Mat::NewtonianFluid>(mat_m)->viscosity();
   else
     FOUR_C_THROW("get_coupling_specific_average_weights: Master Material not a fluid material?");
-  return;
 }
 
 /*--------------------------------------------------------------------------*
@@ -704,7 +686,6 @@ void XFEM::CouplingBase::get_average_weights(Core::Elements::Element* xfele,  //
     get_coupling_specific_average_weights(xfele, coup_ele, kappa_m);
 
   kappa_s = 1.0 - kappa_m;
-  return;
 }
 
 /*--------------------------------------------------------------------------------

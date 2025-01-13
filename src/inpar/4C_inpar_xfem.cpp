@@ -742,7 +742,8 @@ void Inpar::XFEM::set_valid_conditions(
   }
 
   // optional: allow for random noise, set percentage used in uniform random distribution
-  add_named_real(xfem_surf_wdbc, "RANDNOISE", "", 0.0, true);
+  add_named_real(xfem_surf_wdbc, "RANDNOISE",
+      "set percentage of random noise used in uniform random distribution", 0.0, true);
 
   condlist.push_back(xfem_surf_wdbc);
 

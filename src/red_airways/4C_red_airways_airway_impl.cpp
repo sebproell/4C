@@ -100,10 +100,7 @@ namespace
         bcVal = (*vals)[0] * curvefac;
 
         // get funct 1
-        const int* function = condition->parameters().get_if<int>("VAL");
-        int functnum = -1;
-        if (function) functnum = (*function);
-
+        const int functnum = condition->parameters().get_or<int>("VAL", -1);
         double functionfac = 0.0;
         if (functnum > 0)
         {

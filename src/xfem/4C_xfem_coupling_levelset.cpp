@@ -1415,7 +1415,7 @@ void XFEM::LevelSetCouplingNavierSlip::get_condition_by_robin_id(
 {
   mynewcond.clear();
 
-  // select the conditions with specified "couplingID"
+  // select the conditions with specified "robin_id"
   for (size_t i = 0; i < mycond.size(); ++i)
   {
     Core::Conditions::Condition* cond = mycond[i];

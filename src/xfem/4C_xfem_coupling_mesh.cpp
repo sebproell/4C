@@ -1497,7 +1497,7 @@ void XFEM::MeshCouplingNavierSlip::get_condition_by_robin_id(
 {
   mynewcond.clear();
 
-  // select the conditions with specified "couplingID"
+  // select the conditions with specified "robin_id"
   for (auto* cond : mycond)
   {
     const int id = cond->parameters().get<int>("robin_id");
