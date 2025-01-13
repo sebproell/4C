@@ -114,10 +114,11 @@ void Utils::Cardiovascular0DArterialProxDist::evaluate(Teuchos::ParameterList& p
     const int curvenum = cardiovascular0dcond_[condID]->parameters().get<int>("p_at_crv");
     double curvefac_np = 1.0;
 
-    if (curvenum >= 0 && usetime)
+    if (curvenum > 0 && usetime)
     {
+      // function_by_id takes a zero based index
       curvefac_np = Global::Problem::instance()
-                        ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
+                        ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
                         .evaluate(tim);
     }
 
