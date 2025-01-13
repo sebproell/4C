@@ -22,7 +22,7 @@ namespace
     std::set<const Core::IO::InputSpec*> unnamed_entries;
     for (const auto& entry : line)
     {
-      const auto& name = entry.name();
+      const auto& name = entry.impl().name();
       if (name.empty())
       {
         unnamed_entries.insert(&entry);
@@ -54,7 +54,7 @@ namespace
       if (it != name_to_entry_map.end())
       {
         // Will consume the name as well as the value.
-        it->second->parse(parser, container);
+        it->second->impl().parse(parser, container);
 
         // Drop the entry from the map: we do not want to parse the same value twice. This also
         // allows to check if all required values have been parsed.
@@ -71,7 +71,7 @@ namespace
         {
           try
           {
-            entry->parse(parser, container);
+            entry->impl().parse(parser, container);
           }
           catch (const Core::Exception&)
           {
@@ -102,20 +102,20 @@ namespace
     for (const auto& entry : unnamed_entries)
     {
       // Unnamed entries contain a useful description, which indicates what is missing.
-      FOUR_C_ASSERT_ALWAYS(!entry->required(), "Required '%s' not found in input line",
-          entry->description().c_str());
+      FOUR_C_ASSERT_ALWAYS(!entry->impl().required(), "Required '%s' not found in input line",
+          entry->impl().description().c_str());
     }
 
     // Check if all required values have been parsed, i.e., any remaining component must be optional
     for (const auto& [name, entry] : name_to_entry_map)
     {
-      if (entry->required())
+      if (entry->impl().required())
       {
         FOUR_C_THROW("Required value '%s' not found in input line", name.c_str());
       }
-      else if (entry->has_default_value())
+      else if (entry->impl().has_default_value())
       {
-        entry->set_default_value(container);
+        entry->impl().set_default_value(container);
       }
     }
   }
@@ -123,23 +123,23 @@ namespace
   void assert_unique_or_empty_names(const std::vector<Core::IO::InputSpec>& specs)
   {
     std::set<std::string> names;
-    for (const auto& component : specs)
+    for (const auto& spec : specs)
     {
-      if (!component.name().empty())
-        FOUR_C_ASSERT_ALWAYS(names.insert(component.name()).second,
-            "Duplicate component name '%s' found in input line.", component.name().c_str());
+      if (!spec.impl().name().empty())
+        FOUR_C_ASSERT_ALWAYS(names.insert(spec.impl().name()).second,
+            "Duplicate component name '%s' found in input line.", spec.impl().name().c_str());
     }
   }
 
   bool all_have_default_values(const std::vector<Core::IO::InputSpec>& specs)
   {
     return std::all_of(specs.begin(), specs.end(),
-        [](const Core::IO::InputSpec& component) { return component.has_default_value(); });
+        [](const Core::IO::InputSpec& spec) { return spec.impl().has_default_value(); });
   }
 
   [[nodiscard]] const std::string& describe_for_error_handling(const Core::IO::InputSpec& spec)
   {
-    return (spec.name().empty()) ? spec.description() : spec.name();
+    return (spec.impl().name().empty()) ? spec.impl().description() : spec.impl().name();
   }
 
   [[nodiscard]] std::string describe_for_error_handling(
@@ -186,9 +186,9 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::set_default_value(
     Core::IO::InputParameterContainer& container) const
 {
   auto& subcontainer = (name.empty()) ? container : container.group(name);
-  for (const auto& component : specs)
+  for (const auto& spec : specs)
   {
-    if (component.has_default_value()) component.set_default_value(subcontainer);
+    if (spec.impl().has_default_value()) spec.impl().set_default_value(subcontainer);
   }
 }
 
@@ -202,9 +202,9 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::print(
       (name.empty()) ? container
                      : (container.has_group(name) ? container.group(name)
                                                   : Core::IO::InputParameterContainer{});
-  for (const auto& component : specs)
+  for (const auto& spec : specs)
   {
-    component.print(stream, subcontainer);
+    spec.impl().print(stream, subcontainer);
     stream << " ";
   }
 }
@@ -215,11 +215,11 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::parse(
   ValueParser::BacktrackScope backtrack_scope(parser);
 
   // Try to parse a component and backtrack if it fails.
-  const auto try_parse = [&](const Core::IO::InputSpec& component) -> bool
+  const auto try_parse = [&](const Core::IO::InputSpec& spec) -> bool
   {
     try
     {
-      component.parse(parser, container);
+      spec.impl().parse(parser, container);
       return true;
     }
     catch (const Core::Exception&)
@@ -278,9 +278,9 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::print(
     std::ostream& stream, const Core::IO::InputParameterContainer& container) const
 {
   stream << "<one_of {";
-  for (const auto& component : specs)
+  for (const auto& spec : specs)
   {
-    component.print(stream, container);
+    spec.impl().print(stream, container);
     stream << ";";
   }
   stream << "}>";
@@ -306,14 +306,14 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
 {
   assert_unique_or_empty_names(specs);
 
-  InputSpec::CommonData common_data{
+  IO::Internal::InputSpecTypeErasedBase::CommonData common_data{
       .name = name,
       .description = data.description,
       .required = data.required,
       .has_default_value = all_have_default_values(specs),
   };
 
-  return InputSpec(
+  return IO::Internal::make_spec(
       Internal::GroupSpec{.name = name, .data = std::move(data), .specs = std::move(specs)},
       common_data);
 }
@@ -326,16 +326,16 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(std::vector<InputSpec> sp
   // Generate a description of the form "group {a, b, c}".
   std::string description = "group " + describe_for_error_handling(specs);
 
-  InputSpec::CommonData common_data{
+  IO::Internal::InputSpecTypeErasedBase::CommonData common_data{
       .name = "",
       .description = description,
       .required = true,
       .has_default_value = all_have_default_values(specs),
   };
 
-  return InputSpec(Internal::GroupSpec{.name = "",
-                       .data = {.description = description, .required = true},
-                       .specs = std::move(specs)},
+  return IO::Internal::make_spec(Internal::GroupSpec{.name = "",
+                                     .data = {.description = description, .required = true},
+                                     .specs = std::move(specs)},
       common_data);
 }
 
@@ -349,7 +349,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> s
   assert_unique_or_empty_names(specs);
 
   std::string description = "one_of " + describe_for_error_handling(specs);
-  InputSpec::CommonData common_data{
+  IO::Internal::InputSpecTypeErasedBase::CommonData common_data{
       .name = "",
       .description = description,
       .required = true,
@@ -361,9 +361,9 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> s
       .required = true,
   };
 
-  return InputSpec(Internal::OneOfSpec{.data = std::move(group_data),
-                       .specs = std::move(specs),
-                       .on_parse_callback = std::move(on_parse_callback)},
+  return IO::Internal::make_spec(Internal::OneOfSpec{.data = std::move(group_data),
+                                     .specs = std::move(specs),
+                                     .on_parse_callback = std::move(on_parse_callback)},
       std::move(common_data));
 }
 

@@ -11,6 +11,7 @@
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_global_legacy_module.hpp"
 #include "4C_io_input_file_utils.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_io_linedefinition.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_string.hpp"
@@ -329,9 +330,9 @@ namespace RTD
     for (const auto& spec : material->specs())
     {
       std::vector<std::string> table_row;
-      table_row.push_back(spec.name());
-      table_row.emplace_back((spec.required() ? "" : "yes"));
-      table_row.push_back(spec.description());
+      table_row.push_back(spec.impl().name());
+      table_row.emplace_back((spec.impl().required() ? "" : "yes"));
+      table_row.push_back(spec.impl().description());
 
       parametertable.add_row(table_row);
 
@@ -344,7 +345,7 @@ namespace RTD
 
       std::ostringstream parameterstream;
       Core::IO::InputParameterContainer container;
-      spec.print(parameterstream, container);
+      spec.print_as_dat(parameterstream, container);
       parameter += " " + parameterstream.str();
     }
 
@@ -624,7 +625,7 @@ namespace RTD
     write_code(stream, contactlawsectionstring);
 
     std::stringstream specs_string;
-    specs.print(specs_string, Core::IO::InputParameterContainer{});
+    specs.print_as_dat(specs_string, Core::IO::InputParameterContainer{});
     write_code(stream, {specs_string.str()});
   }
 

@@ -112,22 +112,72 @@ namespace Core::IO
       return PrettyTypeName<T>{}();
     }
 
-    class InputSpecTypeErasedInterface
+    class InputSpecTypeErasedBase
     {
      public:
-      virtual ~InputSpecTypeErasedInterface() = default;
+      /**
+       * Store a reduced version of the common data entries.
+       */
+      struct CommonData
+      {
+        /**
+         * The name or key under which the value is found in the input. This name is also used to
+         * store the value in the container.
+         */
+        std::string name;
+
+        /**
+         * An optional description of the value.
+         */
+        std::string description;
+
+        /**
+         * Whether the value is required or optional.
+         */
+        bool required;
+
+        /**
+         * Whether the spec has a default value.
+         */
+        bool has_default_value;
+      };
+
+      virtual ~InputSpecTypeErasedBase() = default;
+
+      InputSpecTypeErasedBase(CommonData data) : data(std::move(data)) {}
+
       virtual void parse(ValueParser& parser, InputParameterContainer& container) const = 0;
       virtual void set_default_value(InputParameterContainer& container) const = 0;
-      virtual void print(std::ostream& stream, const InputParameterContainer& container) const = 0;
-      [[nodiscard]] virtual std::unique_ptr<InputSpecTypeErasedInterface> clone() const = 0;
+      [[nodiscard]] virtual std::unique_ptr<InputSpecTypeErasedBase> clone() const = 0;
+
+      void print(std::ostream& stream, const InputParameterContainer& container) const
+      {
+        if (!required()) stream << "[";
+        do_print(stream, container);
+        if (!required()) stream << "]";
+      }
+
+      [[nodiscard]] const std::string& name() const { return data.name; }
+
+      [[nodiscard]] const std::string& description() const { return data.description; }
+
+      [[nodiscard]] bool required() const { return data.required; }
+
+      [[nodiscard]] bool has_default_value() const { return data.has_default_value; }
+
+      CommonData data;
+
+     private:
+      virtual void do_print(
+          std::ostream& stream, const InputParameterContainer& container) const = 0;
     };
 
     template <typename T>
-    struct InputSpecTypeErasedImplementation : public InputSpecTypeErasedInterface
+    struct InputSpecTypeErasedImplementation : public InputSpecTypeErasedBase
     {
       template <typename T2>
-        requires(!std::common_with<InputSpec, T2>)
-      explicit InputSpecTypeErasedImplementation(T2&& wrapped) : wrapped(std::forward<T2>(wrapped))
+      explicit InputSpecTypeErasedImplementation(T2&& wrapped, CommonData data)
+          : InputSpecTypeErasedBase(std::move(data)), wrapped(std::forward<T2>(wrapped))
       {
       }
 
@@ -152,7 +202,7 @@ namespace Core::IO
         }
       }
 
-      void print(std::ostream& stream, const InputParameterContainer& container) const override
+      void do_print(std::ostream& stream, const InputParameterContainer& container) const override
       {
         if constexpr (Internal::has_print<T>)
         {
@@ -180,127 +230,21 @@ namespace Core::IO
         }
       }
 
-      [[nodiscard]] std::unique_ptr<InputSpecTypeErasedInterface> clone() const override
+      [[nodiscard]] std::unique_ptr<InputSpecTypeErasedBase> clone() const override
       {
-        return std::make_unique<InputSpecTypeErasedImplementation<T>>(wrapped);
+        return std::make_unique<InputSpecTypeErasedImplementation<T>>(wrapped, data);
       }
 
       T wrapped;
     };
-  }  // namespace Internal
 
-  /**
-   * Objects of this class encapsulate knowledge about the input. Users can create objects using
-   * the helper functions in the InputSpecBuilders namespace. See the function
-   * InputSpecBuilders::entry() for an explanation how to create InputSpecs. This class can be
-   * treated as an implementation detail from the user's perspective.
-   */
-  class InputSpec
-  {
-   public:
-    /**
-     * Store a reduced version of the common data entries.
-     */
-    struct CommonData
-    {
-      /**
-       * The name or key under which the value is found in the input. This name is also used to
-       * store the value in the container.
-       */
-      std::string name;
-
-      /**
-       * An optional description of the value.
-       */
-      std::string description;
-
-      /**
-       * Whether the value is required or optional.
-       */
-      bool required;
-
-      /**
-       * Whether the spec has a default value.
-       */
-      bool has_default_value;
-    };
-
-    /**
-     * A default-constructed spec. A value needs to be assigned to this object before it can
-     * be used.
-     */
-    InputSpec() = default;
-
-    /**
-     * Construct a InputSpec. This constructor is not intended to be used directly. Use the
-     * helper functions in the InputSpecBuilders namespace instead.
-     */
     template <typename T>
-      requires(!std::common_with<InputSpec, T>)
-    InputSpec(T&& spec, CommonData data);
-
-    InputSpec(const InputSpec& other) : data_(other.data_), spec_(other.spec_->clone()) {}
-
-    InputSpec& operator=(const InputSpec& other)
+    InputSpec make_spec(T&& wrapped, InputSpecTypeErasedBase::CommonData data)
     {
-      spec_ = other.spec_->clone();
-      data_ = other.data_;
-      return *this;
+      return InputSpec(std::make_unique<InputSpecTypeErasedImplementation<std::decay_t<T>>>(
+          std::forward<T>(wrapped), std::move(data)));
     }
-
-    InputSpec(InputSpec&&) noexcept = default;
-    InputSpec& operator=(InputSpec&&) noexcept = default;
-
-    /**
-     * Parse this spec from the input. This is often not the correct function to call, if you
-     * want to ensure that the input is fully parsed. Use the fully_parse() function instead.
-     *
-     * @note This function is an implementation detail and should not be called by users.
-     */
-    void parse(ValueParser& parser, InputParameterContainer& container) const
-    {
-      spec_->parse(parser, container);
-    }
-
-    /**
-     * Store the default value of this spec in the container. This likely only makes sense
-     * if the has_default_value() function returns true.
-     *
-     * @note This function is an implementation detail and should not be called by users.
-     */
-    void set_default_value(InputParameterContainer& container) const
-    {
-      spec_->set_default_value(container);
-    }
-
-    /**
-     * Legacy dat-style printing. This format is intended to be human-readable and is not used
-     * for further processing.
-     *
-     * @note This function is an implementation detail and should not be called by users.
-     */
-    void print(std::ostream& stream, const InputParameterContainer& container) const
-    {
-      if (!required()) stream << "[";
-      spec_->print(stream, container);
-      if (!required()) stream << "]";
-    }
-
-    [[nodiscard]] const std::string& name() const { return data_.name; }
-
-    [[nodiscard]] const std::string& description() const { return data_.description; }
-
-    [[nodiscard]] bool required() const { return data_.required; }
-
-    [[nodiscard]] bool has_default_value() const { return data_.has_default_value; }
-
-   private:
-    //! Common data entries.
-    CommonData data_;
-
-    //! Pointer to type-erased implementation.
-    std::unique_ptr<Internal::InputSpecTypeErasedInterface> spec_;
-  };
+  }  // namespace Internal
 
   /**
    * Helper functions to create InputSpec objects. When you want to create an InputSpec, you
@@ -834,15 +778,6 @@ void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataType>::parse(
 }
 
 
-template <typename T>
-  requires(!std::common_with<Core::IO::InputSpec, T>)
-Core::IO::InputSpec::InputSpec(T&& spec, CommonData data)
-    : data_(std::move(data)),
-      spec_(std::make_unique<Internal::InputSpecTypeErasedImplementation<std::decay_t<T>>>(
-          std::forward<T>(spec)))
-{
-}
-
 
 template <typename T>
 auto Core::IO::InputSpecBuilders::from_parameter(const std::string& name)
@@ -860,7 +795,7 @@ template <typename T, typename DataType>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::entry(std::string name, DataType&& data)
 {
   Internal::sanitize_required_default(data);
-  return InputSpec(Internal::BasicSpec<DataType>{.name = name, .data = data},
+  return IO::Internal::make_spec(Internal::BasicSpec<DataType>{.name = name, .data = data},
       {
           .name = name,
           .description = data.description,
@@ -876,7 +811,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::user_defined(std::string name, 
     const std::function<void(std::ostream&, const Core::IO::InputParameterContainer&)>& print)
 {
   Internal::sanitize_required_default(data);
-  return InputSpec(
+  return IO::Internal::make_spec(
       Internal::UserDefinedSpec<DataType>{
           .name = name,
           .data = std::forward<DataType>(data),

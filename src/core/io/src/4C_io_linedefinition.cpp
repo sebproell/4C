@@ -287,8 +287,7 @@ namespace Input
   {
     auto line = Core::IO::InputSpecBuilders::group(pimpl_->components_);
     Core::IO::InputParameterContainer container;
-    line.set_default_value(container);
-    line.print(stream, container);
+    line.print_as_dat(stream, container);
   }
 
 
@@ -307,7 +306,7 @@ namespace Input
     {
       auto input_line = Core::IO::InputSpecBuilders::group(pimpl_->components_);
       Core::IO::ValueParser parser(line, {.base_path = context.input_file.parent_path()});
-      Core::IO::fully_parse(parser, input_line, container);
+      input_line.fully_parse(parser, container);
     }
     catch (const Core::Exception& e)
     {

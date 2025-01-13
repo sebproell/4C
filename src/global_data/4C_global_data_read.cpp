@@ -23,6 +23,7 @@
 #include "4C_io_geometry_type.hpp"
 #include "4C_io_input_file.hpp"
 #include "4C_io_input_file_utils.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_io_linedefinition.hpp"
 #include "4C_io_meshreader.hpp"
 #include "4C_mat_elchmat.hpp"
@@ -2070,12 +2071,12 @@ void Global::read_materials(Global::Problem& problem, Core::IO::InputFile& input
     if (problem.materials()->id_exists(mat_id))
       FOUR_C_THROW("More than one material with 'MAT %d'", mat_id);
 
-    Core::IO::fully_parse(parser, all_materials, container);
+    all_materials.fully_parse(parser, container);
 
     problem.materials()->insert(
         mat_id, Core::Utils::LazyPtr<Core::Mat::PAR::Parameter>(
                     [mat_id, mat_type = all_types[current_index],
-                        container = container.group(all_specs[current_index].name())]()
+                        container = container.group(all_specs[current_index].impl().name())]()
                     { return Mat::make_parameter(mat_id, mat_type, container); }));
   }
 
@@ -2105,7 +2106,7 @@ void Global::read_contact_constitutive_laws(Global::Problem& problem, Core::IO::
         section_i, {.user_scope_message = "While reading 'CONTACT CONSTITUTIVE LAWS' section: "});
 
     Core::IO::InputParameterContainer container;
-    Core::IO::fully_parse(parser, valid_law_spec, container);
+    valid_law_spec.fully_parse(parser, container);
     CONTACT::CONSTITUTIVELAW::create_contact_constitutive_law_from_input(container);
   }
 }

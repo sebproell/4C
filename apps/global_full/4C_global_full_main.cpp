@@ -285,7 +285,7 @@ int main(int argc, char* argv[])
         auto valid_co_laws = CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws();
         Core::IO::InputFileUtils::print_section_header(std::cout, "CONTACT CONSTITUTIVE LAWS");
         std::cout << "//";
-        valid_co_laws.print(std::cout, Core::IO::InputParameterContainer{});
+        valid_co_laws.print_as_dat(std::cout, Core::IO::InputParameterContainer{});
         std::cout << '\n';
       }
 
