@@ -74,8 +74,8 @@ DSURF                           1
 E 12 - NUMDOF 3 ONOFF 1 1 1 VAL 1.0 1.0 -1.0 FUNCT 1 1 2
 -----------------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
 DSURF                           2
-E 6 - 0 Master Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Solidcontact DoNothing TwoHalfPass 0 RefConfCheckNonSmoothSelfContactSurface 0.0 ConstitutiveLawID 1
-E 7 - 0 Slave Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Solidcontact DoNothing TwoHalfPass 0 RefConfCheckNonSmoothSelfContactSurface 0.0 ConstitutiveLawID 1
+E 6 - InterfaceID 0 Side Master Initialization Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 0 RefConfCheckNonSmoothSelfContactSurface 0.0 ConstitutiveLawID 1
+E 7 - InterfaceID 0 Side Slave Initialization Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 0 RefConfCheckNonSmoothSelfContactSurface 0.0 ConstitutiveLawID 1
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 249 DNODE 1
 NODE 175 DNODE 2

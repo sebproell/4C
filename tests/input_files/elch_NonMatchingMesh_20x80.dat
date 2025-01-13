@@ -77,9 +77,9 @@ E 2 - ID 1 POT 25.0 FUNCT 4 NUMSCAL 2 STOICH -1 0  E- 1 EPSILON -1 ZERO_CUR 0 Bu
 -------------------------DESIGN LINE MORTAR COUPLING CONDITIONS 2D
 DLINE                           2
 // left internal boundary
-E 5 - 1 Master
+E 5 - InterfaceID 1 Side Master
 // right internal boundary
-E 6 - 1 Slave
+E 6 - InterfaceID 1 Side Slave
 -----------------------------------------------DLINE-NODE TOPOLOGY
 NODE 1 DLINE 1
 NODE 2 DLINE 1

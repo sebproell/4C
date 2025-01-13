@@ -56,11 +56,11 @@ E 5 - NUMDOF 2 ONOFF 1 1 VAL 1.0 1.0 FUNCT 1 2
 -------------------------DESIGN LINE MORTAR COUPLING CONDITIONS 2D
 DLINE  3
 // outer_domain_inner_boundary
-E 2 - 1 Master
+E 2 - InterfaceID 1 Side Master
 // main_domain_outer_boundary_xcurs
-E 3 - 1 Slave
+E 3 - InterfaceID 1 Side Slave
 // main_domain_outer_boundary_ycurs
-E 4 - 1 Slave
+E 4 - InterfaceID 1 Side Slave
 -----------------------------------------------DLINE-NODE TOPOLOGY
 NODE    1 DLINE 1
 NODE    2 DLINE 1

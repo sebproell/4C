@@ -22,14 +22,14 @@ Property Name: none
 has 36 Nodes
 *ns1="CONDITION"
 sectionname="DESIGN SURF MORTAR CONTACT CONDITIONS 3D"
-description="1 Slave"
+description="InterfaceID 1 Side Slave"
 
 Node Set, named: master
 Property Name: none
 has 121 Nodes
 *ns2="CONDITION"
 sectionname="DESIGN SURF MORTAR CONTACT CONDITIONS 3D"
-description="1 Master"
+description="InterfaceID 1 Side Master"
 
 $$ Assign the Dirichlet Boundary Conditions
 Node Set, named: pushing

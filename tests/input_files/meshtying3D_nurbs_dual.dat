@@ -68,8 +68,8 @@ COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME 2e-1
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME 3e-1
 -------------------------DESIGN SURF MORTAR COUPLING CONDITIONS 3D
 DSURF  2
-E 5 - 1 Slave Active
-E 12 - 1 Master Inactive
+E 5 - InterfaceID 1 Side Slave Initialization Active
+E 12 - InterfaceID 1 Side Master Initialization Inactive
 -------------------------------------------------------DNODE-NODE TOPOLOGY
 //
 // structure: patch 1, (0,0,0)

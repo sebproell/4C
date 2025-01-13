@@ -8,6 +8,7 @@
 #include "4C_inpar_ehl.hpp"
 
 #include "4C_fem_condition_definition.hpp"
+#include "4C_io_linecomponent.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -153,13 +154,13 @@ void Inpar::EHL::set_valid_conditions(
 
   for (const auto& cond : {lineehl, surfehl})
   {
-    cond->add_component(std::make_shared<Input::IntComponent>("InterfaceID"));
-    cond->add_component(std::make_shared<Input::SelectionComponent>("Side", "Master",
+    add_named_int(cond, "InterfaceID");
+    add_named_selection_component(cond, "Side", "interface side", "Master",
         Teuchos::tuple<std::string>("Master", "Slave"),
-        Teuchos::tuple<std::string>("Master", "Slave")));
-    cond->add_component(std::make_shared<Input::SelectionComponent>("Initialization", "Active",
+        Teuchos::tuple<std::string>("Master", "Slave"));
+    add_named_selection_component(cond, "Initialization", "initialization", "Active",
         Teuchos::tuple<std::string>("Inactive", "Active"),
-        Teuchos::tuple<std::string>("Inactive", "Active"), true));
+        Teuchos::tuple<std::string>("Inactive", "Active"), true);
     add_named_real(cond, "FrCoeffOrBound", "", 0.0, true);
 
     condlist.push_back(cond);

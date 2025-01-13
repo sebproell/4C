@@ -93,8 +93,8 @@ E 24 - NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 -100 0.0 0.0 0.0 FUNCT 1 1 1 1 1 1
 E 25 - NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 -100 0.0 0.0 0.0 FUNCT 1 1 1 1 1 1 TYPE Live
 -----------------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
 DSURF                           2
-E 9 - 1 Slave Active
-E 29 - 1 Master Inactive
+E 9 - InterfaceID 1 Side Slave Initialization Active
+E 29 - InterfaceID 1 Side Master Initialization Inactive
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 1224 DNODE 1
 NODE 741 DNODE 2

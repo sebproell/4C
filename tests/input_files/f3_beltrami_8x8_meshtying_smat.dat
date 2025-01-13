@@ -146,9 +146,9 @@ E 6 - NUMDOF 4 ONOFF 1 1 1 1 VAL 1.0 1.0 1.0 1.0 FUNCT 1 1 1 2
 -------------------------DESIGN SURF MORTAR COUPLING CONDITIONS 3D
 DSURF  2
 // inside meshtying
-E 7 - 1 Slave
+E 7 - InterfaceID 1 Side Slave
 // outside meshtying
-E 8 - 1 Master
+E 8 - InterfaceID 1 Side Master
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    51 DNODE 1
 -----------------------------------------------DSURF-NODE TOPOLOGY

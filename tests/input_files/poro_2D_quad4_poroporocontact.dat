@@ -281,9 +281,9 @@ E 4 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 --------------------------DESIGN LINE MORTAR CONTACT CONDITIONS 2D
 DLINE  2
 // edge_semicircle
-E 1 - 1 Slave Inactive FrCoeffOrBound 0.3
+E 1 - InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.3
 // top_line
-E 3 - 1 Master Inactive FrCoeffOrBound 0.3
+E 3 - InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.3
 -----------------------------DESIGN SURFACE POROCOUPLING CONDITION
 DSURF  2
 // semicircle

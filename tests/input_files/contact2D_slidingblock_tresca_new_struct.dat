@@ -85,8 +85,8 @@ DSURF                           1
 E 1 - NUMDOF 6 ONOFF 0 1 0 0 0 0 VAL 0.0 -15 0.0 0.0 0.0 0.0  FUNCT 0 0 0 0 0 0 TYPE Live
 -----------------------------------DESIGN LINE MORTAR CONTACT CONDITIONS 2D
 DLINE                           2
-E 1 - 1 Slave Active FrCoeffOrBound 1.0
-E 7 - 1 Master Inactive FrCoeffOrBound 1.0
+E 1 - InterfaceID 1 Side Slave Initialization Active FrCoeffOrBound 1.0
+E 7 - InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 1.0
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 415 DNODE 1
 NODE 343 DNODE 2

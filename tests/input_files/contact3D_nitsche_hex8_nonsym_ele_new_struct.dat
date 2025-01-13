@@ -75,9 +75,9 @@ E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 1.0 1.0 -1.0 FUNCT 1 1 2
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
 DSURF  2
 // c_twist
-E 3 - 1 Slave Inactive
+E 3 - InterfaceID 1 Side Slave Initialization Inactive
 // c_block
-E 4 - 1 Master Inactive
+E 4 - InterfaceID 1 Side Master Initialization Inactive
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    84 DSURFACE 1
 NODE    85 DSURFACE 1

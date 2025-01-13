@@ -82,15 +82,15 @@ E 2 - NUMDOF 2 ONOFF 1 1 VAL 1.0 -1.0 FUNCT 2 1
 --------------------------DESIGN LINE MORTAR CONTACT CONDITIONS 2D
 DLINE  2
 // slave_c
-E 3 - 1 Slave Inactive
+E 3 - InterfaceID 1 Side Slave Initialization Inactive
 // master_c
-E 4 - 1 Master Inactive
+E 4 - InterfaceID 1 Side Master Initialization Inactive
 -------------------------DESIGN LINE MORTAR COUPLING CONDITIONS 2D
 DLINE  2
 // slave_m
-E 5 - 1 Slave Active
+E 5 - InterfaceID 1 Side Slave Initialization Active
 // master_m
-E 6 - 1 Master Inactive
+E 6 - InterfaceID 1 Side Master Initialization Inactive
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    171 DNODE 1
 -----------------------------------------------DLINE-NODE TOPOLOGY

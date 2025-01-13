@@ -72,8 +72,8 @@ E 11 - NUMDOF 3 ONOFF 1 1 1 VAL 0 0 0 FUNCT 0 0 0
 E 6  - NUMDOF 3 ONOFF 1 1 1 VAL 1.0 1.0 -1.0 FUNCT 1  1 2
 -------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
 DSURF  2
-E 5 - 1 Slave Inactive
-E 12 - 1 Master Inactive
+E 5 - InterfaceID 1 Side Slave Initialization Inactive
+E 12 - InterfaceID 1 Side Master Initialization Inactive
 -------------------------------------------------------DNODE-NODE TOPOLOGY
 //
 // structure: patch 1, (0,0,0)

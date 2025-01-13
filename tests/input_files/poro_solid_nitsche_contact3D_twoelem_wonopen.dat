@@ -212,9 +212,9 @@ E 5 -
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
 DSURF  2
 // zp
-E 2 - 1 Slave
+E 2 - InterfaceID 1 Side Slave
 // s_contact
-E 3 - 1 Master
+E 3 - InterfaceID 1 Side Master
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    1 DSURFACE 1
 NODE    2 DSURFACE 1

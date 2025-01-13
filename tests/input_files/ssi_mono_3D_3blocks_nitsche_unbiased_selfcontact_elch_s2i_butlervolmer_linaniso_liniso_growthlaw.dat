@@ -160,10 +160,10 @@ E 2 - FIELD ScaTra FUNCT 2
 E 3 - FIELD ScaTra FUNCT 3
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
 DSURF  4
-E 2 - 0 Selfcontact Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Solidcontact DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 0
-E 3 - 0 Selfcontact Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Solidcontact DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 0
-E 4 - 1 Selfcontact Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Solidcontact DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 0
-E 5 - 1 Selfcontact Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Solidcontact DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 0
+E 2 - InterfaceID 0 Side Selfcontact Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 0
+E 3 - InterfaceID 0 Side Selfcontact Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 0
+E 4 - InterfaceID 1 Side Selfcontact Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 0
+E 5 - InterfaceID 1 Side Selfcontact Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 0
 -------------------------------DESIGN S2I KINETICS SURF CONDITIONS
 DSURF  4
 E 2 - 0 Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.0e-3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False

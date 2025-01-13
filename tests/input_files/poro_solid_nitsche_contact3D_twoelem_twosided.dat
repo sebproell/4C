@@ -217,9 +217,9 @@ E 2 -
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
 DSURF  2
 // zp
-E 2 - 1 Master
+E 2 - InterfaceID 1 Side Master
 // s_contact
-E 3 - 1 Slave
+E 3 - InterfaceID 1 Side Slave
 ---------------------------DESIGN SURFACE PORO PARTIAL INTEGRATION
 DSURF 1
 // all

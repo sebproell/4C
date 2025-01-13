@@ -101,11 +101,11 @@ E 2 - NUMDOF 3  ONOFF 1 1 1  VAL 0.4 0.0 -0.4 FUNCT 1  0 1
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
 DSURF  3
 // stscontact_solid1
-E 3 - 1 Master Inactive FrCoeffOrBound 0.5 AdhesionBound 0.0 Solidcontact
+E 3 - InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.5 AdhesionBound 0.0 Application Solidcontact
 // stscontact_solid2
-E 4 - 1 Slave Inactive FrCoeffOrBound 0.5 AdhesionBound 0.0 Solidcontact
+E 4 - InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.5 AdhesionBound 0.0 Application Solidcontact
 // btscontact_beam1
-E 5 - 2 Master Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Beamtosolidcontact
+E 5 - InterfaceID 2 Side Master Initialization Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Beamtosolidcontact
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    55 DNODE 1
 NODE    59 DNODE 1

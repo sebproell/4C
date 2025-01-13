@@ -61,9 +61,9 @@ COMPONENT 2 SYMBOLIC_FUNCTION_OF_SPACE_TIME y
 -----------------------------------DESIGN SURF MORTAR COUPLING CONDITIONS 3D
 DSURF                           2
 //                              top_contact
-E 3 - 1 Slave Active
+E 3 - InterfaceID 1 Side Slave Initialization Active
 //                              bottom_contact
-E 4 - 1 Master Inactive
+E 4 - InterfaceID 1 Side Master Initialization Inactive
 -----------------------------------------DESIGN VOL INITIAL FIELD CONDITIONS
 DVOL   1
 E 1 - FIELD Velocity FUNCT 2

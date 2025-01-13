@@ -180,29 +180,28 @@ void Inpar::Mortar::set_valid_conditions(
 
   for (const auto& cond : {linecontact, surfcontact})
   {
-    cond->add_component(std::make_shared<Input::IntComponent>("InterfaceID"));
-    cond->add_component(std::make_shared<Input::SelectionComponent>("Side", "Master",
+    add_named_int(cond, "InterfaceID");
+    add_named_selection_component(cond, "Side", "interface side", "Master",
         Teuchos::tuple<std::string>("Master", "Slave", "Selfcontact"),
-        Teuchos::tuple<std::string>("Master", "Slave", "Selfcontact")));
-    cond->add_component(std::make_shared<Input::SelectionComponent>("Initialization", "Inactive",
+        Teuchos::tuple<std::string>("Master", "Slave", "Selfcontact"));
+    add_named_selection_component(cond, "Initialization", "initialization", "Inactive",
         Teuchos::tuple<std::string>("Inactive", "Active"),
-        Teuchos::tuple<std::string>("Inactive", "Active"), true));
+        Teuchos::tuple<std::string>("Inactive", "Active"), true);
 
     add_named_real(cond, "FrCoeffOrBound", "friction coefficient bound", 0.0, true);
     add_named_real(cond, "AdhesionBound", "adhesion bound", 0.0, true);
 
-    cond->add_component(std::make_shared<Input::SelectionComponent>("Application", "Solidcontact",
+    add_named_selection_component(cond, "Application", "application", "Solidcontact",
         Teuchos::tuple<std::string>("Solidcontact", "Beamtosolidcontact", "Beamtosolidmeshtying"),
         Teuchos::tuple<std::string>("Solidcontact", "Beamtosolidcontact", "Beamtosolidmeshtying"),
-        true));
+        true);
 
     // optional DBC handling
-    cond->add_component(std::make_shared<Input::SelectionComponent>("DbcHandling", "DoNothing",
+    add_named_selection_component(cond, "DbcHandling", "DbcHandling", "DoNothing",
         Teuchos::tuple<std::string>("DoNothing", "RemoveDBCSlaveNodes"),
         Teuchos::tuple<int>(static_cast<int>(DBCHandling::do_nothing),
             static_cast<int>(DBCHandling::remove_dbc_nodes_from_slave_side)),
-        true));
-
+        true);
     add_named_real(cond, "TwoHalfPass", "optional two half pass approach", 0.0, true);
     add_named_real(cond, "RefConfCheckNonSmoothSelfContactSurface",
         "optional reference configuration check for non-smooth self contact surfaces", 0.0, true);
@@ -225,13 +224,13 @@ void Inpar::Mortar::set_valid_conditions(
 
   for (const auto& cond : {linemortar, surfmortar})
   {
-    cond->add_component(std::make_shared<Input::IntComponent>("InterfaceID"));
-    cond->add_component(std::make_shared<Input::SelectionComponent>("Side", "Master",
+    add_named_int(cond, "InterfaceID");
+    add_named_selection_component(cond, "Side", "interface side", "Master",
         Teuchos::tuple<std::string>("Master", "Slave"),
-        Teuchos::tuple<std::string>("Master", "Slave")));
-    cond->add_component(std::make_shared<Input::SelectionComponent>("Initialization", "Inactive",
+        Teuchos::tuple<std::string>("Master", "Slave"));
+    add_named_selection_component(cond, "Initialization", "initialization", "Inactive",
         Teuchos::tuple<std::string>("Inactive", "Active"),
-        Teuchos::tuple<std::string>("Inactive", "Active"), true));
+        Teuchos::tuple<std::string>("Inactive", "Active"), true);
 
     condlist.push_back(cond);
   }
@@ -294,13 +293,13 @@ void Inpar::Mortar::set_valid_conditions(
 
     for (const auto& cond : {linemortar, surfmortar})
     {
-      cond->add_component(std::make_shared<Input::IntComponent>("InterfaceID"));
-      cond->add_component(std::make_shared<Input::SelectionComponent>("Side", "Master",
+      add_named_int(cond, "InterfaceID");
+      add_named_selection_component(cond, "Side", "interface side", "Master",
           Teuchos::tuple<std::string>("Master", "Slave"),
-          Teuchos::tuple<std::string>("Master", "Slave")));
-      cond->add_component(std::make_shared<Input::SelectionComponent>("Initialization", "Inactive",
+          Teuchos::tuple<std::string>("Master", "Slave"));
+      add_named_selection_component(cond, "Initialization", "initialization", "Inactive",
           Teuchos::tuple<std::string>("Inactive", "Active"),
-          Teuchos::tuple<std::string>("Inactive", "Active"), true));
+          Teuchos::tuple<std::string>("Inactive", "Active"), true);
 
       condlist.push_back(cond);
     }

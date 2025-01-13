@@ -78,8 +78,8 @@ DSURF                           1
 E 12 - NUMDOF 3 ONOFF 1 1 1 VAL 1.0 1.0 -1.0 FUNCT 1 1 2
 -----------------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
 DSURF                           2
-E 6 - 1 Master
-E 7 - 1 Slave
+E 6 - InterfaceID 1 Side Master
+E 7 - InterfaceID 1 Side Slave
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 249 DNODE 1
 NODE 175 DNODE 2

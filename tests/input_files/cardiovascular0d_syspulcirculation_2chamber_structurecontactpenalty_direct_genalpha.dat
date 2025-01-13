@@ -204,14 +204,14 @@ E 10 - NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0  FUNCT 0 0 0
 E 11 - NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0  FUNCT 0 0 0
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
 DSURF  8
-E 12 - 1 Master Inactive FrCoeffOrBound 0.0
-E 13 - 1 Slave Inactive FrCoeffOrBound 0.0
-E 14 - 2 Master Inactive FrCoeffOrBound 0.0
-E 15 - 2 Slave Inactive FrCoeffOrBound 0.0
-E 16 - 3 Master Inactive FrCoeffOrBound 0.0
-E 17 - 3 Slave Inactive FrCoeffOrBound 0.0
-E 18 - 4 Master Inactive FrCoeffOrBound 0.0
-E 19 - 4 Slave Inactive FrCoeffOrBound 0.0
+E 12 - InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.0
+E 13 - InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.0
+E 14 - InterfaceID 2 Side Master Initialization Inactive FrCoeffOrBound 0.0
+E 15 - InterfaceID 2 Side Slave Initialization Inactive FrCoeffOrBound 0.0
+E 16 - InterfaceID 3 Side Master Initialization Inactive FrCoeffOrBound 0.0
+E 17 - InterfaceID 3 Side Slave Initialization Inactive FrCoeffOrBound 0.0
+E 18 - InterfaceID 4 Side Master Initialization Inactive FrCoeffOrBound 0.0
+E 19 - InterfaceID 4 Side Slave Initialization Inactive FrCoeffOrBound 0.0
 -----DESIGN SURF CARDIOVASCULAR 0D SYS-PUL CIRCULATION CONDITIONS
 DSURF                           2
 E 6 - id 0 TYPE ventricle_left
