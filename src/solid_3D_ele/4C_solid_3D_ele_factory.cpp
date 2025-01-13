@@ -12,6 +12,7 @@
 #include "4C_inpar_structure.hpp"
 #include "4C_solid_3D_ele_calc_displacement_based.hpp"
 #include "4C_solid_3D_ele_calc_eas.hpp"
+#include "4C_solid_3D_ele_calc_eas_helpers.hpp"
 #include "4C_solid_3D_ele_calc_fbar.hpp"
 #include "4C_solid_3D_ele_calc_mulf.hpp"
 #include "4C_solid_3D_ele_calc_mulf_fbar.hpp"
@@ -144,6 +145,32 @@ namespace
                        celltype == Core::FE::CellType::wedge6>>
   {
     using type = Discret::Elements::ANSSolidShellIntegrator<celltype>;
+  };
+
+  /*!
+   * @brief Nonlinear total lagrangian hex8 solid-shell formulation with EAS and ANS
+   */
+  template <Core::FE::CellType celltype>
+  struct SolidCalculationFormulation<celltype, Inpar::Solid::KinemType::nonlinearTotLag,
+      Discret::Elements::ElementTechnology::shell_eas_ans,
+      Discret::Elements::PrestressTechnology::none,
+      std::enable_if_t<celltype == Core::FE::CellType::hex8>>
+  {
+    using type = Discret::Elements::EasAnsSolidShellIntegrator<celltype,
+        Discret::Elements::EasType::eastype_sh8_7>;
+  };
+
+  /*!
+   * @brief Nonlinear total lagrangian wedge6 solid-shell formulation with EAS and ANS
+   */
+  template <Core::FE::CellType celltype>
+  struct SolidCalculationFormulation<celltype, Inpar::Solid::KinemType::nonlinearTotLag,
+      Discret::Elements::ElementTechnology::shell_eas_ans,
+      Discret::Elements::PrestressTechnology::none,
+      std::enable_if_t<celltype == Core::FE::CellType::wedge6>>
+  {
+    using type = Discret::Elements::EasAnsSolidShellIntegrator<celltype,
+        Discret::Elements::EasType::eastype_sw6_1>;
   };
 
   /*!

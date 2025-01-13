@@ -25,6 +25,7 @@
 #include "4C_solid_3D_ele_calc_mulf.hpp"
 #include "4C_solid_3D_ele_calc_mulf_fbar.hpp"
 #include "4C_solid_3D_ele_calc_shell_ans.hpp"
+#include "4C_solid_3D_ele_calc_shell_eas_ans.hpp"
 #include "4C_solid_3D_ele_formulation.hpp"
 #include "4C_solid_3D_ele_interface_serializable.hpp"
 #include "4C_utils_demangle.hpp"
@@ -632,6 +633,14 @@ template class Discret::Elements::SolidEleCalc<Core::FE::CellType::hex8,
     Discret::Elements::ShellANSFormulation<Core::FE::CellType::hex8>>;
 template class Discret::Elements::SolidEleCalc<Core::FE::CellType::wedge6,
     Discret::Elements::ShellANSFormulation<Core::FE::CellType::wedge6>>;
+
+// explicit instantiations for shell_eas_ans
+template class Discret::Elements::SolidEleCalc<Core::FE::CellType::hex8,
+    Discret::Elements::ShellEASANSFormulation<Core::FE::CellType::hex8,
+        Discret::Elements::EasType::eastype_sh8_7>>;
+template class Discret::Elements::SolidEleCalc<Core::FE::CellType::wedge6,
+    Discret::Elements::ShellEASANSFormulation<Core::FE::CellType::wedge6,
+        Discret::Elements::EasType::eastype_sw6_1>>;
 
 // explicit instantiations for hex8 with EAS
 template class Discret::Elements::SolidEleCalc<Core::FE::CellType::hex8,
