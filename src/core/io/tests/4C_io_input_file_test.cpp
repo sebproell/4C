@@ -74,67 +74,6 @@ namespace
     EXPECT_ANY_THROW(Core::IO::read_key_value("key=1.0"));
   }
 
-  TEST(StreamLineIterator, Empty)
-  {
-    auto stream = std::make_shared<std::istringstream>("");
-    Core::IO::Internal::StreamLineIterator it{stream};
-    Core::IO::Internal::StreamLineIterator it_end{};
-    EXPECT_EQ(it, it_end);
-  }
-
-  TEST(StreamLineIterator, SingleLine)
-  {
-    auto stream = std::make_shared<std::istringstream>("test");
-    Core::IO::Internal::StreamLineIterator it{stream};
-    Core::IO::Internal::StreamLineIterator it_end{};
-    std::string line;
-    for (; it != it_end; ++it)
-    {
-      line += *it;
-    }
-    EXPECT_EQ(line, "test");
-  }
-
-  TEST(StreamLineIterator, MultipleLineUntilEnd)
-  {
-    auto stream = std::make_shared<std::istringstream>("a\nb\nc\n");
-    Core::IO::Internal::StreamLineIterator it{stream};
-    Core::IO::Internal::StreamLineIterator it_end{};
-    std::string line;
-    for (; it != it_end; ++it)
-    {
-      line += *it;
-    }
-    EXPECT_EQ(line, "abc");
-  }
-
-  TEST(StreamLineIterator, MultipleLineUntilGivenLine)
-  {
-    auto stream = std::make_shared<std::istringstream>("a\nb\nc\n");
-    Core::IO::Internal::StreamLineIterator it{stream, 2};
-    Core::IO::Internal::StreamLineIterator it_end{};
-    std::string line;
-    for (; it != it_end; ++it)
-    {
-      line += *it;
-    }
-    EXPECT_EQ(line, "ab");
-  }
-
-  TEST(StreamLineIterator, EmptyRange)
-  {
-    auto stream = std::make_shared<std::istringstream>("a\nb\nc\n");
-    Core::IO::Internal::StreamLineIterator it{stream, 0};
-    // Read zero lines
-    Core::IO::Internal::StreamLineIterator it_end{};
-    std::string line;
-    for (; it != it_end; ++it)
-    {
-      line += *it;
-    }
-    EXPECT_EQ(line, "");
-  }
-
   void check_section(
       Core::IO::InputFile& input, const std::string& section, const std::vector<std::string>& lines)
   {
@@ -159,7 +98,7 @@ namespace
     MPI_Comm comm(MPI_COMM_WORLD);
     Core::IO::InputFile input{input_file_name, comm};
 
-    EXPECT_FALSE(input.has_section("EMPTY"));
+    EXPECT_TRUE(input.has_section("EMPTY"));
     EXPECT_FALSE(input.has_section("NONEXISTENT SECTION"));
 
     check_section(input, "SECTION WITH SPACES", {"line in section with spaces"});

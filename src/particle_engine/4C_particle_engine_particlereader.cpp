@@ -28,7 +28,7 @@ void PARTICLEENGINE::read_particles(Core::IO::InputFile& input, const std::strin
   Teuchos::Time time("", true);
 
   bool any_particles_read = false;
-  for (const auto& particle_line : input.lines_in_section(section_name))
+  for (const auto& particle_line : input.lines_in_section_rank_0_only(section_name))
   {
     if (!any_particles_read) Core::IO::cout << "Read and create particles\n" << Core::IO::flush;
     any_particles_read = true;

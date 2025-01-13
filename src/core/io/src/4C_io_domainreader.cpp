@@ -116,7 +116,7 @@ namespace Core::IO
     {
       bool any_lines_read = false;
       // read domain info
-      for (const auto& line : input_.lines_in_section(sectionname_))
+      for (const auto& line : input_.lines_in_section_rank_0_only(sectionname_))
       {
         any_lines_read = true;
         std::istringstream t{std::string{line}};

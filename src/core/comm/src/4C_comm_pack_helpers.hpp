@@ -415,7 +415,7 @@ namespace Core::Communication
       extract_from_pack(buffer, second);
 
       // add to map
-      stuff.insert(std::pair<T, U>(first, second));
+      stuff.emplace(std::move(first), std::move(second));
     }
   }
 
@@ -445,7 +445,7 @@ namespace Core::Communication
       extract_from_pack(buffer, second);
 
       // add to map
-      stuff.insert({first, second});
+      stuff.emplace(std::move(first), std::move(second));
     }
   }
 

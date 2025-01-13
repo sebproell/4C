@@ -53,7 +53,7 @@ void ntam(int argc, char* argv[])
   ti = walltime_in_seconds() - t0;
   if (Core::Communication::my_mpi_rank(gcomm) == 0)
   {
-    Core::IO::cout << "\nTotal CPU Time for INPUT:       " << std::setw(10) << std::setprecision(3)
+    Core::IO::cout << "\nTotal wall time for INPUT:       " << std::setw(10) << std::setprecision(3)
                    << std::scientific << ti << " sec \n\n";
   }
 
@@ -65,7 +65,7 @@ void ntam(int argc, char* argv[])
   tc = walltime_in_seconds() - t0;
   if (Core::Communication::my_mpi_rank(gcomm) == 0)
   {
-    Core::IO::cout << "\nTotal CPU Time for CALCULATION: " << std::setw(10) << std::setprecision(3)
+    Core::IO::cout << "\nTotal wall time for CALCULATION: " << std::setw(10) << std::setprecision(3)
                    << std::scientific << tc << " sec \n\n";
   }
 }
