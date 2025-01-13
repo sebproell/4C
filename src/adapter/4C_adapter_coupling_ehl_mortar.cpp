@@ -82,7 +82,7 @@ void Adapter::CouplingEhlMortar::setup(std::shared_ptr<Core::FE::Discretization>
   double fr_coeff = -1.;
   for (int i = 0; i < (int)ehl_conditions.size(); ++i)
   {
-    [[maybe_unused]] const int group1id = ehl_conditions[i]->parameters().get<int>("Interface ID");
+    [[maybe_unused]] const int group1id = ehl_conditions[i]->parameters().get<int>("InterfaceID");
     const auto fr = ehl_conditions[i]->parameters().get<double>("FrCoeffOrBound");
     if (fr != ehl_conditions[0]->parameters().get<double>("FrCoeffOrBound"))
       FOUR_C_THROW("inconsistency in friction coefficients");

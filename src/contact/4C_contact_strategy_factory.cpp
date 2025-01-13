@@ -682,7 +682,7 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
   for (auto& currentgroup : ccond_grps)
   {
     // initialize a reference to the i-th contact condition group
-    const auto groupid1 = currentgroup[0]->parameters().get<int>("Interface ID");
+    const auto groupid1 = currentgroup[0]->parameters().get<int>("InterfaceID");
 
     // In case of MultiScale contact this is the id of the interface's constitutive contact law
     int contactconstitutivelaw_id = currentgroup[0]->parameters().get<int>("ConstitutiveLawID");

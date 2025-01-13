@@ -118,7 +118,7 @@ void CONTACT::Utils::get_contact_condition_groups(
 
     // try to build contact group around this condition
     current_grp.push_back(cconds[i]);
-    const auto groupid1 = current_grp[0]->parameters().get<int>("Interface ID");
+    const auto groupid1 = current_grp[0]->parameters().get<int>("InterfaceID");
     bool foundit = false;
 
     // only one surface per group is ok for self contact
@@ -130,7 +130,7 @@ void CONTACT::Utils::get_contact_condition_groups(
       // do not compare ids of one and the same contact condition
       if (j == i) continue;
       tempcond = cconds[j];
-      const auto groupid2 = tempcond->parameters().get<int>("Interface ID");
+      const auto groupid2 = tempcond->parameters().get<int>("InterfaceID");
 
       // Do the IDs coincide?
       if (groupid1 != groupid2) continue;  // not in the group

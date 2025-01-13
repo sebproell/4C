@@ -180,7 +180,7 @@ void Inpar::Mortar::set_valid_conditions(
 
   for (const auto& cond : {linecontact, surfcontact})
   {
-    cond->add_component(std::make_shared<Input::IntComponent>("Interface ID"));
+    cond->add_component(std::make_shared<Input::IntComponent>("InterfaceID"));
     cond->add_component(std::make_shared<Input::SelectionComponent>("Side", "Master",
         Teuchos::tuple<std::string>("Master", "Slave", "Selfcontact"),
         Teuchos::tuple<std::string>("Master", "Slave", "Selfcontact")));
@@ -225,7 +225,7 @@ void Inpar::Mortar::set_valid_conditions(
 
   for (const auto& cond : {linemortar, surfmortar})
   {
-    cond->add_component(std::make_shared<Input::IntComponent>("Interface ID"));
+    cond->add_component(std::make_shared<Input::IntComponent>("InterfaceID"));
     cond->add_component(std::make_shared<Input::SelectionComponent>("Side", "Master",
         Teuchos::tuple<std::string>("Master", "Slave"),
         Teuchos::tuple<std::string>("Master", "Slave")));
@@ -294,7 +294,7 @@ void Inpar::Mortar::set_valid_conditions(
 
     for (const auto& cond : {linemortar, surfmortar})
     {
-      cond->add_component(std::make_shared<Input::IntComponent>("Interface ID"));
+      cond->add_component(std::make_shared<Input::IntComponent>("InterfaceID"));
       cond->add_component(std::make_shared<Input::SelectionComponent>("Side", "Master",
           Teuchos::tuple<std::string>("Master", "Slave"),
           Teuchos::tuple<std::string>("Master", "Slave")));

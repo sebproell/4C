@@ -153,7 +153,7 @@ void Inpar::EHL::set_valid_conditions(
 
   for (const auto& cond : {lineehl, surfehl})
   {
-    cond->add_component(std::make_shared<Input::IntComponent>("Interface ID"));
+    cond->add_component(std::make_shared<Input::IntComponent>("InterfaceID"));
     cond->add_component(std::make_shared<Input::SelectionComponent>("Side", "Master",
         Teuchos::tuple<std::string>("Master", "Slave"),
         Teuchos::tuple<std::string>("Master", "Slave")));
