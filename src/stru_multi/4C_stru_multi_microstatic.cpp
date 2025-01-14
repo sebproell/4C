@@ -22,7 +22,6 @@
 #include "4C_linear_solver_method.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_so3_hex8.hpp"
-#include "4C_so3_shw6.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_structure_aux.hpp"
 #include "4C_utils_exceptions.hpp"
@@ -888,8 +887,7 @@ void MultiScale::MicroStatic::set_eas_data()
   {
     Core::Elements::Element* actele = discret_->l_row_element(lid);
 
-    if (actele->element_type() == Discret::Elements::SoHex8Type::instance() or
-        actele->element_type() == Discret::Elements::SoShw6Type::instance())
+    if (actele->element_type() == Discret::Elements::SoHex8Type::instance())
     {
       // create the parameters for the discretization
       Teuchos::ParameterList p;
