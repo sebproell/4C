@@ -1498,10 +1498,10 @@ void XFEM::MeshCouplingNavierSlip::get_condition_by_robin_id(
 {
   mynewcond.clear();
 
-  // select the conditions with specified "robin_id"
+  // select the conditions with specified "ROBIN_ID"
   for (auto* cond : mycond)
   {
-    const int id_zero_based = cond->parameters().get<int>("robin_id") - 1;
+    const int id_zero_based = cond->parameters().get<int>("ROBIN_ID") - 1;
 
     if (id_zero_based == coupling_id) mynewcond.push_back(cond);
   }
