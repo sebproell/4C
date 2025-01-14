@@ -258,17 +258,16 @@ void Core::Conditions::PeriodicBoundaryConditions::put_all_slaves_to_masters_pro
     //----------------------------------------------------------------------
 
     std::vector<std::string> planes;
-    planes.push_back("xy");
-    planes.push_back("xz");
-    planes.push_back("yz");
-    planes.push_back("xyz");
+    planes.emplace_back("xy");
+    planes.emplace_back("xz");
+    planes.emplace_back("yz");
+    planes.emplace_back("xyz");
 
     // the id of the plane --- will be counted in the loop....
     int num = 0;
 
     // loop over periodic directions/planes
-    for (std::vector<std::string>::iterator thisplane = planes.begin(); thisplane != planes.end();
-        ++thisplane)
+    for (auto& plane : planes)
     {
       // loop over all three layers (we allow three layers since
       // the code should be able to deal with up to cubic splines
@@ -302,29 +301,29 @@ void Core::Conditions::PeriodicBoundaryConditions::put_all_slaves_to_masters_pro
           //--------------------------------------------------
           // get master and slave condition pair with id pbcid
 
-          for (unsigned numcond = 0; numcond < mysurfpbcs_.size(); ++numcond)
+          for (auto& mysurfpbc : mysurfpbcs_)
           {
-            const int myid = mysurfpbcs_[numcond]->parameters().get<int>("ID");
-            const int mylayer = mysurfpbcs_[numcond]->parameters().get<int>("LAYER");
+            const int myid = mysurfpbc->parameters().get<int>("ID");
+            const int mylayer = mysurfpbc->parameters().get<int>("LAYER");
             // yes, I am the condition with id pbcid and in the desired layer
 
             if (myid == pbcid && (mylayer + 1) == nlayer)
             {
-              const std::string& mymasterslavetoggle =
-                  mysurfpbcs_[numcond]->parameters().get<std::string>("MASTER_OR_SLAVE");
+              const auto& mymasterslavetoggle =
+                  mysurfpbc->parameters().get<std::string>("MASTER_OR_SLAVE");
 
               if (mymasterslavetoggle == "Master")
               {
-                mastercond = mysurfpbcs_[numcond];
+                mastercond = mysurfpbc;
 
                 //--------------------------------------------------
                 // check whether this periodic boundary condition belongs
                 // to thisplane
 
-                const std::string& dofsforpbcplanename =
+                const auto& dofsforpbcplanename =
                     mastercond->parameters().get<std::string>("PLANE");
 
-                if (dofsforpbcplanename == *thisplane)
+                if (dofsforpbcplanename == plane)
                 {
                   // add all master nodes to masterset
 
@@ -334,14 +333,13 @@ void Core::Conditions::PeriodicBoundaryConditions::put_all_slaves_to_masters_pro
 
                   masteridstoadd = mastercond->get_nodes();
 
-                  for (std::vector<int>::const_iterator idtoadd = (*masteridstoadd).begin();
-                      idtoadd != (*masteridstoadd).end(); ++idtoadd)
+                  for (int idtoadd : *masteridstoadd)
                   {
                     // we only add row nodes to the set
-                    if (discret_->have_global_node(*idtoadd))
-                      if (discret_->g_node(*idtoadd)->owner() ==
+                    if (discret_->have_global_node(idtoadd))
+                      if (discret_->g_node(idtoadd)->owner() ==
                           Core::Communication::my_mpi_rank(discret_->get_comm()))
-                        masterset.insert(*idtoadd);
+                        masterset.insert(idtoadd);
                   }
 
                   // check for angle of rotation (has to be zero for master plane)
@@ -352,15 +350,14 @@ void Core::Conditions::PeriodicBoundaryConditions::put_all_slaves_to_masters_pro
               }
               else if (mymasterslavetoggle == "Slave")
               {
-                slavecond = mysurfpbcs_[numcond];
+                slavecond = mysurfpbc;
 
                 //--------------------------------------------------
                 // check whether this periodic boundary condition belongs
                 // to thisplane
-                const std::string& dofsforpbcplanename =
-                    slavecond->parameters().get<std::string>("PLANE");
+                const auto& dofsforpbcplanename = slavecond->parameters().get<std::string>("PLANE");
 
-                if (dofsforpbcplanename == *thisplane)
+                if (dofsforpbcplanename == plane)
                 {
                   // add all slave nodes to slaveset
 
@@ -370,21 +367,20 @@ void Core::Conditions::PeriodicBoundaryConditions::put_all_slaves_to_masters_pro
 
                   slaveidstoadd = slavecond->get_nodes();
 
-                  for (std::vector<int>::const_iterator idtoadd = (*slaveidstoadd).begin();
-                      idtoadd != (*slaveidstoadd).end(); ++idtoadd)
+                  for (int idtoadd : *slaveidstoadd)
                   {
                     // we only add row nodes to the set
-                    if (discret_->have_global_node(*idtoadd))
-                      if (discret_->g_node(*idtoadd)->owner() ==
+                    if (discret_->have_global_node(idtoadd))
+                      if (discret_->g_node(idtoadd)->owner() ==
                           Core::Communication::my_mpi_rank(discret_->get_comm()))
-                        slaveset.insert(*idtoadd);
+                        slaveset.insert(idtoadd);
                   }
 
                   // check for angle of rotation of slave plane and store it
                   const double angle = slavecond->parameters().get<double>("ANGLE");
                   if (abs(angle) > 1e-13)
                   {
-                    if ((*thisplane != "xz") && (*thisplane != "yz"))
+                    if ((plane != "xz") && (plane != "yz"))
                       FOUR_C_THROW("Rotation of slave plane only implemented for xz and yz planes");
                     else
                     {
@@ -405,7 +401,7 @@ void Core::Conditions::PeriodicBoundaryConditions::put_all_slaves_to_masters_pro
 
 
               // set tolerance for octree
-              const double tol = mysurfpbcs_[numcond]->parameters().get<double>("ABSTREETOL");
+              const double tol = mysurfpbc->parameters().get<double>("ABSTREETOL");
 
               if (!tol_set)
               {
@@ -420,7 +416,7 @@ void Core::Conditions::PeriodicBoundaryConditions::put_all_slaves_to_masters_pro
                   FOUR_C_THROW(
                       "none matching tolerances %12.5e neq %12.5e for nodmatching octree. All "
                       "values in direction %s have to match\n",
-                      abs_tol, tol, (*thisplane).c_str());
+                      abs_tol, tol, plane.c_str());
                 }
               }
             }  // end if i am the right condition in the right layer
@@ -456,15 +452,15 @@ void Core::Conditions::PeriodicBoundaryConditions::put_all_slaves_to_masters_pro
           // consecutive in the ASCII table --- 'x' is the ASCII
           // value of x ....
 
-          if (*thisplane == "xyz")
+          if (plane == "xyz")
           {
             // nodes in exact the same position are coupled
             dofsforpbcplane.clear();
           }
           else
           {
-            dofsforpbcplane[0] = thisplane->c_str()[0] - 'x';
-            dofsforpbcplane[1] = thisplane->c_str()[1] - 'x';
+            dofsforpbcplane[0] = plane.c_str()[0] - 'x';
+            dofsforpbcplane[1] = plane.c_str()[1] - 'x';
           }
           //--------------------------------------------------
           // we just write the sets into vectors
@@ -498,7 +494,7 @@ void Core::Conditions::PeriodicBoundaryConditions::put_all_slaves_to_masters_pro
           if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0 && verbose_ &&
               pbcid == numpbcpairs_ - 1)
           {
-            std::cout << " creating layer " << nlayer << " of midtosid-map in " << *thisplane
+            std::cout << " creating layer " << nlayer << " of midtosid-map in " << plane
                       << " direction ... ";
             fflush(stdout);
           }
