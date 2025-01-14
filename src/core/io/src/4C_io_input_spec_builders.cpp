@@ -208,23 +208,21 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::print(
   }
 }
 
-void Core::IO::InputSpecBuilders::Internal::GroupSpec::emit_metadata(YAML::Emitter& yaml) const
+void Core::IO::InputSpecBuilders::Internal::GroupSpec::emit_metadata(ryml::NodeRef node) const
 {
-  {
-    yaml << YAML::Key << (name.empty() ? data.description : name);
-    yaml << YAML::Value << YAML::BeginMap;
-    {
-      yaml << YAML::Key << "type" << YAML::Value << (name.empty() ? "anonymous_group" : "group");
-      yaml << YAML::Key << "description" << YAML::Value << data.description;
-      yaml << YAML::Key << "required" << YAML::Value << data.required;
+  node << ryml::key(name.empty() ? data.description : name);
+  node |= ryml::MAP;
 
-      yaml << YAML::Key << "specs" << YAML::Value << YAML::BeginMap;
-      {
-        for (const auto& spec : specs) spec.impl().emit_metadata(yaml);
-      }
-      yaml << YAML::EndMap;
-    }
-    yaml << YAML::EndMap;
+  node["type"] << (name.empty() ? "anonymous_group" : "group");
+  node["description"] << data.description;
+  emit_value_as_yaml(node["required"], data.required);
+  node["specs"] |= ryml::MAP;
+  {
+    for (const auto& spec : specs)
+    {
+      auto child = node["specs"].append_child();
+      spec.impl().emit_metadata(child);
+    };
   }
 }
 
@@ -304,24 +302,20 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::print(
   stream << "}>";
 }
 
-void Core::IO::InputSpecBuilders::Internal::OneOfSpec::emit_metadata(YAML::Emitter& yaml) const
+void Core::IO::InputSpecBuilders::Internal::OneOfSpec::emit_metadata(ryml::NodeRef node) const
 {
-  {
-    yaml << YAML::Key << data.description;
-    yaml << YAML::Value << YAML::BeginMap;
-    {
-      yaml << YAML::Key << "type" << YAML::Value << "one_of";
-      yaml << YAML::Key << "description" << YAML::Value << data.description;
-      yaml << YAML::Key << "required" << YAML::Value << data.required;
+  node << ryml::key(data.description);
+  node |= ryml::MAP;
 
-      yaml << YAML::Key << "specs" << YAML::Value << YAML::BeginMap;
-      {
-        for (const auto& spec : specs) spec.impl().emit_metadata(yaml);
-      }
-      yaml << YAML::EndMap;
-    }
-    yaml << YAML::EndMap;
-  }
+  node["type"] << "one_of";
+  node["description"] << data.description;
+  emit_value_as_yaml(node["required"], data.required);
+  node["specs"] |= ryml::MAP;
+  for (const auto& spec : specs)
+  {
+    auto child = node["specs"].append_child();
+    spec.impl().emit_metadata(child);
+  };
 }
 
 

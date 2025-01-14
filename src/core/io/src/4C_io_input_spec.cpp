@@ -8,6 +8,7 @@
 #include "4C_io_input_spec.hpp"
 
 #include "4C_io_input_spec_builders.hpp"
+#include "4C_io_yaml_emitter.hpp"
 #include "4C_utils_exceptions.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -41,11 +42,11 @@ void Core::IO::InputSpec::print_as_dat(
   pimpl_->print(stream, container);
 }
 
-void Core::IO::InputSpec::emit_metadata(YAML::Emitter& yaml) const
+void Core::IO::InputSpec::emit_metadata(YamlEmitter& yaml) const
 {
-  yaml << YAML::BeginMap;
-  pimpl_->emit_metadata(yaml);
-  yaml << YAML::EndMap;
+  auto root = yaml.node;
+  root |= ryml::MAP;
+  pimpl_->emit_metadata(root.append_child());
 }
 
 Core::IO::Internal::InputSpecTypeErasedBase& Core::IO::InputSpec::impl() { return *pimpl_; }

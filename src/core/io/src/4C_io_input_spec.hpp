@@ -10,8 +10,6 @@
 
 #include "4C_config.hpp"
 
-#include <yaml-cpp/emitter.h>
-
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN
@@ -20,6 +18,7 @@ namespace Core::IO
 {
   class InputParameterContainer;
   class ValueParser;
+  class YamlEmitter;
 
   namespace Internal
   {
@@ -62,7 +61,7 @@ namespace Core::IO
     /**
      * Emit metadata about the InputSpec to the @p yaml emitter.
      */
-    void emit_metadata(YAML::Emitter& yaml) const;
+    void emit_metadata(YamlEmitter& yaml) const;
 
     /**
      * Access the opaque implementation class. This is used in the implementation files where the
