@@ -64,8 +64,8 @@ E 7 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0  FUNCT 0 0
 E 8 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0  FUNCT 0 0
 -----------------------------------DESIGN LINE MORTAR CONTACT CONDITIONS 2D
 DLINE                           2
-E 4 - 1 Slave Inactive FrCoeffOrBound 0.2
-E 6 - 1 Master Inactive FrCoeffOrBound 0.2
+E 4 - InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.2
+E 6 - InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.2
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 296 DNODE 1
 NODE 210 DNODE 2

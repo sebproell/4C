@@ -99,8 +99,8 @@ DVOL   1
 E 1 - FIELD Velocity FUNCT 2
 ---------------------DESIGN SURF EHL MORTAR COUPLING CONDITIONS 3D
 DSURF  2
-E 2 - 1 Slave
-E 3 - 1 Master
+E 2 - InterfaceID 1 Side Slave
+E 3 - InterfaceID 1 Side Master
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    413 DNODE 1
 NODE    414 DNODE 1

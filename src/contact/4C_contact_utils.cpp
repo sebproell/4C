@@ -118,7 +118,7 @@ void CONTACT::Utils::get_contact_condition_groups(
 
     // try to build contact group around this condition
     current_grp.push_back(cconds[i]);
-    const auto groupid1 = current_grp[0]->parameters().get<int>("Interface ID");
+    const auto groupid1 = current_grp[0]->parameters().get<int>("InterfaceID");
     bool foundit = false;
 
     // only one surface per group is ok for self contact
@@ -130,7 +130,7 @@ void CONTACT::Utils::get_contact_condition_groups(
       // do not compare ids of one and the same contact condition
       if (j == i) continue;
       tempcond = cconds[j];
-      const auto groupid2 = tempcond->parameters().get<int>("Interface ID");
+      const auto groupid2 = tempcond->parameters().get<int>("InterfaceID");
 
       // Do the IDs coincide?
       if (groupid1 != groupid2) continue;  // not in the group
@@ -456,7 +456,7 @@ void CONTACT::Utils::DbcHandler::detect_dbc_slave_nodes_and_elements(
 
       const Core::Conditions::Condition* sl_cond = ccond_grp[i];
 
-      const int dbc_handling_id = sl_cond->parameters().get<int>("dbc_handling");
+      const int dbc_handling_id = sl_cond->parameters().get<int>("DbcHandling");
       const auto dbc_handling = static_cast<Inpar::Mortar::DBCHandling>(dbc_handling_id);
 
       switch (dbc_handling)

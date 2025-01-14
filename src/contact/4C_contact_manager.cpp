@@ -137,7 +137,7 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
 
     // try to build contact group around this condition
     currentgroup.push_back(contactconditions[i]);
-    const int groupid1 = currentgroup[0]->parameters().get<int>("Interface ID");
+    const int groupid1 = currentgroup[0]->parameters().get<int>("InterfaceID");
 
     // In case of MultiScale contact this is the id of the interface's constitutive contact law
     int contactconstitutivelawid = currentgroup[0]->parameters().get<int>("ConstitutiveLawID");
@@ -152,7 +152,7 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
     {
       if (j == i) continue;  // do not detect contactconditions[i] again
       tempcond = contactconditions[j];
-      const int groupid2 = tempcond->parameters().get<int>("Interface ID");
+      const int groupid2 = tempcond->parameters().get<int>("InterfaceID");
       if (groupid1 != groupid2) continue;  // not in the group
       foundit = true;                      // found a group entry
       currentgroup.push_back(tempcond);    // store it in currentgroup

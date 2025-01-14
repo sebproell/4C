@@ -155,9 +155,9 @@ E 7 - NUMDOF 4 ONOFF 1 1 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 -------------------------DESIGN SURF MORTAR COUPLING CONDITIONS 3D
 DSURF  2
 // fluid_coupling_surf
-E 5 - 1 Master
+E 5 - InterfaceID 1 Side Master
 // randschicht_coupling_surf
-E 6 - 1 Slave
+E 6 - InterfaceID 1 Side Slave
 -----------------------------------------------DLINE-NODE TOPOLOGY
 NODE    27 DLINE 1
 NODE    28 DLINE 1

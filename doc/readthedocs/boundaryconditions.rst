@@ -383,10 +383,10 @@ is necessary:
 
    ---------------------------DESIGN LINE|SURF MORTAR CONTACT CONDITIONS 2D|3D
    DLINE              <numtotal>
-   //E <num> - <interfaceID> [Master|Slave|Selfcontact] [Inactive|Active] [FrCoeffOrBound 0.0] [AdhesionBound 0.0] [Solidcontact|Beamtosolidcontact|Beamtosolidmeshtying]     [DoNothing|RemoveDBCSlaveNodes] [TwoHalfPass 0.0]  [RefConfCheckNonSmoothSelfContactSurface 0.0] [ConstitutiveLawID 0]
+   //E <num> - InterfaceID <interfaceID> Side <Master|Slave|Selfcontact> Initialization <Inactive|Active> [FrCoeffOrBound 0.0] [AdhesionBound 0.0] [Application <Solidcontact|Beamtosolidcontact|Beamtosolidmeshtying>] [DbcHandling <DoNothing|RemoveDBCSlaveNodes>] [TwoHalfPass 0.0] [RefConfCheckNonSmoothSelfContactSurface 0.0] [ConstitutiveLawID 0]
 
 The parameters
-``FrCoeffOrBound, AdhesionBound, Solidcontact, DoNothing, TwoHalfPass, RefConfCheckNonSmoothSelfContactSurface``
+``FrCoeffOrBound, AdhesionBound, Application, DbcHandling, TwoHalfPass, RefConfCheckNonSmoothSelfContactSurface and ConstitutiveLawID``
 are optional. You'll find more information about contact in the
 :ref:`contact and meshtying <contactandmeshtying>` section.
 

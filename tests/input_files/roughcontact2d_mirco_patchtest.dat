@@ -81,9 +81,9 @@ E 6 - NUMDOF 2 ONOFF 0 1 VAL 0.0 1.0 FUNCT 0 1
 --------------------------DESIGN LINE MORTAR CONTACT CONDITIONS 2D
 DLINE  2
 // bottom_contact
-E 3 - 0 Master Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Solidcontact DoNothing TwoHalfPass 0 RefConfCheckNonSmoothSelfContactSurface 0.0 ConstitutiveLawID 1
+E 3 - InterfaceID 0 Side Master Initialization Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 0 RefConfCheckNonSmoothSelfContactSurface 0.0 ConstitutiveLawID 1
 // top_contact
-E 4 - 0 Slave Active FrCoeffOrBound 0.0 AdhesionBound 0.0 Solidcontact DoNothing TwoHalfPass 0 RefConfCheckNonSmoothSelfContactSurface 0.0 ConstitutiveLawID 1
+E 4 - InterfaceID 0 Side Slave Initialization Active FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 0 RefConfCheckNonSmoothSelfContactSurface 0.0 ConstitutiveLawID 1
 -----------------------------------------------DLINE-NODE TOPOLOGY
 NODE    73 DLINE 1
 NODE    74 DLINE 1

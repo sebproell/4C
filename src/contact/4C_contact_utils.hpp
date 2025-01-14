@@ -125,7 +125,8 @@ namespace CONTACT
      *  sets.
      *
      *  A possible condition line can look like
-     *  E 7 - 1 Slave Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Solidcontact RemoveDBCSlaveNodes
+     *  E 7 - InterfaceID 1 Side Slave Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Solidcontact
+     * RemoveDBCSlaveNodes
      *
      *  \author hiermeier \date 01/18 */
     class DbcHandler

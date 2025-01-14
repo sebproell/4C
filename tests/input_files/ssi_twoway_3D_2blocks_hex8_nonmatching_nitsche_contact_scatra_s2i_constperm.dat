@@ -108,9 +108,9 @@ E 3 - ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID 1 CONTACT_CONDITION_ID
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
 DSURF  2
 // left_block_side_of_interface
-E 2 - 1 Slave Inactive
+E 2 - InterfaceID 1 Side Slave Initialization Inactive
 // right_block_side_of_interface
-E 3 - 1 Master Inactive
+E 3 - InterfaceID 1 Side Master Initialization Inactive
 -------------------------------DESIGN S2I KINETICS SURF CONDITIONS
 DSURF  2
 // left_block_side_of_interface

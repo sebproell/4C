@@ -72,8 +72,8 @@ E 7 - FIELD Velocity FUNCT 1
 E 8 - FIELD Velocity FUNCT 1
 -----------------------------------DESIGN LINE MORTAR CONTACT CONDITIONS 2D
 DLINE                           2
-E 10 - 1 Master Inactive
-E 23 - 1 Slave Inactive
+E 10 - InterfaceID 1 Side Master Initialization Inactive
+E 23 - InterfaceID 1 Side Slave Initialization Inactive
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 618 DNODE 3
 NODE 583 DNODE 4

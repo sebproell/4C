@@ -854,7 +854,7 @@ void SSI::Utils::check_consistency_of_ssi_interface_contact_condition(
     // loop over all contact conditions and add them to the vector, if IDs match
     for (auto* contactcondition : contactconditions)
     {
-      if (contactcondition->parameters().get<int>("Interface ID") != contactconditionID) continue;
+      if (contactcondition->parameters().get<int>("InterfaceID") != contactconditionID) continue;
 
       InterfaceContactConditions.push_back(contactcondition);
     }

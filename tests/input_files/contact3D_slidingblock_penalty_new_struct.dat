@@ -96,9 +96,9 @@ E 4 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0  FUNCT 0 0 0
 -----------------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
 DSURF                           2
 //                              master
-E 4 - 1 Master Inactive FrCoeffOrBound 0.1
+E 4 - InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.1
 //                              slave
-E 5 - 1 Slave Active FrCoeffOrBound 0.1
+E 5 - InterfaceID 1 Side Slave Initialization Active FrCoeffOrBound 0.1
 ---------------------------------------------------------DSURF-NODE TOPOLOGY
 NODE 243 DSURFACE 1
 NODE 244 DSURFACE 1

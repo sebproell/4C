@@ -67,8 +67,8 @@ E 7 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 E 8 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 -----------------------------------DESIGN LINE MORTAR CONTACT CONDITIONS 2D
 DLINE                           2
-E 4 - 1 Slave
-E 6 - 1 Master
+E 4 - InterfaceID 1 Side Slave
+E 6 - InterfaceID 1 Side Master
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 978 DNODE 1
 NODE 694 DNODE 2

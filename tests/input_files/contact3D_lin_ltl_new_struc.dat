@@ -81,9 +81,9 @@ E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 1.0 1.0 -1.0 FUNCT 2 2 1
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
 DSURF  2
 // slave
-E 3 - 1 Slave Inactive FrCoeffOrBound 0.9
+E 3 - InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.9
 // master
-E 4 - 1 Master Inactive FrCoeffOrBound 0.9
+E 4 - InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.9
 -----------------------------DESIGN LINE MORTAR EDGE CONDITIONS 3D
 DLINE  1
 // line

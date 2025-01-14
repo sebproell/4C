@@ -115,9 +115,9 @@ E 2 - NUMDOF 1 ONOFF 1 VAL 20 FUNCT 0
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
 DSURF  2
 // top_contact
-E 3 - 1 Slave Active
+E 3 - InterfaceID 1 Side Slave Initialization Active
 // bottom_contact
-E 4 - 1 Master Inactive
+E 4 - InterfaceID 1 Side Master Initialization Inactive
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    65 DSURFACE 1
 NODE    68 DSURFACE 1

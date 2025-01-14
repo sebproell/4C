@@ -160,8 +160,8 @@ E 2 - FIELD ScaTra FUNCT 2
 E 3 - FIELD ScaTra FUNCT 3
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
 DSURF  2
-E 4 - 1 Master Inactive
-E 5 - 1 Slave Inactive
+E 4 - InterfaceID 1 Side Master Initialization Inactive
+E 5 - InterfaceID 1 Side Slave Initialization Inactive
 -------------------------------DESIGN S2I KINETICS SURF CONDITIONS
 DSURF  4
 E 2 - ConditionID 0 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.036426957e-3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
