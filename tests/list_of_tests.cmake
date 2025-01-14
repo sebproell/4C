@@ -494,6 +494,7 @@ four_c_test(TEST_FILE elch_pulseplating_hex27_moving_boundary.4C.yaml NP 3 RESTA
 four_c_test(TEST_FILE elch_RCE_rotsymm_pbc.4C.yaml NP 2)
 four_c_test(TEST_FILE elch_straight_convection.4C.yaml NP 2)
 four_c_test(TEST_FILE elch_test.4C.yaml NP 2)
+four_c_test(TEST_FILE embeddedmesh_2d_hertzian_contact.yaml NP 2 CSV_COMPARISON_RESULT_FILE xxx_energy.csv CSV_COMPARISON_REFERENCE_FILE ref/embeddedmesh_2d_hertzian_contact_energy.csv CSV_COMPARISON_TOL_R 0.0 CSV_COMPARISON_TOL_A 1.0e-16)
 four_c_test(TEST_FILE embeddedmesh_block_nurbs27_hex8_wedge6.4C.yaml NP 2)
 four_c_test(TEST_FILE embeddedmesh_cantilever_beam.4C.yaml NP 1)
 four_c_test(TEST_FILE embeddedmesh_cut_bar_under_torsion_one_element.4C.yaml NP 1)

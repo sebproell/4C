@@ -166,6 +166,16 @@ namespace Constraints::EmbeddedMesh
      */
     void collect_output_integration_points();
 
+    /**
+     * \brief Get the communicator associated to the mortar manager
+     */
+    MPI_Comm get_my_comm();
+
+    /**
+     * \brief Obtain the energy contribution of the embedded mesh method
+     */
+    double get_energy() const;
+
    protected:
     /**
      * \brief Throw an error if setup was not called on the object prior to this function call.
