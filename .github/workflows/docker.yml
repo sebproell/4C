@@ -64,7 +64,7 @@ jobs:
             }}
           ubuntu-version: "24.04"
 
-  tag-images-as-latest:
+  tag-images-as-main:
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' && github.repository == '4C-multiphysics/4C' }}
     permissions:
@@ -82,9 +82,9 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Pull current Ubuntu 24.04 dependencies image and tag it with latest
+      - name: Pull current Ubuntu 24.04 dependencies image and tag it with main
         run: |
           IMAGE_NAME="${{ env.REGISTRY }}/${{ env.PROJECT_NAMESPACE }}/4c-dependencies-ubuntu24.04"
           docker pull $IMAGE_NAME:${{ steps.compute-dependencies-hash.outputs.computed_dependencies_hash }}
-          docker image tag $IMAGE_NAME:${{ steps.compute-dependencies-hash.outputs.computed_dependencies_hash }} $IMAGE_NAME:latest
-          docker push $IMAGE_NAME:latest
+          docker image tag $IMAGE_NAME:${{ steps.compute-dependencies-hash.outputs.computed_dependencies_hash }} $IMAGE_NAME:main
+          docker push $IMAGE_NAME:main
