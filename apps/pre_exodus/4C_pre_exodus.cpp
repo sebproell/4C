@@ -313,13 +313,13 @@ int main(int argc, char** argv)
       std::stringstream prelimhead;
       Core::IO::InputFileUtils::print_dat(prelimhead, *list);
       std::string headstring = prelimhead.str();
-      size_t size_section =
-          headstring.find("-------------------------------------------------------PROBLEM SIZE");
+      size_t size_section = headstring.find("--PROBLEM SIZE");
       if (size_section != std::string::npos)
       {
-        size_t typ_section =
-            headstring.find("--------------------------------------------------------PROBLEM TYPE");
-        headstring.erase(size_section, typ_section - size_section);
+        size_t size_section_start = headstring.substr(0, size_section).rfind("\n");
+        size_t type_section = headstring.find("--PROBLEM TYPE");
+        size_t type_section_start = headstring.substr(0, type_section).rfind("\n");
+        headstring.erase(size_section_start, type_section_start - size_section_start);
       }
       defaulthead << headstring;
 
