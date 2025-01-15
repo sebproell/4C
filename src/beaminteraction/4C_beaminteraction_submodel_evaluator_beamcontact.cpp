@@ -43,7 +43,6 @@
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_linalg_utils_densematrix_inverse.hpp"
 #include "4C_rigidsphere.hpp"
-#include "4C_so3_base.hpp"
 #include "4C_structure_new_timint_basedataglobalstate.hpp"
 #include "4C_structure_new_timint_basedataio.hpp"
 #include "4C_utils_exceptions.hpp"

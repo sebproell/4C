@@ -21,7 +21,6 @@
 #include "4C_geometry_pair_element.hpp"
 #include "4C_geometry_pair_evaluation_data_base.hpp"
 #include "4C_inpar_beam_to_solid.hpp"
-#include "4C_so3_base.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

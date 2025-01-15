@@ -33,7 +33,6 @@
 #include "4C_rebalance_print.hpp"
 #include "4C_rigidsphere.hpp"
 #include "4C_scatra_ele.hpp"
-#include "4C_so3_base.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_structure_new_model_evaluator_data.hpp"
 #include "4C_structure_new_timint_base.hpp"

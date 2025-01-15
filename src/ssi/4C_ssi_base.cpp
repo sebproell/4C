@@ -26,7 +26,6 @@
 #include "4C_scatra_timint_implicit.hpp"
 #include "4C_scatra_timint_meshtying_strategy_s2i.hpp"
 #include "4C_scatra_utils.hpp"
-#include "4C_so3_base.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_ssi_clonestrategy.hpp"
 #include "4C_ssi_coupling.hpp"

@@ -23,7 +23,6 @@
 #include "4C_inpar_tsi.hpp"
 #include "4C_io.hpp"
 #include "4C_mortar_multifield_coupling.hpp"
-#include "4C_so3_base.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_structure_new_model_evaluator_contact.hpp"
 #include "4C_structure_new_model_evaluator_structure.hpp"

@@ -8,6 +8,8 @@
 #include "4C_xfem_coupling_mesh.hpp"
 
 #include "4C_fem_dofset_transparent_independent.hpp"
+#include "4C_fem_general_cell_type.hpp"
+#include "4C_fem_general_cell_type_traits.hpp"
 #include "4C_fem_general_extract_values.hpp"
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_fluid_ele.hpp"
@@ -25,7 +27,6 @@
 #include "4C_mat_elasthyper.hpp"
 #include "4C_mat_newtonianfluid.hpp"
 #include "4C_rebalance_binning_based.hpp"
-#include "4C_so3_hex8.hpp"
 #include "4C_so3_surface.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_solid_3D_ele_calc_lib_nitsche.hpp"
@@ -2327,16 +2328,20 @@ void XFEM::MeshCouplingFSI::evaluate_structural_cauchy_stress(Core::Elements::El
       "XFEM::MeshCouplingFSI::evaluate_structural_cauchy_stress is currently only implemented for "
       "hex8 elements");
 
+  constexpr Core::FE::CellType celltype = Core::FE::CellType::hex8;
+  constexpr int num_dim = Core::FE::dim<celltype>;
+  constexpr int num_dof = Core::FE::dim<celltype> * Core::FE::num_nodes<celltype>;
+
 
   auto evaluate_cauchy_n_dir_and_derivatives = std::invoke(
-      [&]() -> std::function<void(const Core::LinAlg::Matrix<NUMDIM_SOH8, 1>&, double&,
+      [&]() -> std::function<void(const Core::LinAlg::Matrix<num_dim, 1>&, double&,
                 Core::LinAlg::SerialDenseMatrix&, Core::LinAlg::SerialDenseMatrix&)>
       {
         if (auto* solid_ele = dynamic_cast<Discret::Elements::SoBase*>(coupl_ele);
             solid_ele != nullptr)
         {
-          return [&, solid_ele](const Core::LinAlg::Matrix<NUMDIM_SOH8, 1>& dir,
-                     double& cauchy_n_dir, Core::LinAlg::SerialDenseMatrix& d_cauchy_d_d,
+          return [&, solid_ele](const Core::LinAlg::Matrix<num_dim, 1>& dir, double& cauchy_n_dir,
+                     Core::LinAlg::SerialDenseMatrix& d_cauchy_d_d,
                      Core::LinAlg::SerialDenseMatrix& d2_cauchy_d_d2)
           {
             solid_ele->get_cauchy_n_dir_and_derivatives_at_xi(rst_slave, eledisp, normal, dir,
@@ -2347,8 +2352,8 @@ void XFEM::MeshCouplingFSI::evaluate_structural_cauchy_stress(Core::Elements::El
         else if (auto* solid_ele = dynamic_cast<Discret::Elements::Solid*>(coupl_ele);
             solid_ele != nullptr)
         {
-          return [&, solid_ele](const Core::LinAlg::Matrix<NUMDIM_SOH8, 1>& dir,
-                     double& cauchy_n_dir, Core::LinAlg::SerialDenseMatrix& d_cauchy_d_d,
+          return [&, solid_ele](const Core::LinAlg::Matrix<num_dim, 1>& dir, double& cauchy_n_dir,
+                     Core::LinAlg::SerialDenseMatrix& d_cauchy_d_d,
                      Core::LinAlg::SerialDenseMatrix& d2_cauchy_d_d2)
           {
             Discret::Elements::CauchyNDirLinearizations<3> linearizations{};
@@ -2366,24 +2371,24 @@ void XFEM::MeshCouplingFSI::evaluate_structural_cauchy_stress(Core::Elements::El
       });
 
   solid_stress.resize(5);  // traction,dtdd,d2dddx,d2dddy,d2dddz
-  solid_stress[0].reshape(NUMDIM_SOH8, 1);
-  Core::LinAlg::Matrix<NUMDIM_SOH8, 1> traction(solid_stress[0].values(), true);
+  solid_stress[0].reshape(num_dim, 1);
+  Core::LinAlg::Matrix<num_dim, 1> traction(solid_stress[0].values(), true);
 
-  solid_stress[1].reshape(NUMDOF_SOH8, NUMDIM_SOH8);
-  Core::LinAlg::Matrix<NUMDOF_SOH8, NUMDIM_SOH8> dtraction_dd_l(solid_stress[1].values(), true);
+  solid_stress[1].reshape(num_dof, num_dim);
+  Core::LinAlg::Matrix<num_dof, num_dim> dtraction_dd_l(solid_stress[1].values(), true);
 
   traction.clear();
 
   static Core::LinAlg::SerialDenseMatrix dtraction_dd_i;
-  for (int i = 0; i < NUMDIM_SOH8; ++i)
+  for (int i = 0; i < num_dim; ++i)
   {
-    Core::LinAlg::Matrix<NUMDIM_SOH8, 1> ei(true);
+    Core::LinAlg::Matrix<num_dim, 1> ei(true);
     ei(i, 0) = 1.;
 
     evaluate_cauchy_n_dir_and_derivatives(ei, traction(i, 0), dtraction_dd_i, solid_stress[2 + i]);
 
-    Core::LinAlg::Matrix<NUMDOF_SOH8, 1> dtraction_dd_i_l(dtraction_dd_i.values(), true);
-    for (int col = 0; col < NUMDOF_SOH8; ++col) dtraction_dd_l(col, i) = dtraction_dd_i_l(col, 0);
+    Core::LinAlg::Matrix<num_dof, 1> dtraction_dd_i_l(dtraction_dd_i.values(), true);
+    for (int col = 0; col < num_dof; ++col) dtraction_dd_l(col, i) = dtraction_dd_i_l(col, 0);
   }
 
   FOUR_C_ASSERT_ALWAYS(timefac_ > 0,
