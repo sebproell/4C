@@ -23,7 +23,6 @@
 #include "4C_fluid_ele.hpp"
 #include "4C_mat_newtonianfluid.hpp"
 #include "4C_mortar_element.hpp"
-#include "4C_so3_hex8.hpp"
 #include "4C_so3_surface.hpp"
 #include "4C_xfem_condition_manager.hpp"
 

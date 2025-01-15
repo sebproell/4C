@@ -15,7 +15,6 @@
 #include "4C_scatra_ele.hpp"
 #include "4C_scatra_timint_implicit.hpp"
 #include "4C_scatra_timint_meshtying_strategy_s2i.hpp"
-#include "4C_so3_nurbs27.hpp"
 #include "4C_ssi_utils.hpp"
 #include "4C_ssti_monolithic.hpp"
 

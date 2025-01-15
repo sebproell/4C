@@ -9,8 +9,7 @@
 
 #include "4C_contact_element.hpp"
 #include "4C_contact_selfcontact_binarytree_unbiased.hpp"
-#include "4C_so3_hex8.hpp"
-#include "4C_so3_tet4.hpp"
+#include "4C_solid_3D_ele.hpp"
 #include "4C_unittest_utils_assertions_test.hpp"
 
 namespace
@@ -36,8 +35,8 @@ namespace
       {
         testdis_->add_node(std::make_shared<Core::Nodes::Node>(nodeidshex8[i], coordshex8[i], 0));
       }
-      std::shared_ptr<Discret::Elements::SoHex8> testhex8ele =
-          std::make_shared<Discret::Elements::SoHex8>(0, 0);
+      std::shared_ptr<Discret::Elements::Solid> testhex8ele =
+          std::make_shared<Discret::Elements::Solid>(0, 0);
       testhex8ele->set_node_ids(8, nodeidshex8.data());
       testdis_->add_element(testhex8ele);
 
@@ -55,8 +54,8 @@ namespace
       {
         testdis_->add_node(std::make_shared<Core::Nodes::Node>(nodeidstet4[j], coordstet4[j], 0));
       }
-      std::shared_ptr<Discret::Elements::SoTet4> testtet4ele =
-          std::make_shared<Discret::Elements::SoTet4>(2, 0);
+      std::shared_ptr<Discret::Elements::Solid> testtet4ele =
+          std::make_shared<Discret::Elements::Solid>(2, 0);
       testtet4ele->set_node_ids(4, nodeidstet4.data());
       testdis_->add_element(testtet4ele);
 

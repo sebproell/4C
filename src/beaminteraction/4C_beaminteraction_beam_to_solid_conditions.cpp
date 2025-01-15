@@ -36,7 +36,6 @@
 #include "4C_geometry_pair_line_to_3D_evaluation_data.hpp"
 #include "4C_geometry_pair_line_to_surface_evaluation_data.hpp"
 #include "4C_inpar_beam_to_solid.hpp"
-#include "4C_so3_base.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

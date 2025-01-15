@@ -13,8 +13,7 @@
 #include "4C_geometry_pair_line_to_3D_evaluation_data.hpp"
 #include "4C_geometry_pair_line_to_volume_segmentation.hpp"
 #include "4C_linalg_serialdensevector.hpp"
-#include "4C_so3_hex27.hpp"
-#include "4C_so3_hex8.hpp"
+#include "4C_solid_3D_ele.hpp"
 
 
 
@@ -61,7 +60,7 @@ namespace
           std::make_shared<Discret::Elements::Beam3r>(0, 0);
       beam_element->set_node_ids(2, dummy_node_ids);
       std::shared_ptr<Core::Elements::Element> solid_element =
-          std::make_shared<Discret::Elements::SoHex8>(1, 0);
+          std::make_shared<Discret::Elements::Solid>(1, 0);
 
       // Set up the beam element.
       std::vector<double> xrefe(6);

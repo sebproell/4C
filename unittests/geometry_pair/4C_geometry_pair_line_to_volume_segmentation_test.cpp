@@ -16,7 +16,6 @@
 #include "4C_geometry_pair_line_to_3D_evaluation_data.hpp"
 #include "4C_geometry_pair_line_to_volume_segmentation_geometry_functions_test.hpp"
 #include "4C_geometry_pair_utility_classes.hpp"
-#include "4C_so3_hex27.hpp"
 #include "4C_unittest_utils_assertions_test.hpp"
 
 

@@ -15,7 +15,6 @@
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_mat_par_bundle.hpp"
-#include "4C_so3_hex8.hpp"
 #include "4C_tsi_defines.hpp"
 
 #include <vector>

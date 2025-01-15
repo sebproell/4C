@@ -5,4 +5,4 @@
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
-four_c_add_support_files_to_test(geometry_pair)
+four_c_auto_define_tests(geometry_pair)
