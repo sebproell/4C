@@ -15,21 +15,35 @@ inputs:
     description: Use ccache to speed up the build
     required: false
     default: "true"
+  cache-key:
+    description: Key to restore the cache for ccache (default <job-name>-<preset-name>)
+    required: false
+    default: ""
   additional-cmake-flags:
     description: Additional flags to pass to CMake
     required: false
     default: ""
+outputs:
+  cache-key:
+    description: Key to restore the cache for ccache
+    value: ${{ steps.prepare-cache-key.outputs.cache_key }}
 runs:
   using: composite
   steps:
     - shell: bash
       if: ${{ inputs.use-ccache == 'true' }}
       run: apt-get update
+    - name: Prepare ccache cache key
+      id: prepare-cache-key
+      shell: bash
+      run: |
+        CACHE_KEY=${{ inputs.cache-key == '' && format('{0}-{1}', github.job, inputs.cmake-preset) || inputs.cache-key }}
+        echo "cache_key=$CACHE_KEY" >> $GITHUB_OUTPUT
     - name: Setup ccache
       if: ${{ inputs.use-ccache == 'true' }}
       uses: hendrikmuhs/ccache-action@v1.2
       with:
-        key: ${{ github.job }}-${{ inputs.cmake-preset }}
+        key: ${{ steps.prepare-cache-key.outputs.cache_key }}
     - uses: ./.github/actions/configure_4C
       with:
         cmake-preset: ${{ inputs.cmake-preset }}

@@ -106,6 +106,8 @@ jobs:
     defaults:
       run:
         shell: bash
+    outputs:
+      cache-key: ${{ steps.build-4C.outputs.cache-key }}
     steps:
       # Due to a bug in runner action the variables $GITHUB_WORKSPACE and ${{ github.workspace }} are different inside a container. https://github.com/actions/runner/issues/2058
       # The repo gets cloned to `/__w/4C/4C` ($GITHUB_WORKSPACE) while ${{ github.workspace }} points to `/home/runner/work/4C/4C`.`
@@ -114,6 +116,7 @@ jobs:
       - name: Check docker hash
         uses: ./.github/actions/compute-and-check-dependencies-hash
       - uses: ./.github/actions/build_4C
+        id: build-4C
         with:
           cmake-preset: docker_clang
           build-targets: full
@@ -166,15 +169,13 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE
           git config --global --add safe.directory $GITHUB_WORKSPACE
-      - uses: ./.github/actions/download_4C_build
-        with:
-          build-job: clang18_build
       - uses: ./.github/actions/build_4C
         with:
           cmake-preset: docker_clang
           build-targets: install
           build-directory: ${{ github.workspace }}/build
           use-ccache: "true"
+          cache-key: ${{needs.clang18_build.outputs.cache-key}}
       - name: Test the installation
         run: |
           cd $GITHUB_WORKSPACE/build/tests/install_test
