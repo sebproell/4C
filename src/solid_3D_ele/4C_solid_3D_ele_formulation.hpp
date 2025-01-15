@@ -69,23 +69,6 @@ namespace Discret::Elements
 
   namespace Internal
   {
-    template <typename SolidFormulation, typename = void>
-    struct IsPrestressUpdatable : std::false_type
-    {
-    };
-
-    template <typename SolidFormulation>
-    struct IsPrestressUpdatable<SolidFormulation,
-        std::enable_if_t<SolidFormulation::is_prestress_updatable, void>> : std::true_type
-    {
-    };
-  }  // namespace Internal
-
-  template <typename SolidFormulation>
-  constexpr bool is_prestress_updatable = Internal::IsPrestressUpdatable<SolidFormulation>::value;
-
-  namespace Internal
-  {
     /*!
      * @brief A dummy type that is used if a solid formulation does not need preparation data
      */
@@ -93,19 +76,19 @@ namespace Discret::Elements
     {
     };
 
-    template <typename SolidFormulation, typename T = void>
+    template <typename SolidFormulation>
     struct PreparationTypeTrait;
 
     template <typename SolidFormulation>
-    struct PreparationTypeTrait<SolidFormulation,
-        std::enable_if_t<has_preparation_data<SolidFormulation>, void>>
+      requires(has_preparation_data<SolidFormulation>)
+    struct PreparationTypeTrait<SolidFormulation>
     {
       using type = typename SolidFormulation::PreparationData;
     };
 
     template <typename SolidFormulation>
-    struct PreparationTypeTrait<SolidFormulation,
-        std::enable_if_t<!has_preparation_data<SolidFormulation>, void>>
+      requires(!has_preparation_data<SolidFormulation>)
+    struct PreparationTypeTrait<SolidFormulation>
     {
       using type = NoneType;
     };
@@ -130,39 +113,34 @@ namespace Discret::Elements
    * @tparam SolidFormulation
    * @tparam T
    */
-  template <typename SolidFormulation, typename T = void>
+  template <typename SolidFormulation>
   struct SolidFormulationHistory;
 
   template <typename SolidFormulation>
-  struct SolidFormulationHistory<SolidFormulation,
-      std::enable_if_t<
-          has_global_history<SolidFormulation> && has_gauss_point_history<SolidFormulation>, void>>
+    requires(has_global_history<SolidFormulation> && has_gauss_point_history<SolidFormulation>)
+  struct SolidFormulationHistory<SolidFormulation>
   {
     typename SolidFormulation::GlobalHistory global_history;
     std::vector<typename SolidFormulation::GaussPointHistory> gp_history;
   };
 
   template <typename SolidFormulation>
-  struct SolidFormulationHistory<SolidFormulation,
-      std::enable_if_t<
-          !has_global_history<SolidFormulation> && has_gauss_point_history<SolidFormulation>, void>>
+    requires(!has_global_history<SolidFormulation> && has_gauss_point_history<SolidFormulation>)
+  struct SolidFormulationHistory<SolidFormulation>
   {
     std::vector<typename SolidFormulation::GaussPointHistory> gp_history;
   };
 
   template <typename SolidFormulation>
-  struct SolidFormulationHistory<SolidFormulation,
-      std::enable_if_t<
-          has_global_history<SolidFormulation> && !has_gauss_point_history<SolidFormulation>, void>>
+    requires(has_global_history<SolidFormulation> && !has_gauss_point_history<SolidFormulation>)
+  struct SolidFormulationHistory<SolidFormulation>
   {
     typename SolidFormulation::GlobalHistory global_history;
   };
 
   template <typename SolidFormulation>
-  struct SolidFormulationHistory<SolidFormulation,
-      std::enable_if_t<!has_global_history<SolidFormulation> &&
-                           !has_gauss_point_history<SolidFormulation>,
-          void>>
+    requires(!has_global_history<SolidFormulation> && !has_gauss_point_history<SolidFormulation>)
+  struct SolidFormulationHistory<SolidFormulation>
   {
   };
 
@@ -739,20 +717,13 @@ namespace Discret::Elements
       const PreparationData<SolidFormulation>& preparation_data,
       SolidFormulationHistory<SolidFormulation>& history_data)
   {
-    if constexpr (is_prestress_updatable<SolidFormulation>)
+    if constexpr (has_global_history<SolidFormulation>)
     {
-      if constexpr (has_global_history<SolidFormulation>)
-      {
-        std::apply([](auto&&... args)
-            { SolidFormulation::update_prestress(std::forward<decltype(args)>(args)...); },
-            std::tuple_cat(std::forward_as_tuple(ele, element_nodes),
-                Internal::get_additional_preparation_tuple<SolidFormulation>(preparation_data),
-                Internal::get_additional_global_history_tuple<SolidFormulation>(history_data)));
-      }
-    }
-    else
-    {
-      FOUR_C_THROW("The solid formulation does not support to update the prestress!");
+      std::apply([](auto&&... args)
+          { SolidFormulation::update_prestress(std::forward<decltype(args)>(args)...); },
+          std::tuple_cat(std::forward_as_tuple(ele, element_nodes),
+              Internal::get_additional_preparation_tuple<SolidFormulation>(preparation_data),
+              Internal::get_additional_global_history_tuple<SolidFormulation>(history_data)));
     }
   }
 
@@ -767,18 +738,11 @@ namespace Discret::Elements
       const PreparationData<SolidFormulation>& preparation_data,
       SolidFormulationHistory<SolidFormulation>& history_data, [[maybe_unused]] const int gp)
   {
-    if constexpr (is_prestress_updatable<SolidFormulation>)
-    {
-      std::apply([](auto&&... args)
-          { SolidFormulation::update_prestress(std::forward<decltype(args)>(args)...); },
-          std::tuple_cat(std::forward_as_tuple(ele, element_nodes, xi, shape_functions,
-                             jacobian_mapping, deformation_gradient),
-              Internal::get_additional_tuple(preparation_data, history_data, gp)));
-    }
-    else
-    {
-      FOUR_C_THROW("The solid formulation does not support to update the prestress!");
-    }
+    std::apply([](auto&&... args)
+        { SolidFormulation::update_prestress(std::forward<decltype(args)>(args)...); },
+        std::tuple_cat(std::forward_as_tuple(ele, element_nodes, xi, shape_functions,
+                           jacobian_mapping, deformation_gradient),
+            Internal::get_additional_tuple(preparation_data, history_data, gp)));
   }
 
 

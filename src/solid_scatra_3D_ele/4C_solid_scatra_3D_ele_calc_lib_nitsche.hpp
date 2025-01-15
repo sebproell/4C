@@ -87,17 +87,17 @@ namespace Discret::Elements
       {
       }
 
-      template <typename T,
-          std::enable_if_t<can_evaluate_solid_scatra_cauchy_n_dir_at_xi<T&, dim>, bool> = true>
+      template <typename T>
       double operator()(T& cauchy_n_dir_evaluatable)
+        requires(can_evaluate_solid_scatra_cauchy_n_dir_at_xi<T&, dim>)
       {
         return cauchy_n_dir_evaluatable->get_normal_cauchy_stress_at_xi(
             element, mat, disp, scalars, xi, n, dir, linearizations);
       }
 
-      template <typename T,
-          std::enable_if_t<!can_evaluate_solid_scatra_cauchy_n_dir_at_xi<T&, dim>, bool> = true>
+      template <typename T>
       double operator()(T& other)
+        requires(!can_evaluate_solid_scatra_cauchy_n_dir_at_xi<T&, dim>)
       {
         FOUR_C_THROW(
             "Your element evaluation %s does not allow to evaluate the Cauchy stress at a "

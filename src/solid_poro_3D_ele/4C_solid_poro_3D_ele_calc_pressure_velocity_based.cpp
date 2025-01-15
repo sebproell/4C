@@ -33,8 +33,7 @@ namespace
    * @param kinematictype (in) : kinematic type of element
    * @return dInverseDeformationGradientTransposed_dDisp
    */
-  template <Core::FE::CellType celltype,
-      std::enable_if_t<Discret::Elements::Internal::num_dim<celltype> == 3, int> = 0>
+  template <Core::FE::CellType celltype>
   Core::LinAlg::Matrix<Discret::Elements::Internal::num_dim<celltype> *
                            Discret::Elements::Internal::num_dim<celltype>,
       Discret::Elements::Internal::num_dim<celltype> *
@@ -43,6 +42,7 @@ namespace
       const Discret::Elements::JacobianMapping<celltype>& jacobian_mapping,
       const Discret::Elements::SpatialMaterialMapping<celltype>& spatial_material_mapping,
       const Inpar::Solid::KinemType& kinematictype = Inpar::Solid::KinemType::nonlinearTotLag)
+    requires(Discret::Elements::Internal::num_dim<celltype> == 3)
   {
     Core::LinAlg::Matrix<Discret::Elements::Internal::num_dim<celltype> *
                              Discret::Elements::Internal::num_dim<celltype>,
@@ -84,8 +84,7 @@ namespace
    * @return dInverseDeformationGradient_dDisp_Gradp : Derivative of inverse deformation gradient
    * w.r.t. displacements times material gradient of fluid pressure
    */
-  template <Core::FE::CellType celltype,
-      std::enable_if_t<Discret::Elements::Internal::num_dim<celltype> == 3, int> = 0>
+  template <Core::FE::CellType celltype>
   Core::LinAlg::Matrix<Discret::Elements::Internal::num_dim<celltype> *
                            Discret::Elements::Internal::num_dim<celltype>,
       Discret::Elements::Internal::num_dim<celltype> *
@@ -98,6 +97,7 @@ namespace
           d_inverse_deformationgradient_transposed_ddisp,
       const Core::LinAlg::Matrix<Discret::Elements::Internal::num_dim<celltype>, 1>& Gradp,
       const Inpar::Solid::KinemType& kinematictype = Inpar::Solid::KinemType::nonlinearTotLag)
+    requires(Discret::Elements::Internal::num_dim<celltype> == 3)
   {
     // dF^-T/dus * Grad p
     Core::LinAlg::Matrix<Discret::Elements::Internal::num_dim<celltype> *
