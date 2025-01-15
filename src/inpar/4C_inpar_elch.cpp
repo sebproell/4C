@@ -362,7 +362,7 @@ void Inpar::ElCh::set_valid_conditions(
       cond->add_component(std::make_shared<Input::SeparatorComponent>("ID"));
       cond->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
       add_named_real(cond, "POT");
-      add_named_int(cond, "FUNCT", "", 0, false, true, true);
+      add_named_int(cond, "FUNCT", "", 0, false, true);
       add_named_int(cond, "NUMSCAL");
       add_named_int_vector(cond, "STOICH", "", "NUMSCAL");
       add_named_int(cond, "E-");
@@ -408,7 +408,7 @@ void Inpar::ElCh::set_valid_conditions(
       electrodedomainkineticscomponents.emplace_back(
           std::make_shared<Input::SeparatorComponent>("FUNCT"));
       electrodedomainkineticscomponents.emplace_back(
-          std::make_shared<Input::IntComponent>("FUNCT", IntComponentData{0, true, true, false}));
+          std::make_shared<Input::IntComponent>("FUNCT", IntComponentData{0, true, false}));
       electrodedomainkineticscomponents.emplace_back(
           std::make_shared<Input::SeparatorComponent>("NUMSCAL"));
 

@@ -869,7 +869,7 @@ void Immersed::ImmersedPartitionedFSIDirichletNeumann::calc_fluid_tractions_on_s
               << std::endl;
   }
   evaluate_interpolation_condition(
-      *immersedstructure_->discretization(), params, struct_bdry_strategy, "IMMERSEDCoupling", -1);
+      *immersedstructure_->discretization(), params, struct_bdry_strategy, "IMMERSEDCoupling");
 
   // we just validate the boundary tractions
   boundary_traction_isvalid_ = true;

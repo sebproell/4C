@@ -326,19 +326,19 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
           // Get the type of prescribed bc
           Bc = (condition->parameters().get<std::string>("boundarycond"));
 
-          const auto* vals = &condition->parameters().get<std::vector<double>>("VAL");
-          const auto* curve = &condition->parameters().get<std::vector<int>>("curve");
-          const auto* functions = &condition->parameters().get<std::vector<int>>("funct");
+          const auto vals = condition->parameters().get<std::vector<double>>("VAL");
+          const auto curve = condition->parameters().get<std::vector<int>>("curve");
+          const auto functions = condition->parameters().get<std::vector<int>>("funct");
 
           // Read in the value of the applied BC
           // Get factor of first CURVE
           double curvefac = 1.0;
-          if ((*curve)[0] >= 0)
+          if (curve[0] > 0)
           {
             curvefac = Global::Problem::instance()
-                           ->function_by_id<Core::Utils::FunctionOfTime>((*curve)[0])
+                           ->function_by_id<Core::Utils::FunctionOfTime>(curve[0] - 1)
                            .evaluate(time);
-            BCin = (*vals)[0] * curvefac;
+            BCin = vals[0] * curvefac;
           }
           else
           {
@@ -347,11 +347,7 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
           }
 
           // Get factor of FUNCT
-          int functnum = -1;
-          if (functions)
-            functnum = (*functions)[0];
-          else
-            functnum = -1;
+          int functnum = functions[0];
 
           double functionfac = 0.0;
           if (functnum > 0)
@@ -364,10 +360,10 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
           // Get factor of second CURVE
           int curve2num = -1;
           double curve2fac = 1.0;
-          if (curve) curve2num = (*curve)[1];
-          if (curve2num >= 0)
+          curve2num = curve[1];
+          if (curve2num > 0)
             curve2fac = Global::Problem::instance()
-                            ->function_by_id<Core::Utils::FunctionOfTime>(curve2num)
+                            ->function_by_id<Core::Utils::FunctionOfTime>(curve2num - 1)
                             .evaluate(time);
 
           // Add first_CURVE + FUNCTION * second_CURVE
@@ -470,17 +466,17 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
             Bc = (condition->parameters().get<std::string>("phase2"));
           }
 
-          const auto* curve = &condition->parameters().get<std::vector<int>>("curve");
+          const auto curve = condition->parameters().get<std::vector<int>>("curve");
           double curvefac = 1.0;
-          const auto* vals = &condition->parameters().get<std::vector<double>>("VAL");
+          const auto vals = condition->parameters().get<std::vector<double>>("VAL");
 
           // Read in the value of the applied BC
-          if ((*curve)[phase_number] >= 0)
+          if (curve[phase_number] > 0)
           {
             curvefac = Global::Problem::instance()
-                           ->function_by_id<Core::Utils::FunctionOfTime>((*curve)[phase_number])
+                           ->function_by_id<Core::Utils::FunctionOfTime>(curve[phase_number] - 1)
                            .evaluate(time);
-            BCin = (*vals)[phase_number] * curvefac;
+            BCin = vals[phase_number] * curvefac;
           }
           else
           {
@@ -513,15 +509,15 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
             double Pp_np = 0.0;
             if (pplCond)
             {
-              const auto* curve = &pplCond->parameters().get<std::vector<int>>("curve");
+              const auto curve = pplCond->parameters().get<std::vector<int>>("curve");
               double curvefac = 1.0;
-              const auto* vals = &pplCond->parameters().get<std::vector<double>>("VAL");
+              const auto vals = pplCond->parameters().get<std::vector<double>>("VAL");
 
               // Read in the value of the applied BC
-              if ((*curve)[0] >= 0)
+              if (curve[0] > 0)
               {
                 curvefac = Global::Problem::instance()
-                               ->function_by_id<Core::Utils::FunctionOfTime>((*curve)[0])
+                               ->function_by_id<Core::Utils::FunctionOfTime>(curve[0] - 1)
                                .evaluate(time);
               }
 
@@ -592,7 +588,7 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
               {
                 FOUR_C_THROW("Unknown volume pleural pressure type: %s", ppl_Type.c_str());
               }
-              Pp_np *= curvefac * ((*vals)[0]);
+              Pp_np *= curvefac * (vals[0]);
             }
             else
             {

@@ -644,11 +644,10 @@ void Inpar::ScaTra::set_valid_conditions(
     add_named_real(cond, "coeff", "heat transfer coefficient h");
     add_named_real(cond, "surtemp", "surrounding (fluid) temperature T_oo");
     add_named_int(cond, "surtempfunct",
-        "time curve to increase the surrounding (fluid) temperature T_oo in time", 0, false, true,
-        true);
+        "time curve to increase the surrounding (fluid) temperature T_oo in time", 0, false, true);
     add_named_int(cond, "funct",
         "time curve to increase the complete boundary condition, i.e., the heat flux", 0, false,
-        true, true);
+        true);
 
     condlist.emplace_back(cond);
   }

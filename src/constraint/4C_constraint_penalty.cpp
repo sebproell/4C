@@ -29,20 +29,12 @@ CONSTRAINTS::ConstraintPenalty::ConstraintPenalty(
   {
     for (auto* i : constrcond_)
     {
-      const double* mypenalty = i->parameters().get_if<double>("penalty");
-      const double* myrho = i->parameters().get_if<double>("rho");
+      const double mypenalty = i->parameters().get<double>("penalty");
+      const double myrho = i->parameters().get<double>("rho");
       int condID = i->parameters().get<int>("ConditionID");
-      if (mypenalty and myrho)
-      {
-        penalties_.insert(std::pair<int, double>(condID, *mypenalty));
-        rho_.insert(std::pair<int, double>(condID, *myrho));
-      }
-      else
-      {
-        FOUR_C_THROW(
-            "you should not turn up in penalty controlled constraint without penalty parameter and "
-            "rho!");
-      }
+
+      penalties_.insert(std::pair<int, double>(condID, mypenalty));
+      rho_.insert(std::pair<int, double>(condID, myrho));
     }
     int nummyele = 0;
     int numele = penalties_.size();
@@ -212,14 +204,15 @@ void CONSTRAINTS::ConstraintPenalty::evaluate_constraint(Teuchos::ParameterList&
       }
 
       // Evaluate loadcurve if defined. Put current load factor in parameterlist
-      const auto* curve = cond->parameters().get_if<int>("curve");
-      int curvenum = -1;
-      if (curve) curvenum = *curve;
+      const int curvenum = cond->parameters().get_or<int>("curve", -1);
       double curvefac = 1.0;
-      if (curvenum >= 0)
+      if (curvenum > 0)
+      {
+        // function_by_id takes a zero-based index
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
                        .evaluate(time);
+      }
 
       double diff = (curvefac * (*initerror_)[condID - 1] - (*acterror_)[condID - 1]);
 

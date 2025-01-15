@@ -200,19 +200,19 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
           // Get the type of prescribed bc
           Bc = (condition->parameters().get<std::string>("boundarycond"));
 
-          const auto* curve = &condition->parameters().get<std::vector<int>>("curve");
+          const auto curve = condition->parameters().get<std::vector<int>>("curve");
           double curvefac = 1.0;
-          const auto* vals = &condition->parameters().get<std::vector<double>>("VAL");
-          const auto* functions = &condition->parameters().get<std::vector<int>>("funct");
+          const auto vals = condition->parameters().get<std::vector<double>>("VAL");
+          const auto functions = condition->parameters().get<std::vector<int>>("funct");
 
           // Read in the value of the applied BC
           // Get factor of first CURVE
-          if ((*curve)[0] >= 0)
+          if (curve[0] > 0)
           {
             curvefac = Global::Problem::instance()
-                           ->function_by_id<Core::Utils::FunctionOfTime>((*curve)[0])
+                           ->function_by_id<Core::Utils::FunctionOfTime>(curve[0] - 1)
                            .evaluate(time);
-            BCin = (*vals)[0] * curvefac;
+            BCin = vals[0] * curvefac;
           }
           else
           {
@@ -220,11 +220,7 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
             exit(1);
           }
           // Get factor of FUNCT
-          int functnum = -1;
-          if (functions)
-            functnum = (*functions)[0];
-          else
-            functnum = -1;
+          int functnum = functions[0];
 
           double functionfac = 0.0;
           if (functnum > 0)
@@ -237,10 +233,10 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
           // Get factor of second CURVE
           int curve2num = -1;
           double curve2fac = 1.0;
-          if (curve) curve2num = (*curve)[1];
-          if (curve2num >= 0)
+          curve2num = curve[1];
+          if (curve2num > 0)
             curve2fac = Global::Problem::instance()
-                            ->function_by_id<Core::Utils::FunctionOfTime>(curve2num)
+                            ->function_by_id<Core::Utils::FunctionOfTime>(curve2num - 1)
                             .evaluate(time);
 
           // Add first_CURVE + FUNCTION * second_CURVE
@@ -270,15 +266,15 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
             double Pp_np = 0.0;
             if (pplCond)
             {
-              const auto* curve = &pplCond->parameters().get<std::vector<int>>("curve");
+              const auto curve = pplCond->parameters().get<std::vector<int>>("curve");
               double curvefac = 1.0;
-              const auto* vals = &pplCond->parameters().get<std::vector<double>>("VAL");
+              const auto vals = pplCond->parameters().get<std::vector<double>>("VAL");
 
               // Read in the value of the applied BC
-              if ((*curve)[0] >= 0)
+              if (curve[0] > 0)
               {
                 curvefac = Global::Problem::instance()
-                               ->function_by_id<Core::Utils::FunctionOfTime>((*curve)[0])
+                               ->function_by_id<Core::Utils::FunctionOfTime>(curve[0] - 1)
                                .evaluate(time);
               }
 
@@ -348,7 +344,7 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
               {
                 FOUR_C_THROW("Unknown volume pleural pressure type: %s", ppl_Type.c_str());
               }
-              Pp_np *= curvefac * ((*vals)[0]);
+              Pp_np *= curvefac * (vals[0]);
             }
             else
             {

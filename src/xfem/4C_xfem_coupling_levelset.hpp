@@ -487,8 +487,6 @@ namespace XFEM
         gradphi.put_scalar(0.0);  // This to catch the cases when gradphi \approx 0
 
       setup_projection_matrix(projection_matrix, gradphi);
-
-      return;
     }
 
    protected:
@@ -530,8 +528,8 @@ namespace XFEM
     bool has_neumann_jump_;
     double sliplength_;
 
-    // ID given the Robin Dirichlet/-Neumann conditions (need to match the one given in the "MAIN
-    // condition")
+    // ID given the Robin Dirichlet/-Neumann conditions
+    // (need to match the one given in the "MAIN condition")
     int robin_dirichlet_id_;
     int robin_neumann_id_;
 

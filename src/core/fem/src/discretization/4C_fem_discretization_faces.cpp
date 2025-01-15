@@ -280,7 +280,7 @@ void Core::FE::DiscretizationFaces::build_faces(const bool verbose)
         std::map<int, std::set<int>> slavetopbcset;
         for (auto& mypbc : mypbcs)
         {
-          const int myid = mypbc->parameters().get<int>("ID");
+          const int zero_based_id = mypbc->parameters().get<int>("ID") - 1;
 
           const auto mymasterslavetoggle = mypbc->parameters().get<std::string>("MASTER_OR_SLAVE");
 
@@ -292,7 +292,7 @@ void Core::FE::DiscretizationFaces::build_faces(const bool verbose)
             // store them in list depending on the pbc id
             for (int idtoadd : *masteridstoadd)
             {
-              (mastertopbcset[myid]).insert(idtoadd);
+              (mastertopbcset[zero_based_id]).insert(idtoadd);
             }
           }
           else if (mymasterslavetoggle == "Slave")
@@ -303,7 +303,7 @@ void Core::FE::DiscretizationFaces::build_faces(const bool verbose)
             // store them in list depending on the pbc id
             for (int idtoadd : *slaveidstoadd)
             {
-              (slavetopbcset[myid]).insert(idtoadd);
+              (slavetopbcset[zero_based_id]).insert(idtoadd);
             }
           }
           else

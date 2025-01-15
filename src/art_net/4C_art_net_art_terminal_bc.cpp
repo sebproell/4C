@@ -79,10 +79,10 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     else if (Type == "forced")  // => with Reflection
     {
       // If forced curve exists => Rf = curve
-      if (curve[1] >= 0)
+      if (curve[1] > 0)
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[1])
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[1] - 1)
                        .evaluate(time);
         Rf = vals[1] * curvefac;
       }
@@ -106,10 +106,10 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     // -----------------------------------------------------------------
     // Read in the value of the applied BC
     // -----------------------------------------------------------------
-    if (curve[0] >= 0)
+    if (curve[0] > 0)
     {
       curvefac = Global::Problem::instance()
-                     ->function_by_id<Core::Utils::FunctionOfTime>(curve[0])
+                     ->function_by_id<Core::Utils::FunctionOfTime>(curve[0] - 1)
                      .evaluate(time);
       BCin = vals[0] * curvefac;
     }
@@ -550,12 +550,12 @@ void Arteries::Utils::solve_reflective_terminal(Core::FE::Discretization& actdis
   const auto& vals = condition->parameters().get<std::vector<double>>("VAL");
 
   // if the curve exist => Rf = val*curve(time)
-  if (curve[0] >= 0)
+  if (curve[0] > 0)
   {
     double time = params.get<double>("total time");
-    curvefac =
-        Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfTime>(curve[0]).evaluate(
-            time);
+    curvefac = Global::Problem::instance()
+                   ->function_by_id<Core::Utils::FunctionOfTime>(curve[0] - 1)
+                   .evaluate(time);
     Rf = vals[0] * curvefac;
   }
   // else Rf = val

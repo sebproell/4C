@@ -456,16 +456,18 @@ void CONSTRAINTS::MPConstraint3::evaluate_constraint(std::shared_ptr<Core::FE::D
       }
 
       // loadcurve business
-      const auto* curve = cond->parameters().get_if<int>("curve");
-      int curvenum = -1;
-      if (curve) curvenum = (*curve);
+      const int curvenum = cond->parameters().get_or<int>("curve", -1);
       double curvefac = 1.0;
       bool usetime = true;
       if (time < 0.0) usetime = false;
-      if (curvenum >= 0 && usetime)
+      if (curvenum > 0 && usetime)
+      {
+        // function_by_id takes a zero-based index
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
                        .evaluate(time);
+      }
+
       std::shared_ptr<Core::LinAlg::Vector<double>> timefact =
           params.get<std::shared_ptr<Core::LinAlg::Vector<double>>>("vector curve factors");
       timefact->ReplaceGlobalValues(1, &curvefac, &gindex);
@@ -533,16 +535,17 @@ void CONSTRAINTS::MPConstraint3::initialize_constraint(Core::FE::Discretization&
     Core::LinAlg::assemble(systemvector, elevector3, constrlm, constrowner);
 
     // loadcurve business
-    const auto* curve = cond->parameters().get_if<int>("curve");
-    int curvenum = -1;
-    if (curve) curvenum = (*curve);
+    const int curvenum = cond->parameters().get_or<int>("curve", -1);
     double curvefac = 1.0;
     bool usetime = true;
     if (time < 0.0) usetime = false;
-    if (curvenum >= 0 && usetime)
+    if (curvenum > 0 && usetime)
+    {
+      // function_by_id takes a zero-based index
       curvefac = Global::Problem::instance()
-                     ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
+                     ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
                      .evaluate(time);
+    }
 
     // Get ConditionID of current condition if defined and write value in parameterlist
     constexpr unsigned character_length = 30;

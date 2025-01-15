@@ -616,9 +616,7 @@ void Adapter::CouplingNonLinMortar::setup_spring_dashpot(
   // find master surface: loop all coupling conditions
   for (int i = 0; i < n_coup_conds; i++)
   {
-    // add one, since read in of COUPLING parameter in DESIGN SURF SPRING DASHPOT CONDITIONS
-    // subtracts one
-    if (coup_conds[i]->parameters().get<int>("COUPLING") == (coupling_id + 1))
+    if (coup_conds[i]->parameters().get<int>("COUPLING") == (coupling_id))
       conds_master.push_back(coup_conds[i]);
   }
   if (!conds_master.size()) FOUR_C_THROW("Coupling ID not found.");

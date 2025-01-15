@@ -236,7 +236,7 @@ namespace Immersed
     */
     void evaluate_interpolation_condition(Core::FE::Discretization& evaldis,
         Teuchos::ParameterList& params, Core::FE::AssembleStrategy& strategy,
-        const std::string& condstring, const int condid);
+        const std::string& condstring);
 
 
     /*!

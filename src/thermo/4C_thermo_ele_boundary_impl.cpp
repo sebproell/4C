@@ -156,10 +156,10 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
 
     // find out whether we shall use a time curve for q^_c and get the factor
     double curvefac = 1.0;
-    if (curvenum >= 0)
+    if (curvenum > 0)
     {
       curvefac = Global::Problem::instance()
-                     ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
+                     ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
                      .evaluate(time);
     }
     // multiply heat convection coefficient with the timecurve factor
@@ -169,10 +169,10 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
     // enabling for instance a load cycle due to combustion of a fluid
     double surtempcurvefac = 1.0;
     // find out whether we shall use a time curve for T_oo and get the factor
-    if (surtempcurvenum >= 0)
+    if (surtempcurvenum > 0)
     {
       surtempcurvefac = Global::Problem::instance()
-                            ->function_by_id<Core::Utils::FunctionOfTime>(surtempcurvenum)
+                            ->function_by_id<Core::Utils::FunctionOfTime>(surtempcurvenum - 1)
                             .evaluate(time);
     }
     // complete surrounding temperatures T_oo: multiply with the timecurve factor
@@ -375,10 +375,10 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
 
         // find out whether we shall use a time curve for q^_c and get the factor
         double curvefac = 1.0;
-        if (curvenum >= 0)
+        if (curvenum > 0)
         {
           curvefac = Global::Problem::instance()
-                         ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
+                         ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
                          .evaluate(time);
         }
         // multiply heat convection coefficient with the timecurve factor
@@ -388,10 +388,10 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
         // enabling for instance a load cycle due to combustion of a fluid
         double surtempcurvefac = 1.0;
         // find out whether we shall use a time curve for T_oo and get the factor
-        if (surtempcurvenum >= 0)
+        if (surtempcurvenum > 0)
         {
           surtempcurvefac = Global::Problem::instance()
-                                ->function_by_id<Core::Utils::FunctionOfTime>(surtempcurvenum)
+                                ->function_by_id<Core::Utils::FunctionOfTime>(surtempcurvenum - 1)
                                 .evaluate(time);
         }
         // complete surrounding temperatures T_oo: multiply with the timecurve factor

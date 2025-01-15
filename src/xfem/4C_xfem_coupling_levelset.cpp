@@ -432,7 +432,7 @@ bool XFEM::LevelSetCoupling::set_level_set_field(const double time)
     if (projtosurf_ != Inpar::XFEM::Proj_normal)  // and projtosurf_!=Inpar::XFEM::Proj_normal_phi
     {
       // check for potential L2_Projection smoothing
-      const int l2_proj_num = (cond->parameters().get<int>("L2_PROJECTION_SOLVER") + 1);
+      const int l2_proj_num = (cond->parameters().get<int>("L2_PROJECTION_SOLVER"));
       if (l2_proj_num < 1) FOUR_C_THROW("Issue with L2_PROJECTION_SOLVER, smaller than 1!!!");
 
       // SMOOTHED GRAD PHI!!!!!! (Create from nodal map on Xfluid discretization)
@@ -1240,8 +1240,8 @@ void XFEM::LevelSetCouplingNavierSlip::set_element_conditions()
   Core::Conditions::Condition* cond = cutterele_conds_[0].second;  // get condition of first element
 
   // Get robin coupling IDs
-  robin_dirichlet_id_ = cond->parameters().get<int>("ROBIN_DIRICHLET_ID");
-  robin_neumann_id_ = cond->parameters().get<int>("ROBIN_NEUMANN_ID");
+  robin_dirichlet_id_ = cond->parameters().get<int>("ROBIN_DIRICHLET_ID") - 1;
+  robin_neumann_id_ = cond->parameters().get<int>("ROBIN_NEUMANN_ID") - 1;
 
   has_neumann_jump_ = (robin_neumann_id_ < 0) ? false : true;
 
@@ -1309,7 +1309,7 @@ void XFEM::LevelSetCouplingNavierSlip::set_element_specific_conditions(
       FOUR_C_THROW(
           "%i conditions of the same name with robin id %i, for element %i! %s coupling-condition "
           "not unique!",
-          mynewcond.size(), (robin_id + 1), cutele->id(), cond_name.c_str());
+          mynewcond.size(), robin_id, cutele->id(), cond_name.c_str());
     }
     else if (mynewcond.size() == 1)  // unique condition found
     {
@@ -1415,11 +1415,11 @@ void XFEM::LevelSetCouplingNavierSlip::get_condition_by_robin_id(
 {
   mynewcond.clear();
 
-  // select the conditions with specified "couplingID"
+  // select the conditions with specified "robin_id"
   for (size_t i = 0; i < mycond.size(); ++i)
   {
     Core::Conditions::Condition* cond = mycond[i];
-    const int id = cond->parameters().get<int>("robin_id");
+    const int id = cond->parameters().get<int>("robin_id") - 1;
 
     if (id == coupling_id) mynewcond.push_back(cond);
   }

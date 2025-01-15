@@ -153,11 +153,12 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_elch_b
   double rhsfac = 1.0;
   // find out whether we shell use a time curve and get the factor
   // this feature can be also used for stationary "pseudo time loops"
-  if (curvenum >= 0)
+  if (curvenum > 0)
   {
-    const double curvefac =
-        Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfTime>(curvenum).evaluate(
-            time);
+    // function_by_id takes a zero-based index
+    const double curvefac = Global::Problem::instance()
+                                ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
+                                .evaluate(time);
     // adjust potential at metal side accordingly
     pot0 *= curvefac;
   }
@@ -258,10 +259,11 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_nernst
 
     const double time = my::scatraparamstimint_->time();
 
-    if (curvenum >= 0)
+    if (curvenum > 0)
     {
+      // function_by_id takes a zero-based index
       const double curvefac = Global::Problem::instance()
-                                  ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
+                                  ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
                                   .evaluate(time);
       // adjust potential at metal side accordingly
       pot0 *= curvefac;
