@@ -120,6 +120,92 @@ namespace
     }
   }
 
+  TEST(InputSpecTest, Noneable)
+  {
+    auto line = anonymous_group({
+        entry<int>("size"),
+        entry<std::vector<Noneable<int>>>("a", {.size = from_parameter<int>("size")}),
+        entry<Noneable<std::string>>("b", {.description = "b"}),
+        entry<Noneable<double>>("c", {.default_value = 1.0}),
+        entry<Noneable<bool>>("d", {.required = false}),
+        entry<Noneable<int>>("e", {.default_value = none<int>}),
+    });
+
+    {
+      InputParameterContainer container;
+      std::string stream("size 3 a 1 2 3 b none");
+      ValueParser parser(stream);
+      line.fully_parse(parser, container);
+      const auto& a = container.get<std::vector<Noneable<int>>>("a");
+      EXPECT_EQ(a.size(), 3);
+      EXPECT_EQ(a[0].has_value(), true);
+      EXPECT_EQ(a[0].value(), 1);
+      EXPECT_EQ(a[1].has_value(), true);
+      EXPECT_EQ(a[1].value(), 2);
+      EXPECT_EQ(a[2].has_value(), true);
+      EXPECT_EQ(a[2].value(), 3);
+
+      const auto& b = container.get<Noneable<std::string>>("b");
+      EXPECT_EQ(b.has_value(), false);
+
+      const auto& c = container.get<Noneable<double>>("c");
+      EXPECT_EQ(c.has_value(), true);
+      EXPECT_EQ(c.value(), 1.0);
+
+      const auto& e = container.get<Noneable<int>>("e");
+      EXPECT_EQ(e.has_value(), false);
+    }
+
+    {
+      InputParameterContainer container;
+      std::string stream("size 3 a 1 none 3 b none c none d none e none");
+      ValueParser parser(stream);
+      line.fully_parse(parser, container);
+      const auto& a = container.get<std::vector<Noneable<int>>>("a");
+      EXPECT_EQ(a.size(), 3);
+      EXPECT_EQ(a[0].has_value(), true);
+      EXPECT_EQ(a[0].value(), 1);
+      EXPECT_EQ(a[1].has_value(), false);
+      EXPECT_EQ(a[2].has_value(), true);
+      EXPECT_EQ(a[2].value(), 3);
+
+      const auto& b = container.get<Noneable<std::string>>("b");
+      EXPECT_EQ(b.has_value(), false);
+
+      const auto& c = container.get<Noneable<double>>("c");
+      EXPECT_EQ(c.has_value(), false);
+
+      const auto& d = container.get<Noneable<bool>>("d");
+      EXPECT_EQ(d.has_value(), false);
+
+      const auto& e = container.get<Noneable<int>>("e");
+      EXPECT_EQ(e.has_value(), false);
+    }
+
+    {
+      InputParameterContainer container;
+      std::string stream("size 3 a 1 2 3 b string c 2.0 d true e 42");
+      ValueParser parser(stream);
+      line.fully_parse(parser, container);
+
+      const auto& b = container.get<Noneable<std::string>>("b");
+      EXPECT_EQ(b.has_value(), true);
+      EXPECT_EQ(b.value(), "string");
+
+      const auto& c = container.get<Noneable<double>>("c");
+      EXPECT_EQ(c.has_value(), true);
+      EXPECT_EQ(c.value(), 2.0);
+
+      const auto& d = container.get<Noneable<bool>>("d");
+      EXPECT_EQ(d.has_value(), true);
+      EXPECT_EQ(d.value(), true);
+
+      const auto& e = container.get<Noneable<int>>("e");
+      EXPECT_EQ(e.has_value(), true);
+      EXPECT_EQ(e.value(), 42);
+    }
+  }
+
   TEST(InputSpecTest, VectorWithParsedLength)
   {
     auto line = anonymous_group({

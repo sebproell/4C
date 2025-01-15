@@ -200,6 +200,34 @@ namespace
     EXPECT_EQ(path, std::filesystem::path("/path/to/file"));
   }
 
+  TEST(ValueParser, ReadOptionalGiven)
+  {
+    std::string_view in("1 2 string");
+    Core::IO::ValueParser parser(in);
+
+    auto optional_int = parser.read<std::optional<int>>();
+    auto optional_double = parser.read<std::optional<double>>();
+    auto optional_string = parser.read<std::optional<std::string>>();
+
+    EXPECT_EQ(optional_int, 1);
+    EXPECT_EQ(optional_double, 2);
+    EXPECT_EQ(optional_string, "string");
+  }
+
+  TEST(ValueParser, ReadOptionalNone)
+  {
+    std::string_view in("none none none");
+    Core::IO::ValueParser parser(in);
+
+    auto optional_int = parser.read<std::optional<int>>();
+    auto optional_double = parser.read<std::optional<double>>();
+    auto optional_string = parser.read<std::optional<std::string>>();
+
+    EXPECT_FALSE(optional_int.has_value());
+    EXPECT_FALSE(optional_double.has_value());
+    EXPECT_FALSE(optional_string.has_value());
+  }
+
   TEST(ValueParser, NestedVectors)
   {
     std::string_view in("1 2 3 4 5 6 7 8 9");

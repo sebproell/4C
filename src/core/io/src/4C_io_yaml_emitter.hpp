@@ -13,6 +13,8 @@
 #include <ryml.hpp>
 #include <ryml_std.hpp>
 
+#include <optional>
+
 FOUR_C_NAMESPACE_OPEN
 
 namespace Core::IO
@@ -55,6 +57,19 @@ namespace Core::IO
   inline void emit_value_as_yaml(ryml::NodeRef node, const bool& value)
   {
     node << (value ? "true" : "false");
+  }
+
+  template <typename T>
+  void emit_value_as_yaml(ryml::NodeRef node, const std::optional<T>& value)
+  {
+    if (value.has_value())
+    {
+      emit_value_as_yaml(node, value.value());
+    }
+    else
+    {
+      node << "none";
+    }
   }
 
 
