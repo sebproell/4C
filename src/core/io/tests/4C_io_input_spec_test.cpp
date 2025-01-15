@@ -20,7 +20,7 @@ namespace
 
   TEST(InputSpecTest, Simple)
   {
-    auto line = group({
+    auto line = anonymous_group({
         tag("marker"),
         entry<int>("a", {.description = "An integer", .default_value = 1}),
         entry<double>("b", {.required = true}),
@@ -39,7 +39,7 @@ namespace
 
   TEST(InputSpecTest, OutofOrder)
   {
-    auto line = group({
+    auto line = anonymous_group({
         entry<int>("a"),
         entry<double>("b"),
         entry<std::string>("c"),
@@ -55,7 +55,7 @@ namespace
 
   TEST(InputSpecTest, OptionalLeftOut)
   {
-    auto line = group({
+    auto line = anonymous_group({
         entry<int>("a"),
         entry<double>("b"),
         entry<std::string>("c", {.default_value = "default"}),
@@ -74,7 +74,7 @@ namespace
 
   TEST(InputSpecTest, RequiredLeftOut)
   {
-    auto line = group({
+    auto line = anonymous_group({
         entry<int>("a"),
         entry<double>("b"),
         entry<std::string>("c"),
@@ -91,7 +91,7 @@ namespace
 
   TEST(InputSpecTest, Vector)
   {
-    auto line = group({
+    auto line = anonymous_group({
         entry<int>("a"),
         entry<std::vector<double>>("b", {.size = 3}),
         entry<std::string>("c"),
@@ -122,7 +122,7 @@ namespace
 
   TEST(InputSpecTest, VectorWithParsedLength)
   {
-    auto line = group({
+    auto line = anonymous_group({
         entry<int>("a"),
         entry<std::vector<double>>("b", {.size = from_parameter<int>("a")}),
         entry<std::string>("c"),
@@ -153,7 +153,7 @@ namespace
 
   TEST(InputSpecTest, UserDefined)
   {
-    auto line = group({
+    auto line = anonymous_group({
         entry<int>("a"),
         entry<double>("b"),
         user_defined<std::string>(
@@ -193,7 +193,7 @@ namespace
 
   TEST(InputSpecTest, Selection)
   {
-    auto line = group({
+    auto line = anonymous_group({
         entry<int>("a"),
         selection<int>("b", {{"b1", 1}, {"b2", 2}}, {.default_value = 1}),
         selection<std::string>("c", {{"c1", "1"}, {"c2", "2"}}, {.default_value = "2"}),
@@ -222,7 +222,7 @@ namespace
 
   TEST(InputSpecTest, Unparsed)
   {
-    auto line = group({
+    auto line = anonymous_group({
         entry<int>("a"),
         entry<int>("optional", {.default_value = 42}),
         entry<double>("b"),
@@ -238,7 +238,7 @@ namespace
 
   TEST(InputSpecTest, Groups)
   {
-    auto line = group({
+    auto line = anonymous_group({
         entry<int>("a"),
         group("group1",
             {
@@ -303,7 +303,7 @@ namespace
 
   TEST(InputSpecTest, OneOf)
   {
-    auto line = group({
+    auto line = anonymous_group({
         entry<int>("a", {.default_value = 42}),
         one_of({
             entry<double>("b"),
@@ -366,11 +366,11 @@ namespace
   {
     auto line = one_of(
         {
-            group({
+            anonymous_group({
                 entry<int>("a"),
                 entry<double>("b"),
             }),
-            group({
+            anonymous_group({
                 entry<std::string>("c"),
                 entry<double>("d"),
             }),
@@ -403,7 +403,7 @@ namespace
       std::string stream("a 1 b 2 c string d 2.0");
       ValueParser parser(stream);
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(line.fully_parse(parser, container), Core::Exception,
-          "both 'group {a, b}' and 'group {c, d}'");
+          "both 'anonymous_group {a, b}' and 'anonymous_group {c, d}'");
     }
 
     {
@@ -411,13 +411,13 @@ namespace
       std::string stream("a 1 c string");
       ValueParser parser(stream);
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(line.fully_parse(parser, container), Core::Exception,
-          "one_of {group {a, b}, group {c, d}}");
+          "one_of {anonymous_group {a, b}, anonymous_group {c, d}}");
     }
   }
 
   TEST(InputSpecTest, Print)
   {
-    auto line = group({
+    auto line = anonymous_group({
         entry<int>("a"),
         entry<std::string>("b"),
         selection<int>("c", {{"c1", 1}, {"c2", 2}}, {.default_value = 1}),
@@ -430,6 +430,78 @@ namespace
       std::ostringstream out;
       line.print_as_dat(out, container);
       EXPECT_EQ(out.str(), "a 1 b s [c (c1|c2|)] ");
+    }
+  }
+
+  TEST(InputSpecTest, EmitMetadata)
+  {
+    auto line = anonymous_group({
+        entry<int>("a", {.default_value = 42}),
+        entry<std::vector<double>>("b", {.default_value = std::vector{1., 2., 3.}, .size = 3}),
+        one_of({
+            entry<std::pair<int, std::string>>("b", {.default_value = std::pair{1, "abc"}}),
+            group("group",
+                {
+                    entry<std::string>("c"),
+                    entry<double>("d"),
+                }),
+        }),
+        selection<int>("e", {{"e1", 1}, {"e2", 2}}, {.default_value = 1}),
+    });
+
+
+    {
+      std::ostringstream out;
+      YAML::Emitter yaml(out);
+      line.emit_metadata(yaml);
+
+      std::string expected = R"(anonymous_group {a, b, one_of {b, group}, e}:
+  type: anonymous_group
+  description: anonymous_group {a, b, one_of {b, group}, e}
+  required: true
+  specs:
+    a:
+      type: int
+      description: ""
+      required: false
+      default: 42
+    b:
+      type: vector<double>
+      description: ""
+      required: false
+      default: [1, 2, 3]
+    one_of {b, group}:
+      type: one_of
+      description: one_of {b, group}
+      required: true
+      specs:
+        b:
+          type: pair<int, string>
+          description: ""
+          required: false
+          default: [1, abc]
+        group:
+          type: group
+          description: ""
+          required: true
+          specs:
+            c:
+              type: string
+              description: ""
+              required: true
+            d:
+              type: double
+              description: ""
+              required: true
+    e:
+      type: selection
+      description: ""
+      required: false
+      default: 1
+      choices:
+        e1: 1
+        e2: 2)";
+      EXPECT_EQ(out.str(), expected);
     }
   }
 }  // namespace

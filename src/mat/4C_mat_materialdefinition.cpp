@@ -59,7 +59,7 @@ std::ostream& Mat::MaterialDefinition::print(
 
   // the default line
   stream << comment << "MAT 0   " << materialname_ << "   ";
-  auto input_line = Core::IO::InputSpecBuilders::group(components_);
+  auto input_line = Core::IO::InputSpecBuilders::anonymous_group(components_);
 
   Core::IO::InputParameterContainer container;
   input_line.impl().set_default_value(container);

@@ -14,6 +14,8 @@
 #include "4C_io_input_spec.hpp"
 #include "4C_io_value_parser.hpp"
 
+#include <yaml-cpp/emitter.h>
+
 #include <functional>
 #include <optional>
 #include <ostream>
@@ -112,6 +114,34 @@ namespace Core::IO
       return PrettyTypeName<T>{}();
     }
 
+    template <typename T>
+    concept YamlCppSupportedType = requires(YAML::Emitter& yaml, const T& value) {
+      { yaml << value };
+    };
+
+    template <YamlCppSupportedType T>
+    void emit_value_as_yaml(YAML::Emitter& yaml, const T& value)
+    {
+      yaml << value;
+    }
+
+    template <typename T, typename U>
+    void emit_value_as_yaml(YAML::Emitter& yaml, const std::pair<T, U>& value)
+    {
+      yaml << YAML::Flow << YAML::BeginSeq;
+      emit_value_as_yaml(yaml, value.first);
+      emit_value_as_yaml(yaml, value.second);
+      yaml << YAML::EndSeq;
+    }
+
+    template <typename T>
+    void emit_value_as_yaml(YAML::Emitter& yaml, const std::vector<T>& value)
+    {
+      yaml << YAML::Flow << YAML::BeginSeq;
+      for (const auto& v : value) emit_value_as_yaml(yaml, v);
+      yaml << YAML::EndSeq;
+    }
+
     class InputSpecTypeErasedBase
     {
      public:
@@ -148,6 +178,11 @@ namespace Core::IO
 
       virtual void parse(ValueParser& parser, InputParameterContainer& container) const = 0;
       virtual void set_default_value(InputParameterContainer& container) const = 0;
+
+      //! Emit metadata. This function always emits into a map, i.e., the implementation must
+      //! insert keys and values into the yaml emitter.
+      virtual void emit_metadata(YAML::Emitter& yaml) const = 0;
+
       [[nodiscard]] virtual std::unique_ptr<InputSpecTypeErasedBase> clone() const = 0;
 
       void print(std::ostream& stream, const InputParameterContainer& container) const
@@ -201,6 +236,8 @@ namespace Core::IO
           container.add(wrapped.name, *wrapped.data.default_value);
         }
       }
+
+      void emit_metadata(YAML::Emitter& yaml) const override { wrapped.emit_metadata(yaml); }
 
       void do_print(std::ostream& stream, const InputParameterContainer& container) const override
       {
@@ -399,6 +436,7 @@ namespace Core::IO
         using StoredType = typename DataType::StoredType;
         DataType data;
         void parse(ValueParser& parser, InputParameterContainer& container) const;
+        void emit_metadata(YAML::Emitter& yaml) const;
       };
 
 
@@ -411,6 +449,20 @@ namespace Core::IO
         DataType data;
         std::function<void(ValueParser&, InputParameterContainer&)> parse;
         std::function<void(std::ostream&, const InputParameterContainer&)> print;
+        std::function<void(YAML::Emitter&)> emit_metadata;
+      };
+
+      template <typename DataTypeIn>
+      struct SelectionSpec
+      {
+        std::string name;
+        using DataType = std::decay_t<DataTypeIn>;
+        using StoredType = typename DataType::StoredType;
+        DataType data;
+        std::vector<std::pair<std::string, StoredType>> choices;
+        void parse(ValueParser& parser, InputParameterContainer& container) const;
+        void print(std::ostream& stream, const InputParameterContainer& container) const;
+        void emit_metadata(YAML::Emitter& yaml) const;
       };
 
       struct GroupSpec
@@ -422,6 +474,7 @@ namespace Core::IO
         void parse(ValueParser& parser, InputParameterContainer& container) const;
         void set_default_value(InputParameterContainer& container) const;
         void print(std::ostream& stream, const InputParameterContainer& container) const;
+        void emit_metadata(YAML::Emitter& yaml) const;
       };
 
       struct OneOfSpec
@@ -442,6 +495,8 @@ namespace Core::IO
         void set_default_value(InputParameterContainer& container) const;
 
         void print(std::ostream& stream, const InputParameterContainer& container) const;
+
+        void emit_metadata(YAML::Emitter& yaml) const;
       };
     }  // namespace Internal
 
@@ -572,7 +627,8 @@ namespace Core::IO
     [[nodiscard]] InputSpec user_defined(std::string name, DataType&& data = {},
         const std::function<void(ValueParser&, InputParameterContainer&)>& parse = nullptr,
         const std::function<void(std::ostream&, const Core::IO::InputParameterContainer&)>& print =
-            nullptr);
+            nullptr,
+        const std::function<void(YAML::Emitter&)>& emit_metadata = nullptr);
 
     /**
      * An entry whose value is a a selection from a list of choices. For example:
@@ -655,7 +711,7 @@ namespace Core::IO
      * Example:
      *
      * @code
-     * group({
+     * anonymous_group({
      *   entry<int>("a"),
      *   entry<double>("b"),
      *   entry<std::string>("c"),
@@ -665,7 +721,7 @@ namespace Core::IO
      * This functions gathers multiple InputSpecs on the same level and treats them as a single
      * InputSpec.
      */
-    [[nodiscard]] InputSpec group(std::vector<InputSpec> specs);
+    [[nodiscard]] InputSpec anonymous_group(std::vector<InputSpec> specs);
 
     /**
      * Exactly one of the given InputSpecs is expected. There is no support for default values and
@@ -778,6 +834,99 @@ void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataType>::parse(
 }
 
 
+template <typename DataTypeIn>
+void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataTypeIn>::emit_metadata(
+    YAML::Emitter& yaml) const
+{
+  {
+    yaml << YAML::Key << name;
+    yaml << YAML::Value << YAML::BeginMap;
+    {
+      yaml << YAML::Key << "type" << YAML::Value
+           << IO::Internal::get_pretty_type_name<StoredType>();
+      yaml << YAML::Key << "description" << YAML::Value << data.description;
+      yaml << YAML::Key << "required" << YAML::Value << data.required.value();
+      if (data.default_value.has_value())
+      {
+        yaml << YAML::Key << "default" << YAML::Value;
+        IO::Internal::emit_value_as_yaml(yaml, data.default_value.value());
+      }
+    }
+    yaml << YAML::EndMap;
+  }
+}
+
+
+template <typename DataTypeIn>
+void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::parse(
+    ValueParser& parser, InputParameterContainer& container) const
+{
+  parser.consume(name);
+  auto value = parser.read<std::string>();
+  for (const auto& choice : choices)
+  {
+    if (choice.first == value)
+    {
+      container.add(name, choice.second);
+      return;
+    }
+  }
+  FOUR_C_THROW("Invalid value '%s'", value.c_str());
+}
+
+template <typename DataTypeIn>
+void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::print(
+    std::ostream& stream, const InputParameterContainer& container) const
+{
+  stream << name;
+  auto* val = container.get_if<StoredType>(name);
+  if (val)
+  {
+    for (const auto& choice : choices)
+    {
+      if (choice.second == *val)
+      {
+        stream << " " << choice.first;
+        return;
+      }
+    }
+    FOUR_C_ASSERT(false, "Invalid value.");
+  }
+  else
+  {
+    stream << " (";
+    for (const auto& choice : choices)
+    {
+      stream << choice.first << "|";
+    }
+    stream << ")";
+  }
+}
+
+template <typename DataTypeIn>
+void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::emit_metadata(
+    YAML::Emitter& yaml) const
+{
+  yaml << YAML::Key << name << YAML::BeginMap;
+  {
+    yaml << YAML::Key << "type" << YAML::Value << "selection";
+    yaml << YAML::Key << "description" << YAML::Value << data.description;
+    yaml << YAML::Key << "required" << YAML::Value << data.required.value();
+    if (data.default_value.has_value())
+    {
+      yaml << YAML::Key << "default" << YAML::Value;
+      IO::Internal::emit_value_as_yaml(yaml, data.default_value.value());
+    }
+    yaml << YAML::Key << "choices" << YAML::Value << YAML::BeginMap;
+    for (const auto& choice : choices)
+    {
+      yaml << YAML::Key << choice.first << YAML::Value;
+      IO::Internal::emit_value_as_yaml(yaml, choice.second);
+    }
+    yaml << YAML::EndMap;
+  }
+  yaml << YAML::EndMap;
+}
 
 template <typename T>
 auto Core::IO::InputSpecBuilders::from_parameter(const std::string& name)
@@ -808,7 +957,8 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::entry(std::string name, DataTyp
 template <typename T, typename DataType>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::user_defined(std::string name, DataType&& data,
     const std::function<void(ValueParser&, InputParameterContainer&)>& parse,
-    const std::function<void(std::ostream&, const Core::IO::InputParameterContainer&)>& print)
+    const std::function<void(std::ostream&, const Core::IO::InputParameterContainer&)>& print,
+    const std::function<void(YAML::Emitter&)>& emit_metadata)
 {
   Internal::sanitize_required_default(data);
   return IO::Internal::make_spec(
@@ -817,6 +967,12 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::user_defined(std::string name, 
           .data = std::forward<DataType>(data),
           .parse = parse,
           .print = print ? print : [](std::ostream&, const InputParameterContainer&) {},
+          .emit_metadata = emit_metadata ? emit_metadata
+                                         : [name](YAML::Emitter& yaml)
+                               {
+      yaml << YAML::Key << name << YAML::BeginMap;
+      yaml << YAML::Key << "type" << YAML::Value << "user_defined" <<
+                                     YAML::EndMap; },
       },
       {
           .name = name,
@@ -832,6 +988,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
     std::string name, std::vector<std::pair<std::string, T>> choices, DataType data)
 {
   FOUR_C_ASSERT_ALWAYS(!choices.empty(), "Selection must have at least one choice.");
+  Internal::sanitize_required_default(data);
 
   if (data.default_value.has_value())
   {
@@ -842,47 +999,13 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
         default_value_it != choices.end(), "Default value of selection not found in choices.");
   }
 
-  return user_defined<T, DataType>(
-      name, std::move(data),
-      [name, data, choices](ValueParser& parser, InputParameterContainer& container)
+  return IO::Internal::make_spec(
+      Internal::SelectionSpec<DataType>{.name = name, .data = data, .choices = choices},
       {
-        parser.consume(name);
-        auto value = parser.read<std::string>();
-        for (const auto& choice : choices)
-        {
-          if (choice.first == value)
-          {
-            container.add(name, choice.second);
-            return;
-          }
-        }
-        FOUR_C_THROW("Invalid value '%s'", value.c_str());
-      },
-      [name, data, choices](std::ostream& stream, const InputParameterContainer& container)
-      {
-        stream << name;
-        auto* val = container.get_if<T>(name);
-        if (val)
-        {
-          for (const auto& choice : choices)
-          {
-            if (choice.second == *val)
-            {
-              stream << " " << choice.first;
-              return;
-            }
-          }
-          FOUR_C_ASSERT(false, "Invalid value.");
-        }
-        else
-        {
-          stream << " (";
-          for (const auto& choice : choices)
-          {
-            stream << choice.first << "|";
-          }
-          stream << ")";
-        }
+          .name = name,
+          .description = data.description,
+          .required = data.required.value(),
+          .has_default_value = data.default_value.has_value(),
       });
 }
 

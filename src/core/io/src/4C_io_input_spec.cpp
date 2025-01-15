@@ -41,6 +41,13 @@ void Core::IO::InputSpec::print_as_dat(
   pimpl_->print(stream, container);
 }
 
+void Core::IO::InputSpec::emit_metadata(YAML::Emitter& yaml) const
+{
+  yaml << YAML::BeginMap;
+  pimpl_->emit_metadata(yaml);
+  yaml << YAML::EndMap;
+}
+
 Core::IO::Internal::InputSpecTypeErasedBase& Core::IO::InputSpec::impl() { return *pimpl_; }
 
 const Core::IO::Internal::InputSpecTypeErasedBase& Core::IO::InputSpec::impl() const

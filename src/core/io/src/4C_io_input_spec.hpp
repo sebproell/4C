@@ -10,6 +10,8 @@
 
 #include "4C_config.hpp"
 
+#include <yaml-cpp/emitter.h>
+
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN
@@ -56,6 +58,11 @@ namespace Core::IO
      * container, the type of the value is printed instead.
      */
     void print_as_dat(std::ostream& stream, const InputParameterContainer& container) const;
+
+    /**
+     * Emit metadata about the InputSpec to the @p yaml emitter.
+     */
+    void emit_metadata(YAML::Emitter& yaml) const;
 
     /**
      * Access the opaque implementation class. This is used in the implementation files where the

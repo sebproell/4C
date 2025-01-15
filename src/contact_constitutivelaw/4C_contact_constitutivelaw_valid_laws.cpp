@@ -134,7 +134,7 @@ Core::IO::InputSpec CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws()
     group_index_to_type.push_back(Inpar::CONTACT::ConstitutiveLawType::colaw_mirco);
   }
 
-  auto valid_law = group({
+  auto valid_law = anonymous_group({
       entry<int>("LAW"),
       one_of(specs, store_index_as("LAW_TYPE", group_index_to_type)),
   });
