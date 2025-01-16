@@ -11,9 +11,10 @@
 
 #include "4C_io_input_file.hpp"
 
+#include <ryml.hpp>
+#include <ryml_std.hpp>
 #include <Teuchos_ParameterList.hpp>
 #include <Teuchos_StrUtils.hpp>
-#include <yaml-cpp/yaml.h>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -194,7 +195,7 @@ namespace
   }
 
 
-  void print_metadata_yaml_impl(YAML::Emitter& yaml, const Teuchos::ParameterList& list,
+  void print_metadata_yaml_impl(ryml::NodeRef node, const Teuchos::ParameterList& list,
       const std::string& parent_section_name)
   {
     // prevent invalid ordering of parameters caused by alphabetical output:
@@ -204,7 +205,8 @@ namespace
 
 
 
-    const auto print_key_value = [&](const std::string& key, const Teuchos::ParameterEntry& entry)
+    const auto print_key_value =
+        [](ryml::NodeRef parent, const std::string& key, const Teuchos::ParameterEntry& entry)
     {
       const auto to_string = [](const Teuchos::any& any)
       {
@@ -213,18 +215,21 @@ namespace
         return s.str();
       };
 
-      yaml << YAML::Key << key;
-      yaml << YAML::Value << YAML::BeginMap;
+      auto yaml_entry = parent.append_child();
+      // Serialize the key since the ParameterList gives us a temporary copy
+      yaml_entry << ryml::key(key);
+      yaml_entry |= ryml::MAP;
 
       const Teuchos::any& v = entry.getAny(false);
-      yaml << YAML::Value << "type" << YAML::Value << v.typeName();
+      yaml_entry["type"] << v.typeName();
+      yaml_entry["default"] << to_string(v);
 
-      yaml << YAML::Value << "default" << YAML::Value << to_string(v);
-
-      std::string doc = entry.docString();
+      const std::string& doc = entry.docString();
       if (doc != "")
       {
-        yaml << YAML::Key << "description" << YAML::Value << doc;
+        yaml_entry["description"] << doc;
+        // Add double quotes to the description to prevent YAML from interpreting special characters
+        yaml_entry["description"] |= ryml::VAL_DQUO;
       }
 
       Teuchos::RCP<const Teuchos::ParameterEntryValidator> validator = entry.validator();
@@ -233,30 +238,30 @@ namespace
         Teuchos::RCP<const Teuchos::Array<std::string>> values = validator->validStringValues();
         if (values != Teuchos::null)
         {
-          yaml << YAML::Key << "valid options";
-          yaml << YAML::Value << YAML::BeginSeq;
+          auto yaml_values = yaml_entry["valid options"];
+          yaml_values |= ryml::SEQ;
+
           for (int i = 0; i < (int)values->size(); ++i)
           {
-            yaml << (*values)[i];
+            yaml_values[i] << (*values)[i];
           }
-          yaml << YAML::EndSeq;
         }
       }
-      yaml << YAML::EndMap;
     };
 
-    yaml << YAML::BeginMap;
     for (const auto& [name, sublist] : sublists)
     {
-      yaml << YAML::Key << name;
-      yaml << YAML::Value << YAML::BeginMap;
+      auto yaml_sublist = node.append_child();
+      // Serialize the name since the ParameterList gives us a temporary copy
+      yaml_sublist << ryml::key(name);
+      yaml_sublist |= ryml::MAP;
+
       for (const auto& key_value : *sublist)
       {
-        if (!key_value.second.isList()) print_key_value(key_value.first, key_value.second);
+        if (!key_value.second.isList())
+          print_key_value(yaml_sublist, key_value.first, key_value.second);
       }
-      yaml << YAML::EndMap;
     }
-    yaml << YAML::EndMap;
   }
 }  // namespace
 
@@ -296,25 +301,25 @@ void Core::IO::InputFileUtils::print_dat(
 void Core::IO::InputFileUtils::print_metadata_yaml(
     std::ostream& stream, const Teuchos::ParameterList& list)
 {
-  YAML::Emitter yaml(stream);
-  yaml << YAML::BeginMap;
+  ryml::Tree tree;
+  ryml::NodeRef root = tree.rootref();
+  root |= ryml::MAP;
+
   {
     // First write some metadata
-    yaml << YAML::Key << "metadata" << YAML::Value;
-    yaml << YAML::BeginMap;
-    {
-      yaml << YAML::Key << "commit_hash" << YAML::Value << VersionControl::git_hash;
-    }
-    yaml << YAML::EndMap;
+    auto metadata = root["metadata"];
+    metadata |= ryml::MAP;
+    metadata["commit_hash"] << VersionControl::git_hash;
   }
 
   {
     // Then write the key-value parameters.
-    yaml << YAML::Key << "parameters" << YAML::Value;
-    print_metadata_yaml_impl(yaml, list, "");
+    auto parameters = root["parameters"];
+    parameters |= ryml::MAP;
+    print_metadata_yaml_impl(parameters, list, "");
   }
-  yaml << YAML::EndMap;
-  yaml << YAML::Newline;
+
+  stream << tree;
 }
 
 

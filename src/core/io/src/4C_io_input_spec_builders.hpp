@@ -13,8 +13,7 @@
 #include "4C_io_input_parameter_container.hpp"
 #include "4C_io_input_spec.hpp"
 #include "4C_io_value_parser.hpp"
-
-#include <yaml-cpp/emitter.h>
+#include "4C_io_yaml_emitter.hpp"
 
 #include <functional>
 #include <optional>
@@ -114,34 +113,6 @@ namespace Core::IO
       return PrettyTypeName<T>{}();
     }
 
-    template <typename T>
-    concept YamlCppSupportedType = requires(YAML::Emitter& yaml, const T& value) {
-      { yaml << value };
-    };
-
-    template <YamlCppSupportedType T>
-    void emit_value_as_yaml(YAML::Emitter& yaml, const T& value)
-    {
-      yaml << value;
-    }
-
-    template <typename T, typename U>
-    void emit_value_as_yaml(YAML::Emitter& yaml, const std::pair<T, U>& value)
-    {
-      yaml << YAML::Flow << YAML::BeginSeq;
-      emit_value_as_yaml(yaml, value.first);
-      emit_value_as_yaml(yaml, value.second);
-      yaml << YAML::EndSeq;
-    }
-
-    template <typename T>
-    void emit_value_as_yaml(YAML::Emitter& yaml, const std::vector<T>& value)
-    {
-      yaml << YAML::Flow << YAML::BeginSeq;
-      for (const auto& v : value) emit_value_as_yaml(yaml, v);
-      yaml << YAML::EndSeq;
-    }
-
     class InputSpecTypeErasedBase
     {
      public:
@@ -181,7 +152,7 @@ namespace Core::IO
 
       //! Emit metadata. This function always emits into a map, i.e., the implementation must
       //! insert keys and values into the yaml emitter.
-      virtual void emit_metadata(YAML::Emitter& yaml) const = 0;
+      virtual void emit_metadata(ryml::NodeRef node) const = 0;
 
       [[nodiscard]] virtual std::unique_ptr<InputSpecTypeErasedBase> clone() const = 0;
 
@@ -237,7 +208,7 @@ namespace Core::IO
         }
       }
 
-      void emit_metadata(YAML::Emitter& yaml) const override { wrapped.emit_metadata(yaml); }
+      void emit_metadata(ryml::NodeRef node) const override { wrapped.emit_metadata(node); }
 
       void do_print(std::ostream& stream, const InputParameterContainer& container) const override
       {
@@ -436,7 +407,7 @@ namespace Core::IO
         using StoredType = typename DataType::StoredType;
         DataType data;
         void parse(ValueParser& parser, InputParameterContainer& container) const;
-        void emit_metadata(YAML::Emitter& yaml) const;
+        void emit_metadata(ryml::NodeRef node) const;
       };
 
 
@@ -449,7 +420,7 @@ namespace Core::IO
         DataType data;
         std::function<void(ValueParser&, InputParameterContainer&)> parse;
         std::function<void(std::ostream&, const InputParameterContainer&)> print;
-        std::function<void(YAML::Emitter&)> emit_metadata;
+        std::function<void(ryml::NodeRef)> emit_metadata;
       };
 
       template <typename DataTypeIn>
@@ -462,7 +433,7 @@ namespace Core::IO
         std::vector<std::pair<std::string, StoredType>> choices;
         void parse(ValueParser& parser, InputParameterContainer& container) const;
         void print(std::ostream& stream, const InputParameterContainer& container) const;
-        void emit_metadata(YAML::Emitter& yaml) const;
+        void emit_metadata(ryml::NodeRef node) const;
       };
 
       struct GroupSpec
@@ -474,7 +445,7 @@ namespace Core::IO
         void parse(ValueParser& parser, InputParameterContainer& container) const;
         void set_default_value(InputParameterContainer& container) const;
         void print(std::ostream& stream, const InputParameterContainer& container) const;
-        void emit_metadata(YAML::Emitter& yaml) const;
+        void emit_metadata(ryml::NodeRef node) const;
       };
 
       struct OneOfSpec
@@ -496,7 +467,7 @@ namespace Core::IO
 
         void print(std::ostream& stream, const InputParameterContainer& container) const;
 
-        void emit_metadata(YAML::Emitter& yaml) const;
+        void emit_metadata(ryml::NodeRef node) const;
       };
     }  // namespace Internal
 
@@ -628,7 +599,7 @@ namespace Core::IO
         const std::function<void(ValueParser&, InputParameterContainer&)>& parse = nullptr,
         const std::function<void(std::ostream&, const Core::IO::InputParameterContainer&)>& print =
             nullptr,
-        const std::function<void(YAML::Emitter&)>& emit_metadata = nullptr);
+        const std::function<void(ryml::NodeRef)>& emit_metadata = nullptr);
 
     /**
      * An entry whose value is a a selection from a list of choices. For example:
@@ -836,23 +807,17 @@ void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataType>::parse(
 
 template <typename DataTypeIn>
 void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataTypeIn>::emit_metadata(
-    YAML::Emitter& yaml) const
+    ryml::NodeRef node) const
 {
+  node |= ryml::MAP;
+  node << ryml::key(name);
+
+  node["type"] << IO::Internal::get_pretty_type_name<StoredType>();
+  node["description"] << data.description;
+  emit_value_as_yaml(node["required"], data.required.value());
+  if (data.default_value.has_value())
   {
-    yaml << YAML::Key << name;
-    yaml << YAML::Value << YAML::BeginMap;
-    {
-      yaml << YAML::Key << "type" << YAML::Value
-           << IO::Internal::get_pretty_type_name<StoredType>();
-      yaml << YAML::Key << "description" << YAML::Value << data.description;
-      yaml << YAML::Key << "required" << YAML::Value << data.required.value();
-      if (data.default_value.has_value())
-      {
-        yaml << YAML::Key << "default" << YAML::Value;
-        IO::Internal::emit_value_as_yaml(yaml, data.default_value.value());
-      }
-    }
-    yaml << YAML::EndMap;
+    emit_value_as_yaml(node["default"], data.default_value.value());
   }
 }
 
@@ -905,27 +870,25 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::print(
 
 template <typename DataTypeIn>
 void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::emit_metadata(
-    YAML::Emitter& yaml) const
+    ryml::NodeRef node) const
 {
-  yaml << YAML::Key << name << YAML::BeginMap;
+  node |= ryml::MAP;
+  node << ryml::key(name);
+
+  node["type"] = "selection";
+  node["description"] << data.description;
+  emit_value_as_yaml(node["required"], data.required.value());
+  if (data.default_value.has_value())
   {
-    yaml << YAML::Key << "type" << YAML::Value << "selection";
-    yaml << YAML::Key << "description" << YAML::Value << data.description;
-    yaml << YAML::Key << "required" << YAML::Value << data.required.value();
-    if (data.default_value.has_value())
-    {
-      yaml << YAML::Key << "default" << YAML::Value;
-      IO::Internal::emit_value_as_yaml(yaml, data.default_value.value());
-    }
-    yaml << YAML::Key << "choices" << YAML::Value << YAML::BeginMap;
-    for (const auto& choice : choices)
-    {
-      yaml << YAML::Key << choice.first << YAML::Value;
-      IO::Internal::emit_value_as_yaml(yaml, choice.second);
-    }
-    yaml << YAML::EndMap;
+    emit_value_as_yaml(node["default"], data.default_value.value());
   }
-  yaml << YAML::EndMap;
+  node["choices"] |= ryml::MAP;
+  for (const auto& choice : choices)
+  {
+    auto entry = node["choices"].append_child();
+    entry << ryml::key(choice.first);
+    emit_value_as_yaml(entry, choice.second);
+  }
 }
 
 template <typename T>
@@ -958,22 +921,22 @@ template <typename T, typename DataType>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::user_defined(std::string name, DataType&& data,
     const std::function<void(ValueParser&, InputParameterContainer&)>& parse,
     const std::function<void(std::ostream&, const Core::IO::InputParameterContainer&)>& print,
-    const std::function<void(YAML::Emitter&)>& emit_metadata)
+    const std::function<void(ryml::NodeRef)>& emit_metadata)
 {
+  auto default_emitter = [name](ryml::NodeRef node)
+  {
+    node << ryml::key(name);
+    node |= ryml::MAP;
+    node["type"] = "user_defined";
+  };
+
   Internal::sanitize_required_default(data);
   return IO::Internal::make_spec(
-      Internal::UserDefinedSpec<DataType>{
-          .name = name,
+      Internal::UserDefinedSpec<DataType>{.name = name,
           .data = std::forward<DataType>(data),
           .parse = parse,
           .print = print ? print : [](std::ostream&, const InputParameterContainer&) {},
-          .emit_metadata = emit_metadata ? emit_metadata
-                                         : [name](YAML::Emitter& yaml)
-                               {
-      yaml << YAML::Key << name << YAML::BeginMap;
-      yaml << YAML::Key << "type" << YAML::Value << "user_defined" <<
-                                     YAML::EndMap; },
-      },
+          .emit_metadata = emit_metadata ? emit_metadata : default_emitter},
       {
           .name = name,
           .description = data.description,

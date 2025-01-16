@@ -41,7 +41,7 @@ namespace
     a:
       type: int
       default: 1
-      description: The parameter 'a'.
+      description: "The parameter 'a'."
     b:
       type: bool
       default: 1
@@ -49,7 +49,7 @@ namespace
     c:
       type: string
       default: string1
-      description: The parameter 'c'.
+      description: "The parameter 'c'."
       valid options:
         - string1
         - string2

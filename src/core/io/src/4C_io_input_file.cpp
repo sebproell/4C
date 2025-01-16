@@ -14,9 +14,10 @@
 #include "4C_linalg_utils_densematrix_communication.hpp"
 #include "4C_utils_string.hpp"
 
+#include <ryml.hpp>
+#include <ryml_std.hpp>
 #include <Teuchos_ParameterList.hpp>
 #include <Teuchos_Time.hpp>
-#include <yaml-cpp/yaml.h>
 
 #include <filesystem>
 #include <sstream>
@@ -285,27 +286,34 @@ namespace Core::IO
       // to constructs in a dat file. This means that top-level sections are pre-fixed with "--" and
       // the key-value pairs are mapped to "key = value" lines.
       //
-      // caveats:
-      // - YAML files can only be read in full.
-      YAML::Node config = YAML::LoadFile(file_path);
-      for (const auto& section : config)
+
+      // Read the whole file into a string and parse it with ryml.
+      std::ifstream file(file_path);
+      std::ostringstream ss;
+      ss << file.rdbuf();
+      const std::string file_content = ss.str();
+      ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(file_content));
+
+      const auto to_string = [](const ryml::csubstr str) -> std::string
+      { return std::string(str.data(), str.size()); };
+
+      for (ryml::ConstNodeRef node : tree.crootref())
       {
-        const std::string& section_name = section.first.as<std::string>();
-        const auto& entries = section.second;
+        const auto& section_name = node.key();
 
         // If this is the special section "INCLUDES", we need to handle it differently.
         if (section_name == "INCLUDES")
         {
-          if (entries.IsScalar())
-            included_files.emplace_back(get_include_path(entries.as<std::string>(), file_path));
-          else if (entries.IsSequence())
+          if (node.has_val())
           {
-            for (const auto& entry : entries)
+            included_files.emplace_back(get_include_path(to_string(node.val()), file_path));
+          }
+          else if (node.is_seq())
+          {
+            for (const auto& include_node : node)
             {
-              FOUR_C_ASSERT_ALWAYS(
-                  entry.IsScalar(), "Only scalar entries are supported in the INCLUDES section.");
-              const auto line = entry.as<std::string>();
-              included_files.emplace_back(get_include_path(line, file_path));
+              included_files.emplace_back(
+                  get_include_path(to_string(include_node.val()), file_path));
             }
           }
           else
@@ -314,53 +322,52 @@ namespace Core::IO
           continue;
         }
 
-        FOUR_C_ASSERT_ALWAYS(content_by_section.find(section_name) == content_by_section.end(),
-            "Section '%s' is defined again in file '%s'.", section_name.c_str(), file_path.c_str());
 
-        auto& current_content = content_by_section[section_name];
+        FOUR_C_ASSERT_ALWAYS(
+            content_by_section.find(to_string(section_name)) == content_by_section.end(),
+            "Section '%s' is defined again in file '%s'.", to_string(section_name).c_str(),
+            file_path.c_str());
+
+        auto& current_content = content_by_section[to_string(section_name)];
         current_content.file = file_path;
         std::list<std::string> list_of_lines;
 
-        const auto read_flat_sequence = [&](const YAML::Node& node)
+        const auto read_flat_sequence = [&](const ryml::ConstNodeRef& node)
         {
           for (const auto& entry : node)
           {
-            FOUR_C_ASSERT_ALWAYS(entry.IsScalar(),
+            FOUR_C_ASSERT_ALWAYS(entry.has_val(),
                 "While reading section '%s': "
                 "only scalar entries are supported in sequences.",
-                section_name.c_str());
-            const auto line = entry.as<std::string>();
-            list_of_lines.emplace_back(line);
+                to_string(section_name).c_str());
+            list_of_lines.emplace_back(to_string(entry.val()));
           }
         };
 
-        const auto read_map = [&](const YAML::Node& node)
+        const auto read_map = [&](const ryml::ConstNodeRef& node)
         {
           for (const auto& entry : node)
           {
-            FOUR_C_ASSERT_ALWAYS(entry.first.IsScalar() && entry.second.IsScalar(),
+            FOUR_C_ASSERT_ALWAYS(entry.has_val(),
                 "While reading section '%s': "
                 "only scalar key-value pairs are supported in maps.",
-                section_name.c_str());
-            const auto line =
-                entry.first.as<std::string>() + " = " + entry.second.as<std::string>();
-            list_of_lines.emplace_back(line);
+                to_string(section_name).c_str());
+            list_of_lines.emplace_back(to_string(entry.key()) + " = " + to_string(entry.val()));
           }
         };
 
-        switch (entries.Type())
+        if (node.is_map())
         {
-          case YAML::NodeType::Undefined:
-          case YAML::NodeType::Null:
-          case YAML::NodeType::Scalar:
-            FOUR_C_THROW(
-                "Entries in section %s must either form a map or a sequence", section_name.c_str());
-          case YAML::NodeType::Sequence:
-            read_flat_sequence(entries);
-            break;
-          case YAML::NodeType::Map:
-            read_map(entries);
-            break;
+          read_map(node);
+        }
+        else if (node.is_seq())
+        {
+          read_flat_sequence(node);
+        }
+        else
+        {
+          FOUR_C_THROW("Entries in section %s must either form a map or a sequence",
+              to_string(section_name).c_str());
         }
 
         // Finish the current section by condensing the lines into the content.

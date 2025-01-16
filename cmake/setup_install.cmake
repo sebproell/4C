@@ -79,7 +79,7 @@ _add_dependency_to_settings(FFTW)
 _add_dependency_to_settings(CLN)
 _add_dependency_to_settings(MIRCO)
 _add_dependency_to_settings(Backtrace)
-_add_dependency_to_settings(yaml-cpp)
+_add_dependency_to_settings(ryml)
 
 # install
 install(

@@ -452,55 +452,59 @@ namespace
 
     {
       std::ostringstream out;
-      YAML::Emitter yaml(out);
+      ryml::Tree tree;
+      ryml::NodeRef root = tree.rootref();
+      YamlEmitter yaml{root};
       line.emit_metadata(yaml);
+      out << tree;
 
-      std::string expected = R"(anonymous_group {a, b, one_of {b, group}, e}:
+      std::string expected = R"('anonymous_group {a, b, one_of {b, group}, e}':
   type: anonymous_group
-  description: anonymous_group {a, b, one_of {b, group}, e}
+  description: 'anonymous_group {a, b, one_of {b, group}, e}'
   required: true
   specs:
     a:
       type: int
-      description: ""
+      description: ''
       required: false
       default: 42
     b:
       type: vector<double>
-      description: ""
+      description: ''
       required: false
-      default: [1, 2, 3]
-    one_of {b, group}:
+      default: [1,2,3]
+    'one_of {b, group}':
       type: one_of
-      description: one_of {b, group}
+      description: 'one_of {b, group}'
       required: true
       specs:
         b:
-          type: pair<int, string>
-          description: ""
+          type: 'pair<int, string>'
+          description: ''
           required: false
-          default: [1, abc]
+          default: [1,abc]
         group:
           type: group
-          description: ""
+          description: ''
           required: true
           specs:
             c:
               type: string
-              description: ""
+              description: ''
               required: true
             d:
               type: double
-              description: ""
+              description: ''
               required: true
     e:
       type: selection
-      description: ""
+      description: ''
       required: false
       default: 1
       choices:
         e1: 1
-        e2: 2)";
+        e2: 2
+)";
       EXPECT_EQ(out.str(), expected);
     }
   }

@@ -204,7 +204,7 @@ void Inpar::NlnSol::set_valid_parameters(Teuchos::ParameterList& list)
         "The search fails if the number of iterations exceeds this value",
         &polynomial);
     Core::Utils::double_parameter("Minimum Step", 1.0e-12,
-        "Minimum acceptable step length. The search fails if the computed \f$\\lambda_k\f$ "
+        "Minimum acceptable step length. The search fails if the computed $\\lambda_k$ "
         "is less than this value",
         &polynomial);
 
@@ -223,11 +223,11 @@ void Inpar::NlnSol::set_valid_parameters(Teuchos::ParameterList& list)
         "Type of interpolation that should be used", &polynomial, interpolation_type_valid_input);
 
     Core::Utils::double_parameter("Min Bounds Factor", 0.1,
-        "Choice for \f$\\gamma_{\\min}\f$, i.e., the factor that limits the minimum size "
+        "Choice for $\\gamma_{\\min}$, i.e., the factor that limits the minimum size "
         "of the new step based on the previous step",
         &polynomial);
     Core::Utils::double_parameter("Max Bounds Factor", 0.5,
-        "Choice for \f$\\gamma_{\\max}\f$, i.e., the factor that limits the maximum size "
+        "Choice for $\\gamma_{\\max}$, i.e., the factor that limits the maximum size "
         "of the new step based on the previous step",
         &polynomial);
 
@@ -290,7 +290,7 @@ void Inpar::NlnSol::set_valid_parameters(Teuchos::ParameterList& list)
         sufficient_decrease_condition_valid_input);
 
     Core::Utils::bool_parameter("Optimize Slope Calculation", "No",
-        "Boolean value. If set to true the value of \f$s^T J^T F\f$ is estimated using a "
+        "Boolean value. If set to true the value of $s^T J^T F$ is estimated using a "
         "directional derivative in a call to ::NOX::LineSearch::Common::computeSlopeWithOutJac. "
         "If false the slope computation is computed with the "
         "::NOX::LineSearch::Common::computeSlope method. "

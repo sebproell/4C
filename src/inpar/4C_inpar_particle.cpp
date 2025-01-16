@@ -508,7 +508,7 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       "COEFF_RESTITUTION", -1.0, "coefficient of restitution", &particledyndem);
   Core::Utils::double_parameter("DAMP_REG_FAC", -1.0,
       "linearly regularized damping normal force in the interval "
-      "\f$|g| < (\\text{DAMP_REG_FAC} \\cdot r_{\\min})\f$",
+      "$|g| < (\\text{DAMP_REG_FAC} \\cdot r_{\\min})$",
       &particledyndem);
   Core::Utils::bool_parameter(
       "TENSION_CUTOFF", "yes", "evaluate tension cutoff of normal contact force", &particledyndem);

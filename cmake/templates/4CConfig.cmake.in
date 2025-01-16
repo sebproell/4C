@@ -67,8 +67,8 @@ if(FOUR_C_WITH_ARBORX)
   find_package(ArborX CONFIG HINTS ${FOUR_C_ARBORX_ROOT})
 endif()
 
-if(FOUR_C_WITH_YAML_CPP)
-  find_package(yaml-cpp CONFIG HINTS ${FOUR_C_YAML_CPP_ROOT})
+if(FOUR_C_WITH_RYML)
+  find_package(ryml CONFIG HINTS ${FOUR_C_RYML_ROOT})
 endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/4CTargets.cmake")
