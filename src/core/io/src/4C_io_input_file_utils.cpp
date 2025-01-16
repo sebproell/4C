@@ -10,6 +10,7 @@
 #include "4C_io_input_file_utils.hpp"
 
 #include "4C_io_input_file.hpp"
+#include "4C_io_value_parser.hpp"
 
 #include <ryml.hpp>
 #include <ryml_std.hpp>
@@ -291,6 +292,17 @@ void Core::IO::InputFileUtils::print_section(std::ostream& out, const std::strin
 }
 
 
+void Core::IO::InputFileUtils::print_section(
+    std::ostream& out, const std::string& header, const InputSpec& spec)
+{
+  print_section_header(out, header);
+
+  out << "// ";
+  spec.print_as_dat(out, Core::IO::InputParameterContainer{});
+  out << '\n';
+}
+
+
 void Core::IO::InputFileUtils::print_dat(
     std::ostream& stream, const Teuchos::ParameterList& list, bool comment)
 {
@@ -373,6 +385,23 @@ std::vector<Core::IO::InputParameterContainer> Core::IO::InputFileUtils::read_al
           out << '\n';
         });
     FOUR_C_THROW(out.str().c_str());
+  }
+
+  return parsed_lines;
+}
+
+
+std::vector<Core::IO::InputParameterContainer> Core::IO::InputFileUtils::read_all_lines_in_section(
+    Core::IO::InputFile& input, const std::string& section, const InputSpec& spec)
+{
+  std::vector<Core::IO::InputParameterContainer> parsed_lines;
+
+  for (const auto& line : input.lines_in_section(section))
+  {
+    ValueParser parser{line};
+    Core::IO::InputParameterContainer container;
+    spec.fully_parse(parser, container);
+    parsed_lines.emplace_back(std::move(container));
   }
 
   return parsed_lines;

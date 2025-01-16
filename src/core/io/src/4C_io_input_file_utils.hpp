@@ -10,6 +10,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_io_input_spec.hpp"
 #include "4C_io_linedefinition.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
@@ -60,6 +61,11 @@ namespace Core::IO::InputFileUtils
       const std::vector<Input::LineDefinition>& possible_lines);
 
   /**
+   * Print @p spec into a dat file section with given @p header.
+   */
+  void print_section(std::ostream& out, const std::string& header, const InputSpec& spec);
+
+  /**
    * Read all lines in a @p section of @p input that match the @p possible_lines.
    * Every line in the @p section must be readable as one of the @p possible_lines. Otherwise, an
    * exception is thrown.
@@ -69,6 +75,14 @@ namespace Core::IO::InputFileUtils
   std::vector<Core::IO::InputParameterContainer> read_all_lines_in_section(
       Core::IO::InputFile& input, const std::string& section,
       const std::vector<Input::LineDefinition>& possible_lines);
+
+
+  /**
+   * Read all lines in a @p section of @p input that match the @p spec. Every line in the @p section
+   * must match the @p spec. Otherwise, an exception is thrown.
+   */
+  std::vector<Core::IO::InputParameterContainer> read_all_lines_in_section(
+      Core::IO::InputFile& input, const std::string& section, const InputSpec& spec);
 
 
   /**

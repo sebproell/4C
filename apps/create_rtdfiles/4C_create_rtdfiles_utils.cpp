@@ -287,9 +287,9 @@ namespace RTD
         "This discretization is then cloned/duplicated such that the resulting discretization "
         "is assigned the material TAR_MAT.");
 
-    const std::vector<Input::LineDefinition> lines = Core::FE::valid_cloning_material_map_lines();
+    const auto spec = Core::FE::valid_cloning_material_map();
     std::stringstream cloningMatStream;
-    Core::IO::InputFileUtils::print_section(cloningMatStream, "CLONING MATERIAL MAP", lines);
+    Core::IO::InputFileUtils::print_section(cloningMatStream, "CLONING MATERIAL MAP", spec);
     const std::vector<std::string> cloningMatList =
         Core::Utils::split(cloningMatStream.str(), "\n");
 

@@ -289,7 +289,7 @@ int main(int argc, char* argv[])
         std::cout << '\n';
       }
 
-      const auto lines = Core::FE::valid_cloning_material_map_lines();
+      const auto lines = Core::FE::valid_cloning_material_map();
       Core::IO::InputFileUtils::print_section(std::cout, "CLONING MATERIAL MAP", lines);
 
       print_element_dat_header();

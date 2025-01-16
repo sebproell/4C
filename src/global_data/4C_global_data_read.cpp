@@ -2122,11 +2122,11 @@ void Global::read_contact_constitutive_laws(Global::Problem& problem, Core::IO::
 /*----------------------------------------------------------------------*/
 void Global::read_cloning_material_map(Global::Problem& problem, Core::IO::InputFile& input)
 {
-  const std::vector<Input::LineDefinition> lines = Core::FE::valid_cloning_material_map_lines();
+  auto spec = Core::FE::valid_cloning_material_map();
 
   // perform the actual reading and extract the input parameters
   auto parameters =
-      Core::IO::InputFileUtils::read_all_lines_in_section(input, "CLONING MATERIAL MAP", lines);
+      Core::IO::InputFileUtils::read_all_lines_in_section(input, "CLONING MATERIAL MAP", spec);
   for (const auto& input_line : parameters)
   {
     // extract what was read from the input file

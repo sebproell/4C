@@ -331,7 +331,7 @@ int main(int argc, char** argv)
       }
 
       // print cloning material map default lines (right after the materials)
-      const auto lines = Core::FE::valid_cloning_material_map_lines();
+      const auto lines = Core::FE::valid_cloning_material_map();
       Core::IO::InputFileUtils::print_section(defaulthead, "CLONING MATERIAL MAP", lines);
 
       // print spatial functions
