@@ -145,6 +145,7 @@ namespace Discret::Elements
     Core::FE::GaussIntegration mass_matrix_integration_;
 
     SolidFormulationHistory<ElementFormulation> history_data_{};
+    SolidFormulationHistory<ElementFormulation> old_history_data_{};
 
   };  // class SolidEleCalc
 }  // namespace Discret::Elements

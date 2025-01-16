@@ -278,6 +278,8 @@ void Discret::Elements::SolidEleCalc<celltype, ElementFormulation>::update(
     const Core::FE::Discretization& discretization, const std::vector<int>& lm,
     Teuchos::ParameterList& params)
 {
+  old_history_data_ = history_data_;
+
   const ElementNodes<celltype> nodal_coordinates =
       evaluate_element_nodes<celltype>(ele, discretization, lm);
 
@@ -480,6 +482,7 @@ template <Core::FE::CellType celltype, typename ElementFormulation>
 void Discret::Elements::SolidEleCalc<celltype, ElementFormulation>::reset_to_last_converged(
     const Core::Elements::Element& ele, Mat::So3Material& solid_material)
 {
+  history_data_ = old_history_data_;
   solid_material.reset_step();
 }
 
