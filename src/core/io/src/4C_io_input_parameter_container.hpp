@@ -17,6 +17,7 @@
 #include <any>
 #include <functional>
 #include <map>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -26,6 +27,22 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Core::IO
 {
+  /**
+   * A type that either contains a value of type T or nothing. This type is useful to
+   * represent the absence of a value marked by "none" in the input file. The type is just an alias
+   * for std::optional<T> to more precisely convey the intended meaning.
+   */
+  template <typename T>
+  using Noneable = std::optional<T>;
+
+  /**
+   * A constant to represent the absence of a value in the input file. The constant is templated
+   * on the type of the value inside the Noneable to properly handle cases where a Noneable is
+   * itself stored inside a std::optional type.
+   */
+  template <typename T>
+  inline constexpr auto none = Noneable<T>{std::nullopt};
+
   /**
    * A container to store dynamic input parameters. The container can store arbitrary types of
    * parameters. Parameters can be grouped in sub-containers.
@@ -153,6 +170,19 @@ namespace Core::IO::Internal::InputParameterContainerImplementation
   struct PrintHelper<T>
   {
     void operator()(std::ostream& os, const std::any& data) { os << std::any_cast<T>(data) << " "; }
+  };
+
+  template <StreamInsertable T>
+  struct PrintHelper<Noneable<T>>
+  {
+    void operator()(std::ostream& os, const std::any& data)
+    {
+      auto val = std::any_cast<Noneable<T>>(data);
+      if (val.has_value())
+        PrintHelper<T>{}(os, *val);
+      else
+        os << "none ";
+    }
   };
 
   // Specialization for vectors.

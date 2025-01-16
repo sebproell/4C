@@ -40,6 +40,15 @@ namespace Core::IO
       void operator()(std::ostream& out, bool val) const { out << " " << (val ? "true" : "false"); }
 
       template <typename T>
+      void operator()(std::ostream& out, const std::optional<T>& val) const
+      {
+        if (val.has_value())
+          (*this)(out, *val);
+        else
+          out << " none";
+      }
+
+      template <typename T>
       void operator()(std::ostream& out, const std::vector<T>& val) const
       {
         for (const auto& v : val)
@@ -478,7 +487,7 @@ namespace Core::IO
      *
      * @code
      * // An entry with name and description. By default, the entry is required.
-     * entry<int>("my_int", {.description = "An integer value."});
+     * entry<std::string>("my_string", {.description = "A string value."});
      *
      * // An entry with a default value. This entry is implicitly optional because a default value
      * // is given.
@@ -487,10 +496,18 @@ namespace Core::IO
      * entry<double>("my_double", {.required = false, .default_value = 3.14});
      *
      * // An optional entry. This value does not have a default value.
-     * entry<std::string>("my_string", {.required = false});
+     * entry<int>("my_int", {.required = false});
+     *
+     * // An alternative way to create this optional int entry is achieved with the Noneable type.
+     * // This value is optional and by default has an empty value represented by "none" in the
+     * // input file.
+     * entry<Noneable<int>>("my_int", .default_value = none<int>);
      *
      * // A vector entry with a fixed size of 3.
      * entry<std::vector<double>>("my_vector", {.size = 3});
+     *
+     * // A vector may also contain Noneable values.
+     * entry<std::vector<Noneable<double>>>("my_vector", {.size = 3});
      *
      * // A vector entry with a size that is determined by the value of another parameter. The
      * // size is given as a callback.
@@ -518,7 +535,7 @@ namespace Core::IO
      *     in an exception.
      *
      * When you decide how to set the `required` and `default_value` fields, consider the following
-     * three cases:
+     * cases:
      *
      *   - If you always require a parameter and there is no reasonable default value, do not set
      *     `required` or `default_value`. This will make the parameter required by default. Parsing
@@ -547,7 +564,17 @@ namespace Core::IO
      *     activate parameters can be achieved with the group() function, especially if a set of
      *     parameters is always required together.
      *
+     *   - As an alternative to the last case, you could also use a Noneable type which allows you
+     *     to treat the non-existence of a parameter explicitly via the "none" value. In this case,
+     *     wrap the type T of the parameter in a Noneable<T> type and specify
+     *     `.default_value = none<T>` (see also the example code above). After parsing, the
+     *     container will be guaranteed to contain a Noneable<T> value which you can query with
+     *     InputParameterContainer::get(). If the parameter is not present in the input file or set
+     *     to "none", the Noneable<T> value will be empty.
+     *
      * @tparam T The data type of the entry.
+     *
+     * @relatedalso InputSpec
      */
     template <typename T, typename DataType = Internal::DataFor<T>>
     [[nodiscard]] InputSpec entry(std::string name, DataType&& data = {});
@@ -566,6 +593,8 @@ namespace Core::IO
      * @endcode
      *
      * @tparam T The type of the parameter of given @p name.
+     *
+     * @relatedalso InputSpec
      */
     template <typename T>
     [[nodiscard]] auto from_parameter(const std::string& name);
@@ -578,6 +607,8 @@ namespace Core::IO
      *
      * @deprecated Use `entry<bool>` instead, to be more explicit in input files. A "tag" cannot
      * explicitly be set to `false` in the input file, as this requires leaving out the tag.
+     *
+     * @relatedalso InputSpec
      */
     [[nodiscard]] InputSpec tag(std::string name, ScalarData<bool> data = {});
 
@@ -593,6 +624,8 @@ namespace Core::IO
      *       is not covered by the other functions, you can use this function. Please consider,
      *       enhancing the library with a new function if you think what you are doing is a
      *       missing common use case.
+     *
+     * @relatedalso InputSpec
      */
     template <typename T, typename DataType = Internal::DataFor<T>>
     [[nodiscard]] InputSpec user_defined(std::string name, DataType&& data = {},
@@ -614,6 +647,8 @@ namespace Core::IO
      * values to another type yourself. A frequent use case is to map strings to enum constants.
      *
      * The remaining parameterization options follow the same rules as for the entry() function.
+     *
+     * @relatedalso InputSpec
      */
     template <typename T, typename DataType = Internal::DataFor<T>>
     [[nodiscard]] InputSpec selection(
@@ -672,6 +707,7 @@ namespace Core::IO
      * @note If you want to group multiple InputSpecs without creating a new scope, use the other
      * group() function which does not take a name.
      *
+     * @relatedalso InputSpec
      */
     [[nodiscard]] InputSpec group(
         std::string name, std::vector<InputSpec> specs, GroupData data = {});
@@ -691,6 +727,8 @@ namespace Core::IO
      *
      * This functions gathers multiple InputSpecs on the same level and treats them as a single
      * InputSpec.
+     *
+     * @relatedalso InputSpec
      */
     [[nodiscard]] InputSpec anonymous_group(std::vector<InputSpec> specs);
 
@@ -726,6 +764,8 @@ namespace Core::IO
      *
      * @note The one_of() function is not intended to be used for selecting from a fixed set of
      * different values of the same type. Use the selection() function for this purpose.
+     *
+     * @relatedalso InputSpec
      */
     [[nodiscard]] InputSpec one_of(std::vector<InputSpec> specs,
         std::function<void(ValueParser& parser, InputParameterContainer& container,
@@ -767,6 +807,7 @@ namespace Core::IO
      * document the meaning of the index. This is demonstrated in the example above. If the
      * @p reindexing vector is not provided, the index is stored as is.
      *
+     * @relatedalso InputSpec
      */
     template <typename T>
     auto store_index_as(std::string name, std::vector<T> reindexing = {});

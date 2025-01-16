@@ -15,6 +15,7 @@
 
 #include <array>
 #include <filesystem>
+#include <optional>
 #include <stack>
 #include <string>
 #include <string_view>
@@ -148,6 +149,21 @@ namespace Core::IO
     void read_internal(double& value);
     void read_internal(std::string& value);
     void read_internal(std::filesystem::path& value);
+
+    template <typename T, typename... SizeInfo>
+    void read_internal(std::optional<T>& value, SizeInfo&&... size_info)
+    {
+      auto next = peek();
+      if (next == "none")
+      {
+        consume("none");
+        value.reset();
+      }
+      else
+      {
+        read_internal(value.emplace(), std::forward<SizeInfo>(size_info)...);
+      }
+    }
 
     template <typename T, typename... SizeInfo>
     void read_internal(std::vector<T>& value, std::size_t size, SizeInfo&&... size_info)
