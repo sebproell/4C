@@ -74,8 +74,6 @@ void Solid::EXPLICIT::CentrDiff::set_state(const Core::LinAlg::Vector<double>& x
   const double dt = (*global_state().get_delta_time())[0];
   const double dthalf = dt / 2.0;
 
-  model_eval().reset_step_state();
-
   // ---------------------------------------------------------------------------
   // new end-point acceleration
   // ---------------------------------------------------------------------------
