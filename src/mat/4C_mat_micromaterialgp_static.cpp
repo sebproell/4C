@@ -15,7 +15,6 @@
 #include "4C_io_control.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 #include "4C_so3_hex8.hpp"
-#include "4C_so3_shw6.hpp"
 #include "4C_stru_multi_microstatic.hpp"
 #include "4C_utils_singleton_owner.hpp"
 
@@ -251,8 +250,7 @@ void Mat::MicroMaterialGP::eas_init()
   {
     Core::Elements::Element* actele = discret->l_row_element(lid);
 
-    if (actele->element_type() == Discret::Elements::SoHex8Type::instance() or
-        actele->element_type() == Discret::Elements::SoShw6Type::instance())
+    if (actele->element_type() == Discret::Elements::SoHex8Type::instance())
     {
       // create the parameters for the discretization
       Teuchos::ParameterList p;

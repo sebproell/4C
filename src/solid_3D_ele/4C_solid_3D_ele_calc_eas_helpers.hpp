@@ -40,7 +40,6 @@ namespace Discret::Elements
     eastype_h8_9,
     eastype_h8_21,
     eastype_sh8_7,
-    eastype_sh18_9,
     eastype_sw6_1,
     eastype_undefined
   };
@@ -63,11 +62,6 @@ namespace Discret::Elements
   struct EasTypeToNumEas<Discret::Elements::EasType::eastype_sh8_7>
   {
     static constexpr int num_eas = 7;
-  };
-  template <>
-  struct EasTypeToNumEas<Discret::Elements::EasType::eastype_sh18_9>
-  {
-    static constexpr int num_eas = 9;
   };
   template <>
   struct EasTypeToNumEas<Discret::Elements::EasType::eastype_sw6_1>

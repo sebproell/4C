@@ -34,7 +34,7 @@
 #include "4C_mortar_manager_base.hpp"
 #include "4C_mortar_strategy_base.hpp"
 #include "4C_so3_hex8.hpp"
-#include "4C_so3_shw6.hpp"
+#include "4C_solid_3D_ele.hpp"
 #include "4C_structure_aux.hpp"
 #include "4C_structure_timint.hpp"
 
@@ -550,10 +550,8 @@ void Solid::TimIntImpl::prepare_line_search()
   // each proc searches through his elements
   for (int i = 0; i < discret_->num_my_row_elements(); i++)
   {
-    Core::Elements::Element* actele = discret_->l_row_element(i);
-    Discret::Elements::SoHex8* ele_hex8 = dynamic_cast<Discret::Elements::SoHex8*>(actele);
-    if ((ele_hex8 != nullptr && ele_hex8->have_eas() == true) ||
-        (actele->element_type() == Discret::Elements::SoShw6Type::instance()))
+    if (const auto* solid = dynamic_cast<Discret::Elements::Solid*>(discret_->l_row_element(i));
+        solid != nullptr && solid->have_eas())
       haveCondensationLocal = 1;
   }
   Core::Communication::max_all(
