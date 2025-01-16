@@ -118,8 +118,8 @@ E 3 -
 E 4 -
 ----------------------DESIGN TOTAL AND MEAN SCALAR SURF CONDITIONS
 DSURF  2
-E 1 - ID 3
-E 2 - ID 2
+E 1 - ConditionID 3
+E 2 - ConditionID 2
 -----------------------------------------------DLINE-NODE TOPOLOGY
 NODE    1 DLINE 1
 NODE    4 DLINE 1

@@ -139,12 +139,12 @@ E 5 - ConditionID 2 INTERFACE_SIDE Slave KINETIC_MODEL Butler-Volmer-Peltier NUM
 E 6 - ConditionID 2 INTERFACE_SIDE Master
 -------------------DESIGN ELECTRODE STATE OF CHARGE VOL CONDITIONS
 DVOL   2
-E 2 - ID 0 C_0% 0.0 C_100% 24.681 ONE_HOUR 3600
-E 3 - ID 1 C_0% 23.671 C_100% 0.0 ONE_HOUR 3600
+E 2 - ConditionID 0 C_0% 0.0 C_100% 24.681 ONE_HOUR 3600
+E 3 - ConditionID 1 C_0% 23.671 C_100% 0.0 ONE_HOUR 3600
 -------------------------------DESIGN CELL VOLTAGE SURF CONDITIONS
 DSURF  2
-E 1 - ID 0
-E 2 - ID 1
+E 1 - ConditionID 0
+E 2 - ConditionID 1
 ----------------------------------SCATRA FLUX CALC SURF CONDITIONS
 DSURF  6
 E 1 -

@@ -192,8 +192,7 @@ void Inpar::ElCh::set_valid_conditions(
   for (const auto& cond : {electrodesocline, electrodesocsurf, electrodesocvol})
   {
     // insert input file line components into condition definitions
-    cond->add_component(std::make_shared<Input::SeparatorComponent>("ID"));
-    cond->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
+    add_named_int(cond, "ConditionID");
     add_named_real(cond, "C_0%");
     add_named_real(cond, "C_100%");
     add_named_real(cond, "ONE_HOUR");
@@ -222,8 +221,7 @@ void Inpar::ElCh::set_valid_conditions(
   for (const auto& cond : {cellvoltagepoint, cellvoltageline, cellvoltagesurf})
   {
     // insert input file line components into condition definitions
-    cond->add_component(std::make_shared<Input::SeparatorComponent>("ID"));
-    cond->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
+    add_named_int(cond, "ConditionID");
 
     // insert condition definitions into global list of valid condition definitions
     condlist.emplace_back(cond);
@@ -359,8 +357,7 @@ void Inpar::ElCh::set_valid_conditions(
     for (const auto& cond : {electrodeboundarykineticspoint, electrodeboundarykineticsline,
              electrodeboundarykineticssurf})
     {
-      cond->add_component(std::make_shared<Input::SeparatorComponent>("ID"));
-      cond->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
+      add_named_int(cond, "ConditionID");
       add_named_real(cond, "POT");
       add_named_int(cond, "FUNCT", "", 0, false, true);
       add_named_int(cond, "NUMSCAL");
@@ -399,7 +396,7 @@ void Inpar::ElCh::set_valid_conditions(
 
     {
       electrodedomainkineticscomponents.emplace_back(
-          std::make_shared<Input::SeparatorComponent>("ID"));
+          std::make_shared<Input::SeparatorComponent>("ConditionID"));
       electrodedomainkineticscomponents.emplace_back(
           std::make_shared<Input::IntComponent>("ConditionID"));
       electrodedomainkineticscomponents.emplace_back(
@@ -528,8 +525,7 @@ void Inpar::ElCh::set_valid_conditions(
   for (const auto& cond : {cccvhalfcyclepoint, cccvhalfcycleline, cccvhalfcyclesurf})
   {
     // insert input file line components into condition definitions
-    cond->add_component(std::make_shared<Input::SeparatorComponent>("ID"));
-    cond->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
+    add_named_int(cond, "ConditionID");
     add_named_real(cond, "CURRENT");
     add_named_real(cond, "CUT_OFF_VOLTAGE");
     add_named_real(cond, "CUT_OFF_C_RATE");

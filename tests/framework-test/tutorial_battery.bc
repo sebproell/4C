@@ -69,7 +69,7 @@ sectionname="DESIGN VOL INITIAL FIELD CONDITIONS"
 description="FIELD ScaTra FUNCT 3"
 *eb3="CONDITION"
 sectionname="DESIGN ELECTRODE STATE OF CHARGE VOL CONDITIONS"
-description="ID 0 C_0% 43196.78 C_100% 24362.37 ONE_HOUR 3600000"
+description="ConditionID 0 C_0% 43196.78 C_100% 24362.37 ONE_HOUR 3600000"
 
 Element Block, named: anode_cc
 of Shape: TET4
@@ -110,7 +110,7 @@ sectionname="DESIGN SURF TRANSPORT DIRICH CONDITIONS"
 description="NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0"
 *ns1="CONDITION"
 sectionname="DESIGN CELL VOLTAGE SURF CONDITIONS"
-description="ID 0"
+description="ConditionID 0"
 
 Node Set, named: cc-side_(sl)_of_an-cc_interface
 Property Name: none
@@ -223,7 +223,7 @@ sectionname="DESIGN SURF TRANSPORT NEUMANN CONDITIONS"
 description="NUMDOF 2 ONOFF 0 1 VAL 0.0 5.839316572e-6 FUNCT 0 0"
 *ns12="CONDITION"
 sectionname="DESIGN CELL VOLTAGE SURF CONDITIONS"
-description="ID 1"
+description="ConditionID 1"
 
 Node Set, named: battery_surface_normal_to_y
 Property Name: none

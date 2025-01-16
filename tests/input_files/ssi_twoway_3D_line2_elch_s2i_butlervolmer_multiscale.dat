@@ -148,9 +148,9 @@ E 4 - ConditionID 0 INTERFACE_SIDE Master
 ------------------------------DESIGN CELL VOLTAGE POINT CONDITIONS
 DPOINT 2
 // anode
-E 1 - ID 0
+E 1 - ConditionID 0
 // cathode
-E 2 - ID 1
+E 2 - ConditionID 1
 ------------------------------DESIGN LINE INITIAL FIELD CONDITIONS
 DLINE  3
 // anode
@@ -162,15 +162,15 @@ E 3 - FIELD ScaTra FUNCT 3
 ----------------------DESIGN TOTAL AND MEAN SCALAR LINE CONDITIONS
 DLINE  3
 // anode
-E 1 - ID 0
+E 1 - ConditionID 0
 // electrolyte
-E 2 - ID 1
+E 2 - ConditionID 1
 // cathode
-E 3 - ID 2
+E 3 - ConditionID 2
 ------------------DESIGN ELECTRODE STATE OF CHARGE LINE CONDITIONS
 DLINE   1
 // cathode
-E 3 - ID 3 C_0% 4.5536e4 C_100% 1.6776e4 ONE_HOUR 3600000
+E 3 - ConditionID 3 C_0% 4.5536e4 C_100% 1.6776e4 ONE_HOUR 3600000
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE 1 DNODE 1
 NODE 10 DNODE 2

@@ -573,10 +573,7 @@ void Inpar::XFEM::set_valid_conditions(
   add_named_int(xfem_levelset_navier_slip, "ROBIN_DIRICHLET_ID", "", 0, false, true);
   add_named_int(xfem_levelset_navier_slip, "ROBIN_NEUMANN_ID", "", 0, false, true);
   add_named_real(xfem_levelset_navier_slip, "SLIPCOEFFICIENT");
-  xfem_levelset_navier_slip->add_component(
-      std::make_shared<Input::SeparatorComponent>("SLIP_FUNCT", "", true));
-  xfem_levelset_navier_slip->add_component(
-      std::make_shared<Input::IntComponent>("FUNCT", IntComponentData{0, false, true}));
+  add_named_int(xfem_levelset_navier_slip, "FUNCT", "slip function id", 0, true, false);
   add_named_bool(xfem_levelset_navier_slip, "FORCE_ONLY_TANG_VEL", "", false, true);
 
   condlist.push_back(xfem_levelset_navier_slip);
@@ -589,14 +586,11 @@ void Inpar::XFEM::set_valid_conditions(
           "XFEM Robin Dirichlet Volume", Core::Conditions::XFEM_Robin_Dirichlet_Volume, true,
           Core::Conditions::geometry_type_volume);
 
-  xfem_navier_slip_robin_dirch->add_component(
-      std::make_shared<Input::SeparatorComponent>("ROBIN_DIRICHLET_ID"));
-  xfem_navier_slip_robin_dirch->add_component(
-      std::make_shared<Input::IntComponent>("robin_id", IntComponentData{0, true, false}));
+  add_named_int(xfem_navier_slip_robin_dirch, "ROBIN_ID", "robin id", 0, false, true);
 
-  for (unsigned i = 0; i < dirichletbundcomponents.size(); ++i)
+  for (const auto& dirichletbundcomponent : dirichletbundcomponents)
   {
-    xfem_navier_slip_robin_dirch->add_component(dirichletbundcomponents[i]);
+    xfem_navier_slip_robin_dirch->add_component(dirichletbundcomponent);
   }
 
   condlist.push_back(xfem_navier_slip_robin_dirch);
@@ -607,14 +601,11 @@ void Inpar::XFEM::set_valid_conditions(
           "XFEM Robin Neumann Volume", Core::Conditions::XFEM_Robin_Neumann_Volume, true,
           Core::Conditions::geometry_type_volume);
 
-  xfem_navier_slip_robin_neumann->add_component(
-      std::make_shared<Input::SeparatorComponent>("ROBIN_NEUMANN_ID"));
-  xfem_navier_slip_robin_neumann->add_component(
-      std::make_shared<Input::IntComponent>("robin_id", IntComponentData{0, true, false}));
+  add_named_int(xfem_navier_slip_robin_neumann, "ROBIN_ID", "robin id", 0, false, true);
 
-  for (unsigned i = 0; i < neumanncomponents.size(); ++i)
+  for (const auto& neumanncomponent : neumanncomponents)
   {
-    xfem_navier_slip_robin_neumann->add_component(neumanncomponents[i]);
+    xfem_navier_slip_robin_neumann->add_component(neumanncomponent);
   }
 
   condlist.push_back(xfem_navier_slip_robin_neumann);
@@ -788,10 +779,7 @@ void Inpar::XFEM::set_valid_conditions(
   add_named_int(xfem_surf_navier_slip, "ROBIN_DIRICHLET_ID", "", 0, false, true);
   add_named_int(xfem_surf_navier_slip, "ROBIN_NEUMANN_ID", "", 0, false, true);
   add_named_real(xfem_surf_navier_slip, "SLIPCOEFFICIENT");
-  xfem_surf_navier_slip->add_component(
-      std::make_shared<Input::SeparatorComponent>("SLIP_FUNCT", "", true));
-  xfem_surf_navier_slip->add_component(
-      std::make_shared<Input::IntComponent>("FUNCT", IntComponentData{0, false, true}));
+  add_named_int(xfem_surf_navier_slip, "FUNCT", "slip function id", 0, true, false);
   add_named_bool(xfem_surf_navier_slip, "FORCE_ONLY_TANG_VEL", "", false, true);
 
   condlist.push_back(xfem_surf_navier_slip);
@@ -805,11 +793,7 @@ void Inpar::XFEM::set_valid_conditions(
   // this implementation should be reviewed at some point as it requires these conditions
   //  to have a couplingID. In theory this should not be necessary.
   add_named_int(xfem_navier_slip_robin_dirch_surf, "COUPLINGID");
-
-  xfem_navier_slip_robin_dirch_surf->add_component(
-      std::make_shared<Input::SeparatorComponent>("ROBIN_DIRICHLET_ID"));
-  xfem_navier_slip_robin_dirch_surf->add_component(
-      std::make_shared<Input::IntComponent>("robin_id", IntComponentData{0, true, false}));
+  add_named_int(xfem_navier_slip_robin_dirch_surf, "ROBIN_ID", "robin id", 0, false, true);
 
   // Likely, not necessary. But needed for the current structure.
   add_named_selection_component(xfem_navier_slip_robin_dirch_surf, "EVALTYPE", "",
@@ -838,11 +822,7 @@ void Inpar::XFEM::set_valid_conditions(
   // this implementation should be reviewed at some point as it requires these conditions
   //  to have a couplingID. In theory this should not be necessary.
   add_named_int(xfem_navier_slip_robin_neumann_surf, "COUPLINGID");
-
-  xfem_navier_slip_robin_neumann_surf->add_component(
-      std::make_shared<Input::SeparatorComponent>("ROBIN_NEUMANN_ID"));
-  xfem_navier_slip_robin_neumann_surf->add_component(
-      std::make_shared<Input::IntComponent>("robin_id", IntComponentData{0, true, false}));
+  add_named_int(xfem_navier_slip_robin_neumann_surf, "ROBIN_ID", "robin id", 0, false, true);
 
   for (unsigned i = 0; i < neumanncomponents.size(); ++i)
   {

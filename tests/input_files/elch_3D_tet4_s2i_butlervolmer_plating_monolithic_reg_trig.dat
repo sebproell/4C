@@ -105,17 +105,17 @@ DSURF  1
 E 2 - ConditionID 0 KINETIC_MODEL Butler-Volmer NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.2e-7 ALPHA_A 0.5 ALPHA_C 0.5 MOLMASS 6.941e-9 DENSITY 5.34e-7 CONDUCTIVITY 10.6e9 REGTYPE trigonometrical REGPAR 0.0 INITTHICKNESS 0.0
 -------------------DESIGN ELECTRODE STATE OF CHARGE VOL CONDITIONS
 DVOL   2
-E 1 - ID 0 C_0% 1.3195 C_100% 12.2941 ONE_HOUR 3600
-E 3 - ID 1 C_0% 20.574 C_100% 9.5994 ONE_HOUR 3600
+E 1 - ConditionID 0 C_0% 1.3195 C_100% 12.2941 ONE_HOUR 3600
+E 3 - ConditionID 1 C_0% 20.574 C_100% 9.5994 ONE_HOUR 3600
 -------------------------------DESIGN CELL VOLTAGE SURF CONDITIONS
 DSURF                           2
-E 1 - ID 0
-E 6 - ID 1
+E 1 - ConditionID 0
+E 6 - ConditionID 1
 -----------------------DESIGN TOTAL AND MEAN SCALAR VOL CONDITIONS
 DVOL                            3
-E 1 - ID 0
-E 2 - ID 1
-E 3 - ID 2
+E 1 - ConditionID 0
+E 2 - ConditionID 1
+E 3 - ConditionID 2
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    104 DSURFACE 1
 NODE    106 DSURFACE 1

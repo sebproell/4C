@@ -522,8 +522,7 @@ void Inpar::ScaTra::set_valid_conditions(
   for (const auto& cond : {totalandmeanscalarline, totalandmeanscalarsurf, totalandmeanscalarvol})
   {
     // insert input file line components into condition definitions
-    cond->add_component(std::make_shared<Input::SeparatorComponent>("ID"));
-    cond->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
+    add_named_int(cond, "ConditionID");
 
     // insert condition definitions into global list of valid condition definitions
     condlist.emplace_back(cond);
@@ -550,8 +549,7 @@ void Inpar::ScaTra::set_valid_conditions(
   for (const auto& cond : {relerrorline, relerrorsurf, relerrorvol})
   {
     // insert input file line components into condition definitions
-    cond->add_component(std::make_shared<Input::SeparatorComponent>("ID"));
-    cond->add_component(std::make_shared<Input::IntComponent>("ConditionID"));
+    add_named_int(cond, "ConditionID");
     add_named_int(cond, "Function");
 
     // insert condition definitions into global list of valid condition definitions
