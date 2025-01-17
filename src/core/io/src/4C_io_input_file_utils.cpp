@@ -362,36 +362,6 @@ bool Core::IO::InputFileUtils::need_to_print_equal_sign(const Teuchos::Parameter
 
 
 std::vector<Core::IO::InputParameterContainer> Core::IO::InputFileUtils::read_all_lines_in_section(
-    Core::IO::InputFile& input, const std::string& section,
-    const std::vector<Input::LineDefinition>& possible_lines)
-{
-  auto [parsed_lines, unparsed_lines] =
-      read_matching_lines_in_section(input, section, possible_lines);
-
-  // In this function, encountering unparsed lines is an error, so construct a nice message.
-  if (unparsed_lines.size() > 0)
-  {
-    std::stringstream out;
-    out << "Read failed in section " << std::quoted(section) << '\n';
-    for (const auto& unparsed : unparsed_lines)
-    {
-      out << "  " << std::quoted(unparsed) << '\n';
-    }
-    out << "Valid lines are:\n";
-    std::for_each(possible_lines.begin(), possible_lines.end(),
-        [&](const Input::LineDefinition& def)
-        {
-          def.print(out);
-          out << '\n';
-        });
-    FOUR_C_THROW(out.str().c_str());
-  }
-
-  return parsed_lines;
-}
-
-
-std::vector<Core::IO::InputParameterContainer> Core::IO::InputFileUtils::read_all_lines_in_section(
     Core::IO::InputFile& input, const std::string& section, const InputSpec& spec)
 {
   std::vector<Core::IO::InputParameterContainer> parsed_lines;
@@ -409,34 +379,25 @@ std::vector<Core::IO::InputParameterContainer> Core::IO::InputFileUtils::read_al
 
 
 std::pair<std::vector<Core::IO::InputParameterContainer>, std::vector<std::string>>
-Core::IO::InputFileUtils::read_matching_lines_in_section(Core::IO::InputFile& input,
-    const std::string& section, const std::vector<Input::LineDefinition>& possible_lines)
+Core::IO::InputFileUtils::read_matching_lines_in_section(
+    Core::IO::InputFile& input, const std::string& section, const IO::InputSpec& spec)
 {
   std::vector<std::string> unparsed_lines;
   std::vector<Core::IO::InputParameterContainer> parsed_lines;
 
-  Input::LineDefinition::ReadContext context{.input_file = input.file_for_section(section)};
-
-  const auto process_line = [&](const std::string& input_line)
-  {
-    for (const auto& definition : possible_lines)
-    {
-      std::stringstream l{input_line};
-
-      auto data = definition.read(l, context);
-      if (data.has_value())
-      {
-        parsed_lines.emplace_back(std::move(data.value()));
-        return;
-      }
-    }
-    // None of the possible lines matched.
-    unparsed_lines.emplace_back(input_line);
-  };
-
   for (const auto& input_line : input.lines_in_section(section))
   {
-    process_line(std::string(input_line));
+    try
+    {
+      ValueParser parser{input_line, {.base_path = input.file_for_section(section).parent_path()}};
+      InputParameterContainer container;
+      spec.fully_parse(parser, container);
+      parsed_lines.emplace_back(std::move(container));
+    }
+    catch (const Core::Exception& e)
+    {
+      unparsed_lines.emplace_back(input_line);
+    }
   }
 
   return {parsed_lines, unparsed_lines};

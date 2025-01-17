@@ -9,7 +9,7 @@
 
 #include "4C_io_control.hpp"
 #include "4C_io_file_reader.hpp"
-#include "4C_io_linedefinition.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_cubic_spline_interpolation.hpp"
 #include "4C_utils_function_manager.hpp"
 
@@ -59,21 +59,21 @@ namespace
 /*----------------------------------------------------------------------*/
 void Core::Utils::add_valid_library_functions(Core::Utils::FunctionManager& function_manager)
 {
-  using namespace Input;
+  using namespace IO::InputSpecBuilders;
 
-  LineDefinition fast_polynomial_funct =
-      LineDefinition::Builder()
-          .add_tag("FASTPOLYNOMIAL")
-          .add_named_int("NUMCOEFF")
-          .add_named_double_vector("COEFF", LengthFromIntNamed("NUMCOEFF"))
-          .build();
+  auto spec = one_of({
+      anonymous_group({
+          tag("FASTPOLYNOMIAL"),
+          entry<int>("NUMCOEFF"),
+          entry<std::vector<double>>("COEFF", {.size = from_parameter<int>("NUMCOEFF")}),
+      }),
+      anonymous_group({
+          tag("CUBIC_SPLINE_FROM_CSV"),
+          entry<std::filesystem::path>("CSV"),
+      }),
+  });
 
-  LineDefinition cubic_spline_from_csv_funct =
-      LineDefinition::Builder().add_tag("CUBIC_SPLINE_FROM_CSV").add_named_path("CSV").build();
-
-  function_manager.add_function_definition(
-      {std::move(fast_polynomial_funct), std::move(cubic_spline_from_csv_funct)},
-      create_library_function_scalar);
+  function_manager.add_function_definition(spec, create_library_function_scalar);
 }
 
 

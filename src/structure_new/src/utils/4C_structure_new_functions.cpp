@@ -8,6 +8,7 @@
 #include "4C_structure_new_functions.hpp"
 
 #include "4C_global_data.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_stvenantkirchhoff.hpp"
 #include "4C_utils_function_manager.hpp"
@@ -79,17 +80,17 @@ namespace
 /*----------------------------------------------------------------------*/
 void Solid::add_valid_structure_functions(Core::Utils::FunctionManager& function_manager)
 {
-  std::vector<Input::LineDefinition> lines;
-  lines.emplace_back(Input::LineDefinition::Builder()
-          .add_tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE")
-          .add_named_int("MAT_STRUCT")
-          .build());
-  lines.emplace_back(Input::LineDefinition::Builder()
-          .add_tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE_FORCE")
-          .add_named_int("MAT_STRUCT")
-          .build());
+  using namespace Core::IO::InputSpecBuilders;
 
-  function_manager.add_function_definition(std::move(lines), create_structure_function);
+  auto spec = anonymous_group({
+      one_of({
+          tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE"),
+          tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE_FORCE"),
+      }),
+      entry<int>("MAT_STRUCT"),
+  });
+
+  function_manager.add_function_definition(std::move(spec), create_structure_function);
 }
 
 

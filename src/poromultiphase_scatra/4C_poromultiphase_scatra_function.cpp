@@ -8,7 +8,7 @@
 #include "4C_poromultiphase_scatra_function.hpp"
 
 #include "4C_global_data.hpp"
-#include "4C_io_linedefinition.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_poromultiphase_scatra_utils.hpp"
 #include "4C_utils_fad.hpp"
 #include "4C_utils_function_manager.hpp"
@@ -113,13 +113,15 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraFunction<dim>::PoroMultiPhaseScaTraFun
 /*----------------------------------------------------------------------*/
 void PoroMultiPhaseScaTra::add_valid_poro_functions(Core::Utils::FunctionManager& function_manager)
 {
+  using namespace Core::IO::InputSpecBuilders;
+
   function_manager.add_function_definition(
-      {Input::LineDefinition::Builder()
-              .add_named_string("POROMULTIPHASESCATRA_FUNCTION")
-              .add_optional_named_int("NUMPARAMS")
-              .add_optional_named_pair_of_string_and_double_vector(
-                  "PARAMS", Input::LengthFromIntNamed("NUMPARAMS"))
-              .build()},
+      anonymous_group({
+          entry<std::string>("POROMULTIPHASESCATRA_FUNCTION"),
+          entry<int>("NUMPARAMS", {.required = false}),
+          entry<std::vector<std::pair<std::string, double>>>(
+              "PARAMS", {.required = false, .size = from_parameter<int>("NUMPARAMS")}),
+      }),
       try_create_poro_function_dispatch);
 }
 

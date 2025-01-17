@@ -347,7 +347,7 @@ int main(int argc, char** argv)
         std::stringstream tmp;
         Core::Utils::FunctionManager functionmanager;
         global_legacy_module_callbacks().AttachFunctionDefinitions(functionmanager);
-        const std::vector<Input::LineDefinition> flines = functionmanager.valid_function_lines();
+        const auto flines = functionmanager.valid_function_lines();
         Core::IO::InputFileUtils::print_section(tmp, "FUNCT", flines);
         std::string tmpstring = tmp.str();
         std::string removeit =

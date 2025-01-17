@@ -7,7 +7,7 @@
 
 #include "4C_fluid_xfluid_functions.hpp"
 
-#include "4C_io_linedefinition.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_function_manager.hpp"
 
 #include <cmath>
@@ -190,124 +190,103 @@ namespace
 
 void Discret::Utils::add_valid_xfluid_functions(Core::Utils::FunctionManager& function_manager)
 {
-  Input::LineDefinition gerstenbergerforwardfacingstep =
-      Input::LineDefinition::Builder().add_tag("FORWARDFACINGSTEP").build();
+  using namespace Core::IO::InputSpecBuilders;
 
-  Input::LineDefinition movinglevelsetcylinder = Input::LineDefinition::Builder()
-                                                     .add_tag("MOVINGLEVELSETCYLINDER")
-                                                     .add_named_double_vector("ORIGIN", 3)
-                                                     .add_named_double("RADIUS")
-                                                     .add_named_double_vector("DIRECTION", 3)
-                                                     .add_named_double("DISTANCE")
-                                                     .add_named_double("MAXSPEED")
-                                                     .build();
+  auto spec = one_of({
+      tag("FORWARDFACINGSTEP"),
+      anonymous_group({
+          tag("MOVINGLEVELSETCYLINDER"),
+          entry<std::vector<double>>("ORIGIN", {.size = 3}),
+          entry<double>("RADIUS"),
+          entry<std::vector<double>>("DIRECTION", {.size = 3}),
+          entry<double>("DISTANCE"),
+          entry<double>("MAXSPEED"),
+      }),
+      anonymous_group({
+          tag("MOVINGLEVELSETTORUS"),
+          entry<std::vector<double>>("ORIGIN", {.size = 3}),
+          entry<std::vector<double>>("ORIENTVEC_TORUS", {.size = 3}),
+          entry<double>("RADIUS"),
+          entry<double>("RADIUS_TUBE"),
+          entry<std::vector<double>>("DIRECTION", {.size = 3}),
+          entry<double>("DISTANCE"),
+          entry<double>("MAXSPEED"),
+          entry<std::vector<double>>("ROTATION_VEC", {.size = 3}),
+          entry<double>("ROTATION_SPEED"),
+          entry<double>("ROTATION_RAMPTIME"),
+      }),
+      anonymous_group({
+          tag("MOVINGLEVELSETTORUSVELOCITY"),
+          entry<std::vector<double>>("ORIGIN", {.size = 3}),
+          entry<std::vector<double>>("ORIENTVEC_TORUS", {.size = 3}),
+          entry<double>("RADIUS"),
+          entry<double>("RADIUS_TUBE"),
+          entry<std::vector<double>>("DIRECTION", {.size = 3}),
+          entry<double>("DISTANCE"),
+          entry<double>("MAXSPEED"),
+          entry<std::vector<double>>("ROTATION_VEC", {.size = 3}),
+          entry<double>("ROTATION_SPEED"),
+          entry<double>("ROTATION_RAMPTIME"),
+      }),
+      anonymous_group({
+          tag("MOVINGLEVELSETTORUSSLIPLENGTH"),
+          entry<std::vector<double>>("ORIGIN", {.size = 3}),
+          entry<std::vector<double>>("ORIENTVEC_TORUS", {.size = 3}),
+          entry<double>("RADIUS"),
+          entry<double>("RADIUS_TUBE"),
+          entry<std::vector<double>>("DIRECTION", {.size = 3}),
+          entry<double>("DISTANCE"),
+          entry<double>("MAXSPEED"),
+          entry<std::vector<double>>("ROTATION_VEC", {.size = 3}),
+          entry<double>("ROTATION_SPEED"),
+          entry<double>("ROTATION_RAMPTIME"),
+          entry<int>("SLIP_FUNCT"),
+      }),
+      anonymous_group({
+          tag("TAYLORCOUETTEFLOW"),
+          entry<double>("RADIUS_I"),
+          entry<double>("RADIUS_O"),
+          entry<double>("VEL_THETA_I"),
+          entry<double>("VEL_THETA_O"),
+          entry<double>("SLIPLENGTH_I"),
+          entry<double>("SLIPLENGTH_O"),
+          entry<double>("TRACTION_THETA_I"),
+          entry<double>("TRACTION_THETA_O"),
+          entry<double>("VISCOSITY"),
+      }),
+      anonymous_group({
+          tag("URQUIZABOXFLOW"),
+          entry<double>("LENGTHX"),
+          entry<double>("LENGTHY"),
+          entry<double>("ROTATION"),
+          entry<double>("VISCOSITY"),
+          entry<double>("DENSITY"),
+          entry<int>("CASE"),
+          entry<std::vector<double>>("COMBINATION", {.size = 2}),
+      }),
+      anonymous_group({
+          tag("URQUIZABOXFLOW_TRACTION"),
+          entry<double>("LENGTHX"),
+          entry<double>("LENGTHY"),
+          entry<double>("ROTATION"),
+          entry<double>("VISCOSITY"),
+          entry<double>("DENSITY"),
+          entry<int>("CASE"),
+          entry<std::vector<double>>("COMBINATION", {.size = 2}),
+      }),
+      anonymous_group({
+          tag("URQUIZABOXFLOW_FORCE"),
+          entry<double>("LENGTHX"),
+          entry<double>("LENGTHY"),
+          entry<double>("ROTATION"),
+          entry<double>("VISCOSITY"),
+          entry<double>("DENSITY"),
+          entry<int>("CASE"),
+          entry<std::vector<double>>("COMBINATION", {.size = 2}),
+      }),
+  });
 
-  Input::LineDefinition movinglevelsettorus = Input::LineDefinition::Builder()
-                                                  .add_tag("MOVINGLEVELSETTORUS")
-                                                  .add_named_double_vector("ORIGIN", 3)
-                                                  .add_named_double_vector("ORIENTVEC_TORUS", 3)
-                                                  .add_named_double("RADIUS")
-                                                  .add_named_double("RADIUS_TUBE")
-                                                  .add_named_double_vector("DIRECTION", 3)
-                                                  .add_named_double("DISTANCE")
-                                                  .add_named_double("MAXSPEED")
-                                                  .add_named_double_vector("ROTATION_VEC", 3)
-                                                  .add_named_double("ROTATION_SPEED")
-                                                  .add_named_double("ROTATION_RAMPTIME")
-                                                  .build();
-
-  Input::LineDefinition movinglevelsettorusvelocity =
-      Input::LineDefinition::Builder()
-          .add_tag("MOVINGLEVELSETTORUSVELOCITY")
-          .add_named_double_vector("ORIGIN", 3)
-          .add_named_double_vector("ORIENTVEC_TORUS", 3)
-          .add_named_double("RADIUS")
-          .add_named_double("RADIUS_TUBE")
-          .add_named_double_vector("DIRECTION", 3)
-          .add_named_double("DISTANCE")
-          .add_named_double("MAXSPEED")
-          .add_named_double_vector("ROTATION_VEC", 3)
-          .add_named_double("ROTATION_SPEED")
-          .add_named_double("ROTATION_RAMPTIME")
-          .build();
-
-  Input::LineDefinition movinglevelsettorussliplength =
-      Input::LineDefinition::Builder()
-          .add_tag("MOVINGLEVELSETTORUSSLIPLENGTH")
-          .add_named_double_vector("ORIGIN", 3)
-          .add_named_double_vector("ORIENTVEC_TORUS", 3)
-          .add_named_double("RADIUS")
-          .add_named_double("RADIUS_TUBE")
-          .add_named_double_vector("DIRECTION", 3)
-          .add_named_double("DISTANCE")
-          .add_named_double("MAXSPEED")
-          .add_named_double_vector("ROTATION_VEC", 3)
-          .add_named_double("ROTATION_SPEED")
-          .add_named_double("ROTATION_RAMPTIME")
-          .add_named_int("SLIP_FUNCT")
-          .build();
-
-  Input::LineDefinition taylorcouetteflow = Input::LineDefinition::Builder()
-                                                .add_tag("TAYLORCOUETTEFLOW")
-                                                .add_named_double("RADIUS_I")
-                                                .add_named_double("RADIUS_O")
-                                                .add_named_double("VEL_THETA_I")
-                                                .add_named_double("VEL_THETA_O")
-                                                .add_named_double("SLIPLENGTH_I")
-                                                .add_named_double("SLIPLENGTH_O")
-                                                .add_named_double("TRACTION_THETA_I")
-                                                .add_named_double("TRACTION_THETA_O")
-                                                .add_named_double("VISCOSITY")
-                                                .build();
-
-  Input::LineDefinition urquizaboxflow = Input::LineDefinition::Builder()
-                                             .add_tag("URQUIZABOXFLOW")
-                                             .add_named_double("LENGTHX")
-                                             .add_named_double("LENGTHY")
-                                             .add_named_double("ROTATION")
-                                             .add_named_double("VISCOSITY")
-                                             .add_named_double("DENSITY")
-                                             .add_named_int("CASE")
-                                             .add_optional_named_double_vector("COMBINATION", 2)
-                                             .build();
-
-  Input::LineDefinition urquizaboxflowtraction =
-      Input::LineDefinition::Builder()
-          .add_tag("URQUIZABOXFLOW_TRACTION")
-          .add_named_double("LENGTHX")
-          .add_named_double("LENGTHY")
-          .add_named_double("ROTATION")
-          .add_named_double("VISCOSITY")
-          .add_named_double("DENSITY")
-          .add_named_int("CASE")
-          .add_optional_named_double_vector("COMBINATION", 2)
-          .build();
-
-  Input::LineDefinition urquizaboxflowforce =
-      Input::LineDefinition::Builder()
-          .add_tag("URQUIZABOXFLOW_FORCE")
-          .add_named_double("LENGTHX")
-          .add_named_double("LENGTHY")
-          .add_named_double("ROTATION")
-          .add_named_double("VISCOSITY")
-          .add_named_double("DENSITY")
-          .add_named_int("CASE")
-          .add_optional_named_double_vector("COMBINATION", 2)
-          .build();
-
-  std::vector<Input::LineDefinition> lines;
-
-  lines.emplace_back(std::move(gerstenbergerforwardfacingstep));
-  lines.emplace_back(std::move(movinglevelsetcylinder));
-  lines.emplace_back(std::move(movinglevelsettorus));
-  lines.emplace_back(std::move(movinglevelsettorusvelocity));
-  lines.emplace_back(std::move(movinglevelsettorussliplength));
-  lines.emplace_back(std::move(taylorcouetteflow));
-  lines.emplace_back(std::move(urquizaboxflow));
-  lines.emplace_back(std::move(urquizaboxflowforce));
-  lines.emplace_back(std::move(urquizaboxflowtraction));
-
-  function_manager.add_function_definition(std::move(lines), create_xfluid_function);
+  function_manager.add_function_definition(std::move(spec), create_xfluid_function);
 }
 
 

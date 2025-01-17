@@ -7,6 +7,7 @@
 
 #include "4C_fluid_xfluid_functions_combust.hpp"
 
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_io_linedefinition.hpp"
 #include "4C_utils_function_manager.hpp"
 
@@ -38,14 +39,14 @@ namespace
 
 void Discret::Utils::add_valid_combust_functions(Core::Utils::FunctionManager& function_manager)
 {
-  Input::LineDefinition zalesaksdisk =
-      Input::LineDefinition::Builder().add_tag("ZALESAKSDISK").build();
+  using namespace Core::IO::InputSpecBuilders;
 
-  Input::LineDefinition collapsingwatercolumn =
-      Input::LineDefinition::Builder().add_tag("COLLAPSINGWATERCOLUMN").build();
+  auto spec = one_of({
+      tag("ZALESAKSDISK"),
+      tag("COLLAPSINGWATERCOLUMN"),
+  });
 
-  function_manager.add_function_definition(
-      {std::move(zalesaksdisk), std::move(collapsingwatercolumn)}, create_combust_function);
+  function_manager.add_function_definition(spec, create_combust_function);
 }
 
 

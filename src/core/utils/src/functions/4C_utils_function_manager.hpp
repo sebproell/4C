@@ -11,7 +11,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_io_linedefinition.hpp"
+#include "4C_io_input_spec.hpp"
 #include "4C_utils_demangle.hpp"
 #include "4C_utils_exceptions.hpp"
 
@@ -47,21 +47,20 @@ namespace Core::Utils
         std::function<std::any(const std::vector<Core::IO::InputParameterContainer>& lines)>;
 
     /// Return all known input lines that define a Function.
-    std::vector<Input::LineDefinition> valid_function_lines();
+    IO::InputSpec valid_function_lines();
 
     /// Read the 4C input file and set up all Functions.
     void read_input(Core::IO::InputFile& input);
 
     /**
-     * Tell the FunctionManager how to parse a set of @p possible_lines into a Function object.
-     * When the ReadInput() function is called, this class will try to read lines encountered in
-     * the input file according to the @p possible_lines that were previously passed in this
-     * function. If one or more of these lines match, they are parsed and the @p function_factory
-     * that was passed alongside these lines is called with the parsed data. @p function_factory
-     * needs to return the actual function object wrapped in a std::shared_ptr.
+     * Tell the FunctionManager how to parse a @p spec into a Function object. When the ReadInput()
+     * function is called, this class will try to read lines encountered in the input file according
+     * to the @p spec that were previously passed in this function. If one or more of these lines
+     * match, they are parsed and the @p function_factory that was passed alongside these lines is
+     * called with the parsed data. @p function_factory needs to return the actual function object
+     * wrapped in a std::shared_ptr.
      */
-    void add_function_definition(
-        std::vector<Input::LineDefinition> possible_lines, FunctionFactory function_factory);
+    void add_function_definition(IO::InputSpec spec, FunctionFactory function_factory);
 
     /**
      * Get a Function by its @p id in the input file. In addition, you need to specify the type of
@@ -87,12 +86,10 @@ namespace Core::Utils
     /// Function objects belonging to distinct interfaces.
     std::vector<std::any> functions_;
 
-
     /**
      * Store the lines we can read and how to convert them into a 4C Function.
      */
-    std::vector<std::pair<std::vector<Input::LineDefinition>, FunctionFactory>>
-        attached_function_data_;
+    std::vector<std::pair<IO::InputSpec, FunctionFactory>> attached_function_data_;
   };
 
   /**
