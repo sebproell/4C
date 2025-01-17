@@ -71,7 +71,6 @@ _execute_process(
   PROCESS_COMMAND
   ${FOUR_C_PYTHON_VENV_BUILD}/bin/pip
   install
-  -U
   pip==24.3.1
   wheel==0.45.0
   )
