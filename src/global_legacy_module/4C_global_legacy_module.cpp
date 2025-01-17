@@ -40,6 +40,7 @@
 #include "4C_fluid_functions.hpp"
 #include "4C_fluid_xfluid_functions.hpp"
 #include "4C_fluid_xfluid_functions_combust.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_lubrication_ele.hpp"
 #include "4C_mat_aaaneohooke.hpp"
 #include "4C_mat_beam_elasthyper.hpp"
@@ -322,357 +323,212 @@ namespace
     PoroMultiPhaseScaTra::add_valid_poro_functions(function_manager);
   }
 
-  std::vector<Input::LineDefinition> valid_result_lines()
+  Core::IO::InputSpec valid_result_lines()
   {
-    return {//
-        Input::LineDefinition::Builder()
-            .add_tag("STRUCTURE")
-            .add_named_string("DIS")
-            .add_named_int("NODE")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
+    using namespace Core::IO::InputSpecBuilders;
 
-        Input::LineDefinition::Builder()
-            .add_tag("STRUCTURE")
-            .add_named_string("DIS")
-            .add_named_int("NODE")
-            .add_named_string("OP")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("STRUCTURE")
-            .add_named_string("DIS")
-            .add_named_int("LINE")
-            .add_named_string("OP")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("STRUCTURE")
-            .add_named_string("DIS")
-            .add_named_int("SURFACE")
-            .add_named_string("OP")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("STRUCTURE")
-            .add_named_string("DIS")
-            .add_named_int("VOLUME")
-            .add_named_string("OP")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("STRUCTURE")
-            .add_tag("SPECIAL")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("FLUID")
-            .add_named_string("DIS")
-            .add_named_int("NODE")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("FLUID")
-            .add_named_string("DIS")
-            .add_named_int("ELEMENT")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("XFLUID")
-            .add_named_string("DIS")
-            .add_named_int("NODE")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("ALE")
-            .add_named_string("DIS")
-            .add_named_int("NODE")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("THERMAL")
-            .add_named_string("DIS")
-            .add_named_int("NODE")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("LUBRICATION")
-            .add_named_string("DIS")
-            .add_named_int("NODE")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("POROFLUIDMULTIPHASE")
-            .add_named_string("DIS")
-            .add_named_int("NODE")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("POROFLUIDMULTIPHASE")
-            .add_named_string("DIS")
-            .add_named_int("ELEMENT")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("POROFLUIDMULTIPHASE")
-            .add_named_string("DIS")
-            .add_tag("SPECIAL")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("SCATRA")
-            .add_named_string("DIS")
-            .add_named_int("NODE")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("SCATRA")
-            .add_named_string("DIS")
-            .add_tag("SPECIAL")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("SSI")
-            .add_named_string("DIS")
-            .add_named_int("NODE")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("SSI")
-            .add_tag("SPECIAL")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("SSTI")
-            .add_tag("SPECIAL")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("STI")
-            .add_tag("SPECIAL")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("RED_AIRWAY")
-            .add_named_string("DIS")
-            .add_named_int("NODE")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("RED_AIRWAY")
-            .add_named_string("DIS")
-            .add_named_int("ELEMENT")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("ARTNET")
-            .add_named_string("DIS")
-            .add_named_int("NODE")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("ARTNET")
-            .add_named_string("DIS")
-            .add_named_int("ELEMENT")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("ADJOINT")
-            .add_named_string("DIS")
-            .add_named_int("NODE")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("OPTI")
-            .add_named_string("DIS")
-            .add_named_int("NODE")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("OPTI")
-            .add_named_string("DIS")
-            .add_named_int("ELEMENT")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("FSI")
-            .add_named_int("NODE")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("FSI")
-            .add_tag("SPECIAL")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("PARTICLE")
-            .add_named_int("ID")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("PARTICLEWALL")
-            .add_named_string("DIS")
-            .add_named_int("NODE")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("PARTICLEWALL")
-            .add_named_string("DIS")
-            .add_tag("SPECIAL")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("RIGIDBODY")
-            .add_named_int("ID")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("ELECTROMAGNETIC")
-            .add_named_string("DIS")
-            .add_named_int("NODE")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build(),
-
-        Input::LineDefinition::Builder()
-            .add_tag("CARDIOVASCULAR0D")
-            .add_named_string("DIS")
-            .add_tag("SPECIAL")
-            .add_named_string("QUANTITY")
-            .add_named_double("VALUE")
-            .add_named_double("TOLERANCE")
-            .add_optional_named_string("NAME")
-            .build()};
+    return one_of({
+        group("STRUCTURE",
+            {
+                one_of({
+                    anonymous_group({
+                        entry<std::string>("DIS"),
+                        one_of({
+                            entry<int>("NODE"),
+                            entry<int>("LINE"),
+                            entry<int>("SURFACE"),
+                            entry<int>("VOLUME"),
+                        }),
+                    }),
+                    tag("SPECIAL"),
+                }),
+                entry<std::string>("OP", {.required = false}),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+                entry<std::string>("NAME", {.required = false}),
+            }),
+        group("FLUID",
+            {
+                entry<std::string>("DIS"),
+                one_of({
+                    entry<int>("NODE"),
+                    entry<int>("ELEMENT"),
+                }),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+                entry<std::string>("NAME", {.required = false}),
+            }),
+        group("XFLUID",
+            {
+                entry<std::string>("DIS"),
+                entry<int>("NODE"),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+                entry<std::string>("NAME", {.required = false}),
+            }),
+        group("ALE",
+            {
+                entry<std::string>("DIS"),
+                entry<int>("NODE"),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+                entry<std::string>("NAME", {.required = false}),
+            }),
+        group("THERMAL",
+            {
+                entry<std::string>("DIS"),
+                entry<int>("NODE"),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+                entry<std::string>("NAME", {.required = false}),
+            }),
+        group("LUBRICATION",
+            {
+                entry<std::string>("DIS"),
+                entry<int>("NODE"),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+                entry<std::string>("NAME", {.required = false}),
+            }),
+        group("POROFLUIDMULTIPHASE",
+            {
+                entry<std::string>("DIS"),
+                one_of({
+                    entry<int>("NODE"),
+                    entry<int>("ELEMENT"),
+                    tag("SPECIAL"),
+                }),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+                entry<std::string>("NAME", {.required = false}),
+            }),
+        group("SCATRA",
+            {
+                entry<std::string>("DIS"),
+                one_of({
+                    entry<int>("NODE"),
+                    tag("SPECIAL"),
+                }),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+                entry<std::string>("NAME", {.required = false}),
+            }),
+        group("SSI",
+            {
+                one_of({
+                    anonymous_group({
+                        entry<std::string>("DIS"),
+                        entry<int>("NODE"),
+                    }),
+                    tag("SPECIAL"),
+                }),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+                entry<std::string>("NAME", {.required = false}),
+            }),
+        group("SSTI",
+            {
+                tag("SPECIAL"),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+            }),
+        group("STI",
+            {
+                tag("SPECIAL"),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+            }),
+        group("RED_AIRWAY",
+            {
+                entry<std::string>("DIS"),
+                one_of({
+                    entry<int>("NODE"),
+                    entry<int>("ELEMENT"),
+                }),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+                entry<std::string>("NAME", {.required = false}),
+            }),
+        group("ARTNET",
+            {
+                entry<std::string>("DIS"),
+                one_of({
+                    entry<int>("NODE"),
+                    entry<int>("ELEMENT"),
+                }),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+                entry<std::string>("NAME", {.required = false}),
+            }),
+        group("FSI",
+            {
+                one_of({
+                    entry<int>("NODE"),
+                    tag("SPECIAL"),
+                }),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+                entry<std::string>("NAME", {.required = false}),
+            }),
+        group("PARTICLE",
+            {
+                entry<int>("ID"),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+            }),
+        group("PARTICLEWALL",
+            {
+                entry<std::string>("DIS"),
+                one_of({
+                    entry<int>("NODE"),
+                    tag("SPECIAL"),
+                }),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+                entry<std::string>("NAME", {.required = false}),
+            }),
+        group("RIGIDBODY",
+            {
+                entry<int>("ID"),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+            }),
+        group("ELECTROMAGNETIC",
+            {
+                entry<std::string>("DIS"),
+                entry<int>("NODE"),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+                entry<std::string>("NAME", {.required = false}),
+            }),
+        group("CARDIOVASCULAR0D",
+            {
+                entry<std::string>("DIS"),
+                tag("SPECIAL"),
+                entry<std::string>("QUANTITY"),
+                entry<double>("VALUE"),
+                entry<double>("TOLERANCE"),
+                entry<std::string>("NAME", {.required = false}),
+            }),
+    });
   }
 
 }  // namespace

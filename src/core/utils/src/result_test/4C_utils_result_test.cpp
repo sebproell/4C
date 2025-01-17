@@ -121,7 +121,7 @@ int Core::Utils::ResultTest::compare_values(
 /*----------------------------------------------------------------------*/
 bool Core::Utils::ResultTest::match(const Core::IO::InputParameterContainer& container)
 {
-  return container.get_or<bool>(myname_, false);
+  return container.has_group(myname_);
 }
 
 
@@ -152,16 +152,17 @@ void Core::Utils::ResultTestManager::test_all(MPI_Comm comm)
     {
       if (fieldtest->match(result))
       {
-        if (result.get_if<int>("ELEMENT") != nullptr)
-          fieldtest->test_element(result, nerr, test_count);
-        else if (result.get_if<int>("NODE") != nullptr)
-          fieldtest->test_node(result, nerr, test_count);
-        else if (result.get_if<int>("LINE") != nullptr ||
-                 result.get_if<int>("SURFACE") != nullptr ||
-                 result.get_if<int>("VOLUME") != nullptr)
-          fieldtest->test_node_on_geometry(result, nerr, test_count, get_node_set());
+        const auto& group = result.group(fieldtest->name());
+
+        if (group.get_if<int>("ELEMENT") != nullptr)
+          fieldtest->test_element(group, nerr, test_count);
+        else if (group.get_if<int>("NODE") != nullptr)
+          fieldtest->test_node(group, nerr, test_count);
+        else if (group.get_if<int>("LINE") != nullptr || group.get_if<int>("SURFACE") != nullptr ||
+                 group.get_if<int>("VOLUME") != nullptr)
+          fieldtest->test_node_on_geometry(group, nerr, test_count, get_node_set());
         else
-          fieldtest->test_special(result, nerr, test_count, uneval_test_count);
+          fieldtest->test_special(group, nerr, test_count, uneval_test_count);
       }
     }
   }

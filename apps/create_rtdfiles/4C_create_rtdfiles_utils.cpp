@@ -640,13 +640,13 @@ namespace RTD
       write_linktarget(stream, "restultdescriptionreference");
       write_header(stream, 0, "Result description reference");
 
-      std::vector<Input::LineDefinition> lines =
-          global_legacy_module_callbacks().valid_result_description_lines();
+      auto result_spec = global_legacy_module_callbacks().valid_result_description_lines();
       write_paragraph(stream,
           "The result of the simulation with respect to specific quantities at concrete points "
           "can be tested against particular values with a given tolerance.");
       std::stringstream resultDescriptionStream;
-      Core::IO::InputFileUtils::print_section(resultDescriptionStream, "RESULT DESCRIPTION", lines);
+      Core::IO::InputFileUtils::print_section(
+          resultDescriptionStream, "RESULT DESCRIPTION", result_spec);
       const std::vector<std::string> resultDescriptionList =
           Core::Utils::split(resultDescriptionStream.str(), "\n");
       write_code(stream, resultDescriptionList);

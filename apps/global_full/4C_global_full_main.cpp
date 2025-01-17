@@ -294,9 +294,8 @@ int main(int argc, char* argv[])
 
       print_element_dat_header();
 
-      const std::vector<Input::LineDefinition> result_lines =
-          global_legacy_module_callbacks().valid_result_description_lines();
-      Core::IO::InputFileUtils::print_section(std::cout, "RESULT DESCRIPTION", result_lines);
+      const auto result_spec = global_legacy_module_callbacks().valid_result_description_lines();
+      Core::IO::InputFileUtils::print_section(std::cout, "RESULT DESCRIPTION", result_spec);
 
       printf("\n\n");
     }
