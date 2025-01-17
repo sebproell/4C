@@ -273,6 +273,10 @@ void Solid::TimIntCentrDiff::update_step_element()
   p.set("delta time", (*dt_)[0]);
   // action for elements
   p.set("action", "calc_struct_update_istep");
+
+  // Add displacements
+  discret_->clear_state();
+  discret_->set_state("displacement", (*dis_)(0));
   // go to elements
   discret_->evaluate(p, nullptr, nullptr, nullptr, nullptr, nullptr);
 }
