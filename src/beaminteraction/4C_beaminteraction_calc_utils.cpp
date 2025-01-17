@@ -26,6 +26,7 @@
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_rigidsphere.hpp"
 #include "4C_shell_kl_nurbs.hpp"
+#include "4C_so3_base.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_utils_exceptions.hpp"
 

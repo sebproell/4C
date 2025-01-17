@@ -37,6 +37,7 @@
 #include "4C_rebalance_binning_based.hpp"
 #include "4C_rigidsphere.hpp"
 #include "4C_shell7p_ele.hpp"
+#include "4C_so3_base.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_solver_nonlin_nox_group.hpp"
 #include "4C_solver_nonlin_nox_group_prepostoperator.hpp"
@@ -597,7 +598,7 @@ void Adapter::StructureBaseAlgorithmNew::detect_element_technologies(
   {
     Core::Elements::Element* actele = actdis_->l_row_element(i);
     // Detect EAS --------------------------------------------------------------
-    Discret::Elements::SoBase* so_base_ele = dynamic_cast<Discret::Elements::SoBase*>(actele);
+    auto* so_base_ele = dynamic_cast<Discret::Elements::SoBase*>(actele);
     if (so_base_ele != nullptr)
     {
       if (so_base_ele->have_eas()) iseas_local = 1;

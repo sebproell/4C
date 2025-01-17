@@ -13,7 +13,6 @@
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_structporo.hpp"
 #include "4C_poroelast_utils.hpp"
-#include "4C_so3_element_service.hpp"
 #include "4C_so3_poro.hpp"
 #include "4C_so3_poro_p1_eletypes.hpp"
 #include "4C_solid_poro_3D_ele_pressure_based.hpp"

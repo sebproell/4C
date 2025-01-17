@@ -9,6 +9,7 @@
 #include "4C_fem_general_utils_boundary_integration.hpp"
 #include "4C_fem_general_utils_fem_shapefunctions.hpp"
 #include "4C_fem_general_utils_gausspoints.hpp"
+#include "4C_fem_general_utils_interpolation.hpp"
 #include "4C_fem_general_utils_nurbs_shapefunctions.hpp"
 #include "4C_fem_nurbs_discretization.hpp"
 #include "4C_global_data.hpp"
@@ -17,7 +18,6 @@
 #include "4C_linalg_utils_densematrix_eigen.hpp"
 #include "4C_mat_fourieriso.hpp"
 #include "4C_mat_so3_material.hpp"
-#include "4C_so3_element_service.hpp"
 #include "4C_so3_surface.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -140,8 +140,7 @@ void Discret::Elements::StructuralSurface::trace_estimate_vol_matrix(
       // as long as we need the parameter list to pass the information, we need to wrap it into a
       // std::shared_ptr<> as the values of a Teuchos::ParameterList have to be printable
       auto scalar_values_at_xi = std::make_shared<std::vector<double>>();
-      *scalar_values_at_xi =
-          Discret::Elements::project_nodal_quantity_to_xi<dt_vol>(xi, parent_scalar);
+      *scalar_values_at_xi = Core::FE::interpolate_to_xi<dt_vol>(xi, parent_scalar);
       params.set("scalars", scalar_values_at_xi);
     }
     std::dynamic_pointer_cast<Mat::So3Material>(parent_element()->material())
@@ -206,8 +205,7 @@ void Discret::Elements::StructuralSurface::trace_estimate_surf_matrix(
       // as long as we need the parameter list to pass the information, we need to wrap it into a
       // std::shared_ptr<> as the values of a Teuchos::ParameterList have to be printable
       auto scalar_values_at_xi = std::make_shared<std::vector<double>>();
-      *scalar_values_at_xi =
-          Discret::Elements::project_nodal_quantity_to_xi<dt_vol>(xi, parent_scalar);
+      *scalar_values_at_xi = Core::FE::interpolate_to_xi<dt_vol>(xi, parent_scalar);
       params.set("scalars", scalar_values_at_xi);
     }
     std::dynamic_pointer_cast<Mat::So3Material>(parent_element()->material())

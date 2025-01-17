@@ -18,7 +18,6 @@
 #include "4C_global_data.hpp"
 #include "4C_io_linedefinition.hpp"
 #include "4C_mat_so3_material.hpp"
-#include "4C_so3_element_service.hpp"
 #include "4C_so3_line.hpp"
 #include "4C_so3_nullspace.hpp"
 #include "4C_so3_prestress.hpp"

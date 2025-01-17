@@ -23,6 +23,27 @@ namespace Core::Elements
 
 namespace Core::FE
 {
+  /*!
+   * \brief Assemble nodal element count
+   *
+   * \param global_count Add a 1 to all nodes belonging to this element
+   * \param ele element
+   */
+  void assemble_nodal_element_count(
+      Core::LinAlg::Vector<int>& global_count, const Core::Elements::Element& ele);
+
+
+  /*!
+   * \brief Assemble Gauss point data into an array of global cell data
+   *
+   * \param global_data array of global cell data (length at least number of gauss points)
+   * \param gp_data (numgp x size) matrix of the Gauss point data
+   * \param ele element
+   */
+  void assemble_gauss_point_values(
+      std::vector<std::shared_ptr<Core::LinAlg::MultiVector<double>>>& global_data,
+      const Core::LinAlg::SerialDenseMatrix& gp_data, const Core::Elements::Element& ele);
+
 
   /*!
    * @brief Extrapolation of Gauss point quantities given in @data to the nodes of the Element @ele

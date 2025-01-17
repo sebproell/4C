@@ -34,6 +34,38 @@ namespace
   }
 }  // namespace
 
+void Core::FE::assemble_gauss_point_values(
+    std::vector<std::shared_ptr<Core::LinAlg::MultiVector<double>>>& global_data,
+    const Core::LinAlg::SerialDenseMatrix& gp_data, const Core::Elements::Element& ele)
+{
+  for (int gp = 0; gp < gp_data.numRows(); ++gp)
+  {
+    const Epetra_BlockMap& elemap = global_data[gp]->Map();
+    int lid = elemap.LID(ele.id());
+    if (lid != -1)
+    {
+      for (int i = 0; i < gp_data.numCols(); ++i)
+      {
+        ((*global_data[gp])(i))[lid] += gp_data(gp, i);
+      }
+    }
+  }
+}
+
+void Core::FE::assemble_nodal_element_count(
+    Core::LinAlg::Vector<int>& global_count, const Core::Elements::Element& ele)
+{
+  for (int n = 0; n < ele.num_node(); ++n)
+  {
+    const int lid = global_count.Map().LID(ele.node_ids()[n]);
+
+    if (lid != -1)
+    {
+      global_count[lid] += 1;
+    }
+  }
+}
+
 void Core::FE::extrapolate_gauss_point_quantity_to_nodes(Core::Elements::Element& ele,
     const Core::LinAlg::SerialDenseMatrix& data, const Core::FE::Discretization& dis,
     Core::LinAlg::MultiVector<double>& nodal_data)
