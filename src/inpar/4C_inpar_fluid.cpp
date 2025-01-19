@@ -1522,7 +1522,7 @@ void Inpar::FLUID::set_valid_conditions(
     add_named_real_vector(cond, "val", "velocity", 3);
 
     // and optional spatial functions
-    add_named_int_vector(cond, "funct", "spatial function", 3, 0, true, false);
+    add_named_int_vector(cond, "funct", "spatial function", 3, 0, true, true);
 
     // characteristic velocity
     add_named_real(cond, "u_C");

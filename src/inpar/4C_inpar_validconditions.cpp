@@ -506,7 +506,7 @@ Input::valid_conditions()
   for (const auto& cond : {pointlocsys, linelocsys, surflocsys, vollocsys})
   {
     add_named_real_vector(cond, "ROTANGLE", "", 3);
-    add_named_int_vector(cond, "FUNCT", "", 3);
+    add_named_int_vector(cond, "FUNCT", "", 3, {}, false, true);
     add_named_int(cond, "USEUPDATEDNODEPOS");
   }
 

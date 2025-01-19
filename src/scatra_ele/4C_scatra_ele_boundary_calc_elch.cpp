@@ -109,7 +109,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_elch_b
   // access parameters of the condition
   const auto kinetics = cond->parameters().get<int>("KINETIC_MODEL");
   auto pot0 = cond->parameters().get<double>("POT");
-  const auto curvenum = cond->parameters().get<int>("FUNCT");
+  const auto curvenum = cond->parameters().get<Core::IO::Noneable<int>>("FUNCT");
   const auto nume = cond->parameters().get<int>("E-");
   // if zero=1=true, the current flow across the electrode is zero (comparable to do-nothing Neuman
   // condition) but the electrode status is evaluated
@@ -153,11 +153,11 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_elch_b
   double rhsfac = 1.0;
   // find out whether we shell use a time curve and get the factor
   // this feature can be also used for stationary "pseudo time loops"
-  if (curvenum > 0)
+  if (curvenum.has_value() && curvenum.value() > 0)
   {
     // function_by_id takes a zero-based index
     const double curvefac = Global::Problem::instance()
-                                ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
+                                ->function_by_id<Core::Utils::FunctionOfTime>(curvenum.value() - 1)
                                 .evaluate(time);
     // adjust potential at metal side accordingly
     pot0 *= curvefac;
@@ -237,7 +237,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_nernst
 
     // access parameters of the condition
     auto pot0 = cond->parameters().get<double>("POT");
-    const auto curvenum = cond->parameters().get<int>("FUNCT");
+    const auto curvenum = cond->parameters().get<Core::IO::Noneable<int>>("FUNCT");
     const auto nume = cond->parameters().get<int>("E-");
     const auto e0 = cond->parameters().get<double>("e0");
     const auto c0 = cond->parameters().get<double>("c0");
@@ -259,12 +259,13 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_nernst
 
     const double time = my::scatraparamstimint_->time();
 
-    if (curvenum > 0)
+    if (curvenum.has_value() && curvenum.value() > 0)
     {
       // function_by_id takes a zero-based index
-      const double curvefac = Global::Problem::instance()
-                                  ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
-                                  .evaluate(time);
+      const double curvefac =
+          Global::Problem::instance()
+              ->function_by_id<Core::Utils::FunctionOfTime>(curvenum.value() - 1)
+              .evaluate(time);
       // adjust potential at metal side accordingly
       pot0 *= curvefac;
     }

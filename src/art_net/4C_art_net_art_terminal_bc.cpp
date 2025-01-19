@@ -10,6 +10,7 @@
 #include "4C_fem_condition_utils.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
+#include "4C_io_input_parameter_container.hpp"
 #include "4C_utils_function.hpp"
 #include "4C_utils_function_of_time.hpp"
 
@@ -65,7 +66,7 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     // -----------------------------------------------------------------
     // Read in the bc curve information
     // -----------------------------------------------------------------
-    const auto& curve = condition->parameters().get<std::vector<int>>("curve");
+    const auto& curve = condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve");
     double curvefac = 1.0;
     const auto& vals = condition->parameters().get<std::vector<double>>("VAL");
 
@@ -79,10 +80,10 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     else if (Type == "forced")  // => with Reflection
     {
       // If forced curve exists => Rf = curve
-      if (curve[1] > 0)
+      if (curve[1].has_value() && curve[1].value())
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[1] - 1)
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[1].value() - 1)
                        .evaluate(time);
         Rf = vals[1] * curvefac;
       }
@@ -106,10 +107,10 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     // -----------------------------------------------------------------
     // Read in the value of the applied BC
     // -----------------------------------------------------------------
-    if (curve[0] > 0)
+    if (curve[0].has_value() && curve[0].value())
     {
       curvefac = Global::Problem::instance()
-                     ->function_by_id<Core::Utils::FunctionOfTime>(curve[0] - 1)
+                     ->function_by_id<Core::Utils::FunctionOfTime>(curve[0].value() - 1)
                      .evaluate(time);
       BCin = vals[0] * curvefac;
     }
@@ -545,16 +546,16 @@ void Arteries::Utils::solve_reflective_terminal(Core::FE::Discretization& actdis
   // -------------------------------------------------------------------
   // Read in the bc curve information
   // -------------------------------------------------------------------
-  const auto& curve = condition->parameters().get<std::vector<int>>("curve");
+  const auto& curve = condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve");
   double curvefac = 1.0;
   const auto& vals = condition->parameters().get<std::vector<double>>("VAL");
 
   // if the curve exist => Rf = val*curve(time)
-  if (curve[0] > 0)
+  if (curve[0].has_value() && curve[0].value())
   {
     double time = params.get<double>("total time");
     curvefac = Global::Problem::instance()
-                   ->function_by_id<Core::Utils::FunctionOfTime>(curve[0] - 1)
+                   ->function_by_id<Core::Utils::FunctionOfTime>(curve[0].value() - 1)
                    .evaluate(time);
     Rf = vals[0] * curvefac;
   }
@@ -624,7 +625,7 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
   // -------------------------------------------------------------------
   // Read in the bc curve information
   // -------------------------------------------------------------------
-  const auto& curve = condition->parameters().get<std::vector<int>>("curve");
+  const auto& curve = condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve");
   double curvefac = 1.0;
   const auto& vals = condition->parameters().get<std::vector<double>>("VAL");
 
@@ -661,10 +662,10 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
       double Pout = 0.0;
       double dFdA = 0.0;
       // read in the reflection value
-      if (curve[1] >= 0)
+      if (curve[1].has_value() && curve[1].value())
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[0])
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[1].value())
                        .evaluate(time);
         R = vals[1] * curvefac;
       }
@@ -679,10 +680,10 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
         exit(1);
       }
 
-      if (curve[0] >= 0)
+      if (curve[0].has_value() && curve[0].value())
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[0])
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[0].value())
                        .evaluate(time);
         Pout = vals[0] * curvefac;
       }
@@ -736,10 +737,10 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
       double C = 0.0;
 
       // Read in the periferal pressure of the wind kessel model
-      if (curve[0] >= 0)
+      if (curve[0].has_value() && curve[0].value())
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[0])
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[0].value())
                        .evaluate(time);
         //        Pout = vals[0]*curvefac;
       }
@@ -748,10 +749,10 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
         //        Pout = vals[0];
       }
       // read in the resistance value
-      if (curve[1] >= 0)
+      if (curve[1].has_value() && curve[1].value())
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[1])
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[1].value())
                        .evaluate(time);
         R = vals[1] * curvefac;
       }
@@ -760,10 +761,10 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
         R = vals[1];
       }
       // Read in the capacitance value
-      if (curve[2] >= 0)
+      if (curve[2].has_value() && curve[2].value())
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[2])
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[2].value())
                        .evaluate(time);
         C = vals[2] * curvefac;
       }
@@ -796,22 +797,8 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
       double Poutnm = 0.0;
 
       // Read in the periferal pressure of the windkessel model
-      if (curve[0] >= 0)
-      {
-        curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[0])
-                       .evaluate(time);
-        //        Pout = vals[0]*curvefac;
-        curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[0])
-                       .evaluate(time - dt);
-      }
-      else
-      {
-        //        Pout = vals[2];
-      }
       // Read in Pout at time step n-1
-      if (curve[0] >= 0)
+      if (curve[0].has_value() && curve[0].value())
       {
         double t;
         if (time <= dt)
@@ -819,7 +806,7 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
         else
           t = time - dt;
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[0])
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[0].value())
                        .evaluate(t);
         Poutnm = vals[0] * curvefac;
       }
@@ -828,10 +815,10 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
         Poutnm = vals[2];
       }
       // read in the source resistance value
-      if (curve[1] >= 0)
+      if (curve[1].has_value() && curve[1].value())
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[1])
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[1].value())
                        .evaluate(time);
         R1 = vals[1] * curvefac;
       }
@@ -840,10 +827,10 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
         R1 = vals[1];
       }
       // Read in the capacitance value
-      if (curve[2] >= 0)
+      if (curve[2].has_value() && curve[2].value())
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[2])
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[2].value())
                        .evaluate(time);
         C = vals[2] * curvefac;
       }
@@ -852,10 +839,10 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
         C = vals[2];
       }
       // read in the periferal resistance value
-      if (curve[3] >= 0)
+      if (curve[3].has_value() && curve[3].value())
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[3])
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[3].value())
                        .evaluate(time);
         R2 = vals[3] * curvefac;
       }
@@ -932,10 +919,10 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
       double L = 0.0;
 
       // Read in the periferal pressure of the wind kessel model
-      if (curve[0] >= 0)
+      if (curve[0].has_value() && curve[0].value())
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[0])
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[0].value())
                        .evaluate(time);
         //        Pout = vals[0]*curvefac;
       }
@@ -944,10 +931,10 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
         //        Pout = vals[2];
       }
       // read in the source resistance value
-      if (curve[1] >= 0)
+      if (curve[1].has_value() && curve[1].value())
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[1])
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[1].value())
                        .evaluate(time);
         R1 = vals[1] * curvefac;
       }
@@ -956,10 +943,10 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
         R1 = vals[1];
       }
       // Read in the capacitance value
-      if (curve[2] >= 0)
+      if (curve[2].has_value() && curve[2].value())
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[2])
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[2].value())
                        .evaluate(time);
         C = vals[2] * curvefac;
       }
@@ -968,10 +955,10 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
         C = vals[2];
       }
       // read in the periferal resistance value
-      if (curve[3] >= 0)
+      if (curve[3].has_value() && curve[3].value())
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[3])
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[3].value())
                        .evaluate(time);
         R2 = vals[3] * curvefac;
       }
@@ -980,10 +967,10 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
         R2 = vals[3];
       }
       // read in the inductance value
-      if (curve[4] >= 0)
+      if (curve[4].has_value() && curve[4].value())
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[4])
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[4].value())
                        .evaluate(time);
         L = vals[4] * curvefac;
       }

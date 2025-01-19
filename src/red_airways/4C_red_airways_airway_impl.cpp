@@ -12,6 +12,7 @@
 #include "4C_fem_general_extract_values.hpp"
 #include "4C_fem_general_utils_fem_shapefunctions.hpp"
 #include "4C_global_data.hpp"
+#include "4C_io_input_parameter_container.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_mat_newtonianfluid.hpp"
 #include "4C_mat_par_bundle.hpp"
@@ -81,7 +82,8 @@ namespace
       std::string Bc = (condition->parameters().get<std::string>(optionName));
       if (Bc == condType)
       {
-        const auto* curve = condition->parameters().get_if<std::vector<int>>("curve");
+        const auto curve =
+            condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve");
         double curvefac = 1.0;
         const auto vals = condition->parameters().get<std::vector<double>>("VAL");
 
@@ -90,11 +92,9 @@ namespace
         //  Val = curve1*val1 + curve2*func
         // -----------------------------------------------------------------
         // get curve1 and val1
-        int curvenum = -1;
-        if (curve) curvenum = (*curve)[0];
-        if (curvenum > 0)
+        if (curve[0].has_value() && curve[0].value() > 0)
           curvefac = Global::Problem::instance()
-                         ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
+                         ->function_by_id<Core::Utils::FunctionOfTime>(curve[0].value() - 1)
                          .evaluate(time);
 
         bcVal = vals[0] * curvefac;
@@ -109,12 +109,10 @@ namespace
                             .evaluate(node->x().data(), time, 0);
         }
         // get curve2
-        int curve2num = -1;
         double curve2fac = 1.0;
-        if (curve) curve2num = (*curve)[1];
-        if (curve2num > 0)
+        if (curve[1].has_value() && curve[1].value() > 0)
           curve2fac = Global::Problem::instance()
-                          ->function_by_id<Core::Utils::FunctionOfTime>(curve2num - 1)
+                          ->function_by_id<Core::Utils::FunctionOfTime>(curve[1].value() - 1)
                           .evaluate(time);
 
         bcVal += functionfac * curve2fac;
@@ -858,9 +856,6 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
   // get total time
   const double time = evaluation_data.time;
 
-  // get time-step size
-  const double dt = evaluation_data.dt;
-
   // the number of nodes
   const int numnode = lm.size();
 
@@ -893,8 +888,7 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
     if (ele->nodes()[i]->owner() == myrank)
     {
       if (ele->nodes()[i]->get_condition("RedAirwayPrescribedCond") ||
-          ele->nodes()[i]->get_condition("Art_redD_3D_CouplingCond") ||
-          ele->nodes()[i]->get_condition("RedAirwayVentilatorCond"))
+          ele->nodes()[i]->get_condition("Art_redD_3D_CouplingCond"))
       {
         std::string Bc;
         double BCin = 0.0;
@@ -954,18 +948,18 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
             // Read in the value of the applied BC
             //  Val = curve1*val1 + curve2*func
             // -----------------------------------------------------------------
-            const auto* curve = condition->parameters().get_if<std::vector<int>>("curve");
+            const auto* curve =
+                condition->parameters().get_if<std::vector<Core::IO::Noneable<int>>>("curve");
             const auto vals = condition->parameters().get<std::vector<double>>("VAL");
 
             // get factor of curve1 or curve2
             const auto curvefac = [&](unsigned id)
             {
-              int curvenum = -1;
               if (curve)
               {
-                if ((curvenum = (*curve)[id]) > 0)
+                if ((*curve)[id].has_value() && (*curve)[id].value() > 0)
                   return Global::Problem::instance()
-                      ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
+                      ->function_by_id<Core::Utils::FunctionOfTime>((*curve)[id].value() - 1)
                       .evaluate(time);
                 else
                   return 1.0;
@@ -978,16 +972,18 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
             const double functfac = std::invoke(
                 [&]()
                 {
-                  int functnum = -1;
-                  const std::vector<int>* functions =
-                      condition->parameters().get_if<std::vector<int>>("funct");
+                  const auto* functions =
+                      condition->parameters().get_if<std::vector<Core::IO::Noneable<int>>>("funct");
                   if (functions)
-                    if ((functnum = (*functions)[0]) > 0)
+                  {
+                    if ((*functions)[0].has_value() && (*functions)[0].value() > 0)
                       return Global::Problem::instance()
-                          ->function_by_id<Core::Utils::FunctionOfSpaceTime>(functnum - 1)
+                          ->function_by_id<Core::Utils::FunctionOfSpaceTime>(
+                              (*functions)[0].value() - 1)
                           .evaluate((ele->nodes()[i])->x().data(), time, 0);
                     else
                       return 0.0;
+                  }
                   else
                     return 0.0;
                 });
@@ -1067,120 +1063,6 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
               BCin = itr->second;
               break;
             }
-          }
-        }
-        else if (ele->nodes()[i]->get_condition("RedAirwayVentilatorCond"))
-        {
-          Core::Conditions::Condition* condition =
-              ele->nodes()[i]->get_condition("RedAirwayVentilatorCond");
-          // Get the type of prescribed bc
-          Bc = (condition->parameters().get<std::string>("phase1"));
-
-          // get the smoothness flag of the two different phases
-          std::string phase1Smooth = (condition->parameters().get<std::string>("Phase1Smoothness"));
-          std::string phase2Smooth = (condition->parameters().get<std::string>("Phase2Smoothness"));
-
-          double period = condition->parameters().get<double>("period");
-          double period1 = condition->parameters().get<double>("phase1_period");
-
-          double smoothnessT1 = condition->parameters().get<double>("smoothness_period1");
-          double smoothnessT2 = condition->parameters().get<double>("smoothness_period2");
-
-          unsigned int phase_number = 0;
-
-          if (fmod(time, period) >= period1)
-          {
-            phase_number = 1;
-            Bc = (condition->parameters().get<std::string>("phase2"));
-          }
-
-          const auto curve = condition->parameters().get<std::vector<int>>("curve");
-          double curvefac = 1.0;
-          const auto vals = condition->parameters().get<std::vector<double>>("VAL");
-
-          // -----------------------------------------------------------------
-          // Read in the value of the applied BC
-          // -----------------------------------------------------------------
-          int curvenum = curve[phase_number];
-          if (curvenum > 0)
-            curvefac = Global::Problem::instance()
-                           ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
-                           .evaluate(time);
-
-          BCin = vals[phase_number] * curvefac;
-
-          // -----------------------------------------------------------------
-          // Compute flow value in case a volume is prescribed in the RedAirwayVentilatorCond
-          // -----------------------------------------------------------------
-          if (Bc == "volume")
-          {
-            if (fmod(time, period) < period1)
-            {
-              double Vnp = BCin;
-              double Vn = vals[phase_number] *
-                          Global::Problem::instance()
-                              ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
-                              .evaluate(time - dt);
-              BCin = (Vnp - Vn) / dt;
-              Bc = "flow";
-            }
-          }
-
-          // -----------------------------------------------------------------
-          // treat smoothness of the solution
-          // -----------------------------------------------------------------
-          // if phase 1
-          if ((fmod(time, period) < smoothnessT1 && phase_number == 0) ||
-              (fmod(time, period) < period1 + smoothnessT2 && phase_number == 1))
-          {
-            double tsmooth = period;
-            if (phase_number == 0 && phase1Smooth == "smooth")
-            {
-              tsmooth = fmod(time, period);
-              double tau = smoothnessT2 / 6.0;
-              double Xo = 0.0;
-              double Xinf = BCin;
-              double Xn = 0.0;
-              if (Bc == "pressure")
-              {
-                Xn = epn(i);
-              }
-              if (Bc == "flow")
-              {
-                Xn = eqn(i);
-              }
-              Xo = (Xn - Xinf) / (exp(-(tsmooth - dt) / tau));
-              BCin = Xo * exp(-tsmooth / tau) + Xinf;
-            }
-            if (phase_number == 1 && phase2Smooth == "smooth")
-            {
-              tsmooth = fmod(time, period) - period1;
-              double tau = smoothnessT2 / 6.0;
-              double Xo = 0.0;
-              double Xinf = BCin;
-              double Xn = 0.0;
-              if (Bc == "pressure")
-              {
-                Xn = epn(i);
-              }
-              if (Bc == "flow")
-              {
-                Xn = eqn(i);
-              }
-              Xo = (Xn - Xinf) / (exp(-(tsmooth - dt) / tau));
-              BCin = Xo * exp(-tsmooth / tau) + Xinf;
-            }
-          }
-
-          // -----------------------------------------------------------------------------
-          // get the local id of the node to whom the bc is prescribed
-          // -----------------------------------------------------------------------------
-          int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
-          if (local_id < 0)
-          {
-            FOUR_C_THROW("node (%d) doesn't exist on proc(%d)", ele->nodes()[i]->id(),
-                Core::Communication::my_mpi_rank(discretization.get_comm()));
-            exit(1);
           }
         }
         else

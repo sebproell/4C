@@ -12,6 +12,7 @@
 #include "4C_fem_general_extract_values.hpp"
 #include "4C_fem_general_utils_fem_shapefunctions.hpp"
 #include "4C_global_data.hpp"
+#include "4C_io_input_parameter_container.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_mat_newtonianfluid.hpp"
 #include "4C_red_airways_evaluation_data.hpp"
@@ -200,17 +201,19 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
           // Get the type of prescribed bc
           Bc = (condition->parameters().get<std::string>("boundarycond"));
 
-          const auto curve = condition->parameters().get<std::vector<int>>("curve");
+          const auto curve =
+              condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve");
           double curvefac = 1.0;
           const auto vals = condition->parameters().get<std::vector<double>>("VAL");
-          const auto functions = condition->parameters().get<std::vector<int>>("funct");
+          const auto functions =
+              condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("funct");
 
           // Read in the value of the applied BC
           // Get factor of first CURVE
-          if (curve[0] > 0)
+          if (curve[0].has_value() && curve[0].value() > 0)
           {
             curvefac = Global::Problem::instance()
-                           ->function_by_id<Core::Utils::FunctionOfTime>(curve[0] - 1)
+                           ->function_by_id<Core::Utils::FunctionOfTime>(curve[0].value() - 1)
                            .evaluate(time);
             BCin = vals[0] * curvefac;
           }
@@ -220,23 +223,20 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
             exit(1);
           }
           // Get factor of FUNCT
-          int functnum = functions[0];
-
           double functionfac = 0.0;
-          if (functnum > 0)
+          if (functions[0].has_value() && functions[0].value() > 0)
           {
-            functionfac = Global::Problem::instance()
-                              ->function_by_id<Core::Utils::FunctionOfSpaceTime>(functnum - 1)
-                              .evaluate((ele->nodes()[i])->x().data(), time, 0);
+            functionfac =
+                Global::Problem::instance()
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(functions[0].value() - 1)
+                    .evaluate((ele->nodes()[i])->x().data(), time, 0);
           }
 
           // Get factor of second CURVE
-          int curve2num = -1;
           double curve2fac = 1.0;
-          curve2num = curve[1];
-          if (curve2num > 0)
+          if (curve[1].has_value() && curve[1].value() > 0)
             curve2fac = Global::Problem::instance()
-                            ->function_by_id<Core::Utils::FunctionOfTime>(curve2num - 1)
+                            ->function_by_id<Core::Utils::FunctionOfTime>(curve[1].value() - 1)
                             .evaluate(time);
 
           // Add first_CURVE + FUNCTION * second_CURVE
@@ -266,15 +266,16 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
             double Pp_np = 0.0;
             if (pplCond)
             {
-              const auto curve = pplCond->parameters().get<std::vector<int>>("curve");
+              const auto curve =
+                  pplCond->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve");
               double curvefac = 1.0;
               const auto vals = pplCond->parameters().get<std::vector<double>>("VAL");
 
               // Read in the value of the applied BC
-              if (curve[0] > 0)
+              if (curve[0].has_value() && curve[0].value() > 0)
               {
                 curvefac = Global::Problem::instance()
-                               ->function_by_id<Core::Utils::FunctionOfTime>(curve[0] - 1)
+                               ->function_by_id<Core::Utils::FunctionOfTime>(curve[0].value() - 1)
                                .evaluate(time);
               }
 
