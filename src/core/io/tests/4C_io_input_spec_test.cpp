@@ -616,4 +616,32 @@ namespace
       EXPECT_EQ(out.str(), expected);
     }
   }
+
+  TEST(InputSpecTest, Copyable)
+  {
+    InputSpec line;
+    {
+      auto tmp = anonymous_group({
+          entry<int>("a"),
+          entry<std::string>("b"),
+          selection<int>("c", {{"c1", 1}, {"c2", 2}}, {.default_value = 1}),
+      });
+
+      line = anonymous_group({
+          tmp,
+          entry<int>("d"),
+      });
+    }
+
+    {
+      InputParameterContainer container;
+      std::string stream("a 1 b string c c2 d 42");
+      ValueParser parser(stream);
+      line.fully_parse(parser, container);
+      EXPECT_EQ(container.get<int>("a"), 1);
+      EXPECT_EQ(container.get<std::string>("b"), "string");
+      EXPECT_EQ(container.get<int>("c"), 2);
+      EXPECT_EQ(container.get<int>("d"), 42);
+    }
+  }
 }  // namespace
