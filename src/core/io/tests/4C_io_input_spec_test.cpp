@@ -387,6 +387,28 @@ namespace
     }
   }
 
+  TEST(InputSpecTest, NestedAnonymousGroups)
+  {
+    auto line = anonymous_group({
+        entry<int>("a"),
+        anonymous_group({
+            anonymous_group({
+                entry<double>("b"),
+            }),
+        }),
+    });
+
+    {
+      InputParameterContainer container;
+      std::string stream("a 1 b 2.0");
+      ValueParser parser(stream);
+      line.fully_parse(parser, container);
+      const auto& const_container = container;
+      EXPECT_EQ(const_container.get<int>("a"), 1);
+      EXPECT_EQ(const_container.get<double>("b"), 2.0);
+    }
+  }
+
   TEST(InputSpecTest, OneOf)
   {
     auto line = anonymous_group({
