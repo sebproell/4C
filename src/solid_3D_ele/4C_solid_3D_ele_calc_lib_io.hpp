@@ -16,7 +16,6 @@
 #include "4C_inpar_structure.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
-#include "4C_so3_element_service.hpp"
 #include "4C_solid_3D_ele_calc_lib.hpp"
 #include "4C_solid_3D_ele_utils.hpp"
 #include "4C_structure_new_gauss_point_data_output_manager.hpp"
@@ -285,14 +284,14 @@ namespace Discret::Elements
 
             Core::FE::extrapolate_gp_quantity_to_nodes_and_assemble<celltype>(
                 ele, gp_data, *global_data, false, stiffness_matrix_integration);
-            Discret::Elements::assemble_nodal_element_count(global_nodal_element_count, ele);
+            Core::FE::assemble_nodal_element_count(global_nodal_element_count, ele);
             break;
           }
           case Inpar::Solid::GaussPointDataOutputType::gauss_points:
           {
             std::vector<std::shared_ptr<Core::LinAlg::MultiVector<double>>>& global_data =
                 gp_data_output_manager.get_gauss_point_data().at(quantity_name);
-            Discret::Elements::assemble_gauss_point_values(global_data, gp_data, ele);
+            Core::FE::assemble_gauss_point_values(global_data, gp_data, ele);
             break;
           }
           case Inpar::Solid::GaussPointDataOutputType::none:

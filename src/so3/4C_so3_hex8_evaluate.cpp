@@ -31,7 +31,6 @@
 #include "4C_mat_thermoplastichyperelast.hpp"
 #include "4C_mat_thermostvenantkirchhoff.hpp"
 #include "4C_so3_defines.hpp"
-#include "4C_so3_element_service.hpp"
 #include "4C_so3_hex8.hpp"
 #include "4C_so3_hex8_determinant_analysis.hpp"
 #include "4C_so3_prestress.hpp"
@@ -532,7 +531,7 @@ int Discret::Elements::SoHex8::evaluate(Teuchos::ParameterList& params,
                   Core::FE::num_gauss_points_to_gauss_rule<Core::FE::CellType::hex8>(NUMGPT_SOH8));
               Core::FE::extrapolate_gp_quantity_to_nodes_and_assemble<Core::FE::CellType::hex8>(
                   *this, gp_data, *global_data, false, gauss_integration);
-              Discret::Elements::assemble_nodal_element_count(global_nodal_element_count, *this);
+              Core::FE::assemble_nodal_element_count(global_nodal_element_count, *this);
               break;
             }
             case Inpar::Solid::GaussPointDataOutputType::gauss_points:
@@ -542,7 +541,7 @@ int Discret::Elements::SoHex8::evaluate(Teuchos::ParameterList& params,
                       .gauss_point_data_output_manager_ptr()
                       ->get_gauss_point_data()
                       .at(quantity_name);
-              Discret::Elements::assemble_gauss_point_values(global_data, gp_data, *this);
+              Core::FE::assemble_gauss_point_values(global_data, gp_data, *this);
               break;
             }
             case Inpar::Solid::GaussPointDataOutputType::none:

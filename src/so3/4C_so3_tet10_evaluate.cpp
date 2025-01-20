@@ -18,7 +18,6 @@
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_mat_so3_material.hpp"
-#include "4C_so3_element_service.hpp"
 #include "4C_so3_prestress.hpp"
 #include "4C_so3_prestress_service.hpp"
 #include "4C_so3_tet10.hpp"
@@ -628,7 +627,7 @@ int Discret::Elements::SoTet10::evaluate(Teuchos::ParameterList& params,
                       NUMGPT_SOTET10));
               Core::FE::extrapolate_gp_quantity_to_nodes_and_assemble<Core::FE::CellType::tet10>(
                   *this, gp_data, *global_data, false, gauss_integration);
-              Discret::Elements::assemble_nodal_element_count(global_nodal_element_count, *this);
+              Core::FE::assemble_nodal_element_count(global_nodal_element_count, *this);
               break;
             }
             case Inpar::Solid::GaussPointDataOutputType::gauss_points:
@@ -638,7 +637,7 @@ int Discret::Elements::SoTet10::evaluate(Teuchos::ParameterList& params,
                       .gauss_point_data_output_manager_ptr()
                       ->get_gauss_point_data()
                       .at(quantity_name);
-              Discret::Elements::assemble_gauss_point_values(global_data, gp_data, *this);
+              Core::FE::assemble_gauss_point_values(global_data, gp_data, *this);
               break;
             }
             case Inpar::Solid::GaussPointDataOutputType::none:
