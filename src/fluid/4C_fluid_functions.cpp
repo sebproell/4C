@@ -8,6 +8,7 @@
 #include "4C_fluid_functions.hpp"
 
 #include "4C_global_data.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_mat_fluid_linear_density_viscosity.hpp"
 #include "4C_mat_fluid_murnaghantait.hpp"
 #include "4C_mat_fluid_weakly_compressible.hpp"
@@ -331,146 +332,104 @@ namespace
 
 void FLD::add_valid_fluid_functions(Core::Utils::FunctionManager& function_manager)
 {
-  auto beltrami =
-      Input::LineDefinition::Builder().add_tag("BELTRAMI").add_named_double("c1").build();
+  using namespace Core::IO::InputSpecBuilders;
+  auto spec = one_of({
+      anonymous_group({
+          tag("BELTRAMI"),
+          entry<double>("c1"),
+      }),
+      tag("CHANNELWEAKLYCOMPRESSIBLE"),
+      tag("CORRECTIONTERMCHANNELWEAKLYCOMPRESSIBLE"),
+      anonymous_group({
+          tag("WEAKLYCOMPRESSIBLE_POISEUILLE"),
+          entry<int>("MAT"),
+          entry<double>("L"),
+          entry<double>("R"),
+          entry<double>("U"),
+      }),
+      anonymous_group({
+          tag("WEAKLYCOMPRESSIBLE_POISEUILLE_FORCE"),
+          entry<int>("MAT"),
+          entry<double>("L"),
+          entry<double>("R"),
+          entry<double>("U"),
+      }),
+      anonymous_group({
+          tag("WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW"),
+          entry<int>("MAT"),
+      }),
+      anonymous_group({
+          tag("WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW_FORCE"),
+          entry<int>("MAT"),
+      }),
+      anonymous_group({
+          tag("WEAKLYCOMPRESSIBLE_ETIENNE_CFD"),
+          entry<int>("MAT"),
+      }),
+      anonymous_group({
+          tag("WEAKLYCOMPRESSIBLE_ETIENNE_CFD_FORCE"),
+          entry<int>("MAT"),
+      }),
+      anonymous_group({
+          tag("WEAKLYCOMPRESSIBLE_ETIENNE_CFD_VISCOSITY"),
+          entry<int>("MAT"),
+      }),
+      anonymous_group({
+          tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID"),
+          entry<int>("MAT_FLUID"),
+          entry<int>("MAT_STRUCT"),
+      }),
+      anonymous_group({
+          tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID_FORCE"),
+          entry<int>("MAT_FLUID"),
+          entry<int>("MAT_STRUCT"),
+      }),
+      anonymous_group({
+          tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID_VISCOSITY"),
+          entry<int>("MAT_FLUID"),
+          entry<int>("MAT_STRUCT"),
+      }),
+      anonymous_group({
+          tag("BELTRAMI-UP"),
+          entry<int>("MAT"),
+          entry<int>("ISSTAT"),
+      }),
+      anonymous_group({
+          tag("BELTRAMI-GRADU"),
+          entry<int>("MAT"),
+          entry<int>("ISSTAT"),
+      }),
+      anonymous_group({
+          tag("BELTRAMI-RHS"),
+          entry<int>("MAT"),
+          entry<int>("ISSTAT"),
+          entry<int>("ISSTOKES"),
+      }),
+      anonymous_group({
+          tag("KIMMOIN-UP"),
+          entry<int>("MAT"),
+          entry<int>("ISSTAT"),
+      }),
+      anonymous_group({
+          tag("KIMMOIN-GRADU"),
+          entry<int>("MAT"),
+          entry<int>("ISSTAT"),
+      }),
+      anonymous_group({
+          tag("KIMMOIN-RHS"),
+          entry<int>("MAT"),
+          entry<int>("ISSTAT"),
+          entry<int>("ISSTOKES"),
+      }),
+      anonymous_group({
+          tag("KIMMOIN-STRESS"),
+          entry<int>("MAT"),
+          entry<int>("ISSTAT"),
+          entry<double>("AMPLITUDE"),
+      }),
+  });
 
-  auto channelweaklycompressible =
-      Input::LineDefinition::Builder().add_tag("CHANNELWEAKLYCOMPRESSIBLE").build();
-
-  auto correctiontermchannelweaklycompressible =
-      Input::LineDefinition::Builder().add_tag("CORRECTIONTERMCHANNELWEAKLYCOMPRESSIBLE").build();
-
-  auto weaklycompressiblepoiseuille = Input::LineDefinition::Builder()
-                                          .add_tag("WEAKLYCOMPRESSIBLE_POISEUILLE")
-                                          .add_named_int("MAT")
-                                          .add_named_double("L")
-                                          .add_named_double("R")
-                                          .add_named_double("U")
-                                          .build();
-
-  auto weaklycompressiblepoiseuilleforce = Input::LineDefinition::Builder()
-                                               .add_tag("WEAKLYCOMPRESSIBLE_POISEUILLE_FORCE")
-                                               .add_named_int("MAT")
-                                               .add_named_double("L")
-                                               .add_named_double("R")
-                                               .add_named_double("U")
-                                               .build();
-
-  auto weaklycompressiblemanufacturedflow = Input::LineDefinition::Builder()
-                                                .add_tag("WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW")
-                                                .add_named_int("MAT")
-                                                .build();
-
-  auto weaklycompressiblemanufacturedflowforce =
-      Input::LineDefinition::Builder()
-          .add_tag("WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW_FORCE")
-          .add_named_int("MAT")
-          .build();
-
-  auto weaklycompressibleetiennecfd = Input::LineDefinition::Builder()
-                                          .add_tag("WEAKLYCOMPRESSIBLE_ETIENNE_CFD")
-                                          .add_named_int("MAT")
-                                          .build();
-
-  auto weaklycompressibleetiennecfdforce = Input::LineDefinition::Builder()
-                                               .add_tag("WEAKLYCOMPRESSIBLE_ETIENNE_CFD_FORCE")
-                                               .add_named_int("MAT")
-                                               .build();
-
-  auto weaklycompressibleetiennecfdviscosity =
-      Input::LineDefinition::Builder()
-          .add_tag("WEAKLYCOMPRESSIBLE_ETIENNE_CFD_VISCOSITY")
-          .add_named_int("MAT")
-          .build();
-
-  auto weaklycompressibleetiennefsifluid = Input::LineDefinition::Builder()
-                                               .add_tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID")
-                                               .add_named_int("MAT_FLUID")
-                                               .add_named_int("MAT_STRUCT")
-                                               .build();
-
-  auto weaklycompressibleetiennefsifluidforce =
-      Input::LineDefinition::Builder()
-          .add_tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID_FORCE")
-          .add_named_int("MAT_FLUID")
-          .add_named_int("MAT_STRUCT")
-          .build();
-
-  auto weaklycompressibleetiennefsifluidviscosity =
-      Input::LineDefinition::Builder()
-          .add_tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID_VISCOSITY")
-          .add_named_int("MAT_FLUID")
-          .add_named_int("MAT_STRUCT")
-          .build();
-
-  auto beltramiup = Input::LineDefinition::Builder()
-                        .add_tag("BELTRAMI-UP")
-                        .add_named_int("MAT")
-                        .add_named_int("ISSTAT")
-                        .build();
-
-  auto beltramigradu = Input::LineDefinition::Builder()
-                           .add_tag("BELTRAMI-GRADU")
-                           .add_named_int("MAT")
-                           .add_named_int("ISSTAT")
-                           .build();
-
-  auto beltramirhs = Input::LineDefinition::Builder()
-                         .add_tag("BELTRAMI-RHS")
-                         .add_named_int("MAT")
-                         .add_named_int("ISSTAT")
-                         .add_named_int("ISSTOKES")
-                         .build();
-
-  auto kimmoinup = Input::LineDefinition::Builder()
-                       .add_tag("KIMMOIN-UP")
-                       .add_named_int("MAT")
-                       .add_named_int("ISSTAT")
-                       .build();
-
-  auto kimmoingradu = Input::LineDefinition::Builder()
-                          .add_tag("KIMMOIN-GRADU")
-                          .add_named_int("MAT")
-                          .add_named_int("ISSTAT")
-                          .build();
-
-  auto kimmoinrhs = Input::LineDefinition::Builder()
-                        .add_tag("KIMMOIN-RHS")
-                        .add_named_int("MAT")
-                        .add_named_int("ISSTAT")
-                        .add_named_int("ISSTOKES")
-                        .build();
-
-  auto kimmoinstress = Input::LineDefinition::Builder()
-                           .add_tag("KIMMOIN-STRESS")
-                           .add_named_int("MAT")
-                           .add_named_int("ISSTAT")
-                           .add_named_double("AMPLITUDE")
-                           .build();
-
-  std::vector<Input::LineDefinition> lines;
-  lines.emplace_back(std::move(beltrami));
-  lines.emplace_back(std::move(channelweaklycompressible));
-  lines.emplace_back(std::move(correctiontermchannelweaklycompressible));
-  lines.emplace_back(std::move(weaklycompressiblepoiseuille));
-  lines.emplace_back(std::move(weaklycompressiblepoiseuilleforce));
-  lines.emplace_back(std::move(weaklycompressiblemanufacturedflow));
-  lines.emplace_back(std::move(weaklycompressiblemanufacturedflowforce));
-  lines.emplace_back(std::move(weaklycompressibleetiennecfd));
-  lines.emplace_back(std::move(weaklycompressibleetiennecfdforce));
-  lines.emplace_back(std::move(weaklycompressibleetiennecfdviscosity));
-  lines.emplace_back(std::move(weaklycompressibleetiennefsifluid));
-  lines.emplace_back(std::move(weaklycompressibleetiennefsifluidforce));
-  lines.emplace_back(std::move(weaklycompressibleetiennefsifluidviscosity));
-  lines.emplace_back(std::move(beltramiup));
-  lines.emplace_back(std::move(beltramigradu));
-  lines.emplace_back(std::move(beltramirhs));
-  lines.emplace_back(std::move(kimmoinup));
-  lines.emplace_back(std::move(kimmoingradu));
-  lines.emplace_back(std::move(kimmoinrhs));
-  lines.emplace_back(std::move(kimmoinstress));
-
-  function_manager.add_function_definition(std::move(lines), create_fluid_function);
+  function_manager.add_function_definition(std::move(spec), create_fluid_function);
 }
 
 

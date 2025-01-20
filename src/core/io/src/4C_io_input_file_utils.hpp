@@ -10,6 +10,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_io_input_spec.hpp"
 #include "4C_io_linedefinition.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
@@ -60,19 +61,21 @@ namespace Core::IO::InputFileUtils
       const std::vector<Input::LineDefinition>& possible_lines);
 
   /**
-   * Read all lines in a @p section of @p input that match the @p possible_lines.
-   * Every line in the @p section must be readable as one of the @p possible_lines. Otherwise, an
-   * exception is thrown.
-   *
-   * @see read_matching_lines_in_section()
+   * Print @p spec into a dat file section with given @p header.
    */
-  std::vector<Core::IO::InputParameterContainer> read_all_lines_in_section(
-      Core::IO::InputFile& input, const std::string& section,
-      const std::vector<Input::LineDefinition>& possible_lines);
+  void print_section(std::ostream& out, const std::string& header, const InputSpec& spec);
 
 
   /**
-   * Read only lines in a @p section of @p input that match the @p possible_lines. This implies
+   * Read all lines in a @p section of @p input that match the @p spec. Every line in the @p section
+   * must match the @p spec. Otherwise, an exception is thrown.
+   */
+  std::vector<Core::IO::InputParameterContainer> read_all_lines_in_section(
+      Core::IO::InputFile& input, const std::string& section, const InputSpec& spec);
+
+
+  /**
+   * Read only lines in a @p section of @p input that match the @p spec. This implies
    * that, potentially, no lines are read at all, resulting in an empty returned vector. In
    * addition to the vector of parsed lines, the second returned value contains all unparsed input
    * lines.
@@ -80,8 +83,8 @@ namespace Core::IO::InputFileUtils
    * @see read_all_lines_in_section()
    */
   std::pair<std::vector<Core::IO::InputParameterContainer>, std::vector<std::string>>
-  read_matching_lines_in_section(Core::IO::InputFile& input, const std::string& section,
-      const std::vector<Input::LineDefinition>& possible_lines);
+  read_matching_lines_in_section(
+      Core::IO::InputFile& input, const std::string& section, const InputSpec& spec);
 
 }  // namespace Core::IO::InputFileUtils
 

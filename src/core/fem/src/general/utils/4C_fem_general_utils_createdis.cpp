@@ -8,6 +8,7 @@
 #include "4C_fem_general_utils_createdis.hpp"
 
 #include "4C_fem_dofset_transparent_independent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_io_linedefinition.hpp"
 #include "4C_rebalance_binning_based.hpp"
 
@@ -253,14 +254,16 @@ void Core::FE::DiscretizationCreatorBase::finalize(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::vector<Input::LineDefinition> Core::FE::valid_cloning_material_map_lines()
+Core::IO::InputSpec Core::FE::valid_cloning_material_map()
 {
-  return {Input::LineDefinition::Builder()
-          .add_named_string("SRC_FIELD")
-          .add_named_int("SRC_MAT")
-          .add_named_string("TAR_FIELD")
-          .add_named_int("TAR_MAT")
-          .build()};
+  using namespace Core::IO::InputSpecBuilders;
+  return anonymous_group({
+      entry<std::string>("SRC_FIELD"),
+      entry<int>("SRC_MAT"),
+      entry<std::string>("TAR_FIELD"),
+      entry<int>("TAR_MAT"),
+
+  });
 }
 
 FOUR_C_NAMESPACE_CLOSE

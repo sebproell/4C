@@ -9,7 +9,7 @@
 
 #include "4C_io_input_file.hpp"
 #include "4C_io_input_file_utils.hpp"
-#include "4C_io_linedefinition.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_function.hpp"
 #include "4C_utils_function_of_time.hpp"
@@ -67,76 +67,75 @@ namespace
 
 void Core::Utils::add_valid_builtin_functions(Core::Utils::FunctionManager& function_manager)
 {
-  using namespace Input;
+  using namespace IO::InputSpecBuilders;
 
-  std::vector<LineDefinition> possible_lines = {
-      LineDefinition::Builder().add_named_string("SYMBOLIC_FUNCTION_OF_SPACE_TIME").build(),
+  auto spec = one_of({
+      anonymous_group({
+          entry<int>("COMPONENT", {.required = false}),
+          entry<std::string>("SYMBOLIC_FUNCTION_OF_SPACE_TIME"),
+      }),
 
-      LineDefinition::Builder().add_named_string("SYMBOLIC_FUNCTION_OF_TIME").build(),
+      entry<std::string>("SYMBOLIC_FUNCTION_OF_TIME"),
 
-      LineDefinition::Builder()
-          .add_named_int("COMPONENT")
-          .add_named_string("SYMBOLIC_FUNCTION_OF_SPACE_TIME")
-          .build(),
+      anonymous_group({
+          entry<int>("VARIABLE"),
+          entry<std::string>("NAME"),
+          entry<std::string>("TYPE"),
+          entry<int>("NUMPOINTS", {.required = false}),
+          tag("BYNUM", {.default_value = false}),
+          entry<std::vector<double>>("TIMERANGE", {.required = false, .size = 2}),
+          entry<std::vector<double>>(
+              "TIMES", {.required = false, .size = from_parameter<int>("NUMPOINTS")}),
+          entry<std::vector<double>>(
+              "VALUES", {.required = false, .size = from_parameter<int>("NUMPOINTS")}),
+          entry<std::vector<std::string>>(
+              "DESCRIPTION", {.required = false,
+                                 .size =
+                                     [](const IO::InputParameterContainer& container)
+                                 {
+                                   try
+                                   {
+                                     return container.get<int>("NUMPOINTS") - 1;
+                                   }
+                                   catch (const Core::Exception& e)
+                                   {
+                                     // When NUMPOINTS is not set, then we still allow for a
+                                     // single DESCRIPTION entry
+                                     return 1;
+                                   }
+                                 }}),
+          tag("PERIODIC", {.default_value = false}),
+          entry<double>("T1", {.required = false}),
+          entry<double>("T2", {.required = false}),
+      }),
 
-      LineDefinition::Builder()
-          .add_named_int("VARIABLE")
-          .add_named_string("NAME")
-          .add_named_string("TYPE")
-          .add_optional_named_int("NUMPOINTS")
-          .add_optional_tag("BYNUM")
-          .add_optional_named_double_vector("TIMERANGE", 2)
-          .add_optional_named_double_vector("TIMES", LengthFromIntNamed("NUMPOINTS"))
-          .add_optional_named_double_vector("VALUES", LengthFromIntNamed("NUMPOINTS"))
-          .add_optional_named_string_vector("DESCRIPTION",
-              // Special case where only NUMPOINTS-1 are taken
-              [](const Core::IO::InputParameterContainer& already_read_line)
-              {
-                try
-                {
-                  int length = already_read_line.get<int>("NUMPOINTS");
-                  return length - 1;
-                }
-                catch (const Core::Exception& e)
-                {
-                  // When NUMPOINTS is not set, then we still allow for a single DESCRIPTION entry
-                  return 1;
-                }
-              })
-          .add_optional_tag("PERIODIC")
-          .add_optional_named_double("T1")
-          .add_optional_named_double("T2")
-          .build(),
+      anonymous_group({
+          entry<std::string>("VARFUNCTION"),
+          entry<int>("NUMCONSTANTS", {.required = false}),
+          entry<std::vector<std::pair<std::string, double>>>(
+              "CONSTANTS", {.required = false, .size = from_parameter<int>("NUMCONSTANTS")}),
+      }),
+  });
 
-      LineDefinition::Builder()
-          .add_named_string("VARFUNCTION")
-          .add_optional_named_int("NUMCONSTANTS")
-          .add_optional_named_pair_of_string_and_double_vector(
-              "CONSTANTS", LengthFromIntNamed("NUMCONSTANTS"))
-          .build()};
-
-  function_manager.add_function_definition(possible_lines, create_builtin_function);
+  function_manager.add_function_definition(spec, create_builtin_function);
 }
 
 
-std::vector<Input::LineDefinition> Core::Utils::FunctionManager::valid_function_lines()
+Core::IO::InputSpec Core::Utils::FunctionManager::valid_function_lines()
 {
-  std::vector<Input::LineDefinition> lines;
-  for (const auto& [possible_lines, _] : attached_function_data_)
+  std::vector<IO::InputSpec> specs;
+  for (const auto& [spec, _] : attached_function_data_)
   {
-    for (const auto& single_line : possible_lines)
-    {
-      lines.emplace_back(single_line);
-    }
+    specs.emplace_back(spec);
   }
-  return lines;
+  return Core::IO::InputSpecBuilders::one_of(specs);
 }
 
 
 void Core::Utils::FunctionManager::add_function_definition(
-    std::vector<Input::LineDefinition> possible_lines, FunctionFactory function_factory)
+    IO::InputSpec spec, FunctionFactory function_factory)
 {
-  attached_function_data_.emplace_back(std::move(possible_lines), std::move(function_factory));
+  attached_function_data_.emplace_back(std::move(spec), std::move(function_factory));
 }
 
 
@@ -152,11 +151,11 @@ void Core::Utils::FunctionManager::read_input(Core::IO::InputFile& input)
     const bool stop_parsing = std::invoke(
         [&]()
         {
-          for (auto& [possible_lines, function_factory] : attached_function_data_)
+          for (auto& [spec, function_factory] : attached_function_data_)
           {
             auto [parsed_parameters, unparsed_lines] =
                 Core::IO::InputFileUtils::read_matching_lines_in_section(
-                    input, "FUNCT" + std::to_string(funct_suffix), possible_lines);
+                    input, "FUNCT" + std::to_string(funct_suffix), spec);
 
             // A convoluted way of saying that there are no lines in the section, thus, stop
             // parsing. This can only be refactored if the reading mechanism is overhauled in

@@ -331,7 +331,7 @@ int main(int argc, char** argv)
       }
 
       // print cloning material map default lines (right after the materials)
-      const auto lines = Core::FE::valid_cloning_material_map_lines();
+      const auto lines = Core::FE::valid_cloning_material_map();
       Core::IO::InputFileUtils::print_section(defaulthead, "CLONING MATERIAL MAP", lines);
 
       // print spatial functions
@@ -347,7 +347,7 @@ int main(int argc, char** argv)
         std::stringstream tmp;
         Core::Utils::FunctionManager functionmanager;
         global_legacy_module_callbacks().AttachFunctionDefinitions(functionmanager);
-        const std::vector<Input::LineDefinition> flines = functionmanager.valid_function_lines();
+        const auto flines = functionmanager.valid_function_lines();
         Core::IO::InputFileUtils::print_section(tmp, "FUNCT", flines);
         std::string tmpstring = tmp.str();
         std::string removeit =

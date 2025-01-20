@@ -20,11 +20,6 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace Input
-{
-  class LineDefinition;
-}  // namespace Input
-
 namespace Core::IO
 {
   class InputFile;
@@ -96,6 +91,12 @@ namespace Core::Utils
 
     /// tell whether this field test matches to a given line
     virtual bool match(const Core::IO::InputParameterContainer& container);
+
+    /**
+     * The name of the field test. This name matches the top-level group of the input for a result
+     * test.
+     */
+    [[nodiscard]] const std::string& name() const { return myname_; }
 
    protected:
     //! compare a calculated @param actresult with the expected one stored in the @param container

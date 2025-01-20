@@ -17,6 +17,7 @@
 #include "4C_fem_general_immersed_node.hpp"
 #include "4C_fem_general_node.hpp"
 #include "4C_fem_nurbs_discretization.hpp"
+#include "4C_io_input_spec.hpp"
 #include "4C_io_linedefinition.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_material_base.hpp"
@@ -941,7 +942,7 @@ namespace Core::FE
   };  // clone_discretization_from_condition
 
   //! Return valid cloning material map input lines.
-  std::vector<Input::LineDefinition> valid_cloning_material_map_lines();
+  IO::InputSpec valid_cloning_material_map();
 
 }  // namespace Core::FE
 

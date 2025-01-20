@@ -10,6 +10,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_io_input_spec.hpp"
 #include "4C_utils_function_manager.hpp"
 
 #include <functional>
@@ -43,7 +44,7 @@ struct ModuleCallbacks
   /**
    * A callback to return valid result description lines.
    */
-  std::function<std::vector<Input::LineDefinition>()> valid_result_description_lines;
+  std::function<Core::IO::InputSpec()> valid_result_description_lines;
 };
 
 FOUR_C_NAMESPACE_CLOSE

@@ -289,14 +289,13 @@ int main(int argc, char* argv[])
         std::cout << '\n';
       }
 
-      const auto lines = Core::FE::valid_cloning_material_map_lines();
+      const auto lines = Core::FE::valid_cloning_material_map();
       Core::IO::InputFileUtils::print_section(std::cout, "CLONING MATERIAL MAP", lines);
 
       print_element_dat_header();
 
-      const std::vector<Input::LineDefinition> result_lines =
-          global_legacy_module_callbacks().valid_result_description_lines();
-      Core::IO::InputFileUtils::print_section(std::cout, "RESULT DESCRIPTION", result_lines);
+      const auto result_spec = global_legacy_module_callbacks().valid_result_description_lines();
+      Core::IO::InputFileUtils::print_section(std::cout, "RESULT DESCRIPTION", result_spec);
 
       printf("\n\n");
     }
