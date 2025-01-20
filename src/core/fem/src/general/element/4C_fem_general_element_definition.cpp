@@ -31,12 +31,10 @@ void Core::Elements::ElementDefinition::print_element_dat_header_to_stream(std::
 
   print_section_header(stream, "STRUCTURE ELEMENTS");
 
-  //  PrintElementLines(stream,"ART");
-  print_element_lines(stream, "BEAM3");
   print_element_lines(stream, "BEAM3R");
   print_element_lines(stream, "BEAM3EB");
   print_element_lines(stream, "BEAM3K");
-  print_element_lines(stream, "BELE3");
+  print_element_lines(stream, "BELE3_3");
   print_element_lines(stream, "RIGIDSPHERE");
   print_element_lines(stream, "SHELL7P");
   print_element_lines(stream, "SHELL7PSCATRA");
@@ -47,10 +45,8 @@ void Core::Elements::ElementDefinition::print_element_dat_header_to_stream(std::
   print_element_lines(stream, "SOLIDSCATRA");
   print_element_lines(stream, "SOLIDH27_DEPRECATED");
   print_element_lines(stream, "SOLIDH27PORO");
-  print_element_lines(stream, "SONURBS27");
   print_element_lines(stream, "SOLIDH8_DEPRECATED");
-  print_element_lines(stream, "MEMBRANE");
-  print_element_lines(stream, "SOLIDH8FBAR_DEPRECATED");
+  print_element_lines(stream, "MEMBRANE3");
   print_element_lines(stream, "SOLIDH8PORO");
   print_element_lines(stream, "SOLIDH8POROSCATRA");
   print_element_lines(stream, "SOLIDH8POROP1");
@@ -78,7 +74,6 @@ void Core::Elements::ElementDefinition::print_element_dat_header_to_stream(std::
   print_element_lines(stream, "FLUIDHDG");
   print_element_lines(stream, "FLUIDHDGWEAKCOMP");
   print_element_lines(stream, "FLUIDIMMERSED");
-  print_element_lines(stream, "FLUIDPOROIMMERSED");
 
   print_section_header(stream, "LUBRICATION ELEMENTS");
   print_element_lines(stream, "LUBRICATION");
@@ -92,9 +87,6 @@ void Core::Elements::ElementDefinition::print_element_dat_header_to_stream(std::
   print_section_header(stream, "ALE ELEMENTS");
   print_element_lines(stream, "ALE2");
   print_element_lines(stream, "ALE3");
-
-  // PrintElementLines(stream,"BELE3_3");
-  // PrintElementLines(stream,"VELE3");
 
   print_section_header(stream, "THERMO ELEMENTS");
   print_element_lines(stream, "THERMO");

@@ -119,33 +119,6 @@ void Discret::Elements::Bele3Type::setup_element_definition(
       entry<std::vector<int>>("QUAD9", {.size = 9}),
       entry<int>("MAT", {.required = false}),
   });
-
-  auto& defs4 = definitions["BELE3_4"];
-
-  defs4["TRI3"] = anonymous_group({
-      entry<std::vector<int>>("TRI3", {.size = 3}),
-      entry<int>("MAT", {.required = false}),
-  });
-
-  defs4["TRI6"] = anonymous_group({
-      entry<std::vector<int>>("TRI6", {.size = 6}),
-      entry<int>("MAT", {.required = false}),
-  });
-
-  defs4["QUAD4"] = anonymous_group({
-      entry<std::vector<int>>("QUAD4", {.size = 4}),
-      entry<int>("MAT", {.required = false}),
-  });
-
-  defs4["QUAD8"] = anonymous_group({
-      entry<std::vector<int>>("QUAD8", {.size = 8}),
-      entry<int>("MAT", {.required = false}),
-  });
-
-  defs4["QUAD9"] = anonymous_group({
-      entry<std::vector<int>>("QUAD9", {.size = 9}),
-      entry<int>("MAT", {.required = false}),
-  });
 }
 
 
