@@ -18,7 +18,6 @@
 #include "4C_scatra_ele_parameter_elch.hpp"
 #include "4C_scatra_ele_parameter_std.hpp"
 #include "4C_scatra_ele_parameter_timint.hpp"
-#include "4C_so3_utils.hpp"
 #include "4C_utils_singleton_owner.hpp"
 
 FOUR_C_NAMESPACE_OPEN

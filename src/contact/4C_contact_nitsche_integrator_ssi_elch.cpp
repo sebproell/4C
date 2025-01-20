@@ -9,15 +9,35 @@
 
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_contact_nitsche_utils.hpp"
+#include "4C_fem_general_cell_type.hpp"
+#include "4C_fem_general_cell_type_traits.hpp"
 #include "4C_fem_general_utils_local_connectivity_matrices.hpp"
 #include "4C_mat_electrode.hpp"
 #include "4C_scatra_ele_boundary_calc_elch_electrode_utils.hpp"
 #include "4C_scatra_ele_parameter_boundary.hpp"
 #include "4C_scatra_ele_parameter_elch.hpp"
 #include "4C_scatra_ele_parameter_timint.hpp"
-#include "4C_so3_utils.hpp"
+#include "4C_solid_3D_ele_calc_lib.hpp"
 
 FOUR_C_NAMESPACE_OPEN
+
+
+namespace
+{
+  template <Core::FE::CellType celltype, int prob_dim>
+  Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, prob_dim> evaluate_nodal_coordinates(
+      Core::Nodes::Node** nodes)
+  {
+    Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, prob_dim> xrefe(true);
+    for (auto i = 0; i < Core::FE::num_nodes<celltype>; ++i)
+    {
+      const auto& x = nodes[i]->x();
+      for (auto dim = 0; dim < prob_dim; ++dim) xrefe(i, dim) = x[dim];
+    }
+
+    return xrefe;
+  }
+}  // namespace
 
 template <int d>
 struct CONTACT::IntegratorNitscheSsiElch::ElementDataBundle
@@ -192,37 +212,31 @@ template <int dim>
 double CONTACT::IntegratorNitscheSsiElch::calculate_det_f_of_parent_element(
     const ElementDataBundle<dim>& electrode_quantities)
 {
-  auto electrode_ele = electrode_quantities.element;
-  auto xi_parent = Core::FE::calculate_parent_gp_from_face_element_data<dim>(
+  auto* electrode_ele = electrode_quantities.element;
+  const auto xi_parent = Core::FE::calculate_parent_gp_from_face_element_data<dim>(
       electrode_quantities.xi, electrode_ele);
 
   // calculate defgrad based on element discretization type
-  static Core::LinAlg::Matrix<dim, dim> defgrd;
-  switch (electrode_ele->parent_element()->shape())
-  {
-    case Core::FE::CellType::hex8:
-    {
-      Discret::Elements::Utils::compute_deformation_gradient<Core::FE::CellType::hex8, dim>(defgrd,
-          electrode_ele->parent_element()->nodes(), xi_parent,
-          electrode_ele->mo_data().parent_disp());
+  const Core::LinAlg::Matrix<dim, dim> defgrd = Core::FE::cell_type_switch<
+      Core::FE::CelltypeSequence<Core::FE::CellType::hex8, Core::FE::CellType::tet4>>(
+      electrode_ele->parent_element()->shape(),
+      [&](auto celltype_t)
+      {
+        constexpr Core::FE::CellType celltype = celltype_t();
 
-      break;
-    }
-    case Core::FE::CellType::tet4:
-    {
-      Discret::Elements::Utils::compute_deformation_gradient<Core::FE::CellType::tet4, dim>(defgrd,
-          electrode_ele->parent_element()->nodes(), xi_parent,
-          electrode_ele->mo_data().parent_disp());
+        const Discret::Elements::ElementNodes<celltype> element_nodes =
+            Discret::Elements::evaluate_element_nodes<celltype>(
+                *electrode_ele->parent_element(), electrode_ele->mo_data().parent_disp());
 
-      break;
-    }
-    default:
-    {
-      FOUR_C_THROW(
-          "Not implemented for discretization type: %i!", electrode_ele->parent_element()->shape());
-      break;
-    }
-  }
+        const Discret::Elements::ShapeFunctionsAndDerivatives<celltype> shape_functions =
+            evaluate_shape_functions_and_derivs<celltype>(xi_parent, element_nodes);
+
+        const Discret::Elements::JacobianMapping<celltype> jacobian_mapping =
+            Discret::Elements::evaluate_jacobian_mapping(shape_functions, element_nodes);
+
+        return Discret::Elements::evaluate_deformation_gradient(jacobian_mapping, element_nodes);
+      });
+
   return defgrd.determinant();
 }
 
@@ -271,8 +285,8 @@ void CONTACT::IntegratorNitscheSsiElch::calculate_spatial_derivative_of_det_f(co
   FOUR_C_ASSERT(num_ele_nodes == electrode_ele->num_node(),
       "Number of nodes is not matching discretization type");
 
-  static Core::LinAlg::Matrix<num_ele_nodes, dim> xyze;
-  Discret::Elements::Utils::evaluate_nodal_coordinates<distype, dim>(electrode_ele->nodes(), xyze);
+  Core::LinAlg::Matrix<num_ele_nodes, dim> xyze =
+      evaluate_nodal_coordinates<distype, dim>(electrode_ele->nodes());
 
   static Core::LinAlg::Matrix<ele_dim, num_ele_nodes> deriv;
   for (auto i = 0; i < num_ele_nodes; ++i)
