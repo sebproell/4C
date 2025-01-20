@@ -17,11 +17,6 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace Input
-{
-  class LineDefinition;
-}
-
 namespace Core::FE
 {
   class Discretization;
