@@ -143,6 +143,7 @@ def create_json_schema(fourc_metadata: dict) -> dict:
             "title": section_name,
             "description": description,
             "type": "object",  # this type is required by the JSON schema template
+            "additionalProperties": False,
             "properties": create_properties_dict(section_options),
         }
 
