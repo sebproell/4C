@@ -13,10 +13,11 @@
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_global_data.hpp"
 #include "4C_global_legacy_module.hpp"
+#include "4C_global_legacy_module_validmaterials.hpp"
 #include "4C_inpar_validconditions.hpp"
-#include "4C_inpar_validmaterials.hpp"
 #include "4C_inpar_validparameters.hpp"
 #include "4C_io_input_file_utils.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_pre_exodus_readbc.hpp"
 #include "4C_pre_exodus_reader.hpp"
 #include "4C_pre_exodus_validate.hpp"
@@ -325,10 +326,24 @@ int main(int argc, char** argv)
 
       // get valid input materials
       {
-        std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> mlist =
-            Input::valid_materials();
-        Input::print_empty_material_definitions(defaulthead, *mlist);
+        std::vector<Core::IO::InputSpec> possible_materials;
+        {
+          auto materials = global_legacy_module_callbacks().materials();
+          for (auto&& [type, spec] : materials)
+          {
+            possible_materials.emplace_back(std::move(spec));
+          }
+        }
+
+        using namespace Core::IO::InputSpecBuilders;
+        auto all_materials = anonymous_group({
+            entry<int>("MAT"),
+            one_of(possible_materials),
+        });
+
+        Core::IO::InputFileUtils::print_section(std::cout, "MATERIALS", all_materials);
       }
+
 
       // print cloning material map default lines (right after the materials)
       const auto lines = Core::FE::valid_cloning_material_map();

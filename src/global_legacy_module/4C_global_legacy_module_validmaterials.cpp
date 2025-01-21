@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_validmaterials.hpp"
+#include "4C_global_legacy_module_validmaterials.hpp"
 
 #include "4C_global_data.hpp"
 #include "4C_inpar_material.hpp"
@@ -24,35 +24,8 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Input::print_empty_material_definitions(
-    std::ostream& stream, std::vector<std::shared_ptr<Mat::MaterialDefinition>>& matlist)
+std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::valid_materials()
 {
-  const std::string sectionname = "MATERIALS";
-  const unsigned l = sectionname.length();
-  stream << "--" << std::string(std::max<int>(65 - l, 0), '-');
-  stream << sectionname << '\n';
-
-  for (auto& i : matlist)
-  {
-    i->print(stream, nullptr);
-  }
-}
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-void print_material_dat_header()
-{
-  std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> matlist =
-      Input::valid_materials();
-  Input::print_empty_material_definitions(std::cout, *matlist);
-}
-
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Input::valid_materials()
-{
-  using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
   // a list containing all valid materials

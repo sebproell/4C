@@ -16,8 +16,8 @@
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_fem_nurbs_discretization.hpp"
 #include "4C_global_legacy_module.hpp"
+#include "4C_global_legacy_module_validmaterials.hpp"
 #include "4C_inpar_validconditions.hpp"
-#include "4C_inpar_validmaterials.hpp"
 #include "4C_io.hpp"
 #include "4C_io_elementreader.hpp"
 #include "4C_io_geometry_type.hpp"
@@ -2041,17 +2041,15 @@ void Global::read_parameter(Global::Problem& problem, Core::IO::InputFile& input
 /*----------------------------------------------------------------------*/
 void Global::read_materials(Global::Problem& problem, Core::IO::InputFile& input)
 {
-  // create list of known materials
-  std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> vm =
-      Input::valid_materials();
-  std::vector<std::shared_ptr<Mat::MaterialDefinition>>& matlist = *vm;
-
   std::vector<Core::IO::InputSpec> all_specs;
   std::vector<Core::Materials::MaterialType> all_types;
-  for (auto& mat : matlist)
   {
-    all_specs.emplace_back(Core::IO::InputSpecBuilders::group(mat->name(), mat->specs()));
-    all_types.push_back(mat->type());
+    auto materials = global_legacy_module_callbacks().materials();
+    for (auto&& [type, spec] : materials)
+    {
+      all_specs.emplace_back(std::move(spec));
+      all_types.push_back(type);
+    }
   }
 
   // Whenever one of the materials is read, the lambda function will update this index to the
@@ -2059,9 +2057,14 @@ void Global::read_materials(Global::Problem& problem, Core::IO::InputFile& input
   // without searching through all of them.
   std::size_t current_index = 0;
 
-  auto all_materials = Core::IO::InputSpecBuilders::one_of(all_specs,
-      [&current_index](Core::IO::ValueParser& parser, Core::IO::InputParameterContainer& container,
-          std::size_t index) { current_index = index; });
+  using namespace Core::IO::InputSpecBuilders;
+
+  auto all_materials = anonymous_group({
+      entry<int>("MAT", {.description = "Material ID that may be used to refer to this material."}),
+      one_of(all_specs, [&current_index](Core::IO::ValueParser& parser,
+                            Core::IO::InputParameterContainer& container, std::size_t index)
+          { current_index = index; }),
+  });
 
   for (const auto& line : input.lines_in_section("MATERIALS"))
   {
@@ -2070,14 +2073,15 @@ void Global::read_materials(Global::Problem& problem, Core::IO::InputFile& input
         line, {.user_scope_message = "While reading 'MATERIALS' section: ",
                   .base_path = input.file_for_section("MATERIALS").parent_path()});
 
-    parser.consume("MAT");
-    const int mat_id = parser.read<int>();
+
+    all_materials.fully_parse(parser, container);
+
+    const int mat_id = container.get<int>("MAT");
+
     FOUR_C_ASSERT_ALWAYS(mat_id >= 0, "Material ID must be non-negative. Found: %d", mat_id);
 
     if (problem.materials()->id_exists(mat_id))
       FOUR_C_THROW("More than one material with 'MAT %d'", mat_id);
-
-    all_materials.fully_parse(parser, container);
 
     problem.materials()->insert(
         mat_id, Core::Utils::LazyPtr<Core::Mat::PAR::Parameter>(

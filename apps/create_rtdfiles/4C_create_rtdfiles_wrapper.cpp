@@ -15,8 +15,8 @@
 #include "4C_fem_general_element_definition.hpp"
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_global_data.hpp"
+#include "4C_global_legacy_module_validmaterials.hpp"
 #include "4C_inpar_validconditions.hpp"
-#include "4C_inpar_validmaterials.hpp"
 #include "4C_inpar_validparameters.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_function.hpp"
@@ -83,7 +83,7 @@ namespace RTD
       FOUR_C_THROW("failed to open file: %s", materialdocumentationfilename.c_str());
     materialdocumentationfile << "..\n   Created using 4C version (git SHA1):\n";
     materialdocumentationfile << "   " << VersionControl::git_hash << "\n\n";
-    write_material_reference(materialdocumentationfile, *Input::valid_materials());
+    write_material_reference(materialdocumentationfile, *Global::valid_materials());
   }
 
   /*----------------------------------------------------------------------*/
