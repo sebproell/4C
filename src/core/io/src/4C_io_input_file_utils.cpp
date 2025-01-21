@@ -286,7 +286,7 @@ void Core::IO::InputFileUtils::print_section(
   print_section_header(out, header);
 
   out << "// ";
-  spec.print_as_dat(out, Core::IO::InputParameterContainer{});
+  spec.print_as_dat(out);
   out << '\n';
 }
 

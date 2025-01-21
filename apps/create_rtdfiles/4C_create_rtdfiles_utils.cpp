@@ -343,8 +343,7 @@ namespace RTD
       }
 
       std::ostringstream parameterstream;
-      Core::IO::InputParameterContainer container;
-      spec.print_as_dat(parameterstream, container);
+      spec.print_as_dat(parameterstream);
       parameter += " " + parameterstream.str();
     }
 
@@ -624,7 +623,7 @@ namespace RTD
     write_code(stream, contactlawsectionstring);
 
     std::stringstream specs_string;
-    specs.print_as_dat(specs_string, Core::IO::InputParameterContainer{});
+    specs.print_as_dat(specs_string);
     write_code(stream, {specs_string.str()});
   }
 

@@ -52,11 +52,9 @@ namespace Core::IO
     void fully_parse(ValueParser& parser, InputParameterContainer& container) const;
 
     /**
-     * Print the expected input format of this InputSpec to @p stream in dat format. The @p
-     * container is used to print the default values of the input. If a value is not present in the
-     * container, the type of the value is printed instead.
+     * Print the expected input format of this InputSpec to @p stream in dat format.
      */
-    void print_as_dat(std::ostream& stream, const InputParameterContainer& container) const;
+    void print_as_dat(std::ostream& stream) const;
 
     /**
      * Emit metadata about the InputSpec to the @p yaml emitter.

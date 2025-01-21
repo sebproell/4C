@@ -34,7 +34,7 @@ namespace Core::IO
       template <typename T>
       void operator()(std::ostream& out, const T& val) const
       {
-        out << " " << val;
+        out << val;
       }
 
       void operator()(std::ostream& out, bool val) const { out << " " << (val ? "true" : "false"); }
@@ -45,7 +45,7 @@ namespace Core::IO
         if (val.has_value())
           (*this)(out, *val);
         else
-          out << " none";
+          out << "none";
       }
 
       template <typename T>
@@ -54,6 +54,7 @@ namespace Core::IO
         for (const auto& v : val)
         {
           (*this)(out, v);
+          out << " ";
         }
       }
 
@@ -61,18 +62,15 @@ namespace Core::IO
       void operator()(std::ostream& out, const std::pair<T, U>& val) const
       {
         (*this)(out, val.first);
+        out << " ";
         (*this)(out, val.second);
       }
     };
 
-    template <typename T, typename AlwaysVoid = void>
-    constexpr bool has_print = false;
-
     template <typename T>
-    constexpr bool has_print<T, std::void_t<decltype(std::declval<const std::decay_t<T>>().print(
-                                    std::declval<std::ostream&>(),
-                                    std::declval<const Core::IO::InputParameterContainer&>()))>> =
-        true;
+    concept CustomDatPrintable = requires(const T& t, std::ostream& stream, std::size_t indent) {
+      { t.print(stream, indent) } -> std::same_as<void>;
+    };
 
     template <typename T, typename AlwaysVoid = void>
     constexpr bool has_set_default_value = false;
@@ -114,6 +112,12 @@ namespace Core::IO
       {
         return "pair<" + PrettyTypeName<T>{}() + ", " + PrettyTypeName<U>{}() + ">";
       }
+    };
+
+    template <typename T>
+    struct PrettyTypeName<Noneable<T>>
+    {
+      std::string operator()() { return "Noneable<" + PrettyTypeName<T>{}() + ">"; }
     };
 
     template <typename T>
@@ -165,12 +169,7 @@ namespace Core::IO
 
       [[nodiscard]] virtual std::unique_ptr<InputSpecTypeErasedBase> clone() const = 0;
 
-      void print(std::ostream& stream, const InputParameterContainer& container) const
-      {
-        if (!required()) stream << "[";
-        do_print(stream, container);
-        if (!required()) stream << "]";
-      }
+      void print(std::ostream& stream, std::size_t indent) const { do_print(stream, indent); }
 
       [[nodiscard]] const std::string& name() const { return data.name; }
 
@@ -189,8 +188,7 @@ namespace Core::IO
       InputSpecTypeErasedBase& operator=(InputSpecTypeErasedBase&&) noexcept = default;
 
      private:
-      virtual void do_print(
-          std::ostream& stream, const InputParameterContainer& container) const = 0;
+      virtual void do_print(std::ostream& stream, std::size_t indent) const = 0;
     };
 
     template <typename T>
@@ -225,31 +223,37 @@ namespace Core::IO
 
       void emit_metadata(ryml::NodeRef node) const override { wrapped.emit_metadata(node); }
 
-      void do_print(std::ostream& stream, const InputParameterContainer& container) const override
+      void do_print(std::ostream& stream, std::size_t indent) const override
       {
-        if constexpr (Internal::has_print<T>)
+        if constexpr (CustomDatPrintable<T>)
         {
-          wrapped.print(stream, container);
+          wrapped.print(stream, indent);
         }
         else
         {
-          stream << wrapped.name;
+          stream << "// " << std::string(indent, ' ') << name();
 
-          const auto* value = container.get_if<typename T::DataType::StoredType>(wrapped.name);
-          if (value)
+          // pretty printed type of the parameter
+          stream << " <" << Internal::get_pretty_type_name<typename T::DataType::StoredType>()
+                 << ">";
+
+          if (!required())
           {
-            // Print the value if it is present in the container.
-            Internal::DatPrinter{}(stream, *value);
+            stream << " (optional)";
           }
-          else
+
+          if (has_default_value())
           {
-            // Print the type of the value if it is not present in the container.
-            // This functionality is only required to print exemplary lines into a default
-            // dat file. When no default value, exists there is not much that we can let the
-            // user know except the type we expect.
-            stream << " <" << Internal::get_pretty_type_name<typename T::DataType::StoredType>()
-                   << ">";
+            stream << " (default: ";
+            Internal::DatPrinter{}(stream, wrapped.data.default_value.value());
+            stream << ")";
           }
+
+          if (!description().empty())
+          {
+            stream << " " << std::quoted(description());
+          }
+          stream << "\n";
         }
       }
 
@@ -434,7 +438,7 @@ namespace Core::IO
         using StoredType = typename DataType::StoredType;
         DataType data;
         std::function<void(ValueParser&, InputParameterContainer&)> parse;
-        std::function<void(std::ostream&, const InputParameterContainer&)> print;
+        std::function<void(std::ostream&, std::size_t)> print;
         std::function<void(ryml::NodeRef)> emit_metadata;
       };
 
@@ -447,7 +451,7 @@ namespace Core::IO
         DataType data;
         std::vector<std::pair<std::string, StoredType>> choices;
         void parse(ValueParser& parser, InputParameterContainer& container) const;
-        void print(std::ostream& stream, const InputParameterContainer& container) const;
+        void print(std::ostream& stream, std::size_t indent) const;
         void emit_metadata(ryml::NodeRef node) const;
       };
 
@@ -459,7 +463,7 @@ namespace Core::IO
 
         void parse(ValueParser& parser, InputParameterContainer& container) const;
         void set_default_value(InputParameterContainer& container) const;
-        void print(std::ostream& stream, const InputParameterContainer& container) const;
+        void print(std::ostream& stream, std::size_t indent) const;
         void emit_metadata(ryml::NodeRef node) const;
       };
 
@@ -480,7 +484,7 @@ namespace Core::IO
 
         void set_default_value(InputParameterContainer& container) const;
 
-        void print(std::ostream& stream, const InputParameterContainer& container) const;
+        void print(std::ostream& stream, std::size_t indent) const;
 
         void emit_metadata(ryml::NodeRef node) const;
       };
@@ -636,8 +640,7 @@ namespace Core::IO
     template <typename T, typename DataType = Internal::DataFor<T>>
     [[nodiscard]] InputSpec user_defined(std::string name, DataType&& data = {},
         const std::function<void(ValueParser&, InputParameterContainer&)>& parse = nullptr,
-        const std::function<void(std::ostream&, const Core::IO::InputParameterContainer&)>& print =
-            nullptr,
+        const std::function<void(std::ostream&, std::size_t)>& print = nullptr,
         const std::function<void(ryml::NodeRef)>& emit_metadata = nullptr);
 
     /**
@@ -732,7 +735,30 @@ namespace Core::IO
      * @endcode
      *
      * This functions gathers multiple InputSpecs on the same level and treats them as a single
-     * InputSpec.
+     * InputSpec. Nesting multiple anonymous groups is possible but does not have any effect on the
+     * structure of the input. The following two examples are equivalent:
+     *
+     * @code
+     * // version 1
+     * group("outer",
+     * {
+     *   anonymous_group({
+     *     entry<int>("a"),
+     *     anonymous_group({
+     *       entry<double>("b"),
+     *     }),
+     *   }),
+     *   entry<std::string>("c"),
+     * });
+     *
+     * // version 2
+     * group("outer",
+     * {
+     *   entry<int>("a"),
+     *   entry<double>("b"),
+     *   entry<std::string>("c"),
+     * });
+     * @endcode
      *
      * @relatedalso InputSpec
      */
@@ -888,31 +914,39 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::parse(
 
 template <typename DataTypeIn>
 void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::print(
-    std::ostream& stream, const InputParameterContainer& container) const
+    std::ostream& stream, std::size_t indent) const
 {
-  stream << name;
-  auto* val = container.get_if<StoredType>(name);
-  if (val)
+  stream << "// " << std::string(indent, ' ') << name;
+
+  if (!data.required)
   {
-    for (const auto& choice : choices)
-    {
-      if (choice.second == *val)
-      {
-        stream << " " << choice.first;
-        return;
-      }
-    }
-    FOUR_C_ASSERT(false, "Invalid value.");
+    stream << " (optional)";
   }
-  else
+  if (data.default_value.has_value())
   {
-    stream << " (";
+    // Find the choice that corresponds to the default value.
+    auto default_value_it = std::find_if(choices.begin(), choices.end(),
+        [&](const auto& choice) { return choice.second == data.default_value.value(); });
+    FOUR_C_ASSERT(
+        default_value_it != choices.end(), "Internal error: default value not found in choices.");
+
+    stream << " (default: ";
+    stream << default_value_it->first;
+    stream << ")";
+  }
+  {
+    stream << " (choices: ";
     for (const auto& choice : choices)
     {
       stream << choice.first << "|";
     }
     stream << ")";
   }
+  if (!data.description.empty())
+  {
+    stream << " " << std::quoted(data.description);
+  }
+  stream << "\n";
 }
 
 template <typename DataTypeIn>
@@ -967,7 +1001,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::entry(std::string name, DataTyp
 template <typename T, typename DataType>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::user_defined(std::string name, DataType&& data,
     const std::function<void(ValueParser&, InputParameterContainer&)>& parse,
-    const std::function<void(std::ostream&, const Core::IO::InputParameterContainer&)>& print,
+    const std::function<void(std::ostream&, std::size_t)>& print,
     const std::function<void(ryml::NodeRef)>& emit_metadata)
 {
   auto default_emitter = [name](ryml::NodeRef node)
@@ -982,7 +1016,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::user_defined(std::string name, 
       Internal::UserDefinedSpec<DataType>{.name = name,
           .data = std::forward<DataType>(data),
           .parse = parse,
-          .print = print ? print : [](std::ostream&, const InputParameterContainer&) {},
+          .print = print ? print : [](std::ostream&, std::size_t) {},
           .emit_metadata = emit_metadata ? emit_metadata : default_emitter},
       {
           .name = name,
