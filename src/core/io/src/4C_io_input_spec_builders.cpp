@@ -277,9 +277,10 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::parse(
     }
   }
 
-  // If we reach this point, none of the specs could be parsed.
+  // Convert remainder into a null-terminated string for the error message.
+  std::string remainder(parser.get_unparsed_remainder());
   FOUR_C_THROW("While parsing '%s'.\nNone of the specs fit the input. Expected %s",
-      parser.get_unparsed_remainder().data(), data.description.c_str());
+      remainder.c_str(), data.description.c_str());
 }
 
 
