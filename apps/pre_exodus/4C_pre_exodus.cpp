@@ -312,7 +312,7 @@ int main(int argc, char** argv)
 
       // write default .dat header into file
       std::stringstream prelimhead;
-      Core::IO::InputFileUtils::print_dat(prelimhead, *list);
+      Core::IO::print_dat(prelimhead, *list);
       std::string headstring = prelimhead.str();
       size_t size_section = headstring.find("--PROBLEM SIZE");
       if (size_section != std::string::npos)
@@ -341,13 +341,13 @@ int main(int argc, char** argv)
             one_of(possible_materials),
         });
 
-        Core::IO::InputFileUtils::print_section(std::cout, "MATERIALS", all_materials);
+        Core::IO::print_section(std::cout, "MATERIALS", all_materials);
       }
 
 
       // print cloning material map default lines (right after the materials)
       const auto lines = Core::FE::valid_cloning_material_map();
-      Core::IO::InputFileUtils::print_section(defaulthead, "CLONING MATERIAL MAP", lines);
+      Core::IO::print_section(defaulthead, "CLONING MATERIAL MAP", lines);
 
       // print spatial functions
       defaulthead << "-------------------------------------------------------------FUNCT1"
@@ -363,7 +363,7 @@ int main(int argc, char** argv)
         Core::Utils::FunctionManager functionmanager;
         global_legacy_module_callbacks().AttachFunctionDefinitions(functionmanager);
         const auto flines = functionmanager.valid_function_lines();
-        Core::IO::InputFileUtils::print_section(tmp, "FUNCT", flines);
+        Core::IO::print_section(tmp, "FUNCT", flines);
         std::string tmpstring = tmp.str();
         std::string removeit =
             "--------------------------------------------------------------FUNCT\n";
@@ -378,7 +378,7 @@ int main(int argc, char** argv)
       // default result-test lines
       {
         const auto lines = global_legacy_module_callbacks().valid_result_description_lines();
-        Core::IO::InputFileUtils::print_section(defaulthead, "RESULT DESCRIPTION", lines);
+        Core::IO::print_section(defaulthead, "RESULT DESCRIPTION", lines);
       }
 
       // close default header file

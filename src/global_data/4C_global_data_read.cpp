@@ -2128,8 +2128,7 @@ void Global::read_cloning_material_map(Global::Problem& problem, Core::IO::Input
   auto spec = Core::FE::valid_cloning_material_map();
 
   // perform the actual reading and extract the input parameters
-  auto parameters =
-      Core::IO::InputFileUtils::read_all_lines_in_section(input, "CLONING MATERIAL MAP", spec);
+  auto parameters = Core::IO::read_all_lines_in_section(input, "CLONING MATERIAL MAP", spec);
   for (const auto& input_line : parameters)
   {
     // extract what was read from the input file
@@ -2165,7 +2164,7 @@ void Global::read_result(Global::Problem& problem, Core::IO::InputFile& input)
   problem.get_result_test_manager().set_node_set(nodeset);
 
   problem.get_result_test_manager().set_parsed_lines(
-      Core::IO::InputFileUtils::read_all_lines_in_section(input, "RESULT DESCRIPTION", lines));
+      Core::IO::read_all_lines_in_section(input, "RESULT DESCRIPTION", lines));
 }
 
 /*----------------------------------------------------------------------*/

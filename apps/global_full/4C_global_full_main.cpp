@@ -270,7 +270,7 @@ int main(int argc, char* argv[])
     if (Core::Communication::my_mpi_rank(lcomm) == 0)
     {
       auto valid_parameters = Input::valid_parameters();
-      Core::IO::InputFileUtils::print_metadata_yaml(std::cout, *valid_parameters);
+      Core::IO::print_metadata_yaml(std::cout, *valid_parameters);
     }
   }
   else if ((argc == 2) && ((strcmp(argv[1], "-d") == 0) || (strcmp(argv[1], "--datfile") == 0)))
@@ -297,22 +297,22 @@ int main(int argc, char* argv[])
             one_of(possible_materials),
         });
 
-        Core::IO::InputFileUtils::print_section(std::cout, "MATERIALS", all_materials);
+        Core::IO::print_section(std::cout, "MATERIALS", all_materials);
       }
 
       {
         auto valid_co_laws = CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws();
-        Core::IO::InputFileUtils::print_section_header(std::cout, "CONTACT CONSTITUTIVE LAWS");
+        Core::IO::print_section_header(std::cout, "CONTACT CONSTITUTIVE LAWS");
         valid_co_laws.print_as_dat(std::cout);
       }
 
       const auto lines = Core::FE::valid_cloning_material_map();
-      Core::IO::InputFileUtils::print_section(std::cout, "CLONING MATERIAL MAP", lines);
+      Core::IO::print_section(std::cout, "CLONING MATERIAL MAP", lines);
 
       print_element_dat_header();
 
       const auto result_spec = global_legacy_module_callbacks().valid_result_description_lines();
-      Core::IO::InputFileUtils::print_section(std::cout, "RESULT DESCRIPTION", result_spec);
+      Core::IO::print_section(std::cout, "RESULT DESCRIPTION", result_spec);
 
       printf("\n\n");
     }

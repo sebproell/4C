@@ -177,7 +177,7 @@ void print_help_message()
 void print_default_dat_header()
 {
   std::shared_ptr<const Teuchos::ParameterList> list = Input::valid_parameters();
-  Core::IO::InputFileUtils::print_dat(std::cout, *list);
+  Core::IO::print_dat(std::cout, *list);
 }
 
 std::shared_ptr<const Teuchos::ParameterList> Input::valid_parameters()

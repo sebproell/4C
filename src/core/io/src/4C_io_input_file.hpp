@@ -12,14 +12,8 @@
 
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_comm_pack_buffer.hpp"
-#include "4C_fem_discretization.hpp"
-#include "4C_utils_parameter_list.fwd.hpp"
-#include "4C_utils_string.hpp"
 
-#include <algorithm>
 #include <filesystem>
-#include <fstream>
-#include <iostream>
 #include <list>
 #include <map>
 #include <memory>
@@ -29,14 +23,6 @@
 #include <variant>
 
 FOUR_C_NAMESPACE_OPEN
-
-namespace Core::FE
-{
-  namespace Nurbs
-  {
-    class Knotvector;
-  }
-}  // namespace Core::FE
 
 namespace Core::IO
 {
@@ -194,51 +180,6 @@ namespace Core::IO
     /// Protocol of known and unknown section names
     std::map<std::string, bool> knownsections_;
   };
-
-  /**
-   * Split the given @p line into a key-value pair. Key and value are normally separated by
-   * whitespace. In case there are multiple distinct whitespace groups in one line, the first of
-   * these is assumed to be the separator and all the other whitespace is assumed to be part of
-   * the value. Key and value may also be separated by an equals sign "=" and at least one
-   * whitespace character on both sides. In this case, key and value may contain spaces
-   * internally. Leading and trailing whitespace is trimmed from both key and value.
-   *
-   * @throws Core::Exception If the @p line cannot be read.
-   *
-   * @return A pair of key and value.
-   */
-  std::pair<std::string, std::string> read_key_value(const std::string& line);
-
-  /**
-   * Read a @p section_name from the input file and store the key-value pairs in the given @p list.
-   */
-  bool read_parameters_in_section(
-      InputFile& input, const std::string& section_name, Teuchos::ParameterList& list);
-
-  /**
-   * Read a node-design topology section. This is a collective call that propagates data that
-   * may only be available on rank 0 to all ranks.
-   *
-   * @param input The input file.
-   * @param name Name of the topology to read
-   * @param dobj_fenode Resulting collection of all nodes that belong to a design.
-   * @param get_discretization Callback to return a discretization by name.
-   */
-  void read_design(InputFile& input, const std::string& name,
-      std::vector<std::vector<int>>& dobj_fenode,
-      const std::function<const Core::FE::Discretization&(const std::string& name)>&
-          get_discretization);
-
-  /**
-   * \brief read the knotvector section (for isogeometric analysis)
-   *
-   * \param  reader         (in ): InputFile object
-   * \param  name           (in ): Name/type of discretisation
-   * \param  disknots       (out): node vector coordinates
-   *
-   */
-  void read_knots(InputFile& input, const std::string& name,
-      std::shared_ptr<Core::FE::Nurbs::Knotvector>& disknots);
 
 
   /// -- template and inline functions --- //
