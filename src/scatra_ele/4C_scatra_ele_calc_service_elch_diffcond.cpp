@@ -266,7 +266,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_elch_d
   // access parameters of the condition
   const int kinetics = cond->parameters().get<int>("KINETIC_MODEL");
   double pot0 = cond->parameters().get<double>("POT");
-  const int curvenum = cond->parameters().get<int>("FUNCT");
+  const auto curvenum = cond->parameters().get<Core::IO::Noneable<int>>("FUNCT");
   const int nume = cond->parameters().get<int>("E-");
   // if zero=1=true, the current flow across the electrode is zero (comparable to do-nothing Neuman
   // condition) but the electrode status is evaluated
@@ -313,11 +313,11 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_elch_d
   double rhsfac = 1.0;
   // find out whether we shell use a time curve and get the factor
   // this feature can be also used for stationary "pseudo time loops"
-  if (curvenum > 0)
+  if (curvenum.has_value() && curvenum.value() > 0)
   {
     // function_by_id takes a zero-based index
     const double curvefac = Global::Problem::instance()
-                                ->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1)
+                                ->function_by_id<Core::Utils::FunctionOfTime>(curvenum.value() - 1)
                                 .evaluate(time);
     // adjust potential at metal side accordingly
     pot0 *= curvefac;
