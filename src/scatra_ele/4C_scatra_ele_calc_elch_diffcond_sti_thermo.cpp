@@ -71,7 +71,8 @@ void Discret::Elements::ScaTraEleCalcElchDiffCondSTIThermo<distype>::get_materia
   // get parameters of secondary, thermodynamic electrolyte material
   std::shared_ptr<const Core::Mat::Material> material = ele->material(1);
   materialtype_ = material->material_type();
-  if (materialtype_ == Core::Materials::m_soret) mythermo::mat_soret(material);
+
+  if (materialtype_ == Core::Materials::m_soret) mythermo::mat_soret(ele);
 }  // Discret::Elements::ScaTraEleCalcElchDiffCondSTIThermo<distype>::get_material_params
 
 

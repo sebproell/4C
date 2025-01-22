@@ -152,15 +152,14 @@ namespace Discret
           ) override;
 
       //! evaluate Soret material
-      void mat_soret(const std::shared_ptr<const Core::Mat::Material> material,  //!< Soret material
+      void mat_soret(const Core::Elements::Element* ele,
           double& densn,   //!< density at time t_(n)
           double& densnp,  //!< density at time t_(n+1) or t_(n+alpha_F)
           double& densam   //!< density at time t_(n+alpha_M)
       );
 
-      void mat_fourier(
-          const std::shared_ptr<const Core::Mat::Material> material,  //!< Fourier material
-          double& densn,                                              //!< density at time t_(n)
+      void mat_fourier(const Core::Elements::Element* ele,
+          double& densn,   //!< density at time t_(n)
           double& densnp,  //!< density at time t_(n+1) or t_(n+alpha_F)
           double& densam   //!< density at time t_(n+alpha_M)
       );

@@ -110,8 +110,7 @@ namespace Discret
           const Core::LinAlg::Matrix<nsd_, nen_>& derxy, const double& scalefac);
 
       //! evaluate Soret material
-      void mat_soret(const std::shared_ptr<const Core::Mat::Material> material  //!< Soret material
-      );
+      void mat_soret(const Core::Elements::Element* ele);
 
       //! compute gradient of test function times gradient of shape function
       void get_laplacian_weak_form(double& result,       //!< result variable

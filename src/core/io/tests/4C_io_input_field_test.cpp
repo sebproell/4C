@@ -27,7 +27,7 @@ namespace
   using namespace FourC::Core::IO;
   using namespace FourC::Core::IO::InputSpecBuilders;
 
-  TEST(InputField, ReadJsonInputField)
+  TEST(InputField, ReadJsonScalarInputField)
   {
     const std::string input_field_file =
         TESTING::get_support_file_path("test_files/input_field/stiffness_input_field.json");
@@ -38,13 +38,14 @@ namespace
     EXPECT_EQ(stiffness_map, expected_stiffness_map);
   }
 
-  TEST(InputField, ReadSpecInputField)
+  TEST(InputField, ReadSpecScalarInputField)
   {
     const std::string input_field_file =
         TESTING::get_support_file_path("test_files/input_field/stiffness_input_field.json");
     auto spec = input_field<double>("stiffness", {.description = "A stiffness field"});
+
     {
-      SCOPED_TRACE("Constant input field");
+      SCOPED_TRACE("Constant scalar input field");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
       ryml::parse_in_arena(R"(stiffness:
@@ -57,8 +58,9 @@ namespace
       InputField<double> input_field_stiffness = container.get<InputField<double>>("stiffness");
       EXPECT_EQ(input_field_stiffness.at(1), 1.0);
     }
+
     {
-      SCOPED_TRACE("Input field from file");
+      SCOPED_TRACE("Scalar input field from file");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
       ryml::parse_in_arena(("stiffness:\n    from_file: " + input_field_file).c_str(), root);
@@ -71,6 +73,59 @@ namespace
       EXPECT_EQ(input_field_stiffness.at(2), 3.5);
       EXPECT_EQ(input_field_stiffness.at(3), 4.0);
       EXPECT_EQ(input_field_stiffness.at(4), 5.5);
+    }
+  }
+
+  TEST(InputField, ReadJsonVectorInputField)
+  {
+    const std::string input_field_file =
+        TESTING::get_support_file_path("test_files/input_field/conductivity_input_field.json");
+    std::unordered_map<int, std::vector<double>> conductivity_map;
+    read_value_from_yaml(input_field_file, "CONDUCT", conductivity_map);
+    std::unordered_map<int, std::vector<double>> expected_conductivity_map = {
+        {1, {1.0, 2.0, 3.0}}, {2, {3.0, 2.0, 1.0}}, {3, {1.0, 2.0, 3.0}}, {4, {3.0, 2.0, 1.0}}};
+    EXPECT_EQ(conductivity_map, expected_conductivity_map);
+  }
+
+  TEST(InputField, ReadSpecVectorInputField)
+  {
+    const std::string input_field_file =
+        TESTING::get_support_file_path("test_files/input_field/conductivity_input_field.json");
+    auto spec =
+        input_field<std::vector<double>>("CONDUCT", {.description = "A conductivity field"});
+
+    {
+      SCOPED_TRACE("Constant vector input field");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(R"(CONDUCT:
+              constant: [1.0, 2.0, 3.0])",
+          root);
+      std::flush(std::cout);
+      ConstYamlNodeRef node(root, "");
+      InputParameterContainer container;
+      spec.match(node, container);
+      auto input_field_conductivity = container.get<InputField<std::vector<double>>>("CONDUCT");
+      std::vector<double> expected_conductivity{1.0, 2.0, 3.0};
+      EXPECT_EQ(input_field_conductivity.at(1), expected_conductivity);
+    }
+
+    {
+      SCOPED_TRACE("Vector input field from file");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(("CONDUCT:\n    from_file: " + input_field_file).c_str(), root);
+      std::flush(std::cout);
+      ConstYamlNodeRef node(root, "");
+      InputParameterContainer container;
+      spec.match(node, container);
+      auto input_field_conductivity = container.get<InputField<std::vector<double>>>("CONDUCT");
+      std::vector<std::vector<double>> expected_conductivity{
+          {1.0, 2.0, 3.0}, {3.0, 2.0, 1.0}, {1.0, 2.0, 3.0}, {3.0, 2.0, 1.0}};
+      EXPECT_EQ(input_field_conductivity.at(1), expected_conductivity[0]);
+      EXPECT_EQ(input_field_conductivity.at(2), expected_conductivity[1]);
+      EXPECT_EQ(input_field_conductivity.at(3), expected_conductivity[2]);
+      EXPECT_EQ(input_field_conductivity.at(4), expected_conductivity[3]);
     }
   }
 

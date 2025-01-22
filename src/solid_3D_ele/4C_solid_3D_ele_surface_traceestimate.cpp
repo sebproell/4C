@@ -502,7 +502,7 @@ void Discret::Elements::SolidSurface::trace_estimate_vol_matrix_tsi(
   std::shared_ptr<Mat::Fourier> mat_thermo =
       std::dynamic_pointer_cast<Mat::Fourier>(parent_element()->material(1));
 
-  std::vector<double> k = mat_thermo->conductivity();
+  std::vector<double> k = mat_thermo->conductivity(parent_element_id());
   FOUR_C_ASSERT(k.size() != 1, "Conductivity value is a vector quantity, but has to be a scalar.");
 
   for (int gp = 0; gp < ip.ip().nquad; ++gp)
@@ -555,7 +555,7 @@ void Discret::Elements::SolidSurface::trace_estimate_surf_matrix_tsi(
   std::shared_ptr<Mat::Fourier> mat_thermo =
       std::dynamic_pointer_cast<Mat::Fourier>(parent_element()->material(1));
 
-  std::vector<double> k = mat_thermo->conductivity();
+  std::vector<double> k = mat_thermo->conductivity(parent_element_id());
   FOUR_C_ASSERT(k.size() != 1, "Conductivity value is a vector quantity, but has to be a scalar.");
 
   for (int gp = 0; gp < ip.ip().nquad; ++gp)
