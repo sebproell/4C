@@ -174,9 +174,9 @@ void Core::Utils::FunctionManager::read_input(Core::IO::InputFile& input)
           // If we end up here, the current sections function definition could not be parsed.
           {
             std::stringstream ss;
-            for (const auto& line : input.lines_in_section("FUNCT" + std::to_string(funct_suffix)))
+            for (const auto& line : input.in_section("FUNCT" + std::to_string(funct_suffix)))
             {
-              ss << '\n' << line;
+              ss << '\n' << line.get_as_dat_style_string();
             }
 
             FOUR_C_THROW("Could not parse the following lines into a Function known to 4C:\n%s",

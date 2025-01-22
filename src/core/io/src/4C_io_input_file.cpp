@@ -8,6 +8,8 @@
 #include "4C_io_input_file.hpp"
 
 #include "4C_comm_mpi_utils.hpp"
+#include "4C_io_input_spec.hpp"
+#include "4C_io_value_parser.hpp"
 #include "4C_utils_string.hpp"
 
 #include <ryml.hpp>
@@ -22,9 +24,140 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Core::IO
 {
+  namespace Internal
+  {
+    struct SectionContent;
+
+    //! Helper for PIMPL idiom.
+    class InputFileFragmentImpl
+    {
+     public:
+      // This depends on the source of the fragment. Dat files produce string_views, yaml files
+      // can directly store the node with all internal structure.
+      std::variant<std::string_view, ryml::ConstNodeRef> fragment;
+
+      /**
+       * Store a pointer to the whole section this fragment belongs to.
+       */
+      SectionContent* section;
+    };
+
+    /**
+     * Internal storage for the content of a section.
+     */
+    struct SectionContent
+    {
+      //! The raw chars of the input.
+      std::vector<char> raw_content;
+      //! String views into #raw_content.
+      std::vector<std::string_view> lines;
+
+      /**
+       * The actual content of the section sorted into fragments.
+       */
+      std::vector<InputFileFragmentImpl> fragments_impl;
+
+      /**
+       * The InputFile::Fragment is exposed to the user and contains a pointer to the actual
+       * data stored in #fragments_impl.
+       */
+      std::vector<InputFile::Fragment> fragments;
+
+
+      //! The file the section was read from.
+      std::string file;
+
+      /**
+       * Depending on what is stored in this section ensure that all data is consistent.
+       */
+      void synchronize_internal_state()
+      {
+        fragments_impl.clear();
+        fragments.clear();
+        fragments_impl.reserve(lines.size());
+        fragments.reserve(lines.size());
+
+        for (const auto& line : lines)
+        {
+          auto& ref = fragments_impl.emplace_back(InputFileFragmentImpl{
+              .fragment = line,
+              .section = this,
+          });
+          fragments.emplace_back(&ref);
+        }
+      }
+
+      void pack(Communication::PackBuffer& data) const
+      {
+        Core::Communication::add_to_pack(data, file);
+        Core::Communication::add_to_pack(data, raw_content);
+
+        // String_views are not packable, so we store offsets.
+        std::vector<std::size_t> offsets;
+        offsets.reserve(lines.size());
+        for (const auto& line : lines)
+        {
+          FOUR_C_ASSERT(line.data() >= raw_content.data() &&
+                            line.data() <= raw_content.data() + raw_content.size(),
+              "Line data out of bounds.");
+          const std::size_t offset = (line.data() - raw_content.data()) / sizeof(char);
+          FOUR_C_ASSERT(offset <= raw_content.size(), "Offset out of bounds.");
+          offsets.push_back(offset);
+        }
+        FOUR_C_ASSERT(offsets.empty() || offsets.back() + lines.back().size() == raw_content.size(),
+            "Offset out of bounds.");
+        Core::Communication::add_to_pack(data, offsets);
+      }
+
+
+      void unpack(Communication::UnpackBuffer& buffer)
+      {
+        Core::Communication::extract_from_pack(buffer, file);
+        Core::Communication::extract_from_pack(buffer, raw_content);
+
+        std::vector<std::size_t> offsets;
+        Core::Communication::extract_from_pack(buffer, offsets);
+        lines.clear();
+        for (std::size_t i = 0; i < offsets.size(); ++i)
+        {
+          const char* start = raw_content.data() + offsets[i];
+          const std::size_t length = (i + 1 < offsets.size() ? (offsets[i + 1] - offsets[i])
+                                                             : (raw_content.size()) - offsets[i]);
+          FOUR_C_ASSERT(start >= raw_content.data() &&
+                            start + length <= raw_content.data() + raw_content.size(),
+              "Line data out of bounds.");
+          lines.emplace_back(start, length);
+        }
+      }
+
+      SectionContent() = default;
+
+      // Prevent copies: making a copy would invalidate the string views.
+      SectionContent(const SectionContent&) = delete;
+      SectionContent& operator=(const SectionContent&) = delete;
+
+      SectionContent(SectionContent&&) = default;
+      SectionContent& operator=(SectionContent&&) = default;
+    };
+
+
+    //! Helper for PIMPL idiom.
+    class InputFileImpl
+    {
+     public:
+      InputFileImpl(MPI_Comm comm) : comm_(comm) {}
+
+      MPI_Comm comm_;
+
+      std::unordered_map<std::string, SectionContent> content_by_section_;
+
+      std::map<std::string, bool> knownsections_;
+    };
+
+  }  // namespace Internal
+
   namespace
   {
-
     /**
      * Sections that contain at least this number of entries are considered huge and are only
      * available on rank 0.
@@ -80,7 +213,7 @@ namespace Core::IO
     }
 
     std::vector<std::filesystem::path> read_dat_content(const std::filesystem::path& file_path,
-        std::unordered_map<std::string, InputFile::SectionContent>& content_by_section)
+        std::unordered_map<std::string, Internal::SectionContent>& content_by_section)
     {
       const auto name_of_section = [](const std::string& section_header)
       {
@@ -96,7 +229,7 @@ namespace Core::IO
       std::vector<std::filesystem::path> included_files;
       SectionType current_section_type = SectionType::normal;
       std::list<std::string> list_of_lines;
-      InputFile::SectionContent* current_section_content = nullptr;
+      Internal::SectionContent* current_section_content = nullptr;
       std::string line;
 
       // Loop over all input lines. This reads the actual file contents and determines whether a
@@ -190,13 +323,13 @@ namespace Core::IO
     }
 
     std::vector<std::filesystem::path> read_yaml_content(const std::filesystem::path& file_path,
-        std::unordered_map<std::string, InputFile::SectionContent>& content_by_section)
+        std::unordered_map<std::string, Internal::SectionContent>& content_by_section)
     {
       std::vector<std::filesystem::path> included_files;
 
       // In this first iteration of the YAML support, we map the constructs from a YAML file back
-      // to constructs in a dat file. This means that top-level sections are pre-fixed with "--" and
-      // the key-value pairs are mapped to "key = value" lines.
+      // to constructs in a dat file. This means that top-level sections are pre-fixed with "--"
+      // and the key-value pairs are mapped to "key = value" lines.
       //
 
       // Read the whole file into a string and parse it with ryml.
@@ -290,20 +423,50 @@ namespace Core::IO
     }
   }  // namespace
 
+
+  std::string_view InputFile::Fragment::get_as_dat_style_string() const
+  {
+    FOUR_C_ASSERT(pimpl_, "Implementation error: fragment is not initialized.");
+    if (std::holds_alternative<std::string_view>(pimpl_->fragment))
+    {
+      return std::get<std::string_view>(pimpl_->fragment);
+    }
+    else
+    {
+      FOUR_C_THROW("Fragment is not a string.");
+    }
+  }
+
+
+  std::optional<InputParameterContainer> InputFile::Fragment::match(const InputSpec& spec) const
+  {
+    Core::IO::ValueParser parser{get_as_dat_style_string(),
+        {.base_path = std::filesystem::path(pimpl_->section->file).parent_path()}};
+    InputParameterContainer container;
+    spec.fully_parse(parser, container);
+    return container;
+  }
+
+
   /*----------------------------------------------------------------------*/
   /*----------------------------------------------------------------------*/
-  InputFile::InputFile(std::string filename, MPI_Comm comm) : comm_(comm)
+  InputFile::InputFile(std::string filename, MPI_Comm comm)
+      : pimpl_(std::make_unique<Internal::InputFileImpl>(comm))
   {
     read_generic(filename);
   }
+
+
+  // Note: defaulted in implementation file to allow for use of incomplete type in PIMPL unique_ptr.
+  InputFile::~InputFile() = default;
 
 
   /*----------------------------------------------------------------------*/
   /*----------------------------------------------------------------------*/
   std::filesystem::path InputFile::file_for_section(const std::string& section_name) const
   {
-    auto it = content_by_section_.find(section_name);
-    if (it == content_by_section_.end()) return std::filesystem::path{};
+    auto it = pimpl_->content_by_section_.find(section_name);
+    if (it == pimpl_->content_by_section_.end()) return std::filesystem::path{};
     return std::filesystem::path{it->second.file};
   }
 
@@ -313,8 +476,8 @@ namespace Core::IO
   bool InputFile::has_section(const std::string& section_name) const
   {
     const bool known_somewhere = Core::Communication::all_reduce<bool>(
-        content_by_section_.contains(section_name),
-        [](const bool& r, const bool& in) { return r || in; }, comm_);
+        pimpl_->content_by_section_.contains(section_name),
+        [](const bool& r, const bool& in) { return r || in; }, pimpl_->comm_);
     return known_somewhere;
   }
 
@@ -324,7 +487,7 @@ namespace Core::IO
   /*----------------------------------------------------------------------*/
   void InputFile::read_generic(const std::filesystem::path& top_level_file)
   {
-    if (Core::Communication::my_mpi_rank(comm_) == 0)
+    if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0)
     {
       // Start by "including" the top-level file.
       std::list<std::filesystem::path> included_files{top_level_file};
@@ -341,11 +504,11 @@ namespace Core::IO
               if (file_extension == ".yaml" || file_extension == ".yml" ||
                   file_extension == ".json")
               {
-                return read_yaml_content(*file_it, content_by_section_);
+                return read_yaml_content(*file_it, pimpl_->content_by_section_);
               }
               else
               {
-                return read_dat_content(*file_it, content_by_section_);
+                return read_dat_content(*file_it, pimpl_->content_by_section_);
               }
             });
 
@@ -365,12 +528,12 @@ namespace Core::IO
       }
     }
 
-    if (Core::Communication::my_mpi_rank(comm_) == 0)
+    if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0)
     {
       // Temporarily move the sections that are not huge into a separate map.
-      std::unordered_map<std::string, SectionContent> non_huge_sections;
+      std::unordered_map<std::string, Internal::SectionContent> non_huge_sections;
 
-      for (auto&& [section_name, content] : content_by_section_)
+      for (auto&& [section_name, content] : pimpl_->content_by_section_)
       {
         if (content.lines.size() < huge_section_threshold)
         {
@@ -378,18 +541,24 @@ namespace Core::IO
         }
       }
 
-      Core::Communication::broadcast(non_huge_sections, 0, comm_);
+      Core::Communication::broadcast(non_huge_sections, 0, pimpl_->comm_);
 
       // Move the non-huge sections back into the main map.
       for (auto&& [section_name, content] : non_huge_sections)
       {
-        content_by_section_[section_name] = std::move(content);
+        pimpl_->content_by_section_[section_name] = std::move(content);
       }
     }
     else
     {
       // Other ranks receive the non-huge sections.
-      Core::Communication::broadcast(content_by_section_, 0, comm_);
+      Core::Communication::broadcast(pimpl_->content_by_section_, 0, pimpl_->comm_);
+    }
+
+    // Ensure that all sections are in a consistent state.
+    for (auto& [_, content] : pimpl_->content_by_section_)
+    {
+      content.synchronize_internal_state();
     }
 
     // the following section names are always regarded as valid
@@ -416,15 +585,71 @@ namespace Core::IO
     record_section_used("FUNCT20");
   }
 
+  InputFile::FragmentIteratorRange InputFile::in_section(const std::string& section_name)
+  {
+    static const std::vector<Fragment> empty;
+
+    // Early return in case the section does not exist at all.
+    const bool known_somewhere = has_section(section_name);
+    if (!known_somewhere)
+    {
+      return std::views::all(empty);
+    }
+
+    record_section_used(section_name);
+    const bool locally_known = pimpl_->content_by_section_.contains(section_name);
+    const bool known_everywhere = Core::Communication::all_reduce<bool>(
+        locally_known, [](const bool& r, const bool& in) { return r && in; }, pimpl_->comm_);
+
+    if (known_everywhere)
+    {
+      // Take a const reference to the section content to match the return type.
+      const auto& lines = pimpl_->content_by_section_.at(section_name).fragments;
+      return std::views::all(lines);
+    }
+    else
+    // Distribute the content of the section to all ranks.
+    {
+      FOUR_C_ASSERT((!locally_known && (Core::Communication::my_mpi_rank(pimpl_->comm_) > 0)) ||
+                        (locally_known && (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0)),
+          "Implementation error: section should be known on rank 0 and unknown on others.");
+
+      auto& content = pimpl_->content_by_section_[section_name];
+      Core::Communication::broadcast(content, 0, pimpl_->comm_);
+      content.synchronize_internal_state();
+
+      const auto& lines = pimpl_->content_by_section_.at(section_name).fragments;
+      return std::views::all(lines);
+    }
+  }
+
+
+
+  InputFile::FragmentIteratorRange InputFile::in_section_rank_0_only(
+      const std::string& section_name)
+  {
+    if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0 &&
+        pimpl_->content_by_section_.contains(section_name))
+    {
+      record_section_used(section_name);
+      const auto& lines = pimpl_->content_by_section_.at(section_name).fragments;
+      return std::views::all(lines);
+    }
+    else
+    {
+      static const std::vector<Fragment> empty;
+      return std::views::all(empty);
+    }
+  }
 
 
   /*----------------------------------------------------------------------*/
   /*----------------------------------------------------------------------*/
   bool InputFile::print_unknown_sections(std::ostream& out) const
   {
-    using MapType = decltype(knownsections_);
-    const MapType merged_map = Core::Communication::all_reduce<MapType>(
-        knownsections_,
+    using MapType = decltype(pimpl_->knownsections_);
+    const auto merged_map = Core::Communication::all_reduce<MapType>(
+        pimpl_->knownsections_,
         [](const MapType& r, const MapType& in)
         {
           MapType result = r;
@@ -434,21 +659,20 @@ namespace Core::IO
           }
           return result;
         },
-        comm_);
+        pimpl_->comm_);
     const bool printout = std::any_of(
         merged_map.begin(), merged_map.end(), [](const auto& kv) { return !kv.second; });
 
-    // now it's time to create noise on the screen
     if (printout and (Core::Communication::my_mpi_rank(get_comm()) == 0))
     {
       out << "\nERROR!"
           << "\n--------"
           << "\nThe following input file sections remained unused (obsolete or typo?):\n";
-      for (const auto& [section_name, known] : knownsections_)
+      for (const auto& [section_name, known] : pimpl_->knownsections_)
       {
         if (!known) out << section_name << '\n';
       }
-      out << std::endl;
+      out << '\n';
     }
 
     return printout;
@@ -457,79 +681,11 @@ namespace Core::IO
 
   void InputFile::record_section_used(const std::string& section_name)
   {
-    knownsections_[section_name] = true;
+    pimpl_->knownsections_[section_name] = true;
   }
 
 
-  void InputFile::SectionContent::pack(Communication::PackBuffer& data) const
-  {
-    Core::Communication::add_to_pack(data, file);
-    Core::Communication::add_to_pack(data, raw_content);
-
-    // String_views are not packable, so we store offsets.
-    std::vector<std::size_t> offsets;
-    offsets.reserve(lines.size());
-    for (const auto& line : lines)
-    {
-      FOUR_C_ASSERT(line.data() >= raw_content.data() &&
-                        line.data() <= raw_content.data() + raw_content.size(),
-          "Line data out of bounds.");
-      const std::size_t offset = (line.data() - raw_content.data()) / sizeof(char);
-      FOUR_C_ASSERT(offset <= raw_content.size(), "Offset out of bounds.");
-      offsets.push_back(offset);
-    }
-    FOUR_C_ASSERT(offsets.empty() || offsets.back() + lines.back().size() == raw_content.size(),
-        "Offset out of bounds.");
-    Core::Communication::add_to_pack(data, offsets);
-  }
-
-
-  void InputFile::SectionContent::unpack(Communication::UnpackBuffer& buffer)
-  {
-    Core::Communication::extract_from_pack(buffer, file);
-    Core::Communication::extract_from_pack(buffer, raw_content);
-
-    std::vector<std::size_t> offsets;
-    Core::Communication::extract_from_pack(buffer, offsets);
-    lines.clear();
-    for (std::size_t i = 0; i < offsets.size(); ++i)
-    {
-      const char* start = raw_content.data() + offsets[i];
-      const std::size_t length = (i + 1 < offsets.size() ? (offsets[i + 1] - offsets[i])
-                                                         : (raw_content.size()) - offsets[i]);
-      FOUR_C_ASSERT(
-          start >= raw_content.data() && start + length <= raw_content.data() + raw_content.size(),
-          "Line data out of bounds.");
-      lines.emplace_back(start, length);
-    }
-  }
-
-
-  std::pair<std::string, std::string> read_key_value(const std::string& line)
-  {
-    std::string::size_type separator_index = line.find('=');
-    // The equals sign is only treated as a separator when surrounded by whitespace.
-    if (separator_index != std::string::npos &&
-        !(std::isspace(line[separator_index - 1]) && std::isspace(line[separator_index + 1])))
-      separator_index = std::string::npos;
-
-    // In case we didn't find an "=" separator, look for a space instead
-    if (separator_index == std::string::npos)
-    {
-      separator_index = line.find(' ');
-
-      if (separator_index == std::string::npos)
-        FOUR_C_THROW("Line '%s' with just one word in parameter section", line.c_str());
-    }
-
-    std::string key = Core::Utils::trim(line.substr(0, separator_index));
-    std::string value = Core::Utils::trim(line.substr(separator_index + 1));
-
-    if (key.empty()) FOUR_C_THROW("Cannot get key from line '%s'", line.c_str());
-    if (value.empty()) FOUR_C_THROW("Cannot get value from line '%s'", line.c_str());
-
-    return {std::move(key), std::move(value)};
-  }
+  MPI_Comm InputFile::get_comm() const { return pimpl_->comm_; }
 
 }  // namespace Core::IO
 

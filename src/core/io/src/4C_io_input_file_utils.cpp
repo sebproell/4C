@@ -18,6 +18,7 @@
 #include "4C_io_pstream.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
+#include "4C_utils_string.hpp"
 
 #include <ryml.hpp>
 #include <ryml_std.hpp>
@@ -351,14 +352,42 @@ bool Core::IO::need_to_print_equal_sign(const Teuchos::ParameterList& list)
 }
 
 
+
+std::pair<std::string, std::string> Core::IO::read_key_value(const std::string& line)
+{
+  std::string::size_type separator_index = line.find('=');
+  // The equals sign is only treated as a separator when surrounded by whitespace.
+  if (separator_index != std::string::npos &&
+      !(std::isspace(line[separator_index - 1]) && std::isspace(line[separator_index + 1])))
+    separator_index = std::string::npos;
+
+  // In case we didn't find an "=" separator, look for a space instead
+  if (separator_index == std::string::npos)
+  {
+    separator_index = line.find(' ');
+
+    if (separator_index == std::string::npos)
+      FOUR_C_THROW("Line '%s' with just one word in parameter section", line.c_str());
+  }
+
+  std::string key = Core::Utils::trim(line.substr(0, separator_index));
+  std::string value = Core::Utils::trim(line.substr(separator_index + 1));
+
+  if (key.empty()) FOUR_C_THROW("Cannot get key from line '%s'", line.c_str());
+  if (value.empty()) FOUR_C_THROW("Cannot get value from line '%s'", line.c_str());
+
+  return {std::move(key), std::move(value)};
+}
+
+
 std::vector<Core::IO::InputParameterContainer> Core::IO::read_all_lines_in_section(
     Core::IO::InputFile& input, const std::string& section, const InputSpec& spec)
 {
   std::vector<Core::IO::InputParameterContainer> parsed_lines;
 
-  for (const auto& line : input.lines_in_section(section))
+  for (const auto& line : input.in_section(section))
   {
-    ValueParser parser{line};
+    ValueParser parser{line.get_as_dat_style_string()};
     Core::IO::InputParameterContainer container;
     spec.fully_parse(parser, container);
     parsed_lines.emplace_back(std::move(container));
@@ -375,18 +404,19 @@ Core::IO::read_matching_lines_in_section(
   std::vector<std::string> unparsed_lines;
   std::vector<Core::IO::InputParameterContainer> parsed_lines;
 
-  for (const auto& input_line : input.lines_in_section(section))
+  for (const auto& input_line : input.in_section(section))
   {
     try
     {
-      ValueParser parser{input_line, {.base_path = input.file_for_section(section).parent_path()}};
+      ValueParser parser{input_line.get_as_dat_style_string(),
+          {.base_path = input.file_for_section(section).parent_path()}};
       InputParameterContainer container;
       spec.fully_parse(parser, container);
       parsed_lines.emplace_back(std::move(container));
     }
     catch (const Core::Exception& e)
     {
-      unparsed_lines.emplace_back(input_line);
+      unparsed_lines.emplace_back(input_line.get_as_dat_style_string());
     }
   }
 
@@ -483,9 +513,9 @@ bool Core::IO::read_parameters_in_section(
 
   Teuchos::ParameterList& sublist = find_sublist(section_name, list);
 
-  for (const auto& line : input.lines_in_section(section_name))
+  for (const auto& line : input.in_section(section_name))
   {
-    const auto& [key, value] = read_key_value(std::string(line));
+    const auto& [key, value] = read_key_value(std::string(line.get_as_dat_style_string()));
 
     add_entry(key, value, sublist);
   }
@@ -508,15 +538,19 @@ void Core::IO::read_design(InputFile& input, const std::string& name,
   // Store lines that need special treatment
   std::vector<std::string> box_face_conditions;
 
-  for (const auto& l : input.lines_in_section_rank_0_only(marker))
+  for (const auto& l : input.in_section_rank_0_only(marker))
   {
     int dobj;
     int nodeid;
     std::string nname;
     std::string dname;
-    std::istringstream stream{std::string(l)};
+    std::istringstream stream{std::string(l.get_as_dat_style_string())};
     stream >> nname;
-    if (not stream) FOUR_C_THROW("Illegal line in section '%s': '%s'", marker.c_str(), l.data());
+    if (not stream)
+    {
+      auto s = l.get_as_dat_style_string();
+      FOUR_C_THROW("Illegal line in section '%s': '%*s'", marker.c_str(), s.size(), s.data());
+    }
 
     if (nname == "NODE")  // plain old reading of the design nodes from the .dat-file
     {
@@ -526,7 +560,7 @@ void Core::IO::read_design(InputFile& input, const std::string& name,
     else  // fancy specification of the design nodes by specifying min or max of the domain
     {     // works best on rectangular domains ;)
       // Store the specification and broadcast it to all processors
-      box_face_conditions.emplace_back(l);
+      box_face_conditions.emplace_back(l.get_as_dat_style_string());
     }
   }
 
@@ -605,9 +639,9 @@ void Core::IO::read_design(InputFile& input, const std::string& name,
           std::string dommarker = disname + " DOMAIN";
           std::transform(dommarker.begin(), dommarker.end(), dommarker.begin(), ::toupper);
 
-          for (const auto& line : input.lines_in_section_rank_0_only(dommarker))
+          for (const auto& line : input.in_section_rank_0_only(dommarker))
           {
-            std::istringstream t{std::string{line}};
+            std::istringstream t{std::string{line.get_as_dat_style_string()}};
             std::string key;
             t >> key;
 
@@ -791,13 +825,13 @@ void Core::IO::read_knots(InputFile& input, const std::string& name,
     // temporary string
     std::string tmp;
     // loop lines in file
-    for (const auto& line : input.lines_in_section(sectionname))
+    for (const auto& line : input.in_section(sectionname))
     {
       // count number of patches in knotvector section of
       // this discretisation
       {
         std::string::size_type loc;
-        std::istringstream file{std::string{line}};
+        std::istringstream file{std::string{line.get_as_dat_style_string()}};
         file >> tmp;
 
         // check for the number of dimensions
@@ -880,9 +914,9 @@ void Core::IO::read_knots(InputFile& input, const std::string& name,
     std::vector<int> count_vals(nurbs_dim);
 
     // loop lines in file
-    for (const auto& line : input.lines_in_section(sectionname))
+    for (const auto& line : input.in_section(sectionname))
     {
-      std::istringstream file{std::string{line}};
+      std::istringstream file{std::string{line.get_as_dat_style_string()}};
       file >> tmp;
 
       // check for a new patch

@@ -116,10 +116,10 @@ namespace Core::IO
     {
       bool any_lines_read = false;
       // read domain info
-      for (const auto& line : input_.lines_in_section_rank_0_only(sectionname_))
+      for (const auto& line : input_.in_section_rank_0_only(sectionname_))
       {
         any_lines_read = true;
-        std::istringstream t{std::string{line}};
+        std::istringstream t{std::string{line.get_as_dat_style_string()}};
         std::string key;
         t >> key;
         if (key == "LOWER_BOUND")

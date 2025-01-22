@@ -2066,17 +2066,17 @@ void Global::read_materials(Global::Problem& problem, Core::IO::InputFile& input
           { current_index = index; }),
   });
 
-  for (const auto& line : input.lines_in_section("MATERIALS"))
+  for (const auto& fragment : input.in_section("MATERIALS"))
   {
-    Core::IO::InputParameterContainer container;
-    Core::IO::ValueParser parser(
-        line, {.user_scope_message = "While reading 'MATERIALS' section: ",
-                  .base_path = input.file_for_section("MATERIALS").parent_path()});
+    auto container = fragment.match(all_materials);
 
+    if (!container.has_value())
+    {
+      std::string l(fragment.get_as_dat_style_string());
+      FOUR_C_THROW("Invalid material specification. Could not parse line:\n  %s", l.c_str());
+    }
 
-    all_materials.fully_parse(parser, container);
-
-    const int mat_id = container.get<int>("MAT");
+    const int mat_id = container->get<int>("MAT");
 
     FOUR_C_ASSERT_ALWAYS(mat_id >= 0, "Material ID must be non-negative. Found: %d", mat_id);
 
@@ -2086,7 +2086,7 @@ void Global::read_materials(Global::Problem& problem, Core::IO::InputFile& input
     problem.materials()->insert(
         mat_id, Core::Utils::LazyPtr<Core::Mat::PAR::Parameter>(
                     [mat_id, mat_type = all_types[current_index],
-                        container = container.group(all_specs[current_index].impl().name())]()
+                        container = container->group(all_specs[current_index].impl().name())]()
                     { return Mat::make_parameter(mat_id, mat_type, container); }));
   }
 
@@ -2110,14 +2110,16 @@ void Global::read_contact_constitutive_laws(Global::Problem& problem, Core::IO::
   auto valid_law_spec = CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws();
 
   const std::string contact_const_laws = "CONTACT CONSTITUTIVE LAWS";
-  for (const auto& section_i : input.lines_in_section(contact_const_laws))
+  for (const auto& section_i : input.in_section(contact_const_laws))
   {
-    Core::IO::ValueParser parser(
-        section_i, {.user_scope_message = "While reading 'CONTACT CONSTITUTIVE LAWS' section: "});
-
-    Core::IO::InputParameterContainer container;
-    valid_law_spec.fully_parse(parser, container);
-    CONTACT::CONSTITUTIVELAW::create_contact_constitutive_law_from_input(container);
+    auto container = section_i.match(valid_law_spec);
+    if (!container.has_value())
+    {
+      auto l = section_i.get_as_dat_style_string();
+      FOUR_C_THROW("Invalid contact constitutive law specification. Could not parse line:\n  %*s",
+          l.size(), l.data());
+    }
+    CONTACT::CONSTITUTIVELAW::create_contact_constitutive_law_from_input(*container);
   }
 }
 

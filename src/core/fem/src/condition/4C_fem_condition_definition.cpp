@@ -53,8 +53,8 @@ void Core::Conditions::ConditionDefinition::read(Core::IO::InputFile& input,
     std::multimap<int, std::shared_ptr<Core::Conditions::Condition>>& cmap)
 {
   // read the range into a vector
-  std::vector<std::string_view> section_vec;
-  std::ranges::copy(input.lines_in_section(section_name()), std::back_inserter(section_vec));
+  std::vector<IO::InputFile::Fragment> section_vec;
+  std::ranges::copy(input.in_section(section_name()), std::back_inserter(section_vec));
 
   if (section_vec.empty()) return;
 
@@ -63,7 +63,7 @@ void Core::Conditions::ConditionDefinition::read(Core::IO::InputFile& input,
   //
   // ("DPOINT" | "DLINE" | "DSURF" | "DVOL" ) <number>
 
-  Core::IO::ValueParser parser_header(section_vec[0],
+  Core::IO::ValueParser parser_header(section_vec[0].get_as_dat_style_string(),
       {.user_scope_message = "While reading header of condition section '" + sectionname_ + "': "});
 
   const std::string expected_geometry_type = std::invoke(
@@ -95,9 +95,9 @@ void Core::Conditions::ConditionDefinition::read(Core::IO::InputFile& input,
 
   for (auto i = section_vec.begin() + 1; i != section_vec.end(); ++i)
   {
-    Core::IO::ValueParser parser_content(
-        *i, {.user_scope_message =
-                    "While reading content of condition section '" + sectionname_ + "': "});
+    Core::IO::ValueParser parser_content(i->get_as_dat_style_string(),
+        {.user_scope_message =
+                "While reading content of condition section '" + sectionname_ + "': "});
 
     parser_content.consume("E");
     // Read a one-based condition number but convert it to zero-based for internal use.
