@@ -45,27 +45,9 @@ void Mat::MaterialDefinition::add_component(Core::IO::InputSpec&& c)
 std::ostream& Mat::MaterialDefinition::print(
     std::ostream& stream, const Core::FE::Discretization* dis)
 {
-  // a string holding the comment indicating symbols for DAT input file
-  const std::string comment = "//";
-
-  // the descriptive lines (comments)
-  stream << comment << '\n';
-  stream << comment << " " << description_ << '\n';
-  for (const auto& c : components_)
-  {
-    stream << comment << " " << c.impl().name() << (c.impl().required() ? " " : " (optional) ")
-           << c.impl().description() << '\n';
-  }
-
-  // the default line
-  stream << comment << "MAT 0   " << materialname_ << "   ";
   auto input_line = Core::IO::InputSpecBuilders::anonymous_group(components_);
 
-  Core::IO::InputParameterContainer container;
-  input_line.impl().set_default_value(container);
-  input_line.impl().print(stream, container);
-
-  stream << '\n';
+  input_line.print_as_dat(stream);
 
   return stream;
 }

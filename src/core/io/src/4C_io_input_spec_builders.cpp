@@ -193,18 +193,23 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::set_default_value(
 
 
 void Core::IO::InputSpecBuilders::Internal::GroupSpec::print(
-    std::ostream& stream, const Core::IO::InputParameterContainer& container) const
+    std::ostream& stream, std::size_t indent) const
 {
-  if (!name.empty()) stream << name;
+  if (!name.empty())
+  {
+    stream << "// " << std::string(indent, ' ') << name << ":\n";
+    indent += 2;
+  }
+  // Only print an anonymous group if it is not present at the top-level.
+  else if (indent > 0)
+  {
+    stream << "// " << std::string(indent, ' ') << "<anonymous_group>:\n";
+    indent += 2;
+  }
 
-  const auto& subcontainer =
-      (name.empty()) ? container
-                     : (container.has_group(name) ? container.group(name)
-                                                  : Core::IO::InputParameterContainer{});
   for (const auto& spec : specs)
   {
-    spec.impl().print(stream, subcontainer);
-    stream << " ";
+    spec.impl().print(stream, indent);
   }
 }
 
@@ -292,15 +297,13 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::set_default_value(
 
 
 void Core::IO::InputSpecBuilders::Internal::OneOfSpec::print(
-    std::ostream& stream, const Core::IO::InputParameterContainer& container) const
+    std::ostream& stream, std::size_t indent) const
 {
-  stream << "<one_of {";
+  stream << "// " << std::string(indent, ' ') << "<one_of>:\n";
   for (const auto& spec : specs)
   {
-    spec.impl().print(stream, container);
-    stream << ";";
+    spec.impl().print(stream, indent + 2);
   }
-  stream << "}>";
 }
 
 void Core::IO::InputSpecBuilders::Internal::OneOfSpec::emit_metadata(ryml::NodeRef node) const
@@ -322,6 +325,7 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::emit_metadata(ryml::NodeR
 
 Core::IO::InputSpec Core::IO::InputSpecBuilders::tag(std::string name, ScalarData<bool> data)
 {
+  Internal::sanitize_required_default(data);
   return user_defined<bool>(
       name, data,
       // If we encounter the tag, we set the value to true.
@@ -330,48 +334,72 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::tag(std::string name, ScalarDat
         parser.consume(name);
         container.add(name, true);
       },
-      [name](std::ostream& stream, const InputParameterContainer& container) { stream << name; });
+      // Print the tag as a comment.
+      [name, data](std::ostream& out, std::size_t indent)
+      {
+        out << "// " << std::string(indent, ' ') << name;
+        out << " <tag>";
+        if (!data.required.value()) out << " (optional)";
+        if (!data.description.empty()) out << " " << std::quoted(data.description);
+        out << "\n";
+      });
 }
+
+namespace
+{
+  // An anonymous groups is only used for grouping purposes and does not have a name. If it is
+  // used inside another group, it can be flattened by stealing its specs and adding them to the
+  // parent group.
+  std::vector<Core::IO::InputSpec> flatten_anonymous_group(std::vector<Core::IO::InputSpec> specs)
+  {
+    std::vector<Core::IO::InputSpec> flattened_specs;
+    for (auto&& spec : specs)
+    {
+      if (auto* group = dynamic_cast<Core::IO::Internal::InputSpecTypeErasedImplementation<
+              Core::IO::InputSpecBuilders::Internal::GroupSpec>*>(&spec.impl());
+          // must be an anonymous group to steal the specs
+          group && group->wrapped.name.empty())
+      {
+        for (auto&& sub_spec : group->wrapped.specs)
+        {
+          flattened_specs.emplace_back(std::move(sub_spec));
+        }
+      }
+      else
+      {
+        flattened_specs.emplace_back(std::move(spec));
+      }
+    }
+
+    return flattened_specs;
+  }
+}  // namespace
 
 
 Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
     std::string name, std::vector<InputSpec> specs, Core::IO::InputSpecBuilders::GroupData data)
 {
-  assert_unique_or_empty_names(specs);
+  auto flattened_specs = flatten_anonymous_group(std::move(specs));
+
+  assert_unique_or_empty_names(flattened_specs);
 
   IO::Internal::InputSpecTypeErasedBase::CommonData common_data{
       .name = name,
       .description = data.description,
       .required = data.required,
-      .has_default_value = all_have_default_values(specs),
+      .has_default_value = all_have_default_values(flattened_specs),
   };
 
   return IO::Internal::make_spec(
-      Internal::GroupSpec{.name = name, .data = std::move(data), .specs = std::move(specs)},
+      Internal::GroupSpec{
+          .name = name, .data = std::move(data), .specs = std::move(flattened_specs)},
       common_data);
 }
 
 
 Core::IO::InputSpec Core::IO::InputSpecBuilders::anonymous_group(std::vector<InputSpec> specs)
 {
-  // Flatten any other anonymous groups.
-  std::vector<InputSpec> flattened_specs;
-  for (auto&& spec : specs)
-  {
-    if (auto* group = dynamic_cast<IO::Internal::InputSpecTypeErasedImplementation<
-            InputSpecBuilders::Internal::GroupSpec>*>(&spec.impl());
-        group && group->wrapped.name.empty())
-    {
-      for (auto&& sub_spec : group->wrapped.specs)
-      {
-        flattened_specs.emplace_back(std::move(sub_spec));
-      }
-    }
-    else
-    {
-      flattened_specs.emplace_back(std::move(spec));
-    }
-  }
+  auto flattened_specs = flatten_anonymous_group(std::move(specs));
 
   assert_unique_or_empty_names(flattened_specs);
 

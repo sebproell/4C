@@ -253,7 +253,7 @@ namespace
 
               container.add<std::string>("c", "I found c");
             },
-            [](std::ostream& out, const Core::IO::InputParameterContainer&) { out << "_ _"; }),
+            [](std::ostream& out, std::size_t) { out << "_ _ \n"; }),
         entry<std::string>("s"),
     });
 
@@ -523,21 +523,29 @@ namespace
     }
   }
 
-  TEST(InputSpecTest, Print)
+  TEST(InputSpecTest, PrintAsDat)
   {
-    auto line = anonymous_group({
-        entry<int>("a"),
-        entry<std::string>("b"),
-        selection<int>("c", {{"c1", 1}, {"c2", 2}}, {.default_value = 1}),
-    });
+    auto line =
+        group("g", {
+                       // Note: the anonymous group entries will be pulled into the parent group.
+                       anonymous_group({
+                           entry<int>("a", {.description = "An integer"}),
+                           tag("b", {.description = "A tag", .required = false}),
+                           selection<int>("c", {{"c1", 1}, {"c2", 2}},
+                               {.description = "Selection", .default_value = 1}),
+                       }),
+                       entry<int>("d", {.description = "Another integer", .default_value = 42}),
+                   });
 
     {
-      InputParameterContainer container;
-      container.add("a", 1);
-      container.add("b", std::string("s"));
       std::ostringstream out;
-      line.print_as_dat(out, container);
-      EXPECT_EQ(out.str(), "a 1 b s [c (c1|c2|)] ");
+      line.print_as_dat(out);
+      EXPECT_EQ(out.str(), R"(// g:
+//   a <int> "An integer"
+//   b <tag> (optional) "A tag"
+//   c (default: c1) (choices: c1|c2|) "Selection"
+//   d <int> (optional) (default: 42) "Another integer"
+)");
     }
   }
 

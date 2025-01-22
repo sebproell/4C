@@ -284,10 +284,7 @@ void Core::IO::InputFileUtils::print_section(
     std::ostream& out, const std::string& header, const InputSpec& spec)
 {
   print_section_header(out, header);
-
-  out << "// ";
-  spec.print_as_dat(out, Core::IO::InputParameterContainer{});
-  out << '\n';
+  spec.print_as_dat(out);
 }
 
 

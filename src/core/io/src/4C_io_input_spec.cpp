@@ -44,12 +44,11 @@ void Core::IO::InputSpec::fully_parse(
       std::string(parser.get_unparsed_remainder()).c_str());
 }
 
-void Core::IO::InputSpec::print_as_dat(
-    std::ostream& stream, const Core::IO::InputParameterContainer& container) const
+void Core::IO::InputSpec::print_as_dat(std::ostream& stream) const
 {
   FOUR_C_ASSERT(pimpl_, "InputSpec is empty.");
 
-  pimpl_->print(stream, container);
+  pimpl_->print(stream, 0u);
 }
 
 void Core::IO::InputSpec::emit_metadata(YamlEmitter& yaml) const

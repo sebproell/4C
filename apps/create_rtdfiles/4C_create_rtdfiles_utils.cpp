@@ -313,12 +313,7 @@ namespace RTD
     std::string materialDescription = material->description();
     write_paragraph(stream, materialDescription);
 
-    // the material line as it occurs in the dat file
-    std::string parameter = "   MAT <matID>  " + material->name();
-    std::vector<std::string> materialcode;
-    //
-    // Also: create the table from the parameter descriptions (based on the so-called
-    // separatorComponents) table header
+    // Also: create the table from the parameter descriptions
     const unsigned tablesize = 3;
     Table parametertable(tablesize);
     std::vector<std::string> tablerow(tablesize);
@@ -334,22 +329,8 @@ namespace RTD
       table_row.push_back(spec.impl().description());
 
       parametertable.add_row(table_row);
-
-      if (parameter.length() > 60)
-      {
-        parameter += " \\";
-        materialcode.push_back(parameter);
-        parameter = "   ";
-      }
-
-      std::ostringstream parameterstream;
-      Core::IO::InputParameterContainer container;
-      spec.print_as_dat(parameterstream, container);
-      parameter += " " + parameterstream.str();
     }
 
-    materialcode.push_back(parameter);
-    write_code(stream, materialcode);
     //
     // Now printing the parameter table
     parametertable.set_widths({10, 10, 50});
@@ -577,6 +558,7 @@ namespace RTD
     }
     // Now write the complete code of this condition to the readthedocs file
     conditioncode.push_back(conditioncodeline);
+    conditioncode.push_back("");
     write_code(stream, conditioncode);
 
     /*------ PART 4 -------------------------
@@ -624,8 +606,12 @@ namespace RTD
     write_code(stream, contactlawsectionstring);
 
     std::stringstream specs_string;
-    specs.print_as_dat(specs_string, Core::IO::InputParameterContainer{});
-    write_code(stream, {specs_string.str()});
+    specs.print_as_dat(specs_string);
+
+    // Split on newline because this is what the write_code function expects
+    std::vector<std::string> specs_list = Core::Utils::split(specs_string.str(), "\n");
+
+    write_code(stream, specs_list);
   }
 
 

@@ -11,9 +11,11 @@
 #include "4C_config.hpp"
 
 #include "4C_io_input_spec.hpp"
+#include "4C_legacy_enum_definitions_materials.hpp"
 #include "4C_utils_function_manager.hpp"
 
 #include <functional>
+#include <unordered_map>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -45,6 +47,19 @@ struct ModuleCallbacks
    * A callback to return valid result description lines.
    */
   std::function<Core::IO::InputSpec()> valid_result_description_lines;
+
+  /**
+   * A callback to return materials known by the module.
+   *
+   * @return A map from material type to corresponding InputSpec. Every InputSpec should contain a
+   * top-level group with the material name to easily identify the material and ensure it cannot be
+   * confused with other materials. All other necessary parameters can be added inside this group.
+   * Nested groups are allowed.
+   *
+   * @note The materials from various modules are gathered in a shared section. The input mechanism
+   * automatically adds an `entry<int>("MAT")` to the InputSpec to allow enumeration of materials.
+   */
+  std::function<std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec>()> materials;
 };
 
 FOUR_C_NAMESPACE_CLOSE

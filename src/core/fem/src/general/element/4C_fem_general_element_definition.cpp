@@ -123,11 +123,10 @@ void Core::Elements::ElementDefinition::print_element_lines(std::ostream& stream
   FOUR_C_ASSERT(definitions_.contains(name), "Element type not found: " + name);
   auto& defs = definitions_[name];
 
-  const Core::IO::InputParameterContainer container;
   for (const auto& [cell_type, spec] : defs)
   {
     stream << "// 0 " << name << " ";
-    spec.print_as_dat(stream, container);
+    spec.print_as_dat(stream);
     stream << '\n';
   }
 }
