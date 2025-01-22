@@ -126,6 +126,13 @@ jobs:
         with:
           build-directory: ${{ github.workspace }}/build
           retention-days: 1
+      - name: Upload 4C schema
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}-schema
+          path: |
+            ${{ github.workspace }}/build/4C_schema.json
+          retention-days: 1
 
   clang18_test_minimal:
     needs: clang18_build
@@ -181,9 +188,33 @@ jobs:
           cd $GITHUB_WORKSPACE/build/tests/install_test
           sh test_install.sh
 
+  clang18_verify_schema:
+    needs: clang18_build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: clang18_build-schema
+          path: ${{ github.workspace }}
+      - name: json-yaml-validate
+        uses: GrantBirki/json-yaml-validate@v3.2.1
+        with:
+          base_dir: .
+          json_schema: ${{ github.workspace }}/4C_schema.json
+          yaml_as_json: true
+          ajv_strict_mode: false
+          json_schema_version: draft-2020-12
+          yaml_extension: .4C.yaml
+          yaml_extension_short: .4C.yml
+          json_extension: .4C.json
+
   ensure_all_tests_pass:
     needs: [gcc13_assertions_test, gcc13_assertions_test_report, gcc13_assertions_build, clang18_build,
-      clang18_test_minimal, clang18_test_install]
+      clang18_test_minimal, clang18_test_install, clang18_verify_schema]
     runs-on: ubuntu-latest
     if: always() && github.ref != 'refs/heads/main'
     steps:
