@@ -154,7 +154,7 @@ void Global::Problem::write_input_parameters()
   std::string s = output_control_file()->file_name();
   s.append(".parameter");
   std::ofstream stream(s.c_str());
-  Core::IO::InputFileUtils::print_dat(stream, *parameters_, false);
+  Core::IO::print_dat(stream, *parameters_, false);
 }
 
 

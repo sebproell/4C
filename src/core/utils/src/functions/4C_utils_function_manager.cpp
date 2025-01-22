@@ -153,9 +153,8 @@ void Core::Utils::FunctionManager::read_input(Core::IO::InputFile& input)
         {
           for (auto& [spec, function_factory] : attached_function_data_)
           {
-            auto [parsed_parameters, unparsed_lines] =
-                Core::IO::InputFileUtils::read_matching_lines_in_section(
-                    input, "FUNCT" + std::to_string(funct_suffix), spec);
+            auto [parsed_parameters, unparsed_lines] = Core::IO::read_matching_lines_in_section(
+                input, "FUNCT" + std::to_string(funct_suffix), spec);
 
             // A convoluted way of saying that there are no lines in the section, thus, stop
             // parsing. This can only be refactored if the reading mechanism is overhauled in

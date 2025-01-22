@@ -288,7 +288,7 @@ namespace RTD
 
     const auto spec = Core::FE::valid_cloning_material_map();
     std::stringstream cloningMatStream;
-    Core::IO::InputFileUtils::print_section(cloningMatStream, "CLONING MATERIAL MAP", spec);
+    Core::IO::print_section(cloningMatStream, "CLONING MATERIAL MAP", spec);
     const std::vector<std::string> cloningMatList =
         Core::Utils::split(cloningMatStream.str(), "\n");
 
@@ -393,7 +393,7 @@ namespace RTD
           codelines.push_back("--" + std::string(std::max<int>(65 - l, 0), '-') + fullname);
           write_code(stream, codelines);
 
-          if (Core::IO::InputFileUtils::need_to_print_equal_sign(list.sublist(name)))
+          if (Core::IO::need_to_print_equal_sign(list.sublist(name)))
           {
             write_note(stream,
                 "   The parameters in this section need an equal sign (=) "
@@ -630,8 +630,7 @@ namespace RTD
           "The result of the simulation with respect to specific quantities at concrete points "
           "can be tested against particular values with a given tolerance.");
       std::stringstream resultDescriptionStream;
-      Core::IO::InputFileUtils::print_section(
-          resultDescriptionStream, "RESULT DESCRIPTION", result_spec);
+      Core::IO::print_section(resultDescriptionStream, "RESULT DESCRIPTION", result_spec);
       const std::vector<std::string> resultDescriptionList =
           Core::Utils::split(resultDescriptionStream.str(), "\n");
       write_code(stream, resultDescriptionList);
@@ -649,7 +648,7 @@ namespace RTD
       write_paragraph(
           stream, "Definition of functions for various cases, mainly boundary conditions");
       std::stringstream functionStream;
-      Core::IO::InputFileUtils::print_section(functionStream, "FUNCT", lines);
+      Core::IO::print_section(functionStream, "FUNCT", lines);
       const std::vector<std::string> functionList = Core::Utils::split(functionStream.str(), "\n");
       write_code(stream, functionList);
     }
