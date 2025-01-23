@@ -192,14 +192,14 @@ def plot3D_surfaces(ax, surfaces, coords, parameter):
             )
         )
 
-        # draw shrinked faces
-        shrinked_verts = [
+        # draw shrunk faces
+        shrunk_verts = [
             surf_center_coord
             + parameter.shrink_factor * (np.array(verts) - surf_center_coord)
         ]
         ax.add_collection3d(
             Poly3DCollection(
-                shrinked_verts,
+                shrunk_verts,
                 edgecolor=parameter.colorlist[k],
                 facecolor=(1, 1, 1, 0.01),
             )

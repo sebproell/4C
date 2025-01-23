@@ -128,7 +128,7 @@ endfunction()
 #                                 For two input files two NP's are required.
 # RESTART_STEP:                   Number of restart step; not defined indicates no restart
 # TIMEOUT:                        Manually defined duration for test timeout; defaults to global timeout if not specified
-# OMP_THREADS:                    Number of OpenMP threads per proccessor the test should use; defaults to deactivated
+# OMP_THREADS:                    Number of OpenMP threads per processor the test should use; defaults to deactivated
 # POST_ENSIGHT_STRUCTURE:         Test post_ensight options in serial and parallel (for structure simulation only!)
 # LABELS:                         Add labels to the test
 # CSV_COMPARISON_RESULT_FILE:     Arbitrary .csv result files to be compared (see `utilites/diff_with_tolerance.py`)

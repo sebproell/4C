@@ -47,7 +47,7 @@ enable_compiler_flag_if_supported("-Wno-overloaded-virtual")
 enable_linker_flag_if_supported("-rdynamic")
 
 # Enable position-independent code. This flag is necessary to build shared libraries. Since our internal targets are not
-# real libaries but object libraries, this property needs to be set explicitly.
+# real libraries but object libraries, this property needs to be set explicitly.
 if(BUILD_SHARED_LIBS)
   message(VERBOSE "Enabling POSITION_INDEPENDENT_CODE on internal targets.")
   set_target_properties(

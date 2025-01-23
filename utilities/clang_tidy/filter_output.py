@@ -13,7 +13,7 @@ begin_note_regex = re.compile(r"^\/\S+\:\d+\:\d+\: note: .*$")
 note_regex = re.compile(r"^note: .*$")
 message_block_regex = re.compile(r"^ *\d* \|.*$")
 number_of_warnings = re.compile(r"^\d+ warnings generated.$")
-supressed_warnings_hint = re.compile(r"^Suppressed \d+ warnings")
+suppressed_warnings_hint = re.compile(r"^Suppressed \d+ warnings")
 display_warning_hint = re.compile(r"^Use -header-filter=\.\* to display errors")
 
 clang_invocation = re.compile(r"^\/?\S*\/?clang-tidy-?\d* ")
@@ -43,14 +43,14 @@ for line in sys.stdin:
     if note_regex.match(line_removed_coloroutput):
         continue
 
-    # remove clang invokation message
+    # remove clang invocation message
     if clang_invocation.match(line_removed_coloroutput):
         continue
 
     # remove suppressed warnings
     if (
         number_of_warnings.match(line_removed_coloroutput)
-        or supressed_warnings_hint.match(line_removed_coloroutput)
+        or suppressed_warnings_hint.match(line_removed_coloroutput)
         or display_warning_hint.match(line_removed_coloroutput)
     ):
         continue

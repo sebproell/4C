@@ -24,12 +24,12 @@ function(four_c_add_dependency target)
         _four_c_internal_link_with_debug_message(${target} INTERFACE ${_dep}_deps)
       endforeach()
     elseif(${_target_type} STREQUAL EXECUTABLE)
-      # Currently the code base is not able to link without cycles. When linking an executable to a libary, the
+      # Currently the code base is not able to link without cycles. When linking an executable to a library, the
       # transitive dependencies must not contain any cycles. For static libraries this can be ignored when the
       # libraries are repeated on the link line. However, for shared libraries there is no such workaround.
       # For this reason, we issue an error here (for now).
       message(
-        FATAL_ERROR "Trying to link parts of the library to ${target} which is an exectuable. "
+        FATAL_ERROR "Trying to link parts of the library to ${target} which is an executable. "
                     "Please link against the whole library."
         )
     else()
