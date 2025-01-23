@@ -155,10 +155,9 @@ void ALE::Ale::set_initial_displacement(const Inpar::ALE::InitialDisp init, cons
           int doflid = dofrowmap->LID(dofgid);
 
           // evaluate component d of function
-          double initialval =
-              Global::Problem::instance()
-                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno - 1)
-                  .evaluate(lnode->x().data(), 0, d);
+          double initialval = Global::Problem::instance()
+                                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)
+                                  .evaluate(lnode->x().data(), 0, d);
 
           int err = dispn_->ReplaceMyValues(1, &initialval, &doflid);
           if (err != 0) FOUR_C_THROW("dof not on proc");

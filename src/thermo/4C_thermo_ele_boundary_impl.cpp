@@ -159,7 +159,7 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
     if (curvenum.has_value() && curvenum.value() > 0)
     {
       curvefac = Global::Problem::instance()
-                     ->function_by_id<Core::Utils::FunctionOfTime>(curvenum.value() - 1)
+                     ->function_by_id<Core::Utils::FunctionOfTime>(curvenum.value())
                      .evaluate(time);
     }
     // multiply heat convection coefficient with the timecurve factor
@@ -171,10 +171,9 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
     // find out whether we shall use a time curve for T_oo and get the factor
     if (surtempcurvenum.has_value() and surtempcurvenum.value() > 0)
     {
-      surtempcurvefac =
-          Global::Problem::instance()
-              ->function_by_id<Core::Utils::FunctionOfTime>(surtempcurvenum.value() - 1)
-              .evaluate(time);
+      surtempcurvefac = Global::Problem::instance()
+                            ->function_by_id<Core::Utils::FunctionOfTime>(surtempcurvenum.value())
+                            .evaluate(time);
     }
     // complete surrounding temperatures T_oo: multiply with the timecurve factor
     surtemp *= surtempcurvefac;
@@ -380,7 +379,7 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
         if (curvenum.has_value() && curvenum.value() > 0)
         {
           curvefac = Global::Problem::instance()
-                         ->function_by_id<Core::Utils::FunctionOfTime>(curvenum.value() - 1)
+                         ->function_by_id<Core::Utils::FunctionOfTime>(curvenum.value())
                          .evaluate(time);
         }
         // multiply heat convection coefficient with the timecurve factor
@@ -394,7 +393,7 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
         {
           surtempcurvefac =
               Global::Problem::instance()
-                  ->function_by_id<Core::Utils::FunctionOfTime>(surtempcurvenum.value() - 1)
+                  ->function_by_id<Core::Utils::FunctionOfTime>(surtempcurvenum.value())
                   .evaluate(time);
         }
         // complete surrounding temperatures T_oo: multiply with the timecurve factor
@@ -580,7 +579,7 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate_neumann(const Core::Elements::
         {
           // evaluate function at current gauss point
           functfac = Global::Problem::instance()
-                         ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func[dof].value() - 1)
+                         ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func[dof].value())
                          .evaluate(coordgpref, time, dof);
         }
         else

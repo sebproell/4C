@@ -105,7 +105,7 @@ int Discret::Elements::Shell7pLine::evaluate_neumann(Teuchos::ParameterList& par
 
           // evaluate function at current gauss point
           functfac = Global::Problem::instance()
-                         ->function_by_id<Core::Utils::FunctionOfSpaceTime>(spa_func[i].value() - 1)
+                         ->function_by_id<Core::Utils::FunctionOfSpaceTime>(spa_func[i].value())
                          .evaluate(coordgpref, time, i);
         }
 

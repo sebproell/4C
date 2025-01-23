@@ -530,7 +530,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::flow_dep_pressure_bc(
   double curvefac = 1.0;
   if (curvenum.has_value() && curvenum.value() > 0 && time >= 0)
     curvefac = Global::Problem::instance()
-                   ->function_by_id<Core::Utils::FunctionOfTime>(curvenum.value() - 1)
+                   ->function_by_id<Core::Utils::FunctionOfTime>(curvenum.value())
                    .evaluate(time);
 
   // (temporarily) switch off any flow-dependent pressure condition in case of zero
@@ -2193,10 +2193,9 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
       {
         // evaluate function at current gauss point
         // (important: requires 3D position vector)
-        functionfac(idim) =
-            Global::Problem::instance()
-                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(functions[idim] - 1)
-                .evaluate(coordgp.data(), time, idim);
+        functionfac(idim) = Global::Problem::instance()
+                                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(functions[idim])
+                                .evaluate(coordgp.data(), time, idim);
       }
       else
         functionfac(idim) = 1.0;
@@ -4860,7 +4859,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
             // evaluate function at current gauss point (important: requires 3D position vector)
             functionfac(dim) =
                 Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(functions[dim].value() - 1)
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(functions[dim].value())
                     .evaluate(coordgp.data(), time, dim);
           }
           else
@@ -5228,7 +5227,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
           // evaluate function at current gauss point (important: requires 3D position vector)
           functionfac(dim) =
               Global::Problem::instance()
-                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(functions[dim].value() - 1)
+                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(functions[dim].value())
                   .evaluate(coordgp.data(), time, dim);
         }
         else

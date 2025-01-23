@@ -48,7 +48,7 @@ namespace
     Mat::MuscleCombo::ActivationEvaluatorVariant operator()(const int function_id) const
     {
       return &Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfSpaceTime>(
-          function_id - 1);
+          function_id);
     }
 
     Mat::MuscleCombo::ActivationEvaluatorVariant operator()(const ActivationMapType& map) const

@@ -2127,7 +2127,7 @@ int Discret::Elements::Beam3k::evaluate_neumann(Teuchos::ParameterList& params,
       // number of the load curve related with a specific line Neumann condition called
       if (funct[i].has_value() && funct[i].value() > 0)
         functtimefac[i] = Global::Problem::instance()
-                              ->function_by_id<Core::Utils::FunctionOfTime>(funct[i].value() - 1)
+                              ->function_by_id<Core::Utils::FunctionOfTime>(funct[i].value())
                               .evaluate(time);
 
       load_vector_neumann(i) *= functtimefac[i];
@@ -2584,10 +2584,10 @@ void Discret::Elements::Beam3k::evaluate_line_neumann_forces(
     {
       if (function_numbers[idof].has_value() && function_numbers[idof].value() > 0)
       {
-        functionfac = Global::Problem::instance()
-                          ->function_by_id<Core::Utils::FunctionOfSpaceTime>(
-                              function_numbers[idof].value() - 1)
-                          .evaluate(X_ref.data(), time, idof);
+        functionfac =
+            Global::Problem::instance()
+                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(function_numbers[idof].value())
+                .evaluate(X_ref.data(), time, idof);
       }
       else
         functionfac = 1.0;

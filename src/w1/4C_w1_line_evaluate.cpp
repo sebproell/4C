@@ -227,7 +227,7 @@ int Discret::Elements::Wall1Line::evaluate_neumann(Teuchos::ParameterList& param
 
               // evaluate function at current gauss point
               functfac = Global::Problem::instance()
-                             ->function_by_id<Core::Utils::FunctionOfSpaceTime>(functnum - 1)
+                             ->function_by_id<Core::Utils::FunctionOfSpaceTime>(functnum)
                              .evaluate(coordgpref, time, i);
             }
             else
@@ -283,7 +283,7 @@ int Discret::Elements::Wall1Line::evaluate_neumann(Teuchos::ParameterList& param
 
           // evaluate function at current gauss point
           functfac = Global::Problem::instance()
-                         ->function_by_id<Core::Utils::FunctionOfSpaceTime>(functnum - 1)
+                         ->function_by_id<Core::Utils::FunctionOfSpaceTime>(functnum)
                          .evaluate(coordgpref, time, 0);
         }
 

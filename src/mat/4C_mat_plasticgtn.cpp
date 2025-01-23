@@ -180,7 +180,7 @@ void Mat::PlasticGTN::setup(int numgp, const Core::IO::InputParameterContainer& 
   {
     hardening_function_ =
         &Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfAnything>(
-            functionID_hardening - 1);
+            functionID_hardening);
   }
 
   const double f0 = params_->f0_;

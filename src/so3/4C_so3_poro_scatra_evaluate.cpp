@@ -56,7 +56,7 @@ void Discret::Elements::So3PoroScatra<So3Ele, distype>::pre_evaluate(Teuchos::Pa
   {
     const double time = params.get("total time", 0.0);
     // find out whether we will use a time curve and get the factor
-    int num = 0;  // TO BE READ FROM INPUTFILE AT EACH ELEMENT!!!
+    int num = 1;  // TO BE READ FROM INPUTFILE AT EACH ELEMENT!!!
     std::vector<double> xrefe;
     xrefe.resize(3);
     Core::Nodes::Node** nodes = my::nodes();

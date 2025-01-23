@@ -48,7 +48,7 @@ void ParticleRigidBody::set_initial_fields(const Teuchos::ParameterList& params,
 
     // get reference to function
     const auto& function =
-        Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfSpaceTime>(functid - 1);
+        Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfSpaceTime>(functid);
 
     // get rigid body state dimension
     const int statedim = 3;

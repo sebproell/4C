@@ -430,7 +430,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
           "terms, you can still define a zero exchange term");
     diam_funct_active_ = true;
     artdiam_funct_ = &Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfAnything>(
-        diam_funct_num - 1);
+        diam_funct_num);
     if (coupltype_ == type_porofluid)
     {
       // cont derivatives + 1 artery pressure derivative

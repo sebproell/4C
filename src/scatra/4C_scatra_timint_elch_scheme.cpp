@@ -287,8 +287,7 @@ void ScaTra::ScaTraTimIntElchOST::compute_time_deriv_pot0(const bool init)
       {
         // function_by_id takes a zero-based index
         const double functfac =
-            problem_->function_by_id<Core::Utils::FunctionOfTime>(functnum.value() - 1)
-                .evaluate(time_);
+            problem_->function_by_id<Core::Utils::FunctionOfTime>(functnum.value()).evaluate(time_);
 
         // adjust potential at metal side accordingly
         pot0np *= functfac;
@@ -858,8 +857,7 @@ void ScaTra::ScaTraTimIntElchGenAlpha::compute_time_deriv_pot0(const bool init)
       {
         // function_by_id takes a zero-based index
         const double functfac =
-            problem_->function_by_id<Core::Utils::FunctionOfTime>(functnum.value() - 1)
-                .evaluate(time_);
+            problem_->function_by_id<Core::Utils::FunctionOfTime>(functnum.value()).evaluate(time_);
         // adjust potential at metal side accordingly
 
         pot0np *= functfac;

@@ -660,7 +660,7 @@ int Discret::Elements::Nurbs::SoNurbs27::evaluate_neumann(Teuchos::ParameterList
         {
           // function evaluation
           functfac = Global::Problem::instance()
-                         ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funct[dim].value() - 1)
+                         ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funct[dim].value())
                          .evaluate(xrefegp.data(), time, dim);
         }
 

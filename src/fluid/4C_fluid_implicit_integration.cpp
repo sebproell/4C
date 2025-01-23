@@ -2635,7 +2635,7 @@ void FLD::FluidImplicitTimeInt::ale_update(std::string condName)
           {
             (*nodeNormals)[dofsLocalInd[i]] =
                 (Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfSpaceTime>(
-                     nodeNormalFunct - 1))
+                     nodeNormalFunct))
                     .evaluate(currPos.data(), 0.0, i);
           }
         }
@@ -4137,7 +4137,7 @@ void FLD::FluidImplicitTimeInt::set_initial_flow_field(
         int gid = nodedofset[index];
 
         double initialval = Global::Problem::instance()
-                                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno - 1)
+                                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)
                                 .evaluate(lnode->x().data(), time_, index);
 
         velnp_->ReplaceGlobalValues(1, &initialval, &gid);
@@ -4170,7 +4170,7 @@ void FLD::FluidImplicitTimeInt::set_initial_flow_field(
 
       Core::FE::Nurbs::apply_nurbs_initial_condition(*discret_, solver_params,
           Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfSpaceTime>(
-              startfuncno - 1),
+              startfuncno),
           velnp_);
     }
 

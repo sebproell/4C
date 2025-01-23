@@ -316,11 +316,11 @@ template <int dim>
 void Mat::PAR::FluidPoroPhaseLawByFunction::initialize_internal()
 {
   if (Global::Problem::instance()
-          ->function_by_id<Core::Utils::FunctionOfAnything>(functionID_saturation_ - 1)
+          ->function_by_id<Core::Utils::FunctionOfAnything>(functionID_saturation_)
           .number_components() != 1)
     FOUR_C_THROW("expected only one component for the saturation evaluation");
   if (Global::Problem::instance()
-          ->function_by_id<Core::Utils::FunctionOfAnything>(functionID_pressure_ - 1)
+          ->function_by_id<Core::Utils::FunctionOfAnything>(functionID_pressure_)
           .number_components() != 1)
     FOUR_C_THROW("expected only one component for the pressure evaluation");
 
@@ -371,7 +371,7 @@ double Mat::PAR::FluidPoroPhaseLawByFunction::evaluate_saturation_internal(
   dp_[0].second = presval;
 
   return Global::Problem::instance()
-      ->function_by_id<Core::Utils::FunctionOfAnything>(functionID_saturation_ - 1)
+      ->function_by_id<Core::Utils::FunctionOfAnything>(functionID_saturation_)
       .evaluate(dp_, {}, 0);
 }
 
@@ -413,7 +413,7 @@ double Mat::PAR::FluidPoroPhaseLawByFunction::evaluate_deriv_of_saturation_wrt_p
 
   std::vector<double> deriv =
       Global::Problem::instance()
-          ->function_by_id<Core::Utils::FunctionOfAnything>(functionID_saturation_ - 1)
+          ->function_by_id<Core::Utils::FunctionOfAnything>(functionID_saturation_)
           .evaluate_derivative(dp_, {}, 0);
 
   return deriv[0] * presids_[doftoderive];
@@ -466,7 +466,7 @@ double Mat::PAR::FluidPoroPhaseLawByFunction::evaluate_deriv_of_pressure_wrt_sat
 
   std::vector<double> deriv =
       Global::Problem::instance()
-          ->function_by_id<Core::Utils::FunctionOfAnything>(functionID_pressure_ - 1)
+          ->function_by_id<Core::Utils::FunctionOfAnything>(functionID_pressure_)
           .evaluate_derivative(s_, {}, 0);
 
   return deriv[0] * presids_[doftoderive];
@@ -499,7 +499,7 @@ double Mat::PAR::FluidPoroPhaseLawByFunction::evaluate_gen_pressure_internal(dou
   s_[0].second = saturation;
 
   return Global::Problem::instance()
-      ->function_by_id<Core::Utils::FunctionOfAnything>(functionID_pressure_ - 1)
+      ->function_by_id<Core::Utils::FunctionOfAnything>(functionID_pressure_)
       .evaluate(s_, {}, 0);
 }
 

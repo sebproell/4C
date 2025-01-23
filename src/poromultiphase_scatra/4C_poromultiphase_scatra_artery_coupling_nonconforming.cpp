@@ -857,7 +857,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::
 
   std::istringstream funct_art_stream(
       Teuchos::getNumericStringParameter(couplingparams_, "REACFUNCT_ART"));
-  while (funct_art_stream >> word1) funct_vec_[0].push_back((int)(word1 - 1));
+  while (funct_art_stream >> word1) funct_vec_[0].push_back((int)(word1));
 
   // 2) 2D, 3D continuous field discretization
   std::istringstream scale_cont_stream(
@@ -866,7 +866,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::
 
   std::istringstream funct_cont_stream(
       Teuchos::getNumericStringParameter(couplingparams_, "REACFUNCT_CONT"));
-  while (funct_cont_stream >> word1) funct_vec_[1].push_back((int)(word1 - 1));
+  while (funct_cont_stream >> word1) funct_vec_[1].push_back((int)(word1));
 }
 
 /*----------------------------------------------------------------------*

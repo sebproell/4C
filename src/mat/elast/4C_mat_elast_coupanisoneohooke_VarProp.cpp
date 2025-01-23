@@ -135,10 +135,9 @@ void Mat::Elastic::CoupAnisoNeoHookeVarProp::add_stress_aniso_principal(
   double time_ = params.get<double>("total time", 0.0);
   const auto& element_center_coordinates_ref =
       params.get<Core::LinAlg::Matrix<3, 1>>("elecenter_coords_ref");
-  double stressFact_ =
-      Global::Problem::instance()
-          ->function_by_id<Core::Utils::FunctionOfSpaceTime>(params_->sourceactiv_ - 1)
-          .evaluate(element_center_coordinates_ref.data(), time_, 0);
+  double stressFact_ = Global::Problem::instance()
+                           ->function_by_id<Core::Utils::FunctionOfSpaceTime>(params_->sourceactiv_)
+                           .evaluate(element_center_coordinates_ref.data(), time_, 0);
 
 
   // double stressFact_=params.get<double>("scalar");

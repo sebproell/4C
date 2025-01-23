@@ -317,7 +317,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_elch_d
   {
     // function_by_id takes a zero-based index
     const double curvefac = Global::Problem::instance()
-                                ->function_by_id<Core::Utils::FunctionOfTime>(curvenum.value() - 1)
+                                ->function_by_id<Core::Utils::FunctionOfTime>(curvenum.value())
                                 .evaluate(time);
     // adjust potential at metal side accordingly
     pot0 *= curvefac;

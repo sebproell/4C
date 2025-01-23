@@ -840,10 +840,9 @@ int Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
     {
       const double* jx = pele->nodes()[jnode]->x().data();
       for (int idim = 0; idim < nsd_; ++idim)
-        peconvvelaf_(idim, jnode) =
-            Global::Problem::instance()
-                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funcnum - 1)
-                .evaluate(jx, time, idim);
+        peconvvelaf_(idim, jnode) = Global::Problem::instance()
+                                        ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funcnum)
+                                        .evaluate(jx, time, idim);
     }
 
     // neighbor element
@@ -851,10 +850,9 @@ int Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
     {
       const double* jx = nele->nodes()[jnode]->x().data();
       for (int idim = 0; idim < nsd_; ++idim)
-        neconvvelaf_(idim, jnode) =
-            Global::Problem::instance()
-                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funcnum - 1)
-                .evaluate(jx, time, idim);
+        neconvvelaf_(idim, jnode) = Global::Problem::instance()
+                                        ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funcnum)
+                                        .evaluate(jx, time, idim);
     }
 
     if (pele->is_ale()) FOUR_C_THROW("is ALE for Oseen really reasonable");

@@ -320,7 +320,7 @@ void Mat::PlasticNlnLogNeoHooke::setup(
   {
     hardening_function_ =
         &Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfAnything>(
-            functionID_hardening - 1);
+            functionID_hardening);
   }
 
   invplrcglast_.resize(numgp);

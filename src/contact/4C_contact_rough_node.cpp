@@ -53,14 +53,13 @@ CONTACT::RoughNode::RoughNode(int id, const std::vector<double>& coords, const i
 #ifdef FOUR_C_WITH_MIRCO
   if (isslave)
   {
-    hurstExponent_ =
+    hurstExponent_ = Global::Problem::instance()
+                         ->function_by_id<Core::Utils::FunctionOfSpaceTime>(hurstexponentfunction_)
+                         .evaluate(this->x().data(), 1, this->n_dim());
+    initialTopologyStdDeviation_ =
         Global::Problem::instance()
-            ->function_by_id<Core::Utils::FunctionOfSpaceTime>(hurstexponentfunction_ - 1)
+            ->function_by_id<Core::Utils::FunctionOfSpaceTime>(initialtopologystddeviationfunction_)
             .evaluate(this->x().data(), 1, this->n_dim());
-    initialTopologyStdDeviation_ = Global::Problem::instance()
-                                       ->function_by_id<Core::Utils::FunctionOfSpaceTime>(
-                                           initialtopologystddeviationfunction_ - 1)
-                                       .evaluate(this->x().data(), 1, this->n_dim());
 
     const int N = pow(2, resolution_);
     topology_.shape(N + 1, N + 1);

@@ -1297,7 +1297,7 @@ void Discret::Elements::ElemagDiffEleCalc<distype>::LocalSolver::evaluate_all(co
     Core::LinAlg::SerialDenseVector& v) const
 {
   int numComp = Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(start_func - 1)
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(start_func)
                     .number_components();
 
   // If the number is not recognised throw an error
@@ -1314,7 +1314,7 @@ void Discret::Elements::ElemagDiffEleCalc<distype>::LocalSolver::evaluate_all(co
   // If there is only one component always use it
   for (int d = 0; d < v.numRows(); ++d)
     v[d] = Global::Problem::instance()
-               ->function_by_id<Core::Utils::FunctionOfSpaceTime>(start_func - 1)
+               ->function_by_id<Core::Utils::FunctionOfSpaceTime>(start_func)
                .evaluate(xyz.data(), t, d % numComp);
 
   return;
@@ -1329,7 +1329,7 @@ void Discret::Elements::ElemagDiffEleCalc<distype>::LocalSolver::compute_functio
     Core::LinAlg::SerialDenseMatrix& v) const
 {
   int numComp = Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(start_func - 1)
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(start_func)
                     .number_components();
 
   // If the number is not recognised throw an error
@@ -1345,10 +1345,9 @@ void Discret::Elements::ElemagDiffEleCalc<distype>::LocalSolver::compute_functio
   // If there is only one component always use it
   for (int d = 0; d < v.numRows(); ++d)
   {
-    std::vector<double> deriv =
-        Global::Problem::instance()
-            ->function_by_id<Core::Utils::FunctionOfSpaceTime>(start_func - 1)
-            .evaluate_spatial_derivative(xyz.data(), t, d % numComp);
+    std::vector<double> deriv = Global::Problem::instance()
+                                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(start_func)
+                                    .evaluate_spatial_derivative(xyz.data(), t, d % numComp);
     for (unsigned int d_der = 0; d_der < nsd_; ++d_der) v(d, d_der) = deriv[d_der];
   }
 
@@ -1364,7 +1363,7 @@ void Discret::Elements::ElemagDiffEleCalc<distype>::LocalSolver::compute_functio
     Core::LinAlg::SerialDenseVector& v) const
 {
   int numComp = Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(start_func - 1)
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(start_func)
                     .number_components();
 
   // If the number is not recognised throw an error
@@ -1381,10 +1380,10 @@ void Discret::Elements::ElemagDiffEleCalc<distype>::LocalSolver::compute_functio
   // If there is only one component always use it
   for (int d = 0; d < v.numRows(); ++d)
     v[d] = (Global::Problem::instance()
-                   ->function_by_id<Core::Utils::FunctionOfSpaceTime>(start_func - 1)
+                   ->function_by_id<Core::Utils::FunctionOfSpaceTime>(start_func)
                    .evaluate(xyz.data(), t + (0.5 * dt), d % numComp) -
                Global::Problem::instance()
-                   ->function_by_id<Core::Utils::FunctionOfSpaceTime>(start_func - 1)
+                   ->function_by_id<Core::Utils::FunctionOfSpaceTime>(start_func)
                    .evaluate(xyz.data(), t - (0.5 * dt), d % numComp)) /
            dt;
 

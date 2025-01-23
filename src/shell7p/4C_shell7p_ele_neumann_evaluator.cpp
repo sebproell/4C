@@ -224,7 +224,7 @@ void Discret::Elements::Shell::evaluate_neumann(Core::Elements::Element& ele,
         {
           function_scale_factors[dim] =
               Global::Problem::instance()
-                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(function_ids[dim].value() - 1)
+                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(function_ids[dim].value())
                   .evaluate(gauss_point_reference_coordinates.data(), total_time, dim);
         }
       }

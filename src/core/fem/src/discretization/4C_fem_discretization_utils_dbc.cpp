@@ -340,10 +340,9 @@ void Core::FE::Utils::Dbc::read_dirichlet_condition(const Teuchos::ParameterList
 
         if (funct[onesetj].has_value() && funct[onesetj].value() > 0)
         {
-          functfac =
-              params.get<const Core::Utils::FunctionManager*>("function_manager")
-                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funct[onesetj].value() - 1)
-                  .evaluate(actnode->x().data(), time, onesetj);
+          functfac = params.get<const Core::Utils::FunctionManager*>("function_manager")
+                         ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funct[onesetj].value())
+                         .evaluate(actnode->x().data(), time, onesetj);
         }
 
         const double value = val[onesetj] * functfac;
@@ -543,7 +542,7 @@ void Core::FE::Utils::Dbc::do_dirichlet_condition(const Teuchos::ParameterList& 
       {
         functimederivfac =
             params.get<const Core::Utils::FunctionManager*>("function_manager")
-                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funct[onesetj].value() - 1)
+                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funct[onesetj].value())
                 .evaluate_time_derivative(actnode->x().data(), time, deg, onesetj);
       }
 

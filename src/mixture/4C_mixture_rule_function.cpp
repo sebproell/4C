@@ -33,7 +33,7 @@ namespace
     for (int id : funct_ids)
     {
       const auto* function =
-          &Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfSpaceTime>(id - 1);
+          &Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfSpaceTime>(id);
 
       const std::string errorMessage =
           "pointer to mass fraction function with id " + std::to_string(id) + " is nullptr!";
