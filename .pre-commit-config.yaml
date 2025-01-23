@@ -79,6 +79,9 @@ repos:
         name: Check for typos in code
         types_or: [c++, c, python, cmake, shell]
         exclude: '(mm$|list_of_tests.cmake)'
+      - id: typos
+        name: Check for typos in documentation
+        types_or: [markdown, rst]
 
   - repo: local
     hooks:

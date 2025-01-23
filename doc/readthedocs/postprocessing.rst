@@ -1,4 +1,3 @@
-
 .. _postprocessing:
 
 Postprocessing
@@ -44,7 +43,7 @@ As per default, running this script on the result (.control) file of the simulat
 
 The ``post_processor`` script has a lot of options to specify the post processing details.
 A complete list of these options is printed to the screen when executing ``./post_processor --help`` .
-Most of these options are self-explanatory. Other ouput format filters are available via the ``--filter`` option.
+Most of these options are self-explanatory. Other output format filters are available via the ``--filter`` option.
 Here the vtu filter is of particular interest when you want to convert the results to VTK file format,
 and did not provide the direct vtk output (see :ref:`above <directvtkoutput>`).
 
@@ -163,7 +162,7 @@ Movies should be playable across platforms (at least Linux/windows/macOS)
 and embeddable inside MS Powerpoint presentations
 without the need of having different movie versions in different formats.
 
-Since the tools to create videos is vast, here we will simply give ony a rough overview of a few tools that are used frequently.
+Since the tools to create videos is vast, here we will simply give a rough overview of a few tools that are used frequently.
 
 **Recoding videos**
 
@@ -178,7 +177,7 @@ Command line based:
 With GUI (freeware):
 
 - Blender (all OS)
-- Shotcut (Windows)
+- Shortcut (Windows)
 
 **Video editing**
 
@@ -186,7 +185,7 @@ If you want to join, cut or render videos in a fancy way, add subtitles, or prov
 you might want to use a tool with more features, which then comes with a graphical user interface:
 
 - Blender (all OS)
-- Shotcut (Windows)
+- Shortcut (Windows)
 
 **Videos from Pictures**
 

@@ -48,7 +48,7 @@ the [user documentation](https://baci.pages.gitlab.lrz.de/baci/readthedocs/4Cset
 
 ### Setup your Integrated Development Environment
 
-We recommend to use an Integrated Develoment Environment (IDE) for code development because it provides many convenient
+We recommend to use an Integrated Development Environment (IDE) for code development because it provides many convenient
 features and also eases to comply with our mandatory code style.
 Set-up instructions for various IDEs can be found in
 the [user documentation](https://baci.pages.gitlab.lrz.de/baci/readthedocs/4Csetup.html#set-up-your-ide).

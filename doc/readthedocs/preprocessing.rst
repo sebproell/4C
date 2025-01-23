@@ -28,7 +28,7 @@ additional information is needed, which is given by two additional files:
 
 #. for the global system parameters (solver, material, step information, etc.), called the *headerfile*, and
 
-#. a file for the correlation between element sets and type declatations, as well as boundary conditions definitions.
+#. a file for the correlation between element sets and type declarations, as well as boundary conditions definitions.
    This is the so-called the *bcfile*.
 
 These three files are merged into an input file for |FOURC| by the program ``pre_exodus``.
@@ -160,7 +160,7 @@ Unlike ``meshio.read``, the command ``abaqus_meshio.read`` will return a model, 
 - ``model`` has attributes materials (from MATERIAL), parts (from PART/END PART) and steps (from STEP)
 - ``model.parts[part_name].mesh`` is again a ``BMesh``, ``model.rootAssembly.instances[instance_name].mesh`` is a transformation of this mesh.
 
-``BModel`` is designed to mimick the way Abaqus systematically stores its data. To access the original ``meshio.Mesh`` one has to use ``model.parts[part_name].mesh``.
+``BModel`` is designed to mimic the way Abaqus systematically stores its data. To access the original ``meshio.Mesh`` one has to use ``model.parts[part_name].mesh``.
 
 Proving that the information from inp is properly stored, the transformation to dat file is done by a simple command
 

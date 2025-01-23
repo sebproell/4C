@@ -77,7 +77,7 @@ Simulations". The terminal command to obtain both prototype files is:
 
 In `tutorial_contact_3d.bc` it can be seen, that the first two blocks of text define the structure elements, which will
 later fill the system matrices. The other text blocks define conditions on parts of the system. The first line of each
-block assignes an (optional) name to the element block/nodeset and the shape of the element type is specified. The next
+block assigns an (optional) name to the element block/nodeset and the shape of the element type is specified. The next
 part has already been filled in by `pre_exodus`. For our simple geometry and discretization it can easily be checked
 that the number of elements/nodes in the corresponding element blocks and nodesets is correct. Next, the Section of
 the `.dat` file under which this information will be listed is given. the structure element properties are listed
@@ -93,7 +93,7 @@ element type/condition specific set of parameters is given and the name of the e
 of possible options can be found in the `.bc` default file.
 
 Remark: Apart from the separate listing of problem specific conditions, Dirichlet and Neumann BCs (as well as many other
-types of conditions) are also listed seperately, depending on the geometric entity that they are imposed on, e.g.
+types of conditions) are also listed separately, depending on the geometric entity that they are imposed on, e.g.
 points, lines, surfaces or volumes.
 
 The parameters for the definition of a DBC are:
@@ -116,13 +116,13 @@ The prototype of the `.head` file contains an extensive list of possible paramet
 your editor to navigate the 13000 lines of text.
 
 As we are setting up a structural contact problem, not all sections and parameters are required (e.g. sections
-concerning the simulation of fluids, etc. can be left out). If they are not specified explicitely in our input file, the
+concerning the simulation of fluids, etc. can be left out). If they are not specified explicitly in our input file, the
 parameters take on default values. Some sections that are required by all problem types
 include `PROBLEM SIZE`, `PROBLEM TYPE`, `DISCRETIZATION`, `IO` (Input/Output), at least one `SOLVER` section (for
 contact problems we need to specify two solvers: one for the state, where not contact is active, and one for the state
 with active contact) and a `MATERIALS` section. The time integration method `DYNAMICTYPE` (Generalized alpha method),
 time step size `TIMESTEP` and final time `MAXTIME` are also specified for structural dynamics. An important parameter
-is `RESULTSEVERY`, which specifies how often output is written and thus directly controles the size of the output file.
+is `RESULTSEVERY`, which specifies how often output is written and thus directly controls the size of the output file.
 
 The contact specific parameters are given under `--MORTAR COUPLING`. Dual Lagrange multipliers are chosen for the
 coupling of the interface. Either the `BruteForceEleBased` algorithm, or the more efficient `BinaryTree` can be chosen

@@ -10,7 +10,7 @@ However, not only software developers, also users of software written by others 
 Overview of debugging and profiling tools
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In the following various debugging and profiling tools are desribed that may be of help when developing or working with |FOURC|.
+In the following various debugging and profiling tools are described that may be of help when developing or working with |FOURC|.
 
 - Get MPI collective timer statistics with a :ref:`time monitor <Teuchos-Time-Monitor>` from ``Trilinos`` package ``Teuchos``
 - Code profiling of |FOURC| with :ref:`callgrind <profiling_callgrind>`

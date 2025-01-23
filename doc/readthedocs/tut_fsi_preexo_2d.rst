@@ -386,7 +386,7 @@ to |FOURC| and postprocess the results.
 Postprocessing
 --------------
 
-You can postprocess your results with any vizualization software you
+You can postprocess your results with any visualization software you
 like. In this tutorial, we choose *Paraview*.
 
 Before you can open the results, you have to generate a filter again.
@@ -435,7 +435,7 @@ There are two possibilities for monolithic schemes:
 
 In order to use a monolithic solver, change the coupling algorithm
 ``COUPALGO`` in the ``FSI DYNAMIC`` section in the \*.head-file.
-Additionaly, special care has to be taken of the interface degrees of
+Additionally, special care has to be taken of the interface degrees of
 freedom, that are subject to Dirichlet boundary conditions. The
 interface is always governed by the master field. The slave interface
 degrees of freedom do not occur in the global system of equations and,
@@ -481,7 +481,7 @@ fluid split
    in order to remove the Dirichlet boundary conditions from the fluid
    (=slave) interface degrees of freedom.
 
-Create the input file as desribed above. Start |FOURC| as usual.
+Create the input file as described above. Start |FOURC| as usual.
 
 structure split
 ~~~~~~~~~~~~~~~
@@ -501,4 +501,4 @@ structure split
    in order to remove the Dirichlet boundary conditions from the
    structure (=slave) interface degrees of freedom.
 
-Create the input file as desribed above. Start |FOURC| as usual.
+Create the input file as described above. Start |FOURC| as usual.

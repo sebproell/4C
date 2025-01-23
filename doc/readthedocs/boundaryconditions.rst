@@ -21,9 +21,9 @@ The number to be entered in ``num`` is the number of conditions to follow.
 
 Each subsequent line starts with an ``E <set> -``, where ``set`` is the number of the TOPOLOGY set defined in terms of points, lines, surfaces and volumes, respectively.
 
-Note that all boundary conditions are given in terms of node sets
-Boundary conditions of a vector tye may be applied in arbitrary coordinate directions,
-which are not necessarily the original coordinate system, in which the system is defined.
+Note that all boundary conditions are given in terms of node sets.
+Boundary conditions may be applied in arbitrary coordinate directions,
+which do not need to coincide with the original coordinate system of the geometry.
 For this aspect one may define a local (rotated) coordinate system.
 
 .. `locsysconditions`:
@@ -36,7 +36,7 @@ The coordinate system is given by an axis :math:`\mathbf{n}` and an angle :math:
 around which the coordinate is rotated **clockwise**.
 
 Since the axis is a unit vector, the angle is given as the length of the vector,
-so that the complete roation can be entered in three values:
+so that the complete rotation can be entered in three values:
 :math:`[\alpha \cdot n_x, \, \alpha \cdot n_y, \, \alpha \cdot n_z]`.
 
 The complete definition of a local coordinate system writes:
@@ -205,7 +205,7 @@ A spring-dashpot condition, also called a Robin boundary condition,
 is used to give a surface boundary (and only surface boundaries!)
 a stiffness and/or viscosity with respect to its displacement.
 For each degree of freedom the stiffness and/or viscosity may be considered or not.
-Also, both stiffness and viscosity may depend on a function defintion.
+Also, both stiffness and viscosity may depend on a function definition.
 The Direction can be given in the global coordinate system or with respect to the surface normal.
 The input looks like this:
 
@@ -268,7 +268,7 @@ Some applications (typically in structural / solid mechanics) require the coupli
 nodes shall remain independent (e.g. joints and hinges in frames).
 While it is very easy to couple all(!) DoFs of several nodes at the same geometrical position (by simply merging the nodes into one node), things are more complicated if only certain DoFs are to be coupled.
 While it would always be possible to introduce this coupling as a Dirichlet condition / Multipoint
-Constraint into the final system of equations, we have decided to implement this at a more fundamental level by changing the assigment of DoFs according to the existing coupling
+Constraint into the final system of equations, we have decided to implement this at a more fundamental level by changing the assignment of DoFs according to the existing coupling
 conditions.
 Thus, if a point coupling condition is introduced for a set of nodes, the DoFs to be coupled are identified and the same(!) DoFs are then assigned to all participating nodes,
 while the remaining uncoupled DoFs are created and assigned independently for each node. This required some changes in the way nodal DoFs are assigned and handled in |FOURC|.
