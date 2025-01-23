@@ -2572,32 +2572,45 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
   }
 
   /*--------------------------------------------------------------------*/
-  // Fourier's law
+  // Fourier's law for linear and possibly anisotropic heat transport
   {
-    auto m = std::make_shared<Mat::MaterialDefinition>("THERM_FourierIso",
-        "isotropic (linear) Fourier's law of heat conduction", Core::Materials::m_th_fourier_iso);
+    auto m = std::make_shared<Mat::MaterialDefinition>("MAT_Fourier",
+        "anisotropic linear Fourier's law of heat conduction", Core::Materials::m_thermo_fourier);
 
     m->add_component(entry<double>("CAPA", {.description = "volumetric heat capacity"}));
-    m->add_component(entry<double>("CONDUCT", {.description = "thermal conductivity"}));
+    m->add_component(entry<int>("CONDUCT_PARA_NUM",
+        {.description = "Parameter representing the relevant number of entries in the thermal "
+                        "conductivity tensor. Setting its value to 1 resembles a scalar "
+                        "conductivity, 2 or 3 a diagonal conductivity and 4 or 9 the full "
+                        "conductivity tensor in two and three dimensions respectively."}));
+    m->add_component(entry<std::vector<double>>("CONDUCT",
+        {.description = "Vector of values representing the thermal conductivity tensor in a "
+                        "row-wise ordering, with the vector size given by CONDUCT_PARA_NUM.",
+            .size = from_parameter<int>("CONDUCT_PARA_NUM")}));
 
     Mat::append_material_definition(matlist, m);
   }
 
   /*----------------------------------------------------------------------*/
-  // material for heat transport due to Fourier-type thermal conduction and the Soret effect (fang
-  // 06/15)
+  // material for heat transport due to Fourier-type thermal conduction and the Soret effect
   {
-    auto matsoret = std::make_shared<Mat::MaterialDefinition>("MAT_soret",
+    auto m = std::make_shared<Mat::MaterialDefinition>("MAT_soret",
         "material for heat transport due to Fourier-type thermal conduction and the Soret effect",
         Core::Materials::m_soret);
 
-    // mandatory parameters
-    matsoret->add_component(entry<double>("CAPA", {.description = "volumetric heat capacity"}));
-    matsoret->add_component(entry<double>("CONDUCT", {.description = "thermal conductivity"}));
-    matsoret->add_component(entry<double>("SORET", {.description = "Soret coefficient"}));
+    m->add_component(entry<double>("CAPA", {.description = "volumetric heat capacity"}));
+    m->add_component(entry<int>("CONDUCT_PARA_NUM",
+        {.description = "Parameter representing the relevant number of entries in the thermal "
+                        "conductivity tensor. Setting its value to 1 resembles a scalar "
+                        "conductivity, 2 or 3 a diagonal conductivity and 4 or 9 the full "
+                        "conductivity tensor in two and three dimensions respectively."}));
+    m->add_component(entry<std::vector<double>>("CONDUCT",
+        {.description = "Vector of values representing the thermal conductivity tensor in a "
+                        "row-wise ordering, with the vector size given by CONDUCT_PARA_NUM.",
+            .size = from_parameter<int>("CONDUCT_PARA_NUM")}));
+    m->add_component(entry<double>("SORET", {.description = "Soret coefficient"}));
 
-    // add Soret material to global list of valid materials
-    Mat::append_material_definition(matlist, matsoret);
+    Mat::append_material_definition(matlist, m);
   }
 
   /*----------------------------------------------------------------------*/

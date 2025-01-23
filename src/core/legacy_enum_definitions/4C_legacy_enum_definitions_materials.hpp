@@ -174,15 +174,16 @@ namespace Core::Materials
     m_superelast,             ///< Superelastic material behaviour of shape memory alloys
     m_stvenant,               ///< St.Venant Kirchhoff material
     m_sutherland,             ///< material with temperature dependence according to Sutherland law
-    m_th_fourier_iso,         ///< isotropic (linear) Fourier's law of heat conduction
-    m_thermoplhyperelast,     ///< Temperature-dependent hyperelasticity and von Mises plasticity
-    m_thermopllinelast,       ///< Temperature-dependent Hooke elasticity and von Mises plasticity
-    m_thermostvenant,         ///< St.Venant Kirchhoff material with temperature
-    m_viscoanisotropic,       ///< Viscous Anisotropic Fiber Material
-    m_viscoelasthyper,        ///< viscohyperelastic material
-    m_visconeohooke,          ///< Viscous NeoHookean Material
-    m_vp_no_yield_surface,    ///< visco-plastic finite strain material law without yield surface
-    m_vp_robinson,            ///< Robinson's visco-plastic material
+    m_thermo_fourier,  ///< (Possibly anisotropic) linear implementation of Fourier's law of heat
+                       ///< conduction
+    m_thermoplhyperelast,   ///< Temperature-dependent hyperelasticity and von Mises plasticity
+    m_thermopllinelast,     ///< Temperature-dependent Hooke elasticity and von Mises plasticity
+    m_thermostvenant,       ///< St.Venant Kirchhoff material with temperature
+    m_viscoanisotropic,     ///< Viscous Anisotropic Fiber Material
+    m_viscoelasthyper,      ///< viscohyperelastic material
+    m_visconeohooke,        ///< Viscous NeoHookean Material
+    m_vp_no_yield_surface,  ///< visco-plastic finite strain material law without yield surface
+    m_vp_robinson,          ///< Robinson's visco-plastic material
     mes_anisoactivestress_evolution,  ///< anisotropic single fiber summand with active stress
                                       ///< computed through a simplified Bestel-Clement-Sorine
                                       ///< model
