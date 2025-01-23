@@ -418,8 +418,8 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_elch_kinetics_at_i
       // n is one if charge transfer is involved, multiple electron transfers "being unlikely in
       // an elementary step
 
-      const auto k_a = cond.parameters().get<double>("k_a");
-      const auto k_c = cond.parameters().get<double>("k_c");
+      const auto k_a = cond.parameters().get<double>("K_A");
+      const auto k_c = cond.parameters().get<double>("K_C");
       const auto beta = cond.parameters().get<double>("BETA");
       const auto dlcap = cond.parameters().get<double>("DL_SPEC_CAP");
       if (dlcap != 0.0)
@@ -535,8 +535,8 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_elch_kinetics_at_i
       // Bard and Faulkner, 2001, pp. 94 ff; pp. 99 eq. 3.4.10
       // reaction model for a one-step, one-electron process (elementar step)
       // O + e -> R
-      const auto e0 = cond.parameters().get<double>("e0");
-      const auto k0 = cond.parameters().get<double>("k0");
+      const auto e0 = cond.parameters().get<double>("E0");
+      const auto k0 = cond.parameters().get<double>("K0");
       const auto beta = cond.parameters().get<double>("BETA");
       const auto c_c0 = cond.parameters().get<double>("C_C0");
       const auto c_a0 = cond.parameters().get<double>("C_A0");
@@ -980,8 +980,8 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_electrode_status_a
       // n is one if charge transfer is involved, multiple electron transfers "being unlikely in
       // an elementary step
 
-      const auto k_a = cond.parameters().get<double>("k_a");
-      const auto k_c = cond.parameters().get<double>("k_c");
+      const auto k_a = cond.parameters().get<double>("K_A");
+      const auto k_c = cond.parameters().get<double>("K_C");
       const auto beta = cond.parameters().get<double>("BETA");
       const auto dlcap = cond.parameters().get<double>("DL_SPEC_CAP");
       if (dlcap != 0.0)
@@ -1107,8 +1107,8 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_electrode_status_a
       // Bard and Faulkner, 2001, pp. 94 ff; pp. 99 eq. 3.4.10
       // reaction model for a one-step, one-electron process
       // O + e -> R
-      const auto e0 = cond.parameters().get<double>("e0");
-      const auto k0 = cond.parameters().get<double>("k0");
+      const auto e0 = cond.parameters().get<double>("E0");
+      const auto k0 = cond.parameters().get<double>("K0");
       const auto beta = cond.parameters().get<double>("BETA");
       const auto c_c0 = cond.parameters().get<double>("C_C0");
       const auto c_a0 = cond.parameters().get<double>("C_A0");
@@ -1211,8 +1211,8 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_electrode_status_a
 
     case Inpar::ElCh::nernst:
     {
-      const auto e0 = cond.parameters().get<double>("e0");
-      const auto c0 = cond.parameters().get<double>("c0");
+      const auto e0 = cond.parameters().get<double>("E0");
+      const auto c0 = cond.parameters().get<double>("C0");
       if (zerocur != 0)
         FOUR_C_THROW(
             "The electrode kinetics flag zero_cur is not implemented for this specific kinetic "

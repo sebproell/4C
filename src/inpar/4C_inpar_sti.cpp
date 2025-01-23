@@ -19,7 +19,6 @@ FOUR_C_NAMESPACE_OPEN
  *------------------------------------------------------------------------*/
 void Inpar::STI::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -108,8 +107,6 @@ void Inpar::STI::set_valid_parameters(Teuchos::ParameterList& list)
 void Inpar::STI::set_valid_conditions(
     std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
 {
-  using namespace Input;
-
   return;
 }
 

@@ -10,6 +10,7 @@
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_beaminteraction.hpp"
 #include "4C_inpar_geometry_pair.hpp"
+#include "4C_io_linecomponent.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_parameter_list.hpp"
 
@@ -50,7 +51,6 @@ void Inpar::BeamToSolid::beam_to_solid_interaction_get_string(
  */
 void Inpar::BeamToSolid::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 

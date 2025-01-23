@@ -11,7 +11,9 @@
 
 #include "4C_config.hpp"
 
+#include "4C_fem_condition_definition.hpp"
 #include "4C_io_input_parameter_container.hpp"
+#include "4C_io_input_spec_builders.hpp"
 
 #include <Teuchos_Array.hpp>
 
@@ -436,129 +438,217 @@ namespace Input
   };
 
 
-  /// add a separator followed by a single integer value
-  ///
-  /// The name on the input line becomes the name used to put the int value into
-  /// the parsed container.
-  template <typename DefinitionType>
-  inline void add_named_int(const std::shared_ptr<DefinitionType>& definition,
+  inline void add_named_int(
+      const std::shared_ptr<Core::Conditions::ConditionDefinition>& definition,
       const std::string& name, const std::string& description = {}, const int defaultvalue = 0,
       const bool optional = false, const bool none_allowed = false)
   {
-    definition->add_component(
-        std::make_shared<Input::SeparatorComponent>(name, description, optional));
-    IntComponentData data{};
-    data.default_value = defaultvalue;
-    data.optional = optional;
-    data.none_allowed = none_allowed;
-    definition->add_component(std::make_shared<Input::IntComponent>(name, data));
+    using namespace Core::IO;
+    using namespace Core::IO::InputSpecBuilders;
+
+    if (none_allowed)
+    {
+      if (optional)
+      {
+        definition->add_component(entry<Noneable<int>>(
+            name, {.description = description, .default_value = defaultvalue}));
+      }
+      else
+      {
+        definition->add_component(entry<Noneable<int>>(name, {.description = description}));
+      }
+    }
+    else
+    {
+      if (optional)
+      {
+        definition->add_component(
+            entry<int>(name, {.description = description, .default_value = defaultvalue}));
+      }
+      else
+      {
+        definition->add_component(entry<int>(name, {.description = description}));
+      }
+    }
   }
 
   /// add a separator followed by a number integer values
   ///
   /// The name on the input line becomes the name used to put the int value into
   /// the parsed Container.
-  template <typename DefinitionType>
-  inline void add_named_int_vector(const std::shared_ptr<DefinitionType>& definition,
+  inline void add_named_int_vector(
+      const std::shared_ptr<Core::Conditions::ConditionDefinition>& definition,
       const std::string& name, const std::string& description, const int size,
       const int defaultvalue = 0, const bool optional = false, const bool none_allowed = false)
   {
-    definition->add_component(
-        std::make_shared<Input::SeparatorComponent>(name, description, optional));
-    IntComponentData data{};
-    data.default_value = defaultvalue;
-    data.optional = optional;
-    data.none_allowed = none_allowed;
-    definition->add_component(std::make_shared<Input::IntVectorComponent>(name, size, data));
+    using namespace Core::IO;
+    using namespace Core::IO::InputSpecBuilders;
+
+    if (none_allowed)
+    {
+      if (optional)
+      {
+        definition->add_component(entry<std::vector<Noneable<int>>>(
+            name, {.description = description,
+                      .default_value = std::vector<Noneable<int>>(size, defaultvalue),
+                      .size = size}));
+      }
+      else
+      {
+        definition->add_component(
+            entry<std::vector<Noneable<int>>>(name, {.description = description, .size = size}));
+      }
+    }
+    else
+    {
+      if (optional)
+      {
+        definition->add_component(
+            entry<std::vector<int>>(name, {.description = description,
+                                              .default_value = std::vector<int>(size, defaultvalue),
+                                              .size = size}));
+      }
+      else
+      {
+        definition->add_component(
+            entry<std::vector<int>>(name, {.description = description, .size = size}));
+      }
+    }
   }
 
   /// add a separator followed by a number integer values
   ///
   /// The name on the input line becomes the name used to put the int value into
   /// the parsed Container.
-  template <typename DefinitionType>
-  inline void add_named_int_vector(const std::shared_ptr<DefinitionType>& definition,
+  inline void add_named_int_vector(
+      const std::shared_ptr<Core::Conditions::ConditionDefinition>& definition,
       const std::string& name, const std::string& description, const std::string& sizename,
       const int defaultvalue = 0, const bool optional = false, const bool none_allowed = false)
   {
-    definition->add_component(
-        std::make_shared<Input::SeparatorComponent>(name, description, optional));
-    IntComponentData data{};
-    data.default_value = defaultvalue;
-    data.optional = optional;
-    data.none_allowed = none_allowed;
-    definition->add_component(
-        std::make_shared<Input::IntVectorComponent>(name, LengthFromInt(sizename), data));
+    using namespace Core::IO;
+    using namespace Core::IO::InputSpecBuilders;
+
+    if (none_allowed)
+    {
+      if (optional)
+      {
+        definition->add_component(entry<std::vector<Noneable<int>>>(
+            name, {.description = description,
+                      .default_value = std::vector<Noneable<int>>(),
+                      .size = from_parameter<int>(sizename)}));
+      }
+      else
+      {
+        definition->add_component(entry<std::vector<Noneable<int>>>(
+            name, {.description = description, .size = from_parameter<int>(sizename)}));
+      }
+    }
+    else
+    {
+      if (optional)
+      {
+        definition->add_component(
+            entry<std::vector<int>>(name, {.description = description,
+                                              .default_value = std::vector<int>(),
+                                              .size = from_parameter<int>(sizename)}));
+      }
+      else
+      {
+        definition->add_component(entry<std::vector<int>>(
+            name, {.description = description, .size = from_parameter<int>(sizename)}));
+      }
+    }
   }
 
   /// add a separator followed by a single real value
   ///
   /// The name on the input line becomes the name used to put the value into the parsed Container
-  template <typename DefinitionType>
-  inline void add_named_real(const std::shared_ptr<DefinitionType>& definition,
+  inline void add_named_real(
+      const std::shared_ptr<Core::Conditions::ConditionDefinition>& definition,
       const std::string& name, const std::string& description = {}, const double defaultvalue = 0.0,
       const bool optional = false)
   {
-    definition->add_component(
-        std::make_shared<Input::SeparatorComponent>(name, description, optional));
-    definition->add_component(
-        std::make_shared<Input::RealComponent>(name, RealComponentData{defaultvalue, optional}));
+    using namespace Core::IO::InputSpecBuilders;
+
+    if (optional)
+    {
+      definition->add_component(
+          entry<double>(name, {.description = description, .default_value = defaultvalue}));
+    }
+    else
+    {
+      definition->add_component(entry<double>(name, {.description = description}));
+    }
   }
 
   /// add a separator followed by a number of real values
   ///
   /// The name on the input line becomes the name used to put the value into the parsed Container.
-  template <typename DefinitionType>
-  inline void add_named_real_vector(const std::shared_ptr<DefinitionType>& definition,
+  inline void add_named_real_vector(
+      const std::shared_ptr<Core::Conditions::ConditionDefinition>& definition,
       const std::string& name, const std::string& description, const int size,
       const double defaultvalue = 0.0, const bool optional = false)
   {
-    definition->add_component(
-        std::make_shared<Input::SeparatorComponent>(name, description, optional));
-    definition->add_component(std::make_shared<Input::RealVectorComponent>(
-        name, size, RealComponentData{defaultvalue, optional}));
+    using namespace Core::IO::InputSpecBuilders;
+
+    if (optional)
+    {
+      definition->add_component(entry<std::vector<double>>(
+          name, {.description = description,
+                    .default_value = std::vector<double>(size, defaultvalue),
+                    .size = size}));
+    }
+    else
+    {
+      definition->add_component(
+          entry<std::vector<double>>(name, {.description = description, .size = size}));
+    }
   }
 
   /// add a separator followed by a number of real values
   ///
   /// The name on the input line becomes the name used to put the value into the parsed Container.
-  template <typename DefinitionType>
-  inline void add_named_real_vector(const std::shared_ptr<DefinitionType>& definition,
+  inline void add_named_real_vector(
+      const std::shared_ptr<Core::Conditions::ConditionDefinition>& definition,
       const std::string& name, const std::string& description, const std::string& sizename,
       const double defaultvalue = 0.0, const bool optional = false)
   {
-    definition->add_component(
-        std::make_shared<Input::SeparatorComponent>(name, description, optional));
-    definition->add_component(std::make_shared<Input::RealVectorComponent>(
-        name, LengthFromInt(sizename), Input::RealComponentData{defaultvalue, optional}));
-  }
+    using namespace Core::IO::InputSpecBuilders;
 
-  /// add a separator followed by a single string value
-  ///
-  /// The name on the input line becomes the name used to put the value into the parsed Container
-  template <typename DefinitionType>
-  inline void add_named_string(const std::shared_ptr<DefinitionType>& definition,
-      const std::string& name, const std::string& description, const std::string& defaultvalue,
-      const bool optional = false)
-  {
-    definition->add_component(
-        std::make_shared<Input::SeparatorComponent>(name, description, optional));
-    definition->add_component(
-        std::make_shared<Input::StringComponent>(name, defaultvalue, optional));
+    if (optional)
+    {
+      definition->add_component(
+          entry<std::vector<double>>(name, {.description = description,
+                                               .default_value = std::vector<double>(),
+                                               .size = from_parameter<int>(sizename)}));
+    }
+    else
+    {
+      definition->add_component(entry<std::vector<double>>(
+          name, {.description = description, .size = from_parameter<int>(sizename)}));
+    }
   }
 
   /// add a separator followed by a single Boolean value
   ///
   /// The name on the input line becomes the name used to put the bool value into
   /// the parsed Container.
-  template <typename DefinitionType>
-  inline void add_named_bool(const std::shared_ptr<DefinitionType>& definition,
+  inline void add_named_bool(
+      const std::shared_ptr<Core::Conditions::ConditionDefinition>& definition,
       const std::string& name, const std::string& description, const bool defaultvalue = false,
       const bool optional = false)
   {
-    definition->add_component(
-        std::make_shared<Input::SeparatorComponent>(name, description, optional));
-    definition->add_component(std::make_shared<Input::BoolComponent>(name, defaultvalue, optional));
+    using namespace Core::IO::InputSpecBuilders;
+
+    if (optional)
+    {
+      definition->add_component(
+          entry<bool>(name, {.description = description, .default_value = defaultvalue}));
+    }
+    else
+    {
+      definition->add_component(entry<bool>(name, {.description = description}));
+    }
   }
 
   /*!
@@ -591,15 +681,23 @@ namespace Input
    * @endcode
    * and a print_string "integer vector retrieved from the FILE".
    */
-  template <typename T, typename DefinitionType>
-  inline void add_named_processed_component(const std::shared_ptr<DefinitionType>& definition,
+  template <typename T>
+  inline void add_named_processed_component(
+      const std::shared_ptr<Core::Conditions::ConditionDefinition>& definition,
       const std::string& name, const std::string& separator_description,
       const std::function<T(const std::string&)>& process_operation, const bool optional = false)
   {
+    using namespace Core::IO;
+    using namespace Core::IO::InputSpecBuilders;
+
     definition->add_component(
-        std::make_shared<Input::SeparatorComponent>(name, separator_description, optional));
-    definition->add_component(
-        std::make_shared<Input::ProcessedComponent>(name, process_operation, optional));
+        user_defined<T>(name, {.description = separator_description, .required = !optional},
+            [name, process_operation](ValueParser& parser, InputParameterContainer& container)
+            {
+              parser.consume(name);
+              const std::string& read_string = parser.read<std::string>();
+              container.add(name, process_operation(read_string));
+            }));
   }
 
 
@@ -611,16 +709,34 @@ namespace Input
    *  2. A SelectionComponent with the same @p name , @p datfilevalues, @p condvalues and an @p
    * optional tag.
    */
-  template <typename DefinitionType>
-  inline void add_named_selection_component(const std::shared_ptr<DefinitionType>& definition,
+  inline void add_named_selection_component(
+      const std::shared_ptr<Core::Conditions::ConditionDefinition>& definition,
       const std::string& name, const std::string& separator_description,
       const std::string& defaultvalue, const Teuchos::Array<std::string>& datfilevalues,
       const Teuchos::Array<std::string>& condvalues, bool optional = false)
   {
-    definition->add_component(
-        std::make_shared<Input::SeparatorComponent>(name, separator_description, optional));
-    definition->add_component(std::make_shared<Input::SelectionComponent>(
-        name, defaultvalue, datfilevalues, condvalues, optional));
+    using namespace Core::IO;
+    using namespace Core::IO::InputSpecBuilders;
+
+    std::vector<std::pair<std::string, std::string>> choices;
+    choices.reserve(datfilevalues.size());
+    for (int i = 0; i < condvalues.size(); ++i)
+    {
+      choices.emplace_back(datfilevalues[i], condvalues[i]);
+    }
+
+    std::optional<std::string> default_value;
+    if (optional)
+    {
+      auto default_value_it = std::find_if(choices.begin(), choices.end(),
+          [&](const auto& choice) { return choice.first == defaultvalue; });
+      FOUR_C_ASSERT_ALWAYS(
+          default_value_it != choices.end(), "Invalid default value for selection component.");
+      default_value = default_value_it->second;
+    }
+
+    definition->add_component(selection<std::string>(
+        name, choices, {.description = separator_description, .default_value = default_value}));
   }
 
   /*!
@@ -631,16 +747,35 @@ namespace Input
    *  2. A SelectionComponent with the same @p name , @p datfilevalues, @p condvalues and an @p
    * optional tag.
    */
-  template <typename DefinitionType>
-  inline void add_named_selection_component(const std::shared_ptr<DefinitionType>& definition,
+  inline void add_named_selection_component(
+      const std::shared_ptr<Core::Conditions::ConditionDefinition>& definition,
       const std::string& name, const std::string& separator_description,
       const std::string& defaultvalue, const Teuchos::Array<std::string>& datfilevalues,
       const Teuchos::Array<int>& condvalues, bool optional = false)
   {
-    definition->add_component(
-        std::make_shared<Input::SeparatorComponent>(name, separator_description, optional));
-    definition->add_component(std::make_shared<Input::SelectionComponent>(
-        name, defaultvalue, datfilevalues, condvalues, optional));
+    using namespace Core::IO;
+    using namespace Core::IO::InputSpecBuilders;
+
+    std::vector<std::pair<std::string, int>> choices;
+    choices.reserve(datfilevalues.size());
+    for (int i = 0; i < condvalues.size(); ++i)
+    {
+      choices.emplace_back(datfilevalues[i], condvalues[i]);
+    }
+
+    std::optional<int> default_value;
+    if (optional)
+    {
+      // Find the associated int default value
+      auto default_value_it = std::find_if(choices.begin(), choices.end(),
+          [&](const auto& choice) { return choice.first == defaultvalue; });
+      FOUR_C_ASSERT_ALWAYS(
+          default_value_it != choices.end(), "Invalid default value for selection component.");
+      default_value = default_value_it->second;
+    }
+
+    definition->add_component(selection<int>(
+        name, choices, {.description = separator_description, .default_value = default_value}));
   }
 
 }  // namespace Input

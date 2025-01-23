@@ -384,52 +384,29 @@ void Inpar::XFEM::set_valid_conditions(
 {
   using namespace Input;
 
-  // define standard Dirichlet condition components
-  std::vector<std::shared_ptr<LineComponent>> dirichletbundcomponents;
+  using namespace Core::IO;
+  using namespace Core::IO::InputSpecBuilders;
 
-  dirichletbundcomponents.emplace_back(std::make_shared<SeparatorComponent>("NUMDOF"));
-  dirichletbundcomponents.emplace_back(std::make_shared<IntComponent>("NUMDOF"));
+  auto dirichletbundcomponents = anonymous_group({
+      entry<int>("NUMDOF"),
+      entry<std::vector<int>>("ONOFF", {.size = from_parameter<int>("NUMDOF")}),
+      entry<std::vector<double>>("VAL", {.size = from_parameter<int>("NUMDOF")}),
+      entry<std::vector<Noneable<int>>>("FUNCT", {.size = from_parameter<int>("NUMDOF")}),
+      selection<std::string>(
+          "TAG", {{"none", "none"}, {"monitor_reaction", "monitor_reaction"}}, {.required = false}),
+  });
 
-  dirichletbundcomponents.emplace_back(std::make_shared<SeparatorComponent>("ONOFF"));
-  dirichletbundcomponents.emplace_back(
-      std::make_shared<IntVectorComponent>("ONOFF", LengthFromInt("NUMDOF")));
-  dirichletbundcomponents.emplace_back(std::make_shared<SeparatorComponent>("VAL"));
-  dirichletbundcomponents.emplace_back(
-      std::make_shared<RealVectorComponent>("VAL", LengthFromInt("NUMDOF")));
-  dirichletbundcomponents.emplace_back(std::make_shared<SeparatorComponent>("FUNCT"));
-  dirichletbundcomponents.emplace_back(std::shared_ptr<LineComponent>(
-      new IntVectorComponent("FUNCT", LengthFromInt("NUMDOF"), {0, true, false})));
-
-  // optional
-  dirichletbundcomponents.emplace_back(std::make_shared<SeparatorComponent>("TAG", "", true));
-  dirichletbundcomponents.emplace_back(std::make_shared<SelectionComponent>("TAG", "none",
-      Teuchos::tuple<std::string>("none", "monitor_reaction"),
-      Teuchos::tuple<std::string>("none", "monitor_reaction"), true));
-
-  // define standard Neumann condition components
-  std::vector<std::shared_ptr<LineComponent>> neumanncomponents;
-
-  neumanncomponents.emplace_back(std::make_shared<SeparatorComponent>("NUMDOF"));
-  neumanncomponents.emplace_back(std::make_shared<IntComponent>("NUMDOF"));
-
-  neumanncomponents.emplace_back(std::make_shared<SeparatorComponent>("ONOFF"));
-  neumanncomponents.emplace_back(
-      std::make_shared<IntVectorComponent>("ONOFF", LengthFromInt("NUMDOF")));
-  neumanncomponents.emplace_back(std::make_shared<SeparatorComponent>("VAL"));
-  neumanncomponents.emplace_back(
-      std::make_shared<RealVectorComponent>("VAL", LengthFromInt("NUMDOF")));
-  neumanncomponents.emplace_back(std::make_shared<SeparatorComponent>("FUNCT"));
-  neumanncomponents.emplace_back(std::shared_ptr<LineComponent>(
-      new IntVectorComponent("FUNCT", LengthFromInt("NUMDOF"), {0, true, false})));
-
-  // optional
-  neumanncomponents.emplace_back(std::make_shared<SeparatorComponent>("TYPE", "", true));
-  neumanncomponents.emplace_back(std::make_shared<SelectionComponent>("TYPE", "Live",
-      Teuchos::tuple<std::string>(
-          "Live", "Dead", "pseudo_orthopressure", "orthopressure", "PressureGrad"),
-      Teuchos::tuple<std::string>("neum_live", "neum_dead", "neum_pseudo_orthopressure",
-          "neum_orthopressure", "neum_pgrad"),
-      true));
+  auto neumanncomponents = anonymous_group({
+      entry<int>("NUMDOF"),
+      entry<std::vector<int>>("ONOFF", {.size = from_parameter<int>("NUMDOF")}),
+      entry<std::vector<double>>("VAL", {.size = from_parameter<int>("NUMDOF")}),
+      entry<std::vector<Noneable<int>>>("FUNCT", {.size = from_parameter<int>("NUMDOF")}),
+      selection<std::string>("TYPE",
+          {{"Live", "neum_live"}, {"Dead", "neum_dead"},
+              {"pseudo_orthopressure", "neum_pseudo_orthopressure"},
+              {"orthopressure", "neum_orthopressure"}, {"PressureGrad", "neum_pgrad"}},
+          {.default_value = "neum_live"}),
+  });
 
   std::shared_ptr<Core::Conditions::ConditionDefinition> movingfluid =
       std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN FLUID MESH VOL CONDITIONS",
@@ -469,37 +446,27 @@ void Inpar::XFEM::set_valid_conditions(
       Teuchos::tuple<std::string>("zero", "funct", "implementation"),
       Teuchos::tuple<std::string>("zero", "funct", "implementation"), true);
 
-  for (unsigned i = 0; i < dirichletbundcomponents.size(); ++i)
-  {
-    xfem_surf_displacement->add_component(dirichletbundcomponents[i]);
-  }
+  xfem_surf_displacement->add_component(dirichletbundcomponents);
 
   condlist.push_back(xfem_surf_displacement);
 
   //*----------------*/
   // Levelset field condition components
 
-  std::vector<std::shared_ptr<Input::LineComponent>> levelsetfield_components;
-
-  levelsetfield_components.push_back(std::make_shared<Input::SeparatorComponent>("COUPLINGID"));
-  levelsetfield_components.push_back(std::make_shared<Input::IntComponent>("COUPLINGID"));
-
-  levelsetfield_components.push_back(
-      std::make_shared<Input::SeparatorComponent>("LEVELSETFIELDNO"));
-  levelsetfield_components.push_back(std::make_shared<Input::IntComponent>("LEVELSETFIELDNO"));
-
-  // define which boolean operator is used for combining this level-set field with the previous one
-  // with smaller coupling id
-  levelsetfield_components.push_back(std::make_shared<Input::SeparatorComponent>("BOOLEANTYPE"));
-  levelsetfield_components.push_back(std::make_shared<Input::SelectionComponent>("BOOLEANTYPE",
-      "none", Teuchos::tuple<std::string>("none", "cut", "union", "difference", "sym_difference"),
-      Teuchos::tuple<std::string>("none", "cut", "union", "difference", "sym_difference"), false));
-
-  // define which complementary operator is applied after combining the level-set field with a
-  // boolean operator with the previous one
-  levelsetfield_components.push_back(std::make_shared<Input::SeparatorComponent>("COMPLEMENTARY"));
-  levelsetfield_components.push_back(std::make_shared<Input::BoolComponent>("COMPLEMENTARY"));
-
+  auto levelsetfield_components = anonymous_group({
+      entry<int>("COUPLINGID"),
+      entry<int>("LEVELSETFIELDNO"),
+      selection<std::string>("BOOLEANTYPE",
+          {{"none", "none"}, {"cut", "cut"}, {"union", "union"}, {"difference", "difference"},
+              {"sym_difference", "sym_difference"}},
+          {.description = "define which boolean operator is used for combining this level-set "
+                          "field with the previous one with smaller coupling id",
+              .required = false}),
+      entry<bool>(
+          "COMPLEMENTARY", {.description = "define which complementary operator is applied "
+                                           "after combining the level-set field with a boolean "
+                                           "operator with the previous one"}),
+  });
 
   //*----------------*/
   // Levelset based Weak Dirichlet conditions
@@ -510,15 +477,9 @@ void Inpar::XFEM::set_valid_conditions(
           "XFEM Levelset Weak Dirichlet", Core::Conditions::XFEM_Levelset_Weak_Dirichlet, true,
           Core::Conditions::geometry_type_volume);
 
-  for (unsigned i = 0; i < levelsetfield_components.size(); ++i)
-  {
-    xfem_levelset_wdbc->add_component(levelsetfield_components[i]);
-  }
+  xfem_levelset_wdbc->add_component(levelsetfield_components);
 
-  for (unsigned i = 0; i < dirichletbundcomponents.size(); ++i)
-  {
-    xfem_levelset_wdbc->add_component(dirichletbundcomponents[i]);
-  }
+  xfem_levelset_wdbc->add_component(dirichletbundcomponents);
 
   // optional: allow for random noise, set percentage used in uniform random distribution
   add_named_real(xfem_levelset_wdbc, "RANDNOISE",
@@ -535,15 +496,9 @@ void Inpar::XFEM::set_valid_conditions(
           "XFEM Levelset Neumann", Core::Conditions::XFEM_Levelset_Neumann, true,
           Core::Conditions::geometry_type_volume);
 
-  for (unsigned i = 0; i < levelsetfield_components.size(); ++i)
-  {
-    xfem_levelset_neumann->add_component(levelsetfield_components[i]);
-  }
+  xfem_levelset_neumann->add_component(levelsetfield_components);
 
-  for (unsigned i = 0; i < neumanncomponents.size(); ++i)
-  {
-    xfem_levelset_neumann->add_component(neumanncomponents[i]);
-  }
+  xfem_levelset_neumann->add_component(neumanncomponents);
 
   // define if we use inflow stabilization on the xfem neumann surf condition
   add_named_bool(xfem_levelset_neumann, "INFLOW_STAB", "", false, true);
@@ -558,10 +513,7 @@ void Inpar::XFEM::set_valid_conditions(
           "XFEM Levelset Navier Slip", Core::Conditions::XFEM_Levelset_Navier_Slip, true,
           Core::Conditions::geometry_type_volume);
 
-  for (unsigned i = 0; i < levelsetfield_components.size(); ++i)
-  {
-    xfem_levelset_navier_slip->add_component(levelsetfield_components[i]);
-  }
+  xfem_levelset_navier_slip->add_component(levelsetfield_components);
 
   add_named_selection_component(xfem_levelset_navier_slip, "SURFACE_PROJECTION", "", "proj_normal",
       Teuchos::tuple<std::string>(
@@ -588,10 +540,7 @@ void Inpar::XFEM::set_valid_conditions(
 
   add_named_int(xfem_navier_slip_robin_dirch, "ROBIN_ID", "robin id", 0, false, true);
 
-  for (const auto& dirichletbundcomponent : dirichletbundcomponents)
-  {
-    xfem_navier_slip_robin_dirch->add_component(dirichletbundcomponent);
-  }
+  xfem_navier_slip_robin_dirch->add_component(dirichletbundcomponents);
 
   condlist.push_back(xfem_navier_slip_robin_dirch);
 
@@ -603,10 +552,7 @@ void Inpar::XFEM::set_valid_conditions(
 
   add_named_int(xfem_navier_slip_robin_neumann, "ROBIN_ID", "robin id", 0, false, true);
 
-  for (const auto& neumanncomponent : neumanncomponents)
-  {
-    xfem_navier_slip_robin_neumann->add_component(neumanncomponent);
-  }
+  xfem_navier_slip_robin_neumann->add_component(neumanncomponents);
 
   condlist.push_back(xfem_navier_slip_robin_neumann);
 
@@ -620,10 +566,7 @@ void Inpar::XFEM::set_valid_conditions(
           "XFEM Levelset Twophase", Core::Conditions::XFEM_Levelset_Twophase, true,
           Core::Conditions::geometry_type_volume);
 
-  for (unsigned i = 0; i < levelsetfield_components.size(); ++i)
-  {
-    xfem_levelset_twophase->add_component(levelsetfield_components[i]);
-  }
+  xfem_levelset_twophase->add_component(levelsetfield_components);
 
   condlist.push_back(xfem_levelset_twophase);
 
@@ -727,10 +670,7 @@ void Inpar::XFEM::set_valid_conditions(
           "displacement_1storder_with_initfunct", "displacement_2ndorder_with_initfunct"),
       true);
 
-  for (unsigned i = 0; i < dirichletbundcomponents.size(); ++i)
-  {
-    xfem_surf_wdbc->add_component(dirichletbundcomponents[i]);
-  }
+  xfem_surf_wdbc->add_component(dirichletbundcomponents);
 
   // optional: allow for random noise, set percentage used in uniform random distribution
   add_named_real(xfem_surf_wdbc, "RANDNOISE",
@@ -749,10 +689,7 @@ void Inpar::XFEM::set_valid_conditions(
 
   add_named_int(xfem_surf_neumann, "COUPLINGID");
 
-  for (unsigned i = 0; i < neumanncomponents.size(); ++i)
-  {
-    xfem_surf_neumann->add_component(neumanncomponents[i]);
-  }
+  xfem_surf_neumann->add_component(neumanncomponents);
 
   // define if we use inflow stabilization on the xfem neumann surf condition
   add_named_bool(xfem_surf_neumann, "INFLOW_STAB", "toggle inflow stabilization", false, true);
@@ -806,10 +743,7 @@ void Inpar::XFEM::set_valid_conditions(
           "displacement_1storder_with_initfunct", "displacement_2ndorder_with_initfunct"),
       true);
 
-  for (unsigned i = 0; i < dirichletbundcomponents.size(); ++i)
-  {
-    xfem_navier_slip_robin_dirch_surf->add_component(dirichletbundcomponents[i]);
-  }
+  xfem_navier_slip_robin_dirch_surf->add_component(dirichletbundcomponents);
 
   condlist.push_back(xfem_navier_slip_robin_dirch_surf);
 
@@ -824,10 +758,7 @@ void Inpar::XFEM::set_valid_conditions(
   add_named_int(xfem_navier_slip_robin_neumann_surf, "COUPLINGID");
   add_named_int(xfem_navier_slip_robin_neumann_surf, "ROBIN_ID", "robin id", 0, false, true);
 
-  for (unsigned i = 0; i < neumanncomponents.size(); ++i)
-  {
-    xfem_navier_slip_robin_neumann_surf->add_component(neumanncomponents[i]);
-  }
+  xfem_navier_slip_robin_neumann_surf->add_component(neumanncomponents);
 
   condlist.push_back(xfem_navier_slip_robin_neumann_surf);
 

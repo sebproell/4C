@@ -228,116 +228,68 @@ void Inpar::ElCh::set_valid_conditions(
   }
 
 
+  using namespace Core::IO::InputSpecBuilders;
+
   /*--------------------------------------------------------------------*/
   // electrode kinetics as boundary condition on electrolyte
   {
-    std::map<int, std::pair<std::string, std::vector<std::shared_ptr<Input::LineComponent>>>>
-        reaction_model_choices;
+    auto reaction_model_choices = one_of({
+        anonymous_group({
+            selection<int>("KINETIC_MODEL",
+                {
+                    {"Butler-Volmer", Inpar::ElCh::ElectrodeKinetics::butler_volmer},
+                    {"Butler-Volmer-Yang1997",
+                        Inpar::ElCh::ElectrodeKinetics::butler_volmer_yang1997},
+                }),
+            entry<double>("ALPHA_A"),
+            entry<double>("ALPHA_C"),
+            entry<double>("I0"),
+            entry<double>("GAMMA"),
+            entry<double>("REFCON"),
+            entry<double>("DL_SPEC_CAP"),
+        }),
+        anonymous_group({
+            selection<int>("KINETIC_MODEL", {{"Tafel", Inpar::ElCh::ElectrodeKinetics::tafel}}),
+            entry<double>("ALPHA"),
+            entry<double>("I0"),
+            entry<double>("GAMMA"),
+            entry<double>("REFCON"),
+            entry<double>("DL_SPEC_CAP"),
+        }),
+        anonymous_group({
+            selection<int>("KINETIC_MODEL", {{"linear", Inpar::ElCh::ElectrodeKinetics::linear}}),
+            entry<double>("ALPHA"),
+            entry<double>("I0"),
+            entry<double>("GAMMA"),
+            entry<double>("REFCON"),
+            entry<double>("DL_SPEC_CAP"),
+        }),
+        anonymous_group({
+            selection<int>("KINETIC_MODEL",
+                {{"Butler-Volmer-Newman", Inpar::ElCh::ElectrodeKinetics::butler_volmer_newman}}),
+            entry<double>("K_A"),
+            entry<double>("K_C"),
+            entry<double>("BETA"),
+            entry<double>("DL_SPEC_CAP"),
+        }),
+        anonymous_group({
+            selection<int>("KINETIC_MODEL",
+                {{"Butler-Volmer-Bard", Inpar::ElCh::ElectrodeKinetics::butler_volmer_bard}}),
+            entry<double>("E0"),
+            entry<double>("K0"),
+            entry<double>("BETA"),
+            entry<double>("C_C0"),
+            entry<double>("C_A0"),
+            entry<double>("DL_SPEC_CAP"),
+        }),
+        anonymous_group({
+            selection<int>("KINETIC_MODEL", {{"Nernst", Inpar::ElCh::ElectrodeKinetics::nernst}}),
+            entry<double>("E0"),
+            entry<double>("C0"),
+            entry<double>("DL_SPEC_CAP"),
+        }),
+    });
 
-    // Butler-Volmer
-    std::vector<std::shared_ptr<Input::LineComponent>> butlervolmer;
-    butlervolmer.emplace_back(std::make_shared<Input::SeparatorComponent>("ALPHA_A"));
-    butlervolmer.emplace_back(std::make_shared<Input::RealComponent>("ALPHA_A"));
-    butlervolmer.emplace_back(std::make_shared<Input::SeparatorComponent>("ALPHA_C"));
-    butlervolmer.emplace_back(std::make_shared<Input::RealComponent>("ALPHA_C"));
-    butlervolmer.emplace_back(std::make_shared<Input::SeparatorComponent>("I0"));
-    butlervolmer.emplace_back(std::make_shared<Input::RealComponent>("I0"));
-    butlervolmer.emplace_back(std::make_shared<Input::SeparatorComponent>("GAMMA"));
-    butlervolmer.emplace_back(std::make_shared<Input::RealComponent>("GAMMA"));
-    butlervolmer.emplace_back(std::make_shared<Input::SeparatorComponent>("REFCON"));
-    butlervolmer.emplace_back(std::make_shared<Input::RealComponent>("REFCON"));
-    butlervolmer.emplace_back(std::make_shared<Input::SeparatorComponent>("DL_SPEC_CAP"));
-    butlervolmer.emplace_back(std::make_shared<Input::RealComponent>("DL_SPEC_CAP"));
-    reaction_model_choices.emplace(
-        butler_volmer, std::make_pair("Butler-Volmer", std::move(butlervolmer)));
-
-    // Butler-Volmer Yang
-    // parameter are identical to Butler-Volmer
-    std::vector<std::shared_ptr<Input::LineComponent>> butlervolmeryang;
-    butlervolmeryang.emplace_back(std::make_shared<Input::SeparatorComponent>("ALPHA_A"));
-    butlervolmeryang.emplace_back(std::make_shared<Input::RealComponent>("ALPHA_A"));
-    butlervolmeryang.emplace_back(std::make_shared<Input::SeparatorComponent>("ALPHA_C"));
-    butlervolmeryang.emplace_back(std::make_shared<Input::RealComponent>("ALPHA_C"));
-    butlervolmeryang.emplace_back(std::make_shared<Input::SeparatorComponent>("I0"));
-    butlervolmeryang.emplace_back(std::make_shared<Input::RealComponent>("I0"));
-    butlervolmeryang.emplace_back(std::make_shared<Input::SeparatorComponent>("GAMMA"));
-    butlervolmeryang.emplace_back(std::make_shared<Input::RealComponent>("GAMMA"));
-    butlervolmeryang.emplace_back(std::make_shared<Input::SeparatorComponent>("REFCON"));
-    butlervolmeryang.emplace_back(std::make_shared<Input::RealComponent>("REFCON"));
-    butlervolmeryang.emplace_back(std::make_shared<Input::SeparatorComponent>("DL_SPEC_CAP"));
-    butlervolmeryang.emplace_back(std::make_shared<Input::RealComponent>("DL_SPEC_CAP"));
-    reaction_model_choices.emplace(Inpar::ElCh::butler_volmer_yang1997,
-        std::make_pair("Butler-Volmer-Yang1997", butlervolmeryang));
-
-    // Tafel kinetics
-    std::vector<std::shared_ptr<Input::LineComponent>> tafel;
-    tafel.emplace_back(std::make_shared<Input::SeparatorComponent>("ALPHA"));
-    tafel.emplace_back(std::make_shared<Input::RealComponent>("ALPHA"));
-    tafel.emplace_back(std::make_shared<Input::SeparatorComponent>("I0"));
-    tafel.emplace_back(std::make_shared<Input::RealComponent>("I0"));
-    tafel.emplace_back(std::make_shared<Input::SeparatorComponent>("GAMMA"));
-    tafel.emplace_back(std::make_shared<Input::RealComponent>("GAMMA"));
-    tafel.emplace_back(std::make_shared<Input::SeparatorComponent>("REFCON"));
-    tafel.emplace_back(std::make_shared<Input::RealComponent>("REFCON"));
-    tafel.emplace_back(std::make_shared<Input::SeparatorComponent>("DL_SPEC_CAP"));
-    tafel.emplace_back(std::make_shared<Input::RealComponent>("DL_SPEC_CAP"));
-    reaction_model_choices.emplace(Inpar::ElCh::tafel, std::make_pair("Tafel", tafel));
-
-    // linear kinetics
-    std::vector<std::shared_ptr<Input::LineComponent>> linear;
-    linear.emplace_back(std::make_shared<Input::SeparatorComponent>("ALPHA"));
-    linear.emplace_back(std::make_shared<Input::RealComponent>("ALPHA"));
-    linear.emplace_back(std::make_shared<Input::SeparatorComponent>("I0"));
-    linear.emplace_back(std::make_shared<Input::RealComponent>("I0"));
-    linear.emplace_back(std::make_shared<Input::SeparatorComponent>("GAMMA"));
-    linear.emplace_back(std::make_shared<Input::RealComponent>("GAMMA"));
-    linear.emplace_back(std::make_shared<Input::SeparatorComponent>("REFCON"));
-    linear.emplace_back(std::make_shared<Input::RealComponent>("REFCON"));
-    linear.emplace_back(std::make_shared<Input::SeparatorComponent>("DL_SPEC_CAP"));
-    linear.emplace_back(std::make_shared<Input::RealComponent>("DL_SPEC_CAP"));
-    reaction_model_choices.emplace(Inpar::ElCh::linear, std::make_pair("linear", linear));
-
-    // Butler-Volmer-Newman: "Newman (book), 2004, p. 213, eq. 8.26"
-    //                       "Wittmann (Bachelor thesis), 2011, p. 15, eq. 2.30"
-    std::vector<std::shared_ptr<Input::LineComponent>> bvnewman;
-    bvnewman.emplace_back(std::make_shared<Input::SeparatorComponent>("K_A"));
-    bvnewman.emplace_back(std::make_shared<Input::RealComponent>("k_a"));
-    bvnewman.emplace_back(std::make_shared<Input::SeparatorComponent>("K_C"));
-    bvnewman.emplace_back(std::make_shared<Input::RealComponent>("k_c"));
-    bvnewman.emplace_back(std::make_shared<Input::SeparatorComponent>("BETA"));
-    bvnewman.emplace_back(std::make_shared<Input::RealComponent>("BETA"));
-    bvnewman.emplace_back(std::make_shared<Input::SeparatorComponent>("DL_SPEC_CAP"));
-    bvnewman.emplace_back(std::make_shared<Input::RealComponent>("DL_SPEC_CAP"));
-    reaction_model_choices.emplace(
-        Inpar::ElCh::butler_volmer_newman, std::make_pair("Butler-Volmer-Newman", bvnewman));
-
-    // Butler-Volmer-Newman: "Bard (book), 2001, p. 99, eq. 3.4.10"
-    //                       "Wittmann (Bachelor thesis), 2011, p. 16, eq. 2.32"
-    std::vector<std::shared_ptr<Input::LineComponent>> bvbard;
-    bvbard.emplace_back(std::make_shared<Input::SeparatorComponent>("E0"));
-    bvbard.emplace_back(std::make_shared<Input::RealComponent>("e0"));
-    bvbard.emplace_back(std::make_shared<Input::SeparatorComponent>("K0"));
-    bvbard.emplace_back(std::make_shared<Input::RealComponent>("k0"));
-    bvbard.emplace_back(std::make_shared<Input::SeparatorComponent>("BETA"));
-    bvbard.emplace_back(std::make_shared<Input::RealComponent>("BETA"));
-    bvbard.emplace_back(std::make_shared<Input::SeparatorComponent>("C_C0"));
-    bvbard.emplace_back(std::make_shared<Input::RealComponent>("C_C0"));
-    bvbard.emplace_back(std::make_shared<Input::SeparatorComponent>("C_A0"));
-    bvbard.emplace_back(std::make_shared<Input::RealComponent>("C_A0"));
-    bvbard.emplace_back(std::make_shared<Input::SeparatorComponent>("DL_SPEC_CAP"));
-    bvbard.emplace_back(std::make_shared<Input::RealComponent>("DL_SPEC_CAP"));
-    reaction_model_choices.emplace(
-        Inpar::ElCh::butler_volmer_bard, std::make_pair("Butler-Volmer-Bard", bvbard));
-
-    // Nernst equation:
-    std::vector<std::shared_ptr<Input::LineComponent>> nernst;
-    nernst.emplace_back(std::make_shared<Input::SeparatorComponent>("E0"));
-    nernst.emplace_back(std::make_shared<Input::RealComponent>("e0"));
-    nernst.emplace_back(std::make_shared<Input::SeparatorComponent>("C0"));
-    nernst.emplace_back(std::make_shared<Input::RealComponent>("c0"));
-    nernst.emplace_back(std::make_shared<Input::SeparatorComponent>("DL_SPEC_CAP"));
-    nernst.emplace_back(std::make_shared<Input::RealComponent>("DL_SPEC_CAP"));
-    reaction_model_choices.emplace(Inpar::ElCh::nernst, std::make_pair("Nernst", nernst));
 
     auto electrodeboundarykineticspoint = std::make_shared<Core::Conditions::ConditionDefinition>(
         "ELECTRODE BOUNDARY KINETICS POINT CONDITIONS", "ElchBoundaryKineticsPoint",
@@ -366,8 +318,7 @@ void Inpar::ElCh::set_valid_conditions(
       add_named_real(cond, "EPSILON",
           "porosity of electrode boundary, set to -1 if equal to porosity of electrolyte domain");
       add_named_int(cond, "ZERO_CUR");
-      cond->add_component(std::make_shared<Input::SwitchComponent>(
-          "KINETIC_MODEL", butler_volmer, reaction_model_choices));
+      cond->add_component(reaction_model_choices);
       condlist.emplace_back(cond);
     }
   }
@@ -392,71 +343,31 @@ void Inpar::ElCh::set_valid_conditions(
         Core::Conditions::geometry_type_volume);
 
     // equip condition definition with input file line components
-    std::vector<std::shared_ptr<Input::LineComponent>> electrodedomainkineticscomponents;
+    auto electrodedomainkineticscomponents = anonymous_group({
+        entry<int>("ConditionID"),
+        entry<double>("POT"),
+        entry<Core::IO::Noneable<int>>("FUNCT"),
+        entry<int>("NUMSCAL"),
+        entry<std::vector<int>>("STOICH", {.size = from_parameter<int>("NUMSCAL")}),
+        entry<int>("E-"),
+        entry<int>("ZERO_CUR"),
+        selection<int>("KINETIC_MODEL",
+            {
+                {"Butler-Volmer", Inpar::ElCh::ElectrodeKinetics::butler_volmer},
+            }),
+        entry<double>("A_S"),
+        entry<double>("ALPHA_A"),
+        entry<double>("ALPHA_C"),
+        entry<double>("I0"),
+        entry<double>("GAMMA"),
+        entry<double>("REFCON"),
+        entry<double>("DL_SPEC_CAP"),
+    });
 
     {
-      electrodedomainkineticscomponents.emplace_back(
-          std::make_shared<Input::SeparatorComponent>("ConditionID"));
-      electrodedomainkineticscomponents.emplace_back(
-          std::make_shared<Input::IntComponent>("ConditionID"));
-      electrodedomainkineticscomponents.emplace_back(
-          std::make_shared<Input::SeparatorComponent>("POT"));
-      electrodedomainkineticscomponents.emplace_back(std::make_shared<Input::RealComponent>("POT"));
-      electrodedomainkineticscomponents.emplace_back(
-          std::make_shared<Input::SeparatorComponent>("FUNCT"));
-      electrodedomainkineticscomponents.emplace_back(
-          std::make_shared<Input::IntComponent>("FUNCT", IntComponentData{0, true, false}));
-      electrodedomainkineticscomponents.emplace_back(
-          std::make_shared<Input::SeparatorComponent>("NUMSCAL"));
-
-      electrodedomainkineticscomponents.emplace_back(
-          std::make_shared<Input::IntComponent>("NUMSCAL"));
-      electrodedomainkineticscomponents.emplace_back(
-          std::make_shared<Input::SeparatorComponent>("STOICH"));
-      electrodedomainkineticscomponents.emplace_back(
-          std::make_shared<Input::IntVectorComponent>("STOICH", Input::LengthFromInt("NUMSCAL")));
-
-      electrodedomainkineticscomponents.emplace_back(
-          std::make_shared<Input::SeparatorComponent>("E-"));
-      electrodedomainkineticscomponents.emplace_back(std::make_shared<Input::IntComponent>("E-"));
-      electrodedomainkineticscomponents.emplace_back(
-          std::make_shared<Input::SeparatorComponent>("ZERO_CUR"));
-      electrodedomainkineticscomponents.emplace_back(
-          std::make_shared<Input::IntComponent>("ZERO_CUR"));
-
-
-      {
-        // Butler-Volmer
-        std::vector<std::shared_ptr<Input::LineComponent>> butlervolmer;
-        butlervolmer.emplace_back(std::make_shared<Input::SeparatorComponent>(
-            "A_S"));  // ratio of electrode-electrolyte interface area to total two-phase volume
-        butlervolmer.emplace_back(std::make_shared<Input::RealComponent>("A_S"));
-        butlervolmer.emplace_back(std::make_shared<Input::SeparatorComponent>("ALPHA_A"));
-        butlervolmer.emplace_back(std::make_shared<Input::RealComponent>("ALPHA_A"));
-        butlervolmer.emplace_back(std::make_shared<Input::SeparatorComponent>("ALPHA_C"));
-        butlervolmer.emplace_back(std::make_shared<Input::RealComponent>("ALPHA_C"));
-        butlervolmer.emplace_back(std::make_shared<Input::SeparatorComponent>("I0"));
-        butlervolmer.emplace_back(std::make_shared<Input::RealComponent>("I0"));
-        butlervolmer.emplace_back(std::make_shared<Input::SeparatorComponent>("GAMMA"));
-        butlervolmer.emplace_back(std::make_shared<Input::RealComponent>("GAMMA"));
-        butlervolmer.emplace_back(std::make_shared<Input::SeparatorComponent>("REFCON"));
-        butlervolmer.emplace_back(std::make_shared<Input::RealComponent>("REFCON"));
-        butlervolmer.emplace_back(std::make_shared<Input::SeparatorComponent>("DL_SPEC_CAP"));
-        butlervolmer.emplace_back(std::make_shared<Input::RealComponent>("DL_SPEC_CAP"));
-        butlervolmer.emplace_back(std::make_shared<Input::SeparatorComponent>("END"));
-
-        electrodedomainkineticscomponents.emplace_back(std::shared_ptr<LineComponent>(
-            new Input::SwitchComponent("KINETIC_MODEL", butler_volmer,
-                {{butler_volmer, std::make_pair("Butler-Volmer", std::move(butlervolmer))}})));
-      }
-    }
-
-    // insert input file line components into condition definitions
-    for (auto& electrodedomainkineticscomponent : electrodedomainkineticscomponents)
-    {
-      electrodedomainkineticsline->add_component(electrodedomainkineticscomponent);
-      electrodedomainkineticssurf->add_component(electrodedomainkineticscomponent);
-      electrodedomainkineticsvol->add_component(electrodedomainkineticscomponent);
+      electrodedomainkineticsline->add_component(electrodedomainkineticscomponents);
+      electrodedomainkineticssurf->add_component(electrodedomainkineticscomponents);
+      electrodedomainkineticsvol->add_component(electrodedomainkineticscomponents);
     }
 
     // insert condition definitions into global list of valid condition definitions

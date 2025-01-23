@@ -219,7 +219,7 @@ void Discret::Elements::ScaTraEleParameterBoundary::set_conv_tol_iter_num(
 void Discret::Elements::ScaTraEleParameterBoundary::set_density_molar_mass(
     Teuchos::ParameterList& parameters)
 {
-  density_ = parameters.get<double>("density", std::numeric_limits<double>::infinity());
+  density_ = parameters.get<double>("DENSITY", std::numeric_limits<double>::infinity());
   if (density_ <= 0.0) FOUR_C_THROW("Density must be positive");
 
   molarmass_ = parameters.get<double>("MOLMASS", std::numeric_limits<double>::infinity());

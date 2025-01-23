@@ -444,16 +444,6 @@ namespace RTD
   void write_single_condition_read_the_docs(
       std::ostream& stream, Core::Conditions::ConditionDefinition& condition)
   {
-    /* Each entry consists of a number of fields:
-    - Part 1: link target and header
-    - Part 2: description
-    - Part 3: code lines
-    - Part 4: table for description and admissible values of string
-      and conditionComponentBundleSelector parameters
-    - Part 5: finally additional code lines for model specific parameters
-      or the complex ConditionComponentBundleSelectors
-    */
-
     std::string sectionname = condition.section_name();
     const std::string sectionlinktarget =
         Teuchos::StrUtils::removeAllSpaces(Core::Utils::to_lower(sectionname));
@@ -503,94 +493,21 @@ namespace RTD
         FOUR_C_THROW("geometry type unspecified");
         break;
     }
-    // Collecting information for the final code line (conditioncodeline)
-    // Also:
-    // store admissible values for string parameters (vector<string> parametertable) -> Part 4
-    // store options for the CondCompBundles (vector<string> condCompStrings) -> Part 5
-    std::string conditioncodeline = "E <setnumber> -";
-    bool isNewlinePossible = false;
-    //
-    // also: Generate the table rows for admissible values of string parameters
-    const unsigned tablesize = 3;
-    Table parametertable(tablesize);
-    std::vector<std::string> tablerow = {"Parameter", "Default", "Admissible values"};
-    std::vector<std::string> condCompStrings;
-    std::string condCompName("");
-    parametertable.add_row(tablerow);
-    for (auto& condparameter : condition.inputline())
-    {
-      // newline after some 60 characters, but no newline after a separator condition
-      if (isNewlinePossible)
-      {
-        conditioncode.push_back(conditioncodeline + " \\ ");
-        conditioncodeline = "   ";  // start a new line
-      }
-      conditioncodeline += " " + condparameter->write_read_the_docs();
-      isNewlinePossible = (conditioncodeline.length() > 60);
-      if (auto* previousparameter = dynamic_cast<Input::SeparatorComponent*>(condparameter.get()))
-      {
-        previousparameter->get_options();  // just needed to prevent an unusedVariable warning
-        isNewlinePossible = false;
-      }
-      // If the component is a string component, store the admissible parameters in the table:
-      if (auto* stringComponent = dynamic_cast<Input::SelectionComponent*>(condparameter.get()))
-      {
-        tablerow[0] = stringComponent->name();
-        std::ostringstream parametercell;
-        stringComponent->default_line(parametercell);
-        tablerow[1] = parametercell.str();
-        Teuchos::Array<std::string> datfilevalues = stringComponent->get_options();
-        tablerow[2] = boost::algorithm::join(datfilevalues, ", ");
-        parametertable.add_row(tablerow);
-      }
-      // if the component is a bundleselector (bundle of variables following a string keyword):
-      if (auto* compBundleSelector = dynamic_cast<Input::SwitchComponent*>(condparameter.get()))
-      {
-        condCompName = compBundleSelector->name();
-        std::vector<std::string> bundle = compBundleSelector->write_read_the_docs_lines();
-        condCompStrings.insert(condCompStrings.end(), bundle.begin(), bundle.end());
-        tablerow[0] = condCompName;
-        Teuchos::Array<std::string> datfilevalues = compBundleSelector->get_options();
-        tablerow[1] = datfilevalues[0];
-        tablerow[2] = boost::algorithm::join(datfilevalues, ", ");
-        parametertable.add_row(tablerow);
-      }
-    }
-    // Now write the complete code of this condition to the readthedocs file
-    conditioncode.push_back(conditioncodeline);
-    conditioncode.push_back("");
     write_code(stream, conditioncode);
 
-    /*------ PART 4 -------------------------
-     * Now write a table for the options of the string variables, if any have been stored above
-     */
-    if (parametertable.get_rows() > 1)
+    // Avoid writing an empty code block if there are no specs for this condition
+    if (!condition.specs().empty())
     {
-      std::string optionheaderstring("**String options:**");
-      write_paragraph(stream, optionheaderstring);
-      // table header for the options in string parameters
-      parametertable.set_widths({0, 0, 50});
-      parametertable.add_directive("header-rows", "1");
+      auto cond_spec = Core::IO::InputSpecBuilders::anonymous_group(condition.specs());
 
-      parametertable.print(stream);
-    }
+      std::stringstream specs_string;
+      cond_spec.print_as_dat(specs_string);
 
-    /*------ PART 5 -------------------------
-     * Finally add the model specific parameters for the complex ConditionComponentBundleSelectors
-     */
-    if (condCompStrings.size() > 0)
-    {
-      std::string optionheaderstring =
-          "The following parameter sets are possible for `<" + condCompName + ">`:";
-      write_paragraph(stream, optionheaderstring);
-      conditioncode.clear();
-      for (auto& condCompString : condCompStrings)
-      {
-        conditioncode.push_back(condCompString);
-      }
-      write_code(stream, conditioncode);
+      // Split on newline because this is what the write_code function expects
+      std::vector<std::string> specs_list = Core::Utils::split(specs_string.str(), "\n");
+
+      write_code(stream, specs_list);
     }
-    return;
   }
 
   /*----------------------------------------------------------------------*/

@@ -40,8 +40,14 @@ void Core::IO::InputSpec::fully_parse(
   FOUR_C_ASSERT(pimpl_, "InputSpec is empty.");
 
   pimpl_->parse(parser, container);
-  FOUR_C_ASSERT_ALWAYS(parser.at_end(), "After parsing, the line still contains '%s'.",
-      std::string(parser.get_unparsed_remainder()).c_str());
+  if (!parser.at_end())
+  {
+    std::stringstream ss;
+    container.print(ss);
+    std::string remainder(parser.get_unparsed_remainder());
+    FOUR_C_THROW("After parsing, the line still contains '%s'.\nParsed parameters: %s",
+        remainder.c_str(), ss.str().c_str());
+  }
 }
 
 void Core::IO::InputSpec::print_as_dat(std::ostream& stream) const

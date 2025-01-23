@@ -239,8 +239,8 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_nernst
     auto pot0 = cond->parameters().get<double>("POT");
     const auto curvenum = cond->parameters().get<Core::IO::Noneable<int>>("FUNCT");
     const auto nume = cond->parameters().get<int>("E-");
-    const auto e0 = cond->parameters().get<double>("e0");
-    const auto c0 = cond->parameters().get<double>("c0");
+    const auto e0 = cond->parameters().get<double>("E0");
+    const auto c0 = cond->parameters().get<double>("C0");
 
     if (nume < 0)
       FOUR_C_THROW(
