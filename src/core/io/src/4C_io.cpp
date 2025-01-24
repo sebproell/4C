@@ -747,7 +747,8 @@ void Core::IO::DiscretizationWriter::new_step(const int step, const double time)
       write_file = true;
     }
 
-    resultgroup_ = H5Gcreate(resultfile_, groupname.str().c_str(), 0);
+    resultgroup_ =
+        H5Gcreate(resultfile_, groupname.str().c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     if (resultgroup_ < 0) FOUR_C_THROW("Failed to write HDF-group in resultfile");
 
     if (Core::Communication::my_mpi_rank(get_comm()) == 0)
@@ -1069,7 +1070,7 @@ void Core::IO::DiscretizationWriter::write_mesh(const int step, const double tim
     }
     std::ostringstream name;
     name << "step" << step;
-    meshgroup_ = H5Gcreate(meshfile_, name.str().c_str(), 0);
+    meshgroup_ = H5Gcreate(meshfile_, name.str().c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     if (meshgroup_ < 0) FOUR_C_THROW("Failed to write group in HDF-meshfile");
 
     // only procs with row elements need to write data
@@ -1218,7 +1219,7 @@ void Core::IO::DiscretizationWriter::write_only_nodes_in_new_field_group_to_cont
     }
     std::ostringstream name;
     name << "step" << step;
-    meshgroup_ = H5Gcreate(meshfile_, name.str().c_str(), 0);
+    meshgroup_ = H5Gcreate(meshfile_, name.str().c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     if (meshgroup_ < 0) FOUR_C_THROW("Failed to write group in HDF-meshfile");
 
     if (writerestart)
