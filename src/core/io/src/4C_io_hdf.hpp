@@ -8,14 +8,6 @@
 #ifndef FOUR_C_IO_HDF_HPP
 #define FOUR_C_IO_HDF_HPP
 
-
-#ifndef H5GCreate_vers
-#define H5Gcreate_vers 1
-#endif
-#ifndef H5Dopen_vers
-#define H5Dopen_vers 1
-#endif
-
 #include "4C_config.hpp"
 
 #include "4C_linalg_vector.hpp"

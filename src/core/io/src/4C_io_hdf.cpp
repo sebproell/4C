@@ -183,7 +183,7 @@ std::shared_ptr<std::vector<char>> Core::IO::HDFReader::read_char_data(
   for (int i = start; i < end; ++i)
   {
     const char* cpath = path.c_str();
-    hid_t dataset = H5Dopen(files_[i], cpath);
+    hid_t dataset = H5Dopen(files_[i], cpath, H5P_DEFAULT);
     if (dataset < 0)
     {
       FOUR_C_THROW("Failed to open dataset %s in HDF-file %s", cpath, filenames_[i].c_str());
@@ -241,7 +241,7 @@ std::shared_ptr<std::vector<int>> Core::IO::HDFReader::read_int_data(
   std::shared_ptr<std::vector<int>> data = std::make_shared<std::vector<int>>();
   for (int i = start; i < end; ++i)
   {
-    hid_t dataset = H5Dopen(files_[i], path.c_str());
+    hid_t dataset = H5Dopen(files_[i], path.c_str(), H5P_DEFAULT);
     if (dataset < 0)
     {
       FOUR_C_THROW("Failed to open dataset %s in HDF-file %s", path.c_str(), filenames_[i].c_str());
@@ -297,7 +297,7 @@ std::shared_ptr<std::vector<double>> Core::IO::HDFReader::read_double_data(
   std::shared_ptr<std::vector<double>> data = std::make_shared<std::vector<double>>();
   for (int i = start; i < end; ++i)
   {
-    hid_t dataset = H5Dopen(files_[i], path.c_str());
+    hid_t dataset = H5Dopen(files_[i], path.c_str(), H5P_DEFAULT);
     if (dataset < 0)
       FOUR_C_THROW("Failed to open dataset %s in HDF-file %s", path.c_str(), filenames_[i].c_str());
     hid_t dataspace = H5Dget_space(dataset);
