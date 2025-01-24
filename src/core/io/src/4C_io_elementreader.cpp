@@ -128,9 +128,9 @@ std::pair<int, std::vector<int>> Core::IO::ElementReader::get_element_size_and_i
   // all reading is done on proc 0
   if (Core::Communication::my_mpi_rank(comm_) == 0)
   {
-    for (const auto& element_line : input_.lines_in_section_rank_0_only(sectionname_))
+    for (const auto& element_line : input_.in_section_rank_0_only(sectionname_))
     {
-      std::istringstream t{std::string{element_line}};
+      std::istringstream t{std::string{element_line.get_as_dat_style_string()}};
       int elenumber;
       std::string eletype;
       t >> elenumber >> eletype;
@@ -178,9 +178,10 @@ void Core::IO::ElementReader::get_and_distribute_elements(const int nblock, cons
     int bcount = 0;
     int block = 0;
 
-    for (const auto& element_line : input_.lines_in_section_rank_0_only(sectionname_))
+    for (const auto& element_line : input_.in_section_rank_0_only(sectionname_))
     {
-      ValueParser parser{element_line, {.user_scope_message = "While reading element line: "}};
+      ValueParser parser{element_line.get_as_dat_style_string(),
+          {.user_scope_message = "While reading element line: "}};
       const int elenumber = parser.read<int>() - 1;
       gidlist.push_back(elenumber);
 

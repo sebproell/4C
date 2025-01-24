@@ -27,10 +27,10 @@ namespace
   {
     SCOPED_TRACE("Checking section " + section);
     ASSERT_TRUE(input.has_section(section));
-    auto section_lines = input.lines_in_section(section);
+    auto section_lines = input.in_section(section);
     std::vector<std::string> section_lines_str;
-    std::ranges::copy(section_lines | std::views::transform([](const std::string_view& line)
-                                          { return std::string{line}; }),
+    std::ranges::copy(section_lines | std::views::transform([](const auto& line)
+                                          { return std::string{line.get_as_dat_style_string()}; }),
         std::back_inserter(section_lines_str));
     EXPECT_EQ(lines.size(), section_lines_str.size());
     for (std::size_t i = 0; i < lines.size(); ++i)

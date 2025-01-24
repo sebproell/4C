@@ -12,11 +12,13 @@
 
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_comm_pack_buffer.hpp"
+#include "4C_io_input_parameter_container.hpp"
 
 #include <filesystem>
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <ranges>
 #include <set>
 #include <string>
@@ -26,14 +28,27 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Core::IO
 {
+  class InputSpec;
+
+  namespace Internal
+  {
+    class InputFileImpl;
+    class InputFileFragmentImpl;
+  }  // namespace Internal
+
   /**
    * This class encapsulates input files independent of their format.
    *
    * Objects of this class read the content of a file and grant access to it. The input is not
    * yet interpreted in any way. Input files contain different sections. A section either contains
-   * key-value pairs or a list of arbitrary lines of text. Sections may appear in an arbitrary order
-   * and each section name must be unique. An exception is the special section named "INCLUDES"
-   * which can contain a list of other files that should be read in addition to the current file.
+   * key-value pairs or a list of arbitrary lines of text. The content is accessed via the
+   * in_section() function which return InputFile::Fragment objects. These hide what exactly is
+   * contained and in which format. The content can be matched against an expected InputSpec to
+   * extract meaningful data.
+   *
+   * Sections may appear in an arbitrary order and each section name must be unique. An exception is
+   * the special section named "INCLUDES" which can contain a list of other files that should be
+   * read in addition to the current file.
    *
    * Three file formats are supported: the custom .dat file format and the standard .yaml (or .yml)
    * and .json formats. The format of a file is detected based on its ending. If the ending is not
@@ -76,13 +91,87 @@ namespace Core::IO
    *
    * @note The file is only read on rank 0 to save memory. Sections that are huge are only
    * distributed to other ranks if they are accessed through line_in_section(). If you only
-   * want to read a section on rank 0, use lines_in_section_rank_0_only().
+   * want to read a section on rank 0, use in_section_rank_0_only().
    */
   class InputFile
   {
    public:
-    /// Construct a reader for a given file
+    /**
+     * A Fragment is a part of the input file. Fragments are used to store the content of a section.
+     * and are used to match() against an InputSpec. Instead of using a concrete data type, the
+     * Fragment class encapsulates details of the input file format and provides a few methods to
+     * interact with the content. A Fragment is a lightweight object that can be copied and passed
+     * around by value. The associated InputFile must outlive any of its fragments.
+     */
+    class Fragment
+    {
+     public:
+      /**
+       * Return the content of the fragment as a string formatted in the .dat style. You need to
+       * manually parse this string.
+       *
+       * @deprecated Do not use this function in new code. Say what you expect with an InputSpec and
+       * use the match() function instead.
+       */
+      [[nodiscard]] std::string_view get_as_dat_style_string() const;
+
+      /**
+       * Match the fragment against a given InputSpec @p spec. If the fragment does not match the
+       * spec, an empty optional is returned. If the fragment matches the spec, an
+       * InputParameterContainer with the parsed content is returned.
+       */
+      [[nodiscard]] std::optional<InputParameterContainer> match(const InputSpec& spec) const;
+
+      /**
+       * A raw pointer to implementation details. This pointer will be valid as long as the
+       * associated InputFile object is alive.
+       *
+       * @note Can be public since you cannot do anything useful with this opaque pointer.
+       */
+      Internal::InputFileFragmentImpl* pimpl_;
+    };
+
+    /**
+     * Iterator over the Fragments making up a section.
+     */
+    using FragmentIterator = std::vector<Fragment>::const_iterator;
+
+    /**
+     * A range of FragmentIterators.
+     */
+    using FragmentIteratorRange = std::ranges::subrange<FragmentIterator>;
+
+    /**
+     * Construct a reader for a given @p filename.
+     */
     InputFile(std::string filename, MPI_Comm comm);
+
+    /**
+     * Destructor.
+     */
+    ~InputFile();
+
+    /**
+     * Copy constructor is deleted. InputFile can contain large amounts of data and copying it is
+     * almost certainly not what you want.
+     */
+    InputFile(const InputFile&) = delete;
+
+    /**
+     * Copy assignment is deleted. InputFile can contain large amounts of data and copying it is
+     * almost certainly not what you want.
+     */
+    InputFile& operator=(const InputFile&) = delete;
+
+    /**
+     * Move constructor.
+     */
+    InputFile(InputFile&&) noexcept = default;
+
+    /**
+     * Move assignment.
+     */
+    InputFile& operator=(InputFile&&) noexcept = default;
 
     /**
      * Get the (absolute) file path of the input file that contained a section. If the section is
@@ -91,31 +180,32 @@ namespace Core::IO
     [[nodiscard]] std::filesystem::path file_for_section(const std::string& section_name) const;
 
     /**
-     * Get a a range of lines inside a section that have actual content, i.e., they contain
-     * something other than whitespace or comments. Any line returned will have comment stripped
-     * and whitespace trimmed. The usual way to do something with the lines is
+     * Get a range of Fragments inside a section. A Fragment always contains meaningful content,
+     * i.e., something other than whitespace or comments. The usual way to interact with the
+     * Fragments is as follows:
      *
      * @code
-     *   for (const auto& line : input.lines_in_section("section_name"))
+     *   for (const auto& input_fragment : input.in_section("section_name"))
      *   {
-     *     // do something with line
+     *      auto parameters = fragment.match(spec);
      *   }
      * @endcode
      *
-     * @return A range of string_views to the lines in this section.
+     * @return A range of Fragments which encapsulate the content of the section. Use the
+     * Fragment::match() function to extract the content.
      *
      * @note This is a collective call that needs to be called on all MPI ranks in the communicator
      * associated with this object. Depending on the section size, the content might need to be
      * distributed from rank 0 to all other ranks. This happens automatically.
      */
-    std::ranges::view auto lines_in_section(const std::string& section_name);
+    FragmentIteratorRange in_section(const std::string& section_name);
 
     /**
-     * This function is similar to lines_in_section(), but it only returns the lines on rank 0 and
+     * This function is similar to in_section(), but it only returns the lines on rank 0 and
      * returns an empty range on all other ranks. This is useful for sections that might be huge and
-     * are not necessary on all ranks.
+     * are not processed on all ranks.
      */
-    std::ranges::view auto lines_in_section_rank_0_only(const std::string& section_name);
+    FragmentIteratorRange in_section_rank_0_only(const std::string& section_name);
 
     /**
      * Returns true if the input file contains a section with the given name.
@@ -127,7 +217,7 @@ namespace Core::IO
     /**
      * Access MPI communicator associated with this object.
      */
-    [[nodiscard]] MPI_Comm get_comm() const { return comm_; }
+    [[nodiscard]] MPI_Comm get_comm() const;
 
     /**
      * Print a list of all sections that are contained in the input file but never
@@ -136,32 +226,6 @@ namespace Core::IO
      * @return True if there were unknown sections, false otherwise.
      */
     bool print_unknown_sections(std::ostream& out) const;
-
-    /**
-     * Internal storage for the content of a section.
-     */
-    struct SectionContent
-    {
-      //! The raw chars of the input.
-      std::vector<char> raw_content;
-      //! String views into #raw_content.
-      std::vector<std::string_view> lines;
-      //! The file the section was read from.
-      std::string file;
-
-      void pack(Core::Communication::PackBuffer& data) const;
-
-      void unpack(Core::Communication::UnpackBuffer& buffer);
-
-      SectionContent() = default;
-
-      // Prevent copies: making a copy would invalidate the string views.
-      SectionContent(const SectionContent&) = delete;
-      SectionContent& operator=(const SectionContent&) = delete;
-
-      SectionContent(SectionContent&&) = default;
-      SectionContent& operator=(SectionContent&&) = default;
-    };
 
    private:
     /**
@@ -172,70 +236,8 @@ namespace Core::IO
     //! Remember that a section was used.
     void record_section_used(const std::string& section_name);
 
-    /// The communicator associated with this object.
-    MPI_Comm comm_;
-
-    std::unordered_map<std::string, SectionContent> content_by_section_;
-
-    /// Protocol of known and unknown section names
-    std::map<std::string, bool> knownsections_;
+    std::unique_ptr<Internal::InputFileImpl> pimpl_;
   };
-
-
-  /// -- template and inline functions --- //
-
-  inline std::ranges::view auto InputFile::lines_in_section(const std::string& section_name)
-  {
-    record_section_used(section_name);
-
-    static const std::vector<std::string_view> empty;
-
-    const bool known_somewhere = has_section(section_name);
-    if (!known_somewhere)
-    {
-      return std::views::all(empty);
-    }
-
-    const bool locally_known = content_by_section_.contains(section_name);
-    const bool known_everywhere = Core::Communication::all_reduce<bool>(
-        locally_known, [](const bool& r, const bool& in) { return r && in; }, comm_);
-    if (known_everywhere)
-    {
-      // Take a const reference to the section content.
-      const auto& lines = content_by_section_.at(section_name).lines;
-      return std::views::all(lines);
-    }
-
-    // Distribute the content of the section to all ranks.
-    {
-      FOUR_C_ASSERT((!locally_known && (Core::Communication::my_mpi_rank(comm_) > 0)) ||
-                        (locally_known && (Core::Communication::my_mpi_rank(comm_) == 0)),
-          "Implementation error: section should be known on rank 0 and unknown on others.");
-
-      auto& content = content_by_section_[section_name];
-      Core::Communication::broadcast(content, 0, comm_);
-    }
-
-    const auto& lines = content_by_section_.at(section_name).lines;
-    return std::views::all(lines);
-  }
-
-  inline std::ranges::view auto InputFile::lines_in_section_rank_0_only(
-      const std::string& section_name)
-  {
-    if (Core::Communication::my_mpi_rank(comm_) == 0 && content_by_section_.contains(section_name))
-    {
-      record_section_used(section_name);
-      const auto& lines = content_by_section_.at(section_name).lines;
-      return std::views::all(lines);
-    }
-    else
-    {
-      static const std::vector<std::string_view> empty;
-      return std::views::all(empty);
-    }
-  }
-
 }  // namespace Core::IO
 
 FOUR_C_NAMESPACE_CLOSE

@@ -28,7 +28,7 @@ void PARTICLEENGINE::read_particles(Core::IO::InputFile& input, const std::strin
   Teuchos::Time time("", true);
 
   bool any_particles_read = false;
-  for (const auto& particle_line : input.lines_in_section_rank_0_only(section_name))
+  for (const auto& particle_line : input.in_section_rank_0_only(section_name))
   {
     if (!any_particles_read) Core::IO::cout << "Read and create particles\n" << Core::IO::flush;
     any_particles_read = true;
@@ -38,8 +38,8 @@ void PARTICLEENGINE::read_particles(Core::IO::InputFile& input, const std::strin
       PARTICLEENGINE::TypeEnum particletype;
       PARTICLEENGINE::ParticleStates particlestates;
 
-      Core::IO::ValueParser parser{
-          particle_line, {.user_scope_message = "While reading particle data: "}};
+      Core::IO::ValueParser parser{particle_line.get_as_dat_style_string(),
+          {.user_scope_message = "While reading particle data: "}};
       parser.consume("TYPE");
       auto type = parser.read<std::string>();
       parser.consume("POS");
