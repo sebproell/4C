@@ -3140,7 +3140,7 @@ void ScaTra::MeshtyingStrategyS2I::write_s2_i_kinetics_specific_scatra_parameter
           s2icouplingparameters.set<double>(
               "ALPHA_C", s2ikinetics_cond.parameters().get<double>("ALPHA_C"));
           s2icouplingparameters.set<double>(
-              "density", s2ikinetics_cond.parameters().get<double>("density"));
+              "DENSITY", s2ikinetics_cond.parameters().get<double>("DENSITY"));
           s2icouplingparameters.set<double>(
               "MOLMASS", s2ikinetics_cond.parameters().get<double>("MOLMASS"));
           s2icouplingparameters.set<double>(

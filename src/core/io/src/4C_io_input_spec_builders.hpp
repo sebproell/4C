@@ -1039,8 +1039,15 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
     auto default_value_it = std::find_if(choices.begin(), choices.end(),
         [&](const auto& choice) { return choice.second == data.default_value.value(); });
 
-    FOUR_C_ASSERT_ALWAYS(
-        default_value_it != choices.end(), "Default value of selection not found in choices.");
+    if (default_value_it == choices.end())
+    {
+      std::string error_message;
+      for (const auto& choice : choices)
+      {
+        error_message += choice.first + "|";
+      }
+      FOUR_C_THROW("Default value of selection not found in choices '%s'.", error_message.c_str());
+    }
   }
 
   return IO::Internal::make_spec(

@@ -12,7 +12,7 @@
 
 #include "4C_fem_condition.hpp"
 #include "4C_io_input_parameter_container.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec.hpp"
 
 #include <Teuchos_Array.hpp>
 
@@ -83,7 +83,9 @@ namespace Core::Conditions
       right. The order is important! On reading we try and read component
       after component.
      */
-    void add_component(const std::shared_ptr<Input::LineComponent>& c);
+    void add_component(Core::IO::InputSpec&& spec);
+
+    void add_component(const Core::IO::InputSpec& spec);
 
     /// read all conditions from my input file section
     /*!
@@ -106,11 +108,10 @@ namespace Core::Conditions
     /// my condition description
     std::string description() const { return description_; }
 
-    /// my condition inputline
-    std::vector<std::shared_ptr<Input::LineComponent>> inputline() const { return inputline_; }
-
     /// my GeometryType
     Core::Conditions::GeometryType geometry_type() const { return gtype_; }
+
+    const std::vector<Core::IO::InputSpec>& specs() const { return specs_; }
 
    private:
     std::string sectionname_;
@@ -120,8 +121,7 @@ namespace Core::Conditions
     bool buildgeometry_;
     Core::Conditions::GeometryType gtype_;
 
-    ///
-    std::vector<std::shared_ptr<Input::LineComponent>> inputline_;
+    std::vector<Core::IO::InputSpec> specs_;
   };
 
 }  // namespace Core::Conditions

@@ -9,6 +9,7 @@
 
 #include "4C_fem_discretization.hpp"
 #include "4C_io_input_file.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_io_linecomponent.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_utils_exceptions.hpp"
@@ -40,10 +41,15 @@ Core::Conditions::ConditionDefinition::ConditionDefinition(std::string sectionna
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void Core::Conditions::ConditionDefinition::add_component(
-    const std::shared_ptr<Input::LineComponent>& c)
+void Core::Conditions::ConditionDefinition::add_component(Core::IO::InputSpec&& spec)
 {
-  inputline_.push_back(c);
+  specs_.emplace_back(std::move(spec));
+}
+
+
+void Core::Conditions::ConditionDefinition::add_component(const Core::IO::InputSpec& spec)
+{
+  specs_.emplace_back(spec);
 }
 
 
@@ -93,6 +99,8 @@ void Core::Conditions::ConditionDefinition::read(Core::IO::InputFile& input,
         condition_count, sectionname_.c_str());
   }
 
+  auto condition_spec = Core::IO::InputSpecBuilders::anonymous_group(specs_);
+
   for (auto i = section_vec.begin() + 1; i != section_vec.end(); ++i)
   {
     Core::IO::ValueParser parser_content(i->get_as_dat_style_string(),
@@ -107,38 +115,9 @@ void Core::Conditions::ConditionDefinition::read(Core::IO::InputFile& input,
     std::shared_ptr<Core::Conditions::Condition> condition =
         std::make_shared<Core::Conditions::Condition>(dobjid, condtype_, buildgeometry_, gtype_);
 
-    // insert leading whitespace for legacy implementation
-    std::shared_ptr<std::stringstream> condline = std::make_shared<std::stringstream>(
-        " " + std::string(parser_content.get_unparsed_remainder()));
-    // add trailing white space to stringstream "condline" to avoid deletion of stringstream upon
-    // reading the last entry inside This is required since the material parameters can be
-    // specified in an arbitrary order in the input file. So it might happen that the last entry
-    // is extracted before all of the previous ones are.
-    condline->seekp(0, condline->end);
-    *condline << " ";
 
-    for (auto& j : inputline_)
-    {
-      condline = j->read(section_name(), condline, condition->parameters());
-    }
-
-    // Deal with remaining content of condition line
-    std::string remainder = condline->str();
-    Core::IO::ValueParser check_remainder(remainder,
-        {.user_scope_message =
-                "While reading remainder of condition section '" + sectionname_ + "': "});
-
-    // Consume a potential trailing comment
-    {
-      const auto next = check_remainder.peek();
-      if (next == "//") check_remainder.consume_comment("//");
-    }
-
-    if (!check_remainder.at_end())
-    {
-      FOUR_C_THROW("Unexpected content in condition section '%s': '%s'", sectionname_.c_str(),
-          check_remainder.get_unparsed_remainder().data());
-    }
+    Core::IO::ValueParser parser{parser_content.get_unparsed_remainder()};
+    condition_spec.fully_parse(parser, condition->parameters());
 
     //------------------------------- put condition in map of conditions
     cmap.insert(std::pair<int, std::shared_ptr<Core::Conditions::Condition>>(dobjid, condition));
@@ -181,13 +160,13 @@ std::ostream& Core::Conditions::ConditionDefinition::print(std::ostream& stream)
   for (int i = 0; i < std::max<int>(31 - l, 0); ++i) stream << ' ';
   stream << ' ' << count << '\n';
 
-  stream << "//"
-         << "E num - ";
-  for (auto& i : inputline_)
-  {
-    i->default_line(stream);
-    stream << " ";
-  }
+  using namespace Core::IO::InputSpecBuilders;
+  auto condition_spec = anonymous_group({
+      entry<int>("E"),
+      anonymous_group(specs_),
+  });
+
+  condition_spec.print_as_dat(stream);
 
   stream << "\n";
   return stream;

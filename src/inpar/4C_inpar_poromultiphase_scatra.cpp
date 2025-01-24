@@ -8,6 +8,7 @@
 #include "4C_inpar_poromultiphase_scatra.hpp"
 
 #include "4C_fem_condition_definition.hpp"
+#include "4C_io_linecomponent.hpp"
 #include "4C_linalg_equilibrate.hpp"
 #include "4C_utils_parameter_list.hpp"
 
@@ -16,7 +17,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 

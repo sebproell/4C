@@ -380,63 +380,29 @@ void Inpar::SSI::set_valid_conditions(
     add_named_int(surfmanifoldkinetics, "ConditionID");
     add_named_int(surfmanifoldkinetics, "ManifoldConditionID");
 
-    std::map<int, std::pair<std::string, std::vector<std::shared_ptr<Input::LineComponent>>>>
-        kinetic_model_choices;
-    {
-      {
-        std::vector<std::shared_ptr<Input::LineComponent>> constantinterfaceresistance;
-        constantinterfaceresistance.emplace_back(
-            std::make_shared<Input::SeparatorComponent>("ONOFF"));
-        constantinterfaceresistance.emplace_back(
-            std::make_shared<Input::IntVectorComponent>("ONOFF", 2));
+    using namespace Core::IO::InputSpecBuilders;
 
-        constantinterfaceresistance.emplace_back(
-            std::make_shared<Input::SeparatorComponent>("RESISTANCE"));
-        constantinterfaceresistance.emplace_back(
-            std::make_shared<Input::RealComponent>("RESISTANCE"));
-        constantinterfaceresistance.emplace_back(new Input::SeparatorComponent("E-"));
-        constantinterfaceresistance.emplace_back(new Input::IntComponent("E-"));
-
-        kinetic_model_choices.emplace(Inpar::S2I::kinetics_constantinterfaceresistance,
-            std::make_pair("ConstantInterfaceResistance", constantinterfaceresistance));
-      }
-
-      {
-        // Butler-Volmer-reduced
-        std::vector<std::shared_ptr<Input::LineComponent>> butlervolmerreduced;
-        // total number of existing scalars
-        butlervolmerreduced.emplace_back(std::make_shared<Input::SeparatorComponent>("NUMSCAL"));
-        butlervolmerreduced.emplace_back(std::make_shared<Input::IntComponent>("NUMSCAL"));
-        butlervolmerreduced.emplace_back(
-            std::make_shared<Input::SeparatorComponent>("STOICHIOMETRIES"));
-        butlervolmerreduced.emplace_back(std::make_shared<Input::IntVectorComponent>(
-            "STOICHIOMETRIES", Input::LengthFromInt("NUMSCAL")));
-
-        butlervolmerreduced.emplace_back(std::make_shared<Input::SeparatorComponent>("E-"));
-        butlervolmerreduced.emplace_back(std::make_shared<Input::IntComponent>("E-"));
-        butlervolmerreduced.emplace_back(std::make_shared<Input::SeparatorComponent>("K_R"));
-        butlervolmerreduced.emplace_back(std::make_shared<Input::RealComponent>("K_R"));
-        butlervolmerreduced.emplace_back(std::make_shared<Input::SeparatorComponent>("ALPHA_A"));
-        butlervolmerreduced.emplace_back(std::make_shared<Input::RealComponent>("ALPHA_A"));
-        butlervolmerreduced.emplace_back(std::make_shared<Input::SeparatorComponent>("ALPHA_C"));
-        butlervolmerreduced.emplace_back(std::make_shared<Input::RealComponent>("ALPHA_C"));
-
-        kinetic_model_choices.emplace(Inpar::S2I::kinetics_butlervolmerreduced,
-            std::make_pair("Butler-VolmerReduced", butlervolmerreduced));
-      }
-
-      {
-        std::vector<std::shared_ptr<Input::LineComponent>> noflux;
-
-        kinetic_model_choices.emplace(
-            Inpar::S2I::kinetics_nointerfaceflux, std::make_pair("NoInterfaceFlux", noflux));
-      }
-    }
-
-    surfmanifoldkinetics->add_component(
-        std::make_shared<Input::SeparatorComponent>("KINETIC_MODEL"));
-    surfmanifoldkinetics->add_component(std::make_shared<Input::SwitchComponent>(
-        "KINETIC_MODEL", Inpar::S2I::kinetics_constantinterfaceresistance, kinetic_model_choices));
+    surfmanifoldkinetics->add_component(one_of({
+        anonymous_group({
+            selection<int>("KINETIC_MODEL", {{"ConstantInterfaceResistance",
+                                                Inpar::S2I::kinetics_constantinterfaceresistance}}),
+            entry<std::vector<int>>("ONOFF", {.size = 2}),
+            entry<double>("RESISTANCE"),
+            entry<int>("E-"),
+        }),
+        anonymous_group({
+            selection<int>("KINETIC_MODEL",
+                {{"Butler-VolmerReduced", Inpar::S2I::kinetics_butlervolmerreduced}}),
+            entry<int>("NUMSCAL"),
+            entry<std::vector<int>>("STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
+            entry<int>("E-"),
+            entry<double>("K_R"),
+            entry<double>("ALPHA_A"),
+            entry<double>("ALPHA_C"),
+        }),
+        selection<int>(
+            "KINETIC_MODEL", {{"NoInterfaceFlux", Inpar::S2I::kinetics_nointerfaceflux}}),
+    }));
   }
 
   condlist.emplace_back(surfmanifoldkinetics);

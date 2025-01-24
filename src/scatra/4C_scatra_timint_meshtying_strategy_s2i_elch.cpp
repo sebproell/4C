@@ -403,7 +403,7 @@ void ScaTra::MeshtyingStrategyS2IElch::update() const
           // pre-compute integration factor
           const double integrationfac(condition->parameters().get<double>("MOLMASS") *
                                       scatratimint_->dt() /
-                                      (condition->parameters().get<double>("density") * faraday));
+                                      (condition->parameters().get<double>("DENSITY") * faraday));
 
           // extract nodal cloud from current condition
           const std::vector<int>* nodegids = condition->get_nodes();

@@ -16,7 +16,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::LevelSet::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -203,8 +202,6 @@ void Inpar::LevelSet::set_valid_parameters(Teuchos::ParameterList& list)
 void Inpar::LevelSet::set_valid_conditions(
     std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
 {
-  using namespace Input;
-
   /*--------------------------------------------------------------------*/
   // Taylor Galerkin outflow Boundaries for level set transport equation
 
