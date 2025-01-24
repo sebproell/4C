@@ -431,7 +431,7 @@ void Immersed::ImmersedBase::evaluate_interpolation_condition(Core::FE::Discreti
         if ((*curvenum).has_value() && (*curvenum).value() > 0 && time >= 0)
         {
           curvefac = Global::Problem::instance()
-                         ->function_by_id<Core::Utils::FunctionOfTime>((*curvenum).value() - 1)
+                         ->function_by_id<Core::Utils::FunctionOfTime>((*curvenum).value())
                          .evaluate(time);
         }
       }

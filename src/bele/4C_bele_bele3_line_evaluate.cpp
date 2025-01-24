@@ -163,7 +163,7 @@ int Discret::Elements::Bele3Line::evaluate_neumann(Teuchos::ParameterList& param
         {
           functionfac =
               Global::Problem::instance()
-                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(functions[dim].value() - 1)
+                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(functions[dim].value())
                   .evaluate(coordgpref, time, dim);
         }
         else

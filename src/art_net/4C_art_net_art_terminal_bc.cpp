@@ -83,7 +83,7 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
       if (curve[1].has_value() && curve[1].value())
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[1].value() - 1)
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve[1].value())
                        .evaluate(time);
         Rf = vals[1] * curvefac;
       }
@@ -110,7 +110,7 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     if (curve[0].has_value() && curve[0].value())
     {
       curvefac = Global::Problem::instance()
-                     ->function_by_id<Core::Utils::FunctionOfTime>(curve[0].value() - 1)
+                     ->function_by_id<Core::Utils::FunctionOfTime>(curve[0].value())
                      .evaluate(time);
       BCin = vals[0] * curvefac;
     }
@@ -555,7 +555,7 @@ void Arteries::Utils::solve_reflective_terminal(Core::FE::Discretization& actdis
   {
     double time = params.get<double>("total time");
     curvefac = Global::Problem::instance()
-                   ->function_by_id<Core::Utils::FunctionOfTime>(curve[0].value() - 1)
+                   ->function_by_id<Core::Utils::FunctionOfTime>(curve[0].value())
                    .evaluate(time);
     Rf = vals[0] * curvefac;
   }

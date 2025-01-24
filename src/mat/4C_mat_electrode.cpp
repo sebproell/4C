@@ -151,7 +151,7 @@ double Mat::Electrode::compute_open_circuit_potential(
       // points
       case Mat::PAR::OCPModels::function:
       {
-        const int ocp_function_number = params_->ocpfunctnum_ - 1;
+        const int ocp_function_number = params_->ocpfunctnum_;
         ocp = Global::Problem::instance()
                   ->function_by_id<Core::Utils::FunctionOfScalar>(ocp_function_number)
                   .evaluate(X);
@@ -249,7 +249,7 @@ double Mat::Electrode::compute_d_open_circuit_potential_d_intercalation_fraction
       // spline interpolation of *.csv data points
       case Mat::PAR::OCPModels::function:
       {
-        const int ocp_function_number = params_->ocpfunctnum_ - 1;
+        const int ocp_function_number = params_->ocpfunctnum_;
         d_ocp_dX = Global::Problem::instance()
                        ->function_by_id<Core::Utils::FunctionOfScalar>(ocp_function_number)
                        .evaluate_derivative(X, 1);
@@ -354,7 +354,7 @@ double Mat::Electrode::compute_d2_open_circuit_potential_d_concentration_d_conce
       // cubic spline interpolation of *.csv data points
       case Mat::PAR::OCPModels::function:
       {
-        const int ocp_function_number = params_->ocpfunctnum_ - 1;
+        const int ocp_function_number = params_->ocpfunctnum_;
         d2_ocp_dX2 = Global::Problem::instance()
                          ->function_by_id<Core::Utils::FunctionOfScalar>(ocp_function_number)
                          .evaluate_derivative(X, 2);

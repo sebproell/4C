@@ -259,7 +259,7 @@ void ScaTra::LevelSetAlgorithm::evaluate_error_compared_to_analytical_sol()
             int doflid = dofrowmap->LID(dofgid);
             // evaluate component k of spatial function
             double initialval =
-                problem_->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno - 1)
+                problem_->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)
                     .evaluate(lnode->x().data(), time_, k);
             int err = phiref->ReplaceMyValues(1, &initialval, &doflid);
             if (err != 0) FOUR_C_THROW("dof not on proc");

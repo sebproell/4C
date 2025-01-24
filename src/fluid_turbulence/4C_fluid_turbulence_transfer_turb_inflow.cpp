@@ -718,7 +718,7 @@ void FLD::TransferTurbulentInflowConditionXW::transfer(
       if (time >= 0.0)
       {
         curvefac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfTime>(curve_)
+                       ->function_by_id<Core::Utils::FunctionOfTime>(curve_ + 1)
                        .evaluate(time);
       }
       else

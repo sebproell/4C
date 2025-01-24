@@ -154,7 +154,7 @@ void SSI::SSIBase::setup()
           *Global::Problem::instance()->get_dis("structure")->dof_row_map(2), true);
 
       temperature_vector_->PutScalar(Global::Problem::instance()
-              ->function_by_id<Core::Utils::FunctionOfTime>(temperature_funct_num_ - 1)
+              ->function_by_id<Core::Utils::FunctionOfTime>(temperature_funct_num_)
               .evaluate(time()));
 
       ssicoupling_->set_temperature_field(
@@ -564,7 +564,7 @@ void SSI::SSIBase::evaluate_and_set_temperature_field()
     // evaluate temperature at current time and put to scalar
     const double temperature =
         Global::Problem::instance()
-            ->function_by_id<Core::Utils::FunctionOfTime>(temperature_funct_num_ - 1)
+            ->function_by_id<Core::Utils::FunctionOfTime>(temperature_funct_num_)
             .evaluate(time());
     temperature_vector_->PutScalar(temperature);
 

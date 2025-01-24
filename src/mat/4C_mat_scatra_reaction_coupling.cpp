@@ -603,7 +603,7 @@ void Mat::PAR::REACTIONCOUPLING::ByFunction::initialize_internal(
       if (functID != 0)
       {
         if (Global::Problem::instance()
-                ->function_by_id<Core::Utils::FunctionOfAnything>(functID - 1)
+                ->function_by_id<Core::Utils::FunctionOfAnything>(functID)
                 .number_components() != 1)
           FOUR_C_THROW("expected only one component for the reaction evaluation");
 
@@ -691,7 +691,7 @@ double Mat::PAR::REACTIONCOUPLING::ByFunction::calc_rea_body_force_term_internal
 
   // evaluate reaction term
   double bftfac = Global::Problem::instance()
-                      ->function_by_id<Core::Utils::FunctionOfAnything>(round(couprole[k]) - 1)
+                      ->function_by_id<Core::Utils::FunctionOfAnything>(round(couprole[k]))
                       .evaluate(variables_for_parser_evaluation, constants, 0);
 
   return scale_reac * bftfac;
@@ -761,7 +761,7 @@ void Mat::PAR::REACTIONCOUPLING::ByFunction::calc_rea_body_force_deriv_internal(
   // evaluate the derivatives of the reaction term
   std::vector<double> myderivs =
       Global::Problem::instance()
-          ->function_by_id<Core::Utils::FunctionOfAnything>(round(couprole[k]) - 1)
+          ->function_by_id<Core::Utils::FunctionOfAnything>(round(couprole[k]))
           .evaluate_derivative(variables_, constants_for_parser_evaluation, 0);
 
   // add it to derivs
@@ -815,7 +815,7 @@ void Mat::PAR::REACTIONCOUPLING::ByFunction::calc_rea_body_force_deriv_add_varia
   // evaluate the derivatives of the reaction term
   std::vector<double> myderivs =
       Global::Problem::instance()
-          ->function_by_id<Core::Utils::FunctionOfAnything>(round(couprole[k]) - 1)
+          ->function_by_id<Core::Utils::FunctionOfAnything>(round(couprole[k]))
           .evaluate_derivative(variables, constants, 0);
 
   if (myderivs.size() != derivs.size())

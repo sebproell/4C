@@ -781,7 +781,7 @@ int Discret::Elements::SoTet4::evaluate_neumann(Teuchos::ParameterList& params,
         if (funct[dim].has_value() && funct[dim].value() > 0)
         {
           functfac = Global::Problem::instance()
-                         ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funct[dim].value() - 1)
+                         ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funct[dim].value())
                          .evaluate(xrefegp.data(), time, dim);
         }
 

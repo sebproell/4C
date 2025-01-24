@@ -27,7 +27,7 @@ Solid::ErrorEvaluator::Parameters Solid::ErrorEvaluator::error_evaluator_paramet
   parameters.evaluate_error_analytical =
       parameter_list.get<bool>("EVALUATE_ERROR_ANALYTICAL_REFERENCE");
   parameters.evaluate_error_analytical_displacement_function_id =
-      parameter_list.get<int>("ANALYTICAL_DISPLACEMENT_FUNCTION") - 1;
+      parameter_list.get<int>("ANALYTICAL_DISPLACEMENT_FUNCTION");
 
   return parameters;
 }

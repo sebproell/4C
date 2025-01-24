@@ -287,7 +287,7 @@ void ParticleInteraction::SPHOpenBoundaryDirichlet::prescribe_open_boundary_stat
   // get reference to function
   const auto& function =
       Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfSpaceTime>(
-          prescribedstatefunctid_ - 1);
+          prescribedstatefunctid_);
 
   // safety check
   if (function.number_components() != 1)
@@ -497,7 +497,7 @@ void ParticleInteraction::SPHOpenBoundaryNeumann::prescribe_open_boundary_states
     // get reference to function
     const auto& function =
         Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfSpaceTime>(
-            prescribedstatefunctid_ - 1);
+            prescribedstatefunctid_);
 
     // safety check
     if (function.number_components() != 1)

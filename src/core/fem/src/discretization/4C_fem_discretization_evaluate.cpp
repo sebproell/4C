@@ -226,7 +226,7 @@ void Core::FE::Discretization::evaluate_neumann(Teuchos::ParameterList& params,
                         : params.get<const Core::Utils::FunctionManager*>("function_manager");
 
                 return function_manager
-                    ->function_by_id<Core::Utils::FunctionOfTime>((tmp_funct[j]).value() - 1)
+                    ->function_by_id<Core::Utils::FunctionOfTime>((tmp_funct[j]).value())
                     .evaluate(time);
               }
               else
@@ -415,9 +415,8 @@ void Core::FE::Discretization::evaluate_condition(Teuchos::ParameterList& params
           {
             const auto& function_manager =
                 params.get<const Core::Utils::FunctionManager*>("function_manager");
-            curvefac =
-                function_manager->function_by_id<Core::Utils::FunctionOfTime>(curve->value() - 1)
-                    .evaluate(time);
+            curvefac = function_manager->function_by_id<Core::Utils::FunctionOfTime>(curve->value())
+                           .evaluate(time);
           }
         }
 

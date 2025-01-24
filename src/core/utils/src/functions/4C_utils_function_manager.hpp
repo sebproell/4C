@@ -106,11 +106,10 @@ namespace Core::Utils
 template <typename T>
 const T& Core::Utils::FunctionManager::function_by_id(int num) const
 {
-  const int input_id = num + 1;
-  if (functions_.size() < (unsigned int)(input_id) || input_id < 1)
-    FOUR_C_THROW("Function with index %d (i.e. input FUNCT%d) not available.", num, input_id);
+  if (functions_.size() < (unsigned int)(num) || num < 1)
+    FOUR_C_THROW("Function with index %d (i.e. input FUNCT%d) not available.", num);
 
-  const auto& function_any = functions_[num];
+  const auto& function_any = functions_[num - 1];
   FOUR_C_ASSERT(function_any.has_value(), "Implementation error.");
 
   using StoredType = std::shared_ptr<T>;
@@ -144,7 +143,7 @@ const T& Core::Utils::FunctionManager::function_by_id(int num) const
     FOUR_C_THROW(
         "You tried to query function %d as a function of type '%s'.\n"
         "Actually, it has type '%s'.",
-        input_id, Core::Utils::get_type_name<T>().c_str(), actual_type_name.c_str());
+        num, Core::Utils::get_type_name<T>().c_str(), actual_type_name.c_str());
   }
 }
 

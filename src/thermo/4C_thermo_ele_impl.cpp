@@ -2775,7 +2775,7 @@ void Discret::Elements::TemperImpl<distype>::radiation(
     if (funct[0].has_value() && funct[0].value() > 0)
       // evaluate function at current gauss point (3D position vector required!)
       functfac = Global::Problem::instance()
-                     ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funct[0].value() - 1)
+                     ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funct[0].value())
                      .evaluate(xrefegp.data(), time, 0);
 
     // get values and switches from the condition
@@ -3338,16 +3338,15 @@ void Discret::Elements::TemperImpl<distype>::compute_error(
 
         for (int dim = 0; dim < nsd_; ++dim) position[dim] = xyzint(dim);
 
-        const double T_exact =
-            Global::Problem::instance()
-                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(errorfunctno - 1)
-                .evaluate(position, t, 0);
+        const double T_exact = Global::Problem::instance()
+                                   ->function_by_id<Core::Utils::FunctionOfSpaceTime>(errorfunctno)
+                                   .evaluate(position, t, 0);
 
         T_analytical(0, 0) = T_exact;
 
         std::vector<double> Tder_exact =
             Global::Problem::instance()
-                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(errorfunctno - 1)
+                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(errorfunctno)
                 .evaluate_spatial_derivative(position, t, 0);
 
         if (Tder_exact.size())

@@ -157,7 +157,7 @@ int Discret::Elements::KirchhoffLoveShellNurbs::evaluate_neumann(Teuchos::Parame
     {
       functions[i_dof] =
           &(Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfSpaceTime>(
-              funct_id[i_dof].value() - 1));
+              funct_id[i_dof].value()));
     }
   }
 

@@ -316,7 +316,7 @@ int Discret::Elements::Beam3eb::evaluate_neumann(Teuchos::ParameterList& params,
       // number of the load curve related with a specific line Neumann condition called
       if (tmp_funct[i].has_value() && tmp_funct[i].value() > 0)
         functfac[i] = Global::Problem::instance()
-                          ->function_by_id<Core::Utils::FunctionOfTime>(tmp_funct[i].value() - 1)
+                          ->function_by_id<Core::Utils::FunctionOfTime>(tmp_funct[i].value())
                           .evaluate(time);
     }
 
@@ -500,7 +500,7 @@ int Discret::Elements::Beam3eb::evaluate_neumann(Teuchos::ParameterList& params,
           // evaluate function at the position of the current node       --> dof here correct?
           functionfac =
               Global::Problem::instance()
-                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(tmp_funct[dof].value() - 1)
+                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(tmp_funct[dof].value())
                   .evaluate(X_ref.data(), time, dof);
         }
         else

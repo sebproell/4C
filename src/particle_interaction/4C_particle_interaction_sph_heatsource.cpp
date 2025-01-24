@@ -103,7 +103,7 @@ void ParticleInteraction::SPHHeatSourceVolume::evaluate_heat_source(const double
   // get reference to function
   const auto& function =
       Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfSpaceTime>(
-          heatsourcefctnumber_ - 1);
+          heatsourcefctnumber_);
 
   // safety check
   if (function.number_components() != 1)
@@ -279,7 +279,7 @@ void ParticleInteraction::SPHHeatSourceSurface::evaluate_heat_source(const doubl
   // get reference to function
   const auto& function =
       Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfSpaceTime>(
-          heatsourcefctnumber_ - 1);
+          heatsourcefctnumber_);
 
   // safety check
   if (function.number_components() != 1)

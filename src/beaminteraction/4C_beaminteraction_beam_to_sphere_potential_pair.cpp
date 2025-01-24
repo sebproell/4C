@@ -253,14 +253,14 @@ void BeamInteraction::BeamToSpherePotentialPair<numnodes,
 
   if (function_number.has_value() && function_number.value() > 0)
     q1 *= Global::Problem::instance()
-              ->function_by_id<Core::Utils::FunctionOfTime>(function_number.value() - 1)
+              ->function_by_id<Core::Utils::FunctionOfTime>(function_number.value())
               .evaluate(time_);
 
   function_number = chargeconds_[1]->parameters().get<Core::IO::Noneable<int>>("FUNCT");
 
   if (function_number.has_value() and function_number.value() > 0)
     q2 *= Global::Problem::instance()
-              ->function_by_id<Core::Utils::FunctionOfTime>(function_number.value() - 1)
+              ->function_by_id<Core::Utils::FunctionOfTime>(function_number.value())
               .evaluate(time_);
 
 

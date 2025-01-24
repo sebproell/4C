@@ -357,7 +357,7 @@ void FLD::Utils::FluidImpedanceBc::calculate_impedance_tractions_and_update_resi
   else if (treetype_ == "pressure_by_funct")
   {
     pressure = Global::Problem::instance()
-                   ->function_by_id<Core::Utils::FunctionOfTime>(functnum_ - 1)
+                   ->function_by_id<Core::Utils::FunctionOfTime>(functnum_)
                    .evaluate(time);
     Q_np_fac = 0.0;
   }

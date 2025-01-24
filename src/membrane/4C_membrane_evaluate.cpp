@@ -553,7 +553,7 @@ int Discret::Elements::Membrane<distype>::evaluate_neumann(Teuchos::ParameterLis
     if (tmp_funct[i].has_value() && tmp_funct[i].value() > 0)
     {
       functfacs[i] = Global::Problem::instance()
-                         ->function_by_id<Core::Utils::FunctionOfTime>(tmp_funct[i].value() - 1)
+                         ->function_by_id<Core::Utils::FunctionOfTime>(tmp_funct[i].value())
                          .evaluate(time);
     }
   }

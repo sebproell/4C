@@ -649,15 +649,15 @@ namespace Discret
           {
             const double u_exact_x =
                 Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno - 1)
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno)
                     .evaluate(position, t, 0);
             const double u_exact_y =
                 Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno - 1)
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno)
                     .evaluate(position, t, 1);
             const double p_exact =
                 Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno - 1)
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno)
                     .evaluate(position, t, 2);
 
             u(0) = u_exact_x;
@@ -667,11 +667,11 @@ namespace Discret
 
             std::vector<double> uder_exact_x =
                 Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno - 1)
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno)
                     .evaluate_spatial_derivative(position, t, 0);
             std::vector<double> uder_exact_y =
                 Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno - 1)
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno)
                     .evaluate_spatial_derivative(position, t, 1);
 
             if (uder_exact_x.size())
@@ -690,19 +690,19 @@ namespace Discret
           {
             const double u_exact_x =
                 Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno - 1)
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno)
                     .evaluate(position, t, 0);
             const double u_exact_y =
                 Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno - 1)
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno)
                     .evaluate(position, t, 1);
             const double u_exact_z =
                 Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno - 1)
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno)
                     .evaluate(position, t, 2);
             const double p_exact =
                 Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno - 1)
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno)
                     .evaluate(position, t, 3);
 
             u(0) = u_exact_x;
@@ -712,15 +712,15 @@ namespace Discret
 
             std::vector<double> uder_exact_x =
                 Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno - 1)
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno)
                     .evaluate_spatial_derivative(position, t, 0);
             std::vector<double> uder_exact_y =
                 Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno - 1)
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno)
                     .evaluate_spatial_derivative(position, t, 1);
             std::vector<double> uder_exact_z =
                 Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno - 1)
+                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(calcerrfunctno)
                     .evaluate_spatial_derivative(position, t, 2);
 
             if (uder_exact_x.size())

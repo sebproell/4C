@@ -289,10 +289,9 @@ void Lubrication::TimIntImpl::set_height_field_pure_lub(const int nds)
 
     for (int index = 0; index < nsd_; ++index)
     {
-      double heightfuncvalue =
-          Global::Problem::instance()
-              ->function_by_id<Core::Utils::FunctionOfSpaceTime>(heightfuncno - 1)
-              .evaluate(lnode->x().data(), time_, index);
+      double heightfuncvalue = Global::Problem::instance()
+                                   ->function_by_id<Core::Utils::FunctionOfSpaceTime>(heightfuncno)
+                                   .evaluate(lnode->x().data(), time_, index);
 
       // get global and local dof IDs
       const int gid = nodedofs[index];
@@ -335,7 +334,7 @@ void Lubrication::TimIntImpl::set_average_velocity_field_pure_lub(const int nds)
     for (int index = 0; index < nsd_; ++index)
     {
       double velfuncvalue = Global::Problem::instance()
-                                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(velfuncno - 1)
+                                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(velfuncno)
                                 .evaluate(lnode->x().data(), time_, index);
 
       // get global and local dof IDs

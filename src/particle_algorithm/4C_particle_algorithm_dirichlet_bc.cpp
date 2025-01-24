@@ -123,7 +123,7 @@ void PARTICLEALGORITHM::DirichletBoundaryConditionHandler::evaluate_dirichlet_bo
 
     // get reference to function
     const auto& function =
-        Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfSpaceTime>(functid - 1);
+        Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfSpaceTime>(functid);
 
     // get pointer to particle states
     const double* refpos = container->get_ptr_to_state(PARTICLEENGINE::ReferencePosition, 0);

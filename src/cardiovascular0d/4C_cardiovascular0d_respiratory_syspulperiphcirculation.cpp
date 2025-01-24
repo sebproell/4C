@@ -285,11 +285,11 @@ void Utils::CardiovascularRespiratory0DSysPulPeriphCirculation::evaluate(
   double y_at_r_np = 0.0;
   if (atrium_act_curve_l_ >= 0 && usetime)
     y_at_l_np = Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfTime>(atrium_act_curve_l_ - 1)
+                    ->function_by_id<Core::Utils::FunctionOfTime>(atrium_act_curve_l_)
                     .evaluate(tim);
   if (atrium_act_curve_r_ >= 0 && usetime)
     y_at_r_np = Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfTime>(atrium_act_curve_r_ - 1)
+                    ->function_by_id<Core::Utils::FunctionOfTime>(atrium_act_curve_r_)
                     .evaluate(tim);
   // 0D time-varying atrial elastance
   double E_at_l_np = 0.;
@@ -300,11 +300,11 @@ void Utils::CardiovascularRespiratory0DSysPulPeriphCirculation::evaluate(
   double y_v_r_np = 0.0;
   if (ventricle_act_curve_l_ >= 0 && usetime)
     y_v_l_np = Global::Problem::instance()
-                   ->function_by_id<Core::Utils::FunctionOfTime>(ventricle_act_curve_l_ - 1)
+                   ->function_by_id<Core::Utils::FunctionOfTime>(ventricle_act_curve_l_)
                    .evaluate(tim);
   if (ventricle_act_curve_r_ >= 0 && usetime)
     y_v_r_np = Global::Problem::instance()
-                   ->function_by_id<Core::Utils::FunctionOfTime>(ventricle_act_curve_r_ - 1)
+                   ->function_by_id<Core::Utils::FunctionOfTime>(ventricle_act_curve_r_)
                    .evaluate(tim);
   // 0D time-varying ventricular elastance
   double E_v_l_np = 0.;
@@ -314,28 +314,24 @@ void Utils::CardiovascularRespiratory0DSysPulPeriphCirculation::evaluate(
   double E_at_l_prescr_np = 0.0;
   double E_at_r_prescr_np = 0.0;
   if (atrium_prescr_e_curve_l_ >= 0 && usetime)
-    E_at_l_prescr_np =
-        Global::Problem::instance()
-            ->function_by_id<Core::Utils::FunctionOfTime>(atrium_prescr_e_curve_l_ - 1)
-            .evaluate(tim);
+    E_at_l_prescr_np = Global::Problem::instance()
+                           ->function_by_id<Core::Utils::FunctionOfTime>(atrium_prescr_e_curve_l_)
+                           .evaluate(tim);
   if (atrium_prescr_e_curve_r_ >= 0 && usetime)
-    E_at_r_prescr_np =
-        Global::Problem::instance()
-            ->function_by_id<Core::Utils::FunctionOfTime>(atrium_prescr_e_curve_r_ - 1)
-            .evaluate(tim);
+    E_at_r_prescr_np = Global::Problem::instance()
+                           ->function_by_id<Core::Utils::FunctionOfTime>(atrium_prescr_e_curve_r_)
+                           .evaluate(tim);
   // prescribed ventricular elastances
   double E_v_l_prescr_np = 0.0;
   double E_v_r_prescr_np = 0.0;
   if (ventricle_prescr_e_curve_l_ >= 0 && usetime)
-    E_v_l_prescr_np =
-        Global::Problem::instance()
-            ->function_by_id<Core::Utils::FunctionOfTime>(ventricle_prescr_e_curve_l_ - 1)
-            .evaluate(tim);
+    E_v_l_prescr_np = Global::Problem::instance()
+                          ->function_by_id<Core::Utils::FunctionOfTime>(ventricle_prescr_e_curve_l_)
+                          .evaluate(tim);
   if (ventricle_prescr_e_curve_r_ >= 0 && usetime)
-    E_v_r_prescr_np =
-        Global::Problem::instance()
-            ->function_by_id<Core::Utils::FunctionOfTime>(ventricle_prescr_e_curve_r_ - 1)
-            .evaluate(tim);
+    E_v_r_prescr_np = Global::Problem::instance()
+                          ->function_by_id<Core::Utils::FunctionOfTime>(ventricle_prescr_e_curve_r_)
+                          .evaluate(tim);
 
 
   switch (atrium_model_)
@@ -1110,7 +1106,7 @@ void Utils::CardiovascularRespiratory0DSysPulPeriphCirculation::evaluate_respira
   double U_t = 0.0;
   if (u_t_curve_ >= 0 && usetime)
     U_t = Global::Problem::instance()
-              ->function_by_id<Core::Utils::FunctionOfTime>(u_t_curve_ - 1)
+              ->function_by_id<Core::Utils::FunctionOfTime>(u_t_curve_)
               .evaluate(tim);
 
   // extract values of dof vector at t_{n+1}
@@ -9138,7 +9134,7 @@ void Utils::CardiovascularRespiratory0DSysPulPeriphCirculation::initialize(
       double U_t_0 = 0.0;
       if (u_t_curve_ >= 0)
         U_t_0 = Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfTime>(u_t_curve_ - 1)
+                    ->function_by_id<Core::Utils::FunctionOfTime>(u_t_curve_)
                     .evaluate(0);
 
       double V_alv_0 = respirpar.get("V_alv_0", -1.0);

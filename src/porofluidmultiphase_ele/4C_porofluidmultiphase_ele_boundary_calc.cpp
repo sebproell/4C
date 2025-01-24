@@ -225,7 +225,7 @@ int Discret::Elements::PoroFluidMultiPhaseEleBoundaryCalc<distype>::evaluate_neu
         {
           // evaluate function at current Gauss point (provide always 3D coordinates!)
           functfac = Global::Problem::instance()
-                         ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func[dof].value() - 1)
+                         ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func[dof].value())
                          .evaluate(coordgpref, time, dof);
         }
         else

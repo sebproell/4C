@@ -1354,12 +1354,12 @@ void Discret::Elements::LubricationEleCalc<distype, probdim>::cal_error_compared
         gradpre.multiply(derxy_, eprenp_);
 
         pre_exact = Global::Problem::instance()
-                        ->function_by_id<Core::Utils::FunctionOfSpaceTime>(errorfunctno - 1)
+                        ->function_by_id<Core::Utils::FunctionOfSpaceTime>(errorfunctno)
                         .evaluate(position, t, 0);
 
         std::vector<double> gradpre_exact_vec =
             Global::Problem::instance()
-                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(errorfunctno - 1)
+                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(errorfunctno)
                 .evaluate_spatial_derivative(position, t, 0);
 
         if (gradpre_exact_vec.size())

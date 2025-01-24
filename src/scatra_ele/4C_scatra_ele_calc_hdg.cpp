@@ -426,7 +426,7 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::project_dirich_field(
     const double fac = shapesface_->jfac(q);
     // evaluate function at current Gauss point (provide always 3D coordinates!)
     const double functfac = Global::Problem::instance()
-                                ->function_by_id<Core::Utils::FunctionOfSpaceTime>((*func)[0] - 1)
+                                ->function_by_id<Core::Utils::FunctionOfSpaceTime>((*func)[0])
                                 .evaluate(coordgp, time, 0);
 
     // Creating the mass matrix and the RHS vector
@@ -1135,7 +1135,7 @@ void Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::LocalSolver::compute
 
   // Core::LinAlg::SerialDenseVector source(nsd_);
   if (nsd_ != Global::Problem::instance()
-                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funcno - 1)
+                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funcno)
                   .number_components())
     FOUR_C_THROW(
         "The source does not have the correct number of components.\n The correct number of "
@@ -1154,7 +1154,7 @@ void Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::LocalSolver::compute
         for (unsigned int d = 0; d < nsd_; ++d)
           source += shapes_->shderxy(j * nsd_ + d, q) *
                     Global::Problem::instance()
-                        ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funcno - 1)
+                        ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funcno)
                         .evaluate(xyz.data(), time, d);
         elevec1(i) += shapes_->shfunct(i, q) * source * shapes_->jfac(q);
       }
@@ -1355,7 +1355,7 @@ void Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::LocalSolver::compute
       {
         // evaluate function at current Gauss point (provide always 3D coordinates!)
         functfac = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func[0].value() - 1)
+                       ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func[0].value())
                        .evaluate(coordgpref, time, 0);
       }
       else
@@ -1657,10 +1657,10 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::set_initial_field(
 
       FOUR_C_ASSERT(start_func != nullptr, "funct not set for initial value");
       if (Global::Problem::instance()
-                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(*start_func - 1)
+                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(*start_func)
                   .number_components() != 1 &&
           Global::Problem::instance()
-                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(*start_func - 1)
+                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(*start_func)
                   .number_components() != nsd_ + 2)
         FOUR_C_THROW(
             "Impossible to initialize the field with the given number of components of the initial "
@@ -1668,11 +1668,11 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::set_initial_field(
             "as:\n- phi\n- gradphi\n- tracephi");
 
       phi = Global::Problem::instance()
-                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(*start_func - 1)
+                ->function_by_id<Core::Utils::FunctionOfSpaceTime>(*start_func)
                 .evaluate(xyz.data(), 0, 0);
       for (unsigned int i = 0; i < nsd_; ++i)
         gradphi[i] = Global::Problem::instance()
-                         ->function_by_id<Core::Utils::FunctionOfSpaceTime>(*start_func - 1)
+                         ->function_by_id<Core::Utils::FunctionOfSpaceTime>(*start_func)
                          .evaluate(xyz.data(), 0, 1 + i);
 
       // now fill the components in the one-sided mass matrix and the right hand side
@@ -1725,7 +1725,7 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::set_initial_field(
 
       double trphi;
       trphi = Global::Problem::instance()
-                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(*start_func - 1)
+                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(*start_func)
                   .evaluate(xyz.data(), 0, nsd_ + 1);
 
       // now fill the components in the mass matrix and the right hand side
@@ -2170,7 +2170,7 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::calc_error(
   const double time = params.get<double>("time");
 
   if (Global::Problem::instance()
-          ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func - 1)
+          ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func)
           .number_components() != 1)
     FOUR_C_THROW(
         "The number of component must be one. The gradient is computed with forward auomatic "
@@ -2210,10 +2210,10 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::calc_error(
     // Evaluate error function and its derivatives in the integration point (real) coordinates
     for (unsigned int idim = 0; idim < nsd_; idim++) xsi(idim) = highshapes.xyzreal(idim, q);
     double funct = Global::Problem::instance()
-                       ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func - 1)
+                       ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func)
                        .evaluate(xsi.data(), time, 0);
     std::vector<double> deriv = Global::Problem::instance()
-                                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func - 1)
+                                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func)
                                     .evaluate_spatial_derivative(xsi.data(), time, 0);
 
     error_phi += std::pow((funct - phi), 2) * highshapes.jfac(q);

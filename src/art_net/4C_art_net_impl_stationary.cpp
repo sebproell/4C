@@ -688,10 +688,9 @@ void Arteries::ArtNetImplStationary::set_initial_field(
           const int dofgid = nodedofset[k];
           int doflid = dofrowmap->LID(dofgid);
           // evaluate component k of spatial function
-          double initialval =
-              Global::Problem::instance()
-                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno - 1)
-                  .evaluate(lnode->x().data(), time_, k);
+          double initialval = Global::Problem::instance()
+                                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)
+                                  .evaluate(lnode->x().data(), time_, k);
           int err = pressurenp_->ReplaceMyValues(1, &initialval, &doflid);
           if (err != 0) FOUR_C_THROW("dof not on proc");
         }

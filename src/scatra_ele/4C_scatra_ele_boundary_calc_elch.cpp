@@ -157,7 +157,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_elch_b
   {
     // function_by_id takes a zero-based index
     const double curvefac = Global::Problem::instance()
-                                ->function_by_id<Core::Utils::FunctionOfTime>(curvenum.value() - 1)
+                                ->function_by_id<Core::Utils::FunctionOfTime>(curvenum.value())
                                 .evaluate(time);
     // adjust potential at metal side accordingly
     pot0 *= curvefac;
@@ -262,10 +262,9 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_nernst
     if (curvenum.has_value() && curvenum.value() > 0)
     {
       // function_by_id takes a zero-based index
-      const double curvefac =
-          Global::Problem::instance()
-              ->function_by_id<Core::Utils::FunctionOfTime>(curvenum.value() - 1)
-              .evaluate(time);
+      const double curvefac = Global::Problem::instance()
+                                  ->function_by_id<Core::Utils::FunctionOfTime>(curvenum.value())
+                                  .evaluate(time);
       // adjust potential at metal side accordingly
       pot0 *= curvefac;
     }

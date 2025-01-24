@@ -4479,10 +4479,9 @@ void FLD::XFluid::set_initial_flow_field(
         {
           int gid = nodedofset[dof];
 
-          double initialval =
-              Global::Problem::instance()
-                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno - 1)
-                  .evaluate(lnode->x().data(), time_, dof % 4);
+          double initialval = Global::Problem::instance()
+                                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)
+                                  .evaluate(lnode->x().data(), time_, dof % 4);
           state_->velnp_->ReplaceGlobalValues(1, &initialval, &gid);
         }
       }

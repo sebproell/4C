@@ -142,7 +142,7 @@ void Mat::Elastic::AnisoActiveStressEvolution::add_stress_aniso_principal(
         params.get<Core::LinAlg::Matrix<3, 1>>("elecenter_coords_ref");
     activationFunction =
         Global::Problem::instance()
-            ->function_by_id<Core::Utils::FunctionOfSpaceTime>(params_->sourceactiv_ - 1)
+            ->function_by_id<Core::Utils::FunctionOfSpaceTime>(params_->sourceactiv_)
             .evaluate(element_center_coordinates_ref.data(), totaltime, 0);
   }
 

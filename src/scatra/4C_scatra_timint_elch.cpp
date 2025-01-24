@@ -2237,7 +2237,7 @@ bool ScaTra::ScaTraTimIntElch::apply_galvanostatic_control()
       compute_time_derivative();
 
       double targetcurrent =
-          problem_->function_by_id<Core::Utils::FunctionOfTime>(curvenum - 1).evaluate(time_);
+          problem_->function_by_id<Core::Utils::FunctionOfTime>(curvenum).evaluate(time_);
       double timefacrhs = 1.0 / residual_scaling();
 
       double currtangent_anode(0.0);
@@ -3278,7 +3278,7 @@ void ScaTra::ScaTraTimIntElch::reduce_dimension_null_space_blocks(
  *-----------------------------------------------------------------------------*/
 double ScaTra::ScaTraTimIntElch::compute_temperature_from_function() const
 {
-  return problem_->function_by_id<Core::Utils::FunctionOfTime>(temperature_funct_num_ - 1)
+  return problem_->function_by_id<Core::Utils::FunctionOfTime>(temperature_funct_num_)
       .evaluate(time_);
 }
 

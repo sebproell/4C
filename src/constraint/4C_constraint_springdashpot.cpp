@@ -243,14 +243,14 @@ void CONSTRAINTS::SpringDashpot::evaluate_robin(std::shared_ptr<Core::LinAlg::Sp
               (*numfuncstiff)[dof] != 0
                   ? (*springstiff)[dof] *
                         Global::Problem::instance()
-                            ->function_by_id<Core::Utils::FunctionOfTime>((*numfuncstiff)[dof] - 1)
+                            ->function_by_id<Core::Utils::FunctionOfTime>((*numfuncstiff)[dof])
                             .evaluate(total_time)
                   : (*springstiff)[dof];
           const double dof_viscosity =
               (*numfuncvisco)[dof] != 0
                   ? (*dashpotvisc)[dof] *
                         Global::Problem::instance()
-                            ->function_by_id<Core::Utils::FunctionOfTime>((*numfuncvisco)[dof] - 1)
+                            ->function_by_id<Core::Utils::FunctionOfTime>((*numfuncvisco)[dof])
                             .evaluate(total_time)
                   : (*dashpotvisc)[dof];
           const double dof_disploffset =

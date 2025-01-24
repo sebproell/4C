@@ -612,7 +612,7 @@ void Core::FE::Utils::DbcNurbs::fill_matrix_and_rhs_for_ls_dirichlet_boundary(
       {
         // important: position has to have always three components!!
         functimederivfac =
-            function_manager.function_by_id<Core::Utils::FunctionOfSpaceTime>(funct[rr].value() - 1)
+            function_manager.function_by_id<Core::Utils::FunctionOfSpaceTime>(funct[rr].value())
                 .evaluate_time_derivative(position.values(), time, deg, rr);
       }
 
@@ -762,11 +762,11 @@ void Core::FE::Utils::DbcNurbs::fill_matrix_and_rhs_for_ls_dirichlet_domain(
       {
         // important: position has to have always three components!!
         functimederivfac =
-            function_manager.function_by_id<Core::Utils::FunctionOfSpaceTime>(funct[rr].value() - 1)
+            function_manager.function_by_id<Core::Utils::FunctionOfSpaceTime>(funct[rr].value())
                 .evaluate_time_derivative(position.values(), time, deg, rr);
 
         functfac =
-            function_manager.function_by_id<Core::Utils::FunctionOfSpaceTime>(funct[rr].value() - 1)
+            function_manager.function_by_id<Core::Utils::FunctionOfSpaceTime>(funct[rr].value())
                 .evaluate(position.values(), time, rr);
       }
 

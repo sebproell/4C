@@ -417,15 +417,13 @@ int Discret::Elements::FluidBoundaryImpl<distype>::evaluate_neumann(
           if (func[idim].has_value() && func[idim].value() > 0)
           {
             // evaluate function at current gauss point
-            functfac =
-                Global::Problem::instance()
-                    ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func[idim].value() - 1)
-                    .evaluate(coordgpref, time, idim);
+            functfac = Global::Problem::instance()
+                           ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func[idim].value())
+                           .evaluate(coordgpref, time, idim);
             if (fldparatimint_->is_new_ost_implementation())
-              functfacn =
-                  Global::Problem::instance()
-                      ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func[idim].value() - 1)
-                      .evaluate(coordgpref, time - fldparatimint_->dt(), idim);
+              functfacn = Global::Problem::instance()
+                              ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func[idim].value())
+                              .evaluate(coordgpref, time - fldparatimint_->dt(), idim);
           }
           else
           {
@@ -458,13 +456,12 @@ int Discret::Elements::FluidBoundaryImpl<distype>::evaluate_neumann(
           {
             // evaluate function at current gauss point
             functfac = Global::Problem::instance()
-                           ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func[0].value() - 1)
+                           ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func[0].value())
                            .evaluate(coordgpref, time, idim);
             if (fldparatimint_->is_new_ost_implementation())
-              functfacn =
-                  Global::Problem::instance()
-                      ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func[0].value() - 1)
-                      .evaluate(coordgpref, time - fldparatimint_->dt(), idim);
+              functfacn = Global::Problem::instance()
+                              ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func[0].value())
+                              .evaluate(coordgpref, time - fldparatimint_->dt(), idim);
           }
           else
           {

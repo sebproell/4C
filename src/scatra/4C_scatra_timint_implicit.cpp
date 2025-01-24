@@ -1277,8 +1277,9 @@ void ScaTra::ScaTraTimIntImpl::set_velocity_field()
 
         for (int index = 0; index < nsd_; ++index)
         {
-          double value = problem_->function_by_id<Core::Utils::FunctionOfSpaceTime>(velfuncno - 1)
-                             .evaluate(lnode->x().data(), time_, index);
+          double value =
+              problem_->function_by_id<Core::Utils::FunctionOfSpaceTime>(velfuncno).evaluate(
+                  lnode->x().data(), time_, index);
 
           // get global and local dof IDs
           const int gid = nodedofs[index];
@@ -1339,12 +1340,11 @@ void ScaTra::ScaTraTimIntImpl::set_external_force()
     for (int spatial_dimension = 0; spatial_dimension < nsd_; ++spatial_dimension)
     {
       const double external_force_value =
-          problem_->function_by_id<Core::Utils::FunctionOfSpaceTime>(external_force_function_id - 1)
+          problem_->function_by_id<Core::Utils::FunctionOfSpaceTime>(external_force_function_id)
               .evaluate(current_node->x().data(), time_, spatial_dimension);
 
       const double intrinsic_mobility_value =
-          problem_
-              ->function_by_id<Core::Utils::FunctionOfSpaceTime>(intrinsic_mobility_function_id - 1)
+          problem_->function_by_id<Core::Utils::FunctionOfSpaceTime>(intrinsic_mobility_function_id)
               .evaluate(current_node->x().data(), time_, spatial_dimension);
       const double force_velocity_value = external_force_value * intrinsic_mobility_value;
 
@@ -1917,7 +1917,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
           int doflid = dofrowmap->LID(dofgid);
           // evaluate component k of spatial function
           double initialval =
-              problem_->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno - 1)
+              problem_->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)
                   .evaluate(lnode->x().data(), time_, k);
           int err = phin_->ReplaceMyValues(1, &initialval, &doflid);
           if (err != 0) FOUR_C_THROW("dof not on proc");
@@ -1942,7 +1942,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
 
         Core::FE::Nurbs::apply_nurbs_initial_condition(*discret_,
             problem_->solver_params(lstsolver),
-            problem_->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno - 1), phin_);
+            problem_->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno), phin_);
       }
 
       // initialize also the solution vector. These values are a pretty good guess for the

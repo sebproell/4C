@@ -402,7 +402,7 @@ bool XFEM::LevelSetCoupling::set_level_set_field(const double time)
     else if (func_no >= 1)
     {
       value = Global::Problem::instance()
-                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func_no - 1)
+                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(func_no)
                   .evaluate(lnode->x().data(), time, 0);
     }
     else

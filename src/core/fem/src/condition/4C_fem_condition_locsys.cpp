@@ -215,14 +215,14 @@ void Core::Conditions::LocsysManager::update(const double time,
 
                   // Evaluate function with current node position
                   functfac = (function_manager.function_by_id<Core::Utils::FunctionOfSpaceTime>(
-                                  (funct)[j].value() - 1))
+                                  (funct)[j].value()))
                                  .evaluate(currPos.data(), time, j);
                 }
                 else
                 {
                   // Evaluate function with reference node position
                   functfac = (function_manager.function_by_id<Core::Utils::FunctionOfSpaceTime>(
-                                  (funct)[j].value() - 1))
+                                  (funct)[j].value()))
                                  .evaluate(node->x().data(), time, j);
                 }
               }
