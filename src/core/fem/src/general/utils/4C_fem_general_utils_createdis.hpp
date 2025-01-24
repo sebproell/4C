@@ -14,7 +14,6 @@
 #include "4C_comm_utils_factory.hpp"
 #include "4C_fem_condition_utils.hpp"
 #include "4C_fem_general_element.hpp"
-#include "4C_fem_general_immersed_node.hpp"
 #include "4C_fem_general_node.hpp"
 #include "4C_fem_nurbs_discretization.hpp"
 #include "4C_io_input_spec.hpp"
@@ -253,7 +252,7 @@ namespace Core::FE
     //! construct row nodes for cloned target discretization
     void create_nodes(const Core::FE::Discretization& sourcedis,
         Core::FE::Discretization& targetdis, const std::set<int>& rownodeset,
-        const std::set<int>& colnodeset, const bool isnurbsdis, const bool buildimmersednode) const;
+        const std::set<int>& colnodeset, const bool isnurbsdis) const;
 
     //! construct and return Epetra_Map
     std::shared_ptr<Epetra_Map> create_map(
@@ -375,17 +374,12 @@ namespace Core::FE
           dynamic_cast<Core::FE::Nurbs::NurbsDiscretization*>(&((sourcedis)));
       bool isnurbsdis(nurbsdis != nullptr);
 
-      // try to cast source node to immersed node
-      Core::Nodes::ImmersedNode* inode = dynamic_cast<Core::Nodes::ImmersedNode*>(
-          sourcedis.g_node(sourcedis.node_row_map()->GID(0)));
-      bool buildimmersednode(inode != nullptr);
-
       // check and analyze source discretization
       initial_checks(sourcedis, targetdis);
       analyze_source_dis(sourcedis, eletype_, rownodeset_, colnodeset_, roweleset_, coleleset_);
 
       // do the node business
-      create_nodes(sourcedis, targetdis, rownodeset_, colnodeset_, isnurbsdis, buildimmersednode);
+      create_nodes(sourcedis, targetdis, rownodeset_, colnodeset_, isnurbsdis);
       targetnoderowmap_ = create_map(rownodeset_, targetdis);
       targetnodecolmap_ = create_map(colnodeset_, targetdis);
 
@@ -467,16 +461,11 @@ namespace Core::FE
           dynamic_cast<const Core::FE::Nurbs::NurbsDiscretization*>(&sourcedis);
       bool isnurbsdis(nurbsdis_ptr != nullptr);
 
-      // try to cast source node to immersed node
-      Core::Nodes::ImmersedNode* inode = dynamic_cast<Core::Nodes::ImmersedNode*>(
-          sourcedis.g_node(sourcedis.node_row_map()->GID(0)));
-      bool buildimmersednode(inode != nullptr);
-
       analyze_conditioned_source_dis(
           sourcedis, sourceelements, eletype_, rownodeset_, colnodeset_, roweleset_, coleleset_);
 
       // do the node business
-      create_nodes(sourcedis, targetdis, rownodeset_, colnodeset_, isnurbsdis, buildimmersednode);
+      create_nodes(sourcedis, targetdis, rownodeset_, colnodeset_, isnurbsdis);
       targetnoderowmap_ = create_map(rownodeset_, targetdis);
       targetnodecolmap_ = create_map(colnodeset_, targetdis);
 

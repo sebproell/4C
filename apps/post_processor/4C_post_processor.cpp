@@ -597,7 +597,6 @@ namespace
 
         break;
       }
-      case Core::ProblemType::immersed_fsi:
       case Core::ProblemType::fbi:
       {
         std::string basename = problem.outname();

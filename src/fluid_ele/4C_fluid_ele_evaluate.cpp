@@ -10,7 +10,6 @@
 #include "4C_fluid_ele_action.hpp"
 #include "4C_fluid_ele_evaluate_utils.hpp"
 #include "4C_fluid_ele_factory.hpp"
-#include "4C_fluid_ele_immersed.hpp"
 #include "4C_fluid_ele_interface.hpp"
 #include "4C_fluid_ele_parameter.hpp"
 #include "4C_fluid_ele_parameter_intface.hpp"
@@ -112,11 +111,6 @@ int Discret::Elements::Fluid::evaluate(Teuchos::ParameterList& params,
       impltype = "std";
       break;
   }
-
-  Discret::Elements::FluidImmersed* immersedele =
-      dynamic_cast<Discret::Elements::FluidImmersed*>(this);
-  if (immersedele)  // not a standard immersed element and the node row maps don't know it's nodes
-    impltype = "std_immersed";
 
 
   Discret::Elements::FluidXWall* xwallele = dynamic_cast<Discret::Elements::FluidXWall*>(this);
@@ -718,11 +712,6 @@ int Discret::Elements::Fluid::evaluate(Teuchos::ParameterList& params,
     case FLD::calc_dissipation:
     case FLD::integrate_shape:
     case FLD::calc_divop:
-    case FLD::interpolate_velgrad_to_given_point:
-    case FLD::interpolate_velocity_to_given_point_immersed:
-    case FLD::interpolate_velocity_to_given_point:
-    case FLD::interpolate_pressure_to_given_point:
-    case FLD::correct_immersed_fluid_bound_vel:
     case FLD::calc_turbulence_statistics:
     case FLD::xwall_l2_projection:
     case FLD::xwall_calc_mk:
@@ -732,8 +721,6 @@ int Discret::Elements::Fluid::evaluate(Teuchos::ParameterList& params,
     case FLD::calc_velgrad_ele_center:
     case FLD::calc_dt_via_cfl:
     case FLD::calc_mass_flow_periodic_hill:
-    case FLD::reset_immersed_ele:
-    case FLD::update_immersed_information:
     {
       return Discret::Elements::FluidFactory::provide_impl(shape(), impltype)
           ->evaluate_service(

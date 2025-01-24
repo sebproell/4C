@@ -9,7 +9,6 @@
 
 #include "4C_fluid_ele_calc_hdg.hpp"
 #include "4C_fluid_ele_calc_hdg_weak_comp.hpp"
-#include "4C_fluid_ele_calc_immersed.hpp"
 #include "4C_fluid_ele_calc_loma.hpp"
 #include "4C_fluid_ele_calc_poro.hpp"
 #include "4C_fluid_ele_calc_poro_p1.hpp"
@@ -109,8 +108,6 @@ Discret::Elements::FluidEleInterface* Discret::Elements::FluidFactory::define_pr
     return Discret::Elements::FluidEleCalcStd<distype>::instance();
   else if (problem == "loma")
     return Discret::Elements::FluidEleCalcLoma<distype>::instance();
-  else if (problem == "std_immersed")
-    return Discret::Elements::FluidEleCalcImmersed<distype>::instance();
   else if (problem == "poro")
     return Discret::Elements::FluidEleCalcPoro<distype>::instance();
   else if (problem == "poro_p1")

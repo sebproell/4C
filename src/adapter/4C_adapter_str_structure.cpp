@@ -10,7 +10,6 @@
 #include "4C_adapter_str_constr_merged.hpp"
 #include "4C_adapter_str_fpsiwrapper.hpp"
 #include "4C_adapter_str_fsi_timint_adaptive.hpp"
-#include "4C_adapter_str_fsiwrapper_immersed.hpp"
 #include "4C_adapter_str_redairway.hpp"
 #include "4C_adapter_str_ssiwrapper.hpp"
 #include "4C_adapter_str_timeloop.hpp"
@@ -361,11 +360,6 @@ void Adapter::StructureBaseAlgorithm::create_tim_int(const Teuchos::ParameterLis
           structure_ = std::make_shared<FSIStructureWrapper>(
               std::make_shared<StructureNOXCorrectionWrapper>(tmpstr));
         }
-      }
-      break;
-      case Core::ProblemType::immersed_fsi:
-      {
-        structure_ = std::make_shared<FSIStructureWrapperImmersed>(tmpstr);
       }
       break;
       case Core::ProblemType::ssi:

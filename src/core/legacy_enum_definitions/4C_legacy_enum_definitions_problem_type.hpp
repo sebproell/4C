@@ -41,7 +41,6 @@ namespace Core
     fsi_redmodels,   // fluid structure interaction problem
     fsi_xfem,        // fluid structure interaction problem including XFEM interfaces
     gas_fsi,         // fsi with gas transport
-    immersed_fsi,    // immersed fsi
     level_set,       // level-set problem
     loma,            // low-Mach-number flow problem
     lubrication,     // lubrication problem (reduced fluid model for elastohydrodynamic lubrication)

@@ -2101,9 +2101,6 @@ void Solid::ModelEvaluator::Structure::params_interface2_parameter_list(
     case Core::Elements::struct_calc_global_gpstresses_map:
       action = "calc_global_gpstresses_map";
       break;
-    case Core::Elements::struct_interpolate_velocity_to_point:
-      action = "interpolate_velocity_to_given_point";
-      break;
     case Core::Elements::struct_calc_mass_volume:
       action = "calc_struct_mass_volume";
       break;

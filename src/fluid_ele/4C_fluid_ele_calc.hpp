@@ -145,57 +145,6 @@ namespace Discret
           //    const Core::FE::GaussIntegration & intpoints
       );
 
-      /*! \brief Interpolate velocity gradient and pressure to given point
-       *
-       *  \author rauch \date 05/2014
-       */
-      int interpolate_velocity_gradient_and_pressure(Discret::Elements::Fluid* ele,
-          Core::FE::Discretization& discretization, const std::vector<int>& lm,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra);
-
-      /*! \brief Interpolate velocity to given point
-       *
-       *  \author rauch \date 05/2014
-       */
-      int interpolate_velocity_to_node(Teuchos::ParameterList& params,
-          Discret::Elements::Fluid* ele, Core::FE::Discretization& discretization,
-          const std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra);
-
-      /*! \brief Interpolate velocity to given point
-       *
-       *  \author rauch \date 07/2015
-       */
-      int correct_immersed_bound_velocities(Teuchos::ParameterList& params,
-          Discret::Elements::Fluid* ele, Core::FE::Discretization& discretization,
-          const std::vector<int>& lm, Core::Mat::Material& mat,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra);
-
-      /*---------------------------------------------------------------------*
-       | Action type: interpolate_velocity_to_given_point                    |
-       | calculate velocity at given point                       ghamm 12/15 |
-       *---------------------------------------------------------------------*/
-      int interpolate_velocity_to_point(Discret::Elements::Fluid* ele,
-          Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-          std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
-          Core::LinAlg::SerialDenseVector& elevec2);
-
-      /*! \brief Interpolate pressure to given point
-       *
-       *  \author ghamm \date 06/2015
-       */
-      int interpolate_pressure_to_point(Discret::Elements::Fluid* ele,
-          Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-          std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1_epetra);
-
-      /*! \brief Reset debug output of immersed element
-       *
-       *  \author rauch \date 05/2014
-       */
-      int reset_immersed_ele(Discret::Elements::Fluid* ele, Teuchos::ParameterList& params);
-
       /*! \brief Calculate coordinates and velocities and element center
        *
        *  \author bk \date 01/2015

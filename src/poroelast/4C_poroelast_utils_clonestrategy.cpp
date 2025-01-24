@@ -30,8 +30,8 @@ std::map<std::string, std::string> PoroElast::Utils::PoroelastCloneStrategy::con
       {"PoroPartInt", "PoroPartInt"}, {"PoroCoupling", "PoroCoupling"},
       {"FSICoupling", "FSICoupling"}, {"fpsi_coupling", "fpsi_coupling"},
       {"PoroPresInt", "PoroPresInt"}, {"Mortar", "Mortar"}, {"SurfFlowRate", "SurfFlowRate"},
-      {"LineFlowRate", "LineFlowRate"}, {"ImmersedSearchbox", "ImmersedSearchbox"},
-      {"XFEMSurfFPIMono", "XFEMSurfFPIMono"}, {"FluidNeumannInflow", "FluidNeumannInflow"}};
+      {"LineFlowRate", "LineFlowRate"}, {"XFEMSurfFPIMono", "XFEMSurfFPIMono"},
+      {"FluidNeumannInflow", "FluidNeumannInflow"}};
 }
 
 void PoroElast::Utils::PoroelastCloneStrategy::check_material_type(const int matid)

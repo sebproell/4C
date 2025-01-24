@@ -752,7 +752,6 @@ void Adapter::FluidBaseAlgorithm::setup_fluid(const Teuchos::ParameterList& prbd
       }
       break;
       case Core::ProblemType::fsi:
-      case Core::ProblemType::immersed_fsi:
       case Core::ProblemType::gas_fsi:
       case Core::ProblemType::biofilm_fsi:
       case Core::ProblemType::fbi:

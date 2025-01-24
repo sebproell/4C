@@ -28,7 +28,6 @@
 #include "4C_inpar_fs3i.hpp"
 #include "4C_inpar_fsi.hpp"
 #include "4C_inpar_geometric_search.hpp"
-#include "4C_inpar_immersed.hpp"
 #include "4C_inpar_io.hpp"
 #include "4C_inpar_IO_monitor_structure_dbc.hpp"
 #include "4C_inpar_IO_runtime_output.hpp"
@@ -285,7 +284,6 @@ std::shared_ptr<const Teuchos::ParameterList> Input::valid_parameters()
   Inpar::BioFilm::set_valid_parameters(*list);
   Inpar::ReducedLung::set_valid_parameters(*list);
   Inpar::Cardiovascular0D::set_valid_parameters(*list);
-  Inpar::Immersed::set_valid_parameters(*list);
   Inpar::FPSI::set_valid_parameters(*list);
   Inpar::FBI::set_valid_parameters(*list);
 

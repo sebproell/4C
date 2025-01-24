@@ -8,7 +8,6 @@
 #include "4C_adapter_fld_fbi_movingboundary.hpp"
 #include "4C_adapter_fld_fluid_ale.hpp"
 #include "4C_adapter_fld_fluid_ale_xfem.hpp"
-#include "4C_adapter_fld_fluid_immersed.hpp"
 #include "4C_adapter_fld_fluid_xfem.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_validparameters.hpp"
@@ -50,11 +49,6 @@ Adapter::FluidMovingBoundaryBaseAlgorithm::FluidMovingBoundaryBaseAlgorithm(
       {
         fluid_ = std::make_shared<FluidAleXFEM>(prbdyn, condname);
       }
-      break;
-    }
-    case Core::ProblemType::immersed_fsi:
-    {
-      fluid_ = std::make_shared<FluidImmersed>(prbdyn, condname);
       break;
     }
     case Core::ProblemType::fbi:

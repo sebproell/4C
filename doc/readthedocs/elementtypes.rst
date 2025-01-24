@@ -1143,44 +1143,6 @@ FLUIDHDGWEAKCOMP
 | SPC (opt.)   |  1 x number |
 +--------------+-------------+
 
-.. _fluidfluidimmersed:
-
-FLUIDIMMERSED
-^^^^^^^^^^^^^
-
-*Shapes:*
-
-- :ref:`HEX8 <hex8>` (8 nodes)
-
-**Parameters**
-
-+--------------+-------------+
-| Parameter    | Values      |
-+==============+=============+
-| MAT          |  1 x number |
-+--------------+-------------+
-| NA           |  1 x string |
-+--------------+-------------+
-
-.. _fluidfluidporoimmersed:
-
-FLUIDPOROIMMERSED
-^^^^^^^^^^^^^^^^^
-
-*Shapes:*
-
-- :ref:`HEX8 <hex8>` (8 nodes)
-
-**Parameters**
-
-+--------------+-------------+
-| Parameter    | Values      |
-+==============+=============+
-| MAT          |  1 x number |
-+--------------+-------------+
-| NA           |  1 x string |
-+--------------+-------------+
-
 .. _lubricationelements:
 
 LUBRICATION ELEMENTS

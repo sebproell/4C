@@ -299,10 +299,6 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "AAA Surface";
     case Core::Conditions::LsContact:
       return "level-set condition for contact points";
-    case Core::Conditions::ImmersedSearchbox:
-      return "Box for search algorithm in immersed method";
-    case Core::Conditions::IMMERSEDCoupling:
-      return "Interface of immersed objects";
     case Core::Conditions::RedAirwayVolDependentPleuralPressureCond:
       return "Reduced D airways evaluate lungs volume-dependent peural pressure condition";
     case Core::Conditions::RedAirwayEvalLungVolCond:

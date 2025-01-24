@@ -73,7 +73,6 @@ void Core::Elements::ElementDefinition::print_element_dat_header_to_stream(std::
   print_element_lines(stream, "FLUIDXW");
   print_element_lines(stream, "FLUIDHDG");
   print_element_lines(stream, "FLUIDHDGWEAKCOMP");
-  print_element_lines(stream, "FLUIDIMMERSED");
 
   print_section_header(stream, "LUBRICATION ELEMENTS");
   print_element_lines(stream, "LUBRICATION");

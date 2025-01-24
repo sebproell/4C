@@ -37,7 +37,7 @@ void Core::FE::DiscretizationCreatorBase::initial_checks(
 /*----------------------------------------------------------------------*/
 void Core::FE::DiscretizationCreatorBase::create_nodes(const Core::FE::Discretization& sourcedis,
     Core::FE::Discretization& targetdis, const std::set<int>& rownodeset,
-    const std::set<int>& colnodeset, const bool isnurbsdis, const bool buildimmersednode) const
+    const std::set<int>& colnodeset, const bool isnurbsdis) const
 {
   // prepare some variables we need
   int myrank = Core::Communication::my_mpi_rank(targetdis.get_comm());
@@ -52,11 +52,7 @@ void Core::FE::DiscretizationCreatorBase::create_nodes(const Core::FE::Discretiz
       if (rownodeset.find(gid) != rownodeset.end())
       {
         Core::Nodes::Node* node_to_create = sourcedis.l_row_node(i);
-        if (!buildimmersednode)
-          targetdis.add_node(std::make_shared<Core::Nodes::Node>(gid, node_to_create->x(), myrank));
-        else
-          targetdis.add_node(
-              std::make_shared<Core::Nodes::ImmersedNode>(gid, node_to_create->x(), myrank));
+        targetdis.add_node(std::make_shared<Core::Nodes::Node>(gid, node_to_create->x(), myrank));
       }
     }
   }
