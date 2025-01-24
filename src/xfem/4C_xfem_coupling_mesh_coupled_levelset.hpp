@@ -142,7 +142,7 @@ namespace XFEM
         FOUR_C_THROW("Key was not found in this instance!! Fatal error! (force_tangvel_map_)");
       }
 #endif
-    };
+    }
 
 
     // template <Core::FE::CellType DISTYPE>//,class M1, class M2>

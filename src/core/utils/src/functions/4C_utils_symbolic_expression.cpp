@@ -1016,7 +1016,7 @@ Core::Utils::SymbolicExpression<Number>& Core::Utils::SymbolicExpression<Number>
 
 
 template <typename Number>
-Core::Utils::SymbolicExpression<Number>::~SymbolicExpression() = default;
+Core::Utils::SymbolicExpression<Number>::~SymbolicExpression<Number>() = default;
 
 // explicit instantiations
 template class Core::Utils::SymbolicExpression<double>;

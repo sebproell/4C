@@ -115,12 +115,13 @@ namespace Core
  *   FOUR_C_ASSERT_ALWAYS(vector.size() == dim, "Vector size does not equal dimension d=%d.", dim);
  * @endcode
  */
-#define FOUR_C_ASSERT_ALWAYS(test, args...)                                                      \
-  if (!(test))                                                                                   \
-  {                                                                                              \
-    FourC::Core::Internal::ErrorHelper{                                                          \
-        .file_name = __FILE__, .line_number = __LINE__, .failed_assertion_string = #test}(args); \
-  }                                                                                              \
+#define FOUR_C_ASSERT_ALWAYS(test, ...)                       \
+  if (!(test))                                                \
+  {                                                           \
+    FourC::Core::Internal::ErrorHelper{.file_name = __FILE__, \
+        .line_number = __LINE__,                              \
+        .failed_assertion_string = #test}(__VA_ARGS__);       \
+  }                                                           \
   static_assert(true, "Terminate with a comma.")
 
 
@@ -138,14 +139,14 @@ namespace Core
  *   FOUR_C_ASSERT(vector.size() == dim, "Vector size does not equal dimension.");
  * @endcode
  */
-#define FOUR_C_ASSERT(test, args...) FOUR_C_ASSERT_ALWAYS(test, args)
+#define FOUR_C_ASSERT(test, ...) FOUR_C_ASSERT_ALWAYS(test, __VA_ARGS__)
 
 #else
 
 /**
  * This macro would assert that @p test is true, but only if FOUR_C_ENABLE_ASSERTIONS is set.
  */
-#define FOUR_C_ASSERT(test, args...) static_assert(true, "Terminate with a comma.")
+#define FOUR_C_ASSERT(test, ...) static_assert(true, "Terminate with a comma.")
 
 #endif
 

@@ -36,6 +36,7 @@ endfunction()
 # Enable all warnings that are supported by the compiler
 enable_compiler_flag_if_supported("-Wall")
 enable_compiler_flag_if_supported("-Wextra")
+enable_compiler_flag_if_supported("-Wpedantic")
 enable_compiler_flag_if_supported("-Wvla")
 
 # Disable unused parameter detection since there would be too many hits to fix

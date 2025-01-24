@@ -79,7 +79,7 @@ namespace Core::Utils
     void set_functions(const std::vector<T>& functions)
     {
       functions_ = functions;
-    };
+    }
 
    private:
     /// Internal storage for all functions. We use type erasure via std::any to store various

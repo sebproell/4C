@@ -240,7 +240,7 @@ namespace FPSI
     std::shared_ptr<Coupling::Adapter::MatrixRowTransform>
         couplingrowtransform4_;  /// g_fpsi || F->PS transform (FPSI)
     std::shared_ptr<Coupling::Adapter::MatrixRowTransform> couplingrowtransform5_;
-    ;  /// g_fpsi || F->PS transform (FPSI)
+    /// g_fpsi || F->PS transform (FPSI)
     std::shared_ptr<Coupling::Adapter::MatrixColTransform>
         couplingcoltransform_;  /// for Row/Col-Map for Full - fluid_field & F->PS transform (FPSI)
     std::shared_ptr<Coupling::Adapter::MatrixColTransform>

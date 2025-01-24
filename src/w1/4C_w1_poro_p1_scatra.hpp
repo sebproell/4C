@@ -113,7 +113,7 @@ namespace Discret
 
       /// @name params
       /// return ScaTra::ImplType
-      const Inpar::ScaTra::ImplType& impl_type() const { return impltype_; };
+      const Inpar::ScaTra::ImplType& impl_type() const { return impltype_; }
 
      private:
       //! scalar transport implementation type (physics)

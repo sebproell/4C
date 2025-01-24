@@ -71,7 +71,7 @@ namespace Mat
   {
    public:
     std::string name() const override { return "PlasticDruckerPragerType"; }
-    static PlasticDruckerPragerType& instance() { return instance_; };
+    static PlasticDruckerPragerType& instance() { return instance_; }
     Core::Communication::ParObject* create(Core::Communication::UnpackBuffer& buffer) override;
 
    private:
@@ -123,7 +123,7 @@ namespace Mat
         Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat, int gp, int eleGID) override
     {
       this->evaluate_fad(defgrd, linstrain, params, stress, cmat, gp, eleGID);
-    };
+    }
 
     template <typename ScalarT>
     void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
@@ -132,7 +132,7 @@ namespace Mat
         Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat, int gp, int eleGID)
     {
       this->evaluate_fad(defgrd, linstrain, params, stress, cmat, gp, eleGID);
-    };
+    }
     template <typename ScalarT>
     void evaluate_fad(const Core::LinAlg::Matrix<3, 3>* defgrd,
         const Core::LinAlg::Matrix<NUM_STRESS_3D, 1, ScalarT>* linstrain,

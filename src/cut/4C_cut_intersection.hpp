@@ -1360,7 +1360,7 @@ namespace Cut
           exit(EXIT_FAILURE);
       }
       return inter_ptr;
-    };
+    }
 
   };  // class IntersectionFactory
 

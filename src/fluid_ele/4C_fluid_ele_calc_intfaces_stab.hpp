@@ -490,7 +490,7 @@ namespace Discret
         if (h_k <= 0.0) FOUR_C_THROW("negative or zero diameter for current element!");
 
         return;
-      };
+      }
 
       //! compute surface diameter w.r.t to parent master element or parent slave element (flag
       //! master=true/false)

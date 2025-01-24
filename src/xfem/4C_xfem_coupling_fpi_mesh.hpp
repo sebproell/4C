@@ -104,7 +104,7 @@ namespace XFEM
     {
       eval_projection_matrix<distype>(projection_matrix, normal);
       return;
-    };
+    }
 
     // finalize the interface true residual vector
     void complete_state_vectors() override;

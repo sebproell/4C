@@ -203,9 +203,9 @@ namespace Mat
       inline void get_derivative_aniso_active(T& dPIact) const
       {
         dPIact = d_p_iact_;
-      };
+      }
 
-      double get_derivative_aniso_active() const override { return d_p_iact_; };
+      double get_derivative_aniso_active() const override { return d_p_iact_; }
 
       //@}
 

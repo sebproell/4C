@@ -393,7 +393,7 @@ namespace XFEM
             projection_matrix, ivel);  // apply Projection matrix from the right. (u_0 * P^t)
         ivel.update(1.0, tmp_ivel, 0.0);
       }
-    };
+    }
 
     /*!
      Return a smoothed/non-smoothed tangiential projection of the level set surface.
