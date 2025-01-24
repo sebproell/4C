@@ -80,14 +80,12 @@ The nodes are read in by the section
 Within this section, the nodes are read one per line. There are different types of nodes:
 
 - General nodes (NODE)
-- Nodes for immersed problems (INODE), only useful in problemtype ``Immersed_FSI``.
 - Control points for nurbs geometry (CP)
 - Nodes with addition fiber information (FNODE)
 
 All node coordinates must be given with three coordinates, even if the problem is 1D or 2D::
 
    NODE <ID> COORD <coord-x> <coord-y> <coord-z> [ROTANGLE <coord-yz> <coord-xz> <coord-xy>]
-   INODE <ID> COORD <coord-x> <coord-y> <coord-z>
    CP <ID> COORD <coord-x> <coord-y> <coord-z> <weight>
    FNODE <ID> COORD <coord-x> <coord-y> <coord-z> [FIBER1|FIBER2|FIBER3|CIR|TAN|RAD|HELIX|TRANS] <further parameters>
 

@@ -56,11 +56,9 @@ namespace Core::Elements
                                     //!< shell structures
     struct_calc_ptcstiff,           //!< calculate artificial stiffness due to PTC solution strategy
     struct_calc_stifftemp,          //!< TSI specific: mechanical-thermal stiffness
-    struct_calc_global_gpstresses_map,     //!< basically calc_struct_stress but with assembly of
-                                           //!< global gpstresses map
-    struct_interpolate_velocity_to_point,  //!< interpolate the structural velocity to a given
-                                           //!< point
-    struct_calc_mass_volume,               //!< calculate volume and mass
+    struct_calc_global_gpstresses_map,  //!< basically calc_struct_stress but with assembly of
+                                        //!< global gpstresses map
+    struct_calc_mass_volume,            //!< calculate volume and mass
     struct_calc_brownianforce,        //!< thermal (i.e. stochastic) and damping forces according to
                                       //!< Brownian dynamics
     struct_calc_brownianstiff,        //!< thermal (i.e. stochastic) and damping forces and stiffnes
@@ -125,8 +123,6 @@ namespace Core::Elements
       return struct_update_prestress;
     else if (action == "calc_global_gpstresses_map")
       return struct_calc_global_gpstresses_map;
-    else if (action == "interpolate_velocity_to_given_point")
-      return struct_interpolate_velocity_to_point;
     else if (action == "calc_struct_mass_volume")
       return struct_calc_mass_volume;
     else if (action == "calc_struct_predict")
@@ -210,8 +206,6 @@ namespace Core::Elements
         return "struct_calc_stifftemp";
       case struct_calc_global_gpstresses_map:
         return "struct_calc_global_gpstresses_map";
-      case struct_interpolate_velocity_to_point:
-        return "struct_interpolate_velocity_to_point";
       case struct_calc_brownianforce:
         return "struct_calc_brownianforce";
       case struct_calc_brownianstiff:

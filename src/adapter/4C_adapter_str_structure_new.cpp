@@ -10,7 +10,6 @@
 #include "4C_adapter_str_constr_merged.hpp"
 #include "4C_adapter_str_fbiwrapper.hpp"
 #include "4C_adapter_str_fpsiwrapper.hpp"
-#include "4C_adapter_str_fsiwrapper_immersed.hpp"
 #include "4C_adapter_str_pasiwrapper.hpp"
 #include "4C_adapter_str_redairway.hpp"
 #include "4C_adapter_str_ssiwrapper.hpp"
@@ -426,7 +425,6 @@ void Adapter::StructureBaseAlgorithmNew::set_model_types(
   switch (probtype)
   {
     case Core::ProblemType::fsi:
-    case Core::ProblemType::immersed_fsi:
     case Core::ProblemType::fbi:
     case Core::ProblemType::fsi_redmodels:
     case Core::ProblemType::gas_fsi:
@@ -847,11 +845,6 @@ void Adapter::StructureBaseAlgorithmNew::create_wrapper(
         str_wrapper_ = std::make_shared<FBIStructureWrapper>(ti_strategy);
       else
         FOUR_C_THROW("Only DirichletNeumann is implemented for FBI so far");
-      break;
-    }
-    case Core::ProblemType::immersed_fsi:
-    {
-      str_wrapper_ = std::make_shared<FSIStructureWrapperImmersed>(ti_strategy);
       break;
     }
     case Core::ProblemType::ssi:

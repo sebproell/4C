@@ -87,7 +87,6 @@ std::map<std::string, Core::ProblemType> Inpar::PROBLEMTYPE::string_to_problem_t
     string2prbtype["Fluid_XFEM"] = Core::ProblemType::fluid_xfem;
     string2prbtype["Fluid_XFEM_LevelSet"] = Core::ProblemType::fluid_xfem_ls;
     string2prbtype["Gas_Fluid_Structure_Interaction"] = Core::ProblemType::gas_fsi;
-    string2prbtype["Immersed_FSI"] = Core::ProblemType::immersed_fsi;
     string2prbtype["Level_Set"] = Core::ProblemType::level_set;
     string2prbtype["Low_Mach_Number_Flow"] = Core::ProblemType::loma;
     string2prbtype["Lubrication"] = Core::ProblemType::lubrication;

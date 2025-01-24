@@ -1048,27 +1048,6 @@ void Global::read_fields(Global::Problem& problem, Core::IO::InputFile& input, c
 
       break;
     }
-    case Core::ProblemType::immersed_fsi:
-    {
-      // create empty discretizations
-      structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-      fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
-
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      fluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
-
-      problem.add_dis("structure", structdis);
-      problem.add_dis("fluid", fluiddis);
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-      meshreader.add_element_reader(Core::IO::ElementReader(fluiddis, input, "FLUID ELEMENTS"));
-
-      break;
-    }
     case Core::ProblemType::fps3i:
     {
       // create empty discretizations
@@ -1881,8 +1860,6 @@ void Global::read_parameter(Global::Problem& problem, Core::IO::InputFile& input
       input, "FLUID BEAM INTERACTION/BEAM TO FLUID MESHTYING", *list);
   Core::IO::read_parameters_in_section(
       input, "FLUID BEAM INTERACTION/BEAM TO FLUID MESHTYING/RUNTIME VTK OUTPUT", *list);
-  Core::IO::read_parameters_in_section(input, "IMMERSED METHOD", *list);
-  Core::IO::read_parameters_in_section(input, "IMMERSED METHOD/PARTITIONED SOLVER", *list);
   Core::IO::read_parameters_in_section(input, "FPSI DYNAMIC", *list);
   Core::IO::read_parameters_in_section(input, "ARTERIAL DYNAMIC", *list);
   Core::IO::read_parameters_in_section(input, "REDUCED DIMENSIONAL AIRWAYS DYNAMIC", *list);

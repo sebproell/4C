@@ -11,7 +11,6 @@
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_general_element_definition.hpp"
 #include "4C_fem_general_fiber_node.hpp"
-#include "4C_fem_general_immersed_node.hpp"
 #include "4C_fem_nurbs_discretization_control_point.hpp"
 #include "4C_io_input_file.hpp"
 
@@ -68,27 +67,6 @@ void Core::IO::read_nodes(Core::IO::InputFile& input, const std::string& node_se
         std::shared_ptr<Core::Nodes::Node> node =
             std::make_shared<Core::Nodes::Node>(nodeid, coords, myrank);
         di->add_node(node);
-      }
-    }
-    // this is a specialized node for immersed problems
-    else if (tmp == "INODE")
-    {
-      std::vector<double> coords(3, 0.0);
-      int nodeid;
-      // read in the node coordinates
-      linestream >> nodeid >> tmp >> coords[0] >> coords[1] >> coords[2];
-
-      nodeid--;
-      max_node_id = std::max(max_node_id, nodeid) + 1;
-      std::vector<std::shared_ptr<Core::FE::Discretization>> diss =
-          find_dis_node(element_readers, nodeid);
-
-      for (const auto& dis : diss)
-      {
-        // create node and add to discretization
-        std::shared_ptr<Core::Nodes::Node> node =
-            std::make_shared<Core::Nodes::ImmersedNode>(nodeid, coords, myrank);
-        dis->add_node(node);
       }
     }
     // this node is a Nurbs control point

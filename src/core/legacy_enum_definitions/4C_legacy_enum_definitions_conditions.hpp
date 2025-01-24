@@ -67,7 +67,6 @@ namespace Core::Conditions
     SurfaceConservativeOutflowConsistency,
     FSICoupling,  ///< Surface coupling condition for fluid-structure interaction (2D and 3D)
     fpsi_coupling,
-    IMMERSEDCoupling,
     FSICouplingCenterDisp,
     ALEUPDATECoupling,
     MicroBoundary,
@@ -207,7 +206,6 @@ namespace Core::Conditions
     UncertainSurface,
     AAASurface,
     LsContact,
-    ImmersedSearchbox,
     RedAirwayVolDependentPleuralPressureCond,
     RedAirwayEvalLungVolCond,
     SPRboundary,

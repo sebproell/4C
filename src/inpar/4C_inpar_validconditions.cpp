@@ -20,7 +20,6 @@
 #include "4C_inpar_fluid.hpp"
 #include "4C_inpar_fpsi.hpp"
 #include "4C_inpar_fsi.hpp"
-#include "4C_inpar_immersed.hpp"
 #include "4C_inpar_levelset.hpp"
 #include "4C_inpar_mortar.hpp"
 #include "4C_inpar_mpc_rve.hpp"
@@ -873,7 +872,6 @@ Input::valid_conditions()
   Inpar::ALE::set_valid_conditions(condlist);
   Inpar::FSI::set_valid_conditions(condlist);
   Inpar::FPSI::set_valid_conditions(condlist);
-  Inpar::Immersed::set_valid_conditions(condlist);
   Inpar::XFEM::set_valid_conditions(condlist);
   Inpar::BioFilm::set_valid_conditions(condlist);
   Inpar::ArteryNetwork::set_valid_conditions(condlist);

@@ -294,10 +294,6 @@ namespace Global
     {
       return parameters_->sublist("FPSI DYNAMIC");
     }
-    const Teuchos::ParameterList& immersed_method_params() const
-    {
-      return parameters_->sublist("IMMERSED METHOD");
-    }
     const Teuchos::ParameterList& cut_general_params() const
     {
       return parameters_->sublist("CUT GENERAL");

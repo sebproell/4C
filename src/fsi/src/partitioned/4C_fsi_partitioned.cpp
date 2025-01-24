@@ -10,7 +10,6 @@
 #include "4C_adapter_ale_fluid.hpp"
 #include "4C_adapter_fld_fbi_movingboundary.hpp"
 #include "4C_adapter_fld_fluid.hpp"
-#include "4C_adapter_fld_fluid_immersed.hpp"
 #include "4C_adapter_fld_fluid_xfem.hpp"
 #include "4C_adapter_fld_fluid_xfsi.hpp"
 #include "4C_adapter_str_fsiwrapper.hpp"
@@ -986,8 +985,7 @@ void FSI::Partitioned::read_restart(int step)
       double omega = -1234.0;
       auto input_control_file = Global::Problem::instance()->input_control_file();
 
-      if (std::dynamic_pointer_cast<Adapter::FluidImmersed>(mb_fluid_field()) != nullptr ||
-          std::dynamic_pointer_cast<Adapter::FBIFluidMB>(mb_fluid_field()) != nullptr)
+      if (std::dynamic_pointer_cast<Adapter::FBIFluidMB>(mb_fluid_field()) != nullptr)
       {
         Core::IO::DiscretizationReader reader(
             mb_fluid_field()->fluid_field()->discretization(), input_control_file, step);
@@ -1005,7 +1003,7 @@ void FSI::Partitioned::read_restart(int step)
       else
         FOUR_C_THROW(
             "You want to restart a partitioned FSI scheme with AITKEN relaxation.\n"
-            "This is only tested for standard ALE FSI and Immersed FSI.\n"
+            "This is only tested for standard ALE FSI.\n"
             "Check the implementation of FSI::Partitioned::read_restart.");
 
       noxparameterlist_.sublist("Line Search").sublist("Aitken").set<int>("restart", step);

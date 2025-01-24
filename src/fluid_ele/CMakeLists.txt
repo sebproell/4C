@@ -15,7 +15,6 @@ set(_dependencies
     cut
     fluid
     global_data
-    immersed_problem
     inpar
     mat
     poroelast

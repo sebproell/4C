@@ -15,7 +15,6 @@
 #include "4C_fs3i_dyn.hpp"
 #include "4C_fsi_dyn.hpp"
 #include "4C_global_data.hpp"
-#include "4C_immersed_problem_dyn.hpp"
 #include "4C_levelset_dyn.hpp"
 #include "4C_loma_dyn.hpp"
 #include "4C_lubrication_dyn.hpp"
@@ -126,10 +125,6 @@ void ntacal()
 
     case Core::ProblemType::red_airways:
       dyn_red_airways_drt();
-      break;
-
-    case Core::ProblemType::immersed_fsi:
-      immersed_problem_drt();
       break;
 
     case Core::ProblemType::poroelast:
