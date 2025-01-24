@@ -86,7 +86,7 @@ void Discret::Elements::SoTet10Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["TET10"] = anonymous_group({
+  defs["TET10"] = all_of({
       entry<std::vector<int>>("TET10", {.size = 10}),
       entry<int>("MAT"),
       entry<std::string>("KINEM"),

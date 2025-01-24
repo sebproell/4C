@@ -195,7 +195,7 @@ void Discret::Utils::add_valid_xfluid_functions(Core::Utils::FunctionManager& fu
 
   auto spec = one_of({
       tag("FORWARDFACINGSTEP"),
-      anonymous_group({
+      all_of({
           tag("MOVINGLEVELSETCYLINDER"),
           entry<std::vector<double>>("ORIGIN", {.size = 3}),
           entry<double>("RADIUS"),
@@ -203,7 +203,7 @@ void Discret::Utils::add_valid_xfluid_functions(Core::Utils::FunctionManager& fu
           entry<double>("DISTANCE"),
           entry<double>("MAXSPEED"),
       }),
-      anonymous_group({
+      all_of({
           tag("MOVINGLEVELSETTORUS"),
           entry<std::vector<double>>("ORIGIN", {.size = 3}),
           entry<std::vector<double>>("ORIENTVEC_TORUS", {.size = 3}),
@@ -216,7 +216,7 @@ void Discret::Utils::add_valid_xfluid_functions(Core::Utils::FunctionManager& fu
           entry<double>("ROTATION_SPEED"),
           entry<double>("ROTATION_RAMPTIME"),
       }),
-      anonymous_group({
+      all_of({
           tag("MOVINGLEVELSETTORUSVELOCITY"),
           entry<std::vector<double>>("ORIGIN", {.size = 3}),
           entry<std::vector<double>>("ORIENTVEC_TORUS", {.size = 3}),
@@ -229,7 +229,7 @@ void Discret::Utils::add_valid_xfluid_functions(Core::Utils::FunctionManager& fu
           entry<double>("ROTATION_SPEED"),
           entry<double>("ROTATION_RAMPTIME"),
       }),
-      anonymous_group({
+      all_of({
           tag("MOVINGLEVELSETTORUSSLIPLENGTH"),
           entry<std::vector<double>>("ORIGIN", {.size = 3}),
           entry<std::vector<double>>("ORIENTVEC_TORUS", {.size = 3}),
@@ -243,7 +243,7 @@ void Discret::Utils::add_valid_xfluid_functions(Core::Utils::FunctionManager& fu
           entry<double>("ROTATION_RAMPTIME"),
           entry<int>("SLIP_FUNCT"),
       }),
-      anonymous_group({
+      all_of({
           tag("TAYLORCOUETTEFLOW"),
           entry<double>("RADIUS_I"),
           entry<double>("RADIUS_O"),
@@ -255,7 +255,7 @@ void Discret::Utils::add_valid_xfluid_functions(Core::Utils::FunctionManager& fu
           entry<double>("TRACTION_THETA_O"),
           entry<double>("VISCOSITY"),
       }),
-      anonymous_group({
+      all_of({
           tag("URQUIZABOXFLOW"),
           entry<double>("LENGTHX"),
           entry<double>("LENGTHY"),
@@ -265,7 +265,7 @@ void Discret::Utils::add_valid_xfluid_functions(Core::Utils::FunctionManager& fu
           entry<int>("CASE"),
           entry<std::vector<double>>("COMBINATION", {.size = 2}),
       }),
-      anonymous_group({
+      all_of({
           tag("URQUIZABOXFLOW_TRACTION"),
           entry<double>("LENGTHX"),
           entry<double>("LENGTHY"),
@@ -275,7 +275,7 @@ void Discret::Utils::add_valid_xfluid_functions(Core::Utils::FunctionManager& fu
           entry<int>("CASE"),
           entry<std::vector<double>>("COMBINATION", {.size = 2}),
       }),
-      anonymous_group({
+      all_of({
           tag("URQUIZABOXFLOW_FORCE"),
           entry<double>("LENGTHX"),
           entry<double>("LENGTHY"),

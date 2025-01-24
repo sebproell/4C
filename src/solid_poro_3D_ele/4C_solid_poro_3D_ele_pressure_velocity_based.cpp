@@ -34,7 +34,7 @@ namespace Discret::Elements::SolidPoroPressureVelocityBasedInternal
     template <Core::FE::CellType celltype>
     auto get_default_input_spec()
     {
-      return anonymous_group({
+      return all_of({
           entry<std::vector<int>>(
               Core::FE::cell_type_to_string(celltype), {.size = Core::FE::num_nodes<celltype>}),
           entry<int>("MAT"),
@@ -61,7 +61,7 @@ void Discret::Elements::SolidPoroPressureVelocityBasedType::setup_element_defini
 {
   auto& defsgeneral = definitions["SOLIDPORO_PRESSURE_VELOCITY_BASED"];
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex8)] = anonymous_group({
+  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex8)] = all_of({
       Discret::Elements::SolidPoroPressureVelocityBasedInternal::get_default_input_spec<
           Core::FE::CellType::hex8>(),
       entry<std::vector<double>>("POROANISONODALCOEFFS1", {.required = false, .size = 8}),
@@ -74,7 +74,7 @@ void Discret::Elements::SolidPoroPressureVelocityBasedType::setup_element_defini
           Core::FE::CellType::hex27>();
 
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::tet4)] = anonymous_group({
+  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::tet4)] = all_of({
       Discret::Elements::SolidPoroPressureVelocityBasedInternal::get_default_input_spec<
           Core::FE::CellType::tet4>(),
       entry<std::vector<double>>("POROANISONODALCOEFFS1", {.required = false, .size = 8}),

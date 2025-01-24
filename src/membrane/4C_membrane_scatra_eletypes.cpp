@@ -62,7 +62,7 @@ void Discret::Elements::MembraneScatraTri3Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["TRI3"] = anonymous_group({
+  defs["TRI3"] = all_of({
       defs_membrane["TRI3"],
       entry<std::string>("TYPE"),
   });
@@ -119,7 +119,7 @@ void Discret::Elements::MembraneScatraTri6Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["TRI6"] = anonymous_group({
+  defs["TRI6"] = all_of({
       defs_membrane["TRI6"],
       entry<std::string>("TYPE"),
   });
@@ -176,7 +176,7 @@ void Discret::Elements::MembraneScatraQuad4Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD4"] = anonymous_group({
+  defs["QUAD4"] = all_of({
       defs_membrane["QUAD4"],
       entry<std::string>("TYPE"),
   });
@@ -233,7 +233,7 @@ void Discret::Elements::MembraneScatraQuad9Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD9"] = anonymous_group({
+  defs["QUAD9"] = all_of({
       defs_membrane["QUAD9"],
       entry<std::string>("TYPE"),
   });

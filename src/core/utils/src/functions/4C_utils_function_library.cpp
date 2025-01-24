@@ -62,12 +62,12 @@ void Core::Utils::add_valid_library_functions(Core::Utils::FunctionManager& func
   using namespace IO::InputSpecBuilders;
 
   auto spec = one_of({
-      anonymous_group({
+      all_of({
           tag("FASTPOLYNOMIAL"),
           entry<int>("NUMCOEFF"),
           entry<std::vector<double>>("COEFF", {.size = from_parameter<int>("NUMCOEFF")}),
       }),
-      anonymous_group({
+      all_of({
           tag("CUBIC_SPLINE_FROM_CSV"),
           entry<std::filesystem::path>("CSV"),
       }),

@@ -73,7 +73,7 @@ void Discret::Elements::Torsion3Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["LINE3"] = anonymous_group({
+  defs["LINE3"] = all_of({
       entry<std::vector<int>>("LINE3", {.size = 3}),
       entry<int>("MAT"),
       entry<std::string>("BENDINGPOTENTIAL"),

@@ -35,7 +35,7 @@ namespace Discret::Elements::SolidPoroPressureBasedInternal
     template <Core::FE::CellType celltype>
     auto get_default_input_spec()
     {
-      return anonymous_group({
+      return all_of({
           entry<std::vector<int>>(
               Core::FE::cell_type_to_string(celltype), {.size = Core::FE::num_nodes<celltype>}),
           entry<int>("MAT"),
@@ -60,7 +60,7 @@ void Discret::Elements::SolidPoroPressureBasedType::setup_element_definition(
 {
   auto& defsgeneral = definitions["SOLIDPORO_PRESSURE_BASED"];
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex8)] = anonymous_group({
+  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex8)] = all_of({
       Discret::Elements::SolidPoroPressureBasedInternal::get_default_input_spec<
           Core::FE::CellType::hex8>(),
       entry<std::string>("EAS", {.required = false}),

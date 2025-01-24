@@ -81,7 +81,7 @@ void Discret::Elements::SoHex27Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["HEX27"] = anonymous_group({
+  defs["HEX27"] = all_of({
       entry<std::vector<int>>("HEX27", {.size = 27}),
       entry<int>("MAT"),
       entry<std::string>("KINEM"),

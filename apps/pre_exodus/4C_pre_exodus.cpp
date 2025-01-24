@@ -336,7 +336,7 @@ int main(int argc, char** argv)
         }
 
         using namespace Core::IO::InputSpecBuilders;
-        auto all_materials = anonymous_group({
+        auto all_materials = all_of({
             entry<int>("MAT"),
             one_of(possible_materials),
         });

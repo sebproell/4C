@@ -383,14 +383,14 @@ void Inpar::SSI::set_valid_conditions(
     using namespace Core::IO::InputSpecBuilders;
 
     surfmanifoldkinetics->add_component(one_of({
-        anonymous_group({
+        all_of({
             selection<int>("KINETIC_MODEL", {{"ConstantInterfaceResistance",
                                                 Inpar::S2I::kinetics_constantinterfaceresistance}}),
             entry<std::vector<int>>("ONOFF", {.size = 2}),
             entry<double>("RESISTANCE"),
             entry<int>("E-"),
         }),
-        anonymous_group({
+        all_of({
             selection<int>("KINETIC_MODEL",
                 {{"Butler-VolmerReduced", Inpar::S2I::kinetics_butlervolmerreduced}}),
             entry<int>("NUMSCAL"),

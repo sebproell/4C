@@ -110,7 +110,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
   using namespace Core::IO::InputSpecBuilders;
 
   // note: LINE2 refers to linear Lagrange interpolation of centerline AND triad field
-  defs["LINE2"] = anonymous_group({
+  defs["LINE2"] = all_of({
       entry<std::vector<int>>("LINE2", {.size = 2}),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 6}),
@@ -118,7 +118,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
   });
 
   // note: LINE3 refers to quadratic Lagrange interpolation of centerline AND triad field
-  defs["LINE3"] = anonymous_group({
+  defs["LINE3"] = all_of({
       entry<std::vector<int>>("LINE3", {.size = 3}),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 9}),
@@ -126,7 +126,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
   });
 
   // note: LINE4 refers to cubic Lagrange interpolation of centerline AND triad field
-  defs["LINE4"] = anonymous_group({
+  defs["LINE4"] = all_of({
       entry<std::vector<int>>("LINE4", {.size = 4}),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 12}),
@@ -134,7 +134,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
   });
 
   // note: LINE5 refers to quartic Lagrange interpolation of centerline AND triad field
-  defs["LINE5"] = anonymous_group({
+  defs["LINE5"] = all_of({
       entry<std::vector<int>>("LINE5", {.size = 5}),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 15}),
@@ -143,7 +143,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
 
   /* note: HERM2 refers to cubic Hermite interpolation of centerline (2 nodes)
    *       LINE2 refers to linear Lagrange interpolation of the triad field*/
-  defs["HERM2LINE2"] = anonymous_group({
+  defs["HERM2LINE2"] = all_of({
       entry<std::vector<int>>("HERM2LINE2", {.size = 2}),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 6}),
@@ -152,7 +152,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
 
   /* note: HERM2 refers to cubic order Hermite interpolation of centerline (2 nodes)
    *       LINE3 refers to quadratic Lagrange interpolation of the triad field*/
-  defs["HERM2LINE3"] = anonymous_group({
+  defs["HERM2LINE3"] = all_of({
       entry<std::vector<int>>("HERM2LINE3", {.size = 3}),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 9}),
@@ -161,7 +161,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
 
   /* note: HERM2 refers to cubic Hermite interpolation of centerline (2 nodes)
    *       LINE4 refers to cubic Lagrange interpolation of the triad field*/
-  defs["HERM2LINE4"] = anonymous_group({
+  defs["HERM2LINE4"] = all_of({
       entry<std::vector<int>>("HERM2LINE4", {.size = 4}),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 12}),
@@ -170,7 +170,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
 
   /* note: HERM2 refers to cubic Hermite interpolation of centerline (2 nodes)
    *       LINE5 refers to quartic Lagrange interpolation of the triad field*/
-  defs["HERM2LINE5"] = anonymous_group({
+  defs["HERM2LINE5"] = all_of({
       entry<std::vector<int>>("HERM2LINE5", {.size = 5}),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 15}),

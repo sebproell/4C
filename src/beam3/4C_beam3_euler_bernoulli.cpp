@@ -211,7 +211,7 @@ void Discret::Elements::Beam3ebType::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["LINE2"] = anonymous_group({
+  defs["LINE2"] = all_of({
       entry<std::vector<int>>("LINE2", {.size = 2}),
       entry<int>("MAT"),
   });

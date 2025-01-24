@@ -69,7 +69,7 @@ void Discret::Elements::SoHex8PoroScatraType::setup_element_definition(
   auto& defs = definitions[get_element_type_string()];
 
 
-  defs["HEX8"] = anonymous_group({
+  defs["HEX8"] = all_of({
       defs_hex8["HEX8"],
       entry<std::string>("TYPE"),
   });
@@ -131,7 +131,7 @@ void Discret::Elements::SoTet4PoroScatraType::setup_element_definition(
 
   auto& defs = definitions[get_element_type_string()];
 
-  defs["TET4"] = anonymous_group({
+  defs["TET4"] = all_of({
       defs_tet4["TET4"],
       entry<std::string>("TYPE"),
   });
@@ -193,7 +193,7 @@ void Discret::Elements::SoHex27PoroScatraType::setup_element_definition(
 
   auto& defs = definitions[get_element_type_string()];
 
-  defs["HEX27"] = anonymous_group({
+  defs["HEX27"] = all_of({
       defs_hex27["HEX27"],
       entry<std::string>("TYPE"),
   });
@@ -256,7 +256,7 @@ void Discret::Elements::SoTet10PoroScatraType::setup_element_definition(
 
   auto& defs = definitions[get_element_type_string()];
 
-  defs["TET10"] = anonymous_group({
+  defs["TET10"] = all_of({
       defs_tet10["TET10"],
       entry<std::string>("TYPE"),
   });
@@ -317,7 +317,7 @@ void Discret::Elements::SoNurbs27PoroScatraType::setup_element_definition(
 
   auto& defs = definitions[get_element_type_string()];
 
-  defs["NURBS27"] = anonymous_group({
+  defs["NURBS27"] = all_of({
       defs_nurbs27["NURBS27"],
       entry<std::string>("TYPE"),
   });

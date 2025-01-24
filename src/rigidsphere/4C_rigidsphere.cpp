@@ -96,7 +96,7 @@ void Discret::Elements::RigidsphereType::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["POINT1"] = anonymous_group({
+  defs["POINT1"] = all_of({
       entry<std::vector<int>>("POINT1", {.size = 1}),
       entry<double>("RADIUS"),
       entry<double>("DENSITY"),

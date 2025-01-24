@@ -31,7 +31,7 @@ namespace
   template <Core::FE::CellType celltype>
   auto get_default_input_spec()
   {
-    return anonymous_group({
+    return all_of({
         entry<std::vector<int>>(
             Core::FE::cell_type_to_string(celltype), {.size = Core::FE::num_nodes<celltype>}),
         entry<int>("MAT"),
@@ -56,7 +56,7 @@ void Discret::Elements::SolidType::setup_element_definition(
 {
   auto& defsgeneral = definitions["SOLID"];
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex8)] = anonymous_group({
+  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex8)] = all_of({
       get_default_input_spec<Core::FE::CellType::hex8>(),
       entry<std::string>("TECH", {.required = false}),
   });
@@ -76,17 +76,17 @@ void Discret::Elements::SolidType::setup_element_definition(
   defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::tet10)] =
       get_default_input_spec<Core::FE::CellType::tet10>();
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::wedge6)] = anonymous_group({
+  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::wedge6)] = all_of({
       get_default_input_spec<Core::FE::CellType::wedge6>(),
       entry<std::string>("TECH", {.required = false}),
   });
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::pyramid5)] = anonymous_group({
+  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::pyramid5)] = all_of({
       get_default_input_spec<Core::FE::CellType::pyramid5>(),
       entry<std::string>("TECH", {.required = false}),
   });
 
-  defsgeneral["NURBS27"] = anonymous_group({
+  defsgeneral["NURBS27"] = all_of({
       entry<std::vector<int>>("NURBS27", {.size = 27}),
       entry<int>("MAT"),
       entry<std::string>("KINEM"),

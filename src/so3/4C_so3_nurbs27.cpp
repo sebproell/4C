@@ -79,7 +79,7 @@ void Discret::Elements::Nurbs::SoNurbs27Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["NURBS27"] = anonymous_group({
+  defs["NURBS27"] = all_of({
       entry<std::vector<int>>("NURBS27", {.size = 27}),
       entry<int>("MAT"),
       entry<std::vector<int>>("GP", {.size = 3}),

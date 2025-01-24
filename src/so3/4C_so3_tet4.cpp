@@ -92,7 +92,7 @@ void Discret::Elements::SoTet4Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["TET4"] = anonymous_group({
+  defs["TET4"] = all_of({
       entry<std::vector<int>>("TET4", {.size = 4}),
       entry<int>("MAT"),
       entry<std::string>("KINEM"),

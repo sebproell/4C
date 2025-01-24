@@ -95,27 +95,27 @@ void Discret::Elements::Bele3Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs3["TRI3"] = anonymous_group({
+  defs3["TRI3"] = all_of({
       entry<std::vector<int>>("TRI3", {.size = 3}),
       entry<int>("MAT", {.required = false}),
   });
 
-  defs3["TRI6"] = anonymous_group({
+  defs3["TRI6"] = all_of({
       entry<std::vector<int>>("TRI6", {.size = 6}),
       entry<int>("MAT", {.required = false}),
   });
 
-  defs3["QUAD4"] = anonymous_group({
+  defs3["QUAD4"] = all_of({
       entry<std::vector<int>>("QUAD4", {.size = 4}),
       entry<int>("MAT", {.required = false}),
   });
 
-  defs3["QUAD8"] = anonymous_group({
+  defs3["QUAD8"] = all_of({
       entry<std::vector<int>>("QUAD8", {.size = 8}),
       entry<int>("MAT", {.required = false}),
   });
 
-  defs3["QUAD9"] = anonymous_group({
+  defs3["QUAD9"] = all_of({
       entry<std::vector<int>>("QUAD9", {.size = 9}),
       entry<int>("MAT", {.required = false}),
   });

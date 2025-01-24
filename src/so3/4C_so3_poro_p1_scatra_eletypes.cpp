@@ -68,7 +68,7 @@ void Discret::Elements::SoHex8PoroP1ScatraType::setup_element_definition(
 
   auto& defs = definitions[get_element_type_string()];
 
-  defs["HEX8"] = anonymous_group({
+  defs["HEX8"] = all_of({
       defs_hex8["HEX8"],
       entry<std::string>("TYPE"),
   });
@@ -128,7 +128,7 @@ void Discret::Elements::SoTet4PoroP1ScatraType::setup_element_definition(
 
   auto& defs = definitions[get_element_type_string()];
 
-  defs["TET4"] = anonymous_group({
+  defs["TET4"] = all_of({
       defs_tet4["TET4"],
       entry<std::string>("TYPE"),
   });

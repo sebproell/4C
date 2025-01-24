@@ -387,7 +387,7 @@ void Inpar::XFEM::set_valid_conditions(
   using namespace Core::IO;
   using namespace Core::IO::InputSpecBuilders;
 
-  auto dirichletbundcomponents = anonymous_group({
+  auto dirichletbundcomponents = all_of({
       entry<int>("NUMDOF"),
       entry<std::vector<int>>("ONOFF", {.size = from_parameter<int>("NUMDOF")}),
       entry<std::vector<double>>("VAL", {.size = from_parameter<int>("NUMDOF")}),
@@ -396,7 +396,7 @@ void Inpar::XFEM::set_valid_conditions(
           "TAG", {{"none", "none"}, {"monitor_reaction", "monitor_reaction"}}, {.required = false}),
   });
 
-  auto neumanncomponents = anonymous_group({
+  auto neumanncomponents = all_of({
       entry<int>("NUMDOF"),
       entry<std::vector<int>>("ONOFF", {.size = from_parameter<int>("NUMDOF")}),
       entry<std::vector<double>>("VAL", {.size = from_parameter<int>("NUMDOF")}),
@@ -453,7 +453,7 @@ void Inpar::XFEM::set_valid_conditions(
   //*----------------*/
   // Levelset field condition components
 
-  auto levelsetfield_components = anonymous_group({
+  auto levelsetfield_components = all_of({
       entry<int>("COUPLINGID"),
       entry<int>("LEVELSETFIELDNO"),
       selection<std::string>("BOOLEANTYPE",

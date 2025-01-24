@@ -93,14 +93,14 @@ void Discret::Elements::ElemagType::setup_element_definition(
   using namespace Core::IO::InputSpecBuilders;
 
   // 3D elements
-  defs["HEX8"] = anonymous_group({
+  defs["HEX8"] = all_of({
       entry<std::vector<int>>("HEX8", {.size = 8}),
       entry<int>("MAT"),
       entry<int>("DEG"),
       entry<int>("SPC"),
   });
 
-  defs["TET4"] = anonymous_group({
+  defs["TET4"] = all_of({
       entry<std::vector<int>>("TET4", {.size = 4}),
       entry<int>("MAT"),
       entry<int>("DEG"),
@@ -108,21 +108,21 @@ void Discret::Elements::ElemagType::setup_element_definition(
   });
 
   // 2D elements
-  defs["QUAD4"] = anonymous_group({
+  defs["QUAD4"] = all_of({
       entry<std::vector<int>>("QUAD4", {.size = 4}),
       entry<int>("MAT"),
       entry<int>("DEG"),
       entry<int>("SPC"),
   });
 
-  defs["QUAD9"] = anonymous_group({
+  defs["QUAD9"] = all_of({
       entry<std::vector<int>>("QUAD9", {.size = 9}),
       entry<int>("MAT"),
       entry<int>("DEG"),
       entry<int>("SPC"),
   });
 
-  defs["TRI3"] = anonymous_group({
+  defs["TRI3"] = all_of({
       entry<std::vector<int>>("TRI3", {.size = 3}),
       entry<int>("MAT"),
       entry<int>("DEG"),

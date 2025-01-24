@@ -108,92 +108,92 @@ void Thermo::ElementType::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["HEX8"] = anonymous_group({
+  defs["HEX8"] = all_of({
       entry<std::vector<int>>("HEX8", {.size = 8}),
       entry<int>("MAT"),
   });
 
-  defs["HEX20"] = anonymous_group({
+  defs["HEX20"] = all_of({
       entry<std::vector<int>>("HEX20", {.size = 20}),
       entry<int>("MAT"),
   });
 
-  defs["HEX27"] = anonymous_group({
+  defs["HEX27"] = all_of({
       entry<std::vector<int>>("HEX27", {.size = 27}),
       entry<int>("MAT"),
   });
 
-  defs["TET4"] = anonymous_group({
+  defs["TET4"] = all_of({
       entry<std::vector<int>>("TET4", {.size = 4}),
       entry<int>("MAT"),
   });
 
-  defs["TET10"] = anonymous_group({
+  defs["TET10"] = all_of({
       entry<std::vector<int>>("TET10", {.size = 10}),
       entry<int>("MAT"),
   });
 
-  defs["WEDGE6"] = anonymous_group({
+  defs["WEDGE6"] = all_of({
       entry<std::vector<int>>("WEDGE6", {.size = 6}),
       entry<int>("MAT"),
   });
 
-  defs["WEDGE15"] = anonymous_group({
+  defs["WEDGE15"] = all_of({
       entry<std::vector<int>>("WEDGE15", {.size = 15}),
       entry<int>("MAT"),
   });
 
-  defs["PYRAMID5"] = anonymous_group({
+  defs["PYRAMID5"] = all_of({
       entry<std::vector<int>>("PYRAMID5", {.size = 5}),
       entry<int>("MAT"),
   });
 
-  defs["NURBS27"] = anonymous_group({
+  defs["NURBS27"] = all_of({
       entry<std::vector<int>>("NURBS27", {.size = 27}),
       entry<int>("MAT"),
   });
 
-  defs["QUAD4"] = anonymous_group({
+  defs["QUAD4"] = all_of({
       entry<std::vector<int>>("QUAD4", {.size = 4}),
       entry<int>("MAT"),
   });
 
-  defs["QUAD8"] = anonymous_group({
+  defs["QUAD8"] = all_of({
       entry<std::vector<int>>("QUAD8", {.size = 8}),
       entry<int>("MAT"),
   });
 
-  defs["QUAD9"] = anonymous_group({
+  defs["QUAD9"] = all_of({
       entry<std::vector<int>>("QUAD9", {.size = 9}),
       entry<int>("MAT"),
   });
 
-  defs["TRI3"] = anonymous_group({
+  defs["TRI3"] = all_of({
       entry<std::vector<int>>("TRI3", {.size = 3}),
       entry<int>("MAT"),
   });
 
-  defs["TRI6"] = anonymous_group({
+  defs["TRI6"] = all_of({
       entry<std::vector<int>>("TRI6", {.size = 6}),
       entry<int>("MAT"),
   });
 
-  defs["NURBS4"] = anonymous_group({
+  defs["NURBS4"] = all_of({
       entry<std::vector<int>>("NURBS4", {.size = 4}),
       entry<int>("MAT"),
   });
 
-  defs["NURBS9"] = anonymous_group({
+  defs["NURBS9"] = all_of({
       entry<std::vector<int>>("NURBS9", {.size = 9}),
       entry<int>("MAT"),
   });
 
-  defs["LINE2"] = anonymous_group({
+  defs["LINE2"] = all_of({
       entry<std::vector<int>>("LINE2", {.size = 2}),
       entry<int>("MAT"),
   });
 
-  defs["LINE3"] = anonymous_group({
+  defs["LINE3"] = all_of({
       entry<std::vector<int>>("LINE3", {.size = 3}),
       entry<int>("MAT"),
   });

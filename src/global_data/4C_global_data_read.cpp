@@ -2036,7 +2036,7 @@ void Global::read_materials(Global::Problem& problem, Core::IO::InputFile& input
 
   using namespace Core::IO::InputSpecBuilders;
 
-  auto all_materials = anonymous_group({
+  auto all_materials = all_of({
       entry<int>("MAT", {.description = "Material ID that may be used to refer to this material."}),
       one_of(all_specs, [&current_index](Core::IO::ValueParser& parser,
                             Core::IO::InputParameterContainer& container, std::size_t index)

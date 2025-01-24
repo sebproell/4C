@@ -713,8 +713,8 @@ namespace Core::IO
      * the group is optional and not present in the input, the default values of the entries are
      * stored under the group name in the container.
      *
-     * @note If you want to group multiple InputSpecs without creating a new scope, use the other
-     * group() function which does not take a name.
+     * @note If you want to group multiple InputSpecs without creating a new named scope, use the
+     * all_of() function.
      *
      * @relatedalso InputSpec
      */
@@ -722,29 +722,29 @@ namespace Core::IO
         std::string name, std::vector<InputSpec> specs, GroupData data = {});
 
     /**
-     * A group of multiple InputSpecs. In contrast to the other group() function, this function
-     * produces a group without a name and, consequently, no scope is created in the input.
-     * Example:
+     * All of the given InputSpecs are expected, e.g.,
      *
      * @code
-     * anonymous_group({
+     * all_of({
      *   entry<int>("a"),
      *   entry<double>("b"),
      *   entry<std::string>("c"),
      *   });
      * @endcode
      *
-     * This functions gathers multiple InputSpecs on the same level and treats them as a single
-     * InputSpec. Nesting multiple anonymous groups is possible but does not have any effect on the
-     * structure of the input. The following two examples are equivalent:
+     * will require all three entries to be present in the input.
+     *
+     * The main application of this function is to gather multiple InputSpecs on the same level and
+     * treat them as a single InputSpec. Nesting multiple all_of() specs is possible but does not
+     * have any effect on the structure of the input. The following two examples are equivalent:
      *
      * @code
      * // version 1
      * group("outer",
      * {
-     *   anonymous_group({
+     *   all_of({
      *     entry<int>("a"),
-     *     anonymous_group({
+     *     all_of({
      *       entry<double>("b"),
      *     }),
      *   }),
@@ -760,14 +760,20 @@ namespace Core::IO
      * });
      * @endcode
      *
+     * Note that all_of() does not changed the `required` state of its contained InputSpecs. It
+     * simply tries to parse all of them and missing optional InputSpecs are not an error. In
+     * practice, all_of() is essentially a group() without a name and without an associated scope in
+     * the input file. An all_of() InputSpec will be required if at least one of its contained
+     * InputSpecs is required. If none of the contained InputSpecs are required, the all_of()
+     * InputSpec is not required.
+     *
      * @relatedalso InputSpec
      */
-    [[nodiscard]] InputSpec anonymous_group(std::vector<InputSpec> specs);
+    [[nodiscard]] InputSpec all_of(std::vector<InputSpec> specs);
 
     /**
-     * Exactly one of the given InputSpecs is expected. There is no support for default values and
-     * one of the InputSpecs is always required. For example, the example shown for the group()
-     * function may be enhanced to require exactly one of two groups:
+     * Exactly one of the given InputSpecs is expected. For example, to require exactly one of two
+     * groups:
      *
      * @code
      * one_of({
@@ -780,12 +786,18 @@ namespace Core::IO
      *    entry<double>("alpha_f"),
      *    entry<double>("alpha_m"),
      *    entry<double>("gamma"),
+     *    entry<bool>("do_logging", {.default_value = false}),
      *  }),
      *  });
      * @endcode
      *
-     * This InputSpecs requires either the "OneStepTheta" group or the "GenAlpha" group to be
-     * present in the input. If both or none of them are present, an exception is thrown.
+     * Here, one_of() requires either the "OneStepTheta" group or the "GenAlpha" group to be
+     * present in the input. If both or none of them are present, an exception is thrown. Note that
+     * all InputSpecs handed to one_of() need to be `required = true`. While this could silently be
+     * changed internally, you will encounter an error if any InputSpec is not required to avoid
+     * confusion and stop you from constructing difficult to understand InputSpecs. You can use
+     * entries that are `required = false` nested inside other InputSpecs, see e.g. the `do_logging`
+     * entry in the example code. The return one_of() InputSpec is always treated as required.
      *
      * The optional @p on_parse_callback may be used to perform additional actions after parsing one
      * of the specs. The index of the parsed spec inside the @p specs vector is passed as an

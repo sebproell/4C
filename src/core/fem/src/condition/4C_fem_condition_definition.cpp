@@ -99,7 +99,7 @@ void Core::Conditions::ConditionDefinition::read(Core::IO::InputFile& input,
         condition_count, sectionname_.c_str());
   }
 
-  auto condition_spec = Core::IO::InputSpecBuilders::anonymous_group(specs_);
+  auto condition_spec = Core::IO::InputSpecBuilders::all_of(specs_);
 
   for (auto i = section_vec.begin() + 1; i != section_vec.end(); ++i)
   {
@@ -161,9 +161,9 @@ std::ostream& Core::Conditions::ConditionDefinition::print(std::ostream& stream)
   stream << ' ' << count << '\n';
 
   using namespace Core::IO::InputSpecBuilders;
-  auto condition_spec = anonymous_group({
+  auto condition_spec = all_of({
       entry<int>("E"),
-      anonymous_group(specs_),
+      all_of(specs_),
   });
 
   condition_spec.print_as_dat(stream);

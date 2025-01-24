@@ -70,7 +70,7 @@ void Discret::Elements::Nurbs::Wall1NurbsType::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["NURBS4"] = anonymous_group({
+  defs["NURBS4"] = all_of({
       entry<std::vector<int>>("NURBS4", {.size = 4}),
       entry<int>("MAT"),
       entry<std::string>("KINEM"),
@@ -80,7 +80,7 @@ void Discret::Elements::Nurbs::Wall1NurbsType::setup_element_definition(
       entry<std::vector<int>>("GP", {.size = 2}),
   });
 
-  defs["NURBS9"] = anonymous_group({
+  defs["NURBS9"] = all_of({
       entry<std::vector<int>>("NURBS9", {.size = 9}),
       entry<int>("MAT"),
       entry<std::string>("KINEM"),
