@@ -64,7 +64,7 @@ Graph and domain partitioner:
 Miscellaneous:
 
 - Qhull (recommended version: 2012.1, :download:`install script <qhull/install.sh>`
-- CLN (recommened version: 1.3.4),
+- CLN (recommended version: 1.3.4),
 - FFTW
 - HDF5
 - ArborX (optional)
@@ -178,7 +178,7 @@ are available from the up-right corner menu bar (look for the user's avatar) -->
 or under `your profile <https://gitlab.lrz.de/profile>`_.
 
 #. Under 'Main Settings' please enter your full name, i.e., first name followed by last name, in the 'Name' field.
-#. You may want to add a foto of you as a 'Public Avatar' so people can recognize you more easily.
+#. You may want to add a photo of you as a 'Public Avatar' so people can recognize you more easily.
 #. Hit 'Update profile settings'.
 
 
@@ -269,7 +269,7 @@ To add a SSH key to your GitLab account please follow the instructions below
 
 #. Test your setup
 
-    To test wether you have added your SSH key correctly, run the following command:
+    To test whether you have added your SSH key correctly, run the following command:
 
     .. code-block:: bash
 

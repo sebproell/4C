@@ -12,7 +12,7 @@ from four_c_utils import common_utils as utils
 import os
 import re
 
-# The name of files that indicate that a directory should be treated as module root directoy.
+# The name of files that indicate that a directory should be treated as module root directory.
 module_root_maker_file_name = ".contains_modules"
 
 

@@ -157,7 +157,7 @@ Creating a |FOURC| input file with *pre_exodus*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The previously created files have to be merged to a |FOURC| input file in
-oder to solve the problem. We will use *pre_exodus* for this purpose.
+order to solve the problem. We will use *pre_exodus* for this purpose.
 Open a terminal and execute the following command in the
 ``build-release`` folder:
 
@@ -187,7 +187,7 @@ be applied to all output files that |FOURC| generates.
 Postprocessing
 --------------
 
-You can postprocess your results with any vizualization software you
+You can postprocess your results with any visualization software you
 like. In this tutorial, we choose *Paraview*.
 
 Filtering result data

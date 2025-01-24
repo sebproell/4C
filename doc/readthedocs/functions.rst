@@ -42,7 +42,7 @@ If the function cannot easily be given as a symbolic expression, the function ma
 
 where
 
-- **expression** is simply a symoblic expression similar to the function definition itself.
+- **expression** is simply a symbolic expression similar to the function definition itself.
   That is,
 
   ::

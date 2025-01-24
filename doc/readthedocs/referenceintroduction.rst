@@ -14,7 +14,7 @@ example is the ``PROBLEM TYPE`` introductory line
 
    -------------------------------------PROBLEM TYPE
 
-Plenty of keyword lines and blocks refere to special applications of the
+Plenty of keyword lines and blocks refer to special applications of the
 program (such as ``OPTIMIZATION`` , ``ALE DYNAMIC`` etc.). These
 often can be omitted when not required, which shortens the file and
 eases its use. Other blocks however are of general character and must

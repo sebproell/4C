@@ -11,7 +11,7 @@ If you find a nice one, feel free to tell your colleagues (via issue, Slack or T
 
 CMake presets are available since cmake 3.19 and have been improved in the following versions.
 We are currently using CMake preset version 5, which requires at least cmake 3.24.
-Make sure to have a sufficient cmake-version in your path or use the provided onces on the institute's server.
+Make sure to have a sufficient cmake-version in your path or use the provided ones on the institute's server.
 
 Configuration from a terminal
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

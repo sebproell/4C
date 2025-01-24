@@ -59,7 +59,7 @@ This guide to |FOURC| is structured as follows:
    A collection of useful scripts for working with |FOURC|
 
 :ref:`Appendix<appendix>`
-   Information on contributing to this documentation as well as seleceted topics of interest
+   Information on contributing to this documentation as well as selected topics of interest
 
 .. toctree::
    :maxdepth: 2

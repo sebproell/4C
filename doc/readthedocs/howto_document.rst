@@ -43,7 +43,7 @@ I also like `this doc <https://books.dehlia.in/writing-with-ratatouille/toc/>`_.
 
 - **Lists** (as the one addressing the features of reStructuredText here) can be numbered or unsorted.
   Any list must be surrounded by blank lines.
-  An unordered list with bullet points is created by dashs like this one::
+  An unordered list with bullet points is created by dashes like this one::
 
      Here, we'll start a list
 
@@ -136,7 +136,7 @@ I also like `this doc <https://books.dehlia.in/writing-with-ratatouille/toc/>`_.
 
 - **Math** can be inserted either within the text or as separate equations.
   For inline math one may use the ``math`` rule like ``:math:`f(x) = x^2```.
-  Separate equations are writen as a directive ``.. math::``, for example:
+  Separate equations are written as a directive ``.. math::``, for example:
 
   ::
 

@@ -60,7 +60,7 @@ Information about this tool can be found in the :ref:`Analysis Guide <pre_exodus
 
 Besides a given mesh as the one we just created using CUBIT (see above), we need two more files:
 
-- the bc-file, which contains the specific element declation and the particular boundary conditions, and
+- the bc-file, which contains the specific element declaration and the particular boundary conditions, and
 - the header file, which contains the general parameters such as solvers, algorithmic parameters, etc..
 
 In the following sections, we'll learn how to create the these two files.
@@ -826,7 +826,7 @@ to |FOURC| and postprocess the results.
 Postprocessing
 --------------
 
-You can postprocess your results with any vizualization software you
+You can postprocess your results with any visualization software you
 like. In this tutorial, we choose *Paraview*.
 
 Before you can open the results, you have to generate a filter again.

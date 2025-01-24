@@ -49,7 +49,7 @@ def create_properties_dict(properties_entry: dict) -> dict:
     # Loop over the definitions of the properties
     for key, value in properties_entry.items():
 
-        # Check if the optains contains the type
+        # Check if the obtains contains the type
         if "type" not in value.keys():
             raise Exception(f"Ups could not load {key}: {value}")
 
@@ -96,7 +96,7 @@ def create_json_schema(fourc_metadata: dict) -> dict:
     """Create a JSON schema dict.
 
     Args:
-        fourc_metada (dict): Metadata exported by 4C
+        fourc_metadata (dict): Metadata exported by 4C
 
     Returns:
         dict: data for the JSON schema

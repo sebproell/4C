@@ -206,7 +206,7 @@ are introduced to control the behavior of this approximation
    \boldsymbol{A}^\gamma(\tau) &= \boldsymbol{A}_n + 2\gamma \frac{\boldsymbol{A}_{n+1} - \boldsymbol{A}_n}{\Delta t}\tau\\
    \boldsymbol{A}^\beta(\tau) &= \boldsymbol{A}_n + 6\beta  \frac{\boldsymbol{A}_{n+1} - \boldsymbol{A}_n}{\Delta t}\tau
 
-If :math:`\gamma=\frac{1}{2}` and :math:`\beta=\frac{1}{6}` are choosen,
+If :math:`\gamma=\frac{1}{2}` and :math:`\beta=\frac{1}{6}` are chosen,
 a linear acceleration scheme is obtained. The
 :math:`\gamma`-parameterized acceleration
 :math:`\boldsymbol{A}^\gamma(\tau)` is integrated once over
@@ -351,7 +351,7 @@ vector:
    \end{array} \right\}  \quad \alpha_\text{f} \in[0,1]
 
 with the parameters :math:`\alpha_\text{m},\alpha_\text{f}\in[0,1]`.
-There two possibilties for the internal mid-forces
+There two possibilities for the internal mid-forces
 :math:`\boldsymbol{F}_{\text{int},\text{mid}}`. Either they are
 defined as well by a linear combination (which we call ‘TR-like’) or
 by inserting mid-displacements (which we call ‘IMR-like’), i.e.
@@ -817,7 +817,7 @@ with GA2 and GA3 would require two iterative solutions. This can be
 overcome by avoiding a direct determination of the GA3. The results of
 the marching GA2 method (:math:`\boldsymbol{D}_{n+1}^\text{GA2}`,
 :math:`\boldsymbol{V}_{n+1}^\text{GA2}`,
-:math:`\boldsymbol{A}_{n+1}^\text{GA2}`) can be used to explicitely
+:math:`\boldsymbol{A}_{n+1}^\text{GA2}`) can be used to explicitly
 construct a third-order accurate result, which is related to the NM3 and
 is called ZX here.
 

@@ -103,7 +103,7 @@ def read_sections(filename):
                 # this is a section title
                 current_section = match_title.group(1)
                 if current_section in content:
-                    raise ValueError("{0} is dublicate!".format(current_section))
+                    raise ValueError("{0} is duplicate!".format(current_section))
 
                 content[current_section] = []
             else:

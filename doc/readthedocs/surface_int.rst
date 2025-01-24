@@ -20,7 +20,7 @@ spanned by the vectors :math:`a^1` and :math:`a^2`.
 
 (b) In the case :math:`k=n`, it holds that
 :math:`\operatorname{vol}_{n}\bigl(A\bigl([0,1]^{n}\bigr)\bigr)=\lvert\det A\rvert`.
-If :math:`a^{1},\ldots,a^{n}` are linearly dependent, then boths sides
+If :math:`a^{1},\ldots,a^{n}` are linearly dependent, then both sides
 are :math:`=0`, for :math:`A\bigl([0,1]^{k}\bigr)` has width :math:`0`
 in (at least) one direction.
 
@@ -53,7 +53,7 @@ an example: Let :math:`n=k+1` and
 :math:`A\bigl([0,1]^{k}\bigr)\subseteq\mathbb{R}^{k}\times\{0\}`, e.g.
 the parallelepiped has width :math:`0` in the direction of
 :math:`e_{n}=e_{k+1}`. Let :math:`Q:\mathbb{R}^{k+1}\to\mathbb{R}^{k}`
-be the projektion onto the first :math:`k` coordinates (thus
+be the projection onto the first :math:`k` coordinates (thus
 :math:`Q(x)=Q\bigl((x_{1},\ldots,x_{n})\bigr)=(x_{1},\ldots,x_{k})`),
 then\
 
@@ -124,7 +124,7 @@ sphere, by\
 Remark.
 '''''''
 
-For vectors :math:`a,b\in\mathbb{R}^{3}` in the three-dimensonal space
+For vectors :math:`a,b\in\mathbb{R}^{3}` in the three-dimensional space
 :math:`\mathbb{R}^{3}` it holds that\
 
 .. math::
@@ -148,5 +148,5 @@ is known in engineering as the *area element.*
    Actually, this is not a parameterization of all of the unit sphere:
    The half-plane :math:`\{x\in\mathbb{R}^{3};\,x_{2}=0,x_{1}\le 0\}` is
    missing. A global parameterization of the unit sphere doesn’t exist,
-   and the missing half-plane is a set of :math:`2`-dimensonal measure
+   and the missing half-plane is a set of :math:`2`-dimensional measure
    zero, so we can disregard it.

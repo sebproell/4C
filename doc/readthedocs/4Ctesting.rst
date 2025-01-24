@@ -63,7 +63,7 @@ Thorough
 
 .. Note::
 
-    following test driven developement (TDD) (refer to Robert C. Martin [Martin08]_ ) this can also be interpreted as:
+    following test driven development (TDD) (refer to Robert C. Martin [Martin08]_ ) this can also be interpreted as:
 
     **Timely**
 
