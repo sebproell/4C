@@ -135,7 +135,7 @@ void Discret::Elements::ScaTraHDGType ::setup_element_definition(
 
   for (const auto& [key, scatra_line_def] : defs_scatra)
   {
-    defs[key] = anonymous_group({
+    defs[key] = all_of({
         scatra_line_def,
         entry<int>("DEG"),
         entry<int>("SPC", {.required = false}),

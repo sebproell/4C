@@ -76,7 +76,7 @@ void Discret::Elements::WallQuad4PoroP1ScatraType::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD4"] = anonymous_group({
+  defs["QUAD4"] = all_of({
       defs_wallporo["QUAD4"],
       entry<std::string>("TYPE"),
   });
@@ -146,7 +146,7 @@ void Discret::Elements::WallQuad9PoroP1ScatraType::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD9"] = anonymous_group({
+  defs["QUAD9"] = all_of({
       defs_wallporo["QUAD9"],
       entry<std::string>("TYPE"),
   });
@@ -213,7 +213,7 @@ void Discret::Elements::WallTri3PoroP1ScatraType::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["TRI3"] = anonymous_group({
+  defs["TRI3"] = all_of({
       defs_wallporo["TRI3"],
       entry<std::string>("TYPE"),
   });

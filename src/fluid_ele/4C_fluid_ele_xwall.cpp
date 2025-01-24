@@ -70,12 +70,12 @@ void Discret::Elements::FluidXWallType::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defsxwall["HEX8"] = anonymous_group({
+  defsxwall["HEX8"] = all_of({
       entry<std::vector<int>>("HEX8", {.size = 8}),
       entry<int>("MAT"),
       entry<std::string>("NA"),
   });
-  defsxwall["TET4"] = anonymous_group({
+  defsxwall["TET4"] = all_of({
       entry<std::vector<int>>("TET4", {.size = 4}),
       entry<int>("MAT"),
       entry<std::string>("NA"),

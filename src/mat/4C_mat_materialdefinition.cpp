@@ -45,7 +45,7 @@ void Mat::MaterialDefinition::add_component(Core::IO::InputSpec&& c)
 std::ostream& Mat::MaterialDefinition::print(
     std::ostream& stream, const Core::FE::Discretization* dis)
 {
-  auto input_line = Core::IO::InputSpecBuilders::anonymous_group(components_);
+  auto input_line = Core::IO::InputSpecBuilders::all_of(components_);
 
   input_line.print_as_dat(stream);
 

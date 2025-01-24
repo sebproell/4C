@@ -200,10 +200,10 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::print(
     stream << "// " << std::string(indent, ' ') << name << ":\n";
     indent += 2;
   }
-  // Only print an anonymous group if it is not present at the top-level.
+  // Only print an all_of if it is not present at the top-level.
   else if (indent > 0)
   {
-    stream << "// " << std::string(indent, ' ') << "<anonymous_group>:\n";
+    stream << "// " << std::string(indent, ' ') << "<all_of>:\n";
     indent += 2;
   }
 
@@ -218,7 +218,7 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::emit_metadata(ryml::NodeR
   node << ryml::key(name.empty() ? data.description : name);
   node |= ryml::MAP;
 
-  node["type"] << (name.empty() ? "anonymous_group" : "group");
+  node["type"] << (name.empty() ? "all_of" : "group");
   node["description"] << data.description;
   emit_value_as_yaml(node["required"], data.required);
   node["specs"] |= ryml::MAP;
@@ -347,17 +347,16 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::tag(std::string name, ScalarDat
 
 namespace
 {
-  // An anonymous groups is only used for grouping purposes and does not have a name. If it is
-  // used inside another group, it can be flattened by stealing its specs and adding them to the
-  // parent group.
-  std::vector<Core::IO::InputSpec> flatten_anonymous_group(std::vector<Core::IO::InputSpec> specs)
+  // An all_of is only used for grouping purposes and does not have a name. If it is used inside
+  // another group, it can be flattened by stealing its specs and adding them to the parent group.
+  std::vector<Core::IO::InputSpec> flatten_all_ofs(std::vector<Core::IO::InputSpec> specs)
   {
     std::vector<Core::IO::InputSpec> flattened_specs;
     for (auto&& spec : specs)
     {
       if (auto* group = dynamic_cast<Core::IO::Internal::InputSpecTypeErasedImplementation<
               Core::IO::InputSpecBuilders::Internal::GroupSpec>*>(&spec.impl());
-          // must be an anonymous group to steal the specs
+          // must be an all_of to steal the specs
           group && group->wrapped.name.empty())
       {
         for (auto&& sub_spec : group->wrapped.specs)
@@ -379,7 +378,7 @@ namespace
 Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
     std::string name, std::vector<InputSpec> specs, Core::IO::InputSpecBuilders::GroupData data)
 {
-  auto flattened_specs = flatten_anonymous_group(std::move(specs));
+  auto flattened_specs = flatten_all_ofs(std::move(specs));
 
   assert_unique_or_empty_names(flattened_specs);
 
@@ -397,24 +396,27 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
 }
 
 
-Core::IO::InputSpec Core::IO::InputSpecBuilders::anonymous_group(std::vector<InputSpec> specs)
+Core::IO::InputSpec Core::IO::InputSpecBuilders::all_of(std::vector<InputSpec> specs)
 {
-  auto flattened_specs = flatten_anonymous_group(std::move(specs));
+  auto flattened_specs = flatten_all_ofs(std::move(specs));
 
   assert_unique_or_empty_names(flattened_specs);
 
+  const bool any_required =
+      std::ranges::any_of(flattened_specs, [](const auto& spec) { return spec.impl().required(); });
+
   // Generate a description of the form "group {a, b, c}".
-  std::string description = "anonymous_group " + describe(flattened_specs);
+  std::string description = "all_of " + describe(flattened_specs);
 
   IO::Internal::InputSpecTypeErasedBase::CommonData common_data{
       .name = "",
       .description = description,
-      .required = true,
+      .required = any_required,
       .has_default_value = all_have_default_values(flattened_specs),
   };
 
   return IO::Internal::make_spec(Internal::GroupSpec{.name = "",
-                                     .data = {.description = description, .required = true},
+                                     .data = {.description = description, .required = any_required},
                                      .specs = std::move(flattened_specs)},
       common_data);
 }
@@ -427,6 +429,23 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> s
   FOUR_C_ASSERT_ALWAYS(!specs.empty(), "`one_of` must contain at least one entry.");
 
   assert_unique_or_empty_names(specs);
+
+  // Assert that all specs are required.
+  const bool all_required =
+      std::ranges::all_of(specs, [](const auto& spec) { return spec.impl().required(); });
+  if (!all_required)
+  {
+    std::string non_required;
+    for (const auto& spec : specs)
+    {
+      if (!spec.impl().required()) non_required += "    " + describe(spec) + "\n";
+    }
+
+    FOUR_C_THROW(
+        "All specs in a 'one_of' must be required to avoid confusion. The following InputSpecs "
+        "are not required:\n%s",
+        non_required.c_str());
+  }
 
   std::string description = "one_of " + describe(specs);
   IO::Internal::InputSpecTypeErasedBase::CommonData common_data{

@@ -329,7 +329,7 @@ namespace
         group("STRUCTURE",
             {
                 one_of({
-                    anonymous_group({
+                    all_of({
                         entry<std::string>("DIS"),
                         one_of({
                             entry<int>("NODE"),
@@ -422,7 +422,7 @@ namespace
         group("SSI",
             {
                 one_of({
-                    anonymous_group({
+                    all_of({
                         entry<std::string>("DIS"),
                         entry<int>("NODE"),
                     }),

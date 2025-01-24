@@ -73,7 +73,7 @@ void Discret::Elements::MembraneTri3Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["TRI3"] = anonymous_group({
+  defs["TRI3"] = all_of({
       entry<std::vector<int>>("TRI3", {.size = 3}),
       entry<int>("MAT"),
       entry<std::string>("KINEM"),
@@ -148,7 +148,7 @@ void Discret::Elements::MembraneTri6Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["TRI6"] = anonymous_group({
+  defs["TRI6"] = all_of({
       entry<std::vector<int>>("TRI6", {.size = 6}),
       entry<int>("MAT"),
       entry<std::string>("KINEM"),
@@ -223,7 +223,7 @@ void Discret::Elements::MembraneQuad4Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD4"] = anonymous_group({
+  defs["QUAD4"] = all_of({
       entry<std::vector<int>>("QUAD4", {.size = 4}),
       entry<int>("MAT"),
       entry<std::string>("KINEM"),
@@ -298,7 +298,7 @@ void Discret::Elements::MembraneQuad9Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD9"] = anonymous_group({
+  defs["QUAD9"] = all_of({
       entry<std::vector<int>>("QUAD9", {.size = 9}),
       entry<int>("MAT"),
       entry<std::string>("KINEM"),

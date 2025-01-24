@@ -103,52 +103,52 @@ void Discret::Elements::PoroFluidMultiPhaseType::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD4"] = anonymous_group({
+  defs["QUAD4"] = all_of({
       entry<std::vector<int>>("QUAD4", {.size = 4}),
       entry<int>("MAT"),
   });
 
-  defs["QUAD8"] = anonymous_group({
+  defs["QUAD8"] = all_of({
       entry<std::vector<int>>("QUAD8", {.size = 8}),
       entry<int>("MAT"),
   });
 
-  defs["QUAD9"] = anonymous_group({
+  defs["QUAD9"] = all_of({
       entry<std::vector<int>>("QUAD9", {.size = 9}),
       entry<int>("MAT"),
   });
 
-  defs["TRI3"] = anonymous_group({
+  defs["TRI3"] = all_of({
       entry<std::vector<int>>("TRI3", {.size = 3}),
       entry<int>("MAT"),
   });
 
-  defs["TRI6"] = anonymous_group({
+  defs["TRI6"] = all_of({
       entry<std::vector<int>>("TRI6", {.size = 6}),
       entry<int>("MAT"),
   });
 
-  defs["LINE2"] = anonymous_group({
+  defs["LINE2"] = all_of({
       entry<std::vector<int>>("LINE2", {.size = 2}),
       entry<int>("MAT"),
   });
 
-  defs["LINE3"] = anonymous_group({
+  defs["LINE3"] = all_of({
       entry<std::vector<int>>("LINE3", {.size = 3}),
       entry<int>("MAT"),
   });
 
-  defs["HEX8"] = anonymous_group({
+  defs["HEX8"] = all_of({
       entry<std::vector<int>>("HEX8", {.size = 8}),
       entry<int>("MAT"),
   });
 
-  defs["TET4"] = anonymous_group({
+  defs["TET4"] = all_of({
       entry<std::vector<int>>("TET4", {.size = 4}),
       entry<int>("MAT"),
   });
 
-  defs["TET10"] = anonymous_group({
+  defs["TET10"] = all_of({
       entry<std::vector<int>>("TET10", {.size = 10}),
       entry<int>("MAT"),
   });

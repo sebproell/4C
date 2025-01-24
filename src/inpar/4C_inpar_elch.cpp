@@ -234,7 +234,7 @@ void Inpar::ElCh::set_valid_conditions(
   // electrode kinetics as boundary condition on electrolyte
   {
     auto reaction_model_choices = one_of({
-        anonymous_group({
+        all_of({
             selection<int>("KINETIC_MODEL",
                 {
                     {"Butler-Volmer", Inpar::ElCh::ElectrodeKinetics::butler_volmer},
@@ -248,7 +248,7 @@ void Inpar::ElCh::set_valid_conditions(
             entry<double>("REFCON"),
             entry<double>("DL_SPEC_CAP"),
         }),
-        anonymous_group({
+        all_of({
             selection<int>("KINETIC_MODEL", {{"Tafel", Inpar::ElCh::ElectrodeKinetics::tafel}}),
             entry<double>("ALPHA"),
             entry<double>("I0"),
@@ -256,7 +256,7 @@ void Inpar::ElCh::set_valid_conditions(
             entry<double>("REFCON"),
             entry<double>("DL_SPEC_CAP"),
         }),
-        anonymous_group({
+        all_of({
             selection<int>("KINETIC_MODEL", {{"linear", Inpar::ElCh::ElectrodeKinetics::linear}}),
             entry<double>("ALPHA"),
             entry<double>("I0"),
@@ -264,7 +264,7 @@ void Inpar::ElCh::set_valid_conditions(
             entry<double>("REFCON"),
             entry<double>("DL_SPEC_CAP"),
         }),
-        anonymous_group({
+        all_of({
             selection<int>("KINETIC_MODEL",
                 {{"Butler-Volmer-Newman", Inpar::ElCh::ElectrodeKinetics::butler_volmer_newman}}),
             entry<double>("K_A"),
@@ -272,7 +272,7 @@ void Inpar::ElCh::set_valid_conditions(
             entry<double>("BETA"),
             entry<double>("DL_SPEC_CAP"),
         }),
-        anonymous_group({
+        all_of({
             selection<int>("KINETIC_MODEL",
                 {{"Butler-Volmer-Bard", Inpar::ElCh::ElectrodeKinetics::butler_volmer_bard}}),
             entry<double>("E0"),
@@ -282,7 +282,7 @@ void Inpar::ElCh::set_valid_conditions(
             entry<double>("C_A0"),
             entry<double>("DL_SPEC_CAP"),
         }),
-        anonymous_group({
+        all_of({
             selection<int>("KINETIC_MODEL", {{"Nernst", Inpar::ElCh::ElectrodeKinetics::nernst}}),
             entry<double>("E0"),
             entry<double>("C0"),
@@ -343,7 +343,7 @@ void Inpar::ElCh::set_valid_conditions(
         Core::Conditions::geometry_type_volume);
 
     // equip condition definition with input file line components
-    auto electrodedomainkineticscomponents = anonymous_group({
+    auto electrodedomainkineticscomponents = all_of({
         entry<int>("ConditionID"),
         entry<double>("POT"),
         entry<Core::IO::Noneable<int>>("FUNCT"),

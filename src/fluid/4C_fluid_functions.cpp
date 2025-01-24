@@ -334,94 +334,94 @@ void FLD::add_valid_fluid_functions(Core::Utils::FunctionManager& function_manag
 {
   using namespace Core::IO::InputSpecBuilders;
   auto spec = one_of({
-      anonymous_group({
+      all_of({
           tag("BELTRAMI"),
           entry<double>("c1"),
       }),
       tag("CHANNELWEAKLYCOMPRESSIBLE"),
       tag("CORRECTIONTERMCHANNELWEAKLYCOMPRESSIBLE"),
-      anonymous_group({
+      all_of({
           tag("WEAKLYCOMPRESSIBLE_POISEUILLE"),
           entry<int>("MAT"),
           entry<double>("L"),
           entry<double>("R"),
           entry<double>("U"),
       }),
-      anonymous_group({
+      all_of({
           tag("WEAKLYCOMPRESSIBLE_POISEUILLE_FORCE"),
           entry<int>("MAT"),
           entry<double>("L"),
           entry<double>("R"),
           entry<double>("U"),
       }),
-      anonymous_group({
+      all_of({
           tag("WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW"),
           entry<int>("MAT"),
       }),
-      anonymous_group({
+      all_of({
           tag("WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW_FORCE"),
           entry<int>("MAT"),
       }),
-      anonymous_group({
+      all_of({
           tag("WEAKLYCOMPRESSIBLE_ETIENNE_CFD"),
           entry<int>("MAT"),
       }),
-      anonymous_group({
+      all_of({
           tag("WEAKLYCOMPRESSIBLE_ETIENNE_CFD_FORCE"),
           entry<int>("MAT"),
       }),
-      anonymous_group({
+      all_of({
           tag("WEAKLYCOMPRESSIBLE_ETIENNE_CFD_VISCOSITY"),
           entry<int>("MAT"),
       }),
-      anonymous_group({
+      all_of({
           tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID"),
           entry<int>("MAT_FLUID"),
           entry<int>("MAT_STRUCT"),
       }),
-      anonymous_group({
+      all_of({
           tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID_FORCE"),
           entry<int>("MAT_FLUID"),
           entry<int>("MAT_STRUCT"),
       }),
-      anonymous_group({
+      all_of({
           tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID_VISCOSITY"),
           entry<int>("MAT_FLUID"),
           entry<int>("MAT_STRUCT"),
       }),
-      anonymous_group({
+      all_of({
           tag("BELTRAMI-UP"),
           entry<int>("MAT"),
           entry<int>("ISSTAT"),
       }),
-      anonymous_group({
+      all_of({
           tag("BELTRAMI-GRADU"),
           entry<int>("MAT"),
           entry<int>("ISSTAT"),
       }),
-      anonymous_group({
+      all_of({
           tag("BELTRAMI-RHS"),
           entry<int>("MAT"),
           entry<int>("ISSTAT"),
           entry<int>("ISSTOKES"),
       }),
-      anonymous_group({
+      all_of({
           tag("KIMMOIN-UP"),
           entry<int>("MAT"),
           entry<int>("ISSTAT"),
       }),
-      anonymous_group({
+      all_of({
           tag("KIMMOIN-GRADU"),
           entry<int>("MAT"),
           entry<int>("ISSTAT"),
       }),
-      anonymous_group({
+      all_of({
           tag("KIMMOIN-RHS"),
           entry<int>("MAT"),
           entry<int>("ISSTAT"),
           entry<int>("ISSTOKES"),
       }),
-      anonymous_group({
+      all_of({
           tag("KIMMOIN-STRESS"),
           entry<int>("MAT"),
           entry<int>("ISSTAT"),

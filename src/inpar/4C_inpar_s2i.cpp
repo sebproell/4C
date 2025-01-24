@@ -167,7 +167,7 @@ void Inpar::S2I::set_valid_conditions(
     {
       {
         // constant and linear permeability
-        auto constlinperm = anonymous_group({
+        auto constlinperm = all_of({
             selection<int>("KINETIC_MODEL",
                 {
                     {"ConstantPermeability", Inpar::S2I::kinetics_constperm},
@@ -181,7 +181,7 @@ void Inpar::S2I::set_valid_conditions(
       }
 
       {
-        auto butler_volmer = anonymous_group({
+        auto butler_volmer = all_of({
             selection<int>("KINETIC_MODEL",
                 {
                     {"Butler-Volmer", Inpar::S2I::kinetics_butlervolmer},
@@ -202,7 +202,7 @@ void Inpar::S2I::set_valid_conditions(
       }
 
       {
-        auto butler_volmer_peltier = anonymous_group({
+        auto butler_volmer_peltier = all_of({
             selection<int>("KINETIC_MODEL",
                 {
                     {"Butler-Volmer-Peltier", Inpar::S2I::kinetics_butlervolmerpeltier},
@@ -221,7 +221,7 @@ void Inpar::S2I::set_valid_conditions(
       }
 
       {
-        auto butler_volmer_reduced_capacitance = anonymous_group({
+        auto butler_volmer_reduced_capacitance = all_of({
             selection<int>("KINETIC_MODEL",
                 {
                     {"Butler-VolmerReduced_Capacitance",
@@ -241,7 +241,7 @@ void Inpar::S2I::set_valid_conditions(
       }
 
       {
-        auto butler_volmer_resistance = anonymous_group({
+        auto butler_volmer_resistance = all_of({
             selection<int>("KINETIC_MODEL",
                 {
                     {"Butler-Volmer_Resistance", Inpar::S2I::kinetics_butlervolmerresistance},
@@ -261,7 +261,7 @@ void Inpar::S2I::set_valid_conditions(
       }
 
       {
-        auto butler_volmer_reduced_with_resistance = anonymous_group({
+        auto butler_volmer_reduced_with_resistance = all_of({
             selection<int>("KINETIC_MODEL",
                 {
                     {"Butler-VolmerReduced_Resistance",
@@ -283,7 +283,7 @@ void Inpar::S2I::set_valid_conditions(
       }
 
       {
-        auto butler_volmer_reduced_thermo = anonymous_group({
+        auto butler_volmer_reduced_thermo = all_of({
             selection<int>("KINETIC_MODEL",
                 {
                     {"Butler-VolmerReduced_ThermoResistance",
@@ -304,7 +304,7 @@ void Inpar::S2I::set_valid_conditions(
       }
 
       {
-        auto constant_interface_resistance = anonymous_group({
+        auto constant_interface_resistance = all_of({
             selection<int>("KINETIC_MODEL",
                 {
                     {"ConstantInterfaceResistance",
@@ -333,13 +333,13 @@ void Inpar::S2I::set_valid_conditions(
     }
 
     auto interface_side_options = one_of({
-        anonymous_group({
+        all_of({
             selection<int>("INTERFACE_SIDE", {{"Master", side_master}}),
         }),
-        anonymous_group({
+        all_of({
             selection<int>("INTERFACE_SIDE", {{"Undefined", side_undefined}}),
         }),
-        anonymous_group({
+        all_of({
             selection<int>("INTERFACE_SIDE", {{"Slave", side_slave}}),
             one_of(kinetic_model_choices),
         }),
@@ -379,7 +379,7 @@ void Inpar::S2I::set_valid_conditions(
         "Scatra-scatra surface interface layer growth kinetics",
         Core::Conditions::S2IKineticsGrowth, true, Core::Conditions::geometry_type_surface);
 
-    auto butler_volmer = anonymous_group({
+    auto butler_volmer = all_of({
         entry<int>("NUMSCAL"),
         entry<std::vector<int>>("STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
         entry<int>("E-"),

@@ -83,42 +83,42 @@ void Discret::Elements::Ale3Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["HEX8"] = anonymous_group({
+  defs["HEX8"] = all_of({
       entry<std::vector<int>>("HEX8", {.size = 8}),
       entry<int>("MAT"),
   });
 
-  defs["HEX20"] = anonymous_group({
+  defs["HEX20"] = all_of({
       entry<std::vector<int>>("HEX20", {.size = 20}),
       entry<int>("MAT"),
   });
 
-  defs["HEX27"] = anonymous_group({
+  defs["HEX27"] = all_of({
       entry<std::vector<int>>("HEX27", {.size = 27}),
       entry<int>("MAT"),
   });
 
-  defs["TET4"] = anonymous_group({
+  defs["TET4"] = all_of({
       entry<std::vector<int>>("TET4", {.size = 4}),
       entry<int>("MAT"),
   });
 
-  defs["TET10"] = anonymous_group({
+  defs["TET10"] = all_of({
       entry<std::vector<int>>("TET10", {.size = 10}),
       entry<int>("MAT"),
   });
 
-  defs["WEDGE6"] = anonymous_group({
+  defs["WEDGE6"] = all_of({
       entry<std::vector<int>>("WEDGE6", {.size = 6}),
       entry<int>("MAT"),
   });
 
-  defs["WEDGE15"] = anonymous_group({
+  defs["WEDGE15"] = all_of({
       entry<std::vector<int>>("WEDGE15", {.size = 15}),
       entry<int>("MAT"),
   });
 
-  defs["PYRAMID5"] = anonymous_group({
+  defs["PYRAMID5"] = all_of({
       entry<std::vector<int>>("PYRAMID5", {.size = 5}),
       entry<int>("MAT"),
   });

@@ -82,7 +82,7 @@ void Solid::add_valid_structure_functions(Core::Utils::FunctionManager& function
 {
   using namespace Core::IO::InputSpecBuilders;
 
-  auto spec = anonymous_group({
+  auto spec = all_of({
       one_of({
           tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE"),
           tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE_FORCE"),

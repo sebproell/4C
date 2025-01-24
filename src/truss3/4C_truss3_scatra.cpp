@@ -79,7 +79,7 @@ void Discret::Elements::Truss3ScatraType::setup_element_definition(
   auto& defs_truss = definitions_truss["TRUSS3"];
 
   // copy definitions of standard truss element to truss element for scalar transport coupling
-  defs["LINE2"] = anonymous_group({
+  defs["LINE2"] = all_of({
       defs_truss["LINE2"],
       entry<std::string>("TYPE"),
   });

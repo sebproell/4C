@@ -20,7 +20,7 @@ namespace
 
   TEST(InputSpecTest, Simple)
   {
-    auto line = anonymous_group({
+    auto line = all_of({
         tag("marker"),
         entry<int>("a", {.description = "An integer", .default_value = 1}),
         entry<double>("b", {.required = true}),
@@ -39,7 +39,7 @@ namespace
 
   TEST(InputSpecTest, OutofOrder)
   {
-    auto line = anonymous_group({
+    auto line = all_of({
         entry<int>("a"),
         entry<double>("b"),
         entry<std::string>("c"),
@@ -55,7 +55,7 @@ namespace
 
   TEST(InputSpecTest, OptionalLeftOut)
   {
-    auto line = anonymous_group({
+    auto line = all_of({
         entry<int>("a"),
         entry<double>("b"),
         entry<std::string>("c", {.default_value = "default"}),
@@ -74,7 +74,7 @@ namespace
 
   TEST(InputSpecTest, RequiredLeftOut)
   {
-    auto line = anonymous_group({
+    auto line = all_of({
         entry<int>("a"),
         entry<double>("b"),
         entry<std::string>("c"),
@@ -91,7 +91,7 @@ namespace
 
   TEST(InputSpecTest, Vector)
   {
-    auto line = anonymous_group({
+    auto line = all_of({
         entry<int>("a"),
         entry<std::vector<double>>("b", {.size = 3}),
         entry<std::string>("c"),
@@ -122,7 +122,7 @@ namespace
 
   TEST(InputSpecTest, Noneable)
   {
-    auto line = anonymous_group({
+    auto line = all_of({
         entry<int>("size"),
         entry<std::vector<Noneable<int>>>("a", {.size = from_parameter<int>("size")}),
         entry<Noneable<std::string>>("b", {.description = "b"}),
@@ -208,7 +208,7 @@ namespace
 
   TEST(InputSpecTest, VectorWithParsedLength)
   {
-    auto line = anonymous_group({
+    auto line = all_of({
         entry<int>("a"),
         entry<std::vector<double>>("b", {.size = from_parameter<int>("a")}),
         entry<std::string>("c"),
@@ -239,7 +239,7 @@ namespace
 
   TEST(InputSpecTest, UserDefined)
   {
-    auto line = anonymous_group({
+    auto line = all_of({
         entry<int>("a"),
         entry<double>("b"),
         user_defined<std::string>(
@@ -279,7 +279,7 @@ namespace
 
   TEST(InputSpecTest, Selection)
   {
-    auto line = anonymous_group({
+    auto line = all_of({
         entry<int>("a"),
         selection<int>("b", {{"b1", 1}, {"b2", 2}}, {.default_value = 1}),
         selection<std::string>("c", {{"c1", "1"}, {"c2", "2"}}, {.default_value = "2"}),
@@ -308,7 +308,7 @@ namespace
 
   TEST(InputSpecTest, Unparsed)
   {
-    auto line = anonymous_group({
+    auto line = all_of({
         entry<int>("a"),
         entry<int>("optional", {.default_value = 42}),
         entry<double>("b"),
@@ -324,7 +324,7 @@ namespace
 
   TEST(InputSpecTest, Groups)
   {
-    auto line = anonymous_group({
+    auto line = all_of({
         entry<int>("a"),
         group("group1",
             {
@@ -387,12 +387,12 @@ namespace
     }
   }
 
-  TEST(InputSpecTest, NestedAnonymousGroups)
+  TEST(InputSpecTest, NestedAllOf)
   {
-    auto line = anonymous_group({
+    auto line = all_of({
         entry<int>("a"),
-        anonymous_group({
-            anonymous_group({
+        all_of({
+            all_of({
                 entry<double>("b"),
             }),
         }),
@@ -411,7 +411,7 @@ namespace
 
   TEST(InputSpecTest, OneOf)
   {
-    auto line = anonymous_group({
+    auto line = all_of({
         entry<int>("a", {.default_value = 42}),
         one_of({
             entry<double>("b"),
@@ -474,11 +474,11 @@ namespace
   {
     auto line = one_of(
         {
-            anonymous_group({
+            all_of({
                 entry<int>("a"),
                 entry<double>("b"),
             }),
-            anonymous_group({
+            all_of({
                 entry<std::string>("c"),
                 entry<double>("d"),
             }),
@@ -511,7 +511,7 @@ namespace
       std::string stream("a 1 b 2 c string d 2.0");
       ValueParser parser(stream);
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(line.fully_parse(parser, container), Core::Exception,
-          "both 'anonymous_group {a, b}' and 'anonymous_group {c, d}'");
+          "both 'all_of {a, b}' and 'all_of {c, d}'");
     }
 
     {
@@ -519,7 +519,7 @@ namespace
       std::string stream("a 1 c string");
       ValueParser parser(stream);
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(line.fully_parse(parser, container), Core::Exception,
-          "one_of {anonymous_group {a, b}, anonymous_group {c, d}}");
+          "one_of {all_of {a, b}, all_of {c, d}}");
     }
   }
 
@@ -527,8 +527,8 @@ namespace
   {
     auto line =
         group("g", {
-                       // Note: the anonymous group entries will be pulled into the parent group.
-                       anonymous_group({
+                       // Note: the all_of entries will be pulled into the parent group.
+                       all_of({
                            entry<int>("a", {.description = "An integer"}),
                            tag("b", {.description = "A tag", .required = false}),
                            selection<int>("c", {{"c1", 1}, {"c2", 2}},
@@ -551,11 +551,14 @@ namespace
 
   TEST(InputSpecTest, EmitMetadata)
   {
-    auto line = anonymous_group({
+    auto line = all_of({
         entry<int>("a", {.default_value = 42}),
         entry<std::vector<double>>("b", {.default_value = std::vector{1., 2., 3.}, .size = 3}),
         one_of({
-            entry<std::pair<int, std::string>>("b", {.default_value = std::pair{1, "abc"}}),
+            all_of({
+                entry<std::pair<int, std::string>>("b", {.default_value = std::pair{1, "abc"}}),
+                entry<std::string>("c"),
+            }),
             group("group",
                 {
                     entry<std::string>("c"),
@@ -574,9 +577,9 @@ namespace
       line.emit_metadata(yaml);
       out << tree;
 
-      std::string expected = R"('anonymous_group {a, b, one_of {b, group}, e}':
-  type: anonymous_group
-  description: 'anonymous_group {a, b, one_of {b, group}, e}'
+      std::string expected = R"('all_of {a, b, one_of {all_of {b, c}, group}, e}':
+  type: all_of
+  description: 'all_of {a, b, one_of {all_of {b, c}, group}, e}'
   required: true
   specs:
     a:
@@ -589,16 +592,25 @@ namespace
       description: ''
       required: false
       default: [1,2,3]
-    'one_of {b, group}':
+    'one_of {all_of {b, c}, group}':
       type: one_of
-      description: 'one_of {b, group}'
+      description: 'one_of {all_of {b, c}, group}'
       required: true
       specs:
-        b:
-          type: 'pair<int, string>'
-          description: ''
-          required: false
-          default: [1,abc]
+        'all_of {b, c}':
+          type: all_of
+          description: 'all_of {b, c}'
+          required: true
+          specs:
+            b:
+              type: 'pair<int, string>'
+              description: ''
+              required: false
+              default: [1,abc]
+            c:
+              type: string
+              description: ''
+              required: true
         group:
           type: group
           description: ''
@@ -629,13 +641,13 @@ namespace
   {
     InputSpec line;
     {
-      auto tmp = anonymous_group({
+      auto tmp = all_of({
           entry<int>("a"),
           entry<std::string>("b"),
           selection<int>("c", {{"c1", 1}, {"c2", 2}}, {.default_value = 1}),
       });
 
-      line = anonymous_group({
+      line = all_of({
           tmp,
           entry<int>("d"),
       });

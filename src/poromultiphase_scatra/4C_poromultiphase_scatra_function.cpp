@@ -116,7 +116,7 @@ void PoroMultiPhaseScaTra::add_valid_poro_functions(Core::Utils::FunctionManager
   using namespace Core::IO::InputSpecBuilders;
 
   function_manager.add_function_definition(
-      anonymous_group({
+      all_of({
           entry<std::string>("POROMULTIPHASESCATRA_FUNCTION"),
           entry<int>("NUMPARAMS", {.required = false}),
           entry<std::vector<std::pair<std::string, double>>>(

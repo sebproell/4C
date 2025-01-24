@@ -61,7 +61,7 @@ void Discret::Elements::Wall1ScatraType::setup_element_definition(
 
   for (const auto& [key, wall_line_def] : defs_wall)
   {
-    defs[key] = anonymous_group({
+    defs[key] = all_of({
         wall_line_def,
         entry<std::string>("TYPE"),
     });

@@ -70,14 +70,14 @@ void Core::Utils::add_valid_builtin_functions(Core::Utils::FunctionManager& func
   using namespace IO::InputSpecBuilders;
 
   auto spec = one_of({
-      anonymous_group({
+      all_of({
           entry<int>("COMPONENT", {.required = false}),
           entry<std::string>("SYMBOLIC_FUNCTION_OF_SPACE_TIME"),
       }),
 
       entry<std::string>("SYMBOLIC_FUNCTION_OF_TIME"),
 
-      anonymous_group({
+      all_of({
           entry<int>("VARIABLE"),
           entry<std::string>("NAME"),
           entry<std::string>("TYPE"),
@@ -109,7 +109,7 @@ void Core::Utils::add_valid_builtin_functions(Core::Utils::FunctionManager& func
           entry<double>("T2", {.required = false}),
       }),
 
-      anonymous_group({
+      all_of({
           entry<std::string>("VARFUNCTION"),
           entry<int>("NUMCONSTANTS", {.required = false}),
           entry<std::vector<std::pair<std::string, double>>>(

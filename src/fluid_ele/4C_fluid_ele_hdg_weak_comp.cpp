@@ -96,7 +96,7 @@ void Discret::Elements::FluidHDGWeakCompType ::setup_element_definition(
 
   for (const auto& [key, fluid_line_def] : defs_fluid)
   {
-    defs_hdg[key] = anonymous_group({
+    defs_hdg[key] = all_of({
         fluid_line_def,
         entry<int>("DEG"),
         entry<int>("SPC", {.required = false}),

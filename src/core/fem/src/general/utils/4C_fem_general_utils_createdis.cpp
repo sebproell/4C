@@ -252,7 +252,7 @@ void Core::FE::DiscretizationCreatorBase::finalize(
 Core::IO::InputSpec Core::FE::valid_cloning_material_map()
 {
   using namespace Core::IO::InputSpecBuilders;
-  return anonymous_group({
+  return all_of({
       entry<std::string>("SRC_FIELD"),
       entry<int>("SRC_MAT"),
       entry<std::string>("TAR_FIELD"),

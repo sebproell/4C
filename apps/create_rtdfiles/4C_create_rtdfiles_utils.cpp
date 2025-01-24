@@ -498,7 +498,7 @@ namespace RTD
     // Avoid writing an empty code block if there are no specs for this condition
     if (!condition.specs().empty())
     {
-      auto cond_spec = Core::IO::InputSpecBuilders::anonymous_group(condition.specs());
+      auto cond_spec = Core::IO::InputSpecBuilders::all_of(condition.specs());
 
       std::stringstream specs_string;
       cond_spec.print_as_dat(specs_string);

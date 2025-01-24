@@ -98,7 +98,7 @@ void Discret::Elements::Beam3kType::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["LINE2"] = anonymous_group({
+  defs["LINE2"] = all_of({
       entry<std::vector<int>>("LINE2", {.size = 2}),
       entry<int>("WK"),
       entry<int>("ROTVEC"),
@@ -107,7 +107,7 @@ void Discret::Elements::Beam3kType::setup_element_definition(
       tag("FAD", {.default_value = false}),
   });
 
-  defs["LINE3"] = anonymous_group({
+  defs["LINE3"] = all_of({
       entry<std::vector<int>>("LINE3", {.size = 3}),
       entry<int>("WK"),
       entry<int>("ROTVEC"),
@@ -116,7 +116,7 @@ void Discret::Elements::Beam3kType::setup_element_definition(
       tag("FAD", {.default_value = false}),
   });
 
-  defs["LINE4"] = anonymous_group({
+  defs["LINE4"] = all_of({
       entry<std::vector<int>>("LINE4", {.size = 4}),
       entry<int>("WK"),
       entry<int>("ROTVEC"),
