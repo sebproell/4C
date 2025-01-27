@@ -20,6 +20,8 @@
 #include "4C_inpar_validparameters.hpp"
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"
+#include "4C_io_discretization_visualization_writer_mesh.hpp"
+#include "4C_io_visualization_parameters.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
@@ -194,6 +196,9 @@ namespace Thermo
 
     //! print summary after step
     void print_step() override = 0;
+
+    //! runtime output write based on vtk, writing quantities like temperature, elemend ids, ...
+    void write_runtime_output();
 
     //! Output to file
     //! This routine always prints the last converged state, i.e.
@@ -531,8 +536,36 @@ namespace Thermo
     //! @name Printing and output
     //@{
 
+    struct OptionsThermoRuntimeOutput
+    {
+      /// whether to write pressure output
+      bool output_temperature_state = false;
+
+      /// whether to write heatflux output
+      bool output_heatflux_state = false;
+
+      /// whether to write temperature gradient output
+      bool output_tempgrad_state = false;
+
+      /// whether to write energy output
+      bool output_energy_state = false;
+
+      /// whether to write the owner of elements
+      bool output_element_owner = false;
+
+      /// whether to write the element GIDs
+      bool output_element_gid = false;
+
+      /// whether to write the node GIDs
+      bool output_node_gid = false;
+    };
+
     std::shared_ptr<Core::IO::DiscretizationWriter> output_;  //!< binary output
-    bool printlogo_;                                          //!< true: enjoy your cuppa
+    std::optional<Core::IO::DiscretizationVisualizationWriterMesh>
+        runtime_output_writer_;                         //!< runtime output
+    OptionsThermoRuntimeOutput runtime_output_params_;  //!< runtime output parameter
+
+    bool printlogo_;         //!< true: enjoy your cuppa
     int printscreen_;        //!< print infos to standard out every n steps
     bool printiter_;         //!< print intermediate iterations during solution
     int writerestartevery_;  //!< write restart every given step;

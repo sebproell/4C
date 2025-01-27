@@ -9,6 +9,8 @@
 
 #include "4C_fem_general_node.hpp"
 #include "4C_io_control.hpp"
+#include "4C_io_discretization_visualization_writer_mesh.hpp"
+#include "4C_io_visualization_parameters.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_thermo_ele_action.hpp"
@@ -144,10 +146,33 @@ Thermo::TimInt::TimInt(const Teuchos::ParameterList& ioparams,
       Teuchos::getIntegralValue<Inpar::Thermo::InitialField>(tdynparams, "INITIALFIELD"),
       startfuncno);
 
-  // stay with us
-  return;
+  // check for special thermo output which is to be handled by an own writer object
+  const Teuchos::ParameterList thermo_runtime_output_list(
+      Global::Problem::instance()->io_params().sublist("RUNTIME VTK OUTPUT").sublist("THERMO"));
 
-}  // cstr
+  auto output_thermo = thermo_runtime_output_list.get<bool>("OUTPUT_THERMO");
+
+  // create and initialize parameter container object for thermo specific runtime output
+  if (output_thermo)
+  {
+    bool output_temperature_state = thermo_runtime_output_list.get<bool>("TEMPERATURE");
+    bool output_heatflux_state = thermo_runtime_output_list.get<bool>("HEATFLUX");
+    bool output_tempgrad_state = thermo_runtime_output_list.get<bool>("TEMPGRAD");
+    bool output_energy_state = thermo_runtime_output_list.get<bool>("ENERGY");
+    bool output_element_owner = thermo_runtime_output_list.get<bool>("ELEMENT_OWNER");
+    bool output_element_gid = thermo_runtime_output_list.get<bool>("ELEMENT_GID");
+    bool output_node_gid = thermo_runtime_output_list.get<bool>("NODE_GID");
+
+    runtime_output_params_ = {output_temperature_state, output_heatflux_state,
+        output_tempgrad_state, output_energy_state, output_element_owner, output_element_gid,
+        output_node_gid};
+
+    runtime_output_writer_ = Core::IO::DiscretizationVisualizationWriterMesh(
+        discret_, Core::IO::visualization_parameters_factory(
+                      Global::Problem::instance()->io_params().sublist("RUNTIME VTK OUTPUT"),
+                      *Global::Problem::instance()->output_control_file(), (*time_)[0]));
+  }
+}
 
 
 /*----------------------------------------------------------------------*
@@ -349,6 +374,48 @@ void Thermo::TimInt::read_restart_state()
 
 
 /*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+void Thermo::TimInt::write_runtime_output()
+{
+  FOUR_C_ASSERT_ALWAYS(runtime_output_writer_.has_value(), "Runtime output not initialized.");
+
+  runtime_output_writer_->reset();
+
+  if (runtime_output_params_.output_temperature_state)
+  {
+    runtime_output_writer_->append_result_data_vector_with_context(
+        *tempn_, Core::IO::OutputEntity::node, {"temperature"});
+  }
+
+  if (runtime_output_params_.output_heatflux_state)
+  {
+    FOUR_C_THROW("VTK runtime output is not yet implemented for the heatflux state.");
+  }
+
+  if (runtime_output_params_.output_tempgrad_state)
+  {
+    FOUR_C_THROW("VTK runtime output is not yet implemented for the temperature gradient state.");
+  }
+
+  if (runtime_output_params_.output_energy_state)
+  {
+    FOUR_C_THROW("VTK runtime output is not yet implemented for the energy state.");
+  }
+
+  if (runtime_output_params_.output_element_owner)
+    runtime_output_writer_->append_element_owner("element_owner");
+
+  if (runtime_output_params_.output_element_gid)
+    runtime_output_writer_->append_element_gid("element_gid");
+
+  if (runtime_output_params_.output_node_gid) runtime_output_writer_->append_node_gid("node_gid");
+
+  // finalize everything and write all required files to filesystem
+  runtime_output_writer_->write_to_disk((*time_)[0], step_);
+}
+
+
+/*----------------------------------------------------------------------*
  | output to file                                           mwgee 03/07 |
  *----------------------------------------------------------------------*/
 void Thermo::TimInt::output_step(bool forced_writerestart)
@@ -380,6 +447,12 @@ void Thermo::TimInt::output_step(bool forced_writerestart)
     output_restart(datawritten);
   }
 
+  // write runtime output
+  if (writeglobevery_ > 0 and step_ % writeglobevery_ == 0)
+  {
+    if (runtime_output_writer_.has_value()) write_runtime_output();
+  }
+
   // output results (not necessary if restart in same step)
   if (writeglob_ and writeglobevery_ and (step_ % writeglobevery_ == 0) and (not datawritten))
   {
@@ -399,11 +472,7 @@ void Thermo::TimInt::output_step(bool forced_writerestart)
   {
     output_energy();
   }
-
-  // what's next?
-  return;
-
-}  // OutputStep()
+}
 
 
 /*----------------------------------------------------------------------*

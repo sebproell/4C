@@ -2,6 +2,14 @@
 PROBLEMTYPE                     Thermo
 -----------------------------------------------------------------IO
 VERBOSITY                       standard
+----------------------------------------------IO/RUNTIME VTK OUTPUT
+OUTPUT_DATA_FORMAT              ascii
+---------------------------------------IO/RUNTIME VTK OUTPUT/THERMO
+OUTPUT_THERMO                   Yes
+TEMPERATURE                     Yes
+ELEMENT_OWNER                   Yes
+ELEMENT_GID                     Yes
+NODE_GID                        Yes
 ----------------------------------------------------THERMAL DYNAMIC
 DIVERCONT                       stop
 DYNAMICTYPE                     Statics
