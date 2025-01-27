@@ -254,8 +254,7 @@ namespace Inpar
     void set_valid_parameters(Teuchos::ParameterList& list);
 
     //! set the particle conditions
-    void set_valid_conditions(
-        std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist);
+    void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);
 
   }  // namespace PARTICLE
 

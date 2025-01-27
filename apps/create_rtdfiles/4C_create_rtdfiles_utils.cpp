@@ -428,21 +428,21 @@ namespace RTD
 
   /*----------------------------------------------------------------------*/
   /*----------------------------------------------------------------------*/
-  void write_conditions_reference(std::ostream& stream,
-      const std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+  void write_conditions_reference(
+      std::ostream& stream, const std::vector<Core::Conditions::ConditionDefinition>& condlist)
   {
     write_linktarget(stream, "prescribedconditionreference");
     write_header(stream, 0, "Prescribed Condition Reference");
 
-    for (auto& condition : condlist)
+    for (const auto& condition : condlist)
     {
-      write_single_condition_read_the_docs(stream, *condition);
+      write_single_condition_read_the_docs(stream, condition);
     }
   }
 
 
   void write_single_condition_read_the_docs(
-      std::ostream& stream, Core::Conditions::ConditionDefinition& condition)
+      std::ostream& stream, const Core::Conditions::ConditionDefinition& condition)
   {
     std::string sectionname = condition.section_name();
     const std::string sectionlinktarget =

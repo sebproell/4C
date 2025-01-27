@@ -1002,13 +1002,13 @@ void Discret::Elements::ScaTraEleCalc<distype, probdim>::calc_subgr_velocity(
           functfac = 1.0;
 
         // compute body force
-        if (*condtype == "neum_dead" or *condtype == "neum_live")
+        if (*condtype == "Dead" or *condtype == "Live")
           nodebodyforce(isd, jnode) = num * functfac;
         else
           nodebodyforce.clear();
 
         // compute prescribed pressure gradient
-        if (*condtype == "neum_pgrad")
+        if (*condtype == "PressureGrad")
           nodepressuregrad(isd, jnode) = num * functfac;
         else
           nodepressuregrad.clear();

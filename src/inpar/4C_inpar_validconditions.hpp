@@ -28,12 +28,11 @@ namespace Core::Conditions
 namespace Input
 {
   /// construct list with all conditions and documentation
-  std::shared_ptr<std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>>
-  valid_conditions();
+  std::vector<Core::Conditions::ConditionDefinition> valid_conditions();
 
   /// print all known condition sections without contents
-  void print_empty_condition_definitions(std::ostream& stream,
-      std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist);
+  void print_empty_condition_definitions(
+      std::ostream& stream, std::vector<Core::Conditions::ConditionDefinition>& condlist);
 
 }  // namespace Input
 

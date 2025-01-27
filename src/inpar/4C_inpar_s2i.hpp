@@ -99,8 +99,7 @@ namespace Inpar::S2I
   void set_valid_parameters(Teuchos::ParameterList& list);
 
   //! set valid conditions for scatra-scatra interface coupling
-  void set_valid_conditions(
-      std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist);
+  void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);
 }  // namespace Inpar::S2I
 
 FOUR_C_NAMESPACE_CLOSE

@@ -10,7 +10,6 @@
 #include "4C_fem_discretization.hpp"
 #include "4C_io_input_file.hpp"
 #include "4C_io_input_spec_builders.hpp"
-#include "4C_io_linecomponent.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_utils_exceptions.hpp"
 
@@ -56,7 +55,7 @@ void Core::Conditions::ConditionDefinition::add_component(const Core::IO::InputS
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Core::Conditions::ConditionDefinition::read(Core::IO::InputFile& input,
-    std::multimap<int, std::shared_ptr<Core::Conditions::Condition>>& cmap)
+    std::multimap<int, std::shared_ptr<Core::Conditions::Condition>>& cmap) const
 {
   // read the range into a vector
   std::vector<IO::InputFile::Fragment> section_vec;

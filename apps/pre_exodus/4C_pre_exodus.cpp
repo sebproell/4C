@@ -132,9 +132,8 @@ namespace
 
     // print validconditions as proposal
     defaultbc << "-----------------------------------------VALIDCONDITIONS" << std::endl;
-    std::shared_ptr<std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>> condlist =
-        Input::valid_conditions();
-    Input::print_empty_condition_definitions(defaultbc, *condlist);
+    std::vector<Core::Conditions::ConditionDefinition> condlist = Input::valid_conditions();
+    Input::print_empty_condition_definitions(defaultbc, condlist);
 
     // print valid element lines as proposal (parobjects have to be registered for doing this!)
     defaultbc << std::endl << std::endl;

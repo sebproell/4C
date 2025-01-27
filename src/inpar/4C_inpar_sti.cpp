@@ -104,8 +104,7 @@ void Inpar::STI::set_valid_parameters(Teuchos::ParameterList& list)
 /*------------------------------------------------------------------------*
  | set valid conditions for scatra-thermo interaction          fang 10/16 |
  *------------------------------------------------------------------------*/
-void Inpar::STI::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+void Inpar::STI::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
   return;
 }

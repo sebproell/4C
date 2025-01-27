@@ -551,19 +551,18 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
  | set the particle conditions                                               |
  *---------------------------------------------------------------------------*/
 void Inpar::PARTICLE::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*-------------------------------------------------------------------------*
    | particle wall condition                                                 |
    *-------------------------------------------------------------------------*/
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfpartwall =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN SURFACE PARTICLE WALL",
-          "ParticleWall", "Wall for particle interaction with (optional) material definition",
-          Core::Conditions::ParticleWall, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition surfpartwall("DESIGN SURFACE PARTICLE WALL", "ParticleWall",
+      "Wall for particle interaction with (optional) material definition",
+      Core::Conditions::ParticleWall, true, Core::Conditions::geometry_type_surface);
 
-  add_named_int(surfpartwall, "MAT");
+  surfpartwall.add_component(entry<int>("MAT"));
 
   condlist.push_back(surfpartwall);
 }

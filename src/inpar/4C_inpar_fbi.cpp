@@ -117,10 +117,8 @@ void Inpar::FBI::set_valid_parameters(Teuchos::ParameterList& list)
       "Number of segments for continuous mortar output", &beam_to_fluid_meshtying_output);
 }
 
-void Inpar::FBI::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
-{
-  /*-------------------------------------------------------------------*/
+void Inpar::FBI::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
+{ /*-------------------------------------------------------------------*/
 }
 
 FOUR_C_NAMESPACE_CLOSE

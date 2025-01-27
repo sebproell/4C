@@ -97,7 +97,7 @@ namespace RTD
       FOUR_C_THROW("failed to open file: %s", conditiondocumentationfilename.c_str());
     conditiondocumentationfile << "..\n   Created using 4C version (git SHA1):\n";
     conditiondocumentationfile << "   " << VersionControl::git_hash << "\n\n";
-    write_conditions_reference(conditiondocumentationfile, *Input::valid_conditions());
+    write_conditions_reference(conditiondocumentationfile, Input::valid_conditions());
 
     write_contact_law_reference(
         conditiondocumentationfile, CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws());
