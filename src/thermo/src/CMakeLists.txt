@@ -6,3 +6,17 @@
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
 four_c_auto_define_module()
+
+set(_dependencies
+    # cmake-format: sortable
+    adapter
+    config
+    contact
+    core
+    global_data
+    inpar
+    mat
+    timestepping
+    )
+
+four_c_add_dependency(${AUTO_DEFINED_MODULE_NAME} ${_dependencies})
