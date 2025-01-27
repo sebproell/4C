@@ -282,7 +282,7 @@ namespace
     auto line = all_of({
         entry<int>("a"),
         selection<int>("b", {{"b1", 1}, {"b2", 2}}, {.default_value = 1}),
-        selection<std::string>("c", {{"c1", "1"}, {"c2", "2"}}, {.default_value = "2"}),
+        selection<std::string>("c", {"c1", "c2"}, {.default_value = "c2"}),
         entry<std::string>("d"),
     });
 
@@ -293,7 +293,7 @@ namespace
       line.fully_parse(parser, container);
       EXPECT_EQ(container.get<int>("a"), 1);
       EXPECT_EQ(container.get<int>("b"), 2);
-      EXPECT_EQ(container.get<std::string>("c"), "1");
+      EXPECT_EQ(container.get<std::string>("c"), "c1");
       EXPECT_EQ(container.get<std::string>("d"), "string");
     }
 
