@@ -5,7 +5,7 @@
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
-if(${FOUR_C_BUILD_TYPE_UPPER} EQUAL "DEBUG")
+if(FOUR_C_BUILD_TYPE_UPPER STREQUAL "DEBUG")
   set(FOUR_C_TEST_TIMEOUT_SCALE
       4
       CACHE STRING "Scale timeout of tests by this factor."
