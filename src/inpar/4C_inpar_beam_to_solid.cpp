@@ -10,7 +10,7 @@
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_beaminteraction.hpp"
 #include "4C_inpar_geometry_pair.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_parameter_list.hpp"
 
@@ -361,7 +361,6 @@ void Inpar::BeamToSolid::set_valid_parameters(Teuchos::ParameterList& list)
 void Inpar::BeamToSolid::set_valid_conditions(
     std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
   using namespace Core::IO::InputSpecBuilders;
 
   // Beam-to-volume mesh tying conditions.

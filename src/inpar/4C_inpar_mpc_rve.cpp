@@ -11,13 +11,12 @@
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_validparameters.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 // set the mpc specific parameters
 void Inpar::RveMpc::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
 
 
@@ -40,7 +39,6 @@ void Inpar::RveMpc::set_valid_parameters(Teuchos::ParameterList& list)
 void Inpar::RveMpc::set_valid_conditions(
     std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
   using namespace Core::IO::InputSpecBuilders;
 
   // ================================================================================================

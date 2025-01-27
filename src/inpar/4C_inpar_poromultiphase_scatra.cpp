@@ -8,7 +8,7 @@
 #include "4C_inpar_poromultiphase_scatra.hpp"
 
 #include "4C_fem_condition_definition.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_linalg_equilibrate.hpp"
 #include "4C_utils_parameter_list.hpp"
 
@@ -135,7 +135,6 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(Teuchos::ParameterList& l
 void Inpar::PoroMultiPhaseScaTra::set_valid_conditions(
     std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
   using namespace Core::IO::InputSpecBuilders;
 
   /*--------------------------------------------------------------------*/

@@ -8,7 +8,7 @@
 #include "4C_inpar_fsi.hpp"
 
 #include "4C_fem_condition_definition.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -417,7 +417,6 @@ void Inpar::FSI::set_valid_parameters(Teuchos::ParameterList& list)
 /*----------------------------------------------------------------------------*/
 void Inpar::FSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
   using namespace Core::IO::InputSpecBuilders;
 
   Core::Conditions::ConditionDefinition linefsi("DESIGN FSI COUPLING LINE CONDITIONS",
