@@ -10,7 +10,7 @@
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_s2i.hpp"
 #include "4C_inpar_scatra.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_linalg_equilibrate.hpp"
 #include "4C_linalg_sparseoperator.hpp"
 #include "4C_utils_parameter_list.hpp"
@@ -19,7 +19,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::SSTI::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -136,35 +135,34 @@ void Inpar::SSTI::set_valid_parameters(Teuchos::ParameterList& list)
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Inpar::SSTI::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+void Inpar::SSTI::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*--------------------------------------------------------------------*/
   // set Scalar-Structure-Thermo interaction interface meshtying condition
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linesstiinterfacemeshtying =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SSTI INTERFACE MESHTYING LINE CONDITIONS", "SSTIInterfaceMeshtying",
-          "SSTI Interface Meshtying", Core::Conditions::SSTIInterfaceMeshtying, true,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfsstiinterfacemeshtying =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SSTI INTERFACE MESHTYING SURF CONDITIONS", "SSTIInterfaceMeshtying",
-          "SSTI Interface Meshtying", Core::Conditions::SSTIInterfaceMeshtying, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition linesstiinterfacemeshtying(
+      "DESIGN SSTI INTERFACE MESHTYING LINE CONDITIONS", "SSTIInterfaceMeshtying",
+      "SSTI Interface Meshtying", Core::Conditions::SSTIInterfaceMeshtying, true,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfsstiinterfacemeshtying(
+      "DESIGN SSTI INTERFACE MESHTYING SURF CONDITIONS", "SSTIInterfaceMeshtying",
+      "SSTI Interface Meshtying", Core::Conditions::SSTIInterfaceMeshtying, true,
+      Core::Conditions::geometry_type_surface);
 
-  // insert input file line components into condition definitions
-  for (const auto& cond : {linesstiinterfacemeshtying, surfsstiinterfacemeshtying})
+  const auto make_sstiinterfacemeshtying = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    add_named_int(cond, "ConditionID");
-    add_named_selection_component(cond, "INTERFACE_SIDE", "interface side", "Undefined",
-        Teuchos::tuple<std::string>("Undefined", "Slave", "Master"),
-        Teuchos::tuple<int>(
-            Inpar::S2I::side_undefined, Inpar::S2I::side_slave, Inpar::S2I::side_master));
-    add_named_int(cond, "S2I_KINETICS_ID");
+    cond.add_component(entry<int>("ConditionID"));
+    cond.add_component(selection<int>("INTERFACE_SIDE",
+        {{"Undefined", Inpar::S2I::side_undefined}, {"Slave", Inpar::S2I::side_slave},
+            {"Master", Inpar::S2I::side_master}},
+        {.description = "interface side"}));
+    cond.add_component(entry<int>("S2I_KINETICS_ID"));
     condlist.push_back(cond);
-  }
+  };
+
+  make_sstiinterfacemeshtying(linesstiinterfacemeshtying);
+  make_sstiinterfacemeshtying(surfsstiinterfacemeshtying);
 }
 
 FOUR_C_NAMESPACE_CLOSE

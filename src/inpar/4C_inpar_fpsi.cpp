@@ -8,7 +8,7 @@
 #include "4C_inpar_fpsi.hpp"
 
 #include "4C_fem_condition_definition.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -17,7 +17,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::FPSI::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -123,25 +122,22 @@ void Inpar::FPSI::set_valid_parameters(Teuchos::ParameterList& list)
 
 
 
-void Inpar::FPSI::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+void Inpar::FPSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*--------------------------------------------------------------------*/
   // FPSI
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linefpsi =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN FPSI COUPLING LINE CONDITIONS", "fpsi_coupling", "FPSI Coupling",
-          Core::Conditions::fpsi_coupling, true, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surffpsi =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN FPSI COUPLING SURF CONDITIONS", "fpsi_coupling", "FPSI Coupling",
-          Core::Conditions::fpsi_coupling, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition linefpsi("DESIGN FPSI COUPLING LINE CONDITIONS",
+      "fpsi_coupling", "FPSI Coupling", Core::Conditions::fpsi_coupling, true,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surffpsi("DESIGN FPSI COUPLING SURF CONDITIONS",
+      "fpsi_coupling", "FPSI Coupling", Core::Conditions::fpsi_coupling, true,
+      Core::Conditions::geometry_type_surface);
 
-  add_named_int(linefpsi, "coupling_id");
-  add_named_int(surffpsi, "coupling_id");
+  linefpsi.add_component(entry<int>("coupling_id"));
+  surffpsi.add_component(entry<int>("coupling_id"));
 
   condlist.push_back(linefpsi);
   condlist.push_back(surffpsi);
@@ -153,20 +149,18 @@ void Inpar::FPSI::set_valid_conditions(
   // elements which share a node with the fpsi interface. Tangential
   // Beaver-Joseph-Condition must not be overwritten by prescribed value!
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> neumannintegration_surf =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN SURFACE NEUMANN INTEGRATION",
-          "NeumannIntegration", "Neumann Integration", Core::Conditions::NeumannIntegration, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition neumannintegration_surf(
+      "DESIGN SURFACE NEUMANN INTEGRATION", "NeumannIntegration", "Neumann Integration",
+      Core::Conditions::NeumannIntegration, true, Core::Conditions::geometry_type_surface);
 
   condlist.push_back(neumannintegration_surf);
 
   /*--------------------------------------------------------------------*/
   // condition for evaluation of boundary terms in fpsi problems
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> neumannintegration_line =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN LINE NEUMANN INTEGRATION",
-          "NeumannIntegration", "Neumann Integration", Core::Conditions::NeumannIntegration, true,
-          Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition neumannintegration_line("DESIGN LINE NEUMANN INTEGRATION",
+      "NeumannIntegration", "Neumann Integration", Core::Conditions::NeumannIntegration, true,
+      Core::Conditions::geometry_type_line);
 
   condlist.push_back(neumannintegration_line);
 }

@@ -200,26 +200,24 @@ void Inpar::LevelSet::set_valid_parameters(Teuchos::ParameterList& list)
 
 
 void Inpar::LevelSet::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
   /*--------------------------------------------------------------------*/
   // Taylor Galerkin outflow Boundaries for level set transport equation
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfOutflowTaylorGalerkin =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "TAYLOR GALERKIN OUTFLOW SURF CONDITIONS", "TaylorGalerkinOutflow",
-          "Surface Taylor Galerkin Outflow", Core::Conditions::TaylorGalerkinOutflow, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition surfOutflowTaylorGalerkin(
+      "TAYLOR GALERKIN OUTFLOW SURF CONDITIONS", "TaylorGalerkinOutflow",
+      "Surface Taylor Galerkin Outflow", Core::Conditions::TaylorGalerkinOutflow, true,
+      Core::Conditions::geometry_type_surface);
 
   condlist.push_back(surfOutflowTaylorGalerkin);
 
   /*--------------------------------------------------------------------*/
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfneumanninflowTaylorGalerkin =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "TAYLOR GALERKIN NEUMANN INFLOW SURF CONDITIONS", "TaylorGalerkinNeumannInflow",
-          "Surface Taylor Galerkin Neumann Inflow", Core::Conditions::TaylorGalerkinNeumannInflow,
-          true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition surfneumanninflowTaylorGalerkin(
+      "TAYLOR GALERKIN NEUMANN INFLOW SURF CONDITIONS", "TaylorGalerkinNeumannInflow",
+      "Surface Taylor Galerkin Neumann Inflow", Core::Conditions::TaylorGalerkinNeumannInflow, true,
+      Core::Conditions::geometry_type_surface);
 
   condlist.push_back(surfneumanninflowTaylorGalerkin);
 
@@ -227,28 +225,22 @@ void Inpar::LevelSet::set_valid_conditions(
   /*--------------------------------------------------------------------*/
   // Characteristic Galerkin Boundaries for LevelSet-reinitialization
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfreinitializationtaylorgalerkin =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "REINITIALIZATION TAYLOR GALERKIN SURF CONDITIONS", "ReinitializationTaylorGalerkin",
-          "Surface reinitialization Taylor Galerkin",
-          Core::Conditions::ReinitializationTaylorGalerkin, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition surfreinitializationtaylorgalerkin(
+      "REINITIALIZATION TAYLOR GALERKIN SURF CONDITIONS", "ReinitializationTaylorGalerkin",
+      "Surface reinitialization Taylor Galerkin", Core::Conditions::ReinitializationTaylorGalerkin,
+      true, Core::Conditions::geometry_type_surface);
 
   condlist.push_back(surfreinitializationtaylorgalerkin);
 
   /*--------------------------------------------------------------------*/
   // level-set condition for contact points
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linelscontact =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE LEVEL SET CONTACT CONDITION", "LsContact",
-          "level-set condition for contact points", Core::Conditions::LsContact, false,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointlscontact =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN POINT LEVEL SET CONTACT CONDITION", "LsContact",
-          "level-set condition for contact points", Core::Conditions::LsContact, false,
-          Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition linelscontact("DESIGN LINE LEVEL SET CONTACT CONDITION",
+      "LsContact", "level-set condition for contact points", Core::Conditions::LsContact, false,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition pointlscontact("DESIGN POINT LEVEL SET CONTACT CONDITION",
+      "LsContact", "level-set condition for contact points", Core::Conditions::LsContact, false,
+      Core::Conditions::geometry_type_point);
 
   condlist.push_back(linelscontact);
   condlist.push_back(pointlscontact);

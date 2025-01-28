@@ -8,7 +8,7 @@
 #include "4C_inpar_elemag.hpp"
 
 #include "4C_fem_condition_definition.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_linalg_equilibrate.hpp"
 #include "4C_utils_parameter_list.hpp"
 
@@ -110,35 +110,38 @@ void Inpar::EleMag::set_valid_parameters(Teuchos::ParameterList& list)
 
 /// set specific electromagnetic conditions
 void Inpar::EleMag::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   //*--------------------------------------------------------------------* /
   // absorbing boundary condition for electromagnetic problems
   // line
-  std::shared_ptr<Core::Conditions::ConditionDefinition> silvermueller_line =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE SILVER-MUELLER CONDITIONS", "Silver-Mueller",
-          "Absorbing-emitting line for electromagnetics", Core::Conditions::SilverMueller, true,
-          Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition silvermueller_line("DESIGN LINE SILVER-MUELLER CONDITIONS",
+      "Silver-Mueller", "Absorbing-emitting line for electromagnetics",
+      Core::Conditions::SilverMueller, true, Core::Conditions::geometry_type_line);
 
   // surface
-  std::shared_ptr<Core::Conditions::ConditionDefinition> silvermueller_surface =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF SILVER-MUELLER CONDITIONS", "Silver-Mueller",
-          "Absorbing-emitting surface for electromagnetics", Core::Conditions::SilverMueller, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition silvermueller_surface(
+      "DESIGN SURF SILVER-MUELLER CONDITIONS", "Silver-Mueller",
+      "Absorbing-emitting surface for electromagnetics", Core::Conditions::SilverMueller, true,
+      Core::Conditions::geometry_type_surface);
 
-  for (const auto& cond : {silvermueller_line, silvermueller_surface})
+  const auto make_silvermueller = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    add_named_int(cond, "NUMDOF");
-    add_named_int_vector(cond, "ONOFF", "", "NUMDOF");
-    add_named_int_vector(cond, "FUNCT", "", "NUMDOF", 0, true, true);
-    add_named_real_vector(cond, "VAL", "", "NUMDOF");
+    cond.add_component(entry<int>("NUMDOF"));
+    cond.add_component(entry<std::vector<int>>(
+        "ONOFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
+    cond.add_component(entry<std::vector<Noneable<int>>>(
+        "FUNCT", {.description = "", .required = false, .size = from_parameter<int>("NUMDOF")}));
+    cond.add_component(entry<std::vector<double>>(
+        "VAL", {.description = "", .size = from_parameter<int>("NUMDOF")}));
 
     condlist.push_back(cond);
-  }
+  };
+
+  make_silvermueller(silvermueller_line);
+  make_silvermueller(silvermueller_surface);
 }
 
 FOUR_C_NAMESPACE_CLOSE

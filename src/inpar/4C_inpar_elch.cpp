@@ -9,7 +9,7 @@
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_scatra.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_linalg_sparseoperator.hpp"
 #include "4C_utils_parameter_list.hpp"
 
@@ -17,7 +17,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::ElCh::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -166,65 +165,74 @@ void Inpar::ElCh::set_valid_parameters(Teuchos::ParameterList& list)
 }
 
 
-void Inpar::ElCh::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*--------------------------------------------------------------------*/
   // electrode state of charge
-
-  // definition of electrode state of charge surface and volume conditions
-  auto electrodesocline = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN ELECTRODE STATE OF CHARGE LINE CONDITIONS", "ElectrodeSOC",
-      "electrode state of charge line condition", Core::Conditions::ElectrodeSOC, true,
-      Core::Conditions::geometry_type_line);
-
-  auto electrodesocsurf = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN ELECTRODE STATE OF CHARGE SURF CONDITIONS", "ElectrodeSOC",
-      "electrode state of charge surface condition", Core::Conditions::ElectrodeSOC, true,
-      Core::Conditions::geometry_type_surface);
-  auto electrodesocvol = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN ELECTRODE STATE OF CHARGE VOL CONDITIONS", "ElectrodeSOC",
-      "electrode state of charge volume condition", Core::Conditions::ElectrodeSOC, true,
-      Core::Conditions::geometry_type_volume);
-
-  for (const auto& cond : {electrodesocline, electrodesocsurf, electrodesocvol})
   {
-    // insert input file line components into condition definitions
-    add_named_int(cond, "ConditionID");
-    add_named_real(cond, "C_0%");
-    add_named_real(cond, "C_100%");
-    add_named_real(cond, "ONE_HOUR");
+    // definition of electrode state of charge surface and volume conditions
+    Core::Conditions::ConditionDefinition electrodesocline(
+        "DESIGN ELECTRODE STATE OF CHARGE LINE CONDITIONS", "ElectrodeSOC",
+        "electrode state of charge line condition", Core::Conditions::ElectrodeSOC, true,
+        Core::Conditions::geometry_type_line);
 
-    // insert condition definitions into global list of valid condition definitions
-    condlist.emplace_back(cond);
+    Core::Conditions::ConditionDefinition electrodesocsurf(
+        "DESIGN ELECTRODE STATE OF CHARGE SURF CONDITIONS", "ElectrodeSOC",
+        "electrode state of charge surface condition", Core::Conditions::ElectrodeSOC, true,
+        Core::Conditions::geometry_type_surface);
+    Core::Conditions::ConditionDefinition electrodesocvol(
+        "DESIGN ELECTRODE STATE OF CHARGE VOL CONDITIONS", "ElectrodeSOC",
+        "electrode state of charge volume condition", Core::Conditions::ElectrodeSOC, true,
+        Core::Conditions::geometry_type_volume);
+
+    const auto make_electrodesoc = [&condlist](Core::Conditions::ConditionDefinition& cond)
+    {
+      // insert input file line components into condition definitions
+      cond.add_component(entry<int>("ConditionID"));
+      cond.add_component(entry<double>("C_0%"));
+      cond.add_component(entry<double>("C_100%"));
+      cond.add_component(entry<double>("ONE_HOUR"));
+
+      // insert condition definitions into global list of valid condition definitions
+      condlist.emplace_back(cond);
+    };
+
+    make_electrodesoc(electrodesocline);
+    make_electrodesoc(electrodesocsurf);
+    make_electrodesoc(electrodesocvol);
   }
-
 
   /*--------------------------------------------------------------------*/
   // cell voltage
 
-  // definition of cell voltage point, line, and surface conditions
-  auto cellvoltagepoint = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN CELL VOLTAGE POINT CONDITIONS", "CellVoltagePoint", "cell voltage point condition",
-      Core::Conditions::CellVoltage, false, Core::Conditions::geometry_type_point);
-
-  auto cellvoltageline = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN CELL VOLTAGE LINE CONDITIONS", "CellVoltage", "cell voltage line condition",
-      Core::Conditions::CellVoltage, true, Core::Conditions::geometry_type_line);
-
-  auto cellvoltagesurf = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN CELL VOLTAGE SURF CONDITIONS", "CellVoltage", "cell voltage surface condition",
-      Core::Conditions::CellVoltage, true, Core::Conditions::geometry_type_surface);
-
-  for (const auto& cond : {cellvoltagepoint, cellvoltageline, cellvoltagesurf})
   {
-    // insert input file line components into condition definitions
-    add_named_int(cond, "ConditionID");
+    // definition of cell voltage point, line, and surface conditions
+    Core::Conditions::ConditionDefinition cellvoltagepoint("DESIGN CELL VOLTAGE POINT CONDITIONS",
+        "CellVoltagePoint", "cell voltage point condition", Core::Conditions::CellVoltage, false,
+        Core::Conditions::geometry_type_point);
 
-    // insert condition definitions into global list of valid condition definitions
-    condlist.emplace_back(cond);
+    Core::Conditions::ConditionDefinition cellvoltageline("DESIGN CELL VOLTAGE LINE CONDITIONS",
+        "CellVoltage", "cell voltage line condition", Core::Conditions::CellVoltage, true,
+        Core::Conditions::geometry_type_line);
+
+    Core::Conditions::ConditionDefinition cellvoltagesurf("DESIGN CELL VOLTAGE SURF CONDITIONS",
+        "CellVoltage", "cell voltage surface condition", Core::Conditions::CellVoltage, true,
+        Core::Conditions::geometry_type_surface);
+
+    const auto make_cellvoltage = [&condlist](Core::Conditions::ConditionDefinition& cond)
+    {
+      // insert input file line components into condition definitions
+      cond.add_component(entry<int>("ConditionID"));
+
+      // insert condition definitions into global list of valid condition definitions
+      condlist.emplace_back(cond);
+    };
+
+    make_cellvoltage(cellvoltagepoint);
+    make_cellvoltage(cellvoltageline);
+    make_cellvoltage(cellvoltagesurf);
   }
 
 
@@ -291,53 +299,59 @@ void Inpar::ElCh::set_valid_conditions(
     });
 
 
-    auto electrodeboundarykineticspoint = std::make_shared<Core::Conditions::ConditionDefinition>(
+    Core::Conditions::ConditionDefinition electrodeboundarykineticspoint(
         "ELECTRODE BOUNDARY KINETICS POINT CONDITIONS", "ElchBoundaryKineticsPoint",
         "point electrode boundary kinetics", Core::Conditions::ElchBoundaryKinetics, false,
         Core::Conditions::geometry_type_point);
 
-    auto electrodeboundarykineticsline = std::make_shared<Core::Conditions::ConditionDefinition>(
+    Core::Conditions::ConditionDefinition electrodeboundarykineticsline(
         "ELECTRODE BOUNDARY KINETICS LINE CONDITIONS", "ElchBoundaryKinetics",
         "line electrode boundary kinetics", Core::Conditions::ElchBoundaryKinetics, true,
         Core::Conditions::geometry_type_line);
 
-    auto electrodeboundarykineticssurf = std::make_shared<Core::Conditions::ConditionDefinition>(
+    Core::Conditions::ConditionDefinition electrodeboundarykineticssurf(
         "ELECTRODE BOUNDARY KINETICS SURF CONDITIONS", "ElchBoundaryKinetics",
         "surface electrode boundary kinetics", Core::Conditions::ElchBoundaryKinetics, true,
         Core::Conditions::geometry_type_surface);
 
-    for (const auto& cond : {electrodeboundarykineticspoint, electrodeboundarykineticsline,
-             electrodeboundarykineticssurf})
+    const auto make_electrodeboundarykinetics = [&condlist, &reaction_model_choices](
+                                                    Core::Conditions::ConditionDefinition& cond)
     {
-      add_named_int(cond, "ConditionID");
-      add_named_real(cond, "POT");
-      add_named_int(cond, "FUNCT", "", 0, false, true);
-      add_named_int(cond, "NUMSCAL");
-      add_named_int_vector(cond, "STOICH", "", "NUMSCAL");
-      add_named_int(cond, "E-");
-      add_named_real(cond, "EPSILON",
-          "porosity of electrode boundary, set to -1 if equal to porosity of electrolyte domain");
-      add_named_int(cond, "ZERO_CUR");
-      cond->add_component(reaction_model_choices);
+      cond.add_component(entry<int>("ConditionID"));
+      cond.add_component(entry<double>("POT"));
+      cond.add_component(entry<Noneable<int>>("FUNCT", {.description = ""}));
+      cond.add_component(entry<int>("NUMSCAL"));
+      cond.add_component(entry<std::vector<int>>(
+          "STOICH", {.description = "", .size = from_parameter<int>("NUMSCAL")}));
+      cond.add_component(entry<int>("E-"));
+      cond.add_component(
+          entry<double>("EPSILON", {.description = "porosity of electrode boundary, set to -1 if "
+                                                   "equal to porosity of electrolyte domain"}));
+      cond.add_component(entry<int>("ZERO_CUR"));
+      cond.add_component(reaction_model_choices);
       condlist.emplace_back(cond);
-    }
+    };
+
+    make_electrodeboundarykinetics(electrodeboundarykineticspoint);
+    make_electrodeboundarykinetics(electrodeboundarykineticsline);
+    make_electrodeboundarykinetics(electrodeboundarykineticssurf);
   }
 
   /*--------------------------------------------------------------------*/
   // electrode kinetics as domain condition within electrolyte
   {
     // definition of line, surface, and volume conditions for electrode domain kinetics
-    auto electrodedomainkineticsline = std::make_shared<Core::Conditions::ConditionDefinition>(
+    Core::Conditions::ConditionDefinition electrodedomainkineticsline(
         "ELECTRODE DOMAIN KINETICS LINE CONDITIONS", "ElchDomainKinetics",
         "line electrode domain kinetics", Core::Conditions::ElchDomainKinetics, true,
         Core::Conditions::geometry_type_line);
 
-    auto electrodedomainkineticssurf = std::make_shared<Core::Conditions::ConditionDefinition>(
+    Core::Conditions::ConditionDefinition electrodedomainkineticssurf(
         "ELECTRODE DOMAIN KINETICS SURF CONDITIONS", "ElchDomainKinetics",
         "surface electrode domain kinetics", Core::Conditions::ElchDomainKinetics, true,
         Core::Conditions::geometry_type_surface);
 
-    auto electrodedomainkineticsvol = std::make_shared<Core::Conditions::ConditionDefinition>(
+    Core::Conditions::ConditionDefinition electrodedomainkineticsvol(
         "ELECTRODE DOMAIN KINETICS VOL CONDITIONS", "ElchDomainKinetics",
         "volume electrode domain kinetics", Core::Conditions::ElchDomainKinetics, true,
         Core::Conditions::geometry_type_volume);
@@ -365,9 +379,9 @@ void Inpar::ElCh::set_valid_conditions(
     });
 
     {
-      electrodedomainkineticsline->add_component(electrodedomainkineticscomponents);
-      electrodedomainkineticssurf->add_component(electrodedomainkineticscomponents);
-      electrodedomainkineticsvol->add_component(electrodedomainkineticscomponents);
+      electrodedomainkineticsline.add_component(electrodedomainkineticscomponents);
+      electrodedomainkineticssurf.add_component(electrodedomainkineticscomponents);
+      electrodedomainkineticsvol.add_component(electrodedomainkineticscomponents);
     }
 
     // insert condition definitions into global list of valid condition definitions
@@ -380,74 +394,84 @@ void Inpar::ElCh::set_valid_conditions(
   // boundary condition for constant-current constant-voltage (CCCV) cell cycling
 
   // definition of point, line and surface conditions for CCCV cell cycling
-  auto cccvcyclingpoint = std::make_shared<Core::Conditions::ConditionDefinition>(
+  Core::Conditions::ConditionDefinition cccvcyclingpoint(
       "DESIGN CCCV CELL CYCLING POINT CONDITIONS", "CCCVCycling",
       "line boundary condition for constant-current constant-voltage (CCCV) cell cycling",
       Core::Conditions::CCCVCycling, true, Core::Conditions::geometry_type_point);
 
-  auto cccvcyclingline = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN CCCV CELL CYCLING LINE CONDITIONS", "CCCVCycling",
+  Core::Conditions::ConditionDefinition cccvcyclingline("DESIGN CCCV CELL CYCLING LINE CONDITIONS",
+      "CCCVCycling",
       "line boundary condition for constant-current constant-voltage (CCCV) cell cycling",
       Core::Conditions::CCCVCycling, true, Core::Conditions::geometry_type_line);
 
-  auto cccvcyclingsurf = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN CCCV CELL CYCLING SURF CONDITIONS", "CCCVCycling",
+  Core::Conditions::ConditionDefinition cccvcyclingsurf("DESIGN CCCV CELL CYCLING SURF CONDITIONS",
+      "CCCVCycling",
       "surface boundary condition for constant-current constant-voltage (CCCV) cell cycling",
       Core::Conditions::CCCVCycling, true, Core::Conditions::geometry_type_surface);
 
-  for (const auto& cond : {cccvcyclingpoint, cccvcyclingline, cccvcyclingsurf})
+  const auto make_cccvcycling = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
     // insert input file line components into condition definitions
     {
-      add_named_int(cond, "NUMBER_OF_HALF_CYCLES");
-      add_named_int(
-          cond, "BEGIN_WITH_CHARGING");  // Boolean parameter represented by integer parameter
-      add_named_int(cond, "CONDITION_ID_FOR_CHARGE", "", 0, false, true);
-      add_named_int(cond, "CONDITION_ID_FOR_DISCHARGE", "", 0, false, true);
-      add_named_real(cond, "INIT_RELAX_TIME");
-      add_named_int(cond, "ADAPTIVE_TIME_STEPPING_INIT_RELAX");
-      add_named_int(cond, "NUM_ADD_ADAPT_TIME_STEPS", "", 0, false, true);
-      add_named_int(cond, "MIN_TIME_STEPS_DURING_INIT_RELAX", "", 0, false, true);
+      cond.add_component(entry<int>("NUMBER_OF_HALF_CYCLES"));
+      cond.add_component(
+          entry<int>("BEGIN_WITH_CHARGING"));  // Boolean parameter represented by integer parameter
+      cond.add_component(entry<Noneable<int>>("CONDITION_ID_FOR_CHARGE", {.description = ""}));
+      cond.add_component(entry<Noneable<int>>("CONDITION_ID_FOR_DISCHARGE", {.description = ""}));
+      cond.add_component(entry<double>("INIT_RELAX_TIME"));
+      cond.add_component(entry<int>("ADAPTIVE_TIME_STEPPING_INIT_RELAX"));
+      cond.add_component(entry<Noneable<int>>("NUM_ADD_ADAPT_TIME_STEPS", {.description = ""}));
+      cond.add_component(
+          entry<Noneable<int>>("MIN_TIME_STEPS_DURING_INIT_RELAX", {.description = ""}));
 
       // insert condition definitions into global list of valid condition definitions
       condlist.emplace_back(cond);
     }
-  }
+  };
+
+  make_cccvcycling(cccvcyclingpoint);
+  make_cccvcycling(cccvcyclingline);
+  make_cccvcycling(cccvcyclingsurf);
 
   /*--------------------------------------------------------------------*/
   // boundary condition for constant-current constant-voltage (CCCV) half-cycle
 
   // definition of point, line and surface conditions for CCCV half-cycle
-  auto cccvhalfcyclepoint = std::make_shared<Core::Conditions::ConditionDefinition>(
+  Core::Conditions::ConditionDefinition cccvhalfcyclepoint(
       "DESIGN CCCV HALF-CYCLE POINT CONDITIONS", "CCCVHalfCycle",
       "line boundary condition for constant-current constant-voltage (CCCV) half-cycle",
       Core::Conditions::CCCVHalfCycle, true, Core::Conditions::geometry_type_point);
 
-  auto cccvhalfcycleline = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN CCCV HALF-CYCLE LINE CONDITIONS", "CCCVHalfCycle",
+  Core::Conditions::ConditionDefinition cccvhalfcycleline("DESIGN CCCV HALF-CYCLE LINE CONDITIONS",
+      "CCCVHalfCycle",
       "line boundary condition for constant-current constant-voltage (CCCV) half-cycle",
       Core::Conditions::CCCVHalfCycle, true, Core::Conditions::geometry_type_line);
 
-  auto cccvhalfcyclesurf = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN CCCV HALF-CYCLE SURF CONDITIONS", "CCCVHalfCycle",
+  Core::Conditions::ConditionDefinition cccvhalfcyclesurf("DESIGN CCCV HALF-CYCLE SURF CONDITIONS",
+      "CCCVHalfCycle",
       "surface boundary condition for constant-current constant-voltage (CCCV) half-cycle",
       Core::Conditions::CCCVHalfCycle, true, Core::Conditions::geometry_type_surface);
 
-  for (const auto& cond : {cccvhalfcyclepoint, cccvhalfcycleline, cccvhalfcyclesurf})
+  const auto make_cccvhalfcycle = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
     // insert input file line components into condition definitions
-    add_named_int(cond, "ConditionID");
-    add_named_real(cond, "CURRENT");
-    add_named_real(cond, "CUT_OFF_VOLTAGE");
-    add_named_real(cond, "CUT_OFF_C_RATE");
-    add_named_real(cond, "RELAX_TIME");
+    cond.add_component(entry<int>("ConditionID"));
+    cond.add_component(entry<double>("CURRENT"));
+    cond.add_component(entry<double>("CUT_OFF_VOLTAGE"));
+    cond.add_component(entry<double>("CUT_OFF_C_RATE"));
+    cond.add_component(entry<double>("RELAX_TIME"));
     // switch adaptive time stepping on for different phases of half cycle: 1st: end of constant
     // current, 2nd: end of constant voltage, 3rd: end of relaxation
-    add_named_int_vector(cond, "ADAPTIVE_TIME_STEPPING_PHASE_ON_OFF", "", 3);
+    cond.add_component(entry<std::vector<int>>(
+        "ADAPTIVE_TIME_STEPPING_PHASE_ON_OFF", {.description = "", .size = 3}));
 
     // insert condition definitions into global list of valid condition definitions
     condlist.emplace_back(cond);
-  }
+  };
+
+  make_cccvhalfcycle(cccvhalfcyclepoint);
+  make_cccvhalfcycle(cccvhalfcycleline);
+  make_cccvhalfcycle(cccvhalfcyclesurf);
 }
 
 FOUR_C_NAMESPACE_CLOSE

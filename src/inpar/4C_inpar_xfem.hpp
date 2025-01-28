@@ -10,8 +10,9 @@
 
 #include "4C_config.hpp"
 
-#include "4C_io_linecomponent.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
+
+#include <vector>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -317,8 +318,7 @@ namespace Inpar
     void set_valid_parameters(Teuchos::ParameterList& list);
 
     /// set specific xfem conditions
-    void set_valid_conditions(
-        std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist);
+    void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);
 
   }  // namespace XFEM
 

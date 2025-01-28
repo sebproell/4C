@@ -8,7 +8,7 @@
 #include "4C_inpar_fsi.hpp"
 
 #include "4C_fem_condition_definition.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -415,22 +415,19 @@ void Inpar::FSI::set_valid_parameters(Teuchos::ParameterList& list)
 }
 
 /*----------------------------------------------------------------------------*/
-void Inpar::FSI::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+void Inpar::FSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linefsi =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN FSI COUPLING LINE CONDITIONS",
-          "FSICoupling", "FSI Coupling", Core::Conditions::FSICoupling, true,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surffsi =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN FSI COUPLING SURF CONDITIONS",
-          "FSICoupling", "FSI Coupling", Core::Conditions::FSICoupling, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition linefsi("DESIGN FSI COUPLING LINE CONDITIONS",
+      "FSICoupling", "FSI Coupling", Core::Conditions::FSICoupling, true,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surffsi("DESIGN FSI COUPLING SURF CONDITIONS",
+      "FSICoupling", "FSI Coupling", Core::Conditions::FSICoupling, true,
+      Core::Conditions::geometry_type_surface);
 
-  add_named_int(linefsi, "coupling_id");
-  add_named_int(surffsi, "coupling_id");
+  linefsi.add_component(entry<int>("coupling_id"));
+  surffsi.add_component(entry<int>("coupling_id"));
 
   condlist.push_back(linefsi);
   condlist.push_back(surffsi);
@@ -438,16 +435,12 @@ void Inpar::FSI::set_valid_conditions(
   /*--------------------------------------------------------------------*/
   // FSI define centerdisp for sliding interfaces
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linefsicd =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN FSI COUPLING CENTER DISP LINE CONDITIONS", "FSICouplingCenterDisp",
-          "FSI Coupling Center Disp", Core::Conditions::FSICouplingCenterDisp, true,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surffsicd =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN FSI COUPLING CENTER DISP SURF CONDITIONS", "FSICouplingCenterDisp",
-          "FSI Coupling Center Disp", Core::Conditions::FSICouplingCenterDisp, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition linefsicd("DESIGN FSI COUPLING CENTER DISP LINE CONDITIONS",
+      "FSICouplingCenterDisp", "FSI Coupling Center Disp", Core::Conditions::FSICouplingCenterDisp,
+      true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surffsicd("DESIGN FSI COUPLING CENTER DISP SURF CONDITIONS",
+      "FSICouplingCenterDisp", "FSI Coupling Center Disp", Core::Conditions::FSICouplingCenterDisp,
+      true, Core::Conditions::geometry_type_surface);
 
   condlist.push_back(linefsicd);
   condlist.push_back(surffsicd);
@@ -455,31 +448,27 @@ void Inpar::FSI::set_valid_conditions(
   /*--------------------------------------------------------------------*/
   // Additional coupling of structure and ale fields (for lung fsi)
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfsac =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN STRUCTURE ALE COUPLING SURF CONDITIONS", "StructAleCoupling", "StructAleCoupling",
-          Core::Conditions::StructAleCoupling, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition surfsac("DESIGN STRUCTURE ALE COUPLING SURF CONDITIONS",
+      "StructAleCoupling", "StructAleCoupling", Core::Conditions::StructAleCoupling, true,
+      Core::Conditions::geometry_type_surface);
 
-  add_named_int(surfsac, "coupling_id");
-  add_named_selection_component(surfsac, "field", "field", "structure",
-      Teuchos::tuple<std::string>("structure", "ale"),
-      Teuchos::tuple<std::string>("structure", "ale"), true);
+  surfsac.add_component(entry<int>("coupling_id"));
+  surfsac.add_component(selection<std::string>(
+      "field", {"structure", "ale"}, {.description = "field", .default_value = "structure"}));
 
   condlist.push_back(surfsac);
 
   /*--------------------------------------------------------------------*/
   // Additional coupling of structure and fluid volumes (for lung fsi)
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> volsfv =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN STRUCTURE FLUID VOLUME COUPLING VOL CONDITIONS", "StructFluidVolCoupling",
-          "StructFluidVolCoupling", Core::Conditions::StructFluidVolCoupling, false,
-          Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition volsfv(
+      "DESIGN STRUCTURE FLUID VOLUME COUPLING VOL CONDITIONS", "StructFluidVolCoupling",
+      "StructFluidVolCoupling", Core::Conditions::StructFluidVolCoupling, false,
+      Core::Conditions::geometry_type_volume);
 
-  add_named_int(volsfv, "coupling_id");
-  add_named_selection_component(volsfv, "field", "field", "structure",
-      Teuchos::tuple<std::string>("structure", "ale"),
-      Teuchos::tuple<std::string>("structure", "ale"), true);
+  volsfv.add_component(entry<int>("coupling_id"));
+  volsfv.add_component(selection<std::string>(
+      "field", {"structure", "ale"}, {.description = "field", .default_value = "structure"}));
 
   condlist.push_back(volsfv);
 }

@@ -9,7 +9,7 @@
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_io_geometry_type.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_legacy_enum_definitions_conditions.hpp"
 #include "4C_utils_parameter_list.hpp"
 
@@ -19,7 +19,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::FLUID::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -1335,7 +1334,6 @@ void Inpar::FLUID::set_valid_parameters(Teuchos::ParameterList& list)
 
 void Inpar::LowMach::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -1368,36 +1366,33 @@ void Inpar::LowMach::set_valid_parameters(Teuchos::ParameterList& list)
 
 
 void Inpar::FLUID::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*--------------------------------------------------------------------*/
   // transfer boundary condition for turbulent inflow
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> tbc_turb_inflow =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF TURBULENT INFLOW TRANSFER", "TransferTurbulentInflow",
-          "TransferTurbulentInflow", Core::Conditions::TransferTurbulentInflow, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition tbc_turb_inflow("DESIGN SURF TURBULENT INFLOW TRANSFER",
+      "TransferTurbulentInflow", "TransferTurbulentInflow",
+      Core::Conditions::TransferTurbulentInflow, true, Core::Conditions::geometry_type_surface);
 
-  add_named_int(tbc_turb_inflow, "ID", "", 0, false, false);
-  add_named_selection_component(tbc_turb_inflow, "toggle", "toggle", "master",
-      Teuchos::tuple<std::string>("master", "slave"),
-      Teuchos::tuple<std::string>("master", "slave"));
-  add_named_selection_component(tbc_turb_inflow, "DIRECTION", "transfer direction", "x",
-      Teuchos::tuple<std::string>("x", "y", "z"), Teuchos::tuple<int>(0, 1, 2));
-  add_named_int(tbc_turb_inflow, "curve", "curve id", 0, false, true);
+  tbc_turb_inflow.add_component(entry<int>("ID", {.description = ""}));
+  tbc_turb_inflow.add_component(
+      selection<std::string>("toggle", {"master", "slave"}, {.description = "toggle"}));
+  tbc_turb_inflow.add_component(selection<int>("DIRECTION", {{"x", 0}, {"y", 1}, {"z", 2}},
+      {.description = "transfer direction", .default_value = 0}));
+  tbc_turb_inflow.add_component(entry<Noneable<int>>(
+      "curve", {.description = "curve id", .default_value = Core::IO::none<int>}));
 
   condlist.push_back(tbc_turb_inflow);
 
   /*--------------------------------------------------------------------*/
   // separate domain for turbulent inflow generation
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> turbulentinflowgeneration =
-      std::make_shared<Core::Conditions::ConditionDefinition>("FLUID TURBULENT INFLOW VOLUME",
-          "TurbulentInflowSection", "TurbulentInflowSection",
-          Core::Conditions::TurbulentInflowSection, true, Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition turbulentinflowgeneration("FLUID TURBULENT INFLOW VOLUME",
+      "TurbulentInflowSection", "TurbulentInflowSection", Core::Conditions::TurbulentInflowSection,
+      true, Core::Conditions::geometry_type_volume);
 
   condlist.push_back(turbulentinflowgeneration);
 
@@ -1405,28 +1400,27 @@ void Inpar::FLUID::set_valid_conditions(
   /*--------------------------------------------------------------------*/
   // flow-dependent pressure conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfflowdeppressure =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURFACE FLOW-DEPENDENT PRESSURE CONDITIONS", "SurfaceFlowDepPressure",
-          "SurfaceFlowDepPressure", Core::Conditions::SurfaceFlowDepPressure, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition surfflowdeppressure(
+      "DESIGN SURFACE FLOW-DEPENDENT PRESSURE CONDITIONS", "SurfaceFlowDepPressure",
+      "SurfaceFlowDepPressure", Core::Conditions::SurfaceFlowDepPressure, true,
+      Core::Conditions::geometry_type_surface);
 
   // flow-dependent pressure conditions can be imposed either based on
   // (out)flow rate or (out)flow volume (e.g., for air-cushion condition)
-  add_named_selection_component(surfflowdeppressure, "TYPE_OF_FLOW_DEPENDENCE",
-      "type of flow dependence", "flow_rate",
-      Teuchos::tuple<std::string>("flow_rate", "flow_volume", "fixed_pressure"),
-      Teuchos::tuple<std::string>("flow_rate", "flow_volume", "fixed_pressure"));
-  add_named_real(surfflowdeppressure, "ConstCoeff",
-      "constant coefficient for (linear) flow-rate-based condition");
-  add_named_real(
-      surfflowdeppressure, "LinCoeff", "linear coefficient for (linear) flow-rate-based condition");
-  add_named_real(
-      surfflowdeppressure, "InitialVolume", "initial (air-cushion) volume outside of boundary");
-  add_named_real(
-      surfflowdeppressure, "ReferencePressure", " reference pressure outside of boundary");
-  add_named_real(surfflowdeppressure, "AdiabaticExponent", "adiabatic exponent");
-  add_named_int(surfflowdeppressure, "curve", "curve id", 0, false, true);
+  surfflowdeppressure.add_component(selection<std::string>("TYPE_OF_FLOW_DEPENDENCE",
+      {"flow_rate", "flow_volume", "fixed_pressure"}, {.description = "type of flow dependence"}));
+  surfflowdeppressure.add_component(entry<double>("ConstCoeff",
+      {.description = "constant coefficient for (linear) flow-rate-based condition"}));
+  surfflowdeppressure.add_component(entry<double>(
+      "LinCoeff", {.description = "linear coefficient for (linear) flow-rate-based condition"}));
+  surfflowdeppressure.add_component(entry<double>(
+      "InitialVolume", {.description = "initial (air-cushion) volume outside of boundary"}));
+  surfflowdeppressure.add_component(entry<double>(
+      "ReferencePressure", {.description = " reference pressure outside of boundary"}));
+  surfflowdeppressure.add_component(
+      entry<double>("AdiabaticExponent", {.description = "adiabatic exponent"}));
+  surfflowdeppressure.add_component(entry<Noneable<int>>(
+      "curve", {.description = "curve id", .default_value = Core::IO::none<int>}));
 
   condlist.emplace_back(surfflowdeppressure);
 
@@ -1434,67 +1428,64 @@ void Inpar::FLUID::set_valid_conditions(
   /*--------------------------------------------------------------------*/
   // Slip Supplemental Curved Boundary conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> lineslipsupp =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE SLIP SUPPLEMENTAL CURVED BOUNDARY CONDITIONS", "LineSlipSupp",
-          "LineSlipSupp", Core::Conditions::LineSlipSupp, true,
-          Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition lineslipsupp(
+      "DESIGN LINE SLIP SUPPLEMENTAL CURVED BOUNDARY CONDITIONS", "LineSlipSupp", "LineSlipSupp",
+      Core::Conditions::LineSlipSupp, true, Core::Conditions::geometry_type_line);
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfslipsupp =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURFACE SLIP SUPPLEMENTAL CURVED BOUNDARY CONDITIONS", "SurfaceSlipSupp",
-          "SurfaceSlipSupp", Core::Conditions::SurfaceSlipSupp, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition surfslipsupp(
+      "DESIGN SURFACE SLIP SUPPLEMENTAL CURVED BOUNDARY CONDITIONS", "SurfaceSlipSupp",
+      "SurfaceSlipSupp", Core::Conditions::SurfaceSlipSupp, true,
+      Core::Conditions::geometry_type_surface);
 
-  for (const auto& cond : {lineslipsupp, surfslipsupp})
+  const auto make_slip_supp = [&](Core::Conditions::ConditionDefinition& cond)
   {
-    add_named_real(cond, "USEUPDATEDNODEPOS");
+    cond.add_component(entry<double>("USEUPDATEDNODEPOS"));
     condlist.emplace_back(cond);
-  }
+  };
+
+  make_slip_supp(lineslipsupp);
+  make_slip_supp(surfslipsupp);
 
   /*--------------------------------------------------------------------*/
   // Navier-slip boundary conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linenavierslip =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE NAVIER-SLIP BOUNDARY CONDITIONS", "LineNavierSlip", "LineNavierSlip",
-          Core::Conditions::LineNavierSlip, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition linenavierslip(
+      "DESIGN LINE NAVIER-SLIP BOUNDARY CONDITIONS", "LineNavierSlip", "LineNavierSlip",
+      Core::Conditions::LineNavierSlip, true, Core::Conditions::geometry_type_line);
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfnavierslip =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF NAVIER-SLIP BOUNDARY CONDITIONS", "SurfNavierSlip", "SurfNavierSlip",
-          Core::Conditions::SurfNavierSlip, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition surfnavierslip(
+      "DESIGN SURF NAVIER-SLIP BOUNDARY CONDITIONS", "SurfNavierSlip", "SurfNavierSlip",
+      Core::Conditions::SurfNavierSlip, true, Core::Conditions::geometry_type_surface);
 
-  for (const auto& cond : {linenavierslip, surfnavierslip})
+  const auto make_navierslip = [&](Core::Conditions::ConditionDefinition& cond)
   {
-    add_named_real(cond, "SLIPCOEFFICIENT");
+    cond.add_component(entry<double>("SLIPCOEFFICIENT"));
     condlist.emplace_back(cond);
-  }
+  };
+
+  make_navierslip(linenavierslip);
+  make_navierslip(surfnavierslip);
 
   /*--------------------------------------------------------------------*/
   // consistent outflow bcs for conservative element formulations
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfconsistentoutflowconsistency =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURFACE CONSERVATIVE OUTFLOW CONSISTENCY",
-          "SurfaceConservativeOutflowConsistency", "SurfaceConservativeOutflowConsistency",
-          Core::Conditions::SurfaceConservativeOutflowConsistency, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition surfconsistentoutflowconsistency(
+      "DESIGN SURFACE CONSERVATIVE OUTFLOW CONSISTENCY", "SurfaceConservativeOutflowConsistency",
+      "SurfaceConservativeOutflowConsistency",
+      Core::Conditions::SurfaceConservativeOutflowConsistency, true,
+      Core::Conditions::geometry_type_surface);
 
   condlist.push_back(surfconsistentoutflowconsistency);
 
   /*--------------------------------------------------------------------*/
   // Neumann condition for fluid that can handle inflow/backflow
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linefluidneumanninflow =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "FLUID NEUMANN INFLOW LINE CONDITIONS", "FluidNeumannInflow", "Line Fluid Neumann Inflow",
-          Core::Conditions::FluidNeumannInflow, true, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surffluidneumanninflow =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "FLUID NEUMANN INFLOW SURF CONDITIONS", "FluidNeumannInflow",
-          "Surface Fluid Neumann Inflow", Core::Conditions::FluidNeumannInflow, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition linefluidneumanninflow(
+      "FLUID NEUMANN INFLOW LINE CONDITIONS", "FluidNeumannInflow", "Line Fluid Neumann Inflow",
+      Core::Conditions::FluidNeumannInflow, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surffluidneumanninflow(
+      "FLUID NEUMANN INFLOW SURF CONDITIONS", "FluidNeumannInflow", "Surface Fluid Neumann Inflow",
+      Core::Conditions::FluidNeumannInflow, true, Core::Conditions::geometry_type_surface);
 
   condlist.push_back(linefluidneumanninflow);
   condlist.push_back(surffluidneumanninflow);
@@ -1502,151 +1493,138 @@ void Inpar::FLUID::set_valid_conditions(
   /*--------------------------------------------------------------------*/
   // mixed/hybrid Dirichlet conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linemixhybDirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE MIXED/HYBRID DIRICHLET CONDITIONS", "LineMixHybDirichlet",
-          "LineMixHybDirichlet", Core::Conditions::LineMixHybDirichlet, true,
-          Core::Conditions::geometry_type_line);
-
-
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfmixhybDirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURFACE MIXED/HYBRID DIRICHLET CONDITIONS", "SurfaceMixHybDirichlet",
-          "SurfaceMixHybDirichlet", Core::Conditions::SurfaceMixHybDirichlet, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition linemixhybDirichlet(
+      "DESIGN LINE MIXED/HYBRID DIRICHLET CONDITIONS", "LineMixHybDirichlet", "LineMixHybDirichlet",
+      Core::Conditions::LineMixHybDirichlet, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfmixhybDirichlet(
+      "DESIGN SURFACE MIXED/HYBRID DIRICHLET CONDITIONS", "SurfaceMixHybDirichlet",
+      "SurfaceMixHybDirichlet", Core::Conditions::SurfaceMixHybDirichlet, true,
+      Core::Conditions::geometry_type_surface);
 
   // we attach all the components of this condition to this condition
-  for (const auto& cond : {linemixhybDirichlet, surfmixhybDirichlet})
+  const auto make_mixhybDirichlet = [&](Core::Conditions::ConditionDefinition& cond)
   {
     // we provide a vector of 3 values for velocities
-    add_named_real_vector(cond, "val", "velocity", 3);
+    cond.add_component(entry<std::vector<double>>("val", {.description = "velocity", .size = 3}));
 
     // and optional spatial functions
-    add_named_int_vector(cond, "funct", "spatial function", 3, 0, true, true);
+    cond.add_component(entry<std::vector<Noneable<int>>>(
+        "funct", {.description = "spatial function",
+                     .default_value = std::vector(3, Core::IO::none<int>),
+                     .size = 3}));
 
     // characteristic velocity
-    add_named_real(cond, "u_C");
+    cond.add_component(entry<double>("u_C"));
 
     // the penalty parameter could be computed dynamically (using Spaldings
     // law of the wall) or using a fixed value (1)
-    add_named_selection_component(cond, "PENTYPE", "how penalty parameter is computed", "constant",
-        Teuchos::tuple<std::string>("constant", "Spalding"),
-        Teuchos::tuple<std::string>("constant", "Spalding"));
+    cond.add_component(selection<std::string>(
+        "PENTYPE", {"constant", "Spalding"}, {.description = "how penalty parameter is computed"}));
 
     // scaling factor for penalty parameter tauB
-    add_named_real(cond, "hB_divided_by");
+    cond.add_component(entry<double>("hB_divided_by"));
 
     // if Spaldings law is used, this defines the way how the traction at y is computed from utau
-    add_named_selection_component(cond, "utau_computation",
-        "how traction at y is computed from utau", "at_wall",
-        Teuchos::tuple<std::string>("at_wall", "viscous_tangent"),
-        Teuchos::tuple<std::string>("at_wall", "viscous_tangent"));
+    cond.add_component(selection<std::string>("utau_computation", {"at_wall", "viscous_tangent"},
+        {.description = "how traction at y is computed from utau"}));
 
     // we append it to the list of all conditions
     condlist.push_back(cond);
-  }
+  };
+
+  make_mixhybDirichlet(linemixhybDirichlet);
+  make_mixhybDirichlet(surfmixhybDirichlet);
 
   /*--------------------------------------------------------------------*/
   // fluid stress
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linefluidstress =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN FLUID STRESS CALC LINE CONDITIONS", "FluidStressCalc",
-          "Line Fluid Stress Calculation", Core::Conditions::FluidStressCalc, true,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surffluidstress =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN FLUID STRESS CALC SURF CONDITIONS", "FluidStressCalc",
-          "Surf Fluid Stress Calculation", Core::Conditions::FluidStressCalc, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition linefluidstress("DESIGN FLUID STRESS CALC LINE CONDITIONS",
+      "FluidStressCalc", "Line Fluid Stress Calculation", Core::Conditions::FluidStressCalc, true,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surffluidstress("DESIGN FLUID STRESS CALC SURF CONDITIONS",
+      "FluidStressCalc", "Surf Fluid Stress Calculation", Core::Conditions::FluidStressCalc, true,
+      Core::Conditions::geometry_type_surface);
 
   condlist.push_back(linefluidstress);
   condlist.push_back(surffluidstress);
 
   /*--------------------------------------------------------------------*/
   // lift & drag
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfliftdrag =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN FLUID SURF LIFT&DRAG",
-          "LIFTDRAG", "Surface LIFTDRAG", Core::Conditions::SurfLIFTDRAG, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition surfliftdrag("DESIGN FLUID SURF LIFT&DRAG", "LIFTDRAG",
+      "Surface LIFTDRAG", Core::Conditions::SurfLIFTDRAG, true,
+      Core::Conditions::geometry_type_surface);
 
-  add_named_int(surfliftdrag, "label");
-  add_named_real_vector(surfliftdrag, "CENTER", "", 3);
-  add_named_real_vector(surfliftdrag, "AXIS", "", 3, 0.0, true);
+  surfliftdrag.add_component(entry<int>("label"));
+  surfliftdrag.add_component(entry<std::vector<double>>("CENTER", {.description = "", .size = 3}));
+  surfliftdrag.add_component(entry<std::vector<double>>(
+      "AXIS", {.description = "", .default_value = std::vector<double>{0.0, 0.0, 0.0}, .size = 3}));
 
   condlist.push_back(surfliftdrag);
 
   /*--------------------------------------------------------------------*/
   // flow rate through line
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> lineflowrate =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN FLOW RATE LINE CONDITIONS",
-          "LineFlowRate", "Line Flow Rate", Core::Conditions::FlowRateThroughLine_2D, true,
-          Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition lineflowrate("DESIGN FLOW RATE LINE CONDITIONS",
+      "LineFlowRate", "Line Flow Rate", Core::Conditions::FlowRateThroughLine_2D, true,
+      Core::Conditions::geometry_type_line);
 
-  add_named_int(lineflowrate, "ConditionID");
+  lineflowrate.add_component(entry<int>("ConditionID"));
 
   condlist.push_back(lineflowrate);
 
   /*--------------------------------------------------------------------*/
   // flow rate through surface
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfflowrate =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN FLOW RATE SURF CONDITIONS",
-          "SurfFlowRate", "Surface Flow Rate", Core::Conditions::FlowRateThroughSurface_3D, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition surfflowrate("DESIGN FLOW RATE SURF CONDITIONS",
+      "SurfFlowRate", "Surface Flow Rate", Core::Conditions::FlowRateThroughSurface_3D, true,
+      Core::Conditions::geometry_type_surface);
 
-  add_named_int(surfflowrate, "ConditionID");
+  surfflowrate.add_component(entry<int>("ConditionID"));
 
   condlist.push_back(surfflowrate);
 
   /*--------------------------------------------------------------------*/
   // Volumetric surface flow profile condition
-  std::shared_ptr<Core::Conditions::ConditionDefinition> volumetric_surface_flow_cond =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF VOLUMETRIC FLOW CONDITIONS", "VolumetricSurfaceFlowCond",
-          "volumetric surface flow condition", Core::Conditions::VolumetricSurfaceFlowCond, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition volumetric_surface_flow_cond(
+      "DESIGN SURF VOLUMETRIC FLOW CONDITIONS", "VolumetricSurfaceFlowCond",
+      "volumetric surface flow condition", Core::Conditions::VolumetricSurfaceFlowCond, true,
+      Core::Conditions::geometry_type_surface);
 
-  add_named_int(volumetric_surface_flow_cond, "ConditionID");
+  volumetric_surface_flow_cond.add_component(entry<int>("ConditionID"));
 
-  Input::add_named_selection_component(volumetric_surface_flow_cond, "ConditionType",
-      "condition type", "POLYNOMIAL", Teuchos::tuple<std::string>("POLYNOMIAL", "WOMERSLEY"),
-      Teuchos::tuple<std::string>("POLYNOMIAL", "WOMERSLEY"), true);
+  volumetric_surface_flow_cond.add_component(
+      selection<std::string>("ConditionType", {"POLYNOMIAL", "WOMERSLEY"},
+          {.description = "condition type", .default_value = "POLYNOMIAL"}));
 
-  Input::add_named_selection_component(volumetric_surface_flow_cond, "prebiased", "prebiased",
-      "NOTPREBIASED", Teuchos::tuple<std::string>("NOTPREBIASED", "PREBIASED", "FORCED"),
-      Teuchos::tuple<std::string>("NOTPREBIASED", "PREBIASED", "FORCED"), true);
+  volumetric_surface_flow_cond.add_component(
+      selection<std::string>("prebiased", {"NOTPREBIASED", "PREBIASED", "FORCED"},
+          {.description = "prebiased", .default_value = "NOTPREBIASED"}));
 
-  Input::add_named_selection_component(volumetric_surface_flow_cond, "FlowType", "flow type",
-      "InFlow", Teuchos::tuple<std::string>("InFlow", "OutFlow"),
-      Teuchos::tuple<std::string>("InFlow", "OutFlow"), true);
-  Input::add_named_selection_component(volumetric_surface_flow_cond, "CorrectionFlag",
-      "correction flag", "WithOutCorrection",
-      Teuchos::tuple<std::string>("WithOutCorrection", "WithCorrection"),
-      Teuchos::tuple<std::string>("WithOutCorrection", "WithCorrection"), true);
+  volumetric_surface_flow_cond.add_component(selection<std::string>(
+      "FlowType", {"InFlow", "OutFlow"}, {.description = "flow type", .default_value = "InFlow"}));
+  volumetric_surface_flow_cond.add_component(
+      selection<std::string>("CorrectionFlag", {"WithOutCorrection", "WithCorrection"},
+          {.description = "correction flag", .default_value = "WithOutCorrection"}));
 
-  Input::add_named_real(volumetric_surface_flow_cond, "Period");
-  Input::add_named_int(volumetric_surface_flow_cond, "Order");
-  Input::add_named_int(volumetric_surface_flow_cond, "Harmonics");
-  Input::add_named_real(volumetric_surface_flow_cond, "Val");
-  Input::add_named_int(volumetric_surface_flow_cond, "Funct");
+  volumetric_surface_flow_cond.add_component(entry<double>("Period"));
+  volumetric_surface_flow_cond.add_component(entry<int>("Order"));
+  volumetric_surface_flow_cond.add_component(entry<int>("Harmonics"));
+  volumetric_surface_flow_cond.add_component(entry<double>("Val"));
+  volumetric_surface_flow_cond.add_component(entry<int>("Funct"));
 
-  Input::add_named_selection_component(volumetric_surface_flow_cond, "NORMAL", "normal",
-      "SelfEvaluateNormal",
-      Teuchos::tuple<std::string>("SelfEvaluateNormal", "UsePrescribedNormal"),
-      Teuchos::tuple<std::string>("SelfEvaluateNormal", "UsePrescribedNormal"), true);
-  Input::add_named_real(volumetric_surface_flow_cond, "n1");
-  Input::add_named_real(volumetric_surface_flow_cond, "n2");
-  Input::add_named_real(volumetric_surface_flow_cond, "n3");
+  volumetric_surface_flow_cond.add_component(
+      selection<std::string>("NORMAL", {"SelfEvaluateNormal", "UsePrescribedNormal"},
+          {.description = "normal", .default_value = "SelfEvaluateNormal"}));
+  volumetric_surface_flow_cond.add_component(entry<double>("n1"));
+  volumetric_surface_flow_cond.add_component(entry<double>("n2"));
+  volumetric_surface_flow_cond.add_component(entry<double>("n3"));
 
-  Input::add_named_selection_component(volumetric_surface_flow_cond, "CenterOfMass",
-      "center of mass", "SelfEvaluateCenterOfMass",
-      Teuchos::tuple<std::string>("SelfEvaluateCenterOfMass", "UsePrescribedCenterOfMass"),
-      Teuchos::tuple<std::string>("SelfEvaluateCenterOfMass", "UsePrescribedCenterOfMass"), true);
-  Input::add_named_real(volumetric_surface_flow_cond, "c1");
-  Input::add_named_real(volumetric_surface_flow_cond, "c2");
-  Input::add_named_real(volumetric_surface_flow_cond, "c3");
+  volumetric_surface_flow_cond.add_component(selection<std::string>("CenterOfMass",
+      {"SelfEvaluateCenterOfMass", "UsePrescribedCenterOfMass"},
+      {.description = "center of mass", .default_value = "SelfEvaluateCenterOfMass"}));
+  volumetric_surface_flow_cond.add_component(entry<double>("c1"));
+  volumetric_surface_flow_cond.add_component(entry<double>("c2"));
+  volumetric_surface_flow_cond.add_component(entry<double>("c3"));
 
   condlist.push_back(volumetric_surface_flow_cond);
 
@@ -1655,77 +1633,69 @@ void Inpar::FLUID::set_valid_conditions(
   /*--------------------------------------------------------------------*/
   // Volumetric flow border nodes condition
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> volumetric_border_nodes_cond =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE VOLUMETRIC FLOW BORDER NODES", "VolumetricFlowBorderNodesCond",
-          "volumetric flow border nodes condition", Core::Conditions::VolumetricFlowBorderNodes,
-          true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition volumetric_border_nodes_cond(
+      "DESIGN LINE VOLUMETRIC FLOW BORDER NODES", "VolumetricFlowBorderNodesCond",
+      "volumetric flow border nodes condition", Core::Conditions::VolumetricFlowBorderNodes, true,
+      Core::Conditions::geometry_type_line);
 
-  add_named_int(volumetric_border_nodes_cond, "ConditionID");
+  volumetric_border_nodes_cond.add_component(entry<int>("ConditionID"));
 
   condlist.push_back(volumetric_border_nodes_cond);
 
   /*--------------------------------------------------------------------*/
   // Volumetric surface total traction corrector
-  std::shared_ptr<Core::Conditions::ConditionDefinition> total_traction_correction_cond =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF TOTAL TRACTION CORRECTION CONDITIONS", "TotalTractionCorrectionCond",
-          "total traction correction condition", Core::Conditions::TotalTractionCorrectionCond,
-          true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition total_traction_correction_cond(
+      "DESIGN SURF TOTAL TRACTION CORRECTION CONDITIONS", "TotalTractionCorrectionCond",
+      "total traction correction condition", Core::Conditions::TotalTractionCorrectionCond, true,
+      Core::Conditions::geometry_type_surface);
 
-  Input::add_named_int(total_traction_correction_cond, "ConditionID");
-  Input::add_named_selection_component(total_traction_correction_cond, "ConditionType",
-      "condition type", "POLYNOMIAL", Teuchos::tuple<std::string>("POLYNOMIAL", "WOMERSLEY"),
-      Teuchos::tuple<std::string>("POLYNOMIAL", "WOMERSLEY"), true);
+  total_traction_correction_cond.add_component(entry<int>("ConditionID"));
+  total_traction_correction_cond.add_component(
+      selection<std::string>("ConditionType", {"POLYNOMIAL", "WOMERSLEY"},
+          {.description = "condition type", .default_value = "POLYNOMIAL"}));
 
-  Input::add_named_selection_component(total_traction_correction_cond, "prebiased", "prebiased",
-      "NOTPREBIASED", Teuchos::tuple<std::string>("NOTPREBIASED", "PREBIASED", "FORCED"),
-      Teuchos::tuple<std::string>("NOTPREBIASED", "PREBIASED", "FORCED"), true);
+  total_traction_correction_cond.add_component(
+      selection<std::string>("prebiased", {"NOTPREBIASED", "PREBIASED", "FORCED"},
+          {.description = "prebiased", .default_value = "NOTPREBIASED"}));
 
-  Input::add_named_selection_component(total_traction_correction_cond, "FlowType", "flow type",
-      "InFlow", Teuchos::tuple<std::string>("InFlow", "OutFlow"),
-      Teuchos::tuple<std::string>("InFlow", "OutFlow"), true);
-  Input::add_named_selection_component(total_traction_correction_cond, "CorrectionFlag",
-      "correction flag", "WithOutCorrection",
-      Teuchos::tuple<std::string>("WithOutCorrection", "WithCorrection"),
-      Teuchos::tuple<std::string>("WithOutCorrection", "WithCorrection"), true);
+  total_traction_correction_cond.add_component(selection<std::string>(
+      "FlowType", {"InFlow", "OutFlow"}, {.description = "flow type", .default_value = "InFlow"}));
+  total_traction_correction_cond.add_component(
+      selection<std::string>("CorrectionFlag", {"WithOutCorrection", "WithCorrection"},
+          {.description = "correction flag", .default_value = "WithOutCorrection"}));
 
-  Input::add_named_real(total_traction_correction_cond, "Period");
-  Input::add_named_int(total_traction_correction_cond, "Order");
-  Input::add_named_int(total_traction_correction_cond, "Harmonics");
-  Input::add_named_real(total_traction_correction_cond, "Val");
-  Input::add_named_int(total_traction_correction_cond, "Funct");
+  total_traction_correction_cond.add_component(entry<double>("Period"));
+  total_traction_correction_cond.add_component(entry<int>("Order"));
+  total_traction_correction_cond.add_component(entry<int>("Harmonics"));
+  total_traction_correction_cond.add_component(entry<double>("Val"));
+  total_traction_correction_cond.add_component(entry<int>("Funct"));
 
-  Input::add_named_selection_component(total_traction_correction_cond, "NORMAL", "normal",
-      "SelfEvaluateNormal",
-      Teuchos::tuple<std::string>("SelfEvaluateNormal", "UsePrescribedNormal"),
-      Teuchos::tuple<std::string>("SelfEvaluateNormal", "UsePrescribedNormal"), true);
-  Input::add_named_real(total_traction_correction_cond, "n1");
-  Input::add_named_real(total_traction_correction_cond, "n2");
-  Input::add_named_real(total_traction_correction_cond, "n3");
+  total_traction_correction_cond.add_component(
+      selection<std::string>("NORMAL", {"SelfEvaluateNormal", "UsePrescribedNormal"},
+          {.description = "normal", .default_value = "SelfEvaluateNormal"}));
+  total_traction_correction_cond.add_component(entry<double>("n1"));
+  total_traction_correction_cond.add_component(entry<double>("n2"));
+  total_traction_correction_cond.add_component(entry<double>("n3"));
 
-  Input::add_named_selection_component(total_traction_correction_cond, "CenterOfMass",
-      "center of mass", "SelfEvaluateCenterOfMass",
-      Teuchos::tuple<std::string>("SelfEvaluateCenterOfMass", "UsePrescribedCenterOfMass"),
-      Teuchos::tuple<std::string>("SelfEvaluateCenterOfMass", "UsePrescribedCenterOfMass"), true);
-  Input::add_named_real(total_traction_correction_cond, "c1");
-  Input::add_named_real(total_traction_correction_cond, "c2");
-  Input::add_named_real(total_traction_correction_cond, "c3");
+  total_traction_correction_cond.add_component(selection<std::string>("CenterOfMass",
+      {"SelfEvaluateCenterOfMass", "UsePrescribedCenterOfMass"},
+      {.description = "center of mass", .default_value = "SelfEvaluateCenterOfMass"}));
+  total_traction_correction_cond.add_component(entry<double>("c1"));
+  total_traction_correction_cond.add_component(entry<double>("c2"));
+  total_traction_correction_cond.add_component(entry<double>("c3"));
 
   condlist.push_back(total_traction_correction_cond);
 
   /*--------------------------------------------------------------------*/
   // Volumetric flow traction correction border nodes condition
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> traction_corrector_border_nodes_cond =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE TOTAL TRACTION CORRECTION BORDER NODES",
-          "TotalTractionCorrectionBorderNodesCond",
-          "total traction correction border nodes condition",
-          Core::Conditions::TotalTractionCorrectionBorderNodes, true,
-          Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition traction_corrector_border_nodes_cond(
+      "DESIGN LINE TOTAL TRACTION CORRECTION BORDER NODES",
+      "TotalTractionCorrectionBorderNodesCond", "total traction correction border nodes condition",
+      Core::Conditions::TotalTractionCorrectionBorderNodes, true,
+      Core::Conditions::geometry_type_line);
 
-  add_named_int(traction_corrector_border_nodes_cond, "ConditionID");
+  traction_corrector_border_nodes_cond.add_component(entry<int>("ConditionID"));
 
   condlist.push_back(traction_corrector_border_nodes_cond);
 
@@ -1733,80 +1703,72 @@ void Inpar::FLUID::set_valid_conditions(
   /*--------------------------------------------------------------------*/
   // no penetration for darcy flow in porous media
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> nopenetration_surf =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURFACE NORMAL NO PENETRATION CONDITION", "no_penetration", "No Penetration",
-          Core::Conditions::no_penetration, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition nopenetration_surf(
+      "DESIGN SURFACE NORMAL NO PENETRATION CONDITION", "no_penetration", "No Penetration",
+      Core::Conditions::no_penetration, true, Core::Conditions::geometry_type_surface);
 
   condlist.push_back(nopenetration_surf);
 
   /*--------------------------------------------------------------------*/
   // no penetration for darcy flow in porous media
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> nopenetration_line =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE NORMAL NO PENETRATION CONDITION", "no_penetration", "No Penetration",
-          Core::Conditions::no_penetration, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition nopenetration_line(
+      "DESIGN LINE NORMAL NO PENETRATION CONDITION", "no_penetration", "No Penetration",
+      Core::Conditions::no_penetration, true, Core::Conditions::geometry_type_line);
 
   condlist.push_back(nopenetration_line);
 
   /*--------------------------------------------------------------------*/
   // condition for evaluation of coupling terms in porous media
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> porocoupling_vol =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN VOLUME POROCOUPLING CONDITION", "PoroCoupling", "Poro Coupling",
-          Core::Conditions::PoroCoupling, true, Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition porocoupling_vol("DESIGN VOLUME POROCOUPLING CONDITION",
+      "PoroCoupling", "Poro Coupling", Core::Conditions::PoroCoupling, true,
+      Core::Conditions::geometry_type_volume);
 
   condlist.push_back(porocoupling_vol);
 
   /*--------------------------------------------------------------------*/
   // condition for evaluation of coupling terms in porous media
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> porocoupling_surf =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURFACE POROCOUPLING CONDITION", "PoroCoupling", "Poro Coupling",
-          Core::Conditions::PoroCoupling, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition porocoupling_surf("DESIGN SURFACE POROCOUPLING CONDITION",
+      "PoroCoupling", "Poro Coupling", Core::Conditions::PoroCoupling, true,
+      Core::Conditions::geometry_type_surface);
 
   condlist.push_back(porocoupling_surf);
 
   /*--------------------------------------------------------------------*/
   // condition for evaluation of boundary terms in porous media problems
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> poropartint_surf =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURFACE PORO PARTIAL INTEGRATION", "PoroPartInt", "Poro Partial Integration",
-          Core::Conditions::PoroPartInt, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition poropartint_surf("DESIGN SURFACE PORO PARTIAL INTEGRATION",
+      "PoroPartInt", "Poro Partial Integration", Core::Conditions::PoroPartInt, true,
+      Core::Conditions::geometry_type_surface);
 
   condlist.push_back(poropartint_surf);
 
   /*--------------------------------------------------------------------*/
   // condition for evaluation of boundary terms in porous media problems
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> poropartint_line =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE PORO PARTIAL INTEGRATION", "PoroPartInt", "Poro Partial Integration",
-          Core::Conditions::PoroPartInt, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition poropartint_line("DESIGN LINE PORO PARTIAL INTEGRATION",
+      "PoroPartInt", "Poro Partial Integration", Core::Conditions::PoroPartInt, true,
+      Core::Conditions::geometry_type_line);
 
   condlist.push_back(poropartint_line);
 
   /*--------------------------------------------------------------------*/
   // condition for evaluation of boundary terms in porous media problems
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> poropresint_surf =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURFACE PORO PRESSURE INTEGRATION", "PoroPresInt", "Poro Pressure Integration",
-          Core::Conditions::PoroPresInt, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition poropresint_surf("DESIGN SURFACE PORO PRESSURE INTEGRATION",
+      "PoroPresInt", "Poro Pressure Integration", Core::Conditions::PoroPresInt, true,
+      Core::Conditions::geometry_type_surface);
 
   condlist.push_back(poropresint_surf);
 
   /*--------------------------------------------------------------------*/
   // condition for evaluation of boundary terms in porous media problems
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> poropresint_line =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE PORO PRESSURE INTEGRATION", "PoroPresInt", "Poro Pressure Integration",
-          Core::Conditions::PoroPresInt, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition poropresint_line("DESIGN LINE PORO PRESSURE INTEGRATION",
+      "PoroPresInt", "Poro Pressure Integration", Core::Conditions::PoroPresInt, true,
+      Core::Conditions::geometry_type_line);
 
   condlist.push_back(poropresint_line);
 }

@@ -2185,9 +2185,7 @@ void Global::read_conditions(Global::Problem& problem, Core::IO::InputFile& inpu
   nodeset[3] = &dvol_fenode;
 
   // create list of known conditions
-  std::shared_ptr<std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>> vc =
-      Input::valid_conditions();
-  std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist = *vc;
+  std::vector<Core::Conditions::ConditionDefinition> valid_conditions = Input::valid_conditions();
 
   // test for each condition definition (input file condition section)
   // - read all conditions that match the definition
@@ -2195,12 +2193,12 @@ void Global::read_conditions(Global::Problem& problem, Core::IO::InputFile& inpu
   // - add the conditions to the appropriate discretizations
   //
   // Note that this will reset (un-fill_complete) the discretizations.
-  for (auto& condition : condlist)
+  for (const auto& condition : valid_conditions)
   {
     std::multimap<int, std::shared_ptr<Core::Conditions::Condition>> cond;
 
     // read conditions from dat file
-    condition->read(input, cond);
+    condition.read(input, cond);
 
     // add nodes to conditions
     std::multimap<int, std::shared_ptr<Core::Conditions::Condition>>::const_iterator curr;
@@ -2260,7 +2258,7 @@ void Global::read_conditions(Global::Problem& problem, Core::IO::InputFile& inpu
       {
         const std::vector<int>* nodes = curr->second->get_nodes();
         if (nodes->size() == 0)
-          FOUR_C_THROW("%s condition %d has no nodal cloud", condition->description().c_str(),
+          FOUR_C_THROW("%s condition %d has no nodal cloud", condition.description().c_str(),
               curr->second->id());
 
         int foundit = 0;
@@ -2274,7 +2272,7 @@ void Global::read_conditions(Global::Problem& problem, Core::IO::InputFile& inpu
         if (found)
         {
           // Insert a copy since we might insert the same condition in many discretizations.
-          dis->set_condition(condition->name(), curr->second->copy_without_geometry());
+          dis->set_condition(condition.name(), curr->second->copy_without_geometry());
         }
       }
     }

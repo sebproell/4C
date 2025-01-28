@@ -11,13 +11,12 @@
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_validparameters.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 // set the mpc specific parameters
 void Inpar::RveMpc::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
 
 
@@ -38,67 +37,59 @@ void Inpar::RveMpc::set_valid_parameters(Teuchos::ParameterList& list)
 
 // set mpc specific conditions
 void Inpar::RveMpc::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   // ================================================================================================
-  std::shared_ptr<Core::Conditions::ConditionDefinition> rve_lineperiodic_condition =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE PERIODIC RVE 2D BOUNDARY CONDITIONS", "LinePeriodicRve",
-          "definition of edges forming 2D periodic boundary conditions",
-          Core::Conditions::LineRvePeriodic, false, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition rve_lineperiodic_condition(
+      "DESIGN LINE PERIODIC RVE 2D BOUNDARY CONDITIONS", "LinePeriodicRve",
+      "definition of edges forming 2D periodic boundary conditions",
+      Core::Conditions::LineRvePeriodic, false, Core::Conditions::geometry_type_line);
 
-  add_named_selection_component(rve_lineperiodic_condition, "EDGE", "edge line id", "undefined",
-      Teuchos::tuple<std::string>("x+", "x-", "y+", "y-", "undefined"),
-      Teuchos::tuple<std::string>("x+", "x-", "y+", "y-", "undefined"), true);
+  rve_lineperiodic_condition.add_component(
+      selection<std::string>("EDGE", {"x+", "x-", "y+", "y-", "undefined"},
+          {.description = "edge line id", .default_value = "undefined"}));
 
   condlist.push_back(rve_lineperiodic_condition);
 
   // ================================================================================================
-  std::shared_ptr<Core::Conditions::ConditionDefinition> rve_surfperiodic_condition =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF PERIODIC RVE 3D BOUNDARY CONDITIONS", "SurfacePeriodicRve",
-          "definition of surfaces forming 3D periodic boundary conditions",
-          Core::Conditions::SurfaceRvePeriodic, false, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition rve_surfperiodic_condition(
+      "DESIGN SURF PERIODIC RVE 3D BOUNDARY CONDITIONS", "SurfacePeriodicRve",
+      "definition of surfaces forming 3D periodic boundary conditions",
+      Core::Conditions::SurfaceRvePeriodic, false, Core::Conditions::geometry_type_surface);
 
-  add_named_selection_component(rve_surfperiodic_condition, "SURF", "surface id", "undefined",
-      Teuchos::tuple<std::string>("x+", "x-", "y+", "y-", "z+", "z-", "undefined"),
-      Teuchos::tuple<std::string>("x+", "x-", "y+", "y-", "z+", "z-", "undefined"), true);
+  rve_surfperiodic_condition.add_component(
+      selection<std::string>("SURF", {"x+", "x-", "y+", "y-", "z+", "z-", "undefined"},
+          {.description = "surface id", .default_value = "undefined"}));
 
   condlist.push_back(rve_surfperiodic_condition);
 
   // ================================================================================================
-  std::shared_ptr<Core::Conditions::ConditionDefinition> rve_cornerpoint_condition =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN POINT PERIODIC RVE 2D BOUNDARY REFERENCE CONDITIONS",
-          "PointPeriodicRveReferenceNode",
-          "definition of reference points defining the reference vector of the periodic boundary"
-          "condition -  only required if RVE_REFERENCE_POINTS = automatic",
-          Core::Conditions::PointRvePeriodicReference, false,
-          Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition rve_cornerpoint_condition(
+      "DESIGN POINT PERIODIC RVE 2D BOUNDARY REFERENCE CONDITIONS", "PointPeriodicRveReferenceNode",
+      "definition of reference points defining the reference vector of the periodic boundary"
+      "condition -  only required if RVE_REFERENCE_POINTS = automatic",
+      Core::Conditions::PointRvePeriodicReference, false, Core::Conditions::geometry_type_point);
 
-  add_named_selection_component(rve_cornerpoint_condition, "POSITION", "position of reference node",
-      "undefined", Teuchos::tuple<std::string>("N1L", "N1B", "N2", "N4", "N1", "N3", "undefined"),
-      Teuchos::tuple<std::string>("N1L", "N1B", "N2", "N4", "N1", "N3", "undefined"), true);
+  rve_cornerpoint_condition.add_component(
+      selection<std::string>("POSITION", {"N1L", "N1B", "N2", "N4", "N1", "N3", "undefined"},
+          {.description = "position of reference node", .default_value = "undefined"}));
 
   condlist.push_back(rve_cornerpoint_condition);
 
   // ================================================================================================
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linear_ce =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN POINT COUPLED DOF EQUATION CONDITIONS", "PointLinearCoupledEquation",
-          "definition of the term of a linear couple equation coupling different degrees of "
-          "freedom in "
-          "2d",
-          Core::Conditions::PointLinearCoupledEquation, false,
-          Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition linear_ce("DESIGN POINT COUPLED DOF EQUATION CONDITIONS",
+      "PointLinearCoupledEquation",
+      "definition of the term of a linear couple equation coupling different degrees of "
+      "freedom in "
+      "2d",
+      Core::Conditions::PointLinearCoupledEquation, false, Core::Conditions::geometry_type_point);
 
-  add_named_int(linear_ce, "EQUATION", "EQUATION");
-  add_named_selection_component(linear_ce, "ADD", "degrees of freedom", "undefined",
-      Teuchos::tuple<std::string>("dispx", "dispy", "undefined"),
-      Teuchos::tuple<std::string>("dispx", "dispy", "undefined"), true);
-  add_named_real(linear_ce, "COEFFICIENT");
+  linear_ce.add_component(entry<int>("EQUATION", {.description = "EQUATION"}));
+  linear_ce.add_component(selection<std::string>("ADD", {"dispx", "dispy", "undefined"},
+      {.description = "degrees of freedom", .default_value = "undefined"}));
+  linear_ce.add_component(entry<double>("COEFFICIENT"));
 
   condlist.push_back(linear_ce);
   /*--------------------------------------------------------------------*/

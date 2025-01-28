@@ -10,7 +10,7 @@
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_beaminteraction.hpp"
 #include "4C_inpar_geometry_pair.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_parameter_list.hpp"
 
@@ -359,9 +359,9 @@ void Inpar::BeamToSolid::set_valid_parameters(Teuchos::ParameterList& list)
  *
  */
 void Inpar::BeamToSolid::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   // Beam-to-volume mesh tying conditions.
   {
@@ -370,23 +370,20 @@ void Inpar::BeamToSolid::set_valid_conditions(
         Inpar::BeamInteraction::BeamInteractionConditions::beam_to_solid_volume_meshtying,
         condition_names);
 
-    std::shared_ptr<Core::Conditions::ConditionDefinition>
-        beam_to_solid_volume_meshtying_condition =
-            std::make_shared<Core::Conditions::ConditionDefinition>(
-                "BEAM INTERACTION/BEAM TO SOLID VOLUME MESHTYING VOLUME", condition_names[1],
-                "Beam-to-volume mesh tying conditions - volume definition",
-                Core::Conditions::BeamToSolidVolumeMeshtyingVolume, true,
-                Core::Conditions::geometry_type_volume);
-    add_named_int(beam_to_solid_volume_meshtying_condition, "COUPLING_ID");
+    Core::Conditions::ConditionDefinition beam_to_solid_volume_meshtying_condition(
+        "BEAM INTERACTION/BEAM TO SOLID VOLUME MESHTYING VOLUME", condition_names[1],
+        "Beam-to-volume mesh tying conditions - volume definition",
+        Core::Conditions::BeamToSolidVolumeMeshtyingVolume, true,
+        Core::Conditions::geometry_type_volume);
+    beam_to_solid_volume_meshtying_condition.add_component(entry<int>("COUPLING_ID"));
     condlist.push_back(beam_to_solid_volume_meshtying_condition);
 
-    beam_to_solid_volume_meshtying_condition =
-        std::make_shared<Core::Conditions::ConditionDefinition>(
-            "BEAM INTERACTION/BEAM TO SOLID VOLUME MESHTYING LINE", condition_names[0],
-            "Beam-to-volume mesh tying conditions - line definition",
-            Core::Conditions::BeamToSolidVolumeMeshtyingLine, true,
-            Core::Conditions::geometry_type_line);
-    add_named_int(beam_to_solid_volume_meshtying_condition, "COUPLING_ID");
+    beam_to_solid_volume_meshtying_condition = Core::Conditions::ConditionDefinition(
+        "BEAM INTERACTION/BEAM TO SOLID VOLUME MESHTYING LINE", condition_names[0],
+        "Beam-to-volume mesh tying conditions - line definition",
+        Core::Conditions::BeamToSolidVolumeMeshtyingLine, true,
+        Core::Conditions::geometry_type_line);
+    beam_to_solid_volume_meshtying_condition.add_component(entry<int>("COUPLING_ID"));
     condlist.push_back(beam_to_solid_volume_meshtying_condition);
   }
 
@@ -397,23 +394,20 @@ void Inpar::BeamToSolid::set_valid_conditions(
         Inpar::BeamInteraction::BeamInteractionConditions::beam_to_solid_surface_meshtying,
         condition_names);
 
-    std::shared_ptr<Core::Conditions::ConditionDefinition>
-        beam_to_solid_surface_meshtying_condition =
-            std::make_shared<Core::Conditions::ConditionDefinition>(
-                "BEAM INTERACTION/BEAM TO SOLID SURFACE MESHTYING SURFACE", condition_names[1],
-                "Beam-to-surface mesh tying conditions - surface definition",
-                Core::Conditions::BeamToSolidSurfaceMeshtyingSurface, true,
-                Core::Conditions::geometry_type_surface);
-    add_named_int(beam_to_solid_surface_meshtying_condition, "COUPLING_ID");
+    Core::Conditions::ConditionDefinition beam_to_solid_surface_meshtying_condition(
+        "BEAM INTERACTION/BEAM TO SOLID SURFACE MESHTYING SURFACE", condition_names[1],
+        "Beam-to-surface mesh tying conditions - surface definition",
+        Core::Conditions::BeamToSolidSurfaceMeshtyingSurface, true,
+        Core::Conditions::geometry_type_surface);
+    beam_to_solid_surface_meshtying_condition.add_component(entry<int>("COUPLING_ID"));
     condlist.push_back(beam_to_solid_surface_meshtying_condition);
 
-    beam_to_solid_surface_meshtying_condition =
-        std::make_shared<Core::Conditions::ConditionDefinition>(
-            "BEAM INTERACTION/BEAM TO SOLID SURFACE MESHTYING LINE", condition_names[0],
-            "Beam-to-surface mesh tying conditions - line definition",
-            Core::Conditions::BeamToSolidSurfaceMeshtyingLine, true,
-            Core::Conditions::geometry_type_line);
-    add_named_int(beam_to_solid_surface_meshtying_condition, "COUPLING_ID");
+    beam_to_solid_surface_meshtying_condition = Core::Conditions::ConditionDefinition(
+        "BEAM INTERACTION/BEAM TO SOLID SURFACE MESHTYING LINE", condition_names[0],
+        "Beam-to-surface mesh tying conditions - line definition",
+        Core::Conditions::BeamToSolidSurfaceMeshtyingLine, true,
+        Core::Conditions::geometry_type_line);
+    beam_to_solid_surface_meshtying_condition.add_component(entry<int>("COUPLING_ID"));
     condlist.push_back(beam_to_solid_surface_meshtying_condition);
   }
 
@@ -424,22 +418,20 @@ void Inpar::BeamToSolid::set_valid_conditions(
         Inpar::BeamInteraction::BeamInteractionConditions::beam_to_solid_surface_contact,
         condition_names);
 
-    std::shared_ptr<Core::Conditions::ConditionDefinition> beam_to_solid_surface_contact_condition =
-        std::make_shared<Core::Conditions::ConditionDefinition>(
-            "BEAM INTERACTION/BEAM TO SOLID SURFACE CONTACT SURFACE", condition_names[1],
-            "Beam-to-surface contact conditions - surface definition",
-            Core::Conditions::BeamToSolidSurfaceContactSurface, true,
-            Core::Conditions::geometry_type_surface);
-    add_named_int(beam_to_solid_surface_contact_condition, "COUPLING_ID");
+    Core::Conditions::ConditionDefinition beam_to_solid_surface_contact_condition(
+        "BEAM INTERACTION/BEAM TO SOLID SURFACE CONTACT SURFACE", condition_names[1],
+        "Beam-to-surface contact conditions - surface definition",
+        Core::Conditions::BeamToSolidSurfaceContactSurface, true,
+        Core::Conditions::geometry_type_surface);
+    beam_to_solid_surface_contact_condition.add_component(entry<int>("COUPLING_ID"));
     condlist.push_back(beam_to_solid_surface_contact_condition);
 
     beam_to_solid_surface_contact_condition =
-        std::make_shared<Core::Conditions::ConditionDefinition>(
-            "BEAM INTERACTION/BEAM TO SOLID SURFACE CONTACT LINE", condition_names[0],
-            "Beam-to-surface contact conditions - line definition",
+        Core::Conditions::ConditionDefinition("BEAM INTERACTION/BEAM TO SOLID SURFACE CONTACT LINE",
+            condition_names[0], "Beam-to-surface contact conditions - line definition",
             Core::Conditions::BeamToSolidSurfaceContactLine, true,
             Core::Conditions::geometry_type_line);
-    add_named_int(beam_to_solid_surface_contact_condition, "COUPLING_ID");
+    beam_to_solid_surface_contact_condition.add_component(entry<int>("COUPLING_ID"));
     condlist.push_back(beam_to_solid_surface_contact_condition);
   }
 }

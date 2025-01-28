@@ -38,7 +38,7 @@ int Discret::Elements::MembraneLine<distype>::evaluate_neumann(Teuchos::Paramete
   LoadType ltype;
 
   const std::string& type = condition.parameters().get<std::string>("TYPE");
-  if (type == "neum_live")
+  if (type == "Live")
   {
     ltype = neum_live;
   }

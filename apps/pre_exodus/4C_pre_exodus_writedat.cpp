@@ -134,8 +134,7 @@ void EXODUS::write_dat_conditions(
 {
   using namespace FourC;
 
-  std::shared_ptr<std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>> condlist =
-      Input::valid_conditions();
+  std::vector<Core::Conditions::ConditionDefinition> condlist = Input::valid_conditions();
 
   // count how often we have one specific condition
   std::map<std::string, std::vector<int>> count_cond;
@@ -145,10 +144,10 @@ void EXODUS::write_dat_conditions(
     (count_cond[condefs.at(i_cond).sec]).push_back(i_cond);
 
   // loop all valid conditions that 4C knows
-  for (auto& condition : *condlist)
+  for (auto& condition : condlist)
   {
     size_t linelength = 66;
-    std::string sectionname = condition->section_name();
+    std::string sectionname = condition.section_name();
 
     // ignore conditions occurring zero times
     count = count_cond.find(sectionname);
@@ -158,7 +157,7 @@ void EXODUS::write_dat_conditions(
     std::string dash(linelength - sectionname.size(), '-');
     dat << dash << sectionname << std::endl;
     std::string geo;
-    switch (condition->geometry_type())
+    switch (condition.geometry_type())
     {
       case Core::Conditions::geometry_type_point:
         geo = "DPOINT ";

@@ -8,7 +8,7 @@
 #include "4C_inpar_s2i.hpp"
 
 #include "4C_fem_condition_definition.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -18,7 +18,6 @@ FOUR_C_NAMESPACE_OPEN
  *------------------------------------------------------------------------*/
 void Inpar::S2I::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -102,63 +101,59 @@ void Inpar::S2I::set_valid_parameters(Teuchos::ParameterList& list)
 /*------------------------------------------------------------------------*
  | set valid conditions for scatra-scatra interface coupling   fang 01/16 |
  *------------------------------------------------------------------------*/
-void Inpar::S2I::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+void Inpar::S2I::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
   using namespace Core::IO::InputSpecBuilders;
 
   /*--------------------------------------------------------------------*/
   // scatra-scatra interface mesh tying condition
   {
     // definition of scatra-scatra interface mesh tying line condition
-    auto s2imeshtyingline = std::make_shared<Core::Conditions::ConditionDefinition>(
-        "DESIGN S2I MESHTYING LINE CONDITIONS", "S2IMeshtying",
-        "Scatra-scatra line interface mesh tying", Core::Conditions::S2IMeshtying, true,
-        Core::Conditions::geometry_type_line);
+    Core::Conditions::ConditionDefinition s2imeshtyingline("DESIGN S2I MESHTYING LINE CONDITIONS",
+        "S2IMeshtying", "Scatra-scatra line interface mesh tying", Core::Conditions::S2IMeshtying,
+        true, Core::Conditions::geometry_type_line);
 
     // definition of scatra-scatra interface mesh tying surface condition
-    auto s2imeshtyingsurf = std::make_shared<Core::Conditions::ConditionDefinition>(
-        "DESIGN S2I MESHTYING SURF CONDITIONS", "S2IMeshtying",
-        "Scatra-scatra surface interface mesh tying", Core::Conditions::S2IMeshtying, true,
-        Core::Conditions::geometry_type_surface);
+    Core::Conditions::ConditionDefinition s2imeshtyingsurf("DESIGN S2I MESHTYING SURF CONDITIONS",
+        "S2IMeshtying", "Scatra-scatra surface interface mesh tying",
+        Core::Conditions::S2IMeshtying, true, Core::Conditions::geometry_type_surface);
 
-    // insert input file line components into condition definitions
-    for (const auto& cond : {s2imeshtyingline, s2imeshtyingsurf})
+    const auto make_s2imeshtying = [&condlist](Core::Conditions::ConditionDefinition& cond)
     {
-      add_named_int(cond, "ConditionID");
-      add_named_selection_component(cond, "INTERFACE_SIDE", "interface side", "Undefined",
-          Teuchos::tuple<std::string>("Undefined", "Slave", "Master"),
-          Teuchos::tuple<int>(
-              Inpar::S2I::side_undefined, Inpar::S2I::side_slave, Inpar::S2I::side_master));
-      add_named_int(cond, "S2I_KINETICS_ID");
+      cond.add_component(entry<int>("ConditionID"));
+      cond.add_component(selection<int>("INTERFACE_SIDE",
+          {{"Undefined", Inpar::S2I::side_undefined}, {"Slave", Inpar::S2I::side_slave},
+              {"Master", Inpar::S2I::side_master}},
+          {.description = "interface side"}));
+      cond.add_component(entry<int>("S2I_KINETICS_ID"));
+
       condlist.push_back(cond);
-    }
+    };
+
+    make_s2imeshtying(s2imeshtyingline);
+    make_s2imeshtying(s2imeshtyingsurf);
   }
 
   /*--------------------------------------------------------------------*/
   // scatra-scatra interface kinetics condition
   {
     // definition of scatra-scatra interface kinetics point condition
-    auto s2ikineticspoint = std::make_shared<Core::Conditions::ConditionDefinition>(
-        "DESIGN S2I KINETICS POINT CONDITIONS", "S2IKinetics",
-        "Scatra-scatra line interface kinetics", Core::Conditions::S2IKinetics, true,
+    Core::Conditions::ConditionDefinition s2ikineticspoint("DESIGN S2I KINETICS POINT CONDITIONS",
+        "S2IKinetics", "Scatra-scatra line interface kinetics", Core::Conditions::S2IKinetics, true,
         Core::Conditions::geometry_type_point);
 
     // definition of scatra-scatra interface kinetics line condition
-    auto s2ikineticsline = std::make_shared<Core::Conditions::ConditionDefinition>(
-        "DESIGN S2I KINETICS LINE CONDITIONS", "S2IKinetics",
-        "Scatra-scatra line interface kinetics", Core::Conditions::S2IKinetics, true,
+    Core::Conditions::ConditionDefinition s2ikineticsline("DESIGN S2I KINETICS LINE CONDITIONS",
+        "S2IKinetics", "Scatra-scatra line interface kinetics", Core::Conditions::S2IKinetics, true,
         Core::Conditions::geometry_type_line);
 
     // definition of scatra-scatra interface kinetics surface condition
-    auto s2ikineticssurf = std::make_shared<Core::Conditions::ConditionDefinition>(
-        "DESIGN S2I KINETICS SURF CONDITIONS", "S2IKinetics",
-        "Scatra-scatra surface interface kinetics", Core::Conditions::S2IKinetics, true,
-        Core::Conditions::geometry_type_surface);
+    Core::Conditions::ConditionDefinition s2ikineticssurf("DESIGN S2I KINETICS SURF CONDITIONS",
+        "S2IKinetics", "Scatra-scatra surface interface kinetics", Core::Conditions::S2IKinetics,
+        true, Core::Conditions::geometry_type_surface);
 
     // Macro-micro coupling condition for micro scale in multi-scale scalar transport problems
-    auto multiscalecouplingpoint = std::make_shared<Core::Conditions::ConditionDefinition>(
+    Core::Conditions::ConditionDefinition multiscalecouplingpoint(
         "DESIGN SCATRA MULTI-SCALE COUPLING POINT CONDITIONS", "ScatraMultiScaleCoupling",
         "Scalar transport multi-scale coupling condition",
         Core::Conditions::ScatraMultiScaleCoupling, false, Core::Conditions::geometry_type_point);
@@ -329,7 +324,7 @@ void Inpar::S2I::set_valid_conditions(
         kinetic_model_choices.emplace_back(std::move(noflux));
       }
 
-      multiscalecouplingpoint->add_component(one_of(kinetic_model_choices));
+      multiscalecouplingpoint.add_component(one_of(kinetic_model_choices));
     }
 
     auto interface_side_options = one_of({
@@ -345,17 +340,19 @@ void Inpar::S2I::set_valid_conditions(
         }),
     });
 
-    // add components to conditions
-    for (const auto& cond : {s2ikineticspoint, s2ikineticsline, s2ikineticssurf})
+    const auto make_s2ikinetics = [&condlist, &interface_side_options](
+                                      Core::Conditions::ConditionDefinition& cond)
     {
-      // interface ID
-      add_named_int(cond, "ConditionID");
+      cond.add_component(entry<int>("ConditionID"));
+      cond.add_component(interface_side_options);
 
-      cond->add_component(interface_side_options);
+      condlist.push_back(cond);
+    };
 
-      // insert condition definitions into global list of valid condition definitions
-      condlist.emplace_back(cond);
-    }
+    make_s2ikinetics(s2ikineticspoint);
+    make_s2ikinetics(s2ikineticsline);
+    make_s2ikinetics(s2ikineticssurf);
+
 
     condlist.emplace_back(multiscalecouplingpoint);
   }
@@ -367,14 +364,14 @@ void Inpar::S2I::set_valid_conditions(
   {
     // definition of scatra-scatra interface coupling line condition involving interface layer
     // growth
-    auto s2igrowthline = std::make_shared<Core::Conditions::ConditionDefinition>(
+    Core::Conditions::ConditionDefinition s2igrowthline(
         "DESIGN S2I KINETICS GROWTH LINE CONDITIONS", "S2IKineticsGrowth",
         "Scatra-scatra line interface layer growth kinetics", Core::Conditions::S2IKineticsGrowth,
         true, Core::Conditions::geometry_type_line);
 
     // definition of scatra-scatra interface coupling surface condition involving interface layer
     // growth
-    auto s2igrowthsurf = std::make_shared<Core::Conditions::ConditionDefinition>(
+    Core::Conditions::ConditionDefinition s2igrowthsurf(
         "DESIGN S2I KINETICS GROWTH SURF CONDITIONS", "S2IKineticsGrowth",
         "Scatra-scatra surface interface layer growth kinetics",
         Core::Conditions::S2IKineticsGrowth, true, Core::Conditions::geometry_type_surface);
@@ -400,32 +397,32 @@ void Inpar::S2I::set_valid_conditions(
         entry<double>("INITTHICKNESS"),
     });
 
-    for (const auto& cond : {s2igrowthline, s2igrowthsurf})
+    const auto make_s2igrowth = [&condlist, &butler_volmer](
+                                    Core::Conditions::ConditionDefinition& cond)
     {
-      // interface ID
-      add_named_int(cond, "ConditionID");
-      cond->add_component(
+      cond.add_component(entry<int>("ConditionID"));
+      cond.add_component(
           selection<int>("KINETIC_MODEL", {{"Butler-Volmer", growth_kinetics_butlervolmer}}));
-      cond->add_component(butler_volmer);
+      cond.add_component(butler_volmer);
 
-
-      // insert condition definitions into global list of valid condition definitions
       condlist.emplace_back(cond);
-    }
+    };
+
+    make_s2igrowth(s2igrowthline);
+    make_s2igrowth(s2igrowthsurf);
   }
 
   /*--------------------------------------------------------------------*/
   // scatra-scatra interface with micro-macro coupling for space-charge layers
   {
-    auto s2isclcond = std::make_shared<Core::Conditions::ConditionDefinition>(
-        "DESIGN S2I SCL COUPLING SURF CONDITIONS", "S2ISCLCoupling",
-        "Scatra-scatra surface with SCL micro-macro coupling between",
+    Core::Conditions::ConditionDefinition s2isclcond("DESIGN S2I SCL COUPLING SURF CONDITIONS",
+        "S2ISCLCoupling", "Scatra-scatra surface with SCL micro-macro coupling between",
         Core::Conditions::S2ISCLCoupling, true, Core::Conditions::geometry_type_surface);
 
-    add_named_selection_component(s2isclcond, "INTERFACE_SIDE", "interface side", "Undefined",
-        Teuchos::tuple<std::string>("Undefined", "Slave", "Master"),
-        Teuchos::tuple<int>(
-            Inpar::S2I::side_undefined, Inpar::S2I::side_slave, Inpar::S2I::side_master));
+    s2isclcond.add_component(selection<int>("INTERFACE_SIDE",
+        {{"Undefined", Inpar::S2I::side_undefined}, {"Slave", Inpar::S2I::side_slave},
+            {"Master", Inpar::S2I::side_master}},
+        {.description = "interface side"}));
 
     condlist.emplace_back(s2isclcond);
   }

@@ -8,7 +8,7 @@
 #include "4C_inpar_cardiovascular0d.hpp"
 
 #include "4C_fem_condition_definition.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -17,7 +17,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::Cardiovascular0D::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -522,29 +521,27 @@ void Inpar::Cardiovascular0D::set_valid_parameters(Teuchos::ParameterList& list)
 
 
 void Inpar::Cardiovascular0D::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
 
   /*--------------------------------------------------------------------*/
   // Monolithic coupling of structure and a four-element windkessel - mhv 11/13
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition>
-      cardiovascular0d4elementwindkesselcondition =
-          std::make_shared<Core::Conditions::ConditionDefinition>(
-              "DESIGN SURF CARDIOVASCULAR 0D 4-ELEMENT WINDKESSEL CONDITIONS",
-              "Cardiovascular0D4ElementWindkesselStructureCond", "Surface Cardiovascular0D",
-              Core::Conditions::Cardiovascular0D4ElementWindkessel_Structure, true,
-              Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition cardiovascular0d4elementwindkesselcondition(
+      "DESIGN SURF CARDIOVASCULAR 0D 4-ELEMENT WINDKESSEL CONDITIONS",
+      "Cardiovascular0D4ElementWindkesselStructureCond", "Surface Cardiovascular0D",
+      Core::Conditions::Cardiovascular0D4ElementWindkessel_Structure, true,
+      Core::Conditions::geometry_type_surface);
 
-  Input::add_named_int(cardiovascular0d4elementwindkesselcondition, "id");
-  Input::add_named_real(cardiovascular0d4elementwindkesselcondition, "C");
-  Input::add_named_real(cardiovascular0d4elementwindkesselcondition, "R_p");
-  Input::add_named_real(cardiovascular0d4elementwindkesselcondition, "Z_c");
-  Input::add_named_real(cardiovascular0d4elementwindkesselcondition, "L");
-  Input::add_named_real(cardiovascular0d4elementwindkesselcondition, "p_ref");
-  Input::add_named_real(cardiovascular0d4elementwindkesselcondition, "p_0");
+  cardiovascular0d4elementwindkesselcondition.add_component(entry<int>("id"));
+  cardiovascular0d4elementwindkesselcondition.add_component(entry<double>("C"));
+  cardiovascular0d4elementwindkesselcondition.add_component(entry<double>("R_p"));
+  cardiovascular0d4elementwindkesselcondition.add_component(entry<double>("Z_c"));
+  cardiovascular0d4elementwindkesselcondition.add_component(entry<double>("L"));
+  cardiovascular0d4elementwindkesselcondition.add_component(entry<double>("p_ref"));
+  cardiovascular0d4elementwindkesselcondition.add_component(entry<double>("p_0"));
 
   condlist.push_back(cardiovascular0d4elementwindkesselcondition);
 
@@ -552,54 +549,49 @@ void Inpar::Cardiovascular0D::set_valid_conditions(
   // Monolithic coupling of structure and an arterial cardiovascular 0D flow model accounting for
   // proximal and distal arterial pressure formulation proposed by Cristobal Bertoglio - mhv 03/14
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> cardiovascular0darterialproxdistcond =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF CARDIOVASCULAR 0D ARTERIAL PROX DIST CONDITIONS",
-          "Cardiovascular0DArterialProxDistStructureCond",
-          "Surface 0D cardiovascular arterial proximal and distal",
-          Core::Conditions::Cardiovascular0DArterialProxDist_Structure, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition cardiovascular0darterialproxdistcond(
+      "DESIGN SURF CARDIOVASCULAR 0D ARTERIAL PROX DIST CONDITIONS",
+      "Cardiovascular0DArterialProxDistStructureCond",
+      "Surface 0D cardiovascular arterial proximal and distal",
+      Core::Conditions::Cardiovascular0DArterialProxDist_Structure, true,
+      Core::Conditions::geometry_type_surface);
 
-  Input::add_named_int(cardiovascular0darterialproxdistcond, "id");
-  Input::add_named_real(cardiovascular0darterialproxdistcond, "R_arvalve_max");
-  Input::add_named_real(cardiovascular0darterialproxdistcond, "R_arvalve_min");
-  Input::add_named_real(cardiovascular0darterialproxdistcond, "R_atvalve_max");
-  Input::add_named_real(cardiovascular0darterialproxdistcond, "R_atvalve_min");
-  Input::add_named_real(cardiovascular0darterialproxdistcond, "k_p");
-  Input::add_named_real(cardiovascular0darterialproxdistcond, "L_arp");
-  Input::add_named_real(cardiovascular0darterialproxdistcond, "C_arp");
-  Input::add_named_real(cardiovascular0darterialproxdistcond, "R_arp");
-  Input::add_named_real(cardiovascular0darterialproxdistcond, "C_ard");
-  Input::add_named_real(cardiovascular0darterialproxdistcond, "R_ard");
-  Input::add_named_real(cardiovascular0darterialproxdistcond, "p_ref");
-  Input::add_named_real(cardiovascular0darterialproxdistcond, "p_v_0");
-  Input::add_named_real(cardiovascular0darterialproxdistcond, "p_arp_0");
-  Input::add_named_real(cardiovascular0darterialproxdistcond, "y_arp_0");
-  Input::add_named_real(cardiovascular0darterialproxdistcond, "p_ard_0");
-  Input::add_named_real(cardiovascular0darterialproxdistcond, "p_at_fac");
-  Input::add_named_int(cardiovascular0darterialproxdistcond, "p_at_crv", "curve", 0, false, true);
+  cardiovascular0darterialproxdistcond.add_component(entry<int>("id"));
+  cardiovascular0darterialproxdistcond.add_component(entry<double>("R_arvalve_max"));
+  cardiovascular0darterialproxdistcond.add_component(entry<double>("R_arvalve_min"));
+  cardiovascular0darterialproxdistcond.add_component(entry<double>("R_atvalve_max"));
+  cardiovascular0darterialproxdistcond.add_component(entry<double>("R_atvalve_min"));
+  cardiovascular0darterialproxdistcond.add_component(entry<double>("k_p"));
+  cardiovascular0darterialproxdistcond.add_component(entry<double>("L_arp"));
+  cardiovascular0darterialproxdistcond.add_component(entry<double>("C_arp"));
+  cardiovascular0darterialproxdistcond.add_component(entry<double>("R_arp"));
+  cardiovascular0darterialproxdistcond.add_component(entry<double>("C_ard"));
+  cardiovascular0darterialproxdistcond.add_component(entry<double>("R_ard"));
+  cardiovascular0darterialproxdistcond.add_component(entry<double>("p_ref"));
+  cardiovascular0darterialproxdistcond.add_component(entry<double>("p_v_0"));
+  cardiovascular0darterialproxdistcond.add_component(entry<double>("p_arp_0"));
+  cardiovascular0darterialproxdistcond.add_component(entry<double>("y_arp_0"));
+  cardiovascular0darterialproxdistcond.add_component(entry<double>("p_ard_0"));
+  cardiovascular0darterialproxdistcond.add_component(entry<double>("p_at_fac"));
+  cardiovascular0darterialproxdistcond.add_component(
+      entry<Noneable<int>>("p_at_crv", {.description = "curve"}));
   condlist.push_back(cardiovascular0darterialproxdistcond);
 
   /*--------------------------------------------------------------------*/
   // Monolithic coupling of structure and a full closed-loop 0D cardiovascular flow model
   // (closed-loop circulatory system model) mhv 02/15
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> cardiovascular0dsyspulcirculationcond =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF CARDIOVASCULAR 0D SYS-PUL CIRCULATION CONDITIONS",
-          "Cardiovascular0DSysPulCirculationStructureCond",
-          "Surface cardiovascular 0D sys pul circulation condition",
-          Core::Conditions::Cardiovascular0DSysPulCirculation_Structure, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition cardiovascular0dsyspulcirculationcond(
+      "DESIGN SURF CARDIOVASCULAR 0D SYS-PUL CIRCULATION CONDITIONS",
+      "Cardiovascular0DSysPulCirculationStructureCond",
+      "Surface cardiovascular 0D sys pul circulation condition",
+      Core::Conditions::Cardiovascular0DSysPulCirculation_Structure, true,
+      Core::Conditions::geometry_type_surface);
 
-  Input::add_named_int(cardiovascular0dsyspulcirculationcond, "id");
-  Input::add_named_selection_component(cardiovascular0dsyspulcirculationcond, "TYPE", "",
-      "ventricle_left",
-      Teuchos::tuple<std::string>(
-          "ventricle_left", "ventricle_right", "atrium_left", "atrium_right", "dummy"),
-      Teuchos::tuple<std::string>(
-          "ventricle_left", "ventricle_right", "atrium_left", "atrium_right", "dummy"),
-      false);
+  cardiovascular0dsyspulcirculationcond.add_component(entry<int>("id"));
+  cardiovascular0dsyspulcirculationcond.add_component(selection<std::string>("TYPE",
+      {"ventricle_left", "ventricle_right", "atrium_left", "atrium_right", "dummy"},
+      {.description = ""}));
 
   condlist.push_back(cardiovascular0dsyspulcirculationcond);
 
@@ -607,23 +599,17 @@ void Inpar::Cardiovascular0D::set_valid_conditions(
   // Monolithic coupling of structure and a full closed-loop 0D cardiovascular flow model
   // (closed-loop circulatory system model) mhv 02/15
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition>
-      cardiovascularrespiratory0dsyspulperiphcirculationcond =
-          std::make_shared<Core::Conditions::ConditionDefinition>(
-              "DESIGN SURF CARDIOVASCULAR RESPIRATORY 0D SYS-PUL PERIPH CIRCULATION CONDITIONS",
-              "CardiovascularRespiratory0DSysPulPeriphCirculationStructureCond",
-              "Surface 0D cardiovascular respiratory sys-pul periph circulation condition",
-              Core::Conditions::CardiovascularRespiratory0DSysPulPeriphCirculation_Structure, true,
-              Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition cardiovascularrespiratory0dsyspulperiphcirculationcond(
+      "DESIGN SURF CARDIOVASCULAR RESPIRATORY 0D SYS-PUL PERIPH CIRCULATION CONDITIONS",
+      "CardiovascularRespiratory0DSysPulPeriphCirculationStructureCond",
+      "Surface 0D cardiovascular respiratory sys-pul periph circulation condition",
+      Core::Conditions::CardiovascularRespiratory0DSysPulPeriphCirculation_Structure, true,
+      Core::Conditions::geometry_type_surface);
 
-  Input::add_named_int(cardiovascularrespiratory0dsyspulperiphcirculationcond, "id");
-  add_named_selection_component(cardiovascularrespiratory0dsyspulperiphcirculationcond, "TYPE", "",
-      "ventricle_left",
-      Teuchos::tuple<std::string>(
-          "ventricle_left", "ventricle_right", "atrium_left", "atrium_right", "dummy"),
-      Teuchos::tuple<std::string>(
-          "ventricle_left", "ventricle_right", "atrium_left", "atrium_right", "dummy"),
-      false);
+  cardiovascularrespiratory0dsyspulperiphcirculationcond.add_component(entry<int>("id"));
+  cardiovascularrespiratory0dsyspulperiphcirculationcond.add_component(selection<std::string>(
+      "TYPE", {"ventricle_left", "ventricle_right", "atrium_left", "atrium_right", "dummy"},
+      {.description = ""}));
 
   condlist.push_back(cardiovascularrespiratory0dsyspulperiphcirculationcond);
 
@@ -632,15 +618,13 @@ void Inpar::Cardiovascular0D::set_valid_conditions(
   // Monolithic coupling of structure and 0D cardiovascular flow models: Neumann coupling surface -
   // mhv 11/13
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> cardiovascular0dstructurecouplingcond =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF CARDIOVASCULAR 0D-STRUCTURE COUPLING CONDITIONS",
-          "SurfaceNeumannCardiovascular0D",
-          "structure 0d cardiovascular coupling surface condition",
-          Core::Conditions::Cardiovascular0DStructureCoupling, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition cardiovascular0dstructurecouplingcond(
+      "DESIGN SURF CARDIOVASCULAR 0D-STRUCTURE COUPLING CONDITIONS",
+      "SurfaceNeumannCardiovascular0D", "structure 0d cardiovascular coupling surface condition",
+      Core::Conditions::Cardiovascular0DStructureCoupling, true,
+      Core::Conditions::geometry_type_surface);
 
-  Input::add_named_int(cardiovascular0dstructurecouplingcond, "coupling_id");
+  cardiovascular0dstructurecouplingcond.add_component(entry<int>("coupling_id"));
 
   condlist.push_back(cardiovascular0dstructurecouplingcond);
 }

@@ -9,7 +9,7 @@
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_io_geometry_type.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -18,7 +18,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::Thermo::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -150,65 +149,66 @@ void Inpar::Thermo::set_valid_parameters(Teuchos::ParameterList& list)
 
 
 void Inpar::Thermo::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*--------------------------------------------------------------------*/
   // Convective heat transfer (Newton's law of heat transfer)
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linethermoconvect =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN THERMO CONVECTION LINE CONDITIONS", "ThermoConvections",
-          "Line Thermo Convections", Core::Conditions::ThermoConvections, true,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfthermoconvect =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN THERMO CONVECTION SURF CONDITIONS", "ThermoConvections",
-          "Surface Thermo Convections", Core::Conditions::ThermoConvections, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition linethermoconvect(
+      "DESIGN THERMO CONVECTION LINE CONDITIONS", "ThermoConvections", "Line Thermo Convections",
+      Core::Conditions::ThermoConvections, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfthermoconvect(
+      "DESIGN THERMO CONVECTION SURF CONDITIONS", "ThermoConvections", "Surface Thermo Convections",
+      Core::Conditions::ThermoConvections, true, Core::Conditions::geometry_type_surface);
 
-  for (const auto& cond : {linethermoconvect, surfthermoconvect})
+  const auto make_thermoconvect = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
     // decide here if approximation is sufficient
     // --> Tempn (old temperature T_n)
     // or if the exact solution is needed
     // --> Tempnp (current temperature solution T_n+1) with linearisation
-    add_named_selection_component(cond, "temperature_state", "temperature state", "Tempnp",
-        Teuchos::tuple<std::string>("Tempnp", "Tempn"),
-        Teuchos::tuple<std::string>("Tempnp", "Tempn"));
-    add_named_real(cond, "coeff", "heat transfer coefficient h");
-    add_named_real(cond, "surtemp", "surrounding (fluid) temperature T_oo");
-    add_named_int(cond, "surtempfunct",
-        "time curve to increase the surrounding (fluid) temperature T_oo in time", 0, false, true);
-    add_named_int(cond, "funct",
-        "time curve to increase the complete boundary condition, i.e., the heat flux", 0, false,
-        true);
-
+    cond.add_component(selection<std::string>(
+        "temperature_state", {"Tempnp", "Tempn"}, {.description = "temperature state"}));
+    cond.add_component(entry<double>("coeff", {.description = "heat transfer coefficient h"}));
+    cond.add_component(
+        entry<double>("surtemp", {.description = "surrounding (fluid) temperature T_oo"}));
+    cond.add_component(entry<Noneable<int>>("surtempfunct",
+        {.description =
+                "time curve to increase the surrounding (fluid) temperature T_oo in time"}));
+    cond.add_component(entry<Noneable<int>>("funct",
+        {.description =
+                "time curve to increase the complete boundary condition, i.e., the heat flux"}));
     condlist.push_back(cond);
-  }
+  };
+
+  make_thermoconvect(linethermoconvect);
+  make_thermoconvect(surfthermoconvect);
 
   /*--------------------------------------------------------------------*/
   // Robin boundary conditions for heat transfer
   // NOTE: this condition must be
-  std::shared_ptr<Core::Conditions::ConditionDefinition> thermorobinline =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN THERMO ROBIN LINE CONDITIONS",
-          "ThermoRobin", "Thermo Robin boundary condition", Core::Conditions::ThermoRobin, true,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> thermorobinsurf =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN THERMO ROBIN SURF CONDITIONS",
-          "ThermoRobin", "Thermo Robin boundary condition", Core::Conditions::ThermoRobin, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition thermorobinline("DESIGN THERMO ROBIN LINE CONDITIONS",
+      "ThermoRobin", "Thermo Robin boundary condition", Core::Conditions::ThermoRobin, true,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition thermorobinsurf("DESIGN THERMO ROBIN SURF CONDITIONS",
+      "ThermoRobin", "Thermo Robin boundary condition", Core::Conditions::ThermoRobin, true,
+      Core::Conditions::geometry_type_surface);
 
-  for (const auto& cond : {thermorobinline, thermorobinsurf})
+  const auto make_thermorobin = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    add_named_int(cond, "NUMSCAL");
-    add_named_int_vector(cond, "ONOFF", "", "NUMSCAL");
-    add_named_real(cond, "PREFACTOR");
-    add_named_real(cond, "REFVALUE");
+    cond.add_component(entry<int>("NUMSCAL"));
+    cond.add_component(entry<std::vector<int>>(
+        "ONOFF", {.description = "", .size = from_parameter<int>("NUMSCAL")}));
+    cond.add_component(entry<double>("PREFACTOR"));
+    cond.add_component(entry<double>("REFVALUE"));
 
-    condlist.emplace_back(cond);
-  }
+    condlist.push_back(cond);
+  };
+
+  make_thermorobin(thermorobinline);
+  make_thermorobin(thermorobinsurf);
 }
 
 FOUR_C_NAMESPACE_CLOSE

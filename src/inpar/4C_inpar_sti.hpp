@@ -52,8 +52,7 @@ namespace Inpar
     void set_valid_parameters(Teuchos::ParameterList& list);
 
     //! set valid conditions for scatra-thermo interaction
-    void set_valid_conditions(
-        std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist);
+    void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);
   }  // namespace STI
 }  // namespace Inpar
 FOUR_C_NAMESPACE_CLOSE

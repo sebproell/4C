@@ -42,8 +42,7 @@ namespace Inpar
     void set_valid_parameters(Teuchos::ParameterList& list);
 
     /// set specific ssti conditions
-    void set_valid_conditions(
-        std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist);
+    void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);
 
   }  // namespace SSTI
 }  // namespace Inpar

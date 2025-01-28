@@ -52,7 +52,7 @@ Airway::RedAirwayTissue::RedAirwayTissue(MPI_Comm comm, const Teuchos::Parameter
   for (unsigned int i = 0; i < numcond; ++i)
   {
     Core::Conditions::Condition* cond = coupcond[i];
-    std::string type = "neum_orthopressure";
+    std::string type = "orthopressure";
     cond->parameters().add("TYPE", type);
     std::vector<int> onoff(6, 0);
     onoff[0] = 1;

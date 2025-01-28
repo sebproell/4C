@@ -51,7 +51,7 @@ int Discret::Elements::StructuralLine::evaluate_neumann(Teuchos::ParameterList& 
   // Configuration config = config_none;
 
   const auto& type = condition.parameters().get<std::string>("TYPE");
-  if (type == "neum_live")
+  if (type == "Live")
   {
     ltype = neum_live;
     // config = config_material;

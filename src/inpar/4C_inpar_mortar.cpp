@@ -8,7 +8,7 @@
 #include "4C_inpar_mortar.hpp"
 
 #include "4C_fem_condition_definition.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -17,7 +17,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -162,115 +161,117 @@ void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
 }
 
 void Inpar::Mortar::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*--------------------------------------------------------------------*/
   // mortar contact
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linecontact =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE MORTAR CONTACT CONDITIONS 2D", "Contact", "Line Contact Coupling",
-          Core::Conditions::Contact, true, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfcontact =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF MORTAR CONTACT CONDITIONS 3D", "Contact", "Surface Contact Coupling",
-          Core::Conditions::Contact, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition linecontact("DESIGN LINE MORTAR CONTACT CONDITIONS 2D",
+      "Contact", "Line Contact Coupling", Core::Conditions::Contact, true,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfcontact("DESIGN SURF MORTAR CONTACT CONDITIONS 3D",
+      "Contact", "Surface Contact Coupling", Core::Conditions::Contact, true,
+      Core::Conditions::geometry_type_surface);
 
-  for (const auto& cond : {linecontact, surfcontact})
+  const auto make_contact = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    add_named_int(cond, "InterfaceID");
-    add_named_selection_component(cond, "Side", "interface side", "Master",
-        Teuchos::tuple<std::string>("Master", "Slave", "Selfcontact"),
-        Teuchos::tuple<std::string>("Master", "Slave", "Selfcontact"));
-    add_named_selection_component(cond, "Initialization", "initialization", "Inactive",
-        Teuchos::tuple<std::string>("Inactive", "Active"),
-        Teuchos::tuple<std::string>("Inactive", "Active"), true);
+    cond.add_component(entry<int>("InterfaceID"));
+    cond.add_component(selection<std::string>(
+        "Side", {"Master", "Slave", "Selfcontact"}, {.description = "interface side"}));
+    cond.add_component(selection<std::string>("Initialization", {"Inactive", "Active"},
+        {.description = "initialization", .default_value = "Inactive"}));
 
-    add_named_real(cond, "FrCoeffOrBound", "friction coefficient bound", 0.0, true);
-    add_named_real(cond, "AdhesionBound", "adhesion bound", 0.0, true);
+    cond.add_component(entry<double>(
+        "FrCoeffOrBound", {.description = "friction coefficient bound", .default_value = 0.0}));
+    cond.add_component(
+        entry<double>("AdhesionBound", {.description = "adhesion bound", .default_value = 0.0}));
 
-    add_named_selection_component(cond, "Application", "application", "Solidcontact",
-        Teuchos::tuple<std::string>("Solidcontact", "Beamtosolidcontact", "Beamtosolidmeshtying"),
-        Teuchos::tuple<std::string>("Solidcontact", "Beamtosolidcontact", "Beamtosolidmeshtying"),
-        true);
+    cond.add_component(selection<std::string>("Application",
+        {"Solidcontact", "Beamtosolidcontact", "Beamtosolidmeshtying"},
+        {.description = "application", .default_value = "Solidcontact"}));
 
     // optional DBC handling
-    add_named_selection_component(cond, "DbcHandling", "DbcHandling", "DoNothing",
-        Teuchos::tuple<std::string>("DoNothing", "RemoveDBCSlaveNodes"),
-        Teuchos::tuple<int>(static_cast<int>(DBCHandling::do_nothing),
-            static_cast<int>(DBCHandling::remove_dbc_nodes_from_slave_side)),
-        true);
-    add_named_real(cond, "TwoHalfPass", "optional two half pass approach", 0.0, true);
-    add_named_real(cond, "RefConfCheckNonSmoothSelfContactSurface",
-        "optional reference configuration check for non-smooth self contact surfaces", 0.0, true);
-    add_named_int(cond, "ConstitutiveLawID", "material id of the constitutive law", 0, true, true);
-
+    cond.add_component(selection<int>("DbcHandling",
+        {{"DoNothing", static_cast<int>(DBCHandling::do_nothing)},
+            {"RemoveDBCSlaveNodes",
+                static_cast<int>(DBCHandling::remove_dbc_nodes_from_slave_side)}},
+        {.description = "DbcHandling",
+            .default_value = static_cast<int>(DBCHandling::do_nothing)}));
+    cond.add_component(entry<double>(
+        "TwoHalfPass", {.description = "optional two half pass approach", .default_value = 0.0}));
+    cond.add_component(entry<double>("RefConfCheckNonSmoothSelfContactSurface",
+        {.description =
+                "optional reference configuration check for non-smooth self contact surfaces",
+            .default_value = 0.0}));
+    cond.add_component(entry<Noneable<int>>("ConstitutiveLawID",
+        {.description = "material id of the constitutive law", .default_value = 0}));
     condlist.push_back(cond);
-  }
+  };
+
+  make_contact(linecontact);
+  make_contact(surfcontact);
 
   /*--------------------------------------------------------------------*/
   // mortar coupling (for ALL kinds of interface problems except contact)
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linemortar =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE MORTAR COUPLING CONDITIONS 2D", "Mortar", "Line Mortar Coupling",
-          Core::Conditions::Mortar, true, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfmortar =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF MORTAR COUPLING CONDITIONS 3D", "Mortar", "Surface Mortar Coupling",
-          Core::Conditions::Mortar, true, Core::Conditions::geometry_type_surface);
-
-  for (const auto& cond : {linemortar, surfmortar})
   {
-    add_named_int(cond, "InterfaceID");
-    add_named_selection_component(cond, "Side", "interface side", "Master",
-        Teuchos::tuple<std::string>("Master", "Slave"),
-        Teuchos::tuple<std::string>("Master", "Slave"));
-    add_named_selection_component(cond, "Initialization", "initialization", "Inactive",
-        Teuchos::tuple<std::string>("Inactive", "Active"),
-        Teuchos::tuple<std::string>("Inactive", "Active"), true);
+    Core::Conditions::ConditionDefinition linemortar("DESIGN LINE MORTAR COUPLING CONDITIONS 2D",
+        "Mortar", "Line Mortar Coupling", Core::Conditions::Mortar, true,
+        Core::Conditions::geometry_type_line);
+    Core::Conditions::ConditionDefinition surfmortar("DESIGN SURF MORTAR COUPLING CONDITIONS 3D",
+        "Mortar", "Surface Mortar Coupling", Core::Conditions::Mortar, true,
+        Core::Conditions::geometry_type_surface);
 
-    condlist.push_back(cond);
+    const auto make_mortar = [&condlist](Core::Conditions::ConditionDefinition& cond)
+    {
+      cond.add_component(entry<int>("InterfaceID"));
+      cond.add_component(
+          selection<std::string>("Side", {"Master", "Slave"}, {.description = "interface side"}));
+      cond.add_component(selection<std::string>("Initialization", {"Inactive", "Active"},
+          {.description = "initialization", .default_value = "Inactive"}));
+
+      condlist.push_back(cond);
+    };
+
+    make_mortar(linemortar);
+    make_mortar(surfmortar);
   }
 
 
   /*--------------------------------------------------------------------*/
   // mortar coupling symmetry condition
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linemrtrsym =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE MORTAR SYMMETRY CONDITIONS 3D", "mrtrsym",
-          "Symmetry plane normal for 3D contact", Core::Conditions::LineMrtrSym, true,
-          Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition linemrtrsym("DESIGN LINE MORTAR SYMMETRY CONDITIONS 3D",
+      "mrtrsym", "Symmetry plane normal for 3D contact", Core::Conditions::LineMrtrSym, true,
+      Core::Conditions::geometry_type_line);
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointmrtrsym =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN POINT MORTAR SYMMETRY CONDITIONS 2D/3D", "mrtrsym",
-          "Symmetry plane normal for 2D/3D contact", Core::Conditions::PointMrtrSym, true,
-          Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition pointmrtrsym(
+      "DESIGN POINT MORTAR SYMMETRY CONDITIONS 2D/3D", "mrtrsym",
+      "Symmetry plane normal for 2D/3D contact", Core::Conditions::PointMrtrSym, true,
+      Core::Conditions::geometry_type_point);
 
-  for (const auto& cond : {linemrtrsym, pointmrtrsym})
+  const auto make_mrtrsym = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    add_named_int_vector(cond, "ONOFF", "", 3);
+    cond.add_component(entry<std::vector<int>>("ONOFF", {.description = "", .size = 3}));
 
     condlist.push_back(cond);
-  }
+  };
+
+  make_mrtrsym(linemrtrsym);
+  make_mrtrsym(pointmrtrsym);
 
   /*--------------------------------------------------------------------*/
   // mortar edge/corner condition
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> edgemrtr =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE MORTAR EDGE CONDITIONS 3D", "mrtredge", "Geometrical edge for 3D contact",
-          Core::Conditions::EdgeMrtr, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition edgemrtr("DESIGN LINE MORTAR EDGE CONDITIONS 3D",
+      "mrtredge", "Geometrical edge for 3D contact", Core::Conditions::EdgeMrtr, true,
+      Core::Conditions::geometry_type_line);
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> cornermrtr =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN POINT MORTAR CORNER CONDITIONS 2D/3D", "mrtrcorner",
-          "Geometrical corner for 2D/3D contact", Core::Conditions::CornerMrtr, true,
-          Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition cornermrtr("DESIGN POINT MORTAR CORNER CONDITIONS 2D/3D",
+      "mrtrcorner", "Geometrical corner for 2D/3D contact", Core::Conditions::CornerMrtr, true,
+      Core::Conditions::geometry_type_point);
 
   condlist.push_back(edgemrtr);
   condlist.push_back(cornermrtr);
@@ -280,29 +281,28 @@ void Inpar::Mortar::set_valid_conditions(
     /*--------------------------------------------------------------------*/
     // mortar coupling (for ALL kinds of interface problems except contact)
 
-    std::shared_ptr<Core::Conditions::ConditionDefinition> linemortar =
-        std::make_shared<Core::Conditions::ConditionDefinition>(
-            "DESIGN LINE MORTAR MULTI-COUPLING CONDITIONS 2D", "MortarMulti",
-            "Line Mortar Multi-Coupling", Core::Conditions::MortarMulti, true,
-            Core::Conditions::geometry_type_line);
-    std::shared_ptr<Core::Conditions::ConditionDefinition> surfmortar =
-        std::make_shared<Core::Conditions::ConditionDefinition>(
-            "DESIGN SURF MORTAR MULTI-COUPLING CONDITIONS 3D", "MortarMulti",
-            "Surface Mortar Multi-Coupling", Core::Conditions::MortarMulti, true,
-            Core::Conditions::geometry_type_surface);
+    Core::Conditions::ConditionDefinition linemortar(
+        "DESIGN LINE MORTAR MULTI-COUPLING CONDITIONS 2D", "MortarMulti",
+        "Line Mortar Multi-Coupling", Core::Conditions::MortarMulti, true,
+        Core::Conditions::geometry_type_line);
+    Core::Conditions::ConditionDefinition surfmortar(
+        "DESIGN SURF MORTAR MULTI-COUPLING CONDITIONS 3D", "MortarMulti",
+        "Surface Mortar Multi-Coupling", Core::Conditions::MortarMulti, true,
+        Core::Conditions::geometry_type_surface);
 
-    for (const auto& cond : {linemortar, surfmortar})
+    const auto make_mortar_multi = [&condlist](Core::Conditions::ConditionDefinition& cond)
     {
-      add_named_int(cond, "InterfaceID");
-      add_named_selection_component(cond, "Side", "interface side", "Master",
-          Teuchos::tuple<std::string>("Master", "Slave"),
-          Teuchos::tuple<std::string>("Master", "Slave"));
-      add_named_selection_component(cond, "Initialization", "initialization", "Inactive",
-          Teuchos::tuple<std::string>("Inactive", "Active"),
-          Teuchos::tuple<std::string>("Inactive", "Active"), true);
+      cond.add_component(entry<int>("InterfaceID"));
+      cond.add_component(
+          selection<std::string>("Side", {"Master", "Slave"}, {.description = "interface side"}));
+      cond.add_component(selection<std::string>("Initialization", {"Inactive", "Active"},
+          {.description = "initialization", .default_value = "Inactive"}));
 
       condlist.push_back(cond);
-    }
+    };
+
+    make_mortar_multi(linemortar);
+    make_mortar_multi(surfmortar);
   }
 }
 

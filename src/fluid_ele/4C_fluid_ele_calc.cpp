@@ -1466,10 +1466,9 @@ void Discret::Elements::FluidEleCalc<distype, enrtype>::body_force(Discret::Elem
             functionfac = 1.0;
 
           // get usual body force
-          if (condtype == "neum_dead" or condtype == "neum_live")
-            ebofoaf(isd, jnode) = num * functionfac;
+          if (condtype == "Dead" or condtype == "Live") ebofoaf(isd, jnode) = num * functionfac;
           // get prescribed pressure gradient
-          else if (condtype == "neum_pgrad")
+          else if (condtype == "PressureGrad")
             eprescpgaf(isd, jnode) = num * functionfac;
           else
             FOUR_C_THROW("Unknown Neumann condition");
@@ -1495,10 +1494,9 @@ void Discret::Elements::FluidEleCalc<distype, enrtype>::body_force(Discret::Elem
             functionfac = 1.0;
 
           // get usual body force
-          if (condtype == "neum_dead" or condtype == "neum_live")
-            ebofoaf(isd, jnode) = num * functionfac;
+          if (condtype == "Dead" or condtype == "Live") ebofoaf(isd, jnode) = num * functionfac;
           // get prescribed pressure gradient
-          else if (condtype == "neum_pgrad")
+          else if (condtype == "PressureGrad")
             eprescpgaf(isd, jnode) = num * functionfac;
           else
             FOUR_C_THROW("Unknown Neumann condition");

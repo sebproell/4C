@@ -9,7 +9,7 @@
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_beamcontact.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -18,7 +18,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::BeamPotential::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -153,31 +152,31 @@ void Inpar::BeamPotential::set_valid_parameters(Teuchos::ParameterList& list)
 }
 
 void Inpar::BeamPotential::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*-------------------------------------------------------------------*/
   // beam potential interaction: atom/charge density per unit length on LINE
-  std::shared_ptr<Core::Conditions::ConditionDefinition> rigidsphere_potential_charge =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN POINT RIGIDSPHERE POTENTIAL CHARGE CONDITIONS", "RigidspherePotentialPointCharge",
-          "Rigidsphere_Potential_Point_Charge", Core::Conditions::RigidspherePotential_PointCharge,
-          false, Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition rigidsphere_potential_charge(
+      "DESIGN POINT RIGIDSPHERE POTENTIAL CHARGE CONDITIONS", "RigidspherePotentialPointCharge",
+      "Rigidsphere_Potential_Point_Charge", Core::Conditions::RigidspherePotential_PointCharge,
+      false, Core::Conditions::geometry_type_point);
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> beam_potential_line_charge =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE BEAM POTENTIAL CHARGE CONDITIONS", "BeamPotentialLineCharge",
-          "Beam_Potential_Line_Charge_Density", Core::Conditions::BeamPotential_LineChargeDensity,
-          false, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition beam_potential_line_charge(
+      "DESIGN LINE BEAM POTENTIAL CHARGE CONDITIONS", "BeamPotentialLineCharge",
+      "Beam_Potential_Line_Charge_Density", Core::Conditions::BeamPotential_LineChargeDensity,
+      false, Core::Conditions::geometry_type_line);
 
-  add_named_int(rigidsphere_potential_charge, "POTLAW");
-  add_named_real(rigidsphere_potential_charge, "VAL");
-  add_named_int(rigidsphere_potential_charge, "FUNCT", "", 0, true, true);
+  rigidsphere_potential_charge.add_component(entry<int>("POTLAW"));
+  rigidsphere_potential_charge.add_component(entry<double>("VAL"));
+  rigidsphere_potential_charge.add_component(
+      entry<Noneable<int>>("FUNCT", {.description = "", .default_value = 0}));
 
-  add_named_int(beam_potential_line_charge, "POTLAW");
-  add_named_real(beam_potential_line_charge, "VAL");
-  add_named_int(beam_potential_line_charge, "FUNCT", "", 0, true, true);
+  beam_potential_line_charge.add_component(entry<int>("POTLAW"));
+  beam_potential_line_charge.add_component(entry<double>("VAL"));
+  beam_potential_line_charge.add_component(
+      entry<Noneable<int>>("FUNCT", {.description = "", .default_value = 0}));
 
   condlist.push_back(rigidsphere_potential_charge);
   condlist.push_back(beam_potential_line_charge);

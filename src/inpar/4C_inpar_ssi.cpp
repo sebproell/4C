@@ -10,7 +10,7 @@
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_s2i.hpp"
 #include "4C_inpar_scatra.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_linalg_equilibrate.hpp"
 #include "4C_linalg_sparseoperator.hpp"
 #include "4C_utils_parameter_list.hpp"
@@ -19,7 +19,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::SSI::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -236,85 +235,92 @@ void Inpar::SSI::set_valid_parameters(Teuchos::ParameterList& list)
 
 /*--------------------------------------------------------------------
 --------------------------------------------------------------------*/
-void Inpar::SSI::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+void Inpar::SSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
 
   /*--------------------------------------------------------------------*/
-  auto linessiplain = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN SSI COUPLING LINE CONDITIONS", "SSICoupling", "SSI Coupling",
-      Core::Conditions::SSICoupling, true, Core::Conditions::geometry_type_line);
-  auto surfssiplain = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN SSI COUPLING SURF CONDITIONS", "SSICoupling", "SSI Coupling",
-      Core::Conditions::SSICoupling, true, Core::Conditions::geometry_type_surface);
-  auto volssiplain = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN SSI COUPLING VOL CONDITIONS", "SSICoupling", "SSI Coupling",
-      Core::Conditions::SSICoupling, true, Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition linessiplain("DESIGN SSI COUPLING LINE CONDITIONS",
+      "SSICoupling", "SSI Coupling", Core::Conditions::SSICoupling, true,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfssiplain("DESIGN SSI COUPLING SURF CONDITIONS",
+      "SSICoupling", "SSI Coupling", Core::Conditions::SSICoupling, true,
+      Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition volssiplain("DESIGN SSI COUPLING VOL CONDITIONS",
+      "SSICoupling", "SSI Coupling", Core::Conditions::SSICoupling, true,
+      Core::Conditions::geometry_type_volume);
 
   // insert input file line components into condition definitions
-  for (const auto& cond : {linessiplain, surfssiplain, volssiplain})
+  const auto make_ssiplain = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    add_named_int(cond, "coupling_id");
+    cond.add_component(entry<int>("coupling_id"));
     condlist.push_back(cond);
-  }
+  };
+
+  make_ssiplain(linessiplain);
+  make_ssiplain(surfssiplain);
 
   /*--------------------------------------------------------------------*/
   //! set solid dofset on scatra discretization
-  auto linessi = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN SSI COUPLING SOLIDTOSCATRA LINE CONDITIONS", "SSICouplingSolidToScatra",
-      "SSI Coupling SolidToScatra", Core::Conditions::SSICouplingSolidToScatra, true,
-      Core::Conditions::geometry_type_line);
-  auto surfssi = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN SSI COUPLING SOLIDTOSCATRA SURF CONDITIONS", "SSICouplingSolidToScatra",
-      "SSI Coupling SolidToScatra", Core::Conditions::SSICouplingSolidToScatra, true,
-      Core::Conditions::geometry_type_surface);
-  auto volssi = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN SSI COUPLING SOLIDTOSCATRA VOL CONDITIONS", "SSICouplingSolidToScatra",
-      "SSI Coupling SolidToScatra", Core::Conditions::SSICouplingSolidToScatra, true,
-      Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition linessi("DESIGN SSI COUPLING SOLIDTOSCATRA LINE CONDITIONS",
+      "SSICouplingSolidToScatra", "SSI Coupling SolidToScatra",
+      Core::Conditions::SSICouplingSolidToScatra, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfssi("DESIGN SSI COUPLING SOLIDTOSCATRA SURF CONDITIONS",
+      "SSICouplingSolidToScatra", "SSI Coupling SolidToScatra",
+      Core::Conditions::SSICouplingSolidToScatra, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition volssi("DESIGN SSI COUPLING SOLIDTOSCATRA VOL CONDITIONS",
+      "SSICouplingSolidToScatra", "SSI Coupling SolidToScatra",
+      Core::Conditions::SSICouplingSolidToScatra, true, Core::Conditions::geometry_type_volume);
 
   // insert input file line components into condition definitions
-  for (const auto& cond : {linessi, surfssi, volssi})
+  const auto make_ssi = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    add_named_int(cond, "coupling_id");
+    cond.add_component(entry<int>("coupling_id"));
     condlist.push_back(cond);
-  }
+  };
+
+  make_ssi(linessi);
+  make_ssi(surfssi);
+  make_ssi(volssi);
 
   /*--------------------------------------------------------------------*/
   //! set scatra dofset on solid discretization
-  auto linessi2 = std::make_shared<Core::Conditions::ConditionDefinition>(
+  Core::Conditions::ConditionDefinition linessi2(
       "DESIGN SSI COUPLING SCATRATOSOLID LINE CONDITIONS", "SSICouplingScatraToSolid",
       "SSI Coupling ScatraToSolid", Core::Conditions::SSICouplingScatraToSolid, true,
       Core::Conditions::geometry_type_line);
-  auto surfssi2 = std::make_shared<Core::Conditions::ConditionDefinition>(
+  Core::Conditions::ConditionDefinition surfssi2(
       "DESIGN SSI COUPLING SCATRATOSOLID SURF CONDITIONS", "SSICouplingScatraToSolid",
       "SSI Coupling ScatraToSolid", Core::Conditions::SSICouplingScatraToSolid, true,
       Core::Conditions::geometry_type_surface);
-  auto volssi2 = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN SSI COUPLING SCATRATOSOLID VOL CONDITIONS", "SSICouplingScatraToSolid",
-      "SSI Coupling ScatraToSolid", Core::Conditions::SSICouplingScatraToSolid, true,
-      Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition volssi2("DESIGN SSI COUPLING SCATRATOSOLID VOL CONDITIONS",
+      "SSICouplingScatraToSolid", "SSI Coupling ScatraToSolid",
+      Core::Conditions::SSICouplingScatraToSolid, true, Core::Conditions::geometry_type_volume);
 
   // insert input file line components into condition definitions
-  for (const auto& cond : {linessi2, surfssi2, volssi2})
+  const auto make_ssi2 = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    add_named_int(cond, "coupling_id");
+    cond.add_component(entry<int>("coupling_id"));
     condlist.push_back(cond);
-  }
+  };
+
+  make_ssi2(linessi2);
+  make_ssi2(surfssi2);
+  make_ssi2(volssi2);
+
 
   /*--------------------------------------------------------------------*/
   // set ScaTra-Structure interaction interface meshtying condition
-  auto pointssiinterfacemeshtying = std::make_shared<Core::Conditions::ConditionDefinition>(
+  Core::Conditions::ConditionDefinition pointssiinterfacemeshtying(
       "DESIGN SSI INTERFACE MESHTYING POINT CONDITIONS", "ssi_interface_meshtying",
       "SSI Interface Meshtying", Core::Conditions::ssi_interface_meshtying, true,
       Core::Conditions::geometry_type_point);
-  auto linessiinterfacemeshtying = std::make_shared<Core::Conditions::ConditionDefinition>(
+  Core::Conditions::ConditionDefinition linessiinterfacemeshtying(
       "DESIGN SSI INTERFACE MESHTYING LINE CONDITIONS", "ssi_interface_meshtying",
       "SSI Interface Meshtying", Core::Conditions::ssi_interface_meshtying, true,
       Core::Conditions::geometry_type_line);
-  auto surfssiinterfacemeshtying = std::make_shared<Core::Conditions::ConditionDefinition>(
+  Core::Conditions::ConditionDefinition surfssiinterfacemeshtying(
       "DESIGN SSI INTERFACE MESHTYING SURF CONDITIONS", "ssi_interface_meshtying",
       "SSI Interface Meshtying", Core::Conditions::ssi_interface_meshtying, true,
       Core::Conditions::geometry_type_surface);
@@ -328,61 +334,65 @@ void Inpar::SSI::set_valid_conditions(
   // reference is necessary.
 
   // insert input file line components into condition definitions
-  for (const auto& cond :
-      {pointssiinterfacemeshtying, linessiinterfacemeshtying, surfssiinterfacemeshtying})
+  const auto make_ssiinterfacemeshtying = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    add_named_int(cond, "ConditionID");
-    add_named_selection_component(cond, "INTERFACE_SIDE", "interface_side", "Undefined",
-        Teuchos::tuple<std::string>("Undefined", "Slave", "Master"),
-        Teuchos::tuple<int>(
-            Inpar::S2I::side_undefined, Inpar::S2I::side_slave, Inpar::S2I::side_master));
-    add_named_int(cond, "S2I_KINETICS_ID");
+    cond.add_component(entry<int>("ConditionID"));
+    cond.add_component(selection<int>("INTERFACE_SIDE",
+        {{"Undefined", Inpar::S2I::side_undefined}, {"Slave", Inpar::S2I::side_slave},
+            {"Master", Inpar::S2I::side_master}},
+        {.description = "interface_side"}));
+    cond.add_component(entry<int>("S2I_KINETICS_ID"));
 
     condlist.push_back(cond);
-  }
+  };
+
+  make_ssiinterfacemeshtying(pointssiinterfacemeshtying);
+  make_ssiinterfacemeshtying(linessiinterfacemeshtying);
+  make_ssiinterfacemeshtying(surfssiinterfacemeshtying);
 
   /*--------------------------------------------------------------------*/
   // condition, where additional scatra field on manifold is created
-  auto ssisurfacemanifold = std::make_shared<Core::Conditions::ConditionDefinition>(
-      "DESIGN SSI MANIFOLD SURF CONDITIONS", "SSISurfaceManifold", "scalar transport on manifold",
-      Core::Conditions::SSISurfaceManifold, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition ssisurfacemanifold("DESIGN SSI MANIFOLD SURF CONDITIONS",
+      "SSISurfaceManifold", "scalar transport on manifold", Core::Conditions::SSISurfaceManifold,
+      true, Core::Conditions::geometry_type_surface);
 
-  add_named_int(ssisurfacemanifold, "ConditionID");
-  add_named_selection_component(ssisurfacemanifold, "ImplType", "implementation type", "Undefined",
-      Teuchos::tuple<std::string>("Undefined", "Standard", "ElchElectrode", "ElchDiffCond"),
-      Teuchos::tuple<int>(Inpar::ScaTra::impltype_undefined, Inpar::ScaTra::impltype_std,
-          Inpar::ScaTra::impltype_elch_electrode, Inpar::ScaTra::impltype_elch_diffcond));
-  add_named_real(ssisurfacemanifold, "thickness");
+  ssisurfacemanifold.add_component(entry<int>("ConditionID"));
+  ssisurfacemanifold.add_component(selection<int>("ImplType",
+      {{"Undefined", Inpar::ScaTra::impltype_undefined}, {"Standard", Inpar::ScaTra::impltype_std},
+          {"ElchElectrode", Inpar::ScaTra::impltype_elch_electrode},
+          {"ElchDiffCond", Inpar::ScaTra::impltype_elch_diffcond}},
+      {.description = "implementation type"}));
+  ssisurfacemanifold.add_component(entry<double>("thickness"));
 
   condlist.emplace_back(ssisurfacemanifold);
 
   /*--------------------------------------------------------------------*/
   // initial field by condition for scatra on manifold
-  auto surfmanifoldinitfields = std::make_shared<Core::Conditions::ConditionDefinition>(
+  Core::Conditions::ConditionDefinition surfmanifoldinitfields(
       "DESIGN SURF SCATRA MANIFOLD INITIAL FIELD CONDITIONS", "ScaTraManifoldInitfield",
       "Surface ScaTra Manifold Initfield", Core::Conditions::SurfaceInitfield, false,
       Core::Conditions::geometry_type_surface);
 
-  add_named_selection_component(surfmanifoldinitfields, "FIELD", "init field", "ScaTra",
-      Teuchos::tuple<std::string>("ScaTra"), Teuchos::tuple<std::string>("ScaTra"));
-  add_named_int(surfmanifoldinitfields, "FUNCT");
+  surfmanifoldinitfields.add_component(
+      selection<std::string>("FIELD", {"ScaTra"}, {.description = "init field"}));
+  surfmanifoldinitfields.add_component(entry<int>("FUNCT"));
 
   condlist.emplace_back(surfmanifoldinitfields);
 
   /*--------------------------------------------------------------------*/
   // kinetics condition for flux scatra <-> scatra on manifold
-  auto surfmanifoldkinetics = std::make_shared<Core::Conditions::ConditionDefinition>(
+  Core::Conditions::ConditionDefinition surfmanifoldkinetics(
       "DESIGN SSI MANIFOLD KINETICS SURF CONDITIONS", "SSISurfaceManifoldKinetics",
       "kinetics model for coupling scatra <-> scatra on manifold",
       Core::Conditions::SSISurfaceManifoldKinetics, true, Core::Conditions::geometry_type_surface);
 
   {
-    add_named_int(surfmanifoldkinetics, "ConditionID");
-    add_named_int(surfmanifoldkinetics, "ManifoldConditionID");
+    surfmanifoldkinetics.add_component(entry<int>("ConditionID"));
+    surfmanifoldkinetics.add_component(entry<int>("ManifoldConditionID"));
 
     using namespace Core::IO::InputSpecBuilders;
 
-    surfmanifoldkinetics->add_component(one_of({
+    surfmanifoldkinetics.add_component(one_of({
         all_of({
             selection<int>("KINETIC_MODEL", {{"ConstantInterfaceResistance",
                                                 Inpar::S2I::kinetics_constantinterfaceresistance}}),
@@ -409,23 +419,26 @@ void Inpar::SSI::set_valid_conditions(
 
   /*--------------------------------------------------------------------*/
   // Dirichlet conditions for scatra on manifold
-  auto pointmanifolddirichlet = std::make_shared<Core::Conditions::ConditionDefinition>(
+  Core::Conditions::ConditionDefinition pointmanifolddirichlet(
       "DESIGN POINT MANIFOLD DIRICH CONDITIONS", "ManifoldDirichlet", "Point Dirichlet",
       Core::Conditions::PointDirichlet, false, Core::Conditions::geometry_type_point);
-  auto linemanifolddirichlet = std::make_shared<Core::Conditions::ConditionDefinition>(
+  Core::Conditions::ConditionDefinition linemanifolddirichlet(
       "DESIGN LINE MANIFOLD DIRICH CONDITIONS", "ManifoldDirichlet", "Line Dirichlet",
       Core::Conditions::LineDirichlet, false, Core::Conditions::geometry_type_line);
-  auto surfmanifolddirichlet = std::make_shared<Core::Conditions::ConditionDefinition>(
+  Core::Conditions::ConditionDefinition surfmanifolddirichlet(
       "DESIGN SURF MANIFOLD DIRICH CONDITIONS", "ManifoldDirichlet", "Surface Dirichlet",
       Core::Conditions::SurfaceDirichlet, false, Core::Conditions::geometry_type_surface);
 
   const auto add_dirichlet_manifold_components =
-      [](std::shared_ptr<Core::Conditions::ConditionDefinition> definition)
+      [](Core::Conditions::ConditionDefinition& definition)
   {
-    add_named_int(definition, "NUMDOF");
-    add_named_int_vector(definition, "ONOFF", "", "NUMDOF");
-    add_named_real_vector(definition, "VAL", "", "NUMDOF");
-    add_named_int_vector(definition, "FUNCT", "", "NUMDOF", 0, false, true);
+    definition.add_component(entry<int>("NUMDOF"));
+    definition.add_component(entry<std::vector<int>>(
+        "ONOFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
+    definition.add_component(entry<std::vector<double>>(
+        "VAL", {.description = "", .size = from_parameter<int>("NUMDOF")}));
+    definition.add_component(entry<std::vector<Noneable<int>>>(
+        "FUNCT", {.description = "", .size = from_parameter<int>("NUMDOF")}));
   };
 
   {
@@ -440,28 +453,31 @@ void Inpar::SSI::set_valid_conditions(
 
   /*--------------------------------------------------------------------*/
   // set ScaTra-Structure Interaction interface contact condition
-  auto linessiinterfacecontact = std::make_shared<Core::Conditions::ConditionDefinition>(
+  Core::Conditions::ConditionDefinition linessiinterfacecontact(
       "DESIGN SSI INTERFACE CONTACT LINE CONDITIONS", "SSIInterfaceContact",
       "SSI Interface Contact", Core::Conditions::SSIInterfaceContact, true,
       Core::Conditions::geometry_type_line);
-  auto surfssiinterfacecontact = std::make_shared<Core::Conditions::ConditionDefinition>(
+  Core::Conditions::ConditionDefinition surfssiinterfacecontact(
       "DESIGN SSI INTERFACE CONTACT SURF CONDITIONS", "SSIInterfaceContact",
       "SSI Interface Contact", Core::Conditions::SSIInterfaceContact, true,
       Core::Conditions::geometry_type_surface);
 
   // insert input file line components into condition definitions
-  for (const auto& cond : {linessiinterfacecontact, surfssiinterfacecontact})
+  const auto make_ssiinterfacecontact = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    add_named_int(cond, "ConditionID");
-    add_named_selection_component(cond, "INTERFACE_SIDE", "interface_side", "Undefined",
-        Teuchos::tuple<std::string>("Undefined", "Slave", "Master"),
-        Teuchos::tuple<int>(
-            Inpar::S2I::side_undefined, Inpar::S2I::side_slave, Inpar::S2I::side_master));
-    add_named_int(cond, "S2I_KINETICS_ID");
-    add_named_int(cond, "CONTACT_CONDITION_ID");
+    cond.add_component(entry<int>("ConditionID"));
+    cond.add_component(selection<int>("INTERFACE_SIDE",
+        {{"Undefined", Inpar::S2I::side_undefined}, {"Slave", Inpar::S2I::side_slave},
+            {"Master", Inpar::S2I::side_master}},
+        {.description = "interface_side"}));
+    cond.add_component(entry<int>("S2I_KINETICS_ID"));
+    cond.add_component(entry<int>("CONTACT_CONDITION_ID"));
 
     condlist.push_back(cond);
-  }
+  };
+
+  make_ssiinterfacecontact(linessiinterfacecontact);
+  make_ssiinterfacecontact(surfssiinterfacecontact);
 }
 
 FOUR_C_NAMESPACE_CLOSE

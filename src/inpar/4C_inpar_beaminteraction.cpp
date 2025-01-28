@@ -10,7 +10,7 @@
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_beam_to_solid.hpp"
 #include "4C_inpar_beamcontact.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -28,7 +28,6 @@ void Inpar::BeamInteraction::beam_interaction_conditions_get_all(
 
 void Inpar::BeamInteraction::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -170,38 +169,33 @@ void Inpar::BeamInteraction::set_valid_parameters(Teuchos::ParameterList& list)
 }
 
 void Inpar::BeamInteraction::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*-------------------------------------------------------------------*/
   // beam potential interaction: atom/charge density per unit length on LINE
-  std::shared_ptr<Core::Conditions::ConditionDefinition> beam_filament_condition =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE BEAM FILAMENT CONDITIONS", "BeamLineFilamentCondition",
-          "Beam_Line_Filament_Condition", Core::Conditions::FilamentBeamLineCondition, false,
-          Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition beam_filament_condition(
+      "DESIGN LINE BEAM FILAMENT CONDITIONS", "BeamLineFilamentCondition",
+      "Beam_Line_Filament_Condition", Core::Conditions::FilamentBeamLineCondition, false,
+      Core::Conditions::geometry_type_line);
 
-  add_named_int(beam_filament_condition, "ID", "filament id");
-  add_named_selection_component(beam_filament_condition, "TYPE", "", "Arbitrary",
-      Teuchos::tuple<std::string>(
-          "Arbitrary", "arbitrary", "Actin", "actin", "Collagen", "collagen"),
-      Teuchos::tuple<std::string>(
-          "Arbitrary", "arbitrary", "Actin", "actin", "Collagen", "collagen"),
-      true);
+  beam_filament_condition.add_component(entry<int>("ID", {.description = "filament id"}));
+  beam_filament_condition.add_component(selection<std::string>("TYPE",
+      {"Arbitrary", "arbitrary", "Actin", "actin", "Collagen", "collagen"},
+      {.description = "", .default_value = "Arbitrary"}));
 
   condlist.push_back(beam_filament_condition);
 
   /*-------------------------------------------------------------------*/
-  std::shared_ptr<Core::Conditions::ConditionDefinition> penalty_coupling_condition =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN POINT PENALTY COUPLING CONDITIONS", "PenaltyPointCouplingCondition",
-          "Couples beam nodes that lie on the same position",
-          Core::Conditions::PenaltyPointCouplingCondition, false,
-          Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition penalty_coupling_condition(
+      "DESIGN POINT PENALTY COUPLING CONDITIONS", "PenaltyPointCouplingCondition",
+      "Couples beam nodes that lie on the same position",
+      Core::Conditions::PenaltyPointCouplingCondition, false,
+      Core::Conditions::geometry_type_point);
 
-  Input::add_named_real(penalty_coupling_condition, "POSITIONAL_PENALTY_PARAMETER");
-  Input::add_named_real(penalty_coupling_condition, "ROTATIONAL_PENALTY_PARAMETER");
+  penalty_coupling_condition.add_component(entry<double>("POSITIONAL_PENALTY_PARAMETER"));
+  penalty_coupling_condition.add_component(entry<double>("ROTATIONAL_PENALTY_PARAMETER"));
 
   condlist.push_back(penalty_coupling_condition);
 

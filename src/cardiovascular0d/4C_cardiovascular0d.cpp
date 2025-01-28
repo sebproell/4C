@@ -166,7 +166,7 @@ Utils::Cardiovascular0D::Cardiovascular0D(std::shared_ptr<Core::FE::Discretizati
     {
       coupcondID[i] = cardiovascular0dstructcoupcond_[i]->parameters().get<int>("coupling_id");
 
-      std::string type = "neum_orthopressure";
+      std::string type = "orthopressure";
       cardiovascular0dstructcoupcond_[i]->parameters().add("TYPE", type);
       std::vector<int> onoff(6, 0);
       onoff[0] = 1;

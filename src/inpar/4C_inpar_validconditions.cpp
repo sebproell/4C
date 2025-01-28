@@ -33,17 +33,17 @@
 #include "4C_inpar_structure.hpp"
 #include "4C_inpar_thermo.hpp"
 #include "4C_inpar_xfem.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
 
-void Input::print_empty_condition_definitions(std::ostream& stream,
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+void Input::print_empty_condition_definitions(
+    std::ostream& stream, std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  for (unsigned i = 0; i < condlist.size(); ++i)
+  for (auto& i : condlist)
   {
-    condlist[i]->print(stream);
+    i.print(stream);
   }
 }
 
@@ -52,37 +52,34 @@ void Input::print_empty_condition_definitions(std::ostream& stream,
 /*----------------------------------------------------------------------*/
 void print_condition_dat_header()
 {
-  std::shared_ptr<std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>> condlist =
-      Input::valid_conditions();
-  Input::print_empty_condition_definitions(std::cout, *condlist);
+  std::vector<Core::Conditions::ConditionDefinition> condlist = Input::valid_conditions();
+  Input::print_empty_condition_definitions(std::cout, condlist);
 }
 
 
 namespace Input
 {
   // collect some problem-specific conditions that do not fit in the generic sections
-  void set_miscellaneous_conditions(
-      std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+  void set_miscellaneous_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
   {
+    using namespace Core::IO::InputSpecBuilders;
     /*--------------------------------------------------------------------*/
     // microscale boundary
 
-    std::shared_ptr<Core::Conditions::ConditionDefinition> microscale =
-        std::make_shared<Core::Conditions::ConditionDefinition>("MICROSCALE CONDITIONS",
-            "MicroBoundary", "Microscale Boundary", Core::Conditions::MicroBoundary, true,
-            Core::Conditions::geometry_type_surface);
+    Core::Conditions::ConditionDefinition microscale("MICROSCALE CONDITIONS", "MicroBoundary",
+        "Microscale Boundary", Core::Conditions::MicroBoundary, true,
+        Core::Conditions::geometry_type_surface);
 
     condlist.push_back(microscale);
 
     /*--------------------------------------------------------------------*/
     // stc layer condition
 
-    std::shared_ptr<Core::Conditions::ConditionDefinition> stclayer =
-        std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN VOL STC LAYER", "STC Layer",
-            "Layer for Multilayered STC", Core::Conditions::VolSTCLayer, true,
-            Core::Conditions::geometry_type_volume);
+    Core::Conditions::ConditionDefinition stclayer("DESIGN VOL STC LAYER", "STC Layer",
+        "Layer for Multilayered STC", Core::Conditions::VolSTCLayer, true,
+        Core::Conditions::geometry_type_volume);
 
-    add_named_int(stclayer, "ConditionID");
+    stclayer.add_component(entry<int>("ConditionID"));
 
     condlist.push_back(stclayer);
   }
@@ -91,376 +88,372 @@ namespace Input
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>>
-Input::valid_conditions()
+std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
 {
-  std::shared_ptr<std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>> vc =
-      std::make_shared<std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>>();
-
-  std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist = *vc;
+  using namespace Core::IO::InputSpecBuilders;
+  std::vector<Core::Conditions::ConditionDefinition> condlist;
 
   /*--------------------------------------------------------------------*/
   // Neumann conditions
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointneumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN POINT NEUMANN CONDITIONS",
-          "PointNeumann", "Point Neumann", Core::Conditions::PointNeumann, false,
-          Core::Conditions::geometry_type_point);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointneumanneb =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN POINT MOMENT EB CONDITIONS",
-          "PointNeumannEB", "Point Neumann Moment for an Euler-Bernoulli beam",
-          Core::Conditions::PointNeumannEB, false, Core::Conditions::geometry_type_point);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> lineneumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN LINE NEUMANN CONDITIONS",
-          "LineNeumann", "Line Neumann", Core::Conditions::LineNeumann, true,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfneumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN SURF NEUMANN CONDITIONS",
-          "SurfaceNeumann", "Surface Neumann", Core::Conditions::SurfaceNeumann, true,
-          Core::Conditions::geometry_type_surface);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> volneumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN VOL NEUMANN CONDITIONS",
-          "VolumeNeumann", "Volume Neumann", Core::Conditions::VolumeNeumann, true,
-          Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition pointneumann("DESIGN POINT NEUMANN CONDITIONS",
+      "PointNeumann", "Point Neumann", Core::Conditions::PointNeumann, false,
+      Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition pointneumanneb("DESIGN POINT MOMENT EB CONDITIONS",
+      "PointNeumannEB", "Point Neumann Moment for an Euler-Bernoulli beam",
+      Core::Conditions::PointNeumannEB, false, Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition lineneumann("DESIGN LINE NEUMANN CONDITIONS", "LineNeumann",
+      "Line Neumann", Core::Conditions::LineNeumann, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfneumann("DESIGN SURF NEUMANN CONDITIONS",
+      "SurfaceNeumann", "Surface Neumann", Core::Conditions::SurfaceNeumann, true,
+      Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition volneumann("DESIGN VOL NEUMANN CONDITIONS", "VolumeNeumann",
+      "Volume Neumann", Core::Conditions::VolumeNeumann, true,
+      Core::Conditions::geometry_type_volume);
 
   // Neumann conditions for transport problems
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointtransportneumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN POINT TRANSPORT NEUMANN CONDITIONS", "TransportPointNeumann", "Point Neumann",
-          Core::Conditions::PointNeumann, false, Core::Conditions::geometry_type_point);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linetransportneumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE TRANSPORT NEUMANN CONDITIONS", "TransportLineNeumann", "Line Neumann",
-          Core::Conditions::LineNeumann, true, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surftransportneumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF TRANSPORT NEUMANN CONDITIONS", "TransportSurfaceNeumann", "Surface Neumann",
-          Core::Conditions::SurfaceNeumann, true, Core::Conditions::geometry_type_surface);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> voltransportneumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN VOL TRANSPORT NEUMANN CONDITIONS", "TransportVolumeNeumann", "Volume Neumann",
-          Core::Conditions::VolumeNeumann, true, Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition pointtransportneumann(
+      "DESIGN POINT TRANSPORT NEUMANN CONDITIONS", "TransportPointNeumann", "Point Neumann",
+      Core::Conditions::PointNeumann, false, Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition linetransportneumann(
+      "DESIGN LINE TRANSPORT NEUMANN CONDITIONS", "TransportLineNeumann", "Line Neumann",
+      Core::Conditions::LineNeumann, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surftransportneumann(
+      "DESIGN SURF TRANSPORT NEUMANN CONDITIONS", "TransportSurfaceNeumann", "Surface Neumann",
+      Core::Conditions::SurfaceNeumann, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition voltransportneumann(
+      "DESIGN VOL TRANSPORT NEUMANN CONDITIONS", "TransportVolumeNeumann", "Volume Neumann",
+      Core::Conditions::VolumeNeumann, true, Core::Conditions::geometry_type_volume);
 
   // Neumann conditions for thermo problems
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointthermoneumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN POINT THERMO NEUMANN CONDITIONS", "ThermoPointNeumann", "Point Neumann",
-          Core::Conditions::PointNeumann, false, Core::Conditions::geometry_type_point);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linethermoneumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE THERMO NEUMANN CONDITIONS", "ThermoLineNeumann", "Line Neumann",
-          Core::Conditions::LineNeumann, true, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfthermoneumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF THERMO NEUMANN CONDITIONS", "ThermoSurfaceNeumann", "Surface Neumann",
-          Core::Conditions::SurfaceNeumann, true, Core::Conditions::geometry_type_surface);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> volthermoneumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN VOL THERMO NEUMANN CONDITIONS", "ThermoVolumeNeumann", "Volume Neumann",
-          Core::Conditions::VolumeNeumann, true, Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition pointthermoneumann("DESIGN POINT THERMO NEUMANN CONDITIONS",
+      "ThermoPointNeumann", "Point Neumann", Core::Conditions::PointNeumann, false,
+      Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition linethermoneumann("DESIGN LINE THERMO NEUMANN CONDITIONS",
+      "ThermoLineNeumann", "Line Neumann", Core::Conditions::LineNeumann, true,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfthermoneumann("DESIGN SURF THERMO NEUMANN CONDITIONS",
+      "ThermoSurfaceNeumann", "Surface Neumann", Core::Conditions::SurfaceNeumann, true,
+      Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition volthermoneumann("DESIGN VOL THERMO NEUMANN CONDITIONS",
+      "ThermoVolumeNeumann", "Volume Neumann", Core::Conditions::VolumeNeumann, true,
+      Core::Conditions::geometry_type_volume);
 
   // Neumann conditions for poroelasticity problems
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointporoneumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN POINT PORO NEUMANN CONDITIONS", "PoroPointNeumann", "Point Neumann",
-          Core::Conditions::PointNeumann, false, Core::Conditions::geometry_type_point);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> lineporoneumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN LINE PORO NEUMANN CONDITIONS",
-          "PoroLineNeumann", "Line Neumann", Core::Conditions::LineNeumann, true,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfporoneumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN SURF PORO NEUMANN CONDITIONS",
-          "PoroSurfaceNeumann", "Surface Neumann", Core::Conditions::SurfaceNeumann, true,
-          Core::Conditions::geometry_type_surface);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> volporoneumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN VOL PORO NEUMANN CONDITIONS",
-          "PoroVolumeNeumann", "Volume Neumann", Core::Conditions::VolumeNeumann, true,
-          Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition pointporoneumann("DESIGN POINT PORO NEUMANN CONDITIONS",
+      "PoroPointNeumann", "Point Neumann", Core::Conditions::PointNeumann, false,
+      Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition lineporoneumann("DESIGN LINE PORO NEUMANN CONDITIONS",
+      "PoroLineNeumann", "Line Neumann", Core::Conditions::LineNeumann, true,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfporoneumann("DESIGN SURF PORO NEUMANN CONDITIONS",
+      "PoroSurfaceNeumann", "Surface Neumann", Core::Conditions::SurfaceNeumann, true,
+      Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition volporoneumann("DESIGN VOL PORO NEUMANN CONDITIONS",
+      "PoroVolumeNeumann", "Volume Neumann", Core::Conditions::VolumeNeumann, true,
+      Core::Conditions::geometry_type_volume);
 
-  auto all_neumann_conditions = {pointneumann, pointneumanneb, lineneumann, surfneumann, volneumann,
-      pointtransportneumann, linetransportneumann, surftransportneumann, voltransportneumann,
-      pointthermoneumann, linethermoneumann, surfthermoneumann, volthermoneumann, pointporoneumann,
-      lineporoneumann, surfporoneumann, volporoneumann};
-
-  for (const auto& cond : all_neumann_conditions)
+  const auto make_neumann_condition = [&condlist](auto& cond)
   {
-    add_named_int(cond, "NUMDOF");
-    add_named_int_vector(cond, "ONOFF", "onoff", "NUMDOF");
-    add_named_real_vector(cond, "VAL", "values", "NUMDOF");
-    add_named_int_vector(cond, "FUNCT", "function ids", "NUMDOF", 0, false, true);
-    add_named_selection_component(cond, "TYPE", "type", "Live",
-        Teuchos::tuple<std::string>(
-            "Live", "Dead", "pseudo_orthopressure", "orthopressure", "PressureGrad"),
-        Teuchos::tuple<std::string>("neum_live", "neum_dead", "neum_pseudo_orthopressure",
-            "neum_orthopressure", "neum_pgrad"),
-        true);
+    cond.add_component(entry<int>("NUMDOF"));
+    cond.add_component(entry<std::vector<int>>(
+        "ONOFF", {.description = "onoff", .size = from_parameter<int>("NUMDOF")}));
+    cond.add_component(entry<std::vector<double>>(
+        "VAL", {.description = "values", .size = from_parameter<int>("NUMDOF")}));
+    cond.add_component(entry<std::vector<Noneable<int>>>(
+        "FUNCT", {.description = "function ids", .size = from_parameter<int>("NUMDOF")}));
+    cond.add_component(selection<std::string>("TYPE",
+        {"Live", "Dead", "pseudo_orthopressure", "orthopressure", "PressureGrad"},
+        {.description = "type", .default_value = "Live"}));
 
     condlist.emplace_back(cond);
-  }
+  };
+
+  make_neumann_condition(pointneumann);
+  make_neumann_condition(pointneumanneb);
+  make_neumann_condition(lineneumann);
+  make_neumann_condition(surfneumann);
+  make_neumann_condition(volneumann);
+
+  make_neumann_condition(pointtransportneumann);
+  make_neumann_condition(linetransportneumann);
+  make_neumann_condition(surftransportneumann);
+  make_neumann_condition(voltransportneumann);
+
+  make_neumann_condition(pointthermoneumann);
+  make_neumann_condition(linethermoneumann);
+  make_neumann_condition(surfthermoneumann);
+  make_neumann_condition(volthermoneumann);
+
+  make_neumann_condition(pointporoneumann);
+  make_neumann_condition(lineporoneumann);
+  make_neumann_condition(surfporoneumann);
+  make_neumann_condition(volporoneumann);
+
 
   /*--------------------------------------------------------------------*/
   // Dirichlet conditions
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointdirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN POINT DIRICH CONDITIONS",
-          "Dirichlet", "Point Dirichlet", Core::Conditions::PointDirichlet, false,
-          Core::Conditions::geometry_type_point);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linedirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN LINE DIRICH CONDITIONS",
-          "Dirichlet", "Line Dirichlet", Core::Conditions::LineDirichlet, false,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfdirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN SURF DIRICH CONDITIONS",
-          "Dirichlet", "Surface Dirichlet", Core::Conditions::SurfaceDirichlet, false,
-          Core::Conditions::geometry_type_surface);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> voldirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN VOL DIRICH CONDITIONS",
-          "Dirichlet", "Volume Dirichlet", Core::Conditions::VolumeDirichlet, false,
-          Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition pointdirichlet("DESIGN POINT DIRICH CONDITIONS",
+      "Dirichlet", "Point Dirichlet", Core::Conditions::PointDirichlet, false,
+      Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition linedirichlet("DESIGN LINE DIRICH CONDITIONS", "Dirichlet",
+      "Line Dirichlet", Core::Conditions::LineDirichlet, false,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfdirichlet("DESIGN SURF DIRICH CONDITIONS", "Dirichlet",
+      "Surface Dirichlet", Core::Conditions::SurfaceDirichlet, false,
+      Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition voldirichlet("DESIGN VOL DIRICH CONDITIONS", "Dirichlet",
+      "Volume Dirichlet", Core::Conditions::VolumeDirichlet, false,
+      Core::Conditions::geometry_type_volume);
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointaledirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN POINT ALE DIRICH CONDITIONS",
-          "ALEDirichlet", "Point Dirichlet", Core::Conditions::PointDirichlet, false,
-          Core::Conditions::geometry_type_point);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linealedirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN LINE ALE DIRICH CONDITIONS",
-          "ALEDirichlet", "Line Dirichlet", Core::Conditions::LineDirichlet, false,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfaledirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN SURF ALE DIRICH CONDITIONS",
-          "ALEDirichlet", "Surface Dirichlet", Core::Conditions::SurfaceDirichlet, false,
-          Core::Conditions::geometry_type_surface);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> volaledirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN VOL ALE DIRICH CONDITIONS",
-          "ALEDirichlet", "Volume Dirichlet", Core::Conditions::VolumeDirichlet, false,
-          Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition pointaledirichlet("DESIGN POINT ALE DIRICH CONDITIONS",
+      "ALEDirichlet", "Point Dirichlet", Core::Conditions::PointDirichlet, false,
+      Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition linealedirichlet("DESIGN LINE ALE DIRICH CONDITIONS",
+      "ALEDirichlet", "Line Dirichlet", Core::Conditions::LineDirichlet, false,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfaledirichlet("DESIGN SURF ALE DIRICH CONDITIONS",
+      "ALEDirichlet", "Surface Dirichlet", Core::Conditions::SurfaceDirichlet, false,
+      Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition volaledirichlet("DESIGN VOL ALE DIRICH CONDITIONS",
+      "ALEDirichlet", "Volume Dirichlet", Core::Conditions::VolumeDirichlet, false,
+      Core::Conditions::geometry_type_volume);
 
   // Dirichlet conditions for transport problems
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointtransportdirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN POINT TRANSPORT DIRICH CONDITIONS", "TransportDirichlet", "Point Dirichlet",
-          Core::Conditions::PointDirichlet, false, Core::Conditions::geometry_type_point);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linetransportdirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE TRANSPORT DIRICH CONDITIONS", "TransportDirichlet", "Line Dirichlet",
-          Core::Conditions::LineDirichlet, false, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surftransportdirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF TRANSPORT DIRICH CONDITIONS", "TransportDirichlet", "Surface Dirichlet",
-          Core::Conditions::SurfaceDirichlet, false, Core::Conditions::geometry_type_surface);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> voltransportdirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN VOL TRANSPORT DIRICH CONDITIONS", "TransportDirichlet", "Volume Dirichlet",
-          Core::Conditions::VolumeDirichlet, false, Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition pointtransportdirichlet(
+      "DESIGN POINT TRANSPORT DIRICH CONDITIONS", "TransportDirichlet", "Point Dirichlet",
+      Core::Conditions::PointDirichlet, false, Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition linetransportdirichlet(
+      "DESIGN LINE TRANSPORT DIRICH CONDITIONS", "TransportDirichlet", "Line Dirichlet",
+      Core::Conditions::LineDirichlet, false, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surftransportdirichlet(
+      "DESIGN SURF TRANSPORT DIRICH CONDITIONS", "TransportDirichlet", "Surface Dirichlet",
+      Core::Conditions::SurfaceDirichlet, false, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition voltransportdirichlet(
+      "DESIGN VOL TRANSPORT DIRICH CONDITIONS", "TransportDirichlet", "Volume Dirichlet",
+      Core::Conditions::VolumeDirichlet, false, Core::Conditions::geometry_type_volume);
 
   // Dirichlet conditions for thermo problems
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointthermodirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN POINT THERMO DIRICH CONDITIONS", "ThermoDirichlet", "Point Dirichlet",
-          Core::Conditions::PointDirichlet, false, Core::Conditions::geometry_type_point);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linethermodirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE THERMO DIRICH CONDITIONS", "ThermoDirichlet", "Line Dirichlet",
-          Core::Conditions::LineDirichlet, false, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfthermodirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF THERMO DIRICH CONDITIONS", "ThermoDirichlet", "Surface Dirichlet",
-          Core::Conditions::SurfaceDirichlet, false, Core::Conditions::geometry_type_surface);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> volthermodirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN VOL THERMO DIRICH CONDITIONS",
-          "ThermoDirichlet", "Volume Dirichlet", Core::Conditions::VolumeDirichlet, false,
-          Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition pointthermodirichlet(
+      "DESIGN POINT THERMO DIRICH CONDITIONS", "ThermoDirichlet", "Point Dirichlet",
+      Core::Conditions::PointDirichlet, false, Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition linethermodirichlet("DESIGN LINE THERMO DIRICH CONDITIONS",
+      "ThermoDirichlet", "Line Dirichlet", Core::Conditions::LineDirichlet, false,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfthermodirichlet("DESIGN SURF THERMO DIRICH CONDITIONS",
+      "ThermoDirichlet", "Surface Dirichlet", Core::Conditions::SurfaceDirichlet, false,
+      Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition volthermodirichlet("DESIGN VOL THERMO DIRICH CONDITIONS",
+      "ThermoDirichlet", "Volume Dirichlet", Core::Conditions::VolumeDirichlet, false,
+      Core::Conditions::geometry_type_volume);
 
   // Dirichlet conditions for poroelasticity problems
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointporodirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN POINT PORO DIRICH CONDITIONS",
-          "PoroDirichlet", "Point Dirichlet", Core::Conditions::PointDirichlet, false,
-          Core::Conditions::geometry_type_point);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> lineporodirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN LINE PORO DIRICH CONDITIONS",
-          "PoroDirichlet", "Line Dirichlet", Core::Conditions::LineDirichlet, false,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfporodirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN SURF PORO DIRICH CONDITIONS",
-          "PoroDirichlet", "Surface Dirichlet", Core::Conditions::SurfaceDirichlet, false,
-          Core::Conditions::geometry_type_surface);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> volporodirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN VOL PORO DIRICH CONDITIONS",
-          "PoroDirichlet", "Volume Dirichlet", Core::Conditions::VolumeDirichlet, false,
-          Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition pointporodirichlet("DESIGN POINT PORO DIRICH CONDITIONS",
+      "PoroDirichlet", "Point Dirichlet", Core::Conditions::PointDirichlet, false,
+      Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition lineporodirichlet("DESIGN LINE PORO DIRICH CONDITIONS",
+      "PoroDirichlet", "Line Dirichlet", Core::Conditions::LineDirichlet, false,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfporodirichlet("DESIGN SURF PORO DIRICH CONDITIONS",
+      "PoroDirichlet", "Surface Dirichlet", Core::Conditions::SurfaceDirichlet, false,
+      Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition volporodirichlet("DESIGN VOL PORO DIRICH CONDITIONS",
+      "PoroDirichlet", "Volume Dirichlet", Core::Conditions::VolumeDirichlet, false,
+      Core::Conditions::geometry_type_volume);
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointnurbslsdirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN POINT NURBS LS DIRICH CONDITIONS", "NurbsLSDirichlet", "Point Dirichlet",
-          Core::Conditions::PointDirichlet, true, Core::Conditions::geometry_type_point);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linenurbslsdirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE NURBS LS DIRICH CONDITIONS", "NurbsLSDirichlet", "Line Dirichlet",
-          Core::Conditions::LineDirichlet, true, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfnurbslsdirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF NURBS LS DIRICH CONDITIONS", "NurbsLSDirichlet", "Surface Dirichlet",
-          Core::Conditions::SurfaceDirichlet, true, Core::Conditions::geometry_type_surface);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> volnurbslsdirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN VOL NURBS LS DIRICH CONDITIONS", "NurbsLSDirichlet", "Volume Dirichlet",
-          Core::Conditions::VolumeDirichlet, true, Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition pointnurbslsdirichlet(
+      "DESIGN POINT NURBS LS DIRICH CONDITIONS", "NurbsLSDirichlet", "Point Dirichlet",
+      Core::Conditions::PointDirichlet, true, Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition linenurbslsdirichlet(
+      "DESIGN LINE NURBS LS DIRICH CONDITIONS", "NurbsLSDirichlet", "Line Dirichlet",
+      Core::Conditions::LineDirichlet, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfnurbslsdirichlet(
+      "DESIGN SURF NURBS LS DIRICH CONDITIONS", "NurbsLSDirichlet", "Surface Dirichlet",
+      Core::Conditions::SurfaceDirichlet, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition volnurbslsdirichlet("DESIGN VOL NURBS LS DIRICH CONDITIONS",
+      "NurbsLSDirichlet", "Volume Dirichlet", Core::Conditions::VolumeDirichlet, true,
+      Core::Conditions::geometry_type_volume);
 
-  auto all_dirichlet_conditions = {pointdirichlet, linedirichlet, surfdirichlet, voldirichlet,
-      pointaledirichlet, linealedirichlet, surfaledirichlet, volaledirichlet,
-      pointtransportdirichlet, linetransportdirichlet, surftransportdirichlet,
-      voltransportdirichlet, pointthermodirichlet, linethermodirichlet, surfthermodirichlet,
-      volthermodirichlet, pointporodirichlet, lineporodirichlet, surfporodirichlet,
-      volporodirichlet, pointnurbslsdirichlet, linenurbslsdirichlet, surfnurbslsdirichlet,
-      volnurbslsdirichlet};
-
-  for (const auto& cond : all_dirichlet_conditions)
+  const auto make_dirichlet_condition = [&condlist](auto& cond)
   {
-    add_named_int(cond, "NUMDOF");
-    add_named_int_vector(cond, "ONOFF", "", "NUMDOF");
-    add_named_real_vector(cond, "VAL", "", "NUMDOF");
-    add_named_int_vector(cond, "FUNCT", "", "NUMDOF", 0, false, true);
+    cond.add_component(entry<int>("NUMDOF"));
+    cond.add_component(entry<std::vector<int>>(
+        "ONOFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
+    cond.add_component(entry<std::vector<double>>(
+        "VAL", {.description = "", .size = from_parameter<int>("NUMDOF")}));
+    cond.add_component(entry<std::vector<Noneable<int>>>(
+        "FUNCT", {.description = "", .size = from_parameter<int>("NUMDOF")}));
 
     // optional
-    add_named_selection_component(cond, "TAG", "", "none",
-        Teuchos::tuple<std::string>("none", "monitor_reaction"),
-        Teuchos::tuple<std::string>("none", "monitor_reaction"), true);
+    cond.add_component(selection<std::string>(
+        "TAG", {"none", "monitor_reaction"}, {.description = "", .default_value = "none"}));
 
     condlist.emplace_back(cond);
-  }
+  };
+
+  make_dirichlet_condition(pointdirichlet);
+  make_dirichlet_condition(linedirichlet);
+  make_dirichlet_condition(surfdirichlet);
+  make_dirichlet_condition(voldirichlet);
+
+  make_dirichlet_condition(pointaledirichlet);
+  make_dirichlet_condition(linealedirichlet);
+  make_dirichlet_condition(surfaledirichlet);
+  make_dirichlet_condition(volaledirichlet);
+
+  make_dirichlet_condition(pointtransportdirichlet);
+  make_dirichlet_condition(linetransportdirichlet);
+  make_dirichlet_condition(surftransportdirichlet);
+  make_dirichlet_condition(voltransportdirichlet);
+
+  make_dirichlet_condition(pointthermodirichlet);
+  make_dirichlet_condition(linethermodirichlet);
+  make_dirichlet_condition(surfthermodirichlet);
+  make_dirichlet_condition(volthermodirichlet);
+
+  make_dirichlet_condition(pointporodirichlet);
+  make_dirichlet_condition(lineporodirichlet);
+  make_dirichlet_condition(surfporodirichlet);
+  make_dirichlet_condition(volporodirichlet);
+
+  make_dirichlet_condition(pointnurbslsdirichlet);
+  make_dirichlet_condition(linenurbslsdirichlet);
+  make_dirichlet_condition(surfnurbslsdirichlet);
+  make_dirichlet_condition(volnurbslsdirichlet);
 
   /*--------------------------------------------------------------------*/
   // Point coupling (e.g. joints - couple X out of Y nodal DoFs)
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointcoupling =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN POINT COUPLING CONDITIONS",
-          "PointCoupling", "Point Coupling", Core::Conditions::PointCoupling, false,
-          Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition pointcoupling("DESIGN POINT COUPLING CONDITIONS",
+      "PointCoupling", "Point Coupling", Core::Conditions::PointCoupling, false,
+      Core::Conditions::geometry_type_point);
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointthermocoupling =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN POINT THERMO COUPLING CONDITIONS", "PointThermoCoupling", "Point Coupling",
-          Core::Conditions::PointCoupling, false, Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition pointthermocoupling(
+      "DESIGN POINT THERMO COUPLING CONDITIONS", "PointThermoCoupling", "Point Coupling",
+      Core::Conditions::PointCoupling, false, Core::Conditions::geometry_type_point);
 
-  for (const auto& cond : {pointcoupling, pointthermocoupling})
+  const auto make_point_coupling_condition = [&condlist](auto& cond)
   {
-    add_named_int(cond, "NUMDOF");
-    add_named_int_vector(cond, "ONOFF", "", "NUMDOF");
+    cond.add_component(entry<int>("NUMDOF"));
+    cond.add_component(entry<std::vector<int>>(
+        "ONOFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
 
-    condlist.push_back(cond);
-  }
+    condlist.emplace_back(cond);
+  };
+
+  make_point_coupling_condition(pointcoupling);
+  make_point_coupling_condition(pointthermocoupling);
 
   /*--------------------------------------------------------------------*/
   // Initial fields
 
   // general initial field conditions
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointinitfields =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN POINT INITIAL FIELD CONDITIONS", "Initfield", "Point Initfield",
-          Core::Conditions::PointInitfield, false, Core::Conditions::geometry_type_point);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> lineinitfields =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE INITIAL FIELD CONDITIONS", "Initfield", "Line Initfield",
-          Core::Conditions::LineInitfield, false, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfinitfields =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF INITIAL FIELD CONDITIONS", "Initfield", "Surface Initfield",
-          Core::Conditions::SurfaceInitfield, false, Core::Conditions::geometry_type_surface);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> volinitfields =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN VOL INITIAL FIELD CONDITIONS",
-          "Initfield", "Volume Initfield", Core::Conditions::VolumeInitfield, false,
-          Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition pointinitfields("DESIGN POINT INITIAL FIELD CONDITIONS",
+      "Initfield", "Point Initfield", Core::Conditions::PointInitfield, false,
+      Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition lineinitfields("DESIGN LINE INITIAL FIELD CONDITIONS",
+      "Initfield", "Line Initfield", Core::Conditions::LineInitfield, false,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfinitfields("DESIGN SURF INITIAL FIELD CONDITIONS",
+      "Initfield", "Surface Initfield", Core::Conditions::SurfaceInitfield, false,
+      Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition volinitfields("DESIGN VOL INITIAL FIELD CONDITIONS",
+      "Initfield", "Volume Initfield", Core::Conditions::VolumeInitfield, false,
+      Core::Conditions::geometry_type_volume);
 
-  for (const auto& cond : {pointinitfields, lineinitfields, surfinitfields, volinitfields})
+  const auto make_init_field_condition = [&condlist](auto& cond)
   {
-    add_named_selection_component(cond, "FIELD", "init field", "Undefined",
-        Teuchos::tuple<std::string>("Undefined", "Velocity", "Pressure", "Temperature", "ScaTra",
-            "Porosity", "PoroMultiFluid", "Artery"),
-        Teuchos::tuple<std::string>("Undefined", "Velocity", "Pressure", "Temperature", "ScaTra",
-            "Porosity", "PoroMultiFluid", "Artery"));
+    cond.add_component(selection<std::string>("FIELD",
+        {"Undefined", "Velocity", "Pressure", "Temperature", "ScaTra", "Porosity", "PoroMultiFluid",
+            "Artery"},
+        {.description = "init field"}));
 
     // for initial vector fields, use the COMPONENT option of our functions
-    add_named_int(cond, "FUNCT");
+    cond.add_component(entry<int>("FUNCT"));
 
-    condlist.push_back(cond);
-  }
+    condlist.emplace_back(cond);
+  };
+
+  make_init_field_condition(pointinitfields);
+  make_init_field_condition(lineinitfields);
+  make_init_field_condition(surfinitfields);
+  make_init_field_condition(volinitfields);
+
 
   /*--------------------------------------------------------------------*/
   // define initial field that can be set on thermo simulations that use the ScaTra
   // discretization e.g. STI, SSTI
 
   // initial field conditions for temperature on ScaTra discretizations
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointthermoinitfields =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN POINT THERMO INITIAL FIELD CONDITIONS", "ThermoInitfield",
-          "Set the initial temperature field if the thermo field is solved using a ScaTra "
-          "discretization (e.g. STI, SSTI) on points",
-          Core::Conditions::PointInitfield, false, Core::Conditions::geometry_type_point);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linethermoinitfields =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE THERMO INITIAL FIELD CONDITIONS", "ThermoInitfield",
-          "Set the initial temperature field if the thermo field is solved using a ScaTra "
-          "discretization (e.g. STI, SSTI) on lines",
-          Core::Conditions::LineInitfield, false, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfthermoinitfields =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF THERMO INITIAL FIELD CONDITIONS", "ThermoInitfield",
-          "Set the initial temperature field if the thermo field is solved using a ScaTra "
-          "discretization (e.g. STI, SSTI) on surfaces",
-          Core::Conditions::SurfaceInitfield, false, Core::Conditions::geometry_type_surface);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> volthermoinitfields =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN VOL THERMO INITIAL FIELD CONDITIONS", "ThermoInitfield",
-          "Set the initial temperature field if the thermo field is solved using a ScaTra "
-          "discretization (e.g. STI, SSTI) on volumes",
-          Core::Conditions::VolumeInitfield, false, Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition pointthermoinitfields(
+      "DESIGN POINT THERMO INITIAL FIELD CONDITIONS", "ThermoInitfield",
+      "Set the initial temperature field if the thermo field is solved using a ScaTra "
+      "discretization (e.g. STI, SSTI) on points",
+      Core::Conditions::PointInitfield, false, Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition linethermoinitfields(
+      "DESIGN LINE THERMO INITIAL FIELD CONDITIONS", "ThermoInitfield",
+      "Set the initial temperature field if the thermo field is solved using a ScaTra "
+      "discretization (e.g. STI, SSTI) on lines",
+      Core::Conditions::LineInitfield, false, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfthermoinitfields(
+      "DESIGN SURF THERMO INITIAL FIELD CONDITIONS", "ThermoInitfield",
+      "Set the initial temperature field if the thermo field is solved using a ScaTra "
+      "discretization (e.g. STI, SSTI) on surfaces",
+      Core::Conditions::SurfaceInitfield, false, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition volthermoinitfields(
+      "DESIGN VOL THERMO INITIAL FIELD CONDITIONS", "ThermoInitfield",
+      "Set the initial temperature field if the thermo field is solved using a ScaTra "
+      "discretization (e.g. STI, SSTI) on volumes",
+      Core::Conditions::VolumeInitfield, false, Core::Conditions::geometry_type_volume);
 
-  for (const auto& cond :
-      {pointthermoinitfields, linethermoinitfields, surfthermoinitfields, volthermoinitfields})
+  const auto make_thermo_init_field_condition = [&condlist](auto& cond)
   {
-    add_named_selection_component(cond, "FIELD", "init field", "Undefined",
-        Teuchos::tuple<std::string>("Undefined", "ScaTra"),
-        Teuchos::tuple<std::string>("Undefined", "ScaTra"));
-    add_named_int(cond, "FUNCT");
+    cond.add_component(
+        selection<std::string>("FIELD", {"Undefined", "ScaTra"}, {.description = "init field"}));
+    cond.add_component(entry<int>("FUNCT"));
 
-    condlist.push_back(cond);
-  }
+    condlist.emplace_back(cond);
+  };
+
+  make_thermo_init_field_condition(pointthermoinitfields);
+  make_thermo_init_field_condition(linethermoinitfields);
+  make_thermo_init_field_condition(surfthermoinitfields);
+  make_thermo_init_field_condition(volthermoinitfields);
+
 
   /*--------------------------------------------------------------------*/
   // compute domain integrals, i.e., cumulative volumes of 3D domain elements or cumulative
   // surface areas of 2D domain elements
 
   // definition of surface and volume conditions for domain integral computation
-  std::shared_ptr<Core::Conditions::ConditionDefinition> domainintegralsurf =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN DOMAIN INTEGRAL SURF CONDITIONS", "DomainIntegral",
-          "compute cumulative surface areas of 2D domain elements",
-          Core::Conditions::DomainIntegral, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition domainintegralsurf("DESIGN DOMAIN INTEGRAL SURF CONDITIONS",
+      "DomainIntegral", "compute cumulative surface areas of 2D domain elements",
+      Core::Conditions::DomainIntegral, true, Core::Conditions::geometry_type_surface);
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> domainintegralvol =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN DOMAIN INTEGRAL VOL CONDITIONS", "DomainIntegral",
-          "compute cumulative volumes of 3D domain elements", Core::Conditions::DomainIntegral,
-          true, Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition domainintegralvol("DESIGN DOMAIN INTEGRAL VOL CONDITIONS",
+      "DomainIntegral", "compute cumulative volumes of 3D domain elements",
+      Core::Conditions::DomainIntegral, true, Core::Conditions::geometry_type_volume);
 
-  for (const auto& cond : {domainintegralsurf, domainintegralvol})
+  const auto make_domain_integral_condition = [&condlist](auto& cond)
   {
-    // add input file line components to condition definitions
-    add_named_int(cond, "ConditionID");
+    cond.add_component(entry<int>("ConditionID"));
 
-    // insert condition definitions into global list of valid condition definitions
-    condlist.push_back(cond);
-  }
+    condlist.emplace_back(cond);
+  };
+
+  make_domain_integral_condition(domainintegralsurf);
+  make_domain_integral_condition(domainintegralvol);
+
 
   /*--------------------------------------------------------------------*/
   // compute boundary integrals, i.e., cumulative surface areas of 2D boundary elements
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> boundaryintegralsurf =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN BOUNDARY INTEGRAL SURF CONDITIONS", "BoundaryIntegral",
-          "compute cumulative surface areas of 2D boundary elements",
-          Core::Conditions::BoundaryIntegral, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition boundaryintegralsurf(
+      "DESIGN BOUNDARY INTEGRAL SURF CONDITIONS", "BoundaryIntegral",
+      "compute cumulative surface areas of 2D boundary elements",
+      Core::Conditions::BoundaryIntegral, true, Core::Conditions::geometry_type_surface);
 
   // add input file line components to condition definition
-  add_named_int(boundaryintegralsurf, "ConditionID");
+  boundaryintegralsurf.add_component(entry<int>("ConditionID"));
 
   // insert condition definition into global list of valid condition definitions
   condlist.push_back(boundaryintegralsurf);
@@ -469,14 +462,10 @@ Input::valid_conditions()
   /*--------------------------------------------------------------------*/
   // wear in ALE description
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linealewear =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN LINE ALE WEAR CONDITIONS 2D",
-          "AleWear", "Line Ale Wear", Core::Conditions::AleWear, true,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfalewear =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN SURFACE WEAR CONDITIONS 3D",
-          "AleWear", "Surface Ale Wear", Core::Conditions::AleWear, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition linealewear("DESIGN LINE ALE WEAR CONDITIONS 2D", "AleWear",
+      "Line Ale Wear", Core::Conditions::AleWear, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfalewear("DESIGN SURFACE WEAR CONDITIONS 3D", "AleWear",
+      "Surface Ale Wear", Core::Conditions::AleWear, true, Core::Conditions::geometry_type_surface);
 
   condlist.push_back(linealewear);
   condlist.push_back(surfalewear);
@@ -484,139 +473,129 @@ Input::valid_conditions()
   /*--------------------------------------------------------------------*/
   // local coordinate systems
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> pointlocsys =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN POINT LOCSYS CONDITIONS",
-          "Locsys", "Point local coordinate system", Core::Conditions::PointLocsys, true,
-          Core::Conditions::geometry_type_point);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linelocsys =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN LINE LOCSYS CONDITIONS",
-          "Locsys", "Line local coordinate system", Core::Conditions::LineLocsys, true,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surflocsys =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN SURF LOCSYS CONDITIONS",
-          "Locsys", "Surface local coordinate system", Core::Conditions::SurfaceLocsys, true,
-          Core::Conditions::geometry_type_surface);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> vollocsys =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN VOL LOCSYS CONDITIONS",
-          "Locsys", "Volume local coordinate system", Core::Conditions::VolumeLocsys, true,
-          Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition pointlocsys("DESIGN POINT LOCSYS CONDITIONS", "Locsys",
+      "Point local coordinate system", Core::Conditions::PointLocsys, true,
+      Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition linelocsys("DESIGN LINE LOCSYS CONDITIONS", "Locsys",
+      "Line local coordinate system", Core::Conditions::LineLocsys, true,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surflocsys("DESIGN SURF LOCSYS CONDITIONS", "Locsys",
+      "Surface local coordinate system", Core::Conditions::SurfaceLocsys, true,
+      Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition vollocsys("DESIGN VOL LOCSYS CONDITIONS", "Locsys",
+      "Volume local coordinate system", Core::Conditions::VolumeLocsys, true,
+      Core::Conditions::geometry_type_volume);
 
-  // add components to condition definitions
-  for (const auto& cond : {pointlocsys, linelocsys, surflocsys, vollocsys})
+  const auto make_locsys_condition = [&condlist](auto& cond)
   {
-    add_named_real_vector(cond, "ROTANGLE", "", 3);
-    add_named_int_vector(cond, "FUNCT", "", 3, {}, false, true);
-    add_named_int(cond, "USEUPDATEDNODEPOS");
-  }
+    cond.add_component(entry<std::vector<double>>("ROTANGLE", {.description = "", .size = 3}));
+    cond.add_component(entry<std::vector<Noneable<int>>>("FUNCT", {.description = "", .size = 3}));
+    cond.add_component(entry<int>("USEUPDATEDNODEPOS"));
 
-  // add node normal system option only for lines and surfaces
-  for (const auto& cond : {linelocsys, surflocsys})
-  {
-    add_named_int(cond, "USECONSISTENTNODENORMAL");
-  }
+    if (cond.geometry_type() == Core::Conditions::geometry_type_line ||
+        cond.geometry_type() == Core::Conditions::geometry_type_surface)
+    {
+      cond.add_component(entry<int>("USECONSISTENTNODENORMAL"));
+    }
 
-  // add conditions to global list of conditions
-  for (const auto& cond : {pointlocsys, linelocsys, surflocsys, vollocsys})
-  {
-    condlist.push_back(cond);
-  }
+    condlist.emplace_back(cond);
+  };
+
+  make_locsys_condition(pointlocsys);
+  make_locsys_condition(linelocsys);
+  make_locsys_condition(surflocsys);
+  make_locsys_condition(vollocsys);
 
   /*--------------------------------------------------------------------*/
   // periodic boundary
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> lineperiodic =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE PERIODIC BOUNDARY CONDITIONS", "LinePeriodic", "Line Periodic",
-          Core::Conditions::LinePeriodic, false, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfperiodic =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF PERIODIC BOUNDARY CONDITIONS", "SurfacePeriodic", "Surface Periodic",
-          Core::Conditions::SurfacePeriodic, false, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition lineperiodic("DESIGN LINE PERIODIC BOUNDARY CONDITIONS",
+      "LinePeriodic", "Line Periodic", Core::Conditions::LinePeriodic, false,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfperiodic("DESIGN SURF PERIODIC BOUNDARY CONDITIONS",
+      "SurfacePeriodic", "Surface Periodic", Core::Conditions::SurfacePeriodic, false,
+      Core::Conditions::geometry_type_surface);
 
-  for (const auto& cond : {lineperiodic, surfperiodic})
+  const auto make_periodic_condition = [&condlist](auto& cond)
   {
-    add_named_int(cond, "ID", "periodic boundary condition id", 0, false, false);
-    add_named_selection_component(cond, "MASTER_OR_SLAVE", "master-slave toggle", "Master",
-        Teuchos::tuple<std::string>("Master", "Slave"),
-        Teuchos::tuple<std::string>("Master", "Slave"));
-    add_named_selection_component(cond, "PLANE", "degrees of freedom for the pbc plane", "xy",
-        Teuchos::tuple<std::string>("xy", "yx", "yz", "zy", "xz", "zx", "xyz"),
-        Teuchos::tuple<std::string>("xy", "xy", "yz", "yz", "xz", "xz", "xyz"));
-    add_named_int(cond, "LAYER", "layer of periodic boundary condition", 0, false, false);
-    add_named_real(cond, "ANGLE", "angle of rotation");
-    add_named_real(cond, "ABSTREETOL", "tolerance for nodematching in octree");
+    cond.add_component(entry<int>("ID", {.description = "periodic boundary condition id"}));
+    cond.add_component(selection<std::string>(
+        "MASTER_OR_SLAVE", {"Master", "Slave"}, {.description = "master-slave toggle"}));
+    cond.add_component(selection<std::string>("PLANE", {"xy", "yz", "xz", "xyz"},
+        {.description = "degrees of freedom for the pbc plane"}));
+    cond.add_component(
+        entry<int>("LAYER", {.description = "layer of periodic boundary condition"}));
+    cond.add_component(entry<double>("ANGLE", {.description = "angle of rotation"}));
+    cond.add_component(
+        entry<double>("ABSTREETOL", {.description = "tolerance for nodematching in octree"}));
 
-    condlist.push_back(cond);
-  }
+    condlist.emplace_back(cond);
+  };
+
+  make_periodic_condition(lineperiodic);
+  make_periodic_condition(surfperiodic);
 
   /*--------------------------------------------------------------------*/
   // weak Dirichlet conditions
-  std::shared_ptr<Core::Conditions::ConditionDefinition> lineweakdirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE WEAK DIRICHLET CONDITIONS", "LineWeakDirichlet", "LineWeakDirichlet",
-          Core::Conditions::LineWeakDirichlet, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition lineweakdirichlet("DESIGN LINE WEAK DIRICHLET CONDITIONS",
+      "LineWeakDirichlet", "LineWeakDirichlet", Core::Conditions::LineWeakDirichlet, true,
+      Core::Conditions::geometry_type_line);
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfweakdirichlet =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURFACE WEAK DIRICHLET CONDITIONS", "SurfaceWeakDirichlet",
-          "SurfaceWeakDirichlet", Core::Conditions::SurfaceWeakDirichlet, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition surfweakdirichlet(
+      "DESIGN SURFACE WEAK DIRICHLET CONDITIONS", "SurfaceWeakDirichlet", "SurfaceWeakDirichlet",
+      Core::Conditions::SurfaceWeakDirichlet, true, Core::Conditions::geometry_type_surface);
 
-  // attach all components to those condition
-  for (const auto& cond : {lineweakdirichlet, surfweakdirichlet})
+  const auto make_weak_dirichlet_condition = [&condlist](auto& cond)
   {
     // weak DBCs can be imposed adjoint consistent or adjoint inconsistent
-    add_named_selection_component(cond, "GAMMATYPE", "Choice of gamma parameter",
-        "adjoint-consistent",
-        Teuchos::tuple<std::string>("adjoint-consistent", "diffusive-optimal"),
-        Teuchos::tuple<std::string>("adjoint-consistent", "diffusive-optimal"));
+    cond.add_component(selection<std::string>("GAMMATYPE",
+        {"adjoint-consistent", "diffusive-optimal"}, {.description = "Choice of gamma parameter"}));
 
     // weak DBCs can be imposed in all directions or only in normal direction
     // (SCATRA: not checked, only in all_directions so far)
-    add_named_selection_component(cond, "DIR", "Directions to apply weak dbc", "all_directions",
-        Teuchos::tuple<std::string>("all_directions", "only_in_normal_direction"),
-        Teuchos::tuple<std::string>("all_directions", "only_in_normal_direction"));
+    cond.add_component(selection<std::string>("DIR", {"all_directions", "only_in_normal_direction"},
+        {.description = "Directions to apply weak dbc"}));
 
     // FLUID: penalty parameter either computed dynamically (using Spaldings law of
     // the wall) or by a fixed value; SCATRA: not checked, only constant value so far
-    add_named_selection_component(cond, "PENTYPE", "Definition of penalty parameter", "constant",
-        Teuchos::tuple<std::string>("constant", "Spalding"),
-        Teuchos::tuple<std::string>("constant", "Spalding"));
+    cond.add_component(selection<std::string>(
+        "PENTYPE", {"constant", "Spalding"}, {.description = "Definition of penalty parameter"}));
 
     // scaling factor for penalty parameter tauB or
     // stabilization parameter alpha for Nitsche term
     // (SCATRA: if stabilization parameter negative -> mixed-hybrid formulation)
-    add_named_real(cond, "TauBscaling");
+    cond.add_component(entry<double>("TauBscaling"));
 
     // linearisation strategies --- the linearisation (i.e. the matrix
     // contribution) of the convective term on the inflow could be
     // suppressed, since the flux is a kink function and including this one
     // might result in even worse convergence behaviour
     // (SCATRA: not checked)
-    add_named_selection_component(cond, "LINEARISATION", "Linearisation", "lin_all",
-        Teuchos::tuple<std::string>("lin_all", "no_lin_conv_inflow"),
-        Teuchos::tuple<std::string>("lin_all", "no_lin_conv_inflow"));
+    cond.add_component(selection<std::string>(
+        "LINEARISATION", {"lin_all", "no_lin_conv_inflow"}, {.description = "Linearisation"}));
 
     // we provide a vector of 3 values for velocities
-    add_named_real_vector(cond, "VAL", "values", 3);
+    cond.add_component(entry<std::vector<double>>("VAL", {.description = "values", .size = 3}));
 
     // and optional spatial functions
-    add_named_int_vector(cond, "FUNCT", "function ids", 3, 0, true, false);
+    cond.add_component(entry<std::vector<int>>("FUNCT",
+        {.description = "function ids", .default_value = std::vector<int>{0, 0, 0}, .size = 3}));
     // append the condition to the list of all conditions
     condlist.push_back(cond);
-  }
+  };
+
+  make_weak_dirichlet_condition(lineweakdirichlet);
+  make_weak_dirichlet_condition(surfweakdirichlet);
 
   /*--------------------------------------------------------------------*/
   // boundary for superconvergent patch recovery (SPR)
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linespr =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN PATCH RECOVERY BOUNDARY LINE CONDITIONS", "SPRboundary", "Boundary for SPR",
-          Core::Conditions::SPRboundary, false, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfspr =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN PATCH RECOVERY BOUNDARY SURF CONDITIONS", "SPRboundary", "Boundary for SPR",
-          Core::Conditions::SPRboundary, false, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition linespr("DESIGN PATCH RECOVERY BOUNDARY LINE CONDITIONS",
+      "SPRboundary", "Boundary for SPR", Core::Conditions::SPRboundary, false,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfspr("DESIGN PATCH RECOVERY BOUNDARY SURF CONDITIONS",
+      "SPRboundary", "Boundary for SPR", Core::Conditions::SPRboundary, false,
+      Core::Conditions::geometry_type_surface);
 
   condlist.push_back(linespr);
   condlist.push_back(surfspr);
@@ -624,17 +603,15 @@ Input::valid_conditions()
   /*--------------------------------------------------------------------*/
   // volume constraint
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> volumeconstraint =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN SURFACE VOLUME CONSTRAINT 3D",
-          "VolumeConstraint_3D", "Surface Volume Constraint", Core::Conditions::VolumeConstraint_3D,
-          true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition volumeconstraint("DESIGN SURFACE VOLUME CONSTRAINT 3D",
+      "VolumeConstraint_3D", "Surface Volume Constraint", Core::Conditions::VolumeConstraint_3D,
+      true, Core::Conditions::geometry_type_surface);
 
-  add_named_int(volumeconstraint, "ConditionID");
-  add_named_int(volumeconstraint, "curve", "id of the curve", 0, false, true);
-  add_named_real(volumeconstraint, "activeTime");
-  add_named_selection_component(volumeconstraint, "projection", "projection", "none",
-      Teuchos::tuple<std::string>("none", "xy", "yz", "xz"),
-      Teuchos::tuple<std::string>("none", "xy", "yz", "xz"), true);
+  volumeconstraint.add_component(entry<int>("ConditionID"));
+  volumeconstraint.add_component(entry<Noneable<int>>("curve", {.description = "id of the curve"}));
+  volumeconstraint.add_component(entry<double>("activeTime"));
+  volumeconstraint.add_component(selection<std::string>("projection", {"none", "xy", "yz", "xz"},
+      {.description = "projection", .default_value = "none"}));
 
 
   condlist.push_back(volumeconstraint);
@@ -642,34 +619,32 @@ Input::valid_conditions()
   /*--------------------------------------------------------------------*/
   // volume constraint penalty
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> volumeconstraintpen =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURFACE VOLUME CONSTRAINT 3D PEN", "VolumeConstraint_3D_Pen",
-          "Surface Volume Constraint Penalty", Core::Conditions::VolumeConstraint_3D_pen, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition volumeconstraintpen(
+      "DESIGN SURFACE VOLUME CONSTRAINT 3D PEN", "VolumeConstraint_3D_Pen",
+      "Surface Volume Constraint Penalty", Core::Conditions::VolumeConstraint_3D_pen, true,
+      Core::Conditions::geometry_type_surface);
 
-  add_named_int(volumeconstraintpen, "ConditionID");
-  add_named_int(volumeconstraintpen, "curve", "id of the curve", 0, false, true);
-  add_named_real(volumeconstraintpen, "activeTime");
-  add_named_real(volumeconstraintpen, "penalty");
-  add_named_real(volumeconstraintpen, "rho");
-  add_named_selection_component(volumeconstraintpen, "projection", "projection", "none",
-      Teuchos::tuple<std::string>("none", "xy", "yz", "xz"),
-      Teuchos::tuple<std::string>("none", "xy", "yz", "xz"), true);
+  volumeconstraintpen.add_component(entry<int>("ConditionID"));
+  volumeconstraintpen.add_component(
+      entry<Noneable<int>>("curve", {.description = "id of the curve"}));
+  volumeconstraintpen.add_component(entry<double>("activeTime"));
+  volumeconstraintpen.add_component(entry<double>("penalty"));
+  volumeconstraintpen.add_component(entry<double>("rho"));
+  volumeconstraintpen.add_component(selection<std::string>("projection", {"none", "xy", "yz", "xz"},
+      {.description = "projection", .default_value = "none"}));
 
   condlist.push_back(volumeconstraintpen);
 
   /*--------------------------------------------------------------------*/
   // area constraint
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> areaconstraint =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN SURFACE AREA CONSTRAINT 3D",
-          "AreaConstraint_3D", "Surface Area Constraint", Core::Conditions::AreaConstraint_3D, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition areaconstraint("DESIGN SURFACE AREA CONSTRAINT 3D",
+      "AreaConstraint_3D", "Surface Area Constraint", Core::Conditions::AreaConstraint_3D, true,
+      Core::Conditions::geometry_type_surface);
 
-  add_named_int(areaconstraint, "ConditionID");
-  add_named_int(areaconstraint, "curve", "id of the curve", 0, false, true);
-  add_named_real(areaconstraint, "activeTime");
+  areaconstraint.add_component(entry<int>("ConditionID"));
+  areaconstraint.add_component(entry<Noneable<int>>("curve", {.description = "id of the curve"}));
+  areaconstraint.add_component(entry<double>("activeTime"));
 
   condlist.push_back(areaconstraint);
 
@@ -677,139 +652,129 @@ Input::valid_conditions()
   /*--------------------------------------------------------------------*/
   // volume monitor
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> volumemonitor =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN SURFACE VOLUME MONITOR 3D",
-          "VolumeMonitor_3D", "Surface Volume Monitor", Core::Conditions::VolumeMonitor_3D, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition volumemonitor("DESIGN SURFACE VOLUME MONITOR 3D",
+      "VolumeMonitor_3D", "Surface Volume Monitor", Core::Conditions::VolumeMonitor_3D, true,
+      Core::Conditions::geometry_type_surface);
 
-  add_named_int(volumemonitor, "ConditionID");
+  volumemonitor.add_component(entry<int>("ConditionID"));
 
   condlist.push_back(volumemonitor);
 
   /*--------------------------------------------------------------------*/
   // area monitor 3D
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> areamonitor =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN SURFACE AREA MONITOR 3D",
-          "AreaMonitor_3D", "Surface Area Monitor", Core::Conditions::AreaMonitor_3D, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition areamonitor("DESIGN SURFACE AREA MONITOR 3D",
+      "AreaMonitor_3D", "Surface Area Monitor", Core::Conditions::AreaMonitor_3D, true,
+      Core::Conditions::geometry_type_surface);
 
-  add_named_int(areamonitor, "ConditionID");
-  add_named_selection_component(areamonitor, "projection", "projection", "none",
-      Teuchos::tuple<std::string>("none", "xy", "yz", "xz"),
-      Teuchos::tuple<std::string>("none", "xy", "yz", "xz"), true);
+  areamonitor.add_component(entry<int>("ConditionID"));
+  areamonitor.add_component(selection<std::string>("projection", {"none", "xy", "yz", "xz"},
+      {.description = "projection", .default_value = "none"}));
 
   condlist.push_back(areamonitor);
 
   /*--------------------------------------------------------------------*/
   // area constraint
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> areaconstraint2D =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN LINE AREA CONSTRAINT 2D",
-          "AreaConstraint_2D", "Line Area Constraint", Core::Conditions::AreaConstraint_2D, true,
-          Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition areaconstraint2D("DESIGN LINE AREA CONSTRAINT 2D",
+      "AreaConstraint_2D", "Line Area Constraint", Core::Conditions::AreaConstraint_2D, true,
+      Core::Conditions::geometry_type_line);
 
-  add_named_int(areaconstraint2D, "ConditionID");
-  add_named_int(areaconstraint2D, "curve", {}, 0, false, true);
-  add_named_real(areaconstraint2D, "activeTime");
+  areaconstraint2D.add_component(entry<int>("ConditionID"));
+  areaconstraint2D.add_component(entry<Noneable<int>>("curve", {.description = {}}));
+  areaconstraint2D.add_component(entry<double>("activeTime"));
 
   condlist.push_back(areaconstraint2D);
 
   /*--------------------------------------------------------------------*/
   // area monitor 2D
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> areamonitor2D =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN LINE AREA MONITOR 2D",
-          "AreaMonitor_2D", "Line Area Monitor", Core::Conditions::AreaMonitor_2D, true,
-          Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition areamonitor2D("DESIGN LINE AREA MONITOR 2D",
+      "AreaMonitor_2D", "Line Area Monitor", Core::Conditions::AreaMonitor_2D, true,
+      Core::Conditions::geometry_type_line);
 
-  add_named_int(areamonitor2D, "ConditionID");
+  areamonitor2D.add_component(entry<int>("ConditionID"));
 
   condlist.push_back(areamonitor2D);
 
   /*--------------------------------------------------------------------*/
   // Multi point constraint in 3D for a node over a plane
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> nodeonplaneconst3D =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURFACE MULTIPNT CONSTRAINT 3D", "MPC_NodeOnPlane_3D", "Node on Plane Constraint",
-          Core::Conditions::MPC_NodeOnPlane_3D, false, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition nodeonplaneconst3D("DESIGN SURFACE MULTIPNT CONSTRAINT 3D",
+      "MPC_NodeOnPlane_3D", "Node on Plane Constraint", Core::Conditions::MPC_NodeOnPlane_3D, false,
+      Core::Conditions::geometry_type_surface);
 
-  add_named_int(nodeonplaneconst3D, "ConditionID");
-  add_named_real(nodeonplaneconst3D, "amplitude");
-  add_named_int(nodeonplaneconst3D, "curve", {}, 0, false, true);
-  add_named_real(nodeonplaneconst3D, "activeTime");
-  add_named_int_vector(nodeonplaneconst3D, "planeNodes", "ids of the nodes spanning the plane", 3);
-  add_named_selection_component(nodeonplaneconst3D, "control", "relative or absolute control",
-      "rel", Teuchos::tuple<std::string>("rel", "abs"), Teuchos::tuple<std::string>("rel", "abs"),
-      true);
+  nodeonplaneconst3D.add_component(entry<int>("ConditionID"));
+  nodeonplaneconst3D.add_component(entry<double>("amplitude"));
+  nodeonplaneconst3D.add_component(entry<Noneable<int>>("curve", {.description = {}}));
+  nodeonplaneconst3D.add_component(entry<double>("activeTime"));
+  nodeonplaneconst3D.add_component(entry<std::vector<int>>(
+      "planeNodes", {.description = "ids of the nodes spanning the plane", .size = 3}));
+  nodeonplaneconst3D.add_component(selection<std::string>("control", {"rel", "abs"},
+      {.description = "relative or absolute control", .default_value = "rel"}));
 
   condlist.push_back(nodeonplaneconst3D);
 
   /*--------------------------------------------------------------------*/
   // Multi point constraint in 3D, moving all constraint nodes synchronously
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> nodemasterconst3D =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURFACE NORMALDIR MULTIPNT CONSTRAINT 3D", "MPC_NormalComponent_3D",
-          "Node on Plane Constraint", Core::Conditions::MPC_NormalComponent_3D, false,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition nodemasterconst3D(
+      "DESIGN SURFACE NORMALDIR MULTIPNT CONSTRAINT 3D", "MPC_NormalComponent_3D",
+      "Node on Plane Constraint", Core::Conditions::MPC_NormalComponent_3D, false,
+      Core::Conditions::geometry_type_surface);
 
-  add_named_int(nodemasterconst3D, "ConditionID");
-  add_named_real(nodemasterconst3D, "amplitude");
-  add_named_int(nodemasterconst3D, "curve", {}, 0, false, true);
-  add_named_real(nodemasterconst3D, "activeTime");
-  add_named_int(nodemasterconst3D, "masterNode");
-  add_named_real_vector(nodemasterconst3D, "direction", "direction", 3);
-  add_named_selection_component(nodemasterconst3D, "value", "value", "disp",
-      Teuchos::tuple<std::string>("disp", "x"), Teuchos::tuple<std::string>("disp", "x"), true);
-  add_named_selection_component(nodemasterconst3D, "control", "relative or absolute control", "rel",
-      Teuchos::tuple<std::string>("rel", "abs"), Teuchos::tuple<std::string>("rel", "abs"), true);
+  nodemasterconst3D.add_component(entry<int>("ConditionID"));
+  nodemasterconst3D.add_component(entry<double>("amplitude"));
+  nodemasterconst3D.add_component(entry<Noneable<int>>("curve", {.description = {}}));
+  nodemasterconst3D.add_component(entry<double>("activeTime"));
+  nodemasterconst3D.add_component(entry<int>("masterNode"));
+  nodemasterconst3D.add_component(
+      entry<std::vector<double>>("direction", {.description = "direction", .size = 3}));
+  nodemasterconst3D.add_component(selection<std::string>(
+      "value", {"disp", "x"}, {.description = "value", .default_value = "disp"}));
+  nodemasterconst3D.add_component(selection<std::string>("control", {"rel", "abs"},
+      {.description = "relative or absolute control", .default_value = "rel"}));
 
   condlist.push_back(nodemasterconst3D);
 
   /*--------------------------------------------------------------------*/
   // Multi point constraint in 3D, moving all constraint nodes synchronously, penalty based
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> nodemasterconst3Dpen =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURFACE NORMALDIR MULTIPNT CONSTRAINT 3D PEN", "MPC_NormalComponent_3D_Pen",
-          "Node on Plane Constraint Penalty", Core::Conditions::MPC_NormalComponent_3D_pen, false,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition nodemasterconst3Dpen(
+      "DESIGN SURFACE NORMALDIR MULTIPNT CONSTRAINT 3D PEN", "MPC_NormalComponent_3D_Pen",
+      "Node on Plane Constraint Penalty", Core::Conditions::MPC_NormalComponent_3D_pen, false,
+      Core::Conditions::geometry_type_surface);
 
 
-  add_named_int(nodemasterconst3Dpen, "ConditionID");
-  add_named_real(nodemasterconst3Dpen, "amplitude");
-  add_named_int(nodemasterconst3Dpen, "curve", {}, 0, false, true);
-  add_named_real(nodemasterconst3Dpen, "activeTime");
-  add_named_real(nodemasterconst3Dpen, "penalty");
-  add_named_int(nodemasterconst3Dpen, "masterNode");
-  add_named_int_vector(nodemasterconst3Dpen, "direction", "direction", 3);
-  add_named_selection_component(nodemasterconst3Dpen, "value", "value", "disp",
-      Teuchos::tuple<std::string>("disp", "x"), Teuchos::tuple<std::string>("disp", "x"), true);
-  add_named_selection_component(nodemasterconst3Dpen, "control", "relative or absolute control",
-      "rel", Teuchos::tuple<std::string>("rel", "abs"), Teuchos::tuple<std::string>("rel", "abs"),
-      true);
+  nodemasterconst3Dpen.add_component(entry<int>("ConditionID"));
+  nodemasterconst3Dpen.add_component(entry<double>("amplitude"));
+  nodemasterconst3Dpen.add_component(entry<Noneable<int>>("curve", {.description = {}}));
+  nodemasterconst3Dpen.add_component(entry<double>("activeTime"));
+  nodemasterconst3Dpen.add_component(entry<double>("penalty"));
+  nodemasterconst3Dpen.add_component(entry<int>("masterNode"));
+  nodemasterconst3Dpen.add_component(
+      entry<std::vector<int>>("direction", {.description = "direction", .size = 3}));
+  nodemasterconst3Dpen.add_component(selection<std::string>(
+      "value", {"disp", "x"}, {.description = "value", .default_value = "disp"}));
+  nodemasterconst3Dpen.add_component(selection<std::string>("control", {"rel", "abs"},
+      {.description = "relative or absolute control", .default_value = "rel"}));
 
   condlist.push_back(nodemasterconst3Dpen);
   /*--------------------------------------------------------------------*/
   // Multi point constraint in 2D for a node on a line
-  std::shared_ptr<Core::Conditions::ConditionDefinition> nodeonlineconst2D =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN LINE MULTIPNT CONSTRAINT 2D",
-          "MPC_NodeOnLine_2D", "Node on Line Constraint", Core::Conditions::MPC_NodeOnLine_2D,
-          false, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition nodeonlineconst2D("DESIGN LINE MULTIPNT CONSTRAINT 2D",
+      "MPC_NodeOnLine_2D", "Node on Line Constraint", Core::Conditions::MPC_NodeOnLine_2D, false,
+      Core::Conditions::geometry_type_line);
 
-  add_named_int(nodeonlineconst2D, "ConditionID");
-  add_named_real(nodeonlineconst2D, "amplitude");
-  add_named_int(nodeonlineconst2D, "curve", {}, 0, false, true);
-  add_named_int(nodeonlineconst2D, "constrNode1");
-  add_named_int(nodeonlineconst2D, "constrNode2");
-  add_named_int(nodeonlineconst2D, "constrNode3");
-  ;
-  add_named_selection_component(nodeonlineconst2D, "control", "distance or angle control", "dist",
-      Teuchos::tuple<std::string>("dist", "angle"), Teuchos::tuple<std::string>("dist", "angle"),
-      true);
-  add_named_real(nodeonlineconst2D, "activeTime");
+  nodeonlineconst2D.add_component(entry<int>("ConditionID"));
+  nodeonlineconst2D.add_component(entry<double>("amplitude"));
+  nodeonlineconst2D.add_component(entry<Noneable<int>>("curve", {.description = {}}));
+  nodeonlineconst2D.add_component(entry<int>("constrNode1"));
+  nodeonlineconst2D.add_component(entry<int>("constrNode2"));
+  nodeonlineconst2D.add_component(entry<int>("constrNode3"));
+  nodeonlineconst2D.add_component(selection<std::string>("control", {"dist", "angle"},
+      {.description = "distance or angle control", .default_value = "dist"}));
+  nodeonlineconst2D.add_component(entry<double>("activeTime"));
 
   condlist.push_back(nodeonlineconst2D);
 
@@ -834,31 +799,31 @@ Input::valid_conditions()
   // 3-D solid, 3 for 2-D solid), where ONOFF triggers first the
   // translational followed by the rotational modes, each in/around x to z
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfrigidbodymode =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF MODE FOR KRYLOV SPACE PROJECTION", "KrylovSpaceProjection",
-          "Surface mode for Krylov space projection", Core::Conditions::SurfaceModeKrylovProjection,
-          true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition surfrigidbodymode(
+      "DESIGN SURF MODE FOR KRYLOV SPACE PROJECTION", "KrylovSpaceProjection",
+      "Surface mode for Krylov space projection", Core::Conditions::SurfaceModeKrylovProjection,
+      true, Core::Conditions::geometry_type_surface);
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> volrigidbodymode =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN VOL MODE FOR KRYLOV SPACE PROJECTION", "KrylovSpaceProjection",
-          "Volume mode for Krylov space projection", Core::Conditions::VolumeModeKrylovProjection,
-          true, Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition volrigidbodymode(
+      "DESIGN VOL MODE FOR KRYLOV SPACE PROJECTION", "KrylovSpaceProjection",
+      "Volume mode for Krylov space projection", Core::Conditions::VolumeModeKrylovProjection, true,
+      Core::Conditions::geometry_type_volume);
 
-  for (const auto& cond : {surfrigidbodymode, volrigidbodymode})
+  const auto make_rigidbody_mode_condition = [&condlist](auto& cond)
   {
-    add_named_selection_component(cond, "DIS", "discretization", "fluid",
-        Teuchos::tuple<std::string>("fluid", "scatra", "solid"),
-        Teuchos::tuple<std::string>("fluid", "scatra", "solid"));
-    add_named_int(cond, "NUMMODES");
-    add_named_int_vector(cond, "ONOFF", "", "NUMMODES");
-    add_named_selection_component(cond, "WEIGHTVECDEF", "weight vector definition", "integration",
-        Teuchos::tuple<std::string>("integration", "pointvalues"),
-        Teuchos::tuple<std::string>("integration", "pointvalues"));
+    cond.add_component(selection<std::string>(
+        "DIS", {"fluid", "scatra", "solid"}, {.description = "discretization"}));
+    cond.add_component(entry<int>("NUMMODES"));
+    cond.add_component(entry<std::vector<int>>(
+        "ONOFF", {.description = "", .size = from_parameter<int>("NUMMODES")}));
+    cond.add_component(selection<std::string>("WEIGHTVECDEF", {"integration", "pointvalues"},
+        {.description = "weight vector definition"}));
 
-    condlist.push_back(cond);
-  }
+    condlist.emplace_back(cond);
+  };
+
+  make_rigidbody_mode_condition(surfrigidbodymode);
+  make_rigidbody_mode_condition(volrigidbodymode);
 
 
   // Finally, add the problem-specific conditions from the various modules
@@ -893,7 +858,7 @@ Input::valid_conditions()
   // finally some conditions that do not have their own files yet are problem-specific
   set_miscellaneous_conditions(condlist);
 
-  return vc;
+  return condlist;
 }
 
 FOUR_C_NAMESPACE_CLOSE

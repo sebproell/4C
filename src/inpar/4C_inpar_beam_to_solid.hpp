@@ -208,8 +208,7 @@ namespace Inpar
     /**
      * \brief Set beam beam-to-solid specific conditions.
      */
-    void set_valid_conditions(
-        std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist);
+    void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);
   }  // namespace BeamToSolid
 }  // namespace Inpar
 

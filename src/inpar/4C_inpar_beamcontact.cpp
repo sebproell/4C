@@ -8,7 +8,7 @@
 #include "4C_inpar_beamcontact.hpp"
 
 #include "4C_fem_condition_definition.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -176,20 +176,19 @@ void Inpar::BeamContact::set_valid_parameters(Teuchos::ParameterList& list)
  *
  */
 void Inpar::BeamContact::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   // Beam-to-beam conditions.
   {
     std::string condition_name = "BeamToBeamContact";
 
-    std::shared_ptr<Core::Conditions::ConditionDefinition> beam_to_beam_contact_condition =
-        std::make_shared<Core::Conditions::ConditionDefinition>(
-            "BEAM INTERACTION/BEAM TO BEAM CONTACT CONDITIONS", condition_name,
-            "Beam-to-beam contact conditions", Core::Conditions::BeamToBeamContact, true,
-            Core::Conditions::geometry_type_line);
-    add_named_int(beam_to_beam_contact_condition, "COUPLING_ID");
+    Core::Conditions::ConditionDefinition beam_to_beam_contact_condition(
+        "BEAM INTERACTION/BEAM TO BEAM CONTACT CONDITIONS", condition_name,
+        "Beam-to-beam contact conditions", Core::Conditions::BeamToBeamContact, true,
+        Core::Conditions::geometry_type_line);
+    beam_to_beam_contact_condition.add_component(entry<int>("COUPLING_ID"));
     condlist.push_back(beam_to_beam_contact_condition);
   }
 }

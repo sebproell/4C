@@ -11,7 +11,7 @@
 #include "4C_inpar_bio.hpp"
 #include "4C_inpar_fluid.hpp"
 #include "4C_inpar_s2i.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_linalg_equilibrate.hpp"
 #include "4C_linalg_sparseoperator.hpp"
 #include "4C_utils_parameter_list.hpp"
@@ -20,7 +20,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -484,186 +483,181 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
 
 
 void Inpar::ScaTra::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*--------------------------------------------------------------------*/
   // Boundary flux evaluation condition for scalar transport
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linebndryfluxeval =
-      std::make_shared<Core::Conditions::ConditionDefinition>("SCATRA FLUX CALC LINE CONDITIONS",
-          "ScaTraFluxCalc", "Scalar Transport Boundary Flux Calculation",
-          Core::Conditions::ScaTraFluxCalc, true, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfbndryfluxeval =
-      std::make_shared<Core::Conditions::ConditionDefinition>("SCATRA FLUX CALC SURF CONDITIONS",
-          "ScaTraFluxCalc", "Scalar Transport Boundary Flux Calculation",
-          Core::Conditions::ScaTraFluxCalc, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition linebndryfluxeval("SCATRA FLUX CALC LINE CONDITIONS",
+      "ScaTraFluxCalc", "Scalar Transport Boundary Flux Calculation",
+      Core::Conditions::ScaTraFluxCalc, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfbndryfluxeval("SCATRA FLUX CALC SURF CONDITIONS",
+      "ScaTraFluxCalc", "Scalar Transport Boundary Flux Calculation",
+      Core::Conditions::ScaTraFluxCalc, true, Core::Conditions::geometry_type_surface);
   condlist.emplace_back(linebndryfluxeval);
   condlist.emplace_back(surfbndryfluxeval);
 
   /*--------------------------------------------------------------------*/
   // conditions for calculation of total and mean values of transported scalars
-  std::shared_ptr<Core::Conditions::ConditionDefinition> totalandmeanscalarline =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN TOTAL AND MEAN SCALAR LINE CONDITIONS", "TotalAndMeanScalar",
-          "calculation of total and mean values of transported scalars",
-          Core::Conditions::TotalAndMeanScalar, true, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> totalandmeanscalarsurf =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN TOTAL AND MEAN SCALAR SURF CONDITIONS", "TotalAndMeanScalar",
-          "calculation of total and mean values of transported scalars",
-          Core::Conditions::TotalAndMeanScalar, true, Core::Conditions::geometry_type_surface);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> totalandmeanscalarvol =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN TOTAL AND MEAN SCALAR VOL CONDITIONS", "TotalAndMeanScalar",
-          "calculation of total and mean values of transported scalars",
-          Core::Conditions::TotalAndMeanScalar, true, Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition totalandmeanscalarline(
+      "DESIGN TOTAL AND MEAN SCALAR LINE CONDITIONS", "TotalAndMeanScalar",
+      "calculation of total and mean values of transported scalars",
+      Core::Conditions::TotalAndMeanScalar, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition totalandmeanscalarsurf(
+      "DESIGN TOTAL AND MEAN SCALAR SURF CONDITIONS", "TotalAndMeanScalar",
+      "calculation of total and mean values of transported scalars",
+      Core::Conditions::TotalAndMeanScalar, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition totalandmeanscalarvol(
+      "DESIGN TOTAL AND MEAN SCALAR VOL CONDITIONS", "TotalAndMeanScalar",
+      "calculation of total and mean values of transported scalars",
+      Core::Conditions::TotalAndMeanScalar, true, Core::Conditions::geometry_type_volume);
 
-  for (const auto& cond : {totalandmeanscalarline, totalandmeanscalarsurf, totalandmeanscalarvol})
+  const auto make_totalandmeanscalar = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
     // insert input file line components into condition definitions
-    add_named_int(cond, "ConditionID");
+    cond.add_component(entry<int>("ConditionID"));
 
     // insert condition definitions into global list of valid condition definitions
     condlist.emplace_back(cond);
-  }
+  };
+
+  make_totalandmeanscalar(totalandmeanscalarline);
+  make_totalandmeanscalar(totalandmeanscalarsurf);
+  make_totalandmeanscalar(totalandmeanscalarvol);
 
   /*--------------------------------------------------------------------*/
   // conditions for calculation of relative error with reference to analytical solution
-  std::shared_ptr<Core::Conditions::ConditionDefinition> relerrorline =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SCATRA RELATIVE ERROR LINE CONDITIONS", "ScatraRelError",
-          "calculation of relative error with reference to analytical solution",
-          Core::Conditions::ScatraRelError, true, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> relerrorsurf =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SCATRA RELATIVE ERROR SURF CONDITIONS", "ScatraRelError",
-          "calculation of relative error with reference to analytical solution",
-          Core::Conditions::ScatraRelError, true, Core::Conditions::geometry_type_surface);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> relerrorvol =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SCATRA RELATIVE ERROR VOL CONDITIONS", "ScatraRelError",
-          "calculation of relative error with reference to analytical solution",
-          Core::Conditions::ScatraRelError, true, Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition relerrorline("DESIGN SCATRA RELATIVE ERROR LINE CONDITIONS",
+      "ScatraRelError", "calculation of relative error with reference to analytical solution",
+      Core::Conditions::ScatraRelError, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition relerrorsurf("DESIGN SCATRA RELATIVE ERROR SURF CONDITIONS",
+      "ScatraRelError", "calculation of relative error with reference to analytical solution",
+      Core::Conditions::ScatraRelError, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition relerrorvol("DESIGN SCATRA RELATIVE ERROR VOL CONDITIONS",
+      "ScatraRelError", "calculation of relative error with reference to analytical solution",
+      Core::Conditions::ScatraRelError, true, Core::Conditions::geometry_type_volume);
 
-  for (const auto& cond : {relerrorline, relerrorsurf, relerrorvol})
+  const auto make_relerror = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
     // insert input file line components into condition definitions
-    add_named_int(cond, "ConditionID");
-    add_named_int(cond, "Function");
+    cond.add_component(entry<int>("ConditionID"));
+    cond.add_component(entry<int>("Function"));
 
     // insert condition definitions into global list of valid condition definitions
     condlist.emplace_back(cond);
-  }
+  };
+
+  make_relerror(relerrorline);
+  make_relerror(relerrorsurf);
+  make_relerror(relerrorvol);
 
   /*--------------------------------------------------------------------*/
   // Coupling of different scalar transport fields
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfscatracoup =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SCATRA COUPLING SURF CONDITIONS", "ScaTraCoupling", "ScaTra Coupling",
-          Core::Conditions::ScaTraCoupling, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition surfscatracoup("DESIGN SCATRA COUPLING SURF CONDITIONS",
+      "ScaTraCoupling", "ScaTra Coupling", Core::Conditions::ScaTraCoupling, true,
+      Core::Conditions::geometry_type_surface);
 
-  add_named_int(surfscatracoup, "NUMSCAL");
-  add_named_int_vector(surfscatracoup, "ONOFF", "", "NUMSCAL");
-  add_named_int(surfscatracoup, "COUPID");
-  add_named_real(surfscatracoup, "PERMCOEF");
-  add_named_real(surfscatracoup, "CONDUCT");
-  add_named_real(surfscatracoup, "FILTR");
-  add_named_bool(surfscatracoup, "WSSON", "flag if wall shear stress coupling is on");
-  add_named_real_vector(surfscatracoup, "WSSCOEFFS", "", 2);
+  surfscatracoup.add_component(entry<int>("NUMSCAL"));
+  surfscatracoup.add_component(entry<std::vector<int>>(
+      "ONOFF", {.description = "", .size = from_parameter<int>("NUMSCAL")}));
+  surfscatracoup.add_component(entry<int>("COUPID"));
+  surfscatracoup.add_component(entry<double>("PERMCOEF"));
+  surfscatracoup.add_component(entry<double>("CONDUCT"));
+  surfscatracoup.add_component(entry<double>("FILTR"));
+  surfscatracoup.add_component(
+      entry<bool>("WSSON", {.description = "flag if wall shear stress coupling is on"}));
+  surfscatracoup.add_component(
+      entry<std::vector<double>>("WSSCOEFFS", {.description = "", .size = 2}));
 
   condlist.emplace_back(surfscatracoup);
 
   /*--------------------------------------------------------------------*/
   // Robin boundary condition for scalar transport problems
   // line
-  std::shared_ptr<Core::Conditions::ConditionDefinition> scatrarobinline =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN TRANSPORT ROBIN LINE CONDITIONS", "TransportRobin",
-          "Scalar Transport Robin Boundary Condition", Core::Conditions::TransportRobin, true,
-          Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition scatrarobinline("DESIGN TRANSPORT ROBIN LINE CONDITIONS",
+      "TransportRobin", "Scalar Transport Robin Boundary Condition",
+      Core::Conditions::TransportRobin, true, Core::Conditions::geometry_type_line);
   // surface
-  std::shared_ptr<Core::Conditions::ConditionDefinition> scatrarobinsurf =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN TRANSPORT ROBIN SURF CONDITIONS", "TransportRobin",
-          "Scalar Transport Robin Boundary Condition", Core::Conditions::TransportRobin, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition scatrarobinsurf("DESIGN TRANSPORT ROBIN SURF CONDITIONS",
+      "TransportRobin", "Scalar Transport Robin Boundary Condition",
+      Core::Conditions::TransportRobin, true, Core::Conditions::geometry_type_surface);
 
-  for (const auto& cond : {scatrarobinline, scatrarobinsurf})
+  const auto make_scatrarobin = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    add_named_int(cond, "NUMSCAL");
-    add_named_int_vector(cond, "ONOFF", "", "NUMSCAL");
-    add_named_real(cond, "PREFACTOR");
-    add_named_real(cond, "REFVALUE");
+    cond.add_component(entry<int>("NUMSCAL"));
+    cond.add_component(entry<std::vector<int>>(
+        "ONOFF", {.description = "", .size = from_parameter<int>("NUMSCAL")}));
+    cond.add_component(entry<double>("PREFACTOR"));
+    cond.add_component(entry<double>("REFVALUE"));
 
     condlist.emplace_back(cond);
-  }
+  };
+
+  make_scatrarobin(scatrarobinline);
+  make_scatrarobin(scatrarobinsurf);
 
   /*--------------------------------------------------------------------*/
   // Neumann inflow for SCATRA
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linetransportneumanninflow =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "TRANSPORT NEUMANN INFLOW LINE CONDITIONS", "TransportNeumannInflow",
-          "Line Transport Neumann Inflow", Core::Conditions::TransportNeumannInflow, true,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surftransportneumanninflow =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "TRANSPORT NEUMANN INFLOW SURF CONDITIONS", "TransportNeumannInflow",
-          "Surface Transport Neumann Inflow", Core::Conditions::TransportNeumannInflow, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition linetransportneumanninflow(
+      "TRANSPORT NEUMANN INFLOW LINE CONDITIONS", "TransportNeumannInflow",
+      "Line Transport Neumann Inflow", Core::Conditions::TransportNeumannInflow, true,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surftransportneumanninflow(
+      "TRANSPORT NEUMANN INFLOW SURF CONDITIONS", "TransportNeumannInflow",
+      "Surface Transport Neumann Inflow", Core::Conditions::TransportNeumannInflow, true,
+      Core::Conditions::geometry_type_surface);
 
   condlist.emplace_back(linetransportneumanninflow);
   condlist.emplace_back(surftransportneumanninflow);
 
   /*--------------------------------------------------------------------*/
   // Scatra convective heat transfer (Newton's law of heat transfer)
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linetransportthermoconvect =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "TRANSPORT THERMO CONVECTION LINE CONDITIONS", "TransportThermoConvections",
-          "Line Transport Thermo Convections", Core::Conditions::TransportThermoConvections, true,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surftransportthermoconvect =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "TRANSPORT THERMO CONVECTION SURF CONDITIONS", "TransportThermoConvections",
-          "Surface Transport Thermo Convections", Core::Conditions::TransportThermoConvections,
-          true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition linetransportthermoconvect(
+      "TRANSPORT THERMO CONVECTION LINE CONDITIONS", "TransportThermoConvections",
+      "Line Transport Thermo Convections", Core::Conditions::TransportThermoConvections, true,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surftransportthermoconvect(
+      "TRANSPORT THERMO CONVECTION SURF CONDITIONS", "TransportThermoConvections",
+      "Surface Transport Thermo Convections", Core::Conditions::TransportThermoConvections, true,
+      Core::Conditions::geometry_type_surface);
 
-  for (const auto& cond : {linetransportthermoconvect, surftransportthermoconvect})
+  const auto make_transportthermoconvect = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
     // decide here if approximation is sufficient
     // --> Tempn (old temperature T_n)
     // or if the exact solution is needed
     // --> Tempnp (current temperature solution T_n+1) with linearisation
-    add_named_selection_component(cond, "temperature_state", "temperature state", "Tempnp",
-        Teuchos::tuple<std::string>("Tempnp", "Tempn"),
-        Teuchos::tuple<std::string>("Tempnp", "Tempn"));
-    add_named_real(cond, "coeff", "heat transfer coefficient h");
-    add_named_real(cond, "surtemp", "surrounding (fluid) temperature T_oo");
-    add_named_int(cond, "surtempfunct",
-        "time curve to increase the surrounding (fluid) temperature T_oo in time", 0, false, true);
-    add_named_int(cond, "funct",
-        "time curve to increase the complete boundary condition, i.e., the heat flux", 0, false,
-        true);
+    cond.add_component(selection<std::string>(
+        "temperature_state", {"Tempnp", "Tempn"}, {.description = "temperature state"}));
+    cond.add_component(entry<double>("coeff", {.description = "heat transfer coefficient h"}));
+    cond.add_component(
+        entry<double>("surtemp", {.description = "surrounding (fluid) temperature T_oo"}));
+    cond.add_component(entry<Noneable<int>>("surtempfunct",
+        {.description =
+                "time curve to increase the surrounding (fluid) temperature T_oo in time"}));
+    cond.add_component(entry<Noneable<int>>("funct",
+        {.description =
+                "time curve to increase the complete boundary condition, i.e., the heat flux"}));
 
     condlist.emplace_back(cond);
-  }
+  };
+
+  make_transportthermoconvect(linetransportthermoconvect);
+  make_transportthermoconvect(surftransportthermoconvect);
 
   /*--------------------------------------------------------------------*/
   // conditions for calculation of calculation of heterogeneous reactions
-  std::shared_ptr<Core::Conditions::ConditionDefinition> scatraheteroreactionmasterline =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SCATRA HETEROGENEOUS REACTION LINE CONDITIONS / MASTER",
-          "ScatraHeteroReactionMaster", "calculation of heterogeneous reactions",
-          Core::Conditions::ScatraHeteroReactionCondMaster, true,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> scatraheteroreactionmastersurf =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SCATRA HETEROGENEOUS REACTION SURF CONDITIONS / MASTER",
-          "ScatraHeteroReactionMaster", "calculation of heterogeneous reactions",
-          Core::Conditions::ScatraHeteroReactionCondMaster, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition scatraheteroreactionmasterline(
+      "DESIGN SCATRA HETEROGENEOUS REACTION LINE CONDITIONS / MASTER", "ScatraHeteroReactionMaster",
+      "calculation of heterogeneous reactions", Core::Conditions::ScatraHeteroReactionCondMaster,
+      true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition scatraheteroreactionmastersurf(
+      "DESIGN SCATRA HETEROGENEOUS REACTION SURF CONDITIONS / MASTER", "ScatraHeteroReactionMaster",
+      "calculation of heterogeneous reactions", Core::Conditions::ScatraHeteroReactionCondMaster,
+      true, Core::Conditions::geometry_type_surface);
 
   // insert condition definitions into global list of valid condition definitions
   condlist.emplace_back(scatraheteroreactionmasterline);
@@ -671,18 +665,14 @@ void Inpar::ScaTra::set_valid_conditions(
 
   /*--------------------------------------------------------------------*/
   // conditions for calculation of calculation of heterogeneous reactions
-  std::shared_ptr<Core::Conditions::ConditionDefinition> scatraheteroreactionslaveline =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SCATRA HETEROGENEOUS REACTION LINE CONDITIONS / SLAVE",
-          "ScatraHeteroReactionSlave", "calculation of heterogeneous reactions",
-          Core::Conditions::ScatraHeteroReactionCondSlave, true,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> scatraheteroreactionslavesurf =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SCATRA HETEROGENEOUS REACTION SURF CONDITIONS / SLAVE",
-          "ScatraHeteroReactionSlave", "calculation of heterogeneous reactions",
-          Core::Conditions::ScatraHeteroReactionCondSlave, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition scatraheteroreactionslaveline(
+      "DESIGN SCATRA HETEROGENEOUS REACTION LINE CONDITIONS / SLAVE", "ScatraHeteroReactionSlave",
+      "calculation of heterogeneous reactions", Core::Conditions::ScatraHeteroReactionCondSlave,
+      true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition scatraheteroreactionslavesurf(
+      "DESIGN SCATRA HETEROGENEOUS REACTION SURF CONDITIONS / SLAVE", "ScatraHeteroReactionSlave",
+      "calculation of heterogeneous reactions", Core::Conditions::ScatraHeteroReactionCondSlave,
+      true, Core::Conditions::geometry_type_surface);
 
   // insert condition definitions into global list of valid condition definitions
   condlist.emplace_back(scatraheteroreactionslaveline);
@@ -696,13 +686,13 @@ void Inpar::ScaTra::set_valid_conditions(
   // interface coupling at all
   {
     // partitioning of 2D domain into 2D subdomains
-    auto scatrasurfpartitioning = std::make_shared<Core::Conditions::ConditionDefinition>(
+    Core::Conditions::ConditionDefinition scatrasurfpartitioning(
         "DESIGN SCATRA SURF CONDITIONS / PARTITIONING", "ScatraPartitioning",
         "Domain partitioning of scatra field", Core::Conditions::ScatraPartitioning, false,
         Core::Conditions::geometry_type_surface);
 
     // partitioning of 3D domain into 3D subdomains
-    auto scatravolpartitioning = std::make_shared<Core::Conditions::ConditionDefinition>(
+    Core::Conditions::ConditionDefinition scatravolpartitioning(
         "DESIGN SCATRA VOL CONDITIONS / PARTITIONING", "ScatraPartitioning",
         "Domain partitioning of scatra field", Core::Conditions::ScatraPartitioning, false,
         Core::Conditions::geometry_type_volume);

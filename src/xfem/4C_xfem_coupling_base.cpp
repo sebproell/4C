@@ -517,8 +517,7 @@ void XFEM::CouplingBase::evaluate_neumann_function(Core::LinAlg::Matrix<3, 1>& i
   const auto condtype = cond->parameters().get<std::string>("TYPE");
 
   // get usual body force
-  if (!(condtype == "neum_dead" or condtype == "neum_live"))
-    FOUR_C_THROW("Unknown Neumann condition");
+  if (!(condtype == "Dead" or condtype == "Live")) FOUR_C_THROW("Unknown Neumann condition");
   //---------------------------------------
 
   evaluate_function(final_values, x.data(), cond, time);
@@ -537,8 +536,7 @@ void XFEM::CouplingBase::evaluate_neumann_function(Core::LinAlg::Matrix<6, 1>& i
   const auto condtype = cond->parameters().get<std::string>("TYPE");
 
   // get usual body force
-  if (!(condtype == "neum_dead" or condtype == "neum_live"))
-    FOUR_C_THROW("Unknown Neumann condition");
+  if (!(condtype == "Dead" or condtype == "Live")) FOUR_C_THROW("Unknown Neumann condition");
   //---------------------------------------
 
   evaluate_function(final_values, x.data(), cond, time);

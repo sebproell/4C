@@ -110,8 +110,7 @@ namespace Inpar
     void set_valid_parameters(Teuchos::ParameterList& list);
 
     /// set specific artnet conditions
-    void set_valid_conditions(
-        std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist);
+    void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);
 
   }  // namespace ArteryNetwork
 
@@ -121,8 +120,7 @@ namespace Inpar
     void set_valid_parameters(Teuchos::ParameterList& list);
 
     /// set specific biofilm conditions
-    void set_valid_conditions(
-        std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist);
+    void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);
   }  // namespace BioFilm
 
   namespace ReducedLung
@@ -131,8 +129,7 @@ namespace Inpar
     void set_valid_parameters(Teuchos::ParameterList& list);
 
     /// set specific reduced airways conditions
-    void set_valid_conditions(
-        std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist);
+    void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);
   }  // namespace ReducedLung
 }  // namespace Inpar
 

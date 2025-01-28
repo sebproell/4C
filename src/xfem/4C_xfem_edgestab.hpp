@@ -14,6 +14,7 @@
 #include "4C_inpar_xfem.hpp"
 #include "4C_linalg_vector.hpp"
 
+#include <map>
 #include <memory>
 #include <vector>
 

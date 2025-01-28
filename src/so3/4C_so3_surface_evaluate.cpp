@@ -72,17 +72,17 @@ int Discret::Elements::StructuralSurface::evaluate_neumann(Teuchos::ParameterLis
 
   // get type of condition
   const auto& type = condition.parameters().get<std::string>("TYPE");
-  if (type == "neum_live")
+  if (type == "Live")
   {
     ltype = neum_live;
     config = config_material;
   }
-  else if (type == "neum_pseudo_orthopressure")
+  else if (type == "pseudo_orthopressure")
   {
     ltype = neum_pseudo_orthopressure;
     config = config_lastconverged;
   }
-  else if (type == "neum_orthopressure")
+  else if (type == "orthopressure")
   {
     ltype = neum_orthopressure;
     config = config_spatial;

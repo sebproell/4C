@@ -17,6 +17,8 @@
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_vector.hpp"
 
+#include <map>
+
 FOUR_C_NAMESPACE_OPEN
 
 // forward declarations

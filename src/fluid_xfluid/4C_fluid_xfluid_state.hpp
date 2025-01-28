@@ -18,6 +18,7 @@
 
 #include <Epetra_Map.h>
 
+#include <map>
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN

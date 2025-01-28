@@ -94,7 +94,7 @@ namespace Core::Conditions
       \param cmap (o) the conditions we read here
      */
     void read(Core::IO::InputFile& input,
-        std::multimap<int, std::shared_ptr<Core::Conditions::Condition>>& cmap);
+        std::multimap<int, std::shared_ptr<Core::Conditions::Condition>>& cmap) const;
 
     /// print my dat file section
     std::ostream& print(std::ostream& stream);

@@ -8,7 +8,7 @@
 #include "4C_inpar_ehl.hpp"
 
 #include "4C_fem_condition_definition.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -17,7 +17,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::EHL::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -134,37 +133,33 @@ void Inpar::EHL::set_valid_parameters(Teuchos::ParameterList& list)
 }
 
 
-void Inpar::EHL::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+void Inpar::EHL::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
-  using Teuchos::setStringToIntegralParameter;
-  using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
   /*--------------------------------------------------------------------*/
   // ehl mortar coupling
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> lineehl =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE EHL MORTAR COUPLING CONDITIONS 2D", "EHLCoupling", "Line EHL Coupling",
-          Core::Conditions::EHLCoupling, true, Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfehl =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF EHL MORTAR COUPLING CONDITIONS 3D", "EHLCoupling", "Surface EHL Coupling",
-          Core::Conditions::EHLCoupling, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition lineehl("DESIGN LINE EHL MORTAR COUPLING CONDITIONS 2D",
+      "EHLCoupling", "Line EHL Coupling", Core::Conditions::EHLCoupling, true,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfehl("DESIGN SURF EHL MORTAR COUPLING CONDITIONS 3D",
+      "EHLCoupling", "Surface EHL Coupling", Core::Conditions::EHLCoupling, true,
+      Core::Conditions::geometry_type_surface);
 
-  for (const auto& cond : {lineehl, surfehl})
+  const auto make_ehl_cond = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    add_named_int(cond, "InterfaceID");
-    add_named_selection_component(cond, "Side", "interface side", "Master",
-        Teuchos::tuple<std::string>("Master", "Slave"),
-        Teuchos::tuple<std::string>("Master", "Slave"));
-    add_named_selection_component(cond, "Initialization", "initialization", "Active",
-        Teuchos::tuple<std::string>("Inactive", "Active"),
-        Teuchos::tuple<std::string>("Inactive", "Active"), true);
-    add_named_real(cond, "FrCoeffOrBound", "", 0.0, true);
+    cond.add_component(entry<int>("InterfaceID"));
+    cond.add_component(
+        selection<std::string>("Side", {"Master", "Slave"}, {.description = "interface side"}));
+    cond.add_component(selection<std::string>("Initialization", {"Inactive", "Active"},
+        {.description = "initialization", .default_value = "Active"}));
+    cond.add_component(entry<double>("FrCoeffOrBound", {.description = "", .default_value = 0.0}));
 
     condlist.push_back(cond);
-  }
+  };
+
+  make_ehl_cond(lineehl);
+  make_ehl_cond(surfehl);
 }
 
 FOUR_C_NAMESPACE_CLOSE

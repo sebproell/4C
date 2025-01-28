@@ -9,7 +9,7 @@
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_validparameters.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -17,7 +17,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::ArtDyn::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
   Teuchos::ParameterList& andyn = list.sublist("ARTERIAL DYNAMIC", false, "");
@@ -55,7 +54,6 @@ void Inpar::ArtDyn::set_valid_parameters(Teuchos::ParameterList& list)
 
 void Inpar::ArteryNetwork::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -79,137 +77,127 @@ void Inpar::ArteryNetwork::set_valid_parameters(Teuchos::ParameterList& list)
 
 
 void Inpar::ArteryNetwork::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*--------------------------------------------------------------------*/
   // 1D-Artery connector condition
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> art_connection_bc =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN NODE 1D ARTERY JUNCTION CONDITIONS", "ArtJunctionCond",
-          "Artery junction boundary condition", Core::Conditions::ArtJunctionCond, true,
-          Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition art_connection_bc(
+      "DESIGN NODE 1D ARTERY JUNCTION CONDITIONS", "ArtJunctionCond",
+      "Artery junction boundary condition", Core::Conditions::ArtJunctionCond, true,
+      Core::Conditions::geometry_type_point);
 
-  add_named_int(art_connection_bc, "ConditionID");
-  add_named_real(art_connection_bc, "Kr");
+  art_connection_bc.add_component(entry<int>("ConditionID"));
+  art_connection_bc.add_component(entry<double>("Kr"));
 
   condlist.push_back(art_connection_bc);
 
   /*--------------------------------------------------------------------*/
   // 1D artery prescribed BC
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> art_in_bc =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN NODE 1D ARTERY PRESCRIBED CONDITIONS", "ArtPrescribedCond",
-          "Artery prescribed boundary condition", Core::Conditions::ArtPrescribedCond, true,
-          Core::Conditions::geometry_type_point);
-  add_named_selection_component(art_in_bc, "boundarycond", "boundarycond", "flow",
-      Teuchos::tuple<std::string>("flow", "pressure", "velocity", "area", "characteristicWave"),
-      Teuchos::tuple<std::string>("flow", "pressure", "velocity", "area", "characteristicWave"),
-      true);
-  add_named_selection_component(art_in_bc, "type", "type", "forced",
-      Teuchos::tuple<std::string>("forced", "absorbing"),
-      Teuchos::tuple<std::string>("forced", "absorbing"), true);
+  Core::Conditions::ConditionDefinition art_in_bc("DESIGN NODE 1D ARTERY PRESCRIBED CONDITIONS",
+      "ArtPrescribedCond", "Artery prescribed boundary condition",
+      Core::Conditions::ArtPrescribedCond, true, Core::Conditions::geometry_type_point);
+  art_in_bc.add_component(selection<std::string>("boundarycond",
+      {"flow", "pressure", "velocity", "area", "characteristicWave"},
+      {.description = "boundarycond", .default_value = "flow"}));
+  art_in_bc.add_component(selection<std::string>(
+      "type", {"forced", "absorbing"}, {.description = "type", .default_value = "forced"}));
 
-  add_named_real_vector(art_in_bc, "VAL", "values", 2);
-  add_named_int_vector(art_in_bc, "curve", "curve ids", 2, 0.0, false, true);
+  art_in_bc.add_component(entry<std::vector<double>>("VAL", {.description = "values", .size = 2}));
+  art_in_bc.add_component(
+      entry<std::vector<Noneable<int>>>("curve", {.description = "curve ids", .size = 2}));
 
   condlist.push_back(art_in_bc);
 
   /*--------------------------------------------------------------------*/
   // 1D artery reflective BC
-  std::shared_ptr<Core::Conditions::ConditionDefinition> art_rf_bc =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN NODE 1D ARTERY REFLECTIVE CONDITIONS", "ArtRfCond", "Artery reflection condition",
-          Core::Conditions::ArtRfCond, true, Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition art_rf_bc("DESIGN NODE 1D ARTERY REFLECTIVE CONDITIONS",
+      "ArtRfCond", "Artery reflection condition", Core::Conditions::ArtRfCond, true,
+      Core::Conditions::geometry_type_point);
 
-  add_named_real_vector(art_rf_bc, "VAL", "value", 1);
-  add_named_int_vector(art_rf_bc, "curve", "curve", 1, 0, false, true);
+  art_rf_bc.add_component(entry<std::vector<double>>("VAL", {.description = "value", .size = 1}));
+  art_rf_bc.add_component(
+      entry<std::vector<Noneable<int>>>("curve", {.description = "curve", .size = 1}));
   condlist.push_back(art_rf_bc);
 
 
   /*--------------------------------------------------------------------*/
   // 1D artery in/out condition
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> art_in_outlet_bc =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN NODE 1D ARTERY IN_OUTLET CONDITIONS", "ArtInOutCond",
-          "Artery terminal in_outlet condition", Core::Conditions::ArtInOutletCond, true,
-          Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition art_in_outlet_bc(
+      "DESIGN NODE 1D ARTERY IN_OUTLET CONDITIONS", "ArtInOutCond",
+      "Artery terminal in_outlet condition", Core::Conditions::ArtInOutletCond, true,
+      Core::Conditions::geometry_type_point);
 
-  add_named_selection_component(art_in_outlet_bc, "terminaltype", "terminaltype", "inlet",
-      Teuchos::tuple<std::string>("inlet", "outlet"),
-      Teuchos::tuple<std::string>("inlet", "outlet"), true);
+  art_in_outlet_bc.add_component(selection<std::string>("terminaltype", {"inlet", "outlet"},
+      {.description = "terminaltype", .default_value = "inlet"}));
 
   condlist.push_back(art_in_outlet_bc);
 
   /*--------------------------------------------------------------------*/
   // 1D artery-to-porofluid coupling BC
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> artcoup =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN NODE 1D ARTERY TO POROFLUID COUPLING CONDITIONS", "ArtPorofluidCouplConNodebased",
-          "Artery coupling with porofluid", Core::Conditions::ArtPorofluidCouplingCondNodebased,
-          true, Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition artcoup(
+      "DESIGN NODE 1D ARTERY TO POROFLUID COUPLING CONDITIONS", "ArtPorofluidCouplConNodebased",
+      "Artery coupling with porofluid", Core::Conditions::ArtPorofluidCouplingCondNodebased, true,
+      Core::Conditions::geometry_type_point);
 
-  add_named_int(artcoup, "COUPID");
+  artcoup.add_component(entry<int>("COUPID"));
 
   condlist.push_back(artcoup);
 
   /*--------------------------------------------------------------------*/
   // 1D artery-to-scatra coupling BC
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> artscatracoup =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN NODE 1D ARTERY TO SCATRA COUPLING CONDITIONS", "ArtScatraCouplConNodebased",
-          "Artery coupling with porofluid", Core::Conditions::ArtScatraCouplingCondNodebased, true,
-          Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition artscatracoup(
+      "DESIGN NODE 1D ARTERY TO SCATRA COUPLING CONDITIONS", "ArtScatraCouplConNodebased",
+      "Artery coupling with porofluid", Core::Conditions::ArtScatraCouplingCondNodebased, true,
+      Core::Conditions::geometry_type_point);
 
-  add_named_int(artscatracoup, "COUPID");
+  artscatracoup.add_component(entry<int>("COUPID"));
 
   condlist.push_back(artscatracoup);
 
   /*--------------------------------------------------------------------*/
   // 1D artery-to-porofluid coupling BC Node-To-Point
-  std::shared_ptr<Core::Conditions::ConditionDefinition> artcoup_ntp =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN 1D ARTERY/AIRWAY TO POROFLUID NONCONF COUPLING CONDITIONS",
-          "ArtPorofluidCouplConNodeToPoint", "Artery coupling with porofluid nonconf",
-          Core::Conditions::ArtPorofluidCouplingCondNodeToPoint, true,
-          Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition artcoup_ntp(
+      "DESIGN 1D ARTERY/AIRWAY TO POROFLUID NONCONF COUPLING CONDITIONS",
+      "ArtPorofluidCouplConNodeToPoint", "Artery coupling with porofluid nonconf",
+      Core::Conditions::ArtPorofluidCouplingCondNodeToPoint, true,
+      Core::Conditions::geometry_type_point);
 
-  Input::add_named_selection_component(artcoup_ntp, "COUPLING_TYPE", "coupling type", "ARTERY",
-      Teuchos::tuple<std::string>("ARTERY", "AIRWAY"),
-      Teuchos::tuple<std::string>("ARTERY", "AIRWAY"), true);
-  Input::add_named_int(artcoup_ntp, "NUMDOF");
-  Input::add_named_int_vector(
-      artcoup_ntp, "COUPLEDDOF_REDUCED", "coupling dofs of reduced airways or arteries", "NUMDOF");
-  Input::add_named_int_vector(
-      artcoup_ntp, "COUPLEDDOF_PORO", "coupling dofs in porous domain", "NUMDOF");
-  Input::add_named_real(artcoup_ntp, "PENALTY");
+  artcoup_ntp.add_component(selection<std::string>("COUPLING_TYPE", {"ARTERY", "AIRWAY"},
+      {.description = "coupling type", .default_value = "ARTERY"}));
+  artcoup_ntp.add_component(entry<int>("NUMDOF"));
+  artcoup_ntp.add_component(entry<std::vector<int>>(
+      "COUPLEDDOF_REDUCED", {.description = "coupling dofs of reduced airways or arteries",
+                                .size = from_parameter<int>("NUMDOF")}));
+  artcoup_ntp.add_component(entry<std::vector<int>>("COUPLEDDOF_PORO",
+      {.description = "coupling dofs in porous domain", .size = from_parameter<int>("NUMDOF")}));
+  artcoup_ntp.add_component(entry<double>("PENALTY"));
 
   condlist.push_back(artcoup_ntp);
 
   /*--------------------------------------------------------------------*/
   // 1D artery-to-scatra coupling BC Node-To-Point
-  std::shared_ptr<Core::Conditions::ConditionDefinition> artscatracoup_ntp =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN 1D ARTERY/AIRWAY TO SCATRA NONCONF COUPLING CONDITIONS",
-          "ArtScatraCouplConNodeToPoint", "Artery coupling with scatra nonconf",
-          Core::Conditions::ArtScatraCouplingCondNodeToPoint, true,
-          Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition artscatracoup_ntp(
+      "DESIGN 1D ARTERY/AIRWAY TO SCATRA NONCONF COUPLING CONDITIONS",
+      "ArtScatraCouplConNodeToPoint", "Artery coupling with scatra nonconf",
+      Core::Conditions::ArtScatraCouplingCondNodeToPoint, true,
+      Core::Conditions::geometry_type_point);
 
-  Input::add_named_selection_component(artscatracoup_ntp, "COUPLING_TYPE", "coupling type",
-      "ARTERY", Teuchos::tuple<std::string>("ARTERY", "AIRWAY"),
-      Teuchos::tuple<std::string>("ARTERY", "AIRWAY"), true);
-  Input::add_named_int(artscatracoup_ntp, "NUMDOF");
-  Input::add_named_int_vector(artscatracoup_ntp, "COUPLEDDOF_REDUCED",
-      "coupling dofs of reduced airways or arteries", "NUMDOF");
-  Input::add_named_int_vector(
-      artscatracoup_ntp, "COUPLEDDOF_PORO", "coupling dofs in porous domain", "NUMDOF");
-  Input::add_named_real(artscatracoup_ntp, "PENALTY");
+  artscatracoup_ntp.add_component(selection<std::string>("COUPLING_TYPE", {"ARTERY", "AIRWAY"},
+      {.description = "coupling type", .default_value = "ARTERY"}));
+  artscatracoup_ntp.add_component(entry<int>("NUMDOF"));
+  artscatracoup_ntp.add_component(entry<std::vector<int>>(
+      "COUPLEDDOF_REDUCED", {.description = "coupling dofs of reduced airways or arteries",
+                                .size = from_parameter<int>("NUMDOF")}));
+  artscatracoup_ntp.add_component(entry<std::vector<int>>("COUPLEDDOF_PORO",
+      {.description = "coupling dofs in porous domain", .size = from_parameter<int>("NUMDOF")}));
+  artscatracoup_ntp.add_component(entry<double>("PENALTY"));
 
   condlist.push_back(artscatracoup_ntp);
 }
@@ -246,25 +234,23 @@ void Inpar::BioFilm::set_valid_parameters(Teuchos::ParameterList& list)
 
 
 void Inpar::BioFilm::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*--------------------------------------------------------------------*/
   // Additional coupling for biofilm growth
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfbiogr =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN BIOFILM GROWTH COUPLING SURF CONDITIONS", "BioGrCoupling", "BioGrCoupling",
-          Core::Conditions::BioGrCoupling, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition surfbiogr("DESIGN BIOFILM GROWTH COUPLING SURF CONDITIONS",
+      "BioGrCoupling", "BioGrCoupling", Core::Conditions::BioGrCoupling, true,
+      Core::Conditions::geometry_type_surface);
 
-  add_named_int(surfbiogr, "coupling_id", "coupling_id");
+  surfbiogr.add_component(entry<int>("coupling_id", {.description = "coupling_id"}));
   condlist.push_back(surfbiogr);
 }
 
 
 void Inpar::ReducedLung::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -307,57 +293,50 @@ void Inpar::ReducedLung::set_valid_parameters(Teuchos::ParameterList& list)
 
 
 void Inpar::ReducedLung::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*--------------------------------------------------------------------*/
   // 3-D/reduced-D coupling boundary condition
-  std::shared_ptr<Core::Conditions::ConditionDefinition> art_red_to_3d_bc =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN NODE REDUCED D To 3D FLOW COUPLING CONDITIONS", "Art_redD_3D_CouplingCond",
-          "Artery reduced D 3D coupling condition", Core::Conditions::ArtRedTo3DCouplingCond, true,
-          Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition art_red_to_3d_bc(
+      "DESIGN NODE REDUCED D To 3D FLOW COUPLING CONDITIONS", "Art_redD_3D_CouplingCond",
+      "Artery reduced D 3D coupling condition", Core::Conditions::ArtRedTo3DCouplingCond, true,
+      Core::Conditions::geometry_type_point);
 
-  Input::add_named_int(art_red_to_3d_bc, "ConditionID");
-  Input::add_named_selection_component(art_red_to_3d_bc, "CouplingType", "coupling type", "forced",
-      Teuchos::tuple<std::string>("forced", "absorbing"),
-      Teuchos::tuple<std::string>("forced", "absorbing"), true);
-  Input::add_named_selection_component(art_red_to_3d_bc, "ReturnedVariable", "returned variable",
-      "pressure", Teuchos::tuple<std::string>("pressure", "flow"),
-      Teuchos::tuple<std::string>("pressure", "flow"), true);
-  Input::add_named_real(art_red_to_3d_bc, "Tolerance");
-  Input::add_named_int(art_red_to_3d_bc, "MaximumIterations");
+  art_red_to_3d_bc.add_component(entry<int>("ConditionID"));
+  art_red_to_3d_bc.add_component(selection<std::string>("CouplingType", {"forced", "absorbing"},
+      {.description = "coupling type", .default_value = "forced"}));
+  art_red_to_3d_bc.add_component(selection<std::string>("ReturnedVariable", {"pressure", "flow"},
+      {.description = "returned variable", .default_value = "pressure"}));
+  art_red_to_3d_bc.add_component(entry<double>("Tolerance"));
+  art_red_to_3d_bc.add_component(entry<int>("MaximumIterations"));
 
   condlist.push_back(art_red_to_3d_bc);
 
   /*--------------------------------------------------------------------*/
   // 3-D/reduced-D coupling boundary condition
-  std::shared_ptr<Core::Conditions::ConditionDefinition> art_3d_to_red_bc =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF 3D To REDUCED D FLOW COUPLING CONDITIONS", "Art_3D_redD_CouplingCond",
-          "Artery 3D reduced D coupling condition", Core::Conditions::Art3DToRedCouplingCond, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition art_3d_to_red_bc(
+      "DESIGN SURF 3D To REDUCED D FLOW COUPLING CONDITIONS", "Art_3D_redD_CouplingCond",
+      "Artery 3D reduced D coupling condition", Core::Conditions::Art3DToRedCouplingCond, true,
+      Core::Conditions::geometry_type_surface);
 
-  Input::add_named_int(art_3d_to_red_bc, "ConditionID");
-  Input::add_named_selection_component(art_3d_to_red_bc, "ReturnedVariable", "returned variable",
-      "flow", Teuchos::tuple<std::string>("pressure", "flow"),
-      Teuchos::tuple<std::string>("pressure", "flow"), true);
-  Input::add_named_real(art_3d_to_red_bc, "Tolerance");
-  Input::add_named_int(art_3d_to_red_bc, "MaximumIterations");
+  art_3d_to_red_bc.add_component(entry<int>("ConditionID"));
+  art_3d_to_red_bc.add_component(selection<std::string>("ReturnedVariable", {"pressure", "flow"},
+      {.description = "returned variable", .default_value = "flow"}));
+  art_3d_to_red_bc.add_component(entry<double>("Tolerance"));
+  art_3d_to_red_bc.add_component(entry<int>("MaximumIterations"));
 
   condlist.push_back(art_3d_to_red_bc);
 
   /*--------------------------------------------------------------------*/
   // Coupling of 3D tissue models and reduced-D airway tree
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfredairtis =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN SURF TISSUE REDAIRWAY CONDITIONS", "SurfaceNeumann",
-          "tissue RedAirway coupling surface condition", Core::Conditions::RedAirwayTissue, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition surfredairtis("DESIGN SURF TISSUE REDAIRWAY CONDITIONS",
+      "SurfaceNeumann", "tissue RedAirway coupling surface condition",
+      Core::Conditions::RedAirwayTissue, true, Core::Conditions::geometry_type_surface);
 
-  add_named_int(surfredairtis, "coupling_id");
+  surfredairtis.add_component(entry<int>("coupling_id"));
 
   condlist.push_back(surfredairtis);
 
@@ -365,13 +344,11 @@ void Inpar::ReducedLung::set_valid_conditions(
   /*--------------------------------------------------------------------*/
   // Prescribed BC for reduced dimensional airways
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> noderedairtis =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN NODE TISSUE REDAIRWAY CONDITIONS", "RedAirwayPrescribedCond",
-          "tissue RedAirway coupling node condition", Core::Conditions::RedAirwayNodeTissue, true,
-          Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition noderedairtis("DESIGN NODE TISSUE REDAIRWAY CONDITIONS",
+      "RedAirwayPrescribedCond", "tissue RedAirway coupling node condition",
+      Core::Conditions::RedAirwayNodeTissue, true, Core::Conditions::geometry_type_point);
 
-  add_named_int(noderedairtis, "coupling_id");
+  noderedairtis.add_component(entry<int>("coupling_id"));
 
   condlist.push_back(noderedairtis);
 
@@ -380,23 +357,21 @@ void Inpar::ReducedLung::set_valid_conditions(
   /*--------------------------------------------------------------------*/
   // Prescribed BC for reduced dimensional airways
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> raw_in_bc =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN NODE Reduced D AIRWAYS PRESCRIBED CONDITIONS", "RedAirwayPrescribedCond",
-          "Reduced d airway prescribed boundary condition",
-          Core::Conditions::RedAirwayPrescribedCond, true, Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition raw_in_bc(
+      "DESIGN NODE Reduced D AIRWAYS PRESCRIBED CONDITIONS", "RedAirwayPrescribedCond",
+      "Reduced d airway prescribed boundary condition", Core::Conditions::RedAirwayPrescribedCond,
+      true, Core::Conditions::geometry_type_point);
 
-  add_named_selection_component(raw_in_bc, "boundarycond", "boundary condition type", "flow",
-      Teuchos::tuple<std::string>(
-          "flow", "pressure", "switchFlowPressure", "VolumeDependentPleuralPressure"),
-      Teuchos::tuple<std::string>(
-          "flow", "pressure", "switchFlowPressure", "VolumeDependentPleuralPressure"),
-      true);
+  raw_in_bc.add_component(selection<std::string>("boundarycond",
+      {"flow", "pressure", "switchFlowPressure", "VolumeDependentPleuralPressure"},
+      {.description = "boundary condition type", .default_value = "flow"}));
 
   // reduced airway inlet components
-  add_named_real_vector(raw_in_bc, "VAL", "value", 1);
-  add_named_int_vector(raw_in_bc, "curve", "curve", 2, 0, false, true);
-  add_named_int_vector(raw_in_bc, "funct", "function id", 1, 0, true, true);
+  raw_in_bc.add_component(entry<std::vector<double>>("VAL", {.description = "value", .size = 1}));
+  raw_in_bc.add_component(
+      entry<std::vector<Noneable<int>>>("curve", {.description = "curve", .size = 2}));
+  raw_in_bc.add_component(entry<std::vector<Noneable<int>>>(
+      "funct", {.description = "function id", .default_value = std::vector{none<int>}, .size = 1}));
 
   condlist.push_back(raw_in_bc);
 
@@ -404,60 +379,55 @@ void Inpar::ReducedLung::set_valid_conditions(
   // Prescribed BC for reduced dimensional airways switching between different types of boundary
   // conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> raw_in_switch_bc =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN NODE Reduced D AIRWAYS SWITCH FLOW PRESSURE CONDITIONS",
-          "RedAirwaySwitchFlowPressureCond",
-          "Reduced d airway switch flow pressure boundary condition",
-          Core::Conditions::RedAirwayPrescribedSwitchCond, true,
-          Core::Conditions::geometry_type_point);
+  Core::Conditions::ConditionDefinition raw_in_switch_bc(
+      "DESIGN NODE Reduced D AIRWAYS SWITCH FLOW PRESSURE CONDITIONS",
+      "RedAirwaySwitchFlowPressureCond", "Reduced d airway switch flow pressure boundary condition",
+      Core::Conditions::RedAirwayPrescribedSwitchCond, true, Core::Conditions::geometry_type_point);
 
-  Input::add_named_int(raw_in_switch_bc, "FUNCT_ID_FLOW");
-  Input::add_named_int(raw_in_switch_bc, "FUNCT_ID_PRESSURE");
-  Input::add_named_int(raw_in_switch_bc, "FUNCT_ID_PRESSURE_ACTIVE");
+  raw_in_switch_bc.add_component(entry<int>("FUNCT_ID_FLOW"));
+  raw_in_switch_bc.add_component(entry<int>("FUNCT_ID_PRESSURE"));
+  raw_in_switch_bc.add_component(entry<int>("FUNCT_ID_PRESSURE_ACTIVE"));
 
   condlist.push_back(raw_in_switch_bc);
 
   /*--------------------------------------------------------------------*/
   // Prescribed volume dependent pleural pressure for reduced dimensional airways
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> raw_volPpl_bc =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE REDUCED D AIRWAYS VOL DEPENDENT PLEURAL PRESSURE CONDITIONS",
-          "RedAirwayVolDependentPleuralPressureCond",
-          "Reduced D airways volume-dependent peural pressure condition",
-          Core::Conditions::RedAirwayVolDependentPleuralPressureCond, true,
-          Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition raw_volPpl_bc(
+      "DESIGN LINE REDUCED D AIRWAYS VOL DEPENDENT PLEURAL PRESSURE CONDITIONS",
+      "RedAirwayVolDependentPleuralPressureCond",
+      "Reduced D airways volume-dependent peural pressure condition",
+      Core::Conditions::RedAirwayVolDependentPleuralPressureCond, true,
+      Core::Conditions::geometry_type_line);
 
-  Input::add_named_selection_component(raw_volPpl_bc, "TYPE", "type", "Linear_Exponential",
-      Teuchos::tuple<std::string>("Linear_Polynomial", "Linear_Exponential", "Linear_Ogden",
-          "Nonlinear_Polynomial", "Nonlinear_Exponential", "Nonlinear_Ogden"),
-      Teuchos::tuple<std::string>("Linear_Polynomial", "Linear_Exponential", "Linear_Ogden",
-          "Nonlinear_Polynomial", "Nonlinear_Exponential", "Nonlinear_Ogden"),
-      true);
+  raw_volPpl_bc.add_component(selection<std::string>("TYPE",
+      {"Linear_Polynomial", "Linear_Exponential", "Linear_Ogden", "Nonlinear_Polynomial",
+          "Nonlinear_Exponential", "Nonlinear_Ogden"},
+      {.description = "type", .default_value = "Linear_Exponential"}));
 
-  Input::add_named_real(raw_volPpl_bc, "TLC");
-  Input::add_named_real(raw_volPpl_bc, "RV");
+  raw_volPpl_bc.add_component(entry<double>("TLC"));
+  raw_volPpl_bc.add_component(entry<double>("RV"));
 
-  Input::add_named_real(raw_volPpl_bc, "P_PLEURAL_0");
-  Input::add_named_real(raw_volPpl_bc, "P_PLEURAL_LIN");
-  Input::add_named_real(raw_volPpl_bc, "P_PLEURAL_NONLIN");
-  Input::add_named_real(raw_volPpl_bc, "TAU");
+  raw_volPpl_bc.add_component(entry<double>("P_PLEURAL_0"));
+  raw_volPpl_bc.add_component(entry<double>("P_PLEURAL_LIN"));
+  raw_volPpl_bc.add_component(entry<double>("P_PLEURAL_NONLIN"));
+  raw_volPpl_bc.add_component(entry<double>("TAU"));
 
   // raw_volPpl_bc_components
-  Input::add_named_real_vector(raw_volPpl_bc, "VAL", "value", 1);
-  Input::add_named_int_vector(raw_volPpl_bc, "curve", "curve", 1, 0, false, true);
+  raw_volPpl_bc.add_component(
+      entry<std::vector<double>>("VAL", {.description = "value", .size = 1}));
+  raw_volPpl_bc.add_component(
+      entry<std::vector<Noneable<int>>>("curve", {.description = "curve", .size = 1}));
 
   condlist.push_back(raw_volPpl_bc);
 
   /*--------------------------------------------------------------------*/
   // Evaluate lung volume condition for reduced dimensional airways
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> raw_eval_lungV_bc =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN LINE REDUCED D AIRWAYS EVALUATE LUNG VOLUME CONDITIONS",
-          "RedAirwayEvalLungVolCond", "Reduced D airways evaluate lung volume condition",
-          Core::Conditions::RedAirwayEvalLungVolCond, true, Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition raw_eval_lungV_bc(
+      "DESIGN LINE REDUCED D AIRWAYS EVALUATE LUNG VOLUME CONDITIONS", "RedAirwayEvalLungVolCond",
+      "Reduced D airways evaluate lung volume condition",
+      Core::Conditions::RedAirwayEvalLungVolCond, true, Core::Conditions::geometry_type_line);
 
 
   condlist.push_back(raw_eval_lungV_bc);
@@ -466,20 +436,19 @@ void Inpar::ReducedLung::set_valid_conditions(
   /*--------------------------------------------------------------------*/
   // Impedance condition
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> impedancebc =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN SURF IMPEDANCE CONDITIONS",
-          "ImpedanceCond", "Impedance boundary condition", Core::Conditions::ImpedanceCond, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition impedancebc("DESIGN SURF IMPEDANCE CONDITIONS",
+      "ImpedanceCond", "Impedance boundary condition", Core::Conditions::ImpedanceCond, true,
+      Core::Conditions::geometry_type_surface);
 
-  Input::add_named_int(impedancebc, "ConditionID");
-  Input::add_named_selection_component(impedancebc, "TYPE", "type", "windkessel",
-      Teuchos::tuple<std::string>("windkessel", "resistive", "pressure_by_funct"),
-      Teuchos::tuple<std::string>("windkessel", "resistive", "pressure_by_funct"), true);
-  Input::add_named_real(impedancebc, "R1");
-  Input::add_named_real(impedancebc, "R2");
-  Input::add_named_real(impedancebc, "C");
-  Input::add_named_real(impedancebc, "TIMEPERIOD");
-  Input::add_named_int(impedancebc, "FUNCT");
+  impedancebc.add_component(entry<int>("ConditionID"));
+  impedancebc.add_component(
+      selection<std::string>("TYPE", {"windkessel", "resistive", "pressure_by_funct"},
+          {.description = "type", .default_value = "windkessel"}));
+  impedancebc.add_component(entry<double>("R1"));
+  impedancebc.add_component(entry<double>("R2"));
+  impedancebc.add_component(entry<double>("C"));
+  impedancebc.add_component(entry<double>("TIMEPERIOD"));
+  impedancebc.add_component(entry<int>("FUNCT"));
 
   condlist.push_back(impedancebc);
 }

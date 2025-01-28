@@ -206,8 +206,8 @@ namespace RTD
    *  @param[in] stream restructuredText file for prescribed conditions.
    *  @param[in] condlist List of prescribed conditions to be written to that file
    */
-  void write_conditions_reference(std::ostream& stream,
-      const std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist);
+  void write_conditions_reference(
+      std::ostream& stream, const std::vector<Core::Conditions::ConditionDefinition>& condlist);
 
   /*!
    *  write a single condition including explanations (if available) to a .rst file for
@@ -217,7 +217,7 @@ namespace RTD
    *  @param[in] condition Single prescribed condition to be written to that file
    */
   void write_single_condition_read_the_docs(
-      std::ostream& stream, Core::Conditions::ConditionDefinition& condition);
+      std::ostream& stream, const Core::Conditions::ConditionDefinition& condition);
 
   /*!
    *  write all known contact laws including explanations (if available) to a .rst file for

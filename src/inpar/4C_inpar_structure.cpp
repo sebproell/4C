@@ -9,7 +9,7 @@
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_io_geometry_type.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -22,7 +22,6 @@ namespace Inpar
     /*----------------------------------------------------------------------*/
     void set_valid_time_adaptivity_parameters(Teuchos::ParameterList& list)
     {
-      using namespace Input;
       using Teuchos::setStringToIntegralParameter;
       using Teuchos::tuple;
 
@@ -111,7 +110,6 @@ namespace Inpar
 
     void set_valid_parameters(Teuchos::ParameterList& list)
     {
-      using namespace Input;
       using Teuchos::setStringToIntegralParameter;
       using Teuchos::tuple;
 
@@ -392,54 +390,60 @@ namespace Inpar
 
 
 
-    void set_valid_conditions(
-        std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
     {
-      using namespace Input;
+      using namespace Core::IO::InputSpecBuilders;
 
       /*--------------------------------------------------------------------*/
 
       // structural Robin spring dashpot boundary condition (spring and dashpot in parallel)
 
-      auto robinspringdashpotsurf = std::make_shared<Core::Conditions::ConditionDefinition>(
+      Core::Conditions::ConditionDefinition robinspringdashpotsurf(
           "DESIGN SURF ROBIN SPRING DASHPOT CONDITIONS", "RobinSpringDashpot",
           "Robin Spring Dashpot", Core::Conditions::RobinSpringDashpot, true,
           Core::Conditions::geometry_type_surface);
 
-      auto robinspringdashpotpoint = std::make_shared<Core::Conditions::ConditionDefinition>(
+      Core::Conditions::ConditionDefinition robinspringdashpotpoint(
           "DESIGN POINT ROBIN SPRING DASHPOT CONDITIONS", "RobinSpringDashpot",
           "Robin Spring Dashpot", Core::Conditions::RobinSpringDashpot, true,
           Core::Conditions::geometry_type_point);
 
-      for (const auto& cond : {robinspringdashpotpoint, robinspringdashpotsurf})
+      const auto make_robin_spring_dashpot = [&condlist](
+                                                 Core::Conditions::ConditionDefinition& cond)
       {
-        add_named_int(cond, "NUMDOF");
-        add_named_int_vector(cond, "ONOFF", "", 3);
-        add_named_real_vector(cond, "STIFF", "", 3);
-        add_named_int_vector(cond, "TIMEFUNCTSTIFF", "", 3);
-        add_named_real_vector(cond, "VISCO", "", 3);
-        add_named_int_vector(cond, "TIMEFUNCTVISCO", "", 3);
-        add_named_real_vector(cond, "DISPLOFFSET", "", 3);
-        add_named_int_vector(cond, "TIMEFUNCTDISPLOFFSET", "", 3);
-        add_named_int_vector(cond, "FUNCTNONLINSTIFF", "", 3);
-        add_named_selection_component(cond, "DIRECTION", "", "xyz",
-            Teuchos::tuple<std::string>("xyz", "refsurfnormal", "cursurfnormal"),
-            Teuchos::tuple<std::string>("xyz", "refsurfnormal", "cursurfnormal"), false);
-        add_named_int(cond, "COUPLING", "", 0, false, true);
+        cond.add_component(entry<int>("NUMDOF"));
+        cond.add_component(entry<std::vector<int>>("ONOFF", {.description = "", .size = 3}));
+        cond.add_component(entry<std::vector<double>>("STIFF", {.description = "", .size = 3}));
+        cond.add_component(
+            entry<std::vector<int>>("TIMEFUNCTSTIFF", {.description = "", .size = 3}));
+        cond.add_component(entry<std::vector<double>>("VISCO", {.description = "", .size = 3}));
+        cond.add_component(
+            entry<std::vector<int>>("TIMEFUNCTVISCO", {.description = "", .size = 3}));
+        cond.add_component(
+            entry<std::vector<double>>("DISPLOFFSET", {.description = "", .size = 3}));
+        cond.add_component(
+            entry<std::vector<int>>("TIMEFUNCTDISPLOFFSET", {.description = "", .size = 3}));
+        cond.add_component(
+            entry<std::vector<int>>("FUNCTNONLINSTIFF", {.description = "", .size = 3}));
+        cond.add_component(selection<std::string>(
+            "DIRECTION", {"xyz", "refsurfnormal", "cursurfnormal"}, {.description = ""}));
+        cond.add_component(entry<Noneable<int>>("COUPLING", {.description = ""}));
         condlist.emplace_back(cond);
-      }
+      };
+
+      make_robin_spring_dashpot(robinspringdashpotsurf);
+      make_robin_spring_dashpot(robinspringdashpotpoint);
 
       /*--------------------------------------------------------------------*/
       // surface coupling for spring dashpot DIRECTION cursurfnormal
       // pfaller Apr15
 
-      std::shared_ptr<Core::Conditions::ConditionDefinition> springdashpotcoupcond =
-          std::make_shared<Core::Conditions::ConditionDefinition>(
-              "DESIGN SURF ROBIN SPRING DASHPOT COUPLING CONDITIONS", "RobinSpringDashpotCoupling",
-              "RobinSpring Dashpot Coupling", Core::Conditions::RobinSpringDashpotCoupling, true,
-              Core::Conditions::geometry_type_surface);
+      Core::Conditions::ConditionDefinition springdashpotcoupcond(
+          "DESIGN SURF ROBIN SPRING DASHPOT COUPLING CONDITIONS", "RobinSpringDashpotCoupling",
+          "RobinSpring Dashpot Coupling", Core::Conditions::RobinSpringDashpotCoupling, true,
+          Core::Conditions::geometry_type_surface);
 
-      add_named_int(springdashpotcoupcond, "COUPLING");
+      springdashpotcoupcond.add_component(entry<int>("COUPLING"));
 
       condlist.push_back(springdashpotcoupcond);
     }

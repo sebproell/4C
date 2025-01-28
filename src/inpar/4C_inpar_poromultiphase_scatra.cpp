@@ -8,7 +8,7 @@
 #include "4C_inpar_poromultiphase_scatra.hpp"
 
 #include "4C_fem_condition_definition.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_linalg_equilibrate.hpp"
 #include "4C_utils_parameter_list.hpp"
 
@@ -133,50 +133,50 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(Teuchos::ParameterList& l
 }
 
 void Inpar::PoroMultiPhaseScaTra::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+    std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*--------------------------------------------------------------------*/
   // oxygen partial pressure calculation condition
   {
     // definition of oxygen partial pressure calculation condition
-    std::shared_ptr<Core::Conditions::ConditionDefinition> oxypartpressline =
-        std::make_shared<Core::Conditions::ConditionDefinition>(
-            "DESIGN OXYGEN PARTIAL PRESSURE CALCULATION LINE CONDITIONS",
-            "PoroMultiphaseScatraOxyPartPressCalcCond",
-            "PoroMultiphaseScatra Oxygen Partial Pressure Calculation line condition",
-            Core::Conditions::PoroMultiphaseScatraOxyPartPressCalcCond, true,
-            Core::Conditions::geometry_type_line);
-    std::shared_ptr<Core::Conditions::ConditionDefinition> oxypartpresssurf =
-        std::make_shared<Core::Conditions::ConditionDefinition>(
-            "DESIGN OXYGEN PARTIAL PRESSURE CALCULATION SURF CONDITIONS",
-            "PoroMultiphaseScatraOxyPartPressCalcCond",
-            "PoroMultiphaseScatra Oxygen Partial Pressure Calculation surface condition",
-            Core::Conditions::PoroMultiphaseScatraOxyPartPressCalcCond, true,
-            Core::Conditions::geometry_type_surface);
-    std::shared_ptr<Core::Conditions::ConditionDefinition> oxypartpressvol =
-        std::make_shared<Core::Conditions::ConditionDefinition>(
-            "DESIGN OXYGEN PARTIAL PRESSURE CALCULATION VOL CONDITIONS",
-            "PoroMultiphaseScatraOxyPartPressCalcCond",
-            "PoroMultiphaseScatra Oxygen Partial Pressure Calculation volume condition",
-            Core::Conditions::PoroMultiphaseScatraOxyPartPressCalcCond, true,
-            Core::Conditions::geometry_type_volume);
+    Core::Conditions::ConditionDefinition oxypartpressline(
+        "DESIGN OXYGEN PARTIAL PRESSURE CALCULATION LINE CONDITIONS",
+        "PoroMultiphaseScatraOxyPartPressCalcCond",
+        "PoroMultiphaseScatra Oxygen Partial Pressure Calculation line condition",
+        Core::Conditions::PoroMultiphaseScatraOxyPartPressCalcCond, true,
+        Core::Conditions::geometry_type_line);
+    Core::Conditions::ConditionDefinition oxypartpresssurf(
+        "DESIGN OXYGEN PARTIAL PRESSURE CALCULATION SURF CONDITIONS",
+        "PoroMultiphaseScatraOxyPartPressCalcCond",
+        "PoroMultiphaseScatra Oxygen Partial Pressure Calculation surface condition",
+        Core::Conditions::PoroMultiphaseScatraOxyPartPressCalcCond, true,
+        Core::Conditions::geometry_type_surface);
+    Core::Conditions::ConditionDefinition oxypartpressvol(
+        "DESIGN OXYGEN PARTIAL PRESSURE CALCULATION VOL CONDITIONS",
+        "PoroMultiphaseScatraOxyPartPressCalcCond",
+        "PoroMultiphaseScatra Oxygen Partial Pressure Calculation volume condition",
+        Core::Conditions::PoroMultiphaseScatraOxyPartPressCalcCond, true,
+        Core::Conditions::geometry_type_volume);
 
-    for (const auto& cond : {oxypartpressline, oxypartpresssurf, oxypartpressvol})
+    const auto make_oxypartpress = [&condlist](Core::Conditions::ConditionDefinition& cond)
     {
-      // insert input file line components into condition definitions
-      add_named_int(cond, "SCALARID");
-      add_named_real(cond, "n");
-      add_named_real(cond, "Pb50");
-      add_named_real(cond, "CaO2_max");
-      add_named_real(cond, "alpha_bl_eff");
-      add_named_real(cond, "rho_oxy");
-      add_named_real(cond, "rho_bl");
+      cond.add_component(
+          entry<int>("SCALARID", {.description = "scalar id of oxygen partial pressure"}));
+      cond.add_component(entry<double>("n", {.description = "n"}));
+      cond.add_component(entry<double>("Pb50", {.description = "Pb50"}));
+      cond.add_component(entry<double>("CaO2_max", {.description = "CaO2_max"}));
+      cond.add_component(entry<double>("alpha_bl_eff", {.description = "alpha_bl_eff"}));
+      cond.add_component(entry<double>("rho_oxy", {.description = "rho_oxy"}));
+      cond.add_component(entry<double>("rho_bl", {.description = "rho_bl"}));
 
-      // insert condition definitions into global list of valid condition definitions
       condlist.push_back(cond);
-    }
+    };
+
+    make_oxypartpress(oxypartpressline);
+    make_oxypartpress(oxypartpresssurf);
+    make_oxypartpress(oxypartpressvol);
   }
 }
 

@@ -8,7 +8,7 @@
 #include "4C_inpar_ale.hpp"
 
 #include "4C_fem_condition_definition.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -17,7 +17,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::ALE::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -76,36 +75,34 @@ void Inpar::ALE::set_valid_parameters(Teuchos::ParameterList& list)
 
 
 
-void Inpar::ALE::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+void Inpar::ALE::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*--------------------------------------------------------------------*/
   // Ale update boundary condition
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> linealeupdate =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN ALE UPDATE LINE CONDITIONS",
-          "ALEUPDATECoupling", "ALEUPDATE Coupling", Core::Conditions::ALEUPDATECoupling, true,
-          Core::Conditions::geometry_type_line);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> surfaleupdate =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN ALE UPDATE SURF CONDITIONS",
-          "ALEUPDATECoupling", "ALEUPDATE Coupling", Core::Conditions::ALEUPDATECoupling, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition linealeupdate("DESIGN ALE UPDATE LINE CONDITIONS",
+      "ALEUPDATECoupling", "ALEUPDATE Coupling", Core::Conditions::ALEUPDATECoupling, true,
+      Core::Conditions::geometry_type_line);
+  Core::Conditions::ConditionDefinition surfaleupdate("DESIGN ALE UPDATE SURF CONDITIONS",
+      "ALEUPDATECoupling", "ALEUPDATE Coupling", Core::Conditions::ALEUPDATECoupling, true,
+      Core::Conditions::geometry_type_surface);
 
-  for (const auto& cond : {linealeupdate, surfaleupdate})
+  const auto make_ale_update = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    add_named_selection_component(cond, "COUPLING", "", "lagrange",
-        Teuchos::tuple<std::string>("lagrange", "heightfunction", "sphereHeightFunction",
-            "meantangentialvelocity", "meantangentialvelocityscaled"),
-        Teuchos::tuple<std::string>("lagrange", "heightfunction", "sphereHeightFunction",
-            "meantangentialvelocity", "meantangentialvelocityscaled"),
-        true);
-    add_named_real(cond, "VAL");
-    add_named_int(cond, "NODENORMALFUNCT");
+    cond.add_component(selection<std::string>("COUPLING",
+        {"lagrange", "heightfunction", "sphereHeightFunction", "meantangentialvelocity",
+            "meantangentialvelocityscaled"},
+        {.description = "", .default_value = "lagrange"}));
+    cond.add_component(entry<double>("VAL"));
+    cond.add_component(entry<int>("NODENORMALFUNCT"));
 
     condlist.emplace_back(cond);
-  }
+  };
+
+  make_ale_update(linealeupdate);
+  make_ale_update(surfaleupdate);
 }
 
 FOUR_C_NAMESPACE_CLOSE

@@ -12,7 +12,6 @@
 #include "4C_io_control.hpp"
 #include "4C_io_file_reader.hpp"
 #include "4C_io_input_spec_builders.hpp"
-#include "4C_io_linecomponent.hpp"
 #include "4C_mat_electrode.hpp"
 #include "4C_mat_materialdefinition.hpp"
 
@@ -531,9 +530,6 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
         {{"function", Inpar::Mat::ActivationType::function_of_space_time},
             {"map", Inpar::Mat::ActivationType::map}},
         {.description = "type of activation evaluation"}));
-
-    std::map<int, std::pair<std::string, std::vector<std::shared_ptr<Input::LineComponent>>>>
-        activation_evaluation_choices;
 
     using actMapType = std::unordered_map<int, std::vector<std::pair<double, double>>>;
 

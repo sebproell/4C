@@ -410,7 +410,7 @@ int Discret::Elements::FluidBoundaryImpl<distype>::evaluate_neumann(
 
     for (int idim = 0; idim < (nsd_); ++idim)
     {
-      if (*type == "neum_live")
+      if (*type == "Live")
       {
         if (onoff[idim])  // Is this dof activated
         {
@@ -443,7 +443,7 @@ int Discret::Elements::FluidBoundaryImpl<distype>::evaluate_neumann(
           }  // end is_new_ost_implementation
         }  // if onoff
       }
-      else if (*type == "neum_pseudo_orthopressure")
+      else if (*type == "pseudo_orthopressure")
       {
         if (idim != 0 and onoff[idim])
           FOUR_C_THROW(

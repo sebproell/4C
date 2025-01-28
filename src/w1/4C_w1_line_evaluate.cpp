@@ -53,11 +53,11 @@ int Discret::Elements::Wall1Line::evaluate_neumann(Teuchos::ParameterList& param
 
   LoadType ltype = neum_none;
   const std::string& type = condition.parameters().get<std::string>("TYPE");
-  if (type == "neum_live")
+  if (type == "Live")
     ltype = neum_live;
-  else if (type == "neum_pseudo_orthopressure")
+  else if (type == "pseudo_orthopressure")
     ltype = neum_pseudo_orthopressure;
-  else if (type == "neum_orthopressure")
+  else if (type == "orthopressure")
     ltype = neum_orthopressure;
   else
     FOUR_C_THROW("Unknown type of SurfaceNeumann condition");

@@ -9,7 +9,7 @@
 
 #include "4C_cut_enum.hpp"
 #include "4C_fem_condition_definition.hpp"
-#include "4C_io_linecomponent.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -18,7 +18,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::XFEM::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using namespace Input;
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
@@ -379,11 +378,8 @@ void Inpar::XFEM::set_valid_parameters(Teuchos::ParameterList& list)
 }
 
 
-void Inpar::XFEM::set_valid_conditions(
-    std::vector<std::shared_ptr<Core::Conditions::ConditionDefinition>>& condlist)
+void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
-  using namespace Input;
-
   using namespace Core::IO;
   using namespace Core::IO::InputSpecBuilders;
 
@@ -392,8 +388,7 @@ void Inpar::XFEM::set_valid_conditions(
       entry<std::vector<int>>("ONOFF", {.size = from_parameter<int>("NUMDOF")}),
       entry<std::vector<double>>("VAL", {.size = from_parameter<int>("NUMDOF")}),
       entry<std::vector<Noneable<int>>>("FUNCT", {.size = from_parameter<int>("NUMDOF")}),
-      selection<std::string>(
-          "TAG", {{"none", "none"}, {"monitor_reaction", "monitor_reaction"}}, {.required = false}),
+      selection<std::string>("TAG", {"none", "monitor_reaction"}, {.required = false}),
   });
 
   auto neumanncomponents = all_of({
@@ -402,32 +397,29 @@ void Inpar::XFEM::set_valid_conditions(
       entry<std::vector<double>>("VAL", {.size = from_parameter<int>("NUMDOF")}),
       entry<std::vector<Noneable<int>>>("FUNCT", {.size = from_parameter<int>("NUMDOF")}),
       selection<std::string>("TYPE",
-          {{"Live", "neum_live"}, {"Dead", "neum_dead"},
-              {"pseudo_orthopressure", "neum_pseudo_orthopressure"},
-              {"orthopressure", "neum_orthopressure"}, {"PressureGrad", "neum_pgrad"}},
-          {.default_value = "neum_live"}),
+          {"Live", "Dead", "pseudo_orthopressure", "orthopressure", "PressureGrad"},
+          {.default_value = "Live"}),
   });
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> movingfluid =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN FLUID MESH VOL CONDITIONS",
-          "FluidMesh", "Fluid Mesh", Core::Conditions::FluidMesh, true,
-          Core::Conditions::geometry_type_volume);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> fluidfluidcoupling =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN FLUID FLUID COUPLING SURF CONDITIONS", "FluidFluidCoupling",
-          "FLUID FLUID Coupling", Core::Conditions::FluidFluidCoupling, true,
-          Core::Conditions::geometry_type_surface);
-  std::shared_ptr<Core::Conditions::ConditionDefinition> ALEfluidcoupling =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN ALE FLUID COUPLING SURF CONDITIONS", "ALEFluidCoupling", "ALE FLUID Coupling",
-          Core::Conditions::ALEFluidCoupling, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition movingfluid("DESIGN FLUID MESH VOL CONDITIONS", "FluidMesh",
+      "Fluid Mesh", Core::Conditions::FluidMesh, true, Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition fluidfluidcoupling(
+      "DESIGN FLUID FLUID COUPLING SURF CONDITIONS", "FluidFluidCoupling", "FLUID FLUID Coupling",
+      Core::Conditions::FluidFluidCoupling, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition ALEfluidcoupling(
+      "DESIGN ALE FLUID COUPLING SURF CONDITIONS", "ALEFluidCoupling", "ALE FLUID Coupling",
+      Core::Conditions::ALEFluidCoupling, true, Core::Conditions::geometry_type_surface);
 
-  for (const auto& cond : {movingfluid, fluidfluidcoupling, ALEfluidcoupling})
+  const auto make_fluid_cond = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    add_named_int(cond, "COUPLINGID");
+    cond.add_component(entry<int>("COUPLINGID"));
 
     condlist.emplace_back(cond);
-  }
+  };
+
+  make_fluid_cond(movingfluid);
+  make_fluid_cond(fluidfluidcoupling);
+  make_fluid_cond(ALEfluidcoupling);
 
   /*--------------------------------------------------------------------*/
   // XFEM coupling conditions
@@ -435,18 +427,15 @@ void Inpar::XFEM::set_valid_conditions(
   //*----------------*/
   // Displacement surface condition for XFEM WDBC and Neumann boundary conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> xfem_surf_displacement =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN XFEM DISPLACEMENT SURF CONDITIONS", "XFEMSurfDisplacement",
-          "XFEM Surf Displacement", Core::Conditions::XFEM_Surf_Displacement, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition xfem_surf_displacement(
+      "DESIGN XFEM DISPLACEMENT SURF CONDITIONS", "XFEMSurfDisplacement", "XFEM Surf Displacement",
+      Core::Conditions::XFEM_Surf_Displacement, true, Core::Conditions::geometry_type_surface);
 
-  add_named_int(xfem_surf_displacement, "COUPLINGID");
-  add_named_selection_component(xfem_surf_displacement, "EVALTYPE", "", "funct",
-      Teuchos::tuple<std::string>("zero", "funct", "implementation"),
-      Teuchos::tuple<std::string>("zero", "funct", "implementation"), true);
+  xfem_surf_displacement.add_component(entry<int>("COUPLINGID"));
+  xfem_surf_displacement.add_component(selection<std::string>("EVALTYPE",
+      {"zero", "funct", "implementation"}, {.description = "", .default_value = "funct"}));
 
-  xfem_surf_displacement->add_component(dirichletbundcomponents);
+  xfem_surf_displacement.add_component(dirichletbundcomponents);
 
   condlist.push_back(xfem_surf_displacement);
 
@@ -457,8 +446,7 @@ void Inpar::XFEM::set_valid_conditions(
       entry<int>("COUPLINGID"),
       entry<int>("LEVELSETFIELDNO"),
       selection<std::string>("BOOLEANTYPE",
-          {{"none", "none"}, {"cut", "cut"}, {"union", "union"}, {"difference", "difference"},
-              {"sym_difference", "sym_difference"}},
+          {"none", "cut", "union", "difference", "sym_difference"},
           {.description = "define which boolean operator is used for combining this level-set "
                           "field with the previous one with smaller coupling id",
               .required = false}),
@@ -471,88 +459,89 @@ void Inpar::XFEM::set_valid_conditions(
   //*----------------*/
   // Levelset based Weak Dirichlet conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> xfem_levelset_wdbc =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN XFEM LEVELSET WEAK DIRICHLET VOL CONDITIONS", "XFEMLevelsetWeakDirichlet",
-          "XFEM Levelset Weak Dirichlet", Core::Conditions::XFEM_Levelset_Weak_Dirichlet, true,
-          Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition xfem_levelset_wdbc(
+      "DESIGN XFEM LEVELSET WEAK DIRICHLET VOL CONDITIONS", "XFEMLevelsetWeakDirichlet",
+      "XFEM Levelset Weak Dirichlet", Core::Conditions::XFEM_Levelset_Weak_Dirichlet, true,
+      Core::Conditions::geometry_type_volume);
 
-  xfem_levelset_wdbc->add_component(levelsetfield_components);
+  xfem_levelset_wdbc.add_component(levelsetfield_components);
 
-  xfem_levelset_wdbc->add_component(dirichletbundcomponents);
+  xfem_levelset_wdbc.add_component(dirichletbundcomponents);
 
   // optional: allow for random noise, set percentage used in uniform random distribution
-  add_named_real(xfem_levelset_wdbc, "RANDNOISE",
-      "set percentage of random noise used in uniform random distribution", 0.0, true);
+  xfem_levelset_wdbc.add_component(entry<double>("RANDNOISE",
+      {.description = "set percentage of random noise used in uniform random distribution",
+          .default_value = 0.0}));
 
   condlist.push_back(xfem_levelset_wdbc);
 
   //*----------------*/
   // Levelset based Neumann conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> xfem_levelset_neumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN XFEM LEVELSET NEUMANN VOL CONDITIONS", "XFEMLevelsetNeumann",
-          "XFEM Levelset Neumann", Core::Conditions::XFEM_Levelset_Neumann, true,
-          Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition xfem_levelset_neumann(
+      "DESIGN XFEM LEVELSET NEUMANN VOL CONDITIONS", "XFEMLevelsetNeumann", "XFEM Levelset Neumann",
+      Core::Conditions::XFEM_Levelset_Neumann, true, Core::Conditions::geometry_type_volume);
 
-  xfem_levelset_neumann->add_component(levelsetfield_components);
+  xfem_levelset_neumann.add_component(levelsetfield_components);
 
-  xfem_levelset_neumann->add_component(neumanncomponents);
+  xfem_levelset_neumann.add_component(neumanncomponents);
 
   // define if we use inflow stabilization on the xfem neumann surf condition
-  add_named_bool(xfem_levelset_neumann, "INFLOW_STAB", "", false, true);
+  xfem_levelset_neumann.add_component(
+      entry<bool>("INFLOW_STAB", {.description = "", .default_value = false}));
   condlist.push_back(xfem_levelset_neumann);
 
   //*----------------*/
   // Levelset based Navier Slip conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> xfem_levelset_navier_slip =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN XFEM LEVELSET NAVIER SLIP VOL CONDITIONS", "XFEMLevelsetNavierSlip",
-          "XFEM Levelset Navier Slip", Core::Conditions::XFEM_Levelset_Navier_Slip, true,
-          Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition xfem_levelset_navier_slip(
+      "DESIGN XFEM LEVELSET NAVIER SLIP VOL CONDITIONS", "XFEMLevelsetNavierSlip",
+      "XFEM Levelset Navier Slip", Core::Conditions::XFEM_Levelset_Navier_Slip, true,
+      Core::Conditions::geometry_type_volume);
 
-  xfem_levelset_navier_slip->add_component(levelsetfield_components);
+  xfem_levelset_navier_slip.add_component(levelsetfield_components);
 
-  add_named_selection_component(xfem_levelset_navier_slip, "SURFACE_PROJECTION", "", "proj_normal",
-      Teuchos::tuple<std::string>(
-          "proj_normal", "proj_smoothed", "proj_normal_smoothed_comb", "proj_normal_phi"),
-      Teuchos::tuple<int>(Inpar::XFEM::Proj_normal, Inpar::XFEM::Proj_smoothed,
-          Inpar::XFEM::Proj_normal_smoothed_comb, Inpar::XFEM::Proj_normal_phi),
-      true);
-  add_named_int(xfem_levelset_navier_slip, "L2_PROJECTION_SOLVER", "", 0, false, false);
-  add_named_int(xfem_levelset_navier_slip, "ROBIN_DIRICHLET_ID", "", 0, false, true);
-  add_named_int(xfem_levelset_navier_slip, "ROBIN_NEUMANN_ID", "", 0, false, true);
-  add_named_real(xfem_levelset_navier_slip, "SLIPCOEFFICIENT");
-  add_named_int(xfem_levelset_navier_slip, "FUNCT", "slip function id", 0, true, false);
-  add_named_bool(xfem_levelset_navier_slip, "FORCE_ONLY_TANG_VEL", "", false, true);
+  xfem_levelset_navier_slip.add_component(selection<int>("SURFACE_PROJECTION",
+      {{"proj_normal", Inpar::XFEM::Proj_normal}, {"proj_smoothed", Inpar::XFEM::Proj_smoothed},
+          {"proj_normal_smoothed_comb", Inpar::XFEM::Proj_normal_smoothed_comb},
+          {"proj_normal_phi", Inpar::XFEM::Proj_normal_phi}},
+      {.description = "", .default_value = Inpar::XFEM::Proj_normal}));
+  xfem_levelset_navier_slip.add_component(entry<int>("L2_PROJECTION_SOLVER", {.description = ""}));
+  xfem_levelset_navier_slip.add_component(
+      entry<Noneable<int>>("ROBIN_DIRICHLET_ID", {.description = ""}));
+  xfem_levelset_navier_slip.add_component(
+      entry<Noneable<int>>("ROBIN_NEUMANN_ID", {.description = ""}));
+  xfem_levelset_navier_slip.add_component(entry<double>("SLIPCOEFFICIENT"));
+  xfem_levelset_navier_slip.add_component(
+      entry<int>("FUNCT", {.description = "slip function id", .default_value = 0}));
+  xfem_levelset_navier_slip.add_component(
+      entry<bool>("FORCE_ONLY_TANG_VEL", {.description = "", .default_value = false}));
 
   condlist.push_back(xfem_levelset_navier_slip);
 
   // Add condition XFEM DIRICHLET/NEUMANN?
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> xfem_navier_slip_robin_dirch =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN XFEM ROBIN DIRICHLET VOL CONDITIONS", "XFEMRobinDirichletVol",
-          "XFEM Robin Dirichlet Volume", Core::Conditions::XFEM_Robin_Dirichlet_Volume, true,
-          Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition xfem_navier_slip_robin_dirch(
+      "DESIGN XFEM ROBIN DIRICHLET VOL CONDITIONS", "XFEMRobinDirichletVol",
+      "XFEM Robin Dirichlet Volume", Core::Conditions::XFEM_Robin_Dirichlet_Volume, true,
+      Core::Conditions::geometry_type_volume);
 
-  add_named_int(xfem_navier_slip_robin_dirch, "ROBIN_ID", "robin id", 0, false, true);
+  xfem_navier_slip_robin_dirch.add_component(
+      entry<Noneable<int>>("ROBIN_ID", {.description = "robin id"}));
 
-  xfem_navier_slip_robin_dirch->add_component(dirichletbundcomponents);
+  xfem_navier_slip_robin_dirch.add_component(dirichletbundcomponents);
 
   condlist.push_back(xfem_navier_slip_robin_dirch);
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> xfem_navier_slip_robin_neumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN XFEM ROBIN NEUMANN VOL CONDITIONS", "XFEMRobinNeumannVol",
-          "XFEM Robin Neumann Volume", Core::Conditions::XFEM_Robin_Neumann_Volume, true,
-          Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition xfem_navier_slip_robin_neumann(
+      "DESIGN XFEM ROBIN NEUMANN VOL CONDITIONS", "XFEMRobinNeumannVol",
+      "XFEM Robin Neumann Volume", Core::Conditions::XFEM_Robin_Neumann_Volume, true,
+      Core::Conditions::geometry_type_volume);
 
-  add_named_int(xfem_navier_slip_robin_neumann, "ROBIN_ID", "robin id", 0, false, true);
+  xfem_navier_slip_robin_neumann.add_component(
+      entry<Noneable<int>>("ROBIN_ID", {.description = "robin id"}));
 
-  xfem_navier_slip_robin_neumann->add_component(neumanncomponents);
+  xfem_navier_slip_robin_neumann.add_component(neumanncomponents);
 
   condlist.push_back(xfem_navier_slip_robin_neumann);
 
@@ -560,93 +549,91 @@ void Inpar::XFEM::set_valid_conditions(
   //*----------------*/
   // Levelset based Twophase conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> xfem_levelset_twophase =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN XFEM LEVELSET TWOPHASE VOL CONDITIONS", "XFEMLevelsetTwophase",
-          "XFEM Levelset Twophase", Core::Conditions::XFEM_Levelset_Twophase, true,
-          Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition xfem_levelset_twophase(
+      "DESIGN XFEM LEVELSET TWOPHASE VOL CONDITIONS", "XFEMLevelsetTwophase",
+      "XFEM Levelset Twophase", Core::Conditions::XFEM_Levelset_Twophase, true,
+      Core::Conditions::geometry_type_volume);
 
-  xfem_levelset_twophase->add_component(levelsetfield_components);
+  xfem_levelset_twophase.add_component(levelsetfield_components);
 
   condlist.push_back(xfem_levelset_twophase);
 
   //*----------------*/
   // Surface Fluid-Fluid coupling conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> xfem_surf_fluidfluid =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN XFEM FLUIDFLUID SURF CONDITIONS", "XFEMSurfFluidFluid", "XFEM Surf FluidFluid",
-          Core::Conditions::XFEM_Surf_FluidFluid, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition xfem_surf_fluidfluid(
+      "DESIGN XFEM FLUIDFLUID SURF CONDITIONS", "XFEMSurfFluidFluid", "XFEM Surf FluidFluid",
+      Core::Conditions::XFEM_Surf_FluidFluid, true, Core::Conditions::geometry_type_surface);
 
-  add_named_int(xfem_surf_fluidfluid, "COUPLINGID");
-  add_named_selection_component(xfem_surf_fluidfluid, "COUPSTRATEGY", "coupling strategy", "xfluid",
-      Teuchos::tuple<std::string>("xfluid", "embedded", "mean"),
-      Teuchos::tuple<int>(
-          Inpar::XFEM::Xfluid_Sided, Inpar::XFEM::Embedded_Sided, Inpar::XFEM::Mean));
+  xfem_surf_fluidfluid.add_component(entry<int>("COUPLINGID"));
+  xfem_surf_fluidfluid.add_component(selection<int>("COUPSTRATEGY",
+      {{"xfluid", Inpar::XFEM::Xfluid_Sided}, {"embedded", Inpar::XFEM::Embedded_Sided},
+          {"mean", Inpar::XFEM::Mean}},
+      {.description = "coupling strategy"}));
 
   condlist.push_back(xfem_surf_fluidfluid);
 
   //*----------------*/
   // Surface partitioned XFSI boundary conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> xfem_surf_fsi_part =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN XFEM FSI PARTITIONED SURF CONDITIONS", "XFEMSurfFSIPart", "XFEM Surf FSI Part",
-          Core::Conditions::XFEM_Surf_FSIPart, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition xfem_surf_fsi_part(
+      "DESIGN XFEM FSI PARTITIONED SURF CONDITIONS", "XFEMSurfFSIPart", "XFEM Surf FSI Part",
+      Core::Conditions::XFEM_Surf_FSIPart, true, Core::Conditions::geometry_type_surface);
 
-  add_named_int(xfem_surf_fsi_part, "COUPLINGID");
+  xfem_surf_fsi_part.add_component(entry<int>("COUPLINGID"));
 
   // COUPSTRATEGY IS FLUID SIDED
-  add_named_selection_component(xfem_surf_fsi_part, "INTLAW", "", "noslip",
-      Teuchos::tuple<std::string>("noslip", "noslip_splitpen", "slip", "navslip"),
-      Teuchos::tuple<int>(Inpar::XFEM::noslip, Inpar::XFEM::noslip_splitpen, Inpar::XFEM::slip,
-          Inpar::XFEM::navierslip),
-      true);
-  add_named_real(xfem_surf_fsi_part, "SLIPCOEFFICIENT", "", 0.0, true);
-  add_named_int(xfem_surf_fsi_part, "SLIP_FUNCT", "slip function id", 0, true, false);
+  xfem_surf_fsi_part.add_component(selection<int>("INTLAW",
+      {{"noslip", Inpar::XFEM::noslip}, {"noslip_splitpen", Inpar::XFEM::noslip_splitpen},
+          {"slip", Inpar::XFEM::slip}, {"navslip", Inpar::XFEM::navierslip}},
+      {.description = "", .default_value = Inpar::XFEM::noslip}));
+  xfem_surf_fsi_part.add_component(
+      entry<double>("SLIPCOEFFICIENT", {.description = "", .default_value = 0.0}));
+  xfem_surf_fsi_part.add_component(
+      entry<int>("SLIP_FUNCT", {.description = "slip function id", .default_value = 0}));
 
   condlist.push_back(xfem_surf_fsi_part);
 
   //*----------------*/
   // Surface monolithic XFSI coupling conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> xfem_surf_fsi_mono =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN XFEM FSI MONOLITHIC SURF CONDITIONS", "XFEMSurfFSIMono", "XFEM Surf FSI Mono",
-          Core::Conditions::XFEM_Surf_FSIMono, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition xfem_surf_fsi_mono(
+      "DESIGN XFEM FSI MONOLITHIC SURF CONDITIONS", "XFEMSurfFSIMono", "XFEM Surf FSI Mono",
+      Core::Conditions::XFEM_Surf_FSIMono, true, Core::Conditions::geometry_type_surface);
 
-  add_named_int(xfem_surf_fsi_mono, "COUPLINGID");
-  add_named_selection_component(xfem_surf_fsi_mono, "COUPSTRATEGY", "", "xfluid",
-      Teuchos::tuple<std::string>("xfluid", "solid", "mean", "harmonic"),
-      Teuchos::tuple<int>(Inpar::XFEM::Xfluid_Sided, Inpar::XFEM::Embedded_Sided, Inpar::XFEM::Mean,
-          Inpar::XFEM::Harmonic),
-      true);
-  add_named_selection_component(xfem_surf_fsi_mono, "INTLAW", "", "noslip",
-      Teuchos::tuple<std::string>(
-          "noslip", "noslip_splitpen", "slip", "navslip", "navslip_contact"),
-      Teuchos::tuple<int>(Inpar::XFEM::noslip, Inpar::XFEM::noslip_splitpen, Inpar::XFEM::slip,
-          Inpar::XFEM::navierslip, Inpar::XFEM::navierslip_contact),
-      true);
-  add_named_real(xfem_surf_fsi_mono, "SLIPCOEFFICIENT", "", 0.0, true);
-  add_named_int(xfem_surf_fsi_mono, "SLIP_FUNCT", "slip function id", 0, true, false);
+  xfem_surf_fsi_mono.add_component(entry<int>("COUPLINGID"));
+  xfem_surf_fsi_mono.add_component(selection<int>("COUPSTRATEGY",
+      {{"xfluid", Inpar::XFEM::Xfluid_Sided}, {"solid", Inpar::XFEM::Embedded_Sided},
+          {"mean", Inpar::XFEM::Mean}, {"harmonic", Inpar::XFEM::Harmonic}},
+      {.description = "", .default_value = Inpar::XFEM::Xfluid_Sided}));
+  xfem_surf_fsi_mono.add_component(selection<int>("INTLAW",
+      {{"noslip", Inpar::XFEM::noslip}, {"noslip_splitpen", Inpar::XFEM::noslip_splitpen},
+          {"slip", Inpar::XFEM::slip}, {"navslip", Inpar::XFEM::navierslip},
+          {"navslip_contact", Inpar::XFEM::navierslip_contact}},
+      {.description = "", .default_value = Inpar::XFEM::noslip}));
+  xfem_surf_fsi_mono.add_component(
+      entry<double>("SLIPCOEFFICIENT", {.description = "", .default_value = 0.0}));
+  xfem_surf_fsi_mono.add_component(
+      entry<int>("SLIP_FUNCT", {.description = "slip function id", .default_value = 0}));
 
   condlist.push_back(xfem_surf_fsi_mono);
 
   //*----------------*/
   // Surface monolithic XFPI coupling conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> xfem_surf_fpi_mono =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN XFEM FPI MONOLITHIC SURF CONDITIONS", "XFEMSurfFPIMono", "XFEM Surf FPI Mono",
-          Core::Conditions::XFEM_Surf_FPIMono, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition xfem_surf_fpi_mono(
+      "DESIGN XFEM FPI MONOLITHIC SURF CONDITIONS", "XFEMSurfFPIMono", "XFEM Surf FPI Mono",
+      Core::Conditions::XFEM_Surf_FPIMono, true, Core::Conditions::geometry_type_surface);
 
-  add_named_int(xfem_surf_fpi_mono, "COUPLINGID");
-  add_named_real(xfem_surf_fpi_mono, "BJ_COEFF", "", 0, true);
-  add_named_selection_component(xfem_surf_fpi_mono, "Variant", "variant", "BJ",
-      Teuchos::tuple<std::string>("BJ", "BJS"), Teuchos::tuple<std::string>("BJ", "BJS"), true);
-  add_named_selection_component(xfem_surf_fpi_mono, "Method", "method", "NIT",
-      Teuchos::tuple<std::string>("NIT", "SUB"), Teuchos::tuple<std::string>("NIT", "SUB"), true);
-  add_named_bool(xfem_surf_fpi_mono, "Contact", "contact", false, true);
+  xfem_surf_fpi_mono.add_component(entry<int>("COUPLINGID"));
+  xfem_surf_fpi_mono.add_component(
+      entry<double>("BJ_COEFF", {.description = "", .default_value = 0}));
+  xfem_surf_fpi_mono.add_component(selection<std::string>(
+      "Variant", {"BJ", "BJS"}, {.description = "variant", .default_value = "BJ"}));
+  xfem_surf_fpi_mono.add_component(selection<std::string>(
+      "Method", {"NIT", "SUB"}, {.description = "method", .default_value = "NIT"}));
+  xfem_surf_fpi_mono.add_component(
+      entry<bool>("Contact", {.description = "contact", .default_value = false}));
 
   condlist.push_back(xfem_surf_fpi_mono);
 
@@ -654,27 +641,23 @@ void Inpar::XFEM::set_valid_conditions(
   //*----------------*/
   // Surface Weak Dirichlet conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> xfem_surf_wdbc =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN XFEM WEAK DIRICHLET SURF CONDITIONS", "XFEMSurfWeakDirichlet",
-          "XFEM Surf Weak Dirichlet", Core::Conditions::XFEM_Surf_Weak_Dirichlet, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition xfem_surf_wdbc("DESIGN XFEM WEAK DIRICHLET SURF CONDITIONS",
+      "XFEMSurfWeakDirichlet", "XFEM Surf Weak Dirichlet",
+      Core::Conditions::XFEM_Surf_Weak_Dirichlet, true, Core::Conditions::geometry_type_surface);
 
-  add_named_int(xfem_surf_wdbc, "COUPLINGID");
-  add_named_selection_component(xfem_surf_wdbc, "EVALTYPE", "", "funct_interpolated",
-      Teuchos::tuple<std::string>("zero", "funct_interpolated", "funct_gausspoint",
-          "displacement_1storder_wo_initfunct", "displacement_2ndorder_wo_initfunct",
-          "displacement_1storder_with_initfunct", "displacement_2ndorder_with_initfunct"),
-      Teuchos::tuple<std::string>("zero", "funct_interpolated", "funct_gausspoint",
-          "displacement_1storder_wo_initfunct", "displacement_2ndorder_wo_initfunct",
-          "displacement_1storder_with_initfunct", "displacement_2ndorder_with_initfunct"),
-      true);
+  xfem_surf_wdbc.add_component(entry<int>("COUPLINGID"));
+  xfem_surf_wdbc.add_component(selection<std::string>("EVALTYPE",
+      {"zero", "funct_interpolated", "funct_gausspoint", "displacement_1storder_wo_initfunct",
+          "displacement_2ndorder_wo_initfunct", "displacement_1storder_with_initfunct",
+          "displacement_2ndorder_with_initfunct"},
+      {.description = "", .default_value = "funct_interpolated"}));
 
-  xfem_surf_wdbc->add_component(dirichletbundcomponents);
+  xfem_surf_wdbc.add_component(dirichletbundcomponents);
 
   // optional: allow for random noise, set percentage used in uniform random distribution
-  add_named_real(xfem_surf_wdbc, "RANDNOISE",
-      "set percentage of random noise used in uniform random distribution", 0.0, true);
+  xfem_surf_wdbc.add_component(entry<double>("RANDNOISE",
+      {.description = "set percentage of random noise used in uniform random distribution",
+          .default_value = 0.0}));
 
   condlist.push_back(xfem_surf_wdbc);
 
@@ -682,108 +665,101 @@ void Inpar::XFEM::set_valid_conditions(
   //*----------------*/
   // Surface Neumann conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> xfem_surf_neumann =
-      std::make_shared<Core::Conditions::ConditionDefinition>("DESIGN XFEM NEUMANN SURF CONDITIONS",
-          "XFEMSurfNeumann", "XFEM Surf Neumann", Core::Conditions::XFEM_Surf_Neumann, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition xfem_surf_neumann("DESIGN XFEM NEUMANN SURF CONDITIONS",
+      "XFEMSurfNeumann", "XFEM Surf Neumann", Core::Conditions::XFEM_Surf_Neumann, true,
+      Core::Conditions::geometry_type_surface);
 
-  add_named_int(xfem_surf_neumann, "COUPLINGID");
+  xfem_surf_neumann.add_component(entry<int>("COUPLINGID"));
 
-  xfem_surf_neumann->add_component(neumanncomponents);
+  xfem_surf_neumann.add_component(neumanncomponents);
 
   // define if we use inflow stabilization on the xfem neumann surf condition
-  add_named_bool(xfem_surf_neumann, "INFLOW_STAB", "toggle inflow stabilization", false, true);
+  xfem_surf_neumann.add_component(entry<bool>(
+      "INFLOW_STAB", {.description = "toggle inflow stabilization", .default_value = false}));
 
   condlist.push_back(xfem_surf_neumann);
 
   //*----------------*/
   // Surface Navier Slip conditions
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> xfem_surf_navier_slip =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN XFEM NAVIER SLIP SURF CONDITIONS", "XFEMSurfNavierSlip", "XFEM Surf Navier Slip",
-          Core::Conditions::XFEM_Surf_Navier_Slip, true, Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition xfem_surf_navier_slip(
+      "DESIGN XFEM NAVIER SLIP SURF CONDITIONS", "XFEMSurfNavierSlip", "XFEM Surf Navier Slip",
+      Core::Conditions::XFEM_Surf_Navier_Slip, true, Core::Conditions::geometry_type_surface);
 
-  add_named_int(xfem_surf_navier_slip, "COUPLINGID");
-  add_named_selection_component(xfem_surf_navier_slip, "EVALTYPE", "", "funct_interpolated",
-      Teuchos::tuple<std::string>("zero", "funct_interpolated", "funct_gausspoint",
-          "displacement_1storder_wo_initfunct", "displacement_2ndorder_wo_initfunct",
-          "displacement_1storder_with_initfunct", "displacement_2ndorder_with_initfunct"),
-      Teuchos::tuple<std::string>("zero", "funct_interpolated", "funct_gausspoint",
-          "displacement_1storder_wo_initfunct", "displacement_2ndorder_wo_initfunct",
-          "displacement_1storder_with_initfunct", "displacement_2ndorder_with_initfunct"),
-      true);
-  add_named_int(xfem_surf_navier_slip, "ROBIN_DIRICHLET_ID", "", 0, false, true);
-  add_named_int(xfem_surf_navier_slip, "ROBIN_NEUMANN_ID", "", 0, false, true);
-  add_named_real(xfem_surf_navier_slip, "SLIPCOEFFICIENT");
-  add_named_int(xfem_surf_navier_slip, "FUNCT", "slip function id", 0, true, false);
-  add_named_bool(xfem_surf_navier_slip, "FORCE_ONLY_TANG_VEL", "", false, true);
+  xfem_surf_navier_slip.add_component(entry<int>("COUPLINGID"));
+  xfem_surf_navier_slip.add_component(selection<std::string>("EVALTYPE",
+      {"zero", "funct_interpolated", "funct_gausspoint", "displacement_1storder_wo_initfunct",
+          "displacement_2ndorder_wo_initfunct", "displacement_1storder_with_initfunct",
+          "displacement_2ndorder_with_initfunct"},
+      {.description = "", .default_value = "funct_interpolated"}));
+  xfem_surf_navier_slip.add_component(
+      entry<Noneable<int>>("ROBIN_DIRICHLET_ID", {.description = ""}));
+  xfem_surf_navier_slip.add_component(
+      entry<Noneable<int>>("ROBIN_NEUMANN_ID", {.description = ""}));
+  xfem_surf_navier_slip.add_component(entry<double>("SLIPCOEFFICIENT"));
+  xfem_surf_navier_slip.add_component(
+      entry<int>("FUNCT", {.description = "slip function id", .default_value = 0}));
+  xfem_surf_navier_slip.add_component(
+      entry<bool>("FORCE_ONLY_TANG_VEL", {.description = "", .default_value = false}));
 
   condlist.push_back(xfem_surf_navier_slip);
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> xfem_navier_slip_robin_dirch_surf =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN XFEM ROBIN DIRICHLET SURF CONDITIONS", "XFEMRobinDirichletSurf",
-          "XFEM Robin Dirichlet Volume", Core::Conditions::XFEM_Robin_Dirichlet_Surf, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition xfem_navier_slip_robin_dirch_surf(
+      "DESIGN XFEM ROBIN DIRICHLET SURF CONDITIONS", "XFEMRobinDirichletSurf",
+      "XFEM Robin Dirichlet Volume", Core::Conditions::XFEM_Robin_Dirichlet_Surf, true,
+      Core::Conditions::geometry_type_surface);
 
   // this implementation should be reviewed at some point as it requires these conditions
   //  to have a couplingID. In theory this should not be necessary.
-  add_named_int(xfem_navier_slip_robin_dirch_surf, "COUPLINGID");
-  add_named_int(xfem_navier_slip_robin_dirch_surf, "ROBIN_ID", "robin id", 0, false, true);
+  xfem_navier_slip_robin_dirch_surf.add_component(entry<int>("COUPLINGID"));
+  xfem_navier_slip_robin_dirch_surf.add_component(
+      entry<Noneable<int>>("ROBIN_ID", {.description = "robin id"}));
 
   // Likely, not necessary. But needed for the current structure.
-  add_named_selection_component(xfem_navier_slip_robin_dirch_surf, "EVALTYPE", "",
-      "funct_interpolated",
-      Teuchos::tuple<std::string>("zero", "funct_interpolated", "funct_gausspoint",
-          "displacement_1storder_wo_initfunct", "displacement_2ndorder_wo_initfunct",
-          "displacement_1storder_with_initfunct", "displacement_2ndorder_with_initfunct"),
-      Teuchos::tuple<std::string>("zero", "funct_interpolated", "funct_gausspoint",
-          "displacement_1storder_wo_initfunct", "displacement_2ndorder_wo_initfunct",
-          "displacement_1storder_with_initfunct", "displacement_2ndorder_with_initfunct"),
-      true);
+  xfem_navier_slip_robin_dirch_surf.add_component(selection<std::string>("EVALTYPE",
+      {"zero", "funct_interpolated", "funct_gausspoint", "displacement_1storder_wo_initfunct",
+          "displacement_2ndorder_wo_initfunct", "displacement_1storder_with_initfunct",
+          "displacement_2ndorder_with_initfunct"},
+      {.description = "", .default_value = "funct_interpolated"}));
 
-  xfem_navier_slip_robin_dirch_surf->add_component(dirichletbundcomponents);
+  xfem_navier_slip_robin_dirch_surf.add_component(dirichletbundcomponents);
 
   condlist.push_back(xfem_navier_slip_robin_dirch_surf);
 
-  std::shared_ptr<Core::Conditions::ConditionDefinition> xfem_navier_slip_robin_neumann_surf =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN XFEM ROBIN NEUMANN SURF CONDITIONS", "XFEMRobinNeumannSurf",
-          "XFEM Robin Neumann Volume", Core::Conditions::XFEM_Robin_Neumann_Surf, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition xfem_navier_slip_robin_neumann_surf(
+      "DESIGN XFEM ROBIN NEUMANN SURF CONDITIONS", "XFEMRobinNeumannSurf",
+      "XFEM Robin Neumann Volume", Core::Conditions::XFEM_Robin_Neumann_Surf, true,
+      Core::Conditions::geometry_type_surface);
 
   // this implementation should be reviewed at some point as it requires these conditions
   //  to have a couplingID. In theory this should not be necessary.
-  add_named_int(xfem_navier_slip_robin_neumann_surf, "COUPLINGID");
-  add_named_int(xfem_navier_slip_robin_neumann_surf, "ROBIN_ID", "robin id", 0, false, true);
+  xfem_navier_slip_robin_neumann_surf.add_component(entry<int>("COUPLINGID"));
+  xfem_navier_slip_robin_neumann_surf.add_component(
+      entry<Noneable<int>>("ROBIN_ID", {.description = "robin id"}));
 
-  xfem_navier_slip_robin_neumann_surf->add_component(neumanncomponents);
+  xfem_navier_slip_robin_neumann_surf.add_component(neumanncomponents);
 
   condlist.push_back(xfem_navier_slip_robin_neumann_surf);
 
   //*----------------*/
   // Solid to solid embedded mesh coupling conditions
-  std::shared_ptr<Core::Conditions::ConditionDefinition> solid_surf_coupling =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN EMBEDDED MESH SOLID SURF COUPLING CONDITIONS", "EmbeddedMeshSolidSurfCoupling",
-          "Embedded Mesh Solid Surface Coupling",
-          Core::Conditions::Embedded_Mesh_Solid_Surf_Coupling, true,
-          Core::Conditions::geometry_type_surface);
+  Core::Conditions::ConditionDefinition solid_surf_coupling(
+      "DESIGN EMBEDDED MESH SOLID SURF COUPLING CONDITIONS", "EmbeddedMeshSolidSurfCoupling",
+      "Embedded Mesh Solid Surface Coupling", Core::Conditions::Embedded_Mesh_Solid_Surf_Coupling,
+      true, Core::Conditions::geometry_type_surface);
 
-  add_named_int(solid_surf_coupling, "COUPLINGID");
+  solid_surf_coupling.add_component(entry<int>("COUPLINGID"));
 
   condlist.push_back(solid_surf_coupling);
 
   // Solid to solid embedded mesh volume background mesh condition
-  std::shared_ptr<Core::Conditions::ConditionDefinition> solid_vol_background_coupling =
-      std::make_shared<Core::Conditions::ConditionDefinition>(
-          "DESIGN EMBEDDED SOLID VOL BACKGROUND CONDITIONS", "EmbeddedMeshSolidVolBackground",
-          "Embedded Mesh Solid Volume Background",
-          Core::Conditions::Embedded_Mesh_Solid_Volume_Background, true,
-          Core::Conditions::geometry_type_volume);
+  Core::Conditions::ConditionDefinition solid_vol_background_coupling(
+      "DESIGN EMBEDDED SOLID VOL BACKGROUND CONDITIONS", "EmbeddedMeshSolidVolBackground",
+      "Embedded Mesh Solid Volume Background",
+      Core::Conditions::Embedded_Mesh_Solid_Volume_Background, true,
+      Core::Conditions::geometry_type_volume);
 
-  add_named_int(solid_vol_background_coupling, "COUPLINGID");
+  solid_vol_background_coupling.add_component(entry<int>("COUPLINGID"));
   condlist.push_back(solid_vol_background_coupling);
 }
 

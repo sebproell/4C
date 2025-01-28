@@ -295,6 +295,10 @@ namespace Core::IO
    */
   namespace InputSpecBuilders
   {
+    // Import the Noneable type into the InputSpecBuilders namespace to make it easier to use.
+    using Core::IO::none;
+    using Core::IO::Noneable;
+
     //! Additional parameters for a scalar-valued entry().
     template <typename StoredTypeIn>
     struct ScalarData
@@ -488,6 +492,12 @@ namespace Core::IO
 
         void emit_metadata(ryml::NodeRef node) const;
       };
+
+
+      //! Helper to create selection() specs.
+      template <typename T, typename DataType = Internal::DataFor<T>>
+      [[nodiscard]] InputSpec selection_internal(
+          std::string name, std::vector<std::pair<std::string, T>> choices, DataType data = {});
     }  // namespace Internal
 
     /**
@@ -657,11 +667,29 @@ namespace Core::IO
      *
      * The remaining parameterization options follow the same rules as for the entry() function.
      *
+     * @note If you want to store the choices as strings and not map them to another type, use the
+     * other selection() function.
+     *
      * @relatedalso InputSpec
      */
     template <typename T, typename DataType = Internal::DataFor<T>>
+      requires(!std::same_as<T, std::string>)
     [[nodiscard]] InputSpec selection(
         std::string name, std::vector<std::pair<std::string, T>> choices, DataType data = {});
+
+
+    /**
+     * Like the the other selection() function, but the choices are stored as strings and not mapped
+     * to another type.
+     *
+     * @note Although this function only works with strings, you still need to provide a type for
+     * the first template parameter for consistency with the other functions.
+     *
+     * @relatedalso InputSpec
+     */
+    template <std::same_as<std::string> T, typename DataType = Internal::DataFor<T>>
+    [[nodiscard]] InputSpec selection(
+        std::string name, std::vector<std::string> choices, DataType data = {});
 
     /**
      * A group of InputSpecs. This groups one or more InputSpecs under a name. A group can be
@@ -1038,9 +1066,8 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::user_defined(std::string name, 
       });
 }
 
-
 template <typename T, typename DataType>
-Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
+Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
     std::string name, std::vector<std::pair<std::string, T>> choices, DataType data)
 {
   FOUR_C_ASSERT_ALWAYS(!choices.empty(), "Selection must have at least one choice.");
@@ -1058,7 +1085,11 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
       {
         error_message += choice.first + "|";
       }
-      FOUR_C_THROW("Default value of selection not found in choices '%s'.", error_message.c_str());
+
+      std::stringstream default_value_stream;
+      Core::IO::Internal::DatPrinter{}(default_value_stream, data.default_value.value());
+      FOUR_C_THROW("Default value '%s' of selection not found in choices '%s'.",
+          default_value_stream.str().c_str(), error_message.c_str());
     }
   }
 
@@ -1071,6 +1102,30 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
           .has_default_value = data.default_value.has_value(),
       });
 }
+
+
+template <typename T, typename DataType>
+  requires(!std::same_as<T, std::string>)
+Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
+    std::string name, std::vector<std::pair<std::string, T>> choices, DataType data)
+{
+  return Internal::selection_internal(name, choices, data);
+}
+
+
+template <std::same_as<std::string> T, typename DataType>
+Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
+    std::string name, std::vector<std::string> choices, DataType data)
+{
+  std::vector<std::pair<std::string, std::string>> choices_with_strings;
+  for (const auto& choice : choices)
+  {
+    choices_with_strings.emplace_back(choice, choice);
+  }
+  return Internal::selection_internal(name, choices_with_strings, data);
+}
+
+
 
 template <typename T>
 auto Core::IO::InputSpecBuilders::store_index_as(std::string name, std::vector<T> reindexing)
