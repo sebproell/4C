@@ -108,7 +108,9 @@ namespace Core::IO
      public:
       /**
        * Return the content of the fragment as a string formatted in the .dat style. You need to
-       * manually parse this string.
+       * manually parse this string. Depending on the format of the input file, this might be rather
+       * inefficient, since you convert a differently structured format into a one-liner string,
+       * just to reparse it later.
        *
        * @deprecated Do not use this function in new code. Say what you expect with an InputSpec and
        * use the match() function instead.
