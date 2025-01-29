@@ -272,11 +272,11 @@ Core::Utils::try_create_symbolic_function_of_space_time(
           // read periodicity data
           Periodicstruct periodicdata{};
 
-          periodicdata.periodic = line.get<bool>("PERIODIC");
+          periodicdata.periodic = line.has_group("PERIODIC");
           if (periodicdata.periodic)
           {
-            periodicdata.t1 = line.get<double>("T1");
-            periodicdata.t2 = line.get<double>("T2");
+            periodicdata.t1 = line.group("PERIODIC").get<double>("T1");
+            periodicdata.t2 = line.group("PERIODIC").get<double>("T2");
           }
           else
           {
@@ -287,16 +287,9 @@ Core::Utils::try_create_symbolic_function_of_space_time(
           // distinguish the type of the variable
           if (vartype == "expression")
           {
-            auto description_vec = line.get<std::vector<std::string>>("DESCRIPTION");
-            if (description_vec.size() != 1)
-            {
-              FOUR_C_THROW(
-                  "Only expect one DESCRIPTION for variable of type 'expression' but %d were "
-                  "given.",
-                  description_vec.size());
-            }
+            auto description = line.get<std::string>("DESCRIPTION");
 
-            return std::make_shared<ParsedFunctionVariable>(varname, description_vec.front());
+            return std::make_shared<ParsedFunctionVariable>(varname, description);
           }
           else if (vartype == "linearinterpolation")
           {
