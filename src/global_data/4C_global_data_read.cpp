@@ -1761,6 +1761,7 @@ void Global::read_parameter(Global::Problem& problem, Core::IO::InputFile& input
   Core::IO::read_parameters_in_section(input, "IO/MONITOR STRUCTURE DBC", *list);
   Core::IO::read_parameters_in_section(input, "IO/RUNTIME VTK OUTPUT", *list);
   Core::IO::read_parameters_in_section(input, "IO/RUNTIME VTK OUTPUT/FLUID", *list);
+  Core::IO::read_parameters_in_section(input, "IO/RUNTIME VTK OUTPUT/THERMO", *list);
   Core::IO::read_parameters_in_section(input, "IO/RUNTIME VTK OUTPUT/STRUCTURE", *list);
   Core::IO::read_parameters_in_section(input, "IO/RUNTIME VTK OUTPUT/BEAMS", *list);
   Core::IO::read_parameters_in_section(input, "IO/RUNTIME VTP OUTPUT STRUCTURE", *list);
