@@ -102,11 +102,11 @@ SCATRA DIS scatra NODE 452 QUANTITY flux_boundary_1_z VALUE -3.79928355664697419
 SCATRA DIS scatra NODE 452 QUANTITY phi1 VALUE  1.26475657662599890e+01 TOLERANCE 1.3e-08 // local lithium concentration at cathode-electrolyte interface (cathode side)
 SCATRA DIS scatra NODE 452 QUANTITY phi2 VALUE  3.77030482827812152e+00 TOLERANCE 3.8e-09 // local electric potential at cathode-electrolyte interface (cathode side)
 SCATRA DIS thermo NODE 452 QUANTITY phi VALUE  3.00355754949210052e+02 TOLERANCE 3.0e-07 // local temperature at cathode-electrolyte interface (cathode side)
-SCATRA DIS scatra SPECIAL QUANTITY soc1 VALUE  9.44444416517173702e-01 TOLERANCE 9.4e-10 // anode state of charge
-SCATRA DIS scatra SPECIAL QUANTITY soc2 VALUE  9.58363864987377911e-01 TOLERANCE 9.6e-10 // cathode state of charge
-SCATRA DIS scatra SPECIAL QUANTITY cellvoltage VALUE  3.77030388964309360e+00 TOLERANCE 3.8e-09 // cell voltage
-STI SPECIAL QUANTITY numiterlastnonlinearsolve VALUE  4.00000000000000000e+00 TOLERANCE 1.0e-16 // number of Newton-Raphson iterations during last time step
-STI SPECIAL QUANTITY numiterlastlinearsolve VALUE  3.20000000000000000e+01 TOLERANCE 1.0e-16 // number of iterations performed by linear solver during last Newton-Raphson iteration
+SCATRA DIS scatra SPECIAL true QUANTITY soc1 VALUE  9.44444416517173702e-01 TOLERANCE 9.4e-10 // anode state of charge
+SCATRA DIS scatra SPECIAL true QUANTITY soc2 VALUE  9.58363864987377911e-01 TOLERANCE 9.6e-10 // cathode state of charge
+SCATRA DIS scatra SPECIAL true QUANTITY cellvoltage VALUE  3.77030388964309360e+00 TOLERANCE 3.8e-09 // cell voltage
+STI SPECIAL true QUANTITY numiterlastnonlinearsolve VALUE  4.00000000000000000e+00 TOLERANCE 1.0e-16 // number of Newton-Raphson iterations during last time step
+STI SPECIAL true QUANTITY numiterlastlinearsolve VALUE  3.20000000000000000e+01 TOLERANCE 1.0e-16 // number of iterations performed by linear solver during last Newton-Raphson iteration
 ------------------------------------DESIGN SURF NEUMANN CONDITIONS
 DSURF  1
 E 6 - NUMDOF 2 ONOFF 0 1 VAL 0.0 -5.278302597e-4 FUNCT 0 0 TYPE Live

@@ -139,7 +139,7 @@ STRUCTURE DIS structure NODE 878 QUANTITY dispz VALUE 2.90024732200437028e-02 TO
 STRUCTURE DIS structure NODE 63 QUANTITY dispx VALUE 3.86639161369754514e-01 TOLERANCE 1e-10
 STRUCTURE DIS structure NODE 63 QUANTITY dispy VALUE 2.36392523623275203e-01 TOLERANCE 1e-10
 STRUCTURE DIS structure NODE 63 QUANTITY dispz VALUE -4.31052672448184529e-02 TOLERANCE 1e-10
-STRUCTURE SPECIAL QUANTITY beam_contact_penalty_potential VALUE 8.29111136262605038e-04 TOLERANCE 1e-14
+STRUCTURE SPECIAL true QUANTITY beam_contact_penalty_potential VALUE 8.29111136262605038e-04 TOLERANCE 1e-14
 ----------------------------------------------------------STRUCT NOX/Status Test
 XML File                            = beam3r_herm2line3_static_beam_to_solid_surface_coupling.xml
 -----------------------------------------------------------------------MATERIALS

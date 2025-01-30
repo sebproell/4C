@@ -59,9 +59,9 @@ MAT 2 MAT_BeamKirchhoffTorsionFreeElastHyper YOUNG 10 DENS 0.0 CROSSAREA 7.85398
 --------------------------------------------------------------------------FUNCT1
 SYMBOLIC_FUNCTION_OF_SPACE_TIME t
 --------------------------------------------------------------RESULT DESCRIPTION
-STRUCTURE SPECIAL QUANTITY nodes_proc0 VALUE 1562 TOLERANCE 1e-8
-STRUCTURE SPECIAL QUANTITY nodes_proc1 VALUE 1311 TOLERANCE 1e-8
-STRUCTURE SPECIAL QUANTITY nodes_proc2 VALUE 1533 TOLERANCE 1e-8
+STRUCTURE SPECIAL true QUANTITY nodes_proc0 VALUE 1562 TOLERANCE 1e-8
+STRUCTURE SPECIAL true QUANTITY nodes_proc1 VALUE 1311 TOLERANCE 1e-8
+STRUCTURE SPECIAL true QUANTITY nodes_proc2 VALUE 1533 TOLERANCE 1e-8
 ---------------------------------------------------DESIGN SURF DIRICH CONDITIONS
 DSURF 1
 // fix_xyz

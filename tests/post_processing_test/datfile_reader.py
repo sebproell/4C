@@ -42,7 +42,7 @@ def read_result_description(datfile):
                 this_result["tolerance"] = float(tol)
 
             this_result["special_quantity"] = read_option_item(
-                r, "SPECIAL QUANTITY", 1
+                r, "SPECIAL true QUANTITY", 1
             )[0]
 
             this_result["enabled"] = True

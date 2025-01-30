@@ -83,8 +83,8 @@ SCATRA DIS thermo NODE 391 QUANTITY phi VALUE 3.00355744423245937e+02 TOLERANCE 
 SCATRA DIS scatra NODE 452 QUANTITY phi1 VALUE 1.26475657623100766e+01 TOLERANCE 1.e-08    // local lithium concentration at cathode-electrolyte interface (cathode side)
 SCATRA DIS scatra NODE 452 QUANTITY phi2 VALUE 3.77030483209256273e+00 TOLERANCE 1.e-09    // local electric potential at cathode-electrolyte interface (cathode side)
 SCATRA DIS thermo NODE 452 QUANTITY phi VALUE 3.00355744423245937e+02 TOLERANCE 1.e-07     // local temperature at cathode-electrolyte interface (cathode side)
-SCATRA DIS scatra SPECIAL QUANTITY omega1 VALUE 9.49999999999999956e-01 TOLERANCE 1.e-10
-STI SPECIAL QUANTITY numiterlastnonlinearsolve VALUE 4.0 TOLERANCE 1.e-20                  // number of outer coupling iterations during last time step
+SCATRA DIS scatra SPECIAL true QUANTITY omega1 VALUE 9.49999999999999956e-01 TOLERANCE 1.e-10
+STI SPECIAL true QUANTITY numiterlastnonlinearsolve VALUE 4.0 TOLERANCE 1.e-20                  // number of outer coupling iterations during last time step
 ------------------------------------DESIGN SURF NEUMANN CONDITIONS
 DSURF  1
 E 6 - NUMDOF 2 ONOFF 0 1 VAL 0.0 -5.278302597e-4 FUNCT 0 0 TYPE Live

@@ -338,7 +338,7 @@ namespace
                             entry<int>("VOLUME"),
                         }),
                     }),
-                    tag("SPECIAL"),
+                    entry<bool>("SPECIAL"),
                 }),
                 entry<std::string>("OP", {.required = false}),
                 entry<std::string>("QUANTITY"),
@@ -400,7 +400,7 @@ namespace
                 one_of({
                     entry<int>("NODE"),
                     entry<int>("ELEMENT"),
-                    tag("SPECIAL"),
+                    entry<bool>("SPECIAL"),
                 }),
                 entry<std::string>("QUANTITY"),
                 entry<double>("VALUE"),
@@ -412,7 +412,7 @@ namespace
                 entry<std::string>("DIS"),
                 one_of({
                     entry<int>("NODE"),
-                    tag("SPECIAL"),
+                    entry<bool>("SPECIAL"),
                 }),
                 entry<std::string>("QUANTITY"),
                 entry<double>("VALUE"),
@@ -426,7 +426,7 @@ namespace
                         entry<std::string>("DIS"),
                         entry<int>("NODE"),
                     }),
-                    tag("SPECIAL"),
+                    entry<bool>("SPECIAL"),
                 }),
                 entry<std::string>("QUANTITY"),
                 entry<double>("VALUE"),
@@ -435,14 +435,14 @@ namespace
             }),
         group("SSTI",
             {
-                tag("SPECIAL"),
+                entry<bool>("SPECIAL"),
                 entry<std::string>("QUANTITY"),
                 entry<double>("VALUE"),
                 entry<double>("TOLERANCE"),
             }),
         group("STI",
             {
-                tag("SPECIAL"),
+                entry<bool>("SPECIAL"),
                 entry<std::string>("QUANTITY"),
                 entry<double>("VALUE"),
                 entry<double>("TOLERANCE"),
@@ -475,7 +475,7 @@ namespace
             {
                 one_of({
                     entry<int>("NODE"),
-                    tag("SPECIAL"),
+                    entry<bool>("SPECIAL"),
                 }),
                 entry<std::string>("QUANTITY"),
                 entry<double>("VALUE"),
@@ -494,7 +494,7 @@ namespace
                 entry<std::string>("DIS"),
                 one_of({
                     entry<int>("NODE"),
-                    tag("SPECIAL"),
+                    entry<bool>("SPECIAL"),
                 }),
                 entry<std::string>("QUANTITY"),
                 entry<double>("VALUE"),
@@ -520,7 +520,7 @@ namespace
         group("CARDIOVASCULAR0D",
             {
                 entry<std::string>("DIS"),
-                tag("SPECIAL"),
+                entry<bool>("SPECIAL"),
                 entry<std::string>("QUANTITY"),
                 entry<double>("VALUE"),
                 entry<double>("TOLERANCE"),

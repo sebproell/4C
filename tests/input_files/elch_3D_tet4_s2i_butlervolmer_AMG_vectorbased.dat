@@ -61,13 +61,13 @@ SCATRA DIS scatra NODE 391 QUANTITY phi1 VALUE  1.19995817577297603e+00 TOLERANC
 SCATRA DIS scatra NODE 391 QUANTITY phi2 VALUE -9.96863187914626553e-02 TOLERANCE 1.0e-10 // local electric potential at cathode-electrolyte interface (electrolyte side)
 SCATRA DIS scatra NODE 452 QUANTITY phi1 VALUE  1.26475730588174979e+01 TOLERANCE 1.3e-08 // local lithium concentration at cathode-electrolyte interface (cathode side)
 SCATRA DIS scatra NODE 452 QUANTITY phi2 VALUE  3.77032831745337838e+00 TOLERANCE 3.8e-09 // local electric potential at cathode-electrolyte interface (cathode side)
-SCATRA DIS scatra SPECIAL QUANTITY soc1 VALUE  9.44444648117048313e-01 TOLERANCE 9.4e-10 // anode state of charge
-SCATRA DIS scatra SPECIAL QUANTITY soc2 VALUE  9.58364058701466015e-01 TOLERANCE 9.6e-10 // cathode state of charge
-SCATRA DIS scatra SPECIAL QUANTITY c-rate1 VALUE -9.99998307631503813e+00 TOLERANCE 1.0e-06 // anode C rate
-SCATRA DIS scatra SPECIAL QUANTITY c-rate2 VALUE -7.49448965374553921e+00 TOLERANCE 7.5e-07 // cathode C rate
-SCATRA DIS scatra SPECIAL QUANTITY cellvoltage VALUE  3.77032737882205682e+00 TOLERANCE 3.8e-09 // cell voltage
-SCATRA DIS scatra SPECIAL QUANTITY numiterlastnewton VALUE  4.00000000000000000e+00 TOLERANCE 1.0e-16 // number of Newton-Raphson iterations during last time step
-SCATRA DIS scatra SPECIAL QUANTITY numiterlastsolve VALUE  3.30000000000000000e+01 TOLERANCE 1.0e-16 // number of iterations performed by linear solver during last Newton-Raphson iteration
+SCATRA DIS scatra SPECIAL true QUANTITY soc1 VALUE  9.44444648117048313e-01 TOLERANCE 9.4e-10 // anode state of charge
+SCATRA DIS scatra SPECIAL true QUANTITY soc2 VALUE  9.58364058701466015e-01 TOLERANCE 9.6e-10 // cathode state of charge
+SCATRA DIS scatra SPECIAL true QUANTITY c-rate1 VALUE -9.99998307631503813e+00 TOLERANCE 1.0e-06 // anode C rate
+SCATRA DIS scatra SPECIAL true QUANTITY c-rate2 VALUE -7.49448965374553921e+00 TOLERANCE 7.5e-07 // cathode C rate
+SCATRA DIS scatra SPECIAL true QUANTITY cellvoltage VALUE  3.77032737882205682e+00 TOLERANCE 3.8e-09 // cell voltage
+SCATRA DIS scatra SPECIAL true QUANTITY numiterlastnewton VALUE  4.00000000000000000e+00 TOLERANCE 1.0e-16 // number of Newton-Raphson iterations during last time step
+SCATRA DIS scatra SPECIAL true QUANTITY numiterlastsolve VALUE  3.30000000000000000e+01 TOLERANCE 1.0e-16 // number of iterations performed by linear solver during last Newton-Raphson iteration
 ----------------------------------------------DESIGN SURF NEUMANN CONDITIONS
 DSURF                           1
 E 6 - NUMDOF 2 ONOFF 0 1 VAL 0.0 -5.278302597e-4 FUNCT 0 0 TYPE Live

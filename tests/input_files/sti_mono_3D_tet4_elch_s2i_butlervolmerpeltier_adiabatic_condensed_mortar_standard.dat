@@ -98,10 +98,10 @@ SCATRA DIS scatra NODE 390 QUANTITY flux_boundary_1_z VALUE -7.38097061411333603
 SCATRA DIS scatra NODE 390 QUANTITY phi1 VALUE 1.27189741669535081e+01 TOLERANCE 1.e-08                 // local lithium concentration at cathode-electrolyte interface (cathode side)
 SCATRA DIS scatra NODE 390 QUANTITY phi2 VALUE 3.76624972400851599e+00 TOLERANCE 4.e-09                 // local electric potential at cathode-electrolyte interface (cathode side)
 SCATRA DIS thermo NODE 390 QUANTITY phi VALUE 3.00389263185800360e+02 TOLERANCE 3.e-07                  // local temperature at cathode-electrolyte interface (cathode side)
-SCATRA DIS scatra SPECIAL QUANTITY soc1 VALUE 9.44444415603965526e-01 TOLERANCE 9.e-10                  // anode state of charge
-SCATRA DIS scatra SPECIAL QUANTITY soc2 VALUE 9.58384658169807446e-01 TOLERANCE 1.e-09                  // cathode state of charge
-SCATRA DIS scatra SPECIAL QUANTITY cellvoltage VALUE 3.76624889083234216e+00 TOLERANCE 4.e-09           // cell voltage
-STI SPECIAL QUANTITY numiterlastnonlinearsolve VALUE 2.0 TOLERANCE 1.e-20                               // number of Newton-Raphson iterations during last time step
+SCATRA DIS scatra SPECIAL true QUANTITY soc1 VALUE 9.44444415603965526e-01 TOLERANCE 9.e-10                  // anode state of charge
+SCATRA DIS scatra SPECIAL true QUANTITY soc2 VALUE 9.58384658169807446e-01 TOLERANCE 1.e-09                  // cathode state of charge
+SCATRA DIS scatra SPECIAL true QUANTITY cellvoltage VALUE 3.76624889083234216e+00 TOLERANCE 4.e-09           // cell voltage
+STI SPECIAL true QUANTITY numiterlastnonlinearsolve VALUE 2.0 TOLERANCE 1.e-20                               // number of Newton-Raphson iterations during last time step
 ------------------------------------DESIGN SURF NEUMANN CONDITIONS
 DSURF  1
 E 6 - NUMDOF 2 ONOFF 0 1 VAL 0.0 -5.297831088e-4 FUNCT 0 0 TYPE Live
