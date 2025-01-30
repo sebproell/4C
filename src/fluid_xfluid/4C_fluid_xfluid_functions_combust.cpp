@@ -21,11 +21,12 @@ namespace
   {
     if (parameters.size() != 1) return nullptr;
 
-    if (parameters.front().get_or("ZALESAKSDISK", false))
+    const auto type = parameters.front().get<std::string>("COMBUSTION_FUNCTION");
+    if (type == "ZALESAKSDISK")
     {
       return std::make_shared<Discret::Utils::ZalesaksDiskFunction>();
     }
-    else if (parameters.front().get_or("COLLAPSINGWATERCOLUMN", false))
+    else if (type == "COLLAPSINGWATERCOLUMN")
     {
       return std::make_shared<Discret::Utils::CollapsingWaterColumnFunction>();
     }
@@ -41,8 +42,11 @@ void Discret::Utils::add_valid_combust_functions(Core::Utils::FunctionManager& f
   using namespace Core::IO::InputSpecBuilders;
 
   auto spec = one_of({
-      tag("ZALESAKSDISK"),
-      tag("COLLAPSINGWATERCOLUMN"),
+      selection<std::string>("COMBUSTION_FUNCTION",
+          {
+              "ZALESAKSDISK",
+              "COLLAPSINGWATERCOLUMN",
+          }),
   });
 
   function_manager.add_function_definition(spec, create_combust_function);
