@@ -269,8 +269,7 @@ int main(int argc, char* argv[])
   {
     if (Core::Communication::my_mpi_rank(lcomm) == 0)
     {
-      auto valid_parameters = Input::valid_parameters();
-      Core::IO::print_metadata_yaml(std::cout, *valid_parameters);
+      write_input_metadata(std::cout);
     }
   }
   else if ((argc == 2) && ((strcmp(argv[1], "-d") == 0) || (strcmp(argv[1], "--datfile") == 0)))
