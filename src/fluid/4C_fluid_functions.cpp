@@ -63,21 +63,23 @@ namespace
 
     const auto& function_lin_def = parameters.front();
 
-    if (function_lin_def.get_or("BELTRAMI", false))
+    const auto type = function_lin_def.get<std::string>("FLUID_FUNCTION");
+
+    if (type == "BELTRAMI")
     {
       double c1 = function_lin_def.get<double>("c1");
 
       return std::make_shared<FLD::BeltramiFunction>(c1);
     }
-    else if (function_lin_def.get_or("CHANNELWEAKLYCOMPRESSIBLE", false))
+    else if (type == "CHANNELWEAKLYCOMPRESSIBLE")
     {
       return std::make_shared<FLD::ChannelWeaklyCompressibleFunction>();
     }
-    else if (function_lin_def.get_or("CORRECTIONTERMCHANNELWEAKLYCOMPRESSIBLE", false))
+    else if (type == "CORRECTIONTERMCHANNELWEAKLYCOMPRESSIBLE")
     {
       return std::make_shared<FLD::CorrectionTermChannelWeaklyCompressibleFunction>();
     }
-    else if (function_lin_def.get_or("WEAKLYCOMPRESSIBLE_POISEUILLE", false))
+    else if (type == "WEAKLYCOMPRESSIBLE_POISEUILLE")
     {
       // read data
       int mat_id = function_lin_def.get_or<int>("MAT", -1);
@@ -96,7 +98,7 @@ namespace
 
       return std::make_shared<FLD::WeaklyCompressiblePoiseuilleFunction>(fparams, L, R, U);
     }
-    else if (function_lin_def.get_or("WEAKLYCOMPRESSIBLE_POISEUILLE_FORCE", false))
+    else if (type == "WEAKLYCOMPRESSIBLE_POISEUILLE_FORCE")
     {
       // read data
       auto mat_id = function_lin_def.get_or<int>("MAT", -1);
@@ -118,7 +120,7 @@ namespace
 
       return std::make_shared<FLD::WeaklyCompressiblePoiseuilleForceFunction>(fparams, L, R, U);
     }
-    else if (function_lin_def.get_or("WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW", false))
+    else if (type == "WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW")
     {
       // read data
       int mat_id = function_lin_def.get_or<int>("MAT", -1);
@@ -131,7 +133,7 @@ namespace
 
       return std::make_shared<FLD::WeaklyCompressibleManufacturedFlowFunction>(fparams);
     }
-    else if (function_lin_def.get_or("WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW_FORCE", false))
+    else if (type == "WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW_FORCE")
     {
       // read data
       int mat_id = function_lin_def.get_or<int>("MAT", -1);
@@ -145,7 +147,7 @@ namespace
 
       return std::make_shared<FLD::WeaklyCompressibleManufacturedFlowForceFunction>(fparams);
     }
-    else if (function_lin_def.get_or("WEAKLYCOMPRESSIBLE_ETIENNE_CFD", false))
+    else if (type == "WEAKLYCOMPRESSIBLE_ETIENNE_CFD")
     {
       // read data
       int mat_id = function_lin_def.get_or<int>("MAT", -1);
@@ -158,7 +160,7 @@ namespace
 
       return std::make_shared<FLD::WeaklyCompressibleEtienneCFDFunction>(fparams);
     }
-    else if (function_lin_def.get_or("WEAKLYCOMPRESSIBLE_ETIENNE_CFD_FORCE", false))
+    else if (type == "WEAKLYCOMPRESSIBLE_ETIENNE_CFD_FORCE")
     {
       // read data
       int mat_id = function_lin_def.get_or<int>("MAT", -1);
@@ -171,7 +173,7 @@ namespace
 
       return std::make_shared<FLD::WeaklyCompressibleEtienneCFDForceFunction>(fparams);
     }
-    else if (function_lin_def.get_or("WEAKLYCOMPRESSIBLE_ETIENNE_CFD_VISCOSITY", false))
+    else if (type == "WEAKLYCOMPRESSIBLE_ETIENNE_CFD_VISCOSITY")
     {
       // read data
       int mat_id = function_lin_def.get_or<int>("MAT", -1);
@@ -185,7 +187,7 @@ namespace
 
       return std::make_shared<FLD::WeaklyCompressibleEtienneCFDViscosityFunction>(fparams);
     }
-    else if (function_lin_def.get_or("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID", false))
+    else if (type == "WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID")
     {
       // read data
       int mat_id_fluid = function_lin_def.get_or<int>("MAT_FLUID", -1);
@@ -205,7 +207,7 @@ namespace
       return std::make_shared<FLD::WeaklyCompressibleEtienneFSIFluidFunction>(
           fparams_fluid, fparams_struct);
     }
-    else if (function_lin_def.get_or("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID_FORCE", false))
+    else if (type == "WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID_FORCE")
     {
       // read data
       int mat_id_fluid = function_lin_def.get_or<int>("MAT_FLUID", -1);
@@ -231,7 +233,7 @@ namespace
       return std::make_shared<FLD::WeaklyCompressibleEtienneFSIFluidForceFunction>(
           fparams_fluid, fparams_struct);
     }
-    else if (function_lin_def.get_or("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID_VISCOSITY", false))
+    else if (type == "WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID_VISCOSITY")
     {
       // read data
       int mat_id_fluid = function_lin_def.get_or<int>("MAT_FLUID", -1);
@@ -257,7 +259,7 @@ namespace
       return std::make_shared<FLD::WeaklyCompressibleEtienneFSIFluidViscosityFunction>(
           fparams_fluid, fparams_struct);
     }
-    else if (function_lin_def.get_or("BELTRAMI-UP", false))
+    else if (type == "BELTRAMI-UP")
     {
       // read data
       int mat_id = function_lin_def.get_or<int>("MAT", -1);
@@ -269,7 +271,7 @@ namespace
 
       return std::make_shared<FLD::BeltramiUP>(fparams);
     }
-    else if (function_lin_def.get_or("BELTRAMI-RHS", false))
+    else if (type == "BELTRAMI-RHS")
     {
       // read material
       int mat_id = function_lin_def.get_or<int>("MAT", -1);
@@ -282,7 +284,7 @@ namespace
 
       return std::make_shared<FLD::BeltramiRHS>(fparams, (bool)is_stokes);
     }
-    else if (function_lin_def.get_or("KIMMOIN-UP", false))
+    else if (type == "KIMMOIN-UP")
     {
       // read material
       int mat_id = function_lin_def.get_or<int>("MAT", -1);
@@ -295,7 +297,7 @@ namespace
 
       return std::make_shared<FLD::KimMoinUP>(fparams, (bool)is_stationary);
     }
-    else if (function_lin_def.get_or("KIMMOIN-RHS", false))
+    else if (type == "KIMMOIN-RHS")
     {
       // read material
       int mat_id = function_lin_def.get_or<int>("MAT", -1);
@@ -309,7 +311,7 @@ namespace
 
       return std::make_shared<FLD::KimMoinRHS>(fparams, (bool)is_stationary, (bool)is_stokes);
     }
-    else if (function_lin_def.get_or("KIMMOIN-STRESS", false))
+    else if (type == "KIMMOIN-STRESS")
     {
       // read material
       auto mat_id = function_lin_def.get_or<int>("MAT", -1);
@@ -335,94 +337,47 @@ void FLD::add_valid_fluid_functions(Core::Utils::FunctionManager& function_manag
   using namespace Core::IO::InputSpecBuilders;
   auto spec = one_of({
       all_of({
-          tag("BELTRAMI"),
+          selection<std::string>("FLUID_FUNCTION", {"BELTRAMI"}),
           entry<double>("c1"),
       }),
-      tag("CHANNELWEAKLYCOMPRESSIBLE"),
-      tag("CORRECTIONTERMCHANNELWEAKLYCOMPRESSIBLE"),
+      selection<std::string>("FLUID_FUNCTION",
+          {"CHANNELWEAKLYCOMPRESSIBLE", "CORRECTIONTERMCHANNELWEAKLYCOMPRESSIBLE"}),
       all_of({
-          tag("WEAKLYCOMPRESSIBLE_POISEUILLE"),
+          selection<std::string>("FLUID_FUNCTION",
+              {"WEAKLYCOMPRESSIBLE_POISEUILLE", "WEAKLYCOMPRESSIBLE_POISEUILLE_FORCE"}),
           entry<int>("MAT"),
           entry<double>("L"),
           entry<double>("R"),
           entry<double>("U"),
       }),
       all_of({
-          tag("WEAKLYCOMPRESSIBLE_POISEUILLE_FORCE"),
-          entry<int>("MAT"),
-          entry<double>("L"),
-          entry<double>("R"),
-          entry<double>("U"),
-      }),
-      all_of({
-          tag("WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW"),
+          selection<std::string>("FLUID_FUNCTION",
+              {"WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW", "WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW_FORCE",
+                  "WEAKLYCOMPRESSIBLE_ETIENNE_CFD", "WEAKLYCOMPRESSIBLE_ETIENNE_CFD_FORCE",
+                  "WEAKLYCOMPRESSIBLE_ETIENNE_CFD_VISCOSITY"}),
           entry<int>("MAT"),
       }),
       all_of({
-          tag("WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW_FORCE"),
-          entry<int>("MAT"),
-      }),
-      all_of({
-          tag("WEAKLYCOMPRESSIBLE_ETIENNE_CFD"),
-          entry<int>("MAT"),
-      }),
-      all_of({
-          tag("WEAKLYCOMPRESSIBLE_ETIENNE_CFD_FORCE"),
-          entry<int>("MAT"),
-      }),
-      all_of({
-          tag("WEAKLYCOMPRESSIBLE_ETIENNE_CFD_VISCOSITY"),
-          entry<int>("MAT"),
-      }),
-      all_of({
-          tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID"),
+          selection<std::string>("FLUID_FUNCTION",
+              {"WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID", "WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID_FORCE",
+                  "WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID_VISCOSITY"}),
           entry<int>("MAT_FLUID"),
           entry<int>("MAT_STRUCT"),
       }),
       all_of({
-          tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID_FORCE"),
-          entry<int>("MAT_FLUID"),
-          entry<int>("MAT_STRUCT"),
-      }),
-      all_of({
-          tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_FLUID_VISCOSITY"),
-          entry<int>("MAT_FLUID"),
-          entry<int>("MAT_STRUCT"),
-      }),
-      all_of({
-          tag("BELTRAMI-UP"),
+          selection<std::string>(
+              "FLUID_FUNCTION", {"BELTRAMI-UP", "BELTRAMI-GRADU", "KIMMOIN-UP", "KIMMOIN-GRADU"}),
           entry<int>("MAT"),
           entry<int>("ISSTAT"),
       }),
       all_of({
-          tag("BELTRAMI-GRADU"),
-          entry<int>("MAT"),
-          entry<int>("ISSTAT"),
-      }),
-      all_of({
-          tag("BELTRAMI-RHS"),
+          selection<std::string>("FLUID_FUNCTION", {"BELTRAMI-RHS", "KIMMOIN-RHS"}),
           entry<int>("MAT"),
           entry<int>("ISSTAT"),
           entry<int>("ISSTOKES"),
       }),
       all_of({
-          tag("KIMMOIN-UP"),
-          entry<int>("MAT"),
-          entry<int>("ISSTAT"),
-      }),
-      all_of({
-          tag("KIMMOIN-GRADU"),
-          entry<int>("MAT"),
-          entry<int>("ISSTAT"),
-      }),
-      all_of({
-          tag("KIMMOIN-RHS"),
-          entry<int>("MAT"),
-          entry<int>("ISSTAT"),
-          entry<int>("ISSTOKES"),
-      }),
-      all_of({
-          tag("KIMMOIN-STRESS"),
+          selection<std::string>("FLUID_FUNCTION", {"KIMMOIN-STRESS"}),
           entry<int>("MAT"),
           entry<int>("ISSTAT"),
           entry<double>("AMPLITUDE"),

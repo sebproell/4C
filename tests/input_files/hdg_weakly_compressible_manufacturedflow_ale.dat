@@ -47,9 +47,9 @@ MAT 2 MAT_Struct_StVenantKirchhoff YOUNG 1.0 NUE 0.3 DENS 1.0
 ----------------------------------------------CLONING MATERIAL MAP
 SRC_FIELD fluid SRC_MAT 1 TAR_FIELD ale TAR_MAT 2
 ------------------------------------------------------------FUNCT1
-WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW MAT 1
+FLUID_FUNCTION WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW MAT 1
 ------------------------------------------------------------FUNCT2
-WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW_FORCE MAT 1
+FLUID_FUNCTION WEAKLYCOMPRESSIBLE_MANUFACTUREDFLOW_FORCE MAT 1
 ------------------------------------------------------------FUNCT3
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME 1/8*sin(2*pi*x)*(cos(2*pi*y)-1)*(cos(2*pi*t)-1)/4 // ux
 COMPONENT 1 SYMBOLIC_FUNCTION_OF_SPACE_TIME 1/8*sin(2*pi*y)*(cos(2*pi*x)-1)*(cos(2*pi*t)-1)/4 // uy

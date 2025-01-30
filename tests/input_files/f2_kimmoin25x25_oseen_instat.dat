@@ -70,9 +70,9 @@ IFPACKOVERLAP                   0
 -------------------------------------------------------------------MATERIALS
 MAT 1 MAT_fluid DYNVISCOSITY 0.0001 DENSITY 1.0 GAMMA 1.0
 ----------------------------------------------------------------------FUNCT1 // adapt the rhs function
-KIMMOIN-RHS MAT 1 ISSTAT 0 ISSTOKES 0
+FLUID_FUNCTION KIMMOIN-RHS MAT 1 ISSTAT 0 ISSTOKES 0
 ----------------------------------------------------------------------FUNCT2 // exact velocity/pressure solution
-KIMMOIN-UP  MAT 1 ISSTAT 0
+FLUID_FUNCTION KIMMOIN-UP  MAT 1 ISSTAT 0
 ----------------------------------------------------------RESULT DESCRIPTION
 FLUID DIS fluid NODE 377 QUANTITY velx     VALUE  3.64263484699005935e-01  TOLERANCE 1e-14
 FLUID DIS fluid NODE 377 QUANTITY vely     VALUE  1.16218137730263266e-01  TOLERANCE 1e-14
