@@ -104,7 +104,7 @@ void Discret::Elements::Beam3kType::setup_element_definition(
       entry<int>("ROTVEC"),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 6}),
-      tag("FAD", {.default_value = false}),
+      entry<bool>("USE_FAD", {.default_value = false}),
   });
 
   defs["LINE3"] = all_of({
@@ -113,7 +113,7 @@ void Discret::Elements::Beam3kType::setup_element_definition(
       entry<int>("ROTVEC"),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 9}),
-      tag("FAD", {.default_value = false}),
+      entry<bool>("USE_FAD", {.default_value = false}),
   });
 
   defs["LINE4"] = all_of({
@@ -122,7 +122,7 @@ void Discret::Elements::Beam3kType::setup_element_definition(
       entry<int>("ROTVEC"),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 12}),
-      tag("FAD", {.default_value = false}),
+      entry<bool>("USE_FAD", {.default_value = false}),
   });
 }
 

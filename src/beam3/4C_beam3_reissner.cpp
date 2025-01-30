@@ -114,7 +114,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
       entry<std::vector<int>>("LINE2", {.size = 2}),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 6}),
-      tag("FAD", {.default_value = false}),
+      entry<bool>("USE_FAD", {.default_value = false}),
   });
 
   // note: LINE3 refers to quadratic Lagrange interpolation of centerline AND triad field
@@ -122,7 +122,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
       entry<std::vector<int>>("LINE3", {.size = 3}),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 9}),
-      tag("FAD", {.default_value = false}),
+      entry<bool>("USE_FAD", {.default_value = false}),
   });
 
   // note: LINE4 refers to cubic Lagrange interpolation of centerline AND triad field
@@ -130,7 +130,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
       entry<std::vector<int>>("LINE4", {.size = 4}),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 12}),
-      tag("FAD", {.default_value = false}),
+      entry<bool>("USE_FAD", {.default_value = false}),
   });
 
   // note: LINE5 refers to quartic Lagrange interpolation of centerline AND triad field
@@ -138,7 +138,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
       entry<std::vector<int>>("LINE5", {.size = 5}),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 15}),
-      tag("FAD", {.default_value = false}),
+      entry<bool>("USE_FAD", {.default_value = false}),
   });
 
   /* note: HERM2 refers to cubic Hermite interpolation of centerline (2 nodes)
@@ -147,7 +147,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
       entry<std::vector<int>>("HERM2LINE2", {.size = 2}),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 6}),
-      tag("FAD", {.default_value = false}),
+      entry<bool>("USE_FAD", {.default_value = false}),
   });
 
   /* note: HERM2 refers to cubic order Hermite interpolation of centerline (2 nodes)
@@ -156,7 +156,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
       entry<std::vector<int>>("HERM2LINE3", {.size = 3}),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 9}),
-      tag("FAD", {.default_value = false}),
+      entry<bool>("USE_FAD", {.default_value = false}),
   });
 
   /* note: HERM2 refers to cubic Hermite interpolation of centerline (2 nodes)
@@ -165,7 +165,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
       entry<std::vector<int>>("HERM2LINE4", {.size = 4}),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 12}),
-      tag("FAD", {.default_value = false}),
+      entry<bool>("USE_FAD", {.default_value = false}),
   });
 
   /* note: HERM2 refers to cubic Hermite interpolation of centerline (2 nodes)
@@ -174,7 +174,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
       entry<std::vector<int>>("HERM2LINE5", {.size = 5}),
       entry<int>("MAT"),
       entry<std::vector<double>>("TRIADS", {.size = 15}),
-      tag("FAD", {.default_value = false}),
+      entry<bool>("USE_FAD", {.default_value = false}),
   });
 }
 
