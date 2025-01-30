@@ -37,10 +37,11 @@ namespace
 
     const auto& function_lin_def = parameters.front();
 
-    if (function_lin_def.get_or("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE", false))
+    if (function_lin_def.has_group("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE"))
     {
       // read data
-      int mat_id_struct = function_lin_def.get_or<int>("MAT_STRUCT", -1);
+      int mat_id_struct =
+          function_lin_def.group("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE").get<int>("MAT_STRUCT");
 
       if (mat_id_struct <= 0)
         FOUR_C_THROW(
@@ -51,10 +52,11 @@ namespace
 
       return std::make_shared<Solid::WeaklyCompressibleEtienneFSIStructureFunction>(fparams);
     }
-    else if (function_lin_def.get_or("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE_FORCE", false))
+    else if (function_lin_def.has_group("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE_FORCE"))
     {
       // read data
-      int mat_id_struct = function_lin_def.get_or<int>("MAT_STRUCT", -1);
+      int mat_id_struct = function_lin_def.group("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE_FORCE")
+                              .get<int>("MAT_STRUCT");
 
       if (mat_id_struct <= 0)
       {
@@ -82,12 +84,15 @@ void Solid::add_valid_structure_functions(Core::Utils::FunctionManager& function
 {
   using namespace Core::IO::InputSpecBuilders;
 
-  auto spec = all_of({
-      one_of({
-          tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE"),
-          tag("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE_FORCE"),
-      }),
-      entry<int>("MAT_STRUCT"),
+  auto spec = one_of({
+      group("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE",
+          {
+              entry<int>("MAT_STRUCT"),
+          }),
+      group("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE_FORCE",
+          {
+              entry<int>("MAT_STRUCT"),
+          }),
   });
 
   function_manager.add_function_definition(std::move(spec), create_structure_function);
