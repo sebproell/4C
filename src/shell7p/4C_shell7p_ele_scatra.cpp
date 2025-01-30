@@ -84,7 +84,7 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
       entry<double>("THICK"),
       entry<std::vector<std::string>>("EAS", {.size = 5}),
       entry<double>("SDC"),
-      tag("ANS"),
+      entry<bool>("USE_ANS", {.default_value = false}),
       entry<std::vector<double>>("RAD", {.required = false, .size = 3}),
       entry<std::vector<double>>("AXI", {.required = false, .size = 3}),
       entry<std::vector<double>>("CIR", {.required = false, .size = 3}),
@@ -100,7 +100,7 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
       entry<double>("THICK"),
       entry<std::vector<std::string>>("EAS", {.size = 5}),
       entry<double>("SDC"),
-      tag("ANS"),
+      entry<bool>("USE_ANS", {.default_value = false}),
       entry<std::vector<double>>("RAD", {.required = false, .size = 3}),
       entry<std::vector<double>>("AXI", {.required = false, .size = 3}),
       entry<std::vector<double>>("CIR", {.required = false, .size = 3}),
@@ -116,7 +116,7 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
       entry<double>("THICK"),
       entry<std::vector<std::string>>("EAS", {.size = 5}),
       entry<double>("SDC"),
-      tag("ANS"),
+      entry<bool>("USE_ANS", {.default_value = false}),
       entry<std::vector<double>>("RAD", {.required = false, .size = 3}),
       entry<std::vector<double>>("AXI", {.required = false, .size = 3}),
       entry<std::vector<double>>("CIR", {.required = false, .size = 3}),
@@ -372,7 +372,7 @@ bool Discret::Elements::Shell7pScatra::read_element(const std::string& eletype,
   if (distype_ == Core::FE::CellType::quad4 or distype_ == Core::FE::CellType::quad6 or
       distype_ == Core::FE::CellType::quad9)
   {
-    if (container.get<bool>("ANS"))
+    if (container.get<bool>("USE_ANS"))
     {
       shell_data.num_ans = Solid::Utils::Shell::ReadElement::read_and_set_num_ans(distype_);
     }
