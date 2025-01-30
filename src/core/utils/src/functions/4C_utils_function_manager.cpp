@@ -69,6 +69,18 @@ void Core::Utils::add_valid_builtin_functions(Core::Utils::FunctionManager& func
 {
   using namespace IO::InputSpecBuilders;
 
+  auto time_info = all_of({
+      entry<int>("NUMPOINTS"),
+      one_of({
+          group("BYNUM",
+              {
+                  entry<std::vector<double>>("TIMERANGE", {.size = 2}),
+              },
+              {.description = "Linearly distribute NUMPOINTS time points in the TIMERANGE."}),
+          entry<std::vector<double>>("TIMES", {.size = from_parameter<int>("NUMPOINTS")}),
+      }),
+  });
+
   auto spec = one_of({
       all_of({
           entry<int>("COMPONENT", {.required = false}),
@@ -80,33 +92,30 @@ void Core::Utils::add_valid_builtin_functions(Core::Utils::FunctionManager& func
       all_of({
           entry<int>("VARIABLE"),
           entry<std::string>("NAME"),
-          entry<std::string>("TYPE"),
-          entry<int>("NUMPOINTS", {.required = false}),
-          tag("BYNUM", {.default_value = false}),
-          entry<std::vector<double>>("TIMERANGE", {.required = false, .size = 2}),
-          entry<std::vector<double>>(
-              "TIMES", {.required = false, .size = from_parameter<int>("NUMPOINTS")}),
-          entry<std::vector<double>>(
-              "VALUES", {.required = false, .size = from_parameter<int>("NUMPOINTS")}),
-          entry<std::vector<std::string>>(
-              "DESCRIPTION", {.required = false,
-                                 .size =
-                                     [](const IO::InputParameterContainer& container)
-                                 {
-                                   try
-                                   {
-                                     return container.get<int>("NUMPOINTS") - 1;
-                                   }
-                                   catch (const Core::Exception& e)
-                                   {
-                                     // When NUMPOINTS is not set, then we still allow for a
-                                     // single DESCRIPTION entry
-                                     return 1;
-                                   }
-                                 }}),
-          tag("PERIODIC", {.default_value = false}),
-          entry<double>("T1", {.required = false}),
-          entry<double>("T2", {.required = false}),
+          one_of({
+              all_of({
+                  selection<std::string>("TYPE", {"expression"}),
+                  entry<std::string>("DESCRIPTION"),
+              }),
+              all_of({
+                  selection<std::string>("TYPE", {"linearinterpolation", "fourierinterpolation"}),
+                  time_info,
+                  entry<std::vector<double>>("VALUES", {.size = from_parameter<int>("NUMPOINTS")}),
+              }),
+              all_of({
+                  selection<std::string>("TYPE", {"multifunction"}),
+                  time_info,
+                  entry<std::vector<std::string>>(
+                      "DESCRIPTION", {.size = [](const IO::InputParameterContainer& container)
+                                         { return container.get<int>("NUMPOINTS") - 1; }}),
+              }),
+          }),
+          group("PERIODIC",
+              {
+                  entry<double>("T1"),
+                  entry<double>("T2"),
+              },
+              {.required = false}),
       }),
 
       all_of({

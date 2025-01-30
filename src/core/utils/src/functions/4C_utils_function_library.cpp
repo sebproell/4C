@@ -31,15 +31,17 @@ namespace
 
     const auto& function_lin_def = parameters.front();
 
-    if (function_lin_def.get_or<bool>("FASTPOLYNOMIAL", false))
+    if (function_lin_def.has_group("FASTPOLYNOMIAL"))
     {
-      std::vector<double> coefficients = function_lin_def.get<std::vector<double>>("COEFF");
+      const auto& group = function_lin_def.group("FASTPOLYNOMIAL");
+      std::vector<double> coefficients = group.get<std::vector<double>>("COEFF");
 
       return std::make_shared<Core::Utils::FastPolynomialFunction>(std::move(coefficients));
     }
-    else if (function_lin_def.get_or<bool>("CUBIC_SPLINE_FROM_CSV", false))
+    else if (function_lin_def.has_group("CUBIC_SPLINE_FROM_CSV"))
     {
-      const auto csv_file = function_lin_def.get<std::filesystem::path>("CSV");
+      const auto& group = function_lin_def.group("CUBIC_SPLINE_FROM_CSV");
+      const auto csv_file = group.get<std::filesystem::path>("CSV");
 
       // safety check
       if (csv_file.empty())
@@ -62,15 +64,15 @@ void Core::Utils::add_valid_library_functions(Core::Utils::FunctionManager& func
   using namespace IO::InputSpecBuilders;
 
   auto spec = one_of({
-      all_of({
-          tag("FASTPOLYNOMIAL"),
-          entry<int>("NUMCOEFF"),
-          entry<std::vector<double>>("COEFF", {.size = from_parameter<int>("NUMCOEFF")}),
-      }),
-      all_of({
-          tag("CUBIC_SPLINE_FROM_CSV"),
-          entry<std::filesystem::path>("CSV"),
-      }),
+      group("FASTPOLYNOMIAL",
+          {
+              entry<int>("NUMCOEFF"),
+              entry<std::vector<double>>("COEFF", {.size = from_parameter<int>("NUMCOEFF")}),
+          }),
+      group("CUBIC_SPLINE_FROM_CSV",
+          {
+              entry<std::filesystem::path>("CSV"),
+          }),
   });
 
   function_manager.add_function_definition(spec, create_library_function_scalar);

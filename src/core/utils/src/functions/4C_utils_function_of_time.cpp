@@ -146,11 +146,11 @@ std::shared_ptr<Core::Utils::FunctionOfTime> Core::Utils::try_create_function_of
           // read periodicity data
           Periodicstruct periodicdata{};
 
-          periodicdata.periodic = line.get<bool>("PERIODIC");
+          periodicdata.periodic = line.has_group("PERIODIC");
           if (periodicdata.periodic)
           {
-            periodicdata.t1 = line.get<double>("T1");
-            periodicdata.t2 = line.get<double>("T2");
+            periodicdata.t1 = line.group("PERIODIC").get<double>("T1");
+            periodicdata.t2 = line.group("PERIODIC").get<double>("T2");
           }
           else
           {

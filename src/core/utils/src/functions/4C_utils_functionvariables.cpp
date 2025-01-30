@@ -536,7 +536,7 @@ std::vector<double> Core::Utils::Internal::extract_time_vector(
   int numpoints = timevar.get<int>("NUMPOINTS");
 
   // read whether times are defined by number of points or by vector
-  bool bynum = timevar.get<bool>("BYNUM");
+  bool bynum = timevar.has_group("BYNUM");
 
   // read respectively create times vector
   std::vector<double> times = std::invoke(
@@ -545,7 +545,7 @@ std::vector<double> Core::Utils::Internal::extract_time_vector(
         if (bynum)  // times defined by number of points
         {
           // read the time range
-          auto timerange = timevar.get<std::vector<double>>("TIMERANGE");
+          auto timerange = timevar.group("BYNUM").get<std::vector<double>>("TIMERANGE");
 
           std::vector<double> times;
 
