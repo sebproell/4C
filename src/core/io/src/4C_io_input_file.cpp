@@ -24,6 +24,11 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Core::IO
 {
+  namespace
+  {
+    std::string to_string(const ryml::csubstr str) { return std::string(str.data(), str.size()); };
+  }  // namespace
+
   namespace Internal
   {
     struct SectionContent;
@@ -47,10 +52,28 @@ namespace Core::IO
      */
     struct SectionContent
     {
-      //! The raw chars of the input.
-      std::vector<char> raw_content;
-      //! String views into #raw_content.
-      std::vector<std::string_view> lines;
+      struct DatContent
+      {
+        //! The raw chars of the input.
+        std::vector<char> raw_content;
+
+        //! String views into #raw_content.
+        std::vector<std::string_view> lines;
+      };
+
+      struct YamlContent
+      {
+        //! Node in the tree of the associated InputFileImpl.
+        ryml::NodeRef node;
+
+        //! String representation of the section in the .dat format. This is intended as a buffer
+        //! to store the content if it should be requested via `get_as_dat_style_string()`. Do not
+        //! assume this to contain a particular content.
+        std::string dat_style_string{};
+      };
+
+      //! Content of the section is either in the .dat format or in the yaml format.
+      std::variant<DatContent, YamlContent> content;
 
       /**
        * The actual content of the section sorted into fragments.
@@ -63,70 +86,133 @@ namespace Core::IO
        */
       std::vector<InputFile::Fragment> fragments;
 
-
       //! The file the section was read from.
       std::string file;
 
-      /**
-       * Depending on what is stored in this section ensure that all data is consistent.
-       */
-      void synchronize_internal_state()
-      {
-        fragments_impl.clear();
-        fragments.clear();
-        fragments_impl.reserve(lines.size());
-        fragments.reserve(lines.size());
+      DatContent& as_dat() { return std::get<DatContent>(content); }
+      [[nodiscard]] const DatContent& as_dat() const { return std::get<DatContent>(content); }
 
-        for (const auto& line : lines)
+      YamlContent& as_yaml() { return std::get<YamlContent>(content); }
+      [[nodiscard]] const YamlContent& as_yaml() const { return std::get<YamlContent>(content); }
+
+      /**
+       * Depending on what is stored in this section, set up the Fragment objects to point to the
+       * correct backend data.
+       */
+      void set_up_fragments()
+      {
+        if (std::holds_alternative<DatContent>(content))
         {
-          auto& ref = fragments_impl.emplace_back(InputFileFragmentImpl{
-              .fragment = line,
-              .section = this,
-          });
-          fragments.emplace_back(&ref);
+          auto& lines = as_dat().lines;
+          fragments_impl.clear();
+          fragments.clear();
+          fragments_impl.reserve(lines.size());
+          fragments.reserve(lines.size());
+
+          for (const auto& line : lines)
+          {
+            auto& ref = fragments_impl.emplace_back(InputFileFragmentImpl{
+                .fragment = line,
+                .section = this,
+            });
+            fragments.emplace_back(&ref);
+          }
+        }
+        else
+        {
+          // extract the fragments from the yaml node
+          auto& node = as_yaml().node;
+          fragments_impl.clear();
+          fragments.clear();
+          fragments_impl.reserve(node.num_children());
+          fragments.reserve(node.num_children());
+
+          FOUR_C_ASSERT(node.is_seq() || node.is_map(),
+              "Section '%s' is neither a sequence nor a map.", to_string(node.key()).c_str());
+
+          for (auto child : node.children())
+          {
+            auto& ref = fragments_impl.emplace_back(InputFileFragmentImpl{
+                .fragment = child,
+                .section = this,
+            });
+            fragments.emplace_back(&ref);
+          }
         }
       }
 
       void pack(Communication::PackBuffer& data) const
       {
         Core::Communication::add_to_pack(data, file);
-        Core::Communication::add_to_pack(data, raw_content);
-
-        // String_views are not packable, so we store offsets.
-        std::vector<std::size_t> offsets;
-        offsets.reserve(lines.size());
-        for (const auto& line : lines)
+        Core::Communication::add_to_pack(data, content.index());
+        if (std::holds_alternative<DatContent>(content))
         {
-          FOUR_C_ASSERT(line.data() >= raw_content.data() &&
-                            line.data() <= raw_content.data() + raw_content.size(),
-              "Line data out of bounds.");
-          const std::size_t offset = (line.data() - raw_content.data()) / sizeof(char);
-          FOUR_C_ASSERT(offset <= raw_content.size(), "Offset out of bounds.");
-          offsets.push_back(offset);
+          const auto& raw_content = as_dat().raw_content;
+          auto& lines = as_dat().lines;
+          Core::Communication::add_to_pack(data, raw_content);
+
+          // String_views are not packable, so we store offsets.
+          std::vector<std::size_t> offsets;
+          offsets.reserve(lines.size());
+          for (const auto& line : lines)
+          {
+            FOUR_C_ASSERT(line.data() >= raw_content.data() &&
+                              line.data() <= raw_content.data() + raw_content.size(),
+                "Line data out of bounds.");
+            const std::size_t offset = (line.data() - raw_content.data()) / sizeof(char);
+            FOUR_C_ASSERT(offset <= raw_content.size(), "Offset out of bounds.");
+            offsets.push_back(offset);
+          }
+          FOUR_C_ASSERT(
+              offsets.empty() || offsets.back() + lines.back().size() == raw_content.size(),
+              "Offset out of bounds.");
+          Core::Communication::add_to_pack(data, offsets);
         }
-        FOUR_C_ASSERT(offsets.empty() || offsets.back() + lines.back().size() == raw_content.size(),
-            "Offset out of bounds.");
-        Core::Communication::add_to_pack(data, offsets);
+        else if (std::holds_alternative<YamlContent>(content))
+        {
+          // Nothing to communicate for yaml content.
+        }
+        else
+        {
+          FOUR_C_THROW("Unknown content type.");
+        }
       }
 
 
       void unpack(Communication::UnpackBuffer& buffer)
       {
         Core::Communication::extract_from_pack(buffer, file);
-        Core::Communication::extract_from_pack(buffer, raw_content);
+        std::size_t content_index;
+        Core::Communication::extract_from_pack(buffer, content_index);
 
-        std::vector<std::size_t> offsets;
-        Core::Communication::extract_from_pack(buffer, offsets);
-        lines.clear();
-        for (std::size_t i = 0; i < offsets.size(); ++i)
+        if (content_index == 0)
         {
-          const char* start = raw_content.data() + offsets[i];
-          const std::size_t length = (i + 1 < offsets.size() ? (offsets[i + 1] - offsets[i])
-                                                             : (raw_content.size()) - offsets[i]);
-          FOUR_C_ASSERT(start >= raw_content.data() &&
-                            start + length <= raw_content.data() + raw_content.size(),
-              "Line data out of bounds.");
-          lines.emplace_back(start, length);
+          auto& raw_content = std::get<DatContent>(content).raw_content;
+          auto& lines = std::get<DatContent>(content).lines;
+
+          Core::Communication::extract_from_pack(buffer, raw_content);
+
+          std::vector<std::size_t> offsets;
+          Core::Communication::extract_from_pack(buffer, offsets);
+          lines.clear();
+          for (std::size_t i = 0; i < offsets.size(); ++i)
+          {
+            const char* start = raw_content.data() + offsets[i];
+            const std::size_t length = (i + 1 < offsets.size() ? (offsets[i + 1] - offsets[i])
+                                                               : (raw_content.size()) - offsets[i]);
+            FOUR_C_ASSERT(start >= raw_content.data() &&
+                              start + length <= raw_content.data() + raw_content.size(),
+                "Line data out of bounds.");
+            lines.emplace_back(start, length);
+          }
+        }
+        else if (content_index == 1)
+        {
+          // Nothing to communicate for yaml content.
+        }
+        else
+        {
+          FOUR_C_THROW("Unknown content index %d", content_index);
         }
       }
 
@@ -145,11 +231,22 @@ namespace Core::IO
     class InputFileImpl
     {
      public:
-      InputFileImpl(MPI_Comm comm) : comm_(comm) {}
+      InputFileImpl(MPI_Comm comm) : comm_(comm)
+      {
+        // Root node is a map that stores the file paths as keys and the file content as values.
+        yaml_tree_.rootref() |= ryml::MAP;
+      }
 
       MPI_Comm comm_;
 
       std::unordered_map<std::string, SectionContent> content_by_section_;
+
+      /**
+       * This is the merged tree of all yaml input files combined, excluding any "INCLUDES"
+       * sections. The data from different files will be stored under top-level keys corresponding
+       * to the file paths.
+       */
+      ryml::Tree yaml_tree_;
 
       std::map<std::string, bool> knownsections_;
     };
@@ -265,8 +362,8 @@ namespace Core::IO
           // Finish the current section.
           if (current_section_content)
           {
-            join_lines(list_of_lines, current_section_content->raw_content,
-                current_section_content->lines);
+            join_lines(list_of_lines, current_section_content->as_dat().raw_content,
+                current_section_content->as_dat().lines);
           }
           list_of_lines.clear();
 
@@ -315,108 +412,56 @@ namespace Core::IO
       // Finish the current section.
       if (current_section_content)
       {
-        join_lines(
-            list_of_lines, current_section_content->raw_content, current_section_content->lines);
+        join_lines(list_of_lines, current_section_content->as_dat().raw_content,
+            current_section_content->as_dat().lines);
       }
 
       return included_files;
     }
 
-    std::vector<std::filesystem::path> read_yaml_content(const std::filesystem::path& file_path,
-        std::unordered_map<std::string, Internal::SectionContent>& content_by_section)
+
+    std::vector<std::filesystem::path> read_yaml_content(
+        const std::filesystem::path& file_path, Internal::InputFileImpl& input_file_impl)
     {
       std::vector<std::filesystem::path> included_files;
 
-      // In this first iteration of the YAML support, we map the constructs from a YAML file back
-      // to constructs in a dat file. This means that top-level sections are pre-fixed with "--"
-      // and the key-value pairs are mapped to "key = value" lines.
-      //
-
-      // Read the whole file into a string and parse it with ryml.
+      // Read the whole file into a string ...
       std::ifstream file(file_path);
       std::ostringstream ss;
       ss << file.rdbuf();
       const std::string file_content = ss.str();
-      ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(file_content));
 
-      const auto to_string = [](const ryml::csubstr str) -> std::string
-      { return std::string(str.data(), str.size()); };
-
-      for (ryml::ConstNodeRef node : tree.crootref())
+      // ... and parse it into a new node in the yaml tree.
+      ryml::NodeRef file_node = input_file_impl.yaml_tree_.rootref().append_child();
       {
-        const auto& section_name = node.key();
+        std::string file_path_str = file_path.string();
+        file_node << ryml::key(file_path_str);
+        ryml::parse_in_arena(ryml::to_csubstr(file_content), file_node);
+      }
 
-        // If this is the special section "INCLUDES", we need to handle it differently.
-        if (section_name == "INCLUDES")
+      // Treat the special section "INCLUDES" to find more included files. Remove the section once
+      // processed.
+      if (file_node.has_child("INCLUDES"))
+      {
+        ryml::ConstNodeRef node = file_node["INCLUDES"];
+        if (node.has_val())
         {
-          if (node.has_val())
-          {
-            included_files.emplace_back(get_include_path(to_string(node.val()), file_path));
-          }
-          else if (node.is_seq())
-          {
-            for (const auto& include_node : node)
-            {
-              included_files.emplace_back(
-                  get_include_path(to_string(include_node.val()), file_path));
-            }
-          }
-          else
-            FOUR_C_THROW("INCLUDES section must contain a single file or a sequence.");
-
-          continue;
-        }
-
-
-        FOUR_C_ASSERT_ALWAYS(
-            content_by_section.find(to_string(section_name)) == content_by_section.end(),
-            "Section '%s' is defined again in file '%s'.", to_string(section_name).c_str(),
-            file_path.c_str());
-
-        auto& current_content = content_by_section[to_string(section_name)];
-        current_content.file = file_path;
-        std::list<std::string> list_of_lines;
-
-        const auto read_flat_sequence = [&](const ryml::ConstNodeRef& node)
-        {
-          for (const auto& entry : node)
-          {
-            FOUR_C_ASSERT_ALWAYS(entry.has_val(),
-                "While reading section '%s': "
-                "only scalar entries are supported in sequences.",
-                to_string(section_name).c_str());
-            list_of_lines.emplace_back(to_string(entry.val()));
-          }
-        };
-
-        const auto read_map = [&](const ryml::ConstNodeRef& node)
-        {
-          for (const auto& entry : node)
-          {
-            FOUR_C_ASSERT_ALWAYS(entry.has_val(),
-                "While reading section '%s': "
-                "only scalar key-value pairs are supported in maps.",
-                to_string(section_name).c_str());
-            list_of_lines.emplace_back(to_string(entry.key()) + " = " + to_string(entry.val()));
-          }
-        };
-
-        if (node.is_map())
-        {
-          read_map(node);
+          included_files.emplace_back(get_include_path(to_string(node.val()), file_path));
         }
         else if (node.is_seq())
         {
-          read_flat_sequence(node);
+          for (const auto& include_node : node)
+          {
+            included_files.emplace_back(get_include_path(to_string(include_node.val()), file_path));
+          }
         }
         else
         {
-          FOUR_C_THROW("Entries in section %s must either form a map or a sequence",
-              to_string(section_name).c_str());
+          FOUR_C_THROW("INCLUDES section must contain a single file or a sequence.");
         }
 
-        // Finish the current section by condensing the lines into the content.
-        join_lines(list_of_lines, current_content.raw_content, current_content.lines);
+        // Now we can drop the node containing the INCLUDES from the tree.
+        input_file_impl.yaml_tree_.remove(node.id());
       }
 
       return included_files;
@@ -433,13 +478,36 @@ namespace Core::IO
     }
     else
     {
-      FOUR_C_THROW("Fragment is not a string.");
+      const auto& node = std::get<ryml::ConstNodeRef>(pimpl_->fragment);
+      if (node.is_val())
+      {
+        return std::string_view(node.val().data(), node.val().size());
+      }
+      else
+      {
+        // flatten the yaml node into a string
+        std::ostringstream ss;
+        ss << node;
+        // replace all the yaml markup characters with spaces to receive a dat-style string
+        auto& str = pimpl_->section->as_yaml().dat_style_string;
+        str = ss.str();
+        std::replace(str.begin(), str.end(), '\n', ' ');
+        std::replace(str.begin(), str.end(), ':', ' ');
+        std::replace(str.begin(), str.end(), ',', ' ');
+        std::replace(str.begin(), str.end(), '[', ' ');
+        std::replace(str.begin(), str.end(), ']', ' ');
+        str = Core::Utils::trim(str);
+
+        return std::string_view(str);
+      }
     }
   }
 
 
   std::optional<InputParameterContainer> InputFile::Fragment::match(const InputSpec& spec) const
   {
+    FOUR_C_ASSERT(pimpl_, "Implementation error: fragment is not initialized.");
+
     Core::IO::ValueParser parser{get_as_dat_style_string(),
         {.base_path = std::filesystem::path(pimpl_->section->file).parent_path()}};
     InputParameterContainer container;
@@ -504,7 +572,7 @@ namespace Core::IO
               if (file_extension == ".yaml" || file_extension == ".yml" ||
                   file_extension == ".json")
               {
-                return read_yaml_content(*file_it, pimpl_->content_by_section_);
+                return read_yaml_content(*file_it, *pimpl_);
               }
               else
               {
@@ -528,6 +596,7 @@ namespace Core::IO
       }
     }
 
+    // Communicate the dat content
     if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0)
     {
       // Temporarily move the sections that are not huge into a separate map.
@@ -535,9 +604,12 @@ namespace Core::IO
 
       for (auto&& [section_name, content] : pimpl_->content_by_section_)
       {
-        if (content.lines.size() < huge_section_threshold)
+        if (std::holds_alternative<Internal::SectionContent::DatContent>(content.content))
         {
-          non_huge_sections[section_name] = std::move(content);
+          if (content.as_dat().lines.size() < huge_section_threshold)
+          {
+            non_huge_sections[section_name] = std::move(content);
+          }
         }
       }
 
@@ -555,10 +627,42 @@ namespace Core::IO
       Core::Communication::broadcast(pimpl_->content_by_section_, 0, pimpl_->comm_);
     }
 
-    // Ensure that all sections are in a consistent state.
-    for (auto& [_, content] : pimpl_->content_by_section_)
+    // Communicate the yaml content
     {
-      content.synchronize_internal_state();
+      if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0)
+      {
+        std::stringstream ss;
+        ss << pimpl_->yaml_tree_;
+        std::string yaml_str = ss.str();
+        Core::Communication::broadcast(yaml_str, /*root*/ 0, pimpl_->comm_);
+      }
+      else
+      {
+        std::string yaml_str;
+        Core::Communication::broadcast(yaml_str, /*root*/ 0, pimpl_->comm_);
+        pimpl_->yaml_tree_.reserve_arena(yaml_str.size());
+        ryml::parse_in_arena(ryml::to_csubstr(yaml_str), pimpl_->yaml_tree_.rootref());
+      }
+
+      // Now all ranks agree on the yaml tree. Parse out the sections and fill the SectionContent.
+      for (auto file_node : pimpl_->yaml_tree_.rootref())
+      {
+        for (auto node : file_node.children())
+        {
+          const std::string section_name = to_string(node.key());
+          FOUR_C_ASSERT_ALWAYS(!pimpl_->content_by_section_.contains(section_name),
+              "Section '%s' is defined more than once.", section_name.c_str());
+
+          Internal::SectionContent& content = pimpl_->content_by_section_[section_name];
+          content.content = Internal::SectionContent::YamlContent{.node = node};
+          content.file = to_string(file_node.key());
+        }
+      }
+    }
+
+    for (auto& [name, content] : pimpl_->content_by_section_)
+    {
+      content.set_up_fragments();
     }
 
     // the following section names are always regarded as valid
@@ -616,7 +720,7 @@ namespace Core::IO
 
       auto& content = pimpl_->content_by_section_[section_name];
       Core::Communication::broadcast(content, 0, pimpl_->comm_);
-      content.synchronize_internal_state();
+      content.set_up_fragments();
 
       const auto& lines = pimpl_->content_by_section_.at(section_name).fragments;
       return std::views::all(lines);

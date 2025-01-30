@@ -1,3 +1,9 @@
 INCLUDES: included.dat
 MAIN SECTION:
   - something
+SECTION WITH SUBSTRUCTURE:
+  # A possible material input
+  - MAT: 1
+    THERMO:
+      COND: [1, 2, 3]
+      CAPA: 2

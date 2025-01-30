@@ -106,6 +106,7 @@ namespace
     Core::IO::InputFile input{input_file_name, comm};
 
     check_section(input, "INCLUDED SECTION 1", std::vector<std::string>(2, "line"));
+    check_section(input, "SECTION WITH SUBSTRUCTURE", {"MAT 1 THERMO COND 1 2 3 CAPA 2"});
 
     EXPECT_EQ(input.file_for_section("INCLUDED SECTION 2").filename(), "included.yaml");
 
