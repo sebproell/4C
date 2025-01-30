@@ -215,17 +215,24 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::print(
 
 void Core::IO::InputSpecBuilders::Internal::GroupSpec::emit_metadata(ryml::NodeRef node) const
 {
-  node << ryml::key(name.empty() ? data.description : name);
   node |= ryml::MAP;
+  if (!name.empty())
+  {
+    node["name"] << name;
+  }
 
   node["type"] << (name.empty() ? "all_of" : "group");
-  node["description"] << data.description;
+  if (!data.description.empty())
+  {
+    node["description"] << data.description;
+  }
   emit_value_as_yaml(node["required"], data.required);
-  node["specs"] |= ryml::MAP;
+  node["specs"] |= ryml::SEQ;
   {
     for (const auto& spec : specs)
     {
       auto child = node["specs"].append_child();
+      child |= ryml::MAP;
       spec.impl().emit_metadata(child);
     };
   }
@@ -308,13 +315,15 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::print(
 
 void Core::IO::InputSpecBuilders::Internal::OneOfSpec::emit_metadata(ryml::NodeRef node) const
 {
-  node << ryml::key(data.description);
   node |= ryml::MAP;
 
   node["type"] << "one_of";
-  node["description"] << data.description;
+  if (!data.description.empty())
+  {
+    node["description"] << data.description;
+  }
   emit_value_as_yaml(node["required"], data.required);
-  node["specs"] |= ryml::MAP;
+  node["specs"] |= ryml::SEQ;
   for (const auto& spec : specs)
   {
     auto child = node["specs"].append_child();

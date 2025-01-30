@@ -561,11 +561,17 @@ namespace
             }),
             group("group",
                 {
-                    entry<std::string>("c"),
+                    entry<std::string>("c", {.description = "A string"}),
                     entry<double>("d"),
-                }),
+                },
+                {.description = "A group"}),
         }),
         selection<int>("e", {{"e1", 1}, {"e2", 2}}, {.default_value = 1}),
+        group("group2",
+            {
+                entry<int>("g"),
+            },
+            {.required = false}),
     });
 
 
@@ -577,63 +583,63 @@ namespace
       line.emit_metadata(yaml);
       out << tree;
 
-      std::string expected = R"('all_of {a, b, one_of {all_of {b, c}, group}, e}':
-  type: all_of
-  description: 'all_of {a, b, one_of {all_of {b, c}, group}, e}'
-  required: true
-  specs:
-    a:
-      type: int
-      description: ''
-      required: false
-      default: 42
-    b:
-      type: vector<double>
-      description: ''
-      required: false
-      default: [1,2,3]
-    'one_of {all_of {b, c}, group}':
-      type: one_of
-      description: 'one_of {all_of {b, c}, group}'
-      required: true
-      specs:
-        'all_of {b, c}':
-          type: all_of
-          description: 'all_of {b, c}'
-          required: true
-          specs:
-            b:
-              type: 'pair<int, string>'
-              description: ''
-              required: false
-              default: [1,abc]
-            c:
-              type: string
-              description: ''
-              required: true
-        group:
-          type: group
-          description: ''
-          required: true
-          specs:
-            c:
-              type: string
-              description: ''
-              required: true
-            d:
-              type: double
-              description: ''
-              required: true
-    e:
-      type: selection
-      description: ''
-      required: false
-      default: 1
-      choices:
-        e1: 1
-        e2: 2
+      std::string expected = R"(type: all_of
+description: 'all_of {a, b, one_of {all_of {b, c}, group}, e, group2}'
+required: true
+specs:
+  - name: a
+    type: int
+    required: false
+    default: 42
+  - name: b
+    type: vector<double>
+    required: false
+    default: [1,2,3]
+    size: 3
+  - type: one_of
+    description: 'one_of {all_of {b, c}, group}'
+    required: true
+    specs:
+      - type: all_of
+        description: 'all_of {b, c}'
+        required: true
+        specs:
+          - name: b
+            type: 'pair<int, string>'
+            required: false
+            default: [1,abc]
+          - name: c
+            type: string
+            required: true
+      - name: group
+        type: group
+        description: A group
+        required: true
+        specs:
+          - name: c
+            type: string
+            description: A string
+            required: true
+          - name: d
+            type: double
+            required: true
+  - name: e
+    type: selection
+    required: false
+    default: 1
+    choices:
+      e1: 1
+      e2: 2
+  - name: group2
+    type: group
+    required: false
+    specs:
+      - name: g
+        type: int
+        required: true
 )";
       EXPECT_EQ(out.str(), expected);
+      std::cout << out.str() << std::endl;
     }
   }
 

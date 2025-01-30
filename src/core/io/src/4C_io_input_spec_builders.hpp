@@ -923,14 +923,26 @@ void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataTypeIn>::emit_metadata
     ryml::NodeRef node) const
 {
   node |= ryml::MAP;
-  node << ryml::key(name);
+  node["name"] << name;
 
   node["type"] << IO::Internal::get_pretty_type_name<StoredType>();
-  node["description"] << data.description;
+  if (!data.description.empty())
+  {
+    node["description"] << data.description;
+  }
   emit_value_as_yaml(node["required"], data.required.value());
   if (data.default_value.has_value())
   {
     emit_value_as_yaml(node["default"], data.default_value.value());
+  }
+
+  if constexpr (InputSpecBuilders::Internal::is_sized_data<DataType>)
+  {
+    // Size can only be emitted if it is fixed.
+    if (data.size.index() == 0)
+    {
+      node["size"] << std::get<0>(data.size);
+    }
   }
 }
 
@@ -994,10 +1006,13 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::emit_meta
     ryml::NodeRef node) const
 {
   node |= ryml::MAP;
-  node << ryml::key(name);
+  node["name"] << name;
 
   node["type"] = "selection";
-  node["description"] << data.description;
+  if (!data.description.empty())
+  {
+    node["description"] << data.description;
+  }
   emit_value_as_yaml(node["required"], data.required.value());
   if (data.default_value.has_value())
   {
@@ -1046,8 +1061,8 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::user_defined(std::string name, 
 {
   auto default_emitter = [name](ryml::NodeRef node)
   {
-    node << ryml::key(name);
     node |= ryml::MAP;
+    node["name"] << name;
     node["type"] = "user_defined";
   };
 
