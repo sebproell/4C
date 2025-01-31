@@ -10,6 +10,7 @@ Developer guide
     4Csetup
     4Ctesting
     codingguidelines
+    petra_object_model
     developer_addedinformation
     development_parts
 
