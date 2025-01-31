@@ -11,10 +11,10 @@
 #include "4C_config.hpp"
 
 #include "4C_beamcontact_beam3contactinterface.hpp"
+#include "4C_beamcontact_input.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_defines.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_tangentsmoothing.hpp"
 #include "4C_fem_general_element.hpp"
-#include "4C_inpar_beamcontact.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_linalg_sparsematrix.hpp"
@@ -350,7 +350,7 @@ namespace CONTACT
     Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, double> ele2pos_lastiter_;
 
     //! variable to check which smoothing type should be applied
-    Inpar::BeamContact::Smoothing smoothing_;
+    BeamContact::Smoothing smoothing_;
 
     //! sgn(normal*normal_old)
     double sgn_;

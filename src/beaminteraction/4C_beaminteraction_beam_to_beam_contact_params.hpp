@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_beamcontact.hpp"
+#include "4C_beamcontact_input.hpp"
 #include "4C_utils_exceptions.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -50,9 +50,9 @@ namespace BeamInteraction
       if (!is_init()) FOUR_C_THROW("init() has not been called yet!");
     }
 
-    inline enum Inpar::BeamContact::Strategy strategy() const { return strategy_; }
+    inline enum BeamContact::Strategy strategy() const { return strategy_; }
 
-    inline enum Inpar::BeamContact::PenaltyLaw penalty_law() const { return penalty_law_; }
+    inline enum BeamContact::PenaltyLaw penalty_law() const { return penalty_law_; }
 
     inline double beam_to_beam_penalty_law_regularization_g0() const
     {
@@ -103,10 +103,10 @@ namespace BeamInteraction
     bool issetup_;
 
     //! strategy
-    enum Inpar::BeamContact::Strategy strategy_;
+    enum BeamContact::Strategy strategy_;
 
     //! penalty law
-    enum Inpar::BeamContact::PenaltyLaw penalty_law_;
+    enum BeamContact::PenaltyLaw penalty_law_;
 
     //! regularization parameters for penalty law
     double btb_penalty_law_regularization_g0_;

@@ -10,13 +10,13 @@
 #include "4C_beam3_euler_bernoulli.hpp"
 #include "4C_beam3_kirchhoff.hpp"
 #include "4C_beam3_reissner.hpp"
+#include "4C_beamcontact_input.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_defines.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_tangentsmoothing.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_utils.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_general_utils_fem_shapefunctions.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_beamcontact.hpp"
 #include "4C_inpar_contact.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
 #include "4C_structure_timint_impl.hpp"
@@ -64,9 +64,8 @@ CONTACT::Beam3contact<numnodes, numnodalvalues>::Beam3contact(
     nodaltangentssmooth2_(i) = 0.0;
   }
 
-  auto smoothing =
-      Teuchos::getIntegralValue<Inpar::BeamContact::Smoothing>(bcparams_, "BEAMS_SMOOTHING");
-  if (smoothing == Inpar::BeamContact::bsm_cpp)
+  auto smoothing = Teuchos::getIntegralValue<BeamContact::Smoothing>(bcparams_, "BEAMS_SMOOTHING");
+  if (smoothing == BeamContact::bsm_cpp)
   {
     const Core::Elements::ElementType& eot1 = element1_->element_type();
     if (eot1 != Discret::Elements::Beam3rType::instance())
@@ -132,9 +131,9 @@ CONTACT::Beam3contact<numnodes, numnodalvalues>::Beam3contact(
   if (element1->id() >= element2->id())
     FOUR_C_THROW("Element 1 has to have the smaller element-ID. Adapt your contact search!");
 
-  auto penaltylaw = Teuchos::getIntegralValue<Inpar::BeamContact::PenaltyLaw>(
-      beamcontactparams, "BEAMS_PENALTYLAW");
-  if (penaltylaw != Inpar::BeamContact::pl_lp and penaltylaw != Inpar::BeamContact::pl_qp)
+  auto penaltylaw =
+      Teuchos::getIntegralValue<BeamContact::PenaltyLaw>(beamcontactparams, "BEAMS_PENALTYLAW");
+  if (penaltylaw != BeamContact::pl_lp and penaltylaw != BeamContact::pl_qp)
   {
     if (beamcontactparams.get<double>("BEAMS_PENREGPARAM_F0", -1.0) == -1.0 or
         beamcontactparams.get<double>("BEAMS_PENREGPARAM_G0", -1.0) == -1.0 or
@@ -147,13 +146,13 @@ CONTACT::Beam3contact<numnodes, numnodalvalues>::Beam3contact(
   gpvariables_.resize(0);
   epvariables_.resize(0);
 
-  if (Teuchos::getIntegralValue<Inpar::BeamContact::Damping>(bcparams_, "BEAMS_DAMPING") !=
-      Inpar::BeamContact::bd_no)
+  if (Teuchos::getIntegralValue<BeamContact::Damping>(bcparams_, "BEAMS_DAMPING") !=
+      BeamContact::bd_no)
     FOUR_C_THROW("Damping is not implemented for beam3contact elements so far!");
 
   if (bcparams_.get<double>("BEAMS_GAPSHIFTPARAM", 0.0) != 0.0 and
-      Teuchos::getIntegralValue<Inpar::BeamContact::PenaltyLaw>(bcparams_, "BEAMS_PENALTYLAW") !=
-          Inpar::BeamContact::pl_lpqp)
+      Teuchos::getIntegralValue<BeamContact::PenaltyLaw>(bcparams_, "BEAMS_PENALTYLAW") !=
+          BeamContact::pl_lpqp)
     FOUR_C_THROW("BEAMS_GAPSHIFTPARAM only possible for penalty law LinPosQuadPen!");
 
   double perpshiftangle1 = bcparams_.get<double>("BEAMS_PERPSHIFTANGLE1") / 180.0 * M_PI;
@@ -1426,9 +1425,9 @@ void CONTACT::Beam3contact<numnodes, numnodalvalues>::calc_penalty_law(
 
   if (!check_contact_status(Core::FADUtils::cast_to_double(gap))) return;
 
-  switch (Teuchos::getIntegralValue<Inpar::BeamContact::PenaltyLaw>(bcparams_, "BEAMS_PENALTYLAW"))
+  switch (Teuchos::getIntegralValue<BeamContact::PenaltyLaw>(bcparams_, "BEAMS_PENALTYLAW"))
   {
-    case Inpar::BeamContact::pl_lp:  // linear penalty force law
+    case BeamContact::pl_lp:  // linear penalty force law
     {
       fp = -pp * gap;
       dfp = -pp;
@@ -1436,7 +1435,7 @@ void CONTACT::Beam3contact<numnodes, numnodalvalues>::calc_penalty_law(
 
       break;
     }
-    case Inpar::BeamContact::pl_qp:  // quadratic penalty force law
+    case BeamContact::pl_qp:  // quadratic penalty force law
     {
       fp = pp * gap * gap;
       dfp = 2 * pp * gap;
@@ -1444,7 +1443,7 @@ void CONTACT::Beam3contact<numnodes, numnodalvalues>::calc_penalty_law(
 
       break;
     }
-    case Inpar::BeamContact::pl_lnqp:  // quadratic regularization for negative gaps
+    case BeamContact::pl_lnqp:  // quadratic regularization for negative gaps
     {
       if (g0 == -1.0)
         FOUR_C_THROW("Invalid value of regularization parameter BEAMS_PENREGPARAM_G0!");
@@ -1464,7 +1463,7 @@ void CONTACT::Beam3contact<numnodes, numnodalvalues>::calc_penalty_law(
 
       break;
     }
-    case Inpar::BeamContact::pl_lpqp:  // quadratic regularization for positive gaps
+    case BeamContact::pl_lpqp:  // quadratic regularization for positive gaps
     {
       if (g0 == -1.0)
         FOUR_C_THROW("Invalid value of regularization parameter BEAMS_PENREGPARAM_G0!");
@@ -1495,7 +1494,7 @@ void CONTACT::Beam3contact<numnodes, numnodalvalues>::calc_penalty_law(
 
       break;
     }
-    case Inpar::BeamContact::pl_lpcp:  // cubic regularization for positive gaps
+    case BeamContact::pl_lpcp:  // cubic regularization for positive gaps
     {
       if (g0 == -1.0)
         FOUR_C_THROW("Invalid value of regularization parameter BEAMS_PENREGPARAM_G0!");
@@ -1530,7 +1529,7 @@ void CONTACT::Beam3contact<numnodes, numnodalvalues>::calc_penalty_law(
 
       break;
     }
-    case Inpar::BeamContact::pl_lpdqp:  // double quadratic regularization for positive gaps
+    case BeamContact::pl_lpdqp:  // double quadratic regularization for positive gaps
     {
       if (g0 == -1.0)
         FOUR_C_THROW("Invalid value of regularization parameter BEAMS_PENREGPARAM_G0!");
@@ -1576,8 +1575,8 @@ void CONTACT::Beam3contact<numnodes, numnodalvalues>::calc_penalty_law(
 
       break;
     }
-    case Inpar::BeamContact::pl_lpep:  // exponential regularization for positive gaps. Here g0
-                                       // represents the cut off radius!
+    case BeamContact::pl_lpep:  // exponential regularization for positive gaps. Here g0
+                                // represents the cut off radius!
     {
       if (g0 == -1.0)
         FOUR_C_THROW("Invalid value of regularization parameter BEAMS_PENREGPARAM_G0!");
@@ -1860,18 +1859,18 @@ double CONTACT::Beam3contact<numnodes, numnodalvalues>::get_max_active_dist()
 {
   double maxactivedist = 0.0;
   auto penaltylaw =
-      Teuchos::getIntegralValue<Inpar::BeamContact::PenaltyLaw>(bcparams_, "BEAMS_PENALTYLAW");
+      Teuchos::getIntegralValue<BeamContact::PenaltyLaw>(bcparams_, "BEAMS_PENALTYLAW");
 
   switch (penaltylaw)
   {
-    case Inpar::BeamContact::pl_lp:
-    case Inpar::BeamContact::pl_qp:
-    case Inpar::BeamContact::pl_lnqp:
+    case BeamContact::pl_lp:
+    case BeamContact::pl_qp:
+    case BeamContact::pl_lnqp:
     {
       maxactivedist = 0.0;
       break;
     }
-    case Inpar::BeamContact::pl_lpqp:
+    case BeamContact::pl_lpqp:
     {
       double g0 = bcparams_.get<double>("BEAMS_PENREGPARAM_G0", -1.0);
       if (g0 == -1.0)
@@ -1884,9 +1883,9 @@ double CONTACT::Beam3contact<numnodes, numnodalvalues>::get_max_active_dist()
 
       break;
     }
-    case Inpar::BeamContact::pl_lpcp:
-    case Inpar::BeamContact::pl_lpdqp:
-    case Inpar::BeamContact::pl_lpep:
+    case BeamContact::pl_lpcp:
+    case BeamContact::pl_lpdqp:
+    case BeamContact::pl_lpep:
     {
       maxactivedist = bcparams_.get<double>("BEAMS_PENREGPARAM_G0", -1.0);
       if (maxactivedist == -1.0)
@@ -1894,8 +1893,8 @@ double CONTACT::Beam3contact<numnodes, numnodalvalues>::get_max_active_dist()
       break;
     }
   }
-  if (Teuchos::getIntegralValue<Inpar::BeamContact::Damping>(bcparams_, "BEAMS_DAMPING") !=
-      Inpar::BeamContact::bd_no)
+  if (Teuchos::getIntegralValue<BeamContact::Damping>(bcparams_, "BEAMS_DAMPING") !=
+      BeamContact::bd_no)
   {
     double gd1 = bcparams_.get<double>("BEAMS_DAMPREGPARAM1", -1000.0);
     if (gd1 == -1000.0)
@@ -2206,11 +2205,11 @@ bool CONTACT::Beam3contact<numnodes, numnodalvalues>::closest_point_projection(d
       }
 
       auto smoothing =
-          Teuchos::getIntegralValue<Inpar::BeamContact::Smoothing>(bcparams_, "BEAMS_SMOOTHING");
-      if (smoothing != Inpar::BeamContact::bsm_none)  // smoothed case
+          Teuchos::getIntegralValue<BeamContact::Smoothing>(bcparams_, "BEAMS_SMOOTHING");
+      if (smoothing != BeamContact::bsm_none)  // smoothed case
       {
         // Evaluate nodal tangents in each case. However, they are used only if
-        // smoothing=Inpar::BeamContact::bsm_cpp
+        // smoothing=BeamContact::bsm_cpp
         BeamInteraction::Beam3TangentSmoothing::compute_tangents_and_derivs<numnodes,
             numnodalvalues>(t1, t1_xi, nodaltangentssmooth1_, N1, N1_xi);
         BeamInteraction::Beam3TangentSmoothing::compute_tangents_and_derivs<numnodes,
@@ -4776,11 +4775,10 @@ void CONTACT::Beam3contact<numnodes, numnodalvalues>::evaluate_orthogonality_con
   // reset f
   f.clear();
 
-  auto smoothing =
-      Teuchos::getIntegralValue<Inpar::BeamContact::Smoothing>(bcparams_, "BEAMS_SMOOTHING");
+  auto smoothing = Teuchos::getIntegralValue<BeamContact::Smoothing>(bcparams_, "BEAMS_SMOOTHING");
   // evaluate f
   // see Wriggers, Computational Contact Mechanics, equation (12.5)
-  if (smoothing == Inpar::BeamContact::bsm_none)  // non-smoothed
+  if (smoothing == BeamContact::bsm_none)  // non-smoothed
   {
     for (int i = 0; i < 3; i++)
     {
@@ -4826,12 +4824,11 @@ void CONTACT::Beam3contact<numnodes, numnodalvalues>::evaluate_lin_orthogonality
   df.clear();
   dfinv.clear();
 
-  auto smoothing =
-      Teuchos::getIntegralValue<Inpar::BeamContact::Smoothing>(bcparams_, "BEAMS_SMOOTHING");
+  auto smoothing = Teuchos::getIntegralValue<BeamContact::Smoothing>(bcparams_, "BEAMS_SMOOTHING");
 
   // evaluate df
   // see Wriggers, Computational Contact Mechanics, equation (12.7)
-  if (smoothing == Inpar::BeamContact::bsm_none)  // non-smoothed
+  if (smoothing == BeamContact::bsm_none)  // non-smoothed
   {
     for (int i = 0; i < 3; i++)
     {
@@ -5027,9 +5024,9 @@ bool CONTACT::Beam3contact<numnodes, numnodalvalues>::check_contact_status(const
   bool contactflag = false;
 
   auto penaltylaw =
-      Teuchos::getIntegralValue<Inpar::BeamContact::PenaltyLaw>(bcparams_, "BEAMS_PENALTYLAW");
+      Teuchos::getIntegralValue<BeamContact::PenaltyLaw>(bcparams_, "BEAMS_PENALTYLAW");
 
-  if (penaltylaw == Inpar::BeamContact::pl_lp)
+  if (penaltylaw == BeamContact::pl_lp)
   {
     // linear penalty force law
     if (gap < 0)
@@ -5039,7 +5036,7 @@ bool CONTACT::Beam3contact<numnodes, numnodalvalues>::check_contact_status(const
     else
       contactflag = false;
   }
-  else if (penaltylaw == Inpar::BeamContact::pl_qp)
+  else if (penaltylaw == BeamContact::pl_qp)
   {
     // quadratic penalty force law
     if (gap < 0)
@@ -5049,7 +5046,7 @@ bool CONTACT::Beam3contact<numnodes, numnodalvalues>::check_contact_status(const
     else
       contactflag = false;
   }
-  else if (penaltylaw == Inpar::BeamContact::pl_lpqp)
+  else if (penaltylaw == BeamContact::pl_lpqp)
   {
     // penalty laws with regularization for positive gaps
     if (g0 == -1.0) FOUR_C_THROW("Invalid value of regularization parameter BEAMS_PENREGPARAM_G0!");
@@ -5065,8 +5062,8 @@ bool CONTACT::Beam3contact<numnodes, numnodalvalues>::check_contact_status(const
     else
       contactflag = false;
   }
-  else if (penaltylaw == Inpar::BeamContact::pl_lpcp or
-           penaltylaw == Inpar::BeamContact::pl_lpdqp or penaltylaw == Inpar::BeamContact::pl_lpep)
+  else if (penaltylaw == BeamContact::pl_lpcp or penaltylaw == BeamContact::pl_lpdqp or
+           penaltylaw == BeamContact::pl_lpep)
   {
     // penalty laws with regularization for positive gaps
     if (g0 == -1.0) FOUR_C_THROW("Invalid value of regularization parameter BEAMS_PENREGPARAM_G0!");
@@ -5078,7 +5075,7 @@ bool CONTACT::Beam3contact<numnodes, numnodalvalues>::check_contact_status(const
     else
       contactflag = false;
   }
-  else if (penaltylaw == Inpar::BeamContact::pl_lnqp)
+  else if (penaltylaw == BeamContact::pl_lnqp)
   {
     // penalty law with quadratic regularization for negative gaps
     if (gap < 0)
@@ -5103,8 +5100,8 @@ bool CONTACT::Beam3contact<numnodes, numnodalvalues>::check_damping_status(const
 {
   bool dampingcontactflag = false;
 
-  if (Teuchos::getIntegralValue<Inpar::BeamContact::Damping>(bcparams_, "BEAMS_DAMPING") !=
-      Inpar::BeamContact::bd_no)
+  if (Teuchos::getIntegralValue<BeamContact::Damping>(bcparams_, "BEAMS_DAMPING") !=
+      BeamContact::bd_no)
   {
     // First parameter for contact force regularization
     double gd1 = bcparams_.get<double>("BEAMS_DAMPREGPARAM1", -1000.0);

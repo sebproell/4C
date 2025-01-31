@@ -8,6 +8,7 @@
 #include "4C_beaminteraction_str_model_evaluator.hpp"
 
 #include "4C_beam3_base.hpp"
+#include "4C_beamcontact_input.hpp"
 #include "4C_beaminteraction_calc_utils.hpp"
 #include "4C_beaminteraction_crosslinker_handler.hpp"
 #include "4C_beaminteraction_crosslinker_node.hpp"
@@ -23,7 +24,6 @@
 #include "4C_fem_geometry_periodic_boundingbox.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_beam_to_solid.hpp"
-#include "4C_inpar_beamcontact.hpp"
 #include "4C_io.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_linalg_serialdensematrix.hpp"

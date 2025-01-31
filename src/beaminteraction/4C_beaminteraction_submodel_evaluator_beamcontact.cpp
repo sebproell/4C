@@ -8,6 +8,7 @@
 #include "4C_beaminteraction_submodel_evaluator_beamcontact.hpp"
 
 #include "4C_beam3_base.hpp"
+#include "4C_beamcontact_input.hpp"
 #include "4C_beaminteraction_beam_to_solid_surface_contact_params.hpp"
 #include "4C_beaminteraction_beam_to_solid_surface_meshtying_params.hpp"
 #include "4C_beaminteraction_beam_to_solid_surface_visualization_output_params.hpp"
@@ -32,7 +33,6 @@
 #include "4C_fem_geometric_search_visualization.hpp"
 #include "4C_geometry_pair_line_to_3D_evaluation_data.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_beamcontact.hpp"
 #include "4C_inpar_geometry_pair.hpp"
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"

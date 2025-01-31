@@ -8,8 +8,8 @@
 #include "4C_inpar_validparameters.hpp"
 
 #include "4C_ale_input.hpp"
+#include "4C_beamcontact_input.hpp"
 #include "4C_browniandyn_input.hpp"
-#include "4C_inpar_beamcontact.hpp"
 #include "4C_inpar_beaminteraction.hpp"
 #include "4C_inpar_beampotential.hpp"
 #include "4C_inpar_binningstrategy.hpp"
@@ -243,7 +243,7 @@ std::shared_ptr<const Teuchos::ParameterList> Input::valid_parameters()
   Inpar::IORuntimeOutput::FLUID::set_valid_parameters(*list);
   Inpar::IORuntimeOutput::Solid::set_valid_parameters(*list);
   Inpar::IORuntimeOutput::Beam::set_valid_parameters(*list);
-  Inpar::BeamContact::set_valid_parameters(*list);
+  BeamContact::set_valid_parameters(*list);
   Inpar::BeamPotential::set_valid_parameters(*list);
   Inpar::BeamInteraction::set_valid_parameters(*list);
   Inpar::RveMpc::set_valid_parameters(*list);

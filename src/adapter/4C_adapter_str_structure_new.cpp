@@ -18,13 +18,13 @@
 #include "4C_adapter_str_wrapper.hpp"
 #include "4C_beam3_kirchhoff.hpp"
 #include "4C_beam3_reissner.hpp"
+#include "4C_beamcontact_input.hpp"
 #include "4C_binstrategy.hpp"
 #include "4C_comm_utils.hpp"
 #include "4C_fem_condition.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_beam_to_solid.hpp"
-#include "4C_inpar_beamcontact.hpp"
 #include "4C_inpar_beaminteraction.hpp"
 #include "4C_inpar_contact.hpp"
 #include "4C_inpar_fsi.hpp"
@@ -496,11 +496,10 @@ void Adapter::StructureBaseAlgorithmNew::set_model_types(
   // ---------------------------------------------------------------------------
   // get beam contact strategy
   const Teuchos::ParameterList& beamcontact = Global::Problem::instance()->beam_contact_params();
-  auto strategy =
-      Teuchos::getIntegralValue<Inpar::BeamContact::Strategy>(beamcontact, "BEAMS_STRATEGY");
+  auto strategy = Teuchos::getIntegralValue<BeamContact::Strategy>(beamcontact, "BEAMS_STRATEGY");
 
   auto modelevaluator =
-      Teuchos::getIntegralValue<Inpar::BeamContact::Modelevaluator>(beamcontact, "MODELEVALUATOR");
+      Teuchos::getIntegralValue<BeamContact::Modelevaluator>(beamcontact, "MODELEVALUATOR");
 
   // conditions for potential-based beam interaction
   std::vector<Core::Conditions::Condition*> beampotconditions(0);
@@ -511,7 +510,7 @@ void Adapter::StructureBaseAlgorithmNew::set_model_types(
   actdis_->get_condition("PenaltyPointCouplingCondition", beampenaltycouplingconditions);
 
 
-  if (strategy != Inpar::BeamContact::bstr_none and modelevaluator == Inpar::BeamContact::bstr_old)
+  if (strategy != BeamContact::bstr_none and modelevaluator == BeamContact::bstr_old)
     modeltypes.insert(Inpar::Solid::model_beam_interaction_old);
 
   // ---------------------------------------------------------------------------
