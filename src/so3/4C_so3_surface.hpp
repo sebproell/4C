@@ -235,14 +235,11 @@ namespace Discret
         calc_struct_constrvol,
         calc_struct_volconstrstiff,
         calc_struct_constrarea,
-        calc_init_vol,
         calc_struct_areaconstrstiff,
         calc_struct_monitarea,
         prestress_update,
         prestress_writerestart,
         prestress_readrestart,
-        calc_brownian_motion,
-        calc_brownian_motion_damping,
         calc_struct_centerdisp,
         calc_struct_rotation,
         calc_undo_struct_rotation,
@@ -250,7 +247,6 @@ namespace Discret
         calc_ref_nodal_normals,
         calc_cur_nodal_normals,
         calc_struct_area_poro,
-        calc_cur_normal_at_point,
         calc_struct_robinforcestiff
       };
 
