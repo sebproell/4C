@@ -15,26 +15,6 @@ Really use the refactoring methods provided by your IDE to write clean code.
 For example: If renaming variables only takes seconds,
 you can use it as many times as needed until you find a name that makes your code easy to read and understand.
 
-For more general advice on C++ coding, see for example
-
-- this `C++ tutorial <http://www.cplusplus.com/doc/tutorial/>`_ for new developers
-- the `C++ core guidelines <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md>`_ proposed by Bjarne Stroustrup
-- the blog `Modernes C++ <https://www.modernescpp.com/index.php/der-einstieg-in-modernes-c>`_
-- recommendations on `how to choose the right data structure that fits best to your algorithm <https://github.com/gibsjose/cpp-cheat-sheet/blob/master/Data%20Structures%20and%20Algorithms.md>`_.
-- Useful books might be [Will20]_, [Bancila20]_, [Swidzinski22]_
-
-There is a lecture series published on youtube by *Robert C. Martin*, the author of the book *Clean Code: A Handbook of Agile Software Craftsmanship*, on - you will probably anticipate - clean code.
-The lecture series consists of 6 lessons and is from my point of view both entertaining and informative.
-Below I'll add the links to the videos:
-
-#. `Clean Code: Lesson 1 <https://www.youtube.com/watch?v=7EmboKQH8lM>`_
-#. `Clean Code: Lesson 2 <https://www.youtube.com/watch?v=2a_ytyt9sf8>`_
-#. `Clean Code: Lesson 3 <https://www.youtube.com/watch?v=Qjywrq2gM8o>`_
-#. `Clean Code: Lesson 4 <https://www.youtube.com/watch?v=58jGpV2Cg50>`_
-#. `Clean Code: Lesson 5 <https://www.youtube.com/watch?v=sn0aFEMVTpA>`_
-#. `Clean Code: Lesson 6 <https://www.youtube.com/watch?v=l-gF0vDhJVI>`_
-
-**Note:** For more information on the individual videos please have a look at the video description.
 
 |FOURC|-specific Design Guidelines
 ------------------------------------
