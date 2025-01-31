@@ -10,7 +10,6 @@
 #include "4C_fem_general_element.hpp"
 #include "4C_fem_general_node.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_lubrication.hpp"
 #include "4C_inpar_validparameters.hpp"
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"
@@ -20,6 +19,7 @@
 #include "4C_linalg_utils_sparse_algebra_print.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_lubrication_ele_action.hpp"
+#include "4C_lubrication_input.hpp"
 #include "4C_utils_function.hpp"
 
 #include <Teuchos_TimeMonitor.hpp>
@@ -1036,21 +1036,20 @@ inline void Lubrication::TimIntImpl::increment_time_and_step()
  *----------------------------------------------------------------------*/
 void Lubrication::TimIntImpl::evaluate_error_compared_to_analytical_sol()
 {
-  const auto calcerr =
-      Teuchos::getIntegralValue<Inpar::Lubrication::CalcError>(*params_, "CALCERROR");
+  const auto calcerr = Teuchos::getIntegralValue<Lubrication::CalcError>(*params_, "CALCERROR");
 
-  if (calcerr == Inpar::Lubrication::calcerror_no)  // do nothing (the usual case))
+  if (calcerr == Lubrication::calcerror_no)  // do nothing (the usual case))
     return;
 
   // create the parameters for the error calculation
   Teuchos::ParameterList eleparams;
   eleparams.set<Lubrication::Action>("action", Lubrication::calc_error);
   eleparams.set("total time", time_);
-  eleparams.set<Inpar::Lubrication::CalcError>("calcerrorflag", calcerr);
+  eleparams.set<Lubrication::CalcError>("calcerrorflag", calcerr);
 
   switch (calcerr)
   {
-    case Inpar::Lubrication::calcerror_byfunction:
+    case Lubrication::calcerror_byfunction:
     {
       const int errorfunctnumber = params_->get<int>("CALCERRORNO");
       if (errorfunctnumber < 1)

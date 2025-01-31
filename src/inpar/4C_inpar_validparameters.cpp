@@ -37,7 +37,6 @@
 #include "4C_inpar_IO_runtime_vtk_output_structure.hpp"
 #include "4C_inpar_IO_runtime_vtp_output_structure.hpp"
 #include "4C_inpar_levelset.hpp"
-#include "4C_inpar_lubrication.hpp"
 #include "4C_inpar_mortar.hpp"
 #include "4C_inpar_mpc_rve.hpp"
 #include "4C_inpar_particle.hpp"
@@ -66,6 +65,7 @@
 #include "4C_inpar_xfem.hpp"
 #include "4C_io_input_file_utils.hpp"
 #include "4C_io_pstream.hpp"
+#include "4C_lubrication_input.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 #include <Teuchos_any.hpp>
@@ -261,7 +261,7 @@ std::shared_ptr<const Teuchos::ParameterList> Input::valid_parameters()
   Inpar::XFEM::set_valid_parameters(*list);
   Inpar::CONSTRAINTS::set_valid_parameters(*list);
 
-  Inpar::Lubrication::set_valid_parameters(*list);
+  Lubrication::set_valid_parameters(*list);
   Inpar::ScaTra::set_valid_parameters(*list);
   Inpar::LevelSet::set_valid_parameters(*list);
   Inpar::ElCh::set_valid_parameters(*list);
