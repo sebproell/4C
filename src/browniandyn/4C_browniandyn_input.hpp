@@ -5,8 +5,8 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_INPAR_BROWNIANDYN_HPP
-#define FOUR_C_INPAR_BROWNIANDYN_HPP
+#ifndef FOUR_C_BROWNIANDYN_INPUT_HPP
+#define FOUR_C_BROWNIANDYN_INPUT_HPP
 
 #include "4C_config.hpp"
 
@@ -15,24 +15,20 @@
 FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*/
-namespace Inpar
+namespace BrownianDynamics
 {
-  namespace BrownianDynamics
+  /// the way how damping coefficient values for beams are specified
+  enum BeamDampingCoefficientSpecificationType
   {
-    /// the way how damping coefficient values for beams are specified
-    enum BeamDampingCoefficientSpecificationType
-    {
-      cylinder_geometry_approx,
-      input_file,
-      vague
-    };
+    cylinder_geometry_approx,
+    input_file,
+    vague
+  };
 
-    /// set the brownian dynamic parameters
-    void set_valid_parameters(Teuchos::ParameterList& list);
+  /// set the brownian dynamic parameters
+  void set_valid_parameters(Teuchos::ParameterList& list);
 
-  }  // namespace BrownianDynamics
-
-}  // namespace Inpar
+}  // namespace BrownianDynamics
 
 /*----------------------------------------------------------------------*/
 FOUR_C_NAMESPACE_CLOSE

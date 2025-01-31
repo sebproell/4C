@@ -8,6 +8,7 @@
 #include "4C_rigidsphere.hpp"
 
 #include "4C_beaminteraction_link_pinjointed.hpp"
+#include "4C_browniandyn_input.hpp"
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_comm_utils_factory.hpp"
 #include "4C_fem_discretization.hpp"
@@ -15,7 +16,6 @@
 #include "4C_fem_general_utils_fem_shapefunctions.hpp"
 #include "4C_fem_general_utils_integration.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_browniandyn.hpp"
 #include "4C_inpar_validparameters.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"

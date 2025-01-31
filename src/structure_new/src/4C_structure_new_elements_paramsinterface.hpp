@@ -10,8 +10,8 @@
 
 #include "4C_config.hpp"
 
+#include "4C_browniandyn_input.hpp"                     // enums
 #include "4C_fem_general_elements_paramsinterface.hpp"  // base class
-#include "4C_inpar_browniandyn.hpp"                     // enums
 #include "4C_inpar_structure.hpp"                       // enums
 #include "4C_linalg_multi_vector.hpp"
 #include "4C_solver_nonlin_nox_enum_lists.hpp"  // enums
@@ -226,7 +226,7 @@ namespace BrownianDynamics
     virtual double const& get_viscosity() const = 0;
 
     /// the way how damping coefficient values for beams are specified
-    virtual Inpar::BrownianDynamics::BeamDampingCoefficientSpecificationType
+    virtual BrownianDynamics::BeamDampingCoefficientSpecificationType
     how_beam_damping_coefficients_are_specified() const = 0;
 
     /// get prefactors for damping coefficients of beams if they are specified via input file

@@ -5,14 +5,14 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_browniandyn.hpp"
+#include "4C_browniandyn_input.hpp"
 
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
 
-void Inpar::BrownianDynamics::set_valid_parameters(Teuchos::ParameterList& list)
+void BrownianDynamics::set_valid_parameters(Teuchos::ParameterList& list)
 {
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
@@ -45,10 +45,9 @@ void Inpar::BrownianDynamics::set_valid_parameters(Teuchos::ParameterList& list)
       "In which way are damping coefficient values for beams specified?",
       tuple<std::string>(
           "cylinder_geometry_approx", "Cylinder_geometry_approx", "input_file", "Input_file"),
-      tuple<BeamDampingCoefficientSpecificationType>(
-          Inpar::BrownianDynamics::cylinder_geometry_approx,
-          Inpar::BrownianDynamics::cylinder_geometry_approx, Inpar::BrownianDynamics::input_file,
-          Inpar::BrownianDynamics::input_file),
+      tuple<BeamDampingCoefficientSpecificationType>(BrownianDynamics::cylinder_geometry_approx,
+          BrownianDynamics::cylinder_geometry_approx, BrownianDynamics::input_file,
+          BrownianDynamics::input_file),
       &browniandyn_list);
 
   // values for damping coefficients of beams if they are specified via input file

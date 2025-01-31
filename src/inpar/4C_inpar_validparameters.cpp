@@ -8,12 +8,12 @@
 #include "4C_inpar_validparameters.hpp"
 
 #include "4C_ale_input.hpp"
+#include "4C_browniandyn_input.hpp"
 #include "4C_inpar_beamcontact.hpp"
 #include "4C_inpar_beaminteraction.hpp"
 #include "4C_inpar_beampotential.hpp"
 #include "4C_inpar_binningstrategy.hpp"
 #include "4C_inpar_bio.hpp"
-#include "4C_inpar_browniandyn.hpp"
 #include "4C_inpar_cardiac_monodomain.hpp"
 #include "4C_inpar_cardiovascular0d.hpp"
 #include "4C_inpar_constraint_framework.hpp"
@@ -247,7 +247,7 @@ std::shared_ptr<const Teuchos::ParameterList> Input::valid_parameters()
   Inpar::BeamPotential::set_valid_parameters(*list);
   Inpar::BeamInteraction::set_valid_parameters(*list);
   Inpar::RveMpc::set_valid_parameters(*list);
-  Inpar::BrownianDynamics::set_valid_parameters(*list);
+  BrownianDynamics::set_valid_parameters(*list);
 
   Inpar::Plasticity::set_valid_parameters(*list);
 
