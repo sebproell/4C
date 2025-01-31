@@ -584,12 +584,6 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
     act = StructuralSurface::calc_struct_constrarea;
   else if (action == "calc_struct_areaconstrstiff")
     act = StructuralSurface::calc_struct_areaconstrstiff;
-  else if (action == "calc_init_vol")
-    act = StructuralSurface::calc_init_vol;
-  else if (action == "calc_brownian_motion")
-    act = StructuralSurface::calc_brownian_motion;
-  else if (action == "calc_brownian_motion_damping")
-    act = StructuralSurface::calc_brownian_motion_damping;
   else if (action == "calc_struct_centerdisp")
     act = StructuralSurface::calc_struct_centerdisp;
   else if (action == "calc_struct_rotation")
@@ -600,8 +594,6 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
     act = StructuralSurface::calc_struct_area;
   else if (action == "calc_ref_nodal_normals")
     act = StructuralSurface::calc_ref_nodal_normals;
-  else if (action == "calc_cur_normal_at_point")
-    act = StructuralSurface::calc_cur_normal_at_point;
   else if (action == "calc_cur_nodal_normals")
     act = StructuralSurface::calc_cur_nodal_normals;
   else if (action == "calc_struct_robinforcestiff")
@@ -938,94 +930,6 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
       elevector3[0] = volumeele;
     }
     break;
-    case calc_init_vol:
-    {
-      if (Core::Communication::my_mpi_rank(Comm) == owner())
-      {
-        // the reference volume of the RVE (including inner
-        // holes) is calculated by evaluating the following
-        // surface integral:
-        // V = 1/3*int(div(X))dV = 1/3*int(N*X)dA
-        // with X being the reference coordinates and N the
-        // normal vector of the surface element (exploiting the
-        // fact that div(X)=1.0)
-
-        // this is intended to be used in the serial case (microstructure)
-
-        // NOTE: there must not be any holes penetrating the boundary!
-
-        double V = params.get<double>("V0", 0.0);
-        double dV = 0.0;
-        const int numnode = num_node();
-        Core::LinAlg::SerialDenseMatrix x(numnode, 3);
-        material_configuration(x);
-
-        // allocate vector for shape functions and matrix for derivatives
-        Core::LinAlg::SerialDenseVector funct(numnode);
-        Core::LinAlg::SerialDenseMatrix deriv(2, numnode);
-
-        /*----------------------------------------------------------------------*
-             |               start loop over integration points                     |
-         *----------------------------------------------------------------------*/
-        const Core::FE::IntegrationPoints2D intpoints(gaussrule_);
-
-        for (int gp = 0; gp < intpoints.nquad; gp++)
-        {
-          const double e0 = intpoints.qxg[gp][0];
-          const double e1 = intpoints.qxg[gp][1];
-
-          // get shape functions and derivatives in the plane of the element
-          Core::FE::shape_function_2d(funct, e0, e1, shape());
-          Core::FE::shape_function_2d_deriv1(deriv, e0, e1, shape());
-
-          std::vector<double> normal(3);
-          double detA;
-          surface_integration(detA, normal, x, deriv);
-          const double fac = intpoints.qwgt[gp] * detA;
-
-          double temp = 0.0;
-          std::vector<double> X(3, 0.);
-
-          for (int i = 0; i < numnode; i++)
-          {
-            X[0] += funct[i] * x(i, 0);
-            X[1] += funct[i] * x(i, 1);
-            X[2] += funct[i] * x(i, 2);
-          }
-
-          for (int i = 0; i < 3; ++i)
-          {
-            temp += normal[i] * normal[i];
-          }
-
-          if (temp < 0.) FOUR_C_THROW("calculation of initial volume failed in surface element");
-          double absnorm = sqrt(temp);
-
-          for (int i = 0; i < 3; ++i)
-          {
-            normal[i] /= absnorm;
-          }
-          for (int i = 0; i < 3; ++i)
-          {
-            dV += 1 / 3.0 * fac * normal[i] * X[i];
-          }
-        }
-        params.set("V0", V + dV);
-      }
-    }
-    break;
-    // compute stochastical forces due to Brownian Motion
-    case calc_brownian_motion:
-    {
-      FOUR_C_THROW("not committed");
-    }
-    break;
-    // compute damping matrix due to Brownian Motion
-    case calc_brownian_motion_damping:
-    {
-      FOUR_C_THROW("not yet committed");
-    }
-    break;
     // compute the area (e.g. for initialization)
     case calc_struct_monitarea:
     {
@@ -1190,41 +1094,6 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
       std::vector<double> mydisp(lm.size());
       Core::FE::extract_my_values(*disp, mydisp, lm);
       build_normals_at_nodes(elevector1, mydisp, false);
-    }
-    break;
-    case calc_cur_normal_at_point:
-    {
-      std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
-          discretization.get_state("displacement");
-      if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-
-      const int numnode = num_node();
-      const int numdim = 3;
-
-      Core::LinAlg::SerialDenseMatrix x(numnode, 3);
-      spatial_configuration(x, mydisp);
-
-      const double e0 = elevector2(0);
-      const double e1 = elevector2(1);
-
-      // allocate vector for shape functions and matrix for derivatives
-      Core::LinAlg::SerialDenseVector funct(numnode);
-      Core::LinAlg::SerialDenseMatrix deriv(2, numnode);
-
-      // get shape functions and derivatives in the plane of the element
-      Core::FE::shape_function_2d(funct, e0, e1, shape());
-      Core::FE::shape_function_2d_deriv1(deriv, e0, e1, shape());
-
-      double detA;
-      std::vector<double> normal(3);
-      surface_integration(detA, normal, x, deriv);
-
-      for (int j = 0; j < numdim; ++j)
-      {
-        elevector1(j) = normal[j];
-      }
     }
     break;
 
