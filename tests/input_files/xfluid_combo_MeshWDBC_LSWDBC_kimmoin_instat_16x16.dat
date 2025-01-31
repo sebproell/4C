@@ -96,9 +96,9 @@ AZSOLVE                         GMRES
 MAT 1 MAT_fluid DYNVISCOSITY 0.0001 DENSITY 1.0 GAMMA 1.0
 MAT 2 MAT_Struct_StVenantKirchhoff YOUNG 100000000000.0 NUE 0.0 DENS 0.0
 ----------------------------------------------------------------------FUNCT1
-KIMMOIN-RHS MAT 1 ISSTAT 0 ISSTOKES 0
+FLUID_FUNCTION KIMMOIN-RHS MAT 1 ISSTAT 0 ISSTOKES 0
 ----------------------------------FUNCT2 // exact velocity/pressure solution
-KIMMOIN-UP MAT 1 ISSTAT 0
+FLUID_FUNCTION KIMMOIN-UP MAT 1 ISSTAT 0
 ----------------------------------------------------------------------FUNCT3
 SYMBOLIC_FUNCTION_OF_SPACE_TIME 1.0*((x-0.25)*(x-0.25)+(y-0.5)*(y-0.5)-0.01)
 ----------------------------------------------------------RESULT DESCRIPTION

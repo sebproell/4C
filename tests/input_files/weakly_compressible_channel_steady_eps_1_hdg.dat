@@ -44,9 +44,9 @@ SOLVER           UMFPACK
 ---------------------------------------------------------MATERIALS
 MAT 1 MAT_fluid_murnaghantait DYNVISCOSITY 1 REFDENSITY 1 REFPRESSURE 0 REFBULKMODULUS 3e1 MATPARAMETER 1 GAMMA 1
 ------------------------------------------------------------FUNCT1
-CHANNELWEAKLYCOMPRESSIBLE
+FLUID_FUNCTION CHANNELWEAKLYCOMPRESSIBLE
 ------------------------------------------------------------FUNCT2
-CORRECTIONTERMCHANNELWEAKLYCOMPRESSIBLE
+FLUID_FUNCTION CORRECTIONTERMCHANNELWEAKLYCOMPRESSIBLE
 ------------------------------------DESIGN POINT DIRICH CONDITIONS
 DPOINT 1
 // corner

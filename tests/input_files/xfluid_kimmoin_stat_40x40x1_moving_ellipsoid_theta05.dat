@@ -114,9 +114,9 @@ MAT 2 MAT_scatra DIFFUSIVITY 0.0
 //--------------------------------------------------------CLONING MATERIAL MAP
 //SRC_FIELD fluid SRC_MAT 1 TAR_FIELD scatra TAR_MAT 2
 ----------------------------------------------------------------------FUNCT1
-KIMMOIN-RHS MAT 1 ISSTAT 1 ISSTOKES 0
+FLUID_FUNCTION KIMMOIN-RHS MAT 1 ISSTAT 1 ISSTOKES 0
 ----------------------------------FUNCT2 // exact velocity/pressure solution
-KIMMOIN-UP MAT 1 ISSTAT 1
+FLUID_FUNCTION KIMMOIN-UP MAT 1 ISSTAT 1
 ----------------------------------------------------------------------FUNCT3
 SYMBOLIC_FUNCTION_OF_SPACE_TIME -1.0*(sqrt((x-0.5)*(x-0.5)+(y-0.5)*(y-0.5))-0.45)
 ----------------------------------------------------------RESULT DESCRIPTION

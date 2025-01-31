@@ -620,19 +620,6 @@ namespace Core::IO
     [[nodiscard]] auto from_parameter(const std::string& name);
 
     /**
-     * Create a special "tag" entry. A tag is essentially a `bool` parameter that is `true` if the
-     * tag is present in the input and `false` otherwise.
-     *
-     * @note Tags are always optional. If not present in the input, the value is `false`.
-     *
-     * @deprecated Use `entry<bool>` instead, to be more explicit in input files. A "tag" cannot
-     * explicitly be set to `false` in the input file, as this requires leaving out the tag.
-     *
-     * @relatedalso InputSpec
-     */
-    [[nodiscard]] InputSpec tag(std::string name, ScalarData<bool> data = {});
-
-    /**
      * A user-defined entry. This is a more flexible version of the `entry` function. It takes
      * a custom function to parse and store the value. The function must take a `ValueParser` and an
      * `InputParameterContainer` as arguments. You can also provide a custom function to print the

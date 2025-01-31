@@ -92,9 +92,9 @@ AZSOLVE                         GMRES
 MAT 1 MAT_fluid DYNVISCOSITY 1.0 DENSITY 1.0 GAMMA 1.0
 MAT 2 MAT_Struct_StVenantKirchhoff YOUNG 100000000000.0 NUE 0.0 DENS 0.0
 ----------------------------------------------------------------------FUNCT1
-BELTRAMI-RHS MAT 1 ISSTAT 1 ISSTOKES 0
+FLUID_FUNCTION BELTRAMI-RHS MAT 1 ISSTAT 1 ISSTOKES 0
 ----------------------------------FUNCT2 // exact velocity/pressure solution
-BELTRAMI-UP MAT 1 ISSTAT 1
+FLUID_FUNCTION BELTRAMI-UP MAT 1 ISSTAT 1
 ----------------------------------------------------------RESULT DESCRIPTION
 XFLUID DIS fluid NODE 17597 QUANTITY velx VALUE 1.91023949352205874e-01 TOLERANCE 5e-12
 XFLUID DIS fluid NODE 17597 QUANTITY vely VALUE 4.14161067897064361e-01 TOLERANCE 5e-12

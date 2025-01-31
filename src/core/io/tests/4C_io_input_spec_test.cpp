@@ -21,14 +21,13 @@ namespace
   TEST(InputSpecTest, Simple)
   {
     auto line = all_of({
-        tag("marker"),
         entry<int>("a", {.description = "An integer", .default_value = 1}),
         entry<double>("b", {.required = true}),
         entry<std::string>("c", {.required = false}),
         entry<bool>("d"),
     });
     InputParameterContainer container;
-    std::string stream("marker b 2.0 d true // trailing comment");
+    std::string stream("b 2.0 d true // trailing comment");
     ValueParser parser(stream);
     line.fully_parse(parser, container);
     EXPECT_EQ(container.get<int>("a"), 1);
@@ -530,7 +529,6 @@ namespace
                        // Note: the all_of entries will be pulled into the parent group.
                        all_of({
                            entry<int>("a", {.description = "An integer"}),
-                           tag("b", {.description = "A tag", .required = false}),
                            selection<int>("c", {{"c1", 1}, {"c2", 2}},
                                {.description = "Selection", .default_value = 1}),
                        }),
@@ -542,7 +540,6 @@ namespace
       line.print_as_dat(out);
       EXPECT_EQ(out.str(), R"(// g:
 //   a <int> "An integer"
-//   b <tag> (optional) "A tag"
 //   c (default: c1) (choices: c1|c2|) "Selection"
 //   d <int> (optional) (default: 42) "Another integer"
 )");

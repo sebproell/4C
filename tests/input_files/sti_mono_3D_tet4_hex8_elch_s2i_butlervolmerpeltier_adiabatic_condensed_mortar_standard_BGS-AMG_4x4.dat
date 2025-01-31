@@ -111,11 +111,11 @@ SCATRA DIS scatra NODE 600 QUANTITY flux_boundary_1_z VALUE 0.0 TOLERANCE 1.e-20
 SCATRA DIS scatra NODE 600 QUANTITY phi1 VALUE 8.47066542910742726e+00 TOLERANCE 1.e-09                // local lithium concentration at cathode-electrolyte interface (cathode side)
 SCATRA DIS scatra NODE 600 QUANTITY phi2 VALUE 3.81527589202178286e+00 TOLERANCE 1.e-09                // local electric potential at cathode-electrolyte interface (cathode side)
 SCATRA DIS thermo NODE 600 QUANTITY phi VALUE 3.00065705424520843e+02 TOLERANCE 1.e-07                 // local temperature at cathode-electrolyte interface (cathode side)
-SCATRA DIS scatra SPECIAL QUANTITY soc1 VALUE 6.44625242874985793e-01 TOLERANCE 1.e-10                 // anode state of charge
-SCATRA DIS scatra SPECIAL QUANTITY soc2 VALUE 6.45498693173858329e-01 TOLERANCE 1.e-10                 // cathode state of charge
-SCATRA DIS scatra SPECIAL QUANTITY cellvoltage VALUE 3.80342082502127798e+00 TOLERANCE 1.e-09          // cell voltage
-STI SPECIAL QUANTITY numiterlastnonlinearsolve VALUE 2.0 TOLERANCE 1.e-20                              // number of Newton-Raphson iterations during last time step
-STI SPECIAL QUANTITY numiterlastlinearsolve VALUE 3.0 TOLERANCE 1.e-20                                 // number of iterations performed by linear solver during last Newton-Raphson iteration
+SCATRA DIS scatra SPECIAL true QUANTITY soc1 VALUE 6.44625242874985793e-01 TOLERANCE 1.e-10                 // anode state of charge
+SCATRA DIS scatra SPECIAL true QUANTITY soc2 VALUE 6.45498693173858329e-01 TOLERANCE 1.e-10                 // cathode state of charge
+SCATRA DIS scatra SPECIAL true QUANTITY cellvoltage VALUE 3.80342082502127798e+00 TOLERANCE 1.e-09          // cell voltage
+STI SPECIAL true QUANTITY numiterlastnonlinearsolve VALUE 2.0 TOLERANCE 1.e-20                              // number of Newton-Raphson iterations during last time step
+STI SPECIAL true QUANTITY numiterlastlinearsolve VALUE 3.0 TOLERANCE 1.e-20                                 // number of iterations performed by linear solver during last Newton-Raphson iteration
 ------------------------------------DESIGN SURF NEUMANN CONDITIONS
 DSURF  1
 E 2 - NUMDOF 2  ONOFF 0 1 VAL 0.0 -0.000103642 FUNCT 0 5 TYPE Live

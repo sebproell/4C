@@ -63,7 +63,7 @@ COMPONENT 2 SYMBOLIC_FUNCTION_OF_SPACE_TIME 0.0
 ------------------------------------------------------------FUNCT2
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME x*x+y*y-0.20
 ------------------------------------------------------------FUNCT3
-ZALESAKSDISK
+COMBUSTION_FUNCTION ZALESAKSDISK
 //SYMBOLIC_FUNCTION_OF_SPACE_TIME x+0.005
 ------------------------------------------------------------FUNCT4
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME x

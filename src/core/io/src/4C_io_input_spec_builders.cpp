@@ -323,28 +323,6 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::emit_metadata(ryml::NodeR
 }
 
 
-Core::IO::InputSpec Core::IO::InputSpecBuilders::tag(std::string name, ScalarData<bool> data)
-{
-  Internal::sanitize_required_default(data);
-  return user_defined<bool>(
-      name, data,
-      // If we encounter the tag, we set the value to true.
-      [name](ValueParser& parser, InputParameterContainer& container)
-      {
-        parser.consume(name);
-        container.add(name, true);
-      },
-      // Print the tag as a comment.
-      [name, data](std::ostream& out, std::size_t indent)
-      {
-        out << "// " << std::string(indent, ' ') << name;
-        out << " <tag>";
-        if (!data.required.value()) out << " (optional)";
-        if (!data.description.empty()) out << " " << std::quoted(data.description);
-        out << "\n";
-      });
-}
-
 namespace
 {
   // An all_of is only used for grouping purposes and does not have a name. If it is used inside

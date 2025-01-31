@@ -83,9 +83,9 @@ MAT 2 MAT_scatra DIFFUSIVITY 0.1
 --------------------------------------------------------CLONING MATERIAL MAP
 SRC_FIELD fluid SRC_MAT 1 TAR_FIELD scatra TAR_MAT 2
 ------------------------------------------------------------FUNCT1
-BELTRAMI c1 1.0
+FLUID_FUNCTION BELTRAMI c1 1.0
 ------------------------------------------------------------FUNCT2
-BELTRAMI c1 2.0
+FLUID_FUNCTION BELTRAMI c1 2.0
 ----------------------------------------------------------------------FUNCT3
 SYMBOLIC_FUNCTION_OF_SPACE_TIME 1.0-x
 ----------------------------------------------------------RESULT DESCRIPTION

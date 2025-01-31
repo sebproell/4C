@@ -119,7 +119,7 @@ MAT 1 MAT_fluid DYNVISCOSITY 2.0 DENSITY 0.5 GAMMA 0.0
 --------------------------------------------------------CLONING MATERIAL MAP
 SRC_FIELD fluid SRC_MAT 1 TAR_FIELD scatra TAR_MAT 2
 ----------------------------------------------------------------------FUNCT1
-MOVINGLEVELSETCYLINDER ORIGIN 0.0 -1.0 0.0 RADIUS 0.3 DIRECTION 0.0 1.0 0.0 DISTANCE 2.0 MAXSPEED 2.0
+XFLUID_FUNCTION MOVINGLEVELSETCYLINDER ORIGIN 0.0 -1.0 0.0 RADIUS 0.3 DIRECTION 0.0 1.0 0.0 DISTANCE 2.0 MAXSPEED 2.0
 ----------------------------------------------------------------------FUNCT2
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME 2.0*sin((2.0*2.0/2.0)*t)
 ----------------------------------------------------------------------FUNCT3

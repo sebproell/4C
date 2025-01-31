@@ -74,11 +74,11 @@ SCATRA DIS scatra NODE 5 QUANTITY flux_boundary_1_x VALUE -3.80923943192565590e-
 SCATRA DIS scatra NODE 10 QUANTITY flux_boundary_1_x VALUE -3.80923943201850924e-07 TOLERANCE 1.e-16   // local flux at cathode-electrolyte interface (cathode side)
 SCATRA DIS scatra NODE 10 QUANTITY phi1 VALUE 1.89215872381838395e+01 TOLERANCE 1.e-08                 // local lithium concentration at cathode-electrolyte interface (cathode side)
 SCATRA DIS scatra NODE 10 QUANTITY phi2 VALUE 3.54999999851963643e+00 TOLERANCE 1.e-09                 // local electric potential at cathode-electrolyte interface (cathode side)
-SCATRA DIS scatra SPECIAL QUANTITY soc1 VALUE 3.74600932568966094e-01 TOLERANCE 1.e-10                 // anode state of charge
-SCATRA DIS scatra SPECIAL QUANTITY soc2 VALUE 2.80744526178453635e-01 TOLERANCE 1.e-10                 // cathode state of charge
-SCATRA DIS scatra SPECIAL QUANTITY cellvoltage VALUE 3.55e+00 TOLERANCE 1.e-09                         // cell voltage
-SCATRA DIS scatra SPECIAL QUANTITY numiterlastnewton VALUE 3.0 TOLERANCE 1.e-20                        // number of Newton-Raphson iterations during last time step
-SCATRA DIS scatra SPECIAL QUANTITY numstep VALUE 4.35600000000000000e+03 TOLERANCE 1.e-20              // total number of time steps
+SCATRA DIS scatra SPECIAL true QUANTITY soc1 VALUE 3.74600932568966094e-01 TOLERANCE 1.e-10                 // anode state of charge
+SCATRA DIS scatra SPECIAL true QUANTITY soc2 VALUE 2.80744526178453635e-01 TOLERANCE 1.e-10                 // cathode state of charge
+SCATRA DIS scatra SPECIAL true QUANTITY cellvoltage VALUE 3.55e+00 TOLERANCE 1.e-09                         // cell voltage
+SCATRA DIS scatra SPECIAL true QUANTITY numiterlastnewton VALUE 3.0 TOLERANCE 1.e-20                        // number of Newton-Raphson iterations during last time step
+SCATRA DIS scatra SPECIAL true QUANTITY numstep VALUE 4.35600000000000000e+03 TOLERANCE 1.e-20              // total number of time steps
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
 DLINE  1
 E 1 - NUMDOF 2  ONOFF 0 1  VAL 0.0 0.0  FUNCT 0 0

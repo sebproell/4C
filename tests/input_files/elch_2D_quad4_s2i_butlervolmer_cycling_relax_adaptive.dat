@@ -70,11 +70,11 @@ SCATRA DIS scatra NODE 5 QUANTITY phi1 VALUE  1.19999948342665230e+00 TOLERANCE 
 SCATRA DIS scatra NODE 5 QUANTITY phi2 VALUE -1.10914653085040990e-01 TOLERANCE 1.1e-10 // local electric potential at cathode-electrolyte interface (electrolyte side)
 SCATRA DIS scatra NODE 10 QUANTITY phi1 VALUE  1.90309897834278203e+01 TOLERANCE 1.9e-08 // local lithium concentration at cathode-electrolyte interface (cathode side)
 SCATRA DIS scatra NODE 10 QUANTITY phi2 VALUE  3.54587864821211829e+00 TOLERANCE 3.5e-09 // local electric potential at cathode-electrolyte interface (cathode side)
-SCATRA DIS scatra SPECIAL QUANTITY soc1 VALUE  3.74670556803217369e-01 TOLERANCE 3.7e-10 // anode state of charge
-SCATRA DIS scatra SPECIAL QUANTITY soc2 VALUE  2.80796706034292243e-01 TOLERANCE 2.8e-10 // cathode state of charge
-SCATRA DIS scatra SPECIAL QUANTITY cellvoltage VALUE  3.54587864821211829e+00 TOLERANCE 3.5e-09 // cell voltage
-SCATRA DIS scatra SPECIAL QUANTITY numiterlastnewton VALUE 3.0 TOLERANCE 1.e-20 // number of Newton-Raphson iterations during last time step
-SCATRA DIS scatra SPECIAL QUANTITY numstep VALUE  2.33400000000000000e+03 TOLERANCE 1.0e-16 // total number of time steps
+SCATRA DIS scatra SPECIAL true QUANTITY soc1 VALUE  3.74670556803217369e-01 TOLERANCE 3.7e-10 // anode state of charge
+SCATRA DIS scatra SPECIAL true QUANTITY soc2 VALUE  2.80796706034292243e-01 TOLERANCE 2.8e-10 // cathode state of charge
+SCATRA DIS scatra SPECIAL true QUANTITY cellvoltage VALUE  3.54587864821211829e+00 TOLERANCE 3.5e-09 // cell voltage
+SCATRA DIS scatra SPECIAL true QUANTITY numiterlastnewton VALUE 3.0 TOLERANCE 1.e-20 // number of Newton-Raphson iterations during last time step
+SCATRA DIS scatra SPECIAL true QUANTITY numstep VALUE  2.33400000000000000e+03 TOLERANCE 1.0e-16 // total number of time steps
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
 DLINE  1
 E 1 - NUMDOF 2  ONOFF 0 1  VAL 0.0 0.0  FUNCT 0 0
