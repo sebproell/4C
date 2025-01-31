@@ -10,6 +10,7 @@
 #include "4C_ale_input.hpp"
 #include "4C_beamcontact_input.hpp"
 #include "4C_browniandyn_input.hpp"
+#include "4C_cut_input.hpp"
 #include "4C_inpar_beaminteraction.hpp"
 #include "4C_inpar_beampotential.hpp"
 #include "4C_inpar_binningstrategy.hpp"
@@ -18,7 +19,6 @@
 #include "4C_inpar_cardiovascular0d.hpp"
 #include "4C_inpar_constraint_framework.hpp"
 #include "4C_inpar_contact.hpp"
-#include "4C_inpar_cut.hpp"
 #include "4C_inpar_ehl.hpp"
 #include "4C_inpar_elch.hpp"
 #include "4C_inpar_elemag.hpp"
@@ -257,7 +257,7 @@ std::shared_ptr<const Teuchos::ParameterList> Input::valid_parameters()
 
   Inpar::FLUID::set_valid_parameters(*list);
   Inpar::LowMach::set_valid_parameters(*list);
-  Inpar::Cut::set_valid_parameters(*list);
+  Cut::set_valid_parameters(*list);
   Inpar::XFEM::set_valid_parameters(*list);
   Inpar::CONSTRAINTS::set_valid_parameters(*list);
 

@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_cut.hpp"
+#include "4C_cut_input.hpp"
 
 #include "4C_cut_enum.hpp"
 #include "4C_fem_condition_definition.hpp"
@@ -15,7 +15,7 @@ FOUR_C_NAMESPACE_OPEN
 
 
 
-void Inpar::Cut::set_valid_parameters(Teuchos::ParameterList& list)
+void Cut::set_valid_parameters(Teuchos::ParameterList& list)
 {
   using namespace FourC::Cut;
   using Teuchos::setStringToIntegralParameter;

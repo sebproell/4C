@@ -11,8 +11,8 @@
 #include "4C_config.hpp"
 
 #include "4C_cut_enum.hpp"
+#include "4C_cut_input.hpp"
 #include "4C_fluid_ele_parameter_std.hpp"
-#include "4C_inpar_cut.hpp"
 #include "4C_inpar_xfem.hpp"
 
 FOUR_C_NAMESPACE_OPEN

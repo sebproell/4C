@@ -1359,7 +1359,7 @@ void Cut::Output::gmsh_element_cut_test(
     file << "     Cut::VolumeCell * vc = &**i;"
          << "\n";
     file << "     "
-            "vc->direct_divergence_gauss_rule(vc->parent_element(),mesh,true,Inpar::Cut::"
+            "vc->direct_divergence_gauss_rule(vc->parent_element(),mesh,true,Cut::"
             "BCellGaussPts_"
             "Tessellation);"
          << "\n";
