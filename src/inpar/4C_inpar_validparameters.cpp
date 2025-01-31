@@ -7,7 +7,7 @@
 
 #include "4C_inpar_validparameters.hpp"
 
-#include "4C_inpar_ale.hpp"
+#include "4C_ale_input.hpp"
 #include "4C_inpar_beamcontact.hpp"
 #include "4C_inpar_beaminteraction.hpp"
 #include "4C_inpar_beampotential.hpp"
@@ -278,7 +278,7 @@ std::shared_ptr<const Teuchos::ParameterList> Input::valid_parameters()
   Inpar::EHL::set_valid_parameters(*list);
   Inpar::SSI::set_valid_parameters(*list);
   Inpar::SSTI::set_valid_parameters(*list);
-  Inpar::ALE::set_valid_parameters(*list);
+  ALE::set_valid_parameters(*list);
   Inpar::FSI::set_valid_parameters(*list);
 
   Inpar::ArtDyn::set_valid_parameters(*list);

@@ -13,10 +13,10 @@
 #include "4C_adapter_ale_fsi_msht.hpp"
 #include "4C_adapter_ale_xffsi.hpp"
 #include "4C_ale.hpp"
+#include "4C_ale_input.hpp"
 #include "4C_fem_condition_periodic.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_ale.hpp"
 #include "4C_inpar_fpsi.hpp"
 #include "4C_inpar_fsi.hpp"
 #include "4C_io.hpp"
@@ -117,23 +117,23 @@ void Adapter::AleBaseAlgorithm::setup_ale(
   }
 
   // create the ALE time integrator
-  auto aletype = Teuchos::getIntegralValue<Inpar::ALE::AleDynamic>(*adyn, "ALE_TYPE");
+  auto aletype = Teuchos::getIntegralValue<ALE::AleDynamic>(*adyn, "ALE_TYPE");
   std::shared_ptr<ALE::Ale> ale = nullptr;
   switch (aletype)
   {
     // catch all nonlinear cases
-    case Inpar::ALE::solid:
-    case Inpar::ALE::laplace_spatial:
-    case Inpar::ALE::springs_spatial:
+    case ALE::solid:
+    case ALE::laplace_spatial:
+    case ALE::springs_spatial:
     {
       ale = std::make_shared<ALE::Ale>(actdis, solver, adyn, output);
 
       break;
     }
     // catch and linear cases
-    case Inpar::ALE::solid_linear:
-    case Inpar::ALE::laplace_material:
-    case Inpar::ALE::springs_material:
+    case ALE::solid_linear:
+    case ALE::laplace_material:
+    case ALE::springs_material:
     {
       ale = std::make_shared<ALE::AleLinear>(actdis, solver, adyn, output);
 

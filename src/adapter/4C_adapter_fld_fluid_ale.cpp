@@ -8,13 +8,13 @@
 #include "4C_adapter_fld_fluid_ale.hpp"
 
 #include "4C_adapter_ale_fluid.hpp"
+#include "4C_ale_input.hpp"
 #include "4C_coupling_adapter.hpp"
 #include "4C_coupling_adapter_mortar.hpp"
 #include "4C_coupling_adapter_volmortar.hpp"
 #include "4C_fluid_utils_mapextractor.hpp"
 #include "4C_fsi_dirichletneumann_volcoupl.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_ale.hpp"
 #include "4C_inpar_fsi.hpp"
 #include "4C_inpar_validparameters.hpp"
 #include "4C_io.hpp"
@@ -106,9 +106,8 @@ Adapter::FluidAle::FluidAle(const Teuchos::ParameterList& prbdyn, std::string co
   }
 
   // Apply initial ALE mesh displacement
-  if (Teuchos::getIntegralValue<Inpar::ALE::InitialDisp>(
-          Global::Problem::instance()->ale_dynamic_params(), "INITIALDISP") !=
-      Inpar::ALE::initdisp_zero_disp)
+  if (Teuchos::getIntegralValue<ALE::InitialDisp>(Global::Problem::instance()->ale_dynamic_params(),
+          "INITIALDISP") != ALE::initdisp_zero_disp)
   {
     fluid_field()->set_mesh_map(coupfa_->master_dof_map(), nds_master);
     std::shared_ptr<Core::LinAlg::Vector<double>> initfluiddisp =
