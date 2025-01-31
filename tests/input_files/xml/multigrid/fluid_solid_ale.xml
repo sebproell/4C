@@ -256,6 +256,7 @@
     </ParameterList>
     <ParameterList name="myBlockDirectSolver">
       <Parameter name="factory" type="string" value="BlockedDirectSolver"/>
+      <Parameter name="type" type="string" value="Umfpack"/>
     </ParameterList>
   </ParameterList>
   <!-- end Factories -->
