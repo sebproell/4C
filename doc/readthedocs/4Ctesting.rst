@@ -6,72 +6,6 @@ Testing
 Clean code goes hand in hand with code testing, that is why in |FOURC| we set great value upon the latter.
 This page is concerned with everything related to testing in |FOURC|.
 
-.. _firstprinciples:
-
-F.I.R.S.T. principles for writing clean tests
----------------------------------------------
-
-The F.I.R.S.T. principles serve as a general guideline for writing framework tests or unit tests in |FOURC|.
-Being an acronym F.I.R.S.T. stands for the following principles:
-
-Fast
-~~~~~
-
-Unit testing benefits from extremely fast testing times.
-Write meaningful framework tests while reducing the run time and number of processors of a single test
-to keep overall testing time and resources in a reasonable scale.
-
-- developers should run tests frequently
-- slow tests also slow down code development
-
-
-Independent/Isolated
-~~~~~~~~~~~~~~~~~~~~~~
-
-In |FOURC| there are some framework tests concerning mesh generation, pre-processing, or post-processing that may depend on a specific order of execution,
-so whenever possible:
-
-- tests should not depend on each other
-- tests should pass independently of each other
-
-
-Repeatable
-~~~~~~~~~~~~
-
-- tests produce the same result each time
-- tests should be repeatable in any configuration/environment
-
-|FOURC| is developed by contributors distributed among several institutes working on different configurations
-(including cluster configurations)
-
-Self-Validating
-~~~~~~~~~~~~~~~~
-
-Manually checking results is time consuming and prone to errors.
-Anyway, it is inevitable to have an automated test result comparison within the pipeline.
-
-- no manual interpretation of results
-- a test fails or passes
-
-
-
-Thorough
-~~~~~~~~~~~~
-
-- cover every use case scenario including corner/edge/boundary values
-- test for illegal arguments or bad inputs, exceptions and errors
-
-.. Note::
-
-    following test driven development (TDD) (refer to Robert C. Martin [Martin08]_ ) this can also be interpreted as:
-
-    **Timely**
-
-        - following TDD write tests just before writing code that makes them pass
-        - helps designing code to be testable
-
-    However, test driven development is discussed controversial in the community!
-
 Overview on testing mechanisms
 ------------------------------
 
@@ -112,48 +46,6 @@ The ``*.dat``-file of a CI test (residing in ``<4C_sourcedir>/tests/input_files`
 In general a "clean" format of the file is demanded (alignment of parameters/values).
 
 Accompanying ``*.xml``-files will be formatted by ``pre-commit``. Check ``.pre-commit-config.yaml`` for details.
-
-
-.. _unittesting:
-
-Unit testing: good practice in software development
----------------------------------------------------
-
-Unit tests isolate and exercise specific units of source code, e.g., functions or class methods, independently from other parts.
-
-There are several advantages of unit tests, as for example:
-
-- find problems early in development cycle
-- reduce uncertainty in code testing (bottom-up testing approach)
-- easy refactoring of code
-- integration/framework testing becomes easier
-- extremely fast testing times
-
-However note that:
-
-- framework, performance or system errors are not caught (unit testing always in addition to other testing mechanisms)
-- problems arise when testing methods interact with external classes/applications
-
-Good practice of writing unit tests
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-What to test
-
-- functions/methods
-- every public member of a class
-- that the class can be cast to any interface or base class it inherits from
-
-Good practices
-
-- unit tests should test one method only
-- unit tests are not coupled together
-- unit tests should use realistic but simple data
-- name test suites after the class it is testing
-- choose descriptive test names inside test suite
-- do not use static members in a test class
-
-Also refer to the :ref:`F.I.R.S.T. principles for writing clean tests <firstprinciples>`.
-
 
 Executing |FOURC| unit tests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
