@@ -6,7 +6,7 @@ Coding Guidelines
 General Guidelines regarding Coding in C++
 --------------------------------------------
 
-Current C++ standard in |FOURC| is C++17. Hence, use of C++17 features is encouraged.
+Current C++ standard in |FOURC| is C++20. Hence, use of C++20 features is encouraged.
 Avoid define flags as much as possible, because they complicate testing and, thus, lead to untested code.
 Avoid and actively resolve header-in-header inclusion to speed up compilation time. Use forward declarations instead.
 Do not use ``using ... / typedef`` statements at unscoped level.
