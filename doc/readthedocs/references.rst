@@ -5,12 +5,6 @@ References
 
 .. [Wall99] W.A. Wall, PhD thesis, 1999 (available under ``/lnm/literature/1999/``)
 
-.. [Will20] Will, Torsten T. (2020): C++: Das umfassende Handbuch zu Modern C++ (in German). Rheinwerk Computing, 2nd. edition.
-
-.. [Bancila20] Bancila, Marius (2020): Modern C++ Programming Cookbook: Master C++ core language and standard library features. Packt Publishing, 2. Edition.
-
-.. [Swidzinski22] Swidzinski, Rafal (2022): Modern CMake for C++: Discover a better approach to building, testing and packaging your software. Packt Publishing.
-
 .. [Reiser94] Reiser et al., 1994
 
 .. [Martin08] Robert C. Martin (2008):  Clean code: A Handbook of Agile Software Craftsmanship. Prentice Hall, p. 122f

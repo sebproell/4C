@@ -47,7 +47,7 @@ Use coverage to increase the quality of tests:
 #. To identify untested code.
 
 It is highly recommended to check and study the coverage report regularly.
-Where coverage is missing, design a :ref:`suitable <firstprinciples>` test.
+Where coverage is missing, design a suitable test.
 But try to avoid tests that just execute lines of code.
 
 .. note::
@@ -58,10 +58,10 @@ But try to avoid tests that just execute lines of code.
 
 .. note::
 
-    Ideally, coverage is determined with :ref:`unit tests <unittesting>`,
+    Ideally, coverage is determined with unit tests,
     because unit tests make it particularly easy to relate test execution with executed lines of code.
 
-2. Coverage should increase over time
+1. Coverage should increase over time
 """""""""""""""""""""""""""""""""""""""""
 
 An ideal code project has 100% coverage, where all existing lines of code are tested with suitable tests.
