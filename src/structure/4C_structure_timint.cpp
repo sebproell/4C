@@ -103,8 +103,6 @@ Solid::TimInt::TimInt(const Teuchos::ParameterList& timeparams,
       writestrain_(Teuchos::getIntegralValue<Inpar::Solid::StrainType>(ioparams, "STRUCT_STRAIN")),
       writeplstrain_(
           Teuchos::getIntegralValue<Inpar::Solid::StrainType>(ioparams, "STRUCT_PLASTIC_STRAIN")),
-      writeoptquantity_(Teuchos::getIntegralValue<Inpar::Solid::OptQuantityType>(
-          ioparams, "STRUCT_OPTIONAL_QUANTITY")),
       writeenergyevery_(sdynparams.get<int>("RESEVERYERGY")),
       writesurfactant_(ioparams.get<bool>("STRUCT_SURFACTANT")),
       writerotation_(ioparams.get<bool>("OUTPUT_ROT")),
@@ -1885,7 +1883,6 @@ void Solid::TimInt::prepare_output(bool force_prepare_timestep)
 {
   determine_stress_strain();
   determine_energy();
-  determine_optional_quantity();
 }
 
 /*----------------------------------------------------------------------*
@@ -2011,13 +2008,6 @@ void Solid::TimInt::output_step(const bool forced_writerestart)
   if (writeenergyevery_ and (step_ % writeenergyevery_ == 0))
   {
     output_energy();
-  }
-
-  // output optional quantity
-  if (writeresultsevery_ and (writeoptquantity_ != Inpar::Solid::optquantity_none) and
-      (step_ % writeresultsevery_ == 0))
-  {
-    output_opt_quantity(datawritten);
   }
 
   // output active set, energies and momentum for contact
@@ -2386,42 +2376,6 @@ void Solid::TimInt::determine_energy()
 }
 
 /*----------------------------------------------------------------------*/
-/* Calculation of an optional quantity */
-void Solid::TimInt::determine_optional_quantity()
-{
-  if (writeresultsevery_ and (writeoptquantity_ != Inpar::Solid::optquantity_none) and
-      (stepn_ % writeresultsevery_ == 0))
-  {
-    //-------------------------------
-    // create the parameters for the discretization
-    Teuchos::ParameterList p;
-
-    // action for elements
-    if (writeoptquantity_ == Inpar::Solid::optquantity_membranethickness)
-      p.set("action", "calc_struct_thickness");
-    else
-      FOUR_C_THROW("requested optional quantity type not supported");
-
-    // other parameters that might be needed by the elements
-    p.set("total time", timen_);
-    p.set("delta time", (*dt_)[0]);
-
-    optquantitydata_ = std::make_shared<std::vector<char>>();
-    p.set("optquantity", optquantitydata_);
-    p.set<Inpar::Solid::OptQuantityType>("iooptquantity", writeoptquantity_);
-
-    // set vector values needed by elements
-    discret_->clear_state();
-    // extended set_state(0,...) in case of multiple dofsets (e.g. TSI)
-    discret_->set_state(0, "residual displacement", zeros_);
-    discret_->set_state(0, "displacement", disn_);
-
-    discret_->evaluate(p, nullptr, nullptr, nullptr, nullptr, nullptr);
-    discret_->clear_state();
-  }
-}
-
-/*----------------------------------------------------------------------*/
 /* stress calculation and output */
 void Solid::TimInt::output_stress_strain(bool& datawritten)
 {
@@ -2537,32 +2491,6 @@ void Solid::TimInt::output_energy()
     (*energyfile_) << " " << std::setw(9) << step_ << std::scientific << std::setprecision(16)
                    << " " << (*time_)[0] << " " << totergy << " " << kinergy_ << " " << intergy_
                    << " " << extergy_ << std::endl;
-  }
-}
-
-/*----------------------------------------------------------------------*/
-/* stress calculation and output */
-void Solid::TimInt::output_opt_quantity(bool& datawritten)
-{
-  // Make new step
-  if (not datawritten)
-  {
-    output_->new_step(step_, (*time_)[0]);
-  }
-  datawritten = true;
-
-  // write optional quantity
-  if (writeoptquantity_ != Inpar::Solid::optquantity_none)
-  {
-    std::string optquantitytext = "";
-    if (writeoptquantity_ == Inpar::Solid::optquantity_membranethickness)
-      optquantitytext = "gauss_membrane_thickness";
-    else
-      FOUR_C_THROW("requested optional quantity type not supported");
-
-    output_->write_vector(optquantitytext, *optquantitydata_, *(discret_->element_row_map()));
-    // we don't need this anymore
-    optquantitydata_ = nullptr;
   }
 }
 

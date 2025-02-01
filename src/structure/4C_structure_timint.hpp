@@ -382,9 +382,6 @@ namespace Solid
     //! Calculate kinetic, internal and external energy
     virtual void determine_energy();
 
-    //! Calculate an optional quantity
-    void determine_optional_quantity();
-
     /// create result test for encapsulated structure algorithm
     std::shared_ptr<Core::Utils::ResultTest> create_field_test() override;
 
@@ -455,11 +452,6 @@ namespace Solid
 
     //! Energy output
     void output_energy();
-
-    //! Optional quantity output
-    void output_opt_quantity(bool& datawritten  //!< (in/out) read and append if
-                                                //!< it was written at this time step
-    );
 
     //! Active set, energy and momentum output for contact
     void output_contact();
@@ -1063,11 +1055,10 @@ namespace Solid
     Inpar::Solid::StressType writecouplstress_;  //!< output type of coupling stress
     Inpar::Solid::StrainType writestrain_;       //!< strain output type
     Inpar::Solid::StrainType writeplstrain_;     //!< plastic strain output type
-    Inpar::Solid::OptQuantityType writeoptquantity_;  //!< stress output type
-    int writeenergyevery_;                            //!< write system energy every given step
-    bool writesurfactant_;                            //!< write surfactant output
-    bool writerotation_;                              //!< write strutural rotation tensor output
-    std::shared_ptr<std::ofstream> energyfile_;       //!< outputfile for energy
+    int writeenergyevery_;                       //!< write system energy every given step
+    bool writesurfactant_;                       //!< write surfactant output
+    bool writerotation_;                         //!< write strutural rotation tensor output
+    std::shared_ptr<std::ofstream> energyfile_;  //!< outputfile for energy
 
     std::shared_ptr<std::vector<char>> stressdata_;  //!< container for element GP stresses
     std::shared_ptr<std::vector<char>>
@@ -1075,11 +1066,9 @@ namespace Solid
     std::shared_ptr<std::vector<char>> straindata_;  //!< container for element GP strains
     std::shared_ptr<std::vector<char>> plstraindata_;  //!< container for element GP plastic strains
     std::shared_ptr<std::vector<char>> rotdata_;       //!< container for element rotation tensor
-    std::shared_ptr<std::vector<char>>
-        optquantitydata_;  //!< container for element GP optional quantities
-    double kinergy_;       //!< kinetic energy
-    double intergy_;       //!< internal energy
-    double extergy_;       //!< external energy
+    double kinergy_;                                   //!< kinetic energy
+    double intergy_;                                   //!< internal energy
+    double extergy_;                                   //!< external energy
     //@}
 
     //! @name Damping

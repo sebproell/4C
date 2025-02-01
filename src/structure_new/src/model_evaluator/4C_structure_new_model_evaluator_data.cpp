@@ -584,7 +584,7 @@ const std::vector<char>& Solid::ModelEvaluator::Data::coupling_stress_data() con
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-std::shared_ptr<std::vector<char>>& Solid::ModelEvaluator::Data::opt_quantity_data_ptr()
+std::shared_ptr<std::vector<char>> Solid::ModelEvaluator::Data::opt_quantity_data_ptr()
 {
   check_init_setup();
   return optquantitydata_ptr_;
