@@ -185,7 +185,7 @@ namespace Solid
       std::shared_ptr<std::vector<char>>& coupling_stress_data_ptr() override;
 
       //! mutable access to the optional quantity data vector
-      std::shared_ptr<std::vector<char>>& opt_quantity_data_ptr() override;
+      std::shared_ptr<std::vector<char>> opt_quantity_data_ptr() override;
 
       //! get the current stress type [derived]
       [[nodiscard]] enum Inpar::Solid::StressType get_stress_output_type() const override;

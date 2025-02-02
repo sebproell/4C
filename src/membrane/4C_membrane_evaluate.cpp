@@ -115,8 +115,6 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
       act = Core::Elements::struct_calc_reset_istep;
     else if (action == "calc_struct_stress")
       act = Core::Elements::struct_calc_stress;
-    else if (action == "calc_struct_thickness")
-      act = Core::Elements::struct_calc_thickness;
     else if (action == "calc_struct_energy")
       act = Core::Elements::struct_calc_energy;
     else if (action == "postprocess_thickness")
@@ -281,12 +279,7 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
       // nothing to do for ghost elements
       if (Core::Communication::my_mpi_rank(discretization.get_comm()) == owner())
       {
-        std::shared_ptr<std::vector<char>> thickdata = nullptr;
-
-        if (is_params_interface())  // new structural time integration
-          thickdata = str_params_interface().opt_quantity_data_ptr();
-        else  // old structural time integration
-          thickdata = params.get<std::shared_ptr<std::vector<char>>>("optquantity", nullptr);
+        auto thickdata = str_params_interface().opt_quantity_data_ptr();
 
         if (thickdata == nullptr) FOUR_C_THROW("Cannot get 'thickness' data");
 

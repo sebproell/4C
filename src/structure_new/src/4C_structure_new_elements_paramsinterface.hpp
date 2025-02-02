@@ -157,7 +157,7 @@ namespace Solid
 
       virtual std::shared_ptr<std::vector<char>>& coupling_stress_data_ptr() = 0;
 
-      virtual std::shared_ptr<std::vector<char>>& opt_quantity_data_ptr() = 0;
+      virtual std::shared_ptr<std::vector<char>> opt_quantity_data_ptr() = 0;
 
       //! get the current stress type
       virtual enum Inpar::Solid::StressType get_stress_output_type() const = 0;
