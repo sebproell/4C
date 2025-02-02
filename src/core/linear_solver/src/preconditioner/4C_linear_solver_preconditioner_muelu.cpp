@@ -72,7 +72,7 @@ void Core::LinearSolver::MueLuPreconditioner::setup(bool create, Epetra_Operator
       pmatrix_ = Xpetra::MatrixFactory<SC, LO, GO, NO>::BuildCopy(
           Teuchos::make_rcp<Xpetra::CrsMatrixWrap<SC, LO, GO, NO>>(mueluA));
 
-      Teuchos::ParameterList& inverseList = muelulist_.sublist("MueLu Parameters");
+      const Teuchos::ParameterList& inverseList = muelulist_.sublist("MueLu Parameters");
 
       auto xmlFileName = inverseList.get<std::string>("MUELU_XML_FILE");
 
@@ -167,7 +167,7 @@ void Core::LinearSolver::MueLuPreconditioner::setup(bool create, Epetra_Operator
       for (int block = 0; block < A->rows(); block++)
       {
         const std::string inverse = "Inverse" + std::to_string(block + 1);
-        Teuchos::ParameterList& inverse_list =
+        const Teuchos::ParameterList& inverse_list =
             muelulist_.sublist(inverse).sublist("MueLu Parameters");
 
         Teuchos::RCP<Xpetra::MultiVector<SC, LO, GO, NO>> nullspace =

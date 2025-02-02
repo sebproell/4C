@@ -162,27 +162,18 @@ void Core::LinearSolver::Parameters::fix_null_space(std::string field, const Epe
 //----------------------------------------------------------------------------------
 Teuchos::RCP<Xpetra::MultiVector<Scalar, LocalOrdinal, GlobalOrdinal, Node>>
 Core::LinearSolver::Parameters::extract_nullspace_from_parameterlist(
-    const Xpetra::Map<LocalOrdinal, GlobalOrdinal, Node>& row_map, Teuchos::ParameterList& list)
+    const Xpetra::Map<LocalOrdinal, GlobalOrdinal, Node>& row_map,
+    const Teuchos::ParameterList& list)
 {
   if (!list.isParameter("null space: dimension"))
-    FOUR_C_THROW(
-        "Core::LinearSolver::Parameters::extract_nullspace_from_parameterlist: Multigrid "
-        "parameter "
-        "'null space: dimension' missing  in solver parameter list.");
+    FOUR_C_THROW("Multigrid parameter 'null space: dimension' missing  in solver parameter list.");
 
   const int nullspace_dimension = list.get<int>("null space: dimension");
   if (nullspace_dimension < 1)
-    FOUR_C_THROW(
-        "Core::LinearSolver::Parameters::extract_nullspace_from_parameterlist: Multigrid "
-        "parameter "
-        "'null space: dimension' wrong. It has to be > 0.");
+    FOUR_C_THROW("Multigrid parameter 'null space: dimension' wrong. It has to be > 0.");
 
-  std::shared_ptr<Core::LinAlg::MultiVector<double>> nullspace_data =
-      list.get<std::shared_ptr<Core::LinAlg::MultiVector<double>>>("nullspace", nullptr);
-  if (!nullspace_data)
-    FOUR_C_THROW(
-        "Core::LinearSolver::Parameters::extract_nullspace_from_parameterlist: Nullspace data is "
-        "null.");
+  auto nullspace_data = list.get<std::shared_ptr<Core::LinAlg::MultiVector<double>>>("nullspace");
+  if (!nullspace_data) FOUR_C_THROW("Nullspace data is null.");
 
   Teuchos::RCP<Xpetra::MultiVector<Scalar, LocalOrdinal, GlobalOrdinal, Node>> nullspace =
       Teuchos::make_rcp<Xpetra::EpetraMultiVectorT<GlobalOrdinal, Node>>(
