@@ -56,7 +56,7 @@ namespace Core::LinearSolver
      *
      * \pre The input parameter list needs to contain these entries:
      *   - "null space: dimension" (type: \c int )
-     *   - "nullspace" (type: \c RCP<Core::LinAlg::MultiVector<double>> )
+     *   - "nullspace" (type: \c std::shared_ptr<Core::LinAlg::MultiVector<double>> )
      *
      * @param[in] row_map Xpetra-style map to be used to create the nullspace vector
      * @param[in] list Parameter list, where 4C has stored the nullspace data as
