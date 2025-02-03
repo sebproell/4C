@@ -10,9 +10,9 @@
 
 #include "4C_config.hpp"
 
+#include "4C_browniandyn_input.hpp"        // enums
 #include "4C_contact_paramsinterface.hpp"  // base class of the ContactData class
 #include "4C_fem_discretization.hpp"
-#include "4C_inpar_browniandyn.hpp"                       // enums
 #include "4C_structure_new_elements_paramsinterface.hpp"  // base class of the Data class
 #include "4C_structure_new_enum_lists.hpp"
 #include "4C_structure_new_gauss_point_data_output_manager.hpp"
@@ -1416,7 +1416,7 @@ namespace Solid
       };
 
       /// the way how damping coefficient values for beams are specified
-      [[nodiscard]] Inpar::BrownianDynamics::BeamDampingCoefficientSpecificationType
+      [[nodiscard]] BrownianDynamics::BeamDampingCoefficientSpecificationType
       how_beam_damping_coefficients_are_specified() const override
       {
         check_init_setup();
@@ -1478,8 +1478,7 @@ namespace Solid
       double timeintconstrandnumb_;
 
       /// the way how damping coefficient values for beams are specified
-      Inpar::BrownianDynamics::BeamDampingCoefficientSpecificationType
-          beam_damping_coeff_specified_via_;
+      BrownianDynamics::BeamDampingCoefficientSpecificationType beam_damping_coeff_specified_via_;
 
       /// prefactors for damping coefficients of beams if they are specified via input file
       /// (per unit length, NOT yet multiplied by viscosity)

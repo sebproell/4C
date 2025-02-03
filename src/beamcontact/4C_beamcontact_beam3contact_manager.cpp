@@ -12,6 +12,7 @@
 #include "4C_beam3_kirchhoff.hpp"
 #include "4C_beam3_reissner.hpp"
 #include "4C_beamcontact_beam3contact_octtree.hpp"
+#include "4C_beamcontact_input.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_defines.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_utils.hpp"
 #include "4C_comm_mpi_utils.hpp"
@@ -19,7 +20,6 @@
 #include "4C_contact_node.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_beamcontact.hpp"
 #include "4C_inpar_beampotential.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_io.hpp"
@@ -130,8 +130,8 @@ CONTACT::Beam3cmanager::Beam3cmanager(Core::FE::Discretization& discret, double 
     FOUR_C_THROW("Choose a positive value for the searchbox extrusion factor BEAMS_EXTVAL!");
 
   // initialize octtree for contact search
-  if (Teuchos::getIntegralValue<Inpar::BeamContact::OctreeType>(sbeamcontact_, "BEAMS_OCTREE") !=
-      Inpar::BeamContact::boct_none)
+  if (Teuchos::getIntegralValue<BeamContact::OctreeType>(sbeamcontact_, "BEAMS_OCTREE") !=
+      BeamContact::boct_none)
   {
     if (!Core::Communication::my_mpi_rank(pdiscret_.get_comm()))
       std::cout << "BTB-CO penalty         = " << currentpp_ << std::endl;
@@ -156,57 +156,56 @@ CONTACT::Beam3cmanager::Beam3cmanager(Core::FE::Discretization& discret, double 
 
   if (!Core::Communication::my_mpi_rank(pdiscret_.get_comm()))
   {
-    if (Teuchos::getIntegralValue<Inpar::BeamContact::Strategy>(sbeamcontact_, "BEAMS_STRATEGY") ==
-        Inpar::BeamContact::bstr_penalty)
+    if (Teuchos::getIntegralValue<BeamContact::Strategy>(sbeamcontact_, "BEAMS_STRATEGY") ==
+        BeamContact::bstr_penalty)
       std::cout << "Strategy                 Penalty" << std::endl;
-    else if (Teuchos::getIntegralValue<Inpar::BeamContact::Strategy>(
-                 sbeamcontact_, "BEAMS_STRATEGY") == Inpar::BeamContact::bstr_gmshonly)
+    else if (Teuchos::getIntegralValue<BeamContact::Strategy>(sbeamcontact_, "BEAMS_STRATEGY") ==
+             BeamContact::bstr_gmshonly)
       std::cout << "Strategy                 Gmsh Only" << std::endl;
     else
       FOUR_C_THROW("Unknown strategy for beam contact!");
 
-    switch (Teuchos::getIntegralValue<Inpar::BeamContact::PenaltyLaw>(
-        sbeamcontact_, "BEAMS_PENALTYLAW"))
+    switch (Teuchos::getIntegralValue<BeamContact::PenaltyLaw>(sbeamcontact_, "BEAMS_PENALTYLAW"))
     {
-      case Inpar::BeamContact::pl_lp:
+      case BeamContact::pl_lp:
       {
         std::cout << "Regularization Type      Linear penalty law!" << std::endl;
         break;
       }
-      case Inpar::BeamContact::pl_qp:
+      case BeamContact::pl_qp:
       {
         std::cout << "Regularization Type      Quadratic penalty law!" << std::endl;
         break;
       }
-      case Inpar::BeamContact::pl_lnqp:
+      case BeamContact::pl_lnqp:
       {
         std::cout << "Regularization Type      Linear penalty law with quadratic regularization "
                      "for negative gaps!"
                   << std::endl;
         break;
       }
-      case Inpar::BeamContact::pl_lpqp:
+      case BeamContact::pl_lpqp:
       {
         std::cout << "Regularization Type      Linear penalty law with quadratic regularization "
                      "for positive gaps!"
                   << std::endl;
         break;
       }
-      case Inpar::BeamContact::pl_lpcp:
+      case BeamContact::pl_lpcp:
       {
         std::cout << "Regularization Type      Linear penalty law with cubic regularization for "
                      "positive gaps!"
                   << std::endl;
         break;
       }
-      case Inpar::BeamContact::pl_lpdqp:
+      case BeamContact::pl_lpdqp:
       {
         std::cout << "Regularization Type      Linear penalty law with double quadratic "
                      "regularization for positive gaps!"
                   << std::endl;
         break;
       }
-      case Inpar::BeamContact::pl_lpep:
+      case BeamContact::pl_lpep:
       {
         std::cout << "Regularization Type      Linear penalty law with exponential regularization "
                      "for positive gaps!"
@@ -215,8 +214,8 @@ CONTACT::Beam3cmanager::Beam3cmanager(Core::FE::Discretization& discret, double 
       }
     }
 
-    if (Teuchos::getIntegralValue<Inpar::BeamContact::PenaltyLaw>(
-            sbeamcontact_, "BEAMS_PENALTYLAW") != Inpar::BeamContact::pl_lp)
+    if (Teuchos::getIntegralValue<BeamContact::PenaltyLaw>(sbeamcontact_, "BEAMS_PENALTYLAW") !=
+        BeamContact::pl_lp)
     {
       std::cout << "Regularization Params    BEAMS_PENREGPARAM_G0 = "
                 << sbeamcontact_.get<double>("BEAMS_PENREGPARAM_G0", -1.0)
@@ -228,8 +227,8 @@ CONTACT::Beam3cmanager::Beam3cmanager(Core::FE::Discretization& discret, double 
                 << sbeamcontact_.get<double>("BEAMS_GAPSHIFTPARAM", 0.0) << std::endl;
     }
 
-    if (Teuchos::getIntegralValue<Inpar::BeamContact::Damping>(sbeamcontact_, "BEAMS_DAMPING") ==
-        Inpar::BeamContact::bd_no)
+    if (Teuchos::getIntegralValue<BeamContact::Damping>(sbeamcontact_, "BEAMS_DAMPING") ==
+        BeamContact::bd_no)
       std::cout << "Damping                  No Contact Damping Force Applied!" << std::endl;
     else
     {
@@ -346,8 +345,8 @@ CONTACT::Beam3cmanager::Beam3cmanager(Core::FE::Discretization& discret, double 
     searchradiuspot_ = sbeampotential_.get<double>("CUTOFFRADIUS", -1.0);
 
     // initialize octtree for search of potential-based interaction pairs
-    if (Teuchos::getIntegralValue<Inpar::BeamContact::OctreeType>(
-            sbeampotential_, "BEAMPOT_OCTREE") != Inpar::BeamContact::boct_none)
+    if (Teuchos::getIntegralValue<BeamContact::OctreeType>(sbeampotential_, "BEAMPOT_OCTREE") !=
+        BeamContact::boct_none)
     {
       if (searchradiuspot_ <= 0)
         FOUR_C_THROW(
@@ -409,8 +408,8 @@ void CONTACT::Beam3cmanager::evaluate(Core::LinAlg::SparseMatrix& stiffmatrix,
     Teuchos::ParameterList timeintparams, bool newsti, double time)
 {
   // get out of here if only interested in gmsh output
-  if (Teuchos::getIntegralValue<Inpar::BeamContact::Strategy>(sbeamcontact_, "BEAMS_STRATEGY") ==
-      Inpar::BeamContact::bstr_gmshonly)
+  if (Teuchos::getIntegralValue<BeamContact::Strategy>(sbeamcontact_, "BEAMS_STRATEGY") ==
+      BeamContact::bstr_gmshonly)
     return;
 
   // set time
@@ -1167,8 +1166,8 @@ void CONTACT::Beam3cmanager::set_state(std::map<int, Core::LinAlg::Matrix<3, 1>>
   }
   // Update also the interpolated tangents if the tangentsmoothing is activated for Reissner beams
   auto smoothing =
-      Teuchos::getIntegralValue<Inpar::BeamContact::Smoothing>(sbeamcontact_, "BEAMS_SMOOTHING");
-  if (smoothing != Inpar::BeamContact::bsm_none)
+      Teuchos::getIntegralValue<BeamContact::Smoothing>(sbeamcontact_, "BEAMS_SMOOTHING");
+  if (smoothing != BeamContact::bsm_none)
   {
     for (int i = 0; i < (int)pairs_.size(); ++i)
     {

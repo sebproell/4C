@@ -7,8 +7,8 @@
 
 #include "4C_inpar_beampotential.hpp"
 
+#include "4C_beamcontact_input.hpp"
 #include "4C_fem_condition_definition.hpp"
-#include "4C_inpar_beamcontact.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
@@ -92,13 +92,12 @@ void Inpar::BeamPotential::set_valid_parameters(Teuchos::ParameterList& list)
       &beampotential);
 
   // enable octree search and determine type of bounding box (aabb = axis aligned, spbb = spherical)
-  setStringToIntegralParameter<Inpar::BeamContact::OctreeType>("BEAMPOT_OCTREE", "None",
+  setStringToIntegralParameter<BeamContact::OctreeType>("BEAMPOT_OCTREE", "None",
       "octree and bounding box type for octree search routine",
       tuple<std::string>(
           "None", "none", "octree_axisaligned", "octree_cylorient", "octree_spherical"),
-      tuple<Inpar::BeamContact::OctreeType>(Inpar::BeamContact::boct_none,
-          Inpar::BeamContact::boct_none, Inpar::BeamContact::boct_aabb,
-          Inpar::BeamContact::boct_cobb, Inpar::BeamContact::boct_spbb),
+      tuple<BeamContact::OctreeType>(BeamContact::boct_none, BeamContact::boct_none,
+          BeamContact::boct_aabb, BeamContact::boct_cobb, BeamContact::boct_spbb),
       &beampotential);
 
   Core::Utils::int_parameter(

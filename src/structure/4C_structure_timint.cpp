@@ -8,6 +8,7 @@
 #include "4C_structure_timint.hpp"
 
 #include "4C_beamcontact_beam3contact_manager.hpp"
+#include "4C_beamcontact_input.hpp"
 #include "4C_cardiovascular0d_manager.hpp"
 #include "4C_cardiovascular0d_mor_pod.hpp"
 #include "4C_comm_utils.hpp"
@@ -19,7 +20,6 @@
 #include "4C_fem_discretization_faces.hpp"
 #include "4C_fem_discretization_utils.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_beamcontact.hpp"
 #include "4C_inpar_contact.hpp"
 #include "4C_inpar_mortar.hpp"
 #include "4C_io.hpp"
@@ -414,8 +414,7 @@ void Solid::TimInt::prepare_beam_contact(const Teuchos::ParameterList& sdynparam
 {
   // some parameters
   const Teuchos::ParameterList& beamcontact = Global::Problem::instance()->beam_contact_params();
-  auto strategy =
-      Teuchos::getIntegralValue<Inpar::BeamContact::Strategy>(beamcontact, "BEAMS_STRATEGY");
+  auto strategy = Teuchos::getIntegralValue<BeamContact::Strategy>(beamcontact, "BEAMS_STRATEGY");
 
   // conditions for potential-based beam interaction
   std::vector<Core::Conditions::Condition*> beampotconditions(0);
@@ -423,7 +422,7 @@ void Solid::TimInt::prepare_beam_contact(const Teuchos::ParameterList& sdynparam
 
   // only continue if beam contact unmistakably chosen in input file or beam potential conditions
   // applied
-  if (strategy != Inpar::BeamContact::bstr_none or (int) beampotconditions.size() != 0)
+  if (strategy != BeamContact::bstr_none or (int) beampotconditions.size() != 0)
   {
     // store integration parameter alphaf into beamcman_ as well
     // (for all cases except OST, GenAlpha and GEMM this is zero)

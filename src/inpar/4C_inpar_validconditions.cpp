@@ -7,8 +7,8 @@
 
 #include "4C_inpar_validconditions.hpp"
 
+#include "4C_ale_input.hpp"
 #include "4C_fem_condition_definition.hpp"
-#include "4C_inpar_ale.hpp"
 #include "4C_inpar_beaminteraction.hpp"
 #include "4C_inpar_beampotential.hpp"
 #include "4C_inpar_bio.hpp"
@@ -834,7 +834,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
   Inpar::ElCh::set_valid_conditions(condlist);
   Inpar::ElectroPhysiology::set_valid_conditions(condlist);
   Inpar::FLUID::set_valid_conditions(condlist);
-  Inpar::ALE::set_valid_conditions(condlist);
+  ALE::set_valid_conditions(condlist);
   Inpar::FSI::set_valid_conditions(condlist);
   Inpar::FPSI::set_valid_conditions(condlist);
   Inpar::XFEM::set_valid_conditions(condlist);

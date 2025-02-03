@@ -5,13 +5,13 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_lubrication.hpp"
+#include "4C_lubrication_input.hpp"
 
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
-void Inpar::Lubrication::set_valid_parameters(Teuchos::ParameterList& list)
+void Lubrication::set_valid_parameters(Teuchos::ParameterList& list)
 {
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
@@ -25,28 +25,27 @@ void Inpar::Lubrication::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::int_parameter("RESULTSEVERY", 1, "Increment for writing solution", &lubricationdyn);
   Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", &lubricationdyn);
 
-  setStringToIntegralParameter<Inpar::Lubrication::CalcError>("CALCERROR", "No",
+  setStringToIntegralParameter<Lubrication::CalcError>("CALCERROR", "No",
       "compute error compared to analytical solution",
       tuple<std::string>("No", "error_by_function"),
-      tuple<Inpar::Lubrication::CalcError>(calcerror_no, calcerror_byfunction), &lubricationdyn);
+      tuple<Lubrication::CalcError>(calcerror_no, calcerror_byfunction), &lubricationdyn);
 
   Core::Utils::int_parameter(
       "CALCERRORNO", -1, "function number for lubrication error computation", &lubricationdyn);
 
-  setStringToIntegralParameter<Inpar::Lubrication::VelocityField>("VELOCITYFIELD", "zero",
+  setStringToIntegralParameter<Lubrication::VelocityField>("VELOCITYFIELD", "zero",
       "type of velocity field used for lubrication problems",
       tuple<std::string>("zero", "function", "EHL"),
-      tuple<Inpar::Lubrication::VelocityField>(velocity_zero, velocity_function, velocity_EHL),
+      tuple<Lubrication::VelocityField>(velocity_zero, velocity_function, velocity_EHL),
       &lubricationdyn);
 
   Core::Utils::int_parameter(
       "VELFUNCNO", -1, "function number for lubrication velocity field", &lubricationdyn);
 
-  setStringToIntegralParameter<Inpar::Lubrication::HeightField>("HEIGHTFEILD", "zero",
+  setStringToIntegralParameter<Lubrication::HeightField>("HEIGHTFEILD", "zero",
       "type of height field used for lubrication problems",
       tuple<std::string>("zero", "function", "EHL"),
-      tuple<Inpar::Lubrication::HeightField>(height_zero, height_function, height_EHL),
-      &lubricationdyn);
+      tuple<Lubrication::HeightField>(height_zero, height_function, height_EHL), &lubricationdyn);
 
   Core::Utils::int_parameter(
       "HFUNCNO", -1, "function number for lubrication height field", &lubricationdyn);

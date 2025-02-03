@@ -11,7 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_cut_enum.hpp"
-#include "4C_inpar_cut.hpp"
+#include "4C_cut_input.hpp"
 #include "4C_inpar_fluid.hpp"
 #include "4C_inpar_xfem.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"

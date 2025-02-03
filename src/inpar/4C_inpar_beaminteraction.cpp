@@ -7,9 +7,9 @@
 
 #include "4C_inpar_beaminteraction.hpp"
 
+#include "4C_beamcontact_input.hpp"
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_beam_to_solid.hpp"
-#include "4C_inpar_beamcontact.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_parameter_list.hpp"
 
@@ -200,7 +200,7 @@ void Inpar::BeamInteraction::set_valid_conditions(
   condlist.push_back(penalty_coupling_condition);
 
   // beam-to-beam interactions
-  Inpar::BeamContact::set_valid_conditions(condlist);
+  BeamContact::set_valid_conditions(condlist);
 
   // beam-to-solid interactions
   Inpar::BeamToSolid::set_valid_conditions(condlist);

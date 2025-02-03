@@ -11,10 +11,10 @@
 #include "4C_beam3_euler_bernoulli.hpp"
 #include "4C_beam3_reissner.hpp"
 #include "4C_beamcontact_beam3contact_manager.hpp"
+#include "4C_beamcontact_input.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_defines.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_beamcontact.hpp"
 #include "4C_inpar_contact.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_linalg_sparsematrix.hpp"
@@ -50,7 +50,7 @@ Beam3ContactOctTree::Beam3ContactOctTree(Teuchos::ParameterList& params,
   extrusionvalue_ = std::make_shared<std::vector<double>>();
   extrusionvalue_->clear();
 
-  Inpar::BeamContact::OctreeType bboxtype_input = Inpar::BeamContact::boct_none;
+  BeamContact::OctreeType bboxtype_input = BeamContact::boct_none;
 
   // This OctTree may be used for contact search as well as search for potential-based interaction
   // it will thus be called with slightly different parameter sets
@@ -59,8 +59,7 @@ Beam3ContactOctTree::Beam3ContactOctTree(Teuchos::ParameterList& params,
   if (params.name() == "DAT FILE->BEAM CONTACT")
   {
     // octree specs
-    bboxtype_input =
-        Teuchos::getIntegralValue<Inpar::BeamContact::OctreeType>(params, "BEAMS_OCTREE");
+    bboxtype_input = Teuchos::getIntegralValue<BeamContact::OctreeType>(params, "BEAMS_OCTREE");
 
     // additive or multiplicative extrusion of bounding boxes
     if (params.get<bool>("BEAMS_ADDITEXT"))
@@ -93,8 +92,7 @@ Beam3ContactOctTree::Beam3ContactOctTree(Teuchos::ParameterList& params,
   }
   else if (params.name() == "DAT FILE->BEAM POTENTIAL")
   {
-    bboxtype_input =
-        Teuchos::getIntegralValue<Inpar::BeamContact::OctreeType>(params, "BEAMPOT_OCTREE");
+    bboxtype_input = Teuchos::getIntegralValue<BeamContact::OctreeType>(params, "BEAMPOT_OCTREE");
 
     additiveextrusion_ = true;
     extrusionvalue_->push_back(Teuchos::getDoubleParameter(params, "CUTOFFRADIUS"));
@@ -133,14 +131,14 @@ Beam3ContactOctTree::Beam3ContactOctTree(Teuchos::ParameterList& params,
   // determine bounding box type
   switch (bboxtype_input)
   {
-    case Inpar::BeamContact::boct_aabb:
+    case BeamContact::boct_aabb:
     {
       if (!Core::Communication::my_mpi_rank(discret_.get_comm()))
         std::cout << "Search routine:\nOctree + Axis Aligned BBs" << std::endl;
       boundingbox_ = Beam3ContactOctTree::axisaligned;
     }
     break;
-    case Inpar::BeamContact::boct_cobb:
+    case BeamContact::boct_cobb:
     {
       if (!Core::Communication::my_mpi_rank(discret_.get_comm()))
         std::cout << "Search routine:\nOctree + Cylindrical Oriented BBs" << std::endl;
@@ -151,7 +149,7 @@ Beam3ContactOctTree::Beam3ContactOctTree(Teuchos::ParameterList& params,
             "Only axis aligned or spherical bounding boxes possible for beam-to-solid contact!");
     }
     break;
-    case Inpar::BeamContact::boct_spbb:
+    case BeamContact::boct_spbb:
     {
       if (!Core::Communication::my_mpi_rank(discret_.get_comm()))
         std::cout << "Search routine:\nOctree + Spherical BBs" << std::endl;

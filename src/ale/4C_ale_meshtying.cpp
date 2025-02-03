@@ -187,7 +187,7 @@ void ALE::Meshtying::dirichlet_on_master(std::shared_ptr<const Epetra_Map> bmaps
   //      (in project_master_to_slave_for_overlapping_bc()) (-> disabled)
   //      -> DC also influence slave nodes which are not part of the inflow
   //
-  //      if(msht_ != Inpar::ALE::no_meshtying)
+  //      if(msht_ != ALE::no_meshtying)
   //        meshtying_->project_master_to_slave_for_overlapping_bc(dispnp_, dbcmaps_->cond_map());
   //
   // (c)  DC are included in the condensation process (-> actual strategy)

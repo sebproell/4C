@@ -16,8 +16,8 @@
 
 #include "4C_ehl_base.hpp"
 #include "4C_inpar_ehl.hpp"
-#include "4C_inpar_lubrication.hpp"
 #include "4C_inpar_structure.hpp"
+#include "4C_lubrication_input.hpp"
 
 #include <Epetra_FEVector.h>
 #include <Teuchos_Time.hpp>
@@ -304,8 +304,8 @@ namespace EHL
     enum Inpar::EHL::ConvNorm normtyperhs_;       //!< convergence check for residual forces
     enum Inpar::Solid::ConvNorm normtypedisi_;    //!< convergence check for residual displacements
     enum Inpar::Solid::ConvNorm normtypestrrhs_;  //!< convergence check for residual forces
-    enum Inpar::Lubrication::ConvNorm normtypeprei_;  //!< convergence check for residual pressures
-    enum Inpar::Lubrication::ConvNorm
+    enum Lubrication::ConvNorm normtypeprei_;     //!< convergence check for residual pressures
+    enum Lubrication::ConvNorm
         normtypelubricationrhs_;  //!< convergence check for residual lubrication forces
 
     enum Inpar::EHL::BinaryOp combincrhs_;  //!< binary operator to combine increments and forces

@@ -7,18 +7,18 @@
 
 #include "4C_inpar_validparameters.hpp"
 
-#include "4C_inpar_ale.hpp"
-#include "4C_inpar_beamcontact.hpp"
+#include "4C_ale_input.hpp"
+#include "4C_beamcontact_input.hpp"
+#include "4C_browniandyn_input.hpp"
+#include "4C_cut_input.hpp"
 #include "4C_inpar_beaminteraction.hpp"
 #include "4C_inpar_beampotential.hpp"
 #include "4C_inpar_binningstrategy.hpp"
 #include "4C_inpar_bio.hpp"
-#include "4C_inpar_browniandyn.hpp"
 #include "4C_inpar_cardiac_monodomain.hpp"
 #include "4C_inpar_cardiovascular0d.hpp"
 #include "4C_inpar_constraint_framework.hpp"
 #include "4C_inpar_contact.hpp"
-#include "4C_inpar_cut.hpp"
 #include "4C_inpar_ehl.hpp"
 #include "4C_inpar_elch.hpp"
 #include "4C_inpar_elemag.hpp"
@@ -37,7 +37,6 @@
 #include "4C_inpar_IO_runtime_vtk_output_structure.hpp"
 #include "4C_inpar_IO_runtime_vtp_output_structure.hpp"
 #include "4C_inpar_levelset.hpp"
-#include "4C_inpar_lubrication.hpp"
 #include "4C_inpar_mortar.hpp"
 #include "4C_inpar_mpc_rve.hpp"
 #include "4C_inpar_particle.hpp"
@@ -66,6 +65,7 @@
 #include "4C_inpar_xfem.hpp"
 #include "4C_io_input_file_utils.hpp"
 #include "4C_io_pstream.hpp"
+#include "4C_lubrication_input.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 #include <Teuchos_any.hpp>
@@ -243,11 +243,11 @@ std::shared_ptr<const Teuchos::ParameterList> Input::valid_parameters()
   Inpar::IORuntimeOutput::FLUID::set_valid_parameters(*list);
   Inpar::IORuntimeOutput::Solid::set_valid_parameters(*list);
   Inpar::IORuntimeOutput::Beam::set_valid_parameters(*list);
-  Inpar::BeamContact::set_valid_parameters(*list);
+  BeamContact::set_valid_parameters(*list);
   Inpar::BeamPotential::set_valid_parameters(*list);
   Inpar::BeamInteraction::set_valid_parameters(*list);
   Inpar::RveMpc::set_valid_parameters(*list);
-  Inpar::BrownianDynamics::set_valid_parameters(*list);
+  BrownianDynamics::set_valid_parameters(*list);
 
   Inpar::Plasticity::set_valid_parameters(*list);
 
@@ -257,11 +257,11 @@ std::shared_ptr<const Teuchos::ParameterList> Input::valid_parameters()
 
   Inpar::FLUID::set_valid_parameters(*list);
   Inpar::LowMach::set_valid_parameters(*list);
-  Inpar::Cut::set_valid_parameters(*list);
+  Cut::set_valid_parameters(*list);
   Inpar::XFEM::set_valid_parameters(*list);
   Inpar::CONSTRAINTS::set_valid_parameters(*list);
 
-  Inpar::Lubrication::set_valid_parameters(*list);
+  Lubrication::set_valid_parameters(*list);
   Inpar::ScaTra::set_valid_parameters(*list);
   Inpar::LevelSet::set_valid_parameters(*list);
   Inpar::ElCh::set_valid_parameters(*list);
@@ -278,7 +278,7 @@ std::shared_ptr<const Teuchos::ParameterList> Input::valid_parameters()
   Inpar::EHL::set_valid_parameters(*list);
   Inpar::SSI::set_valid_parameters(*list);
   Inpar::SSTI::set_valid_parameters(*list);
-  Inpar::ALE::set_valid_parameters(*list);
+  ALE::set_valid_parameters(*list);
   Inpar::FSI::set_valid_parameters(*list);
 
   Inpar::ArtDyn::set_valid_parameters(*list);

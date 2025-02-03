@@ -5,10 +5,10 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+#include "4C_browniandyn_input.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_general_extract_values.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_browniandyn.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_mat_spring.hpp"
 #include "4C_structure_new_elements_paramsinterface.hpp"

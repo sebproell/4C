@@ -11,8 +11,8 @@
 #include "4C_config.hpp"
 
 #include "4C_adapter_ale.hpp"
+#include "4C_ale_input.hpp"
 #include "4C_ale_meshtying.hpp"
-#include "4C_inpar_ale.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
@@ -124,8 +124,7 @@ namespace ALE
      *  \param[in]     startfuncno Function to evaluate initial displacement
      *
      */
-    virtual void set_initial_displacement(
-        const Inpar::ALE::InitialDisp init, const int startfuncno);
+    virtual void set_initial_displacement(const ALE::InitialDisp init, const int startfuncno);
 
     /*! \brief Create Systemmatrix
      *
@@ -169,8 +168,7 @@ namespace ALE
     virtual void evaluate_elements();
 
     /// Convert element action enum to std::string
-    virtual std::string element_action_string(
-        const enum Inpar::ALE::AleDynamic name  ///< enum to convert
+    virtual std::string element_action_string(const enum ALE::AleDynamic name  ///< enum to convert
     );
 
     //! @name Time step helpers
@@ -479,7 +477,7 @@ namespace ALE
     virtual void output_state(bool& datawritten);
 
     /// ale formulation read from inputfile
-    const Inpar::ALE::AleDynamic aletype_;
+    const ALE::AleDynamic aletype_;
 
     //! @name solver parameters
     //@{
@@ -493,13 +491,13 @@ namespace ALE
     const double toldisp_;
 
     //! error handling in case of unconverged nonlinear solver
-    const Inpar::ALE::DivContAct divercont_;
+    const ALE::DivContAct divercont_;
 
     //! flag for mesh-tying
-    const Inpar::ALE::MeshTying msht_;
+    const ALE::MeshTying msht_;
 
     //! flag for initial displacement
-    const Inpar::ALE::InitialDisp initialdisp_;
+    const ALE::InitialDisp initialdisp_;
 
     //! start function number
     const int startfuncno_;

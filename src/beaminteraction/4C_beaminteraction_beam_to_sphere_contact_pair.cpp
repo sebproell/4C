@@ -8,12 +8,12 @@
 #include "4C_beaminteraction_beam_to_sphere_contact_pair.hpp"
 
 #include "4C_beam3_base.hpp"
+#include "4C_beamcontact_input.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_defines.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_utils.hpp"
 #include "4C_beaminteraction_beam_to_sphere_contact_params.hpp"
 #include "4C_beaminteraction_contact_params.hpp"
 #include "4C_fem_general_utils_fem_shapefunctions.hpp"
-#include "4C_inpar_beamcontact.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"

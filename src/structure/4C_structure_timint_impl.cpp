@@ -8,6 +8,7 @@
 #include "4C_structure_timint_impl.hpp"
 
 #include "4C_beamcontact_beam3contact_manager.hpp"
+#include "4C_beamcontact_input.hpp"
 #include "4C_cardiovascular0d_manager.hpp"
 #include "4C_cardiovascular0d_mor_pod.hpp"
 #include "4C_constraint_manager.hpp"
@@ -19,7 +20,6 @@
 #include "4C_fem_condition_locsys.hpp"
 #include "4C_fem_discretization_nullspace.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_beamcontact.hpp"
 #include "4C_inpar_contact.hpp"
 #include "4C_inpar_wear.hpp"
 #include "4C_io_control.hpp"
@@ -3223,7 +3223,7 @@ int Solid::TimIntImpl::beam_contact_nonlinear_solve()
   // get some parameters
   //********************************************************************
   // strategy type
-  auto strategy = Teuchos::getIntegralValue<Inpar::BeamContact::Strategy>(
+  auto strategy = Teuchos::getIntegralValue<BeamContact::Strategy>(
       beamcman_->beam_contact_parameters(), "BEAMS_STRATEGY");
 
   // unknown types of nonlinear iteration schemes
@@ -3234,7 +3234,7 @@ int Solid::TimIntImpl::beam_contact_nonlinear_solve()
   // solving strategy using regularization with penalty method
   // (nonlinear solution approach: ordinary NEWTON)
   //**********************************************************************
-  if (strategy == Inpar::BeamContact::bstr_penalty)
+  if (strategy == BeamContact::bstr_penalty)
   {
     // nonlinear iteration (Newton)
     int error = newton_full();
@@ -3249,7 +3249,7 @@ int Solid::TimIntImpl::beam_contact_nonlinear_solve()
   // misuse of beam contact module for GMSH output
   // (nonlinear solution approach: ordinary NEWTON)
   //**********************************************************************
-  else if (strategy == Inpar::BeamContact::bstr_gmshonly)
+  else if (strategy == BeamContact::bstr_gmshonly)
   {
     // nonlinear iteration (Newton)
     int error = newton_full();

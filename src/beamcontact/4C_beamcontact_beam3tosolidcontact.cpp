@@ -9,6 +9,7 @@
 
 #include "4C_beam3_euler_bernoulli.hpp"
 #include "4C_beam3_reissner.hpp"
+#include "4C_beamcontact_input.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_defines.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_tangentsmoothing.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_utils.hpp"
@@ -18,7 +19,6 @@
 #include "4C_fem_general_elementtype.hpp"
 #include "4C_fem_general_utils_fem_shapefunctions.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_beamcontact.hpp"
 #include "4C_inpar_contact.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
 #include "4C_utils_exceptions.hpp"

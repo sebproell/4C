@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_beamcontact.hpp"
+#include "4C_beamcontact_input.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

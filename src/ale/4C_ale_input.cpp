@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_ale.hpp"
+#include "4C_ale_input.hpp"
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_io_input_spec_builders.hpp"
@@ -15,7 +15,7 @@ FOUR_C_NAMESPACE_OPEN
 
 
 
-void Inpar::ALE::set_valid_parameters(Teuchos::ParameterList& list)
+void ALE::set_valid_parameters(Teuchos::ParameterList& list)
 {
   using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
@@ -26,11 +26,10 @@ void Inpar::ALE::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::int_parameter("NUMSTEP", 41, "max number of time steps", &adyn);
   Core::Utils::double_parameter("MAXTIME", 4.0, "max simulation time", &adyn);
 
-  setStringToIntegralParameter<Inpar::ALE::AleDynamic>("ALE_TYPE", "solid",
-      "ale mesh movement algorithm",
+  setStringToIntegralParameter<ALE::AleDynamic>("ALE_TYPE", "solid", "ale mesh movement algorithm",
       tuple<std::string>("solid", "solid_linear", "laplace_material", "laplace_spatial",
           "springs_material", "springs_spatial"),
-      tuple<Inpar::ALE::AleDynamic>(solid, solid_linear, laplace_material, laplace_spatial,
+      tuple<ALE::AleDynamic>(solid, solid_linear, laplace_material, laplace_spatial,
           springs_material, springs_spatial),
       &adyn);
 
@@ -50,20 +49,20 @@ void Inpar::ALE::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::int_parameter(
       "RESTARTEVERY", 1, "write restart data every RESTARTEVERY steps", &adyn);
   Core::Utils::int_parameter("RESULTSEVERY", 0, "write results every RESULTSTEVERY steps", &adyn);
-  setStringToIntegralParameter<Inpar::ALE::DivContAct>("DIVERCONT", "continue",
+  setStringToIntegralParameter<ALE::DivContAct>("DIVERCONT", "continue",
       "What to do if nonlinear solver does not converge?", tuple<std::string>("stop", "continue"),
-      tuple<Inpar::ALE::DivContAct>(divcont_stop, divcont_continue), &adyn);
+      tuple<ALE::DivContAct>(divcont_stop, divcont_continue), &adyn);
 
-  setStringToIntegralParameter<Inpar::ALE::MeshTying>("MESHTYING", "no",
+  setStringToIntegralParameter<ALE::MeshTying>("MESHTYING", "no",
       "Flag to (de)activate mesh tying and mesh sliding algorithm",
       tuple<std::string>("no", "meshtying", "meshsliding"),
-      tuple<Inpar::ALE::MeshTying>(no_meshtying, meshtying, meshsliding), &adyn);
+      tuple<ALE::MeshTying>(no_meshtying, meshtying, meshsliding), &adyn);
 
   // Initial displacement
-  setStringToIntegralParameter<Inpar::ALE::InitialDisp>("INITIALDISP", "zero_displacement",
+  setStringToIntegralParameter<ALE::InitialDisp>("INITIALDISP", "zero_displacement",
       "Initial displacement for structure problem",
       tuple<std::string>("zero_displacement", "displacement_by_function"),
-      tuple<Inpar::ALE::InitialDisp>(initdisp_zero_disp, initdisp_disp_by_function), &adyn);
+      tuple<ALE::InitialDisp>(initdisp_zero_disp, initdisp_disp_by_function), &adyn);
 
   // Function to evaluate initial displacement
   Core::Utils::int_parameter("STARTFUNCNO", -1, "Function for Initial displacement", &adyn);
@@ -75,7 +74,7 @@ void Inpar::ALE::set_valid_parameters(Teuchos::ParameterList& list)
 
 
 
-void Inpar::ALE::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
+void ALE::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
   using namespace Core::IO::InputSpecBuilders;
 

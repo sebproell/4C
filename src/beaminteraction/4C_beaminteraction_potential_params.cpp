@@ -7,9 +7,9 @@
 
 #include "4C_beaminteraction_potential_params.hpp"
 
+#include "4C_beamcontact_input.hpp"
 #include "4C_beaminteraction_potential_runtime_visualization_output_params.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_beamcontact.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_utils_exceptions.hpp"
 
@@ -199,8 +199,8 @@ void BeamInteraction::BeamPotentialParams::init(const double restart_time)
   /****************************************************************************/
 
   // outdated: octtree for search of potential-based interaction pairs
-  if (Teuchos::getIntegralValue<Inpar::BeamContact::OctreeType>(
-          beam_potential_params_list, "BEAMPOT_OCTREE") != Inpar::BeamContact::boct_none)
+  if (Teuchos::getIntegralValue<BeamContact::OctreeType>(
+          beam_potential_params_list, "BEAMPOT_OCTREE") != BeamContact::boct_none)
   {
     FOUR_C_THROW("Octree-based search for potential-based beam interactions is deprecated!");
   }

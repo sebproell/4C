@@ -833,13 +833,13 @@ bool EHL::Monolithic::converged()
   // lubrication residual forces
   switch (normtypelubricationrhs_)
   {
-    case Inpar::Lubrication::convnorm_abs:
+    case Lubrication::convnorm_abs:
       convlubricationrhs = normlubricationrhs_ < tollubricationrhs_;
       break;
-    case Inpar::Lubrication::convnorm_rel:
+    case Lubrication::convnorm_rel:
       convlubricationrhs = normlubricationrhs_ < normlubricationrhsiter0_ * tollubricationrhs_;
       break;
-    case Inpar::Lubrication::convnorm_mix:
+    case Lubrication::convnorm_mix:
       convlubricationrhs = ((normlubricationrhs_ < tollubricationrhs_) or
                             (normlubricationrhs_ < normlubricationrhsiter0_ * tollubricationrhs_));
       break;
@@ -851,13 +851,13 @@ bool EHL::Monolithic::converged()
   // residual pressures
   switch (normtypeprei_)
   {
-    case Inpar::Lubrication::convnorm_abs:
+    case Lubrication::convnorm_abs:
       convpre = normprei_ < tolprei_;
       break;
-    case Inpar::Lubrication::convnorm_rel:
+    case Lubrication::convnorm_rel:
       convpre = normprei_ < normpreiiter0_ * tolprei_;
       break;
-    case Inpar::Lubrication::convnorm_mix:
+    case Lubrication::convnorm_mix:
       convpre = ((normprei_ < tolprei_) or (normprei_ < normpreiiter0_ * tolprei_));
       break;
     default:
@@ -989,13 +989,13 @@ void EHL::Monolithic::print_newton_iter_header(FILE* ofile)
   // ------------------------------------------------------------- lubrication
   switch (normtypelubricationrhs_)
   {
-    case Inpar::Lubrication::convnorm_rel:
+    case Lubrication::convnorm_rel:
       oss << std::setw(18) << "rel-lub-res-norm";
       break;
-    case Inpar::Lubrication::convnorm_abs:
+    case Lubrication::convnorm_abs:
       oss << std::setw(18) << "abs-lub-res-norm";
       break;
-    case Inpar::Lubrication::convnorm_mix:
+    case Lubrication::convnorm_mix:
       oss << std::setw(18) << "mix-lub-res-norm";
       break;
     default:
@@ -1005,13 +1005,13 @@ void EHL::Monolithic::print_newton_iter_header(FILE* ofile)
 
   switch (normtypeprei_)
   {
-    case Inpar::Lubrication::convnorm_rel:
+    case Lubrication::convnorm_rel:
       oss << std::setw(16) << "rel-pre-norm";
       break;
-    case Inpar::Lubrication::convnorm_abs:
+    case Lubrication::convnorm_abs:
       oss << std::setw(16) << "abs-pre-norm";
       break;
-    case Inpar::Lubrication::convnorm_mix:
+    case Lubrication::convnorm_mix:
       oss << std::setw(16) << "mix-pre-norm";
       break;
     default:
@@ -1138,14 +1138,14 @@ void EHL::Monolithic::print_newton_iter_text(FILE* ofile)
   // ------------------------------------------------------------- lubrication
   switch (normtypelubricationrhs_)
   {
-    case Inpar::Lubrication::convnorm_abs:
+    case Lubrication::convnorm_abs:
       oss << std::setw(18) << std::setprecision(5) << std::scientific << normlubricationrhs_;
       break;
-    case Inpar::Lubrication::convnorm_rel:
+    case Lubrication::convnorm_rel:
       oss << std::setw(18) << std::setprecision(5) << std::scientific
           << normlubricationrhs_ / normlubricationrhsiter0_;
       break;
-    case Inpar::Lubrication::convnorm_mix:
+    case Lubrication::convnorm_mix:
       oss << std::setw(18) << std::setprecision(5) << std::scientific
           << std::min(normlubricationrhs_, normlubricationrhs_ / normlubricationrhsiter0_);
       break;
@@ -1156,13 +1156,13 @@ void EHL::Monolithic::print_newton_iter_text(FILE* ofile)
 
   switch (normtypeprei_)
   {
-    case Inpar::Lubrication::convnorm_abs:
+    case Lubrication::convnorm_abs:
       oss << std::setw(16) << std::setprecision(5) << std::scientific << normprei_;
       break;
-    case Inpar::Lubrication::convnorm_rel:
+    case Lubrication::convnorm_rel:
       oss << std::setw(16) << std::setprecision(5) << std::scientific << normprei_ / normpreiiter0_;
       break;
-    case Inpar::Lubrication::convnorm_mix:
+    case Lubrication::convnorm_mix:
       oss << std::setw(16) << std::setprecision(5) << std::scientific
           << std::min(normprei_, normprei_ / normpreiiter0_);
       break;
@@ -1447,11 +1447,9 @@ void EHL::Monolithic::set_default_parameters()
   normtypedisi_ = Teuchos::getIntegralValue<Inpar::Solid::ConvNorm>(sdyn_, "NORM_DISP");
   normtypestrrhs_ = Teuchos::getIntegralValue<Inpar::Solid::ConvNorm>(sdyn_, "NORM_RESF");
   auto striternorm = Teuchos::getIntegralValue<Inpar::Solid::VectorNorm>(sdyn_, "ITERNORM");
-  normtypeprei_ = Teuchos::getIntegralValue<Inpar::Lubrication::ConvNorm>(ldyn, "NORM_PRE");
-  normtypelubricationrhs_ =
-      Teuchos::getIntegralValue<Inpar::Lubrication::ConvNorm>(ldyn, "NORM_RESF");
-  auto lubricationiternorm =
-      Teuchos::getIntegralValue<Inpar::Lubrication::VectorNorm>(ldyn, "ITERNORM");
+  normtypeprei_ = Teuchos::getIntegralValue<Lubrication::ConvNorm>(ldyn, "NORM_PRE");
+  normtypelubricationrhs_ = Teuchos::getIntegralValue<Lubrication::ConvNorm>(ldyn, "NORM_RESF");
+  auto lubricationiternorm = Teuchos::getIntegralValue<Lubrication::VectorNorm>(ldyn, "ITERNORM");
   // in total when do we reach a converged state for complete problem
   combincrhs_ = Teuchos::getIntegralValue<Inpar::EHL::BinaryOp>(ehldynmono_, "NORMCOMBI_RESFINC");
 
@@ -1529,19 +1527,19 @@ void EHL::Monolithic::set_default_parameters()
   // what norm is used for lubrication
   switch (lubricationiternorm)
   {
-    case Inpar::Lubrication::norm_l1:
+    case Lubrication::norm_l1:
       iternormlubrication_ = Inpar::EHL::norm_l1;
       break;
-    case Inpar::Lubrication::norm_l2:
+    case Lubrication::norm_l2:
       iternormlubrication_ = Inpar::EHL::norm_l2;
       break;
-    case Inpar::Lubrication::norm_rms:
+    case Lubrication::norm_rms:
       iternormlubrication_ = Inpar::EHL::norm_rms;
       break;
-    case Inpar::Lubrication::norm_inf:
+    case Lubrication::norm_inf:
       iternormlubrication_ = Inpar::EHL::norm_inf;
       break;
-    case Inpar::Lubrication::norm_vague:
+    case Lubrication::norm_vague:
     default:
     {
       FOUR_C_THROW("LUBRICATION norm is not determined.");

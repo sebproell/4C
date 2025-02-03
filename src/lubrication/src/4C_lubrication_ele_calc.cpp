@@ -13,10 +13,10 @@
 #include "4C_fem_general_utils_integration.hpp"
 #include "4C_fem_geometry_position_array.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_lubrication.hpp"
 #include "4C_lubrication_ele_action.hpp"
 #include "4C_lubrication_ele_calc_utils.hpp"
 #include "4C_lubrication_ele_parameter.hpp"
+#include "4C_lubrication_input.hpp"
 #include "4C_mat_lubrication_mat.hpp"
 #include "4C_utils_function.hpp"
 #include "4C_utils_singleton_owner.hpp"
@@ -1318,10 +1318,10 @@ void Discret::Elements::LubricationEleCalc<distype, probdim>::cal_error_compared
       FourC::Lubrication::DisTypeToGaussRuleForExactSol<distype>::rule);
 
   const auto errortype =
-      Teuchos::getIntegralValue<Inpar::Lubrication::CalcError>(params, "calcerrorflag");
+      Teuchos::getIntegralValue<FourC::Lubrication::CalcError>(params, "calcerrorflag");
   switch (errortype)
   {
-    case Inpar::Lubrication::calcerror_byfunction:
+    case FourC::Lubrication::calcerror_byfunction:
     {
       const int errorfunctno = params.get<int>("error function number");
 
