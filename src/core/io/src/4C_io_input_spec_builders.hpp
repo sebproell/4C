@@ -471,6 +471,17 @@ namespace Core::IO
         void emit_metadata(ryml::NodeRef node) const;
       };
 
+      struct AllOfSpec
+      {
+        GroupData data;
+        std::vector<InputSpec> specs;
+
+        void parse(ValueParser& parser, InputParameterContainer& container) const;
+        void set_default_value(InputParameterContainer& container) const;
+        void print(std::ostream& stream, std::size_t indent) const;
+        void emit_metadata(ryml::NodeRef node) const;
+      };
+
       struct OneOfSpec
       {
         // A one_of spec is essentially an unnamed group with additional logic to ensure that

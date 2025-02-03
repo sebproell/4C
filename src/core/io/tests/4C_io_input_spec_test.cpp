@@ -522,6 +522,38 @@ namespace
     }
   }
 
+  TEST(InputSpecTest, NestedOneOfs)
+  {
+    auto spec = one_of({
+        one_of({
+            entry<int>("a"),
+            entry<double>("b"),
+        }),
+        one_of({
+            entry<std::string>("c"),
+            entry<double>("d"),
+            one_of({
+                entry<int>("e"),
+                entry<std::string>("f"),
+            }),
+        }),
+    });
+
+    {
+      // Verify that all entries got pulled to the highest level.
+      std::ostringstream out;
+      spec.print_as_dat(out);
+      EXPECT_EQ(out.str(), R"(// <one_of>:
+//   a <int>
+//   b <double>
+//   c <string>
+//   d <double>
+//   e <int>
+//   f <string>
+)");
+    }
+  }
+
   TEST(InputSpecTest, PrintAsDat)
   {
     auto line =
