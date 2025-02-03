@@ -2039,9 +2039,8 @@ void Global::read_materials(Global::Problem& problem, Core::IO::InputFile& input
 
   auto all_materials = all_of({
       entry<int>("MAT", {.description = "Material ID that may be used to refer to this material."}),
-      one_of(all_specs, [&current_index](Core::IO::ValueParser& parser,
-                            Core::IO::InputParameterContainer& container, std::size_t index)
-          { current_index = index; }),
+      one_of(all_specs, [&current_index](Core::IO::InputParameterContainer& container,
+                            std::size_t index) { current_index = index; }),
   });
 
   for (const auto& fragment : input.in_section("MATERIALS"))
@@ -2061,10 +2060,15 @@ void Global::read_materials(Global::Problem& problem, Core::IO::InputFile& input
     if (problem.materials()->id_exists(mat_id))
       FOUR_C_THROW("More than one material with 'MAT %d'", mat_id);
 
+    const std::string material_name = all_specs[current_index].impl().name();
+    FOUR_C_ASSERT_ALWAYS(container->has_group(material_name),
+        "Material type '%s' does not have a corresponding group in the input file.",
+        material_name.c_str());
+
     problem.materials()->insert(
         mat_id, Core::Utils::LazyPtr<Core::Mat::PAR::Parameter>(
                     [mat_id, mat_type = all_types[current_index],
-                        container = container->group(all_specs[current_index].impl().name())]()
+                        container = container->group(material_name)]()
                     { return Mat::make_parameter(mat_id, mat_type, container); }));
   }
 
