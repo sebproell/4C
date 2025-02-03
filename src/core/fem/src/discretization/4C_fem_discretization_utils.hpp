@@ -351,7 +351,6 @@ namespace Core::FE
        *
        *  The corresponding condition, e.g.:
        *  ---------DESIGN LINE DIRICH CONDITIONS
-       *  DSURF  1
        *  // example_line
        *  E 1 - NUMDOF 6 ONOFF 0 1 1 VAL 0.0 1.0 1.0 FUNCT 1 0 0
        *
@@ -409,7 +408,6 @@ namespace Core::FE
        *
        *  The corresponding condition, e.g.:
        *  ---------DESIGN LINE DIRICH CONDITIONS
-       *  DSURF  1
        *  // example_line
        *  E 1 - NUMDOF 6 ONOFF 0 1 1 VAL 0.0 1.0 1.0 FUNCT 1 0 0
        *

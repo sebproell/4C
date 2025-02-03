@@ -55,26 +55,6 @@ namespace EXODUS
   void dat_eles(const EXODUS::ElementBlock& eb, const EXODUS::ElemDef& acte, int& startele,
       std::ostream& dat, const int eb_id);
 
-  inline std::string cond_geom_type_to_string(const EXODUS::CondDef& def)
-  {
-    switch (def.gtype)
-    {
-      case Core::Conditions::geometry_type_volume:
-        return "DVOL  ";
-      case Core::Conditions::geometry_type_surface:
-        return "DSURF ";
-      case Core::Conditions::geometry_type_line:
-        return "DLINE ";
-      case Core::Conditions::geometry_type_point:
-        return "DPOINT";
-      case Core::Conditions::geometry_type_no_geom:
-        return "";
-      default:
-        FOUR_C_THROW("Unknown Condition GeometryType");
-    }
-    return "";
-  }
-
 }  // namespace EXODUS
 
 FOUR_C_NAMESPACE_CLOSE

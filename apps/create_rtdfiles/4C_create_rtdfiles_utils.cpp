@@ -473,26 +473,6 @@ namespace RTD
     unsigned l = sectionname.length();
     std::vector<std::string> conditioncode{
         "--" + std::string(std::max<int>(65 - l, 0), '-') + sectionname};
-    // second line: geometry type
-    std::string name;
-    switch (condition.geometry_type())
-    {
-      case Core::Conditions::geometry_type_point:
-        conditioncode.push_back("DPOINT  0");
-        break;
-      case Core::Conditions::geometry_type_line:
-        conditioncode.push_back("DLINE  0");
-        break;
-      case Core::Conditions::geometry_type_surface:
-        conditioncode.push_back("DSURF  0");
-        break;
-      case Core::Conditions::geometry_type_volume:
-        conditioncode.push_back("DVOL  0");
-        break;
-      default:
-        FOUR_C_THROW("geometry type unspecified");
-        break;
-    }
     write_code(stream, conditioncode);
 
     // Avoid writing an empty code block if there are no specs for this condition

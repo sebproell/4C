@@ -105,13 +105,11 @@ namespace Core::DOFSets
           Imagine, we have given the following conditions in our .dat-file:
 
           -----DESIGN SSI COUPLING SOLIDTOSCATRA VOL CONDITIONS
-          DVOL   2
           // scatra volume matching to struct volume
           E 2 - coupling_id 1
           // struct volume matching to scatra volume
           E 1 - coupling_id 1
           ----DESIGN SSI COUPLING SOLIDTOSCATRA SURF CONDITIONS
-          DSURF   2
          // separate surface discretization matching struct volume boundary
          E 1 - coupling_id 2
          // struct volume boundary
