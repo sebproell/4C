@@ -1,0 +1,231 @@
+// This file is part of 4C multiphysics licensed under the
+// GNU Lesser General Public License v3.0 or later.
+//
+// See the LICENSE.md file in the top-level for license information.
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
+
+#ifndef FOUR_C_IO_YAML_HPP
+#define FOUR_C_IO_YAML_HPP
+
+#include "4C_config.hpp"
+
+#include "4C_utils_exceptions.hpp"
+
+#include <ryml.hpp>      // IWYU pragma: export
+#include <ryml_std.hpp>  // IWYU pragma: export
+
+#include <filesystem>
+#include <optional>
+
+FOUR_C_NAMESPACE_OPEN
+
+namespace Core::IO
+{
+  namespace Internal
+  {
+    /**
+     * This class wraps the yaml implementation in our own namespace. Most code does not need the
+     * implementation details of the yaml library, so we hide it here and forward declare the class
+     * in relevant headers. This has the additional benefit that we can attach more data that is
+     * useful when traversing yaml trees, e.g. an associated file path. Since ryml treats const-ness
+     * with different node types, we model this behavior with a template parameter selecting between
+     * a const and a non-const node.
+     *
+     * @note This class uses CRTP to allow wrap() to return the concrete derived type.
+     */
+    template <bool is_const, typename Derived>
+    class YamlNodeRefImpl
+    {
+     public:
+      using NodeRef = std::conditional_t<is_const, ryml::ConstNodeRef, ryml::NodeRef>;
+
+     private:
+      YamlNodeRefImpl(NodeRef node, std::filesystem::path associated_file)
+          : node(node), associated_file(std::move(associated_file))
+      {
+      }
+
+
+     public:
+      /**
+       * When traversing the yaml tree, we frequently need to process child nodes of the wrapped
+       * node. This function wraps the @p next node while keeping any other information stored in
+       * this wrapper object.
+       */
+      [[nodiscard]] Derived wrap(NodeRef next) const { return Derived(next, associated_file); }
+
+      /**
+       * The wrapped ryml node.
+       */
+      NodeRef node;
+
+      /**
+       * The file associated with this node. May be used for error messages and to correctly resolve
+       * relative paths.
+       */
+      std::filesystem::path associated_file;
+
+      /**
+       * Make the derived class a friend to allow it to call the constructor.
+       */
+      friend Derived;
+    };
+  }  // namespace Internal
+
+  /**
+   * Refers to a non-const yaml node.
+   */
+  class YamlNodeRef : public Internal::YamlNodeRefImpl<false, YamlNodeRef>
+  {
+   public:
+    YamlNodeRef(NodeRef node, std::filesystem::path associated_file)
+        : Internal::YamlNodeRefImpl<false, YamlNodeRef>(node, std::move(associated_file))
+    {
+    }
+  };
+
+  /**
+   * Refers to a const yaml node.
+   */
+  class ConstYamlNodeRef : public Internal::YamlNodeRefImpl<true, ConstYamlNodeRef>
+  {
+   public:
+    ConstYamlNodeRef(ryml::ConstNodeRef node, std::filesystem::path associated_file)
+        : Internal::YamlNodeRefImpl<true, ConstYamlNodeRef>(node, std::move(associated_file))
+    {
+    }
+  };
+
+
+  template <typename T>
+  concept YamlSupportedType = requires(ryml::NodeRef node, const T& value) {
+    { node << value };
+  };
+
+  /**
+   * An exception thrown when an error occurs during yaml processing..
+   */
+  class YamlException : public Core::Exception
+  {
+   public:
+    explicit YamlException(const std::string& message);
+  };
+
+
+  /**
+   * Initialize a ryml tree which throws YamlExceptions on parse errors.
+   */
+  [[nodiscard]] ryml::Tree init_yaml_tree_with_exceptions();
+
+  template <YamlSupportedType T>
+  void emit_value_as_yaml(ryml::NodeRef node, const T& value)
+  {
+    node << value;
+  }
+
+  inline void emit_value_as_yaml(ryml::NodeRef node, const std::string& value)
+  {
+    node << ryml::to_csubstr(value);
+  }
+
+  inline void emit_value_as_yaml(ryml::NodeRef node, const bool& value)
+  {
+    node << (value ? "true" : "false");
+  }
+
+  template <typename T>
+  void emit_value_as_yaml(ryml::NodeRef node, const std::optional<T>& value)
+  {
+    if (value.has_value())
+    {
+      emit_value_as_yaml(node, value.value());
+    }
+    else
+    {
+      node << "none";
+    }
+  }
+
+
+  template <typename T, typename U>
+  void emit_value_as_yaml(ryml::NodeRef node, const std::pair<T, U>& value)
+  {
+    node |= ryml::SEQ | ryml::FLOW_SL;
+    auto first = node.append_child();
+    emit_value_as_yaml(first, value.first);
+    auto second = node.append_child();
+    emit_value_as_yaml(second, value.second);
+  }
+
+  template <typename T>
+  void emit_value_as_yaml(ryml::NodeRef node, const std::vector<T>& value)
+  {
+    node |= ryml::SEQ | ryml::FLOW_SL;
+    for (const auto& v : value)
+    {
+      auto child = node.append_child();
+      emit_value_as_yaml(child, v);
+    }
+  }
+
+  template <YamlSupportedType T>
+  void read_value_from_yaml(ConstYamlNodeRef node, T& value)
+  {
+    FOUR_C_ASSERT_ALWAYS(node.node.has_val(), "Expected a value node.");
+    node.node >> value;
+  }
+
+  template <typename T>
+  void read_value_from_yaml(ConstYamlNodeRef node, std::optional<T>& value)
+  {
+    FOUR_C_ASSERT_ALWAYS(node.node.has_val(), "Expected a value node.");
+    if (node.node.is_val() && node.node.val() == "none")
+    {
+      value.reset();
+    }
+    else
+    {
+      value = T{};
+      read_value_from_yaml(node, value.value());
+    }
+  }
+
+  inline void read_value_from_yaml(ConstYamlNodeRef node, std::filesystem::path& value)
+  {
+    FOUR_C_ASSERT_ALWAYS(node.node.has_val(), "Expected a value node.");
+    std::string path;
+    read_value_from_yaml(node, path);
+
+    value = std::filesystem::path(path);
+    if (value.is_relative())
+    {
+      value = node.associated_file.parent_path() / value;
+    }
+  }
+
+  template <typename T, typename U>
+  void read_value_from_yaml(ConstYamlNodeRef node, std::pair<T, U>& value)
+  {
+    FOUR_C_ASSERT_ALWAYS(node.node.is_seq(), "Expected a sequence node for a pair.");
+    read_value_from_yaml(node.wrap(node.node[0]), value.first);
+    read_value_from_yaml(node.wrap(node.node[1]), value.second);
+  }
+
+  template <typename T>
+  void read_value_from_yaml(ConstYamlNodeRef node, std::vector<T>& value)
+  {
+    FOUR_C_ASSERT_ALWAYS(node.node.is_seq(), "Expected a sequence node for a vector.");
+    value.clear();
+    for (auto child : node.node.children())
+    {
+      T v;
+      read_value_from_yaml(node.wrap(child), v);
+      value.push_back(v);
+    }
+  }
+}  // namespace Core::IO
+
+FOUR_C_NAMESPACE_CLOSE
+
+#endif

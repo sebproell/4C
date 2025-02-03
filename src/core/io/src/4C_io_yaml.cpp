@@ -1,0 +1,30 @@
+// This file is part of 4C multiphysics licensed under the
+// GNU Lesser General Public License v3.0 or later.
+//
+// See the LICENSE.md file in the top-level for license information.
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
+
+#include "4C_io_yaml.hpp"
+
+FOUR_C_NAMESPACE_OPEN
+
+namespace
+{
+  [[noreturn]] void throw_on_yaml_parse_error(
+      const char* msg, size_t msg_len, ryml::Location location, void* user_data)
+  {
+    throw Core::IO::YamlException(std::string(msg, msg_len));
+  }
+}  // namespace
+
+Core::IO::YamlException::YamlException(const std::string& message) : Core::Exception(message) {}
+
+ryml::Tree Core::IO::init_yaml_tree_with_exceptions()
+{
+  ryml::Callbacks cb{};
+  cb.m_error = throw_on_yaml_parse_error;
+  return ryml::Tree{cb};
+}
+
+FOUR_C_NAMESPACE_CLOSE
