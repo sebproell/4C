@@ -94,10 +94,6 @@ OEI_FILE_COUNTER                0
 //     Yes,No,yes,no,YES,NO
 STRUCT_DISP                     Yes
 //
-// Output of velocity and acceleration
-//     Yes,No,yes,no,YES,NO
-STRUCT_VEL_ACC                  No
-//
 // Output of stress
 //     No,no,NO,Yes,yes,YES,Cauchy,cauchy,2PK,2pk
 STRUCT_STRESS                   No

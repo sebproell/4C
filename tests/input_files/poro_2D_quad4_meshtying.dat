@@ -18,7 +18,6 @@ SHAPEFCT                        Polynomial
 RANDSEED                        -1
 -----------------------------------------------------------------IO
 STRUCT_STRESS                   cauchy
-STRUCT_VEL_ACC                  yes
 -------------------------------------------------STRUCTURAL DYNAMIC
 DYNAMICTYPE                      Statics
 DAMPING                         Material

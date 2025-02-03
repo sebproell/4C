@@ -4,19 +4,24 @@ patch of 20x20 quad4 membrane finite elements (plane stress, incompressible) wit
 dirichlet bc prescribing displacements of all nodes resulting in an uniaxial stretch
 in x-direction and a translation in y-direction
 --------------------------------------------------------PROBLEM TYPE
-PROBLEMTYPE                      Structure
+PROBLEMTYPE                     Structure
 -----------------------------------------------------------------IO
-STRUCT_DISP                     Yes
-STRUCT_VEL_ACC                  Yes
 STRUCT_STRESS                   Cauchy
 STRUCT_STRAIN                   GL
 STRUCT_OPTIONAL_QUANTITY        membranethickness
+----------------------------------------------IO/RUNTIME VTK OUTPUT
+OUTPUT_DATA_FORMAT              ascii
+INTERVAL_STEPS                  2
+EVERY_ITERATION                 no
+------------------------------------IO/RUNTIME VTK OUTPUT/STRUCTURE
+OUTPUT_STRUCTURE                yes
+ACCELERATION                    yes
 -------------------------------------------------STRUCTURAL DYNAMIC
 INT_STRATEGY                    Standard
-DYNAMICTYPE                      OneStepTheta
-RESULTSEVERY                     2
-RESEVERYERGY                     2
-RESTARTEVERY                     5
+DYNAMICTYPE                     OneStepTheta
+RESULTSEVERY                    2
+RESEVERYERGY                    2
+RESTARTEVERY                    5
 TIMESTEP                        0.1
 NUMSTEP                         10
 MAXTIME                         1.0

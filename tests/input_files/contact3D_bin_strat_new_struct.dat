@@ -23,7 +23,6 @@ NUMTHERMDIS                     0
 --------------------------------------------------------------------------IO
 OUTPUT_BIN                      Yes
 STRUCT_DISP                     Yes
-STRUCT_VEL_ACC                  Yes
 STRUCT_STRESS                   No
 FLUID_STRESS                    No
 FILESTEPS                       1000

@@ -400,7 +400,8 @@ namespace Solid
        *  \author grill */
       void write_output_runtime_structure(
           const Core::LinAlg::Vector<double>& displacement_state_vector,
-          const Core::LinAlg::Vector<double>& velocity_state_vector, int timestep_number,
+          const Core::LinAlg::Vector<double>& velocity_state_vector,
+          const Core::LinAlg::Vector<double>& acceleration_state_vector, int timestep_number,
           double time) const;
 
       /**

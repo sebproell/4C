@@ -50,6 +50,13 @@ namespace Discret
         return output_velocity_state_;
       }
 
+      /// whether to write acceleration
+      [[nodiscard]] bool output_acceleration_state() const
+      {
+        check_init_setup();
+        return output_acceleration_state_;
+      }
+
       /// whether to write the owner of elements
       [[nodiscard]] bool output_element_owner() const
       {
@@ -125,6 +132,9 @@ namespace Discret
 
       /// whether to write velocity output
       bool output_velocity_state_;
+
+      /// whether to write acceleration output
+      bool output_acceleration_state_;
 
       /// whether to write the owner of elements
       bool output_element_owner_;

@@ -32,7 +32,6 @@ NUMTHERMDIS                     0
 FILESTEPS                       1000
 OUTPUT_BIN                      Yes
 STRUCT_DISP                     Yes
-STRUCT_VEL_ACC                  Yes
 STRUCT_STRAIN                   EA
 STRUCT_STRESS                   Cauchy
 STRUCT_COUPLING_STRESS          Cauchy

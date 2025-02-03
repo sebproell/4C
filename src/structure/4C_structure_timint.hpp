@@ -1046,7 +1046,6 @@ namespace Solid
                                                  //!< if 0, restart is not written
     bool writeele_;                              //!< write elements on/off
     bool writestate_;                            //!< write state on/off
-    bool writevelacc_;                           //!< write velocity and acceleration on/off
     int writeresultsevery_;                      //!< write state/stress/strain every given step
     Inpar::Solid::StressType writestress_;       //!< stress output type
     Inpar::Solid::StressType writecouplstress_;  //!< output type of coupling stress

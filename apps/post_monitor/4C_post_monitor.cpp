@@ -687,51 +687,6 @@ void StructMonWriter::write_result(
     outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
   }
 
-  // velocity
-
-  // check if velocity is available
-  MAP* dummydir;
-  if (map_find_map(result.group(), "velocity", &dummydir) and
-      result.field()->problem()->struct_vel_acc() == "yes")
-  {
-    // get actual result vector velocity
-    resvec = result.read_result("velocity");
-    const Epetra_BlockMap& velmap = resvec->Map();
-
-    // compute second part of offset
-    offset2 = velmap.MinAllGID();
-
-    // do output of velocity
-    for (unsigned i = 0; i < noddof; ++i)
-    {
-      const int lid = velmap.LID(gdof[i] + offset2);
-      if (lid == -1) FOUR_C_THROW("illegal gid %d at %d!", gdof[i], i);
-      outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
-    }
-  }
-
-  // acceleration
-
-  // check if acceleration is available
-  if (map_find_map(result.group(), "acceleration", &dummydir) and
-      result.field()->problem()->struct_vel_acc() == "yes")
-  {
-    // get actual result vector acceleration
-    resvec = result.read_result("acceleration");
-    const Epetra_BlockMap& accmap = resvec->Map();
-
-    // compute second part of offset
-    offset2 = accmap.MinAllGID();
-
-    // do output for acceleration
-    for (unsigned i = 0; i < noddof; ++i)
-    {
-      const int lid = accmap.LID(gdof[i] + offset2);
-      if (lid == -1) FOUR_C_THROW("illegal gid %d at %d!", gdof[i], i);
-      outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
-    }
-  }
-
   // pressure
   if (gdof.size() == (unsigned)dim + 1)
   {
@@ -1161,65 +1116,7 @@ void FsiStructMonWriter::write_result(
     outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
   }
 
-  // velocity
-
-  // check if velocity is available
   MAP* dummydir;
-  if (map_find_map(result.group(), "velocity", &dummydir) and
-      result.field()->problem()->struct_vel_acc() == "yes")
-  {
-    // get actual result vector velocity
-    resvec = result.read_result("velocity");
-    const Epetra_BlockMap& velmap = resvec->Map();
-
-    // compute second part of offset
-    offset2 = velmap.MinAllGID();
-
-    // do output of velocity
-    for (unsigned i = 0; i < noddof; ++i)
-    {
-      const int lid = velmap.LID(gdof[i] + offset2);
-      if (lid == -1) FOUR_C_THROW("illegal gid %d at %d!", gdof[i], i);
-      outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
-    }
-  }
-  else
-  {
-    for (unsigned i = 0; i < noddof; ++i)
-    {
-      outfile << std::right << std::setw(16) << "not avail.";
-    }
-  }
-
-  // acceleration
-
-  // check if acceleration is available
-  if (map_find_map(result.group(), "acceleration", &dummydir) and
-      result.field()->problem()->struct_vel_acc() == "yes")
-  {
-    // get actual result vector acceleration
-    resvec = result.read_result("acceleration");
-    const Epetra_BlockMap& accmap = resvec->Map();
-
-    // compute second part of offset
-    offset2 = accmap.MinAllGID();
-
-    // do output for acceleration
-    for (unsigned i = 0; i < noddof; ++i)
-    {
-      const int lid = accmap.LID(gdof[i] + offset2);
-      if (lid == -1) FOUR_C_THROW("illegal gid %d at %d!", gdof[i], i);
-      outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
-    }
-  }
-  else
-  {
-    for (unsigned i = 0; i < noddof; ++i)
-    {
-      outfile << std::right << std::setw(16) << "not avail.";
-    }
-  }
-
   // pressure
   if (gdof.size() == (unsigned)dim + 1)
   {
