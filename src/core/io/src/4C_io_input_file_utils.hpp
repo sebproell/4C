@@ -11,6 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_io_input_parameter_container.hpp"
+#include "4C_io_input_spec.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
 #include <functional>
@@ -57,11 +58,16 @@ namespace Core::IO
 
 
   /**
-   * Print the metadata of what can be put into a ParameterList @p list. The result is formatted as
-   * YAML. This information can be useful for additional tools that generate schema files or
-   * documentation.
+   * Print the metadata of what can be put into a ParameterList @p list. All nested sub-lists inside
+   * @p list are concatenated into a top-level input file section containing the respective
+   * parameters of that sublist. Additionally, @p section_specs contains the InputSpec which may
+   * be read for a specific section.
+   *
+   * The output is formatted as YAML. This information can be useful for additional tools that
+   * generate schema files or documentation.
    */
-  void print_metadata_yaml(std::ostream& stream, const Teuchos::ParameterList& list);
+  void print_metadata_yaml(std::ostream& stream, const Teuchos::ParameterList& list,
+      const std::map<std::string, InputSpec>& section_specs = {});
 
   /**
    * Return true if the @p list contains any parameter that has whitespace in the key name.

@@ -62,8 +62,7 @@ void Core::IO::InputSpec::emit_metadata(YamlEmitter& yaml) const
   FOUR_C_ASSERT(pimpl_, "InputSpec is empty.");
 
   auto root = yaml.node;
-  root |= ryml::MAP;
-  pimpl_->emit_metadata(root.append_child());
+  pimpl_->emit_metadata(root);
 }
 
 Core::IO::Internal::InputSpecTypeErasedBase& Core::IO::InputSpec::impl()

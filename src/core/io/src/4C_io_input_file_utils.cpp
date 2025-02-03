@@ -17,6 +17,7 @@
 #include "4C_io_input_spec.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_io_value_parser.hpp"
+#include "4C_io_yaml_emitter.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
 #include "4C_utils_string.hpp"
 
@@ -207,7 +208,7 @@ namespace
   }
 
 
-  void print_metadata_yaml_impl(ryml::NodeRef node, const Teuchos::ParameterList& list,
+  void print_metadata_yaml_parameter_list(ryml::NodeRef node, const Teuchos::ParameterList& list,
       const std::string& parent_section_name)
   {
     // prevent invalid ordering of parameters caused by alphabetical output:
@@ -302,24 +303,36 @@ void Core::IO::print_dat(std::ostream& stream, const Teuchos::ParameterList& lis
 }
 
 
-void Core::IO::print_metadata_yaml(std::ostream& stream, const Teuchos::ParameterList& list)
+void Core::IO::print_metadata_yaml(std::ostream& stream, const Teuchos::ParameterList& list,
+    const std::map<std::string, InputSpec>& section_specs)
 {
   ryml::Tree tree;
   ryml::NodeRef root = tree.rootref();
   root |= ryml::MAP;
 
   {
-    // First write some metadata
     auto metadata = root["metadata"];
     metadata |= ryml::MAP;
     metadata["commit_hash"] << VersionControl::git_hash;
   }
 
   {
-    // Then write the key-value parameters.
     auto parameters = root["parameters"];
     parameters |= ryml::MAP;
-    print_metadata_yaml_impl(parameters, list, "");
+    print_metadata_yaml_parameter_list(parameters, list, "");
+  }
+
+  {
+    auto sections = root["sections"];
+    sections |= ryml::MAP;
+    for (const auto& [name, spec] : section_specs)
+    {
+      auto section = sections.append_child();
+      section |= ryml::MAP;
+      section << ryml::key(name);
+      YamlEmitter spec_emitter{section};
+      spec.emit_metadata(spec_emitter);
+    }
   }
 
   stream << tree;

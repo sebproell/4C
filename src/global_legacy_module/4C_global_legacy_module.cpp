@@ -24,11 +24,13 @@
 #include "4C_binstrategy_meshfree_multibin.hpp"
 #include "4C_constraint_element2.hpp"
 #include "4C_constraint_element3.hpp"
+#include "4C_contact_constitutivelaw_valid_laws.hpp"
 #include "4C_contact_element.hpp"
 #include "4C_contact_friction_node.hpp"
 #include "4C_contact_node.hpp"
 #include "4C_elemag_diff_ele.hpp"
 #include "4C_elemag_ele.hpp"
+#include "4C_fem_general_utils_createdis.hpp"
 #include "4C_fem_nurbs_discretization_control_point.hpp"
 #include "4C_fluid_ele.hpp"
 #include "4C_fluid_ele_hdg.hpp"
@@ -39,6 +41,8 @@
 #include "4C_fluid_xfluid_functions.hpp"
 #include "4C_fluid_xfluid_functions_combust.hpp"
 #include "4C_global_legacy_module_validmaterials.hpp"
+#include "4C_inpar_validparameters.hpp"
+#include "4C_io_input_file_utils.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_lubrication_ele.hpp"
 #include "4C_mat_aaaneohooke.hpp"
@@ -553,6 +557,50 @@ ModuleCallbacks global_legacy_module_callbacks()
   callbacks.materials = materials;
 
   return callbacks;
+}
+
+
+void write_input_metadata(std::ostream& out)
+{
+  std::map<std::string, Core::IO::InputSpec> section_specs;
+  section_specs["CONTACT CONSTITUTIVE LAWS"] =
+      CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws();
+  section_specs["CLONING MATERIAL MAP"] = Core::FE::valid_cloning_material_map();
+  section_specs["RESULT DESCRIPTION"] =
+      global_legacy_module_callbacks().valid_result_description_lines();
+
+  {
+    std::vector<Core::IO::InputSpec> possible_materials;
+    {
+      auto materials = global_legacy_module_callbacks().materials();
+      for (auto&& [type, spec] : materials)
+      {
+        possible_materials.emplace_back(std::move(spec));
+      }
+    }
+
+    using namespace Core::IO::InputSpecBuilders;
+    auto all_materials = all_of({
+        entry<int>("MAT"),
+        one_of(possible_materials),
+    });
+    section_specs["MATERIALS"] = all_materials;
+  }
+
+  {
+    Core::Utils::FunctionManager functionmanager;
+    global_legacy_module_callbacks().AttachFunctionDefinitions(functionmanager);
+
+    auto valid_functions = functionmanager.valid_function_lines();
+
+    for (unsigned i : std::views::iota(1, 21))
+    {
+      section_specs["FUNCT" + std::to_string(i)] = valid_functions;
+    }
+  }
+
+  auto valid_parameters = Input::valid_parameters();
+  Core::IO::print_metadata_yaml(out, *valid_parameters, section_specs);
 }
 
 FOUR_C_NAMESPACE_CLOSE
