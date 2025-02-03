@@ -64,4 +64,11 @@ void Core::IO::InputParameterContainer::merge(const Core::IO::InputParameterCont
 }
 
 
+void Core::IO::InputParameterContainer::clear()
+{
+  entries_.clear();
+  groups_.clear();
+}
+
+
 FOUR_C_NAMESPACE_CLOSE

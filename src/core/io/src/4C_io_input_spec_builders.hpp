@@ -13,7 +13,7 @@
 #include "4C_io_input_parameter_container.hpp"
 #include "4C_io_input_spec.hpp"
 #include "4C_io_value_parser.hpp"
-#include "4C_io_yaml_emitter.hpp"
+#include "4C_io_yaml.hpp"
 
 #include <functional>
 #include <optional>
@@ -126,6 +126,40 @@ namespace Core::IO
       return PrettyTypeName<T>{}();
     }
 
+    /**
+     * A small wrapper around a vector that provides a few convenience functions related to storing
+     * matched node IDs.
+     */
+    class Matches
+    {
+     public:
+      void push(ryml::id_type node) { matched_nodes_.push_back(node); }
+
+      void push_all(const Matches& other)
+      {
+        matched_nodes_.insert(
+            matched_nodes_.end(), other.matched_nodes_.begin(), other.matched_nodes_.end());
+      }
+
+      [[nodiscard]] bool are_direct_children_matched(ConstYamlNodeRef node) const
+      {
+        for (const auto& child : node.node.children())
+        {
+          if (std::find(matched_nodes_.begin(), matched_nodes_.end(), child.id()) ==
+              matched_nodes_.end())
+          {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      void clear() { matched_nodes_.clear(); }
+
+     private:
+      std::vector<ryml::id_type> matched_nodes_;
+    };
+
     class InputSpecTypeErasedBase
     {
      public:
@@ -161,6 +195,15 @@ namespace Core::IO
       InputSpecTypeErasedBase(CommonData data) : data(std::move(data)) {}
 
       virtual void parse(ValueParser& parser, InputParameterContainer& container) const = 0;
+
+      /**
+       * Returns true if the node matches the spec and stores the value in the container. The passed
+       * @p node is the parent node which might contain data matching the spec. Every spec needs
+       * to check if it can find required data in this node. If yes, the nodes that were used to
+       * match that spec are stored in @p matches.
+       */
+      virtual bool match(
+          ConstYamlNodeRef node, InputParameterContainer& container, Matches& matches) const = 0;
       virtual void set_default_value(InputParameterContainer& container) const = 0;
 
       //! Emit metadata. This function always emits into a map, i.e., the implementation must
@@ -203,6 +246,12 @@ namespace Core::IO
       void parse(ValueParser& parser, InputParameterContainer& container) const override
       {
         wrapped.parse(parser, container);
+      }
+
+      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+          Matches& matches) const override
+      {
+        return wrapped.match(node, container, matches);
       }
 
       void set_default_value(InputParameterContainer& container) const override
@@ -430,6 +479,8 @@ namespace Core::IO
         using StoredType = typename DataType::StoredType;
         DataType data;
         void parse(ValueParser& parser, InputParameterContainer& container) const;
+        bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+            IO::Internal::Matches& matches) const;
         void emit_metadata(ryml::NodeRef node) const;
       };
 
@@ -442,6 +493,8 @@ namespace Core::IO
         using StoredType = typename DataType::StoredType;
         DataType data;
         std::function<void(ValueParser&, InputParameterContainer&)> parse;
+        std::function<bool(ConstYamlNodeRef, InputParameterContainer&, IO::Internal::Matches&)>
+            match;
         std::function<void(std::ostream&, std::size_t)> print;
         std::function<void(ryml::NodeRef)> emit_metadata;
       };
@@ -455,6 +508,8 @@ namespace Core::IO
         DataType data;
         std::vector<std::pair<std::string, StoredType>> choices;
         void parse(ValueParser& parser, InputParameterContainer& container) const;
+        bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+            IO::Internal::Matches& matches) const;
         void print(std::ostream& stream, std::size_t indent) const;
         void emit_metadata(ryml::NodeRef node) const;
       };
@@ -466,6 +521,8 @@ namespace Core::IO
         std::vector<InputSpec> specs;
 
         void parse(ValueParser& parser, InputParameterContainer& container) const;
+        bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+            IO::Internal::Matches& matches) const;
         void set_default_value(InputParameterContainer& container) const;
         void print(std::ostream& stream, std::size_t indent) const;
         void emit_metadata(ryml::NodeRef node) const;
@@ -477,6 +534,8 @@ namespace Core::IO
         std::vector<InputSpec> specs;
 
         void parse(ValueParser& parser, InputParameterContainer& container) const;
+        bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+            IO::Internal::Matches& matches) const;
         void set_default_value(InputParameterContainer& container) const;
         void print(std::ostream& stream, std::size_t indent) const;
         void emit_metadata(ryml::NodeRef node) const;
@@ -491,11 +550,13 @@ namespace Core::IO
 
         //! This callback may be used to perform additional actions after parsing one of the specs.
         //! The index of the parsed spec as given inside #specs is passed as an argument.
-        std::function<void(
-            ValueParser& parser, InputParameterContainer& container, std::size_t index)>
+        std::function<void(InputParameterContainer& container, std::size_t index)>
             on_parse_callback;
 
         void parse(ValueParser& parser, InputParameterContainer& container) const;
+
+        bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+            IO::Internal::Matches& matches) const;
 
         void set_default_value(InputParameterContainer& container) const;
 
@@ -838,8 +899,8 @@ namespace Core::IO
      * @relatedalso InputSpec
      */
     [[nodiscard]] InputSpec one_of(std::vector<InputSpec> specs,
-        std::function<void(ValueParser& parser, InputParameterContainer& container,
-            std::size_t index)> on_parse_callback = nullptr);
+        std::function<void(InputParameterContainer& container, std::size_t index)>
+            on_parse_callback = nullptr);
 
     /**
      * This function may be used to produce the optional argument of the one_of() function. It
@@ -917,6 +978,34 @@ void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataType>::parse(
 
 
 template <typename DataTypeIn>
+bool Core::IO::InputSpecBuilders::Internal::BasicSpec<DataTypeIn>::match(
+    ConstYamlNodeRef node, InputParameterContainer& container, IO::Internal::Matches& matches) const
+{
+  auto spec_name = ryml::to_csubstr(name);
+  if (!node.node.has_child(spec_name))
+  {
+    return false;
+  }
+  auto entry_node = node.wrap(node.node[spec_name]);
+
+  FOUR_C_ASSERT(entry_node.node.key() == name, "Internal error.");
+
+  try
+  {
+    typename DataTypeIn::StoredType value;
+    read_value_from_yaml(entry_node, value);
+    container.add(name, value);
+    matches.push(entry_node.node.id());
+  }
+  catch (const Core::Exception& e)
+  {
+    return false;
+  }
+  return true;
+}
+
+
+template <typename DataTypeIn>
 void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataTypeIn>::emit_metadata(
     ryml::NodeRef node) const
 {
@@ -960,6 +1049,43 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::parse(
     }
   }
   FOUR_C_THROW("Invalid value '%s'", value.c_str());
+}
+
+
+template <typename DataTypeIn>
+bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::match(
+    ConstYamlNodeRef node, InputParameterContainer& container, IO::Internal::Matches& matches) const
+{
+  auto spec_name = ryml::to_csubstr(name);
+  if (!node.node.has_child(spec_name))
+  {
+    return false;
+  }
+  auto entry_node = node.wrap(node.node[spec_name]);
+
+  FOUR_C_ASSERT(entry_node.node.key() == name, "Internal error.");
+
+  try
+  {
+    std::string value;
+    read_value_from_yaml(entry_node, value);
+
+    for (const auto& choice : choices)
+    {
+      if (choice.first == value)
+      {
+        container.add(name, choice.second);
+        matches.push(entry_node.node.id());
+        return true;
+      }
+    }
+  }
+  catch (const std::exception& e)
+  {
+    return false;
+  }
+
+  return false;
 }
 
 template <typename DataTypeIn>
@@ -1069,6 +1195,10 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::user_defined(std::string name, 
       Internal::UserDefinedSpec<DataType>{.name = name,
           .data = std::forward<DataType>(data),
           .parse = parse,
+          .match =
+              [](ConstYamlNodeRef, InputParameterContainer&, IO::Internal::Matches&) {  // TODO
+                return false;
+              },
           .print = print ? print : [](std::ostream&, std::size_t) {},
           .emit_metadata = emit_metadata ? emit_metadata : default_emitter},
       {
@@ -1143,8 +1273,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
 template <typename T>
 auto Core::IO::InputSpecBuilders::store_index_as(std::string name, std::vector<T> reindexing)
 {
-  return
-      [name, reindexing](ValueParser& parser, InputParameterContainer& container, std::size_t index)
+  return [name, reindexing](InputParameterContainer& container, std::size_t index)
   {
     if (reindexing.empty())
     {

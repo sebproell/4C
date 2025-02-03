@@ -11,6 +11,7 @@
 #include "4C_config.hpp"
 
 #include <memory>
+#include <optional>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -18,7 +19,8 @@ namespace Core::IO
 {
   class InputParameterContainer;
   class ValueParser;
-  class YamlEmitter;
+  class YamlNodeRef;
+  class ConstYamlNodeRef;
 
   namespace Internal
   {
@@ -51,6 +53,8 @@ namespace Core::IO
      */
     void fully_parse(ValueParser& parser, InputParameterContainer& container) const;
 
+    [[nodiscard]] std::optional<InputParameterContainer> match(ConstYamlNodeRef yaml) const;
+
     /**
      * Print the expected input format of this InputSpec to @p stream in dat format.
      */
@@ -59,7 +63,7 @@ namespace Core::IO
     /**
      * Emit metadata about the InputSpec to the @p yaml emitter.
      */
-    void emit_metadata(YamlEmitter& yaml) const;
+    void emit_metadata(YamlNodeRef yaml) const;
 
     /**
      * Access the opaque implementation class. This is used in the implementation files where the

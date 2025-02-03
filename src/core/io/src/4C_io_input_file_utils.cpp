@@ -17,12 +17,10 @@
 #include "4C_io_input_spec.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_io_value_parser.hpp"
-#include "4C_io_yaml_emitter.hpp"
+#include "4C_io_yaml.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
 #include "4C_utils_string.hpp"
 
-#include <ryml.hpp>
-#include <ryml_std.hpp>
 #include <Teuchos_ParameterList.hpp>
 #include <Teuchos_StrUtils.hpp>
 #include <Teuchos_Time.hpp>
@@ -306,7 +304,7 @@ void Core::IO::print_dat(std::ostream& stream, const Teuchos::ParameterList& lis
 void Core::IO::print_metadata_yaml(std::ostream& stream, const Teuchos::ParameterList& list,
     const std::map<std::string, InputSpec>& section_specs)
 {
-  ryml::Tree tree;
+  ryml::Tree tree = init_yaml_tree_with_exceptions();
   ryml::NodeRef root = tree.rootref();
   root |= ryml::MAP;
 
@@ -330,7 +328,7 @@ void Core::IO::print_metadata_yaml(std::ostream& stream, const Teuchos::Paramete
       auto section = sections.append_child();
       section |= ryml::MAP;
       section << ryml::key(name);
-      YamlEmitter spec_emitter{section};
+      YamlNodeRef spec_emitter{section, ""};
       spec.emit_metadata(spec_emitter);
     }
   }
