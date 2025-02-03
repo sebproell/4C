@@ -251,46 +251,38 @@ COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME 20*(y-1)
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME v
 VARIABLE 0 NAME v TYPE multifunction NUMPOINTS 3 TIMES 0.0 0.5 10.0 DESCRIPTION 0.5*(1-cos(2*t*pi)) 1.0
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF 2
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
-E 9 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.1 0.0 FUNCT 0 2 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 9 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.1 0.0 FUNCT 0 2 0
 //E 8 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 //E 2 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 --------------------------------------DESIGN VOL DIRICH CONDITIONS
-DVOL   3
-E 1 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
-E 2 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
-E 3 - NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 3 NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0 0.0 0.0 FUNCT 0 0 0 0
 //---------------------------------------DESIGN VOL PORO DIRICH CONDITIONS
 //DVOL   1
 //E 2 - NUMDOF 4 ONOFF 1 0 1 0 VAL 0.0 0 0.0 0.0 FUNCT 0 0 0 0
 --------------------------------DESIGN SURF PORO DIRICH CONDITIONS
-DSURF 1
-E 8 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 8 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 ---------------------------------DESIGN SURF ALE DIRICH CONDITIONS
-DSURF  1
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -------------------------------DESIGN FSI COUPLING SURF CONDITIONS
-DSURF  2
 // structure_coupling_surface
-E 3 - coupling_id 1
+E 3 coupling_id 1
 // fluid_coupling_surface
-E 4 - coupling_id 1
+E 4 coupling_id 1
 ------------------------------DESIGN FPSI COUPLING SURF CONDITIONS
-DSURF  2
 // structure_coupling_surface
-E 7 - coupling_id 1
+E 7 coupling_id 1
 // fluid_coupling_surface
-E 6 - coupling_id 1
+E 6 coupling_id 1
 --------------------------DESIGN SURFACE PORO PRESSURE INTEGRATION
-DSURF  2
 // structure_coupling_surface ... fpsi
-E 7 -
+E 7
 // p s coupling surface
-E 10 -
+E 10
 ------------------------------DESIGN VOLUME POROCOUPLING CONDITION
-DVOL   1
-E 2 -
+E 2
 ---------------------------DESIGN SURFACE PORO PARTIAL INTEGRATION
 //DSURF        0
 //E 7 -

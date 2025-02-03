@@ -189,29 +189,24 @@ SRC_FIELD structure SRC_MAT 1 TAR_FIELD porofluid TAR_MAT 3
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME a
 VARIABLE 0 NAME a TYPE multifunction NUMPOINTS 4 TIMES 0.0 1 21 500000.0 DESCRIPTION 0.01+0.09*0.5*(1-cos((t*pi/1.0))) 0.01+0.09+0.21*0.5*(1-cos(((t-1.0)*pi/20.0))) 0.01+0.3
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  2
 // struct_bottom
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // pusher_top
-E 4 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 -1.0 FUNCT 0 0 1
+E 4 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 -1.0 FUNCT 0 0 1
 --------------------------------DESIGN SURF PORO DIRICH CONDITIONS
-DSURF  1
 // struct_bottom
-E 1 - NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 ------------------------------DESIGN VOLUME POROCOUPLING CONDITION
-DVOL  1
 // poro_surface
-E 1 -
+E 1
 ---------------------------DESIGN SURFACE PORO PARTIAL INTEGRATION
-DSURF  1
 // all
-E 5 -
+E 5
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
-DSURF  2
 // zp
-E 2 - InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.3
+E 2 InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.3
 // s_contact
-E 3 - InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.3
+E 3 InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.3
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    1 DSURFACE 1
 NODE    2 DSURFACE 1

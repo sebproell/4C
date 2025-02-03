@@ -66,19 +66,17 @@ STRUCTURE DIS structure NODE 11 QUANTITY dispx VALUE 1.9547069624368049e-01 TOLE
 STRUCTURE DIS structure NODE 11 QUANTITY dispy VALUE -3.0289183129216480e-03 TOLERANCE 1e-8
 STRUCTURE DIS structure NODE 11 QUANTITY dispz VALUE 3.4528236362011839e-06 TOLERANCE 1e-8
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF                           3
 // slave oben
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 1 -0.01 0.0 FUNCT 1 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 1 -0.01 0.0 FUNCT 1 0 0
 //                              master
-E 3 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 3 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // master unten
-E 4 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 4 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -----------------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
-DSURF                           2
 //                              slave
-E 2 - InterfaceID 1 Side Slave Initialization Active FrCoeffOrBound 0.2
+E 2 InterfaceID 1 Side Slave Initialization Active FrCoeffOrBound 0.2
 //                              master
-E 3 - InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.2
+E 3 InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.2
 ---------------------------------------------------------DSURF-NODE TOPOLOGY
 NODE 3 DSURFACE 1
 NODE 4 DSURFACE 1

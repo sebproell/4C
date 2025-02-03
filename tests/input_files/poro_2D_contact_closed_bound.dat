@@ -154,35 +154,29 @@ STRUCTURE DIS structure NODE 116 QUANTITY dispy VALUE -3.43155112375127580e-01 T
 STRUCTURE DIS structure NODE 117 QUANTITY dispx VALUE -1.35953543237678949e-02 TOLERANCE 1e-8
 STRUCTURE DIS structure NODE 117 QUANTITY velx VALUE -1.77604315363663612e-02 TOLERANCE 1e-8
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  2
 // solid_top
-E 3 - NUMDOF 2 ONOFF 1 1 VAL 1.0 -1.0 FUNCT 2 1
+E 3 NUMDOF 2 ONOFF 1 1 VAL 1.0 -1.0 FUNCT 2 1
 // poro_bottom
-E 4 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 4 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 --------------------------------DESIGN LINE PORO DIRICH CONDITIONS
-DLINE  1
 // poro_bottom
-E 4 - NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 4 NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 --------------------------DESIGN LINE MORTAR CONTACT CONDITIONS 2D
-DLINE  2
 // solid_contact_interface
-E 1 - InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.3
+E 1 InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.3
 // poro_contact_interface
-E 2 - InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.3
+E 2 InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.3
 -----------------------------DESIGN SURFACE POROCOUPLING CONDITION
-DSURF  1
 // poro
-E 1 -
+E 1
 ------------------------------DESIGN LINE PORO PARTIAL INTEGRATION
-DLINE  2
 // poro_left
-E 5 -
+E 5
 // poro_right
-E 6 -
+E 6
 -----------------------------DESIGN LINE PORO PRESSURE INTEGRATION
-DLINE  1
 // poro_contact_interface
-E 2 -
+E 2
 -----------------------------------------------DLINE-NODE TOPOLOGY
 NODE    111 DLINE 1
 NODE    112 DLINE 1

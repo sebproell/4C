@@ -93,43 +93,35 @@ SRC_FIELD fluid SRC_MAT 1 TAR_FIELD ale TAR_MAT 2
 ------------------------------------------------------------FUNCT1
 SYMBOLIC_FUNCTION_OF_SPACE_TIME t*t*t
 ------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 2
 // fluid fsi
-E 1 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // str fsi
-E 2 - NUMDOF 3 ONOFF 0 0 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 0 0 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF 1
 // str dirichlet
-E 3 - NUMDOF 3 ONOFF 1 1 1 VAL 1.0 0.0 0.0 FUNCT 1 0 0
+E 3 NUMDOF 3 ONOFF 1 1 1 VAL 1.0 0.0 0.0 FUNCT 1 0 0
 --------------------------------------DESIGN VOL DIRICH CONDITIONS
-DVOL 2
 // bgfluid volume
-E 1 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // embedded volume
-E 2 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 ----------------------------------DESIGN VOL ALE DIRICH CONDITIONS
-DVOL 1
 // embedded volume
-E 2 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 -------------------------------DESIGN FSI COUPLING SURF CONDITIONS
-DSURF 2
 // fluid fsi
-E 1 - coupling_id 1
+E 1 coupling_id 1
 // str fsi
-E 4 - coupling_id 1
+E 4 coupling_id 1
 ----------------------------DESIGN XFEM FLUIDFLUID SURF CONDITIONS
-DSURF 1
 // xfem
-E 2 - COUPLINGID 1 COUPSTRATEGY embedded
+E 2 COUPLINGID 1 COUPSTRATEGY embedded
 -----------------------DESIGN FLUID FLUID COUPLING SURF CONDITIONS
-DSURF 1
 // fluid fluid
-E 5 - COUPLINGID 1
+E 5 COUPLINGID 1
 ----------------------------------DESIGN FLUID MESH VOL CONDITIONS
-DVOL 1
 // embedded volume
-E 2 - COUPLINGID 1
+E 2 COUPLINGID 1
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE 25 DNODE 1
 NODE 26 DNODE 1

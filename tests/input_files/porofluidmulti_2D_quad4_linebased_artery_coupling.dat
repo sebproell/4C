@@ -123,15 +123,12 @@ SYMBOLIC_FUNCTION_OF_TIME t/1.5
 ----------------------------------------------------------------------FUNCT6
 VARFUNCTION (p_art-p3)*0.001
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  1
 // all 2d nodes
-E 1 - NUMDOF 5 ONOFF 1 1 1 1 1 VAL 0.1 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
+E 1 NUMDOF 5 ONOFF 1 1 1 1 1 VAL 0.1 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
 ---------------------------------------------DESIGN POINT NEUMANN CONDITIONS
-DPOINT                          1
-E 1 - NUMDOF 1 ONOFF 1 VAL 1.0 FUNCT 0
+E 1 NUMDOF 1 ONOFF 1 VAL 1.0 FUNCT 0
 ---------------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT                          1
-E 2 - NUMDOF 1 ONOFF 1 VAL 0.0 FUNCT 0
+E 2 NUMDOF 1 ONOFF 1 VAL 0.0 FUNCT 0
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    65 DNODE 1
 NODE    75 DNODE 2

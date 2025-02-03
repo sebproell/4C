@@ -142,43 +142,39 @@ FLUID DIS fluid NODE 695 QUANTITY vely VALUE -1.86107661689178397e-06 TOLERANCE 
 FLUID DIS fluid NODE 695 QUANTITY velz VALUE 0.00000000000000000e+00 TOLERANCE 1e-09
 FLUID DIS fluid NODE 695 QUANTITY pressure VALUE 3.82942436384208773e-02 TOLERANCE 1e-11
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF                           10
 //                              back
-E 1 - NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 //                              front
-E 2 - NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // inflow top
-E 3 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 3 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // inflow bottom
-E 4 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 4 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 //                              outflow
-E 5 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 5 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // outflow top
-E 6 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 6 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // outflow bottom
-E 7 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 7 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 //                              inflow
-E 8 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 8 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 //                              anode
-E 9 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 9 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 //                              cathode
-E 10 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 10 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 -------------------------------------DESIGN SURF TRANSPORT DIRICH CONDITIONS
-DSURF                           2
 //                              inflow
-E 8 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.5 1.0 0.0 FUNCT 0 0 0 0
+E 8 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.5 1.0 0.0 FUNCT 0 0 0 0
 // cathode (for neutral species use a Dirichlet b.c.)
-E 10 - NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 1.0 0.0 FUNCT 0 0 6 0
+E 10 NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 1.0 0.0 FUNCT 0 0 6 0
 ---------------------------------ELECTRODE BOUNDARY KINETICS SURF CONDITIONS
-DSURF                           2
 //                              anode
-E 9 - ConditionID 0 POT 1.0 FUNCT 5 NUMSCAL 3 STOICH -1 0 0  E- 1 EPSILON -1 ZERO_CUR 0 KINETIC_MODEL Butler-Volmer ALPHA_A 0.5 ALPHA_C 0.5 I0 964.853399 GAMMA 1.0 REFCON 1.0 DL_SPEC_CAP 0.0
+E 9 ConditionID 0 POT 1.0 FUNCT 5 NUMSCAL 3 STOICH -1 0 0  E- 1 EPSILON -1 ZERO_CUR 0 KINETIC_MODEL Butler-Volmer ALPHA_A 0.5 ALPHA_C 0.5 I0 964.853399 GAMMA 1.0 REFCON 1.0 DL_SPEC_CAP 0.0
 //                              cathode
-E 10 - ConditionID 1 POT 0.0 FUNCT 5 NUMSCAL 3 STOICH -1 0 0  E- 1 EPSILON -1 ZERO_CUR 0 KINETIC_MODEL Butler-Volmer ALPHA_A 0.5 ALPHA_C 0.5 I0 964.853399 GAMMA 1.0 REFCON 1.0 DL_SPEC_CAP 0.0
+E 10 ConditionID 1 POT 0.0 FUNCT 5 NUMSCAL 3 STOICH -1 0 0  E- 1 EPSILON -1 ZERO_CUR 0 KINETIC_MODEL Butler-Volmer ALPHA_A 0.5 ALPHA_C 0.5 I0 964.853399 GAMMA 1.0 REFCON 1.0 DL_SPEC_CAP 0.0
 --------------------------------------------DESIGN FLOW RATE SURF CONDITIONS
-DSURF                           2
-E 8 - ConditionID 1
-E 5 - ConditionID 2
+E 8 ConditionID 1
+E 5 ConditionID 2
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 29 DNODE 1
 ---------------------------------------------------------DSURF-NODE TOPOLOGY

@@ -72,17 +72,15 @@ VARIABLE 0 NAME a TYPE linearinterpolation NUMPOINTS 3 TIMES 0 0.1 1 VALUES 0 0.
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME a
 VARIABLE 0 NAME a TYPE linearinterpolation NUMPOINTS 3 TIMES 0 0.1 1 VALUES 0 0 0.6
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF                           2
 //                              top_dirichlet
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 1.0 0.0 -1.0 FUNCT 2 0 1
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 1.0 0.0 -1.0 FUNCT 2 0 1
 //                              bottom_dirichlet
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -----------------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
-DSURF                           2
 //                              top_contact
-E 3 - InterfaceID 1 Side Slave Initialization Inactive
+E 3 InterfaceID 1 Side Slave Initialization Inactive
 //                              bottom_contact
-E 4 - InterfaceID 1 Side Master Initialization Inactive
+E 4 InterfaceID 1 Side Master Initialization Inactive
 ---------------------------------------------------------DSURF-NODE TOPOLOGY
 NODE 65 DSURFACE 1
 NODE 68 DSURFACE 1

@@ -59,13 +59,11 @@ STRUCTURE DIS structure NODE 1443 QUANTITY dispx VALUE 1.37097102380157078e-02 T
 STRUCTURE DIS structure NODE 1443 QUANTITY dispy VALUE 1.82519872696213885e-02 TOLERANCE 1e-10
 STRUCTURE DIS structure NODE 1443 QUANTITY dispz VALUE 9.15539273602530013e-02 TOLERANCE 1e-10
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF                           2
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 1.0 1.0 1.0 FUNCT 1 1 1
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 1.0 1.0 1.0 FUNCT 1 1 1
 -----------------------------------DESIGN SURF MORTAR COUPLING CONDITIONS 3D
-DSURF                           2
-E 3 - InterfaceID 1 Side Master Initialization Inactive
-E 4 - InterfaceID 1 Side Slave Initialization Active
+E 3 InterfaceID 1 Side Master Initialization Inactive
+E 4 InterfaceID 1 Side Slave Initialization Active
 ---------------------------------------------------------DSURF-NODE TOPOLOGY
 NODE 360 DSURFACE 1
 NODE 365 DSURFACE 1

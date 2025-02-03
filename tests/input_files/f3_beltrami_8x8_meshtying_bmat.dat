@@ -113,25 +113,23 @@ FLUID DIS fluid NODE 1 QUANTITY L2errpre VALUE 1.82991074114060917e-02 TOLERANCE
 FLUID DIS fluid NODE 1 QUANTITY H1errvel VALUE 8.20542456931862285e-02 TOLERANCE 1e-9
 FLUID DIS fluid NODE 1 QUANTITY divu VALUE 2.64749882686743732e+00 TOLERANCE 1e-9
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  6
 // surface top
-E 1 - NUMDOF 4 ONOFF 1 1 1 1 VAL 1.0 1.0 1.0 1.0 FUNCT 1 1 1 2
+E 1 NUMDOF 4 ONOFF 1 1 1 1 VAL 1.0 1.0 1.0 1.0 FUNCT 1 1 1 2
 // surface front
-E 2 - NUMDOF 4 ONOFF 1 1 1 1 VAL 1.0 1.0 1.0 1.0 FUNCT 1 1 1 2
+E 2 NUMDOF 4 ONOFF 1 1 1 1 VAL 1.0 1.0 1.0 1.0 FUNCT 1 1 1 2
 // surface back
-E 3 - NUMDOF 4 ONOFF 1 1 1 1 VAL 1.0 1.0 1.0 1.0 FUNCT 1 1 1 2
+E 3 NUMDOF 4 ONOFF 1 1 1 1 VAL 1.0 1.0 1.0 1.0 FUNCT 1 1 1 2
 // surface unten
-E 4 - NUMDOF 4 ONOFF 1 1 1 1 VAL 1.0 1.0 1.0 1.0 FUNCT 1 1 1 2
+E 4 NUMDOF 4 ONOFF 1 1 1 1 VAL 1.0 1.0 1.0 1.0 FUNCT 1 1 1 2
 // surface rechts
-E 5 - NUMDOF 4 ONOFF 1 1 1 1 VAL 1.0 1.0 1.0 1.0 FUNCT 1 1 1 2
+E 5 NUMDOF 4 ONOFF 1 1 1 1 VAL 1.0 1.0 1.0 1.0 FUNCT 1 1 1 2
 // surface links
-E 6 - NUMDOF 4 ONOFF 1 1 1 1 VAL 1.0 1.0 1.0 1.0 FUNCT 1 1 1 2
+E 6 NUMDOF 4 ONOFF 1 1 1 1 VAL 1.0 1.0 1.0 1.0 FUNCT 1 1 1 2
 -------------------------DESIGN SURF MORTAR COUPLING CONDITIONS 3D
-DSURF  2
 // inside meshtying
-E 7 - InterfaceID 1 Side Slave
+E 7 InterfaceID 1 Side Slave
 // outside meshtying
-E 8 - InterfaceID 1 Side Master
+E 8 InterfaceID 1 Side Master
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    51 DNODE 1
 -----------------------------------------------DSURF-NODE TOPOLOGY

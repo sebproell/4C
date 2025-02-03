@@ -121,29 +121,24 @@ COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME 699.81667 // = 800 degrees Fahrenhei
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME a
 VARIABLE 0 NAME a TYPE multifunction NUMPOINTS 3 TIMES 0.0 5 500000.0 DESCRIPTION 0.5*(sin((t*pi/5)-(pi/2)))+0.5 0.5*(sin((5*pi/5)-(pi/2)))+0.5
 ----------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF                           1
 //                              surf_pseudo_orthopressure
-E 1 - NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL -2.517e4 0.0 0.0 0.0 0.0 0.0 FUNCT 2 2 2 2 2 2 TYPE pseudo_orthopressure
+E 1 NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL -2.517e4 0.0 0.0 0.0 0.0 0.0 FUNCT 2 2 2 2 2 2 TYPE pseudo_orthopressure
 -----------------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE                           2
 //                              line_sym_edge__fix_yz_move_x
-E 1 - NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 //                              line_sym_edge_fix_xz_move_y
-E 2 - NUMDOF 3 ONOFF 1 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF                           2
 //                              surf_normal_x_and_fixed_in_x
-E 2 - NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 //                              surf_normal_y_and_fixed_in_y
-E 3 - NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 3 NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 ------------------------------------------------DESIGN VOL DIRICH CONDITIONS
-DVOL                            1
 //                              fixed_complete_body_in_z
-E 1 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -----------------------------------------DESIGN VOL THERMO DIRICH CONDITIONS
-DVOL                            1
 //                              constant_temperature
-E 2 - NUMDOF 1 ONOFF 1 VAL 699.81667 FUNCT 0
+E 2 NUMDOF 1 ONOFF 1 VAL 699.81667 FUNCT 0
 ---------------------------------------------------------DLINE-NODE TOPOLOGY
 NODE 1 DLINE 1
 NODE 4 DLINE 1

@@ -179,131 +179,118 @@ SCATRA DIS scatra SPECIAL true QUANTITY soc1 VALUE  5.58744019258593000e-04 TOLE
 SCATRA DIS scatra SPECIAL true QUANTITY cellvoltage VALUE  3.54036624711530523e+00 TOLERANCE 3.5e-08
 SSTI SPECIAL true QUANTITY numiterlastnonlinearsolve VALUE  4.00000000000000000e+00 TOLERANCE 1.0e-16
 --------------------------DESIGN SURF TRANSPORT NEUMANN CONDITIONS
-DSURF  1
 // cat-side_cc
-E 12 - NUMDOF 2 ONOFF 0 1 VAL 0.0  8.878927606e-6 FUNCT 0 0
+E 12 NUMDOF 2 ONOFF 0 1 VAL 0.0  8.878927606e-6 FUNCT 0 0
 ------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 2
 // vertices_an_cc
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
 // vertices_cat_cc
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  3
 // battery_curves_in_y-direction
-E 1 - NUMDOF 3 ONOFF 1 0 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 1 NUMDOF 3 ONOFF 1 0 1 VAL 0.0 0.0 0.0 FUNCT none none none
 // battery_curves_in_z-direction
-E 2 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT none none none
+E 2 NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT none none none
 // battery_curves_in_x-direction
-E 3 - NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 3 NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  4
 // an-side_cc
-E 1 - NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT none none none
+E 1 NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT none none none
 // cat-side_cc
-E 12 - NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT none none none
+E 12 NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT none none none
 // battery_surface_normal_to_y
-E 13 - NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT none none none
+E 13 NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT none none none
 // battery_surface_normal_to_z
-E 14 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 14 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT none none none
 ---------------------------DESIGN SURF TRANSPORT DIRICH CONDITIONS
-DSURF  1
 // an-side_cc
-E 1 - NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
 ----------------------------DESIGN VOL TRANSPORT DIRICH CONDITIONS
-DVOL   3
 // electrolyte
-E 2 - NUMDOF 2 ONOFF 1 0 VAL 1.2e3 0.0 FUNCT 0 0
+E 2 NUMDOF 2 ONOFF 1 0 VAL 1.2e3 0.0 FUNCT 0 0
 // anode_cc
-E 4 - NUMDOF 2 ONOFF 1 0 VAL 1.2e3 0.0 FUNCT 0 0
+E 4 NUMDOF 2 ONOFF 1 0 VAL 1.2e3 0.0 FUNCT 0 0
 // cathode_cc
-E 5 - NUMDOF 2 ONOFF 1 0 VAL 1.2e3 0.0 FUNCT 0 0
+E 5 NUMDOF 2 ONOFF 1 0 VAL 1.2e3 0.0 FUNCT 0 0
 -------------------------------DESIGN VOL INITIAL FIELD CONDITIONS
-DVOL   5
 // anode
-E 1 - FIELD ScaTra FUNCT 1
+E 1 FIELD ScaTra FUNCT 1
 // electrolyte
-E 2 - FIELD ScaTra FUNCT 2
+E 2 FIELD ScaTra FUNCT 2
 // cathode
-E 3 - FIELD ScaTra FUNCT 3
+E 3 FIELD ScaTra FUNCT 3
 // anode_cc
-E 4 - FIELD ScaTra FUNCT 5
+E 4 FIELD ScaTra FUNCT 5
 // cathode_cc
-E 5 - FIELD ScaTra FUNCT 4
+E 5 FIELD ScaTra FUNCT 4
 -------------------------------DESIGN S2I KINETICS SURF CONDITIONS
-DSURF  10
 // cc-side_(sl)_of_an-cc_interface
-E 2 - ConditionID 0 INTERFACE_SIDE Slave KINETIC_MODEL ConstantInterfaceResistance ONOFF  0 1 RESISTANCE 8.0e-3  E- 1 IS_PSEUDO_CONTACT False
+E 2 ConditionID 0 INTERFACE_SIDE Slave KINETIC_MODEL ConstantInterfaceResistance ONOFF  0 1 RESISTANCE 8.0e-3  E- 1 IS_PSEUDO_CONTACT False
 // an-side_(ma)_of_an-cc_interface
-E 3 - ConditionID 0 INTERFACE_SIDE Master
+E 3 ConditionID 0 INTERFACE_SIDE Master
 // an-side_(sl)_of_an-el_interface
-E 4 - ConditionID 1 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced_ThermoResistance NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.036426957e-3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False  THERMOPERM  1.0e-4 MOLAR_HEAT_CAPACITY 0.0
+E 4 ConditionID 1 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced_ThermoResistance NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.036426957e-3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False  THERMOPERM  1.0e-4 MOLAR_HEAT_CAPACITY 0.0
 // el-side_(ma)_of_an-el_interface
-E 5 - ConditionID 1 INTERFACE_SIDE Master
+E 5 ConditionID 1 INTERFACE_SIDE Master
 // el-side_(ma)_of_cat-el_interface
-E 6 - ConditionID 2 INTERFACE_SIDE Master
+E 6 ConditionID 2 INTERFACE_SIDE Master
 // cat-side_(sl)_of_cat-el_interfac
-E 7 - ConditionID 2 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced_ThermoResistance NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  2.07e-5 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False  THERMOPERM  1.0e-4 MOLAR_HEAT_CAPACITY 0.0
+E 7 ConditionID 2 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced_ThermoResistance NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  2.07e-5 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False  THERMOPERM  1.0e-4 MOLAR_HEAT_CAPACITY 0.0
 // cat-side_(ma)_of_cat-cc_interfac
-E 8 - ConditionID 3 INTERFACE_SIDE Master
+E 8 ConditionID 3 INTERFACE_SIDE Master
 // cc-side_(sl)_of_cat-comp_cat-cc_
-E 9 - ConditionID 3 INTERFACE_SIDE Slave KINETIC_MODEL ConstantInterfaceResistance ONOFF  0 1  RESISTANCE 2.0e-3  E- 1 IS_PSEUDO_CONTACT False
+E 9 ConditionID 3 INTERFACE_SIDE Slave KINETIC_MODEL ConstantInterfaceResistance ONOFF  0 1  RESISTANCE 2.0e-3  E- 1 IS_PSEUDO_CONTACT False
 // sol-el-side_(ma)_of_comp_cat-cc_
-E 10 - ConditionID 4 INTERFACE_SIDE Master
+E 10 ConditionID 4 INTERFACE_SIDE Master
 // cc-side_(sl)_of_sol-el-comp_cat-
-E 11 - ConditionID 4 INTERFACE_SIDE Slave KINETIC_MODEL NoInterfaceFlux
+E 11 ConditionID 4 INTERFACE_SIDE Slave KINETIC_MODEL NoInterfaceFlux
 -----------------------DESIGN TOTAL AND MEAN SCALAR VOL CONDITIONS
-DVOL   3
 // anode
-E 1 - ConditionID 0
+E 1 ConditionID 0
 // electrolyte
-E 2 - ConditionID 1
+E 2 ConditionID 1
 // cathode
-E 3 - ConditionID 2
+E 3 ConditionID 2
 -----------------------DESIGN SCATRA VOL CONDITIONS / PARTITIONING
-DVOL   5
 // anode
-E 1 -
+E 1
 // electrolyte
-E 2 -
+E 2
 // cathode
-E 3 -
+E 3
 // anode_cc
-E 4 -
+E 4
 // cathode_cc
-E 5 -
+E 5
 -------------------DESIGN ELECTRODE STATE OF CHARGE VOL CONDITIONS
-DVOL   1
 // cathode
-E 3 - ConditionID 1 C_0% 4.5536e4 C_100% 1.6776e4 ONE_HOUR 3600000
+E 3 ConditionID 1 C_0% 4.5536e4 C_100% 1.6776e4 ONE_HOUR 3600000
 -------------------------------DESIGN CELL VOLTAGE SURF CONDITIONS
-DSURF  2
 // an-side_cc
-E 1 - ConditionID 0
+E 1 ConditionID 0
 // cat-side_cc
-E 12 - ConditionID 1
+E 12 ConditionID 1
 -------------------DESIGN SSTI INTERFACE MESHTYING SURF CONDITIONS
-DSURF  10
 // cc-side_(sl)_of_an-cc_interface
-E 2 - ConditionID 0 INTERFACE_SIDE Slave S2I_KINETICS_ID  0
+E 2 ConditionID 0 INTERFACE_SIDE Slave S2I_KINETICS_ID  0
 // an-side_(ma)_of_an-cc_interface
-E 3 - ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID  0
+E 3 ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID  0
 // an-side_(sl)_of_an-el_interface
-E 4 - ConditionID 1 INTERFACE_SIDE Slave S2I_KINETICS_ID  1
+E 4 ConditionID 1 INTERFACE_SIDE Slave S2I_KINETICS_ID  1
 // el-side_(ma)_of_an-el_interface
-E 5 - ConditionID 1 INTERFACE_SIDE Master S2I_KINETICS_ID  1
+E 5 ConditionID 1 INTERFACE_SIDE Master S2I_KINETICS_ID  1
 // el-side_(ma)_of_cat-el_interface
-E 6 - ConditionID 2 INTERFACE_SIDE Master S2I_KINETICS_ID  2
+E 6 ConditionID 2 INTERFACE_SIDE Master S2I_KINETICS_ID  2
 // cat-side_(sl)_of_cat-el_interfac
-E 7 - ConditionID 2 INTERFACE_SIDE Slave S2I_KINETICS_ID  2
+E 7 ConditionID 2 INTERFACE_SIDE Slave S2I_KINETICS_ID  2
 // cat-side_(ma)_of_cat-cc_interfac
-E 8 - ConditionID 3 INTERFACE_SIDE Master S2I_KINETICS_ID  3
+E 8 ConditionID 3 INTERFACE_SIDE Master S2I_KINETICS_ID  3
 // cc-side_(sl)_of_cat-comp_cat-cc_
-E 9 - ConditionID 3 INTERFACE_SIDE Slave S2I_KINETICS_ID  3
+E 9 ConditionID 3 INTERFACE_SIDE Slave S2I_KINETICS_ID  3
 // sol-el-side_(ma)_of_comp_cat-cc_
-E 10 - ConditionID 4 INTERFACE_SIDE Master S2I_KINETICS_ID  4
+E 10 ConditionID 4 INTERFACE_SIDE Master S2I_KINETICS_ID  4
 // cc-side_(sl)_of_sol-el-comp_cat-
-E 11 - ConditionID 4 INTERFACE_SIDE Slave S2I_KINETICS_ID  4
+E 11 ConditionID 4 INTERFACE_SIDE Slave S2I_KINETICS_ID  4
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    791 DNODE 1
 NODE    794 DNODE 1

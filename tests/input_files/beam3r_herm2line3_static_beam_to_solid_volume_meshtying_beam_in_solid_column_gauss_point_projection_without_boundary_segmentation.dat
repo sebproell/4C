@@ -76,23 +76,19 @@ STRUCTURE DIS structure NODE 51 QUANTITY dispx VALUE  0.0                     TO
 STRUCTURE DIS structure NODE 51 QUANTITY dispy VALUE  2.59636329867325488e-01 TOLERANCE 1e-8
 STRUCTURE DIS structure NODE 51 QUANTITY dispz VALUE -4.62000835160756781e-02 TOLERANCE 1e-8
 -------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT                           2
 // support
-E 1 - NUMDOF 9  ONOFF 1 1 1 1 1 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0 0 0 0
+E 1 NUMDOF 9  ONOFF 1 1 1 1 1 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0 0 0 0
 // movement
-E 2 - NUMDOF 9  ONOFF 0 1 0 0 0 0 0 0 0 VAL 0.0 0.5 0.0 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 1 0 0 0 0 0 0 0
+E 2 NUMDOF 9  ONOFF 0 1 0 0 0 0 0 0 0 VAL 0.0 0.5 0.0 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 1 0 0 0 0 0 0 0
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  1
 // support
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 --------------------------BEAM INTERACTION/BEAM TO SOLID VOLUME MESHTYING VOLUME
 // Define the volumes for the beam-to-solid volume meshtying.
-DVOL                                  1
-E 1 - COUPLING_ID 1
+E 1 COUPLING_ID 1
 ----------------------------BEAM INTERACTION/BEAM TO SOLID VOLUME MESHTYING LINE
 // Define the lines for the beam-to-solid volume meshtying.
-DLINE                                 1
-E 1 - COUPLING_ID 1
+E 1 COUPLING_ID 1
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE   45   DNODE   1
 NODE   53   DNODE   2

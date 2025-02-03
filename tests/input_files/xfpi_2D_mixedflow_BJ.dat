@@ -153,59 +153,49 @@ FLUID DIS porofluid NODE 50 QUANTITY velx VALUE 2.06442171571588878e-03 TOLERANC
 FLUID DIS porofluid NODE 50 QUANTITY vely VALUE -2.00405797721342266e-03 TOLERANCE 1e-10
 FLUID DIS porofluid NODE 50 QUANTITY pressure VALUE 2.83106980949157649e-01 TOLERANCE 1e-10
 --------------------------------------DESIGN VOL DIRICH CONDITIONS
-DVOL   2
 // fluid_volume
-E 1 - NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // poro_volume
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 --------------------------------------------DESIGN VOL ALE DIRICH CONDITIONS
-DVOL                            1
 // fluid_volume
-E 1 - NUMDOF 3 ONOFF  1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF  1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -------------------------------------------DESIGN VOL PORO DIRICH CONDITIONS
-DVOL                            1
 // poro_volume
-E 2 - NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 ----------------------------------------DESIGN VOLUME POROCOUPLING CONDITION
-DVOL                            1
 // poro_volume
-E 2 -
+E 2
 ------------------------------------------------DESIGN SURF PORO NEUMANN CONDITIONS
-DSURF                            1
 // poro_left
-E 5 - NUMDOF 4 ONOFF 1 0 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 5 NUMDOF 4 ONOFF 1 0 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 ------------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF     2
 //fluid_right
-E 2 - NUMDOF 4 ONOFF 1 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 1 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // fluid_left
-E 1 - NUMDOF 4 ONOFF 1 0 0 0 VAL 1.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 0 0 0 VAL 1.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF 3
 // fluid_left
-E 1 - NUMDOF 4 ONOFF 0 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 1 NUMDOF 4 ONOFF 0 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 // fluid_right
-E 2 - NUMDOF 4 ONOFF 0 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 2 NUMDOF 4 ONOFF 0 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 // fluid_top
-E 3 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 3 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 -------------------------------------------DESIGN SURF PORO DIRICH CONDITIONS
-DSURF 1
 // poro_top
-E 7 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 7 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 -----------------------------------------DESIGN SURFACE PORO PARTIAL INTEGRATION
-DSURF 4
 // poro_left
-E 5 -
+E 5
 // poro_right
-E 6 -
+E 6
 // poro_top
-E 7 -
+E 7
 // poro_bottom
-E 8 -
+E 8
 ----------------------------------DESIGN XFEM FPI MONOLITHIC SURF CONDITIONS
-DSURF                        1
 // poro_bottom
-E 8 - COUPLINGID 1 BJ_COEFF 17.3205080756888
+E 8 COUPLINGID 1 BJ_COEFF 17.3205080756888
 -----------------------------------------------DLINE-NODE TOPOLOGY
 NODE    21 DLINE 1
 NODE    22 DLINE 1

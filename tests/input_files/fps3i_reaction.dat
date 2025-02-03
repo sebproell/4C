@@ -309,96 +309,82 @@ SCATRA DIS scatra1 NODE 4334 QUANTITY phi2 VALUE 0.00000000000000000e+00 TOLERAN
 SCATRA DIS scatra2 NODE 240 QUANTITY phi1 VALUE 1.50434900323278154e-02 TOLERANCE 1e-9
 SCATRA DIS scatra2 NODE 25 QUANTITY phi2 VALUE 2.72940684552573599e-03 TOLERANCE 1e-9
 --------------------------------------DESIGN VOL DIRICH CONDITIONS
-DVOL   2
 // channel_volume
-E 1 - NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // obstacle_volume
-E 2 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF          4
 // channel_surface_y+
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // channel_surface_y-
-E 2 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // channel_surface_x-
-E 3 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 3 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 // obstacle_surface_y-
-E 9 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 9 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 
 
 ------------------------------------------DESIGN VOL PORO DIRICH CONDITIONS
-DVOL          1
 // obstacle_volume
-E 2 - NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 
 -------------------------------DESIGN FPSI COUPLING SURF CONDITIONS
-DSURF  2
 // whole_channel_interface
-E 18 - coupling_id 1
+E 18 coupling_id 1
 // whole_obstacle_interface
-E 17 - coupling_id 1
+E 17 coupling_id 1
 
 -----------------------------DESIGN SURFACE PORO PRESSURE INTEGRATION
-DSURF                           1
-E 17 -
+E 17
 
 ------------------------------------------DESIGN SURF PORO DIRICH CONDITIONS
-DSURF                            1
 // obstacle_surface_y-
-E 9 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 9 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 
 ------------------------------------------DESIGN LINE PORO DIRICH CONDITIONS
-DLINE                           2
 
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
-E 2 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 
 ------------------------------------------DESIGN VOLUME POROCOUPLING CONDITION
-DVOL                            1
-E 2 -
+E 2
 
 ---------------------------------DESIGN VOL ALE DIRICH CONDITIONS
-DVOL        1
-E 3 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 3 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 
 ---------------------------------DESIGN SURF ALE DIRICH CONDITIONS
-DSURF          4
 // channel_surface_y+
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // channel_surface_y- \ Interface
-E 16 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 16 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // channel_surface_x-
-E 3  - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 3 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // channel_surface_x+
-E 15 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 15 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 
 ------------------------DESIGN SURF TRANSPORT DIRICH CONDITIONS
-DSURF                           1
-E 3 - NUMDOF 2 ONOFF 1 0 VAL 1.0 0.0 FUNCT 2 0
+E 3 NUMDOF 2 ONOFF 1 0 VAL 1.0 0.0 FUNCT 2 0
 
 ------------------------DESIGN SURF TRANSPORT NEUMANN CONDITIONS
-DSURF                           4
 // obstacle_surface_y-
-E 9 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0 TYPE Live
+E 9 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0 TYPE Live
 // obstacle_surface_x+
-E 13 - NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0 TYPE Live
+E 13 NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0 TYPE Live
 // obstacle_surface_x-
-E 14 - NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0 TYPE Live
+E 14 NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0 TYPE Live
 // obstacle_surface_y+
-E 12 - NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0 TYPE Live
+E 12 NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0 TYPE Live
 
 --------------------------------------DESIGN SCATRA COUPLING SURF CONDITIONS
-DSURF                           2
 // interface_lumen
-E 18 - NUMSCAL 2 ONOFF 1 0 COUPID 1 PERMCOEF 0.135463498 CONDUCT 100.0 FILTR 0.999972907382 WSSON true WSSCOEFFS 1e-5 1e-6
+E 18 NUMSCAL 2 ONOFF 1 0 COUPID 1 PERMCOEF 0.135463498 CONDUCT 100.0 FILTR 0.999972907382 WSSON true WSSCOEFFS 1e-5 1e-6
 // interface_intima
-E 17 - NUMSCAL 2 ONOFF 1 0 COUPID 1 PERMCOEF 0.135463498 CONDUCT 100.0 FILTR 0.999972907382 WSSON true WSSCOEFFS 1e-5 1e-6
+E 17 NUMSCAL 2 ONOFF 1 0 COUPID 1 PERMCOEF 0.135463498 CONDUCT 100.0 FILTR 0.999972907382 WSSON true WSSCOEFFS 1e-5 1e-6
 
 -------------------------------------DESIGN FLUID STRESS CALC SURF CONDITIONS
-DSURF  1
 // interface_lumen
-E 18 -
+E 18
 -----------------------------------------------DNODE-NODE TOPOLOGY
 //NODE   292 DNODE 1
 -----------------------------------------------DLINE-NODE TOPOLOGY

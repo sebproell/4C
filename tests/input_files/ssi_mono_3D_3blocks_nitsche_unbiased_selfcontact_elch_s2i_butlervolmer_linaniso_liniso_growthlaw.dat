@@ -131,55 +131,45 @@ STRUCTURE DIS structure NODE 77 QUANTITY dispx VALUE -4.09961095928553540e-04 TO
 STRUCTURE DIS structure NODE 101 QUANTITY dispx VALUE -4.09964247268247511e-04 TOLERANCE 4.1e-12
 SSI SPECIAL true QUANTITY numiterlastnonlinearsolve VALUE  5.00000000000000000e+00 TOLERANCE 1.0e-16
 --------------------------DESIGN SURF TRANSPORT NEUMANN CONDITIONS
-DSURF  1
-E 6 - NUMDOF 2 ONOFF 0 1 VAL 0.0 1.0 FUNCT none 5
+E 6 NUMDOF 2 ONOFF 0 1 VAL 0.0 1.0 FUNCT none 5
 ------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 2
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 1.0 0.0 0.0 FUNCT 4 none none
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 1.0 0.0 0.0 FUNCT 4 none none
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  5
-E 1 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT none none none
-E 2 - NUMDOF 3 ONOFF 1 0 1 VAL 0.0 0.0 0.0 FUNCT none none none
-E 3 - NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
-E 4 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 4 none none
-E 5 - NUMDOF 3 ONOFF 1 0 1 VAL 1.0 0.0 0.0 FUNCT 4 none none
+E 1 NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT none none none
+E 2 NUMDOF 3 ONOFF 1 0 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 3 NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 4 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 4 none none
+E 5 NUMDOF 3 ONOFF 1 0 1 VAL 1.0 0.0 0.0 FUNCT 4 none none
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  4
-E 1 - NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT none none none
-E 6 - NUMDOF 3 ONOFF 1 0 0 VAL 1.0 0.0 0.0 FUNCT 4 none none
-E 7 - NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT none none none
-E 8 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 1 NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT none none none
+E 6 NUMDOF 3 ONOFF 1 0 0 VAL 1.0 0.0 0.0 FUNCT 4 none none
+E 7 NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT none none none
+E 8 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT none none none
 ---------------------------DESIGN SURF TRANSPORT DIRICH CONDITIONS
-DSURF  1
-E 1 - NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT none none
+E 1 NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT none none
 -------------------------------DESIGN VOL INITIAL FIELD CONDITIONS
-DVOL   3
-E 1 - FIELD ScaTra FUNCT 1
-E 2 - FIELD ScaTra FUNCT 2
-E 3 - FIELD ScaTra FUNCT 3
+E 1 FIELD ScaTra FUNCT 1
+E 2 FIELD ScaTra FUNCT 2
+E 3 FIELD ScaTra FUNCT 3
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
-DSURF  4
-E 2 - InterfaceID 0 Side Selfcontact Initialization Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 0
-E 3 - InterfaceID 0 Side Selfcontact Initialization Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 0
-E 4 - InterfaceID 1 Side Selfcontact Initialization Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 0
-E 5 - InterfaceID 1 Side Selfcontact Initialization Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 0
+E 2 InterfaceID 0 Side Selfcontact Initialization Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 0
+E 3 InterfaceID 0 Side Selfcontact Initialization Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 0
+E 4 InterfaceID 1 Side Selfcontact Initialization Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 0
+E 5 InterfaceID 1 Side Selfcontact Initialization Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 0
 -------------------------------DESIGN S2I KINETICS SURF CONDITIONS
-DSURF  4
-E 2 - ConditionID 0 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.0e-3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
-E 3 - ConditionID 0 INTERFACE_SIDE Master
-E 4 - ConditionID 1 INTERFACE_SIDE Master
-E 5 - ConditionID 1 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.0e-3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
+E 2 ConditionID 0 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.0e-3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
+E 3 ConditionID 0 INTERFACE_SIDE Master
+E 4 ConditionID 1 INTERFACE_SIDE Master
+E 5 ConditionID 1 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.0e-3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
 -------------------------------DESIGN CELL VOLTAGE SURF CONDITIONS
-DSURF  2
-E 1 - ConditionID 0
-E 6 - ConditionID 1
+E 1 ConditionID 0
+E 6 ConditionID 1
 ----------------------DESIGN SSI INTERFACE CONTACT SURF CONDITIONS
-DSURF  4
-E 2 - ConditionID 0 INTERFACE_SIDE Slave S2I_KINETICS_ID 0 CONTACT_CONDITION_ID 0
-E 3 - ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID 0 CONTACT_CONDITION_ID 0
-E 4 - ConditionID 1 INTERFACE_SIDE Master S2I_KINETICS_ID 1 CONTACT_CONDITION_ID 1
-E 5 - ConditionID 1 INTERFACE_SIDE Slave S2I_KINETICS_ID 1 CONTACT_CONDITION_ID 1
+E 2 ConditionID 0 INTERFACE_SIDE Slave S2I_KINETICS_ID 0 CONTACT_CONDITION_ID 0
+E 3 ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID 0 CONTACT_CONDITION_ID 0
+E 4 ConditionID 1 INTERFACE_SIDE Master S2I_KINETICS_ID 1 CONTACT_CONDITION_ID 1
+E 5 ConditionID 1 INTERFACE_SIDE Slave S2I_KINETICS_ID 1 CONTACT_CONDITION_ID 1
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    1 DNODE 1
 NODE    9 DNODE 1

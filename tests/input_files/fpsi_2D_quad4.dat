@@ -153,55 +153,45 @@ COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME 20*(y-1)
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME a
 VARIABLE 0 NAME a TYPE multifunction NUMPOINTS 3 TIMES 0.0 1.0 500000.0 DESCRIPTION 20.0*0.5*(1-cos(t*pi/1.0)) 20
 ------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 1
 // bottom_corner_fluid
-E 1 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.01 0.0 FUNCT 0 2 0
+E 1 NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.01 0.0 FUNCT 0 2 0
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  3
 // left_right_fluid
-E 3 - NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 3 NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // bottom_fluid
-E 5 - NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.01 0.0 FUNCT 0 2 0
+E 5 NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.01 0.0 FUNCT 0 2 0
 // top_poro
-E 6 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 6 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  1
 // poro
-E 1 - NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
 ---------------------------------DESIGN LINE ALE DIRICH CONDITIONS
-DLINE  2
 // fpsi_line_fluid
-E 2 - NUMDOF 2 ONOFF 0 0 VAL 0.0 0.0 FUNCT 0 0
+E 2 NUMDOF 2 ONOFF 0 0 VAL 0.0 0.0 FUNCT 0 0
 // bottom_fluid
-E 5 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 5 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 ---------------------------------DESIGN SURF ALE DIRICH CONDITIONS
-DSURF  1
 // fluid
-E 2 - NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
+E 2 NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
 --------------------------------DESIGN LINE PORO DIRICH CONDITIONS
-DLINE  1
 // left_right_poro
-E 4 - NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 4 NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -----------------------------DESIGN SURFACE POROCOUPLING CONDITION
-DSURF  1
 // poro
-E 1 -
+E 1
 ------------------------------DESIGN LINE PORO PARTIAL INTEGRATION
-DLINE  2
 // left_right_poro
-E 4 -
+E 4
 // top_poro
-E 6 -
+E 6
 -----------------------------DESIGN LINE PORO PRESSURE INTEGRATION
-DLINE  1
 // fpsi_line_poro
-E 1 -
+E 1
 ------------------------------DESIGN FPSI COUPLING LINE CONDITIONS
-DLINE  2
 // fpsi_line_poro
-E 1 - coupling_id 1
+E 1 coupling_id 1
 // fpsi_line_fluid
-E 2 - coupling_id 1
+E 2 coupling_id 1
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    442 DNODE 1
 NODE    445 DNODE 1

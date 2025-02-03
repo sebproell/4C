@@ -73,25 +73,21 @@ XFF_CONV_STAB_SCALING           none
 MAT 1 MAT_fluid DYNVISCOSITY 1.0 DENSITY 1.0 GAMMA 1.0
 MAT 2 MAT_Struct_StVenantKirchhoff YOUNG 10000 NUE 0.4 DENS 2.0
 ----------------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 2
 // Fluid 1 inflow
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // Fluid 1 outflow
-E 2 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 ------------------------------------------------DESIGN VOL DIRICH CONDITIONS
-DVOL 2
 // fluid volume
-E 1 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // embd fluid volume
-E 2 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 --------------------------------------DESIGN XFEM FLUIDFLUID SURF CONDITIONS
-DSURF 1
 // xfem
-E 1 - COUPLINGID 1 COUPSTRATEGY xfluid
+E 1 COUPLINGID 1 COUPSTRATEGY xfluid
 ------------------------------------------DESIGN FLUID MESH VOL CONDITIONS
-DVOL 1
 // embd fluid volume
-E 2 - COUPLINGID 1
+E 2 COUPLINGID 1
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 1 DNODE 1
 NODE 2 DNODE 1

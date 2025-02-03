@@ -112,17 +112,15 @@ STRUCTURE DIS structure NODE 6284 QUANTITY dispz VALUE 1.51399027783745921e-05 T
 // Check linear iterations in last Newton step
 STRUCTURE SPECIAL true QUANTITY lin_iters_contact VALUE 11 TOLERANCE 1.0e-13
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  2
 // dirichlet_surf_large
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // dirichlet_surf_small
-E 3 - NUMDOF 3 ONOFF 1 1 1 VAL -1.0 0.0 0.0 FUNCT 1 0 0
+E 3 NUMDOF 3 ONOFF 1 1 1 VAL -1.0 0.0 0.0 FUNCT 1 0 0
 -------------------------DESIGN SURF MORTAR COUPLING CONDITIONS 3D
-DSURF  2
 // contact_surf_large
-E 2 - InterfaceID 0 Side Master Initialization Inactive
+E 2 InterfaceID 0 Side Master Initialization Inactive
 // contact_surf_small
-E 4 - InterfaceID 0 Side Slave Initialization Active
+E 4 InterfaceID 0 Side Slave Initialization Active
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    1 DSURFACE 1
 NODE    2 DSURFACE 1

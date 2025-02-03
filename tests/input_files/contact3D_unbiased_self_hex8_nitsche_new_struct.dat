@@ -69,49 +69,43 @@ STRUCTURE DIS structure NODE 592 QUANTITY dispy VALUE -8.24540588176319172e-02 T
 STRUCTURE SPECIAL true QUANTITY num_iter_step_4 VALUE 5.0 TOLERANCE 1.0e-20
 STRUCTURE SPECIAL true QUANTITY num_iter_step_6 VALUE 6.0 TOLERANCE 1.0e-20
 ------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 2
 // points_left_side
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
 // points_right_side
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 1.0 0.0 0.0 FUNCT 1 none none
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 1.0 0.0 0.0 FUNCT 1 none none
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  5
 // lines_left_side_y_dir
-E 1 - NUMDOF 3 ONOFF 1 0 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 1 NUMDOF 3 ONOFF 1 0 1 VAL 0.0 0.0 0.0 FUNCT none none none
 // lines_left_side_z_dir
-E 2 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT none none none
+E 2 NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT none none none
 // lines_in_x_direction
-E 3 - NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 3 NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
 // lines_right_side_y_dir
-E 4 - NUMDOF 3 ONOFF 1 0 1 VAL 1.0 0.0 0.0 FUNCT 1 none none
+E 4 NUMDOF 3 ONOFF 1 0 1 VAL 1.0 0.0 0.0 FUNCT 1 none none
 // lines_right_side_z_dir
-E 5 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 1 none none
+E 5 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 1 none none
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  4
 // surface_normal_x_left
-E 1 - NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT none none none
+E 1 NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT none none none
 // surface_normal_x_right
-E 2 - NUMDOF 3 ONOFF 1 0 0 VAL 1.0 0.0 0.0 FUNCT 1 none none
+E 2 NUMDOF 3 ONOFF 1 0 0 VAL 1.0 0.0 0.0 FUNCT 1 none none
 // surface_normal_y
-E 3 - NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT none none none
+E 3 NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT none none none
 // surface_normal_z
-E 4 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 4 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT none none none
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
-DSURF  2
 // cyl_side_of_cyl-bl_interface
-E 5 - InterfaceID 0 Side Selfcontact Initialization Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 1
+E 5 InterfaceID 0 Side Selfcontact Initialization Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 1
 // block_side_of_cyl-bl_interface
-E 6 - InterfaceID 0 Side Selfcontact Initialization Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 1
+E 6 InterfaceID 0 Side Selfcontact Initialization Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Application Solidcontact DbcHandling DoNothing TwoHalfPass 1 RefConfCheckNonSmoothSelfContactSurface 1
 -------------------------DESIGN LINE MORTAR SYMMETRY CONDITIONS 3D
-DLINE  2
 // lines_mrtr_sym_normal_z
-E 6 - ONOFF 0 0 1
+E 6 ONOFF 0 0 1
 // lines_mrtr_sym_normal_y
-E 7 - ONOFF 0 1 0
+E 7 ONOFF 0 1 0
 ---------------------DESIGN POINT MORTAR SYMMETRY CONDITIONS 2D/3D
-DPOINT 1
 // points_mrtr_sym_normal_y_z
-E 3 - ONOFF 0 1 1
+E 3 ONOFF 0 1 1
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    500 DNODE 1
 NODE    502 DNODE 1

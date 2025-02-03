@@ -91,47 +91,39 @@ COMPONENT 1 SYMBOLIC_FUNCTION_OF_SPACE_TIME 10.0
 SCATRA DIS scatra NODE 40 QUANTITY phi VALUE  2.30465158895883215e+00 TOLERANCE 2.3e-08
 SCATRA DIS scatra NODE 145 QUANTITY phi2 VALUE  6.87626254659050673e+00 TOLERANCE 6.9e-08
 ------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 2
 // node1
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.1 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.1 FUNCT 0 0 0
 // node2
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  1
 // surface_scatra_volume
-E 1 - NUMDOF 2 ONOFF 0 0 VAL 0.0 0.0 FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 0 0 VAL 0.0 0.0 FUNCT 0 0
 -----DESIGN SCATRA HETEROGENEOUS REACTION SURF CONDITIONS / MASTER
-DSURF  1
 // surface_scatra_volume
-E 1 -
+E 1
 ------DESIGN SCATRA HETEROGENEOUS REACTION SURF CONDITIONS / SLAVE
-DSURF  1
 // surface
-E 2 -
+E 2
 ------------------DESIGN SSI COUPLING SOLIDTOSCATRA VOL CONDITIONS
-DVOL   2
 // volume_scatra
-E 1 - coupling_id 1
+E 1 coupling_id 1
 // volume
-E 2 - coupling_id 1
+E 2 coupling_id 1
 -----------------DESIGN SSI COUPLING SOLIDTOSCATRA SURF CONDITIONS
-DSURF  2
 // surface
-E 2 - coupling_id 2
+E 2 coupling_id 2
 // surface_structure
-E 3 - coupling_id 2
+E 3 coupling_id 2
 ------------------DESIGN SSI COUPLING SCATRATOSOLID VOL CONDITIONS
-DVOL   2
 // volume_scatra
-E 1 - coupling_id 1
+E 1 coupling_id 1
 // volume
-E 2 - coupling_id 1
+E 2 coupling_id 1
 -----------------DESIGN SSI COUPLING SCATRATOSOLID SURF CONDITIONS
-DSURF  2
 // surface
-E 2 - coupling_id 2
+E 2 coupling_id 2
 // surface_structure
-E 3 - coupling_id 2
+E 3 coupling_id 2
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    73 DNODE 1
 NODE    84 DNODE 2

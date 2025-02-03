@@ -174,27 +174,21 @@ VARFUNCTION 0.0
 ----------------------------------------------------------------------FUNCT8
 SYMBOLIC_FUNCTION_OF_TIME t
 -------------------------------------DESIGN LINE PORO DIRICH CONDITIONS
-DLINE  1
 // top
-E 1 - NUMDOF 5 ONOFF 1 1 1 1 1 VAL 0.0 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
+E 1 NUMDOF 5 ONOFF 1 1 1 1 1 VAL 0.0 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
 -------------------------------------DESIGN SURF PORO DIRICH CONDITIONS
-DSURF  1
 // top
-E 1 - NUMDOF 5 ONOFF 0 0 0 1 0 VAL 0.0 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
+E 1 NUMDOF 5 ONOFF 0 0 0 1 0 VAL 0.0 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
 -------------------------------------DESIGN LINE TRANSPORT DIRICH CONDITIONS
-DLINE  1
 // top
-E 1 - NUMDOF 4 ONOFF 1 1 1 1 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 1 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  1
 // all 2d nodes
-E 2 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 2 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 ---------------------------------------------DESIGN POINT NEUMANN CONDITIONS
-DPOINT                          1
-E 1 - NUMDOF 1 ONOFF 1 VAL 0.0001 FUNCT 8
+E 1 NUMDOF 1 ONOFF 1 VAL 0.0001 FUNCT 8
 -------------------------------------DESIGN POINT TRANSPORT DIRICH CONDITIONS
-DPOINT  1
-E 1 - NUMDOF 4 ONOFF 1 1 1 1 VAL 1.0 2.0 3.0 4.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 1 VAL 1.0 2.0 3.0 4.0 FUNCT 0 0 0 0
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 29 DNODE 1
 ---------------------------------------------------------DLINE-NODE TOPOLOGY

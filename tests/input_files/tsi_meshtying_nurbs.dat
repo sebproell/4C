@@ -95,21 +95,16 @@ MAT 3 MAT_Fourier CONDUCT_PARA_NUM 1 CAPA 0.1 CONDUCT 1
 --------------------------------------------------------CLONING MATERIAL MAP
 SRC_FIELD structure SRC_MAT 1 TAR_FIELD thermo TAR_MAT 3
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF                           1
-E 11 - NUMDOF 3 ONOFF 1 1 1 VAL 0 0 0 FUNCT 0 0 0
+E 11 NUMDOF 3 ONOFF 1 1 1 VAL 0 0 0 FUNCT 0 0 0
 -----------------------------------------------DESIGN SURF THERMO DIRICH CONDITIONS
-DSURF                           1
-E 11 - NUMDOF 1 ONOFF 1 VAL 0 FUNCT 0
+E 11 NUMDOF 1 ONOFF 1 VAL 0 FUNCT 0
 -----------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF                           1
-E 6 - NUMDOF 3 ONOFF 1 1 1 VAL 0.001 0.002 0.003 FUNCT 2 2 2
+E 6 NUMDOF 3 ONOFF 1 1 1 VAL 0.001 0.002 0.003 FUNCT 2 2 2
 -----------------------------------------------DESIGN SURF THERMO NEUMANN CONDITIONS
-DSURF                           1
-E 6 - NUMDOF 1 ONOFF 1 VAL 1 FUNCT 1
+E 6 NUMDOF 1 ONOFF 1 VAL 1 FUNCT 1
 -------------------------DESIGN SURF MORTAR MULTI-COUPLING CONDITIONS 3D
-DSURF  2
-E 5 - InterfaceID 1 Side Slave Initialization Active
-E 12 - InterfaceID 1 Side Master Initialization Inactive
+E 5 InterfaceID 1 Side Slave Initialization Active
+E 12 InterfaceID 1 Side Master Initialization Inactive
 --------------------------------------------------------FUNCT1
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME x+10*x*y+y*y
 --------------------------------------------------------FUNCT2

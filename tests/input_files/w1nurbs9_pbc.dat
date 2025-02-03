@@ -59,17 +59,14 @@ COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME 1.0+0.5*0.5*(1-cos((y*2.0*pi)))
 -------------------------------------------------------------FUNCT2
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME -1.0*0.5*(1-cos((t*pi/2.0)))*(1.0+0.5*0.5*(1-cos((y*2.0*pi))))
 -----------------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE                           1
-E 4 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 4 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 //E 3 - NUMDOF 2 ONOFF 1 0 VAL -1.0 0.0 FUNCT 2 0
 -----------------------------------------------DESIGN LINE NURBS LS DIRICH CONDITIONS
-DLINE                           1
-E 3 - NUMDOF 2 ONOFF 1 0 VAL -1.0 0.0 FUNCT 2 0
+E 3 NUMDOF 2 ONOFF 1 0 VAL -1.0 0.0 FUNCT 2 0
 ------------------------------------DESIGN LINE PERIODIC BOUNDARY CONDITIONS
 // DOBJECT PBC_ID ORIENTATION
-DLINE                           2
-E 1 - ID 1 MASTER_OR_SLAVE Master PLANE xz LAYER 0 ANGLE 0.0 ABSTREETOL 1e-9
-E 2 - ID 1 MASTER_OR_SLAVE Slave PLANE xz LAYER 0 ANGLE 0.0 ABSTREETOL 1e-9
+E 1 ID 1 MASTER_OR_SLAVE Master PLANE xz LAYER 0 ANGLE 0.0 ABSTREETOL 1e-9
+E 2 ID 1 MASTER_OR_SLAVE Slave PLANE xz LAYER 0 ANGLE 0.0 ABSTREETOL 1e-9
 -----------------------------------------------------------STRUCTURE KNOTVECTORS
 NURBS_DIMENSION                       2
 BEGIN                           NURBSPATCH

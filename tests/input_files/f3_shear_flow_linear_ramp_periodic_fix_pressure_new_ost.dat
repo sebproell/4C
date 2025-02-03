@@ -114,25 +114,22 @@ COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME  0.1*0.5*t //0.1*0.5*(0.5*(1-sin((t+
 -------------------------------------------------------------FUNCT3
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME  0.5*y //0.1*0.5*(0.5*(1-sin((t+0.5)*3.141592653589793))) //mu=0.1
 ------------------------------------DESIGN SURF PERIODIC BOUNDARY CONDITIONS
-DSURF                           2
 // slave span
-E 4 - ID 1 MASTER_OR_SLAVE Slave PLANE yz LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
+E 4 ID 1 MASTER_OR_SLAVE Slave PLANE yz LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
 // master span
-E 6 - ID 1 MASTER_OR_SLAVE Master PLANE yz LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
+E 6 ID 1 MASTER_OR_SLAVE Master PLANE yz LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
 ----------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF                           0
 // surface outflow
 //E 4 - none 1 1 1 0 0 0 3.0 1.0 0.0 0.0 0.0 0.0 TYPE Live 0 2 0 0 0 0
 ------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 4
 // bottom_south_east_point
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // bottom_east_north_point
-E 2 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // bottom_north_west_point
-E 3 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 3 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // bottom_west_south_point
-E 4 - NUMDOF 4 ONOFF 1 1 1 1 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 4 NUMDOF 4 ONOFF 1 1 1 1 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // top_south_east_point
 //E 5 - NUMDOF 4 ONOFF 1 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // top_east_north_point
@@ -142,15 +139,14 @@ E 4 - NUMDOF 4 ONOFF 1 1 1 1 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // top_west_south_point
 //E 8 - NUMDOF 4 ONOFF 1 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  8
 // bottom_east_line
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // bottom_north_line
-E 2 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // // bottom_west_line
-E 3 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 3 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // // bottom_south_line
-E 4 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 4 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 
 // south_east_line
 //E 5 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
@@ -164,33 +160,30 @@ E 4 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 //E 8 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 
 // top_south_line
-E 9 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 9 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 // top_east_line
-E 10 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 10 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 // top_north_line
-E 11 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 11 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 // top_west_line
-E 12 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 12 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  4
 // bottom
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // top
-E 2 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 2 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 // south
-E 3 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 3 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // east
 //E 4 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // north
-E 5 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 5 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // west
 //E 6 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 -----------------------------------------------DESIGN VOL NEUMANN CONDITIONS
-DVOL                            1
 //                              volume
-E 1 - NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 1.0 0.0 0.0 0.0 0.0 0.0 FUNCT 3 0 0 0 0 0 TYPE Live
+E 1 NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 1.0 0.0 0.0 0.0 0.0 0.0 FUNCT 3 0 0 0 0 0 TYPE Live
 --------------------------------------DESIGN VOL DIRICH CONDITIONS
-DVOL   0
 // volume
 
 -------------------------------------------------RESULT DESCRIPTION

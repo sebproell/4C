@@ -104,19 +104,16 @@ STRUCTURE DIS structure NODE 56 QUANTITY dispy VALUE -6.67827112763444940e-03 TO
 STRUCTURE DIS structure NODE 87 QUANTITY dispy VALUE -3.33913556388275041e-03 TOLERANCE 1e-8
 STRUCTURE DIS structure NODE 100 QUANTITY dispy VALUE -1.11304518796215323e-03 TOLERANCE 1e-8
 ------------------------------------DESIGN LINE NEUMANN CONDITIONS
-DLINE  1
 // top_line
-E 1 - NUMDOF 6 ONOFF 0 1 0 0 0 0 VAL 0.0 -4.0 0.0 0.0 0.0 0.0 FUNCT 0 1 0 0 0 0 TYPE Live
+E 1 NUMDOF 6 ONOFF 0 1 0 0 0 0 VAL 0.0 -4.0 0.0 0.0 0.0 0.0 FUNCT 0 1 0 0 0 0 TYPE Live
 -------------------------------DESIGN LINE PORO NEUMANN CONDITIONS
-DLINE  3
 // left_line_bottom
-E 6 - NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL 1.0 0.0 0.0 0.0 0.0 0.0 FUNCT 1 0 0 0 0 0 TYPE Live
+E 6 NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL 1.0 0.0 0.0 0.0 0.0 0.0 FUNCT 1 0 0 0 0 0 TYPE Live
 // right_line_bottom
-E 7 - NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL -1.0 0.0 0.0 0.0 0.0 0.0 FUNCT 1 0 0 0 0 0 TYPE Live
+E 7 NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL -1.0 0.0 0.0 0.0 0.0 0.0 FUNCT 1 0 0 0 0 0 TYPE Live
 // bottom_line_bottom
-E 8 - NUMDOF 6 ONOFF 0 1 0 0 0 0 VAL 0.0 1.0 0.0 0.0 0.0 0.0 FUNCT 0 1 0 0 0 0 TYPE Live
+E 8 NUMDOF 6 ONOFF 0 1 0 0 0 0 VAL 0.0 1.0 0.0 0.0 0.0 0.0 FUNCT 0 1 0 0 0 0 TYPE Live
 ------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 4
 // top_right_point
 //E 1 - NUMDOF 2 ONOFF 0 0 VAL 0.0 0.0 FUNCT 0 0
 // top_left_point
@@ -126,47 +123,43 @@ DPOINT 4
 // bottom_left_point
 //E 4 - NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
 // top_right_point_bottom
-E 5 - NUMDOF 2 ONOFF 0 0 VAL 0.0 0.0 FUNCT 0 0
+E 5 NUMDOF 2 ONOFF 0 0 VAL 0.0 0.0 FUNCT 0 0
 // top_left_point_bottom
-E 6 - NUMDOF 2 ONOFF 0 0 VAL 0.0 0.0 FUNCT 0 0
+E 6 NUMDOF 2 ONOFF 0 0 VAL 0.0 0.0 FUNCT 0 0
 // bottom_right_point_bottom
-E 7 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 7 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 // bottom_left_point_bottom
-E 8 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 8 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  5
 // left_line
-E 2 - NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
+E 2 NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
 // right_line
-E 3 - NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
+E 3 NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
 // left_line_bottom
-E 6 - NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
+E 6 NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
 // right_line_bottom
-E 7 - NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
+E 7 NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
 // bottom_line_bottom
-E 8 - NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
+E 8 NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
 -------------------------DESIGN LINE MORTAR COUPLING CONDITIONS 2D
-DLINE  2
 // bottom_line
-E 4 - InterfaceID 1 Side Master
+E 4 InterfaceID 1 Side Master
 // top_line_bottom
-E 5 - InterfaceID 1 Side Slave Initialization Active
+E 5 InterfaceID 1 Side Slave Initialization Active
 -----------------------------DESIGN SURFACE POROCOUPLING CONDITION
-DSURF  1
 // surf
 //E 1 -
 // surf_bottom
-E 2 -
+E 2
 ------------------------------DESIGN LINE PORO PARTIAL INTEGRATION
-DLINE  4
 // top_line_bottom
-E 5 -
+E 5
 // left_line_bottom
-E 6 -
+E 6
 // right_line_bottom
-E 7 -
+E 7
 // bottom_line_bottom
-E 8 -
+E 8
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    36 DNODE 1
 NODE    32 DNODE 2

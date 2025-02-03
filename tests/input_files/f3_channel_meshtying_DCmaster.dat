@@ -133,29 +133,25 @@ FLUID DIS fluid NODE 10707 QUANTITY vely VALUE  0.00000000000000000e+00 TOLERANC
 FLUID DIS fluid NODE 10707 QUANTITY velz VALUE  3.00000000000000044e+00 TOLERANCE 1e-11
 FLUID DIS fluid NODE 10707 QUANTITY pressure VALUE 2.81124544877500433e-04 TOLERANCE 1e-9
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  2
 // inflow
-E 2 - NUMDOF 4  ONOFF 1 1 1 0  VAL 0.0 0.0 10.0 0.0 FUNCT 0 0 1 0
+E 2 NUMDOF 4  ONOFF 1 1 1 0  VAL 0.0 0.0 10.0 0.0 FUNCT 0 0 1 0
 // wall
-E 5 - NUMDOF 4  ONOFF 1 1 0 0  VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 5 NUMDOF 4  ONOFF 1 1 0 0  VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 ------------------------DESIGN SURF MORTAR COUPLING CONDITIONS 3D
-DSURF  2
 // internal interface fluid boundary layer
-E 6 - InterfaceID 1 Side Slave
+E 6 InterfaceID 1 Side Slave
 // internal interface fluid inner
-E 7 - InterfaceID 1 Side Master
+E 7 InterfaceID 1 Side Master
 ---------------------------------DESIGN FLOW RATE SURF CONDITIONS
-DSURF    7
-E 1 - ConditionID 1
-E 2 - ConditionID 2
-E 3 - ConditionID 3
-E 4 - ConditionID 4
-E 5 - ConditionID 5
-E 6 - ConditionID 6
-E 7 - ConditionID 7
+E 1 ConditionID 1
+E 2 ConditionID 2
+E 3 ConditionID 3
+E 4 ConditionID 4
+E 5 ConditionID 5
+E 6 ConditionID 6
+E 7 ConditionID 7
 ------------------------------------DESIGN FLUID STRESS CALC SURF CONDITIONS
-DSURF 1
-E 5 -
+E 5
 -----------------------------------------------DLINE-NODE TOPOLOGY
 NODE    10045 DLINE 1
 NODE    10046 DLINE 1

@@ -134,119 +134,107 @@ SCATRA DIS scatra_manifold NODE 83 QUANTITY phi2 VALUE  1.00000000000000000e+00 
 SSI SPECIAL true QUANTITY numiterlastlinearsolve VALUE  2.00000000000000000e+00 TOLERANCE 1.0e-16
 SSI SPECIAL true QUANTITY numiterlastnonlinearsolve VALUE  3.00000000000000000e+00 TOLERANCE 1.0e-16
 ------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 2
 // node
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // node_z_max
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 -1.5 FUNCT 0 0 4
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 -1.5 FUNCT 0 0 4
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  5
 // line_x
-E 3 - NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 3 NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // line_y
-E 4 - NUMDOF 3 ONOFF 1 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 4 NUMDOF 3 ONOFF 1 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // line_z
-E 5 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 5 NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // line_z_max_x
-E 6 - NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 -1.5 FUNCT 0 0 4
+E 6 NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 -1.5 FUNCT 0 0 4
 // line_z_max_y
-E 7 - NUMDOF 3 ONOFF 1 0 1 VAL 0.0 0.0 -1.5 FUNCT 0 0 4
+E 7 NUMDOF 3 ONOFF 1 0 1 VAL 0.0 0.0 -1.5 FUNCT 0 0 4
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  4
 // surf_x
-E 7 - NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 7 NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // surf_y
-E 8 - NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 8 NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // surf_z
-E 9 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 9 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // surf_z_max
-E 10 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 -1.5 FUNCT 0 0 4
+E 10 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 -1.5 FUNCT 0 0 4
 ---------------------------DESIGN SURF TRANSPORT DIRICH CONDITIONS
-DSURF  1
 // pot_zero
-E 11 - NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
+E 11 NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
 ----------------------------DESIGN VOL TRANSPORT DIRICH CONDITIONS
-DVOL   3
 // cc
-E 1 - NUMDOF 2 ONOFF 1 1 VAL 1.0e1 1.0 FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 1 1 VAL 1.0e1 1.0 FUNCT 0 0
 // el
-E 2 - NUMDOF 2 ONOFF 1 1 VAL 1.0e1 1.0 FUNCT 0 0
+E 2 NUMDOF 2 ONOFF 1 1 VAL 1.0e1 1.0 FUNCT 0 0
 // cath
-E 3 - NUMDOF 2 ONOFF 1 1 VAL 1.0e2 1.0 FUNCT 0 0
+E 3 NUMDOF 2 ONOFF 1 1 VAL 1.0e2 1.0 FUNCT 0 0
 -------------------------------DESIGN VOL INITIAL FIELD CONDITIONS
-DVOL   3
 // cc
-E 1 - FIELD ScaTra FUNCT 1
+E 1 FIELD ScaTra FUNCT 1
 // el
-E 2 - FIELD ScaTra FUNCT 2
+E 2 FIELD ScaTra FUNCT 2
 // cath
-E 3 - FIELD ScaTra FUNCT 3
+E 3 FIELD ScaTra FUNCT 3
 -----------------------DESIGN SCATRA VOL CONDITIONS / PARTITIONING
-DVOL   3
 // cc
-E 1 -
+E 1
 // el
-E 2 -
+E 2
 // cath
-E 3 -
+E 3
 -------------------------------DESIGN S2I KINETICS SURF CONDITIONS
-DSURF  6
 // slave-side_cc-el
-E 1 - ConditionID 0 INTERFACE_SIDE Slave KINETIC_MODEL NoInterfaceFlux
+E 1 ConditionID 0 INTERFACE_SIDE Slave KINETIC_MODEL NoInterfaceFlux
 // master-side_cc-el
-E 2 - ConditionID 0 INTERFACE_SIDE Master
+E 2 ConditionID 0 INTERFACE_SIDE Master
 // slave-side_cc-cath
-E 3 - ConditionID 1 INTERFACE_SIDE Slave KINETIC_MODEL ConstantInterfaceResistance ONOFF 0 1 RESISTANCE 2.0e-5  E- 1 IS_PSEUDO_CONTACT False
+E 3 ConditionID 1 INTERFACE_SIDE Slave KINETIC_MODEL ConstantInterfaceResistance ONOFF 0 1 RESISTANCE 2.0e-5  E- 1 IS_PSEUDO_CONTACT False
 // master-side_cc-cath
-E 4 - ConditionID 1 INTERFACE_SIDE Master
+E 4 ConditionID 1 INTERFACE_SIDE Master
 // master-side_el-cath
-E 5 - ConditionID 2 INTERFACE_SIDE Master
+E 5 ConditionID 2 INTERFACE_SIDE Master
 // slave-side_el-cath
-E 6 - ConditionID 2 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.036426957e3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
+E 6 ConditionID 2 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.036426957e3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
 --------------------DESIGN SSI INTERFACE MESHTYING SURF CONDITIONS
-DSURF  6
 // slave-side_cc-el
-E 1 - ConditionID 0 INTERFACE_SIDE Slave S2I_KINETICS_ID  0
+E 1 ConditionID 0 INTERFACE_SIDE Slave S2I_KINETICS_ID  0
 // master-side_cc-el
-E 2 - ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID  0
+E 2 ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID  0
 // slave-side_cc-cath
-E 3 - ConditionID 1 INTERFACE_SIDE Slave S2I_KINETICS_ID  1
+E 3 ConditionID 1 INTERFACE_SIDE Slave S2I_KINETICS_ID  1
 // master-side_cc-cath
-E 4 - ConditionID 1 INTERFACE_SIDE Master S2I_KINETICS_ID  1
+E 4 ConditionID 1 INTERFACE_SIDE Master S2I_KINETICS_ID  1
 // master-side_el-cath
-E 5 - ConditionID 2 INTERFACE_SIDE Master S2I_KINETICS_ID  2
+E 5 ConditionID 2 INTERFACE_SIDE Master S2I_KINETICS_ID  2
 // slave-side_el-cath
-E 6 - ConditionID 2 INTERFACE_SIDE Slave S2I_KINETICS_ID  2
+E 6 ConditionID 2 INTERFACE_SIDE Slave S2I_KINETICS_ID  2
 -------------------------------DESIGN SSI MANIFOLD SURF CONDITIONS
-DSURF  3
 // slave-side_cc-el
-E 1 - ConditionID 1 ImplType ElchElectrode thickness 1.0
+E 1 ConditionID 1 ImplType ElchElectrode thickness 1.0
 // master-side_cc-cath
-E 4 - ConditionID 2 ImplType ElchElectrode thickness 1.0
+E 4 ConditionID 2 ImplType ElchElectrode thickness 1.0
 // slave-side_el-cath
-E 6 - ConditionID 3 ImplType ElchElectrode thickness 1.0
+E 6 ConditionID 3 ImplType ElchElectrode thickness 1.0
 ----------------------DESIGN SSI MANIFOLD KINETICS SURF CONDITIONS
-DSURF  6
 // slave-side_cc-el
-E 1 - ConditionID 1 ManifoldConditionID 1 KINETIC_MODEL NoInterfaceFlux
+E 1 ConditionID 1 ManifoldConditionID 1 KINETIC_MODEL NoInterfaceFlux
 // master-side_cc-el
-E 2 - ConditionID 2 ManifoldConditionID 1 KINETIC_MODEL NoInterfaceFlux
+E 2 ConditionID 2 ManifoldConditionID 1 KINETIC_MODEL NoInterfaceFlux
 // slave-side_cc-cath
-E 3 - ConditionID 3 ManifoldConditionID 2 KINETIC_MODEL NoInterfaceFlux
+E 3 ConditionID 3 ManifoldConditionID 2 KINETIC_MODEL NoInterfaceFlux
 // master-side_cc-cath
-E 4 - ConditionID 4 ManifoldConditionID 2 KINETIC_MODEL NoInterfaceFlux
+E 4 ConditionID 4 ManifoldConditionID 2 KINETIC_MODEL NoInterfaceFlux
 // master-side_el-cath
-E 5 - ConditionID 5 ManifoldConditionID 3 KINETIC_MODEL NoInterfaceFlux
+E 5 ConditionID 5 ManifoldConditionID 3 KINETIC_MODEL NoInterfaceFlux
 // slave-side_el-cath
-E 6 - ConditionID 6 ManifoldConditionID 3 KINETIC_MODEL NoInterfaceFlux
+E 6 ConditionID 6 ManifoldConditionID 3 KINETIC_MODEL NoInterfaceFlux
 ----------------------------DESIGN SURF MANIFOLD DIRICH CONDITIONS
-DSURF  3
 // slave-side_cc-el
-E 1 - NUMDOF 2 ONOFF 0 1 VAL 0.0 1.0 FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 0 1 VAL 0.0 1.0 FUNCT 0 0
 // master-side_cc-cath
-E 4 - NUMDOF 2 ONOFF 0 1 VAL 0.0 1.0 FUNCT 0 0
+E 4 NUMDOF 2 ONOFF 0 1 VAL 0.0 1.0 FUNCT 0 0
 // slave-side_el-cath
-E 6 - NUMDOF 2 ONOFF 0 1 VAL 0.0 1.0 FUNCT 0 0
+E 6 NUMDOF 2 ONOFF 0 1 VAL 0.0 1.0 FUNCT 0 0
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    54 DNODE 1
 NODE    9 DNODE 2

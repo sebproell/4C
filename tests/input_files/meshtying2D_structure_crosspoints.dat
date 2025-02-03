@@ -55,31 +55,27 @@ MAT 2 ELAST_CoupNeoHooke YOUNG 10 NUE 0.3
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME a
 VARIABLE 0 NAME a TYPE linearinterpolation NUMPOINTS 3 TIMES 0 1 10000000 VALUES 0 1 1
 ----------------------------------------------DESIGN LINE NEUMANN CONDITIONS
-DLINE                           1
 //                              fbc_y
-E 2 - NUMDOF 6 ONOFF 0 1 0 0 0 0 VAL 0.0 1.0 0.0 0.0 0.0 0.0 FUNCT 1 1 1 1 1 1 TYPE Live
+E 2 NUMDOF 6 ONOFF 0 1 0 0 0 0 VAL 0.0 1.0 0.0 0.0 0.0 0.0 FUNCT 1 1 1 1 1 1 TYPE Live
 ----------------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT                          1
 //                              dbx_xy
-E 1 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 -----------------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE                           1
 //                              dbc_y
-E 1 - NUMDOF 2 ONOFF 0 1 VAL 0 0 FUNCT none none
+E 1 NUMDOF 2 ONOFF 0 1 VAL 0 0 FUNCT none none
 -----------------------------------DESIGN LINE MORTAR COUPLING CONDITIONS 2D
-DLINE                           12
-E 3 - InterfaceID 1 Side Slave Initialization Active
-E 4 - InterfaceID 1 Side Master Initialization Inactive
-E 5 - InterfaceID 2 Side Slave Initialization Active
-E 6 - InterfaceID 2 Side Master Initialization Inactive
-E 7 - InterfaceID 3 Side Slave Initialization Active
-E 8 - InterfaceID 3 Side Master Initialization Inactive
-E 9 - InterfaceID 4 Side Slave Initialization Active
-E 10 - InterfaceID 4 Side Master Initialization Inactive
-E 11 - InterfaceID 5 Side Slave Initialization Active
-E 12 - InterfaceID 5 Side Master Initialization Inactive
-E 13 - InterfaceID 6 Side Slave Initialization Active
-E 14 - InterfaceID 6 Side Master Initialization Inactive
+E 3 InterfaceID 1 Side Slave Initialization Active
+E 4 InterfaceID 1 Side Master Initialization Inactive
+E 5 InterfaceID 2 Side Slave Initialization Active
+E 6 InterfaceID 2 Side Master Initialization Inactive
+E 7 InterfaceID 3 Side Slave Initialization Active
+E 8 InterfaceID 3 Side Master Initialization Inactive
+E 9 InterfaceID 4 Side Slave Initialization Active
+E 10 InterfaceID 4 Side Master Initialization Inactive
+E 11 InterfaceID 5 Side Slave Initialization Active
+E 12 InterfaceID 5 Side Master Initialization Inactive
+E 13 InterfaceID 6 Side Slave Initialization Active
+E 14 InterfaceID 6 Side Master Initialization Inactive
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 1662 DNODE 1
 ---------------------------------------------------------DLINE-NODE TOPOLOGY

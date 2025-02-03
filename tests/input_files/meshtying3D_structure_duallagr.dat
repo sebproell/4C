@@ -61,13 +61,11 @@ STRUCTURE DIS structure NODE 200 QUANTITY dispx VALUE 8.98057903892079512e-01 TO
 STRUCTURE DIS structure NODE 200 QUANTITY dispy VALUE 7.79212745350494562e-01 TOLERANCE 1e-10
 STRUCTURE DIS structure NODE 200 QUANTITY dispz VALUE 4.94710970341323997e-01 TOLERANCE 1e-10
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF                           2
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 1.0 1.0 1.0 FUNCT 1 1 1
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 1.0 1.0 1.0 FUNCT 1 1 1
 -----------------------------------DESIGN SURF MORTAR COUPLING CONDITIONS 3D
-DSURF                           2
-E 3 - InterfaceID 1 Side Master Initialization Inactive
-E 4 - InterfaceID 1 Side Slave Initialization Active
+E 3 InterfaceID 1 Side Master Initialization Inactive
+E 4 InterfaceID 1 Side Slave Initialization Active
 ---------------------------------------------------------DSURF-NODE TOPOLOGY
 NODE 1 DSURFACE 1
 NODE 2 DSURFACE 1

@@ -133,31 +133,28 @@ MAT 2 MAT_BeamKirchhoffTorsionFreeElastHyper YOUNG 1e+06 DENS 1e+03 CROSSAREA 0.
 --------------------------------------------------------------------------FUNCT1
 SYMBOLIC_FUNCTION_OF_SPACE_TIME heaviside(0.05-t)*0.5*(1-cos(pi*t*0.2e+2))+heaviside(t-0.05)
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  3
 // fluid_inflow_coupling_ring
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 100.0 0.0 FUNCT 0 0 1 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 100.0 0.0 FUNCT 0 0 1 0
 // randschicht_inflow_coupling_ring
-E 2 - NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // randschicht_inflow_outer_ring
-E 3 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 100.0 0.0 FUNCT 0 0 1 0
+E 3 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 100.0 0.0 FUNCT 0 0 1 0
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  5
 // fluid_inflow_surf
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 100.0 0.0 FUNCT 0 0 1 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 100.0 0.0 FUNCT 0 0 1 0
 // fluid_outflow_surf
-E 2 - NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // randschicht_inflow_surf
-E 3 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 100.0 0.0 FUNCT 0 0 1 0
+E 3 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 100.0 0.0 FUNCT 0 0 1 0
 // randschicht_outflow_surf
-E 4 - NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 4 NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // mantel
-E 7 - NUMDOF 4 ONOFF 1 1 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 7 NUMDOF 4 ONOFF 1 1 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 -------------------------DESIGN SURF MORTAR COUPLING CONDITIONS 3D
-DSURF  2
 // fluid_coupling_surf
-E 5 - InterfaceID 1 Side Master
+E 5 InterfaceID 1 Side Master
 // randschicht_coupling_surf
-E 6 - InterfaceID 1 Side Slave
+E 6 InterfaceID 1 Side Slave
 -----------------------------------------------DLINE-NODE TOPOLOGY
 NODE    27 DLINE 1
 NODE    28 DLINE 1

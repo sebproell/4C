@@ -16,17 +16,15 @@ or surfaces (3D). Two types of contact can be defined: Master/Slave contact and 
   ::
 
      ---------------------------DESIGN LINE MORTAR CONTACT CONDITIONS 2D
-     DLINE 2
-     E 1 - InterfaceID 1 Side Master <further parameters>
-     E 2 - InterfaceID 1 Side Slave <further parameters>
+     E 1 InterfaceID 1 Side Master <further parameters>
+     E 2 InterfaceID 1 Side Slave <further parameters>
 
 for master/slave contact, or
 
   ::
 
      ---------------------------DESIGN LINE MORTAR CONTACT CONDITIONS 2D
-     DLINE 1
-     E 1 - InterfaceID 1 Side Selfcontact <further parameters>
+     E 1 InterfaceID 1 Side Selfcontact <further parameters>
 
 for self contact, see also :ref:`DESIGN MORTAR CONTACT CONDITIONS 2D<designlinemortarcontactconditions2d>`.
 
@@ -141,16 +139,12 @@ Different meshes can be connected with the `MORTAR COUPLING` definition. Two dif
 ::
 
    --------------------------DESIGN LINE MORTAR COUPLING CONDITIONS 2D
-   DLINE                           0
-   //E num - InterfaceID 0 Side Master Initialization Inactive
+   //E num InterfaceID 0 Side Master Initialization Inactive
    --------------------------DESIGN SURF MORTAR COUPLING CONDITIONS 3D
-   DSURF                           0
-   //E num - InterfaceID 0 Side Master Initialization Inactive
+   //E num InterfaceID 0 Side Master Initialization Inactive
    --------------------DESIGN LINE MORTAR MULTI-COUPLING CONDITIONS 2D
-   DLINE                           0
-   //E num - InterfaceID 0 Side Master Initialization Inactive
+   //E num InterfaceID 0 Side Master Initialization Inactive
    --------------------DESIGN SURF MORTAR MULTI-COUPLING CONDITIONS 3D
-   DSURF                           0
-   //E num - InterfaceID 0 Side Master Initialization Inactive
+   //E num InterfaceID 0 Side Master Initialization Inactive
 
 See the reference :ref:`DESIGN MORTAR COUPLING CONDITIONS 3D<designsurfmortarcouplingconditions3d>`, :ref:`DESIGN MORTAR COUPLING CONDITIONS 2D<designlinemortarcouplingconditions2d>`, :ref:`DESIGN MORTAR MULTI-COUPLING CONDITIONS 3D<designsurfmortarmulti-couplingconditions3d>`, :ref:`DESIGN MORTAR MULTI-COUPLING CONDITIONS 2D<designlinemortarmulti-couplingconditions2d>`

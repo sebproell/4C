@@ -128,91 +128,78 @@ STRUCTURE DIS structure NODE 100 QUANTITY dispy VALUE -1.29983501466205949e-08 T
 STRUCTURE DIS structure NODE 100 QUANTITY dispz VALUE  1.17091250696344125e-08 TOLERANCE 1.2e-15
 SSI SPECIAL true QUANTITY numiterlastnonlinearsolve VALUE  3.00000000000000000e+00 TOLERANCE 1.0e-16
 --------------------------DESIGN SURF TRANSPORT NEUMANN CONDITIONS
-DSURF  1
 // cathode_side_current_collector
-E 6 - NUMDOF 2 ONOFF 0 1 VAL 0.0 5.318885943e-3 FUNCT 0 4 TYPE Live
+E 6 NUMDOF 2 ONOFF 0 1 VAL 0.0 5.318885943e-3 FUNCT 0 4 TYPE Live
 ------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 2
 // vertices_at_the_anode_side_cc
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
 // vertices_at_the_cathode_side_cc
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  3
 // curves_at_the_anode_side_cc
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
 // curves_at_the_battery_edges_in_x
-E 2 - NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 2 NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
 // curves_at_the_cathode_side_cc
-E 3 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 3 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  5
 // anode_side_current_collector
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
 // battery_surface_cathode_side_cc
-E 7 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 7 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
 // battery_surface_normal_to_y_axis
-E 8 - NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT none none none
+E 8 NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT none none none
 // battery_surface_normal_to_z_axis
-E 9 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 9 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT none none none
 // battery_surface_normal_to_(0_1_1
-E 10 - NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT none none none
+E 10 NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT none none none
 ---------------------------DESIGN SURF TRANSPORT DIRICH CONDITIONS
-DSURF  1
 // anode_side_current_collector
-E 1 - NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
 ----------------------------DESIGN VOL TRANSPORT DIRICH CONDITIONS
-DVOL   1
 // electrolyte
-E 2 - NUMDOF 2 ONOFF 1 0 VAL 1.2e3 0.0 FUNCT 0 0
+E 2 NUMDOF 2 ONOFF 1 0 VAL 1.2e3 0.0 FUNCT 0 0
 -------------------------------DESIGN VOL INITIAL FIELD CONDITIONS
-DVOL   3
 // anode
-E 1 - FIELD ScaTra FUNCT 1
+E 1 FIELD ScaTra FUNCT 1
 // electrolyte
-E 2 - FIELD ScaTra FUNCT 2
+E 2 FIELD ScaTra FUNCT 2
 // cathode
-E 3 - FIELD ScaTra FUNCT 3
+E 3 FIELD ScaTra FUNCT 3
 -------------------------------------DESIGN SURF LOCSYS CONDITIONS
-DSURF  1
 // battery_surface_normal_to_(0_1_1
-E 10 - ROTANGLE 0.7853981634 0.0 0.0 FUNCT 0 0 0 USEUPDATEDNODEPOS 0 USECONSISTENTNODENORMAL 0
+E 10 ROTANGLE 0.7853981634 0.0 0.0 FUNCT 0 0 0 USEUPDATEDNODEPOS 0 USECONSISTENTNODENORMAL 0
 --------------------DESIGN SSI INTERFACE MESHTYING SURF CONDITIONS
-DSURF  4
-E 2 - ConditionID 0 INTERFACE_SIDE Slave S2I_KINETICS_ID  0
-E 3 - ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID  0
-E 4 - ConditionID 1 INTERFACE_SIDE Master S2I_KINETICS_ID  1
-E 5 - ConditionID 1 INTERFACE_SIDE Slave S2I_KINETICS_ID  1
+E 2 ConditionID 0 INTERFACE_SIDE Slave S2I_KINETICS_ID  0
+E 3 ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID  0
+E 4 ConditionID 1 INTERFACE_SIDE Master S2I_KINETICS_ID  1
+E 5 ConditionID 1 INTERFACE_SIDE Slave S2I_KINETICS_ID  1
 -------------------------------DESIGN S2I KINETICS SURF CONDITIONS
-DSURF  4
 // anode_side_of_an-el_interface
-E 2 - ConditionID 0 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.036426957e-3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
+E 2 ConditionID 0 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.036426957e-3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
 // electrolyte_side_of_an-el_interf
-E 3 - ConditionID 0 INTERFACE_SIDE Master
+E 3 ConditionID 0 INTERFACE_SIDE Master
 // electrolyte_side_of_cat-el_inter
-E 4 - ConditionID 1 INTERFACE_SIDE Master
+E 4 ConditionID 1 INTERFACE_SIDE Master
 // cathode_side_of_cat-el_interface
-E 5 - ConditionID 1 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.036426957e-3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
+E 5 ConditionID 1 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.036426957e-3 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
 -----------------------DESIGN TOTAL AND MEAN SCALAR VOL CONDITIONS
-DVOL   3
 // anode
-E 1 - ConditionID 0
+E 1 ConditionID 0
 // electrolyte
-E 2 - ConditionID 1
+E 2 ConditionID 1
 // cathode
-E 3 - ConditionID 2
+E 3 ConditionID 2
 -------------------DESIGN ELECTRODE STATE OF CHARGE VOL CONDITIONS
-DVOL   2
 // anode
-E 1 - ConditionID 0 C_0% 1.0e-10 C_100% 5.2579e4 ONE_HOUR 3600000
+E 1 ConditionID 0 C_0% 1.0e-10 C_100% 5.2579e4 ONE_HOUR 3600000
 // cathode
-E 3 - ConditionID 1 C_0% 4.5536e4 C_100% 1.6776e4 ONE_HOUR 3600000
+E 3 ConditionID 1 C_0% 4.5536e4 C_100% 1.6776e4 ONE_HOUR 3600000
 -------------------------------DESIGN CELL VOLTAGE SURF CONDITIONS
-DSURF  2
 // anode_side_current_collector
-E 1 - ConditionID 0
+E 1 ConditionID 0
 // cathode_side_current_collector
-E 6 - ConditionID 1
+E 6 ConditionID 1
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    2 DNODE 1
 NODE    3 DNODE 1

@@ -114,21 +114,18 @@ VARIABLE 0 NAME a TYPE multifunction NUMPOINTS 3 TIMES 0 1 1000 DESCRIPTION 1000
 ----------------------------------------------------------------------FUNCT5
 SYMBOLIC_FUNCTION_OF_TIME t/1.5
 ------------------------------------DESIGN NODE 1D ARTERY TO POROFLUID COUPLING CONDITIONS
-DPOINT                          6
-E 3 - COUPID  1
-E 1 - COUPID  1
-E 5 - COUPID  2
-E 9 - COUPID  2
-E 6 - COUPID  3
-E 10 - COUPID  3
+E 3 COUPID  1
+E 1 COUPID  1
+E 5 COUPID  2
+E 9 COUPID  2
+E 6 COUPID  3
+E 10 COUPID  3
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  1
 // left
-E 2 - NUMDOF 5 ONOFF 1 1 1 1 1 VAL 0.1 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
+E 2 NUMDOF 5 ONOFF 1 1 1 1 1 VAL 0.1 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  1
 // all 2d nodes
-E 1 - NUMDOF 5 ONOFF 1 1 1 1 0 VAL 0.1 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
+E 1 NUMDOF 5 ONOFF 1 1 1 1 0 VAL 0.1 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
 //
 // Neumann BC on right side, this would correspond to a situation without coupling when
 // applying a Neumann BC directly on right side of 2D domain as
@@ -136,10 +133,9 @@ E 1 - NUMDOF 5 ONOFF 1 1 1 1 0 VAL 0.1 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
 //DLINE                          1
 //E 1 - NUMDOF 5 ONOFF 0 0 0 0 1 VAL 0.0 0.0 0.0 0.0 6.785840131753953e+03 FUNCT 0 0 0 0 0
 ---------------------------------------------DESIGN POINT NEUMANN CONDITIONS
-DPOINT                          3
-E 2 - NUMDOF 1 ONOFF 1 VAL 6.785840131753953e+03 FUNCT 5
-E 7 - NUMDOF 1 ONOFF 1 VAL 3.392920065876976e+03 FUNCT 5
-E 8 - NUMDOF 1 ONOFF 1 VAL 3.392920065876976e+03 FUNCT 5
+E 2 NUMDOF 1 ONOFF 1 VAL 6.785840131753953e+03 FUNCT 5
+E 7 NUMDOF 1 ONOFF 1 VAL 3.392920065876976e+03 FUNCT 5
+E 8 NUMDOF 1 ONOFF 1 VAL 3.392920065876976e+03 FUNCT 5
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 4 DNODE 1
 NODE 9 DNODE 2

@@ -132,59 +132,49 @@ COMPONENT 3 SYMBOLIC_FUNCTION_OF_SPACE_TIME 0
 ----------------------------------------------------------------------FUNCT3
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME (1/0.4)*(1/0.4)*(0.8-2*y)
 ----------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF 1
 // xFluid__outflow
-E 1 - NUMDOF 6 ONOFF 0 0 0 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0 TYPE Live
+E 1 NUMDOF 6 ONOFF 0 0 0 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0 TYPE Live
 ----------------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 2
 // xFluid__inflow
-E 1 - NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.3 0.0 0.0 0.0 0.0 0.0 FUNCT 2 0 0 0 0 0
+E 1 NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.3 0.0 0.0 0.0 0.0 0.0 FUNCT 2 0 0 0 0 0
 // no_bc
-E 2 - NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
+E 2 NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF 4
 // fluid FSI
-E 2 - NUMDOF 6 ONOFF 0 0 0 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
+E 2 NUMDOF 6 ONOFF 0 0 0 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
 // structure_unten_dir
-E 4 - NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
+E 4 NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
 // xFluid__upper_and_lower_surface
-E 5 - NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
+E 5 NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
 // unten_dirichlet_fluid
-E 6 - NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
+E 6 NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
 ------------------------------------------------DESIGN VOL DIRICH CONDITIONS
-DVOL 3
 // embFluid_volume
-E 1 - NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
+E 1 NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
 // bgFluid_volume
-E 2 - NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
+E 2 NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
 // structure_volume
-E 3 - NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
+E 3 NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
 -------------------------------------------DESIGN SURF ALE DIRICH CONDITIONS
-DSURF 1
 // bottom_dirichlet_fluid
-E 6 - NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
+E 6 NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
 --------------------------------------------DESIGN VOL ALE DIRICH CONDITIONS
-DVOL 1
 // embFluid_volume
-E 1 - NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
+E 1 NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
 -----------------------------------------DESIGN FSI COUPLING SURF CONDITIONS
-DSURF 2
 // fluid fsi
-E 2 - coupling_id 1
+E 2 coupling_id 1
 // structure fsi
-E 7 - coupling_id 1
+E 7 coupling_id 1
 --------------------------------------DESIGN XFEM FLUIDFLUID SURF CONDITIONS
-DSURF 1
 // xfem
-E 3 - COUPLINGID 1 COUPSTRATEGY embedded
+E 3 COUPLINGID 1 COUPSTRATEGY embedded
 ---------------------------------DESIGN FLUID FLUID COUPLING SURF CONDITIONS
-DSURF 1
 // fluid-fluid
-E 3 - COUPLINGID 1
+E 3 COUPLINGID 1
 ------------------------------------------DESIGN FLUID MESH VOL CONDITIONS
-DVOL 1
 // embFluid_volume
-E 1 - COUPLINGID 1
+E 1 COUPLINGID 1
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 1 DNODE 1
 NODE 2 DNODE 1

@@ -66,7 +66,16 @@ void Core::Conditions::ConditionDefinition::read(Core::IO::InputFile& input,
 
   for (const auto& fragment : input.in_section(section_name()))
   {
-    auto data = fragment.match(condition_spec);
+    std::optional<Core::IO::InputParameterContainer> data;
+    try
+    {
+      data = fragment.match(condition_spec);
+    }
+    catch (const Core::Exception& e)
+    {
+      FOUR_C_THROW(
+          "Failed to match condition specification in section '%s'.", section_name().c_str());
+    }
     if (!data)
     {
       FOUR_C_THROW(

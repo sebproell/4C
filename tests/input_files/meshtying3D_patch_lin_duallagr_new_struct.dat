@@ -63,35 +63,31 @@ SYMBOLIC_FUNCTION_OF_SPACE_TIME 1
 -------------------------------------------------------------FUNCT2
 SYMBOLIC_FUNCTION_OF_TIME 1
 ---------------------------------------------DESIGN POINT NEUMANN CONDITIONS
-DPOINT                          5
 //                              node_force_z_1
-E 1 - NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 -1.0 0.0 0.0 0.0 FUNCT 0 0 2 0 0 0 TYPE Live
+E 1 NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 -1.0 0.0 0.0 0.0 FUNCT 0 0 2 0 0 0 TYPE Live
 //                              node_force_z_2
-E 2 - NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 -2.0 0.0 0.0 0.0 FUNCT 0 0 2 0 0 0 TYPE Live
+E 2 NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 -2.0 0.0 0.0 0.0 FUNCT 0 0 2 0 0 0 TYPE Live
 //                              node_force_z_2.9101562500
-E 3 - NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 -2.9101562500 0.0 0.0 0.0 FUNCT 0 0 2 0 0 0 TYPE Live
+E 3 NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 -2.9101562500 0.0 0.0 0.0 FUNCT 0 0 2 0 0 0 TYPE Live
 //                              node_force_z_3.6835937500
-E 4 - NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 -3.6835937500 0.0 0.0 0.0 FUNCT 0 0 2 0 0 0 TYPE Live
+E 4 NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 -3.6835937500 0.0 0.0 0.0 FUNCT 0 0 2 0 0 0 TYPE Live
 //                              node_force_z_0.24609375000
-E 5 - NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 -0.24609375000 0.0 0.0 0.0 FUNCT 0 0 2 0 0 0 TYPE Live
+E 5 NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 -0.24609375000 0.0 0.0 0.0 FUNCT 0 0 2 0 0 0 TYPE Live
 ----------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF                           1
 //                              surf_force_1
-E 1 - NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 -1.0 0.0 0.0 0.0 FUNCT 0 0 1 0 0 0 TYPE Live
+E 1 NUMDOF 6 ONOFF 0 0 1 0 0 0 VAL 0.0 0.0 -1.0 0.0 0.0 0.0 FUNCT 0 0 1 0 0 0 TYPE Live
 ----------------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT                          4
 //                              D_all
-E 6 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 6 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 //                              D_xz
-E 7 - NUMDOF 3 ONOFF 1 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 7 NUMDOF 3 ONOFF 1 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 //                              D_yz
-E 8 - NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 8 NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 //                              D_z
-E 9 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 9 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -----------------------------------DESIGN SURF MORTAR COUPLING CONDITIONS 3D
-DSURF                           2
-E 2 - InterfaceID 1 Side Slave Initialization Active
-E 3 - InterfaceID 1 Side Master
+E 2 InterfaceID 1 Side Slave Initialization Active
+E 3 InterfaceID 1 Side Master
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 1 DNODE 1
 NODE 42 DNODE 1

@@ -81,32 +81,28 @@ FLUID DIS fluid NODE 669 QUANTITY velx     VALUE  2.28933009598151073e-17  TOLER
 FLUID DIS fluid NODE 669 QUANTITY vely     VALUE  9.79963255467464989e-01  TOLERANCE 1e-14
 FLUID DIS fluid NODE 669 QUANTITY pressure VALUE  1.54312392369901027e-03  TOLERANCE 1e-14
 --------------------------------DESIGN SURF MODE FOR KRYLOV SPACE PROJECTION
-DSURF                          1
-E 1 - DIS fluid NUMMODES 3 ONOFF 0 0 1 WEIGHTVECDEF integration // ensure that integral of pressure remains 0.0
+E 1 DIS fluid NUMMODES 3 ONOFF 0 0 1 WEIGHTVECDEF integration // ensure that integral of pressure remains 0.0
 ----------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF  1
 // Body_force
-E 1 - NUMDOF 6 ONOFF 1 1 0 0 0 0 VAL 1.0 1.0 0.0 0.0 0.0 0.0 FUNCT 1 1 0 0 0 0 TYPE Live
+E 1 NUMDOF 6 ONOFF 1 1 0 0 0 0 VAL 1.0 1.0 0.0 0.0 0.0 0.0 FUNCT 1 1 0 0 0 0 TYPE Live
 ----------------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 4
 // Topleft
-E 1 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 2 2 0
+E 1 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 2 2 0
 // Bottomleft
-E 2 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 2 2 0
+E 2 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 2 2 0
 // Bottomright
-E 3 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 2 2 0
+E 3 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 2 2 0
 // Topright
-E 4 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 2 2 0
+E 4 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 2 2 0
 -----------------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  4
 // Line_top
-E 1 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 2 2 0
+E 1 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 2 2 0
 // Line_left
-E 2 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 2 2 0
+E 2 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 2 2 0
 // Line_bottom
-E 3 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 2 2 0
+E 3 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 2 2 0
 // Line_right
-E 4 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 2 2 0
+E 4 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 2 2 0
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE    51 DNODE 1
 NODE    676 DNODE 2

@@ -91,47 +91,41 @@ STRUCTURE DIS structure NODE 4 QUANTITY dispx VALUE -2.06382837031129863e-04 TOL
 STRUCTURE DIS structure NODE 4 QUANTITY velx VALUE -1.20360058328942456e-03 TOLERANCE 1e-8
 STRUCTURE DIS structure NODE 5 QUANTITY dispx VALUE 0 TOLERANCE 1e-14
 ----------------------------------------------DESIGN LINE NEUMANN CONDITIONS
-DLINE                           1
 // Surface x+
-E 1 - NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL 1.0 0.0 0.0 0.0 0.0 0.0 FUNCT 1 0 0 0 0 0 TYPE Live
+E 1 NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL 1.0 0.0 0.0 0.0 0.0 0.0 FUNCT 1 0 0 0 0 0 TYPE Live
 ----------------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT                          4
 // Point x+y+
-E 1 - NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
 // Point x-y+
-E 2 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 2 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 // Point x-y-
-E 3 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 3 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 // Point x+y-
-E 4 - NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
+E 4 NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
 -----------------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE                           4
 //                              Line_x+
-E 1 - NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
 //                              Line_x-
-E 2 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 2 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 //                              Line_y+
-E 3 - NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
+E 3 NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
 //                              Line_y-
-E 4 - NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
+E 4 NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
 ----------------------------------------DESIGN LINE PORO PARTIAL INTEGRATION
-DLINE                           2
 //                              Line_x+
 //E 1 -
 //                              Line_x-
 //E 2 -
 //                              Line_y+
-E 3 -
+E 3
 //                              Line_y-
-E 4 -
+E 4
 ---------------------------------------DESIGN SURFACE POROCOUPLING CONDITION
-DSURF                           1
 //                              Surface
-E 1 -
+E 1
 -----------------------------------------DESIGN FSI COUPLING LINE CONDITIONS
-DLINE                           2
-E 1 - coupling_id 1
-E 2 - coupling_id 2
+E 1 coupling_id 1
+E 2 coupling_id 2
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 1 DNODE 1
 NODE 5 DNODE 2

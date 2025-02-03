@@ -100,33 +100,27 @@ FLUID_FUNCTION KIMMOIN-RHS MAT 1 ISSTAT 1 ISSTOKES 0
 ----------------------------------FUNCT2 // exact velocity/pressure solution
 FLUID_FUNCTION KIMMOIN-UP MAT 1 ISSTAT 1
 -----------------------------------------------DESIGN VOL NEUMANN CONDITIONS
-DVOL 2
 // fluid_1_volume
-E 1 - NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 1.0 1.0 1.0 0.0 0.0 0.0 FUNCT 1 1 1 0 0 0 TYPE Live
+E 1 NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 1.0 1.0 1.0 0.0 0.0 0.0 FUNCT 1 1 1 0 0 0 TYPE Live
 // fluid_2_volume
-E 2 - NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 1.0 1.0 1.0 0.0 0.0 0.0 FUNCT 1 1 1 0 0 0 TYPE Live
+E 2 NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 1.0 1.0 1.0 0.0 0.0 0.0 FUNCT 1 1 1 0 0 0 TYPE Live
 ----------------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 1
 // pressure_point
-E 1 - NUMDOF 4 ONOFF 0 0 1 1 VAL 0.0 0.0 0.0 1.0 FUNCT 0 0 0 2
+E 1 NUMDOF 4 ONOFF 0 0 1 1 VAL 0.0 0.0 0.0 1.0 FUNCT 0 0 0 2
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF 1
 // Fluid_1_wall
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 1.0 1.0 0.0 FUNCT 2 2 2 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 1.0 1.0 0.0 FUNCT 2 2 2 0
 ------------------------------------------------DESIGN VOL DIRICH CONDITIONS
-DVOL 2
 // fluid_2_volume
-E 2 - NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // fluid_1_volume
-E 1 - NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 --------------------------------------DESIGN XFEM FLUIDFLUID SURF CONDITIONS
-DSURF 1
 // xfem
-E 2 - COUPLINGID 1 COUPSTRATEGY xfluid
+E 2 COUPLINGID 1 COUPSTRATEGY xfluid
 ------------------------------------------DESIGN FLUID MESH VOL CONDITIONS
-DVOL 1
 // fluid_2_volume
-E 2 - COUPLINGID 1
+E 2 COUPLINGID 1
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 2319 DNODE 1
 NODE 2323 DNODE 1

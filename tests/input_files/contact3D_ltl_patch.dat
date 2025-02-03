@@ -74,21 +74,18 @@ STRUCTURE DIS structure NODE 63 QUANTITY dispx VALUE 0.0 TOLERANCE 1e-12
 STRUCTURE DIS structure NODE 63 QUANTITY dispy VALUE 0.0 TOLERANCE 1e-12
 STRUCTURE DIS structure NODE 63 QUANTITY dispz VALUE 2.18622162954730092e-03 TOLERANCE 1e-12
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  2
 // top_dbc_surf
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 1.0 FUNCT 0 0 1
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 1.0 FUNCT 0 0 1
 // bottom_dbc_surf
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
-DSURF  2
 // top_contact_surf
-E 3 - InterfaceID 0 Side Slave Initialization Inactive
+E 3 InterfaceID 0 Side Slave Initialization Inactive
 // bottom_contact_surf
-E 4 - InterfaceID 0 Side Master Initialization Inactive
+E 4 InterfaceID 0 Side Master Initialization Inactive
 -----------------------------DESIGN LINE MORTAR EDGE CONDITIONS 3D
-DLINE  1
 // top_contact_edge
-E 1 -
+E 1
 -----------------------------------------------DLINE-NODE TOPOLOGY
 NODE    62 DLINE 1
 NODE    63 DLINE 1

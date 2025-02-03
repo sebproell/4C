@@ -60,19 +60,17 @@ NAME                            Contact_Solver
 SOLVER                          UMFPACK
 ----------------------------------------DESIGN SURF INITIAL FIELD CONDITIONS
 // initial velocity for upper ring
-DSURF                           8
-E 1 - FIELD Velocity FUNCT 1
-E 2 - FIELD Velocity FUNCT 1
-E 3 - FIELD Velocity FUNCT 1
-E 4 - FIELD Velocity FUNCT 1
-E 5 - FIELD Velocity FUNCT 1
-E 6 - FIELD Velocity FUNCT 1
-E 7 - FIELD Velocity FUNCT 1
-E 8 - FIELD Velocity FUNCT 1
+E 1 FIELD Velocity FUNCT 1
+E 2 FIELD Velocity FUNCT 1
+E 3 FIELD Velocity FUNCT 1
+E 4 FIELD Velocity FUNCT 1
+E 5 FIELD Velocity FUNCT 1
+E 6 FIELD Velocity FUNCT 1
+E 7 FIELD Velocity FUNCT 1
+E 8 FIELD Velocity FUNCT 1
 -----------------------------------DESIGN LINE MORTAR CONTACT CONDITIONS 2D
-DLINE                           2
-E 10 - InterfaceID 1 Side Master Initialization Inactive
-E 23 - InterfaceID 1 Side Slave Initialization Inactive
+E 10 InterfaceID 1 Side Master Initialization Inactive
+E 23 InterfaceID 1 Side Slave Initialization Inactive
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 618 DNODE 3
 NODE 583 DNODE 4

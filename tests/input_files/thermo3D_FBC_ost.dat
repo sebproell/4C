@@ -51,17 +51,14 @@ MAT 1 MAT_Fourier CONDUCT_PARA_NUM 1 CAPA 420 CONDUCT 52
 ----------------------------------------------------------------------FUNCT1
 SYMBOLIC_FUNCTION_OF_SPACE_TIME t
 ----------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF                           1
 // right surface: heatflux
-E 2 - NUMDOF 1 ONOFF 1 VAL 20.0 FUNCT 1 TYPE Live
+E 2 NUMDOF 1 ONOFF 1 VAL 20.0 FUNCT 1 TYPE Live
 -----------------------------------------------DESIGN VOL NEUMANN CONDITIONS
-DVOL                            1
 // body temperature
-E 1 - NUMDOF 1 ONOFF 1 VAL 3.0 FUNCT 1 TYPE Live
+E 1 NUMDOF 1 ONOFF 1 VAL 3.0 FUNCT 1 TYPE Live
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF                           1
 // left surface temperature
-E 1 - NUMDOF 1 ONOFF 1 VAL 0.0 FUNCT 0
+E 1 NUMDOF 1 ONOFF 1 VAL 0.0 FUNCT 0
 ---------------------------------------------------------DSURF-NODE TOPOLOGY
 NODE 13 DSURFACE 1
 NODE 14 DSURFACE 1

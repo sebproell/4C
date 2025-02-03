@@ -101,39 +101,34 @@ FLUID DIS porofluid NODE 8 QUANTITY pressure VALUE  1.26516173922667940e+00 TOLE
 STRUCTURE DIS structure NODE 2 QUANTITY dispy VALUE -1.46446609406726325e-01 TOLERANCE 1e-7
 STRUCTURE DIS structure NODE 3 QUANTITY dispy VALUE -7.31862850935549869e-02 TOLERANCE 1e-7
 ------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT                          4
 // Point x+y+
-E 1 - NUMDOF 2 ONOFF 1 1 VAL 0.0 1.0 FUNCT 0 1
+E 1 NUMDOF 2 ONOFF 1 1 VAL 0.0 1.0 FUNCT 0 1
 // Point x-y+
-E 2 - NUMDOF 2 ONOFF 1 1 VAL 0.0 1.0 FUNCT 0 1
+E 2 NUMDOF 2 ONOFF 1 1 VAL 0.0 1.0 FUNCT 0 1
 // Point x-y-
-E 3 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 3 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 // Point x+y-
-E 4 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 4 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE                           4
 // Line_x+
-E 1 - NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
 // Line_x-
-E 2 - NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
+E 2 NUMDOF 2 ONOFF 1 0 VAL 0.0 0.0 FUNCT 0 0
 // Line_y+
-E 3 - NUMDOF 2 ONOFF 1 1 VAL 0.0 1.0 FUNCT 0 1
+E 3 NUMDOF 2 ONOFF 1 1 VAL 0.0 1.0 FUNCT 0 1
 // Line_y-
-E 4 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 4 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 -----------------------DESIGN LINE NORMAL NO PENETRATION CONDITION
-DLINE                           1
-E 5 -
+E 5
 ------------------------------DESIGN LINE PORO PARTIAL INTEGRATION
-DLINE                           3
 // Line_y-
-E 4 -
+E 4
 // rightporo
-E 6 -
+E 6
 // leftporo
-E 7 -
+E 7
 -----------------------------DESIGN SURFACE POROCOUPLING CONDITION
-DSURF                           1
-E 2 -
+E 2
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE 1 DNODE 1
 NODE 5 DNODE 2

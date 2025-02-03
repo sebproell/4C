@@ -115,37 +115,30 @@ COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME -8.0*y
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME a
 VARIABLE 0 NAME a TYPE multifunction NUMPOINTS 3 TIMES 0 1 500000.0 DESCRIPTION 0 t
 ----------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF 1
 // xFluid_outflow
-E 1 - NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.0 1.0 0.0 0.0 0.0 0.0 FUNCT 0 2 0 0 0 0 TYPE Live
+E 1 NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.0 1.0 0.0 0.0 0.0 0.0 FUNCT 0 2 0 0 0 0 TYPE Live
 ----------------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 2
 // xFluid_upper_and_lower_surface
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // xFluid_inflow
-E 2 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 2 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 ------------------------------------------------DESIGN VOL DIRICH CONDITIONS
-DVOL 2
 // xFluid_volume
-E 1 - NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // Fluid_volume
-E 2 - NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 -------------------------------------------DESIGN SURF ALE DIRICH CONDITIONS
-DSURF 1
 // Fluid_xfem
-E 2 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.2 0 0.0 0.0 FUNCT 3 0 0 0
+E 2 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.2 0 0.0 0.0 FUNCT 3 0 0 0
 --------------------------------------------DESIGN VOL ALE DIRICH CONDITIONS
-DVOL 1
 // Fluid_volume
-E 2 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.2 0 0.0 0.0 FUNCT 3 0 0 0
+E 2 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.2 0 0.0 0.0 FUNCT 3 0 0 0
 --------------------------------------DESIGN XFEM FLUIDFLUID SURF CONDITIONS
-DSURF 1
 // Fluid_xfem
-E 2 - COUPLINGID 1 COUPSTRATEGY xfluid
+E 2 COUPLINGID 1 COUPSTRATEGY xfluid
 ------------------------------------------DESIGN FLUID MESH VOL CONDITIONS
-DVOL 1
 // Fluid_volume
-E 2 - COUPLINGID 1
+E 2 COUPLINGID 1
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 1 DNODE 1
 NODE 2 DNODE 1

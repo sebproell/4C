@@ -85,25 +85,20 @@ VARIABLE 0 NAME a TYPE multifunction NUMPOINTS 3 TIMES 0 0.18 0.9001 DESCRIPTION
 ----------------------------------------------------------RESULT DESCRIPTION
 STRUCTURE DIS structure NODE 226 QUANTITY dispz VALUE 8.00901026463622223e+00 TOLERANCE 1e-6
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF                           3
-E 1 - NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0  FUNCT 0 0 0
-E 2 - NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0  FUNCT 0 0 0
-E 3 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0  FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0  FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0  FUNCT 0 0 0
+E 3 NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0  FUNCT 0 0 0
 --------------------------------------------DESIGN SURFACE VOLUME MONITOR 3D
-DSURF                           2
-E 6 - ConditionID 0
-E 7 - ConditionID 1
+E 6 ConditionID 0
+E 7 ConditionID 1
 -----------------DESIGN SURF CARDIOVASCULAR 0D ARTERIAL PROX DIST CONDITIONS
-DSURF                           2
-E 6 - id 0 R_arvalve_max 1.0e1 R_arvalve_min 1.0e-6 R_atvalve_max 1.0e1 R_atvalve_min 1.0e-6 k_p 0.0001 L_arp 6.67e-07 C_arp 7500.0 R_arp 120.0e-6 C_ard 10000.0 R_ard 120.0e-6 p_ref 2.0 p_v_0 0.2 p_arp_0 9.68378038166 y_arp_0 0.0 p_ard_0 9.68378038166 p_at_fac 1.0 p_at_crv 2
-E 7 - id 1 R_arvalve_max 1.0e1 R_arvalve_min 1.0e-6 R_atvalve_max 1.0e1 R_atvalve_min 1.0e-6 k_p 0.0001 L_arp 0.0 C_arp 20000.0 R_arp 100.0e-6 C_ard 30000.0 R_ard 100.0e-6 p_ref 1.5 p_v_0 0.1 p_arp_0 3.22792679389 y_arp_0 0.0 p_ard_0 3.22792679389 p_at_fac 1.0 p_at_crv 3
+E 6 id 0 R_arvalve_max 1.0e1 R_arvalve_min 1.0e-6 R_atvalve_max 1.0e1 R_atvalve_min 1.0e-6 k_p 0.0001 L_arp 6.67e-07 C_arp 7500.0 R_arp 120.0e-6 C_ard 10000.0 R_ard 120.0e-6 p_ref 2.0 p_v_0 0.2 p_arp_0 9.68378038166 y_arp_0 0.0 p_ard_0 9.68378038166 p_at_fac 1.0 p_at_crv 2
+E 7 id 1 R_arvalve_max 1.0e1 R_arvalve_min 1.0e-6 R_atvalve_max 1.0e1 R_atvalve_min 1.0e-6 k_p 0.0001 L_arp 0.0 C_arp 20000.0 R_arp 100.0e-6 C_ard 30000.0 R_ard 100.0e-6 p_ref 1.5 p_v_0 0.1 p_arp_0 3.22792679389 y_arp_0 0.0 p_ard_0 3.22792679389 p_at_fac 1.0 p_at_crv 3
 -----------------DESIGN SURF CARDIOVASCULAR 0D-STRUCTURE COUPLING CONDITIONS
-DSURF                           2
-E 8 - coupling_id 0
-E 9 - coupling_id 1
+E 8 coupling_id 0
+E 9 coupling_id 1
 ---------------------------------DESIGN SURF ROBIN SPRING DASHPOT CONDITIONS
-DSURF                           1
-E 4 - NUMDOF 3 ONOFF 1 0 0 STIFF 0.075 0.0 0.0 TIMEFUNCTSTIFF 0 0 0 VISCO 0.005 0.0 0.0 TIMEFUNCTVISCO 0 0 0 DISPLOFFSET 0.0 0.0 0.0 TIMEFUNCTDISPLOFFSET 0 0 0 FUNCTNONLINSTIFF 0 0 0 DIRECTION refsurfnormal COUPLING none
+E 4 NUMDOF 3 ONOFF 1 0 0 STIFF 0.075 0.0 0.0 TIMEFUNCTSTIFF 0 0 0 VISCO 0.005 0.0 0.0 TIMEFUNCTVISCO 0 0 0 DISPLOFFSET 0.0 0.0 0.0 TIMEFUNCTDISPLOFFSET 0 0 0 FUNCTNONLINSTIFF 0 0 0 DIRECTION refsurfnormal COUPLING none
 ---------------------------------------------------------DSURF-NODE TOPOLOGY
 NODE 1 DSURFACE 1
 NODE 2 DSURFACE 1
