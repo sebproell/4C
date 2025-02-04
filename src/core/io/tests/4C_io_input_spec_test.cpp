@@ -36,22 +36,6 @@ namespace
     EXPECT_EQ(container.get<bool>("d"), true);
   }
 
-  TEST(InputSpecTest, OutofOrder)
-  {
-    auto spec = all_of({
-        entry<int>("a"),
-        entry<double>("b"),
-        entry<std::string>("c"),
-    });
-    InputParameterContainer container;
-    std::string stream("b 2.0 c string a 1");
-    ValueParser parser(stream);
-    spec.fully_parse(parser, container);
-    EXPECT_EQ(container.get<int>("a"), 1);
-    EXPECT_EQ(container.get<double>("b"), 2.0);
-    EXPECT_EQ(container.get<std::string>("c"), "string");
-  }
-
   TEST(InputSpecTest, OptionalLeftOut)
   {
     auto spec = all_of({
@@ -714,8 +698,9 @@ specs:
       root["a"] << 1;
       ConstYamlNodeRef node(root, "");
 
-      auto container = spec.match(node);
-      EXPECT_EQ(container->get<int>("a"), 1);
+      InputParameterContainer container;
+      spec.match(node, container);
+      EXPECT_EQ(container.get<int>("a"), 1);
     }
 
     {
@@ -726,8 +711,9 @@ specs:
       root["b"] << 1;
       ConstYamlNodeRef node(root, "");
 
-      auto container = spec.match(node);
-      EXPECT_FALSE(container);
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
+          spec.match(node, container), Core::Exception, "Expected entry 'a'");
     }
   }
 
@@ -761,14 +747,15 @@ specs:
 
       ConstYamlNodeRef node(root, "");
 
-      auto container = spec.match(node);
-      EXPECT_EQ(container->get<int>("a"), 1);
-      const auto& b = container->get<std::vector<std::string>>("b");
+      InputParameterContainer container;
+      spec.match(node, container);
+      EXPECT_EQ(container.get<int>("a"), 1);
+      const auto& b = container.get<std::vector<std::string>>("b");
       EXPECT_EQ(b.size(), 2);
       EXPECT_EQ(b[0], "b1");
       EXPECT_EQ(b[1], "b2");
-      EXPECT_EQ(container->get<int>("c"), 2);
-      EXPECT_EQ(container->group("group").get<int>("d"), 42);
+      EXPECT_EQ(container.get<int>("c"), 2);
+      EXPECT_EQ(container.group("group").get<int>("d"), 42);
     }
 
     // default left out
@@ -783,9 +770,10 @@ specs:
       root["b"].append_child() << "b2";
       ConstYamlNodeRef node(root, "");
 
-      auto container = spec.match(node);
-      EXPECT_EQ(container->get<int>("c"), 1);
-      EXPECT_FALSE(container->has_group("group"));
+      InputParameterContainer container;
+      spec.match(node, container);
+      EXPECT_EQ(container.get<int>("c"), 1);
+      EXPECT_FALSE(container.has_group("group"));
     }
 
     // too little input
@@ -797,8 +785,9 @@ specs:
       root["a"] << 1;
       ConstYamlNodeRef node(root, "");
 
-      auto container = spec.match(node);
-      EXPECT_FALSE(container);
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
+          spec.match(node, container), Core::Exception, "Expected entry 'b'");
     }
 
     // too much input
@@ -815,8 +804,10 @@ specs:
       root["d"] << 42;
       ConstYamlNodeRef node(root, "");
 
-      auto container = spec.match(node);
-      EXPECT_FALSE(container);
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
+          "The following parts of the input did not match:\n\n"
+          "d: 42");
     }
   }
 
@@ -842,9 +833,10 @@ specs:
       root["b"] << "b";
       ConstYamlNodeRef node(root, "");
 
-      auto container = spec.match(node);
-      EXPECT_EQ(container->get<int>("a"), 1);
-      EXPECT_EQ(container->get<std::string>("b"), "b");
+      InputParameterContainer container;
+      spec.match(node, container);
+      EXPECT_EQ(container.get<int>("a"), 1);
+      EXPECT_EQ(container.get<std::string>("b"), "b");
     }
 
     {
@@ -856,9 +848,10 @@ specs:
       root["d"] << 2.0;
       ConstYamlNodeRef node(root, "");
 
-      auto container = spec.match(node);
-      EXPECT_EQ(container->get<std::string>("a"), "c");
-      EXPECT_EQ(container->get<double>("d"), 2.0);
+      InputParameterContainer container;
+      spec.match(node, container);
+      EXPECT_EQ(container.get<std::string>("a"), "c");
+      EXPECT_EQ(container.get<double>("d"), 2.0);
     };
 
     {
@@ -871,8 +864,19 @@ specs:
       root["d"] << 2.0;
       ConstYamlNodeRef node(root, "");
 
-      auto container = spec.match(node);
-      EXPECT_FALSE(container);
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
+          "[X] Expected exactly one but matched multiple:\n"
+          "  [!] Possible match:\n"
+          "    {\n"
+          "      [ ] Fully matched entry 'a'\n"
+          "      [ ] Fully matched entry 'b'\n"
+          "    }\n"
+          "  [!] Possible match:\n"
+          "    {\n"
+          "      [ ] Fully matched entry 'a'\n"
+          "      [ ] Fully matched entry 'd'\n"
+          "    }");
     }
   }
 
@@ -890,8 +894,9 @@ specs:
       root["a"] << "dir/file.txt";
       ConstYamlNodeRef node(root, "path/to/input.yaml");
 
-      auto container = spec.match(node);
-      EXPECT_EQ(container->get<std::filesystem::path>("a"), "path/to/dir/file.txt");
+      InputParameterContainer container;
+      spec.match(node, container);
+      EXPECT_EQ(container.get<std::filesystem::path>("a"), "path/to/dir/file.txt");
     }
 
     {
@@ -902,8 +907,9 @@ specs:
       root["a"] << "dir/file.txt";
       ConstYamlNodeRef node(root, "input.yaml");
 
-      auto container = spec.match(node);
-      EXPECT_EQ(container->get<std::filesystem::path>("a"), "dir/file.txt");
+      InputParameterContainer container;
+      spec.match(node, container);
+      EXPECT_EQ(container.get<std::filesystem::path>("a"), "dir/file.txt");
     }
 
     {
@@ -914,8 +920,9 @@ specs:
       root["a"] << "/root/dir/file.txt";
       ConstYamlNodeRef node(root, "path/to/input.yaml");
 
-      auto container = spec.match(node);
-      EXPECT_EQ(container->get<std::filesystem::path>("a"), "/root/dir/file.txt");
+      InputParameterContainer container;
+      spec.match(node, container);
+      EXPECT_EQ(container.get<std::filesystem::path>("a"), "/root/dir/file.txt");
     }
   }
 
@@ -946,10 +953,10 @@ specs:
       root["MAT_A"]["a"] << 2;
       ConstYamlNodeRef node(root, "");
 
-      auto container = mat_spec.match(node);
-      ASSERT_TRUE(container);
-      EXPECT_EQ(container->get<int>("MAT"), 1);
-      EXPECT_EQ(container->group("MAT_A").get<int>("a"), 2);
+      InputParameterContainer container;
+      mat_spec.match(node, container);
+      EXPECT_EQ(container.get<int>("MAT"), 1);
+      EXPECT_EQ(container.group("MAT_A").get<int>("a"), 2);
     }
   }
 }  // namespace

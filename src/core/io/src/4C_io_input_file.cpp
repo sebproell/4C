@@ -529,7 +529,9 @@ namespace Core::IO
       }
       else
       {
-        return spec.match(ConstYamlNodeRef(node, pimpl_->section->file));
+        InputParameterContainer container;
+        spec.match(ConstYamlNodeRef(node, pimpl_->section->file), container);
+        return container;
       }
     }
   }

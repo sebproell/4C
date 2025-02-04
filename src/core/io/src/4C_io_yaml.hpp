@@ -176,6 +176,8 @@ namespace Core::IO
     node.node >> value;
   }
 
+  void read_value_from_yaml(ConstYamlNodeRef node, double& value);
+
   template <typename T>
   void read_value_from_yaml(ConstYamlNodeRef node, std::optional<T>& value)
   {

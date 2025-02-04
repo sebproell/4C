@@ -53,7 +53,13 @@ namespace Core::IO
      */
     void fully_parse(ValueParser& parser, InputParameterContainer& container) const;
 
-    [[nodiscard]] std::optional<InputParameterContainer> match(ConstYamlNodeRef yaml) const;
+    /**
+     * Match the content in @p yaml to the expected input format of this InputSpec. If the content
+     * matches, fill the @p container with the parsed data. If the content does not match, throws an
+     * exception. A successful match means that @p yaml contains all required entries and no unknown
+     * content.
+     */
+    void match(ConstYamlNodeRef yaml, InputParameterContainer& container) const;
 
     /**
      * Print the expected input format of this InputSpec to @p stream in dat format.

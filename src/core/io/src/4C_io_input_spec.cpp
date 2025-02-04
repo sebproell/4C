@@ -50,21 +50,14 @@ void Core::IO::InputSpec::fully_parse(
   }
 }
 
-std::optional<Core::IO::InputParameterContainer> Core::IO::InputSpec::match(
-    ConstYamlNodeRef yaml) const
+void Core::IO::InputSpec::match(ConstYamlNodeRef yaml, InputParameterContainer& container) const
 {
   FOUR_C_ASSERT(pimpl_, "InputSpec is empty.");
 
-  std::optional<Core::IO::InputParameterContainer> container{std::in_place};
-  Internal::Matches matches;
-  const bool success = pimpl_->match(yaml, *container, matches);
+  Internal::MatchTree match_tree{*this};
+  pimpl_->match(yaml, container, match_tree.root());
 
-  // Additional to the self-reported success, we also check that all content of the node was
-  // matched.
-  if (success && matches.are_direct_children_matched(yaml))
-    return container;
-  else
-    return std::nullopt;
+  match_tree.assert_match(yaml.node);
 }
 
 void Core::IO::InputSpec::print_as_dat(std::ostream& stream) const
