@@ -704,6 +704,9 @@ namespace Core::IO
      *       enhancing the library with a new function if you think what you are doing is a
      *       missing common use case.
      *
+     * @deprecated This function is deprecated. Please construct your InputSpec using the other
+     * functions provided in this namespace.
+     *
      * @relatedalso InputSpec
      */
     template <typename T, typename DataType = Internal::DataFor<T>>
@@ -1196,9 +1199,11 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::user_defined(std::string name, 
           .data = std::forward<DataType>(data),
           .parse = parse,
           .match =
-              [](ConstYamlNodeRef, InputParameterContainer&, IO::Internal::Matches&) {  // TODO
-                return false;
-              },
+              [](ConstYamlNodeRef, InputParameterContainer&, IO::Internal::Matches&)
+          {
+            FOUR_C_THROW("User-defined specs cannot be matched against yaml.");
+            return false;
+          },
           .print = print ? print : [](std::ostream&, std::size_t) {},
           .emit_metadata = emit_metadata ? emit_metadata : default_emitter},
       {
