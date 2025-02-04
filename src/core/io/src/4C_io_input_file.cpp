@@ -10,10 +10,8 @@
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_io_input_spec.hpp"
 #include "4C_io_value_parser.hpp"
+#include "4C_io_yaml.hpp"
 #include "4C_utils_string.hpp"
-
-#include <ryml.hpp>
-#include <ryml_std.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -231,7 +229,7 @@ namespace Core::IO
     class InputFileImpl
     {
      public:
-      InputFileImpl(MPI_Comm comm) : comm_(comm)
+      InputFileImpl(MPI_Comm comm) : comm_(comm), yaml_tree_(init_yaml_tree_with_exceptions())
       {
         // Root node is a map that stores the file paths as keys and the file content as values.
         yaml_tree_.rootref() |= ryml::MAP;
@@ -508,11 +506,32 @@ namespace Core::IO
   {
     FOUR_C_ASSERT(pimpl_, "Implementation error: fragment is not initialized.");
 
-    Core::IO::ValueParser parser{get_as_dat_style_string(),
-        {.base_path = std::filesystem::path(pimpl_->section->file).parent_path()}};
-    InputParameterContainer container;
-    spec.fully_parse(parser, container);
-    return container;
+    if (std::holds_alternative<std::string_view>(pimpl_->fragment))
+    {
+      Core::IO::ValueParser parser{get_as_dat_style_string(),
+          {.base_path = std::filesystem::path(pimpl_->section->file).parent_path()}};
+      InputParameterContainer container;
+      spec.fully_parse(parser, container);
+      return container;
+    }
+    else
+    {
+      const auto node = std::get<ryml::ConstNodeRef>(pimpl_->fragment);
+      // We need to check whether the node contains structured yaml or just a dat-style string.
+      if (node.is_val())
+      {
+        std::string_view dat_style_string{node.val().data(), node.val().size()};
+        Core::IO::ValueParser parser{dat_style_string,
+            {.base_path = std::filesystem::path(pimpl_->section->file).parent_path()}};
+        InputParameterContainer container;
+        spec.fully_parse(parser, container);
+        return container;
+      }
+      else
+      {
+        return spec.match(ConstYamlNodeRef(node, pimpl_->section->file));
+      }
+    }
   }
 
 

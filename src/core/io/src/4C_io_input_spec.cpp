@@ -8,7 +8,7 @@
 #include "4C_io_input_spec.hpp"
 
 #include "4C_io_input_spec_builders.hpp"
-#include "4C_io_yaml_emitter.hpp"
+#include "4C_io_yaml.hpp"
 #include "4C_utils_exceptions.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -50,6 +50,23 @@ void Core::IO::InputSpec::fully_parse(
   }
 }
 
+std::optional<Core::IO::InputParameterContainer> Core::IO::InputSpec::match(
+    ConstYamlNodeRef yaml) const
+{
+  FOUR_C_ASSERT(pimpl_, "InputSpec is empty.");
+
+  std::optional<Core::IO::InputParameterContainer> container{std::in_place};
+  Internal::Matches matches;
+  const bool success = pimpl_->match(yaml, *container, matches);
+
+  // Additional to the self-reported success, we also check that all content of the node was
+  // matched.
+  if (success && matches.are_direct_children_matched(yaml))
+    return container;
+  else
+    return std::nullopt;
+}
+
 void Core::IO::InputSpec::print_as_dat(std::ostream& stream) const
 {
   FOUR_C_ASSERT(pimpl_, "InputSpec is empty.");
@@ -57,7 +74,7 @@ void Core::IO::InputSpec::print_as_dat(std::ostream& stream) const
   pimpl_->print(stream, 0u);
 }
 
-void Core::IO::InputSpec::emit_metadata(YamlEmitter& yaml) const
+void Core::IO::InputSpec::emit_metadata(YamlNodeRef yaml) const
 {
   FOUR_C_ASSERT(pimpl_, "InputSpec is empty.");
 

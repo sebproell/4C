@@ -110,6 +110,11 @@ namespace Core::IO
      */
     void print(std::ostream& os) const;
 
+    /**
+     * Clear the container.
+     */
+    void clear();
+
    private:
     //! Entry stored in the container.
     struct Entry

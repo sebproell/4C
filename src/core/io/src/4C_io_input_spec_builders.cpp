@@ -161,6 +161,31 @@ namespace
     return description;
   }
 
+  // Match a vector of specs against a node. Returns true when all specs could be matched.
+  // Does not validate that all content of the node was matched as this differs depending on the
+  // context.
+  bool match_vector_of_specs(const std::vector<Core::IO::InputSpec>& specs,
+      Core::IO::ConstYamlNodeRef node, Core::IO::InputParameterContainer& container,
+      Core::IO::Internal::Matches& group_matches)
+  {
+    for (const auto& spec : specs)
+    {
+      if (spec.impl().match(node, container, group_matches))
+      {
+        // OK
+      }
+      else if (spec.impl().required())
+      {
+        return false;
+      }
+      else if (spec.impl().has_default_value())
+      {
+        spec.impl().set_default_value(container);
+      }
+    }
+    return true;
+  }
+
 
 }  // namespace
 
@@ -177,6 +202,36 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::parse(
   parse_in_arbitrary_order(parser, specs, subcontainer);
 
   container.group(name) = subcontainer;
+}
+
+bool Core::IO::InputSpecBuilders::Internal::GroupSpec::match(ConstYamlNodeRef node,
+    Core::IO::InputParameterContainer& container, IO::Internal::Matches& matches) const
+{
+  FOUR_C_ASSERT(!name.empty(), "Internal error: group name must not be empty.");
+  const auto group_name = ryml::to_csubstr(name);
+
+  if (!node.node.has_child(group_name))
+  {
+    return false;
+  }
+
+  auto group_node = node.wrap(node.node[group_name]);
+
+  // Parse into a separate container to avoid side effects if parsing fails.
+  InputParameterContainer subcontainer;
+  IO::Internal::Matches group_matches;
+  bool all_matched = match_vector_of_specs(specs, group_node, subcontainer, group_matches);
+
+  if (!all_matched || !group_matches.are_direct_children_matched(group_node))
+  {
+    return false;
+  }
+
+  // Everything was correctly matched, so mark the group node as matched.
+  matches.push(group_node.node.id());
+
+  container.group(name) = subcontainer;
+  return true;
 }
 
 
@@ -230,9 +285,33 @@ void Core::IO::InputSpecBuilders::Internal::AllOfSpec::parse(
     Core::IO::ValueParser& parser, Core::IO::InputParameterContainer& container) const
 {
   // Parse into a separate container to avoid side effects if parsing fails.
-  Core::IO::InputParameterContainer subcontainer;
+  InputParameterContainer subcontainer;
   parse_in_arbitrary_order(parser, specs, subcontainer);
   container.merge(subcontainer);
+}
+
+
+bool Core::IO::InputSpecBuilders::Internal::AllOfSpec::match(ConstYamlNodeRef node,
+    Core::IO::InputParameterContainer& container, IO::Internal::Matches& matches) const
+{
+  std::vector<ryml::id_type> parsed_node_ids;
+
+  // Parse into a separate container to avoid side effects if parsing fails.
+  InputParameterContainer subcontainer;
+  IO::Internal::Matches all_of_matches;
+  bool all_matched = match_vector_of_specs(specs, node, subcontainer, all_of_matches);
+
+  if (!all_matched)
+  {
+    return false;
+  }
+  // N.B. an all_of does not constitute a full yaml object, so we cannot assert that all children
+  // must be matched.
+
+  matches.push_all(all_of_matches);
+  container.merge(subcontainer);
+
+  return true;
 }
 
 
@@ -328,7 +407,7 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::parse(
 
       // If we reach this point, we have successfully parsed the input.
       std::size_t index = std::distance(specs.begin(), component);
-      if (on_parse_callback) on_parse_callback(parser, container, index);
+      if (on_parse_callback) on_parse_callback(container, index);
 
       return;
     }
@@ -338,6 +417,53 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::parse(
   std::string remainder(parser.get_unparsed_remainder());
   FOUR_C_THROW("While parsing '%s'.\nNone of the specs fit the input. Expected %s",
       remainder.c_str(), data.description.c_str());
+}
+
+
+bool Core::IO::InputSpecBuilders::Internal::OneOfSpec::match(ConstYamlNodeRef node,
+    Core::IO::InputParameterContainer& container, IO::Internal::Matches& matches) const
+{
+  InputParameterContainer subcontainer;
+  IO::Internal::Matches submatches;
+
+  std::size_t matched_index = 0;
+  for (; matched_index < specs.size(); ++matched_index)
+  {
+    submatches.clear();
+    subcontainer.clear();
+    if (specs[matched_index].impl().match(node, subcontainer, submatches))
+    {
+      break;
+    }
+  }
+
+  // If we have reached the end of the loop, no spec could be matched.
+  if (matched_index == specs.size())
+  {
+    submatches.clear();
+    return false;
+  }
+
+  // Check that no other spec can be matched.
+  {
+    IO::Internal::Matches dummy_matches;
+    InputParameterContainer dummy_container;
+    for (std::size_t j = matched_index + 1; j < specs.size(); ++j)
+    {
+      dummy_matches.clear();
+      dummy_container.clear();
+      if (specs[j].impl().match(node, dummy_container, dummy_matches))
+      {
+        return false;
+      }
+    }
+  }
+
+  if (on_parse_callback) on_parse_callback(subcontainer, matched_index);
+
+  matches.push_all(submatches);
+  container.merge(subcontainer);
+  return true;
 }
 
 
@@ -458,8 +584,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::all_of(std::vector<InputSpec> s
 
 
 Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> specs,
-    std::function<void(ValueParser& parser, InputParameterContainer& container, std::size_t index)>
-        on_parse_callback)
+    std::function<void(InputParameterContainer& container, std::size_t index)> on_parse_callback)
 {
   auto flattened_specs = flatten_nested<Internal::OneOfSpec>(std::move(specs));
 
