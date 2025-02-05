@@ -10,6 +10,7 @@
 #include "4C_fem_condition_definition.hpp"
 #include "4C_fem_general_cell_type_traits.hpp"
 #include "4C_inpar_validconditions.hpp"
+#include "4C_io_input_file_utils.hpp"
 #include "4C_pre_exodus_reader.hpp"
 
 #include <fstream>
@@ -146,36 +147,14 @@ void EXODUS::write_dat_conditions(
   // loop all valid conditions that 4C knows
   for (auto& condition : condlist)
   {
-    size_t linelength = 66;
-    std::string sectionname = condition.section_name();
+    const std::string& sectionname = condition.section_name();
 
     // ignore conditions occurring zero times
     count = count_cond.find(sectionname);
     if (count == count_cond.end()) continue;
 
-    // only write conditions provided by user
-    std::string dash(linelength - sectionname.size(), '-');
-    dat << dash << sectionname << std::endl;
-    std::string geo;
-    switch (condition.geometry_type())
-    {
-      case Core::Conditions::geometry_type_point:
-        geo = "DPOINT ";
-        break;
-      case Core::Conditions::geometry_type_line:
-        geo = "DLINE  ";
-        break;
-      case Core::Conditions::geometry_type_surface:
-        geo = "DSURF  ";
-        break;
-      case Core::Conditions::geometry_type_volume:
-        geo = "DVOL   ";
-        break;
-      default:
-        FOUR_C_THROW("geometry type unspecified");
-    }
+    Core::IO::print_section_header(dat, sectionname);
 
-    dat << geo << (count->second).size() << std::endl;
     for (i_c = (count->second).begin(); i_c != (count->second).end(); ++i_c)
     {
       EXODUS::CondDef actcon = condefs[*i_c];
@@ -214,13 +193,13 @@ void EXODUS::write_dat_conditions(
       {
         // special case for locsys conditions: calculate normal
         std::vector<double> normal_tangent = EXODUS::calc_normal_surf_locsys(actcon.id, mymesh);
-        dat << "E " << actcon.e_id << " - ";
+        dat << "E " << actcon.e_id << " ";
         for (double normtang : normal_tangent)
           dat << std::setprecision(10) << std::fixed << normtang << " ";
         dat << std::endl;
       }
       else
-        dat << "E " << actcon.e_id << " - " << actcon.desc << std::endl;
+        dat << "E " << actcon.e_id << " " << actcon.desc << std::endl;
     }
     // remove sectionname from map, since writing is done
     count_cond.erase(sectionname);

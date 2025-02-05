@@ -105,14 +105,12 @@ SCATRA DIS scatra SPECIAL true QUANTITY meanc VALUE 3.55692182589152917e-02 TOLE
 SCATRA DIS scatra SPECIAL true QUANTITY meaneta VALUE -2.36265020983621093e-01 TOLERANCE 1e-10
 SCATRA DIS scatra SPECIAL true QUANTITY meancur VALUE -5.95032827797435313e-02 TOLERANCE 1e-11
 -----------------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE                           1
 //                              right_electrode
-E 2 - NUMDOF 7 ONOFF 1 1 1 1 1 1 1 VAL 9.95 0.1 5.0 5.0 1000 985 0.0 FUNCT 0 0 0 0 0 0 0
+E 2 NUMDOF 7 ONOFF 1 1 1 1 1 1 1 VAL 9.95 0.1 5.0 5.0 1000 985 0.0 FUNCT 0 0 0 0 0 0 0
 ---------------------------------ELECTRODE BOUNDARY KINETICS LINE CONDITIONS
-DLINE                           2
 //                              left_electrode
-E 1 - ConditionID 0 POT -1.0 FUNCT 3 NUMSCAL 6 STOICH -1 1 0 0 0 0  E- 1 EPSILON -1 ZERO_CUR 0 KINETIC_MODEL Butler-Volmer-Newman K_A 1.0312e-1 K_C 1.0364e-3 BETA 0.5 DL_SPEC_CAP 0.0
-E 1 - ConditionID 1 POT -1.0 FUNCT 3 NUMSCAL 6 STOICH 0 0 -1 1 0 0  E- 1 EPSILON -1 ZERO_CUR 0 KINETIC_MODEL Butler-Volmer-Newman K_A 1.16e-4 K_C 9.32e+2 BETA 0.463 DL_SPEC_CAP 0.0
+E 1 ConditionID 0 POT -1.0 FUNCT 3 NUMSCAL 6 STOICH -1 1 0 0 0 0  E- 1 EPSILON -1 ZERO_CUR 0 KINETIC_MODEL Butler-Volmer-Newman K_A 1.0312e-1 K_C 1.0364e-3 BETA 0.5 DL_SPEC_CAP 0.0
+E 1 ConditionID 1 POT -1.0 FUNCT 3 NUMSCAL 6 STOICH 0 0 -1 1 0 0  E- 1 EPSILON -1 ZERO_CUR 0 KINETIC_MODEL Butler-Volmer-Newman K_A 1.16e-4 K_C 9.32e+2 BETA 0.463 DL_SPEC_CAP 0.0
 ---------------------------------------------------------DLINE-NODE TOPOLOGY
 NODE 1 DLINE 1
 NODE 4 DLINE 1

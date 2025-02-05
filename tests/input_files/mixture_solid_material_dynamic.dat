@@ -65,11 +65,9 @@ LINEAR_SOLVER                   1
 --------------------------------------------------------------------SOLVER 1
 SOLVER                          UMFPACK
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF                           1
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 ----------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF                           1
-E 2 - NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 10.0 10.0 10.0 0.0 0.0 0.0 FUNCT 1 2 3 1 1 1 TYPE Live
+E 2 NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 10.0 10.0 10.0 0.0 0.0 0.0 FUNCT 1 2 3 1 1 1 TYPE Live
 -------------------------------------------------------------------MATERIALS
 MAT 1 MAT_Mixture NUMCONST 1 MATIDSCONST 11 MATIDMIXTURERULE 10
 MAT 10 MIX_Rule_Simple DENS 1.5 NUMCONST 1 MASSFRAC 1.0

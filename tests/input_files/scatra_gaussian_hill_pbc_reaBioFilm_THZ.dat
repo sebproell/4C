@@ -79,20 +79,18 @@ SCATRA DIS scatra NODE 330 QUANTITY flux_boundary_1_x VALUE 9.62328047635092888e
 SCATRA DIS scatra NODE 330 QUANTITY flux_boundary_1_y VALUE -0.00000000000000000e+00 TOLERANCE 1e-12
 SCATRA DIS scatra NODE 330 QUANTITY flux_boundary_1_z VALUE -0.00000000000000000e+00 TOLERANCE 1e-12
 ------------------------------------DESIGN SURF PERIODIC BOUNDARY CONDITIONS
-DSURF                           2
 //                              inflow
-E 1 - ID 1 MASTER_OR_SLAVE Master PLANE yz LAYER 0 ANGLE 0.0 ABSTREETOL 1e-9
+E 1 ID 1 MASTER_OR_SLAVE Master PLANE yz LAYER 0 ANGLE 0.0 ABSTREETOL 1e-9
 //                              outflow
-E 2 - ID 1 MASTER_OR_SLAVE Slave PLANE yz LAYER 0 ANGLE 0.0 ABSTREETOL 1e-9
+E 2 ID 1 MASTER_OR_SLAVE Slave PLANE yz LAYER 0 ANGLE 0.0 ABSTREETOL 1e-9
 --------------------------------------------SCATRA FLUX CALC SURF CONDITIONS
-DSURF                           1
 // measure total mass flux through boundary
 // DSurface 3 inside the domain is only defined for not using the periodic boundary planes,
 // which would lead to wrong results!!! Usually, you take your inflow or
 // outflow surface and do your flux calculation there!!!
 // The current setting in this test with periodic b.c.'s required this workaround.
 //
-E 3 -
+E 3
 ---------------------------------------------------------DSURF-NODE TOPOLOGY
 NODE 1 DSURFACE 1
 NODE 2 DSURFACE 1

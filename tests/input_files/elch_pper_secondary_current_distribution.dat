@@ -100,18 +100,15 @@ SCATRA DIS scatra NODE 265 QUANTITY flux_boundary_1_x VALUE 0.0e+00 TOLERANCE 1e
 SCATRA DIS scatra NODE 265 QUANTITY flux_boundary_1_y VALUE -1.02010396016265700e-01 TOLERANCE 1e-10
 SCATRA DIS scatra NODE 265 QUANTITY flux_boundary_1_z VALUE 0.0e+00 TOLERANCE 1e-09
 ---------------------------------ELECTRODE BOUNDARY KINETICS SURF CONDITIONS
-DSURF                           2
 //                              anode
-E 1 - ConditionID 0 POT 1.0 FUNCT none NUMSCAL 2 STOICH -1 0  E- 1 EPSILON -1 ZERO_CUR 0 KINETIC_MODEL Butler-Volmer ALPHA_A 0.5 ALPHA_C 0.5 I0 0.1 GAMMA 0.0 REFCON 1.0 DL_SPEC_CAP 0.0
+E 1 ConditionID 0 POT 1.0 FUNCT none NUMSCAL 2 STOICH -1 0  E- 1 EPSILON -1 ZERO_CUR 0 KINETIC_MODEL Butler-Volmer ALPHA_A 0.5 ALPHA_C 0.5 I0 0.1 GAMMA 0.0 REFCON 1.0 DL_SPEC_CAP 0.0
 //                              cathode
-E 2 - ConditionID 1 POT -1.0 FUNCT none NUMSCAL 2 STOICH -1 0  E- 1 EPSILON -1 ZERO_CUR 0 KINETIC_MODEL Butler-Volmer ALPHA_A 0.5 ALPHA_C 0.5 I0 0.1 GAMMA 0.0 REFCON 1.0 DL_SPEC_CAP 0.0
+E 2 ConditionID 1 POT -1.0 FUNCT none NUMSCAL 2 STOICH -1 0  E- 1 EPSILON -1 ZERO_CUR 0 KINETIC_MODEL Butler-Volmer ALPHA_A 0.5 ALPHA_C 0.5 I0 0.1 GAMMA 0.0 REFCON 1.0 DL_SPEC_CAP 0.0
 --------------------------------------------SCATRA FLUX CALC SURF CONDITIONS
-DSURF                           2
-E 1 -
-E 2 -
+E 1
+E 2
 ------------------------------------------------DESIGN VOL DIRICH CONDITIONS
-DVOL                            1
-E 1 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 1.0 0.0 FUNCT 0 0 0
 ---------------------------------------------------------DSURF-NODE TOPOLOGY
 NODE 241 DSURFACE 1
 NODE 242 DSURFACE 1

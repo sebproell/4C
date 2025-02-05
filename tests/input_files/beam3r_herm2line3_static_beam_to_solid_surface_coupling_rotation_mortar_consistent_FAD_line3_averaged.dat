@@ -99,20 +99,15 @@ MAT 2 MAT_BeamReissnerElastHyper YOUNG 100 POISSONRATIO 0.0 DENS 0.0 CROSSAREA 0
 --------------------------------------------------------------------------FUNCT1
 SYMBOLIC_FUNCTION_OF_TIME t
 --------------------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 1
-E 1 - NUMDOF 9 ONOFF 1 1 1 1 1 1 0 0 0 VAL 0 0 0 0 0 0 0 0 0 FUNCT 0 0 0 0 0 0 0 0 0
+E 1 NUMDOF 9 ONOFF 1 1 1 1 1 1 0 0 0 VAL 0 0 0 0 0 0 0 0 0 FUNCT 0 0 0 0 0 0 0 0 0
 ---------------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF 1
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0 0 0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0 0 0 FUNCT 0 0 0
 -------------------------------------------------DESIGN POINT NEUMANN CONDITIONS
-DPOINT 1
-E 2 - NUMDOF 9 ONOFF 0 0 0 1 0 0 0 0 0 VAL 0 0 0 0.005 0 0 0 0 0 FUNCT 0 0 0 1 0 0 0 0 0
+E 2 NUMDOF 9 ONOFF 0 0 0 1 0 0 0 0 0 VAL 0 0 0 0.005 0 0 0 0 0 FUNCT 0 0 0 1 0 0 0 0 0
 ---------------------------BEAM INTERACTION/BEAM TO SOLID SURFACE MESHTYING LINE
-DLINE 1
-E 1 - COUPLING_ID 1
+E 1 COUPLING_ID 1
 ------------------------BEAM INTERACTION/BEAM TO SOLID SURFACE MESHTYING SURFACE
-DSURF 1
-E 2 - COUPLING_ID 1
+E 2 COUPLING_ID 1
 -------------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 13 DNODE 1
 NODE 15 DNODE 2

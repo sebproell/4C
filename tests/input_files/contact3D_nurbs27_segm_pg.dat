@@ -67,13 +67,11 @@ VARIABLE 0 NAME v TYPE multifunction NUMPOINTS 3 TIMES 0.0 1.0 10.0 DESCRIPTION 
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME v
 VARIABLE 0 NAME v TYPE multifunction NUMPOINTS 3 TIMES 0.0 1.0 10.0 DESCRIPTION 0.0 1.0
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF                           2
-E 11 - NUMDOF 3 ONOFF 1 1 1 VAL 0 0 0 FUNCT 0 0 0
-E 6  - NUMDOF 3 ONOFF 1 1 1 VAL 1.0 1.0 -1.0 FUNCT 1  1 2
+E 11 NUMDOF 3 ONOFF 1 1 1 VAL 0 0 0 FUNCT 0 0 0
+E 6 NUMDOF 3 ONOFF 1 1 1 VAL 1.0 1.0 -1.0 FUNCT 1  1 2
 -------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
-DSURF  2
-E 5 - InterfaceID 1 Side Slave Initialization Inactive
-E 12 - InterfaceID 1 Side Master Initialization Inactive
+E 5 InterfaceID 1 Side Slave Initialization Inactive
+E 12 InterfaceID 1 Side Master Initialization Inactive
 -------------------------------------------------------DNODE-NODE TOPOLOGY
 //
 // structure: patch 1, (0,0,0)

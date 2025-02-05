@@ -65,34 +65,28 @@ SOLVER                          UMFPACK
 NAME                            Poro_Solver
 SOLVER                          UMFPACK
 ------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT                          0
 // E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0
 // E 2 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0
 // E 3 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0
 // E 4 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE                           2
-E 3 - NUMDOF 2 ONOFF 1 0 VAL -0.1 0.0 FUNCT 1 0
+E 3 NUMDOF 2 ONOFF 1 0 VAL -0.1 0.0 FUNCT 1 0
 // E 2 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 CURVE 1 none none
 // E 3 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0
-E 4 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 4 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 --------------------------------DESIGN LINE PORO DIRICH CONDITIONS
-DLINE                           1
 //E 3 - NUMDOF 2 ONOFF 1 0 VAL -0.1 0.0 FUNCT 0 0
 // E 2 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 CURVE 1 none none
 // E 3 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0
-E 4 - NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 4 NUMDOF 3 ONOFF 1 0 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 ------------------------------DESIGN LINE PORO PARTIAL INTEGRATION
-DLINE                           2
-E 1 -
-E 2 -
+E 1
+E 2
 -----------------------------DESIGN LINE PORO PRESSURE INTEGRATION
-DLINE                           1
-E 3 -
+E 3
 -----------------------------DESIGN SURFACE POROCOUPLING CONDITION
-DSURF                           1
 //                              Surface
-E 1 -
+E 1
 ---------------------------------------------STRUCTURE KNOTVECTORS
 NURBS_DIMENSION                       2
 BEGIN                           NURBSPATCH

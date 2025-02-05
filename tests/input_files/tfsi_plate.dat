@@ -299,121 +299,106 @@ SYMBOLIC_FUNCTION_OF_SPACE_TIME 1508*(x-0.5)^2+473
 
 
 ------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF  1
 // ConvectionSurface
-E 1 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 ------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 3
 // FluidInflowBottomPoints
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 4 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 4 0 0 0
 // FluidInflowTopPoints
-E 2 - NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // DBC consistency
-E 4 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 4 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  7
 // FluidInflowBottomLine
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 4 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 4 0 0 0
 // FluidInflowTopLine
-E 2 - NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // FluidInflowFrontLine
-E 3 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 4 0 0 0
+E 3 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 4 0 0 0
 // FluidInflowBackLine
-E 4 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 4 0 0 0
+E 4 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 4 0 0 0
 // FluidFrontBottomLine
-E 5 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 5 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // FluidBackBottomLine
-E 6 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 6 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // FluidFrontBackLineInterface
-E 7 - NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 7 NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  6
 // inflow
-E 2 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 4 0 0 0
+E 2 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 4 0 0 0
 // FluidBottom
-E 3 - NUMDOF 4 ONOFF 0 1 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 3 NUMDOF 4 ONOFF 0 1 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // FluidFrontBackSurface
-E 4 - NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 4 NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // interface_fluid
-E 6 - NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 6 NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // PlateEnds
-E 8 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 8 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // StructureFrontBackSurface
-E 9 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 9 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 --------------------------------DESIGN POINT ALE DIRICH CONDITIONS
-DPOINT 2
 // FluidInflowTopPoints
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // FluidOutflowTopPoints
-E 3 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 3 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 ---------------------------------DESIGN LINE ALE DIRICH CONDITIONS
-DLINE  4
 // FluidFrontBottomLine
-E 5 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 5 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // FluidBackBottomLine
-E 6 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 6 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // FluidInflowFrontLine
-E 3 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 3 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // FluidInflowBackLine
-E 4 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 4 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 ---------------------------------DESIGN SURF ALE DIRICH CONDITIONS
-DSURF  4
 // inflow
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // FluidFrontBackSurface
-E 4 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 4 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // outflow
-E 5 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 5 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // FluidBottom
-E 3 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 3 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 --------------------------DESIGN POINT TRANSPORT DIRICH CONDITIONS
-DPOINT 2
 // FluidInflowBottomPoints
-E 1 - NUMDOF 1 ONOFF 1 VAL 1.0 FUNCT 5
+E 1 NUMDOF 1 ONOFF 1 VAL 1.0 FUNCT 5
 // FluidInflowTopPoints
-E 2 - NUMDOF 1 ONOFF 0 VAL 0.0 FUNCT 0
+E 2 NUMDOF 1 ONOFF 0 VAL 0.0 FUNCT 0
 ---------------------------DESIGN LINE TRANSPORT DIRICH CONDITIONS
-DLINE  4
 // FluidInflowBottomLine
-E 1 - NUMDOF 1 ONOFF 1 VAL 1.0 FUNCT 5
+E 1 NUMDOF 1 ONOFF 1 VAL 1.0 FUNCT 5
 // FluidInflowTopLine
-E 2 - NUMDOF 1 ONOFF 0 VAL 0.0 FUNCT 0
+E 2 NUMDOF 1 ONOFF 0 VAL 0.0 FUNCT 0
 // FluidInflowFrontLine
-E 3 - NUMDOF 1 ONOFF 1 VAL 1.0 FUNCT 5
+E 3 NUMDOF 1 ONOFF 1 VAL 1.0 FUNCT 5
 // FluidInflowBackLine
-E 4 - NUMDOF 1 ONOFF 1 VAL 1.0 FUNCT 5
+E 4 NUMDOF 1 ONOFF 1 VAL 1.0 FUNCT 5
 ---------------------------DESIGN SURF TRANSPORT DIRICH CONDITIONS
-DSURF  1
 // inflow
-E 2 - NUMDOF 1 ONOFF 1 VAL 1.0 FUNCT 5
+E 2 NUMDOF 1 ONOFF 1 VAL 1.0 FUNCT 5
 ----------------------------------SCATRA FLUX CALC SURF CONDITIONS
-DSURF  3
 // ConvectionSurface
-E 1 -
+E 1
 // interface_fluid
-E 6 -
+E 6
 // interface_structure
-E 7 -
+E 7
 ----------------------------DESIGN SCATRA COUPLING SURF CONDITIONS
-DSURF  2
 // interface_fluid
-E 6 - NUMSCAL 1 ONOFF 1 COUPID 1 PERMCOEF 0.0 CONDUCT 0.0 FILTR 0.0 WSSON false WSSCOEFFS 0.0 0.0
+E 6 NUMSCAL 1 ONOFF 1 COUPID 1 PERMCOEF 0.0 CONDUCT 0.0 FILTR 0.0 WSSON false WSSCOEFFS 0.0 0.0
 // interface_structure
-E 7 - NUMSCAL 1 ONOFF 1 COUPID 1 PERMCOEF 0.0 CONDUCT 0.0 FILTR 0.0 WSSON false WSSCOEFFS 0.0 0.0
+E 7 NUMSCAL 1 ONOFF 1 COUPID 1 PERMCOEF 0.0 CONDUCT 0.0 FILTR 0.0 WSSON false WSSCOEFFS 0.0 0.0
 -----------------DESIGN SURFACE FLOW-DEPENDENT PRESSURE CONDITIONS
-DSURF  1
 // outflow
-E 5 - TYPE_OF_FLOW_DEPENDENCE fixed_pressure ConstCoeff 0.0 LinCoeff 0.0 InitialVolume 0.0 ReferencePressure 0.0 AdiabaticExponent 0.0 curve none
+E 5 TYPE_OF_FLOW_DEPENDENCE fixed_pressure ConstCoeff 0.0 LinCoeff 0.0 InitialVolume 0.0 ReferencePressure 0.0 AdiabaticExponent 0.0 curve none
 -------------------------------DESIGN FSI COUPLING SURF CONDITIONS
-DSURF  2
 // interface_fluid
-E 6 - coupling_id 1
+E 6 coupling_id 1
 // interface_structure
-E 7 - coupling_id 1
+E 7 coupling_id 1
 -----------------------TRANSPORT THERMO CONVECTION SURF CONDITIONS
-DSURF  1
 // ConvectionSurface
-E 1 - temperature_state Tempnp coeff -10.0 surtemp 273.0 surtempfunct none funct none
+E 1 temperature_state Tempnp coeff -10.0 surtemp 273.0 surtempfunct none funct none
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    523 DNODE 1
 NODE    2263 DNODE 1

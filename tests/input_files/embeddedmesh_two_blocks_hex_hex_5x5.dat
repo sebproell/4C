@@ -63,25 +63,20 @@ CONSTRAINT_ENFORCEMENT_PENALTYPARAM   1e+6
 -----------------------------------------------------------------------MATERIALS
 MAT 1 MAT_Struct_StVenantKirchhoff YOUNG 20000 NUE 0.3 DENS 7.8e-07
 -----------------------------DESIGN EMBEDDED MESH SOLID SURF COUPLING CONDITIONS
-DSURF                                 1
-E 4 - COUPLINGID 1
+E 4 COUPLINGID 1
 ---------------------------------DESIGN EMBEDDED SOLID VOL BACKGROUND CONDITIONS
-DVOL                                  1
-E 1 - COUPLINGID 1
+E 1 COUPLINGID 1
 --------------------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 1
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0 0 0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0 0 0 FUNCT 0 0 0
 ---------------------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE 1
-E 1 - NUMDOF 3 ONOFF 1 0 1 VAL 0 0 0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 0 1 VAL 0 0 0 FUNCT 0 0 0
 ---------------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF 6
-E 1 - NUMDOF 3 ONOFF 0 0 1 VAL 0 0 0 FUNCT 0 0 0
-E 2 - NUMDOF 3 ONOFF 0 1 0 VAL 0 0 0 FUNCT 0 0 0
-E 3 - NUMDOF 3 ONOFF 1 0 0 VAL 0 0 0 FUNCT 0 0 0
-E 5 - NUMDOF 3 ONOFF 0 0 1 VAL 0 0 -0.1 FUNCT 0 0 0
-E 6 - NUMDOF 3 ONOFF 0 1 0 VAL 0 0 0 FUNCT 0 0 0
-E 7 - NUMDOF 3 ONOFF 1 0 0 VAL 0 0 0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 0 0 1 VAL 0 0 0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 0 1 0 VAL 0 0 0 FUNCT 0 0 0
+E 3 NUMDOF 3 ONOFF 1 0 0 VAL 0 0 0 FUNCT 0 0 0
+E 5 NUMDOF 3 ONOFF 0 0 1 VAL 0 0 -0.1 FUNCT 0 0 0
+E 6 NUMDOF 3 ONOFF 0 1 0 VAL 0 0 0 FUNCT 0 0 0
+E 7 NUMDOF 3 ONOFF 1 0 0 VAL 0 0 0 FUNCT 0 0 0
 -------------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE    347 DNODE 1
 -------------------------------------------------------------DLINE-NODE TOPOLOGY

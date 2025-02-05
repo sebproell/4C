@@ -212,8 +212,7 @@ The input looks like this:
 ::
 
    ------------------------------DESIGN SURF ROBIN SPRING DASHPOT CONDITIONS
-   DSURF <numtotal>
-   E <surfset> - NUMDOF 3 ONOFF 0 0 0 \
+   E <surfset> NUMDOF 3 ONOFF 0 0 0 \
    STIFF <X_STIFF> <Y_STIFF> <Z_STIFF> TIMEFUNCTSTIFF 0 0 0 \
    VISCO <X_VISCO> <Y_VISCO> <Z_VISCO> TIMEFUNCTVISCO 0 0 0 \
    DISPLOFFSET 0.0 0.0 0.0 TIMEFUNCTDISPLOFFSET 0 0 0 FUNCTNONLINSTIFF 0 0 0 \
@@ -236,8 +235,7 @@ The input looks like this:
 ::
 
    ------------------------------DESIGN SURF ROBIN SPRING DASHPOT CONDITIONS
-   DSURF <numtotal>
-   E <surfset> - NUMDOF 3 ONOFF 0 0 0 \
+   E <surfset> NUMDOF 3 ONOFF 0 0 0 \
    STIFF <X_STIFF> <Y_STIFF> <Z_STIFF> TIMEFUNCTSTIFF 0 0 0 \
    VISCO <X_VISCO> <Y_VISCO> <Z_VISCO> TIMEFUNCTVISCO 0 0 0 \
    DISPLOFFSET 0.0 0.0 0.0 TIMEFUNCTDISPLOFFSET 0 0 0 FUNCTNONLINSTIFF 0 0 0 \
@@ -294,8 +292,7 @@ Example input file snippet for a Y-junction of three beam elements with a pin jo
 ::
 
    ------------------------------------DESIGN POINT COUPLING CONDITIONS
-   DPOINT 1
-   E 1 - NUMDOF 6 ONOFF 1 1 1 0 0 0
+   E 1 NUMDOF 6 ONOFF 1 1 1 0 0 0
    -------------------------------------------------DNODE-NODE TOPOLOGY
    NODE 17 DNODE 1
    NODE 42 DNODE 1

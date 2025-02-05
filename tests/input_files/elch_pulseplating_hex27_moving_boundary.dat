@@ -130,33 +130,25 @@ ALE DIS ale NODE 1 QUANTITY dispy VALUE 2.07236784683175871e-05 TOLERANCE 1e-14
 ALE DIS ale NODE 1 QUANTITY dispz VALUE 0.00000000000000000e+00 TOLERANCE 1e-16
 ALE DIS ale NODE 28 QUANTITY dispy VALUE 2.02931945345120346e-05 TOLERANCE 1e-14
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF                           1
-E 1 - NUMDOF 4 ONOFF 1 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 ------------------------------------------------DESIGN VOL DIRICH CONDITIONS
-DVOL                            1
-E 1 - NUMDOF 4 ONOFF 1 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // no velocity in x and z-direction at all nodes!!!
 -------------------------------------------DESIGN SURF ALE DIRICH CONDITIONS
-DSURF                           1
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 --------------------------------------------DESIGN VOL ALE DIRICH CONDITIONS
-DVOL                            1
-E 1 - NUMDOF 3 ONOFF 1 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // no ALE-displacement in x and z-direction at all nodes!!!
 -------------------------------------DESIGN SURF TRANSPORT DIRICH CONDITIONS
-DSURF                           1
 //                              anode
-E 1 - NUMDOF 4 ONOFF 1 1 1 1 VAL 0.348 2.408 4.12 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 1 VAL 0.348 2.408 4.12 0.0 FUNCT 0 0 0 0
 -----------------------------------------DESIGN FSI COUPLING SURF CONDITIONS
-DSURF                           1
-E 2 - coupling_id 1
+E 2 coupling_id 1
 ---------------------------------ELECTRODE BOUNDARY KINETICS SURF CONDITIONS
-DSURF                           1
 //                              cathode
-E 2 - ConditionID 0 POT -0.0 FUNCT none NUMSCAL 3 STOICH -1 0 0  E- 2 EPSILON -1 ZERO_CUR 0 KINETIC_MODEL Butler-Volmer ALPHA_A 1.0 ALPHA_C 0.4 I0 51.0 GAMMA 0.75 REFCON 0.348 DL_SPEC_CAP 0.0
+E 2 ConditionID 0 POT -0.0 FUNCT none NUMSCAL 3 STOICH -1 0 0  E- 2 EPSILON -1 ZERO_CUR 0 KINETIC_MODEL Butler-Volmer ALPHA_A 1.0 ALPHA_C 0.4 I0 51.0 GAMMA 0.75 REFCON 0.348 DL_SPEC_CAP 0.0
 --------------------------------------------SCATRA FLUX CALC SURF CONDITIONS
-DSURF                           1
-E 2 -
+E 2
 ---------------------------------------------------------DSURF-NODE TOPOLOGY
 NODE 892 DSURFACE 1
 NODE 893 DSURFACE 1

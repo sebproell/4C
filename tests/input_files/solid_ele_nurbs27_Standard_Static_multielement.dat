@@ -74,11 +74,9 @@ TYPE                                  Interpolated
 1.0
 END                                   NURBSPATCH
 ---------------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF 1
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0 0 0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0 0 0 FUNCT 0 0 0
 ---------------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF 1
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 0 0 0.2 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 0 0 0.2 FUNCT 0 0 0
 -------------------------------------------------------------DSURF-NODE TOPOLOGY
 NODE 1 DSURFACE 1
 NODE 2 DSURFACE 1

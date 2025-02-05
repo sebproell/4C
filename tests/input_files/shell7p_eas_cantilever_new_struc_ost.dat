@@ -92,14 +92,11 @@ VARIABLE 0 NAME a TYPE linearinterpolation NUMPOINTS 4 TIMES 0 0.1 0.11 1 VALUES
 SYMBOLIC_FUNCTION_OF_SPACE_TIME a
 VARIABLE 0 NAME a TYPE linearinterpolation NUMPOINTS 4 TIMES 0 0.1 0.11 1 VALUES 0 6 0 0
 -----------------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE                           1
-E 3 - NUMDOF 6 ONOFF 1 1 1 1 1 1 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
+E 3 NUMDOF 6 ONOFF 1 1 1 1 1 1 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
 ----------------------------------------------DESIGN LINE NEUMANN CONDITIONS
-DLINE                           1
-E 4 - NUMDOF 6 ONOFF 0 1 0 0 0 0 VAL 0.0 -1.0 0.0 0.0 0.0 0.0 FUNCT 2 2 2 2 2 2 TYPE Live
+E 4 NUMDOF 6 ONOFF 0 1 0 0 0 0 VAL 0.0 -1.0 0.0 0.0 0.0 0.0 FUNCT 2 2 2 2 2 2 TYPE Live
 ----------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF                           1
-E 1 - NUMDOF 6 ONOFF 0 1 0 0 0 0 VAL 0.0 -1.0 0.0 0.0 0.0 0.0 FUNCT 1 1 1 1 1 1 TYPE Live
+E 1 NUMDOF 6 ONOFF 0 1 0 0 0 0 VAL 0.0 -1.0 0.0 0.0 0.0 0.0 FUNCT 1 1 1 1 1 1 TYPE Live
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 1 DNODE 1
 NODE 401 DNODE 2

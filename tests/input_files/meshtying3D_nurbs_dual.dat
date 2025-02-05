@@ -54,12 +54,10 @@ MAT 10   ELAST_CoupNeoHooke YOUNG 2 NUE 0.3
 MAT 2   MAT_ElastHyper   NUMMAT 1 MATIDS 20 DENS 0.1
 MAT 20   ELAST_CoupNeoHooke YOUNG 1 NUE 0.3
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF                           2
-E 11 - NUMDOF 3 ONOFF 1 1 1 VAL 0 0 0 FUNCT 0 0 0
-E 6  - NUMDOF 3 ONOFF 1 1 1 VAL -0.65 -0.7 -0.5 FUNCT 0 0 0
+E 11 NUMDOF 3 ONOFF 1 1 1 VAL 0 0 0 FUNCT 0 0 0
+E 6 NUMDOF 3 ONOFF 1 1 1 VAL -0.65 -0.7 -0.5 FUNCT 0 0 0
 -----------------------------------------------DESIGN VOL NEUMANN CONDITIONS
-DVOL 1
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 1 1 1 FUNCT 1 2 3
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 1 1 1 FUNCT 1 2 3
 ----------------------------------------------------------------------FUNCT1
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME 1e-1
 ----------------------------------------------------------------------FUNCT2
@@ -67,9 +65,8 @@ COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME 2e-1
 ----------------------------------------------------------------------FUNCT3
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME 3e-1
 -------------------------DESIGN SURF MORTAR COUPLING CONDITIONS 3D
-DSURF  2
-E 5 - InterfaceID 1 Side Slave Initialization Active
-E 12 - InterfaceID 1 Side Master Initialization Inactive
+E 5 InterfaceID 1 Side Slave Initialization Active
+E 12 InterfaceID 1 Side Master Initialization Inactive
 -------------------------------------------------------DNODE-NODE TOPOLOGY
 //
 // structure: patch 1, (0,0,0)

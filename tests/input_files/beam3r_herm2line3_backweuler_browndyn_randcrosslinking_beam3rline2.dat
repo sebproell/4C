@@ -83,9 +83,8 @@ Outer Iteration                 = Yes
 Inner Iteration                 = No
 Outer Iteration StatusTest      = No
 --------------------------------------------------DESIGN LINE BEAM FILAMENT CONDITIONS
-DLINE 2
-E 1 - ID 0 TYPE actin
-E 2 - ID 1 TYPE actin
+E 1 ID 0 TYPE actin
+E 2 ID 1 TYPE actin
 -----------------------------------------------DLINE-NODE TOPOLOGY
 NODE       1 DLINE 1
 NODE       2 DLINE 1

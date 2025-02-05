@@ -125,26 +125,21 @@ SYMBOLIC_FUNCTION_OF_SPACE_TIME 2.0*t
 ----------------------------------------------------------------------FUNCT6
 VARFUNCTION 0.05*(p_art-p1)
 -------------------------------------DESIGN SURF PORO DIRICH CONDITIONS
-DSURF  1
 // all 2d nodes
-E 1 - NUMDOF 5 ONOFF 0 0 0 1 0 VAL 0.0 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
+E 1 NUMDOF 5 ONOFF 0 0 0 1 0 VAL 0.0 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
 -------------------------------------DESIGN LINE PORO DIRICH CONDITIONS
-DLINE  1
 // down
-E 3 - NUMDOF 5 ONOFF 1 1 1 1 0 VAL 0.0 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
+E 3 NUMDOF 5 ONOFF 1 1 1 1 0 VAL 0.0 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  1
 // all 2d nodes
-E 1 - NUMDOF 2 ONOFF 1 1  VAL 0.0 3.0  FUNCT 0 5
+E 1 NUMDOF 2 ONOFF 1 1  VAL 0.0 3.0  FUNCT 0 5
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  1
 // all 2d nodes
-E 1 - NUMDOF 2 ONOFF 1 1  VAL 0.0 0.0  FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 1 1  VAL 0.0 0.0  FUNCT 0 0
 -------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT  2
 // all 2d nodes
-E 1 - NUMDOF 1 ONOFF 1 VAL 0.25 FUNCT 0
-E 2 - NUMDOF 1 ONOFF 1 VAL 0.75 FUNCT 0
+E 1 NUMDOF 1 ONOFF 1 VAL 0.25 FUNCT 0
+E 2 NUMDOF 1 ONOFF 1 VAL 0.75 FUNCT 0
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 7 DNODE 1
 NODE 8 DNODE 2

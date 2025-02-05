@@ -76,19 +76,16 @@ STRUCTURE DIS structure NODE 155 QUANTITY dispx VALUE 1.94937616225647115e+00 TO
 STRUCTURE DIS structure NODE 155 QUANTITY dispy VALUE 1.82512040539336318e+00 TOLERANCE 1e-8
 STRUCTURE DIS structure NODE 155 QUANTITY dispz VALUE -6.41449423948259212e-01 TOLERANCE 1e-8
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  1
 // dirich_line_fix
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0  FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0  FUNCT 0 0 0
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  1
 // dirich_move
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 1.0 1.0 1.0 FUNCT 1  1 2
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 1.0 1.0 1.0 FUNCT 1  1 2
 -------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
-DSURF  2
 // slave
-E 2 - InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.1
+E 2 InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.1
 // master
-E 3 - InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.1
+E 3 InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.1
 -----------------------------------------------DLINE-NODE TOPOLOGY
 NODE    2 DLINE 1
 NODE    3 DLINE 1

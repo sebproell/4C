@@ -91,9 +91,8 @@ TYPE phase2 POS 0.045 0.045 -0.02
 TYPE phase2 POS 0.015 0.045 -0.02
 TYPE phase2 POS -0.04 0.02 0.0
 --------------------------------------DESIGN SURFACE PARTICLE WALL
-DSURF  2
-E 1 - MAT 21
-E 2 - MAT 22
+E 1 MAT 21
+E 2 MAT 22
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    1 DSURFACE 1
 NODE    2 DSURFACE 1

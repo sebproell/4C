@@ -156,42 +156,36 @@ COMPONENT 3 SYMBOLIC_FUNCTION_OF_SPACE_TIME 0
 ----------------------------------------------------------------------FUNCT2
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME 0.005*y+1.0 //initial temperature field
 -----------------------------------------------DESIGN VOL NEUMANN CONDITIONS
-DVOL                            1
 //                              volume
-E 1 - NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL 1.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0 TYPE PressureGrad
+E 1 NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL 1.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0 TYPE PressureGrad
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF                           2
 // wall top
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // wall bottom
-E 2 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 ------------------------------------DESIGN SURF PERIODIC BOUNDARY CONDITIONS
-DSURF                           4
 // master stream
-E 3 - ID 2 MASTER_OR_SLAVE Master PLANE yz LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
+E 3 ID 2 MASTER_OR_SLAVE Master PLANE yz LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
 // slave stream
-E 4 - ID 2 MASTER_OR_SLAVE Slave PLANE yz LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
+E 4 ID 2 MASTER_OR_SLAVE Slave PLANE yz LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
 // slave span
-E 5 - ID 1 MASTER_OR_SLAVE Slave PLANE xy LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
+E 5 ID 1 MASTER_OR_SLAVE Slave PLANE xy LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
 // master span
-E 6 - ID 1 MASTER_OR_SLAVE Master PLANE xy LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
+E 6 ID 1 MASTER_OR_SLAVE Master PLANE xy LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
 ---------------------------------DESIGN VOL MODE FOR KRYLOV SPACE PROJECTION
-DVOL                            1
 //                              volume
-E 1 - DIS fluid NUMMODES 4 ONOFF 0 0 0 1 WEIGHTVECDEF integration
+E 1 DIS fluid NUMMODES 4 ONOFF 0 0 0 1 WEIGHTVECDEF integration
 -------------------------------------DESIGN SURF TRANSPORT DIRICH CONDITIONS
-DSURF                           2
 // wall top
-E 2 - NUMDOF 1 ONOFF 1 VAL 0.995 FUNCT 0
+E 2 NUMDOF 1 ONOFF 1 VAL 0.995 FUNCT 0
 // wall bottom
-E 1 - NUMDOF 1 ONOFF 1 VAL 1.005 FUNCT 0
+E 1 NUMDOF 1 ONOFF 1 VAL 1.005 FUNCT 0
 --------------------------------------------SCATRA FLUX CALC SURF CONDITIONS
 //                              DOBJECT
-DSURF                           2
 // wall top
-E 1 -
+E 1
 // wall bottom
-E 2 -
+E 2
 ---------------------------------------------------------DSURF-NODE TOPOLOGY
 NODE 1201 DSURFACE 1
 NODE 1202 DSURFACE 1

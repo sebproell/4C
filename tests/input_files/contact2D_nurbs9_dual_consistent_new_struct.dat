@@ -61,15 +61,13 @@ VARIABLE 0 NAME a TYPE linearinterpolation NUMPOINTS 4 TIMES 0 1 2 100 VALUES 0 
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME a
 VARIABLE 0 NAME a TYPE linearinterpolation NUMPOINTS 4 TIMES 0 1 5 100 VALUES 0 0 11.5 11.5
 -----------------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE                           2
-E 7 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT none none
-E 2 - NUMDOF 2 ONOFF 1 1 VAL 1.0 -1.0 FUNCT 2 1
+E 7 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT none none
+E 2 NUMDOF 2 ONOFF 1 1 VAL 1.0 -1.0 FUNCT 2 1
 -------------------------DESIGN LINE MORTAR CONTACT CONDITIONS 2D
-DLINE  2
 // mrtr_1
-E 1 - InterfaceID 1 Side Slave Initialization Inactive
+E 1 InterfaceID 1 Side Slave Initialization Inactive
 // mrtr_2
-E 8 - InterfaceID 1 Side Master Initialization Inactive
+E 8 InterfaceID 1 Side Master Initialization Inactive
 -------------------------------------------------------DLINE-NODE TOPOLOGY
 //patch coupling BC 1 (begin)
 NODE       1 DLINE   1

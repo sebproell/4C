@@ -55,12 +55,10 @@ AZTOL                           1.0e-08
 AZCONV                          AZ_r0
 -----------------------------------------------DESIGN LINE DIRICH CONDITIONS
 // DOBJECT FLAG FLAG FLAG FLAG FLAG FLAG VAL VAL VAL VAL VAL VAL CURVE CURVE CURVE CURVE CURVE CURVE
-DLINE                           1
-E 4 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 4 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 ----------------------------------------------DESIGN LINE NEUMANN CONDITIONS
 // DOBJECT CURVE FLAG FLAG FLAG FLAG FLAG FLAG VAL VAL VAL VAL VAL VAL FUNC FUNC FUNC FUNC FUNC FUNC TYPE
-DLINE                           1
-E 2 - NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL 2 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0 TYPE Live
+E 2 NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL 2 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0 TYPE Live
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 1 DNODE 1
 NODE 5 DNODE 2

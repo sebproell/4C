@@ -89,57 +89,49 @@ COMPONENT 3 SYMBOLIC_FUNCTION_OF_SPACE_TIME 0
 ----------------------------------------------------------------------FUNCT2
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME -y
 ----------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF                           1
 //                              outflow
-E 2 - NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.0 2.0 0.0 0.0 0.0 0.0 FUNCT 0 2 0 0 0 0 TYPE Live
+E 2 NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL 0.0 2.0 0.0 0.0 0.0 0.0 FUNCT 0 2 0 0 0 0 TYPE Live
 -----------------------------------------------DESIGN VOL NEUMANN CONDITIONS
-DVOL                            1
 //                              inflow
-E 2 - NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL 2.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0 TYPE Dead
+E 2 NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL 2.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0 TYPE Dead
 ----------------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT                          1
 // turbulent inflow
-E 1 - NUMDOF 4 ONOFF 1 1 1 1 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 1 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF                           5
 // turbulent inflow
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // upper wall outflow
-E 3 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 3 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // lower wall outflow
-E 4 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 4 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // upper wall inflow
-E 7 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 7 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // lower wall inflow
-E 8 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 8 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 ------------------------------------DESIGN SURF PERIODIC BOUNDARY CONDITIONS
-DSURF                           6
 // outflow periodic boundary
-E 5 - ID 3 MASTER_OR_SLAVE Slave PLANE xy LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
+E 5 ID 3 MASTER_OR_SLAVE Slave PLANE xy LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
 // outflow periodic boundary
-E 6 - ID 3 MASTER_OR_SLAVE Master PLANE xy LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
+E 6 ID 3 MASTER_OR_SLAVE Master PLANE xy LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
 // spanwise periodic boundary
-E 9 - ID 1 MASTER_OR_SLAVE Master PLANE xy LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
+E 9 ID 1 MASTER_OR_SLAVE Master PLANE xy LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
 // spanwise periodic boundary
-E 10 - ID 1 MASTER_OR_SLAVE Slave PLANE xy LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
+E 10 ID 1 MASTER_OR_SLAVE Slave PLANE xy LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
 // streamwise periodic boundary
-E 11 - ID 2 MASTER_OR_SLAVE Master PLANE yz LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
+E 11 ID 2 MASTER_OR_SLAVE Master PLANE yz LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
 // streamwise periodic boundary
-E 12 - ID 2 MASTER_OR_SLAVE Slave PLANE yz LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
+E 12 ID 2 MASTER_OR_SLAVE Slave PLANE yz LAYER 1 ANGLE 0.0 ABSTREETOL 1e-9
 ---------------------------------------DESIGN SURF TURBULENT INFLOW TRANSFER
-DSURF                           2
 // turbulent inflow
-E 1 - ID 1 toggle slave DIRECTION x curve none
+E 1 ID 1 toggle slave DIRECTION x curve none
 // streamwise periodic boundary
-E 12 - ID 1 toggle master DIRECTION x curve none
+E 12 ID 1 toggle master DIRECTION x curve none
 ----------------------------------------FLUID NEUMANN INFLOW SURF CONDITIONS
-DSURF                           1
 //                              outflow
-E 2 -
+E 2
 -----------------------------------------------FLUID TURBULENT INFLOW VOLUME
-DVOL                            1
 //                              inflow
-E 2 -
+E 2
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 7242 DNODE 1
 ---------------------------------------------------------DSURF-NODE TOPOLOGY

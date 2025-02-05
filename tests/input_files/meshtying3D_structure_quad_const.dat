@@ -54,17 +54,15 @@ SOLVER                          UMFPACK
 MAT 1 MAT_ElastHyper NUMMAT 1 MATIDS 20 DENS 0.0
 MAT 20 ELAST_CoupSVK YOUNG 40000 NUE 0.3
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  2
 // top_dirichlet
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.2 0.3 -0.3 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.2 0.3 -0.3 FUNCT 0 0 0
 // bottom_dirichlet
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 --------------------------DESIGN SURF MORTAR COUPLING CONDITIONS 3D
-DSURF  2
 // top_contact
-E 3 - InterfaceID 1 Side Slave Initialization Active
+E 3 InterfaceID 1 Side Slave Initialization Active
 // bottom_contact
-E 4 - InterfaceID 1 Side Master Initialization Inactive
+E 4 InterfaceID 1 Side Master Initialization Inactive
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    344 DSURFACE 1
 NODE    347 DSURFACE 1

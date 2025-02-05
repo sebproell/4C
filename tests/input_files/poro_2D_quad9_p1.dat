@@ -100,25 +100,23 @@ STRUCTURE DIS structure NODE 3 QUANTITY dispx VALUE -7.06839821013631048e-02 TOL
 STRUCTURE DIS structure NODE 4 QUANTITY dispx VALUE -1.46446609406726325e-01 TOLERANCE 1e-8
 STRUCTURE DIS structure NODE 5 QUANTITY dispx VALUE -1.06434677899982039e-01 TOLERANCE 1e-8
 ----------------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT                          4
 // Point x+y+
-E 1 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 2 0 0
+E 1 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 2 0 0
 // Point x-y+
-E 2 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // Point x-y-
-E 3 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 3 NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // Point x+y-
-E 4 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 2 0 0
+E 4 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 2 0 0
 -----------------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE                           4
 //                              Line_x+
-E 1 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 2 0 0
+E 1 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 2 0 0
 //                              Line_x-
-E 2 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 //                              Line_y+
-E 3 - NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 3 NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 //                              Line_y-
-E 4 - NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 4 NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // ---------------------------------DESIGN LINE NORMAL NO PENETRATION CONDITION
 // DLINE                           2
 // //                              Line_x+
@@ -130,19 +128,16 @@ E 4 - NUMDOF 3 ONOFF 0 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // //                              Line_y-
 // //E 4 -
 ------------------------------DESIGN LINE PORO PRESSURE INTEGRATION
-DLINE                           2
 //                              Line_x+
-E 1 -
+E 1
 //                              Line_x-
-E 2 -
+E 2
 ---------------------------------------DESIGN SURFACE POROCOUPLING CONDITION
-DSURF                           1
 //                              Surface
-E 1 -
+E 1
 ----------------------------------------DESIGN SURF INITIAL FIELD CONDITIONS
-DSURF                           1
 //                              Surface
-E 1 - FIELD Porosity FUNCT 1
+E 1 FIELD Porosity FUNCT 1
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 1 DNODE 1
 NODE 10 DNODE 2

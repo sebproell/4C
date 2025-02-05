@@ -194,36 +194,30 @@ STRUCTURE DIS structure NODE 13 QUANTITY dispx VALUE 6.10032530861557554e+00 TOL
 STRUCTURE DIS structure NODE 65 QUANTITY dispx VALUE -3.42624275473375928e+00 TOLERANCE 1e-6
 STRUCTURE DIS structure NODE 77 QUANTITY dispx VALUE 6.48785530297677582e+00 TOLERANCE 1e-6
 ------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF  2
-E 10 - NUMDOF 3 ONOFF 1 0 0 VAL -1.0 0.0 0.0  FUNCT 4 4 4 TYPE orthopressure
-E 11 - NUMDOF 3 ONOFF 1 0 0 VAL -1.0 0.0 0.0  FUNCT 5 5 5 TYPE orthopressure
+E 10 NUMDOF 3 ONOFF 1 0 0 VAL -1.0 0.0 0.0  FUNCT 4 4 4 TYPE orthopressure
+E 11 NUMDOF 3 ONOFF 1 0 0 VAL -1.0 0.0 0.0  FUNCT 5 5 5 TYPE orthopressure
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  3
-E 1 - NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0  FUNCT 0 0 0
-E 10 - NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0  FUNCT 0 0 0
-E 11 - NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0  FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0  FUNCT 0 0 0
+E 10 NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0  FUNCT 0 0 0
+E 11 NUMDOF 3 ONOFF 0 1 1 VAL 0.0 0.0 0.0  FUNCT 0 0 0
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
-DSURF  8
-E 12 - InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.0
-E 13 - InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.0
-E 14 - InterfaceID 2 Side Master Initialization Inactive FrCoeffOrBound 0.0
-E 15 - InterfaceID 2 Side Slave Initialization Inactive FrCoeffOrBound 0.0
-E 16 - InterfaceID 3 Side Master Initialization Inactive FrCoeffOrBound 0.0
-E 17 - InterfaceID 3 Side Slave Initialization Inactive FrCoeffOrBound 0.0
-E 18 - InterfaceID 4 Side Master Initialization Inactive FrCoeffOrBound 0.0
-E 19 - InterfaceID 4 Side Slave Initialization Inactive FrCoeffOrBound 0.0
+E 12 InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.0
+E 13 InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.0
+E 14 InterfaceID 2 Side Master Initialization Inactive FrCoeffOrBound 0.0
+E 15 InterfaceID 2 Side Slave Initialization Inactive FrCoeffOrBound 0.0
+E 16 InterfaceID 3 Side Master Initialization Inactive FrCoeffOrBound 0.0
+E 17 InterfaceID 3 Side Slave Initialization Inactive FrCoeffOrBound 0.0
+E 18 InterfaceID 4 Side Master Initialization Inactive FrCoeffOrBound 0.0
+E 19 InterfaceID 4 Side Slave Initialization Inactive FrCoeffOrBound 0.0
 -----DESIGN SURF CARDIOVASCULAR 0D SYS-PUL CIRCULATION CONDITIONS
-DSURF                           2
-E 6 - id 0 TYPE ventricle_left
-E 7 - id 1 TYPE ventricle_right
+E 6 id 0 TYPE ventricle_left
+E 7 id 1 TYPE ventricle_right
 -------DESIGN SURF CARDIOVASCULAR 0D-STRUCTURE COUPLING CONDITIONS
-DSURF                           2
-E 8 - coupling_id 0
-E 9 - coupling_id 1
+E 8 coupling_id 0
+E 9 coupling_id 1
 -----------------------DESIGN SURF ROBIN SPRING DASHPOT CONDITIONS
-DSURF  2
-E 2 - NUMDOF 3 ONOFF 1 0 0 STIFF 1.5 0.0 0.0 TIMEFUNCTSTIFF 0 0 0 VISCO 0.001 0.0 0.0 TIMEFUNCTVISCO 0 0 0 DISPLOFFSET 0.0 0.0 0.0 TIMEFUNCTDISPLOFFSET 0 0 0 FUNCTNONLINSTIFF 0 0 0 DIRECTION refsurfnormal COUPLING none
-E 3 - NUMDOF 3 ONOFF 1 0 0 STIFF 0.075 0.0 0.0 TIMEFUNCTSTIFF 0 0 0 VISCO 0.005 0.0 0.0 TIMEFUNCTVISCO 0 0 0 DISPLOFFSET 0.0 0.0 0.0 TIMEFUNCTDISPLOFFSET 0 0 0 FUNCTNONLINSTIFF 0 0 0 DIRECTION refsurfnormal COUPLING none
+E 2 NUMDOF 3 ONOFF 1 0 0 STIFF 1.5 0.0 0.0 TIMEFUNCTSTIFF 0 0 0 VISCO 0.001 0.0 0.0 TIMEFUNCTVISCO 0 0 0 DISPLOFFSET 0.0 0.0 0.0 TIMEFUNCTDISPLOFFSET 0 0 0 FUNCTNONLINSTIFF 0 0 0 DIRECTION refsurfnormal COUPLING none
+E 3 NUMDOF 3 ONOFF 1 0 0 STIFF 0.075 0.0 0.0 TIMEFUNCTSTIFF 0 0 0 VISCO 0.005 0.0 0.0 TIMEFUNCTVISCO 0 0 0 DISPLOFFSET 0.0 0.0 0.0 TIMEFUNCTDISPLOFFSET 0 0 0 FUNCTNONLINSTIFF 0 0 0 DIRECTION refsurfnormal COUPLING none
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    1 DSURFACE 1
 NODE    2 DSURFACE 1

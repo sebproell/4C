@@ -68,7 +68,6 @@ COMBUSTION_FUNCTION ZALESAKSDISK
 ------------------------------------------------------------FUNCT4
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME x
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  0
 // top bottom
 // E 1 -
 // left right

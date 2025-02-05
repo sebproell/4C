@@ -69,8 +69,7 @@ Linear Solver Details           = No
 Test Details                    = No
 Debug                           = No
 --------------------------------------------------DESIGN LINE BEAM FILAMENT CONDITIONS
-DLINE 1
-E 1 - ID 0 TYPE arbitrary
+E 1 ID 0 TYPE arbitrary
 -----------------------------------------------DLINE-NODE TOPOLOGY
 NODE       1 DLINE 1
 NODE       2 DLINE 1

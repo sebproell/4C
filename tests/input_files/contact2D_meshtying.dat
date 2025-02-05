@@ -70,27 +70,23 @@ VARIABLE 0 NAME a TYPE linearinterpolation NUMPOINTS 3 TIMES 0 0.5 1 VALUES 0 30
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME a
 VARIABLE 0 NAME a TYPE linearinterpolation NUMPOINTS 3 TIMES 0 0.5 1 VALUES 0 0 40
 ------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 1
 // dbc_point_xy
-E 1 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE  2
 // dbc_line_y
-E 1 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 // dbc_line_y_move
-E 2 - NUMDOF 2 ONOFF 1 1 VAL 1.0 -1.0 FUNCT 2 1
+E 2 NUMDOF 2 ONOFF 1 1 VAL 1.0 -1.0 FUNCT 2 1
 --------------------------DESIGN LINE MORTAR CONTACT CONDITIONS 2D
-DLINE  2
 // slave_c
-E 3 - InterfaceID 1 Side Slave Initialization Inactive
+E 3 InterfaceID 1 Side Slave Initialization Inactive
 // master_c
-E 4 - InterfaceID 1 Side Master Initialization Inactive
+E 4 InterfaceID 1 Side Master Initialization Inactive
 -------------------------DESIGN LINE MORTAR COUPLING CONDITIONS 2D
-DLINE  2
 // slave_m
-E 5 - InterfaceID 1 Side Slave Initialization Active
+E 5 InterfaceID 1 Side Slave Initialization Active
 // master_m
-E 6 - InterfaceID 1 Side Master Initialization Inactive
+E 6 InterfaceID 1 Side Master Initialization Inactive
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    171 DNODE 1
 -----------------------------------------------DLINE-NODE TOPOLOGY

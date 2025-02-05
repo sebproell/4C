@@ -181,33 +181,26 @@ VARFUNCTION pi*D*1.0*(p_art-p3)
 ----------------------------------------------------------------------FUNCT13
 VARFUNCTION pi*D*8.0*(phi_art1-phi1)+pi*D*0.01*(p_art-p3)*(phi_art1-phi1)
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  1
 // leftsurf
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 --------------------------------------DESIGN VOL PORO DIRICH CONDITIONS
-DVOL   1
 // designvol
-E 1 - NUMDOF 5 ONOFF 0 0 0 1 0 VAL 0.0 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
+E 1 NUMDOF 5 ONOFF 0 0 0 1 0 VAL 0.0 0.0 0.0 0.2 0.0 FUNCT 0 0 0 0 0
 --------------------------------DESIGN SURF PORO DIRICH CONDITIONS
-DSURF  1
 // leftsurf
-E 1 - NUMDOF 5 ONOFF 1 1 1 1 1 VAL 0.1 0.2 0.1 0.2 0.0 FUNCT 0 0 0 0 0
+E 1 NUMDOF 5 ONOFF 1 1 1 1 1 VAL 0.1 0.2 0.1 0.2 0.0 FUNCT 0 0 0 0 0
 --------------------------------DESIGN SURF TRANSPORT DIRICH CONDITIONS
-DSURF  1
 // leftsurf
-E 1 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
 --------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT  1
 // leftsurf
-E 2 - NUMDOF 1 ONOFF 1 VAL 0.0 FUNCT 0
+E 2 NUMDOF 1 ONOFF 1 VAL 0.0 FUNCT 0
 --------------------------------DESIGN POINT NEUMANN CONDITIONS
-DPOINT  1
 // leftsurf
-E 1 - NUMDOF 1 ONOFF 1 VAL 0.001 FUNCT 8
+E 1 NUMDOF 1 ONOFF 1 VAL 0.001 FUNCT 8
 --------------------------------DESIGN POINT TRANSPORT DIRICH CONDITIONS
-DPOINT  1
 // leftsurf
-E 1 - NUMDOF 2 ONOFF 1 1 VAL 1.0 1.0 FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 1 1 VAL 1.0 1.0 FUNCT 0 0
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE    217 DNODE 1
 NODE    227 DNODE 2

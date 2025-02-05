@@ -65,17 +65,15 @@ MAT 1 MAT_Struct_StVenantKirchhoff YOUNG 2250 NUE 0.3 DENS 0.1
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME a
 VARIABLE 0 NAME a TYPE linearinterpolation NUMPOINTS 3 TIMES 0 1 6 VALUES 0 1.4 1.4
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  2
 // dbc_xy_fixed_line
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0  FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0  FUNCT 0 0 0
 // grav
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 -1.0 FUNCT 0 0 1
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 -1.0 FUNCT 0 0 1
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
-DSURF  2
 // slave
-E 3 - InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.2
+E 3 InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.2
 // master
-E 4 - InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.2
+E 4 InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.2
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    17 DSURFACE 1
 NODE    18 DSURFACE 1

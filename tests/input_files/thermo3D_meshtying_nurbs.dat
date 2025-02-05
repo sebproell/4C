@@ -52,18 +52,14 @@ SOLVER                          UMFPACK
 ---------------------------------------------------------MATERIALS
 MAT 1 MAT_Fourier CONDUCT_PARA_NUM 1 CAPA 0 CONDUCT 52
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF                           1
-E 11 - NUMDOF 1 ONOFF 1 VAL 0 FUNCT 0
+E 11 NUMDOF 1 ONOFF 1 VAL 0 FUNCT 0
 -----------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF                           1
-E 6 - NUMDOF 1 ONOFF 1 VAL 1 FUNCT 1
+E 6 NUMDOF 1 ONOFF 1 VAL 1 FUNCT 1
 ------------------------------------------------DESIGN VOL NEUMANN CONDITIONS
-DVOL 1
-E 1 - NUMDOF 1 ONOFF 1 VAL 1 FUNCT 1
+E 1 NUMDOF 1 ONOFF 1 VAL 1 FUNCT 1
 -------------------------DESIGN SURF MORTAR COUPLING CONDITIONS 3D
-DSURF  2
-E 5 - InterfaceID 1 Side Slave Initialization Active
-E 12 - InterfaceID 1 Side Master Initialization Inactive
+E 5 InterfaceID 1 Side Slave Initialization Active
+E 12 InterfaceID 1 Side Master Initialization Inactive
 --------------------------------------------------------FUNCT1
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME x+10*x*y+y*y
 -------------------------------------------------------DNODE-NODE TOPOLOGY

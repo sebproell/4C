@@ -278,12 +278,10 @@ namespace
 
 void Core::IO::print_section_header(std::ostream& out, const std::string& header)
 {
-  constexpr std::size_t max_line_width = 65ul;
-  FOUR_C_ASSERT_ALWAYS(header.length() <= max_line_width, "Header '%s' too long", header.c_str());
+  constexpr std::size_t max_padding = 65ul;
+  const std::size_t padding = (header.length() < max_padding) ? (max_padding - header.length()) : 0;
 
-  out << "--";
-  out << std::string(std::max(max_line_width - header.length(), 0ul), '-');
-  out << header << '\n';
+  out << "--" << std::string(padding, '-') << header << '\n';
 }
 
 

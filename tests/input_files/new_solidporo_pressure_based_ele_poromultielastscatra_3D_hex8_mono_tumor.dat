@@ -177,23 +177,19 @@ SCATRA DIS scatra NODE 1604 QUANTITY phi2 VALUE 0.0 TOLERANCE 1e-14  // inner su
 SCATRA DIS scatra NODE 764 QUANTITY phi1 VALUE 3.77765026869554181e-06 TOLERANCE 1e-10   // somewhere in the middle
 SCATRA DIS scatra NODE 515 QUANTITY phi1 VALUE 3.99676383702082982e-06 TOLERANCE 1e-10   // somewhere in the middle
 ---------------------------DESIGN SURF TRANSPORT DIRICH CONDITIONS
-DSURF  1
 // surface_out
-E 2 - NUMDOF 2 ONOFF 1 1 VAL 4.2e-6 0.0 FUNCT 0 0
+E 2 NUMDOF 2 ONOFF 1 1 VAL 4.2e-6 0.0 FUNCT 0 0
 ---------------------------DESIGN VOL DIRICH CONDITIONS
-DVOL  1
 // all_nodes
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 --------------------------------DESIGN SURF PORO DIRICH CONDITIONS
-DSURF  1
 // surface_out
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 590.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 590.0 0.0 0.0 FUNCT 0 0 0
 -------------------------------DESIGN VOL INITIAL FIELD CONDITIONS
-DVOL   2
 // all_nodes
-E 1 - FIELD PoroMultiFluid FUNCT 1
+E 1 FIELD PoroMultiFluid FUNCT 1
 // all_nodes
-E 1 - FIELD ScaTra FUNCT 3
+E 1 FIELD ScaTra FUNCT 3
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    1601 DSURFACE 1
 NODE    1602 DSURFACE 1

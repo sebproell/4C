@@ -50,9 +50,8 @@ AZITER                          200
 AZSUB                           100
 AZOUTPUT                        1
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  1
 // beltramiboundary
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 1.0 1.0 1.0 FUNCT 1 1 1 2
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 1.0 1.0 1.0 FUNCT 1 1 1 2
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    2 DSURFACE 1
 NODE    12 DSURFACE 1

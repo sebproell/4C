@@ -106,73 +106,62 @@ SRC_FIELD fluid SRC_MAT 2 TAR_FIELD ale TAR_MAT 5
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME y/15.0*a
 VARIABLE 0 NAME a TYPE multifunction NUMPOINTS 3 TIMES 0.0 100.0 500000.0 DESCRIPTION (0.25*(1-cos(2*pi*t/200))) 0.5
 ---------------------------------------------DESIGN POINT NEUMANN CONDITIONS
-DPOINT 1
 // mz
-E 1 - NUMDOF 6 ONOFF 0 0 0 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0 TYPE Live
+E 1 NUMDOF 6 ONOFF 0 0 0 0 0 0 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0 TYPE Live
 ----------------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 1
 // fluidycurves
-E 2 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 2 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 -----------------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE 3
 // fluidxzcurves
-E 2 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 2 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 // fluidxsymcurves
-E 3 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 3 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // r_r_extrude_aux_flat
-E 4 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 4 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF 4
 // fluidxsurfs
-E 2 - NUMDOF 4 ONOFF 0 1 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 1 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // fluidysurfs
-E 3 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 3 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 // fluidzsurfs
-E 4 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 4 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 // fluidsym
-E 5 - NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 5 NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 -------------------------------------------DESIGN LINE ALE DIRICH CONDITIONS
-DLINE 3
 // fluidycurves
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // fluidxzcurves
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // fluidxsymcurves
-E 3 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 3 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -------------------------------------------DESIGN SURF ALE DIRICH CONDITIONS
-DSURF 4
 // fluidxsurfs
-E 2 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // fluidysurfs
-E 3 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 3 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // fluidzsurfs
-E 4 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 4 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // fluidsym
-E 5 - NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 5 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 -----------------------------------------DESIGN FSI COUPLING SURF CONDITIONS
-DSURF 2
 // fsi2
-E 1 - coupling_id 1
+E 1 coupling_id 1
 // base_nodes24
-E 7 - coupling_id 1
+E 7 coupling_id 1
 -----------------------------DESIGN FSI COUPLING CENTER DISP SURF CONDITIONS
-DSURF 1
 // base_nodes24
-E 7 -
+E 7
 --------------------------------------------------------DESIGN VOL STC LAYER
-DVOL 2
 // exth3
-E 1 - ConditionID 1
+E 1 ConditionID 1
 // exth4
-E 2 - ConditionID 2
+E 2 ConditionID 2
 --------------------------------------------DESIGN SURFACE VOLUME MONITOR 3D
-DSURF 1
 // base_nodes24
-E 7 - ConditionID 3
+E 7 ConditionID 3
 ----------------------------------------------DESIGN SURFACE AREA MONITOR 3D
-DSURF 1
 // base_nodes24
-E 7 - ConditionID 1
+E 7 ConditionID 1
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 113 DNODE 1
 NODE 560 DNODE 2

@@ -77,15 +77,13 @@ MAT 1   MAT_Fourier CONDUCT_PARA_NUM 1   CAPA 420 CONDUCT 52
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME a
 VARIABLE 0 NAME a TYPE multifunction NUMPOINTS 3 TIMES 0.0 4 500000.0 DESCRIPTION t/4 1
 ------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF  0
 // right_surface_temperature
 //E 2 - 1  1 0 0 0 0 0  10.0 0.0 0.0 0.0 0.0 0.0  TYPE Live 0 0 0 0 0 0  // first 1 is loadcurve
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  2
 // left_surface_temperature
-E 1 - NUMDOF 1 ONOFF 1 VAL 0.0 FUNCT 0
+E 1 NUMDOF 1 ONOFF 1 VAL 0.0 FUNCT 0
 // right_surface_temperature
-E 2 - NUMDOF 1 ONOFF 1 VAL 10.0 FUNCT 1
+E 2 NUMDOF 1 ONOFF 1 VAL 10.0 FUNCT 1
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    41 DSURFACE 1
 NODE    42 DSURFACE 1

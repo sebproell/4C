@@ -106,71 +106,61 @@ STRUCTURE DIS structure NODE 13 QUANTITY dispy VALUE  0.00000000000000000e+00 TO
 STRUCTURE DIS structure NODE 13 QUANTITY dispz VALUE  0.00000000000000000e+00 TOLERANCE 1.0e-16
 SSI SPECIAL true QUANTITY numiterlastnonlinearsolve VALUE  2.00000000000000000e+00 TOLERANCE 1.0e-16
 --------------------------DESIGN SURF TRANSPORT NEUMANN CONDITIONS
-DSURF  1
 // cathode_collector
-E 1 - NUMDOF 2 ONOFF 0 1 VAL 0.0 1.0e-5 FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 0 1 VAL 0.0 1.0e-5 FUNCT 0 0
 --------------------------------------DESIGN VOL DIRICH CONDITIONS
-DVOL   1
 // all_nodes
-E 4 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
+E 4 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT none none none
 ---------------------------DESIGN SURF TRANSPORT DIRICH CONDITIONS
-DSURF  1
 // anode_collector
-E 8 - NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
+E 8 NUMDOF 2 ONOFF 0 1 VAL 0.0 0.0 FUNCT 0 0
 ----------------------------DESIGN VOL TRANSPORT DIRICH CONDITIONS
-DVOL   1
 // electrolyte
-E 2 - NUMDOF 2 ONOFF 1 0 VAL 1.2 0.0 FUNCT 0 0
+E 2 NUMDOF 2 ONOFF 1 0 VAL 1.2 0.0 FUNCT 0 0
 -------------------------------DESIGN VOL INITIAL FIELD CONDITIONS
-DVOL   3
 // cathode
-E 1 - FIELD ScaTra FUNCT 3
+E 1 FIELD ScaTra FUNCT 3
 // electrolyte
-E 2 - FIELD ScaTra FUNCT 2
+E 2 FIELD ScaTra FUNCT 2
 // anode
-E 3 - FIELD ScaTra FUNCT 1
+E 3 FIELD ScaTra FUNCT 1
 -------------------------------DESIGN S2I KINETICS SURF CONDITIONS
-DSURF  6
 // cathode_electrolyte
-E 2 - ConditionID 0 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.0e-5 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
+E 2 ConditionID 0 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.0e-5 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
 // electrolyte_cathode
-E 3 - ConditionID 0 INTERFACE_SIDE Master
+E 3 ConditionID 0 INTERFACE_SIDE Master
 // electrolyte_grain_boundary_1 (coupling between/over grain boundary with manifold conditions)
-E 4 - ConditionID 2 INTERFACE_SIDE Master
+E 4 ConditionID 2 INTERFACE_SIDE Master
 // electrolyte_grain_boundary_2
-E 5 - ConditionID 2 INTERFACE_SIDE Slave KINETIC_MODEL NoInterfaceFlux
+E 5 ConditionID 2 INTERFACE_SIDE Slave KINETIC_MODEL NoInterfaceFlux
 // electrolyte_anode
-E 6 - ConditionID 1 INTERFACE_SIDE Master
+E 6 ConditionID 1 INTERFACE_SIDE Master
 // anode_electrolyte
-E 7 - ConditionID 1 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.0e-5 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
+E 7 ConditionID 1 INTERFACE_SIDE Slave KINETIC_MODEL Butler-VolmerReduced NUMSCAL 1 STOICHIOMETRIES -1  E- 1  K_R  1.0e-5 ALPHA_A 0.5 ALPHA_C 0.5 IS_PSEUDO_CONTACT False
 --------------------DESIGN SSI INTERFACE MESHTYING SURF CONDITIONS
-DSURF  6
 // cathode_electrolyte
-E 2 - ConditionID 0 INTERFACE_SIDE Slave S2I_KINETICS_ID  0
+E 2 ConditionID 0 INTERFACE_SIDE Slave S2I_KINETICS_ID  0
 // electrolyte_cathode
-E 3 - ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID  0
+E 3 ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID  0
 // electrolyte_grain_boundary_1
-E 4 - ConditionID 2 INTERFACE_SIDE Master S2I_KINETICS_ID  2
+E 4 ConditionID 2 INTERFACE_SIDE Master S2I_KINETICS_ID  2
 // electrolyte_grain_boundary_2
-E 5 - ConditionID 2 INTERFACE_SIDE Slave S2I_KINETICS_ID  2
+E 5 ConditionID 2 INTERFACE_SIDE Slave S2I_KINETICS_ID  2
 // electrolyte_anode
-E 6 - ConditionID 1 INTERFACE_SIDE Master S2I_KINETICS_ID  1
+E 6 ConditionID 1 INTERFACE_SIDE Master S2I_KINETICS_ID  1
 // anode_electrolyte
-E 7 - ConditionID 1 INTERFACE_SIDE Slave S2I_KINETICS_ID  1
+E 7 ConditionID 1 INTERFACE_SIDE Slave S2I_KINETICS_ID  1
 -------------------------------DESIGN SSI MANIFOLD SURF CONDITIONS
-DSURF  1
 // electrolyte_grain_boundary_2
-E 5 - ConditionID 1 ImplType ElchDiffCond thickness 1.0
+E 5 ConditionID 1 ImplType ElchDiffCond thickness 1.0
 ----------------------DESIGN SSI MANIFOLD KINETICS SURF CONDITIONS
-DSURF  2
 // electrolyte_grain_boundary_1
-E 4 - ConditionID 1 ManifoldConditionID 1 KINETIC_MODEL ConstantInterfaceResistance ONOFF 1 1 RESISTANCE 1.03642731098877849  E- 1
+E 4 ConditionID 1 ManifoldConditionID 1 KINETIC_MODEL ConstantInterfaceResistance ONOFF 1 1 RESISTANCE 1.03642731098877849  E- 1
 // electrolyte_grain_boundary_2
-E 5 - ConditionID 2 ManifoldConditionID 1 KINETIC_MODEL ConstantInterfaceResistance ONOFF 1 1 RESISTANCE 1.03642731098877849  E- 1
+E 5 ConditionID 2 ManifoldConditionID 1 KINETIC_MODEL ConstantInterfaceResistance ONOFF 1 1 RESISTANCE 1.03642731098877849  E- 1
 ----------------------------DESIGN SURF MANIFOLD DIRICH CONDITIONS
-DSURF  1
 // electrolyte_grain_boundary_2
-E 5 - NUMDOF 2 ONOFF 1 0 VAL 1.2 0.0 FUNCT 0 0
+E 5 NUMDOF 2 ONOFF 1 0 VAL 1.2 0.0 FUNCT 0 0
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    9 DSURFACE 1
 NODE    10 DSURFACE 1

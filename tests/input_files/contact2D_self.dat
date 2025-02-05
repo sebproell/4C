@@ -66,45 +66,43 @@ SOLVER                          UMFPACK
 NAME                            Contact_Solver
 SOLVER                          UMFPACK
 -------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE                           2
-E 21 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
-E 49 - NUMDOF 2 ONOFF 1 1 VAL 0.0 -1.0 FUNCT 0 1
+E 21 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0 FUNCT 0 0
+E 49 NUMDOF 2 ONOFF 1 1 VAL 0.0 -1.0 FUNCT 0 1
 --------------------------DESIGN LINE MORTAR CONTACT CONDITIONS 2D
-DLINE                           34
-E 3 - InterfaceID 3 Side Selfcontact
-E 4 - InterfaceID 2 Side Selfcontact
-E 6 - InterfaceID 2 Side Selfcontact
-E 7 - InterfaceID 3 Side Selfcontact
-E 9 - InterfaceID 2 Side Selfcontact
-E 10 - InterfaceID 3 Side Selfcontact
-E 13 - InterfaceID 1 Side Selfcontact
-E 14 - InterfaceID 2 Side Selfcontact
-E 16 - InterfaceID 2 Side Selfcontact
-E 17 - InterfaceID 1 Side Selfcontact
-E 19 - InterfaceID 2 Side Selfcontact
-E 20 - InterfaceID 1 Side Selfcontact
-E 22 - InterfaceID 2 Side Selfcontact
-E 25 - InterfaceID 3 Side Selfcontact
-E 26 - InterfaceID 2 Side Selfcontact
-E 27 - InterfaceID 1 Side Selfcontact
-E 28 - InterfaceID 2 Side Selfcontact
-E 31 - InterfaceID 3 Side Selfcontact
-E 32 - InterfaceID 2 Side Selfcontact
-E 34 - InterfaceID 2 Side Selfcontact
-E 35 - InterfaceID 3 Side Selfcontact
-E 37 - InterfaceID 2 Side Selfcontact
-E 38 - InterfaceID 3 Side Selfcontact
-E 41 - InterfaceID 1 Side Selfcontact
-E 42 - InterfaceID 2 Side Selfcontact
-E 44 - InterfaceID 2 Side Selfcontact
-E 45 - InterfaceID 1 Side Selfcontact
-E 47 - InterfaceID 2 Side Selfcontact
-E 48 - InterfaceID 1 Side Selfcontact
-E 50 - InterfaceID 2 Side Selfcontact
-E 51 - InterfaceID 3 Side Selfcontact
-E 52 - InterfaceID 2 Side Selfcontact
-E 53 - InterfaceID 1 Side Selfcontact
-E 54 - InterfaceID 2 Side Selfcontact
+E 3 InterfaceID 3 Side Selfcontact
+E 4 InterfaceID 2 Side Selfcontact
+E 6 InterfaceID 2 Side Selfcontact
+E 7 InterfaceID 3 Side Selfcontact
+E 9 InterfaceID 2 Side Selfcontact
+E 10 InterfaceID 3 Side Selfcontact
+E 13 InterfaceID 1 Side Selfcontact
+E 14 InterfaceID 2 Side Selfcontact
+E 16 InterfaceID 2 Side Selfcontact
+E 17 InterfaceID 1 Side Selfcontact
+E 19 InterfaceID 2 Side Selfcontact
+E 20 InterfaceID 1 Side Selfcontact
+E 22 InterfaceID 2 Side Selfcontact
+E 25 InterfaceID 3 Side Selfcontact
+E 26 InterfaceID 2 Side Selfcontact
+E 27 InterfaceID 1 Side Selfcontact
+E 28 InterfaceID 2 Side Selfcontact
+E 31 InterfaceID 3 Side Selfcontact
+E 32 InterfaceID 2 Side Selfcontact
+E 34 InterfaceID 2 Side Selfcontact
+E 35 InterfaceID 3 Side Selfcontact
+E 37 InterfaceID 2 Side Selfcontact
+E 38 InterfaceID 3 Side Selfcontact
+E 41 InterfaceID 1 Side Selfcontact
+E 42 InterfaceID 2 Side Selfcontact
+E 44 InterfaceID 2 Side Selfcontact
+E 45 InterfaceID 1 Side Selfcontact
+E 47 InterfaceID 2 Side Selfcontact
+E 48 InterfaceID 1 Side Selfcontact
+E 50 InterfaceID 2 Side Selfcontact
+E 51 InterfaceID 3 Side Selfcontact
+E 52 InterfaceID 2 Side Selfcontact
+E 53 InterfaceID 1 Side Selfcontact
+E 54 InterfaceID 2 Side Selfcontact
 -----------------------------------------------DNODE-NODE TOPOLOGY
 NODE 1429 DNODE 1
 NODE 1379 DNODE 2

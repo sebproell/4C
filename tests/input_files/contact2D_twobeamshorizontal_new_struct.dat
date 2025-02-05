@@ -57,15 +57,13 @@ SOLVER                          UMFPACK
 NAME                            Contact_Solver
 SOLVER                          UMFPACK
 -----------------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE                           4
-E 1 - NUMDOF 2 ONOFF 1 1 VAL 1.0 0.0 FUNCT 1 0
-E 2 - NUMDOF 2 ONOFF 1 1 VAL 1.0 0.0 FUNCT 1 0
-E 7 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0  FUNCT 0 0
-E 8 - NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0  FUNCT 0 0
+E 1 NUMDOF 2 ONOFF 1 1 VAL 1.0 0.0 FUNCT 1 0
+E 2 NUMDOF 2 ONOFF 1 1 VAL 1.0 0.0 FUNCT 1 0
+E 7 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0  FUNCT 0 0
+E 8 NUMDOF 2 ONOFF 1 1 VAL 0.0 0.0  FUNCT 0 0
 -----------------------------------DESIGN LINE MORTAR CONTACT CONDITIONS 2D
-DLINE                           2
-E 4 - InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.2
-E 6 - InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.2
+E 4 InterfaceID 1 Side Slave Initialization Inactive FrCoeffOrBound 0.2
+E 6 InterfaceID 1 Side Master Initialization Inactive FrCoeffOrBound 0.2
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 296 DNODE 1
 NODE 210 DNODE 2

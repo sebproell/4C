@@ -87,16 +87,14 @@ Linear Solver Details           = No
 Test Details                    = No
 Debug                           = No
 ----------------------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  2
-E 1 - NUMDOF 9 ONOFF 0 0 1 0 0 0 0 0 0 VAL 0.0 0.0 -1.0 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 1 0 0 0 0 0 0
-E 2 - NUMDOF 9 ONOFF 0 0 1 0 0 0 0 0 0 VAL 0.0 0.0  1.0 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 1 0 0 0 0 0 0
+E 1 NUMDOF 9 ONOFF 0 0 1 0 0 0 0 0 0 VAL 0.0 0.0 -1.0 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 1 0 0 0 0 0 0
+E 2 NUMDOF 9 ONOFF 0 0 1 0 0 0 0 0 0 VAL 0.0 0.0  1.0 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 1 0 0 0 0 0 0
 ----------------------------------------------------------FUNCT1
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME a
 VARIABLE 0 NAME a TYPE expression DESCRIPTION t
 --------------------------------------------------DESIGN LINE BEAM FILAMENT CONDITIONS
-DLINE 2
-E 1 - ID 0 TYPE actin
-E 2 - ID 1 TYPE actin
+E 1 ID 0 TYPE actin
+E 2 ID 1 TYPE actin
 ----------------------------------------------------------DLINE-NODE TOPOLOGY
 NODE  1 DLINE 1
 NODE  2 DLINE 1

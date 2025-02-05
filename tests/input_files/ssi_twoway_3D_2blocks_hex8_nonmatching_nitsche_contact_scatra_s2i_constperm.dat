@@ -88,35 +88,30 @@ STRUCTURE DIS structure NODE 54 QUANTITY dispx VALUE -4.91366460821387116e-02 TO
 STRUCTURE DIS structure NODE 74 QUANTITY dispx VALUE -4.91014334169160988e-02 TOLERANCE 4.9e-10
 SSI SPECIAL true QUANTITY numiterlastnonlinearsolve VALUE  6.00000000000000000e+00 TOLERANCE 1.0e-16
 -------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  2
 // left_block_normal_x
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 // right_block_normal_x
-E 4 - NUMDOF 3 ONOFF 1 1 1 VAL -1.0e-1 0.0 0.0 FUNCT 3 0 0
+E 4 NUMDOF 3 ONOFF 1 1 1 VAL -1.0e-1 0.0 0.0 FUNCT 3 0 0
 -------------------------------DESIGN VOL INITIAL FIELD CONDITIONS
-DVOL   2
 // left_block
-E 1 - FIELD ScaTra FUNCT 1
+E 1 FIELD ScaTra FUNCT 1
 // right_block
-E 2 - FIELD ScaTra FUNCT 2
+E 2 FIELD ScaTra FUNCT 2
 ----------------------DESIGN SSI INTERFACE CONTACT SURF CONDITIONS
-DSURF  2
 // left_block_side_of_interface
-E 2 - ConditionID 0 INTERFACE_SIDE Slave S2I_KINETICS_ID 1 CONTACT_CONDITION_ID 1
+E 2 ConditionID 0 INTERFACE_SIDE Slave S2I_KINETICS_ID 1 CONTACT_CONDITION_ID 1
 // right_block_side_of_interface
-E 3 - ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID 1 CONTACT_CONDITION_ID 1
+E 3 ConditionID 0 INTERFACE_SIDE Master S2I_KINETICS_ID 1 CONTACT_CONDITION_ID 1
 --------------------------DESIGN SURF MORTAR CONTACT CONDITIONS 3D
-DSURF  2
 // left_block_side_of_interface
-E 2 - InterfaceID 1 Side Slave Initialization Inactive
+E 2 InterfaceID 1 Side Slave Initialization Inactive
 // right_block_side_of_interface
-E 3 - InterfaceID 1 Side Master Initialization Inactive
+E 3 InterfaceID 1 Side Master Initialization Inactive
 -------------------------------DESIGN S2I KINETICS SURF CONDITIONS
-DSURF  2
 // left_block_side_of_interface
-E 2 - ConditionID 1 INTERFACE_SIDE Slave KINETIC_MODEL ConstantPermeability NUMSCAL 1 PERMEABILITIES 5.0e-2 IS_PSEUDO_CONTACT False
+E 2 ConditionID 1 INTERFACE_SIDE Slave KINETIC_MODEL ConstantPermeability NUMSCAL 1 PERMEABILITIES 5.0e-2 IS_PSEUDO_CONTACT False
 // right_block_side_of_interface
-E 3 - ConditionID 1 INTERFACE_SIDE Master
+E 3 ConditionID 1 INTERFACE_SIDE Master
 -----------------------------------------------DSURF-NODE TOPOLOGY
 NODE    1 DSURFACE 1
 NODE    2 DSURFACE 1

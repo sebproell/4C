@@ -67,13 +67,11 @@ STRUCTURE DIS structure NODE 8 QUANTITY dispy VALUE 8.61957557828584974e-04 TOLE
 STRUCTURE DIS structure NODE 8 QUANTITY dispz VALUE 8.61957557828591371e-04 TOLERANCE 1e-8
 POROFLUIDMULTIPHASE DIS porofluid NODE 6 QUANTITY phi1 VALUE 4.77457514062631372e-02 TOLERANCE 1e-08
 -------------------------------------------DESIGN VOL PORO DIRICH CONDITIONS
-DVOL  1
 // total volume
-E 1 - NUMDOF 1 ONOFF 1 VAL 1.0 FUNCT 1
+E 1 NUMDOF 1 ONOFF 1 VAL 1.0 FUNCT 1
 -------------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF  1
 // leftsurf
-E 1 - NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 ------------------------------------------------------------------PROBLEM SIZE
 ELEMENTS                        28
 NODES                           15

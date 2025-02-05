@@ -299,24 +299,20 @@ MAT 2 MAT_BeamKirchhoffTorsionFreeElastHyper YOUNG 1e+06 DENS 1e-01 CROSSAREA 0.
 SYMBOLIC_FUNCTION_OF_SPACE_TIME 0.1*a
 VARIABLE 0 NAME a TYPE expression DESCRIPTION heaviside(0.005-t)*0.5*(1-cos(pi*t*0.2e+03))+heaviside(t-0.005)
 --------------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF 1
-E 3 - NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 TYPE Live
+E 3 NUMDOF 4 ONOFF 0 0 0 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 TYPE Live
 --------------------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT 1
 // beam
-E 1 - NUMDOF 6 ONOFF 1 1 1 1 1 1 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
+E 1 NUMDOF 6 ONOFF 1 1 1 1 1 1 VAL 0.0 0.0 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0
 ---------------------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE 2
 // inflowedeges
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 // outflowedges
-E 2 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 ---------------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF 2
 // canal
-E 1 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // inflow
-E 2 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 2 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 -------------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 326 DNODE 1
 -------------------------------------------------------------DLINE-NODE TOPOLOGY

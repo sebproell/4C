@@ -74,31 +74,27 @@ FLUID DIS fluid NODE 173 QUANTITY velx VALUE 0.25 TOLERANCE 1e-15
 FLUID DIS fluid NODE 173 QUANTITY vely VALUE 0.0 TOLERANCE 1e-16
 FLUID DIS fluid NODE 173 QUANTITY pressure VALUE 0.0 TOLERANCE 1e-14
 ----------------------------------------------DESIGN POINT DIRICH CONDITIONS
-DPOINT                          4
 //bottom_west
-E 1 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 //bottom_east
-E 2 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 2 NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 //top_east
-E 3 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 1  0 0
+E 3 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 1  0 0
 //top_west
-E 4 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 1  0 0
+E 4 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 1  0 0
 -----------------------------------------------DESIGN LINE DIRICH CONDITIONS
-DLINE                           3
 //bottom
-E 1 - NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
+E 1 NUMDOF 3 ONOFF 1 1 0 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 //east
 //E 2 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 1  0 0
 //top
-E 3 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 1  0 0
+E 3 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 1  0 0
 //west
-E 4 - NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 1  0 0
+E 4 NUMDOF 3 ONOFF 1 1 0 VAL 1.0 0.0 0.0 FUNCT 1  0 0
 ----------------------------------------------DESIGN LINE NEUMANN CONDITIONS
-DLINE                           1
-E 2 - NUMDOF 6 ONOFF 1 1 0 0 0 0 VAL 0.0 1.0 0.0 0.0 0.0 0.0 FUNCT 0 2 0 0 0 0 TYPE Live
+E 2 NUMDOF 6 ONOFF 1 1 0 0 0 0 VAL 0.0 1.0 0.0 0.0 0.0 0.0 FUNCT 0 2 0 0 0 0 TYPE Live
 ----------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF                           1
-E 1 - NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL 1.0 0.0 0.0 0.0 0.0 0.0 FUNCT 3 0 0 0 0 0 TYPE Live
+E 1 NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL 1.0 0.0 0.0 0.0 0.0 0.0 FUNCT 3 0 0 0 0 0 TYPE Live
 ---------------------------------------------------------DNODE-NODE TOPOLOGY
 NODE 332 DNODE 1
 NODE 1 DNODE 2

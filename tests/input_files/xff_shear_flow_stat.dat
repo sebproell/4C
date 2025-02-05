@@ -71,25 +71,21 @@ XFF_CONV_STAB_SCALING           none
 -------------------------------------------------------------------MATERIALS
 MAT 1 MAT_fluid DYNVISCOSITY 1.0 DENSITY 1.0 GAMMA 1.0
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF 2
 // XFluid upper surface
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // XFluid lower surface
-E 2 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 ------------------------------------------------DESIGN VOL DIRICH CONDITIONS
-DVOL 2
 // XFluid volume
-E 1 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // Fluid volume
-E 2 - NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 --------------------------------------DESIGN XFEM FLUIDFLUID SURF CONDITIONS
-DSURF 1
 // Fluid surfaces
-E 3 - COUPLINGID 1 COUPSTRATEGY xfluid
+E 3 COUPLINGID 1 COUPSTRATEGY xfluid
 ------------------------------------------DESIGN FLUID MESH VOL CONDITIONS
-DVOL 1
 // Fluid volume
-E 2 - COUPLINGID 1
+E 2 COUPLINGID 1
 ---------------------------------------------------------DSURF-NODE TOPOLOGY
 NODE 41 DSURFACE 1
 NODE 42 DSURFACE 1

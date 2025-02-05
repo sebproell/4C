@@ -74,39 +74,32 @@ COMPONENT 3 SYMBOLIC_FUNCTION_OF_SPACE_TIME 9.0
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME a
 VARIABLE 0 NAME a TYPE multifunction NUMPOINTS 3 TIMES 0.0 0.5 500000.0 DESCRIPTION 0 t
 ----------------------------------------------DESIGN SURF NEUMANN CONDITIONS
-DSURF 1
 // xFluid outflow
-E 5 - NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL -9.0 1.25 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0 TYPE Live
+E 5 NUMDOF 6 ONOFF 1 1 1 0 0 0 VAL -9.0 1.25 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0 0 0 TYPE Live
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-DSURF 3
 // xFluid upper surface
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // xFluid lower surface
-E 2 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // xFluid inflow
-E 3 - NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
+E 3 NUMDOF 4 ONOFF 1 1 1 0 VAL 1.0 0.0 0.0 0.0 FUNCT 1 0 0 0
 ------------------------------------------------DESIGN VOL DIRICH CONDITIONS
-DVOL 2
 // XFluid volume
-E 2 - NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 2 NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 // Fluid volume
-E 1 - NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
+E 1 NUMDOF 4 ONOFF 0 0 1 0 VAL 0.0 0.0 0.0 0.0 FUNCT 0 0 0 0
 -------------------------------------------DESIGN SURF ALE DIRICH CONDITIONS
-DSURF 1
 // Fluid xfem
-E 4 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.2 0.0 0.0 0.0 FUNCT 3 0 0 0
+E 4 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.2 0.0 0.0 0.0 FUNCT 3 0 0 0
 --------------------------------------------DESIGN VOL ALE DIRICH CONDITIONS
-DVOL 1
 // Fluid volume
-E 1 - NUMDOF 4 ONOFF 1 1 1 0 VAL 0.2 0.0 0.0 0.0 FUNCT 3 0 0 0
+E 1 NUMDOF 4 ONOFF 1 1 1 0 VAL 0.2 0.0 0.0 0.0 FUNCT 3 0 0 0
 --------------------------------------DESIGN XFEM FLUIDFLUID SURF CONDITIONS
-DSURF 1
 // Fluid xfem
-E 4 - COUPLINGID 1 COUPSTRATEGY xfluid
+E 4 COUPLINGID 1 COUPSTRATEGY xfluid
 ------------------------------------------DESIGN FLUID MESH VOL CONDITIONS
-DVOL 1
 // Fluid volume
-E 1 - COUPLINGID 1
+E 1 COUPLINGID 1
 ---------------------------------------------------------DSURF-NODE TOPOLOGY
 NODE 21 DSURFACE 1
 NODE 22 DSURFACE 1
