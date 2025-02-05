@@ -96,7 +96,7 @@ namespace Core::IO
     template <>
     struct PrettyTypeName<std::filesystem::path>
     {
-      std::string operator()() { return "char"; }
+      std::string operator()() { return "path"; }
     };
 
     template <typename T>

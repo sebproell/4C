@@ -559,6 +559,11 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::all_of(std::vector<InputSpec> s
 {
   auto flattened_specs = flatten_nested<Internal::AllOfSpec>(std::move(specs));
 
+  if (flattened_specs.size() == 1)
+  {
+    return flattened_specs[0];
+  }
+
   assert_unique_or_empty_names(flattened_specs);
 
   const bool any_required =
@@ -588,7 +593,12 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> s
 {
   auto flattened_specs = flatten_nested<Internal::OneOfSpec>(std::move(specs));
 
-  FOUR_C_ASSERT_ALWAYS(!flattened_specs.empty(), "`one_of` must contain at least one entry.");
+  FOUR_C_ASSERT_ALWAYS(!flattened_specs.empty(), "A `one_of` must contain entries.");
+
+  if (flattened_specs.size() == 1)
+  {
+    return flattened_specs[0];
+  }
 
   assert_unique_or_empty_names(flattened_specs);
 

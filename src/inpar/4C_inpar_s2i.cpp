@@ -328,12 +328,7 @@ void Inpar::S2I::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
     }
 
     auto interface_side_options = one_of({
-        all_of({
-            selection<int>("INTERFACE_SIDE", {{"Master", side_master}}),
-        }),
-        all_of({
-            selection<int>("INTERFACE_SIDE", {{"Undefined", side_undefined}}),
-        }),
+        selection<int>("INTERFACE_SIDE", {{"Master", side_master}, {"Undefined", side_undefined}}),
         all_of({
             selection<int>("INTERFACE_SIDE", {{"Slave", side_slave}}),
             one_of(kinetic_model_choices),

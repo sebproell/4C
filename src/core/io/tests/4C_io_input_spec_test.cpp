@@ -394,6 +394,8 @@ namespace
             all_of({
                 entry<double>("b"),
             }),
+            // Not useful but might happen in practice, so ensure this can be handled.
+            all_of({}),
         }),
     });
 
