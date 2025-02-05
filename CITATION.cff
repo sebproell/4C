@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+title: '4C: A Comprehensive Multi-Physics Simulation Framework'
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - name: 4C
+identifiers:
+  - type: url
+    value: 'https://www.4c-multiphysics.org'
+repository-code: 'https://github.com/4C-multiphysics/4C'
+url: 'https://www.4c-multiphysics.org'
+license: LGPL-3.0
