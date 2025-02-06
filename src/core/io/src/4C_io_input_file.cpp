@@ -246,7 +246,7 @@ namespace Core::IO
        */
       ryml::Tree yaml_tree_;
 
-      std::map<std::string, bool> knownsections_;
+      std::map<std::string, bool> used_sections_;
     };
 
   }  // namespace Internal
@@ -772,9 +772,15 @@ namespace Core::IO
   /*----------------------------------------------------------------------*/
   bool InputFile::print_unknown_sections(std::ostream& out) const
   {
-    using MapType = decltype(pimpl_->knownsections_);
+    using MapType = decltype(pimpl_->used_sections_);
+
+    for (const auto& [section_name, content] : pimpl_->content_by_section_)
+    {
+      pimpl_->used_sections_[section_name] |= false;
+    }
+
     const auto merged_map = Core::Communication::all_reduce<MapType>(
-        pimpl_->knownsections_,
+        pimpl_->used_sections_,
         [](const MapType& r, const MapType& in)
         {
           MapType result = r;
@@ -793,7 +799,7 @@ namespace Core::IO
       out << "\nERROR!"
           << "\n--------"
           << "\nThe following input file sections remained unused (obsolete or typo?):\n";
-      for (const auto& [section_name, known] : pimpl_->knownsections_)
+      for (const auto& [section_name, known] : pimpl_->used_sections_)
       {
         if (!known) out << section_name << '\n';
       }
@@ -806,7 +812,7 @@ namespace Core::IO
 
   void InputFile::record_section_used(const std::string& section_name)
   {
-    pimpl_->knownsections_[section_name] = true;
+    pimpl_->used_sections_[section_name] = true;
   }
 
 
