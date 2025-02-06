@@ -27,4 +27,28 @@ ryml::Tree Core::IO::init_yaml_tree_with_exceptions()
   return ryml::Tree{cb};
 }
 
+void Core::IO::read_value_from_yaml(Core::IO::ConstYamlNodeRef node, double& value)
+{
+  FOUR_C_ASSERT_ALWAYS(node.node.has_val(), "Expected a value node.");
+  // Instead of relying on the ryml library to parse the double value, we do it ourselves to
+  // ensure that we only accept data that fully parses as a double.
+
+  // Null-terminate the string.
+  std::string string(node.node.val().data(), node.node.val().size());
+  std::size_t end;
+  try
+  {
+    value = std::stod(string.data(), &end);
+  }
+  catch (const std::logic_error&)
+  {
+    throw YamlException("Could not parse '" + string + "' as a double value.");
+  }
+
+  if (end != string.size())
+  {
+    throw YamlException("Could not parse '" + string + "' as a double value.");
+  }
+}
+
 FOUR_C_NAMESPACE_CLOSE
