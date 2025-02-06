@@ -687,7 +687,10 @@ namespace Core::IO
     }
 
     // the following section names are always regarded as valid
-    record_section_used("TITLE");
+    // NOTE: this is a temporary solution to avoid unused section warnings for restarts.
+    //       Once the input file knows the expected sections, this can be removed.
+    record_section_used("ALE ELEMENTS");
+    record_section_used("FLUID ELEMENTS");
     record_section_used("FUNCT1");
     record_section_used("FUNCT2");
     record_section_used("FUNCT3");
@@ -708,6 +711,10 @@ namespace Core::IO
     record_section_used("FUNCT18");
     record_section_used("FUNCT19");
     record_section_used("FUNCT20");
+    record_section_used("NODE COORDS");
+    record_section_used("PARTICLES");
+    record_section_used("STRUCTURE ELEMENTS");
+    record_section_used("TITLE");
   }
 
   InputFile::FragmentIteratorRange InputFile::in_section(const std::string& section_name)
@@ -770,7 +777,7 @@ namespace Core::IO
 
   /*----------------------------------------------------------------------*/
   /*----------------------------------------------------------------------*/
-  bool InputFile::print_unknown_sections(std::ostream& out) const
+  bool InputFile::print_unused_sections(std::ostream& out) const
   {
     using MapType = decltype(pimpl_->used_sections_);
 

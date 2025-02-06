@@ -89,7 +89,7 @@ void ntainp_ccadiscret(
   if (Core::Communication::my_mpi_rank(lcomm) == 0) problem->write_input_parameters();
 
   // before we destroy the reader we want to know about unused sections
-  const bool all_ok = !reader.print_unknown_sections(std::cout);
+  const bool all_ok = !reader.print_unused_sections(std::cout);
 
   // we wait till all procs are here. Otherwise a hang up might occur where
   // one proc ended with FOUR_C_THROW but other procs were not finished and waited...
