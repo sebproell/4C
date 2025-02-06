@@ -16,7 +16,7 @@ void Core::IO::InputParameterContainer::print(std::ostream& os) const
   for (const auto& [key, entry] : entries_)
   {
     os << key << " : ";
-    entry.print(os, entry.data);
+    get_type_actions().at(entry.data.type()).print(os, entry.data);
   }
 
   for (const auto& [key, group] : groups_)
@@ -69,6 +69,30 @@ void Core::IO::InputParameterContainer::clear()
   entries_.clear();
   groups_.clear();
 }
+
+Teuchos::ParameterList Core::IO::InputParameterContainer::to_teuchos_parameter_list() const
+{
+  Teuchos::ParameterList pl;
+
+  for (const auto& [key, entry] : entries_)
+  {
+    get_type_actions().at(entry.data.type()).write_to_pl(pl, key, entry.data);
+  }
+
+  for (const auto& [key, group] : groups_)
+  {
+    pl.sublist(key) = group.to_teuchos_parameter_list();
+  }
+  return pl;
+}
+
+std::map<std::type_index, Core::IO::InputParameterContainer::TypeActions>&
+Core::IO::InputParameterContainer::get_type_actions()
+{
+  static std::map<std::type_index, TypeActions> type_actions;
+  return type_actions;
+}
+
 
 
 FOUR_C_NAMESPACE_CLOSE

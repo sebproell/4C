@@ -14,12 +14,15 @@
 #include "4C_utils_demangle.hpp"
 #include "4C_utils_exceptions.hpp"
 
+#include <Teuchos_ParameterList.hpp>
+
 #include <any>
 #include <functional>
 #include <map>
 #include <optional>
 #include <ostream>
 #include <string>
+#include <typeindex>
 #include <vector>
 
 
@@ -115,15 +118,18 @@ namespace Core::IO
      */
     void clear();
 
+    /**
+     * Convert the data in this container to a Teuchos::ParameterList. All groups are converted to
+     * sublists.
+     */
+    [[nodiscard]] Teuchos::ParameterList to_teuchos_parameter_list() const;
+
    private:
     //! Entry stored in the container.
     struct Entry
     {
       //! The actual data.
       std::any data;
-
-      //! A function to print the data.
-      std::function<void(std::ostream&, const std::any&)> print;
     };
 
     //! Data stored in this container.
@@ -131,6 +137,30 @@ namespace Core::IO
 
     //! Groups present in this container. Groups are InputParameterContainers themselves.
     std::map<std::string, InputParameterContainer> groups_;
+
+    /**
+     * Gather different actions that can be performed on a type.
+     */
+    struct TypeActions
+    {
+      //! The function to print the data.
+      std::function<void(std::ostream&, const std::any&)> print;
+
+      //! Function to write the data into a Teuchos::ParameterList.
+      std::function<void(Teuchos::ParameterList&, const std::string& name, const std::any&)>
+          write_to_pl;
+    };
+
+    /**
+     * Add the type actions if not already present.
+     */
+    template <typename T>
+    void ensure_type_action_registered();
+
+    /**
+     * Access the shared storage for all the type actions.
+     */
+    static std::map<std::type_index, TypeActions>& get_type_actions();
   };  // class InputParameterContainer
 
 }  // namespace Core::IO
@@ -227,10 +257,8 @@ namespace Core::IO::Internal::InputParameterContainerImplementation
 template <typename T>
 void Core::IO::InputParameterContainer::add(const std::string& name, const T& data)
 {
-  entries_[name] = {
-      .data = std::any{data},
-      .print = Internal::InputParameterContainerImplementation::PrintHelper<T>{},
-  };
+  entries_[name] = {.data = std::any{data}};
+  ensure_type_action_registered<T>();
 }
 
 template <typename T>
@@ -263,6 +291,20 @@ const T* Core::IO::InputParameterContainer::get_if(const std::string& name) cons
   else
   {
     return nullptr;
+  }
+}
+
+template <typename T>
+void Core::IO::InputParameterContainer::ensure_type_action_registered()
+{
+  auto& type_actions = get_type_actions();
+  if (!type_actions.contains(typeid(T)))
+  {
+    type_actions[typeid(T)] = {
+        .print = Internal::InputParameterContainerImplementation::PrintHelper<T>{},
+        .write_to_pl = [](Teuchos::ParameterList& pl, const std::string& name, const std::any& data)
+        { pl.set<T>(name, std::any_cast<T>(data)); },
+    };
   }
 }
 
