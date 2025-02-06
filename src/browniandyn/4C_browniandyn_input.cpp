@@ -14,7 +14,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void BrownianDynamics::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& browniandyn_list = list.sublist("BROWNIAN DYNAMICS", false, "");
@@ -40,7 +39,7 @@ void BrownianDynamics::set_valid_parameters(Teuchos::ParameterList& list)
       "Within this time interval the random numbers remain constant. -1.0 ", &browniandyn_list);
 
   // the way how damping coefficient values for beams are specified
-  setStringToIntegralParameter<BeamDampingCoefficientSpecificationType>(
+  Core::Utils::string_to_integral_parameter<BeamDampingCoefficientSpecificationType>(
       "BEAMS_DAMPING_COEFF_SPECIFIED_VIA", "cylinder_geometry_approx",
       "In which way are damping coefficient values for beams specified?",
       tuple<std::string>(

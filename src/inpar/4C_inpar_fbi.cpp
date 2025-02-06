@@ -15,7 +15,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::FBI::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& fbi = list.sublist("FLUID BEAM INTERACTION", false, "");
@@ -23,8 +22,8 @@ void Inpar::FBI::set_valid_parameters(Teuchos::ParameterList& list)
   /*----------------------------------------------------------------------*/
   /* parameters for beam to fluid meshtying */
 
-  setStringToIntegralParameter<BeamToFluidCoupling>("COUPLING", "two-way", "Type of FBI coupling",
-      tuple<std::string>("two-way", "fluid", "solid"),
+  Core::Utils::string_to_integral_parameter<BeamToFluidCoupling>("COUPLING", "two-way",
+      "Type of FBI coupling", tuple<std::string>("two-way", "fluid", "solid"),
       tuple<BeamToFluidCoupling>(
           BeamToFluidCoupling::twoway, BeamToFluidCoupling::fluid, BeamToFluidCoupling::solid),
       &fbi);
@@ -33,8 +32,9 @@ void Inpar::FBI::set_valid_parameters(Teuchos::ParameterList& list)
       "Time Step at which to begin the fluid beam coupling. Usually this will be the first step.",
       &fbi);
 
-  setStringToIntegralParameter<BeamToFluidPreSortStrategy>("PRESORT_STRATEGY", "bruteforce",
-      "Presort strategy for the beam elements", tuple<std::string>("bruteforce", "binning"),
+  Core::Utils::string_to_integral_parameter<BeamToFluidPreSortStrategy>("PRESORT_STRATEGY",
+      "bruteforce", "Presort strategy for the beam elements",
+      tuple<std::string>("bruteforce", "binning"),
       tuple<BeamToFluidPreSortStrategy>(
           BeamToFluidPreSortStrategy::bruteforce, BeamToFluidPreSortStrategy::binning),
       &fbi);
@@ -44,15 +44,16 @@ void Inpar::FBI::set_valid_parameters(Teuchos::ParameterList& list)
   Teuchos::ParameterList& beam_to_fluid_meshtying =
       fbi.sublist("BEAM TO FLUID MESHTYING", false, "");
 
-  setStringToIntegralParameter<BeamToFluidDiscretization>("MESHTYING_DISCRETIZATION", "none",
-      "Type of employed meshtying discretization",
+  Core::Utils::string_to_integral_parameter<BeamToFluidDiscretization>("MESHTYING_DISCRETIZATION",
+      "none", "Type of employed meshtying discretization",
       tuple<std::string>("none", "gauss_point_to_segment", "mortar"),
       tuple<FBI::BeamToFluidDiscretization>(BeamToFluidDiscretization::none,
           BeamToFluidDiscretization::gauss_point_to_segment, BeamToFluidDiscretization::mortar),
       &beam_to_fluid_meshtying);
 
-  setStringToIntegralParameter<BeamToFluidConstraintEnforcement>("CONSTRAINT_STRATEGY", "none",
-      "Type of employed constraint enforcement strategy", tuple<std::string>("none", "penalty"),
+  Core::Utils::string_to_integral_parameter<BeamToFluidConstraintEnforcement>("CONSTRAINT_STRATEGY",
+      "none", "Type of employed constraint enforcement strategy",
+      tuple<std::string>("none", "penalty"),
       tuple<BeamToFluidConstraintEnforcement>(
           BeamToFluidConstraintEnforcement::none, BeamToFluidConstraintEnforcement::penalty),
       &beam_to_fluid_meshtying);
@@ -65,7 +66,7 @@ void Inpar::FBI::set_valid_parameters(Teuchos::ParameterList& list)
       "memory demand but to still find all interaction pairs!",
       &beam_to_fluid_meshtying);
 
-  setStringToIntegralParameter<Inpar::FBI::BeamToFluidMeshtingMortarShapefunctions>(
+  Core::Utils::string_to_integral_parameter<Inpar::FBI::BeamToFluidMeshtingMortarShapefunctions>(
       "MORTAR_SHAPE_FUNCTION", "none", "Shape function for the mortar Lagrange-multipliers",
       tuple<std::string>("none", "line2", "line3", "line4"),
       tuple<Inpar::FBI::BeamToFluidMeshtingMortarShapefunctions>(

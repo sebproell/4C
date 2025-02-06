@@ -20,8 +20,8 @@ void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(Teuchos::ParameterList
   // Add the input parameters for line to 3D coupling.
 
   // Segmentation strategy.
-  Teuchos::setStringToIntegralParameter<LineTo3DStrategy>("GEOMETRY_PAIR_STRATEGY", "segmentation",
-      "Type of employed segmentation strategy",
+  Core::Utils::string_to_integral_parameter<LineTo3DStrategy>("GEOMETRY_PAIR_STRATEGY",
+      "segmentation", "Type of employed segmentation strategy",
       Teuchos::tuple<std::string>("none", "segmentation",
           "gauss_point_projection_without_boundary_segmentation",
           "gauss_point_projection_boundary_segmentation", "gauss_point_projection_cross_section"),
@@ -36,7 +36,7 @@ void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(Teuchos::ParameterList
       "Number of search points for segmentation", &list);
 
   // What to do if not all Gauss points of a segment project valid
-  Teuchos::setStringToIntegralParameter<NotAllGaussPointsProjectValidAction>(
+  Core::Utils::string_to_integral_parameter<NotAllGaussPointsProjectValidAction>(
       "GEOMETRY_PAIR_SEGMENTATION_NOT_ALL_GAUSS_POINTS_PROJECT_VALID_ACTION", "fail",
       "What to do if not all Gauss points of a segment project valid",
       Teuchos::tuple<std::string>("fail", "warning"),
@@ -64,7 +64,7 @@ void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to_surface(Teuchos::Paramete
   // Add the input parameters for line to surface coupling.
 
   // Add the surface normal option.
-  Teuchos::setStringToIntegralParameter<GEOMETRYPAIR::SurfaceNormals>(
+  Core::Utils::string_to_integral_parameter<GEOMETRYPAIR::SurfaceNormals>(
       "GEOMETRY_PAIR_SURFACE_NORMALS", "standard", "How the surface normals are evaluated",
       Teuchos::tuple<std::string>("standard", "extended_volume"),
       Teuchos::tuple<GEOMETRYPAIR::SurfaceNormals>(

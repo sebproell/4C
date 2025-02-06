@@ -17,7 +17,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::Plasticity::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   /*----------------------------------------------------------------------*/
@@ -30,12 +29,13 @@ void Inpar::Plasticity::set_valid_parameters(Teuchos::ParameterList& list)
       "STABILIZATION_S", 1.0, "Stabilization factor s for semi-smooth PDASS", &iplast);
 
   // solver convergence test parameters for semi-smooth plasticity formulation
-  setStringToIntegralParameter<Inpar::Solid::BinaryOp>("NORMCOMBI_RESFPLASTCONSTR", "And",
-      "binary operator to combine plasticity constraints and residual force values",
+  Core::Utils::string_to_integral_parameter<Inpar::Solid::BinaryOp>("NORMCOMBI_RESFPLASTCONSTR",
+      "And", "binary operator to combine plasticity constraints and residual force values",
       tuple<std::string>("And", "Or"),
       tuple<Inpar::Solid::BinaryOp>(Inpar::Solid::bop_and, Inpar::Solid::bop_or), &iplast);
 
-  setStringToIntegralParameter<Inpar::Solid::BinaryOp>("NORMCOMBI_DISPPLASTINCR", "And",
+  Core::Utils::string_to_integral_parameter<Inpar::Solid::BinaryOp>("NORMCOMBI_DISPPLASTINCR",
+      "And",
       "binary operator to combine displacement increments and plastic flow (Delta Lp) increment "
       "values",
       tuple<std::string>("And", "Or"),
@@ -46,12 +46,12 @@ void Inpar::Plasticity::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter("TOLDELTALP", 1.0E-8,
       "tolerance in the plastic flow (Delta Lp) norm for the Newton iteration", &iplast);
 
-  setStringToIntegralParameter<Inpar::Solid::BinaryOp>("NORMCOMBI_EASRES", "And",
+  Core::Utils::string_to_integral_parameter<Inpar::Solid::BinaryOp>("NORMCOMBI_EASRES", "And",
       "binary operator to combine EAS-residual and residual force values",
       tuple<std::string>("And", "Or"),
       tuple<Inpar::Solid::BinaryOp>(Inpar::Solid::bop_and, Inpar::Solid::bop_or), &iplast);
 
-  setStringToIntegralParameter<Inpar::Solid::BinaryOp>("NORMCOMBI_EASINCR", "And",
+  Core::Utils::string_to_integral_parameter<Inpar::Solid::BinaryOp>("NORMCOMBI_EASINCR", "And",
       "binary operator to combine displacement increments and EAS increment values",
       tuple<std::string>("And", "Or"),
       tuple<Inpar::Solid::BinaryOp>(Inpar::Solid::bop_and, Inpar::Solid::bop_or), &iplast);
@@ -61,8 +61,8 @@ void Inpar::Plasticity::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter("TOLEASINCR", 1.0E-8,
       "tolerance in the EAS increment norm for the Newton iteration", &iplast);
 
-  setStringToIntegralParameter<Inpar::TSI::DissipationMode>("DISSIPATION_MODE", "pl_multiplier",
-      "method to calculate the plastic dissipation",
+  Core::Utils::string_to_integral_parameter<Inpar::TSI::DissipationMode>("DISSIPATION_MODE",
+      "pl_multiplier", "method to calculate the plastic dissipation",
       tuple<std::string>("pl_multiplier", "pl_flow", "Taylor_Quinney"),
       tuple<Inpar::TSI::DissipationMode>(
           Inpar::TSI::pl_multiplier, Inpar::TSI::pl_flow, Inpar::TSI::Taylor_Quinney),

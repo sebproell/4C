@@ -19,21 +19,20 @@ FOUR_C_NAMESPACE_OPEN
  *------------------------------------------------------------------------*/
 void Inpar::STI::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& stidyn = list.sublist(
       "STI DYNAMIC", false, "general control parameters for scatra-thermo interaction problems");
 
   // type of scalar transport time integration
-  setStringToIntegralParameter<ScaTraTimIntType>("SCATRATIMINTTYPE", "Standard",
+  Core::Utils::string_to_integral_parameter<ScaTraTimIntType>("SCATRATIMINTTYPE", "Standard",
       "scalar transport time integration type is needed to instantiate correct scalar transport "
       "time integration scheme for scatra-thermo interaction problems",
       tuple<std::string>("Standard", "Elch"),
       tuple<ScaTraTimIntType>(ScaTraTimIntType::standard, ScaTraTimIntType::elch), &stidyn);
 
   // type of coupling between scatra and thermo fields
-  setStringToIntegralParameter<CouplingType>("COUPLINGTYPE", "Undefined",
+  Core::Utils::string_to_integral_parameter<CouplingType>("COUPLINGTYPE", "Undefined",
       "type of coupling between scatra and thermo fields",
       tuple<std::string>("Undefined", "Monolithic", "OneWay_ScatraToThermo",
           "OneWay_ThermoToScatra", "TwoWay_ScatraToThermo", "TwoWay_ScatraToThermo_Aitken",
@@ -47,8 +46,8 @@ void Inpar::STI::set_valid_parameters(Teuchos::ParameterList& list)
       &stidyn);
 
   // specification of initial temperature field
-  setStringToIntegralParameter<Inpar::ScaTra::InitialField>("THERMO_INITIALFIELD", "zero_field",
-      "initial temperature field for scatra-thermo interaction problems",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::InitialField>("THERMO_INITIALFIELD",
+      "zero_field", "initial temperature field for scatra-thermo interaction problems",
       tuple<std::string>("zero_field", "field_by_function", "field_by_condition"),
       tuple<Inpar::ScaTra::InitialField>(Inpar::ScaTra::initfield_zero_field,
           Inpar::ScaTra::initfield_field_by_function, Inpar::ScaTra::initfield_field_by_condition),
@@ -78,7 +77,7 @@ void Inpar::STI::set_valid_parameters(Teuchos::ParameterList& list)
       "ID of linear solver for global system of equations", &stidyn_monolithic);
 
   // type of global system matrix in global system of equations
-  setStringToIntegralParameter<Core::LinAlg::MatrixType>("MATRIXTYPE", "block",
+  Core::Utils::string_to_integral_parameter<Core::LinAlg::MatrixType>("MATRIXTYPE", "block",
       "type of global system matrix in global system of equations",
       tuple<std::string>("block", "sparse"),
       tuple<Core::LinAlg::MatrixType>(

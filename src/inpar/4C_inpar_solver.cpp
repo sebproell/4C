@@ -20,7 +20,8 @@ namespace Inpar::SOLVER
   {
     // Solver options
     {
-      Teuchos::setStringToIntegralParameter<Core::LinearSolver::SolverType>("SOLVER", "undefined",
+      Core::Utils::string_to_integral_parameter<Core::LinearSolver::SolverType>("SOLVER",
+          "undefined",
           "The solver to attack the system of linear equations arising of FE approach with.",
           Teuchos::tuple<std::string>("UMFPACK", "Superlu", "Belos", "undefined"),
           Teuchos::tuple<Core::LinearSolver::SolverType>(Core::LinearSolver::SolverType::umfpack,
@@ -31,7 +32,7 @@ namespace Inpar::SOLVER
 
     // Iterative solver options
     {
-      Teuchos::setStringToIntegralParameter<Core::LinearSolver::IterativeSolverType>("AZSOLVE",
+      Core::Utils::string_to_integral_parameter<Core::LinearSolver::IterativeSolverType>("AZSOLVE",
           "GMRES", "Type of linear solver algorithm to use.",
           Teuchos::tuple<std::string>("CG", "GMRES", "BiCGSTAB"),
           Teuchos::tuple<Core::LinearSolver::IterativeSolverType>(
@@ -43,7 +44,8 @@ namespace Inpar::SOLVER
 
     // Preconditioner options
     {
-      Teuchos::setStringToIntegralParameter<Core::LinearSolver::PreconditionerType>("AZPREC", "ILU",
+      Core::Utils::string_to_integral_parameter<Core::LinearSolver::PreconditionerType>("AZPREC",
+          "ILU",
           "Type of internal preconditioner to use.\n"
           "Note! this preconditioner will only be used if the input operator\n"
           "supports the Epetra_RowMatrix interface and the client does not pass\n"
@@ -81,7 +83,7 @@ namespace Inpar::SOLVER
       Core::Utils::double_parameter("AZTOL", 1e-8,
           "The level the residual norms must reach to decide about successful convergence", &list);
 
-      Teuchos::setStringToIntegralParameter<Belos::ScaleType>("AZCONV", "AZ_r0",
+      Core::Utils::string_to_integral_parameter<Belos::ScaleType>("AZCONV", "AZ_r0",
           "The implicit residual norm scaling type to use for terminating the iterative solver.",
           Teuchos::tuple<std::string>("AZ_r0", "AZ_noscaled"),
           Teuchos::tuple<Belos::ScaleType>(Belos::ScaleType::NormOfInitRes, Belos::ScaleType::None),

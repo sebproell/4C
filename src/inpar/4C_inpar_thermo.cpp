@@ -18,12 +18,11 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::Thermo::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& tdyn = list.sublist("THERMAL DYNAMIC", false, "");
 
-  setStringToIntegralParameter<DynamicType>("DYNAMICTYPE", "OneStepTheta",
+  Core::Utils::string_to_integral_parameter<DynamicType>("DYNAMICTYPE", "OneStepTheta",
       "type of time integration control",
       tuple<std::string>("Statics", "OneStepTheta", "GenAlpha", "ExplicitEuler"),
       tuple<DynamicType>(dyna_statics, dyna_onesteptheta, dyna_genalpha, dyna_expleuler), &tdyn);
@@ -36,7 +35,7 @@ void Inpar::Thermo::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::int_parameter(
       "RESTARTEVERY", 1, "write restart possibility every RESTARTEVERY steps", &tdyn);
 
-  setStringToIntegralParameter<InitialField>("INITIALFIELD", "zero_field",
+  Core::Utils::string_to_integral_parameter<InitialField>("INITIALFIELD", "zero_field",
       "Initial Field for thermal problem",
       tuple<std::string>("zero_field", "field_by_function", "field_by_condition"),
       tuple<InitialField>(
@@ -54,18 +53,18 @@ void Inpar::Thermo::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter(
       "TOLTEMP", 1.0E-10, "tolerance in the temperature norm of the Newton iteration", &tdyn);
 
-  setStringToIntegralParameter<ConvNorm>("NORM_TEMP", "Abs",
+  Core::Utils::string_to_integral_parameter<ConvNorm>("NORM_TEMP", "Abs",
       "type of norm for temperature convergence check", tuple<std::string>("Abs", "Rel", "Mix"),
       tuple<ConvNorm>(convnorm_abs, convnorm_rel, convnorm_mix), &tdyn);
 
   Core::Utils::double_parameter(
       "TOLRES", 1.0E-08, "tolerance in the residual norm for the Newton iteration", &tdyn);
 
-  setStringToIntegralParameter<ConvNorm>("NORM_RESF", "Abs",
+  Core::Utils::string_to_integral_parameter<ConvNorm>("NORM_RESF", "Abs",
       "type of norm for residual convergence check", tuple<std::string>("Abs", "Rel", "Mix"),
       tuple<ConvNorm>(convnorm_abs, convnorm_rel, convnorm_mix), &tdyn);
 
-  setStringToIntegralParameter<BinaryOp>("NORMCOMBI_RESFTEMP", "And",
+  Core::Utils::string_to_integral_parameter<BinaryOp>("NORMCOMBI_RESFTEMP", "And",
       "binary operator to combine temperature and residual force values",
       tuple<std::string>("And", "Or"), tuple<BinaryOp>(bop_and, bop_or), &tdyn);
 
@@ -75,11 +74,11 @@ void Inpar::Thermo::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::int_parameter(
       "MINITER", 0, "minimum number of iterations to be done within Newton-Raphson loop", &tdyn);
 
-  setStringToIntegralParameter<VectorNorm>("ITERNORM", "L2",
+  Core::Utils::string_to_integral_parameter<VectorNorm>("ITERNORM", "L2",
       "type of norm to be applied to residuals", tuple<std::string>("L1", "L2", "Rms", "Inf"),
       tuple<VectorNorm>(norm_l1, norm_l2, norm_rms, norm_inf), &tdyn);
 
-  setStringToIntegralParameter<DivContAct>("DIVERCONT", "stop",
+  Core::Utils::string_to_integral_parameter<DivContAct>("DIVERCONT", "stop",
       "What to do with time integration when Newton-Raphson iteration failed",
       tuple<std::string>("stop", "continue", "halve_step", "repeat_step", "repeat_simulation"),
       tuple<DivContAct>(divcont_stop, divcont_continue, divcont_halve_step, divcont_repeat_step,
@@ -89,11 +88,11 @@ void Inpar::Thermo::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::int_parameter("MAXDIVCONREFINEMENTLEVEL", 10,
       "number of times timestep is halved in case nonlinear solver diverges", &tdyn);
 
-  setStringToIntegralParameter<NonlinSolTech>("NLNSOL", "fullnewton",
+  Core::Utils::string_to_integral_parameter<NonlinSolTech>("NLNSOL", "fullnewton",
       "Nonlinear solution technique", tuple<std::string>("vague", "fullnewton"),
       tuple<NonlinSolTech>(soltech_vague, soltech_newtonfull), &tdyn);
 
-  setStringToIntegralParameter<PredEnum>("PREDICT", "ConstTemp",
+  Core::Utils::string_to_integral_parameter<PredEnum>("PREDICT", "ConstTemp",
       "Predictor of iterative solution techniques",
       tuple<std::string>("Vague", "ConstTemp", "ConstTempRate", "TangTemp"),
       tuple<PredEnum>(pred_vague, pred_consttemp, pred_consttemprate, pred_tangtemp), &tdyn);
@@ -114,13 +113,13 @@ void Inpar::Thermo::set_valid_parameters(Teuchos::ParameterList& list)
       "LINEAR_SOLVER", -1, "number of linear solver used for thermal problems", &tdyn);
 
   // where the geometry comes from
-  setStringToIntegralParameter<Core::IO::GeometryType>("GEOMETRY", "full",
+  Core::Utils::string_to_integral_parameter<Core::IO::GeometryType>("GEOMETRY", "full",
       "How the geometry is specified", tuple<std::string>("full", "box", "file"),
       tuple<Core::IO::GeometryType>(
           Core::IO::geometry_full, Core::IO::geometry_box, Core::IO::geometry_file),
       &tdyn);
 
-  setStringToIntegralParameter<CalcError>("CALCERROR", "No",
+  Core::Utils::string_to_integral_parameter<CalcError>("CALCERROR", "No",
       "compute error compared to analytical solution", tuple<std::string>("No", "byfunct"),
       tuple<CalcError>(no_error_calculation, calcerror_byfunct), &tdyn);
   Core::Utils::int_parameter("CALCERRORFUNCNO", -1, "Function for Error Calculation", &tdyn);
@@ -129,7 +128,7 @@ void Inpar::Thermo::set_valid_parameters(Teuchos::ParameterList& list)
   /* parameters for generalised-alpha thermal integrator */
   Teuchos::ParameterList& tgenalpha = tdyn.sublist("GENALPHA", false, "");
 
-  setStringToIntegralParameter<MidAverageEnum>("GENAVG", "TrLike",
+  Core::Utils::string_to_integral_parameter<MidAverageEnum>("GENAVG", "TrLike",
       "mid-average type of internal forces", tuple<std::string>("Vague", "ImrLike", "TrLike"),
       tuple<MidAverageEnum>(midavg_vague, midavg_imrlike, midavg_trlike), &tgenalpha);
 

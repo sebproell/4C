@@ -10,7 +10,6 @@
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_bio.hpp"
 #include "4C_inpar_fluid.hpp"
-#include "4C_inpar_s2i.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_linalg_equilibrate.hpp"
 #include "4C_linalg_sparseoperator.hpp"
@@ -20,13 +19,12 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& scatradyn = list.sublist(
       "SCALAR TRANSPORT DYNAMIC", false, "control parameters for scalar transport problems\n");
 
-  setStringToIntegralParameter<Inpar::ScaTra::SolverType>("SOLVERTYPE", "linear_full",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::SolverType>("SOLVERTYPE", "linear_full",
       "type of scalar transport solver",
       tuple<std::string>("linear_full", "linear_incremental", "nonlinear",
           "nonlinear_multiscale_macrotomicro", "nonlinear_multiscale_macrotomicro_aitken",
@@ -38,8 +36,8 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
           solvertype_nonlinear_multiscale_microtomacro),
       &scatradyn);
 
-  setStringToIntegralParameter<Inpar::ScaTra::TimeIntegrationScheme>("TIMEINTEGR", "One_Step_Theta",
-      "Time Integration Scheme",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::TimeIntegrationScheme>("TIMEINTEGR",
+      "One_Step_Theta", "Time Integration Scheme",
       tuple<std::string>("Stationary", "One_Step_Theta", "BDF2", "Gen_Alpha"),
       tuple<Inpar::ScaTra::TimeIntegrationScheme>(
           timeint_stationary, timeint_one_step_theta, timeint_bdf2, timeint_gen_alpha),
@@ -59,7 +57,7 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", &scatradyn);
   Core::Utils::int_parameter("MATID", -1, "Material ID for automatic mesh generation", &scatradyn);
 
-  setStringToIntegralParameter<Inpar::ScaTra::VelocityField>("VELOCITYFIELD", "zero",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::VelocityField>("VELOCITYFIELD", "zero",
       "type of velocity field used for scalar transport problems",
       tuple<std::string>("zero", "function", "Navier_Stokes"),
       tuple<Inpar::ScaTra::VelocityField>(velocity_zero, velocity_function, velocity_Navier_Stokes),
@@ -99,8 +97,8 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
     name[12] = "algebraic_field_dependence";
     label[12] = initialfield_algebraic_field_dependence;
 
-    setStringToIntegralParameter<Inpar::ScaTra::InitialField>("INITIALFIELD", "zero_field",
-        "Initial Field for scalar transport problem", name, label, &scatradyn);
+    Core::Utils::string_to_integral_parameter<Inpar::ScaTra::InitialField>("INITIALFIELD",
+        "zero_field", "Initial Field for scalar transport problem", name, label, &scatradyn);
   }
 
   Core::Utils::int_parameter(
@@ -108,7 +106,7 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
 
   Core::Utils::bool_parameter("SPHERICALCOORDS", "No", "use of spherical coordinates", &scatradyn);
 
-  setStringToIntegralParameter<Inpar::ScaTra::CalcError>("CALCERROR", "No",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::CalcError>("CALCERROR", "No",
       "compute error compared to analytical solution",
       tuple<std::string>("No", "Kwok_Wu", "ConcentricCylinders", "Electroneutrality",
           "error_by_function", "error_by_condition", "SphereDiffusion", "AnalyticSeries"),
@@ -120,7 +118,7 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::int_parameter(
       "CALCERRORNO", -1, "function number for scalar transport error computation", &scatradyn);
 
-  setStringToIntegralParameter<Inpar::ScaTra::FluxType>("CALCFLUX_DOMAIN", "No",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::FluxType>("CALCFLUX_DOMAIN", "No",
       "output of diffusive/total flux vectors inside domain",
       tuple<std::string>("No", "total", "diffusive"),
       tuple<Inpar::ScaTra::FluxType>(flux_none, flux_total, flux_diffusive), &scatradyn);
@@ -128,7 +126,7 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::bool_parameter("CALCFLUX_DOMAIN_LUMPED", "Yes",
       "perform approximate domain flux calculation involving matrix lumping", &scatradyn);
 
-  setStringToIntegralParameter<Inpar::ScaTra::FluxType>("CALCFLUX_BOUNDARY", "No",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::FluxType>("CALCFLUX_BOUNDARY", "No",
       "output of convective/diffusive/total flux vectors on boundary",
       tuple<std::string>("No", "total", "diffusive", "convective"),
       tuple<Inpar::ScaTra::FluxType>(flux_none, flux_total, flux_diffusive, flux_convective),
@@ -141,8 +139,8 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
       "Write diffusive/total flux vector fields for these scalar fields only (starting with 1)",
       &scatradyn);
 
-  setStringToIntegralParameter<Inpar::ScaTra::OutputScalarType>("OUTPUTSCALARS", "none",
-      "Output of total and mean values for transported scalars",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::OutputScalarType>("OUTPUTSCALARS",
+      "none", "Output of total and mean values for transported scalars",
       tuple<std::string>("none", "entire_domain", "by_condition", "entire_domain_and_by_condition"),
       tuple<Inpar::ScaTra::OutputScalarType>(outputscalars_none, outputscalars_entiredomain,
           outputscalars_condition, outputscalars_entiredomain_condition),
@@ -157,7 +155,7 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::bool_parameter("MATLAB_STATE_OUTPUT", "No",
       "Do you want to write the state solution to Matlab file?", &scatradyn);
 
-  setStringToIntegralParameter<Inpar::ScaTra::ConvForm>("CONVFORM", "convective",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::ConvForm>("CONVFORM", "convective",
       "form of convective term", tuple<std::string>("convective", "conservative"),
       tuple<Inpar::ScaTra::ConvForm>(convform_convective, convform_conservative), &scatradyn);
 
@@ -170,7 +168,7 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::bool_parameter(
       "SKIPINITDER", "no", "Flag to skip computation of initial time derivative", &scatradyn);
 
-  setStringToIntegralParameter<Inpar::ScaTra::FSSUGRDIFF>("FSSUGRDIFF", "No",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::FSSUGRDIFF>("FSSUGRDIFF", "No",
       "fine-scale subgrid diffusivity",
       tuple<std::string>("No", "artificial", "Smagorinsky_all", "Smagorinsky_small"),
       tuple<Inpar::ScaTra::FSSUGRDIFF>(fssugrdiff_no, fssugrdiff_artificial,
@@ -184,7 +182,7 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
   // Current density source function for EMD problems
   Core::Utils::int_parameter("EMDSOURCE", -1, "Current density source", &scatradyn);
 
-  setStringToIntegralParameter<Inpar::FLUID::MeshTying>("MESHTYING", "no",
+  Core::Utils::string_to_integral_parameter<Inpar::FLUID::MeshTying>("MESHTYING", "no",
       "Flag to (de)activate mesh tying algorithm",
       tuple<std::string>("no", "Condensed_Smat", "Condensed_Bmat", "Condensed_Bmat_merged"),
       tuple<Inpar::FLUID::MeshTying>(Inpar::FLUID::no_meshtying, Inpar::FLUID::condensed_smat,
@@ -192,8 +190,9 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
       &scatradyn);
 
   // Type of coupling strategy between the two fields
-  setStringToIntegralParameter<Inpar::ScaTra::FieldCoupling>("FIELDCOUPLING", "matching",
-      "Type of coupling strategy between fields", tuple<std::string>("matching", "volmortar"),
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::FieldCoupling>("FIELDCOUPLING",
+      "matching", "Type of coupling strategy between fields",
+      tuple<std::string>("matching", "volmortar"),
       tuple<Inpar::ScaTra::FieldCoupling>(coupling_match, coupling_volmortar), &scatradyn);
 
   // linear solver id used for scalar transport/elch problems
@@ -204,8 +203,8 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
       "number of linear solver used for l2-projection sub-problems", &scatradyn);
 
   // flag for equilibration of global system of equations
-  setStringToIntegralParameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION", "none",
-      "flag for equilibration of global system of equations",
+  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
+      "none", "flag for equilibration of global system of equations",
       tuple<std::string>("none", "rows_full", "rows_maindiag", "columns_full", "columns_maindiag",
           "rowsandcolumns_full", "rowsandcolumns_maindiag"),
       tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,
@@ -218,7 +217,7 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
       &scatradyn);
 
   // type of global system matrix in global system of equations
-  setStringToIntegralParameter<Core::LinAlg::MatrixType>("MATRIXTYPE", "sparse",
+  Core::Utils::string_to_integral_parameter<Core::LinAlg::MatrixType>("MATRIXTYPE", "sparse",
       "type of global system matrix in global system of equations",
       tuple<std::string>("sparse", "block_condition", "block_condition_dof"),
       tuple<Core::LinAlg::MatrixType>(Core::LinAlg::MatrixType::sparse,
@@ -230,7 +229,7 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
       "NATURAL_CONVECTION", "No", "Include natural convection effects", &scatradyn);
 
   // parameters for finite difference check
-  setStringToIntegralParameter<Inpar::ScaTra::FdCheck>("FDCHECK", "none",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::FdCheck>("FDCHECK", "none",
       "flag for finite difference check: none, local, or global",
       tuple<std::string>("none",
           "global",           // perform finite difference check on time integrator level
@@ -251,8 +250,8 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
 
   // parameter for optional computation of domain and boundary integrals, i.e., of surface areas and
   // volumes associated with specified nodesets
-  setStringToIntegralParameter<Inpar::ScaTra::ComputeIntegrals>("COMPUTEINTEGRALS", "none",
-      "flag for optional computation of domain integrals",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::ComputeIntegrals>("COMPUTEINTEGRALS",
+      "none", "flag for optional computation of domain integrals",
       tuple<std::string>("none", "initial", "repeated"),
       tuple<Inpar::ScaTra::ComputeIntegrals>(
           computeintegrals_none, computeintegrals_initial, computeintegrals_repeated),
@@ -322,12 +321,9 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
       "control parameters for the stabilization of scalar transport problems");
 
   // this parameter governs type of stabilization
-  setStringToIntegralParameter<Inpar::ScaTra::StabType>("STABTYPE", "SUPG",
-      "type of stabilization (if any)",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::StabType>("STABTYPE", "SUPG",
+      "Type of stabilization (if any). No stabilization is only reasonable for low-Peclet-number.",
       tuple<std::string>("no_stabilization", "SUPG", "GLS", "USFEM", "centered", "upwind"),
-      tuple<std::string>(
-          "Do not use any stabilization -> only reasonable for low-Peclet-number flows", "Use SUPG",
-          "Use GLS", "Use USFEM", "Use centered scheme", "Use upwinded scheme"),
       tuple<Inpar::ScaTra::StabType>(stabtype_no_stabilization, stabtype_SUPG, stabtype_GLS,
           stabtype_USFEM, stabtype_hdg_centered, stabtype_hdg_upwind),
       &scatradyn_stab);
@@ -343,8 +339,8 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
       &scatradyn_stab);
 
   // this parameter selects the tau definition applied
-  setStringToIntegralParameter<Inpar::ScaTra::TauType>("DEFINITION_TAU", "Franca_Valentin",
-      "Definition of tau",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::TauType>("DEFINITION_TAU",
+      "Franca_Valentin", "Definition of tau",
       tuple<std::string>("Taylor_Hughes_Zarins", "Taylor_Hughes_Zarins_wo_dt", "Franca_Valentin",
           "Franca_Valentin_wo_dt", "Shakib_Hughes_Codina", "Shakib_Hughes_Codina_wo_dt", "Codina",
           "Codina_wo_dt", "Franca_Madureira_Valentin", "Franca_Madureira_Valentin_wo_dt",
@@ -358,55 +354,43 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
 
   // this parameter selects the characteristic element length for tau for all
   // stabilization parameter definitions requiring such a length
-  setStringToIntegralParameter<Inpar::ScaTra::CharEleLength>("CHARELELENGTH", "streamlength",
-      "Characteristic element length for tau",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::CharEleLength>("CHARELELENGTH",
+      "streamlength", "Characteristic element length for tau",
       tuple<std::string>("streamlength", "volume_equivalent_diameter", "root_of_volume"),
       tuple<Inpar::ScaTra::CharEleLength>(streamlength, volume_equivalent_diameter, root_of_volume),
       &scatradyn_stab);
 
   // this parameter selects the all-scale subgrid-diffusivity definition applied
-  setStringToIntegralParameter<Inpar::ScaTra::AssgdType>("DEFINITION_ASSGD", "artificial_linear",
-      "Definition of (all-scale) subgrid diffusivity",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::AssgdType>("DEFINITION_ASSGD",
+      "artificial_linear", "Definition of (all-scale) subgrid diffusivity",
       tuple<std::string>("artificial_linear", "artificial_linear_reinit",
           "Hughes_etal_86_nonlinear", "Tezduyar_Park_86_nonlinear",
           "Tezduyar_Park_86_nonlinear_wo_phizero", "doCarmo_Galeao_91_nonlinear",
           "Almeida_Silva_97_nonlinear", "YZbeta_nonlinear", "Codina_nonlinear"),
-      tuple<std::string>("classical linear artificial subgrid-diffusivity",
-          "simple linear artificial subgrid-diffusivity const*h",
-          "nonlinear isotropic according to Hughes et al. (1986)",
-          "nonlinear isotropic according to Tezduyar and Park (1986)",
-          "nonlinear isotropic according to Tezduyar and Park (1986) without user parameter "
-          "phi_zero",
-          "nonlinear isotropic according to doCarmo and Galeao (1991)",
-          "nonlinear isotropic according to Almeida and Silva (1997)", "nonlinear YZ beta model",
-          "nonlinear isotropic according to Codina"),
       tuple<Inpar::ScaTra::AssgdType>(assgd_artificial, assgd_lin_reinit, assgd_hughes,
           assgd_tezduyar, assgd_tezduyar_wo_phizero, assgd_docarmo, assgd_almeida, assgd_yzbeta,
           assgd_codina),
       &scatradyn_stab);
 
   // this parameter selects the location where tau is evaluated
-  setStringToIntegralParameter<Inpar::ScaTra::EvalTau>("EVALUATION_TAU", "element_center",
-      "Location where tau is evaluated", tuple<std::string>("element_center", "integration_point"),
-      tuple<std::string>("evaluate tau at element center", "evaluate tau at integration point"),
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::EvalTau>("EVALUATION_TAU",
+      "element_center", "Location where tau is evaluated",
+      tuple<std::string>("element_center", "integration_point"),
       tuple<Inpar::ScaTra::EvalTau>(evaltau_element_center, evaltau_integration_point),
       &scatradyn_stab);
 
   // this parameter selects the location where the material law is evaluated
   // (does not fit here very well, but parameter transfer is easier)
-  setStringToIntegralParameter<Inpar::ScaTra::EvalMat>("EVALUATION_MAT", "element_center",
-      "Location where material law is evaluated",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::EvalMat>("EVALUATION_MAT",
+      "element_center", "Location where material law is evaluated",
       tuple<std::string>("element_center", "integration_point"),
-      tuple<std::string>(
-          "evaluate material law at element center", "evaluate material law at integration point"),
       tuple<Inpar::ScaTra::EvalMat>(evalmat_element_center, evalmat_integration_point),
       &scatradyn_stab);
 
   // this parameter selects methods for improving consistency of stabilization terms
-  setStringToIntegralParameter<Inpar::ScaTra::Consistency>("CONSISTENCY", "no",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::Consistency>("CONSISTENCY", "no",
       "improvement of consistency for stabilization",
       tuple<std::string>("no", "L2_projection_lumped"),
-      tuple<std::string>("inconsistent", "L2 projection with lumped mass matrix"),
       tuple<Inpar::ScaTra::Consistency>(consistency_no, consistency_l2_projection_lumped),
       &scatradyn_stab);
 
@@ -419,11 +403,10 @@ void Inpar::ScaTra::set_valid_parameters(Teuchos::ParameterList& list)
   Teuchos::ParameterList& scatradyn_art =
       scatradyn.sublist("ARTERY COUPLING", false, "Parameters for artery mesh tying");
 
-  setStringToIntegralParameter<Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod>(
-      "ARTERY_COUPLING_METHOD", "None", "Coupling method for artery coupling.",
+  Core::Utils::string_to_integral_parameter<
+      Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod>("ARTERY_COUPLING_METHOD",
+      "None", "Coupling method for artery coupling.",
       tuple<std::string>("None", "Nodal", "GPTS", "MP", "NTP"),
-      tuple<std::string>("none", "Nodal Coupling", "Gauss-Point-To-Segment Approach",
-          "Mortar Penalty Approach", "1D node-to-point in 2D/3D Approach"),
       tuple<Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod>(
           Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::none,   // none
           Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::nodal,  // Nodal Coupling

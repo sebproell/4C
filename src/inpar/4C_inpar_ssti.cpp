@@ -19,7 +19,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::SSTI::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& sstidyn = list.sublist(
@@ -41,10 +40,10 @@ void Inpar::SSTI::set_valid_parameters(Teuchos::ParameterList& list)
       &sstidyn);
   Core::Utils::string_parameter(
       "SCATRA_FILENAME", "nil", "Control-file name for reading scatra results in SSTI", &sstidyn);
-  setStringToIntegralParameter<SolutionScheme>("COUPALGO", "ssti_Monolithic",
+  Core::Utils::string_to_integral_parameter<SolutionScheme>("COUPALGO", "ssti_Monolithic",
       "Coupling strategies for SSTI solvers", tuple<std::string>("ssti_Monolithic"),
       tuple<Inpar::SSTI::SolutionScheme>(SolutionScheme::monolithic), &sstidyn);
-  setStringToIntegralParameter<ScaTraTimIntType>("SCATRATIMINTTYPE", "Elch",
+  Core::Utils::string_to_integral_parameter<ScaTraTimIntType>("SCATRATIMINTTYPE", "Elch",
       "scalar transport time integration type is needed to instantiate correct scalar transport "
       "time integration scheme for ssi problems",
       tuple<std::string>("Elch"), tuple<ScaTraTimIntType>(ScaTraTimIntType::elch), &sstidyn);
@@ -65,14 +64,14 @@ void Inpar::SSTI::set_valid_parameters(Teuchos::ParameterList& list)
       &sstidynmono);
   Core::Utils::int_parameter(
       "LINEAR_SOLVER", -1, "ID of linear solver for global system of equations", &sstidynmono);
-  setStringToIntegralParameter<Core::LinAlg::MatrixType>("MATRIXTYPE", "undefined",
+  Core::Utils::string_to_integral_parameter<Core::LinAlg::MatrixType>("MATRIXTYPE", "undefined",
       "type of global system matrix in global system of equations",
       tuple<std::string>("undefined", "block", "sparse"),
       tuple<Core::LinAlg::MatrixType>(Core::LinAlg::MatrixType::undefined,
           Core::LinAlg::MatrixType::block_field, Core::LinAlg::MatrixType::sparse),
       &sstidynmono);
-  setStringToIntegralParameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION", "none",
-      "flag for equilibration of global system of equations",
+  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
+      "none", "flag for equilibration of global system of equations",
       tuple<std::string>("none", "rows_full", "rows_maindiag", "rowsandcolumns_full",
           "rowsandcolumns_maindiag", "local"),
       tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,
@@ -82,8 +81,8 @@ void Inpar::SSTI::set_valid_parameters(Teuchos::ParameterList& list)
           Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag,
           Core::LinAlg::EquilibrationMethod::local),
       &sstidynmono);
-  setStringToIntegralParameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION_STRUCTURE", "none",
-      "flag for equilibration of structural equations",
+  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>(
+      "EQUILIBRATION_STRUCTURE", "none", "flag for equilibration of structural equations",
       tuple<std::string>(
           "none", "rows_maindiag", "columns_maindiag", "rowsandcolumns_maindiag", "symmetry"),
       tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,
@@ -92,8 +91,8 @@ void Inpar::SSTI::set_valid_parameters(Teuchos::ParameterList& list)
           Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag,
           Core::LinAlg::EquilibrationMethod::symmetry),
       &sstidynmono);
-  setStringToIntegralParameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION_SCATRA", "none",
-      "flag for equilibration of scatra equations",
+  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>(
+      "EQUILIBRATION_SCATRA", "none", "flag for equilibration of scatra equations",
       tuple<std::string>(
           "none", "rows_maindiag", "columns_maindiag", "rowsandcolumns_maindiag", "symmetry"),
       tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,
@@ -102,8 +101,8 @@ void Inpar::SSTI::set_valid_parameters(Teuchos::ParameterList& list)
           Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag,
           Core::LinAlg::EquilibrationMethod::symmetry),
       &sstidynmono);
-  setStringToIntegralParameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION_THERMO", "none",
-      "flag for equilibration of scatra equations",
+  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>(
+      "EQUILIBRATION_THERMO", "none", "flag for equilibration of scatra equations",
       tuple<std::string>(
           "none", "rows_maindiag", "columns_maindiag", "rowsandcolumns_maindiag", "symmetry"),
       tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,
@@ -124,8 +123,8 @@ void Inpar::SSTI::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::int_parameter(
       "INITTHERMOFUNCT", -1, "initial function for thermo field", &thermodyn);
   Core::Utils::int_parameter("LINEAR_SOLVER", -1, "linear solver for thermo field", &thermodyn);
-  setStringToIntegralParameter<Inpar::ScaTra::InitialField>("INITIALFIELD", "field_by_function",
-      "defines, how to set the initial field",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::InitialField>("INITIALFIELD",
+      "field_by_function", "defines, how to set the initial field",
       tuple<std::string>("field_by_function", "field_by_condition"),
       tuple<Inpar::ScaTra::InitialField>(Inpar::ScaTra::InitialField::initfield_field_by_function,
           Inpar::ScaTra::InitialField::initfield_field_by_condition),

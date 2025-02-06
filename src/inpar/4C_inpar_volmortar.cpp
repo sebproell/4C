@@ -16,13 +16,12 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::VolMortar::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   /* parameters for volmortar */
   Teuchos::ParameterList& volmortar = list.sublist("VOLMORTAR COUPLING", false, "");
 
-  setStringToIntegralParameter<Coupling::VolMortar::IntType>("INTTYPE", "Elements",
+  Core::Utils::string_to_integral_parameter<Coupling::VolMortar::IntType>("INTTYPE", "Elements",
       "Type of numerical integration scheme",
       tuple<std::string>("Elements", "elements", "Segments", "segments"),
       tuple<Coupling::VolMortar::IntType>(Coupling::VolMortar::inttype_elements,
@@ -30,15 +29,15 @@ void Inpar::VolMortar::set_valid_parameters(Teuchos::ParameterList& list)
           Coupling::VolMortar::inttype_segments),
       &volmortar);
 
-  setStringToIntegralParameter<Coupling::VolMortar::CouplingType>("COUPLINGTYPE", "Volmortar",
-      "Type of coupling",
+  Core::Utils::string_to_integral_parameter<Coupling::VolMortar::CouplingType>("COUPLINGTYPE",
+      "Volmortar", "Type of coupling",
       tuple<std::string>("Volmortar", "volmortar", "consistentinterpolation", "consint"),
       tuple<Coupling::VolMortar::CouplingType>(Coupling::VolMortar::couplingtype_volmortar,
           Coupling::VolMortar::couplingtype_volmortar, Coupling::VolMortar::couplingtype_coninter,
           Coupling::VolMortar::couplingtype_coninter),
       &volmortar);
 
-  setStringToIntegralParameter<Coupling::VolMortar::Shapefcn>("SHAPEFCN", "Dual",
+  Core::Utils::string_to_integral_parameter<Coupling::VolMortar::Shapefcn>("SHAPEFCN", "Dual",
       "Type of employed set of shape functions",
       tuple<std::string>("Dual", "dual", "Standard", "standard", "std"),
       tuple<Coupling::VolMortar::Shapefcn>(Coupling::VolMortar::shape_dual,
@@ -46,7 +45,7 @@ void Inpar::VolMortar::set_valid_parameters(Teuchos::ParameterList& list)
           Coupling::VolMortar::shape_std, Coupling::VolMortar::shape_std),
       &volmortar);
 
-  setStringToIntegralParameter<Coupling::VolMortar::CutType>("CUTTYPE", "dd",
+  Core::Utils::string_to_integral_parameter<Coupling::VolMortar::CutType>("CUTTYPE", "dd",
       "Type of cut procedure/ integration point calculation",
       tuple<std::string>(
           "dd", "directdivergence", "DirectDivergence", "tessellation", "t", "Tessellation"),
@@ -56,7 +55,7 @@ void Inpar::VolMortar::set_valid_parameters(Teuchos::ParameterList& list)
           Coupling::VolMortar::cuttype_tessellation, Coupling::VolMortar::cuttype_tessellation),
       &volmortar);
 
-  setStringToIntegralParameter<Coupling::VolMortar::DualQuad>("DUALQUAD", "nomod",
+  Core::Utils::string_to_integral_parameter<Coupling::VolMortar::DualQuad>("DUALQUAD", "nomod",
       "Type of dual shape function for weighting function for quadr. problems",
       tuple<std::string>("nm", "nomod", "lm", "lin_mod", "qm", "quad_mod"),
       tuple<Coupling::VolMortar::DualQuad>(Coupling::VolMortar::dualquad_no_mod,

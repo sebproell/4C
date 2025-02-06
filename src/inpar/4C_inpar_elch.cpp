@@ -17,7 +17,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::ElCh::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& elchcontrol =
@@ -39,12 +38,9 @@ void Inpar::ElCh::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter("GAS_CONSTANT", 8.314472,
       "(universal) gas constant (in unit system as chosen in input file)", &elchcontrol);
   // parameter for possible types of ELCH algorithms for deforming meshes
-  setStringToIntegralParameter<Inpar::ElCh::ElchMovingBoundary>("MOVINGBOUNDARY", "No",
+  Core::Utils::string_to_integral_parameter<Inpar::ElCh::ElchMovingBoundary>("MOVINGBOUNDARY", "No",
       "ELCH algorithm for deforming meshes",
       tuple<std::string>("No", "pseudo-transient", "fully-transient"),
-      tuple<std::string>("no moving boundary algorithm",
-          "pseudo-transient moving boundary algorithm",
-          "full moving boundary algorithm including fluid solve"),
       tuple<Inpar::ElCh::ElchMovingBoundary>(
           elch_mov_bndry_no, elch_mov_bndry_pseudo_transient, elch_mov_bndry_fully_transient),
       &elchcontrol);
@@ -53,8 +49,8 @@ void Inpar::ElCh::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter("MOVBOUNDARYTHETA", 0.0,
       "One-step-theta factor in electrode shape change computations", &elchcontrol);
   Core::Utils::bool_parameter("GALVANOSTATIC", "No", "flag for galvanostatic mode", &elchcontrol);
-  setStringToIntegralParameter<Inpar::ElCh::ApproxElectResist>("GSTAT_APPROX_ELECT_RESIST",
-      "relation_pot_cur", "relation of potential and current flow",
+  Core::Utils::string_to_integral_parameter<Inpar::ElCh::ApproxElectResist>(
+      "GSTAT_APPROX_ELECT_RESIST", "relation_pot_cur", "relation of potential and current flow",
       tuple<std::string>("relation_pot_cur", "effective_length_with_initial_cond",
           "effective_length_with_integrated_cond"),
       tuple<Inpar::ElCh::ApproxElectResist>(approxelctresist_relpotcur,
@@ -74,7 +70,7 @@ void Inpar::ElCh::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter(
       "GSTAT_LENGTH_CURRENTPATH", 0.0, "average length of the current path", &elchcontrol);
 
-  setStringToIntegralParameter<Inpar::ElCh::EquPot>("EQUPOT", "Undefined",
+  Core::Utils::string_to_integral_parameter<Inpar::ElCh::EquPot>("EQUPOT", "Undefined",
       "type of closing equation for electric potential",
       tuple<std::string>(
           "Undefined", "ENC", "ENC_PDE", "ENC_PDE_ELIM", "Poisson", "Laplace", "divi"),
@@ -143,7 +139,7 @@ void Inpar::ElCh::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::bool_parameter(
       "INITPOTCALC", "No", "calculate initial potential field?", &sclcontrol);
   Core::Utils::int_parameter("SOLVER", -1, "solver for coupled SCL problem", &sclcontrol);
-  setStringToIntegralParameter<Core::LinAlg::MatrixType>("MATRIXTYPE", "undefined",
+  Core::Utils::string_to_integral_parameter<Core::LinAlg::MatrixType>("MATRIXTYPE", "undefined",
       "type of global system matrix in global system of equations",
       tuple<std::string>("undefined", "block", "sparse"),
       tuple<Core::LinAlg::MatrixType>(Core::LinAlg::MatrixType::undefined,
@@ -153,7 +149,7 @@ void Inpar::ElCh::set_valid_parameters(Teuchos::ParameterList& list)
       "time step when time step size should be updated to 'ADAPTED_TIME_STEP_SIZE'.", &sclcontrol);
   Core::Utils::double_parameter("ADAPTED_TIME_STEP_SIZE", -1.0, "new time step size.", &sclcontrol);
 
-  setStringToIntegralParameter<ScaTra::InitialField>("INITIALFIELD", "zero_field",
+  Core::Utils::string_to_integral_parameter<ScaTra::InitialField>("INITIALFIELD", "zero_field",
       "Initial Field for scalar transport problem",
       tuple<std::string>("zero_field", "field_by_function", "field_by_condition"),
       tuple<ScaTra::InitialField>(ScaTra::initfield_zero_field, ScaTra::initfield_field_by_function,

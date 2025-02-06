@@ -16,7 +16,6 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------------*/
 void Inpar::FSI::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& fsidyn = list.sublist("FSI DYNAMIC", false,
@@ -70,7 +69,7 @@ void Inpar::FSI::set_valid_parameters(Teuchos::ParameterList& list)
   label[20] = fsi_iter_mortar_monolithicfluidsplit_saddlepoint;
 
 
-  setStringToIntegralParameter<FsiCoupling>("COUPALGO", "iter_stagg_AITKEN_rel_param",
+  Core::Utils::string_to_integral_parameter<FsiCoupling>("COUPALGO", "iter_stagg_AITKEN_rel_param",
       "Iteration Scheme over the fields", name, label, &fsidyn);
 
   std::string debugoutput_doc =
@@ -98,7 +97,7 @@ void Inpar::FSI::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::bool_parameter("SECONDORDER", "No",
       "Second order displacement-velocity conversion at the interface.", &fsidyn);
 
-  setStringToIntegralParameter<Inpar::FSI::SlideALEProj>("SLIDEALEPROJ", "None",
+  Core::Utils::string_to_integral_parameter<Inpar::FSI::SlideALEProj>("SLIDEALEPROJ", "None",
       "Projection method to use for sliding FSI.",
       tuple<std::string>("None", "Curr", "Ref", "RotZ", "RotZSphere"),
       tuple<Inpar::FSI::SlideALEProj>(Inpar::FSI::ALEprojection_none,
@@ -110,7 +109,7 @@ void Inpar::FSI::set_valid_parameters(Teuchos::ParameterList& list)
 
   Core::Utils::int_parameter("RESULTSEVERY", 1, "Increment for writing solution", &fsidyn);
 
-  setStringToIntegralParameter<Inpar::FSI::Verbosity>("VERBOSITY", "full",
+  Core::Utils::string_to_integral_parameter<Inpar::FSI::Verbosity>("VERBOSITY", "full",
       "Verbosity of the FSI problem.", tuple<std::string>("full", "medium", "low", "subproblem"),
       tuple<Inpar::FSI::Verbosity>(Inpar::FSI::verbosity_full, Inpar::FSI::verbosity_medium,
           Inpar::FSI::verbosity_low, Inpar::FSI::verbosity_subproblem),
@@ -125,7 +124,7 @@ void Inpar::FSI::set_valid_parameters(Teuchos::ParameterList& list)
       "(>0)",
       &fsiadapt);
 
-  setStringToIntegralParameter<Inpar::FSI::FluidMethod>("AUXINTEGRATORFLUID", "AB2",
+  Core::Utils::string_to_integral_parameter<Inpar::FSI::FluidMethod>("AUXINTEGRATORFLUID", "AB2",
       "Method for error estimation in the fluid field",
       tuple<std::string>("None", "ExplicitEuler", "AB2"),
       tuple<Inpar::FSI::FluidMethod>(Inpar::FSI::timada_fld_none, Inpar::FSI::timada_fld_expleuler,
@@ -140,7 +139,7 @@ void Inpar::FSI::set_valid_parameters(Teuchos::ParameterList& list)
       &fsiadapt);
 
 
-  setStringToIntegralParameter<Inpar::FSI::DivContAct>("DIVERCONT", "stop",
+  Core::Utils::string_to_integral_parameter<Inpar::FSI::DivContAct>("DIVERCONT", "stop",
       "What to do if nonlinear solver does not converge?",
       tuple<std::string>("stop", "continue", "halve_step", "revert_dt"),
       tuple<Inpar::FSI::DivContAct>(Inpar::FSI::divcont_stop, Inpar::FSI::divcont_continue,
@@ -217,7 +216,7 @@ void Inpar::FSI::set_valid_parameters(Teuchos::ParameterList& list)
 
   Core::Utils::int_parameter("KRYLOV_SIZE", 50, "Size of Krylov Subspace.", &fsimono);
 
-  setStringToIntegralParameter<Inpar::FSI::LinearBlockSolver>("LINEARBLOCKSOLVER",
+  Core::Utils::string_to_integral_parameter<Inpar::FSI::LinearBlockSolver>("LINEARBLOCKSOLVER",
       "PreconditionedKrylov", "Linear block preconditioner for block system in monolithic FSI.",
       tuple<std::string>("PreconditionedKrylov", "LinalgSolver"),
       tuple<Inpar::FSI::LinearBlockSolver>(
@@ -229,7 +228,7 @@ void Inpar::FSI::set_valid_parameters(Teuchos::ParameterList& list)
 
   // Iteration parameters for convergence check of newton loop
   // for implementations without NOX
-  setStringToIntegralParameter<Inpar::FSI::ConvNorm>("NORM_INC", "Rel",
+  Core::Utils::string_to_integral_parameter<Inpar::FSI::ConvNorm>("NORM_INC", "Rel",
       "type of norm for primary variables convergence check",
       tuple<std::string>("Abs", "Rel", "Mix"),
       tuple<Inpar::FSI::ConvNorm>(
@@ -237,14 +236,14 @@ void Inpar::FSI::set_valid_parameters(Teuchos::ParameterList& list)
       &fsimono);
 
   // for implementations without NOX
-  setStringToIntegralParameter<Inpar::FSI::ConvNorm>("NORM_RESF", "Rel",
+  Core::Utils::string_to_integral_parameter<Inpar::FSI::ConvNorm>("NORM_RESF", "Rel",
       "type of norm for residual convergence check", tuple<std::string>("Abs", "Rel", "Mix"),
       tuple<Inpar::FSI::ConvNorm>(
           Inpar::FSI::convnorm_abs, Inpar::FSI::convnorm_rel, Inpar::FSI::convnorm_mix),
       &fsimono);
 
   // for implementations without NOX
-  setStringToIntegralParameter<Inpar::FSI::BinaryOp>("NORMCOMBI_RESFINC", "And",
+  Core::Utils::string_to_integral_parameter<Inpar::FSI::BinaryOp>("NORMCOMBI_RESFINC", "And",
       "binary operator to combine primary variables and residual force values",
       tuple<std::string>("And"), tuple<Inpar::FSI::BinaryOp>(Inpar::FSI::bop_and), &fsimono);
 
@@ -369,7 +368,7 @@ void Inpar::FSI::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::string_parameter("COUPMETHOD", "conforming",
       "Coupling Method mortar or conforming nodes at interface", &fsipart, coupmethod_valid_input);
 
-  setStringToIntegralParameter<Inpar::FSI::CoupVarPart>("COUPVARIABLE", "Displacement",
+  Core::Utils::string_to_integral_parameter<Inpar::FSI::CoupVarPart>("COUPVARIABLE", "Displacement",
       "Coupling variable at the interface", tuple<std::string>("Displacement", "Force", "Velocity"),
       tuple<Inpar::FSI::CoupVarPart>(Inpar::FSI::CoupVarPart::disp, Inpar::FSI::CoupVarPart::force,
           Inpar::FSI::CoupVarPart::vel),
@@ -387,7 +386,7 @@ void Inpar::FSI::set_valid_parameters(Teuchos::ParameterList& list)
       "MINOMEGA", -1.0, "smallest omega allowed for Aitken relaxation (default is -1.0)", &fsipart);
 
 
-  setStringToIntegralParameter<Inpar::FSI::PartitionedCouplingMethod>("PARTITIONED",
+  Core::Utils::string_to_integral_parameter<Inpar::FSI::PartitionedCouplingMethod>("PARTITIONED",
       "DirichletNeumann", "Coupling strategies for partitioned FSI solvers.",
       tuple<std::string>(
           "DirichletNeumann", "DirichletNeumannSlideALE", "DirichletNeumannVolCoupl"),
@@ -407,7 +406,7 @@ void Inpar::FSI::set_valid_parameters(Teuchos::ParameterList& list)
   /* ----------------------------------------------------------------------- */
   Teuchos::ParameterList& constrfsi = fsidyn.sublist("CONSTRAINT", false, "");
 
-  setStringToIntegralParameter<Inpar::FSI::PrecConstr>("PRECONDITIONER", "Simple",
+  Core::Utils::string_to_integral_parameter<Inpar::FSI::PrecConstr>("PRECONDITIONER", "Simple",
       "preconditioner to use", tuple<std::string>("Simple", "Simplec"),
       tuple<Inpar::FSI::PrecConstr>(Inpar::FSI::Simple, Inpar::FSI::Simplec), &constrfsi);
   Core::Utils::int_parameter("SIMPLEITER", 2, "Number of iterations for simple pc", &constrfsi);

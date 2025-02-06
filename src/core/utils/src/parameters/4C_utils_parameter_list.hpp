@@ -58,6 +58,19 @@ namespace Core
         std::string const& docString, Teuchos::ParameterList* paramList,
         std::vector<std::string> const& validParams = {});
 
+
+    /**
+     * Add an integral parameter to a parameter list with a list of valid strings.
+     */
+    template <typename T>
+    void string_to_integral_parameter(const std::string& paramName, const std::string& defaultValue,
+        const std::string& docString, const Teuchos::ArrayView<const std::string>& strings,
+        const Teuchos::ArrayView<const T>& integrals, Teuchos::ParameterList* paramList)
+    {
+      Teuchos::setStringToIntegralParameter<T>(
+          paramName, defaultValue, docString, strings, integrals, paramList);
+    }
+
   }  // namespace Utils
 }  // namespace Core
 

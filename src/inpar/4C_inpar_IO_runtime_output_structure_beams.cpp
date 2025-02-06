@@ -24,7 +24,6 @@ namespace Inpar
        *----------------------------------------------------------------------*/
       void set_valid_parameters(Teuchos::ParameterList& list)
       {
-        using Teuchos::setStringToIntegralParameter;
         using Teuchos::tuple;
 
         // related sublist

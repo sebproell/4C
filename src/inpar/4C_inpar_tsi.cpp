@@ -16,7 +16,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::TSI::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& tsidyn = list.sublist("TSI DYNAMIC", false,
@@ -24,7 +23,7 @@ void Inpar::TSI::set_valid_parameters(Teuchos::ParameterList& list)
       "Dynamic section for TSI solver with various coupling methods");
 
   // coupling strategy for (partitioned and monolithic) TSI solvers
-  setStringToIntegralParameter<SolutionSchemeOverFields>("COUPALGO", "tsi_monolithic",
+  Core::Utils::string_to_integral_parameter<SolutionSchemeOverFields>("COUPALGO", "tsi_monolithic",
       "Coupling strategies for TSI solvers",
       tuple<std::string>("tsi_oneway", "tsi_sequstagg", "tsi_iterstagg", "tsi_iterstagg_aitken",
           "tsi_iterstagg_aitkenirons", "tsi_iterstagg_fixedrelax", "tsi_monolithic"),
@@ -46,7 +45,7 @@ void Inpar::TSI::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::int_parameter("ITEMIN", 1, "minimal number of iterations over fields", &tsidyn);
   Core::Utils::int_parameter("RESULTSEVERY", 1, "increment for writing solution", &tsidyn);
 
-  setStringToIntegralParameter<ConvNorm>("NORM_INC", "Abs",
+  Core::Utils::string_to_integral_parameter<ConvNorm>("NORM_INC", "Abs",
       "type of norm for convergence check of primary variables in TSI",
       tuple<std::string>("Abs", "Rel", "Mix"),
       tuple<ConvNorm>(convnorm_abs, convnorm_rel, convnorm_mix), &tsidyn);
@@ -64,11 +63,11 @@ void Inpar::TSI::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter("TOLINC", 1.0e-6,
       "tolerance for convergence check of TSI-increment in monolithic TSI", &tsidynmono);
 
-  setStringToIntegralParameter<ConvNorm>("NORM_RESF", "Abs",
+  Core::Utils::string_to_integral_parameter<ConvNorm>("NORM_RESF", "Abs",
       "type of norm for residual convergence check", tuple<std::string>("Abs", "Rel", "Mix"),
       tuple<ConvNorm>(convnorm_abs, convnorm_rel, convnorm_mix), &tsidynmono);
 
-  setStringToIntegralParameter<BinaryOp>("NORMCOMBI_RESFINC", "Coupl_And_Single",
+  Core::Utils::string_to_integral_parameter<BinaryOp>("NORMCOMBI_RESFINC", "Coupl_And_Single",
       "binary operator to combine primary variables and residual force values",
       tuple<std::string>(
           "And", "Or", "Coupl_Or_Single", "Coupl_And_Single", "And_Single", "Or_Single"),
@@ -76,14 +75,14 @@ void Inpar::TSI::set_valid_parameters(Teuchos::ParameterList& list)
           bop_or_single),
       &tsidynmono);
 
-  setStringToIntegralParameter<VectorNorm>("ITERNORM", "Rms",
+  Core::Utils::string_to_integral_parameter<VectorNorm>("ITERNORM", "Rms",
       "type of norm to be applied to residuals",
       tuple<std::string>("L1", "L1_Scaled", "L2", "Rms", "Inf"),
       tuple<VectorNorm>(norm_l1, norm_l1_scaled, norm_l2, norm_rms, norm_inf), &tsidynmono);
 
-  setStringToIntegralParameter<NlnSolTech>("NLNSOL", "fullnewton", "Nonlinear solution technique",
-      tuple<std::string>("fullnewton", "ptc"), tuple<NlnSolTech>(soltech_newtonfull, soltech_ptc),
-      &tsidynmono);
+  Core::Utils::string_to_integral_parameter<NlnSolTech>("NLNSOL", "fullnewton",
+      "Nonlinear solution technique", tuple<std::string>("fullnewton", "ptc"),
+      tuple<NlnSolTech>(soltech_newtonfull, soltech_ptc), &tsidynmono);
 
   Core::Utils::double_parameter("PTCDT", 0.1,
       "pseudo time step for pseudo-transient continuation (PTC) stabilised Newton procedure",
@@ -151,8 +150,9 @@ void Inpar::TSI::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter(
       "NITSCHE_THETA_TSI", 0.0, "+1: symmetric, 0: non-symmetric, -1: skew-symmetric", &tsic);
 
-  setStringToIntegralParameter<Inpar::CONTACT::NitscheWeighting>("NITSCHE_WEIGHTING_TSI",
-      "harmonic", "how to weight consistency terms in Nitsche contact formulation",
+  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::NitscheWeighting>(
+      "NITSCHE_WEIGHTING_TSI", "harmonic",
+      "how to weight consistency terms in Nitsche contact formulation",
       tuple<std::string>("slave", "master", "harmonic", "physical"),
       tuple<Inpar::CONTACT::NitscheWeighting>(Inpar::CONTACT::NitWgt_slave,
           Inpar::CONTACT::NitWgt_master, Inpar::CONTACT::NitWgt_harmonic,
@@ -165,7 +165,8 @@ void Inpar::TSI::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter(
       "PENALTYPARAM_THERMO", 0.0, "Penalty parameter for Nitsche solution strategy", &tsic);
 
-  setStringToIntegralParameter<Inpar::CONTACT::NitscheThermoMethod>("NITSCHE_METHOD_TSI", "nitsche",
+  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::NitscheThermoMethod>(
+      "NITSCHE_METHOD_TSI", "nitsche",
       "how to treat thermal interface problem: strong substitution or Nitsche for general "
       "interface conditions",
       tuple<std::string>("nitsche", "substitution"),
@@ -173,8 +174,8 @@ void Inpar::TSI::set_valid_parameters(Teuchos::ParameterList& list)
           Inpar::CONTACT::NitThermo_nitsche, Inpar::CONTACT::NitThermo_substitution),
       &tsic);
 
-  setStringToIntegralParameter<LineSearch>("TSI_LINE_SEARCH", "none", "line-search strategy",
-      tuple<std::string>("none", "structure", "thermo", "and", "or"),
+  Core::Utils::string_to_integral_parameter<LineSearch>("TSI_LINE_SEARCH", "none",
+      "line-search strategy", tuple<std::string>("none", "structure", "thermo", "and", "or"),
       tuple<LineSearch>(LS_none, LS_structure, LS_thermo, LS_and, LS_or), &tsidynmono);
 }
 

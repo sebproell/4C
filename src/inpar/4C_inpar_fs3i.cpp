@@ -16,7 +16,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::FS3I::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& fs3idyn =
@@ -27,8 +26,8 @@ void Inpar::FS3I::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter("MAXTIME", 1000.0, "Total simulation time", &fs3idyn);
   Core::Utils::int_parameter("RESULTSEVERY", 1, "Increment for writing solution", &fs3idyn);
   Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", &fs3idyn);
-  setStringToIntegralParameter<Inpar::ScaTra::SolverType>("SCATRA_SOLVERTYPE", "nonlinear",
-      "type of scalar transport solver", tuple<std::string>("linear", "nonlinear"),
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::SolverType>("SCATRA_SOLVERTYPE",
+      "nonlinear", "type of scalar transport solver", tuple<std::string>("linear", "nonlinear"),
       tuple<Inpar::ScaTra::SolverType>(
           Inpar::ScaTra::solvertype_linear_incremental, Inpar::ScaTra::solvertype_nonlinear),
       &fs3idyn);
@@ -45,15 +44,15 @@ void Inpar::FS3I::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::int_parameter(
       "LINEAR_SOLVER2", -1, "number of linear solver used for structural problem", &fs3idyn);
 
-  setStringToIntegralParameter<Inpar::ScaTra::ConvForm>("STRUCTSCAL_CONVFORM", "conservative",
-      "form of convective term of structure scalar",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::ConvForm>("STRUCTSCAL_CONVFORM",
+      "conservative", "form of convective term of structure scalar",
       tuple<std::string>("convective", "conservative"),
       tuple<Inpar::ScaTra::ConvForm>(
           Inpar::ScaTra::convform_convective, Inpar::ScaTra::convform_conservative),
       &fs3idyn);
 
-  setStringToIntegralParameter<Inpar::ScaTra::InitialField>("STRUCTSCAL_INITIALFIELD", "zero_field",
-      "Initial Field for structure scalar transport problem",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::InitialField>("STRUCTSCAL_INITIALFIELD",
+      "zero_field", "Initial Field for structure scalar transport problem",
       tuple<std::string>("zero_field", "field_by_function"),
       tuple<Inpar::ScaTra::InitialField>(
           Inpar::ScaTra::initfield_zero_field, Inpar::ScaTra::initfield_field_by_function),
@@ -63,19 +62,19 @@ void Inpar::FS3I::set_valid_parameters(Teuchos::ParameterList& list)
       "function number for structure scalar transport initial field", &fs3idyn);
 
   // Type of coupling strategy between structure and structure-scalar field
-  setStringToIntegralParameter<VolumeCoupling>("STRUCTSCAL_FIELDCOUPLING", "volume_matching",
-      "Type of coupling strategy between structure and structure-scalar field",
+  Core::Utils::string_to_integral_parameter<VolumeCoupling>("STRUCTSCAL_FIELDCOUPLING",
+      "volume_matching", "Type of coupling strategy between structure and structure-scalar field",
       tuple<std::string>("volume_matching", "volume_nonmatching"),
       tuple<VolumeCoupling>(coupling_match, coupling_nonmatch), &fs3idyn);
 
   // Type of coupling strategy between fluid and fluid-scalar field
-  setStringToIntegralParameter<VolumeCoupling>("FLUIDSCAL_FIELDCOUPLING", "volume_matching",
-      "Type of coupling strategy between fluid and fluid-scalar field",
+  Core::Utils::string_to_integral_parameter<VolumeCoupling>("FLUIDSCAL_FIELDCOUPLING",
+      "volume_matching", "Type of coupling strategy between fluid and fluid-scalar field",
       tuple<std::string>("volume_matching", "volume_nonmatching"),
       tuple<VolumeCoupling>(coupling_match, coupling_nonmatch), &fs3idyn);
 
   // type of scalar transport
-  setStringToIntegralParameter<Inpar::ScaTra::ImplType>("FLUIDSCAL_SCATRATYPE",
+  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::ImplType>("FLUIDSCAL_SCATRATYPE",
       "ConvectionDiffusion", "Type of scalar transport problem",
       tuple<std::string>("Undefined", "ConvectionDiffusion", "Loma", "Advanced_Reaction",
           "Chemotaxis", "Chemo_Reac"),
@@ -96,7 +95,7 @@ void Inpar::FS3I::set_valid_parameters(Teuchos::ParameterList& list)
       "partitioned fluid-structure-scalar-scalar interaction control section");
 
   // Coupling strategy for partitioned FS3I
-  setStringToIntegralParameter<SolutionSchemeOverFields>("COUPALGO", "fs3i_IterStagg",
+  Core::Utils::string_to_integral_parameter<SolutionSchemeOverFields>("COUPALGO", "fs3i_IterStagg",
       "Coupling strategies for FS3I solvers",
       tuple<std::string>("fs3i_SequStagg", "fs3i_IterStagg"),
       tuple<SolutionSchemeOverFields>(fs3i_SequStagg, fs3i_IterStagg), &fs3idynpart);

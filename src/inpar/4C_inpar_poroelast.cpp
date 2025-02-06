@@ -16,14 +16,13 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::PoroElast::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& poroelastdyn =
       list.sublist("POROELASTICITY DYNAMIC", false, "Poroelasticity");
 
   // Coupling strategy for (monolithic) porous media solvers
-  setStringToIntegralParameter<Inpar::PoroElast::SolutionSchemeOverFields>("COUPALGO",
+  Core::Utils::string_to_integral_parameter<Inpar::PoroElast::SolutionSchemeOverFields>("COUPALGO",
       "poro_monolithic", "Coupling strategies for poroelasticity solvers",
       tuple<std::string>("poro_partitioned", "poro_monolithic", "poro_monolithicstructuresplit",
           "poro_monolithicfluidsplit", "poro_monolithicnopenetrationsplit",
@@ -35,14 +34,14 @@ void Inpar::PoroElast::set_valid_parameters(Teuchos::ParameterList& list)
 
   // physical type of poro fluid flow (incompressible, varying density, loma, Boussinesq
   // approximation)
-  setStringToIntegralParameter<Inpar::FLUID::PhysicalType>("PHYSICAL_TYPE", "Poro",
+  Core::Utils::string_to_integral_parameter<Inpar::FLUID::PhysicalType>("PHYSICAL_TYPE", "Poro",
       "Physical Type of Porofluid", tuple<std::string>("Poro", "Poro_P1"),
       tuple<Inpar::FLUID::PhysicalType>(Inpar::FLUID::poro, Inpar::FLUID::poro_p1), &poroelastdyn);
 
   // physical type of poro fluid flow (incompressible, varying density, loma, Boussinesq
   // approximation)
-  setStringToIntegralParameter<Inpar::PoroElast::TransientEquationsOfPoroFluid>("TRANSIENT_TERMS",
-      "all", "which equation includes transient terms",
+  Core::Utils::string_to_integral_parameter<Inpar::PoroElast::TransientEquationsOfPoroFluid>(
+      "TRANSIENT_TERMS", "all", "which equation includes transient terms",
       tuple<std::string>("none", "momentum", "continuity", "all"),
       tuple<Inpar::PoroElast::TransientEquationsOfPoroFluid>(
           transient_none, transient_momentum_only, transient_continuity_only, transient_all),
@@ -86,30 +85,30 @@ void Inpar::PoroElast::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter("TOLRES_NCOUP", 1e-8,
       "tolerance in the residual norm for the Newton iteration", &poroelastdyn);
 
-  setStringToIntegralParameter<Inpar::PoroElast::ConvNorm>("NORM_INC", "AbsSingleFields",
-      "type of norm for primary variables convergence check",
+  Core::Utils::string_to_integral_parameter<Inpar::PoroElast::ConvNorm>("NORM_INC",
+      "AbsSingleFields", "type of norm for primary variables convergence check",
       tuple<std::string>("AbsGlobal", "AbsSingleFields"),
       tuple<Inpar::PoroElast::ConvNorm>(convnorm_abs_global, convnorm_abs_singlefields),
       &poroelastdyn);
 
-  setStringToIntegralParameter<Inpar::PoroElast::ConvNorm>("NORM_RESF", "AbsSingleFields",
-      "type of norm for residual convergence check",
+  Core::Utils::string_to_integral_parameter<Inpar::PoroElast::ConvNorm>("NORM_RESF",
+      "AbsSingleFields", "type of norm for residual convergence check",
       tuple<std::string>("AbsGlobal", "AbsSingleFields"),
       tuple<Inpar::PoroElast::ConvNorm>(convnorm_abs_global, convnorm_abs_singlefields),
       &poroelastdyn);
 
-  setStringToIntegralParameter<Inpar::PoroElast::BinaryOp>("NORMCOMBI_RESFINC", "And",
+  Core::Utils::string_to_integral_parameter<Inpar::PoroElast::BinaryOp>("NORMCOMBI_RESFINC", "And",
       "binary operator to combine primary variables and residual force values",
       tuple<std::string>("And", "Or"), tuple<Inpar::PoroElast::BinaryOp>(bop_and, bop_or),
       &poroelastdyn);
 
-  setStringToIntegralParameter<Inpar::PoroElast::VectorNorm>("VECTORNORM_RESF", "L2",
+  Core::Utils::string_to_integral_parameter<Inpar::PoroElast::VectorNorm>("VECTORNORM_RESF", "L2",
       "type of norm to be applied to residuals",
       tuple<std::string>("L1", "L1_Scaled", "L2", "Rms", "Inf"),
       tuple<Inpar::PoroElast::VectorNorm>(norm_l1, norm_l1_scaled, norm_l2, norm_rms, norm_inf),
       &poroelastdyn);
 
-  setStringToIntegralParameter<Inpar::PoroElast::VectorNorm>("VECTORNORM_INC", "L2",
+  Core::Utils::string_to_integral_parameter<Inpar::PoroElast::VectorNorm>("VECTORNORM_INC", "L2",
       "type of norm to be applied to residuals",
       tuple<std::string>("L1", "L1_Scaled", "L2", "Rms", "Inf"),
       tuple<Inpar::PoroElast::VectorNorm>(norm_l1, norm_l1_scaled, norm_l2, norm_rms, norm_inf),
@@ -134,8 +133,8 @@ void Inpar::PoroElast::set_valid_parameters(Teuchos::ParameterList& list)
       "number of linear solver used for poroelasticity problems", &poroelastdyn);
 
   // flag for equilibration of global system of equations
-  setStringToIntegralParameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION", "none",
-      "flag for equilibration of global system of equations",
+  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
+      "none", "flag for equilibration of global system of equations",
       tuple<std::string>("none", "rows_full", "rows_maindiag", "columns_full", "columns_maindiag",
           "rowsandcolumns_full", "rowsandcolumns_maindiag"),
       tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,

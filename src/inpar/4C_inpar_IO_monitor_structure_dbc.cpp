@@ -22,7 +22,6 @@ namespace Inpar
      *----------------------------------------------------------------------*/
     void set_valid_parameters(Teuchos::ParameterList& list)
     {
-      using Teuchos::setStringToIntegralParameter;
       using Teuchos::tuple;
 
       // related sublist
@@ -44,8 +43,8 @@ namespace Inpar
           &sublist_IO_monitor_structure_dbc);
 
       // type of written output file
-      setStringToIntegralParameter<Inpar::IOMonitorStructureDBC::FileType>("FILE_TYPE", "csv",
-          "type of written output file",
+      Core::Utils::string_to_integral_parameter<Inpar::IOMonitorStructureDBC::FileType>("FILE_TYPE",
+          "csv", "type of written output file",
           tuple<std::string>("csv", "CSV", "Csv", "data", "Data", "DATA"),
           tuple<Inpar::IOMonitorStructureDBC::FileType>(Inpar::IOMonitorStructureDBC::csv,
               Inpar::IOMonitorStructureDBC::csv, Inpar::IOMonitorStructureDBC::csv,

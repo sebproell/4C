@@ -17,18 +17,19 @@ FOUR_C_NAMESPACE_OPEN
  */
 void Inpar::CONSTRAINTS::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& embeddedmeshcoupling = list.sublist("EMBEDDED MESH COUPLING", false, "");
   {
-    setStringToIntegralParameter<EmbeddedMeshCouplingStrategy>("COUPLING_STRATEGY", "none",
-        "Strategy to couple background and overlapping mesh", tuple<std::string>("none", "mortar"),
+    Core::Utils::string_to_integral_parameter<EmbeddedMeshCouplingStrategy>("COUPLING_STRATEGY",
+        "none", "Strategy to couple background and overlapping mesh",
+        tuple<std::string>("none", "mortar"),
         tuple<EmbeddedMeshCouplingStrategy>(
             EmbeddedMeshCouplingStrategy::none, EmbeddedMeshCouplingStrategy::mortar),
         &embeddedmeshcoupling);
 
-    setStringToIntegralParameter<SolidToSolidMortarShapefunctions>("MORTAR_SHAPE_FUNCTION", "none",
+    Core::Utils::string_to_integral_parameter<SolidToSolidMortarShapefunctions>(
+        "MORTAR_SHAPE_FUNCTION", "none",
         "Shape functions that should be use in case of coupling using the Mortar/Lagrange "
         "Multiplier method",
         tuple<std::string>("none", "quad4", "quad9", "nurbs9"),
@@ -37,8 +38,9 @@ void Inpar::CONSTRAINTS::set_valid_parameters(Teuchos::ParameterList& list)
             SolidToSolidMortarShapefunctions::nurbs9),
         &embeddedmeshcoupling);
 
-    setStringToIntegralParameter<EmbeddedMeshConstraintEnforcement>("CONSTRAINT_ENFORCEMENT",
-        "none", "Apply a constraint enforcement in the embedded mesh coupling strategy",
+    Core::Utils::string_to_integral_parameter<EmbeddedMeshConstraintEnforcement>(
+        "CONSTRAINT_ENFORCEMENT", "none",
+        "Apply a constraint enforcement in the embedded mesh coupling strategy",
         tuple<std::string>("none", "penalty"),
         tuple<EmbeddedMeshConstraintEnforcement>(
             EmbeddedMeshConstraintEnforcement::none, EmbeddedMeshConstraintEnforcement::penalty),

@@ -17,7 +17,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::EHL::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& ehldyn = list.sublist("ELASTO HYDRO DYNAMIC", false,
@@ -41,12 +40,12 @@ void Inpar::EHL::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::int_parameter("ITEMIN", 1, "minimal number of iterations over fields", &ehldyn);
 
   // Type of coupling strategy between the two fields
-  setStringToIntegralParameter<FieldCoupling>("FIELDCOUPLING", "none",
+  Core::Utils::string_to_integral_parameter<FieldCoupling>("FIELDCOUPLING", "none",
       "Type of coupling strategy between fields", tuple<std::string>("none", "matching"),
       tuple<FieldCoupling>(coupling_none, coupling_matching), &ehldyn);
 
   // Coupling strategy for EHL solvers
-  setStringToIntegralParameter<SolutionSchemeOverFields>("COUPALGO", "ehl_Monolithic",
+  Core::Utils::string_to_integral_parameter<SolutionSchemeOverFields>("COUPALGO", "ehl_Monolithic",
       "Coupling strategies for EHL solvers", tuple<std::string>("ehl_IterStagg", "ehl_Monolithic"),
       tuple<SolutionSchemeOverFields>(ehl_IterStagg, ehl_Monolithic), &ehldyn);
 
@@ -63,17 +62,17 @@ void Inpar::EHL::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter("TOLINC", 1.0e-6,
       "tolerance for convergence check of EHL-increment in monolithic EHL", &ehldynmono);
 
-  setStringToIntegralParameter<ConvNorm>("NORM_RESF", "Abs",
+  Core::Utils::string_to_integral_parameter<ConvNorm>("NORM_RESF", "Abs",
       "type of norm for residual convergence check", tuple<std::string>("Abs", "Rel", "Mix"),
       tuple<ConvNorm>(convnorm_abs, convnorm_rel, convnorm_mix), &ehldynmono);
 
-  setStringToIntegralParameter<ConvNorm>("NORM_INC", "Abs",
+  Core::Utils::string_to_integral_parameter<ConvNorm>("NORM_INC", "Abs",
       "type of norm for convergence check of primary variables in EHL",
       tuple<std::string>("Abs", "Rel", "Mix"),
       tuple<ConvNorm>(convnorm_abs, convnorm_rel, convnorm_mix), &ehldynmono);
 
 
-  setStringToIntegralParameter<BinaryOp>("NORMCOMBI_RESFINC", "Coupl_And_Single",
+  Core::Utils::string_to_integral_parameter<BinaryOp>("NORMCOMBI_RESFINC", "Coupl_And_Single",
       "binary operator to combine primary variables and residual force values",
       tuple<std::string>(
           "And", "Or", "Coupl_Or_Single", "Coupl_And_Single", "And_Single", "Or_Single"),
@@ -81,7 +80,7 @@ void Inpar::EHL::set_valid_parameters(Teuchos::ParameterList& list)
           bop_or_single),
       &ehldynmono);
 
-  setStringToIntegralParameter<VectorNorm>("ITERNORM", "Rms",
+  Core::Utils::string_to_integral_parameter<VectorNorm>("ITERNORM", "Rms",
       "type of norm to be applied to residuals",
       tuple<std::string>("L1", "L1_Scaled", "L2", "Rms", "Inf"),
       tuple<VectorNorm>(norm_l1, norm_l1_scaled, norm_l2, norm_rms, norm_inf), &ehldynmono);

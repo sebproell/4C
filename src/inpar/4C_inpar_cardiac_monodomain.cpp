@@ -14,7 +14,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::ElectroPhysiology::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& epcontrol = list.sublist("CARDIAC MONODOMAIN CONTROL", false,
