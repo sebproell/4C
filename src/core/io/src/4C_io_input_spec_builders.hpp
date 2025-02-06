@@ -390,6 +390,38 @@ namespace Core::IO
       return InputSpec(std::make_unique<InputSpecTypeErasedImplementation<std::decay_t<T>>>(
           std::forward<T>(wrapped), std::move(data)));
     }
+
+
+    template <typename T>
+    struct SupportedTypeHelper : std::false_type
+    {
+    };
+
+    template <typename T>
+    concept SupportedTypePrimitives =
+        std::same_as<T, int> || std::same_as<T, double> || std::same_as<T, bool> ||
+        std::same_as<T, std::string> || std::same_as<T, std::filesystem::path> || std::is_enum_v<T>;
+
+    template <SupportedTypePrimitives T>
+    struct SupportedTypeHelper<T> : std::true_type
+    {
+    };
+
+    template <typename T>
+    struct SupportedTypeHelper<std::vector<T>> : SupportedTypeHelper<T>
+    {
+    };
+
+    template <typename T, typename U>
+    struct SupportedTypeHelper<std::pair<T, U>> : SupportedTypeHelper<T>, SupportedTypeHelper<U>
+    {
+    };
+
+    template <typename T>
+    struct SupportedTypeHelper<Noneable<T>> : SupportedTypeHelper<T>
+    {
+    };
+
   }  // namespace Internal
 
   /**
@@ -414,6 +446,30 @@ namespace Core::IO
    */
   namespace InputSpecBuilders
   {
+    /**
+     * We deliberately limit ourselves to a few generally useful types. While it would not be too
+     * difficult to support all the fundamental and container types that C++ provides, this would
+     * likely lead to more confusion for users than it would provide benefits. After all, when
+     * consuming the parsed input, the user will have to use the exact type of the parameter. Also,
+     * input file formats are often not able to distinguish fundamental types like `double` and
+     * `float` and there is little benefit in supporting both in the input mechanism. Any conversion
+     * between types can be done in the user code, which usually entails additional validation and
+     * error handling anyway.
+     *
+     * The supported types are:
+     * - `int`
+     * - `double`
+     * - `bool`
+     * - `std::string`
+     * - `std::filesystem::path`
+     * - `enum` and `enum class` types
+     * - `Noneable<T>`, where `T` is one of the supported types
+     * - `std::vector<T>`, where `T` is one of the supported types
+     * - `std::pair<T, U>`, where `T` and `U` are supported types
+     */
+    template <typename T>
+    concept SupportedType = Internal::SupportedTypeHelper<T>::value;
+
     // Import the Noneable type into the InputSpecBuilders namespace to make it easier to use.
     using Core::IO::none;
     using Core::IO::Noneable;
@@ -747,11 +803,11 @@ namespace Core::IO
      *     InputParameterContainer::get(). If the parameter is not present in the input file or set
      *     to "none", the Noneable<T> value will be empty.
      *
-     * @tparam T The data type of the entry.
+     * @tparam T The data type of the entry. Must be a SupportedType.
      *
      * @relatedalso InputSpec
      */
-    template <typename T, typename DataType = Internal::DataFor<T>>
+    template <SupportedType T, typename DataType = Internal::DataFor<T>>
     [[nodiscard]] InputSpec entry(std::string name, DataType&& data = {});
 
     /**
@@ -1227,14 +1283,20 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::emit_meta
   emit_value_as_yaml(node["required"], data.required.value());
   if (data.default_value.has_value())
   {
-    emit_value_as_yaml(node["default"], data.default_value.value());
+    // Find the choice that corresponds to the default value.
+    auto default_value_it = std::find_if(choices.begin(), choices.end(),
+        [&](const auto& choice) { return choice.second == data.default_value.value(); });
+    FOUR_C_ASSERT(
+        default_value_it != choices.end(), "Internal error: default value not found in choices.");
+    node["default"] << default_value_it->first;
   }
-  node["choices"] |= ryml::MAP;
+  node["choices"] |= ryml::SEQ;
   for (const auto& choice : choices)
   {
     auto entry = node["choices"].append_child();
-    entry << ryml::key(choice.first);
-    emit_value_as_yaml(entry, choice.second);
+    // Write every choice entry as a map to easily extend the information at a later point.
+    entry |= ryml::MAP;
+    entry["name"] << choice.first;
   }
 }
 
@@ -1250,7 +1312,7 @@ auto Core::IO::InputSpecBuilders::from_parameter(const std::string& name)
 }
 
 
-template <typename T, typename DataType>
+template <Core::IO::InputSpecBuilders::SupportedType T, typename DataType>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::entry(std::string name, DataType&& data)
 {
   Internal::sanitize_required_default(data);
@@ -1286,7 +1348,14 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
       }
 
       std::stringstream default_value_stream;
-      Core::IO::Internal::DatPrinter{}(default_value_stream, data.default_value.value());
+      if constexpr (Core::IO::Internal::CustomDatPrintable<T>)
+      {
+        Core::IO::Internal::DatPrinter{}(default_value_stream, data.default_value.value());
+      }
+      else
+      {
+        default_value_stream << "<unprintable>";
+      }
       FOUR_C_THROW("Default value '%s' of selection not found in choices '%s'.",
           default_value_stream.str().c_str(), error_message.c_str());
     }
