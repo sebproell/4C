@@ -17,12 +17,12 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::ArtDyn::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
   Teuchos::ParameterList& andyn = list.sublist("ARTERIAL DYNAMIC", false, "");
 
-  setStringToIntegralParameter<TimeIntegrationScheme>("DYNAMICTYPE", "ExpTaylorGalerkin",
-      "Explicit Taylor Galerkin Scheme", tuple<std::string>("ExpTaylorGalerkin", "Stationary"),
+  Core::Utils::string_to_integral_parameter<TimeIntegrationScheme>("DYNAMICTYPE",
+      "ExpTaylorGalerkin", "Explicit Taylor Galerkin Scheme",
+      tuple<std::string>("ExpTaylorGalerkin", "Stationary"),
       tuple<TimeIntegrationScheme>(tay_gal, stationary), &andyn);
 
   Core::Utils::double_parameter("TIMESTEP", 0.01, "Time increment dt", &andyn);
@@ -42,7 +42,7 @@ void Inpar::ArtDyn::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::int_parameter("INITFUNCNO", -1, "function number for artery initial field", &andyn);
 
   // type of initial field
-  setStringToIntegralParameter<InitialField>("INITIALFIELD", "zero_field",
+  Core::Utils::string_to_integral_parameter<InitialField>("INITIALFIELD", "zero_field",
       "Initial Field for artery problem",
       tuple<std::string>("zero_field", "field_by_function", "field_by_condition"),
       tuple<InitialField>(
@@ -54,7 +54,6 @@ void Inpar::ArtDyn::set_valid_parameters(Teuchos::ParameterList& list)
 
 void Inpar::ArteryNetwork::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& redtisdyn =
@@ -64,7 +63,7 @@ void Inpar::ArteryNetwork::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter("CONVTOL_Q", 1E-6,
       "Coupled red_airway and tissue iteration convergence for flux", &redtisdyn);
   Core::Utils::int_parameter("MAXITER", 5, "Maximum coupling iterations", &redtisdyn);
-  setStringToIntegralParameter<Relaxtype3D0D>("RELAXTYPE", "norelaxation",
+  Core::Utils::string_to_integral_parameter<Relaxtype3D0D>("RELAXTYPE", "norelaxation",
       "Dynamic Relaxation Type",
       tuple<std::string>("norelaxation", "fixedrelaxation", "Aitken", "SD"),
       tuple<Relaxtype3D0D>(norelaxation, fixedrelaxation, Aitken, SD), &redtisdyn);
@@ -251,18 +250,17 @@ void Inpar::BioFilm::set_valid_conditions(
 
 void Inpar::ReducedLung::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& redawdyn = list.sublist("REDUCED DIMENSIONAL AIRWAYS DYNAMIC", false, "");
 
-  setStringToIntegralParameter<RedAirwaysDyntype>("DYNAMICTYPE", "OneStepTheta",
+  Core::Utils::string_to_integral_parameter<RedAirwaysDyntype>("DYNAMICTYPE", "OneStepTheta",
       "OneStepTheta Scheme", tuple<std::string>("OneStepTheta"),
       tuple<RedAirwaysDyntype>(one_step_theta), &redawdyn);
 
-  setStringToIntegralParameter<RedAirwaysDyntype>("SOLVERTYPE", "Linear", "Solver type",
-      tuple<std::string>("Linear", "Nonlinear"), tuple<RedAirwaysDyntype>(linear, nonlinear),
-      &redawdyn);
+  Core::Utils::string_to_integral_parameter<RedAirwaysDyntype>("SOLVERTYPE", "Linear",
+      "Solver type", tuple<std::string>("Linear", "Nonlinear"),
+      tuple<RedAirwaysDyntype>(linear, nonlinear), &redawdyn);
 
   Core::Utils::double_parameter("TIMESTEP", 0.01, "Time increment dt", &redawdyn);
   Core::Utils::int_parameter("NUMSTEP", 0, "Number of Time Steps", &redawdyn);

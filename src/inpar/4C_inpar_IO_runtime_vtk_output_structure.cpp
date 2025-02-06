@@ -24,7 +24,6 @@ namespace Inpar
        *----------------------------------------------------------------------*/
       void set_valid_parameters(Teuchos::ParameterList& list)
       {
-        using Teuchos::setStringToIntegralParameter;
         using Teuchos::tuple;
 
         // related sublist
@@ -73,7 +72,7 @@ namespace Inpar
             &sublist_IO_VTK_structure);
 
         // mode to write gauss point data
-        setStringToIntegralParameter<Inpar::Solid::GaussPointDataOutputType>(
+        Core::Utils::string_to_integral_parameter<Inpar::Solid::GaussPointDataOutputType>(
             "GAUSS_POINT_DATA_OUTPUT_TYPE", "none",
             "Where to write gauss point data. (none, projected to nodes, projected to element "
             "center, raw at gauss points)",

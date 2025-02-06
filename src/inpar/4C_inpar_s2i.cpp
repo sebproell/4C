@@ -18,7 +18,6 @@ FOUR_C_NAMESPACE_OPEN
  *------------------------------------------------------------------------*/
 void Inpar::S2I::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& s2icoupling =
@@ -27,7 +26,7 @@ void Inpar::S2I::set_valid_parameters(Teuchos::ParameterList& list)
               "S2I COUPLING", false, "control parameters for scatra-scatra interface coupling");
 
   // type of mortar meshtying
-  setStringToIntegralParameter<CouplingType>("COUPLINGTYPE", "Undefined",
+  Core::Utils::string_to_integral_parameter<CouplingType>("COUPLINGTYPE", "Undefined",
       "type of mortar meshtying",
       tuple<std::string>("Undefined", "MatchingNodes", "StandardMortar", "SaddlePointMortar_Petrov",
           "SaddlePointMortar_Bubnov", "CondensedMortar_Petrov", "CondensedMortar_Bubnov",
@@ -39,7 +38,7 @@ void Inpar::S2I::set_valid_parameters(Teuchos::ParameterList& list)
       &s2icoupling);
 
   // flag for interface side underlying Lagrange multiplier definition
-  setStringToIntegralParameter<InterfaceSides>("LMSIDE", "slave",
+  Core::Utils::string_to_integral_parameter<InterfaceSides>("LMSIDE", "slave",
       "flag for interface side underlying Lagrange multiplier definition",
       tuple<std::string>("slave", "master"), tuple<InterfaceSides>(side_slave, side_master),
       &s2icoupling);
@@ -54,7 +53,7 @@ void Inpar::S2I::set_valid_parameters(Teuchos::ParameterList& list)
       "NTSPROJTOL", 0.0, "node-to-segment projection tolerance", &s2icoupling);
 
   // flag for evaluation of scatra-scatra interface coupling involving interface layer growth
-  setStringToIntegralParameter<GrowthEvaluation>("INTLAYERGROWTH_EVALUATION", "none",
+  Core::Utils::string_to_integral_parameter<GrowthEvaluation>("INTLAYERGROWTH_EVALUATION", "none",
       "flag for evaluation of scatra-scatra interface coupling involving interface layer growth",
       tuple<std::string>("none", "monolithic", "semi-implicit"),
       tuple<GrowthEvaluation>(

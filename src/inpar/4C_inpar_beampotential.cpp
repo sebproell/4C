@@ -18,7 +18,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::BeamPotential::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   /* parameters for potential-based beam interaction */
@@ -31,14 +30,15 @@ void Inpar::BeamPotential::set_valid_parameters(Teuchos::ParameterList& list)
   setNumericStringParameter("POT_LAW_PREFACTOR", "0.0",
       "prefactor(s) $k_i$ of potential law $\\Phi(r) = \\sum_i (k_i * r^{-m_i})$.", &beampotential);
 
-  setStringToIntegralParameter<Inpar::BeamPotential::BeamPotentialType>("BEAMPOTENTIAL_TYPE",
-      "Surface", "Type of potential interaction: surface (default) or volume potential",
+  Core::Utils::string_to_integral_parameter<Inpar::BeamPotential::BeamPotentialType>(
+      "BEAMPOTENTIAL_TYPE", "Surface",
+      "Type of potential interaction: surface (default) or volume potential",
       tuple<std::string>("Surface", "surface", "Volume", "volume"),
       tuple<Inpar::BeamPotential::BeamPotentialType>(
           beampot_surf, beampot_surf, beampot_vol, beampot_vol),
       &beampotential);
 
-  setStringToIntegralParameter<Inpar::BeamPotential::BeamPotentialStrategy>("STRATEGY",
+  Core::Utils::string_to_integral_parameter<Inpar::BeamPotential::BeamPotentialStrategy>("STRATEGY",
       "DoubleLengthSpecific_LargeSepApprox",
       "strategy to evaluate interaction potential: double/single length specific, "
       "small/large separation approximation, ...",
@@ -55,7 +55,7 @@ void Inpar::BeamPotential::set_valid_parameters(Teuchos::ParameterList& list)
       "than this cutoff radius",
       &beampotential);
 
-  setStringToIntegralParameter<Inpar::BeamPotential::BeamPotentialRegularizationType>(
+  Core::Utils::string_to_integral_parameter<Inpar::BeamPotential::BeamPotentialRegularizationType>(
       "REGULARIZATION_TYPE", "none", "Type of regularization applied to the force law",
       tuple<std::string>("linear_extrapolation", "constant_extrapolation", "None", "none"),
       tuple<Inpar::BeamPotential::BeamPotentialRegularizationType>(
@@ -76,7 +76,8 @@ void Inpar::BeamPotential::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::bool_parameter("AUTOMATIC_DIFFERENTIATION", "No",
       "apply automatic differentiation via FAD?", &beampotential);
 
-  setStringToIntegralParameter<MasterSlaveChoice>("CHOICE_MASTER_SLAVE", "smaller_eleGID_is_slave",
+  Core::Utils::string_to_integral_parameter<MasterSlaveChoice>("CHOICE_MASTER_SLAVE",
+      "smaller_eleGID_is_slave",
       "According to which rule shall the role of master and slave be assigned to beam elements?",
       tuple<std::string>("smaller_eleGID_is_slave", "higher_eleGID_is_slave"),
       tuple<MasterSlaveChoice>(
@@ -92,7 +93,7 @@ void Inpar::BeamPotential::set_valid_parameters(Teuchos::ParameterList& list)
       &beampotential);
 
   // enable octree search and determine type of bounding box (aabb = axis aligned, spbb = spherical)
-  setStringToIntegralParameter<BeamContact::OctreeType>("BEAMPOT_OCTREE", "None",
+  Core::Utils::string_to_integral_parameter<BeamContact::OctreeType>("BEAMPOT_OCTREE", "None",
       "octree and bounding box type for octree search routine",
       tuple<std::string>(
           "None", "none", "octree_axisaligned", "octree_cylorient", "octree_spherical"),

@@ -17,13 +17,12 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   /* parameters for mortar coupling */
   Teuchos::ParameterList& mortar = list.sublist("MORTAR COUPLING", false, "");
 
-  setStringToIntegralParameter<Inpar::Mortar::ShapeFcn>("LM_SHAPEFCN", "Dual",
+  Core::Utils::string_to_integral_parameter<Inpar::Mortar::ShapeFcn>("LM_SHAPEFCN", "Dual",
       "Type of employed set of shape functions",
       tuple<std::string>(
           "Dual", "dual", "Standard", "standard", "std", "PetrovGalerkin", "petrovgalerkin", "pg"),
@@ -31,16 +30,17 @@ void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
           shape_standard, shape_petrovgalerkin, shape_petrovgalerkin, shape_petrovgalerkin),
       &mortar);
 
-  setStringToIntegralParameter<Inpar::Mortar::SearchAlgorithm>("SEARCH_ALGORITHM", "Binarytree",
-      "Type of contact search",
+  Core::Utils::string_to_integral_parameter<Inpar::Mortar::SearchAlgorithm>("SEARCH_ALGORITHM",
+      "Binarytree", "Type of contact search",
       tuple<std::string>("BruteForce", "bruteforce", "BruteForceEleBased", "bruteforceelebased",
           "BinaryTree", "Binarytree", "binarytree"),
       tuple<Inpar::Mortar::SearchAlgorithm>(search_bfele, search_bfele, search_bfele, search_bfele,
           search_binarytree, search_binarytree, search_binarytree),
       &mortar);
 
-  setStringToIntegralParameter<Inpar::Mortar::BinaryTreeUpdateType>("BINARYTREE_UPDATETYPE",
-      "BottomUp", "Type of binary tree update, which is either a bottom up or a top down approach.",
+  Core::Utils::string_to_integral_parameter<Inpar::Mortar::BinaryTreeUpdateType>(
+      "BINARYTREE_UPDATETYPE", "BottomUp",
+      "Type of binary tree update, which is either a bottom up or a top down approach.",
       tuple<std::string>("BottomUp", "TopDown"),
       tuple<Inpar::Mortar::BinaryTreeUpdateType>(binarytree_bottom_up, binarytree_top_down),
       &mortar);
@@ -51,7 +51,7 @@ void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::bool_parameter("SEARCH_USE_AUX_POS", "Yes",
       "If chosen auxiliary position is used for computing dops", &mortar);
 
-  setStringToIntegralParameter<Inpar::Mortar::LagMultQuad>("LM_QUAD", "undefined",
+  Core::Utils::string_to_integral_parameter<Inpar::Mortar::LagMultQuad>("LM_QUAD", "undefined",
       "Type of LM interpolation for quadratic FE",
       tuple<std::string>(
           "undefined", "quad", "quadratic", "pwlin", "piecewiselinear", "lin", "linear", "const"),
@@ -62,7 +62,8 @@ void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::bool_parameter("CROSSPOINTS", "No",
       "If chosen, multipliers are removed from crosspoints / edge nodes", &mortar);
 
-  setStringToIntegralParameter<Inpar::Mortar::ConsistentDualType>("LM_DUAL_CONSISTENT", "boundary",
+  Core::Utils::string_to_integral_parameter<Inpar::Mortar::ConsistentDualType>("LM_DUAL_CONSISTENT",
+      "boundary",
       "For which elements should the dual basis be calculated on EXACTLY the same GPs as the "
       "contact terms",
       tuple<std::string>("none", "boundary", "all"),
@@ -70,14 +71,14 @@ void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
           consistent_none, consistent_boundary, consistent_all),
       &mortar);
 
-  setStringToIntegralParameter<Inpar::Mortar::MeshRelocation>("MESH_RELOCATION", "Initial",
-      "Type of mesh relocation",
+  Core::Utils::string_to_integral_parameter<Inpar::Mortar::MeshRelocation>("MESH_RELOCATION",
+      "Initial", "Type of mesh relocation",
       tuple<std::string>("Initial", "initial", "Every_Timestep", "every_timestep", "No", "no"),
       tuple<Inpar::Mortar::MeshRelocation>(relocation_initial, relocation_initial,
           relocation_timestep, relocation_timestep, relocation_none, relocation_none),
       &mortar);
 
-  setStringToIntegralParameter<Inpar::Mortar::AlgorithmType>("ALGORITHM", "Mortar",
+  Core::Utils::string_to_integral_parameter<Inpar::Mortar::AlgorithmType>("ALGORITHM", "Mortar",
       "Type of meshtying/contact algorithm",
       tuple<std::string>("mortar", "Mortar", "nts", "NTS", "gpts", "GPTS", "lts", "LTS", "ltl",
           "LTL", "stl", "STL"),
@@ -86,7 +87,7 @@ void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
           algorithm_ltl, algorithm_ltl, algorithm_stl, algorithm_stl),
       &mortar);
 
-  setStringToIntegralParameter<Inpar::Mortar::IntType>("INTTYPE", "Segments",
+  Core::Utils::string_to_integral_parameter<Inpar::Mortar::IntType>("INTTYPE", "Segments",
       "Type of numerical integration scheme",
       tuple<std::string>(
           "Segments", "segments", "Elements", "elements", "Elements_BS", "elements_BS"),
@@ -97,8 +98,8 @@ void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::int_parameter(
       "NUMGP_PER_DIM", 0, "Number of employed integration points per dimension", &mortar);
 
-  setStringToIntegralParameter<Inpar::Mortar::Triangulation>("TRIANGULATION", "Delaunay",
-      "Type of triangulation for segment-based integration",
+  Core::Utils::string_to_integral_parameter<Inpar::Mortar::Triangulation>("TRIANGULATION",
+      "Delaunay", "Type of triangulation for segment-based integration",
       tuple<std::string>("Delaunay", "delaunay", "Center", "center"),
       tuple<Inpar::Mortar::Triangulation>(triangulation_delaunay, triangulation_delaunay,
           triangulation_center, triangulation_center),
@@ -123,7 +124,7 @@ void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
       "non-close parts and redistribute them independently. [Contact only]",
       &parallelRedist);
 
-  setStringToIntegralParameter<ExtendGhosting>("GHOSTING_STRATEGY", "redundant_master",
+  Core::Utils::string_to_integral_parameter<ExtendGhosting>("GHOSTING_STRATEGY", "redundant_master",
       "Type of interface ghosting and ghosting extension algorithm",
       tuple<std::string>("redundant_all", "redundant_master", "round_robin", "binning"),
       tuple<ExtendGhosting>(ExtendGhosting::redundant_all, ExtendGhosting::redundant_master,
@@ -146,7 +147,7 @@ void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::int_parameter("MIN_ELEPROC", 0,
       "Minimum no. of elements per processor for parallel redistribution", &parallelRedist);
 
-  setStringToIntegralParameter<ParallelRedist>("PARALLEL_REDIST", "Static",
+  Core::Utils::string_to_integral_parameter<ParallelRedist>("PARALLEL_REDIST", "Static",
       "Type of redistribution algorithm",
       tuple<std::string>("None", "none", "No", "no", "Static", "static", "Dynamic", "dynamic"),
       tuple<ParallelRedist>(ParallelRedist::redist_none, ParallelRedist::redist_none,

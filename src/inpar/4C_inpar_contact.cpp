@@ -16,7 +16,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::CONTACT::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   /* parameters for structural meshtying and contact */
@@ -28,13 +27,13 @@ void Inpar::CONTACT::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::bool_parameter("RESTART_WITH_CONTACT", "No",
       "Must be chosen if a non-contact simulation is to be restarted with contact", &scontact);
 
-  setStringToIntegralParameter<Inpar::CONTACT::AdhesionType>("ADHESION", "None",
+  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::AdhesionType>("ADHESION", "None",
       "Type of adhesion law", tuple<std::string>("None", "none", "bounded", "b"),
       tuple<Inpar::CONTACT::AdhesionType>(
           adhesion_none, adhesion_none, adhesion_bound, adhesion_bound),
       &scontact);
 
-  setStringToIntegralParameter<Inpar::CONTACT::FrictionType>("FRICTION", "None",
+  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::FrictionType>("FRICTION", "None",
       "Type of friction law", tuple<std::string>("None", "Stick", "Tresca", "Coulomb"),
       tuple<Inpar::CONTACT::FrictionType>(
           friction_none, friction_stick, friction_tresca, friction_coulomb),
@@ -49,8 +48,8 @@ void Inpar::CONTACT::set_valid_parameters(Teuchos::ParameterList& list)
       "but this would be consistent to wear and tsi calculations.",
       &scontact);
 
-  setStringToIntegralParameter<Inpar::CONTACT::SolvingStrategy>("STRATEGY", "LagrangianMultipliers",
-      "Type of employed solving strategy",
+  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::SolvingStrategy>("STRATEGY",
+      "LagrangianMultipliers", "Type of employed solving strategy",
       tuple<std::string>("LagrangianMultipliers", "lagrange", "Lagrange", "penalty", "Penalty",
           "Uzawa", "Nitsche", "Ehl", "MultiScale"),
       tuple<Inpar::CONTACT::SolvingStrategy>(solution_lagmult, solution_lagmult, solution_lagmult,
@@ -58,7 +57,7 @@ void Inpar::CONTACT::set_valid_parameters(Teuchos::ParameterList& list)
           solution_multiscale),
       &scontact);
 
-  setStringToIntegralParameter<Inpar::CONTACT::SystemType>("SYSTEM", "Condensed",
+  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::SystemType>("SYSTEM", "Condensed",
       "Type of linear system setup / solution",
       tuple<std::string>("Condensed", "condensed", "cond", "Condensedlagmult", "condensedlagmult",
           "condlm", "SaddlePoint", "Saddlepoint", "saddlepoint", "sp", "none"),
@@ -93,7 +92,7 @@ void Inpar::CONTACT::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::bool_parameter(
       "VELOCITY_UPDATE", "No", "If chosen, velocity update method is applied", &scontact);
 
-  setStringToIntegralParameter<Inpar::CONTACT::EmOutputType>("EMOUTPUT", "None",
+  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::EmOutputType>("EMOUTPUT", "None",
       "Type of energy and momentum output",
       tuple<std::string>(
           "None", "none", "No", "no", "Screen", "screen", "File", "file", "Both", "both"),
@@ -108,12 +107,12 @@ void Inpar::CONTACT::set_valid_parameters(Teuchos::ParameterList& list)
       "Value for initialization of init contact set with gap vector", &scontact);
 
   // solver convergence test parameters for contact/meshtying in saddlepoint formulation
-  setStringToIntegralParameter<Inpar::Solid::BinaryOp>("NORMCOMBI_RESFCONTCONSTR", "And",
-      "binary operator to combine contact constraints and residual force values",
+  Core::Utils::string_to_integral_parameter<Inpar::Solid::BinaryOp>("NORMCOMBI_RESFCONTCONSTR",
+      "And", "binary operator to combine contact constraints and residual force values",
       tuple<std::string>("And", "Or"),
       tuple<Inpar::Solid::BinaryOp>(Inpar::Solid::bop_and, Inpar::Solid::bop_or), &scontact);
 
-  setStringToIntegralParameter<Inpar::Solid::BinaryOp>("NORMCOMBI_DISPLAGR", "And",
+  Core::Utils::string_to_integral_parameter<Inpar::Solid::BinaryOp>("NORMCOMBI_DISPLAGR", "And",
       "binary operator to combine displacement increments and Lagrange multiplier increment values",
       tuple<std::string>("And", "Or"),
       tuple<Inpar::Solid::BinaryOp>(Inpar::Solid::bop_and, Inpar::Solid::bop_or), &scontact);
@@ -126,13 +125,14 @@ void Inpar::CONTACT::set_valid_parameters(Teuchos::ParameterList& list)
       "tolerance in the LM norm for the newton iteration (saddlepoint formulation only)",
       &scontact);
 
-  setStringToIntegralParameter<Inpar::CONTACT::ConstraintDirection>("CONSTRAINT_DIRECTIONS", "ntt",
+  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::ConstraintDirection>(
+      "CONSTRAINT_DIRECTIONS", "ntt",
       "formulation of constraints in normal/tangential or xyz-direction",
       tuple<std::string>("ntt", "xyz"),
       tuple<Inpar::CONTACT::ConstraintDirection>(constr_ntt, constr_xyz), &scontact);
 
-  setStringToIntegralParameter<Inpar::CONTACT::Regularization>("CONTACT_REGULARIZATION", "no",
-      "use regularized contact", tuple<std::string>("no", "tanh"),
+  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::Regularization>(
+      "CONTACT_REGULARIZATION", "no", "use regularized contact", tuple<std::string>("no", "tanh"),
       tuple<Inpar::CONTACT::Regularization>(reg_none, reg_tanh), &scontact);
 
   Core::Utils::bool_parameter("NONSMOOTH_GEOMETRIES", "No",
@@ -167,8 +167,8 @@ void Inpar::CONTACT::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter("NITSCHE_THETA_2", 1.0,
       "+1: Chouly-type, 0: Burman penalty-free (only with theta=-1)", &scontact);
 
-  setStringToIntegralParameter<Inpar::CONTACT::NitscheWeighting>("NITSCHE_WEIGHTING", "harmonic",
-      "how to weight consistency terms in Nitsche contact formulation",
+  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::NitscheWeighting>("NITSCHE_WEIGHTING",
+      "harmonic", "how to weight consistency terms in Nitsche contact formulation",
       tuple<std::string>("slave", "master", "harmonic"),
       tuple<Inpar::CONTACT::NitscheWeighting>(NitWgt_slave, NitWgt_master, NitWgt_harmonic),
       &scontact);

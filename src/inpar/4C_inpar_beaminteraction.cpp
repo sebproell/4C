@@ -28,20 +28,19 @@ void Inpar::BeamInteraction::beam_interaction_conditions_get_all(
 
 void Inpar::BeamInteraction::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& beaminteraction = list.sublist("BEAM INTERACTION", false, "");
 
-  setStringToIntegralParameter<Inpar::BeamInteraction::RepartitionStrategy>("REPARTITIONSTRATEGY",
-      "Adaptive", "Type of employed repartitioning strategy",
+  Core::Utils::string_to_integral_parameter<Inpar::BeamInteraction::RepartitionStrategy>(
+      "REPARTITIONSTRATEGY", "Adaptive", "Type of employed repartitioning strategy",
       tuple<std::string>("Adaptive", "adaptive", "Everydt", "everydt"),
       tuple<Inpar::BeamInteraction::RepartitionStrategy>(
           repstr_adaptive, repstr_adaptive, repstr_everydt, repstr_everydt),
       &beaminteraction);
 
-  setStringToIntegralParameter<SearchStrategy>("SEARCH_STRATEGY", "bruteforce_with_binning",
-      "Type of search strategy used for finding coupling pairs",
+  Core::Utils::string_to_integral_parameter<SearchStrategy>("SEARCH_STRATEGY",
+      "bruteforce_with_binning", "Type of search strategy used for finding coupling pairs",
       tuple<std::string>("bruteforce_with_binning", "bounding_volume_hierarchy"),
       tuple<SearchStrategy>(
           SearchStrategy::bruteforce_with_binning, SearchStrategy::bounding_volume_hierarchy),
@@ -140,7 +139,7 @@ void Inpar::BeamInteraction::set_valid_parameters(Teuchos::ParameterList& list)
   Teuchos::ParameterList& beamtobeamcontact =
       beaminteraction.sublist("BEAM TO BEAM CONTACT", false, "");
 
-  setStringToIntegralParameter<Inpar::BeamInteraction::Strategy>("STRATEGY", "None",
+  Core::Utils::string_to_integral_parameter<Inpar::BeamInteraction::Strategy>("STRATEGY", "None",
       "Type of employed solving strategy", tuple<std::string>("None", "none", "Penalty", "penalty"),
       tuple<Inpar::BeamInteraction::Strategy>(bstr_none, bstr_none, bstr_penalty, bstr_penalty),
       &beamtobeamcontact);
@@ -153,7 +152,7 @@ void Inpar::BeamInteraction::set_valid_parameters(Teuchos::ParameterList& list)
   Teuchos::ParameterList& beamtospherecontact =
       beaminteraction.sublist("BEAM TO SPHERE CONTACT", false, "");
 
-  setStringToIntegralParameter<Inpar::BeamInteraction::Strategy>("STRATEGY", "None",
+  Core::Utils::string_to_integral_parameter<Inpar::BeamInteraction::Strategy>("STRATEGY", "None",
       "Type of employed solving strategy", tuple<std::string>("None", "none", "Penalty", "penalty"),
       tuple<Inpar::BeamInteraction::Strategy>(bstr_none, bstr_none, bstr_penalty, bstr_penalty),
       &beamtospherecontact);

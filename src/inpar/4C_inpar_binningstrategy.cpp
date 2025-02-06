@@ -16,7 +16,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::BINSTRATEGY::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& binningstrategy = list.sublist("BINNING STRATEGY", false, "");
@@ -41,7 +40,7 @@ void Inpar::BINSTRATEGY::set_valid_parameters(Teuchos::ParameterList& list)
       "points",
       &binningstrategy);
 
-  setStringToIntegralParameter<Core::Binstrategy::WriteBins>("WRITEBINS", "none",
+  Core::Utils::string_to_integral_parameter<Core::Binstrategy::WriteBins>("WRITEBINS", "none",
       "Write none, row or column bins for visualization",
       tuple<std::string>("none", "rows", "cols"),
       tuple<Core::Binstrategy::WriteBins>(Core::Binstrategy::WriteBins::none,

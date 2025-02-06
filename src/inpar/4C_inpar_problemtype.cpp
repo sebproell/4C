@@ -17,7 +17,6 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*/
 void Inpar::PROBLEMTYPE::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   /*----------------------------------------------------------------------*/
@@ -34,7 +33,7 @@ void Inpar::PROBLEMTYPE::set_valid_parameters(Teuchos::ParameterList& list)
       label.push_back(prb_enum);
     }
 
-    setStringToIntegralParameter<IntegerType>(
+    Core::Utils::string_to_integral_parameter<IntegerType>(
         "PROBLEMTYPE", "Fluid_Structure_Interaction", "", name, label, &type);
   }
 
@@ -49,7 +48,7 @@ void Inpar::PROBLEMTYPE::set_valid_parameters(Teuchos::ParameterList& list)
       label.push_back(prb_enum);
     }
 
-    setStringToIntegralParameter<IntegerType>("SHAPEFCT", "Polynomial",
+    Core::Utils::string_to_integral_parameter<IntegerType>("SHAPEFCT", "Polynomial",
         "Defines the function spaces for the spatial approximation", name, label, &type);
   }
 

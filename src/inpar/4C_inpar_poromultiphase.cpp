@@ -16,7 +16,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::POROMULTIPHASE::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   // ----------------------------------------------------------------------
@@ -43,8 +42,8 @@ void Inpar::POROMULTIPHASE::set_valid_parameters(Teuchos::ParameterList& list)
 
 
   // Coupling strategy for solvers
-  setStringToIntegralParameter<SolutionSchemeOverFields>("COUPALGO", "twoway_partitioned",
-      "Coupling strategies for poro multiphase solvers",
+  Core::Utils::string_to_integral_parameter<SolutionSchemeOverFields>("COUPALGO",
+      "twoway_partitioned", "Coupling strategies for poro multiphase solvers",
       tuple<std::string>("twoway_partitioned", "twoway_monolithic"),
       tuple<SolutionSchemeOverFields>(solscheme_twoway_partitioned, solscheme_twoway_monolithic),
       &poromultiphasedyn);
@@ -69,13 +68,13 @@ void Inpar::POROMULTIPHASE::set_valid_parameters(Teuchos::ParameterList& list)
       "number of linear solver used for poroelasticity problems", &poromultiphasedynmono);
 
   // parameters for finite difference check
-  setStringToIntegralParameter<FdCheck>("FDCHECK", "none",
+  Core::Utils::string_to_integral_parameter<FdCheck>("FDCHECK", "none",
       "flag for finite difference check: none or global",
       tuple<std::string>("none",
           "global"),  // perform finite difference check on time integrator level
       tuple<FdCheck>(fdcheck_none, fdcheck_global), &poromultiphasedynmono);
 
-  setStringToIntegralParameter<VectorNorm>("VECTORNORM_RESF", "L2",
+  Core::Utils::string_to_integral_parameter<VectorNorm>("VECTORNORM_RESF", "L2",
       "type of norm to be applied to residuals",
       tuple<std::string>("L1", "L1_Scaled", "L2", "Rms", "Inf"),
       tuple<VectorNorm>(Inpar::POROMULTIPHASE::norm_l1, Inpar::POROMULTIPHASE::norm_l1_scaled,
@@ -83,7 +82,7 @@ void Inpar::POROMULTIPHASE::set_valid_parameters(Teuchos::ParameterList& list)
           Inpar::POROMULTIPHASE::norm_inf),
       &poromultiphasedynmono);
 
-  setStringToIntegralParameter<VectorNorm>("VECTORNORM_INC", "L2",
+  Core::Utils::string_to_integral_parameter<VectorNorm>("VECTORNORM_INC", "L2",
       "type of norm to be applied to residuals",
       tuple<std::string>("L1", "L1_Scaled", "L2", "Rms", "Inf"),
       tuple<VectorNorm>(Inpar::POROMULTIPHASE::norm_l1, Inpar::POROMULTIPHASE::norm_l1_scaled,
@@ -92,8 +91,8 @@ void Inpar::POROMULTIPHASE::set_valid_parameters(Teuchos::ParameterList& list)
       &poromultiphasedynmono);
 
   // flag for equilibration of global system of equations
-  setStringToIntegralParameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION", "none",
-      "flag for equilibration of global system of equations",
+  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
+      "none", "flag for equilibration of global system of equations",
       tuple<std::string>("none", "rows_full", "rows_maindiag", "columns_full", "columns_maindiag",
           "rowsandcolumns_full", "rowsandcolumns_maindiag"),
       tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,
@@ -124,7 +123,7 @@ void Inpar::POROMULTIPHASE::set_valid_parameters(Teuchos::ParameterList& list)
       "tolerance for convergence check of outer iteration", &poromultiphasedynpart);
 
   // flag for relaxation of partitioned scheme
-  setStringToIntegralParameter<RelaxationMethods>("RELAXATION", "none",
+  Core::Utils::string_to_integral_parameter<RelaxationMethods>("RELAXATION", "none",
       "flag for relaxation of partitioned scheme", tuple<std::string>("none", "Constant", "Aitken"),
       tuple<RelaxationMethods>(relaxation_none, relaxation_constant, relaxation_aitken),
       &poromultiphasedynpart);

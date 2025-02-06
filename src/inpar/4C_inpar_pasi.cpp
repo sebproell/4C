@@ -16,7 +16,6 @@ FOUR_C_NAMESPACE_OPEN
  *---------------------------------------------------------------------------*/
 void Inpar::PaSI::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& pasidyn = list.sublist("PASI DYNAMIC", false,
@@ -30,7 +29,8 @@ void Inpar::PaSI::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter("MAXTIME", 1.0, "Total simulation time", &pasidyn);
 
   // type of partitioned coupling
-  setStringToIntegralParameter<PartitionedCouplingType>("COUPLING", "partitioned_onewaycoup",
+  Core::Utils::string_to_integral_parameter<PartitionedCouplingType>("COUPLING",
+      "partitioned_onewaycoup",
       "partitioned coupling strategies for particle structure interaction",
       tuple<std::string>("partitioned_onewaycoup", "partitioned_twowaycoup",
           "partitioned_twowaycoup_disprelax", "partitioned_twowaycoup_disprelaxaitken"),

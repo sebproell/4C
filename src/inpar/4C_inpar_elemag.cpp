@@ -16,7 +16,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::EleMag::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& electromagneticdyn = list.sublist(
@@ -61,8 +60,8 @@ void Inpar::EleMag::set_valid_parameters(Teuchos::ParameterList& list)
     name[7] = "Crank_Nicolson";
     label[7] = elemag_cn;
 
-    setStringToIntegralParameter<Inpar::EleMag::DynamicType>("TIMEINT", "One_Step_Theta",
-        "Type of time integration scheme", name, label, &electromagneticdyn);
+    Core::Utils::string_to_integral_parameter<Inpar::EleMag::DynamicType>("TIMEINT",
+        "One_Step_Theta", "Type of time integration scheme", name, label, &electromagneticdyn);
   }
 
   {
@@ -78,8 +77,8 @@ void Inpar::EleMag::set_valid_parameters(Teuchos::ParameterList& list)
     name[3] = "field_by_steady_state_hdg";
     label[3] = initfield_scatra_hdg;
 
-    setStringToIntegralParameter<Inpar::EleMag::InitialField>("INITIALFIELD", "zero_field",
-        "Initial field for ele problem", name, label, &electromagneticdyn);
+    Core::Utils::string_to_integral_parameter<Inpar::EleMag::InitialField>("INITIALFIELD",
+        "zero_field", "Initial field for ele problem", name, label, &electromagneticdyn);
 
     // Error calculation
     Core::Utils::bool_parameter(
@@ -94,8 +93,8 @@ void Inpar::EleMag::set_valid_parameters(Teuchos::ParameterList& list)
       "ERRORFUNCNO", -1, "Function for error calculation", &electromagneticdyn);
 
   // flag for equilibration of global system of equations
-  setStringToIntegralParameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION", "none",
-      "flag for equilibration of global system of equations",
+  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
+      "none", "flag for equilibration of global system of equations",
       tuple<std::string>("none", "rows_full", "rows_maindiag", "columns_full", "columns_maindiag",
           "rowsandcolumns_full", "rowsandcolumns_maindiag"),
       tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,

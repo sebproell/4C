@@ -16,7 +16,6 @@ FOUR_C_NAMESPACE_OPEN
  *----------------------------------------------------------------------------*/
 void Inpar::NlnSol::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   /*----------------------------------------------------------------------*
@@ -157,7 +156,7 @@ void Inpar::NlnSol::set_valid_parameters(Teuchos::ParameterList& list)
 
     Teuchos::Array<std::string> checktypes =
         Teuchos::tuple<std::string>("Complete", "Minimal", "None");
-    Teuchos::setStringToIntegralParameter<::NOX::StatusTest::CheckType>(
+    Core::Utils::string_to_integral_parameter<::NOX::StatusTest::CheckType>(
         "Inner Status Test Check Type", "Minimal",
         "Specify the check type for the inner status tests.", checktypes,
         Teuchos::tuple<::NOX::StatusTest::CheckType>(
@@ -354,8 +353,8 @@ void Inpar::NlnSol::set_valid_parameters(Teuchos::ParameterList& list)
 
   {
     Teuchos::Array<std::string> meritFct = Teuchos::tuple<std::string>("Sum of Squares");
-    Teuchos::setStringToIntegralParameter<NOX::Nln::MeritFunction::MeritFctName>("Merit Function",
-        "Sum of Squares", "", meritFct,
+    Core::Utils::string_to_integral_parameter<NOX::Nln::MeritFunction::MeritFctName>(
+        "Merit Function", "Sum of Squares", "", meritFct,
         Teuchos::tuple<NOX::Nln::MeritFunction::MeritFctName>(
             NOX::Nln::MeritFunction::mrtfct_sum_of_squares),
         &solverOptions);

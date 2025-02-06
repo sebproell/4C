@@ -18,40 +18,43 @@ FOUR_C_NAMESPACE_OPEN
 void Cut::set_valid_parameters(Teuchos::ParameterList& list)
 {
   using namespace FourC::Cut;
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& cut_general = list.sublist("CUT GENERAL", false, "");
 
   // intersection precision (double or cln)
-  setStringToIntegralParameter<FourC::Cut::CutFloatType>("KERNEL_INTERSECTION_FLOATTYPE", "double",
+  Core::Utils::string_to_integral_parameter<FourC::Cut::CutFloatType>(
+      "KERNEL_INTERSECTION_FLOATTYPE", "double",
       "The floattype of the cut surface-edge intersection", tuple<std::string>("cln", "double"),
       tuple<FourC::Cut::CutFloatType>(floattype_cln, floattype_double), &cut_general);
 
   // Computing disctance surface to point precision (double or cln)
-  setStringToIntegralParameter<FourC::Cut::CutFloatType>("KERNEL_DISTANCE_FLOATTYPE", "double",
-      "The floattype of the cut distance computation", tuple<std::string>("cln", "double"),
+  Core::Utils::string_to_integral_parameter<FourC::Cut::CutFloatType>("KERNEL_DISTANCE_FLOATTYPE",
+      "double", "The floattype of the cut distance computation",
+      tuple<std::string>("cln", "double"),
       tuple<FourC::Cut::CutFloatType>(floattype_cln, floattype_double), &cut_general);
 
   // A general floattype for Cut::Position for Embedded Elements (compute_distance)
   // If specified this floattype is used for all computations of Cut::Position with
   // embedded elements
-  setStringToIntegralParameter<FourC::Cut::CutFloatType>("GENERAL_POSITION_DISTANCE_FLOATTYPE",
-      "none", "A general floattype for Cut::Position for Embedded Elements (compute_distance)",
+  Core::Utils::string_to_integral_parameter<FourC::Cut::CutFloatType>(
+      "GENERAL_POSITION_DISTANCE_FLOATTYPE", "none",
+      "A general floattype for Cut::Position for Embedded Elements (compute_distance)",
       tuple<std::string>("none", "cln", "double"),
       tuple<FourC::Cut::CutFloatType>(floattype_none, floattype_cln, floattype_double),
       &cut_general);
 
   // A general floattype for Cut::Position for Elements (ComputePosition)
   // If specified this floattype is used for all computations of Cut::Position
-  setStringToIntegralParameter<FourC::Cut::CutFloatType>("GENERAL_POSITION_POSITION_FLOATTYPE",
-      "none", "A general floattype for Cut::Position Elements (ComputePosition)",
+  Core::Utils::string_to_integral_parameter<FourC::Cut::CutFloatType>(
+      "GENERAL_POSITION_POSITION_FLOATTYPE", "none",
+      "A general floattype for Cut::Position Elements (ComputePosition)",
       tuple<std::string>("none", "cln", "double"),
       tuple<FourC::Cut::CutFloatType>(floattype_none, floattype_cln, floattype_double),
       &cut_general);
 
   // Specify which Referenceplanes are used in DirectDivergence
-  setStringToIntegralParameter<FourC::Cut::CutDirectDivergenceRefplane>(
+  Core::Utils::string_to_integral_parameter<FourC::Cut::CutDirectDivergenceRefplane>(
       "DIRECT_DIVERGENCE_REFPLANE", "all",
       "Specify which Referenceplanes are used in DirectDivergence",
       tuple<std::string>("all", "diagonal_side", "facet", "diagonal", "side", "none"),

@@ -18,7 +18,6 @@ FOUR_C_NAMESPACE_OPEN
  *---------------------------------------------------------------------------*/
 void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   /*-------------------------------------------------------------------------*
@@ -28,7 +27,7 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       list.sublist("PARTICLE DYNAMIC", false, "control parameters for particle simulations\n");
 
   // type of particle time integration
-  setStringToIntegralParameter<DynamicType>("DYNAMICTYPE", "VelocityVerlet",
+  Core::Utils::string_to_integral_parameter<DynamicType>("DYNAMICTYPE", "VelocityVerlet",
       "type of particle time integration",
       tuple<std::string>("SemiImplicitEuler", "VelocityVerlet"),
       tuple<DynamicType>(
@@ -36,7 +35,7 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       &particledyn);
 
   // type of particle interaction
-  setStringToIntegralParameter<InteractionType>("INTERACTION", "None",
+  Core::Utils::string_to_integral_parameter<InteractionType>("INTERACTION", "None",
       "type of particle interaction", tuple<std::string>("None", "SPH", "DEM"),
       tuple<InteractionType>(Inpar::PARTICLE::interaction_none, Inpar::PARTICLE::interaction_sph,
           Inpar::PARTICLE::interaction_dem),
@@ -84,8 +83,8 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       "amplitude of noise added to initial position for each spatial direction", &particledyn);
 
   // type of particle wall source
-  setStringToIntegralParameter<ParticleWallSource>("PARTICLE_WALL_SOURCE", "NoParticleWall",
-      "type of particle wall source",
+  Core::Utils::string_to_integral_parameter<ParticleWallSource>("PARTICLE_WALL_SOURCE",
+      "NoParticleWall", "type of particle wall source",
       tuple<std::string>("NoParticleWall", "DiscretCondition", "BoundingBox"),
       tuple<ParticleWallSource>(Inpar::PARTICLE::NoParticleWall, Inpar::PARTICLE::DiscretCondition,
           Inpar::PARTICLE::BoundingBox),
@@ -163,14 +162,14 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       "write particle-wall interaction output", &particledynsph);
 
   // type of smoothed particle hydrodynamics kernel
-  setStringToIntegralParameter<KernelType>("KERNEL", "CubicSpline",
+  Core::Utils::string_to_integral_parameter<KernelType>("KERNEL", "CubicSpline",
       "type of smoothed particle hydrodynamics kernel",
       tuple<std::string>("CubicSpline", "QuinticSpline"),
       tuple<KernelType>(Inpar::PARTICLE::CubicSpline, Inpar::PARTICLE::QuinticSpline),
       &particledynsph);
 
   // kernel space dimension number
-  setStringToIntegralParameter<KernelSpaceDimension>("KERNEL_SPACE_DIM", "Kernel3D",
+  Core::Utils::string_to_integral_parameter<KernelSpaceDimension>("KERNEL_SPACE_DIM", "Kernel3D",
       "kernel space dimension number", tuple<std::string>("Kernel1D", "Kernel2D", "Kernel3D"),
       tuple<KernelSpaceDimension>(
           Inpar::PARTICLE::Kernel1D, Inpar::PARTICLE::Kernel2D, Inpar::PARTICLE::Kernel3D),
@@ -180,14 +179,14 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       "INITIALPARTICLESPACING", 0.0, "initial spacing of particles", &particledynsph);
 
   // type of smoothed particle hydrodynamics equation of state
-  setStringToIntegralParameter<EquationOfStateType>("EQUATIONOFSTATE", "GenTait",
+  Core::Utils::string_to_integral_parameter<EquationOfStateType>("EQUATIONOFSTATE", "GenTait",
       "type of smoothed particle hydrodynamics equation of state",
       tuple<std::string>("GenTait", "IdealGas"),
       tuple<EquationOfStateType>(Inpar::PARTICLE::GenTait, Inpar::PARTICLE::IdealGas),
       &particledynsph);
 
   // type of smoothed particle hydrodynamics momentum formulation
-  setStringToIntegralParameter<MomentumFormulationType>("MOMENTUMFORMULATION",
+  Core::Utils::string_to_integral_parameter<MomentumFormulationType>("MOMENTUMFORMULATION",
       "AdamiMomentumFormulation", "type of smoothed particle hydrodynamics momentum formulation",
       tuple<std::string>("AdamiMomentumFormulation", "MonaghanMomentumFormulation"),
       tuple<MomentumFormulationType>(
@@ -195,16 +194,16 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       &particledynsph);
 
   // type of density evaluation scheme
-  setStringToIntegralParameter<DensityEvaluationScheme>("DENSITYEVALUATION", "DensitySummation",
-      "type of density evaluation scheme",
+  Core::Utils::string_to_integral_parameter<DensityEvaluationScheme>("DENSITYEVALUATION",
+      "DensitySummation", "type of density evaluation scheme",
       tuple<std::string>("DensitySummation", "DensityIntegration", "DensityPredictCorrect"),
       tuple<DensityEvaluationScheme>(Inpar::PARTICLE::DensitySummation,
           Inpar::PARTICLE::DensityIntegration, Inpar::PARTICLE::DensityPredictCorrect),
       &particledynsph);
 
   // type of density correction scheme
-  setStringToIntegralParameter<DensityCorrectionScheme>("DENSITYCORRECTION", "NoCorrection",
-      "type of density correction scheme",
+  Core::Utils::string_to_integral_parameter<DensityCorrectionScheme>("DENSITYCORRECTION",
+      "NoCorrection", "type of density correction scheme",
       tuple<std::string>(
           "NoCorrection", "InteriorCorrection", "NormalizedCorrection", "RandlesCorrection"),
       tuple<DensityCorrectionScheme>(Inpar::PARTICLE::NoCorrection,
@@ -213,32 +212,35 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       &particledynsph);
 
   // type of boundary particle formulation
-  setStringToIntegralParameter<BoundaryParticleFormulationType>("BOUNDARYPARTICLEFORMULATION",
-      "NoBoundaryFormulation", "type of boundary particle formulation",
+  Core::Utils::string_to_integral_parameter<BoundaryParticleFormulationType>(
+      "BOUNDARYPARTICLEFORMULATION", "NoBoundaryFormulation",
+      "type of boundary particle formulation",
       tuple<std::string>("NoBoundaryFormulation", "AdamiBoundaryFormulation"),
       tuple<BoundaryParticleFormulationType>(
           Inpar::PARTICLE::NoBoundaryFormulation, Inpar::PARTICLE::AdamiBoundaryFormulation),
       &particledynsph);
 
   // type of boundary particle interaction
-  setStringToIntegralParameter<BoundaryParticleInteraction>("BOUNDARYPARTICLEINTERACTION",
-      "NoSlipBoundaryParticle", "type of boundary particle interaction",
+  Core::Utils::string_to_integral_parameter<BoundaryParticleInteraction>(
+      "BOUNDARYPARTICLEINTERACTION", "NoSlipBoundaryParticle",
+      "type of boundary particle interaction",
       tuple<std::string>("NoSlipBoundaryParticle", "FreeSlipBoundaryParticle"),
       tuple<BoundaryParticleInteraction>(
           Inpar::PARTICLE::NoSlipBoundaryParticle, Inpar::PARTICLE::FreeSlipBoundaryParticle),
       &particledynsph);
 
   // type of wall formulation
-  setStringToIntegralParameter<WallFormulationType>("WALLFORMULATION", "NoWallFormulation",
-      "type of wall formulation",
+  Core::Utils::string_to_integral_parameter<WallFormulationType>("WALLFORMULATION",
+      "NoWallFormulation", "type of wall formulation",
       tuple<std::string>("NoWallFormulation", "VirtualParticleWallFormulation"),
       tuple<WallFormulationType>(
           Inpar::PARTICLE::NoWallFormulation, Inpar::PARTICLE::VirtualParticleWallFormulation),
       &particledynsph);
 
   // type of transport velocity formulation
-  setStringToIntegralParameter<TransportVelocityFormulation>("TRANSPORTVELOCITYFORMULATION",
-      "NoTransportVelocity", "type of transport velocity formulation",
+  Core::Utils::string_to_integral_parameter<TransportVelocityFormulation>(
+      "TRANSPORTVELOCITYFORMULATION", "NoTransportVelocity",
+      "type of transport velocity formulation",
       tuple<std::string>(
           "NoTransportVelocity", "StandardTransportVelocity", "GeneralizedTransportVelocity"),
       tuple<TransportVelocityFormulation>(Inpar::PARTICLE::NoTransportVelocity,
@@ -247,7 +249,7 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       &particledynsph);
 
   // type of temperature evaluation scheme
-  setStringToIntegralParameter<TemperatureEvaluationScheme>("TEMPERATUREEVALUATION",
+  Core::Utils::string_to_integral_parameter<TemperatureEvaluationScheme>("TEMPERATUREEVALUATION",
       "NoTemperatureEvaluation", "type of temperature evaluation scheme",
       tuple<std::string>("NoTemperatureEvaluation", "TemperatureIntegration"),
       tuple<TemperatureEvaluationScheme>(
@@ -258,7 +260,7 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       "TEMPERATUREGRADIENT", "no", "evaluate temperature gradient", &particledynsph);
 
   // type of heat source
-  setStringToIntegralParameter<HeatSourceType>("HEATSOURCETYPE", "NoHeatSource",
+  Core::Utils::string_to_integral_parameter<HeatSourceType>("HEATSOURCETYPE", "NoHeatSource",
       "type of heat source",
       tuple<std::string>("NoHeatSource", "VolumeHeatSource", "SurfaceHeatSource"),
       tuple<HeatSourceType>(Inpar::PARTICLE::NoHeatSource, Inpar::PARTICLE::VolumeHeatSource,
@@ -294,7 +296,7 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       "VAPOR_RECOIL_TFAC", 0.0, "temperature factor in recoil pressure formula", &particledynsph);
 
   // type of surface tension formulation
-  setStringToIntegralParameter<SurfaceTensionFormulation>("SURFACETENSIONFORMULATION",
+  Core::Utils::string_to_integral_parameter<SurfaceTensionFormulation>("SURFACETENSIONFORMULATION",
       "NoSurfaceTension", "type of surface tension formulation",
       tuple<std::string>("NoSurfaceTension", "ContinuumSurfaceForce"),
       tuple<SurfaceTensionFormulation>(
@@ -361,7 +363,7 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       "transition temperature difference for barrier force evaluation", &particledynsph);
 
   // type of dirichlet open boundary
-  setStringToIntegralParameter<DirichletOpenBoundaryType>("DIRICHLETBOUNDARYTYPE",
+  Core::Utils::string_to_integral_parameter<DirichletOpenBoundaryType>("DIRICHLETBOUNDARYTYPE",
       "NoDirichletOpenBoundary", "type of dirichlet open boundary",
       tuple<std::string>("NoDirichletOpenBoundary", "DirichletNormalToPlane"),
       tuple<DirichletOpenBoundaryType>(
@@ -378,7 +380,7 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       "point on dirichlet open boundary plane", &particledynsph);
 
   // type of neumann open boundary
-  setStringToIntegralParameter<NeumannOpenBoundaryType>("NEUMANNBOUNDARYTYPE",
+  Core::Utils::string_to_integral_parameter<NeumannOpenBoundaryType>("NEUMANNBOUNDARYTYPE",
       "NoNeumannOpenBoundary", "type of neumann open boundary",
       tuple<std::string>("NoNeumannOpenBoundary", "NeumannNormalToPlane"),
       tuple<NeumannOpenBoundaryType>(
@@ -394,7 +396,7 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       "point on neumann open boundary plane", &particledynsph);
 
   // type of phase change
-  setStringToIntegralParameter<PhaseChangeType>("PHASECHANGETYPE", "NoPhaseChange",
+  Core::Utils::string_to_integral_parameter<PhaseChangeType>("PHASECHANGETYPE", "NoPhaseChange",
       "type of phase change",
       tuple<std::string>("NoPhaseChange", "OneWayScalarBelowToAbovePhaseChange",
           "OneWayScalarAboveToBelowPhaseChange", "TwoWayScalarPhaseChange"),
@@ -409,7 +411,7 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       "PHASECHANGEDEFINITION", "none", "phase change definition", &particledynsph);
 
   // type of rigid particle contact
-  setStringToIntegralParameter<RigidParticleContactType>("RIGIDPARTICLECONTACTTYPE",
+  Core::Utils::string_to_integral_parameter<RigidParticleContactType>("RIGIDPARTICLECONTACTTYPE",
       "NoRigidParticleContact", "type of rigid particle contact",
       tuple<std::string>("NoRigidParticleContact", "ElasticRigidParticleContact"),
       tuple<RigidParticleContactType>(
@@ -436,7 +438,7 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       "write particle-wall interaction output", &particledyndem);
 
   // type of normal contact law
-  setStringToIntegralParameter<NormalContact>("NORMALCONTACTLAW", "NormalLinearSpring",
+  Core::Utils::string_to_integral_parameter<NormalContact>("NORMALCONTACTLAW", "NormalLinearSpring",
       "normal contact law for particles",
       tuple<std::string>("NormalLinearSpring", "NormalLinearSpringDamp", "NormalHertz",
           "NormalLeeHerrmann", "NormalKuwabaraKono", "NormalTsuji"),
@@ -446,15 +448,15 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       &particledyndem);
 
   // type of tangential contact law
-  setStringToIntegralParameter<TangentialContact>("TANGENTIALCONTACTLAW", "NoTangentialContact",
-      "tangential contact law for particles",
+  Core::Utils::string_to_integral_parameter<TangentialContact>("TANGENTIALCONTACTLAW",
+      "NoTangentialContact", "tangential contact law for particles",
       tuple<std::string>("NoTangentialContact", "TangentialLinSpringDamp"),
       tuple<TangentialContact>(
           Inpar::PARTICLE::NoTangentialContact, Inpar::PARTICLE::TangentialLinSpringDamp),
       &particledyndem);
 
   // type of rolling contact law
-  setStringToIntegralParameter<RollingContact>("ROLLINGCONTACTLAW", "NoRollingContact",
+  Core::Utils::string_to_integral_parameter<RollingContact>("ROLLINGCONTACTLAW", "NoRollingContact",
       "rolling contact law for particles",
       tuple<std::string>("NoRollingContact", "RollingViscous", "RollingCoulomb"),
       tuple<RollingContact>(Inpar::PARTICLE::NoRollingContact, Inpar::PARTICLE::RollingViscous,
@@ -462,7 +464,7 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       &particledyndem);
 
   // type of normal adhesion law
-  setStringToIntegralParameter<AdhesionLaw>("ADHESIONLAW", "NoAdhesion",
+  Core::Utils::string_to_integral_parameter<AdhesionLaw>("ADHESIONLAW", "NoAdhesion",
       "type of adhesion law for particles",
       tuple<std::string>("NoAdhesion", "AdhesionVdWDMT", "AdhesionRegDMT"),
       tuple<AdhesionLaw>(Inpar::PARTICLE::NoAdhesion, Inpar::PARTICLE::AdhesionVdWDMT,
@@ -470,8 +472,9 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       &particledyndem);
 
   // type of (random) surface energy distribution
-  setStringToIntegralParameter<SurfaceEnergyDistribution>("ADHESION_SURFACE_ENERGY_DISTRIBUTION",
-      "ConstantSurfaceEnergy", "type of (random) surface energy distribution",
+  Core::Utils::string_to_integral_parameter<SurfaceEnergyDistribution>(
+      "ADHESION_SURFACE_ENERGY_DISTRIBUTION", "ConstantSurfaceEnergy",
+      "type of (random) surface energy distribution",
       tuple<std::string>("ConstantSurfaceEnergy", "NormalSurfaceEnergyDistribution",
           "LogNormalSurfaceEnergyDistribution"),
       tuple<SurfaceEnergyDistribution>(Inpar::PARTICLE::ConstantSurfaceEnergy,
@@ -487,7 +490,7 @@ void Inpar::PARTICLE::set_valid_parameters(Teuchos::ParameterList& list)
       "MAX_VELOCITY", -1.0, "maximum expected particle velocity", &particledyndem);
 
   // type of initial particle radius assignment
-  setStringToIntegralParameter<InitialRadiusAssignment>("INITIAL_RADIUS",
+  Core::Utils::string_to_integral_parameter<InitialRadiusAssignment>("INITIAL_RADIUS",
       "RadiusFromParticleMaterial", "type of initial particle radius assignment",
       tuple<std::string>("RadiusFromParticleMaterial", "RadiusFromParticleInput",
           "NormalRadiusDistribution", "LogNormalRadiusDistribution"),

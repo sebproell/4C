@@ -51,7 +51,6 @@ void Inpar::BeamToSolid::beam_to_solid_interaction_get_string(
  */
 void Inpar::BeamToSolid::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& beaminteraction = list.sublist("BEAM INTERACTION", false, "");
@@ -60,8 +59,8 @@ void Inpar::BeamToSolid::set_valid_parameters(Teuchos::ParameterList& list)
   Teuchos::ParameterList& beam_to_solid_volume_mestying =
       beaminteraction.sublist("BEAM TO SOLID VOLUME MESHTYING", false, "");
   {
-    setStringToIntegralParameter<BeamToSolidContactDiscretization>("CONTACT_DISCRETIZATION", "none",
-        "Type of employed contact discretization",
+    Core::Utils::string_to_integral_parameter<BeamToSolidContactDiscretization>(
+        "CONTACT_DISCRETIZATION", "none", "Type of employed contact discretization",
         tuple<std::string>("none", "gauss_point_to_segment", "mortar", "gauss_point_cross_section",
             "mortar_cross_section"),
         tuple<BeamToSolidContactDiscretization>(BeamToSolidContactDiscretization::none,
@@ -71,14 +70,15 @@ void Inpar::BeamToSolid::set_valid_parameters(Teuchos::ParameterList& list)
             BeamToSolidContactDiscretization::mortar_cross_section),
         &beam_to_solid_volume_mestying);
 
-    setStringToIntegralParameter<BeamToSolidConstraintEnforcement>("CONSTRAINT_STRATEGY", "none",
-        "Type of employed constraint enforcement strategy", tuple<std::string>("none", "penalty"),
+    Core::Utils::string_to_integral_parameter<BeamToSolidConstraintEnforcement>(
+        "CONSTRAINT_STRATEGY", "none", "Type of employed constraint enforcement strategy",
+        tuple<std::string>("none", "penalty"),
         tuple<BeamToSolidConstraintEnforcement>(
             BeamToSolidConstraintEnforcement::none, BeamToSolidConstraintEnforcement::penalty),
         &beam_to_solid_volume_mestying);
 
-    setStringToIntegralParameter<BeamToSolidMortarShapefunctions>("MORTAR_SHAPE_FUNCTION", "none",
-        "Shape function for the mortar Lagrange-multipliers",
+    Core::Utils::string_to_integral_parameter<BeamToSolidMortarShapefunctions>(
+        "MORTAR_SHAPE_FUNCTION", "none", "Shape function for the mortar Lagrange-multipliers",
         tuple<std::string>("none", "line2", "line3", "line4"),
         tuple<BeamToSolidMortarShapefunctions>(BeamToSolidMortarShapefunctions::none,
             BeamToSolidMortarShapefunctions::line2, BeamToSolidMortarShapefunctions::line3,
@@ -105,8 +105,8 @@ void Inpar::BeamToSolid::set_valid_parameters(Teuchos::ParameterList& list)
         "Enable / disable the coupling of the restart configuration.",
         &beam_to_solid_volume_mestying);
 
-    setStringToIntegralParameter<BeamToSolidRotationCoupling>("ROTATION_COUPLING", "none",
-        "Type of rotational coupling",
+    Core::Utils::string_to_integral_parameter<BeamToSolidRotationCoupling>("ROTATION_COUPLING",
+        "none", "Type of rotational coupling",
         tuple<std::string>("none", "deformation_gradient_3d_general_in_cross_section_plane",
             "polar_decomposition_2d", "deformation_gradient_y_2d", "deformation_gradient_z_2d",
             "deformation_gradient_average_2d", "fix_triad_2d", "deformation_gradient_3d_local_1",
@@ -128,7 +128,7 @@ void Inpar::BeamToSolid::set_valid_parameters(Teuchos::ParameterList& list)
             BeamToSolidRotationCoupling::deformation_gradient_3d_base_1),
         &beam_to_solid_volume_mestying);
 
-    setStringToIntegralParameter<BeamToSolidMortarShapefunctions>(
+    Core::Utils::string_to_integral_parameter<BeamToSolidMortarShapefunctions>(
         "ROTATION_COUPLING_MORTAR_SHAPE_FUNCTION", "none",
         "Shape function for the mortar Lagrange-multipliers",
         tuple<std::string>("none", "line2", "line3", "line4"),
@@ -189,21 +189,22 @@ void Inpar::BeamToSolid::set_valid_parameters(Teuchos::ParameterList& list)
   Teuchos::ParameterList& beam_to_solid_surface_mestying =
       beaminteraction.sublist("BEAM TO SOLID SURFACE MESHTYING", false, "");
   {
-    setStringToIntegralParameter<BeamToSolidContactDiscretization>("CONTACT_DISCRETIZATION", "none",
-        "Type of employed contact discretization",
+    Core::Utils::string_to_integral_parameter<BeamToSolidContactDiscretization>(
+        "CONTACT_DISCRETIZATION", "none", "Type of employed contact discretization",
         tuple<std::string>("none", "gauss_point_to_segment", "mortar"),
         tuple<BeamToSolidContactDiscretization>(BeamToSolidContactDiscretization::none,
             BeamToSolidContactDiscretization::gauss_point_to_segment,
             BeamToSolidContactDiscretization::mortar),
         &beam_to_solid_surface_mestying);
 
-    setStringToIntegralParameter<BeamToSolidConstraintEnforcement>("CONSTRAINT_STRATEGY", "none",
-        "Type of employed constraint enforcement strategy", tuple<std::string>("none", "penalty"),
+    Core::Utils::string_to_integral_parameter<BeamToSolidConstraintEnforcement>(
+        "CONSTRAINT_STRATEGY", "none", "Type of employed constraint enforcement strategy",
+        tuple<std::string>("none", "penalty"),
         tuple<BeamToSolidConstraintEnforcement>(
             BeamToSolidConstraintEnforcement::none, BeamToSolidConstraintEnforcement::penalty),
         &beam_to_solid_surface_mestying);
 
-    setStringToIntegralParameter<BeamToSolidSurfaceCoupling>("COUPLING_TYPE", "none",
+    Core::Utils::string_to_integral_parameter<BeamToSolidSurfaceCoupling>("COUPLING_TYPE", "none",
         "How the coupling constraints are formulated/",
         tuple<std::string>("none", "reference_configuration_forced_to_zero",
             "reference_configuration_forced_to_zero_fad", "displacement", "displacement_fad",
@@ -215,8 +216,8 @@ void Inpar::BeamToSolid::set_valid_parameters(Teuchos::ParameterList& list)
             BeamToSolidSurfaceCoupling::consistent_fad),
         &beam_to_solid_surface_mestying);
 
-    setStringToIntegralParameter<BeamToSolidMortarShapefunctions>("MORTAR_SHAPE_FUNCTION", "none",
-        "Shape function for the mortar Lagrange-multipliers",
+    Core::Utils::string_to_integral_parameter<BeamToSolidMortarShapefunctions>(
+        "MORTAR_SHAPE_FUNCTION", "none", "Shape function for the mortar Lagrange-multipliers",
         tuple<std::string>("none", "line2", "line3", "line4"),
         tuple<BeamToSolidMortarShapefunctions>(BeamToSolidMortarShapefunctions::none,
             BeamToSolidMortarShapefunctions::line2, BeamToSolidMortarShapefunctions::line3,
@@ -232,7 +233,7 @@ void Inpar::BeamToSolid::set_valid_parameters(Teuchos::ParameterList& list)
     Core::Utils::double_parameter("ROTATIONAL_COUPLING_PENALTY_PARAMETER", 0.0,
         "Penalty parameter for beam-to-solid surface rotational meshtying",
         &beam_to_solid_surface_mestying);
-    setStringToIntegralParameter<BeamToSolidSurfaceRotationCoupling>(
+    Core::Utils::string_to_integral_parameter<BeamToSolidSurfaceRotationCoupling>(
         "ROTATIONAL_COUPLING_SURFACE_TRIAD", "none", "Construction method for surface triad",
         tuple<std::string>("none", "surface_cross_section_director", "averaged"),
         tuple<BeamToSolidSurfaceRotationCoupling>(BeamToSolidSurfaceRotationCoupling::none,
@@ -251,16 +252,17 @@ void Inpar::BeamToSolid::set_valid_parameters(Teuchos::ParameterList& list)
   Teuchos::ParameterList& beam_to_solid_surface_contact =
       beaminteraction.sublist("BEAM TO SOLID SURFACE CONTACT", false, "");
   {
-    setStringToIntegralParameter<BeamToSolidContactDiscretization>("CONTACT_DISCRETIZATION", "none",
-        "Type of employed contact discretization",
+    Core::Utils::string_to_integral_parameter<BeamToSolidContactDiscretization>(
+        "CONTACT_DISCRETIZATION", "none", "Type of employed contact discretization",
         tuple<std::string>("none", "gauss_point_to_segment", "mortar"),
         tuple<BeamToSolidContactDiscretization>(BeamToSolidContactDiscretization::none,
             BeamToSolidContactDiscretization::gauss_point_to_segment,
             BeamToSolidContactDiscretization::mortar),
         &beam_to_solid_surface_contact);
 
-    setStringToIntegralParameter<BeamToSolidConstraintEnforcement>("CONSTRAINT_STRATEGY", "none",
-        "Type of employed constraint enforcement strategy", tuple<std::string>("none", "penalty"),
+    Core::Utils::string_to_integral_parameter<BeamToSolidConstraintEnforcement>(
+        "CONSTRAINT_STRATEGY", "none", "Type of employed constraint enforcement strategy",
+        tuple<std::string>("none", "penalty"),
         tuple<BeamToSolidConstraintEnforcement>(
             BeamToSolidConstraintEnforcement::none, BeamToSolidConstraintEnforcement::penalty),
         &beam_to_solid_surface_contact);
@@ -268,15 +270,15 @@ void Inpar::BeamToSolid::set_valid_parameters(Teuchos::ParameterList& list)
     Core::Utils::double_parameter("PENALTY_PARAMETER", 0.0,
         "Penalty parameter for beam-to-solid surface contact", &beam_to_solid_surface_contact);
 
-    setStringToIntegralParameter<BeamToSolidSurfaceContact>("CONTACT_TYPE", "none",
+    Core::Utils::string_to_integral_parameter<BeamToSolidSurfaceContact>("CONTACT_TYPE", "none",
         "How the contact constraints are formulated",
         tuple<std::string>("none", "gap_variation", "potential"),
         tuple<BeamToSolidSurfaceContact>(BeamToSolidSurfaceContact::none,
             BeamToSolidSurfaceContact::gap_variation, BeamToSolidSurfaceContact::potential),
         &beam_to_solid_surface_contact);
 
-    setStringToIntegralParameter<BeamToSolidSurfaceContactPenaltyLaw>("PENALTY_LAW", "none",
-        "Type of penalty law", tuple<std::string>("none", "linear", "linear_quadratic"),
+    Core::Utils::string_to_integral_parameter<BeamToSolidSurfaceContactPenaltyLaw>("PENALTY_LAW",
+        "none", "Type of penalty law", tuple<std::string>("none", "linear", "linear_quadratic"),
         tuple<BeamToSolidSurfaceContactPenaltyLaw>(BeamToSolidSurfaceContactPenaltyLaw::none,
             BeamToSolidSurfaceContactPenaltyLaw::linear,
             BeamToSolidSurfaceContactPenaltyLaw::linear_quadratic),
@@ -286,7 +288,7 @@ void Inpar::BeamToSolid::set_valid_parameters(Teuchos::ParameterList& list)
         "First penalty regularization parameter G0 >=0: For gap<G0 contact is active",
         &beam_to_solid_surface_contact);
 
-    setStringToIntegralParameter<BeamToSolidSurfaceContactMortarDefinedIn>(
+    Core::Utils::string_to_integral_parameter<BeamToSolidSurfaceContactMortarDefinedIn>(
         "MORTAR_CONTACT_DEFINED_IN", "none", "Configuration where the mortar contact is defined",
         tuple<std::string>("none", "reference_configuration", "current_configuration"),
         tuple<BeamToSolidSurfaceContactMortarDefinedIn>(
@@ -302,8 +304,9 @@ void Inpar::BeamToSolid::set_valid_parameters(Teuchos::ParameterList& list)
     Inpar::GEOMETRYPAIR::set_valid_parameters_line_to_surface(beam_to_solid_surface_contact);
 
     // Define the mortar shape functions for contact
-    setStringToIntegralParameter<BeamToSolidMortarShapefunctions>("MORTAR_SHAPE_FUNCTION", "none",
-        "Shape function for the mortar Lagrange-multipliers", tuple<std::string>("none", "line2"),
+    Core::Utils::string_to_integral_parameter<BeamToSolidMortarShapefunctions>(
+        "MORTAR_SHAPE_FUNCTION", "none", "Shape function for the mortar Lagrange-multipliers",
+        tuple<std::string>("none", "line2"),
         tuple<BeamToSolidMortarShapefunctions>(
             BeamToSolidMortarShapefunctions::none, BeamToSolidMortarShapefunctions::line2),
         &beam_to_solid_surface_contact);

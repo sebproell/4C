@@ -17,7 +17,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   // ----------------------------------------------------------------------
@@ -42,8 +41,8 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(Teuchos::ParameterList& l
       "ITEMIN", 1, "minimal number of iterations over fields", &poromultiphasescatradyn);
 
   // Coupling strategy for poroscatra solvers
-  setStringToIntegralParameter<SolutionSchemeOverFields>("COUPALGO", "twoway_partitioned_nested",
-      "Coupling strategies for poroscatra solvers",
+  Core::Utils::string_to_integral_parameter<SolutionSchemeOverFields>("COUPALGO",
+      "twoway_partitioned_nested", "Coupling strategies for poroscatra solvers",
       tuple<std::string>(
           "twoway_partitioned_nested", "twoway_partitioned_sequential", "twoway_monolithic"),
       tuple<SolutionSchemeOverFields>(solscheme_twoway_partitioned_nested,
@@ -55,7 +54,7 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(Teuchos::ParameterList& l
       "ARTERY_COUPLING", "No", "Coupling with 1D blood vessels.", &poromultiphasescatradyn);
 
   // no convergence of coupling scheme
-  setStringToIntegralParameter<DivContAct>("DIVERCONT", "stop",
+  Core::Utils::string_to_integral_parameter<DivContAct>("DIVERCONT", "stop",
       "What to do with time integration when Poromultiphase-Scatra iteration failed",
       tuple<std::string>("stop", "continue"), tuple<DivContAct>(divcont_stop, divcont_continue),
       &poromultiphasescatradyn);
@@ -65,7 +64,7 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(Teuchos::ParameterList& l
   Teuchos::ParameterList& poromultiphasescatradynmono = poromultiphasescatradyn.sublist(
       "MONOLITHIC", false, "Parameters for monolithic Poro-Multiphase-Scatra Interaction");
 
-  setStringToIntegralParameter<VectorNorm>("VECTORNORM_RESF", "L2",
+  Core::Utils::string_to_integral_parameter<VectorNorm>("VECTORNORM_RESF", "L2",
       "type of norm to be applied to residuals",
       tuple<std::string>("L1", "L1_Scaled", "L2", "Rms", "Inf"),
       tuple<VectorNorm>(Inpar::PoroMultiPhaseScaTra::norm_l1,
@@ -73,7 +72,7 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(Teuchos::ParameterList& l
           Inpar::PoroMultiPhaseScaTra::norm_rms, Inpar::PoroMultiPhaseScaTra::norm_inf),
       &poromultiphasescatradynmono);
 
-  setStringToIntegralParameter<VectorNorm>("VECTORNORM_INC", "L2",
+  Core::Utils::string_to_integral_parameter<VectorNorm>("VECTORNORM_INC", "L2",
       "type of norm to be applied to residuals",
       tuple<std::string>("L1", "L1_Scaled", "L2", "Rms", "Inf"),
       tuple<VectorNorm>(Inpar::PoroMultiPhaseScaTra::norm_l1,
@@ -102,15 +101,15 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(Teuchos::ParameterList& l
       &poromultiphasescatradynmono);
 
   // parameters for finite difference check
-  setStringToIntegralParameter<FdCheck>("FDCHECK", "none",
+  Core::Utils::string_to_integral_parameter<FdCheck>("FDCHECK", "none",
       "flag for finite difference check: none or global",
       tuple<std::string>("none",
           "global"),  // perform finite difference check on time integrator level
       tuple<FdCheck>(fdcheck_none, fdcheck_global), &poromultiphasescatradynmono);
 
   // flag for equilibration of global system of equations
-  setStringToIntegralParameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION", "none",
-      "flag for equilibration of global system of equations",
+  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
+      "none", "flag for equilibration of global system of equations",
       tuple<std::string>("none", "rows_full", "rows_maindiag", "columns_full", "columns_maindiag",
           "rowsandcolumns_full", "rowsandcolumns_maindiag"),
       tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,

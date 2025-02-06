@@ -17,7 +17,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::Cardiovascular0D::set_valid_parameters(Teuchos::ParameterList& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
   Teuchos::ParameterList& cardvasc0dstruct =
@@ -41,7 +40,7 @@ void Inpar::Cardiovascular0D::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::int_parameter("LINEAR_COUPLED_SOLVER", -1,
       "number of linear solver used for cardiovascular 0D-structural problems", &cardvasc0dstruct);
 
-  setStringToIntegralParameter<Cardvasc0DSolveAlgo>("SOLALGORITHM", "direct", "",
+  Core::Utils::string_to_integral_parameter<Cardvasc0DSolveAlgo>("SOLALGORITHM", "direct", "",
       tuple<std::string>("block", "direct"),
       tuple<Cardvasc0DSolveAlgo>(Inpar::Cardiovascular0D::cardvasc0dsolve_block,
           Inpar::Cardiovascular0D::cardvasc0dsolve_direct),
@@ -77,7 +76,7 @@ void Inpar::Cardiovascular0D::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter("R_atvalve_min_r", 0.0,
       "minimal right atrial (atrioventricular) valve resistance", &cardvasc0dsyspulcirc);
 
-  setStringToIntegralParameter<Cardvasc0DAtriumModel>("ATRIUM_MODEL", "0D", "",
+  Core::Utils::string_to_integral_parameter<Cardvasc0DAtriumModel>("ATRIUM_MODEL", "0D", "",
       tuple<std::string>("0D", "3D", "prescribed"),
       tuple<Cardvasc0DAtriumModel>(Inpar::Cardiovascular0D::atr_elastance_0d,
           Inpar::Cardiovascular0D::atr_structure_3d, Inpar::Cardiovascular0D::atr_prescribed),
@@ -101,7 +100,7 @@ void Inpar::Cardiovascular0D::set_valid_parameters(Teuchos::ParameterList& list)
   Core::Utils::double_parameter(
       "E_at_min_r", 0.0, "0D baseline right atrial elastance", &cardvasc0dsyspulcirc);
 
-  setStringToIntegralParameter<Cardvasc0DVentricleModel>("VENTRICLE_MODEL", "3D", "",
+  Core::Utils::string_to_integral_parameter<Cardvasc0DVentricleModel>("VENTRICLE_MODEL", "3D", "",
       tuple<std::string>("3D", "0D", "prescribed"),
       tuple<Cardvasc0DVentricleModel>(Inpar::Cardiovascular0D::ventr_structure_3d,
           Inpar::Cardiovascular0D::ventr_elastance_0d, Inpar::Cardiovascular0D::ventr_prescribed),
@@ -328,8 +327,8 @@ void Inpar::Cardiovascular0D::set_valid_parameters(Teuchos::ParameterList& list)
   Teuchos::ParameterList& cardvascrespir0d =
       cardvasc0dstruct.sublist("RESPIRATORY PARAMETERS", false, "");
 
-  setStringToIntegralParameter<Cardvasc0DRespiratoryModel>("RESPIRATORY_MODEL", "None", "",
-      tuple<std::string>("None", "Standard"),
+  Core::Utils::string_to_integral_parameter<Cardvasc0DRespiratoryModel>("RESPIRATORY_MODEL", "None",
+      "", tuple<std::string>("None", "Standard"),
       tuple<Cardvasc0DRespiratoryModel>(
           Inpar::Cardiovascular0D::resp_none, Inpar::Cardiovascular0D::resp_standard),
       &cardvascrespir0d);

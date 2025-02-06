@@ -22,7 +22,6 @@ namespace Inpar
      *----------------------------------------------------------------------*/
     void set_valid_parameters(Teuchos::ParameterList& list)
     {
-      using Teuchos::setStringToIntegralParameter;
       using Teuchos::tuple;
 
       // related sublist
@@ -43,8 +42,8 @@ namespace Inpar
 
 
       // data format for written numeric data
-      setStringToIntegralParameter<Core::IO::OutputDataFormat>("OUTPUT_DATA_FORMAT", "binary",
-          "data format for written numeric data", tuple<std::string>("binary", "ascii"),
+      Core::Utils::string_to_integral_parameter<Core::IO::OutputDataFormat>("OUTPUT_DATA_FORMAT",
+          "binary", "data format for written numeric data", tuple<std::string>("binary", "ascii"),
           tuple<Core::IO::OutputDataFormat>(
               Core::IO::OutputDataFormat::binary, Core::IO::OutputDataFormat::ascii),
           &sublist_IO_VTK_structure);
@@ -71,7 +70,8 @@ namespace Inpar
           &sublist_IO_VTK_structure);
 
       // specify the actual visualization writer
-      setStringToIntegralParameter<Core::IO::OutputWriter>("OUTPUT_WRITER", "vtu_per_rank",
+      Core::Utils::string_to_integral_parameter<Core::IO::OutputWriter>("OUTPUT_WRITER",
+          "vtu_per_rank",
           "Specify which output writer shall be used to write the visualization data to disk",
           tuple<std::string>("vtu_per_rank"),
           tuple<Core::IO::OutputWriter>(Core::IO::OutputWriter::vtu_per_rank),
