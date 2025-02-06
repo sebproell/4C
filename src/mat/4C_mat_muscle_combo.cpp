@@ -37,7 +37,7 @@ namespace
     }
     else if (activation_type == Inpar::Mat::ActivationType::map)
     {
-      return matdata.parameters.get<const ActivationMapType>("MAPFILE");
+      return matdata.parameters.get<const ActivationMapType>("MAPFILE_CONTENT");
     }
     else
       return std::monostate{};

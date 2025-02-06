@@ -418,6 +418,11 @@ namespace Core::IO
     using Core::IO::none;
     using Core::IO::Noneable;
 
+    /**
+     * Callback function that may be attached to entry().
+     */
+    using EntryCallback = std::function<void(InputParameterContainer&)>;
+
     //! Additional parameters for a scalar-valued entry().
     template <typename StoredTypeIn>
     struct ScalarData
@@ -438,6 +443,12 @@ namespace Core::IO
        * optional. If it is not set, the parameter is required.
        */
       std::optional<StoredType> default_value{};
+
+      /**
+       * An optional callback that is called after the value has been parsed. This can be used to
+       * set additional values in the container.
+       */
+      EntryCallback on_parse_callback{nullptr};
     };
 
     //! Additional parameters for a vector-valued entry().
@@ -478,6 +489,12 @@ namespace Core::IO
        *      argument deduction will work a lot better with `int` than with `size_t`.
        */
       std::variant<int, SizeCallback> size;
+
+      /**
+       * An optional callback that is called after the value has been parsed. This can be used to
+       * set additional values in the container.
+       */
+      EntryCallback on_parse_callback{nullptr};
     };
 
     //! Additional parameters for a group().
@@ -556,20 +573,6 @@ namespace Core::IO
 
 
       template <typename DataTypeIn>
-      struct UserDefinedSpec
-      {
-        std::string name;
-        using DataType = std::decay_t<DataTypeIn>;
-        using StoredType = typename DataType::StoredType;
-        DataType data;
-        std::function<void(ValueParser&, InputParameterContainer&)> parse;
-        std::function<bool(ConstYamlNodeRef, InputParameterContainer&, IO::Internal::MatchEntry&)>
-            match;
-        std::function<void(std::ostream&, std::size_t)> print;
-        std::function<void(ryml::NodeRef)> emit_metadata;
-      };
-
-      template <typename DataTypeIn>
       struct SelectionSpec
       {
         std::string name;
@@ -643,9 +646,9 @@ namespace Core::IO
     }  // namespace Internal
 
     /**
-     * Create a normal entry. All entries are parameterized by a struct which contains the optional
-     * `description`, `required` and `default_value` fields. The following examples demonstrate how
-     * entries can be created:
+     * Create a normal entry with given @p name. All entries are parameterized by a struct which
+     * contains the optional `description`, `required` and `default_value` fields. The following
+     * examples demonstrate how entries can be created:
      *
      * @code
      * // An entry with name and description. By default, the entry is required.
@@ -675,6 +678,16 @@ namespace Core::IO
      * // size is given as a callback.
      * entry<int>("N");
      * entry<std::vector<double>>("my_vector", {.size = from_parameter<int>("N")});
+     *
+     * // A vector entry which performs an additional action after parsing.
+     * entry<std::filesystem::path>("data_file", {.description = "A path to a file.",
+     *   .on_parse_callback = [](InputParameterContainer& container) {
+     *     // Perform an action with the parsed path.
+     *     std::filesystem::path path = container.get<std::filesystem::path>("my_path");
+     *     // e.g. read the file content and also store it in the container.
+     *     // auto data_table = ...
+     *     container.add("data_table", data_table);
+     *   }});
      * @endcode
      *
      * After parsing an InputSpec with fully_parse(), the value of the entry can be retrieved from
@@ -760,30 +773,6 @@ namespace Core::IO
      */
     template <typename T>
     [[nodiscard]] auto from_parameter(const std::string& name);
-
-    /**
-     * A user-defined entry. This is a more flexible version of the `entry` function. It takes
-     * a custom function to parse and store the value. The function must take a `ValueParser` and an
-     * `InputParameterContainer` as arguments. You can also provide a custom function to print the
-     * value. If no print function is provided, a default print function fitting the data type is
-     * used. The struct that parameterizes the entry follows the same rules as for the entry()
-     * function.
-     *
-     * @note This function is a last resort. If what you are parsing is so special that it
-     *       is not covered by the other functions, you can use this function. Please consider,
-     *       enhancing the library with a new function if you think what you are doing is a
-     *       missing common use case.
-     *
-     * @deprecated This function is deprecated. Please construct your InputSpec using the other
-     * functions provided in this namespace.
-     *
-     * @relatedalso InputSpec
-     */
-    template <typename T, typename DataType = Internal::DataFor<T>>
-    [[nodiscard]] InputSpec user_defined(std::string name, DataType&& data = {},
-        const std::function<void(ValueParser&, InputParameterContainer&)>& parse = nullptr,
-        const std::function<void(std::ostream&, std::size_t)>& print = nullptr,
-        const std::function<void(ryml::NodeRef)>& emit_metadata = nullptr);
 
     /**
      * An entry whose value is a a selection from a list of choices. For example:
@@ -1047,6 +1036,8 @@ void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataType>::parse(
   {
     container.add(name, parser.read<typename DataType::StoredType>());
   }
+
+  if (data.on_parse_callback) data.on_parse_callback(container);
 }
 
 
@@ -1171,6 +1162,7 @@ bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::match(Con
         container.add(name, choice.second);
         match_entry.state = IO::Internal::MatchEntry::State::matched;
         match_entry.matched_node = entry_node.node.id();
+        if (data.on_parse_callback) data.on_parse_callback(container);
         return true;
       }
     }
@@ -1272,41 +1264,6 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::entry(std::string name, DataTyp
       });
 }
 
-
-template <typename T, typename DataType>
-Core::IO::InputSpec Core::IO::InputSpecBuilders::user_defined(std::string name, DataType&& data,
-    const std::function<void(ValueParser&, InputParameterContainer&)>& parse,
-    const std::function<void(std::ostream&, std::size_t)>& print,
-    const std::function<void(ryml::NodeRef)>& emit_metadata)
-{
-  auto default_emitter = [name](ryml::NodeRef node)
-  {
-    node |= ryml::MAP;
-    node["name"] << name;
-    node["type"] = "user_defined";
-  };
-
-  Internal::sanitize_required_default(data);
-  return IO::Internal::make_spec(
-      Internal::UserDefinedSpec<DataType>{.name = name,
-          .data = std::forward<DataType>(data),
-          .parse = parse,
-          .match =
-              [](ConstYamlNodeRef, InputParameterContainer&, IO::Internal::MatchEntry&)
-          {
-            FOUR_C_THROW("User-defined specs cannot be matched against yaml.");
-            return false;
-          },
-          .print = print ? print : [](std::ostream&, std::size_t) {},
-          .emit_metadata = emit_metadata ? emit_metadata : default_emitter},
-      {
-          .name = name,
-          .description = data.description,
-          .required = data.required.value(),
-          .has_default_value = data.default_value.has_value(),
-          .n_specs = 1,
-      });
-}
 
 template <typename T, typename DataType>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(

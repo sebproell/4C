@@ -220,43 +220,39 @@ namespace
     }
   }
 
-  TEST(InputSpecTest, UserDefined)
+  TEST(InputSpecTest, EntryWithCallback)
   {
     auto spec = all_of({
         entry<int>("a"),
         entry<double>("b"),
-        user_defined<std::string>(
-            "c", {.description = "A string", .default_value = "Not found"},
-            [name = "c"](ValueParser& parser, InputParameterContainer& container)
+        entry<std::string>("c",
             {
-              parser.consume(name);
-              // Some special parsing logic
-              parser.consume("_");
-              parser.consume("_");
-
-              container.add<std::string>("c", "I found c");
-            },
-            [](std::ostream& out, std::size_t) { out << "_ _ \n"; }),
+                .description = "A string",
+                .default_value = "Not found",
+                .on_parse_callback = [](InputParameterContainer& container)
+                { container.add<int>("c_as_int", std::stoi(container.get<std::string>("c"))); },
+            }),
         entry<std::string>("s"),
     });
 
     {
       InputParameterContainer container;
-      std::string stream("a 1 b 2.0 c _ _ s hello");
+      std::string stream("a 1 b 2.0 c 10 s hello");
       ValueParser parser(stream);
       spec.fully_parse(parser, container);
       EXPECT_EQ(container.get<int>("a"), 1);
       EXPECT_EQ(container.get<double>("b"), 2.0);
-      EXPECT_EQ(container.get<std::string>("c"), "I found c");
+      EXPECT_EQ(container.get<std::string>("c"), "10");
+      EXPECT_EQ(container.get<int>("c_as_int"), 10);
       EXPECT_EQ(container.get<std::string>("s"), "hello");
     }
 
     {
       InputParameterContainer container;
-      std::string stream("a 1 b 2.0 c _ s hello");
+      std::string stream("a 1 b 2.0 c _ hello");
       ValueParser parser(stream);
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          spec.fully_parse(parser, container), Core::Exception, "expected string '_'");
+          spec.fully_parse(parser, container), std::invalid_argument, "stoi");
     }
   }
 

@@ -533,10 +533,9 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
 
     using actMapType = std::unordered_map<int, std::vector<std::pair<double, double>>>;
 
-    auto parse = [](Core::IO::ValueParser& parser, Core::IO::InputParameterContainer& container)
+    auto on_parse = [](Core::IO::InputParameterContainer& container)
     {
-      parser.consume("MAPFILE");
-      const auto map_file = parser.read<std::filesystem::path>();
+      const auto& map_file = container.get<std::filesystem::path>("MAPFILE");
       std::ifstream file_stream(map_file);
 
       if (file_stream.fail()) FOUR_C_THROW("Invalid file %s!", map_file.string().c_str());
@@ -550,17 +549,17 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
         return acc;
       };
 
-      container.add("MAPFILE",
+      container.add("MAPFILE_CONTENT",
           Core::IO::convert_lines<actMapType, actMapType>(file_stream, map_reduction_operation));
     };
 
     auto activation = one_of({
         entry<int>("FUNCTID",
             {.description = "function id for time- and space-dependency of muscle activation"}),
-        user_defined<actMapType>("MAPFILE",
+        entry<std::filesystem::path>("MAPFILE",
             {.description = "pattern file containing a map of elementwise-defined discrete values "
-                            "for time- and space-dependency of muscle activation"},
-            parse),
+                            "for time- and space-dependency of muscle activation",
+                .on_parse_callback = on_parse}),
     });
     m->add_component(std::move(activation));
 
@@ -4464,31 +4463,32 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
     // definition of operation and print string for post processed component "MASSFRACMAPFILE"
     using mapType = std::unordered_map<int, std::vector<double>>;
 
-    m->add_component(user_defined<mapType>("MASSFRACMAPFILE",
+    auto on_parse = [](Core::IO::InputParameterContainer& container)
+    {
+      const auto& map_file = container.get<std::filesystem::path>("MASSFRACMAPFILE");
+      std::ifstream file_stream(map_file);
+
+      if (file_stream.fail()) FOUR_C_THROW("Invalid file %s!", map_file.string().c_str());
+
+      auto map_reduction_operation = [](mapType acc, const mapType& next)
+      {
+        for (const auto& [key, value] : next)
+        {
+          acc[key] = value;
+        }
+        return acc;
+      };
+
+      container.add("MASSFRACMAPFILE_CONTENT",
+          Core::IO::convert_lines<mapType, mapType>(file_stream, map_reduction_operation));
+    };
+
+    m->add_component(entry<std::filesystem::path>("MASSFRACMAPFILE",
         {
             .description =
                 "file path of pattern file defining the massfractions as discrete values",
             .required = false,
-        },
-        [](Core::IO::ValueParser& parser, Core::IO::InputParameterContainer& container)
-        {
-          parser.consume("MASSFRACMAPFILE");
-          const auto map_file = parser.read<std::filesystem::path>();
-          std::ifstream file_stream(map_file);
-
-          if (file_stream.fail()) FOUR_C_THROW("Invalid file %s!", map_file.string().c_str());
-
-          auto map_reduction_operation = [](mapType acc, const mapType& next)
-          {
-            for (const auto& [key, value] : next)
-            {
-              acc[key] = value;
-            }
-            return acc;
-          };
-
-          container.add("MASSFRACMAPFILE",
-              Core::IO::convert_lines<mapType, mapType>(file_stream, map_reduction_operation));
+            .on_parse_callback = on_parse,
         }));
 
     Mat::append_material_definition(matlist, m);
