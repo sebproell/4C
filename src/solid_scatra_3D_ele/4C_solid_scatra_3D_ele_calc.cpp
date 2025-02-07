@@ -250,10 +250,10 @@ namespace
 
 template <Core::FE::CellType celltype, typename SolidFormulation>
 Discret::Elements::SolidScatraEleCalc<celltype, SolidFormulation>::SolidScatraEleCalc()
-    : stiffness_matrix_integration_(
-          create_gauss_integration<celltype>(get_gauss_rule_stiffness_matrix<celltype>())),
+    : stiffness_matrix_integration_(Core::FE::create_gauss_integration<celltype>(
+          get_gauss_rule_stiffness_matrix<celltype>())),
       mass_matrix_integration_(
-          create_gauss_integration<celltype>(get_gauss_rule_mass_matrix<celltype>()))
+          Core::FE::create_gauss_integration<celltype>(get_gauss_rule_mass_matrix<celltype>()))
 {
 }
 

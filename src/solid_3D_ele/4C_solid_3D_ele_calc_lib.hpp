@@ -1021,7 +1021,7 @@ namespace Discret::Elements
     constexpr auto numdim = Core::FE::dim<celltype>;
     const ElementNodes<celltype> nodal_coordinates =
         evaluate_element_nodes<celltype>(element, discretization, lm);
-    Core::FE::GaussIntegration gauss_integration = create_gauss_integration<celltype>(
+    Core::FE::GaussIntegration gauss_integration = Core::FE::create_gauss_integration<celltype>(
         Discret::Elements::get_gauss_rule_stiffness_matrix<celltype>());
 
     AnalyticalDisplacementErrorIntegrationResults error_result;

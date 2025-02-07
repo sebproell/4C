@@ -76,7 +76,7 @@ void Discret::Elements::evaluate_neumann(Core::Elements::Element& element,
 {
   constexpr auto numdim = Core::FE::dim<celltype>;
   constexpr auto numnod = Core::FE::num_nodes<celltype>;
-  Core::FE::GaussIntegration gauss_integration = create_gauss_integration<celltype>(
+  Core::FE::GaussIntegration gauss_integration = Core::FE::create_gauss_integration<celltype>(
       Discret::Elements::get_gauss_rule_stiffness_matrix<celltype>());
 
   // get values and switches from the condition

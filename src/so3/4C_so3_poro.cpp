@@ -23,7 +23,7 @@ FOUR_C_NAMESPACE_OPEN
 template <class So3Ele, Core::FE::CellType distype>
 Discret::Elements::So3Poro<So3Ele, distype>::So3Poro(int id, int owner)
     : So3Ele(id, owner),
-      intpoints_(Discret::Elements::create_gauss_integration<distype>(
+      intpoints_(Core::FE::create_gauss_integration<distype>(
           Discret::Elements::DisTypeToOptGaussRule<distype>::rule)),
       init_(false),
       isNurbs_(false),
@@ -49,7 +49,7 @@ Discret::Elements::So3Poro<So3Ele, distype>::So3Poro(
       invJ_(old.invJ_),
       detJ_(old.detJ_),
       xsi_(old.xsi_),
-      intpoints_(Discret::Elements::create_gauss_integration<distype>(
+      intpoints_(Core::FE::create_gauss_integration<distype>(
           Discret::Elements::DisTypeToOptGaussRule<distype>::rule)),
       init_(old.init_),
       isNurbs_(old.isNurbs_),

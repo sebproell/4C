@@ -130,8 +130,8 @@ namespace
 template <Core::FE::CellType celltype>
 Discret::Elements::SolidPoroPressureVelocityBasedEleCalc<
     celltype>::SolidPoroPressureVelocityBasedEleCalc()
-    : gauss_integration_(
-          create_gauss_integration<celltype>(get_gauss_rule_stiffness_matrix_poro<celltype>()))
+    : gauss_integration_(Core::FE::create_gauss_integration<celltype>(
+          get_gauss_rule_stiffness_matrix_poro<celltype>()))
 {
 }
 

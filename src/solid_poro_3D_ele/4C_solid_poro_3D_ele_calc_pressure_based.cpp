@@ -20,8 +20,8 @@ FOUR_C_NAMESPACE_OPEN
 
 template <Core::FE::CellType celltype>
 Discret::Elements::SolidPoroPressureBasedEleCalc<celltype>::SolidPoroPressureBasedEleCalc()
-    : gauss_integration_(
-          create_gauss_integration<celltype>(get_gauss_rule_stiffness_matrix_poro<celltype>()))
+    : gauss_integration_(Core::FE::create_gauss_integration<celltype>(
+          get_gauss_rule_stiffness_matrix_poro<celltype>()))
 {
 }
 
