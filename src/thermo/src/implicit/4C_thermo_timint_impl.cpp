@@ -13,6 +13,8 @@
 #include "4C_thermo_ele_action.hpp"
 #include "4C_thermo_timint.hpp"
 
+#include <Teuchos_StandardParameterEntryValidators.hpp>
+
 #include <sstream>
 
 FOUR_C_NAMESPACE_OPEN

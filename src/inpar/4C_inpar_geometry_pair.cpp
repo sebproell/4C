@@ -15,7 +15,7 @@ FOUR_C_NAMESPACE_OPEN
 /**
  *
  */
-void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(Teuchos::ParameterList& list)
+void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(Core::Utils::SectionSpecs& list)
 {
   // Add the input parameters for line to 3D coupling.
 
@@ -29,11 +29,11 @@ void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(Teuchos::ParameterList
           LineTo3DStrategy::gauss_point_projection_without_boundary_segmentation,
           LineTo3DStrategy::gauss_point_projection_boundary_segmentation,
           LineTo3DStrategy::gauss_point_projection_cross_section),
-      &list);
+      list);
 
   // Number of search points for segmentation.
   Core::Utils::int_parameter("GEOMETRY_PAIR_SEGMENTATION_SEARCH_POINTS", 6,
-      "Number of search points for segmentation", &list);
+      "Number of search points for segmentation", list);
 
   // What to do if not all Gauss points of a segment project valid
   Core::Utils::string_to_integral_parameter<NotAllGaussPointsProjectValidAction>(
@@ -42,24 +42,24 @@ void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(Teuchos::ParameterList
       Teuchos::tuple<std::string>("fail", "warning"),
       Teuchos::tuple<NotAllGaussPointsProjectValidAction>(
           NotAllGaussPointsProjectValidAction::fail, NotAllGaussPointsProjectValidAction::warning),
-      &list);
+      list);
 
   // Number of integration points on the line.
   Core::Utils::int_parameter(
-      "GAUSS_POINTS", 6, "Number of Gauss Points for the integral evaluations", &list);
+      "GAUSS_POINTS", 6, "Number of Gauss Points for the integral evaluations", list);
 
   // Number of integration along the circumference in cross section coupling.
   Core::Utils::int_parameter("INTEGRATION_POINTS_CIRCUMFERENCE", 6,
       "Number of Integration points along the circumferential direction of the beam. This is "
       "parameter is only used in beam to cylinder meshtying. No gauss integration is "
       "used along the circumferential direction, equally spaced integration points are used.",
-      &list);
+      list);
 }
 
 /**
  *
  */
-void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to_surface(Teuchos::ParameterList& list)
+void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to_surface(Core::Utils::SectionSpecs& list)
 {
   // Add the input parameters for line to surface coupling.
 
@@ -69,7 +69,7 @@ void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to_surface(Teuchos::Paramete
       Teuchos::tuple<std::string>("standard", "extended_volume"),
       Teuchos::tuple<GEOMETRYPAIR::SurfaceNormals>(
           GEOMETRYPAIR::SurfaceNormals::standard, GEOMETRYPAIR::SurfaceNormals::extended_volume),
-      &list);
+      list);
 }
 
 /**

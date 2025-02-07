@@ -10,7 +10,9 @@
 
 #include "4C_config.hpp"
 
-#include "4C_utils_parameter_list.fwd.hpp"
+#include "4C_io_input_spec.hpp"
+
+#include <map>
 
 FOUR_C_NAMESPACE_OPEN
 

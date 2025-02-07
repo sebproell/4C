@@ -11,9 +11,10 @@
 
 #include "4C_config.hpp"
 
+#include "4C_io_input_spec.hpp"
 #include "4C_utils_exceptions.hpp"
-#include "4C_utils_parameter_list.fwd.hpp"
 
+#include <map>
 #include <vector>
 
 FOUR_C_NAMESPACE_OPEN
@@ -720,7 +721,7 @@ namespace Inpar
     //!@}
 
     /// set the structure parameters
-    void set_valid_parameters(Teuchos::ParameterList& list);
+    void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
 
     /// set structure-specific conditions
     void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);

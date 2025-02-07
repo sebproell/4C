@@ -81,17 +81,6 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-/*----------------------------------------------------------------------*/
-//! Print function
-/*----------------------------------------------------------------------*/
-void print_valid_parameters()
-{
-  std::shared_ptr<const Teuchos::ParameterList> list = Input::valid_parameters();
-  list->print(std::cout,
-      Teuchos::ParameterList::PrintOptions().showDoc(true).showFlags(false).indent(4).showTypes(
-          false));
-}
-
 
 /*----------------------------------------------------------------------*/
 //! Print help message
@@ -176,131 +165,136 @@ void print_help_message()
 
 void print_default_dat_header()
 {
-  std::shared_ptr<const Teuchos::ParameterList> list = Input::valid_parameters();
-  Core::IO::print_dat(std::cout, *list);
+  auto map = Input::valid_parameters();
+  Core::IO::print_dat(std::cout, map);
 }
 
-std::shared_ptr<const Teuchos::ParameterList> Input::valid_parameters()
+std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
 {
-  std::shared_ptr<Teuchos::ParameterList> list = std::make_shared<Teuchos::ParameterList>();
-
+  using namespace Core::IO::InputSpecBuilders;
+  std::map<std::string, Core::IO::InputSpec> list;
   /*----------------------------------------------------------------------*/
-  Teuchos::ParameterList& discret = list->sublist("DISCRETISATION", false, "");
+  Core::Utils::SectionSpecs discret{"DISCRETISATION"};
 
-  Core::Utils::int_parameter("NUMFLUIDDIS", 1, "Number of meshes in fluid field", &discret);
-  Core::Utils::int_parameter("NUMSTRUCDIS", 1, "Number of meshes in structural field", &discret);
-  Core::Utils::int_parameter("NUMALEDIS", 1, "Number of meshes in ale field", &discret);
+  Core::Utils::int_parameter("NUMFLUIDDIS", 1, "Number of meshes in fluid field", discret);
+  Core::Utils::int_parameter("NUMSTRUCDIS", 1, "Number of meshes in structural field", discret);
+  Core::Utils::int_parameter("NUMALEDIS", 1, "Number of meshes in ale field", discret);
   Core::Utils::int_parameter(
-      "NUMARTNETDIS", 1, "Number of meshes in arterial network field", &discret);
-  Core::Utils::int_parameter("NUMTHERMDIS", 1, "Number of meshes in thermal field", &discret);
-  Core::Utils::int_parameter("NUMAIRWAYSDIS", 1,
-      "Number of meshes in reduced dimensional airways network field", &discret);
+      "NUMARTNETDIS", 1, "Number of meshes in arterial network field", discret);
+  Core::Utils::int_parameter("NUMTHERMDIS", 1, "Number of meshes in thermal field", discret);
+  Core::Utils::int_parameter(
+      "NUMAIRWAYSDIS", 1, "Number of meshes in reduced dimensional airways network field", discret);
+
+  discret.move_into_collection(list);
 
   /*----------------------------------------------------------------------*/
-  Teuchos::ParameterList& size = list->sublist("PROBLEM SIZE", false, "");
+  Core::Utils::SectionSpecs size{"PROBLEM SIZE"};
 
-  Core::Utils::int_parameter("DIM", 3, "2d or 3d problem", &size);
+  Core::Utils::int_parameter("DIM", 3, "2d or 3d problem", size);
 
   // deactivate all the following (unused) parameters one day
   // they are nice as general info in the input file but should not
   // read into a parameter list. Misuse is possible
-  Core::Utils::int_parameter("ELEMENTS", 0, "Total number of elements", &size);
-  Core::Utils::int_parameter("NODES", 0, "Total number of nodes", &size);
-  Core::Utils::int_parameter("NPATCHES", 0, "number of nurbs patches", &size);
-  Core::Utils::int_parameter("MATERIALS", 0, "number of materials", &size);
-  Core::Utils::int_parameter("NUMDF", 3, "maximum number of degrees of freedom", &size);
+  Core::Utils::int_parameter("ELEMENTS", 0, "Total number of elements", size);
+  Core::Utils::int_parameter("NODES", 0, "Total number of nodes", size);
+  Core::Utils::int_parameter("NPATCHES", 0, "number of nurbs patches", size);
+  Core::Utils::int_parameter("MATERIALS", 0, "number of materials", size);
+  Core::Utils::int_parameter("NUMDF", 3, "maximum number of degrees of freedom", size);
 
-  Inpar::PROBLEMTYPE::set_valid_parameters(*list);
+  size.move_into_collection(list);
+
+  Inpar::PROBLEMTYPE::set_valid_parameters(list);
 
   /*----------------------------------------------------------------------*/
 
-  Teuchos::ParameterList& nurbs_param = list->sublist(
-      "NURBS", false, "Section to define information related to NURBS discretizations.");
+  Core::Utils::SectionSpecs nurbs_param{"NURBS"};
 
   Core::Utils::bool_parameter("DO_LS_DBC_PROJECTION", "No",
       "Determines if a projection is needed for least square Dirichlet boundary conditions.",
-      &nurbs_param);
+      nurbs_param);
 
   Core::Utils::int_parameter("SOLVER_LS_DBC_PROJECTION", -1,
       "Number of linear solver for the projection of least squares Dirichlet boundary conditions "
       "for NURBS "
       "discretizations",
-      &nurbs_param);
+      nurbs_param);
+
+  nurbs_param.move_into_collection(list);
 
   /*----------------------------------------------------------------------*/
   /* Finally call the problem-specific SetValidParameter functions        */
   /*----------------------------------------------------------------------*/
 
-  Inpar::Solid::set_valid_parameters(*list);
-  Inpar::IO::set_valid_parameters(*list);
-  Inpar::IOMonitorStructureDBC::set_valid_parameters(*list);
-  Inpar::IORuntimeOutput::set_valid_parameters(*list);
-  Inpar::IORuntimeVTPStructure::set_valid_parameters(*list);
-  Inpar::Mortar::set_valid_parameters(*list);
-  Inpar::CONTACT::set_valid_parameters(*list);
-  Inpar::VolMortar::set_valid_parameters(*list);
-  Inpar::Wear::set_valid_parameters(*list);
-  Inpar::IORuntimeOutput::FLUID::set_valid_parameters(*list);
-  Inpar::IORuntimeOutput::Solid::set_valid_parameters(*list);
-  Inpar::IORuntimeOutput::Beam::set_valid_parameters(*list);
-  BeamContact::set_valid_parameters(*list);
-  Inpar::BeamPotential::set_valid_parameters(*list);
-  Inpar::BeamInteraction::set_valid_parameters(*list);
-  Inpar::RveMpc::set_valid_parameters(*list);
-  BrownianDynamics::set_valid_parameters(*list);
+  Inpar::Solid::set_valid_parameters(list);
+  Inpar::IO::set_valid_parameters(list);
+  Inpar::IOMonitorStructureDBC::set_valid_parameters(list);
+  Inpar::IORuntimeOutput::set_valid_parameters(list);
+  Inpar::IORuntimeVTPStructure::set_valid_parameters(list);
+  Inpar::Mortar::set_valid_parameters(list);
+  Inpar::CONTACT::set_valid_parameters(list);
+  Inpar::VolMortar::set_valid_parameters(list);
+  Inpar::Wear::set_valid_parameters(list);
+  Inpar::IORuntimeOutput::FLUID::set_valid_parameters(list);
+  Inpar::IORuntimeOutput::Solid::set_valid_parameters(list);
+  Inpar::IORuntimeOutput::Beam::set_valid_parameters(list);
+  BeamContact::set_valid_parameters(list);
+  Inpar::BeamPotential::set_valid_parameters(list);
+  Inpar::BeamInteraction::set_valid_parameters(list);
+  Inpar::RveMpc::set_valid_parameters(list);
+  BrownianDynamics::set_valid_parameters(list);
 
-  Inpar::Plasticity::set_valid_parameters(*list);
+  Inpar::Plasticity::set_valid_parameters(list);
 
-  Inpar::IORuntimeOutput::Thermo::set_valid_parameters(*list);
-  Inpar::Thermo::set_valid_parameters(*list);
-  Inpar::TSI::set_valid_parameters(*list);
+  Inpar::IORuntimeOutput::Thermo::set_valid_parameters(list);
+  Inpar::Thermo::set_valid_parameters(list);
+  Inpar::TSI::set_valid_parameters(list);
 
-  Inpar::FLUID::set_valid_parameters(*list);
-  Inpar::LowMach::set_valid_parameters(*list);
-  Cut::set_valid_parameters(*list);
-  Inpar::XFEM::set_valid_parameters(*list);
-  Inpar::CONSTRAINTS::set_valid_parameters(*list);
+  Inpar::FLUID::set_valid_parameters(list);
+  Inpar::LowMach::set_valid_parameters(list);
+  Cut::set_valid_parameters(list);
+  Inpar::XFEM::set_valid_parameters(list);
+  Inpar::CONSTRAINTS::set_valid_parameters(list);
 
-  Lubrication::set_valid_parameters(*list);
-  Inpar::ScaTra::set_valid_parameters(*list);
-  Inpar::LevelSet::set_valid_parameters(*list);
-  Inpar::ElCh::set_valid_parameters(*list);
-  Inpar::ElectroPhysiology::set_valid_parameters(*list);
-  Inpar::STI::set_valid_parameters(*list);
+  Lubrication::set_valid_parameters(list);
+  Inpar::ScaTra::set_valid_parameters(list);
+  Inpar::LevelSet::set_valid_parameters(list);
+  Inpar::ElCh::set_valid_parameters(list);
+  Inpar::ElectroPhysiology::set_valid_parameters(list);
+  Inpar::STI::set_valid_parameters(list);
 
-  Inpar::S2I::set_valid_parameters(*list);
-  Inpar::FS3I::set_valid_parameters(*list);
-  Inpar::PoroElast::set_valid_parameters(*list);
-  Inpar::PoroScaTra::set_valid_parameters(*list);
-  Inpar::POROMULTIPHASE::set_valid_parameters(*list);
-  Inpar::PoroMultiPhaseScaTra::set_valid_parameters(*list);
-  Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(*list);
-  Inpar::EHL::set_valid_parameters(*list);
-  Inpar::SSI::set_valid_parameters(*list);
-  Inpar::SSTI::set_valid_parameters(*list);
-  ALE::set_valid_parameters(*list);
-  Inpar::FSI::set_valid_parameters(*list);
+  Inpar::S2I::set_valid_parameters(list);
+  Inpar::FS3I::set_valid_parameters(list);
+  Inpar::PoroElast::set_valid_parameters(list);
+  Inpar::PoroScaTra::set_valid_parameters(list);
+  Inpar::POROMULTIPHASE::set_valid_parameters(list);
+  Inpar::PoroMultiPhaseScaTra::set_valid_parameters(list);
+  Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(list);
+  Inpar::EHL::set_valid_parameters(list);
+  Inpar::SSI::set_valid_parameters(list);
+  Inpar::SSTI::set_valid_parameters(list);
+  ALE::set_valid_parameters(list);
+  Inpar::FSI::set_valid_parameters(list);
 
-  Inpar::ArtDyn::set_valid_parameters(*list);
-  Inpar::ArteryNetwork::set_valid_parameters(*list);
-  Inpar::BioFilm::set_valid_parameters(*list);
-  Inpar::ReducedLung::set_valid_parameters(*list);
-  Inpar::Cardiovascular0D::set_valid_parameters(*list);
-  Inpar::FPSI::set_valid_parameters(*list);
-  Inpar::FBI::set_valid_parameters(*list);
+  Inpar::ArtDyn::set_valid_parameters(list);
+  Inpar::ArteryNetwork::set_valid_parameters(list);
+  Inpar::BioFilm::set_valid_parameters(list);
+  Inpar::ReducedLung::set_valid_parameters(list);
+  Inpar::Cardiovascular0D::set_valid_parameters(list);
+  Inpar::FPSI::set_valid_parameters(list);
+  Inpar::FBI::set_valid_parameters(list);
 
-  Inpar::PARTICLE::set_valid_parameters(*list);
+  Inpar::PARTICLE::set_valid_parameters(list);
 
-  Inpar::EleMag::set_valid_parameters(*list);
+  Inpar::EleMag::set_valid_parameters(list);
 
-  Inpar::Geo::set_valid_parameters(*list);
-  Inpar::BINSTRATEGY::set_valid_parameters(*list);
-  Inpar::GeometricSearch::set_valid_parameters(*list);
-  Inpar::PaSI::set_valid_parameters(*list);
+  Inpar::Geo::set_valid_parameters(list);
+  Inpar::BINSTRATEGY::set_valid_parameters(list);
+  Inpar::GeometricSearch::set_valid_parameters(list);
+  Inpar::PaSI::set_valid_parameters(list);
 
-  Inpar::Rebalance::set_valid_parameters(*list);
-  Inpar::SOLVER::set_valid_parameters(*list);
-  Inpar::NlnSol::set_valid_parameters(*list);
+  Inpar::Rebalance::set_valid_parameters(list);
+  Inpar::SOLVER::set_valid_parameters(list);
+  Inpar::NlnSol::set_valid_parameters(list);
 
   return list;
 }

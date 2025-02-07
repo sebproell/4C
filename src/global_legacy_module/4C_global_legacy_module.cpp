@@ -600,7 +600,8 @@ void write_input_metadata(std::ostream& out)
   }
 
   auto valid_parameters = Input::valid_parameters();
-  Core::IO::print_metadata_yaml(out, *valid_parameters, section_specs);
+  section_specs.merge(valid_parameters);
+  Core::IO::print_metadata_yaml(out, section_specs);
 }
 
 FOUR_C_NAMESPACE_CLOSE

@@ -16,8 +16,9 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Inpar::SOLVER
 {
-  void set_valid_solver_parameters(Teuchos::ParameterList& list)
+  void set_valid_solver_parameters(Core::IO::InputSpec& spec)
   {
+    Core::Utils::SectionSpecs list{"dummy"};
     // Solver options
     {
       Core::Utils::string_to_integral_parameter<Core::LinearSolver::SolverType>("SOLVER",
@@ -27,7 +28,7 @@ namespace Inpar::SOLVER
           Teuchos::tuple<Core::LinearSolver::SolverType>(Core::LinearSolver::SolverType::umfpack,
               Core::LinearSolver::SolverType::superlu, Core::LinearSolver::SolverType::belos,
               Core::LinearSolver::SolverType::undefined),
-          &list);
+          list);
     }
 
     // Iterative solver options
@@ -39,7 +40,7 @@ namespace Inpar::SOLVER
               Core::LinearSolver::IterativeSolverType::cg,
               Core::LinearSolver::IterativeSolverType::gmres,
               Core::LinearSolver::IterativeSolverType::bicgstab),
-          &list);
+          list);
     }
 
     // Preconditioner options
@@ -57,20 +58,20 @@ namespace Inpar::SOLVER
               Core::LinearSolver::PreconditionerType::multigrid_muelu_contactsp,
               Core::LinearSolver::PreconditionerType::multigrid_nxn,
               Core::LinearSolver::PreconditionerType::block_teko),
-          &list);
+          list);
     }
 
     // Ifpack options
     {
       Core::Utils::int_parameter("IFPACKOVERLAP", 0,
-          "The amount of overlap used for the ifpack \"ilu\" preconditioner.", &list);
+          "The amount of overlap used for the ifpack \"ilu\" preconditioner.", list);
 
       Core::Utils::int_parameter("IFPACKGFILL", 0,
-          "The amount of fill allowed for an internal \"ilu\" preconditioner.", &list);
+          "The amount of fill allowed for an internal \"ilu\" preconditioner.", list);
 
       std::vector<std::string> ifpack_combine_valid_input = {"Add", "Insert", "Zero"};
       Core::Utils::string_parameter("IFPACKCOMBINE", "Add",
-          "Combine mode for Ifpack Additive Schwarz", &list, ifpack_combine_valid_input);
+          "Combine mode for Ifpack Additive Schwarz", list, ifpack_combine_valid_input);
     }
 
     // Iterative solver options
@@ -78,61 +79,73 @@ namespace Inpar::SOLVER
       Core::Utils::int_parameter("AZITER", 1000,
           "The maximum number of iterations the underlying iterative solver is allowed to "
           "perform",
-          &list);
+          list);
 
       Core::Utils::double_parameter("AZTOL", 1e-8,
-          "The level the residual norms must reach to decide about successful convergence", &list);
+          "The level the residual norms must reach to decide about successful convergence", list);
 
       Core::Utils::string_to_integral_parameter<Belos::ScaleType>("AZCONV", "AZ_r0",
           "The implicit residual norm scaling type to use for terminating the iterative solver.",
           Teuchos::tuple<std::string>("AZ_r0", "AZ_noscaled"),
           Teuchos::tuple<Belos::ScaleType>(Belos::ScaleType::NormOfInitRes, Belos::ScaleType::None),
-          &list);
+          list);
 
       Core::Utils::int_parameter("AZOUTPUT", 0,
           "The number of iterations between each output of the solver's progress is written to "
           "screen",
-          &list);
+          list);
       Core::Utils::int_parameter(
-          "AZREUSE", 0, "The number specifying how often to recompute some preconditioners", &list);
+          "AZREUSE", 0, "The number specifying how often to recompute some preconditioners", list);
 
       Core::Utils::int_parameter("AZSUB", 50,
           "The maximum size of the Krylov subspace used with \"GMRES\" before\n"
           "a restart is performed.",
-          &list);
+          list);
 
-      Core::Utils::string_parameter(
-          "SOLVER_XML_FILE", "none", "xml file defining any linear solver", &list);
+      list.specs.emplace_back(
+          Core::IO::InputSpecBuilders::entry<Core::IO::Noneable<std::filesystem::path>>(
+              "SOLVER_XML_FILE",
+              {.description = "xml file defining any iterative solver",
+                  .default_value = Core::IO::Noneable<std::filesystem::path>()}));
     }
 
     // MueLu options
     {
-      Core::Utils::string_parameter(
-          "MUELU_XML_FILE", "none", "xml file defining any MueLu preconditioner", &list);
+      list.specs.emplace_back(
+          Core::IO::InputSpecBuilders::entry<Core::IO::Noneable<std::filesystem::path>>(
+              "MUELU_XML_FILE", {.description = "xml file defining any MueLu preconditioner",
+                                    .default_value = Core::IO::Noneable<std::filesystem::path>()}));
     }
 
     // Teko options
     {
-      Core::Utils::string_parameter(
-          "TEKO_XML_FILE", "none", "xml file defining any Teko preconditioner", &list);
+      list.specs.emplace_back(
+          Core::IO::InputSpecBuilders::entry<Core::IO::Noneable<std::filesystem::path>>(
+              "TEKO_XML_FILE", {.description = "xml file defining any Teko preconditioner",
+                                   .default_value = Core::IO::Noneable<std::filesystem::path>()}));
     }
 
     // user-given name of solver block (just for beauty)
-    Core::Utils::string_parameter("NAME", "No_name", "User specified name for solver block", &list);
+    Core::Utils::string_parameter("NAME", "No_name", "User specified name for solver block", list);
 
     // Parameters for AMGnxn Preconditioner
     {
       Core::Utils::string_parameter("AMGNXN_TYPE", "AMG(BGS)",
           "Name of the pre-built preconditioner to be used. If set to\"XML\" the preconditioner "
           "is defined using a xml file",
-          &list);
-      Core::Utils::string_parameter(
-          "AMGNXN_XML_FILE", "none", "xml file defining the AMGnxn preconditioner", &list);
+          list);
+      list.specs.emplace_back(
+          Core::IO::InputSpecBuilders::entry<Core::IO::Noneable<std::filesystem::path>>(
+              "AMGNXN_XML_FILE",
+              {.description = "xml file defining the AMGnxn preconditioner",
+                  .default_value = Core::IO::Noneable<std::filesystem::path>()}));
     }
+
+    spec = Core::IO::InputSpecBuilders::all_of(std::move(list.specs));
   }
 
 
-  void set_valid_parameters(Teuchos::ParameterList& list)
+  void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
   {
     // set valid parameters for solver blocks
 
@@ -144,8 +157,7 @@ namespace Inpar::SOLVER
       ss << "SOLVER " << i;
       std::stringstream ss_description;
       ss_description << "solver parameters for solver block " << i;
-      Teuchos::ParameterList& solverlist = list.sublist(ss.str(), false, ss_description.str());
-      set_valid_solver_parameters(solverlist);
+      set_valid_solver_parameters(list[ss.str()]);
     }
   }
 

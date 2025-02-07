@@ -185,95 +185,6 @@ namespace
     stream << std::endl;
   }
 
-
-  void recursively_determine_sublists(const Teuchos::ParameterList& list,
-      std::vector<std::pair<std::string, const Teuchos::ParameterList*>>& sublists,
-      const std::string& parent_section_name = "")
-  {
-    for (const auto& key_value : list)
-    {
-      const Teuchos::ParameterEntry& entry = key_value.second;
-      const std::string& name = key_value.first;
-      if (entry.isList())
-      {
-        const std::string current_section_full_name =
-            (parent_section_name == "") ? name : parent_section_name + "/" + name;
-
-        sublists.emplace_back(current_section_full_name, &list.sublist(name));
-        recursively_determine_sublists(list.sublist(name), sublists, current_section_full_name);
-      }
-    }
-  }
-
-
-  void print_metadata_yaml_parameter_list(ryml::NodeRef node, const Teuchos::ParameterList& list,
-      const std::string& parent_section_name)
-  {
-    // prevent invalid ordering of parameters caused by alphabetical output:
-    // determine all sublists first to pull them out onto the same indentation level
-    std::vector<std::pair<std::string, const Teuchos::ParameterList*>> sublists;
-    recursively_determine_sublists(list, sublists);
-
-
-
-    const auto print_key_value =
-        [](ryml::NodeRef parent, const std::string& key, const Teuchos::ParameterEntry& entry)
-    {
-      const auto to_string = [](const Teuchos::any& any)
-      {
-        std::stringstream s;
-        s << any;
-        return s.str();
-      };
-
-      auto yaml_entry = parent.append_child();
-      // Serialize the key since the ParameterList gives us a temporary copy
-      yaml_entry << ryml::key(key);
-      yaml_entry |= ryml::MAP;
-
-      const Teuchos::any& v = entry.getAny(false);
-      yaml_entry["type"] << v.typeName();
-      yaml_entry["default"] << to_string(v);
-
-      const std::string& doc = entry.docString();
-      if (doc != "")
-      {
-        yaml_entry["description"] << doc;
-        // Add double quotes to the description to prevent YAML from interpreting special characters
-        yaml_entry["description"] |= ryml::VAL_DQUO;
-      }
-
-      Teuchos::RCP<const Teuchos::ParameterEntryValidator> validator = entry.validator();
-      if (validator != Teuchos::null)
-      {
-        Teuchos::RCP<const Teuchos::Array<std::string>> values = validator->validStringValues();
-        if (values != Teuchos::null)
-        {
-          auto yaml_values = yaml_entry["valid options"];
-          yaml_values |= ryml::SEQ;
-
-          for (int i = 0; i < (int)values->size(); ++i)
-          {
-            yaml_values[i] << (*values)[i];
-          }
-        }
-      }
-    };
-
-    for (const auto& [name, sublist] : sublists)
-    {
-      auto yaml_sublist = node.append_child();
-      // Serialize the name since the ParameterList gives us a temporary copy
-      yaml_sublist << ryml::key(name);
-      yaml_sublist |= ryml::MAP;
-
-      for (const auto& key_value : *sublist)
-      {
-        if (!key_value.second.isList())
-          print_key_value(yaml_sublist, key_value.first, key_value.second);
-      }
-    }
-  }
 }  // namespace
 
 void Core::IO::print_section_header(std::ostream& out, const std::string& header)
@@ -298,9 +209,19 @@ void Core::IO::print_dat(std::ostream& stream, const Teuchos::ParameterList& lis
   print_dat_impl(stream, list, "", comment);
 }
 
+void Core::IO::print_dat(
+    std::ostream& stream, const std::map<std::string, Core::IO::InputSpec>& map)
+{
+  for (const auto& [name, spec] : map)
+  {
+    print_section_header(stream, name);
+    spec.print_as_dat(stream);
+  }
+}
 
-void Core::IO::print_metadata_yaml(std::ostream& stream, const Teuchos::ParameterList& list,
-    const std::map<std::string, InputSpec>& section_specs)
+
+void Core::IO::print_metadata_yaml(
+    std::ostream& stream, const std::map<std::string, InputSpec>& section_specs)
 {
   ryml::Tree tree = init_yaml_tree_with_exceptions();
   ryml::NodeRef root = tree.rootref();
@@ -310,12 +231,6 @@ void Core::IO::print_metadata_yaml(std::ostream& stream, const Teuchos::Paramete
     auto metadata = root["metadata"];
     metadata |= ryml::MAP;
     metadata["commit_hash"] << VersionControl::git_hash;
-  }
-
-  {
-    auto parameters = root["parameters"];
-    parameters |= ryml::MAP;
-    print_metadata_yaml_parameter_list(parameters, list, "");
   }
 
   {
@@ -452,86 +367,33 @@ namespace
     return sublist->sublist(name);
   }
 
-  void add_entry(const std::string& key, const std::string& value, Teuchos::ParameterList& list)
-  {
-    // safety check: Is there a duplicate of the same parameter?
-    if (list.isParameter(key))
-      FOUR_C_THROW("Duplicate parameter '%s' in sublist '%s'", key.c_str(), list.name().c_str());
-
-    if (key.empty()) FOUR_C_THROW("Internal error: missing key.", key.c_str());
-    // safety check: Is the parameter without any specified value?
-    if (value.empty())
-      FOUR_C_THROW("Missing value for parameter %s. Fix your input file!", key.c_str());
-
-    {  // try to find an int
-      std::stringstream ssi;
-      int iv;
-
-      ssi << value;
-      ssi >> iv;
-
-      if (ssi.eof())
-      {
-        list.set(key, iv);
-        return;
-      }
-    }
-
-#ifdef FOUR_C_ENABLE_FE_TRAPPING
-    // somehow the following test whether we have a double or not
-    // creates always an internal floating point exception (FE_INVALID). An alternative
-    // implementation using boost::lexical_cast<double> does not solve this problem!
-    // Better temporarily disable this floating point exception in the following,
-    // so that we can go on.
-    feclearexcept(FE_INVALID);
-    /*feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_UNDERFLOW | FE_OVERFLOW);*/
-    fedisableexcept(FE_INVALID);
-#endif
-
-    {  // try to find a double
-      std::stringstream ssd;
-      double dv;
-
-      ssd << value;
-      ssd >> dv;
-
-#ifdef FOUR_C_ENABLE_FE_TRAPPING
-      feclearexcept(FE_INVALID);
-      /*feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_UNDERFLOW | FE_OVERFLOW);*/
-      feenableexcept(FE_INVALID | FE_DIVBYZERO);
-#endif
-
-      if (ssd.eof())
-      {
-        list.set(key, dv);
-        return;
-      }
-    }
-
-    // if it is not an int or a double it must be a string
-    list.set(key, value);
-  }
 }  // namespace
 
 
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-bool Core::IO::read_parameters_in_section(
-    InputFile& input, const std::string& section_name, Teuchos::ParameterList& list)
+void Core::IO::read_parameters_in_section(InputFile& input, const std::string& section_name,
+    Teuchos::ParameterList& list, const InputSpec& spec)
 {
   if (section_name.empty()) FOUR_C_THROW("Empty section name given.");
 
+  InputParameterContainer container;
   Teuchos::ParameterList& sublist = find_sublist(section_name, list);
-
-  for (const auto& line : input.in_section(section_name))
+  if (input.has_section(section_name))
   {
-    const auto& [key, value] = read_key_value(std::string(line.get_as_dat_style_string()));
-
-    add_entry(key, value, sublist);
+    input.match_section(section_name, spec, container);
   }
-
-  return true;
+  else
+  {
+    // Match against an empty section to get all the defaults set correctly.
+    ryml::Tree tree = init_yaml_tree_with_exceptions();
+    ryml::NodeRef root = tree.rootref();
+    root |= ryml::MAP;
+    ConstYamlNodeRef yaml{root, ""};
+    spec.match(yaml, container);
+  }
+  sublist = container.to_teuchos_parameter_list();
 }
 
 /*----------------------------------------------------------------------*/

@@ -17,19 +17,18 @@ FOUR_C_NAMESPACE_OPEN
 /*------------------------------------------------------------------------*
  | set valid parameters for scatra-thermo interaction          fang 10/16 |
  *------------------------------------------------------------------------*/
-void Inpar::STI::set_valid_parameters(Teuchos::ParameterList& list)
+void Inpar::STI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
 
-  Teuchos::ParameterList& stidyn = list.sublist(
-      "STI DYNAMIC", false, "general control parameters for scatra-thermo interaction problems");
+  Core::Utils::SectionSpecs stidyn{"STI DYNAMIC"};
 
   // type of scalar transport time integration
   Core::Utils::string_to_integral_parameter<ScaTraTimIntType>("SCATRATIMINTTYPE", "Standard",
       "scalar transport time integration type is needed to instantiate correct scalar transport "
       "time integration scheme for scatra-thermo interaction problems",
       tuple<std::string>("Standard", "Elch"),
-      tuple<ScaTraTimIntType>(ScaTraTimIntType::standard, ScaTraTimIntType::elch), &stidyn);
+      tuple<ScaTraTimIntType>(ScaTraTimIntType::standard, ScaTraTimIntType::elch), stidyn);
 
   // type of coupling between scatra and thermo fields
   Core::Utils::string_to_integral_parameter<CouplingType>("COUPLINGTYPE", "Undefined",
@@ -43,7 +42,7 @@ void Inpar::STI::set_valid_parameters(Teuchos::ParameterList& list)
           CouplingType::twoway_scatratothermo, CouplingType::twoway_scatratothermo_aitken,
           CouplingType::twoway_scatratothermo_aitken_dofsplit, CouplingType::twoway_thermotoscatra,
           CouplingType::twoway_thermotoscatra_aitken),
-      &stidyn);
+      stidyn);
 
   // specification of initial temperature field
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::InitialField>("THERMO_INITIALFIELD",
@@ -51,30 +50,30 @@ void Inpar::STI::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<std::string>("zero_field", "field_by_function", "field_by_condition"),
       tuple<Inpar::ScaTra::InitialField>(Inpar::ScaTra::initfield_zero_field,
           Inpar::ScaTra::initfield_field_by_function, Inpar::ScaTra::initfield_field_by_condition),
-      &stidyn);
+      stidyn);
 
   // function number for initial temperature field
   Core::Utils::int_parameter("THERMO_INITFUNCNO", -1,
       "function number for initial temperature field for scatra-thermo interaction problems",
-      &stidyn);
+      stidyn);
 
   // ID of linear solver for temperature field
   Core::Utils::int_parameter(
-      "THERMO_LINEAR_SOLVER", -1, "ID of linear solver for temperature field", &stidyn);
+      "THERMO_LINEAR_SOLVER", -1, "ID of linear solver for temperature field", stidyn);
 
   // flag for double condensation of linear equations associated with temperature field
   Core::Utils::bool_parameter("THERMO_CONDENSATION", "No",
-      "flag for double condensation of linear equations associated with temperature field",
-      &stidyn);
+      "flag for double condensation of linear equations associated with temperature field", stidyn);
+
+  stidyn.move_into_collection(list);
 
   /*----------------------------------------------------------------------*/
   // valid parameters for monolithic scatra-thermo interaction
-  Teuchos::ParameterList& stidyn_monolithic = stidyn.sublist(
-      "MONOLITHIC", false, "control parameters for monolithic scatra-thermo interaction problems");
+  Core::Utils::SectionSpecs stidyn_monolithic{stidyn, "MONOLITHIC"};
 
   // ID of linear solver for global system of equations
-  Core::Utils::int_parameter("LINEAR_SOLVER", -1,
-      "ID of linear solver for global system of equations", &stidyn_monolithic);
+  Core::Utils::int_parameter(
+      "LINEAR_SOLVER", -1, "ID of linear solver for global system of equations", stidyn_monolithic);
 
   // type of global system matrix in global system of equations
   Core::Utils::string_to_integral_parameter<Core::LinAlg::MatrixType>("MATRIXTYPE", "block",
@@ -82,19 +81,22 @@ void Inpar::STI::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<std::string>("block", "sparse"),
       tuple<Core::LinAlg::MatrixType>(
           Core::LinAlg::MatrixType::block_condition, Core::LinAlg::MatrixType::sparse),
-      &stidyn_monolithic);
+      stidyn_monolithic);
+
+  stidyn_monolithic.move_into_collection(list);
 
   /*----------------------------------------------------------------------*/
   // valid parameters for partitioned scatra-thermo interaction
-  Teuchos::ParameterList& stidyn_partitioned = stidyn.sublist("PARTITIONED", false,
-      "control parameters for partitioned scatra-thermo interaction problems");
+  Core::Utils::SectionSpecs stidyn_partitioned{stidyn, "PARTITIONED"};
 
   // relaxation parameter
-  Core::Utils::double_parameter("OMEGA", 1., "relaxation parameter", &stidyn_partitioned);
+  Core::Utils::double_parameter("OMEGA", 1., "relaxation parameter", stidyn_partitioned);
 
   // maximum value of Aitken relaxation parameter
   Core::Utils::double_parameter("OMEGAMAX", 0.,
-      "maximum value of Aitken relaxation parameter (0.0 = no constraint)", &stidyn_partitioned);
+      "maximum value of Aitken relaxation parameter (0.0 = no constraint)", stidyn_partitioned);
+
+  stidyn_partitioned.move_into_collection(list);
 
   return;
 }

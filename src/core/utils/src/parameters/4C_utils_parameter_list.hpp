@@ -10,6 +10,8 @@
 
 #include "4C_config.hpp"
 
+#include "4C_io_input_spec_builders.hpp"
+
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 
 FOUR_C_NAMESPACE_OPEN
@@ -18,6 +20,35 @@ namespace Core
 {
   namespace Utils
   {
+    //! A wrapper to gather InputSpecs for a section. This type is used during migration
+    //! to InputSpec.
+    struct SectionSpecs
+    {
+      SectionSpecs(const std::string& section_name) : section_name(section_name) {}
+      //! Create the concatenated section name
+      SectionSpecs(const SectionSpecs& parent, const std::string& section_name)
+          : section_name(parent.section_name + "/" + section_name)
+      {
+      }
+
+      ~SectionSpecs()
+      {
+        FOUR_C_ASSERT(specs.empty(),
+            "SectionSpecs of '%s' must be moved into a collection before destruction.",
+            section_name.c_str());
+      }
+
+      std::string section_name;
+      std::vector<Core::IO::InputSpec> specs;
+
+      void move_into_collection(std::map<std::string, Core::IO::InputSpec>& map)
+      {
+        FOUR_C_ASSERT(map.contains(section_name) == false,
+            "SectionSpecs of '%s' already exists in the collection.", section_name.c_str());
+        map[section_name] = Core::IO::InputSpecBuilders::all_of(std::move(specs));
+      }
+    };
+
     //! add entry as item of enum class @p value to @p list with name @p parameter_name
     template <class EnumType>
     void add_enum_class_to_parameter_list(
@@ -31,15 +62,15 @@ namespace Core
 
     /// local wrapper to test multiple versions of "Yes", "YES", etc
     void bool_parameter(std::string const& paramName, std::string const& value,
-        std::string const& docString, Teuchos::ParameterList* paramList);
+        std::string const& docString, SectionSpecs& section_specs);
 
     /// local wrapper for Teuchos::setIntParameter() that allows only integers
     void int_parameter(std::string const& paramName, int const value, std::string const& docString,
-        Teuchos::ParameterList* paramList);
+        SectionSpecs& section_specs);
 
     /// local wrapper for Teuchos::setDoubleParameter() that allows only doubles
     void double_parameter(std::string const& paramName, double const& value,
-        std::string const& docString, Teuchos::ParameterList* paramList);
+        std::string const& docString, SectionSpecs& section_specs);
 
     /*!
     \brief Sets a string parameter in a Teuchos::ParameterList with optional validation.
@@ -55,7 +86,7 @@ namespace Core
     @param[in] validParams (Optional) A list of valid string values for the parameter.
     */
     void string_parameter(std::string const& paramName, std::string const& value,
-        std::string const& docString, Teuchos::ParameterList* paramList,
+        std::string const& docString, SectionSpecs& section_specs,
         std::vector<std::string> const& validParams = {});
 
 
@@ -65,10 +96,24 @@ namespace Core
     template <typename T>
     void string_to_integral_parameter(const std::string& paramName, const std::string& defaultValue,
         const std::string& docString, const Teuchos::ArrayView<const std::string>& strings,
-        const Teuchos::ArrayView<const T>& integrals, Teuchos::ParameterList* paramList)
+        const Teuchos::ArrayView<const T>& integrals, SectionSpecs& section_specs)
     {
-      Teuchos::setStringToIntegralParameter<T>(
-          paramName, defaultValue, docString, strings, integrals, paramList);
+      FOUR_C_ASSERT(
+          strings.size() == integrals.size(), "The number of strings and integrals must match.");
+      std::vector<std::pair<std::string, T>> choices;
+      for (int i = 0; i < strings.size(); ++i)
+      {
+        choices.emplace_back(strings[i], integrals[i]);
+      }
+
+      auto default_it = std::find(strings.begin(), strings.end(), defaultValue);
+      FOUR_C_ASSERT(default_it != strings.end(), "Default value not found in choices.");
+
+      section_specs.specs.emplace_back(Core::IO::InputSpecBuilders::selection<T>(paramName, choices,
+          {
+              .description = docString,
+              .default_value = integrals[std::distance(strings.begin(), default_it)],
+          }));
     }
 
   }  // namespace Utils

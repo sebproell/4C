@@ -12,7 +12,9 @@
 /*----------------------------------------------------------------------*/
 #include "4C_config.hpp"
 
-#include "4C_utils_parameter_list.fwd.hpp"
+#include "4C_io_input_spec.hpp"
+
+#include <map>
 
 
 
@@ -23,7 +25,7 @@ namespace Inpar
   namespace VolMortar
   {
     /// set the volmortar parameters
-    void set_valid_parameters(Teuchos::ParameterList& list);
+    void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
 
   }  // namespace VolMortar
 }  // namespace Inpar

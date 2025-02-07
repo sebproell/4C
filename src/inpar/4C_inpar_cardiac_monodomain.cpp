@@ -12,22 +12,23 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-void Inpar::ElectroPhysiology::set_valid_parameters(Teuchos::ParameterList& list)
+void Inpar::ElectroPhysiology::set_valid_parameters(
+    std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
 
-  Teuchos::ParameterList& epcontrol = list.sublist("CARDIAC MONODOMAIN CONTROL", false,
-      "control parameters for cardiac electrophysiology problems\n");
-
+  Core::Utils::SectionSpecs epcontrol{"CARDIAC MONODOMAIN CONTROL"};
 
   // Parameters for reaction-diffusion systems (for example cardiac electrophysiology)
   Core::Utils::int_parameter("WRITEMAXINTSTATE", 0,
-      "number of maximal internal state variables to be postprocessed", &epcontrol);
+      "number of maximal internal state variables to be postprocessed", epcontrol);
   Core::Utils::int_parameter("WRITEMAXIONICCURRENTS", 0,
-      "number of maximal ionic currents to be postprocessed", &epcontrol);
+      "number of maximal ionic currents to be postprocessed", epcontrol);
 
   Core::Utils::double_parameter("ACTTHRES", 1.0,
-      "threshold for the potential for computing and postprocessing activation time ", &epcontrol);
+      "threshold for the potential for computing and postprocessing activation time ", epcontrol);
+
+  epcontrol.move_into_collection(list);
 }
 
 

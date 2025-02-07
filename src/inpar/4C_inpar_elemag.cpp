@@ -14,29 +14,28 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-void Inpar::EleMag::set_valid_parameters(Teuchos::ParameterList& list)
+void Inpar::EleMag::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
 
-  Teuchos::ParameterList& electromagneticdyn = list.sublist(
-      "ELECTROMAGNETIC DYNAMIC", false, "control parameters for electromagnetic problems\n");
+  Core::Utils::SectionSpecs electromagneticdyn{"ELECTROMAGNETIC DYNAMIC"};
 
   // general settings for time-integration scheme
-  Core::Utils::double_parameter("TIMESTEP", 0.01, "Time-step length dt", &electromagneticdyn);
-  Core::Utils::double_parameter("TAU", 1, "Stabilization parameter", &electromagneticdyn);
-  Core::Utils::int_parameter("NUMSTEP", 100, "Number of time steps", &electromagneticdyn);
-  Core::Utils::double_parameter("MAXTIME", 1.0, "Total simulation time", &electromagneticdyn);
+  Core::Utils::double_parameter("TIMESTEP", 0.01, "Time-step length dt", electromagneticdyn);
+  Core::Utils::double_parameter("TAU", 1, "Stabilization parameter", electromagneticdyn);
+  Core::Utils::int_parameter("NUMSTEP", 100, "Number of time steps", electromagneticdyn);
+  Core::Utils::double_parameter("MAXTIME", 1.0, "Total simulation time", electromagneticdyn);
 
   // additional parameters
   Core::Utils::int_parameter(
-      "RESULTSEVERY", 1, "Increment for writing solution", &electromagneticdyn);
+      "RESULTSEVERY", 1, "Increment for writing solution", electromagneticdyn);
   Core::Utils::int_parameter(
-      "RESTARTEVERY", 1, "Increment for writing restart", &electromagneticdyn);
+      "RESTARTEVERY", 1, "Increment for writing restart", electromagneticdyn);
   Core::Utils::int_parameter("LINEAR_SOLVER", -1,
-      "Number of linear solver used for electromagnetic problem", &electromagneticdyn);
-  Core::Utils::int_parameter("STARTFUNCNO", -1, "Function for initial field", &electromagneticdyn);
+      "Number of linear solver used for electromagnetic problem", electromagneticdyn);
+  Core::Utils::int_parameter("STARTFUNCNO", -1, "Function for initial field", electromagneticdyn);
   Core::Utils::int_parameter(
-      "SOURCEFUNCNO", -1, "Function for source term in volume", &electromagneticdyn);
+      "SOURCEFUNCNO", -1, "Function for source term in volume", electromagneticdyn);
 
   {
     // time integration
@@ -61,7 +60,7 @@ void Inpar::EleMag::set_valid_parameters(Teuchos::ParameterList& list)
     label[7] = elemag_cn;
 
     Core::Utils::string_to_integral_parameter<Inpar::EleMag::DynamicType>("TIMEINT",
-        "One_Step_Theta", "Type of time integration scheme", name, label, &electromagneticdyn);
+        "One_Step_Theta", "Type of time integration scheme", name, label, electromagneticdyn);
   }
 
   {
@@ -78,19 +77,19 @@ void Inpar::EleMag::set_valid_parameters(Teuchos::ParameterList& list)
     label[3] = initfield_scatra_hdg;
 
     Core::Utils::string_to_integral_parameter<Inpar::EleMag::InitialField>("INITIALFIELD",
-        "zero_field", "Initial field for ele problem", name, label, &electromagneticdyn);
+        "zero_field", "Initial field for ele problem", name, label, electromagneticdyn);
 
     // Error calculation
     Core::Utils::bool_parameter(
-        "CALCERR", "No", "Calc the error wrt ERRORFUNCNO?", &electromagneticdyn);
+        "CALCERR", "No", "Calc the error wrt ERRORFUNCNO?", electromagneticdyn);
 
     // Post process solution?
     Core::Utils::bool_parameter(
-        "POSTPROCESS", "No", "Postprocess solution? (very slow)", &electromagneticdyn);
+        "POSTPROCESS", "No", "Postprocess solution? (very slow)", electromagneticdyn);
   }
 
   Core::Utils::int_parameter(
-      "ERRORFUNCNO", -1, "Function for error calculation", &electromagneticdyn);
+      "ERRORFUNCNO", -1, "Function for error calculation", electromagneticdyn);
 
   // flag for equilibration of global system of equations
   Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
@@ -104,7 +103,9 @@ void Inpar::EleMag::set_valid_parameters(Teuchos::ParameterList& list)
           Core::LinAlg::EquilibrationMethod::columns_maindiag,
           Core::LinAlg::EquilibrationMethod::rowsandcolumns_full,
           Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag),
-      &electromagneticdyn);
+      electromagneticdyn);
+
+  electromagneticdyn.move_into_collection(list);
 }
 
 /// set specific electromagnetic conditions

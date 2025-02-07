@@ -12,11 +12,11 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-void Inpar::Rebalance::set_valid_parameters(Teuchos::ParameterList& list)
+void Inpar::Rebalance::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
 
-  Teuchos::ParameterList& meshpartitioning = list.sublist("MESH PARTITIONING", false, "");
+  Core::Utils::SectionSpecs meshpartitioning{"MESH PARTITIONING"};
 
   Core::Utils::string_to_integral_parameter<Core::Rebalance::RebalanceType>("METHOD", "hypergraph",
       "Type of rebalance/partition algorithm to be used for decomposing the entire mesh into "
@@ -26,17 +26,19 @@ void Inpar::Rebalance::set_valid_parameters(Teuchos::ParameterList& list)
           Core::Rebalance::RebalanceType::hypergraph,
           Core::Rebalance::RebalanceType::recursive_coordinate_bisection,
           Core::Rebalance::RebalanceType::monolithic),
-      &meshpartitioning);
+      meshpartitioning);
 
   Core::Utils::double_parameter("IMBALANCE_TOL", 1.1,
       "Tolerance for relative imbalance of subdomain sizes for graph partitioning of unstructured "
       "meshes read from input files.",
-      &meshpartitioning);
+      meshpartitioning);
 
   Core::Utils::int_parameter("MIN_ELE_PER_PROC", 0,
       "This parameter defines the minimum number of elements to be assigned to any MPI rank during "
       "redistribution. Use 0 to not interfere with the minimal size of a subdomain.",
-      &meshpartitioning);
+      meshpartitioning);
+
+  meshpartitioning.move_into_collection(list);
 }
 
 FOUR_C_NAMESPACE_CLOSE

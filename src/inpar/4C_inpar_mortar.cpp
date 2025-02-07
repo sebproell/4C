@@ -15,12 +15,12 @@ FOUR_C_NAMESPACE_OPEN
 
 
 
-void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
+void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
 
   /* parameters for mortar coupling */
-  Teuchos::ParameterList& mortar = list.sublist("MORTAR COUPLING", false, "");
+  Core::Utils::SectionSpecs mortar{"MORTAR COUPLING"};
 
   Core::Utils::string_to_integral_parameter<Inpar::Mortar::ShapeFcn>("LM_SHAPEFCN", "Dual",
       "Type of employed set of shape functions",
@@ -28,7 +28,7 @@ void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
           "Dual", "dual", "Standard", "standard", "std", "PetrovGalerkin", "petrovgalerkin", "pg"),
       tuple<Inpar::Mortar::ShapeFcn>(shape_dual, shape_dual, shape_standard, shape_standard,
           shape_standard, shape_petrovgalerkin, shape_petrovgalerkin, shape_petrovgalerkin),
-      &mortar);
+      mortar);
 
   Core::Utils::string_to_integral_parameter<Inpar::Mortar::SearchAlgorithm>("SEARCH_ALGORITHM",
       "Binarytree", "Type of contact search",
@@ -36,20 +36,20 @@ void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
           "BinaryTree", "Binarytree", "binarytree"),
       tuple<Inpar::Mortar::SearchAlgorithm>(search_bfele, search_bfele, search_bfele, search_bfele,
           search_binarytree, search_binarytree, search_binarytree),
-      &mortar);
+      mortar);
 
   Core::Utils::string_to_integral_parameter<Inpar::Mortar::BinaryTreeUpdateType>(
       "BINARYTREE_UPDATETYPE", "BottomUp",
       "Type of binary tree update, which is either a bottom up or a top down approach.",
       tuple<std::string>("BottomUp", "TopDown"),
       tuple<Inpar::Mortar::BinaryTreeUpdateType>(binarytree_bottom_up, binarytree_top_down),
-      &mortar);
+      mortar);
 
   Core::Utils::double_parameter(
-      "SEARCH_PARAM", 0.3, "Radius / Bounding volume inflation for contact search", &mortar);
+      "SEARCH_PARAM", 0.3, "Radius / Bounding volume inflation for contact search", mortar);
 
   Core::Utils::bool_parameter("SEARCH_USE_AUX_POS", "Yes",
-      "If chosen auxiliary position is used for computing dops", &mortar);
+      "If chosen auxiliary position is used for computing dops", mortar);
 
   Core::Utils::string_to_integral_parameter<Inpar::Mortar::LagMultQuad>("LM_QUAD", "undefined",
       "Type of LM interpolation for quadratic FE",
@@ -57,10 +57,10 @@ void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
           "undefined", "quad", "quadratic", "pwlin", "piecewiselinear", "lin", "linear", "const"),
       tuple<Inpar::Mortar::LagMultQuad>(lagmult_undefined, lagmult_quad, lagmult_quad,
           lagmult_pwlin, lagmult_pwlin, lagmult_lin, lagmult_lin, lagmult_const),
-      &mortar);
+      mortar);
 
   Core::Utils::bool_parameter("CROSSPOINTS", "No",
-      "If chosen, multipliers are removed from crosspoints / edge nodes", &mortar);
+      "If chosen, multipliers are removed from crosspoints / edge nodes", mortar);
 
   Core::Utils::string_to_integral_parameter<Inpar::Mortar::ConsistentDualType>("LM_DUAL_CONSISTENT",
       "boundary",
@@ -69,14 +69,14 @@ void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<std::string>("none", "boundary", "all"),
       tuple<Inpar::Mortar::ConsistentDualType>(
           consistent_none, consistent_boundary, consistent_all),
-      &mortar);
+      mortar);
 
   Core::Utils::string_to_integral_parameter<Inpar::Mortar::MeshRelocation>("MESH_RELOCATION",
       "Initial", "Type of mesh relocation",
       tuple<std::string>("Initial", "initial", "Every_Timestep", "every_timestep", "No", "no"),
       tuple<Inpar::Mortar::MeshRelocation>(relocation_initial, relocation_initial,
           relocation_timestep, relocation_timestep, relocation_none, relocation_none),
-      &mortar);
+      mortar);
 
   Core::Utils::string_to_integral_parameter<Inpar::Mortar::AlgorithmType>("ALGORITHM", "Mortar",
       "Type of meshtying/contact algorithm",
@@ -85,7 +85,7 @@ void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<Inpar::Mortar::AlgorithmType>(algorithm_mortar, algorithm_mortar, algorithm_nts,
           algorithm_nts, algorithm_gpts, algorithm_gpts, algorithm_lts, algorithm_lts,
           algorithm_ltl, algorithm_ltl, algorithm_stl, algorithm_stl),
-      &mortar);
+      mortar);
 
   Core::Utils::string_to_integral_parameter<Inpar::Mortar::IntType>("INTTYPE", "Segments",
       "Type of numerical integration scheme",
@@ -93,59 +93,60 @@ void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
           "Segments", "segments", "Elements", "elements", "Elements_BS", "elements_BS"),
       tuple<Inpar::Mortar::IntType>(inttype_segments, inttype_segments, inttype_elements,
           inttype_elements, inttype_elements_BS, inttype_elements_BS),
-      &mortar);
+      mortar);
 
   Core::Utils::int_parameter(
-      "NUMGP_PER_DIM", 0, "Number of employed integration points per dimension", &mortar);
+      "NUMGP_PER_DIM", 0, "Number of employed integration points per dimension", mortar);
 
   Core::Utils::string_to_integral_parameter<Inpar::Mortar::Triangulation>("TRIANGULATION",
       "Delaunay", "Type of triangulation for segment-based integration",
       tuple<std::string>("Delaunay", "delaunay", "Center", "center"),
       tuple<Inpar::Mortar::Triangulation>(triangulation_delaunay, triangulation_delaunay,
           triangulation_center, triangulation_center),
-      &mortar);
+      mortar);
 
   Core::Utils::bool_parameter("RESTART_WITH_MESHTYING", "No",
-      "Must be chosen if a non-meshtying simulation is to be restarted with meshtying", &mortar);
+      "Must be chosen if a non-meshtying simulation is to be restarted with meshtying", mortar);
 
   Core::Utils::bool_parameter("OUTPUT_INTERFACES", "No",
       "Write output for each mortar interface separately.\nThis is an additional feature, purely "
       "to enhance visualization. Currently, this is limited to solid meshtying and contact w/o "
       "friction.",
-      &mortar);
+      mortar);
+
+  mortar.move_into_collection(list);
 
   /*--------------------------------------------------------------------*/
   // parameters for parallel redistribution of mortar interfaces
-  Teuchos::ParameterList& parallelRedist = mortar.sublist("PARALLEL REDISTRIBUTION", false,
-      "Parameters to control parallel redistribution of mortar interfaces");
+  Core::Utils::SectionSpecs parallelRedist{mortar, "PARALLEL REDISTRIBUTION"};
 
   Core::Utils::bool_parameter("EXPLOIT_PROXIMITY", "Yes",
       "Exploit information on geometric proximity to split slave interface into close and "
       "non-close parts and redistribute them independently. [Contact only]",
-      &parallelRedist);
+      parallelRedist);
 
   Core::Utils::string_to_integral_parameter<ExtendGhosting>("GHOSTING_STRATEGY", "redundant_master",
       "Type of interface ghosting and ghosting extension algorithm",
       tuple<std::string>("redundant_all", "redundant_master", "round_robin", "binning"),
       tuple<ExtendGhosting>(ExtendGhosting::redundant_all, ExtendGhosting::redundant_master,
           ExtendGhosting::roundrobin, ExtendGhosting::binning),
-      &parallelRedist);
+      parallelRedist);
 
   Core::Utils::double_parameter("IMBALANCE_TOL", 1.1,
-      "Max. relative imbalance of subdomain size after redistribution", &parallelRedist);
+      "Max. relative imbalance of subdomain size after redistribution", parallelRedist);
 
   Core::Utils::double_parameter("MAX_BALANCE_EVAL_TIME", 2.0,
       "Max-to-min ratio of contact evaluation time per processor to trigger parallel "
       "redistribution",
-      &parallelRedist);
+      parallelRedist);
 
   Core::Utils::double_parameter("MAX_BALANCE_SLAVE_ELES", 0.5,
       "Max-to-min ratio of mortar slave elements per processor to trigger parallel "
       "redistribution",
-      &parallelRedist);
+      parallelRedist);
 
   Core::Utils::int_parameter("MIN_ELEPROC", 0,
-      "Minimum no. of elements per processor for parallel redistribution", &parallelRedist);
+      "Minimum no. of elements per processor for parallel redistribution", parallelRedist);
 
   Core::Utils::string_to_integral_parameter<ParallelRedist>("PARALLEL_REDIST", "Static",
       "Type of redistribution algorithm",
@@ -154,11 +155,13 @@ void Inpar::Mortar::set_valid_parameters(Teuchos::ParameterList& list)
           ParallelRedist::redist_none, ParallelRedist::redist_none, ParallelRedist::redist_static,
           ParallelRedist::redist_static, ParallelRedist::redist_dynamic,
           ParallelRedist::redist_dynamic),
-      &parallelRedist);
+      parallelRedist);
 
   Core::Utils::bool_parameter("PRINT_DISTRIBUTION", "Yes",
       "Print details of the parallel distribution, i.e. number of nodes/elements for each rank.",
-      &parallelRedist);
+      parallelRedist);
+
+  parallelRedist.move_into_collection(list);
 }
 
 void Inpar::Mortar::set_valid_conditions(

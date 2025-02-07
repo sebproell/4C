@@ -17,48 +17,48 @@ namespace Inpar
   {
     namespace Thermo
     {
-      void set_valid_parameters(Teuchos::ParameterList& list)
+      void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
       {
         using Teuchos::tuple;
 
         // related sublist
-        Teuchos::ParameterList& sublist_IO = list.sublist("IO", false, "");
-        Teuchos::ParameterList& sublist_IO_output =
-            sublist_IO.sublist("RUNTIME VTK OUTPUT", false, "");
-        Teuchos::ParameterList& sublist_IO_output_thermo =
-            sublist_IO_output.sublist("THERMO", false, "");
+        Core::Utils::SectionSpecs sublist_IO{"IO"};
+        Core::Utils::SectionSpecs sublist_IO_output{sublist_IO, "RUNTIME VTK OUTPUT"};
+        Core::Utils::SectionSpecs sublist_IO_output_thermo{sublist_IO_output, "THERMO"};
 
         // whether to write output for thermo
         Core::Utils::bool_parameter(
-            "OUTPUT_THERMO", "No", "write thermo output", &sublist_IO_output_thermo);
+            "OUTPUT_THERMO", "No", "write thermo output", sublist_IO_output_thermo);
 
         // whether to write temperature state
         Core::Utils::bool_parameter(
-            "TEMPERATURE", "No", "write temperature output", &sublist_IO_output_thermo);
+            "TEMPERATURE", "No", "write temperature output", sublist_IO_output_thermo);
 
         // whether to write heatflux state
         Core::Utils::bool_parameter(
-            "HEATFLUX", "No", "write heatflux output", &sublist_IO_output_thermo);
+            "HEATFLUX", "No", "write heatflux output", sublist_IO_output_thermo);
 
         // whether to write temperature gradient state
         Core::Utils::bool_parameter(
-            "TEMPGRAD", "No", "write temperature gradient output", &sublist_IO_output_thermo);
+            "TEMPGRAD", "No", "write temperature gradient output", sublist_IO_output_thermo);
 
         // whether to write energy state
         Core::Utils::bool_parameter(
-            "ENERGY", "No", "write energy output", &sublist_IO_output_thermo);
+            "ENERGY", "No", "write energy output", sublist_IO_output_thermo);
 
         // whether to write element owner
         Core::Utils::bool_parameter(
-            "ELEMENT_OWNER", "No", "write element owner", &sublist_IO_output_thermo);
+            "ELEMENT_OWNER", "No", "write element owner", sublist_IO_output_thermo);
 
         // whether to write element GIDs
         Core::Utils::bool_parameter(
-            "ELEMENT_GID", "No", "write 4C internal element GIDs", &sublist_IO_output_thermo);
+            "ELEMENT_GID", "No", "write 4C internal element GIDs", sublist_IO_output_thermo);
 
         // whether to write node GIDs
         Core::Utils::bool_parameter(
-            "NODE_GID", "No", "write 4C internal node GIDs", &sublist_IO_output_thermo);
+            "NODE_GID", "No", "write 4C internal node GIDs", sublist_IO_output_thermo);
+
+        sublist_IO_output_thermo.move_into_collection(list);
       }
     }  // namespace Thermo
   }  // namespace IORuntimeOutput

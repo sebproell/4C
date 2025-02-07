@@ -15,31 +15,31 @@
 FOUR_C_NAMESPACE_OPEN
 
 
-void Inpar::ArtDyn::set_valid_parameters(Teuchos::ParameterList& list)
+void Inpar::ArtDyn::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
-  Teuchos::ParameterList& andyn = list.sublist("ARTERIAL DYNAMIC", false, "");
+  Core::Utils::SectionSpecs andyn{"ARTERIAL DYNAMIC"};
 
   Core::Utils::string_to_integral_parameter<TimeIntegrationScheme>("DYNAMICTYPE",
       "ExpTaylorGalerkin", "Explicit Taylor Galerkin Scheme",
       tuple<std::string>("ExpTaylorGalerkin", "Stationary"),
-      tuple<TimeIntegrationScheme>(tay_gal, stationary), &andyn);
+      tuple<TimeIntegrationScheme>(tay_gal, stationary), andyn);
 
-  Core::Utils::double_parameter("TIMESTEP", 0.01, "Time increment dt", &andyn);
-  Core::Utils::int_parameter("NUMSTEP", 0, "Number of Time Steps", &andyn);
-  Core::Utils::double_parameter("MAXTIME", 1000.0, "total simulation time", &andyn);
-  Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", &andyn);
-  Core::Utils::int_parameter("RESULTSEVERY", 1, "Increment for writing solution", &andyn);
+  Core::Utils::double_parameter("TIMESTEP", 0.01, "Time increment dt", andyn);
+  Core::Utils::int_parameter("NUMSTEP", 0, "Number of Time Steps", andyn);
+  Core::Utils::double_parameter("MAXTIME", 1000.0, "total simulation time", andyn);
+  Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", andyn);
+  Core::Utils::int_parameter("RESULTSEVERY", 1, "Increment for writing solution", andyn);
 
   Core::Utils::bool_parameter(
-      "SOLVESCATRA", "no", "Flag to (de)activate solving scalar transport in blood", &andyn);
+      "SOLVESCATRA", "no", "Flag to (de)activate solving scalar transport in blood", andyn);
 
   // number of linear solver used for arterial dynamics
   Core::Utils::int_parameter(
-      "LINEAR_SOLVER", -1, "number of linear solver used for arterial dynamics", &andyn);
+      "LINEAR_SOLVER", -1, "number of linear solver used for arterial dynamics", andyn);
 
   // initial function number
-  Core::Utils::int_parameter("INITFUNCNO", -1, "function number for artery initial field", &andyn);
+  Core::Utils::int_parameter("INITFUNCNO", -1, "function number for artery initial field", andyn);
 
   // type of initial field
   Core::Utils::string_to_integral_parameter<InitialField>("INITIALFIELD", "zero_field",
@@ -47,30 +47,33 @@ void Inpar::ArtDyn::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<std::string>("zero_field", "field_by_function", "field_by_condition"),
       tuple<InitialField>(
           initfield_zero_field, initfield_field_by_function, initfield_field_by_condition),
-      &andyn);
+      andyn);
+
+  andyn.move_into_collection(list);
 }
 
 
 
-void Inpar::ArteryNetwork::set_valid_parameters(Teuchos::ParameterList& list)
+void Inpar::ArteryNetwork::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
 
-  Teuchos::ParameterList& redtisdyn =
-      list.sublist("COUPLED REDUCED-D AIRWAYS AND TISSUE DYNAMIC", false, "");
+  Core::Utils::SectionSpecs redtisdyn{"COUPLED REDUCED-D AIRWAYS AND TISSUE DYNAMIC"};
   Core::Utils::double_parameter("CONVTOL_P", 1E-6,
-      "Coupled red_airway and tissue iteration convergence for pressure", &redtisdyn);
-  Core::Utils::double_parameter("CONVTOL_Q", 1E-6,
-      "Coupled red_airway and tissue iteration convergence for flux", &redtisdyn);
-  Core::Utils::int_parameter("MAXITER", 5, "Maximum coupling iterations", &redtisdyn);
+      "Coupled red_airway and tissue iteration convergence for pressure", redtisdyn);
+  Core::Utils::double_parameter(
+      "CONVTOL_Q", 1E-6, "Coupled red_airway and tissue iteration convergence for flux", redtisdyn);
+  Core::Utils::int_parameter("MAXITER", 5, "Maximum coupling iterations", redtisdyn);
   Core::Utils::string_to_integral_parameter<Relaxtype3D0D>("RELAXTYPE", "norelaxation",
       "Dynamic Relaxation Type",
       tuple<std::string>("norelaxation", "fixedrelaxation", "Aitken", "SD"),
-      tuple<Relaxtype3D0D>(norelaxation, fixedrelaxation, Aitken, SD), &redtisdyn);
-  Core::Utils::double_parameter("TIMESTEP", 0.01, "Time increment dt", &redtisdyn);
-  Core::Utils::int_parameter("NUMSTEP", 1, "Number of Time Steps", &redtisdyn);
-  Core::Utils::double_parameter("MAXTIME", 4.0, "", &redtisdyn);
-  Core::Utils::double_parameter("NORMAL", 1.0, "", &redtisdyn);
+      tuple<Relaxtype3D0D>(norelaxation, fixedrelaxation, Aitken, SD), redtisdyn);
+  Core::Utils::double_parameter("TIMESTEP", 0.01, "Time increment dt", redtisdyn);
+  Core::Utils::int_parameter("NUMSTEP", 1, "Number of Time Steps", redtisdyn);
+  Core::Utils::double_parameter("MAXTIME", 4.0, "", redtisdyn);
+  Core::Utils::double_parameter("NORMAL", 1.0, "", redtisdyn);
+
+  redtisdyn.move_into_collection(list);
 }
 
 
@@ -203,31 +206,32 @@ void Inpar::ArteryNetwork::set_valid_conditions(
 
 
 
-void Inpar::BioFilm::set_valid_parameters(Teuchos::ParameterList& list)
+void Inpar::BioFilm::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
-  Teuchos::ParameterList& biofilmcontrol =
-      list.sublist("BIOFILM CONTROL", false, "control parameters for biofilm problems\n");
+  Core::Utils::SectionSpecs biofilmcontrol{"BIOFILM CONTROL"};
 
   Core::Utils::bool_parameter(
-      "BIOFILMGROWTH", "No", "Scatra algorithm for biofilm growth", &biofilmcontrol);
+      "BIOFILMGROWTH", "No", "Scatra algorithm for biofilm growth", biofilmcontrol);
   Core::Utils::bool_parameter("AVGROWTH", "No",
-      "The calculation of growth parameters is based on averaged values", &biofilmcontrol);
+      "The calculation of growth parameters is based on averaged values", biofilmcontrol);
   Core::Utils::double_parameter(
-      "FLUXCOEF", 0.0, "Coefficient for growth due to scalar flux", &biofilmcontrol);
+      "FLUXCOEF", 0.0, "Coefficient for growth due to scalar flux", biofilmcontrol);
   Core::Utils::double_parameter("NORMFORCEPOSCOEF", 0.0,
-      "Coefficient for erosion due to traction normal surface forces", &biofilmcontrol);
+      "Coefficient for erosion due to traction normal surface forces", biofilmcontrol);
   Core::Utils::double_parameter("NORMFORCENEGCOEF", 0.0,
-      "Coefficient for erosion due to compression normal surface forces", &biofilmcontrol);
+      "Coefficient for erosion due to compression normal surface forces", biofilmcontrol);
   Core::Utils::double_parameter("TANGONEFORCECOEF", 0.0,
-      "Coefficient for erosion due to the first tangential surface force", &biofilmcontrol);
+      "Coefficient for erosion due to the first tangential surface force", biofilmcontrol);
   Core::Utils::double_parameter("TANGTWOFORCECOEF", 0.0,
-      "Coefficient for erosion due to the second tangential surface force", &biofilmcontrol);
+      "Coefficient for erosion due to the second tangential surface force", biofilmcontrol);
   Core::Utils::double_parameter(
-      "BIOTIMESTEP", 0.05, "Time step size for biofilm growth", &biofilmcontrol);
+      "BIOTIMESTEP", 0.05, "Time step size for biofilm growth", biofilmcontrol);
   Core::Utils::int_parameter(
-      "BIONUMSTEP", 0, "Maximum number of steps for biofilm growth", &biofilmcontrol);
+      "BIONUMSTEP", 0, "Maximum number of steps for biofilm growth", biofilmcontrol);
   Core::Utils::bool_parameter(
-      "OUTPUT_GMSH", "No", "Do you want to write Gmsh postprocessing files?", &biofilmcontrol);
+      "OUTPUT_GMSH", "No", "Do you want to write Gmsh postprocessing files?", biofilmcontrol);
+
+  biofilmcontrol.move_into_collection(list);
 }
 
 
@@ -248,44 +252,46 @@ void Inpar::BioFilm::set_valid_conditions(
 }
 
 
-void Inpar::ReducedLung::set_valid_parameters(Teuchos::ParameterList& list)
+void Inpar::ReducedLung::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
 
-  Teuchos::ParameterList& redawdyn = list.sublist("REDUCED DIMENSIONAL AIRWAYS DYNAMIC", false, "");
+  Core::Utils::SectionSpecs redawdyn{"REDUCED DIMENSIONAL AIRWAYS DYNAMIC"};
 
   Core::Utils::string_to_integral_parameter<RedAirwaysDyntype>("DYNAMICTYPE", "OneStepTheta",
       "OneStepTheta Scheme", tuple<std::string>("OneStepTheta"),
-      tuple<RedAirwaysDyntype>(one_step_theta), &redawdyn);
+      tuple<RedAirwaysDyntype>(one_step_theta), redawdyn);
 
   Core::Utils::string_to_integral_parameter<RedAirwaysDyntype>("SOLVERTYPE", "Linear",
       "Solver type", tuple<std::string>("Linear", "Nonlinear"),
-      tuple<RedAirwaysDyntype>(linear, nonlinear), &redawdyn);
+      tuple<RedAirwaysDyntype>(linear, nonlinear), redawdyn);
 
-  Core::Utils::double_parameter("TIMESTEP", 0.01, "Time increment dt", &redawdyn);
-  Core::Utils::int_parameter("NUMSTEP", 0, "Number of Time Steps", &redawdyn);
-  Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", &redawdyn);
-  Core::Utils::int_parameter("RESULTSEVERY", 1, "Increment for writing solution", &redawdyn);
-  Core::Utils::double_parameter("THETA", 1.0, "One-step-theta time integration factor", &redawdyn);
+  Core::Utils::double_parameter("TIMESTEP", 0.01, "Time increment dt", redawdyn);
+  Core::Utils::int_parameter("NUMSTEP", 0, "Number of Time Steps", redawdyn);
+  Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", redawdyn);
+  Core::Utils::int_parameter("RESULTSEVERY", 1, "Increment for writing solution", redawdyn);
+  Core::Utils::double_parameter("THETA", 1.0, "One-step-theta time integration factor", redawdyn);
 
-  Core::Utils::int_parameter("MAXITERATIONS", 1, "maximum iteration steps", &redawdyn);
-  Core::Utils::double_parameter("TOLERANCE", 1.0E-6, "tolerance", &redawdyn);
+  Core::Utils::int_parameter("MAXITERATIONS", 1, "maximum iteration steps", redawdyn);
+  Core::Utils::double_parameter("TOLERANCE", 1.0E-6, "tolerance", redawdyn);
 
   // number of linear solver used for reduced dimensional airways dynamic
   Core::Utils::int_parameter("LINEAR_SOLVER", -1,
-      "number of linear solver used for reduced dim arterial dynamics", &redawdyn);
+      "number of linear solver used for reduced dim arterial dynamics", redawdyn);
 
   Core::Utils::bool_parameter(
-      "SOLVESCATRA", "no", "Flag to (de)activate solving scalar transport in blood", &redawdyn);
+      "SOLVESCATRA", "no", "Flag to (de)activate solving scalar transport in blood", redawdyn);
 
   Core::Utils::bool_parameter("COMPAWACINTER", "no",
-      "Flag to (de)activate computation of airway-acinus interdependency", &redawdyn);
+      "Flag to (de)activate computation of airway-acinus interdependency", redawdyn);
 
   Core::Utils::bool_parameter("CALCV0PRESTRESS", "no",
-      "Flag to (de)activate initial acini volume adjustment with pre-stress condition", &redawdyn);
+      "Flag to (de)activate initial acini volume adjustment with pre-stress condition", redawdyn);
 
   Core::Utils::double_parameter("TRANSPULMPRESS", 800.0,
-      "Transpulmonary pressure needed for recalculation of acini volumes", &redawdyn);
+      "Transpulmonary pressure needed for recalculation of acini volumes", redawdyn);
+
+  redawdyn.move_into_collection(list);
 }
 
 

@@ -7,6 +7,8 @@
 
 #include "4C_utils_parameter_list.hpp"
 
+#include "4C_utils_string.hpp"
+
 #include <Teuchos_Array.hpp>
 #include <Teuchos_ParameterList.hpp>
 #include <Teuchos_StandardParameterEntryValidators.hpp>
@@ -19,59 +21,49 @@ FOUR_C_NAMESPACE_OPEN
 namespace Core::Utils
 {
   void bool_parameter(std::string const& paramName, std::string const& value,
-      std::string const& docString, Teuchos::ParameterList* paramList)
+      std::string const& docString, SectionSpecs& section_specs)
   {
-    Teuchos::Array<std::string> yesnotuple =
-        Teuchos::tuple<std::string>("Yes", "No", "yes", "no", "YES", "NO");
+    // Check that value in lower-case is either "true" or "false", case insensitive
+    const std::string value_lower = Core::Utils::to_lower(value);
+    FOUR_C_ASSERT_ALWAYS(value_lower == "yes" || value_lower == "no",
+        "Invalid value for boolean parameter '" + paramName + "': " + value);
+    bool sane_default = value_lower == "yes";
 
-    std::array<const bool, 6> yesnoarray = {true, false, true, false, true, false};
-    Teuchos::ArrayView<const bool> yesnovalue =
-        Teuchos::arrayView(yesnoarray.data(), yesnoarray.size());
-
-    Teuchos::setStringToIntegralParameter<bool>(
-        paramName, value, docString, yesnotuple, yesnovalue, paramList);
+    section_specs.specs.emplace_back(Core::IO::InputSpecBuilders::entry<bool>(
+        paramName, {.description = docString, .default_value = sane_default}));
   }
 
 
   void int_parameter(std::string const& paramName, int const value, std::string const& docString,
-      Teuchos::ParameterList* paramList)
+      SectionSpecs& section_specs)
   {
-    const bool allow_all_types_per_default = false;
-    Teuchos::AnyNumberParameterEntryValidator::AcceptedTypes validator(allow_all_types_per_default);
-    validator.allowInt(true);
-    Teuchos::setIntParameter(paramName, value, docString, paramList, validator);
+    section_specs.specs.emplace_back(Core::IO::InputSpecBuilders::entry<int>(
+        paramName, {.description = docString, .default_value = value}));
   }
 
 
   void double_parameter(std::string const& paramName, double const& value,
-      std::string const& docString, Teuchos::ParameterList* paramList)
+      std::string const& docString, SectionSpecs& section_specs)
   {
-    // Create a validator that does not allow all types by default
-    const bool allow_all_types_per_default = false;
-    Teuchos::AnyNumberParameterEntryValidator::AcceptedTypes validator(allow_all_types_per_default);
-
-    // Explicitly allow only double type
-    validator.allowDouble(true);
-    validator.allowInt(true);
-
-    // Set the double parameter in the parameter list with the validator
-    Teuchos::setDoubleParameter(paramName, value, docString, paramList, validator);
+    section_specs.specs.emplace_back(Core::IO::InputSpecBuilders::entry<double>(
+        paramName, {.description = docString, .default_value = value}));
   }
 
 
   void string_parameter(std::string const& paramName, std::string const& value,
-      std::string const& docString, Teuchos::ParameterList* paramList,
+      std::string const& docString, SectionSpecs& section_specs,
       std::vector<std::string> const& validParams)
   {
-    Teuchos::RCP<Teuchos::StringValidator> validator =
-        Teuchos::make_rcp<Teuchos::StringValidator>();
-    // Set valid strings only if validParams is not empty
-    if (!validParams.empty())
+    if (validParams.empty())
     {
-      validator->setValidStrings(validParams);
+      section_specs.specs.emplace_back(Core::IO::InputSpecBuilders::entry<std::string>(
+          paramName, {.description = docString, .default_value = value}));
     }
-    // Set the parameter in the parameter list
-    paramList->set(paramName, value, docString, validator);
+    else
+    {
+      section_specs.specs.emplace_back(Core::IO::InputSpecBuilders::selection<std::string>(
+          paramName, validParams, {.description = docString, .default_value = value}));
+    }
   }
 
 }  // namespace Core::Utils

@@ -57,17 +57,17 @@ namespace Core::IO
   void print_dat(std::ostream& stream, const Teuchos::ParameterList& list, bool comment = true);
 
 
+  void print_dat(std::ostream& stream, const std::map<std::string, Core::IO::InputSpec>& map);
+
   /**
-   * Print the metadata of what can be put into a ParameterList @p list. All nested sub-lists inside
-   * @p list are concatenated into a top-level input file section containing the respective
-   * parameters of that sublist. Additionally, @p section_specs contains the InputSpec which may
-   * be read for a specific section.
+   * Print the metadata for @p section_specs which contains the InputSpec which may be read for a
+   * specific section.
    *
    * The output is formatted as YAML. This information can be useful for additional tools that
    * generate schema files or documentation.
    */
-  void print_metadata_yaml(std::ostream& stream, const Teuchos::ParameterList& list,
-      const std::map<std::string, InputSpec>& section_specs = {});
+  void print_metadata_yaml(
+      std::ostream& stream, const std::map<std::string, InputSpec>& section_specs = {});
 
   /**
    * Return true if the @p list contains any parameter that has whitespace in the key name.
@@ -117,11 +117,8 @@ namespace Core::IO
    */
   std::pair<std::string, std::string> read_key_value(const std::string& line);
 
-  /**
-   * Read a @p section_name from the input file and store the key-value pairs in the given @p list.
-   */
-  bool read_parameters_in_section(
-      InputFile& input, const std::string& section_name, Teuchos::ParameterList& list);
+  void read_parameters_in_section(InputFile& input, const std::string& section_name,
+      Teuchos::ParameterList& list, const InputSpec& spec);
 
   /**
    * Read a node-design topology section. This is a collective call that propagates data that

@@ -20,6 +20,9 @@
 #include "4C_inpar_validparameters.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_function.hpp"
+#include "4C_utils_string.hpp"
+
+#include <Teuchos_StrUtils.hpp>
 
 #include <iostream>
 
@@ -55,7 +58,26 @@ namespace RTD
     headerdocumentationfile << ".. _headerparameters:\n\n";
     headerdocumentationfile << "Header parameters\n";
     headerdocumentationfile << "=================\n\n";
-    write_header_reference(headerdocumentationfile, *Input::valid_parameters(), "");
+    auto parameters = Input::valid_parameters();
+
+    for (const auto& [section_name, spec] : parameters)
+    {
+      std::string linktarget = boost::algorithm::replace_all_copy(section_name, "/", "_");
+      linktarget = Teuchos::StrUtils::removeAllSpaces(Core::Utils::to_lower(linktarget));
+
+      // write link:
+      write_linktarget(headerdocumentationfile, "SEC" + linktarget);
+      // write section header
+      write_header(headerdocumentationfile, 1, section_name);
+
+      headerdocumentationfile << section_name << "\n";
+      std::stringstream ss;
+      spec.print_as_dat(ss);
+
+      // Split on newline because this is what the write_code function expects
+      std::vector<std::string> specs_list = Core::Utils::split(ss.str(), "\n");
+      write_code(headerdocumentationfile, specs_list);
+    }
   }
 
   /*----------------------------------------------------------------------*/
