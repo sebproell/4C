@@ -10,6 +10,7 @@
 #include "4C_io_input_file.hpp"
 
 #include "4C_io_input_file_utils.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_unittest_utils_assertions_test.hpp"
 #include "4C_unittest_utils_support_files_test.hpp"
 #include "4C_utils_exceptions.hpp"
@@ -110,10 +111,17 @@ namespace
 
     EXPECT_EQ(input.file_for_section("INCLUDED SECTION 2").filename(), "included.yaml");
 
-    Teuchos::ParameterList pl;
-    Core::IO::read_parameters_in_section(input, "INCLUDED SECTION 2", pl);
-    EXPECT_EQ(pl.sublist("INCLUDED SECTION 2").get<int>("a"), 1);
-    EXPECT_EQ(pl.sublist("INCLUDED SECTION 2").get<double>("b"), 2.0);
+    auto spec = Core::IO::InputSpecBuilders::all_of({
+        Core::IO::InputSpecBuilders::entry<int>("a"),
+        Core::IO::InputSpecBuilders::entry<double>("b"),
+        Core::IO::InputSpecBuilders::entry<bool>("c"),
+    });
+
+    Core::IO::InputParameterContainer container;
+    input.match_section("INCLUDED SECTION 2", spec, container);
+    EXPECT_EQ(container.get<int>("a"), 1);
+    EXPECT_EQ(container.get<double>("b"), 2.0);
+    EXPECT_EQ(container.get<bool>("c"), true);
   }
 
 }  // namespace
