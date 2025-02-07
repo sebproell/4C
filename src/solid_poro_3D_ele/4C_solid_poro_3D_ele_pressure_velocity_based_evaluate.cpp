@@ -252,49 +252,48 @@ double Discret::Elements::SolidPoroPressureVelocityBased::get_normal_cauchy_stre
   if (!pressures) return cauchy_stress_n_dir;
 
   const double n_dot_dir = n.dot(dir);
-  if (std::abs(n_dot_dir) > 1e-30)
-  {
-    using supported_celltypes = Core::FE::CelltypeSequence<Core::FE::CellType::hex8>;
-    Core::FE::cell_type_switch<supported_celltypes>(shape(),
-        [&](auto celltype_t)
+
+  using supported_celltypes = Core::FE::CelltypeSequence<Core::FE::CellType::hex8>;
+  Core::FE::cell_type_switch<supported_celltypes>(shape(),
+      [&](auto celltype_t)
+      {
+        constexpr Core::FE::CellType celltype = celltype_t();
+
+        ElementNodes<celltype> element_nodes = evaluate_element_nodes<celltype>(*this, disp);
+
+        const ShapeFunctionsAndDerivatives<celltype> shape_functions =
+            evaluate_shape_functions_and_derivs<celltype>(xi, element_nodes);
+
+        const double pressure_at_xi = Core::FE::interpolate_to_xi<celltype>(xi, *pressures)[0];
+
+        cauchy_stress_n_dir += -pressure_at_xi * n_dot_dir;
+
+        if (linearizations.d_cauchyndir_dp || linearizations.solid.d_cauchyndir_dn ||
+            linearizations.solid.d_cauchyndir_ddir || linearizations.solid.d_cauchyndir_dxi)
         {
-          constexpr Core::FE::CellType celltype = celltype_t();
-
-          ElementNodes<celltype> element_nodes = evaluate_element_nodes<celltype>(*this, disp);
-
-          const ShapeFunctionsAndDerivatives<celltype> shape_functions =
-              evaluate_shape_functions_and_derivs<celltype>(xi, element_nodes);
-
-          const double pressure_at_xi = Core::FE::interpolate_to_xi<celltype>(xi, *pressures)[0];
-
-          cauchy_stress_n_dir += -pressure_at_xi * n_dot_dir;
-
-          if (linearizations.d_cauchyndir_dp || linearizations.solid.d_cauchyndir_dn ||
-              linearizations.solid.d_cauchyndir_ddir || linearizations.solid.d_cauchyndir_dxi)
+          linearizations.d_cauchyndir_dp->reshape(Core::FE::num_nodes<celltype>, 1);
+          for (unsigned node = 0; node < Core::FE::num_nodes<celltype>; ++node)
           {
-            linearizations.d_cauchyndir_dp->reshape(Core::FE::num_nodes<celltype>, 1);
-            for (unsigned node = 0; node < Core::FE::num_nodes<celltype>; ++node)
+            if (linearizations.d_cauchyndir_dp)
+              (*linearizations.d_cauchyndir_dp)(node, 0) =
+                  -n_dot_dir * shape_functions.shapefunctions_(node);
+
+            for (unsigned dim = 0; dim < 3; ++dim)
             {
-              if (linearizations.d_cauchyndir_dp)
-                (*linearizations.d_cauchyndir_dp)(node, 0) =
-                    -n_dot_dir * shape_functions.shapefunctions_(node);
+              if (linearizations.solid.d_cauchyndir_dn)
+                (*linearizations.solid.d_cauchyndir_dn)(dim, 0) -= pressure_at_xi * dir(dim, 0);
 
-              for (unsigned dim = 0; dim < 3; ++dim)
-              {
-                if (linearizations.solid.d_cauchyndir_dn)
-                  (*linearizations.solid.d_cauchyndir_dn)(dim, 0) -= pressure_at_xi * dir(dim, 0);
+              if (linearizations.solid.d_cauchyndir_ddir)
+                (*linearizations.solid.d_cauchyndir_ddir)(dim, 0) -= pressure_at_xi * n(dim, 0);
 
-                if (linearizations.solid.d_cauchyndir_ddir)
-                  (*linearizations.solid.d_cauchyndir_ddir)(dim, 0) -= pressure_at_xi * n(dim, 0);
-
-                if (linearizations.solid.d_cauchyndir_dxi)
-                  (*linearizations.solid.d_cauchyndir_dxi)(dim, 0) -=
-                      pressures.value()[node] * shape_functions.derivatives_(dim, node) * n_dot_dir;
-              }
+              if (linearizations.solid.d_cauchyndir_dxi)
+                (*linearizations.solid.d_cauchyndir_dxi)(dim, 0) -=
+                    (*pressures)[node] * shape_functions.derivatives_(dim, node) * n_dot_dir;
             }
           }
-        });
-  }
+        }
+      });
+
 
   return cauchy_stress_n_dir;
 }
