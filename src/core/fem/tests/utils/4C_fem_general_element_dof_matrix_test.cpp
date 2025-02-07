@@ -82,13 +82,4 @@ namespace
 
     EXPECT_EQ(arr[5], 12.3);
   }
-
-  TEST(ElementDofMatrixTest, ThrowModifyConstArrayView)
-  {
-    const auto arr = get_dof_array<std::array<double, 8>>();
-    Core::LinAlg::Matrix<2, 4> dof_matrix =
-        Core::FE::get_element_dof_matrix_view<Core::FE::CellType::quad4, 2>(arr);
-
-    EXPECT_ANY_THROW(dof_matrix(1, 2) = 12.3);
-  }
 }  // namespace

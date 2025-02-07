@@ -7,6 +7,7 @@
 
 #include "4C_inpar_structure.hpp"
 
+#include "4C_constraint_springdashpot.hpp"
 #include "4C_fem_condition_definition.hpp"
 #include "4C_io_geometry_type.hpp"
 #include "4C_io_input_spec_builders.hpp"
@@ -412,21 +413,30 @@ namespace Inpar
                                                  Core::Conditions::ConditionDefinition& cond)
       {
         cond.add_component(entry<int>("NUMDOF"));
-        cond.add_component(entry<std::vector<int>>("ONOFF", {.description = "", .size = 3}));
-        cond.add_component(entry<std::vector<double>>("STIFF", {.description = "", .size = 3}));
+        cond.add_component(entry<std::vector<int>>(
+            "ONOFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
+        cond.add_component(entry<std::vector<double>>(
+            "STIFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
+        cond.add_component(entry<std::vector<int>>(
+            "TIMEFUNCTSTIFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
+        cond.add_component(entry<std::vector<double>>(
+            "VISCO", {.description = "", .size = from_parameter<int>("NUMDOF")}));
+        cond.add_component(entry<std::vector<int>>(
+            "TIMEFUNCTVISCO", {.description = "", .size = from_parameter<int>("NUMDOF")}));
+        cond.add_component(entry<std::vector<double>>(
+            "DISPLOFFSET", {.description = "", .size = from_parameter<int>("NUMDOF")}));
+        cond.add_component(entry<std::vector<int>>(
+            "TIMEFUNCTDISPLOFFSET", {.description = "", .size = from_parameter<int>("NUMDOF")}));
+        cond.add_component(entry<std::vector<int>>(
+            "FUNCTNONLINSTIFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
         cond.add_component(
-            entry<std::vector<int>>("TIMEFUNCTSTIFF", {.description = "", .size = 3}));
-        cond.add_component(entry<std::vector<double>>("VISCO", {.description = "", .size = 3}));
-        cond.add_component(
-            entry<std::vector<int>>("TIMEFUNCTVISCO", {.description = "", .size = 3}));
-        cond.add_component(
-            entry<std::vector<double>>("DISPLOFFSET", {.description = "", .size = 3}));
-        cond.add_component(
-            entry<std::vector<int>>("TIMEFUNCTDISPLOFFSET", {.description = "", .size = 3}));
-        cond.add_component(
-            entry<std::vector<int>>("FUNCTNONLINSTIFF", {.description = "", .size = 3}));
-        cond.add_component(selection<std::string>(
-            "DIRECTION", {"xyz", "refsurfnormal", "cursurfnormal"}, {.description = ""}));
+            selection<CONSTRAINTS::SpringDashpot::RobinSpringDashpotType>("DIRECTION",
+                {{"xyz", CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::xyz},
+                    {"refsurfnormal",
+                        CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::refsurfnormal},
+                    {"cursurfnormal",
+                        CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::cursurfnormal}},
+                {.description = "Direction of the spring-dashpot boundary conditions"}));
         cond.add_component(entry<Noneable<int>>("COUPLING", {.description = ""}));
         condlist.emplace_back(cond);
       };

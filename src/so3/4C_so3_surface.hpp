@@ -246,8 +246,7 @@ namespace Discret
         calc_struct_area,
         calc_ref_nodal_normals,
         calc_cur_nodal_normals,
-        calc_struct_area_poro,
-        calc_struct_robinforcestiff
+        calc_struct_area_poro
       };
 
      protected:
