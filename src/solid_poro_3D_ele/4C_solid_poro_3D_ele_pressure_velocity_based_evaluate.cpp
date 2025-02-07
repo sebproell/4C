@@ -5,6 +5,9 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+#include "4C_fem_general_cell_type.hpp"
+#include "4C_fem_general_cell_type_traits.hpp"
+#include "4C_fem_general_utils_interpolation.hpp"
 #include "4C_mat_structporo.hpp"
 #include "4C_solid_3D_ele_calc_lib.hpp"
 #include "4C_solid_poro_3D_ele_pressure_velocity_based.hpp"
@@ -229,6 +232,71 @@ int Discret::Elements::SolidPoroPressureVelocityBased::evaluate(Teuchos::Paramet
       // do nothing (no error because there are some actions the poro element is supposed to ignore)
       return 0;
   }
+}
+
+
+
+double Discret::Elements::SolidPoroPressureVelocityBased::get_normal_cauchy_stress_at_xi(
+    const std::vector<double>& disp, const std::optional<std::vector<double>>& pressures,
+    const Core::LinAlg::Matrix<3, 1>& xi, const Core::LinAlg::Matrix<3, 1>& n,
+    const Core::LinAlg::Matrix<3, 1>& dir, SolidPoroCauchyNDirLinearizations<3>& linearizations)
+{
+  double cauchy_stress_n_dir = std::visit(
+      [&](auto& solid)
+      {
+        return solid->get_normal_cauchy_stress_at_xi(
+            *this, this->struct_poro_material(), disp, xi, n, dir, linearizations.solid);
+      },
+      solid_calc_variant_);
+
+  if (!pressures) return cauchy_stress_n_dir;
+
+  const double n_dot_dir = n.dot(dir);
+  if (std::abs(n_dot_dir) > 1e-30)
+  {
+    using supported_celltypes = Core::FE::CelltypeSequence<Core::FE::CellType::hex8>;
+    Core::FE::cell_type_switch<supported_celltypes>(shape(),
+        [&](auto celltype_t)
+        {
+          constexpr Core::FE::CellType celltype = celltype_t();
+
+          ElementNodes<celltype> element_nodes = evaluate_element_nodes<celltype>(*this, disp);
+
+          const ShapeFunctionsAndDerivatives<celltype> shape_functions =
+              evaluate_shape_functions_and_derivs<celltype>(xi, element_nodes);
+
+          const double pressure_at_xi = Core::FE::interpolate_to_xi<celltype>(xi, *pressures)[0];
+
+          cauchy_stress_n_dir += -pressure_at_xi * n_dot_dir;
+
+          if (linearizations.d_cauchyndir_dp || linearizations.solid.d_cauchyndir_dn ||
+              linearizations.solid.d_cauchyndir_ddir || linearizations.solid.d_cauchyndir_dxi)
+          {
+            linearizations.d_cauchyndir_dp->reshape(Core::FE::num_nodes<celltype>, 1);
+            for (unsigned node = 0; node < Core::FE::num_nodes<celltype>; ++node)
+            {
+              if (linearizations.d_cauchyndir_dp)
+                (*linearizations.d_cauchyndir_dp)(node, 0) =
+                    -n_dot_dir * shape_functions.shapefunctions_(node);
+
+              for (unsigned dim = 0; dim < 3; ++dim)
+              {
+                if (linearizations.solid.d_cauchyndir_dn)
+                  (*linearizations.solid.d_cauchyndir_dn)(dim, 0) -= pressure_at_xi * dir(dim, 0);
+
+                if (linearizations.solid.d_cauchyndir_ddir)
+                  (*linearizations.solid.d_cauchyndir_ddir)(dim, 0) -= pressure_at_xi * n(dim, 0);
+
+                if (linearizations.solid.d_cauchyndir_dxi)
+                  (*linearizations.solid.d_cauchyndir_dxi)(dim, 0) -=
+                      pressures.value()[node] * shape_functions.derivatives_(dim, node) * n_dot_dir;
+              }
+            }
+          }
+        });
+  }
+
+  return cauchy_stress_n_dir;
 }
 
 int Discret::Elements::SolidPoroPressureVelocityBased::evaluate_neumann(

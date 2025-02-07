@@ -17,10 +17,13 @@
 #include "4C_so3_hex8.hpp"
 #include "4C_so3_poro.hpp"
 #include "4C_solid_3D_ele.hpp"
+#include "4C_solid_poro_3D_ele_pressure_velocity_based.hpp"
 #include "4C_utils_exceptions.hpp"
 
 #include <Epetra_FEVector.h>
 #include <Teuchos_StandardParameterEntryValidators.hpp>
+
+#include <optional>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -197,6 +200,19 @@ void CONTACT::IntegratorNitschePoro::so_ele_cauchy(Mortar::Element& moEle, doubl
       sigma_nt = solid_ele->get_normal_cauchy_stress_at_xi<3>(
           moEle.mo_data().parent_disp(), pxsi, normal, direction, cauchy_linearizations);
     }
+    else if (auto* solid_ele = dynamic_cast<Discret::Elements::SolidPoroPressureVelocityBased*>(
+                 moEle.parent_element());
+        solid_ele != nullptr)
+    {
+      Discret::Elements::SolidPoroCauchyNDirLinearizations<3> cauchy_linearizations{};
+      cauchy_linearizations.solid.d_cauchyndir_dd = &dsntdd;
+      cauchy_linearizations.solid.d_cauchyndir_dn = &dsntdn;
+      cauchy_linearizations.solid.d_cauchyndir_ddir = &dsntdt;
+      cauchy_linearizations.solid.d_cauchyndir_dxi = &dsntdpxi;
+
+      sigma_nt = solid_ele->get_normal_cauchy_stress_at_xi(moEle.mo_data().parent_disp(),
+          std::nullopt, pxsi, normal, direction, cauchy_linearizations);
+    }
     else
     {
       FOUR_C_THROW("Unsupported solid element type");
@@ -204,11 +220,32 @@ void CONTACT::IntegratorNitschePoro::so_ele_cauchy(Mortar::Element& moEle, doubl
   }
   else
   {
-    dynamic_cast<Discret::Elements::So3Poro<Discret::Elements::SoHex8, Core::FE::CellType::hex8>*>(
-        moEle.parent_element())
-        ->get_cauchy_n_dir_and_derivatives_at_xi(pxsi, moEle.mo_data().parent_disp(),
-            moEle.mo_data().parent_pf_pres(), normal, direction, sigma_nt, &dsntdd, &dsntdp,
-            &dsntdn, &dsntdt, &dsntdpxi);
+    if (auto* solid_ele = dynamic_cast<Discret::Elements::SolidPoroPressureVelocityBased*>(
+            moEle.parent_element());
+        solid_ele != nullptr)
+    {
+      Discret::Elements::SolidPoroCauchyNDirLinearizations<3> cauchy_linearizations{};
+      cauchy_linearizations.solid.d_cauchyndir_dd = &dsntdd;
+      cauchy_linearizations.solid.d_cauchyndir_dn = &dsntdn;
+      cauchy_linearizations.solid.d_cauchyndir_ddir = &dsntdt;
+      cauchy_linearizations.solid.d_cauchyndir_dxi = &dsntdpxi;
+      cauchy_linearizations.d_cauchyndir_dp = &dsntdp;
+
+      sigma_nt = solid_ele->get_normal_cauchy_stress_at_xi(moEle.mo_data().parent_disp(),
+          moEle.mo_data().parent_pf_pres(), pxsi, normal, direction, cauchy_linearizations);
+    }
+    else if (auto* solid_ele = dynamic_cast<
+                 Discret::Elements::So3Poro<Discret::Elements::SoHex8, Core::FE::CellType::hex8>*>(
+                 moEle.parent_element()))
+    {
+      solid_ele->get_cauchy_n_dir_and_derivatives_at_xi(pxsi, moEle.mo_data().parent_disp(),
+          moEle.mo_data().parent_pf_pres(), normal, direction, sigma_nt, &dsntdd, &dsntdp, &dsntdn,
+          &dsntdt, &dsntdpxi);
+    }
+    else
+    {
+      FOUR_C_THROW("Unsupported solid-poro element type");
+    }
   }
 
   cauchy_nt += w * sigma_nt;
