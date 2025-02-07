@@ -444,7 +444,8 @@ void Core::IO::Internal::MatchTree::assert_match(ryml::ConstNodeRef node) const
   ss << node << "\n\n";
   ss << "against the given input specification. ";
 
-  if (entries_.front().state != MatchEntry::State::matched)
+  if (entries_.front().state != MatchEntry::State::matched &&
+      entries_.front().state != MatchEntry::State::defaulted)
   {
     ss << "This was the best attempt to match the input:\n\n";
     recursively_print_match_entries(entries_.front(), ss, 0);
