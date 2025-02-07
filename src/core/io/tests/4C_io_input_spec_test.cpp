@@ -72,6 +72,33 @@ namespace
     }
   }
 
+  TEST(InputSpecTest, EnumClassSelection)
+  {
+    enum class EnumClass
+    {
+      A,
+      B,
+      C,
+    };
+
+    auto spec = all_of({
+        selection<EnumClass>("enum",
+            {
+                {"A", EnumClass::A},
+                {"B", EnumClass::B},
+                {"C", EnumClass::C},
+            }),
+    });
+
+    {
+      InputParameterContainer container;
+      std::string stream("enum A");
+      ValueParser parser(stream);
+      spec.fully_parse(parser, container);
+      EXPECT_EQ(container.get<EnumClass>("enum"), EnumClass::A);
+    }
+  }
+
   TEST(InputSpecTest, Vector)
   {
     auto spec = all_of({
@@ -637,10 +664,10 @@ specs:
   - name: e
     type: selection
     required: false
-    default: 1
+    default: e1
     choices:
-      e1: 1
-      e2: 2
+      - name: e1
+      - name: e2
   - name: group2
     type: group
     required: false

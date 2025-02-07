@@ -98,10 +98,13 @@ namespace Core::IO
   };
 
 
+  /**
+   * The types that we support for yaml (de)serialization.
+   */
   template <typename T>
-  concept YamlSupportedType = requires(ryml::NodeRef node, const T& value) {
-    { node << value };
-  };
+  concept YamlSupportedType =
+      std::same_as<T, int> || std::same_as<T, double> || std::same_as<T, bool> ||
+      std::same_as<T, std::string> || std::same_as<T, std::filesystem::path>;
 
   /**
    * An exception thrown when an error occurs during yaml processing..
@@ -134,6 +137,11 @@ namespace Core::IO
     node << (value ? "true" : "false");
   }
 
+  inline void emit_value_as_yaml(ryml::NodeRef node, const std::filesystem::path& value)
+  {
+    node << value.string();
+  }
+
   template <typename T>
   void emit_value_as_yaml(ryml::NodeRef node, const std::optional<T>& value)
   {
@@ -146,7 +154,6 @@ namespace Core::IO
       node << "none";
     }
   }
-
 
   template <typename T, typename U>
   void emit_value_as_yaml(ryml::NodeRef node, const std::pair<T, U>& value)
