@@ -60,29 +60,6 @@ namespace Discret::Elements
   {
     return Core::FE::GaussRule3D::tet_1point;
   }
-
-  /*!
-   * @brief Create a Gauss integration interface from a given Gauss rule type
-   */
-  template <Core::FE::CellType celltype, typename GaussRuleType>
-  Core::FE::GaussIntegration create_gauss_integration(GaussRuleType rule)
-  {
-    // setup default integration
-    Core::FE::IntPointsAndWeights<Core::FE::dim<celltype>> intpoints(rule);
-
-    // format as Discret::Utils::GaussIntegration
-    std::shared_ptr<Core::FE::CollectedGaussPoints> gp =
-        std::make_shared<Core::FE::CollectedGaussPoints>();
-
-    std::array<double, 3> xi = {0., 0., 0.};
-    for (int i = 0; i < intpoints.ip().nquad; ++i)
-    {
-      for (int d = 0; d < Core::FE::dim<celltype>; ++d) xi[d] = intpoints.ip().qxg[i][d];
-      gp->append(xi[0], xi[1], xi[2], intpoints.ip().qwgt[i]);
-    }
-
-    return Core::FE::GaussIntegration(gp);
-  }
   /// @}
 }  // namespace Discret::Elements
 FOUR_C_NAMESPACE_CLOSE
