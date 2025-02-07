@@ -185,6 +185,16 @@ namespace Core::IO
 
   void read_value_from_yaml(ConstYamlNodeRef node, double& value);
 
+  /**
+   * Reading a bool currently supports the following options:
+   *
+   * - truthy values: "true", "yes", "on", "1"
+   * - falsy values: "false", "no", "off", "0"
+   *
+   * All of them are case-insensitive.
+   */
+  void read_value_from_yaml(ConstYamlNodeRef node, bool& value);
+
   template <typename T>
   void read_value_from_yaml(ConstYamlNodeRef node, std::optional<T>& value)
   {
