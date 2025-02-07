@@ -68,9 +68,7 @@ void Adapter::StructureBaseAlgorithm::create_structure(const Teuchos::ParameterL
       create_tim_int(prbdyn, sdyn, actdis);  // <-- here is the show
       break;
     default:
-      FOUR_C_THROW("unknown time integration scheme '%s'",
-          Teuchos::getStringValue<Inpar::Solid::DynamicType>(sdyn, "DYNAMICTYPE").c_str());
-      break;
+      FOUR_C_THROW("Unknown time integration scheme");
   }
 }
 

@@ -98,9 +98,7 @@ void Adapter::StructureBaseAlgorithmNew::setup()
       setup_tim_int();  // <-- here is the show
       break;
     default:
-      FOUR_C_THROW("Unknown time integration scheme '%s'",
-          Teuchos::getStringValue<Inpar::Solid::DynamicType>(*sdyn_, "DYNAMICTYPE").c_str());
-      break;
+      FOUR_C_THROW("Unknown time integration scheme");
   }
 
   issetup_ = true;

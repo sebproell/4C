@@ -57,6 +57,19 @@ namespace Inpar
           "write information about monitored boundary condition to output file",
           &sublist_IO_monitor_structure_dbc);
     }
+
+    std::string to_string(FileType type)
+    {
+      switch (type)
+      {
+        case FileType::csv:
+          return "csv";
+        case FileType::data:
+          return "data";
+        default:
+          FOUR_C_THROW("Unknown file type");
+      }
+    }
   }  // namespace IOMonitorStructureDBC
 }  // namespace Inpar
 

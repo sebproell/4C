@@ -45,8 +45,8 @@ void Solid::TimeInt::ParamsMonitorDBC::init(
   os_precision_ = IO_monitor_dbc_structure_paramslist.get<int>("PRECISION_SCREEN");
 
   // file type
-  file_type_ = Teuchos::getStringValue<Inpar::IOMonitorStructureDBC::FileType>(
-      IO_monitor_dbc_structure_paramslist, "FILE_TYPE");
+  file_type_ = to_string(Teuchos::getIntegralValue<Inpar::IOMonitorStructureDBC::FileType>(
+      IO_monitor_dbc_structure_paramslist, "FILE_TYPE"));
 
   // write header in csv file
   write_header_ = IO_monitor_dbc_structure_paramslist.get<bool>("WRITE_HEADER");

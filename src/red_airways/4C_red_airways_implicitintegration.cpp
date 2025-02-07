@@ -652,8 +652,8 @@ void Airway::RedAirwayImplicitTimeInt::time_step(
   }
   else
   {
-    FOUR_C_THROW("[%s] is not a defined solver",
-        (Teuchos::getStringValue<RedAirwaysDyntype>(params_, "solver type").c_str()));
+    FOUR_C_THROW("RedAirwaysDynType %d is not a defined solver",
+        params_.get<RedAirwaysDyntype>("solver type"));
   }
 
   // Update solution: current solution becomes old solution of next timestep
@@ -704,8 +704,8 @@ void Airway::RedAirwayImplicitTimeInt::integrate_step(
   }
   else
   {
-    FOUR_C_THROW("[%s] is not a defined solver",
-        (Teuchos::getStringValue<RedAirwaysDyntype>(params_, "solver type").c_str()));
+    FOUR_C_THROW("RedAirwaysDynType %d is not a defined solver",
+        params_.get<RedAirwaysDyntype>("solver type"));
   }
 
 }  // RedAirwayImplicitTimeInt::IntegrateStep

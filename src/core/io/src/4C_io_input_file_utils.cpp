@@ -349,14 +349,16 @@ bool Core::IO::need_to_print_equal_sign(const Teuchos::ParameterList& list)
 
         const std::string& name = it.key;
 
-        const Teuchos::RCP<const Teuchos::Array<std::string>>& values_ptr =
-            it.second.validator()->validStringValues();
-
-        const bool value_has_space =
-            (values_ptr != Teuchos::null) &&
-            std::any_of(values_ptr->begin(), values_ptr->end(), string_has_space);
-
-        return value_has_space || string_has_space(name);
+        // Only check string values for spaces.
+        if (list.isType<std::string>(name))
+        {
+          const std::string& value = list.get<std::string>(name);
+          return string_has_space(value) || string_has_space(name);
+        }
+        else
+        {
+          return string_has_space(name);
+        }
       });
 }
 

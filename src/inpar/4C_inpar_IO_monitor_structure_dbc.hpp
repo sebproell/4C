@@ -32,6 +32,8 @@ namespace Inpar
       data
     };
 
+    std::string to_string(FileType type);
+
     /// set the valid parameters related to writing of output at runtime
     void set_valid_parameters(Teuchos::ParameterList& list);
 
