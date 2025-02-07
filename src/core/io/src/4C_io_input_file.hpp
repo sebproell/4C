@@ -227,7 +227,7 @@ namespace Core::IO
      *
      * @return True if there were unknown sections, false otherwise.
      */
-    bool print_unknown_sections(std::ostream& out) const;
+    bool print_unused_sections(std::ostream& out) const;
 
    private:
     /**

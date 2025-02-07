@@ -65,7 +65,7 @@ void EXODUS::validate_input_file(const MPI_Comm comm, const std::string datfile)
 
   // inform user about unused/obsolete section names being found
   // and force him/her to correct the input file accordingly
-  const bool all_ok = !reader.print_unknown_sections(std::cout);
+  const bool all_ok = !reader.print_unused_sections(std::cout);
 
   // we wait till all procs are here. Otherwise a hang up might occur where
   // one proc ended with FOUR_C_THROW but other procs were not finished and waited...
