@@ -11,7 +11,6 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_IO_runtime_output_structure_beams.hpp"
 #include "4C_inpar_structure.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -37,63 +36,63 @@ namespace Discret
       void setup();
 
       /// whether to write displacements
-      bool output_displacement_state() const
+      [[nodiscard]] bool output_displacement_state() const
       {
         check_init_setup();
         return output_displacement_state_;
-      };
+      }
 
       /// whether to write velocity
-      bool output_velocity_state() const
+      [[nodiscard]] bool output_velocity_state() const
       {
         check_init_setup();
         return output_velocity_state_;
-      };
+      }
 
       /// whether to write the owner of elements
-      bool output_element_owner() const
+      [[nodiscard]] bool output_element_owner() const
       {
         check_init_setup();
         return output_element_owner_;
-      };
+      }
 
       /// whether to write the GIDs of elements
-      bool output_element_gid() const
+      [[nodiscard]] bool output_element_gid() const
       {
         check_init_setup();
         return output_element_gid_;
-      };
+      }
 
       /// whether to write the material IDs of elements
-      bool output_element_material_id() const
+      [[nodiscard]] bool output_element_material_id() const
       {
         check_init_setup();
         return output_element_material_id_;
-      };
+      }
 
       /// whether to write the ghosting information of elements
-      bool output_element_ghosting() const
+      [[nodiscard]] bool output_element_ghosting() const
       {
         check_init_setup();
         return output_element_ghosting_;
-      };
+      }
 
       /// whether to write the GIDs of the nodes
-      bool output_node_gid() const
+      [[nodiscard]] bool output_node_gid() const
       {
         check_init_setup();
         return output_node_gid_;
-      };
+      }
 
       /// whether to write stress and / or strain data
-      bool output_stress_strain() const
+      [[nodiscard]] bool output_stress_strain() const
       {
         check_init_setup();
         return output_stress_strain_;
-      };
+      }
 
       /// Return output type of Gauss point data
-      Inpar::Solid::GaussPointDataOutputType gauss_point_data_output() const
+      [[nodiscard]] Inpar::Solid::GaussPointDataOutputType gauss_point_data_output() const
       {
         check_init_setup();
         return gauss_point_data_output_type_;
@@ -101,16 +100,14 @@ namespace Discret
 
      private:
       /// get the init indicator status
-      const bool& is_init() const { return isinit_; };
+      [[nodiscard]] bool is_init() const { return isinit_; }
 
       /// get the setup indicator status
-      const bool& is_setup() const { return issetup_; };
+      [[nodiscard]] bool is_setup() const { return issetup_; }
 
       /// Check if init() and setup() have been called, yet.
       void check_init_setup() const;
 
-
-     private:
       /// @name variables for internal use only
       /// @{
       ///
