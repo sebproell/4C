@@ -7,6 +7,7 @@
 
 #include "4C_linear_solver_amgnxn_preconditioner.hpp"
 
+#include "4C_io_input_parameter_container.hpp"
 #include "4C_linalg_blocksparsematrix.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_linear_solver_amgnxn_vcycle.hpp"
@@ -19,6 +20,7 @@
 #include <Teuchos_XMLParameterListHelpers.hpp>
 #include <Xpetra_MultiVectorFactory.hpp>
 
+#include <filesystem>
 #include <iostream>
 
 FOUR_C_NAMESPACE_OPEN
@@ -179,22 +181,15 @@ Core::LinearSolver::AmGnxnInterface::AmGnxnInterface(Teuchos::ParameterList& par
   if (amgnxn_type == "XML")
   {
     // Parse the whole file
-    std::string amgnxn_xml = amglist.get<std::string>("AMGNXN_XML_FILE", "none");
-    if (amgnxn_xml == "none") FOUR_C_THROW("The input parameter AMGNXN_XML_FILE is empty.");
-    if (not(amgnxn_xml == "none"))
+    auto amgnxn_xml = amglist.get<Core::IO::Noneable<std::filesystem::path>>("AMGNXN_XML_FILE");
+    if (!amgnxn_xml) FOUR_C_THROW("The input parameter AMGNXN_XML_FILE is 'none'.");
     {
       Teuchos::updateParametersFromXmlFile(
-          amgnxn_xml, Teuchos::Ptr<Teuchos::ParameterList>(&smoo_params_));
+          amgnxn_xml->string(), Teuchos::Ptr<Teuchos::ParameterList>(&smoo_params_));
 
       // Find the path to the main xml file and include it in the param list to further usage
-      std::string::size_type pos = amgnxn_xml.rfind('/');
-      if (pos != std::string::npos)
-      {
-        std::string tmp = amgnxn_xml.substr(0, pos + 1);
-        smoo_params_.set<std::string>("main xml path", tmp);
-      }
-      else
-        smoo_params_.set<std::string>("main xml path", "");
+      smoo_params_.set<std::string>(
+          "main xml path", amgnxn_xml->has_parent_path() ? amgnxn_xml->parent_path().string() : "");
     }
   }
   else

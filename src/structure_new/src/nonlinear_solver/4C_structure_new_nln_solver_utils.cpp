@@ -15,6 +15,8 @@
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 #include <Teuchos_XMLParameterListCoreHelpers.hpp>
 
+#include <filesystem>
+
 FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------------*
@@ -24,19 +26,19 @@ bool Solid::Nln::SOLVER::is_xml_status_test_file(const Teuchos::ParameterList& p
   bool check = false;
 
   Teuchos::ParameterList pxml;
-  const std::string& xmlfilename = pstatus.get<std::string>("XML File");
+  auto xmlfilename = pstatus.get<Core::IO::Noneable<std::filesystem::path>>("XML File");
 
   // check the input: path to the "Status Test" xml-file
-  if (xmlfilename != "none")
+  if (xmlfilename)
   {
-    if (xmlfilename.length() and xmlfilename.rfind(".xml"))
+    if (xmlfilename->extension() == ".xml")
     {
-      pxml = *(Teuchos::getParametersFromXmlFile(xmlfilename));
+      pxml = *(Teuchos::getParametersFromXmlFile(xmlfilename->string()));
       if (pxml.isSublist("Outer Status Test"))
         if (pxml.sublist("Outer Status Test").numParams() > 0) check = true;
     }
     else
-      FOUR_C_THROW("The file name \"%s\" is not a valid XML file name.", xmlfilename.c_str());
+      FOUR_C_THROW("The file name \"%s\" is not a valid XML file name.", xmlfilename->c_str());
   }
 
   return check;
