@@ -21,6 +21,19 @@ using namespace GEOMETRYPAIR;
 
 namespace
 {
+
+  void set_up_default_parameters_line_to_3d(Teuchos::ParameterList& list)
+  {
+    list.set("GEOMETRY_PAIR_STRATEGY", Inpar::GEOMETRYPAIR::LineTo3DStrategy::segmentation);
+    list.set("GEOMETRY_PAIR_SEGMENTATION_SEARCH_POINTS", 6);
+    list.set("GEOMETRY_PAIR_SEGMENTATION_NOT_ALL_GAUSS_POINTS_PROJECT_VALID_ACTION",
+        Inpar::GEOMETRYPAIR::NotAllGaussPointsProjectValidAction::fail);
+    list.set("GAUSS_POINTS", 6);
+    list.set("INTEGRATION_POINTS_CIRCUMFERENCE", 6);
+
+    list.set("GEOMETRY_PAIR_SURFACE_NORMALS", Inpar::GEOMETRYPAIR::SurfaceNormals::standard);
+  }
+
   /**
    * Class to test the line to volume geometry pair segmentation algorithm.
    */
@@ -34,8 +47,7 @@ namespace
     {
       // Set up the evaluation data container for the geometry pairs.
       Teuchos::ParameterList line_to_surface_params_list;
-      Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(line_to_surface_params_list);
-      Inpar::GEOMETRYPAIR::set_valid_parameters_line_to_surface(line_to_surface_params_list);
+      set_up_default_parameters_line_to_3d(line_to_surface_params_list);
       evaluation_data_ =
           std::make_shared<GEOMETRYPAIR::LineToSurfaceEvaluationData>(line_to_surface_params_list);
     }

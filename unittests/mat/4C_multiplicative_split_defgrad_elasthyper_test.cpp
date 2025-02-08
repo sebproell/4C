@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 
 #include "4C_global_data.hpp"
+#include "4C_inpar_ssi.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_mat_elasthyper_service.hpp"
 #include "4C_mat_multiplicative_split_defgrad_elasthyper.hpp"
@@ -98,9 +99,10 @@ namespace
 
       // set parameter list
       auto parameter_list_pointer = std::make_shared<Teuchos::ParameterList>();
-      auto structural_dynamic_params = parameter_list_pointer->sublist("STRUCTURAL DYNAMIC", false);
-
-      structural_dynamic_params.set("MASSLIN", "No");
+      parameter_list_pointer->sublist("STRUCTURAL DYNAMIC", false)
+          .set("MASSLIN", Inpar::Solid::MassLin::ml_none);
+      parameter_list_pointer->sublist("SSI CONTROL")
+          .set("COUPALGO", Inpar::SSI::SolutionSchemeOverFields::ssi_IterStagg);
 
       // set the parameter list in the global problem
       problem.set_parameter_list(parameter_list_pointer);
