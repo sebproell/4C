@@ -3,12 +3,7 @@
 Setup Guide
 =============
 
-Here you'll find some useful notes on setting up and running |FOURC|,
-the multi purpose multi physics multi-modelling code developed at
-
-- Institute for Computational Mechanics of the Technische Universität München,
-- IMCS of the Hochschule der Bunderwehr München, and
-- Institute of Material Systems Modelling of the Helmholtz Zentrum Hereon.
+Here you'll find some useful notes on setting up and running |FOURC|.
 
 |FOURC| is developed and used on Linux. Other Unixes work as well.
 Windows versions might be created using cygwin or mingw, but this will require some small modifications and is not covered here.
