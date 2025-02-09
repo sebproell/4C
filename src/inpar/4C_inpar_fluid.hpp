@@ -56,6 +56,8 @@ namespace Inpar
       stabtype_pressureprojection
     };
 
+    [[nodiscard]] std::string to_string(StabType stabtype);
+
     //! flag to select the type of viscosity stabilization
     enum VStab
     {
@@ -66,6 +68,9 @@ namespace Inpar
       viscous_stab_usfem_only_rhs
     };
 
+    [[nodiscard]] std::string to_string(VStab vstab);
+
+
     //! flag to select the type of reactive stabilization
     enum RStab
     {
@@ -73,6 +78,8 @@ namespace Inpar
       reactive_stab_gls,
       reactive_stab_usfem
     };
+
+    [[nodiscard]] std::string to_string(RStab rstab);
 
     //! flag to select the type of cross stress stabilization
     enum CrossStress
@@ -82,6 +89,8 @@ namespace Inpar
       cross_stress_stab_only_rhs
     };
 
+    std::string to_string(CrossStress crossstress);
+
     //! flag to select the type of Reynolds stress stabilization
     enum ReynoldsStress
     {
@@ -89,6 +98,8 @@ namespace Inpar
       reynolds_stress_stab,
       reynolds_stress_stab_only_rhs
     };
+
+    std::string to_string(ReynoldsStress reynoldsstress);
 
     //! flag to select time-dependent subgrid-scales
     enum SubscalesTD
@@ -103,6 +114,8 @@ namespace Inpar
       inertia_stab_keep,
       inertia_stab_keep_complete
     };
+
+    [[nodiscard]] std::string to_string(Transient transient);
 
     /// tau type for residual based fluid stabilizations
     enum TauType
@@ -125,6 +138,8 @@ namespace Inpar
       tau_hughes_franca_balestra_wo_dt,
       tau_not_defined
     };
+
+    std::string to_string(TauType tau);
 
     /// characteristic element length for tau_Mu
     enum CharEleLengthU
@@ -150,6 +165,8 @@ namespace Inpar
       EOS_PRES_xfem_gp
     };
 
+    [[nodiscard]] std::string to_string(EosPres eospres);
+
     //! flag to select the type of convective streamline edge-based (EOS) stabilization
     enum EosConvStream
     {
@@ -158,6 +175,8 @@ namespace Inpar
       EOS_CONV_STREAM_xfem_gp
     };
 
+    [[nodiscard]] std::string to_string(EosConvStream eosconvstream);
+
     //! flag to select the type of convective crosswind edge-based (EOS) stabilization
     enum EosConvCross
     {
@@ -165,6 +184,8 @@ namespace Inpar
       EOS_CONV_CROSS_std_eos,
       EOS_CONV_CROSS_xfem_gp
     };
+
+    [[nodiscard]] std::string to_string(EosConvCross eosconvcross);
 
     //! flag to select the type of divergence EOS stabilization
     enum EosDiv
@@ -175,6 +196,8 @@ namespace Inpar
       EOS_DIV_div_jump_std_eos,
       EOS_DIV_div_jump_xfem_gp
     };
+
+    [[nodiscard]] std::string to_string(EosDiv eosdiv);
 
     /// tau type for edge-oriented / continuous interior penalty stabilization
     enum EosTauType
@@ -195,6 +218,8 @@ namespace Inpar
       EOS_tau_not_defined
     };
 
+    [[nodiscard]] std::string to_string(EosTauType eostautype);
+
     /// Element length for edge-oriented / continuous interior penalty stabilization
     enum EosElementLength
     {
@@ -205,6 +230,8 @@ namespace Inpar
       EOS_he_surf_diameter,  // maximal (n-1)D diameter of the internal face/edge
       EOS_he_vol_eq_diameter
     };
+
+    [[nodiscard]] std::string to_string(EosElementLength eoselementlength);
 
     /// EdgeBased (EOS) and Ghost Penalty matrix pattern
     enum EosGpPattern
@@ -328,6 +355,8 @@ namespace Inpar
       dir_dep,
       min_len
     };
+
+    [[nodiscard]] std::string to_string(VremanFiMethod vremanfimethod);
 
     //! options for forcing of homogeneous isotropic turbulence
     enum ForcingType
