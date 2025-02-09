@@ -16,9 +16,6 @@
 #include "4C_utils_result_test.hpp"
 
 #include <Epetra_Map.h>
-#include <Epetra_Operator.h>
-
-#include <memory>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -40,17 +37,6 @@ namespace Core::LinAlg
   class MapExtractor;
   class MultiMapExtractor;
 }  // namespace Core::LinAlg
-
-namespace Core::Conditions
-{
-  class LocsysManager;
-}
-
-namespace CONTACT
-{
-  class NitscheStrategyTsi;
-  class ParamsInterface;
-}  // namespace CONTACT
 
 namespace Thermo
 {
@@ -102,10 +88,10 @@ namespace Thermo
     virtual std::shared_ptr<const Core::LinAlg::Vector<double>> rhs() = 0;
 
     /// unknown temperatures at t(n+1)
-    virtual std::shared_ptr<const Core::LinAlg::Vector<double>> tempnp() = 0;
+    virtual std::shared_ptr<Core::LinAlg::Vector<double>> tempnp() = 0;
 
     /// unknown temperatures at t(n)
-    virtual std::shared_ptr<const Core::LinAlg::Vector<double>> tempn() = 0;
+    virtual std::shared_ptr<Core::LinAlg::Vector<double>> tempn() = 0;
 
     //@}
 
@@ -117,9 +103,6 @@ namespace Thermo
 
     /// DOF map of vector of unknowns for multiple dofsets
     virtual std::shared_ptr<const Epetra_Map> dof_row_map(unsigned nds) = 0;
-
-    /// domain map of system matrix (do we really need this?)
-    virtual const Epetra_Map& domain_map() = 0;
 
     /// direct access to system matrix
     virtual std::shared_ptr<Core::LinAlg::SparseMatrix> system_matrix() = 0;
@@ -188,9 +171,6 @@ namespace Thermo
     //! Access to output object
     virtual std::shared_ptr<Core::IO::DiscretizationWriter> disc_writer() = 0;
 
-    /// prepare output
-    virtual void prepare_output() = 0;
-
     /// output results
     virtual void output(bool forced_writerestart = false) = 0;
 
@@ -199,14 +179,6 @@ namespace Thermo
 
     /// reset everything to beginning of time step, for adaptivity
     virtual void reset_step() = 0;
-
-    //! store an RCP to the contact interface parameters in the structural time integration
-    virtual void set_nitsche_contact_parameters(
-        std::shared_ptr<CONTACT::ParamsInterface> params) = 0;
-
-    /// apply interface loads on the thermal field
-    virtual void set_force_interface(std::shared_ptr<Core::LinAlg::Vector<double>> ithermoload) = 0;
-
 
     //@}
 
@@ -223,18 +195,6 @@ namespace Thermo
      */
     virtual Inpar::Thermo::ConvergenceStatus solve() = 0;
 
-    /// get the linear solver object used for this field
-    virtual std::shared_ptr<Core::LinAlg::Solver> linear_solver() = 0;
-
-    //@}
-
-    //! @name Extract temperature values needed for TSI
-    //@{
-    /// extract temperatures for inserting in structure field
-    virtual std::shared_ptr<Core::LinAlg::Vector<double>> write_access_tempn() = 0;
-
-    /// extract current temperatures for inserting in structure field
-    virtual std::shared_ptr<Core::LinAlg::Vector<double>> write_access_tempnp() = 0;
     //@}
 
     /// Identify residual
@@ -257,7 +217,6 @@ namespace Thermo
     explicit BaseAlgorithm(
         const Teuchos::ParameterList& prbdyn, std::shared_ptr<Core::FE::Discretization> actdis);
 
-    /// virtual destructor to support polymorph destruction
     virtual ~BaseAlgorithm() = default;
 
     /// return thermal field solver

@@ -8,11 +8,6 @@
 #ifndef FOUR_C_THERMO_TIMINT_HPP
 #define FOUR_C_THERMO_TIMINT_HPP
 
-
-/*----------------------------------------------------------------------*
- | headers                                                  bborn 06/08 |
- *----------------------------------------------------------------------*/
-
 #include "4C_config.hpp"
 
 #include "4C_fem_discretization.hpp"
@@ -30,19 +25,8 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-// forward declaration
-namespace CONTACT
-{
-  class NitscheStrategyTsi;
-  class ParamsInterface;
-}  // namespace CONTACT
-
-/*----------------------------------------------------------------------*
- | belongs to thermal dynamics namespace                    bborn 08/09 |
- *----------------------------------------------------------------------*/
 namespace Thermo
 {
-  /*====================================================================*/
   /*!
    * \brief Front-end for thermal dynamics by integrating in time.
    *
@@ -67,20 +51,10 @@ namespace Thermo
    * Most importantly the base integrator manages the system state vectors and
    * matrices. It also deals with the output to files and offers method to
    * determine forces and tangents.
-   *
-   * \author bborn
-   * \date 06/08
    */
   class TimInt : public Adapter
   {
    public:
-    //! @name Life
-    //@{
-
-    //! Print thermo time logo
-    void logo();
-
-    //! Constructor
     TimInt(const Teuchos::ParameterList& ioparams,              //!< ioflags
         const Teuchos::ParameterList& tdynparams,               //!< input parameters
         const Teuchos::ParameterList& xparams,                  //!< extra flags
@@ -88,17 +62,6 @@ namespace Thermo
         std::shared_ptr<Core::LinAlg::Solver> solver,           //!< the solver
         std::shared_ptr<Core::IO::DiscretizationWriter> output  //!< the output
     );
-
-    //! Empty constructor
-    TimInt() { ; }
-
-    //! Copy constructor
-    TimInt(const TimInt& old) { ; }
-
-    //! Resize #TimIntMStep<T> multi-step quantities
-    virtual void resize_m_step() = 0;
-
-    //@}
 
     //! @name Actions
     //@{
@@ -110,23 +73,14 @@ namespace Thermo
 
     //! Apply Dirichlet boundary conditions on provided state vectors
     void apply_dirichlet_bc(const double time,               //!< at time
-        std::shared_ptr<Core::LinAlg::Vector<double>> temp,  //!< temperatures
-                                                             //!< (may be nullptr)
-        std::shared_ptr<Core::LinAlg::Vector<double>> rate,  //!< temperature rate
-                                                             //!< (may be nullptr)
+        std::shared_ptr<Core::LinAlg::Vector<double>> temp,  //!< temperatures (may be nullptr)
+        std::shared_ptr<Core::LinAlg::Vector<double>> rate,  //!< temperature rate (may be nullptr)
         bool recreatemap  //!< recreate mapextractor/toggle-vector
                           //!< which stores the DOF IDs subjected
                           //!< to Dirichlet BCs
                           //!< This needs to be true if the bounded DOFs
                           //!< have been changed.
     );
-
-    //! prepare thermal contact parameters
-    void set_nitsche_contact_parameters(
-        std::shared_ptr<CONTACT::ParamsInterface> params_interface) override
-    {
-      contact_params_interface_ = params_interface;
-    }
 
     //! prepare time step
     void prepare_time_step() override = 0;
@@ -238,15 +192,6 @@ namespace Thermo
     //! Write internal and external forces (if necessary for restart)
     virtual void write_restart_force(std::shared_ptr<Core::IO::DiscretizationWriter> output) = 0;
 
-    //! Check whether energy output file is attached
-    bool attached_energy_file()
-    {
-      if (energyfile_)
-        return true;
-      else
-        return false;
-    }
-
     //! Attach file handle for energy file #energyfile_
     void attach_energy_file()
     {
@@ -257,12 +202,6 @@ namespace Thermo
         energyfile_ = new std::ofstream(energyname.c_str());
         *energyfile_ << "# timestep time internal_energy" << std::endl;
       }
-    }
-
-    //! Detach file handle for energy file #energyfile_
-    void detach_energy_file()
-    {
-      if (energyfile_) delete energyfile_;
     }
 
     //! Identify residual
@@ -341,40 +280,11 @@ namespace Thermo
 
     //@}
 
-    //! @name Thermo-structure-interaction specific methods
-    //@{
-
-    //! Set external loads (heat flux) due to tfsi interface
-    void set_force_interface(
-        std::shared_ptr<Core::LinAlg::Vector<double>> ithermoload  //!< thermal interface load
-        ) override;
-
-    //@}
-
     //! @name Attributes
     //@{
 
     //! Provide Name
     virtual enum Inpar::Thermo::DynamicType method_name() const = 0;
-
-    //! Provide title
-    std::string method_title() const { return Inpar::Thermo::dynamic_type_string(method_name()); }
-
-    //! Return true, if time integrator is implicit
-    virtual bool method_implicit() = 0;
-
-    //! Return true, if time integrator is explicit
-    bool method_explicit() { return (not method_implicit()); }
-
-    //! Provide number of steps, e.g. a single-step method returns 1,
-    //! a \f$m\f$-multistep method returns \f$m\f$
-    virtual int method_steps() = 0;
-
-    //! Give order of accuracy
-    virtual int method_order_of_accuracy() = 0;
-
-    //! Return linear error coefficient of temperatures
-    virtual double method_lin_err_coeff() = 0;
 
     //@}
 
@@ -398,21 +308,11 @@ namespace Thermo
       return std::make_shared<Epetra_Map>(*dofrowmap);
     }
 
-    //! Access solver
-    std::shared_ptr<Core::LinAlg::Solver> solver() { return solver_; }
-
-    //! get the linear solver object used for this field
-    std::shared_ptr<Core::LinAlg::Solver> linear_solver() override { return solver_; }
-
     //! Access output object
     std::shared_ptr<Core::IO::DiscretizationWriter> disc_writer() override { return output_; }
 
-    //! prepare output (do nothing)
-    void prepare_output() override { ; }
-
-    //! Read restart values
-    void read_restart(const int step  //!< restart step
-        ) override;
+    //! Read restart values at given restart step
+    void read_restart(const int step) override;
 
     //! Read and set restart state
     void read_restart_state();
@@ -420,32 +320,17 @@ namespace Thermo
     //! Read and set restart forces
     virtual void read_restart_force() = 0;
 
-    //! Return temperatures \f$T_{n}\f$
-    std::shared_ptr<Core::LinAlg::Vector<double>> temp() { return (*temp_)(0); }
-
-    //! Return temperatures \f$T_{n}\f$
-    std::shared_ptr<Core::LinAlg::Vector<double>> write_access_tempn() override
-    {
-      return (*temp_)(0);
-    }
-
-    //! Return temperatures \f$T_{n}\f$
-    std::shared_ptr<const Core::LinAlg::Vector<double>> tempn() override { return (*temp_)(0); }
-
     //! initial guess of Newton's method
     std::shared_ptr<const Core::LinAlg::Vector<double>> initial_guess() override = 0;
 
-    //! Return temperatures \f$T_{n+1}\f$
-    std::shared_ptr<Core::LinAlg::Vector<double>> write_access_tempnp() override { return tempn_; }
+    //! Return temperatures \f$T_{n}\f$
+    std::shared_ptr<Core::LinAlg::Vector<double>> tempn() override { return (*temp_)(0); }
 
     //! Return temperatures \f$T_{n+1}\f$
-    std::shared_ptr<const Core::LinAlg::Vector<double>> tempnp() override { return tempn_; }
+    std::shared_ptr<Core::LinAlg::Vector<double>> tempnp() override { return tempn_; }
 
     //! Return temperature rates \f$R_{n}\f$
-    std::shared_ptr<Core::LinAlg::Vector<double>> rate() { return (*rate_)(0); }
-
-    //! Return temperature rates \f$R_{n+1}\f$
-    std::shared_ptr<Core::LinAlg::Vector<double>> rate_new() { return raten_; }
+    std::shared_ptr<Core::LinAlg::Vector<double>> raten() { return (*rate_)(0); }
 
     //! Return external force \f$F_{ext,n}\f$
     virtual std::shared_ptr<Core::LinAlg::Vector<double>> fext() = 0;
@@ -459,12 +344,6 @@ namespace Thermo
     //! Return tangent, i.e. thermal residual differentiated by temperatures
     //! (system_matrix()/stiff_ in STR)
     std::shared_ptr<Core::LinAlg::SparseMatrix> system_matrix() override { return tang_; }
-
-    //! Return domain map
-    const Epetra_Map& get_domain_map() { return tang_->domain_map(); }
-
-    //! Return domain map
-    const Epetra_Map& domain_map() override { return tang_->domain_map(); }
 
     //! Return current time \f$t_{n}\f$
     double time_old() const override { return (*time_)[0]; }
@@ -496,15 +375,6 @@ namespace Thermo
     //! Update number of time steps (in adaptivity)
     virtual void set_num_step(const int newNumStep) { stepmax_ = newNumStep; }
 
-    //! Get communicator
-    virtual inline MPI_Comm get_comm() const { return discret_->get_comm(); }
-
-    //! Return MapExtractor for Dirichlet boundary conditions
-    std::shared_ptr<const Core::LinAlg::MapExtractor> get_dbc_map_extractor() const
-    {
-      return dbcmaps_;
-    }
-
     //! Return MapExtractor for Dirichlet boundary conditions
     std::shared_ptr<const Core::LinAlg::MapExtractor> get_dbc_map_extractor() override
     {
@@ -520,10 +390,7 @@ namespace Thermo
     //! @name General purpose algorithm members
     //@{
 
-    std::shared_ptr<Core::FE::Discretization> discret_;        //!< attached discretisation
-    std::shared_ptr<Core::FE::Discretization> discretstruct_;  //!< structural discretisation
-
-    int myrank_;                                           //!< ID of actual processor in parallel
+    std::shared_ptr<Core::FE::Discretization> discret_;    //!< discretisation
     std::shared_ptr<Core::LinAlg::Solver> solver_;         //!< linear algebraic solver
     bool solveradapttol_;                                  //!< adapt solver tolerance
     double solveradaptolbetter_;                           //!< tolerance to which is adapted ????
@@ -565,9 +432,7 @@ namespace Thermo
         runtime_output_writer_;                         //!< runtime output
     OptionsThermoRuntimeOutput runtime_output_params_;  //!< runtime output parameter
 
-    bool printlogo_;         //!< true: enjoy your cuppa
     int printscreen_;        //!< print infos to standard out every n steps
-    bool printiter_;         //!< print intermediate iterations during solution
     int writerestartevery_;  //!< write restart every given step;
                              //!< if 0, restart is not written
     bool writeglob_;         //!< write state on/off
@@ -580,7 +445,7 @@ namespace Thermo
     int errorfunctno_;  //!< function number of analytical solution for error evaluation
     //@}
 
-    //! @name General control parameters
+    //! @name General time integration control parameters
     //@{
 
     std::shared_ptr<TimeStepping::TimIntMStep<double>>
@@ -599,30 +464,25 @@ namespace Thermo
     //! @name Global vectors
     //@{
 
-    std::shared_ptr<Core::LinAlg::Vector<double>> zeros_;  //!< a zero vector of full length
+    //! a zero vector of full length
+    std::shared_ptr<Core::LinAlg::Vector<double>> zeros_;
 
     //@}
-
 
     //! @name Global state vectors
     //@{
 
     //! global temperatures \f${T}_{n}, T_{n-1}, ...\f$
     std::shared_ptr<TimeStepping::TimIntMStep<Core::LinAlg::Vector<double>>> temp_;
+
     //! global temperature rates \f${R}_{n}, R_{n-1}, ...\f$
     std::shared_ptr<TimeStepping::TimIntMStep<Core::LinAlg::Vector<double>>> rate_;
-    std::shared_ptr<Core::LinAlg::Vector<double>> tempn_;  //!< global temperatures
-                                                           //!< \f${T}_{n+1}\f$
-                                                           //!< at \f$t_{n+1}\f$
-    std::shared_ptr<Core::LinAlg::Vector<double>> raten_;  //!< global temperature rates
-                                                           //!< \f${R}_{n+1}\f$
-                                                           //!< at \f$t_{n+1}\f$
-    //@}
 
-    //! @name Interface stuff
-    //@{
+    //! global temperatures \f${T}_{n+1}\f$ at \f$t_{n+1}\f$
+    std::shared_ptr<Core::LinAlg::Vector<double>> tempn_;
 
-    std::shared_ptr<Core::LinAlg::Vector<double>> fifc_;  //!< external interface loads
+    //! global temperature rates \f${R}_{n+1}\f$ at \f$t_{n+1}\f$
+    std::shared_ptr<Core::LinAlg::Vector<double>> raten_;
 
     //@}
 
@@ -631,24 +491,10 @@ namespace Thermo
 
     //! holds eventually effective tangent (STR: stiff_)
     std::shared_ptr<Core::LinAlg::SparseMatrix> tang_;
-    //! capacity matrix (constant)
-    // std::shared_ptr<Core::LinAlg::SparseMatrix> capa_;
 
     //@}
-
-    //! @name Nitsche contact stuff
-    //@{
-
-    // thermo contact parameters
-    std::shared_ptr<CONTACT::ParamsInterface> contact_params_interface_;
-
-    //@}
-
-  };  // TimInt
-
+  };
 }  // namespace Thermo
-
-/*----------------------------------------------------------------------*/
 
 FOUR_C_NAMESPACE_CLOSE
 

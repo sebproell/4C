@@ -18,8 +18,8 @@ FOUR_C_NAMESPACE_OPEN
  *----------------------------------------------------------------------*/
 Thermo::ResultTest::ResultTest(TimInt& tintegrator) : Core::Utils::ResultTest("THERMAL")
 {
-  temp_ = tintegrator.temp();
-  rate_ = tintegrator.rate();
+  temp_ = tintegrator.tempn();
+  rate_ = tintegrator.raten();
   flux_ = tintegrator.freact();
   thrdisc_ = tintegrator.discretization();
 }

@@ -268,7 +268,7 @@ void TSI::Partitioned::time_loop_one_way()
     do_thermo_step();
 
     // now extract the current temperatures and pass it to the structure
-    temp_ = thermo_field()->write_access_tempnp();
+    temp_ = thermo_field()->tempnp();
 
     // -------------------------------------------------- structure field
 
@@ -294,7 +294,7 @@ void TSI::Partitioned::time_loop_one_way()
 void TSI::Partitioned::time_loop_sequ_stagg()
 {
   // now extract the current temperatures and pass it to the structure
-  temp_ = thermo_field()->write_access_tempnp();
+  temp_ = thermo_field()->tempnp();
   // extract final displacements,
   // update is called afterwards, so we extract the newest solution
   disp_ = structure_field()->dispnp();
@@ -400,7 +400,7 @@ void TSI::Partitioned::time_loop_full()
   // extract final displacement and velocity
   // update is called afterwards, so we extract the newest solution
   disp_ = structure_field()->dispnp();
-  temp_ = thermo_field()->write_access_tempnp();
+  temp_ = thermo_field()->tempnp();
 
   // outer iteration loop
   outer_iteration_loop();
@@ -525,7 +525,7 @@ void TSI::Partitioned::outer_iteration_loop()
       // thermal predictor for the coupling iteration outside the loop
       // get temperature of old time step (T_n)
       // T^p_n+1 = T_n
-      temp_ = thermo_field()->write_access_tempn();
+      temp_ = thermo_field()->tempn();
 
       // start OUTER ITERATION
       while (stopnonliniter == false)
@@ -533,7 +533,7 @@ void TSI::Partitioned::outer_iteration_loop()
         itnum++;
 
         // get current temperatures due to solve thermo step, like predictor in FSI
-        if (itnum != 1) temp_ = thermo_field()->write_access_tempnp();
+        if (itnum != 1) temp_ = thermo_field()->tempnp();
 
         // begin nonlinear solver / outer iteration ***************************
 

@@ -8,9 +8,6 @@
 #ifndef FOUR_C_THERMO_TIMINT_IMPL_HPP
 #define FOUR_C_THERMO_TIMINT_IMPL_HPP
 
-/*----------------------------------------------------------------------*
- | headers                                                  bborn 08/09 |
- *----------------------------------------------------------------------*/
 #include "4C_config.hpp"
 
 #include "4C_coupling_adapter_mortar.hpp"
@@ -21,18 +18,13 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-// forward declaration
 namespace Adapter
 {
   class CouplingMortar;
 }
 
-/*----------------------------------------------------------------------*
- | belongs to thermal dynamics namespace                    bborn 08/09 |
- *----------------------------------------------------------------------*/
 namespace Thermo
 {
-  /*====================================================================*/
   //!
   //! \brief Front-end for thermal dynamics
   //!        with \b implicit time integration
@@ -62,9 +54,6 @@ namespace Thermo
         std::shared_ptr<Core::LinAlg::Solver> solver,           //!< the solver
         std::shared_ptr<Core::IO::DiscretizationWriter> output  //!< the output
     );
-
-    //! Resize #TimIntMStep<T> multi-step quantities
-    void resize_m_step() override = 0;
 
     //@}
 
@@ -264,15 +253,8 @@ namespace Thermo
     void print_newton_iter_header(FILE* ofile  //!< output file handle
     );
 
-    //! print statistics of converged Newton-Raphson iteration
-    void print_newton_conv();
-
     //! print summary after step
     void print_step() override;
-
-    //! The text for summary print, see #print_step
-    void print_step_text(FILE* ofile  //!< output file handle
-    );
 
     //@}
 
@@ -281,19 +263,6 @@ namespace Thermo
 
     //! Return time integrator name
     enum Inpar::Thermo::DynamicType method_name() const override = 0;
-
-    //! These time integrators are all implicit (mark their name)
-    bool method_implicit() override { return true; }
-
-    //! Provide number of steps, e.g. a single-step method returns 1,
-    //! a m-multistep method returns m
-    int method_steps() override = 0;
-
-    //! Give local order of accuracy of temperature part
-    int method_order_of_accuracy() override = 0;
-
-    //! Return linear error coefficient of temperatures
-    double method_lin_err_coeff() override = 0;
 
     //@}
 
@@ -398,12 +367,9 @@ namespace Thermo
     std::shared_ptr<Core::LinAlg::Vector<double>> fres_;    //!< force residual used for solution
     std::shared_ptr<Core::LinAlg::Vector<double>> freact_;  //!< reaction force
     //@}
-
-  };  // class TimIntImpl
-
+  };
 }  // namespace Thermo
 
-/*----------------------------------------------------------------------*/
 FOUR_C_NAMESPACE_CLOSE
 
 #endif

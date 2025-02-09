@@ -138,13 +138,6 @@ namespace Thermo
         std::shared_ptr<Core::IO::DiscretizationWriter> output  //!< the output
     );
 
-    //! Destructor
-    // ....
-
-    //! Resize #TimIntMStep<T> multi-step quantities
-    //! Single-step method: nothing to do here
-    void resize_m_step() override { ; }
-
     //@}
 
     //! @name Pure virtual methods which have to be implemented
@@ -155,15 +148,6 @@ namespace Thermo
     {
       return Inpar::Thermo::dyna_onesteptheta;
     }
-
-    //! Provide number of steps, a single-step method returns 1
-    int method_steps() override { return 1; }
-
-    //! Give local order of accuracy of temperature part
-    int method_order_of_accuracy() override { return fabs(1. / 2. - theta_) < 1e-10 ? 2 : 1; }
-
-    //! Return linear error coefficient
-    double method_lin_err_coeff() override { return 1. / 2. - theta_; }
 
     //! Consistent predictor with constant temperatures
     //! and consistent temperature rates and temperatures

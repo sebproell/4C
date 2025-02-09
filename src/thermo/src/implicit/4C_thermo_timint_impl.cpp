@@ -583,7 +583,7 @@ Inpar::Thermo::ConvergenceStatus Thermo::TimIntImpl::newton_full_error_check()
   }
   else if ((iter_ >= itermax_) and (divcontype_ == Inpar::Thermo::divcont_continue))
   {
-    if (myrank_ == 0)
+    if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
       Core::IO::cout << "Newton unconverged in " << iter_ << " iterations, continuing"
                      << Core::IO::endl;
     return Inpar::Thermo::conv_success;
@@ -596,7 +596,7 @@ Inpar::Thermo::ConvergenceStatus Thermo::TimIntImpl::newton_full_error_check()
   else if (divcontype_ == Inpar::Thermo::divcont_repeat_step or
            divcontype_ == Inpar::Thermo::divcont_repeat_simulation)
   {
-    if (myrank_ == 0)
+    if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
       FOUR_C_THROW(
           "Fatal failure in newton_full_error_check()! divcont_repeat_step and "
           "divcont_repeat_simulation not implemented for Thermo");
@@ -632,7 +632,7 @@ void Thermo::TimIntImpl::halve_time_step()
 
   // remember number of iterations
   resetiter_ += iter_;
-  if (Core::Communication::my_mpi_rank(get_comm()) == 0)
+  if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
     Core::IO::cout << "Nonlinear solver failed to converge in step " << step()
                    << ". Divide timestep in half. "
                    << "Old time step: " << old_dt << Core::IO::endl
@@ -659,7 +659,7 @@ void Thermo::TimIntImpl::check_for_time_step_increase()
       // increase the step size if the remaining number of steps is a even number
       if (((num_step() - step()) % 2) == 0 and num_step() != step())
       {
-        if (Core::Communication::my_mpi_rank(get_comm()) == 0)
+        if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
           Core::IO::cout << "Nonlinear solver successful. Double timestep size!" << Core::IO::endl;
 
         // step up one refinement level
@@ -794,7 +794,8 @@ void Thermo::TimIntImpl::update_newton(std::shared_ptr<const Core::LinAlg::Vecto
 void Thermo::TimIntImpl::print_predictor()
 {
   // only master processor
-  if ((myrank_ == 0) and printscreen_ and (step_old() % printscreen_ == 0))
+  if ((Core::Communication::my_mpi_rank(discret_->get_comm()) == 0) and printscreen_ and
+      (step_old() % printscreen_ == 0))
   {
     // relative check of force residual
     if (normtypefres_ == Inpar::Thermo::convnorm_rel)
@@ -834,7 +835,8 @@ void Thermo::TimIntImpl::print_predictor()
 void Thermo::TimIntImpl::print_newton_iter()
 {
   // print to standard out
-  if ((myrank_ == 0) and printscreen_ and printiter_ and (step_old() % printscreen_ == 0))
+  if ((Core::Communication::my_mpi_rank(discret_->get_comm()) == 0) and printscreen_ and
+      (step_old() % printscreen_ == 0))
   {
     if (iter_ == 1) print_newton_iter_header(stdout);
     print_newton_iter_text(stdout);
@@ -971,51 +973,28 @@ void Thermo::TimIntImpl::print_newton_iter_text(FILE* ofile)
 
 
 /*----------------------------------------------------------------------*
- | print statistics of converged NRI                        bborn 08/09 |
- *----------------------------------------------------------------------*/
-void Thermo::TimIntImpl::print_newton_conv()
-{
-  // somebody did the door
-  return;
-}  // print_newton_conv()
-
-
-/*----------------------------------------------------------------------*
  | print step summary                                       bborn 08/09 |
  *----------------------------------------------------------------------*/
 void Thermo::TimIntImpl::print_step()
 {
-  // print out (only on master CPU)
-  if ((myrank_ == 0) and printscreen_ and (step_old() % printscreen_ == 0))
+  if ((Core::Communication::my_mpi_rank(discret_->get_comm()) == 0) and printscreen_ and
+      (step_old() % printscreen_ == 0))
   {
-    print_step_text(stdout);
+    fprintf(stdout,
+        "Finalised: step %6d"
+        " | nstep %6d"
+        " | time %-14.8E"
+        " | dt %-14.8E"
+        " | numiter %3d\n",
+        step_, stepmax_, (*time_)[0], (*dt_)[0], iter_ + resetiter_);
+
+    fprintf(stdout,
+        "--------------------------------------------------------------"
+        "------------------\n");
+
+    fflush(stdout);
   }
-}  // print_step()
-
-
-/*----------------------------------------------------------------------*
- | print step summary                                       bborn 08/09 |
- *----------------------------------------------------------------------*/
-void Thermo::TimIntImpl::print_step_text(FILE* ofile)
-{
-  // the text
-  fprintf(ofile,
-      "Finalised: step %6d"
-      " | nstep %6d"
-      " | time %-14.8E"
-      " | dt %-14.8E"
-      " | numiter %3d\n",
-      step_, stepmax_, (*time_)[0], (*dt_)[0], iter_ + resetiter_);
-  // print a beautiful line made exactly of 80 dashes
-  fprintf(ofile,
-      "--------------------------------------------------------------"
-      "------------------\n");
-  // do it, print now!
-  fflush(ofile);
-
-  // fall asleep
-  return;
-}  // print_step_text()
+}
 
 
 /*----------------------------------------------------------------------*
@@ -1213,8 +1192,5 @@ void Thermo::TimIntImpl::fd_check()
   return;
 
 }  // fd_check()
-
-
-/*----------------------------------------------------------------------*/
 
 FOUR_C_NAMESPACE_CLOSE

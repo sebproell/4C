@@ -25,35 +25,18 @@
 FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
- | print thermal time logo                                   dano 08/09 |
- *----------------------------------------------------------------------*/
-void Thermo::TimInt::logo()
-{
-  std::cout << "Welcome to Thermal Time Integration " << std::endl;
-  std::cout << "      _______________________________" << std::endl;
-  std::cout << "  ===(__|_|_37 degrees celsius__|_|__)" << std::endl;
-  std::cout << std::endl;
-
-}  // Logo()
-
-
-/*----------------------------------------------------------------------*
- | constructor                                              bborn 08/09 |
  *----------------------------------------------------------------------*/
 Thermo::TimInt::TimInt(const Teuchos::ParameterList& ioparams,
     const Teuchos::ParameterList& tdynparams, const Teuchos::ParameterList& xparams,
     std::shared_ptr<Core::FE::Discretization> actdis, std::shared_ptr<Core::LinAlg::Solver> solver,
     std::shared_ptr<Core::IO::DiscretizationWriter> output)
     : discret_(actdis),
-      myrank_(Core::Communication::my_mpi_rank(actdis->get_comm())),
       solver_(solver),
       solveradapttol_(tdynparams.get<bool>("ADAPTCONV")),
       solveradaptolbetter_(tdynparams.get<double>("ADAPTCONV_BETTER")),
       dbcmaps_(std::make_shared<Core::LinAlg::MapExtractor>()),
       output_(output),
-      printlogo_(true),  // DON'T EVEN DARE TO SET THIS TO FALSE
       printscreen_(ioparams.get<int>("STDOUTEVERY")),
-      printiter_(true),  // ADD INPUT PARAMETER
       writerestartevery_(tdynparams.get<int>("RESTARTEVERY")),
       writeglob_(ioparams.get<bool>("THERM_TEMPERATURE")),
       writeglobevery_(tdynparams.get<int>("RESULTSEVERY")),
@@ -79,13 +62,14 @@ Thermo::TimInt::TimInt(const Teuchos::ParameterList& ioparams,
       rate_(nullptr),
       tempn_(nullptr),
       raten_(nullptr),
-      fifc_(nullptr),
       tang_(nullptr)
 {
-  // welcome user
-  if ((printlogo_) and (myrank_ == 0))
+  if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
   {
-    logo();
+    std::cout << "Welcome to Thermal Time Integration " << std::endl;
+    std::cout << "      _______________________________" << std::endl;
+    std::cout << "  ===(__|_|_37 degrees celsius__|_|__)" << std::endl;
+    std::cout << std::endl;
   }
 
   // check whether discretisation has been completed
@@ -104,7 +88,10 @@ Thermo::TimInt::TimInt(const Teuchos::ParameterList& ioparams,
   stepn_ = step_ + 1;
 
   // output file for energy
-  if ((writeenergyevery_ != 0) and (myrank_ == 0)) attach_energy_file();
+  if ((writeenergyevery_ != 0) and (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0))
+  {
+    attach_energy_file();
+  }
 
   // a zero vector of full length
   zeros_ = Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
@@ -130,9 +117,6 @@ Thermo::TimInt::TimInt(const Teuchos::ParameterList& ioparams,
   tempn_ = Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
   // temperature rates R_{n+1} at t_{n+1}
   raten_ = Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
-
-  // create empty interface force vector
-  fifc_ = Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
 
   // create empty matrix
   tang_ = std::make_shared<Core::LinAlg::SparseMatrix>(*discret_->dof_row_map(), 81, true, true);
@@ -495,7 +479,8 @@ void Thermo::TimInt::output_restart(bool& datawritten)
   firstoutputofrun_ = false;
 
   // info dedicated to user's eyes staring at standard out
-  if ((myrank_ == 0) and printscreen_ and (step_old() % printscreen_ == 0))
+  if ((Core::Communication::my_mpi_rank(discret_->get_comm()) == 0) and printscreen_ and
+      (step_old() % printscreen_ == 0))
   {
     printf("====== Restart written in step %d\n", step_);
     // print a beautiful line made exactly of 80 dashes
@@ -543,7 +528,8 @@ void Thermo::TimInt::add_restart_to_output_state()
   output_->write_mesh(step_, (*time_)[0]);
 
   // info dedicated to user's eyes staring at standard out
-  if ((myrank_ == 0) and printscreen_ and (step_old() % printscreen_ == 0))
+  if ((Core::Communication::my_mpi_rank(discret_->get_comm()) == 0) and printscreen_ and
+      (step_old() % printscreen_ == 0))
   {
     printf("====== Restart written in step %d\n", step_);
     // print a beautiful line made exactly of 80 dashes
@@ -662,7 +648,7 @@ void Thermo::TimInt::output_energy()
   }
 
   // the output
-  if (myrank_ == 0)
+  if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
   {
     *energyfile_ << " " << std::setw(9) << step_ << std::scientific << std::setprecision(16) << " "
                  << (*time_)[0] << " " << intergy << std::endl;
@@ -948,15 +934,6 @@ void Thermo::TimInt::set_initial_field(
 
 }  // SetInitialField()
 
-
-/*----------------------------------------------------------------------*
- | apply interface loads to the thermo field                ghamm 12/10 |
- *----------------------------------------------------------------------*/
-void Thermo::TimInt::set_force_interface(std::shared_ptr<Core::LinAlg::Vector<double>> ithermoload)
-{
-  fifc_->Update(1.0, *ithermoload, 0.0);
-}  // SetForceInterface()
-
 /*-----------------------------------------------------------------------------*
  *   evaluate error compared to analytical solution                vuong 03/15 |
  *----------------------------------------------------------------------------*/
@@ -1007,7 +984,7 @@ std::shared_ptr<std::vector<double>> Thermo::TimInt::evaluate_error_compared_to_
       (*relerror)[0] = sqrt((*errors)[0]) / sqrt((*errors)[2]);
       (*relerror)[1] = sqrt((*errors)[1]) / sqrt((*errors)[3]);
 
-      if (myrank_ == 0)
+      if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
       {
         {
           std::cout.precision(8);
