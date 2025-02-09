@@ -23,7 +23,7 @@ Besides classical FEM, cut finite element methods (CutFEMs) allow to treat embed
 Furthermore, particle methods such as the discrete element method (DEM) and smoothed particle hydrodynamics (SPH) are available
 and can be combined with FEM discretizations.
 |FOURC|'s embedding into customizable pre- and postprocessing routines
-as well as its interoperability with the `QUEENS library <https://queens_community.pages.gitlab.lrz.de/website/>`_,
+as well as its interoperability with the `QUEENS library <https://www.queens-py.org/>`_,
 an open-source Python framework for conducting intricate multi-query analyses of arbitrary computational models
 including parameter studies, uncertainty quantification, and inverse problems,
 elevates |FOURC| to a powerful and comprehensive tool in modern computational engineering.
