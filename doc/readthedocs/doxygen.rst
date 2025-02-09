@@ -5,7 +5,7 @@ Documenting the code with Doxygen
 
 
 |FOURC| uses `Doxygen <http://www.doxygen.nl>`__ to generate documentation from annotated source code.
-You can find a current documentation `here <https://baci.pages.gitlab.lrz.de/baci/doxygen/index.html>`_.
+You can find a current documentation `here <https://4c-multiphysics.github.io/4C/doxygen/index.html>`_.
 
 What is Doxygen and why does |FOURC| rely on it?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

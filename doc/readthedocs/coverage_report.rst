@@ -6,8 +6,8 @@ Coverage report
 The |FOURC| coverage report can be used to verify existing tests and to detect untested parts of the code.
 
 
-You can find it by clicking on the coverage badge `here <https://baci.pages.gitlab.lrz.de/baci/coverage_report/index.html>`_
-or at the |FOURC| `frontpage <https://gitlab.lrz.de/baci/baci/>`.
+You can find it by clicking on the coverage badge `here <https://4c-multiphysics.github.io/4C/coverage_report/index.html>`_
+or at the |FOURC| `frontpage <https://github.com/4C-multiphysics/4C>`.
 
 The report contains the source code annotated with coverage information.
 Coverage in its simplest form gives the ratio of executed lines of code over total lines of code of a testsuite run

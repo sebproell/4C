@@ -8,7 +8,7 @@ settings for a given (contact) problem.
 It is assumed that |FOURC| has been built on your machine according to the instructions and has passed the tests without
 error messages.
 For further information on how to build |FOURC| and to test the build, please refer to
-the [README.md](https://gitlab.lrz.de/baci/baci/blob/main/README.md).
+the [README.md](https://github.com/4C-multiphysics/4C/blob/main/README.md).
 
 ## Overview
 
@@ -89,7 +89,7 @@ It also gives a list of all possible conditions that can be defined, as well as 
 corresponding shapes.
 Depending on the type of the problem, undefined/empty/unnecessary lines can be deleted when using it as a template.
 Information on how to obtain prototypes for both the `.bc` file and the `.head` file is given in
-the [README.md](https://gitlab.lrz.de/baci/baci/blob/main/README.md) under the heading "Prepare and Run Simulations".
+the [README.md](https://github.com/4C-multiphysics/4C/blob/main/README.md) under the heading "Prepare and Run Simulations".
 The terminal command to obtain both prototype files is:
 
 ```bash
@@ -164,7 +164,7 @@ DBC.
 ## Create input file
 
 The final `.dat` input file for |FOURC| can be created with the `pre_exodus` executable
-as described in the [README.md](https://gitlab.lrz.de/baci/baci/blob/main/README.md).
+as described in the [README.md](https://github.com/4C-multiphysics/4C/blob/main/README.md).
 To manually create the `.dat` file the full command states:
 
 ```bash
@@ -180,7 +180,7 @@ plus a list of all nodes and structure elements.
 
 ## Run Simulation
 
-Again, following the instructions from the [README.md](https://gitlab.lrz.de/baci/baci/blob/main/README.md), the
+Again, following the instructions from the [README.md](https://github.com/4C-multiphysics/4C/blob/main/README.md), the
 |FOURC|
 executable can be invoked with the `tutorial_contact_3d.dat` input file.
 Since we chose the binary output option in our `.head` file (section `IO`),

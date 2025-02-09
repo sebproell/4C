@@ -18,8 +18,8 @@ Additionally, |FOURC| can be compiled under Windows using the WSL (Windows Subsy
 which provides a complete Linux Environment within the Windows operating system.
 
 You'll find more information about the |FOURC| installation in the
-`README.md <https://gitlab.lrz.de/baci/baci/blob/main/README.md>`_ and the
-`CONTRIBUTING.md <https://gitlab.lrz.de/baci/baci/blob/main/CONTRIBUTING.md>`_
+`README.md <https://github.com/4C-multiphysics/4C/blob/main/README.md>`_ and the
+`CONTRIBUTING.md <https://github.com/4C-multiphysics/4C/blob/main/CONTRIBUTING.md>`_
 files located in the |FOURC| root directory.
 
 Besides the basic setup of the software, the following topics are of particular interest for **all** developers:
@@ -133,7 +133,7 @@ Clone the repository
 
     cd <someBaseDir>
     mkdir <sourceDir>
-    git clone git@gitlab.lrz.de:baci/baci.git <sourceDir>
+    git clone git@github.com:4C-multiphysics/4C.git <sourceDir>
     cd <sourceDir>
 
 where `<someBaseDir>` is some directory on your machine and `<sourceDir>` will contain the |FOURC| source code.
@@ -272,7 +272,7 @@ To enable the code indexer, right-click on the project and select :menuselection
 
 *Source code*
 
-|FOURC| uses a mandatory code style defined as a `.clang-format style file <https://gitlab.lrz.de/baci/baci/blob/main/.clang-format>`_.
+|FOURC| uses a mandatory code style defined as a `.clang-format style file <https://github.com/4C-multiphysics/4C/blob/main/.clang-format>`_.
 Adherence to this code style will be checked on each commit as well as on each merge request.
 To a priori conform to the codes style and avoid issues in your daily workflow,
 you can configure Eclipse to apply the code style to your source code at every file save.
@@ -321,7 +321,7 @@ Eclipse provides automated features to help you with these rules. To configure t
 
 *Automation and utilities for Doxygen documentation*
 
-|FOURC| mandates documentation via Doxygen. Further information and an introduction is summarized in |FOURC|'s `Doxygen guidelines <https://gitlab.lrz.de/baci/baci/-/wikis/doxygen>`_.
+|FOURC| mandates documentation via Doxygen. Further information and an introduction is summarized in |FOURC|'s :ref:`Doxygen guidelines <doxygen>`.
 Eclipse can assist in writing Doxygen documentation by auto-generating lists of input and return parameters when writing a function's documentation.
 
 To enable this utility in Eclipse, perform these steps:

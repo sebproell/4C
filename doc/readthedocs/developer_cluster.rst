@@ -10,11 +10,11 @@ In general there are several ways to get the |FOURC| source code to a cluster. I
   remember to set up |FOURC| as described in the |FOURC| ``README.md`` or in the :ref:`Setup guide <SetupGuideto4C>`.
   However, in general, it is recommended to develop code primarily on your workstation.
 
-Method 1: Clone |FOURC| repository from Gitlab
+Method 1: Clone |FOURC| repository from GitHub
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Clone the |FOURC| repository from Gitlab to a cluster following the procedure as described in ``README.md``.
-**Note:** This requires that firewall settings allow access from the cluster to the Gitlab repository.
+Clone the |FOURC| repository from GitHub to a cluster following the procedure as described in ``README.md``.
+**Note:** This requires that firewall settings allow access from the cluster to the GitHub repository.
 
 Method 2: Clone |FOURC| from local workstation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
