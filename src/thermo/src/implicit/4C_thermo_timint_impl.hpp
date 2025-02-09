@@ -61,11 +61,14 @@ namespace Thermo
     //! Monolithic TSI accesses the linearised thermo problem
     void evaluate() override;
 
-    //! @name Prediction
+    //! @name Time step preparation
     //@{
 
+    //! prepare time step
+    void prepare_time_step() override;
+
     //! Predict target solution and identify residual
-    void predict();
+    void predict_step();
 
     //! Identify residual
     //! This method does not predict the target solution but
@@ -73,7 +76,7 @@ namespace Thermo
     //! In partitioned solution schemes, it is better to keep the current
     //! solution instead of evaluating the initial guess (as the predictor)
     //! does.
-    void prepare_partition_step() override;
+    void prepare_step() override;
 
     //! Predict constant temperature, temperature rate,
     //! i.e. the initial guess is equal to the last converged step
@@ -93,9 +96,6 @@ namespace Thermo
     //!
     //! This is an implicit predictor, i.e. it calls the solver once.
     void predict_tang_temp_consist_rate();
-
-    //! prepare time step
-    void prepare_time_step() override;
 
     //@}
 
@@ -344,10 +344,7 @@ namespace Thermo
     double normtempi_;      //!< norm of residual temperatures
     std::shared_ptr<Core::LinAlg::Vector<double>> tempi_;  //!< residual temperatures
                                                            //!< \f$\Delta{T}^{<k>}_{n+1}\f$
-    std::shared_ptr<Core::LinAlg::Vector<double>>
-        tempinc_;          //!< sum of temperature vectors already applied,
-                           //!< i.e. the incremental temperature
-    Teuchos::Time timer_;  //!< timer for solution technique
+    Teuchos::Time timer_;                                  //!< timer for solution technique
     std::shared_ptr<Coupling::Adapter::CouplingMortar>
         adaptermeshtying_;  //!< mortar coupling adapter
     //@}

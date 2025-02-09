@@ -203,7 +203,7 @@ namespace Thermo
     //! In partitioned solution schemes, it is better to keep the current
     //! solution instead of evaluating the initial guess (as the predictor)
     //! does.
-    void prepare_partition_step() override = 0;
+    void prepare_step() override = 0;
 
     //! thermal result test
     std::shared_ptr<Core::Utils::ResultTest> create_field_test() override;

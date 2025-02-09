@@ -200,7 +200,7 @@ namespace Thermo
     /// In partitioned solution schemes, it is better to keep the current
     /// solution instead of evaluating the initial guess (as the predictor)
     /// does.
-    virtual void prepare_partition_step() = 0;
+    virtual void prepare_step() = 0;
 
     /// create result test for encapulated thermo algorithm
     virtual std::shared_ptr<Core::Utils::ResultTest> create_field_test() = 0;

@@ -43,9 +43,8 @@ Thermo::TimIntImpl::TimIntImpl(const Teuchos::ParameterList& ioparams,
       normcharforce_(0.0),
       normchartemp_(0.0),
       normfres_(0.0),
-      normtempi_(0.0),
+      normtempi_(1e6),
       tempi_(nullptr),
-      tempinc_(nullptr),
       timer_("", true),
       fres_(nullptr),
       freact_(nullptr)
@@ -59,9 +58,6 @@ Thermo::TimIntImpl::TimIntImpl(const Teuchos::ParameterList& ioparams,
   // iterative temperature increments IncT_{n+1}
   // also known as residual temperatures
   tempi_ = Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
-
-  // incremental temperature increments IncT_{n+1}
-  tempinc_ = Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
 
   // setup mortar coupling
   if (Global::Problem::instance()->get_problem_type() == Core::ProblemType::thermo)
@@ -99,70 +95,45 @@ void Thermo::TimIntImpl::evaluate()
   prepare_system_for_newton_solve();
 }
 
+
 /*----------------------------------------------------------------------*
- | predict solution                                         bborn 08/09 |
  *----------------------------------------------------------------------*/
-void Thermo::TimIntImpl::predict()
+void Thermo::TimIntImpl::prepare_time_step()
 {
-  // choose predictor
-  if (pred_ == Inpar::Thermo::pred_consttemp)
-  {
-    predict_const_temp_consist_rate();
-    normtempi_ = 1.0e6;
-  }
-  else if (pred_ == Inpar::Thermo::pred_consttemprate)
-  {
-    predict_const_temp_rate();
-    normtempi_ = 1.0e6;
-  }
-  else if (pred_ == Inpar::Thermo::pred_tangtemp)
-  {
-    predict_tang_temp_consist_rate();
-    // normtempi_ has been set
-  }
-  else
-  {
-    FOUR_C_THROW("Trouble in determining predictor %i", pred_);
-  }
-
-  // apply Dirichlet BCs
-  //  apply_dirichlet_bc(timen_, temon_, raten_, nullptr, false);
-  apply_dirichlet_bc(timen_, tempn_, raten_, false);
-
-  // compute residual forces fres_ and tangent tang_
-  evaluate_rhs_tang_residual();
-
-  // extract reaction forces
-  // reactions are negative to balance residual on DBC
-  freact_->Update(-1.0, *fres_, 0.0);
-  dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact_);
-
-  // blank residual at DOFs on Dirichlet BC
-  dbcmaps_->insert_cond_vector(*dbcmaps_->extract_cond_vector(*zeros_), *fres_);
-
-  // build residual force norm
-  normfres_ = Thermo::Aux::calculate_vector_norm(iternorm_, *fres_);
-
-  // determine characteristic norms
-  // we set the minimum of calc_ref_norm_force() and #tolfres_, because
-  // we want to prevent the case of a zero characteristic fnorm
-  normcharforce_ = calc_ref_norm_force();
-  if (normcharforce_ == 0.0) normcharforce_ = tolfres_;
-  normchartemp_ = calc_ref_norm_temperature();
-  if (normchartemp_ == 0.0) normchartemp_ = toltempi_;
-
-  // output
-  print_predictor();
-
-  // enjoy your meal
-  return;
+  predict_step();
+  prepare_step();
 }
 
 /*----------------------------------------------------------------------*
- | prepare partition step                                     dano 12/10 |
- | like Predict() but without predict the unknown variables T,R         |
  *----------------------------------------------------------------------*/
-void Thermo::TimIntImpl::prepare_partition_step()
+void Thermo::TimIntImpl::predict_step()
+{
+  switch (pred_)
+  {
+    case Inpar::Thermo::pred_consttemp:
+    {
+      predict_const_temp_consist_rate();
+      break;
+    }
+    case Inpar::Thermo::pred_consttemprate:
+    {
+      predict_const_temp_rate();
+      break;
+    }
+    case Inpar::Thermo::pred_tangtemp:
+    {
+      predict_tang_temp_consist_rate();
+      break;
+    }
+    default:
+      FOUR_C_THROW("Trouble in determining predictor %i.", pred_);
+  }
+}
+
+
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+void Thermo::TimIntImpl::prepare_step()
 {
   // set iteration step to 0
   iter_ = 0;
@@ -193,31 +164,21 @@ void Thermo::TimIntImpl::prepare_partition_step()
   normchartemp_ = calc_ref_norm_temperature();
   if (normchartemp_ == 0.0) normchartemp_ = toltempi_;
 
-  // output
   print_predictor();
-
-  // enjoy your meal
-  return;
 }
 
 
-/*----------------------------------------------------------------------*
- | predict solution as constant temperatures,               bborn 08/09 |
- | temperature rates                                                    |
+/*----------------------------------------------------------------------* |
  *----------------------------------------------------------------------*/
 void Thermo::TimIntImpl::predict_const_temp_rate()
 {
   // constant predictor
   tempn_->Update(1.0, *(*temp_)(0), 0.0);
   raten_->Update(1.0, *(*rate_)(0), 0.0);
-
-  // see you next time step
-  return;
 }
 
-/*----------------------------------------------------------------------*
- | Predict solution as constant temperatures,               bborn 08/09 |
- | temperature rates and tangent                                        |
+
+/*----------------------------------------------------------------------* |
  *----------------------------------------------------------------------*/
 void Thermo::TimIntImpl::predict_tang_temp_consist_rate()
 {
@@ -309,25 +270,8 @@ void Thermo::TimIntImpl::predict_tang_temp_consist_rate()
     discret_->evaluate(p, nullptr, nullptr, nullptr, nullptr, nullptr);
     discret_->clear_state();
   }
-
-  // shalom
-  return;
 }
 
-/*----------------------------------------------------------------------*
- | prepare time step                                        bborn 08/09 |
- *----------------------------------------------------------------------*/
-void Thermo::TimIntImpl::prepare_time_step()
-{
-  // Note: MFSI requires a constant predictor. Otherwise the fields will get
-  // out of sync.
-
-  // predict
-  predict();
-
-  // initialise incremental temperatures
-  tempinc_->PutScalar(0.0);
-}
 
 /*----------------------------------------------------------------------*
  | converged                                                bborn 08/09 |
