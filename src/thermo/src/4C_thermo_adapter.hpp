@@ -8,10 +8,6 @@
 #ifndef FOUR_C_THERMO_ADAPTER_HPP
 #define FOUR_C_THERMO_ADAPTER_HPP
 
-
-/*----------------------------------------------------------------------*
- | headers                                                  bborn 08/09 |
- *----------------------------------------------------------------------*/
 #include "4C_config.hpp"
 
 #include "4C_inpar_thermo.hpp"
@@ -26,13 +22,10 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-/*----------------------------------------------------------------------*
- | forward declarations                                      dano 02/11 |
- *----------------------------------------------------------------------*/
 namespace Core::FE
 {
   class Discretization;
-}  // namespace Core::FE
+}
 
 namespace Core::IO
 {
@@ -52,7 +45,6 @@ namespace Core::Conditions
 {
   class LocsysManager;
 }
-
 
 namespace CONTACT
 {
@@ -262,38 +254,21 @@ namespace Thermo
   class BaseAlgorithm
   {
    public:
-    /// constructor
     explicit BaseAlgorithm(
         const Teuchos::ParameterList& prbdyn, std::shared_ptr<Core::FE::Discretization> actdis);
 
     /// virtual destructor to support polymorph destruction
     virtual ~BaseAlgorithm() = default;
 
-    /// thermal field solver
-    Adapter& thermo_field() { return *thermo_; }
-    /// const version of thermal field solver
-    const Adapter& thermo_field() const { return *thermo_; }
-    /// Teuchos::rcp version of thermal field solver
-    std::shared_ptr<Adapter> thermo_fieldrcp() { return thermo_; }
+    /// return thermal field solver
+    std::shared_ptr<Adapter> thermo_field() { return thermo_; }
 
    private:
-    /// setup thermo algorithm
-    void setup_thermo(
-        const Teuchos::ParameterList& prbdyn, std::shared_ptr<Core::FE::Discretization> actdis);
-
-    /// setup thermo algorithm of Thermo::TimIntImpl type
-    void setup_tim_int(const Teuchos::ParameterList& prbdyn, Inpar::Thermo::DynamicType timinttype,
-        std::shared_ptr<Core::FE::Discretization> actdis);
-
     /// thermal field solver
     std::shared_ptr<Adapter> thermo_;
-
-  };  // class BaseAlgorithm
-
+  };
 }  // namespace Thermo
 
-
-/*----------------------------------------------------------------------*/
 FOUR_C_NAMESPACE_CLOSE
 
 #endif

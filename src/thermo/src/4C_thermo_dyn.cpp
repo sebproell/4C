@@ -29,14 +29,14 @@ void thermo_dyn_drt()
   const int restart = Global::Problem::instance()->restart();
   if (restart)
   {
-    algorithm->thermo_field().read_restart(restart);
+    algorithm->thermo_field()->read_restart(restart);
   }
 
   // enter time loop to solve problem
-  algorithm->thermo_field().integrate();
+  algorithm->thermo_field()->integrate();
 
   // perform testing if required
-  Global::Problem::instance()->add_field_test(algorithm->thermo_field().create_field_test());
+  Global::Problem::instance()->add_field_test(algorithm->thermo_field()->create_field_test());
   Global::Problem::instance()->test_all(discretization->get_comm());
 }
 
