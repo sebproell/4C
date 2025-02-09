@@ -655,18 +655,10 @@ void Solid::ModelEvaluator::Structure::write_time_step_output_runtime_structure(
 {
   check_init_setup();
 
-  // export displacement state to column format
-  const auto& discret = dynamic_cast<const Core::FE::Discretization&>(this->discret());
-  std::shared_ptr<Core::LinAlg::Vector<double>> disn_col =
-      std::make_shared<Core::LinAlg::Vector<double>>(*discret.dof_col_map(), true);
-  Core::LinAlg::export_to(*global_state().get_dis_n(), *disn_col);
-  std::shared_ptr<Core::LinAlg::Vector<double>> veln_col =
-      std::make_shared<Core::LinAlg::Vector<double>>(*discret.dof_col_map(), true);
-  Core::LinAlg::export_to(*global_state().get_vel_n(), *veln_col);
-
-  auto [output_time, output_step] = Core::IO::get_time_and_time_step_index_for_output(
+  auto [output_time, output_step] = get_time_and_time_step_index_for_output(
       visualization_params_, global_state().get_time_n(), global_state().get_step_n());
-  write_output_runtime_structure(*disn_col, *veln_col, output_step, output_time);
+  write_output_runtime_structure(
+      *global_state().get_dis_n(), *global_state().get_vel_n(), output_step, output_time);
 }
 
 /*----------------------------------------------------------------------------*
@@ -675,26 +667,18 @@ void Solid::ModelEvaluator::Structure::write_iteration_output_runtime_structure(
 {
   check_init_setup();
 
-  // export displacement state to column format
-  const auto& discret = dynamic_cast<const Core::FE::Discretization&>(this->discret());
-  std::shared_ptr<Core::LinAlg::Vector<double>> disnp_col =
-      std::make_shared<Core::LinAlg::Vector<double>>(*discret.dof_col_map(), true);
-  Core::LinAlg::export_to(*global_state().get_dis_np(), *disnp_col);
-  std::shared_ptr<Core::LinAlg::Vector<double>> velnp_col =
-      std::make_shared<Core::LinAlg::Vector<double>>(*discret.dof_col_map(), true);
-  Core::LinAlg::export_to(*global_state().get_vel_np(), *velnp_col);
-
-  auto [output_time, output_step] =
-      Core::IO::get_time_and_time_step_index_for_output(visualization_params_,
-          global_state().get_time_n(), global_state().get_step_n(), eval_data().get_nln_iter());
-  write_output_runtime_structure(*disnp_col, *velnp_col, output_step, output_time);
+  auto [output_time, output_step] = get_time_and_time_step_index_for_output(visualization_params_,
+      global_state().get_time_n(), global_state().get_step_n(), eval_data().get_nln_iter());
+  write_output_runtime_structure(
+      *global_state().get_dis_np(), *global_state().get_vel_np(), output_step, output_time);
 }
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void Solid::ModelEvaluator::Structure::write_output_runtime_structure(
-    Core::LinAlg::Vector<double>& displacement_state_vector,
-    Core::LinAlg::Vector<double>& velocity_state_vector, int timestep_number, double time) const
+    const Core::LinAlg::Vector<double>& displacement_state_vector,
+    const Core::LinAlg::Vector<double>& velocity_state_vector, const int timestep_number,
+    const double time) const
 {
   check_init_setup();
 

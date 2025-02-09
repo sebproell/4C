@@ -23,6 +23,7 @@ Discret::Elements::StructureRuntimeOutputParams::StructureRuntimeOutputParams()
       output_velocity_state_(false),
       output_element_owner_(false),
       output_element_gid_(false),
+      output_element_material_id_(false),
       output_element_ghosting_(false),
       output_node_gid_(false),
       output_stress_strain_(false),
@@ -61,9 +62,11 @@ void Discret::Elements::StructureRuntimeOutputParams::init(
     auto io_strain =
         Teuchos::getIntegralValue<Inpar::Solid::StrainType>(io_parameter_list, "STRUCT_STRAIN");
     if (io_stress == Inpar::Solid::stress_none and io_strain == Inpar::Solid::strain_none)
+    {
       FOUR_C_THROW(
           "If stress / strain runtime output is required, one or two of the flags STRUCT_STRAIN / "
-          "STRUCT_STRESS in the --IO section has to be set.");
+          "STRUCT_STRESS in the --IO section has to be activated.");
+    }
   }
 
   isinit_ = true;
