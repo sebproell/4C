@@ -103,10 +103,6 @@ namespace Thermo
 
     //! build linear system tangent matrix, rhs/force residual
     //! Monolithic TSI accesses the linearised thermo problem
-    void evaluate(std::shared_ptr<const Core::LinAlg::Vector<double>> tempi) override = 0;
-
-    //! build linear system tangent matrix, rhs/force residual
-    //! Monolithic TSI accesses the linearised thermo problem
     void evaluate() override = 0;
 
     //! Update configuration after time step

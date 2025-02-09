@@ -154,9 +154,6 @@ namespace Thermo
     virtual void prepare_time_step() = 0;
 
     /// evaluate residual at given temperature increment
-    virtual void evaluate(std::shared_ptr<const Core::LinAlg::Vector<double>> tempi) = 0;
-
-    /// evaluate residual at given temperature increment
     virtual void evaluate() = 0;
 
     /// update temperature increment after Newton step
