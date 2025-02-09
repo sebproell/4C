@@ -21,6 +21,17 @@ namespace
 {
   using namespace FourC;
 
+
+  void set_up_default_parameters_line_to_3d(Teuchos::ParameterList& list)
+  {
+    list.set("GEOMETRY_PAIR_STRATEGY", Inpar::GEOMETRYPAIR::LineTo3DStrategy::segmentation);
+    list.set("GEOMETRY_PAIR_SEGMENTATION_SEARCH_POINTS", 6);
+    list.set("GEOMETRY_PAIR_SEGMENTATION_NOT_ALL_GAUSS_POINTS_PROJECT_VALID_ACTION",
+        Inpar::GEOMETRYPAIR::NotAllGaussPointsProjectValidAction::fail);
+    list.set("GAUSS_POINTS", 6);
+    list.set("INTEGRATION_POINTS_CIRCUMFERENCE", 6);
+  }
+
   /**
    * Class to test the local mortar matrices calculated by the beam to volume mesh tying mortar
    * pair.
@@ -35,7 +46,7 @@ namespace
     {
       // Set up the evaluation data container for the geometry pairs.
       Teuchos::ParameterList line_to_volume_params_list;
-      Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(line_to_volume_params_list);
+      set_up_default_parameters_line_to_3d(line_to_volume_params_list);
       evaluation_data_ =
           std::make_shared<GEOMETRYPAIR::LineTo3DEvaluationData>(line_to_volume_params_list);
     }

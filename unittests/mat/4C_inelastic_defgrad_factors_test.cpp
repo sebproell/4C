@@ -175,8 +175,10 @@ namespace
       // add the ocp model
       electrode_data.add("OCP_MODEL", ocp_model);
 
-      // make sure that the default parameters exist in the problem
-      Global::Problem::instance()->set_parameter_list(std::make_shared<Teuchos::ParameterList>());
+      // Set up parameters in global problem instance
+      auto params = std::make_shared<Teuchos::ParameterList>();
+      params->sublist("ELCH CONTROL").set("GAS_CONSTANT", 8.314472);
+      Global::Problem::instance()->set_parameter_list(params);
 
       // add actually required parameters to electrode material
       const double c_max(4.91375e4);
