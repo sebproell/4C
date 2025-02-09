@@ -10,7 +10,6 @@
 #include "4C_global_data.hpp"
 #include "4C_inpar_thermo.hpp"
 #include "4C_io_pstream.hpp"
-#include "4C_thermo_timint_expleuler.hpp"
 #include "4C_thermo_timint_genalpha.hpp"
 #include "4C_thermo_timint_ost.hpp"
 #include "4C_thermo_timint_statics.hpp"
@@ -80,12 +79,6 @@ Thermo::BaseAlgorithm::BaseAlgorithm(
     case Inpar::Thermo::dyna_genalpha:
     {
       thermo_ = std::make_shared<Thermo::TimIntGenAlpha>(
-          ioflags, parameters, xparams, actdis, solver, output);
-      break;
-    }
-    case Inpar::Thermo::dyna_expleuler:
-    {
-      thermo_ = std::make_shared<Thermo::TimIntExplEuler>(
           ioflags, parameters, xparams, actdis, solver, output);
       break;
     }
