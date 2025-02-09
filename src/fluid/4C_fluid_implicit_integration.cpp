@@ -5711,7 +5711,7 @@ void FLD::FluidImplicitTimeInt::print_stabilization_details() const
   if (myrank_ == 0)
   {
     std::cout << "Stabilization type         : "
-              << Teuchos::getStringValue<Inpar::FLUID::StabType>(*stabparams, "STABTYPE") << "\n";
+              << to_string(Teuchos::get<Inpar::FLUID::StabType>(*stabparams, "STABTYPE")) << "\n";
     std::cout << "                             "
               << "Evaluation Tau  = " << stabparams->get<std::string>("EVALUATION_TAU") << "\n";
     std::cout << "                             "
@@ -5726,7 +5726,7 @@ void FLD::FluidImplicitTimeInt::print_stabilization_details() const
       std::cout << "\n";
       std::cout << "                             "
                 << "Tau Type        = "
-                << Teuchos::getStringValue<Inpar::FLUID::TauType>(*stabparams, "DEFINITION_TAU")
+                << to_string(Teuchos::get<Inpar::FLUID::TauType>(*stabparams, "DEFINITION_TAU"))
                 << "\n";
 
       if (Teuchos::getIntegralValue<Inpar::FLUID::SubscalesTD>(*stabparams, "TDS") ==
@@ -5742,32 +5742,32 @@ void FLD::FluidImplicitTimeInt::print_stabilization_details() const
       }
 
       std::cout << "                             "
-                << "SUPG            = " << Teuchos::getStringValue<bool>(*stabparams, "SUPG")
+                << "SUPG            = " << std::boolalpha << Teuchos::get<bool>(*stabparams, "SUPG")
                 << "\n";
       std::cout << "                             "
-                << "PSPG            = " << Teuchos::getStringValue<bool>(*stabparams, "PSPG")
+                << "PSPG            = " << std::boolalpha << Teuchos::get<bool>(*stabparams, "PSPG")
                 << "\n";
       std::cout << "                             "
-                << "GRAD_DIV        = " << Teuchos::getStringValue<bool>(*stabparams, "GRAD_DIV")
-                << "\n";
+                << "GRAD_DIV        = " << std::boolalpha
+                << Teuchos::get<bool>(*stabparams, "GRAD_DIV") << "\n";
       std::cout << "                             "
                 << "CROSS-STRESS    = "
-                << Teuchos::getStringValue<Inpar::FLUID::CrossStress>(*stabparams, "CROSS-STRESS")
+                << to_string(Teuchos::get<Inpar::FLUID::CrossStress>(*stabparams, "CROSS-STRESS"))
                 << "\n";
       std::cout << "                             "
                 << "REYNOLDS-STRESS = "
-                << Teuchos::getStringValue<Inpar::FLUID::ReynoldsStress>(
-                       *stabparams, "REYNOLDS-STRESS")
+                << to_string(
+                       Teuchos::get<Inpar::FLUID::ReynoldsStress>(*stabparams, "REYNOLDS-STRESS"))
                 << "\n";
       std::cout << "                             "
                 << "VSTAB           = "
-                << Teuchos::getStringValue<Inpar::FLUID::VStab>(*stabparams, "VSTAB") << "\n";
+                << to_string(Teuchos::get<Inpar::FLUID::VStab>(*stabparams, "VSTAB")) << "\n";
       std::cout << "                             "
                 << "RSTAB           = "
-                << Teuchos::getStringValue<Inpar::FLUID::RStab>(*stabparams, "RSTAB") << "\n";
+                << to_string(Teuchos::get<Inpar::FLUID::RStab>(*stabparams, "RSTAB")) << "\n";
       std::cout << "                             "
                 << "TRANSIENT       = "
-                << Teuchos::getStringValue<Inpar::FLUID::Transient>(*stabparams, "TRANSIENT")
+                << to_string(Teuchos::get<Inpar::FLUID::Transient>(*stabparams, "TRANSIENT"))
                 << "\n";
       std::cout << "\n";
       std::cout << std::endl;
@@ -5783,32 +5783,32 @@ void FLD::FluidImplicitTimeInt::print_stabilization_details() const
 
       std::cout << "                    "
                 << "EOS_PRES             = "
-                << Teuchos::getStringValue<Inpar::FLUID::EosPres>(
-                       *stabparams_edgebased, ("EOS_PRES"))
+                << to_string(
+                       Teuchos::get<Inpar::FLUID::EosPres>(*stabparams_edgebased, ("EOS_PRES")))
                 << "\n";
       std::cout << "                    "
                 << "EOS_CONV_STREAM      = "
-                << Teuchos::getStringValue<Inpar::FLUID::EosConvStream>(
-                       *stabparams_edgebased, "EOS_CONV_STREAM")
+                << to_string(Teuchos::get<Inpar::FLUID::EosConvStream>(
+                       *stabparams_edgebased, "EOS_CONV_STREAM"))
                 << "\n";
       std::cout << "                    "
                 << "EOS_CONV_CROSS       = "
-                << Teuchos::getStringValue<Inpar::FLUID::EosConvCross>(
-                       *stabparams_edgebased, "EOS_CONV_CROSS")
+                << to_string(Teuchos::get<Inpar::FLUID::EosConvCross>(
+                       *stabparams_edgebased, "EOS_CONV_CROSS"))
                 << "\n";
       std::cout << "                    "
                 << "EOS_DIV              = "
-                << Teuchos::getStringValue<Inpar::FLUID::EosDiv>(*stabparams_edgebased, "EOS_DIV")
+                << to_string(Teuchos::get<Inpar::FLUID::EosDiv>(*stabparams_edgebased, "EOS_DIV"))
                 << "\n";
       std::cout << "                    "
                 << "EOS_DEFINITION_TAU   = "
-                << Teuchos::getStringValue<Inpar::FLUID::EosTauType>(
-                       *stabparams_edgebased, "EOS_DEFINITION_TAU")
+                << to_string(Teuchos::get<Inpar::FLUID::EosTauType>(
+                       *stabparams_edgebased, "EOS_DEFINITION_TAU"))
                 << "\n";
       std::cout << "                    "
                 << "EOS_H_DEFINITION     = "
-                << Teuchos::getStringValue<Inpar::FLUID::EosElementLength>(
-                       *stabparams_edgebased, "EOS_H_DEFINITION")
+                << to_string(Teuchos::get<Inpar::FLUID::EosElementLength>(
+                       *stabparams_edgebased, "EOS_H_DEFINITION"))
                 << "\n";
       std::cout
           << "+---------------------------------------------------------------------------------+\n"
@@ -5899,8 +5899,8 @@ void FLD::FluidImplicitTimeInt::print_turbulence_model()
       std::cout << "\n";
       std::cout << "- Vreman model with constant coefficient\n";
       std::cout << "- Use filter width method:  "
-                << Teuchos::getStringValue<Inpar::FLUID::VremanFiMethod>(
-                       params_->sublist("SUBGRID VISCOSITY"), "FILTER_WIDTH")
+                << to_string(Teuchos::get<Inpar::FLUID::VremanFiMethod>(
+                       params_->sublist("SUBGRID VISCOSITY"), "FILTER_WIDTH"))
                 << "\n";
       std::cout << &std::endl;
     }

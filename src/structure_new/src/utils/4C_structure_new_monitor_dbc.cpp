@@ -129,7 +129,7 @@ void Solid::MonitorDbc::setup()
   const Teuchos::ParameterList& sublist_IO_monitor_structure_dbc =
       Global::Problem::instance()->io_params().sublist("MONITOR STRUCTURE DBC");
 
-  std::string filetype = Teuchos::getStringValue<Inpar::IOMonitorStructureDBC::FileType>(
+  auto filetype = Teuchos::getIntegralValue<Inpar::IOMonitorStructureDBC::FileType>(
       sublist_IO_monitor_structure_dbc, "FILE_TYPE");
   if (isempty_)
   {
@@ -158,7 +158,8 @@ void Solid::MonitorDbc::setup()
       Global::Problem::instance()->output_control_file()->file_name_only_prefix());
   Core::IO::create_directory(full_dirpath, Core::Communication::my_mpi_rank(get_comm()));
   // ... create files paths ...
-  full_filepaths_ = create_file_paths(rconds, full_dirpath, filename_only_prefix, filetype);
+  full_filepaths_ =
+      create_file_paths(rconds, full_dirpath, filename_only_prefix, to_string(filetype));
   // ... clear them and write header
   clear_files_and_write_header(
       rconds, full_filepaths_, sublist_IO_monitor_structure_dbc.get<bool>("WRITE_HEADER"));
@@ -171,8 +172,8 @@ void Solid::MonitorDbc::setup()
     const std::string filename_restart_only_prefix(Core::IO::extract_file_name(
         Global::Problem::instance()->output_control_file()->restart_name()));
 
-    std::vector<std::string> full_restart_filepaths =
-        create_file_paths(rconds, full_restart_dirpath, filename_restart_only_prefix, filetype);
+    std::vector<std::string> full_restart_filepaths = create_file_paths(
+        rconds, full_restart_dirpath, filename_restart_only_prefix, to_string(filetype));
 
     read_results_prior_restart_step_and_write_to_file(
         full_restart_filepaths, gstate_ptr_->get_step_n());

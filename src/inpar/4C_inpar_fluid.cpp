@@ -1691,4 +1691,279 @@ void Inpar::FLUID::set_valid_conditions(
   condlist.push_back(poropresint_line);
 }
 
+std::string Inpar::FLUID::to_string(Inpar::FLUID::StabType stabtype)
+{
+  switch (stabtype)
+  {
+    case stabtype_nostab:
+      return "no_stabilization";
+    case stabtype_residualbased:
+      return "residual_based";
+    case stabtype_edgebased:
+      return "edge_based";
+    case stabtype_pressureprojection:
+      return "pressure_projection";
+    default:
+      return "unknown";
+  }
+}
+
+std::string Inpar::FLUID::to_string(Inpar::FLUID::TauType tau)
+{
+  switch (tau)
+  {
+    case tau_taylor_hughes_zarins:
+      return "Taylor_Hughes_Zarins";
+    case tau_taylor_hughes_zarins_wo_dt:
+      return "Taylor_Hughes_Zarins_wo_dt";
+    case tau_taylor_hughes_zarins_whiting_jansen:
+      return "Taylor_Hughes_Zarins_Whiting_Jansen";
+    case tau_taylor_hughes_zarins_whiting_jansen_wo_dt:
+      return "Taylor_Hughes_Zarins_Whiting_Jansen_wo_dt";
+    case tau_taylor_hughes_zarins_scaled:
+      return "Taylor_Hughes_Zarins_scaled";
+    case tau_taylor_hughes_zarins_scaled_wo_dt:
+      return "Taylor_Hughes_Zarins_scaled_wo_dt";
+    case tau_franca_barrenechea_valentin_frey_wall:
+      return "Franca_Barrenechea_Valentin_Frey_Wall";
+    case tau_franca_barrenechea_valentin_frey_wall_wo_dt:
+      return "Franca_Barrenechea_Valentin_Frey_Wall_wo_dt";
+    case tau_shakib_hughes_codina:
+      return "Shakib_Hughes_Codina";
+    case tau_shakib_hughes_codina_wo_dt:
+      return "Shakib_Hughes_Codina_wo_dt";
+    case tau_codina:
+      return "Codina";
+    case tau_codina_wo_dt:
+      return "Codina_wo_dt";
+    case tau_codina_convscaled:
+      return "Codina_convscaled";
+    case tau_franca_madureira_valentin_badia_codina:
+      return "Franca_Madureira_Valentin_Badia_Codina";
+    case tau_franca_madureira_valentin_badia_codina_wo_dt:
+      return "Franca_Madureira_Valentin_Badia_Codina_wo_dt";
+    case tau_hughes_franca_balestra_wo_dt:
+      return "Hughes_Franca_Balestra_wo_dt";
+    case tau_not_defined:
+      return "not_defined";
+  }
+  return "not_defined";
+}
+
+std::string Inpar::FLUID::to_string(Inpar::FLUID::CrossStress crossstress)
+{
+  switch (crossstress)
+  {
+    case cross_stress_stab_none:
+      return "no_cross";
+    case cross_stress_stab:
+      return "yes_cross";
+    case cross_stress_stab_only_rhs:
+      return "cross_rhs";
+    default:
+      return "unknown";
+  }
+}
+
+std::string Inpar::FLUID::to_string(Inpar::FLUID::VStab vstab)
+{
+  switch (vstab)
+  {
+    case viscous_stab_none:
+      return "no_viscous";
+    case viscous_stab_gls:
+      return "yes_viscous";
+    case viscous_stab_gls_only_rhs:
+      return "viscous_rhs";
+    case viscous_stab_usfem:
+      return "usfem_viscous";
+    case viscous_stab_usfem_only_rhs:
+      return "usfem_viscous_rhs";
+    default:
+      return "unknown";
+  }
+}
+
+std::string Inpar::FLUID::to_string(Inpar::FLUID::RStab rstab)
+{
+  switch (rstab)
+  {
+    case reactive_stab_none:
+      return "no_reactive";
+    case reactive_stab_gls:
+      return "yes_reactive";
+    case reactive_stab_usfem:
+      return "usfem_reactive";
+    default:
+      return "unknown";
+  }
+}
+
+std::string Inpar::FLUID::to_string(Inpar::FLUID::ReynoldsStress reynoldsstress)
+{
+  switch (reynoldsstress)
+  {
+    case reynolds_stress_stab_none:
+      return "no_reynolds";
+    case reynolds_stress_stab:
+      return "yes_reynolds";
+    case reynolds_stress_stab_only_rhs:
+      return "reynolds_rhs";
+    default:
+      return "unknown";
+  }
+}
+
+std::string Inpar::FLUID::to_string(Inpar::FLUID::Transient transient)
+{
+  switch (transient)
+  {
+    case inertia_stab_drop:
+      return "no_transient";
+    case inertia_stab_keep:
+      return "yes_transient";
+    case inertia_stab_keep_complete:
+      return "transient_complete";
+    default:
+      return "unknown";
+  }
+}
+
+std::string Inpar::FLUID::to_string(Inpar::FLUID::EosPres eospres)
+{
+  switch (eospres)
+  {
+    case EOS_PRES_none:
+      return "none";
+    case EOS_PRES_std_eos:
+      return "std_eos";
+    case EOS_PRES_xfem_gp:
+      return "xfem_gp";
+    default:
+      return "unknown";
+  }
+}
+
+std::string Inpar::FLUID::to_string(Inpar::FLUID::EosConvStream eosconvstream)
+{
+  switch (eosconvstream)
+  {
+    case EOS_CONV_STREAM_none:
+      return "none";
+    case EOS_CONV_STREAM_std_eos:
+      return "std_eos";
+    case EOS_CONV_STREAM_xfem_gp:
+      return "xfem_gp";
+    default:
+      return "unknown";
+  }
+}
+
+std::string Inpar::FLUID::to_string(Inpar::FLUID::EosConvCross eosconvcross)
+{
+  switch (eosconvcross)
+  {
+    case EOS_CONV_CROSS_none:
+      return "none";
+    case EOS_CONV_CROSS_std_eos:
+      return "std_eos";
+    case EOS_CONV_CROSS_xfem_gp:
+      return "xfem_gp";
+    default:
+      return "unknown";
+  }
+}
+
+std::string Inpar::FLUID::to_string(Inpar::FLUID::EosDiv eosdiv)
+{
+  switch (eosdiv)
+  {
+    case EOS_DIV_none:
+      return "none";
+    case EOS_DIV_vel_jump_std_eos:
+      return "vel_jump_std_eos";
+    case EOS_DIV_vel_jump_xfem_gp:
+      return "vel_jump_xfem_gp";
+    case EOS_DIV_div_jump_std_eos:
+      return "div_jump_std_eos";
+    case EOS_DIV_div_jump_xfem_gp:
+      return "div_jump_xfem_gp";
+    default:
+      return "unknown";
+  }
+}
+
+std::string Inpar::FLUID::to_string(Inpar::FLUID::EosTauType eostautype)
+{
+  switch (eostautype)
+  {
+    case EOS_tau_burman:
+      return "Burman";
+    case EOS_tau_burman_fernandez_hansbo:
+      return "Burman_Fernandez_Hansbo";
+    case EOS_tau_burman_fernandez_hansbo_wo_dt:
+      return "Burman_Fernandez_Hansbo_wo_dt";
+    case EOS_tau_braack_burman_john_lube:
+      return "Braack_Burman_John_Lube";
+    case EOS_tau_braack_burman_john_lube_wo_divjump:
+      return "Braack_Burman_John_Lube_wo_divjump";
+    case EOS_tau_franca_barrenechea_valentin_wall:
+      return "Franca_Barrenechea_Valentin_Wall";
+    case EOS_tau_burman_fernandez:
+      return "Burman_Fernandez";
+    case EOS_tau_burman_hansbo_dangelo_zunino:
+      return "Burman_Hansbo_DAngelo_Zunino";
+    case EOS_tau_burman_hansbo_dangelo_zunino_wo_dt:
+      return "Burman_Hansbo_DAngelo_Zunino_wo_dt";
+    case EOS_tau_schott_massing_burman_dangelo_zunino:
+      return "Schott_Massing_Burman_DAngelo_Zunino";
+    case EOS_tau_schott_massing_burman_dangelo_zunino_wo_dt:
+      return "Schott_Massing_Burman_DAngelo_Zunino_wo_dt";
+    case EOS_tau_Taylor_Hughes_Zarins_Whiting_Jansen_Codina_scaling:
+      return "Taylor_Hughes_Zarins_Whiting_Jansen_Codina_scaling";
+    case EOS_tau_poroelast_fluid:
+      return "Poroelast_Fluid";
+    case EOS_tau_not_defined:
+      return "not_defined";
+    default:
+      return "unknown";
+  }
+}
+
+std::string Inpar::FLUID::to_string(Inpar::FLUID::EosElementLength eoselementlength)
+{
+  switch (eoselementlength)
+  {
+    case EOS_he_max_diameter_to_opp_surf:
+      return "EOS_he_max_diameter_to_opp_surf";
+    case EOS_he_max_dist_to_opp_surf:
+      return "EOS_he_max_dist_to_opp_surf";
+    case EOS_he_surf_with_max_diameter:
+      return "EOS_he_surf_with_max_diameter";
+    case EOS_hk_max_diameter:
+      return "EOS_hk_max_diameter";
+    case EOS_he_surf_diameter:
+      return "EOS_he_surf_diameter";
+    case EOS_he_vol_eq_diameter:
+      return "EOS_he_vol_eq_diameter";
+    default:
+      return "unknown";
+  }
+}
+
+std::string Inpar::FLUID::to_string(Inpar::FLUID::VremanFiMethod vremanfimethod)
+{
+  switch (vremanfimethod)
+  {
+    case cuberootvol:
+      return "CubeRootVol";
+    case dir_dep:
+      return "Direction_dependent";
+    case min_len:
+      return "Minimum_length";
+    default:
+      return "unknown";
+  }
+}
+
 FOUR_C_NAMESPACE_CLOSE

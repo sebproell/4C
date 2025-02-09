@@ -356,8 +356,8 @@ void FSI::Partitioned::set_default_parameters(
     }
     default:
     {
-      FOUR_C_THROW("coupling method type '%s' unsupported",
-          Teuchos::getStringValue<FsiCoupling>(fsidyn, "COUPALGO").c_str());
+      FOUR_C_THROW("Coupling method type %d unsupported",
+          Teuchos::getIntegralValue<FsiCoupling>(fsidyn, "COUPALGO"));
     }
   }
 

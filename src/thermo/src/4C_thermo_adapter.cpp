@@ -52,8 +52,7 @@ void Thermo::BaseAlgorithm::setup_thermo(
       setup_tim_int(prbdyn, timinttype, actdis);  // <-- here is the show
       break;
     default:
-      FOUR_C_THROW("unknown time integration scheme '%s'",
-          Teuchos::getStringValue<Inpar::Thermo::DynamicType>(tdyn, "DYNAMICTYPE").c_str());
+      FOUR_C_THROW("Unknown time integration scheme");
   }
 
 }  // setup_thermo()
