@@ -930,26 +930,15 @@ void Thermo::TimIntImpl::print_newton_iter_text(FILE* ofile)
 
 
 /*----------------------------------------------------------------------*
- | print step summary                                       bborn 08/09 |
  *----------------------------------------------------------------------*/
 void Thermo::TimIntImpl::print_step()
 {
   if ((Core::Communication::my_mpi_rank(discret_->get_comm()) == 0) and printscreen_ and
       (step_old() % printscreen_ == 0))
   {
-    fprintf(stdout,
-        "Finalised: step %6d"
-        " | nstep %6d"
-        " | time %-14.8E"
-        " | dt %-14.8E"
-        " | numiter %3d\n",
-        step_, stepmax_, (*time_)[0], (*dt_)[0], iter_ + resetiter_);
-
-    fprintf(stdout,
-        "--------------------------------------------------------------"
-        "------------------\n");
-
-    fflush(stdout);
+    std::cout << "Finalised: step " << step_ << " | nstep " << stepmax_ << " | time " << (*time_)[0]
+              << " | dt " << (*dt_)[0] << " | numiter " << iter_ + resetiter_ << std::endl;
+    std::cout << "------------------------------------------------------------------------------\n";
   }
 }
 
