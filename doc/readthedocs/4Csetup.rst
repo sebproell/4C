@@ -6,7 +6,7 @@ Setup Guide
 Here you'll find some useful notes on setting up and running |FOURC|,
 the multi purpose multi physics multi-modelling code developed at
 
-- Chair of Computational Mechanics,
+- Institute for Computational Mechanics of the Technische Universität München,
 - IMCS of the Hochschule der Bunderwehr München, and
 - Institute of Material Systems Modelling of the Helmholtz Zentrum Hereon.
 

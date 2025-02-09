@@ -10,7 +10,7 @@ Reformulated Johnson-Cook law, as shown in:
 - time integration of internal variables using standard substepping, as shown in:
    Ana: Continuum Modeling and Calibration of Viscoplasticity in the Context
 	of the Lithium Anode in Solid-State Batteries
-	(Master's Thesis, Chair of Computational Mechanics, TU Munich, 2024)
+	(Master's Thesis, Institute for Computational Mechanics, TU Munich, 2024)
 ------------------------------------------------------PROBLEM SIZE
 DIM           3
 -------------------------------------------------------PROBLEM TYPE
