@@ -12,10 +12,9 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-/*! entry point for the solution of temperature problems */
+//! Main routine to run (in)stationary heat conduction
 void thermo_dyn_drt();
 
-/*----------------------------------------------------------------------*/
 FOUR_C_NAMESPACE_CLOSE
 
 #endif
