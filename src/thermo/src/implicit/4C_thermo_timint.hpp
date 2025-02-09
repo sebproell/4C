@@ -85,9 +85,6 @@ namespace Thermo
     //! prepare time step
     void prepare_time_step() override = 0;
 
-    //! Do time integration of single step
-    virtual void integrate_step() = 0;
-
     /// tests if there are more time steps to do
     bool not_finished() const override
     {

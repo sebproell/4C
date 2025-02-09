@@ -57,9 +57,6 @@ namespace Thermo
 
     //@}
 
-    //! Do time integration of single step
-    void integrate_step() override;
-
     //! build linear system tangent matrix, rhs/force residual
     //! Monolithic TSI accesses the linearised thermo problem
     void evaluate() override;

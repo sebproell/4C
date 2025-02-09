@@ -18,7 +18,6 @@
 FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
- | constructor                                              bborn 08/09 |
  *----------------------------------------------------------------------*/
 Thermo::TimIntImpl::TimIntImpl(const Teuchos::ParameterList& ioparams,
     const Teuchos::ParameterList& tdynparams, const Teuchos::ParameterList& xparams,
@@ -88,15 +87,6 @@ Thermo::TimIntImpl::TimIntImpl(const Teuchos::ParameterList& ioparams,
   }
 }
 
-/*----------------------------------------------------------------------*
- | integrate step                                           bborn 08/09 |
- *----------------------------------------------------------------------*/
-void Thermo::TimIntImpl::integrate_step()
-{
-  predict();
-  solve();
-  return;
-}
 
 /*----------------------------------------------------------------------*
  | build linear system tangent matrix, rhs/force residual    dano 02/11 |
@@ -503,6 +493,8 @@ Inpar::Thermo::ConvergenceStatus Thermo::TimIntImpl::newton_full()
 }
 
 
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
 void Thermo::TimIntImpl::blank_dirichlet_and_calc_norms()
 {
   // extract reaction forces
@@ -526,7 +518,8 @@ void Thermo::TimIntImpl::blank_dirichlet_and_calc_norms()
 }
 
 
-
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
 Inpar::Thermo::ConvergenceStatus Thermo::TimIntImpl::newton_full_error_check()
 {
   // do some error checks
