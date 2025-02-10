@@ -99,6 +99,39 @@ namespace
     }
   }
 
+  TEST(InputSpecTest, ParseSingleDefaultedEntryDat)
+  {
+    // This used to be a bug where a single default dat parameter was not accepted.
+    auto spec = all_of({
+        entry<double>("a", {.default_value = 1.0}),
+    });
+
+    {
+      InputParameterContainer container;
+      std::string stream("");
+      ValueParser parser(stream);
+      spec.fully_parse(parser, container);
+      EXPECT_EQ(container.get<double>("a"), 1.0);
+    }
+  }
+
+  TEST(InputSpecTest, ParseSingleDefaultedSelectionDat)
+  {
+    // This used to be a bug where a single default selection parameter was not accepted.
+    auto spec = all_of({
+        selection<int>("a", {{"A", 1}, {"B", 2}}, {.default_value = 2}),
+    });
+
+    {
+      InputParameterContainer container;
+      std::string stream("");
+      ValueParser parser(stream);
+      spec.fully_parse(parser, container);
+      EXPECT_EQ(container.get<int>("a"), 2);
+    }
+  }
+
+
   TEST(InputSpecTest, Vector)
   {
     auto spec = all_of({
