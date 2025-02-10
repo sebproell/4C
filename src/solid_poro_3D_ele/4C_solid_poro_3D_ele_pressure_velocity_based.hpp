@@ -17,6 +17,7 @@
 #include "4C_inpar_structure.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_solid_3D_ele_factory.hpp"
+#include "4C_solid_poro_3D_ele_calc_lib_nitsche.hpp"
 #include "4C_solid_poro_3D_ele_factory.hpp"
 #include "4C_solid_poro_3D_ele_properties.hpp"
 #include "4C_structure_new_elements_paramsinterface.hpp"
@@ -196,6 +197,27 @@ namespace Discret::Elements
     {
       return anisotropic_permeability_property_.nodal_coeffs_;
     }
+
+    /*!
+     * @brief Returns the Cauchy stress in the direction @p dir at @p xi with normal @p n
+     *
+     * @param disp Nodal displacements of the element
+     * @param pressures Pressures at the nodes of the element
+     * @param xi
+     * @param n
+     * @param dir
+     * @param linearizations [in/out] : Struct holding the linearizations that are possible for
+     * evaluation
+     * @return double
+     *
+     * @note @p pressures is an optional since it might not be set in the very initial call of the
+     * structure. Once the structure does not evaluate itself after setup, this optional parameter
+     * can be made mandatory.
+     */
+    double get_normal_cauchy_stress_at_xi(const std::vector<double>& disp,
+        const std::optional<std::vector<double>>& pressures, const Core::LinAlg::Matrix<3, 1>& xi,
+        const Core::LinAlg::Matrix<3, 1>& n, const Core::LinAlg::Matrix<3, 1>& dir,
+        SolidPoroCauchyNDirLinearizations<3>& linearizations);
 
     void vis_names(std::map<std::string, int>& names) override;
 

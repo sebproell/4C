@@ -157,13 +157,16 @@ void Discret::Elements::SolidPoroPressureVelocityBasedEleCalc<
   // Create views to SerialDenseMatrices
   std::optional<Core::LinAlg::Matrix<num_dim_ * num_nodes_, num_dim_ * num_nodes_>> stiff = {};
   std::optional<Core::LinAlg::Matrix<num_dim_ * num_nodes_, num_dim_ * num_nodes_>> react = {};
-  Core::LinAlg::Matrix<num_dim_ * num_nodes_, num_dim_ * num_nodes_> react_matrix(
-      reactive_matrix->values(), true);
+  std::optional<Core::LinAlg::Matrix<num_dim_ * num_nodes_, num_dim_ * num_nodes_>> react_matrix =
+      {};
+
+  if (reactive_matrix) react_matrix.emplace(reactive_matrix->values(), true);
   std::optional<Core::LinAlg::Matrix<num_dim_ * num_nodes_, 1>> force = {};
   enum Inpar::Solid::DampKind damping =
       params.get<enum Inpar::Solid::DampKind>("damping", Inpar::Solid::damp_none);
   if (stiffness_matrix != nullptr) stiff.emplace(*stiffness_matrix, true);
-  if (reactive_matrix && react_matrix.is_initialized() && damping == Inpar::Solid::damp_material)
+  if (react_matrix && react_matrix.value().is_initialized() &&
+      damping == Inpar::Solid::damp_material)
     react.emplace(*reactive_matrix, true);
   if (force_vector != nullptr) force.emplace(*force_vector, true);
 
