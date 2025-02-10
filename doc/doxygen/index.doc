@@ -1,10 +1,10 @@
-/*! \mainpage 4C: A Comprehensive Multi-Physics Simulation Framework
+/*! \mainpage 4C: A Comprehensive Multiphysics Simulation Framework
 \htmlonly
 \endhtmlonly
 
 \section mainpageoverview Overview
 
-4C (Comprehensive Computational Community Code) is a powerful research code for multi-physics computer simulations.
+4C (Comprehensive Computational Community Code) is a powerful research code for multiphysics computer simulations.
 Building on more than 20 years of research and development, 4C can model a plethora of physical systems, including solid mechanics, fluid dynamics, scalar transport, and chemical reaction among others.
 
 4C mainly implements finite element methods (FEM) but also offers alternative discretization methods such as discontinuous Galerkin methods (DG), particle methods, and mesh-free methods. 4C is written in C++ using modern software design and uses MPI for distributed memory hardware architectures.
