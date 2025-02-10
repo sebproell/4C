@@ -53,7 +53,7 @@ The solvers are called in the solver sections::
    -----------SOLVER 9
 
 in which all details for a specific solver are defined.
-The parameter :ref:`SOLVER <solver1_solver>` defines the solver to be used.
+The parameter ``SOLVER`` defines the solver to be used.
 Most of the solvers require additional parameters. These are explained in the following.
 
 
@@ -113,11 +113,11 @@ This package provides a bunch of KRYLOV solvers, e.g.
 The parameters are very similar to the AztecOO package,
 and therefore further information on specific details can be found in the official `AztecOO user guide <https://trilinos.github.io/pdfs/AztecOOUserGuide.pdf>`_.
 Since an iterative method approximates the correct solution iteratively,
-a residual criterion (here :ref:`AZCONV <solver1_azconv>`), a tolerance (:ref:`AZTOL <solver1_aztol>`),
-and the maximum number of iterations :ref:`AZITER <solver1_aziter>` must be given.
-The default of AZCONV (AZ_r0) is reasonable, while the default for the maximum number of iterations (1000) is rather high.
+a residual criterion (here ``AZCONV``), a tolerance (``AZTOL``),
+and the maximum number of iterations ``AZITER`` must be given.
+The default of ``AZCONV`` (AZ_r0) is reasonable, while the default for the maximum number of iterations (1000) is rather high.
 
-In addition, the parameter :ref:`AZSUB <solver1_azsub>` is important, if the default algorithm, GMRES, is used:
+In addition, the parameter ``AZSUB`` is important, if the default algorithm, GMRES, is used:
 Krylov solvers build up a subspace of vectors, and they should be rebuilt after a number of iterations. The default of 50 is reasonable.
 
 These parameters are defined in the following way:
@@ -144,7 +144,7 @@ The choice and design of the preconditioner highly affect performance. Within Be
 
 Perfect scalability is not achieved with this method, but is has the advantage of being less complex.
 
-ILU comes with a single parameter: :ref:`IFPACKGFILL <solver1_ifpackgfill>`.
+ILU comes with a single parameter: ``IFPACKGFILL``.
 The default, ``IFPACKGFILL 0``, will not include further elements in the preconditioner P (same sparcity pattern)
 setup will be faster, approximation is worse
 ``IFPACKGFILL = 1 .. n``: The higher the more elements are included, sparcity decreases (a level of 12 might be a full matrix, like a direct solver)

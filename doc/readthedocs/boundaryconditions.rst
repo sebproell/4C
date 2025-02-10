@@ -124,7 +124,7 @@ One needs also to set the corresponding IO, such as
    WRITE_HEADER                     no
 
 , see :ref:`SECio_monitorstructuredbc`,
-and set the right time integration strategy, :ref:`INT_STRATEGY<structuraldynamic_int_strategy>`,
+and set the right time integration strategy, :ref:`INT_STRATEGY<SECstructuraldynamic>`,
 by which the standard one, i.e. Generalized Newmark Alpha, should always work.
 
 ::
