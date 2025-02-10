@@ -18,7 +18,6 @@
 FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
- | constructor                                              bborn 08/09 |
  *----------------------------------------------------------------------*/
 Thermo::TimIntImpl::TimIntImpl(const Teuchos::ParameterList& ioparams,
     const Teuchos::ParameterList& tdynparams, const Teuchos::ParameterList& xparams,
@@ -44,9 +43,8 @@ Thermo::TimIntImpl::TimIntImpl(const Teuchos::ParameterList& ioparams,
       normcharforce_(0.0),
       normchartemp_(0.0),
       normfres_(0.0),
-      normtempi_(0.0),
+      normtempi_(1e6),
       tempi_(nullptr),
-      tempinc_(nullptr),
       timer_("", true),
       fres_(nullptr),
       freact_(nullptr)
@@ -60,9 +58,6 @@ Thermo::TimIntImpl::TimIntImpl(const Teuchos::ParameterList& ioparams,
   // iterative temperature increments IncT_{n+1}
   // also known as residual temperatures
   tempi_ = Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
-
-  // incremental temperature increments IncT_{n+1}
-  tempinc_ = Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
 
   // setup mortar coupling
   if (Global::Problem::instance()->get_problem_type() == Core::ProblemType::thermo)
@@ -88,53 +83,6 @@ Thermo::TimIntImpl::TimIntImpl(const Teuchos::ParameterList& ioparams,
   }
 }
 
-/*----------------------------------------------------------------------*
- | integrate step                                           bborn 08/09 |
- *----------------------------------------------------------------------*/
-void Thermo::TimIntImpl::integrate_step()
-{
-  predict();
-  solve();
-  return;
-}
-
-/*----------------------------------------------------------------------*
- | build linear system tangent matrix, rhs/force residual   bborn 08/09 |
- | Monolithic TSI accesses the linearised thermo problem                |
- *----------------------------------------------------------------------*/
-void Thermo::TimIntImpl::evaluate(std::shared_ptr<const Core::LinAlg::Vector<double>> tempi)
-{
-  // Yes, this is complicated. But we have to be very careful
-  // here. The field solver always expects an increment only. And
-  // there are Dirichlet conditions that need to be preserved. So take
-  // the sum of increments we get from NOX and apply the latest
-  // increment only.
-  //  if (temp != nullptr)
-  //  {
-  //    // residual temperatures (or iteration increments or iteratively
-  //    // incremental temperatures)
-  //    std::shared_ptr<Core::LinAlg::Vector<double>> tempi = Teuchos::rcp(new
-  //    Core::LinAlg::Vector<double>(*temp)); tempi->Update(-1.0, *tempinc_, 1.0);
-  //
-  //    // update incremental temperature member to provided step increments
-  //    // shortly: tempinc_^<i> := temp^<i+1>
-  //    tempinc_->Update(1.0, *temp, 0.0);
-  //
-  //    // do thermal update with provided residual temperatures
-  //    // recent increment: tempi == tempi_ = \f$\Delta{T}^{<k>}_{n+1}\f$
-  //    thermo_->update_iter_incrementally(tempi);
-  //  }
-  //  else
-  //  {
-  //    thermo_->update_iter_incrementally(nullptr);
-  //  }
-
-  // TSI does not use NOX --> the Newton increment is passed to the field solver
-  update_iter_incrementally(tempi);
-
-  // builds tangent, residual and applies DBC
-  evaluate();
-}
 
 /*----------------------------------------------------------------------*
  | build linear system tangent matrix, rhs/force residual    dano 02/11 |
@@ -147,70 +95,45 @@ void Thermo::TimIntImpl::evaluate()
   prepare_system_for_newton_solve();
 }
 
+
 /*----------------------------------------------------------------------*
- | predict solution                                         bborn 08/09 |
  *----------------------------------------------------------------------*/
-void Thermo::TimIntImpl::predict()
+void Thermo::TimIntImpl::prepare_time_step()
 {
-  // choose predictor
-  if (pred_ == Inpar::Thermo::pred_consttemp)
-  {
-    predict_const_temp_consist_rate();
-    normtempi_ = 1.0e6;
-  }
-  else if (pred_ == Inpar::Thermo::pred_consttemprate)
-  {
-    predict_const_temp_rate();
-    normtempi_ = 1.0e6;
-  }
-  else if (pred_ == Inpar::Thermo::pred_tangtemp)
-  {
-    predict_tang_temp_consist_rate();
-    // normtempi_ has been set
-  }
-  else
-  {
-    FOUR_C_THROW("Trouble in determining predictor %i", pred_);
-  }
-
-  // apply Dirichlet BCs
-  //  apply_dirichlet_bc(timen_, temon_, raten_, nullptr, false);
-  apply_dirichlet_bc(timen_, tempn_, raten_, false);
-
-  // compute residual forces fres_ and tangent tang_
-  evaluate_rhs_tang_residual();
-
-  // extract reaction forces
-  // reactions are negative to balance residual on DBC
-  freact_->Update(-1.0, *fres_, 0.0);
-  dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact_);
-
-  // blank residual at DOFs on Dirichlet BC
-  dbcmaps_->insert_cond_vector(*dbcmaps_->extract_cond_vector(*zeros_), *fres_);
-
-  // build residual force norm
-  normfres_ = Thermo::Aux::calculate_vector_norm(iternorm_, *fres_);
-
-  // determine characteristic norms
-  // we set the minimum of calc_ref_norm_force() and #tolfres_, because
-  // we want to prevent the case of a zero characteristic fnorm
-  normcharforce_ = calc_ref_norm_force();
-  if (normcharforce_ == 0.0) normcharforce_ = tolfres_;
-  normchartemp_ = calc_ref_norm_temperature();
-  if (normchartemp_ == 0.0) normchartemp_ = toltempi_;
-
-  // output
-  print_predictor();
-
-  // enjoy your meal
-  return;
+  predict_step();
+  prepare_step();
 }
 
 /*----------------------------------------------------------------------*
- | prepare partition step                                     dano 12/10 |
- | like Predict() but without predict the unknown variables T,R         |
  *----------------------------------------------------------------------*/
-void Thermo::TimIntImpl::prepare_partition_step()
+void Thermo::TimIntImpl::predict_step()
+{
+  switch (pred_)
+  {
+    case Inpar::Thermo::pred_consttemp:
+    {
+      predict_const_temp_consist_rate();
+      break;
+    }
+    case Inpar::Thermo::pred_consttemprate:
+    {
+      predict_const_temp_rate();
+      break;
+    }
+    case Inpar::Thermo::pred_tangtemp:
+    {
+      predict_tang_temp_consist_rate();
+      break;
+    }
+    default:
+      FOUR_C_THROW("Trouble in determining predictor %i.", pred_);
+  }
+}
+
+
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+void Thermo::TimIntImpl::prepare_step()
 {
   // set iteration step to 0
   iter_ = 0;
@@ -241,31 +164,21 @@ void Thermo::TimIntImpl::prepare_partition_step()
   normchartemp_ = calc_ref_norm_temperature();
   if (normchartemp_ == 0.0) normchartemp_ = toltempi_;
 
-  // output
   print_predictor();
-
-  // enjoy your meal
-  return;
 }
 
 
-/*----------------------------------------------------------------------*
- | predict solution as constant temperatures,               bborn 08/09 |
- | temperature rates                                                    |
+/*----------------------------------------------------------------------* |
  *----------------------------------------------------------------------*/
 void Thermo::TimIntImpl::predict_const_temp_rate()
 {
   // constant predictor
   tempn_->Update(1.0, *(*temp_)(0), 0.0);
   raten_->Update(1.0, *(*rate_)(0), 0.0);
-
-  // see you next time step
-  return;
 }
 
-/*----------------------------------------------------------------------*
- | Predict solution as constant temperatures,               bborn 08/09 |
- | temperature rates and tangent                                        |
+
+/*----------------------------------------------------------------------* |
  *----------------------------------------------------------------------*/
 void Thermo::TimIntImpl::predict_tang_temp_consist_rate()
 {
@@ -357,25 +270,8 @@ void Thermo::TimIntImpl::predict_tang_temp_consist_rate()
     discret_->evaluate(p, nullptr, nullptr, nullptr, nullptr, nullptr);
     discret_->clear_state();
   }
-
-  // shalom
-  return;
 }
 
-/*----------------------------------------------------------------------*
- | prepare time step                                        bborn 08/09 |
- *----------------------------------------------------------------------*/
-void Thermo::TimIntImpl::prepare_time_step()
-{
-  // Note: MFSI requires a constant predictor. Otherwise the fields will get
-  // out of sync.
-
-  // predict
-  predict();
-
-  // initialise incremental temperatures
-  tempinc_->PutScalar(0.0);
-}
 
 /*----------------------------------------------------------------------*
  | converged                                                bborn 08/09 |
@@ -496,11 +392,6 @@ Inpar::Thermo::ConvergenceStatus Thermo::TimIntImpl::newton_full()
     // make negative residual
     fres_->Scale(-1.0);
 
-#ifdef THRASOUTPUT
-    // finite difference check
-    fd_check();
-#endif
-
     // apply Dirichlet BCs to system of equations
     tempi_->PutScalar(0.0);  // Useful? depends on solver and more
     Core::LinAlg::apply_dirichlet_to_system(
@@ -546,6 +437,8 @@ Inpar::Thermo::ConvergenceStatus Thermo::TimIntImpl::newton_full()
 }
 
 
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
 void Thermo::TimIntImpl::blank_dirichlet_and_calc_norms()
 {
   // extract reaction forces
@@ -569,7 +462,8 @@ void Thermo::TimIntImpl::blank_dirichlet_and_calc_norms()
 }
 
 
-
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
 Inpar::Thermo::ConvergenceStatus Thermo::TimIntImpl::newton_full_error_check()
 {
   // do some error checks
@@ -583,7 +477,7 @@ Inpar::Thermo::ConvergenceStatus Thermo::TimIntImpl::newton_full_error_check()
   }
   else if ((iter_ >= itermax_) and (divcontype_ == Inpar::Thermo::divcont_continue))
   {
-    if (myrank_ == 0)
+    if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
       Core::IO::cout << "Newton unconverged in " << iter_ << " iterations, continuing"
                      << Core::IO::endl;
     return Inpar::Thermo::conv_success;
@@ -596,7 +490,7 @@ Inpar::Thermo::ConvergenceStatus Thermo::TimIntImpl::newton_full_error_check()
   else if (divcontype_ == Inpar::Thermo::divcont_repeat_step or
            divcontype_ == Inpar::Thermo::divcont_repeat_simulation)
   {
-    if (myrank_ == 0)
+    if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
       FOUR_C_THROW(
           "Fatal failure in newton_full_error_check()! divcont_repeat_step and "
           "divcont_repeat_simulation not implemented for Thermo");
@@ -632,7 +526,7 @@ void Thermo::TimIntImpl::halve_time_step()
 
   // remember number of iterations
   resetiter_ += iter_;
-  if (Core::Communication::my_mpi_rank(get_comm()) == 0)
+  if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
     Core::IO::cout << "Nonlinear solver failed to converge in step " << step()
                    << ". Divide timestep in half. "
                    << "Old time step: " << old_dt << Core::IO::endl
@@ -659,7 +553,7 @@ void Thermo::TimIntImpl::check_for_time_step_increase()
       // increase the step size if the remaining number of steps is a even number
       if (((num_step() - step()) % 2) == 0 and num_step() != step())
       {
-        if (Core::Communication::my_mpi_rank(get_comm()) == 0)
+        if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
           Core::IO::cout << "Nonlinear solver successful. Double timestep size!" << Core::IO::endl;
 
         // step up one refinement level
@@ -794,7 +688,8 @@ void Thermo::TimIntImpl::update_newton(std::shared_ptr<const Core::LinAlg::Vecto
 void Thermo::TimIntImpl::print_predictor()
 {
   // only master processor
-  if ((myrank_ == 0) and printscreen_ and (step_old() % printscreen_ == 0))
+  if ((Core::Communication::my_mpi_rank(discret_->get_comm()) == 0) and printscreen_ and
+      (step_old() % printscreen_ == 0))
   {
     // relative check of force residual
     if (normtypefres_ == Inpar::Thermo::convnorm_rel)
@@ -834,7 +729,8 @@ void Thermo::TimIntImpl::print_predictor()
 void Thermo::TimIntImpl::print_newton_iter()
 {
   // print to standard out
-  if ((myrank_ == 0) and printscreen_ and printiter_ and (step_old() % printscreen_ == 0))
+  if ((Core::Communication::my_mpi_rank(discret_->get_comm()) == 0) and printscreen_ and
+      (step_old() % printscreen_ == 0))
   {
     if (iter_ == 1) print_newton_iter_header(stdout);
     print_newton_iter_text(stdout);
@@ -971,250 +867,16 @@ void Thermo::TimIntImpl::print_newton_iter_text(FILE* ofile)
 
 
 /*----------------------------------------------------------------------*
- | print statistics of converged NRI                        bborn 08/09 |
- *----------------------------------------------------------------------*/
-void Thermo::TimIntImpl::print_newton_conv()
-{
-  // somebody did the door
-  return;
-}  // print_newton_conv()
-
-
-/*----------------------------------------------------------------------*
- | print step summary                                       bborn 08/09 |
  *----------------------------------------------------------------------*/
 void Thermo::TimIntImpl::print_step()
 {
-  // print out (only on master CPU)
-  if ((myrank_ == 0) and printscreen_ and (step_old() % printscreen_ == 0))
+  if ((Core::Communication::my_mpi_rank(discret_->get_comm()) == 0) and printscreen_ and
+      (step_old() % printscreen_ == 0))
   {
-    print_step_text(stdout);
+    std::cout << "Finalised: step " << step_ << " | nstep " << stepmax_ << " | time " << (*time_)[0]
+              << " | dt " << (*dt_)[0] << " | numiter " << iter_ + resetiter_ << std::endl;
+    std::cout << "------------------------------------------------------------------------------\n";
   }
-}  // print_step()
-
-
-/*----------------------------------------------------------------------*
- | print step summary                                       bborn 08/09 |
- *----------------------------------------------------------------------*/
-void Thermo::TimIntImpl::print_step_text(FILE* ofile)
-{
-  // the text
-  fprintf(ofile,
-      "Finalised: step %6d"
-      " | nstep %6d"
-      " | time %-14.8E"
-      " | dt %-14.8E"
-      " | numiter %3d\n",
-      step_, stepmax_, (*time_)[0], (*dt_)[0], iter_ + resetiter_);
-  // print a beautiful line made exactly of 80 dashes
-  fprintf(ofile,
-      "--------------------------------------------------------------"
-      "------------------\n");
-  // do it, print now!
-  fflush(ofile);
-
-  // fall asleep
-  return;
-}  // print_step_text()
-
-
-/*----------------------------------------------------------------------*
- | finite difference check of thermal tangent                dano 09/13 |
- *----------------------------------------------------------------------*/
-void Thermo::TimIntImpl::fd_check()
-{
-  // value of disturbance
-  const double delta = 1.0e-8;
-  // disturb the current temperature increment
-
-  // ------------------------------------------ initialise matrices and vectors
-
-  // initialise discurbed increment vector
-  std::shared_ptr<Core::LinAlg::Vector<double>> disturbtempi =
-      Core::LinAlg::create_vector(*dof_row_map(), true);
-  const int dofs = disturbtempi->GlobalLength();
-  disturbtempi->PutScalar(0.0);
-  disturbtempi->ReplaceGlobalValue(0, 0, delta);
-
-  // initialise rhs
-  Core::LinAlg::Vector<double> rhs_old(*discret_->dof_row_map(), true);
-  rhs_old.Update(1.0, *fres_, 0.0);
-  Core::LinAlg::Vector<double> rhs_copy(*discret_->dof_row_map(), true);
-
-  // initialise approximation of tangent
-  std::shared_ptr<Epetra_CrsMatrix> tang_approx =
-      Core::LinAlg::create_matrix((tang_->row_map()), 81);
-
-  Core::LinAlg::SparseMatrix tang_copy(tang_->epetra_matrix(), Core::LinAlg::Copy);
-  std::cout << "\n****************** Thermo finite difference check ******************"
-            << std::endl;
-  std::cout << "thermo field has " << dofs << " DOFs" << std::endl;
-
-  // loop over columns
-  // in case of pure thermal problem, start at 0,
-  // BUT in case of TSI vector is filled first with STR DOFs followed by Thermo
-  // i.e. insert maximal value of i=STR_DOFs+dofs
-  for (int i = 0; i < dofs; ++i)  // TSI: j=STR_DOFs+dofs
-  {
-    // DOFs that have DBC are not disturbed, i.e. set to zero
-    if (dbcmaps_->cond_map()->MyGID(i))
-    {
-      disturbtempi->ReplaceGlobalValue(i, 0, 0.0);
-    }
-    // evaluate the element with disturb temperature increment
-    evaluate(disturbtempi);
-    rhs_copy.Update(1.0, *fres_, 0.0);
-    tempi_->PutScalar(0.0);
-    Core::LinAlg::apply_dirichlet_to_system(
-        tang_copy, *disturbtempi, rhs_copy, *zeros_, *(dbcmaps_->cond_map()));
-    // finite difference approximation of partial derivative
-    // rhs_copy = ( rhs_disturb - rhs_old ) . (-1)/delta with rhs_copy==rhs_disturb
-    rhs_copy.Update(-1.0, rhs_old, 1.0);
-    rhs_copy.Scale(-1.0 / delta);
-
-    int* index = &i;
-    // loop over rows
-    for (int j = 0; j < dofs; ++j)  // TSI: j=STR_DOFs+dofs
-    {
-      // insert approximate values using FD into tang_approx
-      double value = (rhs_copy)[j];
-      tang_approx->InsertGlobalValues(j, 1, &value, index);
-    }  // loop over rows
-
-    // free DOFs (no DBC) get the value (-delta)
-    if (not dbcmaps_->cond_map()->MyGID(i))
-      disturbtempi->ReplaceGlobalValue(i, 0, -delta);  // row: i, vector index: 0, value: -delta
-
-    // TODO 2013-09-18 was machen diese drei Zeilen??
-    disturbtempi->ReplaceGlobalValue(i - 1, 0, 0.0);
-    if (i != dofs - 1) disturbtempi->ReplaceGlobalValue(i + 1, 0, delta);
-  }  // loop over columns
-
-  // evaluate the element with changed disturbed incremental vector
-  evaluate(disturbtempi);
-  tang_approx->FillComplete();
-  // copy tang_approx
-  Core::LinAlg::SparseMatrix tang_approx_sparse(tang_approx, Core::LinAlg::Copy);
-  // tang_approx_sparse = tang_approx_sparse - tang_copy
-  tang_approx_sparse.add(tang_copy, false, -1.0, 1.0);
-
-  // initialise CRSMatrices for the two tangents
-  std::shared_ptr<Epetra_CrsMatrix> sparse_crs = tang_copy.epetra_matrix();
-  std::shared_ptr<Epetra_CrsMatrix> error_crs = tang_approx_sparse.epetra_matrix();
-  error_crs->FillComplete();
-  sparse_crs->FillComplete();
-
-  // ------------------------------------- initialise values for actual fd_check
-  bool success = true;
-  double error_max = 0.0;
-  for (int i = 0; i < dofs; ++i)
-  {
-    // only do the check for DOFs which have NO Dirichlet boundary condition
-    if (not dbcmaps_->cond_map()->MyGID(i))
-    {
-      for (int j = 0; j < dofs; ++j)
-      {
-        if (not dbcmaps_->cond_map()->MyGID(j))
-        {
-          double tang_approx_ij = 0.0;
-          double sparse_ij = 0.0;
-          double error_ij = 0.0;
-
-          // --------------------------------- get errors of tangent difference
-          int errornumentries = 0;
-          int errorlength = error_crs->NumMyEntries(i);
-          std::vector<double> errorvalues(errorlength);
-          std::vector<int> errorindices(errorlength);
-          error_crs->ExtractGlobalRowCopy(
-              i, errorlength, errornumentries, errorvalues.data(), errorindices.data());
-          for (int k = 0; k < errorlength; ++k)
-          {
-            if (errorindices[k] == j)
-            {
-              error_ij = errorvalues[k];
-              break;
-            }
-          }
-
-          // -------------------------------------- get exact values of tangent
-          // get errors of exact tangent
-          int sparsenumentries = 0;
-          int sparselength = sparse_crs->NumMyEntries(i);
-          std::vector<double> sparsevalues(sparselength);
-          std::vector<int> sparseindices(sparselength);
-          sparse_crs->ExtractGlobalRowCopy(
-              i, sparselength, sparsenumentries, sparsevalues.data(), sparseindices.data());
-          for (int k = 0; k < sparselength; ++k)
-          {
-            if (sparseindices[k] == j)
-            {
-              sparse_ij = sparsevalues[k];
-              break;
-            }
-            // else sparse_ij = 0.0;
-          }
-
-          // ---------------------------- get approximate values of tang_approx
-          int approxnumentries = 0;
-          int approxlength = tang_approx->NumMyEntries(i);
-          std::vector<double> approxvalues(approxlength);
-          std::vector<int> approxindices(approxlength);
-          tang_approx->ExtractGlobalRowCopy(
-              i, approxlength, approxnumentries, approxvalues.data(), approxindices.data());
-          for (int k = 0; k < approxlength; ++k)
-          {
-            if (approxindices[k] == j)
-            {
-              tang_approx_ij = approxvalues[k];
-              break;
-            }
-            // else tang_approx_ij = 0.0;
-          }
-
-          // check value of
-          double error = 0.0;
-          if (abs(tang_approx_ij) > 1e-7)
-            error = error_ij / tang_approx_ij;
-          else if (abs(sparse_ij) > 1e-7)
-            error = error_ij / sparse_ij;
-          // in case current error is higher than maximal, permitted one
-          // --> set error_max to current error
-          if (abs(error) > abs(error_max)) error_max = abs(error);
-
-          // ---------------------------------------- control values of fd_check
-          if ((abs(error) > 1e-6) and (abs(error_ij) > 1e-7))
-          {
-            // fd_check of tangent was NOT successful
-            success = false;
-
-            std::cout << "finite difference check failed!\n"
-                      << "entry (" << i << "," << j << ") of tang = " << sparse_ij
-                      << " and of approx. tang = " << tang_approx_ij
-                      << ".\nAbsolute error = " << error_ij << ", relative error = " << error
-                      << std::endl;
-          }  // control the error values
-        }
-      }
-    }  // fd_check only for DOFs which have NO DBC
-  }  // loop over dofs of successful FD check
-
-  // --------------------------------------------------- fd_check was successful
-  // i.e. tang and its approxiamation are equal w.r.t. given tolerance
-  if (success == true)
-  {
-    std::cout.precision(12);
-    std::cout << "finite difference check successful! Maximal relative error = " << error_max
-              << std::endl;
-    std::cout << "****************** finite difference check done ***************\n\n" << std::endl;
-  }
-  else
-    FOUR_C_THROW("fd_check of thermal tangent failed!");
-
-  return;
-
-}  // fd_check()
-
-
-/*----------------------------------------------------------------------*/
+}
 
 FOUR_C_NAMESPACE_CLOSE

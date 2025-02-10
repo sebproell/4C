@@ -88,7 +88,7 @@ TSI::Algorithm::Algorithm(MPI_Comm comm)
   else
   {
     Thermo::BaseAlgorithm thermo(Global::Problem::instance()->tsi_dynamic_params(), thermodis);
-    thermo_ = thermo.thermo_fieldrcp();
+    thermo_ = thermo.thermo_field();
 
     //  // access structural dynamic params list which will be possibly modified while creating the
     //  time integrator

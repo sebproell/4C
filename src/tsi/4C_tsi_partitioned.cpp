@@ -268,7 +268,7 @@ void TSI::Partitioned::time_loop_one_way()
     do_thermo_step();
 
     // now extract the current temperatures and pass it to the structure
-    temp_ = thermo_field()->write_access_tempnp();
+    temp_ = thermo_field()->tempnp();
 
     // -------------------------------------------------- structure field
 
@@ -294,7 +294,7 @@ void TSI::Partitioned::time_loop_one_way()
 void TSI::Partitioned::time_loop_sequ_stagg()
 {
   // now extract the current temperatures and pass it to the structure
-  temp_ = thermo_field()->write_access_tempnp();
+  temp_ = thermo_field()->tempnp();
   // extract final displacements,
   // update is called afterwards, so we extract the newest solution
   disp_ = structure_field()->dispnp();
@@ -400,7 +400,7 @@ void TSI::Partitioned::time_loop_full()
   // extract final displacement and velocity
   // update is called afterwards, so we extract the newest solution
   disp_ = structure_field()->dispnp();
-  temp_ = thermo_field()->write_access_tempnp();
+  temp_ = thermo_field()->tempnp();
 
   // outer iteration loop
   outer_iteration_loop();
@@ -481,9 +481,9 @@ void TSI::Partitioned::outer_iteration_loop()
 
         // prepare time step with coupled variables
         if (itnum == 1) thermo_field()->prepare_time_step();
-        // within the nonlinear loop, e.g. itnum>1 call only prepare_partition_step
+        // within the nonlinear loop, e.g. itnum>1 call only prepare_step
         else if (itnum != 1)
-          thermo_field()->prepare_partition_step();
+          thermo_field()->prepare_step();
 
         // do the nonlinear solve for the time step. All boundary conditions
         // have been set.
@@ -493,7 +493,7 @@ void TSI::Partitioned::outer_iteration_loop()
 
         // pass the current temperatures to the structure field
         // todo
-        // ApplyCouplingState() also calls prepare_partition_step() for prediction
+        // ApplyCouplingState() also calls prepare_step() for prediction
         // with just calculated incremental solutions
         apply_thermo_coupling_state(temp_);
 
@@ -525,7 +525,7 @@ void TSI::Partitioned::outer_iteration_loop()
       // thermal predictor for the coupling iteration outside the loop
       // get temperature of old time step (T_n)
       // T^p_n+1 = T_n
-      temp_ = thermo_field()->write_access_tempn();
+      temp_ = thermo_field()->tempn();
 
       // start OUTER ITERATION
       while (stopnonliniter == false)
@@ -533,7 +533,7 @@ void TSI::Partitioned::outer_iteration_loop()
         itnum++;
 
         // get current temperatures due to solve thermo step, like predictor in FSI
-        if (itnum != 1) temp_ = thermo_field()->write_access_tempnp();
+        if (itnum != 1) temp_ = thermo_field()->tempnp();
 
         // begin nonlinear solver / outer iteration ***************************
 
@@ -541,7 +541,7 @@ void TSI::Partitioned::outer_iteration_loop()
 
         // pass the current temperatures to the structure field
         // todo
-        // ApplyCouplingState() also calls prepare_partition_step() for prediction
+        // ApplyCouplingState() also calls prepare_step() for prediction
         // with just calculated incremental solutions
         apply_thermo_coupling_state(temp_);
 
@@ -564,9 +564,9 @@ void TSI::Partitioned::outer_iteration_loop()
 
         // prepare time step with coupled variables
         if (itnum == 1) thermo_field()->prepare_time_step();
-        // within the nonlinear loop, e.g. itnum>1 call only prepare_partition_step
+        // within the nonlinear loop, e.g. itnum>1 call only prepare_step
         else if (itnum != 1)
-          thermo_field()->prepare_partition_step();
+          thermo_field()->prepare_step();
 
         /// solve coupled thermal system
         /// do the solve for the time step. All boundary conditions have been set.
@@ -672,9 +672,9 @@ void TSI::Partitioned::outer_iteration_loop()
 
         // prepare time step with coupled variables
         if (itnum == 1) thermo_field()->prepare_time_step();
-        // within the nonlinear loop, e.g. itnum>1 call only prepare_partition_step
+        // within the nonlinear loop, e.g. itnum>1 call only prepare_step
         else if (itnum != 1)
-          thermo_field()->prepare_partition_step();
+          thermo_field()->prepare_step();
 
         // do the nonlinear solve for the time step. All boundary conditions
         // have been set.
@@ -683,7 +683,7 @@ void TSI::Partitioned::outer_iteration_loop()
         // ---------------------------------------------- structure field
 
         // pass the current temperatures to the structure field
-        // ApplyCouplingState() also calls prepare_partition_step() for prediction
+        // ApplyCouplingState() also calls prepare_step() for prediction
         // with just calculated incremental solutions
         apply_thermo_coupling_state(temp_);
 
@@ -885,7 +885,7 @@ void TSI::Partitioned::outer_iteration_loop()
 
         // pass the current temperatures to the structure field
         // todo
-        // ApplyCouplingState() also calls prepare_partition_step() for prediction
+        // ApplyCouplingState() also calls prepare_step() for prediction
         // with just calculated incremental solutions
         // structure_field()->discretization()->set_state(1,"temperature",temp_);
         apply_thermo_coupling_state(temp_);
@@ -908,9 +908,9 @@ void TSI::Partitioned::outer_iteration_loop()
 
         // prepare time step with coupled variables
         if (itnum == 1) thermo_field()->prepare_time_step();
-        // within the nonlinear loop, e.g. itnum>1 call only prepare_partition_step
+        // within the nonlinear loop, e.g. itnum>1 call only prepare_step
         else if (itnum != 1)
-          thermo_field()->prepare_partition_step();
+          thermo_field()->prepare_step();
 
         if (coupling == Inpar::TSI::IterStaggFixedRel)
         {

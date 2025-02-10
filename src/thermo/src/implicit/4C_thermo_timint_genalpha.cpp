@@ -89,7 +89,7 @@ Thermo::TimIntGenAlpha::TimIntGenAlpha(const Teuchos::ParameterList& ioparams,
   calc_coeff();
 
   // info to user
-  if (myrank_ == 0)
+  if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
   {
     // check if coefficients have admissible values
     verify_coeff();

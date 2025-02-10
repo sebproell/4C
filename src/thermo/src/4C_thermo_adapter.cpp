@@ -10,104 +10,43 @@
 #include "4C_global_data.hpp"
 #include "4C_inpar_thermo.hpp"
 #include "4C_io_pstream.hpp"
-#include "4C_thermo_timint_expleuler.hpp"
 #include "4C_thermo_timint_genalpha.hpp"
 #include "4C_thermo_timint_ost.hpp"
 #include "4C_thermo_timint_statics.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
-#include <Teuchos_Time.hpp>
 #include <Teuchos_TimeMonitor.hpp>
 
 FOUR_C_NAMESPACE_OPEN
 
-
 /*----------------------------------------------------------------------*
- |                                                          bborn 08/09 |
  *----------------------------------------------------------------------*/
 Thermo::BaseAlgorithm::BaseAlgorithm(
     const Teuchos::ParameterList& prbdyn, std::shared_ptr<Core::FE::Discretization> actdis)
 {
-  setup_thermo(prbdyn, actdis);
-}
-
-
-
-/*----------------------------------------------------------------------*
- |                                                          bborn 08/09 |
- *----------------------------------------------------------------------*/
-void Thermo::BaseAlgorithm::setup_thermo(
-    const Teuchos::ParameterList& prbdyn, std::shared_ptr<Core::FE::Discretization> actdis)
-{
-  const Teuchos::ParameterList& tdyn = Global::Problem::instance()->thermal_dynamic_params();
-
-  // major switch to different time integrators
-  auto timinttype = Teuchos::getIntegralValue<Inpar::Thermo::DynamicType>(tdyn, "DYNAMICTYPE");
-  switch (timinttype)
-  {
-    case Inpar::Thermo::dyna_statics:
-    case Inpar::Thermo::dyna_onesteptheta:
-    case Inpar::Thermo::dyna_genalpha:
-    case Inpar::Thermo::dyna_expleuler:
-      setup_tim_int(prbdyn, timinttype, actdis);  // <-- here is the show
-      break;
-    default:
-      FOUR_C_THROW("Unknown time integration scheme");
-  }
-
-}  // setup_thermo()
-
-
-/*----------------------------------------------------------------------*
- | setup of thermal time integration                        bborn 08/09 |
- *----------------------------------------------------------------------*/
-void Thermo::BaseAlgorithm::setup_tim_int(const Teuchos::ParameterList& prbdyn,
-    Inpar::Thermo::DynamicType timinttype, std::shared_ptr<Core::FE::Discretization> actdis)
-{
-  // this is not exactly a one hundred meter race, but we need timing
-  auto t = Teuchos::TimeMonitor::getNewTimer("Thermo::BaseAlgorithm::setup_thermo");
-  Teuchos::TimeMonitor monitor(*t);
-
-  // set degrees of freedom in the discretization
   if (not actdis->filled()) actdis->fill_complete();
 
-  // -------------------------------------------------------------------
   // context for output and restart
-  // -------------------------------------------------------------------
   std::shared_ptr<Core::IO::DiscretizationWriter> output = actdis->writer();
   output->write_mesh(0, 0.0);
 
-  //  // get input parameter lists and copy them, because a few parameters are overwritten
+  // get input parameter lists and copy them, because a few parameters are overwritten
   Teuchos::ParameterList ioflags(Global::Problem::instance()->io_params());
-  const std::shared_ptr<Teuchos::ParameterList> tdyn = std::make_shared<Teuchos::ParameterList>(
-      Global::Problem::instance()->thermal_dynamic_params());
-  //  //const Teuchos::ParameterList& size
-  //  //  = Global::Problem::instance()->ProblemSizeParams();
+  Teuchos::ParameterList parameters = Global::Problem::instance()->thermal_dynamic_params();
+  Teuchos::ParameterList xparams;  // add extra parameters (a kind of work-around)
 
-  // add extra parameters (a kind of work-around)
-  Teuchos::ParameterList xparams;
-
-  // -------------------------------------------------------------------
   // overrule certain parameters for coupled problems
-  // -------------------------------------------------------------------
-
-  // the default time step size
-  tdyn->set<double>("TIMESTEP", prbdyn.get<double>("TIMESTEP"));
-  // maximum simulation time
-  tdyn->set<double>("MAXTIME", prbdyn.get<double>("MAXTIME"));
-  // maximum number of timesteps
-  tdyn->set<int>("NUMSTEP", prbdyn.get<int>("NUMSTEP"));
-  // restart
-  tdyn->set<int>("RESTARTEVERY", prbdyn.get<int>("RESTARTEVERY"));
-  // write results every <RESULTSEVERY> steps
-  tdyn->set<int>("RESULTSEVERY", prbdyn.get<int>("RESULTSEVERY"));
+  parameters.set<double>("TIMESTEP", prbdyn.get<double>("TIMESTEP"));
+  parameters.set<double>("MAXTIME", prbdyn.get<double>("MAXTIME"));
+  parameters.set<int>("NUMSTEP", prbdyn.get<int>("NUMSTEP"));
+  parameters.set<int>("RESTARTEVERY", prbdyn.get<int>("RESTARTEVERY"));
+  parameters.set<int>("RESULTSEVERY", prbdyn.get<int>("RESULTSEVERY"));
 
   // get the solver number used for thermal solver
-  const int linsolvernumber = tdyn->get<int>("LINEAR_SOLVER");
-  // check if the THERMAL solver has a valid solver number
+  const int linsolvernumber = parameters.get<int>("LINEAR_SOLVER");
   if (linsolvernumber == (-1))
     FOUR_C_THROW(
-        "no linear solver defined for thermal solver. Please set LINEAR_SOLVER in THERMAL DYNAMIC "
+        "No linear solver defined for thermal solver. Please set LINEAR_SOLVER in THERMAL DYNAMIC "
         "to a valid number!");
 
   // create a linear solver
@@ -120,57 +59,43 @@ void Thermo::BaseAlgorithm::setup_tim_int(const Teuchos::ParameterList& prbdyn,
   actdis->compute_null_space_if_necessary(solver->params());
 
   // create marching time integrator
-  std::shared_ptr<Adapter> tmpthr;
+  auto timinttype =
+      Teuchos::getIntegralValue<Inpar::Thermo::DynamicType>(parameters, "DYNAMICTYPE");
+
   switch (timinttype)
   {
     case Inpar::Thermo::dyna_statics:
     {
-      tmpthr =
-          std::make_shared<Thermo::TimIntStatics>(ioflags, *tdyn, xparams, actdis, solver, output);
+      thermo_ = std::make_shared<Thermo::TimIntStatics>(
+          ioflags, parameters, xparams, actdis, solver, output);
       break;
     }
     case Inpar::Thermo::dyna_onesteptheta:
     {
-      tmpthr = std::make_shared<Thermo::TimIntOneStepTheta>(
-          ioflags, *tdyn, xparams, actdis, solver, output);
+      thermo_ = std::make_shared<Thermo::TimIntOneStepTheta>(
+          ioflags, parameters, xparams, actdis, solver, output);
       break;
     }
     case Inpar::Thermo::dyna_genalpha:
     {
-      tmpthr =
-          std::make_shared<Thermo::TimIntGenAlpha>(ioflags, *tdyn, xparams, actdis, solver, output);
-      break;
-    }
-    case Inpar::Thermo::dyna_expleuler:
-    {
-      tmpthr = std::make_shared<Thermo::TimIntExplEuler>(
-          ioflags, *tdyn, xparams, actdis, solver, output);
+      thermo_ = std::make_shared<Thermo::TimIntGenAlpha>(
+          ioflags, parameters, xparams, actdis, solver, output);
       break;
     }
     default:
-      FOUR_C_THROW("unknown time integration scheme '%s'", timinttype);
-      break;
+      FOUR_C_THROW("Unknown time integration scheme '%s'!", timinttype);
   }
-
-  // link/store thermal field solver
-  thermo_ = tmpthr;
-
-  // see you
-  return;
-}  // setup_tim_int()
+}
 
 
 /*----------------------------------------------------------------------*
- | integrate                                                bborn 08/09 |
  *----------------------------------------------------------------------*/
 void Thermo::Adapter::integrate()
 {
   while (not_finished())
   {
-    // call the predictor
     prepare_time_step();
 
-    // integrate time step
     Inpar::Thermo::ConvergenceStatus convStatus = solve();
 
     switch (convStatus)
@@ -181,18 +106,13 @@ void Thermo::Adapter::integrate()
         output();
         break;
       case Inpar::Thermo::conv_fail_repeat:
-        // do not update and output but try again
         continue;
       default:
-        // no other convergence status can be handled at this point, abort
         FOUR_C_THROW("Solver failed.");
     }
   }
-  // print monitoring of time consumption
+
   Teuchos::TimeMonitor::summarize();
-}  // Integrate()
-
-
-/*----------------------------------------------------------------------*/
+}
 
 FOUR_C_NAMESPACE_CLOSE

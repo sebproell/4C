@@ -12,47 +12,32 @@
 #include "4C_thermo_adapter.hpp"
 #include "4C_thermo_resulttest.hpp"
 
-#include <Teuchos_TimeMonitor.hpp>
-
 FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
- | main control routine for (in)stationary heat conduction              |
  *----------------------------------------------------------------------*/
 void thermo_dyn_drt()
 {
-  // access the discretization
-  std::shared_ptr<Core::FE::Discretization> thermodis = nullptr;
-  thermodis = Global::Problem::instance()->get_dis("thermo");
+  std::shared_ptr<Core::FE::Discretization> discretization =
+      Global::Problem::instance()->get_dis("thermo");
+  const Teuchos::ParameterList& parameters = Global::Problem::instance()->thermal_dynamic_params();
 
-  // set degrees of freedom in the discretization
-  if (not thermodis->filled()) thermodis->fill_complete();
-
-  const Teuchos::ParameterList& tdyn = Global::Problem::instance()->thermal_dynamic_params();
-
-  // create instance of thermo basis algorithm (no structure discretization)
-  std::shared_ptr<Thermo::BaseAlgorithm> thermoonly =
-      std::make_shared<Thermo::BaseAlgorithm>(tdyn, thermodis);
+  std::shared_ptr<Thermo::BaseAlgorithm> algorithm =
+      std::make_shared<Thermo::BaseAlgorithm>(parameters, discretization);
 
   // do restart if demanded from input file
   const int restart = Global::Problem::instance()->restart();
   if (restart)
   {
-    thermoonly->thermo_field().read_restart(restart);
+    algorithm->thermo_field()->read_restart(restart);
   }
 
   // enter time loop to solve problem
-  (thermoonly->thermo_field()).integrate();
+  algorithm->thermo_field()->integrate();
 
-  // perform the result test if required
-  Global::Problem::instance()->add_field_test(thermoonly->thermo_field().create_field_test());
-  Global::Problem::instance()->test_all(thermodis->get_comm());
-
-  // done
-  return;
+  // perform testing if required
+  Global::Problem::instance()->add_field_test(algorithm->thermo_field()->create_field_test());
+  Global::Problem::instance()->test_all(discretization->get_comm());
 }
-
-
-/*----------------------------------------------------------------------*/
 
 FOUR_C_NAMESPACE_CLOSE

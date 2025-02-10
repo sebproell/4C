@@ -8,9 +8,6 @@
 #ifndef FOUR_C_THERMO_TIMINT_IMPL_HPP
 #define FOUR_C_THERMO_TIMINT_IMPL_HPP
 
-/*----------------------------------------------------------------------*
- | headers                                                  bborn 08/09 |
- *----------------------------------------------------------------------*/
 #include "4C_config.hpp"
 
 #include "4C_coupling_adapter_mortar.hpp"
@@ -21,18 +18,13 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-// forward declaration
 namespace Adapter
 {
   class CouplingMortar;
 }
 
-/*----------------------------------------------------------------------*
- | belongs to thermal dynamics namespace                    bborn 08/09 |
- *----------------------------------------------------------------------*/
 namespace Thermo
 {
-  /*====================================================================*/
   //!
   //! \brief Front-end for thermal dynamics
   //!        with \b implicit time integration
@@ -63,27 +55,20 @@ namespace Thermo
         std::shared_ptr<Core::IO::DiscretizationWriter> output  //!< the output
     );
 
-    //! Resize #TimIntMStep<T> multi-step quantities
-    void resize_m_step() override = 0;
-
     //@}
-
-    //! Do time integration of single step
-    void integrate_step() override;
-
-    //! build linear system tangent matrix, rhs/force residual
-    //! Monolithic TSI accesses the linearised thermo problem
-    void evaluate(std::shared_ptr<const Core::LinAlg::Vector<double>> tempi) override;
 
     //! build linear system tangent matrix, rhs/force residual
     //! Monolithic TSI accesses the linearised thermo problem
     void evaluate() override;
 
-    //! @name Prediction
+    //! @name Time step preparation
     //@{
 
+    //! prepare time step
+    void prepare_time_step() override;
+
     //! Predict target solution and identify residual
-    void predict();
+    void predict_step();
 
     //! Identify residual
     //! This method does not predict the target solution but
@@ -91,7 +76,7 @@ namespace Thermo
     //! In partitioned solution schemes, it is better to keep the current
     //! solution instead of evaluating the initial guess (as the predictor)
     //! does.
-    void prepare_partition_step() override;
+    void prepare_step() override;
 
     //! Predict constant temperature, temperature rate,
     //! i.e. the initial guess is equal to the last converged step
@@ -111,12 +96,6 @@ namespace Thermo
     //!
     //! This is an implicit predictor, i.e. it calls the solver once.
     void predict_tang_temp_consist_rate();
-
-    //! prepare time step
-    void prepare_time_step() override;
-
-    // finite difference check for the tangent K_TT
-    void fd_check();
 
     //@}
 
@@ -264,15 +243,8 @@ namespace Thermo
     void print_newton_iter_header(FILE* ofile  //!< output file handle
     );
 
-    //! print statistics of converged Newton-Raphson iteration
-    void print_newton_conv();
-
     //! print summary after step
     void print_step() override;
-
-    //! The text for summary print, see #print_step
-    void print_step_text(FILE* ofile  //!< output file handle
-    );
 
     //@}
 
@@ -281,19 +253,6 @@ namespace Thermo
 
     //! Return time integrator name
     enum Inpar::Thermo::DynamicType method_name() const override = 0;
-
-    //! These time integrators are all implicit (mark their name)
-    bool method_implicit() override { return true; }
-
-    //! Provide number of steps, e.g. a single-step method returns 1,
-    //! a m-multistep method returns m
-    int method_steps() override = 0;
-
-    //! Give local order of accuracy of temperature part
-    int method_order_of_accuracy() override = 0;
-
-    //! Return linear error coefficient of temperatures
-    double method_lin_err_coeff() override = 0;
 
     //@}
 
@@ -385,10 +344,7 @@ namespace Thermo
     double normtempi_;      //!< norm of residual temperatures
     std::shared_ptr<Core::LinAlg::Vector<double>> tempi_;  //!< residual temperatures
                                                            //!< \f$\Delta{T}^{<k>}_{n+1}\f$
-    std::shared_ptr<Core::LinAlg::Vector<double>>
-        tempinc_;          //!< sum of temperature vectors already applied,
-                           //!< i.e. the incremental temperature
-    Teuchos::Time timer_;  //!< timer for solution technique
+    Teuchos::Time timer_;                                  //!< timer for solution technique
     std::shared_ptr<Coupling::Adapter::CouplingMortar>
         adaptermeshtying_;  //!< mortar coupling adapter
     //@}
@@ -398,12 +354,9 @@ namespace Thermo
     std::shared_ptr<Core::LinAlg::Vector<double>> fres_;    //!< force residual used for solution
     std::shared_ptr<Core::LinAlg::Vector<double>> freact_;  //!< reaction force
     //@}
-
-  };  // class TimIntImpl
-
+  };
 }  // namespace Thermo
 
-/*----------------------------------------------------------------------*/
 FOUR_C_NAMESPACE_CLOSE
 
 #endif

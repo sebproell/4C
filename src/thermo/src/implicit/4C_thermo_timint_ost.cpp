@@ -43,7 +43,7 @@ Thermo::TimIntOneStepTheta::TimIntOneStepTheta(const Teuchos::ParameterList& iop
       fextn_(nullptr)
 {
   // info to user
-  if (myrank_ == 0)
+  if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
   {
     // check if coefficient has admissible value
     verify_coeff();
@@ -139,9 +139,6 @@ void Thermo::TimIntOneStepTheta::evaluate_rhs_tang_residual()
   apply_force_external_conv(timen_, (*temp_)(0), tempn_, fextn_, tang_);
 
   apply_force_external(timen_, (*temp_)(0), *fextn_);
-
-  // interface forces to external forces
-  fextn_->Update(1.0, *fifc_, 1.0);
 
   // initialise internal forces
   fintn_->PutScalar(0.0);
