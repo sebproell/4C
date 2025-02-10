@@ -210,6 +210,12 @@ namespace Core::IO
     FragmentIteratorRange in_section_rank_0_only(const std::string& section_name);
 
     /**
+     * Match a whole section named @p section_name against the given @p spec.
+     */
+    void match_section(
+        const std::string& section_name, const InputSpec& spec, InputParameterContainer& container);
+
+    /**
      * Returns true if the input file contains a section with the given name.
      *
      * @note This is a collective call that needs to be called on all MPI ranks in the communicator.

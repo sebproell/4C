@@ -36,6 +36,13 @@ namespace Core::IO
      * A path that is used as a base when parsing relative paths.
      */
     std::filesystem::path base_path{};
+
+    /**
+     * An optional delimiter that is used to split tokens. If set, the parser will split tokens at
+     * this delimiter. If not set, the parser will split tokens at whitespace. A useful choice
+     * can be a quote character (") since it allows for tokens with spaces inside.
+     */
+    char token_delimiter = 0;
   };
 
   /**

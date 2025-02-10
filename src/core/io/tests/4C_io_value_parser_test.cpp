@@ -323,5 +323,19 @@ namespace
     EXPECT_TRUE(parser.at_end());
   }
 
+  TEST(ValueParser, ReadQuoted)
+  {
+    std::string_view in(R"("string with spaces" "a" "1.0" "consume this"
+  )");  // trailing whitespace and newline are deliberate
+    Core::IO::ValueParser parser(in, {.token_delimiter = '"'});
+
+    EXPECT_EQ(parser.read<std::string>(), "string with spaces");
+    EXPECT_EQ(parser.read<std::string>(), "a");
+    EXPECT_EQ(parser.read<double>(), 1.0);
+    parser.consume("consume this");
+    EXPECT_TRUE(parser.at_end());
+    EXPECT_TRUE(parser.peek().empty());
+  }
+
 
 }  // namespace

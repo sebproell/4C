@@ -982,4 +982,23 @@ specs:
       EXPECT_EQ(container.group("MAT_A").get<int>("a"), 2);
     }
   }
+
+  TEST(InputSpecTest, EmptyMatchesAllDefaulted)
+  {
+    // This was a bug where a single defaulted entry was incorrectly reported as not matching.
+    auto spec = all_of({
+        entry<int>("a", {.default_value = 42}),
+    });
+
+    {
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      root |= ryml::MAP;
+      ConstYamlNodeRef node(root, "");
+
+      InputParameterContainer container;
+      spec.match(node, container);
+      EXPECT_EQ(container.get<int>("a"), 42);
+    }
+  }
 }  // namespace

@@ -8,6 +8,7 @@
 #include "4C_io_input_file.hpp"
 
 #include "4C_comm_mpi_utils.hpp"
+#include "4C_io_input_file_utils.hpp"
 #include "4C_io_input_spec.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_io_yaml.hpp"
@@ -771,6 +772,43 @@ namespace Core::IO
     {
       static const std::vector<Fragment> empty;
       return std::views::all(empty);
+    }
+  }
+
+
+  void InputFile::match_section(const std::string& section_name,
+      const FourC::Core::IO::InputSpec& spec, FourC::Core::IO::InputParameterContainer& container)
+  {
+    FOUR_C_ASSERT_ALWAYS(
+        has_section(section_name), "Section '%s' not found.", section_name.c_str());
+    record_section_used(section_name);
+
+    // For dat file format, flatten the lines into a single string, which can be parsed by the
+    // ValueParser.
+    if (pimpl_->content_by_section_.at(section_name).content.index() == 0)
+    {
+      std::stringstream flattened_dat;
+      for (const auto& line : in_section(section_name))
+      {
+        std::string line_str(line.get_as_dat_style_string());
+        // Split the line into key-value according to the dat file format. Quote keys and values
+        // so the parser can identify them.
+        auto [key, value] = read_key_value(line_str);
+        flattened_dat << std::quoted(key) << " " << std::quoted(value) << " ";
+      }
+      std::string flattened_string = flattened_dat.str();
+      Core::IO::ValueParser parser{flattened_string,
+          {.base_path = std::filesystem::path(pimpl_->content_by_section_.at(section_name).file)
+                  .parent_path(),
+              .token_delimiter = '"'}};
+      spec.fully_parse(parser, container);
+    }
+    else
+    {
+      // For yaml file format, we can directly parse the node.
+      spec.match(ConstYamlNodeRef(pimpl_->content_by_section_.at(section_name).as_yaml().node,
+                     pimpl_->content_by_section_.at(section_name).file),
+          container);
     }
   }
 

@@ -19,17 +19,39 @@ namespace
   }
 
   //! Helper to find the next token and update the given @p index into the line.
-  std::string_view advance_token_impl(std::string_view line, std::size_t& index)
+  std::string_view advance_token_impl(std::string_view line, std::size_t& index, char delimiter)
   {
-    // Find the end of the token
+    if (index >= line.size()) return {};
+
     std::size_t start_of_token = index;
-    while (index < line.size() && !std::isspace(line[index])) ++index;
+    if (delimiter != 0)
+    {
+      FOUR_C_ASSERT_ALWAYS(line[start_of_token] == delimiter,
+          "Delimiter mismatch. Expected delimiter '%c' at position %d, but found '%c'.", delimiter,
+          start_of_token, line[start_of_token]);
+      ++index;
+      while (index < line.size() && line[index] != delimiter) ++index;
+      FOUR_C_ASSERT_ALWAYS(line[index] == delimiter,
+          "Delimiter mismatch. Expected delimiter '%c' at position %d, but found '%c'.", delimiter,
+          index, line[index]);
 
-    auto token = line.substr(start_of_token, index - start_of_token);
+      // Skip the delimiter chars at start and end.
+      auto token = line.substr(start_of_token + 1, index - start_of_token - 1);
+      index++;
 
-    skip_whitespace(line, index);
+      skip_whitespace(line, index);
 
-    return token;
+      return token;
+    }
+    else
+    {
+      while (index < line.size() && !std::isspace(line[index])) ++index;
+      auto token = line.substr(start_of_token, index - start_of_token);
+
+      skip_whitespace(line, index);
+
+      return token;
+    }
   }
 }  // namespace
 
@@ -126,7 +148,7 @@ std::string_view Core::IO::ValueParser::peek() const
 {
   // Copy the current index to avoid modifying the parser state
   std::size_t temp_index = current_index_;
-  return advance_token_impl(line_, temp_index);
+  return advance_token_impl(line_, temp_index, context_.token_delimiter);
 }
 
 
@@ -141,7 +163,7 @@ std::string_view Core::IO::ValueParser::get_unparsed_remainder() const
 
 std::string_view Core::IO::ValueParser::advance_token()
 {
-  auto token = advance_token_impl(line_, current_index_);
+  auto token = advance_token_impl(line_, current_index_, context_.token_delimiter);
 
   FOUR_C_ASSERT_ALWAYS(!token.empty(), "%sExpected more tokens, but reached the end of the line.",
       context_.user_scope_message.c_str());
