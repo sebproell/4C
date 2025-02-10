@@ -53,7 +53,7 @@ Other Material Models
 Coupling Material Models for Various Physics on a Single Discretization
 -----------------------------------------------------------------------
 
-One may use a single (multi-physics) element type for a multi-physics simulation with matching discretizations.
+One may use a single (multiphysics) element type for a multiphysics simulation with matching discretizations.
 However, since each discretization belongs to a single physics representation and can thus only be connected to a single material,
 the other material has to be connected to the same discretization by cloning the discretization to the other physics.
 

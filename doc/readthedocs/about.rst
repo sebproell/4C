@@ -16,7 +16,7 @@ At its core,
 Ready-to-use single-field solvers range from solid and structural mechanics over scalar transport all the way to fluid flow.
 Through partitioned or monolithic coupling of single-field solvers,
 either through volume-, surface-, or line-coupling on matching, non-matching or embedded meshes,
-multi-physics phenomena such as fluid-solid interaction (FSI), thermo-mechanics, or coupled scalar-solid-thermo systems can be tackled.
+multiphysics phenomena such as fluid-solid interaction (FSI), thermo-mechanics, or coupled scalar-solid-thermo systems can be tackled.
 Through its versatile library of constitutive laws,
 |FOURC| is well positioned for the analysis of biological tissue, all-solid-state batteries, or plasticity to just name a few.
 Besides classical FEM, cut finite element methods (CutFEMs) allow to treat embedded interfaces.
@@ -33,7 +33,7 @@ While |FOURC| delivers different physics modules, distributed sparse linear alge
 all of its components, e.g., single- and multi-field solvers, coupling schemes, numerical algorithms,
 can be tailored to the research problem at hand
 to also allow the solution of unseen challenges in computational mechanics
-while still standing on the solid foundation of a powerful and mature multi-physics simulation framework.
+while still standing on the solid foundation of a powerful and mature multiphysics simulation framework.
 This approach enables the user to exert fine-grained control over *every* aspect and component of the simulation tool chain
 and, thus, allows for research in advanced numerical methods within a code base
 that is capable to answer real-world problems accurately and at scale.
@@ -63,9 +63,9 @@ For biomedical applications,
 reduced order models for flow in arteries or airways are available alongside suitable Windkessel models.
 Finally, solvers for transport of scalar fields such as heat or chemical concentrations are available.
 
-With the intent to study multi-physics phenomena,
+With the intent to study multiphysics phenomena,
 |FOURC| builds upon its single-field solvers
-to implement partitioned and monolithic multi-physics solvers for surface- and volume-coupled problems.
+to implement partitioned and monolithic multiphysics solvers for surface- and volume-coupled problems.
 In surface coupling,
 existing capabilities from the solid and structural mechanics module are coupled to incompressible fluid flow,
 resulting in partitioned and monolithic FSI solvers
@@ -87,7 +87,7 @@ in and with numerical methods for ordinary and partial differential equations
 and to advance complex models for real-world applications,
 all based on a proper theoretical foundation and with verified and state-of-the-art methods and software implementations.
 Since suitable tools are often not available either in commercial or in other (academic) research codes,
-we want to close this gap by developing |FOURC|, a comprehensive multi-physics simulation framework.
+we want to close this gap by developing |FOURC|, a comprehensive multiphysics simulation framework.
 |FOURC| originated in the 2000s at the `Institute for Computational Mechanics <https://www.epc.ed.tum.de/lnm/home/>`_ of the Technical University of Munich [#f1]_.
 
 .. rubric:: Footnotes

@@ -9,7 +9,7 @@
 Mission statement
 =================
 
-|FOURC| is a parallel multi-physics research code
+|FOURC| is a parallel multiphysics research code
 to analyze and solve a plethora of physical problems
 described by ordinary or partial differential equations.
 Its development is driven by challenging research questions and real-world problems,
@@ -18,7 +18,7 @@ either due to the lack of capabilities or due to falling short of accuracy or pe
 
 |FOURC| not only provides ready-to-use simulation capabilities for a variety of physical models,
 including single fields such as solids and structures, fluids, or scalar transport,
-and multi-physics coupling and interactions between several fields,
+and multiphysics coupling and interactions between several fields,
 but also a modular software environment for research in mathematical modeling and numerical methods.
 Pre- and post-processing tools facilitate the use of |FOURC| within streamlined application workflows in science and engineering.
 For spatial discretization, |FOURC| mostly relies on finite element methods (FEM, CutFEM).
