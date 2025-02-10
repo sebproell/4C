@@ -117,19 +117,17 @@ Adapter::ScaTraBaseAlgorithm::ScaTraBaseAlgorithm(const Teuchos::ParameterList& 
       scatratimeparams->set<Inpar::ScaTra::ConvForm>(
           "CONVFORM", prbdyn.get<Inpar::ScaTra::ConvForm>("STRUCTSCAL_CONVFORM"));
 
+      auto initial_field =
+          Teuchos::getIntegralValue<Inpar::ScaTra::InitialField>(prbdyn, "STRUCTSCAL_INITIALFIELD");
+
+      scatratimeparams->set("INITIALFIELD", initial_field);
       // scatra2 get's in initial functions from FS3I DYNAMICS
-      switch (
-          Teuchos::getIntegralValue<Inpar::ScaTra::InitialField>(prbdyn, "STRUCTSCAL_INITIALFIELD"))
+      switch (initial_field)
       {
         case Inpar::ScaTra::initfield_zero_field:
-          scatratimeparams->set<std::string>("INITIALFIELD",
-              "zero_field");  // we want zero initial conditions for the structure scalar
           scatratimeparams->set<int>("INITFUNCNO", -1);
           break;
         case Inpar::ScaTra::initfield_field_by_function:
-          scatratimeparams->set<std::string>(
-              "INITIALFIELD", "field_by_function");  // we want the same initial conditions for
-                                                     // structure scalar as for the fluid scalar
           scatratimeparams->set<int>("INITFUNCNO", prbdyn.get<int>("STRUCTSCAL_INITFUNCNO"));
           break;
         default:

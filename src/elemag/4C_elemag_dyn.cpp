@@ -248,7 +248,8 @@ void electromagnetics_drt()
 
             // TODO (berardocco) Might want to add the scatra section in the input file to avoid
             // adding params to the elemag or using existing ones for scatra purposes
-            scatraparams->set("TIMEINTEGR", "Stationary");
+            scatraparams->set(
+                "TIMEINTEGR", Inpar::ScaTra::TimeIntegrationScheme::timeint_stationary);
             scatraparams->set("NUMSTEP", 1);
             // This way we avoid writing results and restart
             scatraparams->set("RESULTSEVERY", 1000);

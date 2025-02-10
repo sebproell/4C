@@ -221,16 +221,17 @@ void Mortar::STRATEGY::FactoryMT::read_and_check_input(Teuchos::ParameterList& p
   if (meshtyingandcontact)
   {
     // set options for mortar coupling
-    params.set<std::string>("SEARCH_ALGORITHM", "Binarytree");
+    params.set<Inpar::Mortar::SearchAlgorithm>(
+        "SEARCH_ALGORITHM", Inpar::Mortar::SearchAlgorithm::search_binarytree);
     params.set<double>("SEARCH_PARAM", 0.3);
     params.set<bool>("SEARCH_USE_AUX_POS", false);
-    params.set<std::string>("LM_SHAPEFCN", "dual");
+    params.set<Inpar::Mortar::ShapeFcn>("LM_SHAPEFCN", Inpar::Mortar::shape_dual);
     params.set<Inpar::CONTACT::SystemType>("SYSTEM", Inpar::CONTACT::SystemType::system_condensed);
     params.set<bool>("NURBS", false);
     params.set<int>("NUMGP_PER_DIM", -1);
     params.set<Inpar::CONTACT::SolvingStrategy>(
         "STRATEGY", Inpar::CONTACT::SolvingStrategy::solution_lagmult);
-    params.set<std::string>("INTTYPE", "segments");
+    params.set<Inpar::Mortar::IntType>("INTTYPE", Inpar::Mortar::IntType::inttype_segments);
     params.sublist("PARALLEL REDISTRIBUTION").set<std::string>("REDUNDANT_STORAGE", "Master");
     params.sublist("PARALLEL REDISTRIBUTION")
         .set<Inpar::Mortar::ParallelRedist>(

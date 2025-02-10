@@ -543,10 +543,11 @@ bool CONTACT::MtManager::read_and_check_input(
   if (meshtyingandcontact)
   {
     // set options for mortar coupling
-    mtparams.set<std::string>("SEARCH_ALGORITHM", "Binarytree");
+    mtparams.set<Inpar::Mortar::SearchAlgorithm>(
+        "SEARCH_ALGORITHM", Inpar::Mortar::SearchAlgorithm::search_binarytree);
     mtparams.set<double>("SEARCH_PARAM", 0.3);
     mtparams.set<bool>("SEARCH_USE_AUX_POS", false);
-    mtparams.set<std::string>("LM_SHAPEFCN", "dual");
+    mtparams.set<Inpar::Mortar::ShapeFcn>("LM_SHAPEFCN", Inpar::Mortar::shape_dual);
     mtparams.set<Inpar::CONTACT::SystemType>(
         "SYSTEM", Inpar::CONTACT::SystemType::system_condensed);
     mtparams.set<bool>("NURBS", false);

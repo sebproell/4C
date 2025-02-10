@@ -167,25 +167,20 @@ Teuchos::ParameterList SSI::Utils::clone_sca_tra_manifold_params(
 {
   Teuchos::ParameterList scatra_manifold_params(scatraparams);
 
-  switch (Teuchos::getIntegralValue<Inpar::ScaTra::InitialField>(
-      sublist_manifold_params, "INITIALFIELD"))
+  auto initial_field = Teuchos::getIntegralValue<Inpar::ScaTra::InitialField>(
+      sublist_manifold_params, "INITIALFIELD");
+  scatra_manifold_params.set("INITIALFIELD", initial_field);
+  switch (initial_field)
   {
     case Inpar::ScaTra::initfield_zero_field:
+    case Inpar::ScaTra::initfield_field_by_condition:
     {
-      scatra_manifold_params.set<std::string>("INITIALFIELD", "zero_field");
       scatra_manifold_params.set<int>("INITFUNCNO", -1);
       break;
     }
     case Inpar::ScaTra::initfield_field_by_function:
     {
-      scatra_manifold_params.set<std::string>("INITIALFIELD", "field_by_function");
       scatra_manifold_params.set<int>("INITFUNCNO", sublist_manifold_params.get<int>("INITFUNCNO"));
-      break;
-    }
-    case Inpar::ScaTra::initfield_field_by_condition:
-    {
-      scatra_manifold_params.set<std::string>("INITIALFIELD", "field_by_condition");
-      scatra_manifold_params.set<int>("INITFUNCNO", -1);
       break;
     }
     default:
