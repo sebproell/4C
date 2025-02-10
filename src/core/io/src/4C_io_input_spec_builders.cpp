@@ -7,6 +7,8 @@
 
 #include "4C_io_input_spec_builders.hpp"
 
+#include "4C_utils_string.hpp"
+
 #include <format>
 #include <iostream>
 #include <numeric>
@@ -474,6 +476,12 @@ Core::IO::Internal::MatchEntry& Core::IO::Internal::MatchEntry::append_child(
   auto& child = tree->append_child(in_spec);
   children.push_back(&child);
   return child;
+}
+
+
+std::string Core::IO::Internal::InputSpecTypeErasedBase::description_one_line() const
+{
+  return Core::Utils::trim(data.description);
 }
 
 
