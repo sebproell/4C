@@ -1059,7 +1059,7 @@ bool CONTACT::Manager::read_and_check_input(Teuchos::ParameterList& cparams) con
            Inpar::Mortar::algorithm_gpts)
   {
     const_cast<Teuchos::ParameterList&>(Global::Problem::instance()->contact_dynamic_params())
-        .set("SYSTEM", "none");
+        .set("SYSTEM", Inpar::CONTACT::SystemType::system_none);
 
     if (contact.get<double>("PENALTYPARAM") <= 0.0)
       FOUR_C_THROW("Penalty parameter eps = 0, must be greater than 0");
