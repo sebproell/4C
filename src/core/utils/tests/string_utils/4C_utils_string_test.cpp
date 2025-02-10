@@ -17,6 +17,20 @@ namespace
   using namespace FourC;
   using namespace Core::Utils;
 
+  TEST(StringUtils, TrimEmpty)
+  {
+    const std::string str = "";
+    auto trimmed_str = trim(str);
+    EXPECT_EQ(trimmed_str, "");
+  }
+
+  TEST(StringUtils, TrimMultiple)
+  {
+    const std::string str = "  abc  \tdef\n  ";
+    auto trimmed_str = trim(str);
+    EXPECT_EQ(trimmed_str, "abc def");
+  }
+
   TEST(StringUtils, SplitStringSeparatorInString)
   {
     const std::string str = "1.1,2.2,3.3,4.4,5.5";

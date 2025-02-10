@@ -606,7 +606,7 @@ namespace
                            selection<int>("c", {{"c1", 1}, {"c2", 2}},
                                {.description = "Selection", .default_value = 1}),
                        }),
-                       entry<int>("d", {.description = "Another integer", .default_value = 42}),
+                       entry<int>("d", {.description = "Another\n integer ", .default_value = 42}),
                    });
 
     {

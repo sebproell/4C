@@ -14,6 +14,7 @@
 #include "4C_io_input_spec.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_io_yaml.hpp"
+#include "4C_utils_string.hpp"
 
 #include <algorithm>
 #include <functional>
@@ -269,6 +270,8 @@ namespace Core::IO
 
       [[nodiscard]] const std::string& description() const { return data.description; }
 
+      [[nodiscard]] std::string description_one_line() const;
+
       [[nodiscard]] bool required() const { return data.required; }
 
       [[nodiscard]] bool has_default_value() const { return data.has_default_value; }
@@ -355,7 +358,7 @@ namespace Core::IO
 
           if (!description().empty())
           {
-            stream << " " << std::quoted(description());
+            stream << " " << std::quoted(description_one_line());
           }
           stream << "\n";
         }
@@ -1286,7 +1289,7 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::print(
   }
   if (!data.description.empty())
   {
-    stream << " " << std::quoted(data.description);
+    stream << " " << std::quoted(Core::Utils::trim(data.description));
   }
   stream << "\n";
 }

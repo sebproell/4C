@@ -14,21 +14,25 @@ namespace Core::Utils
 {
   std::string trim(const std::string& line)
   {
-#if (BOOST_MAJOR_VERSION == 1) && (BOOST_MINOR_VERSION >= 47)
-    return boost::algorithm::trim_all_copy(boost::algorithm::replace_all_copy(line, "\t", " "));
-#else
-    std::istringstream t;
-    std::string s;
-    std::string newline;
-    t.str(line);
-    while (t >> s)
+    // Replace all whitespace character sequences with a single space. Remove leading and trailing
+    // spaces.
+    std::string result;
+    for (auto c : line)
     {
-      newline.append(s);
-      newline.append(" ");
+      if (std::isspace(c))
+      {
+        if (!result.empty() && result.back() != ' ') result.push_back(' ');
+      }
+      else
+      {
+        result.push_back(c);
+      }
     }
-    if (newline.size() > 0) newline.resize(newline.size() - 1);
-    return newline;
-#endif
+
+    // Remove trailing space
+    if (!result.empty() && result.back() == ' ') result.pop_back();
+
+    return result;
   }
 
   std::vector<std::string> split(const std::string& input, const std::string& delimiter)
