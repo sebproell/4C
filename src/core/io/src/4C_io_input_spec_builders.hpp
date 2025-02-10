@@ -1070,7 +1070,18 @@ template <typename DataType>
 void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataType>::parse(
     ValueParser& parser, InputParameterContainer& container) const
 {
-  parser.consume(name);
+  if (parser.peek() == name)
+    parser.consume(name);
+  else if (data.required.value())
+  {
+    std::string next_token{parser.peek()};
+    FOUR_C_THROW("Could not parse '%s'. Next token is '%s'.", name.c_str(), next_token.c_str());
+  }
+  else if (data.default_value.has_value())
+  {
+    container.add(name, data.default_value.value());
+    return;
+  }
 
   if constexpr (InputSpecBuilders::Internal::is_sized_data<DataType>)
   {
@@ -1170,7 +1181,19 @@ template <typename DataTypeIn>
 void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::parse(
     ValueParser& parser, InputParameterContainer& container) const
 {
-  parser.consume(name);
+  if (parser.peek() == name)
+    parser.consume(name);
+  else if (data.required.value())
+  {
+    std::string next_token{parser.peek()};
+    FOUR_C_THROW("Could not parse '%s'. Next token is '%s'.", name.c_str(), next_token.c_str());
+  }
+  else if (data.default_value.has_value())
+  {
+    container.add(name, data.default_value.value());
+    return;
+  }
+
   auto value = parser.read<std::string>();
   for (const auto& choice : choices)
   {
