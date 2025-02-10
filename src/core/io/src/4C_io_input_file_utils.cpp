@@ -393,7 +393,8 @@ void Core::IO::read_parameters_in_section(InputFile& input, const std::string& s
     ConstYamlNodeRef yaml{root, ""};
     spec.match(yaml, container);
   }
-  sublist = container.to_teuchos_parameter_list();
+
+  container.to_teuchos_parameter_list(sublist);
 }
 
 /*----------------------------------------------------------------------*/

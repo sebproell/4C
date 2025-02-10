@@ -70,20 +70,18 @@ void Core::IO::InputParameterContainer::clear()
   groups_.clear();
 }
 
-Teuchos::ParameterList Core::IO::InputParameterContainer::to_teuchos_parameter_list() const
+void Core::IO::InputParameterContainer::to_teuchos_parameter_list(
+    Teuchos::ParameterList& list) const
 {
-  Teuchos::ParameterList pl;
-
   for (const auto& [key, entry] : entries_)
   {
-    get_type_actions().at(entry.data.type()).write_to_pl(pl, key, entry.data);
+    get_type_actions().at(entry.data.type()).write_to_pl(list, key, entry.data);
   }
 
   for (const auto& [key, group] : groups_)
   {
-    pl.sublist(key) = group.to_teuchos_parameter_list();
+    group.to_teuchos_parameter_list(list.sublist(key));
   }
-  return pl;
 }
 
 std::map<std::type_index, Core::IO::InputParameterContainer::TypeActions>&

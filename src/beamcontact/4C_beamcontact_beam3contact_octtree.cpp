@@ -56,7 +56,7 @@ Beam3ContactOctTree::Beam3ContactOctTree(Teuchos::ParameterList& params,
   // it will thus be called with slightly different parameter sets
   // first find out which params we got and extract octtree specifications
 
-  if (params.name() == "DAT FILE->BEAM CONTACT")
+  if (params.name() == "ROOT->BEAM CONTACT")
   {
     // octree specs
     bboxtype_input = Teuchos::getIntegralValue<BeamContact::OctreeType>(params, "BEAMS_OCTREE");
@@ -90,7 +90,7 @@ Beam3ContactOctTree::Beam3ContactOctTree(Teuchos::ParameterList& params,
 
     btsol_ = params.get<bool>("BEAMS_BTSOL");
   }
-  else if (params.name() == "DAT FILE->BEAM POTENTIAL")
+  else if (params.name() == "ROOT->BEAM POTENTIAL")
   {
     bboxtype_input = Teuchos::getIntegralValue<BeamContact::OctreeType>(params, "BEAMPOT_OCTREE");
 
@@ -104,7 +104,7 @@ Beam3ContactOctTree::Beam3ContactOctTree(Teuchos::ParameterList& params,
   }
   else
   {
-    FOUR_C_THROW("OctTree called with unknown type of parameter list!");
+    FOUR_C_THROW("OctTree called with unknown parameter list named '%s'!", params.name().c_str());
   }
 
   // sanity checks for extrusion value(s)

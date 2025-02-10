@@ -122,7 +122,7 @@ namespace Core::IO
      * Convert the data in this container to a Teuchos::ParameterList. All groups are converted to
      * sublists.
      */
-    [[nodiscard]] Teuchos::ParameterList to_teuchos_parameter_list() const;
+    void to_teuchos_parameter_list(Teuchos::ParameterList& list) const;
 
    private:
     //! Entry stored in the container.

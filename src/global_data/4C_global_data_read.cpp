@@ -1749,8 +1749,7 @@ void Global::read_microfields_np_support(Global::Problem& problem)
 /*----------------------------------------------------------------------*/
 void Global::read_parameter(Global::Problem& problem, Core::IO::InputFile& input)
 {
-  std::shared_ptr<Teuchos::ParameterList> list =
-      std::make_shared<Teuchos::ParameterList>("DAT FILE");
+  std::shared_ptr<Teuchos::ParameterList> list = std::make_shared<Teuchos::ParameterList>("ROOT");
 
   auto parameter_section_specs = Input::valid_parameters();
 
