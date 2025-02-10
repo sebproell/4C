@@ -3,15 +3,14 @@
 cmake presets
 --------------
 
-CMake presets have been introduced with the Merge Request `!1392 <https://gitlab.lrz.de/baci/baci/-/merge_requests/1392>`_
-and can be used to configure and manage different configurations of |FOURC| in a very convenient way.
+CMake presets are |FOURC|'s recommended way to configure and manage different configurations of |FOURC|.
 This small article will go through a few of them. The experts should also read the
 `official CMake presets documentation <https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html>`_ to get all convenient tricks.
-If you find a nice one, feel free to tell your colleagues (via issue, Slack or TGM).
 
-CMake presets are available since cmake 3.19 and have been improved in the following versions.
-We are currently using CMake preset version 5, which requires at least cmake 3.24.
-Make sure to have a sufficient cmake-version in your path or use the provided ones on the institute's server.
+.. note::
+  CMake presets are available since cmake 3.19 and have been improved in the following versions.
+  We are currently using CMake preset version 5, which requires at least cmake 3.24.
+  Make sure to have a sufficient cmake-version in your path or use the provided ones on the institute's server.
 
 Configuration from a terminal
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
