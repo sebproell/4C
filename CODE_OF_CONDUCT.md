@@ -67,7 +67,7 @@ representative at an online or offline event.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to the community leaders responsible for enforcement.
-A current list of community leaders can be found in the team [@4C-multiphysics/maintainer](https://github.com/orgs/4C-multiphysics/teams/maintainer).
+A current list of community leaders can be found [here](https://github.com/4C-multiphysics/4C/discussions/356).
 All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the
