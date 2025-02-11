@@ -26,6 +26,7 @@
 #include "4C_poromultiphase_dyn.hpp"
 #include "4C_poromultiphase_scatra_dyn.hpp"
 #include "4C_red_airways_dyn_drt.hpp"
+#include "4C_reduced_lung_main.hpp"
 #include "4C_scatra_cardiac_monodomain_dyn.hpp"
 #include "4C_scatra_dyn.hpp"
 #include "4C_ssi_dyn.hpp"
@@ -125,6 +126,10 @@ void ntacal()
 
     case Core::ProblemType::red_airways:
       dyn_red_airways_drt();
+      break;
+
+    case Core::ProblemType::reduced_lung:
+      ReducedLung::reduced_lung_main();
       break;
 
     case Core::ProblemType::poroelast:
