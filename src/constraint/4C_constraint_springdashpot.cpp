@@ -17,6 +17,7 @@
 #include "4C_fem_general_element_integration_select.hpp"
 #include "4C_fem_general_extract_values.hpp"
 #include "4C_fem_general_node.hpp"
+#include "4C_fem_general_utils_gausspoints.hpp"
 #include "4C_global_data.hpp"
 #include "4C_io.hpp"
 #include "4C_io_pstream.hpp"  // has to go before io.hpp
@@ -38,6 +39,9 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace
 {
+  using supported_celltypes =
+      Core::FE::CelltypeSequence<Core::FE::CellType::quad4, Core::FE::CellType::quad8,
+          Core::FE::CellType::quad9, Core::FE::CellType::tri3, Core::FE::CellType::tri6>;
 
   double scale_by_optional_function(double baseline_value, int num_func, double total_time)
   {
@@ -417,9 +421,6 @@ void CONSTRAINTS::SpringDashpot::evaluate_robin(std::shared_ptr<Core::LinAlg::Sp
         res.size(lm.size());
         elestiff.shape(lm.size(), lm.size());
 
-        using supported_celltypes =
-            Core::FE::CelltypeSequence<Core::FE::CellType::quad4, Core::FE::CellType::quad8,
-                Core::FE::CellType::quad9, Core::FE::CellType::tri3, Core::FE::CellType::tri6>;
         Core::FE::cell_type_switch<supported_celltypes>(curr.second->shape(),
             [&](auto celltype_t)
             {
@@ -1108,41 +1109,42 @@ void CONSTRAINTS::SpringDashpot::get_area(
 {
   for (const auto& ele : geom)
   {
-    Core::Elements::Element* element = ele.second.get();
+    Core::Elements::Element& element = *ele.second.get();
 
-    Teuchos::ParameterList eparams;
+    double area = 0.0;
+    Core::FE::cell_type_switch<supported_celltypes>(element.shape(),
+        [&](auto celltype_t)
+        {
+          constexpr Core::FE::CellType celltype = celltype_t();
+          constexpr int num_dof_per_node = 3;
 
-    std::vector<int> lm;
-    std::vector<int> lmowner;
-    std::vector<int> lmstride;
-    element->location_vector(*(actdisc_), lm, lmowner, lmstride);
-    Core::LinAlg::SerialDenseMatrix dummat;
-    Core::LinAlg::SerialDenseVector dumvec;
-    Core::LinAlg::SerialDenseVector elevector;
-    const int eledim = (int)lm.size();
-    elevector.size(eledim);
+          const Core::Elements::ElementNodes<celltype, num_dof_per_node> element_nodes =
+              Core::Elements::evaluate_element_nodes<celltype, num_dof_per_node>(
+                  *actdisc_, *ele.second);
 
-    eparams.set("action", "calc_struct_area");
-    eparams.set("area", 0.0);
-    element->evaluate(eparams, *(actdisc_), lm, dummat, dummat, dumvec, dumvec, dumvec);
-
-    Core::FE::CellType shape = element->shape();
-
-    double a = eparams.get("area", -1.0);
+          Core::FE::GaussIntegration gauss_integration =
+              Core::FE::create_gauss_integration<celltype>(
+                  Discret::Elements::DisTypeToOptGaussRule<celltype>::rule);
+          Core::Elements::for_each_gauss_point<celltype>(element_nodes, gauss_integration,
+              [&](const Core::LinAlg::Matrix<Core::FE::dim<celltype>, 1>& xi,
+                  const Core::Elements::ShapeFunctionsAndDerivatives<celltype>& shape_functions,
+                  const Core::Elements::JacobianMapping<celltype, 3>& jacobian_mapping,
+                  double integration_factor, int gp) { area += integration_factor; });
+        });
 
     // loop over all nodes of the element that share the area
     // do only contribute to my own row nodes
     double apernode = 0.;
-    for (int i = 0; i < element->num_node(); ++i)
+    for (int i = 0; i < element.num_node(); ++i)
     {
       /* here we have to take care to assemble the right stiffness to the nodes!!! (mhv 05/2014):
           we do some sort of "manual" gauss integration here since we have to pay attention to
          assemble the correct stiffness in case of quadratic surface elements*/
 
-      switch (shape)
+      switch (element.shape())
       {
         case Core::FE::CellType::tri3:
-          apernode = a / element->num_node();
+          apernode = area / element.num_node();
           break;
         case Core::FE::CellType::tri6:
         {
@@ -1154,7 +1156,7 @@ void CONSTRAINTS::SpringDashpot::get_area(
           int numedgemidnode = 3;
 
           double weight = numcornernode * int_N_cornernode + numedgemidnode * int_N_edgemidnode;
-          double a_inv_weight = a / weight;
+          double a_inv_weight = area / weight;
 
           if (i < 3)  // corner nodes
             apernode = int_N_cornernode * a_inv_weight;
@@ -1163,7 +1165,7 @@ void CONSTRAINTS::SpringDashpot::get_area(
         }
         break;
         case Core::FE::CellType::quad4:
-          apernode = a / element->num_node();
+          apernode = area / element.num_node();
           break;
         case Core::FE::CellType::quad8:
         {
@@ -1175,7 +1177,7 @@ void CONSTRAINTS::SpringDashpot::get_area(
           int numedgemidnode = 4;
 
           double weight = numcornernode * int_N_cornernode + numedgemidnode * int_N_edgemidnode;
-          double a_inv_weight = a / weight;
+          double a_inv_weight = area / weight;
 
           if (i < 4)  // corner nodes
             apernode = int_N_cornernode * a_inv_weight;
@@ -1196,12 +1198,12 @@ void CONSTRAINTS::SpringDashpot::get_area(
 
           double weight = numcornernode * int_N_cornernode + numedgemidnode * int_N_edgemidnode +
                           numcentermidnode * int_N_centermidnode;
-          double a_inv_weight = a / weight;
+          double a_inv_weight = area / weight;
 
           if (i < 4)  // corner nodes
             apernode = int_N_cornernode * a_inv_weight;
           else if (i == 8)  // center mid node
-            apernode = int_N_centermidnode * a / weight;
+            apernode = int_N_centermidnode * area / weight;
           else  // edge mid nodes
             apernode = int_N_edgemidnode * a_inv_weight;
         }
@@ -1216,7 +1218,7 @@ void CONSTRAINTS::SpringDashpot::get_area(
           break;
       }
 
-      const int gid = element->nodes()[i]->id();
+      const int gid = element.nodes()[i]->id();
       if (!actdisc_->node_row_map()->MyGID(gid)) continue;
 
       // store area in map (gid, area). erase old value before adding new one

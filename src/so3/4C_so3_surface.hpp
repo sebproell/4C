@@ -243,7 +243,6 @@ namespace Discret
         calc_struct_centerdisp,
         calc_struct_rotation,
         calc_undo_struct_rotation,
-        calc_struct_area,
         calc_ref_nodal_normals,
         calc_cur_nodal_normals,
         calc_struct_area_poro
