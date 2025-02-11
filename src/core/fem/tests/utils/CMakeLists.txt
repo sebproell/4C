@@ -5,7 +5,4 @@
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
-add_subdirectory(geometric_search)
-add_subdirectory(geometry)
-add_subdirectory(general)
-add_subdirectory(utils)
+four_c_auto_define_tests()
