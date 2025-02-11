@@ -590,8 +590,6 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
     act = StructuralSurface::calc_struct_rotation;
   else if (action == "calc_undo_struct_rotation")
     act = StructuralSurface::calc_undo_struct_rotation;
-  else if (action == "calc_struct_area")
-    act = StructuralSurface::calc_struct_area;
   else if (action == "calc_ref_nodal_normals")
     act = StructuralSurface::calc_ref_nodal_normals;
   else if (action == "calc_cur_nodal_normals")
@@ -1051,30 +1049,6 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
       elematrix1 = *Adiff2;
       elematrix1.scale(-1.0);
       elevector3[0] = elearea;
-    }
-    break;
-    case calc_struct_area:
-    {
-      const int numnode = num_node();
-      Core::LinAlg::SerialDenseMatrix x(numnode, 3);
-      material_configuration(x);
-      // Core::LinAlg::SerialDenseVector  funct(numnode);
-      Core::LinAlg::SerialDenseMatrix deriv(2, numnode);
-      const Core::FE::IntegrationPoints2D intpoints(gaussrule_);
-      double a = 0.0;
-      for (int gp = 0; gp < intpoints.nquad; gp++)
-      {
-        const double e0 = intpoints.qxg[gp][0];
-        const double e1 = intpoints.qxg[gp][1];
-        Core::FE::shape_function_2d_deriv1(deriv, e0, e1, shape());
-        std::vector<double> normal(3);
-        double detA;
-        surface_integration(detA, normal, x, deriv);
-        a += (intpoints.qwgt[gp] * detA);
-      }
-      double atmp = params.get("area", -1.0);
-      a += atmp;
-      params.set("area", a);
     }
     break;
     case calc_ref_nodal_normals:
