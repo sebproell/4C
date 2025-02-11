@@ -18,6 +18,7 @@
 #include "4C_timestepping_mstep.hpp"
 #include "4C_utils_function.hpp"
 
+#include <Teuchos_StandardParameterEntryValidators.hpp>
 #include <Teuchos_TimeMonitor.hpp>
 
 #include <iostream>

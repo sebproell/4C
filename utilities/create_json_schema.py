@@ -128,25 +128,6 @@ def create_json_schema(fourc_metadata: dict) -> dict:
         "items": {"type": "string"},
     }
 
-    # Loop over sections
-    for section_name, section_options in fourc_metadata["parameters"].items():
-
-        # Some sections are empty
-        if not section_options and not is_parent_section(
-            section_name, fourc_metadata["parameters"].keys()
-        ):
-            warnings.warn(f"For section {section_name} no metadata is available!")
-
-        description = f"Section '{section_name}'\n"
-        description += section_options.pop("description", "No description yet")
-        properties_dict[section_name] = {
-            "title": section_name,
-            "description": description,
-            "type": "object",  # this type is required by the JSON schema template
-            "additionalProperties": False,
-            "properties": create_properties_dict(section_options),
-        }
-
     json_schema_dict["properties"] = properties_dict
     return json_schema_dict
 

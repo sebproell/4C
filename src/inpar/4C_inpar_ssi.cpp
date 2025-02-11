@@ -17,33 +17,32 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-void Inpar::SSI::set_valid_parameters(Teuchos::ParameterList& list)
+void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
 
-  Teuchos::ParameterList& ssidyn =
-      list.sublist("SSI CONTROL", false, "Control parameters for scatra structure interaction");
+  Core::Utils::SectionSpecs ssidyn{"SSI CONTROL"};
 
   // Output type
   Core::Utils::double_parameter(
-      "RESTARTEVERYTIME", 0, "write restart possibility every RESTARTEVERY steps", &ssidyn);
+      "RESTARTEVERYTIME", 0, "write restart possibility every RESTARTEVERY steps", ssidyn);
   Core::Utils::int_parameter(
-      "RESTARTEVERY", 1, "write restart possibility every RESTARTEVERY steps", &ssidyn);
+      "RESTARTEVERY", 1, "write restart possibility every RESTARTEVERY steps", ssidyn);
   // Time loop control
-  Core::Utils::int_parameter("NUMSTEP", 200, "maximum number of Timesteps", &ssidyn);
-  Core::Utils::double_parameter("MAXTIME", 1000.0, "total simulation time", &ssidyn);
-  Core::Utils::double_parameter("TIMESTEP", -1, "time step size dt", &ssidyn);
+  Core::Utils::int_parameter("NUMSTEP", 200, "maximum number of Timesteps", ssidyn);
+  Core::Utils::double_parameter("MAXTIME", 1000.0, "total simulation time", ssidyn);
+  Core::Utils::double_parameter("TIMESTEP", -1, "time step size dt", ssidyn);
   Core::Utils::bool_parameter(
-      "DIFFTIMESTEPSIZE", "No", "use different step size for scatra and solid", &ssidyn);
-  Core::Utils::double_parameter("RESULTSEVERYTIME", 0, "increment for writing solution", &ssidyn);
-  Core::Utils::int_parameter("RESULTSEVERY", 1, "increment for writing solution", &ssidyn);
-  Core::Utils::int_parameter("ITEMAX", 10, "maximum number of iterations over fields", &ssidyn);
+      "DIFFTIMESTEPSIZE", "No", "use different step size for scatra and solid", ssidyn);
+  Core::Utils::double_parameter("RESULTSEVERYTIME", 0, "increment for writing solution", ssidyn);
+  Core::Utils::int_parameter("RESULTSEVERY", 1, "increment for writing solution", ssidyn);
+  Core::Utils::int_parameter("ITEMAX", 10, "maximum number of iterations over fields", ssidyn);
   Core::Utils::bool_parameter("SCATRA_FROM_RESTART_FILE", "No",
       "read scatra result from restart files (use option 'restartfromfile' during execution of "
       "4C)",
-      &ssidyn);
+      ssidyn);
   Core::Utils::string_parameter(
-      "SCATRA_FILENAME", "nil", "Control-file name for reading scatra results in SSI", &ssidyn);
+      "SCATRA_FILENAME", "nil", "Control-file name for reading scatra results in SSI", ssidyn);
 
   // Type of coupling strategy between the two fields
   Core::Utils::string_to_integral_parameter<FieldCoupling>("FIELDCOUPLING", "volume_matching",
@@ -52,7 +51,7 @@ void Inpar::SSI::set_valid_parameters(Teuchos::ParameterList& list)
           "volumeboundary_matching"),
       tuple<FieldCoupling>(FieldCoupling::volume_match, FieldCoupling::volume_nonmatch,
           FieldCoupling::boundary_nonmatch, FieldCoupling::volumeboundary_match),
-      &ssidyn);
+      ssidyn);
 
   // Coupling strategy for SSI solvers
   Core::Utils::string_to_integral_parameter<SolutionSchemeOverFields>("COUPALGO", "ssi_IterStagg",
@@ -73,7 +72,7 @@ void Inpar::SSI::set_valid_parameters(Teuchos::ParameterList& list)
           SolutionSchemeOverFields::ssi_IterStaggAitken_ScatraToSolid,
           SolutionSchemeOverFields::ssi_IterStaggAitken_SolidToScatra,
           SolutionSchemeOverFields::ssi_Monolithic),
-      &ssidyn);
+      ssidyn);
 
   // type of scalar transport time integration
   Core::Utils::string_to_integral_parameter<ScaTraTimIntType>("SCATRATIMINTTYPE", "Standard",
@@ -82,57 +81,57 @@ void Inpar::SSI::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<std::string>("Standard", "Cardiac_Monodomain", "Elch"),
       tuple<ScaTraTimIntType>(
           ScaTraTimIntType::standard, ScaTraTimIntType::cardiac_monodomain, ScaTraTimIntType::elch),
-      &ssidyn);
+      ssidyn);
 
   // Restart from Structure problem instead of SSI
   Core::Utils::bool_parameter("RESTART_FROM_STRUCTURE", "no",
-      "restart from structure problem (e.g. from prestress calculations) instead of ssi", &ssidyn);
+      "restart from structure problem (e.g. from prestress calculations) instead of ssi", ssidyn);
 
   // Adaptive time stepping
   Core::Utils::bool_parameter(
-      "ADAPTIVE_TIMESTEPPING", "no", "flag for adaptive time stepping", &ssidyn);
+      "ADAPTIVE_TIMESTEPPING", "no", "flag for adaptive time stepping", ssidyn);
 
   // do redistribution by binning of solid mechanics discretization (scatra dis is cloned from solid
   // dis for volume_matching and volumeboundary_matching)
   Core::Utils::bool_parameter("REDISTRIBUTE_SOLID", "No",
-      "redistribution by binning of solid mechanics discretization", &ssidyn);
+      "redistribution by binning of solid mechanics discretization", ssidyn);
+
+  ssidyn.move_into_collection(list);
 
   /*----------------------------------------------------------------------*/
   /* parameters for partitioned SSI */
   /*----------------------------------------------------------------------*/
-  Teuchos::ParameterList& ssidynpart = ssidyn.sublist("PARTITIONED", false,
-      "Partitioned Structure Scalar Interaction\n"
-      "Control section for partitioned SSI");
+  Core::Utils::SectionSpecs ssidynpart{ssidyn, "PARTITIONED"};
 
   // Solver parameter for relaxation of iterative staggered partitioned SSI
   Core::Utils::double_parameter(
-      "MAXOMEGA", 10.0, "largest omega allowed for Aitken relaxation", &ssidynpart);
+      "MAXOMEGA", 10.0, "largest omega allowed for Aitken relaxation", ssidynpart);
   Core::Utils::double_parameter(
-      "MINOMEGA", 0.1, "smallest omega allowed for Aitken relaxation", &ssidynpart);
-  Core::Utils::double_parameter("STARTOMEGA", 1.0, "fixed relaxation parameter", &ssidynpart);
+      "MINOMEGA", 0.1, "smallest omega allowed for Aitken relaxation", ssidynpart);
+  Core::Utils::double_parameter("STARTOMEGA", 1.0, "fixed relaxation parameter", ssidynpart);
 
   // convergence tolerance of outer iteration loop
   Core::Utils::double_parameter("CONVTOL", 1e-6,
-      "tolerance for convergence check of outer iteration within partitioned SSI", &ssidynpart);
+      "tolerance for convergence check of outer iteration within partitioned SSI", ssidynpart);
+
+  ssidynpart.move_into_collection(list);
 
   /*----------------------------------------------------------------------*/
   /* parameters for monolithic SSI */
   /*----------------------------------------------------------------------*/
-  Teuchos::ParameterList& ssidynmono = ssidyn.sublist("MONOLITHIC", false,
-      "Monolithic Structure Scalar Interaction\n"
-      "Control section for monolithic SSI");
+  Core::Utils::SectionSpecs ssidynmono{ssidyn, "MONOLITHIC"};
 
   // convergence tolerances of Newton-Raphson iteration loop
   Core::Utils::double_parameter("ABSTOLRES", 1.e-14,
       "absolute tolerance for deciding if global residual of nonlinear problem is already zero",
-      &ssidynmono);
+      ssidynmono);
   Core::Utils::double_parameter("CONVTOL", 1.e-6,
       "tolerance for convergence check of Newton-Raphson iteration within monolithic SSI",
-      &ssidynmono);
+      ssidynmono);
 
   // ID of linear solver for global system of equations
   Core::Utils::int_parameter(
-      "LINEAR_SOLVER", -1, "ID of linear solver for global system of equations", &ssidynmono);
+      "LINEAR_SOLVER", -1, "ID of linear solver for global system of equations", ssidynmono);
 
   // type of global system matrix in global system of equations
   Core::Utils::string_to_integral_parameter<Core::LinAlg::MatrixType>("MATRIXTYPE", "undefined",
@@ -140,7 +139,7 @@ void Inpar::SSI::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<std::string>("undefined", "block", "sparse"),
       tuple<Core::LinAlg::MatrixType>(Core::LinAlg::MatrixType::undefined,
           Core::LinAlg::MatrixType::block_field, Core::LinAlg::MatrixType::sparse),
-      &ssidynmono);
+      ssidynmono);
 
   Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
       "none", "flag for equilibration of global system of equations",
@@ -154,7 +153,7 @@ void Inpar::SSI::set_valid_parameters(Teuchos::ParameterList& list)
           Core::LinAlg::EquilibrationMethod::rowsandcolumns_full,
           Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag,
           Core::LinAlg::EquilibrationMethod::local),
-      &ssidynmono);
+      ssidynmono);
 
   Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>(
       "EQUILIBRATION_STRUCTURE", "none", "flag for equilibration of structural equations",
@@ -165,7 +164,7 @@ void Inpar::SSI::set_valid_parameters(Teuchos::ParameterList& list)
           Core::LinAlg::EquilibrationMethod::columns_maindiag,
           Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag,
           Core::LinAlg::EquilibrationMethod::symmetry),
-      &ssidynmono);
+      ssidynmono);
 
   Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>(
       "EQUILIBRATION_SCATRA", "none", "flag for equilibration of scatra equations",
@@ -176,60 +175,64 @@ void Inpar::SSI::set_valid_parameters(Teuchos::ParameterList& list)
           Core::LinAlg::EquilibrationMethod::columns_maindiag,
           Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag,
           Core::LinAlg::EquilibrationMethod::symmetry),
-      &ssidynmono);
+      ssidynmono);
 
   Core::Utils::bool_parameter("PRINT_MAT_RHS_MAP_MATLAB", "no",
       "print system matrix, rhs vector, and full map to matlab readable file after solution of "
       "time step",
-      &ssidynmono);
+      ssidynmono);
 
   Core::Utils::double_parameter("RELAX_LIN_SOLVER_TOLERANCE", 1.0,
       "relax the tolerance of the linear solver in case it is an iterative solver by scaling the "
       "convergence tolerance with factor RELAX_LIN_SOLVER_TOLERANCE",
-      &ssidynmono);
+      ssidynmono);
 
   Core::Utils::int_parameter("RELAX_LIN_SOLVER_STEP", -1,
       "relax the tolerance of the linear solver within the first RELAX_LIN_SOLVER_STEP steps",
-      &ssidynmono);
+      ssidynmono);
+
+  ssidynmono.move_into_collection(list);
 
   /*----------------------------------------------------------------------*/
   /* parameters for SSI with manifold */
   /*----------------------------------------------------------------------*/
 
-  Teuchos::ParameterList& ssidynmanifold = ssidyn.sublist("MANIFOLD", false,
-      "Monolithic Structure Scalar Interaction with additional scalar transport on manifold");
+  Core::Utils::SectionSpecs ssidynmanifold{ssidyn, "MANIFOLD"};
 
   Core::Utils::bool_parameter(
-      "ADD_MANIFOLD", "no", "activate additional manifold?", &ssidynmanifold);
+      "ADD_MANIFOLD", "no", "activate additional manifold?", ssidynmanifold);
 
   Core::Utils::bool_parameter("MESHTYING_MANIFOLD", "no",
-      "activate meshtying between all manifold fields in case they intersect?", &ssidynmanifold);
+      "activate meshtying between all manifold fields in case they intersect?", ssidynmanifold);
 
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::InitialField>("INITIALFIELD",
       "zero_field", "Initial field for scalar transport on manifold",
       tuple<std::string>("zero_field", "field_by_function", "field_by_condition"),
       tuple<Inpar::ScaTra::InitialField>(Inpar::ScaTra::initfield_zero_field,
           Inpar::ScaTra::initfield_field_by_function, Inpar::ScaTra::initfield_field_by_condition),
-      &ssidynmanifold);
+      ssidynmanifold);
 
   Core::Utils::int_parameter("INITFUNCNO", -1,
-      "function number for scalar transport on manifold initial field", &ssidynmanifold);
+      "function number for scalar transport on manifold initial field", ssidynmanifold);
 
   Core::Utils::int_parameter(
-      "LINEAR_SOLVER", -1, "linear solver for scalar transport on manifold", &ssidynmanifold);
+      "LINEAR_SOLVER", -1, "linear solver for scalar transport on manifold", ssidynmanifold);
 
   Core::Utils::bool_parameter("OUTPUT_INFLOW", "no",
       "write output of inflow of scatra manifold - scatra coupling into scatra manifold to csv "
       "file",
-      &ssidynmanifold);
+      ssidynmanifold);
+
+  ssidynmanifold.move_into_collection(list);
 
   /*----------------------------------------------------------------------*/
   /* parameters for SSI with elch */
   /*----------------------------------------------------------------------*/
-  Teuchos::ParameterList& ssidynelch = ssidyn.sublist(
-      "ELCH", false, "Monolithic Structure Scalar Interaction with Elch as SCATRATIMINTTYPE");
+  Core::Utils::SectionSpecs ssidynelch{ssidyn, "ELCH"};
   Core::Utils::bool_parameter("INITPOTCALC", "No",
-      "Automatically calculate initial field for electric potential", &ssidynelch);
+      "Automatically calculate initial field for electric potential", ssidynelch);
+
+  ssidynelch.move_into_collection(list);
 }
 
 /*--------------------------------------------------------------------

@@ -14,7 +14,10 @@
 #include "4C_fem_general_utils_integration.hpp"
 
 // Forward declaration.
-#include "4C_utils_parameter_list.fwd.hpp"
+#include "4C_io_input_spec.hpp"
+#include "4C_utils_parameter_list.hpp"
+
+#include <map>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -66,7 +69,7 @@ namespace Inpar
      *
      * @param (out) Parameter list to add the line to 3D parameters to.
      */
-    void set_valid_parameters_line_to3_d(Teuchos::ParameterList& list);
+    void set_valid_parameters_line_to3_d(Core::Utils::SectionSpecs& list);
 
     /**
      * \brief Set valid input parameters for line to surface geometry pairs.
@@ -76,7 +79,7 @@ namespace Inpar
      *
      * @param (out) Parameter list to add the line to surface parameters to.
      */
-    void set_valid_parameters_line_to_surface(Teuchos::ParameterList& list);
+    void set_valid_parameters_line_to_surface(Core::Utils::SectionSpecs& list);
 
   }  // namespace GEOMETRYPAIR
 

@@ -9,6 +9,8 @@
 
 #include "4C_thermo_ele_action.hpp"
 
+#include <Teuchos_StandardParameterEntryValidators.hpp>
+
 FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*

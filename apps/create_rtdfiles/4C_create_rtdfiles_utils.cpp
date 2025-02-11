@@ -16,6 +16,7 @@
 #include "4C_utils_string.hpp"
 
 #include <boost/algorithm/string.hpp>
+#include <Teuchos_StrUtils.hpp>
 
 #include <format>
 

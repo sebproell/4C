@@ -25,7 +25,9 @@ namespace
     container.group("group").add<std::string>("e", "group string");
     container.group("group").group("deeply").group("nested").add<int>("f", 42);
 
-    auto list = container.to_teuchos_parameter_list();
+    Teuchos::ParameterList list("dummy");
+    container.to_teuchos_parameter_list(list);
+    EXPECT_EQ(list.name(), "dummy");
     EXPECT_EQ(list.get<int>("a"), 1);
     EXPECT_EQ(list.get<double>("b"), 2.0);
     EXPECT_EQ(list.get<std::string>("c"), "string");

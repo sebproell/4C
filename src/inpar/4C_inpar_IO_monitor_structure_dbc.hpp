@@ -13,9 +13,10 @@
 /* headers */
 #include "4C_config.hpp"
 
+#include "4C_io_input_spec.hpp"
 #include "4C_utils_exceptions.hpp"
-#include "4C_utils_parameter_list.fwd.hpp"
 
+#include <map>
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN
@@ -35,7 +36,7 @@ namespace Inpar
     std::string to_string(FileType type);
 
     /// set the valid parameters related to writing of output at runtime
-    void set_valid_parameters(Teuchos::ParameterList& list);
+    void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
 
   }  // namespace IOMonitorStructureDBC
 }  // namespace Inpar

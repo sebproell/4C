@@ -165,7 +165,7 @@ Thus, the definition is very simple ::
     TYPE <typestring> POS <x> <y> <z> [RAD <radius>]
 
 The ``TYPE`` keyword provides a particle phase, to which a material can be assigned in the section :ref:`PARTICLE DYNAMIC <SECparticledynamic>`,
-see the keyword :ref:`PHASE_TO_MATERIAL_ID <particledynamic_phase_to_material_id>`.
+see the keyword :ref:`PHASE_TO_MATERIAL_ID <SECparticledynamic>`.
 
 For DEM, the phases **phase1** and **phase2** may be defined.
 
@@ -187,14 +187,14 @@ For the DEM, the particles are assumed to have a spherical shape with a given ra
 By default, the radius of the particles are defined in the material definition for both DEM and SPH.
 
 However, as mentioned above, with DEM the radius can also be defined individually per particle.
-To do so one has to define the option :ref:`INITIAL_RADIUS <particledynamic_dem_initial_radius>` in :ref:`PARTICLE DYNAMIC/DEMi <SECparticledynamic_dem>`::
+To do so one has to define the option ``INITIAL_RADIUS`` in :ref:`PARTICLE DYNAMIC/DEM <SECparticledynamic_dem>`::
 
     ------------------PARTICLE DYNAMIC/DEM
     INITIAL_RADIUS    RadiusFromParticleInput
 
 Additionally, it is possible to define a normal or a log-normal distribution of the radius, defined by two parameters, :math:`\mu` and :math:`\sigma`.
 The parameter :math:`\mu` is defined by the initial radius in the material definition,
-while the parameter :math:`\sigma` is defined by the parameter :ref:`RADIUSDISTRIBUTION_SIGMA <particledynamic_dem_radiusdistribution_sigma>` in :ref:`PARTICLE DYNAMIC/DEM <SECparticledynamic_dem>`::
+while the parameter :math:`\sigma` is defined by the parameter ``RADIUSDISTRIBUTION_SIGMA`` in :ref:`PARTICLE DYNAMIC/DEM <SECparticledynamic_dem>`::
 
 
     ------------------PARTICLE DYNAMIC/DEM

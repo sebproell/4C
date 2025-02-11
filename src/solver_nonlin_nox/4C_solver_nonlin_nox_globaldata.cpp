@@ -10,6 +10,7 @@
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_inpar_boolifyparameters.hpp"
 #include "4C_inpar_structure.hpp"
+#include "4C_io_input_parameter_container.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_solver_nonlin_nox_aux.hpp"
 #include "4C_solver_nonlin_nox_direction_factory.hpp"
@@ -25,6 +26,7 @@
 #include <Teuchos_ParameterList.hpp>
 #include <Teuchos_XMLParameterListCoreHelpers.hpp>
 
+#include <filesystem>
 #include <stdexcept>
 
 FOUR_C_NAMESPACE_OPEN
@@ -273,17 +275,17 @@ void NOX::Nln::GlobalData::set_status_test_parameters()
       statusTestParams.sublist("Outer Status Test", false);
 
   Teuchos::ParameterList xmlParams;
-  std::string xmlfilename = statusTestParams.get<std::string>("XML File");
+  auto xmlfilename = statusTestParams.get<Core::IO::Noneable<std::filesystem::path>>("XML File");
 
   // check the input: path to the "Status Test" xml-file
-  if (xmlfilename == "none")
+  if (!xmlfilename)
     FOUR_C_THROW("Please specify a \"Status Test\"->\"XML File\" for the nox nonlinear solver!");
 
-  if (xmlfilename.length() && xmlfilename.rfind(".xml"))
+  if (xmlfilename->extension() == ".xml")
   {
     try
     {
-      xmlParams = *(Teuchos::getParametersFromXmlFile(xmlfilename));
+      xmlParams = *(Teuchos::getParametersFromXmlFile(xmlfilename->string()));
     }
     catch (const std::runtime_error&)
     {
@@ -291,11 +293,11 @@ void NOX::Nln::GlobalData::set_status_test_parameters()
           "The \"Status Test\"->\"XML File\" was not found! "
           "Please check the path in your input file! \n"
           "CURRENT PATH = %s",
-          xmlfilename.c_str());
+          xmlfilename->c_str());
     }
   }
   else
-    FOUR_C_THROW("The file name '%s' is not a valid XML file name.", xmlfilename.c_str());
+    FOUR_C_THROW("The file name '%s' is not a valid XML file name.", xmlfilename->c_str());
 
   // copy the "Outer Status Test" into the nox parameter list
   if (not xmlParams.isSublist("Outer Status Test"))

@@ -15,18 +15,18 @@ FOUR_C_NAMESPACE_OPEN
 /**
  *
  */
-void Inpar::CONSTRAINTS::set_valid_parameters(Teuchos::ParameterList& list)
+void Inpar::CONSTRAINTS::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
 
-  Teuchos::ParameterList& embeddedmeshcoupling = list.sublist("EMBEDDED MESH COUPLING", false, "");
+  Core::Utils::SectionSpecs embeddedmeshcoupling{"EMBEDDED MESH COUPLING"};
   {
     Core::Utils::string_to_integral_parameter<EmbeddedMeshCouplingStrategy>("COUPLING_STRATEGY",
         "none", "Strategy to couple background and overlapping mesh",
         tuple<std::string>("none", "mortar"),
         tuple<EmbeddedMeshCouplingStrategy>(
             EmbeddedMeshCouplingStrategy::none, EmbeddedMeshCouplingStrategy::mortar),
-        &embeddedmeshcoupling);
+        embeddedmeshcoupling);
 
     Core::Utils::string_to_integral_parameter<SolidToSolidMortarShapefunctions>(
         "MORTAR_SHAPE_FUNCTION", "none",
@@ -36,7 +36,7 @@ void Inpar::CONSTRAINTS::set_valid_parameters(Teuchos::ParameterList& list)
         tuple<SolidToSolidMortarShapefunctions>(SolidToSolidMortarShapefunctions::none,
             SolidToSolidMortarShapefunctions::quad4, SolidToSolidMortarShapefunctions::quad9,
             SolidToSolidMortarShapefunctions::nurbs9),
-        &embeddedmeshcoupling);
+        embeddedmeshcoupling);
 
     Core::Utils::string_to_integral_parameter<EmbeddedMeshConstraintEnforcement>(
         "CONSTRAINT_ENFORCEMENT", "none",
@@ -44,11 +44,13 @@ void Inpar::CONSTRAINTS::set_valid_parameters(Teuchos::ParameterList& list)
         tuple<std::string>("none", "penalty"),
         tuple<EmbeddedMeshConstraintEnforcement>(
             EmbeddedMeshConstraintEnforcement::none, EmbeddedMeshConstraintEnforcement::penalty),
-        &embeddedmeshcoupling);
+        embeddedmeshcoupling);
 
     Core::Utils::double_parameter("CONSTRAINT_ENFORCEMENT_PENALTYPARAM", 0.0,
         "Penalty parameter for the constraint enforcement in embedded mesh coupling",
-        &embeddedmeshcoupling);
+        embeddedmeshcoupling);
+
+    embeddedmeshcoupling.move_into_collection(list);
   }
 }
 

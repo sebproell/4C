@@ -198,10 +198,6 @@ namespace Global
     /// Set parameters from a parameter list and return with default values.
     void set_parameter_list(std::shared_ptr<Teuchos::ParameterList> const& parameter_list);
 
-    /// Return a const parameter list of all of the valid parameters that
-    /// this->setParameterList(...) will accept.
-    std::shared_ptr<const Teuchos::ParameterList> get_valid_parameters() const;
-
     std::shared_ptr<const Teuchos::ParameterList> get_parameter_list() const;
 
     /// @name Communicators and their parallel groups

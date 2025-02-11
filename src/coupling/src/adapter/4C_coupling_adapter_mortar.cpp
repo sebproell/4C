@@ -287,7 +287,7 @@ void Coupling::Adapter::CouplingMortar::setup_interface(
   input.set<bool>("NURBS", nurbs);
 
   // set valid parameter values
-  input.set<std::string>("LM_SHAPEFCN", "dual");
+  input.set<Inpar::Mortar::ShapeFcn>("LM_SHAPEFCN", Inpar::Mortar::ShapeFcn::shape_dual);
   input.set<Inpar::Mortar::ConsistentDualType>(
       "LM_DUAL_CONSISTENT", Inpar::Mortar::ConsistentDualType::consistent_none);
   input.sublist("PARALLEL REDISTRIBUTION")

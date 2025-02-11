@@ -164,30 +164,7 @@ void Global::Problem::write_input_parameters()
 void Global::Problem::set_parameter_list(
     std::shared_ptr<Teuchos::ParameterList> const& parameter_list)
 {
-  try
-  {
-    // Test parameter list against valid parameters, set default values
-    // and set validator objects to extract numerical values for string
-    // parameters.
-    parameter_list->validateParametersAndSetDefaults(*get_valid_parameters());
-  }
-  catch (Teuchos::Exceptions::InvalidParameter& err)
-  {
-    std::cerr << "\n\n" << err.what();
-    FOUR_C_THROW("Input parameter validation failed. Fix your input file.");
-  }
-
   parameters_ = parameter_list;
-}
-
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-std::shared_ptr<const Teuchos::ParameterList> Global::Problem::get_valid_parameters() const
-{
-  // call the external method to get the valid parameters
-  // this way the parameter configuration is separate from the source
-  return Input::valid_parameters();
 }
 
 

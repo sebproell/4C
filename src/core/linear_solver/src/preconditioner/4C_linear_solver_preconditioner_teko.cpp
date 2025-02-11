@@ -8,6 +8,7 @@
 #include "4C_linear_solver_preconditioner_teko.hpp"
 
 #include "4C_comm_utils.hpp"
+#include "4C_io_input_parameter_container.hpp"
 #include "4C_linalg_sparsematrix.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
@@ -21,6 +22,8 @@
 #include <Teko_StratimikosFactory.hpp>
 #include <Teuchos_XMLParameterListHelpers.hpp>
 #include <Xpetra_MultiVectorFactory.hpp>
+
+#include <filesystem>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -43,8 +46,7 @@ void Core::LinearSolver::TekoPreconditioner::setup(bool create, Epetra_Operator*
   {
     if (!tekolist_.sublist("Teko Parameters").isParameter("TEKO_XML_FILE"))
       FOUR_C_THROW("TEKO_XML_FILE parameter not set!");
-    std::string xmlFileName =
-        tekolist_.sublist("Teko Parameters").get<std::string>("TEKO_XML_FILE");
+    auto xmlFileName = tekolist_.sublist("Teko Parameters").get<std::string>("TEKO_XML_FILE");
 
     Teuchos::ParameterList tekoParams;
     auto comm = Core::Communication::to_teuchos_comm<int>(

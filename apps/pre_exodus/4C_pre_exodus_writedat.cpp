@@ -92,18 +92,6 @@ void EXODUS::write_dat_head(const std::string& headfile, std::ostream& dat)
   // delete sections which has been written by WriteDatIntro already
   remove_dat_section("PROBLEM SIZE", headstring);
 
-  // delete very first line with comment "//"
-  if (headstring.find("//") == 0)
-    headstring.erase(
-        headstring.find("//"), headstring.find('\n') + 1);  //-headstd::string.find("//"));
-
-  size_t comment = headstring.find("\n//");
-  while (comment != std::string::npos)
-  {
-    headstring.erase(comment + 1, headstring.find('\n', comment + 1) - comment);
-    comment = headstring.find("\n//", comment);
-  }
-
   // remove eof character
   headstring.erase(headstring.end() - 1);
 

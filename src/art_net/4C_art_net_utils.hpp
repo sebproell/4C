@@ -12,6 +12,7 @@
 
 #include "4C_inpar_bio.hpp"
 #include "4C_io.hpp"
+#include "4C_utils_parameter_list.fwd.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

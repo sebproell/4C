@@ -307,11 +307,11 @@ int main(int argc, char** argv)
       if (!defaulthead) FOUR_C_THROW("failed to open file: %s", defaultheadfilename.c_str());
 
       // get valid input parameters
-      std::shared_ptr<const Teuchos::ParameterList> list = Input::valid_parameters();
+      auto parameters = Input::valid_parameters();
 
       // write default .dat header into file
       std::stringstream prelimhead;
-      Core::IO::print_dat(prelimhead, *list);
+      Core::IO::print_dat(prelimhead, parameters);
       std::string headstring = prelimhead.str();
       size_t size_section = headstring.find("--PROBLEM SIZE");
       if (size_section != std::string::npos)
@@ -340,7 +340,7 @@ int main(int argc, char** argv)
             one_of(possible_materials),
         });
 
-        Core::IO::print_section(std::cout, "MATERIALS", all_materials);
+        Core::IO::print_section(defaulthead, "MATERIALS", all_materials);
       }
 
 

@@ -22,6 +22,7 @@
 #include "4C_lubrication_input.hpp"
 #include "4C_utils_function.hpp"
 
+#include <Teuchos_StandardParameterEntryValidators.hpp>
 #include <Teuchos_TimeMonitor.hpp>
 
 FOUR_C_NAMESPACE_OPEN

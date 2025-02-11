@@ -15,61 +15,63 @@ FOUR_C_NAMESPACE_OPEN
 
 
 
-void ALE::set_valid_parameters(Teuchos::ParameterList& list)
+void ALE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
-  using Teuchos::setStringToIntegralParameter;
   using Teuchos::tuple;
 
-  Teuchos::ParameterList& adyn = list.sublist("ALE DYNAMIC", false, "");
+  Core::Utils::SectionSpecs adyn{"ALE DYNAMIC"};
 
-  Core::Utils::double_parameter("TIMESTEP", 0.1, "time step size", &adyn);
-  Core::Utils::int_parameter("NUMSTEP", 41, "max number of time steps", &adyn);
-  Core::Utils::double_parameter("MAXTIME", 4.0, "max simulation time", &adyn);
+  Core::Utils::double_parameter("TIMESTEP", 0.1, "time step size", adyn);
+  Core::Utils::int_parameter("NUMSTEP", 41, "max number of time steps", adyn);
+  Core::Utils::double_parameter("MAXTIME", 4.0, "max simulation time", adyn);
 
-  setStringToIntegralParameter<ALE::AleDynamic>("ALE_TYPE", "solid", "ale mesh movement algorithm",
+  Core::Utils::string_to_integral_parameter<ALE::AleDynamic>("ALE_TYPE", "solid",
+      "ale mesh movement algorithm",
       tuple<std::string>("solid", "solid_linear", "laplace_material", "laplace_spatial",
           "springs_material", "springs_spatial"),
       tuple<ALE::AleDynamic>(solid, solid_linear, laplace_material, laplace_spatial,
           springs_material, springs_spatial),
-      &adyn);
+      adyn);
 
   Core::Utils::bool_parameter("ASSESSMESHQUALITY", "no",
-      "Evaluate element quality measure according to [Oddy et al. 1988]", &adyn);
+      "Evaluate element quality measure according to [Oddy et al. 1988]", adyn);
 
   Core::Utils::bool_parameter("UPDATEMATRIX", "no",
-      "Update stiffness matrix in every time step (only for linear/material strategies)", &adyn);
+      "Update stiffness matrix in every time step (only for linear/material strategies)", adyn);
 
-  Core::Utils::int_parameter("MAXITER", 1, "Maximum number of newton iterations.", &adyn);
+  Core::Utils::int_parameter("MAXITER", 1, "Maximum number of newton iterations.", adyn);
   Core::Utils::double_parameter(
-      "TOLRES", 1.0e-06, "Absolute tolerance for length scaled L2 residual norm ", &adyn);
+      "TOLRES", 1.0e-06, "Absolute tolerance for length scaled L2 residual norm ", adyn);
   Core::Utils::double_parameter(
-      "TOLDISP", 1.0e-06, "Absolute tolerance for length scaled L2 increment norm ", &adyn);
+      "TOLDISP", 1.0e-06, "Absolute tolerance for length scaled L2 increment norm ", adyn);
 
-  Core::Utils::int_parameter("NUM_INITSTEP", 0, "", &adyn);
+  Core::Utils::int_parameter("NUM_INITSTEP", 0, "", adyn);
   Core::Utils::int_parameter(
-      "RESTARTEVERY", 1, "write restart data every RESTARTEVERY steps", &adyn);
-  Core::Utils::int_parameter("RESULTSEVERY", 0, "write results every RESULTSTEVERY steps", &adyn);
-  setStringToIntegralParameter<ALE::DivContAct>("DIVERCONT", "continue",
+      "RESTARTEVERY", 1, "write restart data every RESTARTEVERY steps", adyn);
+  Core::Utils::int_parameter("RESULTSEVERY", 0, "write results every RESULTSTEVERY steps", adyn);
+  Core::Utils::string_to_integral_parameter<ALE::DivContAct>("DIVERCONT", "continue",
       "What to do if nonlinear solver does not converge?", tuple<std::string>("stop", "continue"),
-      tuple<ALE::DivContAct>(divcont_stop, divcont_continue), &adyn);
+      tuple<ALE::DivContAct>(divcont_stop, divcont_continue), adyn);
 
-  setStringToIntegralParameter<ALE::MeshTying>("MESHTYING", "no",
+  Core::Utils::string_to_integral_parameter<ALE::MeshTying>("MESHTYING", "no",
       "Flag to (de)activate mesh tying and mesh sliding algorithm",
       tuple<std::string>("no", "meshtying", "meshsliding"),
-      tuple<ALE::MeshTying>(no_meshtying, meshtying, meshsliding), &adyn);
+      tuple<ALE::MeshTying>(no_meshtying, meshtying, meshsliding), adyn);
 
   // Initial displacement
-  setStringToIntegralParameter<ALE::InitialDisp>("INITIALDISP", "zero_displacement",
+  Core::Utils::string_to_integral_parameter<ALE::InitialDisp>("INITIALDISP", "zero_displacement",
       "Initial displacement for structure problem",
       tuple<std::string>("zero_displacement", "displacement_by_function"),
-      tuple<ALE::InitialDisp>(initdisp_zero_disp, initdisp_disp_by_function), &adyn);
+      tuple<ALE::InitialDisp>(initdisp_zero_disp, initdisp_disp_by_function), adyn);
 
   // Function to evaluate initial displacement
-  Core::Utils::int_parameter("STARTFUNCNO", -1, "Function for Initial displacement", &adyn);
+  Core::Utils::int_parameter("STARTFUNCNO", -1, "Function for Initial displacement", adyn);
 
   // linear solver id used for scalar ale problems
   Core::Utils::int_parameter(
-      "LINEAR_SOLVER", -1, "number of linear solver used for ale problems...", &adyn);
+      "LINEAR_SOLVER", -1, "number of linear solver used for ale problems...", adyn);
+
+  adyn.move_into_collection(list);
 }
 
 

@@ -32,6 +32,7 @@
 #include "4C_scatra_timint_implicit.hpp"
 #include "4C_scatra_utils_clonestrategy.hpp"
 
+#include <Teuchos_StandardParameterEntryValidators.hpp>
 #include <Teuchos_TimeMonitor.hpp>
 
 FOUR_C_NAMESPACE_OPEN

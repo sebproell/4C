@@ -15,12 +15,12 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Inpar::PROBLEMTYPE::set_valid_parameters(Teuchos::ParameterList& list)
+void Inpar::PROBLEMTYPE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
 
   /*----------------------------------------------------------------------*/
-  Teuchos::ParameterList& type = list.sublist("PROBLEM TYPE", false, "");
+  Core::Utils::SectionSpecs type{"PROBLEM TYPE"};
 
   {
     using IntegerType = Core::ProblemType;
@@ -34,7 +34,7 @@ void Inpar::PROBLEMTYPE::set_valid_parameters(Teuchos::ParameterList& list)
     }
 
     Core::Utils::string_to_integral_parameter<IntegerType>(
-        "PROBLEMTYPE", "Fluid_Structure_Interaction", "", name, label, &type);
+        "PROBLEMTYPE", "Fluid_Structure_Interaction", "", name, label, type);
   }
 
   {
@@ -49,12 +49,13 @@ void Inpar::PROBLEMTYPE::set_valid_parameters(Teuchos::ParameterList& list)
     }
 
     Core::Utils::string_to_integral_parameter<IntegerType>("SHAPEFCT", "Polynomial",
-        "Defines the function spaces for the spatial approximation", name, label, &type);
+        "Defines the function spaces for the spatial approximation", name, label, type);
   }
 
-  Core::Utils::int_parameter("RESTART", 0, "", &type);
-  Core::Utils::int_parameter(
-      "RANDSEED", -1, "Set the random seed. If < 0 use current time.", &type);
+  Core::Utils::int_parameter("RESTART", 0, "", type);
+  Core::Utils::int_parameter("RANDSEED", -1, "Set the random seed. If < 0 use current time.", type);
+
+  type.move_into_collection(list);
 }
 
 /*----------------------------------------------------------------------*/

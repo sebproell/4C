@@ -13,17 +13,19 @@ FOUR_C_NAMESPACE_OPEN
 
 
 
-void Inpar::Geo::set_valid_parameters(Teuchos::ParameterList& list)
+void Inpar::Geo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
 
-  Teuchos::ParameterList& search_tree = list.sublist("SEARCH TREE", false, "");
+  Core::Utils::SectionSpecs search_tree{"SEARCH TREE"};
 
   Core::Utils::string_to_integral_parameter<Inpar::Geo::TreeType>("TREE_TYPE", "notree",
       "set tree type", tuple<std::string>("notree", "octree3d", "quadtree3d", "quadtree2d"),
       tuple<Inpar::Geo::TreeType>(
           Inpar::Geo::Notree, Inpar::Geo::Octree3D, Inpar::Geo::Quadtree3D, Inpar::Geo::Quadtree2D),
-      &search_tree);
+      search_tree);
+
+  search_tree.move_into_collection(list);
 }
 
 FOUR_C_NAMESPACE_CLOSE

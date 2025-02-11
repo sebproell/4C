@@ -10,37 +10,24 @@
 
 #include "4C_config.hpp"
 
-#include "4C_utils_parameter_list.fwd.hpp"
-
-#include <Teuchos_StandardParameterEntryValidators.hpp>
+#include "4C_io_input_spec.hpp"
 
 #include <iostream>
+#include <map>
 #include <memory>
 #include <string>
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace Core::IO
-{
-  class Pstream;
-}
-
-
 namespace Input
 {
   /**
-   * Construct a `Teuchos::ParameterList` with all parameters and their documentation.
-   *
-   * @return A `std::shared_ptr` to a constant `Teuchos::ParameterList` containing all valid
-   * parameters.
+   * The valid parameters per section.
    */
-  std::shared_ptr<const Teuchos::ParameterList> valid_parameters();
+  std::map<std::string, Core::IO::InputSpec> valid_parameters();
 
 }  // namespace Input
 
-
-/*! print list of valid parameters with documentation */
-void print_valid_parameters();
 
 /*! print help message */
 void print_help_message();

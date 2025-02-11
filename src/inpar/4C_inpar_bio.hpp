@@ -10,8 +10,9 @@
 
 #include "4C_config.hpp"
 
-#include "4C_utils_parameter_list.fwd.hpp"
+#include "4C_io_input_spec.hpp"
 
+#include <map>
 #include <vector>
 
 FOUR_C_NAMESPACE_OPEN
@@ -76,7 +77,7 @@ namespace Inpar
     };
 
     /// set the arterial dynamic parameters
-    void set_valid_parameters(Teuchos::ParameterList& list);
+    void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
   }  // namespace ArtDyn
 
   namespace ArteryNetwork
@@ -107,7 +108,7 @@ namespace Inpar
     };
 
     /// set the artnet parameters
-    void set_valid_parameters(Teuchos::ParameterList& list);
+    void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
 
     /// set specific artnet conditions
     void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);
@@ -117,7 +118,7 @@ namespace Inpar
   namespace BioFilm
   {
     /// set the biofilm parameters
-    void set_valid_parameters(Teuchos::ParameterList& list);
+    void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
 
     /// set specific biofilm conditions
     void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);
@@ -126,7 +127,7 @@ namespace Inpar
   namespace ReducedLung
   {
     /// set the reduced airways parameters
-    void set_valid_parameters(Teuchos::ParameterList& list);
+    void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
 
     /// set specific reduced airways conditions
     void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);

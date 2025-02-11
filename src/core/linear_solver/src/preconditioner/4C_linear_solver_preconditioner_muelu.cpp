@@ -7,6 +7,7 @@
 
 #include "4C_linear_solver_preconditioner_muelu.hpp"
 
+#include "4C_io_input_parameter_container.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_linear_solver_method_parameters.hpp"
 #include "4C_utils_exceptions.hpp"
@@ -29,6 +30,8 @@
 #include <Xpetra_MatrixUtils.hpp>
 #include <Xpetra_MultiVectorFactory.hpp>
 #include <Xpetra_StridedMap.hpp>
+
+#include <filesystem>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -71,8 +74,7 @@ void Core::LinearSolver::MueLuPreconditioner::setup(bool create, Epetra_Operator
 
       Teuchos::ParameterList& inverseList = muelulist_.sublist("MueLu Parameters");
 
-      std::string xmlFileName = inverseList.get<std::string>("MUELU_XML_FILE");
-      if (xmlFileName == "none") FOUR_C_THROW("MUELU_XML_FILE parameter not set!");
+      auto xmlFileName = inverseList.get<std::string>("MUELU_XML_FILE");
 
       Teuchos::RCP<Teuchos::ParameterList> muelu_params =
           Teuchos::make_rcp<Teuchos::ParameterList>();
@@ -150,8 +152,7 @@ void Core::LinearSolver::MueLuPreconditioner::setup(bool create, Epetra_Operator
       if (!muelulist_.sublist("MueLu Parameters").isParameter("MUELU_XML_FILE"))
         FOUR_C_THROW("MUELU_XML_FILE parameter not set!");
 
-      std::string xmlFileName =
-          muelulist_.sublist("MueLu Parameters").get<std::string>("MUELU_XML_FILE");
+      auto xmlFileName = muelulist_.sublist("MueLu Parameters").get<std::string>("MUELU_XML_FILE");
       Teuchos::RCP<Teuchos::ParameterList> mueluParams =
           Teuchos::make_rcp<Teuchos::ParameterList>();
       auto comm = pmatrix_->getRowMap()->getComm();

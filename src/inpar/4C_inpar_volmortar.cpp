@@ -14,12 +14,12 @@ FOUR_C_NAMESPACE_OPEN
 
 
 
-void Inpar::VolMortar::set_valid_parameters(Teuchos::ParameterList& list)
+void Inpar::VolMortar::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
 
   /* parameters for volmortar */
-  Teuchos::ParameterList& volmortar = list.sublist("VOLMORTAR COUPLING", false, "");
+  Core::Utils::SectionSpecs volmortar{"VOLMORTAR COUPLING"};
 
   Core::Utils::string_to_integral_parameter<Coupling::VolMortar::IntType>("INTTYPE", "Elements",
       "Type of numerical integration scheme",
@@ -27,7 +27,7 @@ void Inpar::VolMortar::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<Coupling::VolMortar::IntType>(Coupling::VolMortar::inttype_elements,
           Coupling::VolMortar::inttype_elements, Coupling::VolMortar::inttype_segments,
           Coupling::VolMortar::inttype_segments),
-      &volmortar);
+      volmortar);
 
   Core::Utils::string_to_integral_parameter<Coupling::VolMortar::CouplingType>("COUPLINGTYPE",
       "Volmortar", "Type of coupling",
@@ -35,7 +35,7 @@ void Inpar::VolMortar::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<Coupling::VolMortar::CouplingType>(Coupling::VolMortar::couplingtype_volmortar,
           Coupling::VolMortar::couplingtype_volmortar, Coupling::VolMortar::couplingtype_coninter,
           Coupling::VolMortar::couplingtype_coninter),
-      &volmortar);
+      volmortar);
 
   Core::Utils::string_to_integral_parameter<Coupling::VolMortar::Shapefcn>("SHAPEFCN", "Dual",
       "Type of employed set of shape functions",
@@ -43,7 +43,7 @@ void Inpar::VolMortar::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<Coupling::VolMortar::Shapefcn>(Coupling::VolMortar::shape_dual,
           Coupling::VolMortar::shape_dual, Coupling::VolMortar::shape_std,
           Coupling::VolMortar::shape_std, Coupling::VolMortar::shape_std),
-      &volmortar);
+      volmortar);
 
   Core::Utils::string_to_integral_parameter<Coupling::VolMortar::CutType>("CUTTYPE", "dd",
       "Type of cut procedure/ integration point calculation",
@@ -53,7 +53,7 @@ void Inpar::VolMortar::set_valid_parameters(Teuchos::ParameterList& list)
           Coupling::VolMortar::cuttype_directdivergence,
           Coupling::VolMortar::cuttype_directdivergence, Coupling::VolMortar::cuttype_tessellation,
           Coupling::VolMortar::cuttype_tessellation, Coupling::VolMortar::cuttype_tessellation),
-      &volmortar);
+      volmortar);
 
   Core::Utils::string_to_integral_parameter<Coupling::VolMortar::DualQuad>("DUALQUAD", "nomod",
       "Type of dual shape function for weighting function for quadr. problems",
@@ -62,13 +62,15 @@ void Inpar::VolMortar::set_valid_parameters(Teuchos::ParameterList& list)
           Coupling::VolMortar::dualquad_no_mod, Coupling::VolMortar::dualquad_lin_mod,
           Coupling::VolMortar::dualquad_lin_mod, Coupling::VolMortar::dualquad_quad_mod,
           Coupling::VolMortar::dualquad_quad_mod),
-      &volmortar);
+      volmortar);
 
   Core::Utils::bool_parameter(
-      "MESH_INIT", "No", "If chosen, mesh initialization procedure is performed", &volmortar);
+      "MESH_INIT", "No", "If chosen, mesh initialization procedure is performed", volmortar);
 
   Core::Utils::bool_parameter("KEEP_EXTENDEDGHOSTING", "Yes",
-      "If chosen, extended ghosting is kept for simulation", &volmortar);
+      "If chosen, extended ghosting is kept for simulation", volmortar);
+
+  volmortar.move_into_collection(list);
 }
 
 FOUR_C_NAMESPACE_CLOSE

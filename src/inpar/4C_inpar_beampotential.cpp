@@ -16,19 +16,19 @@ FOUR_C_NAMESPACE_OPEN
 
 
 
-void Inpar::BeamPotential::set_valid_parameters(Teuchos::ParameterList& list)
+void Inpar::BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
 
   /* parameters for potential-based beam interaction */
-  Teuchos::ParameterList& beampotential = list.sublist("BEAM POTENTIAL", false, "");
+  Core::Utils::SectionSpecs beampotential{"BEAM POTENTIAL"};
 
-  setNumericStringParameter("POT_LAW_EXPONENT", "1.0",
+  Core::Utils::string_parameter("POT_LAW_EXPONENT", "1.0",
       "negative(!) exponent(s)  $m_i$ of potential law "
       "$\\Phi(r) = \\sum_i (k_i * r^{-m_i}).$",
-      &beampotential);
-  setNumericStringParameter("POT_LAW_PREFACTOR", "0.0",
-      "prefactor(s) $k_i$ of potential law $\\Phi(r) = \\sum_i (k_i * r^{-m_i})$.", &beampotential);
+      beampotential);
+  Core::Utils::string_parameter("POT_LAW_PREFACTOR", "0.0",
+      "prefactor(s) $k_i$ of potential law $\\Phi(r) = \\sum_i (k_i * r^{-m_i})$.", beampotential);
 
   Core::Utils::string_to_integral_parameter<Inpar::BeamPotential::BeamPotentialType>(
       "BEAMPOTENTIAL_TYPE", "Surface",
@@ -36,7 +36,7 @@ void Inpar::BeamPotential::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<std::string>("Surface", "surface", "Volume", "volume"),
       tuple<Inpar::BeamPotential::BeamPotentialType>(
           beampot_surf, beampot_surf, beampot_vol, beampot_vol),
-      &beampotential);
+      beampotential);
 
   Core::Utils::string_to_integral_parameter<Inpar::BeamPotential::BeamPotentialStrategy>("STRATEGY",
       "DoubleLengthSpecific_LargeSepApprox",
@@ -48,33 +48,33 @@ void Inpar::BeamPotential::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<Inpar::BeamPotential::BeamPotentialStrategy>(strategy_doublelengthspec_largesepapprox,
           strategy_doublelengthspec_smallsepapprox, strategy_singlelengthspec_smallsepapprox,
           strategy_singlelengthspec_smallsepapprox_simple),
-      &beampotential);
+      beampotential);
 
   Core::Utils::double_parameter("CUTOFF_RADIUS", -1.0,
       "Neglect all potential contributions at separation larger"
       "than this cutoff radius",
-      &beampotential);
+      beampotential);
 
   Core::Utils::string_to_integral_parameter<Inpar::BeamPotential::BeamPotentialRegularizationType>(
       "REGULARIZATION_TYPE", "none", "Type of regularization applied to the force law",
       tuple<std::string>("linear_extrapolation", "constant_extrapolation", "None", "none"),
       tuple<Inpar::BeamPotential::BeamPotentialRegularizationType>(
           regularization_linear, regularization_constant, regularization_none, regularization_none),
-      &beampotential);
+      beampotential);
 
   Core::Utils::double_parameter("REGULARIZATION_SEPARATION", -1.0,
       "Use regularization of force law at separations "
       "smaller than this separation",
-      &beampotential);
+      beampotential);
 
   Core::Utils::int_parameter("NUM_INTEGRATION_SEGMENTS", 1,
-      "Number of integration segments used per beam element", &beampotential);
+      "Number of integration segments used per beam element", beampotential);
 
   Core::Utils::int_parameter(
-      "NUM_GAUSSPOINTS", 10, "Number of Gauss points used per integration segment", &beampotential);
+      "NUM_GAUSSPOINTS", 10, "Number of Gauss points used per integration segment", beampotential);
 
-  Core::Utils::bool_parameter("AUTOMATIC_DIFFERENTIATION", "No",
-      "apply automatic differentiation via FAD?", &beampotential);
+  Core::Utils::bool_parameter(
+      "AUTOMATIC_DIFFERENTIATION", "No", "apply automatic differentiation via FAD?", beampotential);
 
   Core::Utils::string_to_integral_parameter<MasterSlaveChoice>("CHOICE_MASTER_SLAVE",
       "smaller_eleGID_is_slave",
@@ -82,15 +82,15 @@ void Inpar::BeamPotential::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<std::string>("smaller_eleGID_is_slave", "higher_eleGID_is_slave"),
       tuple<MasterSlaveChoice>(
           MasterSlaveChoice::smaller_eleGID_is_slave, MasterSlaveChoice::higher_eleGID_is_slave),
-      &beampotential);
+      beampotential);
 
   Core::Utils::bool_parameter("BEAMPOT_BTSOL", "No",
       "decide, whether potential-based interaction between beams and solids is considered",
-      &beampotential);
+      beampotential);
 
   Core::Utils::bool_parameter("BEAMPOT_BTSPH", "No",
       "decide, whether potential-based interaction between beams and spheres is considered",
-      &beampotential);
+      beampotential);
 
   // enable octree search and determine type of bounding box (aabb = axis aligned, spbb = spherical)
   Core::Utils::string_to_integral_parameter<BeamContact::OctreeType>("BEAMPOT_OCTREE", "None",
@@ -99,56 +99,59 @@ void Inpar::BeamPotential::set_valid_parameters(Teuchos::ParameterList& list)
           "None", "none", "octree_axisaligned", "octree_cylorient", "octree_spherical"),
       tuple<BeamContact::OctreeType>(BeamContact::boct_none, BeamContact::boct_none,
           BeamContact::boct_aabb, BeamContact::boct_cobb, BeamContact::boct_spbb),
-      &beampotential);
+      beampotential);
 
   Core::Utils::int_parameter(
-      "BEAMPOT_TREEDEPTH", 6, "max, tree depth of the octree", &beampotential);
+      "BEAMPOT_TREEDEPTH", 6, "max, tree depth of the octree", beampotential);
   Core::Utils::int_parameter(
-      "BEAMPOT_BOXESINOCT", 8, "max number of bounding boxes in any leaf octant", &beampotential);
+      "BEAMPOT_BOXESINOCT", 8, "max number of bounding boxes in any leaf octant", beampotential);
 
   Core::Utils::double_parameter("POTENTIAL_REDUCTION_LENGTH", -1.0,
       "Within this length of the master beam end point the potential is smoothly reduced to one "
       "half to account for infinitely long master beam surrogates.",
-      &beampotential);
+      beampotential);
+
+  beampotential.move_into_collection(list);
 
   /*------------------------------------------------------------------------*/
   /* parameters for visualization of potential-based beam interactions via output at runtime */
 
-  Teuchos::ParameterList& beampotential_output_sublist =
-      beampotential.sublist("RUNTIME VTK OUTPUT", false, "");
+  Core::Utils::SectionSpecs beampotential_output_sublist{beampotential, "RUNTIME VTK OUTPUT"};
 
 
   // whether to write visualization output for beam contact
   Core::Utils::bool_parameter("VTK_OUTPUT_BEAM_POTENTIAL", "No",
       "write visualization output for potential-based beam interactions",
-      &beampotential_output_sublist);
+      beampotential_output_sublist);
 
   // output interval regarding steps: write output every INTERVAL_STEPS steps
   Core::Utils::int_parameter("INTERVAL_STEPS", -1,
-      "write output at runtime every INTERVAL_STEPS steps", &beampotential_output_sublist);
+      "write output at runtime every INTERVAL_STEPS steps", beampotential_output_sublist);
 
   // whether to write output in every iteration of the nonlinear solver
   Core::Utils::bool_parameter("EVERY_ITERATION", "No",
-      "write output in every iteration of the nonlinear solver", &beampotential_output_sublist);
+      "write output in every iteration of the nonlinear solver", beampotential_output_sublist);
 
   // whether to write visualization output for forces
   Core::Utils::bool_parameter(
-      "FORCES", "No", "write visualization output for forces", &beampotential_output_sublist);
+      "FORCES", "No", "write visualization output for forces", beampotential_output_sublist);
 
   // whether to write visualization output for moments
   Core::Utils::bool_parameter(
-      "MOMENTS", "No", "write visualization output for moments", &beampotential_output_sublist);
+      "MOMENTS", "No", "write visualization output for moments", beampotential_output_sublist);
 
   // whether to write visualization output for forces/moments separately for each element pair
   Core::Utils::bool_parameter("WRITE_FORCE_MOMENT_PER_ELEMENTPAIR", "No",
       "write visualization output for forces/moments separately for each element pair",
-      &beampotential_output_sublist);
+      beampotential_output_sublist);
 
   // whether to write out the UIDs (uid_0_beam_1_gid, uid_1_beam_2_gid, uid_2_gp_id)
   Core::Utils::bool_parameter("WRITE_UIDS", "No",
       "write out the unique ID's for each visualization point,i.e., master and slave beam element "
       "global ID (uid_0_beam_1_gid, uid_1_beam_2_gid) and local Gauss point ID (uid_2_gp_id)",
-      &beampotential_output_sublist);
+      beampotential_output_sublist);
+
+  beampotential_output_sublist.move_into_collection(list);
 }
 
 void Inpar::BeamPotential::set_valid_conditions(

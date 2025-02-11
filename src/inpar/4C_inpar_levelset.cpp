@@ -14,36 +14,37 @@
 FOUR_C_NAMESPACE_OPEN
 
 
-void Inpar::LevelSet::set_valid_parameters(Teuchos::ParameterList& list)
+void Inpar::LevelSet::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
 
-  Teuchos::ParameterList& levelsetcontrol =
-      list.sublist("LEVEL-SET CONTROL", false, "control parameters for level-set problems\n");
+  Core::Utils::SectionSpecs levelsetcontrol{"LEVEL-SET CONTROL"};
 
-  Core::Utils::int_parameter("NUMSTEP", 24, "Total number of time steps", &levelsetcontrol);
-  Core::Utils::double_parameter("TIMESTEP", 0.1, "Time increment dt", &levelsetcontrol);
-  Core::Utils::double_parameter("MAXTIME", 1000.0, "Total simulation time", &levelsetcontrol);
-  Core::Utils::int_parameter("RESULTSEVERY", 1, "Increment for writing solution", &levelsetcontrol);
-  Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", &levelsetcontrol);
+  Core::Utils::int_parameter("NUMSTEP", 24, "Total number of time steps", levelsetcontrol);
+  Core::Utils::double_parameter("TIMESTEP", 0.1, "Time increment dt", levelsetcontrol);
+  Core::Utils::double_parameter("MAXTIME", 1000.0, "Total simulation time", levelsetcontrol);
+  Core::Utils::int_parameter("RESULTSEVERY", 1, "Increment for writing solution", levelsetcontrol);
+  Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", levelsetcontrol);
 
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::CalcErrorLevelSet>("CALCERROR", "No",
       "compute error compared to analytical solution", tuple<std::string>("No", "InitialField"),
       tuple<Inpar::ScaTra::CalcErrorLevelSet>(
           Inpar::ScaTra::calcerror_no_ls, Inpar::ScaTra::calcerror_initial_field),
-      &levelsetcontrol);
+      levelsetcontrol);
 
   Core::Utils::bool_parameter("EXTRACT_INTERFACE_VEL", "No",
       "replace computed velocity at nodes of given distance of interface by approximated interface "
       "velocity",
-      &levelsetcontrol);
+      levelsetcontrol);
   Core::Utils::int_parameter("NUM_CONVEL_LAYERS", -1,
       "number of layers around the interface which keep their computed convective velocity",
-      &levelsetcontrol);
+      levelsetcontrol);
+
+  levelsetcontrol.move_into_collection(list);
 
 
   /*----------------------------------------------------------------------*/
-  Teuchos::ParameterList& ls_reinit = levelsetcontrol.sublist("REINITIALIZATION", false, "");
+  Core::Utils::SectionSpecs ls_reinit{levelsetcontrol, "REINITIALIZATION"};
 
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::ReInitialAction>("REINITIALIZATION",
       "None", "Type of reinitialization strategy for level set function",
@@ -51,39 +52,33 @@ void Inpar::LevelSet::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<Inpar::ScaTra::ReInitialAction>(Inpar::ScaTra::reinitaction_none,
           Inpar::ScaTra::reinitaction_signeddistancefunction, Inpar::ScaTra::reinitaction_sussman,
           Inpar::ScaTra::reinitaction_ellipticeq),
-      &ls_reinit);
+      ls_reinit);
 
   Core::Utils::bool_parameter("REINIT_INITIAL", "No",
-      "Has level set field to be reinitialized before first time step?", &ls_reinit);
-  Core::Utils::int_parameter("REINITINTERVAL", 1, "reinitialization interval", &ls_reinit);
+      "Has level set field to be reinitialized before first time step?", ls_reinit);
+  Core::Utils::int_parameter("REINITINTERVAL", 1, "reinitialization interval", ls_reinit);
 
   // parameters for signed distance reinitialization
   Core::Utils::bool_parameter("REINITBAND", "No",
-      "reinitialization only within a band around the interface, or entire domain?", &ls_reinit);
+      "reinitialization only within a band around the interface, or entire domain?", ls_reinit);
   Core::Utils::double_parameter("REINITBANDWIDTH", 1.0,
-      "level-set value defining band width for reinitialization", &ls_reinit);
+      "level-set value defining band width for reinitialization", ls_reinit);
 
   // parameters for reinitialization equation
   Core::Utils::int_parameter(
-      "NUMSTEPSREINIT", 1, "(maximal) number of pseudo-time steps", &ls_reinit);
-  // this parameter selects the tau definition applied
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::LinReinit>("LINEARIZATIONREINIT",
-      "fixed_point", "linearization of reinitialization equation",
-      tuple<std::string>("newton", "fixed_point"),
-      tuple<Inpar::ScaTra::LinReinit>(Inpar::ScaTra::newton, Inpar::ScaTra::fixed_point),
-      &ls_reinit);
+      "NUMSTEPSREINIT", 1, "(maximal) number of pseudo-time steps", ls_reinit);
   Core::Utils::double_parameter("TIMESTEPREINIT", 1.0,
       "pseudo-time step length (usually a * characteristic element length of discretization with "
       "a>0)",
-      &ls_reinit);
+      ls_reinit);
   Core::Utils::double_parameter(
-      "THETAREINIT", 1.0, "theta for time discretization of reinitialization equation", &ls_reinit);
+      "THETAREINIT", 1.0, "theta for time discretization of reinitialization equation", ls_reinit);
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::StabType>("STABTYPEREINIT", "SUPG",
       "Type of stabilization (if any). No stabilization is only reasonable for low-Peclet-number.",
       tuple<std::string>("no_stabilization", "SUPG", "GLS", "USFEM"),
       tuple<Inpar::ScaTra::StabType>(Inpar::ScaTra::stabtype_no_stabilization,
           Inpar::ScaTra::stabtype_SUPG, Inpar::ScaTra::stabtype_GLS, Inpar::ScaTra::stabtype_USFEM),
-      &ls_reinit);
+      ls_reinit);
   // this parameter selects the tau definition applied
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::TauType>("DEFINITION_TAU_REINIT",
       "Taylor_Hughes_Zarins", "Definition of tau",
@@ -95,7 +90,7 @@ void Inpar::LevelSet::set_valid_parameters(Teuchos::ParameterList& list)
           Inpar::ScaTra::tau_franca_valentin_wo_dt, Inpar::ScaTra::tau_shakib_hughes_codina,
           Inpar::ScaTra::tau_shakib_hughes_codina_wo_dt, Inpar::ScaTra::tau_codina,
           Inpar::ScaTra::tau_codina_wo_dt, Inpar::ScaTra::tau_exact_1d, Inpar::ScaTra::tau_zero),
-      &ls_reinit);
+      ls_reinit);
   // this parameter governs whether all-scale subgrid diffusivity is included
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::ArtDiff>("ARTDIFFREINIT", "no",
       "potential incorporation of all-scale subgrid diffusivity (a.k.a. discontinuity-capturing) "
@@ -103,7 +98,7 @@ void Inpar::LevelSet::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<std::string>("no", "isotropic", "crosswind"),
       tuple<Inpar::ScaTra::ArtDiff>(Inpar::ScaTra::artdiff_none, Inpar::ScaTra::artdiff_isotropic,
           Inpar::ScaTra::artdiff_crosswind),
-      &ls_reinit);
+      ls_reinit);
   // this parameter selects the all-scale subgrid-diffusivity definition applied
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::AssgdType>("DEFINITION_ARTDIFFREINIT",
       "artificial_linear", "Definition of (all-scale) subgrid diffusivity",
@@ -116,7 +111,7 @@ void Inpar::LevelSet::set_valid_parameters(Teuchos::ParameterList& list)
           Inpar::ScaTra::assgd_tezduyar, Inpar::ScaTra::assgd_tezduyar_wo_phizero,
           Inpar::ScaTra::assgd_docarmo, Inpar::ScaTra::assgd_almeida, Inpar::ScaTra::assgd_yzbeta,
           Inpar::ScaTra::assgd_codina),
-      &ls_reinit);
+      ls_reinit);
 
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::SmoothedSignType>("SMOOTHED_SIGN_TYPE",
       "SussmanSmerekaOsher1994", "sign function for reinitialization equation",
@@ -126,53 +121,53 @@ void Inpar::LevelSet::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<Inpar::ScaTra::SmoothedSignType>(Inpar::ScaTra::signtype_nonsmoothed,
           Inpar::ScaTra::signtype_SussmanFatemi1999,
           Inpar::ScaTra::signtype_SussmanSmerekaOsher1994, Inpar::ScaTra::signtype_PengEtAl1999),
-      &ls_reinit);
+      ls_reinit);
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::CharEleLengthReinit>(
       "CHARELELENGTHREINIT", "root_of_volume", "characteristic element length for sign function",
       tuple<std::string>("root_of_volume", "streamlength"),
       tuple<Inpar::ScaTra::CharEleLengthReinit>(
           Inpar::ScaTra::root_of_volume_reinit, Inpar::ScaTra::streamlength_reinit),
-      &ls_reinit);
+      ls_reinit);
   Core::Utils::double_parameter("INTERFACE_THICKNESS", 1.0,
-      "factor for interface thickness (multiplied by element length)", &ls_reinit);
+      "factor for interface thickness (multiplied by element length)", ls_reinit);
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::VelReinit>("VELREINIT",
       "integration_point_based",
       "evaluate velocity at integration point or compute node-based velocity",
       tuple<std::string>("integration_point_based", "node_based"),
       tuple<Inpar::ScaTra::VelReinit>(
           Inpar::ScaTra::vel_reinit_integration_point_based, Inpar::ScaTra::vel_reinit_node_based),
-      &ls_reinit);
+      ls_reinit);
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::LinReinit>("LINEARIZATIONREINIT",
       "newton", "linearization scheme for nonlinear convective term of reinitialization equation",
       tuple<std::string>("newton", "fixed_point"),
       tuple<Inpar::ScaTra::LinReinit>(Inpar::ScaTra::newton, Inpar::ScaTra::fixed_point),
-      &ls_reinit);
+      ls_reinit);
   Core::Utils::bool_parameter("CORRECTOR_STEP", "yes",
       "correction of interface position via volume constraint according to Sussman & Fatemi",
-      &ls_reinit);
+      ls_reinit);
   Core::Utils::double_parameter("CONVTOL_REINIT", -1.0,
       "tolerance for convergence check according to Sussman et al. 1994 (turned off negative)",
-      &ls_reinit);
+      ls_reinit);
 
   Core::Utils::bool_parameter(
-      "REINITVOLCORRECTION", "No", "volume correction after reinitialization", &ls_reinit);
+      "REINITVOLCORRECTION", "No", "volume correction after reinitialization", ls_reinit);
 
   Core::Utils::double_parameter(
-      "PENALTY_PARA", -1.0, "penalty parameter for elliptic reinitialization", &ls_reinit);
+      "PENALTY_PARA", -1.0, "penalty parameter for elliptic reinitialization", ls_reinit);
 
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::LSDim>("DIMENSION", "3D",
       "number of space dimensions for handling of quasi-2D problems with 3D elements",
       tuple<std::string>("3D", "2Dx", "2Dy", "2Dz"),
       tuple<Inpar::ScaTra::LSDim>(Inpar::ScaTra::ls_3D, Inpar::ScaTra::ls_2Dx,
           Inpar::ScaTra::ls_2Dy, Inpar::ScaTra::ls_2Dz),
-      &ls_reinit);
+      ls_reinit);
 
   Core::Utils::bool_parameter(
-      "PROJECTION", "yes", "use L2-projection for grad phi and related quantities", &ls_reinit);
+      "PROJECTION", "yes", "use L2-projection for grad phi and related quantities", ls_reinit);
   Core::Utils::double_parameter(
-      "PROJECTION_DIFF", 0.0, "use diffusive term for L2-projection", &ls_reinit);
+      "PROJECTION_DIFF", 0.0, "use diffusive term for L2-projection", ls_reinit);
   Core::Utils::bool_parameter(
-      "LUMPING", "no", "use lumped mass matrix for L2-projection", &ls_reinit);
+      "LUMPING", "no", "use lumped mass matrix for L2-projection", ls_reinit);
 
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::DiffFunc>("DIFF_FUNC", "hyperbolic",
       "function for diffusivity",
@@ -181,7 +176,9 @@ void Inpar::LevelSet::set_valid_parameters(Teuchos::ParameterList& list)
       tuple<Inpar::ScaTra::DiffFunc>(Inpar::ScaTra::hyperbolic,
           Inpar::ScaTra::hyperbolic_smoothed_positive, Inpar::ScaTra::hyperbolic_clipped_05,
           Inpar::ScaTra::hyperbolic_clipped_1),
-      &ls_reinit);
+      ls_reinit);
+
+  ls_reinit.move_into_collection(list);
 }
 
 

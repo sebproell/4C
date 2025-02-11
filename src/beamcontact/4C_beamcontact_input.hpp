@@ -11,6 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_fem_condition.hpp"
+#include "4C_io_input_spec.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -84,7 +85,7 @@ namespace BeamContact
   };
 
   /// set the beam contact parameters
-  void set_valid_parameters(Teuchos::ParameterList& list);
+  void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
 
   /**
    * \brief Set beam beam-to-beam specific conditions.

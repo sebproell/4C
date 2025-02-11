@@ -20,27 +20,27 @@ namespace Inpar
   {
     /*----------------------------------------------------------------------*
      *----------------------------------------------------------------------*/
-    void set_valid_parameters(Teuchos::ParameterList& list)
+    void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
     {
       using Teuchos::tuple;
 
       // related sublist
-      Teuchos::ParameterList& sublist_IO = list.sublist("IO", false, "");
-      Teuchos::ParameterList& sublist_IO_monitor_structure_dbc =
-          sublist_IO.sublist("MONITOR STRUCTURE DBC", false, "");
+      Core::Utils::SectionSpecs sublist_IO{"IO"};
+      Core::Utils::SectionSpecs sublist_IO_monitor_structure_dbc{
+          sublist_IO, "MONITOR STRUCTURE DBC"};
 
       // output interval regarding steps: write output every INTERVAL_STEPS steps
       Core::Utils::int_parameter("INTERVAL_STEPS", -1,
           "write reaction force output every INTERVAL_STEPS steps",
-          &sublist_IO_monitor_structure_dbc);
+          sublist_IO_monitor_structure_dbc);
 
       // precision for file
       Core::Utils::int_parameter(
-          "PRECISION_FILE", 16, "precision for written file", &sublist_IO_monitor_structure_dbc);
+          "PRECISION_FILE", 16, "precision for written file", sublist_IO_monitor_structure_dbc);
 
       // precision for screen
       Core::Utils::int_parameter("PRECISION_SCREEN", 5, "precision for written screen output",
-          &sublist_IO_monitor_structure_dbc);
+          sublist_IO_monitor_structure_dbc);
 
       // type of written output file
       Core::Utils::string_to_integral_parameter<Inpar::IOMonitorStructureDBC::FileType>("FILE_TYPE",
@@ -50,12 +50,14 @@ namespace Inpar
               Inpar::IOMonitorStructureDBC::csv, Inpar::IOMonitorStructureDBC::csv,
               Inpar::IOMonitorStructureDBC::data, Inpar::IOMonitorStructureDBC::data,
               Inpar::IOMonitorStructureDBC::data),
-          &sublist_IO_monitor_structure_dbc);
+          sublist_IO_monitor_structure_dbc);
 
       // whether to write output in every iteration of the nonlinear solver
       Core::Utils::bool_parameter("WRITE_HEADER", "No",
           "write information about monitored boundary condition to output file",
-          &sublist_IO_monitor_structure_dbc);
+          sublist_IO_monitor_structure_dbc);
+
+      sublist_IO_monitor_structure_dbc.move_into_collection(list);
     }
 
     std::string to_string(FileType type)
