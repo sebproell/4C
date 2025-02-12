@@ -235,12 +235,10 @@ void Core::IO::print_metadata_yaml(
 
   {
     auto sections = root["sections"];
-    sections |= ryml::MAP;
+    sections |= ryml::SEQ;
     for (const auto& [name, spec] : section_specs)
     {
       auto section = sections.append_child();
-      section |= ryml::MAP;
-      section << ryml::key(name);
       YamlNodeRef spec_emitter{section, ""};
       spec.emit_metadata(spec_emitter);
     }
