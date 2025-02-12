@@ -479,6 +479,43 @@ Core::IO::Internal::MatchEntry& Core::IO::Internal::MatchEntry::append_child(
 }
 
 
+InputSpecTypeErasedBase::InputSpecTypeErasedBase(InputSpecTypeErasedBase::CommonData data)
+    : data(std::move(data))
+{
+  const auto check_for_unprintable_chars =
+      [](const std::string& check_string, const auto& field_type)
+  {
+    auto first_unprintable_char =
+        std::ranges::find_if_not(check_string, [](char c) { return std::isprint(c) || c == '\n'; });
+    if (first_unprintable_char != check_string.end())
+    {
+      std::stringstream escaped_string;
+      for (const auto c : check_string)
+      {
+        if (std::isprint(c))
+        {
+          escaped_string << c;
+        }
+        else if (c == '\n')
+        {
+          escaped_string << "\\n";
+        }
+        else
+        {
+          escaped_string << '<' << "0x" << std::hex << static_cast<int>(c) << '>';
+        }
+      }
+      FOUR_C_THROW(
+          "A %s may only consist of printable characters. Here is the offending "
+          "%s with unprintable characters marked in angle brackets:\n'%s'",
+          field_type, field_type, escaped_string.str().c_str());
+    }
+  };
+
+  check_for_unprintable_chars(this->data.description, "description");
+  check_for_unprintable_chars(this->data.name, "name");
+}
+
 std::string Core::IO::Internal::InputSpecTypeErasedBase::description_one_line() const
 {
   return Core::Utils::trim(data.description);
