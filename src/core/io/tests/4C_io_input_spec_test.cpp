@@ -643,6 +643,12 @@ namespace
                 entry<int>("g"),
             },
             {.required = false}),
+        list("list",
+            all_of({
+                entry<int>("l1"),
+                entry<double>("l2"),
+            }),
+            {.size = 2}),
     });
 
 
@@ -655,7 +661,7 @@ namespace
       out << tree;
 
       std::string expected = R"(type: all_of
-description: 'all_of {a, b, one_of {all_of {b, c}, group}, e, group2}'
+description: 'all_of {a, b, one_of {all_of {b, c}, group}, e, group2, list}'
 required: true
 specs:
   - name: a
@@ -708,6 +714,21 @@ specs:
       - name: g
         type: int
         required: true
+  - name: list
+    type: list
+    required: true
+    size: 2
+    spec:
+      type: all_of
+      description: 'all_of {l1, l2}'
+      required: true
+      specs:
+        - name: l1
+          type: int
+          required: true
+        - name: l2
+          type: double
+          required: true
 )";
       EXPECT_EQ(out.str(), expected);
       std::cout << out.str() << std::endl;
@@ -933,6 +954,96 @@ specs:
           "      [ ] Fully matched entry 'a'\n"
           "      [ ] Fully matched entry 'd'\n"
           "    }");
+    }
+  }
+
+  TEST(InputSpecTest, MatchYamlList)
+  {
+    auto spec = list("list",
+        all_of({
+            entry<int>("a"),
+            entry<std::string>("b"),
+        }),
+        {.size = 1});
+
+    {
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+
+      root |= ryml::MAP;
+      auto list_node = root.append_child();
+      list_node << ryml::key("list");
+      list_node |= ryml::SEQ;
+      {
+        auto first_entry = list_node.append_child();
+        first_entry |= ryml::MAP;
+        first_entry["a"] << 1;
+        first_entry["b"] << "string";
+      }
+      ConstYamlNodeRef node(root, "");
+
+      InputParameterContainer container;
+      spec.match(node, container);
+      const auto& list = container.get_list("list");
+      EXPECT_EQ(list.size(), 1);
+      EXPECT_EQ(list[0].get<int>("a"), 1);
+      EXPECT_EQ(list[0].get<std::string>("b"), "string");
+    }
+
+    // unmatched node
+    {
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+
+      root |= ryml::MAP;
+      auto list_node = root.append_child();
+      list_node << ryml::key("list");
+      list_node |= ryml::SEQ;
+      {
+        auto first_entry = list_node.append_child();
+        first_entry |= ryml::MAP;
+        first_entry["a"] << "wrong type";
+        first_entry["b"] << "string";
+      }
+      {
+        auto second_entry = list_node.append_child();
+        second_entry |= ryml::MAP;
+        second_entry["a"] << 2;
+        second_entry["b"] << "string2";
+      }
+      ConstYamlNodeRef node(root, "");
+
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
+          spec.match(node, container), Core::Exception, "The following list entry did not match:");
+    }
+
+    // too many entries
+    {
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+
+      root |= ryml::MAP;
+      auto list_node = root.append_child();
+      list_node << ryml::key("list");
+      list_node |= ryml::SEQ;
+      {
+        auto first_entry = list_node.append_child();
+        first_entry |= ryml::MAP;
+        first_entry["a"] << 1;
+        first_entry["b"] << "string";
+      }
+      {
+        auto second_entry = list_node.append_child();
+        second_entry |= ryml::MAP;
+        second_entry["a"] << 2;
+        second_entry["b"] << "string2";
+      }
+      ConstYamlNodeRef node(root, "");
+
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
+          "Too many list entries encountered: expected 1 but matched 2");
     }
   }
 
