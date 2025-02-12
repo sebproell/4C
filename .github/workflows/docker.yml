@@ -43,7 +43,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-      attestations: write
       id-token: write
       #
     needs: check-if-ubuntu24_04-build-is-required
