@@ -42,6 +42,7 @@ Mat::PAR::PlasticGTN::PlasticGTN(const Core::Mat::PAR::Parameter::Data& matdata)
       functionID_hardening_(matdata.parameters.get<int>("HARDENING_FUNC")),
       fc_(matdata.parameters.get<double>("FC")),
       kappa_(matdata.parameters.get<double>("KAPPA")),
+      ef_(matdata.parameters.get<double>("EF")),
       f0_(matdata.parameters.get<double>("F0")),
       fn_(matdata.parameters.get<double>("FN")),
       sn_(matdata.parameters.get<double>("SN")),
@@ -96,7 +97,6 @@ void Mat::PlasticGTN::pack(Core::Communication::PackBuffer& data) const
 void Mat::PlasticGTN::unpack(Core::Communication::UnpackBuffer& buffer)
 {
   isinit_ = true;
-
 
   Core::Communication::extract_and_assert_id(buffer, unique_par_object_id());
 
@@ -214,6 +214,20 @@ void Mat::PlasticGTN::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat, int gp, int eleGID)
 {
   const double TOL = params_->tol_;
+
+  const int functionID_hardening =
+      params_->functionID_hardening_;  // function number for isotropic hardening
+  if ((functionID_hardening != 0) && (hardening_function_ == nullptr))
+  {
+    // reinitialize the hardening function pointer.
+    // this is to make sure the analysis works consistently with hardening by function. It happens
+    // that during redistribution or restart analysis, the global functions are reassigned after
+    // this constitutive law is set up. This will effectively null out the hardening function
+    // pointer.
+    hardening_function_ =
+        &Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfAnything>(
+            functionID_hardening);
+  }
 
   // save the strain
   auto& strain_n1 = strain_n1_.at(gp);
@@ -484,25 +498,62 @@ double Mat::PlasticGTN::compute_fstar(const double f) const
 {
   const double fC = params_->fc_;
   const double kappa = params_->kappa_;
+  const double ef = params_->ef_;
 
-  if (f <= fC)
+  if (f <= fC - ef)
+  {
     return f;
-  else
+  }
+  else if (f >= fC + ef)
+  {
     return fC + kappa * (f - fC);
+  }
+  else
+  {
+    return (kappa - 1.0) / (4 * ef) * pow(f - fC, 2) + (kappa + 1.0) / 2 * (f - fC) + fC +
+           (kappa - 1) * ef / 4;
+  }
 }
 
 double Mat::PlasticGTN::compute_dfstar_df(const double f) const
 {
   const double fC = params_->fc_;
   const double kappa = params_->kappa_;
+  const double ef = params_->ef_;
 
-  if (f <= fC)
+  if (f <= fC - ef)
+  {
     return 1.0;
-  else
+  }
+  else if (f >= fC + ef)
+  {
     return kappa;
+  }
+  else
+  {
+    return (kappa - 1.0) / (2 * ef) * (f - fC) + (kappa + 1.0) / 2;
+  }
 }
 
-double Mat::PlasticGTN::compute_d2fstar_df2(const double f) const { return 0.0; }
+double Mat::PlasticGTN::compute_d2fstar_df2(const double f) const
+{
+  const double fC = params_->fc_;
+  const double kappa = params_->kappa_;
+  const double ef = params_->ef_;
+
+  if (f <= fC - ef)
+  {
+    return 0.0;
+  }
+  else if (f >= fC + ef)
+  {
+    return 0.0;
+  }
+  else
+  {
+    return (kappa - 1.0) / (2 * ef);
+  }
+}
 
 double Mat::PlasticGTN::compute_damage_nucleation(const double alpha) const
 {
@@ -678,9 +729,9 @@ double Mat::PlasticGTN::yield_derivative(const double alpha) const
   const double isohard = params_->isohard_;  // linear isotropic hardening
   std::vector<std::pair<std::string, double>> dp;
   dp.emplace_back("epsp", alpha);
-  const double y_d = hardening_function_
-                         ? hardening_function_->evaluate(dp, {}, 1)  // using hardening function
-                         : isohard;  // otherwise, use linear hardening
+  const double y_d = hardening_function_ ? hardening_function_->evaluate_derivative(
+                                               dp, {}, 0)[0]  // using hardening function
+                                         : isohard;           // otherwise, use linear hardening
   return y_d;
 }
 

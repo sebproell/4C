@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------TITLE
-4C Structural Analysis, solid necking bar problem with GTN (pure plasticity)
+4C Structural Analysis, solid necking bar problem with GTN (with initial damage and fC)
 ----------------------------------------------------------------PROBLEM SIZE
 ELEMENTS                         543
 NODES                            1196
@@ -24,11 +24,12 @@ FILESTEPS                        1
 LINEAR_SOLVER                    1
 INT_STRATEGY                     Standard
 DYNAMICTYPE                      Statics
+PREDICT                          TangDis
 RESULTSEVERY                     1
 RESTARTEVERY                     1
 NLNSOL                           fullnewton
-TIMESTEP                         5e-3
-NUMSTEP                          20
+TIMESTEP                         1e-3
+NUMSTEP                          150
 TIMEINIT                         0.0
 MAXTIME                          1.0
 DAMPING                          No
@@ -39,15 +40,17 @@ TOLDISP                          1e-07
 NORM_RESF                        Abs
 NORM_DISP                        Abs
 NORMCOMBI_RESFDISP               And
-MAXITER                          20
+MAXITER                          30
 ----------------------------------------------------------------------FUNCT1
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME a
 VARIABLE 0 NAME a TYPE linearinterpolation NUMPOINTS 2 TIMES 0.0 1.0 VALUES 0.0 1.0
+----------------------------------------------------------------------FUNCT2
+VARFUNCTION 375.0+1.0e3*epsp
 --------------------------------------------------------------------SOLVER 1
 NAME                             Structure_Solver
 SOLVER                           UMFPACK
 -----------------------------------------------DESIGN SURF DIRICH CONDITIONS
-E 12 NUMDOF 3 ONOFF 0 1 0 VAL 0.0 2 0.0 FUNCT 0 1 0 TAG monitor_reaction
+E 12 NUMDOF 3 ONOFF 0 1 0 VAL 0.0 1.0 0.0 FUNCT 0 1 0 TAG monitor_reaction
 E 20 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 E 2 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
 E 23 NUMDOF 3 ONOFF 0 0 1 VAL 0.0 0.0 0.0 FUNCT 0 0 0
@@ -3352,7 +3355,7 @@ NODE 1196 COORD 0.0000000000 0.0000000000 0.0000000000
 542 SOLID HEX8 287 316 321 295 292 320 324 299 MAT 1 KINEM linear
 543 SOLID HEX8 265 287 295 269 267 292 299 272 MAT 1 KINEM linear
 -------------------------------------------------------------------MATERIALS
-MAT 1 MAT_Struct_PlasticGTN YOUNG 7e4 NUE 0.33 DENS 0.0 YIELD 375.0 ISOHARD 5e3 K1 1.5 K2 1.0 K3 2.25 F0 0.0 FN 0.0 SN 0.119 EN 0.183115 FC 1e10 KAPPA 1.0 TOL 1e-10 MAXITER 30
+MAT 1 MAT_Struct_PlasticGTN YOUNG 7e4 NUE 0.33 DENS 0.0 YIELD 375.0 ISOHARD 5e3 K1 1.5 K2 1.0 K3 2.25 F0 0.1 FN 0.0 SN 0.119 EN 0.183115 FC 0.2 KAPPA 4.0 EF 0.01 TOL 1e-10 MAXITER 30 HARDENING_FUNC 2
 ----------------------------------------------------------RESULT DESCRIPTION
-STRUCTURE DIS structure NODE 1 QUANTITY dispy VALUE 0.2 TOLERANCE 1e-13
-STRUCTURE DIS structure SURFACE 12 OP sum QUANTITY reacty VALUE -3.44872460829625243e+03 TOLERANCE 1e-10
+STRUCTURE DIS structure NODE 1 QUANTITY dispy VALUE 0.15 TOLERANCE 1e-13
+STRUCTURE DIS structure SURFACE 12 OP sum QUANTITY reacty VALUE -2.36241036565898457e+03 TOLERANCE 1e-10
