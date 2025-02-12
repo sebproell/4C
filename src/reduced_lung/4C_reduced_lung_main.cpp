@@ -504,11 +504,8 @@ namespace ReducedLung
       dofs_n.Update(1.0, dofs, 0.0);
       [[maybe_unused]] int err;  // Saves error code of trilinos functions.
 
-      // 1. Update locally needed dofs with solution from last iteration.
-      Core::LinAlg::export_to(dofs, locally_relevant_dofs);
-
-      // 2. Assemble system of equations.
-      // 2.1 Assemble airway equations in system matrix and rhs.
+      // Assemble system of equations.
+      // Assemble airway equations in system matrix and rhs.
       const auto evaluate_aw_jacobian = [&poiseuille_resistance](
                                             std::array<double, 3>& values, const int& local_ele_id)
       { values = {1.0, -1.0, -poiseuille_resistance[local_ele_id]}; };
@@ -540,7 +537,7 @@ namespace ReducedLung
         FOUR_C_ASSERT(err == 0, "Internal error: Airway equation calculation did not work.");
       }
 
-      // 2.2 Assemble terminal unit equations.
+      // Assemble terminal unit equations.
       for (const TerminalUnit& terminal_unit : terminal_units)
       {
         // Momentum balance: p_in - p_pl - E*(V-V0)/V0 - nu*q/V0 = 0.
@@ -569,7 +566,7 @@ namespace ReducedLung
         FOUR_C_ASSERT(err == 0, "Internal error: Terminal Unit equation calculation did not work.");
       }
 
-      // 2.3 Assemble connection equations.
+      // Assemble connection equations.
       for (const Connection& conn : connections)
       {
         std::array<double, 2> vals;
@@ -616,7 +613,7 @@ namespace ReducedLung
             err == 0, "Internal error: Connection mass balance calculation did not work.");
       }
 
-      // 2.4 Assemble bifurcation equations
+      // Assemble bifurcation equations
       for (const Bifurcation& bif : bifurcations)
       {
         std::array<double, 2> vals_mom_balance;
@@ -691,7 +688,7 @@ namespace ReducedLung
             err == 0, "Internal error: Bifurcation momentum balance calculation did not work.");
       }
 
-      // 2.5 Assemble boundary conditions (equation: dof_value - bc_value = 0).
+      // Assemble boundary conditions (equation: dof_value - bc_value = 0).
       for (const BoundaryCondition& bc : boundary_conditions)
       {
         const double val = 1.0;
@@ -720,21 +717,22 @@ namespace ReducedLung
         sysmat.FillComplete();
       }
 
-      // 3. Solve.
+      // Solve.
       solver->solve(Core::Utils::shared_ptr_from_ref(sysmat), Core::Utils::shared_ptr_from_ref(x),
           Core::Utils::shared_ptr_from_ref(rhs), {});
 
-      // 4. Update dofs with solution vector.
+      // Update dofs with solution vector.
       export_to(x, x_mapped_to_dofs);
       dofs.Update(1.0, x_mapped_to_dofs, 1.0);
+      export_to(dofs, locally_relevant_dofs);
 
-      // 5. Update variable parameters depending on dofs.
+      // Update variable parameters depending on dofs.
       for (const auto& terminal_unit : terminal_units)
       {
         const int& q_id = terminal_unit.local_dof_ids[2];
         const int& tu_id = terminal_unit.local_terminal_unit_id;
         // Backwards Euler: V_n+1 = V_n + q_n+1 * dt.
-        volume[tu_id] += dofs[q_id] * dt;
+        volume[tu_id] += locally_relevant_dofs[q_id] * dt;
       }
     }
     // Print time monitor
