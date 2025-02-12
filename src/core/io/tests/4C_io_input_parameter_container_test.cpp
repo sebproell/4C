@@ -13,9 +13,11 @@ namespace
 {
   using namespace FourC;
 
+  using namespace Core::IO;
+
   TEST(InputParameterContainerTest, ToTeuchosParameterList)
   {
-    Core::IO::InputParameterContainer container;
+    InputParameterContainer container;
     container.add<int>("a", 1);
     container.add<double>("b", 2.0);
     container.add<std::string>("c", "string");
@@ -36,5 +38,23 @@ namespace
     EXPECT_EQ(list.get<Core::IO::Noneable<int>>("n"), Core::IO::none<int>);
     EXPECT_EQ(list.sublist("group").get<std::string>("e"), "group string");
     EXPECT_EQ(list.sublist("group").sublist("deeply").sublist("nested").get<int>("f"), 42);
+  }
+
+  TEST(InputParameterContainerTest, Lists)
+  {
+    InputParameterContainer container;
+    InputParameterContainer::List list;
+
+    list.emplace_back().add("a", 1);
+    auto& list2 = list.emplace_back();
+    list2.group("group").add("b", 2);
+
+    container.add_list("list", std::move(list));
+
+    Teuchos::ParameterList pl;
+    container.to_teuchos_parameter_list(pl);
+
+    EXPECT_EQ(
+        pl.get<std::vector<Teuchos::ParameterList>>("list")[1].sublist("group").get<int>("b"), 2);
   }
 }  // namespace
