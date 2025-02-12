@@ -456,9 +456,6 @@ namespace Solid
     //! Active set, energy and momentum output for contact
     void output_contact();
 
-    //! Output volume mass
-    void output_volume_mass();
-
     //! Write internal and external forces (if necessary for restart)
     virtual void write_restart_force(std::shared_ptr<Core::IO::DiscretizationWriter> output) = 0;
 

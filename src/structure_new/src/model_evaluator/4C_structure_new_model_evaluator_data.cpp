@@ -520,14 +520,6 @@ std::shared_ptr<std::vector<char>>& Solid::ModelEvaluator::Data::stress_data_ptr
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-const Core::LinAlg::Vector<double>& Solid::ModelEvaluator::Data::current_element_volume_data() const
-{
-  FOUR_C_ASSERT(elevolumes_ptr_, "Undefined reference to element volume data!");
-  return *elevolumes_ptr_;
-}
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
 const std::vector<char>& Solid::ModelEvaluator::Data::stress_data() const
 {
   FOUR_C_ASSERT(stressdata_ptr_, "Undefined reference to the stress data!");

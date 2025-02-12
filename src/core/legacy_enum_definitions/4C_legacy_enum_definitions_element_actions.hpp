@@ -46,7 +46,6 @@ namespace Core::Elements
                                           //!< data
     struct_gauss_point_data_output,       //!< collect material data for vtk runtime output
     struct_update_prestress,
-    analyse_jacobian_determinant,   //!< analyze the Jacobian determinant of the element
     multi_readrestart,              //!< multi-scale: read restart on microscale
     multi_init_eas,                 //!< multi-scale: initialize EAS parameters on microscale
     multi_set_eas,                  //!< multi-scale: set EAS parameters on microscale
@@ -58,7 +57,6 @@ namespace Core::Elements
     struct_calc_stifftemp,          //!< TSI specific: mechanical-thermal stiffness
     struct_calc_global_gpstresses_map,  //!< basically calc_struct_stress but with assembly of
                                         //!< global gpstresses map
-    struct_calc_mass_volume,            //!< calculate volume and mass
     struct_calc_brownianforce,        //!< thermal (i.e. stochastic) and damping forces according to
                                       //!< Brownian dynamics
     struct_calc_brownianstiff,        //!< thermal (i.e. stochastic) and damping forces and stiffnes
@@ -123,8 +121,6 @@ namespace Core::Elements
       return struct_update_prestress;
     else if (action == "calc_global_gpstresses_map")
       return struct_calc_global_gpstresses_map;
-    else if (action == "calc_struct_mass_volume")
-      return struct_calc_mass_volume;
     else if (action == "calc_struct_predict")
       return struct_calc_predict;
     else if (action == "struct_poro_calc_fluidcoupling")
@@ -186,8 +182,6 @@ namespace Core::Elements
         return "struct_gauss_point_data_output";
       case struct_update_prestress:
         return "struct_update_prestress";
-      case analyse_jacobian_determinant:
-        return "analyse_jacobian_determinant";
       case multi_readrestart:
         return "multi_readrestart";
       case multi_init_eas:

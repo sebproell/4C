@@ -136,10 +136,6 @@ namespace Solid
       /// recover from back-up
       void recover_from_backup_state() override;
 
-      /// compute the current volumes for all elements
-      bool compute_element_volumes(
-          const Epetra_Vector& x, Teuchos::RCP<Epetra_Vector>& ele_vols) const override;
-
       /// fill the sets with DOFs of the desired elements
       void get_dofs_from_elements(
           const std::vector<int>& my_ele_gids, std::set<int>& my_ele_dofs) const override;

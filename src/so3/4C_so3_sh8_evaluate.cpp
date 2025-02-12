@@ -480,8 +480,6 @@ int Discret::Elements::SoSh8::evaluate(Teuchos::ParameterList& params,
     }
     case Core::Elements::struct_create_backup:
     case Core::Elements::struct_recover_from_backup:
-    case Core::Elements::struct_calc_mass_volume:
-    case Core::Elements::analyse_jacobian_determinant:
     {
       SoHex8::evaluate(params, discretization, lm, elemat1_epetra, elemat2_epetra, elevec1_epetra,
           elevec2_epetra, elevec3_epetra);

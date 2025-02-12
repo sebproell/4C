@@ -144,9 +144,6 @@ namespace Solid
       //! derived
       void determine_optional_quantity() override;
 
-      bool determine_element_volumes(const Core::LinAlg::Vector<double>& x,
-          std::shared_ptr<Core::LinAlg::Vector<double>>& ele_vols);
-
       //! derived
       void reset_step_state() override;
 

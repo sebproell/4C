@@ -42,9 +42,6 @@ void Inpar::Wear::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
 
   Core::Utils::bool_parameter("SSWEAR", "No", "flag for steady state wear", wear);
 
-  Core::Utils::bool_parameter(
-      "VOLMASS_OUTPUT", "No", "flag for output of mass/volume in ref,mat and cur. conf.", wear);
-
   Core::Utils::string_to_integral_parameter<WearSide>("WEAR_SIDE", "slave",
       "Definition of wear side",
       tuple<std::string>("s", "slave", "Slave", "both", "slave_master", "sm"),

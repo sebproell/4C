@@ -803,9 +803,6 @@ namespace Solid
       /// output reaction forces
       void output_reaction_forces();
 
-      /// output element volumes
-      void output_element_volume(Core::IO::DiscretizationWriter& iowriter) const;
-
       /// output stress and/or strain state
       void output_stress_strain();
 
