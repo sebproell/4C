@@ -87,20 +87,6 @@ namespace NOX
       //! contact problems.
       virtual ::NOX::Abstract::Group::ReturnType compute_f_and_jacobian();
 
-      //! ToDo Move this into an extra interface
-      //! @{
-
-      /// compute element volumes
-      ::NOX::Abstract::Group::ReturnType compute_element_volumes(
-          Core::LinAlg::Vector<double>& ele_vols) const;
-
-
-      /// compute trial element volumes
-      ::NOX::Abstract::Group::ReturnType compute_trial_element_volumes(
-          Core::LinAlg::Vector<double>& ele_vols, const ::NOX::Abstract::Vector& dir, double step);
-
-      //! @}
-
       //! set right hand side
       ::NOX::Abstract::Group::ReturnType set_f(Teuchos::RCP<::NOX::Epetra::Vector> Fptr);
 

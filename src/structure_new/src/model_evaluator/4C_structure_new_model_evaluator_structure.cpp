@@ -1646,71 +1646,6 @@ void Solid::ModelEvaluator::Structure::determine_optional_quantity()
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-bool Solid::ModelEvaluator::Structure::determine_element_volumes(
-    const Core::LinAlg::Vector<double>& x, std::shared_ptr<Core::LinAlg::Vector<double>>& ele_vols)
-{
-  // set action in params-interface
-  eval_data().set_action_type(Core::Elements::struct_calc_mass_volume);
-
-  Teuchos::ParameterList p;
-  p.set<std::shared_ptr<Core::Elements::ParamsInterface>>("interface", eval_data_ptr());
-
-  // set vector values needed by elements
-  discret().clear_state();
-  std::shared_ptr<const Core::LinAlg::Vector<double>> disnp =
-      global_state().extract_displ_entries(x);
-  discret().set_state(0, "displacement", disnp);
-
-  // start evaluation
-  const Epetra_Map* relemap = discret().element_row_map();
-  ele_vols = std::make_shared<Core::LinAlg::Vector<double>>(*relemap, true);
-  const unsigned my_num_reles = relemap->NumMyElements();
-
-  Core::Elements::LocationArray la(discret().num_dof_sets());
-  Core::LinAlg::SerialDenseVector ele_vol(6, true);
-
-  Core::LinAlg::SerialDenseMatrix empty_dummy_mat;
-  Core::LinAlg::SerialDenseVector empty_dummy_vec;
-
-  Solid::Elements::EvalErrorFlag ele_eval_error = Solid::Elements::ele_error_none;
-  for (unsigned elid = 0; elid < my_num_reles; ++elid)
-  {
-    Core::Elements::Element* rele = discret().l_row_element(elid);
-    rele->location_vector(discret(), la, false);
-
-    eval_data().set_action_type(Core::Elements::analyse_jacobian_determinant);
-    rele->evaluate(p, discret(), la, empty_dummy_mat, empty_dummy_mat, ele_vol, empty_dummy_vec,
-        empty_dummy_vec);
-
-    if (not eval_data().is_ele_eval_error())
-    {
-      eval_data().set_action_type(Core::Elements::struct_calc_mass_volume);
-      rele->evaluate(p, discret(), la, empty_dummy_mat, empty_dummy_mat, ele_vol, empty_dummy_vec,
-          empty_dummy_vec);
-    }
-
-    // set a negative value, if the evaluation failed
-    if (eval_data().is_ele_eval_error())
-    {
-      ele_eval_error = eval_data().get_ele_eval_error_flag();
-      // reset for the next element
-      eval_data().set_ele_eval_error_flag(Solid::Elements::ele_error_none);
-      ele_vol(2) = -1.0;
-    }
-
-    const int rele_lid = relemap->LID(rele->id());
-    (*ele_vols)[rele_lid] = ele_vol(2);
-    ele_vol.putScalar(0.0);
-  }
-
-  discret().clear_state();
-  eval_data().set_ele_eval_error_flag(ele_eval_error);
-
-  return eval_error_check();
-}
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
 void Solid::ModelEvaluator::Structure::output_step_state(
     Core::IO::DiscretizationWriter& iowriter) const
 {
@@ -2084,9 +2019,6 @@ void Solid::ModelEvaluator::Structure::params_interface2_parameter_list(
       break;
     case Core::Elements::struct_calc_global_gpstresses_map:
       action = "calc_global_gpstresses_map";
-      break;
-    case Core::Elements::struct_calc_mass_volume:
-      action = "calc_struct_mass_volume";
       break;
     case Core::Elements::struct_calc_recover:
       action = "calc_struct_recover";

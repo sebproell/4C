@@ -260,10 +260,6 @@ namespace Solid
     //! calculate an optional quantity in the different model evaluators
     void determine_optional_quantity();
 
-    /// compute the current volumes of all elements
-    bool determine_element_volumes(const Core::LinAlg::Vector<double>& x,
-        std::shared_ptr<Core::LinAlg::Vector<double>>& ele_vols);
-
     /*! \brief Output to file
      *
      *  This routine prints always the last converged state, i.e.

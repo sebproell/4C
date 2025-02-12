@@ -427,15 +427,6 @@ void Solid::TimeInt::Base::prepare_output(bool force_prepare_timestep)
   {
     int_ptr_->determine_stress_strain();
     int_ptr_->determine_optional_quantity();
-
-    if (dataio_->is_write_current_ele_volume())
-    {
-      std::shared_ptr<Core::LinAlg::Vector<double>> elevolumes = nullptr;
-      std::shared_ptr<const Core::LinAlg::Vector<double>> disnp = dataglobalstate_->get_dis_np();
-
-      int_ptr_->determine_element_volumes(*disnp, elevolumes);
-      int_ptr_->eval_data().set_element_volume_data(elevolumes);
-    }
   }
   if ((dataio_->is_runtime_output_enabled() && force_prepare_timestep) ||
       dataio_->write_runtime_vtk_results_for_this_step(dataglobalstate_->get_step_np()) ||
@@ -545,14 +536,6 @@ void Solid::TimeInt::Base::output_step(bool forced_writerestart)
     output_optional_quantity();
   }
 
-  if (dataio_->write_results_for_this_step(dataglobalstate_->get_step_n()) and
-      dataio_->is_write_current_ele_volume())
-  {
-    new_io_step(datawritten);
-    Core::IO::DiscretizationWriter& iowriter = *(dataio_->get_output_ptr());
-    output_element_volume(iowriter);
-  }
-
   // output energy
   if (dataio_->should_write_energy_for_this_step(dataglobalstate_->get_step_n()))
   {
@@ -592,9 +575,6 @@ void Solid::TimeInt::Base::output_debug_state(
     Core::IO::DiscretizationWriter& iowriter, bool write_owner) const
 {
   output_state(iowriter, write_owner);
-
-  // write element volumes as additional debugging information, if activated
-  if (dataio_->is_write_current_ele_volume()) output_element_volume(iowriter);
 }
 
 /*----------------------------------------------------------------------------*
@@ -625,21 +605,6 @@ void Solid::TimeInt::Base::output_reaction_forces()
   check_init_setup();
   Core::IO::DiscretizationWriter& iowriter = *(dataio_->get_output_ptr());
   int_ptr_->monitor_dbc(iowriter);
-}
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
-void Solid::TimeInt::Base::output_element_volume(Core::IO::DiscretizationWriter& iowriter) const
-{
-  check_init_setup();
-
-  Solid::ModelEvaluator::Data& evaldata = int_ptr_->eval_data();
-
-  iowriter.write_vector("current_ele_volumes",
-      Core::Utils::shared_ptr_from_ref(evaldata.current_element_volume_data()),
-      Core::IO::elementvector);
-
-  evaldata.set_element_volume_data(nullptr);
 }
 
 /*----------------------------------------------------------------------------*

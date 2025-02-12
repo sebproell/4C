@@ -95,7 +95,6 @@ void Solid::TimeInt::BaseDataIO::init(const Teuchos::ParameterList& ioparams,
     conditionnumbertype_ = ioparams.get<Inpar::Solid::ConditionNumber>("STRUCT_CONDITION_NUMBER");
     firstoutputofrun_ = true;
     writeresultsevery_ = sdynparams.get<int>("RESULTSEVERY");
-    writecurrentelevolume_ = ioparams.get<bool>("STRUCT_CURRENT_VOLUME");
     writestress_ = Teuchos::getIntegralValue<Inpar::Solid::StressType>(ioparams, "STRUCT_STRESS");
     writecouplstress_ =
         Teuchos::getIntegralValue<Inpar::Solid::StressType>(ioparams, "STRUCT_COUPLING_STRESS");

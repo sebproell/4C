@@ -574,13 +574,6 @@ namespace Solid
         return stressdata_postprocessed_element_ptr_;
       }
 
-      //! set element volume data vector
-      inline void set_element_volume_data(
-          const std::shared_ptr<Core::LinAlg::Vector<double>>& ele_volumes)
-      {
-        elevolumes_ptr_ = ele_volumes;
-      }
-
       //! set stress data vector
       inline void set_coupling_stress_data(
           const std::shared_ptr<std::vector<char>>& couplstressdata)
@@ -646,9 +639,6 @@ namespace Solid
 
       //! reset the partial update norm value of the current processor
       void reset_my_norms(const bool& isdefaultstep);
-
-      //! return element volume data vector (read-only)
-      const Core::LinAlg::Vector<double>& current_element_volume_data() const;
 
       //! return the stress data (read-only)
       const std::vector<char>& stress_data() const;
@@ -902,10 +892,6 @@ namespace Solid
 
       //! @name references to output data container
       //!@{
-
-      //! element volume data vector
-      std::shared_ptr<Core::LinAlg::Vector<double>> elevolumes_ptr_;
-
       //! stress data vector
       std::shared_ptr<std::vector<char>> stressdata_ptr_;
 

@@ -204,13 +204,6 @@ namespace Solid
         return writevelacc_;
       };
 
-      /// Shall we write the current element volume?
-      bool is_write_current_ele_volume() const
-      {
-        check_init_setup();
-        return writecurrentelevolume_;
-      }
-
       /// Shall we write the jacobian to MATLAB?
       bool is_write_jacobian_to_matlab() const
       {
@@ -380,9 +373,6 @@ namespace Solid
 
       /// flag whether this output step is the first one (restarted or not)
       bool firstoutputofrun_;
-
-      /// flag element volume on/off
-      bool writecurrentelevolume_ = false;
 
       /// print infos to standard out every n steps
       int printscreen_;

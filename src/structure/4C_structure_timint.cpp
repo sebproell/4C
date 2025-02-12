@@ -2011,8 +2011,6 @@ void Solid::TimInt::output_step(const bool forced_writerestart)
 
   // output active set, energies and momentum for contact
   output_contact();
-
-  output_volume_mass();
 }
 
 /*-----------------------------------------------------------------------------*
@@ -2671,47 +2669,6 @@ void Solid::TimInt::output_contact()
 
     //-------------------------- Compute and output interface forces
     cmtbridge_->get_strategy().interface_forces(true);
-  }
-}
-
-/*----------------------------------------------------------------------*/
-/* output volume and mass */
-void Solid::TimInt::output_volume_mass()
-{
-  const Teuchos::ParameterList& listwear = Global::Problem::instance()->wear_params();
-  bool massvol = listwear.get<bool>("VOLMASS_OUTPUT");
-  if (!massvol) return;
-
-  // initialize variables
-  std::shared_ptr<Core::LinAlg::SerialDenseVector> norms =
-      std::make_shared<Core::LinAlg::SerialDenseVector>(6);
-  norms->putScalar(0.0);
-
-  // call discretization to evaluate error norms
-  Teuchos::ParameterList p;
-  p.set("action", "calc_struct_mass_volume");
-  discret_->clear_state();
-  discret_->set_state("displacement", (*dis_)(0));
-  discret_->evaluate_scalars(p, norms);
-  discret_->clear_state();
-
-  // proc 0 writes output to screen
-  if (!myrank_)
-  {
-    printf("**********************************");
-    printf("\nVOLUMES:");
-    printf("\nVolume ref.:     %.10e", ((*norms)(0)));
-    printf("\nVolume mat.:     %.10e", ((*norms)(1)));
-    printf("\nDIFF.:           %.10e", ((*norms)(0)) - ((*norms)(1)));
-    printf("\nVolume cur.:     %.10e", ((*norms)(2)));
-    printf("\n**********************************");
-    printf("\nMass:");
-    printf("\nMass ref.:       %.10e", ((*norms)(3)));
-    printf("\nMass mat.:       %.10e", ((*norms)(4)));
-    printf("\nDIFF.:           %.10e", ((*norms)(3)) - ((*norms)(4)));
-    printf("\nMass cur.:       %.10e", ((*norms)(5)));
-    printf("\n**********************************\n\n");
-    fflush(stdout);
   }
 }
 

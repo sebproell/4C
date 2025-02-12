@@ -600,17 +600,6 @@ void Solid::TimeInt::NoxInterface::recover_from_backup_state()
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-bool Solid::TimeInt::NoxInterface::compute_element_volumes(
-    const Epetra_Vector& x, Teuchos::RCP<Epetra_Vector>& ele_vols) const
-{
-  check_init_setup();
-  Core::LinAlg::VectorView ele_vols_view(*ele_vols);
-  return int_ptr_->determine_element_volumes(
-      Core::LinAlg::Vector<double>(x), ele_vols_view.get_non_owning_rcp_ref());
-}
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
 void Solid::TimeInt::NoxInterface::get_dofs_from_elements(
     const std::vector<int>& my_ele_gids, std::set<int>& my_ele_dofs) const
 {

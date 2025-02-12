@@ -429,18 +429,6 @@ void Solid::Integrator::determine_optional_quantity()
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-bool Solid::Integrator::determine_element_volumes(
-    const Core::LinAlg::Vector<double>& x, std::shared_ptr<Core::LinAlg::Vector<double>>& ele_vols)
-{
-  check_init_setup();
-  Solid::ModelEvaluator::Generic& model = evaluator(Inpar::Solid::model_structure);
-  Solid::ModelEvaluator::Structure& smodel = dynamic_cast<Solid::ModelEvaluator::Structure&>(model);
-
-  return smodel.determine_element_volumes(x, ele_vols);
-}
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
 void Solid::Integrator::output_step_state(Core::IO::DiscretizationWriter& iowriter) const
 {
   check_init_setup();

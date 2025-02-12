@@ -101,14 +101,6 @@ namespace NOX
           FOUR_C_THROW("There is no meaningful implementation for this method!");
         }
 
-        //! compute element volumes (optional)
-        virtual bool compute_element_volumes(
-            const Epetra_Vector& x, Teuchos::RCP<Epetra_Vector>& ele_vols) const
-        {
-          FOUR_C_THROW("There is no meaningful implementation for this method!");
-          exit(EXIT_FAILURE);
-        }
-
         //! access dofs of specific elements (optional)
         virtual void get_dofs_from_elements(
             const std::vector<int>& my_ele_gids, std::set<int>& my_ele_dofs) const
