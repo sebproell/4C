@@ -160,6 +160,7 @@ namespace Core::IO
         group,
         all_of,
         one_of,
+        list,
       };
 
       State state{State::unmatched};
@@ -171,6 +172,12 @@ namespace Core::IO
        * child is passed on to the match function of @p in_spec.
        */
       MatchEntry& append_child(const InputSpec* in_spec);
+
+      /**
+       * Reset the state of this entry. This includes dropping all children from the MatchTree.
+       * The state of the entry and MatchTree is the same as if append_child was just called.
+       */
+      void reset();
     };
 
     /**
@@ -179,9 +186,11 @@ namespace Core::IO
     class MatchTree
     {
      public:
-      MatchTree(const InputSpec& root);
+      MatchTree(const InputSpec& root, ConstYamlNodeRef node);
 
       MatchEntry& root() { return entries_.front(); }
+
+      ConstYamlNodeRef node() const { return node_; }
 
       MatchEntry& append_child(const InputSpec* spec);
 
@@ -191,10 +200,17 @@ namespace Core::IO
        * Throw an exception that contains the input and match tree in a user-friendly format, if
        * the match was not successful.
        */
-      void assert_match(ryml::ConstNodeRef node) const;
+      void assert_match() const;
+
+      /**
+       * A helper function to remove every entry added after @p entry. This function is especially
+       * useful to keep the number of stored entries low when matching a list().
+       */
+      void erase_everything_after(const MatchEntry& entry);
 
      private:
       std::vector<MatchEntry> entries_;
+      ConstYamlNodeRef node_;
     };
 
     class InputSpecTypeErasedBase
@@ -477,6 +493,15 @@ namespace Core::IO
     using Core::IO::Noneable;
 
     /**
+     * This constant signifies that a size is dynamic and will be determined at runtime. Pass this
+     * value to the size parameter of a vector-valued entry() or the list() function.
+     *
+     * @note Dynamic sizes do not work for the legacy dat file format and will throw a runtime
+     * error.
+     */
+    constexpr int dynamic_size = 0;
+
+    /**
      * Callback function that may be attached to entry().
      */
     using EntryCallback = std::function<void(InputParameterContainer&)>;
@@ -567,6 +592,25 @@ namespace Core::IO
        * Whether the Group is required or optional.
        */
       bool required{true};
+    };
+
+    //! Additional parameters for a list().
+    struct ListData
+    {
+      /**
+       * An optional description of the List.
+       */
+      std::string description{};
+
+      /**
+       * Whether the List is required or optional.
+       */
+      bool required{true};
+
+      /**
+       * The size of the List.
+       */
+      int size{dynamic_size};
     };
 
     namespace Internal
@@ -693,6 +737,23 @@ namespace Core::IO
 
         void print(std::ostream& stream, std::size_t indent) const;
 
+        void emit_metadata(ryml::NodeRef node) const;
+      };
+
+      struct ListSpec
+      {
+        //! The name of the list.
+        std::string name;
+        //! The spec that fits the list elements.
+        InputSpec spec;
+
+        ListData data;
+
+        void parse(ValueParser& parser, InputParameterContainer& container) const;
+        bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+            IO::Internal::MatchEntry& match_entry) const;
+        void set_default_value(InputParameterContainer& container) const;
+        void print(std::ostream& stream, std::size_t indent) const;
         void emit_metadata(ryml::NodeRef node) const;
       };
 
@@ -1062,6 +1123,30 @@ namespace Core::IO
      */
     template <typename T>
     auto store_index_as(std::string name, std::vector<T> reindexing = {});
+
+    /**
+     * The InputSpec returned by this function represents a list where each element matches the
+     * given @p spec. The size of the list can be specified in the @p data, either as a fixed value
+     * or dynamic_size (the default). For example,
+     *
+     * @code
+     * list("my_list", entry<int>("a"), {.size = 3});
+     * @endcode
+     *
+     * will match the following yaml input:
+     *
+     * @code
+     * my_list:
+     *   - a: 42
+     *   - a: 7
+     *   - a: 3
+     * @endcode
+     *
+     * @note The list() function is not intended to specify an array of primitive values of type T.
+     * Use the `entry<std::vector<T>>()` function for this purpose. As a developer of a new
+     * InputSpec, you should rarely need the list() function.
+     */
+    [[nodiscard]] InputSpec list(std::string name, InputSpec spec, ListData data = {});
   }  // namespace InputSpecBuilders
 }  // namespace Core::IO
 
@@ -1089,8 +1174,13 @@ void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataType>::parse(
   {
     struct SizeVisitor
     {
-      std::size_t operator()(std::size_t size) const { return size; }
-      std::size_t operator()(const typename DataType::SizeCallback& callback) const
+      int operator()(int size) const
+      {
+        if (size > 0) return size;
+
+        FOUR_C_THROW("Reading a vector from a dat-style string requires a known size.");
+      }
+      int operator()(const typename DataType::SizeCallback& callback) const
       {
         return callback(container);
       }

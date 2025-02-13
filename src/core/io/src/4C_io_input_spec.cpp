@@ -54,10 +54,10 @@ void Core::IO::InputSpec::match(ConstYamlNodeRef yaml, InputParameterContainer& 
 {
   FOUR_C_ASSERT(pimpl_, "InputSpec is empty.");
 
-  Internal::MatchTree match_tree{*this};
+  Internal::MatchTree match_tree{*this, yaml};
   pimpl_->match(yaml, container, match_tree.root());
 
-  match_tree.assert_match(yaml.node);
+  match_tree.assert_match();
 }
 
 void Core::IO::InputSpec::print_as_dat(std::ostream& stream) const

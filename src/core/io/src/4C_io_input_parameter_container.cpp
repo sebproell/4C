@@ -40,6 +40,46 @@ const Core::IO::InputParameterContainer& Core::IO::InputParameterContainer::grou
   return groups_.at(name);
 }
 
+void Core::IO::InputParameterContainer::add_list(const std::string& name, List&& list)
+{
+  FOUR_C_ASSERT_ALWAYS(
+      !entries_.contains(name), "Key '%s' already exists in container.", name.c_str());
+
+  entries_[name] = {std::move(list)};
+
+  auto& type_actions = Core::IO::InputParameterContainer::get_type_actions();
+  if (!type_actions.contains(typeid(List)))
+  {
+    type_actions[typeid(List)] = {
+        .print =
+            [](std::ostream& os, const std::any& data)
+        {
+          const auto& list = std::any_cast<List>(data);
+          for (const auto& container : list)
+          {
+            container.print(os);
+          }
+        },
+        .write_to_pl =
+            [](Teuchos::ParameterList& pl, const std::string& key, const std::any& data)
+        {
+          const auto& list = std::any_cast<List>(data);
+          std::vector<Teuchos::ParameterList> sublists;
+          for (const auto& container : list)
+          {
+            container.to_teuchos_parameter_list(sublists.emplace_back());
+          }
+          pl.set(key, sublists);
+        },
+    };
+  }
+}
+
+auto Core::IO::InputParameterContainer::get_list(const std::string& name) const -> const List&
+{
+  return get<List>(name);
+}
+
 bool Core::IO::InputParameterContainer::has_group(const std::string& name) const
 {
   return groups_.count(name) > 0;

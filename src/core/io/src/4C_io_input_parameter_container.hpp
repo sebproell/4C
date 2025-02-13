@@ -57,6 +57,16 @@ namespace Core::IO
   {
    public:
     /**
+     * A type to store a list of InputParameterContainers. This type is used to represent what is
+     * often called a *list*, *array*, or *sequence* of data in the input file.
+     *
+     * @note This type is called `List` to more clearly distinguish it from a simple `std::vector`
+     * entry in the container. A `List` contains nested InputParameterContainers and encodes
+     * rather complex data structures. Nevertheless, it is implemented as a `std::vector`.
+     */
+    using List = std::vector<InputParameterContainer>;
+
+    /**
      * \brief Add @data to the container at the given key @name.
      *
      * If an entry with given @p name already exists, it will be overwritten.
@@ -78,6 +88,24 @@ namespace Core::IO
      * Check if a group with the name @p name exists.
      */
     [[nodiscard]] bool has_group(const std::string& name) const;
+
+    /**
+     * Add the list @p data at the given key @p name.
+     *
+     * @note This functions is a more obvious way to add a list to the container compared to
+     * the add() function with a List template argument, although this is precisely what happens
+     * internally.
+     */
+    void add_list(const std::string& name, List&& list);
+
+    /**
+     * Access the list @p name. This function throws an error if the list does not exist.
+     *
+     * @note This functions is a more obvious way to get a list from the container compared to
+     * the get() function with a List template argument, although this is precisely
+     * what happens internally.
+     */
+    [[nodiscard]] const List& get_list(const std::string& name) const;
 
     /**
      * Combine the data from another container with this one. Conflicting data will throw an

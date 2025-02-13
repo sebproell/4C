@@ -186,7 +186,8 @@ namespace
 }  // namespace
 
 
-Core::IO::Internal::MatchTree::MatchTree(const Core::IO::InputSpec& root)
+Core::IO::Internal::MatchTree::MatchTree(const Core::IO::InputSpec& root, ConstYamlNodeRef node)
+    : node_(node)
 {
   // The number of nodes in the tree is known in advance as it is exactly equal to the
   // number of specs. This is why we can reserve the space for the entries and do not need
@@ -198,7 +199,7 @@ Core::IO::Internal::MatchTree::MatchTree(const Core::IO::InputSpec& root)
 
 namespace
 {
-
+  using namespace Core::IO;
   using namespace Core::IO::Internal;
   //! Helper function to dump the match tree for visual inspection during debugging.
   [[maybe_unused]] void dump_match_entry(std::ostream& stream, const MatchEntry& entry, int depth)
@@ -263,6 +264,44 @@ namespace
           for (const auto* child : entry.children)
           {
             recursively_print_match_entries(*child, out, depth + 2);
+          }
+        }
+        break;
+      }
+      case MatchEntry::Type::list:
+      {
+        out << indent;
+        out << std::format("{} {} list '{}'\n", state_symbol[static_cast<int>(entry.state)],
+            state_phrase[static_cast<int>(entry.state)], entry.spec->impl().name());
+        if (entry.state == MatchEntry::State::partial)
+        {
+          FOUR_C_ASSERT(entry.children.size() == 1,
+              "Internal error: lists should only store one MatchEntry.");
+
+          auto partially_matched_list_node =
+              entry.tree->node().node.tree()->ref(entry.matched_node);
+
+          if (entry.children.front()->state == MatchEntry::State::matched)
+          {
+            auto* list_spec = dynamic_cast<
+                const InputSpecTypeErasedImplementation<InputSpecBuilders::Internal::ListSpec>*>(
+                &entry.spec->impl());
+            FOUR_C_ASSERT(list_spec != nullptr, "Internal error: ListSpec expected.");
+
+            const int n_actual_entries = partially_matched_list_node.num_children();
+            const int n_expected_entries = list_spec->wrapped.data.size;
+            // If the last entry was matched, this means that the list was too long.
+            out << indent << "  ";
+            out << std::format("{} Too many list entries encountered: expected {} but matched {}\n",
+                state_symbol[static_cast<int>(MatchEntry::State::unmatched)], n_expected_entries,
+                n_actual_entries);
+          }
+          else
+          {
+            out << indent << "  ";
+            out << std::format("{} The following list entry did not match:\n",
+                state_symbol[static_cast<int>(MatchEntry::State::partial)]);
+            recursively_print_match_entries(*entry.children.front(), out, depth + 4);
           }
         }
         break;
@@ -411,6 +450,15 @@ namespace
           }
           break;
         }
+        case MatchEntry::Type::list:
+        {
+          if (entry.state == MatchEntry::State::matched)
+          {
+            // If the list is matched, just add all child nodes as well
+            recursively_add_node_ids(node.tree()->ref(entry.matched_node), matched_node_ids);
+          }
+          break;
+        }
         default:
           break;
       }
@@ -439,11 +487,11 @@ void Core::IO::Internal::MatchTree::dump(std::ostream& stream) const
 
 
 
-void Core::IO::Internal::MatchTree::assert_match(ryml::ConstNodeRef node) const
+void Core::IO::Internal::MatchTree::assert_match() const
 {
   std::stringstream ss;
   ss << "Could not match this input\n\n";
-  ss << node << "\n\n";
+  ss << node_.node << "\n\n";
   ss << "against the given input specification. ";
 
   if (entries_.front().state != MatchEntry::State::matched &&
@@ -455,17 +503,29 @@ void Core::IO::Internal::MatchTree::assert_match(ryml::ConstNodeRef node) const
   }
 
   // Check that everything in the input was actually used.
-  auto unmatched_node_ids = unmatched_input_nodes(entries_, node);
+  auto unmatched_node_ids = unmatched_input_nodes(entries_, node_.node);
   if (!unmatched_node_ids.empty())
   {
     ss << "The following parts of the input did not match:\n\n";
 
     for (const auto& id : unmatched_node_ids)
     {
-      ss << node.tree()->ref(id) << "\n";
+      ss << node_.node.tree()->ref(id) << "\n";
     }
     FOUR_C_THROW("%s", ss.str().c_str());
   }
+}
+
+void Core::IO::Internal::MatchTree::erase_everything_after(const MatchEntry& entry)
+{
+  // We know that the entry must be stored in the memory of entries_. This means we can find the
+  // entry by pointer comparison.
+  auto it = std::find_if(entries_.begin(), entries_.end(),
+      [&entry](const MatchEntry& stored_entry) { return &stored_entry == &entry; });
+  FOUR_C_ASSERT(it != entries_.end(), "Internal error: entry not found in MatchTree.");
+
+  // Erase everything that follows the entry.
+  entries_.erase(it + 1, entries_.end());
 }
 
 
@@ -476,6 +536,15 @@ Core::IO::Internal::MatchEntry& Core::IO::Internal::MatchEntry::append_child(
   auto& child = tree->append_child(in_spec);
   children.push_back(&child);
   return child;
+}
+
+void MatchEntry::reset()
+{
+  state = State::unmatched;
+  type = Type::unknown;
+  matched_node = ryml::npos;
+  children.clear();
+  tree->erase_everything_after(*this);
 }
 
 
@@ -542,6 +611,7 @@ bool Core::IO::InputSpecBuilders::Internal::GroupSpec::match(ConstYamlNodeRef no
 {
   match_entry.type = IO::Internal::MatchEntry::Type::group;
   FOUR_C_ASSERT(!name.empty(), "Internal error: group name must not be empty.");
+  FOUR_C_ASSERT(node.node.is_map(), "Internal error: group node must be a map.");
   const auto group_name = ryml::to_csubstr(name);
 
   const bool group_exists = node.node.has_child(group_name) && node.node[group_name].is_map();
@@ -840,6 +910,106 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::emit_metadata(ryml::NodeR
 }
 
 
+void Core::IO::InputSpecBuilders::Internal::ListSpec::parse(
+    Core::IO::ValueParser& parser, Core::IO::InputParameterContainer& container) const
+{
+  FOUR_C_THROW("Cannot parse a list from dat file format.");
+}
+
+
+bool Core::IO::InputSpecBuilders::Internal::ListSpec::match(ConstYamlNodeRef node,
+    Core::IO::InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
+{
+  match_entry.type = IO::Internal::MatchEntry::Type::list;
+  FOUR_C_ASSERT(!name.empty(), "Internal error: list name must not be empty.");
+  FOUR_C_ASSERT(node.node.is_map(), "Internal error: list node must be a map.");
+  const auto list_name = ryml::to_csubstr(name);
+
+  const bool list_exists = node.node.has_child(list_name) && node.node[list_name].is_seq();
+  if (!list_exists)
+  {
+    return !data.required;
+  }
+
+  auto list_node = node.wrap(node.node[list_name]);
+  // Matching the key is at least a partial match.
+  match_entry.state = IO::Internal::MatchEntry::State::partial;
+  match_entry.matched_node = list_node.node.id();
+
+  std::vector<InputParameterContainer> container_list;
+
+  const std::size_t max_entries = data.size > 0 ? data.size : std::numeric_limits<int>::max();
+
+  // Parse all child nodes of the list node. Reuse the same MatchEntry.
+  auto& child_match_entry = match_entry.append_child(&spec);
+  for (const auto child : list_node.node.children())
+  {
+    // Always reset the match entry. We only store the last match attempt for lists.
+    child_match_entry.reset();
+    bool child_matched =
+        spec.impl().match(list_node.wrap(child), container_list.emplace_back(), child_match_entry);
+    if (!child_matched)
+    {
+      // Match will stay a partial match and the MatchEntry will have more details.
+      return false;
+    }
+  }
+
+  if (container_list.size() > max_entries)
+  {
+    // The list is too long. This is a partial match, and we can figure out the reason in the
+    // error message constructed by the MatchTree.
+    return false;
+  }
+
+  // Everything was correctly matched, so mark the list node as matched.
+  container.add_list(name, std::move(container_list));
+  match_entry.state = IO::Internal::MatchEntry::State::matched;
+
+  return true;
+}
+
+
+void Core::IO::InputSpecBuilders::Internal::ListSpec::set_default_value(
+    Core::IO::InputParameterContainer& container) const
+{
+  std::vector<InputParameterContainer> default_list(data.size);
+
+  for (auto& subcontainer : default_list)
+  {
+    spec.impl().set_default_value(subcontainer);
+  }
+
+  container.add_list(name, std::move(default_list));
+}
+
+
+void Core::IO::InputSpecBuilders::Internal::ListSpec::print(
+    std::ostream& stream, std::size_t indent) const
+{
+  stream << "// " << std::string(indent, ' ') << "list '" << name << "'"
+         << " with entries:\n";
+  spec.impl().print(stream, indent + 2);
+}
+
+void Core::IO::InputSpecBuilders::Internal::ListSpec::emit_metadata(ryml::NodeRef node) const
+{
+  node |= ryml::MAP;
+
+  node["name"] << name;
+
+  node["type"] << "list";
+  if (!data.description.empty())
+  {
+    node["description"] << Core::Utils::trim(data.description);
+  }
+  emit_value_as_yaml(node["required"], data.required);
+  if (data.size > 0) node["size"] << data.size;
+  node["spec"] |= ryml::MAP;
+  spec.impl().emit_metadata(node["spec"]);
+}
+
+
 namespace
 {
   // Nesting all_of or one_of within another spec of that same type is the same as pulling the
@@ -982,6 +1152,28 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> s
   return IO::Internal::make_spec(Internal::OneOfSpec{.data = std::move(group_data),
                                      .specs = std::move(flattened_specs),
                                      .on_parse_callback = std::move(on_parse_callback)},
+      std::move(common_data));
+}
+
+Core::IO::InputSpec Core::IO::InputSpecBuilders::list(
+    std::string name, Core::IO::InputSpec spec, ListData data)
+{
+  IO::Internal::InputSpecTypeErasedBase::CommonData common_data{
+      .name = name,
+      .description = data.description,
+      .required = data.required,
+      // We can only set a default value if the size is fixed and the contained spec has
+      // a default value.
+      .has_default_value = spec.impl().has_default_value() && data.size != dynamic_size,
+      .n_specs = spec.impl().data.n_specs + 1,
+  };
+
+  return IO::Internal::make_spec(
+      Internal::ListSpec{
+          .name = name,
+          .spec = std::move(spec),
+          .data = std::move(data),
+      },
       std::move(common_data));
 }
 
