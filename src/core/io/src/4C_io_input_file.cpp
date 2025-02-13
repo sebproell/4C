@@ -248,6 +248,9 @@ namespace Core::IO
       ryml::Tree yaml_tree_;
 
       std::map<std::string, bool> used_sections_;
+
+      std::map<std::string, InputSpec> valid_sections_;
+      std::vector<std::string> legacy_section_names_;
     };
 
   }  // namespace Internal
@@ -538,12 +541,12 @@ namespace Core::IO
   }
 
 
-  /*----------------------------------------------------------------------*/
-  /*----------------------------------------------------------------------*/
-  InputFile::InputFile(std::string filename, MPI_Comm comm)
+  InputFile::InputFile(std::map<std::string, InputSpec> valid_sections,
+      std::vector<std::string> legacy_section_names, MPI_Comm comm)
       : pimpl_(std::make_unique<Internal::InputFileImpl>(comm))
   {
-    read_generic(filename);
+    pimpl_->valid_sections_ = std::move(valid_sections);
+    pimpl_->legacy_section_names_ = std::move(legacy_section_names);
   }
 
 
@@ -575,7 +578,7 @@ namespace Core::IO
 
   /*----------------------------------------------------------------------*/
   /*----------------------------------------------------------------------*/
-  void InputFile::read_generic(const std::filesystem::path& top_level_file)
+  void InputFile::read(const std::filesystem::path& top_level_file)
   {
     if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0)
     {
@@ -854,6 +857,11 @@ namespace Core::IO
     return printout;
   }
 
+  void InputFile::emit_metadata(std::ostream& out) const
+  {
+    print_metadata_yaml(out, pimpl_->valid_sections_);
+  }
+
 
   void InputFile::record_section_used(const std::string& section_name)
   {
@@ -862,6 +870,7 @@ namespace Core::IO
 
 
   MPI_Comm InputFile::get_comm() const { return pimpl_->comm_; }
+
 
 }  // namespace Core::IO
 

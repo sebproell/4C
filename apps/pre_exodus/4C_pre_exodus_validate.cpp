@@ -29,43 +29,44 @@ void EXODUS::validate_input_file(const MPI_Comm comm, const std::string datfile)
   Global::Problem* problem = Global::Problem::instance();
 
   // create a InputFile
-  Core::IO::InputFile reader(datfile, comm);
+  Core::IO::InputFile input_file = Global::set_up_input_file(comm);
+  input_file.read(datfile);
 
   // read and validate dynamic and solver sections
   std::cout << "...Read parameters" << std::endl;
-  Global::read_parameter(*problem, reader);
+  Global::read_parameter(*problem, input_file);
 
   // read and validate all material definitions
   std::cout << "...Read materials" << std::endl;
-  Global::read_materials(*problem, reader);
+  Global::read_materials(*problem, input_file);
 
   // do NOT allocate the different fields (discretizations) here,
   // since RAM might be a problem for huge problems!
   // But, we have to perform at least the problem-specific setup since
   // some reading procedures depend on the number of fields (e.g., ReadKnots())
   std::cout << "...Read field setup" << std::endl;
-  Global::read_fields(*problem, reader, false);  // option false is important here!
+  Global::read_fields(*problem, input_file, false);  // option false is important here!
 
   std::cout << "...";
   {
     Core::Utils::FunctionManager function_manager;
     global_legacy_module_callbacks().AttachFunctionDefinitions(function_manager);
-    function_manager.read_input(reader);
+    function_manager.read_input(input_file);
   }
 
-  Global::read_result(*problem, reader);
-  Global::read_conditions(*problem, reader);
+  Global::read_result(*problem, input_file);
+  Global::read_conditions(*problem, input_file);
 
   // input of materials of cloned fields (if needed)
-  Global::read_cloning_material_map(*problem, reader);
+  Global::read_cloning_material_map(*problem, input_file);
 
   // read all knot information for isogeometric analysis
   // and add it to the (derived) nurbs discretization
-  Global::read_knots(*problem, reader);
+  Global::read_knots(*problem, input_file);
 
   // inform user about unused/obsolete section names being found
   // and force him/her to correct the input file accordingly
-  const bool all_ok = !reader.print_unused_sections(std::cout);
+  const bool all_ok = !input_file.print_unused_sections(std::cout);
 
   // we wait till all procs are here. Otherwise a hang up might occur where
   // one proc ended with FOUR_C_THROW but other procs were not finished and waited...

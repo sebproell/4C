@@ -14,8 +14,8 @@
 #include "4C_fem_general_element_definition.hpp"
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_global_data.hpp"
+#include "4C_global_data_read.hpp"
 #include "4C_global_legacy_module.hpp"
-#include "4C_global_legacy_module_validmaterials.hpp"
 #include "4C_inpar_validconditions.hpp"
 #include "4C_inpar_validparameters.hpp"
 #include "4C_io_input_file_utils.hpp"
@@ -269,7 +269,8 @@ int main(int argc, char* argv[])
   {
     if (Core::Communication::my_mpi_rank(lcomm) == 0)
     {
-      write_input_metadata(std::cout);
+      Core::IO::InputFile input_file = Global::set_up_input_file(lcomm);
+      input_file.emit_metadata(std::cout);
     }
   }
   else if ((argc == 2) && ((strcmp(argv[1], "-d") == 0) || (strcmp(argv[1], "--datfile") == 0)))

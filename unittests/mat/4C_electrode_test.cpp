@@ -390,14 +390,15 @@ namespace
       setup_template_csv_file(csv_template_file_name);
       setup_dummy_dat_file(dat_file_name, csv_template_file_name);
 
-      Core::IO::InputFile reader{dat_file_name, comm};
+      Core::IO::InputFile input_file = Global::set_up_input_file(comm);
+      input_file.read(dat_file_name);
 
-      Global::read_parameter(*problem, reader);
+      Global::read_parameter(*problem, input_file);
 
       {
         Core::Utils::FunctionManager function_manager;
         global_legacy_module_callbacks().AttachFunctionDefinitions(function_manager);
-        function_manager.read_input(reader);
+        function_manager.read_input(input_file);
         problem->set_function_manager(std::move(function_manager));
       }
     }
