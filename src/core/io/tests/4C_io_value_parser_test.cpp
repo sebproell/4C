@@ -245,6 +245,19 @@ namespace
     }
   }
 
+  TEST(ValueParser, Map)
+  {
+    std::string_view in("key1 1 2 key2 2 3 key3 3 4");
+    Core::IO::ValueParser parser(in);
+
+    auto map = parser.read<std::map<std::string, std::vector<int>>>(3, 2);
+
+    EXPECT_EQ(map.size(), 3);
+    EXPECT_EQ(map.at("key1"), (std::vector{1, 2}));
+    EXPECT_EQ(map.at("key2"), (std::vector{2, 3}));
+    EXPECT_EQ(map.at("key3"), (std::vector{3, 4}));
+  }
+
   TEST(ValueParser, Unparsed)
   {
     std::string_view in("a 1 b 2 c 3");

@@ -74,9 +74,10 @@ namespace
     {
       std::string type = function_lin_def.get<std::string>("POROMULTIPHASESCATRA_FUNCTION");
 
-      auto params = function_lin_def.get<std::vector<std::pair<std::string, double>>>("PARAMS");
+      auto params = function_lin_def.get<std::map<std::string, double>>("PARAMS");
+      std::vector<std::pair<std::string, double>> params_vec(params.begin(), params.end());
 
-      return create_poro_function<dim>(type, params);
+      return create_poro_function<dim>(type, params_vec);
     }
     else
     {
@@ -119,7 +120,7 @@ void PoroMultiPhaseScaTra::add_valid_poro_functions(Core::Utils::FunctionManager
       all_of({
           entry<std::string>("POROMULTIPHASESCATRA_FUNCTION"),
           entry<int>("NUMPARAMS", {.required = false}),
-          entry<std::vector<std::pair<std::string, double>>>(
+          entry<std::map<std::string, double>>(
               "PARAMS", {.required = false, .size = from_parameter<int>("NUMPARAMS")}),
       }),
       try_create_poro_function_dispatch);

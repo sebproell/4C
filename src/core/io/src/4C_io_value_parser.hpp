@@ -15,6 +15,7 @@
 
 #include <array>
 #include <filesystem>
+#include <map>
 #include <optional>
 #include <stack>
 #include <string>
@@ -191,11 +192,15 @@ namespace Core::IO
       }
     }
 
-    template <typename T, typename U, typename... SizeInfo>
-    void read_internal(std::pair<T, U>& value, SizeInfo&&... size_info)
+    template <typename U, typename... SizeInfo>
+    void read_internal(std::map<std::string, U>& value, std::size_t size, SizeInfo&&... size_info)
     {
-      read_internal(value.first, std::forward<SizeInfo>(size_info)...);
-      read_internal(value.second, std::forward<SizeInfo>(size_info)...);
+      for (std::size_t i = 0; i < size; ++i)
+      {
+        std::string key;
+        read_internal(key);
+        read_internal(value[key], std::forward<SizeInfo>(size_info)...);
+      }
     }
 
     //! The data to parse from.

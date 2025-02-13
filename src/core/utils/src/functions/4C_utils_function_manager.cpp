@@ -121,7 +121,7 @@ void Core::Utils::add_valid_builtin_functions(Core::Utils::FunctionManager& func
       all_of({
           entry<std::string>("VARFUNCTION"),
           entry<int>("NUMCONSTANTS", {.required = false}),
-          entry<std::vector<std::pair<std::string, double>>>(
+          entry<std::map<std::string, double>>(
               "CONSTANTS", {.required = false, .size = from_parameter<int>("NUMCONSTANTS")}),
       }),
   });

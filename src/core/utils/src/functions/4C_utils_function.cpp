@@ -177,10 +177,10 @@ Core::Utils::try_create_symbolic_function_of_anything(
     std::string component = function_lin_def.get<std::string>("VARFUNCTION");
 
     std::vector<std::pair<std::string, double>> constants;
-    if (function_lin_def.get_if<std::vector<std::pair<std::string, double>>>("CONSTANTS") !=
-        nullptr)
+    if (auto* constants_map = function_lin_def.get_if<std::map<std::string, double>>("CONSTANTS");
+        constants_map)
     {
-      constants = function_lin_def.get<std::vector<std::pair<std::string, double>>>("CONSTANTS");
+      constants.insert(constants.end(), constants_map->begin(), constants_map->end());
     }
 
     return std::make_shared<Core::Utils::SymbolicFunctionOfAnything>(component, constants);

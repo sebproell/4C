@@ -155,14 +155,16 @@ namespace Core::IO
     }
   }
 
-  template <typename T, typename U>
-  void emit_value_as_yaml(ryml::NodeRef node, const std::pair<T, U>& value)
+  template <typename T>
+  void emit_value_as_yaml(ryml::NodeRef node, const std::map<std::string, T>& value)
   {
-    node |= ryml::SEQ | ryml::FLOW_SL;
-    auto first = node.append_child();
-    emit_value_as_yaml(first, value.first);
-    auto second = node.append_child();
-    emit_value_as_yaml(second, value.second);
+    node |= ryml::MAP;
+    for (const auto& [key, v] : value)
+    {
+      auto child = node.append_child();
+      child << ryml::key(key);
+      emit_value_as_yaml(child, v);
+    }
   }
 
   template <typename T>
@@ -223,12 +225,17 @@ namespace Core::IO
     }
   }
 
-  template <typename T, typename U>
-  void read_value_from_yaml(ConstYamlNodeRef node, std::pair<T, U>& value)
+  template <typename U>
+  void read_value_from_yaml(ConstYamlNodeRef node, std::map<std::string, U>& value)
   {
-    FOUR_C_ASSERT_ALWAYS(node.node.is_seq(), "Expected a sequence node for a pair.");
-    read_value_from_yaml(node.wrap(node.node[0]), value.first);
-    read_value_from_yaml(node.wrap(node.node[1]), value.second);
+    FOUR_C_ASSERT_ALWAYS(node.node.is_map(), "Expected a map node for a map.");
+    value.clear();
+    for (auto child : node.node.children())
+    {
+      FOUR_C_ASSERT_ALWAYS(child.has_key(), "Expected a key in the map node.");
+      std::string key(child.key().data(), child.key().size());
+      read_value_from_yaml(node.wrap(child), value[key]);
+    }
   }
 
   template <typename T>
