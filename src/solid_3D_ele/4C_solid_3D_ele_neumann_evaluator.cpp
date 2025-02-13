@@ -119,7 +119,7 @@ void Discret::Elements::evaluate_neumann(Core::Elements::Element& element,
 
         // material/reference co-ordinates of Gauss point
         Core::LinAlg::Matrix<numdim, 1> gauss_point_reference_coordinates;
-        gauss_point_reference_coordinates.multiply_tn(
+        gauss_point_reference_coordinates.multiply_nn(
             nodal_coordinates.reference_coordinates, shape_functions.shapefunctions_);
 
         for (auto dim = 0; dim < numdim; dim++)

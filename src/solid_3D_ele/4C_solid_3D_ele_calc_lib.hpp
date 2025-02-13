@@ -14,6 +14,7 @@
 #include "4C_fem_general_cell_type.hpp"
 #include "4C_fem_general_cell_type_traits.hpp"
 #include "4C_fem_general_element.hpp"
+#include "4C_fem_general_element_dof_matrix.hpp"
 #include "4C_fem_general_extract_values.hpp"
 #include "4C_fem_general_fiber_node_holder.hpp"
 #include "4C_fem_general_fiber_node_utils.hpp"
@@ -93,19 +94,19 @@ namespace Discret::Elements
     /*!
      * @brief Position of nodes in the reference configuration
      */
-    Core::LinAlg::Matrix<Internal::num_nodes<celltype>, Internal::num_dim<celltype>>
+    Core::LinAlg::Matrix<Internal::num_dim<celltype>, Internal::num_nodes<celltype>>
         reference_coordinates;
 
     /*!
      * @brief Position of nodes in the current configuration
      */
-    Core::LinAlg::Matrix<Internal::num_nodes<celltype>, Internal::num_dim<celltype>>
+    Core::LinAlg::Matrix<Internal::num_dim<celltype>, Internal::num_nodes<celltype>>
         current_coordinates;
 
     /*!
      * @brief Displacements of the element nodes
      */
-    Core::LinAlg::Matrix<Internal::num_nodes<celltype>, Internal::num_dim<celltype>> displacements;
+    Core::LinAlg::Matrix<Internal::num_dim<celltype>, Internal::num_nodes<celltype>> displacements;
   };
 
   template <Core::FE::CellType celltype>
@@ -115,19 +116,19 @@ namespace Discret::Elements
     /*!
      * @brief Position of nodes in the reference configuration
      */
-    Core::LinAlg::Matrix<Internal::num_nodes<celltype>, Internal::num_dim<celltype>>
+    Core::LinAlg::Matrix<Internal::num_dim<celltype>, Internal::num_nodes<celltype>>
         reference_coordinates;
 
     /*!
      * @brief Position of nodes in the current configuration
      */
-    Core::LinAlg::Matrix<Internal::num_nodes<celltype>, Internal::num_dim<celltype>>
+    Core::LinAlg::Matrix<Internal::num_dim<celltype>, Internal::num_nodes<celltype>>
         current_coordinates;
 
     /*!
      * @brief Displacements of the element nodes
      */
-    Core::LinAlg::Matrix<Internal::num_nodes<celltype>, Internal::num_dim<celltype>> displacements;
+    Core::LinAlg::Matrix<Internal::num_dim<celltype>, Internal::num_nodes<celltype>> displacements;
 
     /*!
      * @brief Knot span of a NURBS element
@@ -157,12 +158,14 @@ namespace Discret::Elements
     {
       for (int d = 0; d < Internal::num_dim<celltype>; ++d)
       {
-        element_nodes.reference_coordinates(i, d) = ele.nodes()[i]->x()[d];
-        element_nodes.current_coordinates(i, d) =
-            ele.nodes()[i]->x()[d] + disp[i * Internal::num_dim<celltype> + d];
-        element_nodes.displacements(i, d) = disp[i * Internal::num_dim<celltype> + d];
+        element_nodes.reference_coordinates(d, i) = ele.nodes()[i]->x()[d];
       }
     }
+    element_nodes.displacements =
+        Core::FE::get_element_dof_matrix<celltype, Core::FE::dim<celltype>>(disp);
+
+    element_nodes.current_coordinates = element_nodes.reference_coordinates;
+    element_nodes.current_coordinates.update(1.0, element_nodes.displacements, 1.0);
 
     return element_nodes;
   }
@@ -211,10 +214,7 @@ namespace Discret::Elements
   Core::LinAlg::Matrix<Internal::num_dim<celltype>, 1> evaluate_parameter_coordinate(
       const Core::FE::GaussIntegration& intpoints, const int gp)
   {
-    Core::LinAlg::Matrix<Internal::num_dim<celltype>, 1> xi;
-    for (int d = 0; d < Internal::num_dim<celltype>; ++d) xi(d) = intpoints.point(gp)[d];
-
-    return xi;
+    return Core::LinAlg::Matrix<Internal::num_dim<celltype>, 1>(intpoints.point(gp), false);
   }
 
   /*!
@@ -230,9 +230,7 @@ namespace Discret::Elements
   Core::LinAlg::Matrix<Internal::num_dim<celltype>, 1> evaluate_parameter_coordinate_centroid()
     requires(Core::FE::is_hex<celltype> || Core::FE::is_nurbs<celltype>)
   {
-    Core::LinAlg::Matrix<Internal::num_dim<celltype>, 1> xi;
-    for (int d = 0; d < Internal::num_dim<celltype>; ++d) xi(d) = 0;
-
+    Core::LinAlg::Matrix<Internal::num_dim<celltype>, 1> xi(true);
     return xi;
   }
 
@@ -250,7 +248,7 @@ namespace Discret::Elements
     requires(Core::FE::is_tet<celltype>)
   {
     Core::LinAlg::Matrix<Internal::num_dim<celltype>, 1> xi;
-    for (int d = 0; d < Internal::num_dim<celltype>; ++d) xi(d) = 0.25;
+    xi.put_scalar(0.25);
 
     return xi;
   }
@@ -304,12 +302,12 @@ namespace Discret::Elements
    */
   template <Core::FE::CellType celltype>
   Core::LinAlg::Matrix<Core::FE::dim<celltype>, 1> evaluate_reference_coordinate(
-      const Core::LinAlg::Matrix<Internal::num_nodes<celltype>, Internal::num_dim<celltype>>&
+      const Core::LinAlg::Matrix<Internal::num_dim<celltype>, Internal::num_nodes<celltype>>&
           nodal_coordinates_reference,
       const Core::LinAlg::Matrix<Internal::num_nodes<celltype>, 1>& shape_functions_point)
   {
     Core::LinAlg::Matrix<Internal::num_dim<celltype>, 1> coordinates_reference(true);
-    coordinates_reference.multiply_tn(nodal_coordinates_reference, shape_functions_point);
+    coordinates_reference.multiply_nn(nodal_coordinates_reference, shape_functions_point);
 
     return coordinates_reference;
   }
@@ -437,7 +435,7 @@ namespace Discret::Elements
   {
     JacobianMapping<celltype> jacobian;
 
-    jacobian.jacobian_.multiply(shapefcns.derivatives_, nodal_coordinates.reference_coordinates);
+    jacobian.jacobian_.multiply_nt(shapefcns.derivatives_, nodal_coordinates.reference_coordinates);
     jacobian.inverse_jacobian_ = jacobian.jacobian_;
     jacobian.determinant_ = jacobian.inverse_jacobian_.invert();
     jacobian.N_XYZ_.multiply(jacobian.inverse_jacobian_, shapefcns.derivatives_);
@@ -459,7 +457,7 @@ namespace Discret::Elements
       const ElementNodes<celltype>& nodal_coordinates)
   {
     Core::LinAlg::Matrix<Internal::num_dim<celltype>, Internal::num_dim<celltype>> jacobian;
-    jacobian.multiply(shapefcns.derivatives_, nodal_coordinates.reference_coordinates);
+    jacobian.multiply_nt(shapefcns.derivatives_, nodal_coordinates.reference_coordinates);
 
     return jacobian.determinant();
   }
@@ -589,13 +587,13 @@ namespace Discret::Elements
       // displacements. Until we found the problem, we compute the deformation gradient based on
       // the current coordinates (F=(X+u)^T  dN/dX^T) for hex8 and based on the displacement (F=I
       // + u^T dN/dX^T) for the other celltypes.
-      defgrd.multiply_tt(scale_defgrd, element_nodes.current_coordinates, jacobian_mapping.N_XYZ_);
+      defgrd.multiply_nt(scale_defgrd, element_nodes.current_coordinates, jacobian_mapping.N_XYZ_);
     }
     else
     {
       defgrd = Core::LinAlg::identity_matrix<Core::FE::dim<celltype>>();
 
-      defgrd.multiply_tt(
+      defgrd.multiply_nt(
           scale_defgrd, element_nodes.displacements, jacobian_mapping.N_XYZ_, scale_defgrd);
     }
 
@@ -683,11 +681,8 @@ namespace Discret::Elements
       const Core::LinAlg::Matrix<Internal::num_str<celltype>,
           Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>& linear_b_operator)
   {
-    Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>, 1> nodal_displs(
-        true);
-    for (unsigned i = 0; i < Core::FE::num_nodes<celltype>; ++i)
-      for (unsigned j = 0; j < Core::FE::dim<celltype>; ++j)
-        nodal_displs(i * Core::FE::dim<celltype> + j, 0) = nodal_coordinates.displacements(i, j);
+    Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>, 1u> nodal_displs =
+        Core::FE::get_element_dof_vector_view<celltype>(nodal_coordinates.displacements);
 
     Core::LinAlg::Matrix<Internal::num_str<celltype>, 1> gl_strain;
     gl_strain.multiply(linear_b_operator, nodal_displs);
@@ -1031,11 +1026,11 @@ namespace Discret::Elements
             const JacobianMapping<celltype>& jacobian_mapping, double integration_factor, int gp)
         {
           Core::LinAlg::Matrix<numdim, 1> gauss_point_reference_coordinates;
-          gauss_point_reference_coordinates.multiply_tn(
+          gauss_point_reference_coordinates.multiply_nn(
               nodal_coordinates.reference_coordinates, shape_functions.shapefunctions_);
 
           Core::LinAlg::Matrix<numdim, 1> gauss_point_disp;
-          gauss_point_disp.multiply_tn(
+          gauss_point_disp.multiply(
               nodal_coordinates.displacements, shape_functions.shapefunctions_);
 
           Core::LinAlg::Matrix<3, 1> analytical_solution;
