@@ -17,6 +17,7 @@
 #include "4C_inpar_structure.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_linalg_vector.hpp"
+#include "4C_linear_solver_method_linalg.hpp"
 #include "4C_solver_nonlin_nox_aux.hpp"
 #include "4C_solver_nonlin_nox_constraint_interface_preconditioner.hpp"
 #include "4C_solver_nonlin_nox_constraint_interface_required.hpp"
