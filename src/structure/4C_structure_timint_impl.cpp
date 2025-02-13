@@ -3184,9 +3184,9 @@ void Solid::TimIntImpl::cmt_linear_solve()
 
           // get the degree of freedom map from the block matrix
           Epetra_Operator* raw_block_mat = blockMat.get();
-          std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> block_mat_blocked_operator =
+          auto block_mat_blocked_operator =
               std::dynamic_pointer_cast<Core::LinAlg::BlockSparseMatrixBase>(
-                  std::shared_ptr<Epetra_Operator>(raw_block_mat, [](Epetra_Operator*) {}));
+                  Core::Utils::shared_ptr_from_ref(*raw_block_mat));
           auto mat11 = block_mat_blocked_operator->matrix(1, 1);
           const Epetra_Map& dofmap = mat11.domain_map();
 

@@ -76,8 +76,7 @@ void Core::LinearSolver::MueLuPreconditioner::setup(bool create, Epetra_Operator
 
       auto xmlFileName = inverseList.get<std::string>("MUELU_XML_FILE");
 
-      Teuchos::RCP<Teuchos::ParameterList> muelu_params =
-          Teuchos::make_rcp<Teuchos::ParameterList>();
+      auto muelu_params = Teuchos::make_rcp<Teuchos::ParameterList>();
       auto comm = pmatrix_->getRowMap()->getComm();
       Teuchos::updateParametersFromXmlFileAndBroadcast(xmlFileName, muelu_params.ptr(), *comm);
 
@@ -108,7 +107,7 @@ void Core::LinearSolver::MueLuPreconditioner::setup(bool create, Epetra_Operator
 
       for (int block = 0; block < A->rows(); block++)
       {
-        Teuchos::RCP<Xpetra::CrsMatrix<SC, LO, GO, NO>> xCrsA = Teuchos::make_rcp<EpetraCrsMatrix>(
+        Teuchos::RCP<Xpetra::CrsMatrix<SC, LO, GO, NO>> crsA = Teuchos::make_rcp<EpetraCrsMatrix>(
             Teuchos::rcp(A->matrix(block, block).epetra_matrix()));
 
         const std::string inverse = "Inverse" + std::to_string(block + 1);
@@ -120,8 +119,9 @@ void Core::LinearSolver::MueLuPreconditioner::setup(bool create, Epetra_Operator
         striding.emplace_back(number_of_equations);
 
         Teuchos::RCP<const Xpetra::StridedMap<LO, GO, NO>> map =
-            Teuchos::make_rcp<Xpetra::StridedMap<LO, GO, NO>>(
-                xCrsA->getRowMap(), striding, xCrsA->getRowMap()->getIndexBase(), -1, 0);
+            Teuchos::make_rcp<Xpetra::StridedMap<LO, GO, NO>>(crsA->getRowMap()->lib(),
+                crsA->getRowMap()->getGlobalNumElements(), crsA->getRowMap()->getLocalElementList(),
+                crsA->getRowMap()->getIndexBase(), striding, crsA->getRowMap()->getComm(), -1);
 
         maps.emplace_back(map);
       }
@@ -139,12 +139,11 @@ void Core::LinearSolver::MueLuPreconditioner::setup(bool create, Epetra_Operator
       {
         for (int col = 0; col < A->cols(); col++)
         {
-          Teuchos::RCP<Xpetra::CrsMatrix<SC, LO, GO, NO>> xCrsA =
-              Teuchos::make_rcp<EpetraCrsMatrix>(
-                  Teuchos::rcpFromRef(*A->matrix(row, col).epetra_matrix()));
+          Teuchos::RCP<Xpetra::CrsMatrix<SC, LO, GO, NO>> crsA = Teuchos::make_rcp<EpetraCrsMatrix>(
+              Teuchos::rcpFromRef(*A->matrix(row, col).epetra_matrix()));
           Teuchos::RCP<Xpetra::Matrix<SC, LO, GO, NO>> mat =
               Xpetra::MatrixFactory<SC, LO, GO, NO>::BuildCopy(
-                  Teuchos::make_rcp<Xpetra::CrsMatrixWrap<SC, LO, GO, NO>>(xCrsA));
+                  Teuchos::make_rcp<Xpetra::CrsMatrixWrap<SC, LO, GO, NO>>(crsA));
           bOp->setMatrix(row, col, mat);
         }
       }
@@ -152,20 +151,16 @@ void Core::LinearSolver::MueLuPreconditioner::setup(bool create, Epetra_Operator
       bOp->fillComplete();
       pmatrix_ = bOp;
 
-      // free old matrix first
-      P_ = Teuchos::null;
-
       if (!muelulist_.sublist("MueLu Parameters").isParameter("MUELU_XML_FILE"))
         FOUR_C_THROW("MUELU_XML_FILE parameter not set!");
 
       auto xmlFileName = muelulist_.sublist("MueLu Parameters").get<std::string>("MUELU_XML_FILE");
-      Teuchos::RCP<Teuchos::ParameterList> mueluParams =
-          Teuchos::make_rcp<Teuchos::ParameterList>();
+      auto mueluParams = Teuchos::make_rcp<Teuchos::ParameterList>();
       auto comm = pmatrix_->getRowMap()->getComm();
       Teuchos::updateParametersFromXmlFileAndBroadcast(xmlFileName, mueluParams.ptr(), *comm);
 
       MueLu::ParameterListInterpreter<SC, LO, GO, NO> mueLuFactory(xmlFileName, *comm);
-      Teuchos::RCP<MueLu::Hierarchy<SC, LO, GO, NO>> H_ = mueLuFactory.CreateHierarchy();
+      H_ = mueLuFactory.CreateHierarchy();
       H_->GetLevel(0)->Set(
           "A", Teuchos::rcp_dynamic_cast<Xpetra::Matrix<SC, LO, GO, NO>>(pmatrix_));
 
@@ -175,9 +170,8 @@ void Core::LinearSolver::MueLuPreconditioner::setup(bool create, Epetra_Operator
         Teuchos::ParameterList& inverse_list =
             muelulist_.sublist(inverse).sublist("MueLu Parameters");
 
-        Teuchos::RCP<Xpetra::MultiVector<SC, LO, GO, NO>>
-
-            nullspace = Core::LinearSolver::Parameters::extract_nullspace_from_parameterlist(
+        Teuchos::RCP<Xpetra::MultiVector<SC, LO, GO, NO>> nullspace =
+            Core::LinearSolver::Parameters::extract_nullspace_from_parameterlist(
                 *maps.at(block), inverse_list);
 
         H_->GetLevel(0)->Set("Nullspace" + std::to_string(block + 1), nullspace);
