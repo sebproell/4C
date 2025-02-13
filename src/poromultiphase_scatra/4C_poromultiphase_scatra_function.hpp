@@ -88,7 +88,7 @@ namespace PoroMultiPhaseScaTra
      * \brief Constructor creating empty object. Add the function parameters (read from the
      * input file) to the function
      */
-    TumorGrowthLawHeaviside(const std::vector<std::pair<std::string, double>>& funct_params);
+    TumorGrowthLawHeaviside(const std::map<std::string, double>& funct_params);
 
     double evaluate(const std::vector<std::pair<std::string, double>>& variables,
         const std::vector<std::pair<std::string, double>>& constants,
@@ -129,7 +129,7 @@ namespace PoroMultiPhaseScaTra
      * \brief Constructor creating empty object. Add the function parameters (read from the
      * input file) to the function
      */
-    NecrosisLawHeaviside(const std::vector<std::pair<std::string, double>>& funct_params);
+    NecrosisLawHeaviside(const std::map<std::string, double>& funct_params);
 
     double evaluate(const std::vector<std::pair<std::string, double>>& variables,
         const std::vector<std::pair<std::string, double>>& constants,
@@ -170,7 +170,7 @@ namespace PoroMultiPhaseScaTra
      * \brief Constructor creating empty object. Add the function parameters (read from the
      * input file) to the function
      */
-    OxygenConsumptionLawHeaviside(const std::vector<std::pair<std::string, double>>& funct_params);
+    OxygenConsumptionLawHeaviside(const std::map<std::string, double>& funct_params);
 
 
     double evaluate(const std::vector<std::pair<std::string, double>>& variables,
@@ -213,7 +213,7 @@ namespace PoroMultiPhaseScaTra
      * \brief Constructor creating empty object. Add the function parameters (read from the
      * input file) to the function
      */
-    TumorGrowthLawHeavisideOxy(const std::vector<std::pair<std::string, double>>& funct_params);
+    TumorGrowthLawHeavisideOxy(const std::map<std::string, double>& funct_params);
 
 
     double evaluate(const std::vector<std::pair<std::string, double>>& variables,
@@ -255,7 +255,7 @@ namespace PoroMultiPhaseScaTra
      * \brief Constructor creating empty object. Add the function parameters (read from the
      * input file) to the function
      */
-    TumorGrowthLawHeavisideNecro(const std::vector<std::pair<std::string, double>>& funct_params);
+    TumorGrowthLawHeavisideNecro(const std::map<std::string, double>& funct_params);
 
 
     double evaluate(const std::vector<std::pair<std::string, double>>& variables,
@@ -293,8 +293,7 @@ namespace PoroMultiPhaseScaTra
      * \brief Constructor creating empty object. Add the function parameters (read from the
      * input file) to the function
      */
-    OxygenTransvascularExchangeLawCont(
-        const std::vector<std::pair<std::string, double>>& funct_params);
+    OxygenTransvascularExchangeLawCont(const std::map<std::string, double>& funct_params);
 
     double evaluate(const std::vector<std::pair<std::string, double>>& variables,
         const std::vector<std::pair<std::string, double>>& constants,
@@ -331,8 +330,7 @@ namespace PoroMultiPhaseScaTra
      * \brief Constructor creating empty object. Add the function parameters (read from the
      * input file) to the function
      */
-    OxygenTransvascularExchangeLawDisc(
-        const std::vector<std::pair<std::string, double>>& funct_params);
+    OxygenTransvascularExchangeLawDisc(const std::map<std::string, double>& funct_params);
 
 
     double evaluate(const std::vector<std::pair<std::string, double>>& variables,
@@ -374,7 +372,7 @@ namespace PoroMultiPhaseScaTra
      * \brief Constructor creating empty object. Add the function parameters (read from the
      * input file) to the function
      */
-    LungOxygenExchangeLaw(const std::vector<std::pair<std::string, double>>& funct_params);
+    LungOxygenExchangeLaw(const std::map<std::string, double>& funct_params);
 
 
     double evaluate(const std::vector<std::pair<std::string, double>>& variables,
@@ -419,7 +417,7 @@ namespace PoroMultiPhaseScaTra
      * \brief Constructor creating empty object. Add the function parameters (read from the
      * input file) to the function
      */
-    LungCarbonDioxideExchangeLaw(const std::vector<std::pair<std::string, double>>& funct_params);
+    LungCarbonDioxideExchangeLaw(const std::map<std::string, double>& funct_params);
 
     /*!
      * \brief evaluate function for a given set of variables
