@@ -599,7 +599,21 @@ void write_input_metadata(std::ostream& out)
     }
   }
 
+  // Up to here all the sections allow for multiple entries. Thus, wrap up the specs into
+  // lists.
+  for (auto& [section_name, spec] : section_specs)
+  {
+    spec = Core::IO::InputSpecBuilders::list(section_name, spec);
+  }
+
+  // The so-called "parameters" are key-values which can only appear once. Wrap them up into
+  // groups.
   auto valid_parameters = Input::valid_parameters();
+  for (auto& [section_name, spec] : valid_parameters)
+  {
+    spec = Core::IO::InputSpecBuilders::group(section_name, {spec}, {.required = false});
+  }
+
   section_specs.merge(valid_parameters);
   Core::IO::print_metadata_yaml(out, section_specs);
 }
