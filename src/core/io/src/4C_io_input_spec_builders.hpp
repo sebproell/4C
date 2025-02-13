@@ -237,9 +237,8 @@ namespace Core::IO
 
       /**
        * @param data The common data of the spec.
-       * @param n_specs The number of specs (itself included) that make up this spec.
        */
-      InputSpecTypeErasedBase(CommonData data) : data(std::move(data)) {}
+      InputSpecTypeErasedBase(CommonData data);
 
       virtual void parse(ValueParser& parser, InputParameterContainer& container) const = 0;
 
