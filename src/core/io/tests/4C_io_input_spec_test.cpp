@@ -688,7 +688,8 @@ specs:
   {
     auto spec = all_of({
         entry<int>("a", {.default_value = 42}),
-        entry<std::vector<double>>("b", {.default_value = std::vector{1., 2., 3.}, .size = 3}),
+        entry<std::vector<Noneable<double>>>(
+            "b", {.default_value = std::vector<Noneable<double>>{1., none<double>, 3.}, .size = 3}),
         one_of({
             all_of({
                 entry<std::map<std::string, std::string>>(
@@ -735,9 +736,12 @@ specs:
     required: false
     default: 42
   - name: b
-    type: vector<double>
+    type: vector
+    value_type:
+      noneable: true
+      type: double
     required: false
-    default: [1,2,3]
+    default: [1,none,3]
     size: 3
   - type: one_of
     description: 'one_of {all_of {b, c}, group}'
@@ -747,7 +751,9 @@ specs:
         required: true
         specs:
           - name: b
-            type: 'map<string, string>'
+            type: map
+            value_type:
+              type: string
             required: false
             default:
               key: abc
