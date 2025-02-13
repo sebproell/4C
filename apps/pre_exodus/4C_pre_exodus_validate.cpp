@@ -64,21 +64,12 @@ void EXODUS::validate_input_file(const MPI_Comm comm, const std::string datfile)
   // and add it to the (derived) nurbs discretization
   Global::read_knots(*problem, input_file);
 
-  // inform user about unused/obsolete section names being found
-  // and force him/her to correct the input file accordingly
-  const bool all_ok = !input_file.print_unused_sections(std::cout);
-
   // we wait till all procs are here. Otherwise a hang up might occur where
   // one proc ended with FOUR_C_THROW but other procs were not finished and waited...
   // we also want to have the printing above being finished.
   Core::Communication::barrier(comm);
-  FOUR_C_ASSERT_ALWAYS(all_ok,
-      "Unknown sections detected. Correct this! Find hints on these unknown sections above.");
-
   // the input file seems to be valid
-  std::cout << "...OK" << std::endl << std::endl;
-
-  return;
+  std::cout << "...OK\n\n";
 }
 
 /*----------------------------------------------------------------------*/

@@ -444,6 +444,7 @@ namespace
       dat_file << "FASTPOLYNOMIAL NUMCOEFF 1 COEFF 0.0" << '\n';
       dat_file << "------------------------------------------------------------FUNCT3" << '\n';
       dat_file << "FASTPOLYNOMIAL NUMCOEFF 5 COEFF 4.563 2.595 -16.77 23.88 -10.72" << '\n';
+      dat_file << "---------------------------------------------------------------END" << '\n';
     }
 
     //! cathode material based on half cell open circuit potential obtained from cubic spline

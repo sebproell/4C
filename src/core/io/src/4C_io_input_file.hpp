@@ -248,14 +248,6 @@ namespace Core::IO
     [[nodiscard]] MPI_Comm get_comm() const;
 
     /**
-     * Print a list of all sections that are contained in the input file but never
-     * accessed through this object.
-     *
-     * @return True if there were unknown sections, false otherwise.
-     */
-    bool print_unused_sections(std::ostream& out) const;
-
-    /**
      * Emit metadata about the input file to the given output stream @p out. The metadata contains
      * information about all sections and parameters that are known to this object. The metadata
      * information can be useful for additional tools that generate schema files or documentation.
@@ -264,9 +256,6 @@ namespace Core::IO
     void emit_metadata(std::ostream& out) const;
 
    private:
-    //! Remember that a section was used.
-    void record_section_used(const std::string& section_name);
-
     std::unique_ptr<Internal::InputFileImpl> pimpl_;
   };
 }  // namespace Core::IO

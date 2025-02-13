@@ -89,15 +89,10 @@ void ntainp_ccadiscret(
   // all reading is done at this point!
   if (Core::Communication::my_mpi_rank(lcomm) == 0) problem->write_input_parameters();
 
-  // before we destroy the reader we want to know about unused sections
-  const bool all_ok = !input_file.print_unused_sections(std::cout);
-
   // we wait till all procs are here. Otherwise a hang up might occur where
   // one proc ended with FOUR_C_THROW but other procs were not finished and waited...
   // we also want to have the printing above being finished.
   Core::Communication::barrier(lcomm);
-  FOUR_C_ASSERT_ALWAYS(all_ok,
-      "Unknown sections detected. Correct this! Find hints on these unknown sections above.");
 }
 
 

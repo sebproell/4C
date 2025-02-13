@@ -254,8 +254,6 @@ namespace Core::IO
        */
       ryml::Tree yaml_tree_;
 
-      std::map<std::string, bool> used_sections_;
-
       std::map<std::string, InputSpec> valid_sections_;
       std::vector<std::string> legacy_section_names_;
 
@@ -716,36 +714,6 @@ namespace Core::IO
       content.set_up_fragments();
     }
 
-    // the following section names are always regarded as valid
-    // NOTE: this is a temporary solution to avoid unused section warnings for restarts.
-    //       Once the input file knows the expected sections, this can be removed.
-    record_section_used("ALE ELEMENTS");
-    record_section_used("FLUID ELEMENTS");
-    record_section_used("FUNCT1");
-    record_section_used("FUNCT2");
-    record_section_used("FUNCT3");
-    record_section_used("FUNCT4");
-    record_section_used("FUNCT5");
-    record_section_used("FUNCT6");
-    record_section_used("FUNCT7");
-    record_section_used("FUNCT8");
-    record_section_used("FUNCT9");
-    record_section_used("FUNCT10");
-    record_section_used("FUNCT11");
-    record_section_used("FUNCT12");
-    record_section_used("FUNCT13");
-    record_section_used("FUNCT14");
-    record_section_used("FUNCT15");
-    record_section_used("FUNCT16");
-    record_section_used("FUNCT17");
-    record_section_used("FUNCT18");
-    record_section_used("FUNCT19");
-    record_section_used("FUNCT20");
-    record_section_used("NODE COORDS");
-    record_section_used("PARTICLES");
-    record_section_used("STRUCTURE ELEMENTS");
-    record_section_used("TITLE");
-
     // All content has been read. Now validate. In the first iteration of this new feature,
     // we only validate the section names, not the content.
     if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0)
@@ -771,7 +739,6 @@ namespace Core::IO
       return std::views::all(empty);
     }
 
-    record_section_used(section_name);
     const bool locally_known = pimpl_->content_by_section_.contains(section_name);
     const bool known_everywhere = Core::Communication::all_reduce<bool>(
         locally_known, [](const bool& r, const bool& in) { return r && in; }, pimpl_->comm_);
@@ -806,7 +773,6 @@ namespace Core::IO
     if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0 &&
         pimpl_->content_by_section_.contains(section_name))
     {
-      record_section_used(section_name);
       const auto& lines = pimpl_->content_by_section_.at(section_name).fragments;
       return std::views::all(lines);
     }
@@ -823,7 +789,6 @@ namespace Core::IO
   {
     FOUR_C_ASSERT_ALWAYS(
         has_section(section_name), "Section '%s' not found.", section_name.c_str());
-    record_section_used(section_name);
 
     // For dat file format, flatten the lines into a single string, which can be parsed by the
     // ValueParser.
@@ -854,47 +819,6 @@ namespace Core::IO
     }
   }
 
-
-  /*----------------------------------------------------------------------*/
-  /*----------------------------------------------------------------------*/
-  bool InputFile::print_unused_sections(std::ostream& out) const
-  {
-    using MapType = decltype(pimpl_->used_sections_);
-
-    for (const auto& [section_name, content] : pimpl_->content_by_section_)
-    {
-      pimpl_->used_sections_[section_name] |= false;
-    }
-
-    const auto merged_map = Core::Communication::all_reduce<MapType>(
-        pimpl_->used_sections_,
-        [](const MapType& r, const MapType& in)
-        {
-          MapType result = r;
-          for (const auto& [key, value] : in)
-          {
-            result[key] |= value;
-          }
-          return result;
-        },
-        pimpl_->comm_);
-    const bool printout = std::any_of(
-        merged_map.begin(), merged_map.end(), [](const auto& kv) { return !kv.second; });
-
-    if (printout and (Core::Communication::my_mpi_rank(get_comm()) == 0))
-    {
-      out << "\nERROR!"
-          << "\n--------"
-          << "\nThe following input file sections remained unused (obsolete or typo?):\n";
-      for (const auto& [section_name, known] : pimpl_->used_sections_)
-      {
-        if (!known) out << section_name << '\n';
-      }
-      out << '\n';
-    }
-
-    return printout;
-  }
 
   void InputFile::emit_metadata(std::ostream& out) const
   {
@@ -931,12 +855,6 @@ namespace Core::IO
     }
 
     out << tree;
-  }
-
-
-  void InputFile::record_section_used(const std::string& section_name)
-  {
-    pimpl_->used_sections_[section_name] = true;
   }
 
 
