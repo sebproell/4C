@@ -12,8 +12,8 @@
 #include "4C_config.hpp"
 
 #include <array>
+#include <map>
 #include <string>
-#include <vector>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -29,8 +29,7 @@ namespace PoroMultiPhaseScaTra
   {
     TumorGrowthLawHeavisideParameters() = default;
 
-    TumorGrowthLawHeavisideParameters(
-        const std::vector<std::pair<std::string, double>>& funct_params);
+    TumorGrowthLawHeavisideParameters(const std::map<std::string, double>& funct_params);
 
     double gamma_T_growth{};
     double w_nl_crit{};
@@ -47,7 +46,7 @@ namespace PoroMultiPhaseScaTra
   {
     NecrosisLawHeavisideParameters() = default;
 
-    NecrosisLawHeavisideParameters(const std::vector<std::pair<std::string, double>>& funct_params);
+    NecrosisLawHeavisideParameters(const std::map<std::string, double>& funct_params);
 
     double gamma_t_necr{};
     double w_nl_crit{};
@@ -64,8 +63,7 @@ namespace PoroMultiPhaseScaTra
   {
     OxygenConsumptionLawHeavisideParameters() = default;
 
-    OxygenConsumptionLawHeavisideParameters(
-        const std::vector<std::pair<std::string, double>>& funct_params);
+    OxygenConsumptionLawHeavisideParameters(const std::map<std::string, double>& funct_params);
 
     double gamma_nl_growth{};
     double gamma_0_nl{};
@@ -83,8 +81,7 @@ namespace PoroMultiPhaseScaTra
   {
     TumorGrowthLawHeavisideNecroOxyParameters() = default;
 
-    TumorGrowthLawHeavisideNecroOxyParameters(
-        const std::vector<std::pair<std::string, double>>& funct_params);
+    TumorGrowthLawHeavisideNecroOxyParameters(const std::map<std::string, double>& funct_params);
 
     double gamma_T_growth{};
     double w_nl_crit{};
@@ -101,8 +98,7 @@ namespace PoroMultiPhaseScaTra
   {
     OxygenTransvascularExchangeLawContParameters() = default;
 
-    OxygenTransvascularExchangeLawContParameters(
-        const std::vector<std::pair<std::string, double>>& funct_params);
+    OxygenTransvascularExchangeLawContParameters(const std::map<std::string, double>& funct_params);
 
     double n{};
     double Pb50{};
@@ -123,8 +119,7 @@ namespace PoroMultiPhaseScaTra
   {
     OxygenTransvascularExchangeLawDiscParameters() = default;
 
-    OxygenTransvascularExchangeLawDiscParameters(
-        const std::vector<std::pair<std::string, double>>& funct_params);
+    OxygenTransvascularExchangeLawDiscParameters(const std::map<std::string, double>& funct_params);
 
     double n{};
     double Pb50{};
@@ -146,8 +141,7 @@ namespace PoroMultiPhaseScaTra
   {
     LungOxygenExchangeLawParameters() = default;
 
-    LungOxygenExchangeLawParameters(
-        const std::vector<std::pair<std::string, double>>& funct_params);
+    LungOxygenExchangeLawParameters(const std::map<std::string, double>& funct_params);
 
     double rho_oxy{};
     double DiffAdVTLC{};
@@ -169,8 +163,7 @@ namespace PoroMultiPhaseScaTra
   {
     LungCarbonDioxideExchangeLawParameters() = default;
 
-    LungCarbonDioxideExchangeLawParameters(
-        const std::vector<std::pair<std::string, double>>& funct_params);
+    LungCarbonDioxideExchangeLawParameters(const std::map<std::string, double>& funct_params);
 
     double rho_CO2{};
     double DiffsolAdVTLC{};

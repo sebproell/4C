@@ -23,7 +23,7 @@ namespace
 
   template <int dim>
   std::shared_ptr<Core::Utils::FunctionOfAnything> create_poro_function(
-      const std::string& type, const std::vector<std::pair<std::string, double>>& params)
+      const std::string& type, const std::map<std::string, double>& params)
   {
     if (type == "TUMOR_GROWTH_LAW_HEAVISIDE")
       return std::make_shared<PoroMultiPhaseScaTra::TumorGrowthLawHeaviside<dim>>(params);
@@ -74,7 +74,7 @@ namespace
     {
       std::string type = function_lin_def.get<std::string>("POROMULTIPHASESCATRA_FUNCTION");
 
-      auto params = function_lin_def.get<std::vector<std::pair<std::string, double>>>("PARAMS");
+      auto params = function_lin_def.get<std::map<std::string, double>>("PARAMS");
 
       return create_poro_function<dim>(type, params);
     }
@@ -119,7 +119,7 @@ void PoroMultiPhaseScaTra::add_valid_poro_functions(Core::Utils::FunctionManager
       all_of({
           entry<std::string>("POROMULTIPHASESCATRA_FUNCTION"),
           entry<int>("NUMPARAMS", {.required = false}),
-          entry<std::vector<std::pair<std::string, double>>>(
+          entry<std::map<std::string, double>>(
               "PARAMS", {.required = false, .size = from_parameter<int>("NUMPARAMS")}),
       }),
       try_create_poro_function_dispatch);
@@ -129,7 +129,7 @@ void PoroMultiPhaseScaTra::add_valid_poro_functions(Core::Utils::FunctionManager
 /*----------------------------------------------------------------------*/
 template <int dim>
 PoroMultiPhaseScaTra::TumorGrowthLawHeaviside<dim>::TumorGrowthLawHeaviside(
-    const std::vector<std::pair<std::string, double>>& funct_params)
+    const std::map<std::string, double>& funct_params)
     : PoroMultiPhaseScaTraFunction<dim>(), parameter_(funct_params)
 {
 }
@@ -240,7 +240,7 @@ std::vector<double> PoroMultiPhaseScaTra::TumorGrowthLawHeaviside<dim>::evaluate
 /*----------------------------------------------------------------------*/
 template <int dim>
 PoroMultiPhaseScaTra::NecrosisLawHeaviside<dim>::NecrosisLawHeaviside(
-    const std::vector<std::pair<std::string, double>>& funct_params)
+    const std::map<std::string, double>& funct_params)
     : PoroMultiPhaseScaTraFunction<dim>(), parameter_(funct_params)
 {
 }
@@ -376,7 +376,7 @@ std::vector<double> PoroMultiPhaseScaTra::NecrosisLawHeaviside<dim>::evaluate_de
 /*----------------------------------------------------------------------*/
 template <int dim>
 PoroMultiPhaseScaTra::OxygenConsumptionLawHeaviside<dim>::OxygenConsumptionLawHeaviside(
-    const std::vector<std::pair<std::string, double>>& funct_params)
+    const std::map<std::string, double>& funct_params)
     : PoroMultiPhaseScaTraFunction<dim>(), parameter_(funct_params)
 {
 }
@@ -518,7 +518,7 @@ std::vector<double> PoroMultiPhaseScaTra::OxygenConsumptionLawHeaviside<dim>::ev
 /*----------------------------------------------------------------------*/
 template <int dim>
 PoroMultiPhaseScaTra::TumorGrowthLawHeavisideOxy<dim>::TumorGrowthLawHeavisideOxy(
-    const std::vector<std::pair<std::string, double>>& funct_params)
+    const std::map<std::string, double>& funct_params)
     : PoroMultiPhaseScaTraFunction<dim>(), parameter_(funct_params)
 {
 }
@@ -655,7 +655,7 @@ std::vector<double> PoroMultiPhaseScaTra::TumorGrowthLawHeavisideOxy<dim>::evalu
 /*----------------------------------------------------------------------*/
 template <int dim>
 PoroMultiPhaseScaTra::TumorGrowthLawHeavisideNecro<dim>::TumorGrowthLawHeavisideNecro(
-    const std::vector<std::pair<std::string, double>>& funct_params)
+    const std::map<std::string, double>& funct_params)
     : PoroMultiPhaseScaTraFunction<dim>(), parameter_(funct_params)
 {
 }
@@ -797,7 +797,7 @@ std::vector<double> PoroMultiPhaseScaTra::TumorGrowthLawHeavisideNecro<dim>::eva
 /*----------------------------------------------------------------------*/
 template <int dim>
 PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<dim>::OxygenTransvascularExchangeLawCont(
-    const std::vector<std::pair<std::string, double>>& funct_params)
+    const std::map<std::string, double>& funct_params)
     : PoroMultiPhaseScaTraFunction<dim>(), parameter_(funct_params)
 {
 }
@@ -926,7 +926,7 @@ PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<dim>::evaluate_derivati
 /*----------------------------------------------------------------------*/
 template <int dim>
 PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<dim>::OxygenTransvascularExchangeLawDisc(
-    const std::vector<std::pair<std::string, double>>& funct_params)
+    const std::map<std::string, double>& funct_params)
     : PoroMultiPhaseScaTraFunction<dim>(), parameter_(funct_params), pos_oxy_art_(-1), pos_diam_(-1)
 {
 }
@@ -1046,7 +1046,7 @@ PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<dim>::evaluate_derivati
 /*----------------------------------------------------------------------*/
 template <int dim>
 PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::LungOxygenExchangeLaw(
-    const std::vector<std::pair<std::string, double>>& funct_params)
+    const std::map<std::string, double>& funct_params)
     : PoroMultiPhaseScaTraFunction<dim>(), parameter_(funct_params)
 {
 }
@@ -1227,7 +1227,7 @@ std::vector<double> PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::evaluate_d
 /*----------------------------------------------------------------------*/
 template <int dim>
 PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::LungCarbonDioxideExchangeLaw(
-    const std::vector<std::pair<std::string, double>>& funct_params)
+    const std::map<std::string, double>& funct_params)
     : PoroMultiPhaseScaTraFunction<dim>(), parameter_(funct_params)
 {
 }

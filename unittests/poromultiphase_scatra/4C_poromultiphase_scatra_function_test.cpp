@@ -24,7 +24,7 @@ namespace
     void SetUp() override
     {
       // function parameters
-      const std::vector<std::pair<std::string, double>> func_params = {{"rho_oxy", 1.429e-9},
+      const std::map<std::string, double> func_params = {{"rho_oxy", 1.429e-9},
           {"DiffAdVTLC", 5.36}, {"alpha_oxy", 2.1e-4}, {"rho_air", 1.0e-9}, {"rho_bl", 1.03e-6},
           {"n", 3}, {"P_oB50", 3.6}, {"NC_Hb", 0.25}, {"P_atmospheric", 101.3},
           {"volfrac_blood_ref", 0.1}};
@@ -43,7 +43,7 @@ namespace
     void SetUp() override
     {
       // function parameters
-      const std::vector<std::pair<std::string, double>> func_params = {{"rho_CO2", 1.98e-9},
+      const std::map<std::string, double> func_params = {{"rho_CO2", 1.98e-9},
           {"DiffsolAdVTLC", 4.5192e-3}, {"pH", 7.352}, {"rho_air", 1.0e-9}, {"rho_bl", 1.03e-6},
           {"rho_oxy", 1.429e-9}, {"n", 3}, {"P_oB50", 3.6}, {"C_Hb", 18.2}, {"NC_Hb", 0.25},
           {"alpha_oxy", 2.1e-4}, {"P_atmospheric", 101.3}, {"ScalingFormmHg", 133.3e-3},

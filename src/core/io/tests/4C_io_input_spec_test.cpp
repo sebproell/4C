@@ -627,7 +627,9 @@ namespace
         entry<std::vector<double>>("b", {.default_value = std::vector{1., 2., 3.}, .size = 3}),
         one_of({
             all_of({
-                entry<std::pair<int, std::string>>("b", {.default_value = std::pair{1, "abc"}}),
+                entry<std::map<std::string, std::string>>(
+                    "b", {.default_value = std::map<std::string, std::string>{{"key", "abc"}},
+                             .size = 1}),
                 entry<std::string>("c"),
             }),
             group("group",
@@ -682,9 +684,11 @@ specs:
         required: true
         specs:
           - name: b
-            type: 'pair<int, string>'
+            type: 'map<string, string>'
             required: false
-            default: [1,abc]
+            default:
+              key: abc
+            size: 1
           - name: c
             type: string
             required: true

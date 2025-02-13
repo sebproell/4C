@@ -60,12 +60,15 @@ namespace Core::IO
         }
       }
 
-      template <typename T, typename U>
-      void operator()(std::ostream& out, const std::pair<T, U>& val) const
+      template <typename T>
+      void operator()(std::ostream& out, const std::map<std::string, T>& val) const
       {
-        (*this)(out, val.first);
-        out << " ";
-        (*this)(out, val.second);
+        for (const auto& [key, v] : val)
+        {
+          out << key << " ";
+          (*this)(out, v);
+          out << " ";
+        }
       }
     };
 
@@ -108,11 +111,11 @@ namespace Core::IO
     };
 
     template <typename T, typename U>
-    struct PrettyTypeName<std::pair<T, U>>
+    struct PrettyTypeName<std::map<T, U>>
     {
       std::string operator()()
       {
-        return "pair<" + PrettyTypeName<T>{}() + ", " + PrettyTypeName<U>{}() + ">";
+        return "map<" + PrettyTypeName<T>{}() + ", " + PrettyTypeName<U>{}() + ">";
       }
     };
 
@@ -430,8 +433,8 @@ namespace Core::IO
     {
     };
 
-    template <typename T, typename U>
-    struct SupportedTypeHelper<std::pair<T, U>> : SupportedTypeHelper<T>, SupportedTypeHelper<U>
+    template <typename U>
+    struct SupportedTypeHelper<std::map<std::string, U>> : SupportedTypeHelper<U>
     {
     };
 
@@ -483,7 +486,7 @@ namespace Core::IO
      * - `enum` and `enum class` types
      * - `Noneable<T>`, where `T` is one of the supported types
      * - `std::vector<T>`, where `T` is one of the supported types
-     * - `std::pair<T, U>`, where `T` and `U` are supported types
+     * - `std::map<std::string, T>`, where `T` is one of the supported types
      */
     template <typename T>
     concept SupportedType = Internal::SupportedTypeHelper<T>::value;
@@ -536,7 +539,7 @@ namespace Core::IO
 
     //! Additional parameters for a vector-valued entry().
     template <typename StoredTypeIn, typename ScalarTypeIn>
-    struct VectorData
+    struct SizedData
     {
       using StoredType = StoredTypeIn;
       using ScalarType = ScalarTypeIn;
@@ -571,7 +574,7 @@ namespace Core::IO
        * @note We use `int` instead of `size_t` since this is what most users write. Template
        *      argument deduction will work a lot better with `int` than with `size_t`.
        */
-      std::variant<int, SizeCallback> size;
+      std::variant<int, SizeCallback> size{dynamic_size};
 
       /**
        * An optional callback that is called after the value has been parsed. This can be used to
@@ -624,7 +627,13 @@ namespace Core::IO
       template <typename T>
       struct DataForHelper<std::vector<T>>
       {
-        using type = VectorData<std::vector<T>, T>;
+        using type = SizedData<std::vector<T>, T>;
+      };
+
+      template <typename T>
+      struct DataForHelper<std::map<std::string, T>>
+      {
+        using type = SizedData<std::map<std::string, T>, T>;
       };
 
       template <typename T>
@@ -635,7 +644,7 @@ namespace Core::IO
       static constexpr bool is_sized_data = false;
 
       template <typename D, typename S>
-      static constexpr bool is_sized_data<VectorData<D, S>> = true;
+      static constexpr bool is_sized_data<SizedData<D, S>> = true;
 
       //! Make .required field consistent with .default_value.
       template <typename DataType>
