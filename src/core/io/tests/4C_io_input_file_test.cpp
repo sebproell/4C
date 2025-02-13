@@ -43,7 +43,15 @@ namespace
     const std::string input_file_name = TESTING::get_support_file_path("test_files/test1.dat");
 
     MPI_Comm comm(MPI_COMM_WORLD);
-    Core::IO::InputFile input{{}, {"EMPTY"}, comm};
+    Core::IO::InputFile input{{},
+        {
+            "EMPTY",
+            "SECTION WITH SPACES",
+            "SECTION/WITH/SLASHES",
+            "SHORT SECTION",
+            "PARTICLES",
+        },
+        comm};
     input.read(input_file_name);
 
     EXPECT_TRUE(input.has_section("EMPTY"));
@@ -61,7 +69,18 @@ namespace
         TESTING::get_support_file_path("test_files/has_includes/main.dat");
 
     MPI_Comm comm(MPI_COMM_WORLD);
-    Core::IO::InputFile input{{}, {}, comm};
+    Core::IO::InputFile input{{},
+        {
+            "EMPTY",
+            "SECTION 1",
+            "INCLUDED SECTION 1a",
+            "INCLUDED SECTION 1b",
+            "INCLUDED SECTION 2",
+            "INCLUDED SECTION 3",
+            "PARTICLES",
+            "ANOTHER SECTION",
+        },
+        comm};
     input.read(input_file_name);
 
     EXPECT_EQ(input.file_for_section("INCLUDED SECTION 1a").filename(), "include1a.dat");
@@ -71,7 +90,6 @@ namespace
     check_section(input, "INCLUDED SECTION 1b", std::vector<std::string>(2, "line"));
     check_section(input, "INCLUDED SECTION 2", std::vector<std::string>(2, "line"));
     check_section(input, "INCLUDED SECTION 3", std::vector<std::string>(2, "line"));
-    // Check that an on-the-fly section can be read from an include
     check_section(input, "PARTICLES", std::vector<std::string>(5, "line"));
   }
 
@@ -91,7 +109,14 @@ namespace
     const std::string input_file_name = TESTING::get_support_file_path("test_files/yaml/basic.yml");
 
     MPI_Comm comm(MPI_COMM_WORLD);
-    Core::IO::InputFile input{{}, {}, comm};
+    Core::IO::InputFile input{{},
+        {
+            "EMPTY",
+            "SECTION1",
+            "SECTION2",
+            "SECTION WITH LINES",
+        },
+        comm};
     input.read(input_file_name);
 
     EXPECT_FALSE(input.has_section("EMPTY"));
@@ -106,7 +131,15 @@ namespace
         TESTING::get_support_file_path("test_files/yaml_includes/main.yaml");
 
     MPI_Comm comm(MPI_COMM_WORLD);
-    Core::IO::InputFile input{{}, {}, comm};
+    Core::IO::InputFile input{{},
+        {
+            "MAIN SECTION",
+            "INCLUDED SECTION 1",
+            "INCLUDED SECTION 2",
+            "INCLUDED SECTION 3",
+            "SECTION WITH SUBSTRUCTURE",
+        },
+        comm};
     input.read(input_file_name);
 
     check_section(input, "INCLUDED SECTION 1", std::vector<std::string>(2, "line"));

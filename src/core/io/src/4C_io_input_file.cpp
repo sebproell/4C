@@ -5,11 +5,14 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+#include "4C_config_revision.hpp"
+
 #include "4C_io_input_file.hpp"
 
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_io_input_file_utils.hpp"
 #include "4C_io_input_spec.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_io_yaml.hpp"
 #include "4C_utils_string.hpp"
@@ -23,6 +26,10 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Core::IO
 {
+
+  //! Name of the special section that can contain arbitrary data.
+  constexpr const char* description_section_name = "TITLE";
+
   namespace
   {
     std::string to_string(const ryml::csubstr str) { return std::string(str.data(), str.size()); };
@@ -251,6 +258,14 @@ namespace Core::IO
 
       std::map<std::string, InputSpec> valid_sections_;
       std::vector<std::string> legacy_section_names_;
+
+      bool is_section_known(const std::string& section_name) const
+      {
+        return valid_sections_.find(section_name) != valid_sections_.end() ||
+               std::ranges::any_of(
+                   legacy_section_names_, [&](const auto& name) { return name == section_name; }) ||
+               section_name == description_section_name;
+      }
     };
 
   }  // namespace Internal
@@ -547,6 +562,17 @@ namespace Core::IO
   {
     pimpl_->valid_sections_ = std::move(valid_sections);
     pimpl_->legacy_section_names_ = std::move(legacy_section_names);
+
+    FOUR_C_ASSERT_ALWAYS(!pimpl_->is_section_known("INCLUDES"),
+        "Section 'INCLUDES' is a reserved section name with special meaning. Please choose a "
+        "different name.");
+    pimpl_->valid_sections_["INCLUDES"] =
+        InputSpecBuilders::entry<std::vector<std::filesystem::path>>("INCLUDES",
+            {
+                .description = "Path to files that should be included into this file. "
+                               "The paths can be either absolute or relative to the file.",
+                .required = false,
+            });
   }
 
 
@@ -719,6 +745,19 @@ namespace Core::IO
     record_section_used("PARTICLES");
     record_section_used("STRUCTURE ELEMENTS");
     record_section_used("TITLE");
+
+    // All content has been read. Now validate. In the first iteration of this new feature,
+    // we only validate the section names, not the content.
+    if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0)
+    {
+      for (const auto& [section_name, content] : pimpl_->content_by_section_)
+      {
+        if (!pimpl_->is_section_known(section_name))
+        {
+          FOUR_C_THROW("Section '%s' is not a valid section name.", section_name.c_str());
+        }
+      }
+    }
   }
 
   InputFile::FragmentIteratorRange InputFile::in_section(const std::string& section_name)
@@ -859,7 +898,39 @@ namespace Core::IO
 
   void InputFile::emit_metadata(std::ostream& out) const
   {
-    print_metadata_yaml(out, pimpl_->valid_sections_);
+    ryml::Tree tree = init_yaml_tree_with_exceptions();
+    ryml::NodeRef root = tree.rootref();
+    root |= ryml::MAP;
+
+    {
+      auto metadata = root["metadata"];
+      metadata |= ryml::MAP;
+      metadata["commit_hash"] << VersionControl::git_hash;
+      metadata["version"] << FOUR_C_VERSION_FULL;
+      metadata["description_section_name"] = description_section_name;
+    }
+
+    {
+      auto sections = root["sections"];
+      sections |= ryml::SEQ;
+      for (const auto& [name, spec] : pimpl_->valid_sections_)
+      {
+        auto section = sections.append_child();
+        YamlNodeRef spec_emitter{section, ""};
+        spec.emit_metadata(spec_emitter);
+      }
+    }
+
+    {
+      auto legacy_string_sections = root["legacy_string_sections"];
+      legacy_string_sections |= ryml::SEQ;
+      for (const auto& name : pimpl_->legacy_section_names_)
+      {
+        legacy_string_sections.append_child() << name;
+      }
+    }
+
+    out << tree;
   }
 
 

@@ -51,6 +51,8 @@ namespace
    */
   void gather_all_section_specs(std::map<std::string, Core::IO::InputSpec>& section_specs)
   {
+    using namespace Core::IO::InputSpecBuilders;
+
     section_specs["CONTACT CONSTITUTIVE LAWS"] =
         CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws();
     section_specs["CLONING MATERIAL MAP"] = Core::FE::valid_cloning_material_map();
@@ -67,7 +69,6 @@ namespace
         }
       }
 
-      using namespace Core::IO::InputSpecBuilders;
       auto all_materials = all_of({
           entry<int>("MAT"),
           one_of(possible_materials),
@@ -89,11 +90,19 @@ namespace
       }
     }
 
+    {
+      auto valid_conditions = Input::valid_conditions();
+      for (const auto& cond : valid_conditions)
+      {
+        section_specs[cond.section_name()] = all_of(cond.specs());
+      }
+    }
+
     // Up to here all the sections allow for multiple entries. Thus, wrap up the specs into
     // lists.
     for (auto& [section_name, spec] : section_specs)
     {
-      spec = Core::IO::InputSpecBuilders::list(section_name, spec);
+      spec = Core::IO::InputSpecBuilders::list(section_name, spec, {.required = false});
     }
 
     // The so-called "parameters" are key-values which can only appear once. Wrap them up into
@@ -113,9 +122,39 @@ Core::IO::InputFile Global::set_up_input_file(MPI_Comm comm)
   std::map<std::string, Core::IO::InputSpec> valid_sections;
   gather_all_section_specs(valid_sections);
 
-  std::vector<std::string> legacy_section_names;
+  std::vector<std::string> legacy_section_names{
+      // elements
+      "STRUCTURE ELEMENTS",
+      "FLUID ELEMENTS",
+      "LUBRICATION ELEMENTS",
+      "TRANSPORT ELEMENTS",
+      "TRANSPORT2 ELEMENTS",
+      "ALE ELEMENTS",
+      "THERMO ELEMENTS",
+      "ARTERY ELEMENTS",
+      "REDUCED D AIRWAYS ELEMENTS",
+      "ELECTROMAGNETIC ELEMENTS",
+      "PARTICLES",
+      "PERIODIC BOUNDINGBOX ELEMENTS",
+      // domains
+      "FLUID DOMAIN",
+      "STRUCTURE DOMAIN",
+      // general geometry
+      "NODE COORDS",
+      "DNODE-NODE TOPOLOGY",
+      "DLINE-NODE TOPOLOGY",
+      "DSURF-NODE TOPOLOGY",
+      "DVOL-NODE TOPOLOGY",
+      // nurbs
+      "STRUCTURE KNOTVECTORS",
+      "FLUID KNOTVECTORS",
+      "ALE KNOTVECTORS",
+      "TRANSPORT KNOTVECTORS",
+      "TRANSPORT2 KNOTVECTORS",
+      "THERMO KNOTVECTORS",
+  };
 
-  return Core::IO::InputFile(std::move(valid_sections), std::move(legacy_section_names), comm);
+  return Core::IO::InputFile{std::move(valid_sections), std::move(legacy_section_names), comm};
 }
 
 void Global::read_fields(Global::Problem& problem, Core::IO::InputFile& input, const bool read_mesh)
