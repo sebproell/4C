@@ -1,3 +1,5 @@
+PROBLEM TYPE:
+  PROBLEMTYPE: Fluid_Structure_Interaction
 ALE DYNAMIC:
   ALE_TYPE: springs_spatial
   MAXITER: 4

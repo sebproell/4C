@@ -1,3 +1,5 @@
+PROBLEM TYPE:
+  PROBLEMTYPE: Fluid_Structure_Interaction
 STRUCTURAL DYNAMIC:
   INT_STRATEGY: "Standard"
   LINEAR_SOLVER: 3
