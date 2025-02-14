@@ -30,7 +30,6 @@ FULL_PATH_NAMES        = NO
 STRIP_FROM_PATH        =
 JAVADOC_AUTOBRIEF      = YES
 TAB_SIZE               = 2
-ALIASES                += "level=\par Level:\n"
 INLINE_SIMPLE_STRUCTS  = NO
 BUILTIN_STL_SUPPORT    = YES
 NUM_PROC_THREADS       = 0
@@ -58,6 +57,8 @@ QUIET                  = NO
 WARNINGS               = YES
 WARN_IF_UNDOCUMENTED   = NO
 WARN_IF_DOC_ERROR      = YES
+WARN_IF_INCOMPLETE_DOC = NO
+WARN_IF_UNDOC_ENUM_VAL = NO
 WARN_NO_PARAMDOC       = NO
 WARN_AS_ERROR          = NO
 WARN_FORMAT            = "$file:$line: $text"
@@ -101,7 +102,6 @@ REFERENCES_LINK_SOURCE = YES
 #---------------------------------------------------------------------------
 
 ALPHABETICAL_INDEX     = YES
-COLS_IN_ALPHA_INDEX    = 4
 IGNORE_PREFIX          =
 
 #---------------------------------------------------------------------------
@@ -118,7 +118,6 @@ HTML_EXTRA_STYLESHEET  =
 HTML_EXTRA_FILES       =
 HTML_DYNAMIC_MENUS     = YES
 HTML_DYNAMIC_SECTIONS  = NO
-HTML_TIMESTAMP         = YES
 HTML_COLORSTYLE        = AUTO_LIGHT
 GENERATE_HTMLHELP      = NO
 USE_MATHJAX            = YES
@@ -160,9 +159,7 @@ PREDEFINED             = FOUR_C_NAMESPACE_OPEN= \
 # Configuration options related to the dot tool
 #---------------------------------------------------------------------------
 
-CLASS_DIAGRAMS         = YES
 DOT_NUM_THREADS        = 0
-DOT_FONTNAME           = FreeSans
 CLASS_GRAPH            = YES
 COLLABORATION_GRAPH    = YES
 GROUP_GRAPHS           = YES

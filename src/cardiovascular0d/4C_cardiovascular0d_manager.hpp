@@ -83,7 +83,7 @@ namespace Utils
         Teuchos::ParameterList scalelist);
 
     /*!
-     \brief Return cardiovascular0d rhs norm at generalized midpoint $t_{n+\theta}$
+     \brief Return cardiovascular0d rhs norm at generalized midpoint \f$t_{n+\theta}\f$
     */
     double get_cardiovascular0_drhs_norm() const
     {
@@ -93,7 +93,7 @@ namespace Utils
     };
 
     /*!
-     \brief Return cardiovascular0d rhs norm at generalized midpoint $t_{n+\theta}$
+     \brief Return cardiovascular0d rhs norm at generalized midpoint \f$t_{n+\theta}\f$
     */
     double get_cardiovascular0_drhs_inf_norm() const
     {
@@ -113,7 +113,7 @@ namespace Utils
     };
 
     /*!
-     \brief Return cardiovascular0d rhs norm at generalized midpoint $t_{n+\theta}$
+     \brief Return cardiovascular0d rhs norm at generalized midpoint \f$t_{n+\theta}\f$
     */
     int get_cardiovascular0_d_lin_solve_error() const { return linsolveerror_; };
 
@@ -149,7 +149,7 @@ namespace Utils
     );
 
     /*!
-         \brief Return cardiovascular0d rhs at generalized midpoint $t_{n+\theta}$
+         \brief Return cardiovascular0d rhs at generalized midpoint \f$t_{n+\theta}\f$
     */
     std::shared_ptr<Core::LinAlg::Vector<double>> get_cardiovascular0_drhs() const
     {

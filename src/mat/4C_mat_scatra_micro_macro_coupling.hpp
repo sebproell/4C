@@ -152,7 +152,7 @@ namespace Mat
     }
 
     //! set time stepping data: time step size @p dt, current time @p time, and number of time step
-    //! @p step on current Gauss point @gp_id
+    //! @p step on current Gauss point @p gp_id
     void set_time_stepping(int gp_id, double dt, double time, int step);
 
    protected:

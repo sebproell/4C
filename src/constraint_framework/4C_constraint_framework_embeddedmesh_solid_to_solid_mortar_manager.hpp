@@ -78,9 +78,9 @@ namespace CONSTRAINTS::EMBEDDEDMESH
     /**
      * \brief Standard Constructor
      *
-     * @params discret (in) Pointer to the discretization.
-     * @params displacement_vector (in) global displacement vector.
-     * @params start_value_lambda_gid (in) Start value for the Lagrange multiplier global IDs.
+     * @param discret (in) Pointer to the discretization.
+     * @param displacement_vector (in) global displacement vector.
+     * @param start_value_lambda_gid (in) Start value for the Lagrange multiplier global IDs.
      */
     SolidToSolidMortarManager(std::shared_ptr<Core::FE::Discretization>& discret,
         const Core::LinAlg::Vector<double>& displacement_vector,
@@ -209,7 +209,7 @@ namespace CONSTRAINTS::EMBEDDEDMESH
      * timestep (to be more precise: only once for each set of contact pairs. If they do not
      * change between timesteps and do not switch rank, we can keep the created maps).
      *
-     * @params displacement_vector (in) global displacement vector.
+     * @param displacement_vector (in) global displacement vector.
      */
     void set_local_maps(const Core::LinAlg::Vector<double>& displacement_vector);
 

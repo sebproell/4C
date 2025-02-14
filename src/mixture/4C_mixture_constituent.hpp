@@ -235,9 +235,9 @@ namespace Mixture
      *
      * The total deformation is #F, which is split into two parts:
      *
-     * $\boldsymbol{F} = \boldsymbol{F}_e \cdot \boldsymbol{F}_in$
+     * \f$\boldsymbol{F} = \boldsymbol{F}_e \cdot \boldsymbol{F}_in\f$
      *
-     * Only elastic part $\boldsymbol{F}_e$ causes stresses. The inelastic part is only needed
+     * Only elastic part \f$\boldsymbol{F}_e\f$ causes stresses. The inelastic part is only needed
      * for the linearization.
      *
      * @note S_stress and the linearization are specific quantities. They have to be multiplied with

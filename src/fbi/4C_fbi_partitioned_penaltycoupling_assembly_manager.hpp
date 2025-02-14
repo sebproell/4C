@@ -64,12 +64,12 @@ namespace BeamInteraction
       /**
        * \brief Evaluate all force and stiffness terms and add them to the global matrices.
        * \param[in] discret (in) Pointer to the disretization.
-       * \params[inout] ff Global force vector acting on the fluid
-       * \params[inout] fb Global force vector acting on the beam
-       * \params[inout] cff  Global stiffness matrix coupling fluid to fluid DOFs
-       * \params[inout] cbb  Global stiffness matrix coupling beam to beam DOFs
-       * \params[inout] cfb  Global stiffness matrix coupling beam to fluid DOFs
-       * \params[inout] cbf  Global stiffness matrix coupling fluid to beam DOFs
+       * \param[inout] ff Global force vector acting on the fluid
+       * \param[inout] fb Global force vector acting on the beam
+       * \param[inout] cff  Global stiffness matrix coupling fluid to fluid DOFs
+       * \param[inout] cbb  Global stiffness matrix coupling beam to beam DOFs
+       * \param[inout] cfb  Global stiffness matrix coupling beam to fluid DOFs
+       * \param[inout] cbf  Global stiffness matrix coupling fluid to beam DOFs
        */
       virtual void evaluate_force_stiff(const Core::FE::Discretization& discretization1,
           const Core::FE::Discretization& discretization2, std::shared_ptr<Epetra_FEVector>& ff,

@@ -63,8 +63,8 @@ namespace CONTACT
      * within every node! Since this computation is done via Interface::evaluate() in the integrator
      * class, these corresponding methods have to be called before AssembleMacauley()!
      *
-     * \params[in/out] localisincontact true if at least one node is in contact
-     * \params[in/out] localactivesetchange true if the active set changed
+     * \param[in/out] localisincontact true if at least one node is in contact
+     * \param[in/out] localactivesetchange true if the active set changed
      *
      */
     void assemble_reg_normal_forces(bool& localisincontact, bool& localactivesetchange) override;
