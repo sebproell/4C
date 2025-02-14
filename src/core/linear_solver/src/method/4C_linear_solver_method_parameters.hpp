@@ -56,7 +56,7 @@ namespace Core::LinearSolver
      *
      * \pre The input parameter list needs to contain these entries:
      *   - "null space: dimension" (type: \c int )
-     *   - "nullspace" (type: \c RCP<Core::LinAlg::MultiVector<double>> )
+     *   - "nullspace" (type: \c std::shared_ptr<Core::LinAlg::MultiVector<double>> )
      *
      * @param[in] row_map Xpetra-style map to be used to create the nullspace vector
      * @param[in] list Parameter list, where 4C has stored the nullspace data as
@@ -66,7 +66,7 @@ namespace Core::LinearSolver
     static Teuchos::RCP<Xpetra::MultiVector<Scalar, LocalOrdinal, GlobalOrdinal, Node>>
     extract_nullspace_from_parameterlist(
         const Xpetra::Map<LocalOrdinal, GlobalOrdinal, Node>& row_map,
-        Teuchos::ParameterList& list);
+        const Teuchos::ParameterList& list);
   };
 }  // namespace Core::LinearSolver
 
