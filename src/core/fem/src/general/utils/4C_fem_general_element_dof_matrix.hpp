@@ -37,7 +37,7 @@ namespace Core::FE
    * @param values
    * @return Core::LinAlg::Matrix<num_dof_per_node, Core::FE::num_nodes<celltype>>
    */
-  template <Core::FE::CellType celltype, int num_dof_per_node, std::ranges::contiguous_range R>
+  template <Core::FE::CellType celltype, unsigned num_dof_per_node, std::ranges::contiguous_range R>
     requires std::ranges::sized_range<R>
   auto get_element_dof_matrix(R&& values) -> Core::LinAlg::Matrix<num_dof_per_node,
       Core::FE::num_nodes<celltype>, typename std::remove_cvref_t<R>::value_type>
@@ -58,7 +58,7 @@ namespace Core::FE
    outlive
    * the returned matrix object.
    */
-  template <Core::FE::CellType celltype, int num_dof_per_node, std::ranges::contiguous_range R>
+  template <Core::FE::CellType celltype, unsigned num_dof_per_node, std::ranges::contiguous_range R>
     requires std::ranges::sized_range<R>
   auto get_element_dof_matrix_view(R&& values) -> Core::LinAlg::Matrix<num_dof_per_node,
       Core::FE::num_nodes<celltype>, typename std::remove_cvref_t<R>::value_type>
@@ -69,6 +69,41 @@ namespace Core::FE
     constexpr bool view = true;
     return Core::LinAlg::Matrix<num_dof_per_node, Core::FE::num_nodes<celltype>,
         typename std::remove_cvref_t<R>::value_type>(std::ranges::data(values), view);
+  }
+
+  /*!
+   * @brief Get the dof column vector in form of a @p LinAlg::Matrix from a matrix of dof values.
+   *
+   * @tparam celltype : celltype of the element
+   * @tparam num_dof_per_node : Number of dofs per node
+   * @tparam Number : Type of the values
+   * @param matrix : Matrix of the dof values
+   * @return auto
+   */
+  template <Core::FE::CellType celltype, unsigned num_dof_per_node, typename Number>
+  auto get_element_dof_vector(
+      const Core::LinAlg::Matrix<num_dof_per_node, Core::FE::num_nodes<celltype>, Number>& matrix)
+  {
+    return Core::LinAlg::Matrix<num_dof_per_node * Core::FE::num_nodes<celltype>, 1, Number>(
+        matrix.data(), false);
+  }
+
+  /*!
+   * @brief Get a view in form of a dof column vector as @p LinAlg::Matrix to a matrix of
+   * dof values.
+   *
+   * @tparam celltype : celltype of the element
+   * @tparam num_dof_per_node : Number of dofs per node
+   * @tparam Number : Type of the values
+   * @param matrix : Matrix of the dof values
+   * @return auto
+   */
+  template <Core::FE::CellType celltype, unsigned num_dof_per_node, typename Number>
+  auto get_element_dof_vector_view(
+      const Core::LinAlg::Matrix<num_dof_per_node, Core::FE::num_nodes<celltype>, Number>& matrix)
+  {
+    return Core::LinAlg::Matrix<num_dof_per_node * Core::FE::num_nodes<celltype>, 1, Number>(
+        matrix.data(), true);
   }
 }  // namespace Core::FE
 

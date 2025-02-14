@@ -82,4 +82,34 @@ namespace
 
     EXPECT_EQ(arr[5], 12.3);
   }
+
+  TEST(ElementDofMatrixTest, GetVector)
+  {
+    const auto arr = get_dof_array<std::array<double, 8>>();
+    const Core::LinAlg::Matrix<2, 4> dof_matrix =
+        Core::FE::get_element_dof_matrix<Core::FE::CellType::quad4, 2>(arr);
+    const Core::LinAlg::Matrix<8, 1> dof_vector =
+        Core::FE::get_element_dof_vector<Core::FE::CellType::quad4, 2>(dof_matrix);
+
+    // copying the data vice versa must result in the same data
+    for (int i = 0; i < 8; ++i)
+    {
+      EXPECT_EQ(dof_vector(i, 0), arr[i]);
+    }
+  }
+
+  TEST(ElementDofMatrixTest, GetVectorView)
+  {
+    const auto arr = get_dof_array<std::array<double, 8>>();
+    const Core::LinAlg::Matrix<2, 4> dof_matrix =
+        Core::FE::get_element_dof_matrix<Core::FE::CellType::quad4, 2>(arr);
+    const Core::LinAlg::Matrix<8, 1> dof_vector =
+        Core::FE::get_element_dof_vector_view<Core::FE::CellType::quad4, 2>(dof_matrix);
+
+    // copying the data vice versa must result in the same data
+    for (int i = 0; i < 8; ++i)
+    {
+      EXPECT_EQ(dof_vector(i, 0), arr[i]);
+    }
+  }
 }  // namespace
