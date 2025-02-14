@@ -13,6 +13,7 @@
 #include "4C_io_pstream.hpp"
 #include "4C_linalg_sparsematrix.hpp"
 #include "4C_linalg_vector.hpp"
+#include "4C_linear_solver_method_linalg.hpp"
 #include "4C_solver_nonlin_nox_aux.hpp"
 #include "4C_structure_new_dbc.hpp"
 #include "4C_structure_new_model_evaluator_data.hpp"
