@@ -894,7 +894,7 @@ namespace Discret::Elements::Shell
    * 0]^T, E_2=[0, 1, 0]^T, E_3=[0, 0, 1]^T$\f, no transformation is necessary
    *
    * @tparam distype : The discretization type known at compile time
-   * @params strains (in/out) :  Strain measures of the element (deformation gradient,
+   * @param strains (in/out) :  Strain measures of the element (deformation gradient,
    * Green-Lagrange strain tensor)
    * @param g_reference (in) : An object holding the reference basis vectors and metric
    * tensors of the shell body
@@ -957,7 +957,7 @@ namespace Discret::Elements::Shell
    * \f]
    *
    * @tparam distype :  The discretization type known at compile time
-   * @params stress (in/out) : Stress quantities of the element (2. Piola-Kirchoff stress tensor
+   * @param stress (in/out) : Stress quantities of the element (2. Piola-Kirchoff stress tensor
    * and the linearization w.r.t Green-Lagrange strain)
    * @param g_reference (in) : An object holding the reference basis vectors and metric
    * tensors of the shell body
@@ -1001,7 +1001,7 @@ namespace Discret::Elements::Shell
    * strains within the ANS method
    *
    * @tparam distype : The discretization type known at compile time
-   * @params xi_gp (in) : Coordinate of the integration point in the parameter space
+   * @param xi_gp (in) : Coordinate of the integration point in the parameter space
    * @return shapefunctions for ANS
    */
   template <Core::FE::CellType distype>
@@ -1064,8 +1064,8 @@ namespace Discret::Elements::Shell
    * strains within the ANS method
    *
    * @tparam distype : The discretization type known at compile time
-   * @params xi_gp (in) : Coordinate of the integration point in the parameter space
-   * @params num_ans (in) : Number of ANS collocation points
+   * @param xi_gp (in) : Coordinate of the integration point in the parameter space
+   * @param num_ans (in) : Number of ANS collocation points
    * @return shapefunctions for ANS
    */
   template <Core::FE::CellType distype>
@@ -1090,7 +1090,7 @@ namespace Discret::Elements::Shell
    * @brief Transform the Green-Lagrange strains to Euler-Almansi strains
    *
    * @tparam distype : The discretization type known at compile time
-   * @params gl (in) :  Green-Lagrange strains
+   * @param gl (in) :  Green-Lagrange strains
    * @param defgrd (in) : Deformations gradient tensor
    * @param ea (in/out) : Euler-Almansi strains
    */
@@ -1118,7 +1118,7 @@ namespace Discret::Elements::Shell
    * @brief Transform the 2. Piola-Kirchoff stresses to Cauchy stresses
    *
    * @tparam distype : The discretization type known at compile time
-   * @params pk2 (in) :  2. Piola-Kirchoff stresses
+   * @param pk2 (in) :  2. Piola-Kirchoff stresses
    * @param defgrd (in) : Deformations gradient tensor
    * @param cauchy (in/out) : Cauchy stresses
    */
@@ -1143,7 +1143,7 @@ namespace Discret::Elements::Shell
    * @brief Assembles data in voigt vector notation to matrix
    *
    * @tparam num_internal_variables : number of internal parameters
-   * @params vector (in) :  Vector in voigt notation
+   * @param vector (in) :  Vector in voigt notation
    * @param data (in/out) : Data to which the vector will be assembled
    * @param thickness_weight (in) : Weighting factor to consider thickness integration
    */
@@ -1159,8 +1159,8 @@ namespace Discret::Elements::Shell
    * @brief Assembles strain data in voigt vector notation to matrix
    *
    * @tparam distype : The discretization type known at compile time
-   * @params strains (in) :  Strain vector
-   * @params strains_type (in) :  Strain type
+   * @param strains (in) :  Strain vector
+   * @param strains_type (in) :  Strain type
    * @param data (in/out) : Data to which the vector will be assembled
    * @param row (in) : Row number
    * @param thickness_weight (in) : Weighting factor to consider thickness integration
@@ -1198,8 +1198,8 @@ namespace Discret::Elements::Shell
    * @brief Assembles stress data in voigt vector notation to matrix
    *
    * @tparam distype : The discretization type known at compile time
-   * @params stress (in) :  Stress vector
-   * @params stress_type (in) :  Stress type
+   * @param stress (in) :  Stress vector
+   * @param stress_type (in) :  Stress type
    * @param data (in/out) : Data to which the vector will be assembled
    * @param row (in) : Row number
    * @param thickness_weight (in) : Weighting factor to consider thickness integration
@@ -1246,7 +1246,7 @@ namespace Discret::Elements::Shell
    * element. Here, they are chosen such that the points lie on the middle of each edge.
    *
    * @tparam distype : discretization type
-   * @params qp (in) :  Index of collocation point
+   * @param qp (in) :  Index of collocation point
    */
   template <Core::FE::CellType distype>
   void get_coordinates_of_ans_collocation_points(
@@ -1288,9 +1288,9 @@ namespace Discret::Elements::Shell
    * evaluated at collocation points for ANS
    *
    * @tparam distype : The discretization type known at compile time
-   * @params shapefunctions_collocation (in/out) :  An object holding the shape functions and the
+   * @param shapefunctions_collocation (in/out) :  An object holding the shape functions and the
    * first derivatives w.r.t spatial coordinates
-   * @params metrics_collocation_reference (in/out) :  An object holding the reference basis vectors
+   * @param metrics_collocation_reference (in/out) :  An object holding the reference basis vectors
    * and metric tensors of the shell body
    * @param metrics_collocation_current (in/out) : An object holding the current basis vectors and
    * metric tensors of the shell body

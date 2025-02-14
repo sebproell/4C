@@ -42,12 +42,12 @@ namespace BeamInteraction
     /**
      * \brief Evaluate this contact element pair.
      *
-     * \params[inout] forcevec1 (out) Force vector on element 1.
-     * \params[inout] forcevec2 (out) Force vector on element 2.
-     * \params[inout] stiffmat11 (out) Stiffness contributions on element 1 - element 1.
-     * \params[inout] stiffmat12 (out) Stiffness contributions on element 1 - element 2.
-     * \params[inout] stiffmat21 (out) Stiffness contributions on element 2 - element 1.
-     * \params[inout] stiffmat22 (out) Stiffness contributions on element 2 - element 2.
+     * \param[inout] forcevec1 (out) Force vector on element 1.
+     * \param[inout] forcevec2 (out) Force vector on element 2.
+     * \param[inout] stiffmat11 (out) Stiffness contributions on element 1 - element 1.
+     * \param[inout] stiffmat12 (out) Stiffness contributions on element 1 - element 2.
+     * \param[inout] stiffmat21 (out) Stiffness contributions on element 2 - element 1.
+     * \param[inout] stiffmat22 (out) Stiffness contributions on element 2 - element 2.
      *
      * \returns True if pair is in contact.
      */

@@ -349,7 +349,7 @@ namespace Solid
        *  and complete them, if necessary */
       void fill_complete();
 
-      /*! \biref Assemble the Rayleigh damping matrix
+      /*! \brief Assemble the Rayleigh damping matrix
        *
        *  Please note, that this has to been done only once during the
        *  Solid::Integrator::equilibrate_initial_state routine!

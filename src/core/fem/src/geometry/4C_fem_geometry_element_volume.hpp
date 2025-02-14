@@ -145,8 +145,8 @@ namespace Core::Geo
 
   /** \brief calculates the length of a edge element in given configuration
    *
-   *  \params distype (in) : discretization type of the given element
-   *  \params xyze    (in) : spatial coordinates of the elememnt nodes
+   *  \param distype (in) : discretization type of the given element
+   *  \param xyze    (in) : spatial coordinates of the elememnt nodes
    *                         (row = dim, col = number of nodes)
    */
   template <class Matrixtype>

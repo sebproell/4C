@@ -618,7 +618,7 @@ namespace Discret
       /*!
       \brief class for evaluation of convective term into the element matrix
 
-      This class implements the convective term $(w, v \nabla \cdot S )$.
+      This class implements the convective term \f$(w, v \nabla \cdot S )\f$.
 
       \note this term is not used, since the equations are written in a Lagrangian description
             w.r.t. skeleton.
@@ -714,7 +714,7 @@ namespace Discret
       /*!
       \brief class for evaluation of divergence of the (mesh) velocity field
 
-      This class implements the term $(w, \nabla \cdot v^s )$.
+      This class implements the term \f$(w, \nabla \cdot v^s )\f$.
 
       \author vuong
       */
@@ -804,7 +804,7 @@ namespace Discret
       /*!
       \brief class for evaluation of divergence of the (mesh) velocity field, scaled by saturation
 
-      This class implements the term $(w, S \nabla \cdot v^s )$.
+      This class implements the term \f$(w, S \nabla \cdot v^s )\f$.
 
       \author vuong
       */
@@ -894,7 +894,7 @@ namespace Discret
       /*!
       \brief class for evaluation of biot stabilization terms
 
-      This class implements the term $(w, \tau R_{struct} )$.
+      This class implements the term \f$(w, \tau R_{struct} )\f$.
 
       \author vuong
       */
@@ -985,7 +985,7 @@ namespace Discret
       /*!
       \brief class for evaluation of diffusive term into the element matrix
 
-      This class implements the term $( \nabla w, K \nabla p )$.
+      This class implements the term \f$( \nabla w, K \nabla p )\f$.
 
       \author vuong
       */
@@ -1165,7 +1165,7 @@ namespace Discret
       /*!
       \brief class for evaluation of mass term (pressure) into the element matrix
 
-      This class implements the term $( w,porosity S/K \frac{\partial p}{\partial t} )$.
+      This class implements the term \f$( w,porosity S/K \frac{\partial p}{\partial t} )\f$.
 
       \author vuong
       */
@@ -1461,7 +1461,7 @@ namespace Discret
       /*!
       \brief class for evaluation of mass term (solid saturation) into the element matrix
 
-      This class implements the term $( w, \porosity \frac{\partial S}{\partial t} )$.
+      This class implements the term \f$( w, \porosity \frac{\partial S}{\partial t} )\f$.
 
       \author vuong
       */
@@ -2403,7 +2403,7 @@ namespace Discret
       fractions:
              - divergence of the (mesh) velocity field times sum of volume fraction
 
-      This class implements the term $(w, -\sum^volfrac \phi_volfrac \nabla \cdot v^s )$.
+      This class implements the term \f$(w, -\sum^volfrac \phi_volfrac \nabla \cdot v^s )\f$.
 
       \author kremheller
       */
@@ -2496,7 +2496,7 @@ namespace Discret
              - divergence of the (mesh) velocity field times sum of volume fraction scaled with
       saturation
 
-      This class implements the term $(w, S* -\sum^volfrac \phi_volfrac \nabla \cdot v^s )$.
+      This class implements the term \f$(w, S* -\sum^volfrac \phi_volfrac \nabla \cdot v^s )\f$.
 
       \author kremheller
       */
@@ -2680,7 +2680,7 @@ namespace Discret
       /*!
       \brief class for evaluation of instationary term for volume fractions
 
-      This class implements the term $( w, rho \frac{\partial volfrac^i}{\partial t} )$.
+      This class implements the term \f$( w, rho \frac{\partial volfrac^i}{\partial t} )\f$.
       It is assembled into the equation for volume fractions and for volume fraction pressures
 
       \author kremheller
@@ -2771,7 +2771,7 @@ namespace Discret
       /*!
       \brief class for evaluation of divergence of the (mesh) velocity field for volume fractions
 
-      This class implements the term $(w, rho volfrac \nabla \cdot v^s )$.
+      This class implements the term \f$(w, rho volfrac \nabla \cdot v^s )\f$.
       It is assembled into the equation for volume fractions and for volume fraction pressures
 
       \author kremheller
@@ -2862,7 +2862,7 @@ namespace Discret
       /*!
       \brief class for evaluation of diffusive term into the element matrix
 
-      This class implements the term $( \nabla w, D \nabla volfrac )$.
+      This class implements the term \f$( \nabla w, D \nabla volfrac )\f$.
 
       \author kremheller
       */
@@ -3042,7 +3042,7 @@ namespace Discret
       /*!
       \brief class for evaluation of additional flux depending on Scatra primary variable
 
-      This class implements the term $( \nabla w, D \nabla phi_scatra )$.
+      This class implements the term \f$( \nabla w, D \nabla phi_scatra )\f$.
 
       \author kremheller
       */
@@ -3132,7 +3132,7 @@ namespace Discret
       /*!
       \brief class for evaluation of diffusive volfrac pressure term into the element matrix
 
-      This class implements the term $( \nabla w, k/\mu \nabla volfrac_pressure )$.
+      This class implements the term \f$( \nabla w, k/\mu \nabla volfrac_pressure )\f$.
 
       \author kremheller
       */

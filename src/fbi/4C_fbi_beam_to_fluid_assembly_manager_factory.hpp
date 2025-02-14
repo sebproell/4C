@@ -63,7 +63,7 @@ namespace BeamInteraction
      *
      * \param[in] params_ptr Container containing the Fluid beam interaction parameters
      * \param[in] interaction_pairs Vector of possible fluid beam interaction pairs
-     * \params[in] assemblystrategy object handling the assembly into the global fluid matrix
+     * \param[in] assemblystrategy object handling the assembly into the global fluid matrix
      *
      * \return beam interaction assembly manager
      */

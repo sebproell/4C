@@ -87,9 +87,9 @@ namespace BeamInteraction
     /**
      * \brief Standard Constructor
      *
-     * @params discret (in) Pointer to the discretization.
-     * @params params (in) Beam-to-solid parameters.
-     * @params start_value_lambda_gid (in) Start value for the Lagrange multiplier global IDs.
+     * @param discret (in) Pointer to the discretization.
+     * @param params (in) Beam-to-solid parameters.
+     * @param start_value_lambda_gid (in) Start value for the Lagrange multiplier global IDs.
      */
     BeamToSolidMortarManager(const std::shared_ptr<const Core::FE::Discretization>& discret,
         const std::shared_ptr<const BeamInteraction::BeamToSolidParamsBase>& params,
