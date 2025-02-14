@@ -11,6 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_global_data.hpp"
+#include "4C_io_input_file.hpp"
 
 #include <filesystem>
 
@@ -18,6 +19,12 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Global
 {
+  /**
+   * This legacy function prepares an InputFile object with all globally known sections. This object
+   * can be used to read a file, convert file formats or emit the known sections as metadata.
+   */
+  [[nodiscard]] Core::IO::InputFile set_up_input_file(MPI_Comm comm);
+
   /// setup the discretizations
   void read_fields(
       Global::Problem& problem, Core::IO::InputFile& input, const bool read_mesh = true);

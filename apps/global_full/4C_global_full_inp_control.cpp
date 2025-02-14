@@ -33,9 +33,10 @@ void ntainp_ccadiscret(
   Core::Communication::NestedParallelismType npType = problem->get_communicators()->np_type();
 
   // and now the actual reading
-  Core::IO::InputFile reader(inputfile_name, lcomm);
+  Core::IO::InputFile input_file = Global::set_up_input_file(lcomm);
+  input_file.read(inputfile_name);
 
-  Global::read_parameter(*problem, reader);
+  Global::read_parameter(*problem, input_file);
 
   setup_parallel_output(outputfile_kenner, lcomm, group);
 
@@ -43,23 +44,23 @@ void ntainp_ccadiscret(
   problem->open_control_file(lcomm, inputfile_name, outputfile_kenner, restartfile_kenner);
 
   // input of materials
-  Global::read_materials(*problem, reader);
+  Global::read_materials(*problem, input_file);
 
   // input of materials
-  Global::read_contact_constitutive_laws(*problem, reader);
+  Global::read_contact_constitutive_laws(*problem, input_file);
 
   // input of materials of cloned fields (if needed)
-  Global::read_cloning_material_map(*problem, reader);
+  Global::read_cloning_material_map(*problem, input_file);
 
   {
     Core::Utils::FunctionManager function_manager;
     global_legacy_module_callbacks().AttachFunctionDefinitions(function_manager);
-    function_manager.read_input(reader);
+    function_manager.read_input(input_file);
     problem->set_function_manager(std::move(function_manager));
   }
 
   // input of particles
-  Global::read_particles(*problem, reader);
+  Global::read_particles(*problem, input_file);
 
   switch (npType)
   {
@@ -67,18 +68,18 @@ void ntainp_ccadiscret(
     case Core::Communication::NestedParallelismType::every_group_read_dat_file:
     case Core::Communication::NestedParallelismType::separate_dat_files:
       // input of fields
-      Global::read_fields(*problem, reader);
+      Global::read_fields(*problem, input_file);
 
       // read result tests
-      Global::read_result(*problem, reader);
+      Global::read_result(*problem, input_file);
 
       // read all types of geometry related conditions (e.g. boundary conditions)
       // Also read time and space functions and local coord systems
-      Global::read_conditions(*problem, reader);
+      Global::read_conditions(*problem, input_file);
 
       // read all knot information for isogeometric analysis
       // and add it to the (derived) nurbs discretization
-      Global::read_knots(*problem, reader);
+      Global::read_knots(*problem, input_file);
       break;
     default:
       FOUR_C_THROW("nptype (nested parallelity type) not recognized");
@@ -88,15 +89,10 @@ void ntainp_ccadiscret(
   // all reading is done at this point!
   if (Core::Communication::my_mpi_rank(lcomm) == 0) problem->write_input_parameters();
 
-  // before we destroy the reader we want to know about unused sections
-  const bool all_ok = !reader.print_unused_sections(std::cout);
-
   // we wait till all procs are here. Otherwise a hang up might occur where
   // one proc ended with FOUR_C_THROW but other procs were not finished and waited...
   // we also want to have the printing above being finished.
   Core::Communication::barrier(lcomm);
-  FOUR_C_ASSERT_ALWAYS(all_ok,
-      "Unknown sections detected. Correct this! Find hints on these unknown sections above.");
 }
 
 

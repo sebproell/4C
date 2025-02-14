@@ -22,13 +22,6 @@ FOUR_C_NAMESPACE_OPEN
  */
 [[nodiscard]] ModuleCallbacks global_legacy_module_callbacks();
 
-/**
- * Write metadata for input files to @p out.
- *
- * @note This function exists for historic reasons. Its internals need to be split up to remove
- * forced dependencies on the main apps.
- */
-void write_input_metadata(std::ostream& out);
 
 FOUR_C_NAMESPACE_CLOSE
 

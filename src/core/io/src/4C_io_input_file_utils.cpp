@@ -223,28 +223,6 @@ void Core::IO::print_dat(
 void Core::IO::print_metadata_yaml(
     std::ostream& stream, const std::map<std::string, InputSpec>& section_specs)
 {
-  ryml::Tree tree = init_yaml_tree_with_exceptions();
-  ryml::NodeRef root = tree.rootref();
-  root |= ryml::MAP;
-
-  {
-    auto metadata = root["metadata"];
-    metadata |= ryml::MAP;
-    metadata["commit_hash"] << VersionControl::git_hash;
-  }
-
-  {
-    auto sections = root["sections"];
-    sections |= ryml::SEQ;
-    for (const auto& [name, spec] : section_specs)
-    {
-      auto section = sections.append_child();
-      YamlNodeRef spec_emitter{section, ""};
-      spec.emit_metadata(spec_emitter);
-    }
-  }
-
-  stream << tree;
 }
 
 

@@ -5,11 +5,14 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+#include "4C_config_revision.hpp"
+
 #include "4C_io_input_file.hpp"
 
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_io_input_file_utils.hpp"
 #include "4C_io_input_spec.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_io_yaml.hpp"
 #include "4C_utils_string.hpp"
@@ -23,6 +26,10 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Core::IO
 {
+
+  //! Name of the special section that can contain arbitrary data.
+  constexpr const char* description_section_name = "TITLE";
+
   namespace
   {
     std::string to_string(const ryml::csubstr str) { return std::string(str.data(), str.size()); };
@@ -247,7 +254,16 @@ namespace Core::IO
        */
       ryml::Tree yaml_tree_;
 
-      std::map<std::string, bool> used_sections_;
+      std::map<std::string, InputSpec> valid_sections_;
+      std::vector<std::string> legacy_section_names_;
+
+      bool is_section_known(const std::string& section_name) const
+      {
+        return valid_sections_.find(section_name) != valid_sections_.end() ||
+               std::ranges::any_of(
+                   legacy_section_names_, [&](const auto& name) { return name == section_name; }) ||
+               section_name == description_section_name;
+      }
     };
 
   }  // namespace Internal
@@ -538,12 +554,23 @@ namespace Core::IO
   }
 
 
-  /*----------------------------------------------------------------------*/
-  /*----------------------------------------------------------------------*/
-  InputFile::InputFile(std::string filename, MPI_Comm comm)
+  InputFile::InputFile(std::map<std::string, InputSpec> valid_sections,
+      std::vector<std::string> legacy_section_names, MPI_Comm comm)
       : pimpl_(std::make_unique<Internal::InputFileImpl>(comm))
   {
-    read_generic(filename);
+    pimpl_->valid_sections_ = std::move(valid_sections);
+    pimpl_->legacy_section_names_ = std::move(legacy_section_names);
+
+    FOUR_C_ASSERT_ALWAYS(!pimpl_->is_section_known("INCLUDES"),
+        "Section 'INCLUDES' is a reserved section name with special meaning. Please choose a "
+        "different name.");
+    pimpl_->valid_sections_["INCLUDES"] =
+        InputSpecBuilders::entry<std::vector<std::filesystem::path>>("INCLUDES",
+            {
+                .description = "Path to files that should be included into this file. "
+                               "The paths can be either absolute or relative to the file.",
+                .required = false,
+            });
   }
 
 
@@ -575,7 +602,7 @@ namespace Core::IO
 
   /*----------------------------------------------------------------------*/
   /*----------------------------------------------------------------------*/
-  void InputFile::read_generic(const std::filesystem::path& top_level_file)
+  void InputFile::read(const std::filesystem::path& top_level_file)
   {
     if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0)
     {
@@ -687,35 +714,18 @@ namespace Core::IO
       content.set_up_fragments();
     }
 
-    // the following section names are always regarded as valid
-    // NOTE: this is a temporary solution to avoid unused section warnings for restarts.
-    //       Once the input file knows the expected sections, this can be removed.
-    record_section_used("ALE ELEMENTS");
-    record_section_used("FLUID ELEMENTS");
-    record_section_used("FUNCT1");
-    record_section_used("FUNCT2");
-    record_section_used("FUNCT3");
-    record_section_used("FUNCT4");
-    record_section_used("FUNCT5");
-    record_section_used("FUNCT6");
-    record_section_used("FUNCT7");
-    record_section_used("FUNCT8");
-    record_section_used("FUNCT9");
-    record_section_used("FUNCT10");
-    record_section_used("FUNCT11");
-    record_section_used("FUNCT12");
-    record_section_used("FUNCT13");
-    record_section_used("FUNCT14");
-    record_section_used("FUNCT15");
-    record_section_used("FUNCT16");
-    record_section_used("FUNCT17");
-    record_section_used("FUNCT18");
-    record_section_used("FUNCT19");
-    record_section_used("FUNCT20");
-    record_section_used("NODE COORDS");
-    record_section_used("PARTICLES");
-    record_section_used("STRUCTURE ELEMENTS");
-    record_section_used("TITLE");
+    // All content has been read. Now validate. In the first iteration of this new feature,
+    // we only validate the section names, not the content.
+    if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0)
+    {
+      for (const auto& [section_name, content] : pimpl_->content_by_section_)
+      {
+        if (!pimpl_->is_section_known(section_name))
+        {
+          FOUR_C_THROW("Section '%s' is not a valid section name.", section_name.c_str());
+        }
+      }
+    }
   }
 
   InputFile::FragmentIteratorRange InputFile::in_section(const std::string& section_name)
@@ -729,7 +739,6 @@ namespace Core::IO
       return std::views::all(empty);
     }
 
-    record_section_used(section_name);
     const bool locally_known = pimpl_->content_by_section_.contains(section_name);
     const bool known_everywhere = Core::Communication::all_reduce<bool>(
         locally_known, [](const bool& r, const bool& in) { return r && in; }, pimpl_->comm_);
@@ -764,7 +773,6 @@ namespace Core::IO
     if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0 &&
         pimpl_->content_by_section_.contains(section_name))
     {
-      record_section_used(section_name);
       const auto& lines = pimpl_->content_by_section_.at(section_name).fragments;
       return std::views::all(lines);
     }
@@ -781,7 +789,6 @@ namespace Core::IO
   {
     FOUR_C_ASSERT_ALWAYS(
         has_section(section_name), "Section '%s' not found.", section_name.c_str());
-    record_section_used(section_name);
 
     // For dat file format, flatten the lines into a single string, which can be parsed by the
     // ValueParser.
@@ -813,55 +820,46 @@ namespace Core::IO
   }
 
 
-  /*----------------------------------------------------------------------*/
-  /*----------------------------------------------------------------------*/
-  bool InputFile::print_unused_sections(std::ostream& out) const
+  void InputFile::emit_metadata(std::ostream& out) const
   {
-    using MapType = decltype(pimpl_->used_sections_);
+    ryml::Tree tree = init_yaml_tree_with_exceptions();
+    ryml::NodeRef root = tree.rootref();
+    root |= ryml::MAP;
 
-    for (const auto& [section_name, content] : pimpl_->content_by_section_)
     {
-      pimpl_->used_sections_[section_name] |= false;
+      auto metadata = root["metadata"];
+      metadata |= ryml::MAP;
+      metadata["commit_hash"] << VersionControl::git_hash;
+      metadata["version"] << FOUR_C_VERSION_FULL;
+      metadata["description_section_name"] = description_section_name;
     }
 
-    const auto merged_map = Core::Communication::all_reduce<MapType>(
-        pimpl_->used_sections_,
-        [](const MapType& r, const MapType& in)
-        {
-          MapType result = r;
-          for (const auto& [key, value] : in)
-          {
-            result[key] |= value;
-          }
-          return result;
-        },
-        pimpl_->comm_);
-    const bool printout = std::any_of(
-        merged_map.begin(), merged_map.end(), [](const auto& kv) { return !kv.second; });
-
-    if (printout and (Core::Communication::my_mpi_rank(get_comm()) == 0))
     {
-      out << "\nERROR!"
-          << "\n--------"
-          << "\nThe following input file sections remained unused (obsolete or typo?):\n";
-      for (const auto& [section_name, known] : pimpl_->used_sections_)
+      auto sections = root["sections"];
+      sections |= ryml::SEQ;
+      for (const auto& [name, spec] : pimpl_->valid_sections_)
       {
-        if (!known) out << section_name << '\n';
+        auto section = sections.append_child();
+        YamlNodeRef spec_emitter{section, ""};
+        spec.emit_metadata(spec_emitter);
       }
-      out << '\n';
     }
 
-    return printout;
-  }
+    {
+      auto legacy_string_sections = root["legacy_string_sections"];
+      legacy_string_sections |= ryml::SEQ;
+      for (const auto& name : pimpl_->legacy_section_names_)
+      {
+        legacy_string_sections.append_child() << name;
+      }
+    }
 
-
-  void InputFile::record_section_used(const std::string& section_name)
-  {
-    pimpl_->used_sections_[section_name] = true;
+    out << tree;
   }
 
 
   MPI_Comm InputFile::get_comm() const { return pimpl_->comm_; }
+
 
 }  // namespace Core::IO
 

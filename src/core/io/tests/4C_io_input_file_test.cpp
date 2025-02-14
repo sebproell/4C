@@ -21,8 +21,6 @@ namespace
 {
   using namespace FourC;
 
-
-
   void check_section(
       Core::IO::InputFile& input, const std::string& section, const std::vector<std::string>& lines)
   {
@@ -45,7 +43,16 @@ namespace
     const std::string input_file_name = TESTING::get_support_file_path("test_files/test1.dat");
 
     MPI_Comm comm(MPI_COMM_WORLD);
-    Core::IO::InputFile input{input_file_name, comm};
+    Core::IO::InputFile input{{},
+        {
+            "EMPTY",
+            "SECTION WITH SPACES",
+            "SECTION/WITH/SLASHES",
+            "SHORT SECTION",
+            "PARTICLES",
+        },
+        comm};
+    input.read(input_file_name);
 
     EXPECT_TRUE(input.has_section("EMPTY"));
     EXPECT_FALSE(input.has_section("NONEXISTENT SECTION"));
@@ -62,7 +69,19 @@ namespace
         TESTING::get_support_file_path("test_files/has_includes/main.dat");
 
     MPI_Comm comm(MPI_COMM_WORLD);
-    Core::IO::InputFile input{input_file_name, comm};
+    Core::IO::InputFile input{{},
+        {
+            "EMPTY",
+            "SECTION 1",
+            "INCLUDED SECTION 1a",
+            "INCLUDED SECTION 1b",
+            "INCLUDED SECTION 2",
+            "INCLUDED SECTION 3",
+            "PARTICLES",
+            "ANOTHER SECTION",
+        },
+        comm};
+    input.read(input_file_name);
 
     EXPECT_EQ(input.file_for_section("INCLUDED SECTION 1a").filename(), "include1a.dat");
     EXPECT_EQ(input.file_for_section("SECTION 1").filename(), "main.dat");
@@ -71,7 +90,6 @@ namespace
     check_section(input, "INCLUDED SECTION 1b", std::vector<std::string>(2, "line"));
     check_section(input, "INCLUDED SECTION 2", std::vector<std::string>(2, "line"));
     check_section(input, "INCLUDED SECTION 3", std::vector<std::string>(2, "line"));
-    // Check that an on-the-fly section can be read from an include
     check_section(input, "PARTICLES", std::vector<std::string>(5, "line"));
   }
 
@@ -81,8 +99,9 @@ namespace
         TESTING::get_support_file_path("test_files/cyclic_includes/cycle1.dat");
 
     MPI_Comm comm(MPI_COMM_WORLD);
-    FOUR_C_EXPECT_THROW_WITH_MESSAGE(Core::IO::InputFile(input_file_name, comm), Core::Exception,
-        "cycle1.dat' was already included before.");
+    Core::IO::InputFile input{{}, {}, comm};
+    FOUR_C_EXPECT_THROW_WITH_MESSAGE(
+        input.read(input_file_name), Core::Exception, "cycle1.dat' was already included before.");
   }
 
   TEST(InputFile, BasicYaml)
@@ -90,7 +109,15 @@ namespace
     const std::string input_file_name = TESTING::get_support_file_path("test_files/yaml/basic.yml");
 
     MPI_Comm comm(MPI_COMM_WORLD);
-    Core::IO::InputFile input{input_file_name, comm};
+    Core::IO::InputFile input{{},
+        {
+            "EMPTY",
+            "SECTION1",
+            "SECTION2",
+            "SECTION WITH LINES",
+        },
+        comm};
+    input.read(input_file_name);
 
     EXPECT_FALSE(input.has_section("EMPTY"));
     EXPECT_FALSE(input.has_section("NONEXISTENT SECTION"));
@@ -104,7 +131,16 @@ namespace
         TESTING::get_support_file_path("test_files/yaml_includes/main.yaml");
 
     MPI_Comm comm(MPI_COMM_WORLD);
-    Core::IO::InputFile input{input_file_name, comm};
+    Core::IO::InputFile input{{},
+        {
+            "MAIN SECTION",
+            "INCLUDED SECTION 1",
+            "INCLUDED SECTION 2",
+            "INCLUDED SECTION 3",
+            "SECTION WITH SUBSTRUCTURE",
+        },
+        comm};
+    input.read(input_file_name);
 
     check_section(input, "INCLUDED SECTION 1", std::vector<std::string>(2, "line"));
     check_section(input, "SECTION WITH SUBSTRUCTURE", {"MAT 1 THERMO COND 1 2 3 CAPA 2"});

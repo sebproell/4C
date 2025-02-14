@@ -44,6 +44,119 @@
 
 FOUR_C_NAMESPACE_OPEN
 
+namespace
+{
+  /**
+   * Gather all known sections and their specs.
+   */
+  void gather_all_section_specs(std::map<std::string, Core::IO::InputSpec>& section_specs)
+  {
+    using namespace Core::IO::InputSpecBuilders;
+
+    section_specs["CONTACT CONSTITUTIVE LAWS"] =
+        CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws();
+    section_specs["CLONING MATERIAL MAP"] = Core::FE::valid_cloning_material_map();
+    section_specs["RESULT DESCRIPTION"] =
+        global_legacy_module_callbacks().valid_result_description_lines();
+
+    {
+      std::vector<Core::IO::InputSpec> possible_materials;
+      {
+        auto materials = global_legacy_module_callbacks().materials();
+        for (auto&& [type, spec] : materials)
+        {
+          possible_materials.emplace_back(std::move(spec));
+        }
+      }
+
+      auto all_materials = all_of({
+          entry<int>("MAT"),
+          one_of(possible_materials),
+      });
+      section_specs["MATERIALS"] = all_materials;
+    }
+
+    {
+      Core::Utils::FunctionManager functionmanager;
+      global_legacy_module_callbacks().AttachFunctionDefinitions(functionmanager);
+
+      auto valid_functions = functionmanager.valid_function_lines();
+
+      // TODO Move the function number inside the general function section to stop relying
+      // on explicit function numbers.
+      for (unsigned i : std::views::iota(1, 30))
+      {
+        section_specs["FUNCT" + std::to_string(i)] = valid_functions;
+      }
+    }
+
+    {
+      auto valid_conditions = Input::valid_conditions();
+      for (const auto& cond : valid_conditions)
+      {
+        section_specs[cond.section_name()] = all_of(cond.specs());
+      }
+    }
+
+    // Up to here all the sections allow for multiple entries. Thus, wrap up the specs into
+    // lists.
+    for (auto& [section_name, spec] : section_specs)
+    {
+      spec = Core::IO::InputSpecBuilders::list(section_name, spec, {.required = false});
+    }
+
+    // The so-called "parameters" are key-values which can only appear once. Wrap them up into
+    // groups.
+    auto valid_parameters = Input::valid_parameters();
+    for (auto& [section_name, spec] : valid_parameters)
+    {
+      spec = Core::IO::InputSpecBuilders::group(section_name, {spec}, {.required = false});
+    }
+
+    section_specs.merge(valid_parameters);
+  }
+}  // namespace
+
+Core::IO::InputFile Global::set_up_input_file(MPI_Comm comm)
+{
+  std::map<std::string, Core::IO::InputSpec> valid_sections;
+  gather_all_section_specs(valid_sections);
+
+  std::vector<std::string> legacy_section_names{
+      // elements
+      "STRUCTURE ELEMENTS",
+      "FLUID ELEMENTS",
+      "LUBRICATION ELEMENTS",
+      "TRANSPORT ELEMENTS",
+      "TRANSPORT2 ELEMENTS",
+      "ALE ELEMENTS",
+      "THERMO ELEMENTS",
+      "ARTERY ELEMENTS",
+      "REDUCED D AIRWAYS ELEMENTS",
+      "ELECTROMAGNETIC ELEMENTS",
+      "PARTICLES",
+      "PERIODIC BOUNDINGBOX ELEMENTS",
+      // domains
+      "FLUID DOMAIN",
+      "STRUCTURE DOMAIN",
+      // general geometry
+      "NODE COORDS",
+      "DNODE-NODE TOPOLOGY",
+      "DLINE-NODE TOPOLOGY",
+      "DSURF-NODE TOPOLOGY",
+      "DVOL-NODE TOPOLOGY",
+      // nurbs
+      "STRUCTURE KNOTVECTORS",
+      "FLUID KNOTVECTORS",
+      "ALE KNOTVECTORS",
+      "TRANSPORT KNOTVECTORS",
+      "TRANSPORT2 KNOTVECTORS",
+      "THERMO KNOTVECTORS",
+  };
+
+  return Core::IO::InputFile{std::move(valid_sections), std::move(legacy_section_names), comm};
+}
+
 void Global::read_fields(Global::Problem& problem, Core::IO::InputFile& input, const bool read_mesh)
 {
   std::shared_ptr<Core::FE::Discretization> structdis = nullptr;
@@ -1545,7 +1658,8 @@ void Global::read_micro_fields(Global::Problem& problem, const std::filesystem::
             (const_cast<char*>(micro_inputfile_name.c_str())), length, 0, subgroupcomm);
 
         // start with actual reading
-        Core::IO::InputFile micro_reader(micro_inputfile_name, subgroupcomm);
+        Core::IO::InputFile micro_input_file = set_up_input_file(subgroupcomm);
+        micro_input_file.read(micro_inputfile_name);
 
         std::shared_ptr<Core::FE::Discretization> dis_micro =
             std::make_shared<Core::FE::Discretization>(
@@ -1565,7 +1679,7 @@ void Global::read_micro_fields(Global::Problem& problem, const std::filesystem::
 
         micro_problem->add_dis(micro_dis_name, dis_micro);
 
-        read_parameter(*micro_problem, micro_reader);
+        read_parameter(*micro_problem, micro_input_file);
 
         // read materials of microscale
         // CAUTION: materials for microscale cannot be read until
@@ -1576,9 +1690,9 @@ void Global::read_micro_fields(Global::Problem& problem, const std::filesystem::
         // function calls!
         problem.materials()->set_read_from_problem(microdisnum);
 
-        read_materials(*micro_problem, micro_reader);
+        read_materials(*micro_problem, micro_input_file);
 
-        Core::IO::MeshReader micromeshreader(micro_reader, "NODE COORDS",
+        Core::IO::MeshReader micromeshreader(micro_input_file, "NODE COORDS",
             {.mesh_partitioning_parameters = Problem::instance()->mesh_partitioning_params(),
                 .geometric_search_parameters = Problem::instance()->geometric_search_params(),
                 .io_parameters = Problem::instance()->io_params()});
@@ -1586,25 +1700,25 @@ void Global::read_micro_fields(Global::Problem& problem, const std::filesystem::
         if (micro_dis_name == "structure")
         {
           micromeshreader.add_element_reader(
-              Core::IO::ElementReader(dis_micro, micro_reader, "STRUCTURE ELEMENTS"));
+              Core::IO::ElementReader(dis_micro, micro_input_file, "STRUCTURE ELEMENTS"));
         }
         else
           micromeshreader.add_element_reader(
-              Core::IO::ElementReader(dis_micro, micro_reader, "TRANSPORT ELEMENTS"));
+              Core::IO::ElementReader(dis_micro, micro_input_file, "TRANSPORT ELEMENTS"));
 
         micromeshreader.read_and_partition();
 
 
-        read_conditions(*micro_problem, micro_reader);
+        read_conditions(*micro_problem, micro_input_file);
 
         {
           Core::Utils::FunctionManager function_manager;
           global_legacy_module_callbacks().AttachFunctionDefinitions(function_manager);
-          function_manager.read_input(micro_reader);
+          function_manager.read_input(micro_input_file);
           micro_problem->set_function_manager(std::move(function_manager));
         }
 
-        read_result(*micro_problem, micro_reader);
+        read_result(*micro_problem, micro_input_file);
 
         // At this point, everything for the microscale is read,
         // subsequent reading is only for macroscale
@@ -1688,7 +1802,8 @@ void Global::read_microfields_np_support(Global::Problem& problem)
         (const_cast<char*>(micro_inputfile_name.c_str())), length, 0, subgroupcomm);
 
     // start with actual reading
-    Core::IO::InputFile micro_reader(micro_inputfile_name, subgroupcomm);
+    Core::IO::InputFile micro_input_file = set_up_input_file(subgroupcomm);
+    micro_input_file.read(micro_inputfile_name);
 
     std::shared_ptr<Core::FE::Discretization> structdis_micro =
         std::make_shared<Core::FE::Discretization>("structure", subgroupcomm, problem.n_dim());
@@ -1699,7 +1814,7 @@ void Global::read_microfields_np_support(Global::Problem& problem)
 
     micro_problem->add_dis("structure", structdis_micro);
 
-    read_parameter(*micro_problem, micro_reader);
+    read_parameter(*micro_problem, micro_input_file);
 
     // read materials of microscale
     // CAUTION: materials for microscale cannot be read until
@@ -1710,26 +1825,26 @@ void Global::read_microfields_np_support(Global::Problem& problem)
     // function calls!
     problem.materials()->set_read_from_problem(microdisnum);
 
-    read_materials(*micro_problem, micro_reader);
+    read_materials(*micro_problem, micro_input_file);
 
-    Core::IO::MeshReader micromeshreader(micro_reader, "NODE COORDS",
+    Core::IO::MeshReader micromeshreader(micro_input_file, "NODE COORDS",
         {.mesh_partitioning_parameters = Problem::instance()->mesh_partitioning_params(),
             .geometric_search_parameters = Problem::instance()->geometric_search_params(),
             .io_parameters = Problem::instance()->io_params()});
     micromeshreader.add_element_reader(
-        Core::IO::ElementReader(structdis_micro, micro_reader, "STRUCTURE ELEMENTS"));
+        Core::IO::ElementReader(structdis_micro, micro_input_file, "STRUCTURE ELEMENTS"));
     micromeshreader.read_and_partition();
 
-    read_conditions(*micro_problem, micro_reader);
+    read_conditions(*micro_problem, micro_input_file);
 
     {
       Core::Utils::FunctionManager function_manager;
       global_legacy_module_callbacks().AttachFunctionDefinitions(function_manager);
-      function_manager.read_input(micro_reader);
+      function_manager.read_input(micro_input_file);
       micro_problem->set_function_manager(std::move(function_manager));
     }
 
-    read_result(*micro_problem, micro_reader);
+    read_result(*micro_problem, micro_input_file);
 
     // At this point, everything for the microscale is read,
     // subsequent reading is only for macroscale
