@@ -60,6 +60,23 @@ void Core::IO::InputSpec::match(ConstYamlNodeRef yaml, InputParameterContainer& 
   match_tree.assert_match();
 }
 
+void Core::IO::InputSpec::emit(YamlNodeRef yaml,
+    FourC::Core::IO::InputParameterContainer& container, InputSpecEmitOptions options) const
+{
+  FOUR_C_ASSERT(pimpl_, "InputSpec is empty.");
+
+  bool success = pimpl_->emit(yaml, container, options);
+  if (!success)
+  {
+    std::stringstream ss;
+    ss << "Failed to emit this data\n";
+    container.print(ss);
+    ss << "under the following specification\n";
+    print_as_dat(ss);
+    FOUR_C_THROW(ss.str().c_str());
+  }
+}
+
 void Core::IO::InputSpec::print_as_dat(std::ostream& stream) const
 {
   FOUR_C_ASSERT(pimpl_, "InputSpec is empty.");

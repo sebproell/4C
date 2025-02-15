@@ -182,6 +182,28 @@ namespace
     return all_ok;
   }
 
+  /**
+   * Helper class to remember the child nodes of a node and restore this state at a later point,
+   * if emitting fails.
+   */
+  struct ChildNodeCheckpoint
+  {
+    explicit ChildNodeCheckpoint(Core::IO::YamlNodeRef node)
+        : node(node), num_children_before(node.node.num_children())
+    {
+    }
+
+    void restore()
+    {
+      for (auto i = node.node.num_children(); i > num_children_before; --i)
+      {
+        node.node.remove_child(i - 1);
+      }
+    }
+
+    Core::IO::YamlNodeRef node;
+    ryml::id_type num_children_before;
+  };
 
 }  // namespace
 
@@ -596,7 +618,6 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::parse(
 {
   FOUR_C_ASSERT(!name.empty(), "Internal error: group name must not be empty.");
 
-  // Support the special case of unnamed groups.
   parser.consume(name);
 
   // Parse into a separate container to avoid side effects if parsing fails.
@@ -689,6 +710,36 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::emit_metadata(ryml::NodeR
 }
 
 
+bool InputSpecBuilders::Internal::GroupSpec::emit(YamlNodeRef node,
+    const InputParameterContainer& container, const InputSpecEmitOptions& options) const
+{
+  node.node |= ryml::MAP;
+  ChildNodeCheckpoint checkpoint(node);
+  if (container.has_group(name))
+  {
+    auto group_node = node.node.append_child();
+    group_node << ryml::key(name);
+    group_node |= ryml::MAP;
+    for (const auto& spec : specs)
+    {
+      if (!spec.impl().emit(node.wrap(group_node), container.group(name), options))
+      {
+        checkpoint.restore();
+        return false;
+      }
+    }
+    // If no children were added, remove the group node as well, unless it is required.
+    if (!data.required && group_node.num_children() == 0)
+    {
+      checkpoint.restore();
+    }
+    return true;
+  }
+  // If group is not present, success depends on whether it is required.
+  return !data.required;
+}
+
+
 void Core::IO::InputSpecBuilders::Internal::AllOfSpec::parse(
     Core::IO::ValueParser& parser, Core::IO::InputParameterContainer& container) const
 {
@@ -767,9 +818,27 @@ void Core::IO::InputSpecBuilders::Internal::AllOfSpec::emit_metadata(ryml::NodeR
       auto child = node["specs"].append_child();
       child |= ryml::MAP;
       spec.impl().emit_metadata(child);
-    };
+    }
   }
 }
+
+
+bool InputSpecBuilders::Internal::AllOfSpec::emit(YamlNodeRef node,
+    const InputParameterContainer& container, const InputSpecEmitOptions& options) const
+{
+  node.node |= ryml::MAP;
+  ChildNodeCheckpoint checkpoint(node);
+  for (const auto& spec : specs)
+  {
+    if (!spec.impl().emit(node, container, options))
+    {
+      checkpoint.restore();
+      return false;
+    }
+  }
+  return true;
+}
+
 
 void Core::IO::InputSpecBuilders::Internal::OneOfSpec::parse(
     Core::IO::ValueParser& parser, Core::IO::InputParameterContainer& container) const
@@ -906,14 +975,46 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::emit_metadata(ryml::NodeR
   {
     auto child = node["specs"].append_child();
     spec.impl().emit_metadata(child);
-  };
+  }
+}
+
+
+bool InputSpecBuilders::Internal::OneOfSpec::emit(YamlNodeRef node,
+    const InputParameterContainer& container, const InputSpecEmitOptions& options) const
+{
+  node.node |= ryml::MAP;
+  ChildNodeCheckpoint checkpoint(node);
+
+  for (const auto& spec : specs)
+  {
+    if (spec.impl().emit(node, container, options))
+    {
+      return true;
+    }
+    else
+    {
+      checkpoint.restore();
+    }
+  }
+
+  return false;
 }
 
 
 void Core::IO::InputSpecBuilders::Internal::ListSpec::parse(
     Core::IO::ValueParser& parser, Core::IO::InputParameterContainer& container) const
 {
-  FOUR_C_THROW("Cannot parse a list from dat file format.");
+  FOUR_C_ASSERT_ALWAYS(
+      data.size != dynamic_size, "ListSpec with dynamic size cannot be parsed from dat.");
+
+  parser.consume(name);
+
+  std::vector<InputParameterContainer> container_list(data.size);
+  for (int i = 0; i < data.size; ++i)
+  {
+    spec.impl().parse(parser, container_list[i]);
+  }
+  container.add_list(name, std::move(container_list));
 }
 
 
@@ -1007,6 +1108,33 @@ void Core::IO::InputSpecBuilders::Internal::ListSpec::emit_metadata(ryml::NodeRe
   if (data.size > 0) node["size"] << data.size;
   node["spec"] |= ryml::MAP;
   spec.impl().emit_metadata(node["spec"]);
+}
+
+
+bool InputSpecBuilders::Internal::ListSpec::emit(YamlNodeRef node,
+    const InputParameterContainer& container, const InputSpecEmitOptions& options) const
+{
+  node.node |= ryml::MAP;
+  ChildNodeCheckpoint checkpoint(node);
+  if (const auto* list = container.get_if<InputParameterContainer::List>(name); list)
+  {
+    auto list_node = node.node.append_child();
+    list_node << ryml::key(name);
+    list_node |= ryml::SEQ;
+
+    for (const auto& subcontainer : *list)
+    {
+      if (!spec.impl().emit(node.wrap(list_node.append_child()), subcontainer, options))
+      {
+        checkpoint.restore();
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // If list is not present, success depends on whether it is required.
+  return !data.required;
 }
 
 

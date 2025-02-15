@@ -1149,4 +1149,87 @@ specs:
       EXPECT_EQ(container.get<int>("a"), 42);
     }
   }
+
+  TEST(InputSpecTest, DatToYaml)
+  {
+    auto spec = all_of({
+        // awkward one_of where the first choice partially matches
+        one_of({
+            all_of({
+                entry<int>("a"),
+                entry<std::string>("b"),
+            }),
+            all_of({
+                entry<int>("a"),
+                entry<double>("d"),
+            }),
+        }),
+        // group with all defaulted entries
+        group("group",
+            {
+                entry<double>("c", {.default_value = 1.0}),
+                selection<int>("d", {{"d1", 1}, {"d2", 2}}, {.default_value = 2}),
+            },
+            {.required = false}),
+        list("list",
+            all_of({
+                entry<int>("l1"),
+                entry<double>("l2"),
+            }),
+            {.size = 2}),
+        entry<int>("i", {.default_value = 0}),
+        entry<std::vector<double>>("v", {.size = 3}),
+    });
+
+    std::string dat = "a 1 d 3.0 group c 1 d d2 i 42 v 1.0 2.0 3.0 list l1 1 l2 2.0 l1 3 l2 4.0";
+
+    InputParameterContainer container;
+    ValueParser parser(dat);
+    spec.fully_parse(parser, container);
+
+    {
+      SCOPED_TRACE("Emit without default values");
+      auto tree = init_yaml_tree_with_exceptions();
+      YamlNodeRef yaml(tree.rootref(), "");
+      spec.emit(yaml, container);
+
+      std::ostringstream out;
+      out << tree;
+      std::string expected = R"(a: 1
+d: 3
+list:
+  - l1: 1
+    l2: 2
+  - l1: 3
+    l2: 4
+i: 42
+v: [1,2,3]
+)";
+      EXPECT_EQ(out.str(), expected);
+    }
+
+    {
+      SCOPED_TRACE("Emit with defaulted values");
+      auto tree = init_yaml_tree_with_exceptions();
+      YamlNodeRef yaml(tree.rootref(), "");
+      spec.emit(yaml, container, {.emit_defaulted_values = true});
+
+      std::ostringstream out;
+      out << tree;
+      std::string expected = R"(a: 1
+d: 3
+group:
+  c: 1
+  d: d2
+list:
+  - l1: 1
+    l2: 2
+  - l1: 3
+    l2: 4
+i: 42
+v: [1,2,3]
+)";
+      EXPECT_EQ(out.str(), expected);
+    }
+  }
 }  // namespace

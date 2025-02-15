@@ -27,6 +27,15 @@ namespace Core::IO
     class InputSpecTypeErasedBase;
   }  // namespace Internal
 
+  struct InputSpecEmitOptions
+  {
+    /**
+     * If set to true, entries which have a default value are emitted even if their values are equal
+     * to the default.
+     */
+    bool emit_defaulted_values{false};
+  };
+
   /**
    * Objects of this class encapsulate knowledge about the input. You can create objects using the
    * helper functions in the InputSpecBuilders namespace. See the function
@@ -60,6 +69,14 @@ namespace Core::IO
      * content.
      */
     void match(ConstYamlNodeRef yaml, InputParameterContainer& container) const;
+
+    /**
+     * Emit the data in @p container to @p yaml. The data in @p container has to fit the
+     * specification encoded in this InputSpec; otherwise an exception is thrown. This function is
+     * the inverse of match().
+     */
+    void emit(YamlNodeRef yaml, InputParameterContainer& container,
+        InputSpecEmitOptions options = {}) const;
 
     /**
      * Print the expected input format of this InputSpec to @p stream in dat format.

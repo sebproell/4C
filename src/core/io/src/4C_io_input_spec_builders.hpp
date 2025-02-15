@@ -278,6 +278,9 @@ namespace Core::IO
       //! insert keys and values into the yaml emitter.
       virtual void emit_metadata(ryml::NodeRef node) const = 0;
 
+      virtual bool emit(YamlNodeRef node, const InputParameterContainer&,
+          const InputSpecEmitOptions& options) const = 0;
+
       [[nodiscard]] virtual std::string pretty_type_name() const = 0;
 
       [[nodiscard]] virtual std::unique_ptr<InputSpecTypeErasedBase> clone() const = 0;
@@ -347,6 +350,12 @@ namespace Core::IO
       }
 
       void emit_metadata(ryml::NodeRef node) const override { wrapped.emit_metadata(node); }
+
+      bool emit(YamlNodeRef node, const InputParameterContainer& container,
+          const InputSpecEmitOptions& options) const override
+      {
+        return wrapped.emit(node, container, options);
+      }
 
       void do_print(std::ostream& stream, std::size_t indent) const override
       {
@@ -680,6 +689,8 @@ namespace Core::IO
         bool match(ConstYamlNodeRef node, InputParameterContainer& container,
             IO::Internal::MatchEntry& match_entry) const;
         void emit_metadata(ryml::NodeRef node) const;
+        bool emit(YamlNodeRef node, const InputParameterContainer& container,
+            const InputSpecEmitOptions& options) const;
       };
 
 
@@ -696,6 +707,8 @@ namespace Core::IO
             IO::Internal::MatchEntry& match_entry) const;
         void print(std::ostream& stream, std::size_t indent) const;
         void emit_metadata(ryml::NodeRef node) const;
+        bool emit(YamlNodeRef node, const InputParameterContainer& container,
+            const InputSpecEmitOptions& options) const;
       };
 
       struct GroupSpec
@@ -710,6 +723,8 @@ namespace Core::IO
         void set_default_value(InputParameterContainer& container) const;
         void print(std::ostream& stream, std::size_t indent) const;
         void emit_metadata(ryml::NodeRef node) const;
+        bool emit(YamlNodeRef node, const InputParameterContainer& container,
+            const InputSpecEmitOptions& options) const;
       };
 
       struct AllOfSpec
@@ -723,6 +738,8 @@ namespace Core::IO
         void set_default_value(InputParameterContainer& container) const;
         void print(std::ostream& stream, std::size_t indent) const;
         void emit_metadata(ryml::NodeRef node) const;
+        bool emit(YamlNodeRef node, const InputParameterContainer& container,
+            const InputSpecEmitOptions& options) const;
       };
 
       struct OneOfSpec
@@ -747,6 +764,8 @@ namespace Core::IO
         void print(std::ostream& stream, std::size_t indent) const;
 
         void emit_metadata(ryml::NodeRef node) const;
+        bool emit(YamlNodeRef node, const InputParameterContainer& container,
+            const InputSpecEmitOptions& options) const;
       };
 
       struct ListSpec
@@ -764,6 +783,8 @@ namespace Core::IO
         void set_default_value(InputParameterContainer& container) const;
         void print(std::ostream& stream, std::size_t indent) const;
         void emit_metadata(ryml::NodeRef node) const;
+        bool emit(YamlNodeRef node, const InputParameterContainer& container,
+            const InputSpecEmitOptions& options) const;
       };
 
 
@@ -1277,6 +1298,39 @@ void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataTypeIn>::emit_metadata
   }
 }
 
+template <typename DataTypeIn>
+bool Core::IO::InputSpecBuilders::Internal::BasicSpec<DataTypeIn>::emit(YamlNodeRef node,
+    const InputParameterContainer& container, const InputSpecEmitOptions& options) const
+{
+  node.node |= ryml::MAP;
+  // Value present in container
+  if (auto value = container.get_if<StoredType>(name))
+  {
+    if (options.emit_defaulted_values || !data.default_value.has_value() ||
+        *data.default_value != *value)
+    {
+      auto value_node = node.node.append_child();
+      value_node << ryml::key(name);
+      emit_value_as_yaml(value_node, *value);
+    }
+    return true;
+  }
+  // Not present but we have a default
+  else if (data.default_value.has_value())
+  {
+    if (options.emit_defaulted_values)
+    {
+      auto value_node = node.node.append_child();
+      value_node << ryml::key(name);
+      emit_value_as_yaml(value_node, data.default_value.value());
+    }
+    return true;
+  }
+
+  // Not present and no default, success depends on whether the parameter is required.
+  return !data.required.value();
+}
+
 
 template <typename DataTypeIn>
 void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::parse(
@@ -1422,6 +1476,51 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::emit_meta
     entry |= ryml::MAP;
     entry["name"] << choice.first;
   }
+}
+
+template <typename DataTypeIn>
+bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::emit(YamlNodeRef node,
+    const InputParameterContainer& container, const InputSpecEmitOptions& options) const
+{
+  node.node |= ryml::MAP;
+
+  const auto emit_key_value = [&](const std::string& key, const StoredType& value)
+  {
+    for (const auto& choice : choices)
+    {
+      if (choice.second == value)
+      {
+        auto value_node = node.node.append_child();
+        value_node << ryml::key(key);
+        emit_value_as_yaml(value_node, choice.first);
+        return true;
+      }
+    }
+    return false;
+  };
+
+  // Value present in container
+  if (auto value = container.get_if<StoredType>(name))
+  {
+    if (options.emit_defaulted_values || !data.default_value.has_value() ||
+        *data.default_value != *value)
+    {
+      return emit_key_value(name, *value);
+    }
+    return true;
+  }
+  // Not present but we have a default
+  else if (data.default_value.has_value())
+  {
+    if (options.emit_defaulted_values)
+    {
+      return emit_key_value(name, data.default_value.value());
+    }
+    return true;
+  }
+
+  // Not present and no default, success depends on whether the parameter is required.
+  return !data.required.value();
 }
 
 template <typename T>
