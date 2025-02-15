@@ -383,6 +383,7 @@ namespace
             },
             {
                 .required = false,
+                .defaultable = true,
             }),
         entry<std::string>("c"),
     });
@@ -677,7 +678,6 @@ specs:
     size: 3
   - type: one_of
     description: 'one_of {all_of {b, c}, group}'
-    required: true
     specs:
       - type: all_of
         description: 'all_of {b, c}'
@@ -696,6 +696,7 @@ specs:
         type: group
         description: A group
         required: true
+        defaultable: false
         specs:
           - name: c
             type: string
@@ -714,6 +715,7 @@ specs:
   - name: group2
     type: group
     required: false
+    defaultable: false
     specs:
       - name: g
         type: int

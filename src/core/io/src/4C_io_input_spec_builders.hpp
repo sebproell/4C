@@ -603,7 +603,13 @@ namespace Core::IO
       /**
        * Whether the Group is required or optional.
        */
-      bool required{true};
+      std::optional<bool> required{};
+
+      /**
+       * Whether the Group will store itself and its children with defaulted values, if the Group
+       * is not encountered in the input. This only works if all children have default values.
+       */
+      bool defaultable{};
     };
 
     //! Additional parameters for a list().
@@ -1006,10 +1012,18 @@ namespace Core::IO
      * exactly what you need: a group activates a feature which requires certain parameters to
      * be present.
      *
-     * Whether a group has a default value is determined by the default values of its entries. If
-     * all entries have default values, the group implicitly has a default value. In this case, if
-     * the group is optional and not present in the input, the default values of the entries are
-     * stored under the group name in the container.
+     * Whether a group can have a default value is determined by the default values of its entries.
+     * If all of its entries have default values, the group can have a default value. In this case,
+     * you may set the `defaultable` option to guarantee that the default values of the entries are
+     * stored under the group name in the container, even if the group is not present in the input.
+     * Obviously, this only makes sense if the group is not required.
+     * This behavior is analogous to the behavior of the entry() function. While entries with
+     * default values are often a good idea (if the default value is meaningful), groups with
+     * default values are less common. If you follow the advice to use groups to activate features,
+     * you will usually have required entries in the group and, consequently, the group cannot be
+     * `defaultable`. Put differently, if you have a group with many default values, you are likely
+     * not using the InputSpecs to their full potential. Consider splitting the group into multiple
+     * smaller groups or use the one_of() function to select between different groups.
      *
      * @note If you want to group multiple InputSpecs without creating a new named scope, use the
      * all_of() function.

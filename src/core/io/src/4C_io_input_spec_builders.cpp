@@ -638,7 +638,12 @@ bool Core::IO::InputSpecBuilders::Internal::GroupSpec::match(ConstYamlNodeRef no
   const bool group_exists = node.node.has_child(group_name) && node.node[group_name].is_map();
   if (!group_exists)
   {
-    return !data.required;
+    if (data.defaultable)
+    {
+      match_entry.state = IO::Internal::MatchEntry::State::defaulted;
+      set_default_value(container);
+    }
+    return !data.required.value();
   }
 
   auto group_node = node.wrap(node.node[group_name]);
@@ -697,7 +702,8 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::emit_metadata(ryml::NodeR
   {
     node["description"] << data.description;
   }
-  emit_value_as_yaml(node["required"], data.required);
+  emit_value_as_yaml(node["required"], data.required.value());
+  emit_value_as_yaml(node["defaultable"], data.defaultable);
   node["specs"] |= ryml::SEQ;
   {
     for (const auto& spec : specs)
@@ -729,14 +735,14 @@ bool InputSpecBuilders::Internal::GroupSpec::emit(YamlNodeRef node,
       }
     }
     // If no children were added, remove the group node as well, unless it is required.
-    if (!data.required && group_node.num_children() == 0)
+    if (!data.required.value() && group_node.num_children() == 0)
     {
       checkpoint.restore();
     }
     return true;
   }
   // If group is not present, success depends on whether it is required.
-  return !data.required;
+  return !data.required.value();
 }
 
 
@@ -810,7 +816,7 @@ void Core::IO::InputSpecBuilders::Internal::AllOfSpec::emit_metadata(ryml::NodeR
   {
     node["description"] << data.description;
   }
-  emit_value_as_yaml(node["required"], data.required);
+  emit_value_as_yaml(node["required"], data.required.value());
   node["specs"] |= ryml::SEQ;
   {
     for (const auto& spec : specs)
@@ -969,7 +975,6 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::emit_metadata(ryml::NodeR
   {
     node["description"] << data.description;
   }
-  emit_value_as_yaml(node["required"], data.required);
   node["specs"] |= ryml::SEQ;
   for (const auto& spec : specs)
   {
@@ -1182,11 +1187,27 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
 
   assert_unique_or_empty_names(flattened_specs);
 
+  if (!data.required.has_value())
+  {
+    data.required = !data.defaultable;
+  }
+  if (data.required.value() && data.defaultable)
+  {
+    FOUR_C_THROW("Group '%s': a group cannot be both required and defaultable.", name.c_str());
+  }
+  if (data.defaultable && !all_have_default_values(flattened_specs))
+  {
+    FOUR_C_THROW(
+        "Group '%s': a group cannot be defaultable if not all of its child specs have default "
+        "values.",
+        name.c_str());
+  }
+
   IO::Internal::InputSpecTypeErasedBase::CommonData common_data{
       .name = name,
       .description = data.description,
-      .required = data.required,
-      .has_default_value = all_have_default_values(flattened_specs),
+      .required = data.required.value(),
+      .has_default_value = data.defaultable,
       .n_specs = count_contained_specs(flattened_specs) + 1,
   };
 
