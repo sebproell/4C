@@ -110,7 +110,7 @@ namespace
     auto valid_parameters = Input::valid_parameters();
     for (auto& [section_name, spec] : valid_parameters)
     {
-      spec = Core::IO::InputSpecBuilders::group(section_name, {spec}, {.required = false});
+      spec = Core::IO::InputSpecBuilders::group(section_name, {spec}, {.defaultable = true});
     }
 
     section_specs.merge(valid_parameters);
@@ -1869,9 +1869,9 @@ void Global::read_parameter(Global::Problem& problem, Core::IO::InputFile& input
 
   auto parameter_section_specs = Input::valid_parameters();
 
-  for (const auto& [section_name, spec] : parameter_section_specs)
+  for (const auto& [section_name, _] : parameter_section_specs)
   {
-    Core::IO::read_parameters_in_section(input, section_name, *list, spec);
+    Core::IO::read_parameters_in_section(input, section_name, *list);
   }
 
   // check for invalid parameters

@@ -219,13 +219,6 @@ void Core::IO::print_dat(
   }
 }
 
-
-void Core::IO::print_metadata_yaml(
-    std::ostream& stream, const std::map<std::string, InputSpec>& section_specs)
-{
-}
-
-
 bool Core::IO::need_to_print_equal_sign(const Teuchos::ParameterList& list)
 {
   // Helper function to check if string contains a space.
@@ -349,28 +342,18 @@ namespace
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Core::IO::read_parameters_in_section(InputFile& input, const std::string& section_name,
-    Teuchos::ParameterList& list, const InputSpec& spec)
+void Core::IO::read_parameters_in_section(
+    InputFile& input, const std::string& section_name, Teuchos::ParameterList& list)
 {
   if (section_name.empty()) FOUR_C_THROW("Empty section name given.");
 
   InputParameterContainer container;
-  Teuchos::ParameterList& sublist = find_sublist(section_name, list);
-  if (input.has_section(section_name))
-  {
-    input.match_section(section_name, spec, container);
-  }
-  else
-  {
-    // Match against an empty section to get all the defaults set correctly.
-    ryml::Tree tree = init_yaml_tree_with_exceptions();
-    ryml::NodeRef root = tree.rootref();
-    root |= ryml::MAP;
-    ConstYamlNodeRef yaml{root, ""};
-    spec.match(yaml, container);
-  }
+  input.match_section(section_name, container);
 
-  container.to_teuchos_parameter_list(sublist);
+  FOUR_C_ASSERT(container.has_group(section_name),
+      "Internal error: group '%s' not found in container.", section_name.c_str());
+
+  container.group(section_name).to_teuchos_parameter_list(find_sublist(section_name, list));
 }
 
 /*----------------------------------------------------------------------*/

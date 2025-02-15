@@ -127,15 +127,19 @@ namespace
 
   TEST(InputFile, YamlIncludes)
   {
+    using namespace Core::IO::InputSpecBuilders;
     const std::string input_file_name =
         TESTING::get_support_file_path("test_files/yaml_includes/main.yaml");
 
     MPI_Comm comm(MPI_COMM_WORLD);
-    Core::IO::InputFile input{{},
+    Core::IO::InputFile input{{{"INCLUDED SECTION 2", all_of({
+                                                          entry<int>("a"),
+                                                          entry<double>("b"),
+                                                          entry<bool>("c"),
+                                                      })}},
         {
             "MAIN SECTION",
             "INCLUDED SECTION 1",
-            "INCLUDED SECTION 2",
             "INCLUDED SECTION 3",
             "SECTION WITH SUBSTRUCTURE",
         },
@@ -154,7 +158,7 @@ namespace
     });
 
     Core::IO::InputParameterContainer container;
-    input.match_section("INCLUDED SECTION 2", spec, container);
+    input.match_section("INCLUDED SECTION 2", container);
     EXPECT_EQ(container.get<int>("a"), 1);
     EXPECT_EQ(container.get<double>("b"), 2.0);
     EXPECT_EQ(container.get<bool>("c"), true);

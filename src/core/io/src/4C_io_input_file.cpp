@@ -728,7 +728,7 @@ namespace Core::IO
     }
   }
 
-  InputFile::FragmentIteratorRange InputFile::in_section(const std::string& section_name)
+  InputFile::FragmentIteratorRange InputFile::in_section(const std::string& section_name) const
   {
     static const std::vector<Fragment> empty;
 
@@ -768,7 +768,7 @@ namespace Core::IO
 
 
   InputFile::FragmentIteratorRange InputFile::in_section_rank_0_only(
-      const std::string& section_name)
+      const std::string& section_name) const
   {
     if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0 &&
         pimpl_->content_by_section_.contains(section_name))
@@ -784,31 +784,106 @@ namespace Core::IO
   }
 
 
-  void InputFile::match_section(const std::string& section_name,
-      const FourC::Core::IO::InputSpec& spec, FourC::Core::IO::InputParameterContainer& container)
+  void InputFile::match_section(
+      const std::string& section_name, FourC::Core::IO::InputParameterContainer& container) const
   {
-    FOUR_C_ASSERT_ALWAYS(
-        has_section(section_name), "Section '%s' not found.", section_name.c_str());
+    if (!pimpl_->valid_sections_.contains(section_name))
+    {
+      if (std::ranges::find(pimpl_->legacy_section_names_, section_name) ==
+          pimpl_->legacy_section_names_.end())
+      {
+        FOUR_C_THROW(
+            "Tried to match section '%s' which is not a valid section name.", section_name.c_str());
+      }
+      else
+      {
+        FOUR_C_THROW(
+            "Tried to match section '%s' but it is a legacy string section "
+            "and cannot be matched against any InputSpec. The string lines "
+            "in this section need manual parsing.",
+            section_name.c_str());
+      }
+    }
 
-    // For dat file format, flatten the lines into a single string, which can be parsed by the
-    // ValueParser.
+    const auto& spec = pimpl_->valid_sections_.at(section_name);
+    auto section_it = pimpl_->content_by_section_.find(section_name);
+    if (section_it == pimpl_->content_by_section_.end())
+    {
+      if (spec.impl().has_default_value())
+      {
+        spec.impl().set_default_value(container);
+        return;
+      }
+      else if (spec.impl().required())
+      {
+        FOUR_C_THROW("Required section '%s' not found in input file.", section_name.c_str());
+      }
+      else
+      {
+        return;
+      }
+    }
+
+    // Section must be present.
+
+    // Dat file format
     if (pimpl_->content_by_section_.at(section_name).content.index() == 0)
     {
-      std::stringstream flattened_dat;
-      for (const auto& line : in_section(section_name))
+      // Dat format has too little structure and the interpretation of line breaks differs
+      // depending on the expected spec.
+      const auto* list_spec = dynamic_cast<const Internal::InputSpecTypeErasedImplementation<
+          InputSpecBuilders::Internal::ListSpec>*>(&spec.impl());
+
+      if (list_spec)
       {
-        std::string line_str(line.get_as_dat_style_string());
-        // Split the line into key-value according to the dat file format. Quote keys and values
-        // so the parser can identify them.
-        auto [key, value] = read_key_value(line_str);
-        flattened_dat << std::quoted(key) << " " << std::quoted(value) << " ";
+        std::vector<InputParameterContainer> list_entries;
+        for (const auto& line : in_section(section_name))
+        {
+          Core::IO::ValueParser parser{line.get_as_dat_style_string(),
+              {.user_scope_message =
+                      "While parsing list entries in section '" + section_name + "': ",
+                  .base_path =
+                      std::filesystem::path(pimpl_->content_by_section_.at(section_name).file)
+                          .parent_path()}};
+          try
+          {
+            list_spec->wrapped.spec.fully_parse(parser, list_entries.emplace_back());
+          }
+          catch (const std::exception& e)
+          {
+            FOUR_C_THROW("Error while parsing list entries in section '%s': %s",
+                section_name.c_str(), e.what());
+          }
+        }
+        container.add_list(section_name, std::move(list_entries));
       }
-      std::string flattened_string = flattened_dat.str();
-      Core::IO::ValueParser parser{flattened_string,
-          {.base_path = std::filesystem::path(pimpl_->content_by_section_.at(section_name).file)
-                  .parent_path(),
-              .token_delimiter = '"'}};
-      spec.fully_parse(parser, container);
+      else
+      {
+        // Create a group in the dat file format by starting with the section name.
+        std::stringstream flattened_dat;
+        flattened_dat << std::quoted(section_name) << " ";
+        for (const auto& line : in_section(section_name))
+        {
+          std::string line_str(line.get_as_dat_style_string());
+          // Split the line into key-value according to the dat file format. Quote keys and values
+          // so the parser can identify them.
+          auto [key, value] = read_key_value(line_str);
+          flattened_dat << std::quoted(key) << " " << std::quoted(value) << " ";
+        }
+        std::string flattened_string = flattened_dat.str();
+        Core::IO::ValueParser parser{flattened_string,
+            {.base_path = std::filesystem::path(pimpl_->content_by_section_.at(section_name).file)
+                    .parent_path(),
+                .token_delimiter = '"'}};
+        try
+        {
+          spec.fully_parse(parser, container);
+        }
+        catch (const std::exception& e)
+        {
+          FOUR_C_THROW("Error while parsing section '%s': %s", section_name.c_str(), e.what());
+        }
+      }
     }
     else
     {
