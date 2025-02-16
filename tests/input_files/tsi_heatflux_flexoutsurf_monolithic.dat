@@ -82,7 +82,6 @@ NORM_RESF                       Abs
 NORM_TEMP                       Abs
 NUMSTEP                         200
 PREDICT                         ConstTemp
-RESEVERYERGY                     0
 RESULTSEVERY                     1
 RESTARTEVERY                     1
 TIMESTEP                        0.05
