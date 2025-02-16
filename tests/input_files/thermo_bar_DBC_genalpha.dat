@@ -55,7 +55,6 @@ NORM_RESF                       Abs
 NORM_TEMP                       Abs
 NUMSTEP                         50
 PREDICT                         ConstTemp
-RESEVERYERGY                     10
 RESULTSEVERY                     5
 RESTARTEVERY                     20
 TIMESTEP                        2.0

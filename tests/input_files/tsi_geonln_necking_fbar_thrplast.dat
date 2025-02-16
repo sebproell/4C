@@ -68,7 +68,6 @@ NORM_TEMP                       Abs
 NUMSTEP                         40000
 PREDICT                         TangTemp
 RESULTSEVERY                     1
-RESEVERYERGY                     0
 RESTARTEVERY                     10
 TIMESTEP                        0.05
 TOLRES                          1e-05
