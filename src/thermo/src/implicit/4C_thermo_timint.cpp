@@ -45,8 +45,6 @@ Thermo::TimInt::TimInt(const Teuchos::ParameterList& ioparams,
           Teuchos::getIntegralValue<Inpar::Thermo::HeatFluxType>(ioparams, "THERM_HEATFLUX")),
       writetempgrad_(
           Teuchos::getIntegralValue<Inpar::Thermo::TempGradType>(ioparams, "THERM_TEMPGRAD")),
-      writeenergyevery_(tdynparams.get<int>("RESEVERYERGY")),
-      energyfile_(nullptr),
       calcerror_(Teuchos::getIntegralValue<Inpar::Thermo::CalcError>(tdynparams, "CALCERROR")),
       errorfunctno_(tdynparams.get<int>("CALCERRORFUNCNO")),
       time_(nullptr),
@@ -88,12 +86,6 @@ Thermo::TimInt::TimInt(const Teuchos::ParameterList& ioparams,
   timen_ = (*time_)[0] + (*dt_)[0];  // set target time to initial time plus step size
   stepn_ = step_ + 1;
 
-  // output file for energy
-  if ((writeenergyevery_ != 0) and (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0))
-  {
-    attach_energy_file();
-  }
-
   // a zero vector of full length
   zeros_ = Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
 
@@ -131,31 +123,53 @@ Thermo::TimInt::TimInt(const Teuchos::ParameterList& ioparams,
       Teuchos::getIntegralValue<Inpar::Thermo::InitialField>(tdynparams, "INITIALFIELD"),
       startfuncno);
 
-  // check for special thermo output which is to be handled by an own writer object
-  const Teuchos::ParameterList thermo_runtime_output_list(
-      Global::Problem::instance()->io_params().sublist("RUNTIME VTK OUTPUT").sublist("THERMO"));
-
-  auto output_thermo = thermo_runtime_output_list.get<bool>("OUTPUT_THERMO");
-
-  // create and initialize parameter container object for thermo specific runtime output
-  if (output_thermo)
+  // check for special thermo vtk output which is to be handled by an own writer object
   {
-    bool output_temperature_state = thermo_runtime_output_list.get<bool>("TEMPERATURE");
-    bool output_heatflux_state = thermo_runtime_output_list.get<bool>("HEATFLUX");
-    bool output_tempgrad_state = thermo_runtime_output_list.get<bool>("TEMPGRAD");
-    bool output_energy_state = thermo_runtime_output_list.get<bool>("ENERGY");
-    bool output_element_owner = thermo_runtime_output_list.get<bool>("ELEMENT_OWNER");
-    bool output_element_gid = thermo_runtime_output_list.get<bool>("ELEMENT_GID");
-    bool output_node_gid = thermo_runtime_output_list.get<bool>("NODE_GID");
+    const Teuchos::ParameterList thermo_vtk_runtime_output_list(
+        Global::Problem::instance()->io_params().sublist("RUNTIME VTK OUTPUT").sublist("THERMO"));
 
-    runtime_output_params_ = {output_temperature_state, output_heatflux_state,
-        output_tempgrad_state, output_energy_state, output_element_owner, output_element_gid,
-        output_node_gid};
+    auto vtk_output_thermo = thermo_vtk_runtime_output_list.get<bool>("OUTPUT_THERMO");
 
-    runtime_output_writer_ = Core::IO::DiscretizationVisualizationWriterMesh(
-        discret_, Core::IO::visualization_parameters_factory(
-                      Global::Problem::instance()->io_params().sublist("RUNTIME VTK OUTPUT"),
-                      *Global::Problem::instance()->output_control_file(), (*time_)[0]));
+    if (vtk_output_thermo)
+    {
+      bool output_temperature_state = thermo_vtk_runtime_output_list.get<bool>("TEMPERATURE");
+      bool output_heatflux_state = thermo_vtk_runtime_output_list.get<bool>("HEATFLUX");
+      bool output_tempgrad_state = thermo_vtk_runtime_output_list.get<bool>("TEMPGRAD");
+      bool output_element_owner = thermo_vtk_runtime_output_list.get<bool>("ELEMENT_OWNER");
+      bool output_element_gid = thermo_vtk_runtime_output_list.get<bool>("ELEMENT_GID");
+      bool output_node_gid = thermo_vtk_runtime_output_list.get<bool>("NODE_GID");
+
+      runtime_vtk_params_ = {output_temperature_state, output_heatflux_state, output_tempgrad_state,
+          output_element_owner, output_element_gid, output_node_gid};
+
+      runtime_vtk_writer_ = Core::IO::DiscretizationVisualizationWriterMesh(
+          discret_, Core::IO::visualization_parameters_factory(
+                        Global::Problem::instance()->io_params().sublist("RUNTIME VTK OUTPUT"),
+                        *Global::Problem::instance()->output_control_file(), (*time_)[0]));
+    }
+  }
+
+  // check for special thermo csv output which is to be handled by an own writer object
+  {
+    const Teuchos::ParameterList thermo_csv_runtime_output_list(
+        tdynparams.sublist("RUNTIME CSV OUTPUT"));
+
+    auto csv_output_thermo = thermo_csv_runtime_output_list.get<bool>("OUTPUT_THERMO");
+
+    if (csv_output_thermo)
+    {
+      runtime_csv_writer_.emplace(Core::Communication::my_mpi_rank(discret_->get_comm()),
+          *Global::Problem::instance()->output_control_file(), "thermo");
+
+      bool output_energy_state = thermo_csv_runtime_output_list.get<bool>("ENERGY");
+
+      if (output_energy_state)
+      {
+        runtime_csv_writer_->register_data_vector("energy", 1, 16);
+      }
+
+      runtime_csv_params_ = {output_energy_state};
+    }
   }
 }
 
@@ -362,41 +376,63 @@ void Thermo::TimInt::read_restart_state()
  *----------------------------------------------------------------------*/
 void Thermo::TimInt::write_runtime_output()
 {
-  FOUR_C_ASSERT_ALWAYS(runtime_output_writer_.has_value(), "Runtime output not initialized.");
-
-  runtime_output_writer_->reset();
-
-  if (runtime_output_params_.output_temperature_state)
+  // write vtk runtime output
+  if (runtime_vtk_writer_.has_value())
   {
-    runtime_output_writer_->append_result_data_vector_with_context(
-        *tempn_, Core::IO::OutputEntity::node, {"temperature"});
+    runtime_vtk_writer_->reset();
+
+    if (runtime_vtk_params_.output_temperature_state)
+    {
+      runtime_vtk_writer_->append_result_data_vector_with_context(
+          *tempn_, Core::IO::OutputEntity::node, {"temperature"});
+    }
+
+    if (runtime_vtk_params_.output_heatflux_state)
+    {
+      FOUR_C_THROW("VTK runtime output is not yet implemented for the heatflux state.");
+    }
+
+    if (runtime_vtk_params_.output_tempgrad_state)
+    {
+      FOUR_C_THROW("VTK runtime output is not yet implemented for the temperature gradient state.");
+    }
+
+    if (runtime_vtk_params_.output_element_owner)
+      runtime_vtk_writer_->append_element_owner("element_owner");
+
+    if (runtime_vtk_params_.output_element_gid)
+      runtime_vtk_writer_->append_element_gid("element_gid");
+
+    if (runtime_vtk_params_.output_node_gid) runtime_vtk_writer_->append_node_gid("node_gid");
+
+    // finalize everything and write all required files to filesystem
+    runtime_vtk_writer_->write_to_disk((*time_)[0], step_);
   }
 
-  if (runtime_output_params_.output_heatflux_state)
+  // write csv runtime output
+  if (runtime_csv_writer_.has_value())
   {
-    FOUR_C_THROW("VTK runtime output is not yet implemented for the heatflux state.");
+    if (runtime_csv_params_.output_energy_state)
+    {
+      double energy = 0.0;
+
+      Teuchos::ParameterList p;
+      p.set<Thermo::Action>("action", Thermo::calc_thermo_energy);
+
+      discret_->clear_state();
+      discret_->set_state(0, "temperature", (*temp_)(0));
+
+      std::shared_ptr<Core::LinAlg::SerialDenseVector> energies =
+          std::make_shared<Core::LinAlg::SerialDenseVector>(1);
+      discret_->evaluate_scalars(p, energies);
+      discret_->clear_state();
+      energy = (*energies)(0);
+
+      std::map<std::string, std::vector<double>> output_energy;
+      output_energy["energy"] = {energy};
+      runtime_csv_writer_->write_data_to_file((*time_)[0], step_, output_energy);
+    }
   }
-
-  if (runtime_output_params_.output_tempgrad_state)
-  {
-    FOUR_C_THROW("VTK runtime output is not yet implemented for the temperature gradient state.");
-  }
-
-  if (runtime_output_params_.output_energy_state)
-  {
-    FOUR_C_THROW("VTK runtime output is not yet implemented for the energy state.");
-  }
-
-  if (runtime_output_params_.output_element_owner)
-    runtime_output_writer_->append_element_owner("element_owner");
-
-  if (runtime_output_params_.output_element_gid)
-    runtime_output_writer_->append_element_gid("element_gid");
-
-  if (runtime_output_params_.output_node_gid) runtime_output_writer_->append_node_gid("node_gid");
-
-  // finalize everything and write all required files to filesystem
-  runtime_output_writer_->write_to_disk((*time_)[0], step_);
 }
 
 
@@ -435,7 +471,7 @@ void Thermo::TimInt::output_step(bool forced_writerestart)
   // write runtime output
   if (writeglobevery_ > 0 and step_ % writeglobevery_ == 0)
   {
-    if (runtime_output_writer_.has_value()) write_runtime_output();
+    write_runtime_output();
   }
 
   // output results (not necessary if restart in same step)
@@ -450,12 +486,6 @@ void Thermo::TimInt::output_step(bool forced_writerestart)
           (writetempgrad_ != Inpar::Thermo::tempgrad_none)))
   {
     output_heatflux_tempgrad(datawritten);
-  }
-
-  // output energy
-  if (writeenergyevery_ and (step_ % writeenergyevery_ == 0))
-  {
-    output_energy();
   }
 }
 
@@ -570,6 +600,8 @@ void Thermo::TimInt::output_heatflux_tempgrad(bool& datawritten)
   discret_->set_state(0, "residual temperature", zeros_);
   discret_->set_state(0, "temperature", (*temp_)(0));
 
+  auto heatflux = std::make_shared<Core::LinAlg::Vector<double>>(*discret_->dof_row_map(), true);
+
   discret_->evaluate(p, nullptr, nullptr, nullptr, nullptr, nullptr);
   discret_->clear_state();
 
@@ -622,43 +654,6 @@ void Thermo::TimInt::output_heatflux_tempgrad(bool& datawritten)
   return;
 
 }  // output_heatflux_tempgrad()
-
-
-/*----------------------------------------------------------------------*
- | output system energies                                   bborn 06/08 |
- *----------------------------------------------------------------------*/
-void Thermo::TimInt::output_energy()
-{
-  // internal/tempgrad energy
-  double intergy = 0.0;  // total internal energy
-  {
-    Teuchos::ParameterList p;
-    // other parameters needed by the elements
-    p.set<Thermo::Action>("action", Thermo::calc_thermo_energy);
-
-    // set vector values needed by elements
-    discret_->clear_state();
-    // set_state(0,...) in case of multiple dofsets (e.g. TSI)
-    discret_->set_state(0, "temperature", (*temp_)(0));
-    // get energies
-    std::shared_ptr<Core::LinAlg::SerialDenseVector> energies =
-        std::make_shared<Core::LinAlg::SerialDenseVector>(1);
-    discret_->evaluate_scalars(p, energies);
-    discret_->clear_state();
-    intergy = (*energies)(0);
-  }
-
-  // the output
-  if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
-  {
-    *energyfile_ << " " << std::setw(9) << step_ << std::scientific << std::setprecision(16) << " "
-                 << (*time_)[0] << " " << intergy << std::endl;
-  }
-
-  // in God we trust
-  return;
-
-}  // output_energy()
 
 
 /*----------------------------------------------------------------------*

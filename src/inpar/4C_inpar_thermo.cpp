@@ -30,7 +30,7 @@ void Inpar::Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   // output type
   Core::Utils::int_parameter("RESULTSEVERY", 1,
       "save temperature and other global quantities every RESULTSEVERY steps", tdyn);
-  Core::Utils::int_parameter("RESEVERYERGY", 0, "write system energies every requested step", tdyn);
+
   Core::Utils::int_parameter(
       "RESTARTEVERY", 1, "write restart possibility every RESTARTEVERY steps", tdyn);
 
@@ -148,6 +148,20 @@ void Inpar::Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::double_parameter("THETA", 0.5, "One-step-theta factor in (0,1]", tonesteptheta);
 
   tonesteptheta.move_into_collection(list);
+
+
+  // csv runtime output
+  {
+    Core::Utils::SectionSpecs sublist_csv_output{tdyn, "RUNTIME CSV OUTPUT"};
+
+    // whether to write csv output for thermo
+    Core::Utils::bool_parameter("OUTPUT_THERMO", "No", "write thermo output", sublist_csv_output);
+
+    // whether to write energy state
+    Core::Utils::bool_parameter("ENERGY", "No", "write energy output", sublist_csv_output);
+
+    sublist_csv_output.move_into_collection(list);
+  }
 }
 
 

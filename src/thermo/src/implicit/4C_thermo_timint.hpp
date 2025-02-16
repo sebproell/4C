@@ -16,6 +16,7 @@
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"
 #include "4C_io_discretization_visualization_writer_mesh.hpp"
+#include "4C_io_runtime_csv_writer.hpp"
 #include "4C_io_visualization_parameters.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
@@ -179,23 +180,8 @@ namespace Thermo
                                                      //!< it was written at this time step
     );
 
-    //! Energy output
-    void output_energy();
-
     //! Write internal and external forces (if necessary for restart)
     virtual void write_restart_force(std::shared_ptr<Core::IO::DiscretizationWriter> output) = 0;
-
-    //! Attach file handle for energy file #energyfile_
-    void attach_energy_file()
-    {
-      if (not energyfile_)
-      {
-        std::string energyname =
-            Global::Problem::instance()->output_control_file()->file_name() + ".thermo.energy";
-        energyfile_ = new std::ofstream(energyname.c_str());
-        *energyfile_ << "# timestep time internal_energy" << std::endl;
-      }
-    }
 
     //! Identify residual
     //! This method does not predict the target solution but
@@ -396,7 +382,9 @@ namespace Thermo
     //! @name Printing and output
     //@{
 
-    struct OptionsThermoRuntimeOutput
+    std::shared_ptr<Core::IO::DiscretizationWriter> output_;  //!< binary output
+
+    struct OptionsThermoVTKRuntimeOutput
     {
       /// whether to write pressure output
       bool output_temperature_state = false;
@@ -406,9 +394,6 @@ namespace Thermo
 
       /// whether to write temperature gradient output
       bool output_tempgrad_state = false;
-
-      /// whether to write energy output
-      bool output_energy_state = false;
 
       /// whether to write the owner of elements
       bool output_element_owner = false;
@@ -420,10 +405,18 @@ namespace Thermo
       bool output_node_gid = false;
     };
 
-    std::shared_ptr<Core::IO::DiscretizationWriter> output_;  //!< binary output
-    std::optional<Core::IO::DiscretizationVisualizationWriterMesh>
-        runtime_output_writer_;                         //!< runtime output
-    OptionsThermoRuntimeOutput runtime_output_params_;  //!< runtime output parameter
+    std::optional<Core::IO::DiscretizationVisualizationWriterMesh> runtime_vtk_writer_;
+    OptionsThermoVTKRuntimeOutput runtime_vtk_params_;
+
+    struct OptionsThermoCSVRuntimeOutput
+    {
+      /// whether to write energy output
+      bool output_energy_state = false;
+    };
+
+    std::optional<Core::IO::RuntimeCsvWriter> runtime_csv_writer_;
+    OptionsThermoCSVRuntimeOutput runtime_csv_params_;
+
 
     int printscreen_;        //!< print infos to standard out every n steps
     int writerestartevery_;  //!< write restart every given step;
@@ -432,8 +425,6 @@ namespace Thermo
     int writeglobevery_;     //!< write state every given step
     Inpar::Thermo::HeatFluxType writeheatflux_;
     Inpar::Thermo::TempGradType writetempgrad_;
-    int writeenergyevery_;                //!< write system energy every given step
-    std::ofstream* energyfile_;           //!< outputfile for energy
     Inpar::Thermo::CalcError calcerror_;  //!< evaluate error compared to analytical solution
     int errorfunctno_;  //!< function number of analytical solution for error evaluation
     //@}

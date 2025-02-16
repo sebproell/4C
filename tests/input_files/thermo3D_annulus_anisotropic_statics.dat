@@ -28,6 +28,9 @@ NORM_TEMP                       Abs
 PREDICT                         ConstTemp
 TOLRES                          1e-08
 TOLTEMP                         1e-08
+---------------------------------THERMAL DYNAMIC/RUNTIME CSV OUTPUT
+OUTPUT_THERMO                   Yes
+ENERGY                          Yes
 -----------------------------------------------------------SOLVER 1
 SOLVER                          Belos
 AZSOLVE                         GMRES
