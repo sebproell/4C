@@ -1022,14 +1022,30 @@ specs:
         first_entry["a"] << 1;
         first_entry["b"] << "string";
       }
-      ConstYamlNodeRef node(root, "");
 
-      InputParameterContainer container;
-      spec.match(node, container);
-      const auto& list = container.get_list("list");
-      EXPECT_EQ(list.size(), 1);
-      EXPECT_EQ(list[0].get<int>("a"), 1);
-      EXPECT_EQ(list[0].get<std::string>("b"), "string");
+      {
+        SCOPED_TRACE("Match root node.");
+        ConstYamlNodeRef node(root, "");
+
+        InputParameterContainer container;
+        spec.match(node, container);
+        const auto& list = container.get_list("list");
+        EXPECT_EQ(list.size(), 1);
+        EXPECT_EQ(list[0].get<int>("a"), 1);
+        EXPECT_EQ(list[0].get<std::string>("b"), "string");
+      }
+
+      {
+        SCOPED_TRACE("Match list node.");
+        ConstYamlNodeRef node(root["list"], "");
+
+        InputParameterContainer container;
+        spec.match(node, container);
+        const auto& list = container.get_list("list");
+        EXPECT_EQ(list.size(), 1);
+        EXPECT_EQ(list[0].get<int>("a"), 1);
+        EXPECT_EQ(list[0].get<std::string>("b"), "string");
+      }
     }
 
     // unmatched node

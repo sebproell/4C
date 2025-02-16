@@ -1032,16 +1032,18 @@ bool Core::IO::InputSpecBuilders::Internal::ListSpec::match(ConstYamlNodeRef nod
 {
   match_entry.type = IO::Internal::MatchEntry::Type::list;
   FOUR_C_ASSERT(!name.empty(), "Internal error: list name must not be empty.");
-  FOUR_C_ASSERT(node.node.is_map(), "Internal error: list node must be a map.");
   const auto list_name = ryml::to_csubstr(name);
 
-  const bool list_exists = node.node.has_child(list_name) && node.node[list_name].is_seq();
-  if (!list_exists)
+  const bool list_node_is_input =
+      node.node.has_key() && (node.node.key() == list_name) && node.node.is_seq();
+  const bool list_exists_nested =
+      node.node.is_map() && node.node.has_child(list_name) && node.node[list_name].is_seq();
+  if (!list_exists_nested && !list_node_is_input)
   {
     return !data.required;
   }
 
-  auto list_node = node.wrap(node.node[list_name]);
+  auto list_node = list_node_is_input ? node : node.wrap(node.node[list_name]);
   // Matching the key is at least a partial match.
   match_entry.state = IO::Internal::MatchEntry::State::partial;
   match_entry.matched_node = list_node.node.id();
