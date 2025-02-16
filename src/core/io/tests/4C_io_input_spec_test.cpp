@@ -800,6 +800,42 @@ specs:
     }
   }
 
+  TEST(InputSpecTest, MatchYamlGroup)
+  {
+    auto spec = group("group", {
+                                   entry<int>("a"),
+                                   entry<std::string>("b"),
+                               });
+
+    {
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+
+      root |= ryml::MAP;
+      root["group"] |= ryml::MAP;
+      root["group"]["a"] << 1;
+      root["group"]["b"] << "b";
+
+      {
+        SCOPED_TRACE("Match root node.");
+        ConstYamlNodeRef node(root, "");
+        InputParameterContainer container;
+        spec.match(node, container);
+        EXPECT_EQ(container.group("group").get<int>("a"), 1);
+        EXPECT_EQ(container.group("group").get<std::string>("b"), "b");
+      }
+
+      {
+        SCOPED_TRACE("Match group node.");
+        ConstYamlNodeRef node(root["group"], "");
+        InputParameterContainer container;
+        spec.match(node, container);
+        EXPECT_EQ(container.group("group").get<int>("a"), 1);
+        EXPECT_EQ(container.group("group").get<std::string>("b"), "b");
+      }
+    }
+  }
+
 
   TEST(InputSpecTest, MatchYamlAllOf)
   {

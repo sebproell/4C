@@ -635,8 +635,11 @@ bool Core::IO::InputSpecBuilders::Internal::GroupSpec::match(ConstYamlNodeRef no
   FOUR_C_ASSERT(node.node.is_map(), "Internal error: group node must be a map.");
   const auto group_name = ryml::to_csubstr(name);
 
-  const bool group_exists = node.node.has_child(group_name) && node.node[group_name].is_map();
-  if (!group_exists)
+  const bool group_node_is_input = node.node.has_key() && (node.node.key() == group_name);
+  const bool group_exists_nested =
+      node.node.has_child(group_name) && node.node[group_name].is_map();
+
+  if (!group_exists_nested && !group_node_is_input)
   {
     if (data.defaultable)
     {
@@ -646,7 +649,8 @@ bool Core::IO::InputSpecBuilders::Internal::GroupSpec::match(ConstYamlNodeRef no
     return !data.required.value();
   }
 
-  auto group_node = node.wrap(node.node[group_name]);
+  auto group_node = group_node_is_input ? node : node.wrap(node.node[group_name]);
+
   // Matching the key of the group is at least a partial match.
   match_entry.state = IO::Internal::MatchEntry::State::partial;
   match_entry.matched_node = group_node.node.id();
