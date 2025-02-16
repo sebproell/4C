@@ -23,9 +23,8 @@ void Inpar::Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::SectionSpecs tdyn{"THERMAL DYNAMIC"};
 
   Core::Utils::string_to_integral_parameter<DynamicType>("DYNAMICTYPE", "OneStepTheta",
-      "type of time integration control",
-      tuple<std::string>("Statics", "OneStepTheta", "GenAlpha", "ExplicitEuler"),
-      tuple<DynamicType>(dyna_statics, dyna_onesteptheta, dyna_genalpha, dyna_expleuler), tdyn);
+      "type of time integration control", tuple<std::string>("Statics", "OneStepTheta", "GenAlpha"),
+      tuple<DynamicType>(dyna_statics, dyna_onesteptheta, dyna_genalpha), tdyn);
 
   // output type
   Core::Utils::int_parameter("RESULTSEVERY", 1,
