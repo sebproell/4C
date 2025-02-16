@@ -233,9 +233,7 @@ void Thermo::TimInt::determine_capa_consist_temp_rate()
   // We need to reset the tangent matrix because its graph (topology)
   // is not finished yet in case of constraints and possibly other side
   // effects (basically managers).
-  // BUT: in case of explicit time integration, the conductivity matrix
-  // is stored in tang_ which is needed throughout the simulation
-  if (method_name() != Inpar::Thermo::dyna_expleuler) tang_->reset();
+  tang_->reset();
 
   // leave this hell
   return;

@@ -257,7 +257,6 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
           params.get<Inpar::Thermo::DynamicType>("time integrator", Inpar::Thermo::dyna_undefined);
       switch (timint)
       {
-        case Inpar::Thermo::dyna_expleuler:
         case Inpar::Thermo::dyna_onesteptheta:
         {
           calculate_lump_matrix(&ecapa);
