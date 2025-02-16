@@ -2007,20 +2007,14 @@ void Global::read_materials(Global::Problem& problem, Core::IO::InputFile& input
 /*----------------------------------------------------------------------*/
 void Global::read_contact_constitutive_laws(Global::Problem& problem, Core::IO::InputFile& input)
 {
-  auto valid_law_spec = CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws();
-
   const std::string contact_const_laws = "CONTACT CONSTITUTIVE LAWS";
-  for (const auto& section_i : input.in_section(contact_const_laws))
-  {
-    auto container = section_i.match(valid_law_spec);
-    if (!container.has_value())
-    {
-      auto l = section_i.get_as_dat_style_string();
-      FOUR_C_THROW("Invalid contact constitutive law specification. Could not parse line:\n  %*s",
-          l.size(), l.data());
-    }
-    CONTACT::CONSTITUTIVELAW::create_contact_constitutive_law_from_input(*container);
-  }
+  Core::IO::InputParameterContainer container;
+  input.match_section(contact_const_laws, container);
+
+  const auto* laws = container.get_if<Core::IO::InputParameterContainer::List>(contact_const_laws);
+  if (laws)
+    for (const auto& law : *laws)
+      CONTACT::CONSTITUTIVELAW::create_contact_constitutive_law_from_input(law);
 }
 
 /*----------------------------------------------------------------------*/
