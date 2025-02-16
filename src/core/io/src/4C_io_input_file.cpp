@@ -248,6 +248,11 @@ namespace Core::IO
       std::unordered_map<std::string, SectionContent> content_by_section_;
 
       /**
+       * Store the order in which the sections were read.
+       */
+      std::vector<std::string> section_order_;
+
+      /**
        * This is the merged tree of all yaml input files combined, excluding any "INCLUDES"
        * sections. The data from different files will be stored under top-level keys corresponding
        * to the file paths.
@@ -333,8 +338,8 @@ namespace Core::IO
       }
     }
 
-    std::vector<std::filesystem::path> read_dat_content(const std::filesystem::path& file_path,
-        std::unordered_map<std::string, Internal::SectionContent>& content_by_section)
+    std::vector<std::filesystem::path> read_dat_content(
+        const std::filesystem::path& file_path, Internal::InputFileImpl& input_file_impl)
     {
       const auto name_of_section = [](const std::string& section_header)
       {
@@ -403,11 +408,11 @@ namespace Core::IO
           else
           {
             current_section_type = SectionType::normal;
-            FOUR_C_ASSERT_ALWAYS(content_by_section.find(name) == content_by_section.end(),
+            FOUR_C_ASSERT_ALWAYS(!input_file_impl.content_by_section_.contains(name),
                 "Section '%s' is defined again in file '%s'.", name.c_str(), file_path.c_str());
 
-            content_by_section[name] = {};
-            current_section_content = &content_by_section[name];
+            input_file_impl.section_order_.emplace_back(name);
+            current_section_content = &input_file_impl.content_by_section_[name];
             current_section_content->file = file_path;
           }
         }
@@ -634,7 +639,7 @@ namespace Core::IO
               }
               else
               {
-                return read_dat_content(*file_it, pimpl_->content_by_section_);
+                return read_dat_content(*file_it, *pimpl_);
               }
             });
 
@@ -711,6 +716,7 @@ namespace Core::IO
           FOUR_C_ASSERT_ALWAYS(!pimpl_->content_by_section_.contains(section_name),
               "Section '%s' is defined more than once.", section_name.c_str());
 
+          pimpl_->section_order_.emplace_back(section_name);
           Internal::SectionContent& content = pimpl_->content_by_section_[section_name];
           content.content = Internal::SectionContent::YamlContent{.node = node};
           content.file = to_string(file_node.key());
@@ -935,6 +941,43 @@ namespace Core::IO
       for (const auto& name : pimpl_->legacy_section_names_)
       {
         legacy_string_sections.append_child() << name;
+      }
+    }
+
+    out << tree;
+  }
+
+  void InputFile::write_as_yaml(std::ostream& out) const
+  {
+    auto tree = init_yaml_tree_with_exceptions();
+    tree.rootref() |= ryml::MAP;
+    // Iterate the sections, parse them into a container, and emit the container data.
+    InputParameterContainer container;
+
+    // Write the yaml file in the same order as the input was read.
+    for (const auto& section_name : pimpl_->section_order_)
+    {
+      container.clear();
+
+      if (pimpl_->valid_sections_.contains(section_name))
+      {
+        auto& spec = pimpl_->valid_sections_.at(section_name);
+        match_section(section_name, container);
+        YamlNodeRef section_node{tree.rootref(), ""};
+        spec.emit(section_node, container);
+      }
+      else
+      {
+        // Emit the section as a sequence of strings. This also works for the special
+        // description section.
+        auto section = tree.rootref().append_child();
+        section << ryml::key(section_name);
+        section |= ryml::SEQ;
+        for (const auto& line : in_section(section_name))
+        {
+          section.append_child() = ryml::csubstr(
+              line.get_as_dat_style_string().data(), line.get_as_dat_style_string().size());
+        }
       }
     }
 

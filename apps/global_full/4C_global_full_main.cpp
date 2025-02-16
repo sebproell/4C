@@ -39,6 +39,77 @@ using namespace FourC;
 
 namespace
 {
+  void print_help_message()
+  {
+    std::cout
+        << "NAME\n"
+        << "\t"
+        << "4C - simulate just about anything\n"
+        << "\n"
+        << "SYNOPSIS\n"
+        << "\t"
+        << "4C [-h | --help] [-p | --parameters] [--dat_to_yaml] [-d | --datfile] [-ngroup=<x>] \\ "
+           "\n"
+           "\t\t[-glayout=a,b,c,...] [-nptype=<parallelism_type>] \\ \n"
+        << "\t\t<dat_name> <output_name> [restart=<y>] [restartfrom=restart_file_name] \\ \n"
+           "\t\t[ <dat_name0> <output_name0> [restart=<y>] [restartfrom=restart_file_name] ... "
+           "] \\ \n"
+           "\t\t[--interactive]\n"
+        << "\n"
+        << "DESCRIPTION\n"
+        << "\tThe am besten simulation tool in the world.\n"
+        << "\n"
+        << "OPTIONS\n"
+        << "\t--help or -h\n"
+        << "\t\tPrint this message.\n"
+        << "\n"
+        << "\t--parameters or -p\n"
+        << "\t\tDumps information about the parameters for consumption by additional tools.\n"
+        << "\n"
+        << "\t--to-yaml <in_file_name> <out_file_name>\n"
+        << "\t\tRewrites a dat file to a yaml file.\n"
+        << "\n"
+        << "\t--datfile or -d\n"
+        << "\t\tPrint example dat_file with all available parameters.\n"
+        << "\n"
+        << "\t-ngroup=<x>\n"
+        << "\t\tSpecify the number of groups for nested parallelism. (default: 1)\n"
+        << "\n"
+        << "\t-glayout=<a>,<b>,<c>,...\n"
+        << "\t\tSpecify the number of processors per group. \n"
+           "\t\tArgument \"-ngroup\" is mandatory and must be preceding. \n"
+           "\t\t(default: equal distribution)\n"
+        << "\n"
+        << "\t-nptype=<parallelism_type>\n"
+        << "\t\tAvailable options: \"separateDatFiles\" and \"everyGroupReadDatFile\"; \n"
+           "\t\tMust be set if \"-ngroup\" > 1.\n"
+        << "\t\t\"diffgroupx\" can be used to compare results from separate but parallel 4C "
+           "runs; \n"
+           "\t\tx must be 0 and 1 for the respective run\n"
+        << "\n"
+        << "\t<dat_name>\n"
+        << "\t\tName of the input file, including the suffix (Usually *.dat)\n"
+        << "\n"
+        << "\t<output_name>\n"
+        << "\t\tPrefix of your output files.\n"
+        << "\n"
+        << "\trestart=<y>\n"
+        << "\t\tRestart the simulation from step <y>. \n"
+           "\t\tIt always refers to the previously defined <dat_name> and <output_name>. \n"
+           "\t\t(default: 0 or from <dat_name>)\n"
+           "\t\tIf y=last_possible, it will restart from the last restart step defined in the "
+           "control file.\n"
+        << "\n"
+        << "\trestartfrom=<restart_file_name>\n"
+        << "\t\tRestart the simulation from the files prefixed with <restart_file_name>. \n"
+           "\t\t(default: <output_name>)\n"
+        << "\n"
+        << "\t--interactive\n"
+        << "\t\t4C waits at the beginning for keyboard input. \n"
+           "\t\tHelpful for parallel debugging when attaching to a single job. \n"
+           "\t\tMust be specified at the end in the command line.\n"
+        << "\n";
+  }
 
   /** Collect and print data on memory high water mark of this run
    *
@@ -271,6 +342,16 @@ int main(int argc, char* argv[])
     {
       Core::IO::InputFile input_file = Global::set_up_input_file(lcomm);
       input_file.emit_metadata(std::cout);
+    }
+  }
+  else if ((argc == 4) && (strcmp(argv[1], "--to-yaml") == 0))
+  {
+    if (Core::Communication::my_mpi_rank(lcomm) == 0)
+    {
+      Core::IO::InputFile input_file = Global::set_up_input_file(lcomm);
+      input_file.read(argv[2]);
+      std::ofstream output_file(argv[3]);
+      input_file.write_as_yaml(output_file);
     }
   }
   else if ((argc == 2) && ((strcmp(argv[1], "-d") == 0) || (strcmp(argv[1], "--datfile") == 0)))

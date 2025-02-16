@@ -95,7 +95,12 @@ namespace
       auto valid_conditions = Input::valid_conditions();
       for (const auto& cond : valid_conditions)
       {
-        section_specs[cond.section_name()] = all_of(cond.specs());
+        auto condition_spec = all_of({
+            entry<int>("E", {.description = "ID of the condition. This ID refers to the respective "
+                                            "topological entity of the condition."}),
+            all_of(cond.specs()),
+        });
+        section_specs.emplace(cond.section_name(), std::move(condition_spec));
       }
     }
 

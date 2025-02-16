@@ -259,6 +259,14 @@ namespace Core::IO
      */
     void emit_metadata(std::ostream& out) const;
 
+    /**
+     * Write the content of the input file to the given output stream @p out. The content is written
+     * in .yaml format.
+     *
+     * @note You probably only want to call this function on rank 0.
+     */
+    void write_as_yaml(std::ostream& out) const;
+
    private:
     std::unique_ptr<Internal::InputFileImpl> pimpl_;
   };
