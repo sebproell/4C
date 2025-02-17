@@ -73,8 +73,8 @@ void Core::Conditions::ConditionDefinition::read(Core::IO::InputFile& input,
     }
     catch (const Core::Exception& e)
     {
-      FOUR_C_THROW(
-          "Failed to match condition specification in section '%s'.", section_name().c_str());
+      FOUR_C_THROW("Failed to match condition specification in section '%s'. The error was:\n%s.",
+          section_name().c_str(), e.what());
     }
     if (!data)
     {
