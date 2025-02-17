@@ -82,13 +82,11 @@ namespace
 
       auto valid_functions = functionmanager.valid_function_lines();
 
-      // TODO Move the function number inside the general function section to stop relying
-      // on explicit function numbers. The magic number 30 is equal to the highest number appearing
-      // in the test files.
-      for (unsigned i : std::views::iota(1, 30))
-      {
-        section_specs["FUNCT" + std::to_string(i)] = valid_functions;
-      }
+      // The FUNCT sections are special and do not fit into the usual pattern of sections and the
+      // capabilities of InputSpec. The special FUNCT<n> section is not supposed to be entered by
+      // users but we use this information inside the input file. Not pretty, but it works.
+      // TODO remove this hack by restructuring the input of functions.
+      section_specs["FUNCT<n>"] = valid_functions;
     }
 
     {

@@ -264,19 +264,21 @@ namespace Core::IO
 
       bool is_section_known(const std::string& section_name) const
       {
-        // The input for functions might introduce an arbitrary number of sections called
-        // FUNCT<n>, where n is a number. As long as this input is not restructured, we need this
-        // manual hack.
-        const bool is_hacky_function_section =
-            section_name.starts_with("FUNCT") &&
-            std::all_of(section_name.begin() + 5, section_name.end(),
-                [](const char c) { return std::isdigit(c); });
-
-        return is_hacky_function_section ||
+        return is_hacky_function_section(section_name) ||
                (valid_sections_.find(section_name) != valid_sections_.end()) ||
                std::ranges::any_of(
                    legacy_section_names_, [&](const auto& name) { return name == section_name; }) ||
                (section_name == description_section_name);
+      }
+
+      // The input for functions might introduce an arbitrary number of sections called
+      // FUNCT<n>, where n is a number. As long as this input is not restructured, we need this
+      // manual hack.
+      bool is_hacky_function_section(const std::string& section_name) const
+      {
+        return section_name.starts_with("FUNCT") &&
+               std::all_of(section_name.begin() + 5, section_name.end(),
+                   [](const char c) { return std::isdigit(c); });
       }
     };
 
@@ -726,6 +728,20 @@ namespace Core::IO
 
     for (auto& [name, content] : pimpl_->content_by_section_)
     {
+      if (pimpl_->is_hacky_function_section(name))
+      {
+        // Take the special spec of FUNCT<n> because it is the same for all function sections.
+        // Make a copy and replace the name. This is a pretty insane hack and should be removed when
+        // the input of the functions is restructured.
+        auto spec = pimpl_->valid_sections_.at("FUNCT<n>");
+        spec.impl().data.name = name;
+        dynamic_cast<
+            Internal::InputSpecTypeErasedImplementation<InputSpecBuilders::Internal::ListSpec>&>(
+            spec.impl())
+            .wrapped.name = name;
+        pimpl_->valid_sections_.emplace(name, std::move(spec));
+      }
+
       content.set_up_fragments();
     }
 
@@ -804,8 +820,15 @@ namespace Core::IO
   {
     if (!pimpl_->valid_sections_.contains(section_name))
     {
-      if (std::ranges::find(pimpl_->legacy_section_names_, section_name) ==
-          pimpl_->legacy_section_names_.end())
+      if (section_name == description_section_name)
+      {
+        FOUR_C_THROW(
+            "Tried to match section '%s' which is a special section that cannot be matched against "
+            "any InputSpec.",
+            section_name.c_str());
+      }
+      else if (std::ranges::find(pimpl_->legacy_section_names_, section_name) ==
+               pimpl_->legacy_section_names_.end())
       {
         FOUR_C_THROW(
             "Tried to match section '%s' which is not a valid section name.", section_name.c_str());

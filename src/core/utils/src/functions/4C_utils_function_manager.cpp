@@ -162,7 +162,10 @@ void Core::Utils::FunctionManager::read_input(Core::IO::InputFile& input)
         [&]()
         {
           Core::IO::InputParameterContainer container;
-          input.match_section("FUNCT" + std::to_string(funct_suffix), container);
+          const std::string funct_section_name = "FUNCT" + std::to_string(funct_suffix);
+          if (!input.has_section(funct_section_name)) return true;
+
+          input.match_section(funct_section_name, container);
 
           const auto* list = container.get_if<Core::IO::InputParameterContainer::List>(
               "FUNCT" + std::to_string(funct_suffix));
