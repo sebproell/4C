@@ -1152,9 +1152,11 @@ bool InputSpecBuilders::Internal::ListSpec::emit(YamlNodeRef node,
 namespace
 {
   // Nesting all_of or one_of within another spec of that same type is the same as pulling the
-  // nested specs up into the parent spec.
+  // nested specs up into the parent spec. An additional predicate can be used to filter the nested
+  // specs that may be flattened.
   template <typename SpecType>
-  std::vector<Core::IO::InputSpec> flatten_nested(std::vector<Core::IO::InputSpec> specs)
+  std::vector<Core::IO::InputSpec> flatten_nested(std::vector<Core::IO::InputSpec> specs,
+      std::function<bool(const SpecType&)> predicate = nullptr)
   {
     std::vector<Core::IO::InputSpec> flattened_specs;
     for (auto&& spec : specs)
@@ -1162,7 +1164,7 @@ namespace
       if (auto* nested =
               dynamic_cast<Core::IO::Internal::InputSpecTypeErasedImplementation<SpecType>*>(
                   &spec.impl());
-          nested)
+          nested && (!predicate || predicate(nested->wrapped)))
       {
         for (auto&& sub_spec : nested->wrapped.specs)
         {
@@ -1261,7 +1263,12 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::all_of(std::vector<InputSpec> s
 Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> specs,
     std::function<void(InputParameterContainer& container, std::size_t index)> on_parse_callback)
 {
-  auto flattened_specs = flatten_nested<Internal::OneOfSpec>(std::move(specs));
+  // We can only flatten the specs if there is no custom on_parse_callback, either for this
+  // one_of or any nested one_of.
+  auto flattened_specs = on_parse_callback ? specs
+                                           : flatten_nested<Internal::OneOfSpec>(std::move(specs),
+                                                 [](const Internal::OneOfSpec& one_of_spec)
+                                                 { return !one_of_spec.on_parse_callback; });
 
   FOUR_C_ASSERT_ALWAYS(!flattened_specs.empty(), "A `one_of` must contain entries.");
 

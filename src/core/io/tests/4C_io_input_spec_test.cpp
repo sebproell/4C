@@ -597,6 +597,69 @@ namespace
     }
   }
 
+  TEST(InputSpecTest, NestedOneOfsWithCallback)
+  {
+    auto spec = one_of({
+        one_of({
+            entry<int>("a"),
+            entry<double>("b"),
+        }),
+        // This one_of has a callback and should not be flattened into the parent one_of.
+        one_of(
+            {
+                entry<std::string>("c"),
+                // This one_of will not be flattened into the parent that has a callback.
+                one_of({
+                    entry<double>("d"),
+                    // This one_of can be flattened into the parent one_of.
+                    one_of({
+                        entry<int>("e"),
+                        entry<std::string>("f"),
+                    }),
+                }),
+            },
+            [](InputParameterContainer& container, int index)
+            { container.add<int>("index", index); }),
+    });
+
+    std::ostringstream out;
+    ryml::Tree tree = init_yaml_tree_with_exceptions();
+    ryml::NodeRef root = tree.rootref();
+    YamlNodeRef yaml(root, "");
+    spec.emit_metadata(yaml);
+    out << tree;
+
+    std::string expected = R"(type: one_of
+description: 'one_of {a, b, one_of {c, one_of {d, e, f}}}'
+specs:
+  - name: a
+    type: int
+    required: true
+  - name: b
+    type: double
+    required: true
+  - type: one_of
+    description: 'one_of {c, one_of {d, e, f}}'
+    specs:
+      - name: c
+        type: string
+        required: true
+      - type: one_of
+        description: 'one_of {d, e, f}'
+        specs:
+          - name: d
+            type: double
+            required: true
+          - name: e
+            type: int
+            required: true
+          - name: f
+            type: string
+            required: true
+)";
+    EXPECT_EQ(out.str(), expected);
+  }
+
   TEST(InputSpecTest, PrintAsDat)
   {
     auto spec =
