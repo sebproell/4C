@@ -1,32 +1,26 @@
-# Iterative material prestressing wrapper
 PROBLEM TYPE:
   PROBLEMTYPE: Structure
 IO:
-  OUTPUT_BIN: yes
-  STRUCT_DISP: yes
-  FILESTEPS: 1000
-  VERBOSITY: Standard
-  STRUCT_STRAIN: gl
-  STRUCT_STRESS: cauchy
-  OUTPUT_SPRING: Yes
-  WRITE_FINAL_STATE: yes
-  WRITE_INITIAL_STATE: no
+  OUTPUT_SPRING: true
+  STRUCT_STRESS: Cauchy
+  STRUCT_STRAIN: Yes
+  WRITE_INITIAL_STATE: false
+  WRITE_FINAL_STATE: true
+  VERBOSITY: standard
 IO/RUNTIME VTK OUTPUT:
-  OUTPUT_DATA_FORMAT: binary
   INTERVAL_STEPS: 5
-  EVERY_ITERATION: no
 IO/RUNTIME VTK OUTPUT/STRUCTURE:
-  OUTPUT_STRUCTURE: yes
-  DISPLACEMENT: yes
-  ELEMENT_OWNER: yes
-  STRESS_STRAIN: yes
+  OUTPUT_STRUCTURE: true
+  DISPLACEMENT: true
+  ELEMENT_OWNER: true
+  STRESS_STRAIN: true
 SOLVER 1:
-  NAME: Structure_Solver
   SOLVER: Superlu
+  NAME: Structure_Solver
 STRUCTURAL DYNAMIC:
   INT_STRATEGY: Standard
   DYNAMICTYPE: Statics
-  PRESTRESS: material_iterative
+  PRESTRESS: Material_Iterative
   PRESTRESSTIME: 100
   PRESTRESSTOLDISP: 1e-15
   RESULTSEVERY: 5
@@ -34,61 +28,240 @@ STRUCTURAL DYNAMIC:
   TIMESTEP: 0.1
   NUMSTEP: 1000
   MAXTIME: 100
-  TOLDISP: 1e-9
-  TOLRES: 1e-9
+  TOLDISP: 1e-09
+  TOLRES: 1e-09
+  LOADLIN: true
   LINEAR_SOLVER: 1
-  NLNSOL: fullnewton
-  LOADLIN: yes
 MATERIALS:
-  - MAT 1 MAT_IterativePrestress MATID 11 ACTIVE true
-  - MAT 11 MAT_Struct_StVenantKirchhoff YOUNG 1e2 NUE 0.2 DENS 1.0
+  - MAT: 1
+    MAT_IterativePrestress:
+      MATID: 11
+      ACTIVE: true
+  - MAT: 11
+    MAT_Struct_StVenantKirchhoff:
+      YOUNG: 100
+      NUE: 0.2
+      DENS: 1
 FUNCT1:
-  - SYMBOLIC_FUNCTION_OF_TIME a
-  - VARIABLE 0 NAME a TYPE linearinterpolation NUMPOINTS 3 TIMES 0 1 9999999999.0 VALUES 1.0 1.13 1.13
+  - SYMBOLIC_FUNCTION_OF_TIME: a
+  - VARIABLE: 0
+    NAME: a
+    TYPE: linearinterpolation
+    NUMPOINTS: 3
+    TIMES: [0, 1, 9.999999999e+09]
+    VALUES: [1, 1.13, 1.13]
 FUNCT2:
-  - COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME a
-  - VARIABLE 0 NAME a TYPE linearinterpolation NUMPOINTS 3 TIMES 0 1.0 9999999999.0 VALUES 0 1 1
+  - COMPONENT: 0
+    SYMBOLIC_FUNCTION_OF_SPACE_TIME: a
+  - VARIABLE: 0
+    NAME: a
+    TYPE: linearinterpolation
+    NUMPOINTS: 3
+    TIMES: [0, 1, 9.999999999e+09]
+    VALUES: [0, 1, 1]
 DESIGN SURF ROBIN SPRING DASHPOT CONDITIONS:
-  - E 1 NUMDOF 3 ONOFF 1 1 1 STIFF 10 0.001 0.001 TIMEFUNCTSTIFF 0 0 0 VISCO 0.0 0.0 0.0 TIMEFUNCTVISCO
-    0 0 0 DISPLOFFSET 0.0 0.0 0.0 TIMEFUNCTDISPLOFFSET 0 0 0 FUNCTNONLINSTIFF 0 0 0 DIRECTION xyz COUPLING
-    none
+  - E: 1
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    STIFF: [10, 0.001, 0.001]
+    TIMEFUNCTSTIFF: [0, 0, 0]
+    VISCO: [0, 0, 0]
+    TIMEFUNCTVISCO: [0, 0, 0]
+    DISPLOFFSET: [0, 0, 0]
+    TIMEFUNCTDISPLOFFSET: [0, 0, 0]
+    FUNCTNONLINSTIFF: [0, 0, 0]
+    DIRECTION: xyz
+    COUPLING: none
 DESIGN SURF NEUMANN CONDITIONS:
-  - E 2 NUMDOF 6 ONOFF 1 0 0 0 0 0 VAL 100.0 0.0 0.0 0.0 0.0 0.0 FUNCT 2 0 0 0 0 0 TYPE Live
+  - E: 2
+    NUMDOF: 6
+    ONOFF: [1, 0, 0, 0, 0, 0]
+    VAL: [100, 0, 0, 0, 0, 0]
+    FUNCT: [2, 0, 0, 0, 0, 0]
 RESULT DESCRIPTION:
-  - STRUCTURE DIS structure NODE 1 QUANTITY dispx VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 1 QUANTITY dispy VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 1 QUANTITY dispz VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 2 QUANTITY dispx VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 2 QUANTITY dispy VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 2 QUANTITY dispz VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 3 QUANTITY dispx VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 3 QUANTITY dispy VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 3 QUANTITY dispz VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 4 QUANTITY dispx VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 4 QUANTITY dispy VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 4 QUANTITY dispz VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 5 QUANTITY dispx VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 5 QUANTITY dispy VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 5 QUANTITY dispz VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 6 QUANTITY dispx VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 6 QUANTITY dispy VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 6 QUANTITY dispz VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 7 QUANTITY dispx VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 7 QUANTITY dispy VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 7 QUANTITY dispz VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 8 QUANTITY dispx VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 8 QUANTITY dispy VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 8 QUANTITY dispz VALUE 0 TOLERANCE 1e-6
-  - STRUCTURE DIS structure NODE 1 QUANTITY stress_xx VALUE 100 TOLERANCE 1e-4
-  - STRUCTURE DIS structure NODE 1 QUANTITY stress_yy VALUE 0 TOLERANCE 1e-4
-  - STRUCTURE DIS structure NODE 1 QUANTITY stress_zz VALUE 0 TOLERANCE 1e-4
-  - STRUCTURE DIS structure NODE 1 QUANTITY stress_xy VALUE 0 TOLERANCE 1e-4
-  - STRUCTURE DIS structure NODE 1 QUANTITY stress_yz VALUE 0 TOLERANCE 1e-4
-  - STRUCTURE DIS structure NODE 1 QUANTITY stress_xz VALUE 0 TOLERANCE 1e-4
+  - STRUCTURE:
+      DIS: structure
+      NODE: 1
+      QUANTITY: dispx
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 1
+      QUANTITY: dispy
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 1
+      QUANTITY: dispz
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 2
+      QUANTITY: dispx
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 2
+      QUANTITY: dispy
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 2
+      QUANTITY: dispz
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 3
+      QUANTITY: dispx
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 3
+      QUANTITY: dispy
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 3
+      QUANTITY: dispz
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 4
+      QUANTITY: dispx
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 4
+      QUANTITY: dispy
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 4
+      QUANTITY: dispz
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 5
+      QUANTITY: dispx
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 5
+      QUANTITY: dispy
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 5
+      QUANTITY: dispz
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 6
+      QUANTITY: dispx
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 6
+      QUANTITY: dispy
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 6
+      QUANTITY: dispz
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 7
+      QUANTITY: dispx
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 7
+      QUANTITY: dispy
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 7
+      QUANTITY: dispz
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 8
+      QUANTITY: dispx
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 8
+      QUANTITY: dispy
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 8
+      QUANTITY: dispz
+      VALUE: 0
+      TOLERANCE: 1e-06
+  - STRUCTURE:
+      DIS: structure
+      NODE: 1
+      QUANTITY: stress_xx
+      VALUE: 100
+      TOLERANCE: 0.0001
+  - STRUCTURE:
+      DIS: structure
+      NODE: 1
+      QUANTITY: stress_yy
+      VALUE: 0
+      TOLERANCE: 0.0001
+  - STRUCTURE:
+      DIS: structure
+      NODE: 1
+      QUANTITY: stress_zz
+      VALUE: 0
+      TOLERANCE: 0.0001
+  - STRUCTURE:
+      DIS: structure
+      NODE: 1
+      QUANTITY: stress_xy
+      VALUE: 0
+      TOLERANCE: 0.0001
+  - STRUCTURE:
+      DIS: structure
+      NODE: 1
+      QUANTITY: stress_yz
+      VALUE: 0
+      TOLERANCE: 0.0001
+  - STRUCTURE:
+      DIS: structure
+      NODE: 1
+      QUANTITY: stress_xz
+      VALUE: 0
+      TOLERANCE: 0.0001
 PROBLEM SIZE:
   ELEMENTS: 1
   NODES: 8
-  DIM: 3
   MATERIALS: 9999
 DNODE-NODE TOPOLOGY:
   - NODE 5 DNODE 1
