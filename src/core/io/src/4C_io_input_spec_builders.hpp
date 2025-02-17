@@ -1250,6 +1250,12 @@ bool Core::IO::InputSpecBuilders::Internal::BasicSpec<DataTypeIn>::match(ConstYa
 {
   match_entry.type = IO::Internal::MatchEntry::Type::entry;
   auto spec_name = ryml::to_csubstr(name);
+
+  // If we are not even in a map, we refuse to do anything and let the MatchTree handle this case.
+  // Setting a default would confuse the user, since something fundamental must be wrong in the
+  // input file.
+  if (!node.node.is_map()) return false;
+
   if (!node.node.has_child(spec_name))
   {
     // It is OK to not encounter an optional entry
@@ -1382,6 +1388,12 @@ bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::match(Con
 {
   match_entry.type = IO::Internal::MatchEntry::Type::entry;
   auto spec_name = ryml::to_csubstr(name);
+
+  // If we are not even in a map, we refuse to do anything and let the MatchTree handle this case.
+  // Setting a default would confuse the user, since something fundamental must be wrong in the
+  // input file.
+  if (!node.node.is_map()) return false;
+
   if (!node.node.has_child(spec_name))
   {
     // It is OK to not encounter an optional entry
