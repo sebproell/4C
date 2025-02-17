@@ -14,33 +14,96 @@
 #include "4C_fem_general_element.hpp"
 #include "4C_fem_general_node.hpp"
 #include "4C_linalg_vector.hpp"
+#include "4C_utils_exceptions.hpp"
+
+#include <algorithm>
 
 
 FOUR_C_NAMESPACE_OPEN
 
 namespace Core::FE
 {
+
   /*!
-  \brief Locally extract a subset of values from an Core::LinAlg::Vector<double>
+   * @brief Extract a subset of local values from Core::LinAlg::Vector<T>
+   *
+   * @tparam num_entries Number of locally owned entries
+   * @tparam T datatype
+   * @param global (in) : Global values
+   * @param lm (in) : Global ids of the values to extract
+   * @return std::array<T, num_entries> Extracted values from the global vector
+   */
+  template <unsigned num_entries, typename T, std::ranges::sized_range Range>
+  std::array<T, num_entries> extract_values_as_array(
+      const Core::LinAlg::Vector<T>& global, const Range& global_ids)
+  {
+    FOUR_C_ASSERT_ALWAYS(global_ids.size() == num_entries, "Number of entries does not match");
 
-  Extracts lm.size() values from a distributed epetra vector and stores them into local.
-  this is NOT a parallel method, meaning that all values to be extracted on a processor
-  must be present in global on that specific processor. This usually means that global
-  has to be in column map style.
+    std::array<T, num_entries> local;
+    std::transform(global_ids.begin(), global_ids.end(), local.begin(),
+        [&](int global_id)
+        {
+          const int local_id = global.Map().LID(global_id);
+          FOUR_C_ASSERT_ALWAYS(local_id >= 0,
+              "Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
+              Core::Communication::my_mpi_rank(global.Comm()), global_id);
+          return global[local_id];
+        });
 
-  \param global (in): global distributed vector with values to be extracted
-  \param local (out): vector or matrix holding values extracted from global
-  \param lm     (in): vector containing global ids to be extracted. Size of lm
-                      determines number of values to be extracted.
-  */
-  void extract_my_values(const Core::LinAlg::Vector<double>& global, std::vector<double>& local,
-      const std::vector<int>& lm);
+    return local;
+  }
+
+  /*!
+   * @brief Extract a subset of local values from Core::LinAlg::Vector<T>
+   *
+   * @tparam T datatype
+   * @param global (in) : Global values
+   * @param lm (in) : Global ids of the values to extract
+   * @return std::vector<T> Extracted values from the global vector
+   */
+  template <typename T, std::ranges::sized_range Range>
+  std::vector<T> extract_values(const Core::LinAlg::Vector<T>& global, const Range& global_ids)
+  {
+    std::vector<T> local(global_ids.size());
+    std::transform(global_ids.begin(), global_ids.end(), local.begin(),
+        [&](int global_id)
+        {
+          const int local_id = global.Map().LID(global_id);
+          FOUR_C_ASSERT_ALWAYS(local_id >= 0,
+              "Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
+              Core::Communication::my_mpi_rank(global.Comm()), global_id);
+          return global[local_id];
+        });
+
+    return local;
+  }
+
+  template <typename T, std::ranges::sized_range Range>
+  std::vector<T> extract_values(const Core::LinAlg::MultiVector<T>& global, const Range& global_ids)
+  {
+    const int numcol = global.NumVectors();
+    const size_t ldim = std::size(global_ids);
+
+    std::vector<T> local(ldim * numcol);
+    for (size_t i = 0; i < ldim; ++i)
+    {
+      const int lid = global.Map().LID(global_ids[i]);
+      FOUR_C_ASSERT_ALWAYS(lid >= 0,
+          "Proc %d: Cannot find gid=%d in Core::LinAlg::MultiVector<double>",
+          Core::Communication::my_mpi_rank(global.Comm()), global_ids[i]);
+
+      // loop over multi vector columns (numcol=1 for Core::LinAlg::Vector<double>)
+      for (int col = 0; col < numcol; col++)
+      {
+        local[col + (numcol * i)] = global(col)[lid];
+      }
+    }
+
+    return local;
+  }
 
   void extract_my_values(const Core::LinAlg::Vector<double>& global,
       Core::LinAlg::SerialDenseVector& local, const std::vector<int>& lm);
-
-  void extract_my_values(const Core::LinAlg::MultiVector<double>& global,
-      std::vector<double>& local, const std::vector<int>& lm);
 
   template <class Matrix>
   void extract_my_values(const Core::LinAlg::Vector<double>& global, std::vector<Matrix>& local,
