@@ -149,9 +149,9 @@ namespace Discret::Elements
    * @param disp (in) : Vector of nodal displacements of the element
    * @return ElementNodes<celltype>
    */
-  template <Core::FE::CellType celltype>
-  ElementNodes<celltype> evaluate_element_nodes(
-      const Core::Elements::Element& ele, const std::vector<double>& disp)
+  template <Core::FE::CellType celltype, std::ranges::contiguous_range R>
+    requires std::ranges::sized_range<R>
+  ElementNodes<celltype> evaluate_element_nodes(const Core::Elements::Element& ele, const R& disp)
   {
     Discret::Elements::ElementNodes<celltype> element_nodes;
     for (int i = 0; i < Internal::num_nodes<celltype>; ++i)
@@ -183,8 +183,9 @@ namespace Discret::Elements
   {
     const Core::LinAlg::Vector<double>& displacements = *discretization.get_state("displacement");
 
-    std::vector<double> mydisp(lm.size());
-    Core::FE::extract_my_values(displacements, mydisp, lm);
+    constexpr unsigned num_dofs = Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>;
+    std::array<double, num_dofs> mydisp =
+        Core::FE::extract_values_as_array<num_dofs>(displacements, lm);
 
     Discret::Elements::ElementNodes<celltype> element_nodes =
         evaluate_element_nodes<celltype>(ele, mydisp);

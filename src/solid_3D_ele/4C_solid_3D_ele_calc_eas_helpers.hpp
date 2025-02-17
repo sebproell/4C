@@ -11,9 +11,12 @@
 #include "4C_config.hpp"
 
 #include "4C_fem_general_cell_type_traits.hpp"
+#include "4C_fem_general_extract_values.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_fixedsizematrix_generators.hpp"
 #include "4C_solid_3D_ele_calc_lib.hpp"
+
+#include <cstring>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -163,11 +166,11 @@ namespace Discret::Elements
       const Core::FE::Discretization& discretization, const std::vector<int>& lm)
   {
     auto residual_from_dis = discretization.get_state("residual displacement");
-    std::vector<double> residual(lm.size());
-    Core::FE::extract_my_values(*residual_from_dis, residual, lm);
+    const std::array residual =
+        Core::FE::extract_values_as_array<Discret::Elements::num_dof_per_ele<celltype>>(
+            *residual_from_dis, lm);
     Core::LinAlg::Matrix<Discret::Elements::num_dof_per_ele<celltype>, 1> displ_inc(false);
-    for (int i = 0; i < Discret::Elements::num_dof_per_ele<celltype>; ++i)
-      displ_inc(i) = residual[i];
+    std::memcpy(displ_inc.data(), residual.data(), sizeof(double) * residual.size());
 
     return displ_inc;
   }

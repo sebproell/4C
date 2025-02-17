@@ -29,10 +29,7 @@ namespace
       const Core::FE::Discretization& discretization, const std::vector<int>& lm)
   {
     const Core::LinAlg::Vector<double>& acceleration = *discretization.get_state("acceleration");
-    std::vector<double> my_acceleration(lm.size());
-    Core::FE::extract_my_values(acceleration, my_acceleration, lm);
-
-    return my_acceleration;
+    return Core::FE::extract_values(acceleration, lm);
   }
 
   void evaluate_inertia_force(const Core::LinAlg::SerialDenseMatrix& mass_matrix,
