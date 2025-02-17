@@ -2021,22 +2021,21 @@ void Global::read_contact_constitutive_laws(Global::Problem& problem, Core::IO::
 /*----------------------------------------------------------------------*/
 void Global::read_cloning_material_map(Global::Problem& problem, Core::IO::InputFile& input)
 {
-  auto spec = Core::FE::valid_cloning_material_map();
+  Core::IO::InputParameterContainer container;
+  input.match_section("CLONING MATERIAL MAP", container);
+  const auto* map_entries =
+      container.get_if<Core::IO::InputParameterContainer::List>("CLONING MATERIAL MAP");
 
-  // perform the actual reading and extract the input parameters
-  auto parameters = Core::IO::read_all_lines_in_section(input, "CLONING MATERIAL MAP", spec);
-  for (const auto& input_line : parameters)
+  if (!map_entries) return;
+
+  for (const auto& entry : *map_entries)
   {
-    // extract what was read from the input file
-    std::string src_field = input_line.get<std::string>("SRC_FIELD");
-    int src_matid = input_line.get_or<int>("SRC_MAT", -1);
-    std::string tar_field = input_line.get<std::string>("TAR_FIELD");
-    int tar_matid = input_line.get_or<int>("TAR_MAT", -1);
+    std::string src_field = entry.get<std::string>("SRC_FIELD");
+    int src_matid = entry.get_or<int>("SRC_MAT", -1);
+    std::string tar_field = entry.get<std::string>("TAR_FIELD");
+    int tar_matid = entry.get_or<int>("TAR_MAT", -1);
 
-    // create the key pair
     std::pair<std::string, std::string> fields(src_field, tar_field);
-
-    // enter the material pairing into the map
     std::pair<int, int> matmap(src_matid, tar_matid);
     problem.cloning_material_map()[fields].insert(matmap);
   }
@@ -2047,8 +2046,6 @@ void Global::read_cloning_material_map(Global::Problem& problem, Core::IO::Input
 /*----------------------------------------------------------------------*/
 void Global::read_result(Global::Problem& problem, Core::IO::InputFile& input)
 {
-  const auto lines = global_legacy_module_callbacks().valid_result_description_lines();
-
   // read design nodes <-> nodes, lines <-> nodes, surfaces <-> nodes, volumes <-> nodes
   const auto get_discretization_callback = [](const std::string& name) -> decltype(auto)
   { return *Global::Problem::instance()->get_dis(name); };
@@ -2059,8 +2056,12 @@ void Global::read_result(Global::Problem& problem, Core::IO::InputFile& input)
   Core::IO::read_design(input, "DVOL", nodeset[3], get_discretization_callback);
   problem.get_result_test_manager().set_node_set(nodeset);
 
-  problem.get_result_test_manager().set_parsed_lines(
-      Core::IO::read_all_lines_in_section(input, "RESULT DESCRIPTION", lines));
+  Core::IO::InputParameterContainer container;
+  input.match_section("RESULT DESCRIPTION", container);
+
+  const auto* result_descriptions =
+      container.get_if<Core::IO::InputParameterContainer::List>("RESULT DESCRIPTION");
+  if (result_descriptions) problem.get_result_test_manager().set_parsed_lines(*result_descriptions);
 }
 
 /*----------------------------------------------------------------------*/
