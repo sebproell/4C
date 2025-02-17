@@ -72,27 +72,6 @@ namespace Core::IO
    */
   void print_section(std::ostream& out, const std::string& header, const InputSpec& spec);
 
-
-  /**
-   * Read all lines in a @p section of @p input that match the @p spec. Every line in the @p section
-   * must match the @p spec. Otherwise, an exception is thrown.
-   */
-  std::vector<Core::IO::InputParameterContainer> read_all_lines_in_section(
-      Core::IO::InputFile& input, const std::string& section, const InputSpec& spec);
-
-
-  /**
-   * Read only lines in a @p section of @p input that match the @p spec. This implies
-   * that, potentially, no lines are read at all, resulting in an empty returned vector. In
-   * addition to the vector of parsed lines, the second returned value contains all unparsed input
-   * lines.
-   *
-   * @see read_all_lines_in_section()
-   */
-  std::pair<std::vector<Core::IO::InputParameterContainer>, std::vector<std::string>>
-  read_matching_lines_in_section(
-      Core::IO::InputFile& input, const std::string& section, const InputSpec& spec);
-
   /**
    * Split the given @p line into a key-value pair. Key and value are normally separated by
    * whitespace. In case there are multiple distinct whitespace groups in one line, the first of
