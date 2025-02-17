@@ -113,21 +113,18 @@ int Discret::Elements::Beam3eb::evaluate(Teuchos::ParameterList& params,
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
       // get residual displacements
       std::shared_ptr<const Core::LinAlg::Vector<double>> res =
           discretization.get_state("residual displacement");
       if (res == nullptr) FOUR_C_THROW("Cannot get state vectors 'residual displacement'");
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
 
       // Only in the dynamic case the velocities are needed.
       // get element velocities only if example is static in nature
       std::shared_ptr<const Core::LinAlg::Vector<double>> vel;
       std::vector<double> myvel(lm.size(), 0.0);
-      myvel.clear();
       const Teuchos::ParameterList& sdyn = Global::Problem::instance()->structural_dynamic_params();
 
       if (Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(sdyn, "DYNAMICTYPE") !=
@@ -135,7 +132,7 @@ int Discret::Elements::Beam3eb::evaluate(Teuchos::ParameterList& params,
       {
         vel = discretization.get_state("velocity");
         if (vel == nullptr) FOUR_C_THROW("Cannot get state vectors 'velocity'");
-        Core::FE::extract_my_values(*vel, myvel, lm);
+        myvel = Core::FE::extract_values(*vel, lm);
       }
 
       if (act == Core::Elements::struct_calc_nlnstiffmass)
@@ -169,15 +166,13 @@ int Discret::Elements::Beam3eb::evaluate(Teuchos::ParameterList& params,
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
       // get element velocity
       std::shared_ptr<const Core::LinAlg::Vector<double>> vel =
           discretization.get_state("velocity");
       if (vel == nullptr) FOUR_C_THROW("Cannot get state vectors 'velocity'");
-      std::vector<double> myvel(lm.size());
-      Core::FE::extract_my_values(*vel, myvel, lm);
+      std::vector<double> myvel = Core::FE::extract_values(*vel, lm);
 
       if (act == Core::Elements::struct_calc_brownianforce)
         calc_brownian_forces_and_stiff<2, 2, 3>(params, myvel, mydisp, nullptr, &elevec1);
@@ -241,8 +236,7 @@ int Discret::Elements::Beam3eb::evaluate_neumann(Teuchos::ParameterList& params,
   std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
       discretization.get_state("displacement new");
   if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement new'");
-  std::vector<double> mydisp(lm.size());
-  Core::FE::extract_my_values(*disp, mydisp, lm);
+  std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
 #ifndef INEXTENSIBLE
   const int dofpn = 3 * NODALDOFS;
@@ -260,8 +254,7 @@ int Discret::Elements::Beam3eb::evaluate_neumann(Teuchos::ParameterList& params,
   {
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel = discretization.get_state("velocity");
     if (vel == nullptr) FOUR_C_THROW("Cannot get state vectors 'velocity'");
-    std::vector<double> myvel(lm.size());
-    Core::FE::extract_my_values(*vel, myvel, lm);
+    std::vector<double> myvel = Core::FE::extract_values(*vel, lm);
   }
   // find out whether we will use a time curve
   double time = -1.0;

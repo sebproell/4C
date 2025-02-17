@@ -1292,11 +1292,10 @@ void CONTACT::LagrangeStrategyPoro::set_state(
             {
               CONTACT::Node* node = dynamic_cast<CONTACT::Node*>(idiscret_.l_col_node(i));
               const int numdof = node->num_dof();
-              std::vector<double> myvel(numdof);
               std::vector<int> lm(numdof);
 
               for (int j = 0; j < numdof; ++j) lm[j] = node->dofs()[j];
-              Core::FE::extract_my_values(global, myvel, lm);
+              std::vector<double> myvel = Core::FE::extract_values(global, lm);
 
               // add myvel[2]=0 for 2D problems
               if (myvel.size() < 3) myvel.resize(3);
@@ -1324,12 +1323,11 @@ void CONTACT::LagrangeStrategyPoro::set_state(
               CONTACT::Node* node = dynamic_cast<CONTACT::Node*>(idiscret_.l_col_node(i));
 
               const int numdof = node->num_dof();
-              std::vector<double> mylm(numdof);
               std::vector<int> lm(numdof);
 
               for (int j = 0; j < numdof; ++j) lm[j] = node->dofs()[j];
 
-              Core::FE::extract_my_values(global, mylm, lm);
+              std::vector<double> mylm = Core::FE::extract_values(global, lm);
 
               // add myvel[2]=0 for 2D problems
               if (mylm.size() < 3) mylm.resize(3);
@@ -1421,8 +1419,7 @@ void CONTACT::LagrangeStrategyPoro::set_parent_state(const enum Mortar::StateTyp
           // this gets values in local order
           ele->parent_element()->location_vector(dis, lm, lmowner, lmstride);
 
-          std::vector<double> myval;
-          Core::FE::extract_my_values(global, myval, lm);
+          std::vector<double> myval = Core::FE::extract_values(global, lm);
 
           ele->mo_data().parent_disp() = myval;
           ele->mo_data().parent_dof() = lm;
@@ -1443,8 +1440,7 @@ void CONTACT::LagrangeStrategyPoro::set_parent_state(const enum Mortar::StateTyp
           // this gets values in local order
           mele->parent_element()->location_vector(dis, lm, lmowner, lmstride);
 
-          std::vector<double> myval;
-          Core::FE::extract_my_values(global, myval, lm);
+          std::vector<double> myval = Core::FE::extract_values(global, lm);
 
           mele->mo_data().parent_disp() = myval;
           mele->mo_data().parent_dof() = lm;

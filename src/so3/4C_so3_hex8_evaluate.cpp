@@ -103,10 +103,8 @@ int Discret::Elements::SoHex8::evaluate(Teuchos::ParameterList& params,
           discretization.get_state("residual displacement");
       if (disp == nullptr || res == nullptr)
         FOUR_C_THROW("Cannot get state vectors 'displacement' and/or residual");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
       Core::LinAlg::Matrix<NUMDOF_SOH8, NUMDOF_SOH8>* matptr = nullptr;
       if (elemat1.is_initialized()) matptr = &elemat1;
 
@@ -127,10 +125,8 @@ int Discret::Elements::SoHex8::evaluate(Teuchos::ParameterList& params,
           discretization.get_state("residual displacement");
       if (disp == nullptr || res == nullptr)
         FOUR_C_THROW("Cannot get state vectors 'displacement' and/or residual");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
       // create a dummy element matrix to apply linearised EAS-stuff onto
       Core::LinAlg::Matrix<NUMDOF_SOH8, NUMDOF_SOH8> myemat(true);
 
@@ -162,14 +158,10 @@ int Discret::Elements::SoHex8::evaluate(Teuchos::ParameterList& params,
       if (vel == nullptr) FOUR_C_THROW("Cannot get state vectors 'velocity'");
       if (acc == nullptr) FOUR_C_THROW("Cannot get state vectors 'acceleration'");
 
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-      std::vector<double> myvel(lm.size());
-      Core::FE::extract_my_values(*vel, myvel, lm);
-      std::vector<double> myacc(lm.size());
-      Core::FE::extract_my_values(*acc, myacc, lm);
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+      std::vector<double> myvel = Core::FE::extract_values(*vel, lm);
+      std::vector<double> myacc = Core::FE::extract_values(*acc, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
 
       // This matrix is used in the evaluation functions to store the mass matrix. If the action
       // type is Core::Elements::struct_calc_internalinertiaforce we do not want to actually
@@ -229,8 +221,7 @@ int Discret::Elements::SoHex8::evaluate(Teuchos::ParameterList& params,
             "Cannot get state vectors \"displacement\" "
             "and/or \"residual displacement\"");
 
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
 
       soh8_recover(lm, myres);
       /* ToDo Probably we have to recover the history information of some special
@@ -276,10 +267,8 @@ int Discret::Elements::SoHex8::evaluate(Teuchos::ParameterList& params,
       if (stressdata == nullptr) FOUR_C_THROW("Cannot get 'stress' data");
       if (straindata == nullptr) FOUR_C_THROW("Cannot get 'strain' data");
       if (plstraindata == nullptr) FOUR_C_THROW("Cannot get 'plastic strain' data");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
       Core::LinAlg::Matrix<NUMGPT_SOH8, Mat::NUM_STRESS_3D> stress;
       Core::LinAlg::Matrix<NUMGPT_SOH8, Mat::NUM_STRESS_3D> strain;
       Core::LinAlg::Matrix<NUMGPT_SOH8, Mat::NUM_STRESS_3D> plstrain;
@@ -422,8 +411,7 @@ int Discret::Elements::SoHex8::evaluate(Teuchos::ParameterList& params,
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
       update_element(mydisp, params, *material());
     }
     break;
@@ -460,8 +448,7 @@ int Discret::Elements::SoHex8::evaluate(Teuchos::ParameterList& params,
       if (disp == nullptr) FOUR_C_THROW("Cannot get state displacement vector");
 
       // get displacements of this element
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
       // update element geometry
       Core::LinAlg::Matrix<NUMNOD_SOH8, NUMDIM_SOH8> xrefe;  // material coord. of element
@@ -722,8 +709,7 @@ int Discret::Elements::SoHex8::evaluate(Teuchos::ParameterList& params,
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get displacement state");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
       switch (pstype_)
       {
@@ -797,10 +783,8 @@ int Discret::Elements::SoHex8::evaluate(Teuchos::ParameterList& params,
                 "gpstrainmap", nullptr);
         if (gpstrainmap == nullptr)
           FOUR_C_THROW("no gp strain map available for writing gpstrains");
-        std::vector<double> mydisp(lm.size());
-        Core::FE::extract_my_values(*disp, mydisp, lm);
-        std::vector<double> myres(lm.size());
-        Core::FE::extract_my_values(*res, myres, lm);
+        std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+        std::vector<double> myres = Core::FE::extract_values(*res, lm);
 
         Core::LinAlg::Matrix<NUMGPT_SOH8, Mat::NUM_STRESS_3D> stress;
         Core::LinAlg::Matrix<NUMGPT_SOH8, Mat::NUM_STRESS_3D> strain;
@@ -884,8 +868,7 @@ int Discret::Elements::SoHex8::evaluate(Teuchos::ParameterList& params,
       if (!res) FOUR_C_THROW("Cannot get state vector \"residual displacement\"");
 
       // extract the part for this element
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
 
       soh8_create_eas_backup_state(myres);
 

@@ -126,8 +126,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<Beam, Solid,
     // Get the lambda GIDs of this pair.
     const auto& [lambda_row_pos, _] = mortar_manager->location_vector(*this);
 
-    std::vector<double> lambda_pair;
-    Core::FE::extract_my_values(*lambda, lambda_pair, lambda_row_pos);
+    std::vector<double> lambda_pair = Core::FE::extract_values(*lambda, lambda_row_pos);
     for (unsigned int i_dof = 0; i_dof < Mortar::n_dof_; i_dof++)
       element_data_lambda.element_position_(i_dof) = lambda_pair[i_dof];
 

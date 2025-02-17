@@ -488,9 +488,9 @@ void XFEM::XfluidTimeintBase::call_x_to_xi_coords(
     std::vector<double> mydispnp(la[0].lm_.size());
 
     if (state == "dispnp")
-      Core::FE::extract_my_values(*dispnp_, mydispnp, la[0].lm_);
+      mydispnp = Core::FE::extract_values(*dispnp_, la[0].lm_);
     else if (state == "dispn")
-      Core::FE::extract_my_values(*dispn_, mydispnp, la[0].lm_);
+      mydispnp = Core::FE::extract_values(*dispn_, la[0].lm_);
     else
       FOUR_C_THROW("XFEM::XfluidTimeintBase::call_x_to_xi_coords: Undefined state!");
 
@@ -608,8 +608,7 @@ void XFEM::XfluidTimeintBase::eval_shape_and_deriv(
       element->location_vector(*discret_, nds, la, false);
 
       // extract local values of the global vectors
-      std::vector<double> mydispnp(la[0].lm_.size());
-      Core::FE::extract_my_values(*dispnp_, mydispnp, la[0].lm_);
+      std::vector<double> mydispnp = Core::FE::extract_values(*dispnp_, la[0].lm_);
 
       for (int inode = 0; inode < nen; ++inode)  // number of nodes
       {
@@ -1154,8 +1153,7 @@ void XFEM::XfluidStd::get_gp_values_t(Core::Elements::Element* ele,  ///< pointe
 
 
   // extract local values of the global vectors
-  std::vector<double> mymatrix(lm.size());
-  Core::FE::extract_my_values(*vel_vec, mymatrix, lm);
+  std::vector<double> mymatrix = Core::FE::extract_values(*vel_vec, lm);
 
   for (int inode = 0; inode < numnode; ++inode)  // number of nodes
   {
@@ -1671,8 +1669,7 @@ void XFEM::XfluidStd::project_and_trackback(TimeIntData& data)
     if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector %s", state.c_str());
 
     // extract local values of the global vectors
-    std::vector<double> mymatrix(lm.size());
-    Core::FE::extract_my_values(*matrix_state, mymatrix, lm);
+    std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
 
     // add the displacement of the interface
     for (int idim = 0; idim < 3; ++idim)  // number of dimensions
@@ -2286,8 +2283,7 @@ void XFEM::XfluidStd::addeidisp(
   if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector %s", state.c_str());
 
   // extract local values of the global vectors
-  std::vector<double> mymatrix(lm.size());
-  Core::FE::extract_my_values(*matrix_state, mymatrix, lm);
+  std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
 
   for (int inode = 0; inode < nen; ++inode)  // number of nodes
   {
@@ -3076,8 +3072,7 @@ void XFEM::XfluidStd::project_on_point(
   if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector %s", state.c_str());
 
   // extract local values of the global vectors
-  std::vector<double> mymatrix(lm.size());
-  Core::FE::extract_my_values(*matrix_state, mymatrix, lm);
+  std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
 
   // add the displacement of the interface
   for (int idim = 0; idim < 3; ++idim)  // number of dimensions

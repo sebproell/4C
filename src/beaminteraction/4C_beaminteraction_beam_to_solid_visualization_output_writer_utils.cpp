@@ -150,8 +150,6 @@ void BeamInteraction::get_global_coupling_force_resultants(const Core::FE::Discr
   solid_resultant.clear();
 
   // Initialize variables.
-  std::vector<double> local_force;
-  std::vector<double> local_position;
   std::vector<int> gid_node;
 
   // Loop over the nodes and sum up the forces and moments.
@@ -162,8 +160,8 @@ void BeamInteraction::get_global_coupling_force_resultants(const Core::FE::Discr
     discret.dof(current_node, gid_node);
 
     // Get the local force and displacement values.
-    Core::FE::extract_my_values(force, local_force, gid_node);
-    Core::FE::extract_my_values(displacement, local_position, gid_node);
+    std::vector<double> local_force = Core::FE::extract_values(force, gid_node);
+    std::vector<double> local_position = Core::FE::extract_values(displacement, gid_node);
     for (unsigned int dim = 0; dim < 3; ++dim) local_position[dim] += current_node->x()[dim];
 
     if (BeamInteraction::Utils::is_beam_node(*current_node))

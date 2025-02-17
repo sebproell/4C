@@ -797,10 +797,9 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
       variablemanager_->extract_element_and_node_values(*element2_, *contdis, la_cont, ele2pos_, 0);
 
       // get contelephinp_ and artelephinp_
-      Core::FE::extract_my_values(
-          *contdis->get_state("phinp_fluid"), contelephinp_, la_cont[0].lm_);
-      Core::FE::extract_my_values(
-          *artdis->get_state("one_d_artery_pressure"), artelephinp_, la_art[0].lm_);
+      contelephinp_ = Core::FE::extract_values(*contdis->get_state("phinp_fluid"), la_cont[0].lm_);
+      artelephinp_ =
+          Core::FE::extract_values(*artdis->get_state("one_d_artery_pressure"), la_art[0].lm_);
 
       // extract velocity of solid phase
       extract_solid_vel(*contdis);
@@ -854,9 +853,9 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
       variablemanager_->extract_element_and_node_values(*element2_, *contdis, la_cont, ele2pos_, 2);
 
       // get contelephinp_ and artelephinp_
-      Core::FE::extract_my_values(*contdis->get_state("phinp"), contelephinp_, la_cont[0].lm_);
-      Core::FE::extract_my_values(
-          *artdis->get_state("one_d_artery_phinp"), artelephinp_, la_art[0].lm_);
+      contelephinp_ = Core::FE::extract_values(*contdis->get_state("phinp"), la_cont[0].lm_);
+      artelephinp_ =
+          Core::FE::extract_values(*artdis->get_state("one_d_artery_phinp"), la_art[0].lm_);
 
       // extract artery pressure
       std::shared_ptr<const Core::LinAlg::Vector<double>> artpressnp =

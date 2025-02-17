@@ -201,10 +201,7 @@ void Core::Conditions::LocsysManager::update(const double time,
                   std::vector<int> lm;
                   discret().dof(node, lm);
 
-                  std::vector<double> currDisp;
-                  currDisp.resize(lm.size());
-
-                  Core::FE::extract_my_values(*dispnp, currDisp, lm);
+                  std::vector<double> currDisp = Core::FE::extract_values(*dispnp, lm);
 
                   // Calculate current position for node
                   std::vector<double> currPos(n_dim());

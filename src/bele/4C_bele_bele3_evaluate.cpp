@@ -89,8 +89,7 @@ int Discret::Elements::Bele3::evaluate(Teuchos::ParameterList& params,
         std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
             discretization.get_state("displacement");
         if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-        std::vector<double> mydisp(lm.size());
-        Core::FE::extract_my_values(*disp, mydisp, lm);
+        std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
         const int numdim = 3;
         Core::LinAlg::SerialDenseMatrix xscurr(num_node(), numdim);  // material coord. of element
         spatial_configuration(xscurr, mydisp);
@@ -106,8 +105,7 @@ int Discret::Elements::Bele3::evaluate(Teuchos::ParameterList& params,
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
       const int numdim = 3;
       Core::LinAlg::SerialDenseMatrix xscurr(num_node(), numdim);  // material coord. of element
       spatial_configuration(xscurr, mydisp);

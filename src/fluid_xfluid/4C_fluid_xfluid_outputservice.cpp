@@ -663,13 +663,12 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_element(
     actele->location_vector(discret, la, false);
   }
 
-  std::vector<double> m(la[0].lm_.size());
-  Core::FE::extract_my_values(vel, m, la[0].lm_);
+  std::vector<double> m = Core::FE::extract_values(vel, la[0].lm_);
 
   std::vector<double> m_acc(la[0].lm_.size());
   if (acc_output)
   {
-    Core::FE::extract_my_values(*acc, m_acc, la[0].lm_);
+    m_acc = Core::FE::extract_values(*acc, la[0].lm_);
   }
 
   const bool ale_output(dispnp != nullptr);
@@ -677,7 +676,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_element(
   std::vector<double> m_disp(la[0].lm_.size());
   if (ale_output)
   {
-    Core::FE::extract_my_values(*dispnp, m_disp, la[0].lm_);
+    m_disp = Core::FE::extract_values(*dispnp, la[0].lm_);
   }
 
   int numnode = 0;
@@ -791,13 +790,12 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_volume_cell(
   // get element location vector, dirichlet flags and ownerships
   actele->location_vector(discret, nds, la, false);
 
-  std::vector<double> m(la[0].lm_.size());
-  Core::FE::extract_my_values(velvec, m, la[0].lm_);
+  std::vector<double> m = Core::FE::extract_values(velvec, la[0].lm_);
 
   std::vector<double> m_acc(la[0].lm_.size());
   if (acc_output)
   {
-    Core::FE::extract_my_values(*accvec, m_acc, la[0].lm_);
+    m_acc = Core::FE::extract_values(*accvec, la[0].lm_);
   }
 
   Core::LinAlg::SerialDenseMatrix vel(3, actele->num_node());

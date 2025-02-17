@@ -73,9 +73,7 @@ void Discret::Elements::Shell::pre_evaluate_scatra(Core::Elements::Element& ele,
       if (scalarnp == nullptr) FOUR_C_THROW("can not get state vector %s", scalarfield.c_str());
 
       // extract local values of the global vectors
-      std::vector<double> myscalar(dof_index_array[1].lm_.size(), 0.0);
-
-      Core::FE::extract_my_values(*scalarnp, myscalar, dof_index_array[1].lm_);
+      std::vector<double> myscalar = Core::FE::extract_values(*scalarnp, dof_index_array[1].lm_);
 
       // element vector for k-th scalar
       std::vector<Core::LinAlg::Matrix<Shell::Internal::num_node<distype>, 1>> elescalar(numscal);

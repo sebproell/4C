@@ -123,8 +123,7 @@ void CONTACT::NitscheStrategySsi::set_parent_state(const enum Mortar::StateType&
           else
             mortar_parent_ele->location_vector(dis, lm, lmowner, lmstride);
 
-          std::vector<double> myval;
-          Core::FE::extract_my_values(scatra_dofcolmap, myval, lm);
+          std::vector<double> myval = Core::FE::extract_values(scatra_dofcolmap, lm);
 
           mortar_ele->mo_data().parent_scalar() = myval;
           mortar_ele->mo_data().parent_scalar_dof() = lm;

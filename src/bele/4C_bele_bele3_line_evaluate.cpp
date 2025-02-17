@@ -50,8 +50,7 @@ int Discret::Elements::Bele3Line::evaluate(Teuchos::ParameterList& params,
         dispnp = discretization.get_state("dispnp");
         if (dispnp != nullptr)
         {
-          mydispnp.resize(lm.size());
-          Core::FE::extract_my_values(*dispnp, mydispnp, lm);
+          mydispnp = Core::FE::extract_values(*dispnp, lm);
         }
         else
         {

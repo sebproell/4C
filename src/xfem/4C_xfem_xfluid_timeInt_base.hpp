@@ -713,8 +713,7 @@ namespace XFEM
       if (vel_vec == nullptr) FOUR_C_THROW("vector is null");
 
       // extract local values of the global vectors
-      std::vector<double> mymatrix(lm.size());
-      Core::FE::extract_my_values(*vel_vec, mymatrix, lm);
+      std::vector<double> mymatrix = Core::FE::extract_values(*vel_vec, lm);
 
       for (int inode = 0; inode < numnode; ++inode)  // number of nodes
       {

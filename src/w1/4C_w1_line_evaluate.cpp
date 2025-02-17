@@ -122,8 +122,7 @@ int Discret::Elements::Wall1Line::evaluate_neumann(Teuchos::ParameterList& param
     std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
         discretization.get_state("displacement");
     if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-    std::vector<double> mydisp(lm.size());
-    Core::FE::extract_my_values(*disp, mydisp, lm);
+    std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
     for (int i = 0; i < numnod; ++i)
     {
@@ -142,8 +141,7 @@ int Discret::Elements::Wall1Line::evaluate_neumann(Teuchos::ParameterList& param
     std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
         discretization.get_state("displacement new");
     if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement new'");
-    std::vector<double> mydisp(lm.size());
-    Core::FE::extract_my_values(*disp, mydisp, lm);
+    std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
     for (int i = 0; i < numnod; ++i)
     {
@@ -459,8 +457,7 @@ int Discret::Elements::Wall1Line::evaluate(Teuchos::ParameterList& params,
         std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
             discretization.get_state("displacement");
         if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-        std::vector<double> mydisp(lm.size());
-        Core::FE::extract_my_values(*disp, mydisp, lm);
+        std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
         const int numnod = num_node();
         Core::LinAlg::SerialDenseMatrix xsrefe(
             numnod, Wall1::numdim_);  // material coord. of element
@@ -488,8 +485,7 @@ int Discret::Elements::Wall1Line::evaluate(Teuchos::ParameterList& params,
         std::shared_ptr<const Core::LinAlg::Vector<double>> disptotal =
             discretization.get_state("displacementtotal");
         if (disptotal == nullptr) FOUR_C_THROW("Cannot get state vector 'displacementtotal'");
-        std::vector<double> mydisp(lm.size());
-        Core::FE::extract_my_values(*disptotal, mydisp, lm);
+        std::vector<double> mydisp = Core::FE::extract_values(*disptotal, lm);
         const int numnod = num_node();
         Core::LinAlg::SerialDenseMatrix xsrefe(
             Wall1::numdim_, numnod);  // material coord. of element
@@ -518,8 +514,7 @@ int Discret::Elements::Wall1Line::evaluate(Teuchos::ParameterList& params,
 
         std::shared_ptr<const Core::LinAlg::Vector<double>> dispincr =
             discretization.get_state("displacementincr");
-        std::vector<double> edispincr(lm.size());
-        Core::FE::extract_my_values(*dispincr, edispincr, lm);
+        std::vector<double> edispincr = Core::FE::extract_values(*dispincr, lm);
 
         elevector2[0] = 0;
 
@@ -561,8 +556,7 @@ int Discret::Elements::Wall1Line::evaluate(Teuchos::ParameterList& params,
       {
         FOUR_C_THROW("Cannot get state vector 'displacement'");
       }
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
       const int numnod = num_node();
       Core::LinAlg::SerialDenseMatrix xsrefe(numnod, Wall1::numdim_);  // material coord. of element
       Core::LinAlg::SerialDenseMatrix xscurr(numnod, Wall1::numdim_);  // material coord. of element
@@ -649,8 +643,7 @@ int Discret::Elements::Wall1Line::evaluate(Teuchos::ParameterList& params,
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-      std::vector<double> mydisp(lmpar.size());
-      Core::FE::extract_my_values(*disp, mydisp, lmpar);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lmpar);
 
       // update element geometry
       Core::LinAlg::SerialDenseMatrix xrefe(numdim, nenparent);  // material coord. of element
@@ -674,8 +667,7 @@ int Discret::Elements::Wall1Line::evaluate(Teuchos::ParameterList& params,
           discretization.get_state(1, "fluidvel");
       if (velnp == nullptr) FOUR_C_THROW("Cannot get state vector 'fluidvel'");
       // extract local values of the global vectors
-      std::vector<double> myvelpres(la[1].lm_.size());
-      Core::FE::extract_my_values(*velnp, myvelpres, la[1].lm_);
+      std::vector<double> myvelpres = Core::FE::extract_values(*velnp, la[1].lm_);
 
       Core::LinAlg::SerialDenseVector mypres(numnode);
       for (int inode = 0; inode < numnode; ++inode)  // number of nodes

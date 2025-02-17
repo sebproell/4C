@@ -140,7 +140,6 @@ void FBI::FBIBinningGeometryCoupler::compute_current_positions(Core::FE::Discret
   positions->clear();
   std::vector<int> src_dofs(
       9);  // todo this does not work for all possible elements, does it? Variable size?
-  std::vector<double> mydisp(3, 0.0);
 
   const Epetra_Map* bincolmap = binstrategy_->bin_discret()->element_col_map();
   std::vector<int> colbinvec;
@@ -170,7 +169,7 @@ void FBI::FBIBinningGeometryCoupler::compute_current_positions(Core::FE::Discret
         // get the DOF numbers of the current node
         dis.dof(node, 0, src_dofs);
         // get the current displacements
-        Core::FE::extract_my_values(*disp, mydisp, src_dofs);
+        std::vector<double> mydisp = Core::FE::extract_values(*disp, src_dofs);
 
         for (int d = 0; d < 3; ++d) (*positions)[node->id()](d) = node->x()[d] + mydisp.at(d);
       }

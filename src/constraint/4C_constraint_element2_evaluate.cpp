@@ -61,8 +61,7 @@ int Discret::Elements::ConstraintElement2::evaluate(Teuchos::ParameterList& para
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
       const int numnode = 3;
       const int numdim = 2;
       Core::LinAlg::Matrix<numnode, numdim> xscurr;  // material coord. of element
@@ -82,8 +81,7 @@ int Discret::Elements::ConstraintElement2::evaluate(Teuchos::ParameterList& para
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
       const int numnode = 3;
       const int numdim = 2;
       Core::LinAlg::Matrix<numnode, numdim> xscurr;  // material coord. of element

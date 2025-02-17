@@ -51,8 +51,7 @@ void GEOMETRYPAIR::FaceElementTemplate<Surface, ScalarType>::set_state(
     const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>& face_elements)
 {
   // Get all displacements for the current face / patch.
-  std::vector<double> patch_displacement;
-  Core::FE::extract_my_values(*displacement, patch_displacement, patch_dof_gid_);
+  std::vector<double> patch_displacement = Core::FE::extract_values(*displacement, patch_dof_gid_);
 
   // Create the full length FAD types.
   face_position_ = GEOMETRYPAIR::InitializeElementData<Surface, ScalarType>::initialize(
@@ -250,8 +249,8 @@ void GEOMETRYPAIR::FaceElementPatchTemplate<Surface, ScalarType>::set_state(
     const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>& face_elements)
 {
   // Get all displacements for the current face / patch.
-  std::vector<double> patch_displacement;
-  Core::FE::extract_my_values(*displacement, patch_displacement, this->patch_dof_gid_);
+  std::vector<double> patch_displacement =
+      Core::FE::extract_values(*displacement, this->patch_dof_gid_);
 
   // Create the full length FAD types.
   this->face_position_ = GEOMETRYPAIR::InitializeElementData<Surface, ScalarType>::initialize(
@@ -549,8 +548,8 @@ void GEOMETRYPAIR::FaceElementTemplateExtendedVolume<Surface, ScalarType, Volume
     const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>& face_elements)
 {
   // Get all displacements for the current face / volume.
-  std::vector<double> volume_displacement;
-  Core::FE::extract_my_values(*displacement, volume_displacement, this->patch_dof_gid_);
+  std::vector<double> volume_displacement =
+      Core::FE::extract_values(*displacement, this->patch_dof_gid_);
 
   // Create the full length FAD types.
   std::vector<ScalarType> patch_displacement_fad(Volume::n_dof_);

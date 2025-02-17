@@ -77,8 +77,7 @@ int Discret::Elements::InterAcinarDepImpl<distype>::evaluate(RedInterAcinarDep* 
       discretization.get_state("intr_ac_link");
 
   // Extract local values from the global vectors
-  std::vector<double> myial(lm.size());
-  Core::FE::extract_my_values(*ial, myial, lm);
+  std::vector<double> myial = Core::FE::extract_values(*ial, lm);
 
   // Calculate the system matrix for inter-acinar linkers
   sysmat(myial, elemat1_epetra, elevec1_epetra);
@@ -170,8 +169,7 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
   if (pnp == nullptr) FOUR_C_THROW("Cannot get state vectors 'pnp'");
 
   // Extract local values from the global vectors
-  std::vector<double> mypnp(lm.size());
-  Core::FE::extract_my_values(*pnp, mypnp, lm);
+  std::vector<double> mypnp = Core::FE::extract_values(*pnp, lm);
 
   // Create objects for element arrays
   Core::LinAlg::SerialDenseVector epnp(numnode);

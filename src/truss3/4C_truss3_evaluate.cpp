@@ -569,7 +569,7 @@ void Discret::Elements::Truss3::extract_elemental_variables(Core::Elements::Loca
 
   auto disp = discretization.get_state("displacement");
   if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
-  Core::FE::extract_my_values(*disp, disp_ele, la[0].lm_);
+  disp_ele = Core::FE::extract_values(*disp, la[0].lm_);
 
   if (ele_state.find("disp") == ele_state.end())
     ele_state.emplace(std::make_pair("disp", disp_ele));

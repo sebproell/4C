@@ -142,8 +142,7 @@ int Discret::Elements::StructuralSurface::evaluate_neumann(Teuchos::ParameterLis
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
       spatial_configuration(xc, mydisp);
     }
     break;
@@ -170,8 +169,7 @@ int Discret::Elements::StructuralSurface::evaluate_neumann(Teuchos::ParameterLis
           FOUR_C_THROW(
               "Cannot get state vector 'displacement new'\n"
               "Did you forget to set the 'LOADLIN yes' in '--STRUCTURAL DYNAMIC' input section???");
-        std::vector<double> mydisp(lm.size());
-        Core::FE::extract_my_values(*disp, mydisp, lm);
+        std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
         spatial_configuration(xc, mydisp);
       }
     }
@@ -615,8 +613,7 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
         std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
             discretization.get_state("displacementtotal");
         if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacementtotal'");
-        std::vector<double> mydisp(lm.size());
-        Core::FE::extract_my_values(*disp, mydisp, lm);
+        std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
         const int numnode = num_node();
         const int numdf = 3;
         Core::LinAlg::SerialDenseMatrix xc(numnode, numdf);
@@ -634,8 +631,7 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
 
         std::shared_ptr<const Core::LinAlg::Vector<double>> dispincr =
             discretization.get_state("displacementincr");
-        std::vector<double> edispincr(lm.size());
-        Core::FE::extract_my_values(*dispincr, edispincr, lm);
+        std::vector<double> edispincr = Core::FE::extract_values(*dispincr, lm);
         elevector2[0] = 0;
 
         for (int gp = 0; gp < intpoints.nquad; gp++)
@@ -680,16 +676,14 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
         std::shared_ptr<const Core::LinAlg::Vector<double>> dispn =
             discretization.get_state("displacementnp");
         if (dispn == nullptr) FOUR_C_THROW("Cannot get state vector 'displacementnp");
-        std::vector<double> edispn(lm.size());
-        Core::FE::extract_my_values(*dispn, edispn, lm);
+        std::vector<double> edispn = Core::FE::extract_values(*dispn, lm);
         Core::LinAlg::SerialDenseMatrix xcn(numnode, numdf);
         spatial_configuration(xcn, edispn);
 
         std::shared_ptr<const Core::LinAlg::Vector<double>> dispincr =
             discretization.get_state("displacementincr");
         if (dispn == nullptr) FOUR_C_THROW("Cannot get state vector 'displacementincr");
-        std::vector<double> edispincr(lm.size());
-        Core::FE::extract_my_values(*dispincr, edispincr, lm);
+        std::vector<double> edispincr = Core::FE::extract_values(*dispincr, lm);
 
         // integration of the displacements over the surface
         // allocate vector for shape functions and matrix for derivatives
@@ -775,16 +769,14 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
       std::shared_ptr<const Core::LinAlg::Vector<double>> dispn =
           discretization.get_state("displacementnp");
       if (dispn == nullptr) FOUR_C_THROW("Cannot get state vector 'displacementnp");
-      std::vector<double> edispn(lm.size());
-      Core::FE::extract_my_values(*dispn, edispn, lm);
+      std::vector<double> edispn = Core::FE::extract_values(*dispn, lm);
       Core::LinAlg::SerialDenseMatrix xcn(numnode, numdf);
       spatial_configuration(xcn, edispn);
 
       std::shared_ptr<const Core::LinAlg::Vector<double>> dispincr =
           discretization.get_state("displacementincr");
       if (dispn == nullptr) FOUR_C_THROW("Cannot get state vector 'displacementincr");
-      std::vector<double> edispincr(lm.size());
-      Core::FE::extract_my_values(*dispincr, edispincr, lm);
+      std::vector<double> edispincr = Core::FE::extract_values(*dispincr, lm);
 
       // integration of the displacements over the surface
       // allocate vector for shape functions and matrix for derivatives
@@ -858,8 +850,7 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
         std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
             discretization.get_state("displacement");
         if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-        std::vector<double> mydisp(lm.size());
-        Core::FE::extract_my_values(*disp, mydisp, lm);
+        std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
         const int numdim = 3;
         Core::LinAlg::SerialDenseMatrix xscurr(num_node(), numdim);  // material coord. of element
         spatial_configuration(xscurr, mydisp);
@@ -875,8 +866,7 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
       const int numdim = 3;
       Core::LinAlg::SerialDenseMatrix xscurr(num_node(), numdim);  // material coord. of element
       spatial_configuration(xscurr, mydisp);
@@ -936,8 +926,7 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
         std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
             discretization.get_state("displacement");
         if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-        std::vector<double> mydisp(lm.size());
-        Core::FE::extract_my_values(*disp, mydisp, lm);
+        std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
         const int numdim = 3;
         Core::LinAlg::SerialDenseMatrix xscurr(num_node(), numdim);  // material coord. of element
         spatial_configuration(xscurr, mydisp);
@@ -1002,8 +991,7 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
       const int numdim = 3;
       Core::LinAlg::SerialDenseMatrix xscurr(num_node(), numdim);  // material coord. of element
       spatial_configuration(xscurr, mydisp);
@@ -1027,8 +1015,7 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
       const int numdim = 3;
       Core::LinAlg::SerialDenseMatrix xscurr(num_node(), numdim);  // material coord. of element
       spatial_configuration(xscurr, mydisp);
@@ -1063,8 +1050,7 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
       build_normals_at_nodes(elevector1, mydisp, false);
     }
     break;
@@ -1525,8 +1511,7 @@ void Discret::Elements::StructuralSurface::calculate_surface_porosity(
   std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
       discretization.get_state("displacement");
   if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-  std::vector<double> mydisp(lmpar.size());
-  Core::FE::extract_my_values(*disp, mydisp, lmpar);
+  std::vector<double> mydisp = Core::FE::extract_values(*disp, lmpar);
 
   // update element geometry
   Core::LinAlg::SerialDenseMatrix xrefe(numdim, nenparent);  // material coord. of element
@@ -1551,8 +1536,7 @@ void Discret::Elements::StructuralSurface::calculate_surface_porosity(
       discretization.get_state(1, "fluidvel");
   if (velnp == nullptr) FOUR_C_THROW("Cannot get state vector 'fluidvel'");
   // extract local values of the global vectors
-  std::vector<double> myvelpres(la[1].lm_.size());
-  Core::FE::extract_my_values(*velnp, myvelpres, la[1].lm_);
+  std::vector<double> myvelpres = Core::FE::extract_values(*velnp, la[1].lm_);
 
   Core::LinAlg::SerialDenseVector mypres(numnode);
   for (int inode = 0; inode < numnode; ++inode)  // number of nodes

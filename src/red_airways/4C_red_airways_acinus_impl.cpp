@@ -147,20 +147,16 @@ int Discret::Elements::AcinusImpl<distype>::evaluate(RedAcinus* ele, Teuchos::Pa
     FOUR_C_THROW("Cannot get state vectors 'pnp', 'on', and/or 'pnm''");
 
   // Extract local values from the global vectors
-  std::vector<double> mypnp(lm.size());
-  Core::FE::extract_my_values(*pnp, mypnp, lm);
+  std::vector<double> mypnp = Core::FE::extract_values(*pnp, lm);
 
   // Extract local values from the global vectors
-  std::vector<double> mypn(lm.size());
-  Core::FE::extract_my_values(*on, mypn, lm);
+  std::vector<double> mypn = Core::FE::extract_values(*on, lm);
 
   // Extract local values from the global vectors
-  std::vector<double> mypnm(lm.size());
-  Core::FE::extract_my_values(*pnm, mypnm, lm);
+  std::vector<double> mypnm = Core::FE::extract_values(*pnm, lm);
 
   // Extract local values from the global vectors
-  std::vector<double> myial(lm.size());
-  Core::FE::extract_my_values(*ial, myial, lm);
+  std::vector<double> myial = Core::FE::extract_values(*ial, lm);
 
   // Create objects for element arrays
   Core::LinAlg::SerialDenseVector epnp(elemVecdim);
@@ -294,8 +290,7 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
   if (pnp == nullptr) FOUR_C_THROW("Cannot get state vectors 'pnp'");
 
   // Extract local values from the global vectors
-  std::vector<double> mypnp(lm.size());
-  Core::FE::extract_my_values(*pnp, mypnp, lm);
+  std::vector<double> mypnp = Core::FE::extract_values(*pnp, lm);
 
   // Create objects for element arrays
   Core::LinAlg::SerialDenseVector epnp(numnode);
@@ -707,16 +702,13 @@ void Discret::Elements::AcinusImpl<distype>::calc_flow_rates(RedAcinus* ele,
     FOUR_C_THROW("Cannot get state vectors 'pnp', 'on', and/or 'pnm''");
 
   // Extract local values from the global vectors
-  std::vector<double> mypnp(lm.size());
-  Core::FE::extract_my_values(*pnp, mypnp, lm);
+  std::vector<double> mypnp = Core::FE::extract_values(*pnp, lm);
 
   // Extract local values from the global vectors
-  std::vector<double> mypn(lm.size());
-  Core::FE::extract_my_values(*on, mypn, lm);
+  std::vector<double> mypn = Core::FE::extract_values(*on, lm);
 
   // Extract local values from the global vectors
-  std::vector<double> mypnm(lm.size());
-  Core::FE::extract_my_values(*pnm, mypnm, lm);
+  std::vector<double> mypnm = Core::FE::extract_values(*pnm, lm);
 
   // Create objects for element arrays
   Core::LinAlg::SerialDenseVector epnp(elemVecdim);
@@ -826,8 +818,7 @@ void Discret::Elements::AcinusImpl<distype>::get_coupled_values(RedAcinus* ele,
   if (pnp == nullptr) FOUR_C_THROW("Cannot get state vectors 'pnp'");
 
   // extract local values from the global vectors
-  std::vector<double> mypnp(lm.size());
-  Core::FE::extract_my_values(*pnp, mypnp, lm);
+  std::vector<double> mypnp = Core::FE::extract_values(*pnp, lm);
 
   // create objects for element arrays
   Core::LinAlg::SerialDenseVector epnp(numnode);

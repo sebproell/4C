@@ -65,8 +65,7 @@ int Discret::Elements::Ale2::evaluate(Teuchos::ParameterList& params,
     {
       std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp =
           discretization.get_state("dispnp");
-      std::vector<double> my_dispnp(lm.size());
-      Core::FE::extract_my_values(*dispnp, my_dispnp, lm);
+      std::vector<double> my_dispnp = Core::FE::extract_values(*dispnp, lm);
 
       static_ke_nonlinear(lm, my_dispnp, &elemat1, &elevec1, params, true, false);
 
@@ -76,8 +75,7 @@ int Discret::Elements::Ale2::evaluate(Teuchos::ParameterList& params,
     {
       std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp =
           discretization.get_state("dispnp");
-      std::vector<double> my_dispnp(lm.size());
-      Core::FE::extract_my_values(*dispnp, my_dispnp, lm);
+      std::vector<double> my_dispnp = Core::FE::extract_values(*dispnp, lm);
 
       static_ke_nonlinear(lm, my_dispnp, &elemat1, &elevec1, params, spatialconfiguration, true);
 
@@ -87,8 +85,7 @@ int Discret::Elements::Ale2::evaluate(Teuchos::ParameterList& params,
     {
       std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp =
           discretization.get_state("dispnp");
-      std::vector<double> my_dispnp(lm.size());
-      Core::FE::extract_my_values(*dispnp, my_dispnp, lm);
+      std::vector<double> my_dispnp = Core::FE::extract_values(*dispnp, lm);
       static_ke_laplace(discretization, lm, &elemat1, elevec1, my_dispnp, spatialconfiguration);
 
       break;
@@ -97,8 +94,7 @@ int Discret::Elements::Ale2::evaluate(Teuchos::ParameterList& params,
     {
       std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp =
           discretization.get_state("dispnp");
-      std::vector<double> my_dispnp(lm.size());
-      Core::FE::extract_my_values(*dispnp, my_dispnp, lm);
+      std::vector<double> my_dispnp = Core::FE::extract_values(*dispnp, lm);
       static_ke_laplace(discretization, lm, &elemat1, elevec1, my_dispnp, true);
 
       break;
@@ -107,8 +103,7 @@ int Discret::Elements::Ale2::evaluate(Teuchos::ParameterList& params,
     {
       std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp =
           discretization.get_state("dispnp");  // get the displacements
-      std::vector<double> my_dispnp(lm.size());
-      Core::FE::extract_my_values(*dispnp, my_dispnp, lm);
+      std::vector<double> my_dispnp = Core::FE::extract_values(*dispnp, lm);
 
       static_ke_spring(&elemat1, elevec1, my_dispnp, spatialconfiguration);
 
@@ -118,8 +113,7 @@ int Discret::Elements::Ale2::evaluate(Teuchos::ParameterList& params,
     {
       std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp =
           discretization.get_state("dispnp");  // get the displacements
-      std::vector<double> my_dispnp(lm.size());
-      Core::FE::extract_my_values(*dispnp, my_dispnp, lm);
+      std::vector<double> my_dispnp = Core::FE::extract_values(*dispnp, lm);
 
       static_ke_spring(&elemat1, elevec1, my_dispnp, true);
 
@@ -151,8 +145,7 @@ int Discret::Elements::Ale2::evaluate(Teuchos::ParameterList& params,
     {
       std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp =
           discretization.get_state("dispnp");
-      std::vector<double> my_dispnp(lm.size());
-      Core::FE::extract_my_values(*dispnp, my_dispnp, lm);
+      std::vector<double> my_dispnp = Core::FE::extract_values(*dispnp, lm);
 
       compute_det_jac(elevec1, lm, my_dispnp);
 

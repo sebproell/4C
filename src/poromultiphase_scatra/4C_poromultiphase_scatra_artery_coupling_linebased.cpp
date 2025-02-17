@@ -957,8 +957,7 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::get_ele_segment_len
   std::shared_ptr<const Core::LinAlg::Vector<double>> curr_seg_lengths =
       arterydis_->get_state(1, "curr_seg_lengths");
 
-  std::vector<double> seglengths(maxnumsegperartele_);
-  Core::FE::extract_my_values(*curr_seg_lengths, seglengths, seglengthdofs);
+  std::vector<double> seglengths = Core::FE::extract_values(*curr_seg_lengths, seglengthdofs);
 
   return seglengths;
 }

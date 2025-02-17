@@ -606,16 +606,13 @@ int Discret::Elements::AirwayImpl<distype>::evaluate(RedAirway* ele, Teuchos::Pa
     FOUR_C_THROW("Cannot get state vectors 'pnp', 'on', and/or 'pnm''");
 
   // extract local values from the global vectors
-  std::vector<double> mypnp(lm.size());
-  Core::FE::extract_my_values(*pnp, mypnp, lm);
+  std::vector<double> mypnp = Core::FE::extract_values(*pnp, lm);
 
   // extract local values from the global vectors
-  std::vector<double> mypn(lm.size());
-  Core::FE::extract_my_values(*on, mypn, lm);
+  std::vector<double> mypn = Core::FE::extract_values(*on, lm);
 
   // extract local values from the global vectors
-  std::vector<double> mypnm(lm.size());
-  Core::FE::extract_my_values(*pnm, mypnm, lm);
+  std::vector<double> mypnm = Core::FE::extract_values(*pnm, lm);
 
   // create objects for element arrays
   Core::LinAlg::SerialDenseVector epnp(elemVecdim);
@@ -864,8 +861,7 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
   if (on == nullptr) FOUR_C_THROW("Cannot get state vectors 'on'");
 
   // extract local values from the global vectors
-  std::vector<double> mypn(lm.size());
-  Core::FE::extract_my_values(*on, mypn, lm);
+  std::vector<double> mypn = Core::FE::extract_values(*on, lm);
 
   // create objects for element arrays
   Core::LinAlg::SerialDenseVector epn(numnode);
@@ -1177,16 +1173,13 @@ void Discret::Elements::AirwayImpl<distype>::calc_flow_rates(RedAirway* ele,
     FOUR_C_THROW("Cannot get state vectors 'pnp', 'on', and/or 'pnm''");
 
   // extract local values from the global vectors
-  std::vector<double> mypnp(lm.size());
-  Core::FE::extract_my_values(*pnp, mypnp, lm);
+  std::vector<double> mypnp = Core::FE::extract_values(*pnp, lm);
 
   // extract local values from the global vectors
-  std::vector<double> mypn(lm.size());
-  Core::FE::extract_my_values(*on, mypn, lm);
+  std::vector<double> mypn = Core::FE::extract_values(*on, lm);
 
   // extract local values from the global vectors
-  std::vector<double> mypnm(lm.size());
-  Core::FE::extract_my_values(*pnm, mypnm, lm);
+  std::vector<double> mypnm = Core::FE::extract_values(*pnm, lm);
 
   // create objects for element arrays
   Core::LinAlg::SerialDenseVector epnp(elemVecdim);
@@ -1346,8 +1339,7 @@ void Discret::Elements::AirwayImpl<distype>::get_coupled_values(RedAirway* ele,
   if (pnp == nullptr) FOUR_C_THROW("Cannot get state vectors 'pnp'");
 
   // extract local values from the global vectors
-  std::vector<double> mypnp(lm.size());
-  Core::FE::extract_my_values(*pnp, mypnp, lm);
+  std::vector<double> mypnp = Core::FE::extract_values(*pnp, lm);
 
   // create objects for element arrays
   Core::LinAlg::SerialDenseVector epnp(numnode);

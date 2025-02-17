@@ -53,7 +53,7 @@ namespace Discret
           FOUR_C_THROW("Cannot get state vector %s", disp_statename_.c_str());
 
         // extract local values of the global vector
-        Core::FE::extract_my_values(*matrix_state, mymatrix, lm);
+        mymatrix = Core::FE::extract_values(*matrix_state, lm);
 
         for (unsigned inode = 0; inode < slave_nen_; ++inode)  // number of nodes
         {
@@ -93,8 +93,7 @@ namespace Discret
           FOUR_C_THROW("Cannot get state vector %s", vel_statename_.c_str());
 
         // extract local values of the global vectors
-        std::vector<double> mymatrix(lm.size());
-        Core::FE::extract_my_values(*matrix_state, mymatrix, lm);
+        std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
 
         for (unsigned inode = 0; inode < slave_nen_; ++inode)  // number of nodes
         {
@@ -127,8 +126,7 @@ namespace Discret
           FOUR_C_THROW("Cannot get state vector %s", veln_statename_.c_str());
 
         // extract local values of the global vectors
-        std::vector<double> mymatrix(lm.size());
-        Core::FE::extract_my_values(*matrix_state, mymatrix, lm);
+        std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
 
         for (unsigned inode = 0; inode < slave_nen_; ++inode)  // number of nodes
         {
@@ -245,8 +243,7 @@ namespace Discret
         if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector %s", state.c_str());
 
         // extract local values of the global vectors
-        std::vector<double> mymatrix(lm.size());
-        Core::FE::extract_my_values(*matrix_state, mymatrix, lm);
+        std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
 
         for (unsigned inode = 0; inode < slave_nen_; ++inode)  // number of nodes
         {
@@ -279,8 +276,7 @@ namespace Discret
         if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector %s", state.c_str());
 
         // extract local values of the global vectors
-        std::vector<double> mymatrix(lm.size());
-        Core::FE::extract_my_values(*matrix_state, mymatrix, lm);
+        std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
 
         for (unsigned inode = 0; inode < slave_nen_; ++inode)  // number of nodes
         {

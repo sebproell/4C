@@ -79,7 +79,7 @@ void XFEM::MeshProjector::set_source_position_vector(
     {
       // get the current displacement
       sourcedis_->dof(node, 0, src_dofs);
-      Core::FE::extract_my_values(*sourcedisp, mydisp, src_dofs);
+      mydisp = Core::FE::extract_values(*sourcedisp, src_dofs);
     }
 
     for (int d = 0; d < 3; ++d) src_nodepositions_n_[node->id()](d) = node->x()[d] + mydisp.at(d);
@@ -226,7 +226,7 @@ void XFEM::MeshProjector::project(std::map<int, std::set<int>>& projection_nodeT
     {
       // get the current displacement
       targetdis_->dof(node, 0, tar_dofs);
-      Core::FE::extract_my_values(*targetdisp, mydisp, tar_dofs);
+      mydisp = Core::FE::extract_values(*targetdisp, tar_dofs);
     }
 
     Core::LinAlg::Matrix<3, 1> pos;
@@ -370,7 +370,7 @@ bool XFEM::MeshProjector::check_position_and_project(const Core::Elements::Eleme
       {
         if (source_statevecs_[iv] == nullptr) continue;
 
-        Core::FE::extract_my_values(*source_statevecs_[iv], myval, src_dofs);
+        myval = Core::FE::extract_values(*source_statevecs_[iv], src_dofs);
         for (unsigned isd = 0; isd < numdofpernode; ++isd)
         {
           interpolatedvec(isd + offset) += myval[isd] * shp(in);
@@ -621,7 +621,7 @@ void XFEM::MeshProjector::gmsh_output(
       {
         // get the current displacement
         targetdis_->dof(actnode, 0, tar_dofs);
-        Core::FE::extract_my_values(*targetdisp, mydisp, tar_dofs);
+        mydisp = Core::FE::extract_values(*targetdisp, tar_dofs);
         for (unsigned isd = 0; isd < 3; ++isd)
         {
           pos(isd, 0) += mydisp[isd];

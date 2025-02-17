@@ -7055,8 +7055,7 @@ void Discret::Elements::FluidEleCalc<distype, enrtype>::extract_values_from_glob
   if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector %s", state.c_str());
 
   // extract local values of the global vectors
-  std::vector<double> mymatrix(lm.size());
-  Core::FE::extract_my_values(*matrix_state, mymatrix, lm);
+  std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
 
   // rotate the vector field in the case of rotationally symmetric boundary conditions
   if (matrixtofill != nullptr) rotsymmpbc.rotate_my_values_if_necessary(mymatrix);
@@ -8753,8 +8752,7 @@ int Discret::Elements::FluidEleCalc<distype, enrtype>::calc_channel_statistics(
   if (velnp == nullptr) FOUR_C_THROW("Cannot get state vector 'velnp'");
 
   // extract local values from the global vectors
-  std::vector<double> mysol(lm.size());
-  Core::FE::extract_my_values(*velnp, mysol, lm);
+  std::vector<double> mysol = Core::FE::extract_values(*velnp, lm);
   // get view of solution and subgrid-viscosity vector
   Core::LinAlg::Matrix<4 * nen_, 1> sol(mysol.data(), true);
 

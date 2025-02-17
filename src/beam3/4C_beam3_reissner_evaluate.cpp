@@ -147,8 +147,7 @@ int Discret::Elements::Beam3r::evaluate(Teuchos::ParameterList& params,
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
       if (act == Core::Elements::struct_calc_nlnstiffmass)
       {
@@ -403,15 +402,13 @@ int Discret::Elements::Beam3r::evaluate(Teuchos::ParameterList& params,
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
       // get element velocity
       std::shared_ptr<const Core::LinAlg::Vector<double>> vel =
           discretization.get_state("velocity");
       if (vel == nullptr) FOUR_C_THROW("Cannot get state vectors 'velocity'");
-      std::vector<double> myvel(lm.size());
-      Core::FE::extract_my_values(*vel, myvel, lm);
+      std::vector<double> myvel = Core::FE::extract_values(*vel, lm);
 
       if (act == Core::Elements::struct_calc_brownianforce)
       {

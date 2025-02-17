@@ -178,9 +178,8 @@ void BeamInteraction::BeamToFluidMeshtyingPairMortar<Beam, Fluid, Mortar>::get_p
     // Get the lambda GIDs of this pair.
     std::shared_ptr<const BeamContactPair> this_rcp = Core::Utils::shared_ptr_from_ref(*this);
     std::vector<int> lambda_row;
-    std::vector<double> lambda_pair;
     mortar_manager->location_vector(*this_rcp, lambda_row);
-    Core::FE::extract_my_values(*lambda, lambda_pair, lambda_row);
+    std::vector<double> lambda_pair = Core::FE::extract_values(*lambda, lambda_row);
     for (unsigned int i_dof = 0; i_dof < Mortar::n_dof_; i_dof++)
       q_lambda.element_position_(i_dof) = lambda_pair[i_dof];
 

@@ -362,8 +362,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortarRotation<Beam, Solid, 
   // Get the rotational Lagrange multipliers for this pair.
   const auto& [_, lambda_gid_rot] = mortar_manager->location_vector(*this);
 
-  std::vector<double> lambda_rot_double;
-  Core::FE::extract_my_values(global_lambda, lambda_rot_double, lambda_gid_rot);
+  std::vector<double> lambda_rot_double = Core::FE::extract_values(global_lambda, lambda_gid_rot);
   Core::LinAlg::Matrix<MortarRot::n_dof_, 1, double> lambda_rot;
   for (unsigned int i_dof = 0; i_dof < MortarRot::n_dof_; i_dof++)
     lambda_rot(i_dof) = lambda_rot_double[i_dof];

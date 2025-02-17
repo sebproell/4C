@@ -189,17 +189,6 @@ namespace Core::FE
       const int nsd                               ///< number of space dimensions
   );
 
-  /// Locally extract a subset of values from a (column)-nodemap-based
-  /// Core::LinAlg::MultiVector<double>
-  /*  \author schott
-   *  \date 12/16
-   */
-  void extract_my_node_based_values(const Core::Nodes::Node* node,  ///< pointer to current element
-      Core::LinAlg::SerialDenseVector& local,                       ///< local vector on node-level
-      Core::LinAlg::MultiVector<double>& global,                    ///< global vector
-      const int nsd                                                 ///< number of space dimensions
-  );
-
 
   /// Locally extract a subset of values from a (column)-nodemap-based
   /// Core::LinAlg::MultiVector<double> and fill a local matrix that has implemented the (.,.)

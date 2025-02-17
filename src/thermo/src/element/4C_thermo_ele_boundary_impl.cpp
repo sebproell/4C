@@ -191,7 +191,7 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
             discretization.get_state("temperature");
         if (tempnp == nullptr) FOUR_C_THROW("Cannot get state vector 'tempnp'");
 
-        Core::FE::extract_my_values(*tempnp, mytempnp, la[0].lm_);
+        mytempnp = Core::FE::extract_values(*tempnp, la[0].lm_);
         // build the element temperature
         Core::LinAlg::Matrix<nen_, 1> etemp(mytempnp.data(), true);  // view only!
         etemp_.update(etemp);                                        // copy
@@ -210,7 +210,7 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
             discretization.get_state("old temperature");
         if (tempn == nullptr) FOUR_C_THROW("Cannot get state vector 'tempn'");
 
-        Core::FE::extract_my_values(*tempn, mytempn, la[0].lm_);
+        mytempn = Core::FE::extract_values(*tempn, la[0].lm_);
         // build the element temperature
         Core::LinAlg::Matrix<nen_, 1> etemp(mytempn.data(), true);  // view only!
         etemp_.update(etemp);                                       // copy
@@ -271,7 +271,7 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
             discretization.get_state(1, "displacement");
         if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
         // extract the displacements
-        Core::FE::extract_my_values(*disp, mydisp, la[1].lm_);
+        mydisp = Core::FE::extract_values(*disp, la[1].lm_);
 
         // and now check if there is a convection heat transfer boundary condition
         calculate_nln_convection_fint_cond(ele,  // current boundary element
@@ -412,7 +412,7 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
                 discretization.get_state("temperature");
             if (tempnp == nullptr) FOUR_C_THROW("Cannot get state vector 'tempnp'");
 
-            Core::FE::extract_my_values(*tempnp, mytempnp, la[0].lm_);
+            mytempnp = Core::FE::extract_values(*tempnp, la[0].lm_);
             // build the element temperature
             Core::LinAlg::Matrix<nen_, 1> etemp(mytempnp.data(), true);  // view only!
             etemp_.update(etemp);                                        // copy
@@ -431,7 +431,7 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
                 discretization.get_state("old temperature");
             if (tempn == nullptr) FOUR_C_THROW("Cannot get state vector 'tempn'");
 
-            Core::FE::extract_my_values(*tempn, mytempn, la[0].lm_);
+            mytempn = Core::FE::extract_values(*tempn, la[0].lm_);
             // build the element temperature
             Core::LinAlg::Matrix<nen_, 1> etemp(mytempn.data(), true);  // view only!
             etemp_.update(etemp);                                       // copy
@@ -460,7 +460,7 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
             discretization.get_state(1, "displacement");
         if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
         // extract the displacements
-        Core::FE::extract_my_values(*disp, mydisp, la[1].lm_);
+        mydisp = Core::FE::extract_values(*disp, la[1].lm_);
 
         // and now check if there is a convection heat transfer boundary condition
         calculate_nln_convection_fint_cond(ele,  // current boundary element

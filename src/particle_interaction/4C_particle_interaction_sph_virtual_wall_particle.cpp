@@ -196,8 +196,8 @@ void ParticleInteraction::SPHVirtualWallParticle::init_states_at_wall_contact_po
     if (walldatastate->get_acc_col() != nullptr)
     {
       // get nodal accelerations
-      std::vector<double> nodal_acc(numnodes * 3);
-      Core::FE::extract_my_values(*walldatastate->get_acc_col(), nodal_acc, lmele);
+      std::vector<double> nodal_acc =
+          Core::FE::extract_values(*walldatastate->get_acc_col(), lmele);
 
       // determine acceleration of wall contact point j
       for (int node = 0; node < numnodes; ++node)

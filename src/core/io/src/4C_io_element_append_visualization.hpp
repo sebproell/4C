@@ -291,10 +291,9 @@ namespace Core::IO
       // Get the element result vector.
       Core::LinAlg::Matrix<number_of_output_points * result_num_dofs_per_node, 1, double>
           dof_result;
-      std::vector<double> ele_dof_values;
       std::vector<int> lm, lmowner, lmstride;
       ele.location_vector(discret, lm, lmowner, lmstride);
-      Core::FE::extract_my_values(result_data_dofbased, ele_dof_values, lm);
+      std::vector<double> ele_dof_values = Core::FE::extract_values(result_data_dofbased, lm);
 
       const auto total_dofs_per_node = ele_dof_values.size() / number_of_output_points;
       FOUR_C_ASSERT((ele_dof_values.size() % total_dofs_per_node) == 0,

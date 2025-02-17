@@ -357,8 +357,7 @@ void FSI::VolCorrector::correct_vol_displacements_para_space(
       for (int idof = 0; idof < dim_; idof++) dofsFSI.push_back(temp[idof]);
 
       // extract local values of the global vectors
-      std::vector<double> FSIdisp(dofsFSI.size());
-      Core::FE::extract_my_values(DofColMapDummy, FSIdisp, dofsFSI);
+      std::vector<double> FSIdisp = Core::FE::extract_values(DofColMapDummy, dofsFSI);
 
       std::vector<int> temp2 = fluidale->fluid_field()->discretization()->dof(fluidnode);
       std::vector<int> dofs;

@@ -246,8 +246,7 @@ void BeamInteraction::BeamToSolidSurfaceContactPairMortar<ScalarType, Beam, Surf
 
   // Get the Lagrange multipliers DOF vector for this pair
   const auto& [lambda_gid_pos, _] = mortar_manager->location_vector(*this);
-  std::vector<double> lambda_pos_vector;
-  Core::FE::extract_my_values(global_lambda, lambda_pos_vector, lambda_gid_pos);
+  std::vector<double> lambda_pos_vector = Core::FE::extract_values(global_lambda, lambda_gid_pos);
   const auto lambda_pos = Core::LinAlg::Matrix<Mortar::n_dof_, 1, double>(lambda_pos_vector.data());
 
   // Multiply with the matrices evaluated in evaluate_and_assemble_mortar_contributions
@@ -335,8 +334,7 @@ void BeamInteraction::BeamToSolidSurfaceContactPairMortar<ScalarType, Beam, Surf
     // Get the lambda GIDs of this pair.
     auto q_lambda = GEOMETRYPAIR::InitializeElementData<Mortar, double>::initialize(nullptr);
     const auto& [lambda_row_pos, _] = mortar_manager->location_vector(*this);
-    std::vector<double> lambda_pair;
-    Core::FE::extract_my_values(*lambda, lambda_pair, lambda_row_pos);
+    std::vector<double> lambda_pair = Core::FE::extract_values(*lambda, lambda_row_pos);
     for (unsigned int i_dof = 0; i_dof < Mortar::n_dof_; i_dof++)
       q_lambda.element_position_(i_dof) = lambda_pair[i_dof];
 

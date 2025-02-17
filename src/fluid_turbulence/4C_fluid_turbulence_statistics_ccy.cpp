@@ -663,8 +663,7 @@ void FLD::TurbulenceStatisticsCcy::evaluate_pointwise_mean_values_in_planes()
     actele->location_vector(*nurbsdis, lm, lmowner, lmstride);
 
     // extract local values from global vector
-    std::vector<double> myvelnp(lm.size());
-    Core::FE::extract_my_values(*(nurbsdis->get_state("velnp")), myvelnp, lm);
+    std::vector<double> myvelnp = Core::FE::extract_values(*(nurbsdis->get_state("velnp")), lm);
 
     // create Matrix objects
     Core::LinAlg::Matrix<3, 27> evelnp;
@@ -691,8 +690,7 @@ void FLD::TurbulenceStatisticsCcy::evaluate_pointwise_mean_values_in_planes()
     if (withscatra_)
     {
       // extract local values from global vector
-      std::vector<double> myscanp(lm.size());
-      Core::FE::extract_my_values(*(nurbsdis->get_state("scanp")), myscanp, lm);
+      std::vector<double> myscanp = Core::FE::extract_values(*(nurbsdis->get_state("scanp")), lm);
 
       // insert data into element array (scalar field is stored at pressure dofs)
       for (int i = 0; i < 27; ++i)
@@ -716,8 +714,7 @@ void FLD::TurbulenceStatisticsCcy::evaluate_pointwise_mean_values_in_planes()
       std::shared_ptr<const Core::LinAlg::Vector<double>> phinp =
           scatranurbsdis->get_state("phinp_for_statistics");
       if (phinp == nullptr) FOUR_C_THROW("Cannot get state vector 'phinp' for statistics");
-      std::vector<double> myphinp(scatralm.size());
-      Core::FE::extract_my_values(*phinp, myphinp, scatralm);
+      std::vector<double> myphinp = Core::FE::extract_values(*phinp, scatralm);
 
       // fill all element arrays
       for (int i = 0; i < nen; ++i)

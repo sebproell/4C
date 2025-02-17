@@ -411,7 +411,7 @@ void PARTICLEWALL::WallHandlerBase::determine_col_wall_ele_nodal_pos(
         FOUR_C_THROW("dof gid=%d not in dof column map!", lm_wall[i]);
 #endif
 
-    Core::FE::extract_my_values(*walldatastate_->get_disp_col(), nodal_disp, lm_wall);
+    nodal_disp = Core::FE::extract_values(*walldatastate_->get_disp_col(), lm_wall);
   }
 
   // iterate over nodes of current column wall element

@@ -704,8 +704,7 @@ void FLD::XFluid::extract_node_vectors(XFEM::DiscretizationXFEM& dis,
     const Core::Nodes::Node* node = dis.l_col_node(lid);
     std::vector<int> lm;
     dis.initial_dof(node, lm);  // initial dofs!
-    std::vector<double> mydisp;
-    Core::FE::extract_my_values(dispnp_col, mydisp, lm);
+    std::vector<double> mydisp = Core::FE::extract_values(dispnp_col, lm);
     if (mydisp.size() < 3) FOUR_C_THROW("we need at least 3 dofs here");
 
     Core::LinAlg::Matrix<3, 1> currpos;

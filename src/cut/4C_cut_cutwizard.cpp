@@ -410,7 +410,7 @@ void evaluate_position_on_nurbs9(Core::Elements::Element* element,
     lm.clear();
     mydisp.clear();
     cutterdis->dof(controlpoint, lm);
-    Core::FE::extract_my_values(cutter_disp_col, mydisp, lm);
+    mydisp = Core::FE::extract_values(cutter_disp_col, lm);
 
     // Obtain the displacements on control points
     for (int i_dim = 0; i_dim < prob_dim; ++i_dim)
@@ -469,7 +469,7 @@ void evaluate_position_on_lagrange_element(Core::Elements::Element* element,
     {
       if (lm.size() == 3)  // case for BELE3 boundary elements
       {
-        Core::FE::extract_my_values(*cutter_disp_col, mydisp, lm);
+        mydisp = Core::FE::extract_values(*cutter_disp_col, lm);
       }
       else if (lm.size() == 4)  // case for BELE3_4 boundary elements
       {
@@ -479,7 +479,7 @@ void evaluate_position_on_lagrange_element(Core::Elements::Element* element,
         lm_red.clear();
         for (int k = 0; k < 3; k++) lm_red.push_back(lm[k]);
 
-        Core::FE::extract_my_values(*cutter_disp_col, mydisp, lm_red);
+        mydisp = Core::FE::extract_values(*cutter_disp_col, lm_red);
       }
       else
         FOUR_C_THROW("wrong number of dofs for node %i", lm.size());
@@ -696,7 +696,7 @@ Core::LinAlg::SerialDenseMatrix Cut::CutWizard::get_current_element_position(
       lm_red.clear();
       for (int k = 0; k < 3; k++) lm_red.push_back(lm[k]);
 
-      Core::FE::extract_my_values(back_mesh_->back_disp_col(), mydisp, lm_red);
+      mydisp = Core::FE::extract_values(back_mesh_->back_disp_col(), lm_red);
 
       if (mydisp.size() != 3) FOUR_C_THROW("we need 3 displacements here");
 
@@ -1051,7 +1051,7 @@ void Cut::CutWizard::update_boundary_cell_coords(
       {
         if (lm.size() == 3)  // case for BELE3 boundary elements
         {
-          Core::FE::extract_my_values(*cutter_disp_col, mydisp, lm);
+          mydisp = Core::FE::extract_values(*cutter_disp_col, lm);
         }
         else if (lm.size() == 4)  // case for BELE3_4 boundary elements
         {
@@ -1061,7 +1061,7 @@ void Cut::CutWizard::update_boundary_cell_coords(
           lm_red.clear();
           for (int k = 0; k < 3; k++) lm_red.push_back(lm[k]);
 
-          Core::FE::extract_my_values(*cutter_disp_col, mydisp, lm_red);
+          mydisp = Core::FE::extract_values(*cutter_disp_col, lm_red);
         }
         else
           FOUR_C_THROW("wrong number of dofs for node %i", lm.size());

@@ -136,8 +136,7 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
       Core::LinAlg::Matrix<numdof_, numdof_>* matptr = nullptr;
       if (elemat1.is_initialized()) matptr = &elemat1;
 
@@ -155,8 +154,7 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
       Core::LinAlg::Matrix<numdof_, numdof_>* matptr = nullptr;
       if (elemat1.is_initialized()) matptr = &elemat1;
 
@@ -174,8 +172,7 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
       mem_nlnstiffmass(lm, mydisp, nullptr, nullptr, &elevec1, nullptr, nullptr, params,
           Inpar::Solid::stress_none, Inpar::Solid::strain_none);
@@ -191,8 +188,7 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
       update_element(mydisp, params, *material());
     }
     break;
@@ -216,8 +212,7 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
       std::shared_ptr<std::vector<char>> stressdata = nullptr;
       std::shared_ptr<std::vector<char>> straindata = nullptr;
@@ -308,8 +303,7 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
       // get reference configuration and determine current configuration
       Core::LinAlg::Matrix<numnod_, noddof_> xrefe(true);
@@ -562,8 +556,7 @@ int Discret::Elements::Membrane<distype>::evaluate_neumann(Teuchos::ParameterLis
   std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
       discretization.get_state("displacement new");
   if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement new'");
-  std::vector<double> mydisp(lm.size());
-  Core::FE::extract_my_values(*disp, mydisp, lm);
+  std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
   // get reference configuration and determine current configuration
   Core::LinAlg::Matrix<numnod_, noddof_> xrefe(true);

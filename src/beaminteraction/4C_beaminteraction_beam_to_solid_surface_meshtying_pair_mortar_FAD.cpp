@@ -62,8 +62,7 @@ void BeamInteraction::BeamToSolidSurfaceMeshtyingPairMortarFAD<ScalarType, Beam,
 
   // Get the positional Lagrange multipliers for this pair.
   const auto& [lambda_gid_pos, _] = mortar_manager->location_vector(*this);
-  std::vector<double> local_lambda_pos;
-  Core::FE::extract_my_values(global_lambda, local_lambda_pos, lambda_gid_pos);
+  std::vector<double> local_lambda_pos = Core::FE::extract_values(global_lambda, lambda_gid_pos);
   auto q_lambda = GEOMETRYPAIR::InitializeElementData<Mortar, double>::initialize(nullptr);
   q_lambda.element_position_ =
       Core::LinAlg::Matrix<Mortar::n_dof_, 1, double>(local_lambda_pos.data());
@@ -500,8 +499,7 @@ void BeamInteraction::BeamToSolidSurfaceMeshtyingPairMortarRotationFAD<ScalarTyp
 
   // Get the rotational Lagrange multipliers for this pair.
   const auto& [_, lambda_gid_rot] = mortar_manager->location_vector(*this);
-  std::vector<double> lambda_rot_double;
-  Core::FE::extract_my_values(global_lambda, lambda_rot_double, lambda_gid_rot);
+  std::vector<double> lambda_rot_double = Core::FE::extract_values(global_lambda, lambda_gid_rot);
   Core::LinAlg::Matrix<Mortar::n_dof_, 1, double> lambda_rot;
   for (unsigned int i_dof = 0; i_dof < Mortar::n_dof_; i_dof++)
     lambda_rot(i_dof) = lambda_rot_double[i_dof];

@@ -179,8 +179,7 @@ void Discret::Elements::ScaTraEleCalcPoro<distype>::extract_element_and_node_val
 
     if (disp != nullptr)
     {
-      std::vector<double> mydisp(la[ndsdisp].lm_.size());
-      Core::FE::extract_my_values(*disp, mydisp, la[ndsdisp].lm_);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, la[ndsdisp].lm_);
 
       for (unsigned inode = 0; inode < nen_; ++inode)  // number of nodes
         eporosity_(inode, 0) = mydisp[nsd_ + (inode * (nsd_ + 1))];

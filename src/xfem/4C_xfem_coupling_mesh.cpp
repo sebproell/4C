@@ -2453,7 +2453,7 @@ void XFEM::MeshCouplingFSI::estimate_nitsche_trace_max_eigenvalue(Core::Elements
   std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp = coupl_dis_->get_state("dispnp");
   if (dispnp == nullptr) FOUR_C_THROW("Cannot get state vector 'dispnp'");
 
-  Core::FE::extract_my_values(*dispnp, eledisp, la[0].lm_);
+  eledisp = Core::FE::extract_values(*dispnp, la[0].lm_);
   (*ele_to_max_eigenvalue_)[ele->id()] = solidfaceele->estimate_nitsche_trace_max_eigenvalue(
       eledisp);  // this is (E/h) ...basically :-)
 }

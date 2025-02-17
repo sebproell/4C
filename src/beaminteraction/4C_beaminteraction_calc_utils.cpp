@@ -198,7 +198,7 @@ namespace BeamInteraction
       std::vector<int> lm, lmowner, lmstride;
 
       ele->location_vector(discret, lm, lmowner, lmstride);
-      Core::FE::extract_my_values(ia_discolnp, eledisp, lm);
+      eledisp = Core::FE::extract_values(ia_discolnp, lm);
     }
 
     /*-----------------------------------------------------------------------------*

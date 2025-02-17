@@ -27,8 +27,7 @@ void Discret::Elements::So3PoroScatra<So3Ele, distype>::pre_evaluate(Teuchos::Pa
           discretization.get_state(2, "scalar");
 
       // extract local values of the global vectors
-      std::vector<double> myscalar(la[2].lm_.size());
-      Core::FE::extract_my_values(*scalarnp, myscalar, la[2].lm_);
+      std::vector<double> myscalar = Core::FE::extract_values(*scalarnp, la[2].lm_);
 
       if (So3Ele::num_material() < 2)
         FOUR_C_THROW("no second material defined for Wall poro element!");

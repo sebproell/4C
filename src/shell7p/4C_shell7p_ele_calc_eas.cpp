@@ -207,10 +207,8 @@ double Discret::Elements::Shell7pEleCalcEas<distype>::calculate_internal_energy(
       discretization.get_state("displacement");
   std::shared_ptr<const Core::LinAlg::Vector<double>> res =
       discretization.get_state("residual displacement");
-  std::vector<double> displacement(dof_index_array.size());
-  Core::FE::extract_my_values(*disp, displacement, dof_index_array);
-  std::vector<double> residual(dof_index_array.size());
-  Core::FE::extract_my_values(*res, residual, dof_index_array);
+  std::vector<double> displacement = Core::FE::extract_values(*disp, dof_index_array);
+  std::vector<double> residual = Core::FE::extract_values(*res, dof_index_array);
 
   // init scale factor for scaled director approach (SDC)
   const double condfac = shell_data_.sdc;
@@ -343,10 +341,8 @@ void Discret::Elements::Shell7pEleCalcEas<distype>::calculate_stresses_strains(
       discretization.get_state("displacement");
   std::shared_ptr<const Core::LinAlg::Vector<double>> res =
       discretization.get_state("residual displacement");
-  std::vector<double> displacement(dof_index_array.size());
-  Core::FE::extract_my_values(*disp, displacement, dof_index_array);
-  std::vector<double> residual(dof_index_array.size());
-  Core::FE::extract_my_values(*res, residual, dof_index_array);
+  std::vector<double> displacement = Core::FE::extract_values(*disp, dof_index_array);
+  std::vector<double> residual = Core::FE::extract_values(*res, dof_index_array);
 
   // init gauss point in thickness direction that will be modified via SDC
   double zeta = 0.0;
@@ -477,10 +473,8 @@ void Discret::Elements::Shell7pEleCalcEas<distype>::evaluate_nonlinear_force_sti
       discretization.get_state("displacement");
   std::shared_ptr<const Core::LinAlg::Vector<double>> res =
       discretization.get_state("residual displacement");
-  std::vector<double> displacement(dof_index_array.size());
-  Core::FE::extract_my_values(*disp, displacement, dof_index_array);
-  std::vector<double> residual(dof_index_array.size());
-  Core::FE::extract_my_values(*res, residual, dof_index_array);
+  std::vector<double> displacement = Core::FE::extract_values(*disp, dof_index_array);
+  std::vector<double> residual = Core::FE::extract_values(*res, dof_index_array);
 
   // init gauss point in thickness direction that will be modified via SDC
   double zeta = 0.0;
@@ -721,8 +715,7 @@ void Discret::Elements::Shell7pEleCalcEas<distype>::recover(Core::Elements::Elem
   std::shared_ptr<const Core::LinAlg::Vector<double>> res =
       discretization.get_state("residual displacement");
   if (res == nullptr) FOUR_C_THROW("Cannot get residual displacement state vector");
-  std::vector<double> residual(dof_index_array.size());
-  Core::FE::extract_my_values(*res, residual, dof_index_array);
+  std::vector<double> residual = Core::FE::extract_values(*res, dof_index_array);
 
   // get access to the interface parameters
   double step_length = interface_ptr.get_step_length();
@@ -778,8 +771,7 @@ void Discret::Elements::Shell7pEleCalcEas<distype>::update(Core::Elements::Eleme
   std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
       discretization.get_state("displacement");
   if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement' ");
-  std::vector<double> displacement(dof_index_array.size());
-  Core::FE::extract_my_values(*disp, displacement, dof_index_array);
+  std::vector<double> displacement = Core::FE::extract_values(*disp, dof_index_array);
 
   // No need to update alpha here. Update is called to copy states from t_{n+1} to
   // t_{n} after the time step and output Hence, there are no more Newton iterations that would

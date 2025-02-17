@@ -347,7 +347,7 @@ void Discret::Elements::Truss3Scatra::extract_elemental_variables(Core::Elements
     phi_ele.clear();
     auto phi = discretization.get_state(2, "MicroCon");
     if (phi == nullptr) FOUR_C_THROW("Cannot get state vector 'MicroCon'");
-    Core::FE::extract_my_values(*phi, phi_ele, la[2].lm_);
+    phi_ele = Core::FE::extract_values(*phi, la[2].lm_);
   }
   // get nodal phi from micro state
   else if (discretization.has_state(1, "scalarfield"))
@@ -356,7 +356,7 @@ void Discret::Elements::Truss3Scatra::extract_elemental_variables(Core::Elements
     phi_ele.clear();
     auto phi = discretization.get_state(1, "scalarfield");
     if (phi == nullptr) FOUR_C_THROW("Cannot get state vectors 'scalar'");
-    Core::FE::extract_my_values(*phi, phi_ele, la[1].lm_);
+    phi_ele = Core::FE::extract_values(*phi, la[1].lm_);
   }
   else
     FOUR_C_THROW("Cannot find state vector");

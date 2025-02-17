@@ -336,7 +336,7 @@ void ScaTra::LevelSet::Intersection::prepare_cut(const Core::Elements::Element* 
   lmowner.clear();
   lmstride.clear();
   ele->location_vector(scatradis, lm, lmowner, lmstride);
-  Core::FE::extract_my_values(phicol, phi_nodes, lm);
+  phi_nodes = Core::FE::extract_values(phicol, lm);
 
   // define nodal ID's
   node_ids.resize(numnode, 0.0);
