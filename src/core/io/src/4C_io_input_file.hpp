@@ -220,20 +220,24 @@ namespace Core::IO
      * associated with this object. Depending on the section size, the content might need to be
      * distributed from rank 0 to all other ranks. This happens automatically.
      */
-    FragmentIteratorRange in_section(const std::string& section_name);
+    FragmentIteratorRange in_section(const std::string& section_name) const;
 
     /**
      * This function is similar to in_section(), but it only returns the lines on rank 0 and
      * returns an empty range on all other ranks. This is useful for sections that might be huge and
      * are not processed on all ranks.
      */
-    FragmentIteratorRange in_section_rank_0_only(const std::string& section_name);
+    FragmentIteratorRange in_section_rank_0_only(const std::string& section_name) const;
 
     /**
-     * Match a whole section named @p section_name against the given @p spec.
+     * Match a whole section named @p section_name against the input file content. The results are
+     * stored in the @p container. If the section is not known, an exception is thrown. Note that
+     * you do not need to pass an InputSpec to this function, since the InputFile object already
+     * knows about the expected format of the section. Nevertheless, this function only makes sense
+     * for sections with a known InputSpec. Legacy string sections cannot use this function and must
+     * be processed with in_section() or in_section_rank_0_only().
      */
-    void match_section(
-        const std::string& section_name, const InputSpec& spec, InputParameterContainer& container);
+    void match_section(const std::string& section_name, InputParameterContainer& container) const;
 
     /**
      * Returns true if the input file contains a section with the given name.

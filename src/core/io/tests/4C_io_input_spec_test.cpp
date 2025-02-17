@@ -383,6 +383,7 @@ namespace
             },
             {
                 .required = false,
+                .defaultable = true,
             }),
         entry<std::string>("c"),
     });
@@ -596,6 +597,69 @@ namespace
     }
   }
 
+  TEST(InputSpecTest, NestedOneOfsWithCallback)
+  {
+    auto spec = one_of({
+        one_of({
+            entry<int>("a"),
+            entry<double>("b"),
+        }),
+        // This one_of has a callback and should not be flattened into the parent one_of.
+        one_of(
+            {
+                entry<std::string>("c"),
+                // This one_of will not be flattened into the parent that has a callback.
+                one_of({
+                    entry<double>("d"),
+                    // This one_of can be flattened into the parent one_of.
+                    one_of({
+                        entry<int>("e"),
+                        entry<std::string>("f"),
+                    }),
+                }),
+            },
+            [](InputParameterContainer& container, int index)
+            { container.add<int>("index", index); }),
+    });
+
+    std::ostringstream out;
+    ryml::Tree tree = init_yaml_tree_with_exceptions();
+    ryml::NodeRef root = tree.rootref();
+    YamlNodeRef yaml(root, "");
+    spec.emit_metadata(yaml);
+    out << tree;
+
+    std::string expected = R"(type: one_of
+description: 'one_of {a, b, one_of {c, one_of {d, e, f}}}'
+specs:
+  - name: a
+    type: int
+    required: true
+  - name: b
+    type: double
+    required: true
+  - type: one_of
+    description: 'one_of {c, one_of {d, e, f}}'
+    specs:
+      - name: c
+        type: string
+        required: true
+      - type: one_of
+        description: 'one_of {d, e, f}'
+        specs:
+          - name: d
+            type: double
+            required: true
+          - name: e
+            type: int
+            required: true
+          - name: f
+            type: string
+            required: true
+)";
+    EXPECT_EQ(out.str(), expected);
+  }
+
   TEST(InputSpecTest, PrintAsDat)
   {
     auto spec =
@@ -677,7 +741,6 @@ specs:
     size: 3
   - type: one_of
     description: 'one_of {all_of {b, c}, group}'
-    required: true
     specs:
       - type: all_of
         description: 'all_of {b, c}'
@@ -696,6 +759,7 @@ specs:
         type: group
         description: A group
         required: true
+        defaultable: false
         specs:
           - name: c
             type: string
@@ -714,6 +778,7 @@ specs:
   - name: group2
     type: group
     required: false
+    defaultable: false
     specs:
       - name: g
         type: int
@@ -795,6 +860,42 @@ specs:
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(
           spec.match(node, container), Core::Exception, "Expected entry 'a'");
+    }
+  }
+
+  TEST(InputSpecTest, MatchYamlGroup)
+  {
+    auto spec = group("group", {
+                                   entry<int>("a"),
+                                   entry<std::string>("b"),
+                               });
+
+    {
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+
+      root |= ryml::MAP;
+      root["group"] |= ryml::MAP;
+      root["group"]["a"] << 1;
+      root["group"]["b"] << "b";
+
+      {
+        SCOPED_TRACE("Match root node.");
+        ConstYamlNodeRef node(root, "");
+        InputParameterContainer container;
+        spec.match(node, container);
+        EXPECT_EQ(container.group("group").get<int>("a"), 1);
+        EXPECT_EQ(container.group("group").get<std::string>("b"), "b");
+      }
+
+      {
+        SCOPED_TRACE("Match group node.");
+        ConstYamlNodeRef node(root["group"], "");
+        InputParameterContainer container;
+        spec.match(node, container);
+        EXPECT_EQ(container.group("group").get<int>("a"), 1);
+        EXPECT_EQ(container.group("group").get<std::string>("b"), "b");
+      }
     }
   }
 
@@ -984,14 +1085,30 @@ specs:
         first_entry["a"] << 1;
         first_entry["b"] << "string";
       }
-      ConstYamlNodeRef node(root, "");
 
-      InputParameterContainer container;
-      spec.match(node, container);
-      const auto& list = container.get_list("list");
-      EXPECT_EQ(list.size(), 1);
-      EXPECT_EQ(list[0].get<int>("a"), 1);
-      EXPECT_EQ(list[0].get<std::string>("b"), "string");
+      {
+        SCOPED_TRACE("Match root node.");
+        ConstYamlNodeRef node(root, "");
+
+        InputParameterContainer container;
+        spec.match(node, container);
+        const auto& list = container.get_list("list");
+        EXPECT_EQ(list.size(), 1);
+        EXPECT_EQ(list[0].get<int>("a"), 1);
+        EXPECT_EQ(list[0].get<std::string>("b"), "string");
+      }
+
+      {
+        SCOPED_TRACE("Match list node.");
+        ConstYamlNodeRef node(root["list"], "");
+
+        InputParameterContainer container;
+        spec.match(node, container);
+        const auto& list = container.get_list("list");
+        EXPECT_EQ(list.size(), 1);
+        EXPECT_EQ(list[0].get<int>("a"), 1);
+        EXPECT_EQ(list[0].get<std::string>("b"), "string");
+      }
     }
 
     // unmatched node

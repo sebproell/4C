@@ -60,16 +60,6 @@ namespace Core::IO
   void print_dat(std::ostream& stream, const std::map<std::string, Core::IO::InputSpec>& map);
 
   /**
-   * Print the metadata for @p section_specs which contains the InputSpec which may be read for a
-   * specific section.
-   *
-   * The output is formatted as YAML. This information can be useful for additional tools that
-   * generate schema files or documentation.
-   */
-  void print_metadata_yaml(
-      std::ostream& stream, const std::map<std::string, InputSpec>& section_specs = {});
-
-  /**
    * Return true if the @p list contains any parameter that has whitespace in the key name.
    *
    * @note This is needed for the NOX parameters whose keywords and value have white spaces and
@@ -117,8 +107,8 @@ namespace Core::IO
    */
   std::pair<std::string, std::string> read_key_value(const std::string& line);
 
-  void read_parameters_in_section(InputFile& input, const std::string& section_name,
-      Teuchos::ParameterList& list, const InputSpec& spec);
+  void read_parameters_in_section(
+      InputFile& input, const std::string& section_name, Teuchos::ParameterList& list);
 
   /**
    * Read a node-design topology section. This is a collective call that propagates data that

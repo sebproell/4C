@@ -635,13 +635,22 @@ bool Core::IO::InputSpecBuilders::Internal::GroupSpec::match(ConstYamlNodeRef no
   FOUR_C_ASSERT(node.node.is_map(), "Internal error: group node must be a map.");
   const auto group_name = ryml::to_csubstr(name);
 
-  const bool group_exists = node.node.has_child(group_name) && node.node[group_name].is_map();
-  if (!group_exists)
+  const bool group_node_is_input = node.node.has_key() && (node.node.key() == group_name);
+  const bool group_exists_nested =
+      node.node.has_child(group_name) && node.node[group_name].is_map();
+
+  if (!group_exists_nested && !group_node_is_input)
   {
-    return !data.required;
+    if (data.defaultable)
+    {
+      match_entry.state = IO::Internal::MatchEntry::State::defaulted;
+      set_default_value(container);
+    }
+    return !data.required.value();
   }
 
-  auto group_node = node.wrap(node.node[group_name]);
+  auto group_node = group_node_is_input ? node : node.wrap(node.node[group_name]);
+
   // Matching the key of the group is at least a partial match.
   match_entry.state = IO::Internal::MatchEntry::State::partial;
   match_entry.matched_node = group_node.node.id();
@@ -697,7 +706,8 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::emit_metadata(ryml::NodeR
   {
     node["description"] << data.description;
   }
-  emit_value_as_yaml(node["required"], data.required);
+  emit_value_as_yaml(node["required"], data.required.value());
+  emit_value_as_yaml(node["defaultable"], data.defaultable);
   node["specs"] |= ryml::SEQ;
   {
     for (const auto& spec : specs)
@@ -729,14 +739,14 @@ bool InputSpecBuilders::Internal::GroupSpec::emit(YamlNodeRef node,
       }
     }
     // If no children were added, remove the group node as well, unless it is required.
-    if (!data.required && group_node.num_children() == 0)
+    if (!data.required.value() && group_node.num_children() == 0)
     {
       checkpoint.restore();
     }
     return true;
   }
   // If group is not present, success depends on whether it is required.
-  return !data.required;
+  return !data.required.value();
 }
 
 
@@ -810,7 +820,7 @@ void Core::IO::InputSpecBuilders::Internal::AllOfSpec::emit_metadata(ryml::NodeR
   {
     node["description"] << data.description;
   }
-  emit_value_as_yaml(node["required"], data.required);
+  emit_value_as_yaml(node["required"], data.required.value());
   node["specs"] |= ryml::SEQ;
   {
     for (const auto& spec : specs)
@@ -969,7 +979,6 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::emit_metadata(ryml::NodeR
   {
     node["description"] << data.description;
   }
-  emit_value_as_yaml(node["required"], data.required);
   node["specs"] |= ryml::SEQ;
   for (const auto& spec : specs)
   {
@@ -1023,16 +1032,18 @@ bool Core::IO::InputSpecBuilders::Internal::ListSpec::match(ConstYamlNodeRef nod
 {
   match_entry.type = IO::Internal::MatchEntry::Type::list;
   FOUR_C_ASSERT(!name.empty(), "Internal error: list name must not be empty.");
-  FOUR_C_ASSERT(node.node.is_map(), "Internal error: list node must be a map.");
   const auto list_name = ryml::to_csubstr(name);
 
-  const bool list_exists = node.node.has_child(list_name) && node.node[list_name].is_seq();
-  if (!list_exists)
+  const bool list_node_is_input =
+      node.node.has_key() && (node.node.key() == list_name) && node.node.is_seq();
+  const bool list_exists_nested =
+      node.node.is_map() && node.node.has_child(list_name) && node.node[list_name].is_seq();
+  if (!list_exists_nested && !list_node_is_input)
   {
     return !data.required;
   }
 
-  auto list_node = node.wrap(node.node[list_name]);
+  auto list_node = list_node_is_input ? node : node.wrap(node.node[list_name]);
   // Matching the key is at least a partial match.
   match_entry.state = IO::Internal::MatchEntry::State::partial;
   match_entry.matched_node = list_node.node.id();
@@ -1141,9 +1152,11 @@ bool InputSpecBuilders::Internal::ListSpec::emit(YamlNodeRef node,
 namespace
 {
   // Nesting all_of or one_of within another spec of that same type is the same as pulling the
-  // nested specs up into the parent spec.
+  // nested specs up into the parent spec. An additional predicate can be used to filter the nested
+  // specs that may be flattened.
   template <typename SpecType>
-  std::vector<Core::IO::InputSpec> flatten_nested(std::vector<Core::IO::InputSpec> specs)
+  std::vector<Core::IO::InputSpec> flatten_nested(std::vector<Core::IO::InputSpec> specs,
+      std::function<bool(const SpecType&)> predicate = nullptr)
   {
     std::vector<Core::IO::InputSpec> flattened_specs;
     for (auto&& spec : specs)
@@ -1151,7 +1164,7 @@ namespace
       if (auto* nested =
               dynamic_cast<Core::IO::Internal::InputSpecTypeErasedImplementation<SpecType>*>(
                   &spec.impl());
-          nested)
+          nested && (!predicate || predicate(nested->wrapped)))
       {
         for (auto&& sub_spec : nested->wrapped.specs)
         {
@@ -1182,11 +1195,27 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
 
   assert_unique_or_empty_names(flattened_specs);
 
+  if (!data.required.has_value())
+  {
+    data.required = !data.defaultable;
+  }
+  if (data.required.value() && data.defaultable)
+  {
+    FOUR_C_THROW("Group '%s': a group cannot be both required and defaultable.", name.c_str());
+  }
+  if (data.defaultable && !all_have_default_values(flattened_specs))
+  {
+    FOUR_C_THROW(
+        "Group '%s': a group cannot be defaultable if not all of its child specs have default "
+        "values.",
+        name.c_str());
+  }
+
   IO::Internal::InputSpecTypeErasedBase::CommonData common_data{
       .name = name,
       .description = data.description,
-      .required = data.required,
-      .has_default_value = all_have_default_values(flattened_specs),
+      .required = data.required.value(),
+      .has_default_value = data.defaultable,
       .n_specs = count_contained_specs(flattened_specs) + 1,
   };
 
@@ -1234,7 +1263,12 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::all_of(std::vector<InputSpec> s
 Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> specs,
     std::function<void(InputParameterContainer& container, std::size_t index)> on_parse_callback)
 {
-  auto flattened_specs = flatten_nested<Internal::OneOfSpec>(std::move(specs));
+  // We can only flatten the specs if there is no custom on_parse_callback, either for this
+  // one_of or any nested one_of.
+  auto flattened_specs = on_parse_callback ? specs
+                                           : flatten_nested<Internal::OneOfSpec>(std::move(specs),
+                                                 [](const Internal::OneOfSpec& one_of_spec)
+                                                 { return !one_of_spec.on_parse_callback; });
 
   FOUR_C_ASSERT_ALWAYS(!flattened_specs.empty(), "A `one_of` must contain entries.");
 
