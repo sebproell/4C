@@ -259,10 +259,19 @@ namespace Core::IO
 
       bool is_section_known(const std::string& section_name) const
       {
-        return valid_sections_.find(section_name) != valid_sections_.end() ||
+        // The input for functions might introduce an arbitrary number of sections called
+        // FUNCT<n>, where n is a number. As long as this input is not restructured, we need this
+        // manual hack.
+        const bool is_hacky_function_section =
+            section_name.starts_with("FUNCT") &&
+            std::all_of(section_name.begin() + 5, section_name.end(),
+                [](const char c) { return std::isdigit(c); });
+
+        return is_hacky_function_section ||
+               (valid_sections_.find(section_name) != valid_sections_.end()) ||
                std::ranges::any_of(
                    legacy_section_names_, [&](const auto& name) { return name == section_name; }) ||
-               section_name == description_section_name;
+               (section_name == description_section_name);
       }
     };
 

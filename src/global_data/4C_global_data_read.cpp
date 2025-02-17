@@ -83,7 +83,8 @@ namespace
       auto valid_functions = functionmanager.valid_function_lines();
 
       // TODO Move the function number inside the general function section to stop relying
-      // on explicit function numbers.
+      // on explicit function numbers. The magic number 30 is equal to the highest number appearing
+      // in the test files.
       for (unsigned i : std::views::iota(1, 30))
       {
         section_specs["FUNCT" + std::to_string(i)] = valid_functions;
