@@ -154,10 +154,8 @@ int Discret::Elements::Wall1::evaluate(Teuchos::ParameterList& params,
           discretization.get_state("residual displacement");
       if (disp == nullptr || res == nullptr)
         FOUR_C_THROW("Cannot get state vectors 'displacement' and/or residual");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
 
       // special case: geometrically linear
       if (kintype_ == Inpar::Solid::KinemType::linear)
@@ -186,10 +184,8 @@ int Discret::Elements::Wall1::evaluate(Teuchos::ParameterList& params,
           discretization.get_state("residual displacement");
       if (disp == nullptr || res == nullptr)
         FOUR_C_THROW("Cannot get state vectors 'displacement' and/or residual");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
 
       // special case: geometrically linear
       if (kintype_ == Inpar::Solid::KinemType::linear)
@@ -215,10 +211,8 @@ int Discret::Elements::Wall1::evaluate(Teuchos::ParameterList& params,
           discretization.get_state("residual displacement");
       if (disp == nullptr || res == nullptr)
         FOUR_C_THROW("Cannot get state vectors 'displacement' and/or residual");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
       // create a dummy element matrix (initialised to zero)
       // This matrix is not utterly useless. It is used to apply EAS-stuff in a linearised manner
       // onto the internal force vector.
@@ -252,10 +246,8 @@ int Discret::Elements::Wall1::evaluate(Teuchos::ParameterList& params,
             "Cannot get state vectors \"displacement\" "
             "and/or \"residual displacement\"");
       }
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
       w1_recover(lm, mydisp, myres);
       /* ToDo Probably we have to recover the history information of some special
        * materials as well.                                 hiermeier 04/2016  */
@@ -321,10 +313,8 @@ int Discret::Elements::Wall1::evaluate(Teuchos::ParameterList& params,
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
       if (stressdata == nullptr) FOUR_C_THROW("Cannot get stress 'data'");
       if (straindata == nullptr) FOUR_C_THROW("Cannot get strain 'data'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
       const Core::FE::IntegrationPoints2D intpoints(gaussrule_);
       Core::LinAlg::SerialDenseMatrix stress(intpoints.nquad, Wall1::numstr_);
       Core::LinAlg::SerialDenseMatrix strain(intpoints.nquad, Wall1::numstr_);
@@ -362,8 +352,7 @@ int Discret::Elements::Wall1::evaluate(Teuchos::ParameterList& params,
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
       // determine energies
       energy(params, lm, mydisp, &elevec1, actmat);

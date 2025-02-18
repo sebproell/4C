@@ -312,8 +312,7 @@ void Arteries::Utils::ArtWriteGnuplot::write(Core::FE::Discretization& discret,
 
     // get the degrees of freedom
     std::shared_ptr<const Core::LinAlg::Vector<double>> qanp = discret.get_state("qanp");
-    std::vector<double> myqanp(lm.size());
-    Core::FE::extract_my_values(*qanp, myqanp, lm);
+    std::vector<double> myqanp = Core::FE::extract_values(*qanp, lm);
 
     // get the current simulation time
     time = params.get<double>("total time");

@@ -161,7 +161,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
     std::shared_ptr<const Core::LinAlg::Vector<double>> tempnp =
         discretization.get_state(0, "temperature");
     if (tempnp == nullptr) FOUR_C_THROW("Cannot get state vector 'tempnp'");
-    Core::FE::extract_my_values(*tempnp, mytempnp, la[0].lm_);
+    mytempnp = Core::FE::extract_values(*tempnp, la[0].lm_);
     // build the element temperature
     Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> etempn(mytempnp.data(), true);  // view only!
     etempn_.update(etempn);                                                        // copy
@@ -173,7 +173,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
     std::shared_ptr<const Core::LinAlg::Vector<double>> tempn =
         discretization.get_state(0, "last temperature");
     if (tempn == nullptr) FOUR_C_THROW("Cannot get state vector 'tempn'");
-    Core::FE::extract_my_values(*tempn, mytempn, la[0].lm_);
+    mytempn = Core::FE::extract_values(*tempn, la[0].lm_);
     // build the element temperature
     Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> etemp(mytempn.data(), true);  // view only!
     etemp_.update(etemp);                                                        // copy
@@ -388,7 +388,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
           if (ratem == nullptr) FOUR_C_THROW("Cannot get mid-temprate state vector for fcap");
           std::vector<double> myratem((la[0].lm_).size());
           // fill the vector myratem with the global values of ratem
-          Core::FE::extract_my_values(*ratem, myratem, la[0].lm_);
+          myratem = Core::FE::extract_values(*ratem, la[0].lm_);
           // build the element mid-temperature rates
           Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> eratem(
               myratem.data(), true);  // view only!
@@ -650,7 +650,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate_neumann(const Core::Element
     std::shared_ptr<const Core::LinAlg::Vector<double>> tempnp =
         discretization.get_state("temperature");
     if (tempnp == nullptr) FOUR_C_THROW("Cannot get state vector 'tempnp'");
-    Core::FE::extract_my_values(*tempnp, mytempnp, lm);
+    mytempnp = Core::FE::extract_values(*tempnp, lm);
     Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> etemp(mytempnp.data(), true);  // view only!
     etempn_.update(etemp);                                                        // copy
   }
@@ -2665,14 +2665,14 @@ void Discret::Elements::TemperImpl<distype>::extract_disp_vel(
         discretization.get_state(1, "displacement");
     if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
     // extract the displacements
-    Core::FE::extract_my_values(*disp, mydisp, la[1].lm_);
+    mydisp = Core::FE::extract_values(*disp, la[1].lm_);
 
     // get the velocities
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel =
         discretization.get_state(1, "velocity");
     if (vel == nullptr) FOUR_C_THROW("Cannot get state vectors 'velocity'");
     // extract the displacements
-    Core::FE::extract_my_values(*vel, myvel, la[1].lm_);
+    myvel = Core::FE::extract_values(*vel, la[1].lm_);
   }
 }
 

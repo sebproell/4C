@@ -463,8 +463,7 @@ void Solid::MonitorDbc::get_area(double area[], const Core::Conditions::Conditio
 
     for (unsigned i = 0; i < num_fnodes; ++i) discret.dof(fele, fnodes[i], fele_dofs);
 
-    std::vector<double> mydispn;
-    Core::FE::extract_my_values(dispn_col, mydispn, fele_dofs);
+    std::vector<double> mydispn = Core::FE::extract_values(dispn_col, fele_dofs);
 
     xyze_ref.reshape(DIM, num_fnodes);
     xyze_curr.reshape(DIM, num_fnodes);
@@ -562,8 +561,7 @@ double Solid::MonitorDbc::get_reaction_moment(Core::LinAlg::Matrix<DIM, 1>& rmom
 
     for (unsigned i = 0; i < DIM; ++i) node_gid[i] = discret_ptr_->dof(node, i);
 
-    std::vector<double> mydisp;
-    Core::FE::extract_my_values(*dispn, mydisp, node_gid);
+    std::vector<double> mydisp = Core::FE::extract_values(*dispn, node_gid);
     for (unsigned i = 0; i < DIM; ++i) node_position(i) = node->x()[i] + mydisp[i];
 
     // Get the reaction force at this node. This force will only contain non-zero values at the DOFs

@@ -49,10 +49,11 @@ void Discret::Elements::SolidPoroPressureBasedEleCalc<celltype>::evaluate_nonlin
   if (force_vector != nullptr) force.emplace(*force_vector, true);
 
   // get primary variables of multiphase porous medium flow
-  std::vector<double> fluidmultiphase_ephi(la[1].size());
   std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
       discretization.get_state(1, "porofluid");
-  Core::FE::extract_my_values(*matrix_state, fluidmultiphase_ephi, la[1].lm_);
+  const std::vector<double> fluidmultiphase_ephi =
+      Core::FE::extract_values(*matrix_state, la[1].lm_);
+
 
   // Initialize variables of multiphase porous medium flow
   const int nummultifluiddofpernode = porofluidmat.num_mat();
@@ -172,10 +173,9 @@ void Discret::Elements::SolidPoroPressureBasedEleCalc<
     Core::LinAlg::SerialDenseMatrix& stiffness_matrix)
 {
   // get primary variables of multiphase porous medium flow
-  std::vector<double> fluidmultiphase_ephi(la[1].size());
   std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
       discretization.get_state(1, "porofluid");
-  Core::FE::extract_my_values(*matrix_state, fluidmultiphase_ephi, la[1].lm_);
+  std::vector<double> fluidmultiphase_ephi = Core::FE::extract_values(*matrix_state, la[1].lm_);
 
   // Initialize variables of multiphase porous medium flow
   const int nummultifluiddofpernode = porofluidmat.num_mat();

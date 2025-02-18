@@ -1898,13 +1898,12 @@ bool XFEM::XFluidTimeInt::within_space_time_side(
     Core::LinAlg::Matrix<3, 1> x_new(node.x().data());
 
     std::vector<int> lm;
-    std::vector<double> mydisp_old;
     std::vector<double> mydisp_new;
 
     cutter_dis->dof(&node, lm);
 
-    Core::FE::extract_my_values(*idisp_old, mydisp_old, lm);
-    Core::FE::extract_my_values(*idisp_new, mydisp_new, lm);
+    std::vector<double> mydisp_old = Core::FE::extract_values(*idisp_old, lm);
+    mydisp_new = Core::FE::extract_values(*idisp_new, lm);
 
     // add displacements
     x_old(0) += mydisp_old.at(0);

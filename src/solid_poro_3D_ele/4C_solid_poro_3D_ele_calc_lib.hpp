@@ -88,8 +88,7 @@ namespace Discret::Elements
     const int numdofpernode = discretization.num_dof(dofset, ele.nodes()[0]);
 
     // extract local values of the global vectors
-    std::vector<double> mymatrix(lm.size());
-    Core::FE::extract_my_values(*matrix_state, mymatrix, lm);
+    const std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
 
     if (numdofpernode == Internal::num_dim<celltype> + 1)
     {
@@ -388,8 +387,8 @@ namespace Discret::Elements
   inline FluidVariables<celltype> get_fluid_variables(const Core::Elements::Element& ele,
       const Core::FE::Discretization& discretization, const Core::Elements::LocationArray& la)
   {
-    std::vector<double> fluid_ephi(la[1].lm_.size());
-    Core::FE::extract_my_values(*(discretization.get_state(1, "fluidvel")), fluid_ephi, la[1].lm_);
+    const std::vector<double> fluid_ephi =
+        Core::FE::extract_values(*(discretization.get_state(1, "fluidvel")), la[1].lm_);
 
     FluidVariables<celltype> fluid_variables{};
     for (unsigned int inode = 0; inode < Internal::num_nodes<celltype>; ++inode)  // number of nodes

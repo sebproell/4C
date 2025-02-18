@@ -148,8 +148,7 @@ int Discret::Elements::ScaTraEleBoundaryCalcPoro<distype, probdim>::evaluate_act
 
         if (disp != nullptr)
         {
-          std::vector<double> mydisp(la[ndsdisp].lm_.size());
-          Core::FE::extract_my_values(*disp, mydisp, la[ndsdisp].lm_);
+          std::vector<double> mydisp = Core::FE::extract_values(*disp, la[ndsdisp].lm_);
 
           for (int inode = 0; inode < nen_; ++inode)  // number of nodes
             eporosity_(inode, 0) = mydisp[nsd_ + (inode * (nsd_ele_ + 2))];

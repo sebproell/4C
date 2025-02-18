@@ -60,10 +60,9 @@ void CONTACT::LagrangeStrategyTsi::set_state(
         {
           CONTACT::Node* node = dynamic_cast<CONTACT::Node*>(idiscr.l_col_node(i));
           if (node == nullptr) FOUR_C_THROW("cast failed");
-          std::vector<double> mytemp(1);
           std::vector<int> lm(1, node->dofs()[0]);
 
-          Core::FE::extract_my_values(global, mytemp, lm);
+          std::vector<double> mytemp = Core::FE::extract_values(global, lm);
           if (node->has_tsi_data())  // in case the interface has not been initialized yet
             node->tsi_data().temp() = mytemp[0];
         }
@@ -83,8 +82,7 @@ void CONTACT::LagrangeStrategyTsi::set_state(
         {
           CONTACT::Node* node = dynamic_cast<CONTACT::Node*>(idiscr.l_col_node(i));
           std::vector<int> lm(1, node->dofs()[0]);
-          std::vector<double> myThermoLM(1, 0.);
-          Core::FE::extract_my_values(global, myThermoLM, lm);
+          std::vector<double> myThermoLM = Core::FE::extract_values(global, lm);
           node->tsi_data().thermo_lm() = myThermoLM[0];
         }
       }

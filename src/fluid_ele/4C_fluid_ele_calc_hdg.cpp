@@ -115,7 +115,7 @@ int Discret::Elements::FluidEleCalcHDG<distype>::evaluate(Discret::Elements::Flu
     std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
         discretization.get_state(1, "forcing");
     std::vector<int> localDofs = discretization.dof(1, ele);
-    Core::FE::extract_my_values(*matrix_state, interiorebofoaf_, localDofs);
+    interiorebofoaf_ = Core::FE::extract_values(*matrix_state, localDofs);
   }
 
   // interior correction term for the weakly compressible benchmark if applicable
@@ -191,15 +191,15 @@ void Discret::Elements::FluidEleCalcHDG<distype>::read_global_vectors(
   FOUR_C_ASSERT(lm.size() == trace_val_.size(), "Internal error");
   std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
       discretization.get_state("velaf");
-  Core::FE::extract_my_values(*matrix_state, trace_val_, lm);
+  trace_val_ = Core::FE::extract_values(*matrix_state, lm);
 
   // read the interior values from solution vector
   matrix_state = discretization.get_state(1, "intvelaf");
   std::vector<int> localDofs = discretization.dof(1, &ele);
-  Core::FE::extract_my_values(*matrix_state, interior_val_, localDofs);
+  interior_val_ = Core::FE::extract_values(*matrix_state, localDofs);
 
   matrix_state = discretization.get_state(1, "intaccam");
-  Core::FE::extract_my_values(*matrix_state, interior_acc_, localDofs);
+  interior_acc_ = Core::FE::extract_values(*matrix_state, localDofs);
 }
 
 

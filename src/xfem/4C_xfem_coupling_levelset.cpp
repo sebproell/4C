@@ -562,8 +562,7 @@ void XFEM::LevelSetCoupling::map_cutter_to_bg_vector(Core::FE::Discretization& s
       if (static_cast<int>(lm_target.size()) != 1)
         FOUR_C_THROW("we expect a unique dof per node here!");
 
-      std::vector<double> val_source;
-      Core::FE::extract_my_values(source_vec_dofbased, val_source, lm_source);
+      std::vector<double> val_source = Core::FE::extract_values(source_vec_dofbased, lm_source);
 
       // set to a dofrowmap based vector!
       const int lid_target = target_vec_dofbased.Map().LID(lm_target[0]);
@@ -590,8 +589,7 @@ XFEM::LevelSetCoupling::get_level_set_field_as_node_row_vector()
     std::vector<int> lm_source;
     bg_dis_->dof(bg_nds_phi_, node, lm_source);
 
-    std::vector<double> val_source;
-    Core::FE::extract_my_values(*phinp_, val_source, lm_source);
+    std::vector<double> val_source = Core::FE::extract_values(*phinp_, lm_source);
 
     if (val_source.size() != 1) FOUR_C_THROW("we expect only one dof");
 

@@ -119,8 +119,7 @@ void CONSTRAINTS::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<Interface,
   // Get the lambda GIDs of this pair.
   std::vector<int> lambda_row;
   get_mortar_gid(mortar_manager, this, Mortar::n_dof_, &lambda_row);
-  std::vector<double> lambda_pair;
-  Core::FE::extract_my_values(*lambda, lambda_pair, lambda_row);
+  std::vector<double> lambda_pair = Core::FE::extract_values(*lambda, lambda_row);
   for (unsigned int i_dof = 0; i_dof < Mortar::n_dof_; i_dof++)
     q_lambda(i_dof) = lambda_pair[i_dof];
 

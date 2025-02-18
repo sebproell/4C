@@ -381,7 +381,7 @@ void ScaTra::LevelSetAlgorithm::apply_contact_point_boundary_condition()
               std::vector<double> myconvel(lmvel.size());
 
               // extract local values from global vector
-              Core::FE::extract_my_values(*convel, myconvel, lmvel);
+              myconvel = Core::FE::extract_values(*convel, lmvel);
 
               // determine number of velocity related dofs per node
               const int numveldofpernode = lmvel.size() / nen;

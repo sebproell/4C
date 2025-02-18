@@ -1048,12 +1048,10 @@ void XFEM::Utils::evaluate_stateat_gp(const Core::Elements::Element* sele,
     const std::string& state, Core::LinAlg::Matrix<3, 1>& vel_s)
 {
   vel_s.clear();
-
-  std::vector<double> ivel;
   Core::Elements::LocationArray las(1);
   sele->location_vector(discret, las, false);
   std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state = discret.get_state(state);
-  Core::FE::extract_my_values(*matrix_state, ivel, las[0].lm_);
+  std::vector<double> ivel = Core::FE::extract_values(*matrix_state, las[0].lm_);
 
   // 4 // evaluate slave velocity at guasspoint
   if (sele->shape() == Core::FE::CellType::quad4)

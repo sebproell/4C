@@ -3088,8 +3088,7 @@ namespace FLD
         FOUR_C_THROW("Cannot get state vector 'dispnp'");
       }
 
-      std::vector<double> mydispnp(lm.size());
-      Core::FE::extract_my_values(*dispnp,mydispnp,lm);
+      std::vector<double> mydispnp = Core::FE::extract_values(*dispnp, lm);
 
       // extract velocity part from "mygridvelaf" and get
       // set element displacements
@@ -3144,8 +3143,7 @@ namespace FLD
         FOUR_C_THROW("Cannot get state vector 'dispnp'");
       }
 
-      std::vector<double> mydispnp(lm.size());
-      Core::FE::extract_my_values(*dispnp, mydispnp, lm);
+      std::vector<double> mydispnp = Core::FE::extract_values(*dispnp, lm);
 
       // extract velocity part from "mygridvelaf" and get
       // set element displacements

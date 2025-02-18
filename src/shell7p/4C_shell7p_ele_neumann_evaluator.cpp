@@ -169,8 +169,7 @@ void Discret::Elements::Shell::evaluate_neumann(Core::Elements::Element& ele,
         // no linearization needed for load in last converged configuration
         loadlin = false;
         const Core::LinAlg::Vector<double>& disp = *discretization.get_state("displacement");
-        std::vector<double> displacements(dof_index_array.size());
-        Core::FE::extract_my_values(disp, displacements, dof_index_array);
+        std::vector<double> displacements = Core::FE::extract_values(disp, dof_index_array);
 
         spatial_configuration<distype>(x_curr, x_refe, displacements, 0);
 
@@ -180,8 +179,7 @@ void Discret::Elements::Shell::evaluate_neumann(Core::Elements::Element& ele,
       case config_spatial:
       {
         const Core::LinAlg::Vector<double>& disp = *discretization.get_state("displacement new");
-        std::vector<double> displacements(dof_index_array.size());
-        Core::FE::extract_my_values(disp, displacements, dof_index_array);
+        std::vector<double> displacements = Core::FE::extract_values(disp, dof_index_array);
 
         spatial_configuration<distype>(x_curr, x_refe, displacements, 0);
 

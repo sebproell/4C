@@ -1128,8 +1128,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::correction_
   // in this function we check if the actual nodes have a dirichlet value
   std::shared_ptr<const Core::LinAlg::Vector<double>> dctoggle =
       discretization.get_state("dctoggle");
-  std::vector<double> mydctoggle(lm.size());
-  Core::FE::extract_my_values(*dctoggle, mydctoggle, lm);
+  std::vector<double> mydctoggle = Core::FE::extract_values(*dctoggle, lm);
 
   double val = 0.0;
   for (unsigned vi = 0; vi < nen_; ++vi)

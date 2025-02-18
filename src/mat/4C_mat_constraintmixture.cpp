@@ -3116,8 +3116,7 @@ void Mat::constraint_mixture_output_to_gmsh(
     std::vector<int> lmstride;
     actele->location_vector(dis, lm, lmowner, lmstride);
     std::shared_ptr<const Core::LinAlg::Vector<double>> disp = dis.get_state("displacement");
-    std::vector<double> mydisp(lm.size(), 0);
-    Core::FE::extract_my_values(*disp, mydisp, lm);
+    std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
     std::shared_ptr<Core::Mat::Material> mat = actele->material();
     Mat::ConstraintMixture* grow = static_cast<Mat::ConstraintMixture*>(mat.get());

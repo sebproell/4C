@@ -154,10 +154,8 @@ int Discret::Elements::SoTet4::evaluate(Teuchos::ParameterList& params,
           discretization.get_state("residual displacement");
       if (disp == nullptr || res == nullptr)
         FOUR_C_THROW("Cannot get state vectors 'displacement' and/or residual");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
       //      Core::LinAlg::Matrix<NUMDOF_SOTET4,NUMDOF_SOTET4>* matptr = nullptr;
       //      if (elemat1.is_initialized()) matptr = &elemat1;
 
@@ -180,10 +178,8 @@ int Discret::Elements::SoTet4::evaluate(Teuchos::ParameterList& params,
           discretization.get_state("residual displacement");
       if (disp == nullptr || res == nullptr)
         FOUR_C_THROW("Cannot get state vectors 'displacement' and/or residual");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
       std::vector<double> mydispmat(lm.size(), 0.0);
       // create a dummy element matrix to apply linearised EAS-stuff onto
       Core::LinAlg::Matrix<NUMDOF_SOTET4, NUMDOF_SOTET4> myemat(true);  // to zero
@@ -214,14 +210,10 @@ int Discret::Elements::SoTet4::evaluate(Teuchos::ParameterList& params,
         FOUR_C_THROW("Cannot get state vectors 'displacement' and/or residual");
       if (vel == nullptr) FOUR_C_THROW("Cannot get state vectors 'velocity'");
       if (acc == nullptr) FOUR_C_THROW("Cannot get state vectors 'acceleration'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-      std::vector<double> myvel(lm.size());
-      Core::FE::extract_my_values(*vel, myvel, lm);
-      std::vector<double> myacc(lm.size());
-      Core::FE::extract_my_values(*acc, myacc, lm);
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+      std::vector<double> myvel = Core::FE::extract_values(*vel, lm);
+      std::vector<double> myacc = Core::FE::extract_values(*acc, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
 
       std::vector<double> mydispmat(lm.size(), 0.0);
 
@@ -248,10 +240,8 @@ int Discret::Elements::SoTet4::evaluate(Teuchos::ParameterList& params,
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
       if (stressdata == nullptr) FOUR_C_THROW("Cannot get 'stress' data");
       if (straindata == nullptr) FOUR_C_THROW("Cannot get 'strain' data");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
       Core::LinAlg::Matrix<NUMGPT_SOTET4, Mat::NUM_STRESS_3D> stress(true);  // set to zero
       Core::LinAlg::Matrix<NUMGPT_SOTET4, Mat::NUM_STRESS_3D> strain(true);
       auto iostress = params.get<Inpar::Solid::StressType>("iostress", Inpar::Solid::stress_none);
@@ -285,8 +275,7 @@ int Discret::Elements::SoTet4::evaluate(Teuchos::ParameterList& params,
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get displacement state");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
       switch (pstype_)
       {
@@ -344,8 +333,7 @@ int Discret::Elements::SoTet4::evaluate(Teuchos::ParameterList& params,
       if (disp == nullptr) FOUR_C_THROW("Cannot get state displacement vector");
 
       // get displacements of this element
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
       /* ============================================================================*/
       // element geometry
@@ -514,8 +502,7 @@ int Discret::Elements::SoTet4::evaluate(Teuchos::ParameterList& params,
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
       if (solid_material()->uses_extended_update())
       {
@@ -594,10 +581,8 @@ int Discret::Elements::SoTet4::evaluate(Teuchos::ParameterList& params,
                 "gpstrainmap", nullptr);
         if (gpstrainmap == nullptr)
           FOUR_C_THROW("no gp strain map available for writing gpstrains");
-        std::vector<double> mydisp(lm.size());
-        Core::FE::extract_my_values(*disp, mydisp, lm);
-        std::vector<double> myres(lm.size());
-        Core::FE::extract_my_values(*res, myres, lm);
+        std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+        std::vector<double> myres = Core::FE::extract_values(*res, lm);
         Core::LinAlg::Matrix<NUMGPT_SOTET4, Mat::NUM_STRESS_3D> stress;
         Core::LinAlg::Matrix<NUMGPT_SOTET4, Mat::NUM_STRESS_3D> strain;
         auto iostress = params.get<Inpar::Solid::StressType>("iostress", Inpar::Solid::stress_none);

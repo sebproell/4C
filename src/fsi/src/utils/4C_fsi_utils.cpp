@@ -412,10 +412,9 @@ std::map<int, Core::LinAlg::Matrix<3, 1>> FSI::Utils::SlideAleUtils::current_str
         lm.reserve(3);
         // extract global dof ids
         interfacedis.dof(node, lm);
-        std::vector<double> mydisp(3);
         Core::LinAlg::Matrix<3, 1> currpos;
 
-        Core::FE::extract_my_values(reddisp, mydisp, lm);
+        std::vector<double> mydisp = Core::FE::extract_values(reddisp, lm);
 
         for (int a = 0; a < 3; a++)
         {

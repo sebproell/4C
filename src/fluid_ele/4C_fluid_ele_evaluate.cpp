@@ -163,10 +163,8 @@ int Discret::Elements::Fluid::evaluate(Teuchos::ParameterList& params,
             FOUR_C_THROW("Cannot get state vectors 'velnp' and/or 'scanp'");
 
           // extract local values from the global vectors
-          std::vector<double> myvelpre(lm.size());
-          std::vector<double> mysca(lm.size());
-          Core::FE::extract_my_values(*velnp, myvelpre, lm);
-          Core::FE::extract_my_values(*scanp, mysca, lm);
+          std::vector<double> myvelpre = Core::FE::extract_values(*velnp, lm);
+          std::vector<double> mysca = Core::FE::extract_values(*scanp, lm);
 
           // integrate mean values
           const Core::FE::CellType distype = this->shape();
@@ -222,8 +220,8 @@ int Discret::Elements::Fluid::evaluate(Teuchos::ParameterList& params,
           // extract local values from global vectors
           std::vector<double> myvelpre(lm.size());
           std::vector<double> mysca(lm.size());
-          Core::FE::extract_my_values(*velnp, myvelpre, lm);
-          Core::FE::extract_my_values(*scanp, mysca, lm);
+          myvelpre = Core::FE::extract_values(*velnp, lm);
+          mysca = Core::FE::extract_values(*scanp, lm);
 
           // get factor for equation of state
           const double eosfac = params.get<double>("eos factor", 100000.0 / 287.0);
@@ -283,8 +281,7 @@ int Discret::Elements::Fluid::evaluate(Teuchos::ParameterList& params,
             discretization.get_state("u and p (trial)");
         if (vel == nullptr) FOUR_C_THROW("Cannot get state vectors 'vel'");
         // extract local values from the global vectors
-        std::vector<double> myvel(lm.size());
-        Core::FE::extract_my_values(*vel, myvel, lm);
+        std::vector<double> myvel = Core::FE::extract_values(*vel, lm);
 
         std::vector<double> tmp_temp(lm.size());
         std::vector<double> mytemp(nen);
@@ -297,7 +294,7 @@ int Discret::Elements::Fluid::evaluate(Teuchos::ParameterList& params,
           std::shared_ptr<const Core::LinAlg::Vector<double>> temp =
               discretization.get_state("T (trial)");
           if (temp == nullptr) FOUR_C_THROW("Cannot get state vectors 'temp'");
-          Core::FE::extract_my_values(*temp, tmp_temp, lm);
+          tmp_temp = Core::FE::extract_values(*temp, lm);
 
           for (int i = 0; i < nen; i++) mytemp[i] = tmp_temp[nsd + (i * (nsd + 1))];
 
@@ -543,10 +540,8 @@ int Discret::Elements::Fluid::evaluate(Teuchos::ParameterList& params,
         }
 
         // extract local values from the global vectors
-        std::vector<double> myvel(lm.size());
-        Core::FE::extract_my_values(*velnp, myvel, lm);
-        std::vector<double> myfsvel(lm.size());
-        Core::FE::extract_my_values(*fsvelnp, myfsvel, lm);
+        std::vector<double> myvel = Core::FE::extract_values(*velnp, lm);
+        std::vector<double> myfsvel = Core::FE::extract_values(*fsvelnp, lm);
 
         // pointer to class FluidEleParameter (access to the general parameter)
         Discret::Elements::FluidEleParameterStd* fldpara =
@@ -597,11 +592,10 @@ int Discret::Elements::Fluid::evaluate(Teuchos::ParameterList& params,
           FOUR_C_THROW("Cannot get state vectors");
         }
         // extract local values from the global vectors
-        std::vector<double> myvel(lm.size());
-        Core::FE::extract_my_values(*vel, myvel, lm);
+        std::vector<double> myvel = Core::FE::extract_values(*vel, lm);
         std::vector<double> tmp_sca(lm.size());
         std::vector<double> mysca(nen);
-        Core::FE::extract_my_values(*sca, tmp_sca, lm);
+        tmp_sca = Core::FE::extract_values(*sca, lm);
         for (int i = 0; i < nen; i++) mysca[i] = tmp_sca[nsd + (i * (nsd + 1))];
         // get thermodynamic pressure
         double thermpress = params.get<double>("thermpress at n+alpha_F/n+1", 0.0);

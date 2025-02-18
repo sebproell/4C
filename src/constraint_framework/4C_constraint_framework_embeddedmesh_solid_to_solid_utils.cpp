@@ -379,12 +379,10 @@ void CONSTRAINTS::EMBEDDEDMESH::get_current_element_displacement(
     Core::FE::Discretization const& discret, Core::Elements::Element const* ele,
     const Core::LinAlg::Vector<double>& displacement_vector, std::vector<double>& eledisp)
 {
-  // clear
-  eledisp.clear();
   std::vector<int> lm, lmowner, lmstride;
 
   ele->location_vector(discret, lm, lmowner, lmstride);
-  Core::FE::extract_my_values(displacement_vector, eledisp, lm);
+  eledisp = Core::FE::extract_values(displacement_vector, lm);
 }
 
 void CONSTRAINTS::EMBEDDEDMESH::get_mortar_gid(

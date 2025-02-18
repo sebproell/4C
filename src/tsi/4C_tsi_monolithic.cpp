@@ -2605,8 +2605,8 @@ void TSI::Monolithic::calculate_necking_tsi_results()
   // extract axial displacements (here z-displacements) of top surface
   if (structure_field()->discretization()->dof_row_map()->MyGID(one_dof_in_dbc_global.at(0)))
   {
-    Core::FE::extract_my_values(
-        *(structure_field()->dispnp()), top_disp_local, one_dof_in_dbc_global);
+    top_disp_local =
+        Core::FE::extract_values(*(structure_field()->dispnp()), one_dof_in_dbc_global);
   }
 
   // initialise the top displacement
@@ -2642,7 +2642,7 @@ void TSI::Monolithic::calculate_necking_tsi_results()
   necking_radius.at(0) = 0.0;
   if (necking_radius_dof.at(0) != -1)
   {
-    Core::FE::extract_my_values(*(structure_field()->dispnp()), necking_radius, necking_radius_dof);
+    necking_radius = Core::FE::extract_values(*(structure_field()->dispnp()), necking_radius_dof);
   }
 
   // sum necking deformations in the global variable necking_radius_global
@@ -2677,9 +2677,8 @@ void TSI::Monolithic::calculate_necking_tsi_results()
   temperature.at(0) = 0.0;
   if (neck_temperature_dof.at(0) != -1)
   {
-    Core::FE::extract_my_values(*(thermo_field()->tempnp()),  // global (i)
-        temperature,                                          // local (o)
-        neck_temperature_dof                                  // global ids to be extracted
+    temperature = Core::FE::extract_values(*(thermo_field()->tempnp()),  // global (i)
+        neck_temperature_dof  // global ids to be extracted
     );
   }
   // sum necking temperatures in the variable temperature_global
@@ -2712,10 +2711,10 @@ void TSI::Monolithic::calculate_necking_tsi_results()
   top_temperature_local.at(0) = 0.0;
   if (top_temperature_dof.at(0) != -1.)
   {
-    Core::FE::extract_my_values(*(thermo_field()->tempnp()),  // global vector (i)
-        top_temperature_local,  // local, i.e. at specific position (o)
-        top_temperature_dof     // global ids to be extracted
-    );
+    top_temperature_local =
+        Core::FE::extract_values(*(thermo_field()->tempnp()),  // global vector (i)
+            top_temperature_dof                                // global ids to be extracted
+        );
   }
 
   // sum top-temperatures in the variable top_temperature_global

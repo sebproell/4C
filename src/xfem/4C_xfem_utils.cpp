@@ -32,8 +32,7 @@ void XFEM::Utils::extract_node_vectors(Core::FE::Discretization& dis,
     const Core::Nodes::Node* node = dis.l_col_node(lid);
     std::vector<int> lm;
     dis.dof(node, lm);
-    std::vector<double> mydisp;
-    Core::FE::extract_my_values(*dispcol, mydisp, lm);
+    std::vector<double> mydisp = Core::FE::extract_values(*dispcol, lm);
     if (mydisp.size() < 3) FOUR_C_THROW("we need at least 3 dofs here");
 
     Core::LinAlg::Matrix<3, 1> currpos;
@@ -157,8 +156,8 @@ void XFEM::Utils::extract_quantity_at_element(Core::LinAlg::SerialDenseMatrix::B
     FOUR_C_THROW("assume a unique level-set dof in cutterdis-Dofset per node");
   }
 
-  std::vector<double> local_vector(nsd * numnode);
-  Core::FE::extract_my_values(global_col_vector, local_vector, la[nds_vector].lm_);
+  std::vector<double> local_vector =
+      Core::FE::extract_values(global_col_vector, la[nds_vector].lm_);
 
   if (local_vector.size() != nsd * numnode)
     FOUR_C_THROW("wrong size of (potentially resized) local matrix!");
@@ -176,8 +175,7 @@ void XFEM::Utils::extract_quantity_at_node(Core::LinAlg::SerialDenseMatrix::Base
   const std::vector<int> lm = dis.dof(nds_vector, node);
   if (lm.size() != 1) FOUR_C_THROW("assume a unique level-set dof in cutterdis-Dofset");
 
-  std::vector<double> local_vector(nsd);
-  Core::FE::extract_my_values(global_col_vector, local_vector, lm);
+  std::vector<double> local_vector = Core::FE::extract_values(global_col_vector, lm);
 
   if (local_vector.size() != nsd) FOUR_C_THROW("wrong size of (potentially resized) local matrix!");
 

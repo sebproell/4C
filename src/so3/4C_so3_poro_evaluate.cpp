@@ -191,7 +191,7 @@ int Discret::Elements::So3Poro<So3Ele, distype>::my_evaluate(Teuchos::ParameterL
             std::vector<double> myephi(la[1].size());
             std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
                 discretization.get_state(1, "porofluid");
-            Core::FE::extract_my_values(*matrix_state, myephi, la[1].lm_);
+            myephi = Core::FE::extract_values(*matrix_state, la[1].lm_);
 
             // calculate tangent stiffness matrix
             nonlinear_stiffness_poroelast_pressure_based(
@@ -270,7 +270,7 @@ int Discret::Elements::So3Poro<So3Ele, distype>::my_evaluate(Teuchos::ParameterL
             std::vector<double> myephi(la[1].size());
             std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
                 discretization.get_state(1, "porofluid");
-            Core::FE::extract_my_values(*matrix_state, myephi, la[1].lm_);
+            myephi = Core::FE::extract_values(*matrix_state, la[1].lm_);
 
             // calculate tangent stiffness matrix
             nonlinear_stiffness_poroelast_pressure_based(
@@ -339,7 +339,7 @@ int Discret::Elements::So3Poro<So3Ele, distype>::my_evaluate(Teuchos::ParameterL
           std::vector<double> myephi(la[1].size());
           std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
               discretization.get_state(1, "porofluid");
-          Core::FE::extract_my_values(*matrix_state, myephi, la[1].lm_);
+          myephi = Core::FE::extract_values(*matrix_state, la[1].lm_);
 
           Core::LinAlg::Matrix<numdim_, numnod_> mydisp(true);
           extract_values_from_global_vector(
@@ -395,7 +395,7 @@ int Discret::Elements::So3Poro<So3Ele, distype>::my_evaluate(Teuchos::ParameterL
           std::vector<double> myephi(la[1].size());
           std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
               discretization.get_state(1, "porofluid");
-          Core::FE::extract_my_values(*matrix_state, myephi, la[1].lm_);
+          myephi = Core::FE::extract_values(*matrix_state, la[1].lm_);
 
           // calculate tangent stiffness matrix
           nonlinear_stiffness_poroelast_pressure_based(
@@ -1267,8 +1267,7 @@ void Discret::Elements::So3Poro<So3Ele, distype>::extract_values_from_global_vec
   const int numdofpernode = discretization.num_dof(dofset, nodes()[0]);
 
   // extract local values of the global vectors
-  std::vector<double> mymatrix(lm.size());
-  Core::FE::extract_my_values(*matrix_state, mymatrix, lm);
+  std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
 
   if (numdofpernode == numdim_ + 1)
   {

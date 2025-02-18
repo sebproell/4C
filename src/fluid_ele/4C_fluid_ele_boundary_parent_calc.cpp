@@ -680,8 +680,8 @@ void Discret::Elements::FluidBoundaryParent<distype>::flow_dep_pressure_bc(
 
     std::vector<double> mypvelaf(plm.size());
     std::vector<double> mypscaaf(plm.size());
-    Core::FE::extract_my_values(*velaf, mypvelaf, plm);
-    Core::FE::extract_my_values(*scaaf, mypscaaf, plm);
+    mypvelaf = Core::FE::extract_values(*velaf, plm);
+    mypscaaf = Core::FE::extract_values(*scaaf, plm);
 
     Core::LinAlg::Matrix<nsd, piel> pevelaf(true);
     Core::LinAlg::Matrix<piel, 1> pescaaf(true);
@@ -703,8 +703,8 @@ void Discret::Elements::FluidBoundaryParent<distype>::flow_dep_pressure_bc(
           discretization.get_state("dispnp");
       if (dispnp == nullptr) FOUR_C_THROW("Cannot get state vector 'dispnp'");
 
-      Core::FE::extract_my_values(*dispnp, mypedispnp, plm);
-      Core::FE::extract_my_values(*dispnp, mybedispnp, blm);
+      mypedispnp = Core::FE::extract_values(*dispnp, plm);
+      mybedispnp = Core::FE::extract_values(*dispnp, blm);
 
       // add parent and boundary displacement at n+1
       for (int idim = 0; idim < nsd; ++idim)
@@ -1335,8 +1335,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::slip_supp_bc(
   std::shared_ptr<const Core::LinAlg::Vector<double>> velaf = discretization.get_state("velaf");
   if (velaf == nullptr) FOUR_C_THROW("Cannot get state vector 'velaf'");
 
-  std::vector<double> mypvelaf(plm.size());
-  Core::FE::extract_my_values(*velaf, mypvelaf, plm);
+  std::vector<double> mypvelaf = Core::FE::extract_values(*velaf, plm);
 
   Core::LinAlg::Matrix<nsd, piel> pevelaf(true);
   for (int inode = 0; inode < piel; ++inode)
@@ -1348,8 +1347,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::slip_supp_bc(
   }
 
   // boundary pressure
-  std::vector<double> mybvelaf(blm.size());
-  Core::FE::extract_my_values(*velaf, mybvelaf, blm);
+  std::vector<double> mybvelaf = Core::FE::extract_values(*velaf, blm);
 
   Core::LinAlg::Matrix<1, biel> epressnp(true);
 
@@ -1366,8 +1364,8 @@ void Discret::Elements::FluidBoundaryParent<distype>::slip_supp_bc(
     std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp = discretization.get_state("dispnp");
     if (dispnp == nullptr) FOUR_C_THROW("Cannot get state vector 'dispnp'");
 
-    Core::FE::extract_my_values(*dispnp, mypedispnp, plm);
-    Core::FE::extract_my_values(*dispnp, mybedispnp, blm);
+    mypedispnp = Core::FE::extract_values(*dispnp, plm);
+    mybedispnp = Core::FE::extract_values(*dispnp, blm);
 
     // add parent and boundary displacement at n+1
     for (int idim = 0; idim < nsd; ++idim)
@@ -1669,8 +1667,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::navier_slip_bc(
   std::shared_ptr<const Core::LinAlg::Vector<double>> velaf = discretization.get_state("velaf");
   if (velaf == nullptr) FOUR_C_THROW("Cannot get state vector 'velaf'");
 
-  std::vector<double> mypvelaf(plm.size());
-  Core::FE::extract_my_values(*velaf, mypvelaf, plm);
+  std::vector<double> mypvelaf = Core::FE::extract_values(*velaf, plm);
 
   Core::LinAlg::Matrix<nsd, piel> pevelaf(true);
   for (int inode = 0; inode < piel; ++inode)
@@ -1689,8 +1686,8 @@ void Discret::Elements::FluidBoundaryParent<distype>::navier_slip_bc(
     std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp = discretization.get_state("dispnp");
     if (dispnp == nullptr) FOUR_C_THROW("Cannot get state vector 'dispnp'");
 
-    Core::FE::extract_my_values(*dispnp, mypedispnp, plm);
-    Core::FE::extract_my_values(*dispnp, mybedispnp, blm);
+    mypedispnp = Core::FE::extract_values(*dispnp, plm);
+    mybedispnp = Core::FE::extract_values(*dispnp, blm);
 
     // add parent and boundary displacement at n+1
     for (int idim = 0; idim < nsd; ++idim)
@@ -2005,8 +2002,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
   std::shared_ptr<const Core::LinAlg::Vector<double>> velaf = discretization.get_state("velaf");
   if (velaf == nullptr) FOUR_C_THROW("Cannot get state vector 'velaf'");
 
-  std::vector<double> mypvelaf(plm.size());
-  Core::FE::extract_my_values(*velaf, mypvelaf, plm);
+  std::vector<double> mypvelaf = Core::FE::extract_values(*velaf, plm);
 
   Core::LinAlg::Matrix<nsd, piel> pevelaf(true);
   for (int inode = 0; inode < piel; ++inode)
@@ -2025,10 +2021,10 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
     std::shared_ptr<const Core::LinAlg::Vector<double>> velnp = discretization.get_state("velnp");
     if (velnp == nullptr) FOUR_C_THROW("Cannot get state vector 'velnp'");
 
-    Core::FE::extract_my_values(*velnp, mypvelnp, plm);
+    mypvelnp = Core::FE::extract_values(*velnp, plm);
   }
   else
-    Core::FE::extract_my_values(*velaf, mypvelnp, plm);
+    mypvelnp = Core::FE::extract_values(*velaf, plm);
 
   Core::LinAlg::Matrix<nsd, piel> pevelnp(true);
   Core::LinAlg::Matrix<piel, 1> peprenp(true);
@@ -2049,8 +2045,8 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
     std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp = discretization.get_state("dispnp");
     if (dispnp == nullptr) FOUR_C_THROW("Cannot get state vector 'dispnp'");
 
-    Core::FE::extract_my_values(*dispnp, mypedispnp, plm);
-    Core::FE::extract_my_values(*dispnp, mybedispnp, blm);
+    mypedispnp = Core::FE::extract_values(*dispnp, plm);
+    mybedispnp = Core::FE::extract_values(*dispnp, blm);
 
     // add parent and boundary displacement at n+1
     for (int idim = 0; idim < nsd; ++idim)
@@ -3810,8 +3806,8 @@ void Discret::Elements::FluidBoundaryParent<distype>::estimate_nitsche_trace_max
           discretization.get_state("dispnp");
       if (dispnp == nullptr) FOUR_C_THROW("Cannot get state vector 'dispnp'");
 
-      Core::FE::extract_my_values(*dispnp, mypedispnp, plm);
-      Core::FE::extract_my_values(*dispnp, mybedispnp, blm);
+      mypedispnp = Core::FE::extract_values(*dispnp, plm);
+      mybedispnp = Core::FE::extract_values(*dispnp, blm);
 
       // add parent and boundary displacement at n+1
       for (int idim = 0; idim < nsd; ++idim)
@@ -4421,8 +4417,8 @@ void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
     std::vector<double> mypvelaf((plm).size());
     std::vector<double> mypvelnp((plm).size());
 
-    Core::FE::extract_my_values(*vel, mypvelaf, plm);
-    Core::FE::extract_my_values(*velnp, mypvelnp, plm);
+    mypvelaf = Core::FE::extract_values(*vel, plm);
+    mypvelnp = Core::FE::extract_values(*velnp, plm);
 
     for (int inode = 0; inode < piel; ++inode)
     {
@@ -4452,9 +4448,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
   }
   else
   {
-    std::vector<double> mypvel((plm).size());
-
-    Core::FE::extract_my_values(*vel, mypvel, plm);
+    std::vector<double> mypvel = Core::FE::extract_values(*vel, plm);
 
 
     for (int inode = 0; inode < piel; ++inode)

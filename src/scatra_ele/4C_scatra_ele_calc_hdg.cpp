@@ -1900,13 +1900,11 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::project_field(
   std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
       params.get<std::shared_ptr<Core::LinAlg::Vector<double>>>("phi");
 
-  std::vector<double> tracephi;
-  Core::FE::extract_my_values(*matrix_state, tracephi, la[nds_var_old].lm_);
+  std::vector<double> tracephi = Core::FE::extract_values(*matrix_state, la[nds_var_old].lm_);
 
   // get node based values!
   matrix_state = params.get<std::shared_ptr<Core::LinAlg::Vector<double>>>("intphi");
-  std::vector<double> intphi;
-  Core::FE::extract_my_values(*matrix_state, intphi, la[nds_intvar_old].lm_);
+  std::vector<double> intphi = Core::FE::extract_values(*matrix_state, la[nds_intvar_old].lm_);
   if (intphi.size() != shapes_old->ndofs_ * (nsd_ + 1))
     FOUR_C_THROW(
         "node number not matching: %d vs. %d", intphi.size(), shapes_old->ndofs_ * (nsd_ + 1));

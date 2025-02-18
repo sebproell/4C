@@ -406,14 +406,11 @@ void CONSTRAINTS::SpringDashpot::evaluate_robin(std::shared_ptr<Core::LinAlg::Sp
         }
 
         // extract velocity
-        std::vector<double> velocities(lm.size());
-        Core::FE::extract_my_values(velo_with_ghosted, velocities, lm);
+        std::vector<double> velocities = Core::FE::extract_values(velo_with_ghosted, lm);
 
-        std::vector<double> displacements(lm.size());
-        Core::FE::extract_my_values(disp_with_ghosted, displacements, lm);
+        std::vector<double> displacements = Core::FE::extract_values(disp_with_ghosted, lm);
 
-        std::vector<double> displacement_offset(lm.size());
-        Core::FE::extract_my_values(offset_with_ghosted, displacement_offset, lm);
+        std::vector<double> displacement_offset = Core::FE::extract_values(offset_with_ghosted, lm);
 
 
         Core::LinAlg::SerialDenseMatrix elestiff;

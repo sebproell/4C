@@ -80,8 +80,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::evaluate_action(
         dispnp = discretization.get_state("dispnp");
         if (dispnp != nullptr)
         {
-          mydispnp.resize(lm.size());
-          Core::FE::extract_my_values(*dispnp, mydispnp, lm);
+          mydispnp = Core::FE::extract_values(*dispnp, lm);
         }
       }
 
@@ -134,7 +133,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::evaluate_action(
         if (dispnp != nullptr)
         {
           mydispnp.resize(lm.size());
-          Core::FE::extract_my_values(*dispnp, mydispnp, lm);
+          mydispnp = Core::FE::extract_values(*dispnp, lm);
         }
       }
 
@@ -154,7 +153,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::evaluate_action(
         if (dispnp != nullptr)
         {
           mydispnp.resize(lm.size());
-          Core::FE::extract_my_values(*dispnp, mydispnp, lm);
+          mydispnp = Core::FE::extract_values(*dispnp, lm);
         }
       }
 
@@ -165,7 +164,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::evaluate_action(
       if (normals != nullptr)
       {
         mynormals.resize(lm.size());
-        Core::FE::extract_my_values(*normals, mynormals, lm);
+        mynormals = Core::FE::extract_values(*normals, lm);
       }
 
       // what happens, if the mynormals vector is empty? (ehrl)
@@ -248,8 +247,7 @@ int Discret::Elements::FluidBoundaryImpl<distype>::evaluate_neumann(
   if (scaaf == nullptr) FOUR_C_THROW("Cannot get state vector 'scaaf'");
 
   // extract local values from global vector
-  std::vector<double> myscaaf(lm.size());
-  Core::FE::extract_my_values(*scaaf, myscaaf, lm);
+  std::vector<double> myscaaf = Core::FE::extract_values(*scaaf, lm);
 
   Core::LinAlg::Matrix<bdrynen_, 1> escaaf(true);
 
@@ -275,8 +273,7 @@ int Discret::Elements::FluidBoundaryImpl<distype>::evaluate_neumann(
     if (velaf == nullptr) FOUR_C_THROW("Cannot get state vector 'velaf'");
 
     // extract local values from global vector
-    std::vector<double> myvelaf(lm.size());
-    Core::FE::extract_my_values(*velaf, myvelaf, lm);
+    std::vector<double> myvelaf = Core::FE::extract_values(*velaf, lm);
 
     // insert pressure into element array
     for (int inode = 0; inode < bdrynen_; inode++)
@@ -304,7 +301,7 @@ int Discret::Elements::FluidBoundaryImpl<distype>::evaluate_neumann(
     if (dispnp != nullptr)
     {
       mydispnp.resize(lm.size());
-      Core::FE::extract_my_values(*dispnp, mydispnp, lm);
+      mydispnp = Core::FE::extract_values(*dispnp, lm);
     }
 
     for (int inode = 0; inode < bdrynen_; ++inode)
@@ -552,7 +549,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::neumann_inflow(
     if (dispnp != nullptr)
     {
       mydispnp.resize(lm.size());
-      Core::FE::extract_my_values(*dispnp, mydispnp, lm);
+      mydispnp = Core::FE::extract_values(*dispnp, lm);
     }
 
     for (int inode = 0; inode < bdrynen_; ++inode)
@@ -573,8 +570,8 @@ void Discret::Elements::FluidBoundaryImpl<distype>::neumann_inflow(
   // extract local values from global vector
   std::vector<double> myvelaf(lm.size());
   std::vector<double> myscaaf(lm.size());
-  Core::FE::extract_my_values(*velaf, myvelaf, lm);
-  Core::FE::extract_my_values(*scaaf, myscaaf, lm);
+  myvelaf = Core::FE::extract_values(*velaf, lm);
+  myscaaf = Core::FE::extract_values(*scaaf, lm);
 
   // create Epetra objects for scalar array and velocities
   Core::LinAlg::Matrix<nsd_, bdrynen_> evelaf(true);
@@ -1021,7 +1018,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::area_calculation(
     if (dispnp != nullptr)
     {
       mydispnp.resize(lm.size());
-      Core::FE::extract_my_values(*dispnp, mydispnp, lm);
+      mydispnp = Core::FE::extract_values(*dispnp, lm);
     }
     FOUR_C_ASSERT(mydispnp.size() != 0, "paranoid");
     for (int inode = 0; inode < bdrynen_; ++inode)
@@ -1073,8 +1070,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::pressure_boundary_integral(
   std::shared_ptr<const Core::LinAlg::Vector<double>> velnp = discretization.get_state("velaf");
   if (velnp == nullptr) FOUR_C_THROW("Cannot get state vector 'velaf'");
 
-  std::vector<double> myvelnp(lm.size());
-  Core::FE::extract_my_values(*velnp, myvelnp, lm);
+  std::vector<double> myvelnp = Core::FE::extract_values(*velnp, lm);
 
   Core::LinAlg::Matrix<1, bdrynen_> eprenp(true);
   for (int inode = 0; inode < bdrynen_; inode++)
@@ -1095,7 +1091,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::pressure_boundary_integral(
     if (dispnp != nullptr)
     {
       mydispnp.resize(lm.size());
-      Core::FE::extract_my_values(*dispnp, mydispnp, lm);
+      mydispnp = Core::FE::extract_values(*dispnp, lm);
     }
     FOUR_C_ASSERT(mydispnp.size() != 0, "paranoid");
     for (int inode = 0; inode < bdrynen_; ++inode)
@@ -1168,7 +1164,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::center_of_mass_calculation(
     if (dispnp != nullptr)
     {
       mydispnp.resize(lm.size());
-      Core::FE::extract_my_values(*dispnp, mydispnp, lm);
+      mydispnp = Core::FE::extract_values(*dispnp, lm);
     }
     FOUR_C_ASSERT(mydispnp.size() != 0, "paranoid");
     for (int inode = 0; inode < bdrynen_; ++inode)
@@ -1254,8 +1250,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::compute_flow_rate(
 
   if (velnp == nullptr) FOUR_C_THROW("Cannot get state vector 'velaf'");
 
-  std::vector<double> myvelnp(lm.size());
-  Core::FE::extract_my_values(*velnp, myvelnp, lm);
+  std::vector<double> myvelnp = Core::FE::extract_values(*velnp, lm);
 
   // allocate velocity vector
   Core::LinAlg::Matrix<nsd_, bdrynen_> evelnp(true);
@@ -1287,7 +1282,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::compute_flow_rate(
     if (dispnp != nullptr)
     {
       mydispnp.resize(lm.size());
-      Core::FE::extract_my_values(*dispnp, mydispnp, lm);
+      mydispnp = Core::FE::extract_values(*dispnp, lm);
     }
     FOUR_C_ASSERT(mydispnp.size() != 0, "paranoid");
     for (int inode = 0; inode < bdrynen_; ++inode)
@@ -1381,7 +1376,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::flow_rate_deriv(
     dispnp = discretization.get_state("dispnp");
     if (dispnp == nullptr) FOUR_C_THROW("Cannot get state vectors 'dispnp'");
     edispnp.resize(lm.size());
-    Core::FE::extract_my_values(*dispnp, edispnp, lm);
+    edispnp = Core::FE::extract_values(*dispnp, lm);
   }
 
   // get integration rule
@@ -1421,8 +1416,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::flow_rate_deriv(
   if (convelnp == nullptr) FOUR_C_THROW("Cannot get state vector 'convectivevel'");
 
   // extract local values from the global vectors
-  std::vector<double> myconvelnp(lm.size());
-  Core::FE::extract_my_values(*convelnp, myconvelnp, lm);
+  std::vector<double> myconvelnp = Core::FE::extract_values(*convelnp, lm);
 
   // allocate velocities vector
   Core::LinAlg::Matrix<nsd_, bdrynen_> evelnp(true);
@@ -1671,7 +1665,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::impedance_integration(
     if (dispnp != nullptr)
     {
       mydispnp.resize(lm.size());
-      Core::FE::extract_my_values(*dispnp, mydispnp, lm);
+      mydispnp = Core::FE::extract_values(*dispnp, lm);
     }
     FOUR_C_ASSERT(mydispnp.size() != 0, "paranoid");
     for (int inode = 0; inode < bdrynen_; ++inode)
@@ -1732,7 +1726,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::d_qdu(Discret::Elements::Flu
     if (dispnp != nullptr)
     {
       mydispnp.resize(lm.size());
-      Core::FE::extract_my_values(*dispnp, mydispnp, lm);
+      mydispnp = Core::FE::extract_values(*dispnp, lm);
     }
     FOUR_C_ASSERT(mydispnp.size() != 0, "paranoid");
     for (int inode = 0; inode < bdrynen_; ++inode)
@@ -1898,8 +1892,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::calc_traction_velocity_compo
 
   if (velnp == nullptr) FOUR_C_THROW("Cannot get state vector 'velaf'");
 
-  std::vector<double> myvelnp(lm.size());
-  Core::FE::extract_my_values(*velnp, myvelnp, lm);
+  std::vector<double> myvelnp = Core::FE::extract_values(*velnp, lm);
 
   // allocate velocity vector
   Core::LinAlg::Matrix<nsd_, bdrynen_> evelnp(true);
@@ -1980,7 +1973,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::calc_traction_velocity_compo
     if (dispnp != nullptr)
     {
       mydispnp.resize(lm.size());
-      Core::FE::extract_my_values(*dispnp, mydispnp, lm);
+      mydispnp = Core::FE::extract_values(*dispnp, lm);
     }
     FOUR_C_ASSERT(mydispnp.size() != 0, "paranoid");
     for (int inode = 0; inode < bdrynen_; ++inode)

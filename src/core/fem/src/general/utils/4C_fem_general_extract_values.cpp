@@ -22,25 +22,6 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Core::FE::extract_my_values(const Core::LinAlg::Vector<double>& global,
-    std::vector<double>& local, const std::vector<int>& lm)
-{
-  const size_t ldim = lm.size();
-  local.resize(ldim);
-  for (size_t i = 0; i < ldim; ++i)
-  {
-    const int lid = global.Map().LID(lm[i]);
-    if (lid < 0)
-      FOUR_C_THROW("Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
-          Core::Communication::my_mpi_rank(global.Comm()), lm[i]);
-    local[i] = global[lid];
-  }
-  return;
-}
-
-
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-void Core::FE::extract_my_values(const Core::LinAlg::Vector<double>& global,
     Core::LinAlg::SerialDenseVector& local, const std::vector<int>& lm)
 {
   const size_t ldim = lm.size();
@@ -52,34 +33,6 @@ void Core::FE::extract_my_values(const Core::LinAlg::Vector<double>& global,
       FOUR_C_THROW("Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
           Core::Communication::my_mpi_rank(global.Comm()), lm[i]);
     local[i] = global[lid];
-  }
-  return;
-}
-
-
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-void Core::FE::extract_my_values(const Core::LinAlg::MultiVector<double>& global,
-    std::vector<double>& local, const std::vector<int>& lm)
-{
-  const int numcol = global.NumVectors();
-  const size_t ldim = lm.size();
-
-  local.resize(ldim * numcol);
-
-  // loop over element nodes
-  for (size_t i = 0; i < ldim; ++i)
-  {
-    const int lid = global.Map().LID(lm[i]);
-    if (lid < 0)
-      FOUR_C_THROW("Proc %d: Cannot find gid=%d in Core::LinAlg::MultiVector<double>",
-          Core::Communication::my_mpi_rank(global.Comm()), lm[i]);
-
-    // loop over multi vector columns (numcol=1 for Core::LinAlg::Vector<double>)
-    for (int col = 0; col < numcol; col++)
-    {
-      local[col + (numcol * i)] = global(col)[lid];
-    }
   }
   return;
 }
@@ -137,27 +90,6 @@ void Core::FE::extract_my_node_based_values(const Core::Elements::Element* ele,
             Core::Communication::my_mpi_rank(global.Comm()), nodegid);
       local(i + (nsd * j)) = global(i)[lid];
     }
-  }
-  return;
-}
-
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-void Core::FE::extract_my_node_based_values(const Core::Nodes::Node* node,
-    Core::LinAlg::SerialDenseVector& local, Core::LinAlg::MultiVector<double>& global,
-    const int nsd)
-{
-  if (nsd > global.NumVectors())
-    FOUR_C_THROW("Requested %d of %d available columns", nsd, global.NumVectors());
-  if (local.length() != nsd) FOUR_C_THROW("vector size mismatch.");
-
-  const int nodegid = node->id();
-  const int lid = global.Map().LID(nodegid);
-
-  for (int i = 0; i < nsd; i++)
-  {
-    // access actual component column of multi-vector
-    local(i + nsd) = global(i)[lid];
   }
   return;
 }

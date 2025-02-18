@@ -433,7 +433,7 @@ void Discret::Elements::ElemagDiffEleCalc<distype>::element_init_from_restart(
   std::shared_ptr<const Core::LinAlg::Vector<double>> intVar =
       discretization.get_state(1, "intVar");
   std::vector<int> localDofs1 = discretization.dof(1, ele);
-  Core::FE::extract_my_values(*intVar, interiorVar, localDofs1);
+  interiorVar = Core::FE::extract_values(*intVar, localDofs1);
   // now write this in corresponding eleinteriorElectric_ and eleinteriorMagnetic_
   for (unsigned int i = 0; i < size; ++i)
   {
@@ -445,7 +445,7 @@ void Discret::Elements::ElemagDiffEleCalc<distype>::element_init_from_restart(
 
   std::shared_ptr<const Core::LinAlg::Vector<double>> intVarnm =
       discretization.get_state(1, "intVarnm");
-  Core::FE::extract_my_values(*intVarnm, interiorVarnm, localDofs1);
+  interiorVarnm = Core::FE::extract_values(*intVarnm, localDofs1);
   for (unsigned int i = 0; i < size; ++i)
   {
     elemagele->eleinteriorElectricnm1_(i) = interiorVarnm[size + i];

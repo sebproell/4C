@@ -163,8 +163,7 @@ namespace
 
     if (quantities_np == nullptr) FOUR_C_THROW("Cannot get state vector '%s' ", field_name.c_str());
 
-    auto my_quantities = std::vector<double>(la[*field_index].lm_.size(), 0.0);
-    Core::FE::extract_my_values(*quantities_np, my_quantities, la[*field_index].lm_);
+    const auto my_quantities = Core::FE::extract_values(*quantities_np, la[*field_index].lm_);
 
     return get_element_quantities<celltype, is_scalar>(num_scalars, my_quantities);
   }

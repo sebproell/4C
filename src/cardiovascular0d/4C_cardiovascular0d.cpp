@@ -347,8 +347,7 @@ void Utils::Cardiovascular0D::evaluate_d_struct_dp(
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement new'");
       std::shared_ptr<const Core::LinAlg::Vector<double>> curdispl =
           actdisc_->get_state("displacement");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*curdispl, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*curdispl, lm);
 
       for (int j = 0; j < numnode; ++j)
       {

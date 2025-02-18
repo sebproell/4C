@@ -153,18 +153,18 @@ void Discret::Elements::FluidEleCalcHDGWeakComp<distype>::read_global_vectors(
   // read the trace values
   std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
       discretization.get_state(0, "velaf");
-  Core::FE::extract_my_values(*matrix_state, trace_val_, lm);
+  trace_val_ = Core::FE::extract_values(*matrix_state, lm);
 
   // get local dofs
   std::vector<int> localDofs = discretization.dof(1, &ele);
 
   // read the interior values
   matrix_state = discretization.get_state(1, "intvelaf");
-  Core::FE::extract_my_values(*matrix_state, interior_val_, localDofs);
+  interior_val_ = Core::FE::extract_values(*matrix_state, localDofs);
 
   // read the interior time derivatives
   matrix_state = discretization.get_state(1, "intaccam");
-  Core::FE::extract_my_values(*matrix_state, interior_acc_, localDofs);
+  interior_acc_ = Core::FE::extract_values(*matrix_state, localDofs);
 
   // read ale vectors
   read_ale_vectors(ele, discretization);
@@ -201,11 +201,11 @@ void Discret::Elements::FluidEleCalcHDGWeakComp<distype>::read_ale_vectors(
 
       // read the ale displacement
       matrix_state = discretization.get_state(2, "dispnp");
-      Core::FE::extract_my_values(*matrix_state, ale_dis_, aleDofs);
+      ale_dis_ = Core::FE::extract_values(*matrix_state, aleDofs);
 
       // read the ale velocity
       matrix_state = discretization.get_state(2, "gridv");
-      Core::FE::extract_my_values(*matrix_state, ale_vel_, aleDofs);
+      ale_vel_ = Core::FE::extract_values(*matrix_state, aleDofs);
     }
   }
 }
@@ -294,11 +294,9 @@ int Discret::Elements::FluidEleCalcHDGWeakComp<distype>::update_local_solution(
   local_solver_->invert_local_local_matrix();
 
   // extract local trace increments
-  std::vector<double> localtraceinc_vec;
-  localtraceinc_vec.resize(nfaces_ * (1 + nsd_) * shapesface_->nfdofs_);
   std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
       discretization.get_state(0, "globaltraceinc");
-  Core::FE::extract_my_values(*matrix_state, localtraceinc_vec, lm);
+  std::vector<double> localtraceinc_vec = Core::FE::extract_values(*matrix_state, lm);
 
   // convert local trace increments to Core::LinAlg::SerialDenseVector
   Core::LinAlg::SerialDenseVector localtraceinc(nfaces_ * (1 + nsd_) * shapesface_->nfdofs_);

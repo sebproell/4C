@@ -2061,12 +2061,11 @@ void Mortar::Interface::set_state(
       {
         auto* node = dynamic_cast<Mortar::Node*>(idiscret_->l_col_node(i));
         const int numdof = node->num_dof();
-        std::vector<double> mydisp(numdof);
         std::vector<int> lm(numdof);
 
         for (int j = 0; j < numdof; ++j) lm[j] = node->dofs()[j];
 
-        Core::FE::extract_my_values(*global, mydisp, lm);
+        std::vector<double> mydisp = Core::FE::extract_values(*global, lm);
 
         // add mydisp[2]=0 for 2D problems
         if (mydisp.size() < 3) mydisp.resize(3);
@@ -2091,12 +2090,11 @@ void Mortar::Interface::set_state(
       {
         auto* node = dynamic_cast<Mortar::Node*>(idiscret_->g_node(slave_col_nodes()->GID(i)));
         const int numdof = node->num_dof();
-        std::vector<double> mydisp(numdof);
         std::vector<int> lm(numdof);
 
         for (int j = 0; j < numdof; ++j) lm[j] = node->dofs()[j];
 
-        Core::FE::extract_my_values(global, mydisp, lm);
+        std::vector<double> mydisp = Core::FE::extract_values(global, lm);
 
         // add mydisp[2]=0 for 2D problems
         if (mydisp.size() < 3) mydisp.resize(3);
@@ -2122,12 +2120,11 @@ void Mortar::Interface::set_state(
       {
         auto* node = dynamic_cast<Mortar::Node*>(idiscret_->l_col_node(i));
         const int numdof = node->num_dof();
-        std::vector<double> myolddisp(numdof);
         std::vector<int> lm(numdof);
 
         for (int j = 0; j < numdof; ++j) lm[j] = node->dofs()[j];
 
-        Core::FE::extract_my_values(*global, myolddisp, lm);
+        std::vector<double> myolddisp = Core::FE::extract_values(*global, lm);
 
         // add mydisp[2]=0 for 2D problems
         if (myolddisp.size() < 3) myolddisp.resize(3);

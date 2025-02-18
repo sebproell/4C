@@ -71,7 +71,7 @@ int Discret::Elements::Ale3Surface::evaluate(Teuchos::ParameterList& params,
       if (dispnp != nullptr)
       {
         mydispnp.resize(lm.size());
-        Core::FE::extract_my_values(*dispnp, mydispnp, lm);
+        mydispnp = Core::FE::extract_values(*dispnp, lm);
       }
 
       Ale3SurfaceImplInterface::impl(this)->element_node_normal(

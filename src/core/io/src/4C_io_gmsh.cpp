@@ -295,8 +295,7 @@ void Core::IO::Gmsh::vector_field_multi_vector_dof_based_to_gmsh(
     // extract local values from the global vector
     // Core::LinAlg::SerialDenseVector extractmyvectorfield(la[nds].lm_.size());
     Core::LinAlg::SerialDenseMatrix myvectorfield(nsd, numnode);
-    std::vector<double> local_vector;
-    Core::FE::extract_my_values(vectorfield, local_vector, la[nds].lm_);
+    std::vector<double> local_vector = Core::FE::extract_values(vectorfield, la[nds].lm_);
 
     for (int inode = 0; inode < numnode; ++inode)
     {

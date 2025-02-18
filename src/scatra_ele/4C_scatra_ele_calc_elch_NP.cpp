@@ -952,8 +952,7 @@ void Discret::Elements::ScaTraEleCalcElchNP<distype>::correction_for_flux_across
     // get dirichlet toggle from the discretization
     std::shared_ptr<const Core::LinAlg::Vector<double>> dctoggle =
         discretization.get_state("dctoggle");
-    std::vector<double> mydctoggle(lm.size());
-    Core::FE::extract_my_values(*dctoggle, mydctoggle, lm);
+    std::vector<double> mydctoggle = Core::FE::extract_values(*dctoggle, lm);
 
     double val = 0.;
     for (unsigned vi = 0; vi < nen_; ++vi)

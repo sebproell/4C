@@ -694,8 +694,8 @@ void ParticleInteraction::DEMContact::evaluate_particle_wall_contact()
     if (walldatastate->get_vel_col() != nullptr)
     {
       // get nodal velocities
-      std::vector<double> nodal_vel(numnodes * 3);
-      Core::FE::extract_my_values(*walldatastate->get_vel_col(), nodal_vel, lmele);
+      std::vector<double> nodal_vel =
+          Core::FE::extract_values(*walldatastate->get_vel_col(), lmele);
 
       // determine velocity of wall contact point j
       for (int node = 0; node < numnodes; ++node)

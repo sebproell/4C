@@ -114,10 +114,8 @@ int Discret::Elements::Nurbs::SoNurbs27::evaluate(Teuchos::ParameterList& params
           discretization.get_state("residual displacement");
       if (disp == nullptr || res == nullptr)
         FOUR_C_THROW("Cannot get state vectors 'displacement' and/or residual");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
       Core::LinAlg::Matrix<81, 81>* matptr = nullptr;
       if (elemat1.is_initialized()) matptr = &elemat1;
 
@@ -135,10 +133,8 @@ int Discret::Elements::Nurbs::SoNurbs27::evaluate(Teuchos::ParameterList& params
           discretization.get_state("residual displacement");
       if (disp == nullptr || res == nullptr)
         FOUR_C_THROW("Cannot get state vectors 'displacement' and/or residual");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
       // create a dummy element matrix to apply linearised EAS-stuff onto
       Core::LinAlg::Matrix<81, 81> myemat(true);
       sonurbs27_nlnstiffmass(lm, discretization, mydisp, myres, &myemat, nullptr, &elevec1, params);
@@ -156,10 +152,8 @@ int Discret::Elements::Nurbs::SoNurbs27::evaluate(Teuchos::ParameterList& params
           discretization.get_state("residual displacement");
       if (disp == nullptr || res == nullptr)
         FOUR_C_THROW("Cannot get state vectors 'displacement' and/or residual");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
 
       sonurbs27_nlnstiffmass(
           lm, discretization, mydisp, myres, &elemat1, &elemat2, &elevec1, params);
@@ -225,8 +219,7 @@ int Discret::Elements::Nurbs::SoNurbs27::evaluate(Teuchos::ParameterList& params
       // need current displacement
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
       elevec1_epetra(0) = calc_int_energy(discretization, mydisp, params);
       break;

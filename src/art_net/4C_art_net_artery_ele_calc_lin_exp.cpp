@@ -105,8 +105,7 @@ int Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate(Artery* ele,
   if (qanp == nullptr) FOUR_C_THROW("Cannot get state vectors 'qanp'");
 
   // extract local values from the global vectors
-  std::vector<double> myqanp(la[0].lm_.size());
-  Core::FE::extract_my_values(*qanp, myqanp, la[0].lm_);
+  std::vector<double> myqanp = Core::FE::extract_values(*qanp, la[0].lm_);
 
   // create objects for element arrays
   Core::LinAlg::Matrix<numnode, 1> eareanp;
@@ -245,8 +244,7 @@ int Discret::Elements::ArteryEleCalcLinExp<distype>::scatra_evaluate(Artery* ele
   // extract local values from the global vectors
   std::vector<double> myqanp(lm.size());
   std::vector<double> myqan(lm.size());
-  std::vector<double> myescatran(lm.size());
-  Core::FE::extract_my_values(*scatran, myescatran, lm);
+  std::vector<double> myescatran = Core::FE::extract_values(*scatran, lm);
   //  Core::FE::extract_my_values(*qan ,myqan ,lm);
 
   // create objects for element arrays
@@ -993,8 +991,7 @@ bool Discret::Elements::ArteryEleCalcLinExp<distype>::solve_riemann(Artery* ele,
   if (qanp == nullptr) FOUR_C_THROW("Cannot get state vectors 'qanp'");
 
   // extract local values from the global vectors
-  std::vector<double> myqanp(lm.size());
-  Core::FE::extract_my_values(*qanp, myqanp, lm);
+  std::vector<double> myqanp = Core::FE::extract_values(*qanp, lm);
 
   // create objects for element arrays
   Core::LinAlg::Matrix<numnode, 1> earean;
@@ -1235,8 +1232,7 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_terminal_bc(Arter
   if (qanp == nullptr) FOUR_C_THROW("Cannot get state vectors 'qanp'");
 
   // extract local values from the global vectors
-  std::vector<double> myqanp(lm.size());
-  Core::FE::extract_my_values(*qanp, myqanp, lm);
+  std::vector<double> myqanp = Core::FE::extract_values(*qanp, lm);
 
   // create objects for element arrays
   Core::LinAlg::Matrix<numnode, 1> eareanp;
@@ -1626,8 +1622,7 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::calc_postprocessing_values
   if (qanp == nullptr) FOUR_C_THROW("Cannot get state vectors 'qanp'");
 
   // extract local values from the global vectors
-  std::vector<double> myqanp(lm.size());
-  Core::FE::extract_my_values(*qanp, myqanp, lm);
+  std::vector<double> myqanp = Core::FE::extract_values(*qanp, lm);
 
   // create objects for element arrays
   Core::LinAlg::Matrix<numnode, 1> eareanp;
@@ -1706,8 +1701,7 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::calc_scatra_from_scatra_fw
   const int numnode = my::iel_;
 
   // extract local values from the global vectors
-  std::vector<double> myscatra_fb(lm.size());
-  Core::FE::extract_my_values(*scatra_fb, myscatra_fb, lm);
+  std::vector<double> myscatra_fb = Core::FE::extract_values(*scatra_fb, lm);
 
   // get all values at the last computed time step
   double val = 0.0;
@@ -1798,8 +1792,7 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_wf_and_wb(Artery*
   if (qanp == nullptr) FOUR_C_THROW("Cannot get state vectors 'qanp'");
 
   // extract local values from the global vectors
-  std::vector<double> myqanp(lm.size());
-  Core::FE::extract_my_values(*qanp, myqanp, lm);
+  std::vector<double> myqanp = Core::FE::extract_values(*qanp, lm);
 
   // create objects for element arrays
   Core::LinAlg::Matrix<numnode, 1> earean;
@@ -1901,8 +1894,7 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::solve_scatra_analytically(
       params.get<std::shared_ptr<Core::LinAlg::Vector<double>>>("scatranp");
 
   // extract local values from the global vectors
-  std::vector<double> myescatran(lm.size());
-  Core::FE::extract_my_values(*scatran, myescatran, lm);
+  std::vector<double> myescatran = Core::FE::extract_values(*scatran, lm);
   //  Core::FE::extract_my_values(*qan ,myqan ,lm);
 
   // create objects for element arrays

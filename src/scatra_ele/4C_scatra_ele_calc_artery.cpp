@@ -164,9 +164,7 @@ void Discret::Elements::ScaTraEleCalcArtery<distype, probdim>::extract_element_a
   {
     std::shared_ptr<const Core::LinAlg::Vector<double>> curr_seg_lengths =
         discretization.get_state(1, "curr_seg_lengths");
-    std::vector<double> seglengths(la[1].lm_.size());
-
-    Core::FE::extract_my_values(*curr_seg_lengths, seglengths, la[1].lm_);
+    std::vector<double> seglengths = Core::FE::extract_values(*curr_seg_lengths, la[1].lm_);
 
     const double curr_ele_length = std::accumulate(seglengths.begin(), seglengths.end(), 0.0);
 

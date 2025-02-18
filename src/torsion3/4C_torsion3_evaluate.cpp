@@ -95,8 +95,7 @@ int Discret::Elements::Torsion3::evaluate(Teuchos::ParameterList& params,
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
       t3_energy(params, mydisp, &elevec1);
     }
@@ -117,14 +116,12 @@ int Discret::Elements::Torsion3::evaluate(Teuchos::ParameterList& params,
       std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
           discretization.get_state("displacement");
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vectors 'displacement'");
-      std::vector<double> mydisp(lm.size());
-      Core::FE::extract_my_values(*disp, mydisp, lm);
+      std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
       // get residual displacements
       std::shared_ptr<const Core::LinAlg::Vector<double>> res =
           discretization.get_state("residual displacement");
       if (res == nullptr) FOUR_C_THROW("Cannot get state vectors 'residual displacement'");
-      std::vector<double> myres(lm.size());
-      Core::FE::extract_my_values(*res, myres, lm);
+      std::vector<double> myres = Core::FE::extract_values(*res, lm);
 
       /*first displacement vector is modified for proper element evaluation in case of periodic
        *boundary conditions; in case that no periodic boundary conditions are to be applied the

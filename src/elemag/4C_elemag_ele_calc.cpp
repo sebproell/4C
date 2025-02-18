@@ -398,12 +398,10 @@ void Discret::Elements::ElemagEleCalc<distype>::element_init_from_restart(
   Discret::Elements::Elemag* elemagele = dynamic_cast<Discret::Elements::Elemag*>(ele);
   int size = shapes_->ndofs_ * nsd_ * 2;
 
-  std::vector<double> interiorVar(size);
-
   std::shared_ptr<const Core::LinAlg::Vector<double>> intVar =
       discretization.get_state(1, "intVar");
   std::vector<int> localDofs1 = discretization.dof(1, ele);
-  Core::FE::extract_my_values(*intVar, interiorVar, localDofs1);
+  std::vector<double> interiorVar = Core::FE::extract_values(*intVar, localDofs1);
   // now write this in corresponding eleinteriorElectric_ and eleinteriorMagnetic_
   for (unsigned int i = 0; i < shapes_->ndofs_ * nsd_; ++i)
   {
@@ -415,7 +413,7 @@ void Discret::Elements::ElemagEleCalc<distype>::element_init_from_restart(
 
   std::shared_ptr<const Core::LinAlg::Vector<double>> intVarnm =
       discretization.get_state(1, "intVarnm");
-  Core::FE::extract_my_values(*intVarnm, interiorVarnm, localDofs1);
+  interiorVarnm = Core::FE::extract_values(*intVarnm, localDofs1);
   for (unsigned int i = 0; i < shapes_->ndofs_ * nsd_; ++i)
   {
     elemagele->eleinteriorMagneticnm1_(i) = interiorVarnm[i];

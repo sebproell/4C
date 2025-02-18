@@ -127,7 +127,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcLoma<distype, probdim>::calc_loma_t
   std::vector<double> myconvel(lmvel.size());
 
   // extract local values of the global vectors
-  Core::FE::extract_my_values(*convel, myconvel, lmvel);
+  myconvel = Core::FE::extract_values(*convel, lmvel);
 
   // rotate the vector field in the case of rotationally symmetric boundary conditions
   my::rotsymmpbc_->rotate_my_values_if_necessary(myconvel);
