@@ -1259,6 +1259,9 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
         entry<double>("FC", {.description = "GTN constant fC for damage coalescence"}));
     m->add_component(
         entry<double>("KAPPA", {.description = "GTN constant kappa for damage coalescence"}));
+    m->add_component(
+        entry<double>("EF", {.description = "GTN stabilization parameter ef for damage coalescence",
+                                .default_value = 0.0}));
 
     Mat::append_material_definition(matlist, m);
   }

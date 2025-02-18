@@ -71,6 +71,9 @@ namespace Mat
       const double fc_;
       //! slope of damage function when damage exceeds threshold
       const double kappa_;
+      //! stabilization parameter for damage function. This parameter will provide a round-off at
+      //! the corner of fstar function, which improves continuity and convergence.
+      const double ef_;
       //! initial damage
       const double f0_;
       //! parameter for damage nucleation

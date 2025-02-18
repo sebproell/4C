@@ -779,6 +779,7 @@ four_c_test(TEST_FILE mat_elasthyper_coupanisoexpoactive.dat mat_elasthyper_coup
 four_c_test(TEST_FILE mat_gtn_patch_test.dat NP 2 RESTART_STEP 2)
 four_c_test(TEST_FILE mat_gtn_solid_necking_bar_h8.dat NP 2 RESTART_STEP 2)
 four_c_test(TEST_FILE mat_gtn_solid_necking_bar_with_f0_h8.dat NP 2 RESTART_STEP 2)
+four_c_test(TEST_FILE mat_gtn_solid_necking_bar_with_f0_fc_h8.dat NP 2 RESTART_STEP 2)
 four_c_test(TEST_FILE mat_holzapfelcardio.dat NP 2)
 four_c_test(TEST_FILE mat_humphreycardio.dat NP 2)
 four_c_test(TEST_FILE mat_iso_viscoplast_refJC_log_substep.dat RESTART_STEP 90)
