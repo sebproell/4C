@@ -632,12 +632,11 @@ bool Core::IO::InputSpecBuilders::Internal::GroupSpec::match(ConstYamlNodeRef no
 {
   match_entry.type = IO::Internal::MatchEntry::Type::group;
   FOUR_C_ASSERT(!name.empty(), "Internal error: group name must not be empty.");
-  FOUR_C_ASSERT(node.node.is_map(), "Internal error: group node must be a map.");
   const auto group_name = ryml::to_csubstr(name);
 
   const bool group_node_is_input = node.node.has_key() && (node.node.key() == group_name);
   const bool group_exists_nested =
-      node.node.has_child(group_name) && node.node[group_name].is_map();
+      node.node.is_map() && node.node.has_child(group_name) && node.node[group_name].is_map();
 
   if (!group_exists_nested && !group_node_is_input)
   {

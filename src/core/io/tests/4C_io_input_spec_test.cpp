@@ -850,6 +850,20 @@ specs:
     }
 
     {
+      SCOPED_TRACE("Error match against sequence node.");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+
+      root |= ryml::SEQ;
+      root.append_child() << 1;
+      ConstYamlNodeRef node(root, "");
+
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
+          spec.match(node, container), Core::Exception, "Expected entry 'a'");
+    }
+
+    {
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
 
