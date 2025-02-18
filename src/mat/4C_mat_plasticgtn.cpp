@@ -115,6 +115,16 @@ void Mat::PlasticGTN::unpack(Core::Communication::UnpackBuffer& buffer)
       else
         FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
             material_type());
+
+      // Extract the function for hardening again for unpack.
+      const int functionID_hardening =
+          params_->functionID_hardening_;  // function number for isotropic hardening
+      if (functionID_hardening != 0)
+      {
+        hardening_function_ =
+            &Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfAnything>(
+                functionID_hardening);
+      }
     }
 
     int histsize;
@@ -214,20 +224,6 @@ void Mat::PlasticGTN::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat, int gp, int eleGID)
 {
   const double TOL = params_->tol_;
-
-  const int functionID_hardening =
-      params_->functionID_hardening_;  // function number for isotropic hardening
-  if ((functionID_hardening != 0) && (hardening_function_ == nullptr))
-  {
-    // reinitialize the hardening function pointer.
-    // this is to make sure the analysis works consistently with hardening by function. It happens
-    // that during redistribution or restart analysis, the global functions are reassigned after
-    // this constitutive law is set up. This will effectively null out the hardening function
-    // pointer.
-    hardening_function_ =
-        &Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfAnything>(
-            functionID_hardening);
-  }
 
   // save the strain
   auto& strain_n1 = strain_n1_.at(gp);

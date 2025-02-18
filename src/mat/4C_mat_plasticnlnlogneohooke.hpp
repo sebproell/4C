@@ -246,9 +246,7 @@ namespace Mat
     //! indicator if #Initialize routine has been called
     bool isinit_;
   };  // class PlasticNlnLogNeoHooke
-
 }  // namespace Mat
-
 
 /*----------------------------------------------------------------------*/
 FOUR_C_NAMESPACE_CLOSE
