@@ -741,7 +741,7 @@ specs:
       noneable: true
       type: double
     required: false
-    default: [1,none,3]
+    default: [1,null,3]
     size: 3
   - type: one_of
     description: 'one_of {all_of {b, c}, group}'
@@ -1244,15 +1244,12 @@ specs:
 
     {
       ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::parse_in_arena(R"(i : 1
+s: string
+v: [1.0, 2.0, 3.0]
+)",
+          &tree);
       ryml::NodeRef root = tree.rootref();
-
-      root |= ryml::MAP;
-      root["i"] << 1;
-      root["s"] << "string";
-      root["v"] |= ryml::SEQ;
-      root["v"].append_child() << 1.0;
-      root["v"].append_child() << 2.0;
-      root["v"].append_child() << 3.0;
       ConstYamlNodeRef node(root, "");
 
       InputParameterContainer container;
@@ -1268,15 +1265,12 @@ specs:
 
     {
       ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::parse_in_arena(R"(i : null
+s: # Note: leaving the key out is the same as setting null
+v: [Null, NULL, ~] # all the other spellings that YAML supports
+)",
+          &tree);
       ryml::NodeRef root = tree.rootref();
-
-      root |= ryml::MAP;
-      root["i"] << "none";
-      root["s"] << "none";
-      root["v"] |= ryml::SEQ;
-      root["v"].append_child() << 1.0;
-      root["v"].append_child() << "none";
-      root["v"].append_child() << "none";
       ConstYamlNodeRef node(root, "");
 
       InputParameterContainer container;
@@ -1285,7 +1279,7 @@ specs:
       EXPECT_EQ(container.get<Noneable<std::string>>("s"), none<std::string>);
       const auto& v = container.get<std::vector<Noneable<double>>>("v");
       EXPECT_EQ(v.size(), 3);
-      EXPECT_EQ(v[0], 1.0);
+      EXPECT_EQ(v[0], none<double>);
       EXPECT_EQ(v[1], none<double>);
       EXPECT_EQ(v[2], none<double>);
     }
