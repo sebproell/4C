@@ -275,49 +275,6 @@ std::pair<std::string, std::string> Core::IO::read_key_value(const std::string& 
 }
 
 
-std::vector<Core::IO::InputParameterContainer> Core::IO::read_all_lines_in_section(
-    Core::IO::InputFile& input, const std::string& section, const InputSpec& spec)
-{
-  std::vector<Core::IO::InputParameterContainer> parsed_lines;
-
-  for (const auto& line : input.in_section(section))
-  {
-    ValueParser parser{line.get_as_dat_style_string()};
-    Core::IO::InputParameterContainer container;
-    spec.fully_parse(parser, container);
-    parsed_lines.emplace_back(std::move(container));
-  }
-
-  return parsed_lines;
-}
-
-
-std::pair<std::vector<Core::IO::InputParameterContainer>, std::vector<std::string>>
-Core::IO::read_matching_lines_in_section(
-    Core::IO::InputFile& input, const std::string& section, const IO::InputSpec& spec)
-{
-  std::vector<std::string> unparsed_lines;
-  std::vector<Core::IO::InputParameterContainer> parsed_lines;
-
-  for (const auto& input_line : input.in_section(section))
-  {
-    try
-    {
-      ValueParser parser{input_line.get_as_dat_style_string(),
-          {.base_path = input.file_for_section(section).parent_path()}};
-      InputParameterContainer container;
-      spec.fully_parse(parser, container);
-      parsed_lines.emplace_back(std::move(container));
-    }
-    catch (const Core::Exception& e)
-    {
-      unparsed_lines.emplace_back(input_line.get_as_dat_style_string());
-    }
-  }
-
-  return {parsed_lines, unparsed_lines};
-}
-
 namespace
 {
   /*----------------------------------------------------------------------*/

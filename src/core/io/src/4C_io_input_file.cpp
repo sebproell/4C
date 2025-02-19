@@ -248,6 +248,11 @@ namespace Core::IO
       std::unordered_map<std::string, SectionContent> content_by_section_;
 
       /**
+       * Store the order in which the sections were read.
+       */
+      std::vector<std::string> section_order_;
+
+      /**
        * This is the merged tree of all yaml input files combined, excluding any "INCLUDES"
        * sections. The data from different files will be stored under top-level keys corresponding
        * to the file paths.
@@ -259,19 +264,21 @@ namespace Core::IO
 
       bool is_section_known(const std::string& section_name) const
       {
-        // The input for functions might introduce an arbitrary number of sections called
-        // FUNCT<n>, where n is a number. As long as this input is not restructured, we need this
-        // manual hack.
-        const bool is_hacky_function_section =
-            section_name.starts_with("FUNCT") &&
-            std::all_of(section_name.begin() + 5, section_name.end(),
-                [](const char c) { return std::isdigit(c); });
-
-        return is_hacky_function_section ||
+        return is_hacky_function_section(section_name) ||
                (valid_sections_.find(section_name) != valid_sections_.end()) ||
                std::ranges::any_of(
                    legacy_section_names_, [&](const auto& name) { return name == section_name; }) ||
                (section_name == description_section_name);
+      }
+
+      // The input for functions might introduce an arbitrary number of sections called
+      // FUNCT<n>, where n is a number. As long as this input is not restructured, we need this
+      // manual hack.
+      bool is_hacky_function_section(const std::string& section_name) const
+      {
+        return section_name.starts_with("FUNCT") &&
+               std::all_of(section_name.begin() + 5, section_name.end(),
+                   [](const char c) { return std::isdigit(c); });
       }
     };
 
@@ -333,8 +340,8 @@ namespace Core::IO
       }
     }
 
-    std::vector<std::filesystem::path> read_dat_content(const std::filesystem::path& file_path,
-        std::unordered_map<std::string, Internal::SectionContent>& content_by_section)
+    std::vector<std::filesystem::path> read_dat_content(
+        const std::filesystem::path& file_path, Internal::InputFileImpl& input_file_impl)
     {
       const auto name_of_section = [](const std::string& section_header)
       {
@@ -403,11 +410,11 @@ namespace Core::IO
           else
           {
             current_section_type = SectionType::normal;
-            FOUR_C_ASSERT_ALWAYS(content_by_section.find(name) == content_by_section.end(),
+            FOUR_C_ASSERT_ALWAYS(!input_file_impl.content_by_section_.contains(name),
                 "Section '%s' is defined again in file '%s'.", name.c_str(), file_path.c_str());
 
-            content_by_section[name] = {};
-            current_section_content = &content_by_section[name];
+            input_file_impl.section_order_.emplace_back(name);
+            current_section_content = &input_file_impl.content_by_section_[name];
             current_section_content->file = file_path;
           }
         }
@@ -634,7 +641,7 @@ namespace Core::IO
               }
               else
               {
-                return read_dat_content(*file_it, pimpl_->content_by_section_);
+                return read_dat_content(*file_it, *pimpl_);
               }
             });
 
@@ -711,6 +718,7 @@ namespace Core::IO
           FOUR_C_ASSERT_ALWAYS(!pimpl_->content_by_section_.contains(section_name),
               "Section '%s' is defined more than once.", section_name.c_str());
 
+          pimpl_->section_order_.emplace_back(section_name);
           Internal::SectionContent& content = pimpl_->content_by_section_[section_name];
           content.content = Internal::SectionContent::YamlContent{.node = node};
           content.file = to_string(file_node.key());
@@ -720,6 +728,20 @@ namespace Core::IO
 
     for (auto& [name, content] : pimpl_->content_by_section_)
     {
+      if (pimpl_->is_hacky_function_section(name))
+      {
+        // Take the special spec of FUNCT<n> because it is the same for all function sections.
+        // Make a copy and replace the name. This is a pretty insane hack and should be removed when
+        // the input of the functions is restructured.
+        auto spec = pimpl_->valid_sections_.at("FUNCT<n>");
+        spec.impl().data.name = name;
+        dynamic_cast<
+            Internal::InputSpecTypeErasedImplementation<InputSpecBuilders::Internal::ListSpec>&>(
+            spec.impl())
+            .wrapped.name = name;
+        pimpl_->valid_sections_.emplace(name, std::move(spec));
+      }
+
       content.set_up_fragments();
     }
 
@@ -798,8 +820,15 @@ namespace Core::IO
   {
     if (!pimpl_->valid_sections_.contains(section_name))
     {
-      if (std::ranges::find(pimpl_->legacy_section_names_, section_name) ==
-          pimpl_->legacy_section_names_.end())
+      if (section_name == description_section_name)
+      {
+        FOUR_C_THROW(
+            "Tried to match section '%s' which is a special section that cannot be matched against "
+            "any InputSpec.",
+            section_name.c_str());
+      }
+      else if (std::ranges::find(pimpl_->legacy_section_names_, section_name) ==
+               pimpl_->legacy_section_names_.end())
       {
         FOUR_C_THROW(
             "Tried to match section '%s' which is not a valid section name.", section_name.c_str());
@@ -935,6 +964,43 @@ namespace Core::IO
       for (const auto& name : pimpl_->legacy_section_names_)
       {
         legacy_string_sections.append_child() << name;
+      }
+    }
+
+    out << tree;
+  }
+
+  void InputFile::write_as_yaml(std::ostream& out) const
+  {
+    auto tree = init_yaml_tree_with_exceptions();
+    tree.rootref() |= ryml::MAP;
+    // Iterate the sections, parse them into a container, and emit the container data.
+    InputParameterContainer container;
+
+    // Write the yaml file in the same order as the input was read.
+    for (const auto& section_name : pimpl_->section_order_)
+    {
+      container.clear();
+
+      if (pimpl_->valid_sections_.contains(section_name))
+      {
+        auto& spec = pimpl_->valid_sections_.at(section_name);
+        match_section(section_name, container);
+        YamlNodeRef section_node{tree.rootref(), ""};
+        spec.emit(section_node, container);
+      }
+      else
+      {
+        // Emit the section as a sequence of strings. This also works for the special
+        // description section.
+        auto section = tree.rootref().append_child();
+        section << ryml::key(section_name);
+        section |= ryml::SEQ;
+        for (const auto& line : in_section(section_name))
+        {
+          section.append_child() = ryml::csubstr(
+              line.get_as_dat_style_string().data(), line.get_as_dat_style_string().size());
+        }
       }
     }
 

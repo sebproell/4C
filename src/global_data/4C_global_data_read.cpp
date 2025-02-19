@@ -82,20 +82,23 @@ namespace
 
       auto valid_functions = functionmanager.valid_function_lines();
 
-      // TODO Move the function number inside the general function section to stop relying
-      // on explicit function numbers. The magic number 30 is equal to the highest number appearing
-      // in the test files.
-      for (unsigned i : std::views::iota(1, 30))
-      {
-        section_specs["FUNCT" + std::to_string(i)] = valid_functions;
-      }
+      // The FUNCT sections are special and do not fit into the usual pattern of sections and the
+      // capabilities of InputSpec. The special FUNCT<n> section is not supposed to be entered by
+      // users but we use this information inside the input file. Not pretty, but it works.
+      // TODO remove this hack by restructuring the input of functions.
+      section_specs["FUNCT<n>"] = valid_functions;
     }
 
     {
       auto valid_conditions = Input::valid_conditions();
       for (const auto& cond : valid_conditions)
       {
-        section_specs[cond.section_name()] = all_of(cond.specs());
+        auto condition_spec = all_of({
+            entry<int>("E", {.description = "ID of the condition. This ID refers to the respective "
+                                            "topological entity of the condition."}),
+            all_of(cond.specs()),
+        });
+        section_specs.emplace(cond.section_name(), std::move(condition_spec));
       }
     }
 
@@ -2002,42 +2005,35 @@ void Global::read_materials(Global::Problem& problem, Core::IO::InputFile& input
 /*----------------------------------------------------------------------*/
 void Global::read_contact_constitutive_laws(Global::Problem& problem, Core::IO::InputFile& input)
 {
-  auto valid_law_spec = CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws();
-
   const std::string contact_const_laws = "CONTACT CONSTITUTIVE LAWS";
-  for (const auto& section_i : input.in_section(contact_const_laws))
-  {
-    auto container = section_i.match(valid_law_spec);
-    if (!container.has_value())
-    {
-      auto l = section_i.get_as_dat_style_string();
-      FOUR_C_THROW("Invalid contact constitutive law specification. Could not parse line:\n  %*s",
-          l.size(), l.data());
-    }
-    CONTACT::CONSTITUTIVELAW::create_contact_constitutive_law_from_input(*container);
-  }
+  Core::IO::InputParameterContainer container;
+  input.match_section(contact_const_laws, container);
+
+  const auto* laws = container.get_if<Core::IO::InputParameterContainer::List>(contact_const_laws);
+  if (laws)
+    for (const auto& law : *laws)
+      CONTACT::CONSTITUTIVELAW::create_contact_constitutive_law_from_input(law);
 }
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Global::read_cloning_material_map(Global::Problem& problem, Core::IO::InputFile& input)
 {
-  auto spec = Core::FE::valid_cloning_material_map();
+  Core::IO::InputParameterContainer container;
+  input.match_section("CLONING MATERIAL MAP", container);
+  const auto* map_entries =
+      container.get_if<Core::IO::InputParameterContainer::List>("CLONING MATERIAL MAP");
 
-  // perform the actual reading and extract the input parameters
-  auto parameters = Core::IO::read_all_lines_in_section(input, "CLONING MATERIAL MAP", spec);
-  for (const auto& input_line : parameters)
+  if (!map_entries) return;
+
+  for (const auto& entry : *map_entries)
   {
-    // extract what was read from the input file
-    std::string src_field = input_line.get<std::string>("SRC_FIELD");
-    int src_matid = input_line.get_or<int>("SRC_MAT", -1);
-    std::string tar_field = input_line.get<std::string>("TAR_FIELD");
-    int tar_matid = input_line.get_or<int>("TAR_MAT", -1);
+    std::string src_field = entry.get<std::string>("SRC_FIELD");
+    int src_matid = entry.get_or<int>("SRC_MAT", -1);
+    std::string tar_field = entry.get<std::string>("TAR_FIELD");
+    int tar_matid = entry.get_or<int>("TAR_MAT", -1);
 
-    // create the key pair
     std::pair<std::string, std::string> fields(src_field, tar_field);
-
-    // enter the material pairing into the map
     std::pair<int, int> matmap(src_matid, tar_matid);
     problem.cloning_material_map()[fields].insert(matmap);
   }
@@ -2048,8 +2044,6 @@ void Global::read_cloning_material_map(Global::Problem& problem, Core::IO::Input
 /*----------------------------------------------------------------------*/
 void Global::read_result(Global::Problem& problem, Core::IO::InputFile& input)
 {
-  const auto lines = global_legacy_module_callbacks().valid_result_description_lines();
-
   // read design nodes <-> nodes, lines <-> nodes, surfaces <-> nodes, volumes <-> nodes
   const auto get_discretization_callback = [](const std::string& name) -> decltype(auto)
   { return *Global::Problem::instance()->get_dis(name); };
@@ -2060,8 +2054,12 @@ void Global::read_result(Global::Problem& problem, Core::IO::InputFile& input)
   Core::IO::read_design(input, "DVOL", nodeset[3], get_discretization_callback);
   problem.get_result_test_manager().set_node_set(nodeset);
 
-  problem.get_result_test_manager().set_parsed_lines(
-      Core::IO::read_all_lines_in_section(input, "RESULT DESCRIPTION", lines));
+  Core::IO::InputParameterContainer container;
+  input.match_section("RESULT DESCRIPTION", container);
+
+  const auto* result_descriptions =
+      container.get_if<Core::IO::InputParameterContainer::List>("RESULT DESCRIPTION");
+  if (result_descriptions) problem.get_result_test_manager().set_parsed_lines(*result_descriptions);
 }
 
 /*----------------------------------------------------------------------*/

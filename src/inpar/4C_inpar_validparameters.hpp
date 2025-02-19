@@ -28,10 +28,6 @@ namespace Input
 
 }  // namespace Input
 
-
-/*! print help message */
-void print_help_message();
-
 /*! print flag sections of dat file with default flags */
 void print_default_dat_header();
 
