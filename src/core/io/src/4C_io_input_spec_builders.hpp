@@ -131,6 +131,67 @@ namespace Core::IO
       return PrettyTypeName<T>{}();
     }
 
+    template <typename T>
+    struct YamlTypeEmitter
+    {
+      void operator()(ryml::NodeRef node) = delete;
+    };
+
+    template <YamlSupportedType T>
+    struct YamlTypeEmitter<T>
+    {
+      void operator()(ryml::NodeRef node)
+      {
+        FOUR_C_ASSERT(node.is_map(), "Expected a map node.");
+        node["type"] << get_pretty_type_name<T>();
+      }
+    };
+
+    template <typename T>
+    struct YamlTypeEmitter<std::vector<T>>
+    {
+      void operator()(ryml::NodeRef node)
+      {
+        FOUR_C_ASSERT(node.is_map(), "Expected a map node.");
+        node["type"] = "vector";
+        node["value_type"] |= ryml::MAP;
+        YamlTypeEmitter<T>{}(node["value_type"]);
+      }
+    };
+
+    template <typename T>
+    struct YamlTypeEmitter<std::map<std::string, T>>
+    {
+      void operator()(ryml::NodeRef node)
+      {
+        FOUR_C_ASSERT(node.is_map(), "Expected a map node.");
+        node["type"] = "map";
+        node["value_type"] |= ryml::MAP;
+        YamlTypeEmitter<T>{}(node["value_type"]);
+      }
+    };
+
+    template <typename T>
+    struct YamlTypeEmitter<Noneable<T>>
+    {
+      void operator()(ryml::NodeRef node)
+      {
+        FOUR_C_ASSERT(node.is_map(), "Expected a map node.");
+        // Pull up the "noneable" aspect. The fact that this type wraps another type is specific
+        // to C++ and not relevant to other tools. Simply knowing that a type can be "none" is
+        // enough for them.
+        emit_value_as_yaml(node["noneable"], true);
+        YamlTypeEmitter<T>{}(node);
+      }
+    };
+
+    template <typename T>
+    void emit_type_as_yaml(ryml::NodeRef node)
+    {
+      YamlTypeEmitter<T>{}(node);
+    }
+
+
     class MatchTree;
 
     /**
@@ -1297,7 +1358,7 @@ void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataTypeIn>::emit_metadata
   node |= ryml::MAP;
   node["name"] << name;
 
-  node["type"] << IO::Internal::get_pretty_type_name<StoredType>();
+  IO::Internal::emit_type_as_yaml<StoredType>(node);
   if (!data.description.empty())
   {
     node["description"] << data.description;

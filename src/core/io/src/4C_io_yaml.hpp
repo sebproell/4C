@@ -151,7 +151,7 @@ namespace Core::IO
     }
     else
     {
-      node << "none";
+      node = "null";
     }
   }
 
@@ -201,7 +201,7 @@ namespace Core::IO
   void read_value_from_yaml(ConstYamlNodeRef node, std::optional<T>& value)
   {
     FOUR_C_ASSERT_ALWAYS(node.node.has_val(), "Expected a value node.");
-    if (node.node.has_val() && node.node.val() == "none")
+    if (node.node.val_is_null())
     {
       value.reset();
     }
