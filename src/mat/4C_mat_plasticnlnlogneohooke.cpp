@@ -141,7 +141,6 @@ namespace
 
     return {Dgamma, dy_d_dgamma};
   }
-
 }  // namespace
 
 
@@ -244,8 +243,6 @@ void Mat::PlasticNlnLogNeoHooke::pack(Core::Communication::PackBuffer& data) con
     add_to_pack(data, accplstrainlast_.at(var));
     add_to_pack(data, invplrcglast_.at(var));
   }
-
-  return;
 }  // pack()
 
 
@@ -255,7 +252,6 @@ void Mat::PlasticNlnLogNeoHooke::pack(Core::Communication::PackBuffer& data) con
 void Mat::PlasticNlnLogNeoHooke::unpack(Core::Communication::UnpackBuffer& buffer)
 {
   isinit_ = true;
-
 
   Core::Communication::extract_and_assert_id(buffer, unique_par_object_id());
 
@@ -274,6 +270,16 @@ void Mat::PlasticNlnLogNeoHooke::unpack(Core::Communication::UnpackBuffer& buffe
       else
         FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
             material_type());
+
+      // Extract the function for hardening again for unpack.
+      const int functionID_hardening =
+          params_->functionID_hardening_;  // function number for isotropic hardening
+      if (functionID_hardening != 0)
+      {
+        hardening_function_ =
+            &Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfAnything>(
+                functionID_hardening);
+      }
     }
 
   // history data
@@ -299,11 +305,6 @@ void Mat::PlasticNlnLogNeoHooke::unpack(Core::Communication::UnpackBuffer& buffe
     accplstraincurr_.push_back(tmp1);
     invplrcgcurr_.push_back(tmp);
   }
-
-
-
-  return;
-
 }  // unpack()
 
 
@@ -371,7 +372,6 @@ void Mat::PlasticNlnLogNeoHooke::update()
     invplrcgcurr_.at(i) = emptymat;
     accplstraincurr_.at(i) = 0.0;
   }
-  return;
 }  // update()
 
 
@@ -633,7 +633,6 @@ void Mat::PlasticNlnLogNeoHooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
             *cmat, fac, tmp1, tmp1, 1.0);  // N_{abab}
         Core::LinAlg::Tensor::add_elasticity_tensor_product(
             *cmat, fac, tmp1, tmp2, 1.0);  // N_{abba}
-
       }  // end if (a!=b)
     }  // end loop b
   }  // end loop a
@@ -649,9 +648,6 @@ void Mat::PlasticNlnLogNeoHooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
   // Green-Lagrange plastic strains can be easily calculated, in contrast
   // Euler-Almansi requires special treatment, which is not yet considered in the
   // element formulation
-
-  return;
-
 }  // evaluate()
 
 
@@ -729,7 +725,6 @@ bool Mat::PlasticNlnLogNeoHooke::evaluate_output_data(
   }
   return false;
 }
-
 
 /*----------------------------------------------------------------------*/
 
