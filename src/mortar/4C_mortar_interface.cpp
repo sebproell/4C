@@ -817,7 +817,6 @@ void Mortar::Interface::initialize_lag_mult_lin()
 }
 
 
-
 /*----------------------------------------------------------------------*
  |  Check and initialize for const lagmult interpolation     seitz 09/17|
  *----------------------------------------------------------------------*/
@@ -1165,7 +1164,7 @@ void Mortar::Interface::redistribute()
     ss_slave << "Mortar::Interface::redistribute of '" << discret().name() << "' (slave)";
     TEUCHOS_FUNC_TIME_MONITOR(ss_slave.str());
 
-    std::shared_ptr<const Epetra_CrsGraph> snodegraph =
+    std::shared_ptr<const Core::LinAlg::Graph> snodegraph =
         Core::Rebalance::build_graph(*idiscret_, sroweles);
 
     Teuchos::ParameterList rebalanceParams;
@@ -1226,7 +1225,7 @@ void Mortar::Interface::redistribute_master_side(std::shared_ptr<Epetra_Map>& ro
     const double imbalance) const
 {
   // call parallel redistribution
-  std::shared_ptr<const Epetra_CrsGraph> nodegraph =
+  std::shared_ptr<const Core::LinAlg::Graph> nodegraph =
       Core::Rebalance::build_graph(*idiscret_, roweles);
 
   Teuchos::ParameterList rebalanceParams;
