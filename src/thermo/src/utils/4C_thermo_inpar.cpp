@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_thermo.hpp"
+#include "4C_thermo_inpar.hpp"
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_io_geometry_type.hpp"
@@ -14,9 +14,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-
-
-void Inpar::Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
+void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
 
@@ -165,8 +163,7 @@ void Inpar::Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSp
 
 
 
-void Inpar::Thermo::set_valid_conditions(
-    std::vector<Core::Conditions::ConditionDefinition>& condlist)
+void Thermo::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
   using namespace Core::IO::InputSpecBuilders;
 
