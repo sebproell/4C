@@ -1566,15 +1566,6 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
  *----------------------------------------------------------------------*/
 void Mortar::Interface::create_search_tree()
 {
-  // warning
-#ifdef MORTARGMSHCTN
-  if (Dim() == 3 && Core::Communication::my_mpi_rank(Comm()) == 0)
-  {
-    std::cout << "\n*****************************************************************\n";
-    std::cout << "GMSH output of all mortar tree nodes in 3D needs a lot of memory!\n";
-    std::cout << "*****************************************************************\n";
-  }
-#endif
   // binary tree search
   if (search_alg() == Inpar::Mortar::search_binarytree)
   {
@@ -2539,19 +2530,6 @@ void Mortar::Interface::pre_evaluate(const int& step, const int& iter)
   else
     FOUR_C_THROW("Invalid search algorithm");
 
-  // TODO: maybe we can remove this debug functionality
-#ifdef MORTARGMSHCELLS
-  // reset integration cell GMSH files
-  int proc = Core::Communication::my_mpi_rank(Comm());
-  std::ostringstream filename;
-  filename << "o/gmsh_output/cells_" << proc << ".pos";
-  FILE* fp = fopen(filename.str().c_str(), "w");
-  std::stringstream gmshfilecontent;
-  gmshfilecontent << "View \"Integration Cells Proc " << proc << "\" {" << std::endl;
-  fprintf(fp, gmshfilecontent.str().c_str());
-  fclose(fp);
-#endif  // #ifdef MORTARGMSHCELLS
-
   // evaluate averaged nodal normals on slave side
   evaluate_nodal_normals();
 
@@ -2568,45 +2546,6 @@ void Mortar::Interface::pre_evaluate(const int& step, const int& iter)
 void Mortar::Interface::post_evaluate(const int step, const int iter)
 {
   // nothing to do...
-
-#ifdef MORTARGMSHCELLS
-  // finish integration cell GMSH files
-  int proc = Core::Communication::my_mpi_rank(Comm());
-  std::ostringstream filename;
-  filename << "o/gmsh_output/cells_" << proc << ".pos";
-  FILE* fp = fopen(filename.str().c_str(), "a");
-  std::stringstream gmshfilecontent2;
-  gmshfilecontent2 << "};" << std::endl;
-  fprintf(fp, gmshfilecontent2.str().c_str());
-  fclose(fp);
-
-  // construct unique filename for gmsh output
-  // first index = time step index
-  std::ostringstream newfilename;
-  newfilename << "o/gmsh_output/cells_";
-  if (step < 10)
-    newfilename << 0 << 0 << 0 << 0;
-  else if (step < 100)
-    newfilename << 0 << 0 << 0;
-  else if (step < 1000)
-    newfilename << 0 << 0;
-  else if (step < 10000)
-    newfilename << 0;
-  else if (step > 99999)
-    FOUR_C_THROW("Gmsh output implemented for a maximum of 99.999 time steps");
-  newfilename << step;
-
-  // second index = Newton iteration index
-  newfilename << "_";
-  if (iter < 10)
-    newfilename << 0;
-  else if (iter > 99)
-    FOUR_C_THROW("Gmsh output implemented for a maximum of 99 iterations");
-  newfilename << iter << "_p" << proc << ".pos";
-
-  // rename file
-  rename(filename.str().c_str(), newfilename.str().c_str());
-#endif  // #ifdef MORTARGMSHCELLS
 }
 
 
