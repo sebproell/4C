@@ -50,7 +50,6 @@ STRUCT_DISP                     Yes
 STRUCT_PLASTIC_STRAIN           GL
 STRUCT_STRAIN                   GL
 STRUCT_STRESS                   2PK
-STRUCT_VEL_ACC                  No
 THERM_HEATFLUX                  None
 THERM_TEMPERATURE               No
 THERM_TEMPGRAD                  None

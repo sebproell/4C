@@ -95,7 +95,6 @@ Solid::TimInt::TimInt(const Teuchos::ParameterList& timeparams,
       writerestartevery_(timeparams.get<int>("RESTARTEVERY")),
       writeele_(ioparams.get<bool>("STRUCT_ELE")),
       writestate_(ioparams.get<bool>("STRUCT_DISP")),
-      writevelacc_(ioparams.get<bool>("STRUCT_VEL_ACC")),
       writeresultsevery_(timeparams.get<int>("RESULTSEVERY")),
       writestress_(Teuchos::getIntegralValue<Inpar::Solid::StressType>(ioparams, "STRUCT_STRESS")),
       writecouplstress_(
@@ -2169,14 +2168,6 @@ void Solid::TimInt::output_state(bool& datawritten)
     output_->write_vector("displacement", (*dis_)(0));
   }
 
-  // for visualization of vel and acc do not forget to comment in corresponding lines in
-  // StructureEnsightWriter
-  if (writevelacc_)
-  {
-    output_->write_vector("velocity", (*vel_)(0));
-    output_->write_vector("acceleration", (*acc_)(0));
-  }
-
   // biofilm growth
   if (have_biofilm_growth())
   {
@@ -2219,12 +2210,9 @@ void Solid::TimInt::output_state(bool& datawritten)
 /* add restart information to output_state */
 void Solid::TimInt::add_restart_to_output_state()
 {
-  // add velocity and acceleration if necessary
-  if (!writevelacc_)
-  {
-    output_->write_vector("velocity", (*vel_)(0));
-    output_->write_vector("acceleration", (*acc_)(0));
-  }
+  // add velocity and acceleration
+  output_->write_vector("velocity", (*vel_)(0));
+  output_->write_vector("acceleration", (*acc_)(0));
 
   write_restart_force(output_);
 

@@ -657,8 +657,8 @@ void Solid::ModelEvaluator::Structure::write_time_step_output_runtime_structure(
 
   auto [output_time, output_step] = get_time_and_time_step_index_for_output(
       visualization_params_, global_state().get_time_n(), global_state().get_step_n());
-  write_output_runtime_structure(
-      *global_state().get_dis_n(), *global_state().get_vel_n(), output_step, output_time);
+  write_output_runtime_structure(*global_state().get_dis_n(), *global_state().get_vel_n(),
+      *global_state().get_acc_n(), output_step, output_time);
 }
 
 /*----------------------------------------------------------------------------*
@@ -669,15 +669,16 @@ void Solid::ModelEvaluator::Structure::write_iteration_output_runtime_structure(
 
   auto [output_time, output_step] = get_time_and_time_step_index_for_output(visualization_params_,
       global_state().get_time_n(), global_state().get_step_n(), eval_data().get_nln_iter());
-  write_output_runtime_structure(
-      *global_state().get_dis_np(), *global_state().get_vel_np(), output_step, output_time);
+  write_output_runtime_structure(*global_state().get_dis_np(), *global_state().get_vel_np(),
+      *global_state().get_acc_np(), output_step, output_time);
 }
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void Solid::ModelEvaluator::Structure::write_output_runtime_structure(
     const Core::LinAlg::Vector<double>& displacement_state_vector,
-    const Core::LinAlg::Vector<double>& velocity_state_vector, const int timestep_number,
+    const Core::LinAlg::Vector<double>& velocity_state_vector,
+    const Core::LinAlg::Vector<double>& acceleration_state_vector, const int timestep_number,
     const double time) const
 {
   check_init_setup();
@@ -705,6 +706,14 @@ void Solid::ModelEvaluator::Structure::write_output_runtime_structure(
     std::vector<std::optional<std::string>> context(global_state().get_dim(), "velocity");
     vtu_writer_ptr_->append_result_data_vector_with_context(
         velocity_state_vector, Core::IO::OutputEntity::dof, context);
+  }
+
+  // append acceleration if desired
+  if (structure_output_params.output_acceleration_state())
+  {
+    std::vector<std::optional<std::string>> context(global_state().get_dim(), "acceleration");
+    vtu_writer_ptr_->append_result_data_vector_with_context(
+        acceleration_state_vector, Core::IO::OutputEntity::dof, context);
   }
 
   // append element owner if desired
@@ -1655,26 +1664,11 @@ void Solid::ModelEvaluator::Structure::output_step_state(
   if (global_in_output().is_output_every_iter())
   {
     iowriter.write_vector("displacement", global_state().get_dis_np());
-    /* for visualization of vel and acc do not forget to comment in
-     * corresponding lines in StructureEnsightWriter */
-    if (global_in_output().is_write_vel_acc())
-    {
-      iowriter.write_vector("velocity", global_state().get_vel_np());
-      iowriter.write_vector("acceleration", global_state().get_acc_np());
-    }
   }
   else
   {
     // write default output...
     iowriter.write_vector("displacement", global_state().get_dis_n());
-
-    /* for visualization of vel and acc do not forget to comment in
-     * corresponding lines in StructureEnsightWriter */
-    if (global_in_output().is_write_vel_acc())
-    {
-      iowriter.write_vector("velocity", global_state().get_vel_n());
-      iowriter.write_vector("acceleration", global_state().get_acc_n());
-    }
   }
 }
 

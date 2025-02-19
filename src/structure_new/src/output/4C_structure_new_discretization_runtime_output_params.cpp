@@ -21,6 +21,7 @@ Discret::Elements::StructureRuntimeOutputParams::StructureRuntimeOutputParams()
       issetup_(false),
       output_displacement_state_(false),
       output_velocity_state_(false),
+      output_acceleration_state_(false),
       output_element_owner_(false),
       output_element_gid_(false),
       output_element_material_id_(false),
@@ -43,6 +44,7 @@ void Discret::Elements::StructureRuntimeOutputParams::init(
   // initialize the parameter values
   output_displacement_state_ = IO_vtk_structure_structure_paramslist.get<bool>("DISPLACEMENT");
   output_velocity_state_ = IO_vtk_structure_structure_paramslist.get<bool>("VELOCITY");
+  output_acceleration_state_ = IO_vtk_structure_structure_paramslist.get<bool>("ACCELERATION");
   output_element_owner_ = IO_vtk_structure_structure_paramslist.get<bool>("ELEMENT_OWNER");
   output_element_gid_ = IO_vtk_structure_structure_paramslist.get<bool>("ELEMENT_GID");
   output_element_material_id_ = IO_vtk_structure_structure_paramslist.get<bool>("ELEMENT_MAT_ID");

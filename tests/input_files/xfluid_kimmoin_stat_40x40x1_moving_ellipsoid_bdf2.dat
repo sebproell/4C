@@ -12,7 +12,6 @@ NUMSTRUCDIS                     1
 OUTPUT_BIN                      Yes
 OUTPUT_GMSH                     no
 STRUCT_DISP                     Yes
-STRUCT_VEL_ACC                  No
 STRUCT_STRESS                   No
 STRUCT_COUPLING_STRESS          No
 STRUCT_STRAIN                   No

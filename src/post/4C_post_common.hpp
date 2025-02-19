@@ -141,9 +141,6 @@ class PostProblem
   //! returns tempgrad type
   std::string tempgradtype() { return tempgradtype_; }
 
-  //! returns struct_vel_acc_
-  std::string struct_vel_acc() { return struct_vel_acc_; }
-
   //! returns struct_mat_disp_
   std::string struct_mat_disp() { return struct_mat_disp_; }
 
@@ -235,9 +232,6 @@ class PostProblem
 
   //! spatial temperature gradient output type optionally set by command line argument
   std::string tempgradtype_;
-
-  //! structural velocity and acceleration output optionally set by command line argument
-  std::string struct_vel_acc_;
 
   //! material displacement output optionally set by command line argument
   std::string struct_mat_disp_;

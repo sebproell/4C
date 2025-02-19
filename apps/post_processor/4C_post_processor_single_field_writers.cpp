@@ -25,11 +25,6 @@ void StructureFilter::write_all_results(PostField* field)
       "prolongated_gauss_2PK_stresses_xyz", "prolongated_gauss_2PK_stresses_xyz", nodebased, 6);
   writer_->write_result(
       "prolongated_gauss_GL_strains_xyz", "prolongated_gauss_GL_strains_xyz", nodebased, 6);
-  if (field->problem()->struct_vel_acc() == "yes")
-  {
-    writer_->write_result("velocity", "velocity", dofbased, field->problem()->num_dim());
-    writer_->write_result("acceleration", "acceleration", dofbased, field->problem()->num_dim());
-  }
   if (field->problem()->struct_mat_disp() == "yes")
     writer_->write_result(
         "material_displacement", "material_displacement", dofbased, field->problem()->num_dim());

@@ -49,7 +49,6 @@ RANDSEED                        -1
 OUTPUT_GMSH                     No
 OUTPUT_BIN                      yes
 STRUCT_DISP                     Yes
-STRUCT_VEL_ACC                  No
 STRUCT_STRESS                   No
 STRUCT_COUPLING_STRESS          No
 STRUCT_STRAIN                   No

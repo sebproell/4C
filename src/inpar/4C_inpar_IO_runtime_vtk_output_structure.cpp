@@ -43,6 +43,9 @@ namespace Inpar
         Core::Utils::bool_parameter(
             "VELOCITY", "No", "write velocity output", sublist_IO_VTK_structure);
 
+        Core::Utils::bool_parameter(
+            "ACCELERATION", "No", "write acceleration output", sublist_IO_VTK_structure);
+
         // whether to write element owner
         Core::Utils::bool_parameter(
             "ELEMENT_OWNER", "No", "write element owner", sublist_IO_VTK_structure);

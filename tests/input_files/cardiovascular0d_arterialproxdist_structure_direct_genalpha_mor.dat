@@ -4,7 +4,6 @@
 POD_MATRIX                      cardiovascular0d_arterialproxdist_structure_direct_genalpha_mor_pod100.bin
 --------------------------------------------------------------------------IO
 OUTPUT_BIN                      Yes
-STRUCT_VEL_ACC                  Yes
 STRUCT_STRAIN                   gl
 STRUCT_STRESS                   Cauchy
 WRITE_INITIAL_STATE             No

@@ -24,7 +24,6 @@ STRUCT_DISP                     Yes
 STRUCT_PLASTIC_STRAIN           No
 STRUCT_STRAIN                   GL
 STRUCT_STRESS                   2PK
-STRUCT_VEL_ACC                  No
 THERM_HEATFLUX                  Current
 THERM_TEMPERATURE               Yes
 THERM_TEMPGRAD                  Current

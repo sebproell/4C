@@ -197,13 +197,6 @@ namespace Solid
         return writestate_;
       };
 
-      /// Shall we write the velocities and accelerations?
-      const bool& is_write_vel_acc() const
-      {
-        check_init_setup();
-        return writevelacc_;
-      };
-
       /// Shall we write the jacobian to MATLAB?
       bool is_write_jacobian_to_matlab() const
       {
@@ -364,9 +357,6 @@ namespace Solid
 
       /// write state on/off
       bool writestate_;
-
-      /// write velocity and acceleration on/off
-      bool writevelacc_;
 
       /// write jacobian to MATLAB
       bool writejac2matlab_;

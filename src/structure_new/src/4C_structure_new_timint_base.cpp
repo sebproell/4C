@@ -814,13 +814,9 @@ void Solid::TimeInt::Base::add_restart_to_output_state()
 {
   std::shared_ptr<Core::IO::DiscretizationWriter> output_ptr = dataio_->get_output_ptr();
 
-  // force output of velocity and acceleration in case it is not written previously by the model
-  // evaluators
-  if (!dataio_->is_write_vel_acc())
-  {
-    output_ptr->write_vector("velocity", dataglobalstate_->get_vel_n());
-    output_ptr->write_vector("acceleration", dataglobalstate_->get_acc_n());
-  }
+  // output of velocity and acceleration
+  output_ptr->write_vector("velocity", dataglobalstate_->get_vel_n());
+  output_ptr->write_vector("acceleration", dataglobalstate_->get_acc_n());
 
   /* Add the restart information of the different time integrators and model
    * evaluators. */

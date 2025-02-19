@@ -37,7 +37,6 @@ void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>&
   // Structural output
   Core::Utils::bool_parameter("STRUCT_ELE", "Yes", "Output of element properties", io);
   Core::Utils::bool_parameter("STRUCT_DISP", "Yes", "Output of displacements", io);
-  Core::Utils::bool_parameter("STRUCT_VEL_ACC", "No", "Output of velocity and acceleration", io);
   Core::Utils::string_to_integral_parameter<Inpar::Solid::StressType>("STRUCT_STRESS", "No",
       "Output of stress",
       tuple<std::string>("No", "no", "NO", "Yes", "yes", "YES", "Cauchy", "cauchy", "2PK", "2pk"),

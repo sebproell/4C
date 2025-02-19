@@ -47,7 +47,6 @@ Solid::TimeInt::BaseDataIO::BaseDataIO()
       outputeveryiter_(false),
       writesurfactant_(false),
       writestate_(false),
-      writevelacc_(false),
       writejac2matlab_(false),
       firstoutputofrun_(false),
       printscreen_(-1),
@@ -55,6 +54,7 @@ Solid::TimeInt::BaseDataIO::BaseDataIO()
       writerestartevery_(-1),
       writeresultsevery_(-1),
       writeenergyevery_(-1),
+      lastwrittenresultsstep_(-1),
       writestress_(Inpar::Solid::stress_none),
       writecouplstress_(Inpar::Solid::stress_none),
       writestrain_(Inpar::Solid::strain_none),
@@ -90,7 +90,6 @@ void Solid::TimeInt::BaseDataIO::init(const Teuchos::ParameterList& ioparams,
     writerestartevery_ = sdynparams.get<int>("RESTARTEVERY");
     writetimestepoffset_ = sdynparams.get<int>("OUTPUT_STEP_OFFSET");
     writestate_ = ioparams.get<bool>("STRUCT_DISP");
-    writevelacc_ = ioparams.get<bool>("STRUCT_VEL_ACC");
     writejac2matlab_ = ioparams.get<bool>("STRUCT_JACOBIAN_MATLAB");
     conditionnumbertype_ = ioparams.get<Inpar::Solid::ConditionNumber>("STRUCT_CONDITION_NUMBER");
     firstoutputofrun_ = true;
