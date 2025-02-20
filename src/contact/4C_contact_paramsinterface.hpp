@@ -63,9 +63,6 @@ namespace CONTACT
     //! get the current step length
     virtual double get_step_length() const = 0;
 
-    //! get number of linear system corrections (modified Newton approach)
-    virtual int get_number_of_modified_newton_corrections() const = 0;
-
     //! get the is_default_step indicator
     virtual bool is_default_step() const = 0;
 

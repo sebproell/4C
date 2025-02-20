@@ -223,9 +223,8 @@ void NOX::Nln::PrePostOp::IMPLICIT::Generic::runPostIterate(const ::NOX::Solver:
 {
   double step = 0.0;
   const bool isdefaultstep = get_step(step, solver);
-  const int num_corrs = 0;
 
-  impl_.model_eval().run_post_iterate(solver, step, isdefaultstep, num_corrs);
+  impl_.model_eval().run_post_iterate(solver, step, isdefaultstep);
 }
 
 /*----------------------------------------------------------------------------*
