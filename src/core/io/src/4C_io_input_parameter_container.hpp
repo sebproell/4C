@@ -11,6 +11,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_io_input_types.hpp"
 #include "4C_utils_demangle.hpp"
 #include "4C_utils_exceptions.hpp"
 
@@ -30,22 +31,6 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Core::IO
 {
-  /**
-   * A type that either contains a value of type T or nothing. This type is useful to
-   * represent the absence of a value marked by "none" in the input file. The type is just an alias
-   * for std::optional<T> to more precisely convey the intended meaning.
-   */
-  template <typename T>
-  using Noneable = std::optional<T>;
-
-  /**
-   * A constant to represent the absence of a value in the input file. The constant is templated
-   * on the type of the value inside the Noneable to properly handle cases where a Noneable is
-   * itself stored inside a std::optional type.
-   */
-  template <typename T>
-  inline constexpr auto none = Noneable<T>{std::nullopt};
-
   /**
    * A container to store dynamic input parameters. The container can store arbitrary types of
    * parameters. Parameters can be grouped in sub-containers.

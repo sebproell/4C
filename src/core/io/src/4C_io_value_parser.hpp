@@ -10,6 +10,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_io_input_types.hpp"
 #include "4C_utils_demangle.hpp"
 #include "4C_utils_exceptions.hpp"
 
@@ -110,16 +111,47 @@ namespace Core::IO
      *
      * @code
      *  std::vector<std::vector<int>> nested_vector;
-     *  parser.read(nested_vector, 2, 3);
+     *  parser.read(nested_vector, {2, 3});
      *  // This reads two vectors of size 3.
      * @endcode
      */
-    template <typename T, typename... SizeInfo>
-    T read(SizeInfo&&... size_info)
+    template <typename T>
+      requires(rank<T>() == 0)
+    T read()
     {
       T val;
-      // Dispatch to the correct parsing function.
-      read_internal(val, std::forward<SizeInfo>(size_info)...);
+      read_internal(val);
+      return val;
+    }
+
+    template <typename T>
+      requires(rank<T>() == 1)
+    T read(std::size_t size)
+    {
+      size_info_ = &size;
+      T val;
+      read_internal(val);
+      size_info_ = nullptr;
+      return val;
+    }
+
+
+    template <typename T>
+      requires(rank<T>() > 0)
+    T read(const std::array<std::size_t, rank<T>()>& size)
+    {
+      size_info_ = size.data();
+      T val;
+      read_internal(val);
+      size_info_ = nullptr;
+      return val;
+    }
+
+    template <Internal::IsStdArray T>
+    T read()
+    {
+      T val;
+      read_internal(val);
       return val;
     }
 
@@ -159,7 +191,7 @@ namespace Core::IO
     void read_internal(std::filesystem::path& value);
 
     template <typename T, typename... SizeInfo>
-    void read_internal(std::optional<T>& value, SizeInfo&&... size_info)
+    void read_internal(std::optional<T>& value)
     {
       auto next = peek();
       if (next == "none")
@@ -169,38 +201,44 @@ namespace Core::IO
       }
       else
       {
-        read_internal(value.emplace(), std::forward<SizeInfo>(size_info)...);
+        read_internal(value.emplace());
       }
     }
 
     template <typename T, typename... SizeInfo>
-    void read_internal(std::vector<T>& value, std::size_t size, SizeInfo&&... size_info)
+    void read_internal(std::vector<T>& value)
     {
-      value.resize(size);
-      for (std::size_t i = 0; i < size; ++i)
+      const std::size_t my_size = size_info_[0];
+      size_info_++;
+      value.resize(my_size);
+      for (std::size_t i = 0; i < my_size; ++i)
       {
-        read_internal(value[i], std::forward<SizeInfo>(size_info)...);
+        read_internal(value[i]);
       }
+      size_info_--;
     }
 
     template <typename T, std::size_t n, typename... SizeInfo>
-    void read_internal(std::array<T, n>& value, SizeInfo&&... size_info)
+    void read_internal(std::array<T, n>& value)
     {
       for (std::size_t i = 0; i < n; ++i)
       {
-        read_internal(value[i], std::forward<SizeInfo>(size_info)...);
+        read_internal(value[i]);
       }
     }
 
     template <typename U, typename... SizeInfo>
-    void read_internal(std::map<std::string, U>& value, std::size_t size, SizeInfo&&... size_info)
+    void read_internal(std::map<std::string, U>& value)
     {
-      for (std::size_t i = 0; i < size; ++i)
+      const std::size_t my_size = size_info_[0];
+      size_info_++;
+      for (std::size_t i = 0; i < my_size; ++i)
       {
         std::string key;
         read_internal(key);
-        read_internal(value[key], std::forward<SizeInfo>(size_info)...);
+        read_internal(value[key]);
       }
+      size_info_--;
     }
 
     //! The data to parse from.
@@ -214,6 +252,9 @@ namespace Core::IO
 
     //! A stack of positions that the parser can backtrack to.
     std::stack<std::size_t> backtrack_positions_;
+
+    //! This is used to store the size information for the current read operation.
+    const std::size_t* size_info_{nullptr};
   };
 }  // namespace Core::IO
 

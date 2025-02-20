@@ -12,6 +12,7 @@
 
 #include "4C_io_input_parameter_container.hpp"
 #include "4C_io_input_spec.hpp"
+#include "4C_io_input_types.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_io_yaml.hpp"
 #include "4C_utils_string.hpp"
@@ -86,7 +87,7 @@ namespace Core::IO
             std::declval<Core::IO::InputParameterContainer&>()))>> = true;
 
 
-    template <typename T, typename AlwaysVoid = void>
+    template <typename T>
     struct PrettyTypeName
     {
       std::string operator()() { return Utils::try_demangle(typeid(T).name()); }
@@ -140,7 +141,7 @@ namespace Core::IO
     template <YamlSupportedType T>
     struct YamlTypeEmitter<T>
     {
-      void operator()(ryml::NodeRef node)
+      void operator()(ryml::NodeRef node, size_t*)
       {
         FOUR_C_ASSERT(node.is_map(), "Expected a map node.");
         node["type"] << get_pretty_type_name<T>();
@@ -150,45 +151,60 @@ namespace Core::IO
     template <typename T>
     struct YamlTypeEmitter<std::vector<T>>
     {
-      void operator()(ryml::NodeRef node)
+      void operator()(ryml::NodeRef node, size_t* size)
       {
         FOUR_C_ASSERT(node.is_map(), "Expected a map node.");
         node["type"] = "vector";
+        if (*size > 0)
+        {
+          node["size"] << *size;
+        }
         node["value_type"] |= ryml::MAP;
-        YamlTypeEmitter<T>{}(node["value_type"]);
+        YamlTypeEmitter<T>{}(node["value_type"], size + 1);
       }
     };
 
     template <typename T>
     struct YamlTypeEmitter<std::map<std::string, T>>
     {
-      void operator()(ryml::NodeRef node)
+      void operator()(ryml::NodeRef node, size_t* size)
       {
         FOUR_C_ASSERT(node.is_map(), "Expected a map node.");
         node["type"] = "map";
+        if (*size > 0)
+        {
+          node["size"] << *size;
+        }
         node["value_type"] |= ryml::MAP;
-        YamlTypeEmitter<T>{}(node["value_type"]);
+        YamlTypeEmitter<T>{}(node["value_type"], size + 1);
       }
     };
 
     template <typename T>
     struct YamlTypeEmitter<Noneable<T>>
     {
-      void operator()(ryml::NodeRef node)
+      void operator()(ryml::NodeRef node, size_t* size)
       {
         FOUR_C_ASSERT(node.is_map(), "Expected a map node.");
         // Pull up the "noneable" aspect. The fact that this type wraps another type is specific
         // to C++ and not relevant to other tools. Simply knowing that a type can be "none" is
         // enough for them.
         emit_value_as_yaml(node["noneable"], true);
-        YamlTypeEmitter<T>{}(node);
+        YamlTypeEmitter<T>{}(node, size);
       }
     };
 
     template <typename T>
+      requires(rank<T>() == 0)
     void emit_type_as_yaml(ryml::NodeRef node)
     {
-      YamlTypeEmitter<T>{}(node);
+      YamlTypeEmitter<T>{}(node, nullptr);
+    }
+
+    template <typename T>
+    void emit_type_as_yaml(ryml::NodeRef node, std::array<std::size_t, rank<T>()> size)
+    {
+      YamlTypeEmitter<T>{}(node, size.data());
     }
 
 
@@ -480,38 +496,6 @@ namespace Core::IO
       return InputSpec(std::make_unique<InputSpecTypeErasedImplementation<std::decay_t<T>>>(
           std::forward<T>(wrapped), std::move(data)));
     }
-
-
-    template <typename T>
-    struct SupportedTypeHelper : std::false_type
-    {
-    };
-
-    template <typename T>
-    concept SupportedTypePrimitives =
-        std::same_as<T, int> || std::same_as<T, double> || std::same_as<T, bool> ||
-        std::same_as<T, std::string> || std::same_as<T, std::filesystem::path>;
-
-    template <SupportedTypePrimitives T>
-    struct SupportedTypeHelper<T> : std::true_type
-    {
-    };
-
-    template <typename T>
-    struct SupportedTypeHelper<std::vector<T>> : SupportedTypeHelper<T>
-    {
-    };
-
-    template <typename U>
-    struct SupportedTypeHelper<std::map<std::string, U>> : SupportedTypeHelper<U>
-    {
-    };
-
-    template <typename T>
-    struct SupportedTypeHelper<Noneable<T>> : SupportedTypeHelper<T>
-    {
-    };
-
   }  // namespace Internal
 
   /**
@@ -536,58 +520,6 @@ namespace Core::IO
    */
   namespace InputSpecBuilders
   {
-    /**
-     * We deliberately limit ourselves to a few generally useful types. While it would not be too
-     * difficult to support all the fundamental and container types that C++ provides, this would
-     * likely lead to more confusion for users than it would provide benefits. After all, when
-     * consuming the parsed input, the user will have to use the exact type of the parameter. Also,
-     * input file formats are often not able to distinguish fundamental types like `double` and
-     * `float` and there is little benefit in supporting both in the input mechanism. Any conversion
-     * between types can be done in the user code, which usually entails additional validation and
-     * error handling anyway.
-     *
-     * The supported types are:
-     * - `int`
-     * - `double`
-     * - `bool`
-     * - `std::string`
-     * - `std::filesystem::path`
-     * - `Noneable<T>`, where `T` is one of the supported types
-     * - `std::vector<T>`, where `T` is one of the supported types
-     * - `std::map<std::string, T>`, where `T` is one of the supported types
-     */
-    template <typename T>
-    concept SupportedType = Internal::SupportedTypeHelper<T>::value;
-
-
-    template <SupportedType T>
-    struct Rank
-    {
-      static constexpr int value = 0;
-    };
-
-    template <SupportedType T>
-    struct Rank<std::vector<T>>
-    {
-      static constexpr int value = 1 + Rank<T>::value;
-    };
-
-    template <SupportedType T>
-    struct Rank<std::map<std::string, T>>
-    {
-      static constexpr int value = 1 + Rank<T>::value;
-    };
-
-    /**
-     * Determine the rank of a type, i.e., how many levels of nested containers are present.
-     */
-    template <typename T>
-    constexpr int rank()
-    {
-      return Rank<T>::value;
-    }
-
-
     // Import the Noneable type into the InputSpecBuilders namespace to make it easier to use.
     using Core::IO::none;
     using Core::IO::Noneable;
@@ -602,22 +534,29 @@ namespace Core::IO
     constexpr int dynamic_size = 0;
 
     /**
+     * Callback to determine the size of a vector or map at runtime from info that has already been
+     * parsed.
+     */
+    using SizeCallback = std::function<int(const InputParameterContainer&)>;
+
+    /**
+     * Size of a vector or map. This can be a fixed size, #dynamic_size, or a callback that
+     * determines the size at runtime.
+     */
+    using Size = std::variant<int, SizeCallback>;
+
+
+
+    /**
      * Callback function that may be attached to entry().
      */
     using EntryCallback = std::function<void(InputParameterContainer&)>;
 
     //! Additional parameters for an entry().
-    template <typename StoredTypeIn>
+    template <typename T>
     struct EntryData
     {
-      using StoredType = StoredTypeIn;
-      /**
-       * A function that determines the size of the vector. This function is called with the
-       * already parsed content of the input line, which may be used to query the size as the
-       * value of another parameter.
-       */
-      using SizeCallback = std::function<int(const InputParameterContainer&)>;
-
+      using StoredType = T;
       /**
        * An optional description of the value.
        */
@@ -635,19 +574,48 @@ namespace Core::IO
       std::optional<StoredType> default_value{};
 
       /**
-       * The size of the data. This can either be a fixed size or a callback that determines the
-       * size based on the value of another parameter.
-       *
-       * @note We use `int` instead of `size_t` since this is what most users write. Template
-       *      argument deduction will work a lot better with `int` than with `size_t`.
-       */
-      std::variant<int, SizeCallback> size{dynamic_size};
-
-      /**
        * An optional callback that is called after the value has been parsed. This can be used to
        * set additional values in the container.
        */
       EntryCallback on_parse_callback{nullptr};
+    };
+
+    template <typename T>
+      requires(rank<T>() == 1)
+    struct EntryData<T>
+    {
+      using StoredType = T;
+
+      std::string description{};
+
+      std::optional<bool> required{};
+
+      std::optional<StoredType> default_value{};
+
+      EntryCallback on_parse_callback{nullptr};
+
+      /**
+       * The size of the vector. This can be a fixed size, #dynamic_size, or a callback that
+       * determines the size at runtime.
+       */
+      Size size{dynamic_size};
+    };
+
+    template <typename T>
+      requires(rank<T>() > 1)
+    struct EntryData<T>
+    {
+      using StoredType = T;
+
+      std::string description{};
+
+      std::optional<bool> required{};
+
+      std::optional<StoredType> default_value{};
+
+      EntryCallback on_parse_callback{nullptr};
+
+      std::array<Size, rank<T>()> size;
     };
 
     //! Additional parameters for a group().
@@ -726,6 +694,8 @@ namespace Core::IO
         void emit_metadata(ryml::NodeRef node) const;
         bool emit(YamlNodeRef node, const InputParameterContainer& container,
             const InputSpecEmitOptions& options) const;
+        [[nodiscard]] bool has_correct_size(
+            const T& val, const InputParameterContainer& container) const;
       };
 
       /**
@@ -830,6 +800,28 @@ namespace Core::IO
       template <typename T>
       [[nodiscard]] InputSpec selection_internal(
           std::string name, std::vector<std::pair<std::string, T>> choices, EntryData<T> data = {});
+
+
+      struct SizeChecker
+      {
+        constexpr bool operator()(const auto& val, std::size_t* size_info) const { return true; }
+
+        template <typename U>
+        constexpr bool operator()(const std::vector<U>& v, std::size_t* size_info) const
+        {
+          return ((*size_info == dynamic_size) || (v.size() == *size_info)) &&
+                 std::ranges::all_of(
+                     v, [&](const auto& val) { return this->operator()(val, size_info + 1); });
+        }
+
+        template <typename U>
+        constexpr bool operator()(const std::map<std::string, U>& m, std::size_t* size_info) const
+        {
+          return ((*size_info == dynamic_size) || (m.size() == *size_info)) &&
+                 std::ranges::all_of(m,
+                     [&](const auto& val) { return this->operator()(val.second, size_info + 1); });
+        }
+      };
     }  // namespace Internal
 
     /**
@@ -1229,7 +1221,7 @@ namespace Core::IO
 
 // --- template definitions --- //
 
-template <Core::IO::InputSpecBuilders::SupportedType T>
+template <Core::IO::SupportedType T>
 void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::parse(
     ValueParser& parser, InputParameterContainer& container) const
 {
@@ -1246,7 +1238,11 @@ void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::parse(
     return;
   }
 
-  if constexpr (rank<T>() > 0)
+  if constexpr (rank<T>() == 0)
+  {
+    container.add(name, parser.read<T>());
+  }
+  else
   {
     struct SizeVisitor
     {
@@ -1256,27 +1252,33 @@ void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::parse(
 
         FOUR_C_THROW("Reading a vector from a dat-style string requires a known size.");
       }
-      int operator()(const typename EntryData<T>::SizeCallback& callback) const
-      {
-        return callback(container);
-      }
+      int operator()(const SizeCallback& callback) const { return callback(container); }
       InputParameterContainer& container;
     };
 
-    std::size_t size = std::visit(SizeVisitor{container}, data.size);
-    auto parsed = parser.read<T>(size);
-    container.add(name, parsed);
-  }
-  else
-  {
-    container.add(name, parser.read<T>());
+    if constexpr (rank<T>() == 1)
+    {
+      std::size_t size_info = std::visit(SizeVisitor{container}, data.size);
+      auto parsed = parser.read<T>(size_info);
+      container.add(name, parsed);
+    }
+    else if constexpr (rank<T>() > 1)
+    {
+      std::array<std::size_t, rank<T>()> size_info;
+      for (std::size_t i = 0; i < rank<T>(); ++i)
+      {
+        size_info[i] = std::visit(SizeVisitor{container}, data.size[i]);
+      }
+      auto parsed = parser.read<T>(size_info);
+      container.add(name, parsed);
+    }
   }
 
   if (data.on_parse_callback) data.on_parse_callback(container);
 }
 
 
-template <Core::IO::InputSpecBuilders::SupportedType T>
+template <Core::IO::SupportedType T>
 bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::match(ConstYamlNodeRef node,
     InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
 {
@@ -1310,6 +1312,14 @@ bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::match(ConstYamlNodeRef
   {
     T value;
     read_value_from_yaml(entry_node, value);
+    // Perform validation of the value here if necessary. Currently, we only validate sizes.
+    if constexpr (rank<T>() > 0)
+    {
+      if (!has_correct_size(value, container))
+      {
+        return false;
+      }
+    }
     container.add(name, value);
     match_entry.state = IO::Internal::MatchEntry::State::matched;
     match_entry.matched_node = entry_node.node.id();
@@ -1322,13 +1332,35 @@ bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::match(ConstYamlNodeRef
 }
 
 
-template <Core::IO::InputSpecBuilders::SupportedType T>
+template <Core::IO::SupportedType T>
 void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit_metadata(ryml::NodeRef node) const
 {
   node |= ryml::MAP;
   node["name"] << name;
 
-  IO::Internal::emit_type_as_yaml<StoredType>(node);
+  if constexpr (rank<T>() == 0)
+    IO::Internal::emit_type_as_yaml<StoredType>(node);
+  else
+  {
+    struct DynamicSizeVisitor
+    {
+      int operator()(int size) const { return size; }
+      int operator()(const SizeCallback& callback) const { return dynamic_size; }
+    };
+
+    std::array<std::size_t, rank<T>()> size_info;
+    if constexpr (rank<T>() == 1)
+      size_info[0] = std::visit(DynamicSizeVisitor{}, data.size);
+    else
+    {
+      for (std::size_t i = 0; i < rank<T>(); ++i)
+      {
+        size_info[i] = std::visit(DynamicSizeVisitor{}, data.size[i]);
+      }
+    }
+    IO::Internal::emit_type_as_yaml<StoredType>(node, size_info);
+  }
+
   if (!data.description.empty())
   {
     node["description"] << data.description;
@@ -1338,18 +1370,9 @@ void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit_metadata(ryml::No
   {
     emit_value_as_yaml(node["default"], data.default_value.value());
   }
-
-  if constexpr (rank<T>() > 0)
-  {
-    // Size can only be emitted if it is fixed.
-    if (data.size.index() == 0)
-    {
-      node["size"] << std::get<0>(data.size);
-    }
-  }
 }
 
-template <Core::IO::InputSpecBuilders::SupportedType T>
+template <Core::IO::SupportedType T>
 bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit(YamlNodeRef node,
     const InputParameterContainer& container, const InputSpecEmitOptions& options) const
 {
@@ -1380,6 +1403,44 @@ bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit(YamlNodeRef node,
 
   // Not present and no default, success depends on whether the parameter is required.
   return !data.required.value();
+}
+
+
+template <Core::IO::SupportedType T>
+bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::has_correct_size(
+    const T& val, const InputParameterContainer& container) const
+{
+  if constexpr (rank<T>() == 0)
+  {
+    return true;
+  }
+  else
+  {
+    struct SizeVisitor
+    {
+      int operator()(int size) const { return size; }
+      int operator()(const SizeCallback& callback) const
+      {
+        // For yaml, we do not validate the size based on the callback. This feature can be removed
+        // once we remove dat.
+        return dynamic_size;
+      }
+      const InputParameterContainer& container;
+    };
+
+    std::array<std::size_t, rank<T>()> size_info;
+    if constexpr (rank<T>() == 1)
+      size_info[0] = std::visit(SizeVisitor{container}, data.size);
+    else
+    {
+      for (std::size_t i = 0; i < rank<T>(); ++i)
+      {
+        size_info[i] = std::visit(SizeVisitor{container}, data.size[i]);
+      }
+    }
+    SizeChecker size_checker;
+    return size_checker(val, size_info.data());
+  }
 }
 
 
@@ -1592,10 +1653,11 @@ auto Core::IO::InputSpecBuilders::from_parameter(const std::string& name)
 }
 
 
-template <Core::IO::InputSpecBuilders::SupportedType T>
+template <Core::IO::SupportedType T>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::entry(std::string name, EntryData<T>&& data)
 {
   Internal::sanitize_required_default(data);
+
   return IO::Internal::make_spec(Internal::EntrySpec<T>{.name = name, .data = data},
       {
           .name = name,

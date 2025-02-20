@@ -127,20 +127,11 @@ namespace Core::IO
     node << value;
   }
 
-  inline void emit_value_as_yaml(ryml::NodeRef node, const std::string& value)
-  {
-    node << ryml::to_csubstr(value);
-  }
+  void emit_value_as_yaml(ryml::NodeRef node, const std::string& value);
 
-  inline void emit_value_as_yaml(ryml::NodeRef node, const bool& value)
-  {
-    node << (value ? "true" : "false");
-  }
+  void emit_value_as_yaml(ryml::NodeRef node, const bool& value);
 
-  inline void emit_value_as_yaml(ryml::NodeRef node, const std::filesystem::path& value)
-  {
-    node << value.string();
-  }
+  void emit_value_as_yaml(ryml::NodeRef node, const std::filesystem::path& value);
 
   template <typename T>
   void emit_value_as_yaml(ryml::NodeRef node, const std::optional<T>& value)
@@ -156,27 +147,10 @@ namespace Core::IO
   }
 
   template <typename T>
-  void emit_value_as_yaml(ryml::NodeRef node, const std::map<std::string, T>& value)
-  {
-    node |= ryml::MAP;
-    for (const auto& [key, v] : value)
-    {
-      auto child = node.append_child();
-      child << ryml::key(key);
-      emit_value_as_yaml(child, v);
-    }
-  }
+  void emit_value_as_yaml(ryml::NodeRef node, const std::map<std::string, T>& value);
 
   template <typename T>
-  void emit_value_as_yaml(ryml::NodeRef node, const std::vector<T>& value)
-  {
-    node |= ryml::SEQ | ryml::FLOW_SL;
-    for (const auto& v : value)
-    {
-      auto child = node.append_child();
-      emit_value_as_yaml(child, v);
-    }
-  }
+  void emit_value_as_yaml(ryml::NodeRef node, const std::vector<T>& value);
 
   template <YamlSupportedType T>
   void read_value_from_yaml(ConstYamlNodeRef node, T& value)
@@ -251,6 +225,31 @@ namespace Core::IO
     }
   }
 }  // namespace Core::IO
+
+
+
+template <typename T>
+void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const std::map<std::string, T>& value)
+{
+  node |= ryml::MAP;
+  for (const auto& [key, v] : value)
+  {
+    auto child = node.append_child();
+    child << ryml::key(key);
+    emit_value_as_yaml(child, v);
+  }
+}
+
+template <typename T>
+void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const std::vector<T>& value)
+{
+  node |= ryml::SEQ | ryml::FLOW_SL;
+  for (const auto& v : value)
+  {
+    auto child = node.append_child();
+    emit_value_as_yaml(child, v);
+  }
+}
 
 FOUR_C_NAMESPACE_CLOSE
 

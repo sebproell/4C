@@ -135,28 +135,33 @@ namespace
   TEST(InputSpecTest, Vector)
   {
     auto spec = all_of({
-        entry<int>("a"),
+        entry<std::vector<std::vector<int>>>("a", {.size = {2, 2}}),
         entry<std::vector<double>>("b", {.size = 3}),
-        entry<std::string>("c"),
     });
 
     {
       InputParameterContainer container;
-      std::string stream("a 1 b 1.0 2.0 3.0 c string");
+      std::string stream("a 1 2 3 4 b 1.0 2.0 3.0");
       ValueParser parser(stream);
       spec.fully_parse(parser, container);
-      EXPECT_EQ(container.get<int>("a"), 1);
+      const auto& a = container.get<std::vector<std::vector<int>>>("a");
+      EXPECT_EQ(a.size(), 2);
+      EXPECT_EQ(a[0].size(), 2);
+      EXPECT_EQ(a[0][0], 1);
+      EXPECT_EQ(a[0][1], 2);
+      EXPECT_EQ(a[1].size(), 2);
+      EXPECT_EQ(a[1][0], 3);
+      EXPECT_EQ(a[1][1], 4);
       const auto& b = container.get<std::vector<double>>("b");
       EXPECT_EQ(b.size(), 3);
       EXPECT_EQ(b[0], 1.0);
       EXPECT_EQ(b[1], 2.0);
       EXPECT_EQ(b[2], 3.0);
-      EXPECT_EQ(container.get<std::string>("c"), "string");
     }
 
     {
       InputParameterContainer container;
-      std::string stream("a 1 b 1.0 2.0 c string");
+      std::string stream("a 1 2 3 4 b 1.0 2.0 c");
       ValueParser parser(stream);
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.fully_parse(parser, container), Core::Exception,
           "Could not parse 'c' as a double value");
@@ -697,6 +702,8 @@ specs:
                              .size = 1}),
                 entry<std::string>("c"),
             }),
+            entry<std::vector<std::vector<std::vector<int>>>>(
+                "triple_vector", {.size = {dynamic_size, 2, from_parameter<int>("a")}}),
             group("group",
                 {
                     entry<std::string>("c", {.description = "A string"}),
@@ -728,7 +735,7 @@ specs:
       out << tree;
 
       std::string expected = R"(type: all_of
-description: 'all_of {a, b, one_of {all_of {b, c}, group}, e, group2, list}'
+description: 'all_of {a, b, one_of {all_of {b, c}, triple_vector, group}, e, group2, list}'
 required: true
 specs:
   - name: a
@@ -737,14 +744,14 @@ specs:
     default: 42
   - name: b
     type: vector
+    size: 3
     value_type:
       noneable: true
       type: double
     required: false
     default: [1,null,3]
-    size: 3
   - type: one_of
-    description: 'one_of {all_of {b, c}, group}'
+    description: 'one_of {all_of {b, c}, triple_vector, group}'
     specs:
       - type: all_of
         description: 'all_of {b, c}'
@@ -752,15 +759,25 @@ specs:
         specs:
           - name: b
             type: map
+            size: 1
             value_type:
               type: string
             required: false
             default:
               key: abc
-            size: 1
           - name: c
             type: string
             required: true
+      - name: triple_vector
+        type: vector
+        value_type:
+          type: vector
+          size: 2
+          value_type:
+            type: vector
+            value_type:
+              type: int
+        required: true
       - name: group
         type: group
         description: A group
@@ -1282,6 +1299,66 @@ v: [Null, NULL, ~] # all the other spellings that YAML supports
       EXPECT_EQ(v[0], none<double>);
       EXPECT_EQ(v[1], none<double>);
       EXPECT_EQ(v[2], none<double>);
+    }
+  }
+
+  TEST(InputSpecTest, MatchYamlSizes)
+  {
+    using ComplicatedType = std::vector<std::map<std::string, std::vector<int>>>;
+    auto spec = all_of({
+        entry<int>("num"),
+        entry<ComplicatedType>("v", {.size = {2, dynamic_size, from_parameter<int>("num")}}),
+    });
+
+    {
+      SCOPED_TRACE("Expected sizes");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::parse_in_arena(R"(num: 2
+v:
+  - key1: [1, 2]
+    key2: [3, 4]
+  - key1: [5, 6])",
+          &tree);
+      ryml::NodeRef root = tree.rootref();
+      ConstYamlNodeRef node(root, "");
+
+      InputParameterContainer container;
+      spec.match(node, container);
+      const auto& v = container.get<ComplicatedType>("v");
+      EXPECT_EQ(v.size(), 2);
+    }
+
+    {
+      SCOPED_TRACE("Wrong size from_parameter not validated in yaml.");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::parse_in_arena(R"(num: 2
+v:
+  - key1: [1, 2, 3] # inner most vector is too long but we do not check for this in yaml
+    key2: [3, 4]
+  - key1: [5, 6])",
+          &tree);
+      ryml::NodeRef root = tree.rootref();
+      ConstYamlNodeRef node(root, "");
+
+      InputParameterContainer container;
+      spec.match(node, container);
+    }
+
+    {
+      SCOPED_TRACE("Wrong size explicitly set.");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::parse_in_arena(R"(num: 2
+v:
+  - key1: [1, 2]
+  - key1: [5, 6]
+  - key1: [7, 8])",
+          &tree);
+      ryml::NodeRef root = tree.rootref();
+      ConstYamlNodeRef node(root, "");
+
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
+          spec.match(node, container), Core::Exception, "Partially matched entry 'v'");
     }
   }
 
