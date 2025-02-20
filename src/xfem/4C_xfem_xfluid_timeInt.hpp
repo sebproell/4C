@@ -290,9 +290,6 @@ namespace XFEM
                                 /// marker for reconstruction method of single nodal dofsets used
                                 /// for export in parallel
 
-    // global timestep
-    int step_;
-
     // name check interfacetips in timeintegration
     bool xfluid_timint_check_interfacetips_;
 

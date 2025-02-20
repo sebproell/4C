@@ -66,7 +66,6 @@ XFEM::XFluidTimeInt::XFluidTimeInt(
       timeint_scheme_(xfluid_timintapproach),
       node_to_reconstr_method_(node_to_reconstr_method),
       reconstr_method_to_node_(reconstr_method_to_node),
-      step_(step),
       xfluid_timint_check_interfacetips_(xfluid_timint_check_interfacetips),
       xfluid_timint_check_sliding_on_surface_(xfluid_timint_check_sliding_on_surface)
 {
