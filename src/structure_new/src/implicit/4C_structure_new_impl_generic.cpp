@@ -223,7 +223,7 @@ void NOX::Nln::PrePostOp::IMPLICIT::Generic::runPostIterate(const ::NOX::Solver:
 {
   double step = 0.0;
   const bool isdefaultstep = get_step(step, solver);
-  const int num_corrs = get_number_of_modified_newton_corrections(solver);
+  const int num_corrs = 0;
 
   impl_.model_eval().run_post_iterate(solver, step, isdefaultstep, num_corrs);
 }
@@ -299,21 +299,6 @@ bool NOX::Nln::PrePostOp::IMPLICIT::Generic::get_step(
   }
 
   return isdefaultstep;
-}
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
-int NOX::Nln::PrePostOp::IMPLICIT::Generic::get_number_of_modified_newton_corrections(
-    const ::NOX::Solver::Generic& solver) const
-{
-  int number_of_corr = 0;
-  const Teuchos::ParameterList& pmod =
-      solver.getList().sublist("Direction").sublist("Newton").sublist("Modified");
-
-  if (pmod.isParameter("Number of Corrections"))
-    number_of_corr = pmod.get<int>("Number of Corrections");
-
-  return number_of_corr;
 }
 
 /*----------------------------------------------------------------------------*
