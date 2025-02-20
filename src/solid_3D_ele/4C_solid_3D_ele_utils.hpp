@@ -12,6 +12,7 @@
 
 #include "4C_fem_general_element.hpp"
 #include "4C_inpar_structure.hpp"
+#include "4C_io_input_spec.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_solid_3D_ele_properties.hpp"
 
@@ -55,15 +56,6 @@ namespace Solid::Utils
   namespace ReadElement
   {
     int read_element_material(const Core::IO::InputParameterContainer& container);
-
-    Inpar::Solid::KinemType read_element_kinematic_type(
-        const Core::IO::InputParameterContainer& container);
-
-    Discret::Elements::ElementTechnology read_element_technology(
-        const Core::IO::InputParameterContainer& container);
-
-    Discret::Elements::PrestressTechnology read_prestress_technology(
-        const Core::IO::InputParameterContainer& container);
 
     Discret::Elements::SolidElementProperties read_solid_element_properties(
         const Core::IO::InputParameterContainer& container);

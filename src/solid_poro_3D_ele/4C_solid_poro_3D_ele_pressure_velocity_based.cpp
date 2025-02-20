@@ -10,6 +10,7 @@
 #include "4C_comm_utils_factory.hpp"
 #include "4C_fem_general_utils_local_connectivity_matrices.hpp"
 #include "4C_inpar_scatra.hpp"
+#include "4C_inpar_structure.hpp"
 #include "4C_io_input_parameter_container.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_mat_fluidporo.hpp"
@@ -41,7 +42,15 @@ namespace Discret::Elements::SolidPoroPressureVelocityBasedInternal
           entry<std::vector<int>>(
               Core::FE::cell_type_to_string(celltype), {.size = Core::FE::num_nodes<celltype>}),
           entry<int>("MAT"),
-          entry<std::string>("KINEM"),
+          selection<Inpar::Solid::KinemType>("KINEM",
+              {
+                  {kinem_type_string(Inpar::Solid::KinemType::linear),
+                      Inpar::Solid::KinemType::linear},
+                  {kinem_type_string(Inpar::Solid::KinemType::nonlinearTotLag),
+                      Inpar::Solid::KinemType::nonlinearTotLag},
+              },
+              {.description = "Whether to use linear kinematics (small displacements) or nonlinear "
+                              "kinematics (large displacements)"}),
           entry<std::vector<double>>("POROANISODIR1", {.required = false, .size = 3}),
           entry<std::vector<double>>("POROANISODIR2", {.required = false, .size = 3}),
           entry<std::vector<double>>("POROANISODIR3", {.required = false, .size = 3}),
@@ -201,13 +210,7 @@ bool Discret::Elements::SolidPoroPressureVelocityBased::read_element(const std::
   set_material(0, Mat::factory(FourC::Solid::Utils::ReadElement::read_element_material(container)));
 
   // read kinematic type
-  solid_ele_property_.kintype =
-      FourC::Solid::Utils::ReadElement::read_element_kinematic_type(container);
-
-  // check element technology
-  if (FourC::Solid::Utils::ReadElement::read_element_technology(container) !=
-      ElementTechnology::none)
-    FOUR_C_THROW("SOLIDPORO elements do not support any element technology!");
+  solid_ele_property_.kintype = container.get<Inpar::Solid::KinemType>("KINEM");
 
   // read scalar transport implementation type
   poro_ele_property_.impltype = container.get<Inpar::ScaTra::ImplType>("TYPE");

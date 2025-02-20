@@ -10,6 +10,7 @@
 #include "4C_comm_utils_factory.hpp"
 #include "4C_fem_general_utils_local_connectivity_matrices.hpp"
 #include "4C_inpar_scatra.hpp"
+#include "4C_inpar_structure.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_mat_fluidporo.hpp"
 #include "4C_mat_fluidporo_multiphase.hpp"
@@ -40,7 +41,15 @@ namespace Discret::Elements::SolidPoroPressureBasedInternal
           entry<std::vector<int>>(
               Core::FE::cell_type_to_string(celltype), {.size = Core::FE::num_nodes<celltype>}),
           entry<int>("MAT"),
-          entry<std::string>("KINEM"),
+          selection<Inpar::Solid::KinemType>("KINEM",
+              {
+                  {kinem_type_string(Inpar::Solid::KinemType::linear),
+                      Inpar::Solid::KinemType::linear},
+                  {kinem_type_string(Inpar::Solid::KinemType::nonlinearTotLag),
+                      Inpar::Solid::KinemType::nonlinearTotLag},
+              },
+              {.description = "Whether to use linear kinematics (small displacements) or nonlinear "
+                              "kinematics (large displacements)"}),
           selection<Inpar::ScaTra::ImplType>("TYPE", Discret::Elements::get_impltype_inpar_pairs(),
               {.description = "Scalar transport implementation type",
                   .default_value = Inpar::ScaTra::ImplType::impltype_undefined}),
@@ -63,11 +72,9 @@ void Discret::Elements::SolidPoroPressureBasedType::setup_element_definition(
 {
   auto& defsgeneral = definitions["SOLIDPORO_PRESSURE_BASED"];
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex8)] = all_of({
-      Discret::Elements::SolidPoroPressureBasedInternal::get_default_input_spec<
-          Core::FE::CellType::hex8>(),
-      entry<std::string>("EAS", {.required = false}),
-  });
+  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex8)] =
+      all_of({Discret::Elements::SolidPoroPressureBasedInternal::get_default_input_spec<
+          Core::FE::CellType::hex8>()});
 
   defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex27)] =
       Discret::Elements::SolidPoroPressureBasedInternal::get_default_input_spec<
@@ -181,13 +188,7 @@ bool Discret::Elements::SolidPoroPressureBased::read_element(const std::string& 
   set_material(0, Mat::factory(FourC::Solid::Utils::ReadElement::read_element_material(container)));
 
   // read kinematic type
-  solid_ele_property_.kintype =
-      FourC::Solid::Utils::ReadElement::read_element_kinematic_type(container);
-
-  // check element technology
-  if (FourC::Solid::Utils::ReadElement::read_element_technology(container) !=
-      ElementTechnology::none)
-    FOUR_C_THROW("SOLIDPORO elements do not support any element technology!");
+  solid_ele_property_.kintype = container.get<Inpar::Solid::KinemType>("KINEM");
 
   // read scalar transport implementation type
   poro_ele_property_.impltype = container.get<Inpar::ScaTra::ImplType>("TYPE");
