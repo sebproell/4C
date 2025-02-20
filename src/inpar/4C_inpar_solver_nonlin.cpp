@@ -82,35 +82,6 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   }
   steepestdescent.move_into_collection(list);
 
-  // sub-sub-sub-list "Modified Newton"
-  Core::Utils::SectionSpecs modnewton{newton, "Modified"};
-  {
-    Core::Utils::double_parameter("Initial Primal Diagonal Correction", 1.0e-4,
-        "Initial correction factor for the diagonal of the primal block.", modnewton);
-
-    Core::Utils::double_parameter("Minimal Primal Diagonal Correction", 1.0e-20,
-        "Minimal correction factor for the diagonal of the primal block.", modnewton);
-
-    Core::Utils::double_parameter("Maximal Primal Diagonal Correction", 1.0e+40,
-        "Maximal correction factor for the diagonal of the primal block.", modnewton);
-
-    Core::Utils::double_parameter("Primal Reduction Factor", 1.0 / 3.0,
-        "Reduction factor for the adaption of the primal diagonal correction.", modnewton);
-
-    Core::Utils::double_parameter("Primal Accretion Factor", 8.0,
-        "Accretion factor for the adaption of the primal diagonal correction.", modnewton);
-
-    Core::Utils::double_parameter("Primal High Accretion Factor", 100.0,
-        "High accretion factor for the adaption of the primal diagonal correction.", modnewton);
-
-    Core::Utils::bool_parameter("Catch Floating Point Exceptions", "No",
-        "Set to true, if"
-        "floating point exceptions during the linear solver call should be "
-        "caught by the algorithm.",
-        modnewton);
-  }
-  modnewton.move_into_collection(list);
-
   // sub-list "Pseudo Transient"
   Core::Utils::SectionSpecs ptc{snox, "Pseudo Transient"};
 

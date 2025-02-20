@@ -271,13 +271,6 @@ namespace Solid
         return corr_type_;
       }
 
-      /// get number of system modifications in case of a mod. Newton direction method
-      int get_number_of_modified_newton_corrections() const
-      {
-        check_init_setup();
-        return num_corr_mod_newton_;
-      }
-
       //!@name set routines which can be called inside of the element [derived]
       //! @{
 
@@ -477,12 +470,6 @@ namespace Solid
       inline void set_is_default_step(const bool& is_default_step)
       {
         is_default_step_ = is_default_step;
-      }
-
-      /// set the number of system corrections in case of a mod. Newton direction method
-      inline void set_number_of_modified_newton_corrections(const int num_corr)
-      {
-        num_corr_mod_newton_ = num_corr;
       }
 
       /// set the current system correction type of the non-linear solver
@@ -870,9 +857,6 @@ namespace Solid
        *  Only important for the internal elementwise update. */
       bool is_default_step_;
 
-      /// number of system corrections (modified Newton direction method)
-      int num_corr_mod_newton_;
-
       /// system correction type (e.g. in case of a SOC step, see the
       /// NOX::Nln::Inner::StatusTest::Filter method)
       NOX::Nln::CorrectionType corr_type_;
@@ -1137,13 +1121,6 @@ namespace Solid
       {
         check_init();
         return str_data_ptr_->get_correction_type();
-      }
-
-      /// derived
-      int get_number_of_modified_newton_corrections() const override
-      {
-        check_init();
-        return str_data_ptr_->get_number_of_modified_newton_corrections();
       }
 
       /*! \brief Get the current active predictor type

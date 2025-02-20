@@ -301,9 +301,6 @@ namespace NOX
           /// get the step length
           bool get_step(double& step, const ::NOX::Solver::Generic& solver) const;
 
-          /// get the number of necessary system corrections in case of a mod newton direction
-          int get_number_of_modified_newton_corrections(const ::NOX::Solver::Generic& solver) const;
-
          private:
           //! reference to the Solid::IMPLICIT::Generic object (read-only)
           const Solid::IMPLICIT::Generic& impl_;

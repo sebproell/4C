@@ -584,12 +584,11 @@ void Solid::ModelEvaluatorManager::run_pre_compute_x(const Core::LinAlg::Vector<
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void Solid::ModelEvaluatorManager::run_post_iterate(const ::NOX::Solver::Generic& solver,
-    const double step, const bool isdefaultstep, const int num_corrs) const
+void Solid::ModelEvaluatorManager::run_post_iterate(
+    const ::NOX::Solver::Generic& solver, const double step, const bool isdefaultstep) const
 {
   eval_data_ptr_->set_is_default_step(isdefaultstep);
   eval_data_ptr_->set_step_length(step);
-  eval_data_ptr_->set_number_of_modified_newton_corrections(num_corrs);
 
   for (const auto& me_iter : *me_vec_ptr_) me_iter->run_post_iterate(solver);
 }
