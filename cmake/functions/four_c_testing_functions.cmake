@@ -290,7 +290,7 @@ function(four_c_test)
 
     set(test_command
         "mkdir -p ${test_directory} \
-                && $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}> --to-yaml ${base_test_file} ${test_directory}/converted_input.yaml \
+                && ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS} $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}> --to-yaml ${base_test_file} ${test_directory}/converted_input.yaml \
                 && ${MPIEXEC_EXECUTABLE} ${MPIEXEC_EXTRA_OPTS_FOR_TESTING} -np ${base_NP} $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}> ${test_directory}/converted_input.yaml ${test_directory}/xxx"
         )
   else()
