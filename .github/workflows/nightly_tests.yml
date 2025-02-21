@@ -109,7 +109,8 @@ jobs:
           cmake-preset: docker_clang
           build-targets: full
           build-directory: ${{ github.workspace }}/build
-          use-ccache: "true"
+          use-ccache: "false"
+          additional-cmake-flags: "-DFOUR_C_CXX_FLAGS=-ftime-trace"
       - uses: ./.github/actions/upload_4C_build
         with:
           build-directory: ${{ github.workspace }}/build
@@ -121,6 +122,41 @@ jobs:
           source-directory: ${{ github.workspace }}
           number-of-chunks: 15
           junit-report-artifact-name: clang18_test_report.xml
+
+  clang18_analyze_compile_time:
+    needs: clang18_build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: aras-p/ClangBuildAnalyzer
+          ref: bae0cb488cce944bfc3da9850a69ad621701ebef # version 1.6.0
+          path: ClangBuildAnalyzer
+      - name: Build ClangBuildAnalyzer
+        run: |
+          cd $GITHUB_WORKSPACE/ClangBuildAnalyzer
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
+      - uses: ./.github/actions/download_4C_build
+        with:
+          build-job: clang18_build
+          destination: ${{ github.workspace }}/build
+      - name: Analyze compile time
+        run: |
+          $GITHUB_WORKSPACE/ClangBuildAnalyzer/build/ClangBuildAnalyzer --all $GITHUB_WORKSPACE/build time_trace.bin
+          $GITHUB_WORKSPACE/ClangBuildAnalyzer/build/ClangBuildAnalyzer --analyze time_trace.bin > $GITHUB_WORKSPACE/clang18_compile_time_report.txt
+          cat $GITHUB_WORKSPACE/clang18_compile_time_report.txt
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: clang18_compile_time_report.txt
+          path: |
+            ${{ github.workspace }}/clang18_compile_time_report.txt
+          retention-days: 90
 
   clang18_test:
     needs: clang18_build
