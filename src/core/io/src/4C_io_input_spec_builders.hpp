@@ -12,6 +12,7 @@
 
 #include "4C_io_input_parameter_container.hpp"
 #include "4C_io_input_spec.hpp"
+#include "4C_io_input_types.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_io_yaml.hpp"
 #include "4C_utils_string.hpp"
@@ -86,7 +87,7 @@ namespace Core::IO
             std::declval<Core::IO::InputParameterContainer&>()))>> = true;
 
 
-    template <typename T, typename AlwaysVoid = void>
+    template <typename T>
     struct PrettyTypeName
     {
       std::string operator()() { return Utils::try_demangle(typeid(T).name()); }
@@ -140,7 +141,7 @@ namespace Core::IO
     template <YamlSupportedType T>
     struct YamlTypeEmitter<T>
     {
-      void operator()(ryml::NodeRef node)
+      void operator()(ryml::NodeRef node, size_t*)
       {
         FOUR_C_ASSERT(node.is_map(), "Expected a map node.");
         node["type"] << get_pretty_type_name<T>();
@@ -150,45 +151,60 @@ namespace Core::IO
     template <typename T>
     struct YamlTypeEmitter<std::vector<T>>
     {
-      void operator()(ryml::NodeRef node)
+      void operator()(ryml::NodeRef node, size_t* size)
       {
         FOUR_C_ASSERT(node.is_map(), "Expected a map node.");
         node["type"] = "vector";
+        if (*size > 0)
+        {
+          node["size"] << *size;
+        }
         node["value_type"] |= ryml::MAP;
-        YamlTypeEmitter<T>{}(node["value_type"]);
+        YamlTypeEmitter<T>{}(node["value_type"], size + 1);
       }
     };
 
     template <typename T>
     struct YamlTypeEmitter<std::map<std::string, T>>
     {
-      void operator()(ryml::NodeRef node)
+      void operator()(ryml::NodeRef node, size_t* size)
       {
         FOUR_C_ASSERT(node.is_map(), "Expected a map node.");
         node["type"] = "map";
+        if (*size > 0)
+        {
+          node["size"] << *size;
+        }
         node["value_type"] |= ryml::MAP;
-        YamlTypeEmitter<T>{}(node["value_type"]);
+        YamlTypeEmitter<T>{}(node["value_type"], size + 1);
       }
     };
 
     template <typename T>
     struct YamlTypeEmitter<Noneable<T>>
     {
-      void operator()(ryml::NodeRef node)
+      void operator()(ryml::NodeRef node, size_t* size)
       {
         FOUR_C_ASSERT(node.is_map(), "Expected a map node.");
         // Pull up the "noneable" aspect. The fact that this type wraps another type is specific
         // to C++ and not relevant to other tools. Simply knowing that a type can be "none" is
         // enough for them.
         emit_value_as_yaml(node["noneable"], true);
-        YamlTypeEmitter<T>{}(node);
+        YamlTypeEmitter<T>{}(node, size);
       }
     };
 
     template <typename T>
+      requires(rank<T>() == 0)
     void emit_type_as_yaml(ryml::NodeRef node)
     {
-      YamlTypeEmitter<T>{}(node);
+      YamlTypeEmitter<T>{}(node, nullptr);
+    }
+
+    template <typename T>
+    void emit_type_as_yaml(ryml::NodeRef node, std::array<std::size_t, rank<T>()> size)
+    {
+      YamlTypeEmitter<T>{}(node, size.data());
     }
 
 
@@ -372,7 +388,7 @@ namespace Core::IO
     };
 
     template <typename T>
-    concept StoresType = requires(T t) { typename T::DataType::StoredType; };
+    concept StoresType = requires(T t) { typename T::StoredType; };
 
     template <typename T>
     struct InputSpecTypeErasedImplementation : public InputSpecTypeErasedBase
@@ -429,8 +445,7 @@ namespace Core::IO
           stream << "// " << std::string(indent, ' ') << name();
 
           // pretty printed type of the parameter
-          stream << " <" << Internal::get_pretty_type_name<typename T::DataType::StoredType>()
-                 << ">";
+          stream << " <" << pretty_type_name() << ">";
 
           if (!required())
           {
@@ -456,7 +471,7 @@ namespace Core::IO
       {
         if constexpr (StoresType<T>)
         {
-          return Internal::get_pretty_type_name<typename T::DataType::StoredType>();
+          return Internal::get_pretty_type_name<typename T::StoredType>();
         }
         else
         {
@@ -481,38 +496,6 @@ namespace Core::IO
       return InputSpec(std::make_unique<InputSpecTypeErasedImplementation<std::decay_t<T>>>(
           std::forward<T>(wrapped), std::move(data)));
     }
-
-
-    template <typename T>
-    struct SupportedTypeHelper : std::false_type
-    {
-    };
-
-    template <typename T>
-    concept SupportedTypePrimitives =
-        std::same_as<T, int> || std::same_as<T, double> || std::same_as<T, bool> ||
-        std::same_as<T, std::string> || std::same_as<T, std::filesystem::path> || std::is_enum_v<T>;
-
-    template <SupportedTypePrimitives T>
-    struct SupportedTypeHelper<T> : std::true_type
-    {
-    };
-
-    template <typename T>
-    struct SupportedTypeHelper<std::vector<T>> : SupportedTypeHelper<T>
-    {
-    };
-
-    template <typename U>
-    struct SupportedTypeHelper<std::map<std::string, U>> : SupportedTypeHelper<U>
-    {
-    };
-
-    template <typename T>
-    struct SupportedTypeHelper<Noneable<T>> : SupportedTypeHelper<T>
-    {
-    };
-
   }  // namespace Internal
 
   /**
@@ -537,30 +520,6 @@ namespace Core::IO
    */
   namespace InputSpecBuilders
   {
-    /**
-     * We deliberately limit ourselves to a few generally useful types. While it would not be too
-     * difficult to support all the fundamental and container types that C++ provides, this would
-     * likely lead to more confusion for users than it would provide benefits. After all, when
-     * consuming the parsed input, the user will have to use the exact type of the parameter. Also,
-     * input file formats are often not able to distinguish fundamental types like `double` and
-     * `float` and there is little benefit in supporting both in the input mechanism. Any conversion
-     * between types can be done in the user code, which usually entails additional validation and
-     * error handling anyway.
-     *
-     * The supported types are:
-     * - `int`
-     * - `double`
-     * - `bool`
-     * - `std::string`
-     * - `std::filesystem::path`
-     * - `enum` and `enum class` types
-     * - `Noneable<T>`, where `T` is one of the supported types
-     * - `std::vector<T>`, where `T` is one of the supported types
-     * - `std::map<std::string, T>`, where `T` is one of the supported types
-     */
-    template <typename T>
-    concept SupportedType = Internal::SupportedTypeHelper<T>::value;
-
     // Import the Noneable type into the InputSpecBuilders namespace to make it easier to use.
     using Core::IO::none;
     using Core::IO::Noneable;
@@ -575,15 +534,29 @@ namespace Core::IO
     constexpr int dynamic_size = 0;
 
     /**
+     * Callback to determine the size of a vector or map at runtime from info that has already been
+     * parsed.
+     */
+    using SizeCallback = std::function<int(const InputParameterContainer&)>;
+
+    /**
+     * Size of a vector or map. This can be a fixed size, #dynamic_size, or a callback that
+     * determines the size at runtime.
+     */
+    using Size = std::variant<int, SizeCallback>;
+
+
+
+    /**
      * Callback function that may be attached to entry().
      */
     using EntryCallback = std::function<void(InputParameterContainer&)>;
 
-    //! Additional parameters for a scalar-valued entry().
-    template <typename StoredTypeIn>
-    struct ScalarData
+    //! Additional parameters for an entry().
+    template <typename T>
+    struct EntryData
     {
-      using StoredType = StoredTypeIn;
+      using StoredType = T;
       /**
        * An optional description of the value.
        */
@@ -607,50 +580,42 @@ namespace Core::IO
       EntryCallback on_parse_callback{nullptr};
     };
 
-    //! Additional parameters for a vector-valued entry().
-    template <typename StoredTypeIn, typename ScalarTypeIn>
-    struct SizedData
+    template <typename T>
+      requires(rank<T>() == 1)
+    struct EntryData<T>
     {
-      using StoredType = StoredTypeIn;
-      using ScalarType = ScalarTypeIn;
+      using StoredType = T;
 
-      /**
-       * A function that determines the size of the vector. This function is called with the
-       * already parsed content of the input line, which may be used to query the size as the
-       * value of another parameter.
-       */
-      using SizeCallback = std::function<int(const InputParameterContainer&)>;
-
-      /**
-       * An optional description of the value.
-       */
       std::string description{};
 
-      /**
-       * Whether the value is required or optional.
-       */
       std::optional<bool> required{};
 
-      /**
-       * The default value of the parameter. If this optional fields is set, the parameter is
-       * optional. If it is not set, the parameter is required.
-       */
       std::optional<StoredType> default_value{};
 
-      /**
-       * The size of the data. This can either be a fixed size or a callback that determines the
-       * size based on the value of another parameter.
-       *
-       * @note We use `int` instead of `size_t` since this is what most users write. Template
-       *      argument deduction will work a lot better with `int` than with `size_t`.
-       */
-      std::variant<int, SizeCallback> size{dynamic_size};
+      EntryCallback on_parse_callback{nullptr};
 
       /**
-       * An optional callback that is called after the value has been parsed. This can be used to
-       * set additional values in the container.
+       * The size of the vector. This can be a fixed size, #dynamic_size, or a callback that
+       * determines the size at runtime.
        */
+      Size size{dynamic_size};
+    };
+
+    template <typename T>
+      requires(rank<T>() > 1)
+    struct EntryData<T>
+    {
+      using StoredType = T;
+
+      std::string description{};
+
+      std::optional<bool> required{};
+
+      std::optional<StoredType> default_value{};
+
       EntryCallback on_parse_callback{nullptr};
+
+      std::array<Size, rank<T>()> size;
     };
 
     //! Additional parameters for a group().
@@ -694,34 +659,6 @@ namespace Core::IO
 
     namespace Internal
     {
-      template <typename T>
-      struct DataForHelper
-      {
-        using type = ScalarData<T>;
-      };
-
-      template <typename T>
-      struct DataForHelper<std::vector<T>>
-      {
-        using type = SizedData<std::vector<T>, T>;
-      };
-
-      template <typename T>
-      struct DataForHelper<std::map<std::string, T>>
-      {
-        using type = SizedData<std::map<std::string, T>, T>;
-      };
-
-      template <typename T>
-      using DataFor = typename DataForHelper<T>::type;
-
-
-      template <typename DataType>
-      static constexpr bool is_sized_data = false;
-
-      template <typename D, typename S>
-      static constexpr bool is_sized_data<SizedData<D, S>> = true;
-
       //! Make .required field consistent with .default_value.
       template <typename DataType>
       void sanitize_required_default(DataType& data)
@@ -745,29 +682,32 @@ namespace Core::IO
         FOUR_C_ASSERT(data.required.has_value(), "Required field must now be set.");
       }
 
-      template <typename DataTypeIn>
-      struct BasicSpec
+      template <SupportedType T>
+      struct EntrySpec
       {
         std::string name;
-        using DataType = std::decay_t<DataTypeIn>;
-        using StoredType = typename DataType::StoredType;
-        DataType data;
+        using StoredType = T;
+        EntryData<T> data;
         void parse(ValueParser& parser, InputParameterContainer& container) const;
         bool match(ConstYamlNodeRef node, InputParameterContainer& container,
             IO::Internal::MatchEntry& match_entry) const;
         void emit_metadata(ryml::NodeRef node) const;
         bool emit(YamlNodeRef node, const InputParameterContainer& container,
             const InputSpecEmitOptions& options) const;
+        [[nodiscard]] bool has_correct_size(
+            const T& val, const InputParameterContainer& container) const;
       };
 
-
-      template <typename DataTypeIn>
+      /**
+       * Note that a SelectionSpec can store any type since we never need to read or write values of
+       * this type.
+       */
+      template <typename T>
       struct SelectionSpec
       {
         std::string name;
-        using DataType = std::decay_t<DataTypeIn>;
-        using StoredType = typename DataType::StoredType;
-        DataType data;
+        using StoredType = T;
+        EntryData<T> data;
         std::vector<std::pair<std::string, StoredType>> choices;
         void parse(ValueParser& parser, InputParameterContainer& container) const;
         bool match(ConstYamlNodeRef node, InputParameterContainer& container,
@@ -856,9 +796,32 @@ namespace Core::IO
 
 
       //! Helper to create selection() specs.
-      template <typename T, typename DataType = Internal::DataFor<T>>
+      //! Note that the type can be anything since we never read or write values of this type.
+      template <typename T>
       [[nodiscard]] InputSpec selection_internal(
-          std::string name, std::vector<std::pair<std::string, T>> choices, DataType data = {});
+          std::string name, std::vector<std::pair<std::string, T>> choices, EntryData<T> data = {});
+
+
+      struct SizeChecker
+      {
+        constexpr bool operator()(const auto& val, std::size_t* size_info) const { return true; }
+
+        template <typename U>
+        constexpr bool operator()(const std::vector<U>& v, std::size_t* size_info) const
+        {
+          return ((*size_info == dynamic_size) || (v.size() == *size_info)) &&
+                 std::ranges::all_of(
+                     v, [&](const auto& val) { return this->operator()(val, size_info + 1); });
+        }
+
+        template <typename U>
+        constexpr bool operator()(const std::map<std::string, U>& m, std::size_t* size_info) const
+        {
+          return ((*size_info == dynamic_size) || (m.size() == *size_info)) &&
+                 std::ranges::all_of(m,
+                     [&](const auto& val) { return this->operator()(val.second, size_info + 1); });
+        }
+      };
     }  // namespace Internal
 
     /**
@@ -967,8 +930,8 @@ namespace Core::IO
      *
      * @relatedalso InputSpec
      */
-    template <SupportedType T, typename DataType = Internal::DataFor<T>>
-    [[nodiscard]] InputSpec entry(std::string name, DataType&& data = {});
+    template <SupportedType T>
+    [[nodiscard]] InputSpec entry(std::string name, EntryData<T>&& data = {});
 
     /**
      * Create a callback that returns the value of the parameter with the given @p name. Such a
@@ -1009,10 +972,10 @@ namespace Core::IO
      *
      * @relatedalso InputSpec
      */
-    template <typename T, typename DataType = Internal::DataFor<T>>
+    template <typename T>
       requires(!std::same_as<T, std::string>)
     [[nodiscard]] InputSpec selection(
-        std::string name, std::vector<std::pair<std::string, T>> choices, DataType data = {});
+        std::string name, std::vector<std::pair<std::string, T>> choices, EntryData<T> data = {});
 
 
     /**
@@ -1024,9 +987,9 @@ namespace Core::IO
      *
      * @relatedalso InputSpec
      */
-    template <std::same_as<std::string> T, typename DataType = Internal::DataFor<T>>
+    template <std::same_as<std::string> T>
     [[nodiscard]] InputSpec selection(
-        std::string name, std::vector<std::string> choices, DataType data = {});
+        std::string name, std::vector<std::string> choices, EntryData<T> data = {});
 
     /**
      * A group of InputSpecs. This groups one or more InputSpecs under a name. A group can be
@@ -1258,8 +1221,8 @@ namespace Core::IO
 
 // --- template definitions --- //
 
-template <typename DataType>
-void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataType>::parse(
+template <Core::IO::SupportedType T>
+void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::parse(
     ValueParser& parser, InputParameterContainer& container) const
 {
   if (parser.peek() == name)
@@ -1275,7 +1238,11 @@ void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataType>::parse(
     return;
   }
 
-  if constexpr (InputSpecBuilders::Internal::is_sized_data<DataType>)
+  if constexpr (rank<T>() == 0)
+  {
+    container.add(name, parser.read<T>());
+  }
+  else
   {
     struct SizeVisitor
     {
@@ -1285,28 +1252,34 @@ void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataType>::parse(
 
         FOUR_C_THROW("Reading a vector from a dat-style string requires a known size.");
       }
-      int operator()(const typename DataType::SizeCallback& callback) const
-      {
-        return callback(container);
-      }
+      int operator()(const SizeCallback& callback) const { return callback(container); }
       InputParameterContainer& container;
     };
 
-    std::size_t size = std::visit(SizeVisitor{container}, data.size);
-    auto parsed = parser.read<typename DataType::StoredType>(size);
-    container.add(name, parsed);
-  }
-  else
-  {
-    container.add(name, parser.read<typename DataType::StoredType>());
+    if constexpr (rank<T>() == 1)
+    {
+      std::size_t size_info = std::visit(SizeVisitor{container}, data.size);
+      auto parsed = parser.read<T>(size_info);
+      container.add(name, parsed);
+    }
+    else if constexpr (rank<T>() > 1)
+    {
+      std::array<std::size_t, rank<T>()> size_info;
+      for (std::size_t i = 0; i < rank<T>(); ++i)
+      {
+        size_info[i] = std::visit(SizeVisitor{container}, data.size[i]);
+      }
+      auto parsed = parser.read<T>(size_info);
+      container.add(name, parsed);
+    }
   }
 
   if (data.on_parse_callback) data.on_parse_callback(container);
 }
 
 
-template <typename DataTypeIn>
-bool Core::IO::InputSpecBuilders::Internal::BasicSpec<DataTypeIn>::match(ConstYamlNodeRef node,
+template <Core::IO::SupportedType T>
+bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::match(ConstYamlNodeRef node,
     InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
 {
   match_entry.type = IO::Internal::MatchEntry::Type::entry;
@@ -1337,8 +1310,16 @@ bool Core::IO::InputSpecBuilders::Internal::BasicSpec<DataTypeIn>::match(ConstYa
 
   try
   {
-    typename DataTypeIn::StoredType value;
+    T value;
     read_value_from_yaml(entry_node, value);
+    // Perform validation of the value here if necessary. Currently, we only validate sizes.
+    if constexpr (rank<T>() > 0)
+    {
+      if (!has_correct_size(value, container))
+      {
+        return false;
+      }
+    }
     container.add(name, value);
     match_entry.state = IO::Internal::MatchEntry::State::matched;
     match_entry.matched_node = entry_node.node.id();
@@ -1351,14 +1332,35 @@ bool Core::IO::InputSpecBuilders::Internal::BasicSpec<DataTypeIn>::match(ConstYa
 }
 
 
-template <typename DataTypeIn>
-void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataTypeIn>::emit_metadata(
-    ryml::NodeRef node) const
+template <Core::IO::SupportedType T>
+void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit_metadata(ryml::NodeRef node) const
 {
   node |= ryml::MAP;
   node["name"] << name;
 
-  IO::Internal::emit_type_as_yaml<StoredType>(node);
+  if constexpr (rank<T>() == 0)
+    IO::Internal::emit_type_as_yaml<StoredType>(node);
+  else
+  {
+    struct DynamicSizeVisitor
+    {
+      int operator()(int size) const { return size; }
+      int operator()(const SizeCallback& callback) const { return dynamic_size; }
+    };
+
+    std::array<std::size_t, rank<T>()> size_info;
+    if constexpr (rank<T>() == 1)
+      size_info[0] = std::visit(DynamicSizeVisitor{}, data.size);
+    else
+    {
+      for (std::size_t i = 0; i < rank<T>(); ++i)
+      {
+        size_info[i] = std::visit(DynamicSizeVisitor{}, data.size[i]);
+      }
+    }
+    IO::Internal::emit_type_as_yaml<StoredType>(node, size_info);
+  }
+
   if (!data.description.empty())
   {
     node["description"] << data.description;
@@ -1368,19 +1370,10 @@ void Core::IO::InputSpecBuilders::Internal::BasicSpec<DataTypeIn>::emit_metadata
   {
     emit_value_as_yaml(node["default"], data.default_value.value());
   }
-
-  if constexpr (InputSpecBuilders::Internal::is_sized_data<DataType>)
-  {
-    // Size can only be emitted if it is fixed.
-    if (data.size.index() == 0)
-    {
-      node["size"] << std::get<0>(data.size);
-    }
-  }
 }
 
-template <typename DataTypeIn>
-bool Core::IO::InputSpecBuilders::Internal::BasicSpec<DataTypeIn>::emit(YamlNodeRef node,
+template <Core::IO::SupportedType T>
+bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit(YamlNodeRef node,
     const InputParameterContainer& container, const InputSpecEmitOptions& options) const
 {
   node.node |= ryml::MAP;
@@ -1413,8 +1406,46 @@ bool Core::IO::InputSpecBuilders::Internal::BasicSpec<DataTypeIn>::emit(YamlNode
 }
 
 
-template <typename DataTypeIn>
-void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::parse(
+template <Core::IO::SupportedType T>
+bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::has_correct_size(
+    const T& val, const InputParameterContainer& container) const
+{
+  if constexpr (rank<T>() == 0)
+  {
+    return true;
+  }
+  else
+  {
+    struct SizeVisitor
+    {
+      int operator()(int size) const { return size; }
+      int operator()(const SizeCallback& callback) const
+      {
+        // For yaml, we do not validate the size based on the callback. This feature can be removed
+        // once we remove dat.
+        return dynamic_size;
+      }
+      const InputParameterContainer& container;
+    };
+
+    std::array<std::size_t, rank<T>()> size_info;
+    if constexpr (rank<T>() == 1)
+      size_info[0] = std::visit(SizeVisitor{container}, data.size);
+    else
+    {
+      for (std::size_t i = 0; i < rank<T>(); ++i)
+      {
+        size_info[i] = std::visit(SizeVisitor{container}, data.size[i]);
+      }
+    }
+    SizeChecker size_checker;
+    return size_checker(val, size_info.data());
+  }
+}
+
+
+template <typename T>
+void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::parse(
     ValueParser& parser, InputParameterContainer& container) const
 {
   if (parser.peek() == name)
@@ -1443,8 +1474,8 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::parse(
 }
 
 
-template <typename DataTypeIn>
-bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::match(ConstYamlNodeRef node,
+template <typename T>
+bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::match(ConstYamlNodeRef node,
     InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
 {
   match_entry.type = IO::Internal::MatchEntry::Type::entry;
@@ -1496,8 +1527,8 @@ bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::match(Con
   return false;
 }
 
-template <typename DataTypeIn>
-void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::print(
+template <typename T>
+void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::print(
     std::ostream& stream, std::size_t indent) const
 {
   stream << "// " << std::string(indent, ' ') << name;
@@ -1533,8 +1564,8 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::print(
   stream << "\n";
 }
 
-template <typename DataTypeIn>
-void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::emit_metadata(
+template <typename T>
+void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::emit_metadata(
     ryml::NodeRef node) const
 {
   node |= ryml::MAP;
@@ -1565,8 +1596,8 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::emit_meta
   }
 }
 
-template <typename DataTypeIn>
-bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<DataTypeIn>::emit(YamlNodeRef node,
+template <typename T>
+bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::emit(YamlNodeRef node,
     const InputParameterContainer& container, const InputSpecEmitOptions& options) const
 {
   node.node |= ryml::MAP;
@@ -1622,11 +1653,12 @@ auto Core::IO::InputSpecBuilders::from_parameter(const std::string& name)
 }
 
 
-template <Core::IO::InputSpecBuilders::SupportedType T, typename DataType>
-Core::IO::InputSpec Core::IO::InputSpecBuilders::entry(std::string name, DataType&& data)
+template <Core::IO::SupportedType T>
+Core::IO::InputSpec Core::IO::InputSpecBuilders::entry(std::string name, EntryData<T>&& data)
 {
   Internal::sanitize_required_default(data);
-  return IO::Internal::make_spec(Internal::BasicSpec<DataType>{.name = name, .data = data},
+
+  return IO::Internal::make_spec(Internal::EntrySpec<T>{.name = name, .data = data},
       {
           .name = name,
           .description = data.description,
@@ -1637,9 +1669,9 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::entry(std::string name, DataTyp
 }
 
 
-template <typename T, typename DataType>
+template <typename T>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
-    std::string name, std::vector<std::pair<std::string, T>> choices, DataType data)
+    std::string name, std::vector<std::pair<std::string, T>> choices, EntryData<T> data)
 {
   FOUR_C_ASSERT_ALWAYS(!choices.empty(), "Selection must have at least one choice.");
   Internal::sanitize_required_default(data);
@@ -1672,7 +1704,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
   }
 
   return IO::Internal::make_spec(
-      Internal::SelectionSpec<DataType>{.name = name, .data = data, .choices = choices},
+      Internal::SelectionSpec<T>{.name = name, .data = data, .choices = choices},
       {
           .name = name,
           .description = data.description,
@@ -1683,18 +1715,18 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
 }
 
 
-template <typename T, typename DataType>
+template <typename T>
   requires(!std::same_as<T, std::string>)
 Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
-    std::string name, std::vector<std::pair<std::string, T>> choices, DataType data)
+    std::string name, std::vector<std::pair<std::string, T>> choices, EntryData<T> data)
 {
   return Internal::selection_internal(name, choices, data);
 }
 
 
-template <std::same_as<std::string> T, typename DataType>
+template <std::same_as<std::string> T>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
-    std::string name, std::vector<std::string> choices, DataType data)
+    std::string name, std::vector<std::string> choices, EntryData<T> data)
 {
   std::vector<std::pair<std::string, std::string>> choices_with_strings;
   for (const auto& choice : choices)

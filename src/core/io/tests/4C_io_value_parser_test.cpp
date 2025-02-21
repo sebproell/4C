@@ -233,7 +233,7 @@ namespace
     std::string_view in("1 2 3 4 5 6 7 8 9");
     Core::IO::ValueParser parser(in);
 
-    auto nested_vectors = parser.read<std::vector<std::vector<int>>>(3, 3);
+    auto nested_vectors = parser.read<std::vector<std::vector<int>>>({3, 3});
 
     EXPECT_EQ(nested_vectors.size(), 3);
     for (size_t i = 0; i < 3; ++i)
@@ -250,7 +250,7 @@ namespace
     std::string_view in("key1 1 2 key2 2 3 key3 3 4");
     Core::IO::ValueParser parser(in);
 
-    auto map = parser.read<std::map<std::string, std::vector<int>>>(3, 2);
+    auto map = parser.read<std::map<std::string, std::vector<int>>>({3, 2});
 
     EXPECT_EQ(map.size(), 3);
     EXPECT_EQ(map.at("key1"), (std::vector{1, 2}));

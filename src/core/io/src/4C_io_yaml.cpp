@@ -27,6 +27,21 @@ ryml::Tree Core::IO::init_yaml_tree_with_exceptions()
   return ryml::Tree{cb};
 }
 
+void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const std::string& value)
+{
+  node << ryml::to_csubstr(value);
+}
+
+void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const bool& value)
+{
+  node << (value ? "true" : "false");
+}
+
+void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const std::filesystem::path& value)
+{
+  node << value.string();
+}
+
 void Core::IO::read_value_from_yaml(Core::IO::ConstYamlNodeRef node, double& value)
 {
   FOUR_C_ASSERT_ALWAYS(node.node.has_val(), "Expected a value node.");
