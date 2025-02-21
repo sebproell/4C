@@ -52,7 +52,7 @@ Teuchos::RCP<::NOX::Solver::Generic> NOX::Nln::Solver::Factory::build_solver(
   }
   else if (method == "Single Step")
   {
-    solver = Teuchos::make_rcp<NOX::Nln::Solver::SingleStep>(grp, innerTests, params);
+    solver = Teuchos::make_rcp<NOX::Nln::Solver::SingleStep>(grp, params);
   }
   else if (not nlnGlobalData.is_constrained())
   {
