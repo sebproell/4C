@@ -96,11 +96,6 @@ namespace Discret::Elements
 
     [[nodiscard]] Core::FE::CellType shape() const override { return celltype_; };
 
-    void set_kinematic_type(Inpar::Solid::KinemType kintype)
-    {
-      solid_ele_property_.kintype = kintype;
-    }
-
     [[nodiscard]] virtual std::shared_ptr<Mat::So3Material> solid_material(int nummat = 0) const;
 
     [[nodiscard]] int num_line() const override;

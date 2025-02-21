@@ -713,7 +713,7 @@ namespace Inpar
         case Inpar::Solid::KinemType::linear:
           return "linear";
         case Inpar::Solid::KinemType::nonlinearTotLag:
-          return "nonlinear_total_lagrange";
+          return "nonlinear";
       }
 
       FOUR_C_THROW("Unknown kinematic type %d", kinem_type);
