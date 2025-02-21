@@ -12,6 +12,7 @@
 #include "4C_global_data_read.hpp"
 #include "4C_global_legacy_module.hpp"
 #include "4C_io_input_file.hpp"
+#include "4C_io_input_parameter_container.templates.hpp"
 #include "4C_mat_electrode.hpp"
 #include "4C_material_parameter_base.hpp"
 #include "4C_utils_singleton_owner.hpp"

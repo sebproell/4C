@@ -5,9 +5,9 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_io_input_parameter_container.hpp"
+#include "4C_io_input_parameter_container.templates.hpp"
 
-#include "4C_linalg_vector.hpp"
+#include <Teuchos_ParameterList.hpp>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -131,6 +131,21 @@ Core::IO::InputParameterContainer::get_type_actions()
   return type_actions;
 }
 
+// Explicit instantiation of the template functions.
 
+template void Core::IO::InputParameterContainer::add(const std::string& name, const int& data);
+template void Core::IO::InputParameterContainer::add(const std::string& name, const double& data);
+template void Core::IO::InputParameterContainer::add(
+    const std::string& name, const std::string& data);
+template void Core::IO::InputParameterContainer::add(const std::string& name, const bool& data);
+
+template void Core::IO::InputParameterContainer::add(
+    const std::string& name, const std::vector<int>& data);
+template void Core::IO::InputParameterContainer::add(
+    const std::string& name, const std::vector<double>& data);
+template void Core::IO::InputParameterContainer::add(
+    const std::string& name, const std::vector<std::string>& data);
+template void Core::IO::InputParameterContainer::add(
+    const std::string& name, const std::vector<bool>& data);
 
 FOUR_C_NAMESPACE_CLOSE

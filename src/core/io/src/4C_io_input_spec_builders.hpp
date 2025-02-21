@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_io_input_parameter_container.hpp"
+#include "4C_io_input_parameter_container.templates.hpp"
 #include "4C_io_input_spec.hpp"
 #include "4C_io_input_types.hpp"
 #include "4C_io_value_parser.hpp"

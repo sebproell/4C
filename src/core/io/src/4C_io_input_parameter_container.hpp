@@ -14,8 +14,7 @@
 #include "4C_io_input_types.hpp"
 #include "4C_utils_demangle.hpp"
 #include "4C_utils_exceptions.hpp"
-
-#include <Teuchos_ParameterList.hpp>
+#include "4C_utils_parameter_list.fwd.hpp"
 
 #include <any>
 #include <functional>
@@ -267,12 +266,6 @@ namespace Core::IO::Internal::InputParameterContainerImplementation
 }  // namespace Core::IO::Internal::InputParameterContainerImplementation
 
 
-template <typename T>
-void Core::IO::InputParameterContainer::add(const std::string& name, const T& data)
-{
-  entries_[name] = {.data = std::any{data}};
-  ensure_type_action_registered<T>();
-}
 
 template <typename T>
 const T& Core::IO::InputParameterContainer::get(const std::string& name) const
@@ -304,20 +297,6 @@ const T* Core::IO::InputParameterContainer::get_if(const std::string& name) cons
   else
   {
     return nullptr;
-  }
-}
-
-template <typename T>
-void Core::IO::InputParameterContainer::ensure_type_action_registered()
-{
-  auto& type_actions = get_type_actions();
-  if (!type_actions.contains(typeid(T)))
-  {
-    type_actions[typeid(T)] = {
-        .print = Internal::InputParameterContainerImplementation::PrintHelper<T>{},
-        .write_to_pl = [](Teuchos::ParameterList& pl, const std::string& name, const std::any& data)
-        { pl.set<T>(name, std::any_cast<T>(data)); },
-    };
   }
 }
 

@@ -7,7 +7,9 @@
 
 #include <gtest/gtest.h>
 
-#include "4C_io_input_parameter_container.hpp"
+#include "4C_io_input_parameter_container.templates.hpp"
+
+#include <Teuchos_ParameterList.hpp>
 
 namespace
 {
