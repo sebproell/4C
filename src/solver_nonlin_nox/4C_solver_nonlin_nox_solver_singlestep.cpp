@@ -28,17 +28,8 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 NOX::Nln::Solver::SingleStep::SingleStep(const Teuchos::RCP<::NOX::Abstract::Group>& grp,
-    const Teuchos::RCP<NOX::Nln::Inner::StatusTest::Generic>& innerTests,
     const Teuchos::RCP<Teuchos::ParameterList>& params)
     : ::NOX::Solver::SingleStep(grp, params)
-{
-  // call own init() after base init() was called.
-  init(*innerTests);
-}
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
-void NOX::Nln::Solver::SingleStep::init(NOX::Nln::Inner::StatusTest::Generic& innerTests)
 {
   nIter = 0;
   status = ::NOX::StatusTest::Unconverged;

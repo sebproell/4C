@@ -42,7 +42,6 @@ namespace NOX
           for description
          */
         SingleStep(const Teuchos::RCP<::NOX::Abstract::Group>& grp,
-            const Teuchos::RCP<NOX::Nln::Inner::StatusTest::Generic>& innerTests,
             const Teuchos::RCP<Teuchos::ParameterList>& params);
 
         [[nodiscard]] ::NOX::StatusTest::StatusType getStatus() const override;
@@ -51,9 +50,6 @@ namespace NOX
         [[nodiscard]] const ::NOX::Utils& get_utils() const;
 
        protected:
-        //! initialize additional variables after base class initialization
-        void init(NOX::Nln::Inner::StatusTest::Generic& innerTests);
-
         void printUpdate() override;
       };  // class SingleStep
     }  // namespace Solver
