@@ -61,6 +61,7 @@ jobs:
       - uses: ./.github/actions/download_4C_build
         with:
           build-job: gcc13_assertions_build
+          destination: ${{ github.workspace }}/build
       - name: Test
         run: |
           cd $GITHUB_WORKSPACE/build
@@ -145,6 +146,7 @@ jobs:
       - uses: ./.github/actions/download_4C_build
         with:
           build-job: clang18_build
+          destination: ${{ github.workspace }}/build
       - name: Test
         run: |
           cd $GITHUB_WORKSPACE/build
@@ -229,6 +231,7 @@ jobs:
       - uses: ./.github/actions/download_4C_build
         with:
           build-job: gcc13_asan_build
+          destination: ${{ github.workspace }}/build
       - name: Test
         run: |
           cd $GITHUB_WORKSPACE/build

@@ -61,6 +61,7 @@ jobs:
       - uses: ./.github/actions/download_4C_build
         with:
           build-job: gcc13_coverage_build
+          destination: ${{ github.workspace }}/build
       - name: Run all tests and collect raw coverage data
         run: | # Note: Collect raw coverage data in a file distict for each process
           cd $GITHUB_WORKSPACE/build
@@ -119,6 +120,7 @@ jobs:
       - uses: ./.github/actions/download_4C_build
         with:
           build-job: gcc13_coverage_build
+          destination: ${{ github.workspace }}/build
       - name: Setup developer environment for testing
         run: |
           cd $GITHUB_WORKSPACE
