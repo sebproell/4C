@@ -121,11 +121,9 @@ namespace Core::IO
    */
   [[nodiscard]] ryml::Tree init_yaml_tree_with_exceptions();
 
-  template <YamlSupportedType T>
-  void emit_value_as_yaml(ryml::NodeRef node, const T& value)
-  {
-    node << value;
-  }
+  void emit_value_as_yaml(ryml::NodeRef node, const int& value);
+
+  void emit_value_as_yaml(ryml::NodeRef node, const double& value);
 
   void emit_value_as_yaml(ryml::NodeRef node, const std::string& value);
 

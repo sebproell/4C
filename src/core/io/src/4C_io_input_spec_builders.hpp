@@ -1363,7 +1363,7 @@ void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit_metadata(ryml::No
 
   if (!data.description.empty())
   {
-    node["description"] << data.description;
+    emit_value_as_yaml(node["description"], data.description);
   }
   emit_value_as_yaml(node["required"], data.required.value());
   if (data.default_value.has_value())
@@ -1574,7 +1574,7 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::emit_metadata(
   node["type"] = "selection";
   if (!data.description.empty())
   {
-    node["description"] << data.description;
+    emit_value_as_yaml(node["description"], data.description);
   }
   emit_value_as_yaml(node["required"], data.required.value());
   if (data.default_value.has_value())
@@ -1584,15 +1584,15 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::emit_metadata(
         [&](const auto& choice) { return choice.second == data.default_value.value(); });
     FOUR_C_ASSERT(
         default_value_it != choices.end(), "Internal error: default value not found in choices.");
-    node["default"] << default_value_it->first;
+    emit_value_as_yaml(node["default"], default_value_it->first);
   }
   node["choices"] |= ryml::SEQ;
-  for (const auto& choice : choices)
+  for (const auto& [choice_string, _] : choices)
   {
     auto entry = node["choices"].append_child();
     // Write every choice entry as a map to easily extend the information at a later point.
     entry |= ryml::MAP;
-    entry["name"] << choice.first;
+    emit_value_as_yaml(entry["name"], choice_string);
   }
 }
 
