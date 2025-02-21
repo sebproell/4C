@@ -4,6 +4,9 @@ inputs:
   build-job:
     description: Name of the build-job
     required: true
+  destination:
+    description: Path to extract the build
+    required: true
 runs:
   using: composite
   steps:
@@ -14,5 +17,9 @@ runs:
     - name: Extract 4C build
       shell: bash
       run: |
-        tar -xf $GITHUB_WORKSPACE/4C_build.tar -C /
+        mkdir -p $DESTINATION
+        cd $DESTINATION
+        tar -xf $GITHUB_WORKSPACE/4C_build.tar
         rm $GITHUB_WORKSPACE/4C_build.tar
+      env:
+        DESTINATION: ${{ inputs.destination }}
