@@ -25,7 +25,7 @@ NLNSOL                          fullnewton
 TIMESTEP                        0.4
 NUMSTEP                         10
 MAXTIME                         4
-DAMPING                         Yes
+DAMPING                         Rayleigh
 M_DAMP                          4.778815e13
 K_DAMP                          0
 PREDICT                         ConstDis

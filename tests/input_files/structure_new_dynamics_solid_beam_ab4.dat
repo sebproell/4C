@@ -33,7 +33,7 @@ TIMESTEP                         0.01
 NUMSTEP                          100
 TIMEINIT                         0.0
 MAXTIME                          100.0
-DAMPING                          No
+DAMPING                          None
 M_DAMP                           1e-05
 K_DAMP                           1e-05
 TOLRES                           1e-07

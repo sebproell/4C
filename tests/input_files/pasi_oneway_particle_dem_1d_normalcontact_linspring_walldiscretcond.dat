@@ -35,7 +35,7 @@ LINEAR_SOLVER                   1
 INT_STRATEGY                    Standard
 LOADLIN                         yes
 DYNAMICTYPE                      GenAlpha
-DAMPING                         Yes
+DAMPING                         Rayleigh
 M_DAMP                          1.0
 K_DAMP                          1.0
 --------------------------------------------------------------------SOLVER 1

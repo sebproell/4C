@@ -33,7 +33,7 @@ NLNSOL                          fullnewton
 TIMESTEP                        0.01
 NUMSTEP                         100
 MAXTIME                         2.6
-DAMPING                         Yes
+DAMPING                         Rayleigh
 M_DAMP                          0.1
 K_DAMP                          0.1
 TOLRES                          1.0E-6

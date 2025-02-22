@@ -18,7 +18,7 @@ SOLVER                          Belos
 DO_LS_DBC_PROJECTION            Yes
 SOLVER_LS_DBC_PROJECTION        1
 ----------------------------------------------------------STRUCTURAL DYNAMIC
-DAMPING                         no
+DAMPING                         None
 DIVERCONT                       stop
 DYNAMICTYPE                      OneStepTheta
 ITERNORM                        L2

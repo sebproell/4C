@@ -19,7 +19,7 @@ NUMTHERMDIS                     0
 LINEAR_SOLVER                   3
 DYNAMICTYPE                      Statics
 NLNSOL                          fullnewton
-DAMPING                         No
+DAMPING                         None
 TOLRES                          1.0E-2
 TOLDISP                         1.0E-2
 NORM_RESF                       Abs

@@ -79,13 +79,11 @@ namespace Inpar
       Core::Utils::double_parameter("MAXTIME", 5.0, "maximum time", sdyn);
 
       // Damping
-      Core::Utils::string_to_integral_parameter<Solid::DampKind>("DAMPING", "No",
+      Core::Utils::string_to_integral_parameter<Solid::DampKind>("DAMPING", "None",
           "type of damping: (1) Rayleigh damping matrix and use it from M_DAMP x M + K_DAMP x K, "
           "(2) Material based and calculated in elements",
-          tuple<std::string>("no", "No", "NO", "yes", "Yes", "YES", "Rayleigh", "Material"),
-          tuple<Solid::DampKind>(damp_none, damp_none, damp_none, damp_rayleigh, damp_rayleigh,
-              damp_rayleigh, damp_rayleigh, damp_material),
-          sdyn);
+          tuple<std::string>("None", "Rayleigh", "Material"),
+          tuple<Solid::DampKind>(damp_none, damp_rayleigh, damp_material), sdyn);
       Core::Utils::double_parameter("M_DAMP", -1.0, "", sdyn);
       Core::Utils::double_parameter("K_DAMP", -1.0, "", sdyn);
 
@@ -333,13 +331,11 @@ namespace Inpar
       Core::Utils::bool_parameter(
           "LUMPMASS", false, "Lump the mass matrix for explicit time integration", jep);
 
-      Core::Utils::string_to_integral_parameter<Inpar::Solid::DampKind>("DAMPING", "No",
+      Core::Utils::string_to_integral_parameter<Inpar::Solid::DampKind>("DAMPING", "None",
           "type of damping: (1) Rayleigh damping matrix and use it from M_DAMP x M + K_DAMP x K, "
           "(2) Material based and calculated in elements",
-          tuple<std::string>("no", "No", "NO", "yes", "Yes", "YES", "Rayleigh", "Material"),
-          tuple<Inpar::Solid::DampKind>(damp_none, damp_none, damp_none, damp_rayleigh,
-              damp_rayleigh, damp_rayleigh, damp_rayleigh, damp_material),
-          jep);
+          tuple<std::string>("None", "Rayleigh", "Material"),
+          tuple<Inpar::Solid::DampKind>(damp_none, damp_rayleigh, damp_material), jep);
 
       Core::Utils::double_parameter("M_DAMP", -1.0, "", jep);
       Core::Utils::double_parameter("K_DAMP", -1.0, "", jep);

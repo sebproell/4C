@@ -32,7 +32,7 @@ NLNSOL                          noxgeneral
 TIMESTEP                        0.025
 NUMSTEP                         10
 MAXTIME                         0.25
-DAMPING                         No
+DAMPING                         None
 M_DAMP                          0.0
 K_DAMP                          0.0
 PREDICT                         ConstDisVelAcc

@@ -35,7 +35,7 @@ SHAPEFCT                        Polynomial
 --------------------------------------------------------------------SOLVER 1
 SOLVER                          Superlu
 ----------------------------------------------------------STRUCTURAL DYNAMIC
-DAMPING                         No
+DAMPING                         None
 DIVERCONT                       stop
 DYNAMICTYPE                      Statics
 ITERNORM                        L2

@@ -38,7 +38,7 @@ INT_STRATEGY                    Standard
 LINEAR_SOLVER                   1
 ADAPTCONV                       Yes
 ADAPTCONV_BETTER                0.001
-DAMPING                         No
+DAMPING                         None
 DIVERCONT                       stop
 DYNAMICTYPE                      OneStepTheta
 ITERNORM                        L2

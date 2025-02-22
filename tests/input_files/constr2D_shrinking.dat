@@ -30,7 +30,7 @@ RESTARTEVERY                     4
 TIMESTEP                        0.1
 NUMSTEP                         20
 MAXTIME                         50.0
-DAMPING                         Yes
+DAMPING                         Rayleigh
 M_DAMP                          1.0
 K_DAMP                          0.0
 PREDICT                         ConstDis

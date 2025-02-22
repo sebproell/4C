@@ -35,7 +35,7 @@ NLNSOL                          fullnewton
 TIMESTEP                        0.02
 NUMSTEP                         2
 MAXTIME                         0.04
-DAMPING                         Yes
+DAMPING                         Rayleigh
 M_DAMP                          0.00001
 K_DAMP                          0.00001
 -------------------------------------------------STRUCTURAL DYNAMIC/GENALPHA

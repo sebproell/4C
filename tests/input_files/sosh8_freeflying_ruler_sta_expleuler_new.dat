@@ -35,7 +35,7 @@ TOLDISP                         1.0E-6
 NORM_RESF                       Abs
 NORM_DISP                       Abs
 NORMCOMBI_RESFDISP              And
-DAMPING                         No
+DAMPING                         None
 K_DAMP                          0.5
 M_DAMP                          0.5
 MAXITER                         50
@@ -68,7 +68,7 @@ ADAPTSTEPMAX                    3
 LINEAR_SOLVER                   1
 DYNAMICTYPE                      ExplicitEuler
 LUMPMASS                        Yes
-DAMPING                         No
+DAMPING                         None
 K_DAMP                          0.5
 M_DAMP                          0.5
 --------------------------------------------------------------------SOLVER 1

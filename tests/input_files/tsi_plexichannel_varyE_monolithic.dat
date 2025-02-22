@@ -46,7 +46,7 @@ RESTART                         0
 SHAPEFCT                        Polynomial
 ----------------------------------------------------------STRUCTURAL DYNAMIC
 INT_STRATEGY                    Standard
-DAMPING                         No
+DAMPING                         None
 DIVERCONT                       stop
 DYNAMICTYPE                      Statics
 ITERNORM                        L2

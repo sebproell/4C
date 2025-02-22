@@ -36,7 +36,7 @@ RESTARTEVERY                     1
 TIMESTEP                        0.1
 NUMSTEP                         70
 MAXTIME                         7
-DAMPING                         No
+DAMPING                         None
 TOLDISP                         1e-9
 NORM_DISP                       Abs
 TOLRES                          1e-9

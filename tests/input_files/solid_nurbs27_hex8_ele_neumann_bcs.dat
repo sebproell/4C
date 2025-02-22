@@ -24,7 +24,7 @@ RESTARTEVERY                           1
 NLNSOL                                fullnewton
 TIMESTEP                              1
 NUMSTEP                               1
-DAMPING                               No
+DAMPING                               None
 M_DAMP                                0.00001
 K_DAMP                                0.00001
 TOLRES                                1.E-6

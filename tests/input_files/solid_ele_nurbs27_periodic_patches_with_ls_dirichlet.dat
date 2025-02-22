@@ -29,7 +29,7 @@ SOLVER_XML_FILE                 xml/linear_solver/iterative_gmres_template.xml
 DO_LS_DBC_PROJECTION            Yes
 SOLVER_LS_DBC_PROJECTION        2
 ----------------------------------------------------------STRUCTURAL DYNAMIC
-DAMPING                         no
+DAMPING                         None
 DIVERCONT                       stop
 DYNAMICTYPE                      OneStepTheta
 ITERNORM                        L2

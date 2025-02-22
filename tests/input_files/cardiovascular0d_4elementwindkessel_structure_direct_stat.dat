@@ -44,7 +44,7 @@ LINEAR_COUPLED_SOLVER           1
 ENHANCED_OUTPUT                 No
 -------------------------------------------------STRUCTURAL DYNAMIC
 INT_STRATEGY                    Old
-DAMPING                         No
+DAMPING                         None
 DIVERCONT                       stop
 DYNAMICTYPE                      Statics
 ITERNORM                        L2

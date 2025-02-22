@@ -30,7 +30,7 @@ ALE_TYPE                        solid
 LINEAR_SOLVER                   4
 TIMESTEP                        0.01
 ----------------------------------------------------------STRUCTURAL DYNAMIC
-DAMPING                         No
+DAMPING                         None
 DYNAMICTYPE                      GenAlpha
 ITERNORM                        L2
 K_DAMP                          0.5

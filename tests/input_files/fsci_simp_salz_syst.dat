@@ -68,7 +68,7 @@ MAXITER                         50
 MINITER                         0
 ITERNORM                        L2
 RESTARTEVERY                     1200
-DAMPING                         No
+DAMPING                         None
 K_DAMP                          0.5
 LOADLIN                         no
 M_DAMP                          0.5

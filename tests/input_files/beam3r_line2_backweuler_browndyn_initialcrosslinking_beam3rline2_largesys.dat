@@ -33,7 +33,7 @@ DIVERCONT                       stop
 TIMESTEP                        0.00001
 NUMSTEP                         2
 MAXTIME                         1
-DAMPING                         No
+DAMPING                         None
 PREDICT                         ConstDis
 TOLDISP                         1.0E-10
 TOLRES                          1.0E-8

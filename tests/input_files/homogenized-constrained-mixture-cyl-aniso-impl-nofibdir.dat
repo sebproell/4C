@@ -37,7 +37,7 @@ RESTARTEVERY                     3
 TIMESTEP                        10.0
 NUMSTEP                         6
 MAXTIME                         2500000
-DAMPING                         No
+DAMPING                         None
 M_DAMP                          0.0
 K_DAMP                          0.0
 TOLDISP                         1e-5

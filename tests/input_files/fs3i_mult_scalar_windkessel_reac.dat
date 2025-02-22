@@ -93,7 +93,7 @@ MAXTIME                         3
 NORM_DISP                       Abs
 NORM_RESF                       Abs
 NORMCOMBI_RESFDISP              Or
-DAMPING                         No
+DAMPING                         None
 DYNAMICTYPE                      OneStepTheta
 K_DAMP                          0.001
 MAXITER                         50
