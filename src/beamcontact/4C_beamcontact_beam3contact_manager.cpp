@@ -227,8 +227,7 @@ CONTACT::Beam3cmanager::Beam3cmanager(Core::FE::Discretization& discret, double 
                 << sbeamcontact_.get<double>("BEAMS_GAPSHIFTPARAM", 0.0) << std::endl;
     }
 
-    if (Teuchos::getIntegralValue<BeamContact::Damping>(sbeamcontact_, "BEAMS_DAMPING") ==
-        BeamContact::bd_no)
+    if (sbeamcontact_.get<bool>("BEAMS_DAMPING") == false)
       std::cout << "Damping                  No Contact Damping Force Applied!" << std::endl;
     else
     {

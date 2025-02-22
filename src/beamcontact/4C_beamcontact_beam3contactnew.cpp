@@ -180,8 +180,7 @@ CONTACT::Beam3contactnew<numnodes, numnodalvalues>::Beam3contactnew(
           "Regularized penalty law chosen, but not all regularization parameters are set!");
   }
 
-  if (Teuchos::getIntegralValue<BeamContact::Damping>(beamcontactparams, "BEAMS_DAMPING") !=
-      BeamContact::bd_no)
+  if (beamcontactparams.get<bool>("BEAMS_DAMPING") == true)
   {
     if (beamcontactparams.get<double>("BEAMS_DAMPINGPARAM", -1.0) == -1.0 or
         beamcontactparams.get<double>("BEAMS_DAMPREGPARAM1", -1.0) == -1.0 or
@@ -468,9 +467,7 @@ void CONTACT::Beam3contactnew<numnodes, numnodalvalues>::evaluate_fc_contact(con
   //**********************************************************************
   // evaluate damping forces for active pairs
   //**********************************************************************
-  if (Teuchos::getIntegralValue<BeamContact::Damping>(bcparams_, "BEAMS_DAMPING") !=
-          BeamContact::bd_no and
-      dampingcontactflag_)
+  if (bcparams_.get<bool>("BEAMS_DAMPING") == true && dampingcontactflag_)
   {
     DoNotAssemble = false;
     //********************************************************************
@@ -844,9 +841,7 @@ void CONTACT::Beam3contactnew<numnodes, numnodalvalues>::evaluate_stiffc_contact
     //*************End of standard linearization of penalty contact forces****************
 
     //*************Begin of standard linearization of damping contact forces**************
-    if (Teuchos::getIntegralValue<BeamContact::Damping>(bcparams_, "BEAMS_DAMPING") !=
-            BeamContact::bd_no and
-        dampingcontactflag_)
+    if (bcparams_.get<bool>("BEAMS_DAMPING") == true && dampingcontactflag_)
     {
       //*************Begin of standard linearization**************************
       DoNotAssemble = false;
@@ -2647,9 +2642,7 @@ void CONTACT::Beam3contactnew<numnodes, numnodalvalues>::calc_penalty_law()
 template <const int numnodes, const int numnodalvalues>
 void CONTACT::Beam3contactnew<numnodes, numnodalvalues>::calc_damping_law()
 {
-  if (Teuchos::getIntegralValue<BeamContact::Damping>(bcparams_, "BEAMS_DAMPING") ==
-      BeamContact::bd_no)
-    return;
+  if (bcparams_.get<bool>("BEAMS_DAMPING") == false) return;
 
   // Damping force parameter
   double d0 = bcparams_.get<double>("BEAMS_DAMPINGPARAM", -1000.0);
@@ -3223,8 +3216,7 @@ void CONTACT::Beam3contactnew<numnodes, numnodalvalues>::check_contact_status(co
       contactflag_ = false;
   }
 
-  if (Teuchos::getIntegralValue<BeamContact::Damping>(bcparams_, "BEAMS_DAMPING") !=
-      BeamContact::bd_no)
+  if (bcparams_.get<bool>("BEAMS_DAMPING") == true)
   {
     // First parameter for contact force regularization
     double gd1 = bcparams_.get<double>("BEAMS_DAMPREGPARAM1", -1000.0);

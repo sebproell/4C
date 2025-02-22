@@ -146,8 +146,7 @@ CONTACT::Beam3contact<numnodes, numnodalvalues>::Beam3contact(
   gpvariables_.resize(0);
   epvariables_.resize(0);
 
-  if (Teuchos::getIntegralValue<BeamContact::Damping>(bcparams_, "BEAMS_DAMPING") !=
-      BeamContact::bd_no)
+  if (bcparams_.get<bool>("BEAMS_DAMPING") == true)
     FOUR_C_THROW("Damping is not implemented for beam3contact elements so far!");
 
   if (bcparams_.get<double>("BEAMS_GAPSHIFTPARAM", 0.0) != 0.0 and
@@ -1893,8 +1892,7 @@ double CONTACT::Beam3contact<numnodes, numnodalvalues>::get_max_active_dist()
       break;
     }
   }
-  if (Teuchos::getIntegralValue<BeamContact::Damping>(bcparams_, "BEAMS_DAMPING") !=
-      BeamContact::bd_no)
+  if (bcparams_.get<bool>("BEAMS_DAMPING") == true)
   {
     double gd1 = bcparams_.get<double>("BEAMS_DAMPREGPARAM1", -1000.0);
     if (gd1 == -1000.0)
@@ -5100,8 +5098,7 @@ bool CONTACT::Beam3contact<numnodes, numnodalvalues>::check_damping_status(const
 {
   bool dampingcontactflag = false;
 
-  if (Teuchos::getIntegralValue<BeamContact::Damping>(bcparams_, "BEAMS_DAMPING") !=
-      BeamContact::bd_no)
+  if (bcparams_.get<bool>("BEAMS_DAMPING") == true)
   {
     // First parameter for contact force regularization
     double gd1 = bcparams_.get<double>("BEAMS_DAMPREGPARAM1", -1000.0);

@@ -183,10 +183,9 @@ void BeamInteraction::BeamToBeamContactParams::init()
     FOUR_C_THROW("BEAMS_SMOOTHING currently not supported!");
 
   /****************************************************************************/
-  if (Teuchos::getIntegralValue<BeamContact::Damping>(beam_contact_params_list, "BEAMS_DAMPING") !=
-          BeamContact::bd_no or
-      beam_contact_params_list.get<double>("BEAMS_DAMPINGPARAM") != -1000.0 or
-      beam_contact_params_list.get<double>("BEAMS_DAMPREGPARAM1") != -1000.0 or
+  if (beam_contact_params_list.get<bool>("BEAMS_DAMPING") == true ||
+      beam_contact_params_list.get<double>("BEAMS_DAMPINGPARAM") != -1000.0 ||
+      beam_contact_params_list.get<double>("BEAMS_DAMPREGPARAM1") != -1000.0 ||
       beam_contact_params_list.get<double>("BEAMS_DAMPREGPARAM2") != -1000.0)
     FOUR_C_THROW("BEAMS_DAMPING currently not supported!");
 

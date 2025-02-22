@@ -59,9 +59,8 @@ void BeamContact::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "Application of smoothed tangent field", tuple<std::string>("None", "none", "Cpp", "cpp"),
       tuple<BeamContact::Smoothing>(bsm_none, bsm_none, bsm_cpp, bsm_cpp), beamcontact);
 
-  Core::Utils::string_to_integral_parameter<BeamContact::Damping>("BEAMS_DAMPING", "No",
-      "Application of a contact damping force", tuple<std::string>("No", "no", "Yes", "yes"),
-      tuple<BeamContact::Damping>(bd_no, bd_no, bd_yes, bd_yes), beamcontact);
+  Core::Utils::bool_parameter(
+      "BEAMS_DAMPING", false, "Application of a contact damping force", beamcontact);
 
   Core::Utils::double_parameter("BEAMS_BTBPENALTYPARAM", 0.0,
       "Penalty parameter for beam-to-beam point contact", beamcontact);
