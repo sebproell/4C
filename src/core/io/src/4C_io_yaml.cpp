@@ -27,8 +27,13 @@ ryml::Tree Core::IO::init_yaml_tree_with_exceptions()
   return ryml::Tree{cb};
 }
 
+void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const int& value) { node << value; }
+
+void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const double& value) { node << value; }
+
 void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const std::string& value)
 {
+  node |= ryml::VAL_DQUO;
   node << ryml::to_csubstr(value);
 }
 
@@ -39,6 +44,7 @@ void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const bool& value)
 
 void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const std::filesystem::path& value)
 {
+  node |= ryml::VAL_DQUO;
   node << value.string();
 }
 

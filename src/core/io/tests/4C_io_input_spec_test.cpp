@@ -764,7 +764,7 @@ specs:
               type: string
             required: false
             default:
-              key: abc
+              key: "abc"
           - name: c
             type: string
             required: true
@@ -786,7 +786,7 @@ specs:
         specs:
           - name: c
             type: string
-            description: A string
+            description: "A string"
             required: true
           - name: d
             type: double
@@ -794,10 +794,10 @@ specs:
   - name: e
     type: selection
     required: false
-    default: e1
+    default: "e1"
     choices:
-      - name: e1
-      - name: e2
+      - name: "e1"
+      - name: "e2"
   - name: group2
     type: group
     required: false
@@ -1485,7 +1485,7 @@ v: [1,2,3]
 d: 3
 group:
   c: 1
-  d: d2
+  d: "d2"
 list:
   - l1: 1
     l2: 2
