@@ -142,10 +142,8 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   Core::Utils::string_parameter(
       "CONVFORM", "convective", "form of convective term", fdyn, convform_valid_input);
 
-  std::vector<std::string> nonlinearbc_valid_input = {"no", "yes"};
-  Core::Utils::string_parameter("NONLINEARBC", "no",
-      "Flag to activate check for potential nonlinear boundary conditions", fdyn,
-      nonlinearbc_valid_input);
+  Core::Utils::bool_parameter("NONLINEARBC", "no",
+      "Flag to activate check for potential nonlinear boundary conditions", fdyn);
 
   Core::Utils::string_to_integral_parameter<Inpar::FLUID::MeshTying>("MESHTYING", "no",
       "Flag to (de)activate mesh tying algorithm",
@@ -221,20 +219,10 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   Core::Utils::int_parameter("VARVISCFUNCNO", -1,
       "Function for calculation of a variable viscosity for the weakly compressible problem", fdyn);
 
-  {
-    Teuchos::Tuple<std::string, 2> name;
-    Teuchos::Tuple<Inpar::FLUID::PressAvgBc, 2> label;
-
-    name[0] = "no";
-    label[0] = no_pressure_average_bc;
-    name[1] = "yes";
-    label[1] = yes_pressure_average_bc;
-
-    Core::Utils::string_to_integral_parameter<Inpar::FLUID::PressAvgBc>("PRESSAVGBC", "no",
-        "Flag to (de)activate imposition of boundary condition for the considered element average "
-        "pressure",
-        name, label, fdyn);
-  }
+  Core::Utils::bool_parameter("PRESSAVGBC", "no",
+      "Flag to (de)activate imposition of boundary condition for the considered element average "
+      "pressure",
+      fdyn);
 
   Core::Utils::double_parameter("REFMACH", 1.0, "Reference Mach number", fdyn);
 
@@ -278,10 +266,8 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   Core::Utils::double_parameter(
       "START_THETA", 1.0, "Time integration factor for starting scheme", fdyn);
 
-  std::vector<std::string> strong_redd_3d_coupling_valid_input = {"no", "yes"};
-  Core::Utils::string_parameter("STRONG_REDD_3D_COUPLING_TYPE", "no",
-      "Flag to (de)activate potential Strong 3D redD coupling", fdyn,
-      strong_redd_3d_coupling_valid_input);
+  Core::Utils::bool_parameter("STRONG_REDD_3D_COUPLING_TYPE", "no",
+      "Flag to (de)activate potential Strong 3D redD coupling", fdyn);
 
   Core::Utils::int_parameter(
       "VELGRAD_PROJ_SOLVER", -1, "Number of linear solver used for L2 projection", fdyn);

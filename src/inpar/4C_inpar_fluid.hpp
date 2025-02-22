@@ -297,13 +297,6 @@ namespace Inpar
       channel_weakly_compressible,
     };
 
-    /// average pressure boundary condition for hdg
-    enum PressAvgBc
-    {
-      no_pressure_average_bc,
-      yes_pressure_average_bc
-    };
-
     /// meshtying algorithm
     enum MeshTying
     {

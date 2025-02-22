@@ -264,10 +264,9 @@ void FLD::Utils::DbcHdgFluid::do_dirichlet_condition(const Teuchos::ParameterLis
           Teuchos::ParameterList params = Global::Problem::instance()->fluid_dynamic_params();
 
           // check whether the imposition of the average pressure is requested
-          const auto dopressavgbc =
-              Teuchos::getIntegralValue<Inpar::FLUID::PressAvgBc>(params, "PRESSAVGBC");
+          const auto dopressavgbc = Teuchos::get<bool>(params, "PRESSAVGBC");
 
-          if (dopressavgbc == Inpar::FLUID::yes_pressure_average_bc)
+          if (dopressavgbc)
           {
             double pressureavgBC = 0.0;
 
