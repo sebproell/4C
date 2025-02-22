@@ -26,7 +26,7 @@ LINEAR_SOLVER                   1
 COUPLINGTYPE                    SaddlePointMortar_Bubnov
 LMSIDE                          master
 ----------------------------------------------------MORTAR COUPLING
-MESH_RELOCATION                 No
+MESH_RELOCATION                 None
 ----------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
 PARALLEL_REDIST                 none
 -----------------------------------------------------------SOLVER 1

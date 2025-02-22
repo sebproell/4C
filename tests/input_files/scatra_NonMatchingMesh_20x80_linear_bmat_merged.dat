@@ -43,7 +43,7 @@ ITEMAX                          2
 EXPLPREDICT                     Yes
 ---------------------------------------------------MORTAR COUPLING
 LM_SHAPEFCN                     Dual
-MESH_RELOCATION                 no
+MESH_RELOCATION                 None
 ---------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
 PARALLEL_REDIST                 static
 GHOSTING_STRATEGY               redundant_all

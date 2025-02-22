@@ -36,7 +36,7 @@ EQUPOT                          ENC_PDE_ELIM
 ONLYPOTENTIAL                   yes
 -------------------------------------------------------------MORTAR COUPLING
 LM_SHAPEFCN                     Dual
-MESH_RELOCATION                 no
+MESH_RELOCATION                 None
 -------------------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
 PARALLEL_REDIST                 no
 GHOSTING_STRATEGY               redundant_all

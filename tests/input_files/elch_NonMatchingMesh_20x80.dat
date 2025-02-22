@@ -34,7 +34,7 @@ TEMPERATURE                     11604.506                       // abused as a s
 EQUPOT                          ENC
 ---------------------------------------------------MORTAR COUPLING
 LM_SHAPEFCN                     Dual
-MESH_RELOCATION                 initial
+MESH_RELOCATION                 Initial
 ---------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
 PARALLEL_REDIST                 static
 GHOSTING_STRATEGY               redundant_all

@@ -72,7 +72,7 @@ FIELDCOUPLING                   boundary_nonmatching
 LM_SHAPEFCN                     dual
 SEARCH_ALGORITHM                Binarytree
 SEARCH_PARAM                    0.3
-MESH_RELOCATION                 initial
+MESH_RELOCATION                 Initial
 INTTYPE                         elements
 ---------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
 PARALLEL_REDIST                 none

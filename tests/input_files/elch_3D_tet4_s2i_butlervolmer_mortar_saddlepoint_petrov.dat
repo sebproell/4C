@@ -32,7 +32,7 @@ EQUPOT                          divi
 ---------------------------------------SCALAR TRANSPORT DYNAMIC/S2I COUPLING
 COUPLINGTYPE                    SaddlePointMortar_Petrov
 -------------------------------------------------------------MORTAR COUPLING
-MESH_RELOCATION                 no
+MESH_RELOCATION                 None
 -------------------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
 PARALLEL_REDIST                 no
 --------------------------------------------------------------------SOLVER 1

@@ -37,7 +37,7 @@ EQUPOT                          divi
 ---------------------------------------SCALAR TRANSPORT DYNAMIC/S2I COUPLING
 COUPLINGTYPE                    StandardMortar
 -------------------------------------------------------------MORTAR COUPLING
-MESH_RELOCATION                 no
+MESH_RELOCATION                 None
 --------------------------------------------------------------------SOLVER 1
 SOLVER                          Belos
 AZPREC                          AMGnxn

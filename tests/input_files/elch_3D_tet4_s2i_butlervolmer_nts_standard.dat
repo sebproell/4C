@@ -33,7 +33,7 @@ EQUPOT                          divi
 COUPLINGTYPE                    StandardNodeToSegment
 NTSPROJTOL                      2.e-2
 -------------------------------------------------------------MORTAR COUPLING
-MESH_RELOCATION                 no
+MESH_RELOCATION                 None
 -------------------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
 PARALLEL_REDIST                 no
 --------------------------------------------------------------------SOLVER 1
