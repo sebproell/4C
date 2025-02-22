@@ -334,20 +334,6 @@ namespace CONTACT
     //! @name Output
 
     /*!
-    \brief Compute interface forces and moments
-
-    Compute current interface forces and moments at n+1-alphaf using current
-    Lagrange multiplier values and current Mortar matrices D and M at n+1. When
-    doing dynamics with alpha_f > 0, this also uses the old LM and Mortar
-    matrices of the last converged time / load step n (TR-like interpolation).
-
-    \param fresm (in): residual / force vector at state n+1 of current Newton step
-    \param output (in): flag indicating whether force output shall be written
-
-    */
-    void interface_forces(bool output = false) override;
-
-    /*!
     \brief Print interfaces
 
     \param[in] os Output stream used for printing

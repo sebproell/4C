@@ -287,7 +287,6 @@ namespace Mortar
     virtual void initialize_uzawa(std::shared_ptr<Core::LinAlg::SparseOperator>& kteff,
         std::shared_ptr<Core::LinAlg::Vector<double>>& feff) = 0;
     virtual double initial_penalty() const = 0;
-    virtual void interface_forces(bool output = false) = 0;
     virtual double inttime() const = 0;
     virtual void inttime_init() = 0;
     virtual bool is_in_contact() const = 0;

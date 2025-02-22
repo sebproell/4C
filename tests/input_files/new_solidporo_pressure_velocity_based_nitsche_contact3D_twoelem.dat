@@ -87,7 +87,6 @@ SYSTEM                          Condensed
 PENALTYPARAM                    1
 CONTACTFORCE_ENDTIME            No
 VELOCITY_UPDATE                 No
-EMOUTPUT                        None
 NORMCOMBI_RESFCONTCONSTR        And
 NORMCOMBI_DISPLAGR              And
 TOLCONTCONSTR                   1e-06
