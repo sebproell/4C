@@ -2540,7 +2540,7 @@ int Solid::TimIntImpl::uzawa_linear_newton_full()
       constr->apply_dirichlet(*(dbcmaps_->cond_map()), false);
 
       // Apply STC on constraint matrices of desired
-      if (stcscale_ != Inpar::Solid::stc_none)
+      if (stcscale_ != Inpar::Solid::stc_inactive)
       {
         // std::cout<<"scaling constraint matrices"<<std::endl;
         constrT =
@@ -4262,7 +4262,7 @@ void Solid::TimIntImpl::use_block_matrix(
  *----------------------------------------------------------------------*/
 void Solid::TimIntImpl::stc_preconditioning()
 {
-  if (stcscale_ != Inpar::Solid::stc_none)
+  if (stcscale_ != Inpar::Solid::stc_inactive)
   {
     if (!stccompl_)
     {
@@ -4352,7 +4352,7 @@ void Solid::TimIntImpl::compute_stc_matrix()
  *----------------------------------------------------------------------*/
 void Solid::TimIntImpl::recover_stc_solution()
 {
-  if (stcscale_ != Inpar::Solid::stc_none)
+  if (stcscale_ != Inpar::Solid::stc_inactive)
   {
     std::shared_ptr<Core::LinAlg::Vector<double>> disisdc =
         Core::LinAlg::create_vector(*dof_row_map_view(), true);

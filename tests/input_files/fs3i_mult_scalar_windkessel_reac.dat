@@ -120,7 +120,7 @@ PRESTRESSTIME                   1.00000001
 PTCDT                           1.000e-01
 RESEVERYERGY                     0
 STC_LAYER                       1
-STC_SCALING                     no
+STC_SCALING                     Inactive
 TOLCONSTR                       1.000e-08
 TOLINCO                         1.000e-08
 TOLPRE                          1.000e-08

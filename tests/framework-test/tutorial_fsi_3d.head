@@ -197,7 +197,7 @@ K_DAMP                          -1
 //
 // Scaled director conditioning for thin shell structures
 //     no,No,NO,Symmetric,Right
-STC_SCALING                     no
+STC_SCALING                     Inactive
 //
 // number of STC layers for multilayer case
 STC_LAYER                       1

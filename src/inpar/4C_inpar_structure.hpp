@@ -526,9 +526,9 @@ namespace Inpar
     /// STC scaling for thin shell structures
     enum StcScale
     {
-      stc_none = 0,  ///< no scaling
-      stc_curr,      ///< Non-symmetric STC
-      stc_currsym    ///< Symmetric STC
+      stc_inactive = 0,  ///< no scaling
+      stc_curr,          ///< Non-symmetric STC
+      stc_currsym        ///< Symmetric STC
     };
 
     /// map convergence check to enum term
@@ -537,8 +537,8 @@ namespace Inpar
     {
       switch (name)
       {
-        case stc_none:
-          return "stc_none";
+        case stc_inactive:
+          return "stc_inactive";
           break;
         case stc_curr:
           return "stc_curr";

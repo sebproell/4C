@@ -37,7 +37,7 @@ LINEAR_SOLVER                   1
 DYNAMICTYPE                      OneStepTheta
 PREDICT                         ConstDisVelAcc
 STC_LAYER                       2
-STC_SCALING                     No
+STC_SCALING                     Inactive
 ---------------------------------------------STRUCTURAL DYNAMIC/ONESTEPTHETA
 THETA                           0.66
 ---------------------------------------------------------------FLUID DYNAMIC

@@ -47,7 +47,7 @@ MAXTIME                         5
 DAMPING                         Material
 M_DAMP                          -1
 K_DAMP                          -1
-STC_SCALING                     no
+STC_SCALING                     Inactive
 STC_LAYER                       1
 PTCDT                           0.1
 TOLCONSTR                       1e-08

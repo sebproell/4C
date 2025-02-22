@@ -56,7 +56,7 @@ RESEVERYERGY                     0
 RESTARTEVERY                     1
 RESULTSEVERY                     1
 STC_LAYER                       1
-STC_SCALING                     no
+STC_SCALING                     Inactive
 TIMESTEP                        0.05
 TOLCONSTR                       1e-08
 TOLDISP                         1e-10

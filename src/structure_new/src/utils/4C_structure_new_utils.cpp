@@ -366,7 +366,7 @@ void Solid::Nln::create_constraint_preconditioner(
 void Solid::Nln::create_scaling(Teuchos::RCP<::NOX::Epetra::Scaling>& iscale,
     const Solid::TimeInt::BaseDataSDyn& DataSDyn, Solid::TimeInt::BaseDataGlobalState& GState)
 {
-  if (DataSDyn.get_stc_algo_type() != Inpar::Solid::stc_none)
+  if (DataSDyn.get_stc_algo_type() != Inpar::Solid::stc_inactive)
     iscale = Teuchos::make_rcp<Solid::Nln::LinSystem::StcScaling>(DataSDyn, GState);
 }
 

@@ -126,10 +126,10 @@ namespace Inpar
           "binary operator to combine displacement and residual force values",
           tuple<std::string>("And", "Or"), tuple<Solid::BinaryOp>(bop_and, bop_or), sdyn);
 
-      Core::Utils::string_to_integral_parameter<Solid::StcScale>("STC_SCALING", "no",
+      Core::Utils::string_to_integral_parameter<Solid::StcScale>("STC_SCALING", "Inactive",
           "Scaled director conditioning for thin shell structures",
-          tuple<std::string>("no", "No", "NO", "Symmetric", "Right"),
-          tuple<Solid::StcScale>(stc_none, stc_none, stc_none, stc_currsym, stc_curr), sdyn);
+          tuple<std::string>("Inactive", "Symmetric", "Right"),
+          tuple<Solid::StcScale>(stc_inactive, stc_currsym, stc_curr), sdyn);
 
       Core::Utils::int_parameter("STC_LAYER", 1, "number of STC layers for multilayer case", sdyn);
 

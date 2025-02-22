@@ -59,7 +59,7 @@ NORM_INCO                       Abs
 NORMCOMBI_DISPPRES              And
 NORMCOMBI_RESFINCO              And
 NORMCOMBI_RESFDISP              And
-STC_SCALING                     no
+STC_SCALING                     Inactive
 STC_LAYER                       1
 PTCDT                           0.1
 TOLCONSTR                       1e-08

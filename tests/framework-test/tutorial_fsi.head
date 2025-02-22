@@ -1116,7 +1116,7 @@ STC_LAYER                       1
 //
 // Scaled director conditioning for thin shell structures
 //                              no,No,NO,Symmetric,Right
-STC_SCALING                     no
+STC_SCALING                     Inactive
 //
 //
 // time step size

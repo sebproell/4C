@@ -401,7 +401,7 @@ int Discret::Elements::SoSh8::evaluate(Teuchos::ParameterList& params,
     {
       const auto stc_scaling =
           Teuchos::getIntegralValue<Inpar::Solid::StcScale>(params, "stc_scaling");
-      if (stc_scaling == Inpar::Solid::stc_none)
+      if (stc_scaling == Inpar::Solid::stc_inactive)
         FOUR_C_THROW(
             "Action demands to calculate the STC (Scaled Thickness "
             "Conditioning) matrix, but not suitable scaling has been provided.");
@@ -416,7 +416,7 @@ int Discret::Elements::SoSh8::evaluate(Teuchos::ParameterList& params,
     {
       const auto stc_scaling =
           Teuchos::getIntegralValue<Inpar::Solid::StcScale>(params, "stc_scaling");
-      if (stc_scaling == Inpar::Solid::stc_none)
+      if (stc_scaling == Inpar::Solid::stc_inactive)
         FOUR_C_THROW(
             "Action demands to calculate the STC (Scaled Thickness "
             "Conditioning) matrix, but not suitable scaling has been provided.");
