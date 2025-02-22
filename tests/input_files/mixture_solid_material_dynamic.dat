@@ -59,7 +59,7 @@ MINITER                         0
 ITERNORM                        Inf
 NLNSOL                          fullnewton
 LOADLIN                         no
-MASSLIN                         no
+MASSLIN                         none
 PREDICT                         ConstDis
 LINEAR_SOLVER                   1
 --------------------------------------------------------------------SOLVER 1

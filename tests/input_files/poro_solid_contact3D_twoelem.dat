@@ -56,7 +56,7 @@ ITERNORM                        L2
 DIVERCONT                       stop
 NLNSOL                          fullnewton
 LOADLIN                         no
-MASSLIN                         no
+MASSLIN                         none
 PREDICT                         ConstDis
 LINEAR_SOLVER                   2
 ---------------------------------------------------MORTAR COUPLING

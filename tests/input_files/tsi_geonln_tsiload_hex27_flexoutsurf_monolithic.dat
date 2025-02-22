@@ -42,7 +42,7 @@ K_DAMP                          -1
 LINEAR_SOLVER                   1
 LOADLIN                         no
 LUMPMASS                        No
-MASSLIN                         no
+MASSLIN                         none
 MAXITER                         50
 MAXTIME                         5
 MINITER                         0

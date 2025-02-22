@@ -189,12 +189,10 @@ namespace Inpar
       Core::Utils::bool_parameter(
           "LOADLIN", false, "Use linearization of external follower load in Newton", sdyn);
 
-      Core::Utils::string_to_integral_parameter<Solid::MassLin>("MASSLIN", "No",
+      Core::Utils::string_to_integral_parameter<Solid::MassLin>("MASSLIN", "none",
           "Application of nonlinear inertia terms",
-          tuple<std::string>("No", "no", "Standard", "standard", "Rotations", "rotations"),
-          tuple<Solid::MassLin>(
-              ml_none, ml_none, ml_standard, ml_standard, ml_rotations, ml_rotations),
-          sdyn);
+          tuple<std::string>("none", "standard", "rotations"),
+          tuple<Solid::MassLin>(ml_none, ml_standard, ml_rotations), sdyn);
 
       Core::Utils::bool_parameter("NEGLECTINERTIA", false, "Neglect inertia", sdyn);
 

@@ -45,7 +45,7 @@ STC_LAYER                       1
 NLNSOL                          fullnewton
 MATERIALTANGENT                 analytical
 LOADLIN                         No
-MASSLIN                         No
+MASSLIN                         none
 NEGLECTINERTIA                  No
 PREDICT                         TangDis
 LINEAR_SOLVER                   1

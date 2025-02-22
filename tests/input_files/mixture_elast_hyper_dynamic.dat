@@ -59,7 +59,7 @@ MINITER                         0
 ITERNORM                        Inf
 NLNSOL                          fullnewton
 LOADLIN                         no
-MASSLIN                         no
+MASSLIN                         none
 PREDICT                         ConstDisVelAcc
 LINEAR_SOLVER                   1
 ------------------------------------STRUCTURAL DYNAMIC/ONESTEPTHETA

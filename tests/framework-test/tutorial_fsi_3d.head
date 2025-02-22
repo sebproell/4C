@@ -221,8 +221,8 @@ LSMAXITER                       30
 MATERIALTANGENT                 analytical
 //
 // Application of nonlinear inertia terms
-//     No,no,Standard,standard,Rotations,rotations
-MASSLIN                         No
+//     none,standard,rotations
+MASSLIN                         none
 //
 // Type of predictor
 //     Vague

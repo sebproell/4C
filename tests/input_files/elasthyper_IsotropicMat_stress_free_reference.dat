@@ -69,7 +69,7 @@ ITERNORM                        Inf
 DIVERCONT                       stop
 NLNSOL                          fullnewton
 LOADLIN                         no
-MASSLIN                         no
+MASSLIN                         none
 PREDICT                         ConstDis
 UZAWAPARAM                      1
 UZAWATOL                        1e-08
