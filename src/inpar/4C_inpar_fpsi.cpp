@@ -31,12 +31,12 @@ void Inpar::FPSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   Core::Utils::string_to_integral_parameter<FpsiCouplingType>("COUPALGO", "fpsi_monolithic_plain",
       "Iteration Scheme over the fields", name, label, fpsidyn);
 
-  Core::Utils::bool_parameter("SHAPEDERIVATIVES", "No",
+  Core::Utils::bool_parameter("SHAPEDERIVATIVES", false,
       "Include linearization with respect to mesh movement in Navier Stokes equation.\n"
       "Supported in monolithic FPSI for now.",
       fpsidyn);
 
-  Core::Utils::bool_parameter("USESHAPEDERIVATIVES", "No",
+  Core::Utils::bool_parameter("USESHAPEDERIVATIVES", false,
       "Add linearization with respect to mesh movement in Navier Stokes equation to stiffness "
       "matrix.\n"
       "Supported in monolithic FPSI for now.",
@@ -48,7 +48,7 @@ void Inpar::FPSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       tuple<Inpar::FPSI::PartitionedCouplingMethod>(RobinNeumann, monolithic, nocoupling), fpsidyn);
 
   Core::Utils::bool_parameter(
-      "SECONDORDER", "No", "Second order coupling at the interface.", fpsidyn);
+      "SECONDORDER", false, "Second order coupling at the interface.", fpsidyn);
 
   // Iterationparameters
   Core::Utils::string_parameter("RESTOL", "1e-8 1e-8 1e-8 1e-8 1e-8 1e-8",
@@ -87,12 +87,12 @@ void Inpar::FPSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "binary operator to combine primary variables and residual force values",
       tuple<std::string>("And", "Or"), tuple<Inpar::FPSI::BinaryOp>(bop_and, bop_or), fpsidyn);
 
-  Core::Utils::bool_parameter("LineSearch", "No",
+  Core::Utils::bool_parameter("LineSearch", false,
       "adapt increment in case of non-monotonic residual convergence or residual oscillations",
       fpsidyn);
 
   Core::Utils::bool_parameter(
-      "FDCheck", "No", "perform FPSIFDCheck() finite difference check", fpsidyn);
+      "FDCheck", false, "perform FPSIFDCheck() finite difference check", fpsidyn);
 
   // number of linear solver used for poroelasticity
   Core::Utils::int_parameter(

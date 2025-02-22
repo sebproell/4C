@@ -60,9 +60,12 @@ namespace Core
           Teuchos::tuple<std::string>(value_name), Teuchos::tuple<EnumType>(value), &list);
     }
 
-    /// local wrapper to test multiple versions of "Yes", "YES", etc
-    void bool_parameter(std::string const& paramName, std::string const& value,
+    /// temporary helper around InputSpecBuilders::entry<bool>
+    void bool_parameter(std::string const& paramName, bool default_value,
         std::string const& docString, SectionSpecs& section_specs);
+    // fail if users provide a string literal as default value
+    void bool_parameter(std::string const& paramName, const char* default_value,
+        std::string const& docString, SectionSpecs& section_specs) = delete;
 
     /// local wrapper for Teuchos::setIntParameter() that allows only integers
     void int_parameter(std::string const& paramName, int const value, std::string const& docString,

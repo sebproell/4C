@@ -29,7 +29,7 @@ void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           IterStaggAitkenIrons, IterStaggFixedRel, Monolithic),
       tsidyn);
 
-  Core::Utils::bool_parameter("MATCHINGGRID", "Yes", "is matching grid", tsidyn);
+  Core::Utils::bool_parameter("MATCHINGGRID", true, "is matching grid", tsidyn);
 
   // output type
   Core::Utils::int_parameter(
@@ -91,7 +91,7 @@ void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "LINEAR_SOLVER", -1, "number of linear solver used for monolithic TSI problems", tsidynmono);
 
   // convergence criteria adaptivity of monolithic TSI solver
-  Core::Utils::bool_parameter("ADAPTCONV", "No",
+  Core::Utils::bool_parameter("ADAPTCONV", false,
       "Switch on adaptive control of linear solver tolerance for nonlinear solution", tsidynmono);
   Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.1,
       "The linear solver shall be this much better than the current nonlinear residual in the "
@@ -99,16 +99,17 @@ void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       tsidynmono);
 
   Core::Utils::bool_parameter(
-      "INFNORMSCALING", "yes", "Scale blocks of matrix with row infnorm?", tsidynmono);
+      "INFNORMSCALING", true, "Scale blocks of matrix with row infnorm?", tsidynmono);
 
   // merge TSI block matrix to enable use of direct solver in monolithic TSI
   // default: "No", i.e. use block matrix
-  Core::Utils::bool_parameter("MERGE_TSI_BLOCK_MATRIX", "No", "Merge TSI block matrix", tsidynmono);
+  Core::Utils::bool_parameter(
+      "MERGE_TSI_BLOCK_MATRIX", false, "Merge TSI block matrix", tsidynmono);
 
   // in case of monolithic TSI nodal values (displacements, temperatures and
   // reaction forces) at fix points of the body can be calculated
   // default: "No", i.e. nothing is calculated
-  Core::Utils::bool_parameter("CALC_NECKING_TSI_VALUES", "No",
+  Core::Utils::bool_parameter("CALC_NECKING_TSI_VALUES", false,
       "Calculate nodal values for evaluation and validation of necking", tsidynmono);
 
   Core::Utils::string_to_integral_parameter<LineSearch>("TSI_LINE_SEARCH", "none",
@@ -163,7 +164,7 @@ void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           Inpar::CONTACT::NitWgt_physical),
       tsic);
 
-  Core::Utils::bool_parameter("NITSCHE_PENALTY_ADAPTIVE_TSI", "yes",
+  Core::Utils::bool_parameter("NITSCHE_PENALTY_ADAPTIVE_TSI", true,
       "adapt penalty parameter after each converged time step", tsic);
 
   Core::Utils::double_parameter(

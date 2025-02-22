@@ -25,7 +25,7 @@ void Inpar::GeometricSearch::set_valid_parameters(std::map<std::string, Core::IO
       "radius in all directions (+ and -).",
       boundingvolumestrategy);
 
-  Core::Utils::bool_parameter("WRITE_GEOMETRIC_SEARCH_VISUALIZATION", "no",
+  Core::Utils::bool_parameter("WRITE_GEOMETRIC_SEARCH_VISUALIZATION", false,
       "If visualization output for the geometric search should be written", boundingvolumestrategy);
 
   boundingvolumestrategy.move_into_collection(list);

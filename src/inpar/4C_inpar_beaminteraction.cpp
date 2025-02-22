@@ -54,7 +54,7 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
   Core::Utils::SectionSpecs crosslinking{beaminteraction, "CROSSLINKING"};
 
   // remove this some day
-  Core::Utils::bool_parameter("CROSSLINKER", "No", "Crosslinker in problem", crosslinking);
+  Core::Utils::bool_parameter("CROSSLINKER", false, "Crosslinker in problem", crosslinking);
 
   // bounding box for initial random crosslinker position
   Core::Utils::string_parameter("INIT_LINKER_BOUNDINGBOX", "1e12 1e12 1e12 1e12 1e12 1e12",
@@ -104,7 +104,7 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
 
   Core::Utils::SectionSpecs spherebeamlink{beaminteraction, "SPHERE BEAM LINK"};
 
-  Core::Utils::bool_parameter("SPHEREBEAMLINKING", "No", "Integrins in problem", spherebeamlink);
+  Core::Utils::bool_parameter("SPHEREBEAMLINKING", false, "Integrins in problem", spherebeamlink);
 
   // Reading double parameter for contraction rate for active linker
   Core::Utils::double_parameter("CONTRACTIONRATE", 0.0,

@@ -113,18 +113,18 @@ void Inpar::PoroElast::set_valid_parameters(std::map<std::string, Core::IO::Inpu
       poroelastdyn);
 
   Core::Utils::bool_parameter(
-      "SECONDORDER", "Yes", "Second order coupling at the interface.", poroelastdyn);
+      "SECONDORDER", true, "Second order coupling at the interface.", poroelastdyn);
 
-  Core::Utils::bool_parameter("CONTIPARTINT", "No",
+  Core::Utils::bool_parameter("CONTIPARTINT", false,
       "Partial integration of porosity gradient in continuity equation", poroelastdyn);
 
-  Core::Utils::bool_parameter("CONTACT_NO_PENETRATION", "No",
+  Core::Utils::bool_parameter("CONTACT_NO_PENETRATION", false,
       "No-Penetration Condition on active contact surface in case of poro contact problem!",
       poroelastdyn);
 
-  Core::Utils::bool_parameter("MATCHINGGRID", "Yes", "is matching grid", poroelastdyn);
+  Core::Utils::bool_parameter("MATCHINGGRID", true, "is matching grid", poroelastdyn);
 
-  Core::Utils::bool_parameter("CONVECTIVE_TERM", "No", "convective term ", poroelastdyn);
+  Core::Utils::bool_parameter("CONVECTIVE_TERM", false, "convective term ", poroelastdyn);
 
   // number of linear solver used for poroelasticity
   Core::Utils::int_parameter("LINEAR_SOLVER", -1,

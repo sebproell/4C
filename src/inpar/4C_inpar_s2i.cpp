@@ -41,7 +41,7 @@ void Inpar::S2I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       s2icoupling);
 
   // flag for evaluation of interface linearizations and residuals on slave side only
-  Core::Utils::bool_parameter("SLAVEONLY", "No",
+  Core::Utils::bool_parameter("SLAVEONLY", false,
       "flag for evaluation of interface linearizations and residuals on slave side only",
       s2icoupling);
 
@@ -84,10 +84,10 @@ void Inpar::S2I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "growth",
       s2icoupling);
 
-  Core::Utils::bool_parameter("MESHTYING_CONDITIONS_INDEPENDENT_SETUP", "No",
+  Core::Utils::bool_parameter("MESHTYING_CONDITIONS_INDEPENDENT_SETUP", false,
       "mesh tying for different conditions should be setup independently", s2icoupling);
 
-  Core::Utils::bool_parameter("OUTPUT_INTERFACE_FLUX", "No",
+  Core::Utils::bool_parameter("OUTPUT_INTERFACE_FLUX", false,
       "evaluate integral of coupling flux on slave side for each s2i condition and write it to csv "
       "file",
       s2icoupling);

@@ -28,11 +28,11 @@ void Inpar::Cardiovascular0D::set_valid_parameters(std::map<std::string, Core::I
       cardvasc0dstruct);
   Core::Utils::double_parameter("TIMINT_THETA", 0.5,
       "theta for one-step-theta time-integration scheme of Cardiovascular0D", cardvasc0dstruct);
-  Core::Utils::bool_parameter("RESTART_WITH_CARDVASC0D", "No",
+  Core::Utils::bool_parameter("RESTART_WITH_CARDVASC0D", false,
       "Must be chosen if a non-cardiovascular0d simulation is to be restarted as "
       "cardiovascular0d-structural coupled problem.",
       cardvasc0dstruct);
-  Core::Utils::bool_parameter("ENHANCED_OUTPUT", "No",
+  Core::Utils::bool_parameter("ENHANCED_OUTPUT", false,
       "Set to yes for enhanced output (like e.g. derivative information)", cardvasc0dstruct);
 
   // linear solver id used for monolithic 0D cardiovascular-structural problems
@@ -50,7 +50,7 @@ void Inpar::Cardiovascular0D::set_valid_parameters(std::map<std::string, Core::I
       "EPS_PERIODIC", 1.0e-16, "tolerance for periodic state", cardvasc0dstruct);
 
   Core::Utils::bool_parameter(
-      "PTC_3D0D", "No", "Set to yes for doing PTC 2x2 block system.", cardvasc0dstruct);
+      "PTC_3D0D", false, "Set to yes for doing PTC 2x2 block system.", cardvasc0dstruct);
 
   Core::Utils::double_parameter("K_PTC", 0.0,
       "PTC parameter: 0 means normal Newton, ->infty means steepest desc", cardvasc0dstruct);

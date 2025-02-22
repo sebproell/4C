@@ -24,7 +24,7 @@ void Inpar::Wear::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       tuple<std::string>("None", "none", "Archard", "archard"),
       tuple<WearLaw>(wear_none, wear_none, wear_archard, wear_archard), wear);
 
-  Core::Utils::bool_parameter("MATCHINGGRID", "Yes", "is matching grid", wear);
+  Core::Utils::bool_parameter("MATCHINGGRID", true, "is matching grid", wear);
 
   Core::Utils::string_to_integral_parameter<WearShape>("WEAR_SHAPEFCN", "std",
       "Type of employed set of shape functions for wear",
@@ -40,7 +40,7 @@ void Inpar::Wear::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "WEAR_TIMERATIO", 1.0, "Time step ratio between wear and spatial time scale", wear);
   Core::Utils::double_parameter("SSSLIP", 1.0, "Fixed slip for steady state wear", wear);
 
-  Core::Utils::bool_parameter("SSWEAR", "No", "flag for steady state wear", wear);
+  Core::Utils::bool_parameter("SSWEAR", false, "flag for steady state wear", wear);
 
   Core::Utils::string_to_integral_parameter<WearSide>("WEAR_SIDE", "slave",
       "Definition of wear side",

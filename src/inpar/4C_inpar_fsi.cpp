@@ -73,14 +73,14 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   std::string debugoutput_doc =
       "Output of unconverged interface values during FSI iteration. There will be a new control "
       "file for each time step. This might be helpful to understand the coupling iteration.";
-  Core::Utils::bool_parameter("DEBUGOUTPUT", "No", debugoutput_doc, fsidyn);
+  Core::Utils::bool_parameter("DEBUGOUTPUT", false, debugoutput_doc, fsidyn);
 
-  Core::Utils::bool_parameter("MATCHGRID_FLUIDALE", "Yes", "is matching grid (fluid-ale)", fsidyn);
+  Core::Utils::bool_parameter("MATCHGRID_FLUIDALE", true, "is matching grid (fluid-ale)", fsidyn);
 
   Core::Utils::bool_parameter(
-      "MATCHGRID_STRUCTALE", "Yes", "is matching grid (structure-ale)", fsidyn);
+      "MATCHGRID_STRUCTALE", true, "is matching grid (structure-ale)", fsidyn);
 
-  Core::Utils::bool_parameter("MATCHALL", "Yes",
+  Core::Utils::bool_parameter("MATCHALL", true,
       "is matching grid (fluid-ale) and is full fluid-ale (without euler part)", fsidyn);
 
   Core::Utils::double_parameter("MAXTIME", 1000.0, "Total simulation time", fsidyn);
@@ -88,11 +88,11 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
 
   Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", fsidyn);
 
-  Core::Utils::bool_parameter("RESTART_FROM_PART_FSI", "No",
+  Core::Utils::bool_parameter("RESTART_FROM_PART_FSI", false,
       "restart from partitioned fsi (e.g. from prestress calculations) instead of monolithic fsi",
       fsidyn);
 
-  Core::Utils::bool_parameter("SECONDORDER", "No",
+  Core::Utils::bool_parameter("SECONDORDER", false,
       "Second order displacement-velocity conversion at the interface.", fsidyn);
 
   Core::Utils::string_to_integral_parameter<Inpar::FSI::SlideALEProj>("SLIDEALEPROJ", "None",
@@ -175,7 +175,7 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       fsiadapt);
 
   Core::Utils::bool_parameter(
-      "TIMEADAPTON", "No", "Activate or deactivate time step size adaptivity", fsiadapt);
+      "TIMEADAPTON", false, "Activate or deactivate time step size adaptivity", fsiadapt);
 
   fsiadapt.move_into_collection(list);
 
@@ -203,13 +203,13 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "Nonlinear tolerance for lung/constraint/fluid-fluid FSI",
       fsimono);  // ToDo remove
 
-  Core::Utils::bool_parameter("ENERGYFILE", "No",
+  Core::Utils::bool_parameter("ENERGYFILE", false,
       "Write artificial interface energy due to temporal discretization to file", fsimono);
 
   Core::Utils::bool_parameter(
-      "FSIAMGANALYZE", "No", "run analysis on fsiamg multigrid scheme", fsimono);
+      "FSIAMGANALYZE", false, "run analysis on fsiamg multigrid scheme", fsimono);
 
-  Core::Utils::bool_parameter("INFNORMSCALING", "Yes", "Scale Blocks with row infnorm?", fsimono);
+  Core::Utils::bool_parameter("INFNORMSCALING", true, "Scale Blocks with row infnorm?", fsimono);
 
   Core::Utils::int_parameter(
       "ITEMAX", 100, "Maximum allowed number of nonlinear iterations", fsimono);
@@ -253,14 +253,14 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "Number of iterations in one time step reusing the preconditioner before rebuilding it",
       fsimono);
 
-  Core::Utils::bool_parameter("REBUILDPRECEVERYSTEP", "Yes",
+  Core::Utils::bool_parameter("REBUILDPRECEVERYSTEP", true,
       "Enforce rebuilding the preconditioner at the beginning of every time step", fsimono);
 
-  Core::Utils::bool_parameter("SHAPEDERIVATIVES", "No",
+  Core::Utils::bool_parameter("SHAPEDERIVATIVES", false,
       "Include linearization with respect to mesh movement in Navier Stokes equation.", fsimono);
 
   Core::Utils::bool_parameter(
-      "SYMMETRICPRECOND", "No", "Symmetric block GS preconditioner or ordinary GS", fsimono);
+      "SYMMETRICPRECOND", false, "Symmetric block GS preconditioner or ordinary GS", fsimono);
 
   // monolithic preconditioner parameter
 
@@ -378,7 +378,7 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           Inpar::FSI::CoupVarPart::vel),
       fsipart);
 
-  Core::Utils::bool_parameter("DIVPROJECTION", "no",
+  Core::Utils::bool_parameter("DIVPROJECTION", false,
       "Project velocity into divergence-free subspace for partitioned fsi", fsipart);
 
   Core::Utils::int_parameter("ITEMAX", 100, "Maximum number of iterations over fields", fsipart);

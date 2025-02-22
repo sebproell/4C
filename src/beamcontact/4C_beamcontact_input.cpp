@@ -34,25 +34,25 @@ void BeamContact::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       beamcontact);
 
   Core::Utils::bool_parameter(
-      "BEAMS_NEWGAP", "No", "choose between original or enhanced gapfunction", beamcontact);
+      "BEAMS_NEWGAP", false, "choose between original or enhanced gapfunction", beamcontact);
 
-  Core::Utils::bool_parameter("BEAMS_SEGCON", "No",
+  Core::Utils::bool_parameter("BEAMS_SEGCON", false,
       "choose between beam contact with and without subsegment generation", beamcontact);
 
-  Core::Utils::bool_parameter("BEAMS_DEBUG", "No",
+  Core::Utils::bool_parameter("BEAMS_DEBUG", false,
       "This flag can be used for testing purposes. When it is switched on, some sanity checks are "
       "not performed!",
       beamcontact);
 
-  Core::Utils::bool_parameter("BEAMS_INACTIVESTIFF", "No",
+  Core::Utils::bool_parameter("BEAMS_INACTIVESTIFF", false,
       "Always apply contact stiffness in first Newton step for pairs which have active in last "
       "time step",
       beamcontact);
 
-  Core::Utils::bool_parameter("BEAMS_BTSOL", "No",
+  Core::Utils::bool_parameter("BEAMS_BTSOL", false,
       "decide, if also the contact between beams and solids is possible", beamcontact);
 
-  Core::Utils::bool_parameter("BEAMS_ENDPOINTPENALTY", "No",
+  Core::Utils::bool_parameter("BEAMS_ENDPOINTPENALTY", false,
       "Additional consideration of endpoint-line and endpoint-endpoint contacts", beamcontact);
 
   Core::Utils::string_to_integral_parameter<BeamContact::Smoothing>("BEAMS_SMOOTHING", "None",
@@ -130,7 +130,7 @@ void BeamContact::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       tuple<BeamContact::OctreeType>(boct_none, boct_none, boct_aabb, boct_cobb, boct_spbb),
       beamcontact);
 
-  Core::Utils::bool_parameter("BEAMS_ADDITEXT", "Yes",
+  Core::Utils::bool_parameter("BEAMS_ADDITEXT", true,
       "Switch between No==multiplicative extrusion factor and Yes==additive extrusion factor",
       beamcontact);
   Core::Utils::string_parameter("BEAMS_EXTVAL", "-1.0",
@@ -149,7 +149,7 @@ void BeamContact::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   Core::Utils::SectionSpecs beamcontact_vtk_sublist{beamcontact, "RUNTIME VTK OUTPUT"};
 
   // whether to write visualization output for beam contact
-  Core::Utils::bool_parameter("VTK_OUTPUT_BEAM_CONTACT", "No",
+  Core::Utils::bool_parameter("VTK_OUTPUT_BEAM_CONTACT", false,
       "write visualization output for beam contact", beamcontact_vtk_sublist);
 
   // output interval regarding steps: write output every INTERVAL_STEPS steps
@@ -157,15 +157,15 @@ void BeamContact::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "write visualization output at runtime every INTERVAL_STEPS steps", beamcontact_vtk_sublist);
 
   // whether to write output in every iteration of the nonlinear solver
-  Core::Utils::bool_parameter("EVERY_ITERATION", "No",
+  Core::Utils::bool_parameter("EVERY_ITERATION", false,
       "write output in every iteration of the nonlinear solver", beamcontact_vtk_sublist);
 
   // whether to write visualization output for contact forces
-  Core::Utils::bool_parameter("CONTACT_FORCES", "No",
+  Core::Utils::bool_parameter("CONTACT_FORCES", false,
       "write visualization output for contact forces", beamcontact_vtk_sublist);
 
   // whether to write visualization output for gaps
-  Core::Utils::bool_parameter("GAPS", "No", "write visualization output for gap, i.e. penetration",
+  Core::Utils::bool_parameter("GAPS", false, "write visualization output for gap, i.e. penetration",
       beamcontact_vtk_sublist);
 
   beamcontact_vtk_sublist.move_into_collection(list);

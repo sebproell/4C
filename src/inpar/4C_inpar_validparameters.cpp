@@ -128,7 +128,7 @@ std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
 
   Core::Utils::SectionSpecs nurbs_param{"NURBS"};
 
-  Core::Utils::bool_parameter("DO_LS_DBC_PROJECTION", "No",
+  Core::Utils::bool_parameter("DO_LS_DBC_PROJECTION", false,
       "Determines if a projection is needed for least square Dirichlet boundary conditions.",
       nurbs_param);
 

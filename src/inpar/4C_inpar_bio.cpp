@@ -32,7 +32,7 @@ void Inpar::ArtDyn::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::int_parameter("RESULTSEVERY", 1, "Increment for writing solution", andyn);
 
   Core::Utils::bool_parameter(
-      "SOLVESCATRA", "no", "Flag to (de)activate solving scalar transport in blood", andyn);
+      "SOLVESCATRA", false, "Flag to (de)activate solving scalar transport in blood", andyn);
 
   // number of linear solver used for arterial dynamics
   Core::Utils::int_parameter(
@@ -211,8 +211,8 @@ void Inpar::BioFilm::set_valid_parameters(std::map<std::string, Core::IO::InputS
   Core::Utils::SectionSpecs biofilmcontrol{"BIOFILM CONTROL"};
 
   Core::Utils::bool_parameter(
-      "BIOFILMGROWTH", "No", "Scatra algorithm for biofilm growth", biofilmcontrol);
-  Core::Utils::bool_parameter("AVGROWTH", "No",
+      "BIOFILMGROWTH", false, "Scatra algorithm for biofilm growth", biofilmcontrol);
+  Core::Utils::bool_parameter("AVGROWTH", false,
       "The calculation of growth parameters is based on averaged values", biofilmcontrol);
   Core::Utils::double_parameter(
       "FLUXCOEF", 0.0, "Coefficient for growth due to scalar flux", biofilmcontrol);
@@ -229,7 +229,7 @@ void Inpar::BioFilm::set_valid_parameters(std::map<std::string, Core::IO::InputS
   Core::Utils::int_parameter(
       "BIONUMSTEP", 0, "Maximum number of steps for biofilm growth", biofilmcontrol);
   Core::Utils::bool_parameter(
-      "OUTPUT_GMSH", "No", "Do you want to write Gmsh postprocessing files?", biofilmcontrol);
+      "OUTPUT_GMSH", false, "Do you want to write Gmsh postprocessing files?", biofilmcontrol);
 
   biofilmcontrol.move_into_collection(list);
 }
@@ -280,12 +280,12 @@ void Inpar::ReducedLung::set_valid_parameters(std::map<std::string, Core::IO::In
       "number of linear solver used for reduced dim arterial dynamics", redawdyn);
 
   Core::Utils::bool_parameter(
-      "SOLVESCATRA", "no", "Flag to (de)activate solving scalar transport in blood", redawdyn);
+      "SOLVESCATRA", false, "Flag to (de)activate solving scalar transport in blood", redawdyn);
 
-  Core::Utils::bool_parameter("COMPAWACINTER", "no",
+  Core::Utils::bool_parameter("COMPAWACINTER", false,
       "Flag to (de)activate computation of airway-acinus interdependency", redawdyn);
 
-  Core::Utils::bool_parameter("CALCV0PRESTRESS", "no",
+  Core::Utils::bool_parameter("CALCV0PRESTRESS", false,
       "Flag to (de)activate initial acini volume adjustment with pre-stress condition", redawdyn);
 
   Core::Utils::double_parameter("TRANSPULMPRESS", 800.0,

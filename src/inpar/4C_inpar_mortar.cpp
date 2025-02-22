@@ -48,7 +48,7 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::double_parameter(
       "SEARCH_PARAM", 0.3, "Radius / Bounding volume inflation for contact search", mortar);
 
-  Core::Utils::bool_parameter("SEARCH_USE_AUX_POS", "Yes",
+  Core::Utils::bool_parameter("SEARCH_USE_AUX_POS", true,
       "If chosen auxiliary position is used for computing dops", mortar);
 
   Core::Utils::string_to_integral_parameter<Inpar::Mortar::LagMultQuad>("LM_QUAD", "undefined",
@@ -59,7 +59,7 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           lagmult_pwlin, lagmult_pwlin, lagmult_lin, lagmult_lin, lagmult_const),
       mortar);
 
-  Core::Utils::bool_parameter("CROSSPOINTS", "No",
+  Core::Utils::bool_parameter("CROSSPOINTS", false,
       "If chosen, multipliers are removed from crosspoints / edge nodes", mortar);
 
   Core::Utils::string_to_integral_parameter<Inpar::Mortar::ConsistentDualType>("LM_DUAL_CONSISTENT",
@@ -105,10 +105,10 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           triangulation_center, triangulation_center),
       mortar);
 
-  Core::Utils::bool_parameter("RESTART_WITH_MESHTYING", "No",
+  Core::Utils::bool_parameter("RESTART_WITH_MESHTYING", false,
       "Must be chosen if a non-meshtying simulation is to be restarted with meshtying", mortar);
 
-  Core::Utils::bool_parameter("OUTPUT_INTERFACES", "No",
+  Core::Utils::bool_parameter("OUTPUT_INTERFACES", false,
       "Write output for each mortar interface separately.\nThis is an additional feature, purely "
       "to enhance visualization. Currently, this is limited to solid meshtying and contact w/o "
       "friction.",
@@ -120,7 +120,7 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   // parameters for parallel redistribution of mortar interfaces
   Core::Utils::SectionSpecs parallelRedist{mortar, "PARALLEL REDISTRIBUTION"};
 
-  Core::Utils::bool_parameter("EXPLOIT_PROXIMITY", "Yes",
+  Core::Utils::bool_parameter("EXPLOIT_PROXIMITY", true,
       "Exploit information on geometric proximity to split slave interface into close and "
       "non-close parts and redistribute them independently. [Contact only]",
       parallelRedist);
@@ -157,7 +157,7 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           ParallelRedist::redist_dynamic),
       parallelRedist);
 
-  Core::Utils::bool_parameter("PRINT_DISTRIBUTION", "Yes",
+  Core::Utils::bool_parameter("PRINT_DISTRIBUTION", true,
       "Print details of the parallel distribution, i.e. number of nodes/elements for each rank.",
       parallelRedist);
 

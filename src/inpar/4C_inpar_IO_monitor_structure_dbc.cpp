@@ -53,7 +53,7 @@ namespace Inpar
           sublist_IO_monitor_structure_dbc);
 
       // whether to write output in every iteration of the nonlinear solver
-      Core::Utils::bool_parameter("WRITE_HEADER", "No",
+      Core::Utils::bool_parameter("WRITE_HEADER", false,
           "write information about monitored boundary condition to output file",
           sublist_IO_monitor_structure_dbc);
 

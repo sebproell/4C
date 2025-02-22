@@ -30,7 +30,7 @@ void Inpar::FS3I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       tuple<Inpar::ScaTra::SolverType>(
           Inpar::ScaTra::solvertype_linear_incremental, Inpar::ScaTra::solvertype_nonlinear),
       fs3idyn);
-  Core::Utils::bool_parameter("INF_PERM", "yes", "Flag for infinite permeability", fs3idyn);
+  Core::Utils::bool_parameter("INF_PERM", true, "Flag for infinite permeability", fs3idyn);
   std::vector<std::string> consthermpress_valid_input = {"No_energy", "No_mass", "Yes"};
   Core::Utils::string_parameter("CONSTHERMPRESS", "Yes",
       "treatment of thermodynamic pressure in time", fs3idyn, consthermpress_valid_input);
@@ -83,7 +83,7 @@ void Inpar::FS3I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       fs3idyn);
 
   // Restart from FSI instead of FS3I
-  Core::Utils::bool_parameter("RESTART_FROM_PART_FSI", "No",
+  Core::Utils::bool_parameter("RESTART_FROM_PART_FSI", false,
       "restart from partitioned fsi problem (e.g. from prestress calculations) instead of fs3i",
       fs3idyn);
 

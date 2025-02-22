@@ -90,31 +90,31 @@ void Inpar::FBI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       beam_to_fluid_meshtying, "RUNTIME VTK OUTPUT"};
 
   // Whether to write visualization output at all for beam to fluid meshtying.
-  Core::Utils::bool_parameter("WRITE_OUTPUT", "No",
+  Core::Utils::bool_parameter("WRITE_OUTPUT", false,
       "Enable / disable beam-to-fluid mesh tying output.", beam_to_fluid_meshtying_output);
 
-  Core::Utils::bool_parameter("NODAL_FORCES", "No",
+  Core::Utils::bool_parameter("NODAL_FORCES", false,
       "Enable / disable output of the resulting nodal forces due to beam to Fluid interaction.",
       beam_to_fluid_meshtying_output);
 
-  Core::Utils::bool_parameter("SEGMENTATION", "No",
+  Core::Utils::bool_parameter("SEGMENTATION", false,
       "Enable / disable output of segmentation points.", beam_to_fluid_meshtying_output);
 
-  Core::Utils::bool_parameter("INTEGRATION_POINTS", "No",
+  Core::Utils::bool_parameter("INTEGRATION_POINTS", false,
       "Enable / disable output of used integration points. If the meshtying method has 'forces' at "
       "the integration point, they will also be output.",
       beam_to_fluid_meshtying_output);
 
-  Core::Utils::bool_parameter("CONSTRAINT_VIOLATION", "No",
+  Core::Utils::bool_parameter("CONSTRAINT_VIOLATION", false,
       "Enable / disable output of the constraint violation into a output_name.penalty csv file.",
       beam_to_fluid_meshtying_output);
 
-  Core::Utils::bool_parameter("MORTAR_LAMBDA_DISCRET", "No",
+  Core::Utils::bool_parameter("MORTAR_LAMBDA_DISCRET", false,
       "Enable / disable output of the discrete Lagrange multipliers at the node of the Lagrange "
       "multiplier shape functions.",
       beam_to_fluid_meshtying_output);
 
-  Core::Utils::bool_parameter("MORTAR_LAMBDA_CONTINUOUS", "No",
+  Core::Utils::bool_parameter("MORTAR_LAMBDA_CONTINUOUS", false,
       "Enable / disable output of the continuous Lagrange multipliers function along the beam.",
       beam_to_fluid_meshtying_output);
 

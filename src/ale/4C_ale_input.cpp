@@ -33,10 +33,10 @@ void ALE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
           springs_material, springs_spatial),
       adyn);
 
-  Core::Utils::bool_parameter("ASSESSMESHQUALITY", "no",
+  Core::Utils::bool_parameter("ASSESSMESHQUALITY", false,
       "Evaluate element quality measure according to [Oddy et al. 1988]", adyn);
 
-  Core::Utils::bool_parameter("UPDATEMATRIX", "no",
+  Core::Utils::bool_parameter("UPDATEMATRIX", false,
       "Update stiffness matrix in every time step (only for linear/material strategies)", adyn);
 
   Core::Utils::int_parameter("MAXITER", 1, "Maximum number of newton iterations.", adyn);
