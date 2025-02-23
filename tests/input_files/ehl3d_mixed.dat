@@ -60,7 +60,7 @@ INTTYPE                         Elements_BS
 NUMGP_PER_DIM                   2
 TRIANGULATION                   Center
 -------------------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 none
+PARALLEL_REDIST                 None
 ---------------------------------------------------LUBRICATION DYNAMIC
 MAXTIME                         1.0e2
 NUMSTEP                         3000

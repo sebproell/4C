@@ -51,7 +51,7 @@ SEARCH_PARAM                    0.8
 INTTYPE                         elements
 NUMGP_PER_DIM                   3
 -------------------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 dynamic
+PARALLEL_REDIST                 Dynamic
 --------------------------------------------------------------------SOLVER 1
 NAME                            Structure_Solver
 SOLVER                          Superlu

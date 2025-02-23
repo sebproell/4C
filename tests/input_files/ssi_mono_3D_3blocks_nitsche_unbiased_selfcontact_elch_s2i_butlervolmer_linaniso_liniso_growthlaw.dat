@@ -56,7 +56,7 @@ INTTYPE                         Segments
 NUMGP_PER_DIM                   3
 TRIANGULATION                   center
 ---------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 none
+PARALLEL_REDIST                 None
 GHOSTING_STRATEGY               redundant_all
 -----------------------------------------------STRUCT NOX/Printing
 Inner Iteration = no

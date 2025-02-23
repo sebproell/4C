@@ -28,7 +28,7 @@ NTSPROJTOL                      4.e-3
 ----------------------------------------------------MORTAR COUPLING
 MESH_RELOCATION                 None
 ----------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 none
+PARALLEL_REDIST                 None
 -----------------------------------------------------------SOLVER 1
 SOLVER                          UMFPACK
 ----------------------------------------------------------MATERIALS

@@ -52,7 +52,7 @@ INTTYPE              segments
 LM_DUAL_CONSISTENT   none
 ALGORITHM            lts
 ---------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST      none
+PARALLEL_REDIST      None
 ----------------------------------------------------------SOLVER 1
 NAME                 Structure_Solver
 SOLVER               Superlu

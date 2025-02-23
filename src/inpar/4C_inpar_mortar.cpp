@@ -148,11 +148,8 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       "Minimum no. of elements per processor for parallel redistribution", parallelRedist);
 
   Core::Utils::string_to_integral_parameter<ParallelRedist>("PARALLEL_REDIST", "Static",
-      "Type of redistribution algorithm",
-      tuple<std::string>("None", "none", "No", "no", "Static", "static", "Dynamic", "dynamic"),
-      tuple<ParallelRedist>(ParallelRedist::redist_none, ParallelRedist::redist_none,
-          ParallelRedist::redist_none, ParallelRedist::redist_none, ParallelRedist::redist_static,
-          ParallelRedist::redist_static, ParallelRedist::redist_dynamic,
+      "Type of redistribution algorithm", tuple<std::string>("None", "Static", "Dynamic"),
+      tuple<ParallelRedist>(ParallelRedist::redist_none, ParallelRedist::redist_static,
           ParallelRedist::redist_dynamic),
       parallelRedist);
 

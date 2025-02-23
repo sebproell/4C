@@ -63,7 +63,7 @@ LM_DUAL_CONSISTENT   none
 ALGORITHM            mortar
 LM_QUAD              quad
 ---------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST      none
+PARALLEL_REDIST      None
 --------------------------------------------------------------------SOLVER 1
 NAME                            Structure_Solver
 SOLVER                          UMFPACK

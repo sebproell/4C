@@ -45,7 +45,7 @@ EXPLPREDICT                     Yes
 LM_SHAPEFCN                     Dual
 MESH_RELOCATION                 None
 ---------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 static
+PARALLEL_REDIST                 Static
 GHOSTING_STRATEGY               redundant_all
 ----------------------------------------------------------SOLVER 1
 NAME                            Sca_Tra_Solver

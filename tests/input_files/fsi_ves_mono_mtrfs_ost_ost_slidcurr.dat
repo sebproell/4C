@@ -31,7 +31,7 @@ VERBOSITY                       standard
 LM_SHAPEFCN                     Dual
 MESH_RELOCATION                 Initial
 -------------------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 No
+PARALLEL_REDIST                 None
 GHOSTING_STRATEGY               redundant_all
 ----------------------------------------------------------STRUCTURAL DYNAMIC
 LINEAR_SOLVER                   1

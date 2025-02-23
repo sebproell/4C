@@ -68,7 +68,7 @@ SEARCH_ALGORITHM                Binarytree
 SEARCH_PARAM                    1
 INTTYPE                         Elements
 -------------------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 none
+PARALLEL_REDIST                 None
 --------------------------------------------------------------------SOLVER 3
 NAME                            Direct_Solver
 SOLVER                          Superlu

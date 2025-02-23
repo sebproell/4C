@@ -57,7 +57,7 @@ LM_SHAPEFCN                     Dual
 SEARCH_ALGORITHM                Binarytree
 SEARCH_PARAM                    0.5
 ---------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 No
+PARALLEL_REDIST                 None
 GHOSTING_STRATEGY               redundant_all
 ----------------------------------------------------------SOLVER 1
 NAME                            Structure_Solver

@@ -69,7 +69,7 @@ NUMGP_PER_DIM                   5
 LM_QUAD                         quad
 LM_DUAL_CONSISTENT              none
 -------------------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 dynamic
+PARALLEL_REDIST                 Dynamic
 --------------------------------------------------------------------SOLVER 1
 NAME                            Struct_Solver
 SOLVER                          UMFPACK

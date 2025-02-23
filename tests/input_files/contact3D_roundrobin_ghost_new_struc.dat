@@ -58,7 +58,7 @@ LM_SHAPEFCN                     Dual
 SEARCH_ALGORITHM                BinaryTree
 SEARCH_PARAM                    0.3
 -------------------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 dynamic
+PARALLEL_REDIST                 Dynamic
 GHOSTING_STRATEGY               round_robin
 --------------------------------------------------------------------SOLVER 1
 NAME                            Direct_Solver

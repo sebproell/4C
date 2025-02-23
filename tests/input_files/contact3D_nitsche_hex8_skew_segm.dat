@@ -49,7 +49,7 @@ SEARCH_PARAM         0.3e1
 NUMGP_PER_DIM        7
 LM_SHAPEFCN          std
 -------------------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST      none
+PARALLEL_REDIST      None
 ----------------------------------------------------------SOLVER 1
 SOLVER                         UMFPACK
 ---------------------------------------------------------MATERIALS

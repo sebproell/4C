@@ -75,7 +75,7 @@ SEARCH_PARAM                    0.3
 MESH_RELOCATION                 Initial
 INTTYPE                         elements
 ---------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 none
+PARALLEL_REDIST                 None
 ----------------------------------------------------------SOLVER 1
 NAME                            Sca_Tra_Solver
 SOLVER                          UMFPACK

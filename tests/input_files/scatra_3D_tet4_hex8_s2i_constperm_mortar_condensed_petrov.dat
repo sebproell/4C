@@ -27,7 +27,7 @@ COUPLINGTYPE                    CondensedMortar_Petrov
 ----------------------------------------------------MORTAR COUPLING
 MESH_RELOCATION                 None
 ----------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 none
+PARALLEL_REDIST                 None
 -----------------------------------------------------------SOLVER 1
 SOLVER                          UMFPACK
 ----------------------------------------------------------MATERIALS

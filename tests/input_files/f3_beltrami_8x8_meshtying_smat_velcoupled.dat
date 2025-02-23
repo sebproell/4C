@@ -60,7 +60,7 @@ CROSSPOINTS               no
 SEARCH_ALGORITHM          Binarytree
 SEARCH_PARAM              0.3
 --------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 no
+PARALLEL_REDIST                 None
 GHOSTING_STRATEGY               redundant_all
 --------------------------------------------------CONTACT DYNAMIC
 LINEAR_SOLVER                   2

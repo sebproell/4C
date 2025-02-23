@@ -45,7 +45,7 @@ NUMGP_PER_DIM             7
 SEARCH_PARAM              0.3
 LM_DUAL_CONSISTENT        none
 -------------------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST           dynamic
+PARALLEL_REDIST           Dynamic
 ----------------------------------------------------------SOLVER 1
 NAME                 Structure_Solver
 SOLVER              UMFPACK
