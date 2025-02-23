@@ -54,7 +54,7 @@ namespace Inpar
           sublist_IO_VTK_structure);
 
       // whether to write output in every iteration of the nonlinear solver
-      Core::Utils::bool_parameter("EVERY_ITERATION", "No",
+      Core::Utils::bool_parameter("EVERY_ITERATION", false,
           "write output in every iteration of the nonlinear solver", sublist_IO_VTK_structure);
 
       // virtual time increment that is added for each nonlinear output state

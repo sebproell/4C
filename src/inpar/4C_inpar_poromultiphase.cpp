@@ -37,7 +37,7 @@ void Inpar::POROMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO:
   // here the computation of the structure can be skipped, this is helpful if only fluid-scatra
   // coupling should be calculated
   Core::Utils::bool_parameter(
-      "SOLVE_STRUCTURE", "yes", "Flag to skip computation of structural field", poromultiphasedyn);
+      "SOLVE_STRUCTURE", true, "Flag to skip computation of structural field", poromultiphasedyn);
 
 
   // Coupling strategy for solvers
@@ -49,7 +49,7 @@ void Inpar::POROMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO:
 
   // coupling with 1D artery network active
   Core::Utils::bool_parameter(
-      "ARTERY_COUPLING", "No", "Coupling with 1D blood vessels.", poromultiphasedyn);
+      "ARTERY_COUPLING", false, "Coupling with 1D blood vessels.", poromultiphasedyn);
 
   poromultiphasedyn.move_into_collection(list);
 
@@ -105,7 +105,7 @@ void Inpar::POROMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO:
       poromultiphasedynmono);
 
   // convergence criteria adaptivity --> note ADAPTCONV_BETTER set pretty small
-  Core::Utils::bool_parameter("ADAPTCONV", "No",
+  Core::Utils::bool_parameter("ADAPTCONV", false,
       "Switch on adaptive control of linear solver tolerance for nonlinear solution",
       poromultiphasedynmono);
   Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.001,

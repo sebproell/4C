@@ -33,7 +33,7 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   Core::Utils::double_parameter("RESULTSEVERYTIME", 0, "increment for writing solution", sstidyn);
   Core::Utils::int_parameter("RESULTSEVERY", 1, "increment for writing solution", sstidyn);
   Core::Utils::int_parameter("ITEMAX", 10, "maximum number of iterations over fields", sstidyn);
-  Core::Utils::bool_parameter("SCATRA_FROM_RESTART_FILE", "No",
+  Core::Utils::bool_parameter("SCATRA_FROM_RESTART_FILE", false,
       "read scatra result from restart files (use option 'restartfromfile' during execution of "
       "4C)",
       sstidyn);
@@ -47,7 +47,7 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "time integration scheme for ssi problems",
       tuple<std::string>("Elch"), tuple<ScaTraTimIntType>(ScaTraTimIntType::elch), sstidyn);
   Core::Utils::bool_parameter(
-      "ADAPTIVE_TIMESTEPPING", "no", "flag for adaptive time stepping", sstidyn);
+      "ADAPTIVE_TIMESTEPPING", false, "flag for adaptive time stepping", sstidyn);
 
   sstidyn.move_into_collection(list);
 
@@ -110,7 +110,7 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
           Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag,
           Core::LinAlg::EquilibrationMethod::symmetry),
       sstidynmono);
-  Core::Utils::bool_parameter("EQUILIBRATION_INIT_SCATRA", "no",
+  Core::Utils::bool_parameter("EQUILIBRATION_INIT_SCATRA", false,
       "use equilibration method of ScaTra to equilibrate initial calculation of potential",
       sstidynmono);
 

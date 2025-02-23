@@ -19,7 +19,7 @@ void BrownianDynamics::set_valid_parameters(std::map<std::string, Core::IO::Inpu
   Core::Utils::SectionSpecs browniandyn_list{"BROWNIAN DYNAMICS"};
 
   Core::Utils::bool_parameter(
-      "BROWNDYNPROB", "No", "switch Brownian dynamics on/off", browniandyn_list);
+      "BROWNDYNPROB", false, "switch Brownian dynamics on/off", browniandyn_list);
 
   // Reading double parameter for viscosity of background fluid
   Core::Utils::double_parameter("VISCOSITY", 0.0, "viscosity", browniandyn_list);

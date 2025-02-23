@@ -56,7 +56,7 @@ void Inpar::PaSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "tolerance of relative interface force increments in partitioned iterations", pasidyn);
 
   Core::Utils::bool_parameter(
-      "IGNORE_CONV_CHECK", "no", "ignore convergence check and proceed simulation", pasidyn);
+      "IGNORE_CONV_CHECK", false, "ignore convergence check and proceed simulation", pasidyn);
 
   // parameters for relaxation
   Core::Utils::double_parameter("STARTOMEGA", 1.0, "fixed relaxation parameter", pasidyn);

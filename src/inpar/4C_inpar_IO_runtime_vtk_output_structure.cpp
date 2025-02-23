@@ -33,41 +33,41 @@ namespace Inpar
 
         // whether to write output for structure
         Core::Utils::bool_parameter(
-            "OUTPUT_STRUCTURE", "No", "write structure output", sublist_IO_VTK_structure);
+            "OUTPUT_STRUCTURE", false, "write structure output", sublist_IO_VTK_structure);
 
         // whether to write displacement state
         Core::Utils::bool_parameter(
-            "DISPLACEMENT", "No", "write displacement output", sublist_IO_VTK_structure);
+            "DISPLACEMENT", false, "write displacement output", sublist_IO_VTK_structure);
 
         // whether to write velocity state
         Core::Utils::bool_parameter(
-            "VELOCITY", "No", "write velocity output", sublist_IO_VTK_structure);
+            "VELOCITY", false, "write velocity output", sublist_IO_VTK_structure);
 
         Core::Utils::bool_parameter(
-            "ACCELERATION", "No", "write acceleration output", sublist_IO_VTK_structure);
+            "ACCELERATION", false, "write acceleration output", sublist_IO_VTK_structure);
 
         // whether to write element owner
         Core::Utils::bool_parameter(
-            "ELEMENT_OWNER", "No", "write element owner", sublist_IO_VTK_structure);
+            "ELEMENT_OWNER", false, "write element owner", sublist_IO_VTK_structure);
 
         // whether to write element GIDs
         Core::Utils::bool_parameter(
-            "ELEMENT_GID", "No", "write 4C internal element GIDs", sublist_IO_VTK_structure);
+            "ELEMENT_GID", false, "write 4C internal element GIDs", sublist_IO_VTK_structure);
 
         // write element ghosting information
-        Core::Utils::bool_parameter("ELEMENT_GHOSTING", "No",
+        Core::Utils::bool_parameter("ELEMENT_GHOSTING", false,
             "write which processors ghost the elements", sublist_IO_VTK_structure);
 
         // whether to write node GIDs
         Core::Utils::bool_parameter(
-            "NODE_GID", "No", "write 4C internal node GIDs", sublist_IO_VTK_structure);
+            "NODE_GID", false, "write 4C internal node GIDs", sublist_IO_VTK_structure);
 
         // write element material IDs
-        Core::Utils::bool_parameter("ELEMENT_MAT_ID", "No",
+        Core::Utils::bool_parameter("ELEMENT_MAT_ID", false,
             "Output of the material id of each element", sublist_IO_VTK_structure);
 
         // whether to write stress and / or strain data
-        Core::Utils::bool_parameter("STRESS_STRAIN", "No",
+        Core::Utils::bool_parameter("STRESS_STRAIN", false,
             "Write element stress and / or strain  data. The type of stress / strain has to be "
             "selected in the --IO input section",
             sublist_IO_VTK_structure);

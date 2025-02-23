@@ -51,7 +51,7 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(
 
   // coupling with 1D artery network active
   Core::Utils::bool_parameter(
-      "ARTERY_COUPLING", "No", "Coupling with 1D blood vessels.", poromultiphasescatradyn);
+      "ARTERY_COUPLING", false, "Coupling with 1D blood vessels.", poromultiphasescatradyn);
 
   // no convergence of coupling scheme
   Core::Utils::string_to_integral_parameter<DivContAct>("DIVERCONT", "stop",
@@ -82,7 +82,7 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(
       poromultiphasescatradynmono);
 
   // convergence criteria adaptivity --> note ADAPTCONV_BETTER set pretty small
-  Core::Utils::bool_parameter("ADAPTCONV", "No",
+  Core::Utils::bool_parameter("ADAPTCONV", false,
       "Switch on adaptive control of linear solver tolerance for nonlinear solution",
       poromultiphasescatradynmono);
   Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.001,

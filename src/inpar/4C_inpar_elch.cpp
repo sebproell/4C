@@ -46,7 +46,7 @@ void Inpar::ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "MOLARVOLUME", 0.0, "Molar volume for electrode shape change computations", elchcontrol);
   Core::Utils::double_parameter("MOVBOUNDARYTHETA", 0.0,
       "One-step-theta factor in electrode shape change computations", elchcontrol);
-  Core::Utils::bool_parameter("GALVANOSTATIC", "No", "flag for galvanostatic mode", elchcontrol);
+  Core::Utils::bool_parameter("GALVANOSTATIC", false, "flag for galvanostatic mode", elchcontrol);
   Core::Utils::string_to_integral_parameter<Inpar::ElCh::ApproxElectResist>(
       "GSTAT_APPROX_ELECT_RESIST", "relation_pot_cur", "relation of potential and current flow",
       tuple<std::string>("relation_pot_cur", "effective_length_with_initial_cond",
@@ -76,18 +76,18 @@ void Inpar::ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
           equpot_poisson, equpot_laplace, equpot_divi),
       elchcontrol);
   Core::Utils::bool_parameter(
-      "DIFFCOND_FORMULATION", "No", "Activation of diffusion-conduction formulation", elchcontrol);
-  Core::Utils::bool_parameter("INITPOTCALC", "No",
+      "DIFFCOND_FORMULATION", false, "Activation of diffusion-conduction formulation", elchcontrol);
+  Core::Utils::bool_parameter("INITPOTCALC", false,
       "Automatically calculate initial field for electric potential", elchcontrol);
-  Core::Utils::bool_parameter("ONLYPOTENTIAL", "no",
+  Core::Utils::bool_parameter("ONLYPOTENTIAL", false,
       "Coupling of general ion transport equation with Laplace equation", elchcontrol);
-  Core::Utils::bool_parameter("COUPLE_BOUNDARY_FLUXES", "Yes",
+  Core::Utils::bool_parameter("COUPLE_BOUNDARY_FLUXES", true,
       "Coupling of lithium-ion flux density and electric current density at Dirichlet and Neumann "
       "boundaries",
       elchcontrol);
   Core::Utils::double_parameter(
       "CYCLING_TIMESTEP", -1., "modified time step size for CCCV cell cycling", elchcontrol);
-  Core::Utils::bool_parameter("ELECTRODE_INFO_EVERY_STEP", "No",
+  Core::Utils::bool_parameter("ELECTRODE_INFO_EVERY_STEP", false,
       "the cell voltage, SOC, and C-Rate will be written to the csv file every step, even if "
       "RESULTSEVERY is not 1",
       elchcontrol);
@@ -99,8 +99,8 @@ void Inpar::ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   Core::Utils::SectionSpecs elchdiffcondcontrol{elchcontrol, "DIFFCOND"};
 
   Core::Utils::bool_parameter(
-      "CURRENT_SOLUTION_VAR", "No", "Current as a solution variable", elchdiffcondcontrol);
-  Core::Utils::bool_parameter("MAT_DIFFCOND_DIFFBASED", "Yes",
+      "CURRENT_SOLUTION_VAR", false, "Current as a solution variable", elchdiffcondcontrol);
+  Core::Utils::bool_parameter("MAT_DIFFCOND_DIFFBASED", true,
       "Coupling terms of chemical diffusion for current equation are based on t and kappa",
       elchdiffcondcontrol);
 
@@ -133,11 +133,11 @@ void Inpar::ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   Core::Utils::SectionSpecs sclcontrol{elchcontrol, "SCL"};
 
   Core::Utils::bool_parameter(
-      "ADD_MICRO_MACRO_COUPLING", "No", "flag for micro macro coupling with scls", sclcontrol);
-  Core::Utils::bool_parameter("COUPLING_OUTPUT", "No",
+      "ADD_MICRO_MACRO_COUPLING", false, "flag for micro macro coupling with scls", sclcontrol);
+  Core::Utils::bool_parameter("COUPLING_OUTPUT", false,
       "write coupled node gids and node coordinates to csv file", sclcontrol);
   Core::Utils::bool_parameter(
-      "INITPOTCALC", "No", "calculate initial potential field?", sclcontrol);
+      "INITPOTCALC", false, "calculate initial potential field?", sclcontrol);
   Core::Utils::int_parameter("SOLVER", -1, "solver for coupled SCL problem", sclcontrol);
   Core::Utils::string_to_integral_parameter<Core::LinAlg::MatrixType>("MATRIXTYPE", "undefined",
       "type of global system matrix in global system of equations",

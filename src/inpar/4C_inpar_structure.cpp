@@ -30,7 +30,7 @@ namespace Inpar
           tuple<Solid::IntegrationStrategy>(int_old, int_standard), sdyn);
 
       Core::Utils::bool_parameter(
-          "TIME_ADAPTIVITY", "No", "Enable adaptive time integration", sdyn);
+          "TIME_ADAPTIVITY", false, "Enable adaptive time integration", sdyn);
 
       Core::Utils::string_to_integral_parameter<Solid::DynamicType>("DYNAMICTYPE", "GenAlpha",
           "type of the specific dynamic time integration scheme",
@@ -67,7 +67,7 @@ namespace Inpar
           "RESEVERYERGY", 0, "write system energies every requested step", sdyn);
       Core::Utils::int_parameter(
           "RESTARTEVERY", 1, "write restart possibility every RESTARTEVERY steps", sdyn);
-      Core::Utils::bool_parameter("CALC_ACC_ON_RESTART", "No",
+      Core::Utils::bool_parameter("CALC_ACC_ON_RESTART", false,
           "Compute the initial state for a restart dynamics analysis", sdyn);
       Core::Utils::int_parameter("OUTPUT_STEP_OFFSET", 0,
           "An offset added to the current step to shift the steps to be written.", sdyn);
@@ -187,7 +187,7 @@ namespace Inpar
 
 
       Core::Utils::bool_parameter(
-          "LOADLIN", "No", "Use linearization of external follower load in Newton", sdyn);
+          "LOADLIN", false, "Use linearization of external follower load in Newton", sdyn);
 
       Core::Utils::string_to_integral_parameter<Solid::MassLin>("MASSLIN", "No",
           "Application of nonlinear inertia terms",
@@ -196,7 +196,7 @@ namespace Inpar
               ml_none, ml_none, ml_standard, ml_standard, ml_rotations, ml_rotations),
           sdyn);
 
-      Core::Utils::bool_parameter("NEGLECTINERTIA", "No", "Neglect inertia", sdyn);
+      Core::Utils::bool_parameter("NEGLECTINERTIA", false, "Neglect inertia", sdyn);
 
       // Since predictor "none" would be misleading, the usage of no predictor is called vague.
       Core::Utils::string_to_integral_parameter<Solid::PredEnum>("PREDICT", "ConstDis",
@@ -222,7 +222,7 @@ namespace Inpar
           tuple<Solid::ConSolveAlgo>(consolve_uzawa, consolve_simple, consolve_direct), sdyn);
 
       // convergence criteria adaptivity
-      Core::Utils::bool_parameter("ADAPTCONV", "No",
+      Core::Utils::bool_parameter("ADAPTCONV", false,
           "Switch on adaptive control of linear solver tolerance for nonlinear solution", sdyn);
       Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.1,
           "The linear solver shall be this much better than the current nonlinear residual in the "
@@ -230,9 +230,9 @@ namespace Inpar
           sdyn);
 
       Core::Utils::bool_parameter(
-          "LUMPMASS", "No", "Lump the mass matrix for explicit time integration", sdyn);
+          "LUMPMASS", false, "Lump the mass matrix for explicit time integration", sdyn);
 
-      Core::Utils::bool_parameter("MODIFIEDEXPLEULER", "Yes",
+      Core::Utils::bool_parameter("MODIFIEDEXPLEULER", true,
           "Use the modified explicit Euler time integration scheme", sdyn);
 
       // linear solver id used for structural problems
@@ -333,7 +333,7 @@ namespace Inpar
           jep);
 
       Core::Utils::bool_parameter(
-          "LUMPMASS", "No", "Lump the mass matrix for explicit time integration", jep);
+          "LUMPMASS", false, "Lump the mass matrix for explicit time integration", jep);
 
       Core::Utils::string_to_integral_parameter<Inpar::Solid::DampKind>("DAMPING", "No",
           "type of damping: (1) Rayleigh damping matrix and use it from M_DAMP x M + K_DAMP x K, "
@@ -375,7 +375,7 @@ namespace Inpar
       /*----------------------------------------------------------------------*/
       /* parameters for error evaluation */
       Core::Utils::SectionSpecs errorevaluator{sdyn, "ERROR EVALUATION"};
-      Core::Utils::bool_parameter("EVALUATE_ERROR_ANALYTICAL_REFERENCE", "No",
+      Core::Utils::bool_parameter("EVALUATE_ERROR_ANALYTICAL_REFERENCE", false,
           "Calculate error with respect to analytical solution defined by a function",
           errorevaluator);
       Core::Utils::int_parameter("ANALYTICAL_DISPLACEMENT_FUNCTION", -1,

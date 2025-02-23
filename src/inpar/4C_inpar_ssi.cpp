@@ -33,11 +33,11 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   Core::Utils::double_parameter("MAXTIME", 1000.0, "total simulation time", ssidyn);
   Core::Utils::double_parameter("TIMESTEP", -1, "time step size dt", ssidyn);
   Core::Utils::bool_parameter(
-      "DIFFTIMESTEPSIZE", "No", "use different step size for scatra and solid", ssidyn);
+      "DIFFTIMESTEPSIZE", false, "use different step size for scatra and solid", ssidyn);
   Core::Utils::double_parameter("RESULTSEVERYTIME", 0, "increment for writing solution", ssidyn);
   Core::Utils::int_parameter("RESULTSEVERY", 1, "increment for writing solution", ssidyn);
   Core::Utils::int_parameter("ITEMAX", 10, "maximum number of iterations over fields", ssidyn);
-  Core::Utils::bool_parameter("SCATRA_FROM_RESTART_FILE", "No",
+  Core::Utils::bool_parameter("SCATRA_FROM_RESTART_FILE", false,
       "read scatra result from restart files (use option 'restartfromfile' during execution of "
       "4C)",
       ssidyn);
@@ -84,16 +84,16 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       ssidyn);
 
   // Restart from Structure problem instead of SSI
-  Core::Utils::bool_parameter("RESTART_FROM_STRUCTURE", "no",
+  Core::Utils::bool_parameter("RESTART_FROM_STRUCTURE", false,
       "restart from structure problem (e.g. from prestress calculations) instead of ssi", ssidyn);
 
   // Adaptive time stepping
   Core::Utils::bool_parameter(
-      "ADAPTIVE_TIMESTEPPING", "no", "flag for adaptive time stepping", ssidyn);
+      "ADAPTIVE_TIMESTEPPING", false, "flag for adaptive time stepping", ssidyn);
 
   // do redistribution by binning of solid mechanics discretization (scatra dis is cloned from solid
   // dis for volume_matching and volumeboundary_matching)
-  Core::Utils::bool_parameter("REDISTRIBUTE_SOLID", "No",
+  Core::Utils::bool_parameter("REDISTRIBUTE_SOLID", false,
       "redistribution by binning of solid mechanics discretization", ssidyn);
 
   ssidyn.move_into_collection(list);
@@ -177,7 +177,7 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           Core::LinAlg::EquilibrationMethod::symmetry),
       ssidynmono);
 
-  Core::Utils::bool_parameter("PRINT_MAT_RHS_MAP_MATLAB", "no",
+  Core::Utils::bool_parameter("PRINT_MAT_RHS_MAP_MATLAB", false,
       "print system matrix, rhs vector, and full map to matlab readable file after solution of "
       "time step",
       ssidynmono);
@@ -200,9 +200,9 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   Core::Utils::SectionSpecs ssidynmanifold{ssidyn, "MANIFOLD"};
 
   Core::Utils::bool_parameter(
-      "ADD_MANIFOLD", "no", "activate additional manifold?", ssidynmanifold);
+      "ADD_MANIFOLD", false, "activate additional manifold?", ssidynmanifold);
 
-  Core::Utils::bool_parameter("MESHTYING_MANIFOLD", "no",
+  Core::Utils::bool_parameter("MESHTYING_MANIFOLD", false,
       "activate meshtying between all manifold fields in case they intersect?", ssidynmanifold);
 
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::InitialField>("INITIALFIELD",
@@ -218,7 +218,7 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   Core::Utils::int_parameter(
       "LINEAR_SOLVER", -1, "linear solver for scalar transport on manifold", ssidynmanifold);
 
-  Core::Utils::bool_parameter("OUTPUT_INFLOW", "no",
+  Core::Utils::bool_parameter("OUTPUT_INFLOW", false,
       "write output of inflow of scatra manifold - scatra coupling into scatra manifold to csv "
       "file",
       ssidynmanifold);
@@ -229,7 +229,7 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   /* parameters for SSI with elch */
   /*----------------------------------------------------------------------*/
   Core::Utils::SectionSpecs ssidynelch{ssidyn, "ELCH"};
-  Core::Utils::bool_parameter("INITPOTCALC", "No",
+  Core::Utils::bool_parameter("INITPOTCALC", false,
       "Automatically calculate initial field for electric potential", ssidynelch);
 
   ssidynelch.move_into_collection(list);

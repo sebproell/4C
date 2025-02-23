@@ -24,7 +24,7 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
   Core::Utils::int_parameter(
       "LINEAR_SOLVER", -1, "number of linear solver used for meshtying and contact", scontact);
 
-  Core::Utils::bool_parameter("RESTART_WITH_CONTACT", "No",
+  Core::Utils::bool_parameter("RESTART_WITH_CONTACT", false,
       "Must be chosen if a non-contact simulation is to be restarted with contact", scontact);
 
   Core::Utils::string_to_integral_parameter<Inpar::CONTACT::AdhesionType>("ADHESION", "None",
@@ -39,11 +39,11 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
           friction_none, friction_stick, friction_tresca, friction_coulomb),
       scontact);
 
-  Core::Utils::bool_parameter("FRLESS_FIRST", "No",
+  Core::Utils::bool_parameter("FRLESS_FIRST", false,
       "If chosen the first time step of a newly in contact slave node is regarded as frictionless",
       scontact);
 
-  Core::Utils::bool_parameter("GP_SLIP_INCR", "No",
+  Core::Utils::bool_parameter("GP_SLIP_INCR", false,
       "If chosen the slip increment is computed gp-wise which results to a non-objective quantity, "
       "but this would be consistent to wear and tsi calculations.",
       scontact);
@@ -77,23 +77,23 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
       "Tolerance of constraint norm for Uzawa solution strategy", scontact);
 
   Core::Utils::bool_parameter(
-      "SEMI_SMOOTH_NEWTON", "Yes", "If chosen semi-smooth Newton concept is applied", scontact);
+      "SEMI_SMOOTH_NEWTON", true, "If chosen semi-smooth Newton concept is applied", scontact);
 
   Core::Utils::double_parameter(
       "SEMI_SMOOTH_CN", 1.0, "Weighting factor cn for semi-smooth PDASS", scontact);
   Core::Utils::double_parameter(
       "SEMI_SMOOTH_CT", 1.0, "Weighting factor ct for semi-smooth PDASS", scontact);
 
-  Core::Utils::bool_parameter("CONTACTFORCE_ENDTIME", "No",
+  Core::Utils::bool_parameter("CONTACTFORCE_ENDTIME", false,
       "If chosen, the contact force is not evaluated at the generalized midpoint, but at the end "
       "of the time step",
       scontact);
 
   Core::Utils::bool_parameter(
-      "VELOCITY_UPDATE", "No", "If chosen, velocity update method is applied", scontact);
+      "VELOCITY_UPDATE", false, "If chosen, velocity update method is applied", scontact);
 
   Core::Utils::bool_parameter(
-      "INITCONTACTBYGAP", "No", "Initialize init contact by weighted gap vector", scontact);
+      "INITCONTACTBYGAP", false, "Initialize init contact by weighted gap vector", scontact);
 
   Core::Utils::double_parameter("INITCONTACTGAPVALUE", 0.0,
       "Value for initialization of init contact set with gap vector", scontact);
@@ -126,13 +126,13 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
       "CONTACT_REGULARIZATION", "no", "use regularized contact", tuple<std::string>("no", "tanh"),
       tuple<Inpar::CONTACT::Regularization>(reg_none, reg_tanh), scontact);
 
-  Core::Utils::bool_parameter("NONSMOOTH_GEOMETRIES", "No",
+  Core::Utils::bool_parameter("NONSMOOTH_GEOMETRIES", false,
       "If chosen the contact algorithm combines mortar and nts formulations. This is needed if "
       "contact between entities of different geometric dimension (such as contact between surfaces "
       "and lines, or lines and nodes) can occur",
       scontact);
 
-  Core::Utils::bool_parameter("NONSMOOTH_CONTACT_SURFACE", "No",
+  Core::Utils::bool_parameter("NONSMOOTH_CONTACT_SURFACE", false,
       "This flag is used to alter the criterion for the evaluation of the so-called qualified "
       "vectors in the case of a self contact scenario. This is needed as the standard criterion is "
       "only valid for smooth surfaces and thus has to be altered, if the surface that is defined "
@@ -146,11 +146,11 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
       "Non-smooth contact: angle between cpp normal and element normal: end transition (NTS)",
       scontact);
 
-  Core::Utils::bool_parameter("CPP_NORMALS", "No",
+  Core::Utils::bool_parameter("CPP_NORMALS", false,
       "If chosen the nodal normal field is created as averaged CPP normal field.", scontact);
 
   Core::Utils::bool_parameter(
-      "TIMING_DETAILS", "No", "Enable and print detailed contact timings to screen.", scontact);
+      "TIMING_DETAILS", false, "Enable and print detailed contact timings to screen.", scontact);
 
   // --------------------------------------------------------------------------
   Core::Utils::double_parameter(
@@ -164,11 +164,11 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
       tuple<Inpar::CONTACT::NitscheWeighting>(NitWgt_slave, NitWgt_master, NitWgt_harmonic),
       scontact);
 
-  Core::Utils::bool_parameter("NITSCHE_PENALTY_ADAPTIVE", "yes",
+  Core::Utils::bool_parameter("NITSCHE_PENALTY_ADAPTIVE", true,
       "adapt penalty parameter after each converged time step", scontact);
 
-  Core::Utils::bool_parameter(
-      "REGULARIZED_NORMAL_CONTACT", "No", "add a regularized normal contact formulation", scontact);
+  Core::Utils::bool_parameter("REGULARIZED_NORMAL_CONTACT", false,
+      "add a regularized normal contact formulation", scontact);
   Core::Utils::double_parameter(
       "REGULARIZATION_THICKNESS", -1., "maximum contact penetration", scontact);
   Core::Utils::double_parameter("REGULARIZATION_STIFFNESS", -1.,

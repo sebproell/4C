@@ -1356,12 +1356,10 @@ void Adapter::FluidBaseAlgorithm::set_general_parameters(
   fluidtimeparams->set<std::string>("form of convective term", fdyn.get<std::string>("CONVFORM"));
 
   // -------------------------- potential nonlinear boundary conditions
-  fluidtimeparams->set<std::string>(
-      "Nonlinear boundary conditions", fdyn.get<std::string>("NONLINEARBC"));
+  fluidtimeparams->set("Nonlinear boundary conditions", fdyn.get<bool>("NONLINEARBC"));
 
   // ------------------------------------ potential reduced_D 3D coupling method
-  fluidtimeparams->set<std::string>(
-      "Strong 3D_redD coupling", fdyn.get<std::string>("STRONG_REDD_3D_COUPLING_TYPE"));
+  fluidtimeparams->set("Strong 3D_redD coupling", fdyn.get<bool>("STRONG_REDD_3D_COUPLING_TYPE"));
 
   //--------------------------------------  mesh tying for fluid
   fluidtimeparams->set<Inpar::FLUID::MeshTying>(

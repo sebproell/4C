@@ -31,7 +31,7 @@ void Inpar::EHL::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   Core::Utils::double_parameter("MAXTIME", 1000.0, "total simulation time", ehldyn);
   Core::Utils::double_parameter("TIMESTEP", -1, "time step size dt", ehldyn);
   Core::Utils::bool_parameter(
-      "DIFFTIMESTEPSIZE", "No", "use different step size for lubrication and solid", ehldyn);
+      "DIFFTIMESTEPSIZE", false, "use different step size for lubrication and solid", ehldyn);
   Core::Utils::double_parameter("RESULTSEVERYTIME", 0, "increment for writing solution", ehldyn);
   Core::Utils::int_parameter("RESULTSEVERY", 1, "increment for writing solution", ehldyn);
   Core::Utils::int_parameter("ITEMAX", 10, "maximum number of iterations over fields", ehldyn);
@@ -48,11 +48,11 @@ void Inpar::EHL::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       tuple<SolutionSchemeOverFields>(ehl_IterStagg, ehl_Monolithic), ehldyn);
 
   // set unprojectable nodes to zero pressure via Dirichlet condition
-  Core::Utils::bool_parameter("UNPROJ_ZERO_DBC", "No",
+  Core::Utils::bool_parameter("UNPROJ_ZERO_DBC", false,
       "set unprojectable nodes to zero pressure via Dirichlet condition", ehldyn);
 
   // use dry contact model
-  Core::Utils::bool_parameter("DRY_CONTACT_MODEL", "No",
+  Core::Utils::bool_parameter("DRY_CONTACT_MODEL", false,
       "set unprojectable nodes to zero pressure via Dirichlet condition", ehldyn);
 
 
@@ -101,7 +101,7 @@ void Inpar::EHL::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "LINEAR_SOLVER", -1, "number of linear solver used for monolithic EHL problems", ehldynmono);
 
   // convergence criteria adaptivity of monolithic EHL solver
-  Core::Utils::bool_parameter("ADAPTCONV", "No",
+  Core::Utils::bool_parameter("ADAPTCONV", false,
       "Switch on adaptive control of linear solver tolerance for nonlinear solution", ehldynmono);
   Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.1,
       "The linear solver shall be this much better than the current nonlinear residual in the "
@@ -109,7 +109,7 @@ void Inpar::EHL::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       ehldynmono);
 
   Core::Utils::bool_parameter(
-      "INFNORMSCALING", "yes", "Scale blocks of matrix with row infnorm?", ehldynmono);
+      "INFNORMSCALING", true, "Scale blocks of matrix with row infnorm?", ehldynmono);
 
   ehldynmono.move_into_collection(list);
 

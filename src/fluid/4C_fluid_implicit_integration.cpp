@@ -150,9 +150,7 @@ void FLD::FluidImplicitTimeInt::init()
   // -------------------------------------------------------------------
   // flag for potential nonlinear boundary conditions
   // -------------------------------------------------------------------
-  nonlinearbc_ = false;
-  if (params_->get<std::string>("Nonlinear boundary conditions", "no") == "yes")
-    nonlinearbc_ = true;
+  nonlinearbc_ = params_->get<bool>("Nonlinear boundary conditions", false);
 
   discret_->compute_null_space_if_necessary(solver_->params(), true);
 

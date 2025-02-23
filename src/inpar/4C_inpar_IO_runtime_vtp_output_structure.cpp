@@ -39,24 +39,24 @@ namespace Inpar
           sublist_IO_VTP_structure);
 
       // whether to write output in every iteration of the nonlinear solver
-      Core::Utils::bool_parameter("EVERY_ITERATION", "No",
+      Core::Utils::bool_parameter("EVERY_ITERATION", false,
           "write output in every iteration of the nonlinear solver", sublist_IO_VTP_structure);
 
       // write owner at every visualization point
       Core::Utils::bool_parameter(
-          "OWNER", "No", "write owner of every point", sublist_IO_VTP_structure);
+          "OWNER", false, "write owner of every point", sublist_IO_VTP_structure);
 
       // write orientation at every visualization point
-      Core::Utils::bool_parameter("ORIENTATIONANDLENGTH", "No", "write orientation at every point",
+      Core::Utils::bool_parameter("ORIENTATIONANDLENGTH", false, "write orientation at every point",
           sublist_IO_VTP_structure);
 
       // write number of bonds at every visualization point
       Core::Utils::bool_parameter(
-          "NUMBEROFBONDS", "No", "write number of bonds of every point", sublist_IO_VTP_structure);
+          "NUMBEROFBONDS", false, "write number of bonds of every point", sublist_IO_VTP_structure);
 
       // write force actin in linker
       Core::Utils::bool_parameter(
-          "LINKINGFORCE", "No", "write force acting in linker", sublist_IO_VTP_structure);
+          "LINKINGFORCE", false, "write force acting in linker", sublist_IO_VTP_structure);
 
       sublist_IO_VTP_structure.move_into_collection(list);
     }

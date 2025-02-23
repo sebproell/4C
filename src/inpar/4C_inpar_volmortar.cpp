@@ -65,9 +65,9 @@ void Inpar::VolMortar::set_valid_parameters(std::map<std::string, Core::IO::Inpu
       volmortar);
 
   Core::Utils::bool_parameter(
-      "MESH_INIT", "No", "If chosen, mesh initialization procedure is performed", volmortar);
+      "MESH_INIT", false, "If chosen, mesh initialization procedure is performed", volmortar);
 
-  Core::Utils::bool_parameter("KEEP_EXTENDEDGHOSTING", "Yes",
+  Core::Utils::bool_parameter("KEEP_EXTENDEDGHOSTING", true,
       "If chosen, extended ghosting is kept for simulation", volmortar);
 
   volmortar.move_into_collection(list);

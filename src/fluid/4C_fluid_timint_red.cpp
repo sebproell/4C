@@ -66,9 +66,7 @@ void FLD::TimIntRedModels::init()
   // Initialize the reduced models
   // -------------------------------------------------------------------
 
-  strong_redD_3d_coupling_ = false;
-  if (params_->get<std::string>("Strong 3D_redD coupling", "no") == "yes")
-    strong_redD_3d_coupling_ = true;
+  strong_redD_3d_coupling_ = params_->get<bool>("Strong 3D_redD coupling", false);
 
   {
     ART_timeInt_ = dyn_art_net_drt(true);

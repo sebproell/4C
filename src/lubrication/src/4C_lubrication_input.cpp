@@ -49,12 +49,12 @@ void Lubrication::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "HFUNCNO", -1, "function number for lubrication height field", lubricationdyn);
 
   Core::Utils::bool_parameter(
-      "OUTMEAN", "No", "Output of mean values for scalars and density", lubricationdyn);
+      "OUTMEAN", false, "Output of mean values for scalars and density", lubricationdyn);
 
   Core::Utils::bool_parameter(
-      "OUTPUT_GMSH", "No", "Do you want to write Gmsh postprocessing files?", lubricationdyn);
+      "OUTPUT_GMSH", false, "Do you want to write Gmsh postprocessing files?", lubricationdyn);
 
-  Core::Utils::bool_parameter("MATLAB_STATE_OUTPUT", "No",
+  Core::Utils::bool_parameter("MATLAB_STATE_OUTPUT", false,
       "Do you want to write the state solution to Matlab file?", lubricationdyn);
 
   /// linear solver id used for lubrication problems
@@ -69,7 +69,7 @@ void Lubrication::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "CONVTOL", 1e-13, "Tolerance for convergence check", lubricationdyn);
 
   // convergence criteria adaptivity
-  Core::Utils::bool_parameter("ADAPTCONV", "No",
+  Core::Utils::bool_parameter("ADAPTCONV", false,
       "Switch on adaptive control of linear solver tolerance for nonlinear solution",
       lubricationdyn);
   Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.1,
@@ -106,17 +106,17 @@ void Lubrication::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "ROUGHNESS_STD_DEVIATION", 0., "standard deviation of surface roughness", lubricationdyn);
 
   /// use modified reynolds equ.
-  Core::Utils::bool_parameter("MODIFIED_REYNOLDS_EQU", "No",
+  Core::Utils::bool_parameter("MODIFIED_REYNOLDS_EQU", false,
       "the lubrication problem will use the modified reynolds equ. in order to consider surface"
       " roughness",
       lubricationdyn);
 
   /// Flag for considering the Squeeze term in Reynolds Equation
-  Core::Utils::bool_parameter("ADD_SQUEEZE_TERM", "No",
+  Core::Utils::bool_parameter("ADD_SQUEEZE_TERM", false,
       "the squeeze term will also be considered in the Reynolds Equation", lubricationdyn);
 
   /// Flag for considering the pure Reynolds Equation
-  Core::Utils::bool_parameter("PURE_LUB", "No", "the problem is pure lubrication", lubricationdyn);
+  Core::Utils::bool_parameter("PURE_LUB", false, "the problem is pure lubrication", lubricationdyn);
 
   lubricationdyn.move_into_collection(list);
 }

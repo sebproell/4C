@@ -65,14 +65,14 @@ void Cut::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 
   // Specify is Cutsides are triangulated
   Core::Utils::bool_parameter(
-      "SPLIT_CUTSIDES", "Yes", "Split Quad4 CutSides into Tri3-Subtriangles?", cut_general);
+      "SPLIT_CUTSIDES", true, "Split Quad4 CutSides into Tri3-Subtriangles?", cut_general);
 
   // Do the Selfcut before standard CUT
-  Core::Utils::bool_parameter("DO_SELFCUT", "Yes", "Do the SelfCut?", cut_general);
+  Core::Utils::bool_parameter("DO_SELFCUT", true, "Do the SelfCut?", cut_general);
 
   // Do meshcorrection in Selfcut
   Core::Utils::bool_parameter(
-      "SELFCUT_DO_MESHCORRECTION", "Yes", "Do meshcorrection in the SelfCut?", cut_general);
+      "SELFCUT_DO_MESHCORRECTION", true, "Do meshcorrection in the SelfCut?", cut_general);
 
   // Selfcut meshcorrection multiplicator
   Core::Utils::int_parameter("SELFCUT_MESHCORRECTION_MULTIPLICATOR", 30,
@@ -86,7 +86,7 @@ void Cut::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
       cut_general);
 
   // Integrate inside volume cells
-  Core::Utils::bool_parameter("INTEGRATE_INSIDE_CELLS", "Yes",
+  Core::Utils::bool_parameter("INTEGRATE_INSIDE_CELLS", true,
       "Should the integration be done on inside cells", cut_general);
 
   cut_general.move_into_collection(list);

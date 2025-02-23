@@ -32,39 +32,39 @@ namespace Inpar
 
         // whether to write output for fluid
         Core::Utils::bool_parameter(
-            "OUTPUT_FLUID", "No", "write fluid output", sublist_IO_output_fluid);
+            "OUTPUT_FLUID", false, "write fluid output", sublist_IO_output_fluid);
 
         // whether to write velocity state
         Core::Utils::bool_parameter(
-            "VELOCITY", "No", "write velocity output", sublist_IO_output_fluid);
+            "VELOCITY", false, "write velocity output", sublist_IO_output_fluid);
 
         // whether to write pressure state
         Core::Utils::bool_parameter(
-            "PRESSURE", "No", "write pressure output", sublist_IO_output_fluid);
+            "PRESSURE", false, "write pressure output", sublist_IO_output_fluid);
 
         // whether to write acceleration state
         Core::Utils::bool_parameter(
-            "ACCELERATION", "No", "write acceleration output", sublist_IO_output_fluid);
+            "ACCELERATION", false, "write acceleration output", sublist_IO_output_fluid);
 
         // whether to write displacement state
         Core::Utils::bool_parameter(
-            "DISPLACEMENT", "No", "write displacement output", sublist_IO_output_fluid);
+            "DISPLACEMENT", false, "write displacement output", sublist_IO_output_fluid);
 
         // whether to write displacement state
         Core::Utils::bool_parameter(
-            "GRIDVELOCITY", "No", "write grid velocity output", sublist_IO_output_fluid);
+            "GRIDVELOCITY", false, "write grid velocity output", sublist_IO_output_fluid);
 
         // whether to write element owner
         Core::Utils::bool_parameter(
-            "ELEMENT_OWNER", "No", "write element owner", sublist_IO_output_fluid);
+            "ELEMENT_OWNER", false, "write element owner", sublist_IO_output_fluid);
 
         // whether to write element GIDs
         Core::Utils::bool_parameter(
-            "ELEMENT_GID", "No", "write 4C internal element GIDs", sublist_IO_output_fluid);
+            "ELEMENT_GID", false, "write 4C internal element GIDs", sublist_IO_output_fluid);
 
         // whether to write node GIDs
         Core::Utils::bool_parameter(
-            "NODE_GID", "No", "write 4C internal node GIDs", sublist_IO_output_fluid);
+            "NODE_GID", false, "write 4C internal node GIDs", sublist_IO_output_fluid);
 
         sublist_IO_output_fluid.move_into_collection(list);
       }

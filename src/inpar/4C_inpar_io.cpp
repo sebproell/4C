@@ -20,23 +20,23 @@ void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>&
 
   Core::Utils::SectionSpecs io{"IO"};
 
-  Core::Utils::bool_parameter("OUTPUT_GMSH", "No", "", io);
-  Core::Utils::bool_parameter("OUTPUT_ROT", "No", "", io);
-  Core::Utils::bool_parameter("OUTPUT_SPRING", "No", "", io);
-  Core::Utils::bool_parameter("OUTPUT_BIN", "yes", "Do you want to have binary output?", io);
+  Core::Utils::bool_parameter("OUTPUT_GMSH", false, "", io);
+  Core::Utils::bool_parameter("OUTPUT_ROT", false, "", io);
+  Core::Utils::bool_parameter("OUTPUT_SPRING", false, "", io);
+  Core::Utils::bool_parameter("OUTPUT_BIN", true, "Do you want to have binary output?", io);
 
   // Output every iteration (for debugging purposes)
-  Core::Utils::bool_parameter("OUTPUT_EVERY_ITER", "no",
+  Core::Utils::bool_parameter("OUTPUT_EVERY_ITER", false,
       "Do you desire structural displ. output every Newton iteration", io);
   Core::Utils::int_parameter(
       "OEI_FILE_COUNTER", 0, "Add an output name affix by introducing a additional number", io);
 
   Core::Utils::bool_parameter(
-      "ELEMENT_MAT_ID", "No", "Output of the material id of each element", io);
+      "ELEMENT_MAT_ID", false, "Output of the material id of each element", io);
 
   // Structural output
-  Core::Utils::bool_parameter("STRUCT_ELE", "Yes", "Output of element properties", io);
-  Core::Utils::bool_parameter("STRUCT_DISP", "Yes", "Output of displacements", io);
+  Core::Utils::bool_parameter("STRUCT_ELE", true, "Output of element properties", io);
+  Core::Utils::bool_parameter("STRUCT_DISP", true, "Output of displacements", io);
   Core::Utils::string_to_integral_parameter<Inpar::Solid::StressType>("STRUCT_STRESS", "No",
       "Output of stress",
       tuple<std::string>("No", "no", "NO", "Yes", "yes", "YES", "Cauchy", "cauchy", "2PK", "2pk"),
@@ -79,8 +79,8 @@ void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>&
           Inpar::Solid::optquantity_none, Inpar::Solid::optquantity_none,
           Inpar::Solid::optquantity_membranethickness),
       io);
-  Core::Utils::bool_parameter("STRUCT_SURFACTANT", "No", "", io);
-  Core::Utils::bool_parameter("STRUCT_JACOBIAN_MATLAB", "No", "", io);
+  Core::Utils::bool_parameter("STRUCT_SURFACTANT", false, "", io);
+  Core::Utils::bool_parameter("STRUCT_JACOBIAN_MATLAB", false, "", io);
   Core::Utils::string_to_integral_parameter<Inpar::Solid::ConditionNumber>(
       "STRUCT_CONDITION_NUMBER", "none",
       "Compute the condition number of the structural system matrix and write it to a text file.",
@@ -89,11 +89,11 @@ void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>&
           Inpar::Solid::ConditionNumber::max_min_ev_ratio, Inpar::Solid::ConditionNumber::one_norm,
           Inpar::Solid::ConditionNumber::inf_norm, Inpar::Solid::ConditionNumber::none),
       io);
-  Core::Utils::bool_parameter("FLUID_STRESS", "No", "", io);
-  Core::Utils::bool_parameter("FLUID_WALL_SHEAR_STRESS", "No", "", io);
-  Core::Utils::bool_parameter("FLUID_ELEDATA_EVERY_STEP", "No", "", io);
-  Core::Utils::bool_parameter("FLUID_NODEDATA_FIRST_STEP", "No", "", io);
-  Core::Utils::bool_parameter("THERM_TEMPERATURE", "No", "", io);
+  Core::Utils::bool_parameter("FLUID_STRESS", false, "", io);
+  Core::Utils::bool_parameter("FLUID_WALL_SHEAR_STRESS", false, "", io);
+  Core::Utils::bool_parameter("FLUID_ELEDATA_EVERY_STEP", false, "", io);
+  Core::Utils::bool_parameter("FLUID_NODEDATA_FIRST_STEP", false, "", io);
+  Core::Utils::bool_parameter("THERM_TEMPERATURE", false, "", io);
   Core::Utils::string_to_integral_parameter<Thermo::HeatFluxType>("THERM_HEATFLUX", "None", "",
       tuple<std::string>("None", "No", "NO", "no", "Current", "Initial"),
       tuple<Thermo::HeatFluxType>(Thermo::heatflux_none, Thermo::heatflux_none,
@@ -111,18 +111,18 @@ void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>&
       "FILESTEPS", 1000, "Amount of timesteps written to a single result file", io);
   Core::Utils::int_parameter("STDOUTEVERY", 1, "Print to screen every n step", io);
 
-  Core::Utils::bool_parameter("WRITE_TO_SCREEN", "Yes", "Write screen output", io);
-  Core::Utils::bool_parameter("WRITE_TO_FILE", "No", "Write the output into a file", io);
+  Core::Utils::bool_parameter("WRITE_TO_SCREEN", true, "Write screen output", io);
+  Core::Utils::bool_parameter("WRITE_TO_FILE", false, "Write the output into a file", io);
 
   Core::Utils::bool_parameter(
-      "WRITE_INITIAL_STATE", "yes", "Do you want to write output for initial state ?", io);
-  Core::Utils::bool_parameter("WRITE_FINAL_STATE", "no",
+      "WRITE_INITIAL_STATE", true, "Do you want to write output for initial state ?", io);
+  Core::Utils::bool_parameter("WRITE_FINAL_STATE", false,
       "Enforce to write output/restart data at the final state regardless of the other "
       "output/restart intervals",
       io);
 
   Core::Utils::bool_parameter(
-      "PREFIX_GROUP_ID", "No", "Put a <GroupID>: in front of every line", io);
+      "PREFIX_GROUP_ID", false, "Put a <GroupID>: in front of every line", io);
   Core::Utils::int_parameter(
       "LIMIT_OUTP_TO_PROC", -1, "Only the specified procs will write output", io);
   Core::Utils::string_to_integral_parameter<FourC::Core::IO::Verbositylevel>("VERBOSITY", "verbose",
@@ -145,7 +145,7 @@ void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>&
 
   // Output every iteration (for debugging purposes)
   Core::Utils::bool_parameter(
-      "OUTPUT_EVERY_ITER", "No", "Do you wish output every Newton iteration?", io_every_iter);
+      "OUTPUT_EVERY_ITER", false, "Do you wish output every Newton iteration?", io_every_iter);
 
   Core::Utils::int_parameter("RUN_NUMBER", -1,
       "Create a new folder for different runs of the same simulation. "
@@ -158,7 +158,7 @@ void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>&
       "be written.",
       io_every_iter);
 
-  Core::Utils::bool_parameter("WRITE_OWNER_EACH_NEWTON_ITER", "No",
+  Core::Utils::bool_parameter("WRITE_OWNER_EACH_NEWTON_ITER", false,
       "If yes, the ownership "
       "of elements and nodes are written each Newton step, instead of only once"
       "per time/load step.",

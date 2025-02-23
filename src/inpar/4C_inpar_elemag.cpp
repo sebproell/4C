@@ -81,11 +81,11 @@ void Inpar::EleMag::set_valid_parameters(std::map<std::string, Core::IO::InputSp
 
     // Error calculation
     Core::Utils::bool_parameter(
-        "CALCERR", "No", "Calc the error wrt ERRORFUNCNO?", electromagneticdyn);
+        "CALCERR", false, "Calc the error wrt ERRORFUNCNO?", electromagneticdyn);
 
     // Post process solution?
     Core::Utils::bool_parameter(
-        "POSTPROCESS", "No", "Postprocess solution? (very slow)", electromagneticdyn);
+        "POSTPROCESS", false, "Postprocess solution? (very slow)", electromagneticdyn);
   }
 
   Core::Utils::int_parameter(

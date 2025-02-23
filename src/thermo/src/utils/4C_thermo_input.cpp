@@ -94,7 +94,7 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
       tuple<PredEnum>(pred_vague, pred_consttemp, pred_consttemprate, pred_tangtemp), tdyn);
 
   // convergence criteria solver adaptivity
-  Core::Utils::bool_parameter("ADAPTCONV", "No",
+  Core::Utils::bool_parameter("ADAPTCONV", false,
       "Switch on adaptive control of linear solver tolerance for nonlinear solution", tdyn);
   Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.1,
       "The linear solver shall be this much better than the current nonlinear residual in the "
@@ -102,7 +102,7 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
       tdyn);
 
   Core::Utils::bool_parameter(
-      "LUMPCAPA", "No", "Lump the capacity matrix for explicit time integration", tdyn);
+      "LUMPCAPA", false, "Lump the capacity matrix for explicit time integration", tdyn);
 
   // number of linear solver used for thermal problems
   Core::Utils::int_parameter(
@@ -151,29 +151,29 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
     Core::Utils::SectionSpecs sublist_vtk_output{tdyn, "RUNTIME VTK OUTPUT"};
 
     // whether to write output for thermo
-    Core::Utils::bool_parameter("OUTPUT_THERMO", "No", "write thermo output", sublist_vtk_output);
+    Core::Utils::bool_parameter("OUTPUT_THERMO", false, "write thermo output", sublist_vtk_output);
 
     // whether to write temperature state
     Core::Utils::bool_parameter(
-        "TEMPERATURE", "No", "write temperature output", sublist_vtk_output);
+        "TEMPERATURE", false, "write temperature output", sublist_vtk_output);
 
     // whether to write heatflux state
-    Core::Utils::bool_parameter("HEATFLUX", "No", "write heatflux output", sublist_vtk_output);
+    Core::Utils::bool_parameter("HEATFLUX", false, "write heatflux output", sublist_vtk_output);
 
     // whether to write temperature gradient state
     Core::Utils::bool_parameter(
-        "TEMPGRAD", "No", "write temperature gradient output", sublist_vtk_output);
+        "TEMPGRAD", false, "write temperature gradient output", sublist_vtk_output);
 
     // whether to write element owner
-    Core::Utils::bool_parameter("ELEMENT_OWNER", "No", "write element owner", sublist_vtk_output);
+    Core::Utils::bool_parameter("ELEMENT_OWNER", false, "write element owner", sublist_vtk_output);
 
     // whether to write element GIDs
     Core::Utils::bool_parameter(
-        "ELEMENT_GID", "No", "write 4C internal element GIDs", sublist_vtk_output);
+        "ELEMENT_GID", false, "write 4C internal element GIDs", sublist_vtk_output);
 
     // whether to write node GIDs
     Core::Utils::bool_parameter(
-        "NODE_GID", "No", "write 4C internal node GIDs", sublist_vtk_output);
+        "NODE_GID", false, "write 4C internal node GIDs", sublist_vtk_output);
 
     sublist_vtk_output.move_into_collection(list);
   }
@@ -183,10 +183,10 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
     Core::Utils::SectionSpecs sublist_csv_output{tdyn, "RUNTIME CSV OUTPUT"};
 
     // whether to write csv output for thermo
-    Core::Utils::bool_parameter("OUTPUT_THERMO", "No", "write thermo output", sublist_csv_output);
+    Core::Utils::bool_parameter("OUTPUT_THERMO", false, "write thermo output", sublist_csv_output);
 
     // whether to write energy state
-    Core::Utils::bool_parameter("ENERGY", "No", "write energy output", sublist_csv_output);
+    Core::Utils::bool_parameter("ENERGY", false, "write energy output", sublist_csv_output);
 
     sublist_csv_output.move_into_collection(list);
   }
