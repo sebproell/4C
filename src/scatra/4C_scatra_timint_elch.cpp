@@ -3288,7 +3288,7 @@ double ScaTra::ScaTraTimIntElch::get_current_temperature() const
 {
   double temperature(-1.0);
 
-  // if no function is defined we use the value set in the dat-file
+  // if no function is defined we use the value set in the input file
   if (temperature_funct_num_ == -1)
     temperature = elchparams_->get<double>("TEMPERATURE");
   else

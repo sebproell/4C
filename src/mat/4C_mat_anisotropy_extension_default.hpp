@@ -33,11 +33,11 @@ namespace Mat
     /// @{
     //! Fibers defined in material on element basis
     static constexpr int INIT_MODE_ELEMENT_EXTERNAL = 0;
-    //! Fibers defined in dat file on element basis
+    //! Fibers defined in input file on element basis
     static constexpr int INIT_MODE_ELEMENT_FIBERS = 1;
     //! Fibers defined in material on Gauss point basis
     static constexpr int INIT_MODE_NODAL_EXTERNAL = 4;
-    //! Fibers defined in dat file on Gauss point basis
+    //! Fibers defined in input file on Gauss point basis
     static constexpr int INIT_MODE_NODAL_FIBERS = 3;
     /// @}
 

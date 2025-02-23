@@ -153,7 +153,7 @@ namespace Core::IO::GridGenerator
           -1, nummynewele, mynewele.data(), 0, Core::Communication::as_epetra_comm(comm));
     }
 
-    // Build an input line that matches what is expected from a dat file.
+    // Build an input line that matches what is expected from an input file.
     // Prepend the distype which is not part of the user-supplied arguments but must be parsed.
     // The distype is followed by nodal ids, which are set to dummy values of -1 here.
     const std::string argument_line = std::invoke(

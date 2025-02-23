@@ -50,7 +50,7 @@ and did not provide the direct vtk output (see :ref:`above <directvtkoutput>`).
 .. Note::
     When using the |FOURC| post processing script ``post_processor``,
     be aware that derived quantities like e.g. stresses and strains are not automatically extracted from the simulation results!
-    Presumed you set the proper flags in the \*.dat file (i.e. the quantities were actually calculated),
+    Presumed you set the proper flags in the input file (i.e. the quantities were actually calculated),
     you still have to set the ``--stress`` etc. options of the post processing script to extract these quantities from the simulation results.
 
 You always have to provide the control file,

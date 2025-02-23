@@ -232,7 +232,7 @@ namespace Mat
     //! type
     void setup_lattice_vectors();
 
-    //! read lattice orientation matrix from .dat file
+    //! read lattice orientation matrix from an input file
     void setup_lattice_orientation(const Core::IO::InputParameterContainer& container);
 
     //! update internal variables

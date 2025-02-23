@@ -64,8 +64,8 @@ namespace Core::IO
     virtual ~Pstream();
 
     /// configure the output. Must be called before Core::IO::cout can be used. Is
-    /// currently called in the global problem using the params specified in the
-    /// IO section of the .dat-file.
+    /// currently called indat the global problem using the params specified in the
+    /// IO section of the input file.
     void setup(const bool writetoscreen,       ///< bool whether output is written to screen
         const bool writetofile,                ///< bool whether output is written to file
         const bool prefixgroupID,              ///< bool whether group ID is prefixed in each line

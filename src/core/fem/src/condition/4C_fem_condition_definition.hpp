@@ -43,12 +43,12 @@ namespace Core::Conditions
   /// definition of a valid condition in 4C input
   /*!
 
-    A ConditionDefinition is the definition of a condition dat file
+    A ConditionDefinition is the definition of a condition input file
     section. This definition includes the knowledge what this section looks
     like, how to read it and how to write it. In particular given a
-    ConditionDefinition object it is possible to (a) write an empty dat file
-    section that describes this condition, (b) read a dat file and create
-    Core::Conditions::Condition objects for each line in this section and (c) write the dat
+    ConditionDefinition object it is possible to (a) write an empty input file
+    section that describes this condition, (b) read an input file and create
+    Core::Conditions::Condition objects for each line in this section and (c) write the input
     file section filled with all corresponding conditions from a given
     Core::FE::Discretization.
 
@@ -66,7 +66,7 @@ namespace Core::Conditions
    public:
     /// construction of a condition definition
     /*!
-      \param sectionname name of dat file section
+      \param sectionname name of input file section
       \param conditionname name of conditions in Core::FE::Discretization
       \param description description of condition type
       \param condtype type of conditions to be build
@@ -96,7 +96,7 @@ namespace Core::Conditions
     void read(Core::IO::InputFile& input,
         std::multimap<int, std::shared_ptr<Core::Conditions::Condition>>& cmap) const;
 
-    /// print my dat file section
+    /// print my input file section
     std::ostream& print(std::ostream& stream);
 
     /// name of my section in input file

@@ -32,7 +32,7 @@ namespace Core::IO
     \brief helper class to read the elements of a discretization
 
     Together with MeshReader this class constitutes a (almost) parallel
-    and efficient reading mechanism for discretizations from dat files.
+    and efficient reading mechanism for discretizations from input files.
 
     We face the following problem:
 
@@ -154,7 +154,7 @@ namespace Core::IO
     /// discretization name
     std::string name_;
 
-    /// the main dat file reader
+    /// the main input file reader
     Core::IO::InputFile& input_;
 
     /// my comm

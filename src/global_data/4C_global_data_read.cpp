@@ -2113,7 +2113,7 @@ void Global::read_conditions(Global::Problem& problem, Core::IO::InputFile& inpu
   {
     std::multimap<int, std::shared_ptr<Core::Conditions::Condition>> cond;
 
-    // read conditions from dat file
+    // read conditions from the input file
     condition.read(input, cond);
 
     // add nodes to conditions

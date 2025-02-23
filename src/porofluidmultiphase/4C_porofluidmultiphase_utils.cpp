@@ -75,7 +75,7 @@ void POROFLUIDMULTIPHASE::Utils::setup_material(
   // initialize material map
   std::map<int, int> matmap;
   {
-    // get the cloning material map from the .dat file
+    // get the cloning material map from the input file
     std::map<std::pair<std::string, std::string>, std::map<int, int>> clonefieldmatmap =
         Global::Problem::instance()->cloning_material_map();
     if (clonefieldmatmap.size() < 1)

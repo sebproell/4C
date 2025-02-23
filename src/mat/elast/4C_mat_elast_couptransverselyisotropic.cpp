@@ -56,7 +56,7 @@ void Mat::Elastic::CoupTransverselyIsotropic::setup(
 {
   switch (params_->init_)
   {
-    // path if fibers aren't given in .dat file
+    // path if fibers aren't given in input file
     case 0:
     {
       // fibers aligned in YZ-plane with gamma around Z in global cartesian cosy
@@ -66,7 +66,7 @@ void Mat::Elastic::CoupTransverselyIsotropic::setup(
 
       break;
     }
-    // path if fibers are given in .dat file
+    // path if fibers are given in input file
     case 1:
     {
       std::ostringstream ss;

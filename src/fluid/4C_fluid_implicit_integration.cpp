@@ -2089,21 +2089,21 @@ void FLD::FluidImplicitTimeInt::setup_krylov_space_projection(Core::Conditions::
   // confirm that mode flags are number of nodal dofs
   const int nummodes = kspcond->parameters().get<int>("NUMMODES");
   if (nummodes != (numdim_ + 1))
-    FOUR_C_THROW("Expecting numdim_+1 modes in Krylov projection definition. Check dat-file!");
+    FOUR_C_THROW("Expecting numdim_+1 modes in Krylov projection definition. Check input file!");
 
-  // get vector of mode flags as given in dat-file
+  // get vector of mode flags as given in input file
   const auto& modeflags = kspcond->parameters().get<std::vector<int>>("ONOFF");
 
-  // confirm that only the pressure mode is selected for Krylov projection in dat-file
+  // confirm that only the pressure mode is selected for Krylov projection in input file
   for (int rr = 0; rr < numdim_; ++rr)
   {
     if ((modeflags[rr]) != 0)
     {
-      FOUR_C_THROW("Expecting only an undetermined pressure. Check dat-file!");
+      FOUR_C_THROW("Expecting only an undetermined pressure. Check input file!");
     }
   }
   if ((modeflags[numdim_]) != 1)
-    FOUR_C_THROW("Expecting an undetermined pressure. Check dat-file!");
+    FOUR_C_THROW("Expecting an undetermined pressure. Check input file!");
   std::vector<int> activemodeids(1, numdim_);
 
   // allocate kspsplitter_
@@ -2112,7 +2112,7 @@ void FLD::FluidImplicitTimeInt::setup_krylov_space_projection(Core::Conditions::
 
   kspsplitter_->setup(*discret_);
 
-  // get from dat-file definition how weights are to be computed
+  // get from input file definition how weights are to be computed
   const auto* weighttype = &kspcond->parameters().get<std::string>("WEIGHTVECDEF");
 
   // set flag for projection update true only if ALE and integral weights
@@ -2144,7 +2144,7 @@ void FLD::FluidImplicitTimeInt::update_krylov_space_projection()
 
     const std::string* weighttype = projector_->weight_type();
     std::shared_ptr<Core::LinAlg::Vector<double>> w0_update = nullptr;
-    // compute w_ as defined in dat-file
+    // compute w_ as defined in input file
     if (*weighttype == "pointvalues")
     {
       /*

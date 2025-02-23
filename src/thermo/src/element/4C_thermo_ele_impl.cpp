@@ -546,7 +546,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
   }
 
   //==================================================================================
-  // allowing the predictor TangTemp in .dat --> can be decisive in compressible case!
+  // allowing the predictor TangTemp in input file --> can be decisive in compressible case!
   else if (action == Thermo::calc_thermo_reset_istep)
   {
     // we have to have a thermo-capable material here -> throw error if not

@@ -12,7 +12,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-/// Initializes Cut Parameters by Parameterlist (typically from *.dat-file section CUT GENERAL)
+/// Initializes Cut Parameters by Parameterlist (typically from input file section CUT GENERAL)
 void Cut::Options::init_by_paramlist(const Teuchos::ParameterList& cutparams)
 {
   geomintersect_floattype_ =

@@ -325,7 +325,7 @@ void Mat::CrystalPlasticity::setup(int numgp, const Core::IO::InputParameterCont
   // parameters according to chosen lattice type
   this->setup_lattice_vectors();
 
-  //  read Lattice orientation matrix from .dat file
+  //  read Lattice orientation matrix from input file
   this->setup_lattice_orientation(container);
 
   // rotate lattice vectors according to lattice orientation
@@ -1097,7 +1097,7 @@ void Mat::CrystalPlasticity::setup_lattice_vectors()
 }
 
 /*---------------------------------------------------------------------------------*
- | Read Lattice orientation matrix from .dat file                                    |
+ | Read Lattice orientation matrix from input file                                    |
  *---------------------------------------------------------------------------------*/
 
 void Mat::CrystalPlasticity::setup_lattice_orientation(

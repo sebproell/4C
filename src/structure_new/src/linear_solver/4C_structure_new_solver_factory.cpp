@@ -232,7 +232,7 @@ std::shared_ptr<Core::LinAlg::Solver> Solid::SOLVER::Factory::build_meshtying_co
           FOUR_C_THROW(
               "You have chosen an iterative linear solver. For mortar/Contact in saddlepoint "
               "formulation you have to choose a block preconditioner such as SIMPLE. Choose "
-              "Teko or MueLu in the SOLVER %i block in your dat file.",
+              "Teko or MueLu in the SOLVER %i block in your input file.",
               lin_solver_id);
       }
 

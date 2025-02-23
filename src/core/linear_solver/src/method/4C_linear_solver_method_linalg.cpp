@@ -415,9 +415,9 @@ Teuchos::ParameterList Core::LinAlg::Solver::translate_solver_parameters(
   switch (Teuchos::getIntegralValue<Core::LinearSolver::SolverType>(inparams, "SOLVER"))
   {
     case Core::LinearSolver::SolverType::undefined:
-      std::cout << "undefined solver! Set " << inparams.name() << "  in your dat file!"
+      std::cout << "undefined solver! Set " << inparams.name() << "  in your input file!"
                 << std::endl;
-      FOUR_C_THROW("fix your dat file");
+      FOUR_C_THROW("fix your input file");
       break;
     case Core::LinearSolver::SolverType::umfpack:
       outparams.set("solver", "umfpack");

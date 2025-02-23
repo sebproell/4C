@@ -557,7 +557,7 @@ void FLD::Utils::lift_drag(const std::shared_ptr<const Core::FE::Discretization>
     // vector with lift&drag forces after communication
     liftdragvals = std::make_shared<std::map<int, std::vector<double>>>();
 
-    for (unsigned i = 0; i < ldconds.size(); ++i)  // loop L&D conditions (i.e. lines in .dat file)
+    for (unsigned i = 0; i < ldconds.size(); ++i)
     {
       // get label of present lift_drag condition
       const int label = ldconds[i]->parameters().get<int>("label");
@@ -585,7 +585,7 @@ void FLD::Utils::lift_drag(const std::shared_ptr<const Core::FE::Discretization>
     }
 
     // sort data
-    for (unsigned i = 0; i < ldconds.size(); ++i)  // loop L&D conditions (i.e. lines in .dat file)
+    for (unsigned i = 0; i < ldconds.size(); ++i)
     {
       // get label of present lift_drag condition
       const int label = ldconds[i]->parameters().get<int>("label");

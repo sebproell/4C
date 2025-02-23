@@ -24,7 +24,7 @@ namespace Core::IO
 namespace PARTICLEENGINE
 {
   /**
-   * Read particles from a dat file. The particles are read from the section
+   * Read particles from an input file. The particles are read from the section
    * with name @p section_name.
    */
   void read_particles(Core::IO::InputFile& input, const std::string& section_name,

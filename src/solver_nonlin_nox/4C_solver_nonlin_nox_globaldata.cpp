@@ -265,7 +265,7 @@ void NOX::Nln::GlobalData::set_status_test_parameters()
 {
   Teuchos::ParameterList& statusTestParams = nlnparams_->sublist("Status Test", true);
 
-  // check if the status test was already set via the dat-file
+  // check if the status test was already set via the input file
   if (statusTestParams.isSublist("Outer Status Test") and
       statusTestParams.sublist("Outer Status Test").numParams() != 0)
     return;

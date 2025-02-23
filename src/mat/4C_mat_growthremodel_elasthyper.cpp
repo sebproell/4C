@@ -87,8 +87,7 @@ Mat::PAR::GrowthRemodelElastHyper::GrowthRemodelElastHyper(
   if (cylinder_ != -1 && cylinder_ != 1 && cylinder_ != 2 && cylinder_ != 3)
     FOUR_C_THROW(
         "The parameter CYLINDER has to be either 1, 2 or 3. If you have defined a fiber direction "
-        "in your"
-        ".dat file then just skip this parameter");
+        "in your input file then just skip this parameter");
 }
 
 /*----------------------------------------------------------------------*/
@@ -485,7 +484,7 @@ void Mat::GrowthRemodelElastHyper::setup_axi_cir_rad_structural_tensor(
     // radial structural tensor in "stress-like" Voigt notation
     Core::LinAlg::Voigt::Stresses::matrix_to_vector(arad_m_, aradv_);
   }
-  // Cylinder flag defined in .dat file, dummy AXI, CIR and RAD directions are written till
+  // Cylinder flag defined in input file, dummy AXI, CIR and RAD directions are written till
   // location of element center in reference configuration is available
   else if (params_->cylinder_ == 1 || params_->cylinder_ == 2 || params_->cylinder_ == 3)
   {
@@ -495,11 +494,11 @@ void Mat::GrowthRemodelElastHyper::setup_axi_cir_rad_structural_tensor(
     arad_m_(2, 2) = 1.0;
     aradv_(2) = 1.0;
   }
-  // No AXI CIR RAD-direction defined in .dat file and additionally no cylinder flag was set
+  // No AXI CIR RAD-direction defined in input file and additionally no cylinder flag was set
   else
     FOUR_C_THROW(
         "Homogenized Constrained Mixture Model can so far only be used by defining AXI-, CIR- and "
-        "RAD-direction in the .dat file or by defining the Cylinder flag!");
+        "RAD-direction in the input file or by defining the Cylinder flag!");
 }
 
 

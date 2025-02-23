@@ -663,7 +663,7 @@ void Adapter::StructureBaseAlgorithmNew::set_params(Teuchos::ParameterList& iofl
   sdyn_->set<int>("RESTARTEVERY", prbdyn_->get<int>("RESTARTEVERY"));
   sdyn_->set<int>("RESULTSEVERY", prbdyn_->get<int>("RESULTSEVERY"));
 
-  // Check if for chosen Rayleigh damping the regarding parameters are given explicitly in the .dat
+  // Check if for chosen Rayleigh damping the regarding parameters are given explicitly in the input
   // file
   if (Teuchos::getIntegralValue<Inpar::Solid::DampKind>(*sdyn_, "DAMPING") ==
       Inpar::Solid::damp_rayleigh)

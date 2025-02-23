@@ -88,7 +88,7 @@ namespace
            "\t\tx must be 0 and 1 for the respective run\n"
         << "\n"
         << "\t<dat_name>\n"
-        << "\t\tName of the input file, including the suffix (Usually *.dat)\n"
+        << "\t\tName of the input file, including the suffix\n"
         << "\n"
         << "\t<output_name>\n"
         << "\t\tPrefix of your output files.\n"

@@ -210,7 +210,7 @@ namespace EleMag
     /*!
     \brief Output routine
 
-    This routine outputs the computed global and local solutions to the output ".dat" file.
+    This routine outputs the computed global and local solutions to the output file.
     */
     virtual void output();
     // void output();

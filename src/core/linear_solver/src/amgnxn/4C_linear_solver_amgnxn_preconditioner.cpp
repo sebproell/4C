@@ -194,7 +194,7 @@ Core::LinearSolver::AmGnxnInterface::AmGnxnInterface(Teuchos::ParameterList& par
   }
   else
     FOUR_C_THROW(
-        "\"%s\" is an invalid value for \"AMGNXN_TYPE\". Fix your .dat", amgnxn_type.c_str());
+        "\"%s\" is an invalid value for \"AMGNXN_TYPE\". Fix your input file", amgnxn_type.c_str());
 
 
 

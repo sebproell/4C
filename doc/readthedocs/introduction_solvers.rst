@@ -258,8 +258,8 @@ Future prospects
 **Switch from ML to MueLu**
 
    In the near future there will be a major change with respect to the preconditioners.
-   This will affect also the th einput parameters,
-   and even the input style, which will then rather depend on separate solver parameter files than parameters in the .dat file.
+   This will affect also the input parameters,
+   and even the input style, which will then rather depend on separate solver parameter files than parameters in the input file.
 
 Further reading
 ^^^^^^^^^^^^^^^

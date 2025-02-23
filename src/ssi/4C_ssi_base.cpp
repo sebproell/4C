@@ -342,7 +342,7 @@ void SSI::SSIBase::init_discretizations(MPI_Comm comm, const std::string& struct
     if (fieldcoupling_ == Inpar::SSI::FieldCoupling::volume_match)
     {
       FOUR_C_THROW(
-          "Reading a TRANSPORT discretization from the .dat file for the input parameter "
+          "Reading a TRANSPORT discretization from the input file for the input parameter "
           "'FIELDCOUPLING volume_matching' in the SSI CONTROL section is not supported! As this "
           "coupling relies on matching node (and sometimes element) IDs, the ScaTra discretization "
           "is cloned from the structure discretization. Delete the ScaTra discretization from your "
@@ -366,9 +366,10 @@ void SSI::SSIBase::init_discretizations(MPI_Comm comm, const std::string& struct
           Inpar::ScaTra::impltype_undefined)
       {
         FOUR_C_THROW(
-            "A TRANSPORT discretization is read from the .dat file, which is fine since the scatra "
+            "A TRANSPORT discretization is read from the input file, which is fine since the "
+            "scatra "
             "discretization is not cloned from the structure discretization. But in the STRUCTURE "
-            "ELEMENTS section of the .dat file an ImplType that is NOT 'Undefined' is prescribed "
+            "ELEMENTS section of the input file an ImplType that is NOT 'Undefined' is prescribed "
             "which does not make sense if you don't want to clone the structure discretization. "
             "Change the ImplType to 'Undefined' or decide to clone the scatra discretization from "
             "the structure discretization.");

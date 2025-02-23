@@ -397,10 +397,10 @@ void Airway::RedAirwayImplicitTimeInt::integrate(
 
 
 /*-----------------------------------------------------------------------------*
- | Prestress the lung to a given transpulmonary pressure given in the .dat file|
- | This will shink the lung before the first timestep in such a way that the   |
- | volume of each acinus reaches the given volume in the .dat file when p_tp is|
- | applied                                                        roth 05/2015 |
+ | Prestress the lung to a given transpulmonary pressure given in the input file|
+ | This will shink the lung before the first timestep in such a way that the    |
+ | volume of each acinus reaches the given volume in the input file when p_tp is|
+ | applied                                                                      |
  *-----------------------------------------------------------------------------*/
 void Airway::RedAirwayImplicitTimeInt::compute_vol0_for_pre_stress()
 {
@@ -449,7 +449,7 @@ void Airway::RedAirwayImplicitTimeInt::compute_vol0_for_pre_stress()
           // getParams and setParams
           auto* acini_ele = dynamic_cast<Discret::Elements::RedAcinus*>(discret_->g_element(GID));
           const auto acinus_params = acini_ele->get_acinus_params();
-          // get original value for aciuns volume (entered in dat file)
+          // get original value for aciuns volume (entered in input file)
           double val = acinus_params.volume_init;
           // calculate new value for aciuns volume with alpha and set in element parameters
           val = val / alpha;
@@ -474,9 +474,6 @@ void Airway::RedAirwayImplicitTimeInt::compute_vol0_for_pre_stress()
   }
 }
 
-/*-----------------------------------------------------------------------------*
- |                                                                roth 02/2016 |
- *-----------------------------------------------------------------------------*/
 void Airway::RedAirwayImplicitTimeInt::compute_nearest_acinus(
     const Core::FE::Discretization& search_discret, std::set<int>* elecolset,
     std::set<int>* nodecolset, std::shared_ptr<Core::LinAlg::Vector<double>> airway_acinus_dep)

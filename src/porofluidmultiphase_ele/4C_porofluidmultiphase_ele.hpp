@@ -32,7 +32,7 @@ namespace Discret
       /// create an element from data
       Core::Communication::ParObject* create(Core::Communication::UnpackBuffer& buffer) override;
 
-      /// create an element from a dat file specifier
+      /// create an element from an input file specifier
       std::shared_ptr<Core::Elements::Element> create(const std::string eletype,
           const std::string eledistype, const int id, const int owner) override;
 
@@ -47,7 +47,7 @@ namespace Discret
       Core::LinAlg::SerialDenseMatrix compute_null_space(
           Core::Nodes::Node& node, const double* x0, const int numdof, const int dimnsp) override;
 
-      /// setup the dat file input line definitions for this type of element
+      /// setup the input file input line definitions for this type of element
       void setup_element_definition(
           std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
 

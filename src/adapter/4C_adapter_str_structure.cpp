@@ -119,7 +119,7 @@ void Adapter::StructureBaseAlgorithm::create_tim_int(const Teuchos::ParameterLis
   Teuchos::ParameterList& nox = xparams->sublist("NOX");
   nox = snox;
 
-  // Check if for chosen Rayleigh damping the regarding parameters are given explicitly in the .dat
+  // Check if for chosen Rayleigh damping the regarding parameters are given explicitly in the input
   // file
   if (Teuchos::getIntegralValue<Inpar::Solid::DampKind>(sdyn, "DAMPING") ==
       Inpar::Solid::damp_rayleigh)

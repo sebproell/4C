@@ -634,7 +634,7 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::create_linear_solver(
     std::cout << " uses the structural solver and fluid solver blocks" << std::endl;
     std::cout << " for building the internal inverses" << std::endl;
     std::cout << " Remove the old BGS PRECONDITIONER BLOCK entries " << std::endl;
-    std::cout << " in the dat files!" << std::endl;
+    std::cout << " in the input files!" << std::endl;
     std::cout << "!!!!!!!!!!!!!!!!!!!!!! ATTENTION !!!!!!!!!!!!!!!!!!!!!" << std::endl;
     FOUR_C_THROW("Iterative solver expected");
   }

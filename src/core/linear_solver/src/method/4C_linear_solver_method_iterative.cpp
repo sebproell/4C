@@ -137,7 +137,7 @@ int Core::LinearSolver::IterativeSolver<MatrixType, VectorType>::solve()
   else
   {
     if (Core::Communication::my_mpi_rank(comm_) == 0)
-      std::cout << "WARNING: The linear solver input parameters from the .dat file will be "
+      std::cout << "WARNING: The linear solver input parameters from the input file will be "
                    "depreciated soon. Switch to an appropriate xml-file version."
                 << std::endl;
 
