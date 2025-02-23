@@ -92,14 +92,6 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
   Core::Utils::bool_parameter(
       "VELOCITY_UPDATE", "No", "If chosen, velocity update method is applied", scontact);
 
-  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::EmOutputType>("EMOUTPUT", "None",
-      "Type of energy and momentum output",
-      tuple<std::string>(
-          "None", "none", "No", "no", "Screen", "screen", "File", "file", "Both", "both"),
-      tuple<Inpar::CONTACT::EmOutputType>(output_none, output_none, output_none, output_none,
-          output_screen, output_screen, output_file, output_file, output_both, output_both),
-      scontact);
-
   Core::Utils::bool_parameter(
       "INITCONTACTBYGAP", "No", "Initialize init contact by weighted gap vector", scontact);
 

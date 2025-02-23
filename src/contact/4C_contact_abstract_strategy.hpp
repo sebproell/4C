@@ -876,17 +876,6 @@ namespace CONTACT
      *  \param(in) writer: output writer */
     virtual void write_output(Core::IO::DiscretizationWriter& writer) const { return; }
 
-    /*! \brief Compute interface forces and moments
-     *
-     * Compute current interface forces and moments at n+1-alphaf using current
-     * Lagrange multiplier values and current Mortar matrices D and M at n+1. When
-     * doing dynamics with alpha_f > 0, this also uses the old LM and Mortar
-     * matrices of the last converged time / load step n (TR-like interpolation).
-     *
-     *\param output (in): flag indicating whether force output shall be written
-     */
-    void interface_forces(bool output = false) override;
-
     //! Print interfaces
     void print(std::ostream& os) const override;
 

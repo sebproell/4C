@@ -90,16 +90,6 @@ namespace Inpar
       system_saddlepoint         ///< saddle point system
     };
 
-    /// Type of energy and momentum output
-    /// (this enum represents the input file parameter EMOUTPUT)
-    enum EmOutputType
-    {
-      output_none,    ///< no output
-      output_screen,  ///< print to screen
-      output_file,    ///< print to file
-      output_both     ///< print to screen and file
-    };
-
     /// Type of formulation of constraint equations
     /// (this enum represents the input file parameter CONSTRAINT_DIRECTIONS)
     enum ConstraintDirection
