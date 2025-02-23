@@ -1470,7 +1470,7 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::parse(
       return;
     }
   }
-  FOUR_C_THROW("Invalid value '%s'", value.c_str());
+  FOUR_C_THROW("Could not parse parameter '%s': invalid value '%s'", name.c_str(), value.c_str());
 }
 
 
