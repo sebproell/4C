@@ -33,7 +33,7 @@ NLNSOL                          fullnewton
 TIMESTEP                        1
 NUMSTEP                         1
 MAXTIME                         1
-DAMPING                         No
+DAMPING                         None
 M_DAMP                          0
 K_DAMP                          0
 PREDICT                         ConstDisVelAcc

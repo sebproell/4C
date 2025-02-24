@@ -37,7 +37,7 @@ RESTARTEVERY                     3
 TIMESTEP                        10.0
 NUMSTEP                         6
 MAXTIME                         2500000
-DAMPING                         No
+DAMPING                         None
 M_DAMP                          0.0
 K_DAMP                          0.0
 TOLDISP                         1e-5
@@ -51,7 +51,7 @@ NORM_INCO                       Abs
 NORMCOMBI_DISPPRES              And
 NORMCOMBI_RESFINCO              And
 NORMCOMBI_RESFDISP              And
-STC_SCALING                     no
+STC_SCALING                     Inactive
 STC_LAYER                       1
 PTCDT                           0.1
 TOLCONSTR                       1e-07
@@ -65,7 +65,7 @@ ALPHA_LS                        0.5
 SIGMA_LS                        0.0001
 MATERIALTANGENT                 analytical
 LOADLIN                         yes
-MASSLIN                         No
+MASSLIN                         none
 PREDICT                         TangDis
 UZAWAPARAM                      1
 UZAWATOL                        1e-07

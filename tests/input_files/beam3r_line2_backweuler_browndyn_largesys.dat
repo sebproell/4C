@@ -32,7 +32,7 @@ DIVERCONT              stop
 TIMESTEP               0.00005
 NUMSTEP                5
 MAXTIME                10000
-DAMPING                No
+DAMPING                None
 M_DAMP                 0
 K_DAMP                 0
 PREDICT                ConstDis

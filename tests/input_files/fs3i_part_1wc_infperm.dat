@@ -148,7 +148,7 @@ EVALUATION_TAU                  element_center
 STABTYPE                        no_stabilization
 SUGRVEL                         no
 ------------------------------------------------STRUCTURAL DYNAMIC
-DAMPING                         No
+DAMPING                         None
 DIVERCONT                       stop
 DYNAMICTYPE                      OneStepTheta
 ITERNORM                        L2

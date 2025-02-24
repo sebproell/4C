@@ -24,7 +24,7 @@ NLNSOL                          fullnewton
 TIMESTEP                        1.0
 NUMSTEP                         1
 MAXTIME                         100.0
-DAMPING                         No
+DAMPING                         None
 TOLRES                          1.0E-10
 TOLDISP                         1.0E-10
 ITERNORM                        Inf

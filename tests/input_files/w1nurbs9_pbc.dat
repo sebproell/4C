@@ -11,7 +11,7 @@ PROBLEMTYPE                      Structure
 SHAPEFCT                        Nurbs
 RESTART                         0
 ----------------------------------------------------------STRUCTURAL DYNAMIC
-DAMPING                         no
+DAMPING                         None
 DIVERCONT                       stop
 DYNAMICTYPE                      OneStepTheta
 ITERNORM                        L2
@@ -35,7 +35,7 @@ RESEVERYERGY                     0
 RESTARTEVERY                     15
 RESULTSEVERY                     1
 STC_LAYER                       1
-STC_SCALING                     no
+STC_SCALING                     Inactive
 TIMESTEP                        0.01
 TOLCONSTR                       1e-08
 TOLDISP                         1e-10

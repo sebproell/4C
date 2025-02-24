@@ -25,7 +25,7 @@ INT_STRATEGY                    Standard
 NORM_DISP                       Abs
 NORM_RESF                       Abs
 NORMCOMBI_RESFDISP              Or
-DAMPING                         No
+DAMPING                         None
 LUMPMASS                        Yes
 DYNAMICTYPE                      CentrDiff
 K_DAMP                          0.5

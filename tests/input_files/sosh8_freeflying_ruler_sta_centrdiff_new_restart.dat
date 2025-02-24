@@ -59,7 +59,7 @@ ADAPTSTEPMAX                    3
 LINEAR_SOLVER                   1
 DYNAMICTYPE                      CentrDiff
 LUMPMASS                        Yes
-DAMPING                         No
+DAMPING                         None
 K_DAMP                          0.5
 M_DAMP                          0.5
 --------------------------------------------------------------------SOLVER 1

@@ -33,7 +33,7 @@ PTCDT                           0.01
 TIMESTEP                        0.003
 NUMSTEP                         3000
 MAXTIME                         0.003
-DAMPING                         No
+DAMPING                         None
 M_DAMP                          0.5
 K_DAMP                          0.5
 PREDICT                         ConstDisVelAcc

@@ -31,7 +31,7 @@ RESTARTEVERY                     2
 TIMESTEP                        0.005
 NUMSTEP                         20
 MAXTIME                         1000.0
-DAMPING                         No
+DAMPING                         None
 M_DAMP                          100.0
 K_DAMP                          0.0
 PREDICT                         ConstDis

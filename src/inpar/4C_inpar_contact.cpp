@@ -123,8 +123,9 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
       tuple<Inpar::CONTACT::ConstraintDirection>(constr_ntt, constr_xyz), scontact);
 
   Core::Utils::string_to_integral_parameter<Inpar::CONTACT::Regularization>(
-      "CONTACT_REGULARIZATION", "no", "use regularized contact", tuple<std::string>("no", "tanh"),
-      tuple<Inpar::CONTACT::Regularization>(reg_none, reg_tanh), scontact);
+      "CONTACT_REGULARIZATION", "none", "use regularized contact",
+      tuple<std::string>("none", "tanh"), tuple<Inpar::CONTACT::Regularization>(reg_none, reg_tanh),
+      scontact);
 
   Core::Utils::bool_parameter("NONSMOOTH_GEOMETRIES", false,
       "If chosen the contact algorithm combines mortar and nts formulations. This is needed if "

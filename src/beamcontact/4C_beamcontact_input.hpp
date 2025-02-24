@@ -53,14 +53,6 @@ namespace BeamContact
                ///< smoothing"
   };
 
-  /// Application of a contact damping force
-  /// (this enum represents the input file parameter BEAMS_DAMPING)
-  enum Damping
-  {
-    bd_no,  ///< no damping force
-    bd_yes  ///< application of a contact damping force
-  };
-
   /// Application of a smoothed tangent field
   /// (this enum represents the input file parameter BEAMS_SMOOTHING)
   enum PenaltyLaw

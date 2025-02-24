@@ -60,7 +60,7 @@ NORM_INCO                       Abs
 NORMCOMBI_DISPPRES              And
 NORMCOMBI_RESFINCO              And
 NORMCOMBI_RESFDISP              And
-STC_SCALING                     no
+STC_SCALING                     Inactive
 STC_LAYER                       1
 PTCDT                           0.1
 TOLCONSTR                       1e-08
@@ -70,7 +70,7 @@ ITERNORM                        L2
 DIVERCONT                       stop
 NLNSOL                          fullnewton
 LOADLIN                         no
-MASSLIN                         no
+MASSLIN                         none
 PREDICT                         ConstDis
 UZAWAPARAM                      1
 UZAWATOL                        1e-08

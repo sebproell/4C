@@ -93,7 +93,7 @@ MAXTIME                         3
 NORM_DISP                       Abs
 NORM_RESF                       Abs
 NORMCOMBI_RESFDISP              Or
-DAMPING                         No
+DAMPING                         None
 DYNAMICTYPE                      OneStepTheta
 K_DAMP                          0.001
 MAXITER                         50
@@ -120,7 +120,7 @@ PRESTRESSTIME                   1.00000001
 PTCDT                           1.000e-01
 RESEVERYERGY                     0
 STC_LAYER                       1
-STC_SCALING                     no
+STC_SCALING                     Inactive
 TOLCONSTR                       1.000e-08
 TOLINCO                         1.000e-08
 TOLPRE                          1.000e-08

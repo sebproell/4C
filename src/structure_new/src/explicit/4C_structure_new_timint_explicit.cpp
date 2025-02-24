@@ -209,7 +209,7 @@ Inpar::Solid::StcScale Solid::TimeInt::Explicit::get_stc_algo()
 {
   check_init_setup();
   FOUR_C_THROW("get_stc_algo() has not been tested for explicit time integration.");
-  return Inpar::Solid::stc_none;
+  return Inpar::Solid::stc_inactive;
 };
 
 

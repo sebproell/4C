@@ -36,7 +36,7 @@ TIMESTEP                        0.05
 NUMSTEP                         3
 MAXTIME                         5.0
 //XSI                           0.0
-DAMPING                         No
+DAMPING                         None
 M_DAMP                          0.5
 K_DAMP                          0.5
 PREDICT                         ConstDis

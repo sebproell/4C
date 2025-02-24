@@ -28,7 +28,7 @@ RESTARTEVERY                     2
 TIMESTEP                        0.01
 NUMSTEP                         7
 MAXTIME                         0.07
-DAMPING                         Yes
+DAMPING                         Rayleigh
 M_DAMP                          0.0005
 K_DAMP                          0.0005
 TOLDISP                         1e-12

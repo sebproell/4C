@@ -43,7 +43,7 @@ LINEAR_COUPLED_SOLVER           1
 ENHANCED_OUTPUT                 No
 -------------------------------------------------STRUCTURAL DYNAMIC
 INT_STRATEGY                    Standard
-DAMPING                         No
+DAMPING                         None
 DIVERCONT                       stop
 DYNAMICTYPE                      GenAlpha
 ITERNORM                        L2

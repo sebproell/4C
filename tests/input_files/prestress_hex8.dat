@@ -41,7 +41,7 @@ MAXTIME                         0.75
 //GAMMA                         0.581
 //ALPHA_M                       0.378
 //ALPHA_F                       0.459
-DAMPING                         no
+DAMPING                         None
 M_DAMP                          0.0001
 K_DAMP                          0.0001
 PREDICT                         ConstDisVelAcc

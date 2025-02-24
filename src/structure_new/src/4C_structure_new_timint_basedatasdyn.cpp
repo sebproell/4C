@@ -38,7 +38,7 @@ Solid::TimeInt::BaseDataSDyn::BaseDataSDyn()
       eletechs_(nullptr),
       coupling_model_ptr_(nullptr),
       dyntype_(Inpar::Solid::dyna_statics),
-      stcscale_(Inpar::Solid::stc_none),
+      stcscale_(Inpar::Solid::stc_inactive),
       stclayer_(-1),
       itermin_(-1),
       itermax_(-1),

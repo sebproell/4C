@@ -79,13 +79,11 @@ namespace Inpar
       Core::Utils::double_parameter("MAXTIME", 5.0, "maximum time", sdyn);
 
       // Damping
-      Core::Utils::string_to_integral_parameter<Solid::DampKind>("DAMPING", "No",
+      Core::Utils::string_to_integral_parameter<Solid::DampKind>("DAMPING", "None",
           "type of damping: (1) Rayleigh damping matrix and use it from M_DAMP x M + K_DAMP x K, "
           "(2) Material based and calculated in elements",
-          tuple<std::string>("no", "No", "NO", "yes", "Yes", "YES", "Rayleigh", "Material"),
-          tuple<Solid::DampKind>(damp_none, damp_none, damp_none, damp_rayleigh, damp_rayleigh,
-              damp_rayleigh, damp_rayleigh, damp_material),
-          sdyn);
+          tuple<std::string>("None", "Rayleigh", "Material"),
+          tuple<Solid::DampKind>(damp_none, damp_rayleigh, damp_material), sdyn);
       Core::Utils::double_parameter("M_DAMP", -1.0, "", sdyn);
       Core::Utils::double_parameter("K_DAMP", -1.0, "", sdyn);
 
@@ -126,10 +124,10 @@ namespace Inpar
           "binary operator to combine displacement and residual force values",
           tuple<std::string>("And", "Or"), tuple<Solid::BinaryOp>(bop_and, bop_or), sdyn);
 
-      Core::Utils::string_to_integral_parameter<Solid::StcScale>("STC_SCALING", "no",
+      Core::Utils::string_to_integral_parameter<Solid::StcScale>("STC_SCALING", "Inactive",
           "Scaled director conditioning for thin shell structures",
-          tuple<std::string>("no", "No", "NO", "Symmetric", "Right"),
-          tuple<Solid::StcScale>(stc_none, stc_none, stc_none, stc_currsym, stc_curr), sdyn);
+          tuple<std::string>("Inactive", "Symmetric", "Right"),
+          tuple<Solid::StcScale>(stc_inactive, stc_currsym, stc_curr), sdyn);
 
       Core::Utils::int_parameter("STC_LAYER", 1, "number of STC layers for multilayer case", sdyn);
 
@@ -189,12 +187,10 @@ namespace Inpar
       Core::Utils::bool_parameter(
           "LOADLIN", false, "Use linearization of external follower load in Newton", sdyn);
 
-      Core::Utils::string_to_integral_parameter<Solid::MassLin>("MASSLIN", "No",
+      Core::Utils::string_to_integral_parameter<Solid::MassLin>("MASSLIN", "none",
           "Application of nonlinear inertia terms",
-          tuple<std::string>("No", "no", "Standard", "standard", "Rotations", "rotations"),
-          tuple<Solid::MassLin>(
-              ml_none, ml_none, ml_standard, ml_standard, ml_rotations, ml_rotations),
-          sdyn);
+          tuple<std::string>("none", "standard", "rotations"),
+          tuple<Solid::MassLin>(ml_none, ml_standard, ml_rotations), sdyn);
 
       Core::Utils::bool_parameter("NEGLECTINERTIA", false, "Neglect inertia", sdyn);
 
@@ -335,13 +331,11 @@ namespace Inpar
       Core::Utils::bool_parameter(
           "LUMPMASS", false, "Lump the mass matrix for explicit time integration", jep);
 
-      Core::Utils::string_to_integral_parameter<Inpar::Solid::DampKind>("DAMPING", "No",
+      Core::Utils::string_to_integral_parameter<Inpar::Solid::DampKind>("DAMPING", "None",
           "type of damping: (1) Rayleigh damping matrix and use it from M_DAMP x M + K_DAMP x K, "
           "(2) Material based and calculated in elements",
-          tuple<std::string>("no", "No", "NO", "yes", "Yes", "YES", "Rayleigh", "Material"),
-          tuple<Inpar::Solid::DampKind>(damp_none, damp_none, damp_none, damp_rayleigh,
-              damp_rayleigh, damp_rayleigh, damp_rayleigh, damp_material),
-          jep);
+          tuple<std::string>("None", "Rayleigh", "Material"),
+          tuple<Inpar::Solid::DampKind>(damp_none, damp_rayleigh, damp_material), jep);
 
       Core::Utils::double_parameter("M_DAMP", -1.0, "", jep);
       Core::Utils::double_parameter("K_DAMP", -1.0, "", jep);

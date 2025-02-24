@@ -53,7 +53,7 @@ UZAWAPARAM                      2.5
 UZAWATOL                        5E-07
 NLNSOL                          newtonlinuzawa
 STC_LAYER                       2
-STC_SCALING                     No
+STC_SCALING                     Inactive
 ---------------------------------------------STRUCTURAL DYNAMIC/ONESTEPTHETA
 THETA                           0.66
 ---------------------------------------------------------------FLUID DYNAMIC

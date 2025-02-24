@@ -105,7 +105,7 @@ V_ar_pul_u                      84900.0
 V_ven_pul_u                     93000.0
 -------------------------------------------------STRUCTURAL DYNAMIC
 INT_STRATEGY                    Old
-DAMPING                         No
+DAMPING                         None
 DIVERCONT                       stop
 DYNAMICTYPE                      Statics
 ITERNORM                        L2

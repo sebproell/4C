@@ -26,7 +26,7 @@ NLNSOL                           fullnewton
 TIMESTEP                         1.0
 NUMSTEP                          1
 MAXTIME                          1.0
-DAMPING                          No
+DAMPING                          None
 TOLRES                           1e-07
 TOLDISP                          1e-07
 NORM_RESF                        Abs

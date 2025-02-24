@@ -45,7 +45,7 @@ RESTARTEVERY                     1
 TIMESTEP                        0.01
 NUMSTEP                         1
 MAXTIME                         5
-DAMPING                         No
+DAMPING                         None
 M_DAMP                          -1
 K_DAMP                          -1
 TOLDISP                         1e-10
@@ -59,7 +59,7 @@ NORM_INCO                       Abs
 NORMCOMBI_DISPPRES              And
 NORMCOMBI_RESFINCO              And
 NORMCOMBI_RESFDISP              And
-STC_SCALING                     no
+STC_SCALING                     Inactive
 STC_LAYER                       1
 PTCDT                           0.1
 TOLCONSTR                       1e-08
@@ -69,7 +69,7 @@ ITERNORM                        Inf
 DIVERCONT                       stop
 NLNSOL                          fullnewton
 LOADLIN                         no
-MASSLIN                         no
+MASSLIN                         none
 PREDICT                         ConstDis
 UZAWAPARAM                      1
 UZAWATOL                        1e-08

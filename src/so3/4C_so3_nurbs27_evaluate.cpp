@@ -188,7 +188,7 @@ int Discret::Elements::Nurbs::SoNurbs27::evaluate(Teuchos::ParameterList& params
     {
       const auto stc_scaling =
           Teuchos::getIntegralValue<Inpar::Solid::StcScale>(params, "stc_scaling");
-      if (stc_scaling == Inpar::Solid::stc_none)
+      if (stc_scaling == Inpar::Solid::stc_inactive)
         FOUR_C_THROW("To scale or not to scale, that's the query!");
       else
       {
@@ -202,7 +202,7 @@ int Discret::Elements::Nurbs::SoNurbs27::evaluate(Teuchos::ParameterList& params
     {
       const auto stc_scaling =
           Teuchos::getIntegralValue<Inpar::Solid::StcScale>(params, "stc_scaling");
-      if (stc_scaling == Inpar::Solid::stc_none)
+      if (stc_scaling == Inpar::Solid::stc_inactive)
         FOUR_C_THROW("To scale or not to scale, that's the query!");
       else
       {

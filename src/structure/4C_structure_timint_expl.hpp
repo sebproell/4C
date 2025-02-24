@@ -344,7 +344,7 @@ namespace Solid
     Inpar::Solid::StcScale get_stc_algo() override
     {
       FOUR_C_THROW("get_stc_algo() has not been tested for explicit time integrators");
-      return Inpar::Solid::stc_none;
+      return Inpar::Solid::stc_inactive;
     };
 
     //! Access to scaling matrix for STC

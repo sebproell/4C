@@ -29,7 +29,7 @@ SHAPEFCT                        Polynomial
 NORM_DISP                       Abs
 NORM_RESF                       Abs
 NORMCOMBI_RESFDISP              And
-DAMPING                         No
+DAMPING                         None
 DYNAMICTYPE                      GenAlpha
 K_DAMP                          0.5
 MAXITER                         50

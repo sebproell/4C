@@ -76,8 +76,8 @@ NUMSTEP                         6
 MAXTIME                         1.0
 //
 // type of damping: (1) Rayleigh damping matrix and use it from M_DAMP x M + K_DAMP x K, (2) Material based and calculated in elements
-//     no,No,NO,yes,Yes,YES,Rayleigh,Material
-DAMPING                         Yes
+//     None,Rayleigh,Material
+DAMPING                         Rayleigh
 //
 M_DAMP                          0.00001
 //

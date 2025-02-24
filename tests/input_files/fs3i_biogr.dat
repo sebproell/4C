@@ -160,7 +160,7 @@ TANGTWOFORCECOEF                0.0
 BIOFILMGROWTH                   Yes
 OUTPUT_GMSH                     No
 ----------------------------------------------------------STRUCTURAL DYNAMIC
-DAMPING                         No
+DAMPING                         None
 DIVERCONT                       stop
 DYNAMICTYPE                      OneStepTheta
 ITERNORM                        L2

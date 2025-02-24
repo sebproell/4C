@@ -146,7 +146,7 @@ void Adapter::StructureBaseAlgorithm::create_tim_int(const Teuchos::ParameterLis
   if (solver != nullptr && (solver->params().isSublist("Belos Parameters")) &&
       solver->params().isSublist("ML Parameters")  // TODO what about MueLu?
       && Teuchos::getIntegralValue<Inpar::Solid::StcScale>(sdyn, "STC_SCALING") !=
-             Inpar::Solid::stc_none)
+             Inpar::Solid::stc_inactive)
   {
     Teuchos::ParameterList& mllist = solver->params().sublist("ML Parameters");
     std::shared_ptr<std::vector<double>> ns =
