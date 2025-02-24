@@ -38,7 +38,7 @@ SYSTEM                          Saddlepoint
 -------------------------------------------------------------MORTAR COUPLING
 LM_SHAPEFCN                     Standard
 ALGORITHM                       mortar
-MESH_RELOCATION                 no
+MESH_RELOCATION                 None
 --------------------------------------------------------------------SOLVER 1
 NAME                            Structure_Solver
 SOLVER                          UMFPACK

@@ -29,9 +29,9 @@ FILESTEPS                       1000
 VERBOSITY                       standard
 -------------------------------------------------------------MORTAR COUPLING
 LM_SHAPEFCN                     Dual
-MESH_RELOCATION                 no
+MESH_RELOCATION                 None
 -------------------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 none
+PARALLEL_REDIST                 None
 GHOSTING_STRATEGY               redundant_all
 ----------------------------------------------------------STRUCTURAL DYNAMIC
 LINEAR_SOLVER                   1

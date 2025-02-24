@@ -46,7 +46,7 @@ INTTYPE                         Segments
 NUMGP_PER_DIM                   16
 TRIANGULATION                   Center
 ---------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 none
+PARALLEL_REDIST                 None
 MAX_BALANCE_EVAL_TIME           2
 MIN_ELEPROC                     0
 GHOSTING_STRATEGY               redundant_master

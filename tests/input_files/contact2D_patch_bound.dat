@@ -63,7 +63,7 @@ ALGORITHM                       mortar
 LM_QUAD                         quad
 CROSSPOINTS                     Yes
 ---------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 none
+PARALLEL_REDIST                 None
 --------------------------------------------------------------------SOLVER 1
 NAME                            Direct_Solver
 SOLVER                          UMFPACK

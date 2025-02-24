@@ -72,10 +72,9 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       mortar);
 
   Core::Utils::string_to_integral_parameter<Inpar::Mortar::MeshRelocation>("MESH_RELOCATION",
-      "Initial", "Type of mesh relocation",
-      tuple<std::string>("Initial", "initial", "Every_Timestep", "every_timestep", "No", "no"),
-      tuple<Inpar::Mortar::MeshRelocation>(relocation_initial, relocation_initial,
-          relocation_timestep, relocation_timestep, relocation_none, relocation_none),
+      "Initial", "Type of mesh relocation", tuple<std::string>("Initial", "Every_Timestep", "None"),
+      tuple<Inpar::Mortar::MeshRelocation>(
+          relocation_initial, relocation_timestep, relocation_none),
       mortar);
 
   Core::Utils::string_to_integral_parameter<Inpar::Mortar::AlgorithmType>("ALGORITHM", "Mortar",
@@ -149,11 +148,8 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       "Minimum no. of elements per processor for parallel redistribution", parallelRedist);
 
   Core::Utils::string_to_integral_parameter<ParallelRedist>("PARALLEL_REDIST", "Static",
-      "Type of redistribution algorithm",
-      tuple<std::string>("None", "none", "No", "no", "Static", "static", "Dynamic", "dynamic"),
-      tuple<ParallelRedist>(ParallelRedist::redist_none, ParallelRedist::redist_none,
-          ParallelRedist::redist_none, ParallelRedist::redist_none, ParallelRedist::redist_static,
-          ParallelRedist::redist_static, ParallelRedist::redist_dynamic,
+      "Type of redistribution algorithm", tuple<std::string>("None", "Static", "Dynamic"),
+      tuple<ParallelRedist>(ParallelRedist::redist_none, ParallelRedist::redist_static,
           ParallelRedist::redist_dynamic),
       parallelRedist);
 

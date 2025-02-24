@@ -69,7 +69,7 @@ TOL_VEL_RES_L2                  1e-10
 -------------------------------------------------------------MORTAR COUPLING
 LM_SHAPEFCN                     Dual
 -------------------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 No
+PARALLEL_REDIST                 None
 GHOSTING_STRATEGY               redundant_all
 -----------------------------------------------------------------PROBLEM TYPE
 PROBLEMTYPE                      Fluid_Structure_Interaction

@@ -54,7 +54,7 @@ SEARCH_PARAM                    0.3
 ALGORITHM                       gpts
 TRIANGULATION                   center
 ---------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 none
+PARALLEL_REDIST                 None
 ----------------------------------------------------------SOLVER 1
 NAME                            Direct_Solver
 SOLVER                          UMFPACK

@@ -66,7 +66,7 @@ LM_SHAPEFCN             Dual
 LM_QUAD                 quad
 CROSSPOINTS             no
 --------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 static
+PARALLEL_REDIST                 Static
 GHOSTING_STRATEGY               redundant_all
 --------------------------------------------------CONTACT DYNAMIC
 LINEAR_SOLVER                   2

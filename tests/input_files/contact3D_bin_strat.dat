@@ -59,7 +59,7 @@ LM_SHAPEFCN                     Dual
 SEARCH_ALGORITHM                BinaryTree
 SEARCH_PARAM                    0.3
 ---------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 dynamic
+PARALLEL_REDIST                 Dynamic
 MAX_BALANCE_EVAL_TIME           1.0
 GHOSTING_STRATEGY               binning
 ----------------------------------------------------------SOLVER 1

@@ -22,9 +22,9 @@ CALCFLUX_BOUNDARY               total
 LINEAR_SOLVER                   2
 MATRIXTYPE                      block_condition
 ---------------------------------------------------MORTAR COUPLING
-MESH_RELOCATION                 no
+MESH_RELOCATION                 None
 ---------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST                 no
+PARALLEL_REDIST                 None
 --------------------------------SCALAR TRANSPORT DYNAMIC/NONLINEAR
 ITEMAX                          2
 ----------------------------SCALAR TRANSPORT DYNAMIC/STABILIZATION

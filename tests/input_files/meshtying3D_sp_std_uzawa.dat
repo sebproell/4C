@@ -62,7 +62,7 @@ SEARCH_ALGORITHM                BinaryTree
 SEARCH_PARAM                    0.3
 SEARCH_USE_AUX_POS              Yes
 LM_DUAL_CONSISTENT              boundary
-MESH_RELOCATION                 No
+MESH_RELOCATION                 None
 ALGORITHM                       Mortar
 INTTYPE                         Segments
 ----------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION

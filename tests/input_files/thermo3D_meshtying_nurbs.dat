@@ -22,11 +22,11 @@ SHAPEFCT                        Nurbs
 -------------------------------------------------------------MORTAR COUPLING
 SEARCH_PARAM         0.3
 INTTYPE              Segments
-MESH_RELOCATION      no
+MESH_RELOCATION      None
 LM_QUAD              quad
 // REDUNDANT_STORAGE    master
 -------------------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST      No
+PARALLEL_REDIST      None
 ----------------------------------------------------THERMAL DYNAMIC
 ADAPTCONV                       No
 DIVERCONT                       continue

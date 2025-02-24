@@ -59,7 +59,7 @@ LM_QUAD              quad
 NUMGP_PER_DIM        12
 TRIANGULATION        Delaunay
 ---------------------------MORTAR COUPLING/PARALLEL REDISTRIBUTION
-PARALLEL_REDIST      none
+PARALLEL_REDIST      None
 ----------------------------------------------------------SOLVER 1
 NAME                 Structure_Solver
 SOLVER               Superlu
