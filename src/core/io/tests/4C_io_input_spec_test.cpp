@@ -345,8 +345,8 @@ namespace
       InputParameterContainer container;
       std::string stream("a 1 b b4 c string");
       ValueParser parser(stream);
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          spec.fully_parse(parser, container), Core::Exception, "Invalid value 'b4'");
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.fully_parse(parser, container), Core::Exception,
+          "Could not parse parameter 'b': invalid value 'b4'");
     }
   }
 
