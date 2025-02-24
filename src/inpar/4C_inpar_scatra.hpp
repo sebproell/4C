@@ -11,7 +11,6 @@
 #include "4C_config.hpp"
 
 #include "4C_io_input_spec.hpp"
-#include "4C_io_input_spec_builders.hpp"
 
 #include <map>
 #include <utility>

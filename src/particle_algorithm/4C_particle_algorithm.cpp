@@ -32,6 +32,7 @@
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_result_test.hpp"
 
+#include <Teuchos_StandardParameterEntryValidators.hpp>
 #include <Teuchos_TimeMonitor.hpp>
 
 FOUR_C_NAMESPACE_OPEN
