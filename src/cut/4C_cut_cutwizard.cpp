@@ -124,7 +124,7 @@ void Cut::CutWizard::set_options(
   intersection_->set_find_positions(positions);
   intersection_->set_nodal_dof_set_strategy(nodal_dofset_strategy);
 
-  // Initialize Cut Parameters based on dat file section CUT GENERAL
+  // Initialize Cut Parameters based on input file section CUT GENERAL
   intersection_->get_options().init_by_paramlist(cutparams);
 
   is_set_options_ = true;

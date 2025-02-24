@@ -51,7 +51,7 @@ void Mat::Elastic::CoupAnisoNeoHookeVarProp::unpack_summand(
 void Mat::Elastic::CoupAnisoNeoHookeVarProp::setup(
     int numgp, const Core::IO::InputParameterContainer& container)
 {
-  // path if fibers aren't given in .dat file
+  // path if fibers aren't given in input file
   if (params_->init_ == 0)
   {
     // fibers aligned in YZ-plane with gamma around Z in global cartesian cosy
@@ -92,7 +92,7 @@ void Mat::Elastic::CoupAnisoNeoHookeVarProp::setup(
     set_fiber_vecs(-1.0, locsys, Id);
   }
 
-  // path if fibers are given in .dat file
+  // path if fibers are given in input file
   else if (params_->init_ == 1)
   {
     // CIR-AXI-RAD nomenclature

@@ -2338,7 +2338,7 @@ void ScaTra::ScaTraTimIntImpl::update_iter(const Core::LinAlg::Vector<double>& i
 void ScaTra::ScaTraTimIntImpl::setup_krylov_space_projection(Core::Conditions::Condition* kspcond)
 {
   // previously, scatra was able to define actual modes that formed a
-  // nullspace. factors when assigned to scalars in the dat file. it could
+  // nullspace. factors when assigned to scalars in the input file. it could
   // take several scatra Krylov conditions each forming one mode like:
   // 4.0*c_1 + 2.0*c_2 = const
   // since this was never used, not even in ELCH-problems, and for the sake of
@@ -2356,13 +2356,13 @@ void ScaTra::ScaTraTimIntImpl::setup_krylov_space_projection(Core::Conditions::C
   {
     FOUR_C_THROW(
         "Expecting as many mode flags as nodal dofs in Krylov projection definition. Check "
-        "dat-file!");
+        "input file!");
   }
 
-  // get vector of mode flags as given in dat-file
+  // get vector of mode flags as given in input file
   const auto* modeflags = &kspcond->parameters().get<std::vector<int>>("ONOFF");
 
-  // count actual active modes selected in dat-file
+  // count actual active modes selected in input file
   std::vector<int> activemodeids;
   for (int rr = 0; rr < num_dof_per_node(); ++rr)
   {
@@ -2372,7 +2372,7 @@ void ScaTra::ScaTraTimIntImpl::setup_krylov_space_projection(Core::Conditions::C
     }
   }
 
-  // get from dat-file definition how weights are to be computed
+  // get from input file definition how weights are to be computed
   const auto* weighttype = &kspcond->parameters().get<std::string>("WEIGHTVECDEF");
 
   // set flag for projection update true only if ALE and integral weights
@@ -2401,7 +2401,7 @@ void ScaTra::ScaTraTimIntImpl::update_krylov_space_projection()
   c->PutScalar(0.0);
 
   const std::string* weighttype = projector_->weight_type();
-  // compute w_ as defined in dat-file
+  // compute w_ as defined in input file
   if (*weighttype == "pointvalues")
   {
     FOUR_C_THROW("option pointvalues not implemented");

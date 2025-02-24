@@ -453,7 +453,7 @@ void FPSI::MonolithicPlain::setup_system_matrix(Core::LinAlg::BlockSparseMatrixB
             mat.matrix(structure_block_, ale_i_block_), false, true);
       }
     }
-    else  // if shapederivatives = no in FluidDynamics section in dat-file
+    else  // if shapederivatives = no in FluidDynamics section in input file
     {
       std::cout << "WARNING: Linearization with respect to mesh motion of fluid subproblem is "
                    "switched off!"

@@ -27,7 +27,7 @@ namespace Core::IO
     \brief helper class to read a mesh
 
     This is an interface for handling node, element and domain readers
-    and to set up a discretization from a dat file which is fill_complete().
+    and to set up a discretization from an input file which is fill_complete().
    */
   class MeshReader
   {
@@ -109,7 +109,7 @@ namespace Core::IO
 
    private:
     /*!
-    \brief Read pre-generated mesh from dat-file and generate related FillCompleted()
+    \brief Read pre-generated mesh from input file and generate related FillCompleted()
     discretizations
 
     \param[in/out] max_node_id Maximum node id in a given discretization. To be used as global

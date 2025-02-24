@@ -59,7 +59,7 @@ Mat::Elastic::PAR::StructuralTensorParameter::StructuralTensorParameter(
     FOUR_C_THROW(
         "You chose structural tensor strategy 'ByDistributionFunction' but you forgot to specify "
         "the 'DISTR' parameter.\n"
-        "Check the definitions of anisotropic materials in your .dat file.");
+        "Check the definitions of anisotropic materials in your input file.");
   else if (distr_type == "none" and
            (strategy_type_ == strategy_type_standard or
                strategy_type_ == strategy_type_dispersedtransverselyisotropic))

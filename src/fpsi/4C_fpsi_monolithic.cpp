@@ -237,14 +237,16 @@ FPSI::Monolithic::Monolithic(MPI_Comm comm, const Teuchos::ParameterList& fpsidy
       Inpar::Solid::PredEnum::pred_constdis)
     FOUR_C_THROW(
         "No Structural Predictor for FPSI implemented at the moment, choose <PREDICT = ConstDis> "
-        "in you .dat file! \n --> Or feel free to add the missing terms coming from the predictors "
+        "in you input file! \n --> Or feel free to add the missing terms coming from the "
+        "predictors "
         "to 4C!");
 
   const Teuchos::ParameterList& fdynparams = Global::Problem::instance()->fluid_dynamic_params();
   if (fdynparams.get<std::string>("PREDICTOR") != "steady_state")
     FOUR_C_THROW(
         "No Fluid Predictor for FPSI implemented at the moment, choose <PREDICTOR = steady_state> "
-        "in you .dat file! \n --> Or feel free to add the missing terms coming from the predictors "
+        "in you input file! \n --> Or feel free to add the missing terms coming from the "
+        "predictors "
         "to 4C!");
 
   active_FD_check_ = false;  // to avoid adding RHS of firstiter moreoften!
@@ -632,7 +634,7 @@ void FPSI::Monolithic::create_linear_solver()
     std::cout << " uses the structural solver and fluid solver blocks" << std::endl;
     std::cout << " for building the internal inverses" << std::endl;
     std::cout << " Remove the old BGS PRECONDITIONER BLOCK entries " << std::endl;
-    std::cout << " in the dat files!" << std::endl;
+    std::cout << " in the input files!" << std::endl;
     std::cout << "!!!!!!!!!!!!!!!!!!!!!! ATTENTION !!!!!!!!!!!!!!!!!!!!!" << std::endl;
     FOUR_C_THROW("Iterative solver expected");
   }

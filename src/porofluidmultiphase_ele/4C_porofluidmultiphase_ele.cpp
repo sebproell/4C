@@ -22,22 +22,13 @@ FOUR_C_NAMESPACE_OPEN
  *---------------------------------------------------------------------- *
  *-----------------------------------------------------------------------*/
 
-/*----------------------------------------------------------------------*
- | instantiate global instance                               vuong 08/16 |
- *----------------------------------------------------------------------*/
 Discret::Elements::PoroFluidMultiPhaseType Discret::Elements::PoroFluidMultiPhaseType::instance_;
 
-/*----------------------------------------------------------------------*
- | instance access method                                   vuong 08/16 |
- *----------------------------------------------------------------------*/
 Discret::Elements::PoroFluidMultiPhaseType& Discret::Elements::PoroFluidMultiPhaseType::instance()
 {
   return instance_;
 }
 
-/*----------------------------------------------------------------------*
- | create an element from data                              vuong 08/16 |
- *----------------------------------------------------------------------*/
 Core::Communication::ParObject* Discret::Elements::PoroFluidMultiPhaseType::create(
     Core::Communication::UnpackBuffer& buffer)
 {
@@ -47,9 +38,6 @@ Core::Communication::ParObject* Discret::Elements::PoroFluidMultiPhaseType::crea
   return object;
 }
 
-/*----------------------------------------------------------------------*
- |  create an element from a dat file specifier             vuong 08/16 |
- *----------------------------------------------------------------------*/
 std::shared_ptr<Core::Elements::Element> Discret::Elements::PoroFluidMultiPhaseType::create(
     const std::string eletype, const std::string eledistype, const int id, const int owner)
 {
@@ -62,9 +50,6 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::PoroFluidMultiPhaseT
   return nullptr;
 }
 
-/*----------------------------------------------------------------------*
- |  create an empty element                                vuong 08/16 |
- *----------------------------------------------------------------------*/
 std::shared_ptr<Core::Elements::Element> Discret::Elements::PoroFluidMultiPhaseType::create(
     const int id, const int owner)
 {
@@ -73,9 +58,6 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::PoroFluidMultiPhaseT
   return ele;
 }
 
-/*----------------------------------------------------------------------------*
- |  nodal block information to create a null space description    vuong 08/16 |
- *----------------------------------------------------------------------------*/
 void Discret::Elements::PoroFluidMultiPhaseType::nodal_block_information(
     Core::Elements::Element* dwele, int& numdf, int& dimns, int& nv, int& np)
 {
@@ -83,19 +65,13 @@ void Discret::Elements::PoroFluidMultiPhaseType::nodal_block_information(
   dimns = numdf;
   nv = numdf;
 }
-/*----------------------------------------------------------------------*
- |  do the null space computation                            vuong 08/16 |
- *----------------------------------------------------------------------*/
+
 Core::LinAlg::SerialDenseMatrix Discret::Elements::PoroFluidMultiPhaseType::compute_null_space(
     Core::Nodes::Node& node, const double* x0, const int numdof, const int dimnsp)
 {
   return FLD::compute_fluid_null_space(node, numdof, dimnsp);
 }
 
-/*----------------------------------------------------------------------*
- |  setup the dat file input line definitions for this type of element   |
- |                                                           vuong 08/16 |
- *----------------------------------------------------------------------*/
 void Discret::Elements::PoroFluidMultiPhaseType::setup_element_definition(
     std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
 {
@@ -160,24 +136,15 @@ void Discret::Elements::PoroFluidMultiPhaseType::setup_element_definition(
  *---------------------------------------------------------------------- *
  *-----------------------------------------------------------------------*/
 
-/*----------------------------------------------------------------------*
- | instantiate global instance                               vuong 08/16 |
- *----------------------------------------------------------------------*/
 Discret::Elements::PoroFluidMultiPhaseBoundaryType
     Discret::Elements::PoroFluidMultiPhaseBoundaryType::instance_;
 
-/*----------------------------------------------------------------------*
- | instance access method                                   vuong 08/16 |
- *----------------------------------------------------------------------*/
 Discret::Elements::PoroFluidMultiPhaseBoundaryType&
 Discret::Elements::PoroFluidMultiPhaseBoundaryType::instance()
 {
   return instance_;
 }
 
-/*----------------------------------------------------------------------*
- |  create an empty element                                vuong 08/16 |
- *----------------------------------------------------------------------*/
 std::shared_ptr<Core::Elements::Element> Discret::Elements::PoroFluidMultiPhaseBoundaryType::create(
     const int id, const int owner)
 {
@@ -192,9 +159,6 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::PoroFluidMultiPhaseB
   return nullptr;
 }
 
-/*----------------------------------------------------------------------*
- |  init the element (public)                                           |
- *----------------------------------------------------------------------*/
 int Discret::Elements::PoroFluidMultiPhaseType::initialize(Core::FE::Discretization& dis)
 {
   for (int i = 0; i < dis.num_my_col_elements(); ++i)
@@ -215,29 +179,17 @@ int Discret::Elements::PoroFluidMultiPhaseType::initialize(Core::FE::Discretizat
  *---------------------------------------------------------------------- *
  *-----------------------------------------------------------------------*/
 
-/*----------------------------------------------------------------------*
- |  create an empty element                                vuong 08/16 |
- *------------------------------------------------------ ----------------*/
 Discret::Elements::PoroFluidMultiPhase::PoroFluidMultiPhase(int id, int owner)
     : Core::Elements::Element(id, owner), distype_(Core::FE::CellType::dis_none), numdofpernode_(-1)
 {
-  return;
 }
 
-/*----------------------------------------------------------------------*
- |  copy-ctor (public)                                      vuong 08/16 |
- *----------------------------------------------------------------------*/
 Discret::Elements::PoroFluidMultiPhase::PoroFluidMultiPhase(
     const Discret::Elements::PoroFluidMultiPhase& old)
     : Core::Elements::Element(old), distype_(old.distype_), numdofpernode_(old.numdofpernode_)
 {
-  return;
 }
 
-/*--------------------------------------------------------------------------*
- |  Deep copy this instance of PoroFluidMultiPhase and return pointer to it  |
- |                                                 (public) vuong 08/16      |
- *---------------------------------------------------------------------------*/
 Core::Elements::Element* Discret::Elements::PoroFluidMultiPhase::clone() const
 {
   Discret::Elements::PoroFluidMultiPhase* newelement =
@@ -245,29 +197,16 @@ Core::Elements::Element* Discret::Elements::PoroFluidMultiPhase::clone() const
   return newelement;
 }
 
-/*----------------------------------------------------------------------*
- |  Return the shape of a PoroFluidMultiPhase element          (public) |
- |                                                          vuong 08/16 |
- *----------------------------------------------------------------------*/
 Core::FE::CellType Discret::Elements::PoroFluidMultiPhase::shape() const { return distype_; }
 
-/*----------------------------------------------------------------------*
- |  Initialize element                                      (protected) |
- |                                                          vuong 08/16 |
- *----------------------------------------------------------------------*/
 void Discret::Elements::PoroFluidMultiPhase::initialize()
 {
   std::shared_ptr<Mat::FluidPoroMultiPhase> actmat =
       std::dynamic_pointer_cast<Mat::FluidPoroMultiPhase>(material());
 
   actmat->initialize();
-  return;
 }
 
-/*----------------------------------------------------------------------*
- |  Pack data                                                  (public) |
- |                                                          vuong 08/16 |
- *----------------------------------------------------------------------*/
 void Discret::Elements::PoroFluidMultiPhase::pack(Core::Communication::PackBuffer& data) const
 {
   // pack type of this instance of ParObject
@@ -280,15 +219,8 @@ void Discret::Elements::PoroFluidMultiPhase::pack(Core::Communication::PackBuffe
   // add internal data
   add_to_pack(data, distype_);
   add_to_pack(data, numdofpernode_);
-
-  return;
 }
 
-
-/*----------------------------------------------------------------------*
- |  Unpack data                                                (public) |
- |                                                          vuong 08/16 |
- *----------------------------------------------------------------------*/
 void Discret::Elements::PoroFluidMultiPhase::unpack(Core::Communication::UnpackBuffer& buffer)
 {
   Core::Communication::extract_and_assert_id(buffer, unique_par_object_id());
@@ -299,43 +231,23 @@ void Discret::Elements::PoroFluidMultiPhase::unpack(Core::Communication::UnpackB
   // extract internal data
   extract_from_pack(buffer, distype_);
   extract_from_pack(buffer, numdofpernode_);
-
-
-
-  return;
 }
 
-/*----------------------------------------------------------------------*
- |  Return number of lines of this element (public)         vuong 08/16 |
- *----------------------------------------------------------------------*/
 int Discret::Elements::PoroFluidMultiPhase::num_line() const
 {
   return Core::FE::get_number_of_element_lines(distype_);
 }
 
-
-/*----------------------------------------------------------------------*
- |  Return number of surfaces of this element (public)      vuong 08/16 |
- *----------------------------------------------------------------------*/
 int Discret::Elements::PoroFluidMultiPhase::num_surface() const
 {
   return Core::FE::get_number_of_element_surfaces(distype_);
 }
 
-
-/*----------------------------------------------------------------------*
- | Return number of volumes of this element (public)        vuong 08/16 |
- *----------------------------------------------------------------------*/
 int Discret::Elements::PoroFluidMultiPhase::num_volume() const
 {
   return Core::FE::get_number_of_element_volumes(distype_);
 }
 
-
-
-/*----------------------------------------------------------------------*
- |  print this element (public)                             vuong 08/16 |
- *----------------------------------------------------------------------*/
 void Discret::Elements::PoroFluidMultiPhase::print(std::ostream& os) const
 {
   os << "PoroFluidMultiPhase element";
@@ -348,10 +260,6 @@ void Discret::Elements::PoroFluidMultiPhase::print(std::ostream& os) const
   return;
 }
 
-
-/*----------------------------------------------------------------------*
- |  get vector of lines            (public)                 vuong 08/16 |
- *----------------------------------------------------------------------*/
 std::vector<std::shared_ptr<Core::Elements::Element>>
 Discret::Elements::PoroFluidMultiPhase::lines()
 {
@@ -359,10 +267,6 @@ Discret::Elements::PoroFluidMultiPhase::lines()
       *this);
 }
 
-
-/*----------------------------------------------------------------------*
- |  get vector of surfaces (public)                         vuong 08/16 |
- *----------------------------------------------------------------------*/
 std::vector<std::shared_ptr<Core::Elements::Element>>
 Discret::Elements::PoroFluidMultiPhase::surfaces()
 {
@@ -370,9 +274,6 @@ Discret::Elements::PoroFluidMultiPhase::surfaces()
       PoroFluidMultiPhase>(*this);
 }
 
-/*----------------------------------------------------------------------*
- | read element input                                       vuong 08/16 |
- *----------------------------------------------------------------------*/
 bool Discret::Elements::PoroFluidMultiPhase::read_element(const std::string& eletype,
     const std::string& distype, const Core::IO::InputParameterContainer& container)
 {
@@ -386,9 +287,6 @@ bool Discret::Elements::PoroFluidMultiPhase::read_element(const std::string& ele
   return true;
 }
 
-/*----------------------------------------------------------------------*
- |  create material class (public)                          vuong 08/16 |
- *----------------------------------------------------------------------*/
 void Discret::Elements::PoroFluidMultiPhase::set_material(
     const int index, std::shared_ptr<Core::Mat::Material> mat)
 {
@@ -408,8 +306,6 @@ void Discret::Elements::PoroFluidMultiPhase::set_material(
   else
     FOUR_C_THROW(
         "PoroFluidMultiPhase element got unsupported material type %d", mat->material_type());
-
-  return;
 }
 
 /*----------------------------------------------------------------------*
@@ -418,10 +314,6 @@ void Discret::Elements::PoroFluidMultiPhase::set_material(
  *---------------------------------------------------------------------- *
  *-----------------------------------------------------------------------*/
 
-
-/*----------------------------------------------------------------------*
- |  ctor (public)                                           vuong 08/16 |
- *----------------------------------------------------------------------*/
 Discret::Elements::PoroFluidMultiPhaseBoundary::PoroFluidMultiPhaseBoundary(int id, int owner,
     int nnode, const int* nodeids, Core::Nodes::Node** nodes,
     Discret::Elements::PoroFluidMultiPhase* parent, const int lsurface)
@@ -433,9 +325,6 @@ Discret::Elements::PoroFluidMultiPhaseBoundary::PoroFluidMultiPhaseBoundary(int 
   return;
 }
 
-/*----------------------------------------------------------------------*
- |  copy-ctor (public)                                      vuong 08/16 |
- *----------------------------------------------------------------------*/
 Discret::Elements::PoroFluidMultiPhaseBoundary::PoroFluidMultiPhaseBoundary(
     const Discret::Elements::PoroFluidMultiPhaseBoundary& old)
     : Core::Elements::FaceElement(old)
@@ -443,9 +332,6 @@ Discret::Elements::PoroFluidMultiPhaseBoundary::PoroFluidMultiPhaseBoundary(
   return;
 }
 
-/*----------------------------------------------------------------------*
- |  Deep copy this instance return pointer to it   (public) vuong 08/16 |
- *----------------------------------------------------------------------*/
 Core::Elements::Element* Discret::Elements::PoroFluidMultiPhaseBoundary::clone() const
 {
   Discret::Elements::PoroFluidMultiPhaseBoundary* newelement =
@@ -453,17 +339,11 @@ Core::Elements::Element* Discret::Elements::PoroFluidMultiPhaseBoundary::clone()
   return newelement;
 }
 
-/*----------------------------------------------------------------------*
- |  Return shape of this element                   (public) vuong 08/16 |
- *----------------------------------------------------------------------*/
 Core::FE::CellType Discret::Elements::PoroFluidMultiPhaseBoundary::shape() const
 {
   return Core::FE::get_shape_of_boundary_element(num_node(), parent_element()->shape());
 }
 
-/*----------------------------------------------------------------------*
- |  Pack data (public)                                      vuong 08/16 |
- *----------------------------------------------------------------------*/
 void Discret::Elements::PoroFluidMultiPhaseBoundary::pack(
     Core::Communication::PackBuffer& data) const
 {
@@ -474,9 +354,6 @@ void Discret::Elements::PoroFluidMultiPhaseBoundary::pack(
   return;
 }
 
-/*----------------------------------------------------------------------*
- |  Unpack data (public)                                    vuong 08/16 |
- *----------------------------------------------------------------------*/
 void Discret::Elements::PoroFluidMultiPhaseBoundary::unpack(
     Core::Communication::UnpackBuffer& buffer)
 {
@@ -488,10 +365,6 @@ void Discret::Elements::PoroFluidMultiPhaseBoundary::unpack(
 }
 
 
-
-/*----------------------------------------------------------------------*
- |  print this element (public)                             vuong 08/16 |
- *----------------------------------------------------------------------*/
 void Discret::Elements::PoroFluidMultiPhaseBoundary::print(std::ostream& os) const
 {
   os << "PoroFluidMultiPhaseBoundary element";
@@ -502,34 +375,22 @@ void Discret::Elements::PoroFluidMultiPhaseBoundary::print(std::ostream& os) con
   return;
 }
 
-/*----------------------------------------------------------------------*
- | Return number of lines of boundary element (public)      vuong 08/16 |
- *----------------------------------------------------------------------*/
 int Discret::Elements::PoroFluidMultiPhaseBoundary::num_line() const
 {
   return Core::FE::get_number_of_element_lines(shape());
 }
 
-/*----------------------------------------------------------------------*
- |  Return number of surfaces of boundary element (public)  vuong 08/16 |
- *----------------------------------------------------------------------*/
 int Discret::Elements::PoroFluidMultiPhaseBoundary::num_surface() const
 {
   return Core::FE::get_number_of_element_surfaces(shape());
 }
 
-/*----------------------------------------------------------------------*
- |  get vector of lines (public)                            vuong 08/16 |
- *----------------------------------------------------------------------*/
 std::vector<std::shared_ptr<Core::Elements::Element>>
 Discret::Elements::PoroFluidMultiPhaseBoundary::lines()
 {
   FOUR_C_THROW("Lines of PoroFluidMultiPhaseBoundary not implemented");
 }
 
-/*----------------------------------------------------------------------*
- |  get vector of lines (public)                            vuong 08/16 |
- *----------------------------------------------------------------------*/
 std::vector<std::shared_ptr<Core::Elements::Element>>
 Discret::Elements::PoroFluidMultiPhaseBoundary::surfaces()
 {

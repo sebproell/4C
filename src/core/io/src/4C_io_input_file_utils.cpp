@@ -342,7 +342,7 @@ void Core::IO::read_design(InputFile& input, const std::string& name,
       FOUR_C_THROW("Illegal line in section '%s': '%*s'", marker.c_str(), s.size(), s.data());
     }
 
-    if (nname == "NODE")  // plain old reading of the design nodes from the .dat-file
+    if (nname == "NODE")  // plain old reading of the design nodes from the input file
     {
       stream >> nodeid >> dname >> dobj;
       topology[dobj - 1].insert(nodeid - 1);
@@ -425,7 +425,7 @@ void Core::IO::read_design(InputFile& input, const std::string& name,
         for (int init = 0; init < 9; ++init) box_specifications.push_back(0.0);
         if (Core::Communication::my_mpi_rank(input.get_comm()) == 0)  // Reading is done by proc 0
         {
-          // get original domain section from the *.dat-file
+          // get original domain section from the input file
           std::string dommarker = disname + " DOMAIN";
           std::transform(dommarker.begin(), dommarker.end(), dommarker.begin(), ::toupper);
 

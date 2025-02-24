@@ -749,14 +749,14 @@ void Solid::TimIntImpl::predict_tang_dis_consist_vel_acc()
  *--------------------------------------------------------------------------*/
 void Solid::TimIntImpl::setup_krylov_space_projection(Core::Conditions::Condition* kspcond)
 {
-  // get number of mode flags in dat-file
+  // get number of mode flags in input file
   const int nummodes = kspcond->parameters().get<int>("NUMMODES");
 
   // get rigid body mode flags - number and order as in ComputeNullspace
   // e.g. for a 3-D solid: [transx transy transz rotx roty rotz]
   const auto* modeflags = &kspcond->parameters().get<std::vector<int>>("ONOFF");
 
-  // get actual active mode ids given in dat-file
+  // get actual active mode ids given in input file
   std::vector<int> activemodeids;
   for (int rr = 0; rr < nummodes; ++rr)
   {
@@ -766,7 +766,7 @@ void Solid::TimIntImpl::setup_krylov_space_projection(Core::Conditions::Conditio
     }
   }
 
-  // get from dat-file definition how weights are to be computed
+  // get from input file definition how weights are to be computed
   const std::string* weighttype = &kspcond->parameters().get<std::string>("WEIGHTVECDEF");
 
   // since we only use total Lagrange, no update necessary.

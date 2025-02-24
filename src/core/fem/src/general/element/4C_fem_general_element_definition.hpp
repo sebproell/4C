@@ -23,7 +23,7 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Core::Elements
 {
-  /// Collection of valid element dat file line definitions
+  /// Collection of valid element input file line definitions
   /*!
     The actual definition is done by each element's type class.
    */

@@ -34,7 +34,7 @@ namespace Solid
   {
     namespace SOLVER
     {
-      //! Check if a xml status test file is specified in the dat file
+      //! Check if a xml status test file is specified in the input file
       bool is_xml_status_test_file(const Teuchos::ParameterList& pstatus);
 
       /*! \brief Create quantity types
@@ -56,7 +56,7 @@ namespace Solid
       /*! \brief Create a status test parameter list
        *
        *  A status test parameter list for the outer status test is created. The
-       *  information comes from the dat file. Actually we consider only convergence
+       *  information comes from the input file. Actually we consider only convergence
        *  tests which were already in 4C before the NOX framework was introduced.
        *
        *  Feel free to extend the given framework, to generalize it or to use a xml
@@ -80,7 +80,7 @@ namespace Solid
        * parameter list
        *
        *  Maybe the current implementation needs a short explanation:
-       *  You can specify different combinations in your dat-file. Let's concentrate on
+       *  You can specify different combinations in your input file. Let's concentrate on
        *  the NormF case and imagine the following status test settings:
        *
        *  NORMCOMBI_RESFINCO           AND        (RESIDUAL and PRESSURE)
@@ -100,11 +100,11 @@ namespace Solid
        *
        *  If you want a different behavior, please use a xml file instead.
        *
-       *  One last note: In the case you want to commit your dat-file as a test case, your algorithm
-       *  should not use any OR-combination, since the goal of your algorithm should be to reduce
-       * the whole residual. If you think a part of your residual can not be reduced in a sufficient
-       * way, think again and if it stays your opinion, do not check it (by using a xml-file for
-       * example). This makes things easier to read and understand. If you use only
+       *  One last note: In the case you want to commit your input file as a test case, your
+       * algorithm should not use any OR-combination, since the goal of your algorithm should be to
+       * reduce the whole residual. If you think a part of your residual can not be reduced in a
+       * sufficient way, think again and if it stays your opinion, do not check it (by using a
+       * xml-file for example). This makes things easier to read and understand. If you use only
        * AND-combinations, you can use the QUANTITY parameter list name option for NormF, NormWRMS
        * and NormUpdate tests. See the NOX::Nln::StatusTest::Factory for more information.
        *

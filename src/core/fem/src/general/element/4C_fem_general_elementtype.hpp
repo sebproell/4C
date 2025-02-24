@@ -34,7 +34,7 @@ namespace Core::FE
 /// Subclass of ParObjectType that adds element type specific methods
 /*!
   Element types need to be initialized. Furthermore, there is a pre_evaluate
-  method and the ability to read elements from dat files. And finally the
+  method and the ability to read elements from input files. And finally the
   element specific setup of null spaces for multi grid preconditioning is
   here, too.
 
@@ -54,13 +54,13 @@ namespace Core::Elements
     ElementType();
 
    public:
-    /// setup the dat file input line definitions for this type of element
+    /// setup the input file input line definitions for this type of element
     virtual void setup_element_definition(
         std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
     {
     }
 
-    /// create an element from a dat file specifier
+    /// create an element from an input file specifier
     virtual std::shared_ptr<Element> create(
         const std::string eletype, const std::string eledistype, const int id, const int owner)
     {

@@ -197,15 +197,13 @@ void PoroElastScaTra::Utils::PoroScatraCloneStrategy::set_element_data(
   if (impltype == Inpar::ScaTra::impltype_undefined)
     FOUR_C_THROW(
         "PoroScatraCloneStrategy copies scatra discretization from structure discretization, but "
-        "the "
-        "STRUCTURE elements that are defined in the .dat file are either not meant to be copied "
-        "to scatra elements "
-        "or the ImplType is set 'Undefined' which is not meaningful for the created scatra "
-        "discretization! "
+        "the STRUCTURE elements that are defined in the input file are either not meant to be "
+        "copied "
+        "to scatra elements or the ImplType is set 'Undefined' which is not meaningful for the "
+        "created scatra discretization! "
         "Use SOLIDSCATRA, WALLSCATRA, SHELLSCATRA, SOLIDPOROSCATRA, SOLIDPOROP1SCATRA, "
-        "SOLIDPORO_PRESSURE_BASED"
-        "WALLPOROSCATRA or "
-        "WALLPOROP1SCATRA Elements with meaningful ImplType instead!");
+        "SOLIDPORO_PRESSURE_BASED, WALLPOROSCATRA or WALLPOROP1SCATRA Elements with meaningful "
+        "ImplType instead!");
 
   trans->set_impl_type(impltype);
 }

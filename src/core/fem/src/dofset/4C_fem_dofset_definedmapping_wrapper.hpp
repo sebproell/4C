@@ -64,7 +64,7 @@ namespace Core::DOFSets
 
   \endcode
 
-  See also the example '.dat'-file 'immersed_cell_biochemo_mechano_pureProtrusion_h8' in
+  See also the example input file 'immersed_cell_biochemo_mechano_pureProtrusion_h8' in
   the 4C 'Input' folder.
 
 

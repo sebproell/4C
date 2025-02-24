@@ -1009,7 +1009,7 @@ void MultiScale::MicroStatic::static_homogenization(Core::LinAlg::Matrix<6, 1>* 
     // get the solver number used for structural solver
     const int linsolvernumber = 9;
 
-    // TODO: insert input parameter from dat file for solver block Belos
+    // TODO: insert input parameter from input file for solver block Belos
 
     // get solver parameter list of linear solver
     const Teuchos::ParameterList& solverparams =

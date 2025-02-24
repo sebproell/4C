@@ -552,7 +552,7 @@ int CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::build_linear
       << Core::IO::endl
       << "-------------------------------------------" << Core::IO::endl;
   Core::IO::cout(Core::IO::verbose)
-      << "Reading linear coupled eq. from .dat file" << Core::IO::endl;
+      << "Reading linear coupled eq. from input file" << Core::IO::endl;
   Core::IO::cout(Core::IO::verbose)
       << "linear MPC condition count: " << point_linear_coupled_equation_conditions_.size()
       << Core::IO::endl;

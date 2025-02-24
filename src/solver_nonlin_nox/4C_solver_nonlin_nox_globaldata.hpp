@@ -139,7 +139,7 @@ namespace NOX
 
       /*! \brief set printing parameters
        *
-       * translate dat file input into NOX input */
+       * translate input file input into NOX input */
       void set_printing_parameters();
 
       //! set solver option parameters

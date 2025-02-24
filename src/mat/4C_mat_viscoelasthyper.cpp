@@ -866,7 +866,7 @@ void Mat::ViscoElastHyper::evaluate_visco_gen_max(Core::LinAlg::Matrix<6, 1>* st
     // get time algorithmic parameters
     // NOTE: dt can be zero (in restart of STI) for Generalized Maxwell model
     // there is no special treatment required. Adaptation for Kelvin-Voigt were necessary.
-    double dt = params.get<double>("delta time");  // TIMESTEP in the .dat file
+    double dt = params.get<double>("delta time");  // TIMESTEP in the input file
 
     // evaluate scalars to compute
     // Q^(n+1) = tau/(tau+theta*dt) [(tau-dt+theta*dt)/tau Q + beta(S^(n+1) - S^n)]
@@ -908,7 +908,7 @@ void Mat::ViscoElastHyper::evaluate_visco_gen_max(Core::LinAlg::Matrix<6, 1>* st
     // get time algorithmic parameters
     // NOTE: dt can be zero (in restart of STI) for Generalized Maxwell model
     // there is no special treatment required. Adaptation for Kelvin-Voigt were necessary.
-    double dt = params.get<double>("delta time");  // TIMESTEP in the .dat file
+    double dt = params.get<double>("delta time");  // TIMESTEP in the input file
     // evaluate scalars to compute
     // Q_(n+1)=\exp(2*(-dt/(2*tau)))*Q_n+exp(-dt/(2*tau))*beta*(S_(n+1)-S_n)
 
@@ -1074,7 +1074,7 @@ void Mat::ViscoElastHyper::evaluate_visco_generalized_gen_max(Core::LinAlg::Matr
       // get time algorithmic parameters
       // NOTE: dt can be zero (in restart of STI) for Generalized Maxwell model
       // there is no special treatment required. Adaptation for Kelvin-Voigt were necessary.
-      double dt = params.get<double>("delta time");  // TIMESTEP in the .dat file
+      double dt = params.get<double>("delta time");  // TIMESTEP in the input file
 
       // evaluate scalars to compute
       // Q^(n+1) = tau/(tau+theta*dt) [(tau-dt+theta*dt)/tau Q + beta(S^(n+1) - S^n)]

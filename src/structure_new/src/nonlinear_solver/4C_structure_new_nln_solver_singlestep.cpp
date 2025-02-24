@@ -49,7 +49,7 @@ void Solid::Nln::SOLVER::SingleStep::set_single_step_params()
   // STATUS TEST
   // ---------------------------------------------------------------------------
   /* This is only necessary for the special case, that you use no xml-file for
-   * the definition of your convergence tests, but you use the dat-file instead.
+   * the definition of your convergence tests, but you use the input file instead.
    */
   if (not is_xml_status_test_file(data_sdyn().get_nox_params().sublist("Status Test")))
   {

@@ -1380,7 +1380,7 @@ void EnsightWriter::write_coordinates_for_nurbs_shapefunctions(
       for (int inode = 0; inode < proc0map->NumGlobalElements(); ++inode)
       {
         write(geofile, static_cast<float>(proc0map->GID(inode)) + 1);
-        // gid+1 delivers the node numbering of the *.dat file starting with 1
+        // gid+1 delivers the node numbering of the input file starting with 1
       }
     }
     // now write the coordinate information

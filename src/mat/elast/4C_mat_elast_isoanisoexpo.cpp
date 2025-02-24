@@ -56,7 +56,7 @@ void Mat::Elastic::IsoAnisoExpo::setup(
     set_fiber_vecs(-1.0, Id, Id);
   }
 
-  // path if fibers are given in .dat file
+  // path if fibers are given in input file
   else if (params_->init_ == 1)
   {
     // CIR-AXI-RAD nomenclature

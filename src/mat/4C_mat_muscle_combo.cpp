@@ -68,7 +68,7 @@ namespace
   {
     double operator()(const ActivationMapType*& map) const
     {
-      // use one-based element ids in the pattern file (corresponding to the ones in the dat-file)
+      // use one-based element ids in the pattern file (corresponding to the ones in the input file)
       return Mat::Utils::Muscle::evaluate_time_space_dependent_active_stress_by_map(
           Popt_, *map, t_tot_, eleGID_ + 1);
     }
