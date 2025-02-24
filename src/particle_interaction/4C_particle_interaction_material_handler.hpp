@@ -20,7 +20,6 @@
 #include "4C_mat_particle_thermo.hpp"
 #include "4C_particle_engine_enums.hpp"
 #include "4C_particle_engine_typedefs.hpp"
-#include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

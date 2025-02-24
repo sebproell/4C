@@ -20,6 +20,8 @@
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_function.hpp"
 
+#include <Teuchos_StandardParameterEntryValidators.hpp>
+
 FOUR_C_NAMESPACE_OPEN
 
 /*---------------------------------------------------------------------------*

@@ -13,6 +13,10 @@
 #include "4C_inpar_scatra.hpp"
 
 #include <algorithm>
+#include <array>
+#include <string>
+#include <tuple>
+#include <vector>
 
 FOUR_C_NAMESPACE_OPEN
 

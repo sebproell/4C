@@ -24,6 +24,7 @@
 #include "4C_particle_engine_runtime_vtp_writer.hpp"
 #include "4C_particle_engine_unique_global_id.hpp"
 #include "4C_utils_exceptions.hpp"
+#include "4C_utils_parameter_list.hpp"
 
 #include <Teuchos_TimeMonitor.hpp>
 
