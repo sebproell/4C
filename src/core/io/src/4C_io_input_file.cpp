@@ -460,14 +460,32 @@ namespace Core::IO
       std::ifstream file(file_path);
       std::ostringstream ss;
       ss << file.rdbuf();
-      const std::string file_content = ss.str();
+      std::string file_content = ss.str();
 
-      // ... and parse it into a new node in the yaml tree.
+      // ... and parse it into a new yaml tree in-place.
+      ryml::Tree tmp_tree = init_yaml_tree_with_exceptions();
+      ryml::parse_in_place(ryml::to_substr(file_content), &tmp_tree);
+
+      auto tmp_tree_root_without_docs = tmp_tree.rootref();
+      if (tmp_tree.rootref().is_stream())
+      {
+        FOUR_C_ASSERT_ALWAYS(tmp_tree.rootref().num_children() == 1,
+            "The input file '%s' may only contain one YAML document.", file_path.c_str());
+        tmp_tree_root_without_docs = tmp_tree.rootref().first_child();
+      }
+      FOUR_C_ASSERT_ALWAYS(tmp_tree_root_without_docs.is_map(),
+          "The input file '%s' must contain a map as root node.", file_path.c_str());
+
+      std::stringstream file_content_without_docs;
+      file_content_without_docs << tmp_tree_root_without_docs;
+      const std::string file_content_without_docs_str = file_content_without_docs.str();
+
+      // Store the content of the file in the merged tree.
       ryml::NodeRef file_node = input_file_impl.yaml_tree_.rootref().append_child();
       {
         std::string file_path_str = file_path.string();
         file_node << ryml::key(file_path_str);
-        ryml::parse_in_arena(ryml::to_csubstr(file_content), file_node);
+        ryml::parse_in_arena(ryml::to_csubstr(file_content_without_docs_str), file_node);
       }
 
       // Treat the special section "INCLUDES" to find more included files. Remove the section once
