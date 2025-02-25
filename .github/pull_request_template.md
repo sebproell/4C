@@ -16,7 +16,7 @@ Provide a brief and concise description of your proposed change. Questions you s
 Keep the description of the PR always up-to-date and concise.
 -->
 
-## Related Issues and Merge Requests
+## Related Issues and Pull Requests
 <!--
 If applicable, let us know how this pull request is related to any other open issues or pull requests by linking to them here.
 Some suggestion for keywords:
