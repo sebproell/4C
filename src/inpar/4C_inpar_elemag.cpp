@@ -133,7 +133,7 @@ void Inpar::EleMag::set_valid_conditions(
     cond.add_component(parameter<std::vector<int>>(
         "ONOFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
     cond.add_component(parameter<std::vector<Noneable<int>>>(
-        "FUNCT", {.description = "", .required = false, .size = from_parameter<int>("NUMDOF")}));
+        "FUNCT", {.description = "", .size = from_parameter<int>("NUMDOF")}));
     cond.add_component(parameter<std::vector<double>>(
         "VAL", {.description = "", .size = from_parameter<int>("NUMDOF")}));
 
