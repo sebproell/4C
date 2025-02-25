@@ -100,7 +100,6 @@ CONTACT::AbstractStrategy::AbstractStrategy(
       isselfcontact_(data_ptr->is_self_contact()),
       friction_(data_ptr->is_friction()),
       nonSmoothContact_(data_ptr->is_non_smooth_contact()),
-      regularized_(data_ptr->is_regularized()),
       dualquadslavetrafo_(data_ptr->is_dual_quad_slave_trafo()),
       trafo_(data_ptr->trafo_ptr()),
       invtrafo_(data_ptr->inv_trafo_ptr()),
@@ -128,10 +127,6 @@ CONTACT::AbstractStrategy::AbstractStrategy(
 
   // set nonsmooth contact status
   if (params().get<bool>("NONSMOOTH_GEOMETRIES")) nonSmoothContact_ = true;
-
-  if (Teuchos::getIntegralValue<Inpar::CONTACT::Regularization>(
-          params(), "CONTACT_REGULARIZATION") != Inpar::CONTACT::reg_none)
-    regularized_ = true;
 
   // initialize storage fields for parallel redistribution
   unbalanceEvaluationTime_.clear();

@@ -398,22 +398,6 @@ namespace CONTACT
         const Core::LinAlg::Vector<double>& fs, const Core::LinAlg::Vector<double>& fm);
 
     /*!
-    \brief do additional matrix manipulations for regularization scaling
-
-    */
-    void do_regularization_scaling(bool aset, bool iset, Core::LinAlg::SparseMatrix& invda,
-        Core::LinAlg::SparseMatrix& kan, Core::LinAlg::SparseMatrix& kam,
-        Core::LinAlg::SparseMatrix& kai, Core::LinAlg::SparseMatrix& kaa,
-        Core::LinAlg::Vector<double>& fa, Core::LinAlg::SparseMatrix& kteffnew,
-        Core::LinAlg::Vector<double>& feffnew);
-
-    /*!
-    \brief calculate regularization scaling and apply it to matrixes
-
-    */
-    void evaluate_regularization_scaling(Core::LinAlg::Vector<double>& gact);
-
-    /*!
     \brief Saving reference state is required for penalty support (LTL)
 
     */

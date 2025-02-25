@@ -1678,9 +1678,6 @@ namespace CONTACT
     //! Flag for non-smooth contact algorithm
     bool& nonSmoothContact_;
 
-    //! Flag for regularized contact
-    bool& regularized_;
-
     /*! \brief Flag indicating whether transformation should be applied
      *
      * \todo Which transformation?

@@ -99,12 +99,6 @@ namespace Inpar
       constr_xyz     ///< global Cartesian coordinates
     };
 
-    enum Regularization
-    {
-      reg_none,  ///< no regularization is applied
-      reg_tanh   ///< regularization with tanh smoothing is applied
-    };
-
     /// Local definition of problemtype to avoid use of globalproblem.H
     enum Problemtype
     {

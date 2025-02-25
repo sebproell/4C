@@ -72,9 +72,6 @@ void CONTACT::LagrangeStrategy::initialize()
     // (re)setup global tangent matrix
     if (!friction_) tmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gactivedofs_, 3);
 
-    // (re)setup global normal matrix
-    if (regularized_) nmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gactivedofs_, 3);
-
     // (re)setup global matrix containing gap derivatives
     smatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gactivedofs_, 3);
 
@@ -89,8 +86,6 @@ void CONTACT::LagrangeStrategy::initialize()
       // tangential rhs
       tangrhs_ = Core::LinAlg::create_vector(*gactivedofs_, true);
       tderivmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gactivedofs_, 3);
-      if (regularized_)
-        nderivmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gactivedofs_, 3);
     }
     // (re)setup of global friction
     else
@@ -112,9 +107,6 @@ void CONTACT::LagrangeStrategy::initialize()
     // (re)setup global tangent matrix
     if (!friction_) tmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gactivet_, 3);
 
-    // (re)setup global normal matrix
-    if (regularized_) nmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gactiven_, 3);
-
     // (re)setup global matrix containing gap derivatives
     smatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gactiven_, 3);
 
@@ -129,7 +121,6 @@ void CONTACT::LagrangeStrategy::initialize()
       // tangential rhs
       tangrhs_ = Core::LinAlg::create_vector(*gactivet_, true);
       tderivmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gactivet_, 3);
-      if (regularized_) nderivmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gactiven_, 3);
     }
     // (re)setup of global friction
     else
@@ -2036,9 +2027,6 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
     }
   }
 
-  // do reagularization scaling
-  if (regularized_) evaluate_regularization_scaling(*gact);
-
   //**********************************************************************
   //**********************************************************************
   // CASE A: CONDENSED SYSTEM (DUAL)
@@ -2542,7 +2530,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
     }
 
     //---------------------------------------------------------- FOURTH LINE
-    // nothing to do - except its regularized contact see --> do_regularization_scaling()
+    // nothing to do
 
     //----------------------------------------------------------- FIFTH LINE
     // kan: multiply tmatrix with invda and kan
@@ -2653,7 +2641,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
     fimod.Update(1.0, *fi, -1.0);
 
     //---------------------------------------------------------- FOURTH LINE
-    // gactive: nothing to do  - except its regularized contact see --> do_regularization_scaling()
+    // gactive: nothing to do
 
     //----------------------------------------------------------- FIFTH LINE
     // fa: multiply tmatrix with invda and fa
@@ -2722,11 +2710,6 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
             *problem_dofs(), 81, true, false, kteffmatrix->get_matrixtype());
     std::shared_ptr<Core::LinAlg::Vector<double>> feffnew =
         Core::LinAlg::create_vector(*problem_dofs());
-
-    // Add all additional contributions from regularized contact to kteffnew and feffnew!
-    if (regularized_)
-      do_regularization_scaling(
-          aset, iset, *invda, *kan, *kam, *kai, *kaa, *fa, *kteffnew, *feffnew);
 
     //----------------------------------------------------------- FIRST LINE
     // add n submatrices to kteffnew
@@ -5203,214 +5186,6 @@ void CONTACT::LagrangeStrategy::update(std::shared_ptr<const Core::LinAlg::Vecto
   return;
 }
 
-/*-----------------------------------------------------------------------------*
- | do additional matrix manipulations for regularization scaling     ager 07/15|
- *----------------------------------------------------------------------------*/
-void CONTACT::LagrangeStrategy::do_regularization_scaling(bool aset, bool iset,
-    Core::LinAlg::SparseMatrix& invda, Core::LinAlg::SparseMatrix& kan,
-    Core::LinAlg::SparseMatrix& kam, Core::LinAlg::SparseMatrix& kai,
-    Core::LinAlg::SparseMatrix& kaa, Core::LinAlg::Vector<double>& fa,
-    Core::LinAlg::SparseMatrix& kteffnew, Core::LinAlg::Vector<double>& feffnew)
-{
-  /**********************************************************************/
-  /* (7) Build the final K blocks                                       */
-  /**********************************************************************/
-  //---------------------------------------------------------- FOURTH LINE
-  // kan: multiply tmatrix with invda and kan
-  std::shared_ptr<Core::LinAlg::SparseMatrix> kanmod_n;
-  if (aset)
-  {
-    kanmod_n = Core::LinAlg::matrix_multiply(*nmatrix_, false, invda, true, false, false, true);
-    kanmod_n = Core::LinAlg::matrix_multiply(*kanmod_n, false, kan, false, false, false, true);
-  }
-
-  // kam: multiply tmatrix with invda and kam
-  std::shared_ptr<Core::LinAlg::SparseMatrix> kammod_n;
-  if (aset)
-  {
-    kammod_n = Core::LinAlg::matrix_multiply(*nmatrix_, false, invda, true, false, false, true);
-    kammod_n = Core::LinAlg::matrix_multiply(*kammod_n, false, kam, false, false, false, true);
-  }
-
-  // kai: multiply tmatrix with invda and kai
-  std::shared_ptr<Core::LinAlg::SparseMatrix> kaimod_n;
-  if (aset && iset)
-  {
-    kaimod_n = Core::LinAlg::matrix_multiply(*nmatrix_, false, invda, true, false, false, true);
-    kaimod_n = Core::LinAlg::matrix_multiply(*kaimod_n, false, kai, false, false, false, true);
-  }
-
-  // kaa: multiply tmatrix with invda and kaa
-  std::shared_ptr<Core::LinAlg::SparseMatrix> kaamod_n;
-  if (aset)
-  {
-    kaamod_n = Core::LinAlg::matrix_multiply(*nmatrix_, false, invda, true, false, false, true);
-    kaamod_n = Core::LinAlg::matrix_multiply(*kaamod_n, false, kaa, false, false, false, true);
-  }
-
-  /**********************************************************************/
-  /* (8) Build the final f blocks                                       */
-  /**********************************************************************/
-  //---------------------------------------------------------- FOURTH LINE
-
-  std::shared_ptr<Core::LinAlg::Vector<double>> famod_n;
-  std::shared_ptr<Core::LinAlg::SparseMatrix> ninvda;
-  if (aset)
-  {
-    famod_n = std::make_shared<Core::LinAlg::Vector<double>>(*gactiven_);
-    ninvda = Core::LinAlg::matrix_multiply(*nmatrix_, false, invda, true, false, false, true);
-    ninvda->multiply(false, fa, *famod_n);
-  }
-
-  /********************************************************************/
-  /* (9) Transform the final K blocks                                 */
-  /********************************************************************/
-  //---------------------------------------------------------- FOURTH LINE
-  if (parallel_redistribution_status())
-  {
-    if (aset)
-      nderivmatrix_ = Mortar::matrix_row_transform(*nderivmatrix_, *non_redist_gsdofrowmap_);
-  }
-  /**********************************************************************/
-  /* (10) Global setup of kteffnew (including contact)                  */
-  /**********************************************************************/
-  //---------------------------------------------------------- FOURTH LINE
-  if (aset) kteffnew.add(*nderivmatrix_, false, 1.0, 1.0);
-
-  if (aset) kteffnew.add(*kanmod_n, false, -1.0, 1.0);
-  if (aset) kteffnew.add(*kammod_n, false, -1.0, 1.0);
-  if (aset && iset) kteffnew.add(*kaimod_n, false, -1.0, 1.0);
-  if (aset) kteffnew.add(*kaamod_n, false, -1.0, 1.0);
-
-  /********************************************************************/
-  /* (11) Global setup of feffnew (including contact)                 */
-  /********************************************************************/
-  //---------------------------------------------------------- FOURTH LINE
-  std::shared_ptr<Core::LinAlg::Vector<double>> famodexp_n;
-  if (aset)
-  {
-    famodexp_n = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
-    Core::LinAlg::export_to(*famod_n, *famodexp_n);
-    feffnew.Update(-1.0, *famodexp_n, 1.0);
-  }
-}
-
-/*----------------------------------------------------------------------*
- | calculate regularization scaling and apply it to matrixes   ager 06/15|
- *----------------------------------------------------------------------*/
-void CONTACT::LagrangeStrategy::evaluate_regularization_scaling(Core::LinAlg::Vector<double>& gact)
-{
-  /********************************************************************/
-  /* (0) Get Nodal Gap Scaling                                        */
-  /********************************************************************/
-  // vector with all values alpha
-  Core::LinAlg::Vector<double> scalevec(*gactiven_, true);
-
-  // vecor with (alpha + dalpha/dgap*scaling + d(1-alpha)/dgap)
-  Core::LinAlg::Vector<double> derivscalevec(*gactiven_, true);
-
-  // vector with all values (1-alpha)
-  Core::LinAlg::Vector<double> scalevec2(*gactiven_, true);
-  scalevec.PutScalar(1.0);
-
-  {
-    // setting of the parameters is still under investigation Ager Chr.
-    // Global::Problem* problem = Global::Problem::instance();
-    // const Teuchos::ParameterList& structdyn   = problem->structural_dynamic_params(); //just for
-    // now!
-
-    double scaling = 1e6;  // structdyn.get<double>("TOLRES"); //1e6
-    //
-    // sign of the term lambda*n (std is +1.0)?
-    static double sign = 1.0;
-    // scaling also with (1-alpha) of lambda*n term?
-    static double scal1ma = 1.0;
-
-    double epsilon = 1e-6;  // structdyn.get<double>("TOLINCO");//1e-5;+
-
-    // loop over all interfaces
-    for (int i = 0; i < (int)interface_.size(); ++i)
-    {
-      // loop over all slave nodes on the current interface
-      for (int j = 0; j < interface_[i]->slave_row_nodes()->NumMyElements(); ++j)
-      {
-        int gid = interface_[i]->slave_row_nodes()->GID(j);
-        Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
-        if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
-
-        Node* cnode = dynamic_cast<Node*>(node);
-
-        if (cnode->active())
-        {
-          // normal lagrange multiplier! ... replace by multiplication
-          double lmval = cnode->mo_data().n()[0] * cnode->mo_data().lm()[0] +
-                         cnode->mo_data().n()[1] * cnode->mo_data().lm()[1] +
-                         cnode->mo_data().n()[2] * cnode->mo_data().lm()[2];
-          double alpha;
-          double alphaderiv;
-
-          std::cout << "cnode->Data().Getg(): " << cnode->data().getg() << "( eps = " << epsilon
-                    << ", scal = " << scaling << " ) / lambdan: " << lmval << std::endl;
-
-
-          if (cnode->data().getg() >= 0)
-          {
-            alpha = 0.0;
-            alphaderiv = 0.0;
-          }
-          else
-          {
-            double scaledgsum = (5 * cnode->data().getg() / epsilon + 0.5);
-            alpha = 0.5 * (1 - tanh(scaledgsum));
-            alphaderiv = -0.5 * 5 / (cosh(scaledgsum) * cosh(scaledgsum) * epsilon);
-
-            alphaderiv = alphaderiv * (scaling * cnode->data().getg() - sign * lmval);
-          }
-
-          int lid = gactiven_->LID(cnode->dofs()[0]);
-          if (lid != -1)
-          {
-            (scalevec)[lid] = alpha;
-            (derivscalevec)[lid] = alphaderiv;
-          }
-          else
-          {
-            FOUR_C_THROW("lid = -1!");
-          }
-
-          std::cout << std::setprecision(32) << "cnode->PoroData().GetnScale() for node "
-                    << cnode->id() << " is: " << alpha << std::endl;
-        }
-      }  // loop over all slave nodes
-    }  // loop over all interfaces
-
-    // Evaluate final scaling vectors!
-    {
-      scalevec2.PutScalar(sign);
-      scalevec2.Update(-sign * scal1ma, scalevec, 1.0);  // 1-alpha
-
-      scalevec.Scale(scaling);
-      derivscalevec.Update(1.0, scalevec, 1.0);
-    }
-  }
-
-  // scale all matrixes!!!
-  int err = smatrix_->left_scale(
-      derivscalevec);  // scale with (alpha + dalpha/dgap*scaling + d(1-alpha)/dgap*lambda*n
-  if (err) FOUR_C_THROW("LeftScale failed!");
-
-  err = nderivmatrix_->left_scale(scalevec2);  // scale with 1.0-alpha
-  if (err) FOUR_C_THROW("LeftScale failed!");
-
-  err = nmatrix_->left_scale(scalevec2);  // scale with 1.0-alpha
-  if (err) FOUR_C_THROW("LeftScale failed!");
-
-  Core::LinAlg::Vector<double> tmpgact(gact);  // check later if this is required!!!
-  gact.Multiply(1.0, scalevec, tmpgact, 0.0);
-
-  return;
-}
-
 void CONTACT::LagrangeStrategy::condense_friction(
     std::shared_ptr<Core::LinAlg::SparseMatrix> kteff, Core::LinAlg::Vector<double>& rhs)
 {
@@ -6311,9 +6086,6 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
     }
   }
 
-  // do reagularization scaling
-  if (regularized_) evaluate_regularization_scaling(*gact);
-
   // double-check if this is a dual LM system
   if (shapefcn != Inpar::Mortar::shape_dual && shapefcn != Inpar::Mortar::shape_petrovgalerkin &&
       Teuchos::getIntegralValue<Inpar::Mortar::LagMultQuad>(params(), "LM_QUAD") !=
@@ -6603,7 +6375,7 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
   }
 
   //---------------------------------------------------------- FOURTH LINE
-  // nothing to do - except its regularized contact see --> do_regularization_scaling()
+  // nothing to do
 
   //----------------------------------------------------------- FIFTH LINE
   // kan: multiply tmatrix with invda and kan
@@ -6659,7 +6431,7 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
   fimod.Update(1.0, *fi, -1.0);
 
   //---------------------------------------------------------- FOURTH LINE
-  // gactive: nothing to do  - except its regularized contact see --> do_regularization_scaling()
+  // gactive: nothing to do
 
   //----------------------------------------------------------- FIFTH LINE
   // fa: multiply tmatrix with invda and fa
@@ -6727,10 +6499,6 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
       *problem_dofs(), 81, true, false, kteffmatrix->get_matrixtype());
   std::shared_ptr<Core::LinAlg::Vector<double>> feffnew =
       Core::LinAlg::create_vector(*problem_dofs());
-
-  // Add all additional contributions from regularized contact to kteffnew and feffnew!
-  if (regularized_)
-    do_regularization_scaling(aset, iset, *invda, *kan, *kam, *kai, *kaa, *fa, kteffnew, *feffnew);
 
   //----------------------------------------------------------- FIRST LINE
   // add n submatrices to kteffnew
