@@ -172,7 +172,9 @@ namespace
   {
     auto spec = all_of({
         parameter<int>("size"),
-        parameter<std::vector<Noneable<int>>>("a", {.size = from_parameter<int>("size")}),
+        parameter<std::vector<Noneable<int>>>("vector_none", {.size = from_parameter<int>("size")}),
+        parameter<Noneable<std::vector<int>>>("none_vector",
+            {.default_value = none<std::vector<int>>, .size = from_parameter<int>("size")}),
         parameter<Noneable<std::string>>("b", {.description = "b"}),
         parameter<Noneable<double>>("c", {.default_value = 1.0}),
         parameter<Noneable<bool>>("d", {.required = false}),
@@ -180,18 +182,21 @@ namespace
     });
 
     {
+      SCOPED_TRACE("All values");
       InputParameterContainer container;
-      std::string stream("size 3 a 1 2 3 b none");
+      std::string stream("size 3 vector_none 1 2 3 b none none_vector 1 2 3");
       ValueParser parser(stream);
       spec.fully_parse(parser, container);
-      const auto& a = container.get<std::vector<Noneable<int>>>("a");
-      EXPECT_EQ(a.size(), 3);
-      EXPECT_EQ(a[0].has_value(), true);
-      EXPECT_EQ(a[0].value(), 1);
-      EXPECT_EQ(a[1].has_value(), true);
-      EXPECT_EQ(a[1].value(), 2);
-      EXPECT_EQ(a[2].has_value(), true);
-      EXPECT_EQ(a[2].value(), 3);
+      const auto& vector_none = container.get<std::vector<Noneable<int>>>("vector_none");
+      EXPECT_EQ(vector_none.size(), 3);
+      EXPECT_EQ(vector_none[0].has_value(), true);
+      EXPECT_EQ(vector_none[0].value(), 1);
+      EXPECT_EQ(vector_none[1].has_value(), true);
+      EXPECT_EQ(vector_none[1].value(), 2);
+      EXPECT_EQ(vector_none[2].has_value(), true);
+      EXPECT_EQ(vector_none[2].value(), 3);
+
+      EXPECT_TRUE(container.get<Noneable<std::vector<int>>>("none_vector").has_value());
 
       const auto& b = container.get<Noneable<std::string>>("b");
       EXPECT_EQ(b.has_value(), false);
@@ -205,11 +210,13 @@ namespace
     }
 
     {
+      SCOPED_TRACE("None values");
       InputParameterContainer container;
-      std::string stream("size 3 a 1 none 3 b none c none d none e none");
+      std::string stream(
+          "size 3 vector_none 1 none 3 b none c none d none e none none_vector none");
       ValueParser parser(stream);
       spec.fully_parse(parser, container);
-      const auto& a = container.get<std::vector<Noneable<int>>>("a");
+      const auto& a = container.get<std::vector<Noneable<int>>>("vector_none");
       EXPECT_EQ(a.size(), 3);
       EXPECT_EQ(a[0].has_value(), true);
       EXPECT_EQ(a[0].value(), 1);
@@ -231,8 +238,9 @@ namespace
     }
 
     {
+      SCOPED_TRACE("Defaults");
       InputParameterContainer container;
-      std::string stream("size 3 a 1 2 3 b string c 2.0 d true e 42");
+      std::string stream("size 3 vector_none 1 2 3 b string c 2.0 d true e 42");
       ValueParser parser(stream);
       spec.fully_parse(parser, container);
 

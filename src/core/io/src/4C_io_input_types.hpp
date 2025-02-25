@@ -87,6 +87,13 @@ namespace Core::IO
     };
 
     template <typename T>
+    struct RankHelper<Noneable<T>>
+    {
+      // Noneable is not considered a container, so it does not increase the rank.
+      static constexpr std::size_t value = RankHelper<T>::value;
+    };
+
+    template <typename T>
     concept IsStdArray = requires {
       typename T::value_type;
       std::tuple_size<T>::value;

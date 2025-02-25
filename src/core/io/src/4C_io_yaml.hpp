@@ -132,17 +132,7 @@ namespace Core::IO
   void emit_value_as_yaml(ryml::NodeRef node, const std::filesystem::path& value);
 
   template <typename T>
-  void emit_value_as_yaml(ryml::NodeRef node, const std::optional<T>& value)
-  {
-    if (value.has_value())
-    {
-      emit_value_as_yaml(node, value.value());
-    }
-    else
-    {
-      node = "null";
-    }
-  }
+  void emit_value_as_yaml(ryml::NodeRef node, const std::optional<T>& value);
 
   template <typename T>
   void emit_value_as_yaml(ryml::NodeRef node, const std::map<std::string, T>& value);
@@ -224,7 +214,18 @@ namespace Core::IO
   }
 }  // namespace Core::IO
 
-
+template <typename T>
+void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const std::optional<T>& value)
+{
+  if (value.has_value())
+  {
+    emit_value_as_yaml(node, value.value());
+  }
+  else
+  {
+    node = "null";
+  }
+}
 
 template <typename T>
 void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const std::map<std::string, T>& value)
