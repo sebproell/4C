@@ -185,7 +185,7 @@ void BeamContact::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
         "BEAM INTERACTION/BEAM TO BEAM CONTACT CONDITIONS", condition_name,
         "Beam-to-beam contact conditions", Core::Conditions::BeamToBeamContact, true,
         Core::Conditions::geometry_type_line);
-    beam_to_beam_contact_condition.add_component(entry<int>("COUPLING_ID"));
+    beam_to_beam_contact_condition.add_component(parameter<int>("COUPLING_ID"));
     condlist.push_back(beam_to_beam_contact_condition);
   }
 }

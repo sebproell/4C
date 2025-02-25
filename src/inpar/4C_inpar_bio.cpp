@@ -91,8 +91,8 @@ void Inpar::ArteryNetwork::set_valid_conditions(
       "Artery junction boundary condition", Core::Conditions::ArtJunctionCond, true,
       Core::Conditions::geometry_type_point);
 
-  art_connection_bc.add_component(entry<int>("ConditionID"));
-  art_connection_bc.add_component(entry<double>("Kr"));
+  art_connection_bc.add_component(parameter<int>("ConditionID"));
+  art_connection_bc.add_component(parameter<double>("Kr"));
 
   condlist.push_back(art_connection_bc);
 
@@ -108,9 +108,10 @@ void Inpar::ArteryNetwork::set_valid_conditions(
   art_in_bc.add_component(selection<std::string>(
       "type", {"forced", "absorbing"}, {.description = "type", .default_value = "forced"}));
 
-  art_in_bc.add_component(entry<std::vector<double>>("VAL", {.description = "values", .size = 2}));
   art_in_bc.add_component(
-      entry<std::vector<Noneable<int>>>("curve", {.description = "curve ids", .size = 2}));
+      parameter<std::vector<double>>("VAL", {.description = "values", .size = 2}));
+  art_in_bc.add_component(
+      parameter<std::vector<Noneable<int>>>("curve", {.description = "curve ids", .size = 2}));
 
   condlist.push_back(art_in_bc);
 
@@ -120,9 +121,10 @@ void Inpar::ArteryNetwork::set_valid_conditions(
       "ArtRfCond", "Artery reflection condition", Core::Conditions::ArtRfCond, true,
       Core::Conditions::geometry_type_point);
 
-  art_rf_bc.add_component(entry<std::vector<double>>("VAL", {.description = "value", .size = 1}));
   art_rf_bc.add_component(
-      entry<std::vector<Noneable<int>>>("curve", {.description = "curve", .size = 1}));
+      parameter<std::vector<double>>("VAL", {.description = "value", .size = 1}));
+  art_rf_bc.add_component(
+      parameter<std::vector<Noneable<int>>>("curve", {.description = "curve", .size = 1}));
   condlist.push_back(art_rf_bc);
 
 
@@ -147,7 +149,7 @@ void Inpar::ArteryNetwork::set_valid_conditions(
       "Artery coupling with porofluid", Core::Conditions::ArtPorofluidCouplingCondNodebased, true,
       Core::Conditions::geometry_type_point);
 
-  artcoup.add_component(entry<int>("COUPID"));
+  artcoup.add_component(parameter<int>("COUPID"));
 
   condlist.push_back(artcoup);
 
@@ -159,7 +161,7 @@ void Inpar::ArteryNetwork::set_valid_conditions(
       "Artery coupling with porofluid", Core::Conditions::ArtScatraCouplingCondNodebased, true,
       Core::Conditions::geometry_type_point);
 
-  artscatracoup.add_component(entry<int>("COUPID"));
+  artscatracoup.add_component(parameter<int>("COUPID"));
 
   condlist.push_back(artscatracoup);
 
@@ -173,13 +175,13 @@ void Inpar::ArteryNetwork::set_valid_conditions(
 
   artcoup_ntp.add_component(selection<std::string>("COUPLING_TYPE", {"ARTERY", "AIRWAY"},
       {.description = "coupling type", .default_value = "ARTERY"}));
-  artcoup_ntp.add_component(entry<int>("NUMDOF"));
-  artcoup_ntp.add_component(entry<std::vector<int>>(
+  artcoup_ntp.add_component(parameter<int>("NUMDOF"));
+  artcoup_ntp.add_component(parameter<std::vector<int>>(
       "COUPLEDDOF_REDUCED", {.description = "coupling dofs of reduced airways or arteries",
                                 .size = from_parameter<int>("NUMDOF")}));
-  artcoup_ntp.add_component(entry<std::vector<int>>("COUPLEDDOF_PORO",
+  artcoup_ntp.add_component(parameter<std::vector<int>>("COUPLEDDOF_PORO",
       {.description = "coupling dofs in porous domain", .size = from_parameter<int>("NUMDOF")}));
-  artcoup_ntp.add_component(entry<double>("PENALTY"));
+  artcoup_ntp.add_component(parameter<double>("PENALTY"));
 
   condlist.push_back(artcoup_ntp);
 
@@ -193,13 +195,13 @@ void Inpar::ArteryNetwork::set_valid_conditions(
 
   artscatracoup_ntp.add_component(selection<std::string>("COUPLING_TYPE", {"ARTERY", "AIRWAY"},
       {.description = "coupling type", .default_value = "ARTERY"}));
-  artscatracoup_ntp.add_component(entry<int>("NUMDOF"));
-  artscatracoup_ntp.add_component(entry<std::vector<int>>(
+  artscatracoup_ntp.add_component(parameter<int>("NUMDOF"));
+  artscatracoup_ntp.add_component(parameter<std::vector<int>>(
       "COUPLEDDOF_REDUCED", {.description = "coupling dofs of reduced airways or arteries",
                                 .size = from_parameter<int>("NUMDOF")}));
-  artscatracoup_ntp.add_component(entry<std::vector<int>>("COUPLEDDOF_PORO",
+  artscatracoup_ntp.add_component(parameter<std::vector<int>>("COUPLEDDOF_PORO",
       {.description = "coupling dofs in porous domain", .size = from_parameter<int>("NUMDOF")}));
-  artscatracoup_ntp.add_component(entry<double>("PENALTY"));
+  artscatracoup_ntp.add_component(parameter<double>("PENALTY"));
 
   condlist.push_back(artscatracoup_ntp);
 }
@@ -247,7 +249,7 @@ void Inpar::BioFilm::set_valid_conditions(
       "BioGrCoupling", "BioGrCoupling", Core::Conditions::BioGrCoupling, true,
       Core::Conditions::geometry_type_surface);
 
-  surfbiogr.add_component(entry<int>("coupling_id", {.description = "coupling_id"}));
+  surfbiogr.add_component(parameter<int>("coupling_id", {.description = "coupling_id"}));
   condlist.push_back(surfbiogr);
 }
 
@@ -308,13 +310,13 @@ void Inpar::ReducedLung::set_valid_conditions(
       "Artery reduced D 3D coupling condition", Core::Conditions::ArtRedTo3DCouplingCond, true,
       Core::Conditions::geometry_type_point);
 
-  art_red_to_3d_bc.add_component(entry<int>("ConditionID"));
+  art_red_to_3d_bc.add_component(parameter<int>("ConditionID"));
   art_red_to_3d_bc.add_component(selection<std::string>("CouplingType", {"forced", "absorbing"},
       {.description = "coupling type", .default_value = "forced"}));
   art_red_to_3d_bc.add_component(selection<std::string>("ReturnedVariable", {"pressure", "flow"},
       {.description = "returned variable", .default_value = "pressure"}));
-  art_red_to_3d_bc.add_component(entry<double>("Tolerance"));
-  art_red_to_3d_bc.add_component(entry<int>("MaximumIterations"));
+  art_red_to_3d_bc.add_component(parameter<double>("Tolerance"));
+  art_red_to_3d_bc.add_component(parameter<int>("MaximumIterations"));
 
   condlist.push_back(art_red_to_3d_bc);
 
@@ -325,11 +327,11 @@ void Inpar::ReducedLung::set_valid_conditions(
       "Artery 3D reduced D coupling condition", Core::Conditions::Art3DToRedCouplingCond, true,
       Core::Conditions::geometry_type_surface);
 
-  art_3d_to_red_bc.add_component(entry<int>("ConditionID"));
+  art_3d_to_red_bc.add_component(parameter<int>("ConditionID"));
   art_3d_to_red_bc.add_component(selection<std::string>("ReturnedVariable", {"pressure", "flow"},
       {.description = "returned variable", .default_value = "flow"}));
-  art_3d_to_red_bc.add_component(entry<double>("Tolerance"));
-  art_3d_to_red_bc.add_component(entry<int>("MaximumIterations"));
+  art_3d_to_red_bc.add_component(parameter<double>("Tolerance"));
+  art_3d_to_red_bc.add_component(parameter<int>("MaximumIterations"));
 
   condlist.push_back(art_3d_to_red_bc);
 
@@ -340,7 +342,7 @@ void Inpar::ReducedLung::set_valid_conditions(
       "SurfaceNeumann", "tissue RedAirway coupling surface condition",
       Core::Conditions::RedAirwayTissue, true, Core::Conditions::geometry_type_surface);
 
-  surfredairtis.add_component(entry<int>("coupling_id"));
+  surfredairtis.add_component(parameter<int>("coupling_id"));
 
   condlist.push_back(surfredairtis);
 
@@ -352,7 +354,7 @@ void Inpar::ReducedLung::set_valid_conditions(
       "RedAirwayPrescribedCond", "tissue RedAirway coupling node condition",
       Core::Conditions::RedAirwayNodeTissue, true, Core::Conditions::geometry_type_point);
 
-  noderedairtis.add_component(entry<int>("coupling_id"));
+  noderedairtis.add_component(parameter<int>("coupling_id"));
 
   condlist.push_back(noderedairtis);
 
@@ -371,10 +373,11 @@ void Inpar::ReducedLung::set_valid_conditions(
       {.description = "boundary condition type", .default_value = "flow"}));
 
   // reduced airway inlet components
-  raw_in_bc.add_component(entry<std::vector<double>>("VAL", {.description = "value", .size = 1}));
   raw_in_bc.add_component(
-      entry<std::vector<Noneable<int>>>("curve", {.description = "curve", .size = 2}));
-  raw_in_bc.add_component(entry<std::vector<Noneable<int>>>(
+      parameter<std::vector<double>>("VAL", {.description = "value", .size = 1}));
+  raw_in_bc.add_component(
+      parameter<std::vector<Noneable<int>>>("curve", {.description = "curve", .size = 2}));
+  raw_in_bc.add_component(parameter<std::vector<Noneable<int>>>(
       "funct", {.description = "function id", .default_value = std::vector{none<int>}, .size = 1}));
 
   condlist.push_back(raw_in_bc);
@@ -388,9 +391,9 @@ void Inpar::ReducedLung::set_valid_conditions(
       "RedAirwaySwitchFlowPressureCond", "Reduced d airway switch flow pressure boundary condition",
       Core::Conditions::RedAirwayPrescribedSwitchCond, true, Core::Conditions::geometry_type_point);
 
-  raw_in_switch_bc.add_component(entry<int>("FUNCT_ID_FLOW"));
-  raw_in_switch_bc.add_component(entry<int>("FUNCT_ID_PRESSURE"));
-  raw_in_switch_bc.add_component(entry<int>("FUNCT_ID_PRESSURE_ACTIVE"));
+  raw_in_switch_bc.add_component(parameter<int>("FUNCT_ID_FLOW"));
+  raw_in_switch_bc.add_component(parameter<int>("FUNCT_ID_PRESSURE"));
+  raw_in_switch_bc.add_component(parameter<int>("FUNCT_ID_PRESSURE_ACTIVE"));
 
   condlist.push_back(raw_in_switch_bc);
 
@@ -409,19 +412,19 @@ void Inpar::ReducedLung::set_valid_conditions(
           "Nonlinear_Exponential", "Nonlinear_Ogden"},
       {.description = "type", .default_value = "Linear_Exponential"}));
 
-  raw_volPpl_bc.add_component(entry<double>("TLC"));
-  raw_volPpl_bc.add_component(entry<double>("RV"));
+  raw_volPpl_bc.add_component(parameter<double>("TLC"));
+  raw_volPpl_bc.add_component(parameter<double>("RV"));
 
-  raw_volPpl_bc.add_component(entry<double>("P_PLEURAL_0"));
-  raw_volPpl_bc.add_component(entry<double>("P_PLEURAL_LIN"));
-  raw_volPpl_bc.add_component(entry<double>("P_PLEURAL_NONLIN"));
-  raw_volPpl_bc.add_component(entry<double>("TAU"));
+  raw_volPpl_bc.add_component(parameter<double>("P_PLEURAL_0"));
+  raw_volPpl_bc.add_component(parameter<double>("P_PLEURAL_LIN"));
+  raw_volPpl_bc.add_component(parameter<double>("P_PLEURAL_NONLIN"));
+  raw_volPpl_bc.add_component(parameter<double>("TAU"));
 
   // raw_volPpl_bc_components
   raw_volPpl_bc.add_component(
-      entry<std::vector<double>>("VAL", {.description = "value", .size = 1}));
+      parameter<std::vector<double>>("VAL", {.description = "value", .size = 1}));
   raw_volPpl_bc.add_component(
-      entry<std::vector<Noneable<int>>>("curve", {.description = "curve", .size = 1}));
+      parameter<std::vector<Noneable<int>>>("curve", {.description = "curve", .size = 1}));
 
   condlist.push_back(raw_volPpl_bc);
 
@@ -444,15 +447,15 @@ void Inpar::ReducedLung::set_valid_conditions(
       "ImpedanceCond", "Impedance boundary condition", Core::Conditions::ImpedanceCond, true,
       Core::Conditions::geometry_type_surface);
 
-  impedancebc.add_component(entry<int>("ConditionID"));
+  impedancebc.add_component(parameter<int>("ConditionID"));
   impedancebc.add_component(
       selection<std::string>("TYPE", {"windkessel", "resistive", "pressure_by_funct"},
           {.description = "type", .default_value = "windkessel"}));
-  impedancebc.add_component(entry<double>("R1"));
-  impedancebc.add_component(entry<double>("R2"));
-  impedancebc.add_component(entry<double>("C"));
-  impedancebc.add_component(entry<double>("TIMEPERIOD"));
-  impedancebc.add_component(entry<int>("FUNCT"));
+  impedancebc.add_component(parameter<double>("R1"));
+  impedancebc.add_component(parameter<double>("R2"));
+  impedancebc.add_component(parameter<double>("C"));
+  impedancebc.add_component(parameter<double>("TIMEPERIOD"));
+  impedancebc.add_component(parameter<int>("FUNCT"));
 
   condlist.push_back(impedancebc);
 }

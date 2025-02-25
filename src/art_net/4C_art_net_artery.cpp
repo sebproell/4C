@@ -59,11 +59,11 @@ void Discret::Elements::ArteryType::setup_element_definition(
   using namespace Core::IO::InputSpecBuilders;
 
   defs["LINE2"] = all_of({
-      entry<std::vector<int>>("LINE2", {.size = 2}),
-      entry<int>("MAT"),
-      entry<int>("GP"),
-      entry<std::string>("TYPE"),
-      entry<double>("DIAM"),
+      parameter<std::vector<int>>("LINE2", {.size = 2}),
+      parameter<int>("MAT"),
+      parameter<int>("GP"),
+      parameter<std::string>("TYPE"),
+      parameter<double>("DIAM"),
   });
 }
 

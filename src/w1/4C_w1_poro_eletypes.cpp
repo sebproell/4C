@@ -66,10 +66,10 @@ void Discret::Elements::WallQuad4PoroType::setup_element_definition(
 
   defs["QUAD4"] = all_of({
       defs_wall["QUAD4"],
-      entry<std::vector<double>>("POROANISODIR1", {.required = false, .size = 2}),
-      entry<std::vector<double>>("POROANISODIR2", {.required = false, .size = 2}),
-      entry<std::vector<double>>("POROANISONODALCOEFFS1", {.required = false, .size = 4}),
-      entry<std::vector<double>>("POROANISONODALCOEFFS2", {.required = false, .size = 4}),
+      parameter<std::vector<double>>("POROANISODIR1", {.required = false, .size = 2}),
+      parameter<std::vector<double>>("POROANISODIR2", {.required = false, .size = 2}),
+      parameter<std::vector<double>>("POROANISONODALCOEFFS1", {.required = false, .size = 4}),
+      parameter<std::vector<double>>("POROANISONODALCOEFFS2", {.required = false, .size = 4}),
   });
 }
 
@@ -139,8 +139,8 @@ void Discret::Elements::WallQuad9PoroType::setup_element_definition(
 
   defs["QUAD9"] = all_of({
       defs_wall["QUAD9"],
-      entry<std::vector<double>>("POROANISODIR1", {.required = false, .size = 2}),
-      entry<std::vector<double>>("POROANISODIR2", {.required = false, .size = 2}),
+      parameter<std::vector<double>>("POROANISODIR1", {.required = false, .size = 2}),
+      parameter<std::vector<double>>("POROANISODIR2", {.required = false, .size = 2}),
   });
 }
 
@@ -211,8 +211,8 @@ void Discret::Elements::WallNurbs4PoroType::setup_element_definition(
 
   defs["NURBS4"] = all_of({
       defs_wall["NURBS4"],
-      entry<std::vector<double>>("POROANISODIR1", {.required = false, .size = 2}),
-      entry<std::vector<double>>("POROANISODIR2", {.required = false, .size = 2}),
+      parameter<std::vector<double>>("POROANISODIR1", {.required = false, .size = 2}),
+      parameter<std::vector<double>>("POROANISODIR2", {.required = false, .size = 2}),
   });
 }
 
@@ -283,8 +283,8 @@ void Discret::Elements::WallNurbs9PoroType::setup_element_definition(
 
   defs["NURBS9"] = all_of({
       defs_wall["NURBS9"],
-      entry<std::vector<double>>("POROANISODIR1", {.required = false, .size = 2}),
-      entry<std::vector<double>>("POROANISODIR2", {.required = false, .size = 2}),
+      parameter<std::vector<double>>("POROANISODIR1", {.required = false, .size = 2}),
+      parameter<std::vector<double>>("POROANISODIR2", {.required = false, .size = 2}),
   });
 }
 
@@ -355,10 +355,10 @@ void Discret::Elements::WallTri3PoroType::setup_element_definition(
 
   defs["TRI3"] = all_of({
       defs_wall["TRI3"],
-      entry<std::vector<double>>("POROANISODIR1", {.required = false, .size = 2}),
-      entry<std::vector<double>>("POROANISODIR2", {.required = false, .size = 2}),
-      entry<std::vector<double>>("POROANISONODALCOEFFS1", {.required = false, .size = 3}),
-      entry<std::vector<double>>("POROANISONODALCOEFFS2", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISODIR1", {.required = false, .size = 2}),
+      parameter<std::vector<double>>("POROANISODIR2", {.required = false, .size = 2}),
+      parameter<std::vector<double>>("POROANISONODALCOEFFS1", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISONODALCOEFFS2", {.required = false, .size = 3}),
   });
 }
 

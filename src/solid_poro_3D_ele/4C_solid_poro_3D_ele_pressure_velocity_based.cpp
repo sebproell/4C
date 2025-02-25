@@ -39,9 +39,9 @@ namespace Discret::Elements::SolidPoroPressureVelocityBasedInternal
     auto get_default_input_spec()
     {
       return all_of({
-          entry<std::vector<int>>(
+          parameter<std::vector<int>>(
               Core::FE::cell_type_to_string(celltype), {.size = Core::FE::num_nodes<celltype>}),
-          entry<int>("MAT"),
+          parameter<int>("MAT"),
           selection<Inpar::Solid::KinemType>("KINEM",
               {
                   {kinem_type_string(Inpar::Solid::KinemType::linear),
@@ -51,9 +51,9 @@ namespace Discret::Elements::SolidPoroPressureVelocityBasedInternal
               },
               {.description = "Whether to use linear kinematics (small displacements) or nonlinear "
                               "kinematics (large displacements)"}),
-          entry<std::vector<double>>("POROANISODIR1", {.required = false, .size = 3}),
-          entry<std::vector<double>>("POROANISODIR2", {.required = false, .size = 3}),
-          entry<std::vector<double>>("POROANISODIR3", {.required = false, .size = 3}),
+          parameter<std::vector<double>>("POROANISODIR1", {.required = false, .size = 3}),
+          parameter<std::vector<double>>("POROANISODIR2", {.required = false, .size = 3}),
+          parameter<std::vector<double>>("POROANISODIR3", {.required = false, .size = 3}),
           selection<Inpar::ScaTra::ImplType>("TYPE", Discret::Elements::get_impltype_inpar_pairs(),
               {.description = "Scalar transport implementation type",
                   .default_value = Inpar::ScaTra::ImplType::impltype_undefined}),
@@ -79,9 +79,9 @@ void Discret::Elements::SolidPoroPressureVelocityBasedType::setup_element_defini
   defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex8)] = all_of({
       Discret::Elements::SolidPoroPressureVelocityBasedInternal::get_default_input_spec<
           Core::FE::CellType::hex8>(),
-      entry<std::vector<double>>("POROANISONODALCOEFFS1", {.required = false, .size = 8}),
-      entry<std::vector<double>>("POROANISONODALCOEFFS2", {.required = false, .size = 8}),
-      entry<std::vector<double>>("POROANISONODALCOEFFS3", {.required = false, .size = 8}),
+      parameter<std::vector<double>>("POROANISONODALCOEFFS1", {.required = false, .size = 8}),
+      parameter<std::vector<double>>("POROANISONODALCOEFFS2", {.required = false, .size = 8}),
+      parameter<std::vector<double>>("POROANISONODALCOEFFS3", {.required = false, .size = 8}),
   });
 
   defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex27)] =
@@ -92,9 +92,9 @@ void Discret::Elements::SolidPoroPressureVelocityBasedType::setup_element_defini
   defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::tet4)] = all_of({
       Discret::Elements::SolidPoroPressureVelocityBasedInternal::get_default_input_spec<
           Core::FE::CellType::tet4>(),
-      entry<std::vector<double>>("POROANISONODALCOEFFS1", {.required = false, .size = 8}),
-      entry<std::vector<double>>("POROANISONODALCOEFFS2", {.required = false, .size = 8}),
-      entry<std::vector<double>>("POROANISONODALCOEFFS3", {.required = false, .size = 8}),
+      parameter<std::vector<double>>("POROANISONODALCOEFFS1", {.required = false, .size = 8}),
+      parameter<std::vector<double>>("POROANISONODALCOEFFS2", {.required = false, .size = 8}),
+      parameter<std::vector<double>>("POROANISONODALCOEFFS3", {.required = false, .size = 8}),
   });
 
 

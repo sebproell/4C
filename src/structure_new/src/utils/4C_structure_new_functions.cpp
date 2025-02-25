@@ -87,11 +87,11 @@ void Solid::add_valid_structure_functions(Core::Utils::FunctionManager& function
   auto spec = one_of({
       group("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE",
           {
-              entry<int>("MAT_STRUCT"),
+              parameter<int>("MAT_STRUCT"),
           }),
       group("WEAKLYCOMPRESSIBLE_ETIENNE_FSI_STRUCTURE_FORCE",
           {
-              entry<int>("MAT_STRUCT"),
+              parameter<int>("MAT_STRUCT"),
           }),
   });
 

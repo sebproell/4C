@@ -79,7 +79,7 @@ namespace Input
         "Layer for Multilayered STC", Core::Conditions::VolSTCLayer, true,
         Core::Conditions::geometry_type_volume);
 
-    stclayer.add_component(entry<int>("ConditionID"));
+    stclayer.add_component(parameter<int>("ConditionID"));
 
     condlist.push_back(stclayer);
   }
@@ -154,12 +154,12 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
 
   const auto make_neumann_condition = [&condlist](auto& cond)
   {
-    cond.add_component(entry<int>("NUMDOF"));
-    cond.add_component(entry<std::vector<int>>(
+    cond.add_component(parameter<int>("NUMDOF"));
+    cond.add_component(parameter<std::vector<int>>(
         "ONOFF", {.description = "onoff", .size = from_parameter<int>("NUMDOF")}));
-    cond.add_component(entry<std::vector<double>>(
+    cond.add_component(parameter<std::vector<double>>(
         "VAL", {.description = "values", .size = from_parameter<int>("NUMDOF")}));
-    cond.add_component(entry<std::vector<Noneable<int>>>(
+    cond.add_component(parameter<std::vector<Noneable<int>>>(
         "FUNCT", {.description = "function ids", .size = from_parameter<int>("NUMDOF")}));
     cond.add_component(selection<std::string>("TYPE",
         {"Live", "Dead", "pseudo_orthopressure", "orthopressure", "PressureGrad"},
@@ -275,12 +275,12 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
 
   const auto make_dirichlet_condition = [&condlist](auto& cond)
   {
-    cond.add_component(entry<int>("NUMDOF"));
-    cond.add_component(entry<std::vector<int>>(
+    cond.add_component(parameter<int>("NUMDOF"));
+    cond.add_component(parameter<std::vector<int>>(
         "ONOFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
-    cond.add_component(entry<std::vector<double>>(
+    cond.add_component(parameter<std::vector<double>>(
         "VAL", {.description = "", .size = from_parameter<int>("NUMDOF")}));
-    cond.add_component(entry<std::vector<Noneable<int>>>(
+    cond.add_component(parameter<std::vector<Noneable<int>>>(
         "FUNCT", {.description = "", .size = from_parameter<int>("NUMDOF")}));
 
     // optional
@@ -333,8 +333,8 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
 
   const auto make_point_coupling_condition = [&condlist](auto& cond)
   {
-    cond.add_component(entry<int>("NUMDOF"));
-    cond.add_component(entry<std::vector<int>>(
+    cond.add_component(parameter<int>("NUMDOF"));
+    cond.add_component(parameter<std::vector<int>>(
         "ONOFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
 
     condlist.emplace_back(cond);
@@ -368,7 +368,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
         {.description = "init field"}));
 
     // for initial vector fields, use the COMPONENT option of our functions
-    cond.add_component(entry<int>("FUNCT"));
+    cond.add_component(parameter<int>("FUNCT"));
 
     condlist.emplace_back(cond);
   };
@@ -409,7 +409,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
   {
     cond.add_component(
         selection<std::string>("FIELD", {"Undefined", "ScaTra"}, {.description = "init field"}));
-    cond.add_component(entry<int>("FUNCT"));
+    cond.add_component(parameter<int>("FUNCT"));
 
     condlist.emplace_back(cond);
   };
@@ -435,7 +435,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
 
   const auto make_domain_integral_condition = [&condlist](auto& cond)
   {
-    cond.add_component(entry<int>("ConditionID"));
+    cond.add_component(parameter<int>("ConditionID"));
 
     condlist.emplace_back(cond);
   };
@@ -453,7 +453,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
       Core::Conditions::BoundaryIntegral, true, Core::Conditions::geometry_type_surface);
 
   // add input file line components to condition definition
-  boundaryintegralsurf.add_component(entry<int>("ConditionID"));
+  boundaryintegralsurf.add_component(parameter<int>("ConditionID"));
 
   // insert condition definition into global list of valid condition definitions
   condlist.push_back(boundaryintegralsurf);
@@ -488,14 +488,15 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
 
   const auto make_locsys_condition = [&condlist](auto& cond)
   {
-    cond.add_component(entry<std::vector<double>>("ROTANGLE", {.description = "", .size = 3}));
-    cond.add_component(entry<std::vector<Noneable<int>>>("FUNCT", {.description = "", .size = 3}));
-    cond.add_component(entry<int>("USEUPDATEDNODEPOS"));
+    cond.add_component(parameter<std::vector<double>>("ROTANGLE", {.description = "", .size = 3}));
+    cond.add_component(
+        parameter<std::vector<Noneable<int>>>("FUNCT", {.description = "", .size = 3}));
+    cond.add_component(parameter<int>("USEUPDATEDNODEPOS"));
 
     if (cond.geometry_type() == Core::Conditions::geometry_type_line ||
         cond.geometry_type() == Core::Conditions::geometry_type_surface)
     {
-      cond.add_component(entry<int>("USECONSISTENTNODENORMAL"));
+      cond.add_component(parameter<int>("USECONSISTENTNODENORMAL"));
     }
 
     condlist.emplace_back(cond);
@@ -518,16 +519,16 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
 
   const auto make_periodic_condition = [&condlist](auto& cond)
   {
-    cond.add_component(entry<int>("ID", {.description = "periodic boundary condition id"}));
+    cond.add_component(parameter<int>("ID", {.description = "periodic boundary condition id"}));
     cond.add_component(selection<std::string>(
         "MASTER_OR_SLAVE", {"Master", "Slave"}, {.description = "master-slave toggle"}));
     cond.add_component(selection<std::string>("PLANE", {"xy", "yz", "xz", "xyz"},
         {.description = "degrees of freedom for the pbc plane"}));
     cond.add_component(
-        entry<int>("LAYER", {.description = "layer of periodic boundary condition"}));
-    cond.add_component(entry<double>("ANGLE", {.description = "angle of rotation"}));
+        parameter<int>("LAYER", {.description = "layer of periodic boundary condition"}));
+    cond.add_component(parameter<double>("ANGLE", {.description = "angle of rotation"}));
     cond.add_component(
-        entry<double>("ABSTREETOL", {.description = "tolerance for nodematching in octree"}));
+        parameter<double>("ABSTREETOL", {.description = "tolerance for nodematching in octree"}));
 
     condlist.emplace_back(cond);
   };
@@ -564,7 +565,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
     // scaling factor for penalty parameter tauB or
     // stabilization parameter alpha for Nitsche term
     // (SCATRA: if stabilization parameter negative -> mixed-hybrid formulation)
-    cond.add_component(entry<double>("TauBscaling"));
+    cond.add_component(parameter<double>("TauBscaling"));
 
     // linearisation strategies --- the linearisation (i.e. the matrix
     // contribution) of the convective term on the inflow could be
@@ -575,10 +576,10 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
         "LINEARISATION", {"lin_all", "no_lin_conv_inflow"}, {.description = "Linearisation"}));
 
     // we provide a vector of 3 values for velocities
-    cond.add_component(entry<std::vector<double>>("VAL", {.description = "values", .size = 3}));
+    cond.add_component(parameter<std::vector<double>>("VAL", {.description = "values", .size = 3}));
 
     // and optional spatial functions
-    cond.add_component(entry<std::vector<int>>("FUNCT",
+    cond.add_component(parameter<std::vector<int>>("FUNCT",
         {.description = "function ids", .default_value = std::vector<int>{0, 0, 0}, .size = 3}));
     // append the condition to the list of all conditions
     condlist.push_back(cond);
@@ -607,9 +608,10 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
       "VolumeConstraint_3D", "Surface Volume Constraint", Core::Conditions::VolumeConstraint_3D,
       true, Core::Conditions::geometry_type_surface);
 
-  volumeconstraint.add_component(entry<int>("ConditionID"));
-  volumeconstraint.add_component(entry<Noneable<int>>("curve", {.description = "id of the curve"}));
-  volumeconstraint.add_component(entry<double>("activeTime"));
+  volumeconstraint.add_component(parameter<int>("ConditionID"));
+  volumeconstraint.add_component(
+      parameter<Noneable<int>>("curve", {.description = "id of the curve"}));
+  volumeconstraint.add_component(parameter<double>("activeTime"));
   volumeconstraint.add_component(selection<std::string>("projection", {"none", "xy", "yz", "xz"},
       {.description = "projection", .default_value = "none"}));
 
@@ -624,12 +626,12 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
       "Surface Volume Constraint Penalty", Core::Conditions::VolumeConstraint_3D_pen, true,
       Core::Conditions::geometry_type_surface);
 
-  volumeconstraintpen.add_component(entry<int>("ConditionID"));
+  volumeconstraintpen.add_component(parameter<int>("ConditionID"));
   volumeconstraintpen.add_component(
-      entry<Noneable<int>>("curve", {.description = "id of the curve"}));
-  volumeconstraintpen.add_component(entry<double>("activeTime"));
-  volumeconstraintpen.add_component(entry<double>("penalty"));
-  volumeconstraintpen.add_component(entry<double>("rho"));
+      parameter<Noneable<int>>("curve", {.description = "id of the curve"}));
+  volumeconstraintpen.add_component(parameter<double>("activeTime"));
+  volumeconstraintpen.add_component(parameter<double>("penalty"));
+  volumeconstraintpen.add_component(parameter<double>("rho"));
   volumeconstraintpen.add_component(selection<std::string>("projection", {"none", "xy", "yz", "xz"},
       {.description = "projection", .default_value = "none"}));
 
@@ -642,9 +644,10 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
       "AreaConstraint_3D", "Surface Area Constraint", Core::Conditions::AreaConstraint_3D, true,
       Core::Conditions::geometry_type_surface);
 
-  areaconstraint.add_component(entry<int>("ConditionID"));
-  areaconstraint.add_component(entry<Noneable<int>>("curve", {.description = "id of the curve"}));
-  areaconstraint.add_component(entry<double>("activeTime"));
+  areaconstraint.add_component(parameter<int>("ConditionID"));
+  areaconstraint.add_component(
+      parameter<Noneable<int>>("curve", {.description = "id of the curve"}));
+  areaconstraint.add_component(parameter<double>("activeTime"));
 
   condlist.push_back(areaconstraint);
 
@@ -656,7 +659,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
       "VolumeMonitor_3D", "Surface Volume Monitor", Core::Conditions::VolumeMonitor_3D, true,
       Core::Conditions::geometry_type_surface);
 
-  volumemonitor.add_component(entry<int>("ConditionID"));
+  volumemonitor.add_component(parameter<int>("ConditionID"));
 
   condlist.push_back(volumemonitor);
 
@@ -667,7 +670,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
       "AreaMonitor_3D", "Surface Area Monitor", Core::Conditions::AreaMonitor_3D, true,
       Core::Conditions::geometry_type_surface);
 
-  areamonitor.add_component(entry<int>("ConditionID"));
+  areamonitor.add_component(parameter<int>("ConditionID"));
   areamonitor.add_component(selection<std::string>("projection", {"none", "xy", "yz", "xz"},
       {.description = "projection", .default_value = "none"}));
 
@@ -680,9 +683,9 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
       "AreaConstraint_2D", "Line Area Constraint", Core::Conditions::AreaConstraint_2D, true,
       Core::Conditions::geometry_type_line);
 
-  areaconstraint2D.add_component(entry<int>("ConditionID"));
-  areaconstraint2D.add_component(entry<Noneable<int>>("curve", {.description = {}}));
-  areaconstraint2D.add_component(entry<double>("activeTime"));
+  areaconstraint2D.add_component(parameter<int>("ConditionID"));
+  areaconstraint2D.add_component(parameter<Noneable<int>>("curve", {.description = {}}));
+  areaconstraint2D.add_component(parameter<double>("activeTime"));
 
   condlist.push_back(areaconstraint2D);
 
@@ -693,7 +696,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
       "AreaMonitor_2D", "Line Area Monitor", Core::Conditions::AreaMonitor_2D, true,
       Core::Conditions::geometry_type_line);
 
-  areamonitor2D.add_component(entry<int>("ConditionID"));
+  areamonitor2D.add_component(parameter<int>("ConditionID"));
 
   condlist.push_back(areamonitor2D);
 
@@ -704,11 +707,11 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
       "MPC_NodeOnPlane_3D", "Node on Plane Constraint", Core::Conditions::MPC_NodeOnPlane_3D, false,
       Core::Conditions::geometry_type_surface);
 
-  nodeonplaneconst3D.add_component(entry<int>("ConditionID"));
-  nodeonplaneconst3D.add_component(entry<double>("amplitude"));
-  nodeonplaneconst3D.add_component(entry<Noneable<int>>("curve", {.description = {}}));
-  nodeonplaneconst3D.add_component(entry<double>("activeTime"));
-  nodeonplaneconst3D.add_component(entry<std::vector<int>>(
+  nodeonplaneconst3D.add_component(parameter<int>("ConditionID"));
+  nodeonplaneconst3D.add_component(parameter<double>("amplitude"));
+  nodeonplaneconst3D.add_component(parameter<Noneable<int>>("curve", {.description = {}}));
+  nodeonplaneconst3D.add_component(parameter<double>("activeTime"));
+  nodeonplaneconst3D.add_component(parameter<std::vector<int>>(
       "planeNodes", {.description = "ids of the nodes spanning the plane", .size = 3}));
   nodeonplaneconst3D.add_component(selection<std::string>("control", {"rel", "abs"},
       {.description = "relative or absolute control", .default_value = "rel"}));
@@ -723,13 +726,13 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
       "Node on Plane Constraint", Core::Conditions::MPC_NormalComponent_3D, false,
       Core::Conditions::geometry_type_surface);
 
-  nodemasterconst3D.add_component(entry<int>("ConditionID"));
-  nodemasterconst3D.add_component(entry<double>("amplitude"));
-  nodemasterconst3D.add_component(entry<Noneable<int>>("curve", {.description = {}}));
-  nodemasterconst3D.add_component(entry<double>("activeTime"));
-  nodemasterconst3D.add_component(entry<int>("masterNode"));
+  nodemasterconst3D.add_component(parameter<int>("ConditionID"));
+  nodemasterconst3D.add_component(parameter<double>("amplitude"));
+  nodemasterconst3D.add_component(parameter<Noneable<int>>("curve", {.description = {}}));
+  nodemasterconst3D.add_component(parameter<double>("activeTime"));
+  nodemasterconst3D.add_component(parameter<int>("masterNode"));
   nodemasterconst3D.add_component(
-      entry<std::vector<double>>("direction", {.description = "direction", .size = 3}));
+      parameter<std::vector<double>>("direction", {.description = "direction", .size = 3}));
   nodemasterconst3D.add_component(selection<std::string>(
       "value", {"disp", "x"}, {.description = "value", .default_value = "disp"}));
   nodemasterconst3D.add_component(selection<std::string>("control", {"rel", "abs"},
@@ -746,14 +749,14 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
       Core::Conditions::geometry_type_surface);
 
 
-  nodemasterconst3Dpen.add_component(entry<int>("ConditionID"));
-  nodemasterconst3Dpen.add_component(entry<double>("amplitude"));
-  nodemasterconst3Dpen.add_component(entry<Noneable<int>>("curve", {.description = {}}));
-  nodemasterconst3Dpen.add_component(entry<double>("activeTime"));
-  nodemasterconst3Dpen.add_component(entry<double>("penalty"));
-  nodemasterconst3Dpen.add_component(entry<int>("masterNode"));
+  nodemasterconst3Dpen.add_component(parameter<int>("ConditionID"));
+  nodemasterconst3Dpen.add_component(parameter<double>("amplitude"));
+  nodemasterconst3Dpen.add_component(parameter<Noneable<int>>("curve", {.description = {}}));
+  nodemasterconst3Dpen.add_component(parameter<double>("activeTime"));
+  nodemasterconst3Dpen.add_component(parameter<double>("penalty"));
+  nodemasterconst3Dpen.add_component(parameter<int>("masterNode"));
   nodemasterconst3Dpen.add_component(
-      entry<std::vector<int>>("direction", {.description = "direction", .size = 3}));
+      parameter<std::vector<int>>("direction", {.description = "direction", .size = 3}));
   nodemasterconst3Dpen.add_component(selection<std::string>(
       "value", {"disp", "x"}, {.description = "value", .default_value = "disp"}));
   nodemasterconst3Dpen.add_component(selection<std::string>("control", {"rel", "abs"},
@@ -766,15 +769,15 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
       "MPC_NodeOnLine_2D", "Node on Line Constraint", Core::Conditions::MPC_NodeOnLine_2D, false,
       Core::Conditions::geometry_type_line);
 
-  nodeonlineconst2D.add_component(entry<int>("ConditionID"));
-  nodeonlineconst2D.add_component(entry<double>("amplitude"));
-  nodeonlineconst2D.add_component(entry<Noneable<int>>("curve", {.description = {}}));
-  nodeonlineconst2D.add_component(entry<int>("constrNode1"));
-  nodeonlineconst2D.add_component(entry<int>("constrNode2"));
-  nodeonlineconst2D.add_component(entry<int>("constrNode3"));
+  nodeonlineconst2D.add_component(parameter<int>("ConditionID"));
+  nodeonlineconst2D.add_component(parameter<double>("amplitude"));
+  nodeonlineconst2D.add_component(parameter<Noneable<int>>("curve", {.description = {}}));
+  nodeonlineconst2D.add_component(parameter<int>("constrNode1"));
+  nodeonlineconst2D.add_component(parameter<int>("constrNode2"));
+  nodeonlineconst2D.add_component(parameter<int>("constrNode3"));
   nodeonlineconst2D.add_component(selection<std::string>("control", {"dist", "angle"},
       {.description = "distance or angle control", .default_value = "dist"}));
-  nodeonlineconst2D.add_component(entry<double>("activeTime"));
+  nodeonlineconst2D.add_component(parameter<double>("activeTime"));
 
   condlist.push_back(nodeonlineconst2D);
 
@@ -813,8 +816,8 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
   {
     cond.add_component(selection<std::string>(
         "DIS", {"fluid", "scatra", "solid"}, {.description = "discretization"}));
-    cond.add_component(entry<int>("NUMMODES"));
-    cond.add_component(entry<std::vector<int>>(
+    cond.add_component(parameter<int>("NUMMODES"));
+    cond.add_component(parameter<std::vector<int>>(
         "ONOFF", {.description = "", .size = from_parameter<int>("NUMMODES")}));
     cond.add_component(selection<std::string>("WEIGHTVECDEF", {"integration", "pointvalues"},
         {.description = "weight vector definition"}));

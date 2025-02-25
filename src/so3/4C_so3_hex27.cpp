@@ -82,17 +82,17 @@ void Discret::Elements::SoHex27Type::setup_element_definition(
   using namespace Core::IO::InputSpecBuilders;
 
   defs["HEX27"] = all_of({
-      entry<std::vector<int>>("HEX27", {.size = 27}),
-      entry<int>("MAT"),
-      entry<std::string>("KINEM"),
-      entry<std::vector<double>>("RAD", {.required = false, .size = 3}),
-      entry<std::vector<double>>("AXI", {.required = false, .size = 3}),
-      entry<std::vector<double>>("CIR", {.required = false, .size = 3}),
-      entry<std::vector<double>>("FIBER1", {.required = false, .size = 3}),
-      entry<std::vector<double>>("FIBER2", {.required = false, .size = 3}),
-      entry<std::vector<double>>("FIBER3", {.required = false, .size = 3}),
-      entry<double>("STRENGTH", {.required = false}),
-      entry<double>("GROWTHTRIG", {.required = false}),
+      parameter<std::vector<int>>("HEX27", {.size = 27}),
+      parameter<int>("MAT"),
+      parameter<std::string>("KINEM"),
+      parameter<std::vector<double>>("RAD", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("AXI", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("CIR", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("FIBER1", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("FIBER2", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("FIBER3", {.required = false, .size = 3}),
+      parameter<double>("STRENGTH", {.required = false}),
+      parameter<double>("GROWTHTRIG", {.required = false}),
   });
 }
 

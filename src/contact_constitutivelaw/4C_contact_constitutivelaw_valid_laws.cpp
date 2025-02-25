@@ -29,10 +29,10 @@ Core::IO::InputSpec CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws()
   {
     specs.emplace_back(group("CoConstLaw_brokenrational",
         {
-            entry<double>("A", {.description = "scaling factor"}),
-            entry<double>("B", {.description = "asymptote"}),
-            entry<double>("C", {.description = "y intercept"}),
-            entry<double>(
+            parameter<double>("A", {.description = "scaling factor"}),
+            parameter<double>("B", {.description = "asymptote"}),
+            parameter<double>("C", {.description = "y intercept"}),
+            parameter<double>(
                 "Offset", {.description = "offset for contact to start", .default_value = 0.0}),
         },
         {
@@ -44,9 +44,9 @@ Core::IO::InputSpec CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws()
   {
     specs.emplace_back(group("CoConstLaw_power",
         {
-            entry<double>("A", {.description = "scaling factor"}),
-            entry<double>("B", {.description = "power coefficient"}),
-            entry<double>(
+            parameter<double>("A", {.description = "scaling factor"}),
+            parameter<double>("B", {.description = "power coefficient"}),
+            parameter<double>(
                 "Offset", {.description = "offset for contact to start", .default_value = 0.0}),
         },
         {
@@ -59,11 +59,11 @@ Core::IO::InputSpec CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws()
   {
     specs.emplace_back(group("CoConstLaw_cubic",
         {
-            entry<double>("A", {.description = "A"}),
-            entry<double>("B", {.description = "B"}),
-            entry<double>("C", {.description = "C"}),
-            entry<double>("D", {.description = "D"}),
-            entry<double>(
+            parameter<double>("A", {.description = "A"}),
+            parameter<double>("B", {.description = "B"}),
+            parameter<double>("C", {.description = "C"}),
+            parameter<double>("D", {.description = "D"}),
+            parameter<double>(
                 "Offset", {.description = "offset for contact to start", .default_value = 0.0}),
         },
         {
@@ -76,9 +76,9 @@ Core::IO::InputSpec CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws()
   {
     specs.emplace_back(group("CoConstLaw_linear",
         {
-            entry<double>("A", {.description = "slope"}),
-            entry<double>("B", {.description = "y intercept"}),
-            entry<double>(
+            parameter<double>("A", {.description = "slope"}),
+            parameter<double>("B", {.description = "y intercept"}),
+            parameter<double>(
                 "Offset", {.description = "offset for contact to start", .default_value = 0.0}),
         },
         {
@@ -91,41 +91,41 @@ Core::IO::InputSpec CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws()
   {
     specs.emplace_back(group("CoConstLaw_mirco",
         {
-            entry<int>("FirstMatID", {.description = "First material ID"}),
-            entry<int>("SecondMatID", {.description = "Second material ID"}),
-            entry<double>(
+            parameter<int>("FirstMatID", {.description = "First material ID"}),
+            parameter<int>("SecondMatID", {.description = "Second material ID"}),
+            parameter<double>(
                 "LateralLength", {.description = "length of lateral side of the BEM patch"}),
-            entry<int>("Resolution", {.description = "resolution of the surface"}),
-            entry<bool>("PressureGreenFunFlag",
+            parameter<int>("Resolution", {.description = "resolution of the surface"}),
+            parameter<bool>("PressureGreenFunFlag",
                 {.description = "Use pressure-based Green function instead of a point-force-based",
                     .default_value = true}),
-            entry<int>("InitialTopologyStdDeviationFunct",
+            parameter<int>("InitialTopologyStdDeviationFunct",
                 {.description = "Function id for Initial Standard deviation for the "
                                 "random-midpoint generator",
                     .default_value = 100}),
-            entry<int>(
+            parameter<int>(
                 "HurstExponentFunct", {.description = "Function for Hurst exponent of the surface",
                                           .default_value = 100}),
-            entry<bool>("RandomTopologyFlag",
+            parameter<bool>("RandomTopologyFlag",
                 {.description = "Use random midpoint generator flag", .default_value = true}),
-            entry<bool>(
+            parameter<bool>(
                 "RandomSeedFlag", {.description = "Random seed flag", .default_value = false}),
-            entry<int>("RandomGeneratorSeed",
+            parameter<int>("RandomGeneratorSeed",
                 {.description = "Use random seed to reproduce results", .default_value = 95}),
-            entry<double>("Tolerance",
+            parameter<double>("Tolerance",
                 {.description = "Tolerance for the convergence of force", .default_value = 0.01}),
-            entry<int>("MaxIteration",
+            parameter<int>("MaxIteration",
                 {.description = "Maximum iteration of NNLS", .default_value = 1000}),
-            entry<bool>("WarmStartingFlag",
+            parameter<bool>("WarmStartingFlag",
                 {.description = "Warm-starting flag, solution accelerator", .default_value = true}),
-            entry<double>(
+            parameter<double>(
                 "Offset", {.description = "offset for contact to start", .default_value = 0.0}),
-            entry<double>("FiniteDifferenceFraction",
+            parameter<double>("FiniteDifferenceFraction",
                 {.description = "Fraction of perturbation difference compared to the actual gap",
                     .default_value = 0.001}),
-            entry<double>("ActiveGapTolerance",
+            parameter<double>("ActiveGapTolerance",
                 {.description = "Minimum gap to consider a node as active", .default_value = 1e-6}),
-            entry<std::string>("TopologyFilePath",
+            parameter<std::string>("TopologyFilePath",
                 {.description = "Path to file with micro-topology data", .default_value = ""}),
         },
         {
@@ -135,7 +135,7 @@ Core::IO::InputSpec CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws()
   }
 
   auto valid_law = all_of({
-      entry<int>("LAW"),
+      parameter<int>("LAW"),
       one_of(specs, store_index_as("LAW_TYPE", group_index_to_type)),
   });
 

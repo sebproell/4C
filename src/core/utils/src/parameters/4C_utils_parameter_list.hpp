@@ -60,7 +60,7 @@ namespace Core
           Teuchos::tuple<std::string>(value_name), Teuchos::tuple<EnumType>(value), &list);
     }
 
-    /// temporary helper around InputSpecBuilders::entry<bool>
+    /// temporary helper around InputSpecBuilders::parameter<bool>
     void bool_parameter(std::string const& paramName, bool default_value,
         std::string const& docString, SectionSpecs& section_specs);
     // fail if users provide a string literal as default value

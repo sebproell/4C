@@ -71,7 +71,7 @@ void Discret::Elements::SoHex8PoroScatraType::setup_element_definition(
 
   defs["HEX8"] = all_of({
       defs_hex8["HEX8"],
-      entry<std::string>("TYPE"),
+      parameter<std::string>("TYPE"),
   });
 }
 
@@ -133,7 +133,7 @@ void Discret::Elements::SoTet4PoroScatraType::setup_element_definition(
 
   defs["TET4"] = all_of({
       defs_tet4["TET4"],
-      entry<std::string>("TYPE"),
+      parameter<std::string>("TYPE"),
   });
 }
 
@@ -195,7 +195,7 @@ void Discret::Elements::SoHex27PoroScatraType::setup_element_definition(
 
   defs["HEX27"] = all_of({
       defs_hex27["HEX27"],
-      entry<std::string>("TYPE"),
+      parameter<std::string>("TYPE"),
   });
 }
 
@@ -258,7 +258,7 @@ void Discret::Elements::SoTet10PoroScatraType::setup_element_definition(
 
   defs["TET10"] = all_of({
       defs_tet10["TET10"],
-      entry<std::string>("TYPE"),
+      parameter<std::string>("TYPE"),
   });
 }
 
@@ -319,7 +319,7 @@ void Discret::Elements::SoNurbs27PoroScatraType::setup_element_definition(
 
   defs["NURBS27"] = all_of({
       defs_nurbs27["NURBS27"],
-      entry<std::string>("TYPE"),
+      parameter<std::string>("TYPE"),
   });
 }
 

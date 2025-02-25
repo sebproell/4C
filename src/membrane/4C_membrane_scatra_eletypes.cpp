@@ -64,7 +64,7 @@ void Discret::Elements::MembraneScatraTri3Type::setup_element_definition(
 
   defs["TRI3"] = all_of({
       defs_membrane["TRI3"],
-      entry<std::string>("TYPE"),
+      parameter<std::string>("TYPE"),
   });
 }
 
@@ -121,7 +121,7 @@ void Discret::Elements::MembraneScatraTri6Type::setup_element_definition(
 
   defs["TRI6"] = all_of({
       defs_membrane["TRI6"],
-      entry<std::string>("TYPE"),
+      parameter<std::string>("TYPE"),
   });
 }
 
@@ -178,7 +178,7 @@ void Discret::Elements::MembraneScatraQuad4Type::setup_element_definition(
 
   defs["QUAD4"] = all_of({
       defs_membrane["QUAD4"],
-      entry<std::string>("TYPE"),
+      parameter<std::string>("TYPE"),
   });
 }
 
@@ -235,7 +235,7 @@ void Discret::Elements::MembraneScatraQuad9Type::setup_element_definition(
 
   defs["QUAD9"] = all_of({
       defs_membrane["QUAD9"],
-      entry<std::string>("TYPE"),
+      parameter<std::string>("TYPE"),
   });
 }
 

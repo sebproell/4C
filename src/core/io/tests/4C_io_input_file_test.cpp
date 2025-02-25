@@ -133,9 +133,9 @@ namespace
 
     MPI_Comm comm(MPI_COMM_WORLD);
     Core::IO::InputFile input{{{"INCLUDED SECTION 2", all_of({
-                                                          entry<int>("a"),
-                                                          entry<double>("b"),
-                                                          entry<bool>("c"),
+                                                          parameter<int>("a"),
+                                                          parameter<double>("b"),
+                                                          parameter<bool>("c"),
                                                       })}},
         {
             "MAIN SECTION",
@@ -152,9 +152,9 @@ namespace
     EXPECT_EQ(input.file_for_section("INCLUDED SECTION 2").filename(), "included.yaml");
 
     auto spec = Core::IO::InputSpecBuilders::all_of({
-        Core::IO::InputSpecBuilders::entry<int>("a"),
-        Core::IO::InputSpecBuilders::entry<double>("b"),
-        Core::IO::InputSpecBuilders::entry<bool>("c"),
+        Core::IO::InputSpecBuilders::parameter<int>("a"),
+        Core::IO::InputSpecBuilders::parameter<double>("b"),
+        Core::IO::InputSpecBuilders::parameter<bool>("c"),
     });
 
     Core::IO::InputParameterContainer container;

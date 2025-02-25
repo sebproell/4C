@@ -69,12 +69,12 @@ void Discret::Elements::SoHex8PoroType::setup_element_definition(
 
   defs["HEX8"] = all_of({
       defs_hex8["HEX8"],
-      entry<std::vector<double>>("POROANISODIR1", {.required = false, .size = 3}),
-      entry<std::vector<double>>("POROANISODIR2", {.required = false, .size = 3}),
-      entry<std::vector<double>>("POROANISODIR3", {.required = false, .size = 3}),
-      entry<std::vector<double>>("POROANISONODALCOEFFS1", {.required = false, .size = 8}),
-      entry<std::vector<double>>("POROANISONODALCOEFFS2", {.required = false, .size = 8}),
-      entry<std::vector<double>>("POROANISONODALCOEFFS3", {.required = false, .size = 8}),
+      parameter<std::vector<double>>("POROANISODIR1", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISODIR2", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISODIR3", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISONODALCOEFFS1", {.required = false, .size = 8}),
+      parameter<std::vector<double>>("POROANISONODALCOEFFS2", {.required = false, .size = 8}),
+      parameter<std::vector<double>>("POROANISONODALCOEFFS3", {.required = false, .size = 8}),
   });
 }
 
@@ -149,12 +149,12 @@ void Discret::Elements::SoTet4PoroType::setup_element_definition(
 
   defs["TET4"] = all_of({
       defs_tet4["TET4"],
-      entry<std::vector<double>>("POROANISODIR1", {.required = false, .size = 3}),
-      entry<std::vector<double>>("POROANISODIR2", {.required = false, .size = 3}),
-      entry<std::vector<double>>("POROANISODIR3", {.required = false, .size = 3}),
-      entry<std::vector<double>>("POROANISONODALCOEFFS1", {.required = false, .size = 4}),
-      entry<std::vector<double>>("POROANISONODALCOEFFS2", {.required = false, .size = 4}),
-      entry<std::vector<double>>("POROANISONODALCOEFFS3", {.required = false, .size = 4}),
+      parameter<std::vector<double>>("POROANISODIR1", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISODIR2", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISODIR3", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISONODALCOEFFS1", {.required = false, .size = 4}),
+      parameter<std::vector<double>>("POROANISONODALCOEFFS2", {.required = false, .size = 4}),
+      parameter<std::vector<double>>("POROANISONODALCOEFFS3", {.required = false, .size = 4}),
   });
 }
 
@@ -228,9 +228,9 @@ void Discret::Elements::SoHex27PoroType::setup_element_definition(
 
   defs["HEX27"] = all_of({
       defs_hex27["HEX27"],
-      entry<std::vector<double>>("POROANISODIR1", {.required = false, .size = 3}),
-      entry<std::vector<double>>("POROANISODIR2", {.required = false, .size = 3}),
-      entry<std::vector<double>>("POROANISODIR3", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISODIR1", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISODIR2", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISODIR3", {.required = false, .size = 3}),
   });
 }
 
@@ -304,9 +304,9 @@ void Discret::Elements::SoTet10PoroType::setup_element_definition(
 
   defs["TET10"] = all_of({
       defs_tet10["TET10"],
-      entry<std::vector<double>>("POROANISODIR1", {.required = false, .size = 3}),
-      entry<std::vector<double>>("POROANISODIR2", {.required = false, .size = 3}),
-      entry<std::vector<double>>("POROANISODIR3", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISODIR1", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISODIR2", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISODIR3", {.required = false, .size = 3}),
   });
 }
 
@@ -378,9 +378,9 @@ void Discret::Elements::SoNurbs27PoroType::setup_element_definition(
 
   defs["NURBS27"] = all_of({
       defs_nurbs27["NURBS27"],
-      entry<std::vector<double>>("POROANISODIR1", {.required = false, .size = 3}),
-      entry<std::vector<double>>("POROANISODIR2", {.required = false, .size = 3}),
-      entry<std::vector<double>>("POROANISODIR3", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISODIR1", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISODIR2", {.required = false, .size = 3}),
+      parameter<std::vector<double>>("POROANISODIR3", {.required = false, .size = 3}),
   });
 }
 

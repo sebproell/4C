@@ -137,8 +137,8 @@ void Discret::Elements::ScaTraHDGType ::setup_element_definition(
   {
     defs[key] = all_of({
         scatra_line_def,
-        entry<int>("DEG"),
-        entry<int>("SPC", {.required = false}),
+        parameter<int>("DEG"),
+        parameter<int>("SPC", {.required = false}),
     });
   }
 }

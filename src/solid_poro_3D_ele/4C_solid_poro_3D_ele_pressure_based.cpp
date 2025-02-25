@@ -38,9 +38,9 @@ namespace Discret::Elements::SolidPoroPressureBasedInternal
     auto get_default_input_spec()
     {
       return all_of({
-          entry<std::vector<int>>(
+          parameter<std::vector<int>>(
               Core::FE::cell_type_to_string(celltype), {.size = Core::FE::num_nodes<celltype>}),
-          entry<int>("MAT"),
+          parameter<int>("MAT"),
           selection<Inpar::Solid::KinemType>("KINEM",
               {
                   {kinem_type_string(Inpar::Solid::KinemType::linear),

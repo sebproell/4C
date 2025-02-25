@@ -216,13 +216,13 @@ void Thermo::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinit
     // --> Tempnp (current temperature solution T_n+1) with linearisation
     cond.add_component(selection<std::string>(
         "temperature_state", {"Tempnp", "Tempn"}, {.description = "temperature state"}));
-    cond.add_component(entry<double>("coeff", {.description = "heat transfer coefficient h"}));
+    cond.add_component(parameter<double>("coeff", {.description = "heat transfer coefficient h"}));
     cond.add_component(
-        entry<double>("surtemp", {.description = "surrounding (fluid) temperature T_oo"}));
-    cond.add_component(entry<Noneable<int>>("surtempfunct",
+        parameter<double>("surtemp", {.description = "surrounding (fluid) temperature T_oo"}));
+    cond.add_component(parameter<Noneable<int>>("surtempfunct",
         {.description =
                 "time curve to increase the surrounding (fluid) temperature T_oo in time"}));
-    cond.add_component(entry<Noneable<int>>("funct",
+    cond.add_component(parameter<Noneable<int>>("funct",
         {.description =
                 "time curve to increase the complete boundary condition, i.e., the heat flux"}));
     condlist.push_back(cond);
@@ -243,11 +243,11 @@ void Thermo::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinit
 
   const auto make_thermorobin = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    cond.add_component(entry<int>("NUMSCAL"));
-    cond.add_component(entry<std::vector<int>>(
+    cond.add_component(parameter<int>("NUMSCAL"));
+    cond.add_component(parameter<std::vector<int>>(
         "ONOFF", {.description = "", .size = from_parameter<int>("NUMSCAL")}));
-    cond.add_component(entry<double>("PREFACTOR"));
-    cond.add_component(entry<double>("REFVALUE"));
+    cond.add_component(parameter<double>("PREFACTOR"));
+    cond.add_component(parameter<double>("REFVALUE"));
 
     condlist.push_back(cond);
   };

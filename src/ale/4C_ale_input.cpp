@@ -96,8 +96,8 @@ void ALE::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition
         {"lagrange", "heightfunction", "sphereHeightFunction", "meantangentialvelocity",
             "meantangentialvelocityscaled"},
         {.description = "", .default_value = "lagrange"}));
-    cond.add_component(entry<double>("VAL"));
-    cond.add_component(entry<int>("NODENORMALFUNCT"));
+    cond.add_component(parameter<double>("VAL"));
+    cond.add_component(parameter<int>("NODENORMALFUNCT"));
 
     condlist.emplace_back(cond);
   };

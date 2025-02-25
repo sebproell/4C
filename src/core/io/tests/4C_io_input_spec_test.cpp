@@ -21,10 +21,10 @@ namespace
   TEST(InputSpecTest, Simple)
   {
     auto spec = all_of({
-        entry<int>("a", {.description = "An integer", .default_value = 1}),
-        entry<double>("b", {.required = true}),
-        entry<std::string>("c", {.required = false}),
-        entry<bool>("d"),
+        parameter<int>("a", {.description = "An integer", .default_value = 1}),
+        parameter<double>("b", {.required = true}),
+        parameter<std::string>("c", {.required = false}),
+        parameter<bool>("d"),
     });
     InputParameterContainer container;
     std::string stream("b 2.0 d true // trailing comment");
@@ -39,9 +39,9 @@ namespace
   TEST(InputSpecTest, OptionalLeftOut)
   {
     auto spec = all_of({
-        entry<int>("a"),
-        entry<double>("b"),
-        entry<std::string>("c", {.default_value = "default"}),
+        parameter<int>("a"),
+        parameter<double>("b"),
+        parameter<std::string>("c", {.default_value = "default"}),
     });
 
     {
@@ -58,9 +58,9 @@ namespace
   TEST(InputSpecTest, RequiredLeftOut)
   {
     auto spec = all_of({
-        entry<int>("a"),
-        entry<double>("b"),
-        entry<std::string>("c"),
+        parameter<int>("a"),
+        parameter<double>("b"),
+        parameter<std::string>("c"),
     });
 
     {
@@ -103,7 +103,7 @@ namespace
   {
     // This used to be a bug where a single default dat parameter was not accepted.
     auto spec = all_of({
-        entry<double>("a", {.default_value = 1.0}),
+        parameter<double>("a", {.default_value = 1.0}),
     });
 
     {
@@ -135,8 +135,8 @@ namespace
   TEST(InputSpecTest, Vector)
   {
     auto spec = all_of({
-        entry<std::vector<std::vector<int>>>("a", {.size = {2, 2}}),
-        entry<std::vector<double>>("b", {.size = 3}),
+        parameter<std::vector<std::vector<int>>>("a", {.size = {2, 2}}),
+        parameter<std::vector<double>>("b", {.size = 3}),
     });
 
     {
@@ -171,12 +171,12 @@ namespace
   TEST(InputSpecTest, Noneable)
   {
     auto spec = all_of({
-        entry<int>("size"),
-        entry<std::vector<Noneable<int>>>("a", {.size = from_parameter<int>("size")}),
-        entry<Noneable<std::string>>("b", {.description = "b"}),
-        entry<Noneable<double>>("c", {.default_value = 1.0}),
-        entry<Noneable<bool>>("d", {.required = false}),
-        entry<Noneable<int>>("e", {.default_value = none<int>}),
+        parameter<int>("size"),
+        parameter<std::vector<Noneable<int>>>("a", {.size = from_parameter<int>("size")}),
+        parameter<Noneable<std::string>>("b", {.description = "b"}),
+        parameter<Noneable<double>>("c", {.default_value = 1.0}),
+        parameter<Noneable<bool>>("d", {.required = false}),
+        parameter<Noneable<int>>("e", {.default_value = none<int>}),
     });
 
     {
@@ -257,9 +257,9 @@ namespace
   TEST(InputSpecTest, VectorWithParsedLength)
   {
     auto spec = all_of({
-        entry<int>("a"),
-        entry<std::vector<double>>("b", {.size = from_parameter<int>("a")}),
-        entry<std::string>("c"),
+        parameter<int>("a"),
+        parameter<std::vector<double>>("b", {.size = from_parameter<int>("a")}),
+        parameter<std::string>("c"),
     });
 
     {
@@ -288,16 +288,16 @@ namespace
   TEST(InputSpecTest, EntryWithCallback)
   {
     auto spec = all_of({
-        entry<int>("a"),
-        entry<double>("b"),
-        entry<std::string>("c",
+        parameter<int>("a"),
+        parameter<double>("b"),
+        parameter<std::string>("c",
             {
                 .description = "A string",
                 .default_value = "Not found",
                 .on_parse_callback = [](InputParameterContainer& container)
                 { container.add<int>("c_as_int", std::stoi(container.get<std::string>("c"))); },
             }),
-        entry<std::string>("s"),
+        parameter<std::string>("s"),
     });
 
     {
@@ -324,10 +324,10 @@ namespace
   TEST(InputSpecTest, Selection)
   {
     auto spec = all_of({
-        entry<int>("a"),
+        parameter<int>("a"),
         selection<int>("b", {{"b1", 1}, {"b2", 2}}, {.default_value = 1}),
         selection<std::string>("c", {"c1", "c2"}, {.default_value = "c2"}),
-        entry<std::string>("d"),
+        parameter<std::string>("d"),
     });
 
     {
@@ -353,10 +353,10 @@ namespace
   TEST(InputSpecTest, Unparsed)
   {
     auto spec = all_of({
-        entry<int>("a"),
-        entry<int>("optional", {.default_value = 42}),
-        entry<double>("b"),
-        entry<std::string>("c"),
+        parameter<int>("a"),
+        parameter<int>("optional", {.default_value = 42}),
+        parameter<double>("b"),
+        parameter<std::string>("c"),
     });
     InputParameterContainer container;
     std::string stream("a 1 b 2.0 c string unparsed unparsed");
@@ -369,28 +369,28 @@ namespace
   TEST(InputSpecTest, Groups)
   {
     auto spec = all_of({
-        entry<int>("a"),
+        parameter<int>("a"),
         group("group1",
             {
-                entry<double>("b"),
+                parameter<double>("b"),
             }),
         group("group2",
             {
-                entry<double>("b", {.default_value = 3.0}),
-                entry<std::string>("c"),
+                parameter<double>("b", {.default_value = 3.0}),
+                parameter<std::string>("c"),
             },
             {
                 .required = false,
             }),
         group("group3",
             {
-                entry<std::string>("c", {.default_value = "default"}),
+                parameter<std::string>("c", {.default_value = "default"}),
             },
             {
                 .required = false,
                 .defaultable = true,
             }),
-        entry<std::string>("c"),
+        parameter<std::string>("c"),
     });
 
     {
@@ -435,10 +435,10 @@ namespace
   TEST(InputSpecTest, NestedAllOf)
   {
     auto spec = all_of({
-        entry<int>("a"),
+        parameter<int>("a"),
         all_of({
             all_of({
-                entry<double>("b"),
+                parameter<double>("b"),
             }),
             // Not useful but might happen in practice, so ensure this can be handled.
             all_of({}),
@@ -459,13 +459,13 @@ namespace
   TEST(InputSpecTest, OneOf)
   {
     auto spec = all_of({
-        entry<int>("a", {.default_value = 42}),
+        parameter<int>("a", {.default_value = 42}),
         one_of({
-            entry<double>("b"),
+            parameter<double>("b"),
             group("group",
                 {
-                    entry<std::string>("c"),
-                    entry<double>("d"),
+                    parameter<std::string>("c"),
+                    parameter<double>("d"),
                 }),
         }),
     });
@@ -522,12 +522,12 @@ namespace
     auto spec = one_of(
         {
             all_of({
-                entry<int>("a"),
-                entry<double>("b"),
+                parameter<int>("a"),
+                parameter<double>("b"),
             }),
             all_of({
-                entry<std::string>("c"),
-                entry<double>("d"),
+                parameter<std::string>("c"),
+                parameter<double>("d"),
             }),
         },
         // Additionally store the index of the parsed group but map it to a different value.
@@ -574,15 +574,15 @@ namespace
   {
     auto spec = one_of({
         one_of({
-            entry<int>("a"),
-            entry<double>("b"),
+            parameter<int>("a"),
+            parameter<double>("b"),
         }),
         one_of({
-            entry<std::string>("c"),
-            entry<double>("d"),
+            parameter<std::string>("c"),
+            parameter<double>("d"),
             one_of({
-                entry<int>("e"),
-                entry<std::string>("f"),
+                parameter<int>("e"),
+                parameter<std::string>("f"),
             }),
         }),
     });
@@ -606,20 +606,20 @@ namespace
   {
     auto spec = one_of({
         one_of({
-            entry<int>("a"),
-            entry<double>("b"),
+            parameter<int>("a"),
+            parameter<double>("b"),
         }),
         // This one_of has a callback and should not be flattened into the parent one_of.
         one_of(
             {
-                entry<std::string>("c"),
+                parameter<std::string>("c"),
                 // This one_of will not be flattened into the parent that has a callback.
                 one_of({
-                    entry<double>("d"),
+                    parameter<double>("d"),
                     // This one_of can be flattened into the parent one_of.
                     one_of({
-                        entry<int>("e"),
-                        entry<std::string>("f"),
+                        parameter<int>("e"),
+                        parameter<std::string>("f"),
                     }),
                 }),
             },
@@ -667,16 +667,16 @@ specs:
 
   TEST(InputSpecTest, PrintAsDat)
   {
-    auto spec =
-        group("g", {
-                       // Note: the all_of entries will be pulled into the parent group.
-                       all_of({
-                           entry<int>("a", {.description = "An integer"}),
-                           selection<int>("c", {{"c1", 1}, {"c2", 2}},
-                               {.description = "Selection", .default_value = 1}),
-                       }),
-                       entry<int>("d", {.description = "Another\n integer ", .default_value = 42}),
-                   });
+    auto spec = group(
+        "g", {
+                 // Note: the all_of entries will be pulled into the parent group.
+                 all_of({
+                     parameter<int>("a", {.description = "An integer"}),
+                     selection<int>("c", {{"c1", 1}, {"c2", 2}},
+                         {.description = "Selection", .default_value = 1}),
+                 }),
+                 parameter<int>("d", {.description = "Another\n integer ", .default_value = 42}),
+             });
 
     {
       std::ostringstream out;
@@ -692,35 +692,35 @@ specs:
   TEST(InputSpecTest, EmitMetadata)
   {
     auto spec = all_of({
-        entry<int>("a", {.default_value = 42}),
-        entry<std::vector<Noneable<double>>>(
+        parameter<int>("a", {.default_value = 42}),
+        parameter<std::vector<Noneable<double>>>(
             "b", {.default_value = std::vector<Noneable<double>>{1., none<double>, 3.}, .size = 3}),
         one_of({
             all_of({
-                entry<std::map<std::string, std::string>>(
+                parameter<std::map<std::string, std::string>>(
                     "b", {.default_value = std::map<std::string, std::string>{{"key", "abc"}},
                              .size = 1}),
-                entry<std::string>("c"),
+                parameter<std::string>("c"),
             }),
-            entry<std::vector<std::vector<std::vector<int>>>>(
+            parameter<std::vector<std::vector<std::vector<int>>>>(
                 "triple_vector", {.size = {dynamic_size, 2, from_parameter<int>("a")}}),
             group("group",
                 {
-                    entry<std::string>("c", {.description = "A string"}),
-                    entry<double>("d"),
+                    parameter<std::string>("c", {.description = "A string"}),
+                    parameter<double>("d"),
                 },
                 {.description = "A group"}),
         }),
         selection<int>("e", {{"e1", 1}, {"e2", 2}}, {.default_value = 1}),
         group("group2",
             {
-                entry<int>("g"),
+                parameter<int>("g"),
             },
             {.required = false}),
         list("list",
             all_of({
-                entry<int>("l1"),
-                entry<double>("l2"),
+                parameter<int>("l1"),
+                parameter<double>("l2"),
             }),
             {.size = 2}),
     });
@@ -832,14 +832,14 @@ specs:
     InputSpec spec;
     {
       auto tmp = all_of({
-          entry<int>("a"),
-          entry<std::string>("b"),
+          parameter<int>("a"),
+          parameter<std::string>("b"),
           selection<int>("c", {{"c1", 1}, {"c2", 2}}, {.default_value = 1}),
       });
 
       spec = all_of({
           tmp,
-          entry<int>("d"),
+          parameter<int>("d"),
       });
     }
 
@@ -857,7 +857,7 @@ specs:
 
   TEST(InputSpecTest, MatchYamlEntry)
   {
-    auto spec = entry<int>("a");
+    auto spec = parameter<int>("a");
 
     {
       ryml::Tree tree = init_yaml_tree_with_exceptions();
@@ -883,7 +883,7 @@ specs:
 
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          spec.match(node, container), Core::Exception, "Expected entry 'a'");
+          spec.match(node, container), Core::Exception, "Expected parameter 'a'");
     }
 
     {
@@ -896,15 +896,15 @@ specs:
 
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          spec.match(node, container), Core::Exception, "Expected entry 'a'");
+          spec.match(node, container), Core::Exception, "Expected parameter 'a'");
     }
   }
 
   TEST(InputSpecTest, MatchYamlGroup)
   {
     auto spec = group("group", {
-                                   entry<int>("a"),
-                                   entry<std::string>("b"),
+                                   parameter<int>("a"),
+                                   parameter<std::string>("b"),
                                });
 
     {
@@ -940,12 +940,12 @@ specs:
   TEST(InputSpecTest, MatchYamlAllOf)
   {
     auto spec = all_of({
-        entry<int>("a"),
-        entry<std::vector<std::string>>("b"),
+        parameter<int>("a"),
+        parameter<std::vector<std::string>>("b"),
         selection<int>("c", {{"c1", 1}, {"c2", 2}}, {.default_value = 1}),
         group("group",
             {
-                entry<int>("d"),
+                parameter<int>("d"),
             },
             {.required = false}),
     });
@@ -1006,7 +1006,7 @@ specs:
 
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          spec.match(node, container), Core::Exception, "Expected entry 'b'");
+          spec.match(node, container), Core::Exception, "Expected parameter 'b'");
     }
 
     // too much input
@@ -1034,12 +1034,12 @@ specs:
   {
     auto spec = one_of({
         all_of({
-            entry<int>("a"),
-            entry<std::string>("b"),
+            parameter<int>("a"),
+            parameter<std::string>("b"),
         }),
         all_of({
-            entry<std::string>("a"),
-            entry<double>("d"),
+            parameter<std::string>("a"),
+            parameter<double>("d"),
         }),
     });
 
@@ -1088,13 +1088,13 @@ specs:
           "[X] Expected exactly one but matched multiple:\n"
           "  [!] Possible match:\n"
           "    {\n"
-          "      [ ] Fully matched entry 'a'\n"
-          "      [ ] Fully matched entry 'b'\n"
+          "      [ ] Fully matched parameter 'a'\n"
+          "      [ ] Fully matched parameter 'b'\n"
           "    }\n"
           "  [!] Possible match:\n"
           "    {\n"
-          "      [ ] Fully matched entry 'a'\n"
-          "      [ ] Fully matched entry 'd'\n"
+          "      [ ] Fully matched parameter 'a'\n"
+          "      [ ] Fully matched parameter 'd'\n"
           "    }");
     }
   }
@@ -1103,8 +1103,8 @@ specs:
   {
     auto spec = list("list",
         all_of({
-            entry<int>("a"),
-            entry<std::string>("b"),
+            parameter<int>("a"),
+            parameter<std::string>("b"),
         }),
         {.size = 1});
 
@@ -1208,7 +1208,7 @@ specs:
   TEST(InputSpecTest, MatchYamlPath)
   {
     auto spec = all_of({
-        entry<std::filesystem::path>("a"),
+        parameter<std::filesystem::path>("a"),
     });
 
     {
@@ -1254,9 +1254,9 @@ specs:
   TEST(InputSpecTest, MatchYamlNoneable)
   {
     auto spec = all_of({
-        entry<Noneable<int>>("i", {.default_value = none<int>}),
-        entry<Noneable<std::string>>("s"),
-        entry<std::vector<Noneable<double>>>("v", {.size = 3}),
+        parameter<Noneable<int>>("i", {.default_value = none<int>}),
+        parameter<Noneable<std::string>>("s"),
+        parameter<std::vector<Noneable<double>>>("v", {.size = 3}),
     });
 
     {
@@ -1306,8 +1306,8 @@ v: [Null, NULL, ~] # all the other spellings that YAML supports
   {
     using ComplicatedType = std::vector<std::map<std::string, std::vector<int>>>;
     auto spec = all_of({
-        entry<int>("num"),
-        entry<ComplicatedType>("v", {.size = {2, dynamic_size, from_parameter<int>("num")}}),
+        parameter<int>("num"),
+        parameter<ComplicatedType>("v", {.size = {2, dynamic_size, from_parameter<int>("num")}}),
     });
 
     {
@@ -1358,22 +1358,22 @@ v:
 
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          spec.match(node, container), Core::Exception, "Partially matched entry 'v'");
+          spec.match(node, container), Core::Exception, "Partially matched parameter 'v'");
     }
   }
 
   TEST(InputSpecTest, MaterialExample)
   {
     auto mat_spec = all_of({
-        entry<int>("MAT"),
+        parameter<int>("MAT"),
         one_of({
             group("MAT_A",
                 {
-                    entry<int>("a"),
+                    parameter<int>("a"),
                 }),
             group("MAT_B",
                 {
-                    entry<int>("b"),
+                    parameter<int>("b"),
                 }),
         }),
     });
@@ -1398,9 +1398,9 @@ v:
 
   TEST(InputSpecTest, EmptyMatchesAllDefaulted)
   {
-    // This was a bug where a single defaulted entry was incorrectly reported as not matching.
+    // This was a bug where a single defaulted parameter was incorrectly reported as not matching.
     auto spec = all_of({
-        entry<int>("a", {.default_value = 42}),
+        parameter<int>("a", {.default_value = 42}),
     });
 
     {
@@ -1421,29 +1421,29 @@ v:
         // awkward one_of where the first choice partially matches
         one_of({
             all_of({
-                entry<int>("a"),
-                entry<std::string>("b"),
+                parameter<int>("a"),
+                parameter<std::string>("b"),
             }),
             all_of({
-                entry<int>("a"),
-                entry<double>("d"),
+                parameter<int>("a"),
+                parameter<double>("d"),
             }),
         }),
         // group with all defaulted entries
         group("group",
             {
-                entry<double>("c", {.default_value = 1.0}),
+                parameter<double>("c", {.default_value = 1.0}),
                 selection<int>("d", {{"d1", 1}, {"d2", 2}}, {.default_value = 2}),
             },
             {.required = false}),
         list("list",
             all_of({
-                entry<int>("l1"),
-                entry<double>("l2"),
+                parameter<int>("l1"),
+                parameter<double>("l2"),
             }),
             {.size = 2}),
-        entry<int>("i", {.default_value = 0}),
-        entry<std::vector<double>>("v", {.size = 3}),
+        parameter<int>("i", {.default_value = 0}),
+        parameter<std::vector<double>>("v", {.size = 3}),
     });
 
     std::string dat = "a 1 d 3.0 group c 1 d d2 i 42 v 1.0 2.0 3.0 list l1 1 l2 2.0 l1 3 l2 4.0";

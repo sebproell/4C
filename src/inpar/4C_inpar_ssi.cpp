@@ -256,7 +256,7 @@ void Inpar::SSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
   // insert input file line components into condition definitions
   const auto make_ssiplain = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    cond.add_component(entry<int>("coupling_id"));
+    cond.add_component(parameter<int>("coupling_id"));
     condlist.push_back(cond);
   };
 
@@ -278,7 +278,7 @@ void Inpar::SSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
   // insert input file line components into condition definitions
   const auto make_ssi = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    cond.add_component(entry<int>("coupling_id"));
+    cond.add_component(parameter<int>("coupling_id"));
     condlist.push_back(cond);
   };
 
@@ -303,7 +303,7 @@ void Inpar::SSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
   // insert input file line components into condition definitions
   const auto make_ssi2 = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    cond.add_component(entry<int>("coupling_id"));
+    cond.add_component(parameter<int>("coupling_id"));
     condlist.push_back(cond);
   };
 
@@ -338,12 +338,12 @@ void Inpar::SSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
   // insert input file line components into condition definitions
   const auto make_ssiinterfacemeshtying = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    cond.add_component(entry<int>("ConditionID"));
+    cond.add_component(parameter<int>("ConditionID"));
     cond.add_component(selection<int>("INTERFACE_SIDE",
         {{"Undefined", Inpar::S2I::side_undefined}, {"Slave", Inpar::S2I::side_slave},
             {"Master", Inpar::S2I::side_master}},
         {.description = "interface_side"}));
-    cond.add_component(entry<int>("S2I_KINETICS_ID"));
+    cond.add_component(parameter<int>("S2I_KINETICS_ID"));
 
     condlist.push_back(cond);
   };
@@ -358,13 +358,13 @@ void Inpar::SSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
       "SSISurfaceManifold", "scalar transport on manifold", Core::Conditions::SSISurfaceManifold,
       true, Core::Conditions::geometry_type_surface);
 
-  ssisurfacemanifold.add_component(entry<int>("ConditionID"));
+  ssisurfacemanifold.add_component(parameter<int>("ConditionID"));
   ssisurfacemanifold.add_component(selection<int>("ImplType",
       {{"Undefined", Inpar::ScaTra::impltype_undefined}, {"Standard", Inpar::ScaTra::impltype_std},
           {"ElchElectrode", Inpar::ScaTra::impltype_elch_electrode},
           {"ElchDiffCond", Inpar::ScaTra::impltype_elch_diffcond}},
       {.description = "implementation type"}));
-  ssisurfacemanifold.add_component(entry<double>("thickness"));
+  ssisurfacemanifold.add_component(parameter<double>("thickness"));
 
   condlist.emplace_back(ssisurfacemanifold);
 
@@ -377,7 +377,7 @@ void Inpar::SSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
 
   surfmanifoldinitfields.add_component(
       selection<std::string>("FIELD", {"ScaTra"}, {.description = "init field"}));
-  surfmanifoldinitfields.add_component(entry<int>("FUNCT"));
+  surfmanifoldinitfields.add_component(parameter<int>("FUNCT"));
 
   condlist.emplace_back(surfmanifoldinitfields);
 
@@ -389,8 +389,8 @@ void Inpar::SSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
       Core::Conditions::SSISurfaceManifoldKinetics, true, Core::Conditions::geometry_type_surface);
 
   {
-    surfmanifoldkinetics.add_component(entry<int>("ConditionID"));
-    surfmanifoldkinetics.add_component(entry<int>("ManifoldConditionID"));
+    surfmanifoldkinetics.add_component(parameter<int>("ConditionID"));
+    surfmanifoldkinetics.add_component(parameter<int>("ManifoldConditionID"));
 
     using namespace Core::IO::InputSpecBuilders;
 
@@ -398,19 +398,20 @@ void Inpar::SSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
         all_of({
             selection<int>("KINETIC_MODEL", {{"ConstantInterfaceResistance",
                                                 Inpar::S2I::kinetics_constantinterfaceresistance}}),
-            entry<std::vector<int>>("ONOFF", {.size = 2}),
-            entry<double>("RESISTANCE"),
-            entry<int>("E-"),
+            parameter<std::vector<int>>("ONOFF", {.size = 2}),
+            parameter<double>("RESISTANCE"),
+            parameter<int>("E-"),
         }),
         all_of({
             selection<int>("KINETIC_MODEL",
                 {{"Butler-VolmerReduced", Inpar::S2I::kinetics_butlervolmerreduced}}),
-            entry<int>("NUMSCAL"),
-            entry<std::vector<int>>("STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
-            entry<int>("E-"),
-            entry<double>("K_R"),
-            entry<double>("ALPHA_A"),
-            entry<double>("ALPHA_C"),
+            parameter<int>("NUMSCAL"),
+            parameter<std::vector<int>>(
+                "STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
+            parameter<int>("E-"),
+            parameter<double>("K_R"),
+            parameter<double>("ALPHA_A"),
+            parameter<double>("ALPHA_C"),
         }),
         selection<int>(
             "KINETIC_MODEL", {{"NoInterfaceFlux", Inpar::S2I::kinetics_nointerfaceflux}}),
@@ -434,12 +435,12 @@ void Inpar::SSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
   const auto add_dirichlet_manifold_components =
       [](Core::Conditions::ConditionDefinition& definition)
   {
-    definition.add_component(entry<int>("NUMDOF"));
-    definition.add_component(entry<std::vector<int>>(
+    definition.add_component(parameter<int>("NUMDOF"));
+    definition.add_component(parameter<std::vector<int>>(
         "ONOFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
-    definition.add_component(entry<std::vector<double>>(
+    definition.add_component(parameter<std::vector<double>>(
         "VAL", {.description = "", .size = from_parameter<int>("NUMDOF")}));
-    definition.add_component(entry<std::vector<Noneable<int>>>(
+    definition.add_component(parameter<std::vector<Noneable<int>>>(
         "FUNCT", {.description = "", .size = from_parameter<int>("NUMDOF")}));
   };
 
@@ -467,13 +468,13 @@ void Inpar::SSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
   // insert input file line components into condition definitions
   const auto make_ssiinterfacecontact = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    cond.add_component(entry<int>("ConditionID"));
+    cond.add_component(parameter<int>("ConditionID"));
     cond.add_component(selection<int>("INTERFACE_SIDE",
         {{"Undefined", Inpar::S2I::side_undefined}, {"Slave", Inpar::S2I::side_slave},
             {"Master", Inpar::S2I::side_master}},
         {.description = "interface_side"}));
-    cond.add_component(entry<int>("S2I_KINETICS_ID"));
-    cond.add_component(entry<int>("CONTACT_CONDITION_ID"));
+    cond.add_component(parameter<int>("S2I_KINETICS_ID"));
+    cond.add_component(parameter<int>("CONTACT_CONDITION_ID"));
 
     condlist.push_back(cond);
   };

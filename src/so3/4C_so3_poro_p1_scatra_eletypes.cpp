@@ -70,7 +70,7 @@ void Discret::Elements::SoHex8PoroP1ScatraType::setup_element_definition(
 
   defs["HEX8"] = all_of({
       defs_hex8["HEX8"],
-      entry<std::string>("TYPE"),
+      parameter<std::string>("TYPE"),
   });
 }
 
@@ -130,7 +130,7 @@ void Discret::Elements::SoTet4PoroP1ScatraType::setup_element_definition(
 
   defs["TET4"] = all_of({
       defs_tet4["TET4"],
-      entry<std::string>("TYPE"),
+      parameter<std::string>("TYPE"),
   });
 }
 

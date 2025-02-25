@@ -71,23 +71,23 @@ void Discret::Elements::Nurbs::Wall1NurbsType::setup_element_definition(
   using namespace Core::IO::InputSpecBuilders;
 
   defs["NURBS4"] = all_of({
-      entry<std::vector<int>>("NURBS4", {.size = 4}),
-      entry<int>("MAT"),
-      entry<std::string>("KINEM"),
-      entry<std::string>("EAS"),
-      entry<double>("THICK"),
-      entry<std::string>("STRESS_STRAIN"),
-      entry<std::vector<int>>("GP", {.size = 2}),
+      parameter<std::vector<int>>("NURBS4", {.size = 4}),
+      parameter<int>("MAT"),
+      parameter<std::string>("KINEM"),
+      parameter<std::string>("EAS"),
+      parameter<double>("THICK"),
+      parameter<std::string>("STRESS_STRAIN"),
+      parameter<std::vector<int>>("GP", {.size = 2}),
   });
 
   defs["NURBS9"] = all_of({
-      entry<std::vector<int>>("NURBS9", {.size = 9}),
-      entry<int>("MAT"),
-      entry<std::string>("KINEM"),
-      entry<std::string>("EAS"),
-      entry<double>("THICK"),
-      entry<std::string>("STRESS_STRAIN"),
-      entry<std::vector<int>>("GP", {.size = 2}),
+      parameter<std::vector<int>>("NURBS9", {.size = 9}),
+      parameter<int>("MAT"),
+      parameter<std::string>("KINEM"),
+      parameter<std::string>("EAS"),
+      parameter<double>("THICK"),
+      parameter<std::string>("STRESS_STRAIN"),
+      parameter<std::vector<int>>("GP", {.size = 2}),
   });
 }
 

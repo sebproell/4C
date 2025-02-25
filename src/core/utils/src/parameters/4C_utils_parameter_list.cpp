@@ -23,14 +23,14 @@ namespace Core::Utils
   void bool_parameter(std::string const& paramName, bool default_value,
       std::string const& docString, SectionSpecs& section_specs)
   {
-    section_specs.specs.emplace_back(Core::IO::InputSpecBuilders::entry<bool>(
+    section_specs.specs.emplace_back(Core::IO::InputSpecBuilders::parameter<bool>(
         paramName, {.description = docString, .default_value = default_value}));
   }
 
   void int_parameter(std::string const& paramName, int const value, std::string const& docString,
       SectionSpecs& section_specs)
   {
-    section_specs.specs.emplace_back(Core::IO::InputSpecBuilders::entry<int>(
+    section_specs.specs.emplace_back(Core::IO::InputSpecBuilders::parameter<int>(
         paramName, {.description = docString, .default_value = value}));
   }
 
@@ -38,7 +38,7 @@ namespace Core::Utils
   void double_parameter(std::string const& paramName, double const& value,
       std::string const& docString, SectionSpecs& section_specs)
   {
-    section_specs.specs.emplace_back(Core::IO::InputSpecBuilders::entry<double>(
+    section_specs.specs.emplace_back(Core::IO::InputSpecBuilders::parameter<double>(
         paramName, {.description = docString, .default_value = value}));
   }
 
@@ -49,7 +49,7 @@ namespace Core::Utils
   {
     if (validParams.empty())
     {
-      section_specs.specs.emplace_back(Core::IO::InputSpecBuilders::entry<std::string>(
+      section_specs.specs.emplace_back(Core::IO::InputSpecBuilders::parameter<std::string>(
           paramName, {.description = docString, .default_value = value}));
     }
     else

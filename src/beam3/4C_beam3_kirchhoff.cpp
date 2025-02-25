@@ -99,30 +99,30 @@ void Discret::Elements::Beam3kType::setup_element_definition(
   using namespace Core::IO::InputSpecBuilders;
 
   defs["LINE2"] = all_of({
-      entry<std::vector<int>>("LINE2", {.size = 2}),
-      entry<int>("WK"),
-      entry<int>("ROTVEC"),
-      entry<int>("MAT"),
-      entry<std::vector<double>>("TRIADS", {.size = 6}),
-      entry<bool>("USE_FAD", {.default_value = false}),
+      parameter<std::vector<int>>("LINE2", {.size = 2}),
+      parameter<int>("WK"),
+      parameter<int>("ROTVEC"),
+      parameter<int>("MAT"),
+      parameter<std::vector<double>>("TRIADS", {.size = 6}),
+      parameter<bool>("USE_FAD", {.default_value = false}),
   });
 
   defs["LINE3"] = all_of({
-      entry<std::vector<int>>("LINE3", {.size = 3}),
-      entry<int>("WK"),
-      entry<int>("ROTVEC"),
-      entry<int>("MAT"),
-      entry<std::vector<double>>("TRIADS", {.size = 9}),
-      entry<bool>("USE_FAD", {.default_value = false}),
+      parameter<std::vector<int>>("LINE3", {.size = 3}),
+      parameter<int>("WK"),
+      parameter<int>("ROTVEC"),
+      parameter<int>("MAT"),
+      parameter<std::vector<double>>("TRIADS", {.size = 9}),
+      parameter<bool>("USE_FAD", {.default_value = false}),
   });
 
   defs["LINE4"] = all_of({
-      entry<std::vector<int>>("LINE4", {.size = 4}),
-      entry<int>("WK"),
-      entry<int>("ROTVEC"),
-      entry<int>("MAT"),
-      entry<std::vector<double>>("TRIADS", {.size = 12}),
-      entry<bool>("USE_FAD", {.default_value = false}),
+      parameter<std::vector<int>>("LINE4", {.size = 4}),
+      parameter<int>("WK"),
+      parameter<int>("ROTVEC"),
+      parameter<int>("MAT"),
+      parameter<std::vector<double>>("TRIADS", {.size = 12}),
+      parameter<bool>("USE_FAD", {.default_value = false}),
   });
 }
 

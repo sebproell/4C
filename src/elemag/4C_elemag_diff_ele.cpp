@@ -100,39 +100,39 @@ void Discret::Elements::ElemagDiffType::setup_element_definition(
 
   // 3D elements
   defs["HEX8"] = all_of({
-      entry<std::vector<int>>("HEX8", {.size = 8}),
-      entry<int>("MAT"),
-      entry<int>("DEG"),
-      entry<int>("SPC"),
+      parameter<std::vector<int>>("HEX8", {.size = 8}),
+      parameter<int>("MAT"),
+      parameter<int>("DEG"),
+      parameter<int>("SPC"),
   });
 
   defs["TET4"] = all_of({
-      entry<std::vector<int>>("TET4", {.size = 4}),
-      entry<int>("MAT"),
-      entry<int>("DEG"),
-      entry<int>("SPC"),
+      parameter<std::vector<int>>("TET4", {.size = 4}),
+      parameter<int>("MAT"),
+      parameter<int>("DEG"),
+      parameter<int>("SPC"),
   });
 
   // 2D elements
   defs["QUAD4"] = all_of({
-      entry<std::vector<int>>("QUAD4", {.size = 4}),
-      entry<int>("MAT"),
-      entry<int>("DEG"),
-      entry<int>("SPC"),
+      parameter<std::vector<int>>("QUAD4", {.size = 4}),
+      parameter<int>("MAT"),
+      parameter<int>("DEG"),
+      parameter<int>("SPC"),
   });
 
   defs["QUAD9"] = all_of({
-      entry<std::vector<int>>("QUAD9", {.size = 9}),
-      entry<int>("MAT"),
-      entry<int>("DEG"),
-      entry<int>("SPC"),
+      parameter<std::vector<int>>("QUAD9", {.size = 9}),
+      parameter<int>("MAT"),
+      parameter<int>("DEG"),
+      parameter<int>("SPC"),
   });
 
   defs["TRI3"] = all_of({
-      entry<std::vector<int>>("TRI3", {.size = 3}),
-      entry<int>("MAT"),
-      entry<int>("DEG"),
-      entry<int>("SPC"),
+      parameter<std::vector<int>>("TRI3", {.size = 3}),
+      parameter<int>("MAT"),
+      parameter<int>("DEG"),
+      parameter<int>("SPC"),
   });
 }
 

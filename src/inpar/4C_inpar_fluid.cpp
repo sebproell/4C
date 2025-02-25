@@ -1298,12 +1298,12 @@ void Inpar::FLUID::set_valid_conditions(
       "TransferTurbulentInflow", "TransferTurbulentInflow",
       Core::Conditions::TransferTurbulentInflow, true, Core::Conditions::geometry_type_surface);
 
-  tbc_turb_inflow.add_component(entry<int>("ID", {.description = ""}));
+  tbc_turb_inflow.add_component(parameter<int>("ID", {.description = ""}));
   tbc_turb_inflow.add_component(
       selection<std::string>("toggle", {"master", "slave"}, {.description = "toggle"}));
   tbc_turb_inflow.add_component(selection<int>("DIRECTION", {{"x", 0}, {"y", 1}, {"z", 2}},
       {.description = "transfer direction", .default_value = 0}));
-  tbc_turb_inflow.add_component(entry<Noneable<int>>(
+  tbc_turb_inflow.add_component(parameter<Noneable<int>>(
       "curve", {.description = "curve id", .default_value = Core::IO::none<int>}));
 
   condlist.push_back(tbc_turb_inflow);
@@ -1330,17 +1330,17 @@ void Inpar::FLUID::set_valid_conditions(
   // (out)flow rate or (out)flow volume (e.g., for air-cushion condition)
   surfflowdeppressure.add_component(selection<std::string>("TYPE_OF_FLOW_DEPENDENCE",
       {"flow_rate", "flow_volume", "fixed_pressure"}, {.description = "type of flow dependence"}));
-  surfflowdeppressure.add_component(entry<double>("ConstCoeff",
+  surfflowdeppressure.add_component(parameter<double>("ConstCoeff",
       {.description = "constant coefficient for (linear) flow-rate-based condition"}));
-  surfflowdeppressure.add_component(entry<double>(
+  surfflowdeppressure.add_component(parameter<double>(
       "LinCoeff", {.description = "linear coefficient for (linear) flow-rate-based condition"}));
-  surfflowdeppressure.add_component(entry<double>(
+  surfflowdeppressure.add_component(parameter<double>(
       "InitialVolume", {.description = "initial (air-cushion) volume outside of boundary"}));
-  surfflowdeppressure.add_component(entry<double>(
+  surfflowdeppressure.add_component(parameter<double>(
       "ReferencePressure", {.description = " reference pressure outside of boundary"}));
   surfflowdeppressure.add_component(
-      entry<double>("AdiabaticExponent", {.description = "adiabatic exponent"}));
-  surfflowdeppressure.add_component(entry<Noneable<int>>(
+      parameter<double>("AdiabaticExponent", {.description = "adiabatic exponent"}));
+  surfflowdeppressure.add_component(parameter<Noneable<int>>(
       "curve", {.description = "curve id", .default_value = Core::IO::none<int>}));
 
   condlist.emplace_back(surfflowdeppressure);
@@ -1360,7 +1360,7 @@ void Inpar::FLUID::set_valid_conditions(
 
   const auto make_slip_supp = [&](Core::Conditions::ConditionDefinition& cond)
   {
-    cond.add_component(entry<double>("USEUPDATEDNODEPOS"));
+    cond.add_component(parameter<double>("USEUPDATEDNODEPOS"));
     condlist.emplace_back(cond);
   };
 
@@ -1380,7 +1380,7 @@ void Inpar::FLUID::set_valid_conditions(
 
   const auto make_navierslip = [&](Core::Conditions::ConditionDefinition& cond)
   {
-    cond.add_component(entry<double>("SLIPCOEFFICIENT"));
+    cond.add_component(parameter<double>("SLIPCOEFFICIENT"));
     condlist.emplace_back(cond);
   };
 
@@ -1426,16 +1426,17 @@ void Inpar::FLUID::set_valid_conditions(
   const auto make_mixhybDirichlet = [&](Core::Conditions::ConditionDefinition& cond)
   {
     // we provide a vector of 3 values for velocities
-    cond.add_component(entry<std::vector<double>>("val", {.description = "velocity", .size = 3}));
+    cond.add_component(
+        parameter<std::vector<double>>("val", {.description = "velocity", .size = 3}));
 
     // and optional spatial functions
-    cond.add_component(entry<std::vector<Noneable<int>>>(
+    cond.add_component(parameter<std::vector<Noneable<int>>>(
         "funct", {.description = "spatial function",
                      .default_value = std::vector(3, Core::IO::none<int>),
                      .size = 3}));
 
     // characteristic velocity
-    cond.add_component(entry<double>("u_C"));
+    cond.add_component(parameter<double>("u_C"));
 
     // the penalty parameter could be computed dynamically (using Spaldings
     // law of the wall) or using a fixed value (1)
@@ -1443,7 +1444,7 @@ void Inpar::FLUID::set_valid_conditions(
         "PENTYPE", {"constant", "Spalding"}, {.description = "how penalty parameter is computed"}));
 
     // scaling factor for penalty parameter tauB
-    cond.add_component(entry<double>("hB_divided_by"));
+    cond.add_component(parameter<double>("hB_divided_by"));
 
     // if Spaldings law is used, this defines the way how the traction at y is computed from utau
     cond.add_component(selection<std::string>("utau_computation", {"at_wall", "viscous_tangent"},
@@ -1475,9 +1476,10 @@ void Inpar::FLUID::set_valid_conditions(
       "Surface LIFTDRAG", Core::Conditions::SurfLIFTDRAG, true,
       Core::Conditions::geometry_type_surface);
 
-  surfliftdrag.add_component(entry<int>("label"));
-  surfliftdrag.add_component(entry<std::vector<double>>("CENTER", {.description = "", .size = 3}));
-  surfliftdrag.add_component(entry<std::vector<double>>(
+  surfliftdrag.add_component(parameter<int>("label"));
+  surfliftdrag.add_component(
+      parameter<std::vector<double>>("CENTER", {.description = "", .size = 3}));
+  surfliftdrag.add_component(parameter<std::vector<double>>(
       "AXIS", {.description = "", .default_value = std::vector<double>{0.0, 0.0, 0.0}, .size = 3}));
 
   condlist.push_back(surfliftdrag);
@@ -1489,7 +1491,7 @@ void Inpar::FLUID::set_valid_conditions(
       "LineFlowRate", "Line Flow Rate", Core::Conditions::FlowRateThroughLine_2D, true,
       Core::Conditions::geometry_type_line);
 
-  lineflowrate.add_component(entry<int>("ConditionID"));
+  lineflowrate.add_component(parameter<int>("ConditionID"));
 
   condlist.push_back(lineflowrate);
 
@@ -1500,7 +1502,7 @@ void Inpar::FLUID::set_valid_conditions(
       "SurfFlowRate", "Surface Flow Rate", Core::Conditions::FlowRateThroughSurface_3D, true,
       Core::Conditions::geometry_type_surface);
 
-  surfflowrate.add_component(entry<int>("ConditionID"));
+  surfflowrate.add_component(parameter<int>("ConditionID"));
 
   condlist.push_back(surfflowrate);
 
@@ -1511,7 +1513,7 @@ void Inpar::FLUID::set_valid_conditions(
       "volumetric surface flow condition", Core::Conditions::VolumetricSurfaceFlowCond, true,
       Core::Conditions::geometry_type_surface);
 
-  volumetric_surface_flow_cond.add_component(entry<int>("ConditionID"));
+  volumetric_surface_flow_cond.add_component(parameter<int>("ConditionID"));
 
   volumetric_surface_flow_cond.add_component(
       selection<std::string>("ConditionType", {"POLYNOMIAL", "WOMERSLEY"},
@@ -1527,25 +1529,25 @@ void Inpar::FLUID::set_valid_conditions(
       selection<std::string>("CorrectionFlag", {"WithOutCorrection", "WithCorrection"},
           {.description = "correction flag", .default_value = "WithOutCorrection"}));
 
-  volumetric_surface_flow_cond.add_component(entry<double>("Period"));
-  volumetric_surface_flow_cond.add_component(entry<int>("Order"));
-  volumetric_surface_flow_cond.add_component(entry<int>("Harmonics"));
-  volumetric_surface_flow_cond.add_component(entry<double>("Val"));
-  volumetric_surface_flow_cond.add_component(entry<int>("Funct"));
+  volumetric_surface_flow_cond.add_component(parameter<double>("Period"));
+  volumetric_surface_flow_cond.add_component(parameter<int>("Order"));
+  volumetric_surface_flow_cond.add_component(parameter<int>("Harmonics"));
+  volumetric_surface_flow_cond.add_component(parameter<double>("Val"));
+  volumetric_surface_flow_cond.add_component(parameter<int>("Funct"));
 
   volumetric_surface_flow_cond.add_component(
       selection<std::string>("NORMAL", {"SelfEvaluateNormal", "UsePrescribedNormal"},
           {.description = "normal", .default_value = "SelfEvaluateNormal"}));
-  volumetric_surface_flow_cond.add_component(entry<double>("n1"));
-  volumetric_surface_flow_cond.add_component(entry<double>("n2"));
-  volumetric_surface_flow_cond.add_component(entry<double>("n3"));
+  volumetric_surface_flow_cond.add_component(parameter<double>("n1"));
+  volumetric_surface_flow_cond.add_component(parameter<double>("n2"));
+  volumetric_surface_flow_cond.add_component(parameter<double>("n3"));
 
   volumetric_surface_flow_cond.add_component(selection<std::string>("CenterOfMass",
       {"SelfEvaluateCenterOfMass", "UsePrescribedCenterOfMass"},
       {.description = "center of mass", .default_value = "SelfEvaluateCenterOfMass"}));
-  volumetric_surface_flow_cond.add_component(entry<double>("c1"));
-  volumetric_surface_flow_cond.add_component(entry<double>("c2"));
-  volumetric_surface_flow_cond.add_component(entry<double>("c3"));
+  volumetric_surface_flow_cond.add_component(parameter<double>("c1"));
+  volumetric_surface_flow_cond.add_component(parameter<double>("c2"));
+  volumetric_surface_flow_cond.add_component(parameter<double>("c3"));
 
   condlist.push_back(volumetric_surface_flow_cond);
 
@@ -1559,7 +1561,7 @@ void Inpar::FLUID::set_valid_conditions(
       "volumetric flow border nodes condition", Core::Conditions::VolumetricFlowBorderNodes, true,
       Core::Conditions::geometry_type_line);
 
-  volumetric_border_nodes_cond.add_component(entry<int>("ConditionID"));
+  volumetric_border_nodes_cond.add_component(parameter<int>("ConditionID"));
 
   condlist.push_back(volumetric_border_nodes_cond);
 
@@ -1570,7 +1572,7 @@ void Inpar::FLUID::set_valid_conditions(
       "total traction correction condition", Core::Conditions::TotalTractionCorrectionCond, true,
       Core::Conditions::geometry_type_surface);
 
-  total_traction_correction_cond.add_component(entry<int>("ConditionID"));
+  total_traction_correction_cond.add_component(parameter<int>("ConditionID"));
   total_traction_correction_cond.add_component(
       selection<std::string>("ConditionType", {"POLYNOMIAL", "WOMERSLEY"},
           {.description = "condition type", .default_value = "POLYNOMIAL"}));
@@ -1585,25 +1587,25 @@ void Inpar::FLUID::set_valid_conditions(
       selection<std::string>("CorrectionFlag", {"WithOutCorrection", "WithCorrection"},
           {.description = "correction flag", .default_value = "WithOutCorrection"}));
 
-  total_traction_correction_cond.add_component(entry<double>("Period"));
-  total_traction_correction_cond.add_component(entry<int>("Order"));
-  total_traction_correction_cond.add_component(entry<int>("Harmonics"));
-  total_traction_correction_cond.add_component(entry<double>("Val"));
-  total_traction_correction_cond.add_component(entry<int>("Funct"));
+  total_traction_correction_cond.add_component(parameter<double>("Period"));
+  total_traction_correction_cond.add_component(parameter<int>("Order"));
+  total_traction_correction_cond.add_component(parameter<int>("Harmonics"));
+  total_traction_correction_cond.add_component(parameter<double>("Val"));
+  total_traction_correction_cond.add_component(parameter<int>("Funct"));
 
   total_traction_correction_cond.add_component(
       selection<std::string>("NORMAL", {"SelfEvaluateNormal", "UsePrescribedNormal"},
           {.description = "normal", .default_value = "SelfEvaluateNormal"}));
-  total_traction_correction_cond.add_component(entry<double>("n1"));
-  total_traction_correction_cond.add_component(entry<double>("n2"));
-  total_traction_correction_cond.add_component(entry<double>("n3"));
+  total_traction_correction_cond.add_component(parameter<double>("n1"));
+  total_traction_correction_cond.add_component(parameter<double>("n2"));
+  total_traction_correction_cond.add_component(parameter<double>("n3"));
 
   total_traction_correction_cond.add_component(selection<std::string>("CenterOfMass",
       {"SelfEvaluateCenterOfMass", "UsePrescribedCenterOfMass"},
       {.description = "center of mass", .default_value = "SelfEvaluateCenterOfMass"}));
-  total_traction_correction_cond.add_component(entry<double>("c1"));
-  total_traction_correction_cond.add_component(entry<double>("c2"));
-  total_traction_correction_cond.add_component(entry<double>("c3"));
+  total_traction_correction_cond.add_component(parameter<double>("c1"));
+  total_traction_correction_cond.add_component(parameter<double>("c2"));
+  total_traction_correction_cond.add_component(parameter<double>("c3"));
 
   condlist.push_back(total_traction_correction_cond);
 
@@ -1616,7 +1618,7 @@ void Inpar::FLUID::set_valid_conditions(
       Core::Conditions::TotalTractionCorrectionBorderNodes, true,
       Core::Conditions::geometry_type_line);
 
-  traction_corrector_border_nodes_cond.add_component(entry<int>("ConditionID"));
+  traction_corrector_border_nodes_cond.add_component(parameter<int>("ConditionID"));
 
   condlist.push_back(traction_corrector_border_nodes_cond);
 

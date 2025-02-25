@@ -187,7 +187,7 @@ void Inpar::BeamInteraction::set_valid_conditions(
       "Beam_Line_Filament_Condition", Core::Conditions::FilamentBeamLineCondition, false,
       Core::Conditions::geometry_type_line);
 
-  beam_filament_condition.add_component(entry<int>("ID", {.description = "filament id"}));
+  beam_filament_condition.add_component(parameter<int>("ID", {.description = "filament id"}));
   beam_filament_condition.add_component(selection<std::string>("TYPE",
       {"Arbitrary", "arbitrary", "Actin", "actin", "Collagen", "collagen"},
       {.description = "", .default_value = "Arbitrary"}));
@@ -201,8 +201,8 @@ void Inpar::BeamInteraction::set_valid_conditions(
       Core::Conditions::PenaltyPointCouplingCondition, false,
       Core::Conditions::geometry_type_point);
 
-  penalty_coupling_condition.add_component(entry<double>("POSITIONAL_PENALTY_PARAMETER"));
-  penalty_coupling_condition.add_component(entry<double>("ROTATIONAL_PENALTY_PARAMETER"));
+  penalty_coupling_condition.add_component(parameter<double>("POSITIONAL_PENALTY_PARAMETER"));
+  penalty_coupling_condition.add_component(parameter<double>("ROTATIONAL_PENALTY_PARAMETER"));
 
   condlist.push_back(penalty_coupling_condition);
 

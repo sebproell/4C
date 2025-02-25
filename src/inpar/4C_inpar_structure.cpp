@@ -401,22 +401,22 @@ namespace Inpar
       const auto make_robin_spring_dashpot = [&condlist](
                                                  Core::Conditions::ConditionDefinition& cond)
       {
-        cond.add_component(entry<int>("NUMDOF"));
-        cond.add_component(entry<std::vector<int>>(
+        cond.add_component(parameter<int>("NUMDOF"));
+        cond.add_component(parameter<std::vector<int>>(
             "ONOFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
-        cond.add_component(entry<std::vector<double>>(
+        cond.add_component(parameter<std::vector<double>>(
             "STIFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
-        cond.add_component(entry<std::vector<int>>(
+        cond.add_component(parameter<std::vector<int>>(
             "TIMEFUNCTSTIFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
-        cond.add_component(entry<std::vector<double>>(
+        cond.add_component(parameter<std::vector<double>>(
             "VISCO", {.description = "", .size = from_parameter<int>("NUMDOF")}));
-        cond.add_component(entry<std::vector<int>>(
+        cond.add_component(parameter<std::vector<int>>(
             "TIMEFUNCTVISCO", {.description = "", .size = from_parameter<int>("NUMDOF")}));
-        cond.add_component(entry<std::vector<double>>(
+        cond.add_component(parameter<std::vector<double>>(
             "DISPLOFFSET", {.description = "", .size = from_parameter<int>("NUMDOF")}));
-        cond.add_component(entry<std::vector<int>>(
+        cond.add_component(parameter<std::vector<int>>(
             "TIMEFUNCTDISPLOFFSET", {.description = "", .size = from_parameter<int>("NUMDOF")}));
-        cond.add_component(entry<std::vector<int>>(
+        cond.add_component(parameter<std::vector<int>>(
             "FUNCTNONLINSTIFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
         cond.add_component(
             selection<CONSTRAINTS::SpringDashpot::RobinSpringDashpotType>("DIRECTION",
@@ -426,7 +426,7 @@ namespace Inpar
                     {"cursurfnormal",
                         CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::cursurfnormal}},
                 {.description = "Direction of the spring-dashpot boundary conditions"}));
-        cond.add_component(entry<Noneable<int>>("COUPLING", {.description = ""}));
+        cond.add_component(parameter<Noneable<int>>("COUPLING", {.description = ""}));
         condlist.emplace_back(cond);
       };
 
@@ -442,7 +442,7 @@ namespace Inpar
           "RobinSpring Dashpot Coupling", Core::Conditions::RobinSpringDashpotCoupling, true,
           Core::Conditions::geometry_type_surface);
 
-      springdashpotcoupcond.add_component(entry<int>("COUPLING"));
+      springdashpotcoupcond.add_component(parameter<int>("COUPLING"));
 
       condlist.push_back(springdashpotcoupcond);
     }

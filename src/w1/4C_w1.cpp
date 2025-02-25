@@ -72,73 +72,73 @@ void Discret::Elements::Wall1Type::setup_element_definition(
   using namespace Core::IO::InputSpecBuilders;
 
   defs["QUAD4"] = all_of({
-      entry<std::vector<int>>("QUAD4", {.size = 4}),
-      entry<int>("MAT"),
-      entry<std::string>("KINEM"),
-      entry<std::string>("EAS"),
-      entry<double>("THICK"),
-      entry<std::string>("STRESS_STRAIN"),
-      entry<std::vector<int>>("GP", {.size = 2}),
+      parameter<std::vector<int>>("QUAD4", {.size = 4}),
+      parameter<int>("MAT"),
+      parameter<std::string>("KINEM"),
+      parameter<std::string>("EAS"),
+      parameter<double>("THICK"),
+      parameter<std::string>("STRESS_STRAIN"),
+      parameter<std::vector<int>>("GP", {.size = 2}),
   });
 
   defs["QUAD8"] = all_of({
-      entry<std::vector<int>>("QUAD8", {.size = 8}),
-      entry<int>("MAT"),
-      entry<std::string>("KINEM"),
-      entry<std::string>("EAS"),
-      entry<double>("THICK"),
-      entry<std::string>("STRESS_STRAIN"),
-      entry<std::vector<int>>("GP", {.size = 2}),
+      parameter<std::vector<int>>("QUAD8", {.size = 8}),
+      parameter<int>("MAT"),
+      parameter<std::string>("KINEM"),
+      parameter<std::string>("EAS"),
+      parameter<double>("THICK"),
+      parameter<std::string>("STRESS_STRAIN"),
+      parameter<std::vector<int>>("GP", {.size = 2}),
   });
 
   defs["QUAD9"] = all_of({
-      entry<std::vector<int>>("QUAD9", {.size = 9}),
-      entry<int>("MAT"),
-      entry<std::string>("KINEM"),
-      entry<std::string>("EAS"),
-      entry<double>("THICK"),
-      entry<std::string>("STRESS_STRAIN"),
-      entry<std::vector<int>>("GP", {.size = 2}),
+      parameter<std::vector<int>>("QUAD9", {.size = 9}),
+      parameter<int>("MAT"),
+      parameter<std::string>("KINEM"),
+      parameter<std::string>("EAS"),
+      parameter<double>("THICK"),
+      parameter<std::string>("STRESS_STRAIN"),
+      parameter<std::vector<int>>("GP", {.size = 2}),
   });
 
   defs["TRI3"] = all_of({
-      entry<std::vector<int>>("TRI3", {.size = 3}),
-      entry<int>("MAT"),
-      entry<std::string>("KINEM"),
-      entry<std::string>("EAS"),
-      entry<double>("THICK"),
-      entry<std::string>("STRESS_STRAIN"),
-      entry<std::vector<int>>("GP", {.size = 2}),
+      parameter<std::vector<int>>("TRI3", {.size = 3}),
+      parameter<int>("MAT"),
+      parameter<std::string>("KINEM"),
+      parameter<std::string>("EAS"),
+      parameter<double>("THICK"),
+      parameter<std::string>("STRESS_STRAIN"),
+      parameter<std::vector<int>>("GP", {.size = 2}),
   });
 
   defs["TRI6"] = all_of({
-      entry<std::vector<int>>("TRI6", {.size = 6}),
-      entry<int>("MAT"),
-      entry<std::string>("KINEM"),
-      entry<std::string>("EAS"),
-      entry<double>("THICK"),
-      entry<std::string>("STRESS_STRAIN"),
-      entry<std::vector<int>>("GP", {.size = 2}),
+      parameter<std::vector<int>>("TRI6", {.size = 6}),
+      parameter<int>("MAT"),
+      parameter<std::string>("KINEM"),
+      parameter<std::string>("EAS"),
+      parameter<double>("THICK"),
+      parameter<std::string>("STRESS_STRAIN"),
+      parameter<std::vector<int>>("GP", {.size = 2}),
   });
 
   defs["NURBS4"] = all_of({
-      entry<std::vector<int>>("NURBS4", {.size = 4}),
-      entry<int>("MAT"),
-      entry<std::string>("KINEM"),
-      entry<std::string>("EAS"),
-      entry<double>("THICK"),
-      entry<std::string>("STRESS_STRAIN"),
-      entry<std::vector<int>>("GP", {.size = 2}),
+      parameter<std::vector<int>>("NURBS4", {.size = 4}),
+      parameter<int>("MAT"),
+      parameter<std::string>("KINEM"),
+      parameter<std::string>("EAS"),
+      parameter<double>("THICK"),
+      parameter<std::string>("STRESS_STRAIN"),
+      parameter<std::vector<int>>("GP", {.size = 2}),
   });
 
   defs["NURBS9"] = all_of({
-      entry<std::vector<int>>("NURBS9", {.size = 9}),
-      entry<int>("MAT"),
-      entry<std::string>("KINEM"),
-      entry<std::string>("EAS"),
-      entry<double>("THICK"),
-      entry<std::string>("STRESS_STRAIN"),
-      entry<std::vector<int>>("GP", {.size = 2}),
+      parameter<std::vector<int>>("NURBS9", {.size = 9}),
+      parameter<int>("MAT"),
+      parameter<std::string>("KINEM"),
+      parameter<std::string>("EAS"),
+      parameter<double>("THICK"),
+      parameter<std::string>("STRESS_STRAIN"),
+      parameter<std::vector<int>>("GP", {.size = 2}),
   });
 }
 

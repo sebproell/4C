@@ -433,8 +433,8 @@ void Inpar::FSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
       "FSICoupling", "FSI Coupling", Core::Conditions::FSICoupling, true,
       Core::Conditions::geometry_type_surface);
 
-  linefsi.add_component(entry<int>("coupling_id"));
-  surffsi.add_component(entry<int>("coupling_id"));
+  linefsi.add_component(parameter<int>("coupling_id"));
+  surffsi.add_component(parameter<int>("coupling_id"));
 
   condlist.push_back(linefsi);
   condlist.push_back(surffsi);
@@ -459,7 +459,7 @@ void Inpar::FSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
       "StructAleCoupling", "StructAleCoupling", Core::Conditions::StructAleCoupling, true,
       Core::Conditions::geometry_type_surface);
 
-  surfsac.add_component(entry<int>("coupling_id"));
+  surfsac.add_component(parameter<int>("coupling_id"));
   surfsac.add_component(selection<std::string>(
       "field", {"structure", "ale"}, {.description = "field", .default_value = "structure"}));
 
@@ -473,7 +473,7 @@ void Inpar::FSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
       "StructFluidVolCoupling", Core::Conditions::StructFluidVolCoupling, false,
       Core::Conditions::geometry_type_volume);
 
-  volsfv.add_component(entry<int>("coupling_id"));
+  volsfv.add_component(parameter<int>("coupling_id"));
   volsfv.add_component(selection<std::string>(
       "field", {"structure", "ale"}, {.description = "field", .default_value = "structure"}));
 

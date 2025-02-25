@@ -392,18 +392,18 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
   using namespace Core::IO::InputSpecBuilders;
 
   auto dirichletbundcomponents = all_of({
-      entry<int>("NUMDOF"),
-      entry<std::vector<int>>("ONOFF", {.size = from_parameter<int>("NUMDOF")}),
-      entry<std::vector<double>>("VAL", {.size = from_parameter<int>("NUMDOF")}),
-      entry<std::vector<Noneable<int>>>("FUNCT", {.size = from_parameter<int>("NUMDOF")}),
+      parameter<int>("NUMDOF"),
+      parameter<std::vector<int>>("ONOFF", {.size = from_parameter<int>("NUMDOF")}),
+      parameter<std::vector<double>>("VAL", {.size = from_parameter<int>("NUMDOF")}),
+      parameter<std::vector<Noneable<int>>>("FUNCT", {.size = from_parameter<int>("NUMDOF")}),
       selection<std::string>("TAG", {"none", "monitor_reaction"}, {.required = false}),
   });
 
   auto neumanncomponents = all_of({
-      entry<int>("NUMDOF"),
-      entry<std::vector<int>>("ONOFF", {.size = from_parameter<int>("NUMDOF")}),
-      entry<std::vector<double>>("VAL", {.size = from_parameter<int>("NUMDOF")}),
-      entry<std::vector<Noneable<int>>>("FUNCT", {.size = from_parameter<int>("NUMDOF")}),
+      parameter<int>("NUMDOF"),
+      parameter<std::vector<int>>("ONOFF", {.size = from_parameter<int>("NUMDOF")}),
+      parameter<std::vector<double>>("VAL", {.size = from_parameter<int>("NUMDOF")}),
+      parameter<std::vector<Noneable<int>>>("FUNCT", {.size = from_parameter<int>("NUMDOF")}),
       selection<std::string>("TYPE",
           {"Live", "Dead", "pseudo_orthopressure", "orthopressure", "PressureGrad"},
           {.default_value = "Live"}),
@@ -420,7 +420,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
 
   const auto make_fluid_cond = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    cond.add_component(entry<int>("COUPLINGID"));
+    cond.add_component(parameter<int>("COUPLINGID"));
 
     condlist.emplace_back(cond);
   };
@@ -439,7 +439,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       "DESIGN XFEM DISPLACEMENT SURF CONDITIONS", "XFEMSurfDisplacement", "XFEM Surf Displacement",
       Core::Conditions::XFEM_Surf_Displacement, true, Core::Conditions::geometry_type_surface);
 
-  xfem_surf_displacement.add_component(entry<int>("COUPLINGID"));
+  xfem_surf_displacement.add_component(parameter<int>("COUPLINGID"));
   xfem_surf_displacement.add_component(selection<std::string>("EVALTYPE",
       {"zero", "funct", "implementation"}, {.description = "", .default_value = "funct"}));
 
@@ -451,14 +451,14 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
   // Levelset field condition components
 
   auto levelsetfield_components = all_of({
-      entry<int>("COUPLINGID"),
-      entry<int>("LEVELSETFIELDNO"),
+      parameter<int>("COUPLINGID"),
+      parameter<int>("LEVELSETFIELDNO"),
       selection<std::string>("BOOLEANTYPE",
           {"none", "cut", "union", "difference", "sym_difference"},
           {.description = "define which boolean operator is used for combining this level-set "
                           "field with the previous one with smaller coupling id",
               .required = false}),
-      entry<bool>(
+      parameter<bool>(
           "COMPLEMENTARY", {.description = "define which complementary operator is applied "
                                            "after combining the level-set field with a boolean "
                                            "operator with the previous one"}),
@@ -477,7 +477,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
   xfem_levelset_wdbc.add_component(dirichletbundcomponents);
 
   // optional: allow for random noise, set percentage used in uniform random distribution
-  xfem_levelset_wdbc.add_component(entry<double>("RANDNOISE",
+  xfem_levelset_wdbc.add_component(parameter<double>("RANDNOISE",
       {.description = "set percentage of random noise used in uniform random distribution",
           .default_value = 0.0}));
 
@@ -496,7 +496,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
 
   // define if we use inflow stabilization on the xfem neumann surf condition
   xfem_levelset_neumann.add_component(
-      entry<bool>("INFLOW_STAB", {.description = "", .default_value = false}));
+      parameter<bool>("INFLOW_STAB", {.description = "", .default_value = false}));
   condlist.push_back(xfem_levelset_neumann);
 
   //*----------------*/
@@ -514,16 +514,17 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
           {"proj_normal_smoothed_comb", Inpar::XFEM::Proj_normal_smoothed_comb},
           {"proj_normal_phi", Inpar::XFEM::Proj_normal_phi}},
       {.description = "", .default_value = Inpar::XFEM::Proj_normal}));
-  xfem_levelset_navier_slip.add_component(entry<int>("L2_PROJECTION_SOLVER", {.description = ""}));
   xfem_levelset_navier_slip.add_component(
-      entry<Noneable<int>>("ROBIN_DIRICHLET_ID", {.description = ""}));
+      parameter<int>("L2_PROJECTION_SOLVER", {.description = ""}));
   xfem_levelset_navier_slip.add_component(
-      entry<Noneable<int>>("ROBIN_NEUMANN_ID", {.description = ""}));
-  xfem_levelset_navier_slip.add_component(entry<double>("SLIPCOEFFICIENT"));
+      parameter<Noneable<int>>("ROBIN_DIRICHLET_ID", {.description = ""}));
   xfem_levelset_navier_slip.add_component(
-      entry<int>("FUNCT", {.description = "slip function id", .default_value = 0}));
+      parameter<Noneable<int>>("ROBIN_NEUMANN_ID", {.description = ""}));
+  xfem_levelset_navier_slip.add_component(parameter<double>("SLIPCOEFFICIENT"));
   xfem_levelset_navier_slip.add_component(
-      entry<bool>("FORCE_ONLY_TANG_VEL", {.description = "", .default_value = false}));
+      parameter<int>("FUNCT", {.description = "slip function id", .default_value = 0}));
+  xfem_levelset_navier_slip.add_component(
+      parameter<bool>("FORCE_ONLY_TANG_VEL", {.description = "", .default_value = false}));
 
   condlist.push_back(xfem_levelset_navier_slip);
 
@@ -535,7 +536,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       Core::Conditions::geometry_type_volume);
 
   xfem_navier_slip_robin_dirch.add_component(
-      entry<Noneable<int>>("ROBIN_ID", {.description = "robin id"}));
+      parameter<Noneable<int>>("ROBIN_ID", {.description = "robin id"}));
 
   xfem_navier_slip_robin_dirch.add_component(dirichletbundcomponents);
 
@@ -547,7 +548,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       Core::Conditions::geometry_type_volume);
 
   xfem_navier_slip_robin_neumann.add_component(
-      entry<Noneable<int>>("ROBIN_ID", {.description = "robin id"}));
+      parameter<Noneable<int>>("ROBIN_ID", {.description = "robin id"}));
 
   xfem_navier_slip_robin_neumann.add_component(neumanncomponents);
 
@@ -573,7 +574,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       "DESIGN XFEM FLUIDFLUID SURF CONDITIONS", "XFEMSurfFluidFluid", "XFEM Surf FluidFluid",
       Core::Conditions::XFEM_Surf_FluidFluid, true, Core::Conditions::geometry_type_surface);
 
-  xfem_surf_fluidfluid.add_component(entry<int>("COUPLINGID"));
+  xfem_surf_fluidfluid.add_component(parameter<int>("COUPLINGID"));
   xfem_surf_fluidfluid.add_component(selection<int>("COUPSTRATEGY",
       {{"xfluid", Inpar::XFEM::Xfluid_Sided}, {"embedded", Inpar::XFEM::Embedded_Sided},
           {"mean", Inpar::XFEM::Mean}},
@@ -588,7 +589,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       "DESIGN XFEM FSI PARTITIONED SURF CONDITIONS", "XFEMSurfFSIPart", "XFEM Surf FSI Part",
       Core::Conditions::XFEM_Surf_FSIPart, true, Core::Conditions::geometry_type_surface);
 
-  xfem_surf_fsi_part.add_component(entry<int>("COUPLINGID"));
+  xfem_surf_fsi_part.add_component(parameter<int>("COUPLINGID"));
 
   // COUPSTRATEGY IS FLUID SIDED
   xfem_surf_fsi_part.add_component(selection<int>("INTLAW",
@@ -596,9 +597,9 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
           {"slip", Inpar::XFEM::slip}, {"navslip", Inpar::XFEM::navierslip}},
       {.description = "", .default_value = Inpar::XFEM::noslip}));
   xfem_surf_fsi_part.add_component(
-      entry<double>("SLIPCOEFFICIENT", {.description = "", .default_value = 0.0}));
+      parameter<double>("SLIPCOEFFICIENT", {.description = "", .default_value = 0.0}));
   xfem_surf_fsi_part.add_component(
-      entry<int>("SLIP_FUNCT", {.description = "slip function id", .default_value = 0}));
+      parameter<int>("SLIP_FUNCT", {.description = "slip function id", .default_value = 0}));
 
   condlist.push_back(xfem_surf_fsi_part);
 
@@ -609,7 +610,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       "DESIGN XFEM FSI MONOLITHIC SURF CONDITIONS", "XFEMSurfFSIMono", "XFEM Surf FSI Mono",
       Core::Conditions::XFEM_Surf_FSIMono, true, Core::Conditions::geometry_type_surface);
 
-  xfem_surf_fsi_mono.add_component(entry<int>("COUPLINGID"));
+  xfem_surf_fsi_mono.add_component(parameter<int>("COUPLINGID"));
   xfem_surf_fsi_mono.add_component(selection<int>("COUPSTRATEGY",
       {{"xfluid", Inpar::XFEM::Xfluid_Sided}, {"solid", Inpar::XFEM::Embedded_Sided},
           {"mean", Inpar::XFEM::Mean}, {"harmonic", Inpar::XFEM::Harmonic}},
@@ -620,9 +621,9 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
           {"navslip_contact", Inpar::XFEM::navierslip_contact}},
       {.description = "", .default_value = Inpar::XFEM::noslip}));
   xfem_surf_fsi_mono.add_component(
-      entry<double>("SLIPCOEFFICIENT", {.description = "", .default_value = 0.0}));
+      parameter<double>("SLIPCOEFFICIENT", {.description = "", .default_value = 0.0}));
   xfem_surf_fsi_mono.add_component(
-      entry<int>("SLIP_FUNCT", {.description = "slip function id", .default_value = 0}));
+      parameter<int>("SLIP_FUNCT", {.description = "slip function id", .default_value = 0}));
 
   condlist.push_back(xfem_surf_fsi_mono);
 
@@ -633,15 +634,15 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       "DESIGN XFEM FPI MONOLITHIC SURF CONDITIONS", "XFEMSurfFPIMono", "XFEM Surf FPI Mono",
       Core::Conditions::XFEM_Surf_FPIMono, true, Core::Conditions::geometry_type_surface);
 
-  xfem_surf_fpi_mono.add_component(entry<int>("COUPLINGID"));
+  xfem_surf_fpi_mono.add_component(parameter<int>("COUPLINGID"));
   xfem_surf_fpi_mono.add_component(
-      entry<double>("BJ_COEFF", {.description = "", .default_value = 0}));
+      parameter<double>("BJ_COEFF", {.description = "", .default_value = 0}));
   xfem_surf_fpi_mono.add_component(selection<std::string>(
       "Variant", {"BJ", "BJS"}, {.description = "variant", .default_value = "BJ"}));
   xfem_surf_fpi_mono.add_component(selection<std::string>(
       "Method", {"NIT", "SUB"}, {.description = "method", .default_value = "NIT"}));
   xfem_surf_fpi_mono.add_component(
-      entry<bool>("Contact", {.description = "contact", .default_value = false}));
+      parameter<bool>("Contact", {.description = "contact", .default_value = false}));
 
   condlist.push_back(xfem_surf_fpi_mono);
 
@@ -653,7 +654,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       "XFEMSurfWeakDirichlet", "XFEM Surf Weak Dirichlet",
       Core::Conditions::XFEM_Surf_Weak_Dirichlet, true, Core::Conditions::geometry_type_surface);
 
-  xfem_surf_wdbc.add_component(entry<int>("COUPLINGID"));
+  xfem_surf_wdbc.add_component(parameter<int>("COUPLINGID"));
   xfem_surf_wdbc.add_component(selection<std::string>("EVALTYPE",
       {"zero", "funct_interpolated", "funct_gausspoint", "displacement_1storder_wo_initfunct",
           "displacement_2ndorder_wo_initfunct", "displacement_1storder_with_initfunct",
@@ -663,7 +664,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
   xfem_surf_wdbc.add_component(dirichletbundcomponents);
 
   // optional: allow for random noise, set percentage used in uniform random distribution
-  xfem_surf_wdbc.add_component(entry<double>("RANDNOISE",
+  xfem_surf_wdbc.add_component(parameter<double>("RANDNOISE",
       {.description = "set percentage of random noise used in uniform random distribution",
           .default_value = 0.0}));
 
@@ -677,12 +678,12 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       "XFEMSurfNeumann", "XFEM Surf Neumann", Core::Conditions::XFEM_Surf_Neumann, true,
       Core::Conditions::geometry_type_surface);
 
-  xfem_surf_neumann.add_component(entry<int>("COUPLINGID"));
+  xfem_surf_neumann.add_component(parameter<int>("COUPLINGID"));
 
   xfem_surf_neumann.add_component(neumanncomponents);
 
   // define if we use inflow stabilization on the xfem neumann surf condition
-  xfem_surf_neumann.add_component(entry<bool>(
+  xfem_surf_neumann.add_component(parameter<bool>(
       "INFLOW_STAB", {.description = "toggle inflow stabilization", .default_value = false}));
 
   condlist.push_back(xfem_surf_neumann);
@@ -694,21 +695,21 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       "DESIGN XFEM NAVIER SLIP SURF CONDITIONS", "XFEMSurfNavierSlip", "XFEM Surf Navier Slip",
       Core::Conditions::XFEM_Surf_Navier_Slip, true, Core::Conditions::geometry_type_surface);
 
-  xfem_surf_navier_slip.add_component(entry<int>("COUPLINGID"));
+  xfem_surf_navier_slip.add_component(parameter<int>("COUPLINGID"));
   xfem_surf_navier_slip.add_component(selection<std::string>("EVALTYPE",
       {"zero", "funct_interpolated", "funct_gausspoint", "displacement_1storder_wo_initfunct",
           "displacement_2ndorder_wo_initfunct", "displacement_1storder_with_initfunct",
           "displacement_2ndorder_with_initfunct"},
       {.description = "", .default_value = "funct_interpolated"}));
   xfem_surf_navier_slip.add_component(
-      entry<Noneable<int>>("ROBIN_DIRICHLET_ID", {.description = ""}));
+      parameter<Noneable<int>>("ROBIN_DIRICHLET_ID", {.description = ""}));
   xfem_surf_navier_slip.add_component(
-      entry<Noneable<int>>("ROBIN_NEUMANN_ID", {.description = ""}));
-  xfem_surf_navier_slip.add_component(entry<double>("SLIPCOEFFICIENT"));
+      parameter<Noneable<int>>("ROBIN_NEUMANN_ID", {.description = ""}));
+  xfem_surf_navier_slip.add_component(parameter<double>("SLIPCOEFFICIENT"));
   xfem_surf_navier_slip.add_component(
-      entry<int>("FUNCT", {.description = "slip function id", .default_value = 0}));
+      parameter<int>("FUNCT", {.description = "slip function id", .default_value = 0}));
   xfem_surf_navier_slip.add_component(
-      entry<bool>("FORCE_ONLY_TANG_VEL", {.description = "", .default_value = false}));
+      parameter<bool>("FORCE_ONLY_TANG_VEL", {.description = "", .default_value = false}));
 
   condlist.push_back(xfem_surf_navier_slip);
 
@@ -719,9 +720,9 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
 
   // this implementation should be reviewed at some point as it requires these conditions
   //  to have a couplingID. In theory this should not be necessary.
-  xfem_navier_slip_robin_dirch_surf.add_component(entry<int>("COUPLINGID"));
+  xfem_navier_slip_robin_dirch_surf.add_component(parameter<int>("COUPLINGID"));
   xfem_navier_slip_robin_dirch_surf.add_component(
-      entry<Noneable<int>>("ROBIN_ID", {.description = "robin id"}));
+      parameter<Noneable<int>>("ROBIN_ID", {.description = "robin id"}));
 
   // Likely, not necessary. But needed for the current structure.
   xfem_navier_slip_robin_dirch_surf.add_component(selection<std::string>("EVALTYPE",
@@ -741,9 +742,9 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
 
   // this implementation should be reviewed at some point as it requires these conditions
   //  to have a couplingID. In theory this should not be necessary.
-  xfem_navier_slip_robin_neumann_surf.add_component(entry<int>("COUPLINGID"));
+  xfem_navier_slip_robin_neumann_surf.add_component(parameter<int>("COUPLINGID"));
   xfem_navier_slip_robin_neumann_surf.add_component(
-      entry<Noneable<int>>("ROBIN_ID", {.description = "robin id"}));
+      parameter<Noneable<int>>("ROBIN_ID", {.description = "robin id"}));
 
   xfem_navier_slip_robin_neumann_surf.add_component(neumanncomponents);
 
@@ -756,7 +757,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       "Embedded Mesh Solid Surface Coupling", Core::Conditions::Embedded_Mesh_Solid_Surf_Coupling,
       true, Core::Conditions::geometry_type_surface);
 
-  solid_surf_coupling.add_component(entry<int>("COUPLINGID"));
+  solid_surf_coupling.add_component(parameter<int>("COUPLINGID"));
 
   condlist.push_back(solid_surf_coupling);
 
@@ -767,7 +768,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       Core::Conditions::Embedded_Mesh_Solid_Volume_Background, true,
       Core::Conditions::geometry_type_volume);
 
-  solid_vol_background_coupling.add_component(entry<int>("COUPLINGID"));
+  solid_vol_background_coupling.add_component(parameter<int>("COUPLINGID"));
   condlist.push_back(solid_vol_background_coupling);
 }
 

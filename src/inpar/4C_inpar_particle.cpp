@@ -567,7 +567,7 @@ void Inpar::PARTICLE::set_valid_conditions(
       "Wall for particle interaction with (optional) material definition",
       Core::Conditions::ParticleWall, true, Core::Conditions::geometry_type_surface);
 
-  surfpartwall.add_component(entry<int>("MAT"));
+  surfpartwall.add_component(parameter<int>("MAT"));
 
   condlist.push_back(surfpartwall);
 }
