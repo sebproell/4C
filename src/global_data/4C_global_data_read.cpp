@@ -70,7 +70,7 @@ namespace
       }
 
       auto all_materials = all_of({
-          entry<int>("MAT"),
+          parameter<int>("MAT"),
           one_of(possible_materials),
       });
       section_specs["MATERIALS"] = all_materials;
@@ -94,8 +94,9 @@ namespace
       for (const auto& cond : valid_conditions)
       {
         auto condition_spec = all_of({
-            entry<int>("E", {.description = "ID of the condition. This ID refers to the respective "
-                                            "topological entity of the condition."}),
+            parameter<int>(
+                "E", {.description = "ID of the condition. This ID refers to the respective "
+                                     "topological entity of the condition."}),
             all_of(cond.specs()),
         });
         section_specs.emplace(cond.section_name(), std::move(condition_spec));
@@ -1954,7 +1955,8 @@ void Global::read_materials(Global::Problem& problem, Core::IO::InputFile& input
   using namespace Core::IO::InputSpecBuilders;
 
   auto all_materials = all_of({
-      entry<int>("MAT", {.description = "Material ID that may be used to refer to this material."}),
+      parameter<int>(
+          "MAT", {.description = "Material ID that may be used to refer to this material."}),
       one_of(all_specs, [&current_index](Core::IO::InputParameterContainer& container,
                             std::size_t index) { current_index = index; }),
   });

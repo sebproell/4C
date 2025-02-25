@@ -118,12 +118,12 @@ void Inpar::S2I::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
 
     const auto make_s2imeshtying = [&condlist](Core::Conditions::ConditionDefinition& cond)
     {
-      cond.add_component(entry<int>("ConditionID"));
+      cond.add_component(parameter<int>("ConditionID"));
       cond.add_component(selection<int>("INTERFACE_SIDE",
           {{"Undefined", Inpar::S2I::side_undefined}, {"Slave", Inpar::S2I::side_slave},
               {"Master", Inpar::S2I::side_master}},
           {.description = "interface side"}));
-      cond.add_component(entry<int>("S2I_KINETICS_ID"));
+      cond.add_component(parameter<int>("S2I_KINETICS_ID"));
 
       condlist.push_back(cond);
     };
@@ -166,9 +166,10 @@ void Inpar::S2I::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
                     {"ConstantPermeability", Inpar::S2I::kinetics_constperm},
                     {"LinearPermeability", Inpar::S2I::kinetics_linearperm},
                 }),
-            entry<int>("NUMSCAL"),
-            entry<std::vector<double>>("PERMEABILITIES", {.size = from_parameter<int>("NUMSCAL")}),
-            entry<bool>("IS_PSEUDO_CONTACT"),
+            parameter<int>("NUMSCAL"),
+            parameter<std::vector<double>>(
+                "PERMEABILITIES", {.size = from_parameter<int>("NUMSCAL")}),
+            parameter<bool>("IS_PSEUDO_CONTACT"),
         });
         kinetic_model_choices.emplace_back(std::move(constlinperm));
       }
@@ -183,13 +184,14 @@ void Inpar::S2I::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
                     {"Butler-VolmerReduced_Linearized",
                         Inpar::S2I::kinetics_butlervolmerreducedlinearized},
                 }),
-            entry<int>("NUMSCAL"),
-            entry<std::vector<int>>("STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
-            entry<int>("E-"),
-            entry<double>("K_R"),
-            entry<double>("ALPHA_A"),
-            entry<double>("ALPHA_C"),
-            entry<bool>("IS_PSEUDO_CONTACT"),
+            parameter<int>("NUMSCAL"),
+            parameter<std::vector<int>>(
+                "STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
+            parameter<int>("E-"),
+            parameter<double>("K_R"),
+            parameter<double>("ALPHA_A"),
+            parameter<double>("ALPHA_C"),
+            parameter<bool>("IS_PSEUDO_CONTACT"),
         });
         kinetic_model_choices.emplace_back(std::move(butler_volmer));
       }
@@ -200,14 +202,15 @@ void Inpar::S2I::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
                 {
                     {"Butler-Volmer-Peltier", Inpar::S2I::kinetics_butlervolmerpeltier},
                 }),
-            entry<int>("NUMSCAL"),
-            entry<std::vector<int>>("STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
-            entry<int>("E-"),
-            entry<double>("K_R"),
-            entry<double>("ALPHA_A"),
-            entry<double>("ALPHA_C"),
-            entry<bool>("IS_PSEUDO_CONTACT"),
-            entry<double>("PELTIER"),
+            parameter<int>("NUMSCAL"),
+            parameter<std::vector<int>>(
+                "STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
+            parameter<int>("E-"),
+            parameter<double>("K_R"),
+            parameter<double>("ALPHA_A"),
+            parameter<double>("ALPHA_C"),
+            parameter<bool>("IS_PSEUDO_CONTACT"),
+            parameter<double>("PELTIER"),
         });
 
         kinetic_model_choices.emplace_back(std::move(butler_volmer_peltier));
@@ -220,14 +223,15 @@ void Inpar::S2I::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
                     {"Butler-VolmerReduced_Capacitance",
                         Inpar::S2I::kinetics_butlervolmerreducedcapacitance},
                 }),
-            entry<int>("NUMSCAL"),
-            entry<std::vector<int>>("STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
-            entry<int>("E-"),
-            entry<double>("K_R"),
-            entry<double>("CAPACITANCE"),
-            entry<double>("ALPHA_A"),
-            entry<double>("ALPHA_C"),
-            entry<bool>("IS_PSEUDO_CONTACT"),
+            parameter<int>("NUMSCAL"),
+            parameter<std::vector<int>>(
+                "STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
+            parameter<int>("E-"),
+            parameter<double>("K_R"),
+            parameter<double>("CAPACITANCE"),
+            parameter<double>("ALPHA_A"),
+            parameter<double>("ALPHA_C"),
+            parameter<bool>("IS_PSEUDO_CONTACT"),
         });
 
         kinetic_model_choices.emplace_back(std::move(butler_volmer_reduced_capacitance));
@@ -239,16 +243,17 @@ void Inpar::S2I::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
                 {
                     {"Butler-Volmer_Resistance", Inpar::S2I::kinetics_butlervolmerresistance},
                 }),
-            entry<int>("NUMSCAL"),
-            entry<std::vector<int>>("STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
-            entry<int>("E-"),
-            entry<double>("K_R"),
-            entry<double>("ALPHA_A"),
-            entry<double>("ALPHA_C"),
-            entry<bool>("IS_PSEUDO_CONTACT"),
-            entry<double>("RESISTANCE"),
-            entry<double>("CONVTOL_IMPLBUTLERVOLMER"),
-            entry<int>("ITEMAX_IMPLBUTLERVOLMER"),
+            parameter<int>("NUMSCAL"),
+            parameter<std::vector<int>>(
+                "STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
+            parameter<int>("E-"),
+            parameter<double>("K_R"),
+            parameter<double>("ALPHA_A"),
+            parameter<double>("ALPHA_C"),
+            parameter<bool>("IS_PSEUDO_CONTACT"),
+            parameter<double>("RESISTANCE"),
+            parameter<double>("CONVTOL_IMPLBUTLERVOLMER"),
+            parameter<int>("ITEMAX_IMPLBUTLERVOLMER"),
         });
         kinetic_model_choices.emplace_back(std::move(butler_volmer_resistance));
       }
@@ -260,16 +265,17 @@ void Inpar::S2I::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
                     {"Butler-VolmerReduced_Resistance",
                         Inpar::S2I::kinetics_butlervolmerreducedresistance},
                 }),
-            entry<int>("NUMSCAL"),
-            entry<std::vector<int>>("STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
-            entry<int>("E-"),
-            entry<double>("K_R"),
-            entry<double>("ALPHA_A"),
-            entry<double>("ALPHA_C"),
-            entry<bool>("IS_PSEUDO_CONTACT"),
-            entry<double>("RESISTANCE"),
-            entry<double>("CONVTOL_IMPLBUTLERVOLMER"),
-            entry<int>("ITEMAX_IMPLBUTLERVOLMER"),
+            parameter<int>("NUMSCAL"),
+            parameter<std::vector<int>>(
+                "STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
+            parameter<int>("E-"),
+            parameter<double>("K_R"),
+            parameter<double>("ALPHA_A"),
+            parameter<double>("ALPHA_C"),
+            parameter<bool>("IS_PSEUDO_CONTACT"),
+            parameter<double>("RESISTANCE"),
+            parameter<double>("CONVTOL_IMPLBUTLERVOLMER"),
+            parameter<int>("ITEMAX_IMPLBUTLERVOLMER"),
         });
 
         kinetic_model_choices.emplace_back(std::move(butler_volmer_reduced_with_resistance));
@@ -282,15 +288,16 @@ void Inpar::S2I::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
                     {"Butler-VolmerReduced_ThermoResistance",
                         Inpar::S2I::kinetics_butlervolmerreducedthermoresistance},
                 }),
-            entry<int>("NUMSCAL"),
-            entry<std::vector<int>>("STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
-            entry<int>("E-"),
-            entry<double>("K_R"),
-            entry<double>("ALPHA_A"),
-            entry<double>("ALPHA_C"),
-            entry<bool>("IS_PSEUDO_CONTACT"),
-            entry<double>("THERMOPERM"),
-            entry<double>("MOLAR_HEAT_CAPACITY"),
+            parameter<int>("NUMSCAL"),
+            parameter<std::vector<int>>(
+                "STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
+            parameter<int>("E-"),
+            parameter<double>("K_R"),
+            parameter<double>("ALPHA_A"),
+            parameter<double>("ALPHA_C"),
+            parameter<bool>("IS_PSEUDO_CONTACT"),
+            parameter<double>("THERMOPERM"),
+            parameter<double>("MOLAR_HEAT_CAPACITY"),
         });
 
         kinetic_model_choices.emplace_back(std::move(butler_volmer_reduced_thermo));
@@ -303,10 +310,10 @@ void Inpar::S2I::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
                     {"ConstantInterfaceResistance",
                         Inpar::S2I::kinetics_constantinterfaceresistance},
                 }),
-            entry<std::vector<int>>("ONOFF", {.size = 2}),
-            entry<double>("RESISTANCE"),
-            entry<int>("E-"),
-            entry<bool>("IS_PSEUDO_CONTACT"),
+            parameter<std::vector<int>>("ONOFF", {.size = 2}),
+            parameter<double>("RESISTANCE"),
+            parameter<int>("E-"),
+            parameter<bool>("IS_PSEUDO_CONTACT"),
         });
 
         kinetic_model_choices.emplace_back(std::move(constant_interface_resistance));
@@ -336,7 +343,7 @@ void Inpar::S2I::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
     const auto make_s2ikinetics = [&condlist, &interface_side_options](
                                       Core::Conditions::ConditionDefinition& cond)
     {
-      cond.add_component(entry<int>("ConditionID"));
+      cond.add_component(parameter<int>("ConditionID"));
       cond.add_component(interface_side_options);
 
       condlist.push_back(cond);
@@ -370,15 +377,15 @@ void Inpar::S2I::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
         Core::Conditions::S2IKineticsGrowth, true, Core::Conditions::geometry_type_surface);
 
     auto butler_volmer = all_of({
-        entry<int>("NUMSCAL"),
-        entry<std::vector<int>>("STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
-        entry<int>("E-"),
-        entry<double>("K_R"),
-        entry<double>("ALPHA_A"),
-        entry<double>("ALPHA_C"),
-        entry<double>("MOLMASS"),
-        entry<double>("DENSITY"),
-        entry<double>("CONDUCTIVITY"),
+        parameter<int>("NUMSCAL"),
+        parameter<std::vector<int>>("STOICHIOMETRIES", {.size = from_parameter<int>("NUMSCAL")}),
+        parameter<int>("E-"),
+        parameter<double>("K_R"),
+        parameter<double>("ALPHA_A"),
+        parameter<double>("ALPHA_C"),
+        parameter<double>("MOLMASS"),
+        parameter<double>("DENSITY"),
+        parameter<double>("CONDUCTIVITY"),
         selection<int>("REGTYPE",
             {
                 {"none", Inpar::S2I::regularization_none},
@@ -386,14 +393,14 @@ void Inpar::S2I::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
                 {"Hein", Inpar::S2I::regularization_hein},
                 {"trigonometrical", Inpar::S2I::regularization_trigonometrical},
             }),
-        entry<double>("REGPAR"),
-        entry<double>("INITTHICKNESS"),
+        parameter<double>("REGPAR"),
+        parameter<double>("INITTHICKNESS"),
     });
 
     const auto make_s2igrowth = [&condlist, &butler_volmer](
                                     Core::Conditions::ConditionDefinition& cond)
     {
-      cond.add_component(entry<int>("ConditionID"));
+      cond.add_component(parameter<int>("ConditionID"));
       cond.add_component(
           selection<int>("KINETIC_MODEL", {{"Butler-Volmer", growth_kinetics_butlervolmer}}));
       cond.add_component(butler_volmer);

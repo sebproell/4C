@@ -66,12 +66,12 @@ void Core::Utils::add_valid_library_functions(Core::Utils::FunctionManager& func
   auto spec = one_of({
       group("FASTPOLYNOMIAL",
           {
-              entry<int>("NUMCOEFF"),
-              entry<std::vector<double>>("COEFF", {.size = from_parameter<int>("NUMCOEFF")}),
+              parameter<int>("NUMCOEFF"),
+              parameter<std::vector<double>>("COEFF", {.size = from_parameter<int>("NUMCOEFF")}),
           }),
       group("CUBIC_SPLINE_FROM_CSV",
           {
-              entry<std::filesystem::path>("CSV"),
+              parameter<std::filesystem::path>("CSV"),
           }),
   });
 

@@ -166,13 +166,13 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_conditions(
     const auto make_oxypartpress = [&condlist](Core::Conditions::ConditionDefinition& cond)
     {
       cond.add_component(
-          entry<int>("SCALARID", {.description = "scalar id of oxygen partial pressure"}));
-      cond.add_component(entry<double>("n", {.description = "n"}));
-      cond.add_component(entry<double>("Pb50", {.description = "Pb50"}));
-      cond.add_component(entry<double>("CaO2_max", {.description = "CaO2_max"}));
-      cond.add_component(entry<double>("alpha_bl_eff", {.description = "alpha_bl_eff"}));
-      cond.add_component(entry<double>("rho_oxy", {.description = "rho_oxy"}));
-      cond.add_component(entry<double>("rho_bl", {.description = "rho_bl"}));
+          parameter<int>("SCALARID", {.description = "scalar id of oxygen partial pressure"}));
+      cond.add_component(parameter<double>("n", {.description = "n"}));
+      cond.add_component(parameter<double>("Pb50", {.description = "Pb50"}));
+      cond.add_component(parameter<double>("CaO2_max", {.description = "CaO2_max"}));
+      cond.add_component(parameter<double>("alpha_bl_eff", {.description = "alpha_bl_eff"}));
+      cond.add_component(parameter<double>("rho_oxy", {.description = "rho_oxy"}));
+      cond.add_component(parameter<double>("rho_bl", {.description = "rho_bl"}));
 
       condlist.push_back(cond);
     };

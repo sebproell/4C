@@ -539,13 +539,13 @@ void Inpar::Cardiovascular0D::set_valid_conditions(
       Core::Conditions::Cardiovascular0D4ElementWindkessel_Structure, true,
       Core::Conditions::geometry_type_surface);
 
-  cardiovascular0d4elementwindkesselcondition.add_component(entry<int>("id"));
-  cardiovascular0d4elementwindkesselcondition.add_component(entry<double>("C"));
-  cardiovascular0d4elementwindkesselcondition.add_component(entry<double>("R_p"));
-  cardiovascular0d4elementwindkesselcondition.add_component(entry<double>("Z_c"));
-  cardiovascular0d4elementwindkesselcondition.add_component(entry<double>("L"));
-  cardiovascular0d4elementwindkesselcondition.add_component(entry<double>("p_ref"));
-  cardiovascular0d4elementwindkesselcondition.add_component(entry<double>("p_0"));
+  cardiovascular0d4elementwindkesselcondition.add_component(parameter<int>("id"));
+  cardiovascular0d4elementwindkesselcondition.add_component(parameter<double>("C"));
+  cardiovascular0d4elementwindkesselcondition.add_component(parameter<double>("R_p"));
+  cardiovascular0d4elementwindkesselcondition.add_component(parameter<double>("Z_c"));
+  cardiovascular0d4elementwindkesselcondition.add_component(parameter<double>("L"));
+  cardiovascular0d4elementwindkesselcondition.add_component(parameter<double>("p_ref"));
+  cardiovascular0d4elementwindkesselcondition.add_component(parameter<double>("p_0"));
 
   condlist.push_back(cardiovascular0d4elementwindkesselcondition);
 
@@ -560,25 +560,25 @@ void Inpar::Cardiovascular0D::set_valid_conditions(
       Core::Conditions::Cardiovascular0DArterialProxDist_Structure, true,
       Core::Conditions::geometry_type_surface);
 
-  cardiovascular0darterialproxdistcond.add_component(entry<int>("id"));
-  cardiovascular0darterialproxdistcond.add_component(entry<double>("R_arvalve_max"));
-  cardiovascular0darterialproxdistcond.add_component(entry<double>("R_arvalve_min"));
-  cardiovascular0darterialproxdistcond.add_component(entry<double>("R_atvalve_max"));
-  cardiovascular0darterialproxdistcond.add_component(entry<double>("R_atvalve_min"));
-  cardiovascular0darterialproxdistcond.add_component(entry<double>("k_p"));
-  cardiovascular0darterialproxdistcond.add_component(entry<double>("L_arp"));
-  cardiovascular0darterialproxdistcond.add_component(entry<double>("C_arp"));
-  cardiovascular0darterialproxdistcond.add_component(entry<double>("R_arp"));
-  cardiovascular0darterialproxdistcond.add_component(entry<double>("C_ard"));
-  cardiovascular0darterialproxdistcond.add_component(entry<double>("R_ard"));
-  cardiovascular0darterialproxdistcond.add_component(entry<double>("p_ref"));
-  cardiovascular0darterialproxdistcond.add_component(entry<double>("p_v_0"));
-  cardiovascular0darterialproxdistcond.add_component(entry<double>("p_arp_0"));
-  cardiovascular0darterialproxdistcond.add_component(entry<double>("y_arp_0"));
-  cardiovascular0darterialproxdistcond.add_component(entry<double>("p_ard_0"));
-  cardiovascular0darterialproxdistcond.add_component(entry<double>("p_at_fac"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<int>("id"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<double>("R_arvalve_max"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<double>("R_arvalve_min"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<double>("R_atvalve_max"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<double>("R_atvalve_min"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<double>("k_p"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<double>("L_arp"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<double>("C_arp"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<double>("R_arp"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<double>("C_ard"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<double>("R_ard"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<double>("p_ref"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<double>("p_v_0"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<double>("p_arp_0"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<double>("y_arp_0"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<double>("p_ard_0"));
+  cardiovascular0darterialproxdistcond.add_component(parameter<double>("p_at_fac"));
   cardiovascular0darterialproxdistcond.add_component(
-      entry<Noneable<int>>("p_at_crv", {.description = "curve"}));
+      parameter<Noneable<int>>("p_at_crv", {.description = "curve"}));
   condlist.push_back(cardiovascular0darterialproxdistcond);
 
   /*--------------------------------------------------------------------*/
@@ -592,7 +592,7 @@ void Inpar::Cardiovascular0D::set_valid_conditions(
       Core::Conditions::Cardiovascular0DSysPulCirculation_Structure, true,
       Core::Conditions::geometry_type_surface);
 
-  cardiovascular0dsyspulcirculationcond.add_component(entry<int>("id"));
+  cardiovascular0dsyspulcirculationcond.add_component(parameter<int>("id"));
   cardiovascular0dsyspulcirculationcond.add_component(selection<std::string>("TYPE",
       {"ventricle_left", "ventricle_right", "atrium_left", "atrium_right", "dummy"},
       {.description = ""}));
@@ -610,7 +610,7 @@ void Inpar::Cardiovascular0D::set_valid_conditions(
       Core::Conditions::CardiovascularRespiratory0DSysPulPeriphCirculation_Structure, true,
       Core::Conditions::geometry_type_surface);
 
-  cardiovascularrespiratory0dsyspulperiphcirculationcond.add_component(entry<int>("id"));
+  cardiovascularrespiratory0dsyspulperiphcirculationcond.add_component(parameter<int>("id"));
   cardiovascularrespiratory0dsyspulperiphcirculationcond.add_component(selection<std::string>(
       "TYPE", {"ventricle_left", "ventricle_right", "atrium_left", "atrium_right", "dummy"},
       {.description = ""}));
@@ -628,7 +628,7 @@ void Inpar::Cardiovascular0D::set_valid_conditions(
       Core::Conditions::Cardiovascular0DStructureCoupling, true,
       Core::Conditions::geometry_type_surface);
 
-  cardiovascular0dstructurecouplingcond.add_component(entry<int>("coupling_id"));
+  cardiovascular0dstructurecouplingcond.add_component(parameter<int>("coupling_id"));
 
   condlist.push_back(cardiovascular0dstructurecouplingcond);
 }

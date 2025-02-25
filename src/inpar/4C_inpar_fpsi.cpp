@@ -133,8 +133,8 @@ void Inpar::FPSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       "fpsi_coupling", "FPSI Coupling", Core::Conditions::fpsi_coupling, true,
       Core::Conditions::geometry_type_surface);
 
-  linefpsi.add_component(entry<int>("coupling_id"));
-  surffpsi.add_component(entry<int>("coupling_id"));
+  linefpsi.add_component(parameter<int>("coupling_id"));
+  surffpsi.add_component(parameter<int>("coupling_id"));
 
   condlist.push_back(linefpsi);
   condlist.push_back(surffpsi);

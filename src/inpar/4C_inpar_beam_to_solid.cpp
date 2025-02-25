@@ -387,7 +387,7 @@ void Inpar::BeamToSolid::set_valid_conditions(
         "Beam-to-volume mesh tying conditions - volume definition",
         Core::Conditions::BeamToSolidVolumeMeshtyingVolume, true,
         Core::Conditions::geometry_type_volume);
-    beam_to_solid_volume_meshtying_condition.add_component(entry<int>("COUPLING_ID"));
+    beam_to_solid_volume_meshtying_condition.add_component(parameter<int>("COUPLING_ID"));
     condlist.push_back(beam_to_solid_volume_meshtying_condition);
 
     beam_to_solid_volume_meshtying_condition = Core::Conditions::ConditionDefinition(
@@ -395,7 +395,7 @@ void Inpar::BeamToSolid::set_valid_conditions(
         "Beam-to-volume mesh tying conditions - line definition",
         Core::Conditions::BeamToSolidVolumeMeshtyingLine, true,
         Core::Conditions::geometry_type_line);
-    beam_to_solid_volume_meshtying_condition.add_component(entry<int>("COUPLING_ID"));
+    beam_to_solid_volume_meshtying_condition.add_component(parameter<int>("COUPLING_ID"));
     condlist.push_back(beam_to_solid_volume_meshtying_condition);
   }
 
@@ -411,7 +411,7 @@ void Inpar::BeamToSolid::set_valid_conditions(
         "Beam-to-surface mesh tying conditions - surface definition",
         Core::Conditions::BeamToSolidSurfaceMeshtyingSurface, true,
         Core::Conditions::geometry_type_surface);
-    beam_to_solid_surface_meshtying_condition.add_component(entry<int>("COUPLING_ID"));
+    beam_to_solid_surface_meshtying_condition.add_component(parameter<int>("COUPLING_ID"));
     condlist.push_back(beam_to_solid_surface_meshtying_condition);
 
     beam_to_solid_surface_meshtying_condition = Core::Conditions::ConditionDefinition(
@@ -419,7 +419,7 @@ void Inpar::BeamToSolid::set_valid_conditions(
         "Beam-to-surface mesh tying conditions - line definition",
         Core::Conditions::BeamToSolidSurfaceMeshtyingLine, true,
         Core::Conditions::geometry_type_line);
-    beam_to_solid_surface_meshtying_condition.add_component(entry<int>("COUPLING_ID"));
+    beam_to_solid_surface_meshtying_condition.add_component(parameter<int>("COUPLING_ID"));
     condlist.push_back(beam_to_solid_surface_meshtying_condition);
   }
 
@@ -435,7 +435,7 @@ void Inpar::BeamToSolid::set_valid_conditions(
         "Beam-to-surface contact conditions - surface definition",
         Core::Conditions::BeamToSolidSurfaceContactSurface, true,
         Core::Conditions::geometry_type_surface);
-    beam_to_solid_surface_contact_condition.add_component(entry<int>("COUPLING_ID"));
+    beam_to_solid_surface_contact_condition.add_component(parameter<int>("COUPLING_ID"));
     condlist.push_back(beam_to_solid_surface_contact_condition);
 
     beam_to_solid_surface_contact_condition =
@@ -443,7 +443,7 @@ void Inpar::BeamToSolid::set_valid_conditions(
             condition_names[0], "Beam-to-surface contact conditions - line definition",
             Core::Conditions::BeamToSolidSurfaceContactLine, true,
             Core::Conditions::geometry_type_line);
-    beam_to_solid_surface_contact_condition.add_component(entry<int>("COUPLING_ID"));
+    beam_to_solid_surface_contact_condition.add_component(parameter<int>("COUPLING_ID"));
     condlist.push_back(beam_to_solid_surface_contact_condition);
   }
 }

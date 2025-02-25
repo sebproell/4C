@@ -117,9 +117,9 @@ void PoroMultiPhaseScaTra::add_valid_poro_functions(Core::Utils::FunctionManager
 
   function_manager.add_function_definition(
       all_of({
-          entry<std::string>("POROMULTIPHASESCATRA_FUNCTION"),
-          entry<int>("NUMPARAMS", {.required = false}),
-          entry<std::map<std::string, double>>(
+          parameter<std::string>("POROMULTIPHASESCATRA_FUNCTION"),
+          parameter<int>("NUMPARAMS", {.required = false}),
+          parameter<std::map<std::string, double>>(
               "PARAMS", {.required = false, .size = from_parameter<int>("NUMPARAMS")}),
       }),
       try_create_poro_function_dispatch);

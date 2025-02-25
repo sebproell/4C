@@ -47,9 +47,9 @@ namespace
   auto get_default_input_spec()
   {
     return all_of({
-        entry<std::vector<int>>(
+        parameter<std::vector<int>>(
             Core::FE::cell_type_to_string(celltype), {.size = Core::FE::num_nodes<celltype>}),
-        entry<int>("MAT"),
+        parameter<int>("MAT"),
         get_kinem_type_input_spec(),
         selection<Discret::Elements::PrestressTechnology>("PRESTRESS_TECH",
             {
@@ -62,12 +62,12 @@ namespace
             },
             {.description = "The technology used for prestressing",
                 .default_value = Discret::Elements::PrestressTechnology::none}),
-        entry<std::vector<double>>("RAD", {.required = false, .size = 3}),
-        entry<std::vector<double>>("AXI", {.required = false, .size = 3}),
-        entry<std::vector<double>>("CIR", {.required = false, .size = 3}),
-        entry<std::vector<double>>("FIBER1", {.required = false, .size = 3}),
-        entry<std::vector<double>>("FIBER2", {.required = false, .size = 3}),
-        entry<std::vector<double>>("FIBER3", {.required = false, .size = 3}),
+        parameter<std::vector<double>>("RAD", {.required = false, .size = 3}),
+        parameter<std::vector<double>>("AXI", {.required = false, .size = 3}),
+        parameter<std::vector<double>>("CIR", {.required = false, .size = 3}),
+        parameter<std::vector<double>>("FIBER1", {.required = false, .size = 3}),
+        parameter<std::vector<double>>("FIBER2", {.required = false, .size = 3}),
+        parameter<std::vector<double>>("FIBER3", {.required = false, .size = 3}),
     });
   }
 }  // namespace
@@ -139,8 +139,8 @@ void Discret::Elements::SolidType::setup_element_definition(
   });
 
   defsgeneral["NURBS27"] = all_of({
-      entry<std::vector<int>>("NURBS27", {.size = 27}),
-      entry<int>("MAT"),
+      parameter<std::vector<int>>("NURBS27", {.size = 27}),
+      parameter<int>("MAT"),
       get_kinem_type_input_spec(),
   });
 }

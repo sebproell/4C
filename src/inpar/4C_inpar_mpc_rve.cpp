@@ -85,10 +85,10 @@ void Inpar::RveMpc::set_valid_conditions(
       "2d",
       Core::Conditions::PointLinearCoupledEquation, false, Core::Conditions::geometry_type_point);
 
-  linear_ce.add_component(entry<int>("EQUATION", {.description = "EQUATION"}));
+  linear_ce.add_component(parameter<int>("EQUATION", {.description = "EQUATION"}));
   linear_ce.add_component(selection<std::string>("ADD", {"dispx", "dispy", "undefined"},
       {.description = "degrees of freedom", .default_value = "undefined"}));
-  linear_ce.add_component(entry<double>("COEFFICIENT"));
+  linear_ce.add_component(parameter<double>("COEFFICIENT"));
 
   condlist.push_back(linear_ce);
   /*--------------------------------------------------------------------*/

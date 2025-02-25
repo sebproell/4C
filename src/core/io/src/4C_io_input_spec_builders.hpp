@@ -236,7 +236,7 @@ namespace Core::IO
       enum class Type : std::uint8_t
       {
         unknown,
-        entry,
+        parameter,
         group,
         all_of,
         one_of,
@@ -511,8 +511,8 @@ namespace Core::IO
    * @code
    * auto input = group("params",
    *   {
-   *   entry<int>("a", {.description = "An integer value", .required = true}),
-   *   entry<std::vector<double>>("b", {.description = "A vector of doubles", .required = false,
+   *   parameter<int>("a", {.description = "An integer value", .required = true}),
+   *   parameter<std::vector<double>>("b", {.description = "A vector of doubles", .required = false,
    *     .size = 4}),
    *   }
    * );
@@ -526,7 +526,7 @@ namespace Core::IO
 
     /**
      * This constant signifies that a size is dynamic and will be determined at runtime. Pass this
-     * value to the size parameter of a vector-valued entry() or the list() function.
+     * value to the size parameter of a vector-valued parameter() or the list() function.
      *
      * @note Dynamic sizes do not work for the legacy dat file format and will throw a runtime
      * error.
@@ -545,16 +545,14 @@ namespace Core::IO
      */
     using Size = std::variant<int, SizeCallback>;
 
-
-
     /**
-     * Callback function that may be attached to entry().
+     * Callback function that may be attached to parameter().
      */
-    using EntryCallback = std::function<void(InputParameterContainer&)>;
+    using ParameterCallback = std::function<void(InputParameterContainer&)>;
 
-    //! Additional parameters for an entry().
+    //! Additional parameters for a parameter().
     template <typename T>
-    struct EntryData
+    struct ParameterData
     {
       using StoredType = T;
       /**
@@ -577,12 +575,12 @@ namespace Core::IO
        * An optional callback that is called after the value has been parsed. This can be used to
        * set additional values in the container.
        */
-      EntryCallback on_parse_callback{nullptr};
+      ParameterCallback on_parse_callback{nullptr};
     };
 
     template <typename T>
       requires(rank<T>() == 1)
-    struct EntryData<T>
+    struct ParameterData<T>
     {
       using StoredType = T;
 
@@ -592,7 +590,7 @@ namespace Core::IO
 
       std::optional<StoredType> default_value{};
 
-      EntryCallback on_parse_callback{nullptr};
+      ParameterCallback on_parse_callback{nullptr};
 
       /**
        * The size of the vector. This can be a fixed size, #dynamic_size, or a callback that
@@ -603,7 +601,7 @@ namespace Core::IO
 
     template <typename T>
       requires(rank<T>() > 1)
-    struct EntryData<T>
+    struct ParameterData<T>
     {
       using StoredType = T;
 
@@ -613,7 +611,7 @@ namespace Core::IO
 
       std::optional<StoredType> default_value{};
 
-      EntryCallback on_parse_callback{nullptr};
+      ParameterCallback on_parse_callback{nullptr};
 
       std::array<Size, rank<T>()> size;
     };
@@ -687,7 +685,7 @@ namespace Core::IO
       {
         std::string name;
         using StoredType = T;
-        EntryData<T> data;
+        ParameterData<T> data;
         void parse(ValueParser& parser, InputParameterContainer& container) const;
         bool match(ConstYamlNodeRef node, InputParameterContainer& container,
             IO::Internal::MatchEntry& match_entry) const;
@@ -707,7 +705,7 @@ namespace Core::IO
       {
         std::string name;
         using StoredType = T;
-        EntryData<T> data;
+        ParameterData<T> data;
         std::vector<std::pair<std::string, StoredType>> choices;
         void parse(ValueParser& parser, InputParameterContainer& container) const;
         bool match(ConstYamlNodeRef node, InputParameterContainer& container,
@@ -798,8 +796,8 @@ namespace Core::IO
       //! Helper to create selection() specs.
       //! Note that the type can be anything since we never read or write values of this type.
       template <typename T>
-      [[nodiscard]] InputSpec selection_internal(
-          std::string name, std::vector<std::pair<std::string, T>> choices, EntryData<T> data = {});
+      [[nodiscard]] InputSpec selection_internal(std::string name,
+          std::vector<std::pair<std::string, T>> choices, ParameterData<T> data = {});
 
 
       struct SizeChecker
@@ -825,41 +823,42 @@ namespace Core::IO
     }  // namespace Internal
 
     /**
-     * Create a normal entry with given @p name. All entries are parameterized by a struct which
-     * contains the optional `description`, `required` and `default_value` fields. The following
-     * examples demonstrate how entries can be created:
+     * Create a normal parameter with given @p name. All parameters are parameterized by a struct
+     * which contains the optional `description`, `required` and `default_value` fields. The
+     * following examples demonstrate how parameters can be created:
      *
      * @code
-     * // An entry with name and description. By default, the entry is required.
-     * entry<std::string>("my_string", {.description = "A string value."});
+     * // A parameter with name and description. By default, the parameter is required.
+     * parameter<std::string>("my_string", {.description = "A string value."});
      *
-     * // An entry with a default value. This entry is implicitly optional because a default value
-     * // is given.
-     * entry<double>("my_double", {.default_value = 3.14});
+     * // A parameter with a default value. This parameter is implicitly optional because a default
+     * // value is given.
+     * parameter<double>("my_double", {.default_value = 3.14});
      * // This is equivalent to:
-     * entry<double>("my_double", {.required = false, .default_value = 3.14});
+     * parameter<double>("my_double", {.required = false, .default_value = 3.14});
      *
-     * // An optional entry. This value does not have a default value.
-     * entry<int>("my_int", {.required = false});
+     * // An optional parameter. This value does not have a default value.
+     * parameter<int>("my_int", {.required = false});
      *
-     * // An alternative way to create this optional int entry is achieved with the Noneable type.
-     * // This value is optional and by default has an empty value represented by "none" in the
+     * // An alternative way to create this optional int parameter is achieved with the Noneable
+     * // type. This value is optional and by default has an empty value represented by "none" in
+     * the
      * // input file.
-     * entry<Noneable<int>>("my_int", .default_value = none<int>);
+     * parameter<Noneable<int>>("my_int", .default_value = none<int>);
      *
-     * // A vector entry with a fixed size of 3.
-     * entry<std::vector<double>>("my_vector", {.size = 3});
+     * // A vector parameter with a fixed size of 3.
+     * parameter<std::vector<double>>("my_vector", {.size = 3});
      *
      * // A vector may also contain Noneable values.
-     * entry<std::vector<Noneable<double>>>("my_vector", {.size = 3});
+     * parameter<std::vector<Noneable<double>>>("my_vector", {.size = 3});
      *
-     * // A vector entry with a size that is determined by the value of another parameter. The
+     * // A vector parameter with a size that is determined by the value of another parameter. The
      * // size is given as a callback.
-     * entry<int>("N");
-     * entry<std::vector<double>>("my_vector", {.size = from_parameter<int>("N")});
+     * parameter<int>("N");
+     * parameter<std::vector<double>>("my_vector", {.size = from_parameter<int>("N")});
      *
-     * // A vector entry which performs an additional action after parsing.
-     * entry<std::filesystem::path>("data_file", {.description = "A path to a file.",
+     * // A vector parameter which performs an additional action after parsing.
+     * parameter<std::filesystem::path>("data_file", {.description = "A path to a file.",
      *   .on_parse_callback = [](InputParameterContainer& container) {
      *     // Perform an action with the parsed path.
      *     std::filesystem::path path = container.get<std::filesystem::path>("my_path");
@@ -869,8 +868,9 @@ namespace Core::IO
      *   }});
      * @endcode
      *
-     * After parsing an InputSpec with fully_parse(), the value of the entry can be retrieved from
-     * an InputParameterContainer. The details depend on the `required` and `default_value` fields:
+     * After parsing an InputSpec with fully_parse(), the value of the parameter can be retrieved
+     * from an InputParameterContainer. The details depend on the `required` and `default_value`
+     * fields:
      *
      *   - `required` is used to determine whether the parameter is required in the input file. Note
      *     that by default, if `required` is not set, the parameter is implicitly required. Failing
@@ -926,12 +926,12 @@ namespace Core::IO
      *     InputParameterContainer::get(). If the parameter is not present in the input file or set
      *     to "none", the Noneable<T> value will be empty.
      *
-     * @tparam T The data type of the entry. Must be a SupportedType.
+     * @tparam T The data type of the parameter. Must be a SupportedType.
      *
      * @relatedalso InputSpec
      */
     template <SupportedType T>
-    [[nodiscard]] InputSpec entry(std::string name, EntryData<T>&& data = {});
+    [[nodiscard]] InputSpec parameter(std::string name, ParameterData<T>&& data = {});
 
     /**
      * Create a callback that returns the value of the parameter with the given @p name. Such a
@@ -941,8 +941,8 @@ namespace Core::IO
      *
      * @code
      *   auto input_spec = group({
-     *    entry<int>("N"),
-     *    entry<std::vector<double>>("data", {.size = read_from_parameter<int>("N")}),
+     *    parameter<int>("N"),
+     *    parameter<std::vector<double>>("data", {.size = read_from_parameter<int>("N")}),
      *    });
      * @endcode
      *
@@ -954,7 +954,7 @@ namespace Core::IO
     [[nodiscard]] auto from_parameter(const std::string& name);
 
     /**
-     * An entry whose value is a a selection from a list of choices. For example:
+     * A parameter whose value is a a selection from a list of choices. For example:
      *
      * @code
      * selection<int>("my_selection", {{"a", 1}, {"b", 2}, {"c", 3}});
@@ -965,7 +965,7 @@ namespace Core::IO
      * any type. This function is for convenience, as you do not need to convert parsed string
      * values to another type yourself. A frequent use case is to map strings to enum constants.
      *
-     * The remaining parameterization options follow the same rules as for the entry() function.
+     * The remaining parameterization options follow the same rules as for the parameter() function.
      *
      * @note If you want to store the choices as strings and not map them to another type, use the
      * other selection() function.
@@ -974,8 +974,8 @@ namespace Core::IO
      */
     template <typename T>
       requires(!std::same_as<T, std::string>)
-    [[nodiscard]] InputSpec selection(
-        std::string name, std::vector<std::pair<std::string, T>> choices, EntryData<T> data = {});
+    [[nodiscard]] InputSpec selection(std::string name,
+        std::vector<std::pair<std::string, T>> choices, ParameterData<T> data = {});
 
 
     /**
@@ -989,7 +989,7 @@ namespace Core::IO
      */
     template <std::same_as<std::string> T>
     [[nodiscard]] InputSpec selection(
-        std::string name, std::vector<std::string> choices, EntryData<T> data = {});
+        std::string name, std::vector<std::string> choices, ParameterData<T> data = {});
 
     /**
      * A group of InputSpecs. This groups one or more InputSpecs under a name. A group can be
@@ -1000,17 +1000,17 @@ namespace Core::IO
      * // A required group.
      * group("group",
      *    {
-     *      entry<double>("a"),
-     *      entry<int>("b"),
+     *      parameter<double>("a"),
+     *      parameter<int>("b"),
      *    });
      *
-     * // An optional group. If the group is not present in the input, none of the entries are
+     * // An optional group. If the group is not present in the input, none of the parameters are
      * // required. This is useful to require a group of parameters together.
      * group("GenAlpha",
      *   {
-     *      entry<double>("alpha_f"),
-     *      entry<double>("alpha_m"),
-     *      entry<double>("gamma"),
+     *      parameter<double>("alpha_f"),
+     *      parameter<double>("alpha_m"),
+     *      parameter<double>("gamma"),
      *   },
      *   {.required = false}
      *   );
@@ -1018,11 +1018,11 @@ namespace Core::IO
      * //Groups may be nested
      * group("outer",
      *  {
-     *    entry<int>("a"),
+     *    parameter<int>("a"),
      *    group("inner",
      *    {
-     *      entry<double>("b"),
-     *      entry<std::string>("c"),
+     *      parameter<double>("b"),
+     *      parameter<std::string>("c"),
      *    }
      *    ),
      *  });
@@ -1032,19 +1032,19 @@ namespace Core::IO
      * A group introduces a new scope in the input. This group scope is not only useful for
      * structuring the input file, but also to selectively activate a set of parameters, as
      * demonstrated in the second example. If an optional group is not present in the input, none of
-     * the entries are required. If the group is present, all entries are required. This is often
+     * its children are required. If the group is present, all children are required. This is often
      * exactly what you need: a group activates a feature which requires certain parameters to
      * be present.
      *
-     * Whether a group can have a default value is determined by the default values of its entries.
-     * If all of its entries have default values, the group can have a default value. In this case,
-     * you may set the `defaultable` option to guarantee that the default values of the entries are
+     * Whether a group can have a default value is determined by the default values of its children.
+     * If all of its children have default values, the group can have a default value. In this case,
+     * you may set the `defaultable` option to guarantee that the default values of the children are
      * stored under the group name in the container, even if the group is not present in the input.
      * Obviously, this only makes sense if the group is not required.
-     * This behavior is analogous to the behavior of the entry() function. While entries with
+     * This behavior is analogous to the behavior of the parameter() function. While parameters with
      * default values are often a good idea (if the default value is meaningful), groups with
      * default values are less common. If you follow the advice to use groups to activate features,
-     * you will usually have required entries in the group and, consequently, the group cannot be
+     * you will usually have required parameters in the group and, consequently, the group cannot be
      * `defaultable`. Put differently, if you have a group with many default values, you are likely
      * not using the InputSpecs to their full potential. Consider splitting the group into multiple
      * smaller groups or use the one_of() function to select between different groups.
@@ -1062,13 +1062,13 @@ namespace Core::IO
      *
      * @code
      * all_of({
-     *   entry<int>("a"),
-     *   entry<double>("b"),
-     *   entry<std::string>("c"),
+     *   parameter<int>("a"),
+     *   parameter<double>("b"),
+     *   parameter<std::string>("c"),
      *   });
      * @endcode
      *
-     * will require all three entries to be present in the input.
+     * will require all three parameters to be present in the input.
      *
      * The main application of this function is to gather multiple InputSpecs on the same level and
      * treat them as a single InputSpec. Nesting multiple all_of() specs is possible but does not
@@ -1079,20 +1079,20 @@ namespace Core::IO
      * group("outer",
      * {
      *   all_of({
-     *     entry<int>("a"),
+     *     parameter<int>("a"),
      *     all_of({
-     *       entry<double>("b"),
+     *       parameter<double>("b"),
      *     }),
      *   }),
-     *   entry<std::string>("c"),
+     *   parameter<std::string>("c"),
      * });
      *
      * // version 2
      * group("outer",
      * {
-     *   entry<int>("a"),
-     *   entry<double>("b"),
-     *   entry<std::string>("c"),
+     *   parameter<int>("a"),
+     *   parameter<double>("b"),
+     *   parameter<std::string>("c"),
      * });
      * @endcode
      *
@@ -1115,14 +1115,14 @@ namespace Core::IO
      * one_of({
      *  group("OneStepTheta",
      *  {
-     *    entry<double>("theta"),
+     *    parameter<double>("theta"),
      *  }),
      *  group("GenAlpha",
      *  {
-     *    entry<double>("alpha_f"),
-     *    entry<double>("alpha_m"),
-     *    entry<double>("gamma"),
-     *    entry<bool>("do_logging", {.default_value = false}),
+     *    parameter<double>("alpha_f"),
+     *    parameter<double>("alpha_m"),
+     *    parameter<double>("gamma"),
+     *    parameter<bool>("do_logging", {.default_value = false}),
      *  }),
      *  });
      * @endcode
@@ -1132,8 +1132,9 @@ namespace Core::IO
      * all InputSpecs handed to one_of() need to be `required = true`. While this could silently be
      * changed internally, you will encounter an error if any InputSpec is not required to avoid
      * confusion and stop you from constructing difficult to understand InputSpecs. You can use
-     * entries that are `required = false` nested inside other InputSpecs, see e.g. the `do_logging`
-     * entry in the example code. The return one_of() InputSpec is always treated as required.
+     * parameters that are `required = false` nested inside other InputSpecs, see e.g. the
+     * `do_logging` parameter in the example code. The return one_of() InputSpec is always treated
+     * as required.
      *
      * The optional @p on_parse_callback may be used to perform additional actions after parsing one
      * of the specs. The index of the parsed spec inside the @p specs vector is passed as an
@@ -1167,13 +1168,13 @@ namespace Core::IO
      * one_of({
      *  group("OneStepTheta",
      *  {
-     *    entry<double>("theta"),
+     *    parameter<double>("theta"),
      *  }),
      *  group("GenAlpha",
      *  {
-     *    entry<double>("alpha_f"),
-     *    entry<double>("alpha_m"),
-     *    entry<double>("gamma"),
+     *    parameter<double>("alpha_f"),
+     *    parameter<double>("alpha_m"),
+     *    parameter<double>("gamma"),
      *  }),
      *  },
      *  store_index_as<TimeIntegrationMethod>("index",
@@ -1198,7 +1199,7 @@ namespace Core::IO
      * or dynamic_size (the default). For example,
      *
      * @code
-     * list("my_list", entry<int>("a"), {.size = 3});
+     * list("my_list", parameter<int>("a"), {.size = 3});
      * @endcode
      *
      * will match the following yaml input:
@@ -1211,7 +1212,7 @@ namespace Core::IO
      * @endcode
      *
      * @note The list() function is not intended to specify an array of primitive values of type T.
-     * Use the `entry<std::vector<T>>()` function for this purpose. As a developer of a new
+     * Use the `parameter<std::vector<T>>()` function for this purpose. As a developer of a new
      * InputSpec, you should rarely need the list() function.
      */
     [[nodiscard]] InputSpec list(std::string name, InputSpec spec, ListData data = {});
@@ -1282,7 +1283,7 @@ template <Core::IO::SupportedType T>
 bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::match(ConstYamlNodeRef node,
     InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
 {
-  match_entry.type = IO::Internal::MatchEntry::Type::entry;
+  match_entry.type = IO::Internal::MatchEntry::Type::parameter;
   auto spec_name = ryml::to_csubstr(name);
 
   // If we are not even in a map, we refuse to do anything and let the MatchTree handle this case.
@@ -1292,7 +1293,7 @@ bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::match(ConstYamlNodeRef
 
   if (!node.node.has_child(spec_name))
   {
-    // It is OK to not encounter an optional entry
+    // It is OK to not encounter an optional parameter
     if (data.default_value.has_value())
     {
       container.add(name, data.default_value.value());
@@ -1478,7 +1479,7 @@ template <typename T>
 bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::match(ConstYamlNodeRef node,
     InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
 {
-  match_entry.type = IO::Internal::MatchEntry::Type::entry;
+  match_entry.type = IO::Internal::MatchEntry::Type::parameter;
   auto spec_name = ryml::to_csubstr(name);
 
   // If we are not even in a map, we refuse to do anything and let the MatchTree handle this case.
@@ -1488,7 +1489,7 @@ bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::match(ConstYamlNod
 
   if (!node.node.has_child(spec_name))
   {
-    // It is OK to not encounter an optional entry
+    // It is OK to not encounter an optional parameter
     if (data.default_value.has_value())
     {
       container.add(name, data.default_value.value());
@@ -1654,7 +1655,8 @@ auto Core::IO::InputSpecBuilders::from_parameter(const std::string& name)
 
 
 template <Core::IO::SupportedType T>
-Core::IO::InputSpec Core::IO::InputSpecBuilders::entry(std::string name, EntryData<T>&& data)
+Core::IO::InputSpec Core::IO::InputSpecBuilders::parameter(
+    std::string name, ParameterData<T>&& data)
 {
   Internal::sanitize_required_default(data);
 
@@ -1671,7 +1673,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::entry(std::string name, EntryDa
 
 template <typename T>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
-    std::string name, std::vector<std::pair<std::string, T>> choices, EntryData<T> data)
+    std::string name, std::vector<std::pair<std::string, T>> choices, ParameterData<T> data)
 {
   FOUR_C_ASSERT_ALWAYS(!choices.empty(), "Selection must have at least one choice.");
   Internal::sanitize_required_default(data);
@@ -1718,7 +1720,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
 template <typename T>
   requires(!std::same_as<T, std::string>)
 Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
-    std::string name, std::vector<std::pair<std::string, T>> choices, EntryData<T> data)
+    std::string name, std::vector<std::pair<std::string, T>> choices, ParameterData<T> data)
 {
   return Internal::selection_internal(name, choices, data);
 }
@@ -1726,7 +1728,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
 
 template <std::same_as<std::string> T>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
-    std::string name, std::vector<std::string> choices, EntryData<T> data)
+    std::string name, std::vector<std::string> choices, ParameterData<T> data)
 {
   std::vector<std::pair<std::string, std::string>> choices_with_strings;
   for (const auto& choice : choices)

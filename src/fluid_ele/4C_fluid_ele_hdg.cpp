@@ -136,8 +136,8 @@ void Discret::Elements::FluidHDGType ::setup_element_definition(
   {
     defs_hdg[key] = all_of({
         fluid_line_def,
-        entry<int>("DEG"),
-        entry<int>("SPC", {.required = false}),
+        parameter<int>("DEG"),
+        parameter<int>("SPC", {.required = false}),
     });
   }
 }

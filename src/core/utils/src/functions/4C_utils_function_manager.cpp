@@ -70,58 +70,59 @@ void Core::Utils::add_valid_builtin_functions(Core::Utils::FunctionManager& func
   using namespace IO::InputSpecBuilders;
 
   auto time_info = all_of({
-      entry<int>("NUMPOINTS"),
+      parameter<int>("NUMPOINTS"),
       one_of({
           group("BYNUM",
               {
-                  entry<std::vector<double>>("TIMERANGE", {.size = 2}),
+                  parameter<std::vector<double>>("TIMERANGE", {.size = 2}),
               },
               {.description = "Linearly distribute NUMPOINTS time points in the TIMERANGE."}),
-          entry<std::vector<double>>("TIMES", {.size = from_parameter<int>("NUMPOINTS")}),
+          parameter<std::vector<double>>("TIMES", {.size = from_parameter<int>("NUMPOINTS")}),
       }),
   });
 
   auto spec = one_of({
       all_of({
-          entry<int>("COMPONENT", {.required = false}),
-          entry<std::string>("SYMBOLIC_FUNCTION_OF_SPACE_TIME"),
+          parameter<int>("COMPONENT", {.required = false}),
+          parameter<std::string>("SYMBOLIC_FUNCTION_OF_SPACE_TIME"),
       }),
 
-      entry<std::string>("SYMBOLIC_FUNCTION_OF_TIME"),
+      parameter<std::string>("SYMBOLIC_FUNCTION_OF_TIME"),
 
       all_of({
-          entry<int>("VARIABLE"),
-          entry<std::string>("NAME"),
+          parameter<int>("VARIABLE"),
+          parameter<std::string>("NAME"),
           one_of({
               all_of({
                   selection<std::string>("TYPE", {"expression"}),
-                  entry<std::string>("DESCRIPTION"),
+                  parameter<std::string>("DESCRIPTION"),
               }),
               all_of({
                   selection<std::string>("TYPE", {"linearinterpolation", "fourierinterpolation"}),
                   time_info,
-                  entry<std::vector<double>>("VALUES", {.size = from_parameter<int>("NUMPOINTS")}),
+                  parameter<std::vector<double>>(
+                      "VALUES", {.size = from_parameter<int>("NUMPOINTS")}),
               }),
               all_of({
                   selection<std::string>("TYPE", {"multifunction"}),
                   time_info,
-                  entry<std::vector<std::string>>(
+                  parameter<std::vector<std::string>>(
                       "DESCRIPTION", {.size = [](const IO::InputParameterContainer& container)
                                          { return container.get<int>("NUMPOINTS") - 1; }}),
               }),
           }),
           group("PERIODIC",
               {
-                  entry<double>("T1"),
-                  entry<double>("T2"),
+                  parameter<double>("T1"),
+                  parameter<double>("T2"),
               },
               {.required = false}),
       }),
 
       all_of({
-          entry<std::string>("VARFUNCTION"),
-          entry<int>("NUMCONSTANTS", {.required = false}),
-          entry<std::map<std::string, double>>(
+          parameter<std::string>("VARFUNCTION"),
+          parameter<int>("NUMCONSTANTS", {.required = false}),
+          parameter<std::map<std::string, double>>(
               "CONSTANTS", {.required = false, .size = from_parameter<int>("NUMCONSTANTS")}),
       }),
   });

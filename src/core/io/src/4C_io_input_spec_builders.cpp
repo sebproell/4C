@@ -263,10 +263,10 @@ namespace
 
     switch (entry.type)
     {
-      case MatchEntry::Type::entry:
+      case MatchEntry::Type::parameter:
       {
         out << indent;
-        out << std::format("{} {} entry '{}'", state_symbol[static_cast<int>(entry.state)],
+        out << std::format("{} {} parameter '{}'", state_symbol[static_cast<int>(entry.state)],
             state_phrase[static_cast<int>(entry.state)], entry.spec->impl().name());
         if (entry.state == MatchEntry::State::partial)
         {
@@ -454,7 +454,7 @@ namespace
     {
       switch (entry.type)
       {
-        case MatchEntry::Type::entry:
+        case MatchEntry::Type::parameter:
         {
           if (entry.state == MatchEntry::State::matched)
           {

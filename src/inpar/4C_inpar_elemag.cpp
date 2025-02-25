@@ -129,12 +129,12 @@ void Inpar::EleMag::set_valid_conditions(
 
   const auto make_silvermueller = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    cond.add_component(entry<int>("NUMDOF"));
-    cond.add_component(entry<std::vector<int>>(
+    cond.add_component(parameter<int>("NUMDOF"));
+    cond.add_component(parameter<std::vector<int>>(
         "ONOFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
-    cond.add_component(entry<std::vector<Noneable<int>>>(
+    cond.add_component(parameter<std::vector<Noneable<int>>>(
         "FUNCT", {.description = "", .required = false, .size = from_parameter<int>("NUMDOF")}));
-    cond.add_component(entry<std::vector<double>>(
+    cond.add_component(parameter<std::vector<double>>(
         "VAL", {.description = "", .size = from_parameter<int>("NUMDOF")}));
 
     condlist.push_back(cond);

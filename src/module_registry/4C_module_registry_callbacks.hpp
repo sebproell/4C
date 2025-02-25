@@ -57,7 +57,8 @@ struct ModuleCallbacks
    * Nested groups are allowed.
    *
    * @note The materials from various modules are gathered in a shared section. The input mechanism
-   * automatically adds an `entry<int>("MAT")` to the InputSpec to allow enumeration of materials.
+   * automatically adds an `parameter<int>("MAT")` to the InputSpec to allow enumeration of
+   * materials.
    */
   std::function<std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec>()> materials;
 };

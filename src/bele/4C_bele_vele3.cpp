@@ -71,7 +71,7 @@ void Discret::Elements::Vele3Type::setup_element_definition(
   using namespace Core::IO::InputSpecBuilders;
 
   defs["HEX8"] = all_of({
-      entry<std::vector<int>>("HEX8", {.size = 8}),
+      parameter<std::vector<int>>("HEX8", {.size = 8}),
   });
 }
 

@@ -59,8 +59,8 @@ void Core::Conditions::ConditionDefinition::read(Core::IO::InputFile& input,
 {
   using namespace Core::IO::InputSpecBuilders;
   auto condition_spec = all_of({
-      entry<int>("E", {.description = "ID of the condition. This ID refers to the respective "
-                                      "topological entity of the condition."}),
+      parameter<int>("E", {.description = "ID of the condition. This ID refers to the respective "
+                                          "topological entity of the condition."}),
       all_of(specs_),
   });
 
@@ -103,7 +103,7 @@ std::ostream& Core::Conditions::ConditionDefinition::print(std::ostream& stream)
 
   using namespace Core::IO::InputSpecBuilders;
   auto condition_spec = all_of({
-      entry<int>("E"),
+      parameter<int>("E"),
       all_of(specs_),
   });
 

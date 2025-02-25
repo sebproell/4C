@@ -63,7 +63,7 @@ void Discret::Elements::Wall1ScatraType::setup_element_definition(
   {
     defs[key] = all_of({
         wall_line_def,
-        entry<std::string>("TYPE"),
+        parameter<std::string>("TYPE"),
     });
   }
 }

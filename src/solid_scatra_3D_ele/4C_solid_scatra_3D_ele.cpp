@@ -30,9 +30,9 @@ namespace
   auto get_default_input_spec()
   {
     return all_of({
-        entry<std::vector<int>>(
+        parameter<std::vector<int>>(
             Core::FE::cell_type_to_string(celltype), {.size = Core::FE::num_nodes<celltype>}),
-        entry<int>("MAT"),
+        parameter<int>("MAT"),
         selection<Inpar::Solid::KinemType>("KINEM",
             {
                 {kinem_type_string(Inpar::Solid::KinemType::linear),
@@ -42,7 +42,7 @@ namespace
             },
             {.description = "Whether to use linear kinematics (small displacements) or nonlinear "
                             "kinematics (large displacements)"}),
-        entry<std::string>("TYPE"),
+        parameter<std::string>("TYPE"),
         selection<Discret::Elements::PrestressTechnology>("PRESTRESS_TECH",
             {
                 {Discret::Elements::prestress_technology_string(
@@ -54,12 +54,12 @@ namespace
             },
             {.description = "The technology used for prestressing",
                 .default_value = Discret::Elements::PrestressTechnology::none}),
-        entry<std::vector<double>>("RAD", {.required = false, .size = 3}),
-        entry<std::vector<double>>("AXI", {.required = false, .size = 3}),
-        entry<std::vector<double>>("CIR", {.required = false, .size = 3}),
-        entry<std::vector<double>>("FIBER1", {.required = false, .size = 3}),
-        entry<std::vector<double>>("FIBER2", {.required = false, .size = 3}),
-        entry<std::vector<double>>("FIBER3", {.required = false, .size = 3}),
+        parameter<std::vector<double>>("RAD", {.required = false, .size = 3}),
+        parameter<std::vector<double>>("AXI", {.required = false, .size = 3}),
+        parameter<std::vector<double>>("CIR", {.required = false, .size = 3}),
+        parameter<std::vector<double>>("FIBER1", {.required = false, .size = 3}),
+        parameter<std::vector<double>>("FIBER2", {.required = false, .size = 3}),
+        parameter<std::vector<double>>("FIBER3", {.required = false, .size = 3}),
 
     });
   }

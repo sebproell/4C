@@ -75,10 +75,10 @@ void Discret::Elements::Truss3Type::setup_element_definition(
   using namespace Core::IO::InputSpecBuilders;
 
   defs["LINE2"] = all_of({
-      entry<std::vector<int>>("LINE2", {.size = 2}),
-      entry<int>("MAT"),
-      entry<double>("CROSS"),
-      entry<std::string>("KINEM"),
+      parameter<std::vector<int>>("LINE2", {.size = 2}),
+      parameter<int>("MAT"),
+      parameter<double>("CROSS"),
+      parameter<std::string>("KINEM"),
   });
 }
 

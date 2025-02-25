@@ -599,7 +599,7 @@ namespace Core::IO
         "Section 'INCLUDES' is a reserved section name with special meaning. Please choose a "
         "different name.");
     pimpl_->valid_sections_["INCLUDES"] =
-        InputSpecBuilders::entry<std::vector<std::filesystem::path>>("INCLUDES",
+        InputSpecBuilders::parameter<std::vector<std::filesystem::path>>("INCLUDES",
             {
                 .description = "Path to files that should be included into this file. "
                                "The paths can be either absolute or relative to the file.",

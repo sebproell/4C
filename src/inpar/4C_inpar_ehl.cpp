@@ -148,12 +148,13 @@ void Inpar::EHL::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
 
   const auto make_ehl_cond = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
-    cond.add_component(entry<int>("InterfaceID"));
+    cond.add_component(parameter<int>("InterfaceID"));
     cond.add_component(
         selection<std::string>("Side", {"Master", "Slave"}, {.description = "interface side"}));
     cond.add_component(selection<std::string>("Initialization", {"Inactive", "Active"},
         {.description = "initialization", .default_value = "Active"}));
-    cond.add_component(entry<double>("FrCoeffOrBound", {.description = "", .default_value = 0.0}));
+    cond.add_component(
+        parameter<double>("FrCoeffOrBound", {.description = "", .default_value = 0.0}));
 
     condlist.push_back(cond);
   };

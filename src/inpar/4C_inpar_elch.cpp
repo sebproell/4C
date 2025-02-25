@@ -188,10 +188,10 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
     const auto make_electrodesoc = [&condlist](Core::Conditions::ConditionDefinition& cond)
     {
       // insert input file line components into condition definitions
-      cond.add_component(entry<int>("ConditionID"));
-      cond.add_component(entry<double>("C_0%"));
-      cond.add_component(entry<double>("C_100%"));
-      cond.add_component(entry<double>("ONE_HOUR"));
+      cond.add_component(parameter<int>("ConditionID"));
+      cond.add_component(parameter<double>("C_0%"));
+      cond.add_component(parameter<double>("C_100%"));
+      cond.add_component(parameter<double>("ONE_HOUR"));
 
       // insert condition definitions into global list of valid condition definitions
       condlist.emplace_back(cond);
@@ -222,7 +222,7 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
     const auto make_cellvoltage = [&condlist](Core::Conditions::ConditionDefinition& cond)
     {
       // insert input file line components into condition definitions
-      cond.add_component(entry<int>("ConditionID"));
+      cond.add_component(parameter<int>("ConditionID"));
 
       // insert condition definitions into global list of valid condition definitions
       condlist.emplace_back(cond);
@@ -247,52 +247,52 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
                     {"Butler-Volmer-Yang1997",
                         Inpar::ElCh::ElectrodeKinetics::butler_volmer_yang1997},
                 }),
-            entry<double>("ALPHA_A"),
-            entry<double>("ALPHA_C"),
-            entry<double>("I0"),
-            entry<double>("GAMMA"),
-            entry<double>("REFCON"),
-            entry<double>("DL_SPEC_CAP"),
+            parameter<double>("ALPHA_A"),
+            parameter<double>("ALPHA_C"),
+            parameter<double>("I0"),
+            parameter<double>("GAMMA"),
+            parameter<double>("REFCON"),
+            parameter<double>("DL_SPEC_CAP"),
         }),
         all_of({
             selection<int>("KINETIC_MODEL", {{"Tafel", Inpar::ElCh::ElectrodeKinetics::tafel}}),
-            entry<double>("ALPHA"),
-            entry<double>("I0"),
-            entry<double>("GAMMA"),
-            entry<double>("REFCON"),
-            entry<double>("DL_SPEC_CAP"),
+            parameter<double>("ALPHA"),
+            parameter<double>("I0"),
+            parameter<double>("GAMMA"),
+            parameter<double>("REFCON"),
+            parameter<double>("DL_SPEC_CAP"),
         }),
         all_of({
             selection<int>("KINETIC_MODEL", {{"linear", Inpar::ElCh::ElectrodeKinetics::linear}}),
-            entry<double>("ALPHA"),
-            entry<double>("I0"),
-            entry<double>("GAMMA"),
-            entry<double>("REFCON"),
-            entry<double>("DL_SPEC_CAP"),
+            parameter<double>("ALPHA"),
+            parameter<double>("I0"),
+            parameter<double>("GAMMA"),
+            parameter<double>("REFCON"),
+            parameter<double>("DL_SPEC_CAP"),
         }),
         all_of({
             selection<int>("KINETIC_MODEL",
                 {{"Butler-Volmer-Newman", Inpar::ElCh::ElectrodeKinetics::butler_volmer_newman}}),
-            entry<double>("K_A"),
-            entry<double>("K_C"),
-            entry<double>("BETA"),
-            entry<double>("DL_SPEC_CAP"),
+            parameter<double>("K_A"),
+            parameter<double>("K_C"),
+            parameter<double>("BETA"),
+            parameter<double>("DL_SPEC_CAP"),
         }),
         all_of({
             selection<int>("KINETIC_MODEL",
                 {{"Butler-Volmer-Bard", Inpar::ElCh::ElectrodeKinetics::butler_volmer_bard}}),
-            entry<double>("E0"),
-            entry<double>("K0"),
-            entry<double>("BETA"),
-            entry<double>("C_C0"),
-            entry<double>("C_A0"),
-            entry<double>("DL_SPEC_CAP"),
+            parameter<double>("E0"),
+            parameter<double>("K0"),
+            parameter<double>("BETA"),
+            parameter<double>("C_C0"),
+            parameter<double>("C_A0"),
+            parameter<double>("DL_SPEC_CAP"),
         }),
         all_of({
             selection<int>("KINETIC_MODEL", {{"Nernst", Inpar::ElCh::ElectrodeKinetics::nernst}}),
-            entry<double>("E0"),
-            entry<double>("C0"),
-            entry<double>("DL_SPEC_CAP"),
+            parameter<double>("E0"),
+            parameter<double>("C0"),
+            parameter<double>("DL_SPEC_CAP"),
         }),
     });
 
@@ -315,17 +315,17 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
     const auto make_electrodeboundarykinetics = [&condlist, &reaction_model_choices](
                                                     Core::Conditions::ConditionDefinition& cond)
     {
-      cond.add_component(entry<int>("ConditionID"));
-      cond.add_component(entry<double>("POT"));
-      cond.add_component(entry<Noneable<int>>("FUNCT", {.description = ""}));
-      cond.add_component(entry<int>("NUMSCAL"));
-      cond.add_component(entry<std::vector<int>>(
+      cond.add_component(parameter<int>("ConditionID"));
+      cond.add_component(parameter<double>("POT"));
+      cond.add_component(parameter<Noneable<int>>("FUNCT", {.description = ""}));
+      cond.add_component(parameter<int>("NUMSCAL"));
+      cond.add_component(parameter<std::vector<int>>(
           "STOICH", {.description = "", .size = from_parameter<int>("NUMSCAL")}));
-      cond.add_component(entry<int>("E-"));
-      cond.add_component(
-          entry<double>("EPSILON", {.description = "porosity of electrode boundary, set to -1 if "
-                                                   "equal to porosity of electrolyte domain"}));
-      cond.add_component(entry<int>("ZERO_CUR"));
+      cond.add_component(parameter<int>("E-"));
+      cond.add_component(parameter<double>(
+          "EPSILON", {.description = "porosity of electrode boundary, set to -1 if "
+                                     "equal to porosity of electrolyte domain"}));
+      cond.add_component(parameter<int>("ZERO_CUR"));
       cond.add_component(reaction_model_choices);
       condlist.emplace_back(cond);
     };
@@ -356,24 +356,24 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
 
     // equip condition definition with input file line components
     auto electrodedomainkineticscomponents = all_of({
-        entry<int>("ConditionID"),
-        entry<double>("POT"),
-        entry<Core::IO::Noneable<int>>("FUNCT"),
-        entry<int>("NUMSCAL"),
-        entry<std::vector<int>>("STOICH", {.size = from_parameter<int>("NUMSCAL")}),
-        entry<int>("E-"),
-        entry<int>("ZERO_CUR"),
+        parameter<int>("ConditionID"),
+        parameter<double>("POT"),
+        parameter<Core::IO::Noneable<int>>("FUNCT"),
+        parameter<int>("NUMSCAL"),
+        parameter<std::vector<int>>("STOICH", {.size = from_parameter<int>("NUMSCAL")}),
+        parameter<int>("E-"),
+        parameter<int>("ZERO_CUR"),
         selection<int>("KINETIC_MODEL",
             {
                 {"Butler-Volmer", Inpar::ElCh::ElectrodeKinetics::butler_volmer},
             }),
-        entry<double>("A_S"),
-        entry<double>("ALPHA_A"),
-        entry<double>("ALPHA_C"),
-        entry<double>("I0"),
-        entry<double>("GAMMA"),
-        entry<double>("REFCON"),
-        entry<double>("DL_SPEC_CAP"),
+        parameter<double>("A_S"),
+        parameter<double>("ALPHA_A"),
+        parameter<double>("ALPHA_C"),
+        parameter<double>("I0"),
+        parameter<double>("GAMMA"),
+        parameter<double>("REFCON"),
+        parameter<double>("DL_SPEC_CAP"),
     });
 
     {
@@ -411,16 +411,17 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
   {
     // insert input file line components into condition definitions
     {
-      cond.add_component(entry<int>("NUMBER_OF_HALF_CYCLES"));
+      cond.add_component(parameter<int>("NUMBER_OF_HALF_CYCLES"));
+      cond.add_component(parameter<int>(
+          "BEGIN_WITH_CHARGING"));  // Boolean parameter represented by integer parameter
+      cond.add_component(parameter<Noneable<int>>("CONDITION_ID_FOR_CHARGE", {.description = ""}));
       cond.add_component(
-          entry<int>("BEGIN_WITH_CHARGING"));  // Boolean parameter represented by integer parameter
-      cond.add_component(entry<Noneable<int>>("CONDITION_ID_FOR_CHARGE", {.description = ""}));
-      cond.add_component(entry<Noneable<int>>("CONDITION_ID_FOR_DISCHARGE", {.description = ""}));
-      cond.add_component(entry<double>("INIT_RELAX_TIME"));
-      cond.add_component(entry<int>("ADAPTIVE_TIME_STEPPING_INIT_RELAX"));
-      cond.add_component(entry<Noneable<int>>("NUM_ADD_ADAPT_TIME_STEPS", {.description = ""}));
+          parameter<Noneable<int>>("CONDITION_ID_FOR_DISCHARGE", {.description = ""}));
+      cond.add_component(parameter<double>("INIT_RELAX_TIME"));
+      cond.add_component(parameter<int>("ADAPTIVE_TIME_STEPPING_INIT_RELAX"));
+      cond.add_component(parameter<Noneable<int>>("NUM_ADD_ADAPT_TIME_STEPS", {.description = ""}));
       cond.add_component(
-          entry<Noneable<int>>("MIN_TIME_STEPS_DURING_INIT_RELAX", {.description = ""}));
+          parameter<Noneable<int>>("MIN_TIME_STEPS_DURING_INIT_RELAX", {.description = ""}));
 
       // insert condition definitions into global list of valid condition definitions
       condlist.emplace_back(cond);
@@ -453,14 +454,14 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
   const auto make_cccvhalfcycle = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
     // insert input file line components into condition definitions
-    cond.add_component(entry<int>("ConditionID"));
-    cond.add_component(entry<double>("CURRENT"));
-    cond.add_component(entry<double>("CUT_OFF_VOLTAGE"));
-    cond.add_component(entry<double>("CUT_OFF_C_RATE"));
-    cond.add_component(entry<double>("RELAX_TIME"));
+    cond.add_component(parameter<int>("ConditionID"));
+    cond.add_component(parameter<double>("CURRENT"));
+    cond.add_component(parameter<double>("CUT_OFF_VOLTAGE"));
+    cond.add_component(parameter<double>("CUT_OFF_C_RATE"));
+    cond.add_component(parameter<double>("RELAX_TIME"));
     // switch adaptive time stepping on for different phases of half cycle: 1st: end of constant
     // current, 2nd: end of constant voltage, 3rd: end of relaxation
-    cond.add_component(entry<std::vector<int>>(
+    cond.add_component(parameter<std::vector<int>>(
         "ADAPTIVE_TIME_STEPPING_PHASE_ON_OFF", {.description = "", .size = 3}));
 
     // insert condition definitions into global list of valid condition definitions

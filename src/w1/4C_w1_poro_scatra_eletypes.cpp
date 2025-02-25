@@ -75,7 +75,7 @@ void Discret::Elements::WallQuad4PoroScatraType::setup_element_definition(
 
   defs["QUAD4"] = all_of({
       defs_wall["QUAD4"],
-      entry<std::string>("TYPE"),
+      parameter<std::string>("TYPE"),
   });
 }
 
@@ -142,7 +142,7 @@ void Discret::Elements::WallQuad9PoroScatraType::setup_element_definition(
 
   defs["QUAD9"] = all_of({
       defs_wall["QUAD9"],
-      entry<std::string>("TYPE"),
+      parameter<std::string>("TYPE"),
   });
 }
 
@@ -209,7 +209,7 @@ void Discret::Elements::WallNurbs4PoroScatraType::setup_element_definition(
 
   defs["NURBS4"] = all_of({
       defs_wall["NURBS4"],
-      entry<std::string>("TYPE"),
+      parameter<std::string>("TYPE"),
   });
 }
 
@@ -276,7 +276,7 @@ void Discret::Elements::WallNurbs9PoroScatraType::setup_element_definition(
 
   defs["NURBS9"] = all_of({
       defs_wall["NURBS9"],
-      entry<std::string>("TYPE"),
+      parameter<std::string>("TYPE"),
   });
 }
 
@@ -343,7 +343,7 @@ void Discret::Elements::WallTri3PoroScatraType::setup_element_definition(
 
   defs["TRI3"] = all_of({
       defs_wall["TRI3"],
-      entry<std::string>("TYPE"),
+      parameter<std::string>("TYPE"),
   });
 }
 
