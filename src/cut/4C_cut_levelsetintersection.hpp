@@ -37,8 +37,6 @@ namespace Cut
 
 
    public:
-    LevelSetIntersection(MPI_Comm comm, bool create_side = true);
-
     /// constructor for LevelSetIntersection class
     LevelSetIntersection(int myrank = -1, bool create_side = true);
 

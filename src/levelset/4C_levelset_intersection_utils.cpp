@@ -89,7 +89,7 @@ void ScaTra::LevelSet::Intersection::get_zero_level_set(const Core::LinAlg::Vect
     // ------------------------------------------------------------------------
     // Prepare cut
     // ------------------------------------------------------------------------
-    Cut::LevelSetIntersection levelset(scatradis.get_comm());
+    Cut::LevelSetIntersection levelset(Core::Communication::my_mpi_rank(scatradis.get_comm()));
     Core::LinAlg::SerialDenseMatrix xyze;
     std::vector<double> phi_nodes;
     std::vector<int> nids;

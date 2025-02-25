@@ -8,7 +8,6 @@
 #include "4C_cut_combintersection.hpp"
 
 #include "4C_cut_levelsetintersection.hpp"
-#include "4C_cut_levelsetside.hpp"
 #include "4C_cut_meshintersection.hpp"
 #include "4C_cut_tolerance.hpp"  // for EXTENDED_CUT_DEBUG_OUTPUT
 
