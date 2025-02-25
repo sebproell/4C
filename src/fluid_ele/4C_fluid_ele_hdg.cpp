@@ -137,7 +137,7 @@ void Discret::Elements::FluidHDGType ::setup_element_definition(
     defs_hdg[key] = all_of({
         fluid_line_def,
         parameter<int>("DEG"),
-        parameter<int>("SPC", {.required = false}),
+        parameter<Noneable<bool>>("SPC", {.default_value = none<bool>}),
     });
   }
 }
@@ -225,7 +225,7 @@ bool Discret::Elements::FluidHDG::read_element(const std::string& eletype,
   bool success = Fluid::read_element(eletype, distype, container);
   degree_ = container.get<int>("DEG");
 
-  completepol_ = container.get_or<int>("SPC", false);
+  completepol_ = container.get<Core::IO::Noneable<bool>>("SPC").value_or(false);
 
   return success;
 }
