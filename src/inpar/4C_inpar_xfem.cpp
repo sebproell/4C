@@ -456,8 +456,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       selection<std::string>("BOOLEANTYPE",
           {"none", "cut", "union", "difference", "sym_difference"},
           {.description = "define which boolean operator is used for combining this level-set "
-                          "field with the previous one with smaller coupling id",
-              .required = false}),
+                          "field with the previous one with smaller coupling id"}),
       parameter<bool>(
           "COMPLEMENTARY", {.description = "define which complementary operator is applied "
                                            "after combining the level-set field with a boolean "
