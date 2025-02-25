@@ -97,8 +97,6 @@ void Discret::Elements::SoHex27Type::setup_element_definition(
           "FIBER2", {.default_value = none<std::vector<double>>, .size = 3}),
       parameter<Noneable<std::vector<double>>>(
           "FIBER3", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<double>("STRENGTH", {.required = false}),
-      parameter<double>("GROWTHTRIG", {.required = false}),
   });
 }
 
