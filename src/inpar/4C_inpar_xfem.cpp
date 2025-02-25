@@ -396,7 +396,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       parameter<std::vector<int>>("ONOFF", {.size = from_parameter<int>("NUMDOF")}),
       parameter<std::vector<double>>("VAL", {.size = from_parameter<int>("NUMDOF")}),
       parameter<std::vector<Noneable<int>>>("FUNCT", {.size = from_parameter<int>("NUMDOF")}),
-      selection<std::string>("TAG", {"none", "monitor_reaction"}, {.required = false}),
+      selection<std::string>("TAG", {"none", "monitor_reaction"}, {.default_value = "none"}),
   });
 
   auto neumanncomponents = all_of({
