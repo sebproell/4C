@@ -83,7 +83,7 @@ void Core::Utils::add_valid_builtin_functions(Core::Utils::FunctionManager& func
 
   auto spec = one_of({
       all_of({
-          parameter<int>("COMPONENT", {.required = false}),
+          parameter<Noneable<int>>("COMPONENT", {.default_value = none<int>}),
           parameter<std::string>("SYMBOLIC_FUNCTION_OF_SPACE_TIME"),
       }),
 
