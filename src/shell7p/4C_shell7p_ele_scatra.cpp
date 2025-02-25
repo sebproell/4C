@@ -97,7 +97,7 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
           "FIBER2", {.default_value = none<std::vector<double>>, .size = 3}),
       parameter<Noneable<std::vector<double>>>(
           "FIBER3", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<std::string>("TYPE", {.required = false}),
+      parameter<std::string>("TYPE"),
   });
 
   defsgeneral["QUAD8"] = all_of({
@@ -119,7 +119,7 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
           "FIBER2", {.default_value = none<std::vector<double>>, .size = 3}),
       parameter<Noneable<std::vector<double>>>(
           "FIBER3", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<std::string>("TYPE", {.required = false}),
+      parameter<std::string>("TYPE"),
   });
 
   defsgeneral["QUAD9"] = all_of({
@@ -141,7 +141,7 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
           "FIBER2", {.default_value = none<std::vector<double>>, .size = 3}),
       parameter<Noneable<std::vector<double>>>(
           "FIBER3", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<std::string>("TYPE", {.required = false}),
+      parameter<std::string>("TYPE"),
   });
 
   defsgeneral["TRI3"] = all_of({
@@ -161,7 +161,7 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
           "FIBER2", {.default_value = none<std::vector<double>>, .size = 3}),
       parameter<Noneable<std::vector<double>>>(
           "FIBER3", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<std::string>("TYPE", {.required = false}),
+      parameter<std::string>("TYPE"),
   });
 
   defsgeneral["TRI6"] = all_of({
@@ -181,7 +181,7 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
           "FIBER2", {.default_value = none<std::vector<double>>, .size = 3}),
       parameter<Noneable<std::vector<double>>>(
           "FIBER3", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<std::string>("TYPE", {.required = false}),
+      parameter<std::string>("TYPE"),
   });
 }
 
