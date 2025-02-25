@@ -209,9 +209,14 @@ void Mat::ViscoAnisotropic::setup(int numgp, const Core::IO::InputParameterConta
   const double gamma = (params_->gamma_ * M_PI) / 180.;  // convert
 
   // read local (cylindrical) cosy-directions at current element
-  auto rad = container.get<std::vector<double>>("RAD");
-  auto axi = container.get<std::vector<double>>("AXI");
-  auto cir = container.get<std::vector<double>>("CIR");
+  auto rad_opt = container.get<Core::IO::Noneable<std::vector<double>>>("RAD");
+  auto axi_opt = container.get<Core::IO::Noneable<std::vector<double>>>("AXI");
+  auto cir_opt = container.get<Core::IO::Noneable<std::vector<double>>>("CIR");
+  FOUR_C_ASSERT_ALWAYS(rad_opt && axi_opt && cir_opt, "Require RAD, AXI and CIR parameters.");
+
+  const auto& rad = *rad_opt;
+  const auto& axi = *axi_opt;
+  const auto& cir = *cir_opt;
 
   Core::LinAlg::Matrix<3, 3> locsys;
   // basis is local cosy with third vec e3 = circumferential dir and e2 = axial dir

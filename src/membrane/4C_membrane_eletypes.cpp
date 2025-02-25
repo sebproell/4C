@@ -79,12 +79,18 @@ void Discret::Elements::MembraneTri3Type::setup_element_definition(
       parameter<std::string>("KINEM"),
       parameter<double>("THICK"),
       parameter<std::string>("STRESS_STRAIN"),
-      parameter<std::vector<double>>("RAD", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("AXI", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("CIR", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("FIBER1", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("FIBER2", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("FIBER3", {.required = false, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "RAD", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "AXI", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "CIR", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "FIBER1", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "FIBER2", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "FIBER3", {.default_value = none<std::vector<double>>, .size = 3}),
   });
 }
 
@@ -154,12 +160,18 @@ void Discret::Elements::MembraneTri6Type::setup_element_definition(
       parameter<std::string>("KINEM"),
       parameter<double>("THICK"),
       parameter<std::string>("STRESS_STRAIN"),
-      parameter<std::vector<double>>("RAD", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("AXI", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("CIR", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("FIBER1", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("FIBER2", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("FIBER3", {.required = false, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "RAD", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "AXI", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "CIR", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "FIBER1", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "FIBER2", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "FIBER3", {.default_value = none<std::vector<double>>, .size = 3}),
   });
 }
 
@@ -229,12 +241,18 @@ void Discret::Elements::MembraneQuad4Type::setup_element_definition(
       parameter<std::string>("KINEM"),
       parameter<double>("THICK"),
       parameter<std::string>("STRESS_STRAIN"),
-      parameter<std::vector<double>>("RAD", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("AXI", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("CIR", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("FIBER1", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("FIBER2", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("FIBER3", {.required = false, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "RAD", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "AXI", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "CIR", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "FIBER1", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "FIBER2", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "FIBER3", {.default_value = none<std::vector<double>>, .size = 3}),
   });
 }
 
@@ -304,12 +322,18 @@ void Discret::Elements::MembraneQuad9Type::setup_element_definition(
       parameter<std::string>("KINEM"),
       parameter<double>("THICK"),
       parameter<std::string>("STRESS_STRAIN"),
-      parameter<std::vector<double>>("RAD", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("AXI", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("CIR", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("FIBER1", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("FIBER2", {.required = false, .size = 3}),
-      parameter<std::vector<double>>("FIBER3", {.required = false, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "RAD", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "AXI", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "CIR", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "FIBER1", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "FIBER2", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<Noneable<std::vector<double>>>(
+          "FIBER3", {.default_value = none<std::vector<double>>, .size = 3}),
   });
 }
 

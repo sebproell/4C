@@ -409,9 +409,9 @@ void Mat::MembraneActiveStrain::setup_fiber_vectors(
   Core::LinAlg::Matrix<3, 1> dir;
 
   // CIR-AXI-RAD nomenclature
-  if (container.get_if<std::vector<double>>("RAD") != nullptr and
-      container.get_if<std::vector<double>>("AXI") != nullptr and
-      container.get_if<std::vector<double>>("CIR") != nullptr)
+  if (container.get<Core::IO::Noneable<std::vector<double>>>("RAD").has_value() and
+      container.get<Core::IO::Noneable<std::vector<double>>>("AXI").has_value() and
+      container.get<Core::IO::Noneable<std::vector<double>>>("CIR").has_value())
   {
     // Axial direction
     read_dir(container, "AXI", dir);
@@ -426,8 +426,8 @@ void Mat::MembraneActiveStrain::setup_fiber_vectors(
     fibervecs_.push_back(dir);
   }
   // FIBER nomenclature
-  else if (container.get_if<std::vector<double>>("FIBER1") != nullptr and
-           container.get_if<std::vector<double>>("FIBER2") != nullptr)
+  else if (container.get<Core::IO::Noneable<std::vector<double>>>("FIBER1").has_value() and
+           container.get<Core::IO::Noneable<std::vector<double>>>("FIBER2").has_value())
   {
     for (int i = 1; i < 3; ++i)
     {
@@ -474,7 +474,9 @@ void Mat::MembraneActiveStrain::setup_fiber_vectors(
 void Mat::MembraneActiveStrain::read_dir(const Core::IO::InputParameterContainer& container,
     std::string specifier, Core::LinAlg::Matrix<3, 1>& dir)
 {
-  std::vector<double> fiber = container.get<std::vector<double>>(specifier);
+  const auto& fiber_opt = container.get<Core::IO::Noneable<std::vector<double>>>(specifier);
+  FOUR_C_ASSERT(fiber_opt.has_value(), "Internal error: fiber vector not found.");
+  const auto& fiber = *fiber_opt;
 
   double fnorm = 0.;
   // normalization

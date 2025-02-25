@@ -1104,11 +1104,11 @@ void Mat::CrystalPlasticity::setup_lattice_orientation(
     const Core::IO::InputParameterContainer& container)
 {
   // extract fiber vectors as columns of the rotation matrix
-  const auto* fiber1 = container.get_if<std::vector<double>>("FIBER1");
-  const auto* fiber2 = container.get_if<std::vector<double>>("FIBER2");
-  const auto* fiber3 = container.get_if<std::vector<double>>("FIBER3");
+  const auto& fiber1 = container.get<Core::IO::Noneable<std::vector<double>>>("FIBER1");
+  const auto& fiber2 = container.get<Core::IO::Noneable<std::vector<double>>>("FIBER2");
+  const auto& fiber3 = container.get<Core::IO::Noneable<std::vector<double>>>("FIBER3");
 
-  if (fiber1 != nullptr and fiber2 != nullptr and fiber3 != nullptr)
+  if (fiber1 and fiber2 and fiber3)
   {
     // assemble rotation matrix
     for (int i = 0; i < 3; i++)
