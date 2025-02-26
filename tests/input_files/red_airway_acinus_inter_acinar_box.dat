@@ -42,8 +42,8 @@ E 2 boundarycond pressure VAL 1.0 curve 2 none funct none
 ---------------DESIGN LINE REDUCED D AIRWAYS EVALUATE LUNG VOLUME CONDITIONS
 E 1
 --------------------------------------------------REDUCED D AIRWAYS ELEMENTS
-1 RED_ACINUS LINE2 1 2 MAT 2 TYPE NeoHookean AcinusVolume 1.0 AlveolarDuctVolume 1.0 Area 1.0
-2 RED_ACINUS LINE2 3 4 MAT 2 TYPE NeoHookean AcinusVolume 1.0 AlveolarDuctVolume 1.0 Area 1.0
+1 RED_ACINUS LINE2 1 2 MAT 2 TYPE NeoHookean AcinusVolume 1.0 AlveolarDuctVolume 1.0
+2 RED_ACINUS LINE2 3 4 MAT 2 TYPE NeoHookean AcinusVolume 1.0 AlveolarDuctVolume 1.0
 3 RED_ACINAR_INTER_DEP LINE2 2 4 MAT 3
 -----------------------------------------------------------------NODE COORDS
 NODE 1 COORD 3.0 0.0 0.0

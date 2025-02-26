@@ -115,11 +115,10 @@ void Mat::Maxwell0dAcinusExponential::unpack(Core::Communication::UnpackBuffer& 
  *----------------------------------------------------------------------*/
 void Mat::Maxwell0dAcinusExponential::setup(const Core::IO::InputParameterContainer& container)
 {
-  e1_0_ = container.get<double>("E1_0");
-  e1_lin_ = container.get<double>("E1_LIN");
-  e1_exp_ = container.get<double>("E1_EXP");
-  tau_ = container.get<double>("TAU");
-  // TODO bool -variable init, in Evaluate abfragen ob init=true
+  e1_0_ = *container.get<std::optional<double>>("E1_0");
+  e1_lin_ = *container.get<std::optional<double>>("E1_LIN");
+  e1_exp_ = *container.get<std::optional<double>>("E1_EXP");
+  tau_ = *container.get<std::optional<double>>("TAU");
 }
 
 

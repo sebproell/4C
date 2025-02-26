@@ -28,7 +28,7 @@ SYMBOLIC_FUNCTION_OF_TIME 500*(1-cos(pi*t))
 E 1 boundarycond flow VAL 1.0 curve 1 none funct none
 E 2 boundarycond pressure VAL 0.0000 curve 1 none funct none
 --------------------------------------------------REDUCED D AIRWAYS ELEMENTS
-1 RED_ACINUS LINE2  1  2 MAT 2 TYPE NeoHookean AcinusVolume 523.6 AlveolarDuctVolume 0.0372 Area 1.0
+1 RED_ACINUS LINE2  1  2 MAT 2 TYPE NeoHookean AcinusVolume 523.6 AlveolarDuctVolume 0.0372
 -----------------------------------------------------------------NODE COORDS
 NODE 1 COORD 10.00 0.000 0.000
 NODE 2 COORD 12.00 2.000 0.000

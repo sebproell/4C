@@ -111,9 +111,8 @@ void Mat::Maxwell0dAcinusOgden::unpack(Core::Communication::UnpackBuffer& buffer
  *----------------------------------------------------------------------*/
 void Mat::Maxwell0dAcinusOgden::setup(const Core::IO::InputParameterContainer& container)
 {
-  kappa_ = container.get<double>("KAPPA");
-  beta_ = container.get<double>("BETA");
-  // TODO bool -variable init, in Evaluate abfragen ob init=true
+  kappa_ = *container.get<std::optional<double>>("KAPPA");
+  beta_ = *container.get<std::optional<double>>("BETA");
 }
 
 

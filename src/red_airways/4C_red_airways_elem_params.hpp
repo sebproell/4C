@@ -62,7 +62,6 @@ namespace Discret::ReducedLung
   {
     double volume_relaxed{1.0};
     double alveolar_duct_volume{0.0337};
-    double area{1.0};
     double volume_init{1.0};
     int generation{-1};
   };

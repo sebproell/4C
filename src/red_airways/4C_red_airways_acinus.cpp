@@ -67,24 +67,28 @@ void Discret::Elements::RedAcinusType::setup_element_definition(
   defs["LINE2"] = all_of({
       parameter<std::vector<int>>("LINE2", {.size = 2}),
       parameter<int>("MAT"),
-      parameter<std::string>("TYPE"),
+      selection<std::string>("TYPE",
+          {"NeoHookean", "Exponential", "DoubleExponential", "VolumetricOgden"},
+          {.description = "Visco-elastic model of this acinus"}),
       parameter<double>("AcinusVolume"),
       parameter<double>("AlveolarDuctVolume"),
-      parameter<double>("E1_0", {.required = false}),
-      parameter<double>("E1_LIN", {.required = false}),
-      parameter<double>("E1_EXP", {.required = false}),
-      parameter<double>("TAU", {.required = false}),
-      parameter<double>("E1_01", {.required = false}),
-      parameter<double>("E1_LIN1", {.required = false}),
-      parameter<double>("E1_EXP1", {.required = false}),
-      parameter<double>("TAU1", {.required = false}),
-      parameter<double>("E1_02", {.required = false}),
-      parameter<double>("E1_LIN2", {.required = false}),
-      parameter<double>("E1_EXP2", {.required = false}),
-      parameter<double>("TAU2", {.required = false}),
-      parameter<double>("KAPPA", {.required = false}),
-      parameter<double>("BETA", {.required = false}),
-      parameter<double>("Area", {.required = false}),
+      // Maxwell exponential
+      parameter<std::optional<double>>("E1_0", {.default_value = none<double>}),
+      parameter<std::optional<double>>("E1_LIN", {.default_value = none<double>}),
+      parameter<std::optional<double>>("E1_EXP", {.default_value = none<double>}),
+      parameter<std::optional<double>>("TAU", {.default_value = none<double>}),
+      // Maxwell double exponential
+      parameter<std::optional<double>>("E1_01", {.default_value = none<double>}),
+      parameter<std::optional<double>>("E1_LIN1", {.default_value = none<double>}),
+      parameter<std::optional<double>>("E1_EXP1", {.default_value = none<double>}),
+      parameter<std::optional<double>>("TAU1", {.default_value = none<double>}),
+      parameter<std::optional<double>>("E1_02", {.default_value = none<double>}),
+      parameter<std::optional<double>>("E1_LIN2", {.default_value = none<double>}),
+      parameter<std::optional<double>>("E1_EXP2", {.default_value = none<double>}),
+      parameter<std::optional<double>>("TAU2", {.default_value = none<double>}),
+      // VolOgden
+      parameter<std::optional<double>>("KAPPA", {.default_value = none<double>}),
+      parameter<std::optional<double>>("BETA", {.default_value = none<double>}),
   });
 }
 
@@ -158,7 +162,6 @@ void Discret::Elements::RedAcinus::pack(Core::Communication::PackBuffer& data) c
 
   add_to_pack(data, acinus_params_.volume_relaxed);
   add_to_pack(data, acinus_params_.alveolar_duct_volume);
-  add_to_pack(data, acinus_params_.area);
   add_to_pack(data, acinus_params_.volume_init);
   add_to_pack(data, acinus_params_.generation);
 
@@ -182,7 +185,6 @@ void Discret::Elements::RedAcinus::unpack(Core::Communication::UnpackBuffer& buf
 
   extract_from_pack(buffer, acinus_params_.volume_relaxed);
   extract_from_pack(buffer, acinus_params_.alveolar_duct_volume);
-  extract_from_pack(buffer, acinus_params_.area);
   extract_from_pack(buffer, acinus_params_.volume_init);
   extract_from_pack(buffer, acinus_params_.generation);
 

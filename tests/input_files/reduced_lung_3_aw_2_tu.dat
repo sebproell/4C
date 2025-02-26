@@ -44,8 +44,8 @@ NODE 6 DLINE 1
 1 RED_AIRWAY LINE2 1 2 MAT 1 ElemSolvingType Linear TYPE Resistive Resistance Poiseuille PowerOfVelocityProfile 2 WallElasticity 0.0 PoissonsRatio 0.0 ViscousTs 0.0 ViscousPhaseShift 0.0 WallThickness 0.0 Area 8.0 Generation 0
 2 RED_AIRWAY LINE2 2 3 MAT 1 ElemSolvingType Linear TYPE Resistive Resistance Poiseuille PowerOfVelocityProfile 2 WallElasticity 0.0 PoissonsRatio 0.0 ViscousTs 0.0 ViscousPhaseShift 0.0 WallThickness 0.0 Area 4.0 Generation 1
 3 RED_AIRWAY LINE2 2 4 MAT 1 ElemSolvingType Linear TYPE Resistive Resistance Poiseuille PowerOfVelocityProfile 2 WallElasticity 0.0 PoissonsRatio 0.0 ViscousTs 0.0 ViscousPhaseShift 0.0 WallThickness 0.0 Area 2.0 Generation 1
-4 RED_ACINUS LINE2 3 5 MAT 2 TYPE NeoHookean AcinusVolume 10 AlveolarDuctVolume 0.0372 Area 1.0
-5 RED_ACINUS LINE2 4 6 MAT 2 TYPE NeoHookean AcinusVolume 10 AlveolarDuctVolume 0.0372 Area 1.0
+4 RED_ACINUS LINE2 3 5 MAT 2 TYPE NeoHookean AcinusVolume 10 AlveolarDuctVolume 0.0372
+5 RED_ACINUS LINE2 4 6 MAT 2 TYPE NeoHookean AcinusVolume 10 AlveolarDuctVolume 0.0372
 -----------------------------------------------------------------NODE COORDS
 NODE 1 COORDS 0 0 0
 NODE 2 COORDS 1 0 0
