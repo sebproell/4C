@@ -1,5 +1,5 @@
 # for creating the yaml schemata during build:
-pyyaml
+ruamel.yaml
 # for testing:
 numpy
 vtk
