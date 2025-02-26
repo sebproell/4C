@@ -195,22 +195,6 @@ void CONTACT::STRATEGY::Factory::read_and_check_input(Teuchos::ParameterList& pa
     // hopefully coming soon, when Coulomb and Tresca are combined
     FOUR_C_THROW("Frictionless first contact step with Tresca's law not yet implemented");
 
-  if (Teuchos::getIntegralValue<Inpar::CONTACT::Regularization>(
-          contact, "CONTACT_REGULARIZATION") != Inpar::CONTACT::reg_none &&
-      Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(contact, "STRATEGY") !=
-          Inpar::CONTACT::solution_lagmult)
-  {
-    FOUR_C_THROW(
-        "Regularized Contact just available for Dual Mortar Contact with Lagrangean "
-        "Multiplier!");
-  }
-
-  if (Teuchos::getIntegralValue<Inpar::CONTACT::Regularization>(
-          contact, "CONTACT_REGULARIZATION") != Inpar::CONTACT::reg_none &&
-      Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(contact, "FRICTION") !=
-          Inpar::CONTACT::friction_none)
-    FOUR_C_THROW("Regularized Contact for contact with friction not implemented yet!");
-
   // ---------------------------------------------------------------------
   // warnings
   // ---------------------------------------------------------------------

@@ -66,7 +66,6 @@ CONTACT::AbstractStrategyDataContainer::AbstractStrategyDataContainer()
       isselfcontact_(false),
       friction_(false),
       non_smooth_contact_(false),
-      regularized_(false),
       dualquadslavetrafo_(false),
       trafo_(nullptr),
       invtrafo_(nullptr),

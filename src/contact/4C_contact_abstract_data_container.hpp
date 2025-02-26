@@ -477,10 +477,6 @@ namespace CONTACT
     bool& is_non_smooth_contact() { return non_smooth_contact_; };
     bool is_non_smooth_contact() const { return non_smooth_contact_; };
 
-    //! return flag for regularized contact
-    bool& is_regularized() { return regularized_; };
-    bool is_regularized() const { return regularized_; };
-
     //! return flag indicating whether trafo should be applied
     bool& is_dual_quad_slave_trafo() { return dualquadslavetrafo_; };
     bool is_dual_quad_slave_trafo() const { return dualquadslavetrafo_; };
@@ -737,9 +733,6 @@ namespace CONTACT
 
     //! flag for non-smooth contact
     bool non_smooth_contact_;
-
-    //! flag for regularized contact
-    bool regularized_;
 
     //! flag indicating whether trafo should be applied
     bool dualquadslavetrafo_;
