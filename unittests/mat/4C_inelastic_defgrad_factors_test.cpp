@@ -395,7 +395,14 @@ namespace
 
       // define setup parameter for InelasticDefGradTransvIsotropElastViscoplast
       Core::IO::InputParameterContainer setup_transv_isotrop_elast_viscoplast;
-      setup_transv_isotrop_elast_viscoplast.add("FIBER1", std::vector<double>{0.0, 0.0, 1.0});
+      setup_transv_isotrop_elast_viscoplast.add<Core::IO::Noneable<std::vector<double>>>(
+          "FIBER1", std::vector<double>{0.0, 0.0, 1.0});
+      setup_transv_isotrop_elast_viscoplast.add<Core::IO::Noneable<std::vector<double>>>(
+          "RAD", Core::IO::none<std::vector<double>>);
+      setup_transv_isotrop_elast_viscoplast.add<Core::IO::Noneable<std::vector<double>>>(
+          "AXI", Core::IO::none<std::vector<double>>);
+      setup_transv_isotrop_elast_viscoplast.add<Core::IO::Noneable<std::vector<double>>>(
+          "CIR", Core::IO::none<std::vector<double>>);
 
       // call setup method for InelasticDefGradTransvIsotropElastViscoplast
       transv_isotrop_elast_viscoplast_->setup(8, setup_transv_isotrop_elast_viscoplast);

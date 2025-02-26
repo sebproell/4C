@@ -97,14 +97,14 @@ void Discret::Elements::ElemagType::setup_element_definition(
       parameter<std::vector<int>>("HEX8", {.size = 8}),
       parameter<int>("MAT"),
       parameter<int>("DEG"),
-      parameter<int>("SPC"),
+      parameter<bool>("SPC"),
   });
 
   defs["TET4"] = all_of({
       parameter<std::vector<int>>("TET4", {.size = 4}),
       parameter<int>("MAT"),
       parameter<int>("DEG"),
-      parameter<int>("SPC"),
+      parameter<bool>("SPC"),
   });
 
   // 2D elements
@@ -112,21 +112,21 @@ void Discret::Elements::ElemagType::setup_element_definition(
       parameter<std::vector<int>>("QUAD4", {.size = 4}),
       parameter<int>("MAT"),
       parameter<int>("DEG"),
-      parameter<int>("SPC"),
+      parameter<bool>("SPC"),
   });
 
   defs["QUAD9"] = all_of({
       parameter<std::vector<int>>("QUAD9", {.size = 9}),
       parameter<int>("MAT"),
       parameter<int>("DEG"),
-      parameter<int>("SPC"),
+      parameter<bool>("SPC"),
   });
 
   defs["TRI3"] = all_of({
       parameter<std::vector<int>>("TRI3", {.size = 3}),
       parameter<int>("MAT"),
       parameter<int>("DEG"),
-      parameter<int>("SPC"),
+      parameter<bool>("SPC"),
   });
 }
 
@@ -222,7 +222,7 @@ bool Discret::Elements::Elemag::read_element(const std::string& eletype, const s
   set_material(0, Mat::factory(material_id));
   degree_ = container.get<int>("DEG");
 
-  completepol_ = container.get<int>("SPC");
+  completepol_ = container.get<bool>("SPC");
 
   // set discretization type (setOptimalgaussrule is pushed into element
   // routine)

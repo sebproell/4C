@@ -19,7 +19,10 @@ FOUR_C_NAMESPACE_OPEN
 void Mat::read_anisotropy_fiber(const Core::IO::InputParameterContainer& container,
     std::string specifier, Core::LinAlg::Matrix<3, 1>& fiber_vector)
 {
-  auto fiber = container.get<std::vector<double>>(std::move(specifier));
+  const auto& fiber_opt =
+      container.get<Core::IO::Noneable<std::vector<double>>>(std::move(specifier));
+  FOUR_C_ASSERT(fiber_opt.has_value(), "Internal error: fiber vector not found.");
+  const auto& fiber = *fiber_opt;
 
   double f1norm = 0.;
   // normalization

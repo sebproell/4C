@@ -73,9 +73,9 @@ void Mat::Elastic::CoupTransverselyIsotropic::setup(
       ss << params_->fiber_gid_;
       std::string fibername = "FIBER" + ss.str();  // FIBER Name
       // CIR-AXI-RAD nomenclature
-      if (container.get_if<std::vector<double>>("RAD") != nullptr and
-          container.get_if<std::vector<double>>("AXI") != nullptr and
-          container.get_if<std::vector<double>>("CIR") != nullptr)
+      if (container.get<Core::IO::Noneable<std::vector<double>>>("RAD").has_value() and
+          container.get<Core::IO::Noneable<std::vector<double>>>("AXI").has_value() and
+          container.get<Core::IO::Noneable<std::vector<double>>>("CIR").has_value())
       {
         // Read in of data
         Core::LinAlg::Matrix<3, 3> locsys(true);
@@ -86,7 +86,7 @@ void Mat::Elastic::CoupTransverselyIsotropic::setup(
         set_fiber_vecs(0.0, locsys, Id);
       }
       // FIBERi nomenclature
-      else if (container.get_if<std::vector<double>>(fibername) != nullptr)
+      else if (container.get<Core::IO::Noneable<std::vector<double>>>(fibername).has_value())
       {
         // Read in of data
         read_fiber(container, fibername, a_);

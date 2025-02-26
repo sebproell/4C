@@ -97,27 +97,27 @@ void Discret::Elements::Bele3Type::setup_element_definition(
 
   defs3["TRI3"] = all_of({
       parameter<std::vector<int>>("TRI3", {.size = 3}),
-      parameter<int>("MAT", {.required = false}),
+      parameter<Noneable<int>>("MAT"),
   });
 
   defs3["TRI6"] = all_of({
       parameter<std::vector<int>>("TRI6", {.size = 6}),
-      parameter<int>("MAT", {.required = false}),
+      parameter<Noneable<int>>("MAT"),
   });
 
   defs3["QUAD4"] = all_of({
       parameter<std::vector<int>>("QUAD4", {.size = 4}),
-      parameter<int>("MAT", {.required = false}),
+      parameter<Noneable<int>>("MAT"),
   });
 
   defs3["QUAD8"] = all_of({
       parameter<std::vector<int>>("QUAD8", {.size = 8}),
-      parameter<int>("MAT", {.required = false}),
+      parameter<Noneable<int>>("MAT"),
   });
 
   defs3["QUAD9"] = all_of({
       parameter<std::vector<int>>("QUAD9", {.size = 9}),
-      parameter<int>("MAT", {.required = false}),
+      parameter<Noneable<int>>("MAT"),
   });
 }
 
@@ -265,10 +265,10 @@ bool Discret::Elements::Bele3::read_element(const std::string& eletype, const st
     const Core::IO::InputParameterContainer& container)
 {
   // check if material is defined
-  int material = container.get_or("MAT", -1);
-  if (material != -1)
+  auto material_id = container.get<Core::IO::Noneable<int>>("MAT");
+  if (material_id)
   {
-    set_material(0, Mat::factory(material));
+    set_material(0, Mat::factory(*material_id));
   }
   return true;
 }

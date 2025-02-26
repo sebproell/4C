@@ -83,7 +83,7 @@ void Core::Utils::add_valid_builtin_functions(Core::Utils::FunctionManager& func
 
   auto spec = one_of({
       all_of({
-          parameter<int>("COMPONENT", {.required = false}),
+          parameter<Noneable<int>>("COMPONENT", {.default_value = none<int>}),
           parameter<std::string>("SYMBOLIC_FUNCTION_OF_SPACE_TIME"),
       }),
 
@@ -121,9 +121,11 @@ void Core::Utils::add_valid_builtin_functions(Core::Utils::FunctionManager& func
 
       all_of({
           parameter<std::string>("VARFUNCTION"),
-          parameter<int>("NUMCONSTANTS", {.required = false}),
-          parameter<std::map<std::string, double>>(
-              "CONSTANTS", {.required = false, .size = from_parameter<int>("NUMCONSTANTS")}),
+          parameter<Noneable<int>>("NUMCONSTANTS", {.default_value = none<int>}),
+          parameter<std::map<std::string, double>>("CONSTANTS",
+              {.default_value = std::map<std::string, double>{},
+                  .size = [](const IO::InputParameterContainer& container)
+                  { return container.get<Noneable<int>>("NUMCONSTANTS").value_or(0); }}),
       }),
   });
 

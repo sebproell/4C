@@ -200,9 +200,9 @@ void Discret::Elements::So3Poro<So3Ele, distype>::
   for (int dim = 0; dim < 3; ++dim)
   {
     std::string definition_name = "POROANISODIR" + std::to_string(dim + 1);
-    if (container.get_if<std::vector<double>>(definition_name) != nullptr)
-      anisotropic_permeability_directions_[dim] =
-          container.get<std::vector<double>>(definition_name);
+    if (const auto& dir = container.get<Core::IO::Noneable<std::vector<double>>>(definition_name);
+        dir.has_value())
+      anisotropic_permeability_directions_[dim] = *dir;
   }
 }
 
@@ -214,9 +214,10 @@ void Discret::Elements::So3Poro<So3Ele, distype>::
   for (int dim = 0; dim < 3; ++dim)
   {
     std::string definition_name = "POROANISONODALCOEFFS" + std::to_string(dim + 1);
-    if (container.get_if<std::vector<double>>(definition_name) != nullptr)
-      anisotropic_permeability_nodal_coeffs_[dim] =
-          container.get<std::vector<double>>(definition_name);
+    if (const auto* coeffs =
+            container.get_if<Core::IO::Noneable<std::vector<double>>>(definition_name);
+        coeffs && coeffs->has_value())
+      anisotropic_permeability_nodal_coeffs_[dim] = coeffs->value();
   }
 }
 

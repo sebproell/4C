@@ -396,7 +396,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       parameter<std::vector<int>>("ONOFF", {.size = from_parameter<int>("NUMDOF")}),
       parameter<std::vector<double>>("VAL", {.size = from_parameter<int>("NUMDOF")}),
       parameter<std::vector<Noneable<int>>>("FUNCT", {.size = from_parameter<int>("NUMDOF")}),
-      selection<std::string>("TAG", {"none", "monitor_reaction"}, {.required = false}),
+      selection<std::string>("TAG", {"none", "monitor_reaction"}, {.default_value = "none"}),
   });
 
   auto neumanncomponents = all_of({
@@ -456,8 +456,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       selection<std::string>("BOOLEANTYPE",
           {"none", "cut", "union", "difference", "sym_difference"},
           {.description = "define which boolean operator is used for combining this level-set "
-                          "field with the previous one with smaller coupling id",
-              .required = false}),
+                          "field with the previous one with smaller coupling id"}),
       parameter<bool>(
           "COMPLEMENTARY", {.description = "define which complementary operator is applied "
                                            "after combining the level-set field with a boolean "

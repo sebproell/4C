@@ -458,9 +458,9 @@ void Mat::GrowthRemodelElastHyper::setup_axi_cir_rad_structural_tensor(
     const Core::IO::InputParameterContainer& container)
 {
   // CIR-AXI-RAD nomenclature
-  if (container.get_if<std::vector<double>>("RAD") != nullptr and
-      container.get_if<std::vector<double>>("AXI") != nullptr and
-      container.get_if<std::vector<double>>("CIR") != nullptr)
+  if (container.get<Core::IO::Noneable<std::vector<double>>>("RAD").has_value() and
+      container.get<Core::IO::Noneable<std::vector<double>>>("AXI").has_value() and
+      container.get<Core::IO::Noneable<std::vector<double>>>("CIR").has_value())
   {
     // Read in of data
     // read local (cylindrical) cosy-directions at current element
@@ -522,7 +522,9 @@ void Mat::GrowthRemodelElastHyper::setup_aniso_growth_tensors()
 void Mat::GrowthRemodelElastHyper::read_dir(const Core::IO::InputParameterContainer& container,
     const std::string& specifier, Core::LinAlg::Matrix<3, 1>& dir)
 {
-  auto fiber = container.get<std::vector<double>>(specifier);
+  const auto& fiber_opt = container.get<Core::IO::Noneable<std::vector<double>>>(specifier);
+  FOUR_C_ASSERT(fiber_opt.has_value(), "Internal error: fiber vector not found.");
+  const auto& fiber = *fiber_opt;
 
   double fnorm = 0.;
   // normalization
