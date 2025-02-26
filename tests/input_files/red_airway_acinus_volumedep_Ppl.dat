@@ -36,7 +36,7 @@ E 1
 -----DESIGN LINE REDUCED D AIRWAYS VOL DEPENDENT PLEURAL PRESSURE CONDITIONS
 E 2 TYPE Linear_Polynomial TLC 0.0 RV 1.0 P_PLEURAL_0 0.0 P_PLEURAL_LIN 1.0 P_PLEURAL_NONLIN 0.0 TAU 0.0 VAL 1.0 curve none
 --------------------------------------------------REDUCED D AIRWAYS ELEMENTS
-1 RED_ACINUS LINE2 1 2 MAT 2 TYPE NeoHookean AcinusVolume 1.0 AlveolarDuctVolume 1.0 Area 1.0
+1 RED_ACINUS LINE2 1 2 MAT 2 TYPE NeoHookean AcinusVolume 1.0 AlveolarDuctVolume 1.0
 -----------------------------------------------------------------NODE COORDS
 NODE 1 COORD 3.0 0.0 0.0
 NODE 2 COORD 5.0 2.0 0.0

@@ -43,7 +43,7 @@ E 1 boundarycond flow VAL 0.0372 curve 2 none
 E 2 boundarycond pressure VAL 0.0000 curve 1 none
 --------------------------------------------------REDUCED D AIRWAYS ELEMENTS
 1 RED_AIRWAY LINE2  1  2 MAT 1 ElemSolvingType NonLinear TYPE Resistive Resistance Poiseuille PowerOfVelocityProfile 3e6 WallElasticity 0.0 PoissonsRatio 0.0 ViscousTs 0.0 ViscousPhaseShift 0.0 WallThickness 0.0 Area 1.0 Generation 0
-2 RED_ACINUS LINE2  2  3 MAT 2 TYPE Exponential AcinusVolume 0.0372 AlveolarDuctVolume 0.0372  E1_0 6449.0  E1_LIN 33557.7 E1_EXP 6.5158 TAU 47.9892 Area 1.0
+2 RED_ACINUS LINE2  2  3 MAT 2 TYPE Exponential AcinusVolume 0.0372 AlveolarDuctVolume 0.0372  E1_0 6449.0  E1_LIN 33557.7 E1_EXP 6.5158 TAU 47.9892
 -----------------------------------------------------------------NODE COORDS
 NODE 1 COORD 193.300 -546.7000 32.1400
 NODE 2 COORD 183.000 -517.0000 -68.0000

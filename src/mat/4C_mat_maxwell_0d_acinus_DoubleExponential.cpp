@@ -129,16 +129,15 @@ void Mat::Maxwell0dAcinusDoubleExponential::unpack(Core::Communication::UnpackBu
 void Mat::Maxwell0dAcinusDoubleExponential::setup(
     const Core::IO::InputParameterContainer& container)
 {
-  e1_01_ = container.get<double>("E1_01");
-  e1_lin1_ = container.get<double>("E1_LIN1");
-  e1_exp1_ = container.get<double>("E1_EXP1");
-  tau1_ = container.get<double>("TAU1");
+  e1_01_ = *container.get<std::optional<double>>("E1_01");
+  e1_lin1_ = *container.get<std::optional<double>>("E1_LIN1");
+  e1_exp1_ = *container.get<std::optional<double>>("E1_EXP1");
+  tau1_ = *container.get<std::optional<double>>("TAU1");
 
-  e1_02_ = container.get<double>("E1_02");
-  e1_lin2_ = container.get<double>("E1_LIN2");
-  e1_exp2_ = container.get<double>("E1_EXP2");
-  tau2_ = container.get<double>("TAU2");
-  // TODO bool -variable init, in Evaluate abfragen ob init=true
+  e1_02_ = *container.get<std::optional<double>>("E1_02");
+  e1_lin2_ = *container.get<std::optional<double>>("E1_LIN2");
+  e1_exp2_ = *container.get<std::optional<double>>("E1_EXP2");
+  tau2_ = *container.get<std::optional<double>>("TAU2");
 }
 
 
