@@ -61,8 +61,6 @@ int Discret::Elements::So3PoroP1<So3Ele, distype>::evaluate(Teuchos::ParameterLi
     FOUR_C_THROW("No action supplied");
   else if (action == "struct_poro_calc_fluidcoupling")
     act = Base::calc_struct_multidofsetcoupling;
-  else if (action == "interpolate_porosity_to_given_point")
-    act = Base::interpolate_porosity_to_given_point;
 
   // what should the element do
   switch (act)
@@ -78,27 +76,6 @@ int Discret::Elements::So3PoroP1<So3Ele, distype>::evaluate(Teuchos::ParameterLi
           elevec2_epetra, elevec3_epetra);
     }
     break;
-    case Base::interpolate_porosity_to_given_point:
-    {
-      // given point
-      std::vector<Core::LinAlg::Matrix<Base::numdim_, 1>> xsi(1);
-      (xsi[0])(0, 0) = elevec2_epetra(0);
-      (xsi[0])(1, 0) = elevec2_epetra(1);
-      (xsi[0])(2, 0) = elevec2_epetra(2);
-
-      //  evalulate shape functions at given point
-      Core::LinAlg::Matrix<Base::numnod_, 1> shapefct;
-      Core::FE::shape_function<distype>(xsi[0], shapefct);
-
-      Core::LinAlg::Matrix<Base::numdim_, Base::numnod_> mydisp(true);
-      Core::LinAlg::Matrix<Base::numnod_, 1> myporosity(true);
-      Base::extract_values_from_global_vector(
-          discretization, 0, la[0].lm_, nullptr, &myporosity, "displacement");
-
-      elevec1_epetra(0) = shapefct.dot(myporosity);
-    }
-    break;
-    //==================================================================================
     default:
     {
       // in some cases we need to write/change some data before evaluating

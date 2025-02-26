@@ -343,7 +343,6 @@ namespace Discret
         calc_struct_stress,
         calc_struct_multidofsetcoupling,  //!< structure-fluid coupling: internal force, stiffness
                                           //!< for poroelasticity (structural part)
-        interpolate_porosity_to_given_point
       };
 
       //! vector of inverses of the jacobian in material frame
