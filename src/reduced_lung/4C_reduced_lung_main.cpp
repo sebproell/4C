@@ -13,6 +13,7 @@
 #include "4C_fem_general_node.hpp"
 #include "4C_global_data.hpp"
 #include "4C_io.hpp"
+#include "4C_io_discretization_visualization_writer_mesh.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_mat_maxwell_0d_acinus_NeoHookean.hpp"
@@ -47,6 +48,12 @@ namespace ReducedLung
         Teuchos::getIntegralValue<Core::IO::Verbositylevel>(
             Global::Problem::instance()->io_params(), "VERBOSITY"));
     actdis->compute_null_space_if_necessary(solver->params());
+    // Create runtime output writer
+    const auto visualization_writer =
+        std::make_unique<Core::IO::DiscretizationVisualizationWriterMesh>(
+            actdis, Core::IO::visualization_parameters_factory(
+                        Global::Problem::instance()->io_params().sublist("RUNTIME VTK OUTPUT"),
+                        *Global::Problem::instance()->output_control_file(), 0));
     // The existing mpi communicator is recycled for the new data layout.
     const auto& comm = actdis->get_comm();
 
@@ -122,8 +129,8 @@ namespace ReducedLung
     // Assign every local element its associated global dof ids.
     for (auto& airway : airways)
     {
-      int first_dof_gid = first_global_dof_of_ele[airway.global_equation_id];
-      int n_dof = dof_per_ele[airway.global_equation_id];
+      int first_dof_gid = first_global_dof_of_ele[airway.global_element_id];
+      int n_dof = dof_per_ele[airway.global_element_id];
       for (int i = 0; i < n_dof; i++)
       {
         airway.global_dof_ids.insert(airway.global_dof_ids.end(), first_dof_gid + i);
@@ -131,8 +138,8 @@ namespace ReducedLung
     }
     for (auto& terminal_unit : terminal_units)
     {
-      int first_dof_gid = first_global_dof_of_ele[terminal_unit.global_equation_id];
-      int n_dof = dof_per_ele[terminal_unit.global_equation_id];
+      int first_dof_gid = first_global_dof_of_ele[terminal_unit.global_element_id];
+      int n_dof = dof_per_ele[terminal_unit.global_element_id];
       for (int i = 0; i < n_dof; i++)
       {
         terminal_unit.global_dof_ids.insert(terminal_unit.global_dof_ids.end(), first_dof_gid + i);
@@ -434,7 +441,7 @@ namespace ReducedLung
     {
       const int airway_id = airway.local_airway_id;
       const auto* airway_ele =
-          static_cast<Discret::Elements::RedAirway*>(actdis->g_element(airway.global_equation_id));
+          static_cast<Discret::Elements::RedAirway*>(actdis->g_element(airway.global_element_id));
       const Discret::ReducedLung::AirwayParams airway_params = airway_ele->get_airway_params();
       const std::vector<double>& coords_1 = airway_ele->nodes()[0]->x();
       const std::vector<double>& coords_2 = airway_ele->nodes()[1]->x();
@@ -457,7 +464,7 @@ namespace ReducedLung
     {
       const int terminal_unit_id = terminal_unit.local_terminal_unit_id;
       const auto* terminal_unit_ele = static_cast<Discret::Elements::RedAcinus*>(
-          actdis->g_element(terminal_unit.global_equation_id));
+          actdis->g_element(terminal_unit.global_element_id));
       const std::vector<double>& coords_1 = terminal_unit_ele->nodes()[0]->x();
       const std::vector<double>& coords_2 = terminal_unit_ele->nodes()[1]->x();
       const double radius = std::sqrt((coords_1[0] - coords_2[0]) * (coords_1[0] - coords_2[0]) +
@@ -484,6 +491,7 @@ namespace ReducedLung
     auto sysmat = Epetra_CrsMatrix(
         Copy, row_map.get_epetra_map(), locally_relevant_dof_map.get_epetra_map(), 3);
 
+    const int results_every = rawdyn.get<int>("RESULTSEVERY");
     // Time integration parameters.
     const double dt = rawdyn.get<double>("TIMESTEP");
     const int n_timesteps = rawdyn.get<int>("NUMSTEP");
@@ -526,15 +534,15 @@ namespace ReducedLung
         if (!sysmat.Filled())
         {
           err = sysmat.InsertMyValues(
-              airway.local_equation_id, vals.size(), vals.data(), airway.local_dof_ids.data());
+              airway.local_element_id, vals.size(), vals.data(), airway.local_dof_ids.data());
         }
         else
         {
           err = sysmat.ReplaceMyValues(
-              airway.local_equation_id, vals.size(), vals.data(), airway.local_dof_ids.data());
+              airway.local_element_id, vals.size(), vals.data(), airway.local_dof_ids.data());
         }
         FOUR_C_ASSERT(err == 0, "Internal error: Airway equation assembly did not work.");
-        err = rhs.replace_local_value(airway.local_equation_id, 0, res);
+        err = rhs.replace_local_value(airway.local_element_id, 0, res);
         FOUR_C_ASSERT(err == 0, "Internal error: Airway equation calculation did not work.");
       }
 
@@ -554,16 +562,16 @@ namespace ReducedLung
             E * (V_tu - V0_tu) / V0_tu;
         if (!sysmat.Filled())
         {
-          err = sysmat.InsertMyValues(terminal_unit.local_equation_id, vals.size(), vals.data(),
+          err = sysmat.InsertMyValues(terminal_unit.local_element_id, vals.size(), vals.data(),
               terminal_unit.local_dof_ids.data());
         }
         else
         {
-          err = sysmat.ReplaceMyValues(terminal_unit.local_equation_id, vals.size(), vals.data(),
+          err = sysmat.ReplaceMyValues(terminal_unit.local_element_id, vals.size(), vals.data(),
               terminal_unit.local_dof_ids.data());
         }
         FOUR_C_ASSERT(err == 0, "Internal error: Terminal Unit equation assembly did not work.");
-        err = rhs.replace_local_value(terminal_unit.local_equation_id, 0, res);
+        err = rhs.replace_local_value(terminal_unit.local_element_id, 0, res);
         FOUR_C_ASSERT(err == 0, "Internal error: Terminal Unit equation calculation did not work.");
       }
 
@@ -734,6 +742,15 @@ namespace ReducedLung
         const int& tu_id = terminal_unit.local_terminal_unit_id;
         // Backwards Euler: V_n+1 = V_n + q_n+1 * dt.
         volume[tu_id] += locally_relevant_dofs[q_id] * dt;
+      }
+
+      // Runtime output
+      if (n % results_every == 0)
+      {
+        visualization_writer->reset();
+        collect_runtime_output_data(
+            *visualization_writer, airways, terminal_units, dofs, actdis->element_row_map());
+        visualization_writer->write_to_disk(dt * n, n);
       }
     }
     // Print time monitor
