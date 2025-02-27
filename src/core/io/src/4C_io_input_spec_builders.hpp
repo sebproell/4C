@@ -649,7 +649,7 @@ namespace Core::IO
     namespace Internal
     {
       template <SupportedType T>
-      struct EntrySpec
+      struct ParameterSpec
       {
         std::string name;
         using StoredType = T;
@@ -1158,7 +1158,7 @@ namespace Core::IO
 // --- template definitions --- //
 
 template <Core::IO::SupportedType T>
-void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::parse(
+void Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::parse(
     ValueParser& parser, InputParameterContainer& container) const
 {
   if (parser.peek() == name)
@@ -1215,7 +1215,7 @@ void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::parse(
 
 
 template <Core::IO::SupportedType T>
-bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::match(ConstYamlNodeRef node,
+bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
     InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
 {
   match_entry.type = IO::Internal::MatchEntry::Type::parameter;
@@ -1272,7 +1272,8 @@ bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::match(ConstYamlNodeRef
 
 
 template <Core::IO::SupportedType T>
-void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit_metadata(ryml::NodeRef node) const
+void Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::emit_metadata(
+    ryml::NodeRef node) const
 {
   node |= ryml::MAP;
   node["name"] << name;
@@ -1312,7 +1313,7 @@ void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit_metadata(ryml::No
 }
 
 template <Core::IO::SupportedType T>
-bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit(YamlNodeRef node,
+bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::emit(YamlNodeRef node,
     const InputParameterContainer& container, const InputSpecEmitOptions& options) const
 {
   node.node |= ryml::MAP;
@@ -1347,7 +1348,7 @@ bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit(YamlNodeRef node,
 
 
 template <Core::IO::SupportedType T>
-bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::has_correct_size(
+bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::has_correct_size(
     const T& val, const InputParameterContainer& container) const
 {
   if constexpr (rank<T>() == 0)
@@ -1600,7 +1601,7 @@ template <Core::IO::SupportedType T>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::parameter(
     std::string name, ParameterData<T>&& data)
 {
-  return IO::Internal::make_spec(Internal::EntrySpec<T>{.name = name, .data = data},
+  return IO::Internal::make_spec(Internal::ParameterSpec<T>{.name = name, .data = data},
       {
           .name = name,
           .description = data.description,
