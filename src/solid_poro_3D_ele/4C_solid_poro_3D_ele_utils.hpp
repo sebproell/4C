@@ -29,8 +29,7 @@ namespace Discret::Elements
         Inpar::ScaTra::ImplType::impltype_chemo, Inpar::ScaTra::ImplType::impltype_chemoreac,
         Inpar::ScaTra::ImplType::impltype_loma, Inpar::ScaTra::ImplType::impltype_poro,
         Inpar::ScaTra::ImplType::impltype_pororeac, Inpar::ScaTra::ImplType::impltype_pororeacECM,
-        Inpar::ScaTra::ImplType::impltype_multipororeac,
-        Inpar::ScaTra::ImplType::impltype_refconcreac, Inpar::ScaTra::ImplType::impltype_std,
+        Inpar::ScaTra::ImplType::impltype_multipororeac, Inpar::ScaTra::ImplType::impltype_std,
         Inpar::ScaTra::ImplType::impltype_undefined};
   }
 

@@ -33,8 +33,6 @@ Inpar::ScaTra::ImplType Discret::Elements::read_scatra_impl_type(
     return Inpar::ScaTra::impltype_elch_electrode;
   else if (impltype == "Loma")
     return Inpar::ScaTra::impltype_loma;
-  else if (impltype == "RefConcReac")
-    return Inpar::ScaTra::impltype_refconcreac;
   else if (impltype == "Std")
     return Inpar::ScaTra::impltype_std;
 

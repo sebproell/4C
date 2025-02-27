@@ -60,28 +60,15 @@ void SSI::SSIPart2WC::init(MPI_Comm comm, const Teuchos::ParameterList& globalti
           "and hence"
           "the deformations will not be applied to the scalar transport problem!");
     }
+  }
 
-    auto convform = Teuchos::getIntegralValue<Inpar::ScaTra::ConvForm>(scatraparams, "CONVFORM");
-    if (convform == Inpar::ScaTra::convform_convective)
-    {
-      // get scatra discretization
-      std::shared_ptr<Core::FE::Discretization> scatradis =
-          Global::Problem::instance()->get_dis(scatra_disname);
-
-      // loop over all elements of scatra discretization to check if impltype is correct or not
-      for (int i = 0; i < scatradis->num_my_col_elements(); ++i)
-      {
-        if ((dynamic_cast<Discret::Elements::Transport*>(scatradis->l_col_element(i)))
-                ->impl_type() != Inpar::ScaTra::impltype_refconcreac)
-        {
-          FOUR_C_THROW(
-              "If the scalar transport problem is solved on the deforming domain, the conservative "
-              "form must be "
-              "used to include volume changes! Set 'CONVFORM' to 'conservative' in the SCALAR "
-              "TRANSPORT DYNAMIC section or use RefConcReac as ScatraType!");
-        }
-      }
-    }
+  auto convform = Teuchos::getIntegralValue<Inpar::ScaTra::ConvForm>(scatraparams, "CONVFORM");
+  if (convform == Inpar::ScaTra::convform_convective)
+  {
+    FOUR_C_THROW(
+        "If the scalar transport problem is solved on the deforming domain, the conservative "
+        "form must be used to include volume changes. Set 'CONVFORM' to 'conservative' in the "
+        "SCALAR TRANSPORT DYNAMIC section.");
   }
 
   if (diff_time_step_size())

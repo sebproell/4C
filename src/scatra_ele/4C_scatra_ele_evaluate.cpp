@@ -190,7 +190,6 @@ int Discret::Elements::Transport::evaluate(Teuchos::ParameterList& params,
     case Inpar::ScaTra::impltype_thermo_elch_electrode:
     case Inpar::ScaTra::impltype_thermo_elch_diffcond:
     case Inpar::ScaTra::impltype_advreac:
-    case Inpar::ScaTra::impltype_refconcreac:
     case Inpar::ScaTra::impltype_chemo:
     case Inpar::ScaTra::impltype_chemoreac:
     case Inpar::ScaTra::impltype_aniso:

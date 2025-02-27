@@ -121,8 +121,6 @@ bool Discret::Elements::MembraneScatra<distype>::read_element(const std::string&
     impltype_ = Inpar::ScaTra::impltype_chemoreac;
   else if (impltype == "Loma")
     impltype_ = Inpar::ScaTra::impltype_loma;
-  else if (impltype == "RefConcReac")
-    impltype_ = Inpar::ScaTra::impltype_refconcreac;
   else if (impltype == "Std")
     impltype_ = Inpar::ScaTra::impltype_std;
   else

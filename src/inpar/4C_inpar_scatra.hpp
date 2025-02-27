@@ -198,7 +198,6 @@ namespace Inpar
       impltype_levelset,
       impltype_poro,
       impltype_advreac,
-      impltype_refconcreac,
       impltype_multipororeac,
       impltype_pororeac,
       impltype_pororeacECM,

@@ -110,11 +110,6 @@ namespace ScaTra
         impltypestring = "Advanced reactions";
         break;
       }
-      case Inpar::ScaTra::impltype_refconcreac:
-      {
-        impltypestring = "Reference concentrations AND reactions";
-        break;
-      }
       case Inpar::ScaTra::impltype_chemo:
       {
         impltypestring = "Chemotaxis";

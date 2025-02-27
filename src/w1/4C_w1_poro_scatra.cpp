@@ -126,8 +126,6 @@ bool Discret::Elements::Wall1PoroScatra<distype>::read_element(const std::string
     impltype_ = Inpar::ScaTra::impltype_pororeacECM;
   else if (impltype == "PoroMultiReac")
     impltype_ = Inpar::ScaTra::impltype_multipororeac;
-  else if (impltype == "RefConcReac")
-    impltype_ = Inpar::ScaTra::impltype_refconcreac;
   else if (impltype == "Std")
     impltype_ = Inpar::ScaTra::impltype_std;
   else
