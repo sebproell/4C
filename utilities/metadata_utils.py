@@ -244,6 +244,7 @@ class List(Parameter):
 
     size: int = None
     spec: Parameter = None
+    noneable: bool = False
     _type = "list"
 
     def __post_init__(self):
