@@ -24,7 +24,7 @@ Core::IO::VisualizationWriterVtuPerRank::VisualizationWriterVtuPerRank(
           std::pow(10, Core::IO::get_total_digits_to_reserve_in_time_step(parameters)),
           parameters.directory_name_, (parameters.file_name_prefix_ + "-vtk-files"),
           visualization_data_name_, parameters.restart_from_name_, parameters.restart_time_,
-          parameters.data_format_ == OutputDataFormat::binary)
+          parameters.data_format_ == OutputDataFormat::binary, parameters.compression_level_)
 {
 }
 
@@ -32,9 +32,9 @@ Core::IO::VisualizationWriterVtuPerRank::VisualizationWriterVtuPerRank(
  *
  */
 void Core::IO::VisualizationWriterVtuPerRank::initialize_time_step(
-    const double visualziation_time, const int visualization_step)
+    const double visualization_time, const int visualization_step)
 {
-  vtu_writer_.reset_time_and_time_step(visualziation_time, visualization_step);
+  vtu_writer_.reset_time_and_time_step(visualization_time, visualization_step);
 
   vtu_writer_.initialize_vtk_file_streams_for_new_geometry_and_or_time_step();
   vtu_writer_.write_vtk_headers();

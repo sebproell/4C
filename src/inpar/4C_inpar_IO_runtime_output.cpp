@@ -47,6 +47,14 @@ namespace Inpar
               Core::IO::OutputDataFormat::binary, Core::IO::OutputDataFormat::ascii),
           sublist_IO_VTK_structure);
 
+      // compression level of written output
+      Core::Utils::string_to_integral_parameter<LibB64::CompressionLevel>("COMPRESSION_LEVEL",
+          "best_speed", "Specify the compression level of written vtk output.",
+          tuple<std::string>("best_compression", "best_speed", "no_compression"),
+          tuple<LibB64::CompressionLevel>(LibB64::CompressionLevel::best_compression,
+              LibB64::CompressionLevel::best_speed, LibB64::CompressionLevel::no_compression),
+          sublist_IO_VTK_structure);
+
       // specify the maximum digits in the number of time steps that shall be written
       Core::Utils::int_parameter("TIMESTEP_RESERVE_DIGITS", 5,
           "Specify the maximum digits in the number of time steps that shall be written. This only "

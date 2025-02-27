@@ -182,7 +182,8 @@ VtkWriterBase::VtkWriterBase(unsigned int myrank, unsigned int num_processors,
     unsigned int max_number_timesteps_to_be_written,
     const std::string& path_existing_working_directory,
     const std::string& name_new_vtk_subdirectory, const std::string& geometry_name,
-    const std::string& restart_name, const double restart_time, bool write_binary_output)
+    const std::string& restart_name, double restart_time, bool write_binary_output,
+    LibB64::CompressionLevel compression_level)
     : currentPhase_(VAGUE),
       num_timestep_digits_(LibB64::ndigits(max_number_timesteps_to_be_written)),
       num_processor_digits_(LibB64::ndigits(num_processors)),
@@ -192,6 +193,7 @@ VtkWriterBase::VtkWriterBase(unsigned int myrank, unsigned int num_processors,
       is_restart_(restart_time > 0.0),
       cycle_(std::numeric_limits<int>::max()),
       write_binary_output_(write_binary_output),
+      compression_level_(compression_level),
       myrank_(myrank),
       numproc_(num_processors)
 {
@@ -496,7 +498,7 @@ void VtkWriterBase::write_data_array_this_processor(
   {
     filestream << " format=\"binary\">\n";
 
-    LibB64::write_compressed_block(data, filestream);
+    LibB64::write_compressed_block(data, filestream, compression_level_);
   }
   else
   {

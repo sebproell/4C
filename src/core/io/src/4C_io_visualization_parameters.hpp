@@ -11,6 +11,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_io_vtk_writer_base.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
 #include <string>
@@ -44,6 +45,9 @@ namespace Core::IO
   {
     //! Enum containing the type of output data format, i.e., binary or ascii.
     OutputDataFormat data_format_;
+
+    //! Level of compression used when writing output.
+    LibB64::CompressionLevel compression_level_;
 
     //! Base output directory
     std::string directory_name_;
