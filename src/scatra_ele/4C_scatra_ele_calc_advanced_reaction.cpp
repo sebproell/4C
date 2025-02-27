@@ -12,8 +12,6 @@
 #include "4C_global_data.hpp"
 #include "4C_mat_list.hpp"
 #include "4C_mat_list_reactions.hpp"
-#include "4C_mat_scatra.hpp"
-#include "4C_mat_scatra_reaction.hpp"
 #include "4C_mat_so3_material.hpp"
 #include "4C_scatra_ele_parameter_std.hpp"
 #include "4C_scatra_ele_parameter_timint.hpp"
@@ -328,11 +326,13 @@ void Discret::Elements::ScaTraEleCalcAdvReac<distype, probdim>::set_advanced_rea
 {
   const std::shared_ptr<ScaTraEleReaManagerAdvReac> remanager = rea_manager();
 
-  remanager->add_to_rea_body_force(
-      matreaclist->calc_rea_body_force_term(k, my::scatravarmanager_->phinp(), gpcoord), k);
+  auto time = my::scatraparatimint_->time();
 
-  matreaclist->calc_rea_body_force_deriv_matrix(
-      k, remanager->get_rea_body_force_deriv_vector(k), my::scatravarmanager_->phinp(), gpcoord);
+  remanager->add_to_rea_body_force(
+      matreaclist->calc_rea_body_force_term(k, my::scatravarmanager_->phinp(), gpcoord, time), k);
+
+  matreaclist->calc_rea_body_force_deriv_matrix(k, remanager->get_rea_body_force_deriv_vector(k),
+      my::scatravarmanager_->phinp(), gpcoord, time);
 }
 
 /*----------------------------------------------------------------------*

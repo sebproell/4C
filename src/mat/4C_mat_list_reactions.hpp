@@ -145,26 +145,26 @@ namespace Mat
     /// advanced reaction terms
     double calc_rea_body_force_term(const int k, const std::vector<double>& phinp,
         const double* gpcoord,  //!< current Gauss-point coordinates
-        const double scale = 1.0) const;
+        const double time, const double scale = 1.0) const;
 
     /// calculate advanced reaction term derivatives
     void calc_rea_body_force_deriv_matrix(const int k, std::vector<double>& derivs,
         const std::vector<double>& phinp,
         const double* gpcoord,  //!< current Gauss-point coordinates
-        const double scale = 1.0) const;
+        const double time, const double scale = 1.0) const;
 
     /// advanced reaction terms
     double calc_rea_body_force_term(const int k, const std::vector<double>& phinp,
         const std::vector<std::pair<std::string, double>>& constants,
         const double* gpcoord,  //!< current Gauss-point coordinates
-        const double scale = 1.0) const;
+        const double time, const double scale = 1.0) const;
 
     /// calculate advanced reaction term derivatives
     void calc_rea_body_force_deriv_matrix(const int k, std::vector<double>& derivs,
         const std::vector<double>& phinp,
         const std::vector<std::pair<std::string, double>>& constants,
         const double* gpcoord,  //!< current Gauss-point coordinates
-        const double scale = 1.0) const;
+        const double time, const double scale = 1.0) const;
 
     // add additional variables to the reaction (only for by-function coupling)
     void add_additional_variables(
@@ -175,7 +175,7 @@ namespace Mat
         const std::vector<double>& phinp,
         const std::vector<std::pair<std::string, double>>& variables,
         const std::vector<std::pair<std::string, double>>& constants, const double* gpcoord,
-        const double scale = 1.0) const;
+        const double time, const double scale = 1.0) const;
 
 
    protected:

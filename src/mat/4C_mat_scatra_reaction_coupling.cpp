@@ -677,22 +677,10 @@ double Mat::PAR::REACTIONCOUPLING::ByFunction::calc_rea_body_force_term_internal
   // copy phi vector in different format to be read by the function
   build_phi_vector_for_function(phinp, numscal);
 
-  std::vector<std::pair<std::string, double>> variables_for_parser_evaluation = variables_;
-
-  // add possible time dependency
-
-  variables_for_parser_evaluation.emplace_back("t", 0.0);
-
-  // add possible spatial dependency
-
-  variables_for_parser_evaluation.emplace_back("x", 0.0);
-  variables_for_parser_evaluation.emplace_back("y", 0.0);
-  variables_for_parser_evaluation.emplace_back("z", 0.0);
-
   // evaluate reaction term
   double bftfac = Global::Problem::instance()
                       ->function_by_id<Core::Utils::FunctionOfAnything>(round(couprole[k]))
-                      .evaluate(variables_for_parser_evaluation, constants, 0);
+                      .evaluate(variables_, constants, 0);
 
   return scale_reac * bftfac;
 }
@@ -745,30 +733,15 @@ void Mat::PAR::REACTIONCOUPLING::ByFunction::calc_rea_body_force_deriv_internal(
   // copy phi vector in different format to be read by the function
   build_phi_vector_for_function(phinp, numscal);
 
-  std::vector<std::pair<std::string, double>> constants_for_parser_evaluation = constants;
-
-  // add possible time dependency
-
-  constants_for_parser_evaluation.emplace_back("t", 0.0);
-
-  // add possible spatial dependency
-
-  constants_for_parser_evaluation.emplace_back("x", 0.0);
-  constants_for_parser_evaluation.emplace_back("y", 0.0);
-  constants_for_parser_evaluation.emplace_back("z", 0.0);
-
-
   // evaluate the derivatives of the reaction term
   std::vector<double> myderivs =
       Global::Problem::instance()
           ->function_by_id<Core::Utils::FunctionOfAnything>(round(couprole[k]))
-          .evaluate_derivative(variables_, constants_for_parser_evaluation, 0);
+          .evaluate_derivative(variables_, constants, 0);
 
   // add it to derivs
   for (int toderive = 0; toderive < numscal; toderive++)
     derivs[toderive] += scale_reac * myderivs[toderive];
-
-  return;
 }
 
 /*----------------------------------------------------------------------*

@@ -818,9 +818,11 @@ void Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::set_advanced_reacti
 
   const ScaTra::Action act = var_manager()->get_action();
 
+  auto time = my::scatraparatimint_->time();
   // note: we always need the reaction term to calculate rhsint, which is needed also for OD-terms
-  remanager->add_to_rea_body_force(matreaclist->calc_rea_body_force_term(
-                                       k, my::scatravarmanager_->phinp(), couplingvalues_, gpcoord),
+  remanager->add_to_rea_body_force(
+      matreaclist->calc_rea_body_force_term(
+          k, my::scatravarmanager_->phinp(), couplingvalues_, gpcoord, time),
       k);
 
   std::vector<std::pair<std::string, double>> emptyconstants;
@@ -832,7 +834,7 @@ void Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::set_advanced_reacti
     {
       matreaclist->calc_rea_body_force_deriv_matrix(k,
           remanager->get_rea_body_force_deriv_vector(k), my::scatravarmanager_->phinp(),
-          couplingvalues_, gpcoord);
+          couplingvalues_, gpcoord, time);
 
       break;
     }
@@ -840,7 +842,7 @@ void Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::set_advanced_reacti
     {
       matreaclist->calc_rea_body_force_deriv_matrix_add_variables(k,
           remanager->get_rea_body_force_deriv_vector_add_variables(k),
-          my::scatravarmanager_->phinp(), couplingvalues_, emptyconstants, gpcoord);
+          my::scatravarmanager_->phinp(), couplingvalues_, emptyconstants, gpcoord, time);
 
       break;
     }
@@ -850,16 +852,15 @@ void Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::set_advanced_reacti
       {
         matreaclist->calc_rea_body_force_deriv_matrix_add_variables(k,
             remanager->get_rea_body_force_deriv_vector_add_variables(k),
-            my::scatravarmanager_->phinp(), couplingvalues_, emptyconstants, gpcoord);
+            my::scatravarmanager_->phinp(), couplingvalues_, emptyconstants, gpcoord, time);
       }
       break;
     }
     default:
     {
       FOUR_C_THROW("Wrong action type in var_manager(), action type is %d", act);
-      break;
     }
-  }  // switch(act)
+  }
 }
 
 /*-------------------------------------------------------------------------------*

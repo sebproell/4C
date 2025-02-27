@@ -244,15 +244,16 @@ int Mat::MatListReactions::reac_id(const unsigned index) const
 /*----------------------------------------------------------------------*
  | calculate advanced reaction terms                         thon 08/16 |
  *----------------------------------------------------------------------*/
-double Mat::MatListReactions::calc_rea_body_force_term(
-    const int k, const std::vector<double>& phinp, const double* gpcoord, const double scale) const
+double Mat::MatListReactions::calc_rea_body_force_term(const int k,
+    const std::vector<double>& phinp, const double* gpcoord, const double time,
+    const double scale) const
 {
   // set time and space coordinates
   std::vector<std::pair<std::string, double>> constants;
-  constants.push_back(std::pair<std::string, double>("t", 0.0));
-  constants.push_back(std::pair<std::string, double>("x", gpcoord[0]));
-  constants.push_back(std::pair<std::string, double>("y", gpcoord[1]));
-  constants.push_back(std::pair<std::string, double>("z", gpcoord[2]));
+  constants.emplace_back("t", time);
+  constants.emplace_back("x", gpcoord[0]);
+  constants.emplace_back("y", gpcoord[1]);
+  constants.emplace_back("z", gpcoord[2]);
 
   double bodyforcetermK = 0.0;
 
@@ -273,25 +274,22 @@ double Mat::MatListReactions::calc_rea_body_force_term(
  *----------------------------------------------------------------------*/
 void Mat::MatListReactions::calc_rea_body_force_deriv_matrix(const int k,
     std::vector<double>& derivs, const std::vector<double>& phinp, const double* gpcoord,
-    const double scale) const
+    const double time, const double scale) const
 {
-  // set time and space coordinates
   std::vector<std::pair<std::string, double>> constants;
-  constants.push_back(std::pair<std::string, double>("t", 0.0));
-  constants.push_back(std::pair<std::string, double>("x", gpcoord[0]));
-  constants.push_back(std::pair<std::string, double>("y", gpcoord[1]));
-  constants.push_back(std::pair<std::string, double>("z", gpcoord[2]));
+  constants.emplace_back("t", time);
+  constants.emplace_back("x", gpcoord[0]);
+  constants.emplace_back("y", gpcoord[1]);
+  constants.emplace_back("z", gpcoord[2]);
 
   for (int condnum = 0; condnum < num_reac(); condnum++)
   {
     const int reacid = reac_id(condnum);
-    const std::shared_ptr<const Mat::ScatraReactionMat> reacmat =
-        std::static_pointer_cast<const Mat::ScatraReactionMat>(material_by_id(reacid));
+    const std::shared_ptr<const ScatraReactionMat> reacmat =
+        std::static_pointer_cast<const ScatraReactionMat>(material_by_id(reacid));
 
     reacmat->calc_rea_body_force_deriv_matrix(k, derivs, phinp, constants, scale);
   }
-  // gpcoord_
-  return;
 }
 
 /*----------------------------------------------------------------------*
@@ -299,22 +297,21 @@ void Mat::MatListReactions::calc_rea_body_force_deriv_matrix(const int k,
  *----------------------------------------------------------------------*/
 double Mat::MatListReactions::calc_rea_body_force_term(const int k,
     const std::vector<double>& phinp, const std::vector<std::pair<std::string, double>>& constants,
-    const double* gpcoord, const double scale) const
+    const double* gpcoord, const double time, const double scale) const
 {
-  // add time and space coordinates
-  std::vector<std::pair<std::string, double>> constants_mod(constants);
-  constants_mod.push_back(std::pair<std::string, double>("t", 0.0));
-  constants_mod.push_back(std::pair<std::string, double>("x", gpcoord[0]));
-  constants_mod.push_back(std::pair<std::string, double>("y", gpcoord[1]));
-  constants_mod.push_back(std::pair<std::string, double>("z", gpcoord[2]));
+  std::vector constants_mod(constants);
+  constants_mod.emplace_back("t", time);
+  constants_mod.emplace_back("x", gpcoord[0]);
+  constants_mod.emplace_back("y", gpcoord[1]);
+  constants_mod.emplace_back("z", gpcoord[2]);
 
   double bodyforcetermK = 0.0;
 
   for (int condnum = 0; condnum < num_reac(); condnum++)
   {
     const int reacid = reac_id(condnum);
-    const std::shared_ptr<const Mat::ScatraReactionMat> reacmat =
-        std::static_pointer_cast<const Mat::ScatraReactionMat>(material_by_id(reacid));
+    const std::shared_ptr<const ScatraReactionMat> reacmat =
+        std::static_pointer_cast<const ScatraReactionMat>(material_by_id(reacid));
 
     bodyforcetermK += reacmat->calc_rea_body_force_term(k, phinp, constants_mod, scale);
   }
@@ -328,25 +325,22 @@ double Mat::MatListReactions::calc_rea_body_force_term(const int k,
 void Mat::MatListReactions::calc_rea_body_force_deriv_matrix(const int k,
     std::vector<double>& derivs, const std::vector<double>& phinp,
     const std::vector<std::pair<std::string, double>>& constants, const double* gpcoord,
-    const double scale) const
+    const double time, const double scale) const
 {
-  // add time and space coordinates
-  std::vector<std::pair<std::string, double>> constants_mod(constants);
-  constants_mod.push_back(std::pair<std::string, double>("t", 0.0));
-  constants_mod.push_back(std::pair<std::string, double>("x", gpcoord[0]));
-  constants_mod.push_back(std::pair<std::string, double>("y", gpcoord[1]));
-  constants_mod.push_back(std::pair<std::string, double>("z", gpcoord[2]));
+  std::vector constants_mod(constants);
+  constants_mod.emplace_back("t", time);
+  constants_mod.emplace_back("x", gpcoord[0]);
+  constants_mod.emplace_back("y", gpcoord[1]);
+  constants_mod.emplace_back("z", gpcoord[2]);
 
   for (int condnum = 0; condnum < num_reac(); condnum++)
   {
     const int reacid = reac_id(condnum);
-    const std::shared_ptr<const Mat::ScatraReactionMat> reacmat =
-        std::static_pointer_cast<const Mat::ScatraReactionMat>(material_by_id(reacid));
+    const std::shared_ptr<const ScatraReactionMat> reacmat =
+        std::static_pointer_cast<const ScatraReactionMat>(material_by_id(reacid));
 
     reacmat->calc_rea_body_force_deriv_matrix(k, derivs, phinp, constants_mod, scale);
   }
-
-  return;
 }
 
 /*----------------------------------------------------------------------*
@@ -373,34 +367,31 @@ void Mat::MatListReactions::calc_rea_body_force_deriv_matrix_add_variables(const
     std::vector<double>& derivs, const std::vector<double>& phinp,
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const double* gpcoord,
-    const double scale) const
+    const double time, const double scale) const
 {
-  // add time and space coordinates
-  std::vector<std::pair<std::string, double>> constants_mod(constants);
+  std::vector constants_mod(constants);
 
   // add scalar values as constants
   for (unsigned iscal = 0; iscal < phinp.size(); iscal++)
   {
     std::ostringstream temp;
     temp << iscal + 1;
-    constants_mod.push_back(std::pair<std::string, double>("phi" + temp.str(), phinp[iscal]));
+    constants_mod.emplace_back("phi" + temp.str(), phinp[iscal]);
   }
-  constants_mod.push_back(std::pair<std::string, double>("t", 0.0));
-  constants_mod.push_back(std::pair<std::string, double>("x", gpcoord[0]));
-  constants_mod.push_back(std::pair<std::string, double>("y", gpcoord[1]));
-  constants_mod.push_back(std::pair<std::string, double>("z", gpcoord[2]));
+  constants_mod.emplace_back("t", time);
+  constants_mod.emplace_back("x", gpcoord[0]);
+  constants_mod.emplace_back("y", gpcoord[1]);
+  constants_mod.emplace_back("z", gpcoord[2]);
 
   for (int condnum = 0; condnum < num_reac(); condnum++)
   {
     const int reacid = reac_id(condnum);
-    const std::shared_ptr<const Mat::ScatraReactionMat> reacmat =
-        std::static_pointer_cast<const Mat::ScatraReactionMat>(material_by_id(reacid));
+    const std::shared_ptr<const ScatraReactionMat> reacmat =
+        std::static_pointer_cast<const ScatraReactionMat>(material_by_id(reacid));
 
     reacmat->calc_rea_body_force_deriv_matrix_add_variables(
         k, derivs, variables, constants_mod, scale);
   }
-
-  return;
 }
 
 FOUR_C_NAMESPACE_CLOSE
