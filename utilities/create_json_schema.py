@@ -135,6 +135,7 @@ def schema_from_selection(selection):
         description=selection.description,
         default=selection.default,
         enum=list(set(selection.choices)),
+        noneable=selection.noneable,
     )
 
     return schema
@@ -158,6 +159,7 @@ def schema_from_group(group):
             properties={},
             const={},
             default={},
+            noneable=group.noneable,
         )
         return schema
 
@@ -191,6 +193,7 @@ def array_schema(parameter, items):
         items=items,
         maxItems=parameter.size,
         minItems=parameter.size,
+        noneable=parameter.noneable,
     )
 
     return schema
@@ -206,6 +209,8 @@ def schema_from_vector(vector):
         dict: JSON schema data
     """
     items = get_schema(vector.value_type)
+    if items["description"] == MISSING_DESCRIPTION:
+        items.pop("description")
     return array_schema(vector, items)
 
 
@@ -219,17 +224,18 @@ def schema_from_list(list_metadata):
         dict: JSON schema data
     """
     if isinstance(list_metadata.spec, NAMED_TYPES):
-        schema = json_schema(
+        items = json_schema(
             title=list_metadata.spec.short_description(),
             description=list_metadata.spec.description,
             required=[list_metadata.spec.name] if list_metadata.spec.required else None,
             properties={list_metadata.spec.name: get_schema(list_metadata.spec)},
         )
-        items = schema
     # Essentially one_ofs remain
     else:
         items = get_schema(list_metadata.spec)
 
+    if items["description"] == MISSING_DESCRIPTION:
+        items.pop("description")
     return array_schema(list_metadata, items)
 
 
@@ -250,6 +256,7 @@ def schema_from_map(map_metadata):
         patternProperties={"^.*$": value_schema},
         minProperties=map_metadata.size,
         maxProperties=map_metadata.size,
+        noneable=map_metadata.noneable,
     )
     return schema
 
@@ -571,6 +578,7 @@ def schema_for_description_section(section_name):
         description=MISSING_DESCRIPTION + " (no schema)",
         additionalProperties=True,
         schema_type=None,
+        noneable=True,
     )
     return schema
 
