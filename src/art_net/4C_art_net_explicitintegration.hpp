@@ -11,7 +11,6 @@
 #include "4C_config.hpp"
 
 #include "4C_art_net_art_junction.hpp"
-#include "4C_art_net_art_write_gnuplot.hpp"
 #include "4C_art_net_timint.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_io.hpp"
@@ -262,10 +261,6 @@ namespace Arteries
     //! @name 1D artery values at the junctions
     std::shared_ptr<std::map<const int, std::shared_ptr<Arteries::Utils::JunctionNodeParams>>>
         junc_nodal_vals_;
-    //@}
-
-    //! @name A condition to export 1D arteries as a gnuplot format
-    std::shared_ptr<Utils::ArtWriteGnuplotWrapper> artgnu_;
     //@}
 
     //@}

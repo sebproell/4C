@@ -143,7 +143,6 @@ namespace Core::Conditions
     SurfaceModeKrylovProjection,
     VolumeModeKrylovProjection,
     ArtJunctionCond,
-    ArtWriteGnuplotCond,
     ArtPrescribedCond,
     ArtPorofluidCouplingCondNodebased,
     ArtScatraCouplingCondNodebased,

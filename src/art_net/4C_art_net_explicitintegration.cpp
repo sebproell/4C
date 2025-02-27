@@ -158,9 +158,6 @@ void Arteries::ArtNetExplicitTimeInt::init(const Teuchos::ParameterList& globalt
 
   artjun_ = std::make_shared<Utils::ArtJunctionWrapper>(discret_, output_, junparams, dta_);
 
-  // create the gnuplot export conditions
-  artgnu_ = std::make_shared<Arteries::Utils::ArtWriteGnuplotWrapper>(discret_, junparams);
-
   // ---------------------------------------------------------------------------------------
   // Initialize all the arteries' cross-sectional areas to the initial crossectional area Ao
   // and the volumetric flow rate to 0
