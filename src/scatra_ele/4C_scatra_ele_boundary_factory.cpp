@@ -17,7 +17,6 @@
 #include "4C_scatra_ele_boundary_calc_elch_NP.hpp"
 #include "4C_scatra_ele_boundary_calc_loma.hpp"
 #include "4C_scatra_ele_boundary_calc_poro.hpp"
-#include "4C_scatra_ele_boundary_calc_refconc_reac.hpp"
 #include "4C_scatra_ele_boundary_calc_std.hpp"
 #include "4C_scatra_ele_boundary_calc_sti_electrode.hpp"
 #include "4C_scatra_ele_boundary_interface.hpp"
@@ -179,12 +178,6 @@ Discret::Elements::ScaTraBoundaryFactory::define_problem_type(
     case Inpar::ScaTra::impltype_pororeac:
     {
       return Discret::Elements::ScaTraEleBoundaryCalcPoro<distype, probdim>::instance(
-          numdofpernode, numscal, disname);
-      break;
-    }
-    case Inpar::ScaTra::impltype_refconcreac:
-    {
-      return Discret::Elements::ScaTraEleBoundaryCalcRefConcReac<distype, probdim>::instance(
           numdofpernode, numscal, disname);
       break;
     }

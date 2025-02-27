@@ -26,8 +26,6 @@ bool Discret::Elements::Transport::read_element(const std::string& eletype,
     impltype_ = Inpar::ScaTra::impltype_std;
   else if (impltype == "AdvReac")
     impltype_ = Inpar::ScaTra::impltype_advreac;
-  else if (impltype == "RefConcReac")
-    impltype_ = Inpar::ScaTra::impltype_refconcreac;
   else if (impltype == "Chemo")
     impltype_ = Inpar::ScaTra::impltype_chemo;
   else if (impltype == "ChemoReac")

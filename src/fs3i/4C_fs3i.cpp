@@ -156,11 +156,9 @@ void FS3I::FS3IBase::check_f_s3_i_inputs()
 {
   // Check FS3I dynamic parameters
   Global::Problem* problem = Global::Problem::instance();
-  // const Teuchos::ParameterList& ioparams = problem->IOParams();
   const Teuchos::ParameterList& fs3idyn = problem->f_s3_i_dynamic_params();
   const Teuchos::ParameterList& structdynparams = problem->structural_dynamic_params();
   const Teuchos::ParameterList& scatradynparams = problem->scalar_transport_dynamic_params();
-  // const Teuchos::ParameterList& fsidyn = problem->FSIDynamicParams();
   const Teuchos::ParameterList& fluiddynparams = problem->fluid_dynamic_params();
 
   // check consistency of time-integration schemes in input file
@@ -220,25 +218,16 @@ void FS3I::FS3IBase::check_f_s3_i_inputs()
   if (scatravec_[0]->scatra_field()->is_incremental() == false)
     FOUR_C_THROW("Incremental formulation required for partitioned FS3I computations!");
 
-
-  // is scatra calculated conservative?
   if (Teuchos::getIntegralValue<Inpar::ScaTra::ConvForm>(fs3idyn, "STRUCTSCAL_CONVFORM") ==
           Inpar::ScaTra::convform_convective and
       Teuchos::getIntegralValue<Inpar::FS3I::VolumeCoupling>(fs3idyn, "STRUCTSCAL_FIELDCOUPLING") ==
           Inpar::FS3I::coupling_match)
   {
-    // get structure discretization
-    std::shared_ptr<Core::FE::Discretization> structdis = problem->get_dis("structure");
-
-    for (int i = 0; i < structdis->num_my_col_elements(); ++i)
-    {
-      if (Adapter::get_sca_tra_impl_type(structdis->l_col_element(i)) !=
-          Inpar::ScaTra::impltype_refconcreac)
-        FOUR_C_THROW(
-            "Your scalar fields have to be calculated in conservative form, "
-            "since the velocity field in the structure is NOT divergence free!");
-    }
+    FOUR_C_THROW(
+        "Your scalar fields have to be calculated in conservative form, since the velocity field "
+        "in the structure is NOT divergence free!");
   }
+
   auto pstype = Teuchos::getIntegralValue<Inpar::Solid::PreStress>(
       Global::Problem::instance()->structural_dynamic_params(), "PRESTRESS");
   // is structure calculated dynamic when not prestressing?

@@ -69,7 +69,6 @@ int Discret::Elements::TransportBoundary::evaluate(Teuchos::ParameterList& param
 
     case Inpar::ScaTra::impltype_std:
     case Inpar::ScaTra::impltype_advreac:
-    case Inpar::ScaTra::impltype_refconcreac:
     case Inpar::ScaTra::impltype_chemo:
     case Inpar::ScaTra::impltype_chemoreac:
     case Inpar::ScaTra::impltype_aniso:

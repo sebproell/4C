@@ -437,8 +437,6 @@ bool Discret::Elements::Shell7pScatra::read_element(const std::string& eletype,
     impltype_ = Inpar::ScaTra::impltype_chemoreac;
   else if (impltype == "Loma")
     impltype_ = Inpar::ScaTra::impltype_loma;
-  else if (impltype == "RefConcReac")
-    impltype_ = Inpar::ScaTra::impltype_refconcreac;
   else if (impltype == "Std")
     impltype_ = Inpar::ScaTra::impltype_std;
   else

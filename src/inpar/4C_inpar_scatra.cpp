@@ -734,8 +734,6 @@ std::string Inpar::ScaTra::impltype_to_string(ImplType impltype)
       return "Poro";
     case Inpar::ScaTra::impltype_advreac:
       return "Advanced_Reaction";
-    case Inpar::ScaTra::impltype_refconcreac:
-      return "RefConcReac";
     case Inpar::ScaTra::impltype_multipororeac:
       return "PoroMultiReac";
     case Inpar::ScaTra::impltype_pororeac:

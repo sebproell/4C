@@ -128,8 +128,6 @@ bool Discret::Elements::So3PoroScatra<So3Ele, distype>::read_element(const std::
     impltype_ = Inpar::ScaTra::impltype_pororeacECM;
   else if (impltype == "PoroMultiReac")
     impltype_ = Inpar::ScaTra::impltype_multipororeac;
-  else if (impltype == "RefConcReac")
-    impltype_ = Inpar::ScaTra::impltype_refconcreac;
   else if (impltype == "Std")
     impltype_ = Inpar::ScaTra::impltype_std;
   else

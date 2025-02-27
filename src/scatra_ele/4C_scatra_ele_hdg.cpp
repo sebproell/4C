@@ -22,7 +22,6 @@
 #include "4C_scatra_ele_action.hpp"
 #include "4C_scatra_ele_factory.hpp"
 #include "4C_scatra_ele_hdg_boundary_calc.hpp"
-#include "4C_scatra_ele_hdg_intfaces_calc.hpp"
 #include "4C_scatra_ele_interface.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
@@ -1028,14 +1027,7 @@ int Discret::Elements::ScaTraHDGIntFace::evaluate(Teuchos::ParameterList& params
     Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
     Core::LinAlg::SerialDenseVector& elevec3)
 {
-  // REMARK: this line ensures that the static
-  // Discret::Elements::ScaTraHDGIntFaceImplInterface::Impl is created
-  //         this line avoids linker errors
-  Discret::Elements::ScaTraHDGIntFaceImplInterface::impl(this);
-
   FOUR_C_THROW("not available");
-
-  return 0;
 }
 
 
@@ -1048,8 +1040,6 @@ int Discret::Elements::ScaTraHDGIntFace::evaluate_neumann(Teuchos::ParameterList
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {
   FOUR_C_THROW("not available");
-
-  return 0;
 }
 
 FOUR_C_NAMESPACE_CLOSE

@@ -31,7 +31,6 @@
 #include "4C_scatra_ele_calc_poro.hpp"
 #include "4C_scatra_ele_calc_poro_reac.hpp"
 #include "4C_scatra_ele_calc_poro_reac_ECM.hpp"
-#include "4C_scatra_ele_calc_refconc_reac.hpp"
 #include "4C_scatra_ele_calc_std.hpp"
 #include "4C_scatra_ele_calc_sti_diffcond.hpp"
 #include "4C_scatra_ele_calc_sti_electrode.hpp"
@@ -385,11 +384,6 @@ Discret::Elements::ScaTraEleInterface* Discret::Elements::ScaTraFactory::define_
     case Inpar::ScaTra::impltype_advreac:
     {
       return Discret::Elements::ScaTraEleCalcAdvReac<distype, probdim>::instance(
-          numdofpernode, numscal, disname);
-    }
-    case Inpar::ScaTra::impltype_refconcreac:
-    {
-      return Discret::Elements::ScaTraEleCalcRefConcReac<distype>::instance(
           numdofpernode, numscal, disname);
     }
     case Inpar::ScaTra::impltype_chemo:
