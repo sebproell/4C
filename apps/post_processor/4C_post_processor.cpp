@@ -14,7 +14,6 @@
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_singleton_owner.hpp"
 
-#include <Epetra_MpiComm.h>
 
 using namespace FourC;
 namespace

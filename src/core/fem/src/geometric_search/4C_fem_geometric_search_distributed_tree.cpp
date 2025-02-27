@@ -12,7 +12,6 @@
 #include "4C_fem_geometric_search_bounding_volume.hpp"
 #include "4C_fem_geometric_search_utils.hpp"
 
-#include <Epetra_MpiComm.h>
 #include <Teuchos_TimeMonitor.hpp>
 
 #ifdef FOUR_C_WITH_ARBORX

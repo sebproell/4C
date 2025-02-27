@@ -25,7 +25,6 @@
 #include "4C_utils_result_test.hpp"
 #include "4C_utils_singleton_owner.hpp"
 
-#include <Epetra_MpiComm.h>
 #include <Teuchos_CommandLineProcessor.hpp>
 #include <Teuchos_Time.hpp>
 #include <Teuchos_TimeMonitor.hpp>

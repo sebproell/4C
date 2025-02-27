@@ -7,7 +7,6 @@
 
 #include "4C_mortar_manager_base.hpp"
 
-#include <Epetra_MpiComm.h>
 
 
 FOUR_C_NAMESPACE_OPEN

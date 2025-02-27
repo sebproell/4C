@@ -14,7 +14,6 @@
 #include "4C_comm_utils_factory.hpp"
 
 #include <Epetra_Map.h>
-#include <Epetra_MpiComm.h>
 
 #include <map>
 #include <memory>

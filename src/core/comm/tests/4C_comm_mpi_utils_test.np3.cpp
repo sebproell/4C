@@ -9,7 +9,6 @@
 
 #include "4C_comm_mpi_utils.hpp"
 
-#include <Epetra_MpiComm.h>
 
 
 namespace

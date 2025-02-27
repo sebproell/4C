@@ -13,7 +13,6 @@
 
 #include <Epetra_CrsMatrix.h>
 #include <Epetra_Import.h>
-#include <Epetra_MpiComm.h>
 
 #include <iomanip>
 #include <sstream>

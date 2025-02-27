@@ -19,7 +19,6 @@
 #include "4C_fem_geometric_search_distributed_tree.hpp"
 #include "4C_geometric_search_create_bounding_volumes_test.hpp"
 
-#include <Epetra_MpiComm.h>
 
 namespace
 {

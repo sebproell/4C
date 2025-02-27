@@ -16,7 +16,6 @@
 
 #include <BelosTypes.hpp>  // for Belos verbosity codes
 #include <Epetra_LinearProblem.h>
-#include <Epetra_MpiComm.h>
 #include <ml_MultiLevelPreconditioner.h>  // includes for ML parameter list validation
 #include <Teuchos_ParameterList.hpp>
 #include <Teuchos_StandardParameterEntryValidators.hpp>

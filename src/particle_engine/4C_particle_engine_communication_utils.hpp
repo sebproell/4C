@@ -8,15 +8,11 @@
 #ifndef FOUR_C_PARTICLE_ENGINE_COMMUNICATION_UTILS_HPP
 #define FOUR_C_PARTICLE_ENGINE_COMMUNICATION_UTILS_HPP
 
-/*---------------------------------------------------------------------------*
- | headers                                                                   |
- *---------------------------------------------------------------------------*/
 #include "4C_config.hpp"
 
-#include <Epetra_MpiComm.h>
+#include <mpi.h>
 
 #include <map>
-#include <set>
 #include <vector>
 
 FOUR_C_NAMESPACE_OPEN

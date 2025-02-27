@@ -14,7 +14,6 @@
 #include "4C_inpar_scatra.hpp"
 #include "4C_levelset_algorithm.hpp"
 
-#include <Epetra_MpiComm.h>
 #include <Teuchos_ParameterList.hpp>
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 #include <Teuchos_TimeMonitor.hpp>

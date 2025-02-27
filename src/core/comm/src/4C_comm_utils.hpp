@@ -15,7 +15,6 @@
 #include "4C_linalg_multi_vector.hpp"
 #include "4C_utils_exceptions.hpp"
 
-#include <Epetra_MpiComm.h>
 #include <Teuchos_DefaultMpiComm.hpp>
 
 FOUR_C_NAMESPACE_OPEN

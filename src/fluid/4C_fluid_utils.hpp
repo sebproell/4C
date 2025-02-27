@@ -14,7 +14,6 @@
 #include "4C_inpar_fluid.hpp"
 #include "4C_linalg_blocksparsematrix.hpp"
 
-#include <Epetra_MpiComm.h>
 #include <Teuchos_TimeMonitor.hpp>
 
 FOUR_C_NAMESPACE_OPEN

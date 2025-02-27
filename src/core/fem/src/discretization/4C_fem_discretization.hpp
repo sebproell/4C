@@ -18,7 +18,6 @@
 #include "4C_utils_parameter_list.fwd.hpp"
 
 #include <Epetra_Map.h>
-#include <Epetra_MpiComm.h>
 
 #include <functional>
 #include <ranges>

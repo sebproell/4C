@@ -19,8 +19,6 @@
 #include "4C_io_legacy_table.hpp"
 #include "4C_rigidsphere.hpp"
 
-#include <Epetra_MpiComm.h>
-
 #include <stack>
 
 FOUR_C_NAMESPACE_OPEN
