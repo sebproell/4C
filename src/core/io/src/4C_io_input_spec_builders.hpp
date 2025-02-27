@@ -453,11 +453,6 @@ namespace Core::IO
           // pretty printed type of the parameter
           stream << " <" << pretty_type_name() << ">";
 
-          if (!required())
-          {
-            stream << " (optional)";
-          }
-
           if (has_default_value())
           {
             stream << " (default: ";
@@ -517,9 +512,8 @@ namespace Core::IO
    * @code
    * auto input = group("params",
    *   {
-   *   parameter<int>("a", {.description = "An integer value", .required = true}),
-   *   parameter<std::vector<double>>("b", {.description = "A vector of doubles", .required = false,
-   *     .size = 4}),
+   *   parameter<int>("a", {.description = "An integer value"}),
+   *   parameter<std::vector<double>>("b", {.description = "A vector of doubles", .size = 4}),
    *   }
    * );
    * @endcode
@@ -567,13 +561,8 @@ namespace Core::IO
       std::string description{};
 
       /**
-       * Whether the value is required or optional.
-       */
-      std::optional<bool> required{};
-
-      /**
-       * The default value of the parameter. If this optional fields is set, the parameter is
-       * optional. If it is not set, the parameter is required.
+       * The default value of the parameter. If this field is set, the parameter does not need to be
+       * entered in the input. If the parameter is not entered, this default value is used.
        */
       std::optional<StoredType> default_value{};
 
@@ -591,8 +580,6 @@ namespace Core::IO
       using StoredType = T;
 
       std::string description{};
-
-      std::optional<bool> required{};
 
       std::optional<StoredType> default_value{};
 
@@ -612,8 +599,6 @@ namespace Core::IO
       using StoredType = T;
 
       std::string description{};
-
-      std::optional<bool> required{};
 
       std::optional<StoredType> default_value{};
 
@@ -663,29 +648,6 @@ namespace Core::IO
 
     namespace Internal
     {
-      //! Make .required field consistent with .default_value.
-      template <typename DataType>
-      void sanitize_required_default(DataType& data)
-      {
-        if (data.default_value.has_value())
-        {
-          if (data.required.has_value())
-          {
-            FOUR_C_ASSERT_ALWAYS(!data.required.value(),
-                "A parameter cannot be both required and have a default value.");
-          }
-          else
-          {
-            data.required = false;
-          }
-        }
-        else
-        {
-          if (!data.required.has_value()) data.required = true;
-        }
-        FOUR_C_ASSERT(data.required.has_value(), "Required field must now be set.");
-      }
-
       template <SupportedType T>
       struct EntrySpec
       {
@@ -835,26 +797,20 @@ namespace Core::IO
 
     /**
      * Create a normal parameter with given @p name. All parameters are parameterized by a struct
-     * which contains the optional `description`, `required` and `default_value` fields. The
-     * following examples demonstrate how parameters can be created:
+     * which contains the optional `description` and `default_value` fields. The following examples
+     * demonstrate how parameters can be created:
      *
      * @code
-     * // A parameter with name and description. By default, the parameter is required.
+     * // A parameter with name and description. By default, the parameter is required in the input.
      * parameter<std::string>("my_string", {.description = "A string value."});
      *
      * // A parameter with a default value. This parameter is implicitly optional because a default
      * // value is given.
      * parameter<double>("my_double", {.default_value = 3.14});
-     * // This is equivalent to:
-     * parameter<double>("my_double", {.required = false, .default_value = 3.14});
-     *
-     * // An optional parameter. This value does not have a default value.
-     * parameter<int>("my_int", {.required = false});
      *
      * // An alternative way to create this optional int parameter is achieved with the Noneable
      * // type. This value is optional and by default has an empty value represented by "none" in
-     * the
-     * // input file.
+     * // the input file.
      * parameter<Noneable<int>>("my_int", .default_value = none<int>);
      *
      * // A vector parameter with a fixed size of 3.
@@ -880,62 +836,33 @@ namespace Core::IO
      * @endcode
      *
      * After parsing an InputSpec with fully_parse(), the value of the parameter can be retrieved
-     * from an InputParameterContainer. The details depend on the `required` and `default_value`
-     * fields:
+     * from an InputParameterContainer. If `default_value` is set, the parameter is implicitly
+     * optional. In this case, if the parameter is not present in the input file, the default value
+     * will be stored in the container that is filled by the fully_parse() function.
      *
-     *   - `required` is used to determine whether the parameter is required in the input file. Note
-     *     that by default, if `required` is not set, the parameter is implicitly required. Failing
-     *     to read a required parameter will result in an exception.  If successfully parsed, the
-     *     container that is filled by the fully_parse() function will contain the parameter and its
-     *     value. On the other hand, if a parameter is not required, it is optional and can be left
-     *     out in the input file. The container that is filled by the fully_parse() function will
-     *     not contain the optional parameter.
-     *
-     *   - `default_value` is used to provide a value that is used if the parameter is not present
-     *     in the input file. If `default_value` is set, the parameter is implicitly optional. If
-     *     the parameter is not present in the input file, the default value will be stored in the
-     *     container that is filled by the fully_parse() function.
-     *
-     *   - Setting both `required = true` and a `default_value` is a logical error and will result
-     *     in an exception.
-     *
-     * When you decide how to set the `required` and `default_value` fields, consider the following
-     * cases:
+     * When you decide how to set the `default_value` field or whether to make a parameter optional,
+     * consider the following cases:
      *
      *   - If you always require a parameter and there is no reasonable default value, do not set
-     *     `required` or `default_value`. This will make the parameter required by default. Parsing
-     *     will fail if the parameter is not present, but after parsing you can be sure that the
-     *     parameter can safely be retrieved with InputParameterContainer::get(). A good example is
-     *     the time step size in a time integration scheme: this parameter is always required and
-     *     taking an arbitrary default value is not a good idea.
+     *     a `default_value`. This will make the parameter required. Parsing will fail if the
+     *     parameter is not present, but after parsing you can be sure that the parameter can safely
+     *     be retrieved with InputParameterContainer::get(). A good example is the time step size in
+     *     a time integration scheme: this parameter is always required and taking an arbitrary
+     *     default value is not a good idea.
      *
      *   - Is there a reasonable default value for the parameter, which works in most situations? If
-     *     yes, set `default_value` to this value (`required` implicitly is `false` then). This
-     *     guarantees that you can always read the a value from the container with
-     *     InputParameterContainer::get(). A good example is a parameter that activates or
-     *     deactivates a feature, e.g., defaulting the EAS element technology to off might be
-     *     reasonable.
+     *     yes, set `default_value` to this value. This guarantees that you can always read the
+     *     value from the container with InputParameterContainer::get(). A good example is a
+     *     parameter that activates or deactivates a feature, e.g., defaulting the EAS element
+     *     technology to off might be reasonable.
      *
-     *   - If the parameter is not required, but there is no reasonable default value, set
-     *     `required = false`. This makes the parameter optional and the container might not contain
-     *     the parameter if it is not present in the input file. Use
-     *     InputParameterContainer::get_if() or InputParameterContainer::get_or() to safely retrieve
-     *     the value from the container. Since this complicates retrieval of input data, this case
-     *     should be used with caution. Try to formulate your input requirements in a way that one
-     *     of the cases above applies. To still give an example, the present case may be useful for
-     *     a damping parameter that, when present, activates damping using the provided value. This
-     *     example demonstrates that the parameter has a double role: its presence activates
-     *     damping and its value determines the damping strength. An often better way to selectively
-     *     activate parameters can be achieved with the group() function, especially if a set of
-     *     parameters is always required together.
-     *
-     *   - As an alternative to the last case, you could also use a Noneable type which allows you
-     *     to treat the non-existence of a parameter explicitly via the "none" value. In this case,
-     *     wrap the type T of the parameter in a Noneable<T> type and specify
-     *     `.default_value = none<T>` (see also the example code above). After parsing, the
-     *     container will be guaranteed to contain a Noneable<T> value which you can query with
-     *     InputParameterContainer::get(). If the parameter is not present in the input file or set
-     *     to "none", the Noneable<T> value will be empty.
+     *   - If the parameter is not required, but there is no reasonable default value, wrap the type
+     *     in `std::optional` and set the empty optional state as `default_value`. As an example,
+     *     this may be useful for a damping parameter that, when set, activates damping using
+     *     the provided value. This example demonstrates that the parameter has a double role: its
+     *     presence activates damping and its value determines the damping strength. An often better
+     *     way to selectively activate parameters can be achieved with the group() function,
+     *     especially if a set of parameters is always required together.
      *
      * @tparam T The data type of the parameter. Must be a SupportedType.
      *
@@ -1106,10 +1033,8 @@ namespace Core::IO
      * });
      * @endcode
      *
-     * Note that all_of() does not changed the `required` state of its contained InputSpecs. It
-     * simply tries to parse all of them and missing optional InputSpecs are not an error. In
-     * practice, all_of() is essentially a group() without a name and without an associated scope in
-     * the input file. An all_of() InputSpec will be required if at least one of its contained
+     * In practice, all_of() is essentially a group() without a name and without an associated scope
+     * in the input file. An all_of() InputSpec will be required if at least one of its contained
      * InputSpecs is required. If none of the contained InputSpecs are required, the all_of()
      * InputSpec is not required.
      *
@@ -1139,17 +1064,17 @@ namespace Core::IO
      *
      * Here, one_of() requires either the "OneStepTheta" group or the "GenAlpha" group to be
      * present in the input. If both or none of them are present, an exception is thrown. Note that
-     * all InputSpecs handed to one_of() need to be `required = true`. While this could silently be
-     * changed internally, you will encounter an error if any InputSpec is not required to avoid
-     * confusion and stop you from constructing difficult to understand InputSpecs. You can use
-     * parameters that are `required = false` nested inside other InputSpecs, see e.g. the
-     * `do_logging` parameter in the example code. The return one_of() InputSpec is always treated
-     * as required.
+     * all InputSpecs handed to one_of() need to be required, i.e., they may not have a default
+     * value. While this could silently be changed internally, you will instead encounter an error
+     * if any InputSpec is not required to avoid confusion and stop you from constructing difficult
+     * to understand InputSpecs. You can use parameters with default values nested inside
+     * other InputSpecs, see e.g. the `do_logging` parameter in the example code. The returned
+     * one_of() InputSpec is always treated as required.
      *
      * The optional @p on_parse_callback may be used to perform additional actions after parsing one
      * of the specs. The index of the parsed spec inside the @p specs vector is passed as an
      * argument. An exemplary use case is to map the index to an enum value and store it in the
-     * container. This let's you perform a switch on the enum value to easily obtain the correct
+     * container. This lets you perform a switch on the enum value to easily obtain the correct
      * parsed data from the container. The store_index_as() function can be used to create such a
      * callback.
      *
@@ -1238,15 +1163,15 @@ void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::parse(
 {
   if (parser.peek() == name)
     parser.consume(name);
-  else if (data.required.value())
-  {
-    std::string next_token{parser.peek()};
-    FOUR_C_THROW("Could not parse '%s'. Next token is '%s'.", name.c_str(), next_token.c_str());
-  }
   else if (data.default_value.has_value())
   {
     container.add(name, data.default_value.value());
     return;
+  }
+  else
+  {
+    std::string next_token{parser.peek()};
+    FOUR_C_THROW("Could not parse '%s'. Next token is '%s'.", name.c_str(), next_token.c_str());
   }
 
   if constexpr (rank<T>() == 0)
@@ -1310,7 +1235,10 @@ bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::match(ConstYamlNodeRef
       match_entry.state = IO::Internal::MatchEntry::State::defaulted;
       return true;
     }
-    return !data.required.value();
+    else
+    {
+      return false;
+    }
   }
 
   // A child with the name of the spec exists, so this is at least a partial match.
@@ -1376,7 +1304,7 @@ void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit_metadata(ryml::No
   {
     emit_value_as_yaml(node["description"], data.description);
   }
-  emit_value_as_yaml(node["required"], data.required.value());
+  emit_value_as_yaml(node["required"], !data.default_value.has_value());
   if (data.default_value.has_value())
   {
     emit_value_as_yaml(node["default"], data.default_value.value());
@@ -1411,9 +1339,10 @@ bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit(YamlNodeRef node,
     }
     return true;
   }
-
-  // Not present and no default, success depends on whether the parameter is required.
-  return !data.required.value();
+  else
+  {
+    return false;
+  }
 }
 
 
@@ -1461,15 +1390,15 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::parse(
 {
   if (parser.peek() == name)
     parser.consume(name);
-  else if (data.required.value())
-  {
-    std::string next_token{parser.peek()};
-    FOUR_C_THROW("Could not parse '%s'. Next token is '%s'.", name.c_str(), next_token.c_str());
-  }
   else if (data.default_value.has_value())
   {
     container.add(name, data.default_value.value());
     return;
+  }
+  else
+  {
+    std::string next_token{parser.peek()};
+    FOUR_C_THROW("Could not parse '%s'. Next token is '%s'.", name.c_str(), next_token.c_str());
   }
 
   auto value = parser.read<InputType>();
@@ -1510,7 +1439,10 @@ bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::match(ConstYamlNod
       match_entry.state = IO::Internal::MatchEntry::State::defaulted;
       return true;
     }
-    return !data.required.value();
+    else
+    {
+      return false;
+    }
   }
 
   auto entry_node = node.wrap(node.node[spec_name]);
@@ -1548,10 +1480,6 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::print(
 {
   stream << "// " << std::string(indent, ' ') << name;
 
-  if (!data.required)
-  {
-    stream << " (optional)";
-  }
   if (data.default_value.has_value())
   {
     // Find the choice that corresponds to the default value.
@@ -1590,7 +1518,7 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::emit_metadata(
   {
     emit_value_as_yaml(node["description"], data.description);
   }
-  emit_value_as_yaml(node["required"], data.required.value());
+  emit_value_as_yaml(node["required"], !data.default_value.has_value());
   if (data.default_value.has_value())
   {
     // Find the choice that corresponds to the default value.
@@ -1650,9 +1578,10 @@ bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::emit(YamlNodeRef n
     }
     return true;
   }
-
-  // Not present and no default, success depends on whether the parameter is required.
-  return !data.required.value();
+  else
+  {
+    return false;
+  }
 }
 
 template <typename T>
@@ -1671,13 +1600,11 @@ template <Core::IO::SupportedType T>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::parameter(
     std::string name, ParameterData<T>&& data)
 {
-  Internal::sanitize_required_default(data);
-
   return IO::Internal::make_spec(Internal::EntrySpec<T>{.name = name, .data = data},
       {
           .name = name,
           .description = data.description,
-          .required = data.required.value(),
+          .required = !data.default_value.has_value(),
           .has_default_value = data.default_value.has_value(),
           .n_specs = 1,
       });
@@ -1689,7 +1616,6 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
     std::string name, std::map<std::string, RemoveNoneable<T>> choices, ParameterData<T> data)
 {
   FOUR_C_ASSERT_ALWAYS(!choices.empty(), "Selection must have at least one choice.");
-  Internal::sanitize_required_default(data);
 
   // If we have a Noneable type, we need to convert the choices.
   typename SelectionSpec<T>::ChoiceMap modified_choices;
@@ -1732,7 +1658,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
       {
           .name = name,
           .description = data.description,
-          .required = data.required.value(),
+          .required = !data.default_value.has_value(),
           .has_default_value = data.default_value.has_value(),
           .n_specs = 1,
       });
