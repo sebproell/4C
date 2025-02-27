@@ -8,6 +8,7 @@
 #include "4C_solid_poro_3D_ele_pressure_velocity_based.hpp"
 
 #include "4C_comm_utils_factory.hpp"
+#include "4C_fem_general_cell_type_traits.hpp"
 #include "4C_fem_general_utils_local_connectivity_matrices.hpp"
 #include "4C_inpar_scatra.hpp"
 #include "4C_inpar_structure.hpp"
@@ -83,11 +84,14 @@ void Discret::Elements::SolidPoroPressureVelocityBasedType::setup_element_defini
       Discret::Elements::SolidPoroPressureVelocityBasedInternal::get_default_input_spec<
           Core::FE::CellType::hex8>(),
       parameter<Noneable<std::vector<double>>>(
-          "POROANISONODALCOEFFS1", {.default_value = none<std::vector<double>>, .size = 8}),
+          "POROANISONODALCOEFFS1", {.default_value = none<std::vector<double>>,
+                                       .size = Core::FE::num_nodes<Core::FE::CellType::hex8>}),
       parameter<Noneable<std::vector<double>>>(
-          "POROANISONODALCOEFFS2", {.default_value = none<std::vector<double>>, .size = 8}),
+          "POROANISONODALCOEFFS2", {.default_value = none<std::vector<double>>,
+                                       .size = Core::FE::num_nodes<Core::FE::CellType::hex8>}),
       parameter<Noneable<std::vector<double>>>(
-          "POROANISONODALCOEFFS3", {.default_value = none<std::vector<double>>, .size = 8}),
+          "POROANISONODALCOEFFS3", {.default_value = none<std::vector<double>>,
+                                       .size = Core::FE::num_nodes<Core::FE::CellType::hex8>}),
   });
 
   defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex27)] =
@@ -99,11 +103,14 @@ void Discret::Elements::SolidPoroPressureVelocityBasedType::setup_element_defini
       Discret::Elements::SolidPoroPressureVelocityBasedInternal::get_default_input_spec<
           Core::FE::CellType::tet4>(),
       parameter<Noneable<std::vector<double>>>(
-          "POROANISONODALCOEFFS1", {.default_value = none<std::vector<double>>, .size = 8}),
+          "POROANISONODALCOEFFS1", {.default_value = none<std::vector<double>>,
+                                       .size = Core::FE::num_nodes<Core::FE::CellType::tet4>}),
       parameter<Noneable<std::vector<double>>>(
-          "POROANISONODALCOEFFS2", {.default_value = none<std::vector<double>>, .size = 8}),
+          "POROANISONODALCOEFFS2", {.default_value = none<std::vector<double>>,
+                                       .size = Core::FE::num_nodes<Core::FE::CellType::tet4>}),
       parameter<Noneable<std::vector<double>>>(
-          "POROANISONODALCOEFFS3", {.default_value = none<std::vector<double>>, .size = 8}),
+          "POROANISONODALCOEFFS3", {.default_value = none<std::vector<double>>,
+                                       .size = Core::FE::num_nodes<Core::FE::CellType::tet4>}),
   });
 
 
@@ -272,7 +279,7 @@ void Discret::Elements::SolidPoroPressureVelocityBased::
         coeffs && coeffs->has_value())
       anisotropic_permeability_property_.nodal_coeffs_[dim] = coeffs->value();
     else
-      anisotropic_permeability_property_.nodal_coeffs_[dim] = std::vector<double>(8, 0.0);
+      anisotropic_permeability_property_.nodal_coeffs_[dim] = std::vector<double>(num_node(), 0.0);
   }
 }
 
