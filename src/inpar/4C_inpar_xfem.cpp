@@ -635,7 +635,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
 
   xfem_surf_fpi_mono.add_component(parameter<int>("COUPLINGID"));
   xfem_surf_fpi_mono.add_component(
-      parameter<double>("BJ_COEFF", {.description = "", .default_value = 0}));
+      parameter<double>("BJ_COEFF", {.description = "", .default_value = 0.}));
   xfem_surf_fpi_mono.add_component(selection<std::string>(
       "Variant", {"BJ", "BJS"}, {.description = "variant", .default_value = "BJ"}));
   xfem_surf_fpi_mono.add_component(selection<std::string>(

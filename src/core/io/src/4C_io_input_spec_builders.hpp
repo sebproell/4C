@@ -424,11 +424,11 @@ namespace Core::IO
         }
         else
         {
-          FOUR_C_ASSERT(wrapped.data.default_value.has_value(),
+          FOUR_C_ASSERT(has_default_value(),
               "Implementation error: this function should only be called if the wrapped type has "
               "an optional default value.");
 
-          container.add(wrapped.name, *wrapped.data.default_value);
+          container.add(wrapped.name, std::get<1>(wrapped.data.default_value));
         }
       }
 
@@ -456,7 +456,7 @@ namespace Core::IO
           if (has_default_value())
           {
             stream << " (default: ";
-            Internal::DatPrinter{}(stream, wrapped.data.default_value.value());
+            Internal::DatPrinter{}(stream, std::get<1>(wrapped.data.default_value));
             stream << ")";
           }
 
@@ -564,7 +564,7 @@ namespace Core::IO
        * The default value of the parameter. If this field is set, the parameter does not need to be
        * entered in the input. If the parameter is not entered, this default value is used.
        */
-      std::optional<StoredType> default_value{};
+      std::variant<std::monostate, StoredType> default_value{};
 
       /**
        * An optional callback that is called after the value has been parsed. This can be used to
@@ -581,7 +581,7 @@ namespace Core::IO
 
       std::string description{};
 
-      std::optional<StoredType> default_value{};
+      std::variant<std::monostate, StoredType> default_value{};
 
       ParameterCallback on_parse_callback{nullptr};
 
@@ -600,7 +600,7 @@ namespace Core::IO
 
       std::string description{};
 
-      std::optional<StoredType> default_value{};
+      std::variant<std::monostate, StoredType> default_value{};
 
       ParameterCallback on_parse_callback{nullptr};
 
@@ -1163,9 +1163,9 @@ void Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::parse(
 {
   if (parser.peek() == name)
     parser.consume(name);
-  else if (data.default_value.has_value())
+  else if (data.default_value.index() == 1)
   {
-    container.add(name, data.default_value.value());
+    container.add(name, std::get<1>(data.default_value));
     return;
   }
   else
@@ -1229,9 +1229,9 @@ bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::match(ConstYamlNod
   if (!node.node.has_child(spec_name))
   {
     // It is OK to not encounter an optional parameter
-    if (data.default_value.has_value())
+    if (data.default_value.index() == 1)
     {
-      container.add(name, data.default_value.value());
+      container.add(name, std::get<1>(data.default_value));
       match_entry.state = IO::Internal::MatchEntry::State::defaulted;
       return true;
     }
@@ -1305,10 +1305,10 @@ void Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::emit_metadata(
   {
     emit_value_as_yaml(node["description"], data.description);
   }
-  emit_value_as_yaml(node["required"], !data.default_value.has_value());
-  if (data.default_value.has_value())
+  emit_value_as_yaml(node["required"], !(data.default_value.index() == 1));
+  if (data.default_value.index() == 1)
   {
-    emit_value_as_yaml(node["default"], data.default_value.value());
+    emit_value_as_yaml(node["default"], std::get<1>(data.default_value));
   }
 }
 
@@ -1320,8 +1320,8 @@ bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::emit(YamlNodeRef n
   // Value present in container
   if (auto value = container.get_if<StoredType>(name))
   {
-    if (options.emit_defaulted_values || !data.default_value.has_value() ||
-        *data.default_value != *value)
+    if (options.emit_defaulted_values || !(data.default_value.index() == 1) ||
+        std::get<1>(data.default_value) != *value)
     {
       auto value_node = node.node.append_child();
       value_node << ryml::key(name);
@@ -1330,13 +1330,13 @@ bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::emit(YamlNodeRef n
     return true;
   }
   // Not present but we have a default
-  else if (data.default_value.has_value())
+  else if (data.default_value.index() == 1)
   {
     if (options.emit_defaulted_values)
     {
       auto value_node = node.node.append_child();
       value_node << ryml::key(name);
-      emit_value_as_yaml(value_node, data.default_value.value());
+      emit_value_as_yaml(value_node, std::get<1>(data.default_value));
     }
     return true;
   }
@@ -1391,9 +1391,9 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::parse(
 {
   if (parser.peek() == name)
     parser.consume(name);
-  else if (data.default_value.has_value())
+  else if (data.default_value.index() == 1)
   {
-    container.add(name, data.default_value.value());
+    container.add(name, std::get<1>(data.default_value));
     return;
   }
   else
@@ -1434,9 +1434,9 @@ bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::match(ConstYamlNod
   if (!node.node.has_child(spec_name))
   {
     // It is OK to not encounter an optional parameter
-    if (data.default_value.has_value())
+    if (data.default_value.index() == 1)
     {
-      container.add(name, data.default_value.value());
+      container.add(name, std::get<1>(data.default_value));
       match_entry.state = IO::Internal::MatchEntry::State::defaulted;
       return true;
     }
@@ -1481,11 +1481,11 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::print(
 {
   stream << "// " << std::string(indent, ' ') << name;
 
-  if (data.default_value.has_value())
+  if (data.default_value.index() == 1)
   {
     // Find the choice that corresponds to the default value.
     auto default_value_it = std::find_if(choices.begin(), choices.end(),
-        [&](const auto& choice) { return choice.second == data.default_value.value(); });
+        [&](const auto& choice) { return choice.second == std::get<1>(data.default_value); });
     FOUR_C_ASSERT(
         default_value_it != choices.end(), "Internal error: default value not found in choices.");
 
@@ -1519,12 +1519,12 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::emit_metadata(
   {
     emit_value_as_yaml(node["description"], data.description);
   }
-  emit_value_as_yaml(node["required"], !data.default_value.has_value());
-  if (data.default_value.has_value())
+  emit_value_as_yaml(node["required"], !(data.default_value.index() == 1));
+  if (data.default_value.index() == 1)
   {
     // Find the choice that corresponds to the default value.
     auto default_value_it = std::find_if(choices.begin(), choices.end(),
-        [&](const auto& choice) { return choice.second == data.default_value.value(); });
+        [&](const auto& choice) { return choice.second == std::get<1>(data.default_value); });
     FOUR_C_ASSERT(
         default_value_it != choices.end(), "Internal error: default value not found in choices.");
     emit_value_as_yaml(node["default"], default_value_it->first);
@@ -1563,19 +1563,19 @@ bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::emit(YamlNodeRef n
   // Value present in container
   if (auto value = container.get_if<StoredType>(name))
   {
-    if (options.emit_defaulted_values || !data.default_value.has_value() ||
-        *data.default_value != *value)
+    if (options.emit_defaulted_values || !(data.default_value.index() == 1) ||
+        std::get<1>(data.default_value) != *value)
     {
       return emit_key_value(name, *value);
     }
     return true;
   }
   // Not present but we have a default
-  else if (data.default_value.has_value())
+  else if (data.default_value.index() == 1)
   {
     if (options.emit_defaulted_values)
     {
-      return emit_key_value(name, data.default_value.value());
+      return emit_key_value(name, std::get<1>(data.default_value));
     }
     return true;
   }
@@ -1605,8 +1605,8 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::parameter(
       {
           .name = name,
           .description = data.description,
-          .required = !data.default_value.has_value(),
-          .has_default_value = data.default_value.has_value(),
+          .required = !(data.default_value.index() == 1),
+          .has_default_value = data.default_value.index() == 1,
           .n_specs = 1,
       });
 }
@@ -1634,16 +1634,19 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
     choices_string += "|none";
   }
 
+  const bool has_default_value = data.default_value.index() == 1;
+
   // Check that we have a default value that is in the choices.
-  if (data.default_value.has_value())
+  if (has_default_value)
   {
+    const auto& default_value = std::get<1>(data.default_value);
     auto default_value_it = std::find_if(modified_choices.begin(), modified_choices.end(),
-        [&](const auto& choice) { return choice.second == data.default_value.value(); });
+        [&](const auto& choice) { return choice.second == default_value; });
 
     if (default_value_it == modified_choices.end())
     {
       std::stringstream default_value_stream;
-      Core::IO::Internal::DatPrinter{}(default_value_stream, data.default_value.value());
+      Core::IO::Internal::DatPrinter{}(default_value_stream, default_value);
       FOUR_C_THROW("Default value '%s' of selection not found in choices '%s'.",
           default_value_stream.str().c_str(), choices_string.c_str());
     }
@@ -1659,8 +1662,8 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
       {
           .name = name,
           .description = data.description,
-          .required = !data.default_value.has_value(),
-          .has_default_value = data.default_value.has_value(),
+          .required = !has_default_value,
+          .has_default_value = has_default_value,
           .n_specs = 1,
       });
 }
