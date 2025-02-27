@@ -170,13 +170,15 @@ namespace
   {
     auto spec = all_of({
         parameter<int>("size"),
-        parameter<std::vector<std::optional<int>>>(
-            "vector_none", {.size = from_parameter<int>("size")}),
+        parameter<std::vector<std::optional<int>>>("vector_none",
+            {
+                .default_value = std::vector<std::optional<int>>{std::nullopt, 1},
+                .size = from_parameter<int>("size"),
+            }),
         parameter<std::optional<std::vector<int>>>(
-            "none_vector", {.default_value = std::nullopt, .size = from_parameter<int>("size")}),
+            "none_vector", {.size = from_parameter<int>("size")}),
         parameter<std::optional<std::string>>("b", {.description = "b"}),
-        parameter<std::optional<double>>("c", {.default_value = 1.0}),
-        parameter<std::optional<int>>("e", {.default_value = std::nullopt}),
+        parameter<std::optional<int>>("e"),
     });
 
     {
@@ -199,10 +201,6 @@ namespace
       const auto& b = container.get<std::optional<std::string>>("b");
       EXPECT_EQ(b.has_value(), false);
 
-      const auto& c = container.get<std::optional<double>>("c");
-      EXPECT_EQ(c.has_value(), true);
-      EXPECT_EQ(c.value(), 1.0);
-
       const auto& e = container.get<std::optional<int>>("e");
       EXPECT_EQ(e.has_value(), false);
     }
@@ -210,7 +208,7 @@ namespace
     {
       SCOPED_TRACE("None values");
       InputParameterContainer container;
-      std::string stream("size 3 vector_none 1 none 3 b none c none e none none_vector none");
+      std::string stream("size 3 vector_none 1 none 3 b none e none none_vector none");
       ValueParser parser(stream);
       spec.fully_parse(parser, container);
       const auto& a = container.get<std::vector<std::optional<int>>>("vector_none");
@@ -224,9 +222,6 @@ namespace
       const auto& b = container.get<std::optional<std::string>>("b");
       EXPECT_EQ(b.has_value(), false);
 
-      const auto& c = container.get<std::optional<double>>("c");
-      EXPECT_EQ(c.has_value(), false);
-
       const auto& e = container.get<std::optional<int>>("e");
       EXPECT_EQ(e.has_value(), false);
     }
@@ -234,17 +229,18 @@ namespace
     {
       SCOPED_TRACE("Defaults");
       InputParameterContainer container;
-      std::string stream("size 3 vector_none 1 2 3 b string c 2.0 e 42");
+      std::string stream("size 3 b string e 42");
       ValueParser parser(stream);
       spec.fully_parse(parser, container);
+
+      const auto& vector_none = container.get<std::vector<std::optional<int>>>("vector_none");
+      EXPECT_EQ(vector_none.size(), 2);
+      EXPECT_EQ(vector_none[0].has_value(), false);
+      EXPECT_EQ(vector_none[1].has_value(), true);
 
       const auto& b = container.get<std::optional<std::string>>("b");
       EXPECT_EQ(b.has_value(), true);
       EXPECT_EQ(b.value(), "string");
-
-      const auto& c = container.get<std::optional<double>>("c");
-      EXPECT_EQ(c.has_value(), true);
-      EXPECT_EQ(c.value(), 2.0);
 
       const auto& e = container.get<std::optional<int>>("e");
       EXPECT_EQ(e.has_value(), true);
@@ -325,7 +321,7 @@ namespace
         parameter<int>("a"),
         selection<int>("b", {{"b1", 1}, {"b2", 2}}, {.default_value = 1}),
         selection<std::string>("c", {"c1", "c2"}, {.default_value = "c2"}),
-        selection<std::optional<int>>("d", {{"d1", 1}, {"d2", 2}}, {.default_value = std::nullopt}),
+        selection<std::optional<int>>("d", {{"d1", 1}, {"d2", 2}}),
     });
 
     {
@@ -721,8 +717,7 @@ specs:
                 {.description = "A group"}),
         }),
         selection<int>("e", {{"e1", 1}, {"e2", 2}}, {.default_value = 1}),
-        selection<std::optional<double>>(
-            "f", {{"f1", 1.0}, {"f2", 2.0}}, {.default_value = std::nullopt}),
+        selection<std::optional<double>>("f", {{"f1", 1.0}, {"f2", 2.0}}),
         group("group2",
             {
                 parameter<int>("g"),
@@ -962,7 +957,7 @@ specs:
     auto spec = all_of({
         parameter<int>("a"),
         parameter<std::vector<std::string>>("b"),
-        selection<std::optional<int>>("c", {{"c1", 1}, {"c2", 2}}, {.default_value = 1}),
+        selection<std::optional<int>>("c", {{"c1", 1}, {"c2", 2}}),
         group("group",
             {
                 parameter<int>("d"),
@@ -1012,7 +1007,7 @@ b:
 
       InputParameterContainer container;
       spec.match(node, container);
-      EXPECT_EQ(container.get<std::optional<int>>("c").value(), 1);
+      EXPECT_FALSE(container.get<std::optional<int>>("c").has_value());
       EXPECT_FALSE(container.has_group("group"));
     }
 
@@ -1297,7 +1292,7 @@ group:
   TEST(InputSpecTest, MatchYamlNoneable)
   {
     auto spec = all_of({
-        parameter<std::optional<int>>("i", {.default_value = std::nullopt}),
+        parameter<std::optional<int>>("i"),
         parameter<std::optional<std::string>>("s"),
         parameter<std::vector<std::optional<double>>>("v", {.size = 3}),
     });

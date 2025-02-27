@@ -254,10 +254,8 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
     m->add_component(parameter<std::vector<double>>(
         "ROLE", {.description = "role in michaelis-menten like reactions",
                     .size = from_parameter<int>("NUMSCAL")}));
-    m->add_component(parameter<std::optional<std::vector<double>>>(
-        "REACSTART", {.description = "starting point of reaction",
-                         .default_value = std::nullopt,
-                         .size = from_parameter<int>("NUMSCAL")}));
+    m->add_component(parameter<std::optional<std::vector<double>>>("REACSTART",
+        {.description = "starting point of reaction", .size = from_parameter<int>("NUMSCAL")}));
 
     Mat::append_material_definition(matlist, m);
   }
@@ -281,10 +279,8 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
     m->add_component(parameter<std::vector<double>>(
         "ROLE", {.description = "role in michaelis-menten like reactions",
                     .size = from_parameter<int>("NUMSCAL")}));
-    m->add_component(parameter<std::optional<std::vector<double>>>(
-        "REACSTART", {.description = "starting point of reaction",
-                         .default_value = std::nullopt,
-                         .size = from_parameter<int>("NUMSCAL")}));
+    m->add_component(parameter<std::optional<std::vector<double>>>("REACSTART",
+        {.description = "starting point of reaction", .size = from_parameter<int>("NUMSCAL")}));
 
     Mat::append_material_definition(matlist, m);
   }
@@ -3401,7 +3397,6 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
                            .size = from_parameter<int>("NUMSCAL")}));
     m->add_component(parameter<std::optional<std::vector<double>>>(
         "OMEGA_HALF", {.description = "Constant for receptor kinetic law",
-                          .default_value = std::nullopt,
                           .size = from_parameter<int>("NUMSCAL")}));
 
     Mat::append_material_definition(matlist, m);

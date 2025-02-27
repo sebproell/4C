@@ -1303,8 +1303,8 @@ void Inpar::FLUID::set_valid_conditions(
       selection<std::string>("toggle", {"master", "slave"}, {.description = "toggle"}));
   tbc_turb_inflow.add_component(selection<int>("DIRECTION", {{"x", 0}, {"y", 1}, {"z", 2}},
       {.description = "transfer direction", .default_value = 0}));
-  tbc_turb_inflow.add_component(parameter<std::optional<int>>(
-      "curve", {.description = "curve id", .default_value = std::nullopt}));
+  tbc_turb_inflow.add_component(
+      parameter<std::optional<int>>("curve", {.description = "curve id"}));
 
   condlist.push_back(tbc_turb_inflow);
 
@@ -1340,8 +1340,8 @@ void Inpar::FLUID::set_valid_conditions(
       "ReferencePressure", {.description = " reference pressure outside of boundary"}));
   surfflowdeppressure.add_component(
       parameter<double>("AdiabaticExponent", {.description = "adiabatic exponent"}));
-  surfflowdeppressure.add_component(parameter<std::optional<int>>(
-      "curve", {.description = "curve id", .default_value = std::nullopt}));
+  surfflowdeppressure.add_component(
+      parameter<std::optional<int>>("curve", {.description = "curve id"}));
 
   condlist.emplace_back(surfflowdeppressure);
 

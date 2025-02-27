@@ -137,7 +137,7 @@ void Discret::Elements::ScaTraHDGType ::setup_element_definition(
     defs[key] = all_of({
         scatra_line_def,
         parameter<int>("DEG"),
-        parameter<std::optional<bool>>("SPC", {.default_value = std::nullopt}),
+        parameter<std::optional<bool>>("SPC"),
     });
   }
 }

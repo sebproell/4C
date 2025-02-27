@@ -546,9 +546,26 @@ namespace Core::IO
      */
     using ParameterCallback = std::function<void(InputParameterContainer&)>;
 
+    /**
+     * A tag type to indicate that a parameter cannot take default values.
+     */
+    struct NoDefault
+    {
+    };
+
+    /**
+     * The type used for the default value of a parameter. If the parameter is optional, the user
+     * cannot specify a default value, so this type becomes NoDefault. Otherwise, the default value
+     * can be either not set, resulting in the std::monostate, or set to a value of the parameter
+     * type.
+     */
+    template <typename T>
+    using DefaultType =
+        std::conditional_t<OptionalType<T>, NoDefault, std::variant<std::monostate, T>>;
+
     //! Additional parameters for a parameter().
     template <typename T>
-    struct ParameterData
+    struct ParameterDataIn
     {
       using StoredType = T;
       /**
@@ -560,7 +577,7 @@ namespace Core::IO
        * The default value of the parameter. If this field is set, the parameter does not need to be
        * entered in the input. If the parameter is not entered, this default value is used.
        */
-      std::variant<std::monostate, StoredType> default_value{};
+      DefaultType<T> default_value{};
 
       /**
        * An optional callback that is called after the value has been parsed. This can be used to
@@ -571,13 +588,13 @@ namespace Core::IO
 
     template <typename T>
       requires(rank<T>() == 1)
-    struct ParameterData<T>
+    struct ParameterDataIn<T>
     {
       using StoredType = T;
 
       std::string description{};
 
-      std::variant<std::monostate, StoredType> default_value{};
+      DefaultType<T> default_value{};
 
       ParameterCallback on_parse_callback{nullptr};
 
@@ -590,13 +607,13 @@ namespace Core::IO
 
     template <typename T>
       requires(rank<T>() > 1)
-    struct ParameterData<T>
+    struct ParameterDataIn<T>
     {
       using StoredType = T;
 
       std::string description{};
 
-      std::variant<std::monostate, StoredType> default_value{};
+      DefaultType<T> default_value{};
 
       ParameterCallback on_parse_callback{nullptr};
 
@@ -644,6 +661,32 @@ namespace Core::IO
 
     namespace Internal
     {
+      template <typename T>
+      struct ParameterData
+      {
+        using StoredType = T;
+
+        std::string description{};
+
+        std::variant<std::monostate, StoredType> default_value{};
+
+        ParameterCallback on_parse_callback{nullptr};
+
+        std::array<Size, rank<T>()> size{};
+      };
+
+      template <typename T>
+      struct SelectionData
+      {
+        using StoredType = T;
+
+        std::string description{};
+
+        std::variant<std::monostate, StoredType> default_value{};
+
+        ParameterCallback on_parse_callback{nullptr};
+      };
+
       template <SupportedType T>
       struct ParameterSpec
       {
@@ -673,7 +716,7 @@ namespace Core::IO
         using InputType =
             std::conditional_t<OptionalType<T>, std::optional<std::string>, std::string>;
         using ChoiceMap = std::map<InputType, StoredType>;
-        ParameterData<T> data;
+        SelectionData<T> data;
         ChoiceMap choices;
         //! The string representation of the choices.
         std::string choices_string;
@@ -767,7 +810,7 @@ namespace Core::IO
       //! Note that the type can be anything since we never read or write values of this type.
       template <typename T>
       [[nodiscard]] InputSpec selection_internal(std::string name,
-          std::map<std::string, RemoveOptional<T>> choices, ParameterData<T> data = {});
+          std::map<std::string, RemoveOptional<T>> choices, ParameterDataIn<T> data = {});
 
 
       struct SizeChecker
@@ -866,7 +909,7 @@ namespace Core::IO
      * @relatedalso InputSpec
      */
     template <SupportedType T>
-    [[nodiscard]] InputSpec parameter(std::string name, ParameterData<T>&& data = {});
+    [[nodiscard]] InputSpec parameter(std::string name, ParameterDataIn<T>&& data = {});
 
     /**
      * Create a callback that returns the value of the parameter with the given @p name. Such a
@@ -909,7 +952,7 @@ namespace Core::IO
     template <typename T>
       requires(!std::same_as<T, std::string>)
     [[nodiscard]] InputSpec selection(std::string name,
-        std::map<std::string, RemoveOptional<T>> choices, ParameterData<T> data = {});
+        std::map<std::string, RemoveOptional<T>> choices, ParameterDataIn<T> data = {});
 
 
     /**
@@ -923,7 +966,7 @@ namespace Core::IO
      */
     template <std::same_as<std::string> T>
     [[nodiscard]] InputSpec selection(
-        std::string name, std::vector<std::string> choices, ParameterData<T> data = {});
+        std::string name, std::vector<std::string> choices, ParameterDataIn<T> data = {});
 
     /**
      * A group of InputSpecs. This groups one or more InputSpecs under a name. A group can be
@@ -1189,13 +1232,7 @@ void Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::parse(
       InputParameterContainer& container;
     };
 
-    if constexpr (rank<T>() == 1)
-    {
-      std::size_t size_info = std::visit(SizeVisitor{container}, data.size);
-      auto parsed = parser.read<T>(size_info);
-      container.add(name, parsed);
-    }
-    else if constexpr (rank<T>() > 1)
+    if constexpr (rank<T>() > 0)
     {
       std::array<std::size_t, rank<T>()> size_info;
       for (std::size_t i = 0; i < rank<T>(); ++i)
@@ -1286,14 +1323,9 @@ void Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::emit_metadata(
     };
 
     std::array<std::size_t, rank<T>()> size_info;
-    if constexpr (rank<T>() == 1)
-      size_info[0] = std::visit(DynamicSizeVisitor{}, data.size);
-    else
+    for (std::size_t i = 0; i < rank<T>(); ++i)
     {
-      for (std::size_t i = 0; i < rank<T>(); ++i)
-      {
-        size_info[i] = std::visit(DynamicSizeVisitor{}, data.size[i]);
-      }
+      size_info[i] = std::visit(DynamicSizeVisitor{}, data.size[i]);
     }
     IO::Internal::emit_type_as_yaml<StoredType>(node, size_info);
   }
@@ -1367,14 +1399,9 @@ bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::has_correct_size(
     };
 
     std::array<std::size_t, rank<T>()> size_info;
-    if constexpr (rank<T>() == 1)
-      size_info[0] = std::visit(SizeVisitor{container}, data.size);
-    else
+    for (std::size_t i = 0; i < rank<T>(); ++i)
     {
-      for (std::size_t i = 0; i < rank<T>(); ++i)
-      {
-        size_info[i] = std::visit(SizeVisitor{container}, data.size[i]);
-      }
+      size_info[i] = std::visit(SizeVisitor{container}, data.size[i]);
     }
     SizeChecker size_checker;
     return size_checker(val, size_info.data());
@@ -1596,14 +1623,35 @@ auto Core::IO::InputSpecBuilders::from_parameter(const std::string& name)
 
 template <Core::IO::SupportedType T>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::parameter(
-    std::string name, ParameterData<T>&& data)
+    std::string name, ParameterDataIn<T>&& data)
 {
-  return IO::Internal::make_spec(Internal::ParameterSpec<T>{.name = name, .data = data},
+  Internal::ParameterData<T> internal_data;
+  internal_data.description = data.description;
+  if constexpr (OptionalType<T>)
+  {
+    // An optional<T> implies a default_value corresponding to the empty state.
+    internal_data.default_value = std::nullopt;
+  }
+  else
+  {
+    internal_data.default_value = data.default_value;
+  }
+  if constexpr (rank<T>() == 1)
+  {
+    internal_data.size[0] = data.size;
+  }
+  else if constexpr (rank<T>() > 1)
+  {
+    internal_data.size = data.size;
+  }
+  internal_data.on_parse_callback = data.on_parse_callback;
+
+  return IO::Internal::make_spec(Internal::ParameterSpec<T>{.name = name, .data = internal_data},
       {
           .name = name,
           .description = data.description,
-          .required = !(data.default_value.index() == 1),
-          .has_default_value = data.default_value.index() == 1,
+          .required = !(internal_data.default_value.index() == 1),
+          .has_default_value = internal_data.default_value.index() == 1,
           .n_specs = 1,
       });
 }
@@ -1611,7 +1659,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::parameter(
 
 template <typename T>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
-    std::string name, std::map<std::string, RemoveOptional<T>> choices, ParameterData<T> data)
+    std::string name, std::map<std::string, RemoveOptional<T>> choices, ParameterDataIn<T> data)
 {
   FOUR_C_ASSERT_ALWAYS(!choices.empty(), "Selection must have at least one choice.");
 
@@ -1631,12 +1679,25 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
     choices_string += "|none";
   }
 
-  const bool has_default_value = data.default_value.index() == 1;
+  SelectionData<T> internal_data;
+  internal_data.description = data.description;
+  if constexpr (OptionalType<T>)
+  {
+    // An optional<T> implies a default_value corresponding to the empty state.
+    internal_data.default_value = std::nullopt;
+  }
+  else
+  {
+    internal_data.default_value = data.default_value;
+  }
+  internal_data.on_parse_callback = data.on_parse_callback;
+
+  const bool has_default_value = internal_data.default_value.index() == 1;
 
   // Check that we have a default value that is in the choices.
   if (has_default_value)
   {
-    const auto& default_value = std::get<1>(data.default_value);
+    const auto& default_value = std::get<1>(internal_data.default_value);
     auto default_value_it = std::find_if(modified_choices.begin(), modified_choices.end(),
         [&](const auto& choice) { return choice.second == default_value; });
 
@@ -1652,7 +1713,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
   return IO::Internal::make_spec(
       Internal::SelectionSpec<T>{
           .name = name,
-          .data = data,
+          .data = internal_data,
           .choices = modified_choices,
           .choices_string = choices_string,
       },
@@ -1669,7 +1730,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
 template <typename T>
   requires(!std::same_as<T, std::string>)
 Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
-    std::string name, std::map<std::string, RemoveOptional<T>> choices, ParameterData<T> data)
+    std::string name, std::map<std::string, RemoveOptional<T>> choices, ParameterDataIn<T> data)
 {
   return Internal::selection_internal(name, choices, data);
 }
@@ -1677,7 +1738,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
 
 template <std::same_as<std::string> T>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
-    std::string name, std::vector<std::string> choices, ParameterData<T> data)
+    std::string name, std::vector<std::string> choices, ParameterDataIn<T> data)
 {
   std::map<std::string, std::string> choices_with_strings;
   for (const auto& choice : choices)

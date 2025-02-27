@@ -599,7 +599,6 @@ namespace Core::IO
             {
                 .description = "Path to files that should be included into this file. "
                                "The paths can be either absolute or relative to the file.",
-                .default_value = std::nullopt,
             });
   }
 

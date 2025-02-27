@@ -96,18 +96,12 @@ void Discret::Elements::SoTet4Type::setup_element_definition(
       parameter<std::vector<int>>("TET4", {.size = 4}),
       parameter<int>("MAT"),
       parameter<std::string>("KINEM"),
-      parameter<std::optional<std::vector<double>>>(
-          "RAD", {.default_value = std::nullopt, .size = 3}),
-      parameter<std::optional<std::vector<double>>>(
-          "AXI", {.default_value = std::nullopt, .size = 3}),
-      parameter<std::optional<std::vector<double>>>(
-          "CIR", {.default_value = std::nullopt, .size = 3}),
-      parameter<std::optional<std::vector<double>>>(
-          "FIBER1", {.default_value = std::nullopt, .size = 3}),
-      parameter<std::optional<std::vector<double>>>(
-          "FIBER2", {.default_value = std::nullopt, .size = 3}),
-      parameter<std::optional<std::vector<double>>>(
-          "FIBER3", {.default_value = std::nullopt, .size = 3}),
+      parameter<std::optional<std::vector<double>>>("RAD", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("AXI", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("CIR", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER2", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER3", {.size = 3}),
   });
 }
 
