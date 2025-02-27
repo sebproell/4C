@@ -20,10 +20,12 @@
 #include "4C_mat_structporo.hpp"
 #include "4C_solid_3D_ele_calc_lib.hpp"
 #include "4C_solid_poro_3D_ele_properties.hpp"
+#include "4C_utils_exceptions.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
 #include <Teuchos_SerialDenseSolver.hpp>
 
+#include <algorithm>
 #include <numeric>
 
 FOUR_C_NAMESPACE_OPEN
@@ -604,6 +606,12 @@ namespace Discret::Elements
       const std::vector<std::vector<double>>& anisotropic_permeability_nodal_coeffs)
   {
     std::vector<double> anisotropic_permeability_coeffs(Internal::num_dim<celltype>, 0.0);
+
+    FOUR_C_ASSERT(std::all_of(anisotropic_permeability_nodal_coeffs.begin(),
+                      anisotropic_permeability_nodal_coeffs.end(), [](const auto& nodal_coeffs)
+                      { return nodal_coeffs.size() == Core::FE::num_nodes<celltype>; }),
+        "Given permeability coefficients do not match the number of nodes. Expecting %d.",
+        Core::FE::num_nodes<celltype>);
 
     for (int node = 0; node < Internal::num_nodes<celltype>; ++node)
     {
