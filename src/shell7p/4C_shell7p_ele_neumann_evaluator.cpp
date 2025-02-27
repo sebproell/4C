@@ -128,8 +128,7 @@ void Discret::Elements::Shell::evaluate_neumann(Core::Elements::Element& ele,
     }
   }
   // get ids of functions of space and time
-  const auto function_ids =
-      condition.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto function_ids = condition.parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
   // integration loops
   std::array<double, 2> xi_gp;

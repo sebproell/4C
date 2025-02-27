@@ -440,7 +440,7 @@ void Inpar::SSI::set_valid_conditions(std::vector<Core::Conditions::ConditionDef
         "ONOFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
     definition.add_component(parameter<std::vector<double>>(
         "VAL", {.description = "", .size = from_parameter<int>("NUMDOF")}));
-    definition.add_component(parameter<std::vector<Noneable<int>>>(
+    definition.add_component(parameter<std::vector<std::optional<int>>>(
         "FUNCT", {.description = "", .size = from_parameter<int>("NUMDOF")}));
   };
 

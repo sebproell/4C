@@ -965,7 +965,7 @@ void Discret::Elements::ScaTraEleCalc<distype, probdim>::calc_subgr_velocity(
     const auto onoff = myfluidneumcond[0]->parameters().get<std::vector<int>>("ONOFF");
     const auto val = myfluidneumcond[0]->parameters().get<std::vector<double>>("VAL");
     const auto funct =
-        myfluidneumcond[0]->parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+        myfluidneumcond[0]->parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
     // factor given by spatial function
     double functfac = 1.0;

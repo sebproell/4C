@@ -456,7 +456,7 @@ void CONSTRAINTS::MPConstraint3::evaluate_constraint(std::shared_ptr<Core::FE::D
       }
 
       // loadcurve business
-      const auto curvenum = cond->parameters().get<Core::IO::Noneable<int>>("curve");
+      const auto curvenum = cond->parameters().get<std::optional<int>>("curve");
       double curvefac = 1.0;
       if (curvenum.has_value() && curvenum.value() > 0 && time >= 0.0)
       {
@@ -533,7 +533,7 @@ void CONSTRAINTS::MPConstraint3::initialize_constraint(Core::FE::Discretization&
     Core::LinAlg::assemble(systemvector, elevector3, constrlm, constrowner);
 
     // loadcurve business
-    const auto curvenum = cond->parameters().get<Core::IO::Noneable<int>>("curve");
+    const auto curvenum = cond->parameters().get<std::optional<int>>("curve");
     double curvefac = 1.0;
     if (curvenum.has_value() && curvenum.value() > 0 && time >= 0.0)
     {

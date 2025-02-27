@@ -145,14 +145,14 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
     // access parameters of the condition
     const std::string* tempstate = &cond->parameters().get<std::string>("temperature_state");
     double coeff = cond->parameters().get<double>("coeff");
-    const auto curvenum = cond->parameters().get<Core::IO::Noneable<int>>("funct");
+    const auto curvenum = cond->parameters().get<std::optional<int>>("funct");
     const double time = params.get<double>("total time");
 
     // get surrounding temperature T_infty from input file
     double surtemp = cond->parameters().get<double>("surtemp");
     // increase the surrounding temperature T_infty step by step
     // can be scaled with a time curve, get time curve number from input file
-    const auto surtempcurvenum = cond->parameters().get<Core::IO::Noneable<int>>("surtempfunct");
+    const auto surtempcurvenum = cond->parameters().get<std::optional<int>>("surtempfunct");
 
     // find out whether we shall use a time curve for q^_c and get the factor
     double curvefac = 1.0;
@@ -363,15 +363,14 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
         // access parameters of the condition
         const std::string* tempstate = &cond->parameters().get<std::string>("temperature_state");
         double coeff = cond->parameters().get<double>("coeff");
-        const auto curvenum = cond->parameters().get<Core::IO::Noneable<int>>("funct");
+        const auto curvenum = cond->parameters().get<std::optional<int>>("funct");
         const double time = params.get<double>("total time");
 
         // get surrounding temperature T_infty from input file
         double surtemp = cond->parameters().get<double>("surtemp");
         // increase the surrounding temperature T_infty step by step
         // can be scaled with a time curve, get time curve number from input file
-        const auto surtempcurvenum =
-            cond->parameters().get<Core::IO::Noneable<int>>("surtempfunct");
+        const auto surtempcurvenum = cond->parameters().get<std::optional<int>>("surtempfunct");
 
         // find out whether we shall use a time curve for q^_c and get the factor
         double curvefac = 1.0;
@@ -551,7 +550,7 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate_neumann(const Core::Elements::
   // (assumed to be constant on element boundary)
   const auto onoff = condition.parameters().get<std::vector<int>>("ONOFF");
   const auto val = condition.parameters().get<std::vector<double>>("VAL");
-  const auto func = condition.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto func = condition.parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
   // integration loop
   for (int iquad = 0; iquad < intpoints.ip().nquad; ++iquad)

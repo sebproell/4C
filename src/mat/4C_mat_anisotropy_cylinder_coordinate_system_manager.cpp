@@ -36,9 +36,9 @@ void Mat::CylinderCoordinateSystemManager::unpack(Core::Communication::UnpackBuf
 void Mat::CylinderCoordinateSystemManager::read_from_element_line_definition(
     const Core::IO::InputParameterContainer& container)
 {
-  if (container.get<Core::IO::Noneable<std::vector<double>>>("RAD").has_value() and
-      container.get<Core::IO::Noneable<std::vector<double>>>("AXI").has_value() and
-      container.get<Core::IO::Noneable<std::vector<double>>>("CIR").has_value())
+  if (container.get<std::optional<std::vector<double>>>("RAD").has_value() and
+      container.get<std::optional<std::vector<double>>>("AXI").has_value() and
+      container.get<std::optional<std::vector<double>>>("CIR").has_value())
   {
     read_anisotropy_fiber(container, "RAD", radial_);
     read_anisotropy_fiber(container, "AXI", axial_);

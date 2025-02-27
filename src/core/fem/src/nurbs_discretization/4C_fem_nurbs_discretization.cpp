@@ -219,7 +219,7 @@ void Core::FE::Utils::DbcNurbs::do_dirichlet_condition(const Teuchos::ParameterL
   const std::vector<int>* nodeids = cond.get_nodes();
   if (!nodeids) FOUR_C_THROW("Dirichlet condition does not have nodal cloud");
 
-  const auto funct = cond.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto funct = cond.parameters().get<std::vector<std::optional<int>>>("FUNCT");
   const auto val = cond.parameters().get<std::vector<double>>("VAL");
 
 
@@ -514,7 +514,7 @@ void Core::FE::Utils::DbcNurbs::do_dirichlet_condition(const Teuchos::ParameterL
 template <Core::FE::CellType distype>
 void Core::FE::Utils::DbcNurbs::fill_matrix_and_rhs_for_ls_dirichlet_boundary(
     Core::Elements::Element& actele, const std::vector<Core::LinAlg::SerialDenseVector>* knots,
-    const std::vector<int>& lm, const std::vector<Core::IO::Noneable<int>>& funct,
+    const std::vector<int>& lm, const std::vector<std::optional<int>>& funct,
     const std::vector<double>& val, const unsigned deg, const double time,
     Core::LinAlg::SerialDenseMatrix& elemass, std::vector<Core::LinAlg::SerialDenseVector>& elerhs,
     const Core::Utils::FunctionManager& function_manager) const
@@ -655,7 +655,7 @@ void Core::FE::Utils::DbcNurbs::fill_matrix_and_rhs_for_ls_dirichlet_boundary(
 template <Core::FE::CellType distype>
 void Core::FE::Utils::DbcNurbs::fill_matrix_and_rhs_for_ls_dirichlet_domain(
     Core::Elements::Element& actele, const std::vector<Core::LinAlg::SerialDenseVector>* knots,
-    const std::vector<int>& lm, const std::vector<Core::IO::Noneable<int>>& funct,
+    const std::vector<int>& lm, const std::vector<std::optional<int>>& funct,
     const std::vector<double>& val, const unsigned deg, const double time,
     Core::LinAlg::SerialDenseMatrix& elemass, std::vector<Core::LinAlg::SerialDenseVector>& elerhs,
     const Core::Utils::FunctionManager& function_manager) const

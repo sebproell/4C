@@ -370,7 +370,7 @@ void CONSTRAINTS::MPConstraint2::evaluate_constraint(std::shared_ptr<Core::FE::D
       }
 
       // Load curve business
-      const auto curvenum = cond.parameters().get<Core::IO::Noneable<int>>("curve");
+      const auto curvenum = cond.parameters().get<std::optional<int>>("curve");
       double curvefac = 1.0;
       if (curvenum.has_value() && curvenum.value() > 0 && time >= 0.0)
       {

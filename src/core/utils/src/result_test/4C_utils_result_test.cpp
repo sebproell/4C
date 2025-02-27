@@ -58,7 +58,7 @@ int Core::Utils::ResultTest::compare_values(
   double tolerance = container.get<double>("TOLERANCE");
   // safety check
   if (tolerance <= 0.) FOUR_C_THROW("Tolerance for result test must be strictly positive!");
-  auto name = container.get<IO::Noneable<std::string>>("NAME");
+  auto name = container.get<std::optional<std::string>>("NAME");
 
   // return value (0 if results are correct, 1 if results are not correct)
   int ret = 0;

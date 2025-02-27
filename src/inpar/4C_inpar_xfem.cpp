@@ -395,7 +395,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       parameter<int>("NUMDOF"),
       parameter<std::vector<int>>("ONOFF", {.size = from_parameter<int>("NUMDOF")}),
       parameter<std::vector<double>>("VAL", {.size = from_parameter<int>("NUMDOF")}),
-      parameter<std::vector<Noneable<int>>>("FUNCT", {.size = from_parameter<int>("NUMDOF")}),
+      parameter<std::vector<std::optional<int>>>("FUNCT", {.size = from_parameter<int>("NUMDOF")}),
       selection<std::string>("TAG", {"none", "monitor_reaction"}, {.default_value = "none"}),
   });
 
@@ -403,7 +403,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       parameter<int>("NUMDOF"),
       parameter<std::vector<int>>("ONOFF", {.size = from_parameter<int>("NUMDOF")}),
       parameter<std::vector<double>>("VAL", {.size = from_parameter<int>("NUMDOF")}),
-      parameter<std::vector<Noneable<int>>>("FUNCT", {.size = from_parameter<int>("NUMDOF")}),
+      parameter<std::vector<std::optional<int>>>("FUNCT", {.size = from_parameter<int>("NUMDOF")}),
       selection<std::string>("TYPE",
           {"Live", "Dead", "pseudo_orthopressure", "orthopressure", "PressureGrad"},
           {.default_value = "Live"}),
@@ -516,9 +516,9 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
   xfem_levelset_navier_slip.add_component(
       parameter<int>("L2_PROJECTION_SOLVER", {.description = ""}));
   xfem_levelset_navier_slip.add_component(
-      parameter<Noneable<int>>("ROBIN_DIRICHLET_ID", {.description = ""}));
+      parameter<std::optional<int>>("ROBIN_DIRICHLET_ID", {.description = ""}));
   xfem_levelset_navier_slip.add_component(
-      parameter<Noneable<int>>("ROBIN_NEUMANN_ID", {.description = ""}));
+      parameter<std::optional<int>>("ROBIN_NEUMANN_ID", {.description = ""}));
   xfem_levelset_navier_slip.add_component(parameter<double>("SLIPCOEFFICIENT"));
   xfem_levelset_navier_slip.add_component(
       parameter<int>("FUNCT", {.description = "slip function id", .default_value = 0}));
@@ -535,7 +535,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       Core::Conditions::geometry_type_volume);
 
   xfem_navier_slip_robin_dirch.add_component(
-      parameter<Noneable<int>>("ROBIN_ID", {.description = "robin id"}));
+      parameter<std::optional<int>>("ROBIN_ID", {.description = "robin id"}));
 
   xfem_navier_slip_robin_dirch.add_component(dirichletbundcomponents);
 
@@ -547,7 +547,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       Core::Conditions::geometry_type_volume);
 
   xfem_navier_slip_robin_neumann.add_component(
-      parameter<Noneable<int>>("ROBIN_ID", {.description = "robin id"}));
+      parameter<std::optional<int>>("ROBIN_ID", {.description = "robin id"}));
 
   xfem_navier_slip_robin_neumann.add_component(neumanncomponents);
 
@@ -701,9 +701,9 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
           "displacement_2ndorder_with_initfunct"},
       {.description = "", .default_value = "funct_interpolated"}));
   xfem_surf_navier_slip.add_component(
-      parameter<Noneable<int>>("ROBIN_DIRICHLET_ID", {.description = ""}));
+      parameter<std::optional<int>>("ROBIN_DIRICHLET_ID", {.description = ""}));
   xfem_surf_navier_slip.add_component(
-      parameter<Noneable<int>>("ROBIN_NEUMANN_ID", {.description = ""}));
+      parameter<std::optional<int>>("ROBIN_NEUMANN_ID", {.description = ""}));
   xfem_surf_navier_slip.add_component(parameter<double>("SLIPCOEFFICIENT"));
   xfem_surf_navier_slip.add_component(
       parameter<int>("FUNCT", {.description = "slip function id", .default_value = 0}));
@@ -721,7 +721,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
   //  to have a couplingID. In theory this should not be necessary.
   xfem_navier_slip_robin_dirch_surf.add_component(parameter<int>("COUPLINGID"));
   xfem_navier_slip_robin_dirch_surf.add_component(
-      parameter<Noneable<int>>("ROBIN_ID", {.description = "robin id"}));
+      parameter<std::optional<int>>("ROBIN_ID", {.description = "robin id"}));
 
   // Likely, not necessary. But needed for the current structure.
   xfem_navier_slip_robin_dirch_surf.add_component(selection<std::string>("EVALTYPE",
@@ -743,7 +743,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
   //  to have a couplingID. In theory this should not be necessary.
   xfem_navier_slip_robin_neumann_surf.add_component(parameter<int>("COUPLINGID"));
   xfem_navier_slip_robin_neumann_surf.add_component(
-      parameter<Noneable<int>>("ROBIN_ID", {.description = "robin id"}));
+      parameter<std::optional<int>>("ROBIN_ID", {.description = "robin id"}));
 
   xfem_navier_slip_robin_neumann_surf.add_component(neumanncomponents);
 

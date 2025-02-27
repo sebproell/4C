@@ -264,7 +264,7 @@ int Discret::Elements::Beam3eb::evaluate_neumann(Teuchos::ParameterList& params,
     time = params.get("total time", -1.0);
 
   // find out whether we will use a time curve and get the factor
-  const auto tmp_funct = condition.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto tmp_funct = condition.parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
   // get values and switches from the condition
   // "ONOFF" is related to the first 6 flags of a line Neumann condition in the input file;

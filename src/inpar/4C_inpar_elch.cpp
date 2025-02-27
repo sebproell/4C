@@ -317,7 +317,7 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
     {
       cond.add_component(parameter<int>("ConditionID"));
       cond.add_component(parameter<double>("POT"));
-      cond.add_component(parameter<Noneable<int>>("FUNCT", {.description = ""}));
+      cond.add_component(parameter<std::optional<int>>("FUNCT", {.description = ""}));
       cond.add_component(parameter<int>("NUMSCAL"));
       cond.add_component(parameter<std::vector<int>>(
           "STOICH", {.description = "", .size = from_parameter<int>("NUMSCAL")}));
@@ -358,7 +358,7 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
     auto electrodedomainkineticscomponents = all_of({
         parameter<int>("ConditionID"),
         parameter<double>("POT"),
-        parameter<Core::IO::Noneable<int>>("FUNCT"),
+        parameter<std::optional<int>>("FUNCT"),
         parameter<int>("NUMSCAL"),
         parameter<std::vector<int>>("STOICH", {.size = from_parameter<int>("NUMSCAL")}),
         parameter<int>("E-"),
@@ -414,14 +414,16 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       cond.add_component(parameter<int>("NUMBER_OF_HALF_CYCLES"));
       cond.add_component(parameter<int>(
           "BEGIN_WITH_CHARGING"));  // Boolean parameter represented by integer parameter
-      cond.add_component(parameter<Noneable<int>>("CONDITION_ID_FOR_CHARGE", {.description = ""}));
       cond.add_component(
-          parameter<Noneable<int>>("CONDITION_ID_FOR_DISCHARGE", {.description = ""}));
+          parameter<std::optional<int>>("CONDITION_ID_FOR_CHARGE", {.description = ""}));
+      cond.add_component(
+          parameter<std::optional<int>>("CONDITION_ID_FOR_DISCHARGE", {.description = ""}));
       cond.add_component(parameter<double>("INIT_RELAX_TIME"));
       cond.add_component(parameter<int>("ADAPTIVE_TIME_STEPPING_INIT_RELAX"));
-      cond.add_component(parameter<Noneable<int>>("NUM_ADD_ADAPT_TIME_STEPS", {.description = ""}));
       cond.add_component(
-          parameter<Noneable<int>>("MIN_TIME_STEPS_DURING_INIT_RELAX", {.description = ""}));
+          parameter<std::optional<int>>("NUM_ADD_ADAPT_TIME_STEPS", {.description = ""}));
+      cond.add_component(
+          parameter<std::optional<int>>("MIN_TIME_STEPS_DURING_INIT_RELAX", {.description = ""}));
 
       // insert condition definitions into global list of valid condition definitions
       condlist.emplace_back(cond);

@@ -860,8 +860,7 @@ void Discret::Elements::ScaTraEleCalc<distype, probdim>::body_force(
   if (myneumcond.size() == 1)
   {
     // (SPATIAL) FUNCTION BUSINESS
-    const auto funct =
-        myneumcond[0]->parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+    const auto funct = myneumcond[0]->parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
     // get values and switches from the condition
     const auto onoff = myneumcond[0]->parameters().get<std::vector<int>>("ONOFF");

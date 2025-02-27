@@ -48,7 +48,7 @@ int Discret::Elements::MembraneLine<distype>::evaluate_neumann(Teuchos::Paramete
   // get values and switches from the condition
   const auto onoff = condition.parameters().get<std::vector<int>>("ONOFF");
   const auto val = condition.parameters().get<std::vector<double>>("VAL");
-  const auto spa_func = condition.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto spa_func = condition.parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
   /*
   **    TIME CURVE BUSINESS

@@ -109,7 +109,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_elch_b
   // access parameters of the condition
   const auto kinetics = cond->parameters().get<int>("KINETIC_MODEL");
   auto pot0 = cond->parameters().get<double>("POT");
-  const auto curvenum = cond->parameters().get<Core::IO::Noneable<int>>("FUNCT");
+  const auto curvenum = cond->parameters().get<std::optional<int>>("FUNCT");
   const auto nume = cond->parameters().get<int>("E-");
   // if zero=1=true, the current flow across the electrode is zero (comparable to do-nothing Neuman
   // condition) but the electrode status is evaluated
@@ -237,7 +237,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_nernst
 
     // access parameters of the condition
     auto pot0 = cond->parameters().get<double>("POT");
-    const auto curvenum = cond->parameters().get<Core::IO::Noneable<int>>("FUNCT");
+    const auto curvenum = cond->parameters().get<std::optional<int>>("FUNCT");
     const auto nume = cond->parameters().get<int>("E-");
     const auto e0 = cond->parameters().get<double>("E0");
     const auto c0 = cond->parameters().get<double>("C0");

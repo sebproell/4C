@@ -533,7 +533,7 @@ int Discret::Elements::Membrane<distype>::evaluate_neumann(Teuchos::ParameterLis
     if (onoff[checkdof] != 0) FOUR_C_THROW("membrane pressure on 1st dof only!");
 
   // find out whether we will use time curves and get the factors
-  const auto tmp_funct = condition.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto tmp_funct = condition.parameters().get<std::vector<std::optional<int>>>("FUNCT");
   std::vector<double> functfacs(noddof_, 1.0);
   for (int i = 0; i < noddof_; ++i)
   {

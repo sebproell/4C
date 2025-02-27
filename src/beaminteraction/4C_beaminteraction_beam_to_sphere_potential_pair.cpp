@@ -249,14 +249,14 @@ void BeamInteraction::BeamToSpherePotentialPair<numnodes,
 
   // evaluate function in time if specified in line charge conditions
   // TODO allow for functions in space, i.e. varying charge along beam centerline
-  auto function_number = chargeconds_[0]->parameters().get<Core::IO::Noneable<int>>("FUNCT");
+  auto function_number = chargeconds_[0]->parameters().get<std::optional<int>>("FUNCT");
 
   if (function_number.has_value() && function_number.value() > 0)
     q1 *= Global::Problem::instance()
               ->function_by_id<Core::Utils::FunctionOfTime>(function_number.value())
               .evaluate(time_);
 
-  function_number = chargeconds_[1]->parameters().get<Core::IO::Noneable<int>>("FUNCT");
+  function_number = chargeconds_[1]->parameters().get<std::optional<int>>("FUNCT");
 
   if (function_number.has_value() and function_number.value() > 0)
     q2 *= Global::Problem::instance()

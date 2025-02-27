@@ -220,11 +220,11 @@ namespace Core::IO::Internal::InputParameterContainerImplementation
   };
 
   template <StreamInsertable T>
-  struct PrintHelper<Noneable<T>>
+  struct PrintHelper<std::optional<T>>
   {
     void operator()(std::ostream& os, const std::any& data)
     {
-      auto val = std::any_cast<Noneable<T>>(data);
+      auto val = std::any_cast<std::optional<T>>(data);
       if (val.has_value())
         PrintHelper<T>{}(os, *val);
       else

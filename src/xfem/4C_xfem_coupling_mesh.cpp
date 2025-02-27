@@ -1251,7 +1251,7 @@ void XFEM::MeshCouplingNavierSlip::evaluate_coupling_conditions(Core::LinAlg::Ma
   if (eval_dirich_at_gp)
   {
     // evaluate interface velocity (given by weak Dirichlet condition)
-    const auto maybe_id = cond->parameters().get<Core::IO::Noneable<int>>("ROBIN_DIRICHLET_ID");
+    const auto maybe_id = cond->parameters().get<std::optional<int>>("ROBIN_DIRICHLET_ID");
     robin_id = maybe_id.value_or(-1) - 1;
 
     if (robin_id >= 0)
@@ -1269,7 +1269,7 @@ void XFEM::MeshCouplingNavierSlip::evaluate_coupling_conditions(Core::LinAlg::Ma
   }
 
   // evaluate interface traction (given by Neumann condition)
-  const auto maybe_id = cond->parameters().get<Core::IO::Noneable<int>>("ROBIN_NEUMANN_ID");
+  const auto maybe_id = cond->parameters().get<std::optional<int>>("ROBIN_NEUMANN_ID");
   robin_id = maybe_id.value_or(-1) - 1;
 
   if (robin_id >= 0)
@@ -1344,7 +1344,7 @@ void XFEM::MeshCouplingNavierSlip::evaluate_coupling_conditions_old_state(
   //  }
 
   // evaluate interface velocity (given by weak Dirichlet condition)
-  auto maybe_id = cond->parameters().get<Core::IO::Noneable<int>>("ROBIN_DIRICHLET_ID");
+  auto maybe_id = cond->parameters().get<std::optional<int>>("ROBIN_DIRICHLET_ID");
   int robin_id = maybe_id.value_or(-1) - 1;
 
   if (robin_id >= 0)
@@ -1352,7 +1352,7 @@ void XFEM::MeshCouplingNavierSlip::evaluate_coupling_conditions_old_state(
         ivel, x, conditionsmap_robin_dirch_.find(robin_id)->second, time_ - dt_);
 
   // evaluate interface traction (given by Neumann condition)
-  maybe_id = cond->parameters().get<Core::IO::Noneable<int>>("ROBIN_NEUMANN_ID");
+  maybe_id = cond->parameters().get<std::optional<int>>("ROBIN_NEUMANN_ID");
   robin_id = maybe_id.value_or(-1) - 1;
 
   if (robin_id >= 0)
@@ -1394,7 +1394,7 @@ void XFEM::MeshCouplingNavierSlip::create_robin_id_map(
   {
     // Extract its robin id (either dirichlet or neumann)
     const auto maybe_robin_id =
-        conditions_NS[i]->parameters().get<Core::IO::Noneable<int>>(robin_id_name);
+        conditions_NS[i]->parameters().get<std::optional<int>>(robin_id_name);
     const int tmp_robin_id = maybe_robin_id.value_or(-1) - 1;
 
     // Is this robin id active? I.e. is it not 0 or negative?
@@ -1491,7 +1491,7 @@ void XFEM::MeshCouplingNavierSlip::set_condition_specific_parameters()
   for (auto* tmp_cond : conditions_NS)
   {
     const auto maybe_robin_id =
-        tmp_cond->parameters().get<Core::IO::Noneable<int>>("ROBIN_DIRICHLET_ID");
+        tmp_cond->parameters().get<std::optional<int>>("ROBIN_DIRICHLET_ID");
     const auto tmp_robin_id = maybe_robin_id.value_or(-1) - 1;
 
     if (tmp_robin_id >= 0)
@@ -1514,7 +1514,7 @@ void XFEM::MeshCouplingNavierSlip::get_condition_by_robin_id(
   // select the conditions with specified "ROBIN_ID"
   for (auto* cond : mycond)
   {
-    const auto maybe_robin_id = cond->parameters().get<Core::IO::Noneable<int>>("ROBIN_ID");
+    const auto maybe_robin_id = cond->parameters().get<std::optional<int>>("ROBIN_ID");
     const int id_zero_based = maybe_robin_id.value_or(-1) - 1;
 
     if (id_zero_based == coupling_id) mynewcond.push_back(cond);

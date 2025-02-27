@@ -205,7 +205,7 @@ void Inpar::Mortar::set_valid_conditions(
         {.description =
                 "optional reference configuration check for non-smooth self contact surfaces",
             .default_value = 0.0}));
-    cond.add_component(parameter<Noneable<int>>("ConstitutiveLawID",
+    cond.add_component(parameter<std::optional<int>>("ConstitutiveLawID",
         {.description = "material id of the constitutive law", .default_value = 0}));
     condlist.push_back(cond);
   };

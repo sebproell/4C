@@ -1303,8 +1303,8 @@ void Inpar::FLUID::set_valid_conditions(
       selection<std::string>("toggle", {"master", "slave"}, {.description = "toggle"}));
   tbc_turb_inflow.add_component(selection<int>("DIRECTION", {{"x", 0}, {"y", 1}, {"z", 2}},
       {.description = "transfer direction", .default_value = 0}));
-  tbc_turb_inflow.add_component(parameter<Noneable<int>>(
-      "curve", {.description = "curve id", .default_value = Core::IO::none<int>}));
+  tbc_turb_inflow.add_component(parameter<std::optional<int>>(
+      "curve", {.description = "curve id", .default_value = std::nullopt}));
 
   condlist.push_back(tbc_turb_inflow);
 
@@ -1340,8 +1340,8 @@ void Inpar::FLUID::set_valid_conditions(
       "ReferencePressure", {.description = " reference pressure outside of boundary"}));
   surfflowdeppressure.add_component(
       parameter<double>("AdiabaticExponent", {.description = "adiabatic exponent"}));
-  surfflowdeppressure.add_component(parameter<Noneable<int>>(
-      "curve", {.description = "curve id", .default_value = Core::IO::none<int>}));
+  surfflowdeppressure.add_component(parameter<std::optional<int>>(
+      "curve", {.description = "curve id", .default_value = std::nullopt}));
 
   condlist.emplace_back(surfflowdeppressure);
 
@@ -1430,9 +1430,9 @@ void Inpar::FLUID::set_valid_conditions(
         parameter<std::vector<double>>("val", {.description = "velocity", .size = 3}));
 
     // and optional spatial functions
-    cond.add_component(parameter<std::vector<Noneable<int>>>(
+    cond.add_component(parameter<std::vector<std::optional<int>>>(
         "funct", {.description = "spatial function",
-                     .default_value = std::vector(3, Core::IO::none<int>),
+                     .default_value = std::vector(3, std::optional<int>{}),
                      .size = 3}));
 
     // characteristic velocity

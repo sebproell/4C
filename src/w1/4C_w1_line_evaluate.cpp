@@ -65,7 +65,7 @@ int Discret::Elements::Wall1Line::evaluate_neumann(Teuchos::ParameterList& param
   // get values and switches from the condition
   const auto onoff = condition.parameters().get<std::vector<int>>("ONOFF");
   const auto val = condition.parameters().get<std::vector<double>>("VAL");
-  const auto funct = condition.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto funct = condition.parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
   // check total time
   double time = -1.0;

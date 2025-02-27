@@ -66,7 +66,7 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     // -----------------------------------------------------------------
     // Read in the bc curve information
     // -----------------------------------------------------------------
-    const auto& curve = condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve");
+    const auto& curve = condition->parameters().get<std::vector<std::optional<int>>>("curve");
     double curvefac = 1.0;
     const auto& vals = condition->parameters().get<std::vector<double>>("VAL");
 
@@ -546,7 +546,7 @@ void Arteries::Utils::solve_reflective_terminal(Core::FE::Discretization& actdis
   // -------------------------------------------------------------------
   // Read in the bc curve information
   // -------------------------------------------------------------------
-  const auto& curve = condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve");
+  const auto& curve = condition->parameters().get<std::vector<std::optional<int>>>("curve");
   double curvefac = 1.0;
   const auto& vals = condition->parameters().get<std::vector<double>>("VAL");
 
@@ -625,7 +625,7 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
   // -------------------------------------------------------------------
   // Read in the bc curve information
   // -------------------------------------------------------------------
-  const auto& curve = condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve");
+  const auto& curve = condition->parameters().get<std::vector<std::optional<int>>>("curve");
   double curvefac = 1.0;
   const auto& vals = condition->parameters().get<std::vector<double>>("VAL");
 

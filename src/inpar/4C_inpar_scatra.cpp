@@ -628,10 +628,10 @@ void Inpar::ScaTra::set_valid_conditions(
     cond.add_component(parameter<double>("coeff", {.description = "heat transfer coefficient h"}));
     cond.add_component(
         parameter<double>("surtemp", {.description = "surrounding (fluid) temperature T_oo"}));
-    cond.add_component(parameter<Noneable<int>>("surtempfunct",
+    cond.add_component(parameter<std::optional<int>>("surtempfunct",
         {.description =
                 "time curve to increase the surrounding (fluid) temperature T_oo in time"}));
-    cond.add_component(parameter<Noneable<int>>("funct",
+    cond.add_component(parameter<std::optional<int>>("funct",
         {.description =
                 "time curve to increase the complete boundary condition, i.e., the heat flux"}));
 

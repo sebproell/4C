@@ -96,9 +96,9 @@ void Mat::Elastic::CoupAnisoNeoHookeVarProp::setup(
   else if (params_->init_ == 1)
   {
     // CIR-AXI-RAD nomenclature
-    if (container.get<Core::IO::Noneable<std::vector<double>>>("RAD").has_value() and
-        container.get<Core::IO::Noneable<std::vector<double>>>("AXI").has_value() and
-        container.get<Core::IO::Noneable<std::vector<double>>>("CIR").has_value())
+    if (container.get<std::optional<std::vector<double>>>("RAD").has_value() and
+        container.get<std::optional<std::vector<double>>>("AXI").has_value() and
+        container.get<std::optional<std::vector<double>>>("CIR").has_value())
     {
       // Read in of data
       Core::LinAlg::Matrix<3, 3> locsys(true);
@@ -110,7 +110,7 @@ void Mat::Elastic::CoupAnisoNeoHookeVarProp::setup(
     }
 
     // FIBER1 nomenclature
-    else if (container.get<Core::IO::Noneable<std::vector<double>>>("FIBER1").has_value())
+    else if (container.get<std::optional<std::vector<double>>>("FIBER1").has_value())
     {
       // Read in of fiber data and setting fiber data
       read_fiber(container, "FIBER1", a_);

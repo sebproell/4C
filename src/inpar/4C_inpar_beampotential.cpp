@@ -174,12 +174,12 @@ void Inpar::BeamPotential::set_valid_conditions(
   rigidsphere_potential_charge.add_component(parameter<int>("POTLAW"));
   rigidsphere_potential_charge.add_component(parameter<double>("VAL"));
   rigidsphere_potential_charge.add_component(
-      parameter<Noneable<int>>("FUNCT", {.description = "", .default_value = 0}));
+      parameter<std::optional<int>>("FUNCT", {.description = "", .default_value = 0}));
 
   beam_potential_line_charge.add_component(parameter<int>("POTLAW"));
   beam_potential_line_charge.add_component(parameter<double>("VAL"));
   beam_potential_line_charge.add_component(
-      parameter<Noneable<int>>("FUNCT", {.description = "", .default_value = 0}));
+      parameter<std::optional<int>>("FUNCT", {.description = "", .default_value = 0}));
 
   condlist.push_back(rigidsphere_potential_charge);
   condlist.push_back(beam_potential_line_charge);

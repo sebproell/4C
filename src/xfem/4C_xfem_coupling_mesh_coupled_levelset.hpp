@@ -69,7 +69,7 @@ namespace XFEM
       if (eval_dirich_at_gp)
       {
         // evaluate interface velocity (given by weak Dirichlet condition)
-        const auto maybe_id = cond->parameters().get<Core::IO::Noneable<int>>("ROBIN_DIRICHLET_ID");
+        const auto maybe_id = cond->parameters().get<std::optional<int>>("ROBIN_DIRICHLET_ID");
         robin_id = maybe_id.value_or(-1) - 1;
         if (robin_id >= 0)
           evaluate_dirichlet_function(
@@ -86,7 +86,7 @@ namespace XFEM
       }
 
       // evaluate interface traction (given by Neumann condition)
-      const auto maybe_id = cond->parameters().get<Core::IO::Noneable<int>>("ROBIN_NEUMANN_ID");
+      const auto maybe_id = cond->parameters().get<std::optional<int>>("ROBIN_NEUMANN_ID");
       robin_id = maybe_id.value_or(-1) - 1;
 
       if (robin_id >= 0)

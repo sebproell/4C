@@ -682,7 +682,7 @@ int Discret::Elements::SoTet10::evaluate_neumann(Teuchos::ParameterList& params,
   }
 
   // (SPATIAL) FUNCTION BUSINESS
-  const auto funct = condition.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto funct = condition.parameters().get<std::vector<std::optional<int>>>("FUNCT");
   Core::LinAlg::Matrix<NUMDIM_SOTET10, 1> xrefegp(false);
 
   /* ============================================================================*

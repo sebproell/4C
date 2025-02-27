@@ -678,7 +678,7 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
 
     // In case of MultiScale contact this is the id of the interface's constitutive contact law
     auto contactconstitutivelaw_id =
-        currentgroup[0]->parameters().get<Core::IO::Noneable<int>>("ConstitutiveLawID");
+        currentgroup[0]->parameters().get<std::optional<int>>("ConstitutiveLawID");
 
     // Initialize a flag to check for MIRCO contact consitutive law
     bool mircolaw = false;

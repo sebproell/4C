@@ -1416,7 +1416,7 @@ void Discret::Elements::ElemagEleCalc<distype>::LocalSolver::compute_absorbing_b
   {
     // Get the user defined functions
     auto* cond = params.getPtr<std::shared_ptr<Core::Conditions::Condition>>("condition");
-    const auto& funct = (*cond)->parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+    const auto& funct = (*cond)->parameters().get<std::vector<std::optional<int>>>("FUNCT");
     const double time = params.get<double>("time");
 
     Core::LinAlg::SerialDenseVector tempVec1(shapesface_->nfdofs_ * nsd_);

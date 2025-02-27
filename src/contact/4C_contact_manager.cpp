@@ -142,7 +142,7 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
 
     // In case of MultiScale contact this is the id of the interface's constitutive contact law
     auto maybe_contactconstitutivelawid =
-        currentgroup[0]->parameters().get<Core::IO::Noneable<int>>("ConstitutiveLawID");
+        currentgroup[0]->parameters().get<std::optional<int>>("ConstitutiveLawID");
     auto contactconstitutivelawid = maybe_contactconstitutivelawid.value_or(-1);
 
     bool foundit = false;

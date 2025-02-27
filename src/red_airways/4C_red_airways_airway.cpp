@@ -82,13 +82,13 @@ void Discret::Elements::RedAirwayType::setup_element_definition(
       parameter<double>("WallThickness"),
       parameter<double>("Area"),
       parameter<int>("Generation"),
-      parameter<std::optional<double>>("AirwayColl", {.default_value = none<double>}),
-      parameter<std::optional<double>>("S_Close", {.default_value = none<double>}),
-      parameter<std::optional<double>>("S_Open", {.default_value = none<double>}),
-      parameter<std::optional<double>>("Pcrit_Open", {.default_value = none<double>}),
-      parameter<std::optional<double>>("Pcrit_Close", {.default_value = none<double>}),
-      parameter<std::optional<double>>("Open_Init", {.default_value = none<double>}),
-      parameter<std::optional<double>>("BranchLength", {.default_value = none<double>}),
+      parameter<std::optional<double>>("AirwayColl", {.default_value = std::nullopt}),
+      parameter<std::optional<double>>("S_Close", {.default_value = std::nullopt}),
+      parameter<std::optional<double>>("S_Open", {.default_value = std::nullopt}),
+      parameter<std::optional<double>>("Pcrit_Open", {.default_value = std::nullopt}),
+      parameter<std::optional<double>>("Pcrit_Close", {.default_value = std::nullopt}),
+      parameter<std::optional<double>>("Open_Init", {.default_value = std::nullopt}),
+      parameter<std::optional<double>>("BranchLength", {.default_value = std::nullopt}),
   });
 }
 

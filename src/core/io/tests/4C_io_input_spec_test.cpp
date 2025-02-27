@@ -166,16 +166,17 @@ namespace
     }
   }
 
-  TEST(InputSpecTest, Noneable)
+  TEST(InputSpecTest, Optional)
   {
     auto spec = all_of({
         parameter<int>("size"),
-        parameter<std::vector<Noneable<int>>>("vector_none", {.size = from_parameter<int>("size")}),
-        parameter<Noneable<std::vector<int>>>("none_vector",
-            {.default_value = none<std::vector<int>>, .size = from_parameter<int>("size")}),
-        parameter<Noneable<std::string>>("b", {.description = "b"}),
-        parameter<Noneable<double>>("c", {.default_value = 1.0}),
-        parameter<Noneable<int>>("e", {.default_value = none<int>}),
+        parameter<std::vector<std::optional<int>>>(
+            "vector_none", {.size = from_parameter<int>("size")}),
+        parameter<std::optional<std::vector<int>>>(
+            "none_vector", {.default_value = std::nullopt, .size = from_parameter<int>("size")}),
+        parameter<std::optional<std::string>>("b", {.description = "b"}),
+        parameter<std::optional<double>>("c", {.default_value = 1.0}),
+        parameter<std::optional<int>>("e", {.default_value = std::nullopt}),
     });
 
     {
@@ -184,7 +185,7 @@ namespace
       std::string stream("size 3 vector_none 1 2 3 b none none_vector 1 2 3");
       ValueParser parser(stream);
       spec.fully_parse(parser, container);
-      const auto& vector_none = container.get<std::vector<Noneable<int>>>("vector_none");
+      const auto& vector_none = container.get<std::vector<std::optional<int>>>("vector_none");
       EXPECT_EQ(vector_none.size(), 3);
       EXPECT_EQ(vector_none[0].has_value(), true);
       EXPECT_EQ(vector_none[0].value(), 1);
@@ -193,16 +194,16 @@ namespace
       EXPECT_EQ(vector_none[2].has_value(), true);
       EXPECT_EQ(vector_none[2].value(), 3);
 
-      EXPECT_TRUE(container.get<Noneable<std::vector<int>>>("none_vector").has_value());
+      EXPECT_TRUE(container.get<std::optional<std::vector<int>>>("none_vector").has_value());
 
-      const auto& b = container.get<Noneable<std::string>>("b");
+      const auto& b = container.get<std::optional<std::string>>("b");
       EXPECT_EQ(b.has_value(), false);
 
-      const auto& c = container.get<Noneable<double>>("c");
+      const auto& c = container.get<std::optional<double>>("c");
       EXPECT_EQ(c.has_value(), true);
       EXPECT_EQ(c.value(), 1.0);
 
-      const auto& e = container.get<Noneable<int>>("e");
+      const auto& e = container.get<std::optional<int>>("e");
       EXPECT_EQ(e.has_value(), false);
     }
 
@@ -212,7 +213,7 @@ namespace
       std::string stream("size 3 vector_none 1 none 3 b none c none e none none_vector none");
       ValueParser parser(stream);
       spec.fully_parse(parser, container);
-      const auto& a = container.get<std::vector<Noneable<int>>>("vector_none");
+      const auto& a = container.get<std::vector<std::optional<int>>>("vector_none");
       EXPECT_EQ(a.size(), 3);
       EXPECT_EQ(a[0].has_value(), true);
       EXPECT_EQ(a[0].value(), 1);
@@ -220,13 +221,13 @@ namespace
       EXPECT_EQ(a[2].has_value(), true);
       EXPECT_EQ(a[2].value(), 3);
 
-      const auto& b = container.get<Noneable<std::string>>("b");
+      const auto& b = container.get<std::optional<std::string>>("b");
       EXPECT_EQ(b.has_value(), false);
 
-      const auto& c = container.get<Noneable<double>>("c");
+      const auto& c = container.get<std::optional<double>>("c");
       EXPECT_EQ(c.has_value(), false);
 
-      const auto& e = container.get<Noneable<int>>("e");
+      const auto& e = container.get<std::optional<int>>("e");
       EXPECT_EQ(e.has_value(), false);
     }
 
@@ -237,15 +238,15 @@ namespace
       ValueParser parser(stream);
       spec.fully_parse(parser, container);
 
-      const auto& b = container.get<Noneable<std::string>>("b");
+      const auto& b = container.get<std::optional<std::string>>("b");
       EXPECT_EQ(b.has_value(), true);
       EXPECT_EQ(b.value(), "string");
 
-      const auto& c = container.get<Noneable<double>>("c");
+      const auto& c = container.get<std::optional<double>>("c");
       EXPECT_EQ(c.has_value(), true);
       EXPECT_EQ(c.value(), 2.0);
 
-      const auto& e = container.get<Noneable<int>>("e");
+      const auto& e = container.get<std::optional<int>>("e");
       EXPECT_EQ(e.has_value(), true);
       EXPECT_EQ(e.value(), 42);
     }
@@ -324,7 +325,7 @@ namespace
         parameter<int>("a"),
         selection<int>("b", {{"b1", 1}, {"b2", 2}}, {.default_value = 1}),
         selection<std::string>("c", {"c1", "c2"}, {.default_value = "c2"}),
-        selection<Noneable<int>>("d", {{"d1", 1}, {"d2", 2}}, {.default_value = none<int>}),
+        selection<std::optional<int>>("d", {{"d1", 1}, {"d2", 2}}, {.default_value = std::nullopt}),
     });
 
     {
@@ -335,7 +336,7 @@ namespace
       EXPECT_EQ(container.get<int>("a"), 1);
       EXPECT_EQ(container.get<int>("b"), 2);
       EXPECT_EQ(container.get<std::string>("c"), "c1");
-      EXPECT_EQ(container.get<Noneable<int>>("d").value(), 1);
+      EXPECT_EQ(container.get<std::optional<int>>("d").value(), 1);
     }
 
     {
@@ -346,7 +347,7 @@ namespace
       EXPECT_EQ(container.get<int>("a"), 1);
       EXPECT_EQ(container.get<int>("b"), 1);
       EXPECT_EQ(container.get<std::string>("c"), "c2");
-      EXPECT_EQ(container.get<Noneable<int>>("d").has_value(), false);
+      EXPECT_EQ(container.get<std::optional<int>>("d").has_value(), false);
     }
 
     {
@@ -701,8 +702,8 @@ specs:
   {
     auto spec = all_of({
         parameter<int>("a", {.default_value = 42}),
-        parameter<std::vector<Noneable<double>>>(
-            "b", {.default_value = std::vector<Noneable<double>>{1., none<double>, 3.}, .size = 3}),
+        parameter<std::vector<std::optional<double>>>("b",
+            {.default_value = std::vector<std::optional<double>>{1., std::nullopt, 3.}, .size = 3}),
         one_of({
             all_of({
                 parameter<std::map<std::string, std::string>>(
@@ -720,8 +721,8 @@ specs:
                 {.description = "A group"}),
         }),
         selection<int>("e", {{"e1", 1}, {"e2", 2}}, {.default_value = 1}),
-        selection<Noneable<double>>(
-            "f", {{"f1", 1.0}, {"f2", 2.0}}, {.default_value = none<double>}),
+        selection<std::optional<double>>(
+            "f", {{"f1", 1.0}, {"f2", 2.0}}, {.default_value = std::nullopt}),
         group("group2",
             {
                 parameter<int>("g"),
@@ -961,7 +962,7 @@ specs:
     auto spec = all_of({
         parameter<int>("a"),
         parameter<std::vector<std::string>>("b"),
-        selection<Noneable<int>>("c", {{"c1", 1}, {"c2", 2}}, {.default_value = 1}),
+        selection<std::optional<int>>("c", {{"c1", 1}, {"c2", 2}}, {.default_value = 1}),
         group("group",
             {
                 parameter<int>("d"),
@@ -992,7 +993,7 @@ specs:
       EXPECT_EQ(b.size(), 2);
       EXPECT_EQ(b[0], "b1");
       EXPECT_EQ(b[1], "b2");
-      EXPECT_EQ(container.get<Noneable<int>>("c").value(), 2);
+      EXPECT_EQ(container.get<std::optional<int>>("c").value(), 2);
       EXPECT_EQ(container.group("group").get<int>("d"), 42);
     }
 
@@ -1011,7 +1012,7 @@ b:
 
       InputParameterContainer container;
       spec.match(node, container);
-      EXPECT_EQ(container.get<Noneable<int>>("c").value(), 1);
+      EXPECT_EQ(container.get<std::optional<int>>("c").value(), 1);
       EXPECT_FALSE(container.has_group("group"));
     }
 
@@ -1033,7 +1034,7 @@ group:
 
       InputParameterContainer container;
       spec.match(node, container);
-      EXPECT_FALSE(container.get<Noneable<int>>("c").has_value());
+      EXPECT_FALSE(container.get<std::optional<int>>("c").has_value());
       EXPECT_EQ(container.group("group").get<int>("d"), 42);
     }
 
@@ -1296,9 +1297,9 @@ group:
   TEST(InputSpecTest, MatchYamlNoneable)
   {
     auto spec = all_of({
-        parameter<Noneable<int>>("i", {.default_value = none<int>}),
-        parameter<Noneable<std::string>>("s"),
-        parameter<std::vector<Noneable<double>>>("v", {.size = 3}),
+        parameter<std::optional<int>>("i", {.default_value = std::nullopt}),
+        parameter<std::optional<std::string>>("s"),
+        parameter<std::vector<std::optional<double>>>("v", {.size = 3}),
     });
 
     {
@@ -1313,9 +1314,9 @@ v: [1.0, 2.0, 3.0]
 
       InputParameterContainer container;
       spec.match(node, container);
-      EXPECT_EQ(container.get<Noneable<int>>("i"), 1);
-      EXPECT_EQ(container.get<Noneable<std::string>>("s"), "string");
-      const auto& v = container.get<std::vector<Noneable<double>>>("v");
+      EXPECT_EQ(container.get<std::optional<int>>("i"), 1);
+      EXPECT_EQ(container.get<std::optional<std::string>>("s"), "string");
+      const auto& v = container.get<std::vector<std::optional<double>>>("v");
       EXPECT_EQ(v.size(), 3);
       EXPECT_EQ(v[0], 1.0);
       EXPECT_EQ(v[1], 2.0);
@@ -1334,13 +1335,13 @@ v: [Null, NULL, ~] # all the other spellings that YAML supports
 
       InputParameterContainer container;
       spec.match(node, container);
-      EXPECT_EQ(container.get<Noneable<int>>("i"), none<int>);
-      EXPECT_EQ(container.get<Noneable<std::string>>("s"), none<std::string>);
-      const auto& v = container.get<std::vector<Noneable<double>>>("v");
+      EXPECT_EQ(container.get<std::optional<int>>("i"), std::nullopt);
+      EXPECT_EQ(container.get<std::optional<std::string>>("s"), std::nullopt);
+      const auto& v = container.get<std::vector<std::optional<double>>>("v");
       EXPECT_EQ(v.size(), 3);
-      EXPECT_EQ(v[0], none<double>);
-      EXPECT_EQ(v[1], none<double>);
-      EXPECT_EQ(v[2], none<double>);
+      EXPECT_EQ(v[0], std::nullopt);
+      EXPECT_EQ(v[1], std::nullopt);
+      EXPECT_EQ(v[2], std::nullopt);
     }
   }
 

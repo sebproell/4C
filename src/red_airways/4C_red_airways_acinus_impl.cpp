@@ -323,10 +323,9 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
           Bc = (condition->parameters().get<std::string>("boundarycond"));
 
           const auto vals = condition->parameters().get<std::vector<double>>("VAL");
-          const auto curve =
-              condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve");
+          const auto curve = condition->parameters().get<std::vector<std::optional<int>>>("curve");
           const auto functions =
-              condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("funct");
+              condition->parameters().get<std::vector<std::optional<int>>>("funct");
 
           // Read in the value of the applied BC
           // Get factor of first CURVE
@@ -461,8 +460,7 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
             Bc = (condition->parameters().get<std::string>("phase2"));
           }
 
-          const auto curve =
-              condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve");
+          const auto curve = condition->parameters().get<std::vector<std::optional<int>>>("curve");
           double curvefac = 1.0;
           const auto vals = condition->parameters().get<std::vector<double>>("VAL");
 
@@ -507,7 +505,7 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
             if (pplCond)
             {
               const auto curve =
-                  pplCond->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve");
+                  pplCond->parameters().get<std::vector<std::optional<int>>>("curve");
               double curvefac = 1.0;
               const auto vals = pplCond->parameters().get<std::vector<double>>("VAL");
 

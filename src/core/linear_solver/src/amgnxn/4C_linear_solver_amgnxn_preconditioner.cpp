@@ -181,7 +181,7 @@ Core::LinearSolver::AmGnxnInterface::AmGnxnInterface(Teuchos::ParameterList& par
   if (amgnxn_type == "XML")
   {
     // Parse the whole file
-    auto amgnxn_xml = amglist.get<Core::IO::Noneable<std::filesystem::path>>("AMGNXN_XML_FILE");
+    auto amgnxn_xml = amglist.get<std::optional<std::filesystem::path>>("AMGNXN_XML_FILE");
     if (!amgnxn_xml) FOUR_C_THROW("The input parameter AMGNXN_XML_FILE is 'none'.");
     {
       Teuchos::updateParametersFromXmlFile(

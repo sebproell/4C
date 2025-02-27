@@ -26,7 +26,7 @@ bool Solid::Nln::SOLVER::is_xml_status_test_file(const Teuchos::ParameterList& p
   bool check = false;
 
   Teuchos::ParameterList pxml;
-  auto xmlfilename = pstatus.get<Core::IO::Noneable<std::filesystem::path>>("XML File");
+  auto xmlfilename = pstatus.get<std::optional<std::filesystem::path>>("XML File");
 
   // check the input: path to the "Status Test" xml-file
   if (xmlfilename)

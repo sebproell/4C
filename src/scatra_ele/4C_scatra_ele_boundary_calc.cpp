@@ -510,7 +510,7 @@ int Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::evaluate_neumann
   const int numdof = condition.parameters().get<int>("NUMDOF");
   const auto onoff = condition.parameters().get<std::vector<int>>("ONOFF");
   const auto val = condition.parameters().get<std::vector<double>>("VAL");
-  const auto func = condition.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto func = condition.parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
   if (numdofpernode_ != numdof)
   {
@@ -2129,7 +2129,7 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::weak_dirichlet(
   // get values and spatial functions from condition
   // (assumed to be constant on element boundary)
   const auto& val = (*dbc).parameters().get<std::vector<double>>("VAL");
-  const auto& func = (*dbc).parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto& func = (*dbc).parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
   // assign boundary value multiplied by time-curve factor
   double dirichval = val[0];

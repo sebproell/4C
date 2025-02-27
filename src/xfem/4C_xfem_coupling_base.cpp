@@ -559,7 +559,7 @@ void XFEM::CouplingBase::evaluate_function(std::vector<double>& final_values, co
   // get values and switches from the condition
   const auto onoff = cond->parameters().get<std::vector<int>>("ONOFF");
   const auto val = cond->parameters().get<std::vector<double>>("VAL");
-  const auto functions = cond->parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto functions = cond->parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
   // uniformly distributed random noise
   auto& secondary = const_cast<Core::Conditions::Condition&>(*cond);

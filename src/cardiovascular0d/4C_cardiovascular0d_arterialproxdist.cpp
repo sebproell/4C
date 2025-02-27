@@ -104,7 +104,7 @@ void Utils::Cardiovascular0DArterialProxDist::evaluate(Teuchos::ParameterList& p
 
     // find out whether we will use a time curve and get the factor
     const auto curvenum =
-        cardiovascular0dcond_[condID]->parameters().get<Core::IO::Noneable<int>>("p_at_crv");
+        cardiovascular0dcond_[condID]->parameters().get<std::optional<int>>("p_at_crv");
     double curvefac_np = 1.0;
 
     if (curvenum.has_value() && curvenum.value() > 0 && time >= 0)

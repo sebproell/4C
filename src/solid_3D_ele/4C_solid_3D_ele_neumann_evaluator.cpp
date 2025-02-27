@@ -99,8 +99,7 @@ void Discret::Elements::evaluate_neumann(Core::Elements::Element& element,
   }
 
   // get ids of functions of space and time
-  const auto& function_ids =
-      condition.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto& function_ids = condition.parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
   const ElementNodes<celltype> nodal_coordinates =
       evaluate_element_nodes<celltype>(element, discretization, dof_index_array);

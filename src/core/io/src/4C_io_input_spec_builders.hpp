@@ -127,9 +127,9 @@ namespace Core::IO
     };
 
     template <typename T>
-    struct PrettyTypeName<Noneable<T>>
+    struct PrettyTypeName<std::optional<T>>
     {
-      std::string operator()() { return "Noneable<" + PrettyTypeName<T>{}() + ">"; }
+      std::string operator()() { return "std::optional<" + PrettyTypeName<T>{}() + ">"; }
     };
 
     template <typename T>
@@ -187,7 +187,7 @@ namespace Core::IO
     };
 
     template <typename T>
-    struct YamlTypeEmitter<Noneable<T>>
+    struct YamlTypeEmitter<std::optional<T>>
     {
       void operator()(ryml::NodeRef node, size_t* size)
       {
@@ -520,10 +520,6 @@ namespace Core::IO
    */
   namespace InputSpecBuilders
   {
-    // Import the Noneable type into the InputSpecBuilders namespace to make it easier to use.
-    using Core::IO::none;
-    using Core::IO::Noneable;
-
     /**
      * This constant signifies that a size is dynamic and will be determined at runtime. Pass this
      * value to the size parameter of a vector-valued parameter() or the list() function.
@@ -674,7 +670,8 @@ namespace Core::IO
         std::string name;
         using StoredType = T;
         //! The type that is used in the input file.
-        using InputType = std::conditional_t<IsNoneable<T>, Noneable<std::string>, std::string>;
+        using InputType =
+            std::conditional_t<OptionalType<T>, std::optional<std::string>, std::string>;
         using ChoiceMap = std::map<InputType, StoredType>;
         ParameterData<T> data;
         ChoiceMap choices;
@@ -770,7 +767,7 @@ namespace Core::IO
       //! Note that the type can be anything since we never read or write values of this type.
       template <typename T>
       [[nodiscard]] InputSpec selection_internal(std::string name,
-          std::map<std::string, RemoveNoneable<T>> choices, ParameterData<T> data = {});
+          std::map<std::string, RemoveOptional<T>> choices, ParameterData<T> data = {});
 
 
       struct SizeChecker
@@ -808,16 +805,16 @@ namespace Core::IO
      * // value is given.
      * parameter<double>("my_double", {.default_value = 3.14});
      *
-     * // An alternative way to create this optional int parameter is achieved with the Noneable
+     * // An alternative way to create this optional int parameter is achieved with a std::optional
      * // type. This value is optional and by default has an empty value represented by "none" in
      * // the input file.
-     * parameter<Noneable<int>>("my_int", .default_value = none<int>);
+     * parameter<std::optional<int>>("my_int", .default_value = std::nullopt);
      *
      * // A vector parameter with a fixed size of 3.
      * parameter<std::vector<double>>("my_vector", {.size = 3});
      *
-     * // A vector may also contain Noneable values.
-     * parameter<std::vector<Noneable<double>>>("my_vector", {.size = 3});
+     * // A vector may also contain std::optional values.
+     * parameter<std::vector<std::optional<double>>>("my_vector", {.size = 3});
      *
      * // A vector parameter with a size that is determined by the value of another parameter. The
      * // size is given as a callback.
@@ -912,7 +909,7 @@ namespace Core::IO
     template <typename T>
       requires(!std::same_as<T, std::string>)
     [[nodiscard]] InputSpec selection(std::string name,
-        std::map<std::string, RemoveNoneable<T>> choices, ParameterData<T> data = {});
+        std::map<std::string, RemoveOptional<T>> choices, ParameterData<T> data = {});
 
 
     /**
@@ -1512,7 +1509,7 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::emit_metadata(
   node |= ryml::MAP;
   node["name"] << name;
 
-  if constexpr (IsNoneable<T>) emit_value_as_yaml(node["noneable"], true);
+  if constexpr (OptionalType<T>) emit_value_as_yaml(node["noneable"], true);
   node["type"] = "selection";
 
   if (!data.description.empty())
@@ -1614,11 +1611,11 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::parameter(
 
 template <typename T>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
-    std::string name, std::map<std::string, RemoveNoneable<T>> choices, ParameterData<T> data)
+    std::string name, std::map<std::string, RemoveOptional<T>> choices, ParameterData<T> data)
 {
   FOUR_C_ASSERT_ALWAYS(!choices.empty(), "Selection must have at least one choice.");
 
-  // If we have a Noneable type, we need to convert the choices.
+  // If we have a std::optional type, we need to convert the choices.
   typename SelectionSpec<T>::ChoiceMap modified_choices;
   std::string choices_string;
   for (auto&& [key, value] : choices)
@@ -1628,9 +1625,9 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
   }
   choices_string.pop_back();
 
-  if constexpr (IsNoneable<T>)
+  if constexpr (OptionalType<T>)
   {
-    modified_choices[none<std::string>] = T{};
+    modified_choices[std::nullopt] = T{};
     choices_string += "|none";
   }
 
@@ -1672,7 +1669,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
 template <typename T>
   requires(!std::same_as<T, std::string>)
 Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
-    std::string name, std::map<std::string, RemoveNoneable<T>> choices, ParameterData<T> data)
+    std::string name, std::map<std::string, RemoveOptional<T>> choices, ParameterData<T> data)
 {
   return Internal::selection_internal(name, choices, data);
 }

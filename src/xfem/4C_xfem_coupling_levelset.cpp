@@ -1240,9 +1240,9 @@ void XFEM::LevelSetCouplingNavierSlip::set_element_conditions()
 
   // Get robin coupling IDs
   const auto maybe_robin_dirichlet_id =
-      cond->parameters().get<Core::IO::Noneable<int>>("ROBIN_DIRICHLET_ID");
+      cond->parameters().get<std::optional<int>>("ROBIN_DIRICHLET_ID");
   const auto maybe_robin_neumann_id =
-      cond->parameters().get<Core::IO::Noneable<int>>("ROBIN_NEUMANN_ID");
+      cond->parameters().get<std::optional<int>>("ROBIN_NEUMANN_ID");
 
   // zero based robin coupling IDs
   robin_dirichlet_id_ = maybe_robin_dirichlet_id.value_or(-1) - 1;
@@ -1422,7 +1422,7 @@ void XFEM::LevelSetCouplingNavierSlip::get_condition_by_robin_id(
   for (size_t i = 0; i < mycond.size(); ++i)
   {
     Core::Conditions::Condition* cond = mycond[i];
-    const auto maybe_id = cond->parameters().get<Core::IO::Noneable<int>>("ROBIN_ID");
+    const auto maybe_id = cond->parameters().get<std::optional<int>>("ROBIN_ID");
     const int id = maybe_id.value_or(-1) - 1;
 
     if (id == coupling_id) mynewcond.push_back(cond);

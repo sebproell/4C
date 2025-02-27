@@ -88,7 +88,7 @@ void Mat::Anisotropy::read_anisotropy_from_element(
 {
   // This method might be called even though there is no anisotropy possible for the element.
   // In this case, we just return without doing anything.
-  using OptionalFiber = Core::IO::Noneable<std::vector<double>>;
+  using OptionalFiber = std::optional<std::vector<double>>;
   const bool any_fibers_found =
       container.get_if<OptionalFiber>("FIBER1") or container.get_if<OptionalFiber>("RAD") or
       container.get_if<OptionalFiber>("AXI") or container.get_if<OptionalFiber>("CIR");
@@ -96,9 +96,9 @@ void Mat::Anisotropy::read_anisotropy_from_element(
 
 
   // Read coordinate system
-  if (container.get<Core::IO::Noneable<std::vector<double>>>("RAD").has_value() and
-      container.get<Core::IO::Noneable<std::vector<double>>>("AXI").has_value() and
-      container.get<Core::IO::Noneable<std::vector<double>>>("CIR").has_value())
+  if (container.get<std::optional<std::vector<double>>>("RAD").has_value() and
+      container.get<std::optional<std::vector<double>>>("AXI").has_value() and
+      container.get<std::optional<std::vector<double>>>("CIR").has_value())
   {
     // read fibers in RAD AXI CIR notation
     if (!element_cylinder_coordinate_system_manager_)
@@ -118,7 +118,7 @@ void Mat::Anisotropy::read_anisotropy_from_element(
 
       // We count up until we hit a fiber that we do not know about. Thus we need to use the
       // get_if mechanism.
-      auto* fiber_ptr = container.get_if<Core::IO::Noneable<std::vector<double>>>(fiber_name);
+      auto* fiber_ptr = container.get_if<std::optional<std::vector<double>>>(fiber_name);
       if (!fiber_ptr or !fiber_ptr->has_value())
       {
         break;

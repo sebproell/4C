@@ -256,7 +256,7 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
                     .size = from_parameter<int>("NUMSCAL")}));
     m->add_component(parameter<std::optional<std::vector<double>>>(
         "REACSTART", {.description = "starting point of reaction",
-                         .default_value = none<std::vector<double>>,
+                         .default_value = std::nullopt,
                          .size = from_parameter<int>("NUMSCAL")}));
 
     Mat::append_material_definition(matlist, m);
@@ -283,7 +283,7 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
                     .size = from_parameter<int>("NUMSCAL")}));
     m->add_component(parameter<std::optional<std::vector<double>>>(
         "REACSTART", {.description = "starting point of reaction",
-                         .default_value = none<std::vector<double>>,
+                         .default_value = std::nullopt,
                          .size = from_parameter<int>("NUMSCAL")}));
 
     Mat::append_material_definition(matlist, m);
@@ -3401,7 +3401,7 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
                            .size = from_parameter<int>("NUMSCAL")}));
     m->add_component(parameter<std::optional<std::vector<double>>>(
         "OMEGA_HALF", {.description = "Constant for receptor kinetic law",
-                          .default_value = none<std::vector<double>>,
+                          .default_value = std::nullopt,
                           .size = from_parameter<int>("NUMSCAL")}));
 
     Mat::append_material_definition(matlist, m);

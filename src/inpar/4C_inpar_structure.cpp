@@ -426,7 +426,7 @@ namespace Inpar
                     {"cursurfnormal",
                         CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::cursurfnormal}},
                 {.description = "Direction of the spring-dashpot boundary conditions"}));
-        cond.add_component(parameter<Noneable<int>>("COUPLING", {.description = ""}));
+        cond.add_component(parameter<std::optional<int>>("COUPLING", {.description = ""}));
         condlist.emplace_back(cond);
       };
 

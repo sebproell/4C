@@ -69,18 +69,18 @@ void Discret::Elements::SoHex8PoroType::setup_element_definition(
 
   defs["HEX8"] = all_of({
       defs_hex8["HEX8"],
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISODIR1", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISODIR2", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISODIR3", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISONODALCOEFFS1", {.default_value = none<std::vector<double>>, .size = 8}),
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISONODALCOEFFS2", {.default_value = none<std::vector<double>>, .size = 8}),
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISONODALCOEFFS3", {.default_value = none<std::vector<double>>, .size = 8}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISODIR1", {.default_value = std::nullopt, .size = 3}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISODIR2", {.default_value = std::nullopt, .size = 3}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISODIR3", {.default_value = std::nullopt, .size = 3}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISONODALCOEFFS1", {.default_value = std::nullopt, .size = 8}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISONODALCOEFFS2", {.default_value = std::nullopt, .size = 8}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISONODALCOEFFS3", {.default_value = std::nullopt, .size = 8}),
   });
 }
 
@@ -155,18 +155,18 @@ void Discret::Elements::SoTet4PoroType::setup_element_definition(
 
   defs["TET4"] = all_of({
       defs_tet4["TET4"],
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISODIR1", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISODIR2", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISODIR3", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISONODALCOEFFS1", {.default_value = none<std::vector<double>>, .size = 4}),
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISONODALCOEFFS2", {.default_value = none<std::vector<double>>, .size = 4}),
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISONODALCOEFFS3", {.default_value = none<std::vector<double>>, .size = 4}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISODIR1", {.default_value = std::nullopt, .size = 3}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISODIR2", {.default_value = std::nullopt, .size = 3}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISODIR3", {.default_value = std::nullopt, .size = 3}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISONODALCOEFFS1", {.default_value = std::nullopt, .size = 4}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISONODALCOEFFS2", {.default_value = std::nullopt, .size = 4}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISONODALCOEFFS3", {.default_value = std::nullopt, .size = 4}),
   });
 }
 
@@ -240,12 +240,12 @@ void Discret::Elements::SoHex27PoroType::setup_element_definition(
 
   defs["HEX27"] = all_of({
       defs_hex27["HEX27"],
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISODIR1", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISODIR2", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISODIR3", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISODIR1", {.default_value = std::nullopt, .size = 3}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISODIR2", {.default_value = std::nullopt, .size = 3}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISODIR3", {.default_value = std::nullopt, .size = 3}),
   });
 }
 
@@ -319,12 +319,12 @@ void Discret::Elements::SoTet10PoroType::setup_element_definition(
 
   defs["TET10"] = all_of({
       defs_tet10["TET10"],
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISODIR1", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISODIR2", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISODIR3", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISODIR1", {.default_value = std::nullopt, .size = 3}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISODIR2", {.default_value = std::nullopt, .size = 3}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISODIR3", {.default_value = std::nullopt, .size = 3}),
   });
 }
 
@@ -396,12 +396,12 @@ void Discret::Elements::SoNurbs27PoroType::setup_element_definition(
 
   defs["NURBS27"] = all_of({
       defs_nurbs27["NURBS27"],
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISODIR1", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISODIR2", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "POROANISODIR3", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISODIR1", {.default_value = std::nullopt, .size = 3}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISODIR2", {.default_value = std::nullopt, .size = 3}),
+      parameter<std::optional<std::vector<double>>>(
+          "POROANISODIR3", {.default_value = std::nullopt, .size = 3}),
   });
 }
 

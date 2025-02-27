@@ -354,7 +354,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("FLUID",
             {
@@ -366,7 +366,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("XFLUID",
             {
@@ -375,7 +375,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("ALE",
             {
@@ -384,7 +384,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("THERMAL",
             {
@@ -393,7 +393,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("LUBRICATION",
             {
@@ -402,7 +402,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("POROFLUIDMULTIPHASE",
             {
@@ -415,7 +415,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("SCATRA",
             {
@@ -427,7 +427,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("SSI",
             {
@@ -441,7 +441,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("SSTI",
             {
@@ -449,7 +449,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("STI",
             {
@@ -457,7 +457,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("RED_AIRWAY",
             {
@@ -469,7 +469,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("ARTNET",
             {
@@ -481,7 +481,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("FSI",
             {
@@ -492,7 +492,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("PARTICLE",
             {
@@ -500,7 +500,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("PARTICLEWALL",
             {
@@ -512,7 +512,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("RIGIDBODY",
             {
@@ -520,7 +520,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("ELECTROMAGNETIC",
             {
@@ -529,7 +529,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
         group("CARDIOVASCULAR0D",
             {
@@ -538,7 +538,7 @@ namespace
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),
-                parameter<Noneable<std::string>>("NAME", {.default_value = none<std::string>}),
+                parameter<std::optional<std::string>>("NAME", {.default_value = std::nullopt}),
             }),
     });
   }

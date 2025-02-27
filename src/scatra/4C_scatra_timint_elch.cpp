@@ -308,10 +308,10 @@ void ScaTra::ScaTraTimIntElch::setup()
             "no CCCV half-cycle boundary conditions!");
       }
       if (!cccvcyclingcondition.parameters()
-              .get<Core::IO::Noneable<int>>("CONDITION_ID_FOR_CHARGE")
+              .get<std::optional<int>>("CONDITION_ID_FOR_CHARGE")
               .has_value() or
           !cccvcyclingcondition.parameters()
-              .get<Core::IO::Noneable<int>>("CONDITION_ID_FOR_DISCHARGE")
+              .get<std::optional<int>>("CONDITION_ID_FOR_DISCHARGE")
               .has_value())
       {
         FOUR_C_THROW(
@@ -2976,7 +2976,7 @@ void ScaTra::ScaTraTimIntElch::apply_neumann_bc(
             // condition.
             const std::vector<int> onoff = {0, 1};
             const std::vector<double> val = {0.0, condition->parameters().get<double>("CURRENT")};
-            const std::vector<Core::IO::Noneable<int>> funct = {0, 0};
+            const std::vector<std::optional<int>> funct = {0, 0};
             condition->parameters().add("NUMDOF", 2);
             condition->parameters().add("FUNCT", funct);
             condition->parameters().add("ONOFF", onoff);

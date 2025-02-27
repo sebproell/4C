@@ -592,7 +592,7 @@ int Discret::Elements::Beam3r::evaluate_neumann(Teuchos::ParameterList& params,
   const auto val = condition.parameters().get<std::vector<double>>("VAL");
   // funct is related to the numdf "FUNCT" fields after the val field of the Neumann condition
   // in the input file; funct gives the number of the function defined in the section FUNCT
-  const auto functions = condition.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto functions = condition.parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
   // integration points in parameter space and weights
   double xi = 0.0;
