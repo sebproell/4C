@@ -192,8 +192,8 @@ namespace Core::IO
       void operator()(ryml::NodeRef node, size_t* size)
       {
         FOUR_C_ASSERT(node.is_map(), "Expected a map node.");
-        // Pull up the "noneable" aspect. The fact that this type wraps another type is specific
-        // to C++ and not relevant to other tools. Simply knowing that a type can be "none" is
+        // Pull up the std::optional aspect. The fact that this type wraps another type is specific
+        // to C++ and not relevant to other tools. Simply knowing that a type can be empty is
         // enough for them.
         emit_value_as_yaml(node["noneable"], true);
         YamlTypeEmitter<T>{}(node, size);
@@ -330,7 +330,7 @@ namespace Core::IO
 
         /**
          * The total number of specs that make up this spec. This includes the spec itself, meaning,
-         * that the minimum value is 1. This value can used to reserve memory ahead of time.
+         * that the minimum value is 1. This value can be used to reserve memory ahead of time.
          */
         std::size_t n_specs;
       };
@@ -848,10 +848,10 @@ namespace Core::IO
      * // value is given.
      * parameter<double>("my_double", {.default_value = 3.14});
      *
-     * // An alternative way to create this optional int parameter is achieved with a std::optional
-     * // type. This value is optional and by default has an empty value represented by "none" in
-     * // the input file.
-     * parameter<std::optional<int>>("my_int", .default_value = std::nullopt);
+     * // An alternative way to create an optional double parameter is achieved with a
+     * // std::optional type. This value is optional and has an empty value in the input file. You
+     * // cannot set a default value in this case.
+     * parameter<std::optional<my_double>>("my_double");
      *
      * // A vector parameter with a fixed size of 3.
      * parameter<std::vector<double>>("my_vector", {.size = 3});
@@ -875,10 +875,10 @@ namespace Core::IO
      *   }});
      * @endcode
      *
-     * After parsing an InputSpec with fully_parse(), the value of the parameter can be retrieved
-     * from an InputParameterContainer. If `default_value` is set, the parameter is implicitly
-     * optional. In this case, if the parameter is not present in the input file, the default value
-     * will be stored in the container that is filled by the fully_parse() function.
+     * After parsing an InputSpec, the value of the parameter can be retrieved from an
+     * InputParameterContainer. If `default_value` is set, the parameter is implicitly optional. In
+     * this case, if the parameter is not present in the input file, the default value will be
+     * stored in the container.
      *
      * When you decide how to set the `default_value` field or whether to make a parameter optional,
      * consider the following cases:
@@ -896,13 +896,12 @@ namespace Core::IO
      *     parameter that activates or deactivates a feature, e.g., defaulting the EAS element
      *     technology to off might be reasonable.
      *
-     *   - If the parameter is not required, but there is no reasonable default value, wrap the type
-     *     in `std::optional` and set the empty optional state as `default_value`. As an example,
-     *     this may be useful for a damping parameter that, when set, activates damping using
-     *     the provided value. This example demonstrates that the parameter has a double role: its
-     *     presence activates damping and its value determines the damping strength. An often better
-     *     way to selectively activate parameters can be achieved with the group() function,
-     *     especially if a set of parameters is always required together.
+     *   - If the parameter is not required and there is no reasonable default value, wrap the type
+     *     in `std::optional`. As an example, this may be useful for a damping parameter that, when
+     *     set, activates damping using the provided value. This example demonstrates that the
+     *     parameter has a double role: its presence activates damping and its value determines the
+     *     damping strength. An often better way to selectively activate parameters can be achieved
+     *     with the group() function, especially if a set of parameters is always required together.
      *
      * @tparam T The data type of the parameter. Must be a SupportedType.
      *
@@ -932,7 +931,7 @@ namespace Core::IO
     [[nodiscard]] auto from_parameter(const std::string& name);
 
     /**
-     * A parameter whose value is a a selection from a list of choices. For example:
+     * A parameter whose value is a selection from a list of choices. For example:
      *
      * @code
      * selection<int>("my_selection", {{"a", 1}, {"b", 2}, {"c", 3}});
@@ -956,7 +955,7 @@ namespace Core::IO
 
 
     /**
-     * Like the the other selection() function, but the choices are stored as strings and not mapped
+     * Like the other selection() function, but the choices are stored as strings and not mapped
      * to another type.
      *
      * @note Although this function only works with strings, you still need to provide a type for

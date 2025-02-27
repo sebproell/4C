@@ -1289,7 +1289,7 @@ group:
     }
   }
 
-  TEST(InputSpecTest, MatchYamlNoneable)
+  TEST(InputSpecTest, MatchYamlOptional)
   {
     auto spec = all_of({
         parameter<std::optional<int>>("i"),
