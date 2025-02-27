@@ -13,7 +13,6 @@
 #include "4C_linalg_vector.hpp"
 
 #include <Epetra_Map.h>
-#include <Epetra_MpiComm.h>
 #include <hdf5.h>
 #include <hdf5_hl.h>
 

@@ -16,8 +16,6 @@
 #include "4C_io_visualization_manager.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 
-#include <Epetra_MpiComm.h>
-
 #include <unordered_set>
 
 FOUR_C_NAMESPACE_OPEN

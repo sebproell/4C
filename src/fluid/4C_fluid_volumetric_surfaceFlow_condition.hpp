@@ -19,7 +19,6 @@
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 
 #include <Epetra_Map.h>
-#include <Epetra_MpiComm.h>
 
 #include <memory>
 

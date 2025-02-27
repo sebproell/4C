@@ -17,8 +17,6 @@
 #include "4C_scatra_timint_stat.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
-#include <Epetra_MpiComm.h>
-
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN

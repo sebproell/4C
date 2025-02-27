@@ -18,7 +18,6 @@
 #include "4C_tsi_partitioned.hpp"
 #include "4C_tsi_utils.hpp"
 
-#include <Epetra_MpiComm.h>
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 #include <Teuchos_TimeMonitor.hpp>
 

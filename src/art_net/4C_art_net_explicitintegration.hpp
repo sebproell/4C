@@ -20,8 +20,6 @@
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_function.hpp"
 
-#include <Epetra_MpiComm.h>
-
 #include <cstdlib>
 #include <ctime>
 #include <iostream>

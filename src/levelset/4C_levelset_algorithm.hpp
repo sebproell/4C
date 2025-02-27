@@ -17,8 +17,6 @@
 #include "4C_scatra_timint_implicit.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
-#include <Epetra_MpiComm.h>
-
 #include <memory>
 
 #define USE_PHIN_FOR_VEL  // TODO

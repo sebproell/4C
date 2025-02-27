@@ -18,7 +18,6 @@
 #include "4C_solid_scatra_3D_ele.hpp"
 #include "4C_thermo_element.hpp"
 
-#include <Epetra_MpiComm.h>
 
 
 FOUR_C_NAMESPACE_OPEN

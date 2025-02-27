@@ -12,7 +12,6 @@
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_unittest_utils_support_files_test.hpp"
 
-#include <Epetra_MpiComm.h>
 #include <EpetraExt_CrsMatrixIn.h>
 
 FOUR_C_NAMESPACE_OPEN

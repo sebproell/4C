@@ -17,8 +17,6 @@
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 #include "4C_red_airways_dyn_drt.hpp"
 
-#include <Epetra_MpiComm.h>
-
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN

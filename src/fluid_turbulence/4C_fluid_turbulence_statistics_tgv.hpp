@@ -15,7 +15,6 @@
 #include "4C_inpar_scatra.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 
-#include <Epetra_MpiComm.h>
 #include <Teuchos_ParameterList.hpp>
 
 #include <memory>

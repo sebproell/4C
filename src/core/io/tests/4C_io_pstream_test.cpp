@@ -9,8 +9,6 @@
 
 #include "4C_io_pstream.hpp"
 
-#include <Epetra_MpiComm.h>
-
 #include <stdexcept>
 
 namespace

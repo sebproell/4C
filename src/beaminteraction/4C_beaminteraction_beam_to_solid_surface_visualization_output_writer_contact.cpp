@@ -24,7 +24,6 @@
 #include "4C_structure_new_timint_basedataglobalstate.hpp"
 
 #include <Epetra_FEVector.h>
-#include <Epetra_MpiComm.h>
 
 #include <unordered_set>
 #include <utility>

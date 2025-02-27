@@ -14,8 +14,6 @@
 #include "4C_io.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 
-#include <Epetra_MpiComm.h>
-
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN

@@ -14,7 +14,6 @@
 
 // Epetra related headers
 #include <Epetra_Map.h>
-#include <Epetra_MpiComm.h>
 
 #include <memory>
 

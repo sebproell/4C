@@ -17,7 +17,6 @@
 #include "4C_material_parameter_base.hpp"
 #include "4C_utils_singleton_owner.hpp"
 
-#include <Epetra_MpiComm.h>
 
 namespace
 {

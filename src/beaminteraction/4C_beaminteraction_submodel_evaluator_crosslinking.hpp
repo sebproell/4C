@@ -16,7 +16,6 @@
 #include "4C_inpar_beaminteraction.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 
-#include <Epetra_MpiComm.h>
 
 FOUR_C_NAMESPACE_OPEN
 
