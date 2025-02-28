@@ -356,7 +356,6 @@ namespace Inpar
     enum MassLin
     {
       ml_none,      ///< constant mass matrix
-      ml_standard,  ///< nonlinear inertia terms, translational DoFs
       ml_rotations  ///< nonlinear inertia terms, rotational DoFs
     };
 

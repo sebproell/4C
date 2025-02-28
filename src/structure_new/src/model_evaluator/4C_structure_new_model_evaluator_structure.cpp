@@ -580,7 +580,6 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Solid::ModelEvaluator::Structure::
   switch (masslin_type_)
   {
     case Inpar::Solid::ml_rotations:
-    case Inpar::Solid::ml_standard:
     {
       finertial_np().PutScalar(0.0);
       // set inertial force
