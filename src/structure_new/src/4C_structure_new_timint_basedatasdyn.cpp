@@ -31,7 +31,7 @@ Solid::TimeInt::BaseDataSDyn::BaseDataSDyn()
       damptype_(Inpar::Solid::damp_none),
       dampk_(-1.0),
       dampm_(-1.0),
-      masslintype_(Inpar::Solid::ml_none),
+      masslintype_(Inpar::Solid::MassLin::ml_none),
       lumpmass_(false),
       neglectinertia_(false),
       modeltypes_(nullptr),

@@ -204,7 +204,7 @@ void Solid::TimeInt::BaseDataGlobalState::setup()
   mass_ = std::make_shared<Core::LinAlg::SparseMatrix>(*dof_row_map_view(), 81, true, true);
   if (datasdyn_->get_damping_type() != Inpar::Solid::damp_none)
   {
-    if (datasdyn_->get_mass_lin_type() == Inpar::Solid::ml_none)
+    if (datasdyn_->get_mass_lin_type() == Inpar::Solid::MassLin::ml_none)
     {
       damp_ = std::make_shared<Core::LinAlg::SparseMatrix>(*dof_row_map_view(), 81, true, true);
     }
@@ -218,7 +218,7 @@ void Solid::TimeInt::BaseDataGlobalState::setup()
   }
 
   if (datasdyn_->get_dynamic_type() == Inpar::Solid::dyna_statics and
-      datasdyn_->get_mass_lin_type() != Inpar::Solid::ml_none)
+      datasdyn_->get_mass_lin_type() != Inpar::Solid::MassLin::ml_none)
     FOUR_C_THROW(
         "Do not set parameter MASSLIN in static simulations as this leads to undesired"
         " evaluation of mass matrix on element level!");

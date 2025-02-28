@@ -523,7 +523,7 @@ namespace Solid
     //@{
 
     //! Return bool indicating if we have nonlinear inertia forces
-    int have_nonlinear_mass() const;
+    Inpar::Solid::MassLin have_nonlinear_mass() const;
 
     //! check whether the initial conditions are fulfilled */
     virtual void nonlinear_mass_sanity_check(

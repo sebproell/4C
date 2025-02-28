@@ -926,7 +926,7 @@ void Solid::TimIntImpl::apply_force_stiff_internal_and_inertial(const double tim
   params.set("timintfac_dis", timintfac_dis);
   params.set("timintfac_vel", timintfac_vel);
 
-  if (have_nonlinear_mass() == Inpar::Solid::ml_rotations)
+  if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_rotations)
   {
     params.set("rot_beta", beta);
     params.set("rot_gamma", gamma);
@@ -4209,7 +4209,7 @@ void Solid::TimIntImpl::use_block_matrix(
     p.set("delta time", (*dt_)[0]);
 
     std::shared_ptr<Core::LinAlg::Vector<double>> finert = nullptr;
-    if (have_nonlinear_mass())
+    if (have_nonlinear_mass() != Inpar::Solid::MassLin::ml_none)
     {
       finert = Core::LinAlg::create_vector(*dof_row_map_view(), true);  // inertial force
       // Note: the following parameters are just dummies, since they are only needed to calculate

@@ -365,7 +365,7 @@ void Solid::TimInt::create_fields()
   mass_ = std::make_shared<Core::LinAlg::SparseMatrix>(*dof_row_map_view(), 81, false, true);
   if (damping_ != Inpar::Solid::damp_none)
   {
-    if (have_nonlinear_mass() == Inpar::Solid::ml_none)
+    if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
     {
       damp_ = std::make_shared<Core::LinAlg::SparseMatrix>(*dof_row_map_view(), 81, false, true);
     }
@@ -2516,7 +2516,7 @@ void Solid::TimInt::apply_force_external(const double time,
 
 /*----------------------------------------------------------------------*/
 /* check whether we have nonlinear inertia forces or not */
-int Solid::TimInt::have_nonlinear_mass() const
+Inpar::Solid::MassLin Solid::TimInt::have_nonlinear_mass() const
 {
   const Teuchos::ParameterList& sdyn = Global::Problem::instance()->structural_dynamic_params();
   auto masslin = Teuchos::getIntegralValue<Inpar::Solid::MassLin>(sdyn, "MASSLIN");
@@ -2564,7 +2564,7 @@ void Solid::TimInt::nonlinear_mass_sanity_check(
         dispnorm, velnorm, accnorm);
   }
 
-  if (have_nonlinear_mass() == Inpar::Solid::ml_rotations and
+  if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_rotations and
       Teuchos::getIntegralValue<Inpar::Solid::PredEnum>(*sdynparams, "PREDICT") !=
           Inpar::Solid::pred_constdis)
   {
@@ -2575,7 +2575,7 @@ void Solid::TimInt::nonlinear_mass_sanity_check(
 
   if (sdynparams != nullptr)
   {
-    if (have_nonlinear_mass() == Inpar::Solid::ml_rotations and
+    if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_rotations and
         Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(*sdynparams, "DYNAMICTYPE") !=
             Inpar::Solid::dyna_genalpha)
     {

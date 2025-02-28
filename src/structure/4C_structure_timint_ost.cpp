@@ -87,7 +87,7 @@ void Solid::TimIntOneStepTheta::setup()
   // call setup() in base class
   Solid::TimIntImpl::setup();
 
-  if (!have_nonlinear_mass())
+  if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
   {
     // determine mass, damping and initial accelerations
     determine_mass_damp_consist_accel();
@@ -142,7 +142,7 @@ void Solid::TimIntOneStepTheta::setup()
   pwindk.set("time_step_size", (*dt_)[0]);
   apply_force_stiff_cardiovascular0_d((*time_)[0], (*dis_)(0), fint_, stiff_, pwindk);
 
-  if (!have_nonlinear_mass())
+  if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
   {
     // set initial internal force vector
     apply_force_stiff_internal(
@@ -281,7 +281,7 @@ void Solid::TimIntOneStepTheta::evaluate_force_stiff_residual(Teuchos::Parameter
   fintn_->PutScalar(0.0);
 
   // build new internal forces and stiffness
-  if (!have_nonlinear_mass())
+  if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
   {
     // ordinary internal force and stiffness
     apply_force_stiff_internal(
@@ -340,7 +340,7 @@ void Solid::TimIntOneStepTheta::evaluate_force_stiff_residual(Teuchos::Parameter
   // ************************** (3) INERTIAL FORCES ***************************
 
   // build new internal forces and stiffness
-  if (!have_nonlinear_mass())
+  if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
   {
     // inertial forces #finertt_
     mass_->multiply(false, *acct_, *finertt_);
@@ -436,7 +436,7 @@ void Solid::TimIntOneStepTheta::evaluate_force_residual()
   fintn_->PutScalar(0.0);
 
   // build new internal forces and stiffness
-  if (!have_nonlinear_mass())
+  if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
   {
     // ordinary internal force and stiffness
     apply_force_internal(timen_, (*dt_)[0], disn_, disi_, veln_, fintn_);
@@ -449,7 +449,7 @@ void Solid::TimIntOneStepTheta::evaluate_force_residual()
   // ************************** (3) INERTIAL FORCES ***************************
 
   // build new internal forces and stiffness
-  if (!have_nonlinear_mass())
+  if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
   {
     // inertial forces #finertt_
     mass_->multiply(false, *acct_, *finertt_);
@@ -652,7 +652,7 @@ void Solid::TimIntOneStepTheta::update_step_element()
   discret_->clear_state();
   discret_->set_state("displacement", (*dis_)(0));
 
-  if (!have_nonlinear_mass())
+  if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
   {
     discret_->evaluate(p, nullptr, nullptr, nullptr, nullptr, nullptr);
   }

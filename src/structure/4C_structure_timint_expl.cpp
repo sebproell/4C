@@ -86,7 +86,7 @@ void Solid::TimIntExpl::setup()
     FOUR_C_THROW("Explicit time integration schemes cannot handle local co-ordinate systems");
 
   // explicit time integrators cannot handle nonlinear inertia forces
-  if (have_nonlinear_mass())
+  if (have_nonlinear_mass() != Inpar::Solid::MassLin::ml_none)
     FOUR_C_THROW(
         "Explicit time integration schemes cannot handle nonlinear inertia forces (flag: MASSLIN)");
 

@@ -43,7 +43,7 @@ FOUR_C_NAMESPACE_OPEN
  *----------------------------------------------------------------------------*/
 Solid::ModelEvaluator::Structure::Structure()
     : dt_ele_ptr_(nullptr),
-      masslin_type_(Inpar::Solid::ml_none),
+      masslin_type_(Inpar::Solid::MassLin::ml_none),
       stiff_ptr_(nullptr),
       stiff_ptc_ptr_(nullptr),
       dis_incr_ptr_(nullptr),
@@ -423,7 +423,7 @@ bool Solid::ModelEvaluator::Structure::apply_force_stiff_internal()
   // set action types and evaluate matrices/vectors
   static_contributions(eval_mat.data(), eval_vec.data());
   material_damping_contributions(eval_mat.data());
-  if (masslin_type_ != Inpar::Solid::ml_none)
+  if (masslin_type_ != Inpar::Solid::MassLin::ml_none)
     inertial_contributions(eval_mat.data(), eval_vec.data());
 
   // evaluate
@@ -517,7 +517,8 @@ void Solid::ModelEvaluator::Structure::inertial_contributions(
 {
   check_init_setup();
 
-  if (masslin_type_ == Inpar::Solid::ml_none or tim_int().get_data_sdyn_ptr()->neglect_inertia())
+  if (masslin_type_ == Inpar::Solid::MassLin::ml_none or
+      tim_int().get_data_sdyn_ptr()->neglect_inertia())
     return;
 
   // overwrite element action
@@ -536,7 +537,8 @@ void Solid::ModelEvaluator::Structure::inertial_and_viscous_forces()
 {
   check_init_setup();
 
-  if (masslin_type_ == Inpar::Solid::ml_none and !tim_int().get_data_sdyn_ptr()->neglect_inertia())
+  if (masslin_type_ == Inpar::Solid::MassLin::ml_none and
+      !tim_int().get_data_sdyn_ptr()->neglect_inertia())
   {
     // calculate the inertial force at t_{n+1}
     mass().multiply(false, *global_state().get_acc_np(), finertial_np());
@@ -579,15 +581,14 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Solid::ModelEvaluator::Structure::
 {
   switch (masslin_type_)
   {
-    case Inpar::Solid::ml_rotations:
-    case Inpar::Solid::ml_standard:
+    case Inpar::Solid::MassLin::ml_rotations:
     {
       finertial_np().PutScalar(0.0);
       // set inertial force
       return global_state().get_finertial_np();
       break;
     }
-    case Inpar::Solid::ml_none:
+    case Inpar::Solid::MassLin::ml_none:
       // do nothing
       break;
     default:
@@ -1592,7 +1593,7 @@ void Solid::ModelEvaluator::Structure::determine_energy(const Core::LinAlg::Vect
   determine_strain_energy(disnp, global);
 
   // global calculation of kinetic energy
-  if (masslin_type_ == Inpar::Solid::ml_none and velnp != nullptr)
+  if (masslin_type_ == Inpar::Solid::MassLin::ml_none and velnp != nullptr)
   {
     double kinetic_energy_times2 = 0.0;
 
