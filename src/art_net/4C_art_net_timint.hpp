@@ -149,9 +149,6 @@ namespace Arteries
 
     void solve_scatra() override = 0;
 
-    //! is output needed for the current time step?
-    bool do_output() { return ((step_ % upres_ == 0) or (step_ % uprestart_ == 0)); };
-
     // set solve scatra flag
     void set_solve_scatra(const bool solvescatra) override
     {
