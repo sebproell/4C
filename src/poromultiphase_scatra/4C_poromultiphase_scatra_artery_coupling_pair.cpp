@@ -19,6 +19,7 @@
 #include "4C_mat_fluidporo_multiphase.hpp"
 #include "4C_porofluidmultiphase_ele_parameter.hpp"
 #include "4C_poromultiphase_scatra_artery_coupling_defines.hpp"
+#include "4C_scatra_ele_parameter_timint.hpp"
 #include "4C_utils_fad.hpp"
 #include "4C_utils_function.hpp"
 
@@ -2337,6 +2338,8 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
     const std::vector<double>& scalarnpAtGP, double& functval, std::vector<double>& artderivs,
     std::vector<double>& contderivs)
 {
+  double time = Discret::Elements::ScaTraEleParameterTimInt::instance("scatra")->time();
+
   switch (coupltype_)
   {
     case type_porofluid:
@@ -2355,14 +2358,15 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
       set_fluid_values_as_variables(variables, artpressnpAtGP);
 
       // set reference artery diameter as constant
-      constants.push_back(std::pair<std::string, double>("D0", arterydiamref_));
+      constants.emplace_back("D0", arterydiamref_);
 
       // set artery diameter of previous time step as constant
-      constants.push_back(
-          std::pair<std::string, double>("Dprev", arterymat_->diam_previous_time_step()));
+      constants.emplace_back("Dprev", arterymat_->diam_previous_time_step());
 
       // set artery diameter as variable
-      variables.push_back(std::pair<std::string, double>("D", arterydiam_at_gp_));
+      variables.emplace_back("D", arterydiam_at_gp_);
+
+      constants.emplace_back("t", time);
 
       // evaluate the reaction term
       functval = funct.evaluate(variables, constants, 0);
@@ -2387,6 +2391,8 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
       set_scalar_values_as_variables(variables, artscalarnpAtGP, scalarnpAtGP);
 
       set_fluid_values_as_constants(constants, artpressnpAtGP);
+
+      constants.emplace_back("t", time);
 
       // evaluate the reaction term
       functval = funct.evaluate(variables, constants, 0);
