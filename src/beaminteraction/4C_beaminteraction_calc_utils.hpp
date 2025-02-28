@@ -80,7 +80,6 @@ namespace BeamInteraction
      * simulation with crosslinker is not wrong, but depends randomly on memory
      * allocation, i.e. pointer addresses. Without random numbers, everything is fine
      * with default compare operator
-    *  \author J. Eichinger March 2017
      -------------------------------------------------------------------------*/
     class Less
     {
@@ -94,7 +93,6 @@ namespace BeamInteraction
 
     /*! -------------------------------------------------------------------------
      * class for comparing std::set< std::pair < int, int > >
-     *  \author J. Eichinger March 2017
      -------------------------------------------------------------------------*/
     class StdPairComparatorOrderCounts
     {

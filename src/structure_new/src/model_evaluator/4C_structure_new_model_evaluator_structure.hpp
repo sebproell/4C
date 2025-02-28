@@ -75,7 +75,7 @@ namespace Solid
        *  Rayleigh damping matrix only once during the equilibrate_initial_state routine.
        *
        *  \date 09/16
-       *  \author hiermeier */
+       *  */
       bool initialize_inertia_and_damping();
 
       //! derived
@@ -212,7 +212,7 @@ namespace Solid
        *  \return TRUE, if the execution of apply_force_stiff_external shall be
        *  skipped. Otherwise FALSE will be returned.
        *
-       *  \author hiermeier \date 02/18 */
+       *  */
       bool pre_apply_force_stiff_external(
           Core::LinAlg::Vector<double>& fextnp, Core::LinAlg::SparseMatrix& stiff) const;
 
@@ -227,7 +227,7 @@ namespace Solid
        *  \param eval_mat (out) : linearization of the external force (optional)
        *
        *  \date 08/15
-       *  \author hiermeier */
+       *  */
       void evaluate_neumann(Teuchos::ParameterList& p, Core::LinAlg::Vector<double>& eval_vec,
           const std::shared_ptr<Core::LinAlg::SparseOperator>& eval_mat);
 
@@ -243,7 +243,7 @@ namespace Solid
        *  \param eval_mat (out) : array of different matrices (stiffness, mass, damping)
        *
        *  \date 08/15
-       *  \author hiermeier */
+       *  */
       void evaluate_internal(Teuchos::ParameterList& p,
           std::shared_ptr<Core::LinAlg::SparseOperator>* eval_mat,
           std::shared_ptr<Core::LinAlg::Vector<double>>* eval_vec);
@@ -258,7 +258,7 @@ namespace Solid
       /*! \brief  Check if the given parameter list is valid and call the
        *  Evaluate routine for all elements specified in the element map
        *
-       *  \author grill */
+       *  */
       void evaluate_internal_specified_elements(Teuchos::ParameterList& p,
           std::shared_ptr<Core::LinAlg::SparseOperator>* eval_mat,
           std::shared_ptr<Core::LinAlg::Vector<double>>* eval_vec,
@@ -275,7 +275,7 @@ namespace Solid
        *                         changed.
        *
        *  \date 09/16
-       *  \author hiermeier */
+       *  */
       void static_contributions(std::shared_ptr<Core::LinAlg::SparseOperator>* eval_mat,
           std::shared_ptr<Core::LinAlg::Vector<double>>* eval_vec);
 
@@ -287,7 +287,7 @@ namespace Solid
        *                         changed.
        *
        *  \date 09/16
-       *  \author hiermeier */
+       *  */
       void static_contributions(std::shared_ptr<Core::LinAlg::Vector<double>>* eval_vec);
 
       /*! \brief Add material damping matrix  to the evaluate call (optional)
@@ -300,7 +300,7 @@ namespace Solid
        *  considered at the same time at the moment!
        *
        *  \date 09/16
-       *  \author hiermeier */
+       *  */
       void material_damping_contributions(std::shared_ptr<Core::LinAlg::SparseOperator>* eval_mat);
 
       /*! \brief Add mass matrix and inertial force to the evaluate call (optional)
@@ -319,7 +319,7 @@ namespace Solid
        *  considered at the same time at the moment!
        *
        *  \date 09/16
-       *  \author hiermeier */
+       *  */
       void inertial_contributions(std::shared_ptr<Core::LinAlg::SparseOperator>* eval_mat,
           std::shared_ptr<Core::LinAlg::Vector<double>>* eval_vec);
 
@@ -335,14 +335,14 @@ namespace Solid
        *  considered at the same time at the moment!
        *
        *  \date 09/16
-       *  \author hiermeier */
+       *  */
       void inertial_contributions(std::shared_ptr<Core::LinAlg::Vector<double>>* eval_vec);
 
       /*! \brief Evaluate the inertial forces (for the standard case) and
        *         any viscous damping forces
        *
        *  \date 09/16
-       *  \author hiermeier */
+       *  */
       void inertial_and_viscous_forces();
 
       /*! Check the fill_complete status of the stiffness and mass matrix
@@ -355,7 +355,7 @@ namespace Solid
        *  Solid::Integrator::equilibrate_initial_state routine!
        *
        *  \date 09/16
-       *  \author hiermeier */
+       *  */
       void rayleigh_damping_matrix();
 
       /*! \brief Returns the interial force vector for non-linear mass problems
@@ -365,13 +365,13 @@ namespace Solid
        *  pointer is returned.
        *
        *  \date 09/16
-       *  \author hiermeier */
+       *  */
       std::shared_ptr<Core::LinAlg::Vector<double>> get_inertial_force();
 
       /*! \brief writes output for discretization structure
        *
        *  \date 04/17
-       *  \author eichinger */
+       *  */
       void init_output_runtime_structure();
 
       /*!
@@ -384,20 +384,20 @@ namespace Solid
       /*! \brief writes output for discretization structure at the end of a time step
        *
        *  \date 04/17
-       *  \author grill */
+       *  */
       void write_time_step_output_runtime_structure() const;
 
       /*! \brief writes output for discretization structure
        *         at the end of a nonlinear iteration
        *
        *  \date 10/17
-       *  \author grill */
+       *  */
       void write_iteration_output_runtime_structure() const;
 
       /*! \brief writes output for discretization structure
        *
        *  \date 10/17
-       *  \author grill */
+       *  */
       void write_output_runtime_structure(
           const Core::LinAlg::Vector<double>& displacement_state_vector,
           const Core::LinAlg::Vector<double>& velocity_state_vector,
@@ -414,25 +414,25 @@ namespace Solid
       /*! \brief writes special output for beam elements
        *
        *  \date 04/17
-       *  \author eichinger */
+       *  */
       void init_output_runtime_beams();
 
       /*! \brief writes special output for beam elements at the end of a time step
        *
        *  \date 04/17
-       *  \author grill */
+       *  */
       void write_time_step_output_runtime_beams() const;
 
       /*! \brief writes special output for beam elements at the end of a nonlinear iteration
        *
        *  \date 10/17
-       *  \author grill */
+       *  */
       void write_iteration_output_runtime_beams() const;
 
       /*! \brief writes special output for beam elements
        *
        *  \date 10/17
-       *  \author grill */
+       *  */
       void write_output_runtime_beams(Core::LinAlg::Vector<double>& displacement_state_vector,
           int timestep_number, double time) const;
 
@@ -446,7 +446,7 @@ namespace Solid
        *  interface class.
        *
        *  \date 12/16
-       *  \author seitz */
+       *  */
       void params_interface2_parameter_list(
           std::shared_ptr<Solid::ModelEvaluator::Data> interface_ptr,
           Teuchos::ParameterList& params);

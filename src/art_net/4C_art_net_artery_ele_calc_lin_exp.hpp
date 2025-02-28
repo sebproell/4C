@@ -30,8 +30,6 @@ namespace Discret
       provides a clean and fast element implementation.
 
       <h3>Purpose</h3>
-
-      \author ismail
       \date 01/09
     */
 

@@ -22,7 +22,6 @@ namespace CONTACT
    *  contact simulation between different strategy objects. By using this the
    *  actual strategy stays stateless!
    *
-   *  \author  hiermeier
    *  \date 05/16 */
   class AbstractStrategyDataContainer : public Mortar::StrategyDataContainer
   {

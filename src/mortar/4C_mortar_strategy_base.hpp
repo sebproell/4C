@@ -57,7 +57,6 @@ namespace Mortar
    *  contact simulation between different strategy objects. By using this the
    *  actual strategy stays stateless!
    *
-   *  \author  hiermeier
    *  \date 05/16 */
   class StrategyDataContainer
   {
@@ -393,7 +392,6 @@ namespace Mortar
      *
      * \remark This has to stay PRIVATE, otherwise this function becomes ambiguous.
      *
-     * \author hiermeier
      * \date 05/16 */
     Mortar::StrategyDataContainer& data() { return *data_ptr_; }
 
@@ -402,7 +400,6 @@ namespace Mortar
      *
      * \remark This has to stay PRIVATE, otherwise this function becomes ambiguous.
      *
-     * \author hiermeier
      * \date 05/16 */
     const Mortar::StrategyDataContainer& data() const { return *data_ptr_; }
 

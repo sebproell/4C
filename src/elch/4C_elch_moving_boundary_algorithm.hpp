@@ -20,8 +20,6 @@ namespace ElCh
   /*!
 
     ELCH algorithm with moving meshes. Derives from ScaTraFluidAleCouplingAlgorithm.
-
-    \author gjb
     \date 05/09
    */
   class MovingBoundaryAlgorithm : public Adapter::ScaTraFluidAleCouplingAlgorithm

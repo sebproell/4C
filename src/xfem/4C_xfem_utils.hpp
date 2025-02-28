@@ -20,7 +20,6 @@ namespace XFEM
   namespace Utils
   {
     //! extract the nodal vectors and store them in node-vector-map
-    //! \author schott \date 01/13
     void extract_node_vectors(Core::FE::Discretization& dis,
         std::map<int, Core::LinAlg::Matrix<3, 1>>& nodevecmap,
         std::shared_ptr<Core::LinAlg::Vector<double>> idispnp);

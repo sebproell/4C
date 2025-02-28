@@ -54,7 +54,6 @@ namespace NOX
            *  and the function should return FALSE.
            *  Nevertheless, this may change during one of the following iterations!
            *
-           *  \author Michael Hiermeier
            *  \date 04/2016 */
           virtual bool is_saddle_point_system() const = 0;
 
@@ -67,7 +66,6 @@ namespace NOX
            *  and the function should return FALSE.
            *  Nevertheless, this may change during one of the following iterations!
            *
-           *  \author Michael Hiermeier
            *  \date 04/2016 */
           virtual bool is_condensed_system() const = 0;
 

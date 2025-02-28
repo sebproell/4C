@@ -23,7 +23,7 @@ namespace Solid
   {
     /** \brief Explicit time integration strategy
      *
-     * \author Michael Hiermeier */
+     * */
     class Explicit : public Base
     {
      public:

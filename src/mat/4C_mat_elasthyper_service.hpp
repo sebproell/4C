@@ -185,7 +185,6 @@ namespace Mat
    *  <h3>References</h3>
    *  See Holzapfel, p 245-246, p 257-259, p 263-264
    *
-   * \author bborn
    * \date 08/09
    * @param cmat (out) : Material elasticity tensor in Voigt notation
    * @param S_stress (out) : 2n Piola-Kirchhoff stress tensor in stress-like Voigt notation
@@ -343,7 +342,6 @@ namespace Mat
    *  dependent on principal or modified invariants)
    *  is tested with eq. (5.31) of Vera Ebbing - PHD-thesis (p. 79).
    *  Partial derivatives of SEF are used.
-   *  \author birzle
    *  \date 04/2016
    *
    * @param defgrd (in) : Deformation gradient

@@ -237,8 +237,6 @@ namespace CONTACT
     \todo Argument \c numiter not used. Can it be removed?
 
     \sa update_displacements_and_l_mincrements
-
-    \author Tobias Wiesner \date 11/2014
     */
     void build_saddle_point_system(std::shared_ptr<Core::LinAlg::SparseOperator> kdd,
         std::shared_ptr<Core::LinAlg::Vector<double>> fd,
@@ -267,8 +265,6 @@ namespace CONTACT
                     merged linear system, i.e. displacement and Lagrange multiplier DOFs)
 
     \sa build_saddle_point_system
-
-    \author Tobias Wiesner \date 11/2014
     */
     void update_displacements_and_l_mincrements(std::shared_ptr<Core::LinAlg::Vector<double>> sold,
         std::shared_ptr<const Core::LinAlg::Vector<double>> blocksol) override;

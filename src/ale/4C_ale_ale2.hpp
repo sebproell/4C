@@ -338,7 +338,6 @@ namespace Discret
        *  Use current displacement state, i.e. current/spatial configuration.
        *  Check for invalid mappings (detJ <= 0)
        *
-       *  \author mayr.mt \date 01/2016
        */
       void compute_det_jac(
           Core::LinAlg::SerialDenseVector& elevec1,  ///< vector with element result data

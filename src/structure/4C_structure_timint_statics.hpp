@@ -31,7 +31,6 @@ namespace Solid
    *
    * Regarding this matter, please direct any complaints to Axel Gerstenberger.
    *
-   * \author bborn
    * \date 06/08
    */
   class TimIntStatics : public TimIntImpl
@@ -74,7 +73,7 @@ namespace Solid
     \warning none
     \return bool
     \date 08/16
-    \author rauch  */
+    */
     void init(const Teuchos::ParameterList& timeparams, const Teuchos::ParameterList& sdynparams,
         const Teuchos::ParameterList& xparams, std::shared_ptr<Core::FE::Discretization> actdis,
         std::shared_ptr<Core::LinAlg::Solver> solver) override;
@@ -96,7 +95,7 @@ namespace Solid
     \warning none
     \return void
     \date 08/16
-    \author rauch  */
+    */
     void setup() override;
 
     //! Resize #TimIntMStep<T> multi-step quantities
@@ -177,7 +176,6 @@ namespace Solid
     void evaluate_force_residual() override;
 
     //! Determine characteristic norm for force
-    //! \author lw (originally)
     double calc_ref_norm_force() override;
 
     //! Update iteration incrementally

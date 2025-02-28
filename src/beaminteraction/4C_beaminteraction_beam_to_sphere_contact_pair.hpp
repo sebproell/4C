@@ -92,14 +92,12 @@ namespace BeamInteraction
 
     /** \brief print information about this beam contact element pair to screen
      *
-     *  \author grill
      *  \date 05/16 */
     void print(std::ostream& out) const override;
 
 
     /** \brief print this beam contact element pair to screen
      *
-     *  \author grill
      *  \date 12/16 */
     void print_summary_one_line_per_active_segment_pair(std::ostream& out) const override;
     //@}

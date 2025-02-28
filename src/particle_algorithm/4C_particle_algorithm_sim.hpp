@@ -15,7 +15,6 @@ FOUR_C_NAMESPACE_OPEN
 /*!
  * \brief main control routine for particle simulations
  *
- * \author Sebastian Fuchs \date 03/2018
  */
 void particle_drt();
 

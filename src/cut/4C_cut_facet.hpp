@@ -128,7 +128,7 @@ namespace Cut
     /** \brief Check if the given volume cell is equal to one of the already
      *         stored volume cells in this facet.
      *
-     *  \author  hiermeier \date 12/16 */
+     *  */
     bool contains(const plain_facet_set& vcell) const;
 
     bool contains(const std::vector<Point*>& side) const;

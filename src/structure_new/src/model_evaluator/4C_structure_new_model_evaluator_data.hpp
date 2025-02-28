@@ -73,7 +73,6 @@ namespace Solid
      * - Create your own data container class and use a call-back to the parent container to avoid
      *   code redundancy.
      *
-     * \author hiermeier \date 03/2016
      */
     class Data : public Solid::Elements::ParamsInterface
     {
@@ -969,7 +968,6 @@ namespace Solid
 
     /*! data container holding special parameters required for the evaluation of beam elements
      *
-     * \author Maximilian Grill
      * \date 08/16 */
     class BeamData : public Solid::Elements::BeamParamsInterface
     {
@@ -1075,7 +1073,6 @@ namespace Solid
     /*--------------------------------------------------------------------------*/
     /*! Contact data container for the contact model evaluation procedure.
      *
-     * \author Michael Hiermeier
      * \date 04/16 */
     class ContactData : public CONTACT::ParamsInterface
     {
@@ -1129,7 +1126,7 @@ namespace Solid
        *
        * @return Type of predictor
        *
-       * \author hiermeier \date 02/18 */
+       * */
       [[nodiscard]] enum Inpar::Solid::PredEnum get_predictor_type() const override
       {
         check_init();
@@ -1308,7 +1305,6 @@ namespace Solid
 
     /*! Brownian dynamic data container for the model evaluation procedure.
      *
-     * \author Jonas Eichinger
      * \date 06/16 */
     class BrownianDynData : public BrownianDynamics::ParamsInterface
     {

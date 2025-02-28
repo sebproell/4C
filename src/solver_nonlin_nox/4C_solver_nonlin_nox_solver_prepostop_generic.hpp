@@ -30,7 +30,7 @@ namespace NOX
          * ToDo Extend the functionality to non-linear solvers which are not
          * derived from the LineSearchBased class.
          *
-         * \author Michael Hiermeier */
+         * */
 
         class Generic : public ::NOX::Observer
         {

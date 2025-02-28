@@ -36,7 +36,7 @@ namespace Core::Elements
    *  Theoretically, the Teuchos::ParameterList can be replaced by the interface itself!
    *
    *  \date 03/2016
-   *  \author hiermeier */
+   *  */
   class ParamsInterface
   {
    public:

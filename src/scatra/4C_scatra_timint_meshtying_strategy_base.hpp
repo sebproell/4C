@@ -153,7 +153,6 @@ namespace ScaTra
 
     \return void
     \date 08/16
-    \author rauch
     */
     virtual void evaluate_condition(Teuchos::ParameterList& params,
         std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
@@ -231,7 +230,6 @@ namespace ScaTra
 
     \return void
     \date 12/16
-    \author rauch
     */
     virtual void set_state(unsigned nds, const std::string& name,
         std::shared_ptr<const Core::LinAlg::Vector<double>> state)

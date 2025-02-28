@@ -64,7 +64,7 @@ namespace Solid
      *  evaluators share.
      *
      *  \date 11/16
-     *  \author rauch */
+     *  */
     class Multiphysics : public Generic
     {
      public:

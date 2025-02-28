@@ -15,7 +15,6 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*/
 /// Myocard math tools general to all materials
 ///
-/// \author cbert
 
 
 /// \date 08/13

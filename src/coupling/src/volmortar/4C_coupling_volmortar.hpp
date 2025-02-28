@@ -108,8 +108,6 @@ namespace Coupling::VolMortar
    When calling evaluate() this class will identify volume cells (using polygon
    clipping in 2D and the cut algorithm in 3D) OR skip this and ignore weak discontinuities,
    and build a volmortar integrator class, which evaluates the two projection matrices.
-
-   \author vuong 01/14
    */
   class VolMortarCoupl
   {

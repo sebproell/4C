@@ -370,7 +370,7 @@ namespace CONTACT
      * element based case.
      *
      * \date 04/16
-     * \author hiermeier */
+     * */
     void find_feasible_master_elements(std::vector<Mortar::Element*>& feasible_ma_eles) const;
 
    protected:

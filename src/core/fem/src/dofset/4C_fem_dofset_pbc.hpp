@@ -32,8 +32,6 @@ namespace Core::DOFSets
 
   /*!
   \brief A set of degrees of freedom
-
-  \author gammi
   */
   class PBCDofSet : virtual public DofSet
   {

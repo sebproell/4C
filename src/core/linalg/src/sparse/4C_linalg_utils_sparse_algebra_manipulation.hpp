@@ -67,7 +67,7 @@ namespace Core::LinAlg
    *
    *  \return the extracted partial Core::LinAlg::Vector<double> as RCP
    *
-   *  \author hiermeier \date 03/17 */
+   *  */
   std::unique_ptr<Core::LinAlg::Vector<double>> extract_my_vector(
       const Core::LinAlg::Vector<double>& source, const Epetra_Map& target_map);
 
@@ -77,7 +77,7 @@ namespace Core::LinAlg
    *  \param source (in) : source vector ( read-only )
    *  \param target (out): this target vector is going to be filled
    *
-   *  \author hiermeier \date 03/17 */
+   *  */
   void extract_my_vector(
       const Core::LinAlg::Vector<double>& source, Core::LinAlg::Vector<double>& target);
 
@@ -221,7 +221,7 @@ namespace Core::LinAlg
    *  Return 0, if successful. If the given matrix is already filled, the method
    *  returns -1. In this case you should use replace_diagonal_values(), instead.
    *
-   *  \author hiermeier \date 03/17 */
+   *  */
   int insert_my_row_diagonal_into_unfilled_matrix(
       Core::LinAlg::SparseMatrix& mat, const Core::LinAlg::Vector<double>& diag);
 

@@ -35,8 +35,6 @@ namespace Lubrication
 
   /*!
     \brief lubrication specific result test class
-
-    \author wirtz
     \date 11/15
   */
   class ResultTest : public Core::Utils::ResultTest

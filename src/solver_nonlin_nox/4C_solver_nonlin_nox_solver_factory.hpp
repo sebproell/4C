@@ -33,8 +33,6 @@ namespace NOX
     {
       /*! \brief %Modified Factory class to control the creation of solvers derived from the
       ::NOX::Solver::Generic object.
-
-      \author Michael Hiermeier
       */
 
       class Factory

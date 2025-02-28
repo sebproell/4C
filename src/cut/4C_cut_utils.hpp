@@ -135,7 +135,7 @@ namespace Cut
    *  \param unit_normal  (in)  : scale the normal vectors to unit length if \TRUE
    *
    *  \date 07/16
-   *  \author hiermeier */
+   *  */
   template <unsigned probdim, Core::FE::CellType distype, typename Valtype,
       unsigned num_nodes_element = Core::FE::num_nodes<distype>,
       unsigned dim = Core::FE::dim<distype>>
@@ -250,7 +250,6 @@ namespace Cut
    *
    *  For more information, see description of the actual function (above).
    *
-   *  \author hiermeier
    *  \date 08/16 */
   template <unsigned probdim, Core::FE::CellType distype, typename Valtype,
       unsigned num_nodes_element = Core::FE::num_nodes<distype>,
@@ -285,7 +284,7 @@ namespace Cut
    *  \param xyze (in)   : global nodal positions (rows == probdim, cols = numNodes)
    *  \param scale (out) : scaling factor
    *
-   *  \author hiermeier */
+   *  */
   template <unsigned probdim, class T>
   void get_element_scale(const T& xyze, double& scale)
   {
@@ -321,7 +320,7 @@ namespace Cut
    *  \param xyze (in)  : (scaled) global nodal positions (rows == probdim, cols = numNodes)
    *  \para shift (out) : shift vector to move the element center to the origin
    *
-   *  \author hiermeier */
+   *  */
   template <unsigned probdim, class T>
   void get_element_shift(const T& xyze, Core::LinAlg::Matrix<probdim, 1>& shift)
   {
@@ -351,7 +350,7 @@ namespace Cut
    *  \param correct_shape (out): matrix with the desired number of rows and columns.
    *                              (Core::LinAlg::SerialDenseMatrix or Core::LinAlg::(T)Matrix)
    *
-   *  \author hiermeier \date 11/16 */
+   *  */
   template <class T1, class T2>
   void fix_matrix_shape(const T1& wrong_shape, T2& correct_shape)
   {
@@ -376,7 +375,7 @@ namespace Cut
    *                            for dim = 1 and probdim = 3 )
    *  \param unit_normal (in) : scale the normal to unit length
    *
-   *  \author hiermeier \date 12/16 */
+   *  */
   template <unsigned probdim, Core::FE::CellType distype, class T1, class T2, class T3,
       unsigned num_nodes_element = Core::FE::num_nodes<distype>,
       unsigned dim = Core::FE::dim<distype>>
@@ -433,7 +432,7 @@ namespace Cut
    *                            for dim = 1 and probdim = 3 )
    *  \param unit_normal (in) : scale the normal to unit length
    *
-   *  \author hiermeier \date 12/16 */
+   *  */
   template <unsigned probdim, class T1, class T2, class T3>
   void eval_normal_vectors(Core::FE::CellType distype, const T1& xyze, const T2& rst,
       T3& normalvec1, T3* normalvec2 = nullptr, bool unit_normal = true)

@@ -91,7 +91,7 @@ namespace Discret
        *  \param erhs  (out) : element right-hand-side vector (part of the residual vector)
        *  \param bcell (in)  : boundary integration cell (necessary for the penalty term)
        *
-       *  \author hiermeier \date 12/16 */
+       *  */
       void elliptic_newton_system(Core::LinAlg::SerialDenseMatrix* emat,
           Core::LinAlg::SerialDenseVector* erhs,
           const Core::LinAlg::Matrix<nen_, 1>& el2sysmat_diag_inv,
@@ -203,7 +203,7 @@ namespace Discret
        *  \param erhs (out) : element vector to calculate
        *  \param cell (in)  : interface boundary integration cell
        *
-       *  \author hiermeier \date 11/16 */
+       *  */
       void calc_penalty_term_0_d(Core::LinAlg::SerialDenseMatrix* emat,
           Core::LinAlg::SerialDenseVector* erhs, const Core::Geo::BoundaryIntCell& cell);
 

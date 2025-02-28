@@ -519,7 +519,6 @@ namespace FLD
     /*!
      * \brief proc 0 writes the flow rate values for each condition ID to a file
      *
-     * \author mayer
      * \date 01/10
      */
     void write_doubles_to_file(const double time, const int step, const std::map<int, double>& data,

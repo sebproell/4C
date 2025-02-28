@@ -526,7 +526,7 @@ namespace Discret
        *  and for dim==2 the t-coordinate.
        *
        *  \param(in) dim: Desired coordinate.
-       *  \author hiermeier \date 12/17 */
+       *  */
       const double* soh8_get_coordinate_of_gausspoints(unsigned dim) const;
 
       /** \brief Evaluate the determinant of the current jacobian at each element
@@ -742,7 +742,6 @@ namespace Discret
 
       /** recover elementwise stored stuff
        *
-       * \author hiermeier
        * \date 04/16 */
       void soh8_recover(const std::vector<int>& lm, const std::vector<double>& residual);
 
@@ -755,7 +754,7 @@ namespace Discret
        *  Since this function is optional, the backup data is only allocated if
        *  it is really needed.
        *
-       *  \author hiermeier \date 12/17 */
+       *  */
       void soh8_create_eas_backup_state(const std::vector<double>& displ_incr);
 
       /** \brief recover a backup of the eas state consisting of enhanced strains
@@ -764,7 +763,7 @@ namespace Discret
        *  Since this function is optional, the backup data can only be accessed if
        *  soh8_create_eas_backup_state has been called previously.
        *
-       *  \author hiermeier \date 12/17 */
+       *  */
       void soh8_recover_from_eas_backup_state();
 
      private:

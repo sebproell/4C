@@ -33,7 +33,6 @@ namespace PARTICLEALGORITHM
   /*!
    * \brief viscous damping handler for particle simulations
    *
-   * \author Sebastian Fuchs \date 02/2019
    */
   class ViscousDampingHandler
   {
@@ -41,7 +40,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 02/2019
      *
      * \param[in] viscdampfac viscous damping factor
      */
@@ -50,14 +48,12 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief init viscous damping handler
      *
-     * \author Sebastian Fuchs \date 02/2019
      */
     void init();
 
     /*!
      * \brief setup viscous damping handler
      *
-     * \author Sebastian Fuchs \date 02/2019
      *
      * \param[in] particleengineinterface interface to particle engine
      */
@@ -67,7 +63,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief apply viscous damping contribution
      *
-     * \author Sebastian Fuchs \date 02/2019
      */
     void apply_viscous_damping();
 

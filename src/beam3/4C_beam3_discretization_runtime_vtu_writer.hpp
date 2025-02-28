@@ -59,7 +59,6 @@ namespace Discret
  *        Moreover, the results that we want to visualize are special, e.g. the triad field,
  *        cross-section resultants (axial force, shear forces, bending moments, torque), ...
  *
- * \author grill
  * \date 03/17
  */
 class BeamDiscretizationRuntimeOutputWriter
@@ -73,7 +72,6 @@ class BeamDiscretizationRuntimeOutputWriter
   virtual ~BeamDiscretizationRuntimeOutputWriter() = default;
   /** \brief initialize object with all required data
    *
-   *  \author grill
    *  \date 03/17 */
   void initialize(std::shared_ptr<Core::FE::Discretization> discretization,
       bool use_absolute_positions_for_point_coordinates, const unsigned int n_subsegments,
@@ -81,19 +79,16 @@ class BeamDiscretizationRuntimeOutputWriter
 
   /** \brief append triad field determined from given displacement state to output data
    *
-   *  \author grill
    *  \date 03/17 */
   void append_triad_field(const Core::LinAlg::Vector<double>& displacement_state_vector);
 
   /** \brief append discplacement state
    *
-   *  \author grill
    *  \date 03/17 */
   void append_displacement_field(const Core::LinAlg::Vector<double>& displacement_state_vector);
 
   /** \brief append tangent vector field determined from given displacement state to output data
    *
-   *  \author grill
    *  \date 03/17 */
   //  void AppendTangentVectorField(
   //      std::shared_ptr<const Core::LinAlg::Vector<double>> const& displacement_state_vector);
@@ -101,7 +96,6 @@ class BeamDiscretizationRuntimeOutputWriter
 
   /** \brief append information about element owning processor to output data
    *
-   *  \author grill
    *  \date 03/17 */
   void append_element_owning_processor();
 
@@ -117,39 +111,33 @@ class BeamDiscretizationRuntimeOutputWriter
 
   /** \brief append internal (elastic) energy of element
    *
-   *  \author eichinger
    *  \date 01/18 */
   void append_element_internal_energy();
 
   /** \brief append kinetic energy of element
    *
-   *  \author eichinger
    *  \date 01/18 */
   void append_element_kinetic_energy();
 
   /** \brief append information about to which filament an element belonging
    *
-   *  \author eichinger
    *  \date 05/17 */
   void append_element_filament_id_and_type();
 
   /** \brief append circular cross-section radius of elements to output data
    *
-   *  \author grill
    *  \date 03/17 */
   void append_element_circular_cross_section_radius();
 
   /** \brief append a vector field defining orientation and radius of a circular cross-section to
    * output data
    *
-   *  \author grill
    *  \date 03/17 */
   void append_point_circular_cross_section_information_vector(
       const Core::LinAlg::Vector<double>& displacement_state_vector);
 
   /** \brief append material cross-section strain resultant values at Gauss points to output data
    *
-   *  \author grill
    *  \date 03/17 */
   void append_gauss_point_material_cross_section_strain_resultants();
 
@@ -160,7 +148,6 @@ class BeamDiscretizationRuntimeOutputWriter
 
   /** \brief append material cross-section stress resultant values at Gauss points to output data
    *
-   *  \author grill
    *  \date 03/17 */
   void append_gauss_point_material_cross_section_stress_resultants();
 
@@ -171,7 +158,6 @@ class BeamDiscretizationRuntimeOutputWriter
 
   /** \brief append spatial cross-section stress resultant values at Gauss points to output data
    *
-   *  \author grill
    *  \date 03/17 */
   void append_gauss_point_spatial_cross_section_stress_resultants();
 
@@ -182,21 +168,18 @@ class BeamDiscretizationRuntimeOutputWriter
 
   /** \brief append element Orientation parameter with respect to x,y,z axis
    *
-   *  \author eichinger
    *  \date 08/17 */
   void append_element_orientation_parameter(
       const Core::LinAlg::Vector<double>& displacement_state_vector);
 
   /** \brief append sum of all element (node 0) internal energy cut in direction cut_dim
    *
-   *  \author eichinger
    *  \date 08/17 */
   void append_rve_crosssection_forces(
       const Core::LinAlg::Vector<double>& displacement_state_vector);
 
   /** \brief append current internal energy of the elements to output data
    *
-   *  \author grill
    *  \date 03/17 */
   void append_element_elastic_energy();
 
@@ -212,7 +195,6 @@ class BeamDiscretizationRuntimeOutputWriter
 
   /** \brief determine and set geometry data from beam elements based on given displacement state
    *
-   *  \author grill
    *  \date 03/17 */
   void set_geometry_from_beam_discretization(
       const Core::LinAlg::Vector<double>& displacement_state_vector);
@@ -220,7 +202,6 @@ class BeamDiscretizationRuntimeOutputWriter
  private:
   /** \brief insert all values of a given std::vector at the end of another given std::vector
    *
-   *  \author grill
    *  \date 03/17 */
   // Todo template <typename T>
   void insert_vector_values_at_back_of_other_vector(

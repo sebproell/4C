@@ -47,8 +47,6 @@ namespace FSI
     the order in which the filters handle the Discretizations, which in turn
     defines the dof number ordering of the Discretizations... Don't get
     confused. Just always list structure, fluid, ale. In that order.
-
-    \author u.kue
     \date 02/08
    */
   class Algorithm : public Adapter::AlgorithmBase

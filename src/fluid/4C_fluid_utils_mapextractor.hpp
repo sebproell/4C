@@ -49,7 +49,6 @@ namespace FLD
        * We need this in the context of XFFSI.
        * \param (in) additionalothermap : map of additional unconditioned DOF
        * \param (in) extractor : extractor, from which the conditions are cloned
-       * \author kruse
        * \date 05/2014
        */
       void setup(std::shared_ptr<const Epetra_Map>& additionalothermap,

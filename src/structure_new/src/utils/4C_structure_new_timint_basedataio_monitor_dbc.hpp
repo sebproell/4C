@@ -22,7 +22,7 @@ namespace Solid
   {
     /** \brief Input data container for monitoring reaction forces for structural (time) integration
      *
-     * \author Jonas Eichinger */
+     * */
     class ParamsMonitorDBC
     {
      public:

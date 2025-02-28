@@ -25,7 +25,7 @@ namespace BeamInteraction
 
     /*! Factory to build the desired model evaluator std::map
      *
-     *  \author Jonas Eichinger */
+     *  */
     class Factory
     {
      public:

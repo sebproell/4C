@@ -106,7 +106,7 @@ namespace Core::FE
   {
     /** \brief Specialized Dbc evaluation class for HDG discretizations
      *
-     *  \author hiermeier \date 10/16 */
+     *  */
     class DbcHDG : public Dbc
     {
      public:

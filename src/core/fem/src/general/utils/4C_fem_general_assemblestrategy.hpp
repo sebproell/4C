@@ -33,8 +33,6 @@ namespace Core::FE
     process. This class manages the element assembling. This simplifies the
     element loop in Core::FE::Discretization::evaluate(). Furthermore, the strategy
     can be exchanged in the assembly process needs to be modified.
-
-    \author u.kue
    */
   class AssembleStrategy
   {

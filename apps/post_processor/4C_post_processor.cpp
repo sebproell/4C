@@ -684,8 +684,6 @@ namespace
  \brief post-processor main routine
 
  Select the appropriate filter and run!
-
- \author kronbichler
  \date 03/14
  */
 int main(int argc, char** argv)

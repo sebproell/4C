@@ -44,7 +44,6 @@ namespace Solid
   /*!
    * \brief Time step size adaptivity with general Solid::TimInt scheme
    *
-   * \author bborn
    * \date 10/07
    */
   template <typename T>

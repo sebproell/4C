@@ -34,7 +34,6 @@ namespace ParticleRigidBody
   /*!
    * \brief rigid body data state container
    *
-   * \author Sebastian Fuchs \date 08/2020
    */
   class RigidBodyDataState final
   {
@@ -42,21 +41,18 @@ namespace ParticleRigidBody
     /*!
      * \brief init rigid body data state container
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void init();
 
     /*!
      * \brief setup rigid body data state container
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void setup();
 
     /*!
      * \brief allocate stored states
      *
-     * \author Sebastian Fuchs \date 08/2020
      *
      * \param[in] numrigidbodies number of rigid bodies
      */

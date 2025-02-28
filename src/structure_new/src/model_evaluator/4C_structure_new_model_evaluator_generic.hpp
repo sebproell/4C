@@ -81,7 +81,7 @@ namespace Solid
      *  example can be found at \ref Solid::ModelEvaluator::PartitionedFSI.
      *
      *  \date 08/15
-     *  \author hiermeier */
+     *  */
     class Generic
     {
      public:
@@ -139,32 +139,32 @@ namespace Solid
        *  \param[in] x current full state vector
        *
        *  \date 07/2016
-       *  \author hiermeier */
+       *  */
       virtual void reset(const Core::LinAlg::Vector<double>& x) = 0;
 
       /*! \brief Evaluate the current right-hand-side at \f$t_{n+1}\f$
        *
        *  \date 07/2016
-       *  \author hiermeier */
+       *  */
       virtual bool evaluate_force() = 0;
 
       /*! \brief Evaluate the initial right hand side (overload if needed for specific model)
        *
        *  \date 07/2016
-       *  \author hiermeier */
+       *  */
       virtual bool evaluate_initial_force() { return evaluate_force(); };
 
       /*! \brief Evaluate the current tangential stiffness matrix at \f$t_{n+1}\f$
        *
        *  \date 07/2016
-       *  \author hiermeier*/
+       *  */
       virtual bool evaluate_stiff() = 0;
 
       /*! \brief Evaluate the current right-hand-side vector and tangential stiffness matrix at
        * \f$t_{n+1}\f$
        *
        *  \date 07/2016
-       *  \author hiermeier */
+       *  */
       virtual bool evaluate_force_stiff() = 0;
 
       /** \brief evaluate the right hand side for the cheap second order correction step
@@ -172,7 +172,7 @@ namespace Solid
        *  This is an optional method which is mainly considered for constraint
        *  models.
        *
-       *  \author hiermeier \date 12/17 */
+       *  */
       virtual bool evaluate_cheap_soc_rhs() { return true; };
 
       /*! \brief Perform actions just before the evaluate() call
@@ -181,7 +181,6 @@ namespace Solid
        * Solid::ModelEvaluatorManager::Evaluate routines, such as evaluate_force,
        * evaluate_stiff, evaluate_force_stiff.
        *
-       * \author hiermeier \date 03/17
        */
       virtual void pre_evaluate() = 0;
 
@@ -191,7 +190,6 @@ namespace Solid
        * Solid::ModelEvaluatorManager::Evaluate routines, i.e. evaluate_force,
        * evaluate_stiff, evaluate_force_stiff.
        *
-       * \author hiermeier \date 03/17
        */
       virtual void post_evaluate() = 0;
 
@@ -199,7 +197,7 @@ namespace Solid
        *
        * @param[in/out] rhs right-hand side vector
        *
-       * \author hiermeier \date 03/18 */
+       * */
       virtual void remove_condensed_contributions_from_rhs(Core::LinAlg::Vector<double>& rhs) {}
 
       /*! \brief Assemble the force right-hand-side
@@ -222,7 +220,6 @@ namespace Solid
        * \return Boolean to indicate success (true) or error (false)
        *
        * \date 07/2016
-       * \author hiermeier
        */
       virtual bool assemble_force(
           Core::LinAlg::Vector<double>& f, const double& timefac_np) const = 0;
@@ -257,7 +254,7 @@ namespace Solid
        *  \param ioreader (in) : input reader
        *
        *  \date 07/2016
-       *  \author hiermeier */
+       *  */
       virtual void read_restart(Core::IO::DiscretizationReader& ioreader) = 0;
 
       /*! \brief Post setup operations
@@ -278,13 +275,13 @@ namespace Solid
        *  Typical examples are the EAS degrees of freedom or the dual Lagrange multipliers.
        *  Do NOT use it to reset your model variables! Use the reset() method instead.
        *
-       *  \author hiermeier \date 07/2016 */
+       *  */
       virtual void run_post_compute_x(const Core::LinAlg::Vector<double>& xold,
           const Core::LinAlg::Vector<double>& dir, const Core::LinAlg::Vector<double>& xnew) = 0;
 
       /*! \brief Executed before the solution vector is going to be updated
        *
-       *  \author hiermeier \date 03/17 */
+       *  */
       virtual void run_pre_compute_x(const Core::LinAlg::Vector<double>& xold,
           Core::LinAlg::Vector<double>& dir_mutable, const NOX::Nln::Group& curr_grp) = 0;
 
@@ -292,14 +289,14 @@ namespace Solid
        *
        *  \param solver (in) : reference to the non-linear nox solver object (read-only)
        *
-       *  \author hiermeier \date 03/17 */
+       *  */
       virtual void run_post_iterate(const ::NOX::Solver::Generic& solver) = 0;
 
       /*! \brief Executed at the beginning of the ::NOX::Solver::Generic::solve() method
        *
        *  \param solver (in) : reference to the non-linear nox solver object (read-only)
        *
-       *  \author hiermeier */
+       *  */
       virtual void run_pre_solve(const ::NOX::Solver::Generic& solver) {};
 
       /*! \brief Executed at the end of the NOX::Nln::LinearSystem::applyJacobianInverse()
@@ -312,7 +309,7 @@ namespace Solid
        *  \param xold  : read-only access to the old x state vector
        *  \param grp   : read only access to the group object
        *
-       *  \author hiermeier \date 12/17 */
+       *  */
       virtual void run_post_apply_jacobian_inverse(const Core::LinAlg::Vector<double>& rhs,
           Core::LinAlg::Vector<double>& result, const Core::LinAlg::Vector<double>& xold,
           const NOX::Nln::Group& grp)
@@ -330,7 +327,7 @@ namespace Solid
        *  \param xold  : read-only access to the old x state vector
        *  \param grp   : read only access to the group object
        *
-       *  \author hiermeier \date 12/17 */
+       *  */
       virtual void run_pre_apply_jacobian_inverse(const Core::LinAlg::Vector<double>& rhs,
           Core::LinAlg::Vector<double>& result, const Core::LinAlg::Vector<double>& xold,
           const NOX::Nln::Group& grp)
@@ -363,7 +360,7 @@ namespace Solid
        *
        *  \sa output_step_state
        *
-       *  \author hiermeier*/
+       *  */
       virtual void determine_stress_strain() = 0;
 
       /*! \brief calculate energy contributions of each model evaluator
@@ -375,7 +372,7 @@ namespace Solid
        *
        *  \sa output_step_state
        *
-       *  \author hiermeier*/
+       *  */
       virtual void determine_energy() = 0;
 
       /*! \brief calculate optional quantity contribution of each model evaluator
@@ -387,7 +384,7 @@ namespace Solid
        *
        *  \sa output_step_state
        *
-       *  \author hiermeier*/
+       *  */
       virtual void determine_optional_quantity() = 0;
 
       /*! \brief Output routine for model evaluator
@@ -419,7 +416,7 @@ namespace Solid
        *  example the EAS state or the condensed Lagrange multiplier state. The
        *  global state in terms of the x-vector is stored more globally.
        *
-       *  \author hiermeier \date 12/17 */
+       *  */
       virtual void create_backup_state(const Core::LinAlg::Vector<double>& dir) {
         /* do nothing in default */
       };
@@ -430,7 +427,7 @@ namespace Solid
        *  example the EAS state or the condensed Lagrange multiplier state. The
        *  global state in terms of the x-vector is recovered more globally.
        *
-       *  \author hiermeier \date 12/17 */
+       *  */
       virtual void recover_from_backup_state() { /* do nothing in default */ };
 
       //! @name Accessors to model specific things
@@ -491,7 +488,6 @@ namespace Solid
        *
        *  \return Boolean flag indicating success (true) or error (false)
        *
-       *  \author hiermeier
        */
       virtual bool eval_error_check() const;
 

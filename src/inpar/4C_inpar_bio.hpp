@@ -28,8 +28,6 @@ namespace Core::Conditions
 
 /*!----------------------------------------------------------------------
 \brief enum of arterial network dynamic types
-
-\author ismail \date 11/08
 This is the enumeration of all types of different integration schemes
 
 *-----------------------------------------------------------------------*/
@@ -37,8 +35,6 @@ This is the enumeration of all types of different integration schemes
 
 /*!----------------------------------------------------------------------
 \brief enum of reduced dimensional airways dynamic types
-
-\author ismail \date 01/10
 This is the enumeration of all types of different integration schemes
 
 *-----------------------------------------------------------------------*/
@@ -84,8 +80,6 @@ namespace Inpar
   {
     /*!----------------------------------------------------------------------
     \brief enum of reduced dimensional relaxation type
-
-    \author roth \date 10/13
     This is the enumeration of all types of different relaxation types
 
     *-----------------------------------------------------------------------*/

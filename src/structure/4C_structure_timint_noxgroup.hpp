@@ -37,7 +37,6 @@ namespace NOX
      * \brief Special ::NOX::Epetra::Group that always //ToDo (mayr) That's not correct anymore.
      *        sets Jacobian and RHS at the same time.
      *
-     * \author bborn
      * \date 11/08
      */
     class Group : public ::NOX::Epetra::Group

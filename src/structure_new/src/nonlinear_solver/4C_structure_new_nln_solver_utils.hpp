@@ -42,7 +42,6 @@ namespace Solid
        *  This function translates the model type enums and element technology enums
        *  into quantity types.
        *
-       *  \author Hiermeier
        */
       void create_quantity_types(std::set<enum NOX::Nln::StatusTest::QuantityType>& qtypes,
           const Solid::TimeInt::BaseDataSDyn& datasdyn);
@@ -64,7 +63,6 @@ namespace Solid
        *  The last option comes for free and there is no need to modify any code
        *  fragments.
        *
-       *  \author Hiermeier
        */
       void set_status_test_params(Teuchos::ParameterList& pstatus,
           const Solid::TimeInt::BaseDataSDyn& datasdyn,
@@ -108,7 +106,6 @@ namespace Solid
        * AND-combinations, you can use the QUANTITY parameter list name option for NormF, NormWRMS
        * and NormUpdate tests. See the NOX::Nln::StatusTest::Factory for more information.
        *
-       *  \author Hiermeier
        *  \date Oct 13, 2015
        */
       void set_combo_quantity_test_params(Teuchos::ParameterList& p,
@@ -121,7 +118,6 @@ namespace Solid
        *  Create a new sublist corresponding to the count variable and create the specific status
        * test entries in the parameter list for the given quantity
        *
-       *  \author Hiermeier
        */
       void set_quantity_test_params(Teuchos::ParameterList& p,
           const Solid::TimeInt::BaseDataSDyn& datasdyn,

@@ -750,7 +750,7 @@ namespace Mortar
 
     /*! \brief Get nodal reference / spatial coords of current element
      *
-     *  \author hiermeier \date 03/17 */
+     *  */
     template <unsigned elenumnode>
     inline void get_nodal_coords(Core::LinAlg::Matrix<3, elenumnode>& coord) const
     {
@@ -848,7 +848,7 @@ namespace Mortar
 
     /*! \brief Evaluate displacement shape functions and derivatives
      *
-     *  \author hiermeier \date 03/17 */
+     *  */
     template <unsigned elenumnode, unsigned eledim>
     inline bool evaluate_shape(const double* xi, Core::LinAlg::Matrix<elenumnode, 1>& val,
         Core::LinAlg::Matrix<elenumnode, eledim>& deriv, unsigned valdim = elenumnode,
@@ -869,7 +869,7 @@ namespace Mortar
 
     /*! \brief Evaluate Lagrange multiplier shape functions and derivatives
      *
-     *  \author hiermeier \date 03/17 */
+     *  */
     template <unsigned elenumnode, unsigned eledim>
     inline bool evaluate_shape_lag_mult(Inpar::Mortar::ShapeFcn lmtype, const double* xi,
         Core::LinAlg::Matrix<elenumnode, 1>& val, Core::LinAlg::Matrix<elenumnode, eledim>& deriv,
@@ -900,7 +900,7 @@ namespace Mortar
     /*! \brief Evaluate Lagrange multiplier shape functions and derivatives
      *  (special version for 3D quadratic mortar with linear Lagrange multipliers)
      *
-     *  \author hiermeier \date 03/17 */
+     *  */
     template <unsigned elenumnode, unsigned eledim>
     inline bool evaluate_shape_lag_mult_lin(Inpar::Mortar::ShapeFcn lmtype, const double* xi,
         Core::LinAlg::Matrix<elenumnode, 1>& val, Core::LinAlg::Matrix<elenumnode, eledim>& deriv,

@@ -122,7 +122,6 @@ namespace Solid
    * - [4] ...
    *
    *
-   * \author bborn
    * \date 06/08
    */
   class TimIntOneStepTheta : public TimIntImpl
@@ -169,7 +168,7 @@ namespace Solid
     \warning none
     \return bool
     \date 08/16
-    \author rauch  */
+    */
     void init(const Teuchos::ParameterList& timeparams, const Teuchos::ParameterList& sdynparams,
         const Teuchos::ParameterList& xparams, std::shared_ptr<Core::FE::Discretization> actdis,
         std::shared_ptr<Core::LinAlg::Solver> solver) override;
@@ -191,7 +190,7 @@ namespace Solid
     \warning none
     \return void
     \date 08/16
-    \author rauch  */
+    */
     void setup() override;
 
     //! Resize #TimIntMStep<T> multi-step quantities
@@ -251,12 +250,10 @@ namespace Solid
 
     //! Consistent predictor with constant velocities,
     //! extrapolated displacements and consistent accelerations
-    //! \author mayr.mt
     void predict_const_vel_consist_acc() override;
 
     //! Consistent predictor with constant accelerations
     //! and extrapolated velocities and displacements
-    //! \author mayr
     void predict_const_acc() override;
 
     //! Create force residual #fres_ and its stiffness #stiff_
@@ -270,7 +267,6 @@ namespace Solid
     void evaluate_force_residual() override;
 
     //! Determine characteristic norm for force
-    //! \author lw (originally)
     double calc_ref_norm_force() override;
 
     //! Update iteration incrementally

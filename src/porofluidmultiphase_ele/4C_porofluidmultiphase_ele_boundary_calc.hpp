@@ -31,9 +31,6 @@ namespace Discret
     This singleton class is responsible for evaluating boundary terms.
     It provides the method evaluate(...) which performs the actual evaluation
     depending on the action provided by the global algorithm.
-
-
-    \author vuong
     */
     template <Core::FE::CellType distype>
     class PoroFluidMultiPhaseEleBoundaryCalc : public PoroFluidMultiPhaseEleInterface

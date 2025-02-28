@@ -436,7 +436,6 @@ namespace Cut
    * point coordinate stays 3. If probDim is smaller than three, the last
    * coordinates are set to zero.
    *
-   * \author hiermeier
    * \date 11/16 */
   template <unsigned prob_dim>
   class ConcretePoint : public Point
@@ -479,7 +478,7 @@ namespace Cut
    *  Don't call this class directly! Use the non-member function instead.
    *
    *  \date 11/16
-   *  \author hiermeier */
+   *  */
   class PointFactory
   {
    public:
@@ -626,7 +625,7 @@ namespace Cut
    *
    *  A point knows which cut_elements it is associated to.
    *
-   *  \author hiermeier \date 11/16 */
+   *  */
   void find_common_elements(const std::vector<Point*>& element, plain_element_set& elements);
 
   /// Find if the points in side (which is actually a tet...) share a common side,

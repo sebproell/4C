@@ -36,8 +36,6 @@ namespace Core::Nodes
 
 /*
  \brief Base class for VTU output generation
-
- \author kronbichler
  \date 03/14
 */
 class PostVtiWriter : public PostVtkWriter

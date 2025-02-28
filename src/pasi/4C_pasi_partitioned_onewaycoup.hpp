@@ -28,7 +28,6 @@ namespace PaSI
    * One way coupled partitioned particle structure interaction algorithm with structure to particle
    * coupling of the interface states.
    *
-   * \author Sebastian Fuchs \date 02/2017
    */
   class PasiPartOneWayCoup : public PartitionedAlgo
   {
@@ -36,7 +35,6 @@ namespace PaSI
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 02/2017
      *
      * \param[in] comm   communicator
      * \param[in] params particle structure interaction parameter list
@@ -46,14 +44,12 @@ namespace PaSI
     /*!
      * \brief setup pasi algorithm
      *
-     * \author Sebastian Fuchs \date 02/2017
      */
     void setup() override;
 
     /*!
      * \brief partitioned one way coupled timeloop
      *
-     * \author Sebastian Fuchs \date 02/2017
      */
     void timeloop() override;
 
@@ -61,7 +57,6 @@ namespace PaSI
     /*!
      * \brief output of fields
      *
-     * \author Sebastian Fuchs \date 09/2019
      */
     void output() override;
   };

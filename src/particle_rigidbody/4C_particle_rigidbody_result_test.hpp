@@ -35,7 +35,6 @@ namespace ParticleRigidBody
   /*!
    * \brief rigid body result test handler
    *
-   * \author Sebastian Fuchs \date 09/2020
    */
   class RigidBodyResultTest final : public Core::Utils::ResultTest
   {
@@ -46,14 +45,12 @@ namespace ParticleRigidBody
     /*!
      * \brief init rigid body result test
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void init();
 
     /*!
      * \brief setup rigid body result test
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[in] particlerigidbodyinterface interface to rigid body handler
      */

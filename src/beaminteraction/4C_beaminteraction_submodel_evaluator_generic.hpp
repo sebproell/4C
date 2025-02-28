@@ -171,7 +171,7 @@ namespace BeamInteraction
        *
        *  \param solver (in) : reference to the non-linear nox solver object (read-only)
        *
-       *  \author grill, hiermeier \date 10/17 */
+       *  */
       virtual void run_post_iterate(const ::NOX::Solver::Generic& solver) = 0;
 
       //! reset routine for model evlaluator

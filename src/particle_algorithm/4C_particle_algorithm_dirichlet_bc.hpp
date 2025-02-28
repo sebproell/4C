@@ -34,7 +34,6 @@ namespace PARTICLEALGORITHM
   /*!
    * \brief dirichlet boundary condition handler for particle simulations
    *
-   * \author Sebastian Fuchs \date 07/2018
    */
   class DirichletBoundaryConditionHandler
   {
@@ -42,7 +41,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 07/2018
      *
      * \param[in] params particle simulation parameter list
      */
@@ -51,14 +49,12 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief init dirichlet boundary condition handler
      *
-     * \author Sebastian Fuchs \date 07/2018
      */
     void init();
 
     /*!
      * \brief setup dirichlet boundary condition handler
      *
-     * \author Sebastian Fuchs \date 07/2018
      *
      * \param[in] particleengineinterface interface to particle engine
      */
@@ -68,7 +64,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief get reference to set of particle types subjected to dirichlet boundary conditions
      *
-     * \author Sebastian Fuchs \date 07/2018
      *
      * \return set of particle types subjected to dirichlet boundary conditions
      */
@@ -81,7 +76,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief insert dirichlet boundary condition dependent states of all particle types
      *
-     * \author Sebastian Fuchs \date 07/2018
      *
      * \param[out] particlestatestotypes map of particle types and corresponding states
      */
@@ -92,14 +86,12 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief set particle reference position
      *
-     * \author Sebastian Fuchs \date 07/2018
      */
     void set_particle_reference_position() const;
 
     /*!
      * \brief evaluate dirichlet boundary condition
      *
-     * \author Sebastian Fuchs \date 07/2018
      *
      * \param[in] evaltime evaluation time
      * \param[in] evalpos  flag to indicate evaluation of position

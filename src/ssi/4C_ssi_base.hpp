@@ -103,7 +103,7 @@ namespace SSI
     \warning none
     \return void
     \date 08/16
-    \author rauch  */
+    */
     virtual void init(MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams,
         const Teuchos::ParameterList& scatraparams, const Teuchos::ParameterList& structparams,
         const std::string& struct_disname, const std::string& scatra_disname, bool isAle) = 0;
@@ -125,7 +125,7 @@ namespace SSI
     \warning none
     \return void
     \date 08/16
-    \author rauch  */
+    */
     virtual void setup();
 
     //! returns true if setup() was called and is still valid
@@ -151,13 +151,13 @@ namespace SSI
 
     \return RedistributionType
     \date 08/16
-    \author vuong, rauch  */
+    */
     virtual RedistributionType init_field_coupling(const std::string& struct_disname);
 
     /*! \brief Setup discretizations
 
     \date 08/16
-    \author rauch  */
+    */
     virtual void init_discretizations(MPI_Comm comm, const std::string& struct_disname,
         const std::string& scatra_disname, const bool redistribute_struct_dis);
 

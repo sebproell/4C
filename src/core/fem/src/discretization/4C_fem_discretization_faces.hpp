@@ -199,7 +199,6 @@ namespace Core::FE
           be called more than once.
 
     \note Sets Filled()=true
-    \author schott 03/12
     */
     int fill_complete_faces(bool assigndegreesoffreedom = true, bool initelements = true,
         bool doboundaryconditions = true, bool createinternalfaces = false);

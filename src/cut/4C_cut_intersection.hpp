@@ -83,7 +83,7 @@ namespace Cut
   /*--------------------------------------------------------------------------*/
   /** \brief Base class to calculate the intersection of an edge with a side.
    *
-   *  \author ager, hiermeier*/
+   *  */
   class IntersectionBase
   {
    public:
@@ -119,7 +119,7 @@ namespace Cut
      *  \param useshifting         (in) : switch shifting on/off
      *  \param useboundingbox      (in) : switch the bounding box checks on/off
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     template <class T1, class T2>
     void init(T1& xyze_lineElement, T2& xyze_surfaceElement, bool usescaling, bool useshifting,
         bool useboundingbox, Options* options)
@@ -166,7 +166,7 @@ namespace Cut
      *  \param useshifting    (in) : switch shifting on/off
      *  \param useboundingbox (in) : switch the bounding box checks on/off
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     void init(Mesh* mesh_ptr, Edge* edge_ptr, Side* side_ptr, bool usescaling, bool useshifting,
         bool useboundingbox)
     {
@@ -192,7 +192,7 @@ namespace Cut
      *
      *  See derived class for more information.
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     virtual IntersectionStatus compute_edge_side_intersection(
         double& tolerance, bool check_inside = true, std::vector<int>* touched_edges = nullptr) = 0;
 
@@ -201,7 +201,7 @@ namespace Cut
      *
      *  See derived class for more information.
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     virtual bool intersect(PointSet& cuts) = 0;
 
     virtual ParallelIntersectionStatus handle_parallel_intersection(
@@ -215,7 +215,7 @@ namespace Cut
      *
      *  Only allowed if there was only one cut point!
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     virtual double* final_point() = 0;
 
     virtual double* final_point(unsigned cp_id) = 0;
@@ -226,7 +226,7 @@ namespace Cut
     /** Access the cut point local coordinates on the side element
      * ( also working for multiple cut points )
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     template <unsigned dimside>
     void local_side_coordinates(std::vector<Core::LinAlg::Matrix<dimside, 1>>& side_rs_cuts)
     {
@@ -244,7 +244,7 @@ namespace Cut
     /** Access the final cut point global coordinates
      * ( also working for multiple cut points )
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     template <unsigned probdim>
     void final_points(std::vector<Core::LinAlg::Matrix<probdim, 1>>& xyz_cuts)
     {
@@ -387,7 +387,7 @@ namespace Cut
    *  also meaningful to use this class to calculate the intersection of two
    *  edges, if the related init() routine is used.
    *
-   *  \author ager, hiermeier */
+   *  */
   template <unsigned probdim, Core::FE::CellType edgetype, Core::FE::CellType sidetype,
       bool debug = false, unsigned dimedge = Core::FE::dim<edgetype>,
       unsigned dimside = Core::FE::dim<sidetype>,
@@ -434,7 +434,7 @@ namespace Cut
      *
      *  \param cp_id (in) : cut point id
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     double* local_side_coordinates(unsigned cp_id) override
     {
       if (num_cut_points() < 2) return xsi_side_.data();
@@ -447,7 +447,7 @@ namespace Cut
      *
      *  \param cp_id (in) : cut point id
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     const Core::LinAlg::Matrix<dimedge, 1>& local_edge_coordinates(const unsigned& cp_id) const
     {
       if (num_cut_points() < 2) return xsi_edge_;
@@ -626,7 +626,7 @@ namespace Cut
      *
      *  All feasible cut points are within the given element bounds.
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     IntersectionStatus compute_edge_side_intersection(double& tolerance, bool check_inside = true,
         std::vector<int>* touched_edges = nullptr) override
     {
@@ -773,7 +773,7 @@ namespace Cut
      *  there is still handling of some special cases missing in the code & it does not
      *  mean that there is no intersection point.
      *
-     *  \author ager */
+     *  */
     bool intersect(PointSet& cuts) override;
 
     // Try to find possible intersection points, if this intersection is between parallel size
@@ -835,7 +835,6 @@ namespace Cut
      *  makes the used tolerances more reliable. The same procedure is used for
      *  the position calculation.
      *
-     *  \author hiermeier
      *  \date 08/16 */
     void scale_and_shift() override
     {
@@ -892,14 +891,14 @@ namespace Cut
      *
      *  Currently surface and line elements are supported.
      *
-     *  \author hiermeier \date 12/16 */
+     *  */
     bool check_parallelism(std::vector<Core::LinAlg::Matrix<dimside, 1>>& side_rs_intersect,
         std::vector<Core::LinAlg::Matrix<dimedge, 1>>& edge_r_intersect, double& tolerance);
 
     /** \brief Check if the two lines are collinear, end points are on the line, or
      *  the distance values imply that no intersection is possible
      *
-     *  \author hiermeier \date 12/16 */
+     *  */
     bool check_collinearity(std::vector<Core::LinAlg::Matrix<dimside, 1>>& side_rs_corner_intersect,
         std::vector<Core::LinAlg::Matrix<dimedge, 1>>& edge_r_corner_intersect, double& tolerance);
 
@@ -907,13 +906,13 @@ namespace Cut
      *
      *  This is a quick check to skip cases which are definitely not parallel.
      *
-     *  \author hiermeier \date 12/16 */
+     *  */
     bool check_angle_criterion_between_two_edges();
 
     /** ToDo This method is currently unused, since this case should be treated by
      *  the Intersect() method.
      *
-     *  \author hiermeier \date 12/16 */
+     *  */
     bool check_parallelism_between_side_and_edge(
         std::vector<Core::LinAlg::Matrix<dimside, 1>>& side_rs_intersect,
         std::vector<Core::LinAlg::Matrix<dimedge, 1>>& edge_r_intersect, double& tolerance);
@@ -922,7 +921,7 @@ namespace Cut
      *
      *  This is a quick check to skip cases which are definitely not parallel.
      *
-     *  \author hiermeier \date 12/16 */
+     *  */
     bool check_angle_criterion_between_side_normal_and_edge();
 
     /// find the local coordinate of a given edge end point ( i.e. -1 or +1 )
@@ -938,7 +937,7 @@ namespace Cut
      *  Returns TRUE if the calculation was successful. This does not imply, that the
      *  calculated intersection point is feasible!
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     bool compute_edge_tri3_intersection(int triangleid, Kernel::PointOnSurfaceLoc& location)
     {
       switch (get_options_ptr()->geom_intersect_floattype())
@@ -1259,7 +1258,7 @@ namespace Cut
      *  \param tolerance     (out) : used internal adaptive tolerance
      *                           ( specified by the Cut::KERNEL )
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     bool compute_cut(
         Edge* sedge, Edge* eedge, Side* side, PointSet& ee_cut_points, double& tolerance);
 
@@ -1308,7 +1307,7 @@ namespace Cut
   /*--------------------------------------------------------------------------*/
   /** \brief Create a intersection object
    *
-   *  \author hiermeier \date 12/16 */
+   *  */
   class IntersectionFactory
   {
    public:

@@ -67,8 +67,6 @@ namespace Discret
          2. standard assemble, i.e. assemble into one phase, that is the phase that
             currently evaluated
          3. assemble into two phases. The current phase and the summed up phase
-
-      \author vuong
       */
 
       /*----------------------------------------------------------------------*
@@ -162,8 +160,6 @@ namespace Discret
       vector. It templated by the space dimensions 'nsd' and the number of nodes 'nen'. It comprises
       the pure virtual functions EvaluateMatrix(..) and EvaluateVector(..) and the factory method
       CreateEvaluator(). The factory method is the central place, where the terms are defined.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class EvaluatorInterface
@@ -250,8 +246,6 @@ namespace Discret
 
       This class wraps multiple evaluators. For evaluation of matrix and vector, it just loops over
       all single evaluators.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class MultiEvaluator : public EvaluatorInterface<nsd, nen>
@@ -374,8 +368,6 @@ namespace Discret
       defining in which rows the term is to be assembled into. The pure virtual
       methods evaluate_matrix_and_assemble(...) and evaluate_vector_and_assemble(...) defined
       the actual term and are to be implemented in derived classes.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class EvaluatorBase : public EvaluatorInterface<nsd, nen>
@@ -622,8 +614,6 @@ namespace Discret
 
       \note this term is not used, since the equations are written in a Lagrangian description
             w.r.t. skeleton.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class EvaluatorConv : public EvaluatorBase<nsd, nen>
@@ -715,8 +705,6 @@ namespace Discret
       \brief class for evaluation of divergence of the (mesh) velocity field
 
       This class implements the term \f$(w, \nabla \cdot v^s )\f$.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class EvaluatorDivVel : public EvaluatorBase<nsd, nen>
@@ -805,8 +793,6 @@ namespace Discret
       \brief class for evaluation of divergence of the (mesh) velocity field, scaled by saturation
 
       This class implements the term \f$(w, S \nabla \cdot v^s )\f$.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class EvaluatorSatDivVel : public EvaluatorDivVel<nsd, nen>
@@ -895,8 +881,6 @@ namespace Discret
       \brief class for evaluation of biot stabilization terms
 
       This class implements the term \f$(w, \tau R_{struct} )\f$.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class EvaluatorBiotStab : public EvaluatorBase<nsd, nen>
@@ -986,8 +970,6 @@ namespace Discret
       \brief class for evaluation of diffusive term into the element matrix
 
       This class implements the term \f$( \nabla w, K \nabla p )\f$.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class EvaluatorDiff : public EvaluatorBase<nsd, nen>
@@ -1076,8 +1058,6 @@ namespace Discret
       \brief class for evaluation of reactive term into the element matrix
 
       This class implements all kinds of reactive terms, defined by the phasemanager.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class EvaluatorReac : public EvaluatorBase<nsd, nen>
@@ -1166,8 +1146,6 @@ namespace Discret
       \brief class for evaluation of mass term (pressure) into the element matrix
 
       This class implements the term \f$( w,porosity S/K \frac{\partial p}{\partial t} )\f$.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class EvaluatorMassPressure : public EvaluatorBase<nsd, nen>
@@ -1268,8 +1246,6 @@ namespace Discret
 
       This class implements the term $( w, \frac{(1-\porosity) }{K_s} \frac{\partial p^s}{\partial
       t} )$.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class EvaluatorMassSolidPressure : public EvaluatorBase<nsd, nen>
@@ -1372,8 +1348,6 @@ namespace Discret
 
       This class implements the term $( w, S\frac{(1-\porosity) }{K_s} \frac{\partial p^s}{\partial
       t} )$.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class EvaluatorMassSolidPressureSat : public EvaluatorMassSolidPressure<nsd, nen>
@@ -1462,8 +1436,6 @@ namespace Discret
       \brief class for evaluation of mass term (solid saturation) into the element matrix
 
       This class implements the term \f$( w, \porosity \frac{\partial S}{\partial t} )\f$.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class EvaluatorMassSaturation : public EvaluatorBase<nsd, nen>
@@ -1564,8 +1536,6 @@ namespace Discret
       \brief helper class for evaluation of pressure and saturation
 
       This class implements the post processing of pressures and saturation at the nodes.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class EvaluatorPressureAndSaturation : public EvaluatorBase<nsd, nen>
@@ -1654,8 +1624,6 @@ namespace Discret
       \brief helper class for evaluation of the solid pressure
 
       This class implements the post processing of the solid pressure at the nodes.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class EvaluatorSolidPressure : public EvaluatorBase<nsd, nen>
@@ -1747,8 +1715,6 @@ namespace Discret
       The DOFs where the volume fraction pressure is valid, i.e. has a physical meaning
       are those where the respective volume fraction is greater than a threshold (MIN_VOLFRAC)
       These are identified here be setting ones into the valid_volfracpress_dofs_-vector
-
-      \author kremheller
       */
       template <int nsd, int nen>
       class EvaluatorValidVolFracPressures : public EvaluatorBase<nsd, nen>
@@ -1837,8 +1803,6 @@ namespace Discret
       \brief helper class for evaluation of porosity
 
       This class implements the post processing of the porosity at the nodes.
-
-      \author kremheller
       */
       template <int nsd, int nen>
       class EvaluatorPorosity : public EvaluatorBase<nsd, nen>
@@ -1927,8 +1891,6 @@ namespace Discret
       \brief helper class for evaluation of domain integrals
 
       This class implements the evaluation of domain integrals which can be used for output
-
-      \author kremheller
       */
       template <int nsd, int nen>
       class EvaluatorDomainIntegrals : public EvaluatorBase<nsd, nen>
@@ -2030,8 +1992,6 @@ namespace Discret
 
       This class implements the linearization of the flux reconstruction matrix (L_2 projection).
       Only the matrix! For RHS see class ReconstructFluxRHS.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class ReconstructFluxLinearization : public EvaluatorBase<nsd, nen>
@@ -2121,8 +2081,6 @@ namespace Discret
 
       This class implements the RHS the flux reconstruction matrix (L_2 projection).
       Only the RHS! For the matrix see ReconstructFlux.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class ReconstructFluxRHS : public EvaluatorBase<nsd, nen>
@@ -2301,8 +2259,6 @@ namespace Discret
       This class implements the term $( w, \frac{-\sum^volfrac \phi_volfrac) }{K_s} \frac{\partial
       p^s}{\partial t}
                                           -\sum^volfrac \frac{\partial\phi_volfrac) }{\partial t})
-
-      \author kremheller
       */
       template <int nsd, int nen>
       class EvaluatorVolFracAddInstatTerms : public EvaluatorBase<nsd, nen>
@@ -2404,8 +2360,6 @@ namespace Discret
              - divergence of the (mesh) velocity field times sum of volume fraction
 
       This class implements the term \f$(w, -\sum^volfrac \phi_volfrac \nabla \cdot v^s )\f$.
-
-      \author kremheller
       */
       template <int nsd, int nen>
       class EvaluatorVolFracAddDivVelTerm : public EvaluatorBase<nsd, nen>
@@ -2497,8 +2451,6 @@ namespace Discret
       saturation
 
       This class implements the term \f$(w, S* -\sum^volfrac \phi_volfrac \nabla \cdot v^s )\f$.
-
-      \author kremheller
       */
       template <int nsd, int nen>
       class EvaluatorVolFracAddDivVelTermSat : public EvaluatorVolFracAddDivVelTerm<nsd, nen>
@@ -2590,8 +2542,6 @@ namespace Discret
       This class implements the term $( w, S* ( \frac{-\sum^volfrac \phi_volfrac) }{K_s}
       \frac{\partial p^s}{\partial t}
                                           -\sum^volfrac \frac{\partial\phi_volfrac) }{\partial t}) )
-
-      \author kremheller
       */
       template <int nsd, int nen>
       class EvaluatorVolFracAddInstatTermsSat : public EvaluatorVolFracAddInstatTerms<nsd, nen>
@@ -2682,8 +2632,6 @@ namespace Discret
 
       This class implements the term \f$( w, rho \frac{\partial volfrac^i}{\partial t} )\f$.
       It is assembled into the equation for volume fractions and for volume fraction pressures
-
-      \author kremheller
       */
       template <int nsd, int nen>
       class EvaluatorVolFracInstat : public EvaluatorBase<nsd, nen>
@@ -2773,8 +2721,6 @@ namespace Discret
 
       This class implements the term \f$(w, rho volfrac \nabla \cdot v^s )\f$.
       It is assembled into the equation for volume fractions and for volume fraction pressures
-
-      \author kremheller
       */
       template <int nsd, int nen>
       class EvaluatorVolFracDivVel : public EvaluatorBase<nsd, nen>
@@ -2863,8 +2809,6 @@ namespace Discret
       \brief class for evaluation of diffusive term into the element matrix
 
       This class implements the term \f$( \nabla w, D \nabla volfrac )\f$.
-
-      \author kremheller
       */
       template <int nsd, int nen>
       class EvaluatorVolFracDiff : public EvaluatorBase<nsd, nen>
@@ -2953,8 +2897,6 @@ namespace Discret
       \brief class for evaluation of reactive term of volume fractions into the element matrix
 
       This class implements the term $(  w, reac )$.
-
-      \author kremheller
       */
       template <int nsd, int nen>
       class EvaluatorVolFracReac : public EvaluatorBase<nsd, nen>
@@ -3043,8 +2985,6 @@ namespace Discret
       \brief class for evaluation of additional flux depending on Scatra primary variable
 
       This class implements the term \f$( \nabla w, D \nabla phi_scatra )\f$.
-
-      \author kremheller
       */
       template <int nsd, int nen>
       class EvaluatorVolFracAddFlux : public EvaluatorBase<nsd, nen>
@@ -3133,8 +3073,6 @@ namespace Discret
       \brief class for evaluation of diffusive volfrac pressure term into the element matrix
 
       This class implements the term \f$( \nabla w, k/\mu \nabla volfrac_pressure )\f$.
-
-      \author kremheller
       */
       template <int nsd, int nen>
       class EvaluatorVolFracPressureDiff : public EvaluatorBase<nsd, nen>
@@ -3224,8 +3162,6 @@ namespace Discret
              into the element matrix
 
       This class implements the term $(  w, reac )$.
-
-      \author kremheller
       */
       template <int nsd, int nen>
       class EvaluatorVolFracPressureReac : public EvaluatorBase<nsd, nen>

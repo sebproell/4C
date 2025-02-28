@@ -40,8 +40,6 @@ namespace Core::FE
 
   \note There are boundary elements that do not need all of this
   functionality.
-
-  \author u.kue
   \date 06/10
  */
 

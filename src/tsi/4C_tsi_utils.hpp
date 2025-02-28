@@ -87,8 +87,6 @@ namespace TSI
      In case of TSI, we also need the kinematic type of the structural element to be known in the
      thermo element, which is why there is a special strategy for TSI. Note that this is not yet
      working for inhomogeneous material properties.
-
-     \author vuong 10/14
      */
     class TSIMaterialStrategy : public Coupling::VolMortar::Utils::DefaultMaterialStrategy
     {

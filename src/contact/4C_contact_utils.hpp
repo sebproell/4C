@@ -107,7 +107,7 @@ namespace CONTACT
      * \param [in]      isself:    condition is self contact condition
      * \param [in]      cond_grp: current contact condition group (i.e. conditions with same ID)
      *
-     * \author cschmidt \date 11/18 */
+     * */
     void get_initialization_info(bool& Two_half_pass, bool& Check_nonsmooth_selfcontactsurface,
         bool& Searchele_AllProc, std::vector<bool>& isactive, std::vector<bool>& isslave,
         std::vector<bool>& isself, const std::vector<Core::Conditions::Condition*>& cond_grp);
@@ -128,7 +128,7 @@ namespace CONTACT
      *  E 7 - InterfaceID 1 Side Slave Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Solidcontact
      * RemoveDBCSlaveNodes
      *
-     *  \author hiermeier \date 01/18 */
+     *  */
     class DbcHandler
     {
      public:
@@ -145,7 +145,7 @@ namespace CONTACT
        *  \param(out) dbc_slave_eles: set containing all slave elements which
        *                              contain at least one DBC slave node
        *
-       *  \author hiermeier \date 01/18 */
+       *  */
       static void detect_dbc_slave_nodes_and_elements(const Core::FE::Discretization& str_discret,
           const std::vector<std::vector<Core::Conditions::Condition*>>& ccond_grps,
           std::set<const Core::Nodes::Node*>& dbc_slave_nodes,

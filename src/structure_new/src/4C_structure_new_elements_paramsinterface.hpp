@@ -89,7 +89,7 @@ namespace Solid
      *  Theoretically, the Teuchos::ParameterList can be replaced by the interface itself!
      *
      *  \date 03/2016
-     *  \author hiermeier */
+     *  */
     class ParamsInterface : public Core::Elements::ParamsInterface
     {
      public:
@@ -192,7 +192,7 @@ namespace Solid
 
 
     /*! \brief Parameter interface for the data exchange between beam elements and the
-     * Solid::Integrator \author grill */
+     * Solid::Integrator */
     class BeamParamsInterface
     {
      public:
@@ -215,7 +215,7 @@ namespace Solid
 namespace BrownianDynamics
 {
   /*! \brief Parameter interface for brownian dynamic data exchange between integrator and
-   * structure (beam) elements \author eichinger */
+   * structure (beam) elements */
   class ParamsInterface
   {
    public:

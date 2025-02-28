@@ -190,8 +190,6 @@ namespace NTS
 
   /*!
   \brief A class to implement MTInterpolator
-
-  \author farah
   */
   class MTInterpolator
   {
@@ -213,8 +211,7 @@ namespace NTS
 
 
   /*!
-  \author farah
-  */
+   */
   template <Core::FE::CellType distype_m>
   class MTInterpolatorCalc : public MTInterpolator
   {

@@ -109,7 +109,6 @@ namespace Solid
    * matrices. It also deals with the output to files and offers method to
    * determine forces and stiffnesses (tangents).
    *
-   * \author bborn
    * \date 06/08
    */
   class TimInt : public Adapter::Structure
@@ -159,7 +158,7 @@ namespace Solid
     \warning none
     \return bool
     \date 08/16
-    \author rauch  */
+    */
     virtual void init(const Teuchos::ParameterList& timeparams,
         const Teuchos::ParameterList& sdynparams, const Teuchos::ParameterList& xparams,
         std::shared_ptr<Core::FE::Discretization> actdis,
@@ -182,7 +181,7 @@ namespace Solid
     \warning none
     \return void
     \date 08/16
-    \author rauch  */
+    */
     void setup() override;
 
     //! create fields, based on dofrowmap, whose previous time step values are unimportant
@@ -398,7 +397,6 @@ namespace Solid
     //! This routine always prints the last converged state, i.e.
     //! \f$D_{n}, V_{n}, A_{n}\f$. So, #UpdateIncrement should be called
     //! upon object prior to writing stuff here.
-    //! \author mwgee (originally) \date 03/07
     void output_step(const bool forced_writerestart = false  ///< [in] Force writing of restart data
     );
 
@@ -419,12 +417,10 @@ namespace Solid
     void write_gmsh_struct_output_step() override;
 
     //! Write restart
-    //! \author mwgee (originally) \date 03/07
     virtual void output_restart(bool& datawritten  //!< (in/out) read and append if
                                                    //!< it was written at this time step
     );
     //! Get data that is written during restart
-    //! \author biehler \data 06/13
     void get_restart_data(std::shared_ptr<int> step, std::shared_ptr<double> time,
         std::shared_ptr<Core::LinAlg::Vector<double>> disn,  //!< new displacement state
         std::shared_ptr<Core::LinAlg::Vector<double>> veln,  //!< new velocity state
@@ -436,7 +432,6 @@ namespace Solid
 
     //! Output displacements, velocities and accelerations
     //! and more system vectors
-    //! \author mwgee (originally) \date 03/07
     virtual void output_state(bool& datawritten  //!< (in/out) read and append if
                                                  //!< it was written at this time step
     );
@@ -445,7 +440,6 @@ namespace Solid
     void add_restart_to_output_state();
 
     //! Stress & strain output
-    //! \author lw (originally)
     void output_stress_strain(bool& datawritten  //!< (in/out) read and append if
                                                  //!< it was written at this time step
     );

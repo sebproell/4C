@@ -27,7 +27,7 @@ namespace NOX
        *  be set-up. Subsequently, the input parameter is tested and if valid,
        *  the corresponding integral value will be returned.
        *
-       *  \author hiermeier \date 02/18 */
+       *  */
       template <typename IntegralType>
       IntegralType set_and_validate(Teuchos::ParameterList& p, const std::string& param_name,
           const std::string& default_value, const std::string& documentation,

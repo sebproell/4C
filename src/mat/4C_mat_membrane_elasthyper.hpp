@@ -86,7 +86,6 @@ namespace Mat
   /// <li> [1] GA Holzapfel, "Nonlinear solid mechanics", Wiley, 2000.
   /// </ul>
   ///
-  /// \author rausch,tk,bborn
   /// \date 05/09
 
   // forward declaration

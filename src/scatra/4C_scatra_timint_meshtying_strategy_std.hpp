@@ -51,7 +51,6 @@ namespace ScaTra
 
     \return void
     \date 08/16
-    \author rauch
     */
     void evaluate_condition(Teuchos::ParameterList& params,
         std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,

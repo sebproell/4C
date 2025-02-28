@@ -42,7 +42,6 @@ namespace TimeStepping
    * can provide the data on which a multi-step auxiliary integrator
    * can work.
    *
-   * \author bborn
    * \date 07/08
    */
   template <typename STATE>

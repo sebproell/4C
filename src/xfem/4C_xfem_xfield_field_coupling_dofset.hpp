@@ -24,7 +24,7 @@ namespace XFEM
      *  This coupling dof set helps to couple two discretizations (e.g. XFEM and standard)
      *  by returning the maximum number of DoF's at one coupling node.
      *
-     *  \author hiermeier \date 09/16 */
+     *  */
     class CouplingDofSet : public Core::DOFSets::FixedSizeDofSet
     {
      public:
@@ -37,7 +37,6 @@ namespace XFEM
        * DoFs) \param my_num_dofs_per_node        (in): map containing the actual number of DoFs per
        * node
        *
-       *  \author hiermeier
        *  \date 09/16 */
       CouplingDofSet(const int& my_num_reserve_dof_per_node, const int& g_node_index_range,
           const int& g_num_std_dof_per_node, const std::map<int, int>& my_num_dofs_per_node);
@@ -56,7 +55,7 @@ namespace XFEM
        *  \param node            (in) : the node
        *  \param nodal_dofset_id (in) : id of the nodal dofset
        *
-       *  \author hiermeier \date 10/16 */
+       *  */
       void dof(std::vector<int>& dofs, const Core::Nodes::Node* node,
           unsigned nodal_dofset_id) const override;
 
@@ -64,7 +63,6 @@ namespace XFEM
        *
        *  This value is supposed to be constant over all nodes!
        *
-       *  \author hiermeier
        *  \date 10/16 */
       int num_standard_dof_per_node() const;
 
@@ -76,7 +74,6 @@ namespace XFEM
        *
        *  \param node_gid (in): nodal global id
        *
-       *  \author hiermeier
        *  \date 09/16 */
       int my_num_dof_per_node(const int& node_gid) const;
 

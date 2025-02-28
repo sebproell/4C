@@ -152,21 +152,18 @@ namespace Thermo
     //! This routine always prints the last converged state, i.e.
     //! \f$T_{n}, R_{n}\f$. So, #UpdateIncrement should be called
     //! upon object prior to writing stuff here.
-    //! \author mwgee (originally) \date 03/07
     void output_step(bool forced_writerestart);
 
     //! output
     void output(bool forced_writerestart = false) override { output_step(forced_writerestart); }
 
     //! Write restart
-    //! \author mwgee (originally) \date 03/07
     void output_restart(bool& datawritten  //!< (in/out) read and append if
                                            //!< it was written at this time step
     );
 
     //! Output temperatures, temperature rates
     //! and more system vectors
-    //! \author mwgee (originally) \date 03/07
     void output_state(bool& datawritten  //!< (in/out) read and append if
                                          //!< it was written at this time step
     );
@@ -175,7 +172,6 @@ namespace Thermo
     void add_restart_to_output_state();
 
     //! Heatflux & temperature gradient output
-    //! \author lw (originally)
     void output_heatflux_tempgrad(bool& datawritten  //!< (in/out) read and append if
                                                      //!< it was written at this time step
     );

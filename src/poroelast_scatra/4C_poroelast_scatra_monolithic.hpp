@@ -171,16 +171,13 @@ namespace PoroElastScaTra
     //! @name Newton Output
 
     //! print to screen information about residual forces and displacements
-    //! \author lw (originally) \date 12/07
     void print_newton_iter();
 
     //! contains text to print_newton_iter
-    //! \author lw (originally) \date 12/07
     void print_newton_iter_text(FILE* ofile  //!< output file handle
     );
 
     //! contains header to print_newton_iter
-    //! \author lw (originally) \date 12/07
     void print_newton_iter_header(FILE* ofile  //!< output file handle
     );
 

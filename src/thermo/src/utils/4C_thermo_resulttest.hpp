@@ -30,12 +30,10 @@ namespace Thermo
   //!
   //! \brief Thermo specific result test class
   //!
-  //! \author cd
   class ResultTest : public Core::Utils::ResultTest
   {
    public:
     //! Constructor for time integrators of general kind
-    //! \author bborn \date 06/08
     ResultTest(TimInt& tintegrator);
 
     //! \brief thermo version of nodal value tests

@@ -21,8 +21,6 @@ FOUR_C_NAMESPACE_OPEN
   \brief Bring a map variable up to a clean state.
 
   That's needed before anything can be done with a map.
-
-  \author u.kue
   \date 08/04
 */
 /*----------------------------------------------------------------------*/
@@ -32,8 +30,6 @@ void init_map(MAP* map);
 /*----------------------------------------------------------------------*/
 /*!
   \brief Clean up.
-
-  \author u.kue
   \date 08/04
 */
 /*----------------------------------------------------------------------*/

@@ -37,8 +37,6 @@ namespace Core::Utils
     tests, nodal tests and special cases (like beltrami fluid
     flow). These methods provide dummy (FOUR_C_THROW) implementations and
     have to be redefined in subclasses to actually do the testing.
-
-    \author u.kue
   */
   class ResultTest
   {

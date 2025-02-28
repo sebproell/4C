@@ -22,7 +22,7 @@ namespace Cut
     /*--------------------------------------------------------------------------*/
     /** \brief Simplified version of the base class for 1-D elements
      *
-     *  \author hiermeier \date 11/16 */
+     *  */
     class SimplePointGraph1D : public PointGraph
     {
      public:
@@ -37,7 +37,7 @@ namespace Cut
 
         /** \brief Simplified version of the base class implementation
          *
-         *  \author hiermeier \date 11/16 */
+         *  */
         void find_cycles(Element* element, Side* side, Cycle& cycle, Location location,
             Strategy strategy) override;
 
@@ -53,7 +53,7 @@ namespace Cut
        *  \param edge_points (in) : points of the current edge
        *  \param cycle       (out): created point cycle
        *
-       *  \author hiermeier \date 11/16 */
+       *  */
       void build_cycle(const std::vector<Point*>& edge_points, Cycle& cycle) const override;
 
       /** \brief Add cut lines to the graph object [derived]
@@ -61,7 +61,7 @@ namespace Cut
        *  There are no cut lines in 1-D, thus we jump to add_cut_points_to_cycle,
        *  thus it is at least a little bit less confusing.
        *
-       *  \author hiermeier \date 11/16 */
+       *  */
       virtual void add_cut_lines_to_graph(
           Element* element, Side* side, Strategy strategy, Cycle& cycle);
 
@@ -81,7 +81,7 @@ namespace Cut
     /*--------------------------------------------------------------------------*/
     /** \brief Modified version of the base class for 2-D elements
      *
-     *  \author hiermeier \date 11/16 */
+     *  */
     class SimplePointGraph2D : public PointGraph
     {
      public:
@@ -100,7 +100,7 @@ namespace Cut
          *  a split of the created surface facet cycles into line cycles
          *  is performed.
          *
-         *  \author hiermeier \date 11/16 */
+         *  */
         void find_cycles(Element* element, Side* side, Cycle& cycle, Location location,
             Strategy strategy) override;
 
@@ -123,7 +123,7 @@ namespace Cut
          *   We store the generated surface facet main cycles as well, since we
          *   can reuse the implementation for the volume cell generation in 2-D.
          *
-         *   \author hiermeier \date 01/17 */
+         *   */
         void split_main_cycles_into_line_cycles();
 
        private:
@@ -165,7 +165,7 @@ namespace Cut
        * element ) \param cycles (in/out) : cycles which have to be checked and inverted if
        * necessary
        *
-       *  \author hiermeier \date 01/17 */
+       *  */
       static void correct_rotation_direction(const Side* side, std::vector<Cycle>& cycles);
 
      private:

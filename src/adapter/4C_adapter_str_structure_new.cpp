@@ -704,7 +704,6 @@ void Adapter::StructureBaseAlgorithmNew::set_params(Teuchos::ParameterList& iofl
    *
    * ToDO: Find something nicer here!
    *
-   * \author mayr.mt \date 12/2013
    */
   // ---------------------------------------------------------------------------
   switch (probtype)

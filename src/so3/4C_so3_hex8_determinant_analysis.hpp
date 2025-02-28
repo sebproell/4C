@@ -28,7 +28,7 @@ namespace Discret
      *  [1] Johnen, et al, "Robust and efficient validation of the linear
      *  hexahedral element", 2017
      *
-     *  \author hiermeier \date 09/18 */
+     *  */
     class SoHex8DeterminantAnalysis
     {
       struct BezierCube;
@@ -56,7 +56,7 @@ namespace Discret
        *
        *  Use the create function instead.
        *
-       *  \author hiermeier \date 09/18 */
+       *  */
       SoHex8DeterminantAnalysis() = default;
 
       /** \brief Fill the static matrix \c map_q_ with the values given in
@@ -66,7 +66,7 @@ namespace Discret
        *  by the 20 computed TET4 volumes (multiplied by 6) to the 27 Bezier
        *  coefficients.
        *
-       *  \author hiermeier \date 09/18 */
+       *  */
       static void build_map_lagrange20_to_bezier27();
 
       /** \brief Build the full map from the 2nd order Lagrange coefficients
@@ -77,7 +77,7 @@ namespace Discret
        *  matrix. This is achieved by the suitable LAPACK routine. The result is
        *  identical to the matrix T in reference [1].
        *
-       *  \author hiermeier \date 09/18 */
+       *  */
       static void build_map_lagrange_to_bezier();
 
       /** \brief Build the map from 27 Bezier coefficients to 27 Lagrange
@@ -86,7 +86,7 @@ namespace Discret
        *  This can be performed cheaply, since only the evaluation of the
        *  2nd order Bezier basis functions at the different points is necessary.
        *
-       *  \author hiermeier \date 09/18 */
+       *  */
       static void build_map_bezier_to_lagrange(Core::LinAlg::Matrix<27, 27>& map_b2l);
 
       /** \brief Alternative call which allows an additional shift and scale of
@@ -100,7 +100,7 @@ namespace Discret
        *  \param shift    Array with three shifting values for xi, eta and zeta,
        *                  respectively.
        *
-       *  \author hiermeier \date 09/18 */
+       *  */
       static void build_map_bezier_to_lagrange(
           Core::LinAlg::Matrix<27, 27>& map_b2l, const double* scale, const double* shift);
 
@@ -112,7 +112,7 @@ namespace Discret
        *                sub-cube
        *  \param sub_map_b2l  resulting sub-map matrix
        *
-       *  \author hiermeier \date 09/18 */
+       *  */
       void build_sub_map_bezier_to_lagrange(
           const double* left, const double* right, Core::LinAlg::Matrix<27, 27>& sub_map_b2l) const;
 
@@ -122,7 +122,7 @@ namespace Discret
        *  \param subcube      Current sub-domain
        *  \param sub_bcoeffs  Bezier coefficients of the current sub-domain
        *
-       *  \author hiermeier \date 09/18 */
+       *  */
       void get_bezier_coeffs_of_subdomain(const Core::LinAlg::Matrix<27, 1>& bcoeffs,
           BezierCube& subcube, Core::LinAlg::Matrix<27, 1>& sub_bcoeffs) const;
 
@@ -139,7 +139,7 @@ namespace Discret
        *              corresponding to arrays containing the 3 left and right
        *              border coordinates, respectively.
        *
-       *   \author hiermeier \date 09/18 */
+       *   */
       void get_sub_cube_borders(
           const double* l, const double* r, std::list<BezierCube>& subcubes) const;
 
@@ -150,7 +150,7 @@ namespace Discret
        *  \param entries  ptr to the first entry of the array
        *  \param length   number of entries in the array
        *
-       *  \author hiermeier \date 09/18 */
+       *  */
       bool has_invalid_entry(const double* entries, const unsigned length) const;
 
       /** \brief Perform a recursive subdivision of the cubes and refine
@@ -162,7 +162,7 @@ namespace Discret
        *  \param right    Array containing the three left border coordinates
        *                  of the parent (sub-)cube
        *
-       *  \author hiermeier \date 09/18 */
+       *  */
       bool recursive_subdivision(const Core::LinAlg::Matrix<27, 1>& bcoeffs, const double* left,
           const double* right, unsigned& rcount) const;
 
@@ -179,7 +179,7 @@ namespace Discret
        *  \param x_curr        matrix containing the current coordinates of the
        *                       HEX8 corners
        *
-       *  \author hiermeier \date 09/18 */
+       *  */
       void compute20_tet4_volumes(Core::LinAlg::Matrix<20, 1>& tet4_volumes,
           const Core::LinAlg::Matrix<NUMDIM_SOH8, NUMNOD_SOH8>& x_curr) const;
 
@@ -199,7 +199,7 @@ namespace Discret
        *
        *  \return new offset value (increased by the four computed TET4 volumes)
        *
-       *  \author hiermeier \date 09/18 */
+       *  */
       unsigned compute_tet4_vol_at_corners(Core::LinAlg::Matrix<20, 1>& tet4_volumes,
           const Core::LinAlg::Matrix<NUMDIM_SOH8, NUMNOD_SOH8>& x_curr,
           const std::function<unsigned(unsigned i)>& f_index0,
@@ -227,7 +227,7 @@ namespace Discret
        *
        *  \return new offset value (increased by the four computed TET4 volumes)
        *
-       *  \author hiermeier \date 09/18 */
+       *  */
       unsigned compute_tet4_vol_at_edges(Core::LinAlg::Matrix<20, 1>& tet4_volumes,
           const Core::LinAlg::Matrix<NUMDIM_SOH8, NUMNOD_SOH8>& x_curr,
           const std::function<unsigned(unsigned i)>& f_index0,
@@ -244,7 +244,7 @@ namespace Discret
        *  \param t  parameteric coordinate \f$ t \in (0,1) \f$
        *  \param n  desired bezier polynomial. n must be between 0 and 2.
        *
-       *  \author hiermeier \date 09/18 */
+       *  */
       static double bezier_func2(const double t, unsigned n)
       {
         switch (n)
@@ -295,7 +295,7 @@ namespace Discret
        *  The parameter space goes from 0.0 to 1.0, since this is numerically
        *  more stable.
        *
-       *  \author hiermeier \date 09/18 */
+       *  */
       static const double bezier_points_[27][3];
 
       /// Bezier function indices corresponding to the Bezier point coordinates
@@ -316,7 +316,7 @@ namespace Discret
      *  This routine is supposed to be remarkably faster than the default
      *  modulus operator. According to https://youtu.be/nXaxk27zwlk?t=56m34s
      *
-     *  \author hiermeier \date 09/18 */
+     *  */
     inline unsigned fast_mod(const unsigned input, const unsigned ceil)
     {
       /* apply the modulo operator only when needed

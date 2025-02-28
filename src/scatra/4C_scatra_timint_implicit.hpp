@@ -149,7 +149,7 @@ namespace ScaTra
     \warning none
     \return void
     \date 08/16
-    \author rauch  */
+    */
     virtual void init();
 
     /*! \brief Setup all class internal objects and members

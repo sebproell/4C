@@ -33,7 +33,6 @@ namespace SSI
     \warning none
     \return void
     \date 08/16
-    \author rauch
     */
     void init(MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams,
         const Teuchos::ParameterList& scatraparams, const Teuchos::ParameterList& structparams,
@@ -52,7 +51,6 @@ namespace SSI
     \warning none
     \return void
     \date 08/16
-    \author rauch
     */
     void setup() override;
 

@@ -29,7 +29,7 @@ namespace Solid
     /*! \brief Factory to build the desired time integration strategy and
      *  the desired adaptive wrapper object
      *
-     *  \author Michael Hiermeier */
+     *  */
     class Factory
     {
      public:

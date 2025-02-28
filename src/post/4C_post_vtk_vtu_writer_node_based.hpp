@@ -44,8 +44,6 @@ namespace Core::Nodes
 
 /*
  \brief Base class for VTU node based output generation
-
- \author biehler
  \date 12/16
 */
 class PostVtuWriterNode : public PostVtuWriter

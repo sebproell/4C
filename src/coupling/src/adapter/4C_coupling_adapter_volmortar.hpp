@@ -91,7 +91,6 @@ namespace Coupling::Adapter
 
 
     \date   09/16
-    \author rauch
 
     */
     void redistribute(const Teuchos::ParameterList& binning_params,

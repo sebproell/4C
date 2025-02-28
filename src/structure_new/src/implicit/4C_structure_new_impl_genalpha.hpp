@@ -260,7 +260,6 @@ namespace Solid
        *
        *  \param[in/out] f Right-hand side vector
        *
-       *  \author hiermeier
        *  \date 03/2016 */
       void add_visco_mass_contributions(Core::LinAlg::Vector<double>& f) const override;
 
@@ -280,7 +279,6 @@ namespace Solid
        *
        * \param[in/out] jac Jacobian matrix
        *
-       *  \author hiermeier
        *  \date 03/2016 */
       void add_visco_mass_contributions(Core::LinAlg::SparseOperator& jac) const override;
 

@@ -26,7 +26,7 @@ namespace Solid
 
     /*! Factory to build the desired model evaluator std::map
      *
-     *  \author Michael Hiermeier */
+     *  */
     class Factory
     {
      public:

@@ -24,7 +24,6 @@ namespace Solid
   /*!
    * \brief forward Euler: 1st order accurate,
    *                       explicit time integrator,
-   * \author bborn
    * \date 06/08
    */
   class TimIntExplEuler : public TimIntExpl
@@ -67,7 +66,7 @@ namespace Solid
     \warning none
     \return bool
     \date 08/16
-    \author rauch  */
+    */
     void init(const Teuchos::ParameterList& timeparams, const Teuchos::ParameterList& sdynparams,
         const Teuchos::ParameterList& xparams, std::shared_ptr<Core::FE::Discretization> actdis,
         std::shared_ptr<Core::LinAlg::Solver> solver) override;
@@ -89,7 +88,7 @@ namespace Solid
     \warning none
     \return void
     \date 08/16
-    \author rauch  */
+    */
     void setup() override;
 
     //@}

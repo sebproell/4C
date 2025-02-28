@@ -66,7 +66,6 @@ namespace Adapter
    *  \sa ALE::Ale
    *  \sa Adapter::Structure, Adapter::Fluid
    *
-   *  \author mayr.mt \date 10/2014
    */
   class Ale
   {
@@ -194,7 +193,6 @@ namespace Adapter
      *  repeated. Therefore, we need to reset the solution back to the initial
      *  solution of the time step.
      *
-     *  \author mayr.mt \date 08/2013
      */
     virtual void reset_step() = 0;
 

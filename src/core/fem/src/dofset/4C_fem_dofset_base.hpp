@@ -29,7 +29,7 @@ namespace Core::DOFSets
     This base class manages the static list, all DofSets are
     written into and the list of DofSets the current DofSet is connected to.
 
-    \author tk    */
+    */
   class DofSetBase : public DofSetInterface
   {
    public:

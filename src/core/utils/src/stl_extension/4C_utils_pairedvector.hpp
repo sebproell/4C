@@ -99,7 +99,7 @@ namespace Core::Gen
      *  @param[in] source %pairedmatrix object we want to copy.
      *  @param[in] type   Apply this copy type.
      *
-     *  \author hiermeier \date 05/17 */
+     *  */
     Pairedvector(const Pairedvector& source, enum Gen::CopyType type = DeepCopy)
         : m_(0, pair_type()), entries_(0)
 
@@ -305,7 +305,7 @@ namespace Core::Gen
      *  This exchanges the elements between two vectors in constant time.
      *  (Three pointers and the entries information, so it should be quite fast.)
      *
-     *  \author hiermeier \date 06/17 */
+     *  */
     void swap(class_type& x)
     {
       // swap internal data structure

@@ -29,7 +29,6 @@ namespace Adapter
    *
    *  \sa Adapter::Ale, Adapter::AleWrapper, Adapter::AleFsiWrapper
    *
-   *  \author mayr.mt \date 10/2014
    */
   class AleXFFsiWrapper : public AleFsiWrapper
   {

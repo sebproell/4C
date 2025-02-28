@@ -73,7 +73,7 @@ namespace Solid
      * jacobian (incl. the constraint blocks, if a saddle point system should be
      * solved).
      *
-     * \author Michael Hiermeier */
+     * */
     class BaseDataGlobalState
     {
      public:
@@ -93,7 +93,7 @@ namespace Solid
 
       /** \brief copy the init information only and set the issetup flag to false
        *
-       *  \date 02/17 \author hiermeier */
+       *  \date 02/17 */
       virtual BaseDataGlobalState& operator=(const BaseDataGlobalState& source);
 
       /*! \brief Initialize class variables
@@ -175,7 +175,7 @@ namespace Solid
        *  \param mt (in)  : Model type of the desired block.
        *  \param bt (in)  : Desired matrix block type.
        *
-       *  \author hiermeier \date 04/17 */
+       *  */
       std::shared_ptr<const Core::LinAlg::SparseMatrix> get_jacobian_block(
           const Inpar::Solid::ModelType mt, const MatBlockType bt) const;
 
@@ -906,7 +906,7 @@ namespace Solid
        *  instead.
        *
        *  \date 02/17
-       *  \author hiermier */
+       *  */
       std::shared_ptr<Core::LinAlg::SparseOperator>& stiff_ptr() { return stiff_; }
 
      protected:
@@ -1042,7 +1042,7 @@ namespace Solid
        *  protected access is allowed!
        *
        *  \date 02/17
-       *  \author hiermeier */
+       *  */
       std::shared_ptr<Core::LinAlg::SparseOperator> stiff_;
 
       /// mass matrix (constant)
@@ -1113,7 +1113,7 @@ namespace NOX
            *  to update the non-additive rotation (pseudo-)vector DOFs in a consistent
            *  (multiplicative) manner.
            *
-           *  \author Maximilian Grill */
+           *  */
           class RotVecUpdater : public NOX::Nln::Abstract::PrePostOperator
           {
            public:

@@ -310,7 +310,7 @@ namespace CONTACT
      * can differ from 1.0) \param xnew    (in): new solution vector of the NOX solver
      *
      *  \date 05/2016
-     *  \author hiermeier */
+     *  */
     void run_post_compute_x(const CONTACT::ParamsInterface& cparams,
         const Core::LinAlg::Vector<double>& xold, const Core::LinAlg::Vector<double>& dir,
         const Core::LinAlg::Vector<double>& xnew) override

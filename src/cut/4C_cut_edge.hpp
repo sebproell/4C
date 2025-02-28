@@ -35,7 +35,7 @@ namespace Cut
      *  \param edgetype (in) : element type of the edge
      *  \param nodes    (in) : vector of nodes defining the new edge
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     static std::shared_ptr<Edge> create(
         Core::FE::CellType edgetype, const std::vector<Node*>& nodes);
 
@@ -44,7 +44,7 @@ namespace Cut
      *  \param shardskey (in) : unique key equivalent to a element type ( see TRILINOS library )
      *  \param nodes     (in) : vector of nodes defining the new edge
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     static std::shared_ptr<Edge> create(unsigned shardskey, const std::vector<Node*>& nodes);
 
     /// constructor
@@ -183,7 +183,7 @@ namespace Cut
      *  This routine returns TRUE, if the computation was successful AND the cut
      *  point is within the edge limits.
      *
-     *  \author hiermeier \date 12/16 */
+     *  */
     virtual bool compute_cut(
         Mesh* mesh, Edge* other, Side* side, PointSet* cut_points, double& tolerance) = 0;
 
@@ -341,7 +341,7 @@ namespace Cut
      *  This routine returns TRUE, if the computation was successful AND the cut
      *  point is within the edge limits.
      *
-     *  \author hiermeier \date 12/16 */
+     *  */
     bool compute_cut(
         Mesh* mesh, Edge* other, Side* side, PointSet* cut_points, double& tolerance) override;
 

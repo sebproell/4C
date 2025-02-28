@@ -297,7 +297,6 @@ namespace BeamInteraction
        binding events for one crosslinker in one time step are excluded (for this
        the proc must be sure that a crosslink is set as the binding range is
        different for a single bonded crosslinker compared to a free one)
-      *  \author J. Eichinger
        -------------------------------------------------------------------------*/
       void find_potential_binding_events(
           std::map<int, std::shared_ptr<BeamInteraction::Data::BindEventData>>& mybonds,

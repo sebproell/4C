@@ -57,7 +57,7 @@ namespace NOX
        * [3] M. Ceze, K. J. Fidkowski, "Constrained pseudo-transient continuation",
        *     Int. J. Number. Meth. Engng., Vol. 102, pp. 1683-1703, 2015.
        *
-       * \author Michael Hiermeier */
+       * */
       class PseudoTransient : public NOX::Nln::Solver::LineSearchBased
       {
        public:
@@ -376,7 +376,7 @@ namespace NOX
          * NOX::Nln::LinSystem::PrePostOperator classes. The PTC solver uses them to modify the
          * linear system or to be even more precise the jacobian.
          *
-         * \author Michael Hiermeier */
+         * */
         class PseudoTransient : public NOX::Nln::Abstract::PrePostOperator
         {
          public:
@@ -418,7 +418,7 @@ namespace NOX
          *
          * The PTC solver uses this helper class to modify the right hand side.
          *
-         * \author Michael Hiermeier */
+         * */
         class PseudoTransient : public NOX::Nln::Abstract::PrePostOperator
         {
          public:

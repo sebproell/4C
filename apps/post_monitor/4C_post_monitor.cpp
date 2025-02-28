@@ -1692,7 +1692,6 @@ FOUR_C_NAMESPACE_CLOSE
  *
  * Note: Works in seriell version only! Requires to read one instance of the discretisation!!
  *
- * \author chfoe
  * \date 11/07
  */
 int main(int argc, char** argv)

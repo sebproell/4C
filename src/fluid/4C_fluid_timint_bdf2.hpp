@@ -150,7 +150,6 @@ namespace FLD
      *    + HOT\left(\Delta t_n^4\right)
      *  \f]
      *
-     *  \author mayr.mt \date 04/2015
      */
     double method_lin_err_coeff_vel() const override;
 

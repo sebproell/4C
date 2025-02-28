@@ -231,7 +231,7 @@ namespace NOX
        *  Nevertheless, the here computed eigenvalues are the exact ones.
        *
        *  \return the computed condition number.
-       *  \author hiermeier \date 04/18 */
+       *  */
       void compute_serial_eigenvalues_of_jacobian(Core::LinAlg::SerialDenseVector& reigenvalues,
           Core::LinAlg::SerialDenseVector& ieigenvalues) const;
 
@@ -282,7 +282,7 @@ namespace NOX
        *  \param linProblem (in) : Solved linear problem
        *  \param lhs        (out): left-hand-side vector which can be extended
        *
-       *  \author hiermeier \date 04/17 */
+       *  */
       virtual void complete_solution_after_solve(
           const Epetra_LinearProblem& linProblem, Core::LinAlg::Vector<double>& lhs) const;
 

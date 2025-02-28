@@ -29,7 +29,6 @@ namespace PARTICLEALGORITHM
      *
      * Read parameters relating particle types to specific values from the parameter list.
      *
-     * \author Sebastian Fuchs \date 07/2018
      *
      * \tparam valtype type of value
      *

@@ -41,8 +41,6 @@ namespace Discret
      This a calculation class implemented as a singleton, like all calc classes in fluid
      (see comments on base classes for more details). In short this means that on instance
      exists for every discretization type of the boundary element (because of the template).
-
-     \author vuong 10/14
      */
 
     template <Core::FE::CellType distype>

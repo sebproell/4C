@@ -33,8 +33,6 @@ namespace FLD
   /*!
     Class can handle a fluid described on a XFEM discretization and an embedded
     standard FEM discretization
-
-    \author kruse
     \date 01/15
   */
   class XFluidFluid : public XFluid

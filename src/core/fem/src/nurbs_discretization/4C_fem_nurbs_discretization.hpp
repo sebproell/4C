@@ -64,8 +64,6 @@ namespace Core::FE
 
       \param knots : The Knotvector class
 
-      \author gammi
-
       */
       virtual void set_knot_vector(std::shared_ptr<Core::FE::Nurbs::Knotvector> knots);
 
@@ -73,8 +71,6 @@ namespace Core::FE
       \brief get a pointer to the knotvector from the discretization
 
       \return knots : The Knotvector class
-
-      \author gammi
 
       */
       std::shared_ptr<Core::FE::Nurbs::Knotvector> get_knot_vector();
@@ -87,8 +83,6 @@ namespace Core::FE
              the number of the patch we are interested in
 
       \return  : The number of knots in each direction
-
-      \author gammi
 
       */
       virtual std::vector<int> return_n_x_m_x_l(const int npatch)
@@ -104,8 +98,6 @@ namespace Core::FE
 
       \return  : The degree in each direction
 
-      \author gammi
-
       */
       virtual std::vector<int> return_degree(const int npatch)
       {
@@ -117,8 +109,6 @@ namespace Core::FE
 
       \return  : The element offsets of all patches
 
-      \author gammi
-
       */
       virtual std::vector<int> return_offsets() { return (knots_->return_offsets()); }
 
@@ -129,8 +119,6 @@ namespace Core::FE
              the number of the patch we are interested in
 
       \return  : The number of elements in each direction
-
-      \author gammi
 
       */
       virtual std::vector<int> return_nele_x_mele_x_lele(const int npatch)

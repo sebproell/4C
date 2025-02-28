@@ -268,7 +268,7 @@ namespace NOX
          * matrix only once, if locSys is defined and to apply possible modifications to the linear
          * system at different places without the need to re-apply the DBC (see PTC for an example).
          *
-         * \author Hiermeier */
+         * */
         class Dbc : public NOX::Nln::Abstract::PrePostOperator
         {
          public:

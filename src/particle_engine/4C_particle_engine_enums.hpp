@@ -28,7 +28,6 @@ namespace PARTICLEENGINE
   /*!
    * \brief enums of particle states
    *
-   * \author Sebastian Fuchs \date 03/2018
    */
   enum ParticleState
   {
@@ -96,7 +95,6 @@ namespace PARTICLEENGINE
    *
    * \note This method should be used only for initialization.
    *
-   * \author Sebastian Fuchs \date 03/2018
    *
    * \param[in] state particle state
    *
@@ -107,7 +105,6 @@ namespace PARTICLEENGINE
   /*!
    * \brief convert particle state enum to name
    *
-   * \author Sebastian Fuchs \date 03/2018
    *
    * \param[in] state particle state
    *
@@ -124,7 +121,6 @@ namespace PARTICLEENGINE
    * \warning This method is computational expensive due to comparison of strings and should only be
    *          used for initialization.
    *
-   * \author Sebastian Fuchs \date 03/2018
    *
    * \param[in] name particle state name
    *
@@ -142,7 +138,6 @@ namespace PARTICLEENGINE
    *
    * Enum for respective particle type used to relate and distinguish particles to different phases.
    *
-   * \author Sebastian Fuchs \date 03/2018
    */
   enum ParticleType
   {
@@ -162,7 +157,6 @@ namespace PARTICLEENGINE
   /*!
    * \brief convert particle type enum to name
    *
-   * \author Sebastian Fuchs \date 03/2018
    *
    * \param[in] type particle type
    *
@@ -176,7 +170,6 @@ namespace PARTICLEENGINE
    * \warning This method is computational expensive due to comparison of strings and should only be
    *          used for initialization.
    *
-   * \author Sebastian Fuchs \date 03/2018
    *
    * \param[in] name particle type name
    *
@@ -195,7 +188,6 @@ namespace PARTICLEENGINE
    * Enum for respective particle status used to distinguish owned and ghosted particles on each
    * processor.
    *
-   * \author Sebastian Fuchs \date 03/2018
    */
   enum ParticleStatus
   {
@@ -206,7 +198,6 @@ namespace PARTICLEENGINE
   /*!
    * \brief convert particle status enum to name
    *
-   * \author Sebastian Fuchs \date 03/2018
    *
    * \param[in] status particle status
    *

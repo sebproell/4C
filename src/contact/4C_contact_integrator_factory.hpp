@@ -29,7 +29,7 @@ namespace CONTACT
       /*! \brief Build the desired contact integrator
        *
        * \date 04/16
-       * \author hiermeier */
+       * */
       std::shared_ptr<CONTACT::Integrator> build_integrator(
           const Inpar::CONTACT::SolvingStrategy& sol_type, Teuchos::ParameterList& mortar_params,
           const Core::FE::CellType& slave_type, MPI_Comm comm) const;

@@ -47,7 +47,6 @@ namespace Cut
      *
      *  \param sid (in) : side id
      *
-     *  \author hiermeier
      *  \date 08/16 */
     static Side* create_level_set_side(const int& sid);
 
@@ -272,7 +271,7 @@ namespace Cut
      *  because we have to copy the data in the end. So if it's possible to give
      *  the matrix with the correct shape, always do it!
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     template <class T>
     void fix_shape_and_get_coordinates(T& xyze) const
     {
@@ -583,7 +582,7 @@ namespace Cut
      *
      *  The number is dependent on the dimension of the parent element.
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     unsigned uncut_facet_number_per_side() const;
 
     /// Simplifies topological connection in the case, when side contains two parallel cut
@@ -652,7 +651,7 @@ namespace Cut
    *                             the number of nodes per side \c numNodesSide
    *                             the side dimension \c dim
    *
-   *  \author hiermeier */
+   *  */
   template <unsigned probdim, Core::FE::CellType sidetype,
       unsigned num_nodes_side = Core::FE::num_nodes<sidetype>,
       unsigned dim = Core::FE::dim<sidetype>>

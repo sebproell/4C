@@ -38,7 +38,6 @@ namespace Thermo
   //! residuum an d its tangent. This object provides some utility functions to obtain various force
   //! vectors necessary in the calculation of the force residual in the derived time integrators.
   //!
-  //! \author bborn
   //! \date 06/08
   class TimIntImpl : public TimInt
   {
@@ -121,17 +120,14 @@ namespace Thermo
 
     //! determine characteristic norms for relative
     //! error checks of residual temperatures
-    //! \author lw  \date 12/07
     virtual double calc_ref_norm_temperature() = 0;
 
     //! determine characteristic norms for relative
     //! error checks of residual forces
-    //! \author lw  \date 12/07
     virtual double calc_ref_norm_force() = 0;
 
     //! Is convergence reached of iterative solution technique?
     //! Keep your fingers crossed...
-    //! \author lw  \date 12/07
     bool converged();
 
     //! Solve dynamic equilibrium
@@ -226,20 +222,16 @@ namespace Thermo
     //@{
 
     //! Print to screen predictor information about residual norm etc.
-    //! \author lw (originally) \date 12/07
     void print_predictor();
 
     //! Print to screen information about residual forces and temperatures
-    //! \author lw (originally) \date 12/07
     void print_newton_iter();
 
     //! Contains text to print_newton_iter
-    //! \author lw (originally) \date 12/07
     void print_newton_iter_text(FILE* ofile  //!< output file handle
     );
 
     //! Contains header to print_newton_iter
-    //! \author lw (originally) \date 12/07
     void print_newton_iter_header(FILE* ofile  //!< output file handle
     );
 

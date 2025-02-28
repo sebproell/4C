@@ -317,8 +317,6 @@ namespace Adapter
     In case of time step size adaptivity, time steps might have to be repeated.
     Therefore, we need to reset the solution back to the initial solution of the
     time step.
-
-    \author mayr.mt
     \date 08/2013
     */
     void reset_step() override = 0;
@@ -540,7 +538,6 @@ namespace Adapter
      *   variant from outside, because these vectors should always be consistent with
      *   our primary variable (i.e. the displacements).
      *
-     *  \author rauch
      *  \date 10/17
      */
     void set_state(const std::shared_ptr<Core::LinAlg::Vector<double>>& x) override = 0;
@@ -633,7 +630,6 @@ namespace Adapter
      *  The constructor is supposed to stay empty. If you need a safety check, you can overload
      *  the Generic::check_init() and Generic::check_init_setup() routines, instead.
      *
-     *  \author hiermeier
      *  \date 09/16 */
     void set_model_types(std::set<enum Inpar::Solid::ModelType>& modeltypes) const;
 

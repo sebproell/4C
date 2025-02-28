@@ -40,8 +40,6 @@ namespace Adapter
     The generalized fluid is a fluid on a variable domain. The domain could be
     deforming (thus the fluid is solved on an ale mesh) or could be cut using
     xfem. Nevermind, the outside world sees a general fluid interface.
-
-    \author u.kue
     \date 03/08
    */
   class FluidMovingBoundary

@@ -87,7 +87,6 @@ namespace Mat
   /// This is a reaction-diffusion law of anisotropic, instationary electric conductivity in cardiac
   /// muscle tissue
   ///
-  /// \author cbert
   ///
   /// \date 08/13
 

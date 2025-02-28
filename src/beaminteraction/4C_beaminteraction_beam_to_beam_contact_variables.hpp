@@ -182,7 +182,6 @@ namespace BeamInteraction
 
     /** \brief print information to screen
      *
-     *  \author grill
      *  \date 12/16 */
     inline void print(std::ostream& out) const
     {
@@ -198,7 +197,6 @@ namespace BeamInteraction
 
     /** \brief print information to screen
      *
-     *  \author grill
      *  \date 12/16 */
     inline void print_summary_in_one_line(std::ostream& out) const
     {

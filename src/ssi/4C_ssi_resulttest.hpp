@@ -29,7 +29,6 @@ namespace SSI
     by field-specific result testing classes. Feel free to extend this class if necessary.
 
     \sa ResultTest
-    \author fang
     \date 11/2017
   */
   class SSIResultTest : public Core::Utils::ResultTest

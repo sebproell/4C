@@ -354,7 +354,7 @@ namespace Cut
    *  A node knows by the help of its underlying point which cut_elements
    *  it is associated to.
    *
-   *  \author hiermeier \date 11/16 */
+   *  */
   void find_common_elements(const std::vector<Node*>& nelement, plain_element_set& elements);
 
 

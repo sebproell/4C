@@ -62,7 +62,6 @@ namespace PARTICLEWALL
    * all processors following the bin distribution as handed in from the particle engine. In
    * addition potential particle wall neighbor pair relations are build.
    *
-   * \author Sebastian Fuchs \date 10/2018
    */
   class WallHandlerBase : public WallHandlerInterface
   {
@@ -70,7 +69,6 @@ namespace PARTICLEWALL
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 10/2018
      *
      * \param[in] comm   communicator
      * \param[in] params particle simulation parameter list
@@ -80,7 +78,6 @@ namespace PARTICLEWALL
     /*!
      * \brief destructor
      *
-     * \author Sebastian Fuchs \date 10/2018
      *
      * \note At compile-time a complete type of class T as used in class member
      *       std::unique_ptr<T> ptr_T_ is required
@@ -90,7 +87,6 @@ namespace PARTICLEWALL
     /*!
      * \brief init wall handler
      *
-     * \author Sebastian Fuchs \date 10/2018
      *
      * \param[in] binstrategy binning strategy
      */
@@ -99,7 +95,6 @@ namespace PARTICLEWALL
     /*!
      * \brief setup wall handler
      *
-     * \author Sebastian Fuchs \date 10/2018
      *
      * \param[in] particlestatestotypes particle types and corresponding particle states
      * \param[in] restart_time          restart time of the simulation
@@ -111,7 +106,6 @@ namespace PARTICLEWALL
     /*!
      * \brief write restart of wall handler
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \param[in] step restart step
      * \param[in] time restart time
@@ -121,7 +115,6 @@ namespace PARTICLEWALL
     /*!
      * \brief read restart of wall handler
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \param[in] restartstep restart step
      */
@@ -130,7 +123,6 @@ namespace PARTICLEWALL
     /*!
      * \brief insert wall handler dependent states of all particle types
      *
-     * \author Sebastian Fuchs \date 05/2019
      *
      * \param[out] particlestatestotypes map of particle types and corresponding states
      */
@@ -141,7 +133,6 @@ namespace PARTICLEWALL
     /*!
      * \brief write wall runtime output
      *
-     * \author Sebastian Fuchs \date 08/2019
      *
      * \param[in] step output step
      * \param[in] time output time
@@ -151,7 +142,6 @@ namespace PARTICLEWALL
     /*!
      * \brief update bin row and column map
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \param[in] binrowmap bin row map
      * \param[in] bincolmap bin column map
@@ -162,14 +152,12 @@ namespace PARTICLEWALL
     /*!
      * \brief check that wall nodes are located in bounding box
      *
-     * \author Sebastian Fuchs \date 08/2019
      */
     virtual void check_wall_nodes_located_in_bounding_box() const final;
 
     /*!
      * \brief get maximum wall position increment since last transfer
      *
-     * \author Sebastian Fuchs \date 03/2019
      *
      * \param[out] allprocmaxpositionincrement maximum wall position increment
      */
@@ -184,7 +172,6 @@ namespace PARTICLEWALL
     /*!
      * \brief relate bins to column wall elements
      *
-     * \author Sebastian Fuchs \date 11/2018
      */
     virtual void relate_bins_to_col_wall_eles() final;
 
@@ -193,7 +180,6 @@ namespace PARTICLEWALL
      *
      * Build potential particle to wall neighbor pairs.
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \param[in] particlestobins relation of (owned and ghosted) particles to bins
      */
@@ -203,7 +189,6 @@ namespace PARTICLEWALL
     /*!
      * \brief check for valid wall neighbors
      *
-     * \author Sebastian Fuchs \date 11/2018
      */
     virtual bool have_valid_wall_neighbors() const final { return validwallneighbors_; };
 
@@ -222,7 +207,6 @@ namespace PARTICLEWALL
     /*!
      * \brief determine nodal positions of column wall element
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \param ele[in]             column wall element
      * \param colelenodalpos[out] current nodal position
@@ -243,14 +227,12 @@ namespace PARTICLEWALL
     /*!
      * \brief init wall data state container
      *
-     * \author Sebastian Fuchs \date 05/2019
      */
     virtual void init_wall_data_state() final;
 
     /*!
      * \brief create wall discretization runtime vtu writer
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \note this has to be called during setup() as it requires the restart to be read already
      *
@@ -314,7 +296,6 @@ namespace PARTICLEWALL
    * Particle wall handler with wall discretization generated from a surface condition on a
    * structure discretization.
    *
-   * \author Sebastian Fuchs \date 10/2018
    */
   class WallHandlerDiscretCondition final : public WallHandlerBase
   {
@@ -322,7 +303,6 @@ namespace PARTICLEWALL
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 10/2018
      *
      * \param[in] comm   communicator
      * \param[in] params particle simulation parameter list
@@ -332,14 +312,12 @@ namespace PARTICLEWALL
     /*!
      * \brief distribute wall elements and nodes
      *
-     * \author Sebastian Fuchs \date 11/2018
      */
     void distribute_wall_elements_and_nodes() override;
 
     /*!
      * \brief transfer wall elements and nodes
      *
-     * \author Sebastian Fuchs \date 03/2019
      */
     void transfer_wall_elements_and_nodes() override;
 
@@ -347,7 +325,6 @@ namespace PARTICLEWALL
     /*!
      * \brief extend wall element ghosting
      *
-     * \author Sebastian Fuchs \date 03/2019
      *
      * \param[in] bintorowelemap bin to row wall element distribution
      */
@@ -356,14 +333,12 @@ namespace PARTICLEWALL
     /*!
      * \brief init wall discretization
      *
-     * \author Sebastian Fuchs \date 10/2018
      */
     void init_wall_discretization() override;
 
     /*!
      * \brief setup wall discretization
      *
-     * \author Sebastian Fuchs \date 10/2018
      */
     void setup_wall_discretization() const override;
   };
@@ -373,7 +348,6 @@ namespace PARTICLEWALL
    *
    * Particle wall handler with wall discretization generated from bounding box of binning strategy.
    *
-   * \author Sebastian Fuchs \date 10/2018
    */
   class WallHandlerBoundingBox final : public WallHandlerBase
   {
@@ -381,7 +355,6 @@ namespace PARTICLEWALL
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 10/2018
      *
      * \param[in] comm   communicator
      * \param[in] params particle simulation parameter list
@@ -391,14 +364,12 @@ namespace PARTICLEWALL
     /*!
      * \brief distribute wall elements and nodes
      *
-     * \author Sebastian Fuchs \date 11/2018
      */
     void distribute_wall_elements_and_nodes() override;
 
     /*!
      * \brief transfer wall elements and nodes
      *
-     * \author Sebastian Fuchs \date 03/2019
      */
     void transfer_wall_elements_and_nodes() override;
 
@@ -406,14 +377,12 @@ namespace PARTICLEWALL
     /*!
      * \brief init wall discretization
      *
-     * \author Sebastian Fuchs \date 10/2018
      */
     void init_wall_discretization() override;
 
     /*!
      * \brief setup wall discretization
      *
-     * \author Sebastian Fuchs \date 10/2018
      */
     void setup_wall_discretization() const override;
   };

@@ -366,7 +366,6 @@ namespace FLD
      *  scheme. Result is stored in #locerrvelnp_ and is used later to estimate
      *  the local discretization error of the marching time integration scheme.
      *
-     *  \author mayr.mt \date 12/2013
      */
     void time_step_auxiliary() override
     {
@@ -376,7 +375,6 @@ namespace FLD
 
     /*! Indicate norms of temporal discretization error
      *
-     *  \author mayr.mt \date 12/2013
      */
     void indicate_error_norms(
         double& err,       ///< L2-norm of temporal discretization error based on all DOFs
@@ -416,8 +414,6 @@ namespace FLD
     In case of time step size adaptivity, time steps might have to be repeated.
     Therefore, we need to reset the solution back to the initial solution of the
     time step.
-
-    \author mayr.mt
     \date 08/2013
     */
     void reset_step() override
@@ -434,8 +430,6 @@ namespace FLD
     step beforehand. They will be incremented right at the beginning of the repetition
     and, thus, everything will be fine. Currently, this is needed for time step size
     adaptivity in FSI.
-
-    \author mayr.mt
     \date 08/2013
      */
     void reset_time(const double dtold) override

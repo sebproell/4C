@@ -28,8 +28,6 @@ namespace Core::IO
 {
   /*!
   \brief handles restart after a certain walltime interval, step interval or on a user signal
-
-  \author hammerl
   */
   class RestartManager
   {

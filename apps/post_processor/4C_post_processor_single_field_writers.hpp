@@ -40,7 +40,6 @@ class StructureFilter : public PostFilterBase
 
   /*!
   \brief postprocess gauss point stresses and write results
-  \author lw
   \date 02/08
   */
   void post_stress(const std::string groupname, const std::string stresstype);
@@ -58,8 +57,6 @@ class StructureFilter : public PostFilterBase
 
  Each mortar interface is written as its own discretization. The MortarFilter will process only one
  of these interfaces, i.e. there will be as many MortarFilers as there are mortar interfaces.
-
- \author mayr.mt \date 08/2018
  */
 class MortarFilter : public PostFilterBase
 {
@@ -138,8 +135,6 @@ class InterfaceFilter : public PostFilterBase
 
 /*!
  \brief Writer for lubrication problems
-
- \author wirtz
  \date 11/15
 */
 class LubricationFilter : public PostFilterBase
@@ -155,8 +150,6 @@ class LubricationFilter : public PostFilterBase
 
 /*!
  \brief Writer for (in)stationary heat conduction
-
- \author bborn
  \date 09/09
 */
 class ThermoFilter : public PostFilterBase
@@ -174,7 +167,6 @@ class ThermoFilter : public PostFilterBase
 
   /*!
   \brief postprocess gauss point heatfluxes and write results
-  \author originally by lw
   \date 11/09
   */
   void post_heatflux(const std::string groupname, const std::string heatfluxtype);
@@ -186,8 +178,6 @@ class ThermoFilter : public PostFilterBase
 
 /*!
  \brief Writer for electromagnetic problems
-
- \author gravemeier
  \date 06/17
  */
 class ElemagFilter : public PostFilterBase

@@ -36,7 +36,6 @@ FOUR_C_NAMESPACE_OPEN
 /// tissue", Journal of Theoretical Biology 253 (2008) 544-560
 /// </ul>
 ///
-/// \author cbert
 
 
 /// \date 08/13

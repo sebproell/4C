@@ -42,7 +42,7 @@ namespace Core::DOFSets
    * should inherit from.
    *
    * \date 10/2016
-   * \author Andreas Rauch    */
+   * */
   class DofSetInterface
   {
    public:

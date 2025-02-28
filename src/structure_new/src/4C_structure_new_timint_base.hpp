@@ -49,7 +49,7 @@ namespace Solid
   {
     /** \brief Abstract class for all time integration strategies
      *
-     *  \author Michael Hiermeier */
+     *  */
     class Base : public Adapter::StructureNew, Core::IO::EveryIterationWriterInterface
     {
       friend class Adapter::StructureTimeAda;
@@ -499,7 +499,7 @@ namespace Solid
        *
        *  This routine is only for simple structure problems!
        *  \date 06/13
-       *  \author biehler */
+       *  */
       void get_restart_data(std::shared_ptr<int> step, std::shared_ptr<double> time,
           std::shared_ptr<Core::LinAlg::Vector<double>> disnp,
           std::shared_ptr<Core::LinAlg::Vector<double>> velnp,
@@ -773,7 +773,7 @@ namespace Solid
        *  \f$D_{n}, V_{n}, A_{n}\f$.
        *
        *  \date 03/07
-       *  \author mwgee (originally) */
+       *  */
       void output_step(bool forced_writerestart);
 
      private:
@@ -823,20 +823,20 @@ namespace Solid
        *  \pre update_step_time() must be called beforehand, otherwise the wrong
        *  step-id is considered.
        *
-       *  \author hiermeier \date 11/17 */
+       *  */
       void set_number_of_nonlinear_iterations();
 
       /** \brief decide which contributions to the total system energy shall be
        *         computed and written during simulation
        *
-       *  \author grill */
+       *  */
       void select_energy_types_to_be_written();
 
       /** \brief initialize file stream for energy values and write all the
        *         column headers for the previously selected energy contributions
        *         to be written separately
        *
-       *  \author grill */
+       *  */
       void initialize_energy_file_stream_and_write_headers();
 
      protected:

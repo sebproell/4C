@@ -57,7 +57,6 @@ namespace PARTICLEENGINE
    * communication of particles to other processors if required. In addition potential particle
    * neighbor pair relations are build.
    *
-   * \author Sebastian Fuchs \date 03/2018
    */
   class ParticleEngine final : public ParticleEngineInterface
   {
@@ -65,7 +64,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in] comm   communicator
      * \param[in] params particle simulation parameter list
@@ -75,7 +73,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief destructor
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \note At compile-time a complete type of class T as used in class member
      *       std::unique_ptr<T> ptr_T_ is required
@@ -85,14 +82,12 @@ namespace PARTICLEENGINE
     /*!
      * \brief init particle engine
      *
-     * \author Sebastian Fuchs \date 03/2018
      */
     void init();
 
     /*!
      * \brief setup particle engine
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in] particlestatestotypes particle types and corresponding particle states
      */
@@ -101,7 +96,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief write restart of particle engine
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \param[in] step restart step
      * \param[in] time restart time
@@ -111,7 +105,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief read restart of particle engine
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \param[in]  reader          discretization reader
      * \param[out] particlestoread particle objects read in from restart
@@ -122,7 +115,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief write particle runtime output
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \param[in] step output step
      * \param[in] time output time
@@ -134,7 +126,6 @@ namespace PARTICLEENGINE
      *
      * All unique global ids handed in are freed in order to be reassigned.
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \param[in] freeuniquegids free unique global ids
      */
@@ -146,7 +137,6 @@ namespace PARTICLEENGINE
      * All particles handed in do not have a unique global id yet. In this method a unique global id
      * is assigned to each particle.
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \param[in] particlestogetuniquegids particles to get unique global ids
      */
@@ -160,7 +150,6 @@ namespace PARTICLEENGINE
      * means the sum of all particles and of all reusable global ids should equal the number of
      * global ids.
      *
-     * \author Sebastian Fuchs \date 11/2019
      */
     void check_number_of_unique_global_ids();
 
@@ -170,7 +159,6 @@ namespace PARTICLEENGINE
      * All particles handed in are checked if they are located inside the bounding box. Particles
      * that are outside the bounding box are erased.
      *
-     * \author Sebastian Fuchs \date 09/2018
      *
      * \param[in] particlestocheck particles to be checked if located in bounding box
      */
@@ -183,7 +171,6 @@ namespace PARTICLEENGINE
      * processor. This method is primarily used for initialization or after redistribution of the
      * underlying bins.
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] particlestodistribute particles to be distributed to their owning processor
      */
@@ -197,14 +184,12 @@ namespace PARTICLEENGINE
      * it entered the spatial domain of a neighboring processor and is transferred to this new
      * owning processor.
      *
-     * \author Sebastian Fuchs \date 03/2018
      */
     void transfer_particles();
 
     /*!
      * \brief ghost particles on other processors
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void ghost_particles();
 
@@ -215,7 +200,6 @@ namespace PARTICLEENGINE
      * processors directly to those processors together with the information of the local index in
      * the respective ghosted particle container.
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void refresh_particles() const;
 
@@ -225,7 +209,6 @@ namespace PARTICLEENGINE
      * Communicate the information of specific states of particles of specific types from owned
      * particles to processors ghosting that respective particles.
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] particlestatestotypes particle types and corresponding particle states to be
      *                                  refreshed
@@ -240,7 +223,6 @@ namespace PARTICLEENGINE
      * on each processor. This results in a new distribution of bins and requires to rebuild all
      * dependent maps and sets.
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void dynamic_load_balancing();
 
@@ -254,7 +236,6 @@ namespace PARTICLEENGINE
      *       phase change in a different type, the global ids must be handed to the particle unique
      *       global id handler beforehand in order to be reused.
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \param[in] particlestoremove particles to be removed from containers on this processor
      */
@@ -268,7 +249,6 @@ namespace PARTICLEENGINE
      *
      * \note All particle added need a global id assigned.
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \param[in] particlestoinsert particles to be inserted into containers on this processor
      */
@@ -280,7 +260,6 @@ namespace PARTICLEENGINE
      *
      * Build potential particle to particle neighbor pairs storing each pair only once.
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void build_particle_to_particle_neighbors();
 
@@ -289,28 +268,24 @@ namespace PARTICLEENGINE
      *
      * Relate the global id of all particles to the local index as stored in the particle container.
      *
-     * \author Sebastian Fuchs \date 10/2018
      */
     void build_global_id_to_local_index_map();
 
     /*!
      * \brief check for valid particle connectivity
      *
-     * \author Sebastian Fuchs \date 11/2018
      */
     bool have_valid_particle_connectivity() const;
 
     /*!
      * \brief check for valid particle neighbors
      *
-     * \author Sebastian Fuchs \date 04/2019
      */
     bool have_valid_particle_neighbors() const;
 
     /*!
      * \brief get binning strategy
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \return binning strategy
      */
@@ -322,7 +297,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get bin row map
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \return bin row map
      */
@@ -331,7 +305,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get bin column map
      *
-     * \author Sebastian Fuchs \date 02/2019
      *
      * \return bin column map
      */
@@ -345,7 +318,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get reference to relation of (owned and ghosted) particles to bins
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \return relation of (owned and ghosted) particles to bins
      */
@@ -371,7 +343,6 @@ namespace PARTICLEENGINE
      *
      * \note This method is computational expensive and should be used only for initialization.
      *
-     * \author Sebastian Fuchs \date 03/2019
      *
      * \param[out] particlestoproc relate global id of particles to global id of processor
      */
@@ -385,7 +356,6 @@ namespace PARTICLEENGINE
      * \note In case the search point is located in a ghosted bin on this processor, particles
      *       within the search radius but not owned or ghosted by this processor are not found.
      *
-     * \author Sebastian Fuchs \date 09/2019
      *
      * \param[in]  position             position of search point
      * \param[in]  radius               search radius around search point
@@ -413,7 +383,6 @@ namespace PARTICLEENGINE
      * conditions it is checked if the distance over the periodic boundary is closer than inside the
      * domain.
      *
-     * \author Sebastian Fuchs \date 08/2018
      *
      * \param[in]  pos_i pointer to position of particle i
      * \param[in]  pos_j pointer to position of particle j
@@ -425,7 +394,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief create binning discretization reader
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \param[in] restartstep restart step
      *
@@ -443,7 +411,6 @@ namespace PARTICLEENGINE
      * \note The binning discretization output is solely meant as a debug feature as this method is
      * computational expensive!
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in] step output step
      * \param[in] time output time
@@ -457,35 +424,30 @@ namespace PARTICLEENGINE
     /*!
      * \brief init binning strategy
      *
-     * \author Sebastian Fuchs \date 03/2018
      */
     void init_binning_strategy();
 
     /*!
      * \brief setup binning strategy
      *
-     * \author Sebastian Fuchs \date 03/2018
      */
     void setup_binning_strategy();
 
     /*!
      * \brief setup ghosting of bins
      *
-     * \author Sebastian Fuchs \date 03/2018
      */
     void setup_bin_ghosting();
 
     /*!
      * \brief init particle container bundle
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void init_particle_container_bundle();
 
     /*!
      * \brief setup particle container bundle
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] particlestatestotypes particle types and corresponding particle states
      */
@@ -495,21 +457,18 @@ namespace PARTICLEENGINE
     /*!
      * \brief init particle unique global identifier handler
      *
-     * \author Sebastian Fuchs \date 11/2019
      */
     void init_particle_unique_global_id_handler();
 
     /*!
      * \brief setup particle unique global identifier handler
      *
-     * \author Sebastian Fuchs \date 11/2019
      */
     void setup_particle_unique_global_id_handler() const;
 
     /*!
      * \brief setup data storage
      *
-     * \author Sebastian Fuchs \date 12/2018
      *
      * \param[in] particlestatestotypes particle types and corresponding particle states
      */
@@ -519,21 +478,18 @@ namespace PARTICLEENGINE
     /*!
      * \brief init particle runtime vtp writer
      *
-     * \author Sebastian Fuchs \date 04/2018
      */
     void init_particle_vtp_writer();
 
     /*!
      * \brief setup particle runtime vtp writer
      *
-     * \author Sebastian Fuchs \date 04/2018
      */
     void setup_particle_vtp_writer() const;
 
     /*!
      * \brief setup particle type weights for dynamic load balancing
      *
-     * \author Sebastian Fuchs \date 03/2019
      */
     void setup_type_weights();
 
@@ -551,7 +507,6 @@ namespace PARTICLEENGINE
      * - set of owned bins touched by other processors
      * - map of non-owned neighboring bins related to global id of neighboring owning processor
      *
-     * \author Sebastian Fuchs \date 03/2018
      */
     void determine_bin_dis_dependent_maps_and_sets();
 
@@ -562,7 +517,6 @@ namespace PARTICLEENGINE
      * - set of bins being ghosted on this processor
      * - map of owned bins related to global ids of processors ghosting that bins
      *
-     * \author Sebastian Fuchs \date 03/2018
      */
     void determine_ghosting_dependent_maps_and_sets();
 
@@ -576,7 +530,6 @@ namespace PARTICLEENGINE
      * addition, all ghosted bins and also the bin itself are added to that list in order to not
      * miss any potential particle pairs.
      *
-     * \author Sebastian Fuchs \date 01/2019
      */
     void relate_half_neighboring_bins_to_owned_bins();
 
@@ -590,7 +543,6 @@ namespace PARTICLEENGINE
      * containers. In case a particle travels over a periodic boundary it is shifted by the periodic
      * length to be re-injected at the opposite site.
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[out] particlestoremove particles to be removed from containers
      */
@@ -601,7 +553,6 @@ namespace PARTICLEENGINE
      *
      * Find the owning processors of all particle objects handed in.
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \param[in]  particlestodistribute particles to be distributed to their owning processor
      * \param[out] particlestosend       particles to be send to other processors
@@ -621,7 +572,6 @@ namespace PARTICLEENGINE
      * more than one bin layer as each processor only knows the owning processor of the first layer
      * of bins surrounding its own spatial domain.
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[out] particlestoremove particles to be removed from containers on this processor
      * \param[out] particlestosend   particles to be send to other processors
@@ -635,7 +585,6 @@ namespace PARTICLEENGINE
      * Determine all particles that need to be ghosted on other processors based on the information
      * of owned bins, that are ghosted by other processors.
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[out] particlestosend particles to be send to other processors
      */
@@ -648,7 +597,6 @@ namespace PARTICLEENGINE
      * Determine particles that need to be refreshed on other processors based on the direct
      * ghosting targets map.
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[out] particlestosend particles to be send to other processors
      */
@@ -658,7 +606,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief determine specific states of particles of specific type that need to be refreshed
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in]  particlestatestotypes particle types and corresponding particle states to be
      *                                   refreshed
@@ -674,7 +621,6 @@ namespace PARTICLEENGINE
      * This method communicates particles to be send to other processors and receives particles from
      * other processors.
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in]  particlestosend    particles to be send to other processors
      * \param[out] particlestoreceive particles to be received on this processor
@@ -688,7 +634,6 @@ namespace PARTICLEENGINE
      * Communicate the information at which local index in the particle container a particle at the
      * processor ghosting that particle is inserted to the owning processors.
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] directghosting direct ghosting information
      */
@@ -698,7 +643,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief insert owned particles received from other processors
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] particlestoinsert particles to be inserted into containers on this processor
      */
@@ -708,7 +652,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief insert ghosted particles received from other processors
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in]  particlestoinsert particles to be inserted into containers on this processor
      * \param[out] directghosting    direct ghosting information
@@ -720,7 +663,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief insert refreshed particles received from other processors
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] particlestoinsert particles to be inserted into containers on this processor
      */
@@ -730,7 +672,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief remove particles from containers
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in] particlestoremove particles to be removed from containers on this processor
      */
@@ -739,35 +680,30 @@ namespace PARTICLEENGINE
     /*!
      * \brief store particle positions after transfer of particles
      *
-     * \author Sebastian Fuchs \date 11/2018
      */
     void store_positions_after_particle_transfer();
 
     /*!
      * \brief relate owned particles to bins
      *
-     * \author Sebastian Fuchs \date 03/2018
      */
     void relate_owned_particles_to_bins();
 
     /*!
      * \brief determine minimum relevant bin size
      *
-     * \author Sebastian Fuchs \date 08/2018
      */
     void determine_min_relevant_bin_size();
 
     /*!
      * \brief determine bin weights needed for repartitioning
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void determine_bin_weights();
 
     /*!
      * \brief invalidate particle safety flags
      *
-     * \author Sebastian Fuchs \date 11/2018
      */
     void invalidate_particle_safety_flags();
 

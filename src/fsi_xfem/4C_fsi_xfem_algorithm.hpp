@@ -42,9 +42,6 @@ namespace FSI
   //! XFSI algorithm base
   //!
   //!  Base class of XFSI algorithms. Derives from AlgorithmBase.
-  //!
-  //!  \author schott
-  //!  \date 08/14
   class AlgorithmXFEM : public Adapter::AlgorithmBase
   {
    public:

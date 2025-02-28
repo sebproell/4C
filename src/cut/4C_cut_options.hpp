@@ -73,7 +73,7 @@ namespace Cut
 
     /** \brief Set the position for the boundary cell creation
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     void set_gen_boundary_cell_position(BoundaryCellPosition gen_bcell_position)
     {
       gen_bcell_position_ = gen_bcell_position;

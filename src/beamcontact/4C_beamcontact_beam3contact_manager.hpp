@@ -562,7 +562,6 @@ namespace CONTACT
 
     /** \brief set up the discretization btsoldiscret_ to be used within beam contact manager
      *
-     *  \author grill
      *  \date 05/16 */
     void init_beam_contact_discret();
 

@@ -191,7 +191,7 @@ namespace Solid
      *  contributions stemming from the condensation algorithm. A typical
      *  example is the condensed contact.
      *
-     *  \author hiermeier \date 03/18 */
+     *  */
     void remove_condensed_contributions_from_rhs(Core::LinAlg::Vector<double>& rhs) const;
 
     /// operations at the end of the setup
@@ -212,7 +212,7 @@ namespace Solid
      *                                     vector (optional)
      *  \return Boolean flag to indicate success (true) or failure (false)
      *
-     *  \author hiermeier \date 03/17 */
+     *  */
     bool assemble_force(const double timefac_np, Core::LinAlg::Vector<double>& f,
         const std::vector<Inpar::Solid::ModelType>* without_these_models) const;
 
@@ -227,7 +227,7 @@ namespace Solid
      *
      *  \return Boolean flag to indicate success (true) or failure (false)
      *
-     *  \author farah \date 07/17 */
+     *  */
     bool assemble_jacobian(const double timefac_np, Core::LinAlg::SparseOperator& jac,
         const std::vector<Inpar::Solid::ModelType>* without_these_models) const;
 
@@ -238,7 +238,7 @@ namespace Solid
      *
      *  \return Boolean flag to indicate success (true) or failure (false)
      *
-     *  \author hiermeier \date 03/17 */
+     *  */
     inline bool assemble_force(const double timefac_np, Core::LinAlg::Vector<double>& f) const
     {
       return assemble_force(*me_vec_ptr_, timefac_np, f);
@@ -264,7 +264,7 @@ namespace Solid
      *
      *  \return Boolean flag to indicate success (true) or failure (false)
      *
-     *  \author hiermeier \date 03/17 */
+     *  */
     inline bool assemble_force(
         const Vector& me_vec, const double timefac_np, Core::LinAlg::Vector<double>& f) const
     {
@@ -290,7 +290,7 @@ namespace Solid
      *  \param timefac_np (in) : time integration factor for the current contribution \f$t_{n+1}\f$
      *  \param jac       (out) : jacobian which is going to be assembled.
      *
-     *  \author farah \date 07/17 */
+     *  */
     inline bool assemble_jacobian(
         const Vector& me_vec, const double timefac_np, Core::LinAlg::SparseOperator& jac) const
     {
@@ -412,34 +412,34 @@ namespace Solid
 
     /*! \brief Executed before the solution vector is going to be updated
      *
-     *  \author hiermeier \date 03/17 */
+     *  */
     void run_pre_compute_x(const Core::LinAlg::Vector<double>& xold,
         Core::LinAlg::Vector<double>& dir_mutable, const double& step,
         const NOX::Nln::Group& curr_grp, const bool isdefaultstep) const;
 
     /*! \brief Executed at the end of the ::NOX::Solver::Step() (f.k.a. Iterate()) method
      *
-     *  \author hiermeier \date 03/17 */
+     *  */
     void run_post_iterate(
         const ::NOX::Solver::Generic& solver, const double step, const bool isdefaultstep) const;
 
     /*! \brief Executed at the beginning of the ::NOX::Solver::solve() method
      *
-     *  \author hiermeier */
+     *  */
     void run_pre_solve(
         const ::NOX::Solver::Generic& solver, const double step, const bool isdefaultstep) const;
 
     /*! \brief Executed at the end of the NOX::Nln::Group::applyJacobianInverse
      *  method
      *
-     *  \author hiermeier \date 12/17 */
+     *  */
     void run_post_apply_jacobian_inverse(const Core::LinAlg::Vector<double>& rhs,
         Core::LinAlg::Vector<double>& result, const Core::LinAlg::Vector<double>& xold,
         const NOX::Nln::Group& grp) const;
 
     /*! \brief Executed before the solution of the linear system
      *
-     *  \author seitz \date 04/17 */
+     *  */
     void run_pre_apply_jacobian_inverse(const Core::LinAlg::Vector<double>& rhs,
         Core::LinAlg::Vector<double>& result, const Core::LinAlg::Vector<double>& xold,
         const NOX::Nln::Group& grp) const;
@@ -476,7 +476,7 @@ namespace Solid
      *  \param timefac_np (in) : time integration factor for the current contribution \f$t_{n+1}\f$
      *  \param f         (out) : force vector which is going to be assembled.
      *
-     *  \author hiermeier \date 03/17 */
+     *  */
     void assemble_force(bool& ok, const Vector& me_vec, const double timefac_np,
         Core::LinAlg::Vector<double>& f) const;
 
@@ -487,7 +487,7 @@ namespace Solid
      *  \param timefac_np (in) : time integration factor for the current contribution \f$t_{n+1}\f$
      *  \param f         (out) : jacobian matrix object which is going to be assembled.
      *
-     *  \author hiermeier \date 03/17 */
+     *  */
     void assemble_jacobian(bool& ok, const Vector& me_vec, const double timefac_np,
         Core::LinAlg::SparseOperator& jac) const;
 

@@ -54,7 +54,6 @@ namespace Solid
    * is compared to one obtained with an auxiliary time integrator. Based on this
    * estimation of the local truncation error, a new time step size is suggested.
    *
-   * \author bborn
    * \date 07/08
    */
   class TimAda
@@ -182,7 +181,6 @@ namespace Solid
      *  that the new time step size also satisfies upper and lower bounds (#stepsizemax_
      *  and #stepsizemin_).
      *
-     *  \author mayr.mt \date 12/2013
      */
     virtual double calculate_dt(const double norm  ///< current norm of local discretization error
     );
@@ -192,7 +190,6 @@ namespace Solid
      *  Print to screen and reset certain quantities in case that the current time
      *  step has to be repeated.
      *
-     *  \author mayr.mt \date 12/2013
      */
     virtual void reset_step();
 
@@ -394,7 +391,6 @@ namespace Solid
 /*!
  * \brief Out stream inserter for Solid::TimAda
  *
- * \author bborn \date 10/07
  */
 std::ostream& operator<<(std::ostream& str, const Solid::TimAda& ta);
 

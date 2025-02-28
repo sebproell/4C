@@ -373,7 +373,7 @@ namespace Cut
      *
      *  \param position (in) : desired position of the boundary cell
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     const std::vector<plain_boundarycell_set>& get_boundary_cell_set(
         Point::PointPosition position) override
     {
@@ -389,7 +389,7 @@ namespace Cut
      *
      *  \param position (in) : desired position of the boundary cell
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     void boundary_cell_set(Point::PointPosition position) override;
 
     //@}
@@ -539,7 +539,7 @@ namespace Cut
      *
      *  \param position (in) : desired position of the boundary cell
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     void boundary_cell_set(Point::PointPosition position) override;
 
     /** \brief Get the connected boundary cell sets with given position
@@ -547,7 +547,7 @@ namespace Cut
      *
      *  \param position (in) : desired position of the boundary cell
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     const std::vector<plain_boundarycell_set>& get_boundary_cell_set(
         Point::PointPosition position) override
     {
@@ -561,7 +561,7 @@ namespace Cut
      *
      *  \param position (in) : desired position of the boundary cell
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     void connect_boundary_cells(Point::PointPosition position);
 
     /** \brief After the volume cells have been connected, the connected boundary
@@ -570,7 +570,7 @@ namespace Cut
      *  \param connected_vcell_set (in)  : connected volume cell sets
      *  \param connected_bcell_set (out) : connected boundary cell sets
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     void build_boundary_cell_sets(const std::vector<plain_volumecell_set>& connected_vcell_set,
         std::vector<plain_boundarycell_set>& connected_bcell_set) const;
 

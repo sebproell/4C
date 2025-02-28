@@ -161,7 +161,6 @@ namespace Discret
 
       /*! \brief Calculate wall shear stress via gradient for xwall
        *
-       *  \author bk \date 06/2014
        */
 
       virtual int tau_w_via_gradient(Discret::Elements::Fluid* ele, Teuchos::ParameterList& params,
@@ -174,7 +173,6 @@ namespace Discret
 
       /*! \brief Calculate statilization parameter mk entry routine
        *
-       *  \author bk \date 06/2014
        */
 
       virtual int calc_mk(Discret::Elements::Fluid* ele, Teuchos::ParameterList& params,
@@ -184,13 +182,11 @@ namespace Discret
 
       /*! \brief Calculate statilization parameter mk
        *
-       *  \author bk \date 06/2014
        */
       virtual double calc_mk();
 
       /*! \brief Calculate Projection on updated shape functions (matrix and rhs)
        *
-       *  \author bk \date 06/2014
        */
       virtual int x_wall_projection(Discret::Elements::Fluid* ele, Teuchos::ParameterList& params,
           Core::FE::Discretization& discretization, const std::vector<int>& lm,

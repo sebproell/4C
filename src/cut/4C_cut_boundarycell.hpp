@@ -103,7 +103,6 @@ namespace Cut
      *
      *  To make it easier with DD data structures (should be removed at some point)
      *
-     *  \author winter
      *  \date 07/15 */
     std::vector<std::vector<double>> coordinates_v();
 
@@ -143,7 +142,6 @@ namespace Cut
      *
      *  just for debugging
      *
-     *  \author sudhakar
      *  \date 10/14
      */
     void print(std::ostream& stream);
@@ -270,7 +268,6 @@ namespace Cut
 
     /** \brief To calculate the element center of a boundary cell
      *
-     *  \author shahmiri
      *  \date 07/12 */
     template <Core::FE::CellType distype>
     void my_element_center(Core::LinAlg::Matrix<3, 1>& center, Core::LinAlg::Matrix<3, 1>& midpoint)
@@ -404,7 +401,6 @@ namespace Cut
 
     /** \brief  A first step to validate if a boundary cell is valid.
      *
-     *  \author winter
      *  \date 11/15 */
     bool is_valid_boundary_cell() override;
 

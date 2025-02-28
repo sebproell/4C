@@ -25,8 +25,6 @@ namespace Core::LinAlg
     FullDomainMap() along with their many partial RangeMap() and
     DomainMap(). Most of the required SparseOperator methods can simply be
     implemented in terms of the matrix blocks.
-
-    \author u.kue
     \date 02/08
    */
   class BlockSparseMatrixBase : public SparseOperator
@@ -275,8 +273,6 @@ namespace Core::LinAlg
       block be heavy communication. But if there is some knowledge available in
       a particular case, it is easy to implement a specify Strategy that does
       not need to communicate that much.
-
-      \author u.kue
       \date 02/08
    */
   template <class Strategy>
@@ -300,7 +296,7 @@ namespace Core::LinAlg
      *  \param[in] row_block_ids : ID's of the row blocks to clone
      *  \param[in] col_block_ids : ID's of the column blocks to clone
      *
-     *  \author hiermeier \date 04/17 */
+     *  */
     std::unique_ptr<Core::LinAlg::BlockSparseMatrixBase> clone(DataAccess access,
         const std::vector<unsigned>& row_block_ids, const std::vector<unsigned>& col_block_ids);
 
@@ -339,7 +335,7 @@ namespace Core::LinAlg
      *  \param[in] domain_extractor : necessary domain extractor
      *  \param[in] range_extractor : necessary range extractor
      *
-     *  \author hiermeier \date 04/17 */
+     *  */
     std::unique_ptr<Core::LinAlg::BlockSparseMatrixBase> clone(DataAccess access,
         const std::vector<unsigned>& row_block_ids, const std::vector<unsigned>& col_block_ids,
         const MultiMapExtractor& domain_extractor, const MultiMapExtractor& range_extractor);
@@ -359,8 +355,6 @@ namespace Core::LinAlg
       specific block structure.
 
       \sa BlockSparseMatrix
-
-      \author u.kue
       \date 02/08
    */
   class DefaultBlockMatrixStrategy

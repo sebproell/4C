@@ -30,8 +30,6 @@ namespace Core::DOFSets
 {
   /*!
   \brief A set of degrees of freedom
-
-  \author
   */
   class FixedSizeDofSet : virtual public DofSet
   {

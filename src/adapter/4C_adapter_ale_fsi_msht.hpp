@@ -38,7 +38,6 @@ namespace Adapter
    *
    *  \sa Adapter::Ale, Adapter::AleWrapper, Adapter::AleFsiWrapper
    *
-   *  \author wirtz \date 02/2016
    */
   class AleFsiMshtWrapper : public AleFsiWrapper
   {

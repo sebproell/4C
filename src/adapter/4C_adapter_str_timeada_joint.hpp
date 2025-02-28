@@ -87,7 +87,6 @@ namespace Adapter
      *  Print to screen and reset certain quantities in case that the current time
      *  step has to be repeated.
      *
-     *  \author mayr.mt \date 12/2013
      */
     void reset_step() override;
   };

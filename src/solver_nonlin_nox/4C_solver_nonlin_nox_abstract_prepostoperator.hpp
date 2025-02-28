@@ -70,8 +70,6 @@ namespace NOX
         <li> See also the nox_nln_solver_ptc implementation for a short example.
 
         </ol>
-
-        \author Michael Hiermeier
        */
 
       class PrePostOperator : public ::NOX::Observer

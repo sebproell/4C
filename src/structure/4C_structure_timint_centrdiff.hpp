@@ -38,7 +38,6 @@ namespace Solid
    *                + \frac{1}{2}\Delta t \ddot{d}_{n+1}
    *  \f]
    *
-   * \author popp
    * \date 01/12
    */
   class TimIntCentrDiff : public TimIntExpl
@@ -81,7 +80,7 @@ namespace Solid
     \warning none
     \return bool
     \date 08/16
-    \author rauch  */
+    */
     void init(const Teuchos::ParameterList& timeparams, const Teuchos::ParameterList& sdynparams,
         const Teuchos::ParameterList& xparams, std::shared_ptr<Core::FE::Discretization> actdis,
         std::shared_ptr<Core::LinAlg::Solver> solver) override;
@@ -103,7 +102,7 @@ namespace Solid
     \warning none
     \return void
     \date 08/16
-    \author rauch  */
+    */
     void setup() override;
 
     //@}

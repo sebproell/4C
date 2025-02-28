@@ -32,7 +32,6 @@ namespace PARTICLEENGINE
      * \note This method has to be called by all processors of the communicator as it contains
      * collective communication.
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in]  comm  communicator
      * \param[in]  sdata send buffers related to corresponding target processors

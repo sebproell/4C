@@ -36,7 +36,6 @@ FOUR_C_NAMESPACE_OPEN
 /// with \phi the potential variable and r the internal state
 /// </ul>
 ///
-/// \author cbert
 
 
 /// \date 09/13

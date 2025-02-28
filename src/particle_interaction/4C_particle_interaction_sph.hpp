@@ -46,7 +46,6 @@ namespace ParticleInteraction
   /*!
    * \brief smoothed particle hydrodynamics (SPH) interaction
    *
-   * \author Sebastian Fuchs \date 05/2018
    */
   class ParticleInteractionSPH final : public ParticleInteractionBase
   {
@@ -57,7 +56,6 @@ namespace ParticleInteraction
     /*!
      * \brief destructor
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \note At compile-time a complete type of class T as used in class member
      *       std::unique_ptr<T> ptr_T_ is required

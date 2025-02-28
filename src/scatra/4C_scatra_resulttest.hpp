@@ -33,8 +33,6 @@ namespace ScaTra
 
   /*!
     \brief scalar-transport specific result test class
-
-    \author gjb
     \date 07/08
   */
   class ScaTraResultTest : public Core::Utils::ResultTest

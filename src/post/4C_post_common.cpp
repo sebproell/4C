@@ -834,8 +834,6 @@ int PostResult::next_result(const std::string& groupname)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Tell whether a given result group belongs to this result.
-
-  \author u.kue
   \date 10/04
 */
 /*----------------------------------------------------------------------*/

@@ -185,7 +185,6 @@ namespace Discret
 
       /** \brief Get number of nodes used for centerline interpolation
        *
-       *  \author grill
        *  \date 05/16 */
       inline int num_centerline_nodes() const override
       {
@@ -194,7 +193,6 @@ namespace Discret
 
       /** \brief find out whether given node is used for centerline interpolation
        *
-       *  \author grill
        *  \date 10/16 */
       inline bool is_centerline_node(const Core::Nodes::Node& node) const override
       {
@@ -249,14 +247,12 @@ namespace Discret
 
       /** \brief get centerline position at xi \in [-1,1] (element parameter space)
        *
-       *  \author grill
        *  \date 06/16 */
       void get_pos_at_xi(Core::LinAlg::Matrix<3, 1>& pos, const double& xi,
           const std::vector<double>& disp) const override;
 
       /** \brief get triad at xi \in [-1,1] (element parameter space)
        *
-       *  \author grill
        *  \date 07/16 */
       void get_triad_at_xi(Core::LinAlg::Matrix<3, 3>& triad, const double& xi,
           const std::vector<double>& disp) const override;
@@ -265,7 +261,6 @@ namespace Discret
        *         orientation at xi \in [-1,1] if multiplied with the vector of primary DoF
        * variations
        *
-       *  \author grill
        *  \date 11/16 */
       void get_generalized_interpolation_matrix_variations_at_xi(
           Core::LinAlg::SerialDenseMatrix& Ivar, const double& xi,
@@ -275,7 +270,6 @@ namespace Discret
        * variations (see above) and applied force vector) with respect to the primary DoFs of this
        * element
        *
-       *  \author grill
        *  \date 01/17 */
       void get_stiffmat_resulting_from_generalized_interpolation_matrix_at_xi(
           Core::LinAlg::SerialDenseMatrix& stiffmat, const double& xi,
@@ -300,7 +294,6 @@ namespace Discret
       /** \brief get generalized interpolation matrix which yields the increments of the position
        * and orientation at xi \in [-1,1] if multiplied with the vector of primary DoF increments
        *
-       *  \author grill
        *  \date 11/16 */
       void get_generalized_interpolation_matrix_increments_at_xi(
           Core::LinAlg::SerialDenseMatrix& Iinc, const double& xi,
@@ -309,7 +302,6 @@ namespace Discret
       /** \brief get unit tangent vector in reference configuration at i-th node of beam element
        * (element-internal numbering)
        *
-       *  \author grill
        *  \date 06/16 */
       inline void get_ref_tangent_at_node(
           Core::LinAlg::Matrix<3, 1>& Tref_i, const int& i) const override
@@ -334,7 +326,6 @@ namespace Discret
 
       /** \brief get Jacobi factor ds/dxi(xi) at xi \in [-1;1]
        *
-       *  \author grill
        *  \date 06/16 */
       double get_jacobi_fac_at_xi(const double& xi) const override;
 
@@ -345,7 +336,6 @@ namespace Discret
 
       /** \brief Get material cross-section deformation measures, i.e. strain resultants
        *
-       *  \author grill
        *  \date 04/17 */
       inline void get_material_strain_resultants_at_all_gps(std::vector<double>& axial_strain_GPs,
           std::vector<double>& shear_strain_2_GPs, std::vector<double>& shear_strain_3_GPs,
@@ -363,7 +353,6 @@ namespace Discret
 
       /** \brief Get spatial cross-section stress resultants
        *
-       *  \author grill
        *  \date 04/17 */
       inline void get_spatial_stress_resultants_at_all_gps(
           std::vector<double>& spatial_axial_force_GPs,
@@ -381,7 +370,6 @@ namespace Discret
 
       /** \brief Get spatial cross-section stress resultants
        *
-       *  \author grill
        *  \date 04/17 */
       inline void get_spatial_forces_at_all_gps(std::vector<double>& spatial_axial_force_GPs,
           std::vector<double>& spatial_shear_force_2_GPs,
@@ -394,7 +382,6 @@ namespace Discret
 
       /** \brief Get spatial cross-section stress resultants
        *
-       *  \author grill
        *  \date 04/17 */
       inline void get_spatial_moments_at_all_gps(std::vector<double>& spatial_torque_GPs,
           std::vector<double>& spatial_bending_moment_2_GPs,
@@ -407,7 +394,6 @@ namespace Discret
 
       /** \brief Get material cross-section stress resultants
        *
-       *  \author grill
        *  \date 04/17 */
       inline void get_material_stress_resultants_at_all_gps(
           std::vector<double>& material_axial_force_GPs,
@@ -427,7 +413,6 @@ namespace Discret
 
       /** \brief get access to the reference length
        *
-       *  \author grill
        *  \date 05/16 */
       inline double ref_length() const override { return reflength_; }
 
@@ -543,7 +528,6 @@ namespace Discret
 
       /** \brief add indices of those DOFs of a given node that are positions
        *
-       *  \author grill
        *  \date 07/16 */
       inline void position_dof_indices(
           std::vector<int>& posdofs, const Core::Nodes::Node& node) const override
@@ -561,7 +545,6 @@ namespace Discret
       /** \brief add indices of those DOFs of a given node that are tangents (in the case of Hermite
        * interpolation)
        *
-       *  \author grill
        *  \date 07/16 */
       inline void tangent_dof_indices(
           std::vector<int>& tangdofs, const Core::Nodes::Node& node) const override
@@ -579,7 +562,6 @@ namespace Discret
       /** \brief add indices of those DOFs of a given node that are rotation DOFs (non-additive
        * rotation vectors)
        *
-       *  \author grill
        *  \date 07/16 */
       inline void rotation_vec_dof_indices(
           std::vector<int>& rotvecdofs, const Core::Nodes::Node& node) const override
@@ -604,7 +586,6 @@ namespace Discret
        *         (planar rotations are additive, e.g. in case of relative twist DOF of beam3k with
        * rotvec=false)
        *
-       *  \author grill
        *  \date 07/16 */
       inline void rotation_1d_dof_indices(
           std::vector<int>& twistdofs, const Core::Nodes::Node& node) const override
@@ -615,7 +596,6 @@ namespace Discret
       /** \brief add indices of those DOFs of a given node that represent norm of tangent vector
        *         (additive, e.g. in case of beam3k with rotvec=true)
        *
-       *  \author grill
        *  \date 07/16 */
       inline void tangent_length_dof_indices(
           std::vector<int>& tangnormdofs, const Core::Nodes::Node& node) const override
@@ -625,7 +605,6 @@ namespace Discret
 
       /** \brief get element local indices of those Dofs that are used for centerline interpolation
        *
-       *  \author grill
        *  \date 12/16 */
       inline void centerline_dof_indices_of_element(
           std::vector<unsigned int>& centerlinedofindices) const override
@@ -659,7 +638,6 @@ namespace Discret
       /** \brief extract values for those Dofs relevant for centerline-interpolation from total
        * state vector
        *
-       *  \author grill
        *  \date 11/16 */
       void extract_centerline_dof_values_from_element_state_vector(
           const std::vector<double>& dofvec, std::vector<double>& dofvec_centerline,
@@ -677,7 +655,6 @@ namespace Discret
       /** \brief compute internal (i.e. elastic) force, stiffness matrix, inertia force and mass
        * matrix
        *
-       *  \author grill
        *  \date 12/16 */
       template <unsigned int nnodetriad, unsigned int nnodecl, unsigned int vpernode>
       void calc_internal_and_inertia_forces_and_stiff(Teuchos::ParameterList& params,
@@ -687,7 +664,6 @@ namespace Discret
 
       /** \brief compute internal (i.e. elastic) force and stiffness matrix
        *
-       *  \author grill
        *  \date 12/16 */
       template <unsigned int nnodetriad, unsigned int nnodecl, unsigned int vpernode, typename T>
       void calc_internal_force_and_stiff(
@@ -698,7 +674,6 @@ namespace Discret
 
       /** \brief calculate inertia force and mass matrix
        *
-       *  \author grill
        *  \date 11/16 */
       template <unsigned int nnodetriad, unsigned int nnodecl, unsigned int vpernode>
       void calc_inertia_force_and_mass_matrix(
@@ -709,7 +684,6 @@ namespace Discret
 
       /** \brief get Jacobi factor ds/dxi(xi) at xi \in [-1;1]
        *
-       *  \author grill
        *  \date 08/16 */
       template <unsigned int nnodecl, unsigned int vpernode>
       double get_jacobi_fac_at_xi(const double& xi) const
@@ -760,7 +734,6 @@ namespace Discret
        *         orientation at xi \in [-1,1] if multiplied with the vector of primary DoF
        * variations
        *
-       *  \author grill
        *  \date 11/16 */
       template <unsigned int nnodetriad, unsigned int nnodecl, unsigned int vpernode>
       void get_generalized_interpolation_matrix_variations_at_xi(
@@ -770,7 +743,6 @@ namespace Discret
       /** \brief get generalized interpolation matrix which yields the increments of the position
        * and orientation at xi \in [-1,1] if multiplied with the vector of primary DoF increments
        *
-       *  \author grill
        *  \date 11/16 */
       template <unsigned int nnodetriad, unsigned int nnodecl, unsigned int vpernode>
       void get_generalized_interpolation_matrix_increments_at_xi(
@@ -841,7 +813,6 @@ namespace Discret
       /** \brief compute analytic linearization (i.e. stiffness matrix) of element force vector
        *         resulting from internal elastic forces at a certain Gauss point
        *
-       *  \author grill
        *  \date 12/16 */
       template <unsigned int nnodetriad, unsigned int nnodecl, unsigned int vpernode>
       void calc_stiffmat_analytic_force_contributions(Core::LinAlg::SerialDenseMatrix& stiffmatrix,
@@ -857,7 +828,6 @@ namespace Discret
       /** \brief compute analytic linearization (i.e. stiffness matrix) of element force vector
        *         resulting from internal elastic forces at a certain Gauss point
        *
-       *  \author grill
        *  \date 12/16 */
       template <unsigned int nnodetriad, unsigned int nnodecl, unsigned int vpernode>
       inline void calc_stiffmat_analytic_force_contributions(
@@ -878,7 +848,6 @@ namespace Discret
       /** \brief compute analytic linearization (i.e. stiffness matrix) of element force vector
        *         resulting from internal elastic moments at a certain Gauss point
        *
-       *  \author grill
        *  \date 12/16 */
       template <unsigned int nnodetriad, unsigned int nnodecl, unsigned int vpernode>
       void calc_stiffmat_analytic_moment_contributions(Core::LinAlg::SerialDenseMatrix& stiffmatrix,
@@ -895,7 +864,6 @@ namespace Discret
       /** \brief compute analytic linearization (i.e. stiffness matrix) of element force vector
        *         resulting from internal elastic moments at a certain Gauss point
        *
-       *  \author grill
        *  \date 12/16 */
       template <unsigned int nnodetriad, unsigned int nnodecl, unsigned int vpernode>
       inline void calc_stiffmat_analytic_moment_contributions(
@@ -917,7 +885,6 @@ namespace Discret
       /** \brief compute linearization (i.e. stiffness matrix) of a given force vector
        *         using automatic differentiation based on Sacado::Fad package
        *
-       *  \author grill
        *  \date 12/16 */
       template <unsigned int nnodetriad, unsigned int nnodecl, unsigned int vpernode>
       void calc_stiffmat_automatic_differentiation(Core::LinAlg::SerialDenseMatrix& stiffmatrix,

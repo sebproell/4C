@@ -25,8 +25,6 @@ namespace Discret
   {
     /// Fluid HDG element implementation
     /*!
-
-      \author kronbichler
       \date 05/13
     */
     template <Core::FE::CellType distype>

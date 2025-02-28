@@ -48,7 +48,7 @@ namespace Utils
   change back and forth use assign_degrees_of_freedom() and reset().
 
 
-  \author tk     */
+  */
   class Cardiovascular0DDofSet : public Core::DOFSets::DofSet
   {
    public:

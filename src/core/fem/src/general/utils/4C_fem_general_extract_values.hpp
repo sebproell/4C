@@ -167,9 +167,6 @@ namespace Core::FE
 
   /// Locally extract a subset of values from a (column)-nodemap-based
   /// Core::LinAlg::MultiVector<double>
-  /*  \author henke
-   *  \date 06/09
-   */
   void extract_my_node_based_values(
       const Core::Elements::Element* ele,              ///< pointer to current element
       std::vector<double>& local,                      ///< local vector on element-level
@@ -179,9 +176,6 @@ namespace Core::FE
 
   /// Locally extract a subset of values from a (column)-nodemap-based
   /// Core::LinAlg::MultiVector<double>
-  /*  \author g.bau
-   *  \date 08/08
-   */
   void extract_my_node_based_values(
       const Core::Elements::Element* ele,         ///< pointer to current element
       Core::LinAlg::SerialDenseVector& local,     ///< local vector on element-level
@@ -193,9 +187,6 @@ namespace Core::FE
   /// Locally extract a subset of values from a (column)-nodemap-based
   /// Core::LinAlg::MultiVector<double> and fill a local matrix that has implemented the (.,.)
   /// operator
-  /*  \author g.bau
-   *  \date 04/09
-   */
   template <class M>
   void extract_my_node_based_values(
       const Core::Elements::Element* ele,         ///< pointer to current element
@@ -231,7 +222,6 @@ namespace Core::FE
 
   This function returns a column vector!
 
-  \author henke
  */
   template <class M>
   void extract_my_node_based_values(

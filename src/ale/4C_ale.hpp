@@ -101,7 +101,6 @@ namespace ALE
    *
    *  \sa Solid::TimInt, FLD::TimInt, ALE::AleLinear
    *
-   *  \author mayr.mt \date 10/2014
    */
   class Ale : public Adapter::Ale
   {
@@ -195,7 +194,6 @@ namespace ALE
      *  Therefore, we need to reset the solution back to the initial solution of
      *  the time step.
      *
-     *  \author mayr.mt \date 08/2013
      */
     void reset_step() override;
 
@@ -207,7 +205,6 @@ namespace ALE
      *  beginning of the repetition and, thus, everything will be fine. Currently,
      *  this is needed for time step size adaptivity in FSI.
      *
-     *  \author mayr.mt \date 08/2013
      */
     void reset_time(const double dtold) override;
 
@@ -404,7 +401,6 @@ namespace ALE
      *  This is the "mechanical" residual \f$res = - f_{int}\f$ as it comes
      *  from the discret_->evaluate() call.
      *
-     *  \author mayr.mt \date 10/2014
      */
     std::shared_ptr<Core::LinAlg::Vector<double>> residual_;
 
@@ -417,7 +413,6 @@ namespace ALE
      *
      *  \warning DO NOT TOUCH THIS VARIABLE AT OTHER PLACES!!!
      *
-     *  \author mayr.mt \date 10/2014
      */
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs_;
 
@@ -529,7 +524,6 @@ namespace ALE
    *       The residual is computed as \f$r = K*d\f$. </li>
    *  </ul>
    *
-   *  \author mayr.mt \date 11/2015
    */
   class AleLinear : public Ale
   {
@@ -555,7 +549,6 @@ namespace ALE
      *  updated strategy, i.e. if #sysmat_ needs to be recomputed at the beginning
      *  of each time step.
      *
-     *  \author mayr.mt \date 12/2015
      */
     void prepare_time_step() override;
 
@@ -563,7 +556,6 @@ namespace ALE
      *
      *  Just call the linear solver once.
      *
-     *  \author mayr.mt \date 11/2015
      */
     void time_step(ALE::Utils::MapExtractor::AleDBCSetType dbc_type =
                        ALE::Utils::MapExtractor::dbc_set_std) override;
@@ -582,7 +574,6 @@ namespace ALE
      *  In order to initially provide a matrix, we call Ale::evaluate_elements() in
      *  the very first call. This is kept track of by #validsysmat_.
      *
-     *  \author mayr.mt \date 11/2015
      */
     void evaluate_elements() override;
 

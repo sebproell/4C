@@ -91,8 +91,6 @@ namespace FLD
 
   /*!
     This class holds the Fluid implementation for XFEM
-
-    \author schott
     \date 03/12
   */
   class XFluid : public FluidImplicitTimeInt

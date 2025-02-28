@@ -26,20 +26,20 @@ namespace NOX
      *  techniques where a trial point may lead to a floating point exception but
      *  is rejected afterwards.
      *
-     *  \author hiermeier \date 08/18 */
+     *  */
     class FloatingPointException
     {
      public:
       /** \brief Wrapper function which disables the floating point exception
        *  checks if desired.
        *
-       *  \author hiermeier \date 08/18 */
+       *  */
       void precompute() const;
 
       /** \brief Wrapper function which checks, clears and re-enables the
        *  floating point exception checks if desired
        *
-       *  \author hiermeier \date 08/18 */
+       *  */
       int postcompute(std::ostream& os) const;
 
       /** \brief Disable the automatic program abortion if a floating point
@@ -48,12 +48,12 @@ namespace NOX
        *  \note This routine is only executed if the boolean \c shall_be_caught_
        *  is set to TRUE.
        *
-       *  \author hiermeier \date 08/18 */
+       *  */
       void disable() const;
 
       /** \brief Check for any set floating point exception flags
        *
-       *  \author hiermeier \date 08/18 */
+       *  */
       static int check_and_print(std::ostream& os);
 
       /** \brief Clear all potentially set floating point flags
@@ -61,7 +61,7 @@ namespace NOX
        *  \note This routine is only executed if the boolean \c shall_be_caught_
        *  is set to TRUE.
        *
-       *  \author hiermeier \date 08/18 */
+       *  */
       void clear() const;
 
       /** \brief Enable the automatic program abortion if a floating point
@@ -70,7 +70,7 @@ namespace NOX
        *  \note This routine is only executed if the boolean \c shall_be_caught_
        *  is set to TRUE.
        *
-       *  \author hiermeier \date 08/18 */
+       *  */
       void enable() const;
 
       /** set this variable to TRUE if you want to disable the floating point

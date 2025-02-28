@@ -51,7 +51,7 @@ namespace Solid
    *
    *  If no tag is found nothing is happening.
    *
-   *  \author hiermeier \date 01/18 */
+   *  */
   class MonitorDbc
   {
     const static unsigned DIM = 3;

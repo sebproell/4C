@@ -55,7 +55,6 @@ namespace Solid
    * provides some utility functions to obtain various force vectors necessary
    * in the calculation of the force residual in the derived time integrators.
    *
-   * \author bborn
    * \date 06/08
    */
   class TimIntImpl : public TimInt,
@@ -98,7 +97,7 @@ namespace Solid
     \warning none
     \return bool
     \date 08/16
-    \author rauch  */
+    */
     void init(const Teuchos::ParameterList& timeparams, const Teuchos::ParameterList& sdynparams,
         const Teuchos::ParameterList& xparams, std::shared_ptr<Core::FE::Discretization> actdis,
         std::shared_ptr<Core::LinAlg::Solver> solver) override;
@@ -120,7 +119,7 @@ namespace Solid
     \warning none
     \return void
     \date 08/16
-    \author rauch  */
+    */
     void setup() override;
 
 
@@ -245,7 +244,6 @@ namespace Solid
      *
      *  \f[ f_{res} = f_{int} - f_{ext} \f]
      *
-     *  \author mayr.mt \date 09/2014
      */
     virtual void evaluate_force_residual() = 0;
 
@@ -353,17 +351,14 @@ namespace Solid
 
     //! determine characteristic norms for relative
     //! error checks of residual displacements
-    //! \author lw  \date 12/07
     virtual double calc_ref_norm_displacement();
 
     //! determine characteristic norms for relative
     //! error checks of residual forces
-    //! \author lw  \date 12/07
     virtual double calc_ref_norm_force() = 0;
 
     //! Is convergence reached of iterative solution technique?
     //! Keep your fingers crossed...
-    //! \author lw  \date 12/07
     bool converged();
 
     /*!
@@ -439,7 +434,6 @@ namespace Solid
     //! Until convergence Lagrange multiplier
     //! is increased by Uzawa_param*(Vol_err)
     //!
-    //! \author tk (originally)
     int uzawa_non_linear_newton_full();
 
     //! do full Newton iteration respecting volume constraint
@@ -448,7 +442,6 @@ namespace Solid
     //! and Lagrange multipliers
     //! Linear problem is solved with Uzawa algorithm.
     //!
-    //! \author tk (originally) \date 11/07
     int uzawa_linear_newton_full();
 
     //! check for success of nonlinear solve otherwise return error code
@@ -460,12 +453,10 @@ namespace Solid
     //! larger convergence radius than newton and is therefore more stable
     //! and/or can do larger time steps
     //!
-    //! \author mwgee (originally) \date 03/12
     int ptc();
 
     //! Do nonlinear iteration for contact / meshtying
     //!
-    //! \author popp (originally) \date 03/10
     int cmt_nonlinear_solve();
 
     /*! \brief Call linear solver for contact / meshtying
@@ -505,7 +496,6 @@ namespace Solid
 
     //! Do nonlinear iteration for beam contact
     //!
-    //! \author popp (originally) \date 11/11
     int beam_contact_nonlinear_solve();
 
     //@}
@@ -895,20 +885,16 @@ namespace Solid
     //@{
 
     //! Print to screen predictor information about residual norm etc.
-    //! \author lw (originally) \date 12/07
     void print_predictor();
 
     //! Print to screen information about residual forces and displacements
-    //! \author lw (originally) \date 12/07
     void print_newton_iter();
 
     //! Contains text to print_newton_iter
-    //! \author lw (originally) \date 12/07
     void print_newton_iter_text(FILE* ofile  //!< output file handle
     );
 
     //! Contains header to print_newton_iter
-    //! \author lw (originally) \date 12/07
     void print_newton_iter_header(FILE* ofile  //!< output file handle
     );
 

@@ -23,7 +23,6 @@ namespace XFEM
 {
   /** \brief Destroy the Core::LinAlg::SparseOperator object and it's date
    *
-   *  \author hiermeier
    *  \date 07/16 */
   inline void destroy_matrix(
       std::shared_ptr<Core::LinAlg::SparseOperator>& mat, bool throw_exception = true)
@@ -33,7 +32,6 @@ namespace XFEM
 
   /** \brief Destroy the Core::LinAlg::SparseMatrix object and it's date
    *
-   *  \author schott
    *  \date 01/15 */
   inline void destroy_matrix(
       std::shared_ptr<Core::LinAlg::SparseMatrix>& mat, bool throw_exception = true)
@@ -44,7 +42,6 @@ namespace XFEM
 
   /** \brief Destroy the reference counted object and the reference counter
    *
-   *  \author schott
    *  \date 01/15 */
   template <class OBJECT>
   inline void destroy_rcp_object(std::shared_ptr<OBJECT>& obj_rcp, bool throw_exception = true)
@@ -55,7 +52,6 @@ namespace XFEM
 
   /** \brief More efficient and memory safe Zero routine for system matrix
    *
-   *  \author schott
    *  \date 01/15 */
   inline void zero_matrix(Core::LinAlg::SparseMatrix& mat)
   {

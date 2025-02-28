@@ -88,7 +88,6 @@ namespace Mat
   // class Membrane_ActiveStrainType
 
   /*----------------------------------------------------------------------*/
-  /// \author brandstaeter
   /// \date 05/18
   // forward declaration
   class Material;

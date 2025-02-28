@@ -34,7 +34,7 @@ namespace Solid
 
   /*! \brief Factory to build the desired implicit/explicit integrator
    *
-   *  \author Michael Hiermeier */
+   *  */
   class Factory
   {
    public:

@@ -14,8 +14,6 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*/
 /*!
   \brief map iterator constructor
-
-  \author m.geppert (u.kue)
   \date 08/06
  */
 /*----------------------------------------------------------------------*/
@@ -30,8 +28,6 @@ void init_map_iterator(MAP_ITERATOR* iterator, MAP* map)
 /*----------------------------------------------------------------------*/
 /*!
   \brief map iterator push
-
-  \author m.geppert (u.kue)
   \date 08/06
  */
 /*----------------------------------------------------------------------*/
@@ -49,8 +45,6 @@ static void push_map_node(MAP_ITERATOR* iterator, MapNode* map_node)
 /*----------------------------------------------------------------------*/
 /*!
   \brief map iterator pop
-
-  \author m.geppert (u.kue)
   \date 08/06
  */
 /*----------------------------------------------------------------------*/
@@ -77,8 +71,6 @@ static void pop_map_node(MAP_ITERATOR* iterator)
 
   \param iterator (i/o) the map iterator to be advanced
   \return true if a new node was found
-
-  \author m.geppert (u.kue)
   \date 08/06
  */
 /*----------------------------------------------------------------------*/
@@ -134,8 +126,6 @@ int next_map_node(MAP_ITERATOR* iterator)
 /*----------------------------------------------------------------------*/
 /*!
   \brief map iterator current node
-
-  \author m.geppert (u.kue)
   \date 08/06
  */
 /*----------------------------------------------------------------------*/

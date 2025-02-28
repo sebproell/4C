@@ -57,7 +57,7 @@ namespace CONTACT
 
     //! \brief get the currently active predictor type
     /** \note If the execution of the predictor is finished, this
-     *  function will return Inpar::Solid::pred_vague. \author hiermeier */
+     *  function will return Inpar::Solid::pred_vague. */
     virtual enum Inpar::Solid::PredEnum get_predictor_type() const = 0;
 
     //! get the current step length

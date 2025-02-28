@@ -190,7 +190,6 @@ namespace Adapter
      *  Print to screen and reset certain quantities in case that the current time
      *  step has to be repeated.
      *
-     *  \author mayr.mt \date 12/2013
      */
     void reset_step() override;
 
@@ -262,7 +261,6 @@ namespace Adapter
      *  that the new time step size also satisfies upper and lower bounds (#stepsizemax_
      *  and #stepsizemin_).
      *
-     *  \author mayr.mt \date 12/2013
      */
     virtual double calculate_dt(const double norm  ///< current norm of local discretization error
     );

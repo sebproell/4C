@@ -68,8 +68,6 @@ namespace Discret
       (and called from Fluid) and the non-virtual one that does the actual
       work. The non-virtual evaluate() method must be callable without an actual
       Fluid object.
-
-      \author u.kue
       \date 07/07
     */
 
@@ -125,7 +123,6 @@ namespace Discret
        *   The vector valued operator \f$B\f$ is constructed such that
        *   \f$\int_\Omega div (u) \,\mathrm{d}\Omega = B^T u = 0\f$
        *
-       *   \author mayr.mt
        *   \date   04/2012
        */
       virtual int calc_div_op(Discret::Elements::Fluid* ele,  //< current fluid element
@@ -136,7 +133,6 @@ namespace Discret
 
       /*! \brief Calculate element mass matrix
        *
-       *  \author mayr.mt \date 05/2014
        */
       virtual int calc_mass_matrix(Discret::Elements::Fluid* ele,
           //    Teuchos::ParameterList&              params,
@@ -147,7 +143,6 @@ namespace Discret
 
       /*! \brief Calculate coordinates and velocities and element center
        *
-       *  \author bk \date 01/2015
        */
       virtual int calc_vel_gradient_ele_center(Discret::Elements::Fluid* ele,
           Core::FE::Discretization& discretization, const std::vector<int>& lm,
@@ -156,7 +151,6 @@ namespace Discret
 
       /*! \brief Calculate properties for adaptive time step based on CFL number
        *
-       *  \author bk \date 08/2014
        */
       virtual int calc_time_step(Discret::Elements::Fluid* ele,
           Core::FE::Discretization& discretization, const std::vector<int>& lm,
@@ -164,7 +158,6 @@ namespace Discret
 
       /*! \brief Calculate channel statistics
        *
-       *  \author bk \date 05/2014
        */
       virtual int calc_channel_statistics(Discret::Elements::Fluid* ele,
           Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
@@ -172,7 +165,6 @@ namespace Discret
 
       /*! \brief Calculate mass flow for periodic hill
        *
-       *  \author bk \date 12/2014
        */
       virtual int calc_mass_flow_periodic_hill(Discret::Elements::Fluid* ele,
           Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
@@ -181,7 +173,6 @@ namespace Discret
 
       /*! \brief Project velocity gradient to nodal level
        *
-       *   \author ghamm
        *   \date   06/2014
        */
       virtual int vel_gradient_projection(Discret::Elements::Fluid* ele,
@@ -192,7 +183,6 @@ namespace Discret
 
       /*! \brief Project pressure gradient to nodal level
        *
-       *   \author mwinter
        *   \date   09/2015
        */
       virtual int pres_gradient_projection(Discret::Elements::Fluid* ele,
@@ -202,7 +192,6 @@ namespace Discret
 
       /*! \brief Calculate a divergence of velocity at the element center
        *
-       *   \author ehrl
        *   \date   12/2012
        */
       virtual int compute_div_u(Discret::Elements::Fluid* ele,  //< current fluid element

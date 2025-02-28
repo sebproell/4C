@@ -43,8 +43,6 @@ namespace Cut
     might create more tets than we need. Furthermore, it is not guaranteed
     to reconstruct the cut surface. We need to do post-processing of the
     qhull triangulation to get proper integration cells.
-
-    \author u.kue
     \date 01/11
    */
   class TetMesh

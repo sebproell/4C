@@ -54,7 +54,6 @@ namespace FSI
     Adapter::FluidFSI::displacement_to_velocity().
 
     \sa SlidingMonolithicFluidSplit
-    \author wirtz
     \date 01/16
      */
   class SlidingMonolithicFluidSplit : public BlockMonolithic
@@ -126,7 +125,6 @@ namespace FSI
      * (b-a)\lambda^{n+1}\right)\left(d_\Gamma^{S,n+1}-d_\Gamma^{S,n}\right) \f] with the time
      * interpolation factors a and b.
      *
-     *  \author mayr.mt \date 05/2014
      */
     void calculate_interface_energy_increment() override;
 
@@ -145,7 +143,6 @@ namespace FSI
      *  satisfied due to solving the condensed nonlinear system of equations.
      *  We expect really small violation norms.
      *
-     *  \author mayr.mt \date 10/2012
      */
     virtual void check_kinematic_constraint();
 
@@ -159,7 +156,6 @@ namespace FSI
      *  satisfied due to solving the condensed nonlinear system of equations.
      *  We expect really small violation norms.
      *
-     *  \author mayr.mt \date 10/2012
      */
     virtual void check_dynamic_equilibrium();
 
@@ -174,7 +170,6 @@ namespace FSI
      *  time step size. Select the minimum of these three as the new time step
      *  size.
      *
-     *  \author mayr.mt \date 08/2013
      */
     double select_dt_error_based() const override;
 
@@ -183,7 +178,6 @@ namespace FSI
      *  In case that the local truncation error is small enough, the time step
      *  is accepted.
      *
-     *  \author mayr.mt \date 08/2013
      */
     bool set_accepted() const override;
 
@@ -242,7 +236,6 @@ namespace FSI
      *  Combine the DOF row maps of structure, fluid and ALE to an global FSI
      *  DOF row map.
      *
-     *  \author mayr.mt \date 05/2014
      */
     void create_combined_dof_row_map() override;
 
@@ -253,7 +246,6 @@ namespace FSI
      *  condition maps and other maps from structure, fluid and ALE to a
      *  FSI-global condition map and other map.
      *
-     *  \author mayr.mt \date 05/2014
      */
     void setup_dbc_map_extractor() override;
 

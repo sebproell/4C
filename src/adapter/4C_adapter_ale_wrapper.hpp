@@ -24,7 +24,6 @@ namespace Adapter
    *  just derive from this one and overload those routines you need with your
    *  problem specific routine.
    *
-   *  \author mayr.mt \date 10/2014
    */
   class AleWrapper : public Ale
   {
@@ -288,7 +287,6 @@ namespace Adapter
      *
      *  \f$x^{n+1}_{i+1} = x^n + stepinc\f$
      *
-     *  \author mayr.mt \date 10/2014
      */
     void evaluate(std::shared_ptr<const Core::LinAlg::Vector<double>> stepinc  ///< step increment
         ) override;

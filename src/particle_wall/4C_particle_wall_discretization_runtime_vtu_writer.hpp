@@ -47,7 +47,6 @@ namespace PARTICLEWALL
    * A class that writes visualization output for particle wall discretization in vtk/vtp format at
    * runtime.
    *
-   * \author Sebastian Fuchs \date 08/2019
    */
   class WallDiscretizationRuntimeVtuWriter final
   {
@@ -55,7 +54,6 @@ namespace PARTICLEWALL
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 08/2019
      *
      * \param[in] walldiscretization wall discretization
      * \param[in] walldatastate      wall data state container
@@ -69,7 +67,6 @@ namespace PARTICLEWALL
     /*!
      * \brief destructor
      *
-     * \author Sebastian Fuchs \date 08/2019
      *
      * \note At compile-time a complete type of class T as used in class member
      *       std::unique_ptr<T> ptr_T_ is required
@@ -79,7 +76,6 @@ namespace PARTICLEWALL
     /*!
      * \brief write wall discretization runtime output
      *
-     * \author Sebastian Fuchs \date 08/2019
      *
      * \param[in] step output step
      * \param[in] time output time

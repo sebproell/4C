@@ -46,7 +46,7 @@ namespace SSI
     \warning none
     \return int
     \date 08/16
-    \author rauch  */
+    */
     void init(MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams,
         const Teuchos::ParameterList& scatraparams, const Teuchos::ParameterList& structparams,
         const std::string& struct_disname, const std::string& scatra_disname, bool isAle) override;
@@ -68,7 +68,7 @@ namespace SSI
     \warning none
     \return void
     \date 08/16
-    \author rauch  */
+    */
     void setup() override;
 
     //! full time loop
@@ -154,7 +154,6 @@ namespace SSI
     \warning none
     \return void
     \date 08/16
-    \author rauch
     */
     void init(MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams,
         const Teuchos::ParameterList& scatraparams, const Teuchos::ParameterList& structparams,
@@ -199,7 +198,6 @@ namespace SSI
     \warning none
     \return void
     \date 01/18
-    \author fang
     */
     void setup() override;
 
@@ -230,7 +228,6 @@ namespace SSI
     \warning none
     \return void
     \date 08/16
-    \author rauch
     */
     void init(MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams,
         const Teuchos::ParameterList& scatraparams, const Teuchos::ParameterList& structparams,
@@ -275,7 +272,6 @@ namespace SSI
     \warning none
     \return void
     \date 01/18
-    \author fang
     */
     void setup() override;
 

@@ -48,7 +48,6 @@ namespace PARTICLEENGINE
    * \note This requires communication among the processors in order to ensure that all global ids
    * are unique.
    *
-   * \author Sebastian Fuchs \date 11/2019
    */
   class UniqueGlobalIdHandler final
   {
@@ -56,7 +55,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \param[in] comm communicator
      */
@@ -65,21 +63,18 @@ namespace PARTICLEENGINE
     /*!
      * \brief init unique global identifier handler
      *
-     * \author Sebastian Fuchs \date 11/2019
      */
     void init();
 
     /*!
      * \brief setup unique global identifier handler
      *
-     * \author Sebastian Fuchs \date 11/2019
      */
     void setup();
 
     /*!
      * \brief write restart of unique global identifier handler
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \param[in] writer discretization writer
      */
@@ -88,7 +83,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief read restart of unique global identifier handler
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \param[in] reader discretization reader
      */
@@ -97,7 +91,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief return maximum global id
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \return maximum global id
      */
@@ -106,7 +99,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief return number of reusable global ids on this processor
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \return number of reusable global ids on this processor
      */
@@ -118,7 +110,6 @@ namespace PARTICLEENGINE
      * The global id of an object that is removed from the simulation is freed and stored herein to
      * be reassigned in case of new object generation.
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \param[in] freedglobalid freed global id
      */
@@ -130,7 +121,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief draw requested number of global ids
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \param[in,out] requesteduniqueglobalids requested unique global ids
      */
@@ -144,14 +134,12 @@ namespace PARTICLEENGINE
      * reusable global ids are sorted on the master processor. On all non-master processors the
      * storage of reusable global ids is cleared.
      *
-     * \author Sebastian Fuchs \date 11/2019
      */
     void gather_reusable_global_ids_from_all_procs_on_master_proc();
 
     /*!
      * \brief prepare requested global ids for all processors
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \param[in]     numberofrequestedgids number of requested global ids on this processor
      * \param[in,out] preparedglobalids     prepared global ids
@@ -162,7 +150,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief extract requested global ids on master processor
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \param[in]     preparedglobalids        prepared global ids
      * \param[in,out] requesteduniqueglobalids requested unique global ids
@@ -174,7 +161,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief distribute requested global ids from master processor to all processors
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \param[in]     tobesendglobalids        global ids to be send to each processor
      * \param[in,out] requesteduniqueglobalids requested unique global ids
@@ -206,7 +192,6 @@ namespace PARTICLEENGINE
      *
      * \note The global ids are assigned starting from zero.
      *
-     * \author Sebastian Fuchs \date 11/2019
      */
     int maxglobalid_;
 

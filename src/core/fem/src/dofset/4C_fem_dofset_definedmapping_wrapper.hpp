@@ -69,8 +69,6 @@ namespace Core::DOFSets
 
 
   \date 08/2016
-  \author rauch
-  \author vuong
   */
   class DofSetDefinedMappingWrapper : public DofSetBase
   {

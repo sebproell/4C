@@ -33,7 +33,6 @@ namespace BeamInteraction
      *         (i.e. its curve parameter value) relative to a given point
      *         a.k.a 'unilateral' closest-point projection
      *
-     *  \author grill, meier
      *  \date 10/17, 01/14 */
     template <unsigned int numnodes, unsigned int numnodalvalues, typename T>
     bool point_to_curve_projection(Core::LinAlg::Matrix<3, 1, T> const& r_slave, T& xi_master,
@@ -45,7 +44,6 @@ namespace BeamInteraction
     /** \brief evaluates residual of orthogonality condition for so-called unilateral closest-point
      *         projection, i.e. a point-to-curve projection
      *
-     *  \author grill, meier
      *  \date 10/17, 10/14 */
     template <typename T>
     void evaluate_point_to_curve_orthogonality_condition(T& f,
@@ -55,7 +53,6 @@ namespace BeamInteraction
     /** \brief evaluates Jacobian of orthogonality condition for so-called unilateral closest-point
      *         projection, i.e. a point-to-curve projection
      *
-     *  \author grill, meier
      *  \date 10/17, 10/14 */
     template <typename T>
     bool evaluate_linearization_point_to_curve_orthogonality_condition(T& df,
@@ -66,7 +63,6 @@ namespace BeamInteraction
     /** \brief compute linearization of parameter coordinate on master if determined by a
      *         point-to-curve projection
      *
-     *  \author grill, meier
      *  \date 10/17, 10/14 */
     template <unsigned int numnodes, unsigned int numnodalvalues, typename T>
     void calc_linearization_point_to_curve_projection_parameter_coord_master(
@@ -83,7 +79,6 @@ namespace BeamInteraction
      *         partial derivatives of the parameter coordinate on master xi_master with respect to
      *         centerline position of slave point, master point and centerline tangent of master
      *
-     *  \author grill
      *  \date 10/17 */
     template <typename T>
     void calc_point_to_curve_projection_parameter_coord_master_partial_derivs(
@@ -99,7 +94,6 @@ namespace BeamInteraction
      *         respect to centerline position of slave point, master point and centerline tangent of
      *         master
      *
-     *  \author grill
      *  \date 04/19 */
     template <typename T>
     void calc_point_to_curve_projection_parameter_coord_master_partial2nd_derivs(
@@ -133,7 +127,6 @@ namespace BeamInteraction
      *         partial derivative of the orthogonality condition with respect to parameter
      * coordinate on master xi_master
      *
-     *  \author grill
      *  \date 10/17 */
     template <typename T>
     void calc_ptc_projection_orthogonality_condition_partial_deriv_parameter_coord_master(
@@ -145,7 +138,6 @@ namespace BeamInteraction
      *         partial derivative of the orthogonality condition with respect to centerline position
      *         on slave
      *
-     *  \author grill
      *  \date 10/17 */
     template <typename T>
     void calc_ptc_projection_orthogonality_condition_partial_deriv_cl_pos_slave(
@@ -156,7 +148,6 @@ namespace BeamInteraction
      *         partial derivative of the orthogonality condition with respect to centerline position
      *         on master
      *
-     *  \author grill
      *  \date 10/17 */
     template <typename T>
     void calc_ptc_projection_orthogonality_condition_partial_deriv_cl_pos_master(
@@ -167,7 +158,6 @@ namespace BeamInteraction
      *         partial derivative of the orthogonality condition with respect to centerline tangent
      *         on master
      *
-     *  \author grill
      *  \date 10/17 */
     template <typename T>
     void calc_ptc_projection_orthogonality_condition_partial_deriv_cl_tangent_master(
@@ -176,7 +166,6 @@ namespace BeamInteraction
 
     /** \brief calculate angle enclosed by two vectors a and b
      *
-     *  \author grill, meier
      *  \date 10/17, 10/14 */
     template <typename T>
     void calc_enclosed_angle(T& angle, T& cosine_angle, const Core::LinAlg::Matrix<3, 1, T>& a,
