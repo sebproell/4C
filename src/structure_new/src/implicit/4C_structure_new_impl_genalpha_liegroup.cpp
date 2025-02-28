@@ -49,7 +49,8 @@ void Solid::IMPLICIT::GenAlphaLieGroup::post_setup()
 {
   check_init_setup();
 
-  if (sdyn().get_mass_lin_type() != Inpar::Solid::ml_rotations and !sdyn().neglect_inertia())
+  if (sdyn().get_mass_lin_type() != Inpar::Solid::MassLin::ml_rotations and
+      !sdyn().neglect_inertia())
   {
     /* we can use this method for all elements with additive DoFs,
      * but it won't work like this for non-additive rotation vector DoFs */
@@ -298,7 +299,7 @@ void Solid::IMPLICIT::GenAlphaLieGroup::reset_eval_params()
 
   /* in case we have non-additive rotation (pseudo-)vector DOFs, we need to pass
    * the GenAlpha parameters to the beam elements via beam parameter interface */
-  if (tim_int().get_data_sdyn().get_mass_lin_type() == Inpar::Solid::ml_rotations)
+  if (tim_int().get_data_sdyn().get_mass_lin_type() == Inpar::Solid::MassLin::ml_rotations)
   {
     eval_data().get_beam_data().set_beta(beta_);
     eval_data().get_beam_data().set_gamma(gamma_);

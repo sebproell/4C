@@ -135,7 +135,7 @@ void Solid::IMPLICIT::GenAlpha::post_setup()
   // check for applicability of classical GenAlpha scheme
   // ---------------------------------------------------------------------------
   // set the constant parameters for the element evaluation
-  if (tim_int().get_data_sdyn().get_mass_lin_type() == Inpar::Solid::ml_rotations)
+  if (tim_int().get_data_sdyn().get_mass_lin_type() == Inpar::Solid::MassLin::ml_rotations)
   {
     FOUR_C_THROW(
         "MASSLIN=ml_rotations is not supported by classical GenAlpha! "

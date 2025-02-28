@@ -556,7 +556,7 @@ void CONTACT::Beam3cmanager::evaluate(Core::LinAlg::SparseMatrix& stiffmatrix,
   t_start = Teuchos::Time::wallTime();
 
   if (Teuchos::getIntegralValue<Inpar::Solid::MassLin>(sstructdynamic_, "MASSLIN") !=
-      Inpar::Solid::ml_rotations)
+      Inpar::Solid::MassLin::ml_rotations)
   {
     // assemble contact forces into global fres vector
     fres.Update(1.0 - alphaf_, *fc_, 1.0);

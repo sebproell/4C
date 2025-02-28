@@ -150,7 +150,7 @@ void Solid::TimIntGenAlpha::setup()
   // call setup() in base class
   Solid::TimIntImpl::setup();
 
-  if (!have_nonlinear_mass())
+  if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
   {
     // determine mass, damping and initial accelerations
     determine_mass_damp_consist_accel();
@@ -221,7 +221,7 @@ void Solid::TimIntGenAlpha::setup()
   pwindk.set("time_step_size", (*dt_)[0]);
   apply_force_stiff_cardiovascular0_d((*time_)[0], (*dis_)(0), fint_, stiff_, pwindk);
 
-  if (have_nonlinear_mass() == Inpar::Solid::ml_none)
+  if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
   {
     // set initial internal force vector
     apply_force_stiff_internal(
@@ -239,7 +239,8 @@ void Solid::TimIntGenAlpha::setup()
 
     nonlinear_mass_sanity_check(fext_, (*dis_)(0), (*vel_)(0), (*acc_)(0), &sdynparams_);
 
-    if (have_nonlinear_mass() == Inpar::Solid::ml_rotations and !solely_beam3_elements(*discret_))
+    if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_rotations and
+        !solely_beam3_elements(*discret_))
     {
       FOUR_C_THROW(
           "Multiplicative Gen-Alpha time integration scheme only implemented for beam elements so "
@@ -352,7 +353,7 @@ void Solid::TimIntGenAlpha::evaluate_force_stiff_residual(Teuchos::ParameterList
   // ************************** (2) INTERNAL FORCES ***************************
   fintn_->PutScalar(0.0);
   // build new internal forces and stiffness
-  if (have_nonlinear_mass() == Inpar::Solid::ml_none)
+  if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
   {
     apply_force_stiff_internal(
         timen_, (*dt_)[0], disn_, disi_, veln_, fintn_, stiff_, params, damp_);
@@ -417,7 +418,7 @@ void Solid::TimIntGenAlpha::evaluate_force_stiff_residual(Teuchos::ParameterList
   // ************************** (3) INERTIA FORCES ***************************
 
   // build new inertia forces and stiffness
-  if (have_nonlinear_mass() == Inpar::Solid::ml_none)
+  if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
   {
     // build new inertia forces and stiffness
     finertm_->PutScalar(0.0);
@@ -442,7 +443,7 @@ void Solid::TimIntGenAlpha::evaluate_force_stiff_residual(Teuchos::ParameterList
   // ******************** Finally, put everything together ********************
 
   // build residual and tangent matrix for standard case
-  if (have_nonlinear_mass() != Inpar::Solid::ml_rotations)
+  if (have_nonlinear_mass() != Inpar::Solid::MassLin::ml_rotations)
   {
     // build residual
     //    Res = M . A_{n+1-alpha_m}
@@ -510,7 +511,7 @@ void Solid::TimIntGenAlpha::evaluate_force_stiff_residual_relax(Teuchos::Paramet
   evaluate_force_stiff_residual(params);
 
   // overwrite the residual forces #fres_ with interface load
-  if (have_nonlinear_mass() != Inpar::Solid::ml_rotations)
+  if (have_nonlinear_mass() != Inpar::Solid::MassLin::ml_rotations)
   {
     // standard case
     fres_->Update(-1 + alphaf_, *fifc_, 0.0);
@@ -548,7 +549,7 @@ void Solid::TimIntGenAlpha::evaluate_force_residual()
   fintn_->PutScalar(0.0);
 
   // build new internal forces and stiffness
-  if (have_nonlinear_mass() == Inpar::Solid::ml_none)
+  if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
   {
     apply_force_internal(timen_, (*dt_)[0], disn_, disi_, veln_, fintn_);
   }
@@ -564,7 +565,7 @@ void Solid::TimIntGenAlpha::evaluate_force_residual()
   // ************************** (3) INERTIAL FORCES ***************************
 
   // build new inertia forces and stiffness
-  if (have_nonlinear_mass() == Inpar::Solid::ml_none)
+  if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
   {
     // build new inertia forces and stiffness
     finertm_->PutScalar(0.0);
@@ -587,7 +588,7 @@ void Solid::TimIntGenAlpha::evaluate_force_residual()
   // ******************** Finally, put everything together ********************
 
   // build residual and tangent matrix for standard case
-  if (have_nonlinear_mass() != Inpar::Solid::ml_rotations)
+  if (have_nonlinear_mass() != Inpar::Solid::MassLin::ml_rotations)
   {
     // build residual
     //    Res = M . A_{n+1-alpha_m}
@@ -784,7 +785,7 @@ void Solid::TimIntGenAlpha::update_step_element()
   discret_->clear_state();
   discret_->set_state("displacement", (*dis_)(0));
 
-  if (!have_nonlinear_mass())
+  if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
   {
     discret_->evaluate(p, nullptr, nullptr, nullptr, nullptr, nullptr);
   }

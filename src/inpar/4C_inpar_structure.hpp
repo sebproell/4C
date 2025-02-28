@@ -353,7 +353,7 @@ namespace Inpar
     //!@{
 
     /// have inertia forces to be linearized?
-    enum MassLin
+    enum class MassLin
     {
       ml_none,      ///< constant mass matrix
       ml_rotations  ///< nonlinear inertia terms, rotational DoFs
