@@ -327,10 +327,8 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
 
   {
     statusTest.specs.emplace_back(
-        Core::IO::InputSpecBuilders::parameter<Core::IO::Noneable<std::filesystem::path>>(
-            "XML File",
-            {.description = "Filename of XML file with configuration of nox status test",
-                .default_value = Core::IO::Noneable<std::filesystem::path>()}));
+        Core::IO::InputSpecBuilders::parameter<std::optional<std::filesystem::path>>("XML File",
+            {.description = "Filename of XML file with configuration of nox status test"}));
   }
   statusTest.move_into_collection(list);
 

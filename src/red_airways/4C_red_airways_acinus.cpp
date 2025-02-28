@@ -73,22 +73,22 @@ void Discret::Elements::RedAcinusType::setup_element_definition(
       parameter<double>("AcinusVolume"),
       parameter<double>("AlveolarDuctVolume"),
       // Maxwell exponential
-      parameter<std::optional<double>>("E1_0", {.default_value = none<double>}),
-      parameter<std::optional<double>>("E1_LIN", {.default_value = none<double>}),
-      parameter<std::optional<double>>("E1_EXP", {.default_value = none<double>}),
-      parameter<std::optional<double>>("TAU", {.default_value = none<double>}),
+      parameter<std::optional<double>>("E1_0"),
+      parameter<std::optional<double>>("E1_LIN"),
+      parameter<std::optional<double>>("E1_EXP"),
+      parameter<std::optional<double>>("TAU"),
       // Maxwell double exponential
-      parameter<std::optional<double>>("E1_01", {.default_value = none<double>}),
-      parameter<std::optional<double>>("E1_LIN1", {.default_value = none<double>}),
-      parameter<std::optional<double>>("E1_EXP1", {.default_value = none<double>}),
-      parameter<std::optional<double>>("TAU1", {.default_value = none<double>}),
-      parameter<std::optional<double>>("E1_02", {.default_value = none<double>}),
-      parameter<std::optional<double>>("E1_LIN2", {.default_value = none<double>}),
-      parameter<std::optional<double>>("E1_EXP2", {.default_value = none<double>}),
-      parameter<std::optional<double>>("TAU2", {.default_value = none<double>}),
+      parameter<std::optional<double>>("E1_01"),
+      parameter<std::optional<double>>("E1_LIN1"),
+      parameter<std::optional<double>>("E1_EXP1"),
+      parameter<std::optional<double>>("TAU1"),
+      parameter<std::optional<double>>("E1_02"),
+      parameter<std::optional<double>>("E1_LIN2"),
+      parameter<std::optional<double>>("E1_EXP2"),
+      parameter<std::optional<double>>("TAU2"),
       // VolOgden
-      parameter<std::optional<double>>("KAPPA", {.default_value = none<double>}),
-      parameter<std::optional<double>>("BETA", {.default_value = none<double>}),
+      parameter<std::optional<double>>("KAPPA"),
+      parameter<std::optional<double>>("BETA"),
   });
 }
 

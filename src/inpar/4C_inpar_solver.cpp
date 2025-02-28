@@ -102,26 +102,22 @@ namespace Inpar::SOLVER
           list);
 
       list.specs.emplace_back(
-          Core::IO::InputSpecBuilders::parameter<Core::IO::Noneable<std::filesystem::path>>(
-              "SOLVER_XML_FILE",
-              {.description = "xml file defining any iterative solver",
-                  .default_value = Core::IO::Noneable<std::filesystem::path>()}));
+          Core::IO::InputSpecBuilders::parameter<std::optional<std::filesystem::path>>(
+              "SOLVER_XML_FILE", {.description = "xml file defining any iterative solver"}));
     }
 
     // MueLu options
     {
       list.specs.emplace_back(
-          Core::IO::InputSpecBuilders::parameter<Core::IO::Noneable<std::filesystem::path>>(
-              "MUELU_XML_FILE", {.description = "xml file defining any MueLu preconditioner",
-                                    .default_value = Core::IO::Noneable<std::filesystem::path>()}));
+          Core::IO::InputSpecBuilders::parameter<std::optional<std::filesystem::path>>(
+              "MUELU_XML_FILE", {.description = "xml file defining any MueLu preconditioner"}));
     }
 
     // Teko options
     {
       list.specs.emplace_back(
-          Core::IO::InputSpecBuilders::parameter<Core::IO::Noneable<std::filesystem::path>>(
-              "TEKO_XML_FILE", {.description = "xml file defining any Teko preconditioner",
-                                   .default_value = Core::IO::Noneable<std::filesystem::path>()}));
+          Core::IO::InputSpecBuilders::parameter<std::optional<std::filesystem::path>>(
+              "TEKO_XML_FILE", {.description = "xml file defining any Teko preconditioner"}));
     }
 
     // user-given name of solver block (just for beauty)
@@ -134,10 +130,8 @@ namespace Inpar::SOLVER
           "is defined using a xml file",
           list);
       list.specs.emplace_back(
-          Core::IO::InputSpecBuilders::parameter<Core::IO::Noneable<std::filesystem::path>>(
-              "AMGNXN_XML_FILE",
-              {.description = "xml file defining the AMGnxn preconditioner",
-                  .default_value = Core::IO::Noneable<std::filesystem::path>()}));
+          Core::IO::InputSpecBuilders::parameter<std::optional<std::filesystem::path>>(
+              "AMGNXN_XML_FILE", {.description = "xml file defining the AMGnxn preconditioner"}));
     }
 
     spec = Core::IO::InputSpecBuilders::all_of(std::move(list.specs));

@@ -266,7 +266,7 @@ void ScaTra::ScaTraTimIntElchOST::compute_time_deriv_pot0(const bool init)
   for (int icond = 0; icond < numcond; icond++)
   {
     auto pot0np = cond[icond]->parameters().get<double>("POT");
-    const auto functnum = cond[icond]->parameters().get<Core::IO::Noneable<int>>("FUNCT");
+    const auto functnum = cond[icond]->parameters().get<std::optional<int>>("FUNCT");
     auto dlcap = cond[icond]->parameters().get<double>("DL_SPEC_CAP");
 
     if (init)
@@ -827,7 +827,7 @@ void ScaTra::ScaTraTimIntElchGenAlpha::compute_time_deriv_pot0(const bool init)
   for (int icond = 0; icond < numcond; icond++)
   {
     double pot0np = cond[icond]->parameters().get<double>("POT");
-    const auto functnum = cond[icond]->parameters().get<Core::IO::Noneable<int>>("FUNCT");
+    const auto functnum = cond[icond]->parameters().get<std::optional<int>>("FUNCT");
     double dlcap = cond[icond]->parameters().get<double>("DL_SPEC_CAP");
 
     if (init)

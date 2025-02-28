@@ -82,8 +82,7 @@ namespace
       std::string Bc = (condition->parameters().get<std::string>(optionName));
       if (Bc == condType)
       {
-        const auto curve =
-            condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve");
+        const auto curve = condition->parameters().get<std::vector<std::optional<int>>>("curve");
         double curvefac = 1.0;
         const auto vals = condition->parameters().get<std::vector<double>>("VAL");
 
@@ -945,7 +944,7 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
             //  Val = curve1*val1 + curve2*func
             // -----------------------------------------------------------------
             const auto* curve =
-                condition->parameters().get_if<std::vector<Core::IO::Noneable<int>>>("curve");
+                condition->parameters().get_if<std::vector<std::optional<int>>>("curve");
             const auto vals = condition->parameters().get<std::vector<double>>("VAL");
 
             // get factor of curve1 or curve2
@@ -969,7 +968,7 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
                 [&]()
                 {
                   const auto* functions =
-                      condition->parameters().get_if<std::vector<Core::IO::Noneable<int>>>("funct");
+                      condition->parameters().get_if<std::vector<std::optional<int>>>("funct");
                   if (functions)
                   {
                     if ((*functions)[0].has_value() && (*functions)[0].value() > 0)

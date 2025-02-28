@@ -222,7 +222,7 @@ int Discret::Elements::FluidBoundaryImpl<distype>::evaluate_neumann(
   // (assumed to be constant on element boundary)
   const auto onoff = condition.parameters().get<std::vector<int>>("ONOFF");
   const auto val = condition.parameters().get<std::vector<double>>("VAL");
-  const auto func = condition.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto func = condition.parameters().get<std::vector<std::optional<int>>>("FUNCT");
   const std::string* type = &condition.parameters().get<std::string>("TYPE");
 
   // get time factor for Neumann term

@@ -127,9 +127,9 @@ namespace Core::IO
     };
 
     template <typename T>
-    struct PrettyTypeName<Noneable<T>>
+    struct PrettyTypeName<std::optional<T>>
     {
-      std::string operator()() { return "Noneable<" + PrettyTypeName<T>{}() + ">"; }
+      std::string operator()() { return "std::optional<" + PrettyTypeName<T>{}() + ">"; }
     };
 
     template <typename T>
@@ -187,13 +187,13 @@ namespace Core::IO
     };
 
     template <typename T>
-    struct YamlTypeEmitter<Noneable<T>>
+    struct YamlTypeEmitter<std::optional<T>>
     {
       void operator()(ryml::NodeRef node, size_t* size)
       {
         FOUR_C_ASSERT(node.is_map(), "Expected a map node.");
-        // Pull up the "noneable" aspect. The fact that this type wraps another type is specific
-        // to C++ and not relevant to other tools. Simply knowing that a type can be "none" is
+        // Pull up the std::optional aspect. The fact that this type wraps another type is specific
+        // to C++ and not relevant to other tools. Simply knowing that a type can be empty is
         // enough for them.
         emit_value_as_yaml(node["noneable"], true);
         YamlTypeEmitter<T>{}(node, size);
@@ -330,7 +330,7 @@ namespace Core::IO
 
         /**
          * The total number of specs that make up this spec. This includes the spec itself, meaning,
-         * that the minimum value is 1. This value can used to reserve memory ahead of time.
+         * that the minimum value is 1. This value can be used to reserve memory ahead of time.
          */
         std::size_t n_specs;
       };
@@ -424,11 +424,11 @@ namespace Core::IO
         }
         else
         {
-          FOUR_C_ASSERT(wrapped.data.default_value.has_value(),
+          FOUR_C_ASSERT(has_default_value(),
               "Implementation error: this function should only be called if the wrapped type has "
               "an optional default value.");
 
-          container.add(wrapped.name, *wrapped.data.default_value);
+          container.add(wrapped.name, std::get<1>(wrapped.data.default_value));
         }
       }
 
@@ -456,7 +456,7 @@ namespace Core::IO
           if (has_default_value())
           {
             stream << " (default: ";
-            Internal::DatPrinter{}(stream, wrapped.data.default_value.value());
+            Internal::DatPrinter{}(stream, std::get<1>(wrapped.data.default_value));
             stream << ")";
           }
 
@@ -520,10 +520,6 @@ namespace Core::IO
    */
   namespace InputSpecBuilders
   {
-    // Import the Noneable type into the InputSpecBuilders namespace to make it easier to use.
-    using Core::IO::none;
-    using Core::IO::Noneable;
-
     /**
      * This constant signifies that a size is dynamic and will be determined at runtime. Pass this
      * value to the size parameter of a vector-valued parameter() or the list() function.
@@ -550,9 +546,26 @@ namespace Core::IO
      */
     using ParameterCallback = std::function<void(InputParameterContainer&)>;
 
+    /**
+     * A tag type to indicate that a parameter cannot take default values.
+     */
+    struct NoDefault
+    {
+    };
+
+    /**
+     * The type used for the default value of a parameter. If the parameter is optional, the user
+     * cannot specify a default value, so this type becomes NoDefault. Otherwise, the default value
+     * can be either not set, resulting in the std::monostate, or set to a value of the parameter
+     * type.
+     */
+    template <typename T>
+    using DefaultType =
+        std::conditional_t<OptionalType<T>, NoDefault, std::variant<std::monostate, T>>;
+
     //! Additional parameters for a parameter().
     template <typename T>
-    struct ParameterData
+    struct ParameterDataIn
     {
       using StoredType = T;
       /**
@@ -564,7 +577,7 @@ namespace Core::IO
        * The default value of the parameter. If this field is set, the parameter does not need to be
        * entered in the input. If the parameter is not entered, this default value is used.
        */
-      std::optional<StoredType> default_value{};
+      DefaultType<T> default_value{};
 
       /**
        * An optional callback that is called after the value has been parsed. This can be used to
@@ -575,13 +588,13 @@ namespace Core::IO
 
     template <typename T>
       requires(rank<T>() == 1)
-    struct ParameterData<T>
+    struct ParameterDataIn<T>
     {
       using StoredType = T;
 
       std::string description{};
 
-      std::optional<StoredType> default_value{};
+      DefaultType<T> default_value{};
 
       ParameterCallback on_parse_callback{nullptr};
 
@@ -594,13 +607,13 @@ namespace Core::IO
 
     template <typename T>
       requires(rank<T>() > 1)
-    struct ParameterData<T>
+    struct ParameterDataIn<T>
     {
       using StoredType = T;
 
       std::string description{};
 
-      std::optional<StoredType> default_value{};
+      DefaultType<T> default_value{};
 
       ParameterCallback on_parse_callback{nullptr};
 
@@ -648,8 +661,34 @@ namespace Core::IO
 
     namespace Internal
     {
+      template <typename T>
+      struct ParameterData
+      {
+        using StoredType = T;
+
+        std::string description{};
+
+        std::variant<std::monostate, StoredType> default_value{};
+
+        ParameterCallback on_parse_callback{nullptr};
+
+        std::array<Size, rank<T>()> size{};
+      };
+
+      template <typename T>
+      struct SelectionData
+      {
+        using StoredType = T;
+
+        std::string description{};
+
+        std::variant<std::monostate, StoredType> default_value{};
+
+        ParameterCallback on_parse_callback{nullptr};
+      };
+
       template <SupportedType T>
-      struct EntrySpec
+      struct ParameterSpec
       {
         std::string name;
         using StoredType = T;
@@ -674,9 +713,10 @@ namespace Core::IO
         std::string name;
         using StoredType = T;
         //! The type that is used in the input file.
-        using InputType = std::conditional_t<IsNoneable<T>, Noneable<std::string>, std::string>;
+        using InputType =
+            std::conditional_t<OptionalType<T>, std::optional<std::string>, std::string>;
         using ChoiceMap = std::map<InputType, StoredType>;
-        ParameterData<T> data;
+        SelectionData<T> data;
         ChoiceMap choices;
         //! The string representation of the choices.
         std::string choices_string;
@@ -770,7 +810,7 @@ namespace Core::IO
       //! Note that the type can be anything since we never read or write values of this type.
       template <typename T>
       [[nodiscard]] InputSpec selection_internal(std::string name,
-          std::map<std::string, RemoveNoneable<T>> choices, ParameterData<T> data = {});
+          std::map<std::string, RemoveOptional<T>> choices, ParameterDataIn<T> data = {});
 
 
       struct SizeChecker
@@ -808,16 +848,16 @@ namespace Core::IO
      * // value is given.
      * parameter<double>("my_double", {.default_value = 3.14});
      *
-     * // An alternative way to create this optional int parameter is achieved with the Noneable
-     * // type. This value is optional and by default has an empty value represented by "none" in
-     * // the input file.
-     * parameter<Noneable<int>>("my_int", .default_value = none<int>);
+     * // An alternative way to create an optional double parameter is achieved with a
+     * // std::optional type. This value is optional and has an empty value in the input file. You
+     * // cannot set a default value in this case.
+     * parameter<std::optional<my_double>>("my_double");
      *
      * // A vector parameter with a fixed size of 3.
      * parameter<std::vector<double>>("my_vector", {.size = 3});
      *
-     * // A vector may also contain Noneable values.
-     * parameter<std::vector<Noneable<double>>>("my_vector", {.size = 3});
+     * // A vector may also contain std::optional values.
+     * parameter<std::vector<std::optional<double>>>("my_vector", {.size = 3});
      *
      * // A vector parameter with a size that is determined by the value of another parameter. The
      * // size is given as a callback.
@@ -835,10 +875,10 @@ namespace Core::IO
      *   }});
      * @endcode
      *
-     * After parsing an InputSpec with fully_parse(), the value of the parameter can be retrieved
-     * from an InputParameterContainer. If `default_value` is set, the parameter is implicitly
-     * optional. In this case, if the parameter is not present in the input file, the default value
-     * will be stored in the container that is filled by the fully_parse() function.
+     * After parsing an InputSpec, the value of the parameter can be retrieved from an
+     * InputParameterContainer. If `default_value` is set, the parameter is implicitly optional. In
+     * this case, if the parameter is not present in the input file, the default value will be
+     * stored in the container.
      *
      * When you decide how to set the `default_value` field or whether to make a parameter optional,
      * consider the following cases:
@@ -856,20 +896,19 @@ namespace Core::IO
      *     parameter that activates or deactivates a feature, e.g., defaulting the EAS element
      *     technology to off might be reasonable.
      *
-     *   - If the parameter is not required, but there is no reasonable default value, wrap the type
-     *     in `std::optional` and set the empty optional state as `default_value`. As an example,
-     *     this may be useful for a damping parameter that, when set, activates damping using
-     *     the provided value. This example demonstrates that the parameter has a double role: its
-     *     presence activates damping and its value determines the damping strength. An often better
-     *     way to selectively activate parameters can be achieved with the group() function,
-     *     especially if a set of parameters is always required together.
+     *   - If the parameter is not required and there is no reasonable default value, wrap the type
+     *     in `std::optional`. As an example, this may be useful for a damping parameter that, when
+     *     set, activates damping using the provided value. This example demonstrates that the
+     *     parameter has a double role: its presence activates damping and its value determines the
+     *     damping strength. An often better way to selectively activate parameters can be achieved
+     *     with the group() function, especially if a set of parameters is always required together.
      *
      * @tparam T The data type of the parameter. Must be a SupportedType.
      *
      * @relatedalso InputSpec
      */
     template <SupportedType T>
-    [[nodiscard]] InputSpec parameter(std::string name, ParameterData<T>&& data = {});
+    [[nodiscard]] InputSpec parameter(std::string name, ParameterDataIn<T>&& data = {});
 
     /**
      * Create a callback that returns the value of the parameter with the given @p name. Such a
@@ -892,7 +931,7 @@ namespace Core::IO
     [[nodiscard]] auto from_parameter(const std::string& name);
 
     /**
-     * A parameter whose value is a a selection from a list of choices. For example:
+     * A parameter whose value is a selection from a list of choices. For example:
      *
      * @code
      * selection<int>("my_selection", {{"a", 1}, {"b", 2}, {"c", 3}});
@@ -912,11 +951,11 @@ namespace Core::IO
     template <typename T>
       requires(!std::same_as<T, std::string>)
     [[nodiscard]] InputSpec selection(std::string name,
-        std::map<std::string, RemoveNoneable<T>> choices, ParameterData<T> data = {});
+        std::map<std::string, RemoveOptional<T>> choices, ParameterDataIn<T> data = {});
 
 
     /**
-     * Like the the other selection() function, but the choices are stored as strings and not mapped
+     * Like the other selection() function, but the choices are stored as strings and not mapped
      * to another type.
      *
      * @note Although this function only works with strings, you still need to provide a type for
@@ -926,7 +965,7 @@ namespace Core::IO
      */
     template <std::same_as<std::string> T>
     [[nodiscard]] InputSpec selection(
-        std::string name, std::vector<std::string> choices, ParameterData<T> data = {});
+        std::string name, std::vector<std::string> choices, ParameterDataIn<T> data = {});
 
     /**
      * A group of InputSpecs. This groups one or more InputSpecs under a name. A group can be
@@ -1158,14 +1197,14 @@ namespace Core::IO
 // --- template definitions --- //
 
 template <Core::IO::SupportedType T>
-void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::parse(
+void Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::parse(
     ValueParser& parser, InputParameterContainer& container) const
 {
   if (parser.peek() == name)
     parser.consume(name);
-  else if (data.default_value.has_value())
+  else if (data.default_value.index() == 1)
   {
-    container.add(name, data.default_value.value());
+    container.add(name, std::get<1>(data.default_value));
     return;
   }
   else
@@ -1192,13 +1231,7 @@ void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::parse(
       InputParameterContainer& container;
     };
 
-    if constexpr (rank<T>() == 1)
-    {
-      std::size_t size_info = std::visit(SizeVisitor{container}, data.size);
-      auto parsed = parser.read<T>(size_info);
-      container.add(name, parsed);
-    }
-    else if constexpr (rank<T>() > 1)
+    if constexpr (rank<T>() > 0)
     {
       std::array<std::size_t, rank<T>()> size_info;
       for (std::size_t i = 0; i < rank<T>(); ++i)
@@ -1215,7 +1248,7 @@ void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::parse(
 
 
 template <Core::IO::SupportedType T>
-bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::match(ConstYamlNodeRef node,
+bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
     InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
 {
   match_entry.type = IO::Internal::MatchEntry::Type::parameter;
@@ -1229,9 +1262,9 @@ bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::match(ConstYamlNodeRef
   if (!node.node.has_child(spec_name))
   {
     // It is OK to not encounter an optional parameter
-    if (data.default_value.has_value())
+    if (data.default_value.index() == 1)
     {
-      container.add(name, data.default_value.value());
+      container.add(name, std::get<1>(data.default_value));
       match_entry.state = IO::Internal::MatchEntry::State::defaulted;
       return true;
     }
@@ -1272,7 +1305,8 @@ bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::match(ConstYamlNodeRef
 
 
 template <Core::IO::SupportedType T>
-void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit_metadata(ryml::NodeRef node) const
+void Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::emit_metadata(
+    ryml::NodeRef node) const
 {
   node |= ryml::MAP;
   node["name"] << name;
@@ -1288,14 +1322,9 @@ void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit_metadata(ryml::No
     };
 
     std::array<std::size_t, rank<T>()> size_info;
-    if constexpr (rank<T>() == 1)
-      size_info[0] = std::visit(DynamicSizeVisitor{}, data.size);
-    else
+    for (std::size_t i = 0; i < rank<T>(); ++i)
     {
-      for (std::size_t i = 0; i < rank<T>(); ++i)
-      {
-        size_info[i] = std::visit(DynamicSizeVisitor{}, data.size[i]);
-      }
+      size_info[i] = std::visit(DynamicSizeVisitor{}, data.size[i]);
     }
     IO::Internal::emit_type_as_yaml<StoredType>(node, size_info);
   }
@@ -1304,23 +1333,23 @@ void Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit_metadata(ryml::No
   {
     emit_value_as_yaml(node["description"], data.description);
   }
-  emit_value_as_yaml(node["required"], !data.default_value.has_value());
-  if (data.default_value.has_value())
+  emit_value_as_yaml(node["required"], !(data.default_value.index() == 1));
+  if (data.default_value.index() == 1)
   {
-    emit_value_as_yaml(node["default"], data.default_value.value());
+    emit_value_as_yaml(node["default"], std::get<1>(data.default_value));
   }
 }
 
 template <Core::IO::SupportedType T>
-bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit(YamlNodeRef node,
+bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::emit(YamlNodeRef node,
     const InputParameterContainer& container, const InputSpecEmitOptions& options) const
 {
   node.node |= ryml::MAP;
   // Value present in container
   if (auto value = container.get_if<StoredType>(name))
   {
-    if (options.emit_defaulted_values || !data.default_value.has_value() ||
-        *data.default_value != *value)
+    if (options.emit_defaulted_values || !(data.default_value.index() == 1) ||
+        std::get<1>(data.default_value) != *value)
     {
       auto value_node = node.node.append_child();
       value_node << ryml::key(name);
@@ -1329,13 +1358,13 @@ bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit(YamlNodeRef node,
     return true;
   }
   // Not present but we have a default
-  else if (data.default_value.has_value())
+  else if (data.default_value.index() == 1)
   {
     if (options.emit_defaulted_values)
     {
       auto value_node = node.node.append_child();
       value_node << ryml::key(name);
-      emit_value_as_yaml(value_node, data.default_value.value());
+      emit_value_as_yaml(value_node, std::get<1>(data.default_value));
     }
     return true;
   }
@@ -1347,7 +1376,7 @@ bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::emit(YamlNodeRef node,
 
 
 template <Core::IO::SupportedType T>
-bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::has_correct_size(
+bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::has_correct_size(
     const T& val, const InputParameterContainer& container) const
 {
   if constexpr (rank<T>() == 0)
@@ -1369,14 +1398,9 @@ bool Core::IO::InputSpecBuilders::Internal::EntrySpec<T>::has_correct_size(
     };
 
     std::array<std::size_t, rank<T>()> size_info;
-    if constexpr (rank<T>() == 1)
-      size_info[0] = std::visit(SizeVisitor{container}, data.size);
-    else
+    for (std::size_t i = 0; i < rank<T>(); ++i)
     {
-      for (std::size_t i = 0; i < rank<T>(); ++i)
-      {
-        size_info[i] = std::visit(SizeVisitor{container}, data.size[i]);
-      }
+      size_info[i] = std::visit(SizeVisitor{container}, data.size[i]);
     }
     SizeChecker size_checker;
     return size_checker(val, size_info.data());
@@ -1390,9 +1414,9 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::parse(
 {
   if (parser.peek() == name)
     parser.consume(name);
-  else if (data.default_value.has_value())
+  else if (data.default_value.index() == 1)
   {
-    container.add(name, data.default_value.value());
+    container.add(name, std::get<1>(data.default_value));
     return;
   }
   else
@@ -1433,9 +1457,9 @@ bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::match(ConstYamlNod
   if (!node.node.has_child(spec_name))
   {
     // It is OK to not encounter an optional parameter
-    if (data.default_value.has_value())
+    if (data.default_value.index() == 1)
     {
-      container.add(name, data.default_value.value());
+      container.add(name, std::get<1>(data.default_value));
       match_entry.state = IO::Internal::MatchEntry::State::defaulted;
       return true;
     }
@@ -1480,11 +1504,11 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::print(
 {
   stream << "// " << std::string(indent, ' ') << name;
 
-  if (data.default_value.has_value())
+  if (data.default_value.index() == 1)
   {
     // Find the choice that corresponds to the default value.
     auto default_value_it = std::find_if(choices.begin(), choices.end(),
-        [&](const auto& choice) { return choice.second == data.default_value.value(); });
+        [&](const auto& choice) { return choice.second == std::get<1>(data.default_value); });
     FOUR_C_ASSERT(
         default_value_it != choices.end(), "Internal error: default value not found in choices.");
 
@@ -1511,19 +1535,19 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::emit_metadata(
   node |= ryml::MAP;
   node["name"] << name;
 
-  if constexpr (IsNoneable<T>) emit_value_as_yaml(node["noneable"], true);
+  if constexpr (OptionalType<T>) emit_value_as_yaml(node["noneable"], true);
   node["type"] = "selection";
 
   if (!data.description.empty())
   {
     emit_value_as_yaml(node["description"], data.description);
   }
-  emit_value_as_yaml(node["required"], !data.default_value.has_value());
-  if (data.default_value.has_value())
+  emit_value_as_yaml(node["required"], !(data.default_value.index() == 1));
+  if (data.default_value.index() == 1)
   {
     // Find the choice that corresponds to the default value.
     auto default_value_it = std::find_if(choices.begin(), choices.end(),
-        [&](const auto& choice) { return choice.second == data.default_value.value(); });
+        [&](const auto& choice) { return choice.second == std::get<1>(data.default_value); });
     FOUR_C_ASSERT(
         default_value_it != choices.end(), "Internal error: default value not found in choices.");
     emit_value_as_yaml(node["default"], default_value_it->first);
@@ -1562,19 +1586,19 @@ bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::emit(YamlNodeRef n
   // Value present in container
   if (auto value = container.get_if<StoredType>(name))
   {
-    if (options.emit_defaulted_values || !data.default_value.has_value() ||
-        *data.default_value != *value)
+    if (options.emit_defaulted_values || !(data.default_value.index() == 1) ||
+        std::get<1>(data.default_value) != *value)
     {
       return emit_key_value(name, *value);
     }
     return true;
   }
   // Not present but we have a default
-  else if (data.default_value.has_value())
+  else if (data.default_value.index() == 1)
   {
     if (options.emit_defaulted_values)
     {
-      return emit_key_value(name, data.default_value.value());
+      return emit_key_value(name, std::get<1>(data.default_value));
     }
     return true;
   }
@@ -1598,14 +1622,35 @@ auto Core::IO::InputSpecBuilders::from_parameter(const std::string& name)
 
 template <Core::IO::SupportedType T>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::parameter(
-    std::string name, ParameterData<T>&& data)
+    std::string name, ParameterDataIn<T>&& data)
 {
-  return IO::Internal::make_spec(Internal::EntrySpec<T>{.name = name, .data = data},
+  Internal::ParameterData<T> internal_data;
+  internal_data.description = data.description;
+  if constexpr (OptionalType<T>)
+  {
+    // An optional<T> implies a default_value corresponding to the empty state.
+    internal_data.default_value = std::nullopt;
+  }
+  else
+  {
+    internal_data.default_value = data.default_value;
+  }
+  if constexpr (rank<T>() == 1)
+  {
+    internal_data.size[0] = data.size;
+  }
+  else if constexpr (rank<T>() > 1)
+  {
+    internal_data.size = data.size;
+  }
+  internal_data.on_parse_callback = data.on_parse_callback;
+
+  return IO::Internal::make_spec(Internal::ParameterSpec<T>{.name = name, .data = internal_data},
       {
           .name = name,
           .description = data.description,
-          .required = !data.default_value.has_value(),
-          .has_default_value = data.default_value.has_value(),
+          .required = !(internal_data.default_value.index() == 1),
+          .has_default_value = internal_data.default_value.index() == 1,
           .n_specs = 1,
       });
 }
@@ -1613,11 +1658,11 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::parameter(
 
 template <typename T>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
-    std::string name, std::map<std::string, RemoveNoneable<T>> choices, ParameterData<T> data)
+    std::string name, std::map<std::string, RemoveOptional<T>> choices, ParameterDataIn<T> data)
 {
   FOUR_C_ASSERT_ALWAYS(!choices.empty(), "Selection must have at least one choice.");
 
-  // If we have a Noneable type, we need to convert the choices.
+  // If we have a std::optional type, we need to convert the choices.
   typename SelectionSpec<T>::ChoiceMap modified_choices;
   std::string choices_string;
   for (auto&& [key, value] : choices)
@@ -1627,22 +1672,38 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
   }
   choices_string.pop_back();
 
-  if constexpr (IsNoneable<T>)
+  if constexpr (OptionalType<T>)
   {
-    modified_choices[none<std::string>] = T{};
+    modified_choices[std::nullopt] = T{};
     choices_string += "|none";
   }
 
-  // Check that we have a default value that is in the choices.
-  if (data.default_value.has_value())
+  SelectionData<T> internal_data;
+  internal_data.description = data.description;
+  if constexpr (OptionalType<T>)
   {
+    // An optional<T> implies a default_value corresponding to the empty state.
+    internal_data.default_value = std::nullopt;
+  }
+  else
+  {
+    internal_data.default_value = data.default_value;
+  }
+  internal_data.on_parse_callback = data.on_parse_callback;
+
+  const bool has_default_value = internal_data.default_value.index() == 1;
+
+  // Check that we have a default value that is in the choices.
+  if (has_default_value)
+  {
+    const auto& default_value = std::get<1>(internal_data.default_value);
     auto default_value_it = std::find_if(modified_choices.begin(), modified_choices.end(),
-        [&](const auto& choice) { return choice.second == data.default_value.value(); });
+        [&](const auto& choice) { return choice.second == default_value; });
 
     if (default_value_it == modified_choices.end())
     {
       std::stringstream default_value_stream;
-      Core::IO::Internal::DatPrinter{}(default_value_stream, data.default_value.value());
+      Core::IO::Internal::DatPrinter{}(default_value_stream, default_value);
       FOUR_C_THROW("Default value '%s' of selection not found in choices '%s'.",
           default_value_stream.str().c_str(), choices_string.c_str());
     }
@@ -1651,15 +1712,15 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
   return IO::Internal::make_spec(
       Internal::SelectionSpec<T>{
           .name = name,
-          .data = data,
+          .data = internal_data,
           .choices = modified_choices,
           .choices_string = choices_string,
       },
       {
           .name = name,
           .description = data.description,
-          .required = !data.default_value.has_value(),
-          .has_default_value = data.default_value.has_value(),
+          .required = !has_default_value,
+          .has_default_value = has_default_value,
           .n_specs = 1,
       });
 }
@@ -1668,7 +1729,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
 template <typename T>
   requires(!std::same_as<T, std::string>)
 Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
-    std::string name, std::map<std::string, RemoveNoneable<T>> choices, ParameterData<T> data)
+    std::string name, std::map<std::string, RemoveOptional<T>> choices, ParameterDataIn<T> data)
 {
   return Internal::selection_internal(name, choices, data);
 }
@@ -1676,7 +1737,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
 
 template <std::same_as<std::string> T>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
-    std::string name, std::vector<std::string> choices, ParameterData<T> data)
+    std::string name, std::vector<std::string> choices, ParameterDataIn<T> data)
 {
   std::map<std::string, std::string> choices_with_strings;
   for (const auto& choice : choices)

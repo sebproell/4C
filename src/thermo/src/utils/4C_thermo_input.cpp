@@ -219,10 +219,10 @@ void Thermo::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinit
     cond.add_component(parameter<double>("coeff", {.description = "heat transfer coefficient h"}));
     cond.add_component(
         parameter<double>("surtemp", {.description = "surrounding (fluid) temperature T_oo"}));
-    cond.add_component(parameter<Noneable<int>>("surtempfunct",
+    cond.add_component(parameter<std::optional<int>>("surtempfunct",
         {.description =
                 "time curve to increase the surrounding (fluid) temperature T_oo in time"}));
-    cond.add_component(parameter<Noneable<int>>("funct",
+    cond.add_component(parameter<std::optional<int>>("funct",
         {.description =
                 "time curve to increase the complete boundary condition, i.e., the heat flux"}));
     condlist.push_back(cond);

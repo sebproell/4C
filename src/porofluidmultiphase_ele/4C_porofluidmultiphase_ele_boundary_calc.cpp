@@ -194,7 +194,7 @@ int Discret::Elements::PoroFluidMultiPhaseEleBoundaryCalc<distype>::evaluate_neu
   const int numdof = condition.parameters().get<int>("NUMDOF");
   const auto onoff = condition.parameters().get<std::vector<int>>("ONOFF");
   const auto val = condition.parameters().get<std::vector<double>>("VAL");
-  const auto func = condition.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto func = condition.parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
   if (numdofpernode_ != numdof)
     FOUR_C_THROW(

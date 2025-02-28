@@ -1432,7 +1432,7 @@ void Discret::Elements::FluidEleCalc<distype, enrtype>::body_force(Discret::Elem
     const auto onoff = myneumcond[0]->parameters().get<std::vector<int>>("ONOFF");
     const auto val = myneumcond[0]->parameters().get<std::vector<double>>("VAL");
     const auto functions =
-        myneumcond[0]->parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+        myneumcond[0]->parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
     // factor given by spatial function
     double functionfac = 1.0;
@@ -1524,7 +1524,7 @@ void Discret::Elements::FluidEleCalc<distype, enrtype>::body_force(Discret::Elem
     {
       // check for potential time curve
       const auto funct =
-          myscatraneumcond[0]->parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+          myscatraneumcond[0]->parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
       // initialization of time-curve factor
       double functfac = 0.0;

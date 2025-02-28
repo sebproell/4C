@@ -90,18 +90,12 @@ void Discret::Elements::Shell7pType::setup_element_definition(
       parameter<std::vector<std::string>>("EAS", {.size = 5}),
       parameter<double>("SDC"),
       parameter<bool>("USE_ANS", {.default_value = false}),
-      parameter<Noneable<std::vector<double>>>(
-          "RAD", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "AXI", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "CIR", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER1", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER2", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER3", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<std::optional<std::vector<double>>>("RAD", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("AXI", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("CIR", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER2", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER3", {.size = 3}),
   });
 
   defsgeneral["QUAD8"] = all_of({
@@ -111,18 +105,12 @@ void Discret::Elements::Shell7pType::setup_element_definition(
       parameter<std::vector<std::string>>("EAS", {.size = 5}),
       parameter<double>("SDC"),
       parameter<bool>("USE_ANS", {.default_value = false}),
-      parameter<Noneable<std::vector<double>>>(
-          "RAD", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "AXI", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "CIR", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER1", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER2", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER3", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<std::optional<std::vector<double>>>("RAD", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("AXI", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("CIR", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER2", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER3", {.size = 3}),
   });
 
   defsgeneral["QUAD9"] = all_of({
@@ -132,18 +120,12 @@ void Discret::Elements::Shell7pType::setup_element_definition(
       parameter<std::vector<std::string>>("EAS", {.size = 5}),
       parameter<double>("SDC"),
       parameter<bool>("USE_ANS", {.default_value = false}),
-      parameter<Noneable<std::vector<double>>>(
-          "RAD", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "AXI", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "CIR", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER1", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER2", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER3", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<std::optional<std::vector<double>>>("RAD", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("AXI", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("CIR", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER2", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER3", {.size = 3}),
   });
 
   defsgeneral["TRI3"] = all_of({
@@ -151,18 +133,12 @@ void Discret::Elements::Shell7pType::setup_element_definition(
       parameter<int>("MAT"),
       parameter<double>("THICK"),
       parameter<double>("SDC"),
-      parameter<Noneable<std::vector<double>>>(
-          "RAD", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "AXI", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "CIR", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER1", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER2", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER3", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<std::optional<std::vector<double>>>("RAD", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("AXI", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("CIR", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER2", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER3", {.size = 3}),
   });
 
   defsgeneral["TRI6"] = all_of({
@@ -170,18 +146,12 @@ void Discret::Elements::Shell7pType::setup_element_definition(
       parameter<int>("MAT"),
       parameter<double>("THICK"),
       parameter<double>("SDC"),
-      parameter<Noneable<std::vector<double>>>(
-          "RAD", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "AXI", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "CIR", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER1", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER2", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER3", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<std::optional<std::vector<double>>>("RAD", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("AXI", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("CIR", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER2", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER3", {.size = 3}),
   });
 }
 

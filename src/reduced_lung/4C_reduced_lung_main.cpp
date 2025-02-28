@@ -189,7 +189,7 @@ namespace ReducedLung
         const auto* bc_condition = node_in.get_condition("RedAirwayPrescribedCond");
         const std::string bc_type = bc_condition->parameters().get<std::string>("boundarycond");
         const std::optional<int> funct_num =
-            bc_condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve")[0];
+            bc_condition->parameters().get<std::vector<std::optional<int>>>("curve")[0];
         if (bc_type == "pressure")
         {
           if (funct_num.has_value())
@@ -212,7 +212,7 @@ namespace ReducedLung
         const auto* bc_condition = node_out.get_condition("RedAirwayPrescribedCond");
         const std::string bc_type = bc_condition->parameters().get<std::string>("boundarycond");
         const std::optional<int> funct_num =
-            bc_condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve")[0];
+            bc_condition->parameters().get<std::vector<std::optional<int>>>("curve")[0];
         if (bc_type == "pressure")
         {
           if (funct_num.has_value())

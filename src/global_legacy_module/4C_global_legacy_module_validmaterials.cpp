@@ -254,10 +254,8 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
     m->add_component(parameter<std::vector<double>>(
         "ROLE", {.description = "role in michaelis-menten like reactions",
                     .size = from_parameter<int>("NUMSCAL")}));
-    m->add_component(parameter<std::optional<std::vector<double>>>(
-        "REACSTART", {.description = "starting point of reaction",
-                         .default_value = none<std::vector<double>>,
-                         .size = from_parameter<int>("NUMSCAL")}));
+    m->add_component(parameter<std::optional<std::vector<double>>>("REACSTART",
+        {.description = "starting point of reaction", .size = from_parameter<int>("NUMSCAL")}));
 
     Mat::append_material_definition(matlist, m);
   }
@@ -281,10 +279,8 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
     m->add_component(parameter<std::vector<double>>(
         "ROLE", {.description = "role in michaelis-menten like reactions",
                     .size = from_parameter<int>("NUMSCAL")}));
-    m->add_component(parameter<std::optional<std::vector<double>>>(
-        "REACSTART", {.description = "starting point of reaction",
-                         .default_value = none<std::vector<double>>,
-                         .size = from_parameter<int>("NUMSCAL")}));
+    m->add_component(parameter<std::optional<std::vector<double>>>("REACSTART",
+        {.description = "starting point of reaction", .size = from_parameter<int>("NUMSCAL")}));
 
     Mat::append_material_definition(matlist, m);
   }
@@ -1396,13 +1392,13 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
     m->add_component(parameter<double>("NUE", {.description = "Poisson's ratio"}));
     m->add_component(parameter<double>("DENS", {.description = "mass density"}));
     m->add_component(
-        parameter<double>("YIELD", {.description = "yield stress", .default_value = 0}));
+        parameter<double>("YIELD", {.description = "yield stress", .default_value = 0.}));
     m->add_component(parameter<double>(
-        "ISOHARD", {.description = "isotropic hardening modulus", .default_value = 0}));
+        "ISOHARD", {.description = "isotropic hardening modulus", .default_value = 0.}));
     m->add_component(parameter<double>(
-        "SATHARDENING", {.description = "saturation hardening", .default_value = 0}));
+        "SATHARDENING", {.description = "saturation hardening", .default_value = 0.}));
     m->add_component(parameter<double>(
-        "HARDEXPO", {.description = "linear hardening exponent", .default_value = 0}));
+        "HARDEXPO", {.description = "linear hardening exponent", .default_value = 0.}));
     m->add_component(parameter<double>("VISC", {.description = "VISCOSITY", .default_value = 0.}));
     m->add_component(parameter<double>(
         "RATE_DEPENDENCY", {.description = "rate dependency", .default_value = 0.}));
@@ -1635,7 +1631,7 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
         {.description = "the list material/potential IDs", .size = from_parameter<int>("NUMMAT")}));
     m->add_component(parameter<double>("DENS", {.description = "material mass density"}));
     m->add_component(parameter<int>("POLYCONVEX",
-        {.description = "1.0 if polyconvexity of system is checked", .default_value = 0.}));
+        {.description = "1.0 if polyconvexity of system is checked", .default_value = 0}));
 
     Mat::append_material_definition(matlist, m);
   }
@@ -1653,7 +1649,7 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
         {.description = "the list material/potential IDs", .size = from_parameter<int>("NUMMAT")}));
     m->add_component(parameter<double>("DENS", {.description = "material mass density"}));
     m->add_component(parameter<int>("POLYCONVEX",
-        {.description = "1.0 if polyconvexity of system is checked", .default_value = 0.}));
+        {.description = "1.0 if polyconvexity of system is checked", .default_value = 0}));
 
     Mat::append_material_definition(matlist, m);
   }
@@ -1672,7 +1668,7 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
     m->add_component(parameter<double>("DENS", {.description = "material mass density"}));
     m->add_component(parameter<double>("INITYIELD", {.description = "initial yield stress"}));
     m->add_component(parameter<int>("POLYCONVEX",
-        {.description = "1.0 if polyconvexity of system is checked", .default_value = 0.}));
+        {.description = "1.0 if polyconvexity of system is checked", .default_value = 0}));
     m->add_component(parameter<double>(
         "ISOHARD", {.description = "linear isotropic hardening modulus", .default_value = 0.}));
     m->add_component(parameter<double>("EXPISOHARD",
@@ -1802,7 +1798,7 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
         {.description = "Taylor-Quinney factor for plastic heat conversion", .default_value = 1.}));
 
     m->add_component(parameter<int>("POLYCONVEX",
-        {.description = "1.0 if polyconvexity of system is checked", .default_value = 0.}));
+        {.description = "1.0 if polyconvexity of system is checked", .default_value = 0}));
 
 
     Mat::append_material_definition(matlist, m);
@@ -2665,7 +2661,7 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
         {.description = "the list material/potential IDs", .size = from_parameter<int>("NUMMAT")}));
     m->add_component(parameter<double>("DENS", {.description = "material mass density"}));
     m->add_component(parameter<int>("POLYCONVEX",
-        {.description = "1.0 if polyconvexity of system is checked", .default_value = 0.}));
+        {.description = "1.0 if polyconvexity of system is checked", .default_value = 0}));
 
     Mat::append_material_definition(matlist, m);
   }
@@ -2728,7 +2724,7 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
         "PRESTRETCHELASTINAX", {.description = "axial prestretch of elastin matrix"}));
     m->add_component(parameter<double>("THICKNESS",
         {.description = "reference wall thickness of the idealized cylindrical aneurysm [m]",
-            .default_value = -1}));
+            .default_value = -1.}));
     m->add_component(parameter<double>(
         "MEANPRESSURE", {.description = "mean blood pressure [Pa]", .default_value = -1.0}));
     m->add_component(parameter<double>(
@@ -3401,7 +3397,6 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
                            .size = from_parameter<int>("NUMSCAL")}));
     m->add_component(parameter<std::optional<std::vector<double>>>(
         "OMEGA_HALF", {.description = "Constant for receptor kinetic law",
-                          .default_value = none<std::vector<double>>,
                           .size = from_parameter<int>("NUMSCAL")}));
 
     Mat::append_material_definition(matlist, m);

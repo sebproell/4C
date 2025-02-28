@@ -199,12 +199,11 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
           // Get the type of prescribed bc
           Bc = (condition->parameters().get<std::string>("boundarycond"));
 
-          const auto curve =
-              condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve");
+          const auto curve = condition->parameters().get<std::vector<std::optional<int>>>("curve");
           double curvefac = 1.0;
           const auto vals = condition->parameters().get<std::vector<double>>("VAL");
           const auto functions =
-              condition->parameters().get<std::vector<Core::IO::Noneable<int>>>("funct");
+              condition->parameters().get<std::vector<std::optional<int>>>("funct");
 
           // Read in the value of the applied BC
           // Get factor of first CURVE
@@ -265,7 +264,7 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
             if (pplCond)
             {
               const auto curve =
-                  pplCond->parameters().get<std::vector<Core::IO::Noneable<int>>>("curve");
+                  pplCond->parameters().get<std::vector<std::optional<int>>>("curve");
               double curvefac = 1.0;
               const auto vals = pplCond->parameters().get<std::vector<double>>("VAL");
 

@@ -85,18 +85,12 @@ void Discret::Elements::SoHex27Type::setup_element_definition(
       parameter<std::vector<int>>("HEX27", {.size = 27}),
       parameter<int>("MAT"),
       parameter<std::string>("KINEM"),
-      parameter<Noneable<std::vector<double>>>(
-          "RAD", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "AXI", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "CIR", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER1", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER2", {.default_value = none<std::vector<double>>, .size = 3}),
-      parameter<Noneable<std::vector<double>>>(
-          "FIBER3", {.default_value = none<std::vector<double>>, .size = 3}),
+      parameter<std::optional<std::vector<double>>>("RAD", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("AXI", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("CIR", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER2", {.size = 3}),
+      parameter<std::optional<std::vector<double>>>("FIBER3", {.size = 3}),
   });
 }
 

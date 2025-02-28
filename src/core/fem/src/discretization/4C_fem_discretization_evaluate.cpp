@@ -195,7 +195,7 @@ void Core::FE::Discretization::evaluate_neumann(Teuchos::ParameterList& params,
     }
     const std::vector<int>* nodeids = cond->get_nodes();
     if (!nodeids) FOUR_C_THROW("PointNeumann condition does not have nodal cloud");
-    const auto& tmp_funct = cond->parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+    const auto& tmp_funct = cond->parameters().get<std::vector<std::optional<int>>>("FUNCT");
     const auto& onoff = cond->parameters().get<std::vector<int>>("ONOFF");
     const auto& val = cond->parameters().get<std::vector<double>>("VAL");
 
@@ -406,7 +406,7 @@ void Core::FE::Discretization::evaluate_condition(Teuchos::ParameterList& params
         // to the condition geometry
 
         // Evaluate Loadcurve if defined. Put current load factor in parameter list
-        const auto* curve = cond->parameters().get_if<Core::IO::Noneable<int>>("curve");
+        const auto* curve = cond->parameters().get_if<std::optional<int>>("curve");
 
         double curvefac = 1.0;
         if (curve)

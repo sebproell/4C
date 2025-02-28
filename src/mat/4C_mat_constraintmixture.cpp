@@ -369,9 +369,9 @@ void Mat::ConstraintMixture::setup(int numgp, const Core::IO::InputParameterCont
   a4_ = std::make_shared<std::vector<Core::LinAlg::Matrix<3, 1>>>(numgp);
 
   // read local (cylindrical) cosy-directions at current element
-  auto rad_opt = container.get<Core::IO::Noneable<std::vector<double>>>("RAD");
-  auto axi_opt = container.get<Core::IO::Noneable<std::vector<double>>>("AXI");
-  auto cir_opt = container.get<Core::IO::Noneable<std::vector<double>>>("CIR");
+  auto rad_opt = container.get<std::optional<std::vector<double>>>("RAD");
+  auto axi_opt = container.get<std::optional<std::vector<double>>>("AXI");
+  auto cir_opt = container.get<std::optional<std::vector<double>>>("CIR");
   FOUR_C_ASSERT_ALWAYS(rad_opt && axi_opt && cir_opt, "Require RAD, AXI and CIR parameters.");
 
   const auto& rad = *rad_opt;

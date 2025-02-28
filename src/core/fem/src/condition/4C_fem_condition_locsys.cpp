@@ -119,8 +119,7 @@ void Core::Conditions::LocsysManager::update(const double time,
         typelocsys_[i] = currlocsys->type();
 
         const auto rotangle = currlocsys->parameters().get<std::vector<double>>("ROTANGLE");
-        const auto funct =
-            currlocsys->parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+        const auto funct = currlocsys->parameters().get<std::vector<std::optional<int>>>("FUNCT");
         const auto useUpdatedNodePos = currlocsys->parameters().get<int>("USEUPDATEDNODEPOS");
         const std::vector<int>* nodes = currlocsys->get_nodes();
         const auto useConsistentNodeNormal =

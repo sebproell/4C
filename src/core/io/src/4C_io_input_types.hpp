@@ -20,30 +20,6 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Core::IO
 {
-  /**
-   * A type that either contains a value of type T or nothing. This type is useful to
-   * represent the absence of a value marked by "none" in the input file. The type is just an alias
-   * for std::optional<T> to more precisely convey the intended meaning.
-   */
-  template <typename T>
-  using Noneable = std::optional<T>;
-
-  /**
-   * A constant to represent the absence of a value in the input file. The constant is templated
-   * on the type of the value inside the Noneable to properly handle cases where a Noneable is
-   * itself stored inside a std::optional type.
-   */
-  template <typename T>
-  inline constexpr auto none = Noneable<T>{std::nullopt};
-
-  /**
-   * Concept to check if a type is a Noneable type.
-   */
-  template <typename T>
-  concept IsNoneable = requires(T t) {
-    { t.has_value() } -> std::convertible_to<bool>;
-    { t.value() } -> std::convertible_to<typename T::value_type>;
-  };
 
   namespace Internal
   {
@@ -73,7 +49,7 @@ namespace Core::IO
     };
 
     template <typename T>
-    struct SupportedTypeHelper<Noneable<T>> : SupportedTypeHelper<T>
+    struct SupportedTypeHelper<std::optional<T>> : SupportedTypeHelper<T>
     {
     };
 
@@ -96,9 +72,9 @@ namespace Core::IO
     };
 
     template <typename T>
-    struct RankHelper<Noneable<T>>
+    struct RankHelper<std::optional<T>>
     {
-      // Noneable is not considered a container, so it does not increase the rank.
+      // std::optional is not considered a container, so it does not increase the rank.
       static constexpr std::size_t value = RankHelper<T>::value;
     };
 
@@ -109,14 +85,24 @@ namespace Core::IO
     };
 
     template <typename T>
-    struct RemoveNoneableHelper
+    struct OptionalHelper : std::false_type
+    {
+    };
+
+    template <typename T>
+    struct OptionalHelper<std::optional<T>> : std::true_type
+    {
+    };
+
+    template <typename T>
+    struct RemoveOptionalHelper
     {
       using type = T;
     };
 
     template <typename T>
-      requires IsNoneable<T>
-    struct RemoveNoneableHelper<T>
+      requires OptionalHelper<T>::value
+    struct RemoveOptionalHelper<T>
     {
       using type = typename T::value_type;
     };
@@ -138,7 +124,7 @@ namespace Core::IO
    * - `bool`
    * - `std::string`
    * - `std::filesystem::path`
-   * - `Noneable<T>`, where `T` is one of the supported types
+   * - `std::optional<T>`, where `T` is one of the supported types
    * - `std::vector<T>`, where `T` is one of the supported types
    * - `std::map<std::string, T>`, where `T` is one of the supported types
    */
@@ -155,12 +141,17 @@ namespace Core::IO
   }
 
   /**
-   * Remove the Noneable wrapper from a type if it is a Noneable type. Otherwise, return the type
-   * itself.
+   * Concept to check if a type is a std::optional type.
    */
   template <typename T>
-  using RemoveNoneable = typename Internal::RemoveNoneableHelper<T>::type;
+  concept OptionalType = Internal::OptionalHelper<T>::value;
 
+  /**
+   * Remove the std::optional wrapped around a type. If the type is not a std::optional, the type
+   * itself is returned.
+   */
+  template <typename T>
+  using RemoveOptional = typename Internal::RemoveOptionalHelper<T>::type;
 }  // namespace Core::IO
 
 FOUR_C_NAMESPACE_CLOSE

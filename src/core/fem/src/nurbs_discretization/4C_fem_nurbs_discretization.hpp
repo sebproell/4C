@@ -197,7 +197,7 @@ namespace Core::FE
       template <Core::FE::CellType distype>
       void fill_matrix_and_rhs_for_ls_dirichlet_boundary(Core::Elements::Element& ele,
           const std::vector<Core::LinAlg::SerialDenseVector>* knots, const std::vector<int>& lm,
-          const std::vector<Core::IO::Noneable<int>>& funct, const std::vector<double>& val,
+          const std::vector<std::optional<int>>& funct, const std::vector<double>& val,
           const unsigned deg, const double time, Core::LinAlg::SerialDenseMatrix& elemass,
           std::vector<Core::LinAlg::SerialDenseVector>& elerhs,
           const Core::Utils::FunctionManager& function_manager) const;
@@ -219,7 +219,7 @@ namespace Core::FE
       template <Core::FE::CellType distype>
       void fill_matrix_and_rhs_for_ls_dirichlet_domain(Core::Elements::Element& ele,
           const std::vector<Core::LinAlg::SerialDenseVector>* knots, const std::vector<int>& lm,
-          const std::vector<Core::IO::Noneable<int>>& funct, const std::vector<double>& val,
+          const std::vector<std::optional<int>>& funct, const std::vector<double>& val,
           const unsigned deg, const double time, Core::LinAlg::SerialDenseMatrix& elemass,
           std::vector<Core::LinAlg::SerialDenseVector>& elerhs,
           const Core::Utils::FunctionManager& function_manager) const;

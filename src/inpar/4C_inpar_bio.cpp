@@ -111,7 +111,7 @@ void Inpar::ArteryNetwork::set_valid_conditions(
   art_in_bc.add_component(
       parameter<std::vector<double>>("VAL", {.description = "values", .size = 2}));
   art_in_bc.add_component(
-      parameter<std::vector<Noneable<int>>>("curve", {.description = "curve ids", .size = 2}));
+      parameter<std::vector<std::optional<int>>>("curve", {.description = "curve ids", .size = 2}));
 
   condlist.push_back(art_in_bc);
 
@@ -124,7 +124,7 @@ void Inpar::ArteryNetwork::set_valid_conditions(
   art_rf_bc.add_component(
       parameter<std::vector<double>>("VAL", {.description = "value", .size = 1}));
   art_rf_bc.add_component(
-      parameter<std::vector<Noneable<int>>>("curve", {.description = "curve", .size = 1}));
+      parameter<std::vector<std::optional<int>>>("curve", {.description = "curve", .size = 1}));
   condlist.push_back(art_rf_bc);
 
 
@@ -376,9 +376,11 @@ void Inpar::ReducedLung::set_valid_conditions(
   raw_in_bc.add_component(
       parameter<std::vector<double>>("VAL", {.description = "value", .size = 1}));
   raw_in_bc.add_component(
-      parameter<std::vector<Noneable<int>>>("curve", {.description = "curve", .size = 2}));
-  raw_in_bc.add_component(parameter<std::vector<Noneable<int>>>(
-      "funct", {.description = "function id", .default_value = std::vector{none<int>}, .size = 1}));
+      parameter<std::vector<std::optional<int>>>("curve", {.description = "curve", .size = 2}));
+  raw_in_bc.add_component(parameter<std::vector<std::optional<int>>>(
+      "funct", {.description = "function id",
+                   .default_value = std::vector{std::optional<int>{}},
+                   .size = 1}));
 
   condlist.push_back(raw_in_bc);
 
@@ -424,7 +426,7 @@ void Inpar::ReducedLung::set_valid_conditions(
   raw_volPpl_bc.add_component(
       parameter<std::vector<double>>("VAL", {.description = "value", .size = 1}));
   raw_volPpl_bc.add_component(
-      parameter<std::vector<Noneable<int>>>("curve", {.description = "curve", .size = 1}));
+      parameter<std::vector<std::optional<int>>>("curve", {.description = "curve", .size = 1}));
 
   condlist.push_back(raw_volPpl_bc);
 

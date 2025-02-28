@@ -525,7 +525,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::flow_dep_pressure_bc(
   //  generalized-alpha time-integration scheme -> reset to time n+1)
   const double time =
       fldparatimint_->time() + (1 - fldparatimint_->alpha_f()) * fldparatimint_->dt();
-  const auto curvenum = fdp_cond->parameters().get<Core::IO::Noneable<int>>("curve");
+  const auto curvenum = fdp_cond->parameters().get<std::optional<int>>("curve");
 
   double curvefac = 1.0;
   if (curvenum.has_value() && curvenum.value() > 0 && time >= 0)
@@ -4349,8 +4349,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
 
   // get values and switches from the condition
   // (assumed to be constant on element boundary)
-  const auto functions =
-      hixhybdbc_cond->parameters().get<std::vector<Core::IO::Noneable<int>>>("funct");
+  const auto functions = hixhybdbc_cond->parameters().get<std::vector<std::optional<int>>>("funct");
 
   Core::LinAlg::Matrix<nsd, 1> u_dirich(true);
 

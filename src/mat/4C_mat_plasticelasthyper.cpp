@@ -343,12 +343,12 @@ void Mat::PlasticElastHyper::setup(int numgp, const Core::IO::InputParameterCont
     FOUR_C_THROW("no visco-elasticity in PlasticElastHyper...yet(?)");
 
   // check if either zero or three fiber directions are given
-  if ((!container.get<Core::IO::Noneable<std::vector<double>>>("FIBER1").has_value() ||
-          !container.get<Core::IO::Noneable<std::vector<double>>>("FIBER1").has_value() ||
-          !container.get<Core::IO::Noneable<std::vector<double>>>("FIBER1").has_value()) &&
-      (container.get<Core::IO::Noneable<std::vector<double>>>("FIBER1").has_value() ||
-          container.get<Core::IO::Noneable<std::vector<double>>>("FIBER2").has_value() ||
-          container.get<Core::IO::Noneable<std::vector<double>>>("FIBER3").has_value()))
+  if ((!container.get<std::optional<std::vector<double>>>("FIBER1").has_value() ||
+          !container.get<std::optional<std::vector<double>>>("FIBER1").has_value() ||
+          !container.get<std::optional<std::vector<double>>>("FIBER1").has_value()) &&
+      (container.get<std::optional<std::vector<double>>>("FIBER1").has_value() ||
+          container.get<std::optional<std::vector<double>>>("FIBER2").has_value() ||
+          container.get<std::optional<std::vector<double>>>("FIBER3").has_value()))
     FOUR_C_THROW("so3 expects no fibers or 3 fiber directions");
 
   // plastic anisotropy
@@ -441,9 +441,9 @@ void Mat::PlasticElastHyper::setup_hill_plasticity(
     std::vector<Core::LinAlg::Matrix<3, 1>> directions(3);
 
     // compute fiber directions
-    const auto& fiber1 = container.get<Core::IO::Noneable<std::vector<double>>>("FIBER1");
-    const auto& fiber2 = container.get<Core::IO::Noneable<std::vector<double>>>("FIBER2");
-    const auto& fiber3 = container.get<Core::IO::Noneable<std::vector<double>>>("FIBER3");
+    const auto& fiber1 = container.get<std::optional<std::vector<double>>>("FIBER1");
+    const auto& fiber2 = container.get<std::optional<std::vector<double>>>("FIBER2");
+    const auto& fiber3 = container.get<std::optional<std::vector<double>>>("FIBER3");
 
     std::size_t dir_index = 0;
     for (const auto& fiber : {fiber1, fiber2, fiber3})

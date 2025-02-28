@@ -95,8 +95,7 @@ int Discret::Elements::StructuralSurface::evaluate_neumann(Teuchos::ParameterLis
   // get values and switches from the condition
   const auto onoff = condition.parameters().get<std::vector<int>>("ONOFF");
   const auto val = condition.parameters().get<std::vector<double>>("VAL");
-  const auto* spa_func =
-      condition.parameters().get_if<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto* spa_func = condition.parameters().get_if<std::vector<std::optional<int>>>("FUNCT");
 
   /*
   **    TIME CURVE BUSINESS

@@ -159,7 +159,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
         "ONOFF", {.description = "onoff", .size = from_parameter<int>("NUMDOF")}));
     cond.add_component(parameter<std::vector<double>>(
         "VAL", {.description = "values", .size = from_parameter<int>("NUMDOF")}));
-    cond.add_component(parameter<std::vector<Noneable<int>>>(
+    cond.add_component(parameter<std::vector<std::optional<int>>>(
         "FUNCT", {.description = "function ids", .size = from_parameter<int>("NUMDOF")}));
     cond.add_component(selection<std::string>("TYPE",
         {"Live", "Dead", "pseudo_orthopressure", "orthopressure", "PressureGrad"},
@@ -280,7 +280,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
         "ONOFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
     cond.add_component(parameter<std::vector<double>>(
         "VAL", {.description = "", .size = from_parameter<int>("NUMDOF")}));
-    cond.add_component(parameter<std::vector<Noneable<int>>>(
+    cond.add_component(parameter<std::vector<std::optional<int>>>(
         "FUNCT", {.description = "", .size = from_parameter<int>("NUMDOF")}));
 
     // optional
@@ -490,7 +490,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
   {
     cond.add_component(parameter<std::vector<double>>("ROTANGLE", {.description = "", .size = 3}));
     cond.add_component(
-        parameter<std::vector<Noneable<int>>>("FUNCT", {.description = "", .size = 3}));
+        parameter<std::vector<std::optional<int>>>("FUNCT", {.description = "", .size = 3}));
     cond.add_component(parameter<int>("USEUPDATEDNODEPOS"));
 
     if (cond.geometry_type() == Core::Conditions::geometry_type_line ||
@@ -610,7 +610,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
 
   volumeconstraint.add_component(parameter<int>("ConditionID"));
   volumeconstraint.add_component(
-      parameter<Noneable<int>>("curve", {.description = "id of the curve"}));
+      parameter<std::optional<int>>("curve", {.description = "id of the curve"}));
   volumeconstraint.add_component(parameter<double>("activeTime"));
   volumeconstraint.add_component(selection<std::string>("projection", {"none", "xy", "yz", "xz"},
       {.description = "projection", .default_value = "none"}));
@@ -628,7 +628,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
 
   volumeconstraintpen.add_component(parameter<int>("ConditionID"));
   volumeconstraintpen.add_component(
-      parameter<Noneable<int>>("curve", {.description = "id of the curve"}));
+      parameter<std::optional<int>>("curve", {.description = "id of the curve"}));
   volumeconstraintpen.add_component(parameter<double>("activeTime"));
   volumeconstraintpen.add_component(parameter<double>("penalty"));
   volumeconstraintpen.add_component(parameter<double>("rho"));
@@ -646,7 +646,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
 
   areaconstraint.add_component(parameter<int>("ConditionID"));
   areaconstraint.add_component(
-      parameter<Noneable<int>>("curve", {.description = "id of the curve"}));
+      parameter<std::optional<int>>("curve", {.description = "id of the curve"}));
   areaconstraint.add_component(parameter<double>("activeTime"));
 
   condlist.push_back(areaconstraint);
@@ -684,7 +684,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
       Core::Conditions::geometry_type_line);
 
   areaconstraint2D.add_component(parameter<int>("ConditionID"));
-  areaconstraint2D.add_component(parameter<Noneable<int>>("curve", {.description = {}}));
+  areaconstraint2D.add_component(parameter<std::optional<int>>("curve", {.description = {}}));
   areaconstraint2D.add_component(parameter<double>("activeTime"));
 
   condlist.push_back(areaconstraint2D);
@@ -709,7 +709,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
 
   nodeonplaneconst3D.add_component(parameter<int>("ConditionID"));
   nodeonplaneconst3D.add_component(parameter<double>("amplitude"));
-  nodeonplaneconst3D.add_component(parameter<Noneable<int>>("curve", {.description = {}}));
+  nodeonplaneconst3D.add_component(parameter<std::optional<int>>("curve", {.description = {}}));
   nodeonplaneconst3D.add_component(parameter<double>("activeTime"));
   nodeonplaneconst3D.add_component(parameter<std::vector<int>>(
       "planeNodes", {.description = "ids of the nodes spanning the plane", .size = 3}));
@@ -728,7 +728,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
 
   nodemasterconst3D.add_component(parameter<int>("ConditionID"));
   nodemasterconst3D.add_component(parameter<double>("amplitude"));
-  nodemasterconst3D.add_component(parameter<Noneable<int>>("curve", {.description = {}}));
+  nodemasterconst3D.add_component(parameter<std::optional<int>>("curve", {.description = {}}));
   nodemasterconst3D.add_component(parameter<double>("activeTime"));
   nodemasterconst3D.add_component(parameter<int>("masterNode"));
   nodemasterconst3D.add_component(
@@ -751,7 +751,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
 
   nodemasterconst3Dpen.add_component(parameter<int>("ConditionID"));
   nodemasterconst3Dpen.add_component(parameter<double>("amplitude"));
-  nodemasterconst3Dpen.add_component(parameter<Noneable<int>>("curve", {.description = {}}));
+  nodemasterconst3Dpen.add_component(parameter<std::optional<int>>("curve", {.description = {}}));
   nodemasterconst3Dpen.add_component(parameter<double>("activeTime"));
   nodemasterconst3Dpen.add_component(parameter<double>("penalty"));
   nodemasterconst3Dpen.add_component(parameter<int>("masterNode"));
@@ -771,7 +771,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
 
   nodeonlineconst2D.add_component(parameter<int>("ConditionID"));
   nodeonlineconst2D.add_component(parameter<double>("amplitude"));
-  nodeonlineconst2D.add_component(parameter<Noneable<int>>("curve", {.description = {}}));
+  nodeonlineconst2D.add_component(parameter<std::optional<int>>("curve", {.description = {}}));
   nodeonlineconst2D.add_component(parameter<int>("constrNode1"));
   nodeonlineconst2D.add_component(parameter<int>("constrNode2"));
   nodeonlineconst2D.add_component(parameter<int>("constrNode3"));

@@ -275,7 +275,7 @@ void NOX::Nln::GlobalData::set_status_test_parameters()
       statusTestParams.sublist("Outer Status Test", false);
 
   Teuchos::ParameterList xmlParams;
-  auto xmlfilename = statusTestParams.get<Core::IO::Noneable<std::filesystem::path>>("XML File");
+  auto xmlfilename = statusTestParams.get<std::optional<std::filesystem::path>>("XML File");
 
   // check the input: path to the "Status Test" xml-file
   if (!xmlfilename)

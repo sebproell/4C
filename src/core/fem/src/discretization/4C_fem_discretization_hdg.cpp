@@ -439,7 +439,7 @@ void Core::FE::Utils::DbcHDG::do_dirichlet_condition(const Teuchos::ParameterLis
   if (!nodeids) FOUR_C_THROW("Dirichlet condition does not have nodal cloud");
 
   // get curves, functs, vals, and onoff toggles from the condition
-  const auto funct = cond.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto funct = cond.parameters().get<std::vector<std::optional<int>>>("FUNCT");
   const auto val = cond.parameters().get<std::vector<double>>("VAL");
   const auto onoff = cond.parameters().get<std::vector<int>>("ONOFF");
 

@@ -578,7 +578,7 @@ void Inpar::Cardiovascular0D::set_valid_conditions(
   cardiovascular0darterialproxdistcond.add_component(parameter<double>("p_ard_0"));
   cardiovascular0darterialproxdistcond.add_component(parameter<double>("p_at_fac"));
   cardiovascular0darterialproxdistcond.add_component(
-      parameter<Noneable<int>>("p_at_crv", {.description = "curve"}));
+      parameter<std::optional<int>>("p_at_crv", {.description = "curve"}));
   condlist.push_back(cardiovascular0darterialproxdistcond);
 
   /*--------------------------------------------------------------------*/

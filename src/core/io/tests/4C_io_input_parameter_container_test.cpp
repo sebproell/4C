@@ -25,7 +25,7 @@ namespace
     container.add<std::string>("c", "string");
     container.add<bool>("d", true);
     container.add("v", std::vector<int>{1, 2, 3});
-    container.add("n", Core::IO::Noneable<int>{});
+    container.add("n", std::optional<int>{});
     container.group("group").add<std::string>("e", "group string");
     container.group("group").group("deeply").group("nested").add<int>("f", 42);
 
@@ -37,7 +37,7 @@ namespace
     EXPECT_EQ(list.get<std::string>("c"), "string");
     EXPECT_EQ(list.get<bool>("d"), true);
     EXPECT_EQ(list.get<std::vector<int>>("v"), (std::vector<int>{1, 2, 3}));
-    EXPECT_EQ(list.get<Core::IO::Noneable<int>>("n"), Core::IO::none<int>);
+    EXPECT_EQ(list.get<std::optional<int>>("n"), std::nullopt);
     EXPECT_EQ(list.sublist("group").get<std::string>("e"), "group string");
     EXPECT_EQ(list.sublist("group").sublist("deeply").sublist("nested").get<int>("f"), 42);
   }

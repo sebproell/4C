@@ -247,7 +247,7 @@ void Mat::Myocard::setup(const Core::LinAlg::Matrix<2, 1>& fiber1)
 
 void Mat::Myocard::setup(const Core::IO::InputParameterContainer& container)
 {
-  if (const auto& fiber1 = container.get<Core::IO::Noneable<std::vector<double>>>("FIBER1");
+  if (const auto& fiber1 = container.get<std::optional<std::vector<double>>>("FIBER1");
       fiber1.has_value())
   {
     diff_at_ele_center_ = true;

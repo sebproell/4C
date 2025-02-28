@@ -137,7 +137,7 @@ void Discret::Elements::ScaTraHDGType ::setup_element_definition(
     defs[key] = all_of({
         scatra_line_def,
         parameter<int>("DEG"),
-        parameter<Noneable<bool>>("SPC", {.default_value = none<bool>}),
+        parameter<std::optional<bool>>("SPC"),
     });
   }
 }
@@ -347,7 +347,7 @@ bool Discret::Elements::ScaTraHDG::read_element(const std::string& eletype,
   degree_ = container.get<int>("DEG");
   degree_old_ = degree_;
 
-  completepol_ = container.get<Core::IO::Noneable<bool>>("SPC").value_or(false);
+  completepol_ = container.get<std::optional<bool>>("SPC").value_or(false);
 
   return success;
 }

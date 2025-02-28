@@ -700,7 +700,7 @@ int Discret::Elements::SoTet4::evaluate_neumann(Teuchos::ParameterList& params,
 
   // (SPATIAL) FUNCTION BUSINESS
   static_assert((NUMGPT_SOTET4 == 1));
-  const auto funct = condition.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto funct = condition.parameters().get<std::vector<std::optional<int>>>("FUNCT");
   Core::LinAlg::Matrix<NUMDIM_SOTET4, 1> xrefegp(false);
 
   /* =============================================================================*

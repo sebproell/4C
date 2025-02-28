@@ -25,11 +25,11 @@ ScaTra::CCCVCondition::CCCVCondition(const Core::Conditions::Condition& cccvcycl
       ihalfcycle_(-1),
       initrelaxtime_(cccvcyclingcondition.parameters().get<double>("INIT_RELAX_TIME")),
       min_time_steps_during_init_relax_(cccvcyclingcondition.parameters()
-              .get<Core::IO::Noneable<int>>("MIN_TIME_STEPS_DURING_INIT_RELAX")
+              .get<std::optional<int>>("MIN_TIME_STEPS_DURING_INIT_RELAX")
               .value_or(-1)),
       nhalfcycles_(cccvcyclingcondition.parameters().get<int>("NUMBER_OF_HALF_CYCLES")),
       num_add_adapt_timesteps_(cccvcyclingcondition.parameters()
-              .get<Core::IO::Noneable<int>>("NUM_ADD_ADAPT_TIME_STEPS")
+              .get<std::optional<int>>("NUM_ADD_ADAPT_TIME_STEPS")
               .value_or(-1)),
       num_dofs_(num_dofs),
       phasechanged_(false),
@@ -62,13 +62,13 @@ ScaTra::CCCVCondition::CCCVCondition(const Core::Conditions::Condition& cccvcycl
 
     if (condition->parameters().get<int>("ConditionID") ==
         cccvcyclingcondition.parameters()
-            .get<Core::IO::Noneable<int>>("CONDITION_ID_FOR_CHARGE")
+            .get<std::optional<int>>("CONDITION_ID_FOR_CHARGE")
             .value_or(-1))
       halfcycle_charge_ =
           std::make_shared<ScaTra::CCCVHalfCycleCondition>(*condition, adaptivetimestepping);
     if (condition->parameters().get<int>("ConditionID") ==
         cccvcyclingcondition.parameters()
-            .get<Core::IO::Noneable<int>>("CONDITION_ID_FOR_DISCHARGE")
+            .get<std::optional<int>>("CONDITION_ID_FOR_DISCHARGE")
             .value_or(-1))
       halfcycle_discharge_ =
           std::make_shared<ScaTra::CCCVHalfCycleCondition>(*condition, adaptivetimestepping);

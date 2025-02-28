@@ -2750,8 +2750,7 @@ void Discret::Elements::TemperImpl<distype>::radiation(
     else if (detJ < 0.0)
       FOUR_C_THROW("NEGATIVE JACOBIAN DETERMINANT");
 
-    const auto funct =
-        myneumcond[0]->parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+    const auto funct = myneumcond[0]->parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
     Core::LinAlg::Matrix<nsd_, 1> xrefegp(false);
     // material/reference co-ordinates of Gauss point

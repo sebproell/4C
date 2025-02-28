@@ -220,7 +220,7 @@ Core::Utils::try_create_symbolic_function_of_space_time(
   {
     // We need to use get_if since we call this function for lines that are completely wrong.
     // This will go away when the functions are restructured.
-    auto* comp = ith_function_lin_def.get_if<IO::Noneable<int>>("COMPONENT");
+    auto* comp = ith_function_lin_def.get_if<std::optional<int>>("COMPONENT");
     if (comp) maxcomp = comp->value_or(maxcomp);
 
     ignore_errors_in([&]() { maxvar = ith_function_lin_def.get<int>("VARIABLE"); });
@@ -243,7 +243,7 @@ Core::Utils::try_create_symbolic_function_of_space_time(
     const auto& functcomp = parameters[n];
 
     // check the validity of the n-th component
-    const int compid = functcomp.get<IO::Noneable<int>>("COMPONENT").value_or(0);
+    const int compid = functcomp.get<std::optional<int>>("COMPONENT").value_or(0);
     if (compid != n) FOUR_C_THROW("expected COMPONENT %d but got COMPONENT %d", n, compid);
 
 

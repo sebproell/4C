@@ -339,7 +339,7 @@ void FLD::TransferTurbulentInflowCondition::get_data(
   // find out whether we will use a time curve
   if (curve_ == -1)
   {
-    const auto curve = cond->parameters().get<Core::IO::Noneable<int>>("curve");
+    const auto curve = cond->parameters().get<std::optional<int>>("curve");
 
     // set zero based curve number
     curve_ = curve.value_or(-1) - 1;

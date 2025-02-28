@@ -115,7 +115,7 @@ void XFEM::evaluate_neumann_standard(
     const std::vector<int>* nodeids = cond.get_nodes();
     if (!nodeids) FOUR_C_THROW("PointNeumann condition does not have nodal cloud");
     const int nnode = (*nodeids).size();
-    const auto funct = cond.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+    const auto funct = cond.parameters().get<std::vector<std::optional<int>>>("FUNCT");
     const auto onoff = cond.parameters().get<std::vector<int>>("ONOFF");
     const auto val = cond.parameters().get<std::vector<double>>("VAL");
 

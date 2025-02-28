@@ -235,7 +235,7 @@ void Core::FE::Utils::Dbc::read_dirichlet_condition(const Teuchos::ParameterList
   // get val from condition
   const auto val = cond.parameters().get<std::vector<double>>("VAL");
   // get funct from condition
-  const auto funct = cond.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto funct = cond.parameters().get<std::vector<std::optional<int>>>("FUNCT");
 
   // loop nodes to identify spatial distributions of Dirichlet boundary conditions
   for (unsigned i = 0; i < nnode; ++i)
@@ -472,7 +472,7 @@ void Core::FE::Utils::Dbc::do_dirichlet_condition(const Teuchos::ParameterList& 
   const unsigned nnode = (*nodeids).size();
   // get onoff, funct, and val from condition
   const auto onoff = cond.parameters().get<std::vector<int>>("ONOFF");
-  const auto funct = cond.parameters().get<std::vector<Core::IO::Noneable<int>>>("FUNCT");
+  const auto funct = cond.parameters().get<std::vector<std::optional<int>>>("FUNCT");
   const auto val = cond.parameters().get<std::vector<double>>("VAL");
 
   // determine highest degree of time derivative
