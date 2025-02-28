@@ -29,6 +29,10 @@ Core::IO::VisualizationParameters Core::IO::visualization_parameters_factory(
   parameters.data_format_ = Teuchos::getIntegralValue<OutputDataFormat>(
       visualization_output_parameter_list, "OUTPUT_DATA_FORMAT");
 
+  // Compression level
+  parameters.compression_level_ = Teuchos::getIntegralValue<LibB64::CompressionLevel>(
+      visualization_output_parameter_list, "COMPRESSION_LEVEL");
+
   // Number of digits to reserve for time step count
   parameters.digits_for_time_step_ =
       visualization_output_parameter_list.get<int>("TIMESTEP_RESERVE_DIGITS");

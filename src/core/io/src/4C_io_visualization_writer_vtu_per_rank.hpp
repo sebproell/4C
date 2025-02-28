@@ -35,7 +35,7 @@ namespace Core::IO
      * @brief Initialize the current time step (derived)
      */
     void initialize_time_step(
-        const double visualziation_time, const int visualization_step) override;
+        const double visualization_time, const int visualization_step) override;
 
     /**
      * @brief Write all fields contained in the field data map to disk (derived)

@@ -36,13 +36,27 @@ namespace LibB64
    */
   char* encode_block(const char* data, const int data_size);
 
+  /**
+   * This enum class encodes the compression levels available in zlib. Usually, you want to use
+   * best_speed for compression since it offers nearly as good compression as best_compression while
+   * being a lot faster.
+   */
+  enum class CompressionLevel
+  {
+    best_speed = Z_BEST_SPEED,
+    best_compression = Z_BEST_COMPRESSION,
+    no_compression = Z_NO_COMPRESSION
+  };
+
   template <typename T>
-  void write_compressed_block(const std::vector<T>& data, std::ostream& out)
+  void write_compressed_block(const std::vector<T>& data, std::ostream& out,
+      const CompressionLevel compression_level = CompressionLevel::best_speed)
   {
     uLongf compressed_data_length = compressBound(data.size() * sizeof(T));
     char* compressed_data = new char[compressed_data_length];
     int err = compress2((Bytef*)compressed_data, &compressed_data_length, (const Bytef*)data.data(),
-        data.size() * sizeof(T), Z_BEST_COMPRESSION);
+        data.size() * sizeof(T),
+        static_cast<std::underlying_type_t<CompressionLevel>>(compression_level));
     if (err != Z_OK) FOUR_C_THROW("zlib compression failed");
 
     // now encode the compression header
@@ -104,7 +118,8 @@ class VtkWriterBase
       unsigned int max_number_timesteps_to_be_written,
       const std::string& path_existing_working_directory,
       const std::string& name_new_vtk_subdirectory, const std::string& geometry_name,
-      const std::string& restart_name, double restart_time, bool write_binary_output);
+      const std::string& restart_name, double restart_time, bool write_binary_output,
+      LibB64::CompressionLevel compression_level);
 
   //! destructor
   virtual ~VtkWriterBase() = default;
@@ -336,6 +351,8 @@ class VtkWriterBase
   //! toggle between ascii and binary output
   const bool write_binary_output_;
 
+  //! Level of compression used when writing output.
+  const LibB64::CompressionLevel compression_level_;
 
   //! global processor id of this processor
   const unsigned int myrank_;

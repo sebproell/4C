@@ -24,10 +24,11 @@ VtuWriter::VtuWriter(unsigned int myrank, unsigned int num_processors,
     unsigned int max_number_timesteps_to_be_written,
     const std::string& path_existing_working_directory,
     const std::string& name_new_vtk_subdirectory, const std::string& geometry_name,
-    const std::string& restart_name, const double restart_time, bool write_binary_output)
+    const std::string& restart_name, double restart_time, bool write_binary_output,
+    LibB64::CompressionLevel compression_level)
     : VtkWriterBase(myrank, num_processors, max_number_timesteps_to_be_written,
           path_existing_working_directory, name_new_vtk_subdirectory, geometry_name, restart_name,
-          restart_time, write_binary_output)
+          restart_time, write_binary_output, compression_level)
 {
   // empty constructor
 }
@@ -140,7 +141,7 @@ void VtuWriter::write_geometry_unstructured_grid(const std::vector<double>& poin
   if (write_binary_output_)
   {
     currentout_ << " format=\"binary\">\n";
-    LibB64::write_compressed_block(point_coordinates, currentout_);
+    LibB64::write_compressed_block(point_coordinates, currentout_, compression_level_);
   }
   else
   {
@@ -178,7 +179,7 @@ void VtuWriter::write_geometry_unstructured_grid(const std::vector<double>& poin
   if (write_binary_output_)
   {
     currentout_ << " format=\"binary\">\n";
-    LibB64::write_compressed_block(point_cell_connectivity, currentout_);
+    LibB64::write_compressed_block(point_cell_connectivity, currentout_, compression_level_);
   }
   else
   {
@@ -200,7 +201,7 @@ void VtuWriter::write_geometry_unstructured_grid(const std::vector<double>& poin
   if (write_binary_output_)
   {
     currentout_ << " format=\"binary\">\n";
-    LibB64::write_compressed_block(cell_offset, currentout_);
+    LibB64::write_compressed_block(cell_offset, currentout_, compression_level_);
   }
   else
   {
@@ -220,7 +221,7 @@ void VtuWriter::write_geometry_unstructured_grid(const std::vector<double>& poin
   if (write_binary_output_)
   {
     currentout_ << " format=\"binary\">\n";
-    LibB64::write_compressed_block(cell_types, currentout_);
+    LibB64::write_compressed_block(cell_types, currentout_, compression_level_);
   }
   else
   {
@@ -238,7 +239,7 @@ void VtuWriter::write_geometry_unstructured_grid(const std::vector<double>& poin
     if (write_binary_output_)
     {
       currentout_ << " format=\"binary\">\n";
-      LibB64::write_compressed_block(face_connectivity, currentout_);
+      LibB64::write_compressed_block(face_connectivity, currentout_, compression_level_);
     }
     else
     {
@@ -252,7 +253,7 @@ void VtuWriter::write_geometry_unstructured_grid(const std::vector<double>& poin
     if (write_binary_output_)
     {
       currentout_ << " format=\"binary\">\n";
-      LibB64::write_compressed_block(face_offset, currentout_);
+      LibB64::write_compressed_block(face_offset, currentout_, compression_level_);
     }
     else
     {
