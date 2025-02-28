@@ -109,7 +109,7 @@ namespace Core::LinAlg
       \param dis : (in) discretization
       \param ndim : (in) dimensions of map 0
       \param extractor : (out) ready made map splitter
-      \date 02/08
+
      */
   void create_map_extractor_from_discretization(
       const Core::FE::Discretization& dis, int ndim, Core::LinAlg::MultiMapExtractor& extractor);
@@ -129,7 +129,7 @@ namespace Core::LinAlg
     \param dofset : (in) Degree of freedom set
     \param ndim : (in) dimensions of map 0
     \param extractor : (out) ready made map splitter
-    \date 02/08
+
    */
   void create_map_extractor_from_discretization(const Core::FE::Discretization& dis,
       const Core::DOFSets::DofSetInterface& dofset, int ndim,
@@ -149,7 +149,7 @@ namespace Core::LinAlg
     \param ndim_field1 : (in) dimensions of map 0
     \param ndim_field2 : (in) dimensions of map 1
     \param extractor : (out) ready made map splitter
-    \date 12/11
+
    */
   void create_map_extractor_from_discretization(const Core::FE::Discretization& dis,
       int ndim_field1, int ndim_field2, Core::LinAlg::MultiMapExtractor& extractor);

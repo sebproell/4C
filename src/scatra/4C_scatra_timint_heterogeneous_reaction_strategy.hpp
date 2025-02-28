@@ -69,7 +69,7 @@ namespace ScaTra
           dofs.
 
     \return void
-    \date 08/16
+
     */
     void evaluate_condition(Teuchos::ParameterList& params,
         std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
@@ -90,7 +90,7 @@ namespace ScaTra
     \param state (in): vector of some data
 
     \return void
-    \date 12/16
+
     */
     void set_state(unsigned nds, const std::string& name,
         std::shared_ptr<const Core::LinAlg::Vector<double>> state) override;

@@ -38,7 +38,7 @@ namespace Solid
    *                + \frac{1}{2}\Delta t \ddot{d}_{n+1}
    *  \f]
    *
-   * \date 01/12
+
    */
   class TimIntCentrDiff : public TimIntExpl
   {
@@ -79,7 +79,7 @@ namespace Solid
 
     \warning none
     \return bool
-    \date 08/16
+
     */
     void init(const Teuchos::ParameterList& timeparams, const Teuchos::ParameterList& sdynparams,
         const Teuchos::ParameterList& xparams, std::shared_ptr<Core::FE::Discretization> actdis,
@@ -101,7 +101,7 @@ namespace Solid
 
     \warning none
     \return void
-    \date 08/16
+
     */
     void setup() override;
 

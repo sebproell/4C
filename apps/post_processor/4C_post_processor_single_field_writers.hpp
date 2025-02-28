@@ -40,7 +40,7 @@ class StructureFilter : public PostFilterBase
 
   /*!
   \brief postprocess gauss point stresses and write results
-  \date 02/08
+
   */
   void post_stress(const std::string groupname, const std::string stresstype);
   void write_stress(const std::string groupname, PostResult& result, const ResultType stresskind);
@@ -135,7 +135,7 @@ class InterfaceFilter : public PostFilterBase
 
 /*!
  \brief Writer for lubrication problems
- \date 11/15
+
 */
 class LubricationFilter : public PostFilterBase
 {
@@ -150,7 +150,7 @@ class LubricationFilter : public PostFilterBase
 
 /*!
  \brief Writer for (in)stationary heat conduction
- \date 09/09
+
 */
 class ThermoFilter : public PostFilterBase
 {
@@ -167,7 +167,7 @@ class ThermoFilter : public PostFilterBase
 
   /*!
   \brief postprocess gauss point heatfluxes and write results
-  \date 11/09
+
   */
   void post_heatflux(const std::string groupname, const std::string heatfluxtype);
   void write_heatflux(const std::string groupname, PostResult& result, const ResultType kind);
@@ -178,7 +178,7 @@ class ThermoFilter : public PostFilterBase
 
 /*!
  \brief Writer for electromagnetic problems
- \date 06/17
+
  */
 class ElemagFilter : public PostFilterBase
 {

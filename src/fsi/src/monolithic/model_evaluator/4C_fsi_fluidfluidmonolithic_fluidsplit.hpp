@@ -27,7 +27,7 @@ namespace FSI
   /*!
    * Monolithic fluid-fluid FSI with structure-handled interface motion, employing XFEM and NOX.
    * Fluid interface velocities are condensed.
-   * \date 05/14
+
    */
   class FluidFluidMonolithicFluidSplit : public MonolithicFluidSplit
   {

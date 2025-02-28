@@ -75,7 +75,7 @@ namespace Discret
       method Sysmat() provides a clean and fast element implementation.
 
       <h3>Purpose</h3>
-      \date 01/09
+
     */
 
     template <Core::FE::CellType distype>

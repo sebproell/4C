@@ -39,7 +39,7 @@ namespace XFEM
        *                   changes from node to node. This case needs extra
        *                   communication effort and is currently unsupported.
        *
-       * \date 09/16 */
+       */
       enum MinDofDiscretization
       {
         min_dof_slave,
@@ -176,7 +176,7 @@ namespace XFEM
        *  at each node.
        *  Otherwise the base class variant is called.
        *
-       *  \date 09/16  */
+       */
       void build_dof_maps(const Core::FE::Discretization& masterdis,
           const Core::FE::Discretization& slavedis,
           const std::shared_ptr<const Epetra_Map>& masternodemap,
@@ -192,7 +192,7 @@ namespace XFEM
        *  This becomes necessary, since we want to transfer dof's as well as nodal
        *  distributed vectors
        *
-       *  \date 10/16 */
+       */
       void save_node_maps(const std::shared_ptr<const Epetra_Map>& masternodemap,
           const std::shared_ptr<const Epetra_Map>& slavenodemap,
           const std::shared_ptr<const Epetra_Map>& permmasternodemap,

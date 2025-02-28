@@ -414,7 +414,7 @@ namespace FLD
     In case of time step size adaptivity, time steps might have to be repeated.
     Therefore, we need to reset the solution back to the initial solution of the
     time step.
-    \date 08/2013
+
     */
     void reset_step() override
     {
@@ -430,7 +430,7 @@ namespace FLD
     step beforehand. They will be incremented right at the beginning of the repetition
     and, thus, everything will be fine. Currently, this is needed for time step size
     adaptivity in FSI.
-    \date 08/2013
+
      */
     void reset_time(const double dtold) override
     {

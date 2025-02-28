@@ -30,17 +30,17 @@ namespace LargeRotations
 
     /** \brief Standard Constructor
      *
-     *  \date 01/17 */
+     */
     TriadInterpolation();
 
     /** \brief Destructor
      *
-     *  \date 01/17 */
+     */
     virtual ~TriadInterpolation() = default;
 
     /** \brief return appropriate derived (templated) class (acts as a simple factory)
      *
-     *  \date 01/17 */
+     */
     static std::shared_ptr<TriadInterpolation<T>> create(unsigned int numnodes);
     //@}
 
@@ -49,23 +49,23 @@ namespace LargeRotations
 
     /** \brief reset interpolation scheme with nodal quaternions
      *
-     *  \date 01/17 */
+     */
     virtual void reset(std::vector<Core::LinAlg::Matrix<4, 1, T>> const& nodal_quaternions) = 0;
 
     /** \brief reset interpolation scheme with nodal triads
      *
-     *  \date 01/17 */
+     */
     virtual void reset(std::vector<Core::LinAlg::Matrix<3, 3, T>> const& nodal_triads) = 0;
 
     /** \brief compute the interpolated triad at any point \xi \in [-1,1] in parameter space
      *
-     *  \date 01/17 */
+     */
     virtual void get_interpolated_triad_at_xi(
         Core::LinAlg::Matrix<3, 3, T>& triad, const double xi) const = 0;
 
     /** \brief compute the interpolated quaternion at any point \xi \in [-1,1] in parameter space
      *
-     *  \date 01/17 */
+     */
     virtual void get_interpolated_quaternion_at_xi(
         Core::LinAlg::Matrix<4, 1, T>& quaternion, const double xi) const = 0;
     //@}

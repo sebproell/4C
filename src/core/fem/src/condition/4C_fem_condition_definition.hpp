@@ -57,7 +57,7 @@ namespace Core::Conditions
     appropriate definition in valid_conditions(). This will take care of the
     reading part and you will get your Core::FE::Discretization filled with proper
     Core::Conditions::Condition objects.
-    \date 01/08
+
    */
   class ConditionDefinition
   {

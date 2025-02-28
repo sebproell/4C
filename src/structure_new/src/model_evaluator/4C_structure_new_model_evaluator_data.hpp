@@ -968,7 +968,7 @@ namespace Solid
 
     /*! data container holding special parameters required for the evaluation of beam elements
      *
-     * \date 08/16 */
+     */
     class BeamData : public Solid::Elements::BeamParamsInterface
     {
      public:
@@ -1073,7 +1073,7 @@ namespace Solid
     /*--------------------------------------------------------------------------*/
     /*! Contact data container for the contact model evaluation procedure.
      *
-     * \date 04/16 */
+     */
     class ContactData : public CONTACT::ParamsInterface
     {
      public:
@@ -1305,7 +1305,7 @@ namespace Solid
 
     /*! Brownian dynamic data container for the model evaluation procedure.
      *
-     * \date 06/16 */
+     */
     class BrownianDynData : public BrownianDynamics::ParamsInterface
     {
      public:

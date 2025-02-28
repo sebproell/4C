@@ -102,7 +102,7 @@ namespace SSI
 
     \warning none
     \return void
-    \date 08/16
+
     */
     virtual void init(MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams,
         const Teuchos::ParameterList& scatraparams, const Teuchos::ParameterList& structparams,
@@ -124,7 +124,7 @@ namespace SSI
 
     \warning none
     \return void
-    \date 08/16
+
     */
     virtual void setup();
 
@@ -150,13 +150,13 @@ namespace SSI
      classes
 
     \return RedistributionType
-    \date 08/16
+
     */
     virtual RedistributionType init_field_coupling(const std::string& struct_disname);
 
     /*! \brief Setup discretizations
 
-    \date 08/16
+
     */
     virtual void init_discretizations(MPI_Comm comm, const std::string& struct_disname,
         const std::string& scatra_disname, const bool redistribute_struct_dis);

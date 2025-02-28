@@ -54,7 +54,7 @@ namespace NOX
            *  and the function should return FALSE.
            *  Nevertheless, this may change during one of the following iterations!
            *
-           *  \date 04/2016 */
+           */
           virtual bool is_saddle_point_system() const = 0;
 
           /*! \brief Is the (CURRENT) system to solve a condensed system?
@@ -66,7 +66,7 @@ namespace NOX
            *  and the function should return FALSE.
            *  Nevertheless, this may change during one of the following iterations!
            *
-           *  \date 04/2016 */
+           */
           virtual bool is_condensed_system() const = 0;
 
           //! Get necessary maps for the preconditioner.

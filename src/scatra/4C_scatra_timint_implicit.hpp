@@ -148,7 +148,7 @@ namespace ScaTra
 
     \warning none
     \return void
-    \date 08/16
+
     */
     virtual void init();
 

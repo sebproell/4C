@@ -109,7 +109,7 @@ namespace Solid
    * matrices. It also deals with the output to files and offers method to
    * determine forces and stiffnesses (tangents).
    *
-   * \date 06/08
+
    */
   class TimInt : public Adapter::Structure
   {
@@ -157,7 +157,7 @@ namespace Solid
 
     \warning none
     \return bool
-    \date 08/16
+
     */
     virtual void init(const Teuchos::ParameterList& timeparams,
         const Teuchos::ParameterList& sdynparams, const Teuchos::ParameterList& xparams,
@@ -180,7 +180,7 @@ namespace Solid
 
     \warning none
     \return void
-    \date 08/16
+
     */
     void setup() override;
 

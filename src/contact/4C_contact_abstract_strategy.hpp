@@ -122,7 +122,7 @@ namespace CONTACT
      *  \param redist (in): If TRUE, the redistributed map is returned, otherwise the
      *                      original map before any redistribution took place.
      *
-     *  \date 04/2016
+
      *  */
     virtual std::shared_ptr<const Epetra_Map> lm_dof_row_map_ptr(const bool& redist) const
     {
@@ -142,7 +142,7 @@ namespace CONTACT
      *  \note This map is NOT used internally. Its only purpose is to provide a
      *  map as meaningful upper bound for potentially acquired LM dofs.
      *
-     *  \date 04/2018
+
      *  */
     virtual std::shared_ptr<const Epetra_Map> lin_system_lm_dof_row_map_ptr() const
     {
@@ -168,7 +168,7 @@ namespace CONTACT
      *  \param redist (in): If TRUE, the redistributed map is returned, otherwise the
      *                      original map before any redistribution took place.
      *
-     *  \date 04/2016
+
      *  */
     virtual std::shared_ptr<const Epetra_Map> slave_dof_row_map_ptr(const bool& redist) const
     {
@@ -187,7 +187,7 @@ namespace CONTACT
      *  \param redist (in): If TRUE, the redistributed map is returned, otherwise the
      *                      original map before any redistribution took place.
      *
-     *  \date 04/2016
+
      *  */
     virtual std::shared_ptr<const Epetra_Map> slave_n_dof_row_map_ptr(const bool& redist) const
     {
@@ -209,7 +209,7 @@ namespace CONTACT
      *  \param redist (in): If TRUE, the redistributed map is returned, otherwise the
      *                      original map before any redistribution took place.
      *
-     *  \date 04/2016
+
      *  */
     virtual std::shared_ptr<const Epetra_Map> slave_t_dof_row_map_ptr(const bool& redist) const
     {
@@ -225,7 +225,7 @@ namespace CONTACT
      *  \param redist (in): If TRUE, the redistributed map is returned, otherwise the
      *                      original map before any redistribution took place.
      *
-     *  \date 04/2016
+
      *  */
     virtual std::shared_ptr<const Epetra_Map> master_dof_row_map_ptr(const bool& redist) const
     {
@@ -244,7 +244,7 @@ namespace CONTACT
      *  \param redist (in): If TRUE, the redistributed map is returned, otherwise the
      *                      original map before any redistribution took place.
      *
-     *  \date 04/2016
+
      *  */
     virtual std::shared_ptr<const Epetra_Map> slave_master_dof_row_map_ptr(const bool& redist) const
     {
@@ -265,7 +265,7 @@ namespace CONTACT
      *
      *  \param bt (in): Desired vector block type, e.g. displ, constraint, ...
      *
-     *  \date 05/2016
+
      *  */
     virtual std::shared_ptr<const Core::LinAlg::Vector<double>> get_rhs_block_ptr(
         const enum CONTACT::VecBlockType& bt) const
@@ -301,7 +301,7 @@ namespace CONTACT
      *  \remark Please note, that a nullptr pointer is returned, if no active contact
      *  contributions are present.
      *
-     *  \date 05/2016
+
      *  */
     virtual std::shared_ptr<const Core::LinAlg::Vector<double>> get_condensed_rhs_ptr(
         Core::LinAlg::Vector<double>& f, const double& timefac_np) const
@@ -319,7 +319,7 @@ namespace CONTACT
      *
      *  \param bt (in): Desired matrix block type, e.g. displ_displ, displ_lm, ...
      *
-     *  \date 05/2016
+
      *  */
     virtual std::shared_ptr<Core::LinAlg::SparseMatrix> get_matrix_block_ptr(
         const enum CONTACT::MatBlockType& bt,
@@ -439,7 +439,7 @@ namespace CONTACT
      *
      *  \warning The vector is returned with the slave dof row map, i.e. actually the wrong map!
      *
-     *  \date 05/16 */
+     */
     virtual std::shared_ptr<const Core::LinAlg::Vector<double>> lagrange_multiplier_np(
         const bool& redist) const;
 
@@ -457,7 +457,7 @@ namespace CONTACT
      *
      *  \warning The vector is returned with the slave dof row map, i.e. actually the wrong map!
      *
-     *  \date 05/16 */
+     */
     virtual std::shared_ptr<const Core::LinAlg::Vector<double>> lagrange_multiplier_n(
         const bool& redist) const;
 
@@ -674,20 +674,20 @@ namespace CONTACT
 
     /*! \brief Reset the internal state variables
      *
-     *  \date 02/2016
+
      *  */
     virtual void reset(const CONTACT::ParamsInterface& cparams,
         const Core::LinAlg::Vector<double>& dispnp, const Core::LinAlg::Vector<double>& xnew);
 
     /*! \brief Global evaluation method called from Solid::MODELEVALUATOR::Contact class
      *
-     *  \date 03/2016
+
      *  */
     void evaluate(CONTACT::ParamsInterface& cparams) { evaluate(cparams, nullptr); }
 
     /*! \brief Global evaluation method called from Solid::MODELEVALUATOR::Contact class
      *
-     *  \date 03/2016
+
      *  */
 
     void evaluate(CONTACT::ParamsInterface& cparams,
@@ -705,7 +705,7 @@ namespace CONTACT
      *
      * \note This routine is \em not virtual as it is not supposed to be overloaded.
      *
-     * \date 03/2016
+
      * */
     void evaluate(CONTACT::ParamsInterface& cparams,
         const std::vector<std::shared_ptr<const Core::LinAlg::Vector<double>>>* eval_vec,
@@ -981,13 +981,13 @@ namespace CONTACT
 
     /*! \brief Run at the beginning of the evaluate() routine
      *
-     *  \date 03/2016
+
      *  */
     virtual void pre_evaluate(CONTACT::ParamsInterface& cparams) {};
 
     /*! \brief Run in the end of the evaluate() routine
      *
-     *  \date 03/2016
+
      *  */
     virtual void post_evaluate(CONTACT::ParamsInterface& cparams) {};
 
@@ -995,7 +995,7 @@ namespace CONTACT
      *
      *  Can be used to redistribute member variables of derived classes, if necessary.
      *
-     *  \date 03/2016
+
      *  */
     virtual void post_setup(bool redistributed, bool init) {};
 
@@ -1009,7 +1009,7 @@ namespace CONTACT
      * \param cparams (in): parameter interface between the contact objects and the structural time
      * integration
      *
-     *  \date 03/2016
+
      *  */
     virtual void evaluate_force_stiff(CONTACT::ParamsInterface& cparams);
 
@@ -1034,7 +1034,7 @@ namespace CONTACT
      *  \param cparams (in): parameter interface between the contact objects and
      *                       the structural time integration
      *
-     *  \date 03/2016
+
      *  */
     virtual void run_pre_evaluate(CONTACT::ParamsInterface& cparams);
 
@@ -1044,7 +1044,7 @@ namespace CONTACT
      *  \param cparams (in): parameter interface between the contact objects and the structural time
      *                       integration
      *
-     *  \date 03/2016
+
      *  */
     virtual void run_post_evaluate(CONTACT::ParamsInterface& cparams);
 
@@ -1064,7 +1064,7 @@ namespace CONTACT
      *                       that the step length can differ from 1.0)
      *  \param xnew    (in): new solution vector of the NOX solver
      *
-     *  \date 05/2016
+
      *  */
     virtual void run_post_compute_x(const CONTACT::ParamsInterface& cparams,
         const Core::LinAlg::Vector<double>& xold, const Core::LinAlg::Vector<double>& dir,
@@ -1082,7 +1082,7 @@ namespace CONTACT
      *  \param dir     (in/out): current search direction (in general NOT the actual
      *                           step, keep in mind that the step length can differ from 1.0)
      *
-     *  \date 03/2017
+
      *  */
     virtual void run_pre_compute_x(const CONTACT::ParamsInterface& cparams,
         const Core::LinAlg::Vector<double>& xold, Core::LinAlg::Vector<double>& dir_mutable);
@@ -1122,7 +1122,7 @@ namespace CONTACT
      *                       integration
      *  \param xnew    (in): new solution vector of the NOX solver
      *
-     *  \date 07/2016
+
      *  */
     virtual void reset_lagrange_multipliers(
         const CONTACT::ParamsInterface& cparams, const Core::LinAlg::Vector<double>& xnew);
@@ -1429,7 +1429,7 @@ namespace CONTACT
      *
      * \remark This has to stay PRIVATE, otherwise the function becomes ambiguous.
      *
-     * \date 05/16 */
+     */
     CONTACT::AbstractStrategyDataContainer& data()
     {
       if (!data_ptr_) FOUR_C_THROW("The AbstractStrategyDataContainer is not initialized!");
@@ -1441,7 +1441,7 @@ namespace CONTACT
      *
      * \remark This has to stay PRIVATE, otherwise this function becomes ambiguous.
      *
-     * \date 05/16 */
+     */
     const CONTACT::AbstractStrategyDataContainer& data() const
     {
       if (!data_ptr_) FOUR_C_THROW("The AbstractStrategyDataContainer is not initialized!");

@@ -68,7 +68,7 @@ namespace Core::DOFSets
   the 4C 'Input' folder.
 
 
-  \date 08/2016
+
   */
   class DofSetDefinedMappingWrapper : public DofSetBase
   {

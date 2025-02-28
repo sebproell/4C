@@ -38,7 +38,6 @@ FOUR_C_NAMESPACE_OPEN
 ///
 
 
-/// \date 09/13
 
 class MyocardInada : public MyocardGeneral
 

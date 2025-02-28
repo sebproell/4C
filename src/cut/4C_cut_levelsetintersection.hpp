@@ -58,7 +58,7 @@ namespace Cut
      *  standard Cut routine for parallel Level Set Cut where dofsets and node
      *  positions have to be parallelized
      *
-     *  \date 08/14  */
+     */
     void cut_mesh(bool screenoutput = false) override;
 
     /*! \brief Performs all the level set cut operations including find positions
@@ -68,7 +68,7 @@ namespace Cut
      *  node positions have not to be computed, standard cut for cut_test (Only used
      *  for cut test)
      *
-     *  \date 08/14  */
+     */
     void cut(bool include_inner = true, bool screenoutput = false,
         VCellGaussPts VCellGP = VCellGaussPts_Tessellation);
 

@@ -25,7 +25,7 @@ namespace Core::LinAlg
     FullDomainMap() along with their many partial RangeMap() and
     DomainMap(). Most of the required SparseOperator methods can simply be
     implemented in terms of the matrix blocks.
-    \date 02/08
+
    */
   class BlockSparseMatrixBase : public SparseOperator
   {
@@ -273,7 +273,7 @@ namespace Core::LinAlg
       block be heavy communication. But if there is some knowledge available in
       a particular case, it is easy to implement a specify Strategy that does
       not need to communicate that much.
-      \date 02/08
+
    */
   template <class Strategy>
   class BlockSparseMatrix : public BlockSparseMatrixBase, public Strategy
@@ -355,7 +355,7 @@ namespace Core::LinAlg
       specific block structure.
 
       \sa BlockSparseMatrix
-      \date 02/08
+
    */
   class DefaultBlockMatrixStrategy
   {

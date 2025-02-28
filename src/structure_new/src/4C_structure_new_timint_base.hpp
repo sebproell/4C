@@ -498,7 +498,7 @@ namespace Solid
       /** \brief Get data that is written during restart
        *
        *  This routine is only for simple structure problems!
-       *  \date 06/13
+
        *  */
       void get_restart_data(std::shared_ptr<int> step, std::shared_ptr<double> time,
           std::shared_ptr<Core::LinAlg::Vector<double>> disnp,
@@ -772,7 +772,7 @@ namespace Solid
        *  This routine always prints the last converged state, i.e.
        *  \f$D_{n}, V_{n}, A_{n}\f$.
        *
-       *  \date 03/07
+
        *  */
       void output_step(bool forced_writerestart);
 

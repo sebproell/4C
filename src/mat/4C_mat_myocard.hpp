@@ -88,7 +88,7 @@ namespace Mat
   /// muscle tissue
   ///
   ///
-  /// \date 08/13
+
 
   class Myocard : public Core::Mat::Material
 

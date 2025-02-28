@@ -165,7 +165,7 @@ namespace TSI
     //! larger convergence radius than newton and is therefore more stable
     //! and/or can do larger time steps
     //!
-    //! originally by mwgee for structural analysis \date 03/12
+
     void ptc();
 
     //! @name Output

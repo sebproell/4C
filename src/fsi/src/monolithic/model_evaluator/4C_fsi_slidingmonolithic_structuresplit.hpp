@@ -53,7 +53,7 @@ namespace FSI
     Adapter::FluidFSI::velocity_to_displacement().
 
     \sa SlidingMonolithicStructureSplit
-    \date 01/15
+
    */
   class SlidingMonolithicStructureSplit : public BlockMonolithic
   {

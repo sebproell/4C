@@ -40,7 +40,7 @@ namespace Thermo
    *   and Engineering, 190:305-319, 2000.
    *
    *
-   * \date 06/13
+
    */
   class TimIntGenAlpha : public TimIntImpl
   {

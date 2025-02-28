@@ -835,7 +835,7 @@ namespace Cut
      *  makes the used tolerances more reliable. The same procedure is used for
      *  the position calculation.
      *
-     *  \date 08/16 */
+     */
     void scale_and_shift() override
     {
       // ---------------------------------------------------------------------

@@ -55,7 +55,7 @@ namespace Solid
    * provides some utility functions to obtain various force vectors necessary
    * in the calculation of the force residual in the derived time integrators.
    *
-   * \date 06/08
+
    */
   class TimIntImpl : public TimInt,
                      public ::NOX::Epetra::Interface::Required,
@@ -96,7 +96,7 @@ namespace Solid
 
     \warning none
     \return bool
-    \date 08/16
+
     */
     void init(const Teuchos::ParameterList& timeparams, const Teuchos::ParameterList& sdynparams,
         const Teuchos::ParameterList& xparams, std::shared_ptr<Core::FE::Discretization> actdis,
@@ -118,7 +118,7 @@ namespace Solid
 
     \warning none
     \return void
-    \date 08/16
+
     */
     void setup() override;
 

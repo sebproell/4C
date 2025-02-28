@@ -35,7 +35,7 @@ namespace Core::IO
     wrote and read.) Additionally each processor might use several files
     (for several time steps, as it happens with restart.) This class
     handles the basic HDF5 file access.
-    \date 02/07
+
   */
   class HDFReader
   {

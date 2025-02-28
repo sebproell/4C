@@ -41,7 +41,7 @@ namespace Core::Nodes
 
 /*
  \brief Base class for VTK output generation
- \date 03/14
+
 */
 class PostVtkWriter : public PostWriterBase
 {
@@ -136,7 +136,7 @@ class PostVtkWriter : public PostWriterBase
    e.g. structural stresses that do some element computations before output.
    To allow for a generic interface, the calling site needs to supply a
    class derived from SpecialFieldInterface that knows which function to call.
-   \date 04/14
+
    */
   void write_special_field(SpecialFieldInterface& special,
       PostResult& result,  ///< result group in the control file

@@ -134,7 +134,7 @@ namespace Cut
    *                              extension 1D element in 3D)
    *  \param unit_normal  (in)  : scale the normal vectors to unit length if \TRUE
    *
-   *  \date 07/16
+
    *  */
   template <unsigned probdim, Core::FE::CellType distype, typename Valtype,
       unsigned num_nodes_element = Core::FE::num_nodes<distype>,
@@ -250,7 +250,7 @@ namespace Cut
    *
    *  For more information, see description of the actual function (above).
    *
-   *  \date 08/16 */
+   */
   template <unsigned probdim, Core::FE::CellType distype, typename Valtype,
       unsigned num_nodes_element = Core::FE::num_nodes<distype>,
       unsigned dim = Core::FE::dim<distype>>

@@ -29,7 +29,7 @@ namespace Core::DOFSets
     The DofSetProxy is meant to be used as secondary DofSet in a discretization
     if there are two fully volumetric coupled Discretizations with
     matching nodes. Think of Structure-Thermo coupling.
-    \date 10/16    */
+*/
   class DofSetProxy : public DofSetBase
   {
    public:

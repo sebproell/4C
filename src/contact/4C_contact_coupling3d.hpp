@@ -369,7 +369,7 @@ namespace CONTACT
      * This is inherent in the segment based integration but was ignored in the
      * element based case.
      *
-     * \date 04/16
+
      * */
     void find_feasible_master_elements(std::vector<Mortar::Element*>& feasible_ma_eles) const;
 

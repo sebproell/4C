@@ -57,7 +57,7 @@ namespace Discret
       <h3>Usability</h3>
 
       The calculations are done by the EvaluateXfemInterface...() methods.
-      \date 04/12
+
      */
     template <Core::FE::CellType distype>
     class FluidEleCalcXFEM : public FluidEleCalc<distype>

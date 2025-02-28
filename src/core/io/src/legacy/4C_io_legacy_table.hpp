@@ -21,7 +21,7 @@ FOUR_C_NAMESPACE_OPEN
   \brief Bring a map variable up to a clean state.
 
   That's needed before anything can be done with a map.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 void init_map(MAP* map);
@@ -30,7 +30,7 @@ void init_map(MAP* map);
 /*----------------------------------------------------------------------*/
 /*!
   \brief Clean up.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 void destroy_map(MAP* map);

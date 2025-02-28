@@ -25,7 +25,7 @@ namespace Discret
      * \brief to do
      *
      *
-     * \date March, 2012
+
      */
     /*--------------------------------------------------------------------------*/
     class FluidFactory

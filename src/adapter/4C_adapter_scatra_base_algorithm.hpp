@@ -37,7 +37,7 @@ namespace Adapter
 {
   /// general scalar transport field interface for multiphysics problems
   /*!
-  \date 07/08
+
   */
 
   /// basic scalar transport solver

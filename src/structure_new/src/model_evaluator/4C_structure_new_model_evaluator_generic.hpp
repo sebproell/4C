@@ -80,7 +80,7 @@ namespace Solid
      *  and/or have to implement. Look in the derived classes for examples. A minimal
      *  example can be found at \ref Solid::ModelEvaluator::PartitionedFSI.
      *
-     *  \date 08/15
+
      *  */
     class Generic
     {
@@ -138,32 +138,32 @@ namespace Solid
        *
        *  \param[in] x current full state vector
        *
-       *  \date 07/2016
+
        *  */
       virtual void reset(const Core::LinAlg::Vector<double>& x) = 0;
 
       /*! \brief Evaluate the current right-hand-side at \f$t_{n+1}\f$
        *
-       *  \date 07/2016
+
        *  */
       virtual bool evaluate_force() = 0;
 
       /*! \brief Evaluate the initial right hand side (overload if needed for specific model)
        *
-       *  \date 07/2016
+
        *  */
       virtual bool evaluate_initial_force() { return evaluate_force(); };
 
       /*! \brief Evaluate the current tangential stiffness matrix at \f$t_{n+1}\f$
        *
-       *  \date 07/2016
+
        *  */
       virtual bool evaluate_stiff() = 0;
 
       /*! \brief Evaluate the current right-hand-side vector and tangential stiffness matrix at
        * \f$t_{n+1}\f$
        *
-       *  \date 07/2016
+
        *  */
       virtual bool evaluate_force_stiff() = 0;
 
@@ -219,7 +219,7 @@ namespace Solid
        *
        * \return Boolean to indicate success (true) or error (false)
        *
-       * \date 07/2016
+
        */
       virtual bool assemble_force(
           Core::LinAlg::Vector<double>& f, const double& timefac_np) const = 0;
@@ -253,7 +253,7 @@ namespace Solid
        *
        *  \param ioreader (in) : input reader
        *
-       *  \date 07/2016
+
        *  */
       virtual void read_restart(Core::IO::DiscretizationReader& ioreader) = 0;
 

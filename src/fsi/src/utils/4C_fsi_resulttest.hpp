@@ -37,7 +37,7 @@ namespace FSI
     Feel free to add further testing functionalities!
 
     \sa ResultTest
-    \date 11/2012
+
   */
   class FSIResultTest : public Core::Utils::ResultTest
   {

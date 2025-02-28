@@ -116,7 +116,7 @@ namespace Thermo
    * - [4] ...
    *
    *
-   * \date 06/08
+
    */
   class TimIntOneStepTheta : public TimIntImpl
   {

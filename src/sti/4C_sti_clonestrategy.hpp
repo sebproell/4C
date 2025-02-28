@@ -35,7 +35,7 @@ namespace STI
   not in a subsequent loop after the cloning itself. We can do this because the physical
   implementation type of the cloned elements is unique and known a priori.
 
-  \date 04/15
+
   */
 
   class ScatraThermoCloneStrategy

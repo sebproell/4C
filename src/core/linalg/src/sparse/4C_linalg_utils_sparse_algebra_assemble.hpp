@@ -261,7 +261,7 @@ namespace Core::LinAlg
 
    \param dbctoggle (in)     : the Dirichlet toggle vector
    \return MapExtractor object which stores the Dirichlet condition and remaining (other) DOF map
-   \date 10/08
+
    */
   std::shared_ptr<Core::LinAlg::MapExtractor> convert_dirichlet_toggle_vector_to_maps(
       const Core::LinAlg::Vector<double>& dbctoggle);

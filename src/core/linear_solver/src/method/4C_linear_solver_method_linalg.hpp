@@ -199,7 +199,7 @@ namespace Core::LinAlg
     \param get_solver_params (in): function to get solver parameters based on ID used inside
                                    inparams
     \param verbosity (in): verbosity level for output
-    \date 11/08
+
     */
     void put_solver_params_to_sub_params(const std::string name,
         const Teuchos::ParameterList& inparams,

@@ -33,7 +33,7 @@ namespace BeamInteraction
      *         (i.e. its curve parameter value) relative to a given point
      *         a.k.a 'unilateral' closest-point projection
      *
-     *  \date 10/17, 01/14 */
+     */
     template <unsigned int numnodes, unsigned int numnodalvalues, typename T>
     bool point_to_curve_projection(Core::LinAlg::Matrix<3, 1, T> const& r_slave, T& xi_master,
         double const& xi_master_initial_guess,
@@ -44,7 +44,7 @@ namespace BeamInteraction
     /** \brief evaluates residual of orthogonality condition for so-called unilateral closest-point
      *         projection, i.e. a point-to-curve projection
      *
-     *  \date 10/17, 10/14 */
+     */
     template <typename T>
     void evaluate_point_to_curve_orthogonality_condition(T& f,
         const Core::LinAlg::Matrix<3, 1, T>& delta_r, const double norm_delta_r,
@@ -53,7 +53,7 @@ namespace BeamInteraction
     /** \brief evaluates Jacobian of orthogonality condition for so-called unilateral closest-point
      *         projection, i.e. a point-to-curve projection
      *
-     *  \date 10/17, 10/14 */
+     */
     template <typename T>
     bool evaluate_linearization_point_to_curve_orthogonality_condition(T& df,
         const Core::LinAlg::Matrix<3, 1, T>& delta_r, const double norm_delta_r,
@@ -63,7 +63,7 @@ namespace BeamInteraction
     /** \brief compute linearization of parameter coordinate on master if determined by a
      *         point-to-curve projection
      *
-     *  \date 10/17, 10/14 */
+     */
     template <unsigned int numnodes, unsigned int numnodalvalues, typename T>
     void calc_linearization_point_to_curve_projection_parameter_coord_master(
         Core::LinAlg::Matrix<1, 3 * numnodes * numnodalvalues, T>& lin_xi_master_slaveDofs,
@@ -79,7 +79,7 @@ namespace BeamInteraction
      *         partial derivatives of the parameter coordinate on master xi_master with respect to
      *         centerline position of slave point, master point and centerline tangent of master
      *
-     *  \date 10/17 */
+     */
     template <typename T>
     void calc_point_to_curve_projection_parameter_coord_master_partial_derivs(
         Core::LinAlg::Matrix<1, 3, T>& xi_master_partial_r_slave,
@@ -94,7 +94,7 @@ namespace BeamInteraction
      *         respect to centerline position of slave point, master point and centerline tangent of
      *         master
      *
-     *  \date 04/19 */
+     */
     template <typename T>
     void calc_point_to_curve_projection_parameter_coord_master_partial2nd_derivs(
         Core::LinAlg::Matrix<3, 3, T>& xi_master_partial_r_slave_partial_r_slave,
@@ -127,7 +127,7 @@ namespace BeamInteraction
      *         partial derivative of the orthogonality condition with respect to parameter
      * coordinate on master xi_master
      *
-     *  \date 10/17 */
+     */
     template <typename T>
     void calc_ptc_projection_orthogonality_condition_partial_deriv_parameter_coord_master(
         T& orthogon_condition_partial_xi_master, const Core::LinAlg::Matrix<3, 1, T>& delta_r,
@@ -138,7 +138,7 @@ namespace BeamInteraction
      *         partial derivative of the orthogonality condition with respect to centerline position
      *         on slave
      *
-     *  \date 10/17 */
+     */
     template <typename T>
     void calc_ptc_projection_orthogonality_condition_partial_deriv_cl_pos_slave(
         Core::LinAlg::Matrix<1, 3, T>& orthogon_condition_partial_r_slave,
@@ -148,7 +148,7 @@ namespace BeamInteraction
      *         partial derivative of the orthogonality condition with respect to centerline position
      *         on master
      *
-     *  \date 10/17 */
+     */
     template <typename T>
     void calc_ptc_projection_orthogonality_condition_partial_deriv_cl_pos_master(
         Core::LinAlg::Matrix<1, 3, T>& orthogon_condition_partial_r_master,
@@ -158,7 +158,7 @@ namespace BeamInteraction
      *         partial derivative of the orthogonality condition with respect to centerline tangent
      *         on master
      *
-     *  \date 10/17 */
+     */
     template <typename T>
     void calc_ptc_projection_orthogonality_condition_partial_deriv_cl_tangent_master(
         Core::LinAlg::Matrix<1, 3, T>& orthogon_condition_partial_r_xi_master,
@@ -166,7 +166,7 @@ namespace BeamInteraction
 
     /** \brief calculate angle enclosed by two vectors a and b
      *
-     *  \date 10/17, 10/14 */
+     */
     template <typename T>
     void calc_enclosed_angle(T& angle, T& cosine_angle, const Core::LinAlg::Matrix<3, 1, T>& a,
         const Core::LinAlg::Matrix<3, 1, T>& b);

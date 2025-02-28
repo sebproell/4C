@@ -47,7 +47,7 @@ namespace Cut
      *
      *  \param sid (in) : side id
      *
-     *  \date 08/16 */
+     */
     static Side* create_level_set_side(const int& sid);
 
     /// Create a concrete side (using dis-type for identification)

@@ -35,7 +35,7 @@ namespace Thermo
    *
    * Regarding this matter, please direct any complaints to Axel Gerstenberger.
    *
-   * \date 06/08
+
    */
   class TimIntStatics : public TimIntImpl
   {

@@ -25,7 +25,7 @@ namespace Core::FE::MeshFree
    * \brief The element type class of meshfree multibin, creating the same
    *
    *
-   * \date April, 2013
+
    */
   /*--------------------------------------------------------------------------*/
   class MeshfreeMultiBinType : public Core::Elements::ElementType
@@ -71,7 +71,7 @@ namespace Core::FE::MeshFree
    *        elements which can be added and deleted dynamically
    *
    *
-   * \date April, 2013
+
    */
   /*--------------------------------------------------------------------------*/
   class MeshfreeMultiBin : public MeshfreeBin<Core::Elements::Element>

@@ -108,7 +108,7 @@ namespace XFEM
        *  The two discretizations share the same node ID's at the coupling interface,
        *  but differ in the global degrees of freedom ID's!
        *
-       *  \date 06/16 */
+       */
       int setup_xfem_discretization(const Teuchos::ParameterList& xgen_params,
           std::shared_ptr<Core::FE::Discretization> src_dis,
           std::shared_ptr<Core::FE::Discretization> target_dis,
@@ -144,7 +144,7 @@ namespace XFEM
        *  connected to the boundary condition face elements and the other. Currently
        *  not tested.
        *
-       *  \date 06/16
+
        *  */
       void split_discretization_by_boundary_condition(Core::FE::Discretization& sourcedis,
           Core::FE::Discretization& targetdis,

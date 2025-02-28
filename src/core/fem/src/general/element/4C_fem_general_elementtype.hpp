@@ -40,7 +40,7 @@ namespace Core::FE
 
   \note There are boundary elements that do not need all of this
   functionality.
-  \date 06/10
+
  */
 
 namespace Core::Elements

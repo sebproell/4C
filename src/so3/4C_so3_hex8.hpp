@@ -742,7 +742,7 @@ namespace Discret
 
       /** recover elementwise stored stuff
        *
-       * \date 04/16 */
+       */
       void soh8_recover(const std::vector<int>& lm, const std::vector<double>& residual);
 
       void soh8_compute_eas_inc(

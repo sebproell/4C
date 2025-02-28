@@ -260,7 +260,7 @@ namespace Solid
        *
        *  \param[in/out] f Right-hand side vector
        *
-       *  \date 03/2016 */
+       */
       void add_visco_mass_contributions(Core::LinAlg::Vector<double>& f) const override;
 
       /*! \brief Add the viscous and mass contributions to the jacobian (TR-rule)
@@ -279,7 +279,7 @@ namespace Solid
        *
        * \param[in/out] jac Jacobian matrix
        *
-       *  \date 03/2016 */
+       */
       void add_visco_mass_contributions(Core::LinAlg::SparseOperator& jac) const override;
 
       /*! \brief Update constant contributions of the current state for the new time step

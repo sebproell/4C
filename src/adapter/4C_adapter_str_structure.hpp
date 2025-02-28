@@ -116,7 +116,7 @@ namespace Adapter
   \warning Further cleanup is still needed.
 
   \sa Fluid, Ale
-  \date 11/07
+
   */
   class Structure : public Field
   {
@@ -140,7 +140,7 @@ namespace Adapter
 
     \warning none
     \return void
-    \date 08/16
+
     */
     virtual void setup() = 0;
 
@@ -294,7 +294,7 @@ namespace Adapter
     [[nodiscard]] virtual int num_step() const = 0;
 
     /// Take the time and integrate (time loop)
-    /// \date 11/08
+
     virtual int integrate() = 0;
 
     //! do something in case nonlinear solution does not converge for some reason
@@ -392,7 +392,7 @@ namespace Adapter
     In case of time step size adaptivity, time steps might have to be repeated.
     Therefore, we need to reset the solution back to the initial solution of the
     time step.
-    \date 08/2013
+
     */
     virtual void reset_step() = 0;
 

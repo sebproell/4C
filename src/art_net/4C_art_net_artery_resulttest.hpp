@@ -30,7 +30,7 @@ namespace Arteries
 
   /*!
     \brief artnet specific result test class
-    \date 11/11
+
   */
   class ArteryResultTest : public Core::Utils::ResultTest
   {

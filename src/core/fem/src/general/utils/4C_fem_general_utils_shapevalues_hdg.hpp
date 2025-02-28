@@ -83,7 +83,7 @@ namespace Core::FE
 
   /// Helper class for evaluating HDG polynomials, geometry, etc.
   /*!
-    \date 05/14
+
   */
   template <Core::FE::CellType distype>
   class ShapeValues
@@ -169,7 +169,7 @@ namespace Core::FE
 
   /// Helper class for evaluating HDG polynomials, geometry, etc.
   /*!
-    \date 06/14
+
   */
   template <Core::FE::CellType distype>
   class ShapeValuesFace

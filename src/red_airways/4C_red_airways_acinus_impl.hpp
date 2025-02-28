@@ -77,7 +77,7 @@ namespace Discret
       provides a clean and fast element implementation.
 
       <h3>Purpose</h3>
-      \date 01/13
+
     */
 
     template <Core::FE::CellType distype>

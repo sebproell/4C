@@ -2132,7 +2132,7 @@ namespace Core::FE
     \note On exit, the parallel distribution of the newly created surface geometry
     matches the distribution of the originating volume. Each surface is owned by the
     same proc as the underlying volume element (rauch 10/16).
-    \date 01/07
+
 
     \version rework by Andreas Rauch ( rauch 10/16 )       */
     virtual bool build_surfacesin_condition(
@@ -2198,7 +2198,7 @@ namespace Core::FE
      *  \param finalelements (o) map (global_id)->(element) that can be
      *  added to a condition.
      *
-     *  \date 09/07    */
+     */
     virtual void assign_global_i_ds(MPI_Comm comm,
         const std::map<std::vector<int>, std::shared_ptr<Core::Elements::Element>>& elementmap,
         std::map<int, std::shared_ptr<Core::Elements::Element>>& finalgeometry);

@@ -46,7 +46,7 @@ namespace NOX
     /// #NOX as non-linear solution technique while preserving the user-defined
     /// linear algebraic solver #Core::LinAlg::Solver.
     ///
-    /// \date 04/09
+
     class LinearSystem : public ::NOX::Epetra::LinearSystem
     {
      protected:

@@ -745,7 +745,7 @@ namespace XFEM
 
   /*!
   \brief specialized class for coupling with an embedded fluid discretization
-    \date 01/15
+
    */
   class MeshCouplingFluidFluid : public MeshVolCoupling
   {

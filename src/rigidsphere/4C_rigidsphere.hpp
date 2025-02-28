@@ -283,17 +283,17 @@ namespace Discret
        *
        *  \param p (in): Parameter list coming from the time integrator.
        *
-       *  \date 04/16 */
+       */
       void set_params_interface_ptr(const Teuchos::ParameterList& p) override;
 
       /*! \brief returns true if the parameter interface is defined and initialized, otherwise false
        *
-       *  \date 04/16 */
+       */
       inline bool is_params_interface() const override { return (interface_ptr_ != nullptr); }
 
       /*! \brief get access to the parameter interface pointer
        *
-       *  \date 04/16 */
+       */
       std::shared_ptr<Core::Elements::ParamsInterface> params_interface_ptr() override;
       //@}
 
@@ -317,7 +317,7 @@ namespace Discret
        * variations (see above) and applied force vector) with respect to the primary DoFs of this
        * element
        *
-       *  \date 01/17 */
+       */
       virtual void get_stiffmat_resulting_from_generalized_interpolation_matrix_at_xi(
           Core::LinAlg::SerialDenseMatrix& stiffmat, const double& xi,
           const std::vector<double>& disp, const Core::LinAlg::SerialDenseVector& force) const
@@ -344,12 +344,12 @@ namespace Discret
 
       /** \brief get number of bonds
        *
-       *  \date 06/17 */
+       */
       int get_number_of_bonds() const { return static_cast<int>(mybondstobeams_.size()); }
 
       /** \brief check if bond exists
        *
-       *  \date 06/17 */
+       */
       bool does_bond_exist(int bond) const
       {
         return (mybondstobeams_.find(bond) != mybondstobeams_.end()) ? true : false;
@@ -357,7 +357,7 @@ namespace Discret
 
       /** \brief check bond with certain bond gid
        *
-       *  \date 06/17 */
+       */
       std::shared_ptr<BeamInteraction::BeamLinkPinJointed> get_bond(int bond_id)
       {
         return mybondstobeams_[bond_id];
@@ -365,7 +365,7 @@ namespace Discret
 
       /** \brief check bond with certain bond gid
        *
-       *  \date 06/17 */
+       */
       std::map<int, std::shared_ptr<BeamInteraction::BeamLinkPinJointed>> const& get_bond_map()
           const
       {
@@ -374,7 +374,7 @@ namespace Discret
 
       /** \brief add bond
        *
-       *  \date 06/17 */
+       */
       void add_bond(int id, std::shared_ptr<BeamInteraction::BeamLinkPinJointed> newbondpartner)
       {
         mybondstobeams_[id] = newbondpartner;
@@ -382,7 +382,7 @@ namespace Discret
 
       /** \brief dissolve bond
        *
-       *  \date 06/17 */
+       */
       void dissolve_bond(int id)
       {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
@@ -410,7 +410,7 @@ namespace Discret
      protected:
       /** \brief get access to the interface
        *
-       *  \date 04/16 */
+       */
       inline Solid::Elements::ParamsInterface& params_interface()
       {
         if (not is_params_interface()) FOUR_C_THROW("The interface ptr is not set!");

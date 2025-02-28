@@ -43,7 +43,7 @@ namespace NOX
       This is a copy of ::NOX::StatusTest::NormF that allows subclasses to
       define what vector to test. This way we can specify tests on
       vectors that cover only parts of our field.
-      \date 11/07
+
      */
     class GenericNormF : public ::NOX::StatusTest::Generic
     {
@@ -170,7 +170,7 @@ namespace NOX
 
       For FSI status tests independent norms of the inner dofs of
       structural and fluid field are required.
-      \date 11/07
+
      */
     class PartialNormF : public AdaptiveNewtonNormF
     {

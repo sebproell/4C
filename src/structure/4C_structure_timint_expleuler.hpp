@@ -24,7 +24,7 @@ namespace Solid
   /*!
    * \brief forward Euler: 1st order accurate,
    *                       explicit time integrator,
-   * \date 06/08
+
    */
   class TimIntExplEuler : public TimIntExpl
   {
@@ -65,7 +65,7 @@ namespace Solid
 
     \warning none
     \return bool
-    \date 08/16
+
     */
     void init(const Teuchos::ParameterList& timeparams, const Teuchos::ParameterList& sdynparams,
         const Teuchos::ParameterList& xparams, std::shared_ptr<Core::FE::Discretization> actdis,
@@ -87,7 +87,7 @@ namespace Solid
 
     \warning none
     \return void
-    \date 08/16
+
     */
     void setup() override;
 

@@ -34,7 +34,7 @@ namespace Solid
    * This object bridges the gap between the base time integator Solid::TimInt
    * and the specific implementation of explicit time integrators.
    *
-   * \date 07/08
+
    */
   class TimIntExpl : public TimInt
   {
@@ -76,7 +76,7 @@ namespace Solid
 
     \warning none
     \return bool
-    \date 08/16
+
     */
     void init(const Teuchos::ParameterList& timeparams, const Teuchos::ParameterList& sdynparams,
         const Teuchos::ParameterList& xparams, std::shared_ptr<Core::FE::Discretization> actdis,
@@ -98,7 +98,7 @@ namespace Solid
 
     \warning none
     \return void
-    \date 08/16
+
     */
     void setup() override;
 

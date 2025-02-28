@@ -1659,7 +1659,7 @@ void Discret::Elements::SoHex8::nlnstiffmass(std::vector<int>& lm,  // location 
         /// Eq. 70
         /// </ul>
         ///
-        /// \date 08/13
+
 
         // eigenvalue decomposition (from elasthyper.cpp)
         Core::LinAlg::Matrix<3, 3> prstr2(true);  // squared principal stretches

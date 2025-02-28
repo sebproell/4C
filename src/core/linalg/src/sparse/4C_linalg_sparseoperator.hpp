@@ -78,7 +78,7 @@ namespace Core::LinAlg
     Here we have an interface that has different implementations. The obvious
     one is the SparseMatrix, a single Epetra_CrsMatrix in a box, another one
     is BlockSparseMatrix, a block matrix build from a list of SparseMatrix.
-    \date 02/08
+
    */
   class SparseOperator : public Epetra_Operator
   {

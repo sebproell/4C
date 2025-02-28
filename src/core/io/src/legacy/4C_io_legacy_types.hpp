@@ -16,7 +16,7 @@ FOUR_C_NAMESPACE_OPEN
   \brief Types of the symbols we store in a map.
 
   We can have strings, integer and doubles as well as a subgroup.
-  \date 08/04
+
 */
 enum SymbolTypes
 {
@@ -42,7 +42,7 @@ enum SymbolTypes
   \warning String and map values are assumed to be allocated
   dynamically and are owned by the symbol. That is when a symbol is
   destroyed its string or map value will be free'd, too.
-  \date 08/04
+
 */
 struct SYMBOL
 {
@@ -71,7 +71,7 @@ struct SYMBOL
 
   \warning The map node owns its key and symbols as well as any
   subnodes. It'll destroy them when it is destroyed itself.
-  \date 08/04
+
 */
 struct MapNode
 {
@@ -88,7 +88,7 @@ struct MapNode
 
   You need to initialize an object of this structure in order to have
   a map. Internally it's nothing but a map node and a total count.
-  \date 08/04
+
 */
 struct MAP
 {

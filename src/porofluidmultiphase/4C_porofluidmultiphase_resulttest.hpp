@@ -40,7 +40,7 @@ namespace POROFLUIDMULTIPHASE
 
   /*!
     \brief POROFLUIDMULTIPHASE specific result test class
-    \date 08/16
+
   */
   class ResultTest : public Core::Utils::ResultTest
   {

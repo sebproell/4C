@@ -44,7 +44,7 @@ namespace Core::DOFSets
           standard versions are called instead. The reason for this is, that boundary elements
           (which are face elements) built from a condition do not have unique GIDs, so
           a unique GID based mapping is not possible.
-    \date 10/16    */
+*/
   class DofSetGIDBasedWrapper : public DofSetBase
   {
    public:

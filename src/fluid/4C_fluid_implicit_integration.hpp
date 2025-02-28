@@ -444,7 +444,7 @@ namespace FLD
     In case of time step size adaptivity, time steps might have to be repeated.
     Therefore, we need to reset the solution back to the initial solution of the
     time step.
-    \date 08/2013
+
     */
     void reset_step() override
     {

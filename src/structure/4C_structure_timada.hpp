@@ -54,7 +54,7 @@ namespace Solid
    * is compared to one obtained with an auxiliary time integrator. Based on this
    * estimation of the local truncation error, a new time step size is suggested.
    *
-   * \date 07/08
+
    */
   class TimAda
   {

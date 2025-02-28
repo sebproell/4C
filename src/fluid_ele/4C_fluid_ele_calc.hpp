@@ -68,7 +68,7 @@ namespace Discret
       (and called from Fluid) and the non-virtual one that does the actual
       work. The non-virtual evaluate() method must be callable without an actual
       Fluid object.
-      \date 07/07
+
     */
 
     template <Core::FE::CellType distype,
@@ -123,7 +123,7 @@ namespace Discret
        *   The vector valued operator \f$B\f$ is constructed such that
        *   \f$\int_\Omega div (u) \,\mathrm{d}\Omega = B^T u = 0\f$
        *
-       *   \date   04/2012
+
        */
       virtual int calc_div_op(Discret::Elements::Fluid* ele,  //< current fluid element
           Core::FE::Discretization& discretization,           //< fluid discretization
@@ -173,7 +173,7 @@ namespace Discret
 
       /*! \brief Project velocity gradient to nodal level
        *
-       *   \date   06/2014
+
        */
       virtual int vel_gradient_projection(Discret::Elements::Fluid* ele,
           Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
@@ -183,7 +183,7 @@ namespace Discret
 
       /*! \brief Project pressure gradient to nodal level
        *
-       *   \date   09/2015
+
        */
       virtual int pres_gradient_projection(Discret::Elements::Fluid* ele,
           Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
@@ -192,7 +192,7 @@ namespace Discret
 
       /*! \brief Calculate a divergence of velocity at the element center
        *
-       *   \date   12/2012
+
        */
       virtual int compute_div_u(Discret::Elements::Fluid* ele,  //< current fluid element
           Core::FE::Discretization& discretization,             //< fluid discretization

@@ -527,7 +527,7 @@ namespace Core::LinAlg
 
    \param rredundant (o) redundant vector of global ids
    \param emap (i) unique distributed Epetra_Map
-   \date 05/07
+
    */
   void allreduce_e_map(std::vector<int>& rredundant, const Epetra_Map& emap);
 
@@ -545,7 +545,7 @@ namespace Core::LinAlg
 
    \param idxmap (o) map from global ids to (redundant) vector indexes
    \param emap (i) unique distributed Epetra_Map
-   \date 05/07
+
    */
   void allreduce_e_map(std::map<int, int>& idxmap, const Epetra_Map& emap);
 
@@ -562,7 +562,7 @@ namespace Core::LinAlg
    \param emap (i) any distributed Epetra_Map
    \param pid (i)  processor id where you want to have the allreduced map
    exclusively
-   \date 11/07
+
    */
   std::shared_ptr<Epetra_Map> allreduce_e_map(const Epetra_Map& emap, const int pid);
 
@@ -580,7 +580,7 @@ namespace Core::LinAlg
    about to do something illegal.
 
    \param emap (i) any distributed Epetra_Map
-   \date 04/08
+
    */
   std::shared_ptr<Epetra_Map> allreduce_e_map(const Epetra_Map& emap);
 
@@ -590,7 +590,7 @@ namespace Core::LinAlg
 
    Here, we have a overlapping source map and still want to have a fully
    redundant map on all processors without duplicated entries.
-   \date 08/09
+
    */
   std::shared_ptr<Epetra_Map> allreduce_overlapping_e_map(const Epetra_Map& emap);
 
@@ -600,7 +600,7 @@ namespace Core::LinAlg
 
    \param emap (i) any distributed overlapping Epetra_Map
    \param pid (i)  processor id where you want to have the allreduced and sorted map exclusively
-   \date 10/14
+
    */
   std::shared_ptr<Epetra_Map> allreduce_overlapping_e_map(const Epetra_Map& emap, const int pid);
 
@@ -620,7 +620,7 @@ namespace Core::LinAlg
    \param comm (i) communicator
 
    \return vector position of first entry on each processor
-   \date 05/07
+
    */
   int find_my_pos(int nummyelements, MPI_Comm comm);
 
@@ -638,7 +638,7 @@ namespace Core::LinAlg
    \param send (i) vector of length Core::Communication::num_mpi_ranks(comm), j-th element to be
    send to j-th processor. \param recv (o) vector of length
    Core::Communication::num_mpi_ranks(comm), j-th element received from j-th processor.
-   \date 09/07
+
    */
   void all_to_all_communication(MPI_Comm comm, const std::vector<std::vector<int>>& send,
       std::vector<std::vector<int>>& recv);

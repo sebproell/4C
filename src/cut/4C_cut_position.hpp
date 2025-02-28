@@ -246,7 +246,7 @@ namespace Cut
    *                             the element dimension \c dim.
    *
    *
-   *  \date 08/16 */
+   */
   template <unsigned probdim, Core::FE::CellType eletype,
       unsigned num_nodes_element = Core::FE::num_nodes<eletype>,
       unsigned dim = Core::FE::dim<eletype>, CutFloatType floattype = floattype_double>

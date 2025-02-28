@@ -309,7 +309,7 @@ namespace CONTACT
      * current search direction (in general NOT the actual step, keep in mind that the step length
      * can differ from 1.0) \param xnew    (in): new solution vector of the NOX solver
      *
-     *  \date 05/2016
+
      *  */
     void run_post_compute_x(const CONTACT::ParamsInterface& cparams,
         const Core::LinAlg::Vector<double>& xold, const Core::LinAlg::Vector<double>& dir,

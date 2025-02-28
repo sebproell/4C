@@ -345,7 +345,7 @@ namespace Discret
       //@{
       /** recover elementwise stored stuff
        *
-       * \date 05/16 */
+       */
       void w1_recover(const std::vector<int>& lm, const std::vector<double>& disp,
           const std::vector<double>& residual);
 

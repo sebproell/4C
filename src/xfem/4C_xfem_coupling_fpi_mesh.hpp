@@ -30,7 +30,7 @@ namespace XFEM
 {
   /*!
   specialized class for coupling of fluid with an porous media (Darcy Flow)
-    \date 06/16
+
    */
   class MeshCouplingFPI : public MeshVolCoupling
   {

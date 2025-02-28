@@ -436,7 +436,7 @@ namespace Cut
    * point coordinate stays 3. If probDim is smaller than three, the last
    * coordinates are set to zero.
    *
-   * \date 11/16 */
+   */
   template <unsigned prob_dim>
   class ConcretePoint : public Point
   {
@@ -477,7 +477,7 @@ namespace Cut
    *  This class creates a ConcretePoint object with correct problem dimension.
    *  Don't call this class directly! Use the non-member function instead.
    *
-   *  \date 11/16
+
    *  */
   class PointFactory
   {

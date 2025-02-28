@@ -91,7 +91,7 @@ namespace FLD
 
   /*!
     This class holds the Fluid implementation for XFEM
-    \date 03/12
+
   */
   class XFluid : public FluidImplicitTimeInt
   {

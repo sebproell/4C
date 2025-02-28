@@ -18,7 +18,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*/
 /*!
   \brief Clean up.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 static void destroy_symbol(SYMBOL* symbol)
@@ -46,7 +46,7 @@ static void destroy_symbol(SYMBOL* symbol)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Clean up.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 static void destroy_node(MapNode* node)
@@ -77,7 +77,7 @@ static void destroy_node(MapNode* node)
   \brief Bring a map variable up to a clean state.
 
   That's needed before anything can be done with a map.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 void init_map(MAP* map)
@@ -95,7 +95,7 @@ void init_map(MAP* map)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Clean up.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 void destroy_map(MAP* map)
@@ -108,7 +108,7 @@ void destroy_map(MAP* map)
 /*----------------------------------------------------------------------*/
 /*!
   \brief See whether a node matches a certain key.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 static int map_cmp_nodes(const MapNode* lhs, const char* rhs_key)
@@ -123,7 +123,7 @@ static int map_cmp_nodes(const MapNode* lhs, const char* rhs_key)
   \brief Find the node in the map that matches the \a key.
 
   \return nullptr if there's no such node.
-  \date 09/04
+
 */
 /*----------------------------------------------------------------------*/
 static MapNode* map_find_node(MAP* map, const char* key)
@@ -176,7 +176,7 @@ end:
   \brief Find the first symbol in the map that matches the \a key.
 
   \return nullptr if there's no such symbol.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 SYMBOL* map_find_symbol(MAP* map, const char* key)
@@ -197,7 +197,7 @@ SYMBOL* map_find_symbol(MAP* map, const char* key)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Find the first symbol, return its value if it's a string.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int map_find_string(MAP* map, const char* key, const char** string)
@@ -215,7 +215,7 @@ int map_find_string(MAP* map, const char* key, const char** string)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Find the first symbol, return its value if it's a integer.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int map_find_int(MAP* map, const char* key, int* integer)
@@ -233,7 +233,7 @@ int map_find_int(MAP* map, const char* key, int* integer)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Find the first symbol, return its value if it's a real.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int map_find_real(MAP* map, const char* key, double* real)
@@ -251,7 +251,7 @@ int map_find_real(MAP* map, const char* key, double* real)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Find the first symbol, return its value if it's a map.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int map_find_map(MAP* map, const char* key, MAP** dir)
@@ -271,7 +271,7 @@ int map_find_map(MAP* map, const char* key, MAP** dir)
   \brief Find the first symbol, return its value if it's a string.
 
   Stops if no string is found.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 const char* map_read_string(MAP* map, const char* key)
@@ -292,7 +292,7 @@ const char* map_read_string(MAP* map, const char* key)
   \brief Find the first symbol, return its value if it's a integer.
 
   Stops if no integer is found.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int map_read_int(MAP* map, const char* key)
@@ -313,7 +313,7 @@ int map_read_int(MAP* map, const char* key)
   \brief Find the first symbol, return its value if it's a real.
 
   Stops if no real is found.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 double map_read_real(MAP* map, const char* key)
@@ -336,7 +336,7 @@ double map_read_real(MAP* map, const char* key)
   \brief Find the first symbol, return its value if it's a map.
 
   Stops if no map is found.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 MAP* map_read_map(MAP* map, const char* key)
@@ -355,7 +355,7 @@ MAP* map_read_map(MAP* map, const char* key)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Tell if the first symbol with that \a key has this \a value.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int map_has_string(MAP* map, const char* key, const char* value)
@@ -385,7 +385,7 @@ int map_has_string(MAP* map, const char* key, const char* value)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Tell if the first symbol with that \a key has this \a value.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int map_has_int(MAP* map, const char* key, const int value)
@@ -415,7 +415,7 @@ int map_has_int(MAP* map, const char* key, const int value)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Tell if the first symbol with that \a key has this \a value.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int map_has_real(MAP* map, const char* key, const double value)
@@ -447,7 +447,7 @@ int map_has_real(MAP* map, const char* key, const double value)
   \brief Tell if the first symbol with that \a key is a map.
 
   No value comparison here.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int map_has_map(MAP* map, const char* key)
@@ -477,7 +477,7 @@ int map_has_map(MAP* map, const char* key)
 
   Ownership of the symbol and the key is taken. Both have to be
   allocated using malloc or the like.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 static void map_insert_symbol(MAP* map, SYMBOL* symbol, char* key)
@@ -547,7 +547,7 @@ end:
 /*----------------------------------------------------------------------*/
 /*!
   \brief Insert that string with this key.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 void map_insert_string(MAP* map, char* string, char* key)
@@ -566,7 +566,7 @@ void map_insert_string(MAP* map, char* string, char* key)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Insert that integer with this key.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 void map_insert_int(MAP* map, int integer, char* key)
@@ -585,7 +585,7 @@ void map_insert_int(MAP* map, int integer, char* key)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Insert that real with this key.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 void map_insert_real(MAP* map, double real, char* key)
@@ -604,7 +604,7 @@ void map_insert_real(MAP* map, double real, char* key)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Insert that map with this key.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 void map_insert_map(MAP* map, MAP* dir, char* key)
@@ -624,7 +624,7 @@ void map_insert_map(MAP* map, MAP* dir, char* key)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Tell how many symbols of the given name there are.
-  \date 09/04
+
 */
 /*----------------------------------------------------------------------*/
 int map_symbol_count(MAP* map, const char* key)
@@ -649,7 +649,7 @@ int map_symbol_count(MAP* map, const char* key)
   from the map, but the key (the node behind it) stays alive. Also the
   symbols are not deallocated. The caller must already have a pointer
   to the symbol chain and takes responsibility for it.
-  \date 12/04
+
 */
 /*----------------------------------------------------------------------*/
 void map_disconnect_symbols(MAP* map, const char* key)
@@ -671,7 +671,7 @@ void map_disconnect_symbols(MAP* map, const char* key)
   \param key      (i) key to those chain we want to prepend
   \param symbol   (i) start of the new symbol chain
   \param count    (i) number of symbol in the chain
-  \date 12/04
+
 */
 /*----------------------------------------------------------------------*/
 void map_prepend_symbols(MAP* map, const char* key, SYMBOL* symbol, int count)
@@ -711,7 +711,7 @@ void map_prepend_symbols(MAP* map, const char* key, SYMBOL* symbol, int count)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Tell whether the symbol is a string.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int symbol_is_string(const SYMBOL* symbol)
@@ -723,7 +723,7 @@ int symbol_is_string(const SYMBOL* symbol)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Tell whether the symbol is an integer.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int symbol_is_int(const SYMBOL* symbol) { return (symbol != nullptr) && (symbol->type == sym_int); }
@@ -732,7 +732,7 @@ int symbol_is_int(const SYMBOL* symbol) { return (symbol != nullptr) && (symbol-
 /*----------------------------------------------------------------------*/
 /*!
   \brief Tell whether the symbol is a real.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int symbol_is_real(const SYMBOL* symbol)
@@ -744,7 +744,7 @@ int symbol_is_real(const SYMBOL* symbol)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Tell whether the symbol is a map.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int symbol_is_map(const SYMBOL* symbol) { return (symbol != nullptr) && (symbol->type == sym_map); }
@@ -754,7 +754,7 @@ int symbol_is_map(const SYMBOL* symbol) { return (symbol != nullptr) && (symbol-
 /*----------------------------------------------------------------------*/
 /*!
   \brief Extract the value if its a string.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int symbol_get_string(const SYMBOL* symbol, const char** string)
@@ -779,7 +779,7 @@ int symbol_get_string(const SYMBOL* symbol, const char** string)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Extract the value if its an integer.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int symbol_get_int(const SYMBOL* symbol, int* integer)
@@ -804,7 +804,7 @@ int symbol_get_int(const SYMBOL* symbol, int* integer)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Extract the value if its a real.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int symbol_get_real(const SYMBOL* symbol, double* real)
@@ -828,7 +828,7 @@ int symbol_get_real(const SYMBOL* symbol, double* real)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Extract the value if its a real.
-  \date 08/06
+
  */
 /*----------------------------------------------------------------------*/
 int symbol_get_real_as_float(const SYMBOL* symbol, float* real)
@@ -853,7 +853,7 @@ int symbol_get_real_as_float(const SYMBOL* symbol, float* real)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Extract the value if its a map.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 int symbol_get_map(const SYMBOL* symbol, MAP** map)
@@ -878,7 +878,7 @@ int symbol_get_map(const SYMBOL* symbol, MAP** map)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Extract the value if its a map.
-  \date 09/04
+
 */
 /*----------------------------------------------------------------------*/
 MAP* symbol_map(const SYMBOL* symbol)
@@ -900,7 +900,7 @@ MAP* symbol_map(const SYMBOL* symbol)
 /*----------------------------------------------------------------------*/
 /*!
   \brief The types of tokens recognized by the lexer.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 typedef enum TokenType
@@ -927,7 +927,7 @@ typedef enum TokenType
  meanings), the file buffer with the current read position, the
  current line number and indention level. These variables are very
  internal and only used while a control file is read.
-  \date 08/04
+
  */
 /*----------------------------------------------------------------------*/
 struct ParserData
@@ -953,7 +953,7 @@ struct ParserData
   \brief Init the data structure needed to read a file.
 
   The file is read on processor 0 and broadcasted to the others.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 static void init_parser_data(ParserData* data, const char* filename, MPI_Comm comm)
@@ -1031,7 +1031,7 @@ static void init_parser_data(ParserData* data, const char* filename, MPI_Comm co
 /*----------------------------------------------------------------------*/
 /*!
   \brief Clean up.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 static void destroy_parser_data(ParserData* data) { free(data->file_buffer); }
@@ -1039,7 +1039,7 @@ static void destroy_parser_data(ParserData* data) { free(data->file_buffer); }
 /*----------------------------------------------------------------------*/
 /*!
   \brief Get the next char.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 static int getnext(ParserData* data)
@@ -1065,7 +1065,7 @@ static int getnext(ParserData* data)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Get the next token.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 static void lexan(ParserData* data)
@@ -1290,7 +1290,7 @@ end:
 /*----------------------------------------------------------------------*/
 /*!
   \brief The top down parser.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 static void parse_definitions(ParserData* data, MAP* dir)
@@ -1392,7 +1392,7 @@ end:
 /*!
   \brief Parse the file given by name and fill the map with this
   file's content (serial only!)
-  \date 05/08
+
 */
 /*----------------------------------------------------------------------*/
 void parse_control_file_serial(MAP* map, const char* filename)
@@ -1447,7 +1447,7 @@ void parse_control_file_serial(MAP* map, const char* filename)
 /*!
   \brief Parse the file given by name and fill the map with this
   file's content.
-  \date 08/04
+
 */
 /*----------------------------------------------------------------------*/
 void parse_control_file(MAP* map, const char* filename, MPI_Comm comm)

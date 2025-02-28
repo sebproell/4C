@@ -41,7 +41,7 @@ namespace Core::DOFSets
    * This is a pure virtual class all classes managing sets of degrees of freedom
    * should inherit from.
    *
-   * \date 10/2016
+
    * */
   class DofSetInterface
   {

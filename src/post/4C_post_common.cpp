@@ -834,7 +834,7 @@ int PostResult::next_result(const std::string& groupname)
 /*----------------------------------------------------------------------*/
 /*!
   \brief Tell whether a given result group belongs to this result.
-  \date 10/04
+
 */
 /*----------------------------------------------------------------------*/
 int PostResult::match_field_result(MAP* result_group) const

@@ -45,7 +45,7 @@ namespace Core::Nodes
 
 /*
  \brief Base class for VTU output generation
- \date 03/14
+
 */
 class PostVtuWriter : public PostVtkWriter
 {

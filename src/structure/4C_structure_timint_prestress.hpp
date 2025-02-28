@@ -29,7 +29,7 @@ namespace Solid
    *
    * Regarding this matter, please direct any complaints to Michael Gee.
    *
-   * \date 03/12
+
    */
 
   class TimIntPrestress : public TimIntStatics

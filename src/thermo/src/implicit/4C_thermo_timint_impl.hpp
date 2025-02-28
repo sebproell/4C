@@ -38,7 +38,7 @@ namespace Thermo
   //! residuum an d its tangent. This object provides some utility functions to obtain various force
   //! vectors necessary in the calculation of the force residual in the derived time integrators.
   //!
-  //! \date 06/08
+
   class TimIntImpl : public TimInt
   {
    public:

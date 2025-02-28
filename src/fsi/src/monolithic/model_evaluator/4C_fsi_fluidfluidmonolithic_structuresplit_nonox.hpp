@@ -21,7 +21,7 @@ namespace FSI
   /*!
     Here the structural matrix is split whereas the fluid matrix is taken as
     it is.
-    \date  11/2011
+
   */
   class FluidFluidMonolithicStructureSplitNoNOX : public MonolithicNoNOX
   {
@@ -103,7 +103,7 @@ namespace FSI
     /*!
      * In case of a change in the fluid DOF row maps during the Newton loop (full Newton approach),
      * reset vectors accordingly.
-     * \date 05/14
+
      */
     void handle_fluid_dof_map_change_in_newton() override;
 
@@ -112,7 +112,7 @@ namespace FSI
      * \param (in) : DOF map of fluid increment vector
      * \return : true, in case of a mismatch between map of increment vector
      * and inner fluid DOF map after evaluation
-     * \date 05/14
+
      */
     bool has_fluid_dof_map_changed(const Epetra_BlockMap& fluidincrementmap) override;
 

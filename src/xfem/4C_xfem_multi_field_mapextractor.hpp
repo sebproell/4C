@@ -126,7 +126,7 @@ namespace XFEM
    *  although it is not recommended because of the resulting communication
    *  overhead.
    *
-   *  \date 09/16 */
+   */
   class MultiFieldMapExtractor
   {
     typedef std::vector<std::shared_ptr<const Core::FE::Discretization>> XDisVec;
@@ -152,7 +152,7 @@ namespace XFEM
      *                       of DoF's per enriched node (necessary for the fixed size
      *                       dofset).
      *
-     *  \date 09/16 */
+     */
     void init(const std::vector<std::shared_ptr<const Core::FE::Discretization>>& dis_vec,
         int max_num_reserved_dofs_per_node);
 
@@ -162,7 +162,7 @@ namespace XFEM
      *  discretizations in the discretization vector (see init()) is
      *  redistributed.
      *
-     *  \date 09/16 */
+     */
     virtual void setup();
 
     /// @name Accessors to the auxiliary interface discretization
@@ -172,7 +172,7 @@ namespace XFEM
      *
      *  \param gid (in): global id of the interface node
      *
-     *  \date 10/16 */
+     */
     Core::Nodes::Node* g_i_node(const int& gid) const;
 
     /// access the interface node row map
@@ -185,7 +185,7 @@ namespace XFEM
      *
      *  \param inode (in): pointer to the interface node
      *
-     *  \date 10/16 */
+     */
     int i_num_dof(const Core::Nodes::Node* inode) const;
 
     /// get the number of standard DoF's of the discretization
@@ -212,7 +212,7 @@ namespace XFEM
     /** \brief return TRUE if the given global node id corresponds to an
      *  interface node
      *
-     *  \date 09/16 */
+     */
     bool is_interface_node(const int& ngid) const;
 
     /// Access the full maps
@@ -367,7 +367,7 @@ namespace XFEM
      *
      *  \param dis_id (in): entry of the slave discretization vector
      *
-     *  \date 09/16 */
+     */
     bool is_x_fem_dis(enum FieldName field) const { return is_x_fem_dis(slave_id(field)); }
 
    protected:
@@ -388,7 +388,7 @@ namespace XFEM
      *
      *  \param dis_id (in): entry of the slave discretization vector
      *
-     *  \date 09/16 */
+     */
     bool is_x_fem_dis(int dis_id) const;
 
     /** \brief  Access the master interface node row map of the interface
@@ -397,7 +397,7 @@ namespace XFEM
      *
      *  \param dis_id (in): entry of the slave discretization vector
      *
-     *  \date 09/16 */
+     */
     inline const Epetra_Map& master_interface_node_row_map(enum FieldName field) const
     {
       return master_interface_node_row_map(slave_id(field));
@@ -423,7 +423,7 @@ namespace XFEM
 
     /** \brief Access the master map extractor
      *
-     *  \date 09/16 */
+     */
     const Core::LinAlg::MultiMapExtractor& ma_map_extractor(enum MapType map_type) const
     {
       if (master_map_extractor_.at(map_type) == nullptr)
@@ -437,7 +437,7 @@ namespace XFEM
      *  \param dis_id (in): block id of the desired discretization
      *  \param btype  (in): choose between interface and non-interface nodes
      *
-     *  \date 10/16 */
+     */
     inline const Epetra_Map& slave_node_row_map(
         enum XFEM::FieldName field, enum MultiField::BlockType btype) const
     {
@@ -640,7 +640,7 @@ namespace XFEM
     /** \brief Build the interface coupling DoF set and complete the interface
      *  discretization
      *
-     *  \date 09/16 */
+     */
     void build_interface_coupling_dof_set();
 
     void build_interface_coupling_adapters();

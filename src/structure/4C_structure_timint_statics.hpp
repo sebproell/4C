@@ -31,7 +31,7 @@ namespace Solid
    *
    * Regarding this matter, please direct any complaints to Axel Gerstenberger.
    *
-   * \date 06/08
+
    */
   class TimIntStatics : public TimIntImpl
   {
@@ -72,7 +72,7 @@ namespace Solid
 
     \warning none
     \return bool
-    \date 08/16
+
     */
     void init(const Teuchos::ParameterList& timeparams, const Teuchos::ParameterList& sdynparams,
         const Teuchos::ParameterList& xparams, std::shared_ptr<Core::FE::Discretization> actdis,
@@ -94,7 +94,7 @@ namespace Solid
 
     \warning none
     \return void
-    \date 08/16
+
     */
     void setup() override;
 

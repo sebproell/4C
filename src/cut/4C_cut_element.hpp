@@ -731,7 +731,7 @@ namespace Cut
      *  \param rst (in)  : local coordinates
      *  \param xyz (out) : corresponding global coordinates
      *
-     *  \date 08/16 */
+     */
     void point_at(const Core::LinAlg::Matrix<dim, 1>& rst, Core::LinAlg::Matrix<probdim, 1>& xyz)
     {
       Core::LinAlg::Matrix<num_nodes_element, 1> funct(true);

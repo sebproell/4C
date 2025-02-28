@@ -36,7 +36,7 @@ namespace LargeRotations
 
     /** \brief Standard Constructor
      *
-     *  \date 01/17 */
+     */
     TriadInterpolationLocalRotationVectors();
 
     //@}
@@ -45,12 +45,12 @@ namespace LargeRotations
 
     /** \brief get node I which is part of the definition of the reference triad
      *
-     *  \date 01/17 */
+     */
     inline unsigned int node_i() const { return node_i_; }
 
     /** \brief get node J which is part of the definition of the reference triad
      *
-     *  \date 01/17 */
+     */
     inline unsigned int node_j() const { return node_j_; }
 
     //@}
@@ -60,23 +60,23 @@ namespace LargeRotations
 
     /** \brief reset interpolation scheme with nodal quaternions
      *
-     *  \date 01/17 */
+     */
     void reset(std::vector<Core::LinAlg::Matrix<4, 1, T>> const& nodal_quaternions) override;
 
     /** \brief reset interpolation scheme with nodal triads
      *
-     *  \date 01/17 */
+     */
     void reset(std::vector<Core::LinAlg::Matrix<3, 3, T>> const& nodal_triads) override;
 
     /** \brief compute the interpolated triad at any point \xi \in [-1,1] in parameter space
      *
-     *  \date 01/17 */
+     */
     void get_interpolated_triad_at_xi(
         Core::LinAlg::Matrix<3, 3, T>& triad, const double xi) const override;
 
     /** \brief compute the interpolated quaternion at any point \xi \in [-1,1] in parameter space
      *
-     *  \date 01/17 */
+     */
     void get_interpolated_quaternion_at_xi(
         Core::LinAlg::Matrix<4, 1, T>& quaternion, const double xi) const override;
 
@@ -86,25 +86,25 @@ namespace LargeRotations
 
     /** \brief compute the interpolated triad based on given local rotation vector
      *
-     *  \date 01/17 */
+     */
     void get_interpolated_triad(
         Core::LinAlg::Matrix<3, 3, T>& triad, const Core::LinAlg::Matrix<3, 1, T>& Psi_l) const;
 
     /** \brief compute the interpolated quaternion based on given local rotation vector
      *
-     *  \date 01/17 */
+     */
     void get_interpolated_quaternion(Core::LinAlg::Matrix<4, 1, T>& quaternion,
         const Core::LinAlg::Matrix<3, 1, T>& Psi_l) const;
 
     /** \brief compute the local rotation vector at any point \xi \in [-1,1] in parameter space
      *
-     *  \date 01/17 */
+     */
     void get_interpolated_local_rotation_vector_at_xi(
         Core::LinAlg::Matrix<3, 1, T>& Psi_l, const double xi) const;
 
     /** \brief compute the local rotation vector based on given shape function values
      *
-     *  \date 01/17 */
+     */
     void get_interpolated_local_rotation_vector(Core::LinAlg::Matrix<3, 1, T>& Psi_l,
         const Core::LinAlg::Matrix<1, numnodes, double>& I_i) const;
 
@@ -112,14 +112,14 @@ namespace LargeRotations
     /** \brief compute the arc-length derivative of the local rotation vector at any point
      *         \xi \in [-1,1] in parameter space
      *
-     *  \date 01/17 */
+     */
     void get_interpolated_local_rotation_vector_derivative_at_xi(
         Core::LinAlg::Matrix<3, 1, T>& Psi_l_s, const double jacobifac, const double xi) const;
 
     /** \brief compute the arc-length derivative of the local rotation vector based on given
      *         shape function values
      *
-     *  \date 01/17 */
+     */
     void get_interpolated_local_rotation_vector_derivative(Core::LinAlg::Matrix<3, 1, T>& Psi_l_s,
         const Core::LinAlg::Matrix<1, numnodes, double>& I_i_xi, const double jacobifac) const;
 
@@ -127,14 +127,14 @@ namespace LargeRotations
     /** \brief compute the generalized rotational interpolation matrices for all nodes at
      *         any point \xi \in [-1,1] in parameter space
      *
-     *  \date 01/17 */
+     */
     void get_nodal_generalized_rotation_interpolation_matrices_at_xi(
         std::vector<Core::LinAlg::Matrix<3, 3, T>>& Itilde, const double xi) const;
 
     /** \brief compute the generalized rotational interpolation matrices for all nodes
      *         based on given local rotation vector and shape function values
      *
-     *  \date 01/17 */
+     */
     void get_nodal_generalized_rotation_interpolation_matrices(
         std::vector<Core::LinAlg::Matrix<3, 3, T>>& Itilde,
         const Core::LinAlg::Matrix<3, 1, T>& Psi_l,
@@ -144,7 +144,7 @@ namespace LargeRotations
     /** \brief compute the arc-length derivative of generalized rotational interpolation
      *         matrices for all nodes based on given local rotation vector and shape function values
      *
-     *  \date 01/17 */
+     */
     void get_nodal_generalized_rotation_interpolation_matrices_derivative(
         std::vector<Core::LinAlg::Matrix<3, 3, T>>& Itilde_prime,
         const Core::LinAlg::Matrix<3, 1, T>& Psi_l, const Core::LinAlg::Matrix<3, 1, T>& Psi_l_s,
@@ -154,7 +154,7 @@ namespace LargeRotations
     /** \brief compute the arc-length derivative of generalized rotational interpolation
      *         matrices for all nodes based on given local rotation vector and shape function values
      *
-     *  \date 01/17 */
+     */
     void get_nodal_generalized_rotation_interpolation_matrices_derivative(
         std::vector<Core::LinAlg::Matrix<3, 3, T>>& Itilde_prime,
         const Core::LinAlg::Matrix<3, 1, T>& Psi_l, const Core::LinAlg::Matrix<3, 1, T>& Psi_l_s,
@@ -168,7 +168,7 @@ namespace LargeRotations
 
     /** \brief set the two nodes I and J that are used to define the reference triad later on
      *
-     *  \date 01/2017 */
+     */
     void set_node_iand_j();
 
     //! get the interpolation scheme from the given number of nodes

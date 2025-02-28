@@ -25,7 +25,7 @@ namespace Discret
   {
     /// Fluid HDG element implementation
     /*!
-      \date 05/13
+
     */
     template <Core::FE::CellType distype>
     class FluidEleCalcHDG : public FluidEleInterface

@@ -711,7 +711,7 @@ namespace Core::FE
 
   /*!
   \brief integration points and weights
-  \date 12/2008
+
 
   This class unifies the access of integration points and corresponding weights
   w.r.t. to the number of space dimensions.

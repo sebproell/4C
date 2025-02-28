@@ -87,13 +87,13 @@ namespace BeamInteraction
 
     /** \brief print information about this beam contact element pair to screen
      *
-     *  \date 05/16 */
+     */
     void print(std::ostream& out) const override;
 
 
     /** \brief print this beam contact element pair to screen
      *
-     *  \date 12/16 */
+     */
     void print_summary_one_line_per_active_segment_pair(std::ostream& out) const override;
     //@}
 
@@ -578,7 +578,7 @@ namespace BeamInteraction
 
     /** \brief get Jacobi factor of beam element at xi \in [-1;1]
      *
-     *  \date 06/16 */
+     */
     inline double get_jacobi_at_xi(const Core::Elements::Element* element1, const double& xi)
     {
       const Discret::Elements::Beam3Base* ele =

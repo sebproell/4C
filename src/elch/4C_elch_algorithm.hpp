@@ -20,7 +20,7 @@ namespace ElCh
   /*!
 
     Base class of ELCH algorithms. Derives from ScaTraAlgorithm.
-    \date 03/08
+
    */
   class Algorithm : public ScaTra::ScaTraAlgorithm
   {

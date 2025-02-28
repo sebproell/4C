@@ -38,7 +38,6 @@ FOUR_C_NAMESPACE_OPEN
 ///
 
 
-/// \date 08/13
 
 class MyocardMinimal : public MyocardGeneral
 

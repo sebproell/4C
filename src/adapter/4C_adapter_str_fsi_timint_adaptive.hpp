@@ -47,7 +47,7 @@ namespace Adapter
    * \sa FSIStructureWrapper
    * \sa StructureTimIntAda
    *
-   * \date 12/2013
+
    */
   class StructureFSITimIntAda : virtual public FSIStructureWrapper,
                                 virtual public StructureTimIntAda

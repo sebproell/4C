@@ -106,7 +106,7 @@ namespace Solid
        * AND-combinations, you can use the QUANTITY parameter list name option for NormF, NormWRMS
        * and NormUpdate tests. See the NOX::Nln::StatusTest::Factory for more information.
        *
-       *  \date Oct 13, 2015
+
        */
       void set_combo_quantity_test_params(Teuchos::ParameterList& p,
           const Solid::TimeInt::BaseDataSDyn& datasdyn, const std::size_t& count,

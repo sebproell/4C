@@ -50,7 +50,7 @@ namespace Discret
 
       The calculations are done by the Evaluate ... () methods which are
       inherited from the ArteryEleInterface.
-      \date 03/18
+
     */
 
     template <Core::FE::CellType distype>

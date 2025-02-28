@@ -31,7 +31,7 @@ namespace Adapter
   /*!
    * \brief Adapter to adaptive implicit structural time integration
    *
-   * \date 08/08
+
    */
   class StructureTimIntAda : public StructureWrapper
   {

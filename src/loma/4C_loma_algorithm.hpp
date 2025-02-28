@@ -26,7 +26,7 @@ namespace LowMach
     and ScatraBaseAlgorithm.
     There can (and will) be different subclasses that implement
     different coupling schemes.
-    \date 08/08
+
    */
   class Algorithm : public Adapter::ScaTraFluidCouplingAlgorithm
   {
@@ -55,7 +55,7 @@ namespace LowMach
 
     \warning none
     \return void
-    \date 08/16
+
     */
     void init() override;
 
@@ -75,7 +75,7 @@ namespace LowMach
 
     \warning none
     \return void
-    \date 08/16
+
     */
     void setup() override;
 

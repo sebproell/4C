@@ -92,7 +92,7 @@ class EnsightWriter : public PostWriterBase
    other times, however, there is more than one result (velocity,
    pressure) and we want to write just one part of it. So we have to
    specify which part.
-   \date 03/07
+
    */
   void write_result(const std::string groupname,  ///< name of the result group in the control file
       const std::string name,                     ///< name of the result to be written
@@ -116,9 +116,9 @@ class EnsightWriter : public PostWriterBase
    issue.
 
     originally
-   \date 03/07
+
    adapted
-   \date 03/13
+
    */
   void write_result_one_time_step(PostResult& result,  ///< result group in the control file
       const std::string groupname,  ///< name of the result group in the control file
@@ -137,7 +137,7 @@ class EnsightWriter : public PostWriterBase
    e.g. structural stresses that do some element computations before output.
    To allow for a generic interface, the calling site needs to supply a
    class derived from SpecialFieldInterface that knows which function to call.
-   \date 04/14
+
    */
   void write_special_field(SpecialFieldInterface& special,
       PostResult& result,  ///< result group in the control file

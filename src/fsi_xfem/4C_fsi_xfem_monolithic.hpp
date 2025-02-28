@@ -55,7 +55,7 @@ namespace FSI
     expected not to change anymore. In case of permanently activating/deactivating fluid dofs, the
     fluid has to be solved on a slightly larger modified fluid dofsets where additional dofs are
     controlled via fluid stabilization (ghost-penalty) terms.
-    \date  08/2014
+
   */
   class MonolithicXFEM : public AlgorithmXFEM
   {

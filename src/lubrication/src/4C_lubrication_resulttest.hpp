@@ -35,7 +35,7 @@ namespace Lubrication
 
   /*!
     \brief lubrication specific result test class
-    \date 11/15
+
   */
   class ResultTest : public Core::Utils::ResultTest
   {

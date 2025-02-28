@@ -30,7 +30,7 @@ namespace Mat
     /*! \class ScalarDepInterp
      *  \brief Common parameters for scalar dependent interpolation between two material laws
      *
-     *  \date 12/2015
+
      */
     class ScalarDepInterp : public Core::Mat::PAR::Parameter
     {
@@ -92,7 +92,7 @@ namespace Mat
   /// <li> [1] GA Holzapfel, "Nonlinear solid mechanics", Wiley, 2000.
   /// </ul>
   ///
-  /// \date 05/09
+
 
   class ScalarDepInterp : public So3Material
   {

@@ -1142,7 +1142,7 @@ namespace Mortar
 
     /*! \brief Store the unredistributed local slave and lagrange multiplier maps
      *
-     *  \date 07/2016 */
+     */
     void store_unredistributed_maps();
 
     /*! \brief Redistribute the lagrange multiplier sets in a deterministic way
@@ -1151,7 +1151,7 @@ namespace Mortar
      *  Please note, that this function becomes unnecessary as soon as we use
      *  dofsets for the Lagrange and displacement dofs!
      *
-     *  \date 07/2016 */
+     */
     std::shared_ptr<Epetra_Map> redistribute_lag_mult_sets() const;
 
     /*!
@@ -1452,7 +1452,7 @@ namespace Mortar
      *  \param mele        (in): pointer to the current master element
      *  \param mparams_ptr (in): mortar parameter interface pointer
      *
-     *  \date 11/16 */
+     */
     virtual void pre_mortar_coupling(const Mortar::Element* sele,
         const std::vector<Mortar::Element*> mele,
         const std::shared_ptr<Mortar::ParamsInterface>& mparams_ptr) const {
@@ -1465,7 +1465,7 @@ namespace Mortar
      *  \param mele        (in): pointer to the current master element
      *  \param mparams_ptr (in): mortar parameter interface pointer
      *
-     *  \date 11/16 */
+     */
     virtual void post_mortar_coupling(const Mortar::Element* sele,
         const std::vector<Mortar::Element*> mele,
         const std::shared_ptr<Mortar::ParamsInterface>& mparams_ptr) const {

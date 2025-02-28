@@ -93,7 +93,7 @@ namespace Solid
 
       /** \brief copy the init information only and set the issetup flag to false
        *
-       *  \date 02/17 */
+       */
       virtual BaseDataGlobalState& operator=(const BaseDataGlobalState& source);
 
       /*! \brief Initialize class variables
@@ -905,7 +905,7 @@ namespace Solid
        *  Do NOT change this to PUBLIC! Use the ExtractMatrixBlock() function
        *  instead.
        *
-       *  \date 02/17
+
        *  */
       std::shared_ptr<Core::LinAlg::SparseOperator>& stiff_ptr() { return stiff_; }
 
@@ -1041,7 +1041,7 @@ namespace Solid
        *  member function! Only indirect access, e.g. via extract_model_block() or
        *  protected access is allowed!
        *
-       *  \date 02/17
+
        *  */
       std::shared_ptr<Core::LinAlg::SparseOperator> stiff_;
 

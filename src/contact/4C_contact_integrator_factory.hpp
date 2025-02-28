@@ -28,7 +28,7 @@ namespace CONTACT
      public:
       /*! \brief Build the desired contact integrator
        *
-       * \date 04/16
+
        * */
       std::shared_ptr<CONTACT::Integrator> build_integrator(
           const Inpar::CONTACT::SolvingStrategy& sol_type, Teuchos::ParameterList& mortar_params,
