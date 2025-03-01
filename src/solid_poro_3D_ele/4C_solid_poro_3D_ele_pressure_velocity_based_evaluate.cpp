@@ -12,6 +12,7 @@
 #include "4C_legacy_enum_definitions_element_actions.hpp"
 #include "4C_solid_3D_ele_calc_lib.hpp"
 #include "4C_solid_3D_ele_factory.hpp"
+#include "4C_solid_poro_3D_ele_calc_lib.hpp"
 #include "4C_solid_poro_3D_ele_calc_lib_io.hpp"
 #include "4C_solid_poro_3D_ele_pressure_velocity_based.hpp"
 #include "4C_solid_scatra_3D_ele_factory.hpp"
@@ -103,10 +104,14 @@ int Discret::Elements::SolidPoroPressureVelocityBased::evaluate(Teuchos::Paramet
           std::visit(
               [&](auto& interface)
               {
+                SolidPoroDiagonalBlockMatrices<PorosityFormulation::from_material_law>
+                    diagonal_block_matrices{
+                        .force_vector = &elevec1, .K_displacement_displacement = &elemat1};
+
                 interface->evaluate_nonlinear_force_stiffness(*this, this->struct_poro_material(),
                     this->fluid_poro_material(), this->get_anisotropic_permeability_property(),
-                    this->kinematic_type(), discretization, primary_variables, params, &elevec1,
-                    &elemat1, &elemat2);
+                    this->kinematic_type(), discretization, primary_variables, params,
+                    diagonal_block_matrices, &elemat2);
               },
               solidporo_press_vel_based_calc_variant_);
         }
@@ -133,10 +138,13 @@ int Discret::Elements::SolidPoroPressureVelocityBased::evaluate(Teuchos::Paramet
           std::visit(
               [&](auto& interface)
               {
+                SolidPoroDiagonalBlockMatrices<PorosityFormulation::from_material_law>
+                    diagonal_block_matrices{.force_vector = &elevec1};
+
                 interface->evaluate_nonlinear_force_stiffness(*this, this->struct_poro_material(),
                     this->fluid_poro_material(), this->get_anisotropic_permeability_property(),
-                    this->kinematic_type(), discretization, primary_variables, params, &elevec1,
-                    nullptr, nullptr);
+                    this->kinematic_type(), discretization, primary_variables, params,
+                    diagonal_block_matrices, nullptr);
               },
               solidporo_press_vel_based_calc_variant_);
         }
@@ -163,10 +171,14 @@ int Discret::Elements::SolidPoroPressureVelocityBased::evaluate(Teuchos::Paramet
           std::visit(
               [&](auto& interface)
               {
+                SolidPoroDiagonalBlockMatrices<PorosityFormulation::from_material_law>
+                    diagonal_block_matrices{
+                        .force_vector = &elevec1, .K_displacement_displacement = &elemat1};
+
                 interface->evaluate_nonlinear_force_stiffness(*this, this->struct_poro_material(),
                     this->fluid_poro_material(), this->get_anisotropic_permeability_property(),
-                    this->kinematic_type(), discretization, primary_variables, params, &elevec1,
-                    &elemat1, nullptr);
+                    this->kinematic_type(), discretization, primary_variables, params,
+                    diagonal_block_matrices, nullptr);
               },
               solidporo_press_vel_based_calc_variant_);
         }
@@ -200,9 +212,13 @@ int Discret::Elements::SolidPoroPressureVelocityBased::evaluate(Teuchos::Paramet
         std::visit(
             [&](auto& interface)
             {
+              SolidPoroOffDiagonalBlockMatrices<PorosityFormulation::from_material_law>
+                  off_diagonal_block_matrices{.K_displacement_fluid_dofs = &elemat1};
+
               interface->evaluate_nonlinear_force_stiffness_od(*this, this->struct_poro_material(),
                   this->fluid_poro_material(), this->get_anisotropic_permeability_property(),
-                  this->kinematic_type(), discretization, primary_variables, params, &elemat1);
+                  this->kinematic_type(), discretization, primary_variables, params,
+                  off_diagonal_block_matrices);
             },
             solidporo_press_vel_based_calc_variant_);
       }
