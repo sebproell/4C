@@ -82,8 +82,8 @@ namespace CONSTRAINTS
 
     \warning none
     \return void
-    \date 09/16
-    \author rauch  */
+
+    */
     void setup(
         std::shared_ptr<const Core::LinAlg::Vector<double>> disp, Teuchos::ParameterList params);
 

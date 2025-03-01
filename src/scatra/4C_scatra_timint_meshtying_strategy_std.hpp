@@ -50,8 +50,7 @@ namespace ScaTra
      Evaluate terms of your weak formulation on elements marked with a given condition.
 
     \return void
-    \date 08/16
-    \author rauch
+
     */
     void evaluate_condition(Teuchos::ParameterList& params,
         std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,

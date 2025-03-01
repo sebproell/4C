@@ -42,7 +42,6 @@ namespace ParticleRigidBody
    *
    * A class that writes visualization output for rigid bodies in vtk/vtp format at runtime.
    *
-   * \author Sebastian Fuchs \date 09/2020
    */
   class RigidBodyRuntimeVtpWriter final
   {
@@ -50,7 +49,6 @@ namespace ParticleRigidBody
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[in] comm communicator
      */
@@ -59,7 +57,6 @@ namespace ParticleRigidBody
     /*!
      * \brief init rigid body runtime vtp writer
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[in] rigidbodydatastate rigid body data state container
      */
@@ -68,7 +65,6 @@ namespace ParticleRigidBody
     /*!
      * \brief read restart of runtime vtp writer
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[in] reader discretization reader
      */
@@ -79,7 +75,6 @@ namespace ParticleRigidBody
      *
      * Set positions and states of rigid bodies owned by this processor.
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[in] ownedrigidbodies owned rigid bodies by this processor
      */

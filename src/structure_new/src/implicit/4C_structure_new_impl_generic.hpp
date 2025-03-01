@@ -148,7 +148,7 @@ namespace Solid
        *
        *  \param[in] NOX group containing the linear system with the Jacobian
        *
-       *  \author hiermeier \date 06/17 */
+       *  */
       void print_jacobian_in_matlab_format(const NOX::Nln::Group& curr_grp) const;
 
       //! Get the NOX parameter list
@@ -211,7 +211,7 @@ namespace NOX
          *  and is used to modify the computeX() routine of the given NOX::Nln::Group.
          *  It's called by the wrapper class NOX::Nln::GROUP::PrePostOperator.
          *
-         *  \author Michael Hiermeier */
+         *  */
         class Generic : public NOX::Nln::Abstract::PrePostOperator
         {
          public:
@@ -228,7 +228,7 @@ namespace NOX
            *  where we calculate the Lagrange multiplier increment in a post-processing
            *  step.
            *
-           *  \author hiermeier \date 03/17 */
+           *  */
           void run_pre_compute_x(const NOX::Nln::Group& input_grp,
               const Core::LinAlg::Vector<double>& dir, const double& step,
               const NOX::Nln::Group& curr_grp) override;
@@ -243,7 +243,7 @@ namespace NOX
            *  increment plays also a role in other condensation approaches, like the
            *  mortar dual strategies.
            *
-           *  \author hiermeier \date 07/16 */
+           *  */
           void run_post_compute_x(const NOX::Nln::Group& input_grp,
               const Core::LinAlg::Vector<double>& dir, const double& step,
               const NOX::Nln::Group& curr_grp) override;
@@ -255,7 +255,7 @@ namespace NOX
            *  a successful or unsuccessful nonlinear solver step. It is called after
            *  a possible LineSearch or other globalization method has been used.
            *
-           *  \author hiermeier \date 03/17 */
+           *  */
           void runPostIterate(const ::NOX::Solver::Generic& solver) override;
 
           /*! \brief Derived function, which is called at the very end of a call to
@@ -274,14 +274,14 @@ namespace NOX
            *  \param xold   : read-only access to the old state vector
            *  \param grp    : read only access to the group object
            *
-           *  \author hiermeier \date 12/17 */
+           *  */
           void run_post_apply_jacobian_inverse(const ::NOX::Abstract::Vector& rhs,
               ::NOX::Abstract::Vector& result, const ::NOX::Abstract::Vector& xold,
               const NOX::Nln::Group& grp) override;
 
           /// \brief Called at the very beginning of a Newton loop
           /**
-           *  \author hiermeier \date 05/18 */
+           *  */
           void runPreSolve(const ::NOX::Solver::Generic& solver) override;
 
           /*! \brief Derived function, which is called at the beginning of a call to
@@ -292,7 +292,7 @@ namespace NOX
            *  \param xold   : read-only access to the old state vector
            *  \param grp    : read only access to the group object
            *
-           *  \author seitz \date 04/18 */
+           *  */
           void run_pre_apply_jacobian_inverse(const ::NOX::Abstract::Vector& rhs,
               ::NOX::Abstract::Vector& result, const ::NOX::Abstract::Vector& xold,
               const NOX::Nln::Group& grp) override;

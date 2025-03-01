@@ -113,7 +113,7 @@ namespace NOX
            *  "active" problem is extracted as a sub-problem and the very simple
            *  "inactive" problem is solved directly by inverting the diagonal matrix.
            *
-           *  \author hiermeier \date 04/17 */
+           *  */
           void extract_active_blocks(Core::LinAlg::SparseOperator& mat,
               Core::LinAlg::Vector<double>& lhs, Core::LinAlg::Vector<double>& rhs);
 
@@ -121,7 +121,7 @@ namespace NOX
            *
            *  This is the default case if no simple pseudo problem can be detected.
            *
-           *  \author hiermeier \date 04/17 */
+           *  */
           void set_original_system(Core::LinAlg::SparseOperator& mat,
               Core::LinAlg::Vector<double>& lhs, Core::LinAlg::Vector<double>& rhs);
 
@@ -134,7 +134,7 @@ namespace NOX
            *
            *  \param[out] glhs: global left hand side vector
            *
-           *  \author hiermeier \date 03/18 */
+           *  */
           void insert_into_global_lhs(Core::LinAlg::Vector<double>& glhs) const;
 
           const LinearSystem& linsys_;

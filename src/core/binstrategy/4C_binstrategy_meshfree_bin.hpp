@@ -30,7 +30,7 @@ namespace Core::FE::MeshFree
    * parent relations.
    *
    *
-   * \date November, 2012
+
    */
   /*--------------------------------------------------------------------------*/
   template <typename Element>

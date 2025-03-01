@@ -30,8 +30,6 @@ namespace FLD
           o used for rotationally symmetric boundary conditions
           o used for rotationally symmetric boundary conditions
 
-  \author gjb
-
    */
   class RotationallySymmetricPeriodicBC
   {

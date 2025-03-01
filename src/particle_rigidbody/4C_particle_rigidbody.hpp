@@ -52,7 +52,6 @@ namespace ParticleRigidBody
   /*!
    * \brief rigid body handler for particle problem
    *
-   * \author Sebastian Fuchs \date 08/2020
    */
   class RigidBodyHandler final : public RigidBodyHandlerInterface
   {
@@ -60,7 +59,6 @@ namespace ParticleRigidBody
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 08/2020
      *
      * \param[in] comm   communicator
      * \param[in] params particle simulation parameter list
@@ -70,7 +68,6 @@ namespace ParticleRigidBody
     /*!
      * \brief destructor
      *
-     * \author Sebastian Fuchs \date 08/2020
      *
      * \note At compile-time a complete type of class T as used in class member
      *       std::unique_ptr<T> ptr_T_ is required
@@ -80,14 +77,12 @@ namespace ParticleRigidBody
     /*!
      * \brief init rigid body handler
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void init();
 
     /*!
      * \brief setup rigid body handler
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void setup(
         const std::shared_ptr<PARTICLEENGINE::ParticleEngineInterface> particleengineinterface);
@@ -95,14 +90,12 @@ namespace ParticleRigidBody
     /*!
      * \brief write restart of rigid body handler
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void write_restart() const;
 
     /*!
      * \brief read restart of rigid body handler
      *
-     * \author Sebastian Fuchs \date 08/2020
      *
      * \param[in] reader discretization reader
      */
@@ -111,7 +104,6 @@ namespace ParticleRigidBody
     /*!
      * \brief insert rigid body handler dependent states of all particle types
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[out] particlestatestotypes map of particle types and corresponding states
      */
@@ -122,7 +114,6 @@ namespace ParticleRigidBody
     /*!
      * \brief write rigid body runtime output
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[in] step output step
      * \param[in] time output time
@@ -136,7 +127,6 @@ namespace ParticleRigidBody
      * defines the affiliation of a rigid particle to a rigid body. Upon this information the
      * affiliation pair data is initialized.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void set_initial_affiliation_pair_data();
 
@@ -146,14 +136,12 @@ namespace ParticleRigidBody
      * The rigid body unique global identifier handler is initialized. This requires knowledge of
      * all global ids currently assigned to rigid bodies over all processors.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void set_unique_global_ids_for_all_rigid_bodies();
 
     /*!
      * \brief allocate rigid body states
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void allocate_rigid_body_states();
 
@@ -164,21 +152,18 @@ namespace ParticleRigidBody
      * bodies. This includes setting the relative position of rigid particles in the body frame and
      * in the reference frame.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void initialize_rigid_body_mass_quantities_and_orientation();
 
     /*!
      * \brief distribute rigid body
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void distribute_rigid_body();
 
     /*!
      * \brief communicate rigid body
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void communicate_rigid_body();
 
@@ -188,7 +173,6 @@ namespace ParticleRigidBody
      * Clear the forces and torques acting on rigid bodies and on the corresponding rigid particles
      * affiliated with the rigid bodies.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void clear_forces_and_torques();
 
@@ -197,7 +181,6 @@ namespace ParticleRigidBody
      *
      * Add the gravity acceleration acting on rigid bodies.
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[in] gravity gravity acceleration
      */
@@ -211,7 +194,6 @@ namespace ParticleRigidBody
      * processor. Finally, the corresponding accelerations of rigid particles affiliated with the
      * rigid bodies are set.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void compute_accelerations();
 
@@ -221,7 +203,6 @@ namespace ParticleRigidBody
      * Update the positions of rigid bodies with a given time increment and set the corresponding
      * positions of rigid particles affiliated with the rigid bodies.
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[in] timeincrement time increment
      */
@@ -233,7 +214,6 @@ namespace ParticleRigidBody
      * Update the velocities of rigid bodies with a given time increment and set the corresponding
      * velocities of rigid particles affiliated with the rigid bodies.
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[in] timeincrement time increment
      */
@@ -245,7 +225,6 @@ namespace ParticleRigidBody
      * Clear the accelerations of rigid bodies. However, note that the accelerations of rigid
      * particles remain untouched!
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void clear_accelerations() override;
 
@@ -254,7 +233,6 @@ namespace ParticleRigidBody
      *
      * Check for phase change, i.e., melting or solidification, of rigid bodies over all processors.
      *
-     * \author Sebastian Fuchs \date 11/2020
      *
      * \param[in] particlesfromphasetophase particle phase change tuples
      *
@@ -269,7 +247,6 @@ namespace ParticleRigidBody
      * Evaluate phase change, i.e., melting or solidification, of rigid bodies by tracking the phase
      * change of rigid particles owned on this processor from or to the rigid phase.
      *
-     * \author Sebastian Fuchs \date 11/2020
      *
      * \param[in] particlesfromphasetophase particle phase change tuples
      */
@@ -295,28 +272,24 @@ namespace ParticleRigidBody
     /*!
      * \brief init rigid body unique global identifier handler
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void init_rigid_body_unique_global_id_handler();
 
     /*!
      * \brief init rigid body data state container
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void init_rigid_body_data_state();
 
     /*!
      * \brief init rigid body runtime vtp writer
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void init_rigid_body_vtp_writer();
 
     /*!
      * \brief init affiliation pair handler
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void init_affiliation_pair_handler();
 
@@ -325,7 +298,6 @@ namespace ParticleRigidBody
      *
      * Get the packed required states of all rigid bodies owned by this processor.
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[out] buffer buffer of packed rigid body state data
      */
@@ -334,7 +306,6 @@ namespace ParticleRigidBody
     /*!
      * \brief extract packed rigid body state data
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[in] buffer buffer of packed rigid body state data
      */
@@ -345,7 +316,6 @@ namespace ParticleRigidBody
      *
      * Update the ownership of rigid bodies on all processors.
      *
-     * \author Sebastian Fuchs \date 11/2020
      */
     void update_rigid_body_ownership();
 
@@ -357,7 +327,6 @@ namespace ParticleRigidBody
      * maximum number of rigid particles per processor the owning processor of all rigid bodies is
      * determined. Finally, each processor stores the global ids of rigid bodies owned.
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void determine_owned_and_hosted_rigid_bodies();
 
@@ -367,7 +336,6 @@ namespace ParticleRigidBody
      * Relate the global ids of rigid bodies owned by this processor to the corresponding hosting
      * processors.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void relate_owned_rigid_bodies_to_hosting_procs();
 
@@ -377,7 +345,6 @@ namespace ParticleRigidBody
      * Communicate required states of all rigid bodies previously owned by this processor to the new
      * owning processor.
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[in] previouslyownedrigidbodies rigid bodies previously owned by this processor
      */
@@ -389,7 +356,6 @@ namespace ParticleRigidBody
      * Compute the mass quantities, i.e., mass, center of gravity, and mass moment of inertia, of
      * rigid bodies over all processors.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void compute_rigid_body_mass_quantities();
 
@@ -398,7 +364,6 @@ namespace ParticleRigidBody
      *
      * Clear partial mass quantities of hosted rigid bodies on this processor.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void clear_partial_mass_quantities();
 
@@ -407,7 +372,6 @@ namespace ParticleRigidBody
      *
      * Compute the partial mass quantities of hosted rigid bodies on respective hosting processors.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void compute_partial_mass_quantities();
 
@@ -417,7 +381,6 @@ namespace ParticleRigidBody
      * Gather the partial mass quantities for owned rigid bodies from respective hosting processors
      * on owning processor.
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[out] gatheredpartialmass     gathered partial mass
      * \param[out] gatheredpartialinertia  gathered partial inertia
@@ -434,7 +397,6 @@ namespace ParticleRigidBody
      * Compute the full mass quantities of owned rigid bodies on owning processor using all gathered
      * partial mass quantities.
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[in] gatheredpartialmass     gathered partial mass
      * \param[in] gatheredpartialinertia  gathered partial inertia
@@ -450,7 +412,6 @@ namespace ParticleRigidBody
      *
      * Clear the force and torque of hosted rigid bodies on this processor.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void clear_rigid_body_force_and_torque();
 
@@ -459,7 +420,6 @@ namespace ParticleRigidBody
      *
      * Clear the force of rigid particles owned on this processor.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void clear_rigid_particle_force();
 
@@ -469,7 +429,6 @@ namespace ParticleRigidBody
      * Compute the partial force and torque acting on hosted rigid bodies on respective hosting
      * processors.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void compute_partial_force_and_torque();
 
@@ -479,7 +438,6 @@ namespace ParticleRigidBody
      * Gather the partial force and torque acting on owned rigid bodies from respective hosting
      * processors on owning processor and compute the full force and torque.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void gather_partial_and_compute_full_force_and_torque();
 
@@ -489,7 +447,6 @@ namespace ParticleRigidBody
      * Compute the accelerations of owned rigid bodies from force and torque using mass quantities
      * on the owning processor.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void compute_accelerations_from_force_and_torque();
 
@@ -498,7 +455,6 @@ namespace ParticleRigidBody
      *
      * Clear the orientation of rigid bodies owned on this processor.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void clear_rigid_body_orientation();
 
@@ -507,7 +463,6 @@ namespace ParticleRigidBody
      *
      * Update the positions of rigid bodies with a given time increment on the owning processor.
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[in] timeincrement time increment
      */
@@ -518,7 +473,6 @@ namespace ParticleRigidBody
      *
      * Update the velocities of rigid bodies with a given time increment on the owning processor.
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[in] timeincrement time increment
      */
@@ -529,7 +483,6 @@ namespace ParticleRigidBody
      *
      * Clear the accelerations of rigid bodies on the owning processor.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void clear_rigid_body_accelerations();
 
@@ -538,7 +491,6 @@ namespace ParticleRigidBody
      *
      * Broadcast positions of rigid bodies from the owning processor to respective local processors.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void broadcast_rigid_body_positions();
 
@@ -548,7 +500,6 @@ namespace ParticleRigidBody
      * Broadcast velocities of rigid bodies from the owning processor to respective local
      * processors.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void broadcast_rigid_body_velocities();
 
@@ -558,7 +509,6 @@ namespace ParticleRigidBody
      * Broadcast accelerations of rigid bodies from the owning processor to respective local
      * processors.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void broadcast_rigid_body_accelerations();
 
@@ -567,7 +517,6 @@ namespace ParticleRigidBody
      *
      * Set the relative position of rigid particles in the body frame owned on this processor.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void set_rigid_particle_relative_position_in_body_frame();
 
@@ -577,7 +526,6 @@ namespace ParticleRigidBody
      * Update the relative position of rigid particles in the rotating frame owned on this
      * processor.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void update_rigid_particle_relative_position();
 
@@ -587,7 +535,6 @@ namespace ParticleRigidBody
      * Set the position of rigid particles owned on this processor consistent to the affiliated
      * rigid body.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void set_rigid_particle_position();
 
@@ -597,7 +544,6 @@ namespace ParticleRigidBody
      * Set the velocities of rigid particles owned on this processor consistent to the affiliated
      * rigid body.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void set_rigid_particle_velocities();
 
@@ -607,14 +553,12 @@ namespace ParticleRigidBody
      * Set the accelerations of rigid particles owned on this processor consistent to the affiliated
      * rigid body.
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void set_rigid_particle_accelerations();
 
     /*!
      * \brief evaluate melting of rigid bodies
      *
-     * \author Sebastian Fuchs \date 11/2020
      *
      * \param[in] particlesfromphasetophase particle phase change tuples
      */
@@ -624,7 +568,6 @@ namespace ParticleRigidBody
     /*!
      * \brief evaluate solidification of rigid bodies
      *
-     * \author Sebastian Fuchs \date 11/2020
      *
      * \param[in] particlesfromphasetophase particle phase change tuples
      */
@@ -636,7 +579,6 @@ namespace ParticleRigidBody
      *
      * Set the velocities of rigid bodies after a phase change on the owning processor.
      *
-     * \author Sebastian Fuchs \date 11/2020
      *
      * \param[in] previousposition previous position of rigid bodies
      */

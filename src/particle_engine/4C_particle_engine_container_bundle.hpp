@@ -38,7 +38,6 @@ namespace PARTICLEENGINE
    * A handler managing the access to the bundle of particle containers. For each particle type a
    * container for owned particles and a container for ghosted particles is initialized.
    *
-   * \author Sebastian Fuchs \date 05/2018
    */
 
   class ParticleContainerBundle final
@@ -50,14 +49,12 @@ namespace PARTICLEENGINE
     /*!
      * \brief init particle container bundle
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void init();
 
     /*!
      * \brief setup particle container bundle
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] particlestatestotypes particle types and corresponding states
      */
@@ -66,7 +63,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get particle types of stored containers
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \return reference to particle types of stored containers
      */
@@ -75,7 +71,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get specific particle container
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] type   particle type
      * \param[in] status particle status
@@ -99,7 +94,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief scale state of particles in container of owned particles of specific type
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] fac       scale factor
      * \param[in] state particle state
@@ -121,7 +115,6 @@ namespace PARTICLEENGINE
      * \brief add scaled states to first state of particles in container of owned particles of
      *        specific type
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] facA   first scale factor
      * \param[in] stateA first particle state
@@ -144,7 +137,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief set given state to all particles in container of owned particles of specific type
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] val   particle state value
      * \param[in] state particle state
@@ -165,7 +157,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief clear state of all particles in container of owned particles of specific type
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] state particle state
      * \param[in] type  particle type
@@ -189,7 +180,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief scale state of particles in container of owned particles of all types
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] fac   scale factor
      * \param[in] state particle state
@@ -203,7 +193,6 @@ namespace PARTICLEENGINE
      * \brief add scaled states to first state of particles in container of owned particles of all
      *        types
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] facA   first scale factor
      * \param[in] stateA first particle state
@@ -220,7 +209,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief set given state to all particles in container of owned particles of all types
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] val   particle state value
      * \param[in] state particle state
@@ -233,7 +221,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief clear state of all particles in container of owned particles of all types
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] state particle state
      */
@@ -250,7 +237,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief check and decrease the size of all containers of specific status
      *
-     * \author Sebastian Fuchs \date 07/2019
      *
      * \param[in] status particle status
      */
@@ -264,7 +250,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief clear all containers of specific status
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] status particle status
      */
@@ -281,7 +266,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get packed particle objects of all containers
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[out] particlebuffer buffer of packed particle objects of all containers
      */
@@ -291,7 +275,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get particle objects of all containers
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[out] particlesstored particle objects of all containers
      */

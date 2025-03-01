@@ -22,7 +22,7 @@ namespace Core::Elements
    *
    *  \return minimal value.
    *
-   *  \author hiermeier \date 09/18 */
+   *  */
   template <Core::FE::CellType type, unsigned numnode, unsigned numdim>
   double get_minimal_jac_determinant_at_nodes(const Core::LinAlg::Matrix<numdim, numnode>& xcurr)
   {

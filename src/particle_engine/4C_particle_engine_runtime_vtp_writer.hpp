@@ -40,7 +40,6 @@ namespace PARTICLEENGINE
    * particle type (and particle status) a RuntimeVtuWriter is initialized that writes the output to
    * a separate name.
    *
-   * \author Sebastian Fuchs \date 03/2018
    */
   class ParticleRuntimeVtpWriter final
   {
@@ -48,7 +47,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in] comm communicator
      */
@@ -57,7 +55,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief init particle runtime vtp writer
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in] particlecontainerbundle particle container bundle
      */
@@ -66,7 +63,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief setup particle runtime vtp writer
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in] write_ghosted_particles flag for output of ghosted particles
      */
@@ -75,7 +71,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief read restart of runtime vtp writer
      *
-     * \author Sebastian Fuchs \date 07/2018
      *
      * \param[in] reader discretization reader
      */
@@ -84,7 +79,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief set positions and states of particles
      *
-     * \author Sebastian Fuchs \date 03/2018
      */
     void set_particle_positions_and_states();
 
@@ -116,7 +110,6 @@ namespace PARTICLEENGINE
      * \note Reconsider the concept of a black list with hard coded particle state enums. Think
      *       about defining all particle states for the output via a list in the input file.
      *
-     * \author Sebastian Fuchs \date 11/2018
      */
     std::set<ParticleState> blackliststates_;
   };

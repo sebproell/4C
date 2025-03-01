@@ -119,8 +119,6 @@ namespace PoroElast
      In case of poro, we also need the initial porosity type of the structural element to be known
      in the fluid element, which is why there is a special strategy for poro. Note that this is not
      yet working for inhomogeneous material properties.
-
-     \author vuong 10/14
      */
     class PoroMaterialStrategy : public Coupling::VolMortar::Utils::DefaultMaterialStrategy
     {

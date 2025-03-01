@@ -28,7 +28,6 @@ namespace PARTICLEALGORITHM
   /*!
    * \brief gravity acceleration handler for particle simulations
    *
-   * \author Sebastian Fuchs \date 05/2018
    */
   class GravityHandler
   {
@@ -36,7 +35,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] params particle simulation parameter list
      */
@@ -45,7 +43,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief init gravity handler
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] gravity gravity acceleration
      */
@@ -54,7 +51,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief setup gravity handler
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void setup();
 
@@ -63,7 +59,6 @@ namespace PARTICLEALGORITHM
      *
      * Evaluate the gravity ramp function at the given time to get the scaled gravity acceleration.
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in]  time           evaluation time
      * \param[out] scaled_gravity scaled gravity acceleration

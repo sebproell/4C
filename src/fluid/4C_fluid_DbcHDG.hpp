@@ -29,7 +29,7 @@ namespace FLD
   {
     /** \brief Specialized Dbc evaluation class for HDG discretizations
      *
-     *  \author hiermeier \date 10/16 */
+     *  */
     class DbcHdgFluid : public Core::FE::Utils::Dbc
     {
      public:

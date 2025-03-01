@@ -46,7 +46,6 @@ namespace PARTICLEENGINE
    * \note Methods in this class are documented briefly. Refer to the full documentation of the
    *       particle engine class!
    *
-   * \author Sebastian Fuchs \date 03/2018
    */
   class ParticleEngineInterface
   {
@@ -57,7 +56,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief free unique global ids
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \param[in] freeuniquegids free unique global ids
      */
@@ -66,7 +64,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get unique global ids for all particles
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \param[in] particlestogetuniquegids particles to get unique global ids
      */
@@ -76,7 +73,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief refresh specific states of particles of specific types
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] particlestatestotypes particle types and corresponding particle states to be
      *                                  refreshed
@@ -87,7 +83,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief hand over particles to be removed
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \param[in] particlestoremove particles to be removed from containers on this processor
      */
@@ -97,7 +92,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief hand over particles to be inserted
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \param[in] particlestoinsert particles to be inserted into containers on this processor
      */
@@ -107,7 +101,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get particle container bundle
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \return particle container bundle
      */
@@ -116,7 +109,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get reference to potential particle neighbors
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \return potential particle neighbor pairs
      */
@@ -125,7 +117,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get reference to particles being communicated to target processors
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \return particles being communicated to target processors
      */
@@ -134,7 +125,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get local index in specific particle container
      *
-     * \author Sebastian Fuchs \date 10/2018
      *
      * \param[in] globalid global id of particle
      *
@@ -145,7 +135,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get bin discretization writer
      *
-     * \author Sebastian Fuchs \date 03/2019
      *
      * \return bin discretization writer
      */
@@ -155,7 +144,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief relate all particles to all processors
      *
-     * \author Sebastian Fuchs \date 03/2019
      *
      * \param[out] particlestoproc relate global id of particles to global id of processor
      */
@@ -164,7 +152,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get particles within radius
      *
-     * \author Sebastian Fuchs \date 09/2019
      *
      * \param[in]  position             position of search point
      * \param[in]  radius               search radius around search point
@@ -179,7 +166,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get bin size
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \return pointer to bin size
      */
@@ -188,7 +174,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get minimum relevant bin size
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \return minimum relevant bin size
      */
@@ -197,7 +182,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get flag indicating periodic boundary conditions
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \return flag indicating periodic boundary conditions
      */
@@ -206,7 +190,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get flag indicating periodic boundary conditions in spatial direction
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] dim spatial direction
      *
@@ -217,7 +200,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get length of binning domain in a spatial direction
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] dim spatial direction
      *
@@ -228,7 +210,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get bounding box dimensions
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \return bounding box dimensions
      */
@@ -239,7 +220,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get distance between particles considering periodic boundaries
      *
-     * \author Sebastian Fuchs \date 08/2018
      *
      * \param[in]  pos_i pointer to position of particle i
      * \param[in]  pos_j pointer to position of particle j
@@ -251,7 +231,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get number of particles on this processors
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \return number of particles on this processors
      */
@@ -260,7 +239,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get number of particles on this processor of specific type
      *
-     * \author Sebastian Fuchs \date 07/2018
      *
      * \param[in] type particle type
      *

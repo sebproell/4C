@@ -32,7 +32,7 @@ namespace Solid
      *  different implicit time integration strategies. It summarizes the functionality
      *  which all of the different implicit strategies share.
      *
-     *  \author Michael Hiermeier */
+     *  */
     class ImplicitBase : public Base
     {
      public:

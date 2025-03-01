@@ -55,7 +55,6 @@ namespace ParticleInteraction
   /*!
    * \brief base particle interaction
    *
-   * \author Sebastian Fuchs \date 05/2018
    */
   class ParticleInteractionBase
   {

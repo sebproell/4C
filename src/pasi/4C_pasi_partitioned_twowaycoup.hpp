@@ -29,7 +29,6 @@ namespace PaSI
    * Dirichlet-Neumann coupling scheme with particle field as Dirichlet partition and Structure
    * field as Neumann partition.
    *
-   * \author Sebastian Fuchs \date 02/2017
    */
   class PasiPartTwoWayCoup : public PartitionedAlgo
   {
@@ -37,7 +36,6 @@ namespace PaSI
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 02/2017
      *
      * \param[in] comm   communicator
      * \param[in] params particle structure interaction parameter list
@@ -47,21 +45,18 @@ namespace PaSI
     /*!
      * \brief init pasi algorithm
      *
-     * \author Sebastian Fuchs \date 02/2017
      */
     void init() override;
 
     /*!
      * \brief setup pasi algorithm
      *
-     * \author Sebastian Fuchs \date 02/2017
      */
     void setup() override;
 
     /*!
      * \brief read restart information for given time step
      *
-     * \author Sebastian Fuchs \date 03/2017
      *
      * \param[in] restartstep restart step
      */
@@ -70,7 +65,6 @@ namespace PaSI
     /*!
      * \brief partitioned two way coupled timeloop
      *
-     * \author Sebastian Fuchs \date 02/2017
      */
     void timeloop() final;
 
@@ -78,14 +72,12 @@ namespace PaSI
     /*!
      * \brief iteration loop between coupled fields
      *
-     * \author Sebastian Fuchs \date 02/2017
      */
     virtual void outerloop();
 
     /*!
      * \brief output of fields
      *
-     * \author Sebastian Fuchs \date 03/2017
      */
     void output() override;
 
@@ -96,7 +88,6 @@ namespace PaSI
      * interface displacement and the interface force. The increments are build after the structure
      * and particle field are solved.
      *
-     * \author Sebastian Fuchs \date 03/2017
      *
      * \param[in] intfdispnp  interface displacement
      * \param[in] intfforcenp interface force
@@ -109,7 +100,6 @@ namespace PaSI
      *
      * Finalize the interface displacement increment and the interface force increment states.
      *
-     * \author Sebastian Fuchs \date 03/2017
      */
     void build_increment_states();
 
@@ -118,7 +108,6 @@ namespace PaSI
      *
      * Apply the interface forces as handed in to the structural field.
      *
-     * \author Sebastian Fuchs \date 03/2017
      *
      * \param[in] intfforcenp interface force
      */
@@ -129,7 +118,6 @@ namespace PaSI
      *
      * Reset the particle states to the converged states of the last time step.
      *
-     * \author Sebastian Fuchs \date 03/2017
      */
     void reset_particle_states();
 
@@ -138,7 +126,6 @@ namespace PaSI
      *
      * Clear the interface forces in the particle wall handler.
      *
-     * \author Sebastian Fuchs \date 05/2019
      */
     void clear_interface_forces();
 
@@ -149,7 +136,6 @@ namespace PaSI
      * includes communication, since the structural discretization and the particle wall
      * discretization are in general distributed independently of each other to all processors.
      *
-     * \author Sebastian Fuchs \date 05/2019
      */
     void get_interface_forces();
 
@@ -159,7 +145,6 @@ namespace PaSI
      * Convergence check of the partitioned coupling outer loop based on relative and scaled
      * interface displacement and force increment norms.
      *
-     * \author Sebastian Fuchs \date 02/2017
      *
      * \param[in] itnum iteration counter
      *
@@ -172,7 +157,6 @@ namespace PaSI
      *
      * Save the converged particle states of the last time step.
      *
-     * \author Sebastian Fuchs \date 05/2019
      */
     void save_particle_states();
 
@@ -214,7 +198,6 @@ namespace PaSI
    * Dirichlet-Neumann coupling scheme with particle field as Dirichlet partition and Structure
    * field as Neumann partition and constant interface displacement relaxation.
    *
-   * \author Sebastian Fuchs \date 03/2017
    */
   class PasiPartTwoWayCoupDispRelax : public PasiPartTwoWayCoup
   {
@@ -222,7 +205,6 @@ namespace PaSI
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 03/2017
      *
      * \param[in] comm   communicator
      * \param[in] params particle structure interaction parameter list
@@ -232,7 +214,6 @@ namespace PaSI
     /*!
      * \brief init pasi algorithm
      *
-     * \author Sebastian Fuchs \date 07/2020
      */
     void init() override;
 
@@ -240,7 +221,6 @@ namespace PaSI
     /*!
      * \brief iteration loop between coupled fields with relaxed displacements
      *
-     * \author Sebastian Fuchs \date 02/2017
      */
     void outerloop() override;
 
@@ -249,7 +229,6 @@ namespace PaSI
      *
      * No computation of the relaxation parameter necessary in the constant case.
      *
-     * \author Sebastian Fuchs \date 03/2017
      *
      * \param[in] omega relaxation parameter
      * \param[in] itnum iteration counter
@@ -272,14 +251,12 @@ namespace PaSI
     /*!
      * \brief init relaxation of interface states
      *
-     * \author Sebastian Fuchs \date 07/2020
      */
     void init_relaxation_interface_states();
 
     /*!
      * \brief perform relaxation of interface states
      *
-     * \author Sebastian Fuchs \date 11/2019
      */
     void perform_relaxation_interface_states();
   };
@@ -292,7 +269,6 @@ namespace PaSI
    * field as Neumann partition and dynamic interface displacement relaxation following Aitken's
    * delta^2 method.
    *
-   * \author Sebastian Fuchs \date 03/2017
    */
   class PasiPartTwoWayCoupDispRelaxAitken : public PasiPartTwoWayCoupDispRelax
   {
@@ -300,7 +276,6 @@ namespace PaSI
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 03/2017
      *
      * \param[in] comm   communicator
      * \param[in] params particle structure interaction parameter list
@@ -310,14 +285,12 @@ namespace PaSI
     /*!
      * \brief init pasi algorithm
      *
-     * \author Sebastian Fuchs \date 03/2017
      */
     void init() override;
 
     /*!
      * \brief read restart information for given time step
      *
-     * \author Sebastian Fuchs \date 03/2017
      *
      * \param[in] restartstep restart step
      */
@@ -327,7 +300,6 @@ namespace PaSI
     /*!
      * \brief output of fields
      *
-     * \author Sebastian Fuchs \date 03/2017
      */
     void output() override;
 
@@ -338,7 +310,6 @@ namespace PaSI
      *
      * Refer to PhD thesis U. Kuettler, equation (3.5.29).
      *
-     * \author Sebastian Fuchs \date 03/2017
      *
      * \param[in] omega relaxation parameter
      * \param[in] itnum iteration counter

@@ -345,13 +345,11 @@ namespace Discret
       //@{
       /** recover elementwise stored stuff
        *
-       * \author hiermeier
-       * \date 05/16 */
+       */
       void w1_recover(const std::vector<int>& lm, const std::vector<double>& disp,
           const std::vector<double>& residual);
 
       /// evaluate the element forces and stiffness and mass
-      /// \author mgit \date 03/07
       void w1_nlnstiffmass(const std::vector<int>& lm,  ///< location vector
           const std::vector<double>& disp,              ///< element displacements
           const std::vector<double>& residual,          ///< residual displacements
@@ -387,7 +385,6 @@ namespace Discret
 
       /// Jacobian matrix for mapping from parameter space in physical material space
       /// at point parameter space
-      /// \author mgit \date 04/07
       void w1_jacobianmatrix(const Core::LinAlg::SerialDenseMatrix&
                                  xrefe,  ///< reference/material co-ordinates of element nodes
           const Core::LinAlg::SerialDenseMatrix&
@@ -398,7 +395,6 @@ namespace Discret
       );
 
       /// Linear B-operator in reference configuration at point parameter space
-      /// \author mgit \date 04/07
       void w1_boplin(Core::LinAlg::SerialDenseMatrix& boplin,  ///< the B-operator
           Core::LinAlg::SerialDenseMatrix&
               deriv,  ///< derivatives of shape functions at parameter point
@@ -409,7 +405,6 @@ namespace Discret
 
       /// (Material) Deformation gradient \f$F\f$ and Green-Lagrange strains \f$E\f$
       /// at parameter point
-      /// \author mgit \date 04/07
       void w1_defgrad(Core::LinAlg::SerialDenseVector& F,  ///< deformation gradient
           Core::LinAlg::SerialDenseVector&
               strain,  ///< GL strain \f$E^T=[E_{11} \; E_{22} \; E_{12}]\f$
@@ -422,7 +417,6 @@ namespace Discret
       );
 
       /// Non-linear B-operator in reference configuration
-      /// \author mgit \date 04/07
       void w1_boplin_cure(Core::LinAlg::SerialDenseMatrix& b_cure,  ///< non-linear B-operator
           const Core::LinAlg::SerialDenseMatrix& boplin,            ///< linear B-operator
           const Core::LinAlg::SerialDenseVector& F,  ///< deformation gradient as Voigt-vector
@@ -431,7 +425,6 @@ namespace Discret
       );
 
       /// Geometric stiffness constribution (total Lagrange)
-      /// \author mgit \date 05/07
       void w1_kg(Core::LinAlg::SerialDenseMatrix& estif,  ///< (in/out) element stiffness matrix
           const Core::LinAlg::SerialDenseMatrix& boplin,  ///< linear B-operator
           const Core::LinAlg::SerialDenseMatrix& stress,  ///< PK2 stress vector
@@ -441,7 +434,6 @@ namespace Discret
       );
 
       /// elastic and initial displacement stiffness contribution (total Lagrange)
-      /// \author mgit \date 05/07
       void w1_keu(Core::LinAlg::SerialDenseMatrix& estif,  ///< (in/out) element stiffness matrix
           const Core::LinAlg::SerialDenseMatrix& b_cure,   ///< non-linear B-operator
           const Core::LinAlg::SerialDenseMatrix& C,        ///< elasticity matrix
@@ -451,7 +443,6 @@ namespace Discret
       );
 
       /// Evaluate internal element forces for large def (total Lagr)
-      /// \author mgit \date 05/07
       void w1_fint(const Core::LinAlg::SerialDenseMatrix& stress,  ///< PK2 stress vector
           const Core::LinAlg::SerialDenseMatrix& b_cure,           ///< non-linear B-op
           Core::LinAlg::SerialDenseVector& intforce,               ///< internal force vector
@@ -502,7 +493,6 @@ namespace Discret
       /// Get the enhanced deformation gradient and
       /// also the operators G,W0 and Z
       /// at point in parameter space
-      /// \author mgit \date 01/08
       void w1_call_defgrad_enh(
           Core::LinAlg::SerialDenseMatrix& F_enh,       ///< enhanced deformation gradient vector
           const Core::LinAlg::SerialDenseMatrix xjm0,   ///< Jacobian at origin
@@ -520,7 +510,6 @@ namespace Discret
       );
 
       /// Total deformation gradient and (enhanced) Green-Lagrange strain
-      /// \author mgit \date 01/08
       void w1_call_defgrad_tot(
           const Core::LinAlg::SerialDenseMatrix& F_enh,  ///< enhanced def.grad.
           Core::LinAlg::SerialDenseMatrix& F_tot,        ///< total def.grad.
@@ -529,14 +518,12 @@ namespace Discret
       );
 
       /// first Piola-Kirchhoff stress vector
-      /// \author mgit \author 02/08
       void w1_stress_eas(const Core::LinAlg::SerialDenseMatrix& stress,  ///< PK2 stress vector
           const Core::LinAlg::SerialDenseMatrix& F_tot,                  ///< total def.grad.
           Core::LinAlg::SerialDenseMatrix& p_stress                      ///< PK1 stress vector
       );
 
       /// calculate stiffness matrix kdd \f$\partial f_{int}/\partial d\f$
-      /// \author mgit \date 03/08
       void w1_kdd(const Core::LinAlg::SerialDenseMatrix& boplin,  ///< linear B-op
           const Core::LinAlg::SerialDenseMatrix& W0,              ///< W-operator at origin
           const Core::LinAlg::SerialDenseMatrix& F,               ///< total def.grad.
@@ -548,7 +535,6 @@ namespace Discret
       );
 
       /// calculate tangential matrix kda \f$\partial f_{int}/\partial \alpha\f$
-      /// \author mgit \date 03/08
       void w1_kda(const Core::LinAlg::SerialDenseMatrix& FCF,  ///< a product
           const Core::LinAlg::SerialDenseMatrix& W0,           ///< W-operator at origin
           const Core::LinAlg::SerialDenseMatrix& boplin,       ///< linear B-op
@@ -561,7 +547,6 @@ namespace Discret
       );
 
       /// calculate tangential matrix kaa \f$\partial s/\partial \alpha\f$
-      /// \author mgit \date 03/08
       void w1_kaa(
           const Core::LinAlg::SerialDenseMatrix& FCF,     ///< a product \f$F^T \dot C \dot F\f$
           const Core::LinAlg::SerialDenseMatrix& stress,  ///< PK2 stress
@@ -607,7 +592,6 @@ namespace Discret
       //@{
 
       /// Constitutive matrix \f$C\f$ and stresses
-      /// \author mgit \date 05/07
       void w1_call_matgeononl(
           const Core::LinAlg::SerialDenseVector& strain,        ///< Green-Lagrange strain vector
           Core::LinAlg::SerialDenseMatrix& stress,              ///< stress matrix
@@ -621,7 +605,6 @@ namespace Discret
       /// Stress and constitutive matrix mapper from 3d to 2d
       /// due to dimensional reduction #wtype_
       ///
-      /// \author bborn \date 06/09
       void material_response3d_plane(Core::LinAlg::SerialDenseMatrix& stress,  ///< stress matrix
           Core::LinAlg::SerialDenseMatrix& C,             ///< elasticity matrix
           const Core::LinAlg::SerialDenseVector& strain,  ///< Green-Lagrange strain vector
@@ -631,7 +614,6 @@ namespace Discret
 
       /// Generic 3D stress response
       ///
-      /// \author bborn \date 06/09
       void material_response3d(
           Core::LinAlg::Matrix<6, 1>* stress,          ///< 3D 2nd Piola-Kirchhoff stress vector
           Core::LinAlg::Matrix<6, 6>* cmat,            ///< 3D elasticity matrix

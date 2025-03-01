@@ -201,7 +201,7 @@ namespace XFEM
   \brief Mesh Coupling Class which handles all the communication between interface discretization
   and volume discretization. This class can be used for all mesh coupling objects as base class if
   the interface requires volume discretization information (e.g. FluidFluid, SlaveSided FSI,
-  FPI,...) - (orig. from FluidFluid(Kruse)) \author ager \date 10/16
+  FPI,...) - (orig. from FluidFluid(Kruse))
    */
   class MeshVolCoupling : public MeshCoupling
   {
@@ -745,8 +745,7 @@ namespace XFEM
 
   /*!
   \brief specialized class for coupling with an embedded fluid discretization
-    \author kruse
-    \date 01/15
+
    */
   class MeshCouplingFluidFluid : public MeshVolCoupling
   {

@@ -21,8 +21,6 @@ namespace ElCh
 
     Base class of ELCH algorithms. Derives from ScaTraAlgorithm.
 
-    \author gjb
-    \date 03/08
    */
   class Algorithm : public ScaTra::ScaTraAlgorithm
   {

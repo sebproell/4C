@@ -25,7 +25,6 @@ namespace NOX
        * Please see "NOX_StatusTest_Combo.H" for more information. This
        * is a restatement with no changes to the functionality of the class.
        *
-       * \author Michael Hiermeier
        */
 
       class Combo : public ::NOX::StatusTest::Combo

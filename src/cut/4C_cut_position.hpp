@@ -24,7 +24,7 @@ namespace Cut
   /*----------------------------------------------------------------------------*/
   /** \brief Base class of all \e Position objects
    *
-   *  \author hiermeier \date 08/16 */
+   *  */
   class Position
   {
    public:
@@ -34,7 +34,7 @@ namespace Cut
      *  used for comparison operations. As soon as all position cases are working
      *  flawlessly this enum list can and should be adapted.
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     enum Status
     {
       position_outside_of_bbox =
@@ -89,7 +89,7 @@ namespace Cut
      *  \param xyz     (in) : Global coordinates of the given point.
      *  \param floattype (in) : Floattype to compute geometric operations.
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     template <unsigned rdim>
     static std::shared_ptr<Position> create(const Element& element,
         const Core::LinAlg::Matrix<rdim, 1>& xyz, CutFloatType floattype = floattype_double);
@@ -100,7 +100,7 @@ namespace Cut
      *  \param distype (in) : element discretization type.
      *  \param floattype (in) : Floattype to compute geometric operations.
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     template <unsigned rdim, unsigned cdim, unsigned rdim_2>
     static std::shared_ptr<Position> create(const Core::LinAlg::Matrix<rdim, cdim>& xyze,
         const Core::LinAlg::Matrix<rdim_2, 1>& xyz, const Core::FE::CellType& distype,
@@ -119,7 +119,7 @@ namespace Cut
      *  \param distype (in) : element discretization type (optional).
      *  \param floattype (in) : Floattype to compute geometric operations.
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     template <unsigned rdim>
     static std::shared_ptr<Position> create(const std::vector<Node*> nodes,
         const Core::LinAlg::Matrix<rdim, 1>& xyz,
@@ -186,7 +186,7 @@ namespace Cut
      *
      *  \param d (in) : access calculated distance value(s)
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     template <class T>
     void distance(T& d) const
     {
@@ -246,8 +246,7 @@ namespace Cut
    *                             the element dimension \c dim.
    *
    *
-   *  \author hiermeier
-   *  \date 08/16 */
+   */
   template <unsigned probdim, Core::FE::CellType eletype,
       unsigned num_nodes_element = Core::FE::num_nodes<eletype>,
       unsigned dim = Core::FE::dim<eletype>, CutFloatType floattype = floattype_double>
@@ -292,7 +291,7 @@ namespace Cut
      *
      *  \param rst: local coordinates.
      *
-     *  \author hiermeier */
+     *  */
     void local_coordinates(double* rst) override
     {
       if (pos_status_ != position_valid)
@@ -391,7 +390,7 @@ namespace Cut
   /*----------------------------------------------------------------------------*/
   /** \brief class for the position computation in the standard/non-embedded case
    *
-   *  \author hiermeier \date 08/16 */
+   *  */
   template <unsigned probdim, Core::FE::CellType eletype,
       unsigned num_nodes_element = Core::FE::num_nodes<eletype>,
       unsigned dim = Core::FE::dim<eletype>, CutFloatType floattype = floattype_double>
@@ -436,7 +435,7 @@ namespace Cut
   /*----------------------------------------------------------------------------*/
   /** \brief class for the position computation in the embedded case
    *
-   *  \author hiermeier \date 08/16 */
+   *  */
   template <unsigned probdim, Core::FE::CellType eletype,
       unsigned num_nodes_element = Core::FE::num_nodes<eletype>,
       unsigned dim = Core::FE::dim<eletype>, CutFloatType floattype = floattype_double>
@@ -527,7 +526,7 @@ namespace Cut
   /*----------------------------------------------------------------------------*/
   /** \class Position factory
    *
-   *  \author hiermeier \date 11/16 */
+   *  */
   class PositionFactory
   {
    public:
@@ -746,7 +745,7 @@ namespace Cut
      *                        point lies inside / on it.
      *  \param point   (in) : Given global point
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     template <unsigned probdim, Core::FE::CellType eletype, unsigned dim = Core::FE::dim<eletype>,
         unsigned num_nodes_element = Core::FE::num_nodes<eletype>>
     std::shared_ptr<Position> build_position(
@@ -814,7 +813,7 @@ namespace Cut
      *                        point lies inside / on it.
      *  \param xyz     (in) : Global coordinates of the given point.
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     template <unsigned probdim, Core::FE::CellType eletype, unsigned dim = Core::FE::dim<eletype>,
         unsigned num_nodes_element = Core::FE::num_nodes<eletype>>
     static std::shared_ptr<Position> build_position(const Element& element,
@@ -886,7 +885,7 @@ namespace Cut
      *  \param xyze    (in) : Global nodal positions of the element.
      *  \param xyz     (in) : Global coordinates of the given point.
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     template <unsigned probdim, Core::FE::CellType eletype, unsigned dim = Core::FE::dim<eletype>,
         unsigned num_nodes_element = Core::FE::num_nodes<eletype>>
     static std::shared_ptr<Position> build_position(
@@ -952,7 +951,7 @@ namespace Cut
      *  \param nodes (in) : Nodes of the element we want to check.
      *  \param xyz   (in) : Global coordinates of the given point.
      *
-     *  \author hiermeier \date 08/16 */
+     *  */
     template <unsigned probdim, Core::FE::CellType eletype, unsigned dim = Core::FE::dim<eletype>,
         unsigned num_nodes_element = Core::FE::num_nodes<eletype>>
     static std::shared_ptr<Position> build_position(const std::vector<Node*> nodes,

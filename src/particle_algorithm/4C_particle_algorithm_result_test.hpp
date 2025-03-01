@@ -34,7 +34,6 @@ namespace PARTICLEALGORITHM
   /*!
    * \brief particle field result test handler
    *
-   * \author Sebastian Fuchs \date 07/2018
    */
   class ParticleResultTest final : public Core::Utils::ResultTest
   {
@@ -45,14 +44,12 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief init particle result test
      *
-     * \author Sebastian Fuchs \date 07/2018
      */
     void init();
 
     /*!
      * \brief setup particle result test
      *
-     * \author Sebastian Fuchs \date 07/2018
      *
      * \param[in] particleengineinterface interface to particle engine
      */

@@ -255,8 +255,7 @@ namespace Inpar
     /*! \brief Mid-average type of internal forces for generalised-alpha-like time integration
      * schemes
      *
-     * \author bborn
-     * \date 11/08
+
      */
     enum MidAverageEnum
     {

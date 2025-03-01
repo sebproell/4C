@@ -58,7 +58,7 @@ namespace Cut
     /*------------------------------------------------------------------------*/
     /*! \brief Container class for the background mesh object
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     class BackMesh
     {
      public:
@@ -280,7 +280,7 @@ namespace Cut
    protected:
     /** \brief hidden constructor for derived classes only
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     CutWizard(MPI_Comm comm);
 
     std::shared_ptr<BackMesh>& back_mesh_ptr() { return back_mesh_; }

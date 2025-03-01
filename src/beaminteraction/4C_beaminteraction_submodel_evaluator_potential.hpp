@@ -178,7 +178,7 @@ namespace BeamInteraction
 
       /** \brief print this beam potential-based element pair to screen
        *
-       *  \author grill */
+       *  */
       void print_console_welcome_message(std::ostream& out) const;
 
       //!@name routines that handle visualization output for potential-based interactions

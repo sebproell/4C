@@ -281,13 +281,11 @@ namespace Adapter
      *  scheme. Result is stored in \p locerrvelnp_ and is used later to estimate
      *  the local discretization error of the marching time integration scheme.
      *
-     *  \author mayr.mt \date 12/2013
      */
     void time_step_auxiliary() override {};
 
     /*! Indicate norms of temporal discretization error
      *
-     *  \author mayr.mt \date 12/2013
      */
     void indicate_error_norms(
         double& err,       ///< L2-norm of temporal discretization error based on all DOFs

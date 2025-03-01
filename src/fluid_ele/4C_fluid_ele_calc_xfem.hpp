@@ -58,8 +58,6 @@ namespace Discret
 
       The calculations are done by the EvaluateXfemInterface...() methods.
 
-      \author schott
-      \date 04/12
      */
     template <Core::FE::CellType distype>
     class FluidEleCalcXFEM : public FluidEleCalc<distype>
@@ -325,7 +323,7 @@ namespace Discret
       void eval_func_and_deriv(Core::LinAlg::Matrix<3, 1>& rst);
 
       //! build matrices from volume-based terms for Cauchy & viscous stress-based mixed/hybrid
-      //! LM-coupling \author kruse \date 06/14
+      //! LM-coupling
       void hybrid_lm_build_vol_based(const std::vector<Core::FE::GaussIntegration>& intpoints,
           const Cut::plain_volumecell_set& cells,
           const Core::LinAlg::Matrix<nsd_, nen_>& evelaf,  ///< element velocity
@@ -360,7 +358,7 @@ namespace Discret
       );
 
       //! evaluate matrices from volume-based terms for viscous stress-based mixed/hybrid LM
-      //! coupling at current Gauss-point \author kruse \date 06/14
+      //! coupling at current Gauss-point
       void mhvs_evaluate_vol_based(
           const Core::LinAlg::Matrix<nsd_, nen_>& evelaf,  ///< element velocity
           Core::LinAlg::Matrix<nen_, nen_>& bK_ss,         ///< block K_ss matrix
@@ -379,7 +377,7 @@ namespace Discret
       );
 
       //! evaluate matrices from surface-based terms for Cauchy & viscous stress-based mixed/hybrid
-      //! LM coupling at current Gauss-point \author kruse \date 06/14
+      //! LM coupling at current Gauss-point
       void hybrid_lm_evaluate_surf_based(Discret::Elements::XFLUID::HybridLMInterface<distype>& si,
           const Core::LinAlg::Matrix<nen_, nen_>& bK_ss,
           Core::LinAlg::BlockMatrix<Core::LinAlg::Matrix<nen_, nen_>, numstressdof_,

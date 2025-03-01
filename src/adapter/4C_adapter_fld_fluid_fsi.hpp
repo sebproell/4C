@@ -151,7 +151,6 @@ namespace Adapter
      *
      *  The vector \$f R \$f ensures that interface and Dirichlet DOFs are not modified.
      *
-     *  \author mayr.mt \date  06/2012
      */
     void proj_vel_to_div_zero();
 
@@ -170,13 +169,11 @@ namespace Adapter
      *  scheme. Result is stored in #locerrvelnp_ and is used later to estimate
      *  the local discretization error of the marching time integration scheme.
      *
-     *  \author mayr.mt \date 12/2013
      */
     void time_step_auxiliary() override;
 
     /*! \brief Indicate norms of temporal discretization error
      *
-     *  \author mayr.mt \date 12/2013
      */
     void indicate_error_norms(
         double& err,       ///< L2-norm of temporal discretization error based on all DOFs
@@ -190,13 +187,11 @@ namespace Adapter
 
     /*! \brief Error order for adaptive fluid time integration
      *
-     *  \author mayr.mt \date 04/2015
      */
     double get_tim_ada_err_order() const;
 
     /*! \brief Name of auxiliary time integrator
      *
-     *  \author mayr.mt \date 04/2015
      */
     std::string get_tim_ada_method_name() const;
 
@@ -268,7 +263,6 @@ namespace Adapter
      *    x_{n+1} = x_{n} + \Delta t_{n} \dot{x}_{n}
      *  \f]
      *
-     *  \author mayr.mt \date 10/2013
      */
     void explicit_euler(const Core::LinAlg::Vector<double>& veln,  ///< velocity at \f$t_n\f$
         const Core::LinAlg::Vector<double>& accn,                  ///< acceleration at \f$t_n\f$
@@ -303,7 +297,6 @@ namespace Adapter
      *       Stepping for Incompressible Flow Part II: Navier-Stokes Equations,
      *       SIAM J. Sci. Comput. (32), pp. 111-128, 2010 </li>
      *
-     *  \author mayr.mt \date 11/2013
      */
     void adams_bashforth2(const Core::LinAlg::Vector<double>& veln,  ///< velocity at \f$t_n\f$
         const Core::LinAlg::Vector<double>& accn,                    ///< acceleration at \f$t_n\f$

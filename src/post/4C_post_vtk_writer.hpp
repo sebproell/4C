@@ -42,8 +42,6 @@ namespace Core::Nodes
 /*
  \brief Base class for VTK output generation
 
- \author kronbichler
- \date 03/14
 */
 class PostVtkWriter : public PostWriterBase
 {
@@ -139,8 +137,6 @@ class PostVtkWriter : public PostWriterBase
    To allow for a generic interface, the calling site needs to supply a
    class derived from SpecialFieldInterface that knows which function to call.
 
-   \author kronbichler
-   \date 04/14
    */
   void write_special_field(SpecialFieldInterface& special,
       PostResult& result,  ///< result group in the control file

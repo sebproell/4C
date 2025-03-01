@@ -445,8 +445,6 @@ namespace FLD
     Therefore, we need to reset the solution back to the initial solution of the
     time step.
 
-    \author mayr.mt
-    \date 08/2013
     */
     void reset_step() override
     {
@@ -466,7 +464,6 @@ namespace FLD
      *
      *  Currently, this is needed for time step size adaptivity in FSI.
      *
-     *  \author mayr.mt \date 08/2013
      */
     void reset_time(const double dtold) override { set_time_step(time() - dtold, step() - 1); }
 
@@ -1417,7 +1414,6 @@ namespace FLD
      *  with the velocity vector \f$u\f$ and the mass matrix \f$M\f$. Then, it is
      *  written to an output file.
      *
-     *  \author mayr.mt \date 05/2014
      */
     virtual void write_output_kinetic_energy();
 

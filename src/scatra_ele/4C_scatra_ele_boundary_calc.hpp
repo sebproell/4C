@@ -65,8 +65,6 @@ namespace Discret
       Right now we do not read any stabilization parameters from the
       input file but have a fixed version.
 
-      \author gjb
-      \date 08/08
     */
     template <Core::FE::CellType distype, int probdim = Core::FE::dim<distype> + 1>
     class ScaTraEleBoundaryCalc : public ScaTraBoundaryInterface

@@ -160,7 +160,8 @@ namespace Mat
    *    \delta_{\alpha\beta}
    *    = \frac{\partial^2\Psi(\boldsymbol{\lambda})}{\partial\lambda_\alpha
    *    \partial\lambda_\beta} =
-   *    \frac{\partial^2\Psi(\bar{\boldsymbol{\lambda}})}{\partial\bar{\lambda}_\eta\partial\bar{\lambda}_\epsilon}
+   *
+   \frac{\partial^2\Psi(\bar{\boldsymbol{\lambda}})}{\partial\bar{\lambda}_\eta\partial\bar{\lambda}_\epsilon}
    *      \, \frac{\partial \bar{\lambda}_\eta}{\partial\lambda_\alpha}
    *      \, \frac{\partial \bar{\lambda}_\epsilon}{\partial\lambda_\beta}
    *    + \frac{\partial \Psi(\bar{\boldsymbol{\lambda}})}{\partial \bar{\lambda}_\eta}
@@ -185,8 +186,7 @@ namespace Mat
    *  <h3>References</h3>
    *  See Holzapfel, p 245-246, p 257-259, p 263-264
    *
-   * \author bborn
-   * \date 08/09
+
    * @param cmat (out) : Material elasticity tensor in Voigt notation
    * @param S_stress (out) : 2n Piola-Kirchhoff stress tensor in stress-like Voigt notation
    * @param C_strain (in) : Right Cauchy-Green strain tensor in strain-like Voigt notation
@@ -343,8 +343,7 @@ namespace Mat
    *  dependent on principal or modified invariants)
    *  is tested with eq. (5.31) of Vera Ebbing - PHD-thesis (p. 79).
    *  Partial derivatives of SEF are used.
-   *  \author birzle
-   *  \date 04/2016
+
    *
    * @param defgrd (in) : Deformation gradient
    * @param prinv (in) : Principal invariants of the Right Cauchy-Green tensor

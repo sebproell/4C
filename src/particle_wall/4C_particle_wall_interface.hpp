@@ -51,7 +51,6 @@ namespace PARTICLEWALL
    * \note Methods in this class are documented briefly. Refer to the full documentation of the
    *       particle wall handler class!
    *
-   * \author Sebastian Fuchs \date 10/2018
    */
   class WallHandlerInterface
   {
@@ -62,7 +61,6 @@ namespace PARTICLEWALL
     /*!
      * \brief get wall discretization
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \return wall discretization
      */
@@ -71,7 +69,6 @@ namespace PARTICLEWALL
     /*!
      * \brief get wall data state container
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \return wall data state container
      */
@@ -80,7 +77,6 @@ namespace PARTICLEWALL
     /*!
      * \brief get reference to potential wall neighbors
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \return potential particle wall neighbor pairs
      */
@@ -89,7 +85,6 @@ namespace PARTICLEWALL
     /*!
      * \brief determine nodal positions of column wall element
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \param ele[in]             column wall element
      * \param colelenodalpos[out] current nodal position

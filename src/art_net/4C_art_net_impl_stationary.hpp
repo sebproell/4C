@@ -23,8 +23,6 @@ namespace Arteries
 {
   /*!
   \brief stationary formulation for arterial network problems
-
-  \author kremheller
   */
   class ArtNetImplStationary : public TimInt
   {

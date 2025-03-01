@@ -265,7 +265,6 @@ void Adapter::StructureBaseAlgorithm::create_tim_int(const Teuchos::ParameterLis
    *
    * ToDO: Find something nicer here!
    *
-   * \author mayr.mt \date 12/2013
    */
   // ---------------------------------------------------------------------------
   if (probtype == Core::ProblemType::fsi or probtype == Core::ProblemType::fsi_redmodels)

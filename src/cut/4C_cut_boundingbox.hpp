@@ -147,7 +147,7 @@ namespace Cut
    *  a correct and deterministic evaluation is ensured for all problem
    *  dimensions.
    *
-   *  \author hiermeier \date 11/16 */
+   *  */
   template <unsigned probdim>
   class ConcreteBoundingBox : public BoundingBox
   {

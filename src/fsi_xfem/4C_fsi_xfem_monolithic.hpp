@@ -56,9 +56,6 @@ namespace FSI
     fluid has to be solved on a slightly larger modified fluid dofsets where additional dofs are
     controlled via fluid stabilization (ghost-penalty) terms.
 
-
-    \author Benedikt Schott
-    \date  08/2014
   */
   class MonolithicXFEM : public AlgorithmXFEM
   {

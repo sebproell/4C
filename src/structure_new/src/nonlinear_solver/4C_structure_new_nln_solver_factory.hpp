@@ -23,7 +23,7 @@ namespace Solid
       class Generic;
       /*! \brief Factory to build the desired non-linear structural solver
        *
-       *  \author Michael Hiermeier */
+       *  */
       class Factory
       {
        public:

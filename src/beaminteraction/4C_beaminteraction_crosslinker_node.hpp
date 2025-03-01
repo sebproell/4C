@@ -52,8 +52,6 @@ namespace CrossLinking
    needed for correct crosslinking in a biopolymer network simulation. Note they are only
    available on the node's processor (ColMap). The class CrosslinkerNodeDataContainer
    must be declared before the Mortar::Node itself.
-
-   \author eichinger
    */
   class CrosslinkerNodeDataContainer
   {
@@ -152,8 +150,6 @@ namespace CrossLinking
   *
   *
   *
-  *
-  \author eichinger
    */
 
   class CrosslinkerNode : public Core::Nodes::Node

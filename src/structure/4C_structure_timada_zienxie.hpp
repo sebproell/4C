@@ -34,8 +34,7 @@ namespace Solid
    *   time stepping procedure for dynamic analysis, Earthquake Engrg.
    *   and Structural Dynamics, 20:871-887, 1991.
    *
-   * \author bborn
-   * \date 10/07
+
    */
   class TimAdaZienXie : public TimAda
   {

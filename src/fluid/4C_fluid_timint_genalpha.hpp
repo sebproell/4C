@@ -180,7 +180,6 @@ namespace FLD
      *  \f$\gamma=\frac{1}{2}+\alpha_{m}-\alpha_{f}\f$
      *  (cf. eq. (17) in [Jansen, 2000]), otherwise only first order.
      *
-     *  \author mayr.mt \date 04/2015
      */
     int method_order_of_accuracy_vel() const override;
 
@@ -190,7 +189,6 @@ namespace FLD
      *  \f$\gamma=\frac{1}{2}+\alpha_{m}-\alpha_{f}\f$
      *  (cf. eq. (17) in [Jansen, 2000]), otherwise only first order.
      *
-     *  \author mayr.mt \date 04/2015
      */
     int method_order_of_accuracy_pres() const override;
 
@@ -203,7 +201,6 @@ namespace FLD
      *    + HOT\left(\Delta t_n^4\right)
      *  \f]
      *
-     *  \author mayr.mt \date 04/2015
      */
     double method_lin_err_coeff_vel() const override;
 

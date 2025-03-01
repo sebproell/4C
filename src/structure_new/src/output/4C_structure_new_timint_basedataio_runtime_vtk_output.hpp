@@ -30,7 +30,7 @@ namespace Solid
   {
     /** \brief Input data container for output at runtime for the structural (time) integration
      *
-     * \author Maximilian Grill */
+     * */
     class ParamsRuntimeOutput
     {
      public:

@@ -60,7 +60,7 @@ namespace Mortar
 
   /*! \brief State type for the set state routine
    *
-   * \author hiermeier */
+   * */
   enum StateType
   {
     state_old_displacement,     //!< old displacement state
@@ -78,7 +78,7 @@ namespace Mortar
 
   /*! \brief Map state type enum to std::string
    *
-   *  \author hiermeier */
+   *  */
   static inline std::string state_type_to_string(const enum StateType& type)
   {
     switch (type)
@@ -110,7 +110,7 @@ namespace Mortar
 
   /*! \brief Map std::string to state type enum
    *
-   *  \author hiermeier */
+   *  */
   static inline enum Mortar::StateType string_to_state_type(const std::string& name)
   {
     Mortar::StateType type = state_vague;
@@ -148,7 +148,7 @@ namespace Mortar
    *  of the actual interface class itself, makes it possible to share the interface
    *  data between different interface objects w/o the need of copying them.
    *
-   *  \author hiermeier \date 03/17 */
+   *  */
   class InterfaceDataContainer
   {
    public:
@@ -604,7 +604,7 @@ namespace Mortar
      *  \param spatialDim (in) : spatial dimension of the problem
      *  \param imortar (in) : global contact/mesh-tying parameter-list
      *
-     *  \author hiermeier \date 03/17 */
+     *  */
     static std::shared_ptr<Interface> create(const int id, MPI_Comm comm, const int spatialDim,
         const Teuchos::ParameterList& imortar,
         std::shared_ptr<Core::IO::OutputControl> output_control,
@@ -1142,8 +1142,7 @@ namespace Mortar
 
     /*! \brief Store the unredistributed local slave and lagrange multiplier maps
      *
-     *  \author hiermeier
-     *  \date 07/2016 */
+     */
     void store_unredistributed_maps();
 
     /*! \brief Redistribute the lagrange multiplier sets in a deterministic way
@@ -1152,8 +1151,7 @@ namespace Mortar
      *  Please note, that this function becomes unnecessary as soon as we use
      *  dofsets for the Lagrange and displacement dofs!
      *
-     *  \author hiermeier
-     *  \date 07/2016 */
+     */
     std::shared_ptr<Epetra_Map> redistribute_lag_mult_sets() const;
 
     /*!
@@ -1454,8 +1452,7 @@ namespace Mortar
      *  \param mele        (in): pointer to the current master element
      *  \param mparams_ptr (in): mortar parameter interface pointer
      *
-     *  \author hiermeier
-     *  \date 11/16 */
+     */
     virtual void pre_mortar_coupling(const Mortar::Element* sele,
         const std::vector<Mortar::Element*> mele,
         const std::shared_ptr<Mortar::ParamsInterface>& mparams_ptr) const {
@@ -1468,8 +1465,7 @@ namespace Mortar
      *  \param mele        (in): pointer to the current master element
      *  \param mparams_ptr (in): mortar parameter interface pointer
      *
-     *  \author hiermeier
-     *  \date 11/16 */
+     */
     virtual void post_mortar_coupling(const Mortar::Element* sele,
         const std::vector<Mortar::Element*> mele,
         const std::shared_ptr<Mortar::ParamsInterface>& mparams_ptr) const {

@@ -95,9 +95,6 @@ namespace NOX
       optimization, the connection to solving nonlinear equation systems is
       made via the equivalence \f$ f'(x) \leftrightarrow R(x) \f$.
 
-      \author Russ Hooper, Org. 9233, Sandia National Labs
-      \author u.kue (shameless modifications for FSI)
-
     */
 
     class SDRelaxation : public ::NOX::LineSearch::Generic

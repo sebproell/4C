@@ -39,7 +39,6 @@ namespace PARTICLEWALL
   /*!
    * \brief particle wall result test handler
    *
-   * \author Sebastian Fuchs \date 03/2019
    */
   class WallResultTest final : public Core::Utils::ResultTest
   {
@@ -50,14 +49,12 @@ namespace PARTICLEWALL
     /*!
      * \brief init wall result test
      *
-     * \author Sebastian Fuchs \date 03/2019
      */
     void init();
 
     /*!
      * \brief setup wall result test
      *
-     * \author Sebastian Fuchs \date 03/2019
      *
      * \param[in] particleengineinterface interface to particle engine
      */

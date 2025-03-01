@@ -51,7 +51,6 @@ namespace PaSI
    * An abstract base class for partitioned particle structure interaction problems defining
    * methods and holding members to be used in derived algorithms.
    *
-   * \author Sebastian Fuchs \date 01/2017
    */
   class PartitionedAlgo : public Adapter::AlgorithmBase
   {
@@ -59,7 +58,6 @@ namespace PaSI
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 01/2017
      *
      * \param[in] comm   communicator
      * \param[in] params particle structure interaction parameter list
@@ -69,21 +67,18 @@ namespace PaSI
     /*!
      * \brief init pasi algorithm
      *
-     * \author Sebastian Fuchs \date 02/2017
      */
     virtual void init();
 
     /*!
      * \brief setup pasi algorithm
      *
-     * \author Sebastian Fuchs \date 01/2017
      */
     virtual void setup();
 
     /*!
      * \brief read restart information for given time step
      *
-     * \author Sebastian Fuchs \date 01/2017
      *
      * \param[in] restartstep restart step
      */
@@ -92,14 +87,12 @@ namespace PaSI
     /*!
      * \brief timeloop of coupled problem
      *
-     * \author Sebastian Fuchs \date 01/2017
      */
     virtual void timeloop() = 0;
 
     /*!
      * \brief perform result tests
      *
-     * \author Sebastian Fuchs \date 01/2017
      *
      * \param[in] comm communicator
      */
@@ -115,7 +108,6 @@ namespace PaSI
     /*!
      * \brief prepare time step
      *
-     * \author Sebastian Fuchs \date 01/2017
      *
      * \param[in] printheader flag to control output of time step header
      */
@@ -124,28 +116,24 @@ namespace PaSI
     /*!
      * \brief pre evaluate time step
      *
-     * \author Sebastian Fuchs \date 11/2020
      */
     void pre_evaluate_time_step();
 
     /*!
      * \brief structural time step
      *
-     * \author Sebastian Fuchs \date 02/2017
      */
     void struct_step();
 
     /*!
      * \brief particle time step
      *
-     * \author Sebastian Fuchs \date 02/2017
      */
     void particle_step();
 
     /*!
      * \brief post evaluate time step
      *
-     * \author Sebastian Fuchs \date 11/2019
      */
     void post_evaluate_time_step();
 
@@ -155,7 +143,6 @@ namespace PaSI
      * Extract the interface states displacement, velocity, and acceleration from the structural
      * states.
      *
-     * \author Sebastian Fuchs \date 11/2019
      */
     void extract_interface_states();
 
@@ -167,7 +154,6 @@ namespace PaSI
      * the particle wall discretization are in general distributed independently of each other to
      * all processors.
      *
-     * \author Sebastian Fuchs \date 02/2017
      *
      * \param[in] intfdispnp interface displacement
      * \param[in] intfvelnp  interface velocity
@@ -180,14 +166,12 @@ namespace PaSI
     /*!
      * \brief output of structure field
      *
-     * \author Sebastian Fuchs \date 02/2017
      */
     void struct_output();
 
     /*!
      * \brief output of particle field
      *
-     * \author Sebastian Fuchs \date 02/2017
      */
     void particle_output();
 
@@ -225,21 +209,18 @@ namespace PaSI
     /*!
      * \brief init structure field
      *
-     * \author Sebastian Fuchs \date 05/2019
      */
     void init_structure_field();
 
     /*!
      * \brief init particle algorithm
      *
-     * \author Sebastian Fuchs \date 05/2019
      */
     void init_particle_algorithm();
 
     /*!
      * \brief build and register structure model evaluator
      *
-     * \author Sebastian Fuchs \date 05/2019
      */
     void build_structure_model_evaluator();
 

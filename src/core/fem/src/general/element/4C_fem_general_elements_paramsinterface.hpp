@@ -35,8 +35,8 @@ namespace Core::Elements
    *  ToDo Currently we set the interface in the elements via the Teuchos::ParameterList.
    *  Theoretically, the Teuchos::ParameterList can be replaced by the interface itself!
    *
-   *  \date 03/2016
-   *  \author hiermeier */
+
+   *  */
   class ParamsInterface
   {
    public:

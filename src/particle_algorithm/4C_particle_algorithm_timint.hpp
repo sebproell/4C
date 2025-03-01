@@ -45,7 +45,6 @@ namespace PARTICLEALGORITHM
   /*!
    * \brief time integration base
    *
-   * \author Sebastian Fuchs \date 04/2018
    */
   class TimInt
   {
@@ -53,7 +52,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \param[in] params particle simulation parameter list
      */
@@ -62,7 +60,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief destructor
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \note At compile-time a complete type of class T as used in class member
      *       std::unique_ptr<T> ptr_T_ is required
@@ -72,14 +69,12 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief init particle time integration
      *
-     * \author Sebastian Fuchs \date 04/2018
      */
     virtual void init();
 
     /*!
      * \brief time integration scheme specific initialization routine
      *
-     * \author Sebastian Fuchs \date 07/2018
      */
     virtual void setup(
         const std::shared_ptr<PARTICLEENGINE::ParticleEngineInterface> particleengineinterface,
@@ -89,7 +84,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief insert integration dependent states of all particle types
      *
-     * \author Sebastian Fuchs \date 07/2018
      *
      * \param[out] particlestatestotypes map of particle types and corresponding states
      */
@@ -100,14 +94,12 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief time integration scheme specific initialization routine
      *
-     * \author Sebastian Fuchs \date 07/2018
      */
     virtual void set_initial_states();
 
     /*!
      * \brief set current time
      *
-     * \author Sebastian Fuchs \date 08/2018
      *
      * \param[in] currenttime current time
      */
@@ -116,14 +108,12 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief time integration scheme specific pre-interaction routine
      *
-     * \author Sebastian Fuchs \date 04/2018
      */
     virtual void pre_interaction_routine() = 0;
 
     /*!
      * \brief time integration scheme specific post-interaction routine
      *
-     * \author Sebastian Fuchs \date 04/2018
      */
     virtual void post_interaction_routine() = 0;
 
@@ -131,21 +121,18 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief init dirichlet boundary condition handler
      *
-     * \author Sebastian Fuchs \date 07/2018
      */
     void init_dirichlet_boundary_condition();
 
     /*!
      * \brief init temperature boundary condition handler
      *
-     * \author Sebastian Fuchs \date 09/2018
      */
     void init_temperature_boundary_condition();
 
     /*!
      * \brief add initial random noise to particle position
      *
-     * \author Sebastian Fuchs \date 11/2018
      */
     void add_initial_random_noise_to_position();
 
@@ -186,7 +173,6 @@ namespace PARTICLEALGORITHM
    * \$f v_{n+1} = v_{n} + dt * a_{n}   \$f with \$f a_{n} = a( r_{n-1}, v_{n-1} ) \$f
    * \$f x_{n+1} = x_{n} + dt * v_{n+1} \$f
    *
-   * \author Sebastian Fuchs \date 05/2018
    */
   class TimIntSemiImplicitEuler : public TimInt
   {
@@ -194,7 +180,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] params particle simulation parameter list
      */
@@ -203,7 +188,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief time integration scheme specific initialization routine
      *
-     * \author Sebastian Fuchs \date 07/2018
      */
     void setup(
         const std::shared_ptr<PARTICLEENGINE::ParticleEngineInterface> particleengineinterface,
@@ -213,14 +197,12 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief time integration scheme specific pre-interaction routine
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void pre_interaction_routine() override;
 
     /*!
      * \brief time integration scheme specific post-interaction routine
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void post_interaction_routine() override;
   };
@@ -235,7 +217,6 @@ namespace PARTICLEALGORITHM
    * \$f x_{n+1}   = x_{n}     + dt   * v_{n+1/2} \$f
    * \$f v_{n+1}   = v_{n+1/2} + dt/2 * a_{n+1}   \$f with \$f a_{n+1} = a( r_{n+1}, v_{n+1/2} ) \$f
    *
-   * \author Sebastian Fuchs \date 05/2018
    */
   class TimIntVelocityVerlet : public TimInt
   {
@@ -243,7 +224,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] params particle simulation parameter list
      */
@@ -252,21 +232,18 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief time integration scheme specific initialization routine
      *
-     * \author Sebastian Fuchs \date 07/2018
      */
     void set_initial_states() override;
 
     /*!
      * \brief time integration scheme specific pre-interaction routine
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void pre_interaction_routine() override;
 
     /*!
      * \brief time integration scheme specific post-interaction routine
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void post_interaction_routine() override;
 

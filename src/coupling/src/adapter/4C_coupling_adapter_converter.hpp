@@ -145,8 +145,7 @@ namespace Coupling::Adapter
 
 
   \sa MatrixColTransform, MatrixRowTransform, MatrixRowColTransform
-  \author kronbichler
-  \date 11/15
+
                               */
   class MatrixLogicalSplitAndTransform
   {
@@ -252,8 +251,7 @@ namespace Coupling::Adapter
     by the Core::LinAlg::SparseMatrix object.
 
     \sa MatrixLogicalSplitAndTransform, MatrixColTransform, MatrixRowColTransform
-    \author u.kue
-    \date 05/08
+
    */
   class MatrixRowTransform
   {
@@ -305,8 +303,7 @@ namespace Coupling::Adapter
 
 
     \sa MatrixLogicalSplitAndTransform, MatrixRowTransform, MatrixRowColTransform
-    \author u.kue
-    \date 05/08
+
    */
   class MatrixColTransform
   {
@@ -351,8 +348,7 @@ namespace Coupling::Adapter
     by the Core::LinAlg::SparseMatrix object.
 
     \sa MatrixLogicalSplitAndTransform, MatrixRowTransform, MatrixColTransform
-    \author u.kue
-    \date 05/08
+
    */
   class MatrixRowColTransform
   {

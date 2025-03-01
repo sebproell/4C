@@ -59,8 +59,6 @@ namespace EleMag
   This has to be the base class that is inherited by all the specific time integration rules but for
   now it includes all the time integration. This will be fixed in the following iteration of the
   code itself.
-
-  \author Berardocco
   */
   class ElemagTimeInt
   {

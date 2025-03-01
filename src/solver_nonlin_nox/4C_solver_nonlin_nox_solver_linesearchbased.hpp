@@ -61,7 +61,7 @@ namespace NOX
         //! \brief Returns a pointer to one specific stopping test %T.
         /** If there is no outer test of type T, a nullptr pointer will be returned.
          *
-         *  \author hiermeier \date 04/17 */
+         *  */
         template <class T>
         ::NOX::StatusTest::Generic* get_outer_status_test() const;
 
@@ -69,7 +69,7 @@ namespace NOX
         /** If there is no outer test of type T with quantity type qtype, a nullptr
          *  pointer will be returned.
          *
-         *  \author hiermeier \date 08/18 */
+         *  */
         template <class T>
         ::NOX::StatusTest::Generic* get_outer_status_test_with_quantity(
             const NOX::Nln::StatusTest::QuantityType qtype) const;

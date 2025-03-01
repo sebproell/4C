@@ -126,8 +126,7 @@ namespace XFEM
    *  although it is not recommended because of the resulting communication
    *  overhead.
    *
-   *  \author hiermeier
-   *  \date 09/16 */
+   */
   class MultiFieldMapExtractor
   {
     typedef std::vector<std::shared_ptr<const Core::FE::Discretization>> XDisVec;
@@ -153,8 +152,7 @@ namespace XFEM
      *                       of DoF's per enriched node (necessary for the fixed size
      *                       dofset).
      *
-     *  \author hiermeier
-     *  \date 09/16 */
+     */
     void init(const std::vector<std::shared_ptr<const Core::FE::Discretization>>& dis_vec,
         int max_num_reserved_dofs_per_node);
 
@@ -164,8 +162,7 @@ namespace XFEM
      *  discretizations in the discretization vector (see init()) is
      *  redistributed.
      *
-     *  \author hiermeier
-     *  \date 09/16 */
+     */
     virtual void setup();
 
     /// @name Accessors to the auxiliary interface discretization
@@ -175,8 +172,7 @@ namespace XFEM
      *
      *  \param gid (in): global id of the interface node
      *
-     *  \author hiermeier
-     *  \date 10/16 */
+     */
     Core::Nodes::Node* g_i_node(const int& gid) const;
 
     /// access the interface node row map
@@ -189,8 +185,7 @@ namespace XFEM
      *
      *  \param inode (in): pointer to the interface node
      *
-     *  \author hiermeier
-     *  \date 10/16 */
+     */
     int i_num_dof(const Core::Nodes::Node* inode) const;
 
     /// get the number of standard DoF's of the discretization
@@ -217,8 +212,7 @@ namespace XFEM
     /** \brief return TRUE if the given global node id corresponds to an
      *  interface node
      *
-     *  \author hiermeier
-     *  \date 09/16 */
+     */
     bool is_interface_node(const int& ngid) const;
 
     /// Access the full maps
@@ -261,7 +255,7 @@ namespace XFEM
      *  \param partial (in): vector to copy into full vector (Core::LinAlg::Vector<double>)
      *  \param field   (in): field name enumerator of the partial vector
      *
-     *  \author hiermeier \date 10/16 */
+     *  */
     std::shared_ptr<Core::LinAlg::Vector<double>> insert_vector(
         const Core::LinAlg::Vector<double>& partial, enum FieldName field,
         enum MapType map_type = map_dofs) const;
@@ -271,7 +265,7 @@ namespace XFEM
      *  \param partial (in): vector to copy into full vector
      *  \param field   (in): field name enumerator of the partial vector
      *
-     *  \author hiermeier \date 10/16 */
+     *  */
     std::shared_ptr<Core::LinAlg::MultiVector<double>> insert_vector(
         const Core::LinAlg::MultiVector<double>& partial, enum FieldName field,
         enum MapType map_type = map_dofs) const;
@@ -282,7 +276,7 @@ namespace XFEM
      *  \param field   (in): field name enumerator of the partial vector
      *  \param full   (out): vector to copy into
      *
-     *  \author hiermeier \date 10/16 */
+     *  */
     void insert_vector(const Core::LinAlg::MultiVector<double>& partial, enum FieldName field,
         Core::LinAlg::MultiVector<double>& full, enum MapType map_type = map_dofs) const
     {
@@ -291,7 +285,7 @@ namespace XFEM
 
     /** \brief Put a partial vector into a full vector (Core::LinAlg::MultiVector<double>) [derived]
      *
-     *  \author hiermeier \date 10/16  */
+     *  */
     void insert_vector(const Core::LinAlg::MultiVector<double>& partial, int block,
         Core::LinAlg::MultiVector<double>& full, enum MapType map_type = map_dofs) const;
 
@@ -314,7 +308,7 @@ namespace XFEM
      *  \param full   (out): sum into this full vector
      *  \param scale   (in): scaling factor for partial vector
      *
-     *  \author hiermeier \date 10/16 */
+     *  */
     inline void add_vector(const Core::LinAlg::Vector<double>& partial, enum FieldName field,
         Core::LinAlg::Vector<double>& full, double scale, enum MapType map_type = map_dofs) const
     {
@@ -328,7 +322,7 @@ namespace XFEM
      *  \param full   (out): sum into this full vector
      *  \param scale   (in): scaling factor for partial vector
      *
-     *  \author hiermeier \date 10/16 */
+     *  */
     inline void add_vector(const Core::LinAlg::MultiVector<double>& partial, enum FieldName field,
         Core::LinAlg::MultiVector<double>& full, double scale,
         enum MapType map_type = map_dofs) const
@@ -338,7 +332,7 @@ namespace XFEM
 
     /** \brief Add a partial vector to a full vector (Core::LinAlg::MultiVector<double>) [derived]
      *
-     *  \author hiermeier \date 10/16 */
+     *  */
     void add_vector(const Core::LinAlg::MultiVector<double>& partial, int block,
         Core::LinAlg::MultiVector<double>& full, double scale,
         enum MapType map_type = map_dofs) const;
@@ -373,8 +367,7 @@ namespace XFEM
      *
      *  \param dis_id (in): entry of the slave discretization vector
      *
-     *  \author hiermeier
-     *  \date 09/16 */
+     */
     bool is_x_fem_dis(enum FieldName field) const { return is_x_fem_dis(slave_id(field)); }
 
    protected:
@@ -395,8 +388,7 @@ namespace XFEM
      *
      *  \param dis_id (in): entry of the slave discretization vector
      *
-     *  \author hiermeier
-     *  \date 09/16 */
+     */
     bool is_x_fem_dis(int dis_id) const;
 
     /** \brief  Access the master interface node row map of the interface
@@ -405,8 +397,7 @@ namespace XFEM
      *
      *  \param dis_id (in): entry of the slave discretization vector
      *
-     *  \author hiermeier
-     *  \date 09/16 */
+     */
     inline const Epetra_Map& master_interface_node_row_map(enum FieldName field) const
     {
       return master_interface_node_row_map(slave_id(field));
@@ -432,8 +423,7 @@ namespace XFEM
 
     /** \brief Access the master map extractor
      *
-     *  \author hiermeier
-     *  \date 09/16 */
+     */
     const Core::LinAlg::MultiMapExtractor& ma_map_extractor(enum MapType map_type) const
     {
       if (master_map_extractor_.at(map_type) == nullptr)
@@ -447,8 +437,7 @@ namespace XFEM
      *  \param dis_id (in): block id of the desired discretization
      *  \param btype  (in): choose between interface and non-interface nodes
      *
-     *  \author hiermeier
-     *  \date 10/16 */
+     */
     inline const Epetra_Map& slave_node_row_map(
         enum XFEM::FieldName field, enum MultiField::BlockType btype) const
     {
@@ -478,7 +467,7 @@ namespace XFEM
 
     /** \brief Access the interface matrix row transformer for the given field
      *
-     *  \author hiermeier \date 10/16 */
+     *  */
     Coupling::Adapter::MatrixRowTransform& i_mat_row_transform(enum FieldName field)
     {
       return i_mat_row_transform(slave_id(field));
@@ -504,7 +493,7 @@ namespace XFEM
 
     /** \brief Access the interface matrix column transformer for the given field
      *
-     *  \author hiermeier \date 10/16 */
+     *  */
     Coupling::Adapter::MatrixColTransform& i_mat_col_transform(enum FieldName field)
     {
       return i_mat_col_transform(slave_id(field));
@@ -530,7 +519,7 @@ namespace XFEM
 
     /** \brief Access the interface matrix row and column transformer for the given field
      *
-     *  \author hiermeier \date 10/16 */
+     *  */
     Coupling::Adapter::MatrixRowColTransform& i_mat_row_col_transform(enum FieldName field)
     {
       return i_mat_row_col_transform(slave_id(field));
@@ -556,7 +545,7 @@ namespace XFEM
 
     /** \brief Access the interface discretization
      *
-     *  \author hiermeier \date 10/16 */
+     *  */
     inline const Core::FE::Discretization& i_discret() const
     {
       check_init();
@@ -651,8 +640,7 @@ namespace XFEM
     /** \brief Build the interface coupling DoF set and complete the interface
      *  discretization
      *
-     *  \author hiermeier
-     *  \date 09/16 */
+     */
     void build_interface_coupling_dof_set();
 
     void build_interface_coupling_adapters();

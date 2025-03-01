@@ -36,10 +36,8 @@ FOUR_C_NAMESPACE_OPEN
 /// Including Atrio-Nodal, Nodal, and Nodal-His Cells", Biophysical Journal 97 (2009) 2117-2127
 /// </ul>
 ///
-/// \author ljag
 
 
-/// \date 09/13
 
 class MyocardInada : public MyocardGeneral
 

@@ -27,8 +27,6 @@ namespace Core::DOFSets
 
   /*!
   \brief A set of degrees of freedom
-
-  \author
   */
   class IndependentDofSet : virtual public DofSet
   {

@@ -45,7 +45,7 @@ namespace CONTACT
        *
        * \param[in/out] params ParameterList with mortar/contact parameters from input file
        *
-       * \author Popp */
+       * */
       void read_and_check_input(Teuchos::ParameterList& params) const;
 
       /** \brief Create the contact interfaces
@@ -57,14 +57,14 @@ namespace CONTACT
        *
        * \todo ToDo Get rid of poroslave and poromaster parameters.
        *
-       * \author Popp */
+       * */
       void build_interfaces(const Teuchos::ParameterList& params,
           std::vector<std::shared_ptr<CONTACT::Interface>>& interfaces, bool& poroslave,
           bool& poromaster) const;
 
       /** \brief Create a contact interface object based on the given information
        *
-       *  \author hiermeier \date 03/17 */
+       *  */
       static std::shared_ptr<CONTACT::Interface> create_interface(const int id, MPI_Comm comm,
           const int dim, Teuchos::ParameterList& icparams, const bool selfcontact,
           std::shared_ptr<CONTACT::InterfaceDataContainer> interfaceData_ptr = nullptr,
@@ -72,7 +72,7 @@ namespace CONTACT
 
       /** \brief Create a contact interface object based on the given information
        *
-       *  \author hiermeier \date 03/17 */
+       *  */
       static std::shared_ptr<CONTACT::Interface> create_interface(
           const enum Inpar::CONTACT::SolvingStrategy stype, const int id, MPI_Comm comm,
           const int dim, Teuchos::ParameterList& icparams, const bool selfcontact,
@@ -81,7 +81,7 @@ namespace CONTACT
 
       /*! \brief Create the solver strategy object and pass all necessary data to it
        *
-       * \author Popp */
+       * */
       std::shared_ptr<CONTACT::AbstractStrategy> build_strategy(
           const Teuchos::ParameterList& params, const bool& poroslave, const bool& poromaster,
           const int& dof_offset, std::vector<std::shared_ptr<CONTACT::Interface>>& interfaces,
@@ -92,7 +92,7 @@ namespace CONTACT
        *  \note This routine can be used like a non-member function. If you need
        *  access to the class members, use the alternative call.
        *
-       * \author hiermeier \date 03/17 */
+       * */
       static std::shared_ptr<CONTACT::AbstractStrategy> build_strategy(
           const Inpar::CONTACT::SolvingStrategy stype, const Teuchos::ParameterList& params,
           const bool& poroslave, const bool& poromaster, const int& dof_offset,
@@ -125,7 +125,7 @@ namespace CONTACT
 
       /*! \brief Set Parent Elements for Poro Face Elements
        *
-       *  \author Ager */
+       *  */
       void set_poro_parent_element(enum Mortar::Element::PhysicalType& slavetype,
           enum Mortar::Element::PhysicalType& mastertype, CONTACT::Element& cele,
           std::shared_ptr<Core::Elements::Element>& ele,
@@ -133,7 +133,7 @@ namespace CONTACT
 
       /*! \brief Find Physical Type (Poro or Structure) of Poro Interface
        *
-       *  \author Ager */
+       *  */
       void find_poro_interface_types(bool& poromaster, bool& poroslave, bool& structmaster,
           bool& structslave, enum Mortar::Element::PhysicalType& slavetype,
           enum Mortar::Element::PhysicalType& mastertype) const;

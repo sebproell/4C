@@ -258,27 +258,23 @@ namespace Discret
        *
        *  \param p (in): Parameter list coming from the time integrator.
        *
-       *  \author hiermeier
-       *  \date 04/16 */
+       */
       void set_params_interface_ptr(const Teuchos::ParameterList& p) override;
 
       /** \brief returns true if the parameter interface is defined and initialized, otherwise false
        *
-       *  \author hiermeier
-       *  \date 04/16 */
+       */
       inline bool is_params_interface() const override { return (interface_ptr_ != nullptr); }
 
       /** \brief get access to the parameter interface pointer
        *
-       *  \author hiermeier
-       *  \date 04/16 */
+       */
       std::shared_ptr<Core::Elements::ParamsInterface> params_interface_ptr() override;
 
      protected:
       /** \brief get access to the interface
        *
-       *  \author hiermeier
-       *  \date 04/16 */
+       */
       inline Core::Elements::ParamsInterface& params_interface()
       {
         if (not is_params_interface()) FOUR_C_THROW("The interface ptr is not set!");
@@ -287,13 +283,12 @@ namespace Discret
 
       /** \brief get access to the structure interface
        *
-       *  \author vuong
-       *  \date 11/16 */
+       */
       Solid::Elements::ParamsInterface& str_params_interface();
 
       /** \brief error handling for structural elements
        *
-       *  \author hiermeier \date 09/18 */
+       *  */
       void error_handling(const double& det_curr, Teuchos::ParameterList& params, int line_id,
           Solid::Elements::EvalErrorFlag flag);
 

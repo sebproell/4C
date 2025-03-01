@@ -101,7 +101,7 @@ namespace Core::LinAlg
    *  \param scalar_source (in) : scale the source entries by this factor
    *  \param source        (in) : source vector
    *
-   *  \author hiermeier \date 03/17 */
+   *  */
   void assemble_my_vector(double scalar_target, Core::LinAlg::Vector<double>& target,
       double scalar_source, const Core::LinAlg::Vector<double>& source);
 
@@ -262,8 +262,6 @@ namespace Core::LinAlg
    \param dbctoggle (in)     : the Dirichlet toggle vector
    \return MapExtractor object which stores the Dirichlet condition and remaining (other) DOF map
 
-   \author bborn
-   \date 10/08
    */
   std::shared_ptr<Core::LinAlg::MapExtractor> convert_dirichlet_toggle_vector_to_maps(
       const Core::LinAlg::Vector<double>& dbctoggle);

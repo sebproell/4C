@@ -31,7 +31,7 @@ namespace Core::IO
    *  inheritance hierarchy of the class which contains these functions.
    *  See Solid::TimeInt::Base for an example.
    *
-   *  @author hiermeier @date 08/17 */
+   */
   class EveryIterationWriterInterface
   {
    public:
@@ -50,7 +50,7 @@ namespace Core::IO
      *  @param[in] writer_owner If TRUE the owner of each node and element
      *                          is written.
      *
-     *  @author hiermeier @date 08/17 */
+     */
     virtual void output_debug_state(
         Core::IO::DiscretizationWriter& iowriter, bool write_owner) const = 0;
 
@@ -60,7 +60,7 @@ namespace Core::IO
      *  definition thing, you can return any kind of meaningful unique
      *  identification number.
      *
-     *  @author hiermeier @date 08/17 */
+     */
     virtual int get_step_np() const = 0;
   };
 
@@ -121,7 +121,7 @@ namespace Core::IO
    *
    *  That's all. I hope this will help you to find some nasty bugs.
    *
-   *  @author hiermeier @date 08/17 */
+   */
   class EveryIterationWriter
   {
    public:
@@ -137,7 +137,7 @@ namespace Core::IO
      *                            and load/time step numbers.
      *  @param[in] params         EVERY ITERATION parameter list.
      *
-     *  @author hiermeier @date 08/17 */
+     */
     void init(const Core::IO::DiscretizationWriter* parent_writer,
         EveryIterationWriterInterface* interface, const Teuchos::ParameterList& params);
 
@@ -149,7 +149,7 @@ namespace Core::IO
      *  This routine has to be called at the beginning of a new Newton loop.
      *  It will generate all necessary control, result and mesh files.
      *
-     *  @author hiermeier @date 08/17 */
+     */
     void init_newton_iteration();
 
     /** @brief Add a Newton iteration to the current output
@@ -158,7 +158,7 @@ namespace Core::IO
      *
      *  @param[in] newton_iteration  Number of the current Newton iteration.
      *
-     *  @author hiermeier @date 08/17 */
+     */
     void add_newton_iteration(const int newton_iteration);
 
     /** @brief Add a line search iteration to the current output
@@ -168,7 +168,7 @@ namespace Core::IO
      *  @param[in] newton_iteration  Number of the current Newton iteration.
      *  @param[in] linesearch_iteration  Number of the current line search iteration.
      *
-     *  @author hiermeier @date 11/17 */
+     */
     void add_line_search_iteration(const int newton_iteration, const int linesearch_iteration);
 
    private:

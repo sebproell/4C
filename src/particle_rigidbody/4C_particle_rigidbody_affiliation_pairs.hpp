@@ -45,7 +45,6 @@ namespace ParticleRigidBody
    * The affiliation pair handler relates the global ids of rigid particles to the corresponding
    * global ids of rigid bodies.
    *
-   * \author Sebastian Fuchs \date 08/2020
    */
   class RigidBodyAffiliationPairs final
   {
@@ -53,7 +52,6 @@ namespace ParticleRigidBody
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 08/2020
      *
      * \param[in] comm   communicator
      */
@@ -62,14 +60,12 @@ namespace ParticleRigidBody
     /*!
      * \brief init affiliation pair handler
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void init();
 
     /*!
      * \brief setup affiliation pair handler
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void setup(
         const std::shared_ptr<PARTICLEENGINE::ParticleEngineInterface> particleengineinterface);
@@ -77,14 +73,12 @@ namespace ParticleRigidBody
     /*!
      * \brief write restart of affiliation pair handler
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void write_restart() const;
 
     /*!
      * \brief read restart of affiliation pair handler
      *
-     * \author Sebastian Fuchs \date 08/2020
      *
      * \param[in] reader discretization reader
      */
@@ -93,7 +87,6 @@ namespace ParticleRigidBody
     /*!
      * \brief get reference to affiliation pair data
      *
-     * \author Sebastian Fuchs \date 08/2020
      *
      * \return reference to affiliation pair data
      */
@@ -105,14 +98,12 @@ namespace ParticleRigidBody
     /*!
      * \brief distribute affiliation pairs
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void distribute_affiliation_pairs();
 
     /*!
      * \brief communicate affiliation pairs
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void communicate_affiliation_pairs();
 
@@ -120,7 +111,6 @@ namespace ParticleRigidBody
     /*!
      * \brief communicate specific affiliation pairs
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void communicate_specific_affiliation_pairs(
         const std::vector<std::vector<int>>& particletargets);
@@ -128,7 +118,6 @@ namespace ParticleRigidBody
     /*!
      * \brief pack all affiliation pairs
      *
-     * \author Sebastian Fuchs \date 08/2020
      *
      * \param[in] buffer buffer containing affiliation data
      */
@@ -139,7 +128,6 @@ namespace ParticleRigidBody
      *
      * Unpack affiliation pairs relating rigid particles to rigid bodies.
      *
-     * \author Sebastian Fuchs \date 08/2020
      *
      * \param[in] buffer buffer containing affiliation data
      */
@@ -148,7 +136,6 @@ namespace ParticleRigidBody
     /*!
      * \brief add affiliation pair to buffer
      *
-     * \author Sebastian Fuchs \date 08/2020
      *
      * \param[in,out] buffer    buffer containing affiliation data
      * \param[in]     globalid  global id of rigid particle

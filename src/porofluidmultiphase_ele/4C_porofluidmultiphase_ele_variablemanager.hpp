@@ -57,8 +57,6 @@ namespace Discret
 
       This class is a pure virtual non-template class, which provides access to
       the generic state phi and the scalar state (coming from a ScaTra coupling).
-
-      \author vuong
       */
       class VariableManagerMinAccess
       {
@@ -95,8 +93,6 @@ namespace Discret
       This class is a pure virtual template interface class.
       It implements the factory method, which builds the concrete variable manager
       based on the element action.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class VariableManagerInterface : public VariableManagerMinAccess
@@ -159,8 +155,6 @@ namespace Discret
 
       This class is the base class for all variable managers. It basically
       implements some safety checks.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class VariableManagerBase : public VariableManagerInterface<nsd, nen>
@@ -285,8 +279,6 @@ namespace Discret
       This class is the minimal version of a concrete variable managers. It only
       holds the generic state vector 'phi' (this can be e.g. the pressure or
       the saturation).
-
-      \author vuong
       */
       template <int nsd, int nen>
       class VariableManagerPhi : public VariableManagerBase<nsd, nen>
@@ -343,8 +335,6 @@ namespace Discret
 
       This class only holds the generic state vector 'phi' (this can be e.g. the pressure or
       the saturation) and its gradient.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class VariableManagerPhiGradPhi : public VariableManagerPhi<nsd, nen>
@@ -385,8 +375,6 @@ namespace Discret
        pattern is used, i.e. this class wraps another variable manager, extending it if necessary.
 
       This is the base class for all decorators.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class VariableManagerDecorator : public VariableManagerInterface<nsd, nen>
@@ -462,8 +450,6 @@ namespace Discret
 
       This class extends a wrapped variable manager by the instationary variables
       (time derivatives, and 'history'-vector)
-
-      \author vuong
       */
       template <int nsd, int nen>
       class VariableManagerInstat : public VariableManagerDecorator<nsd, nen>
@@ -530,8 +516,6 @@ namespace Discret
 
       This class extends a wrapped variable manager by the  variables needed for an ALE
       formulation, i.e. mesh displacements and convective velocity.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class VariableManagerStruct : public VariableManagerDecorator<nsd, nen>
@@ -619,8 +603,6 @@ namespace Discret
 
       This class extends a wrapped variable manager by the  variables needed for a ScaTra
       coupling, i.e. the scalar values.
-
-      \author vuong
       */
       template <int nsd, int nen>
       class VariableManagerScalar : public VariableManagerDecorator<nsd, nen>
@@ -689,8 +671,6 @@ namespace Discret
       nodes. This is necessary to decide if the calculation of volume fraction pressures inside an
       element makes sense returns a bool in element_has_valid_vol_frac_pressure to decide if volume
       fraction pressure has to be evaluated
-
-      \author kremheller
       */
       template <int nsd, int nen>
       class VariableManagerMaximumNodalVolFracValue : public VariableManagerDecorator<nsd, nen>

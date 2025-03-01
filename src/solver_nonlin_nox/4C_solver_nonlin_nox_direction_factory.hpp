@@ -29,8 +29,6 @@ namespace NOX
        This factory class is closely related to the NOX_Direction_Factory.H. The main
        difference is that it allows to use direction methods which differ from the
        default NOX package.
-
-       \author Michael Hiermeier
        */
       class Factory : public ::NOX::Direction::UserDefinedFactory
       {

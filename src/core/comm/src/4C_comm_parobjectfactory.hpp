@@ -56,8 +56,6 @@ namespace Core::Communication
     ParObjectType is responsible to register with ParObjectFactory and provide
     means to create its ParObject.
 
-    \author u.kue
-    \date 06/10
    */
   class ParObjectType
   {
@@ -93,8 +91,6 @@ namespace Core::Communication
     itself here. The factory is able to loop all ParObjectType objects and call
     the appropriate creation methods.
 
-    \author u.kue
-    \date 06/10
    */
   class ParObjectFactory
   {

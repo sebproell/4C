@@ -48,8 +48,8 @@ namespace Adapter
 
     \warning none
     \return void
-    \date 08/16
-    \author rauch  */
+
+    */
     void setup() override { structure_->setup(); };
 
     //@}

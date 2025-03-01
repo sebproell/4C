@@ -104,8 +104,7 @@ namespace Discret
        *
        *  \param p (in): Parameter list coming from the time integrator.
        *
-       *  \author hiermeier
-       *  \date 04/16 */
+       */
       void set_params_interface_ptr(const Teuchos::ParameterList& p) override;
 
       virtual void set_brownian_dyn_params_interface_ptr();
@@ -113,14 +112,12 @@ namespace Discret
       /** \brief returns true if the parameter interface is defined and initialized, otherwise
        * false
        *
-       *  \author hiermeier
-       *  \date 04/16 */
+       */
       inline bool is_params_interface() const override { return (interface_ptr_ != nullptr); }
 
       /** \brief get access to the parameter interface pointer
        *
-       *  \author hiermeier
-       *  \date 04/16 */
+       */
       std::shared_ptr<Core::Elements::ParamsInterface> params_interface_ptr() override;
       virtual std::shared_ptr<BrownianDynamics::ParamsInterface> brownian_dyn_params_interface_ptr()
           const;
@@ -132,8 +129,7 @@ namespace Discret
       /** \brief get access to the element reference length
        *        (i.e. arc-length in stress-free configuration)
        *
-       *  \author grill
-       *  \date 05/16 */
+       */
       virtual double ref_length() const = 0;
 
       /** \brief get the radius of the element which is used for interactions (contact, viscous,
@@ -142,57 +138,49 @@ namespace Discret
        * dimensions to be specified via input file
        *         - allow for different assumed shapes for different interaction types if needed
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       double get_circular_cross_section_radius_for_interactions() const;
 
       /** \brief get number of nodes used for centerline interpolation
        *
-       *  \author grill
-       *  \date 05/16 */
+       */
       virtual int num_centerline_nodes() const = 0;
 
       /** \brief find out whether given node is used for centerline interpolation
        *
-       *  \author grill
-       *  \date 10/16 */
+       */
       virtual bool is_centerline_node(const Core::Nodes::Node& node) const = 0;
 
       /** \brief return GIDs of all additive DoFs for a given node
        *
-       *  \author grill
-       *  \date 07/16 */
+       */
       std::vector<int> get_additive_dof_gids(
           const Core::FE::Discretization& discret, const Core::Nodes::Node& node) const;
 
       /** \brief return GIDs of all non-additive, i.e. rotation pseudo vector DoFs for a given
        * node
        *
-       *  \author grill
-       *  \date 07/16 */
+       */
       std::vector<int> get_rot_vec_dof_gids(
           const Core::FE::Discretization& discret, const Core::Nodes::Node& node) const;
 
       /** \brief add indices of those DOFs of a given node that are positions
        *
-       *  \author grill
-       *  \date 07/16 */
+       */
       virtual void position_dof_indices(
           std::vector<int>& posdofs, const Core::Nodes::Node& node) const = 0;
 
       /** \brief add indices of those DOFs of a given node that are tangents (in the case of
        * Hermite interpolation)
        *
-       *  \author grill
-       *  \date 07/16 */
+       */
       virtual void tangent_dof_indices(
           std::vector<int>& tangdofs, const Core::Nodes::Node& node) const = 0;
 
       /** \brief add indices of those DOFs of a given node that are rotation DOFs (non-additive
        * rotation vectors)
        *
-       *  \author grill
-       *  \date 07/16 */
+       */
       virtual void rotation_vec_dof_indices(
           std::vector<int>& rotvecdofs, const Core::Nodes::Node& node) const = 0;
 
@@ -200,37 +188,32 @@ namespace Discret
        *         (planar rotations are additive, e.g. in case of relative twist DOF of beam3k with
        * rotvec=false)
        *
-       *  \author grill
-       *  \date 07/16 */
+       */
       virtual void rotation_1d_dof_indices(
           std::vector<int>& twistdofs, const Core::Nodes::Node& node) const = 0;
 
       /** \brief add indices of those DOFs of a given node that represent norm of tangent vector
        *         (additive, e.g. in case of beam3k with rotvec=true)
        *
-       *  \author grill
-       *  \date 07/16 */
+       */
       virtual void tangent_length_dof_indices(
           std::vector<int>& tangnormdofs, const Core::Nodes::Node& node) const = 0;
 
       /** \brief get element local indices of those Dofs that are used for centerline
        * interpolation
        *
-       *  \author grill
-       *  \date 12/16 */
+       */
       virtual void centerline_dof_indices_of_element(
           std::vector<unsigned int>& centerlinedofindices) const = 0;
 
       /** \brief get Jacobi factor ds/dxi(xi) at xi \in [-1;1]
        *
-       *  \author grill
-       *  \date 06/16 */
+       */
       virtual double get_jacobi_fac_at_xi(const double& xi) const = 0;
 
       /** \brief Get material cross-section deformation measures, i.e. strain resultants
        *
-       *  \author grill
-       *  \date 04/17 */
+       */
       virtual inline void get_material_strain_resultants_at_all_gps(
           std::vector<double>& axial_strain_GPs, std::vector<double>& shear_strain_2_GPs,
           std::vector<double>& shear_strain_3_GPs, std::vector<double>& twist_GPs,
@@ -241,8 +224,7 @@ namespace Discret
 
       /** \brief Get spatial cross-section stress resultants
        *
-       *  \author eichinger
-       *  \date 05/17 */
+       */
       virtual inline void get_spatial_stress_resultants_at_all_gps(
           std::vector<double>& spatial_axial_force_GPs,
           std::vector<double>& spatial_shear_force_2_GPs,
@@ -255,8 +237,7 @@ namespace Discret
 
       /** \brief Get spatial cross-section stress resultants
        *
-       *  \author eichinger
-       *  \date 05/17 */
+       */
       virtual inline void get_spatial_forces_at_all_gps(
           std::vector<double>& spatial_axial_force_GPs,
           std::vector<double>& spatial_shear_force_2_GPs,
@@ -267,8 +248,7 @@ namespace Discret
 
       /** \brief Get spatial cross-section stress resultants
        *
-       *  \author eichinger
-       *  \date 05/17 */
+       */
       virtual inline void get_spatial_moments_at_all_gps(std::vector<double>& spatial_torque_GPs,
           std::vector<double>& spatial_bending_moment_2_GPs,
           std::vector<double>& spatial_bending_moment_3_GPs) const
@@ -278,8 +258,7 @@ namespace Discret
 
       /** \brief Get material cross-section stress resultants
        *
-       *  \author grill
-       *  \date 04/17 */
+       */
       virtual inline void get_material_stress_resultants_at_all_gps(
           std::vector<double>& material_axial_force_GPs,
           std::vector<double>& material_shear_force_2_GPs,
@@ -292,8 +271,7 @@ namespace Discret
 
       /** \brief Get number of degrees of freedom of a single node
        *
-       *  \author eichinger
-       *  \date 08/16 */
+       */
       int num_dof_per_node(const Core::Nodes::Node& node) const override
       {
         FOUR_C_THROW("not implemented");
@@ -303,30 +281,26 @@ namespace Discret
       /** \brief get centerline position at xi \in [-1,1] (element parameter space) in stress-free
        * reference configuration
        *
-       *  \author grill
-       *  \date 06/16 */
+       */
       void get_ref_pos_at_xi(Core::LinAlg::Matrix<3, 1>& refpos, const double& xi) const;
 
       /** \brief get unit tangent vector in reference configuration at i-th node of beam element
        * (element-internal numbering)
        *
-       *  \author grill
-       *  \date 06/16 */
+       */
       virtual void get_ref_tangent_at_node(
           Core::LinAlg::Matrix<3, 1>& Tref_i, const int& i) const = 0;
 
       /** \brief get centerline position at xi \in [-1,1] (element parameter space) from
        * displacement state vector
        *
-       *  \author grill
-       *  \date 06/16 */
+       */
       virtual void get_pos_at_xi(Core::LinAlg::Matrix<3, 1>& pos, const double& xi,
           const std::vector<double>& disp) const = 0;
 
       /** \brief get triad at xi \in [-1,1] (element parameter space)
        *
-       *  \author grill
-       *  \date 07/16 */
+       */
       virtual void get_triad_at_xi(Core::LinAlg::Matrix<3, 3>& triad, const double& xi,
           const std::vector<double>& disp) const
       {
@@ -337,8 +311,7 @@ namespace Discret
       /** \brief get generalized interpolation matrix which yields the variation of the position
        * and orientation at xi \in [-1,1] if multiplied with the vector of primary DoF variations
        *
-       *  \author grill
-       *  \date 11/16 */
+       */
       virtual void get_generalized_interpolation_matrix_variations_at_xi(
           Core::LinAlg::SerialDenseMatrix& Ivar, const double& xi,
           const std::vector<double>& disp) const
@@ -350,8 +323,7 @@ namespace Discret
        * variations (see above) and applied force vector) with respect to the primary DoFs of this
        * element
        *
-       *  \author grill
-       *  \date 01/17 */
+       */
       virtual void get_stiffmat_resulting_from_generalized_interpolation_matrix_at_xi(
           Core::LinAlg::SerialDenseMatrix& stiffmat, const double& xi,
           const std::vector<double>& disp, const Core::LinAlg::SerialDenseVector& force) const
@@ -362,8 +334,7 @@ namespace Discret
       /** \brief get generalized interpolation matrix which yields the increments of the position
        * and orientation at xi \in [-1,1] if multiplied with the vector of primary DoF increments
        *
-       *  \author grill
-       *  \date 11/16 */
+       */
       virtual void get_generalized_interpolation_matrix_increments_at_xi(
           Core::LinAlg::SerialDenseMatrix& Iinc, const double& xi,
           const std::vector<double>& disp) const
@@ -390,8 +361,7 @@ namespace Discret
       /** \brief extract values for those Dofs relevant for centerline-interpolation from total
        * state vector
        *
-       *  \author grill
-       *  \date 11/16 */
+       */
       virtual void extract_centerline_dof_values_from_element_state_vector(
           const std::vector<double>& dofvec, std::vector<double>& dofvec_centerline,
           bool add_reference_values = false) const = 0;
@@ -410,8 +380,7 @@ namespace Discret
 
       /** \brief get access to the interface
        *
-       *  \author hiermeier
-       *  \date 04/16 */
+       */
       inline Solid::Elements::ParamsInterface& params_interface() const
       {
         if (not is_params_interface()) FOUR_C_THROW("The interface ptr is not set!");
@@ -484,8 +453,7 @@ namespace Discret
        * space
        * [-1,1] via interpolation of nodal DoFs based on given shape function values
        *
-       *  \author grill
-       *  \date 03/16 */
+       */
       template <unsigned int nnode, unsigned int vpernode, typename T>
       void calc_r(const Core::LinAlg::Matrix<3 * vpernode * nnode, 1, T>& disp_totlag_centerline,
           const Core::LinAlg::Matrix<1, vpernode * nnode, double>& funct,
@@ -499,8 +467,7 @@ namespace Discret
        *         element parameter space [-1,1] with respect to \xi via interpolation of nodal
        * DoFs based on given shape function derivative values
        *
-       *  \author grill
-       *  \date 03/16 */
+       */
       template <unsigned int nnode, unsigned int vpernode, typename T>
       void calc_r_xi(const Core::LinAlg::Matrix<3 * vpernode * nnode, 1, T>& disp_totlag_centerline,
           const Core::LinAlg::Matrix<1, vpernode * nnode, double>& deriv,
@@ -515,8 +482,7 @@ namespace Discret
        * reference configuration via interpolation of nodal DoFs based on given shape function
        * derivative values
        *
-       *  \author grill
-       *  \date 03/16 */
+       */
       template <unsigned int nnode, unsigned int vpernode, typename T>
       void calc_r_s(const Core::LinAlg::Matrix<3 * vpernode * nnode, 1, T>& disp_totlag_centerline,
           const Core::LinAlg::Matrix<1, vpernode * nnode, double>& deriv, const double& jacobi,
@@ -543,16 +509,14 @@ namespace Discret
 
       /** \brief setup constitutive matrices from material law
        *
-       *  \author grill
-       *  \date 03/16 */
+       */
       template <typename T>
       void get_constitutive_matrices(
           Core::LinAlg::Matrix<3, 3, T>& CN, Core::LinAlg::Matrix<3, 3, T>& CM) const;
 
       /** \brief setup mass inertia tensors from material law
        *
-       *  \author grill
-       *  \date 03/16 */
+       */
       template <typename T>
       void get_translational_and_rotational_mass_inertia_tensor(
           double& mass_inertia_translational, Core::LinAlg::Matrix<3, 3, T>& J) const;
@@ -561,8 +525,7 @@ namespace Discret
        *      this method is called by reduced beam formulation which don't include
        *      rotational mass inertia
        *
-       *  \author grill
-       *  \date 03/17 */
+       */
       void get_translational_mass_inertia_factor(double& mass_inertia_translational) const;
 
       //! @name Methods and variables for Brownian dynamics or beaminteraction simulations
@@ -596,8 +559,7 @@ namespace Discret
 
       /** \brief get entire binding spot information of element
        *
-       *  \author eichinger
-       *  \date 06/17 */
+       */
       std::map<Inpar::BeamInteraction::CrosslinkerType, std::vector<double>> const&
       get_binding_spots() const
       {
@@ -606,14 +568,12 @@ namespace Discret
 
       /** \brief get number of binding spot types on this element
        *
-       *  \author eichinger
-       *  \date 06/17 */
+       */
       unsigned int get_number_of_binding_spot_types() const { return bspotposxi_.size(); }
 
       /** \brief get number of binding spots of certain binding spot type on this element
        *
-       *  \author eichinger
-       *  \date 06/17 */
+       */
       unsigned int get_number_of_binding_spots(
           Inpar::BeamInteraction::CrosslinkerType linkertype) const
       {
@@ -622,8 +582,7 @@ namespace Discret
 
       /** \brief get binding spot positions xi
        *
-       *  \author eichinger
-       *  \date 03/17 */
+       */
       double get_binding_spot_xi(
           Inpar::BeamInteraction::CrosslinkerType linkertype, unsigned int bspotlocn) const
       {
@@ -635,8 +594,7 @@ namespace Discret
 
       /** \brief set binding spot positions and status in crosslinker simulation
        *
-       *  \author eichinger
-       *  \date 03/17 */
+       */
       void set_binding_spots(
           std::map<Inpar::BeamInteraction::CrosslinkerType, std::vector<double>> bspotposxi)
       {
@@ -646,8 +604,7 @@ namespace Discret
 
       /** \brief set binding spot positions and status in crosslinker simulation
        *
-       *  \author eichinger
-       *  \date 03/17 */
+       */
       void set_positions_of_binding_spot_type(
           Inpar::BeamInteraction::CrosslinkerType linkertype, std::vector<double> const& bspotposxi)
       {
@@ -656,8 +613,7 @@ namespace Discret
 
       /** \brief set/get type of filament the element is part of
        *
-       *  \author eichinger
-       *  \date 03/17 */
+       */
       void set_filament_type(Inpar::BeamInteraction::FilamentType filamenttype)
       {
         filamenttype_ = filamenttype;

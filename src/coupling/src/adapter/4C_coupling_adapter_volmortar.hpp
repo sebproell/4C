@@ -90,8 +90,7 @@ namespace Coupling::Adapter
           and \ref setup(), in case you need parallel redistribution
 
 
-    \date   09/16
-    \author rauch
+
 
     */
     void redistribute(const Teuchos::ParameterList& binning_params,

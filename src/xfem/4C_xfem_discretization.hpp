@@ -230,7 +230,7 @@ namespace XFEM
      *  \param nds  (in) : number of dofset
      *  \param node (in) : the node those number of dofs are requested
      *
-     *  \author hiermeier \date 10/16 */
+     *  */
     int num_standard_dof(const unsigned& nds, const Core::Nodes::Node* node) const override
     {
       std::vector<int> dofs(0);

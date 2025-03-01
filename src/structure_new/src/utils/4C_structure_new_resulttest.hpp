@@ -67,7 +67,6 @@ namespace Solid
     };
 
     //! Constructor for time integrators of general kind
-    //! \author bborn \date 06/08 (originally)
     ResultTest();
 
     //! initialization of class variables
@@ -141,7 +140,7 @@ namespace Solid
      *  \param[out] special_status  status of the specual result test
      *  \return  The value for the subsequent comparison.
      *
-     *  \author hiermeier \date 11/17 */
+     *  */
     std::optional<double> get_special_result(
         const std::string& quantity, Status& special_status) const;
 
@@ -181,7 +180,7 @@ namespace Solid
      *  \param[out] special_status  status of the special result test
      *  \return  The number of nonlinear iterations, if possible. Otherwise -1.
      *
-     *  \author hiermeier \date 11/17 */
+     *  */
     std::optional<int> get_nln_iteration_number(
         const std::string& quantity, Status& special_status) const;
 
@@ -198,7 +197,7 @@ namespace Solid
      *  \param[out] special_status  status of the special result test
      *  \return     The requested energy
      *
-     *  \author kremheller \date 11/19 */
+     *  */
     std::optional<double> get_energy(const std::string& quantity, Status& special_status) const;
 
     /**! \brief extract nodal value on specific position
@@ -247,7 +246,7 @@ namespace Solid
    *  \param[in] name  string name to extract from
    *  \return Extracted integer at the very last position of the name.
    *
-   *  \author hiermeier \date 11/17 */
+   *  */
   int get_integer_number_at_last_position_of_name(const std::string& quantity);
 
 }  // namespace Solid

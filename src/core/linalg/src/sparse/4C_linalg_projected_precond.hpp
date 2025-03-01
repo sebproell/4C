@@ -45,8 +45,6 @@ namespace Core::LinAlg
 
   See linalg_projected_operator.H for related docu and code.
 
-  \author gammi
-  \date 03/09
   */
   class LinalgPrecondOperator : public Epetra_Operator
   {

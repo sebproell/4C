@@ -75,8 +75,7 @@ namespace Coupling::Adapter
    *  master_to_slave() and slave_to_master() are quite simple. The hard
    *  work happens (once) during setup.
    *
-   *  \author u.kue
-   *  \date 06/07
+
    */
   class Coupling : public CouplingBase
   {

@@ -30,7 +30,6 @@ namespace ParticleRigidBody
     /*!
      * \brief clear quaternion
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     template <class T>
     inline void quaternion_clear(T* q)
@@ -44,7 +43,6 @@ namespace ParticleRigidBody
     /*!
      * \brief set quaternion
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     template <class T>
     inline void quaternion_set(T* q1, const T* q2)
@@ -58,7 +56,6 @@ namespace ParticleRigidBody
     /*!
      * \brief invert quaternion
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     template <class T>
     inline void quaternion_invert(T* q1, const T* q2)
@@ -74,7 +71,6 @@ namespace ParticleRigidBody
      *
      * q12 = q2 * q1, Crisfield, Vol. 2, equation (16.71)
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     template <class T>
     inline void quaternion_product(T* q12, const T* q2, const T* q1)
@@ -88,7 +84,6 @@ namespace ParticleRigidBody
     /*!
      * \brief get quaternion from angle
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     template <class T>
     inline void quaternion_from_angle(T* q, const T* phi)
@@ -117,7 +112,6 @@ namespace ParticleRigidBody
      *
      * [w 0] = q * [v 0] * q^-1
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     template <class T>
     inline void quaternion_rotate_vector(T* w, const T* q, const T* v)

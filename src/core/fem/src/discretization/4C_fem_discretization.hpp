@@ -429,7 +429,7 @@ namespace Core::FE
      *  \param nds (in)       : number of dofset
      *  \param node (in)      : the node those number of DoF's are requested
      *
-     *  \author hiermeier \date 10/16 */
+     *  */
     virtual int num_standard_dof(const unsigned& nds, const Core::Nodes::Node* node) const
     {
       return num_dof(nds, node);
@@ -1175,7 +1175,7 @@ namespace Core::FE
     \param name : name of the condition
     \param cond : vector of new conditions
 
-    \author hiermeier \date 11/16 */
+    */
     void replace_conditions(const std::string& name,
         const std::vector<std::shared_ptr<Core::Conditions::Condition>>& conds);
 
@@ -1922,7 +1922,6 @@ namespace Core::FE
      *
      * Example: strain energy in structures
      *
-     * \author bborn \date 08/08
      */
     virtual void evaluate_scalars(
         Teuchos::ParameterList& params, std::shared_ptr<Core::LinAlg::SerialDenseVector> scalars);
@@ -1937,7 +1936,6 @@ namespace Core::FE
      *
      * Example: strain energy in structures
      *
-     * \author fang \date 02/15
      */
     void evaluate_scalars(Teuchos::ParameterList& params,  //! (in) parameter list
         Core::LinAlg::SerialDenseVector&
@@ -1956,7 +1954,6 @@ namespace Core::FE
      *
      * Example: strain energy in structures
      *
-     * \author gee \date 05/11
      */
     void evaluate_scalars(Teuchos::ParameterList& params, /*!< parameters */
         Core::LinAlg::MultiVector<double>& scalars /*!< output element-wise scalar quantities */
@@ -2136,8 +2133,6 @@ namespace Core::FE
     matches the distribution of the originating volume. Each surface is owned by the
     same proc as the underlying volume element (rauch 10/16).
 
-    \author Michael Gee
-    \date 01/07
 
     \version rework by Andreas Rauch ( rauch 10/16 )       */
     virtual bool build_surfacesin_condition(
@@ -2203,8 +2198,7 @@ namespace Core::FE
      *  \param finalelements (o) map (global_id)->(element) that can be
      *  added to a condition.
      *
-     *  \author h.kue
-     *  \date 09/07    */
+     */
     virtual void assign_global_i_ds(MPI_Comm comm,
         const std::map<std::vector<int>, std::shared_ptr<Core::Elements::Element>>& elementmap,
         std::map<int, std::shared_ptr<Core::Elements::Element>>& finalgeometry);

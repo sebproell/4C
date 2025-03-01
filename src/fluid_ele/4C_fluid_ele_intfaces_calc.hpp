@@ -109,10 +109,7 @@ namespace Discret
       a minimum so that the element fits into the cache. (There might be
       room for improvements.)
 
-      \author gjb
-      \date 08/08
-      \author schott
-      \date 04/12
+
     */
     template <Core::FE::CellType distype>
     class FluidIntFaceImpl : public FluidIntFaceImplInterface

@@ -34,14 +34,14 @@ namespace Cut
      *
      *  The volume cells are numbered and stored individually.
      *
-     *  \author hiermeier \date 12/16 */
+     *  */
     void gmsh_volume_cells_only(const plain_volumecell_set& vcells);
 
     /** \brief Write a Gmsh output file, which contains only the given facets
      *
      *  The facets are numbered and stored individually.
      *
-     *  \author hiermeier \date 12/16 */
+     *  */
     void gmsh_facets_only(
         const plain_facet_set& facets, Element* ele, const std::string& file_affix = "");
     inline void gmsh_facets_only(
@@ -56,7 +56,7 @@ namespace Cut
      *
      *  The volume cells are numbered and stored individually.
      *
-     *  \author hiermeier \date 12/16 */
+     *  */
     void gmsh_edges_only(const plain_edge_set& edges);
 
     /** \brief Write Gmsh output for a cell of given discretization type
@@ -68,7 +68,7 @@ namespace Cut
      *  \param value    (in) : value of the cell ( optional ). If a value is given,
      *                         it will overrule the position input.
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     void gmsh_cell_dump(std::ofstream& file, Core::FE::CellType shape,
         const Core::LinAlg::SerialDenseMatrix& xyze, const Point::PointPosition* position = nullptr,
         const int* value = nullptr);

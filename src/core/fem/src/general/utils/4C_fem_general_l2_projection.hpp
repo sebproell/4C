@@ -40,8 +40,6 @@ namespace Core::FE
     \return an Core::LinAlg::MultiVector<double> based on the discret's node row map containing
     numvec vectors with the projected state
 
-    \author Georg Hammerl
-    \date 06/14
    */
   std::shared_ptr<Core::LinAlg::MultiVector<double>> compute_nodal_l2_projection(
       Core::FE::Discretization& dis,   ///< underlying discretization

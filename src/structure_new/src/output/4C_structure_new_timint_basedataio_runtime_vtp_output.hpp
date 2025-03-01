@@ -22,7 +22,7 @@ namespace Solid
   {
     /** \brief Input data container for VTP output at runtime for the structural (time) integration
      *
-     * \author Jonas Eichinger */
+     * */
     class ParamsRuntimeVtpOutput
     {
      public:

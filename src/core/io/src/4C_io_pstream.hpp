@@ -52,7 +52,6 @@ namespace Core::IO
    *        o limit output to certain procs
    *        o selecting an output level
    *
-   * \author wichmann & hammerl \date 11/12
    */
   class Pstream
   {
@@ -152,7 +151,7 @@ namespace Core::IO
      *  as the processor restriction also for standard print() methods which
      *  typically expect a std::ostream object as input argument.
      *
-     *  \author hiermeier 12/17 */
+     *  */
     std::ostream& os(const Verbositylevel level = undef) const;
 
     /// Return verbosity level
@@ -223,7 +222,6 @@ namespace Core::IO
    * \brief This object handles output if a level was specified.
    *        Everything is then streamed to Pstream.
    *
-   * \author wichmann & hammerl \date 09/16
    */
   class Level
   {

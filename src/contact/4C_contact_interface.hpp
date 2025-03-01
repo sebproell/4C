@@ -359,7 +359,7 @@ namespace CONTACT
      *  \param icontact (in) : global contact parameter-list
      *  \param selfcontact (in): Boolean flag to indicate self-contact
      *
-     *  \author hiermeier \date 03/17 */
+     *  */
     static std::shared_ptr<Interface> create(const int id, MPI_Comm comm, const int spatialDim,
         const Teuchos::ParameterList& icontact, const bool selfcontact);
 

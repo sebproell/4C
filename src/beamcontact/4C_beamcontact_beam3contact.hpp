@@ -532,8 +532,7 @@ namespace CONTACT
 
     /** \brief print information about this beam contact element pair to screen
      *
-     *  \author grill
-     *  \date 05/16 */
+     */
     void print() const override;
 
     //@}
@@ -1023,8 +1022,7 @@ namespace CONTACT
 
     /** \brief get Jacobi factor of beam element at xi \in [-1;1]
      *
-     *  \author grill
-     *  \date 06/16 */
+     */
     inline double get_jacobi_at_xi(Core::Elements::Element* element1, const double& xi)
     {
       const Discret::Elements::Beam3Base* ele =

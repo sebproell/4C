@@ -35,8 +35,7 @@ namespace Thermo
    *
    * Regarding this matter, please direct any complaints to Axel Gerstenberger.
    *
-   * \author bborn
-   * \date 06/08
+
    */
   class TimIntStatics : public TimIntImpl
   {
@@ -99,11 +98,9 @@ namespace Thermo
     // void EvaluateForceTangResidualRelax();
 
     //! Determine characteristic norm for temperatures
-    //! \author lw (originally)
     double calc_ref_norm_temperature() override;
 
     //! Determine characteristic norm for force
-    //! \author lw (originally)
     double calc_ref_norm_force() override;
 
     //! Update iteration incrementally

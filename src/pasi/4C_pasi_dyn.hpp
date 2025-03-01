@@ -15,7 +15,6 @@ FOUR_C_NAMESPACE_OPEN
 /*!
  * \brief control routine for particle structure interaction
  *
- * \author Sebastian Fuchs \date 01/2017
  */
 void pasi_dyn();
 

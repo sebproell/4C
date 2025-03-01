@@ -37,7 +37,6 @@ namespace ParticleInteraction
   /*!
    * \brief discrete element method (DEM) interaction
    *
-   * \author Sebastian Fuchs \date 05/2018
    */
 
   class ParticleInteractionDEM final : public ParticleInteractionBase
@@ -49,7 +48,6 @@ namespace ParticleInteraction
     /*!
      * \brief destructor
      *
-     * \author Sebastian Fuchs \date 10/2018
      *
      * \note At compile-time a complete type of class T as used in class member
      *       std::unique_ptr<T> ptr_T_ is required

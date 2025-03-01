@@ -207,8 +207,8 @@ namespace CONTACT
     /*! \brief Reset call at the beginning of the apply_force(), apply_stiff() and
      * apply_force_stiff() [derived]
      *
-     *  \date 02/2016
-     *  \author hiermeier */
+
+     *  */
     virtual void reset(const Core::LinAlg::Vector<double>& dis)
     {
       FOUR_C_THROW("Not yet considered for meshtying!");
@@ -219,8 +219,8 @@ namespace CONTACT
      *  Evaluation of the right-hand-side only. Necessary and meaningful for line search strategies
      *  for example.
      *
-     *  \date 03/2016
-     *  \author hiermeier */
+
+     *  */
     virtual bool apply_force()
     {
       FOUR_C_THROW("Not yet considered for msht!");
@@ -233,8 +233,8 @@ namespace CONTACT
      * method also, when we are only interested in the jacobian, since the created overhead is
      * negligible.
      *
-     *  \date 03/2016
-     *  \author hiermeier */
+
+     *  */
     virtual bool apply_force_stiff()
     {
       FOUR_C_THROW("Not yet considered for msht!");
@@ -393,7 +393,7 @@ namespace CONTACT
      * (2) innerDofMap
      * (3) activeDofMap
      *
-     * \author hiermeier */
+     * */
     void fill_maps_for_preconditioner(std::vector<Teuchos::RCP<Epetra_Map>>& maps) const override;
 
     //! compute the preconditioner operator
@@ -529,8 +529,8 @@ namespace CONTACT
      *
      *  \param bt (in): Desired vector block type, e.g. displ, constraint, ...
      *
-     *  \date 05/2016
-     *  \author hiermeier */
+
+     *  */
     virtual std::shared_ptr<const Core::LinAlg::Vector<double>> get_rhs_block_ptr(
         const enum CONTACT::VecBlockType& bt) const = 0;
 
@@ -541,8 +541,8 @@ namespace CONTACT
      *
      *  \param bt (in): Desired matrix block type, e.g. displ_displ, displ_lm, ...
      *
-     *  \date 05/2016
-     *  \author hiermeier */
+
+     *  */
     virtual std::shared_ptr<Core::LinAlg::SparseMatrix> get_matrix_block_ptr(
         const enum CONTACT::MatBlockType& bt) const = 0;
 

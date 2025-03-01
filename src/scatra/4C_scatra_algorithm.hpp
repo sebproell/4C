@@ -19,8 +19,6 @@ namespace ScaTra
   /// Basic algorithm for the transport of passive scalars in the fluid velocity field
   /*!
 
-    \author gjb
-    \date 07/08
    */
   class ScaTraAlgorithm : public Adapter::ScaTraFluidCouplingAlgorithm
   {

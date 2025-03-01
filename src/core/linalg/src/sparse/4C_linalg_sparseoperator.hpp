@@ -42,7 +42,6 @@ namespace Core::LinAlg
    *  Use Core::LinAlg::DataAccess for construction of any Core::LINALG matrix object.
    *  Use plain 'Copy' or 'View' for construction of any Epetra matrix object.
    *
-   *  \author mayr.mt \date 10/2015
    */
   enum DataAccess
   {
@@ -80,8 +79,6 @@ namespace Core::LinAlg
     one is the SparseMatrix, a single Epetra_CrsMatrix in a box, another one
     is BlockSparseMatrix, a block matrix build from a list of SparseMatrix.
 
-    \author u.kue
-    \date 02/08
    */
   class SparseOperator : public Epetra_Operator
   {
@@ -224,7 +221,7 @@ namespace Core::LinAlg
      *                             If it is only one block/matrix, this boolean should be TRUE.
      *  \param (in) trafo: pointer to an optional trafo matrix (see LocSys).
      *
-     *  \author hiermeier \date 01/18 */
+     *  */
     virtual bool is_dbc_applied(const Epetra_Map& dbcmap, bool diagonalblock = true,
         const Core::LinAlg::SparseMatrix* trafo = nullptr) const = 0;
 

@@ -129,12 +129,12 @@ namespace BeamInteraction
 
     /** \brief print this beam potential-based element pair to screen
      *
-     *  \author grill */
+     *  */
     void print(std::ostream& out) const override;
 
     /** \brief print this beam potential element pair to screen
      *
-     *  \author grill */
+     *  */
     void print_summary_one_line_per_active_segment_pair(std::ostream& out) const override;
     //@}
 
@@ -156,8 +156,7 @@ namespace BeamInteraction
     /** \brief Evaluate forces and stiffness contribution resulting from potential-based interaction
      *         using double length specific potential with approximation for large separations
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void evaluate_fpotand_stiffpot_large_sep_approx(
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, T>& force_pot1,
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, T>& force_pot2,
@@ -167,8 +166,7 @@ namespace BeamInteraction
     /** \brief compute contributions to analytic linearization (i.e. stiffness matrices) at current
      *         Gauss point pair
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void evaluate_stiffpot_analytic_contributions_large_sep_approx(
         Core::LinAlg::Matrix<3, 1, double> const& dist, double const& norm_dist,
         double const& norm_dist_exp1, double q1q2_JacFac_GaussWeights,
@@ -181,8 +179,7 @@ namespace BeamInteraction
     /** \brief compute contributions to analytic linearization (i.e. stiffness matrices) at current
      *         Gauss point pair
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void evaluate_stiffpot_analytic_contributions_large_sep_approx(
         Core::LinAlg::Matrix<3, 1, Sacado::Fad::DFad<double>> const& dist,
         Sacado::Fad::DFad<double> const& norm_dist, Sacado::Fad::DFad<double> const& norm_dist_exp1,
@@ -199,8 +196,7 @@ namespace BeamInteraction
     /** \brief Evaluate forces and stiffness contribution resulting from potential-based interaction
      *         using double length specific potential with approximation for small separations
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void evaluate_fpotand_stiffpot_double_length_specific_small_sep_approx(
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, T>& force_pot1,
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, T>& force_pot2,
@@ -211,8 +207,7 @@ namespace BeamInteraction
     /** \brief compute contributions to analytic linearization (i.e. stiffness matrices) at current
      *         Gauss point pair
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void evaluate_stiffpot_analytic_contributions_double_length_specific_small_sep_approx(
         Core::LinAlg::Matrix<3, 1, double> const& dist, double const& norm_dist, double const& gap,
         double const& gap_regularized, double const& gap_exp1, double q1q2_JacFac_GaussWeights,
@@ -225,8 +220,7 @@ namespace BeamInteraction
     /** \brief compute contributions to analytic linearization (i.e. stiffness matrices) at current
      *         Gauss point pair
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void evaluate_stiffpot_analytic_contributions_double_length_specific_small_sep_approx(
         Core::LinAlg::Matrix<3, 1, Sacado::Fad::DFad<double>> const& dist,
         Sacado::Fad::DFad<double> const& norm_dist, Sacado::Fad::DFad<double> const& gap,
@@ -244,8 +238,7 @@ namespace BeamInteraction
     /** \brief Evaluate forces and stiffness contribution resulting from potential-based interaction
      *         using single length specific potential with approximation for small separations
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void evaluate_fpotand_stiffpot_single_length_specific_small_sep_approx(
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, T>& force_pot1,
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, T>& force_pot2,
@@ -254,8 +247,7 @@ namespace BeamInteraction
 
     /** \brief Evaluate all quantities for the full disk-cylinder potential law
      *
-     *  \author grill
-     *  \date 03/19 */
+     */
     bool evaluate_full_disk_cylinder_potential(T& interaction_potential_GP,
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, T>& force_pot_slave_GP,
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, T>& force_pot_master_GP,
@@ -311,8 +303,7 @@ namespace BeamInteraction
 
     /** \brief scale given stiffness matrices by given scalar factor
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void scale_stiffpot_analytic_contributions_if_required(double const& scalefactor,
         Core::LinAlg::SerialDenseMatrix& stiffmat11, Core::LinAlg::SerialDenseMatrix& stiffmat12,
         Core::LinAlg::SerialDenseMatrix& stiffmat21,
@@ -320,8 +311,7 @@ namespace BeamInteraction
 
     /** \brief scale given stiffness matrices by given scalar factor
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void scale_stiffpot_analytic_contributions_if_required(
         Sacado::Fad::DFad<double> const& scalefactor, Core::LinAlg::SerialDenseMatrix& stiffmat11,
         Core::LinAlg::SerialDenseMatrix& stiffmat12, Core::LinAlg::SerialDenseMatrix& stiffmat21,
@@ -333,8 +323,7 @@ namespace BeamInteraction
     /** \brief compute linearization (i.e. stiffness matrices) of given force vectors
      *         using automatic differentiation based on Sacado::Fad package
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void calc_stiffmat_automatic_differentiation_if_required(
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, double> const& force_pot1,
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, double> const& force_pot2,
@@ -348,8 +337,7 @@ namespace BeamInteraction
     /** \brief compute linearization (i.e. stiffness matrices) of given force vectors
      *         using automatic differentiation based on Sacado::Fad package
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void calc_stiffmat_automatic_differentiation_if_required(
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, Sacado::Fad::DFad<double>> const&
             force_pot1,
@@ -363,8 +351,7 @@ namespace BeamInteraction
      *         if determined via point-to-curve projection
      *         using automatic differentiation based on Sacado::Fad package
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void add_stiffmat_contributions_xi_master_automatic_differentiation_if_required(
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, double> const& force_pot1,
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, double> const& force_pot2,
@@ -383,8 +370,7 @@ namespace BeamInteraction
      *         if determined via point-to-curve projection
      *         using automatic differentiation based on Sacado::Fad package
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void add_stiffmat_contributions_xi_master_automatic_differentiation_if_required(
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, Sacado::Fad::DFad<double>> const&
             force_pot1,
@@ -400,8 +386,7 @@ namespace BeamInteraction
 
     /** \brief compute discrete force vectors using automatic differentiation
      *
-     *  \author grill
-     *  \date 02/19 */
+     */
     void calc_fpot_gausspoint_automatic_differentiation_if_required(
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, double>& force_pot1,
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, double>& force_pot2,
@@ -414,8 +399,7 @@ namespace BeamInteraction
 
     /** \brief compute discrete force vectors using automatic differentiation
      *
-     *  \author grill
-     *  \date 02/19 */
+     */
     void calc_fpot_gausspoint_automatic_differentiation_if_required(
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, Sacado::Fad::DFad<double>>&
             force_pot1,
@@ -430,8 +414,7 @@ namespace BeamInteraction
 
     /** \brief compute discrete force vectors using automatic differentiation
      *
-     *  \author grill
-     *  \date 02/19 */
+     */
     void calc_fpot_gausspoint_automatic_differentiation_if_required(
 
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, double>& force_pot1,
@@ -449,8 +432,7 @@ namespace BeamInteraction
      *
      *  \param stiffmat11 d (Residuum_vec_1) / d (dof_vec_1)
      *
-     *  \author grill
-     *  \date 04/19 */
+     */
     void evaluate_stiffpot_analytic_contributions_single_length_specific_small_sep_approx_simple(
         Core::LinAlg::Matrix<1, numnodes * numnodalvalues, double> const& N_i_slave,
         Core::LinAlg::Matrix<1, numnodes * numnodalvalues, double> const& N_i_xi_slave,
@@ -480,8 +462,7 @@ namespace BeamInteraction
 
     /** \brief evaluate analytic linearization (i.e. stiffness matrices) at current Gauss point
      *
-     *  \author grill
-     *  \date 04/19 */
+     */
     void evaluate_stiffpot_analytic_contributions_single_length_specific_small_sep_approx_simple(
         Core::LinAlg::Matrix<1, numnodes * numnodalvalues, double> const& N_i_slave,
         Core::LinAlg::Matrix<1, numnodes * numnodalvalues, double> const& N_i_xi_slave,
@@ -551,8 +532,7 @@ namespace BeamInteraction
 
     /** \brief set primary variables for FAD if required
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void set_automatic_differentiation_variables_if_required(
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, double>& ele1centerlinedofvec,
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, double>& ele2centerlinedofvec)
@@ -562,8 +542,7 @@ namespace BeamInteraction
 
     /** \brief set primary variables for FAD if required
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void set_automatic_differentiation_variables_if_required(
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, Sacado::Fad::DFad<double>>&
             ele1centerlinedofvec,
@@ -572,8 +551,7 @@ namespace BeamInteraction
 
     /** \brief set primary variables including xi_master for FAD if required
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void set_automatic_differentiation_variables_if_required(
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, double>& ele1centerlinedofvec,
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, double>& ele2centerlinedofvec,
@@ -584,8 +562,7 @@ namespace BeamInteraction
 
     /** \brief set primary variables including xi_master for FAD if required
      *
-     *  \author grill
-     *  \date 10/17 */
+     */
     void set_automatic_differentiation_variables_if_required(
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, Sacado::Fad::DFad<double>>&
             ele1centerlinedofvec,
@@ -600,8 +577,7 @@ namespace BeamInteraction
      *  deformation of the elements and is thus cheap to compute before we begin with the actual,
      *  expensive evaluation of the pair on Gauss point level.
      *
-     *  \author grill
-     *  \date 08/19 */
+     */
     bool are_elements_much_more_separated_than_cutoff_distance();
 
     //@}

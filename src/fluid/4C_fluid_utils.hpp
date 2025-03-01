@@ -428,7 +428,7 @@ namespace FLD
      *       initial configuration, meaning they are calculated using the coordinates X
      *       of a node in its initial state, not its current position.
      *
-     * \date November 2007
+
      *
      * \param dis          Fluid discretization, including node distribution and
      *                     boundary conditions.
@@ -452,7 +452,7 @@ namespace FLD
      * This function writes the computed lift and drag values to files, with one file being
      * generated per label. It is typically called by process 0.
      *
-     * \date February 2009
+
      *
      * \param time         The current real time at which the values are being written.
      * \param step         The current time step.
@@ -470,7 +470,7 @@ namespace FLD
      * with each condition ID. The flow rate's sign indicates net inflow (positive)
      * or outflow (negative).
      *
-     * \date October 2008
+
      *
      * \param dis         The discretization, including node distribution and conditions.
      * \param velnp       Solution vector containing velocities (and pressure).
@@ -519,8 +519,7 @@ namespace FLD
     /*!
      * \brief proc 0 writes the flow rate values for each condition ID to a file
      *
-     * \author mayer
-     * \date 01/10
+
      */
     void write_doubles_to_file(const double time, const int step, const std::map<int, double>& data,
         const std::string& name);

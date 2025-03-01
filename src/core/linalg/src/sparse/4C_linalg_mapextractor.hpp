@@ -40,8 +40,6 @@ namespace Core::LinAlg
     assumption on the items covered by the maps is made. The actual splitting
     has to be performed by the user.
 
-    \author u.kue
-    \date 02/08
    */
   class MultiMapExtractor
   {
@@ -304,8 +302,6 @@ namespace Core::LinAlg
   \note The two partial maps (cond and other) are stored in the parent member variable maps_,
   where other has index 0 and cond has index 1.
 
-  \author u.kue
-  \date 01/08
   */
   class MapExtractor : public MultiMapExtractor
   {
@@ -339,8 +335,7 @@ namespace Core::LinAlg
 
     /// setup creates non-overlapping othermap/condmap which is complementary to condmap/othermap
     /// with respect to fullmap depending on boolean 'iscondmap'
-    /// \author bborn
-    /// \date 10/08
+
     void setup(const Epetra_Map& fullmap, const std::shared_ptr<const Epetra_Map>& partialmap,
         bool iscondmap = true);
 

@@ -96,7 +96,7 @@ namespace Mortar
    *                                  capable column map. In the latter case some communication
    *                                  effort can be avoided.
    *
-   *  \author hiermeier \date 04/17  */
+   *  */
   void replace_column_and_domain_map(Core::LinAlg::SparseMatrix& mat,
       const Epetra_Map& newdomainmap, std::shared_ptr<Epetra_Map>* const newcolmap_ptr = nullptr);
 
@@ -107,7 +107,7 @@ namespace Mortar
    *                             the matrix %mat.
    *  \param newcolmap    (out): new column map
    *
-   *  \author hiermeier \date 04/17 */
+   *  */
   void create_new_col_map(const Core::LinAlg::SparseMatrix& mat, const Epetra_Map& newdomainmap,
       std::shared_ptr<Epetra_Map>& newcolmap);
 

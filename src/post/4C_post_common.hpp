@@ -266,8 +266,6 @@ class PostProblem
   classes. So postprocessing calculations are easily possible. Element
   specific output operations can be done by the elements themselves.
 
-  \author m.kue
-  \date 02/07
 */
 class PostField
 {
@@ -347,8 +345,6 @@ class PostField
 
   Most filters will loop all time steps from the control file.
 
-  \author m.kue
-  \date 02/07
 */
 class PostResult
 {

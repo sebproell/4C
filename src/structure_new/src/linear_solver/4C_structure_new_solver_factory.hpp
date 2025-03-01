@@ -46,7 +46,7 @@ namespace Solid
     /*! \brief Factory to build the desired linear solver std::map corresponding
      *  to the active model types.
      *
-     *  \author Michael Hiermeier */
+     *  */
     class Factory
     {
      private:

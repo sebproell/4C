@@ -163,7 +163,7 @@ namespace Solid
        *                                   during the assembly
        *  \param[in] apply_dbc             Apply Dirichlet boundary conditions
        *
-       *  \author hiermeier \date 08/17 */
+       *  */
       std::shared_ptr<Core::LinAlg::Vector<double>> assemble_force_of_models(
           const std::vector<Inpar::Solid::ModelType>* without_these_models = nullptr,
           const bool apply_dbc = false) const;

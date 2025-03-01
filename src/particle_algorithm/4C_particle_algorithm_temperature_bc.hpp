@@ -34,7 +34,6 @@ namespace PARTICLEALGORITHM
   /*!
    * \brief temperature boundary condition handler for particle simulations
    *
-   * \author Sebastian Fuchs \date 09/2018
    */
   class TemperatureBoundaryConditionHandler
   {
@@ -42,7 +41,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 09/2018
      *
      * \param[in] params particle simulation parameter list
      */
@@ -51,14 +49,12 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief init temperature boundary condition handler
      *
-     * \author Sebastian Fuchs \date 09/2018
      */
     void init();
 
     /*!
      * \brief setup temperature boundary condition handler
      *
-     * \author Sebastian Fuchs \date 09/2018
      *
      * \param[in] particleengineinterface interface to particle engine
      */
@@ -68,7 +64,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief get reference to set of particle types subjected to temperature boundary conditions
      *
-     * \author Sebastian Fuchs \date 09/2018
      *
      * \return set of particle types subjected to temperature boundary conditions
      */
@@ -81,7 +76,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief insert temperature boundary condition dependent states of all particle types
      *
-     * \author Sebastian Fuchs \date 09/2018
      *
      * \param[out] particlestatestotypes map of particle types and corresponding states
      */
@@ -92,14 +86,12 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief set particle reference position
      *
-     * \author Sebastian Fuchs \date 09/2018
      */
     void set_particle_reference_position() const;
 
     /*!
      * \brief evaluate temperature boundary condition
      *
-     * \author Sebastian Fuchs \date 09/2018
      *
      * \param[in] evaltime evaluation time
      */

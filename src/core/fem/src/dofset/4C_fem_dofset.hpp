@@ -91,8 +91,6 @@ variables (all std::shared_ptrs) know how to copy themselves. So the
 default versions will do just fine. (Far better than buggy hand
 written versions.) And due to the two possible states there is no
 reason to deep copy any of the local map and vector variables.
-
-\author u.kue
 */
 
 namespace Core::DOFSets
@@ -409,8 +407,6 @@ namespace Core::DOFSets
     Nevertheless, for the time being, the old version with #idxcolnodes_ stays
     around, since the new version is only implemented for the standard DofSet
     class declared here (but not for special TransparentDofSets, Proxy, etc.).
-
-    \author popp \date 02/2016
     */
     bool pccdofhandling_;
 

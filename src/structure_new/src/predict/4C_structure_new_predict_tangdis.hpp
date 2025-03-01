@@ -72,7 +72,7 @@ namespace NOX
          *  (see Solid::Predict::TangDis). It's called by the wrapper class
          *  NOX::Nln::GROUP::PrePostOperator.
          *
-         *  \author Michael Hiermeier */
+         *  */
         class TangDis : public NOX::Nln::Abstract::PrePostOperator
         {
          public:

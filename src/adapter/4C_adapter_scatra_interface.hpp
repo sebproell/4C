@@ -39,7 +39,7 @@ namespace Adapter
    *  from the scatra field it needs using this interface.
    *
    * \sa ScaTraTimIntImpl
-   * \date 12/2016
+
    */
   class ScatraInterface
   {

@@ -46,8 +46,6 @@ namespace Core::Nodes
 /*
  \brief Base class for VTU output generation
 
- \author kronbichler
- \date 03/14
 */
 class PostVtuWriter : public PostVtkWriter
 {
@@ -108,7 +106,7 @@ class PostVtuWriter : public PostVtkWriter
   /*! Generalization of the former non-template method for all implemented NURBS
    *  discretization types
    *
-   *  \author hiermeier (originally Seitz) \date 10/17 */
+   *  */
   template <Core::FE::CellType nurbs_type>
   void write_geo_nurbs_ele(const Core::Elements::Element* ele, std::vector<uint8_t>& celltypes,
       int& outNodeId, std::vector<int32_t>& celloffset, std::vector<double>& coordinates) const;
@@ -130,7 +128,7 @@ class PostVtuWriter : public PostVtkWriter
   /*! Generalization of the former non-template method for all implemented NURBS
    *  discretization types
    *
-   *  \author hiermeier (originally Seitz) \date 10/17 */
+   *  */
   template <Core::FE::CellType nurbs_type>
   void write_dof_result_step_nurbs_ele(const Core::Elements::Element* ele, int ncomponents,
       const int numdf, std::vector<double>& solution, Core::LinAlg::Vector<double>& ghostedData,
@@ -149,7 +147,7 @@ class PostVtuWriter : public PostVtkWriter
   /*! Generalization of the former non-template method for all implemented NURBS
    *  discretization types
    *
-   *  \author hiermeier (originally Seitz) \date 10/17 */
+   *  */
   template <Core::FE::CellType nurbs_type>
   void write_nodal_result_step_nurbs_ele(const Core::Elements::Element* ele, int ncomponents,
       const int numdf, std::vector<double>& solution,

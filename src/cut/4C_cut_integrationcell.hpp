@@ -48,7 +48,7 @@ namespace Cut
      *  \note For 1-D elements the element length is returned,
      *        and for 2-D elements the element area.
      *
-     *  \author hiermeier \date 11/16 */
+     *  */
     double volume() const;
 
     const std::vector<Point*>& points() const { return points_; }
@@ -65,7 +65,7 @@ namespace Cut
 
     /** Print the integration cells
      *
-     *  \author hiermeier \date 02/17 */
+     *  */
     void print(std::ostream& stream) const;
     inline void print() const { print(std::cout); };
 

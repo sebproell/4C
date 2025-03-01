@@ -362,8 +362,7 @@ namespace Core::GeometricSearch
     //!       Therefore, we need to have a global temporary storage for
     //!       the nodal pointers, which is provided by this member.
     //!
-    //! \author Andreas Rauch
-    //! \date   10/16
+
     std::map<int, std::shared_ptr<Core::Nodes::Node>> nodes_;
 
   };  // class ElementMatchingOctree

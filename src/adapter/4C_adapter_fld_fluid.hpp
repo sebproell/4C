@@ -96,8 +96,7 @@ namespace Adapter
   \warning Further cleanup is still needed.
 
   \sa Structure, Ale
-  \author u.kue
-  \date 11/07
+
   */
   class Fluid
   {
@@ -363,13 +362,11 @@ namespace Adapter
      *  estimate the local discretization error of the marching time integration
      *  scheme.
      *
-     *  \author mayr.mt \date 12/2013
      */
     virtual void time_step_auxiliary() = 0;
 
     /*! Indicate norms of local discretization error
      *
-     *  \author mayr.mt \date 12/2013
      */
     virtual void indicate_error_norms(
         double& err,       ///< L2-norm of temporal discretization error based on all DOFs
@@ -398,8 +395,6 @@ namespace Adapter
     Therefore, we need to reset the solution back to the initial solution of the
     time step.
 
-    \author mayr.mt
-    \date 08/2013
     */
     virtual void reset_step() = 0;
 
@@ -412,8 +407,6 @@ namespace Adapter
     and, thus, everything will be fine. Currently, this is needed for time step size
     adaptivity in FSI.
 
-    \author mayr.mt
-    \date 08/2013
      */
     virtual void reset_time(const double dtold) = 0;
 

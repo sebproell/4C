@@ -44,8 +44,6 @@ namespace NOX
         For instructions on how to implement a PrePostOperator, see
         NOX::Nln::Abstract::PrePostOperator or one of the currently supported implementations (enum
         list).
-
-        \author Michael Hiermeier
       */
       class PrePostOperator
       {

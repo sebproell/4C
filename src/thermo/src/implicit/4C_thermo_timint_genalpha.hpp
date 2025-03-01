@@ -40,8 +40,7 @@ namespace Thermo
    *   and Engineering, 190:305-319, 2000.
    *
    *
-   * \author danowski
-   * \date 06/13
+
    */
   class TimIntGenAlpha : public TimIntImpl
   {
@@ -108,11 +107,9 @@ namespace Thermo
     void evaluate_rhs_tang_residual() override;
 
     //! Determine characteristic norm for temperatures
-    //! \author lw (originally)
     double calc_ref_norm_temperature() override;
 
     //! Determine characteristic norm for force
-    //! \author lw (originally)
     double calc_ref_norm_force() override;
 
     //! Update iteration incrementally

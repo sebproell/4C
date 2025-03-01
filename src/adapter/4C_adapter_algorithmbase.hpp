@@ -25,8 +25,6 @@ namespace Adapter
 
     Here we just keep the time variables as it is always the same.
 
-    \author u.kue
-    \date 07/09
    */
   class AlgorithmBase
   {

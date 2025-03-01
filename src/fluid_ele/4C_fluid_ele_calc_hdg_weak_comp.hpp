@@ -26,8 +26,6 @@ namespace Discret
     /// Weakly compressible fluid HDG element implementation
     /*!
 
-      \author laspina
-      \date 08/19
     */
     template <Core::FE::CellType distype>
     class FluidEleCalcHDGWeakComp : public FluidEleInterface

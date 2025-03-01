@@ -207,7 +207,7 @@ namespace CONTACT
 
     /*! \brief Evaluate derivative J,xi of Jacobian determinant
      *
-     *  \author hiermeier \date 03/17 */
+     *  */
     template <unsigned elenumnode>
     inline void d_jac_d_xi(
         double* djacdxi, double* xi, Core::LinAlg::Matrix<elenumnode, 3>& secderiv)

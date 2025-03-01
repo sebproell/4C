@@ -586,8 +586,6 @@ void EnsightWriter::write_cells(std::ofstream& geofile,
 /*!
  * \brief communicate and write node connectivity in parallel case
 
- \author gjb
- \date 12/07
 */
 void EnsightWriter::write_node_connectivity_par(std::ofstream& geofile,
     Core::FE::Discretization& dis, const std::vector<int>& nodevector, Epetra_Map& proc0map) const
@@ -674,8 +672,7 @@ void EnsightWriter::write_node_connectivity_par(std::ofstream& geofile,
 
 /*!
  * \brief parse all elements and get the global(!) number of elements for each distype
- * \author gjb
- * \date 01/08
+
  */
 EnsightWriter::NumElePerDisType EnsightWriter::get_num_ele_per_dis_type(
     Core::FE::Discretization& dis) const
@@ -1942,8 +1939,7 @@ void EnsightWriter::write_element_dof_result_step(std::ofstream& file, PostResul
   \brief Write element values for one timestep
 
   Each element has to have the same number of dofs.
-  \author gjb
-  \date 01/08
+
 */
 /*----------------------------------------------------------------------*/
 void EnsightWriter::write_element_result_step(std::ofstream& file, PostResult& result,
@@ -1962,8 +1958,7 @@ void EnsightWriter::write_element_result_step(std::ofstream& file, PostResult& r
   \brief Write element values for one timestep
 
   Each element has to have the same number of dofs.
-  \author gjb
-  \date 01/08
+
 */
 /*----------------------------------------------------------------------*/
 void EnsightWriter::write_element_result_step(std::ofstream& file,

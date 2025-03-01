@@ -206,8 +206,7 @@ namespace Discret
       /** \brief get unit tangent vector in reference configuration at i-th node of beam element
        * (element-internal numbering)
        *
-       *  \author grill
-       *  \date 06/16 */
+       */
       inline void get_ref_tangent_at_node(
           Core::LinAlg::Matrix<3, 1>& Tref_i, const int& i) const override
       {
@@ -219,15 +218,13 @@ namespace Discret
 
       /** \brief get centerline position at xi \in [-1,1] (element parameter space)
        *
-       *  \author grill
-       *  \date 06/16 */
+       */
       void get_pos_at_xi(Core::LinAlg::Matrix<3, 1>& pos, const double& xi,
           const std::vector<double>& disp) const override;
 
       /** \brief get triad at xi \in [-1,1] (element parameter space)
        *
-       *  \author grill
-       *  \date 01/17 */
+       */
       void get_triad_at_xi(Core::LinAlg::Matrix<3, 3>& triad, const double& xi,
           const std::vector<double>& disp) const override;
 
@@ -238,8 +235,7 @@ namespace Discret
        *        cross-section shape; the length of the base vectors indicates the size of the
        * cross-section in the direction of the base vector
        *
-       *  \author meier
-       *  \date 03/16 */
+       */
       void get_scaled_second_and_third_base_vector_at_xi(const double& xi,
           const std::vector<double>& disp, Core::LinAlg::Matrix<3, 2>& scaledbasevectors) const;
 
@@ -247,8 +243,7 @@ namespace Discret
        *         orientation at xi \in [-1,1] if multiplied with the vector of primary DoF
        * variations
        *
-       *  \author grill
-       *  \date 01/17 */
+       */
       void get_generalized_interpolation_matrix_variations_at_xi(
           Core::LinAlg::SerialDenseMatrix& Ivar, const double& xi,
           const std::vector<double>& disp) const override;
@@ -257,8 +252,7 @@ namespace Discret
        * variations (see above) and applied force vector) with respect to the primary DoFs of this
        * element
        *
-       *  \author grill
-       *  \date 01/17 */
+       */
       void get_stiffmat_resulting_from_generalized_interpolation_matrix_at_xi(
           Core::LinAlg::SerialDenseMatrix& stiffmat, const double& xi,
           const std::vector<double>& disp,
@@ -267,16 +261,14 @@ namespace Discret
       /** \brief get generalized interpolation matrix which yields the increments of the position
        * and orientation at xi \in [-1,1] if multiplied with the vector of primary DoF increments
        *
-       *  \author grill
-       *  \date 01/17 */
+       */
       void get_generalized_interpolation_matrix_increments_at_xi(
           Core::LinAlg::SerialDenseMatrix& Iinc, const double& xi,
           const std::vector<double>& disp) const override;
 
       /** \brief get access to the reference length
        *
-       *  \author grill
-       *  \date 05/16 */
+       */
       inline double ref_length() const override { return length_; }
 
       /*!
@@ -286,14 +278,12 @@ namespace Discret
 
       /** \brief get Jacobi factor ds/dxi(xi) at xi \in [-1;1]
        *
-       *  \author grill
-       *  \date 06/16 */
+       */
       double get_jacobi_fac_at_xi(const double& xi) const override;
 
       /** \brief Get material cross-section deformation measures, i.e. strain resultants
        *
-       *  \author grill
-       *  \date 04/17 */
+       */
       inline void get_material_strain_resultants_at_all_gps(std::vector<double>& axial_strain_GPs,
           std::vector<double>& shear_strain_2_GPs, std::vector<double>& shear_strain_3_GPs,
           std::vector<double>& twist_GPs, std::vector<double>& curvature_2_GPs,
@@ -311,8 +301,7 @@ namespace Discret
 
       /** \brief Get material cross-section stress resultants
        *
-       *  \author grill
-       *  \date 04/17 */
+       */
       inline void get_material_stress_resultants_at_all_gps(std::vector<double>& axial_force_GPs,
           std::vector<double>& shear_force_2_GPs, std::vector<double>& shear_force_3_GPs,
           std::vector<double>& torque_GPs, std::vector<double>& bending_moment_2_GPs,
@@ -336,14 +325,12 @@ namespace Discret
 
       /** \brief get number of nodes used for centerline interpolation
        *
-       *  \author grill
-       *  \date 05/16 */
+       */
       inline int num_centerline_nodes() const override { return 2; }
 
       /** \brief find out whether given node is used for centerline interpolation
        *
-       *  \author grill
-       *  \date 10/16 */
+       */
       inline bool is_centerline_node(const Core::Nodes::Node& node) const override
       {
         if (node.id() == this->nodes()[0]->id() or node.id() == this->nodes()[1]->id())
@@ -469,9 +456,7 @@ namespace Discret
       \param elevec1 (out)      : Force vector to be filled by element
 
       \return 0 if successful, negative otherwise
-
-      \author meier
-      \date 01/16 */
+*/
       int evaluate_neumann(Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
           Core::Conditions::Condition& condition, std::vector<int>& lm,
           Core::LinAlg::SerialDenseVector& elevec1,
@@ -503,8 +488,7 @@ namespace Discret
 
       /** \brief add indices of those DOFs of a given node that are positions
        *
-       *  \author grill
-       *  \date 07/16 */
+       */
       inline void position_dof_indices(
           std::vector<int>& posdofs, const Core::Nodes::Node& node) const override
       {
@@ -520,8 +504,7 @@ namespace Discret
       /** \brief add indices of those DOFs of a given node that are tangents (in the case of Hermite
        * interpolation)
        *
-       *  \author grill
-       *  \date 07/16 */
+       */
       inline void tangent_dof_indices(
           std::vector<int>& tangdofs, const Core::Nodes::Node& node) const override
       {
@@ -538,8 +521,7 @@ namespace Discret
       /** \brief add indices of those DOFs of a given node that are rotation DOFs (non-additive
        * rotation vectors)
        *
-       *  \author grill
-       *  \date 07/16 */
+       */
       inline void rotation_vec_dof_indices(
           std::vector<int>& rotvecdofs, const Core::Nodes::Node& node) const override
       {
@@ -557,8 +539,7 @@ namespace Discret
        *         (planar rotations are additive, e.g. in case of relative twist DOF of beam3k with
        * rotvec=false)
        *
-       *  \author grill
-       *  \date 07/16 */
+       */
       inline void rotation_1d_dof_indices(
           std::vector<int>& twistdofs, const Core::Nodes::Node& node) const override
       {
@@ -578,8 +559,7 @@ namespace Discret
       /** \brief add indices of those DOFs of a given node that represent norm of tangent vector
        *         (additive, e.g. in case of beam3k with rotvec=true)
        *
-       *  \author grill
-       *  \date 07/16 */
+       */
       inline void tangent_length_dof_indices(
           std::vector<int>& tangnormdofs, const Core::Nodes::Node& node) const override
       {
@@ -595,8 +575,7 @@ namespace Discret
 
       /** \brief get element local indices of those Dofs that are used for centerline interpolation
        *
-       *  \author grill
-       *  \date 12/16 */
+       */
       inline void centerline_dof_indices_of_element(
           std::vector<unsigned int>& centerlinedofindices) const override
       {
@@ -619,8 +598,7 @@ namespace Discret
       /** \brief extract values for those Dofs relevant for centerline-interpolation from total
        * state vector
        *
-       *  \author grill
-       *  \date 11/16 */
+       */
       void extract_centerline_dof_values_from_element_state_vector(
           const std::vector<double>& dofvec, std::vector<double>& dofvec_centerline,
           bool add_reference_values = false) const override;
@@ -654,8 +632,7 @@ namespace Discret
 
       /** \brief Calculate internal forces and stiffness matrix
        *
-       *  \author grill
-       *  \date 01/17 */
+       */
       void calc_internal_and_inertia_forces_and_stiff(Teuchos::ParameterList& params,
           std::vector<double>& disp, Core::LinAlg::SerialDenseMatrix* stiffmatrix,
           Core::LinAlg::SerialDenseMatrix* massmatrix, Core::LinAlg::SerialDenseVector* force,
@@ -664,8 +641,7 @@ namespace Discret
       /** \brief Calculate internal forces and stiffness matrix in case of a Weak Kirchhoff
        * Constraint
        *
-       *  \author meier
-       *  \date 01/16 */
+       */
       template <unsigned int nnodecl, typename T>
       void calculate_internal_forces_and_stiff_wk(Teuchos::ParameterList& params,
           const Core::LinAlg::Matrix<6 * nnodecl + BEAM3K_COLLOCATION_POINTS, 1, T>&
@@ -682,8 +658,7 @@ namespace Discret
       /** \brief Calculate internal forces and stiffness matrix in case of a Strong Kirchhoff
        * Constraint
        *
-       *  \author meier
-       *  \date 02/16 */
+       */
       template <unsigned int nnodecl>
       void calculate_internal_forces_and_stiff_sk(Teuchos::ParameterList& params,
           const Core::LinAlg::Matrix<6 * nnodecl + BEAM3K_COLLOCATION_POINTS, 1, FAD>&
@@ -698,8 +673,7 @@ namespace Discret
       /** \brief Calculate contributions to the stiffness matrix at a Gauss point analytically
        *         in case of weak Kirchhoff constraint
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void calculate_stiffmat_contributions_analytic_wk(
           Core::LinAlg::SerialDenseMatrix& stiffmatrix,
@@ -755,8 +729,7 @@ namespace Discret
       /** \brief pre-compute quantities required for analytic computation of stiffness matrix
        *         in case of weak Kirchhoff constraint
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void pre_compute_terms_at_cp_for_stiffmat_contributions_analytic_wk(
           Core::LinAlg::Matrix<3, 6 * nnodecl + BEAM3K_COLLOCATION_POINTS, double>& lin_theta,
@@ -784,8 +757,7 @@ namespace Discret
 
       /** \brief Calculate inertia forces and mass matrix
        *
-       *  \author meier
-       *  \date 02/16 */
+       */
       template <unsigned int nnodecl, typename T>
       void calculate_inertia_forces_and_mass_matrix(Teuchos::ParameterList& params,
           const std::vector<Core::LinAlg::Matrix<3, 3, T>>& triad_mat_gp,
@@ -800,8 +772,7 @@ namespace Discret
 
       /** \brief Calculate analytic linearization of inertia forces, i.e. mass matrix
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void calculate_mass_matrix_contributions_analytic_wk(
           Core::LinAlg::SerialDenseMatrix& massmatrix,
@@ -850,8 +821,7 @@ namespace Discret
        *         note: we need to evaluate this on element level because point moments need to be
        *         linearized in case of tangent-based formulation (rotvec_=false)
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void evaluate_point_neumann_eb(Core::LinAlg::SerialDenseVector& forcevec,
           Core::LinAlg::SerialDenseMatrix* stiffmat,
@@ -861,8 +831,7 @@ namespace Discret
 
       /** \brief evaluate contributions to element residual vector from point Neumann moment
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl, typename T>
       void evaluate_residual_from_point_neumann_moment(
           Core::LinAlg::Matrix<6 * nnodecl + BEAM3K_COLLOCATION_POINTS, 1, T>& force_ext,
@@ -871,8 +840,7 @@ namespace Discret
 
       /** \brief evaluate contributions to element stiffness matrix from point Neumann moment
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void evaluate_stiff_matrix_analytic_from_point_neumann_moment(
           Core::LinAlg::SerialDenseMatrix& stiffmat,
@@ -882,8 +850,7 @@ namespace Discret
       /** \brief evaluate contributions to element residual vector and stiffmat from line Neumann
        *         condition
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void evaluate_line_neumann(Core::LinAlg::SerialDenseVector& forcevec,
           Core::LinAlg::SerialDenseMatrix* stiffmat,
@@ -894,8 +861,7 @@ namespace Discret
 
       /** \brief evaluate contributions to element residual vector from line Neumann condition
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl, typename T>
       void evaluate_line_neumann_forces(
           Core::LinAlg::Matrix<6 * nnodecl + BEAM3K_COLLOCATION_POINTS, 1, T>& force_ext,
@@ -905,8 +871,7 @@ namespace Discret
       /** \brief evaluate all contributions from brownian dynamics (thermal & viscous
        * forces/moments)
        *
-       *  \author grill
-       *  \date 12/16 */
+       */
       template <unsigned int nnode, unsigned int vpernode, unsigned int ndim>
       void calc_brownian_forces_and_stiff(Teuchos::ParameterList& params,
           std::vector<double>& vel,                      //!< element velocity vector
@@ -916,8 +881,7 @@ namespace Discret
 
       /** \brief evaluate all contributions from translational damping forces
        *
-       *  \author grill
-       *  \date 12/16 */
+       */
       template <typename T, unsigned int nnode, unsigned int vpernode, unsigned int ndim>
       void evaluate_translational_damping(Teuchos::ParameterList& params,  //!< parameter list
           const Core::LinAlg::Matrix<ndim * vpernode * nnode, 1, double>& vel,
@@ -929,8 +893,7 @@ namespace Discret
       /** \brief evaluate contributions to element stiffness matrix from translational damping
        * forces
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnode, unsigned int vpernode, unsigned int ndim>
       void evaluate_analytic_stiffmat_contributions_from_translational_damping(
           Core::LinAlg::SerialDenseMatrix& stiffmatrix,
@@ -961,8 +924,7 @@ namespace Discret
 
       /** \brief evaluate all contributions from thermal/stochastic forces
        *
-       *  \author grill
-       *  \date 12/16 */
+       */
       template <typename T, unsigned int nnode, unsigned int vpernode, unsigned int ndim,
           unsigned int randompergauss>
       void evaluate_stochastic_forces(
@@ -974,8 +936,7 @@ namespace Discret
 
       /** \brief evaluate contributions to element stiffness matrix from thermal/stochastic forces
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnode, unsigned int vpernode, unsigned int ndim>
       void evaluate_analytic_stiffmat_contributions_from_stochastic_forces(
           Core::LinAlg::SerialDenseMatrix& stiffmatrix,
@@ -1002,8 +963,7 @@ namespace Discret
 
       /** \brief evaluate all contributions from rotational damping moment/torque
        *
-       *  \author grill
-       *  \date 12/16 */
+       */
       template <typename T, unsigned int nnode, unsigned int vpernode, unsigned int ndim>
       void evaluate_rotational_damping(
           const Core::LinAlg::Matrix<ndim * vpernode * nnode + BEAM3K_COLLOCATION_POINTS, 1, T>&
@@ -1014,8 +974,7 @@ namespace Discret
 
       /** \brief evaluate contributions to element stiffness matrix from rotational damping moment
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl, unsigned int vpernode, unsigned int ndim>
       void evaluate_analytic_stiffmat_contributions_from_rotational_damping(
           Core::LinAlg::SerialDenseMatrix& stiffmatrix,
@@ -1058,8 +1017,7 @@ namespace Discret
 
       /** \brief pre-compute quantities required for linearization of rotational damping moment
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnode, unsigned int vpernode, unsigned int ndim>
       void pre_compute_terms_at_cp_for_analytic_stiffmat_contributions_from_rotational_damping(
           Core::LinAlg::Matrix<ndim, ndim * vpernode * nnode + BEAM3K_COLLOCATION_POINTS, double>&
@@ -1349,8 +1307,7 @@ namespace Discret
 
       /** \brief compute interpolated velocity vector from element state vector
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl, unsigned int vpernode, unsigned int ndim>
       void calc_velocity(
           const Core::LinAlg::Matrix<ndim * vpernode * nnodecl, 1, double>& velocity_dofvec,
@@ -1360,8 +1317,7 @@ namespace Discret
 
       /** \brief compute interpolated velocity vector if Fad is used
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl, unsigned int vpernode, unsigned int ndim>
       void calc_velocity(
           const Core::LinAlg::Matrix<ndim * vpernode * nnodecl, 1, double>& velocity_dofvec,
@@ -1371,8 +1327,7 @@ namespace Discret
 
       /** \brief compute discrete strain variations v_thetaperp
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl, typename T>
       void calc_v_thetaperp(
           Core::LinAlg::Matrix<6 * nnodecl + BEAM3K_COLLOCATION_POINTS, 3, T>& v_thetaperp,
@@ -1381,8 +1336,7 @@ namespace Discret
 
       /** \brief compute discrete strain variations v_thetapartheta
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl, typename T>
       void calc_v_thetapartheta(
           Core::LinAlg::Matrix<6 * nnodecl + BEAM3K_COLLOCATION_POINTS, 3, T>& v_thetapartheta,
@@ -1391,8 +1345,7 @@ namespace Discret
 
       /** \brief compute discrete strain increments v_lin_thetaperp
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void calc_lin_thetaperp(
           Core::LinAlg::Matrix<3, 6 * nnodecl + BEAM3K_COLLOCATION_POINTS, double>& lin_thetaperp,
@@ -1401,8 +1354,7 @@ namespace Discret
 
       /** \brief compute discrete strain increments v_lin_thetapar
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void calc_lin_thetapar(
           Core::LinAlg::Matrix<3, 6 * nnodecl + BEAM3K_COLLOCATION_POINTS, double>& lin_thetapar,
@@ -1413,8 +1365,7 @@ namespace Discret
 
       /** \brief compute linearization of scaled tangent vector
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void calc_lin_tangent_tilde(
           Core::LinAlg::Matrix<3, 6 * nnodecl + BEAM3K_COLLOCATION_POINTS, double>&
@@ -1424,8 +1375,7 @@ namespace Discret
 
       /** \brief compute linearization of first arc-length derivative of scaled tangent vector
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void calc_lin_tangent_tilde_s(
           Core::LinAlg::Matrix<3, 6 * nnodecl + BEAM3K_COLLOCATION_POINTS, double>&
@@ -1439,8 +1389,7 @@ namespace Discret
 
       /** \brief compute linearization of first base vector
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void calc_lin_g_1(
           Core::LinAlg::Matrix<3, 6 * nnodecl + BEAM3K_COLLOCATION_POINTS, double>& lin_g_1,
@@ -1449,8 +1398,7 @@ namespace Discret
 
       /** \brief compute linearization of first arc-length derivative of first base vector
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void calc_lin_g_1_s(
           Core::LinAlg::Matrix<3, 6 * nnodecl + BEAM3K_COLLOCATION_POINTS, double>& lin_g_1_s,
@@ -1463,8 +1411,7 @@ namespace Discret
 
       /** \brief compute linearization of v_epsilon
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void calc_lin_v_epsilon(Core::LinAlg::Matrix<6 * nnodecl + BEAM3K_COLLOCATION_POINTS,
                                   6 * nnodecl + BEAM3K_COLLOCATION_POINTS, double>& lin_v_epsilon,
@@ -1473,8 +1420,7 @@ namespace Discret
 
       /** \brief compute linearization of moment resultant
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void calc_lin_moment_resultant(
           Core::LinAlg::Matrix<3, 6 * nnodecl + BEAM3K_COLLOCATION_POINTS, double>&
@@ -1487,8 +1433,7 @@ namespace Discret
 
       /** \brief compute linearization of inertia moment
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void calc_lin_moment_inertia(
           Core::LinAlg::Matrix<3, 6 * nnodecl + BEAM3K_COLLOCATION_POINTS, double>&
@@ -1504,8 +1449,7 @@ namespace Discret
 
       /** \brief compute linearization of moment from rotational damping
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void calc_lin_moment_viscous(
           Core::LinAlg::Matrix<3, 6 * nnodecl + BEAM3K_COLLOCATION_POINTS, double>&
@@ -1519,8 +1463,7 @@ namespace Discret
 
       /** \brief compute linearization of v_theta_perp multiplied with moment vector
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void calc_lin_v_thetaperp_moment(
           Core::LinAlg::Matrix<6 * nnodecl + BEAM3K_COLLOCATION_POINTS,
@@ -1531,8 +1474,7 @@ namespace Discret
 
       /** \brief compute linearization of v_theta_perp_s multiplied with moment vector
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void calc_lin_v_thetaperp_s_moment(
           Core::LinAlg::Matrix<6 * nnodecl + BEAM3K_COLLOCATION_POINTS,
@@ -1547,8 +1489,7 @@ namespace Discret
 
       /** \brief compute linearization of v_theta_par multiplied with moment vector
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void calc_lin_v_thetapar_moment(
           Core::LinAlg::Matrix<6 * nnodecl + BEAM3K_COLLOCATION_POINTS,
@@ -1560,8 +1501,7 @@ namespace Discret
 
       /** \brief compute linearization of v_theta_par_s multiplied with moment vector
        *
-       *  \author grill
-       *  \date 02/17 */
+       */
       template <unsigned int nnodecl>
       void calc_lin_v_thetapar_s_moment(
           Core::LinAlg::Matrix<6 * nnodecl + BEAM3K_COLLOCATION_POINTS,

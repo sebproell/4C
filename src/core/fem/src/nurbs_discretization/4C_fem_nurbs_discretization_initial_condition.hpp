@@ -43,7 +43,7 @@ namespace Core::FE
     \param start_function (i) a function defining the initial field (i.e. u_0(x))
     \param initialvals    (o) the initial field on output (i.e. u_cp)
 
-    \date 08/11
+
     */
     void apply_nurbs_initial_condition(Core::FE::Discretization& dis,
         const Teuchos::ParameterList& solverparams,

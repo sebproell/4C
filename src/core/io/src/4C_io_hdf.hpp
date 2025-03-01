@@ -36,8 +36,6 @@ namespace Core::IO
     (for several time steps, as it happens with restart.) This class
     handles the basic HDF5 file access.
 
-    \author m.kue
-    \date 02/07
   */
   class HDFReader
   {

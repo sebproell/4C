@@ -29,8 +29,6 @@ namespace Adapter
     Different application coupling algorithms will inherit from this base class
     (at the moment only electrochemistry applications).
 
-    \author gjb
-    \date 05/09
    */
   class ScaTraFluidAleCouplingAlgorithm : public Adapter::ScaTraFluidCouplingAlgorithm,
                                           public Adapter::AleBaseAlgorithm

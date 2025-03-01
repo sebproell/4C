@@ -77,8 +77,7 @@ namespace Solid
      *        - this is not yet rigorously tested with other than beam
      *          and rigidsphere elements and thus experimental code
      *
-     *  \author grill
-     *  \date 07/16*/
+     */
 
     class GenAlphaLieGroup : public GenAlpha
     {

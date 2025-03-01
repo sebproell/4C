@@ -31,7 +31,7 @@ namespace SSI
   For some scatra-structure interaction problems, the scatra discretization is obtained through
   cloning from the structure discretization.
 
-  \date 09/17
+
   */
 
   class ScatraStructureCloneStrategy

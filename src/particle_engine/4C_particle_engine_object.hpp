@@ -36,7 +36,6 @@ namespace PARTICLEENGINE
   /*!
    * \brief particle object type singleton
    *
-   * \author Sebastian Fuchs \date 03/2018
    */
   class ParticleObjectType final : public Core::Communication::ParObjectType
   {
@@ -46,7 +45,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get instance of particle object type
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \return reference to instance of particle object type
      */
@@ -71,7 +69,6 @@ namespace PARTICLEENGINE
    *       only needs to be packed once (without being modified afterwards) and is directly sent to
    *       another processor.
    *
-   * \author Sebastian Fuchs \date 03/2018
    */
   class ParticleObject : public Core::Communication::ParObject
   {
@@ -79,7 +76,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 03/2018
      */
     ParticleObject();
 
@@ -88,7 +84,6 @@ namespace PARTICLEENGINE
      *
      * Construct particle object and set class members via initializer list.
      *
-     * \author Sebastian Fuchs \date 02/2019
      *
      * \param[in] type     particle type
      * \param[in] globalid global id of particle
@@ -116,7 +111,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief set global id of particle
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \param[in] particleglobalid global id of particle
      */
@@ -130,7 +124,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get particle type
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \return particle type
      */
@@ -139,7 +132,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get global id of particle
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \return global id of particle
      */
@@ -148,7 +140,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get states of particle
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \return reference to states of particle
      */
@@ -157,7 +148,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get global id of bin the particle is located in
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \return global id of bin the particle is located in
      */
@@ -166,7 +156,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get index of particle in container
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \return index of particle in container
      */

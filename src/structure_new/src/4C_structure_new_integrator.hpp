@@ -266,7 +266,7 @@ namespace Solid
      *  \f$D_{n}, V_{n}, A_{n}\f$. So, #UpdateIncrement should be called
      *  upon object prior to writing stuff here.
      *
-     *  \author mwgee (originally)                         \date 03/07 */
+     *  */
     void output_step_state(Core::IO::DiscretizationWriter& iowriter) const;
 
     /**
@@ -280,7 +280,7 @@ namespace Solid
      *  \f$D_{n}, V_{n}, A_{n}\f$. So, #UpdateIncrement should be called
      *  upon object prior to writing stuff here.
      *
-     *                                                     \date 04/17 */
+     */
     void runtime_output_step_state() const;
 
     /** \brief reset step configuration after time step

@@ -30,8 +30,6 @@ namespace FLD
 
   /*!
   \brief Fluid specific result test class
-
-  \author u.kue
   */
   class FluidResultTest : public Core::Utils::ResultTest
   {

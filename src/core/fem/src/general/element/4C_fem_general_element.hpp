@@ -448,8 +448,6 @@ might become invalid after a redistribution of the discretization.
     and parent_slave element.
 
     This element is e.g. used to create and evaluate edge stabilizations or for HDG discretizations
-
-    \author schott 03/12
     */
     virtual std::shared_ptr<Element> create_face_element(
         Element* parent_slave,                 //!< parent slave element

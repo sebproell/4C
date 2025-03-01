@@ -44,7 +44,7 @@ namespace ScaTra
      *  Level-Set intersection functions wrapped in a class, thus inheritance
      *  becomes possible.
      *
-     *  \author hiermeier \date 11/16 */
+     *  */
     class Intersection
     {
      public:
@@ -56,7 +56,7 @@ namespace ScaTra
 
       /** \brief construct zero iso-contour of level-set field
        *
-       *  \author rasthofer \date 09/13 */
+       *  */
       void capture_zero_level_set(const Core::LinAlg::Vector<double>& phi,
           const Core::FE::Discretization& scatradis, double& volumedomainminus,
           double& volumedomainplus, double& zerosurface,
@@ -71,7 +71,7 @@ namespace ScaTra
        *  to the here defined positions. If no position vector is given, the
        *  outside domain will be considered.
        *
-       *  \author hiermeier \date 11/16 */
+       *  */
       void set_desired_positions(const std::vector<Cut::Point::PointPosition>& desired_pos);
 
      protected:
@@ -85,18 +85,18 @@ namespace ScaTra
 
       /** \brief export boundary integration cells from this proc to parallel distribution
        *
-       * \author henke \date 12/09 */
+       * */
       void export_interface(std::map<int, Core::Geo::BoundaryIntCells>& myinterface, MPI_Comm comm);
 
       /** \brief pack boundary integration cells from set into char array
        *
-       *  \author henke \date 12/09 */
+       *  */
       void pack_boundary_int_cells(const std::map<int, Core::Geo::BoundaryIntCells>& intcellmap,
           Core::Communication::PackBuffer& dataSend);
 
       /** brief unpack boundary integration cells from char array
        *
-       * \author henke \date 12/09 */
+       * */
       void unpack_boundary_int_cells(const std::vector<char>& dataRecv,
           std::map<int, Core::Geo::BoundaryIntCells>& intcellmap);
 
@@ -113,7 +113,7 @@ namespace ScaTra
        *      outside --> plus domain
        *      inside  --> minus domain
        *
-       *  \author hiermeier \date 11/16 */
+       *  */
       void add_to_volume(Cut::Point::PointPosition pos, double vol);
 
       /// access the boundary cell surface value
@@ -121,7 +121,7 @@ namespace ScaTra
 
       /** \brief prepare the cut algorithm
        *
-       *  \author hiermeier \date 11/16 */
+       *  */
       void prepare_cut(const Core::Elements::Element* ele,
           const Core::FE::Discretization& scatradis, const Core::LinAlg::Vector<double>& phicol,
           Core::LinAlg::SerialDenseMatrix& xyze, std::vector<double>& phi_nodes,
@@ -140,7 +140,7 @@ namespace ScaTra
        *
        *  \param curr_pos (in) : current position of the volume cell
        *
-       *  \author hiermeier \date 11/16 */
+       *  */
       bool is_point_position(const Cut::Point::PointPosition& curr_pos)
       {
         return is_point_position(curr_pos, desired_positions());
@@ -150,7 +150,7 @@ namespace ScaTra
 
       /** \brief get the zero level-set
        *
-       *  \author rasthofer \date 09/13 */
+       *  */
       void get_zero_level_set_contour(const Cut::plain_element_set& cuteles,
           const Core::LinAlg::SerialDenseMatrix& xyze, Core::FE::CellType distype);
 

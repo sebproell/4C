@@ -168,8 +168,7 @@ namespace CONTACT
 
     /** \brief print this beam contact element pair to screen
      *
-     *  \author grill
-     *  \date 05/16 */
+     */
     virtual void print() const = 0;
 
 

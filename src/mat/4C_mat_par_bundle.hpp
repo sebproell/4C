@@ -41,8 +41,7 @@ namespace Mat
     /// among different Global::Problem. (The variable #materialreadfromproblem_ is redundant
     /// in the material bundles of all non-0th Global::Problem instances.)
     ///
-    /// \author bborn
-    /// \date 02/09
+
     class Bundle
     {
      public:

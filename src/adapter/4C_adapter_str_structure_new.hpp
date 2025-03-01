@@ -213,7 +213,7 @@ namespace Adapter
     virtual void set_step_end(int step_end) = 0;
 
     /// Take the time and integrate (time loop)
-    /// \date 11/08
+
     int integrate() override = 0;
 
     /// fixme: this can go when the old structure time integration is gone and PerformErrorAction is
@@ -318,8 +318,6 @@ namespace Adapter
     Therefore, we need to reset the solution back to the initial solution of the
     time step.
 
-    \author mayr.mt
-    \date 08/2013
     */
     void reset_step() override = 0;
 
@@ -540,8 +538,7 @@ namespace Adapter
      *   variant from outside, because these vectors should always be consistent with
      *   our primary variable (i.e. the displacements).
      *
-     *  \author rauch
-     *  \date 10/17
+
      */
     void set_state(const std::shared_ptr<Core::LinAlg::Vector<double>>& x) override = 0;
 
@@ -570,7 +567,7 @@ namespace Adapter
      *
      *  This can be used e.g. by coupled problems.
      *
-     *  \date 11/16 */
+     */
     void register_model_evaluator(
         const std::string name, std::shared_ptr<Solid::ModelEvaluator::Generic> me);
 
@@ -633,8 +630,7 @@ namespace Adapter
      *  The constructor is supposed to stay empty. If you need a safety check, you can overload
      *  the Generic::check_init() and Generic::check_init_setup() routines, instead.
      *
-     *  \author hiermeier
-     *  \date 09/16 */
+     */
     void set_model_types(std::set<enum Inpar::Solid::ModelType>& modeltypes) const;
 
     /// Set all found model types.

@@ -76,7 +76,7 @@ namespace Core::Geo
      *  \param physDomainCoordinates    (in) : coordinates of the integrationcell in physical domain
      *  \param indomainplus             (in) : domain part of the integration cell
      *
-     *  \author hiermeier \date 11/16 */
+     *  */
     static BoundaryIntCell* create(const Core::FE::CellType& distype, const int& surface_ele_gid,
         const Core::LinAlg::SerialDenseMatrix& xfemEleDomainCoordinates,
         const Core::LinAlg::SerialDenseMatrix* eleBoundaryCoordinates,

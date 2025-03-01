@@ -38,7 +38,7 @@ namespace Solid
   {
     /** \brief Implicit time integration strategy
      *
-     * \author Michael Hiermeier */
+     * */
     class Implicit : public ImplicitBase
     {
      public:
@@ -122,7 +122,7 @@ namespace Solid
        *
        *  [OUTPUT-FOLDER]/[OUTPUT FILE NAME]_str_jacobian_step-[STEP]_nlniter-[NEWTON-ITERATION].mtl
        *
-       *  \author hiermeier \date 06/17 */
+       *  */
       void print_jacobian_in_matlab_format(const NOX::Nln::Group& curr_grp) const;
 
      protected:

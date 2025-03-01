@@ -107,8 +107,6 @@ namespace LibB64
 /*
  \brief Base class for VTK output generation
 
- \author kronbichler
- \date 03/14
 */
 class VtkWriterBase
 {
@@ -126,21 +124,18 @@ class VtkWriterBase
 
   /** \brief set class variable storing working directory and create it if not existing
    *
-   *  \author grill
-   *  \date 03/17 */
+   */
   void set_and_create_vtk_working_directory(const std::string& path_existing_working_directory,
       const std::string& name_vtk_subdirectory_to_be_created);
 
   /** \brief reset current simulation time and time step number
    *
-   *  \author grill
-   *  \date 03/17 */
+   */
   void reset_time_and_time_step(double time, unsigned int timestepnumber);
 
   /** \brief initialize the required file streams for processor individual file and master file
    *
-   *  \author grill
-   *  \date 03/17 */
+   */
   void initialize_vtk_file_streams_for_new_geometry_and_or_time_step();
 
   //! write prologue of all required vtk files
@@ -241,8 +236,7 @@ class VtkWriterBase
 
   /** write a VTK collection file that summarizes paths to all the given files
    *
-   *  \author eichinger
-   *  \date 05/17 */
+   */
   void create_restarted_initial_collection_file_mid_section(
       const std::string& geometryname, const std::string& restartfilename, double restart_time);
 

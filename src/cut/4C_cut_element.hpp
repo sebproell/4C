@@ -634,7 +634,7 @@ namespace Cut
   /*--------------------------------------------------------------------------*/
   /*! \brief Implementation of the concrete cut element
    *
-   *  \author hiermeier */
+   *  */
   template <unsigned probdim, Core::FE::CellType elementtype,
       unsigned num_nodes_element = Core::FE::num_nodes<elementtype>,
       unsigned dim = Core::FE::dim<elementtype>>
@@ -731,8 +731,7 @@ namespace Cut
      *  \param rst (in)  : local coordinates
      *  \param xyz (out) : corresponding global coordinates
      *
-     *  \author hiermeier
-     *  \date 08/16 */
+     */
     void point_at(const Core::LinAlg::Matrix<dim, 1>& rst, Core::LinAlg::Matrix<probdim, 1>& xyz)
     {
       Core::LinAlg::Matrix<num_nodes_element, 1> funct(true);

@@ -80,8 +80,7 @@ namespace Core::Communication
    *
    * \return boundaryeles   vector filled with std::shared_ptrs of allocated boundary elements
    *
-   * \author gjb
-   * \date 05/08
+
    */
   template <class BoundaryEle, class ParentEle>
   std::vector<std::shared_ptr<Core::Elements::Element>> element_boundary_factory(
@@ -157,8 +156,7 @@ namespace Core::Communication
    *
    * \return intface   std::shared_ptr of allocated internal face element
    *
-   * \author schott
-   * \date 03/12
+
    */
   template <class IntFaceEle, class ParentEle>
   std::shared_ptr<Core::Elements::Element> element_int_face_factory(int id,  ///< element id

@@ -34,7 +34,6 @@ namespace ParticleRigidBody
   /*!
    * \brief interface to provide restricted access to rigid body handler
    *
-   * \author Sebastian Fuchs \date 09/2020
    */
   class RigidBodyHandlerInterface
   {
@@ -45,7 +44,6 @@ namespace ParticleRigidBody
     /*!
      * \brief update positions with given time increment
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[in] timeincrement time increment
      */
@@ -54,7 +52,6 @@ namespace ParticleRigidBody
     /*!
      * \brief update velocities with given time increment
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \param[in] timeincrement time increment
      */
@@ -63,14 +60,12 @@ namespace ParticleRigidBody
     /*!
      * \brief clear accelerations
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     virtual void clear_accelerations() = 0;
 
     /*!
      * \brief get rigid body data state container
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \return rigid body data state container
      */
@@ -80,7 +75,6 @@ namespace ParticleRigidBody
     /*!
      * \brief get owned rigid bodies by this processor
      *
-     * \author Sebastian Fuchs \date 09/2020
      *
      * \return owned rigid bodies by this processor
      */

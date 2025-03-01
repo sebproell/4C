@@ -48,7 +48,7 @@ namespace Solid
      * This data container holds everything, which refers directly to the
      * input/output writer and the screen output.
      *
-     * \author Michael Hiermeier */
+     * */
     class BaseDataIO
     {
      public:
@@ -427,7 +427,7 @@ namespace NOX
            *  It's called by the wrapper classes ::NOX::Solver::PrePostOperator and
            *  NOX::PrePostOperatorVector.
            *
-           *  \author Michael Hiermeier \date 03/17 */
+           *  */
           class WriteOutputEveryIteration : public NOX::Nln::Abstract::PrePostOperator
           {
            public:

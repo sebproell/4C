@@ -48,8 +48,6 @@ namespace Discret
      corresponding to these boundaries need to be listed in the FluidPoroBoundary::LocationVector()
      method. Otherwise one might get an FOUR_C_THROW or even no error at all and very strange
      results instead.
-
-     \author vuong 10/14
      */
 
     template <Core::FE::CellType distype>
@@ -380,8 +378,6 @@ namespace Discret
       This class is implements the poro boundary condition for poro P1 elements, i.e. with
      additional nodal porosity degree of freedom. Therefore the only difference should be the way
      the porosity is evaluated.
-
-     \author vuong 10/14
      */
     template <Core::FE::CellType distype>
     class FluidEleBoundaryCalcPoroP1 : public FluidEleBoundaryCalcPoro<distype>

@@ -18,8 +18,6 @@ FOUR_C_NAMESPACE_OPEN
 /*!
   \brief map node stack element
 
-  \author m.geppert (u.kue)
-  \date 08/06
  */
 /*----------------------------------------------------------------------*/
 typedef struct StackElement
@@ -33,8 +31,6 @@ typedef struct StackElement
 /*!
   \brief stack of map nodes
 
-  \author m.geppert (u.kue)
-  \date 08/06
  */
 /*----------------------------------------------------------------------*/
 typedef struct Stack
@@ -51,8 +47,6 @@ typedef struct Stack
   Visit all maps inside a map. This is a tree iterator. The map is
   implemented as a tree. Hence there is a stack inside this iterator.
 
-  \author m.geppert (u.kue)
-  \date 08/06
  */
 /*----------------------------------------------------------------------*/
 typedef struct MapIterator

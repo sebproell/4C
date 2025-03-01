@@ -22,8 +22,6 @@ FOUR_C_NAMESPACE_OPEN
 
   That's needed before anything can be done with a map.
 
-  \author u.kue
-  \date 08/04
 */
 /*----------------------------------------------------------------------*/
 void init_map(MAP* map);
@@ -33,8 +31,6 @@ void init_map(MAP* map);
 /*!
   \brief Clean up.
 
-  \author u.kue
-  \date 08/04
 */
 /*----------------------------------------------------------------------*/
 void destroy_map(MAP* map);

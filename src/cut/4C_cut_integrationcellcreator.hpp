@@ -47,7 +47,7 @@ namespace Cut
 
     /** \brief fill the 2-D volume cells
      *
-     *  \author hiermeier \date 01/17 */
+     *  */
     template <Core::FE::CellType celltype,
         Core::FE::CellType facetype = Core::FE::DisTypeToFaceShapeType<celltype>::shape,
         unsigned numfaces = Core::FE::num_faces<celltype>>
@@ -85,7 +85,7 @@ namespace Cut
     /** \brief add the side (boundary cell) information during Create<Shape>Cell calls
      *         for the desired boundary cell positions
      *
-     *  \author hiermeier \date 01/17   */
+     *  */
     void add_side(Cut::BoundaryCellPosition bcell_position, VolumeCell* vc, Facet* facet,
         Core::FE::CellType shape, const std::vector<Point*>& side);
 

@@ -36,7 +36,6 @@ namespace Adapter
    *
    *  \sa Adapter::Ale, Adapter::AleWrapper
    *
-   *  \author kruse \date 10/2014
    */
   class AleFluidWrapper : public AleWrapper
   {

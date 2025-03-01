@@ -186,8 +186,7 @@ namespace FSI
     /*!
      * In case of a change in the fluid DOF row maps during the Newton loop (full Newton approach),
      * reset vectors accordingly.
-     * \author kruse
-     * \date 05/14
+
      */
     virtual void handle_fluid_dof_map_change_in_newton() = 0;
 
@@ -196,8 +195,7 @@ namespace FSI
      * \param (in) : DOF map of fluid increment vector
      * \return : true, in case of a mismatch between map of increment vector
      * and inner fluid DOF map after evaluation
-     * \author kruse
-     * \date 05/14
+
      */
     virtual bool has_fluid_dof_map_changed(const Epetra_BlockMap& fluidincrementmap) = 0;
 
@@ -269,8 +267,7 @@ namespace FSI
    private:
     /*!
      * Check whether input parameters are appropriate
-     * \author kruse
-     * \date 05/14
+
      */
     void validate_parameters();
 

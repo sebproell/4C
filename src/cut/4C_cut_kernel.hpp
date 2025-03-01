@@ -540,7 +540,7 @@ namespace Cut::Kernel
 
   /** \brief check if the local augmented coordinates are within the specified limits
    *
-   *  \author hiermeier */
+   *  */
   template <unsigned prob_dim, Core::FE::CellType side_type,
       unsigned dim_side = Core::FE::dim<side_type>, class T>
   bool within_limits_embedded_manifold(const T& xsi_aug, double tol, bool allow_dist, double tol2)
@@ -573,8 +573,7 @@ namespace Cut::Kernel
   /*! \brief Check whether three points are on the same line
    *  by checking whether the cross product is zero
    *
-   *  \author Sudhakar
-   *  \date 04/12 */
+   */
   bool is_on_line(Point*& pt1, Point*& pt2, Point*& pt3, bool DeleteInlinePts = false);
 
   /*! \brief Check whether the polygon defined by the set of points is convex */
@@ -609,8 +608,7 @@ namespace Cut::Kernel
    *  Polygon in 3D space is first projected into 2D plane, and the plane
    *  of projection is returned in projType.
    *
-   *  \author sudhakar
-   *  \date 05/12 */
+   */
   bool is_clockwise_ordered_polygon(std::vector<Point*> polyPoints, std::string& projPlane);
 
   /*! \brief Delete unnecessary in-line points.
@@ -619,20 +617,17 @@ namespace Cut::Kernel
    *  are deleted. This is checked for all the lines for a facet. So once this is
    *  called the facet is free of more than 2 inline points
    *
-   *  \author sudhakar
-   *  \date 06/12 */
+   */
   void delete_inline_pts(std::vector<Point*>& poly);
 
   /*! \brief Returns true if at least 3 points are collinear
    *
-   * \author wirtz
-   * \date 05/13 */
+   */
   bool have_inline_pts(std::vector<Point*>& poly);
 
   /*! \brief Finds tree points of the polygon which are not collinear
    *
-   *  \author wirtz
-   *  \date 05/13 */
+   */
   std::vector<Point*> get3_noncollinear_pts(std::vector<Point*>& polyPoints);
 
   /*! \brief Find appropriate projection plane
@@ -641,8 +636,7 @@ namespace Cut::Kernel
    *  coordinate plane. It is better to project over the plane which is max normal component
    *  because this will reduce the round-off error in further calculations.
    *
-   *  \author sudhakar
-   *  \date 06/12 */
+   */
   void find_projection_plane(std::string& projPlane, const std::vector<double>& eqn);
 
   /*! \brief Split a QUAD4 element into two TRI3 elements
@@ -658,7 +652,7 @@ namespace Cut::Kernel
    *  \param tri3_id    (in) : id of the desired TRI3 element \f& id \in \{0,\; 1\}\f$
    *  \param xyze_tri3  (out): created/filled TRI3 nodal coordinate matrix
    *
-   *  \author hiermeier \date 11/16 */
+   *  */
   template <class T1, class T2>
   void split_quad4_into_tri3(const T1& xyze_quad4, const unsigned& tri3_id, T2& xyze_tri3)
   {
@@ -676,8 +670,7 @@ namespace Cut::Kernel
 
   /*! \brief Get area of triangle in 3D space
    *
-   *  \author sudhakar
-   *  \date 11/14 */
+   */
   double get_area_tri(
       const std::vector<Point*>& poly, Core::LinAlg::Matrix<3, 1>* normalvec = nullptr);
   double get_area_tri(const double* p0_ptr, const double* p1_ptr, const double* p2_ptr,
@@ -697,8 +690,7 @@ namespace Cut::Kernel
    *
    *  \param poly (in): vector containing four pointers to the quad points
    *
-   *  \author sudhakar
-   *  \date 11/14 */
+   */
   double get_area_convex_quad(std::vector<Point*>& poly);
 
   enum NewtonStatus
@@ -719,7 +711,7 @@ namespace Cut::Kernel
    *  If the point is inside or near the side, the additional term will stay
    *  very low and will not distort the used tolerance too much.
    *
-   *  \author hiermeier \date 02/17 */
+   *  */
   template <class T1, class T2, class T3>
   double adaptive_combined_newton_tolerance(
 
@@ -2210,8 +2202,7 @@ namespace Cut::Kernel
      *
      *  The matrix \f$ A \f$ holds the consistent linearization.
      *
-     *  \author hiermeier
-     *  \date 08/16    */
+     */
     bool distance_system(const Core::LinAlg::Matrix<prob_dim, num_nodes_side, FloatType>& xyze_side,
         const Core::LinAlg::Matrix<prob_dim, 1, FloatType>& px, FloatType* distance,
         Core::LinAlg::Matrix<prob_dim, prob_dim, FloatType>& A,
@@ -3770,8 +3761,7 @@ namespace Cut::Kernel
      *  dimension is larger than the accumulated dimensions of the side and edge
      *  elements, a least square approach will be used.
      *
-     *  \author hiermeier
-     *  \date 08/16 */
+     */
     void intersection_system(const Core::LinAlg::Matrix<dim_edge, 1, FloatType>& xsi_edge,
         const Core::LinAlg::Matrix<dim_side, 1, FloatType>& xsi_side,
         const Core::LinAlg::Matrix<prob_dim, num_nodes_edge, FloatType>& xyze_edge,

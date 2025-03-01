@@ -22,8 +22,6 @@ FOUR_C_NAMESPACE_OPEN
 /*
  \brief class for VTU output generation
 
- \author kronbichler, grill
- \date 03/14, 03/17
 */
 class VtuWriter : public VtkWriterBase
 {

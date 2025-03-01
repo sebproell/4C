@@ -36,10 +36,8 @@ FOUR_C_NAMESPACE_OPEN
 /// Limitations", The Journal of Cardiovascular Electrophysiology 14 (2003) 121-132
 /// </ul>
 ///
-/// \author ljag
 
 
-/// \date 09/13
 
 class MyocardSanGarny : public MyocardGeneral
 

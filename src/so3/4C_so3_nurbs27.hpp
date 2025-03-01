@@ -85,8 +85,6 @@ namespace Discret
       A structural 27-control points nurbs solid displacement element for large deformations.
       As its discretization is fixed many data structures are evaluated just once and kept
       for performance.
-
-      \author gammi
       */
       class SoNurbs27 : public SoBase
       {

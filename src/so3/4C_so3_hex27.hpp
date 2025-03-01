@@ -78,8 +78,6 @@ namespace Discret
     As its discretization is fixed many data structures are evaluated just once and kept
     for performance. It heavily uses Epetra objects and methods and therefore relies
     on their performance.
-
-    \author kloeppel
     */
     class SoHex27 : public SoBase
     {

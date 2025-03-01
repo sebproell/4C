@@ -31,7 +31,7 @@ namespace Core::FE
     \param myknots     (o) knot vector (to be filled)
     \param weights     (o) weight vector (to be filled)
 
-    \date 12/10
+
     */
     template <class WG>
     bool get_my_nurbs_knots_and_weights(const Core::FE::Discretization& dis,
@@ -80,7 +80,7 @@ namespace Core::FE
     \param weights          (o) weight vector for boundary element (to be filled)
     \param normalfac        (o) normalfac (to be filled)
 
-    \date 12/10
+
     */
     template <class WG>
     bool get_knot_vector_and_weights_for_nurbs_boundary(const Core::Elements::Element* boundaryele,
@@ -133,7 +133,7 @@ namespace Core::FE
     \param weights          (o) weight vector for boundary element (to be filled)
     \param normalfac        (o) normalfac (to be filled)
 
-    \date 01/14
+
     */
     template <class WG>
     bool get_knot_vector_and_weights_for_nurbs_boundary_and_parent(

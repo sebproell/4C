@@ -48,7 +48,7 @@ namespace Adapter
    * integration. The results are modified and/or merged to account for the
    * additional degrees of freedom of the lagrange multipliers.
    *
-   * \date 11/08
+
    */
   class StructureConstrMerged : public FSIStructureWrapper
   {

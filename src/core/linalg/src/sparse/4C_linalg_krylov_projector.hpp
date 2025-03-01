@@ -29,8 +29,6 @@ namespace Core::LinAlg
   A class providing a Krylov projectors. Used for projected preconditioner,
   projected operator, and directly in direct solver.
 
-  \author Keijo Nissen
-  \date Feb13
   */
 
   class KrylovProjector

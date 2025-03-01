@@ -37,7 +37,6 @@ namespace PARTICLEALGORITHM
   /*!
    * \brief particle input generator
    *
-   * \author Sebastian Fuchs \date 07/2018
    */
   class InputGenerator
   {
@@ -45,7 +44,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 07/2018
      *
      * \param[in] comm   communicator
      * \param[in] params particle simulation parameter list
@@ -55,7 +53,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief init input generator
      *
-     * \author Sebastian Fuchs \date 07/2018
      */
     void init();
 
@@ -77,7 +74,6 @@ namespace PARTICLEALGORITHM
      *       Keep in mind that particles read in from the input files are also stored in that
      *       vector.
      *
-     * \author Sebastian Fuchs \date 07/2018
      *
      * \param[out] particlesgenerated particle objects generated
      */
@@ -88,7 +84,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief add generated particle
      *
-     * \author Sebastian Fuchs \date 09/2018
      *
      * \param[in]  position           position of particle
      * \param[in]  particletype       particle type enum

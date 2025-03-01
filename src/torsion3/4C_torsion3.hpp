@@ -261,27 +261,23 @@ namespace Discret
        *
        *  \param p (in): Parameter list coming from the time integrator.
        *
-       *  \author hiermeier
-       *  \date 04/16 */
+       */
       void set_params_interface_ptr(const Teuchos::ParameterList& p) override;
 
       /*! \brief returns true if the parameter interface is defined and initialized, otherwise false
        *
-       *  \author hiermeier
-       *  \date 04/16 */
+       */
       inline bool is_params_interface() const override { return (interface_ptr_ != nullptr); }
 
       /*! \brief get access to the parameter interface pointer
        *
-       *  \author hiermeier
-       *  \date 04/16 */
+       */
       std::shared_ptr<Core::Elements::ParamsInterface> params_interface_ptr() override;
 
      protected:
       /** \brief get access to the interface
        *
-       *  \author hiermeier
-       *  \date 04/16 */
+       */
       inline FourC::Solid::Elements::ParamsInterface& params_interface()
       {
         if (not is_params_interface()) FOUR_C_THROW("The interface ptr is not set!");

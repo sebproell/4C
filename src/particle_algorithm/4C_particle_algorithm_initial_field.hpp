@@ -34,7 +34,6 @@ namespace PARTICLEALGORITHM
   /*!
    * \brief initial field handler for particle simulations
    *
-   * \author Sebastian Fuchs \date 07/2018
    */
   class InitialFieldHandler
   {
@@ -42,7 +41,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 07/2018
      *
      * \param[in] params particle simulation parameter list
      */
@@ -51,14 +49,12 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief init initial field handler
      *
-     * \author Sebastian Fuchs \date 07/2018
      */
     void init();
 
     /*!
      * \brief setup initial field handler
      *
-     * \author Sebastian Fuchs \date 07/2018
      *
      * \param[in] particleengineinterface interface to particle engine
      */
@@ -68,7 +64,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief set initial fields
      *
-     * \author Sebastian Fuchs \date 07/2018
      */
     void set_initial_fields();
 

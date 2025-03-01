@@ -30,7 +30,6 @@ namespace PARTICLEENGINE
    * avoiding both expensive memory reallocations and memory fragmentation. Fast access to particle
    * states is provided.
    *
-   * \author Sebastian Fuchs \date 03/2018
    */
   class ParticleContainer final
   {
@@ -41,14 +40,12 @@ namespace PARTICLEENGINE
     /*!
      * \brief init particle container
      *
-     * \author Sebastian Fuchs \date 03/2018
      */
     void init();
 
     /*!
      * \brief setup particle container
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in] containersize size of particle container
      * \param[in] stateset      set of particle states to be stored
@@ -63,7 +60,6 @@ namespace PARTICLEENGINE
      *
      * The size of the particle container is doubled to reduce memory (re-)allocation costs.
      *
-     * \author Sebastian Fuchs \date 04/2018
      */
     void increase_container_size();
 
@@ -72,14 +68,12 @@ namespace PARTICLEENGINE
      *
      * The size of the particle container is halved.
      *
-     * \author Sebastian Fuchs \date 04/2018
      */
     void decrease_container_size();
 
     /*!
      * \brief check and decrease the container size
      *
-     * \author Sebastian Fuchs \date 04/2018
      */
     inline void check_and_decrease_container_size()
     {
@@ -104,7 +98,6 @@ namespace PARTICLEENGINE
      * Clear the particle container by resetting the number of particles stored in the container.
      * The container size remains untouched. The global id and the particle states are not cleared.
      *
-     * \author Sebastian Fuchs \date 04/2018
      */
     inline void clear_container() { particlestored_ = 0; };
 
@@ -115,7 +108,6 @@ namespace PARTICLEENGINE
      * container. The size of the particle container is increased if necessary. A state that is not
      * handed over is initialized to zero.
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[out] index    index of particle in container
      * \param[in]  globalid global id of particle
@@ -130,7 +122,6 @@ namespace PARTICLEENGINE
      * the particle states are overwritten. A negative global id is ignored. A state that is not
      * handed over is untouched.
      *
-     * \author Sebastian Fuchs \date 05/2018
      *
      * \param[in] index    index of particle in container
      * \param[in] globalid global id of particle
@@ -143,7 +134,6 @@ namespace PARTICLEENGINE
      *
      * Get a particle at the given index from the particle container.
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in]  index    index of particle in container
      * \param[out] globalid global id of particle
@@ -158,7 +148,6 @@ namespace PARTICLEENGINE
      * with the particle at the end of the container and the number of particles stored in the
      * container is decreased.
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in] index index of particle in container
      */
@@ -169,7 +158,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get particle state dimension
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in] state particle state
      *
@@ -198,7 +186,6 @@ namespace PARTICLEENGINE
      * \note Throws an error in the debug version in case the requested state is not stored in the
      *       particle container.
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in] state particle state
      * \param[in] index index of particle in container
@@ -230,7 +217,6 @@ namespace PARTICLEENGINE
      *
      * \note The returned pointer may not be used to access memory without checking for a nullptr.
      *
-     * \author Sebastian Fuchs \date 12/2020
      *
      * \param[in] state particle state
      * \param[in] index index of particle in container
@@ -253,7 +239,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get pointer to global id of a particle at index
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in] index index of particle in container
      *
@@ -278,7 +263,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief scale state of particles
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in] fac   scale factor
      * \param[in] state particle state
@@ -297,7 +281,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief add scaled states to first state of particles
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in] facA   first scale factor
      * \param[in] stateA first particle state
@@ -326,7 +309,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief set given state to all particles
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in] val   particle state
      * \param[in] state particle state
@@ -350,7 +332,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief clear state of all particles
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \param[in] state particle state
      */
@@ -370,7 +351,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get stored particle states
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \return stored particle states
      */
@@ -381,7 +361,6 @@ namespace PARTICLEENGINE
      *
      * Get a flag that is indicating if a state is stored in the particle container.
      *
-     * \author Sebastian Fuchs \date 11/2019
      *
      * \param[in] state particle state
      *
@@ -392,7 +371,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get size of particle container
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \return size of particle container
      */
@@ -401,7 +379,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get number of particles stored in container
      *
-     * \author Sebastian Fuchs \date 03/2018
      *
      * \return number of particles stored in container
      */
@@ -410,7 +387,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get minimum stored value of state in container
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \param[in] state particle state
      *
@@ -421,7 +397,6 @@ namespace PARTICLEENGINE
     /*!
      * \brief get maximum stored value of state in container
      *
-     * \author Sebastian Fuchs \date 11/2018
      *
      * \param[in] state particle state
      *

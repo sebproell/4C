@@ -573,7 +573,6 @@ namespace Core::FE
 
   /*!
   \brief integration parameters
-  \author Axel Gerstenberger
 
   In this structure the coordinates and weights used by gauss integration are stored.
 
@@ -610,7 +609,6 @@ namespace Core::FE
 
   /*!
   \brief integration parameters
-  \author Axel Gerstenberger
 
   In this structure the coordinates and weights used by gauss integration are stored.
 
@@ -647,8 +645,6 @@ namespace Core::FE
 
   /*!
   \brief integration parameters
-
-  \author gerstenberger \date 06/07
 
   In this structure the coordinates and weights used by numerical integration
   are stored.
@@ -715,8 +711,7 @@ namespace Core::FE
 
   /*!
   \brief integration points and weights
-  \author Georg Bauer
-  \date 12/2008
+
 
   This class unifies the access of integration points and corresponding weights
   w.r.t. to the number of space dimensions.

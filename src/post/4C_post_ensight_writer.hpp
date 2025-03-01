@@ -93,8 +93,6 @@ class EnsightWriter : public PostWriterBase
    pressure) and we want to write just one part of it. So we have to
    specify which part.
 
-   \author u.kue
-   \date 03/07
    */
   void write_result(const std::string groupname,  ///< name of the result group in the control file
       const std::string name,                     ///< name of the result to be written
@@ -118,11 +116,9 @@ class EnsightWriter : public PostWriterBase
    issue.
 
     originally
-   \author u.kue
-   \date 03/07
+
    adapted
-   \author ghamm
-   \date 03/13
+
    */
   void write_result_one_time_step(PostResult& result,  ///< result group in the control file
       const std::string groupname,  ///< name of the result group in the control file
@@ -142,8 +138,6 @@ class EnsightWriter : public PostWriterBase
    To allow for a generic interface, the calling site needs to supply a
    class derived from SpecialFieldInterface that knows which function to call.
 
-   \author kronbichler
-   \date 04/14
    */
   void write_special_field(SpecialFieldInterface& special,
       PostResult& result,  ///< result group in the control file

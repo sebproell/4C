@@ -22,7 +22,7 @@ namespace Discret
   {
     /** \brief Input data container for output at runtime for beams
      *
-     * \author Maximilian Grill */
+     * */
     class BeamRuntimeOutputParams
     {
      public:

@@ -178,7 +178,7 @@ namespace NOX
        * shown that this is usually the case when standard nonlinear solution techniques, such as
        * the plain Newton-Raphson method, are employed, but one should still be aware thereof.
        *
-       * \date 01/2018
+
        */
       class NormUpdateSkipFirstIter : public NormUpdate
       {

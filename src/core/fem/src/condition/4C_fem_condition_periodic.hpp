@@ -44,9 +44,6 @@ namespace Core::Conditions
 
           o passes list of coupled nodes to the dofset
 
-
-  \author gammi
-
   */
   class PeriodicBoundaryConditions
   {

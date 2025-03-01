@@ -63,8 +63,8 @@ namespace Solid
      *  This class summarizes the functionality which all model multiphysics model
      *  evaluators share.
      *
-     *  \date 11/16
-     *  \author rauch */
+
+     *  */
     class Multiphysics : public Generic
     {
      public:

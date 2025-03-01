@@ -69,7 +69,6 @@ namespace PARTICLEALGORITHM
    * - (runtime) output of fields
    * - write restart information
    *
-   * \author Sebastian Fuchs \date 04/2018
    */
 
   class ParticleAlgorithm final : public Adapter::AlgorithmBase
@@ -78,7 +77,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief constructor
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \param[in] comm   communicator
      * \param[in] params particle simulation parameter list
@@ -88,7 +86,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief destructor
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \note At compile-time a complete type of class T as used in class member
      *       std::unique_ptr<T> ptr_T_ is required
@@ -98,7 +95,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief init particle algorithm
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \param[in] initialparticles particle objects read in from restart
      */
@@ -107,7 +103,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief setup particle algorithm
      *
-     * \author Sebastian Fuchs \date 04/2018
      */
     void setup();
 
@@ -116,7 +111,6 @@ namespace PARTICLEALGORITHM
      *
      * Read the restart information in the same order as it is written.
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \param[in] restartstep restart step
      */
@@ -125,14 +119,12 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief time loop for particle problem
      *
-     * \author Sebastian Fuchs \date 04/2018
      */
     void timeloop();
 
     /*!
      * \brief prepare time step
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \param[in] do_print_header flag to control output of time step header
      */
@@ -141,28 +133,24 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief pre evaluate time step
      *
-     * \author Sebastian Fuchs \date 11/2020
      */
     void pre_evaluate_time_step();
 
     /*!
      * \brief integrate time step
      *
-     * \author Sebastian Fuchs \date 04/2018
      */
     void integrate_time_step();
 
     /*!
      * \brief post evaluate time step
      *
-     * \author Sebastian Fuchs \date 11/2019
      */
     void post_evaluate_time_step();
 
     /*!
      * \brief write output
      *
-     * \author Sebastian Fuchs \date 07/2020
      */
     void write_output() const;
 
@@ -174,14 +162,12 @@ namespace PARTICLEALGORITHM
      * information is written by the wall discretization writer. This order is important, otherwise
      * the restart fails.
      *
-     * \author Sebastian Fuchs \date 07/2020
      */
     void write_restart() const;
 
     /*!
      * \brief create particle field specific result test objects
      *
-     * \author Sebastian Fuchs \date 07/2018
      *
      * \return particle field specific result test objects
      */
@@ -190,7 +176,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief get interface to particle engine
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \return interface to particle engine
      */
@@ -202,7 +187,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief get interface to particle wall handler
      *
-     * \author Sebastian Fuchs \date 04/2018
      *
      * \return interface to particle wall handler
      */
@@ -218,91 +202,78 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief init particle engine
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void init_particle_engine();
 
     /*!
      * \brief init particle wall handler
      *
-     * \author Sebastian Fuchs \date 10/2018
      */
     void init_particle_wall();
 
     /*!
      * \brief init rigid body handler
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void init_particle_rigid_body();
 
     /*!
      * \brief init particle time integration
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void init_particle_time_integration();
 
     /*!
      * \brief init particle interaction handler
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void init_particle_interaction();
 
     /*!
      * \brief init particle gravity handler
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void init_particle_gravity();
 
     /*!
      * \brief init viscous damping handler
      *
-     * \author Sebastian Fuchs \date 02/2019
      */
     void init_viscous_damping();
 
     /*!
      * \brief generate initial particles
      *
-     * \author Sebastian Fuchs \date 07/2018
      */
     void generate_initial_particles();
 
     /*!
      * \brief determine all particle types
      *
-     * \author Sebastian Fuchs \date 07/2018
      */
     void determine_particle_types();
 
     /*!
      * \brief determine particle states of all particle types
      *
-     * \author Sebastian Fuchs \date 07/2018
      */
     void determine_particle_states_of_particle_types();
 
     /*!
      * \brief setup initial particles
      *
-     * \author Sebastian Fuchs \date 05/2018
      */
     void setup_initial_particles();
 
     /*!
      * \brief setup initial rigid bodies
      *
-     * \author Sebastian Fuchs \date 09/2020
      */
     void setup_initial_rigid_bodies();
 
     /*!
      * \brief setup initial states
      *
-     * \author Sebastian Fuchs \date 07/2018
      */
     void setup_initial_states();
 
@@ -319,7 +290,6 @@ namespace PARTICLEALGORITHM
      *
      * This method includes several safety checks that are part of the called sub-methods.
      *
-     * \author Sebastian Fuchs \date 06/2018
      */
     void update_connectivity();
 
@@ -332,7 +302,6 @@ namespace PARTICLEALGORITHM
      * - invalid particle neighbor pair relation
      * - invalid particle wall neighbor pair relation
      *
-     * \author Sebastian Fuchs \date 08/2019
      *
      * \return flag indicating load transfer is needed
      */
@@ -341,7 +310,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief check maximum position increment
      *
-     * \author Sebastian Fuchs \date 08/2019
      *
      * \return flag indicating load transfer is needed due to maximum position increment
      */
@@ -350,7 +318,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief get maximum particle position increment since last transfer
      *
-     * \author Sebastian Fuchs \date 06/2018
      *
      * \param allprocmaxpositionincrement maximum particle position increment
      */
@@ -359,7 +326,6 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief transfer load between processors
      *
-     * \author Sebastian Fuchs \date 08/2019
      */
     void transfer_load_between_procs();
 
@@ -369,7 +335,6 @@ namespace PARTICLEALGORITHM
      * Check if a load redistribution is needed based on the difference in the absolute number of
      * particles since the last redistribution.
      *
-     * \author Sebastian Fuchs \date 08/2019
      *
      * \return flag indicating load redistribution is needed
      */
@@ -378,56 +343,48 @@ namespace PARTICLEALGORITHM
     /*!
      * \brief distribute load among processors
      *
-     * \author Sebastian Fuchs \date 08/2019
      */
     void distribute_load_among_procs();
 
     /*!
      * \brief build potential neighbor relation
      *
-     * \author Sebastian Fuchs \date 08/2019
      */
     void build_potential_neighbor_relation();
 
     /*!
      * \brief set initial conditions
      *
-     * \author Sebastian Fuchs \date 07/2018
      */
     void set_initial_conditions();
 
     /*!
      * \brief set current time
      *
-     * \author Sebastian Fuchs \date 08/2018
      */
     void set_current_time();
 
     /*!
      * \brief set current step size
      *
-     * \author Sebastian Fuchs \date 08/2018
      */
     void set_current_step_size();
 
     /*!
      * \brief set current write result flag
      *
-     * \author Sebastian Fuchs \date 08/2019
      */
     void set_current_write_result_flag();
 
     /*!
      * \brief evaluate time step
      *
-     * \author Sebastian Fuchs \date 08/2020
      */
     void evaluate_time_step();
 
     /*!
      * \brief set gravity acceleration
      *
-     * \author Sebastian Fuchs \date 06/2018
      */
     void set_gravity_acceleration();
 

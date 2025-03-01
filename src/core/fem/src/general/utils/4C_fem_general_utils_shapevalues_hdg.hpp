@@ -84,8 +84,6 @@ namespace Core::FE
   /// Helper class for evaluating HDG polynomials, geometry, etc.
   /*!
 
-    \author kronbichler
-    \date 05/14
   */
   template <Core::FE::CellType distype>
   class ShapeValues
@@ -172,8 +170,6 @@ namespace Core::FE
   /// Helper class for evaluating HDG polynomials, geometry, etc.
   /*!
 
-    \author schoeder
-    \date 06/14
   */
   template <Core::FE::CellType distype>
   class ShapeValuesFace
@@ -272,8 +268,6 @@ namespace Core::FE
 
     \note
     The routine is only used in 3D so far and therefore tested only in this case.
-
-    \Author: Berardocco
      */
     void compute_face_reference_system(const Core::Elements::Element& ele, const unsigned int face);
   };

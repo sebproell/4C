@@ -29,8 +29,7 @@ namespace STI
     testing classes. Feel free to extend this class if necessary.
 
     \sa ResultTest
-    \author fang
-    \date 01/2017
+
   */
   class STIResultTest : public Core::Utils::ResultTest
   {

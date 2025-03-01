@@ -69,8 +69,6 @@ namespace Core::LinAlg
     and not in SparseMatrix that you would like to call (for legitimate
     reasons!) please add them to the SparseMatrix.
 
-    \author u.kue
-    \date 02/08
    */
   class SparseMatrix : public SparseMatrixBase
   {

@@ -33,7 +33,6 @@ class StruResultTest : public Core::Utils::ResultTest
 {
  public:
   //! Constructor for time integrators of general kind
-  //! \author bborn \date 06/08
   StruResultTest(Solid::TimInt& tintegrator);
 
   /*!

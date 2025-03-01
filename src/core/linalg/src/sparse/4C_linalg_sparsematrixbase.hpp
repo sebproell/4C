@@ -70,7 +70,7 @@ namespace Core::LinAlg
      *  on the diagonal of diagonal blocks and zeros everywhere else in the DBC
      *  rows.
      *
-     *  \author hiermeier \date 01/2018 */
+     *  */
     bool is_dbc_applied(const Epetra_Map& dbcmap, bool diagonalblock = true,
         const Core::LinAlg::SparseMatrix* trafo = nullptr) const override;
 

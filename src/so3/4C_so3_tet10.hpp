@@ -81,7 +81,6 @@ namespace Discret
     \brief A C++ version of the 10-node tet solid element
 
     a structural 10-node tetrahedral solid displacement element
-    \author biehler
     */
 
     class SoTet10 : public SoBase

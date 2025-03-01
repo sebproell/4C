@@ -70,9 +70,6 @@ namespace TSI
   //!
   //!  \note There is the Algorithm class for general purpose TSI algorithms.
   //!  This simplifies the monolithic implementation.
-  //!
-  //!  \author u.kue
-  //!  \date 02/08
   class Monolithic : public Algorithm
   {
    public:
@@ -154,7 +151,6 @@ namespace TSI
 
     //! is convergence reached of iterative solution technique?
     //! keep your fingers crossed...
-    //! \author lw (originally in STR) \date 12/07
     bool converged();
 
     //! outer iteration loop
@@ -169,22 +165,19 @@ namespace TSI
     //! larger convergence radius than newton and is therefore more stable
     //! and/or can do larger time steps
     //!
-    //! originally by mwgee for structural analysis \date 03/12
+
     void ptc();
 
     //! @name Output
 
     //! print to screen information about residual forces and displacements
-    //! \author lw (originally in STR) \date 12/07
     void print_newton_iter();
 
     //! contains text to print_newton_iter
-    //! \author lw (originally in STR) \date 12/07
     void print_newton_iter_text(FILE* ofile  //!< output file handle
     );
 
     //! contains header to print_newton_iter
-    //! \author lw (originally) \date 12/07
     void print_newton_iter_header(FILE* ofile  //!< output file handle
     );
 

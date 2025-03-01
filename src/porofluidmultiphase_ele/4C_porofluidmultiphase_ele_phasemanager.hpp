@@ -71,8 +71,6 @@ namespace Discret
 
       Two factory methods (in fact, only one as one calls the other), provide
       the specialization depending on the evaluation action.
-
-      \author vuong
       */
 
       class PhaseManagerInterface
@@ -345,8 +343,6 @@ namespace Discret
       This class is a minimal version of a phase manager. It basically provides
       access to the primary variables (saturation, pressure, etc.) and quantities
       that can be accessed via the material in almost all cases (bulkmodulus, ...).
-
-      \author vuong
       */
       class PhaseManagerCore : public PhaseManagerInterface
       {
@@ -837,8 +833,6 @@ namespace Discret
        pattern is used, i.e. this class wraps another phase manager, extending it if necessary.
 
       This is the base class for all decorators.
-
-      \author vuong
       */
       class PhaseManagerDecorator : public PhaseManagerInterface
       {
@@ -1260,8 +1254,6 @@ namespace Discret
 
       This class is a decorator for a phase manager, including the derivatives
       of the pressures and saturations w.r.t. to the primary variables
-
-      \author vuong
       */
       class PhaseManagerDeriv : public PhaseManagerDecorator
       {
@@ -1327,8 +1319,6 @@ namespace Discret
 
       This class is a decorator for a phase manager, including evaluation of
       the pressures and saturations w.r.t. to the primary variables and the porosity.
-
-      \author vuong
       */
       class PhaseManagerDerivAndPorosity : public PhaseManagerDeriv
       {
@@ -1394,8 +1384,6 @@ namespace Discret
 
       This class is a decorator for a phase manager, including evaluation of
       reaction/mass exchange terms.
-
-      \author vuong
       */
       class PhaseManagerReaction : public PhaseManagerDecorator
       {
@@ -1482,8 +1470,6 @@ namespace Discret
       This class is a decorator for a phase manager, including evaluation of
       the diffusion tensor (inverse permeability). As the tensor is saved
       as a Core::LinAlg::Matrix, it is templated by the number of space dimensions
-
-      \author vuong
       */
       template <int nsd>
       class PhaseManagerDiffusion : public PhaseManagerDecorator
@@ -1585,8 +1571,6 @@ namespace Discret
 
       This class is a decorator for a phase manager, including evaluation of
       the additional volume fractions, e.g. for endothelial cells
-
-      \author vuong
       */
       template <int nsd>
       class PhaseManagerVolFrac : public PhaseManagerDecorator

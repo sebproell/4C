@@ -31,8 +31,6 @@ namespace Discret
 
       <h3>Purpose</h3>
 
-      \author kremheller
-      \date 03/18
     */
 
     template <Core::FE::CellType distype>

@@ -27,7 +27,6 @@ namespace PaSI
     /*!
      * \brief modification of time parameter list
      *
-     * \author Sebastian Fuchs \date 02/2017
      */
     void change_time_parameter(MPI_Comm comm, const Teuchos::ParameterList& pasi_params,
         Teuchos::ParameterList& particle_params, Teuchos::ParameterList& struct_params);
@@ -35,7 +34,6 @@ namespace PaSI
     /*!
      * \brief print particle structure interaction logo
      *
-     * \author Sebastian Fuchs \date 02/2017
      */
     void logo();
 

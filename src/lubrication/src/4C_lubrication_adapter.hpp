@@ -37,7 +37,7 @@ namespace Lubrication
 {
   /// general Lubrication field interface for multiphysics problems
   /*!
-  \date 11/15
+
   */
 
   /// basic Lubrication solver

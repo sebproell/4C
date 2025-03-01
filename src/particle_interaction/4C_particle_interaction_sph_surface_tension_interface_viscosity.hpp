@@ -60,7 +60,6 @@ namespace ParticleInteraction
     /*!
      * \brief destructor
      *
-     * \author Sebastian Fuchs \date 12/2020
      *
      * \note At compile-time a complete type of class T as used in class member
      *       std::unique_ptr<T> ptr_T_ is required

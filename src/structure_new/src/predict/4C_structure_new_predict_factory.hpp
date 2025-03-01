@@ -23,7 +23,7 @@ namespace Solid
 
     /*! \brief Factory to build the desired predictor
      *
-     *  \author Michael Hiermeier */
+     *  */
     class Factory
     {
      public:

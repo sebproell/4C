@@ -278,8 +278,7 @@ namespace CONTACT
 
     /** \brief print this beam contact element pair to screen
      *
-     *  \author grill
-     *  \date 05/16 */
+     */
     void print() const override {};
 
     //! @name Public evaluation methods

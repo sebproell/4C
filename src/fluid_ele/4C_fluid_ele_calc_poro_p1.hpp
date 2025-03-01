@@ -42,8 +42,6 @@ namespace Discret
      This is the poro P1 implementation, i.e. meant to be coupled with a structure problem
      which solves for the porosity. For the fluid not much changes compared with the
      standard implementation. Only the porosity is evaluated in a different way.
-
-     \author vuong 10/14
      */
     template <Core::FE::CellType distype>
     class FluidEleCalcPoroP1 : public FluidEleCalcPoro<distype>

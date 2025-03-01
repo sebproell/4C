@@ -36,10 +36,8 @@ FOUR_C_NAMESPACE_OPEN
 /// model", Am J Physiol Heart Circ Physiol 291 (2006) 1088-1100
 /// </ul>
 ///
-/// \author ljag
 
 
-/// \date 09/13
 
 class MyocardTenTusscher : public MyocardGeneral
 
