@@ -211,7 +211,7 @@ namespace Core::FE
     /*!
     \brief Get communicator associated with this class
     */
-    [[nodiscard]] virtual MPI_Comm get_comm() const { return comm_; }
+    [[nodiscard]] MPI_Comm get_comm() const { return comm_; }
 
     /*!
     \brief Get output writer for this discretization
@@ -219,20 +219,17 @@ namespace Core::FE
     \warning This routine does not verify if a valid Core::IO::DiscretizationWriter has
     been set. If not, this will cause a segmentation fault.
     */
-    [[nodiscard]] virtual std::shared_ptr<Core::IO::DiscretizationWriter> writer() const
-    {
-      return writer_;
-    }
+    [[nodiscard]] std::shared_ptr<Core::IO::DiscretizationWriter> writer() const { return writer_; }
 
     /*!
     \brief Get flag indicating whether fill_complete() has been called
     */
-    [[nodiscard]] virtual bool filled() const { return filled_; }
+    [[nodiscard]] bool filled() const { return filled_; }
 
     /*!
     \brief Get name of this discretization
     */
-    [[nodiscard]] virtual const std::string& name() const { return name_; }
+    [[nodiscard]] const std::string& name() const { return name_; }
 
     /*!
     \brief Get flag indicating whether degrees of freedom where assigned
@@ -240,9 +237,9 @@ namespace Core::FE
     Degrees of freedom need to be assigned using assign_degrees_of_freedom()
     before any calculations using this discretization can be made
     */
-    [[nodiscard]] virtual bool have_dofs() const { return havedof_; }
+    [[nodiscard]] bool have_dofs() const { return havedof_; }
 
-    [[nodiscard]] virtual int num_dof_sets() const { return static_cast<int>(dofsets_.size()); }
+    [[nodiscard]] int num_dof_sets() const { return static_cast<int>(dofsets_.size()); }
     /// @name Dof query methods for single dof set discretizations
 
     /*!
@@ -253,7 +250,7 @@ namespace Core::FE
     - HaveDofs()==true prerequisite (produced by call to assign_degrees_of_freedom()))
     \param element (in)      : the element those number of dofs are requested
     */
-    virtual int num_dof(const Core::Elements::Element* element) const
+    int num_dof(const Core::Elements::Element* element) const
     {
       FOUR_C_ASSERT(
           dofsets_.size() == 1, "Discretization %s expects just one dof set!", name_.c_str());
@@ -269,7 +266,7 @@ namespace Core::FE
     \param element (in)      : the element
     \param dof (in)          : the element local dof number
     */
-    virtual int dof(const Core::Elements::Element* element, const int local_index) const
+    int dof(const Core::Elements::Element* element, const int local_index) const
     {
       FOUR_C_ASSERT(
           dofsets_.size() == 1, "Discretization %s expects just one dof set!", name_.c_str());
@@ -285,7 +282,7 @@ namespace Core::FE
     - HaveDofs()==true prerequisite (produced by call to assign_degrees_of_freedom()))
     \param element (in)      : the element
     */
-    virtual std::vector<int> dof(const Core::Elements::Element* element) const
+    std::vector<int> dof(const Core::Elements::Element* element) const
     {
       FOUR_C_ASSERT(
           dofsets_.size() == 1, "Discretization %s expects just one dof set!", name_.c_str());
@@ -303,7 +300,7 @@ namespace Core::FE
     \param node (in)      : the node
     \param lm (in/out)    : lm vector the dofs are appended to
     */
-    virtual void dof(const Core::Elements::Element* element, const Core::Nodes::Node* node,
+    void dof(const Core::Elements::Element* element, const Core::Nodes::Node* node,
         std::vector<int>& lm) const
     {
       FOUR_C_ASSERT(
@@ -321,7 +318,7 @@ namespace Core::FE
     \param element (in)      : the element
     \param lm (in/out)    : lm vector the dofs are appended to
     */
-    virtual void dof(const Core::Elements::Element* element, std::vector<int>& lm) const
+    void dof(const Core::Elements::Element* element, std::vector<int>& lm) const
     {
       FOUR_C_ASSERT(
           dofsets_.size() == 1, "Discretization %s expects just one dof set!", name_.c_str());
@@ -339,8 +336,7 @@ namespace Core::FE
     \param startindex (in): first index of vector at which will be written to end
     \param lm (in/out)    : lm vector the dofs are appended to
     */
-    virtual void dof(
-        const Core::Nodes::Node* node, const unsigned startindex, std::vector<int>& lm) const
+    void dof(const Core::Nodes::Node* node, const unsigned startindex, std::vector<int>& lm) const
     {
       FOUR_C_ASSERT(
           dofsets_.size() == 1, "Discretization %s expects just one dof set!", name_.c_str());
@@ -354,7 +350,7 @@ namespace Core::FE
     @param[in] newdofset New DofSet to be used in this discretization
     @param[in] replaceinstatdofsets Replace also in static dofsets?
     */
-    virtual void replace_dof_set(std::shared_ptr<Core::DOFSets::DofSetInterface> newdofset,
+    void replace_dof_set(std::shared_ptr<Core::DOFSets::DofSetInterface> newdofset,
         bool replaceinstatdofsets = false);
 
     /*!
@@ -365,7 +361,7 @@ namespace Core::FE
     /*!
     \brief Get slave to master connectivity in case of periodic boundary conditions
     */
-    virtual std::shared_ptr<std::map<int, int>> get_pbc_slave_to_master_node_connectivity();
+    std::shared_ptr<std::map<int, int>> get_pbc_slave_to_master_node_connectivity();
 
     //@}
 
@@ -395,7 +391,7 @@ namespace Core::FE
     \param nds (in)       : number of dofset
     \param node (in)      : the node those number of dofs are requested
     */
-    virtual int num_dof(unsigned nds, const Core::Nodes::Node* node) const
+    int num_dof(unsigned nds, const Core::Nodes::Node* node) const
     {
       FOUR_C_ASSERT(
           nds < dofsets_.size(), "undefined dof set found in discretization %s!", name_.c_str());
@@ -412,7 +408,7 @@ namespace Core::FE
     \param nds (in)          : number of dofset
     \param element (in)      : the element those number of dofs are requested
     */
-    virtual int num_dof(unsigned nds, const Core::Elements::Element* element) const
+    int num_dof(unsigned nds, const Core::Elements::Element* element) const
     {
       FOUR_C_ASSERT(
           nds < dofsets_.size(), "undefined dof set found in discretization %s!", name_.c_str());
@@ -461,7 +457,7 @@ namespace Core::FE
     \param node (in)      : the node
     \param dof (in)       : the node local dof number
     */
-    virtual int dof(unsigned nds, const Core::Nodes::Node* node, const int dof) const
+    int dof(unsigned nds, const Core::Nodes::Node* node, const int dof) const
     {
       FOUR_C_ASSERT(
           nds < dofsets_.size(), "undefined dof set found in discretization %s!", name_.c_str());
@@ -479,7 +475,7 @@ namespace Core::FE
     \param element (in)      : the element
     \param dof (in)          : the element local dof number
     */
-    virtual int dof(unsigned nds, const Core::Elements::Element* element, const int dof) const
+    int dof(unsigned nds, const Core::Elements::Element* element, const int dof) const
     {
       FOUR_C_ASSERT(
           nds < dofsets_.size(), "undefined dof set found in discretization %s!", name_.c_str());
@@ -513,7 +509,7 @@ namespace Core::FE
     \param nds (in)       : number of dofset
     \param node (in)      : the node
     */
-    virtual std::vector<int> dof(unsigned nds, const Core::Nodes::Node* node) const
+    std::vector<int> dof(unsigned nds, const Core::Nodes::Node* node) const
     {
       FOUR_C_ASSERT(
           nds < dofsets_.size(), "undefined dof set found in discretization %s!", name_.c_str());
@@ -557,7 +553,7 @@ namespace Core::FE
     \param nds     (in) : number of dofset
     \param element (in) : the element
     */
-    virtual std::vector<int> dof(unsigned nds, const Core::Elements::Element* element) const
+    std::vector<int> dof(unsigned nds, const Core::Elements::Element* element) const
     {
       FOUR_C_ASSERT(
           nds < dofsets_.size(), "undefined dof set found in discretization %s!", name_.c_str());
@@ -593,7 +589,7 @@ namespace Core::FE
     \param node (in)      : the node
     \param lm (in/out)    : lm vector the dofs are appended to
     */
-    virtual void dof(unsigned nds, const Core::Nodes::Node* node, std::vector<int>& lm) const
+    void dof(unsigned nds, const Core::Nodes::Node* node, std::vector<int>& lm) const
     {
       FOUR_C_ASSERT(
           nds < dofsets_.size(), "undefined dof set found in discretization %s!", name_.c_str());
@@ -613,8 +609,8 @@ namespace Core::FE
     \param node (in)      : the node
     \param lm (in/out)    : lm vector the dofs are appended to
     */
-    virtual void dof(unsigned nds, const Core::Elements::Element* element,
-        const Core::Nodes::Node* node, std::vector<int>& lm) const
+    void dof(unsigned nds, const Core::Elements::Element* element, const Core::Nodes::Node* node,
+        std::vector<int>& lm) const
     {
       FOUR_C_ASSERT(
           nds < dofsets_.size(), "undefined dof set found in discretization %s!", name_.c_str());
@@ -633,8 +629,7 @@ namespace Core::FE
     \param element (in)      : the element
     \param lm (in/out)    : lm vector the dofs are appended to
     */
-    virtual void dof(
-        unsigned nds, const Core::Elements::Element* element, std::vector<int>& lm) const
+    void dof(unsigned nds, const Core::Elements::Element* element, std::vector<int>& lm) const
     {
       FOUR_C_ASSERT(
           nds < dofsets_.size(), "undefined dof set found in discretization %s!", name_.c_str());
@@ -654,7 +649,7 @@ namespace Core::FE
     \param startindex (in): first index of vector at which will be written to end
     \param lm (in/out)    : lm vector the dofs are appended to
     */
-    virtual void dof(unsigned nds, const Core::Nodes::Node* node, const unsigned startindex,
+    void dof(unsigned nds, const Core::Nodes::Node* node, const unsigned startindex,
         std::vector<int>& lm) const
     {
       FOUR_C_ASSERT(
@@ -667,8 +662,7 @@ namespace Core::FE
     \brief Replace the dofset associated with the discretisation by a new dofset.
                    Sets havedof_ to false.
     */
-    virtual void replace_dof_set(unsigned nds,
-        std::shared_ptr<Core::DOFSets::DofSetInterface> newdofset,
+    void replace_dof_set(unsigned nds, std::shared_ptr<Core::DOFSets::DofSetInterface> newdofset,
         bool replaceinstatdofsets = false);
 
     /*!
@@ -676,12 +670,12 @@ namespace Core::FE
 
     Sets havedof_ to false only if the new dofset is not properly filled yet.
     */
-    virtual int add_dof_set(std::shared_ptr<Core::DOFSets::DofSetInterface> newdofset);
+    int add_dof_set(std::shared_ptr<Core::DOFSets::DofSetInterface> newdofset);
 
     /*!
     \brief Get proxy to dof set.
     */
-    virtual std::shared_ptr<Core::DOFSets::DofSetInterface> get_dof_set_proxy(int nds = 0);
+    std::shared_ptr<Core::DOFSets::DofSetInterface> get_dof_set_proxy(int nds = 0);
 
     /*!
     \brief Get degree of freedom row map (Filled()==true prerequisite)
@@ -693,7 +687,7 @@ namespace Core::FE
     - HaveDofs()==true prerequisite (produced by call to assign_degrees_of_freedom()))
 
     */
-    [[nodiscard]] virtual const Epetra_Map* dof_row_map(unsigned nds = 0) const;
+    [[nodiscard]] const Epetra_Map* dof_row_map(unsigned nds = 0) const;
 
     /*!
     \brief Get degree of freedom column map (Filled()==true prerequisite)
@@ -705,7 +699,7 @@ namespace Core::FE
     - HaveDofs()==true prerequisite (produced by call to assign_degrees_of_freedom()))
 
     */
-    virtual const Epetra_Map* dof_col_map(unsigned nds = 0) const;
+    const Epetra_Map* dof_col_map(unsigned nds = 0) const;
 
     //@}
 
@@ -715,7 +709,7 @@ namespace Core::FE
 
     \note This is a collective call
     */
-    virtual void print(std::ostream& os) const;
+    void print(std::ostream& os) const;
 
 
     /*!
@@ -727,7 +721,7 @@ namespace Core::FE
 
     \return nullptr if Filled() is false. A call to fill_complete() is a prerequisite.
     */
-    [[nodiscard]] virtual const Epetra_Map* node_row_map() const;
+    [[nodiscard]] const Epetra_Map* node_row_map() const;
 
     /*!
     \brief Get map associated with the distribution of nodes including ghosted nodes
@@ -738,7 +732,7 @@ namespace Core::FE
 
     \return nullptr if Filled() is false. A call to fill_complete() is a prerequisite.
     */
-    virtual const Epetra_Map* node_col_map() const;
+    const Epetra_Map* node_col_map() const;
 
     /*!
     \brief Get map associated with the distribution of the ownership of elements
@@ -749,7 +743,7 @@ namespace Core::FE
 
     \return nullptr if Filled() is false. A call to fill_complete() is a prerequisite.
     */
-    [[nodiscard]] virtual const Epetra_Map* element_row_map() const;
+    [[nodiscard]] const Epetra_Map* element_row_map() const;
 
     /*!
     \brief Get map associated with the distribution of elements including ghosted elements
@@ -760,7 +754,7 @@ namespace Core::FE
 
     \return nullptr if Filled() is false. A call to fill_complete() is a prerequisite.
     */
-    virtual const Epetra_Map* element_col_map() const;
+    const Epetra_Map* element_col_map() const;
 
     /*!
     \brief Get global number of elements (true number of total elements)
@@ -768,37 +762,37 @@ namespace Core::FE
 
     This is a collective call
     */
-    virtual int num_global_elements() const;
+    int num_global_elements() const;
 
     /*!
     \brief Get processor local number of elements owned by this processor
            (Filled()==true prerequisite)
     */
-    [[nodiscard]] virtual int num_my_row_elements() const;
+    [[nodiscard]] int num_my_row_elements() const;
 
     /*!
     \brief Get processor local number of elements including ghost elements
            (Filled()==true NOT prerequisite)
     */
-    virtual int num_my_col_elements() const;
+    int num_my_col_elements() const;
 
     /*!
     \brief Get global number of nodes (true number of total nodes without ghosting)
            (Filled()==true prerequisite)
     */
-    virtual int num_global_nodes() const;
+    int num_global_nodes() const;
 
     /*!
     \brief Get processor local number of nodes owned by this processor
            (Filled()==true prerequisite)
     */
-    [[nodiscard]] virtual int num_my_row_nodes() const;
+    [[nodiscard]] int num_my_row_nodes() const;
 
     /*!
     \brief Get processor local number of nodes including ghost nodes
            (Filled()==true NOT prerequisite)
     */
-    virtual int num_my_col_nodes() const;
+    int num_my_col_nodes() const;
 
     /*!
     \brief Query whether an element with global id @p gid is stored (i.e. owned or ghosted) on this
@@ -808,7 +802,7 @@ namespace Core::FE
     Core::Elements::Element.Owner() for this.
 
     */
-    virtual bool have_global_element(int gid) const;
+    bool have_global_element(int gid) const;
 
     /*!
     \brief Get the element with global id gid (Filled()==true NOT prerequisite)
@@ -822,7 +816,7 @@ namespace Core::FE
     \return Address of element if element is owned by calling proc, returns nullptr
             otherwise
     */
-    [[nodiscard]] virtual Core::Elements::Element* g_element(int gid) const;
+    [[nodiscard]] Core::Elements::Element* g_element(int gid) const;
 
     /*!
     \brief Get the element with local row id lid (Filled()==true prerequisite)
@@ -833,7 +827,7 @@ namespace Core::FE
 
     \return Address of element if element is owned by calling proc
     */
-    [[nodiscard]] virtual Core::Elements::Element* l_row_element(int lid) const
+    [[nodiscard]] Core::Elements::Element* l_row_element(int lid) const
     {
       FOUR_C_ASSERT(filled(), "Discretization %s not Filled()!", name_.c_str());
       return elerowptr_[lid];
@@ -848,7 +842,7 @@ namespace Core::FE
 
     \return Address of element if element is stored by calling proc
     */
-    virtual Core::Elements::Element* l_col_element(int lid) const
+    Core::Elements::Element* l_col_element(int lid) const
     {
       FOUR_C_ASSERT(filled(), "Discretization %s not Filled()!", name_.c_str());
       return elecolptr_[lid];
@@ -886,7 +880,7 @@ namespace Core::FE
     Core::Nodes::Node.Owner() for this.
 
     */
-    [[nodiscard]] virtual bool have_global_node(int gid) const;
+    [[nodiscard]] bool have_global_node(int gid) const;
 
     /*!
     \brief Get the node with global row id gid (Filled()==true NOT prerequisite)
@@ -897,7 +891,7 @@ namespace Core::FE
 
     \return Address of node if node is stored on calling proc
     */
-    [[nodiscard]] virtual Core::Nodes::Node* g_node(int gid) const;
+    [[nodiscard]] Core::Nodes::Node* g_node(int gid) const;
 
     /*!
     \brief Get the node with local row id lid (Filled()==true prerequisite)
@@ -908,7 +902,7 @@ namespace Core::FE
 
     \return Address of node if node is owned and stored by calling proc
     */
-    [[nodiscard]] virtual Core::Nodes::Node* l_row_node(int lid) const
+    [[nodiscard]] Core::Nodes::Node* l_row_node(int lid) const
     {
       FOUR_C_ASSERT(filled(), "Discretization %s not Filled()!", name_.c_str());
       return noderowptr_[lid];
@@ -923,7 +917,7 @@ namespace Core::FE
 
     \return Address of node if node is stored by calling proc
     */
-    virtual Core::Nodes::Node* l_col_node(int lid) const
+    Core::Nodes::Node* l_col_node(int lid) const
     {
       FOUR_C_ASSERT(filled(), "Discretization %s not Filled()!", name_.c_str());
       return nodecolptr_[lid];
@@ -950,10 +944,7 @@ namespace Core::FE
     /*!
     \brief Set a DiscretizationWriter
     */
-    virtual void set_writer(std::shared_ptr<Core::IO::DiscretizationWriter> writer)
-    {
-      writer_ = writer;
-    }
+    void set_writer(std::shared_ptr<Core::IO::DiscretizationWriter> writer) { writer_ = writer; }
 
     /*!
     \brief Add an element to the discretization (Filled()==true NOT prerequisite)
@@ -968,7 +959,7 @@ namespace Core::FE
 
     \note Sets Filled()=false
     */
-    virtual void add_element(std::shared_ptr<Core::Elements::Element> ele);
+    void add_element(std::shared_ptr<Core::Elements::Element> ele);
 
     /*!
     \brief Add a node to the discretization  (Filled()==true NOT prerequisite)
@@ -983,7 +974,7 @@ namespace Core::FE
 
     \note Sets Filled()=false
     */
-    virtual void add_node(std::shared_ptr<Core::Nodes::Node> node);
+    void add_node(std::shared_ptr<Core::Nodes::Node> node);
 
     /*!
     \brief Delete an node from the discretization (Filled()==true NOT prerequisite)
@@ -1001,7 +992,7 @@ namespace Core::FE
 
     \note Sets Filled()=false and calls reset() upon discretization.
     */
-    virtual bool delete_node(std::shared_ptr<Core::Nodes::Node> node);
+    bool delete_node(std::shared_ptr<Core::Nodes::Node> node);
 
     /*!
     \brief Delete an node with global id gid from the discretization
@@ -1020,7 +1011,7 @@ namespace Core::FE
 
     \note Sets Filled()=false and calls reset() upon discretization.
     */
-    virtual bool delete_node(const int gid);
+    bool delete_node(const int gid);
 
     /*!
     \brief Removes all nodes from discretization (Filled()==true NOT prerequisite)
@@ -1029,7 +1020,7 @@ namespace Core::FE
 
     \note CheckFilledGlobally() is called to make sure all processors are informed.
     */
-    virtual bool delete_nodes();
+    bool delete_nodes();
 
     /*!
     \brief Removes all elements from discretization (Filled()==true NOT prerequisite)
@@ -1038,7 +1029,7 @@ namespace Core::FE
 
     \note CheckFilledGlobally() is called to make sure all processors are informed.
     */
-    virtual bool delete_elements();
+    bool delete_elements();
 
     /*!
     \brief Delete an element from the discretization (Filled()==true NOT prerequisite)
@@ -1056,7 +1047,7 @@ namespace Core::FE
 
     \note Sets Filled()=false and calls reset() upon discretization.
     */
-    virtual bool delete_element(std::shared_ptr<Core::Elements::Element> ele);
+    bool delete_element(std::shared_ptr<Core::Elements::Element> ele);
 
     /*!
     \brief Delete an element with global id gid from the discretization
@@ -1075,7 +1066,7 @@ namespace Core::FE
 
     \note Sets Filled()=false and calls reset() upon discretization.
     */
-    virtual bool delete_element(const int gid);
+    bool delete_element(const int gid);
 
     /*!
     \brief Removes all nodes and elements from discretization (Filled()==true NOT prerequisite)
@@ -1084,7 +1075,7 @@ namespace Core::FE
 
     \note CheckFilledGlobally() is called to make sure all processors are informed.
     */
-    virtual bool clear_discret();
+    bool clear_discret();
 
     /*!
     \brief Complete construction of a discretization  (Filled()==true NOT prerequisite)
@@ -1133,7 +1124,7 @@ namespace Core::FE
     it occurs on at least one processor and to call reset() subsequently on each processor; to do so
     just call CheckFilledGlobally
     */
-    virtual void check_filled_globally();
+    void check_filled_globally();
 
 
     //@}
@@ -1163,8 +1154,7 @@ namespace Core::FE
              NOT be overwritten but stored twice in the discretization
 
     */
-    virtual void set_condition(
-        const std::string& name, std::shared_ptr<Core::Conditions::Condition> cond);
+    void set_condition(const std::string& name, std::shared_ptr<Core::Conditions::Condition> cond);
 
     /*!
     \brief Replace a condition with a certain name (Filled()==false on exit)
@@ -1196,10 +1186,10 @@ namespace Core::FE
 
     \return Returns out.size()=0 if condition with that name does not exist
     */
-    virtual void get_condition(
+    void get_condition(
         const std::string& name, std::vector<Core::Conditions::Condition*>& out) const;
 
-    virtual void get_condition(const std::string& name,
+    void get_condition(const std::string& name,
         std::vector<std::shared_ptr<Core::Conditions::Condition>>& out) const;
 
     /*! \brief Get a condition with a certain name
@@ -1218,14 +1208,13 @@ namespace Core::FE
 
     \return Returns nullptr if condition with that name does not exist
     */
-    [[nodiscard]] virtual Core::Conditions::Condition* get_condition(const std::string& name) const;
+    [[nodiscard]] Core::Conditions::Condition* get_condition(const std::string& name) const;
 
     /// return all condition names defined in this discretization
-    virtual void get_condition_names(std::vector<std::string>& names) const;
+    void get_condition_names(std::vector<std::string>& names) const;
 
     /// return all conditions defined on this discretization
-    virtual std::multimap<std::string, std::shared_ptr<Core::Conditions::Condition>>&
-    get_all_conditions()
+    std::multimap<std::string, std::shared_ptr<Core::Conditions::Condition>>& get_all_conditions()
     {
       return condition_;
     }
@@ -1249,7 +1238,7 @@ namespace Core::FE
 
     \note Filled()==true is a prerequisite, Filled()==true on exit
     */
-    virtual void redistribute(const Epetra_Map& noderowmap, const Epetra_Map& nodecolmap,
+    void redistribute(const Epetra_Map& noderowmap, const Epetra_Map& nodecolmap,
         OptionsRedistribution options_redistribution = {});
 
     /*!
@@ -1272,7 +1261,7 @@ namespace Core::FE
 
     \note Filled()==true is a prerequisite, Filled()==true on exit
     */
-    virtual void redistribute(const Epetra_Map& noderowmap, const Epetra_Map& nodecolmap,
+    void redistribute(const Epetra_Map& noderowmap, const Epetra_Map& nodecolmap,
         const Epetra_Map& elerowmap, const Epetra_Map& elecolmap,
         bool assigndegreesoffreedom = true, bool initelements = true,
         bool doboundaryconditions = true, bool killdofs = true, bool killcond = true);
@@ -1289,13 +1278,12 @@ namespace Core::FE
       \param checkghosting (in): additional check can be performed
 
       */
-    virtual void extended_ghosting(const Epetra_Map& elecolmap, bool assigndegreesoffreedom = true,
+    void extended_ghosting(const Epetra_Map& elecolmap, bool assigndegreesoffreedom = true,
         bool initelements = true, bool doboundaryconditions = true, bool checkghosting = true);
 
     // Setup ghosting if you have a proper distribution of rownodes and elements
     // only use this if you are sure that the parallel distribution is ok!
-    virtual void setup_ghosting(
-        bool assigndegreesoffreedom, bool initelements, bool doboundaryconditions);
+    void setup_ghosting(bool assigndegreesoffreedom, bool initelements, bool doboundaryconditions);
 
 
     //-----------------------------------------------------------------------------------
@@ -1324,8 +1312,8 @@ namespace Core::FE
     only builds maps!
 
     */
-    virtual std::pair<std::shared_ptr<Epetra_Map>, std::shared_ptr<Epetra_Map>>
-    build_element_row_column(const Epetra_Map& noderowmap, const Epetra_Map& nodecolmap,
+    std::pair<std::shared_ptr<Epetra_Map>, std::shared_ptr<Epetra_Map>> build_element_row_column(
+        const Epetra_Map& noderowmap, const Epetra_Map& nodecolmap,
         bool do_extended_ghosting = false) const;
 
     /*!
@@ -1350,8 +1338,7 @@ namespace Core::FE
 
     \note Sets Filled()=false and deletes noderowmap_ and nodecolmap_
     */
-    virtual void export_row_nodes(
-        const Epetra_Map& newmap, bool killdofs = true, bool killcond = true);
+    void export_row_nodes(const Epetra_Map& newmap, bool killdofs = true, bool killcond = true);
 
 
     /*!
@@ -1379,8 +1366,7 @@ namespace Core::FE
 
     \note Sets Filled()=false and deletes noderowmap_ and nodecolmap_
     */
-    virtual void export_column_nodes(
-        const Epetra_Map& newmap, bool killdofs = true, bool killcond = true);
+    void export_column_nodes(const Epetra_Map& newmap, bool killdofs = true, bool killcond = true);
 
     /*!
     \brief Export the elements from proc 0 to a different parallel row layout
@@ -1425,8 +1411,7 @@ namespace Core::FE
 
     \note Sets Filled()=false and deletes elerowmap_ and elecolmap_
     */
-    virtual void export_row_elements(
-        const Epetra_Map& newmap, bool killdofs = true, bool killcond = true);
+    void export_row_elements(const Epetra_Map& newmap, bool killdofs = true, bool killcond = true);
 
 
     /*!
@@ -1453,7 +1438,7 @@ namespace Core::FE
 
     \note Sets Filled()=false and deletes elerowmap_ and elecolmap_
     */
-    virtual void export_column_elements(
+    void export_column_elements(
         const Epetra_Map& newmap, bool killdofs = true, bool killcond = true);
 
     /*!
@@ -1474,7 +1459,7 @@ namespace Core::FE
     \return Graph of discretization distributed across processors according to
             the discretization distribution
     */
-    virtual std::shared_ptr<Core::LinAlg::Graph> build_node_graph() const;
+    std::shared_ptr<Core::LinAlg::Graph> build_node_graph() const;
 
     /*!
     \brief Build nodal coordinate vector of this discretization based on a nodal rowmap
@@ -1539,7 +1524,7 @@ namespace Core::FE
 
     \note This class will not take ownership or in any way modify the solution vector.
     */
-    virtual void set_state(unsigned nds, const std::string& name,
+    void set_state(unsigned nds, const std::string& name,
         std::shared_ptr<const Core::LinAlg::Vector<double>> state);
 
     /*!
@@ -1571,7 +1556,7 @@ namespace Core::FE
 
     \return Reference to solution state
     */
-    [[nodiscard]] virtual std::shared_ptr<const Core::LinAlg::Vector<double>> get_state(
+    [[nodiscard]] std::shared_ptr<const Core::LinAlg::Vector<double>> get_state(
         unsigned nds, const std::string& name) const
     {
       FOUR_C_ASSERT(
@@ -1589,7 +1574,7 @@ namespace Core::FE
       \param nds (in): number of dofset
       \param name (in): Name of solution states
      */
-    virtual bool has_state(unsigned nds, const std::string& name) const
+    bool has_state(unsigned nds, const std::string& name) const
     {
       FOUR_C_ASSERT(
           nds < dofsets_.size(), "undefined dof set found in discretization %s!", name_.c_str());
@@ -1603,7 +1588,7 @@ namespace Core::FE
 
     The method deletes references to any solution data
     */
-    virtual void clear_state(bool clearalldofsets = false)
+    void clear_state(bool clearalldofsets = false)
     {
       // clear all states
       if (clearalldofsets) state_.clear();
@@ -1612,14 +1597,14 @@ namespace Core::FE
         state_[0].clear();
     }
 
-    virtual void redistribute_state(unsigned nds, const std::string& name);
+    void redistribute_state(unsigned nds, const std::string& name);
 
 
     /*!
       \brief Tell whether a state vector has been set
       \param name (in): Name of solution state
      */
-    virtual bool has_state(const std::string& name) const { return has_state(0, name); }
+    bool has_state(const std::string& name) const { return has_state(0, name); }
 
 
     /*!
@@ -1636,8 +1621,8 @@ namespace Core::FE
     \param state (in): vector of some data
 
     */
-    virtual void add_multi_vector_to_parameter_list(Teuchos::ParameterList& p,
-        const std::string name, std::shared_ptr<const Core::LinAlg::MultiVector<double>> vec);
+    void add_multi_vector_to_parameter_list(Teuchos::ParameterList& p, const std::string name,
+        std::shared_ptr<const Core::LinAlg::MultiVector<double>> vec);
 
     /*!
     \brief Call elements to evaluate
@@ -1686,7 +1671,7 @@ namespace Core::FE
                                    the underlying assembly methods that add element
                                    contributions.
     */
-    virtual void evaluate(Teuchos::ParameterList& params,
+    void evaluate(Teuchos::ParameterList& params,
         std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
         std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix2,
         std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1,
@@ -1694,7 +1679,7 @@ namespace Core::FE
         std::shared_ptr<Core::LinAlg::Vector<double>> systemvector3);
 
     /// Call elements to evaluate
-    virtual void evaluate(Teuchos::ParameterList& params, Core::FE::AssembleStrategy& strategy);
+    void evaluate(Teuchos::ParameterList& params, Core::FE::AssembleStrategy& strategy);
 
     /**
      * Loop over all elements of the discretization and perform the given @p element_action. In
@@ -1703,7 +1688,7 @@ namespace Core::FE
      * This is very useful for one-off actions, that one does not want to implement inside the
      * actual Element's Evaluate call.
      */
-    virtual void evaluate(Teuchos::ParameterList& params, Core::FE::AssembleStrategy& strategy,
+    void evaluate(Teuchos::ParameterList& params, Core::FE::AssembleStrategy& strategy,
         const std::function<void(Core::Elements::Element&, Core::Elements::LocationArray&,
             Core::LinAlg::SerialDenseMatrix&, Core::LinAlg::SerialDenseMatrix&,
             Core::LinAlg::SerialDenseVector&, Core::LinAlg::SerialDenseVector&,
@@ -1748,7 +1733,7 @@ namespace Core::FE
    */
     void evaluate(Teuchos::ParameterList& params);
 
-    virtual void evaluate(const std::function<void(Core::Elements::Element&)>& element_action);
+    void evaluate(const std::function<void(Core::Elements::Element&)>& element_action);
 
     /*!
     \brief Evaluate Neumann boundary conditions
@@ -1769,7 +1754,7 @@ namespace Core::FE
     \param systemvector (out): Vector to assemble Neumann BCs to.
                                The vector is NOT initialized to zero by this method.
     */
-    virtual void evaluate_neumann(Teuchos::ParameterList& params,
+    void evaluate_neumann(Teuchos::ParameterList& params,
         Core::LinAlg::Vector<double>& systemvector,
         Core::LinAlg::SparseOperator* systemmatrix = nullptr);
 
@@ -1805,7 +1790,7 @@ namespace Core::FE
     \param dbcmapextractor (out): Map extractor containing maps for the DOFs subjected to
                                   Dirichlet boundary conditions and the remaining/free DOFs
     */
-    virtual void evaluate_dirichlet(Teuchos::ParameterList& params,
+    void evaluate_dirichlet(Teuchos::ParameterList& params,
         std::shared_ptr<Core::LinAlg::Vector<double>> systemvector,
         std::shared_ptr<Core::LinAlg::Vector<double>> systemvectord,
         std::shared_ptr<Core::LinAlg::Vector<double>> systemvectordd,
@@ -1813,8 +1798,8 @@ namespace Core::FE
         std::shared_ptr<Core::LinAlg::MapExtractor> dbcmapextractor = nullptr) const;
 
     /// Evaluate a specific condition using assemble strategy
-    virtual void evaluate_condition(Teuchos::ParameterList& params,
-        Core::FE::AssembleStrategy& strategy, const std::string& condstring, const int condid = -1);
+    void evaluate_condition(Teuchos::ParameterList& params, Core::FE::AssembleStrategy& strategy,
+        const std::string& condstring, const int condid = -1);
 
     /** \brief Evaluate a specified condition
      *
@@ -1881,7 +1866,7 @@ namespace Core::FE
       \param condstring (in):    Name of condition to be evaluated
       \param condid (in):        Condition ID
       */
-    virtual void evaluate_condition(Teuchos::ParameterList& params,
+    void evaluate_condition(Teuchos::ParameterList& params,
         std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
         std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix2,
         std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1,
@@ -1900,7 +1885,7 @@ namespace Core::FE
     \param solveparams (in): List of parameters
     \param recompute (in)  : force method to recompute the nullspace
     */
-    virtual void compute_null_space_if_necessary(
+    void compute_null_space_if_necessary(
         Teuchos::ParameterList& solveparams, bool recompute = false);
 
     /*!
@@ -1914,7 +1899,7 @@ namespace Core::FE
      * Example: strain energy in structures
      *
      */
-    virtual void evaluate_scalars(
+    void evaluate_scalars(
         Teuchos::ParameterList& params, std::shared_ptr<Core::LinAlg::SerialDenseVector> scalars);
 
     /*!
@@ -2030,7 +2015,7 @@ namespace Core::FE
 
     \return last dof assigned + 1
     */
-    virtual int assign_degrees_of_freedom(int start);
+    int assign_degrees_of_freedom(int start);
 
    private:
     /*!
@@ -2043,7 +2028,7 @@ namespace Core::FE
 
     \note This is a collective call
     */
-    virtual void build_node_row_map();
+    void build_node_row_map();
 
     /*!
     \brief Build nodecolmap_ (Filled()==true NOT prerequisite)
@@ -2055,7 +2040,7 @@ namespace Core::FE
 
     \note This is a collective call
     */
-    virtual void build_node_col_map();
+    void build_node_col_map();
 
     /*!
     \brief Build elerowmap_ (Filled()==true NOT prerequisite)
@@ -2068,7 +2053,7 @@ namespace Core::FE
     \note This is a collective call
 
     */
-    virtual void build_element_row_map();
+    void build_element_row_map();
 
     /*!
     \brief Build elecolmap_ (Filled()==true NOT prerequisite)
@@ -2080,26 +2065,26 @@ namespace Core::FE
     \note This is a collective call
 
     */
-    virtual void build_element_col_map();
+    void build_element_col_map();
 
     /*!
     \brief Build pointers elements -> Nodes (Filled()==true NOT prerequisite)
     */
-    virtual void build_element_to_node_pointers();
+    void build_element_to_node_pointers();
 
     /*!
     \brief Build pointers Node -> Element (Filled()==true NOT prerequisite)
 
     \note This is a collective call
     */
-    virtual void build_node_to_element_pointers();
+    void build_node_to_element_pointers();
 
     /*!
     \brief Build pointers Element -> Element (Filled()==true NOT prerequisite)
 
     \note This is a collective call
     */
-    virtual void build_element_to_element_pointers();
+    void build_element_to_element_pointers();
 
     /*!
     \brief Build the geometry of surfaces belonging to the structure-fluid
@@ -2114,7 +2099,7 @@ namespace Core::FE
     \brief Build the geometry of lines for a certain line condition
 
     */
-    virtual bool build_linesin_condition(
+    bool build_linesin_condition(
         const std::string& name, std::shared_ptr<Core::Conditions::Condition> cond);
 
     /*!
@@ -2126,14 +2111,14 @@ namespace Core::FE
 
 
     \version rework by Andreas Rauch ( rauch 10/16 )       */
-    virtual bool build_surfacesin_condition(
+    bool build_surfacesin_condition(
         const std::string& name, std::shared_ptr<Core::Conditions::Condition> cond);
 
     /*!
     \brief Build the geometry of volumes for a certain volume condition
 
     */
-    virtual bool build_volumesin_condition(
+    bool build_volumesin_condition(
         const std::string& name, std::shared_ptr<Core::Conditions::Condition> cond);
 
     /*!
@@ -2147,9 +2132,9 @@ namespace Core::FE
     */
     // set protected to be accessible from derived class Discret::MeshFree::MeshfreeDiscretization
     // (nis) Jan12
-    virtual void reset(bool killdofs, bool killcond);
+    void reset(bool killdofs, bool killcond);
 
-    virtual void reset() { this->reset(true, true); }
+    void reset() { this->reset(true, true); }
 
     /*!
     \brief Initialize element routines
@@ -2157,13 +2142,13 @@ namespace Core::FE
     \note initialize_elements might be called more then once!
 
     */
-    virtual void initialize_elements();
+    void initialize_elements();
 
     /*!
     \brief Build the geometry for boundary conditions
 
     */
-    virtual void boundary_conditions_geometry();
+    void boundary_conditions_geometry();
 
     /*!
      *  A helper function for build_surfacesin_condition,
