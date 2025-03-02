@@ -728,23 +728,6 @@ void Core::FE::Discretization::unpack_my_nodes(std::vector<char>& e)
 }
 
 
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-void Core::FE::Discretization::redistribute_state(const unsigned nds, const std::string& name)
-{
-  // only redistribute if state has been set
-  if (has_state(nds, name))
-  {
-    // get the state and export it to the rowmap to be able to reset the state
-    auto statevec = get_state(nds, name);
-    auto statevecrowmap = Core::LinAlg::create_vector(*dof_row_map(nds), true);
-    Core::LinAlg::export_to(*statevec, *statevecrowmap);
-
-    // now set the state again
-    set_state(nds, name, statevecrowmap);
-  }
-}
-
 void Core::FE::Discretization::compute_null_space_if_necessary(
     Teuchos::ParameterList& solveparams, bool recompute)
 {

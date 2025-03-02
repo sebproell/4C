@@ -1597,9 +1597,6 @@ namespace Core::FE
         state_[0].clear();
     }
 
-    void redistribute_state(unsigned nds, const std::string& name);
-
-
     /*!
       \brief Tell whether a state vector has been set
       \param name (in): Name of solution state
