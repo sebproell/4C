@@ -1423,7 +1423,7 @@ void PoroElast::Monolithic::evaluate_condition(
 
   // evaluate condition on elements and assemble matrices
   fluid_field()->evaluate_no_penetration_cond(nopen_handle_->rhs(), ConstraintMatrix,
-      struct_vel_constraint_matrix, nopen_handle_->cond_vector(), *nopen_handle_->cond_i_ds(),
+      struct_vel_constraint_matrix, nopen_handle_->cond_vector(), *nopen_handle_->cond_ids(),
       coupltype);
 
   if (coupltype == PoroElast::fluidfluid)  // fluid fluid part

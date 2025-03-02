@@ -2106,7 +2106,7 @@ namespace Core::FE
     volume coupling condition -> this is special since an associated volume
     conditions also needs to be considered
     */
-    void find_associated_ele_i_ds(
+    void find_associated_ele_ids(
         Core::Conditions::Condition& cond, std::set<int>& VolEleIDs, const std::string& name);
 
    protected:
@@ -2190,7 +2190,7 @@ namespace Core::FE
      *  added to a condition.
      *
      */
-    virtual void assign_global_i_ds(MPI_Comm comm,
+    virtual void assign_global_ids(MPI_Comm comm,
         const std::map<std::vector<int>, std::shared_ptr<Core::Elements::Element>>& elementmap,
         std::map<int, std::shared_ptr<Core::Elements::Element>>& finalgeometry);
 

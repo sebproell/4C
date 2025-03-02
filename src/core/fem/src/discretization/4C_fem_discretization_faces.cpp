@@ -919,7 +919,7 @@ void Core::FE::DiscretizationFaces::build_faces(const bool verbose)
   // rebuild the faces and therefore we have to be sure that the map faces_ is clear
   // therefore, the old faces are deleted and replaced by new ones
   std::map<int, std::shared_ptr<Core::Elements::Element>> finalFaces;
-  assign_global_i_ds(get_comm(), faces, finalFaces);
+  assign_global_ids(get_comm(), faces, finalFaces);
   for (std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator faceit =
            finalFaces.begin();
       faceit != finalFaces.end(); ++faceit)

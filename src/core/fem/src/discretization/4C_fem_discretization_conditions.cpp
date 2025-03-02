@@ -124,7 +124,7 @@ void Core::FE::Discretization::boundary_conditions_geometry()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void Core::FE::Discretization::assign_global_i_ds(MPI_Comm comm,
+void Core::FE::Discretization::assign_global_ids(MPI_Comm comm,
     const std::map<std::vector<int>, std::shared_ptr<Core::Elements::Element>>& elementmap,
     std::map<int, std::shared_ptr<Core::Elements::Element>>& finalgeometry)
 {
@@ -220,7 +220,7 @@ void Core::FE::Discretization::assign_global_i_ds(MPI_Comm comm,
 
     gid += 1;
   }
-}  // assign_global_i_ds
+}  // assign_global_ids
 
 
 /*----------------------------------------------------------------------*
@@ -312,7 +312,7 @@ bool Core::FE::Discretization::build_linesin_condition(
   // Lines be added to the condition: (line_id) -> (line).
   auto finallines = std::make_shared<std::map<int, std::shared_ptr<Core::Elements::Element>>>();
 
-  assign_global_i_ds(get_comm(), linemap, *finallines);
+  assign_global_ids(get_comm(), linemap, *finallines);
 
   cond->add_geometry(finallines);
 
@@ -337,17 +337,17 @@ bool Core::FE::Discretization::build_surfacesin_condition(
   // we want to allow building surfaces where two volume elements which belong to
   // the same discretization share a common surface. the condition surface element however,
   // is associated to only one of the two volume elements.
-  // these volume elements are inserted into VolEleIDs via the method find_associated_ele_i_ds.
+  // these volume elements are inserted into VolEleIDs via the method find_associated_ele_ids.
   std::set<int> VolEleIDs;
   if (cond->type() == Core::Conditions::StructFluidSurfCoupling)
   {
     if ((cond->parameters().get<std::string>("field")) == "structure")
     {
-      find_associated_ele_i_ds(*cond, VolEleIDs, "StructFluidVolCoupling");
+      find_associated_ele_ids(*cond, VolEleIDs, "StructFluidVolCoupling");
     }
   }
   else if (cond->type() == Core::Conditions::RedAirwayTissue)
-    find_associated_ele_i_ds(*cond, VolEleIDs, "StructFluidVolCoupling");
+    find_associated_ele_ids(*cond, VolEleIDs, "StructFluidVolCoupling");
 
   /* First: Create the surface objects that belong to the condition. */
 
@@ -543,7 +543,7 @@ bool Core::FE::Discretization::build_surfacesin_condition(
   std::shared_ptr<std::map<int, std::shared_ptr<Core::Elements::Element>>> final_geometry =
       std::make_shared<std::map<int, std::shared_ptr<Core::Elements::Element>>>();
 
-  assign_global_i_ds(get_comm(), surfmap, *final_geometry);
+  assign_global_ids(get_comm(), surfmap, *final_geometry);
   cond->add_geometry(final_geometry);
 
   // elements were created that need new unique ids
@@ -609,7 +609,7 @@ bool Core::FE::Discretization::build_volumesin_condition(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void Core::FE::Discretization::find_associated_ele_i_ds(
+void Core::FE::Discretization::find_associated_ele_ids(
     Core::Conditions::Condition& cond, std::set<int>& VolEleIDs, const std::string& name)
 {
   // determine constraint number
@@ -657,6 +657,6 @@ void Core::FE::Discretization::find_associated_ele_i_ds(
       }
     }
   }
-}  // Core::FE::Discretization::find_associated_ele_i_ds
+}  // Core::FE::Discretization::find_associated_ele_ids
 
 FOUR_C_NAMESPACE_CLOSE

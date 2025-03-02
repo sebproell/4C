@@ -325,7 +325,7 @@ namespace PoroElast
     std::shared_ptr<const Core::LinAlg::MapExtractor> extractor() { return nopenetration_; }
 
     //! return vector containing global IDs of dofs with no penetration condition
-    std::shared_ptr<std::set<int>> cond_i_ds() { return cond_ids_; }
+    std::shared_ptr<std::set<int>> cond_ids() { return cond_ids_; }
 
     //! return vector containing global IDs of dofs with no penetration condition
     std::shared_ptr<Core::LinAlg::Vector<double>> cond_vector() { return cond_dofs_; }

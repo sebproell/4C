@@ -66,7 +66,7 @@ void Discret::Elements::FluidEleBoundaryCalcPoro<distype>::evaluate_action(
     }
     case FLD::no_penetrationIDs:
     {
-      no_penetration_i_ds(ele1, params, discretization, elevec1, lm);
+      no_penetration_ids(ele1, params, discretization, elevec1, lm);
       break;
     }
     case FLD::poro_boundary:
@@ -2276,7 +2276,7 @@ void Discret::Elements::FluidEleBoundaryCalcPoro<distype>::no_penetration(
 }
 
 template <Core::FE::CellType distype>
-void Discret::Elements::FluidEleBoundaryCalcPoro<distype>::no_penetration_i_ds(
+void Discret::Elements::FluidEleBoundaryCalcPoro<distype>::no_penetration_ids(
     Discret::Elements::FluidBoundary* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, Core::LinAlg::SerialDenseVector& elevec1,
     std::vector<int>& lm)
