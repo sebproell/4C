@@ -847,7 +847,7 @@ specs:
             type: double
             required: true
   - name: e
-    type: selection
+    type: enum
     required: false
     default: "e1"
     choices:
@@ -855,7 +855,7 @@ specs:
       - name: "e2"
   - name: f
     noneable: true
-    type: selection
+    type: enum
     required: false
     default: null
     choices:

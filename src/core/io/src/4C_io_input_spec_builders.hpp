@@ -1566,7 +1566,7 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::emit_metadata(
   node["name"] << name;
 
   if constexpr (OptionalType<T>) emit_value_as_yaml(node["noneable"], true);
-  node["type"] = "selection";
+  node["type"] = "enum";
 
   if (!data.description.empty())
   {
