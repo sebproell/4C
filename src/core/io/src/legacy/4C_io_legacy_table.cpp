@@ -1059,7 +1059,10 @@ static int getnext(ParserData* data)
 }
 
 
-#define TABWIDTH 8
+enum
+{
+  TABWIDTH = 8
+};
 
 
 /*----------------------------------------------------------------------*/

@@ -1297,16 +1297,7 @@ namespace Core::FE
     virtual void setup_ghosting(
         bool assigndegreesoffreedom, bool initelements, bool doboundaryconditions);
 
-    //-----------------------------------------------------------------------------------
-    // this is temporary to hide away this method SetupGhosting and only give access to the
-    // class PostProblem. It is supposed to go away and PostProblem currently is the only place
-    // where it is used.
-    // Naming "SetupGhosting" is misleading, implementation duplicates functionality that
-    // can be build using some of the other methods
-    // mwgee 4/12
-    friend class PostProblem;
 
-   public:
     //-----------------------------------------------------------------------------------
     /*!
     \brief Build element row and column map from nodal row and column maps
