@@ -11,7 +11,6 @@
 #include "4C_config.hpp"
 
 #include "4C_comm_pack_buffer.hpp"
-#include "4C_comm_parobject.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
@@ -19,6 +18,7 @@
 
 #include <array>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <type_traits>
@@ -85,6 +85,24 @@ namespace Core::Communication
    * Add an object that implements a `pack()` method to the buffer.
    */
   void add_to_pack(PackBuffer& data, const Packable auto& obj) { obj.pack(data); }
+
+  /*!
+   * \brief Add stuff to the end of a char vector data
+   *
+   * This method is templated for std::optional<T>
+   * \param[in,out] data char string stuff shall be added to
+   * \param[in] stuff std::optional<T> that get's added to stuff
+   */
+  template <typename T>
+  void add_to_pack(PackBuffer& data, const std::optional<T>& stuff)
+  {
+    add_to_pack(data, stuff.has_value());
+
+    if (stuff.has_value())
+    {
+      add_to_pack(data, *stuff);
+    }
+  }
 
   /*!
    * \brief Add stuff to the end of a char vector data
@@ -332,11 +350,35 @@ namespace Core::Communication
   /*!
    * \brief Extract stuff from a char vector data and increment position
    *
+   * This method is templated for stuff of type std::optional<T>
+   *
+   * \param[in,out] buffer the buffer to unpack from
+   * \param[out] stuff std::optional<T> to extract from data
+   */
+  template <typename T>
+  void extract_from_pack(UnpackBuffer& buffer, std::optional<T>& stuff)
+  {
+    bool has_value = false;
+    buffer.extract_from_pack(has_value);
+
+    if (has_value)
+    {
+      T value;
+      extract_from_pack(buffer, value);
+      stuff.emplace(value);
+    }
+    else
+    {
+      stuff.reset();
+    }
+  }
+
+  /*!
+   * \brief Extract stuff from a char vector data and increment position
+   *
    * This method is templated for stuff of type std::vector<T>
    *
-   * \param[in,out] position place in data where to extract stuff. Position will be incremented
-   * by this method
-   * \param[in] data char vector where stuff is extracted from
+   * \param[in,out] buffer the buffer to unpack from
    * \param[out] stuff std::vector<T> to extract from data
    */
   template <typename T>
@@ -371,9 +413,7 @@ namespace Core::Communication
    *
    * This method is templated for stuff of type std::array<T, n>
    *
-   * \param[in,out] position place in data where to extract stuff. Position will be incremented
-   * by this method
-   * \param[in] data char vector where stuff is extracted from
+   * \param[in,out] buffer the buffer to unpack from
    * \param[out] stuff std::map<T,n> to extract from data
    */
   template <typename T, std::size_t numentries>
@@ -454,9 +494,7 @@ namespace Core::Communication
    *
    * This method is templated for stuff of type std::pair<T,U>
    *
-   * \param[in,out] position place in data where to extract stuff. Position will be incremented
-   * by this method
-   * \param[in] data char vector where stuff is extracted from
+   * \param[in,out] buffer the buffer to unpack from
    * \param[out] stuff std::pair<T,U> to extract from data
    */
   template <typename T, typename U>
@@ -471,9 +509,7 @@ namespace Core::Communication
    *
    * This method is templated for stuff of type std::vector<std::pair<T,U>>*
    *
-   * \param[in,out] position place in data where to extract stuff. Position will be incremented
-   * by this method
-   * \param[in] data char vector where stuff is extracted from
+   * \param[in,out] buffer the buffer to unpack from
    * \param[out] stuff std::vector<std::pair<T,U>> to extract from data
    */
   template <typename T, typename U>
@@ -501,9 +537,7 @@ namespace Core::Communication
    *
    * This method is a template for stuff of type Pairedvector<Key,T0,Ts...>*
    *
-   * \param[in,out] position place in data where to extract stuff. Position will be incremented
-   * by this method
-   * \param[in] data char vector where stuff is extracted from
+   * \param[in,out] buffer the buffer to unpack from
    * \param[out] stuff Pairedvector<Key,T0,Ts...> to extract from data
    */
   template <typename Key, typename T0, typename... Ts>
@@ -532,9 +566,7 @@ namespace Core::Communication
    *
    * This method is a template for stuff of type std::vector< Pairedvector<Ts...> >*
    *
-   * \param[in,out] position place in data where to extract stuff. Position will be incremented
-   * by this method
-   * \param[in] data char vector where stuff is extracted from
+   * \param[in,out] buffer the buffer to unpack from
    * \param[out] stuff std::vector< Pairedvector<Ts...> > to extract from data
    */
   template <typename... Ts>
@@ -562,9 +594,7 @@ namespace Core::Communication
    *
    * This method is templated for stuff of type std::set<T>
    *
-   * \param[in,out] position place in data where to extract stuff. Position will be incremented
-   * by this method
-   * \param[in] data char vector where stuff is extracted from
+   * \param[in,out] buffer the buffer to unpack from
    * \param[out] stuff std::set<T> to extract from data
    */
   template <typename T, typename U>
@@ -591,9 +621,7 @@ namespace Core::Communication
    * This method is an overload of the above template for stuff of type
    * Core::LinAlg::SerialDenseMatrix
    *
-   * \param[in,out] position place in data where to extract stuff. Position will be incremented
-   * by this method
-   * \param[in] data char vector where stuff is extracted from
+   * \param[in,out] buffer the buffer to unpack from
    * \param[out] stuff Core::LinAlg::SerialDenseMatrix to extract from data
    */
   void extract_from_pack(UnpackBuffer& buffer, Core::LinAlg::SerialDenseMatrix& stuff);
@@ -604,9 +632,7 @@ namespace Core::Communication
    * This method is an overload of the above template for stuff of type
    * Core::LinAlg::SerialDenseVector
    *
-   * \param[in,out] position place in data where to extract stuff. Position will be incremented
-   * by this method
-   * \param[in] data char vector where stuff is extracted from
+   * \param[in,out] buffer the buffer to unpack from
    * \param[out] stuff Core::LinAlg::SerialDenseVector to extract from data
    */
   void extract_from_pack(UnpackBuffer& buffer, Core::LinAlg::SerialDenseVector& stuff);
@@ -616,9 +642,7 @@ namespace Core::Communication
    *
    * This method is an overload of the above template for stuff of type Matrix
    *
-   * \param[in,out] position place in data where to extract stuff. Position will be incremented
-   * by this method
-   * \param[in] data char vector where stuff is extracted from
+   * \param[in,out] buffer the buffer to unpack from
    * \param[out] stuff Matrix to extract from data
    */
   template <unsigned int i, unsigned int j>
@@ -638,9 +662,7 @@ namespace Core::Communication
    *
    * This method is an overload of the above template for stuff of type string
    *
-   * \param[in,out] position place in data where to extract stuff. Position will be incremented
-   * by this method
-   * \param[in] data char vector where stuff is extracted from
+   * \param[in,out] buffer the buffer to unpack from
    * \param[out] stuff string to extract from data
    */
   void extract_from_pack(UnpackBuffer& buffer, std::string& stuff);
