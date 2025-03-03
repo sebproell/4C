@@ -197,8 +197,10 @@ namespace Inpar
                           .default_value = 1.e-4}));
 
       std::vector<std::string> material_tangent_valid_input = {"analytical", "finitedifferences"};
-      Core::Utils::string_parameter("MATERIALTANGENT", "analytical",
-          "way of evaluating the constitutive matrix", sdyn, material_tangent_valid_input);
+      sdyn.specs.emplace_back(
+          selection<std::string>("MATERIALTANGENT", material_tangent_valid_input,
+              {.description = "way of evaluating the constitutive matrix",
+                  .default_value = "analytical"}));
 
 
       sdyn.specs.emplace_back(parameter<bool>(

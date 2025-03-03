@@ -51,19 +51,19 @@ void Inpar::FPSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       {.description = "Second order coupling at the interface.", .default_value = false}));
 
   // Iterationparameters
-  Core::Utils::string_parameter("RESTOL", "1e-8 1e-8 1e-8 1e-8 1e-8 1e-8",
-      "Tolerances for single fields in the residual norm for the Newton iteration. \n"
-      "For NORM_RESF != Abs_sys_split only the first value is used for all fields. \n"
-      "Order of fields: porofluidvelocity, porofluidpressure, porostructure, fluidvelocity, "
-      "fluidpressure, ale",
-      fpsidyn);
+  fpsidyn.specs.emplace_back(parameter<std::string>("RESTOL",
+      {.description = "Tolerances for single fields in the residual norm for the Newton iteration. "
+                      "\nFor NORM_RESF != Abs_sys_split only the first value is used for all "
+                      "fields. \nOrder of fields: porofluidvelocity, porofluidpressure, "
+                      "porostructure, fluidvelocity, fluidpressure, ale",
+          .default_value = "1e-8 1e-8 1e-8 1e-8 1e-8 1e-8"}));
 
-  Core::Utils::string_parameter("INCTOL", "1e-8 1e-8 1e-8 1e-8 1e-8 1e-8",
-      "Tolerance in the increment norm for the Newton iteration. \n"
-      "For NORM_INC != \\*_split only the first value is used for all fields. \n"
-      "Order of fields: porofluidvelocity, porofluidpressure, porostructure, fluidvelocity, "
-      "fluidpressure, ale",
-      fpsidyn);
+  fpsidyn.specs.emplace_back(parameter<std::string>(
+      "INCTOL", {.description = "Tolerance in the increment norm for the Newton iteration. \nFor "
+                                "NORM_INC != \\*_split only the first value is used for all "
+                                "fields. \nOrder of fields: porofluidvelocity, porofluidpressure, "
+                                "porostructure, fluidvelocity, fluidpressure, ale",
+                    .default_value = "1e-8 1e-8 1e-8 1e-8 1e-8 1e-8"}));
 
   Core::Utils::string_to_integral_parameter<Inpar::FPSI::ConvergenceNorm>("NORM_INC", "Abs",
       "Type of norm for primary variables convergence check.  \n"

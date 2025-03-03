@@ -24,12 +24,14 @@ void Inpar::BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::
   /* parameters for potential-based beam interaction */
   Core::Utils::SectionSpecs beampotential{"BEAM POTENTIAL"};
 
-  Core::Utils::string_parameter("POT_LAW_EXPONENT", "1.0",
-      "negative(!) exponent(s)  $m_i$ of potential law "
-      "$\\Phi(r) = \\sum_i (k_i * r^{-m_i}).$",
-      beampotential);
-  Core::Utils::string_parameter("POT_LAW_PREFACTOR", "0.0",
-      "prefactor(s) $k_i$ of potential law $\\Phi(r) = \\sum_i (k_i * r^{-m_i})$.", beampotential);
+  beampotential.specs.emplace_back(parameter<std::string>(
+      "POT_LAW_EXPONENT", {.description = "negative(!) exponent(s)  $m_i$ of potential law  "
+                                          "$\\Phi(r) = \\sum_i (k_i * r^{-m_i}).$",
+                              .default_value = "1.0"}));
+
+  beampotential.specs.emplace_back(parameter<std::string>("POT_LAW_PREFACTOR",
+      {.description = "prefactor(s) $k_i$ of potential law $\\Phi(r) = \\sum_i (k_i * r^{-m_i})$.",
+          .default_value = "0.0"}));
 
   Core::Utils::string_to_integral_parameter<Inpar::BeamPotential::BeamPotentialType>(
       "BEAMPOTENTIAL_TYPE", "Surface",

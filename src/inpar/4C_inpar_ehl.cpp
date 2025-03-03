@@ -32,7 +32,7 @@ void Inpar::EHL::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   ehldyn.specs.emplace_back(parameter<double>(
       "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}));
   ehldyn.specs.emplace_back(
-      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = -1}));
+      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = -1.0}));
   ehldyn.specs.emplace_back(parameter<bool>(
       "DIFFTIMESTEPSIZE", {.description = "use different step size for lubrication and solid",
                               .default_value = false}));

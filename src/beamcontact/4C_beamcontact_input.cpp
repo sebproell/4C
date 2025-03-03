@@ -148,10 +148,11 @@ void BeamContact::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "BEAMS_ADDITEXT", {.description = "Switch between No==multiplicative extrusion factor and "
                                         "Yes==additive extrusion factor",
                             .default_value = true}));
-  Core::Utils::string_parameter("BEAMS_EXTVAL", "-1.0",
-      "extrusion value(s) of the bounding box, Depending on BEAMS_ADDITIVEEXTFAC is either "
-      "additive or multiplicative. Give one or two values.",
-      beamcontact);
+  beamcontact.specs.emplace_back(parameter<std::string>("BEAMS_EXTVAL",
+      {.description = "extrusion value(s) of the bounding box, Depending on BEAMS_ADDITIVEEXTFAC "
+                      "is either  additive or multiplicative. Give one or two values.",
+          .default_value = "-1.0"}));
+
   Core::Utils::int_parameter("BEAMS_TREEDEPTH", 6, "max, tree depth of the octree", beamcontact);
   Core::Utils::int_parameter(
       "BEAMS_BOXESINOCT", 8, "max number of bounding boxes in any leaf octant", beamcontact);

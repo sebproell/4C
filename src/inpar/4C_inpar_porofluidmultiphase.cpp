@@ -152,8 +152,8 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
       porofluidmultiphasedyn);
 
   // functions used for domain integrals
-  Core::Utils::string_parameter(
-      "DOMAININT_FUNCT", "-1.0", "functions used for domain integrals", porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(parameter<std::string>("DOMAININT_FUNCT",
+      {.description = "functions used for domain integrals", .default_value = "-1.0"}));
 
   // coupling with 1D artery network active
   porofluidmultiphasedyn.specs.emplace_back(parameter<bool>("ARTERY_COUPLING",
@@ -162,11 +162,11 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
   porofluidmultiphasedyn.specs.emplace_back(parameter<double>("STARTING_DBC_TIME_END",
       {.description = "End time for the starting Dirichlet BC.", .default_value = -1.0}));
 
-  Core::Utils::string_parameter("STARTING_DBC_ONOFF", "0",
-      "Switching the starting Dirichlet BC on or off.", porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(parameter<std::string>("STARTING_DBC_ONOFF",
+      {.description = "Switching the starting Dirichlet BC on or off.", .default_value = "0"}));
 
-  Core::Utils::string_parameter("STARTING_DBC_FUNCT", "0",
-      "Function prescribing the starting Dirichlet BC.", porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(parameter<std::string>("STARTING_DBC_FUNCT",
+      {.description = "Function prescribing the starting Dirichlet BC.", .default_value = "0"}));
 
   porofluidmultiphasedyn.move_into_collection(list);
 
@@ -199,28 +199,28 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
       porofluidmultiphasemshtdyn);
 
   // coupled artery dofs for mesh tying
-  Core::Utils::string_parameter(
-      "COUPLEDDOFS_ART", "-1.0", "coupled artery dofs for mesh tying", porofluidmultiphasemshtdyn);
+  porofluidmultiphasemshtdyn.specs.emplace_back(parameter<std::string>("COUPLEDDOFS_ART",
+      {.description = "coupled artery dofs for mesh tying", .default_value = "-1.0"}));
 
   // coupled porofluid dofs for mesh tying
-  Core::Utils::string_parameter("COUPLEDDOFS_PORO", "-1.0", "coupled porofluid dofs for mesh tying",
-      porofluidmultiphasemshtdyn);
+  porofluidmultiphasemshtdyn.specs.emplace_back(parameter<std::string>("COUPLEDDOFS_PORO",
+      {.description = "coupled porofluid dofs for mesh tying", .default_value = "-1.0"}));
 
   // functions for coupling (artery part)
-  Core::Utils::string_parameter(
-      "REACFUNCT_ART", "-1", "functions for coupling (artery part)", porofluidmultiphasemshtdyn);
+  porofluidmultiphasemshtdyn.specs.emplace_back(parameter<std::string>("REACFUNCT_ART",
+      {.description = "functions for coupling (artery part)", .default_value = "-1"}));
 
   // scale for coupling (artery part)
-  Core::Utils::string_parameter(
-      "SCALEREAC_ART", "0", "scale for coupling (artery part)", porofluidmultiphasemshtdyn);
+  porofluidmultiphasemshtdyn.specs.emplace_back(parameter<std::string>(
+      "SCALEREAC_ART", {.description = "scale for coupling (artery part)", .default_value = "0"}));
 
   // functions for coupling (porofluid part)
-  Core::Utils::string_parameter("REACFUNCT_CONT", "-1", "functions for coupling (porofluid part)",
-      porofluidmultiphasemshtdyn);
+  porofluidmultiphasemshtdyn.specs.emplace_back(parameter<std::string>("REACFUNCT_CONT",
+      {.description = "functions for coupling (porofluid part)", .default_value = "-1"}));
 
   // scale for coupling (porofluid part)
-  Core::Utils::string_parameter(
-      "SCALEREAC_CONT", "0", "scale for coupling (porofluid part)", porofluidmultiphasemshtdyn);
+  porofluidmultiphasemshtdyn.specs.emplace_back(parameter<std::string>("SCALEREAC_CONT",
+      {.description = "scale for coupling (porofluid part)", .default_value = "0"}));
 
   // Flag if artery elements are evaluated in reference or current configuration
   porofluidmultiphasemshtdyn.specs.emplace_back(parameter<bool>("EVALUATE_IN_REF_CONFIG",

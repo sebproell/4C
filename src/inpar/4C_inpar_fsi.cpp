@@ -138,12 +138,12 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           Inpar::FSI::timada_fld_adamsbashforth2),
       fsiadapt);
 
-  Core::Utils::string_parameter("AVERAGINGDT", "0.3 0.7",
-      "Averaging of time step sizes in case of increasing time step size.\n"
-      "Parameters are ordered from most recent weight to the most historic one.\n"
-      "Number of parameters determines the number of previous time steps that are involved\n"
-      "in the averaging procedure.",
-      fsiadapt);
+  fsiadapt.specs.emplace_back(parameter<std::string>("AVERAGINGDT",
+      {.description = "Averaging of time step sizes in case of increasing time step "
+                      "size.\nParameters are ordered from most recent weight to the most historic "
+                      "one.\nNumber of parameters determines the number of previous time steps "
+                      "that are involved\nin the averaging procedure.",
+          .default_value = "0.3 0.7"}));
 
 
   Core::Utils::string_to_integral_parameter<Inpar::FSI::DivContAct>("DIVERCONT", "stop",
@@ -276,54 +276,55 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
 
   // monolithic preconditioner parameter
 
-  Core::Utils::string_parameter("ALEPCOMEGA", "1.0 1.0 1.0 1.0",
-      "Relaxation factor for Richardson iteration on ale block in MFSI block preconditioner\n"
-      "FSIAMG: each number belongs to a level\n"
-      "PreconditiondKrylov: only first number is used for finest level",
-      fsimono);
-  Core::Utils::string_parameter("ALEPCITER", "1 1 1 1",
-      "Number of Richardson iterations on ale block in MFSI block preconditioner\n"
-      "FSIAMG: each number belongs to a level\n"
-      "PreconditiondKrylov: only first number is used for finest level",
-      fsimono);
-  Core::Utils::string_parameter("FLUIDPCOMEGA", "1.0 1.0 1.0 1.0",
-      "Relaxation factor for Richardson iteration on fluid block in MFSI block preconditioner\n"
-      "FSIAMG: each number belongs to a level\n"
-      "PreconditiondKrylov: only first number is used for finest level",
-      fsimono);
-  Core::Utils::string_parameter("FLUIDPCITER", "1 1 1 1",
-      "Number of Richardson iterations on fluid block in MFSI block preconditioner\n"
-      "FSIAMG: each number belongs to a level\n"
-      "PreconditiondKrylov: only first number is used for finest level",
-      fsimono);
-  Core::Utils::string_parameter("STRUCTPCOMEGA", "1.0 1.0 1.0 1.0",
-      "Relaxation factor for Richardson iteration on structural block in MFSI block "
-      "preconditioner\n"
-      "FSIAMG: each number belongs to a level\n"
-      "PreconditiondKrylov: only first number is used for finest level",
-      fsimono);
-  Core::Utils::string_parameter("STRUCTPCITER", "1 1 1 1",
-      "Number of Richardson iterations on structural block in MFSI block preconditioner\n"
-      "FSIAMG: each number belongs to a level\n"
-      "PreconditiondKrylov: only first number is used for finest level",
-      fsimono);
+  fsimono.specs.emplace_back(parameter<std::string>("ALEPCOMEGA",
+      {.description = "Relaxation factor for Richardson iteration on ale block in MFSI block "
+                      "preconditioner\nFSIAMG: each number belongs to a "
+                      "level\nPreconditiondKrylov: only first number is used for finest level",
+          .default_value = "1.0 1.0 1.0 1.0"}));
+  fsimono.specs.emplace_back(parameter<std::string>("ALEPCITER",
+      {.description = "Number of Richardson iterations on ale block in MFSI block "
+                      "preconditioner\nFSIAMG: each number belongs to a "
+                      "level\nPreconditiondKrylov: only first number is used for finest level",
+          .default_value = "1 1 1 1"}));
+  fsimono.specs.emplace_back(parameter<std::string>("FLUIDPCOMEGA",
+      {.description = "Relaxation factor for Richardson iteration on fluid block in MFSI block "
+                      "preconditioner\nFSIAMG: each number belongs to a "
+                      "level\nPreconditiondKrylov: only first number is used for finest level",
+          .default_value = "1.0 1.0 1.0 1.0"}));
+  fsimono.specs.emplace_back(parameter<std::string>("FLUIDPCITER",
+      {.description = "Number of Richardson iterations on fluid block in MFSI block "
+                      "preconditioner\nFSIAMG: each number belongs to a "
+                      "level\nPreconditiondKrylov: only first number is used for finest level",
+          .default_value = "1 1 1 1"}));
+  fsimono.specs.emplace_back(parameter<std::string>("STRUCTPCOMEGA",
+      {.description = "Relaxation factor for Richardson iteration on structural block in MFSI "
+                      "block \npreconditioner\nFSIAMG: each number belongs to a "
+                      "level\nPreconditiondKrylov: only first number is used for finest level",
+          .default_value = "1.0 1.0 1.0 1.0"}));
+  fsimono.specs.emplace_back(parameter<std::string>("STRUCTPCITER",
+      {.description = "Number of Richardson iterations on structural block in MFSI block "
+                      "preconditioner\nFSIAMG: each number belongs to a "
+                      "level\nPreconditiondKrylov: only first number is used for finest level",
+          .default_value = "1 1 1 1"}));
 
-  Core::Utils::string_parameter("PCOMEGA", "1.0 1.0 1.0",
-      "Relaxation factor for Richardson iteration on whole MFSI block preconditioner\n"
-      "FSIAMG: each number belongs to a level\n"
-      "PreconditiondKrylov: only first number is used for finest level",
-      fsimono);
-  Core::Utils::string_parameter("PCITER", "1 1 1",
-      "Number of Richardson iterations on whole MFSI block preconditioner\n"
-      "FSIAMG: each number belongs to a level\n"
-      "PreconditiondKrylov: only first number is used for finest level",
-      fsimono);
+  fsimono.specs.emplace_back(parameter<std::string>("PCOMEGA",
+      {.description = "Relaxation factor for Richardson iteration on whole MFSI block "
+                      "preconditioner\nFSIAMG: each number belongs to a "
+                      "level\nPreconditiondKrylov: only first number is used for finest level",
+          .default_value = "1.0 1.0 1.0"}));
+  fsimono.specs.emplace_back(parameter<std::string>("PCITER",
+      {.description = "Number of Richardson iterations on whole MFSI block preconditioner\nFSIAMG: "
+                      "each number belongs to a level\nPreconditiondKrylov: only first number is "
+                      "used for finest level",
+          .default_value = "1 1 1"}));
 
-  Core::Utils::string_parameter(
-      "BLOCKSMOOTHER", "BGS BGS BGS", "Type of block smoother, can be BGS or Schur", fsimono);
+  fsimono.specs.emplace_back(parameter<std::string>(
+      "BLOCKSMOOTHER", {.description = "Type of block smoother, can be BGS or Schur",
+                           .default_value = "BGS BGS BGS"}));
 
-  Core::Utils::string_parameter(
-      "SCHUROMEGA", "0.001 0.01 0.1", "Damping factor for Schur complement construction", fsimono);
+  fsimono.specs.emplace_back(parameter<std::string>(
+      "SCHUROMEGA", {.description = "Damping factor for Schur complement construction",
+                        .default_value = "0.001 0.01 0.1"}));
 
   // tolerances for convergence check of nonlinear solver in monolithic FSI
   // structure displacements
@@ -398,8 +399,9 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           .default_value = 1e-6}));
 
   std::vector<std::string> coupmethod_valid_input = {"mortar", "conforming", "immersed"};
-  Core::Utils::string_parameter("COUPMETHOD", "conforming",
-      "Coupling Method mortar or conforming nodes at interface", fsipart, coupmethod_valid_input);
+  fsipart.specs.emplace_back(selection<std::string>("COUPMETHOD", coupmethod_valid_input,
+      {.description = "Coupling Method mortar or conforming nodes at interface",
+          .default_value = "conforming"}));
 
   Core::Utils::string_to_integral_parameter<Inpar::FSI::CoupVarPart>("COUPVARIABLE", "Displacement",
       "Coupling variable at the interface", tuple<std::string>("Displacement", "Force", "Velocity"),
@@ -432,8 +434,8 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
 
   std::vector<std::string> predictor_valid_input = {
       "d(n)", "d(n)+dt*(1.5*v(n)-0.5*v(n-1))", "d(n)+dt*v(n)", "d(n)+dt*v(n)+0.5*dt^2*a(n)"};
-  Core::Utils::string_parameter(
-      "PREDICTOR", "d(n)", "Predictor for interface displacements", fsipart, predictor_valid_input);
+  fsipart.specs.emplace_back(selection<std::string>("PREDICTOR", predictor_valid_input,
+      {.description = "Predictor for interface displacements", .default_value = "d(n)"}));
 
 
   fsipart.specs.emplace_back(parameter<double>(

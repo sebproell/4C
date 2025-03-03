@@ -25,7 +25,7 @@ void Inpar::EleMag::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   electromagneticdyn.specs.emplace_back(
       parameter<double>("TIMESTEP", {.description = "Time-step length dt", .default_value = 0.01}));
   electromagneticdyn.specs.emplace_back(
-      parameter<double>("TAU", {.description = "Stabilization parameter", .default_value = 1}));
+      parameter<double>("TAU", {.description = "Stabilization parameter", .default_value = 1.0}));
   Core::Utils::int_parameter("NUMSTEP", 100, "Number of time steps", electromagneticdyn);
   electromagneticdyn.specs.emplace_back(
       parameter<double>("MAXTIME", {.description = "Total simulation time", .default_value = 1.0}));

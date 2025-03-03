@@ -59,8 +59,8 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       parameter<double>("MAXTIME", {.description = "maximum time", .default_value = 1.0}));
 
   // gravity acceleration control
-  Core::Utils::string_parameter(
-      "GRAVITY_ACCELERATION", "0.0 0.0 0.0", "acceleration due to gravity", particledyn);
+  particledyn.specs.emplace_back(parameter<std::string>("GRAVITY_ACCELERATION",
+      {.description = "acceleration due to gravity", .default_value = "0.0 0.0 0.0"}));
   Core::Utils::int_parameter(
       "GRAVITY_RAMP_FUNCT", -1, "number of function governing gravity ramp", particledyn);
 
@@ -74,16 +74,18 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       {.description = "transfer particles to new bins every time step", .default_value = false}));
 
   // considered particle phases with dynamic load balance weighting factor
-  Core::Utils::string_parameter("PHASE_TO_DYNLOADBALFAC", "none",
-      "considered particle phases with dynamic load balance weighting factor", particledyn);
+  particledyn.specs.emplace_back(parameter<std::string>("PHASE_TO_DYNLOADBALFAC",
+      {.description = "considered particle phases with dynamic load balance weighting factor",
+          .default_value = "none"}));
 
   // relate particle phase to material id
-  Core::Utils::string_parameter(
-      "PHASE_TO_MATERIAL_ID", "none", "relate particle phase to material id", particledyn);
+  particledyn.specs.emplace_back(parameter<std::string>("PHASE_TO_MATERIAL_ID",
+      {.description = "relate particle phase to material id", .default_value = "none"}));
 
   // amplitude of noise added to initial position for each spatial direction
-  Core::Utils::string_parameter("INITIAL_POSITION_AMPLITUDE", "0.0 0.0 0.0",
-      "amplitude of noise added to initial position for each spatial direction", particledyn);
+  particledyn.specs.emplace_back(parameter<std::string>("INITIAL_POSITION_AMPLITUDE",
+      {.description = "amplitude of noise added to initial position for each spatial direction",
+          .default_value = "0.0 0.0 0.0"}));
 
   // type of particle wall source
   Core::Utils::string_to_integral_parameter<ParticleWallSource>("PARTICLE_WALL_SOURCE",
@@ -119,41 +121,49 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
   Core::Utils::SectionSpecs particledynconditions{particledyn, "INITIAL AND BOUNDARY CONDITIONS"};
 
   // initial temperature field of particle phase given by function
-  Core::Utils::string_parameter("INITIAL_TEMP_FIELD", "none",
-      "Refer to the function ID describing the initial temperature field of particle phase",
-      particledynconditions);
+  particledynconditions.specs.emplace_back(parameter<std::string>("INITIAL_TEMP_FIELD",
+      {.description =
+              "Refer to the function ID describing the initial temperature field of particle phase",
+          .default_value = "none"}));
 
   // initial velocity field of particle phase given by function
-  Core::Utils::string_parameter("INITIAL_VELOCITY_FIELD", "none",
-      "Refer to the function ID describing the initial velocity field of particle phase",
-      particledynconditions);
+  particledynconditions.specs.emplace_back(parameter<std::string>("INITIAL_VELOCITY_FIELD",
+      {.description =
+              "Refer to the function ID describing the initial velocity field of particle phase",
+          .default_value = "none"}));
 
   // initial angular velocity field of particle phase given by function
-  Core::Utils::string_parameter("INITIAL_ANGULAR_VELOCITY_FIELD", "none",
-      "Refer to the function ID describing the initial angular velocity field of rigid body "
-      "phase/DEM particle",
-      particledynconditions);
+  particledynconditions.specs.emplace_back(parameter<std::string>("INITIAL_ANGULAR_VELOCITY_FIELD",
+      {.description = "Refer to the function ID describing the initial angular velocity field of "
+                      "rigid body  phase/DEM particle",
+          .default_value = "none"}));
+
 
   // initial acceleration field of particle phase given by function
-  Core::Utils::string_parameter("INITIAL_ACCELERATION_FIELD", "none",
-      "Refer to the function ID describing the initial acceleration field of particle phase",
-      particledynconditions);
+  particledynconditions.specs.emplace_back(parameter<std::string>(
+      "INITIAL_ACCELERATION_FIELD", {.description = "Refer to the function ID describing the "
+                                                    "initial acceleration field of particle phase",
+                                        .default_value = "none"}));
 
   // initial angular acceleration field of particle phase given by function
-  Core::Utils::string_parameter("INITIAL_ANGULAR_ACCELERATION_FIELD", "none",
-      "Refer to the function ID describing the initial angular acceleration field of rigid body "
-      "phase/DEM particle",
-      particledynconditions);
+  particledynconditions.specs.emplace_back(
+      parameter<std::string>("INITIAL_ANGULAR_ACCELERATION_FIELD",
+          {.description = "Refer to the function ID describing the initial angular acceleration "
+                          "field of rigid body  phase/DEM particle",
+              .default_value = "none"}));
+
 
   // dirichlet boundary condition of particle phase given by function
-  Core::Utils::string_parameter("DIRICHLET_BOUNDARY_CONDITION", "none",
-      "Refer to the function ID describing the dirichlet boundary condition of particle phase",
-      particledynconditions);
+  particledynconditions.specs.emplace_back(parameter<std::string>("DIRICHLET_BOUNDARY_CONDITION",
+      {.description = "Refer to the function ID describing the dirichlet boundary condition of "
+                      "particle phase",
+          .default_value = "none"}));
 
   // temperature boundary condition of particle phase given by function
-  Core::Utils::string_parameter("TEMPERATURE_BOUNDARY_CONDITION", "none",
-      "Refer to the function ID describing the temperature boundary condition of particle phase",
-      particledynconditions);
+  particledynconditions.specs.emplace_back(parameter<std::string>("TEMPERATURE_BOUNDARY_CONDITION",
+      {.description = "Refer to the function ID describing the temperature boundary condition of "
+                      "particle phase",
+          .default_value = "none"}));
 
   particledynconditions.move_into_collection(list);
 
@@ -275,8 +285,8 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
   Core::Utils::int_parameter(
       "HEATSOURCE_FUNCT", -1, "number of function governing heat source", particledynsph);
 
-  Core::Utils::string_parameter(
-      "HEATSOURCE_DIRECTION", "0.0 0.0 0.0", "direction of surface heat source", particledynsph);
+  particledynsph.specs.emplace_back(parameter<std::string>("HEATSOURCE_DIRECTION",
+      {.description = "direction of surface heat source", .default_value = "0.0 0.0 0.0"}));
 
   // evaporation induced heat loss
   particledynsph.specs.emplace_back(parameter<bool>("VAPOR_HEATLOSS",
@@ -391,10 +401,11 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
   Core::Utils::int_parameter("DIRICHLET_FUNCT", -1,
       "number of function governing velocity condition on dirichlet open boundary", particledynsph);
 
-  Core::Utils::string_parameter("DIRICHLET_OUTWARD_NORMAL", "0.0 0.0 0.0",
-      "direction of outward normal on dirichlet open boundary", particledynsph);
-  Core::Utils::string_parameter("DIRICHLET_PLANE_POINT", "0.0 0.0 0.0",
-      "point on dirichlet open boundary plane", particledynsph);
+  particledynsph.specs.emplace_back(parameter<std::string>("DIRICHLET_OUTWARD_NORMAL",
+      {.description = "direction of outward normal on dirichlet open boundary",
+          .default_value = "0.0 0.0 0.0"}));
+  particledynsph.specs.emplace_back(parameter<std::string>("DIRICHLET_PLANE_POINT",
+      {.description = "point on dirichlet open boundary plane", .default_value = "0.0 0.0 0.0"}));
 
   // type of neumann open boundary
   Core::Utils::string_to_integral_parameter<NeumannOpenBoundaryType>("NEUMANNBOUNDARYTYPE",
@@ -407,10 +418,11 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
   Core::Utils::int_parameter("NEUMANN_FUNCT", -1,
       "number of function governing pressure condition on neumann open boundary", particledynsph);
 
-  Core::Utils::string_parameter("NEUMANN_OUTWARD_NORMAL", "0.0 0.0 0.0",
-      "direction of outward normal on neumann open boundary", particledynsph);
-  Core::Utils::string_parameter(
-      "NEUMANN_PLANE_POINT", "0.0 0.0 0.0", "point on neumann open boundary plane", particledynsph);
+  particledynsph.specs.emplace_back(parameter<std::string>("NEUMANN_OUTWARD_NORMAL",
+      {.description = "direction of outward normal on neumann open boundary",
+          .default_value = "0.0 0.0 0.0"}));
+  particledynsph.specs.emplace_back(parameter<std::string>("NEUMANN_PLANE_POINT",
+      {.description = "point on neumann open boundary plane", .default_value = "0.0 0.0 0.0"}));
 
   // type of phase change
   Core::Utils::string_to_integral_parameter<PhaseChangeType>("PHASECHANGETYPE", "NoPhaseChange",
@@ -424,8 +436,8 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       particledynsph);
 
   // definition of phase change
-  Core::Utils::string_parameter(
-      "PHASECHANGEDEFINITION", "none", "phase change definition", particledynsph);
+  particledynsph.specs.emplace_back(parameter<std::string>("PHASECHANGEDEFINITION",
+      {.description = "phase change definition", .default_value = "none"}));
 
   // type of rigid particle contact
   Core::Utils::string_to_integral_parameter<RigidParticleContactType>("RIGIDPARTICLECONTACTTYPE",

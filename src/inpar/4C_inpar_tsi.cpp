@@ -133,8 +133,9 @@ void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   Core::Utils::SectionSpecs tsidynpart{tsidyn, "PARTITIONED"};
 
   std::vector<std::string> couplvariable_valid_input = {"Displacement", "Temperature"};
-  Core::Utils::string_parameter(
-      "COUPVARIABLE", "Displacement", "Coupling variable", tsidynpart, couplvariable_valid_input);
+  tsidynpart.specs.emplace_back(selection<std::string>("COUPVARIABLE", couplvariable_valid_input,
+      {.description = "Coupling variable", .default_value = "Displacement"}));
+
 
   // Solver parameter for relaxation of iterative staggered partitioned TSI
   tsidynpart.specs.emplace_back(parameter<double>("MAXOMEGA",

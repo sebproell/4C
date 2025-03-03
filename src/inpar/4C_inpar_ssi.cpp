@@ -45,8 +45,9 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       {.description = "read scatra result from restart files (use option 'restartfromfile' during "
                       "execution of 4C)",
           .default_value = false}));
-  Core::Utils::string_parameter(
-      "SCATRA_FILENAME", "nil", "Control-file name for reading scatra results in SSI", ssidyn);
+  ssidyn.specs.emplace_back(parameter<std::string>(
+      "SCATRA_FILENAME", {.description = "Control-file name for reading scatra results in SSI",
+                             .default_value = "nil"}));
 
   // Type of coupling strategy between the two fields
   Core::Utils::string_to_integral_parameter<FieldCoupling>("FIELDCOUPLING", "volume_matching",

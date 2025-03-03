@@ -70,8 +70,8 @@ namespace Inpar::SOLVER
           "The amount of fill allowed for an internal \"ilu\" preconditioner.", list);
 
       std::vector<std::string> ifpack_combine_valid_input = {"Add", "Insert", "Zero"};
-      Core::Utils::string_parameter("IFPACKCOMBINE", "Add",
-          "Combine mode for Ifpack Additive Schwarz", list, ifpack_combine_valid_input);
+      list.specs.emplace_back(selection<std::string>("IFPACKCOMBINE", ifpack_combine_valid_input,
+          {.description = "Combine mode for Ifpack Additive Schwarz", .default_value = "Add"}));
     }
 
     // Iterative solver options
@@ -128,14 +128,15 @@ namespace Inpar::SOLVER
     }
 
     // user-given name of solver block (just for beauty)
-    Core::Utils::string_parameter("NAME", "No_name", "User specified name for solver block", list);
+    list.specs.emplace_back(parameter<std::string>("NAME",
+        {.description = "User specified name for solver block", .default_value = "No_name"}));
 
     // Parameters for AMGnxn Preconditioner
     {
-      Core::Utils::string_parameter("AMGNXN_TYPE", "AMG(BGS)",
-          "Name of the pre-built preconditioner to be used. If set to\"XML\" the preconditioner "
-          "is defined using a xml file",
-          list);
+      list.specs.emplace_back(parameter<std::string>(
+          "AMGNXN_TYPE", {.description = "Name of the pre-built preconditioner to be used. If set "
+                                         "to\"XML\" the preconditioner is defined using a xml file",
+                             .default_value = "AMG(BGS)"}));
       list.specs.emplace_back(
           Core::IO::InputSpecBuilders::parameter<Core::IO::Noneable<std::filesystem::path>>(
               "AMGNXN_XML_FILE",

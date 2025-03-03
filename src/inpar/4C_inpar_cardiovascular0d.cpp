@@ -577,8 +577,8 @@ void Inpar::Cardiovascular0D::set_valid_parameters(std::map<std::string, Core::I
 
   Core::Utils::SectionSpecs mor{"MOR"};
 
-  Core::Utils::string_parameter(
-      "POD_MATRIX", "none", "filename of file containing projection matrix", mor);
+  mor.specs.emplace_back(parameter<std::string>("POD_MATRIX",
+      {.description = "filename of file containing projection matrix", .default_value = "none"}));
 
   mor.move_into_collection(list);
 }

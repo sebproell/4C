@@ -1396,7 +1396,7 @@ std::shared_ptr<std::vector<std::shared_ptr<Mat::MaterialDefinition>>> Global::v
     m->add_component(parameter<double>("NUE", {.description = "Poisson's ratio"}));
     m->add_component(parameter<double>("DENS", {.description = "mass density"}));
     m->add_component(
-        parameter<double>("YIELD", {.description = "yield stress", .default_value = 0}));
+        parameter<double>("YIELD", {.description = "yield stress", .default_value = 0.}));
     m->add_component(parameter<double>(
         "ISOHARD", {.description = "isotropic hardening modulus", .default_value = 0}));
     m->add_component(parameter<double>(

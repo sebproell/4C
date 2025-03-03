@@ -146,9 +146,10 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       {.description = "perform approximate boundary flux calculation involving matrix lumping",
           .default_value = true}));
 
-  Core::Utils::string_parameter("WRITEFLUX_IDS", "-1",
-      "Write diffusive/total flux vector fields for these scalar fields only (starting with 1)",
-      scatradyn);
+  scatradyn.specs.emplace_back(parameter<std::string>(
+      "WRITEFLUX_IDS", {.description = "Write diffusive/total flux vector fields for these scalar "
+                                       "fields only (starting with 1)",
+                           .default_value = "-1"}));
 
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::OutputScalarType>("OUTPUTSCALARS",
       "none", "Output of total and mean values for transported scalars",
@@ -453,28 +454,28 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       {.description = "Penalty parameter for line-based coupling", .default_value = 1000.0}));
 
   // coupled artery dofs for mesh tying
-  Core::Utils::string_parameter(
-      "COUPLEDDOFS_ARTSCATRA", "-1.0", "coupled artery dofs for mesh tying", scatradyn_art);
+  scatradyn_art.specs.emplace_back(parameter<std::string>("COUPLEDDOFS_ARTSCATRA",
+      {.description = "coupled artery dofs for mesh tying", .default_value = "-1.0"}));
 
   // coupled porofluid dofs for mesh tying
-  Core::Utils::string_parameter(
-      "COUPLEDDOFS_SCATRA", "-1.0", "coupled porofluid dofs for mesh tying", scatradyn_art);
+  scatradyn_art.specs.emplace_back(parameter<std::string>("COUPLEDDOFS_SCATRA",
+      {.description = "coupled porofluid dofs for mesh tying", .default_value = "-1.0"}));
 
   // functions for coupling (arteryscatra part)
-  Core::Utils::string_parameter(
-      "REACFUNCT_ART", "-1", "functions for coupling (arteryscatra part)", scatradyn_art);
+  scatradyn_art.specs.emplace_back(parameter<std::string>("REACFUNCT_ART",
+      {.description = "functions for coupling (arteryscatra part)", .default_value = "-1"}));
 
   // scale for coupling (arteryscatra part)
-  Core::Utils::string_parameter(
-      "SCALEREAC_ART", "0", "scale for coupling (arteryscatra part)", scatradyn_art);
+  scatradyn_art.specs.emplace_back(parameter<std::string>("SCALEREAC_ART",
+      {.description = "scale for coupling (arteryscatra part)", .default_value = "0"}));
 
   // functions for coupling (scatra part)
-  Core::Utils::string_parameter(
-      "REACFUNCT_CONT", "-1", "functions for coupling (scatra part)", scatradyn_art);
+  scatradyn_art.specs.emplace_back(parameter<std::string>("REACFUNCT_CONT",
+      {.description = "functions for coupling (scatra part)", .default_value = "-1"}));
 
   // scale for coupling (scatra part)
-  Core::Utils::string_parameter(
-      "SCALEREAC_CONT", "0", "scale for coupling (scatra part)", scatradyn_art);
+  scatradyn_art.specs.emplace_back(parameter<std::string>(
+      "SCALEREAC_CONT", {.description = "scale for coupling (scatra part)", .default_value = "0"}));
 
   scatradyn_art.move_into_collection(list);
 

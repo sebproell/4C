@@ -32,7 +32,7 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   sstidyn.specs.emplace_back(parameter<double>(
       "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}));
   sstidyn.specs.emplace_back(
-      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = -1}));
+      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = -1.0}));
   sstidyn.specs.emplace_back(parameter<double>(
       "RESULTSEVERYTIME", {.description = "increment for writing solution", .default_value = 0}));
   Core::Utils::int_parameter("RESULTSEVERY", 1, "increment for writing solution", sstidyn);
@@ -41,8 +41,9 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       {.description = "read scatra result from restart files (use option 'restartfromfile' during "
                       "execution of 4C)",
           .default_value = false}));
-  Core::Utils::string_parameter(
-      "SCATRA_FILENAME", "nil", "Control-file name for reading scatra results in SSTI", sstidyn);
+  sstidyn.specs.emplace_back(parameter<std::string>(
+      "SCATRA_FILENAME", {.description = "Control-file name for reading scatra results in SSTI",
+                             .default_value = "nil"}));
   Core::Utils::string_to_integral_parameter<SolutionScheme>("COUPALGO", "ssti_Monolithic",
       "Coupling strategies for SSTI solvers", tuple<std::string>("ssti_Monolithic"),
       tuple<Inpar::SSTI::SolutionScheme>(SolutionScheme::monolithic), sstidyn);

@@ -31,7 +31,7 @@ void Inpar::POROMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO:
   poromultiphasedyn.specs.emplace_back(parameter<double>(
       "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}));
   poromultiphasedyn.specs.emplace_back(
-      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = -1}));
+      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = -1.0}));
   Core::Utils::int_parameter(
       "RESULTSEVERY", 1, "increment for writing solution", poromultiphasedyn);
   Core::Utils::int_parameter(

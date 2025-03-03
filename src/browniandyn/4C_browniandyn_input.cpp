@@ -55,11 +55,11 @@ void BrownianDynamics::set_valid_parameters(std::map<std::string, Core::IO::Inpu
 
   // values for damping coefficients of beams if they are specified via input file
   // (per unit length, NOT yet multiplied by fluid viscosity)
-  Core::Utils::string_parameter("BEAMS_DAMPING_COEFF_PER_UNITLENGTH", "0.0 0.0 0.0",
-      "values for beam damping coefficients (per unit length and NOT yet multiplied by fluid "
-      "viscosity): "
-      "translational perpendicular/parallel to beam axis, rotational around axis",
-      browniandyn_list);
+  browniandyn_list.specs.emplace_back(parameter<std::string>("BEAMS_DAMPING_COEFF_PER_UNITLENGTH",
+      {.description = "values for beam damping coefficients (per unit length and NOT yet "
+                      "multiplied by fluid viscosity): translational perpendicular/parallel to "
+                      "beam axis, rotational around axis",
+          .default_value = "0.0 0.0 0.0"}));
 
   browniandyn_list.move_into_collection(list);
 }
