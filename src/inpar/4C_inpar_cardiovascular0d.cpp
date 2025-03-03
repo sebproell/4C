@@ -18,6 +18,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::Cardiovascular0D::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs cardvasc0dstruct{"CARDIOVASCULAR 0D-STRUCTURE COUPLING"};
 
@@ -28,12 +29,13 @@ void Inpar::Cardiovascular0D::set_valid_parameters(std::map<std::string, Core::I
       cardvasc0dstruct);
   Core::Utils::double_parameter("TIMINT_THETA", 0.5,
       "theta for one-step-theta time-integration scheme of Cardiovascular0D", cardvasc0dstruct);
-  Core::Utils::bool_parameter("RESTART_WITH_CARDVASC0D", false,
-      "Must be chosen if a non-cardiovascular0d simulation is to be restarted as "
-      "cardiovascular0d-structural coupled problem.",
-      cardvasc0dstruct);
-  Core::Utils::bool_parameter("ENHANCED_OUTPUT", false,
-      "Set to yes for enhanced output (like e.g. derivative information)", cardvasc0dstruct);
+  cardvasc0dstruct.specs.emplace_back(parameter<bool>("RESTART_WITH_CARDVASC0D",
+      {.description = "Must be chosen if a non-cardiovascular0d simulation is to be restarted as "
+                      "cardiovascular0d-structural coupled problem.",
+          .default_value = false}));
+  cardvasc0dstruct.specs.emplace_back(parameter<bool>("ENHANCED_OUTPUT",
+      {.description = "Set to yes for enhanced output (like e.g. derivative information)",
+          .default_value = false}));
 
   // linear solver id used for monolithic 0D cardiovascular-structural problems
   Core::Utils::int_parameter("LINEAR_COUPLED_SOLVER", -1,
@@ -49,8 +51,8 @@ void Inpar::Cardiovascular0D::set_valid_parameters(std::map<std::string, Core::I
   Core::Utils::double_parameter(
       "EPS_PERIODIC", 1.0e-16, "tolerance for periodic state", cardvasc0dstruct);
 
-  Core::Utils::bool_parameter(
-      "PTC_3D0D", false, "Set to yes for doing PTC 2x2 block system.", cardvasc0dstruct);
+  cardvasc0dstruct.specs.emplace_back(parameter<bool>("PTC_3D0D",
+      {.description = "Set to yes for doing PTC 2x2 block system.", .default_value = false}));
 
   Core::Utils::double_parameter("K_PTC", 0.0,
       "PTC parameter: 0 means normal Newton, ->infty means steepest desc", cardvasc0dstruct);

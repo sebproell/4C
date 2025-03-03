@@ -18,6 +18,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   /* parameters for mortar coupling */
   Core::Utils::SectionSpecs mortar{"MORTAR COUPLING"};
@@ -48,8 +49,9 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::double_parameter(
       "SEARCH_PARAM", 0.3, "Radius / Bounding volume inflation for contact search", mortar);
 
-  Core::Utils::bool_parameter("SEARCH_USE_AUX_POS", true,
-      "If chosen auxiliary position is used for computing dops", mortar);
+  mortar.specs.emplace_back(parameter<bool>("SEARCH_USE_AUX_POS",
+      {.description = "If chosen auxiliary position is used for computing dops",
+          .default_value = true}));
 
   Core::Utils::string_to_integral_parameter<Inpar::Mortar::LagMultQuad>("LM_QUAD", "undefined",
       "Type of LM interpolation for quadratic FE",
@@ -59,8 +61,9 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           lagmult_pwlin, lagmult_pwlin, lagmult_lin, lagmult_lin, lagmult_const),
       mortar);
 
-  Core::Utils::bool_parameter("CROSSPOINTS", false,
-      "If chosen, multipliers are removed from crosspoints / edge nodes", mortar);
+  mortar.specs.emplace_back(parameter<bool>("CROSSPOINTS",
+      {.description = "If chosen, multipliers are removed from crosspoints / edge nodes",
+          .default_value = false}));
 
   Core::Utils::string_to_integral_parameter<Inpar::Mortar::ConsistentDualType>("LM_DUAL_CONSISTENT",
       "boundary",
@@ -104,14 +107,16 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           triangulation_center, triangulation_center),
       mortar);
 
-  Core::Utils::bool_parameter("RESTART_WITH_MESHTYING", false,
-      "Must be chosen if a non-meshtying simulation is to be restarted with meshtying", mortar);
+  mortar.specs.emplace_back(parameter<bool>("RESTART_WITH_MESHTYING",
+      {.description =
+              "Must be chosen if a non-meshtying simulation is to be restarted with meshtying",
+          .default_value = false}));
 
-  Core::Utils::bool_parameter("OUTPUT_INTERFACES", false,
-      "Write output for each mortar interface separately.\nThis is an additional feature, purely "
-      "to enhance visualization. Currently, this is limited to solid meshtying and contact w/o "
-      "friction.",
-      mortar);
+  mortar.specs.emplace_back(parameter<bool>("OUTPUT_INTERFACES",
+      {.description = "Write output for each mortar interface separately.\nThis is an additional "
+                      "feature, purely to enhance visualization. Currently, this is limited to "
+                      "solid meshtying and contact w/o friction.",
+          .default_value = false}));
 
   mortar.move_into_collection(list);
 
@@ -119,10 +124,11 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   // parameters for parallel redistribution of mortar interfaces
   Core::Utils::SectionSpecs parallelRedist{mortar, "PARALLEL REDISTRIBUTION"};
 
-  Core::Utils::bool_parameter("EXPLOIT_PROXIMITY", true,
-      "Exploit information on geometric proximity to split slave interface into close and "
-      "non-close parts and redistribute them independently. [Contact only]",
-      parallelRedist);
+  parallelRedist.specs.emplace_back(parameter<bool>("EXPLOIT_PROXIMITY",
+      {.description =
+              "Exploit information on geometric proximity to split slave interface into close and "
+              "non-close parts and redistribute them independently. [Contact only]",
+          .default_value = true}));
 
   Core::Utils::string_to_integral_parameter<ExtendGhosting>("GHOSTING_STRATEGY", "redundant_master",
       "Type of interface ghosting and ghosting extension algorithm",
@@ -153,9 +159,10 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           ParallelRedist::redist_dynamic),
       parallelRedist);
 
-  Core::Utils::bool_parameter("PRINT_DISTRIBUTION", true,
-      "Print details of the parallel distribution, i.e. number of nodes/elements for each rank.",
-      parallelRedist);
+  parallelRedist.specs.emplace_back(parameter<bool>(
+      "PRINT_DISTRIBUTION", {.description = "Print details of the parallel distribution, i.e. "
+                                            "number of nodes/elements for each rank.",
+                                .default_value = true}));
 
   parallelRedist.move_into_collection(list);
 }

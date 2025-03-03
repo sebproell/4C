@@ -18,6 +18,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::EHL::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs ehldyn{"ELASTO HYDRO DYNAMIC"};
 
@@ -30,8 +31,9 @@ void Inpar::EHL::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   Core::Utils::int_parameter("NUMSTEP", 200, "maximum number of Timesteps", ehldyn);
   Core::Utils::double_parameter("MAXTIME", 1000.0, "total simulation time", ehldyn);
   Core::Utils::double_parameter("TIMESTEP", -1, "time step size dt", ehldyn);
-  Core::Utils::bool_parameter(
-      "DIFFTIMESTEPSIZE", false, "use different step size for lubrication and solid", ehldyn);
+  ehldyn.specs.emplace_back(parameter<bool>(
+      "DIFFTIMESTEPSIZE", {.description = "use different step size for lubrication and solid",
+                              .default_value = false}));
   Core::Utils::double_parameter("RESULTSEVERYTIME", 0, "increment for writing solution", ehldyn);
   Core::Utils::int_parameter("RESULTSEVERY", 1, "increment for writing solution", ehldyn);
   Core::Utils::int_parameter("ITEMAX", 10, "maximum number of iterations over fields", ehldyn);
@@ -48,12 +50,14 @@ void Inpar::EHL::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       tuple<SolutionSchemeOverFields>(ehl_IterStagg, ehl_Monolithic), ehldyn);
 
   // set unprojectable nodes to zero pressure via Dirichlet condition
-  Core::Utils::bool_parameter("UNPROJ_ZERO_DBC", false,
-      "set unprojectable nodes to zero pressure via Dirichlet condition", ehldyn);
+  ehldyn.specs.emplace_back(parameter<bool>("UNPROJ_ZERO_DBC",
+      {.description = "set unprojectable nodes to zero pressure via Dirichlet condition",
+          .default_value = false}));
 
   // use dry contact model
-  Core::Utils::bool_parameter("DRY_CONTACT_MODEL", false,
-      "set unprojectable nodes to zero pressure via Dirichlet condition", ehldyn);
+  ehldyn.specs.emplace_back(parameter<bool>("DRY_CONTACT_MODEL",
+      {.description = "set unprojectable nodes to zero pressure via Dirichlet condition",
+          .default_value = false}));
 
 
   ehldyn.move_into_collection(list);
@@ -101,15 +105,17 @@ void Inpar::EHL::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "LINEAR_SOLVER", -1, "number of linear solver used for monolithic EHL problems", ehldynmono);
 
   // convergence criteria adaptivity of monolithic EHL solver
-  Core::Utils::bool_parameter("ADAPTCONV", false,
-      "Switch on adaptive control of linear solver tolerance for nonlinear solution", ehldynmono);
+  ehldynmono.specs.emplace_back(parameter<bool>("ADAPTCONV",
+      {.description =
+              "Switch on adaptive control of linear solver tolerance for nonlinear solution",
+          .default_value = false}));
   Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.1,
       "The linear solver shall be this much better than the current nonlinear residual in the "
       "nonlinear convergence limit",
       ehldynmono);
 
-  Core::Utils::bool_parameter(
-      "INFNORMSCALING", true, "Scale blocks of matrix with row infnorm?", ehldynmono);
+  ehldynmono.specs.emplace_back(parameter<bool>("INFNORMSCALING",
+      {.description = "Scale blocks of matrix with row infnorm?", .default_value = true}));
 
   ehldynmono.move_into_collection(list);
 

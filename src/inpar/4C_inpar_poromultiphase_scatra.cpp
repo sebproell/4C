@@ -19,6 +19,7 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(
     std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   // ----------------------------------------------------------------------
   // (1) general control parameters
@@ -50,8 +51,8 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(
       poromultiphasescatradyn);
 
   // coupling with 1D artery network active
-  Core::Utils::bool_parameter(
-      "ARTERY_COUPLING", false, "Coupling with 1D blood vessels.", poromultiphasescatradyn);
+  poromultiphasescatradyn.specs.emplace_back(parameter<bool>("ARTERY_COUPLING",
+      {.description = "Coupling with 1D blood vessels.", .default_value = false}));
 
   // no convergence of coupling scheme
   Core::Utils::string_to_integral_parameter<DivContAct>("DIVERCONT", "stop",
@@ -82,9 +83,10 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(
       poromultiphasescatradynmono);
 
   // convergence criteria adaptivity --> note ADAPTCONV_BETTER set pretty small
-  Core::Utils::bool_parameter("ADAPTCONV", false,
-      "Switch on adaptive control of linear solver tolerance for nonlinear solution",
-      poromultiphasescatradynmono);
+  poromultiphasescatradynmono.specs.emplace_back(parameter<bool>("ADAPTCONV",
+      {.description =
+              "Switch on adaptive control of linear solver tolerance for nonlinear solution",
+          .default_value = false}));
   Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.001,
       "The linear solver shall be this much better "
       "than the current nonlinear residual in the nonlinear convergence limit",

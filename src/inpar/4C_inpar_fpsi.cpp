@@ -18,6 +18,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::FPSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs fpsidyn{"FPSI DYNAMIC"};
 
@@ -31,24 +32,23 @@ void Inpar::FPSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   Core::Utils::string_to_integral_parameter<FpsiCouplingType>("COUPALGO", "fpsi_monolithic_plain",
       "Iteration Scheme over the fields", name, label, fpsidyn);
 
-  Core::Utils::bool_parameter("SHAPEDERIVATIVES", false,
-      "Include linearization with respect to mesh movement in Navier Stokes equation.\n"
-      "Supported in monolithic FPSI for now.",
-      fpsidyn);
+  fpsidyn.specs.emplace_back(parameter<bool>("SHAPEDERIVATIVES",
+      {.description = "Include linearization with respect to mesh movement in Navier Stokes "
+                      "equation.\nSupported in monolithic FPSI for now.",
+          .default_value = false}));
 
-  Core::Utils::bool_parameter("USESHAPEDERIVATIVES", false,
-      "Add linearization with respect to mesh movement in Navier Stokes equation to stiffness "
-      "matrix.\n"
-      "Supported in monolithic FPSI for now.",
-      fpsidyn);
+  fpsidyn.specs.emplace_back(parameter<bool>("USESHAPEDERIVATIVES",
+      {.description = "Add linearization with respect to mesh movement in Navier Stokes equation "
+                      "to stiffness matrix.\nSupported in monolithic FPSI for now.",
+          .default_value = false}));
 
   Core::Utils::string_to_integral_parameter<Inpar::FPSI::PartitionedCouplingMethod>("PARTITIONED",
       "RobinNeumann", "Coupling strategies for partitioned FPSI solvers.",
       tuple<std::string>("RobinNeumann", "monolithic", "nocoupling"),
       tuple<Inpar::FPSI::PartitionedCouplingMethod>(RobinNeumann, monolithic, nocoupling), fpsidyn);
 
-  Core::Utils::bool_parameter(
-      "SECONDORDER", false, "Second order coupling at the interface.", fpsidyn);
+  fpsidyn.specs.emplace_back(parameter<bool>("SECONDORDER",
+      {.description = "Second order coupling at the interface.", .default_value = false}));
 
   // Iterationparameters
   Core::Utils::string_parameter("RESTOL", "1e-8 1e-8 1e-8 1e-8 1e-8 1e-8",
@@ -87,12 +87,13 @@ void Inpar::FPSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "binary operator to combine primary variables and residual force values",
       tuple<std::string>("And", "Or"), tuple<Inpar::FPSI::BinaryOp>(bop_and, bop_or), fpsidyn);
 
-  Core::Utils::bool_parameter("LineSearch", false,
-      "adapt increment in case of non-monotonic residual convergence or residual oscillations",
-      fpsidyn);
+  fpsidyn.specs.emplace_back(
+      parameter<bool>("LineSearch", {.description = "adapt increment in case of non-monotonic "
+                                                    "residual convergence or residual oscillations",
+                                        .default_value = false}));
 
-  Core::Utils::bool_parameter(
-      "FDCheck", false, "perform FPSIFDCheck() finite difference check", fpsidyn);
+  fpsidyn.specs.emplace_back(parameter<bool>("FDCheck",
+      {.description = "perform FPSIFDCheck() finite difference check", .default_value = false}));
 
   // number of linear solver used for poroelasticity
   Core::Utils::int_parameter(

@@ -19,6 +19,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::S2I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs s2icoupling{"SCALAR TRANSPORT DYNAMIC/S2I COUPLING"};
 
@@ -41,9 +42,10 @@ void Inpar::S2I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       s2icoupling);
 
   // flag for evaluation of interface linearizations and residuals on slave side only
-  Core::Utils::bool_parameter("SLAVEONLY", false,
-      "flag for evaluation of interface linearizations and residuals on slave side only",
-      s2icoupling);
+  s2icoupling.specs.emplace_back(parameter<bool>("SLAVEONLY",
+      {.description =
+              "flag for evaluation of interface linearizations and residuals on slave side only",
+          .default_value = false}));
 
   // node-to-segment projection tolerance
   Core::Utils::double_parameter(
@@ -84,13 +86,14 @@ void Inpar::S2I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "growth",
       s2icoupling);
 
-  Core::Utils::bool_parameter("MESHTYING_CONDITIONS_INDEPENDENT_SETUP", false,
-      "mesh tying for different conditions should be setup independently", s2icoupling);
+  s2icoupling.specs.emplace_back(parameter<bool>("MESHTYING_CONDITIONS_INDEPENDENT_SETUP",
+      {.description = "mesh tying for different conditions should be setup independently",
+          .default_value = false}));
 
-  Core::Utils::bool_parameter("OUTPUT_INTERFACE_FLUX", false,
-      "evaluate integral of coupling flux on slave side for each s2i condition and write it to csv "
-      "file",
-      s2icoupling);
+  s2icoupling.specs.emplace_back(parameter<bool>(
+      "OUTPUT_INTERFACE_FLUX", {.description = "evaluate integral of coupling flux on slave side "
+                                               "for each s2i condition and write it to csv file",
+                                   .default_value = false}));
 
   s2icoupling.move_into_collection(list);
 }

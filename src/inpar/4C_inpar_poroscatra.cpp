@@ -18,6 +18,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::PoroScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs poroscatradyn{"POROSCATRA CONTROL"};
 
@@ -104,7 +105,8 @@ void Inpar::PoroScaTra::set_valid_parameters(std::map<std::string, Core::IO::Inp
           Monolithic, Part_ScatraToPoro, Part_PoroToScatra, Part_TwoWay),
       poroscatradyn);
 
-  Core::Utils::bool_parameter("MATCHINGGRID", true, "is matching grid", poroscatradyn);
+  poroscatradyn.specs.emplace_back(
+      parameter<bool>("MATCHINGGRID", {.description = "is matching grid", .default_value = true}));
 
   poroscatradyn.move_into_collection(list);
 }

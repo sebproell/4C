@@ -17,6 +17,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::LevelSet::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs levelsetcontrol{"LEVEL-SET CONTROL"};
 
@@ -32,10 +33,10 @@ void Inpar::LevelSet::set_valid_parameters(std::map<std::string, Core::IO::Input
           Inpar::ScaTra::calcerror_no_ls, Inpar::ScaTra::calcerror_initial_field),
       levelsetcontrol);
 
-  Core::Utils::bool_parameter("EXTRACT_INTERFACE_VEL", false,
-      "replace computed velocity at nodes of given distance of interface by approximated interface "
-      "velocity",
-      levelsetcontrol);
+  levelsetcontrol.specs.emplace_back(parameter<bool>("EXTRACT_INTERFACE_VEL",
+      {.description = "replace computed velocity at nodes of given distance of interface by "
+                      "approximated interface velocity",
+          .default_value = false}));
   Core::Utils::int_parameter("NUM_CONVEL_LAYERS", -1,
       "number of layers around the interface which keep their computed convective velocity",
       levelsetcontrol);
@@ -54,13 +55,15 @@ void Inpar::LevelSet::set_valid_parameters(std::map<std::string, Core::IO::Input
           Inpar::ScaTra::reinitaction_ellipticeq),
       ls_reinit);
 
-  Core::Utils::bool_parameter("REINIT_INITIAL", false,
-      "Has level set field to be reinitialized before first time step?", ls_reinit);
+  ls_reinit.specs.emplace_back(parameter<bool>("REINIT_INITIAL",
+      {.description = "Has level set field to be reinitialized before first time step?",
+          .default_value = false}));
   Core::Utils::int_parameter("REINITINTERVAL", 1, "reinitialization interval", ls_reinit);
 
   // parameters for signed distance reinitialization
-  Core::Utils::bool_parameter("REINITBAND", false,
-      "reinitialization only within a band around the interface, or entire domain?", ls_reinit);
+  ls_reinit.specs.emplace_back(parameter<bool>("REINITBAND",
+      {.description = "reinitialization only within a band around the interface, or entire domain?",
+          .default_value = false}));
   Core::Utils::double_parameter("REINITBANDWIDTH", 1.0,
       "level-set value defining band width for reinitialization", ls_reinit);
 
@@ -142,15 +145,16 @@ void Inpar::LevelSet::set_valid_parameters(std::map<std::string, Core::IO::Input
       tuple<std::string>("newton", "fixed_point"),
       tuple<Inpar::ScaTra::LinReinit>(Inpar::ScaTra::newton, Inpar::ScaTra::fixed_point),
       ls_reinit);
-  Core::Utils::bool_parameter("CORRECTOR_STEP", true,
-      "correction of interface position via volume constraint according to Sussman & Fatemi",
-      ls_reinit);
+  ls_reinit.specs.emplace_back(parameter<bool>(
+      "CORRECTOR_STEP", {.description = "correction of interface position via volume constraint "
+                                        "according to Sussman & Fatemi",
+                            .default_value = true}));
   Core::Utils::double_parameter("CONVTOL_REINIT", -1.0,
       "tolerance for convergence check according to Sussman et al. 1994 (turned off negative)",
       ls_reinit);
 
-  Core::Utils::bool_parameter(
-      "REINITVOLCORRECTION", false, "volume correction after reinitialization", ls_reinit);
+  ls_reinit.specs.emplace_back(parameter<bool>("REINITVOLCORRECTION",
+      {.description = "volume correction after reinitialization", .default_value = false}));
 
   Core::Utils::double_parameter(
       "PENALTY_PARA", -1.0, "penalty parameter for elliptic reinitialization", ls_reinit);
@@ -162,12 +166,13 @@ void Inpar::LevelSet::set_valid_parameters(std::map<std::string, Core::IO::Input
           Inpar::ScaTra::ls_2Dy, Inpar::ScaTra::ls_2Dz),
       ls_reinit);
 
-  Core::Utils::bool_parameter(
-      "PROJECTION", true, "use L2-projection for grad phi and related quantities", ls_reinit);
+  ls_reinit.specs.emplace_back(parameter<bool>(
+      "PROJECTION", {.description = "use L2-projection for grad phi and related quantities",
+                        .default_value = true}));
   Core::Utils::double_parameter(
       "PROJECTION_DIFF", 0.0, "use diffusive term for L2-projection", ls_reinit);
-  Core::Utils::bool_parameter(
-      "LUMPING", false, "use lumped mass matrix for L2-projection", ls_reinit);
+  ls_reinit.specs.emplace_back(parameter<bool>("LUMPING",
+      {.description = "use lumped mass matrix for L2-projection", .default_value = false}));
 
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::DiffFunc>("DIFF_FUNC", "hyperbolic",
       "function for diffusivity",

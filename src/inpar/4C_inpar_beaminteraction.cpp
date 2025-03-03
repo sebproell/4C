@@ -29,6 +29,7 @@ void Inpar::BeamInteraction::beam_interaction_conditions_get_all(
 void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs beaminteraction{"BEAM INTERACTION"};
 
@@ -54,7 +55,8 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
   Core::Utils::SectionSpecs crosslinking{beaminteraction, "CROSSLINKING"};
 
   // remove this some day
-  Core::Utils::bool_parameter("CROSSLINKER", false, "Crosslinker in problem", crosslinking);
+  crosslinking.specs.emplace_back(parameter<bool>(
+      "CROSSLINKER", {.description = "Crosslinker in problem", .default_value = false}));
 
   // bounding box for initial random crosslinker position
   Core::Utils::string_parameter("INIT_LINKER_BOUNDINGBOX", "1e12 1e12 1e12 1e12 1e12 1e12",
@@ -104,7 +106,8 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
 
   Core::Utils::SectionSpecs spherebeamlink{beaminteraction, "SPHERE BEAM LINK"};
 
-  Core::Utils::bool_parameter("SPHEREBEAMLINKING", false, "Integrins in problem", spherebeamlink);
+  spherebeamlink.specs.emplace_back(parameter<bool>(
+      "SPHEREBEAMLINKING", {.description = "Integrins in problem", .default_value = false}));
 
   // Reading double parameter for contraction rate for active linker
   Core::Utils::double_parameter("CONTRACTIONRATE", 0.0,

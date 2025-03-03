@@ -17,6 +17,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::PoroElast::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs poroelastdyn{"POROELASTICITY DYNAMIC"};
 
@@ -112,19 +113,23 @@ void Inpar::PoroElast::set_valid_parameters(std::map<std::string, Core::IO::Inpu
       tuple<Inpar::PoroElast::VectorNorm>(norm_l1, norm_l1_scaled, norm_l2, norm_rms, norm_inf),
       poroelastdyn);
 
-  Core::Utils::bool_parameter(
-      "SECONDORDER", true, "Second order coupling at the interface.", poroelastdyn);
+  poroelastdyn.specs.emplace_back(parameter<bool>("SECONDORDER",
+      {.description = "Second order coupling at the interface.", .default_value = true}));
 
-  Core::Utils::bool_parameter("CONTIPARTINT", false,
-      "Partial integration of porosity gradient in continuity equation", poroelastdyn);
+  poroelastdyn.specs.emplace_back(parameter<bool>("CONTIPARTINT",
+      {.description = "Partial integration of porosity gradient in continuity equation",
+          .default_value = false}));
 
-  Core::Utils::bool_parameter("CONTACT_NO_PENETRATION", false,
-      "No-Penetration Condition on active contact surface in case of poro contact problem!",
-      poroelastdyn);
+  poroelastdyn.specs.emplace_back(parameter<bool>("CONTACT_NO_PENETRATION",
+      {.description =
+              "No-Penetration Condition on active contact surface in case of poro contact problem!",
+          .default_value = false}));
 
-  Core::Utils::bool_parameter("MATCHINGGRID", true, "is matching grid", poroelastdyn);
+  poroelastdyn.specs.emplace_back(
+      parameter<bool>("MATCHINGGRID", {.description = "is matching grid", .default_value = true}));
 
-  Core::Utils::bool_parameter("CONVECTIVE_TERM", false, "convective term ", poroelastdyn);
+  poroelastdyn.specs.emplace_back(parameter<bool>(
+      "CONVECTIVE_TERM", {.description = "convective term ", .default_value = false}));
 
   // number of linear solver used for poroelasticity
   Core::Utils::int_parameter("LINEAR_SOLVER", -1,

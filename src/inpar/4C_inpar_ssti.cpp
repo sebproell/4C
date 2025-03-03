@@ -20,6 +20,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs sstidyn{"SSTI CONTROL"};
 
@@ -33,10 +34,10 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   Core::Utils::double_parameter("RESULTSEVERYTIME", 0, "increment for writing solution", sstidyn);
   Core::Utils::int_parameter("RESULTSEVERY", 1, "increment for writing solution", sstidyn);
   Core::Utils::int_parameter("ITEMAX", 10, "maximum number of iterations over fields", sstidyn);
-  Core::Utils::bool_parameter("SCATRA_FROM_RESTART_FILE", false,
-      "read scatra result from restart files (use option 'restartfromfile' during execution of "
-      "4C)",
-      sstidyn);
+  sstidyn.specs.emplace_back(parameter<bool>("SCATRA_FROM_RESTART_FILE",
+      {.description = "read scatra result from restart files (use option 'restartfromfile' during "
+                      "execution of 4C)",
+          .default_value = false}));
   Core::Utils::string_parameter(
       "SCATRA_FILENAME", "nil", "Control-file name for reading scatra results in SSTI", sstidyn);
   Core::Utils::string_to_integral_parameter<SolutionScheme>("COUPALGO", "ssti_Monolithic",
@@ -46,8 +47,8 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "scalar transport time integration type is needed to instantiate correct scalar transport "
       "time integration scheme for ssi problems",
       tuple<std::string>("Elch"), tuple<ScaTraTimIntType>(ScaTraTimIntType::elch), sstidyn);
-  Core::Utils::bool_parameter(
-      "ADAPTIVE_TIMESTEPPING", false, "flag for adaptive time stepping", sstidyn);
+  sstidyn.specs.emplace_back(parameter<bool>("ADAPTIVE_TIMESTEPPING",
+      {.description = "flag for adaptive time stepping", .default_value = false}));
 
   sstidyn.move_into_collection(list);
 
@@ -110,9 +111,10 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
           Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag,
           Core::LinAlg::EquilibrationMethod::symmetry),
       sstidynmono);
-  Core::Utils::bool_parameter("EQUILIBRATION_INIT_SCATRA", false,
-      "use equilibration method of ScaTra to equilibrate initial calculation of potential",
-      sstidynmono);
+  sstidynmono.specs.emplace_back(parameter<bool>("EQUILIBRATION_INIT_SCATRA",
+      {.description =
+              "use equilibration method of ScaTra to equilibrate initial calculation of potential",
+          .default_value = false}));
 
   sstidynmono.move_into_collection(list);
 

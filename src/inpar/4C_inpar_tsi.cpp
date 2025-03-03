@@ -17,6 +17,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs tsidyn{"TSI DYNAMIC"};
 
@@ -29,7 +30,8 @@ void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           IterStaggAitkenIrons, IterStaggFixedRel, Monolithic),
       tsidyn);
 
-  Core::Utils::bool_parameter("MATCHINGGRID", true, "is matching grid", tsidyn);
+  tsidyn.specs.emplace_back(
+      parameter<bool>("MATCHINGGRID", {.description = "is matching grid", .default_value = true}));
 
   // output type
   Core::Utils::int_parameter(
@@ -91,26 +93,29 @@ void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "LINEAR_SOLVER", -1, "number of linear solver used for monolithic TSI problems", tsidynmono);
 
   // convergence criteria adaptivity of monolithic TSI solver
-  Core::Utils::bool_parameter("ADAPTCONV", false,
-      "Switch on adaptive control of linear solver tolerance for nonlinear solution", tsidynmono);
+  tsidynmono.specs.emplace_back(parameter<bool>("ADAPTCONV",
+      {.description =
+              "Switch on adaptive control of linear solver tolerance for nonlinear solution",
+          .default_value = false}));
   Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.1,
       "The linear solver shall be this much better than the current nonlinear residual in the "
       "nonlinear convergence limit",
       tsidynmono);
 
-  Core::Utils::bool_parameter(
-      "INFNORMSCALING", true, "Scale blocks of matrix with row infnorm?", tsidynmono);
+  tsidynmono.specs.emplace_back(parameter<bool>("INFNORMSCALING",
+      {.description = "Scale blocks of matrix with row infnorm?", .default_value = true}));
 
   // merge TSI block matrix to enable use of direct solver in monolithic TSI
   // default: "No", i.e. use block matrix
-  Core::Utils::bool_parameter(
-      "MERGE_TSI_BLOCK_MATRIX", false, "Merge TSI block matrix", tsidynmono);
+  tsidynmono.specs.emplace_back(parameter<bool>(
+      "MERGE_TSI_BLOCK_MATRIX", {.description = "Merge TSI block matrix", .default_value = false}));
 
   // in case of monolithic TSI nodal values (displacements, temperatures and
   // reaction forces) at fix points of the body can be calculated
   // default: "No", i.e. nothing is calculated
-  Core::Utils::bool_parameter("CALC_NECKING_TSI_VALUES", false,
-      "Calculate nodal values for evaluation and validation of necking", tsidynmono);
+  tsidynmono.specs.emplace_back(parameter<bool>("CALC_NECKING_TSI_VALUES",
+      {.description = "Calculate nodal values for evaluation and validation of necking",
+          .default_value = false}));
 
   Core::Utils::string_to_integral_parameter<LineSearch>("TSI_LINE_SEARCH", "none",
       "line-search strategy", tuple<std::string>("none", "structure", "thermo", "and", "or"),
@@ -164,8 +169,9 @@ void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           Inpar::CONTACT::NitWgt_physical),
       tsic);
 
-  Core::Utils::bool_parameter("NITSCHE_PENALTY_ADAPTIVE_TSI", true,
-      "adapt penalty parameter after each converged time step", tsic);
+  tsic.specs.emplace_back(parameter<bool>("NITSCHE_PENALTY_ADAPTIVE_TSI",
+      {.description = "adapt penalty parameter after each converged time step",
+          .default_value = true}));
 
   Core::Utils::double_parameter(
       "PENALTYPARAM_THERMO", 0.0, "Penalty parameter for Nitsche solution strategy", tsic);

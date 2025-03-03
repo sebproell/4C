@@ -16,6 +16,7 @@ void Inpar::ElectroPhysiology::set_valid_parameters(
     std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs epcontrol{"CARDIAC MONODOMAIN CONTROL"};
 

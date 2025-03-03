@@ -19,6 +19,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*-------------------------------------------------------------------------*
    | general control parameters for particle simulations                     |
@@ -47,8 +48,8 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       "RESTARTEVERY", 1, "write restart possibility every RESTARTEVERY steps", particledyn);
 
   // write ghosted particles
-  Core::Utils::bool_parameter(
-      "WRITE_GHOSTED_PARTICLES", false, "write ghosted particles (debug feature)", particledyn);
+  particledyn.specs.emplace_back(parameter<bool>("WRITE_GHOSTED_PARTICLES",
+      {.description = "write ghosted particles (debug feature)", .default_value = false}));
 
   // time loop control
   Core::Utils::double_parameter("TIMESTEP", 0.01, "time step size", particledyn);
@@ -66,8 +67,8 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       "apply viscous damping force to determine static equilibrium solutions", particledyn);
 
   // transfer particles to new bins every time step
-  Core::Utils::bool_parameter(
-      "TRANSFER_EVERY", false, "transfer particles to new bins every time step", particledyn);
+  particledyn.specs.emplace_back(parameter<bool>("TRANSFER_EVERY",
+      {.description = "transfer particles to new bins every time step", .default_value = false}));
 
   // considered particle phases with dynamic load balance weighting factor
   Core::Utils::string_parameter("PHASE_TO_DYNLOADBALFAC", "none",
@@ -94,14 +95,14 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       "material id for particle wall from bounding box source", particledyn);
 
   // flags defining considered states of particle wall
-  Core::Utils::bool_parameter(
-      "PARTICLE_WALL_MOVING", false, "consider a moving particle wall", particledyn);
-  Core::Utils::bool_parameter(
-      "PARTICLE_WALL_LOADED", false, "consider loading on particle wall", particledyn);
+  particledyn.specs.emplace_back(parameter<bool>("PARTICLE_WALL_MOVING",
+      {.description = "consider a moving particle wall", .default_value = false}));
+  particledyn.specs.emplace_back(parameter<bool>("PARTICLE_WALL_LOADED",
+      {.description = "consider loading on particle wall", .default_value = false}));
 
   // consider rigid body motion
-  Core::Utils::bool_parameter(
-      "RIGID_BODY_MOTION", false, "consider rigid body motion", particledyn);
+  particledyn.specs.emplace_back(parameter<bool>(
+      "RIGID_BODY_MOTION", {.description = "consider rigid body motion", .default_value = false}));
 
   Core::Utils::double_parameter("RIGID_BODY_PHASECHANGE_RADIUS", -1.0,
       "search radius for neighboring rigid bodies in case of phase change", particledyn);
@@ -158,8 +159,8 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
   Core::Utils::SectionSpecs particledynsph{particledyn, "SPH"};
 
   // write particle-wall interaction output
-  Core::Utils::bool_parameter("WRITE_PARTICLE_WALL_INTERACTION", false,
-      "write particle-wall interaction output", particledynsph);
+  particledynsph.specs.emplace_back(parameter<bool>("WRITE_PARTICLE_WALL_INTERACTION",
+      {.description = "write particle-wall interaction output", .default_value = false}));
 
   // type of smoothed particle hydrodynamics kernel
   Core::Utils::string_to_integral_parameter<KernelType>("KERNEL", "CubicSpline",
@@ -256,8 +257,8 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
           Inpar::PARTICLE::NoTemperatureEvaluation, Inpar::PARTICLE::TemperatureIntegration),
       particledynsph);
 
-  Core::Utils::bool_parameter(
-      "TEMPERATUREGRADIENT", false, "evaluate temperature gradient", particledynsph);
+  particledynsph.specs.emplace_back(parameter<bool>("TEMPERATUREGRADIENT",
+      {.description = "evaluate temperature gradient", .default_value = false}));
 
   // type of heat source
   Core::Utils::string_to_integral_parameter<HeatSourceType>("HEATSOURCETYPE", "NoHeatSource",
@@ -274,8 +275,8 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       "HEATSOURCE_DIRECTION", "0.0 0.0 0.0", "direction of surface heat source", particledynsph);
 
   // evaporation induced heat loss
-  Core::Utils::bool_parameter(
-      "VAPOR_HEATLOSS", false, "evaluate evaporation induced heat loss", particledynsph);
+  particledynsph.specs.emplace_back(parameter<bool>("VAPOR_HEATLOSS",
+      {.description = "evaluate evaporation induced heat loss", .default_value = false}));
   Core::Utils::double_parameter(
       "VAPOR_HEATLOSS_LATENTHEAT", 0.0, "latent heat in heat loss formula", particledynsph);
   Core::Utils::double_parameter("VAPOR_HEATLOSS_ENTHALPY_REFTEMP", 0.0,
@@ -286,8 +287,8 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       "VAPOR_HEATLOSS_TFAC", 0.0, "temperature factor in heat loss formula", particledynsph);
 
   // evaporation induced recoil pressure
-  Core::Utils::bool_parameter(
-      "VAPOR_RECOIL", false, "evaluate evaporation induced recoil pressure", particledynsph);
+  particledynsph.specs.emplace_back(parameter<bool>("VAPOR_RECOIL",
+      {.description = "evaluate evaporation induced recoil pressure", .default_value = false}));
   Core::Utils::double_parameter("VAPOR_RECOIL_BOILINGTEMPERATURE", 0.0,
       "boiling temperature in recoil pressure formula", particledynsph);
   Core::Utils::double_parameter(
@@ -324,15 +325,16 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       "triple point normal correction wall color field up", particledynsph);
 
   // interface viscosity
-  Core::Utils::bool_parameter(
-      "INTERFACE_VISCOSITY", false, "evaluate interface viscosity", particledynsph);
+  particledynsph.specs.emplace_back(parameter<bool>("INTERFACE_VISCOSITY",
+      {.description = "evaluate interface viscosity", .default_value = false}));
   Core::Utils::double_parameter("INTERFACE_VISCOSITY_LIQUIDGAS", 0.0,
       "artificial viscosity on liquid-gas interface", particledynsph);
   Core::Utils::double_parameter("INTERFACE_VISCOSITY_SOLIDLIQUID", 0.0,
       "artificial viscosity on solid-liquid interface", particledynsph);
 
   // barrier force
-  Core::Utils::bool_parameter("BARRIER_FORCE", false, "evaluate barrier force", particledynsph);
+  particledynsph.specs.emplace_back(parameter<bool>(
+      "BARRIER_FORCE", {.description = "evaluate barrier force", .default_value = false}));
   Core::Utils::double_parameter(
       "BARRIER_FORCE_DISTANCE", 0.0, "barrier force distance", particledynsph);
   Core::Utils::double_parameter(
@@ -430,12 +432,12 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
   Core::Utils::SectionSpecs particledyndem{particledyn, "DEM"};
 
   // write particle energy output
-  Core::Utils::bool_parameter(
-      "WRITE_PARTICLE_ENERGY", false, "write particle energy output", particledyndem);
+  particledyndem.specs.emplace_back(parameter<bool>("WRITE_PARTICLE_ENERGY",
+      {.description = "write particle energy output", .default_value = false}));
 
   // write particle-wall interaction output
-  Core::Utils::bool_parameter("WRITE_PARTICLE_WALL_INTERACTION", false,
-      "write particle-wall interaction output", particledyndem);
+  particledyndem.specs.emplace_back(parameter<bool>("WRITE_PARTICLE_WALL_INTERACTION",
+      {.description = "write particle-wall interaction output", .default_value = false}));
 
   // type of normal contact law
   Core::Utils::string_to_integral_parameter<NormalContact>("NORMALCONTACTLAW", "NormalLinearSpring",
@@ -513,8 +515,8 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       "linearly regularized damping normal force in the interval "
       "$|g| < (\\text{DAMP_REG_FAC} \\cdot r_{\\min})$",
       particledyndem);
-  Core::Utils::bool_parameter(
-      "TENSION_CUTOFF", true, "evaluate tension cutoff of normal contact force", particledyndem);
+  particledyndem.specs.emplace_back(parameter<bool>("TENSION_CUTOFF",
+      {.description = "evaluate tension cutoff of normal contact force", .default_value = true}));
 
   Core::Utils::double_parameter("POISSON_RATIO", -1.0, "poisson ratio", particledyndem);
   Core::Utils::double_parameter("YOUNG_MODULUS", -1.0, "young's modulus", particledyndem);
@@ -531,11 +533,12 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       "ADHESION_MAX_CONTACT_PRESSURE", 0.0, "adhesion maximum contact pressure", particledyndem);
   Core::Utils::double_parameter(
       "ADHESION_MAX_CONTACT_FORCE", 0.0, "adhesion maximum contact force", particledyndem);
-  Core::Utils::bool_parameter("ADHESION_USE_MAX_CONTACT_FORCE", false,
-      "use maximum contact force instead of maximum contact pressure", particledyndem);
+  particledyndem.specs.emplace_back(parameter<bool>("ADHESION_USE_MAX_CONTACT_FORCE",
+      {.description = "use maximum contact force instead of maximum contact pressure",
+          .default_value = false}));
 
-  Core::Utils::bool_parameter(
-      "ADHESION_VDW_CURVE_SHIFT", false, "shifts van-der-Waals-curve to g = 0", particledyndem);
+  particledyndem.specs.emplace_back(parameter<bool>("ADHESION_VDW_CURVE_SHIFT",
+      {.description = "shifts van-der-Waals-curve to g = 0", .default_value = false}));
 
   Core::Utils::double_parameter(
       "ADHESION_HAMAKER", -1.0, "hamaker constant of van-der-Waals interaction", particledyndem);

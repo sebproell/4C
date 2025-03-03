@@ -18,6 +18,7 @@ FOUR_C_NAMESPACE_OPEN
 void ALE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs adyn{"ALE DYNAMIC"};
 
@@ -33,11 +34,14 @@ void ALE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
           springs_material, springs_spatial),
       adyn);
 
-  Core::Utils::bool_parameter("ASSESSMESHQUALITY", false,
-      "Evaluate element quality measure according to [Oddy et al. 1988]", adyn);
+  adyn.specs.emplace_back(parameter<bool>("ASSESSMESHQUALITY",
+      {.description = "Evaluate element quality measure according to [Oddy et al. 1988]",
+          .default_value = false}));
 
-  Core::Utils::bool_parameter("UPDATEMATRIX", false,
-      "Update stiffness matrix in every time step (only for linear/material strategies)", adyn);
+  adyn.specs.emplace_back(parameter<bool>("UPDATEMATRIX",
+      {.description =
+              "Update stiffness matrix in every time step (only for linear/material strategies)",
+          .default_value = false}));
 
   Core::Utils::int_parameter("MAXITER", 1, "Maximum number of newton iterations.", adyn);
   Core::Utils::double_parameter(

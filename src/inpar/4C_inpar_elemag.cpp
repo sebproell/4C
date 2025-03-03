@@ -17,6 +17,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::EleMag::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs electromagneticdyn{"ELECTROMAGNETIC DYNAMIC"};
 
@@ -80,12 +81,12 @@ void Inpar::EleMag::set_valid_parameters(std::map<std::string, Core::IO::InputSp
         "zero_field", "Initial field for ele problem", name, label, electromagneticdyn);
 
     // Error calculation
-    Core::Utils::bool_parameter(
-        "CALCERR", false, "Calc the error wrt ERRORFUNCNO?", electromagneticdyn);
+    electromagneticdyn.specs.emplace_back(parameter<bool>(
+        "CALCERR", {.description = "Calc the error wrt ERRORFUNCNO?", .default_value = false}));
 
     // Post process solution?
-    Core::Utils::bool_parameter(
-        "POSTPROCESS", false, "Postprocess solution? (very slow)", electromagneticdyn);
+    electromagneticdyn.specs.emplace_back(parameter<bool>("POSTPROCESS",
+        {.description = "Postprocess solution? (very slow)", .default_value = false}));
   }
 
   Core::Utils::int_parameter(

@@ -17,6 +17,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::PaSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs pasidyn{"PASI DYNAMIC"};
 
@@ -55,8 +56,8 @@ void Inpar::PaSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   Core::Utils::double_parameter("CONVTOLRELATIVEFORCE", -1.0,
       "tolerance of relative interface force increments in partitioned iterations", pasidyn);
 
-  Core::Utils::bool_parameter(
-      "IGNORE_CONV_CHECK", false, "ignore convergence check and proceed simulation", pasidyn);
+  pasidyn.specs.emplace_back(parameter<bool>("IGNORE_CONV_CHECK",
+      {.description = "ignore convergence check and proceed simulation", .default_value = false}));
 
   // parameters for relaxation
   Core::Utils::double_parameter("STARTOMEGA", 1.0, "fixed relaxation parameter", pasidyn);

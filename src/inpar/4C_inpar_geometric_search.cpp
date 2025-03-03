@@ -13,6 +13,7 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::GeometricSearch::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
+  using namespace Core::IO::InputSpecBuilders;
   Core::Utils::SectionSpecs boundingvolumestrategy{"BOUNDINGVOLUME STRATEGY"};
 
   Core::Utils::double_parameter("BEAM_RADIUS_EXTENSION_FACTOR", 2.0,
@@ -25,8 +26,9 @@ void Inpar::GeometricSearch::set_valid_parameters(std::map<std::string, Core::IO
       "radius in all directions (+ and -).",
       boundingvolumestrategy);
 
-  Core::Utils::bool_parameter("WRITE_GEOMETRIC_SEARCH_VISUALIZATION", false,
-      "If visualization output for the geometric search should be written", boundingvolumestrategy);
+  boundingvolumestrategy.specs.emplace_back(parameter<bool>("WRITE_GEOMETRIC_SEARCH_VISUALIZATION",
+      {.description = "If visualization output for the geometric search should be written",
+          .default_value = false}));
 
   boundingvolumestrategy.move_into_collection(list);
 }

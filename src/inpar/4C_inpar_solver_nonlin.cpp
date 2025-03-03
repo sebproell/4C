@@ -17,6 +17,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   /*----------------------------------------------------------------------*
    * parameters for NOX - non-linear solution
@@ -63,11 +64,10 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
     Core::Utils::double_parameter("Forcing Term Maximum Tolerance", 0.01, "", newton);
     Core::Utils::double_parameter("Forcing Term Alpha", 1.5, "used only by \"Type 2\"", newton);
     Core::Utils::double_parameter("Forcing Term Gamma", 0.9, "used only by \"Type 2\"", newton);
-    Core::Utils::bool_parameter("Rescue Bad Newton Solve", true,
-        "If set to true, we will use "
-        "the computed direction even if the linear solve does not achieve the tolerance "
-        "specified by the forcing term",
-        newton);
+    newton.specs.emplace_back(parameter<bool>("Rescue Bad Newton Solve",
+        {.description = "If set to true, we will use the computed direction even if the linear "
+                        "solve does not achieve the tolerance specified by the forcing term",
+            .default_value = true}));
   }
   newton.move_into_collection(list);
 
@@ -166,10 +166,10 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
         "A multiplier between zero and one that reduces the step size between line search "
         "iterations",
         backtrack);
-    Core::Utils::bool_parameter("Allow Exceptions", false,
-        "Set to true, if exceptions during the force evaluation and backtracking routine should be "
-        "allowed.",
-        backtrack);
+    backtrack.specs.emplace_back(parameter<bool>("Allow Exceptions",
+        {.description = "Set to true, if exceptions during the force evaluation and backtracking "
+                        "routine should be allowed.",
+            .default_value = false}));
   }
   backtrack.move_into_collection(list);
 
@@ -218,15 +218,15 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
 
     Core::Utils::double_parameter(
         "Alpha Factor", 1.0e-4, "Parameter choice for sufficient decrease condition", polynomial);
-    Core::Utils::bool_parameter("Force Interpolation", false,
-        "Set to true if at least one interpolation step should be used. The default is false which "
-        "means that the line search will stop if the default step length satisfies the convergence "
-        "criteria",
-        polynomial);
-    Core::Utils::bool_parameter("Use Counters", true,
-        "Set to true if we should use counters and then output the result to the parameter list as "
-        "described in Output Parameters",
-        polynomial);
+    polynomial.specs.emplace_back(parameter<bool>("Force Interpolation",
+        {.description = "Set to true if at least one interpolation step should be used. The "
+                        "default is false which means that the line search will stop if the "
+                        "default step length satisfies the convergence criteria",
+            .default_value = false}));
+    polynomial.specs.emplace_back(parameter<bool>("Use Counters",
+        {.description = "Set to true if we should use counters and then output the result to the "
+                        "parameter list as described in Output Parameters",
+            .default_value = true}));
     Core::Utils::int_parameter("Maximum Iteration for Increase", 0,
         "Maximum index of the nonlinear iteration for which we allow a relative increase",
         polynomial);
@@ -269,14 +269,14 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
         "Choice to use for the sufficient decrease condition", morethuente,
         sufficient_decrease_condition_valid_input);
 
-    Core::Utils::bool_parameter("Optimize Slope Calculation", false,
-        "Boolean value. If set to true the value of $s^T J^T F$ is estimated using a "
-        "directional derivative in a call to ::NOX::LineSearch::Common::computeSlopeWithOutJac. "
-        "If false the slope computation is computed with the "
-        "::NOX::LineSearch::Common::computeSlope method. "
-        "Setting this to true eliminates having to compute the Jacobian at each inner iteration of "
-        "the More'-Thuente line search",
-        morethuente);
+    morethuente.specs.emplace_back(parameter<bool>("Optimize Slope Calculation",
+        {.description = "Boolean value. If set to true the value of $s^T J^T F$ is estimated using "
+                        "a directional derivative in a call to "
+                        "::NOX::LineSearch::Common::computeSlopeWithOutJac. If false the slope "
+                        "computation is computed with the ::NOX::LineSearch::Common::computeSlope "
+                        "method. Setting this to true eliminates having to compute the Jacobian at "
+                        "each inner iteration of the More'-Thuente line search",
+            .default_value = false}));
   }
   morethuente.move_into_collection(list);
 
@@ -309,16 +309,26 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::SectionSpecs printing{snox, "Printing"};
 
   {
-    Core::Utils::bool_parameter("Error", false, "", printing);
-    Core::Utils::bool_parameter("Warning", true, "", printing);
-    Core::Utils::bool_parameter("Outer Iteration", true, "", printing);
-    Core::Utils::bool_parameter("Inner Iteration", true, "", printing);
-    Core::Utils::bool_parameter("Parameters", false, "", printing);
-    Core::Utils::bool_parameter("Details", false, "", printing);
-    Core::Utils::bool_parameter("Outer Iteration StatusTest", true, "", printing);
-    Core::Utils::bool_parameter("Linear Solver Details", false, "", printing);
-    Core::Utils::bool_parameter("Test Details", false, "", printing);
-    Core::Utils::bool_parameter("Debug", false, "", printing);
+    printing.specs.emplace_back(
+        parameter<bool>("Error", {.description = "", .default_value = false}));
+    printing.specs.emplace_back(
+        parameter<bool>("Warning", {.description = "", .default_value = true}));
+    printing.specs.emplace_back(
+        parameter<bool>("Outer Iteration", {.description = "", .default_value = true}));
+    printing.specs.emplace_back(
+        parameter<bool>("Inner Iteration", {.description = "", .default_value = true}));
+    printing.specs.emplace_back(
+        parameter<bool>("Parameters", {.description = "", .default_value = false}));
+    printing.specs.emplace_back(
+        parameter<bool>("Details", {.description = "", .default_value = false}));
+    printing.specs.emplace_back(
+        parameter<bool>("Outer Iteration StatusTest", {.description = "", .default_value = true}));
+    printing.specs.emplace_back(
+        parameter<bool>("Linear Solver Details", {.description = "", .default_value = false}));
+    printing.specs.emplace_back(
+        parameter<bool>("Test Details", {.description = "", .default_value = false}));
+    printing.specs.emplace_back(
+        parameter<bool>("Debug", {.description = "", .default_value = false}));
   }
   printing.move_into_collection(list);
 
@@ -356,20 +366,22 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
 
   {
     // convergence criteria adaptivity
-    Core::Utils::bool_parameter("Adaptive Control", false,
-        "Switch on adaptive control of linear solver tolerance for nonlinear solution",
-        linearSolver);
+    linearSolver.specs.emplace_back(parameter<bool>("Adaptive Control",
+        {.description =
+                "Switch on adaptive control of linear solver tolerance for nonlinear solution",
+            .default_value = false}));
     Core::Utils::double_parameter("Adaptive Control Objective", 0.1,
         "The linear solver shall be this much better than the current nonlinear residual in the "
         "nonlinear convergence limit",
         linearSolver);
-    Core::Utils::bool_parameter(
-        "Zero Initial Guess", true, "Zero out the delta X vector if requested.", linearSolver);
-    Core::Utils::bool_parameter("Computing Scaling Manually", false,
-        "Allows the manually scaling of your linear system (not supported at the moment).",
-        linearSolver);
-    Core::Utils::bool_parameter(
-        "Output Solver Details", true, "Switch the linear solver output on and off.", linearSolver);
+    linearSolver.specs.emplace_back(parameter<bool>("Zero Initial Guess",
+        {.description = "Zero out the delta X vector if requested.", .default_value = true}));
+    linearSolver.specs.emplace_back(parameter<bool>("Computing Scaling Manually",
+        {.description =
+                "Allows the manually scaling of your linear system (not supported at the moment).",
+            .default_value = false}));
+    linearSolver.specs.emplace_back(parameter<bool>("Output Solver Details",
+        {.description = "Switch the linear solver output on and off.", .default_value = true}));
   }
   linearSolver.move_into_collection(list);
 }

@@ -14,6 +14,7 @@ FOUR_C_NAMESPACE_OPEN
 void Lubrication::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs lubricationdyn("LUBRICATION DYNAMIC");
 
@@ -48,14 +49,15 @@ void Lubrication::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   Core::Utils::int_parameter(
       "HFUNCNO", -1, "function number for lubrication height field", lubricationdyn);
 
-  Core::Utils::bool_parameter(
-      "OUTMEAN", false, "Output of mean values for scalars and density", lubricationdyn);
+  lubricationdyn.specs.emplace_back(parameter<bool>("OUTMEAN",
+      {.description = "Output of mean values for scalars and density", .default_value = false}));
 
-  Core::Utils::bool_parameter(
-      "OUTPUT_GMSH", false, "Do you want to write Gmsh postprocessing files?", lubricationdyn);
+  lubricationdyn.specs.emplace_back(parameter<bool>("OUTPUT_GMSH",
+      {.description = "Do you want to write Gmsh postprocessing files?", .default_value = false}));
 
-  Core::Utils::bool_parameter("MATLAB_STATE_OUTPUT", false,
-      "Do you want to write the state solution to Matlab file?", lubricationdyn);
+  lubricationdyn.specs.emplace_back(parameter<bool>("MATLAB_STATE_OUTPUT",
+      {.description = "Do you want to write the state solution to Matlab file?",
+          .default_value = false}));
 
   /// linear solver id used for lubrication problems
   Core::Utils::int_parameter("LINEAR_SOLVER", -1,
@@ -69,9 +71,10 @@ void Lubrication::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "CONVTOL", 1e-13, "Tolerance for convergence check", lubricationdyn);
 
   // convergence criteria adaptivity
-  Core::Utils::bool_parameter("ADAPTCONV", false,
-      "Switch on adaptive control of linear solver tolerance for nonlinear solution",
-      lubricationdyn);
+  lubricationdyn.specs.emplace_back(parameter<bool>("ADAPTCONV",
+      {.description =
+              "Switch on adaptive control of linear solver tolerance for nonlinear solution",
+          .default_value = false}));
   Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.1,
       "The linear solver shall be this much better than the current nonlinear residual in the "
       "nonlinear convergence limit",
@@ -106,17 +109,19 @@ void Lubrication::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "ROUGHNESS_STD_DEVIATION", 0., "standard deviation of surface roughness", lubricationdyn);
 
   /// use modified reynolds equ.
-  Core::Utils::bool_parameter("MODIFIED_REYNOLDS_EQU", false,
-      "the lubrication problem will use the modified reynolds equ. in order to consider surface"
-      " roughness",
-      lubricationdyn);
+  lubricationdyn.specs.emplace_back(parameter<bool>("MODIFIED_REYNOLDS_EQU",
+      {.description = "the lubrication problem will use the modified reynolds equ. in order to "
+                      "consider surface roughness",
+          .default_value = false}));
 
   /// Flag for considering the Squeeze term in Reynolds Equation
-  Core::Utils::bool_parameter("ADD_SQUEEZE_TERM", false,
-      "the squeeze term will also be considered in the Reynolds Equation", lubricationdyn);
+  lubricationdyn.specs.emplace_back(parameter<bool>("ADD_SQUEEZE_TERM",
+      {.description = "the squeeze term will also be considered in the Reynolds Equation",
+          .default_value = false}));
 
   /// Flag for considering the pure Reynolds Equation
-  Core::Utils::bool_parameter("PURE_LUB", false, "the problem is pure lubrication", lubricationdyn);
+  lubricationdyn.specs.emplace_back(parameter<bool>(
+      "PURE_LUB", {.description = "the problem is pure lubrication", .default_value = false}));
 
   lubricationdyn.move_into_collection(list);
 }

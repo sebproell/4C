@@ -17,6 +17,7 @@ FOUR_C_NAMESPACE_OPEN
 void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs tdyn{"THERMAL DYNAMIC"};
 
@@ -94,15 +95,18 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
       tuple<PredEnum>(pred_vague, pred_consttemp, pred_consttemprate, pred_tangtemp), tdyn);
 
   // convergence criteria solver adaptivity
-  Core::Utils::bool_parameter("ADAPTCONV", false,
-      "Switch on adaptive control of linear solver tolerance for nonlinear solution", tdyn);
+  tdyn.specs.emplace_back(parameter<bool>("ADAPTCONV",
+      {.description =
+              "Switch on adaptive control of linear solver tolerance for nonlinear solution",
+          .default_value = false}));
   Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.1,
       "The linear solver shall be this much better than the current nonlinear residual in the "
       "nonlinear convergence limit",
       tdyn);
 
-  Core::Utils::bool_parameter(
-      "LUMPCAPA", false, "Lump the capacity matrix for explicit time integration", tdyn);
+  tdyn.specs.emplace_back(parameter<bool>(
+      "LUMPCAPA", {.description = "Lump the capacity matrix for explicit time integration",
+                      .default_value = false}));
 
   // number of linear solver used for thermal problems
   Core::Utils::int_parameter(
@@ -151,29 +155,32 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
     Core::Utils::SectionSpecs sublist_vtk_output{tdyn, "RUNTIME VTK OUTPUT"};
 
     // whether to write output for thermo
-    Core::Utils::bool_parameter("OUTPUT_THERMO", false, "write thermo output", sublist_vtk_output);
+    sublist_vtk_output.specs.emplace_back(parameter<bool>(
+        "OUTPUT_THERMO", {.description = "write thermo output", .default_value = false}));
 
     // whether to write temperature state
-    Core::Utils::bool_parameter(
-        "TEMPERATURE", false, "write temperature output", sublist_vtk_output);
+    sublist_vtk_output.specs.emplace_back(parameter<bool>(
+        "TEMPERATURE", {.description = "write temperature output", .default_value = false}));
 
     // whether to write heatflux state
-    Core::Utils::bool_parameter("HEATFLUX", false, "write heatflux output", sublist_vtk_output);
+    sublist_vtk_output.specs.emplace_back(parameter<bool>(
+        "HEATFLUX", {.description = "write heatflux output", .default_value = false}));
 
     // whether to write temperature gradient state
-    Core::Utils::bool_parameter(
-        "TEMPGRAD", false, "write temperature gradient output", sublist_vtk_output);
+    sublist_vtk_output.specs.emplace_back(parameter<bool>(
+        "TEMPGRAD", {.description = "write temperature gradient output", .default_value = false}));
 
     // whether to write element owner
-    Core::Utils::bool_parameter("ELEMENT_OWNER", false, "write element owner", sublist_vtk_output);
+    sublist_vtk_output.specs.emplace_back(parameter<bool>(
+        "ELEMENT_OWNER", {.description = "write element owner", .default_value = false}));
 
     // whether to write element GIDs
-    Core::Utils::bool_parameter(
-        "ELEMENT_GID", false, "write 4C internal element GIDs", sublist_vtk_output);
+    sublist_vtk_output.specs.emplace_back(parameter<bool>(
+        "ELEMENT_GID", {.description = "write 4C internal element GIDs", .default_value = false}));
 
     // whether to write node GIDs
-    Core::Utils::bool_parameter(
-        "NODE_GID", false, "write 4C internal node GIDs", sublist_vtk_output);
+    sublist_vtk_output.specs.emplace_back(parameter<bool>(
+        "NODE_GID", {.description = "write 4C internal node GIDs", .default_value = false}));
 
     sublist_vtk_output.move_into_collection(list);
   }
@@ -183,10 +190,12 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
     Core::Utils::SectionSpecs sublist_csv_output{tdyn, "RUNTIME CSV OUTPUT"};
 
     // whether to write csv output for thermo
-    Core::Utils::bool_parameter("OUTPUT_THERMO", false, "write thermo output", sublist_csv_output);
+    sublist_csv_output.specs.emplace_back(parameter<bool>(
+        "OUTPUT_THERMO", {.description = "write thermo output", .default_value = false}));
 
     // whether to write energy state
-    Core::Utils::bool_parameter("ENERGY", false, "write energy output", sublist_csv_output);
+    sublist_csv_output.specs.emplace_back(
+        parameter<bool>("ENERGY", {.description = "write energy output", .default_value = false}));
 
     sublist_csv_output.move_into_collection(list);
   }

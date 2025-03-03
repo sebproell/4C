@@ -18,6 +18,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::ArtDyn::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
   Core::Utils::SectionSpecs andyn{"ARTERIAL DYNAMIC"};
 
   Core::Utils::string_to_integral_parameter<TimeIntegrationScheme>("DYNAMICTYPE",
@@ -31,8 +32,9 @@ void Inpar::ArtDyn::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", andyn);
   Core::Utils::int_parameter("RESULTSEVERY", 1, "Increment for writing solution", andyn);
 
-  Core::Utils::bool_parameter(
-      "SOLVESCATRA", false, "Flag to (de)activate solving scalar transport in blood", andyn);
+  andyn.specs.emplace_back(parameter<bool>(
+      "SOLVESCATRA", {.description = "Flag to (de)activate solving scalar transport in blood",
+                         .default_value = false}));
 
   // number of linear solver used for arterial dynamics
   Core::Utils::int_parameter(
@@ -57,6 +59,7 @@ void Inpar::ArtDyn::set_valid_parameters(std::map<std::string, Core::IO::InputSp
 void Inpar::ArteryNetwork::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs redtisdyn{"COUPLED REDUCED-D AIRWAYS AND TISSUE DYNAMIC"};
   Core::Utils::double_parameter("CONVTOL_P", 1E-6,
@@ -210,12 +213,14 @@ void Inpar::ArteryNetwork::set_valid_conditions(
 
 void Inpar::BioFilm::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
+  using namespace Core::IO::InputSpecBuilders;
   Core::Utils::SectionSpecs biofilmcontrol{"BIOFILM CONTROL"};
 
-  Core::Utils::bool_parameter(
-      "BIOFILMGROWTH", false, "Scatra algorithm for biofilm growth", biofilmcontrol);
-  Core::Utils::bool_parameter("AVGROWTH", false,
-      "The calculation of growth parameters is based on averaged values", biofilmcontrol);
+  biofilmcontrol.specs.emplace_back(parameter<bool>("BIOFILMGROWTH",
+      {.description = "Scatra algorithm for biofilm growth", .default_value = false}));
+  biofilmcontrol.specs.emplace_back(parameter<bool>("AVGROWTH",
+      {.description = "The calculation of growth parameters is based on averaged values",
+          .default_value = false}));
   Core::Utils::double_parameter(
       "FLUXCOEF", 0.0, "Coefficient for growth due to scalar flux", biofilmcontrol);
   Core::Utils::double_parameter("NORMFORCEPOSCOEF", 0.0,
@@ -230,8 +235,8 @@ void Inpar::BioFilm::set_valid_parameters(std::map<std::string, Core::IO::InputS
       "BIOTIMESTEP", 0.05, "Time step size for biofilm growth", biofilmcontrol);
   Core::Utils::int_parameter(
       "BIONUMSTEP", 0, "Maximum number of steps for biofilm growth", biofilmcontrol);
-  Core::Utils::bool_parameter(
-      "OUTPUT_GMSH", false, "Do you want to write Gmsh postprocessing files?", biofilmcontrol);
+  biofilmcontrol.specs.emplace_back(parameter<bool>("OUTPUT_GMSH",
+      {.description = "Do you want to write Gmsh postprocessing files?", .default_value = false}));
 
   biofilmcontrol.move_into_collection(list);
 }
@@ -257,6 +262,7 @@ void Inpar::BioFilm::set_valid_conditions(
 void Inpar::ReducedLung::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs redawdyn{"REDUCED DIMENSIONAL AIRWAYS DYNAMIC"};
 
@@ -281,14 +287,18 @@ void Inpar::ReducedLung::set_valid_parameters(std::map<std::string, Core::IO::In
   Core::Utils::int_parameter("LINEAR_SOLVER", -1,
       "number of linear solver used for reduced dim arterial dynamics", redawdyn);
 
-  Core::Utils::bool_parameter(
-      "SOLVESCATRA", false, "Flag to (de)activate solving scalar transport in blood", redawdyn);
+  redawdyn.specs.emplace_back(parameter<bool>(
+      "SOLVESCATRA", {.description = "Flag to (de)activate solving scalar transport in blood",
+                         .default_value = false}));
 
-  Core::Utils::bool_parameter("COMPAWACINTER", false,
-      "Flag to (de)activate computation of airway-acinus interdependency", redawdyn);
+  redawdyn.specs.emplace_back(parameter<bool>("COMPAWACINTER",
+      {.description = "Flag to (de)activate computation of airway-acinus interdependency",
+          .default_value = false}));
 
-  Core::Utils::bool_parameter("CALCV0PRESTRESS", false,
-      "Flag to (de)activate initial acini volume adjustment with pre-stress condition", redawdyn);
+  redawdyn.specs.emplace_back(parameter<bool>("CALCV0PRESTRESS",
+      {.description =
+              "Flag to (de)activate initial acini volume adjustment with pre-stress condition",
+          .default_value = false}));
 
   Core::Utils::double_parameter("TRANSPULMPRESS", 800.0,
       "Transpulmonary pressure needed for recalculation of acini volumes", redawdyn);

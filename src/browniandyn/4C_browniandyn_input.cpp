@@ -15,11 +15,12 @@ FOUR_C_NAMESPACE_OPEN
 void BrownianDynamics::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs browniandyn_list{"BROWNIAN DYNAMICS"};
 
-  Core::Utils::bool_parameter(
-      "BROWNDYNPROB", false, "switch Brownian dynamics on/off", browniandyn_list);
+  browniandyn_list.specs.emplace_back(parameter<bool>(
+      "BROWNDYNPROB", {.description = "switch Brownian dynamics on/off", .default_value = false}));
 
   // Reading double parameter for viscosity of background fluid
   Core::Utils::double_parameter("VISCOSITY", 0.0, "viscosity", browniandyn_list);

@@ -25,6 +25,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs scatradyn{"SCALAR TRANSPORT DYNAMIC"};
 
@@ -108,7 +109,8 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::int_parameter(
       "INITFUNCNO", -1, "function number for scalar transport initial field", scatradyn);
 
-  Core::Utils::bool_parameter("SPHERICALCOORDS", false, "use of spherical coordinates", scatradyn);
+  scatradyn.specs.emplace_back(parameter<bool>(
+      "SPHERICALCOORDS", {.description = "use of spherical coordinates", .default_value = false}));
 
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::CalcError>("CALCERROR", "No",
       "compute error compared to analytical solution",
@@ -127,8 +129,9 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       tuple<std::string>("No", "total", "diffusive"),
       tuple<Inpar::ScaTra::FluxType>(flux_none, flux_total, flux_diffusive), scatradyn);
 
-  Core::Utils::bool_parameter("CALCFLUX_DOMAIN_LUMPED", true,
-      "perform approximate domain flux calculation involving matrix lumping", scatradyn);
+  scatradyn.specs.emplace_back(parameter<bool>("CALCFLUX_DOMAIN_LUMPED",
+      {.description = "perform approximate domain flux calculation involving matrix lumping",
+          .default_value = true}));
 
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::FluxType>("CALCFLUX_BOUNDARY", "No",
       "output of convective/diffusive/total flux vectors on boundary",
@@ -136,8 +139,9 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       tuple<Inpar::ScaTra::FluxType>(flux_none, flux_total, flux_diffusive, flux_convective),
       scatradyn);
 
-  Core::Utils::bool_parameter("CALCFLUX_BOUNDARY_LUMPED", true,
-      "perform approximate boundary flux calculation involving matrix lumping", scatradyn);
+  scatradyn.specs.emplace_back(parameter<bool>("CALCFLUX_BOUNDARY_LUMPED",
+      {.description = "perform approximate boundary flux calculation involving matrix lumping",
+          .default_value = true}));
 
   Core::Utils::string_parameter("WRITEFLUX_IDS", "-1",
       "Write diffusive/total flux vector fields for these scalar fields only (starting with 1)",
@@ -149,28 +153,32 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       tuple<Inpar::ScaTra::OutputScalarType>(outputscalars_none, outputscalars_entiredomain,
           outputscalars_condition, outputscalars_entiredomain_condition),
       scatradyn);
-  Core::Utils::bool_parameter(
-      "OUTPUTSCALARSMEANGRAD", false, "Output of mean gradient of scalars", scatradyn);
-  Core::Utils::bool_parameter(
-      "OUTINTEGRREAC", false, "Output of integral reaction values", scatradyn);
-  Core::Utils::bool_parameter(
-      "OUTPUT_GMSH", false, "Do you want to write Gmsh postprocessing files?", scatradyn);
+  scatradyn.specs.emplace_back(parameter<bool>("OUTPUTSCALARSMEANGRAD",
+      {.description = "Output of mean gradient of scalars", .default_value = false}));
+  scatradyn.specs.emplace_back(parameter<bool>("OUTINTEGRREAC",
+      {.description = "Output of integral reaction values", .default_value = false}));
+  scatradyn.specs.emplace_back(parameter<bool>("OUTPUT_GMSH",
+      {.description = "Do you want to write Gmsh postprocessing files?", .default_value = false}));
 
-  Core::Utils::bool_parameter("MATLAB_STATE_OUTPUT", false,
-      "Do you want to write the state solution to Matlab file?", scatradyn);
+  scatradyn.specs.emplace_back(parameter<bool>("MATLAB_STATE_OUTPUT",
+      {.description = "Do you want to write the state solution to Matlab file?",
+          .default_value = false}));
 
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::ConvForm>("CONVFORM", "convective",
       "form of convective term", tuple<std::string>("convective", "conservative"),
       tuple<Inpar::ScaTra::ConvForm>(convform_convective, convform_conservative), scatradyn);
 
-  Core::Utils::bool_parameter(
-      "NEUMANNINFLOW", false, "Flag to (de)activate potential Neumann inflow term(s)", scatradyn);
+  scatradyn.specs.emplace_back(parameter<bool>(
+      "NEUMANNINFLOW", {.description = "Flag to (de)activate potential Neumann inflow term(s)",
+                           .default_value = false}));
 
-  Core::Utils::bool_parameter("CONV_HEAT_TRANS", false,
-      "Flag to (de)activate potential convective heat transfer boundary conditions", scatradyn);
+  scatradyn.specs.emplace_back(parameter<bool>("CONV_HEAT_TRANS",
+      {.description = "Flag to (de)activate potential convective heat transfer boundary conditions",
+          .default_value = false}));
 
-  Core::Utils::bool_parameter(
-      "SKIPINITDER", false, "Flag to skip computation of initial time derivative", scatradyn);
+  scatradyn.specs.emplace_back(parameter<bool>(
+      "SKIPINITDER", {.description = "Flag to skip computation of initial time derivative",
+                         .default_value = false}));
 
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::FSSUGRDIFF>("FSSUGRDIFF", "No",
       "fine-scale subgrid diffusivity",
@@ -180,8 +188,9 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       scatradyn);
 
   // flag for output of performance statistics associated with nonlinear solver into *.csv file
-  Core::Utils::bool_parameter("ELECTROMAGNETICDIFFUSION", false,
-      "flag to activate electromagnetic diffusion problems", scatradyn);
+  scatradyn.specs.emplace_back(parameter<bool>("ELECTROMAGNETICDIFFUSION",
+      {.description = "flag to activate electromagnetic diffusion problems",
+          .default_value = false}));
 
   // Current density source function for EMD problems
   Core::Utils::int_parameter("EMDSOURCE", -1, "Current density source", scatradyn);
@@ -229,8 +238,8 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       scatradyn);
 
   // flag for natural convection effects
-  Core::Utils::bool_parameter(
-      "NATURAL_CONVECTION", false, "Include natural convection effects", scatradyn);
+  scatradyn.specs.emplace_back(parameter<bool>("NATURAL_CONVECTION",
+      {.description = "Include natural convection effects", .default_value = false}));
 
   // parameters for finite difference check
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::FdCheck>("FDCHECK", "none",
@@ -263,33 +272,37 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
 
   // parameter for using p-adpativity and semi-implicit evaluation of the reaction term (at the
   // moment only used for HDG and cardiac monodomain problems)
-  Core::Utils::bool_parameter("PADAPTIVITY", false, "Flag to (de)activate p-adativity", scatradyn);
+  scatradyn.specs.emplace_back(parameter<bool>(
+      "PADAPTIVITY", {.description = "Flag to (de)activate p-adativity", .default_value = false}));
   Core::Utils::double_parameter("PADAPTERRORTOL", 1e-6,
       "The error tolerance to calculate the variation of the elemental degree", scatradyn);
   Core::Utils::double_parameter("PADAPTERRORBASE", 1.66,
       "The error tolerance base to calculate the variation of the elemental degree", scatradyn);
   Core::Utils::int_parameter(
       "PADAPTDEGREEMAX", 4, "The max. degree of the shape functions", scatradyn);
-  Core::Utils::bool_parameter("SEMIIMPLICIT", false,
-      "Flag to (de)activate semi-implicit calculation of the reaction term", scatradyn);
+  scatradyn.specs.emplace_back(parameter<bool>("SEMIIMPLICIT",
+      {.description = "Flag to (de)activate semi-implicit calculation of the reaction term",
+          .default_value = false}));
 
   // flag for output of performance statistics associated with linear solver into *.csv file
-  Core::Utils::bool_parameter("OUTPUTLINSOLVERSTATS", false,
-      "flag for output of performance statistics associated with linear solver into csv file",
-      scatradyn);
+  scatradyn.specs.emplace_back(parameter<bool>(
+      "OUTPUTLINSOLVERSTATS", {.description = "flag for output of performance statistics "
+                                              "associated with linear solver into csv file",
+                                  .default_value = false}));
 
   // flag for output of performance statistics associated with nonlinear solver into *.csv file
-  Core::Utils::bool_parameter("OUTPUTNONLINSOLVERSTATS", false,
-      "flag for output of performance statistics associated with nonlinear solver into csv file",
-      scatradyn);
+  scatradyn.specs.emplace_back(parameter<bool>(
+      "OUTPUTNONLINSOLVERSTATS", {.description = "flag for output of performance statistics "
+                                                 "associated with nonlinear solver into csv file",
+                                     .default_value = false}));
 
   // flag for point-based null space calculation
-  Core::Utils::bool_parameter(
-      "NULLSPACE_POINTBASED", false, "flag for point-based null space calculation", scatradyn);
+  scatradyn.specs.emplace_back(parameter<bool>("NULLSPACE_POINTBASED",
+      {.description = "flag for point-based null space calculation", .default_value = false}));
 
   // flag for adaptive time stepping
-  Core::Utils::bool_parameter(
-      "ADAPTIVE_TIMESTEPPING", false, "flag for adaptive time stepping", scatradyn);
+  scatradyn.specs.emplace_back(parameter<bool>("ADAPTIVE_TIMESTEPPING",
+      {.description = "flag for adaptive time stepping", .default_value = false}));
 
   scatradyn.move_into_collection(list);
 
@@ -306,16 +319,18 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       "Convergence check tolerance for outer loop in partitioned coupling schemes (natural "
       "convection, multi-scale simulations etc.)",
       scatra_nonlin);
-  Core::Utils::bool_parameter("EXPLPREDICT", false,
-      "do an explicit predictor step before starting nonlinear iteration", scatra_nonlin);
+  scatra_nonlin.specs.emplace_back(parameter<bool>("EXPLPREDICT",
+      {.description = "do an explicit predictor step before starting nonlinear iteration",
+          .default_value = false}));
   Core::Utils::double_parameter("ABSTOLRES", 1e-14,
       "Absolute tolerance for deciding if residual of nonlinear problem is already zero",
       scatra_nonlin);
 
   // convergence criteria adaptivity
-  Core::Utils::bool_parameter("ADAPTCONV", false,
-      "Switch on adaptive control of linear solver tolerance for nonlinear solution",
-      scatra_nonlin);
+  scatra_nonlin.specs.emplace_back(parameter<bool>("ADAPTCONV",
+      {.description =
+              "Switch on adaptive control of linear solver tolerance for nonlinear solution",
+          .default_value = false}));
   Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.1,
       "The linear solver shall be this much better than the current nonlinear residual in the "
       "nonlinear convergence limit",
@@ -335,14 +350,15 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       scatradyn_stab);
 
   // this parameter governs whether subgrid-scale velocity is included
-  Core::Utils::bool_parameter(
-      "SUGRVEL", false, "potential incorporation of subgrid-scale velocity", scatradyn_stab);
+  scatradyn_stab.specs.emplace_back(parameter<bool>(
+      "SUGRVEL", {.description = "potential incorporation of subgrid-scale velocity",
+                     .default_value = false}));
 
   // this parameter governs whether all-scale subgrid diffusivity is included
-  Core::Utils::bool_parameter("ASSUGRDIFF", false,
-      "potential incorporation of all-scale subgrid diffusivity (a.k.a. discontinuity-capturing) "
-      "term",
-      scatradyn_stab);
+  scatradyn_stab.specs.emplace_back(parameter<bool>(
+      "ASSUGRDIFF", {.description = "potential incorporation of all-scale subgrid diffusivity "
+                                    "(a.k.a. discontinuity-capturing) term",
+                        .default_value = false}));
 
   // this parameter selects the tau definition applied
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::TauType>("DEFINITION_TAU",
@@ -459,8 +475,8 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::SectionSpecs scatradyn_external_force{scatradyn, "EXTERNAL FORCE"};
 
   // Flag for external force
-  Core::Utils::bool_parameter(
-      "EXTERNAL_FORCE", false, "Flag to activate external force", scatradyn_external_force);
+  scatradyn_external_force.specs.emplace_back(parameter<bool>("EXTERNAL_FORCE",
+      {.description = "Flag to activate external force", .default_value = false}));
 
   // Function ID for external force
   Core::Utils::int_parameter(

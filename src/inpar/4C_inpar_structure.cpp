@@ -22,6 +22,7 @@ namespace Inpar
     void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
     {
       using Teuchos::tuple;
+      using namespace Core::IO::InputSpecBuilders;
 
       Core::Utils::SectionSpecs sdyn{"STRUCTURAL DYNAMIC"};
 
@@ -29,8 +30,8 @@ namespace Inpar
           "global type of the used integration strategy", tuple<std::string>("Old", "Standard"),
           tuple<Solid::IntegrationStrategy>(int_old, int_standard), sdyn);
 
-      Core::Utils::bool_parameter(
-          "TIME_ADAPTIVITY", false, "Enable adaptive time integration", sdyn);
+      sdyn.specs.emplace_back(parameter<bool>("TIME_ADAPTIVITY",
+          {.description = "Enable adaptive time integration", .default_value = false}));
 
       Core::Utils::string_to_integral_parameter<Solid::DynamicType>("DYNAMICTYPE", "GenAlpha",
           "type of the specific dynamic time integration scheme",
@@ -67,8 +68,9 @@ namespace Inpar
           "RESEVERYERGY", 0, "write system energies every requested step", sdyn);
       Core::Utils::int_parameter(
           "RESTARTEVERY", 1, "write restart possibility every RESTARTEVERY steps", sdyn);
-      Core::Utils::bool_parameter("CALC_ACC_ON_RESTART", false,
-          "Compute the initial state for a restart dynamics analysis", sdyn);
+      sdyn.specs.emplace_back(parameter<bool>("CALC_ACC_ON_RESTART",
+          {.description = "Compute the initial state for a restart dynamics analysis",
+              .default_value = false}));
       Core::Utils::int_parameter("OUTPUT_STEP_OFFSET", 0,
           "An offset added to the current step to shift the steps to be written.", sdyn);
 
@@ -184,15 +186,17 @@ namespace Inpar
           "way of evaluating the constitutive matrix", sdyn, material_tangent_valid_input);
 
 
-      Core::Utils::bool_parameter(
-          "LOADLIN", false, "Use linearization of external follower load in Newton", sdyn);
+      sdyn.specs.emplace_back(parameter<bool>(
+          "LOADLIN", {.description = "Use linearization of external follower load in Newton",
+                         .default_value = false}));
 
       Core::Utils::string_to_integral_parameter<Solid::MassLin>("MASSLIN", "none",
           "Application of nonlinear inertia terms",
           tuple<std::string>("none", "standard", "rotations"),
           tuple<Solid::MassLin>(ml_none, ml_standard, ml_rotations), sdyn);
 
-      Core::Utils::bool_parameter("NEGLECTINERTIA", false, "Neglect inertia", sdyn);
+      sdyn.specs.emplace_back(parameter<bool>(
+          "NEGLECTINERTIA", {.description = "Neglect inertia", .default_value = false}));
 
       // Since predictor "none" would be misleading, the usage of no predictor is called vague.
       Core::Utils::string_to_integral_parameter<Solid::PredEnum>("PREDICT", "ConstDis",
@@ -218,18 +222,22 @@ namespace Inpar
           tuple<Solid::ConSolveAlgo>(consolve_uzawa, consolve_simple, consolve_direct), sdyn);
 
       // convergence criteria adaptivity
-      Core::Utils::bool_parameter("ADAPTCONV", false,
-          "Switch on adaptive control of linear solver tolerance for nonlinear solution", sdyn);
+      sdyn.specs.emplace_back(parameter<bool>("ADAPTCONV",
+          {.description =
+                  "Switch on adaptive control of linear solver tolerance for nonlinear solution",
+              .default_value = false}));
       Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.1,
           "The linear solver shall be this much better than the current nonlinear residual in the "
           "nonlinear convergence limit",
           sdyn);
 
-      Core::Utils::bool_parameter(
-          "LUMPMASS", false, "Lump the mass matrix for explicit time integration", sdyn);
+      sdyn.specs.emplace_back(parameter<bool>(
+          "LUMPMASS", {.description = "Lump the mass matrix for explicit time integration",
+                          .default_value = false}));
 
-      Core::Utils::bool_parameter("MODIFIEDEXPLEULER", true,
-          "Use the modified explicit Euler time integration scheme", sdyn);
+      sdyn.specs.emplace_back(parameter<bool>("MODIFIEDEXPLEULER",
+          {.description = "Use the modified explicit Euler time integration scheme",
+              .default_value = true}));
 
       // linear solver id used for structural problems
       Core::Utils::int_parameter(
@@ -328,8 +336,9 @@ namespace Inpar
           tuple<Inpar::Solid::DynamicType>(dyna_expleuler, dyna_centrdiff, dyna_ab2, dyna_ab4),
           jep);
 
-      Core::Utils::bool_parameter(
-          "LUMPMASS", false, "Lump the mass matrix for explicit time integration", jep);
+      jep.specs.emplace_back(parameter<bool>(
+          "LUMPMASS", {.description = "Lump the mass matrix for explicit time integration",
+                          .default_value = false}));
 
       Core::Utils::string_to_integral_parameter<Inpar::Solid::DampKind>("DAMPING", "None",
           "type of damping: (1) Rayleigh damping matrix and use it from M_DAMP x M + K_DAMP x K, "
@@ -369,9 +378,10 @@ namespace Inpar
       /*----------------------------------------------------------------------*/
       /* parameters for error evaluation */
       Core::Utils::SectionSpecs errorevaluator{sdyn, "ERROR EVALUATION"};
-      Core::Utils::bool_parameter("EVALUATE_ERROR_ANALYTICAL_REFERENCE", false,
-          "Calculate error with respect to analytical solution defined by a function",
-          errorevaluator);
+      errorevaluator.specs.emplace_back(parameter<bool>("EVALUATE_ERROR_ANALYTICAL_REFERENCE",
+          {.description =
+                  "Calculate error with respect to analytical solution defined by a function",
+              .default_value = false}));
       Core::Utils::int_parameter("ANALYTICAL_DISPLACEMENT_FUNCTION", -1,
           "function ID of the analytical solution", errorevaluator);
 

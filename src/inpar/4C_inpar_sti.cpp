@@ -20,6 +20,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::STI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs stidyn{"STI DYNAMIC"};
 
@@ -62,8 +63,10 @@ void Inpar::STI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "THERMO_LINEAR_SOLVER", -1, "ID of linear solver for temperature field", stidyn);
 
   // flag for double condensation of linear equations associated with temperature field
-  Core::Utils::bool_parameter("THERMO_CONDENSATION", false,
-      "flag for double condensation of linear equations associated with temperature field", stidyn);
+  stidyn.specs.emplace_back(parameter<bool>("THERMO_CONDENSATION",
+      {.description =
+              "flag for double condensation of linear equations associated with temperature field",
+          .default_value = false}));
 
   stidyn.move_into_collection(list);
 

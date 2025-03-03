@@ -17,6 +17,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs fsidyn{"FSI DYNAMIC"};
 
@@ -73,27 +74,31 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   std::string debugoutput_doc =
       "Output of unconverged interface values during FSI iteration. There will be a new control "
       "file for each time step. This might be helpful to understand the coupling iteration.";
-  Core::Utils::bool_parameter("DEBUGOUTPUT", false, debugoutput_doc, fsidyn);
+  fsidyn.specs.emplace_back(
+      parameter<bool>("DEBUGOUTPUT", {.description = debugoutput_doc, .default_value = false}));
+  fsidyn.specs.emplace_back(parameter<bool>("MATCHGRID_FLUIDALE",
+      {.description = "is matching grid (fluid-ale)", .default_value = true}));
 
-  Core::Utils::bool_parameter("MATCHGRID_FLUIDALE", true, "is matching grid (fluid-ale)", fsidyn);
+  fsidyn.specs.emplace_back(parameter<bool>("MATCHGRID_STRUCTALE",
+      {.description = "is matching grid (structure-ale)", .default_value = true}));
 
-  Core::Utils::bool_parameter(
-      "MATCHGRID_STRUCTALE", true, "is matching grid (structure-ale)", fsidyn);
-
-  Core::Utils::bool_parameter("MATCHALL", true,
-      "is matching grid (fluid-ale) and is full fluid-ale (without euler part)", fsidyn);
+  fsidyn.specs.emplace_back(parameter<bool>("MATCHALL",
+      {.description = "is matching grid (fluid-ale) and is full fluid-ale (without euler part)",
+          .default_value = true}));
 
   Core::Utils::double_parameter("MAXTIME", 1000.0, "Total simulation time", fsidyn);
   Core::Utils::int_parameter("NUMSTEP", 200, "Total number of Timesteps", fsidyn);
 
   Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", fsidyn);
 
-  Core::Utils::bool_parameter("RESTART_FROM_PART_FSI", false,
-      "restart from partitioned fsi (e.g. from prestress calculations) instead of monolithic fsi",
-      fsidyn);
+  fsidyn.specs.emplace_back(parameter<bool>(
+      "RESTART_FROM_PART_FSI", {.description = "restart from partitioned fsi (e.g. from prestress "
+                                               "calculations) instead of monolithic fsi",
+                                   .default_value = false}));
 
-  Core::Utils::bool_parameter("SECONDORDER", false,
-      "Second order displacement-velocity conversion at the interface.", fsidyn);
+  fsidyn.specs.emplace_back(parameter<bool>("SECONDORDER",
+      {.description = "Second order displacement-velocity conversion at the interface.",
+          .default_value = false}));
 
   Core::Utils::string_to_integral_parameter<Inpar::FSI::SlideALEProj>("SLIDEALEPROJ", "None",
       "Projection method to use for sliding FSI.",
@@ -174,8 +179,8 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "time step size compared to previous size (>0).",
       fsiadapt);
 
-  Core::Utils::bool_parameter(
-      "TIMEADAPTON", false, "Activate or deactivate time step size adaptivity", fsiadapt);
+  fsiadapt.specs.emplace_back(parameter<bool>("TIMEADAPTON",
+      {.description = "Activate or deactivate time step size adaptivity", .default_value = false}));
 
   fsiadapt.move_into_collection(list);
 
@@ -203,13 +208,15 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "Nonlinear tolerance for lung/constraint/fluid-fluid FSI",
       fsimono);  // ToDo remove
 
-  Core::Utils::bool_parameter("ENERGYFILE", false,
-      "Write artificial interface energy due to temporal discretization to file", fsimono);
+  fsimono.specs.emplace_back(parameter<bool>("ENERGYFILE",
+      {.description = "Write artificial interface energy due to temporal discretization to file",
+          .default_value = false}));
 
-  Core::Utils::bool_parameter(
-      "FSIAMGANALYZE", false, "run analysis on fsiamg multigrid scheme", fsimono);
+  fsimono.specs.emplace_back(parameter<bool>("FSIAMGANALYZE",
+      {.description = "run analysis on fsiamg multigrid scheme", .default_value = false}));
 
-  Core::Utils::bool_parameter("INFNORMSCALING", true, "Scale Blocks with row infnorm?", fsimono);
+  fsimono.specs.emplace_back(parameter<bool>(
+      "INFNORMSCALING", {.description = "Scale Blocks with row infnorm?", .default_value = true}));
 
   Core::Utils::int_parameter(
       "ITEMAX", 100, "Maximum allowed number of nonlinear iterations", fsimono);
@@ -253,14 +260,17 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "Number of iterations in one time step reusing the preconditioner before rebuilding it",
       fsimono);
 
-  Core::Utils::bool_parameter("REBUILDPRECEVERYSTEP", true,
-      "Enforce rebuilding the preconditioner at the beginning of every time step", fsimono);
+  fsimono.specs.emplace_back(parameter<bool>("REBUILDPRECEVERYSTEP",
+      {.description = "Enforce rebuilding the preconditioner at the beginning of every time step",
+          .default_value = true}));
 
-  Core::Utils::bool_parameter("SHAPEDERIVATIVES", false,
-      "Include linearization with respect to mesh movement in Navier Stokes equation.", fsimono);
+  fsimono.specs.emplace_back(parameter<bool>("SHAPEDERIVATIVES",
+      {.description =
+              "Include linearization with respect to mesh movement in Navier Stokes equation.",
+          .default_value = false}));
 
-  Core::Utils::bool_parameter(
-      "SYMMETRICPRECOND", false, "Symmetric block GS preconditioner or ordinary GS", fsimono);
+  fsimono.specs.emplace_back(parameter<bool>("SYMMETRICPRECOND",
+      {.description = "Symmetric block GS preconditioner or ordinary GS", .default_value = false}));
 
   // monolithic preconditioner parameter
 
@@ -378,8 +388,9 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           Inpar::FSI::CoupVarPart::vel),
       fsipart);
 
-  Core::Utils::bool_parameter("DIVPROJECTION", false,
-      "Project velocity into divergence-free subspace for partitioned fsi", fsipart);
+  fsipart.specs.emplace_back(parameter<bool>("DIVPROJECTION",
+      {.description = "Project velocity into divergence-free subspace for partitioned fsi",
+          .default_value = false}));
 
   Core::Utils::int_parameter("ITEMAX", 100, "Maximum number of iterations over fields", fsipart);
 

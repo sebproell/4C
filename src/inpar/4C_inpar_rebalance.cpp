@@ -15,6 +15,7 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::Rebalance::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
+  using namespace Core::IO::InputSpecBuilders;
 
   Core::Utils::SectionSpecs meshpartitioning{"MESH PARTITIONING"};
 
