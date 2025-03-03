@@ -60,9 +60,11 @@ namespace Inpar
               .default_value = false}));
 
       // virtual time increment that is added for each nonlinear output state
-      Core::Utils::double_parameter("EVERY_ITERATION_VIRTUAL_TIME_INCREMENT", 1e-8,
-          "Specify the virtual time increment that is added for each nonlinear output state",
-          sublist_IO_VTK_structure);
+      sublist_IO_VTK_structure.specs.emplace_back(
+          parameter<double>("EVERY_ITERATION_VIRTUAL_TIME_INCREMENT",
+              {.description = "Specify the virtual time increment that is added for each nonlinear "
+                              "output state",
+                  .default_value = 1e-8}));
 
       // specify the maximum digits in the number of iterations that shall be written
       Core::Utils::int_parameter("EVERY_ITERATION_RESERVE_DIGITS", 4,

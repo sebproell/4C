@@ -35,12 +35,15 @@ void Inpar::Wear::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
           wear_shape_standard),
       wear);
 
-  Core::Utils::double_parameter("WEARCOEFF", 0.0, "Wear coefficient for slave surface", wear);
-  Core::Utils::double_parameter(
-      "WEARCOEFF_MASTER", 0.0, "Wear coefficient for master surface", wear);
-  Core::Utils::double_parameter(
-      "WEAR_TIMERATIO", 1.0, "Time step ratio between wear and spatial time scale", wear);
-  Core::Utils::double_parameter("SSSLIP", 1.0, "Fixed slip for steady state wear", wear);
+  wear.specs.emplace_back(parameter<double>(
+      "WEARCOEFF", {.description = "Wear coefficient for slave surface", .default_value = 0.0}));
+  wear.specs.emplace_back(parameter<double>("WEARCOEFF_MASTER",
+      {.description = "Wear coefficient for master surface", .default_value = 0.0}));
+  wear.specs.emplace_back(parameter<double>(
+      "WEAR_TIMERATIO", {.description = "Time step ratio between wear and spatial time scale",
+                            .default_value = 1.0}));
+  wear.specs.emplace_back(parameter<double>(
+      "SSSLIP", {.description = "Fixed slip for steady state wear", .default_value = 1.0}));
 
   wear.specs.emplace_back(parameter<bool>(
       "SSWEAR", {.description = "flag for steady state wear", .default_value = false}));

@@ -31,9 +31,10 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(
   // Time loop control
   Core::Utils::int_parameter(
       "NUMSTEP", 200, "maximum number of Timesteps", poromultiphasescatradyn);
-  Core::Utils::double_parameter(
-      "MAXTIME", 1000.0, "total simulation time", poromultiphasescatradyn);
-  Core::Utils::double_parameter("TIMESTEP", 0.05, "time step size dt", poromultiphasescatradyn);
+  poromultiphasescatradyn.specs.emplace_back(parameter<double>(
+      "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}));
+  poromultiphasescatradyn.specs.emplace_back(
+      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = 0.05}));
   Core::Utils::int_parameter(
       "RESULTSEVERY", 1, "increment for writing solution", poromultiphasescatradyn);
   Core::Utils::int_parameter(
@@ -87,16 +88,18 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(
       {.description =
               "Switch on adaptive control of linear solver tolerance for nonlinear solution",
           .default_value = false}));
-  Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.001,
-      "The linear solver shall be this much better "
-      "than the current nonlinear residual in the nonlinear convergence limit",
-      poromultiphasescatradynmono);
+  poromultiphasescatradynmono.specs.emplace_back(parameter<double>("ADAPTCONV_BETTER",
+      {.description = "The linear solver shall be this much better than the current nonlinear "
+                      "residual in the nonlinear convergence limit",
+          .default_value = 0.001}));
 
   // Iterationparameters
-  Core::Utils::double_parameter("TOLRES_GLOBAL", 1e-8,
-      "tolerance in the residual norm for the Newton iteration", poromultiphasescatradynmono);
-  Core::Utils::double_parameter("TOLINC_GLOBAL", 1e-8,
-      "tolerance in the increment norm for the Newton iteration", poromultiphasescatradynmono);
+  poromultiphasescatradynmono.specs.emplace_back(parameter<double>(
+      "TOLRES_GLOBAL", {.description = "tolerance in the residual norm for the Newton iteration",
+                           .default_value = 1e-8}));
+  poromultiphasescatradynmono.specs.emplace_back(parameter<double>(
+      "TOLINC_GLOBAL", {.description = "tolerance in the increment norm for the Newton iteration",
+                           .default_value = 1e-8}));
 
   // number of linear solver used for poroelasticity
   Core::Utils::int_parameter("LINEAR_SOLVER", -1,
@@ -131,8 +134,9 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(
   Core::Utils::SectionSpecs poromultiphasescatradynpart{poromultiphasescatradyn, "PARTITIONED"};
 
   // convergence tolerance of outer iteration loop
-  Core::Utils::double_parameter("CONVTOL", 1e-6,
-      "tolerance for convergence check of outer iteration", poromultiphasescatradynpart);
+  poromultiphasescatradynpart.specs.emplace_back(parameter<double>(
+      "CONVTOL", {.description = "tolerance for convergence check of outer iteration",
+                     .default_value = 1e-6}));
 
   poromultiphasescatradynpart.move_into_collection(list);
 }

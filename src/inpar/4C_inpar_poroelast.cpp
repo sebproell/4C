@@ -53,36 +53,49 @@ void Inpar::PoroElast::set_valid_parameters(std::map<std::string, Core::IO::Inpu
 
   // Time loop control
   Core::Utils::int_parameter("NUMSTEP", 200, "maximum number of Timesteps", poroelastdyn);
-  Core::Utils::double_parameter("MAXTIME", 1000.0, "total simulation time", poroelastdyn);
-  Core::Utils::double_parameter("TIMESTEP", 0.05, "time step size dt", poroelastdyn);
+  poroelastdyn.specs.emplace_back(parameter<double>(
+      "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}));
+  poroelastdyn.specs.emplace_back(
+      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = 0.05}));
   Core::Utils::int_parameter(
       "ITEMAX", 10, "maximum number of iterations over fields", poroelastdyn);
   Core::Utils::int_parameter("ITEMIN", 1, "minimal number of iterations over fields", poroelastdyn);
   Core::Utils::int_parameter("RESULTSEVERY", 1, "increment for writing solution", poroelastdyn);
 
   // Iterationparameters
-  Core::Utils::double_parameter("TOLRES_GLOBAL", 1e-8,
-      "tolerance in the residual norm for the Newton iteration", poroelastdyn);
-  Core::Utils::double_parameter("TOLINC_GLOBAL", 1e-8,
-      "tolerance in the increment norm for the Newton iteration", poroelastdyn);
-  Core::Utils::double_parameter(
-      "TOLRES_DISP", 1e-8, "tolerance in the residual norm for the Newton iteration", poroelastdyn);
-  Core::Utils::double_parameter("TOLINC_DISP", 1e-8,
-      "tolerance in the increment norm for the Newton iteration", poroelastdyn);
-  Core::Utils::double_parameter(
-      "TOLRES_PORO", 1e-8, "tolerance in the residual norm for the Newton iteration", poroelastdyn);
-  Core::Utils::double_parameter("TOLINC_PORO", 1e-8,
-      "tolerance in the increment norm for the Newton iteration", poroelastdyn);
-  Core::Utils::double_parameter(
-      "TOLRES_VEL", 1e-8, "tolerance in the residual norm for the Newton iteration", poroelastdyn);
-  Core::Utils::double_parameter(
-      "TOLINC_VEL", 1e-8, "tolerance in the increment norm for the Newton iteration", poroelastdyn);
-  Core::Utils::double_parameter(
-      "TOLRES_PRES", 1e-8, "tolerance in the residual norm for the Newton iteration", poroelastdyn);
-  Core::Utils::double_parameter("TOLINC_PRES", 1e-8,
-      "tolerance in the increment norm for the Newton iteration", poroelastdyn);
-  Core::Utils::double_parameter("TOLRES_NCOUP", 1e-8,
-      "tolerance in the residual norm for the Newton iteration", poroelastdyn);
+  poroelastdyn.specs.emplace_back(parameter<double>(
+      "TOLRES_GLOBAL", {.description = "tolerance in the residual norm for the Newton iteration",
+                           .default_value = 1e-8}));
+  poroelastdyn.specs.emplace_back(parameter<double>(
+      "TOLINC_GLOBAL", {.description = "tolerance in the increment norm for the Newton iteration",
+                           .default_value = 1e-8}));
+  poroelastdyn.specs.emplace_back(parameter<double>(
+      "TOLRES_DISP", {.description = "tolerance in the residual norm for the Newton iteration",
+                         .default_value = 1e-8}));
+  poroelastdyn.specs.emplace_back(parameter<double>(
+      "TOLINC_DISP", {.description = "tolerance in the increment norm for the Newton iteration",
+                         .default_value = 1e-8}));
+  poroelastdyn.specs.emplace_back(parameter<double>(
+      "TOLRES_PORO", {.description = "tolerance in the residual norm for the Newton iteration",
+                         .default_value = 1e-8}));
+  poroelastdyn.specs.emplace_back(parameter<double>(
+      "TOLINC_PORO", {.description = "tolerance in the increment norm for the Newton iteration",
+                         .default_value = 1e-8}));
+  poroelastdyn.specs.emplace_back(parameter<double>(
+      "TOLRES_VEL", {.description = "tolerance in the residual norm for the Newton iteration",
+                        .default_value = 1e-8}));
+  poroelastdyn.specs.emplace_back(parameter<double>(
+      "TOLINC_VEL", {.description = "tolerance in the increment norm for the Newton iteration",
+                        .default_value = 1e-8}));
+  poroelastdyn.specs.emplace_back(parameter<double>(
+      "TOLRES_PRES", {.description = "tolerance in the residual norm for the Newton iteration",
+                         .default_value = 1e-8}));
+  poroelastdyn.specs.emplace_back(parameter<double>(
+      "TOLINC_PRES", {.description = "tolerance in the increment norm for the Newton iteration",
+                         .default_value = 1e-8}));
+  poroelastdyn.specs.emplace_back(parameter<double>(
+      "TOLRES_NCOUP", {.description = "tolerance in the residual norm for the Newton iteration",
+                          .default_value = 1e-8}));
 
   Core::Utils::string_to_integral_parameter<Inpar::PoroElast::ConvNorm>("NORM_INC",
       "AbsSingleFields", "type of norm for primary variables convergence check",

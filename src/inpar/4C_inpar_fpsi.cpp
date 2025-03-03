@@ -108,12 +108,16 @@ void Inpar::FPSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   Core::Utils::int_parameter("FDCheck_row", 0, "print row value during fd_check", fpsidyn);
   Core::Utils::int_parameter("FDCheck_column", 0, "print column value during fd_check", fpsidyn);
 
-  Core::Utils::double_parameter("TIMESTEP", 0.1, "Time increment dt", fpsidyn);
-  Core::Utils::double_parameter("MAXTIME", 1000.0, "Total simulation time", fpsidyn);
-  Core::Utils::double_parameter("CONVTOL", 1e-6, "Tolerance for iteration over fields", fpsidyn);
-  Core::Utils::double_parameter("ALPHABJ", 1.0,
-      "Beavers-Joseph-Coefficient for Slip-Boundary-Condition at Fluid-Porous-Interface (0.1-4)",
-      fpsidyn);
+  fpsidyn.specs.emplace_back(
+      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.1}));
+  fpsidyn.specs.emplace_back(parameter<double>(
+      "MAXTIME", {.description = "Total simulation time", .default_value = 1000.0}));
+  fpsidyn.specs.emplace_back(parameter<double>(
+      "CONVTOL", {.description = "Tolerance for iteration over fields", .default_value = 1e-6}));
+  fpsidyn.specs.emplace_back(parameter<double>(
+      "ALPHABJ", {.description = "Beavers-Joseph-Coefficient for Slip-Boundary-Condition at "
+                                 "Fluid-Porous-Interface (0.1-4)",
+                     .default_value = 1.0}));
 
   fpsidyn.move_into_collection(list);
 }

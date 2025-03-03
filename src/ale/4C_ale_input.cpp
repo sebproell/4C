@@ -22,9 +22,11 @@ void ALE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 
   Core::Utils::SectionSpecs adyn{"ALE DYNAMIC"};
 
-  Core::Utils::double_parameter("TIMESTEP", 0.1, "time step size", adyn);
+  adyn.specs.emplace_back(
+      parameter<double>("TIMESTEP", {.description = "time step size", .default_value = 0.1}));
   Core::Utils::int_parameter("NUMSTEP", 41, "max number of time steps", adyn);
-  Core::Utils::double_parameter("MAXTIME", 4.0, "max simulation time", adyn);
+  adyn.specs.emplace_back(
+      parameter<double>("MAXTIME", {.description = "max simulation time", .default_value = 4.0}));
 
   Core::Utils::string_to_integral_parameter<ALE::AleDynamic>("ALE_TYPE", "solid",
       "ale mesh movement algorithm",
@@ -44,10 +46,12 @@ void ALE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
           .default_value = false}));
 
   Core::Utils::int_parameter("MAXITER", 1, "Maximum number of newton iterations.", adyn);
-  Core::Utils::double_parameter(
-      "TOLRES", 1.0e-06, "Absolute tolerance for length scaled L2 residual norm ", adyn);
-  Core::Utils::double_parameter(
-      "TOLDISP", 1.0e-06, "Absolute tolerance for length scaled L2 increment norm ", adyn);
+  adyn.specs.emplace_back(parameter<double>(
+      "TOLRES", {.description = "Absolute tolerance for length scaled L2 residual norm ",
+                    .default_value = 1.0e-06}));
+  adyn.specs.emplace_back(parameter<double>(
+      "TOLDISP", {.description = "Absolute tolerance for length scaled L2 increment norm ",
+                     .default_value = 1.0e-06}));
 
   Core::Utils::int_parameter("NUM_INITSTEP", 0, "", adyn);
   Core::Utils::int_parameter(

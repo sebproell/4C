@@ -18,6 +18,7 @@ namespace Inpar::SOLVER
 {
   void set_valid_solver_parameters(Core::IO::InputSpec& spec)
   {
+    using namespace Core::IO::InputSpecBuilders;
     Core::Utils::SectionSpecs list{"dummy"};
     // Solver options
     {
@@ -80,8 +81,10 @@ namespace Inpar::SOLVER
           "perform",
           list);
 
-      Core::Utils::double_parameter("AZTOL", 1e-8,
-          "The level the residual norms must reach to decide about successful convergence", list);
+      list.specs.emplace_back(parameter<double>("AZTOL",
+          {.description =
+                  "The level the residual norms must reach to decide about successful convergence",
+              .default_value = 1e-8}));
 
       Core::Utils::string_to_integral_parameter<Belos::ScaleType>("AZCONV", "AZ_r0",
           "The implicit residual norm scaling type to use for terminating the iterative solver.",

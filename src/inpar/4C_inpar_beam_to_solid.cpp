@@ -90,8 +90,9 @@ void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::In
         "Number of fourier modes to be used for cross-section mortar coupling",
         beam_to_solid_volume_mestying);
 
-    Core::Utils::double_parameter("PENALTY_PARAMETER", 0.0,
-        "Penalty parameter for beam-to-solid volume meshtying", beam_to_solid_volume_mestying);
+    beam_to_solid_volume_mestying.specs.emplace_back(parameter<double>(
+        "PENALTY_PARAMETER", {.description = "Penalty parameter for beam-to-solid volume meshtying",
+                                 .default_value = 0.0}));
 
     // Add the geometry pair input parameters.
     Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(beam_to_solid_volume_mestying);
@@ -138,9 +139,11 @@ void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::In
             BeamToSolidMortarShapefunctions::line4),
         beam_to_solid_volume_mestying);
 
-    Core::Utils::double_parameter("ROTATION_COUPLING_PENALTY_PARAMETER", 0.0,
-        "Penalty parameter for rotational coupling in beam-to-solid volume mesh tying",
-        beam_to_solid_volume_mestying);
+    beam_to_solid_volume_mestying.specs.emplace_back(
+        parameter<double>("ROTATION_COUPLING_PENALTY_PARAMETER",
+            {.description =
+                    "Penalty parameter for rotational coupling in beam-to-solid volume mesh tying",
+                .default_value = 0.0}));
   }
 
   beam_to_solid_volume_mestying.move_into_collection(list);
@@ -233,15 +236,17 @@ void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::In
             BeamToSolidMortarShapefunctions::line4),
         beam_to_solid_surface_mestying);
 
-    Core::Utils::double_parameter("PENALTY_PARAMETER", 0.0,
-        "Penalty parameter for beam-to-solid surface meshtying", beam_to_solid_surface_mestying);
+    beam_to_solid_surface_mestying.specs.emplace_back(parameter<double>("PENALTY_PARAMETER",
+        {.description = "Penalty parameter for beam-to-solid surface meshtying",
+            .default_value = 0.0}));
 
     // Parameters for rotational coupling.
     beam_to_solid_surface_mestying.specs.emplace_back(parameter<bool>("ROTATIONAL_COUPLING",
         {.description = "Enable / disable rotational coupling", .default_value = false}));
-    Core::Utils::double_parameter("ROTATIONAL_COUPLING_PENALTY_PARAMETER", 0.0,
-        "Penalty parameter for beam-to-solid surface rotational meshtying",
-        beam_to_solid_surface_mestying);
+    beam_to_solid_surface_mestying.specs.emplace_back(
+        parameter<double>("ROTATIONAL_COUPLING_PENALTY_PARAMETER",
+            {.description = "Penalty parameter for beam-to-solid surface rotational meshtying",
+                .default_value = 0.0}));
     Core::Utils::string_to_integral_parameter<BeamToSolidSurfaceRotationCoupling>(
         "ROTATIONAL_COUPLING_SURFACE_TRIAD", "none", "Construction method for surface triad",
         tuple<std::string>("none", "surface_cross_section_director", "averaged"),
@@ -278,8 +283,9 @@ void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::In
             BeamToSolidConstraintEnforcement::none, BeamToSolidConstraintEnforcement::penalty),
         beam_to_solid_surface_contact);
 
-    Core::Utils::double_parameter("PENALTY_PARAMETER", 0.0,
-        "Penalty parameter for beam-to-solid surface contact", beam_to_solid_surface_contact);
+    beam_to_solid_surface_contact.specs.emplace_back(parameter<double>(
+        "PENALTY_PARAMETER", {.description = "Penalty parameter for beam-to-solid surface contact",
+                                 .default_value = 0.0}));
 
     Core::Utils::string_to_integral_parameter<BeamToSolidSurfaceContact>("CONTACT_TYPE", "none",
         "How the contact constraints are formulated",
@@ -295,9 +301,10 @@ void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::In
             BeamToSolidSurfaceContactPenaltyLaw::linear_quadratic),
         beam_to_solid_surface_contact);
 
-    Core::Utils::double_parameter("PENALTY_PARAMETER_G0", 0.0,
-        "First penalty regularization parameter G0 >=0: For gap<G0 contact is active",
-        beam_to_solid_surface_contact);
+    beam_to_solid_surface_contact.specs.emplace_back(parameter<double>("PENALTY_PARAMETER_G0",
+        {.description =
+                "First penalty regularization parameter G0 >=0: For gap<G0 contact is active",
+            .default_value = 0.0}));
 
     Core::Utils::string_to_integral_parameter<BeamToSolidSurfaceContactMortarDefinedIn>(
         "MORTAR_CONTACT_DEFINED_IN", "none", "Configuration where the mortar contact is defined",

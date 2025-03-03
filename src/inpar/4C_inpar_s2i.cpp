@@ -48,8 +48,8 @@ void Inpar::S2I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           .default_value = false}));
 
   // node-to-segment projection tolerance
-  Core::Utils::double_parameter(
-      "NTSPROJTOL", 0.0, "node-to-segment projection tolerance", s2icoupling);
+  s2icoupling.specs.emplace_back(parameter<double>(
+      "NTSPROJTOL", {.description = "node-to-segment projection tolerance", .default_value = 0.0}));
 
   // flag for evaluation of scatra-scatra interface coupling involving interface layer growth
   Core::Utils::string_to_integral_parameter<GrowthEvaluation>("INTLAYERGROWTH_EVALUATION", "none",
@@ -61,10 +61,10 @@ void Inpar::S2I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
 
   // local Newton-Raphson convergence tolerance for scatra-scatra interface coupling involving
   // interface layer growth
-  Core::Utils::double_parameter("INTLAYERGROWTH_CONVTOL", 1.e-12,
-      "local Newton-Raphson convergence tolerance for scatra-scatra interface coupling involving "
-      "interface layer growth",
-      s2icoupling);
+  s2icoupling.specs.emplace_back(parameter<double>("INTLAYERGROWTH_CONVTOL",
+      {.description = "local Newton-Raphson convergence tolerance for scatra-scatra interface "
+                      "coupling involving interface layer growth",
+          .default_value = 1.e-12}));
 
   // maximum number of local Newton-Raphson iterations for scatra-scatra interface coupling
   // involving interface layer growth
@@ -81,10 +81,10 @@ void Inpar::S2I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       s2icoupling);
 
   // modified time step size for scatra-scatra interface coupling involving interface layer growth
-  Core::Utils::double_parameter("INTLAYERGROWTH_TIMESTEP", -1.,
-      "modified time step size for scatra-scatra interface coupling involving interface layer "
-      "growth",
-      s2icoupling);
+  s2icoupling.specs.emplace_back(parameter<double>("INTLAYERGROWTH_TIMESTEP",
+      {.description = "modified time step size for scatra-scatra interface coupling involving "
+                      "interface layer growth",
+          .default_value = -1.}));
 
   s2icoupling.specs.emplace_back(parameter<bool>("MESHTYING_CONDITIONS_INDEPENDENT_SETUP",
       {.description = "mesh tying for different conditions should be setup independently",

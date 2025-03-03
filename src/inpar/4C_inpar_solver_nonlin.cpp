@@ -58,10 +58,12 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
     Core::Utils::string_parameter(
         "Forcing Term Method", "Constant", "", newton, forcing_term_valid_input);
 
-    Core::Utils::double_parameter(
-        "Forcing Term Initial Tolerance", 0.1, "initial linear solver tolerance", newton);
-    Core::Utils::double_parameter("Forcing Term Minimum Tolerance", 1.0e-6, "", newton);
-    Core::Utils::double_parameter("Forcing Term Maximum Tolerance", 0.01, "", newton);
+    newton.specs.emplace_back(parameter<double>("Forcing Term Initial Tolerance",
+        {.description = "initial linear solver tolerance", .default_value = 0.1}));
+    newton.specs.emplace_back(parameter<double>(
+        "Forcing Term Minimum Tolerance", {.description = "", .default_value = 1.0e-6}));
+    newton.specs.emplace_back(parameter<double>(
+        "Forcing Term Maximum Tolerance", {.description = "", .default_value = 0.01}));
     Core::Utils::double_parameter("Forcing Term Alpha", 1.5, "used only by \"Type 2\"", newton);
     Core::Utils::double_parameter("Forcing Term Gamma", 0.9, "used only by \"Type 2\"", newton);
     newton.specs.emplace_back(parameter<bool>("Rescue Bad Newton Solve",
@@ -86,20 +88,23 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::SectionSpecs ptc{snox, "Pseudo Transient"};
 
   {
-    Core::Utils::double_parameter("deltaInit", -1.0,
-        "Initial time step size. If its negative, the initial time step is calculated "
-        "automatically.",
-        ptc);
+    ptc.specs.emplace_back(parameter<double>(
+        "deltaInit", {.description = "Initial time step size. If its negative, the initial time "
+                                     "step is calculated automatically.",
+                         .default_value = -1.0}));
     Core::Utils::double_parameter("deltaMax", std::numeric_limits<double>::max(),
         "Maximum time step size. "
         "If the new step size is greater than this value, the transient terms will be eliminated "
         "from the Newton iteration resulting in a full Newton solve.",
         ptc);
-    Core::Utils::double_parameter("deltaMin", 1.0e-5, "Minimum step size.", ptc);
+    ptc.specs.emplace_back(parameter<double>(
+        "deltaMin", {.description = "Minimum step size.", .default_value = 1.0e-5}));
     Core::Utils::int_parameter(
         "Max Number of PTC Iterations", std::numeric_limits<int>::max(), "", ptc);
-    Core::Utils::double_parameter("SER_alpha", 1.0, "Exponent of SET.", ptc);
-    Core::Utils::double_parameter("ScalingFactor", 1.0, "Scaling Factor for ptc matrix.", ptc);
+    ptc.specs.emplace_back(
+        parameter<double>("SER_alpha", {.description = "Exponent of SET.", .default_value = 1.0}));
+    ptc.specs.emplace_back(parameter<double>(
+        "ScalingFactor", {.description = "Scaling Factor for ptc matrix.", .default_value = 1.0}));
 
     std::vector<std::string> time_step_control_valid_input = {"SER",
         "Switched Evolution Relaxation", "TTE", "Temporal Truncation Error", "MRR",
@@ -146,7 +151,8 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::SectionSpecs fullstep{linesearch, "Full Step"};
 
   {
-    Core::Utils::double_parameter("Full Step", 1.0, "length of a full step", fullstep);
+    fullstep.specs.emplace_back(parameter<double>(
+        "Full Step", {.description = "length of a full step", .default_value = 1.0}));
   }
   fullstep.move_into_collection(list);
 
@@ -154,18 +160,19 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::SectionSpecs backtrack{linesearch, "Backtrack"};
 
   {
-    Core::Utils::double_parameter("Default Step", 1.0, "starting step length", backtrack);
-    Core::Utils::double_parameter(
-        "Minimum Step", 1.0e-12, "minimum acceptable step length", backtrack);
+    backtrack.specs.emplace_back(parameter<double>(
+        "Default Step", {.description = "starting step length", .default_value = 1.0}));
+    backtrack.specs.emplace_back(parameter<double>("Minimum Step",
+        {.description = "minimum acceptable step length", .default_value = 1.0e-12}));
     Core::Utils::double_parameter("Recovery Step", 1.0,
         "step to take when the line search fails (defaults to value for \"Default Step\")",
         backtrack);
     Core::Utils::int_parameter(
         "Max Iters", 50, "maximum number of iterations (i.e., RHS computations)", backtrack);
-    Core::Utils::double_parameter("Reduction Factor", 0.5,
-        "A multiplier between zero and one that reduces the step size between line search "
-        "iterations",
-        backtrack);
+    backtrack.specs.emplace_back(parameter<double>(
+        "Reduction Factor", {.description = "A multiplier between zero and one that reduces the "
+                                            "step size between line search iterations",
+                                .default_value = 0.5}));
     backtrack.specs.emplace_back(parameter<bool>("Allow Exceptions",
         {.description = "Set to true, if exceptions during the force evaluation and backtracking "
                         "routine should be allowed.",
@@ -177,15 +184,16 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::SectionSpecs polynomial{linesearch, "Polynomial"};
 
   {
-    Core::Utils::double_parameter("Default Step", 1.0, "Starting step length", polynomial);
+    polynomial.specs.emplace_back(parameter<double>(
+        "Default Step", {.description = "Starting step length", .default_value = 1.0}));
     Core::Utils::int_parameter("Max Iters", 100,
         "Maximum number of line search iterations. "
         "The search fails if the number of iterations exceeds this value",
         polynomial);
-    Core::Utils::double_parameter("Minimum Step", 1.0e-12,
-        "Minimum acceptable step length. The search fails if the computed $\\lambda_k$ "
-        "is less than this value",
-        polynomial);
+    polynomial.specs.emplace_back(parameter<double>(
+        "Minimum Step", {.description = "Minimum acceptable step length. The search fails if the "
+                                        "computed $\\lambda_k$ is less than this value",
+                            .default_value = 1.0e-12}));
 
     std::vector<std::string> recovery_step_type_valid_input = {"Constant", "Last Computed Step"};
     Core::Utils::string_parameter("Recovery Step Type", "Constant",
@@ -201,14 +209,14 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
     Core::Utils::string_parameter("Interpolation Type", "Cubic",
         "Type of interpolation that should be used", polynomial, interpolation_type_valid_input);
 
-    Core::Utils::double_parameter("Min Bounds Factor", 0.1,
-        "Choice for $\\gamma_{\\min}$, i.e., the factor that limits the minimum size "
-        "of the new step based on the previous step",
-        polynomial);
-    Core::Utils::double_parameter("Max Bounds Factor", 0.5,
-        "Choice for $\\gamma_{\\max}$, i.e., the factor that limits the maximum size "
-        "of the new step based on the previous step",
-        polynomial);
+    polynomial.specs.emplace_back(parameter<double>("Min Bounds Factor",
+        {.description = "Choice for $\\gamma_{\\min}$, i.e., the factor that limits the minimum "
+                        "size of the new step based on the previous step",
+            .default_value = 0.1}));
+    polynomial.specs.emplace_back(parameter<double>("Max Bounds Factor",
+        {.description = "Choice for $\\gamma_{\\max}$, i.e., the factor that limits the maximum "
+                        "size of the new step based on the previous step",
+            .default_value = 0.5}));
 
     std::vector<std::string> sufficient_decrease_condition_valid_input = {
         "Armijo-Goldstein", "Ared/Pred", "None"};
@@ -216,8 +224,9 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
         "Choice to use for the sufficient decrease condition", polynomial,
         sufficient_decrease_condition_valid_input);
 
-    Core::Utils::double_parameter(
-        "Alpha Factor", 1.0e-4, "Parameter choice for sufficient decrease condition", polynomial);
+    polynomial.specs.emplace_back(parameter<double>(
+        "Alpha Factor", {.description = "Parameter choice for sufficient decrease condition",
+                            .default_value = 1.0e-4}));
     polynomial.specs.emplace_back(parameter<bool>("Force Interpolation",
         {.description = "Set to true if at least one interpolation step should be used. The "
                         "default is false which means that the line search will stop if the "
@@ -230,7 +239,8 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
     Core::Utils::int_parameter("Maximum Iteration for Increase", 0,
         "Maximum index of the nonlinear iteration for which we allow a relative increase",
         polynomial);
-    Core::Utils::double_parameter("Allowed Relative Increase", 100, "", polynomial);
+    polynomial.specs.emplace_back(
+        parameter<double>("Allowed Relative Increase", {.description = "", .default_value = 100}));
   }
   polynomial.move_into_collection(list);
 
@@ -238,20 +248,22 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::SectionSpecs morethuente{linesearch, "More'-Thuente"};
 
   {
-    Core::Utils::double_parameter("Sufficient Decrease", 1.0e-4,
-        "The ftol in the sufficient decrease condition", morethuente);
-    Core::Utils::double_parameter(
-        "Curvature Condition", 0.9999, "The gtol in the curvature condition", morethuente);
-    Core::Utils::double_parameter("Interval Width", 1.0e-15,
-        "The maximum width of the interval containing the minimum of the modified function",
-        morethuente);
-    Core::Utils::double_parameter(
-        "Maximum Step", 1.0e6, "maximum allowable step length", morethuente);
-    Core::Utils::double_parameter(
-        "Minimum Step", 1.0e-12, "minimum allowable step length", morethuente);
+    morethuente.specs.emplace_back(parameter<double>("Sufficient Decrease",
+        {.description = "The ftol in the sufficient decrease condition", .default_value = 1.0e-4}));
+    morethuente.specs.emplace_back(parameter<double>("Curvature Condition",
+        {.description = "The gtol in the curvature condition", .default_value = 0.9999}));
+    morethuente.specs.emplace_back(parameter<double>("Interval Width",
+        {.description =
+                "The maximum width of the interval containing the minimum of the modified function",
+            .default_value = 1.0e-15}));
+    morethuente.specs.emplace_back(parameter<double>(
+        "Maximum Step", {.description = "maximum allowable step length", .default_value = 1.0e6}));
+    morethuente.specs.emplace_back(parameter<double>("Minimum Step",
+        {.description = "minimum allowable step length", .default_value = 1.0e-12}));
     Core::Utils::int_parameter("Max Iters", 20,
         "maximum number of right-hand-side and corresponding Jacobian evaluations", morethuente);
-    Core::Utils::double_parameter("Default Step", 1.0, "starting step length", morethuente);
+    morethuente.specs.emplace_back(parameter<double>(
+        "Default Step", {.description = "starting step length", .default_value = 1.0}));
 
     std::vector<std::string> recovery_step_type_valid_input = {"Constant", "Last Computed Step"};
     Core::Utils::string_parameter("Recovery Step Type", "Constant",
@@ -284,24 +296,27 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::SectionSpecs trustregion{snox, "Trust Region"};
 
   {
-    Core::Utils::double_parameter("Minimum Trust Region Radius", 1.0e-6,
-        "Minimum allowable trust region radius", trustregion);
-    Core::Utils::double_parameter("Maximum Trust Region Radius", 1.0e+9,
-        "Maximum allowable trust region radius", trustregion);
-    Core::Utils::double_parameter("Minimum Improvement Ratio", 1.0e-4,
-        "Minimum improvement ratio to accept the step", trustregion);
+    trustregion.specs.emplace_back(parameter<double>("Minimum Trust Region Radius",
+        {.description = "Minimum allowable trust region radius", .default_value = 1.0e-6}));
+    trustregion.specs.emplace_back(parameter<double>("Maximum Trust Region Radius",
+        {.description = "Maximum allowable trust region radius", .default_value = 1.0e+9}));
+    trustregion.specs.emplace_back(parameter<double>("Minimum Improvement Ratio",
+        {.description = "Minimum improvement ratio to accept the step", .default_value = 1.0e-4}));
     Core::Utils::double_parameter("Contraction Trigger Ratio", 0.1,
         "If the improvement ratio is less than this value, then the trust region is contracted by "
         "the amount specified by the \"Contraction Factor\". Must be larger than \"Minimum "
         "Improvement Ratio\"",
         trustregion);
-    Core::Utils::double_parameter("Contraction Factor", 0.25, "", trustregion);
+    trustregion.specs.emplace_back(
+        parameter<double>("Contraction Factor", {.description = "", .default_value = 0.25}));
     Core::Utils::double_parameter("Expansion Trigger Ratio", 0.75,
         "If the improvement ratio is greater than this value, then the trust region is contracted "
         "by the amount specified by the \"Expansion Factor\"",
         trustregion);
-    Core::Utils::double_parameter("Expansion Factor", 4.0, "", trustregion);
-    Core::Utils::double_parameter("Recovery Step", 1.0, "", trustregion);
+    trustregion.specs.emplace_back(
+        parameter<double>("Expansion Factor", {.description = "", .default_value = 4.0}));
+    trustregion.specs.emplace_back(
+        parameter<double>("Recovery Step", {.description = "", .default_value = 1.0}));
   }
   trustregion.move_into_collection(list);
 
@@ -370,10 +385,10 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
         {.description =
                 "Switch on adaptive control of linear solver tolerance for nonlinear solution",
             .default_value = false}));
-    Core::Utils::double_parameter("Adaptive Control Objective", 0.1,
-        "The linear solver shall be this much better than the current nonlinear residual in the "
-        "nonlinear convergence limit",
-        linearSolver);
+    linearSolver.specs.emplace_back(parameter<double>("Adaptive Control Objective",
+        {.description = "The linear solver shall be this much better than the current nonlinear "
+                        "residual in the nonlinear convergence limit",
+            .default_value = 0.1}));
     linearSolver.specs.emplace_back(parameter<bool>("Zero Initial Guess",
         {.description = "Zero out the delta X vector if requested.", .default_value = true}));
     linearSolver.specs.emplace_back(parameter<bool>("Computing Scaling Manually",

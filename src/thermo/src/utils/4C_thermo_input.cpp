@@ -42,20 +42,24 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
   Core::Utils::int_parameter("INITFUNCNO", -1, "function number for thermal initial field", tdyn);
 
   // Time loop control
-  Core::Utils::double_parameter("TIMESTEP", 0.05, "time step size", tdyn);
+  tdyn.specs.emplace_back(
+      parameter<double>("TIMESTEP", {.description = "time step size", .default_value = 0.05}));
   Core::Utils::int_parameter("NUMSTEP", 200, "maximum number of steps", tdyn);
-  Core::Utils::double_parameter("MAXTIME", 5.0, "maximum time", tdyn);
+  tdyn.specs.emplace_back(
+      parameter<double>("MAXTIME", {.description = "maximum time", .default_value = 5.0}));
 
   // Iterationparameters
-  Core::Utils::double_parameter(
-      "TOLTEMP", 1.0E-10, "tolerance in the temperature norm of the Newton iteration", tdyn);
+  tdyn.specs.emplace_back(parameter<double>(
+      "TOLTEMP", {.description = "tolerance in the temperature norm of the Newton iteration",
+                     .default_value = 1.0E-10}));
 
   Core::Utils::string_to_integral_parameter<ConvNorm>("NORM_TEMP", "Abs",
       "type of norm for temperature convergence check", tuple<std::string>("Abs", "Rel", "Mix"),
       tuple<ConvNorm>(convnorm_abs, convnorm_rel, convnorm_mix), tdyn);
 
-  Core::Utils::double_parameter(
-      "TOLRES", 1.0E-08, "tolerance in the residual norm for the Newton iteration", tdyn);
+  tdyn.specs.emplace_back(parameter<double>(
+      "TOLRES", {.description = "tolerance in the residual norm for the Newton iteration",
+                    .default_value = 1.0E-08}));
 
   Core::Utils::string_to_integral_parameter<ConvNorm>("NORM_RESF", "Abs",
       "type of norm for residual convergence check", tuple<std::string>("Abs", "Rel", "Mix"),
@@ -99,10 +103,10 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
       {.description =
               "Switch on adaptive control of linear solver tolerance for nonlinear solution",
           .default_value = false}));
-  Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.1,
-      "The linear solver shall be this much better than the current nonlinear residual in the "
-      "nonlinear convergence limit",
-      tdyn);
+  tdyn.specs.emplace_back(parameter<double>("ADAPTCONV_BETTER",
+      {.description = "The linear solver shall be this much better than the current nonlinear "
+                      "residual in the nonlinear convergence limit",
+          .default_value = 0.1}));
 
   tdyn.specs.emplace_back(parameter<bool>(
       "LUMPCAPA", {.description = "Lump the capacity matrix for explicit time integration",
@@ -135,10 +139,14 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
       tuple<MidAverageEnum>(midavg_vague, midavg_imrlike, midavg_trlike), tgenalpha);
 
   // default values correspond to midpoint-rule
-  Core::Utils::double_parameter("GAMMA", 0.5, "Generalised-alpha factor in (0,1]", tgenalpha);
-  Core::Utils::double_parameter("ALPHA_M", 0.5, "Generalised-alpha factor in [0.5,1)", tgenalpha);
-  Core::Utils::double_parameter("ALPHA_F", 0.5, "Generalised-alpha factor in [0.5,1)", tgenalpha);
-  Core::Utils::double_parameter("RHO_INF", -1.0, "Generalised-alpha factor in [0,1]", tgenalpha);
+  tgenalpha.specs.emplace_back(parameter<double>(
+      "GAMMA", {.description = "Generalised-alpha factor in (0,1]", .default_value = 0.5}));
+  tgenalpha.specs.emplace_back(parameter<double>(
+      "ALPHA_M", {.description = "Generalised-alpha factor in [0.5,1)", .default_value = 0.5}));
+  tgenalpha.specs.emplace_back(parameter<double>(
+      "ALPHA_F", {.description = "Generalised-alpha factor in [0.5,1)", .default_value = 0.5}));
+  tgenalpha.specs.emplace_back(parameter<double>(
+      "RHO_INF", {.description = "Generalised-alpha factor in [0,1]", .default_value = -1.0}));
 
   tgenalpha.move_into_collection(list);
 
@@ -146,7 +154,8 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
   /* parameters for one-step-theta thermal integrator */
   Core::Utils::SectionSpecs tonesteptheta{tdyn, "ONESTEPTHETA"};
 
-  Core::Utils::double_parameter("THETA", 0.5, "One-step-theta factor in (0,1]", tonesteptheta);
+  tonesteptheta.specs.emplace_back(parameter<double>(
+      "THETA", {.description = "One-step-theta factor in (0,1]", .default_value = 0.5}));
 
   tonesteptheta.move_into_collection(list);
 

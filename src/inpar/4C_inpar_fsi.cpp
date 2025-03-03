@@ -86,7 +86,8 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       {.description = "is matching grid (fluid-ale) and is full fluid-ale (without euler part)",
           .default_value = true}));
 
-  Core::Utils::double_parameter("MAXTIME", 1000.0, "Total simulation time", fsidyn);
+  fsidyn.specs.emplace_back(parameter<double>(
+      "MAXTIME", {.description = "Total simulation time", .default_value = 1000.0}));
   Core::Utils::int_parameter("NUMSTEP", 200, "Total number of Timesteps", fsidyn);
 
   Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", fsidyn);
@@ -108,7 +109,8 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           Inpar::FSI::ALEprojection_rot_z, Inpar::FSI::ALEprojection_rot_zsphere),
       fsidyn);
 
-  Core::Utils::double_parameter("TIMESTEP", 0.1, "Time increment dt", fsidyn);
+  fsidyn.specs.emplace_back(
+      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.1}));
 
   Core::Utils::int_parameter("RESULTSEVERY", 1, "Increment for writing solution", fsidyn);
 
@@ -151,13 +153,13 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           Inpar::FSI::divcont_halve_step, Inpar::FSI::divcont_revert_dt),
       fsiadapt);
 
-  Core::Utils::double_parameter(
-      "DTMAX", 0.1, "Limit maximally permitted time step size (>0)", fsiadapt);
-  Core::Utils::double_parameter(
-      "DTMIN", 1.0e-4, "Limit minimally allowed time step size (>0)", fsiadapt);
+  fsiadapt.specs.emplace_back(parameter<double>("DTMAX",
+      {.description = "Limit maximally permitted time step size (>0)", .default_value = 0.1}));
+  fsiadapt.specs.emplace_back(parameter<double>("DTMIN",
+      {.description = "Limit minimally allowed time step size (>0)", .default_value = 1.0e-4}));
 
-  Core::Utils::double_parameter(
-      "LOCERRTOLFLUID", 1.0e-3, "Tolerance for the norm of local velocity error", fsiadapt);
+  fsiadapt.specs.emplace_back(parameter<double>("LOCERRTOLFLUID",
+      {.description = "Tolerance for the norm of local velocity error", .default_value = 1.0e-3}));
 
 
   Core::Utils::int_parameter("NUMINCREASESTEPS", 0,
@@ -165,19 +167,19 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "actually increasing it. Set 0 to deactivate this feature.",
       fsiadapt);
 
-  Core::Utils::double_parameter("SAFETYFACTOR", 0.9,
-      "This is a safety factor to scale theoretical optimal step size, \n"
-      "should be lower than 1 and must be larger than 0",
-      fsiadapt);
+  fsiadapt.specs.emplace_back(parameter<double>(
+      "SAFETYFACTOR", {.description = "This is a safety factor to scale theoretical optimal step "
+                                      "size, \nshould be lower than 1 and must be larger than 0",
+                          .default_value = 0.9}));
 
-  Core::Utils::double_parameter("SIZERATIOMAX", 2.0,
-      "Limit maximally permitted change of\n"
-      "time step size compared to previous size (>0).",
-      fsiadapt);
-  Core::Utils::double_parameter("SIZERATIOMIN", 0.5,
-      "Limit minimally permitted change of\n"
-      "time step size compared to previous size (>0).",
-      fsiadapt);
+  fsiadapt.specs.emplace_back(parameter<double>("SIZERATIOMAX",
+      {.description =
+              "Limit maximally permitted change of\ntime step size compared to previous size (>0).",
+          .default_value = 2.0}));
+  fsiadapt.specs.emplace_back(parameter<double>("SIZERATIOMIN",
+      {.description =
+              "Limit minimally permitted change of\ntime step size compared to previous size (>0).",
+          .default_value = 0.5}));
 
   fsiadapt.specs.emplace_back(parameter<bool>("TIMEADAPTON",
       {.description = "Activate or deactivate time step size adaptivity", .default_value = false}));
@@ -204,9 +206,9 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "to the nonlinear convergence test using a absolute residual norm.",
       fsimono);
 
-  Core::Utils::double_parameter("CONVTOL", 1e-6,
-      "Nonlinear tolerance for lung/constraint/fluid-fluid FSI",
-      fsimono);  // ToDo remove
+  fsimono.specs.emplace_back(parameter<double>(
+      "CONVTOL", {.description = "Nonlinear tolerance for lung/constraint/fluid-fluid FSI",
+                     .default_value = 1e-6}));  // ToDo remove
 
   fsimono.specs.emplace_back(parameter<bool>("ENERGYFILE",
       {.description = "Write artificial interface energy due to temporal discretization to file",
@@ -325,41 +327,57 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
 
   // tolerances for convergence check of nonlinear solver in monolithic FSI
   // structure displacements
-  Core::Utils::double_parameter("TOL_DIS_RES_L2", 1e-6,
-      "Absolute tolerance for structure displacement residual in L2-norm", fsimono);
-  Core::Utils::double_parameter("TOL_DIS_RES_INF", 1e-6,
-      "Absolute tolerance for structure displacement residual in Inf-norm", fsimono);
-  Core::Utils::double_parameter("TOL_DIS_INC_L2", 1e-6,
-      "Absolute tolerance for structure displacement increment in L2-norm", fsimono);
-  Core::Utils::double_parameter("TOL_DIS_INC_INF", 1e-6,
-      "Absolute tolerance for structure displacement increment in Inf-norm", fsimono);
+  fsimono.specs.emplace_back(parameter<double>("TOL_DIS_RES_L2",
+      {.description = "Absolute tolerance for structure displacement residual in L2-norm",
+          .default_value = 1e-6}));
+  fsimono.specs.emplace_back(parameter<double>("TOL_DIS_RES_INF",
+      {.description = "Absolute tolerance for structure displacement residual in Inf-norm",
+          .default_value = 1e-6}));
+  fsimono.specs.emplace_back(parameter<double>("TOL_DIS_INC_L2",
+      {.description = "Absolute tolerance for structure displacement increment in L2-norm",
+          .default_value = 1e-6}));
+  fsimono.specs.emplace_back(parameter<double>("TOL_DIS_INC_INF",
+      {.description = "Absolute tolerance for structure displacement increment in Inf-norm",
+          .default_value = 1e-6}));
   // interface tolerances
-  Core::Utils::double_parameter(
-      "TOL_FSI_RES_L2", 1e-6, "Absolute tolerance for interface residual in L2-norm", fsimono);
-  Core::Utils::double_parameter(
-      "TOL_FSI_RES_INF", 1e-6, "Absolute tolerance for interface residual in Inf-norm", fsimono);
-  Core::Utils::double_parameter(
-      "TOL_FSI_INC_L2", 1e-6, "Absolute tolerance for interface increment in L2-norm", fsimono);
-  Core::Utils::double_parameter(
-      "TOL_FSI_INC_INF", 1e-6, "Absolute tolerance for interface increment in Inf-norm", fsimono);
+  fsimono.specs.emplace_back(parameter<double>(
+      "TOL_FSI_RES_L2", {.description = "Absolute tolerance for interface residual in L2-norm",
+                            .default_value = 1e-6}));
+  fsimono.specs.emplace_back(parameter<double>(
+      "TOL_FSI_RES_INF", {.description = "Absolute tolerance for interface residual in Inf-norm",
+                             .default_value = 1e-6}));
+  fsimono.specs.emplace_back(parameter<double>(
+      "TOL_FSI_INC_L2", {.description = "Absolute tolerance for interface increment in L2-norm",
+                            .default_value = 1e-6}));
+  fsimono.specs.emplace_back(parameter<double>(
+      "TOL_FSI_INC_INF", {.description = "Absolute tolerance for interface increment in Inf-norm",
+                             .default_value = 1e-6}));
   // fluid pressure
-  Core::Utils::double_parameter(
-      "TOL_PRE_RES_L2", 1e-6, "Absolute tolerance for fluid pressure residual in L2-norm", fsimono);
-  Core::Utils::double_parameter("TOL_PRE_RES_INF", 1e-6,
-      "Absolute tolerance for fluid pressure residual in Inf-norm", fsimono);
-  Core::Utils::double_parameter("TOL_PRE_INC_L2", 1e-6,
-      "Absolute tolerance for fluid pressure increment in L2-norm", fsimono);
-  Core::Utils::double_parameter("TOL_PRE_INC_INF", 1e-6,
-      "Absolute tolerance for fluid pressure increment in Inf-norm", fsimono);
+  fsimono.specs.emplace_back(parameter<double>(
+      "TOL_PRE_RES_L2", {.description = "Absolute tolerance for fluid pressure residual in L2-norm",
+                            .default_value = 1e-6}));
+  fsimono.specs.emplace_back(parameter<double>("TOL_PRE_RES_INF",
+      {.description = "Absolute tolerance for fluid pressure residual in Inf-norm",
+          .default_value = 1e-6}));
+  fsimono.specs.emplace_back(parameter<double>("TOL_PRE_INC_L2",
+      {.description = "Absolute tolerance for fluid pressure increment in L2-norm",
+          .default_value = 1e-6}));
+  fsimono.specs.emplace_back(parameter<double>("TOL_PRE_INC_INF",
+      {.description = "Absolute tolerance for fluid pressure increment in Inf-norm",
+          .default_value = 1e-6}));
   // fluid velocities
-  Core::Utils::double_parameter(
-      "TOL_VEL_RES_L2", 1e-6, "Absolute tolerance for fluid velocity residual in L2-norm", fsimono);
-  Core::Utils::double_parameter("TOL_VEL_RES_INF", 1e-6,
-      "Absolute tolerance for fluid velocity residual in Inf-norm", fsimono);
-  Core::Utils::double_parameter("TOL_VEL_INC_L2", 1e-6,
-      "Absolute tolerance for fluid velocity increment in L2-norm", fsimono);
-  Core::Utils::double_parameter("TOL_VEL_INC_INF", 1e-6,
-      "Absolute tolerance for fluid velocity increment in Inf-norm", fsimono);
+  fsimono.specs.emplace_back(parameter<double>(
+      "TOL_VEL_RES_L2", {.description = "Absolute tolerance for fluid velocity residual in L2-norm",
+                            .default_value = 1e-6}));
+  fsimono.specs.emplace_back(parameter<double>("TOL_VEL_RES_INF",
+      {.description = "Absolute tolerance for fluid velocity residual in Inf-norm",
+          .default_value = 1e-6}));
+  fsimono.specs.emplace_back(parameter<double>("TOL_VEL_INC_L2",
+      {.description = "Absolute tolerance for fluid velocity increment in L2-norm",
+          .default_value = 1e-6}));
+  fsimono.specs.emplace_back(parameter<double>("TOL_VEL_INC_INF",
+      {.description = "Absolute tolerance for fluid velocity increment in Inf-norm",
+          .default_value = 1e-6}));
 
   fsimono.move_into_collection(list);
 
@@ -375,8 +393,9 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "to the nonlinear convergence test using a absolute residual norm.",
       fsipart);
 
-  Core::Utils::double_parameter("CONVTOL", 1e-6,
-      "Tolerance for iteration over fields in case of partitioned scheme", fsipart);
+  fsipart.specs.emplace_back(parameter<double>("CONVTOL",
+      {.description = "Tolerance for iteration over fields in case of partitioned scheme",
+          .default_value = 1e-6}));
 
   std::vector<std::string> coupmethod_valid_input = {"mortar", "conforming", "immersed"};
   Core::Utils::string_parameter("COUPMETHOD", "conforming",
@@ -394,11 +413,13 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
 
   Core::Utils::int_parameter("ITEMAX", 100, "Maximum number of iterations over fields", fsipart);
 
-  Core::Utils::double_parameter("MAXOMEGA", 0.0,
-      "largest omega allowed for Aitken relaxation (0.0 means no constraint)", fsipart);
+  fsipart.specs.emplace_back(parameter<double>("MAXOMEGA",
+      {.description = "largest omega allowed for Aitken relaxation (0.0 means no constraint)",
+          .default_value = 0.0}));
 
-  Core::Utils::double_parameter(
-      "MINOMEGA", -1.0, "smallest omega allowed for Aitken relaxation (default is -1.0)", fsipart);
+  fsipart.specs.emplace_back(parameter<double>(
+      "MINOMEGA", {.description = "smallest omega allowed for Aitken relaxation (default is -1.0)",
+                      .default_value = -1.0}));
 
 
   Core::Utils::string_to_integral_parameter<Inpar::FSI::PartitionedCouplingMethod>("PARTITIONED",
@@ -415,8 +436,9 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "PREDICTOR", "d(n)", "Predictor for interface displacements", fsipart, predictor_valid_input);
 
 
-  Core::Utils::double_parameter(
-      "RELAX", 1.0, "fixed relaxation parameter for partitioned FSI solvers", fsipart);
+  fsipart.specs.emplace_back(parameter<double>(
+      "RELAX", {.description = "fixed relaxation parameter for partitioned FSI solvers",
+                   .default_value = 1.0}));
 
   fsipart.move_into_collection(list);
 
@@ -427,7 +449,8 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "preconditioner to use", tuple<std::string>("Simple", "Simplec"),
       tuple<Inpar::FSI::PrecConstr>(Inpar::FSI::Simple, Inpar::FSI::Simplec), constrfsi);
   Core::Utils::int_parameter("SIMPLEITER", 2, "Number of iterations for simple pc", constrfsi);
-  Core::Utils::double_parameter("ALPHA", 0.8, "alpha parameter for simple pc", constrfsi);
+  constrfsi.specs.emplace_back(parameter<double>(
+      "ALPHA", {.description = "alpha parameter for simple pc", .default_value = 0.8}));
 
   constrfsi.move_into_collection(list);
 }

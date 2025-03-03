@@ -51,10 +51,10 @@ void Inpar::BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::
           strategy_singlelengthspec_smallsepapprox_simple),
       beampotential);
 
-  Core::Utils::double_parameter("CUTOFF_RADIUS", -1.0,
-      "Neglect all potential contributions at separation larger"
-      "than this cutoff radius",
-      beampotential);
+  beampotential.specs.emplace_back(parameter<double>("CUTOFF_RADIUS",
+      {.description =
+              "Neglect all potential contributions at separation largerthan this cutoff radius",
+          .default_value = -1.0}));
 
   Core::Utils::string_to_integral_parameter<Inpar::BeamPotential::BeamPotentialRegularizationType>(
       "REGULARIZATION_TYPE", "none", "Type of regularization applied to the force law",
@@ -63,10 +63,9 @@ void Inpar::BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::
           regularization_linear, regularization_constant, regularization_none, regularization_none),
       beampotential);
 
-  Core::Utils::double_parameter("REGULARIZATION_SEPARATION", -1.0,
-      "Use regularization of force law at separations "
-      "smaller than this separation",
-      beampotential);
+  beampotential.specs.emplace_back(parameter<double>("REGULARIZATION_SEPARATION",
+      {.description = "Use regularization of force law at separations smaller than this separation",
+          .default_value = -1.0}));
 
   Core::Utils::int_parameter("NUM_INTEGRATION_SEGMENTS", 1,
       "Number of integration segments used per beam element", beampotential);
@@ -109,10 +108,10 @@ void Inpar::BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::
   Core::Utils::int_parameter(
       "BEAMPOT_BOXESINOCT", 8, "max number of bounding boxes in any leaf octant", beampotential);
 
-  Core::Utils::double_parameter("POTENTIAL_REDUCTION_LENGTH", -1.0,
-      "Within this length of the master beam end point the potential is smoothly reduced to one "
-      "half to account for infinitely long master beam surrogates.",
-      beampotential);
+  beampotential.specs.emplace_back(parameter<double>("POTENTIAL_REDUCTION_LENGTH",
+      {.description = "Within this length of the master beam end point the potential is smoothly "
+                      "reduced to one half to account for infinitely long master beam surrogates.",
+          .default_value = -1.0}));
 
   beampotential.move_into_collection(list);
 

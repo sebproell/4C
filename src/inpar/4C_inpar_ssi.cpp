@@ -25,17 +25,20 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   Core::Utils::SectionSpecs ssidyn{"SSI CONTROL"};
 
   // Output type
-  Core::Utils::double_parameter(
-      "RESTARTEVERYTIME", 0, "write restart possibility every RESTARTEVERY steps", ssidyn);
+  ssidyn.specs.emplace_back(parameter<double>("RESTARTEVERYTIME",
+      {.description = "write restart possibility every RESTARTEVERY steps", .default_value = 0}));
   Core::Utils::int_parameter(
       "RESTARTEVERY", 1, "write restart possibility every RESTARTEVERY steps", ssidyn);
   // Time loop control
   Core::Utils::int_parameter("NUMSTEP", 200, "maximum number of Timesteps", ssidyn);
-  Core::Utils::double_parameter("MAXTIME", 1000.0, "total simulation time", ssidyn);
-  Core::Utils::double_parameter("TIMESTEP", -1, "time step size dt", ssidyn);
+  ssidyn.specs.emplace_back(parameter<double>(
+      "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}));
+  ssidyn.specs.emplace_back(
+      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = -1}));
   ssidyn.specs.emplace_back(parameter<bool>("DIFFTIMESTEPSIZE",
       {.description = "use different step size for scatra and solid", .default_value = false}));
-  Core::Utils::double_parameter("RESULTSEVERYTIME", 0, "increment for writing solution", ssidyn);
+  ssidyn.specs.emplace_back(parameter<double>(
+      "RESULTSEVERYTIME", {.description = "increment for writing solution", .default_value = 0}));
   Core::Utils::int_parameter("RESULTSEVERY", 1, "increment for writing solution", ssidyn);
   Core::Utils::int_parameter("ITEMAX", 10, "maximum number of iterations over fields", ssidyn);
   ssidyn.specs.emplace_back(parameter<bool>("SCATRA_FROM_RESTART_FILE",
@@ -108,15 +111,17 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   Core::Utils::SectionSpecs ssidynpart{ssidyn, "PARTITIONED"};
 
   // Solver parameter for relaxation of iterative staggered partitioned SSI
-  Core::Utils::double_parameter(
-      "MAXOMEGA", 10.0, "largest omega allowed for Aitken relaxation", ssidynpart);
-  Core::Utils::double_parameter(
-      "MINOMEGA", 0.1, "smallest omega allowed for Aitken relaxation", ssidynpart);
-  Core::Utils::double_parameter("STARTOMEGA", 1.0, "fixed relaxation parameter", ssidynpart);
+  ssidynpart.specs.emplace_back(parameter<double>("MAXOMEGA",
+      {.description = "largest omega allowed for Aitken relaxation", .default_value = 10.0}));
+  ssidynpart.specs.emplace_back(parameter<double>("MINOMEGA",
+      {.description = "smallest omega allowed for Aitken relaxation", .default_value = 0.1}));
+  ssidynpart.specs.emplace_back(parameter<double>(
+      "STARTOMEGA", {.description = "fixed relaxation parameter", .default_value = 1.0}));
 
   // convergence tolerance of outer iteration loop
-  Core::Utils::double_parameter("CONVTOL", 1e-6,
-      "tolerance for convergence check of outer iteration within partitioned SSI", ssidynpart);
+  ssidynpart.specs.emplace_back(parameter<double>("CONVTOL",
+      {.description = "tolerance for convergence check of outer iteration within partitioned SSI",
+          .default_value = 1e-6}));
 
   ssidynpart.move_into_collection(list);
 
@@ -126,12 +131,14 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   Core::Utils::SectionSpecs ssidynmono{ssidyn, "MONOLITHIC"};
 
   // convergence tolerances of Newton-Raphson iteration loop
-  Core::Utils::double_parameter("ABSTOLRES", 1.e-14,
-      "absolute tolerance for deciding if global residual of nonlinear problem is already zero",
-      ssidynmono);
-  Core::Utils::double_parameter("CONVTOL", 1.e-6,
-      "tolerance for convergence check of Newton-Raphson iteration within monolithic SSI",
-      ssidynmono);
+  ssidynmono.specs.emplace_back(parameter<double>(
+      "ABSTOLRES", {.description = "absolute tolerance for deciding if global residual of "
+                                   "nonlinear problem is already zero",
+                       .default_value = 1.e-14}));
+  ssidynmono.specs.emplace_back(parameter<double>("CONVTOL",
+      {.description =
+              "tolerance for convergence check of Newton-Raphson iteration within monolithic SSI",
+          .default_value = 1.e-6}));
 
   // ID of linear solver for global system of equations
   Core::Utils::int_parameter(
@@ -186,10 +193,10 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
                       "solution of time step",
           .default_value = false}));
 
-  Core::Utils::double_parameter("RELAX_LIN_SOLVER_TOLERANCE", 1.0,
-      "relax the tolerance of the linear solver in case it is an iterative solver by scaling the "
-      "convergence tolerance with factor RELAX_LIN_SOLVER_TOLERANCE",
-      ssidynmono);
+  ssidynmono.specs.emplace_back(parameter<double>("RELAX_LIN_SOLVER_TOLERANCE",
+      {.description = "relax the tolerance of the linear solver in case it is an iterative solver "
+                      "by scaling the convergence tolerance with factor RELAX_LIN_SOLVER_TOLERANCE",
+          .default_value = 1.0}));
 
   Core::Utils::int_parameter("RELAX_LIN_SOLVER_STEP", -1,
       "relax the tolerance of the linear solver within the first RELAX_LIN_SOLVER_STEP steps",

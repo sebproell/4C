@@ -150,8 +150,10 @@ void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>&
           FourC::Core::IO::verbose, FourC::Core::IO::debug, FourC::Core::IO::debug),
       io);
 
-  Core::Utils::double_parameter("RESTARTWALLTIMEINTERVAL", -1.0,
-      "Enforce restart after this walltime interval (in seconds), smaller zero to disable", io);
+  io.specs.emplace_back(parameter<double>("RESTARTWALLTIMEINTERVAL",
+      {.description =
+              "Enforce restart after this walltime interval (in seconds), smaller zero to disable",
+          .default_value = -1.0}));
   Core::Utils::int_parameter("RESTARTEVERY", -1, "write restart every RESTARTEVERY steps", io);
 
   io.move_into_collection(list);

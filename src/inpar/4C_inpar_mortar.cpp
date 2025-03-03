@@ -46,8 +46,9 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       tuple<Inpar::Mortar::BinaryTreeUpdateType>(binarytree_bottom_up, binarytree_top_down),
       mortar);
 
-  Core::Utils::double_parameter(
-      "SEARCH_PARAM", 0.3, "Radius / Bounding volume inflation for contact search", mortar);
+  mortar.specs.emplace_back(parameter<double>(
+      "SEARCH_PARAM", {.description = "Radius / Bounding volume inflation for contact search",
+                          .default_value = 0.3}));
 
   mortar.specs.emplace_back(parameter<bool>("SEARCH_USE_AUX_POS",
       {.description = "If chosen auxiliary position is used for computing dops",
@@ -137,18 +138,19 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           ExtendGhosting::roundrobin, ExtendGhosting::binning),
       parallelRedist);
 
-  Core::Utils::double_parameter("IMBALANCE_TOL", 1.1,
-      "Max. relative imbalance of subdomain size after redistribution", parallelRedist);
+  parallelRedist.specs.emplace_back(parameter<double>("IMBALANCE_TOL",
+      {.description = "Max. relative imbalance of subdomain size after redistribution",
+          .default_value = 1.1}));
 
-  Core::Utils::double_parameter("MAX_BALANCE_EVAL_TIME", 2.0,
-      "Max-to-min ratio of contact evaluation time per processor to trigger parallel "
-      "redistribution",
-      parallelRedist);
+  parallelRedist.specs.emplace_back(parameter<double>(
+      "MAX_BALANCE_EVAL_TIME", {.description = "Max-to-min ratio of contact evaluation time per "
+                                               "processor to trigger parallel redistribution",
+                                   .default_value = 2.0}));
 
-  Core::Utils::double_parameter("MAX_BALANCE_SLAVE_ELES", 0.5,
-      "Max-to-min ratio of mortar slave elements per processor to trigger parallel "
-      "redistribution",
-      parallelRedist);
+  parallelRedist.specs.emplace_back(parameter<double>(
+      "MAX_BALANCE_SLAVE_ELES", {.description = "Max-to-min ratio of mortar slave elements per "
+                                                "processor to trigger parallel redistribution",
+                                    .default_value = 0.5}));
 
   Core::Utils::int_parameter("MIN_ELEPROC", 0,
       "Minimum no. of elements per processor for parallel redistribution", parallelRedist);

@@ -21,9 +21,11 @@ void Inpar::FS3I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
 
   Core::Utils::SectionSpecs fs3idyn{"FS3I DYNAMIC"};
 
-  Core::Utils::double_parameter("TIMESTEP", 0.1, "Time increment dt", fs3idyn);
+  fs3idyn.specs.emplace_back(
+      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.1}));
   Core::Utils::int_parameter("NUMSTEP", 20, "Total number of time steps", fs3idyn);
-  Core::Utils::double_parameter("MAXTIME", 1000.0, "Total simulation time", fs3idyn);
+  fs3idyn.specs.emplace_back(parameter<double>(
+      "MAXTIME", {.description = "Total simulation time", .default_value = 1000.0}));
   Core::Utils::int_parameter("RESULTSEVERY", 1, "Increment for writing solution", fs3idyn);
   Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", fs3idyn);
   Core::Utils::string_to_integral_parameter<Inpar::ScaTra::SolverType>("SCATRA_SOLVERTYPE",
@@ -104,8 +106,9 @@ void Inpar::FS3I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       tuple<SolutionSchemeOverFields>(fs3i_SequStagg, fs3i_IterStagg), fs3idynpart);
 
   // convergence tolerance of outer iteration loop
-  Core::Utils::double_parameter("CONVTOL", 1e-6,
-      "tolerance for convergence check of outer iteration within partitioned FS3I", fs3idynpart);
+  fs3idynpart.specs.emplace_back(parameter<double>("CONVTOL",
+      {.description = "tolerance for convergence check of outer iteration within partitioned FS3I",
+          .default_value = 1e-6}));
 
   Core::Utils::int_parameter("ITEMAX", 10, "Maximum number of outer iterations", fs3idynpart);
 

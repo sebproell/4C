@@ -66,37 +66,46 @@ void BeamContact::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   beamcontact.specs.emplace_back(parameter<bool>("BEAMS_DAMPING",
       {.description = "Application of a contact damping force", .default_value = false}));
 
-  Core::Utils::double_parameter("BEAMS_BTBPENALTYPARAM", 0.0,
-      "Penalty parameter for beam-to-beam point contact", beamcontact);
-  Core::Utils::double_parameter("BEAMS_BTBLINEPENALTYPARAM", -1.0,
-      "Penalty parameter per unit length for beam-to-beam line contact", beamcontact);
-  Core::Utils::double_parameter(
-      "BEAMS_BTSPENALTYPARAM", 0.0, "Penalty parameter for beam-to-solid contact", beamcontact);
-  Core::Utils::double_parameter(
-      "BEAMS_DAMPINGPARAM", -1000.0, "Damping parameter for contact damping force", beamcontact);
-  Core::Utils::double_parameter("BEAMS_DAMPREGPARAM1", -1000.0,
-      "First (at gap1, with gap1>gap2) regularization parameter for contact damping force",
-      beamcontact);
-  Core::Utils::double_parameter("BEAMS_DAMPREGPARAM2", -1000.0,
-      "Second (at gap2, with gap1>gap2) regularization parameter for contact damping force",
-      beamcontact);
-  Core::Utils::double_parameter("BEAMS_MAXDISISCALEFAC", -1.0,
-      "Scale factor in order to limit maximal iterative displacement increment (resiudal "
-      "displacement)",
-      beamcontact);
-  Core::Utils::double_parameter("BEAMS_MAXDELTADISSCALEFAC", 1.0,
-      "Scale factor in order to limit maximal displacement per time step", beamcontact);
+  beamcontact.specs.emplace_back(parameter<double>("BEAMS_BTBPENALTYPARAM",
+      {.description = "Penalty parameter for beam-to-beam point contact", .default_value = 0.0}));
+  beamcontact.specs.emplace_back(parameter<double>("BEAMS_BTBLINEPENALTYPARAM",
+      {.description = "Penalty parameter per unit length for beam-to-beam line contact",
+          .default_value = -1.0}));
+  beamcontact.specs.emplace_back(parameter<double>("BEAMS_BTSPENALTYPARAM",
+      {.description = "Penalty parameter for beam-to-solid contact", .default_value = 0.0}));
+  beamcontact.specs.emplace_back(parameter<double>("BEAMS_DAMPINGPARAM",
+      {.description = "Damping parameter for contact damping force", .default_value = -1000.0}));
+  beamcontact.specs.emplace_back(parameter<double>("BEAMS_DAMPREGPARAM1",
+      {.description =
+              "First (at gap1, with gap1>gap2) regularization parameter for contact damping force",
+          .default_value = -1000.0}));
+  beamcontact.specs.emplace_back(parameter<double>("BEAMS_DAMPREGPARAM2",
+      {.description =
+              "Second (at gap2, with gap1>gap2) regularization parameter for contact damping force",
+          .default_value = -1000.0}));
+  beamcontact.specs.emplace_back(parameter<double>(
+      "BEAMS_MAXDISISCALEFAC", {.description = "Scale factor in order to limit maximal iterative "
+                                               "displacement increment (resiudal displacement)",
+                                   .default_value = -1.0}));
+  beamcontact.specs.emplace_back(parameter<double>("BEAMS_MAXDELTADISSCALEFAC",
+      {.description = "Scale factor in order to limit maximal displacement per time step",
+          .default_value = 1.0}));
 
-  Core::Utils::double_parameter("BEAMS_PERPSHIFTANGLE1", -1.0,
-      "Lower shift angle (in degrees) for penalty scaling of large-angle-contact", beamcontact);
-  Core::Utils::double_parameter("BEAMS_PERPSHIFTANGLE2", -1.0,
-      "Upper shift angle (in degrees) for penalty scaling of large-angle-contact", beamcontact);
-  Core::Utils::double_parameter("BEAMS_PARSHIFTANGLE1", -1.0,
-      "Lower shift angle (in degrees) for penalty scaling of small-angle-contact", beamcontact);
-  Core::Utils::double_parameter("BEAMS_PARSHIFTANGLE2", -1.0,
-      "Upper shift angle (in degrees) for penalty scaling of small-angle-contact", beamcontact);
-  Core::Utils::double_parameter("BEAMS_SEGANGLE", -1.0,
-      "Maximal angle deviation allowed for contact search segmentation", beamcontact);
+  beamcontact.specs.emplace_back(parameter<double>("BEAMS_PERPSHIFTANGLE1",
+      {.description = "Lower shift angle (in degrees) for penalty scaling of large-angle-contact",
+          .default_value = -1.0}));
+  beamcontact.specs.emplace_back(parameter<double>("BEAMS_PERPSHIFTANGLE2",
+      {.description = "Upper shift angle (in degrees) for penalty scaling of large-angle-contact",
+          .default_value = -1.0}));
+  beamcontact.specs.emplace_back(parameter<double>("BEAMS_PARSHIFTANGLE1",
+      {.description = "Lower shift angle (in degrees) for penalty scaling of small-angle-contact",
+          .default_value = -1.0}));
+  beamcontact.specs.emplace_back(parameter<double>("BEAMS_PARSHIFTANGLE2",
+      {.description = "Upper shift angle (in degrees) for penalty scaling of small-angle-contact",
+          .default_value = -1.0}));
+  beamcontact.specs.emplace_back(parameter<double>("BEAMS_SEGANGLE",
+      {.description = "Maximal angle deviation allowed for contact search segmentation",
+          .default_value = -1.0}));
   Core::Utils::int_parameter("BEAMS_NUMINTEGRATIONINTERVAL", 1,
       "Number of integration intervals per element", beamcontact);
 
@@ -107,22 +116,24 @@ void BeamContact::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       tuple<BeamContact::PenaltyLaw>(pl_lp, pl_qp, pl_lnqp, pl_lpqp, pl_lpcp, pl_lpdqp, pl_lpep),
       beamcontact);
 
-  Core::Utils::double_parameter("BEAMS_PENREGPARAM_G0", -1.0,
-      "First penalty regularization parameter G0 >=0: For gap<G0 contact is active!", beamcontact);
-  Core::Utils::double_parameter("BEAMS_PENREGPARAM_F0", -1.0,
-      "Second penalty regularization parameter F0 >=0: F0 represents the force at the transition "
-      "point between regularized and linear force law!",
-      beamcontact);
-  Core::Utils::double_parameter("BEAMS_PENREGPARAM_C0", -1.0,
-      "Third penalty regularization parameter C0 >=0: C0 has different physical meanings for the "
-      "different penalty laws!",
-      beamcontact);
-  Core::Utils::double_parameter(
-      "BEAMS_GAPSHIFTPARAM", 0.0, "Parameter to shift penalty law!", beamcontact);
-  Core::Utils::double_parameter("BEAMS_BASICSTIFFGAP", -1.0,
-      "For gaps > -BEAMS_BASICSTIFFGAP, only the basic part of the contact linearization is "
-      "applied!",
-      beamcontact);
+  beamcontact.specs.emplace_back(parameter<double>("BEAMS_PENREGPARAM_G0",
+      {.description =
+              "First penalty regularization parameter G0 >=0: For gap<G0 contact is active!",
+          .default_value = -1.0}));
+  beamcontact.specs.emplace_back(parameter<double>("BEAMS_PENREGPARAM_F0",
+      {.description = "Second penalty regularization parameter F0 >=0: F0 represents the force at "
+                      "the transition point between regularized and linear force law!",
+          .default_value = -1.0}));
+  beamcontact.specs.emplace_back(parameter<double>("BEAMS_PENREGPARAM_C0",
+      {.description = "Third penalty regularization parameter C0 >=0: C0 has different physical "
+                      "meanings for the different penalty laws!",
+          .default_value = -1.0}));
+  beamcontact.specs.emplace_back(parameter<double>("BEAMS_GAPSHIFTPARAM",
+      {.description = "Parameter to shift penalty law!", .default_value = 0.0}));
+  beamcontact.specs.emplace_back(parameter<double>(
+      "BEAMS_BASICSTIFFGAP", {.description = "For gaps > -BEAMS_BASICSTIFFGAP, only the basic part "
+                                             "of the contact linearization is applied!",
+                                 .default_value = -1.0}));
 
   // enable octree search and determine type of bounding box (aabb = axis aligned, cobb =
   // cylindrical oriented)

@@ -71,22 +71,26 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
           system_none),
       scontact);
 
-  Core::Utils::double_parameter("PENALTYPARAM", 0.0,
-      "Penalty parameter for penalty / Uzawa augmented solution strategy", scontact);
-  Core::Utils::double_parameter("PENALTYPARAMTAN", 0.0,
-      "Tangential penalty parameter for penalty / Uzawa augmented solution strategy", scontact);
+  scontact.specs.emplace_back(parameter<double>("PENALTYPARAM",
+      {.description = "Penalty parameter for penalty / Uzawa augmented solution strategy",
+          .default_value = 0.0}));
+  scontact.specs.emplace_back(parameter<double>("PENALTYPARAMTAN",
+      {.description =
+              "Tangential penalty parameter for penalty / Uzawa augmented solution strategy",
+          .default_value = 0.0}));
   Core::Utils::int_parameter(
       "UZAWAMAXSTEPS", 10, "Maximum no. of Uzawa steps for Uzawa solution strategy", scontact);
-  Core::Utils::double_parameter("UZAWACONSTRTOL", 1.0e-8,
-      "Tolerance of constraint norm for Uzawa solution strategy", scontact);
+  scontact.specs.emplace_back(parameter<double>(
+      "UZAWACONSTRTOL", {.description = "Tolerance of constraint norm for Uzawa solution strategy",
+                            .default_value = 1.0e-8}));
 
   scontact.specs.emplace_back(parameter<bool>("SEMI_SMOOTH_NEWTON",
       {.description = "If chosen semi-smooth Newton concept is applied", .default_value = true}));
 
-  Core::Utils::double_parameter(
-      "SEMI_SMOOTH_CN", 1.0, "Weighting factor cn for semi-smooth PDASS", scontact);
-  Core::Utils::double_parameter(
-      "SEMI_SMOOTH_CT", 1.0, "Weighting factor ct for semi-smooth PDASS", scontact);
+  scontact.specs.emplace_back(parameter<double>("SEMI_SMOOTH_CN",
+      {.description = "Weighting factor cn for semi-smooth PDASS", .default_value = 1.0}));
+  scontact.specs.emplace_back(parameter<double>("SEMI_SMOOTH_CT",
+      {.description = "Weighting factor ct for semi-smooth PDASS", .default_value = 1.0}));
 
   scontact.specs.emplace_back(parameter<bool>("CONTACTFORCE_ENDTIME",
       {.description = "If chosen, the contact force is not evaluated at the generalized midpoint, "
@@ -99,8 +103,9 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
   scontact.specs.emplace_back(parameter<bool>("INITCONTACTBYGAP",
       {.description = "Initialize init contact by weighted gap vector", .default_value = false}));
 
-  Core::Utils::double_parameter("INITCONTACTGAPVALUE", 0.0,
-      "Value for initialization of init contact set with gap vector", scontact);
+  scontact.specs.emplace_back(parameter<double>("INITCONTACTGAPVALUE",
+      {.description = "Value for initialization of init contact set with gap vector",
+          .default_value = 0.0}));
 
   // solver convergence test parameters for contact/meshtying in saddlepoint formulation
   Core::Utils::string_to_integral_parameter<Inpar::Solid::BinaryOp>("NORMCOMBI_RESFCONTCONSTR",
@@ -113,12 +118,14 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
       tuple<std::string>("And", "Or"),
       tuple<Inpar::Solid::BinaryOp>(Inpar::Solid::bop_and, Inpar::Solid::bop_or), scontact);
 
-  Core::Utils::double_parameter("TOLCONTCONSTR", 1.0E-6,
-      "tolerance in the contact constraint norm for the newton iteration (saddlepoint formulation "
-      "only)",
-      scontact);
-  Core::Utils::double_parameter("TOLLAGR", 1.0E-6,
-      "tolerance in the LM norm for the newton iteration (saddlepoint formulation only)", scontact);
+  scontact.specs.emplace_back(parameter<double>(
+      "TOLCONTCONSTR", {.description = "tolerance in the contact constraint norm for the newton "
+                                       "iteration (saddlepoint formulation only)",
+                           .default_value = 1.0E-6}));
+  scontact.specs.emplace_back(parameter<double>("TOLLAGR",
+      {.description =
+              "tolerance in the LM norm for the newton iteration (saddlepoint formulation only)",
+          .default_value = 1.0E-6}));
 
   Core::Utils::string_to_integral_parameter<Inpar::CONTACT::ConstraintDirection>(
       "CONSTRAINT_DIRECTIONS", "ntt",
@@ -140,12 +147,14 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
               "the surface that is defined to be a self contact surface is non-smooth!",
           .default_value = false}));
 
-  Core::Utils::double_parameter("HYBRID_ANGLE_MIN", -1.0,
-      "Non-smooth contact: angle between cpp normal and element normal: begin transition (Mortar)",
-      scontact);
-  Core::Utils::double_parameter("HYBRID_ANGLE_MAX", -1.0,
-      "Non-smooth contact: angle between cpp normal and element normal: end transition (NTS)",
-      scontact);
+  scontact.specs.emplace_back(parameter<double>(
+      "HYBRID_ANGLE_MIN", {.description = "Non-smooth contact: angle between cpp normal and "
+                                          "element normal: begin transition (Mortar)",
+                              .default_value = -1.0}));
+  scontact.specs.emplace_back(parameter<double>(
+      "HYBRID_ANGLE_MAX", {.description = "Non-smooth contact: angle between cpp normal and "
+                                          "element normal: end transition (NTS)",
+                              .default_value = -1.0}));
 
   scontact.specs.emplace_back(parameter<bool>("CPP_NORMALS",
       {.description = "If chosen the nodal normal field is created as averaged CPP normal field.",
@@ -156,10 +165,12 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
                             .default_value = false}));
 
   // --------------------------------------------------------------------------
-  Core::Utils::double_parameter(
-      "NITSCHE_THETA", 0.0, "+1: symmetric, 0: non-symmetric, -1: skew-symmetric", scontact);
-  Core::Utils::double_parameter("NITSCHE_THETA_2", 1.0,
-      "+1: Chouly-type, 0: Burman penalty-free (only with theta=-1)", scontact);
+  scontact.specs.emplace_back(parameter<double>(
+      "NITSCHE_THETA", {.description = "+1: symmetric, 0: non-symmetric, -1: skew-symmetric",
+                           .default_value = 0.0}));
+  scontact.specs.emplace_back(parameter<double>("NITSCHE_THETA_2",
+      {.description = "+1: Chouly-type, 0: Burman penalty-free (only with theta=-1)",
+          .default_value = 1.0}));
 
   Core::Utils::string_to_integral_parameter<Inpar::CONTACT::NitscheWeighting>("NITSCHE_WEIGHTING",
       "harmonic", "how to weight consistency terms in Nitsche contact formulation",
@@ -173,8 +184,8 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
 
   scontact.specs.emplace_back(parameter<bool>("REGULARIZED_NORMAL_CONTACT",
       {.description = "add a regularized normal contact formulation", .default_value = false}));
-  Core::Utils::double_parameter(
-      "REGULARIZATION_THICKNESS", -1., "maximum contact penetration", scontact);
+  scontact.specs.emplace_back(parameter<double>("REGULARIZATION_THICKNESS",
+      {.description = "maximum contact penetration", .default_value = -1.}));
   Core::Utils::double_parameter("REGULARIZATION_STIFFNESS", -1.,
       "initial contact stiffness (i.e. initial \"penalty parameter\")", scontact);
 

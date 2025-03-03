@@ -63,14 +63,17 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
       "Linker are initially set randomly within this bounding box", crosslinking);
 
   // time step for stochastic events concerning crosslinking
-  Core::Utils::double_parameter("TIMESTEP", -1.0,
-      "time step for stochastic events concerning crosslinking (e.g. diffusion, p_link, p_unlink) ",
-      crosslinking);
+  crosslinking.specs.emplace_back(parameter<double>(
+      "TIMESTEP", {.description = "time step for stochastic events concerning crosslinking (e.g. "
+                                  "diffusion, p_link, p_unlink) ",
+                      .default_value = -1.0}));
   // Reading double parameter for viscosity of background fluid
-  Core::Utils::double_parameter("VISCOSITY", 0.0, "viscosity", crosslinking);
+  crosslinking.specs.emplace_back(
+      parameter<double>("VISCOSITY", {.description = "viscosity", .default_value = 0.0}));
   // Reading double parameter for thermal energy in background fluid (temperature * Boltzmann
   // constant)
-  Core::Utils::double_parameter("KT", 0.0, "thermal energy", crosslinking);
+  crosslinking.specs.emplace_back(
+      parameter<double>("KT", {.description = "thermal energy", .default_value = 0.0}));
   // number of initial (are set right in the beginning) crosslinker of certain type
   Core::Utils::string_parameter("MAXNUMINITCROSSLINKERPERTYPE", "0",
       "number of initial crosslinker of certain type (additional to NUMCROSSLINKERPERTYPE) ",
@@ -110,13 +113,14 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
       "SPHEREBEAMLINKING", {.description = "Integrins in problem", .default_value = false}));
 
   // Reading double parameter for contraction rate for active linker
-  Core::Utils::double_parameter("CONTRACTIONRATE", 0.0,
-      "contraction rate of cell (integrin linker) in [microm/s]", spherebeamlink);
+  spherebeamlink.specs.emplace_back(parameter<double>(
+      "CONTRACTIONRATE", {.description = "contraction rate of cell (integrin linker) in [microm/s]",
+                             .default_value = 0.0}));
   // time step for stochastic events concerning sphere beam linking
-  Core::Utils::double_parameter("TIMESTEP", -1.0,
-      "time step for stochastic events concerning sphere beam linking (e.g. catch-slip-bond "
-      "behavior) ",
-      spherebeamlink);
+  spherebeamlink.specs.emplace_back(parameter<double>(
+      "TIMESTEP", {.description = "time step for stochastic events concerning sphere beam linking "
+                                  "(e.g. catch-slip-bond behavior) ",
+                      .default_value = -1.0}));
   Core::Utils::string_parameter(
       "MAXNUMLINKERPERTYPE", "0", "number of crosslinker of certain type ", spherebeamlink);
   // material number characterizing crosslinker type
@@ -166,8 +170,8 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
       tuple<Inpar::BeamInteraction::Strategy>(bstr_none, bstr_none, bstr_penalty, bstr_penalty),
       beamtospherecontact);
 
-  Core::Utils::double_parameter("PENALTY_PARAMETER", 0.0,
-      "Penalty parameter for beam-to-rigidsphere contact", beamtospherecontact);
+  beamtospherecontact.specs.emplace_back(parameter<double>("PENALTY_PARAMETER",
+      {.description = "Penalty parameter for beam-to-rigidsphere contact", .default_value = 0.0}));
 
   beamtospherecontact.move_into_collection(list);
 

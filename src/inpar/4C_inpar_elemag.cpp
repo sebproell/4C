@@ -22,10 +22,13 @@ void Inpar::EleMag::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::SectionSpecs electromagneticdyn{"ELECTROMAGNETIC DYNAMIC"};
 
   // general settings for time-integration scheme
-  Core::Utils::double_parameter("TIMESTEP", 0.01, "Time-step length dt", electromagneticdyn);
-  Core::Utils::double_parameter("TAU", 1, "Stabilization parameter", electromagneticdyn);
+  electromagneticdyn.specs.emplace_back(
+      parameter<double>("TIMESTEP", {.description = "Time-step length dt", .default_value = 0.01}));
+  electromagneticdyn.specs.emplace_back(
+      parameter<double>("TAU", {.description = "Stabilization parameter", .default_value = 1}));
   Core::Utils::int_parameter("NUMSTEP", 100, "Number of time steps", electromagneticdyn);
-  Core::Utils::double_parameter("MAXTIME", 1.0, "Total simulation time", electromagneticdyn);
+  electromagneticdyn.specs.emplace_back(
+      parameter<double>("MAXTIME", {.description = "Total simulation time", .default_value = 1.0}));
 
   // additional parameters
   Core::Utils::int_parameter(

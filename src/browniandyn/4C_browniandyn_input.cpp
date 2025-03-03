@@ -23,21 +23,24 @@ void BrownianDynamics::set_valid_parameters(std::map<std::string, Core::IO::Inpu
       "BROWNDYNPROB", {.description = "switch Brownian dynamics on/off", .default_value = false}));
 
   // Reading double parameter for viscosity of background fluid
-  Core::Utils::double_parameter("VISCOSITY", 0.0, "viscosity", browniandyn_list);
+  browniandyn_list.specs.emplace_back(
+      parameter<double>("VISCOSITY", {.description = "viscosity", .default_value = 0.0}));
 
   // Reading double parameter for thermal energy in background fluid (temperature * Boltzmann
   // constant)
-  Core::Utils::double_parameter("KT", 0.0, "thermal energy", browniandyn_list);
+  browniandyn_list.specs.emplace_back(
+      parameter<double>("KT", {.description = "thermal energy", .default_value = 0.0}));
 
   // cutoff for random forces, which determines the maximal value
-  Core::Utils::double_parameter("MAXRANDFORCE", -1.0,
-      "Any random force beyond MAXRANDFORCE*(standard dev.) will be omitted and redrawn. "
-      "-1.0 means no bounds.'",
-      browniandyn_list);
+  browniandyn_list.specs.emplace_back(parameter<double>(
+      "MAXRANDFORCE", {.description = "Any random force beyond MAXRANDFORCE*(standard dev.) will "
+                                      "be omitted and redrawn. -1.0 means no bounds.'",
+                          .default_value = -1.0}));
 
   // time interval in which random numbers are constant
-  Core::Utils::double_parameter("TIMESTEP", -1.0,
-      "Within this time interval the random numbers remain constant. -1.0 ", browniandyn_list);
+  browniandyn_list.specs.emplace_back(parameter<double>("TIMESTEP",
+      {.description = "Within this time interval the random numbers remain constant. -1.0 ",
+          .default_value = -1.0}));
 
   // the way how damping coefficient values for beams are specified
   Core::Utils::string_to_integral_parameter<BeamDampingCoefficientSpecificationType>(

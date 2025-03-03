@@ -211,15 +211,15 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   Core::Utils::int_parameter("BODYFORCEFUNCNO", -1,
       "Function for calculation of the body force for the weakly compressible problem", fdyn);
 
-  Core::Utils::double_parameter("STAB_DEN_REF", 0.0,
-      "Reference stabilization parameter for the density for the HDG weakly compressible "
-      "formulation",
-      fdyn);
+  fdyn.specs.emplace_back(parameter<double>(
+      "STAB_DEN_REF", {.description = "Reference stabilization parameter for the density for the "
+                                      "HDG weakly compressible formulation",
+                          .default_value = 0.0}));
 
-  Core::Utils::double_parameter("STAB_MOM_REF", 0.0,
-      "Reference stabilization parameter for the momentum for the HDG weakly compressible "
-      "formulation",
-      fdyn);
+  fdyn.specs.emplace_back(parameter<double>(
+      "STAB_MOM_REF", {.description = "Reference stabilization parameter for the momentum for the "
+                                      "HDG weakly compressible formulation",
+                          .default_value = 0.0}));
 
   Core::Utils::int_parameter("VARVISCFUNCNO", -1,
       "Function for calculation of a variable viscosity for the weakly compressible problem", fdyn);
@@ -229,7 +229,8 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
                                     "considered element average pressure",
                         .default_value = false}));
 
-  Core::Utils::double_parameter("REFMACH", 1.0, "Reference Mach number", fdyn);
+  fdyn.specs.emplace_back(
+      parameter<double>("REFMACH", {.description = "Reference Mach number", .default_value = 1.0}));
 
   fdyn.specs.emplace_back(parameter<bool>("BLOCKMATRIX",
       {.description =
@@ -240,10 +241,10 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
       {.description =
               "Switch on adaptive control of linear solver tolerance for nonlinear solution",
           .default_value = false}));
-  Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.1,
-      "The linear solver shall be this much better than the current nonlinear residual in the "
-      "nonlinear convergence limit",
-      fdyn);
+  fdyn.specs.emplace_back(parameter<double>("ADAPTCONV_BETTER",
+      {.description = "The linear solver shall be this much better than the current nonlinear "
+                      "residual in the nonlinear convergence limit",
+          .default_value = 0.1}));
 
   fdyn.specs.emplace_back(parameter<bool>("INFNORMSCALING",
       {.description = "Scale blocks of matrix with row infnorm?", .default_value = false}));
@@ -268,15 +269,21 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   Core::Utils::int_parameter("ITEMAX", 10, "max. number of nonlin. iterations", fdyn);
   Core::Utils::int_parameter("INITSTATITEMAX", 5,
       "max number of nonlinear iterations for initial stationary solution", fdyn);
-  Core::Utils::double_parameter("TIMESTEP", 0.01, "Time increment dt", fdyn);
-  Core::Utils::double_parameter("MAXTIME", 1000.0, "Total simulation time", fdyn);
-  Core::Utils::double_parameter("ALPHA_M", 1.0, "Time integration factor", fdyn);
-  Core::Utils::double_parameter("ALPHA_F", 1.0, "Time integration factor", fdyn);
-  Core::Utils::double_parameter("GAMMA", 1.0, "Time integration factor", fdyn);
-  Core::Utils::double_parameter("THETA", 0.66, "Time integration factor", fdyn);
+  fdyn.specs.emplace_back(
+      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.01}));
+  fdyn.specs.emplace_back(parameter<double>(
+      "MAXTIME", {.description = "Total simulation time", .default_value = 1000.0}));
+  fdyn.specs.emplace_back(parameter<double>(
+      "ALPHA_M", {.description = "Time integration factor", .default_value = 1.0}));
+  fdyn.specs.emplace_back(parameter<double>(
+      "ALPHA_F", {.description = "Time integration factor", .default_value = 1.0}));
+  fdyn.specs.emplace_back(
+      parameter<double>("GAMMA", {.description = "Time integration factor", .default_value = 1.0}));
+  fdyn.specs.emplace_back(parameter<double>(
+      "THETA", {.description = "Time integration factor", .default_value = 0.66}));
 
-  Core::Utils::double_parameter(
-      "START_THETA", 1.0, "Time integration factor for starting scheme", fdyn);
+  fdyn.specs.emplace_back(parameter<double>("START_THETA",
+      {.description = "Time integration factor for starting scheme", .default_value = 1.0}));
 
   fdyn.specs.emplace_back(parameter<bool>("STRONG_REDD_3D_COUPLING_TYPE",
       {.description = "Flag to (de)activate potential Strong 3D redD coupling",
@@ -305,17 +312,21 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   /*----------------------------------------------------------------------*/
   Core::Utils::SectionSpecs fdyn_nln{fdyn, "NONLINEAR SOLVER TOLERANCES"};
 
-  Core::Utils::double_parameter(
-      "TOL_VEL_RES", 1e-6, "Tolerance for convergence check of velocity residual", fdyn_nln);
+  fdyn_nln.specs.emplace_back(parameter<double>(
+      "TOL_VEL_RES", {.description = "Tolerance for convergence check of velocity residual",
+                         .default_value = 1e-6}));
 
-  Core::Utils::double_parameter(
-      "TOL_VEL_INC", 1e-6, "Tolerance for convergence check of velocity increment", fdyn_nln);
+  fdyn_nln.specs.emplace_back(parameter<double>(
+      "TOL_VEL_INC", {.description = "Tolerance for convergence check of velocity increment",
+                         .default_value = 1e-6}));
 
-  Core::Utils::double_parameter(
-      "TOL_PRES_RES", 1e-6, "Tolerance for convergence check of pressure residual", fdyn_nln);
+  fdyn_nln.specs.emplace_back(parameter<double>(
+      "TOL_PRES_RES", {.description = "Tolerance for convergence check of pressure residual",
+                          .default_value = 1e-6}));
 
-  Core::Utils::double_parameter(
-      "TOL_PRES_INC", 1e-6, "Tolerance for convergence check of pressure increment", fdyn_nln);
+  fdyn_nln.specs.emplace_back(parameter<double>(
+      "TOL_PRES_INC", {.description = "Tolerance for convergence check of pressure increment",
+                          .default_value = 1e-6}));
 
   fdyn_nln.move_into_collection(list);
 
@@ -626,9 +637,10 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
 
   fdyn_porostab.specs.emplace_back(parameter<bool>("STAB_BIOT",
       {.description = "Flag to (de)activate BIOT stabilization.", .default_value = false}));
-  Core::Utils::double_parameter("STAB_BIOT_SCALING", 1.0,
-      "Scaling factor for stabilization parameter for biot stabilization of porous flow.",
-      fdyn_porostab);
+  fdyn_porostab.specs.emplace_back(parameter<double>("STAB_BIOT_SCALING",
+      {.description =
+              "Scaling factor for stabilization parameter for biot stabilization of porous flow.",
+          .default_value = 1.0}));
 
   // this parameter defines various stabilized methods
   Core::Utils::string_to_integral_parameter<Inpar::FLUID::StabType>("STABTYPE", "residual_based",
@@ -916,10 +928,10 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   // CHANNEL FLOW
   //--------------
 
-  Core::Utils::double_parameter("CHAN_AMPL_INIT_DIST", 0.1,
-      "Max. amplitude of the random disturbance in percent of the initial value in mean flow "
-      "direction.",
-      fdyn_turbu);
+  fdyn_turbu.specs.emplace_back(parameter<double>(
+      "CHAN_AMPL_INIT_DIST", {.description = "Max. amplitude of the random disturbance in percent "
+                                             "of the initial value in mean flow direction.",
+                                 .default_value = 0.1}));
 
   Core::Utils::string_to_integral_parameter<ForcingType>("FORCING_TYPE",
       "linear_compensation_from_intermediate_spectrum", "forcing strategy",
@@ -938,12 +950,13 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
       "turbulence only.",
       fdyn_turbu);
 
-  Core::Utils::double_parameter("THRESHOLD_WAVENUMBER", 0.0,
-      "Forcing is only applied to wave numbers lower or equal than the given threshold wave "
-      "number.",
-      fdyn_turbu);
+  fdyn_turbu.specs.emplace_back(parameter<double>(
+      "THRESHOLD_WAVENUMBER", {.description = "Forcing is only applied to wave numbers lower or "
+                                              "equal than the given threshold wave number.",
+                                  .default_value = 0.0}));
 
-  Core::Utils::double_parameter("POWER_INPUT", 0.0, "power of forcing", fdyn_turbu);
+  fdyn_turbu.specs.emplace_back(
+      parameter<double>("POWER_INPUT", {.description = "power of forcing", .default_value = 0.0}));
 
   std::vector<std::string> scalar_forcing_valid_input = {"no", "isotropic", "mean_scalar_gradient"};
   std::string scalar_forcing_doc =
@@ -953,8 +966,9 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   Core::Utils::string_parameter(
       "SCALAR_FORCING", "no", scalar_forcing_doc, fdyn_turbu, scalar_forcing_valid_input);
 
-  Core::Utils::double_parameter("MEAN_SCALAR_GRADIENT", 0.0,
-      "Value of imposed mean-scalar gradient to force scalar field.", fdyn_turbu);
+  fdyn_turbu.specs.emplace_back(parameter<double>("MEAN_SCALAR_GRADIENT",
+      {.description = "Value of imposed mean-scalar gradient to force scalar field.",
+          .default_value = 0.0}));
 
   // filtering with xfem
   //--------------
@@ -969,14 +983,15 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   // sublist with additional input parameters for Smagorinsky model
   Core::Utils::SectionSpecs fdyn_turbsgv{fdyn, "SUBGRID VISCOSITY"};
 
-  Core::Utils::double_parameter("C_SMAGORINSKY", 0.0,
-      "Constant for the Smagorinsky model. Something between 0.1 to 0.24. Vreman constant if the "
-      "constant vreman model is applied (something between 0.07 and 0.01).",
-      fdyn_turbsgv);
-  Core::Utils::double_parameter("C_YOSHIZAWA", -1.0,
-      "Constant for the compressible Smagorinsky model: isotropic part of subgrid-stress tensor. "
-      "About 0.09 or 0.0066. Ci will not be squared!",
-      fdyn_turbsgv);
+  fdyn_turbsgv.specs.emplace_back(parameter<double>("C_SMAGORINSKY",
+      {.description =
+              "Constant for the Smagorinsky model. Something between 0.1 to 0.24. Vreman constant "
+              "if the constant vreman model is applied (something between 0.07 and 0.01).",
+          .default_value = 0.0}));
+  fdyn_turbsgv.specs.emplace_back(parameter<double>("C_YOSHIZAWA",
+      {.description = "Constant for the compressible Smagorinsky model: isotropic part of "
+                      "subgrid-stress tensor. About 0.09 or 0.0066. Ci will not be squared!",
+          .default_value = -1.0}));
   fdyn_turbsgv.specs.emplace_back(parameter<bool>("C_SMAGORINSKY_AVERAGED",
       {.description = "Flag to (de)activate averaged Smagorinksy constant",
           .default_value = false}));
@@ -993,14 +1008,16 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   //           if C_INCLUDE_CI==true and C_YOSHIZAWA<0.0 then C_YOSHIZAWA is determined dynamically
   //        else all values are taken from input
 
-  Core::Utils::double_parameter("CHANNEL_L_TAU", 0.0,
-      "Used for normalisation of the wall normal distance in the Van \nDriest Damping function. "
-      "May be taken from the output of \nthe apply_mesh_stretching.pl preprocessing script.",
-      fdyn_turbsgv);
+  fdyn_turbsgv.specs.emplace_back(parameter<double>("CHANNEL_L_TAU",
+      {.description = "Used for normalisation of the wall normal distance in the Van \nDriest "
+                      "Damping function. May be taken from the output of \nthe "
+                      "apply_mesh_stretching.pl preprocessing script.",
+          .default_value = 0.0}));
 
-  Core::Utils::double_parameter("C_TURBPRANDTL", 1.0,
-      "(Constant) turbulent Prandtl number for the Smagorinsky model in scalar transport.",
-      fdyn_turbsgv);
+  fdyn_turbsgv.specs.emplace_back(parameter<double>("C_TURBPRANDTL",
+      {.description =
+              "(Constant) turbulent Prandtl number for the Smagorinsky model in scalar transport.",
+          .default_value = 1.0}));
 
   Core::Utils::string_to_integral_parameter<VremanFiMethod>("FILTER_WIDTH", "CubeRootVol",
       "The Vreman model requires a filter width.",
@@ -1046,14 +1063,17 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   Core::Utils::string_parameter(
       "Projection", "No", projection_doc, fdyn_wallmodel, projection_valid_input);
 
-  Core::Utils::double_parameter("C_Tauw", 1.0,
-      "Constant wall shear stress for Spalding's law, if applicable", fdyn_wallmodel);
+  fdyn_wallmodel.specs.emplace_back(parameter<double>(
+      "C_Tauw", {.description = "Constant wall shear stress for Spalding's law, if applicable",
+                    .default_value = 1.0}));
 
-  Core::Utils::double_parameter("Min_Tauw", 2.0e-9,
-      "Minimum wall shear stress preventing system to become singular", fdyn_wallmodel);
+  fdyn_wallmodel.specs.emplace_back(parameter<double>(
+      "Min_Tauw", {.description = "Minimum wall shear stress preventing system to become singular",
+                      .default_value = 2.0e-9}));
 
-  Core::Utils::double_parameter(
-      "Inc_Tauw", 1.0, "Increment of Tauw of full step, between 0.0 and 1.0", fdyn_wallmodel);
+  fdyn_wallmodel.specs.emplace_back(parameter<double>(
+      "Inc_Tauw", {.description = "Increment of Tauw of full step, between 0.0 and 1.0",
+                      .default_value = 1.0}));
 
   std::vector<std::string> blending_type_valid_input = {"none", "ramp_function"};
   std::string blending_type_doc =
@@ -1086,8 +1106,8 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   // sublist with additional input parameters for multifractal subgrid-scales
   Core::Utils::SectionSpecs fdyn_turbmfs{fdyn, "MULTIFRACTAL SUBGRID SCALES"};
 
-  Core::Utils::double_parameter(
-      "CSGS", 0.0, "Modelparameter of multifractal subgrid-scales.", fdyn_turbmfs);
+  fdyn_turbmfs.specs.emplace_back(parameter<double>("CSGS",
+      {.description = "Modelparameter of multifractal subgrid-scales.", .default_value = 0.0}));
 
   std::vector<std::string> scale_separation_valid_input = {
       "no_scale_sep", "box_filter", "algebraic_multigrid_operator"};
@@ -1109,7 +1129,8 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
       "CALC_N", {.description = "Flag to (de)activate calculation of N from the Reynolds number.",
                     .default_value = false}));
 
-  Core::Utils::double_parameter("N", 1.0, "Set grid to viscous scale ratio.", fdyn_turbmfs);
+  fdyn_turbmfs.specs.emplace_back(parameter<double>(
+      "N", {.description = "Set grid to viscous scale ratio.", .default_value = 1.0}));
 
   std::vector<std::string> ref_length_valid_input = {
       "cube_edge", "sphere_diameter", "streamlength", "gradient_based", "metric_tensor"};
@@ -1133,9 +1154,10 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
       "REF_VELOCITY", "strainrate", ref_velocity_doc, fdyn_turbmfs, ref_velocity_valid_input);
 
 
-  Core::Utils::double_parameter("C_NU", 1.0,
-      "Proportionality constant between Re and ratio viscous scale to element length.",
-      fdyn_turbmfs);
+  fdyn_turbmfs.specs.emplace_back(parameter<double>("C_NU",
+      {.description =
+              "Proportionality constant between Re and ratio viscous scale to element length.",
+          .default_value = 1.0}));
 
   fdyn_turbmfs.specs.emplace_back(parameter<bool>("NEAR_WALL_LIMIT",
       {.description = "Flag to (de)activate near-wall limit.", .default_value = false}));
@@ -1149,8 +1171,9 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
       "EVALUATION_B", "element_center", evaluation_b_doc, fdyn_turbmfs, evaluation_b_valid_input);
 
 
-  Core::Utils::double_parameter(
-      "BETA", 0.0, "Cross- and Reynolds-stress terms only on right-hand-side.", fdyn_turbmfs);
+  fdyn_turbmfs.specs.emplace_back(parameter<double>(
+      "BETA", {.description = "Cross- and Reynolds-stress terms only on right-hand-side.",
+                  .default_value = 0.0}));
 
   convform_valid_input = {"convective", "conservative"};
   std::string convform_doc =
@@ -1160,8 +1183,9 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   Core::Utils::string_parameter(
       "CONVFORM", "convective", convform_doc, fdyn_turbmfs, convform_valid_input);
 
-  Core::Utils::double_parameter("CSGS_PHI", 0.0,
-      "Modelparameter of multifractal subgrid-scales for scalar transport.", fdyn_turbmfs);
+  fdyn_turbmfs.specs.emplace_back(parameter<double>("CSGS_PHI",
+      {.description = "Modelparameter of multifractal subgrid-scales for scalar transport.",
+          .default_value = 0.0}));
 
   fdyn_turbmfs.specs.emplace_back(parameter<bool>("ADAPT_CSGS_PHI",
       {.description = "Flag to (de)activate adaption of CsgsD to CsgsB.", .default_value = false}));
@@ -1174,10 +1198,10 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
       {.description = "Flag to (de)activate the consistency term for residual-based stabilization.",
           .default_value = false}));
 
-  Core::Utils::double_parameter("C_DIFF", 1.0,
-      "Proportionality constant between Re*Pr and ratio dissipative scale to element length. "
-      "Usually equal cnu.",
-      fdyn_turbmfs);
+  fdyn_turbmfs.specs.emplace_back(parameter<double>(
+      "C_DIFF", {.description = "Proportionality constant between Re*Pr and ratio dissipative "
+                                "scale to element length. Usually equal cnu.",
+                    .default_value = 1.0}));
 
   fdyn_turbmfs.specs.emplace_back(parameter<bool>("SET_FINE_SCALE_VEL",
       {.description = "Flag to set fine-scale velocity for parallel nightly tests.",
@@ -1208,10 +1232,10 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   Core::Utils::int_parameter(
       "INFLOWFUNC", -1, "Function number for initial flow field in inflow section", fdyn_turbinf);
 
-  Core::Utils::double_parameter("INFLOW_INIT_DIST", 0.1,
-      "Max. amplitude of the random disturbance in percent of the initial value in mean flow "
-      "direction.",
-      fdyn_turbinf);
+  fdyn_turbinf.specs.emplace_back(parameter<double>(
+      "INFLOW_INIT_DIST", {.description = "Max. amplitude of the random disturbance in percent of "
+                                          "the initial value in mean flow direction.",
+                              .default_value = 0.1}));
 
   Core::Utils::int_parameter("NUMINFLOWSTEP", 1,
       "Total number of time steps for development of turbulent flow", fdyn_turbinf);
@@ -1237,8 +1261,9 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
       "CANONICAL_INFLOW", "no", canonical_inflow_doc, fdyn_turbinf, canonical_inflow_valid_input);
 
 
-  Core::Utils::double_parameter("INFLOW_CHA_SIDE", 0.0,
-      "Most right side of inflow channel. Necessary to define sampling domain.", fdyn_turbinf);
+  fdyn_turbinf.specs.emplace_back(parameter<double>("INFLOW_CHA_SIDE",
+      {.description = "Most right side of inflow channel. Necessary to define sampling domain.",
+          .default_value = 0.0}));
 
   std::vector<std::string> inflow_homdir_valid_input = {
       "not_specified", "x", "y", "z", "xy", "xz", "yz"};
@@ -1273,14 +1298,14 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
       tuple<AdaptiveTimeStepEstimator>(const_dt, cfl_number, only_print_cfl_number),
       fdyn_timintada);
 
-  Core::Utils::double_parameter(
-      "CFL_NUMBER", -1.0, "CFL number for adaptive time step", fdyn_timintada);
+  fdyn_timintada.specs.emplace_back(parameter<double>(
+      "CFL_NUMBER", {.description = "CFL number for adaptive time step", .default_value = -1.0}));
   Core::Utils::int_parameter("FREEZE_ADAPTIVE_DT_AT", 1000000,
       "keep time step constant after this step, otherwise turbulence statistics sampling is not "
       "consistent",
       fdyn_timintada);
-  Core::Utils::double_parameter(
-      "ADAPTIVE_DT_INC", 0.8, "Increment of whole step for adaptive dt via CFL", fdyn_timintada);
+  fdyn_timintada.specs.emplace_back(parameter<double>("ADAPTIVE_DT_INC",
+      {.description = "Increment of whole step for adaptive dt via CFL", .default_value = 0.8}));
 
   fdyn_timintada.move_into_collection(list);
 }
@@ -1297,12 +1322,15 @@ void Inpar::LowMach::set_valid_parameters(std::map<std::string, Core::IO::InputS
   lomacontrol.specs.emplace_back(
       parameter<bool>("MONOLITHIC", {.description = "monolithic solver", .default_value = false}));
   Core::Utils::int_parameter("NUMSTEP", 24, "Total number of time steps", lomacontrol);
-  Core::Utils::double_parameter("TIMESTEP", 0.1, "Time increment dt", lomacontrol);
-  Core::Utils::double_parameter("MAXTIME", 1000.0, "Total simulation time", lomacontrol);
+  lomacontrol.specs.emplace_back(
+      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.1}));
+  lomacontrol.specs.emplace_back(parameter<double>(
+      "MAXTIME", {.description = "Total simulation time", .default_value = 1000.0}));
   Core::Utils::int_parameter("ITEMAX", 10, "Maximum number of outer iterations", lomacontrol);
   Core::Utils::int_parameter("ITEMAX_BEFORE_SAMPLING", 1,
       "Maximum number of outer iterations before sampling (for turbulent flows only)", lomacontrol);
-  Core::Utils::double_parameter("CONVTOL", 1e-6, "Tolerance for convergence check", lomacontrol);
+  lomacontrol.specs.emplace_back(parameter<double>(
+      "CONVTOL", {.description = "Tolerance for convergence check", .default_value = 1e-6}));
   Core::Utils::int_parameter("RESULTSEVERY", 1, "Increment for writing solution", lomacontrol);
   Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", lomacontrol);
 

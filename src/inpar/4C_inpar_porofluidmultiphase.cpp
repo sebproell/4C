@@ -20,16 +20,18 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
 
   Core::Utils::SectionSpecs porofluidmultiphasedyn{"POROFLUIDMULTIPHASE DYNAMIC"};
 
-  Core::Utils::double_parameter("MAXTIME", 1000.0, "Total simulation time", porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(parameter<double>(
+      "MAXTIME", {.description = "Total simulation time", .default_value = 1000.0}));
   Core::Utils::int_parameter("NUMSTEP", 20, "Total number of time steps", porofluidmultiphasedyn);
-  Core::Utils::double_parameter("TIMESTEP", 0.1, "Time increment dt", porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(
+      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.1}));
   Core::Utils::int_parameter(
       "RESULTSEVERY", 1, "Increment for writing solution", porofluidmultiphasedyn);
   Core::Utils::int_parameter(
       "RESTARTEVERY", 1, "Increment for writing restart", porofluidmultiphasedyn);
 
-  Core::Utils::double_parameter(
-      "THETA", 0.5, "One-step-theta time integration factor", porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(parameter<double>(
+      "THETA", {.description = "One-step-theta time integration factor", .default_value = 0.5}));
 
   Core::Utils::string_to_integral_parameter<TimeIntegrationScheme>("TIMEINTEGR", "One_Step_Theta",
       "Time Integration Scheme", tuple<std::string>("One_Step_Theta"),
@@ -49,19 +51,20 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
 
   Core::Utils::int_parameter(
       "ITEMAX", 10, "max. number of nonlin. iterations", porofluidmultiphasedyn);
-  Core::Utils::double_parameter("ABSTOLRES", 1e-14,
-      "Absolute tolerance for deciding if residual of nonlinear problem is already zero",
-      porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(parameter<double>("ABSTOLRES",
+      {.description =
+              "Absolute tolerance for deciding if residual of nonlinear problem is already zero",
+          .default_value = 1e-14}));
 
   // convergence criteria adaptivity
   porofluidmultiphasedyn.specs.emplace_back(parameter<bool>("ADAPTCONV",
       {.description =
               "Switch on adaptive control of linear solver tolerance for nonlinear solution",
           .default_value = false}));
-  Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.1,
-      "The linear solver shall be this much better than the current nonlinear residual in the "
-      "nonlinear convergence limit",
-      porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(parameter<double>("ADAPTCONV_BETTER",
+      {.description = "The linear solver shall be this much better than the current nonlinear "
+                      "residual in the nonlinear convergence limit",
+          .default_value = 0.1}));
 
   // parameters for finite difference check
   Core::Utils::string_to_integral_parameter<FdCheck>("FDCHECK", "none",
@@ -69,12 +72,12 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
       tuple<std::string>("none",
           "global"),  // perform finite difference check on time integrator level
       tuple<FdCheck>(fdcheck_none, fdcheck_global), porofluidmultiphasedyn);
-  Core::Utils::double_parameter("FDCHECKEPS", 1.e-6,
-      "dof perturbation magnitude for finite difference check (1.e-6 seems to work very well, "
-      "whereas smaller values don't)",
-      porofluidmultiphasedyn);
-  Core::Utils::double_parameter("FDCHECKTOL", 1.e-6,
-      "relative tolerance for finite difference check", porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(parameter<double>(
+      "FDCHECKEPS", {.description = "dof perturbation magnitude for finite difference check (1.e-6 "
+                                    "seems to work very well, whereas smaller values don't)",
+                        .default_value = 1.e-6}));
+  porofluidmultiphasedyn.specs.emplace_back(parameter<double>("FDCHECKTOL",
+      {.description = "relative tolerance for finite difference check", .default_value = 1.e-6}));
   porofluidmultiphasedyn.specs.emplace_back(parameter<bool>(
       "SKIPINITDER", {.description = "Flag to skip computation of initial time derivative",
                          .default_value = true}));
@@ -93,9 +96,10 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
   // Biot stabilization
   porofluidmultiphasedyn.specs.emplace_back(parameter<bool>("STAB_BIOT",
       {.description = "Flag to (de)activate BIOT stabilization.", .default_value = false}));
-  Core::Utils::double_parameter("STAB_BIOT_SCALING", 1.0,
-      "Scaling factor for stabilization parameter for biot stabilization of porous flow.",
-      porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(parameter<double>("STAB_BIOT_SCALING",
+      {.description =
+              "Scaling factor for stabilization parameter for biot stabilization of porous flow.",
+          .default_value = 1.0}));
 
   Core::Utils::string_to_integral_parameter<VectorNorm>("VECTORNORM_RESF", "L2",
       "type of norm to be applied to residuals",
@@ -114,10 +118,12 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
       porofluidmultiphasedyn);
 
   // Iterationparameters
-  Core::Utils::double_parameter("TOLRES", 1e-6,
-      "tolerance in the residual norm for the Newton iteration", porofluidmultiphasedyn);
-  Core::Utils::double_parameter("TOLINC", 1e-6,
-      "tolerance in the increment norm for the Newton iteration", porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(parameter<double>(
+      "TOLRES", {.description = "tolerance in the residual norm for the Newton iteration",
+                    .default_value = 1e-6}));
+  porofluidmultiphasedyn.specs.emplace_back(parameter<double>(
+      "TOLINC", {.description = "tolerance in the increment norm for the Newton iteration",
+                    .default_value = 1e-6}));
 
   Core::Utils::string_to_integral_parameter<InitialField>("INITIALFIELD", "zero_field",
       "Initial Field for transport problem",
@@ -153,8 +159,8 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
   porofluidmultiphasedyn.specs.emplace_back(parameter<bool>("ARTERY_COUPLING",
       {.description = "Coupling with 1D blood vessels.", .default_value = false}));
 
-  Core::Utils::double_parameter("STARTING_DBC_TIME_END", -1.0,
-      "End time for the starting Dirichlet BC.", porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(parameter<double>("STARTING_DBC_TIME_END",
+      {.description = "End time for the starting Dirichlet BC.", .default_value = -1.0}));
 
   Core::Utils::string_parameter("STARTING_DBC_ONOFF", "0",
       "Switching the starting Dirichlet BC on or off.", porofluidmultiphasedyn);
@@ -174,8 +180,8 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
       porofluidmultiphasemshtdyn);
 
   // penalty parameter
-  Core::Utils::double_parameter(
-      "PENALTY", 1000.0, "Penalty parameter for line-based coupling", porofluidmultiphasemshtdyn);
+  porofluidmultiphasemshtdyn.specs.emplace_back(parameter<double>("PENALTY",
+      {.description = "Penalty parameter for line-based coupling", .default_value = 1000.0}));
 
   Core::Utils::string_to_integral_parameter<
       Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod>("ARTERY_COUPLING_METHOD",
@@ -257,10 +263,11 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
           .default_value = false}));
 
   // components whose size is smaller than this fraction of the total network size are also deleted
-  Core::Utils::double_parameter("DELETE_SMALL_FREE_HANGING_COMPS", -1.0,
-      "Small connected components whose size is smaller than this fraction of the overall network "
-      "size are additionally deleted (a valid choice of this parameter should lie between 0 and 1)",
-      porofluidmultiphasemshtdyn);
+  porofluidmultiphasemshtdyn.specs.emplace_back(parameter<double>("DELETE_SMALL_FREE_HANGING_COMPS",
+      {.description = "Small connected components whose size is smaller than this fraction of the "
+                      "overall network size are additionally deleted (a valid choice of this "
+                      "parameter should lie between 0 and 1)",
+          .default_value = -1.0}));
 
   porofluidmultiphasemshtdyn.move_into_collection(list);
 }

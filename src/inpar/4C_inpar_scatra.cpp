@@ -48,16 +48,19 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           timeint_stationary, timeint_one_step_theta, timeint_bdf2, timeint_gen_alpha),
       scatradyn);
 
-  Core::Utils::double_parameter("MAXTIME", 1000.0, "Total simulation time", scatradyn);
+  scatradyn.specs.emplace_back(parameter<double>(
+      "MAXTIME", {.description = "Total simulation time", .default_value = 1000.0}));
   Core::Utils::int_parameter("NUMSTEP", 20, "Total number of time steps", scatradyn);
-  Core::Utils::double_parameter("TIMESTEP", 0.1, "Time increment dt", scatradyn);
-  Core::Utils::double_parameter("THETA", 0.5, "One-step-theta time integration factor", scatradyn);
-  Core::Utils::double_parameter(
-      "ALPHA_M", 0.5, "Generalized-alpha time integration factor", scatradyn);
-  Core::Utils::double_parameter(
-      "ALPHA_F", 0.5, "Generalized-alpha time integration factor", scatradyn);
-  Core::Utils::double_parameter(
-      "GAMMA", 0.5, "Generalized-alpha time integration factor", scatradyn);
+  scatradyn.specs.emplace_back(
+      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.1}));
+  scatradyn.specs.emplace_back(parameter<double>(
+      "THETA", {.description = "One-step-theta time integration factor", .default_value = 0.5}));
+  scatradyn.specs.emplace_back(parameter<double>("ALPHA_M",
+      {.description = "Generalized-alpha time integration factor", .default_value = 0.5}));
+  scatradyn.specs.emplace_back(parameter<double>("ALPHA_F",
+      {.description = "Generalized-alpha time integration factor", .default_value = 0.5}));
+  scatradyn.specs.emplace_back(parameter<double>(
+      "GAMMA", {.description = "Generalized-alpha time integration factor", .default_value = 0.5}));
   Core::Utils::int_parameter("RESULTSEVERY", 1, "Increment for writing solution", scatradyn);
   Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", scatradyn);
   Core::Utils::int_parameter("MATID", -1, "Material ID for automatic mesh generation", scatradyn);
@@ -254,12 +257,12 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       tuple<Inpar::ScaTra::FdCheck>(
           fdcheck_none, fdcheck_global, fdcheck_global_extended, fdcheck_local),
       scatradyn);
-  Core::Utils::double_parameter("FDCHECKEPS", 1.e-6,
-      "dof perturbation magnitude for finite difference check (1.e-6 seems to work very well, "
-      "whereas smaller values don't)",
-      scatradyn);
-  Core::Utils::double_parameter(
-      "FDCHECKTOL", 1.e-6, "relative tolerance for finite difference check", scatradyn);
+  scatradyn.specs.emplace_back(parameter<double>(
+      "FDCHECKEPS", {.description = "dof perturbation magnitude for finite difference check (1.e-6 "
+                                    "seems to work very well, whereas smaller values don't)",
+                        .default_value = 1.e-6}));
+  scatradyn.specs.emplace_back(parameter<double>("FDCHECKTOL",
+      {.description = "relative tolerance for finite difference check", .default_value = 1.e-6}));
 
   // parameter for optional computation of domain and boundary integrals, i.e., of surface areas and
   // volumes associated with specified nodesets
@@ -274,10 +277,12 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   // moment only used for HDG and cardiac monodomain problems)
   scatradyn.specs.emplace_back(parameter<bool>(
       "PADAPTIVITY", {.description = "Flag to (de)activate p-adativity", .default_value = false}));
-  Core::Utils::double_parameter("PADAPTERRORTOL", 1e-6,
-      "The error tolerance to calculate the variation of the elemental degree", scatradyn);
-  Core::Utils::double_parameter("PADAPTERRORBASE", 1.66,
-      "The error tolerance base to calculate the variation of the elemental degree", scatradyn);
+  scatradyn.specs.emplace_back(parameter<double>("PADAPTERRORTOL",
+      {.description = "The error tolerance to calculate the variation of the elemental degree",
+          .default_value = 1e-6}));
+  scatradyn.specs.emplace_back(parameter<double>("PADAPTERRORBASE",
+      {.description = "The error tolerance base to calculate the variation of the elemental degree",
+          .default_value = 1.66}));
   Core::Utils::int_parameter(
       "PADAPTDEGREEMAX", 4, "The max. degree of the shape functions", scatradyn);
   scatradyn.specs.emplace_back(parameter<bool>("SEMIIMPLICIT",
@@ -310,31 +315,33 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::SectionSpecs scatra_nonlin{scatradyn, "NONLINEAR"};
 
   Core::Utils::int_parameter("ITEMAX", 10, "max. number of nonlin. iterations", scatra_nonlin);
-  Core::Utils::double_parameter("CONVTOL", 1e-6, "Tolerance for convergence check", scatra_nonlin);
+  scatra_nonlin.specs.emplace_back(parameter<double>(
+      "CONVTOL", {.description = "Tolerance for convergence check", .default_value = 1e-6}));
   Core::Utils::int_parameter("ITEMAX_OUTER", 10,
       "Maximum number of outer iterations in partitioned coupling schemes (natural convection, "
       "multi-scale simulations etc.)",
       scatra_nonlin);
-  Core::Utils::double_parameter("CONVTOL_OUTER", 1e-6,
-      "Convergence check tolerance for outer loop in partitioned coupling schemes (natural "
-      "convection, multi-scale simulations etc.)",
-      scatra_nonlin);
+  scatra_nonlin.specs.emplace_back(parameter<double>("CONVTOL_OUTER",
+      {.description = "Convergence check tolerance for outer loop in partitioned coupling schemes "
+                      "(natural convection, multi-scale simulations etc.)",
+          .default_value = 1e-6}));
   scatra_nonlin.specs.emplace_back(parameter<bool>("EXPLPREDICT",
       {.description = "do an explicit predictor step before starting nonlinear iteration",
           .default_value = false}));
-  Core::Utils::double_parameter("ABSTOLRES", 1e-14,
-      "Absolute tolerance for deciding if residual of nonlinear problem is already zero",
-      scatra_nonlin);
+  scatra_nonlin.specs.emplace_back(parameter<double>("ABSTOLRES",
+      {.description =
+              "Absolute tolerance for deciding if residual of nonlinear problem is already zero",
+          .default_value = 1e-14}));
 
   // convergence criteria adaptivity
   scatra_nonlin.specs.emplace_back(parameter<bool>("ADAPTCONV",
       {.description =
               "Switch on adaptive control of linear solver tolerance for nonlinear solution",
           .default_value = false}));
-  Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.1,
-      "The linear solver shall be this much better than the current nonlinear residual in the "
-      "nonlinear convergence limit",
-      scatra_nonlin);
+  scatra_nonlin.specs.emplace_back(parameter<double>("ADAPTCONV_BETTER",
+      {.description = "The linear solver shall be this much better than the current nonlinear "
+                      "residual in the nonlinear convergence limit",
+          .default_value = 0.1}));
 
   scatra_nonlin.move_into_collection(list);
 
@@ -417,8 +424,8 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       scatradyn_stab);
 
   // this parameter defines the numerical value, if stabilization with numerical values is used
-  Core::Utils::double_parameter(
-      "TAU_VALUE", 0.0, "Numerical value for tau for stabilization", scatradyn_stab);
+  scatradyn_stab.specs.emplace_back(parameter<double>("TAU_VALUE",
+      {.description = "Numerical value for tau for stabilization", .default_value = 0.0}));
 
   scatradyn_stab.move_into_collection(list);
 
@@ -442,8 +449,8 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       scatradyn_art);
 
   // penalty parameter
-  Core::Utils::double_parameter(
-      "PENALTY", 1000.0, "Penalty parameter for line-based coupling", scatradyn_art);
+  scatradyn_art.specs.emplace_back(parameter<double>("PENALTY",
+      {.description = "Penalty parameter for line-based coupling", .default_value = 1000.0}));
 
   // coupled artery dofs for mesh tying
   Core::Utils::string_parameter(

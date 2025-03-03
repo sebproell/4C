@@ -18,9 +18,11 @@ void Lubrication::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
 
   Core::Utils::SectionSpecs lubricationdyn("LUBRICATION DYNAMIC");
 
-  Core::Utils::double_parameter("MAXTIME", 1000.0, "Total simulation time", lubricationdyn);
+  lubricationdyn.specs.emplace_back(parameter<double>(
+      "MAXTIME", {.description = "Total simulation time", .default_value = 1000.0}));
   Core::Utils::int_parameter("NUMSTEP", 20, "Total number of time steps", lubricationdyn);
-  Core::Utils::double_parameter("TIMESTEP", 0.1, "Time increment dt", lubricationdyn);
+  lubricationdyn.specs.emplace_back(
+      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.1}));
   Core::Utils::int_parameter("RESULTSEVERY", 1, "Increment for writing solution", lubricationdyn);
   Core::Utils::int_parameter("RESTARTEVERY", 1, "Increment for writing restart", lubricationdyn);
 
@@ -64,21 +66,22 @@ void Lubrication::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "number of linear solver used for the Lubrication problem", lubricationdyn);
 
   Core::Utils::int_parameter("ITEMAX", 10, "max. number of nonlin. iterations", lubricationdyn);
-  Core::Utils::double_parameter("ABSTOLRES", 1e-14,
-      "Absolute tolerance for deciding if residual of nonlinear problem is already zero",
-      lubricationdyn);
-  Core::Utils::double_parameter(
-      "CONVTOL", 1e-13, "Tolerance for convergence check", lubricationdyn);
+  lubricationdyn.specs.emplace_back(parameter<double>("ABSTOLRES",
+      {.description =
+              "Absolute tolerance for deciding if residual of nonlinear problem is already zero",
+          .default_value = 1e-14}));
+  lubricationdyn.specs.emplace_back(parameter<double>(
+      "CONVTOL", {.description = "Tolerance for convergence check", .default_value = 1e-13}));
 
   // convergence criteria adaptivity
   lubricationdyn.specs.emplace_back(parameter<bool>("ADAPTCONV",
       {.description =
               "Switch on adaptive control of linear solver tolerance for nonlinear solution",
           .default_value = false}));
-  Core::Utils::double_parameter("ADAPTCONV_BETTER", 0.1,
-      "The linear solver shall be this much better than the current nonlinear residual in the "
-      "nonlinear convergence limit",
-      lubricationdyn);
+  lubricationdyn.specs.emplace_back(parameter<double>("ADAPTCONV_BETTER",
+      {.description = "The linear solver shall be this much better than the current nonlinear "
+                      "residual in the nonlinear convergence limit",
+          .default_value = 0.1}));
 
   Core::Utils::string_to_integral_parameter<ConvNorm>("NORM_PRE", "Abs",
       "type of norm for temperature convergence check", tuple<std::string>("Abs", "Rel", "Mix"),
@@ -93,20 +96,22 @@ void Lubrication::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       tuple<VectorNorm>(norm_l1, norm_l2, norm_rms, norm_inf), lubricationdyn);
 
   /// Iterationparameters
-  Core::Utils::double_parameter("TOLPRE", 1.0E-06,
-      "tolerance in the temperature norm of the Newton iteration", lubricationdyn);
+  lubricationdyn.specs.emplace_back(parameter<double>(
+      "TOLPRE", {.description = "tolerance in the temperature norm of the Newton iteration",
+                    .default_value = 1.0E-06}));
 
-  Core::Utils::double_parameter(
-      "TOLRES", 1.0E-06, "tolerance in the residual norm for the Newton iteration", lubricationdyn);
+  lubricationdyn.specs.emplace_back(parameter<double>(
+      "TOLRES", {.description = "tolerance in the residual norm for the Newton iteration",
+                    .default_value = 1.0E-06}));
 
-  Core::Utils::double_parameter(
-      "PENALTY_CAVITATION", 0., "penalty parameter for regularized cavitation", lubricationdyn);
+  lubricationdyn.specs.emplace_back(parameter<double>("PENALTY_CAVITATION",
+      {.description = "penalty parameter for regularized cavitation", .default_value = 0.}));
 
-  Core::Utils::double_parameter(
-      "GAP_OFFSET", 0., "Additional offset to the fluid gap", lubricationdyn);
+  lubricationdyn.specs.emplace_back(parameter<double>(
+      "GAP_OFFSET", {.description = "Additional offset to the fluid gap", .default_value = 0.}));
 
-  Core::Utils::double_parameter(
-      "ROUGHNESS_STD_DEVIATION", 0., "standard deviation of surface roughness", lubricationdyn);
+  lubricationdyn.specs.emplace_back(parameter<double>("ROUGHNESS_STD_DEVIATION",
+      {.description = "standard deviation of surface roughness", .default_value = 0.}));
 
   /// use modified reynolds equ.
   lubricationdyn.specs.emplace_back(parameter<bool>("MODIFIED_REYNOLDS_EQU",

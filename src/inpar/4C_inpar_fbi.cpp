@@ -60,13 +60,14 @@ void Inpar::FBI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           BeamToFluidConstraintEnforcement::none, BeamToFluidConstraintEnforcement::penalty),
       beam_to_fluid_meshtying);
 
-  Core::Utils::double_parameter("PENALTY_PARAMETER", 0.0,
-      "Penalty parameter for beam-to-Fluid volume meshtying", beam_to_fluid_meshtying);
+  beam_to_fluid_meshtying.specs.emplace_back(parameter<double>(
+      "PENALTY_PARAMETER", {.description = "Penalty parameter for beam-to-Fluid volume meshtying",
+                               .default_value = 0.0}));
 
-  Core::Utils::double_parameter("SEARCH_RADIUS", 1000,
-      "Absolute Search radius for beam-to-fluid volume meshtying. Choose carefully to not blow up "
-      "memory demand but to still find all interaction pairs!",
-      beam_to_fluid_meshtying);
+  beam_to_fluid_meshtying.specs.emplace_back(parameter<double>("SEARCH_RADIUS",
+      {.description = "Absolute Search radius for beam-to-fluid volume meshtying. Choose carefully "
+                      "to not blow up memory demand but to still find all interaction pairs!",
+          .default_value = 1000}));
 
   Core::Utils::string_to_integral_parameter<Inpar::FBI::BeamToFluidMeshtingMortarShapefunctions>(
       "MORTAR_SHAPE_FUNCTION", "none", "Shape function for the mortar Lagrange-multipliers",
