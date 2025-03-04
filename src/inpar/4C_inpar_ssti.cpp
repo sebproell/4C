@@ -25,7 +25,7 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   Core::Utils::SectionSpecs sstidyn{"SSTI CONTROL"};
 
   sstidyn.specs.emplace_back(parameter<double>("RESTARTEVERYTIME",
-      {.description = "write restart possibility every RESTARTEVERY steps", .default_value = 0}));
+      {.description = "write restart possibility every RESTARTEVERY steps", .default_value = 0.0}));
   Core::Utils::int_parameter(
       "RESTARTEVERY", 1, "write restart possibility every RESTARTEVERY steps", sstidyn);
   Core::Utils::int_parameter("NUMSTEP", 200, "maximum number of Timesteps", sstidyn);
@@ -34,7 +34,7 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   sstidyn.specs.emplace_back(
       parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = -1.0}));
   sstidyn.specs.emplace_back(parameter<double>(
-      "RESULTSEVERYTIME", {.description = "increment for writing solution", .default_value = 0}));
+      "RESULTSEVERYTIME", {.description = "increment for writing solution", .default_value = 0.0}));
   Core::Utils::int_parameter("RESULTSEVERY", 1, "increment for writing solution", sstidyn);
   Core::Utils::int_parameter("ITEMAX", 10, "maximum number of iterations over fields", sstidyn);
   sstidyn.specs.emplace_back(parameter<bool>("SCATRA_FROM_RESTART_FILE",

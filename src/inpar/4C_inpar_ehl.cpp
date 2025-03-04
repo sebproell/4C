@@ -24,7 +24,7 @@ void Inpar::EHL::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
 
   // Output type
   ehldyn.specs.emplace_back(parameter<double>("RESTARTEVERYTIME",
-      {.description = "write restart possibility every RESTARTEVERY steps", .default_value = 0}));
+      {.description = "write restart possibility every RESTARTEVERY steps", .default_value = 0.0}));
   Core::Utils::int_parameter(
       "RESTARTEVERY", 1, "write restart possibility every RESTARTEVERY steps", ehldyn);
   // Time loop control
@@ -37,7 +37,7 @@ void Inpar::EHL::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "DIFFTIMESTEPSIZE", {.description = "use different step size for lubrication and solid",
                               .default_value = false}));
   ehldyn.specs.emplace_back(parameter<double>(
-      "RESULTSEVERYTIME", {.description = "increment for writing solution", .default_value = 0}));
+      "RESULTSEVERYTIME", {.description = "increment for writing solution", .default_value = 0.0}));
   Core::Utils::int_parameter("RESULTSEVERY", 1, "increment for writing solution", ehldyn);
   Core::Utils::int_parameter("ITEMAX", 10, "maximum number of iterations over fields", ehldyn);
   Core::Utils::int_parameter("ITEMIN", 1, "minimal number of iterations over fields", ehldyn);

@@ -67,7 +67,7 @@ void Inpar::FBI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   beam_to_fluid_meshtying.specs.emplace_back(parameter<double>("SEARCH_RADIUS",
       {.description = "Absolute Search radius for beam-to-fluid volume meshtying. Choose carefully "
                       "to not blow up memory demand but to still find all interaction pairs!",
-          .default_value = 1000}));
+          .default_value = 1000.0}));
 
   Core::Utils::string_to_integral_parameter<Inpar::FBI::BeamToFluidMeshtingMortarShapefunctions>(
       "MORTAR_SHAPE_FUNCTION", "none", "Shape function for the mortar Lagrange-multipliers",

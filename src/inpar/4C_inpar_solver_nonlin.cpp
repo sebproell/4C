@@ -249,8 +249,8 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
     Core::Utils::int_parameter("Maximum Iteration for Increase", 0,
         "Maximum index of the nonlinear iteration for which we allow a relative increase",
         polynomial);
-    polynomial.specs.emplace_back(
-        parameter<double>("Allowed Relative Increase", {.description = "", .default_value = 100}));
+    polynomial.specs.emplace_back(parameter<double>(
+        "Allowed Relative Increase", {.description = "", .default_value = 100.0}));
   }
   polynomial.move_into_collection(list);
 

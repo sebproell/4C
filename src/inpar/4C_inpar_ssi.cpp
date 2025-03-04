@@ -26,7 +26,7 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
 
   // Output type
   ssidyn.specs.emplace_back(parameter<double>("RESTARTEVERYTIME",
-      {.description = "write restart possibility every RESTARTEVERY steps", .default_value = 0}));
+      {.description = "write restart possibility every RESTARTEVERY steps", .default_value = 0.0}));
   Core::Utils::int_parameter(
       "RESTARTEVERY", 1, "write restart possibility every RESTARTEVERY steps", ssidyn);
   // Time loop control
@@ -34,11 +34,11 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   ssidyn.specs.emplace_back(parameter<double>(
       "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}));
   ssidyn.specs.emplace_back(
-      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = -1}));
+      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = -1.0}));
   ssidyn.specs.emplace_back(parameter<bool>("DIFFTIMESTEPSIZE",
       {.description = "use different step size for scatra and solid", .default_value = false}));
   ssidyn.specs.emplace_back(parameter<double>(
-      "RESULTSEVERYTIME", {.description = "increment for writing solution", .default_value = 0}));
+      "RESULTSEVERYTIME", {.description = "increment for writing solution", .default_value = 0.0}));
   Core::Utils::int_parameter("RESULTSEVERY", 1, "increment for writing solution", ssidyn);
   Core::Utils::int_parameter("ITEMAX", 10, "maximum number of iterations over fields", ssidyn);
   ssidyn.specs.emplace_back(parameter<bool>("SCATRA_FROM_RESTART_FILE",
