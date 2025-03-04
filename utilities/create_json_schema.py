@@ -111,6 +111,7 @@ def schema_from_base_type(primitive):
     """
     schema = json_schema(
         schema_type=FOURC_BASE_TYPES_TO_JSON_SCHEMA_DICT[primitive.type],
+        description=primitive.description,
         title=primitive.short_description(),
         default=primitive.default,
         noneable=primitive.noneable,
