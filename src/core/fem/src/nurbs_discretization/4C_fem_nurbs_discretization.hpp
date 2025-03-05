@@ -65,7 +65,7 @@ namespace Core::FE
       \param knots : The Knotvector class
 
       */
-      virtual void set_knot_vector(std::shared_ptr<Core::FE::Nurbs::Knotvector> knots);
+      void set_knot_vector(std::shared_ptr<Core::FE::Nurbs::Knotvector> knots);
 
       /*!
       \brief get a pointer to the knotvector from the discretization
@@ -85,7 +85,7 @@ namespace Core::FE
       \return  : The number of knots in each direction
 
       */
-      virtual std::vector<int> return_n_x_m_x_l(const int npatch)
+      std::vector<int> return_n_x_m_x_l(const int npatch)
       {
         return (knots_->return_n_x_m_x_l(npatch));
       }
@@ -99,10 +99,7 @@ namespace Core::FE
       \return  : The degree in each direction
 
       */
-      virtual std::vector<int> return_degree(const int npatch)
-      {
-        return (knots_->return_degree(npatch));
-      }
+      std::vector<int> return_degree(const int npatch) { return (knots_->return_degree(npatch)); }
 
       /*!
       \brief return the offsets
@@ -110,7 +107,7 @@ namespace Core::FE
       \return  : The element offsets of all patches
 
       */
-      virtual std::vector<int> return_offsets() { return (knots_->return_offsets()); }
+      std::vector<int> return_offsets() { return (knots_->return_offsets()); }
 
       /*!
       \brief return number of elements in each direction
@@ -121,7 +118,7 @@ namespace Core::FE
       \return  : The number of elements in each direction
 
       */
-      virtual std::vector<int> return_nele_x_mele_x_lele(const int npatch)
+      std::vector<int> return_nele_x_mele_x_lele(const int npatch)
       {
         return (knots_->return_nele_x_mele_x_lele(npatch));
       }

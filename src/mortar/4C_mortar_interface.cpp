@@ -4246,7 +4246,18 @@ void Mortar::Interface::create_volume_ghosting(
       Mortar::Utils::create_volume_ghosting(discret(), tar_dis, material_map);
 
       // we need to redistribute the scalar field since distribution has changed during setup
-      discretization_map.at("structure")->redistribute_state(1, "scalarfield");
+      const auto& structure_dis = discretization_map.at("structure");
+
+      if (structure_dis->has_state(1, "scalarfield"))
+      {
+        // get the state and export it to the rowmap to be able to reset the state
+        auto statevec = structure_dis->get_state(1, "scalarfield");
+        auto statevecrowmap = Core::LinAlg::create_vector(*structure_dis->dof_row_map(1), true);
+        Core::LinAlg::export_to(*statevec, *statevecrowmap);
+
+        // now set the state again
+        structure_dis->set_state(1, "scalarfield", statevecrowmap);
+      }
 
       break;
     }

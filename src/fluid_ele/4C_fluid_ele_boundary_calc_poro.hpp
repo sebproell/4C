@@ -201,9 +201,9 @@ namespace Discret
                                   where a constraint is to be applied will be marked with 1.0
                                   in this vector otherwise 0.0
       */
-      void no_penetration_i_ds(Discret::Elements::FluidBoundary* ele,
-          Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-          Core::LinAlg::SerialDenseVector& elevec1, std::vector<int>& lm);
+      void no_penetration_ids(Discret::Elements::FluidBoundary* ele, Teuchos::ParameterList& params,
+          Core::FE::Discretization& discretization, Core::LinAlg::SerialDenseVector& elevec1,
+          std::vector<int>& lm);
 
       /*!
       \brief compute flow rate over boundary for porous media problems
