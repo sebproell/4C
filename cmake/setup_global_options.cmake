@@ -192,6 +192,12 @@ four_c_process_global_option(
   OFF
   )
 
+four_c_process_global_option(
+  FOUR_C_ENABLE_METADATA_GENERATION
+  "Generate metadata after building 4C. Requires python and invokes 4C."
+  ON
+  )
+
 ##
 # Add potential user flags at the very end
 ##
