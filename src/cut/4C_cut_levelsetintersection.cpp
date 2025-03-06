@@ -9,12 +9,13 @@
 
 #include "4C_cut_side.hpp"
 
+#include <mpi.h>
 #include <Teuchos_TimeMonitor.hpp>
 
 FOUR_C_NAMESPACE_OPEN
 
 Cut::LevelSetIntersection::LevelSetIntersection(int myrank, bool create_side)
-    : ParentIntersection(myrank), side_(nullptr), comm_(nullptr)
+    : ParentIntersection(myrank), side_(nullptr), comm_(MPI_COMM_NULL)
 {
   if (create_side) add_cut_side(1);
 }
