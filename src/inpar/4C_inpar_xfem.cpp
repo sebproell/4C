@@ -540,7 +540,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
 
   xfem_levelset_navier_slip.add_component(levelsetfield_components);
 
-  xfem_levelset_navier_slip.add_component(selection<int>("SURFACE_PROJECTION",
+  xfem_levelset_navier_slip.add_component(selection<ProjToSurface>("SURFACE_PROJECTION",
       {{"proj_normal", Inpar::XFEM::Proj_normal}, {"proj_smoothed", Inpar::XFEM::Proj_smoothed},
           {"proj_normal_smoothed_comb", Inpar::XFEM::Proj_normal_smoothed_comb},
           {"proj_normal_phi", Inpar::XFEM::Proj_normal_phi}},
@@ -606,7 +606,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       Core::Conditions::XFEM_Surf_FluidFluid, true, Core::Conditions::geometry_type_surface);
 
   xfem_surf_fluidfluid.add_component(parameter<int>("COUPLINGID"));
-  xfem_surf_fluidfluid.add_component(selection<int>("COUPSTRATEGY",
+  xfem_surf_fluidfluid.add_component(selection<AveragingStrategy>("COUPSTRATEGY",
       {{"xfluid", Inpar::XFEM::Xfluid_Sided}, {"embedded", Inpar::XFEM::Embedded_Sided},
           {"mean", Inpar::XFEM::Mean}},
       {.description = "coupling strategy"}));
@@ -623,7 +623,7 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
   xfem_surf_fsi_part.add_component(parameter<int>("COUPLINGID"));
 
   // COUPSTRATEGY IS FLUID SIDED
-  xfem_surf_fsi_part.add_component(selection<int>("INTLAW",
+  xfem_surf_fsi_part.add_component(selection<InterfaceLaw>("INTLAW",
       {{"noslip", Inpar::XFEM::noslip}, {"noslip_splitpen", Inpar::XFEM::noslip_splitpen},
           {"slip", Inpar::XFEM::slip}, {"navslip", Inpar::XFEM::navierslip}},
       {.description = "", .default_value = Inpar::XFEM::noslip}));
@@ -642,11 +642,11 @@ void Inpar::XFEM::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
       Core::Conditions::XFEM_Surf_FSIMono, true, Core::Conditions::geometry_type_surface);
 
   xfem_surf_fsi_mono.add_component(parameter<int>("COUPLINGID"));
-  xfem_surf_fsi_mono.add_component(selection<int>("COUPSTRATEGY",
+  xfem_surf_fsi_mono.add_component(selection<AveragingStrategy>("COUPSTRATEGY",
       {{"xfluid", Inpar::XFEM::Xfluid_Sided}, {"solid", Inpar::XFEM::Embedded_Sided},
           {"mean", Inpar::XFEM::Mean}, {"harmonic", Inpar::XFEM::Harmonic}},
       {.description = "", .default_value = Inpar::XFEM::Xfluid_Sided}));
-  xfem_surf_fsi_mono.add_component(selection<int>("INTLAW",
+  xfem_surf_fsi_mono.add_component(selection<InterfaceLaw>("INTLAW",
       {{"noslip", Inpar::XFEM::noslip}, {"noslip_splitpen", Inpar::XFEM::noslip_splitpen},
           {"slip", Inpar::XFEM::slip}, {"navslip", Inpar::XFEM::navierslip},
           {"navslip_contact", Inpar::XFEM::navierslip_contact}},

@@ -989,10 +989,13 @@ namespace Core::IO
      * @note If you want to store the choices as strings and not map them to another type, use the
      * other selection() function.
      *
+     * @deprecated If you want to select from a set of enum constants use the parameter() function
+     * with the enum type.
+     *
      * @relatedalso InputSpec
      */
     template <typename T>
-      requires(!std::same_as<T, std::string>)
+      requires(std::is_enum_v<T>)
     [[nodiscard]] InputSpec selection(std::string name,
         std::map<std::string, RemoveOptional<T>> choices, ParameterDataIn<T> data = {});
 
@@ -1003,6 +1006,9 @@ namespace Core::IO
      *
      * @note Although this function only works with strings, you still need to provide a type for
      * the first template parameter for consistency with the other functions.
+     *
+     * @deprecated If you want to select from a set of strings, create an enum with the name
+     * of the strings and use the parameter() function with the enum type.
      *
      * @relatedalso InputSpec
      */
@@ -1843,7 +1849,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
 
 
 template <typename T>
-  requires(!std::same_as<T, std::string>)
+  requires(std::is_enum_v<T>)
 Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
     std::string name, std::map<std::string, RemoveOptional<T>> choices, ParameterDataIn<T> data)
 {

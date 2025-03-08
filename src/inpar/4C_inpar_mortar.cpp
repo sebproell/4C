@@ -202,12 +202,8 @@ void Inpar::Mortar::set_valid_conditions(
         {.description = "application", .default_value = "Solidcontact"}));
 
     // optional DBC handling
-    cond.add_component(selection<int>("DbcHandling",
-        {{"DoNothing", static_cast<int>(DBCHandling::do_nothing)},
-            {"RemoveDBCSlaveNodes",
-                static_cast<int>(DBCHandling::remove_dbc_nodes_from_slave_side)}},
-        {.description = "DbcHandling",
-            .default_value = static_cast<int>(DBCHandling::do_nothing)}));
+    cond.add_component(parameter<DBCHandling>(
+        "DbcHandling", {.description = "DbcHandling", .default_value = DBCHandling::DoNothing}));
     cond.add_component(parameter<double>(
         "TwoHalfPass", {.description = "optional two half pass approach", .default_value = 0.0}));
     cond.add_component(parameter<double>("RefConfCheckNonSmoothSelfContactSurface",

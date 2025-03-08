@@ -1374,8 +1374,8 @@ void Inpar::FLUID::set_valid_conditions(
   tbc_turb_inflow.add_component(parameter<int>("ID", {.description = ""}));
   tbc_turb_inflow.add_component(
       selection<std::string>("toggle", {"master", "slave"}, {.description = "toggle"}));
-  tbc_turb_inflow.add_component(selection<int>("DIRECTION", {{"x", 0}, {"y", 1}, {"z", 2}},
-      {.description = "transfer direction", .default_value = 0}));
+  tbc_turb_inflow.add_component(parameter<TurbInflowDirection>(
+      "DIRECTION", {.description = "transfer direction", .default_value = TurbInflowDirection::x}));
   tbc_turb_inflow.add_component(
       parameter<std::optional<int>>("curve", {.description = "curve id"}));
 
