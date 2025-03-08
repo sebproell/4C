@@ -256,7 +256,7 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
   {
     auto reaction_model_choices = one_of({
         all_of({
-            selection<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL",
+            deprecated_selection<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL",
                 {
                     {"Butler-Volmer", Inpar::ElCh::ElectrodeKinetics::butler_volmer},
                     {"Butler-Volmer-Yang1997",
@@ -270,7 +270,7 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
             parameter<double>("DL_SPEC_CAP"),
         }),
         all_of({
-            selection<Inpar::ElCh::ElectrodeKinetics>(
+            deprecated_selection<Inpar::ElCh::ElectrodeKinetics>(
                 "KINETIC_MODEL", {{"Tafel", Inpar::ElCh::ElectrodeKinetics::tafel}}),
             parameter<double>("ALPHA"),
             parameter<double>("I0"),
@@ -279,7 +279,7 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
             parameter<double>("DL_SPEC_CAP"),
         }),
         all_of({
-            selection<Inpar::ElCh::ElectrodeKinetics>(
+            deprecated_selection<Inpar::ElCh::ElectrodeKinetics>(
                 "KINETIC_MODEL", {{"linear", Inpar::ElCh::ElectrodeKinetics::linear}}),
             parameter<double>("ALPHA"),
             parameter<double>("I0"),
@@ -288,7 +288,7 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
             parameter<double>("DL_SPEC_CAP"),
         }),
         all_of({
-            selection<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL",
+            deprecated_selection<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL",
                 {{"Butler-Volmer-Newman", Inpar::ElCh::ElectrodeKinetics::butler_volmer_newman}}),
             parameter<double>("K_A"),
             parameter<double>("K_C"),
@@ -296,7 +296,7 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
             parameter<double>("DL_SPEC_CAP"),
         }),
         all_of({
-            selection<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL",
+            deprecated_selection<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL",
                 {{"Butler-Volmer-Bard", Inpar::ElCh::ElectrodeKinetics::butler_volmer_bard}}),
             parameter<double>("E0"),
             parameter<double>("K0"),
@@ -306,7 +306,7 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
             parameter<double>("DL_SPEC_CAP"),
         }),
         all_of({
-            selection<Inpar::ElCh::ElectrodeKinetics>(
+            deprecated_selection<Inpar::ElCh::ElectrodeKinetics>(
                 "KINETIC_MODEL", {{"Nernst", Inpar::ElCh::ElectrodeKinetics::nernst}}),
             parameter<double>("E0"),
             parameter<double>("C0"),
@@ -381,7 +381,7 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
         parameter<std::vector<int>>("STOICH", {.size = from_parameter<int>("NUMSCAL")}),
         parameter<int>("E-"),
         parameter<int>("ZERO_CUR"),
-        selection<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL",
+        deprecated_selection<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL",
             {
                 {"Butler-Volmer", Inpar::ElCh::ElectrodeKinetics::butler_volmer},
             }),

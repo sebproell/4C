@@ -80,7 +80,7 @@ namespace
     };
 
     auto spec = all_of({
-        selection<EnumClass>("enum",
+        deprecated_selection<EnumClass>("enum",
             {
                 {"A", EnumClass::A},
                 {"B", EnumClass::B},

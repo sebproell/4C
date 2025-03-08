@@ -974,11 +974,7 @@ namespace Core::IO
     [[nodiscard]] auto from_parameter(const std::string& name);
 
     /**
-     * A parameter whose value is a selection from a list of choices. For example:
-     *
-     * @code
-     * selection<int>("my_selection", {{"a", 1}, {"b", 2}, {"c", 3}});
-     * @endcode
+     * A parameter whose value is a selection from a list of choices.
      *
      * The choices are given as a map from string to stored type T. This function is for
      * convenience, as you do not need to convert parsed string values to another type yourself. A
@@ -996,7 +992,7 @@ namespace Core::IO
      */
     template <typename T>
       requires(std::is_enum_v<T>)
-    [[nodiscard]] InputSpec selection(std::string name,
+    [[nodiscard]] InputSpec deprecated_selection(std::string name,
         std::map<std::string, RemoveOptional<T>> choices, ParameterDataIn<T> data = {});
 
 
@@ -1013,7 +1009,7 @@ namespace Core::IO
      * @relatedalso InputSpec
      */
     template <std::same_as<std::string> T>
-    [[nodiscard]] InputSpec selection(
+    [[nodiscard]] InputSpec deprecated_selection(
         std::string name, std::vector<std::string> choices, ParameterDataIn<T> data = {});
 
     /**
@@ -1769,7 +1765,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
   for (auto&& [choice_name, choice_spec] : choices.choices)
   {
     specs.emplace_back(all_of({
-        selection<std::string>(selector.name, {choice_name},
+        deprecated_selection<std::string>(selector.name, {choice_name},
             {.description = "Selects which other parameters are allowed in this group."}),
         std::move(choice_spec),
     }));
@@ -1850,7 +1846,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
 
 template <typename T>
   requires(std::is_enum_v<T>)
-Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
+Core::IO::InputSpec Core::IO::InputSpecBuilders::deprecated_selection(
     std::string name, std::map<std::string, RemoveOptional<T>> choices, ParameterDataIn<T> data)
 {
   return Internal::selection_internal(name, choices, data);
@@ -1858,7 +1854,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
 
 
 template <std::same_as<std::string> T>
-Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
+Core::IO::InputSpec Core::IO::InputSpecBuilders::deprecated_selection(
     std::string name, std::vector<std::string> choices, ParameterDataIn<T> data)
 {
   std::map<std::string, std::string> choices_with_strings;

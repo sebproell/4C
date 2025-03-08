@@ -187,9 +187,9 @@ void Inpar::Mortar::set_valid_conditions(
   const auto make_contact = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
     cond.add_component(parameter<int>("InterfaceID"));
-    cond.add_component(selection<std::string>(
+    cond.add_component(deprecated_selection<std::string>(
         "Side", {"Master", "Slave", "Selfcontact"}, {.description = "interface side"}));
-    cond.add_component(selection<std::string>("Initialization", {"Inactive", "Active"},
+    cond.add_component(deprecated_selection<std::string>("Initialization", {"Inactive", "Active"},
         {.description = "initialization", .default_value = "Inactive"}));
 
     cond.add_component(parameter<double>(
@@ -197,7 +197,7 @@ void Inpar::Mortar::set_valid_conditions(
     cond.add_component(parameter<double>(
         "AdhesionBound", {.description = "adhesion bound", .default_value = 0.0}));
 
-    cond.add_component(selection<std::string>("Application",
+    cond.add_component(deprecated_selection<std::string>("Application",
         {"Solidcontact", "Beamtosolidcontact", "Beamtosolidmeshtying"},
         {.description = "application", .default_value = "Solidcontact"}));
 
@@ -232,9 +232,9 @@ void Inpar::Mortar::set_valid_conditions(
     const auto make_mortar = [&condlist](Core::Conditions::ConditionDefinition& cond)
     {
       cond.add_component(parameter<int>("InterfaceID"));
-      cond.add_component(
-          selection<std::string>("Side", {"Master", "Slave"}, {.description = "interface side"}));
-      cond.add_component(selection<std::string>("Initialization", {"Inactive", "Active"},
+      cond.add_component(deprecated_selection<std::string>(
+          "Side", {"Master", "Slave"}, {.description = "interface side"}));
+      cond.add_component(deprecated_selection<std::string>("Initialization", {"Inactive", "Active"},
           {.description = "initialization", .default_value = "Inactive"}));
 
       condlist.push_back(cond);
@@ -298,9 +298,9 @@ void Inpar::Mortar::set_valid_conditions(
     const auto make_mortar_multi = [&condlist](Core::Conditions::ConditionDefinition& cond)
     {
       cond.add_component(parameter<int>("InterfaceID"));
-      cond.add_component(
-          selection<std::string>("Side", {"Master", "Slave"}, {.description = "interface side"}));
-      cond.add_component(selection<std::string>("Initialization", {"Inactive", "Active"},
+      cond.add_component(deprecated_selection<std::string>(
+          "Side", {"Master", "Slave"}, {.description = "interface side"}));
+      cond.add_component(deprecated_selection<std::string>("Initialization", {"Inactive", "Active"},
           {.description = "initialization", .default_value = "Inactive"}));
 
       condlist.push_back(cond);
