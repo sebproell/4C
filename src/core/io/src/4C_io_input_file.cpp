@@ -635,6 +635,10 @@ namespace Core::IO
   {
     if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0)
     {
+      // the top_level_file must exist
+      if (!std::filesystem::is_regular_file(top_level_file))
+        FOUR_C_THROW("Input file '%s' does not exist.", top_level_file.c_str());
+
       // Start by "including" the top-level file.
       std::list<std::filesystem::path> included_files{top_level_file};
 
