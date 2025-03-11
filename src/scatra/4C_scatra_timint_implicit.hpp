@@ -465,9 +465,6 @@ namespace ScaTra
     //! return flag for micro scale in multi-scale simulations
     bool micro_scale() const { return micro_scale_; };
 
-    //! return flag for electromagnetic diffusion simulations
-    bool is_emd() const { return isemd_; };
-
     //! print information about current time step to screen
     virtual void print_time_step_info();
 
@@ -1287,12 +1284,6 @@ namespace ScaTra
 
     //! flag for micro scale in multi-scale simulations
     const bool micro_scale_;
-
-    //! flag for electromagnetic diffusion simulations
-    bool isemd_;
-
-    //! electromagnetic diffusion current source function
-    int emd_source_;
 
     //! flag for external force
     bool has_external_force_;

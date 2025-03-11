@@ -196,15 +196,6 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           fssugrdiff_smagorinsky_all, fssugrdiff_smagorinsky_small),
       scatradyn);
 
-  // flag for output of performance statistics associated with nonlinear solver into *.csv file
-  scatradyn.specs.emplace_back(parameter<bool>("ELECTROMAGNETICDIFFUSION",
-      {.description = "flag to activate electromagnetic diffusion problems",
-          .default_value = false}));
-
-  // Current density source function for EMD problems
-  scatradyn.specs.emplace_back(
-      parameter<int>("EMDSOURCE", {.description = "Current density source", .default_value = -1}));
-
   Core::Utils::string_to_integral_parameter<Inpar::FLUID::MeshTying>("MESHTYING", "no",
       "Flag to (de)activate mesh tying algorithm",
       tuple<std::string>("no", "Condensed_Smat", "Condensed_Bmat", "Condensed_Bmat_merged"),

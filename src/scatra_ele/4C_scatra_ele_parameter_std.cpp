@@ -53,8 +53,6 @@ Discret::Elements::ScaTraEleParameterStd::ScaTraEleParameterStd(
       intlayergrowth_convtol_(0.),
       intlayergrowth_itemax_(0),
       partitioned_multiscale_(false),
-      is_emd_(false),
-      emd_source_(-1),
       has_external_force_(false),
       stabtype_(Inpar::ScaTra::stabtype_no_stabilization),
       whichtau_(Inpar::ScaTra::tau_zero),
@@ -220,12 +218,6 @@ void Discret::Elements::ScaTraEleParameterStd::set_parameters(Teuchos::Parameter
 
   // set flag for truly partitioned multi-scale simulation
   partitioned_multiscale_ = parameters.get<bool>("partitioned_multiscale", false);
-
-  // set flag for electromagnetic diffusion simulation
-  is_emd_ = parameters.get<bool>("electromagnetic_diffusion", false);
-
-  // electromagnetic diffusion source function
-  emd_source_ = parameters.get<int>("electromagnetic_diffusion_source", -1);
 
   // set flag for external force
   has_external_force_ = parameters.get<bool>("has_external_force", false);

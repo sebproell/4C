@@ -64,7 +64,6 @@
 #include "4C_mat_elchmat.hpp"
 #include "4C_mat_elchphase.hpp"
 #include "4C_mat_electrode.hpp"
-#include "4C_mat_electromagnetic.hpp"
 #include "4C_mat_fluid_linear_density_viscosity.hpp"
 #include "4C_mat_fluid_murnaghantait.hpp"
 #include "4C_mat_fluid_weakly_compressible.hpp"
@@ -996,10 +995,6 @@ std::unique_ptr<Core::Mat::PAR::Parameter> Mat::make_parameter(
     case Core::Materials::m_particle_wall_dem:
     {
       return make_parameter_impl<Mat::PAR::ParticleWallMaterialDEM>(id, type, input_data);
-    }
-    case Core::Materials::m_electromagneticmat:
-    {
-      return make_parameter_impl<Mat::PAR::ElectromagneticMat>(id, type, input_data);
     }
     case Core::Materials::m_superelast:
     {

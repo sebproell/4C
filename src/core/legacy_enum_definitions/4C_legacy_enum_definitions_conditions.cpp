@@ -338,8 +338,6 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "Scatra-scatra interface kinetics";
     case Core::Conditions::S2IMeshtying:
       return "Scatra-scatra interface mesh tying";
-    case Core::Conditions::SilverMueller:
-      return "Silver-Mueller boundary for electromagnetics";
     case Core::Conditions::ElementTag:
       return "Tagged elements";
     case Core::Conditions::NodeTag:

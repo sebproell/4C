@@ -408,10 +408,6 @@ namespace Global
     {
       return parameters_->sublist("SEMI-SMOOTH PLASTICITY");
     }
-    const Teuchos::ParameterList& electromagnetic_params() const
-    {
-      return parameters_->sublist("ELECTROMAGNETIC DYNAMIC");
-    }
     const Teuchos::ParameterList& embedded_mesh_params() const
     {
       return parameters_->sublist("EMBEDDED MESH COUPLING");

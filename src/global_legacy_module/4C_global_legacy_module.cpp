@@ -28,8 +28,6 @@
 #include "4C_contact_element.hpp"
 #include "4C_contact_friction_node.hpp"
 #include "4C_contact_node.hpp"
-#include "4C_elemag_diff_ele.hpp"
-#include "4C_elemag_ele.hpp"
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_fem_nurbs_discretization_control_point.hpp"
 #include "4C_fluid_ele.hpp"
@@ -55,7 +53,6 @@
 #include "4C_mat_damage.hpp"
 #include "4C_mat_elasthyper.hpp"
 #include "4C_mat_elchmat.hpp"
-#include "4C_mat_electromagnetic.hpp"
 #include "4C_mat_fluid_linear_density_viscosity.hpp"
 #include "4C_mat_fluid_murnaghantait.hpp"
 #include "4C_mat_fluid_weakly_compressible.hpp"
@@ -239,15 +236,9 @@ namespace
       << Discret::Elements::LubricationType::instance().name() << " "
       << Discret::Elements::PoroFluidMultiPhaseType::instance().name() << " "
       << Discret::Elements::TransportType::instance().name() << " "
-      << Thermo::ElementType::instance().name() << " "
-      << Discret::Elements::ElemagType::instance().name() << " "
-      << Discret::Elements::ElemagDiffType::instance().name() << " "
-      << Discret::Elements::ElemagBoundaryType::instance().name() << " "
-      << Discret::Elements::ElemagDiffBoundaryType::instance().name() << " "
-      << Discret::Elements::ElemagIntFaceType::instance().name() << " "
-      << Discret::Elements::ElemagDiffIntFaceType::instance().name() << " "
-      << Mat::Cnst1dArtType::instance().name() << " " << Mat::AAAneohookeType::instance().name()
-      << " " << Mat::CarreauYasudaType::instance().name() << " "
+      << Thermo::ElementType::instance().name() << " " << Mat::Cnst1dArtType::instance().name()
+      << " " << Mat::AAAneohookeType::instance().name() << " "
+      << Mat::CarreauYasudaType::instance().name() << " "
       << Mat::ConstraintMixtureType::instance().name() << " "
       << Mat::ConstraintMixtureHistoryType::instance().name() << " "
       << Mat::CrystalPlasticityType::instance().name() << " "
@@ -298,7 +289,6 @@ namespace
       << Discret::Elements::KirchhoffLoveShellNurbsType::instance().name() << " "
       << Mat::PlasticLinElastType::instance().name() << " " << Mat::RobinsonType::instance().name()
       << " " << Mat::DamageType::instance().name() << " "
-      << Mat::ElectromagneticMatType::instance().name() << " "
       << Mat::Maxwell0dAcinusType::instance().name() << " "
       << Mat::Maxwell0dAcinusNeoHookeanType::instance().name() << " "
       << Mat::Maxwell0dAcinusExponentialType::instance().name() << " "
@@ -512,15 +502,6 @@ namespace
         group("RIGIDBODY",
             {
                 parameter<int>("ID"),
-                parameter<std::string>("QUANTITY"),
-                parameter<double>("VALUE"),
-                parameter<double>("TOLERANCE"),
-                parameter<std::optional<std::string>>("NAME"),
-            }),
-        group("ELECTROMAGNETIC",
-            {
-                parameter<std::string>("DIS"),
-                parameter<int>("NODE"),
                 parameter<std::string>("QUANTITY"),
                 parameter<double>("VALUE"),
                 parameter<double>("TOLERANCE"),

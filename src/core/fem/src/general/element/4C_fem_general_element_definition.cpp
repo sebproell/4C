@@ -97,10 +97,6 @@ void Core::Elements::ElementDefinition::print_element_dat_header_to_stream(std::
   print_element_lines(stream, "RED_AIRWAY");
   print_element_lines(stream, "RED_ACINUS");
   print_element_lines(stream, "RED_ACINAR_INTER_DEP");
-
-  print_section_header(stream, "ELECTROMAGNETIC ELEMENTS");
-  print_element_lines(stream, "ELECTROMAGNETIC");
-  print_element_lines(stream, "ELECTROMAGNETICDIFF");
 }
 
 

@@ -47,18 +47,17 @@ namespace Core::Materials
                                                        ///< function, specified for individual
                                                        ///< deformation modes
     m_shell_kirchhoff_love,                            ///< material for a Kirchhoff-Love shell
-    m_carreauyasuda,       ///< fluid with nonlinear viscosity according to Carreau-Yasuda
-    m_cnst_art,            ///< 1D_Artery constant material properties
-    m_constraintmixture,   ///< growth and remodeling of arteries
-    m_crosslinkermat,      ///< material for crosslinker in biopolymer networks
-    m_crystplast,          ///< crystal plasticity
-    m_elasthyper,          ///< collection of hyperelastic materials
-    m_elchmat,             ///< material for porous separators
-    m_elchphase,           ///< material for porous phase inside porous separator
-    m_electrode,           ///< electrode material
-    m_electromagneticmat,  ///< electromagnetic material
-    m_elpldamage,          ///< elasto-plastic material with von Mises plasticity and damage
-    m_fluid,               ///< fluid
+    m_carreauyasuda,      ///< fluid with nonlinear viscosity according to Carreau-Yasuda
+    m_cnst_art,           ///< 1D_Artery constant material properties
+    m_constraintmixture,  ///< growth and remodeling of arteries
+    m_crosslinkermat,     ///< material for crosslinker in biopolymer networks
+    m_crystplast,         ///< crystal plasticity
+    m_elasthyper,         ///< collection of hyperelastic materials
+    m_elchmat,            ///< material for porous separators
+    m_elchphase,          ///< material for porous phase inside porous separator
+    m_electrode,          ///< electrode material
+    m_elpldamage,         ///< elasto-plastic material with von Mises plasticity and damage
+    m_fluid,              ///< fluid
     m_fluid_linear_density_viscosity,  ///< linear law (pressure-dependent) for the density and
                                        ///< the viscosity
     m_fluid_murnaghantait,             ///< weakly compressible fluid according to Murnaghan-Tait

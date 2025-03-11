@@ -1031,8 +1031,6 @@ void Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::LocalSolver::compute
 
   double dt = scatraparatimint_->dt();
   double theta = scatraparatimint_->time_fac() * (1 / dt);
-  const double time = scatraparatimint_->time();
-  bool source = scatrapara_->is_emd();
 
   Core::LinAlg::SerialDenseVector tempVec1(hdgele->ndofs_);
   Core::LinAlg::SerialDenseVector tempVec2(hdgele->ndofs_ * nsd_);
@@ -1053,19 +1051,11 @@ void Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::LocalSolver::compute
   {
     // Reaction term
     tempVecI = hdgele->Ivecnp_;
-    if (source)
-    {
-      compute_source(hdgele, tempVecI, time + dt);
-    }
     tempVecI.scale(dt * theta);
     tempVec1 += tempVecI;
     if (theta != 1.0)
     {
       tempVecI = hdgele->Ivecn_;
-      if (source)
-      {
-        compute_source(hdgele, tempVecI, time);
-      }
       tempVecI.scale(dt * (1.0 - theta));
       tempVec1 += tempVecI;
     }
@@ -1074,10 +1064,6 @@ void Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::LocalSolver::compute
   else
   {
     tempVecI = hdgele->Ivecn_;
-    if (source)
-    {
-      compute_source(hdgele, tempVecI, time);
-    }
     tempVecI.scale(dt);
     tempVec1 += tempVecI;
   }
@@ -1122,46 +1108,6 @@ void Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::LocalSolver::compute
   return;
 }  // ComputeResidual
 
-/*----------------------------------------------------------------------*
- * ComputeSource
- *----------------------------------------------------------------------*/
-template <Core::FE::CellType distype, int probdim>
-void Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::LocalSolver::compute_source(
-    const Core::Elements::Element* ele, Core::LinAlg::SerialDenseVector& elevec1, const double time)
-{
-  const int funcno = scatrapara_->emd_source();
-
-  shapes_->evaluate(*ele);
-
-  // Core::LinAlg::SerialDenseVector source(nsd_);
-  if (nsd_ != Global::Problem::instance()
-                  ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funcno)
-                  .number_components())
-    FOUR_C_THROW(
-        "The source does not have the correct number of components.\n The correct number of "
-        "components should be equal to the number of spatial dimensions.\n Fix the source "
-        "function.");
-
-  for (unsigned int q = 0; q < shapes_->nqpoints_; ++q)
-  {
-    Core::LinAlg::Matrix<3, 1> xyz;
-    // add it all up
-    for (unsigned int i = 0; i < shapes_->ndofs_; ++i)
-      for (unsigned int j = 0; j < shapes_->ndofs_; ++j)
-      {
-        double source = 0;
-        for (unsigned int d = 0; d < nsd_; ++d) xyz(d) = shapes_->nodexyzreal(d, j);
-        for (unsigned int d = 0; d < nsd_; ++d)
-          source += shapes_->shderxy(j * nsd_ + d, q) *
-                    Global::Problem::instance()
-                        ->function_by_id<Core::Utils::FunctionOfSpaceTime>(funcno)
-                        .evaluate(xyz.data(), time, d);
-        elevec1(i) += shapes_->shfunct(i, q) * source * shapes_->jfac(q);
-      }
-  }
-
-  return;
-}
 
 /*----------------------------------------------------------------------*
  * CondenseLocalPart
@@ -1523,8 +1469,6 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::update_interior_varia
 
   double dt = local_solver_->scatraparatimint_->dt();
   double theta = local_solver_->scatraparatimint_->time_fac() * (1 / dt);
-  const double time = local_solver_->scatraparatimint_->time();
-  bool source = local_solver_->scatrapara_->is_emd();
 
   Core::LinAlg::SerialDenseVector tempVec1(hdgele->ndofs_);
   if (theta != 1.0)
@@ -1544,19 +1488,11 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::update_interior_varia
   if (!local_solver_->scatrapara_->semi_implicit())
   {
     tempVecI = hdgele->Ivecnp_;
-    if (source)
-    {
-      local_solver_->compute_source(hdgele, tempVecI, time + dt);
-    }
     tempVecI.scale(-dt * theta);
     tempVec1 += tempVecI;
     if (theta != 1.0)
     {
       tempVecI = hdgele->Ivecn_;
-      if (source)
-      {
-        local_solver_->compute_source(hdgele, tempVecI, time);
-      }
       tempVecI.scale(-dt * (1.0 - theta));
       tempVec1 += tempVecI;
     }
@@ -1564,10 +1500,6 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::update_interior_varia
   else
   {
     tempVecI = hdgele->Ivecn_;
-    if (source)
-    {
-      local_solver_->compute_source(hdgele, tempVecI, time);
-    }
     tempVecI.scale(-dt);
     tempVec1 += tempVecI;
   }
