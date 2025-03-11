@@ -22,8 +22,9 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
   /* parameters for structural meshtying and contact */
   Core::Utils::SectionSpecs scontact{"CONTACT DYNAMIC"};
 
-  Core::Utils::int_parameter(
-      "LINEAR_SOLVER", -1, "number of linear solver used for meshtying and contact", scontact);
+  scontact.specs.emplace_back(parameter<int>(
+      "LINEAR_SOLVER", {.description = "number of linear solver used for meshtying and contact",
+                           .default_value = -1}));
 
   scontact.specs.emplace_back(parameter<bool>("RESTART_WITH_CONTACT",
       {.description = "Must be chosen if a non-contact simulation is to be restarted with contact",
@@ -78,8 +79,9 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
       {.description =
               "Tangential penalty parameter for penalty / Uzawa augmented solution strategy",
           .default_value = 0.0}));
-  Core::Utils::int_parameter(
-      "UZAWAMAXSTEPS", 10, "Maximum no. of Uzawa steps for Uzawa solution strategy", scontact);
+  scontact.specs.emplace_back(parameter<int>(
+      "UZAWAMAXSTEPS", {.description = "Maximum no. of Uzawa steps for Uzawa solution strategy",
+                           .default_value = 10}));
   scontact.specs.emplace_back(parameter<double>(
       "UZAWACONSTRTOL", {.description = "Tolerance of constraint norm for Uzawa solution strategy",
                             .default_value = 1.0e-8}));
@@ -186,8 +188,9 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
       {.description = "add a regularized normal contact formulation", .default_value = false}));
   scontact.specs.emplace_back(parameter<double>("REGULARIZATION_THICKNESS",
       {.description = "maximum contact penetration", .default_value = -1.}));
-  Core::Utils::double_parameter("REGULARIZATION_STIFFNESS", -1.,
-      "initial contact stiffness (i.e. initial \"penalty parameter\")", scontact);
+  scontact.specs.emplace_back(parameter<double>("REGULARIZATION_STIFFNESS",
+      {.description = "initial contact stiffness (i.e. initial \"penalty parameter\")",
+          .default_value = -1.}));
 
   scontact.move_into_collection(list);
 }
