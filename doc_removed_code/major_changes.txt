@@ -1,5 +1,11 @@
 List of major features that were removed from 4C, including date and revision where code was removed
 
+Electromagnetism (elemag) and Electromagnetic Diffusion (EMD)
+ - Removal of all electromagnetic related implementations
+ - reasons: unused in current research and interferes with refactoring effort
+ - removed in commit fd7cadf6eb3c1f20da40f3abf6ec56a28706f332
+ - removed by David Rudlstorfer
+
 Immersed FSI
 - Removal of immersed solids in fluids
 - reasons: unused in current research, block removal of old solid elements
