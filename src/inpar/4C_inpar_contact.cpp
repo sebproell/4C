@@ -188,8 +188,9 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
       {.description = "add a regularized normal contact formulation", .default_value = false}));
   scontact.specs.emplace_back(parameter<double>("REGULARIZATION_THICKNESS",
       {.description = "maximum contact penetration", .default_value = -1.}));
-  Core::Utils::double_parameter("REGULARIZATION_STIFFNESS", -1.,
-      "initial contact stiffness (i.e. initial \"penalty parameter\")", scontact);
+  scontact.specs.emplace_back(parameter<double>("REGULARIZATION_STIFFNESS",
+      {.description = "initial contact stiffness (i.e. initial \"penalty parameter\")",
+          .default_value = -1.}));
 
   scontact.move_into_collection(list);
 }

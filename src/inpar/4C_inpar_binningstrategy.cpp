@@ -22,11 +22,11 @@ void Inpar::BINSTRATEGY::set_valid_parameters(std::map<std::string, Core::IO::In
   Core::Utils::SectionSpecs binningstrategy{"BINNING STRATEGY"};
 
 
-  Core::Utils::double_parameter("BIN_SIZE_LOWER_BOUND", -1.0,
-      "Lower bound for bin size. Exact bin size is computed via (Domain edge "
-      "length)/BIN_SIZE_LOWER_BOUND. This also determines the number of bins in each spatial "
-      "direction",
-      binningstrategy);
+  binningstrategy.specs.emplace_back(parameter<double>("BIN_SIZE_LOWER_BOUND",
+      {.description = "Lower bound for bin size. Exact bin size is computed via (Domain edge "
+                      "length)/BIN_SIZE_LOWER_BOUND. This also determines the number of bins in "
+                      "each spatial direction",
+          .default_value = -1.0}));
 
   binningstrategy.specs.emplace_back(parameter<std::string>("BIN_PER_DIR",
       {.description = "Number of bins per direction (x, y, z) in particle simulations. Either "

@@ -195,20 +195,21 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   /* parameters for monolithic FSI solvers */
   Core::Utils::SectionSpecs fsimono{fsidyn, "MONOLITHIC SOLVER"};
 
-  Core::Utils::double_parameter("ADAPTIVEDIST", 0.0,
-      "Required distance for adaptive convergence check in Newton-type FSI.\n"
-      "This is the improvement we want to achieve in the linear extrapolation of the\n"
-      "adaptive convergence check. Set to zero to avoid the adaptive check altogether.",
-      fsimono);
+  fsimono.specs.emplace_back(parameter<double>("ADAPTIVEDIST",
+      {.description =
+              "Required distance for adaptive convergence check in Newton-type FSI.\n"
+              "This is the improvement we want to achieve in the linear extrapolation of the\n"
+              "adaptive convergence check. Set to zero to avoid the adaptive check altogether.",
+          .default_value = 0.0}));
 
-  Core::Utils::double_parameter("BASETOL", 1e-3,
-      "Basic tolerance for adaptive convergence check in monolithic FSI.\n"
-      "This tolerance will be used for the linear solve of the FSI block system.\n"
-      "The linear convergence test will always use the relative residual norm (AZ_r0).\n"
-      "Not to be confused with the Newton tolerance (CONVTOL) that applies\n"
-      "to the nonlinear convergence test using a absolute residual norm.",
-      fsimono);
-
+  fsimono.specs.emplace_back(parameter<double>("BASETOL",
+      {.description =
+              "Basic tolerance for adaptive convergence check in monolithic FSI.\n"
+              "This tolerance will be used for the linear solve of the FSI block system.\n"
+              "The linear convergence test will always use the relative residual norm (AZ_r0).\n"
+              "Not to be confused with the Newton tolerance (CONVTOL) that applies\n"
+              "to the nonlinear convergence test using a absolute residual norm.",
+          .default_value = 1e-3}));
   fsimono.specs.emplace_back(parameter<double>(
       "CONVTOL", {.description = "Nonlinear tolerance for lung/constraint/fluid-fluid FSI",
                      .default_value = 1e-6}));  // ToDo remove
@@ -391,13 +392,14 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   /* parameters for partitioned FSI solvers */
   Core::Utils::SectionSpecs fsipart{fsidyn, "PARTITIONED SOLVER"};
 
-  Core::Utils::double_parameter("BASETOL", 1e-3,
-      "Basic tolerance for adaptive convergence check in monolithic FSI.\n"
-      "This tolerance will be used for the linear solve of the FSI block system.\n"
-      "The linear convergence test will always use the relative residual norm (AZ_r0).\n"
-      "Not to be confused with the Newton tolerance (CONVTOL) that applies\n"
-      "to the nonlinear convergence test using a absolute residual norm.",
-      fsipart);
+  fsipart.specs.emplace_back(parameter<double>("BASETOL",
+      {.description =
+              "Basic tolerance for adaptive convergence check in monolithic FSI.\n"
+              "This tolerance will be used for the linear solve of the FSI block system.\n"
+              "The linear convergence test will always use the relative residual norm (AZ_r0).\n"
+              "Not to be confused with the Newton tolerance (CONVTOL) that applies\n"
+              "to the nonlinear convergence test using a absolute residual norm.",
+          .default_value = 1e-3}));
 
   fsipart.specs.emplace_back(parameter<double>("CONVTOL",
       {.description = "Tolerance for iteration over fields in case of partitioned scheme",
