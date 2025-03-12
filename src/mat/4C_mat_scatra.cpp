@@ -31,11 +31,11 @@ Mat::PAR::ScatraMat::ScatraMat(const Core::Mat::PAR::Parameter::Data& matdata) :
   {
     matparams_.push_back(std::make_shared<Core::LinAlg::Vector<double>>(dummy_map, true));
   }
-  matparams_.at(diff)->PutScalar(matdata.parameters.get<double>("DIFFUSIVITY"));
-  matparams_.at(reac)->PutScalar(matdata.parameters.get<double>("REACOEFF"));
-  matparams_.at(densific)->PutScalar(matdata.parameters.get<double>("DENSIFICATION"));
+  matparams_.at(diff)->put_scalar(matdata.parameters.get<double>("DIFFUSIVITY"));
+  matparams_.at(reac)->put_scalar(matdata.parameters.get<double>("REACOEFF"));
+  matparams_.at(densific)->put_scalar(matdata.parameters.get<double>("DENSIFICATION"));
   matparams_.at(reacts_to_external_force)
-      ->PutScalar(matdata.parameters.get<bool>("REACTS_TO_EXTERNAL_FORCE"));
+      ->put_scalar(matdata.parameters.get<bool>("REACTS_TO_EXTERNAL_FORCE"));
 }
 
 

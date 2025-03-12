@@ -102,7 +102,7 @@ void Core::LinAlg::print_block_matrix_in_matlab_format(
 void Core::LinAlg::print_vector_in_matlab_format(
     const std::string& filename, const Core::LinAlg::Vector<double>& vector, const bool newfile)
 {
-  const auto& comm = vector.Comm();
+  const auto& comm = vector.get_comm();
 
   const int my_PID = Core::Communication::my_mpi_rank(comm);
   const int num_proc = Core::Communication::num_mpi_ranks(comm);
@@ -110,8 +110,8 @@ void Core::LinAlg::print_vector_in_matlab_format(
   // loop over all procs and send data to proc 0
   for (int iproc = 0; iproc < num_proc; iproc++)
   {
-    int num_elements_iproc = vector.Map().NumMyElements();
-    int max_element_size_iproc = vector.Map().MaxElementSize();
+    int num_elements_iproc = vector.get_map().NumMyElements();
+    int max_element_size_iproc = vector.get_map().MaxElementSize();
 
     Core::Communication::broadcast(&num_elements_iproc, 1, iproc, comm);
     Core::Communication::broadcast(&max_element_size_iproc, 1, iproc, comm);
@@ -124,9 +124,9 @@ void Core::LinAlg::print_vector_in_matlab_format(
     {
       for (int i = 0; i < num_elements_iproc; ++i)
       {
-        global_elements_iproc[i] = vector.Map().MyGlobalElements()[i];
-        values_iproc[i] = vector.Values()[i];
-        first_point_in_element_list_iproc[i] = vector.Map().FirstPointInElementList()[i];
+        global_elements_iproc[i] = vector.get_map().MyGlobalElements()[i];
+        values_iproc[i] = vector.get_values()[i];
+        first_point_in_element_list_iproc[i] = vector.get_map().FirstPointInElementList()[i];
       }
     }
 
@@ -154,7 +154,7 @@ void Core::LinAlg::print_vector_in_matlab_format(
         }
         else
         {
-          for (int ele_lid = 0; ele_lid < vector.Map().ElementSize(lid); ele_lid++)
+          for (int ele_lid = 0; ele_lid < vector.get_map().ElementSize(lid); ele_lid++)
           {
             os << std::setw(10) << global_elements_iproc[lid] << "/" << std::setw(10) << ele_lid;
 

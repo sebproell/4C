@@ -178,15 +178,15 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
   if (constr_direction_ == Inpar::CONTACT::constr_xyz)
   {
     gact = Core::LinAlg::create_vector(*gactivedofs_, true);
-    if (gact->GlobalLength()) Core::LinAlg::export_to(*wgap_, *gact);
+    if (gact->global_length()) Core::LinAlg::export_to(*wgap_, *gact);
   }
   else
   {
     gact = Core::LinAlg::create_vector(*gactivenodes_, true);
-    if (gact->GlobalLength())
+    if (gact->global_length())
     {
       Core::LinAlg::export_to(*wgap_, *gact);
-      gact->ReplaceMap(*gactiven_);
+      gact->replace_map(*gactiven_);
     }
   }
 
@@ -322,19 +322,19 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
       invdS.extract_diagonal_copy(*diagS);
 
       // set zero diagonal values to dummy 1.0
-      for (int i = 0; i < diagV->MyLength(); ++i)
+      for (int i = 0; i < diagV->local_length(); ++i)
         if (abs((*diagV)[i]) < 1e-12) (*diagV)[i] = 1.0;
-      for (int i = 0; i < diagE->MyLength(); ++i)
+      for (int i = 0; i < diagE->local_length(); ++i)
         if (abs((*diagE)[i]) < 1e-12) (*diagE)[i] = 1.0;
-      for (int i = 0; i < diagS->MyLength(); ++i)
+      for (int i = 0; i < diagS->local_length(); ++i)
         if (abs((*diagS)[i]) < 1e-12) (*diagS)[i] = 1.0;
 
       // scalar inversion of diagonal values
-      err = diagV->Reciprocal(*diagV);
+      err = diagV->reciprocal(*diagV);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
-      err = diagE->Reciprocal(*diagE);
+      err = diagE->reciprocal(*diagE);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
-      err = diagS->Reciprocal(*diagS);
+      err = diagS->reciprocal(*diagS);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
 
       // re-insert inverted diagonal into invd
@@ -404,11 +404,11 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
       invd->extract_diagonal_copy(*diag);
 
       // set zero diagonal values to dummy 1.0
-      for (int i = 0; i < diag->MyLength(); ++i)
+      for (int i = 0; i < diag->local_length(); ++i)
         if ((*diag)[i] == 0.0) (*diag)[i] = 1.0;
 
       // scalar inversion of diagonal values
-      err = diag->Reciprocal(*diag);
+      err = diag->reciprocal(*diag);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
 
       std::shared_ptr<Core::LinAlg::Vector<double>> lmDBC =
@@ -416,8 +416,8 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
       Core::LinAlg::export_to(*non_redist_gsdirichtoggle_, *lmDBC);
       std::shared_ptr<Core::LinAlg::Vector<double>> tmp =
           Core::LinAlg::create_vector(*gsdofrowmap_, true);
-      tmp->Multiply(1., *diag, *lmDBC, 0.);
-      diag->Update(-1., *tmp, 1.);
+      tmp->multiply(1., *diag, *lmDBC, 0.);
+      diag->update(-1., *tmp, 1.);
 
       // re-insert inverted diagonal into invd
       err = invd->replace_diagonal_values(*diag);
@@ -889,14 +889,14 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
       if (mold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, zoldexp);
       mold_->multiply(true, zoldexp, tempvecm2);
       if (mset) Core::LinAlg::export_to(tempvecm2, tempvecm);
-      fm->Update(alphaf_, tempvecm, 1.0);
+      fm->update(alphaf_, tempvecm, 1.0);
     }
     // if there is no self contact everything is ok
     else
     {
       Core::LinAlg::Vector<double> tempvecm(*gmdofrowmap_);
       mold_->multiply(true, *zold_, tempvecm);
-      fm->Update(alphaf_, tempvecm, 1.0);
+      fm->update(alphaf_, tempvecm, 1.0);
     }
 
     // fs: prepare alphaf * old contact forces (t_n)
@@ -923,13 +923,13 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     {
       Core::LinAlg::Vector<double> faadd(*gactivedofs_);
       Core::LinAlg::export_to(fsadd, faadd);
-      fa->Update(-alphaf_, faadd, 1.0);
+      fa->update(-alphaf_, faadd, 1.0);
     }
 
     // fm: add T(mhat)*fa
     Core::LinAlg::Vector<double> fmmod(*gmdofrowmap_);
     if (aset) mhataam->multiply(true, *fa, fmmod);
-    fmmod.Update(1.0, *fm, 1.0);
+    fmmod.update(1.0, *fm, 1.0);
 
     //--------------------------------------------------------- THIRD LINE
     // fi: subtract alphaf * old contact forces (t_n)
@@ -937,13 +937,13 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     {
       Core::LinAlg::Vector<double> fiadd(*gidofs);
       Core::LinAlg::export_to(fsadd, fiadd);
-      fi->Update(-alphaf_, fiadd, 1.0);
+      fi->update(-alphaf_, fiadd, 1.0);
     }
 
     // fi: add T(dhat)*fa
     Core::LinAlg::Vector<double> fimod(*gidofs);
     if (aset && iset) dhat->multiply(true, *fa, fimod);
-    fimod.Update(1.0, *fi, -1.0);
+    fimod.update(1.0, *fi, -1.0);
 
     //-------------------------------------------------------- FOURTH LINE
 
@@ -983,7 +983,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
         tempvec1 = std::make_shared<Core::LinAlg::Vector<double>>(*gstickt);
 
       linstickLM_->multiply(false, *zst, *tempvec1);
-      fstmod->Update(-1.0, *tempvec1, 1.0);
+      fstmod->update(-1.0, *tempvec1, 1.0);
     }
 
     //--------------------------------------------------------- SIXTH LINE
@@ -1008,7 +1008,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
 
       linslipLM_->multiply(false, *zsl, *tempvec1);
 
-      fslmod->Update(-1.0, *tempvec1, 1.0);
+      fslmod->update(-1.0, *tempvec1, 1.0);
     }
 
     /********************************************************************/
@@ -1137,13 +1137,13 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     // add n subvector to feffnew
     Core::LinAlg::Vector<double> fnexp(*problem_dofs());
     Core::LinAlg::export_to(*fn, fnexp);
-    feffnew->Update(1.0, fnexp, 1.0);
+    feffnew->update(1.0, fnexp, 1.0);
 
     //-------------------------------------------------------- SECOND LINE
     // add m subvector to feffnew
     Core::LinAlg::Vector<double> fmmodexp(*problem_dofs());
     Core::LinAlg::export_to(fmmod, fmmodexp);
-    feffnew->Update(1.0, fmmodexp, 1.0);
+    feffnew->update(1.0, fmmodexp, 1.0);
 
     //--------------------------------------------------------- THIRD LINE
     // add i subvector to feffnew
@@ -1152,7 +1152,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     {
       fimodexp = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
       Core::LinAlg::export_to(fimod, *fimodexp);
-      feffnew->Update(1.0, *fimodexp, 1.0);
+      feffnew->update(1.0, *fimodexp, 1.0);
     }
 
     //-------------------------------------------------------- FOURTH LINE
@@ -1165,7 +1165,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     {
       gexp = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
       Core::LinAlg::export_to(*gact, *gexp);
-      feffnew->Update(-1.0, *gexp, 1.0);
+      feffnew->update(-1.0, *gexp, 1.0);
     }
 
     //--------------------------------------------------------- FIFTH LINE
@@ -1175,7 +1175,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     {
       fstmodexp = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
       Core::LinAlg::export_to(*fstmod, *fstmodexp);
-      feffnew->Update(1.0, *fstmodexp, +1.0);
+      feffnew->update(1.0, *fstmodexp, +1.0);
     }
 
     // add terms of linearization feffnew
@@ -1183,7 +1183,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     {
       Core::LinAlg::Vector<double> linstickRHSexp(*problem_dofs());
       Core::LinAlg::export_to(*linstickRHS_, linstickRHSexp);
-      feffnew->Update(-1.0, linstickRHSexp, 1.0);
+      feffnew->update(-1.0, linstickRHSexp, 1.0);
     }
 
     //--------------------------------------------------------- SIXTH LINE
@@ -1198,14 +1198,14 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     {
       fslmodexp = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
       Core::LinAlg::export_to(*fslmod, *fslmodexp);
-      feffnew->Update(1.0, *fslmodexp, 1.0);
+      feffnew->update(1.0, *fslmodexp, 1.0);
     }
 
     if (slipset)
     {
       Core::LinAlg::Vector<double> linslipRHSexp(*problem_dofs());
       Core::LinAlg::export_to(*linslipRHS_, linslipRHSexp);
-      feffnew->Update(-1.0, linslipRHSexp, 1.0);
+      feffnew->update(-1.0, linslipRHSexp, 1.0);
     }
 
     // finally do the replacement
@@ -1259,13 +1259,13 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
       if (dmatrix_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*z_, zexp);
       dmatrix_->multiply(true, zexp, tempvecd);
       Core::LinAlg::export_to(tempvecd, fsexp);
-      feff->Update(-(1.0 - alphaf_), fsexp, 1.0);
+      feff->update(-(1.0 - alphaf_), fsexp, 1.0);
 
       Core::LinAlg::Vector<double> fmexp(*problem_dofs());
       Core::LinAlg::Vector<double> tempvecm(mmatrix_->domain_map());
       mmatrix_->multiply(true, zexp, tempvecm);
       Core::LinAlg::export_to(tempvecm, fmexp);
-      feff->Update(1.0 - alphaf_, fmexp, 1.0);
+      feff->update(1.0 - alphaf_, fmexp, 1.0);
 
       // add old contact forces (t_n)
       Core::LinAlg::Vector<double> fsoldexp(*problem_dofs());
@@ -1274,13 +1274,13 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
       if (dold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, zoldexp);
       dold_->multiply(true, zoldexp, tempvecdold);
       Core::LinAlg::export_to(tempvecdold, fsoldexp);
-      feff->Update(-alphaf_, fsoldexp, 1.0);
+      feff->update(-alphaf_, fsoldexp, 1.0);
 
       Core::LinAlg::Vector<double> fmoldexp(*problem_dofs());
       Core::LinAlg::Vector<double> tempvecmold(mold_->domain_map());
       mold_->multiply(true, zoldexp, tempvecmold);
       Core::LinAlg::export_to(tempvecmold, fmoldexp);
-      feff->Update(alphaf_, fmoldexp, 1.0);
+      feff->update(alphaf_, fmoldexp, 1.0);
     }
     // if there is no self contact everything is ok
     else
@@ -1290,26 +1290,26 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
       dmatrix_->multiply(true, *z_, fs);
       Core::LinAlg::Vector<double> fsexp(*problem_dofs());
       Core::LinAlg::export_to(fs, fsexp);
-      feff->Update(-(1.0 - alphaf_), fsexp, 1.0);
+      feff->update(-(1.0 - alphaf_), fsexp, 1.0);
 
       Core::LinAlg::Vector<double> fm(*gmdofrowmap_);
       mmatrix_->multiply(true, *z_, fm);
       Core::LinAlg::Vector<double> fmexp(*problem_dofs());
       Core::LinAlg::export_to(fm, fmexp);
-      feff->Update(1.0 - alphaf_, fmexp, 1.0);
+      feff->update(1.0 - alphaf_, fmexp, 1.0);
 
       // add old contact forces (t_n)
       Core::LinAlg::Vector<double> fsold(*gsdofrowmap_);
       dold_->multiply(true, *zold_, fsold);
       Core::LinAlg::Vector<double> fsoldexp(*problem_dofs());
       Core::LinAlg::export_to(fsold, fsoldexp);
-      feff->Update(-alphaf_, fsoldexp, 1.0);
+      feff->update(-alphaf_, fsoldexp, 1.0);
 
       Core::LinAlg::Vector<double> fmold(*gmdofrowmap_);
       mold_->multiply(true, *zold_, fmold);
       Core::LinAlg::Vector<double> fmoldexp(*problem_dofs());
       Core::LinAlg::export_to(fmold, fmoldexp);
-      feff->Update(alphaf_, fmoldexp, 1.0);
+      feff->update(alphaf_, fmoldexp, 1.0);
     }
   }
 
@@ -1420,8 +1420,8 @@ void CONTACT::LagrangeStrategy::compute_contact_stresses()
     {
       Core::LinAlg::Vector<double> dummy(slave_dof_row_map(true));
       Core::LinAlg::export_to(*fLTLn_, dummy);
-      forcenormal_->Update(1.0, dummy, 1.0);
-      forcenormal.Update(1.0, dummy, 1.0);
+      forcenormal_->update(1.0, dummy, 1.0);
+      forcenormal.update(1.0, dummy, 1.0);
     }
 
     // add penalty force tangential
@@ -1429,8 +1429,8 @@ void CONTACT::LagrangeStrategy::compute_contact_stresses()
     {
       Core::LinAlg::Vector<double> dummy(slave_dof_row_map(true));
       Core::LinAlg::export_to(*fLTLt_, dummy);
-      forcetangential_->Update(1.0, dummy, 1.0);
-      forcetangential.Update(1.0, dummy, 1.0);
+      forcetangential_->update(1.0, dummy, 1.0);
+      forcetangential.update(1.0, dummy, 1.0);
     }
 
     // loop over all interfaces
@@ -1448,7 +1448,7 @@ void CONTACT::LagrangeStrategy::compute_contact_stresses()
 
         for (int dof = 0; dof < n_dim(); ++dof)
         {
-          locindex[dof] = (forcenormal.Map()).LID(cnode->dofs()[dof]);
+          locindex[dof] = (forcenormal.get_map()).LID(cnode->dofs()[dof]);
 
           if (cnode->mo_data().get_dscale() < 1e-8 and cnode->active())
           {
@@ -1465,17 +1465,17 @@ void CONTACT::LagrangeStrategy::compute_contact_stresses()
         }
       }
     }
-    stresstangential_->Update(1.0, forcetangential, 0.0);
-    stressnormal_->Update(1.0, forcenormal, 0.0);
+    stresstangential_->update(1.0, forcetangential, 0.0);
+    stressnormal_->update(1.0, forcenormal, 0.0);
 
     // temporary output:
     double tangforce = 0.0;
-    forcetangential_->Norm2(&tangforce);
+    forcetangential_->norm_2(&tangforce);
     if (Core::Communication::my_mpi_rank(get_comm()) == 0)
       std::cout << "tangential force = " << tangforce << std::endl;
 
     double normalforce = 0.0;
-    forcenormal_->Norm2(&normalforce);
+    forcenormal_->norm_2(&normalforce);
     if (Core::Communication::my_mpi_rank(get_comm()) == 0)
       std::cout << "normal force = " << normalforce << std::endl;
 
@@ -1701,7 +1701,7 @@ void CONTACT::LagrangeStrategy::add_master_contributions(Core::LinAlg::SparseOpe
     Core::LinAlg::Vector<double>& feff, bool add_time_integration)
 {
   // create new contact force vector for LTL contact
-  std::shared_ptr<Epetra_FEVector> fc = std::make_shared<Epetra_FEVector>(feff.Map());
+  std::shared_ptr<Epetra_FEVector> fc = std::make_shared<Epetra_FEVector>(feff.get_map());
 
   // create new contact stiffness matric for LTL contact
   std::shared_ptr<Core::LinAlg::SparseMatrix> kc = std::make_shared<Core::LinAlg::SparseMatrix>(
@@ -1724,18 +1724,18 @@ void CONTACT::LagrangeStrategy::add_master_contributions(Core::LinAlg::SparseOpe
 
   // store fLTL values for time integration
   fLTL_ = std::make_shared<Core::LinAlg::Vector<double>>(fc->Map());
-  if (fLTL_->Update(1.0, *fc, 0.0)) FOUR_C_THROW("Update went wrong");
+  if (fLTL_->update(1.0, *fc, 0.0)) FOUR_C_THROW("Update went wrong");
 
   if (add_time_integration)
     if (fLTLOld_ != nullptr)
-      if (feff.Update(alphaf_, *fLTLOld_, 1.)) FOUR_C_THROW("Update went wrong");
+      if (feff.update(alphaf_, *fLTLOld_, 1.)) FOUR_C_THROW("Update went wrong");
 
   double fac = 0.;
   if (add_time_integration)
     fac = 1. - alphaf_;
   else
     fac = 1.;
-  if (feff.Update(fac, *fc, 1.)) FOUR_C_THROW("Update went wrong");
+  if (feff.update(fac, *fc, 1.)) FOUR_C_THROW("Update went wrong");
 
   // stiffness
   dynamic_cast<Epetra_FECrsMatrix&>(*kc->epetra_matrix()).GlobalAssemble(true, Add);
@@ -1755,9 +1755,9 @@ void CONTACT::LagrangeStrategy::add_line_to_lin_contributions(Core::LinAlg::Spar
     std::shared_ptr<Core::LinAlg::Vector<double>>& feff, bool add_time_integration)
 {
   // create new contact force vector for LTL contact
-  std::shared_ptr<Epetra_FEVector> fc = std::make_shared<Epetra_FEVector>(feff->Map());
+  std::shared_ptr<Epetra_FEVector> fc = std::make_shared<Epetra_FEVector>(feff->get_map());
 
-  fconservation_ = std::make_shared<Core::LinAlg::Vector<double>>(feff->Map());
+  fconservation_ = std::make_shared<Core::LinAlg::Vector<double>>(feff->get_map());
 
   // create new contact stiffness matric for LTL contact
   std::shared_ptr<Core::LinAlg::SparseMatrix> kc = std::make_shared<Core::LinAlg::SparseMatrix>(
@@ -1772,25 +1772,25 @@ void CONTACT::LagrangeStrategy::add_line_to_lin_contributions(Core::LinAlg::Spar
   }
 
   // get info for conservation check
-  fconservation_->Update(1.0, *fc, 0.0);
+  fconservation_->update(1.0, *fc, 0.0);
 
   // force
   if (fc->GlobalAssemble(Add, false) != 0) FOUR_C_THROW("GlobalAssemble failed");
 
   // store fLTL values for time integration
   fLTL_ = std::make_shared<Core::LinAlg::Vector<double>>(fc->Map());
-  if (fLTL_->Update(1.0, *fc, 0.0)) FOUR_C_THROW("Update went wrong");
+  if (fLTL_->update(1.0, *fc, 0.0)) FOUR_C_THROW("Update went wrong");
 
   if (add_time_integration)
     if (fLTLOld_ != nullptr)
-      if (feff->Update(alphaf_, *fLTLOld_, 1.)) FOUR_C_THROW("Update went wrong");
+      if (feff->update(alphaf_, *fLTLOld_, 1.)) FOUR_C_THROW("Update went wrong");
 
   double fac = 0.;
   if (add_time_integration)
     fac = 1. - alphaf_;
   else
     fac = 1.;
-  if (feff->Update(fac, *fc, 1.)) FOUR_C_THROW("Update went wrong");
+  if (feff->update(fac, *fc, 1.)) FOUR_C_THROW("Update went wrong");
 
   // stiffness
   dynamic_cast<Epetra_FECrsMatrix&>(*kc->epetra_matrix()).GlobalAssemble(true, Add);
@@ -1810,9 +1810,9 @@ void CONTACT::LagrangeStrategy::add_line_to_lin_contributions_friction(
     bool add_time_integration)
 {
   // create new contact force vector for LTL contact
-  std::shared_ptr<Epetra_FEVector> fc = std::make_shared<Epetra_FEVector>(feff->Map());
+  std::shared_ptr<Epetra_FEVector> fc = std::make_shared<Epetra_FEVector>(feff->get_map());
 
-  fconservation_ = std::make_shared<Core::LinAlg::Vector<double>>(feff->Map());
+  fconservation_ = std::make_shared<Core::LinAlg::Vector<double>>(feff->get_map());
 
   // create new contact stiffness matric for LTL contact
   std::shared_ptr<Core::LinAlg::SparseMatrix> kc = std::make_shared<Core::LinAlg::SparseMatrix>(
@@ -1828,7 +1828,7 @@ void CONTACT::LagrangeStrategy::add_line_to_lin_contributions_friction(
 
   // store normal forces
   fLTLn_ = std::make_shared<Core::LinAlg::Vector<double>>(fc->Map());
-  if (fLTLn_->Update(1.0, *fc, 0.0)) FOUR_C_THROW("Update went wrong");
+  if (fLTLn_->update(1.0, *fc, 0.0)) FOUR_C_THROW("Update went wrong");
 
   // loop over interface and assemble force and stiffness
   for (int i = 0; i < (int)interface_.size(); ++i)
@@ -1838,30 +1838,30 @@ void CONTACT::LagrangeStrategy::add_line_to_lin_contributions_friction(
   }
 
   // get info for conservation check
-  fconservation_->Update(1.0, *fc, 0.0);
+  fconservation_->update(1.0, *fc, 0.0);
 
   // store tangential forces
   fLTLt_ = std::make_shared<Core::LinAlg::Vector<double>>(fc->Map());
-  if (fLTLt_->Update(1.0, *fc, 0.0)) FOUR_C_THROW("Update went wrong");
-  if (fLTLt_->Update(-1.0, *fLTLn_, 1.0)) FOUR_C_THROW("Update went wrong");
+  if (fLTLt_->update(1.0, *fc, 0.0)) FOUR_C_THROW("Update went wrong");
+  if (fLTLt_->update(-1.0, *fLTLn_, 1.0)) FOUR_C_THROW("Update went wrong");
 
   // force
   if (fc->GlobalAssemble(Add, false) != 0) FOUR_C_THROW("GlobalAssemble failed");
 
   // store fLTL values for time integration
   fLTL_ = std::make_shared<Core::LinAlg::Vector<double>>(fc->Map());
-  if (fLTL_->Update(1.0, *fc, 0.0)) FOUR_C_THROW("Update went wrong");
+  if (fLTL_->update(1.0, *fc, 0.0)) FOUR_C_THROW("Update went wrong");
 
   if (add_time_integration)
     if (fLTLOld_ != nullptr)
-      if (feff->Update(alphaf_, *fLTLOld_, 1.)) FOUR_C_THROW("Update went wrong");
+      if (feff->update(alphaf_, *fLTLOld_, 1.)) FOUR_C_THROW("Update went wrong");
 
   double fac = 0.;
   if (add_time_integration)
     fac = 1. - alphaf_;
   else
     fac = 1.;
-  if (feff->Update(fac, *fc, 1.)) FOUR_C_THROW("Update went wrong");
+  if (feff->update(fac, *fc, 1.)) FOUR_C_THROW("Update went wrong");
 
   // stiffness
   dynamic_cast<Epetra_FECrsMatrix&>(*kc->epetra_matrix()).GlobalAssemble(true, Add);
@@ -1920,7 +1920,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
   if (constr_direction_ == Inpar::CONTACT::constr_xyz)
   {
     gact = Core::LinAlg::create_vector(*gactivedofs_, true);
-    if (gact->GlobalLength())
+    if (gact->global_length())
     {
       Core::LinAlg::export_to(*wgap_, *gact);
     }
@@ -1928,10 +1928,10 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
   else
   {
     gact = Core::LinAlg::create_vector(*gactivenodes_, true);
-    if (gact->GlobalLength())
+    if (gact->global_length())
     {
       Core::LinAlg::export_to(*wgap_, *gact);
-      gact->ReplaceMap(*gactiven_);
+      gact->replace_map(*gactiven_);
     }
   }
   /**********************************************************************/
@@ -2092,19 +2092,19 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
       invdS.extract_diagonal_copy(*diagS);
 
       // set zero diagonal values to dummy 1.0
-      for (int i = 0; i < diagV->MyLength(); ++i)
+      for (int i = 0; i < diagV->local_length(); ++i)
         if (abs((*diagV)[i]) < 1e-12) (*diagV)[i] = 1.0;
-      for (int i = 0; i < diagE->MyLength(); ++i)
+      for (int i = 0; i < diagE->local_length(); ++i)
         if (abs((*diagE)[i]) < 1e-12) (*diagE)[i] = 1.0;
-      for (int i = 0; i < diagS->MyLength(); ++i)
+      for (int i = 0; i < diagS->local_length(); ++i)
         if (abs((*diagS)[i]) < 1e-12) (*diagS)[i] = 1.0;
 
       // scalar inversion of diagonal values
-      err = diagV->Reciprocal(*diagV);
+      err = diagV->reciprocal(*diagV);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
-      err = diagE->Reciprocal(*diagE);
+      err = diagE->reciprocal(*diagE);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
-      err = diagS->Reciprocal(*diagS);
+      err = diagS->reciprocal(*diagS);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
 
       // re-insert inverted diagonal into invd
@@ -2173,11 +2173,11 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
       invd->extract_diagonal_copy(*diag);
 
       // set zero diagonal values to dummy 1.0
-      for (int i = 0; i < diag->MyLength(); ++i)
+      for (int i = 0; i < diag->local_length(); ++i)
         if ((*diag)[i] == 0.0) (*diag)[i] = 1.0;
 
       // scalar inversion of diagonal values
-      err = diag->Reciprocal(*diag);
+      err = diag->reciprocal(*diag);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
 
       std::shared_ptr<Core::LinAlg::Vector<double>> lmDBC =
@@ -2185,8 +2185,8 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
       Core::LinAlg::export_to(*non_redist_gsdirichtoggle_, *lmDBC);
       std::shared_ptr<Core::LinAlg::Vector<double>> tmp =
           Core::LinAlg::create_vector(*gsdofrowmap_, true);
-      tmp->Multiply(1., *diag, *lmDBC, 0.);
-      diag->Update(-1., *tmp, 1.);
+      tmp->multiply(1., *diag, *lmDBC, 0.);
+      diag->update(-1., *tmp, 1.);
 
       // re-insert inverted diagonal into invd
       err = invd->replace_diagonal_values(*diag);
@@ -2584,14 +2584,14 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
       if (mold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, zoldexp);
       mold_->multiply(true, zoldexp, tempvecm2);
       if (mset) Core::LinAlg::export_to(tempvecm2, tempvecm);
-      fm->Update(alphaf_, tempvecm, 1.0);
+      fm->update(alphaf_, tempvecm, 1.0);
     }
     // if there is no self contact everything is ok
     else
     {
       Core::LinAlg::Vector<double> tempvecm(*gmdofrowmap_);
       mold_->multiply(true, *zold_, tempvecm);
-      fm->Update(alphaf_, tempvecm, 1.0);
+      fm->update(alphaf_, tempvecm, 1.0);
     }
 
     // fs: prepare alphaf * old contact forces (t_n)
@@ -2618,13 +2618,13 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
     {
       Core::LinAlg::Vector<double> faadd(*gactivedofs_);
       Core::LinAlg::export_to(fsadd, faadd);
-      fa->Update(-alphaf_, faadd, 1.0);
+      fa->update(-alphaf_, faadd, 1.0);
     }
 
     // fm: add T(mhat)*fa
     Core::LinAlg::Vector<double> fmmod(*gmdofrowmap_);
     if (aset) mhataam->multiply(true, *fa, fmmod);
-    fmmod.Update(1.0, *fm, 1.0);
+    fmmod.update(1.0, *fm, 1.0);
 
     //----------------------------------------------------------- THIRD LINE
     // fi: subtract alphaf * old contact forces (t_n)
@@ -2632,13 +2632,13 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
     {
       Core::LinAlg::Vector<double> fiadd(*gidofs);
       Core::LinAlg::export_to(fsadd, fiadd);
-      fi->Update(-alphaf_, fiadd, 1.0);
+      fi->update(-alphaf_, fiadd, 1.0);
     }
 
     // fi: add T(dhat)*fa
     Core::LinAlg::Vector<double> fimod(*gidofs);
     if (iset && aset) dhat->multiply(true, *fa, fimod);
-    fimod.Update(1.0, *fi, -1.0);
+    fimod.update(1.0, *fi, -1.0);
 
     //---------------------------------------------------------- FOURTH LINE
     // gactive: nothing to do
@@ -2754,13 +2754,13 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
     // add n subvector to feffnew
     Core::LinAlg::Vector<double> fnexp(*problem_dofs());
     Core::LinAlg::export_to(*fn, fnexp);
-    feffnew->Update(1.0, fnexp, 1.0);
+    feffnew->update(1.0, fnexp, 1.0);
 
     //---------------------------------------------------------- SECOND LINE
     // add m subvector to feffnew
     Core::LinAlg::Vector<double> fmmodexp(*problem_dofs());
     Core::LinAlg::export_to(fmmod, fmmodexp);
-    feffnew->Update(1.0, fmmodexp, 1.0);
+    feffnew->update(1.0, fmmodexp, 1.0);
 
     //----------------------------------------------------------- THIRD LINE
     // add i subvector to feffnew
@@ -2769,7 +2769,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
     {
       fimodexp = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
       Core::LinAlg::export_to(fimod, *fimodexp);
-      feffnew->Update(1.0, *fimodexp, 1.0);
+      feffnew->update(1.0, *fimodexp, 1.0);
     }
 
     //---------------------------------------------------------- FOURTH LINE
@@ -2779,7 +2779,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
     {
       gexp = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
       Core::LinAlg::export_to(*gact, *gexp);
-      feffnew->Update(-1.0, *gexp, 1.0);
+      feffnew->update(-1.0, *gexp, 1.0);
     }
 
     //----------------------------------------------------------- FIFTH LINE
@@ -2789,7 +2789,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
     {
       famodexp = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
       Core::LinAlg::export_to(*famod, *famodexp);
-      feffnew->Update(1.0, *famodexp, 1.0);
+      feffnew->update(1.0, *famodexp, 1.0);
     }
 
     // finally do the replacement
@@ -2865,13 +2865,13 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
       if (dmatrix_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*z_, zexp);
       dmatrix_->multiply(true, zexp, tempvecd);
       Core::LinAlg::export_to(tempvecd, fsexp);
-      feff->Update(-(1.0 - alphaf_), fsexp, 1.0);
+      feff->update(-(1.0 - alphaf_), fsexp, 1.0);
 
       Core::LinAlg::Vector<double> fmexp(*problem_dofs());
       Core::LinAlg::Vector<double> tempvecm(mmatrix_->domain_map());
       mmatrix_->multiply(true, zexp, tempvecm);
       Core::LinAlg::export_to(tempvecm, fmexp);
-      feff->Update(1.0 - alphaf_, fmexp, 1.0);
+      feff->update(1.0 - alphaf_, fmexp, 1.0);
 
       // add old contact forces (t_n)
       Core::LinAlg::Vector<double> fsoldexp(*problem_dofs());
@@ -2880,13 +2880,13 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
       if (dold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, zoldexp);
       dold_->multiply(true, zoldexp, tempvecdold);
       Core::LinAlg::export_to(tempvecdold, fsoldexp);
-      feff->Update(-alphaf_, fsoldexp, 1.0);
+      feff->update(-alphaf_, fsoldexp, 1.0);
 
       Core::LinAlg::Vector<double> fmoldexp(*problem_dofs());
       Core::LinAlg::Vector<double> tempvecmold(mold_->domain_map());
       mold_->multiply(true, zoldexp, tempvecmold);
       Core::LinAlg::export_to(tempvecmold, fmoldexp);
-      feff->Update(alphaf_, fmoldexp, 1.0);
+      feff->update(alphaf_, fmoldexp, 1.0);
     }
     // if there is no self contact everything is ok
     else
@@ -2896,26 +2896,26 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
       dmatrix_->multiply(true, *z_, fs);
       Core::LinAlg::Vector<double> fsexp(*problem_dofs());
       Core::LinAlg::export_to(fs, fsexp);
-      feff->Update(-(1.0 - alphaf_), fsexp, 1.0);
+      feff->update(-(1.0 - alphaf_), fsexp, 1.0);
 
       Core::LinAlg::Vector<double> fm(*gmdofrowmap_);
       mmatrix_->multiply(true, *z_, fm);
       Core::LinAlg::Vector<double> fmexp(*problem_dofs());
       Core::LinAlg::export_to(fm, fmexp);
-      feff->Update(1.0 - alphaf_, fmexp, 1.0);
+      feff->update(1.0 - alphaf_, fmexp, 1.0);
 
       // add old contact forces (t_n)
       Core::LinAlg::Vector<double> fsold(*gsdofrowmap_);
       dold_->multiply(true, *zold_, fsold);
       Core::LinAlg::Vector<double> fsoldexp(*problem_dofs());
       Core::LinAlg::export_to(fsold, fsoldexp);
-      feff->Update(-alphaf_, fsoldexp, 1.0);
+      feff->update(-alphaf_, fsoldexp, 1.0);
 
       Core::LinAlg::Vector<double> fmold(*gmdofrowmap_);
       mold_->multiply(true, *zold_, fmold);
       Core::LinAlg::Vector<double> fmoldexp(*problem_dofs());
       Core::LinAlg::export_to(fmold, fmoldexp);
-      feff->Update(alphaf_, fmoldexp, 1.0);
+      feff->update(alphaf_, fmoldexp, 1.0);
     }
   }
 
@@ -2965,7 +2965,7 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
   // conditions on different matrix blocks separately.
   Core::LinAlg::Vector<double> dirichtoggle(*(dbcmaps->full_map()));
   Core::LinAlg::Vector<double> temp(*(dbcmaps->cond_map()));
-  temp.PutScalar(1.0);
+  temp.put_scalar(1.0);
   Core::LinAlg::export_to(temp, dirichtoggle);
 
   // Initialize constraint matrices
@@ -3008,7 +3008,7 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
     // build unity matrix for inactive dofs
     std::shared_ptr<Epetra_Map> gidofs = Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
     Core::LinAlg::Vector<double> ones(*gidofs);
-    ones.PutScalar(1.0);
+    ones.put_scalar(1.0);
     Core::LinAlg::SparseMatrix onesdiag(ones);
     onesdiag.complete();
 
@@ -3046,7 +3046,7 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
     // build unity matrix for inactive dofs
     std::shared_ptr<Epetra_Map> gidofs = Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
     Core::LinAlg::Vector<double> ones(*gidofs);
-    ones.PutScalar(1.0);
+    ones.put_scalar(1.0);
     Core::LinAlg::SparseMatrix onesdiag(ones);
     onesdiag.complete();
 
@@ -3130,13 +3130,13 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
       Core::LinAlg::export_to(dirichtoggle, *lmDBC);
 
       if (parallel_redistribution_status())
-        lmDBC->ReplaceMap(*non_redist_glmdofrowmap_);
+        lmDBC->replace_map(*non_redist_glmdofrowmap_);
       else
-        lmDBC->ReplaceMap(*glmdofrowmap_);
+        lmDBC->replace_map(*glmdofrowmap_);
 
       Core::LinAlg::Vector<double> lmDBCexp(*mergedmap);
       Core::LinAlg::export_to(*lmDBC, lmDBCexp);
-      if (dirichtoggleexp.Update(1., lmDBCexp, 1.)) FOUR_C_THROW("Update failed.");
+      if (dirichtoggleexp.update(1., lmDBCexp, 1.)) FOUR_C_THROW("Update failed.");
       trkzd->apply_dirichlet(*lmDBC, false);
 
       trkzz->complete();
@@ -3184,10 +3184,10 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
     // we also need merged rhs here
     Core::LinAlg::Vector<double> fresmexp(*mergedmap);
     Core::LinAlg::export_to(*fd, fresmexp);
-    mergedrhs->Update(1.0, fresmexp, 1.0);
+    mergedrhs->update(1.0, fresmexp, 1.0);
     Core::LinAlg::Vector<double> constrexp(*mergedmap);
     Core::LinAlg::export_to(*constrrhs_, constrexp);
-    mergedrhs->Update(1.0, constrexp, 1.0);
+    mergedrhs->update(1.0, constrexp, 1.0);
 
     // apply Dirichlet B.C. to mergedrhs and mergedsol
     Core::LinAlg::apply_dirichlet_to_system(*mergedsol, *mergedrhs, *mergedzeros, dirichtoggleexp);
@@ -3218,7 +3218,7 @@ void CONTACT::LagrangeStrategy::update_displacements_and_l_mincrements(
 
     sollm = std::make_shared<Core::LinAlg::Vector<double>>(*glmdofrowmap_);
     Core::LinAlg::export_to(sollmOrig, *sollm);
-    sollm->ReplaceMap(*gsdofrowmap_);
+    sollm->replace_map(*gsdofrowmap_);
   }
   else
   {
@@ -3228,7 +3228,7 @@ void CONTACT::LagrangeStrategy::update_displacements_and_l_mincrements(
     Core::LinAlg::MapExtractor mapext(*mergedmap, problem_dofs(), glmdofrowmap_);
     mapext.extract_cond_vector(*blocksol, *sold);
     mapext.extract_other_vector(*blocksol, *sollm);
-    sollm->ReplaceMap(*gsdofrowmap_);
+    sollm->replace_map(*gsdofrowmap_);
   }
 
   /* For self contact, slave and master sets may have changed, thus we have to reinitialize the LM
@@ -3239,13 +3239,13 @@ void CONTACT::LagrangeStrategy::update_displacements_and_l_mincrements(
     zincr_ = std::make_shared<Core::LinAlg::Vector<double>>(*sollm);
     Core::LinAlg::export_to(*z_, *zincr_);  // change the map of z_
     z_ = std::make_shared<Core::LinAlg::Vector<double>>(*zincr_);
-    zincr_->Update(1.0, *sollm, 0.0);  // save sollm in zincr_
-    z_->Update(1.0, *zincr_, 1.0);     // update z_
+    zincr_->update(1.0, *sollm, 0.0);  // save sollm in zincr_
+    z_->update(1.0, *zincr_, 1.0);     // update z_
   }
   else
   {
-    zincr_->Update(1.0, *sollm, 0.0);
-    z_->Update(1.0, *zincr_, 1.0);
+    zincr_->update(1.0, *sollm, 0.0);
+    z_->update(1.0, *zincr_, 1.0);
   }
 
   return;
@@ -3280,7 +3280,7 @@ void CONTACT::LagrangeStrategy::evaluate_constr_rhs()
   if (constr_direction_ == Inpar::CONTACT::constr_xyz)
   {
     gact = Core::LinAlg::create_vector(*gactivedofs_, true);
-    if (gact->GlobalLength())
+    if (gact->global_length())
     {
       Core::LinAlg::export_to(*wgap_, *gact);
     }
@@ -3291,21 +3291,21 @@ void CONTACT::LagrangeStrategy::evaluate_constr_rhs()
     if (gactiven_->NumGlobalElements())
     {
       Core::LinAlg::export_to(*wgap_, *gact);
-      gact->ReplaceMap(*gactiven_);
+      gact->replace_map(*gactiven_);
     }
   }
 
   Core::LinAlg::Vector<double> gact_exp(*gsdofrowmap_);
   Core::LinAlg::export_to(*gact, gact_exp);
 
-  constrrhs->Update(-1.0, gact_exp, 1.0);
+  constrrhs->update(-1.0, gact_exp, 1.0);
 
   // export inactive rhs
   Core::LinAlg::Vector<double> inactiverhsexp(*gsdofrowmap_);
   Core::LinAlg::export_to(*inactiverhs_, inactiverhsexp);
 
   // build constraint rhs (1)
-  constrrhs->Update(1.0, inactiverhsexp, 1.0);
+  constrrhs->update(1.0, inactiverhsexp, 1.0);
 
   // *** CASE 1: FRICTIONLESS CONTACT *******************************************************
   if (!friction_)
@@ -3315,7 +3315,7 @@ void CONTACT::LagrangeStrategy::evaluate_constr_rhs()
     Core::LinAlg::export_to(*tangrhs_, tangrhs_exp);
 
     // build constraint rhs (2)
-    constrrhs->Update(1.0, tangrhs_exp, 1.0);
+    constrrhs->update(1.0, tangrhs_exp, 1.0);
   }
   // *** CASE 2: FRICTIONAL CONTACT *******************************************************
   else
@@ -3327,11 +3327,11 @@ void CONTACT::LagrangeStrategy::evaluate_constr_rhs()
     Core::LinAlg::export_to(*linslipRHS_, slipexp);
 
     // build constraint rhs
-    constrrhs->Update(1.0, stickexp, 1.0);
-    constrrhs->Update(1.0, slipexp, 1.0);
+    constrrhs->update(1.0, stickexp, 1.0);
+    constrrhs->update(1.0, slipexp, 1.0);
   }
 
-  constrrhs->ReplaceMap(*glmdofrowmap_);
+  constrrhs->replace_map(*glmdofrowmap_);
 
   // export and set constraint rhs vector
   if (parallel_redistribution_status())
@@ -3389,7 +3389,7 @@ void CONTACT::LagrangeStrategy::evaluate_force(CONTACT::ParamsInterface& cparams
     evaluate_constr_rhs();   // evaluate the constraint rhs (saddle-point system only)
 
     if (constrrhs_ != nullptr)
-      constrrhs_->Scale(-1.0);  // scale with -1.0 --> when old structure is deleted change this!!!
+      constrrhs_->scale(-1.0);  // scale with -1.0 --> when old structure is deleted change this!!!
   }
   else
     eval_str_contact_rhs();
@@ -3447,7 +3447,7 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms()
     }
 
     nonsmooth_Penalty_stiff_->complete();
-    nonsmooth_Penalty_force_->Scale(-1.);
+    nonsmooth_Penalty_force_->scale(-1.);
   }
 
   // check if contact contributions are present,
@@ -3586,19 +3586,19 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_friction()
       invdS.extract_diagonal_copy(*diagS);
 
       // set zero diagonal values to dummy 1.0
-      for (int i = 0; i < diagV->MyLength(); ++i)
+      for (int i = 0; i < diagV->local_length(); ++i)
         if (abs((*diagV)[i]) < 1e-12) (*diagV)[i] = 1.0;
-      for (int i = 0; i < diagE->MyLength(); ++i)
+      for (int i = 0; i < diagE->local_length(); ++i)
         if (abs((*diagE)[i]) < 1e-12) (*diagE)[i] = 1.0;
-      for (int i = 0; i < diagS->MyLength(); ++i)
+      for (int i = 0; i < diagS->local_length(); ++i)
         if (abs((*diagS)[i]) < 1e-12) (*diagS)[i] = 1.0;
 
       // scalar inversion of diagonal values
-      err = diagV->Reciprocal(*diagV);
+      err = diagV->reciprocal(*diagV);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
-      err = diagE->Reciprocal(*diagE);
+      err = diagE->reciprocal(*diagE);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
-      err = diagS->Reciprocal(*diagS);
+      err = diagS->reciprocal(*diagS);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
 
       // re-insert inverted diagonal into invd
@@ -3668,11 +3668,11 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_friction()
       invd->extract_diagonal_copy(*diag);
 
       // set zero diagonal values to dummy 1.0
-      for (int i = 0; i < diag->MyLength(); ++i)
+      for (int i = 0; i < diag->local_length(); ++i)
         if ((*diag)[i] == 0.0) (*diag)[i] = 1.0;
 
       // scalar inversion of diagonal values
-      err = diag->Reciprocal(*diag);
+      err = diag->reciprocal(*diag);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
 
       std::shared_ptr<Core::LinAlg::Vector<double>> lmDBC =
@@ -3680,8 +3680,8 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_friction()
       Core::LinAlg::export_to(*non_redist_gsdirichtoggle_, *lmDBC);
       std::shared_ptr<Core::LinAlg::Vector<double>> tmp =
           Core::LinAlg::create_vector(*gsdofrowmap_, true);
-      tmp->Multiply(1., *diag, *lmDBC, 0.);
-      diag->Update(-1., *tmp, 1.);
+      tmp->multiply(1., *diag, *lmDBC, 0.);
+      diag->update(-1., *tmp, 1.);
 
       // re-insert inverted diagonal into invd
       err = invd->replace_diagonal_values(*diag);
@@ -3848,19 +3848,19 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_frictionless()
       invdS.extract_diagonal_copy(*diagS);
 
       // set zero diagonal values to dummy 1.0
-      for (int i = 0; i < diagV->MyLength(); ++i)
+      for (int i = 0; i < diagV->local_length(); ++i)
         if (abs((*diagV)[i]) < 1e-12) (*diagV)[i] = 1.0;
-      for (int i = 0; i < diagE->MyLength(); ++i)
+      for (int i = 0; i < diagE->local_length(); ++i)
         if (abs((*diagE)[i]) < 1e-12) (*diagE)[i] = 1.0;
-      for (int i = 0; i < diagS->MyLength(); ++i)
+      for (int i = 0; i < diagS->local_length(); ++i)
         if (abs((*diagS)[i]) < 1e-12) (*diagS)[i] = 1.0;
 
       // scalar inversion of diagonal values
-      err = diagV->Reciprocal(*diagV);
+      err = diagV->reciprocal(*diagV);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
-      err = diagE->Reciprocal(*diagE);
+      err = diagE->reciprocal(*diagE);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
-      err = diagS->Reciprocal(*diagS);
+      err = diagS->reciprocal(*diagS);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
 
       // re-insert inverted diagonal into invd
@@ -3929,11 +3929,11 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_frictionless()
       invd->extract_diagonal_copy(*diag);
 
       // set zero diagonal values to dummy 1.0
-      for (int i = 0; i < diag->MyLength(); ++i)
+      for (int i = 0; i < diag->local_length(); ++i)
         if ((*diag)[i] == 0.0) (*diag)[i] = 1.0;
 
       // scalar inversion of diagonal values
-      err = diag->Reciprocal(*diag);
+      err = diag->reciprocal(*diag);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
 
       std::shared_ptr<Core::LinAlg::Vector<double>> lmDBC =
@@ -3941,8 +3941,8 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_frictionless()
       Core::LinAlg::export_to(*non_redist_gsdirichtoggle_, *lmDBC);
       std::shared_ptr<Core::LinAlg::Vector<double>> tmp =
           Core::LinAlg::create_vector(*gsdofrowmap_, true);
-      tmp->Multiply(1., *diag, *lmDBC, 0.);
-      diag->Update(-1., *tmp, 1.);
+      tmp->multiply(1., *diag, *lmDBC, 0.);
+      diag->update(-1., *tmp, 1.);
 
       // re-insert inverted diagonal into invd
       err = invd->replace_diagonal_values(*diag);
@@ -4016,13 +4016,13 @@ void CONTACT::LagrangeStrategy::eval_str_contact_rhs()
     if (dmatrix_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*z_, zexp);
     dmatrix_->multiply(true, zexp, tempvecd);
     Core::LinAlg::export_to(tempvecd, fsexp);
-    strcontactrhs_->Update(1., fsexp, 1.0);
+    strcontactrhs_->update(1., fsexp, 1.0);
 
     Core::LinAlg::Vector<double> fmexp(*problem_dofs());
     Core::LinAlg::Vector<double> tempvecm(mmatrix_->domain_map());
     mmatrix_->multiply(true, zexp, tempvecm);
     Core::LinAlg::export_to(tempvecm, fmexp);
-    strcontactrhs_->Update(-1., fmexp, 1.0);
+    strcontactrhs_->update(-1., fmexp, 1.0);
   }
   // if there is no self contact everything is ok
   else
@@ -4032,13 +4032,13 @@ void CONTACT::LagrangeStrategy::eval_str_contact_rhs()
     dmatrix_->multiply(true, *z_, fs);
     Core::LinAlg::Vector<double> fsexp(*problem_dofs());
     Core::LinAlg::export_to(fs, fsexp);
-    strcontactrhs_->Update(+1., fsexp, 1.0);
+    strcontactrhs_->update(+1., fsexp, 1.0);
 
     Core::LinAlg::Vector<double> fm(*gmdofrowmap_);
     mmatrix_->multiply(true, *z_, fm);
     Core::LinAlg::Vector<double> fmexp(*problem_dofs());
     Core::LinAlg::export_to(fm, fmexp);
-    strcontactrhs_->Update(-1., fmexp, 1.0);
+    strcontactrhs_->update(-1., fmexp, 1.0);
   }
 }
 
@@ -4229,7 +4229,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> CONTACT::LagrangeStrategy::get_matri
         std::shared_ptr<Epetra_Map> unused_lmdofs =
             Core::LinAlg::split_map(global_self_contact_ref_map(), *gsdofrowmap_);
         Core::LinAlg::Vector<double> ones = Core::LinAlg::Vector<double>(*unused_lmdofs, false);
-        ones.PutScalar(1.0);
+        ones.put_scalar(1.0);
         if (Core::LinAlg::insert_my_row_diagonal_into_unfilled_matrix(*kzz_ptr, ones))
           FOUR_C_THROW("Unexpected error!");
       }
@@ -4242,7 +4242,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> CONTACT::LagrangeStrategy::get_matri
       // build unity matrix for inactive dofs
       std::shared_ptr<Epetra_Map> gidofs = Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
       Core::LinAlg::Vector<double> ones(*gidofs);
-      ones.PutScalar(1.0);
+      ones.put_scalar(1.0);
       Core::LinAlg::SparseMatrix onesdiag(ones);
       onesdiag.complete();
 
@@ -4310,8 +4310,8 @@ void CONTACT::LagrangeStrategy::run_post_compute_x(const CONTACT::ParamsInterfac
       // store the SCALED Lagrange multiplier increment in the contact
       // strategy
       // ---------------------------------------------------------------------
-      zdir_ptr.ReplaceMap(zincr_->Map());
-      zincr_->Scale(stepLength, zdir_ptr);
+      zdir_ptr.replace_map(zincr_->get_map());
+      zincr_->scale(stepLength, zdir_ptr);
     }
   }
 }
@@ -4347,7 +4347,7 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> CONTACT::LagrangeStrategy::g
       if (vec_ptr == nullptr)
         vec_ptr = strcontactrhs_;
       else if (strcontactrhs_ != nullptr)
-        vec_ptr->Update(1., *strcontactrhs_, 1.);
+        vec_ptr->update(1., *strcontactrhs_, 1.);
 
       std::shared_ptr<Core::LinAlg::Vector<double>> tmp =
           std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
@@ -4367,7 +4367,7 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> CONTACT::LagrangeStrategy::g
       {
         static std::shared_ptr<Core::LinAlg::Vector<double>> tmp_ptr =
             std::make_shared<Core::LinAlg::Vector<double>>(lin_system_lm_dof_row_map(), false);
-        tmp_ptr->PutScalar(0.0);
+        tmp_ptr->put_scalar(0.0);
         Core::LinAlg::export_to(*vec_ptr, *tmp_ptr);
         vec_ptr = tmp_ptr;
       }
@@ -4398,9 +4398,9 @@ void CONTACT::LagrangeStrategy::reset_lagrange_multipliers(
     // ---------------------------------------------------------------------
     // Update the current lagrange multiplier
     // ---------------------------------------------------------------------
-    znew_ptr.ReplaceMap(z_->Map());
+    znew_ptr.replace_map(z_->get_map());
 
-    z_->Scale(1.0, znew_ptr);
+    z_->scale(1.0, znew_ptr);
 
     // ---------------------------------------------------------------------
     // store the new Lagrange multiplier in the nodes
@@ -4496,24 +4496,24 @@ void CONTACT::LagrangeStrategy::recover(std::shared_ptr<Core::LinAlg::Vector<dou
 
       // full update
       z_ = std::make_shared<Core::LinAlg::Vector<double>>(*gsdofrowmap_);
-      z_->Update(1.0, *fs_, 0.0);
+      z_->update(1.0, *fs_, 0.0);
       Core::LinAlg::Vector<double> mod(*gsdofrowmap_);
       kss_->multiply(false, disis, mod);
-      z_->Update(-1.0, mod, 1.0);
+      z_->update(-1.0, mod, 1.0);
       ksm_->multiply(false, disim, mod);
-      z_->Update(-1.0, mod, 1.0);
+      z_->update(-1.0, mod, 1.0);
       ksn_->multiply(false, disin, mod);
-      z_->Update(-1.0, mod, 1.0);
+      z_->update(-1.0, mod, 1.0);
       Core::LinAlg::Vector<double> mod2((dold_->row_map()));
       if (dold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, mod2);
       Core::LinAlg::Vector<double> mod3((dold_->row_map()));
       dold_->multiply(true, mod2, mod3);
       Core::LinAlg::Vector<double> mod4(*gsdofrowmap_);
       if (gsdofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(mod3, mod4);
-      z_->Update(-alphaf_, mod4, 1.0);
+      z_->update(-alphaf_, mod4, 1.0);
       Core::LinAlg::Vector<double> zcopy(*z_);
       invdmod.multiply(true, zcopy, *z_);
-      z_->Scale(1 / (1 - alphaf_));
+      z_->scale(1 / (1 - alphaf_));
     }
     else
     {
@@ -4521,19 +4521,19 @@ void CONTACT::LagrangeStrategy::recover(std::shared_ptr<Core::LinAlg::Vector<dou
       // invdmod->Multiply(false,*fs_,*z_);
 
       // full update
-      z_->Update(1.0, *fs_, 0.0);
+      z_->update(1.0, *fs_, 0.0);
       Core::LinAlg::Vector<double> mod(*gsdofrowmap_);
       kss_->multiply(false, disis, mod);
-      z_->Update(-1.0, mod, 1.0);
+      z_->update(-1.0, mod, 1.0);
       ksm_->multiply(false, disim, mod);
-      z_->Update(-1.0, mod, 1.0);
+      z_->update(-1.0, mod, 1.0);
       ksn_->multiply(false, disin, mod);
-      z_->Update(-1.0, mod, 1.0);
+      z_->update(-1.0, mod, 1.0);
       dold_->multiply(true, *zold_, mod);
-      z_->Update(-alphaf_, mod, 1.0);
+      z_->update(-alphaf_, mod, 1.0);
       Core::LinAlg::Vector<double> zcopy(*z_);
       invdmod.multiply(true, zcopy, *z_);
-      z_->Scale(1 / (1 - alphaf_));
+      z_->scale(1 / (1 - alphaf_));
     }
   }
 
@@ -4595,7 +4595,7 @@ void CONTACT::LagrangeStrategy::update_active_set()
       Node* cnode = dynamic_cast<Node*>(node);
 
       // compute weighted gap
-      double wgap = (*wgap_)[wgap_->Map().LID(gid)];
+      double wgap = (*wgap_)[wgap_->get_map().LID(gid)];
 
       // compute normal part of Lagrange multiplier
       double nz = 0.0;
@@ -4661,7 +4661,7 @@ void CONTACT::LagrangeStrategy::update_active_set()
           {
             FriNode* frinode = dynamic_cast<FriNode*>(cnode);
             const Core::LinAlg::Vector<double>& ct_ref = interface_[i]->ct_ref();
-            double ct = ct_ref[ct_ref.Map().LID(frinode->id())];
+            double ct = ct_ref[ct_ref.get_map().LID(frinode->id())];
 
             // CAREFUL: friction bound is now interface-local (popp 08/2012)
             double frbound = interface_[i]->interface_params().get<double>("FRBOUND");
@@ -4699,7 +4699,7 @@ void CONTACT::LagrangeStrategy::update_active_set()
           {
             FriNode* frinode = dynamic_cast<FriNode*>(cnode);
             const Core::LinAlg::Vector<double>& ct_ref = interface_[i]->ct_ref();
-            double ct = ct_ref[ct_ref.Map().LID(frinode->id())];
+            double ct = ct_ref[ct_ref.get_map().LID(frinode->id())];
 
             // CAREFUL: friction coefficient is now interface-local (popp 08/2012)
             double frcoeff = interface_[i]->interface_params().get<double>("FRCOEFF");
@@ -5100,8 +5100,8 @@ void CONTACT::LagrangeStrategy::update(std::shared_ptr<const Core::LinAlg::Vecto
   if (fLTL_ != nullptr)
   {
     // store fLTL values for time integration
-    fLTLOld_ = std::make_shared<Core::LinAlg::Vector<double>>(fLTL_->Map());
-    if (fLTLOld_->Update(1.0, *fLTL_, 0.0)) FOUR_C_THROW("Update went wrong");
+    fLTLOld_ = std::make_shared<Core::LinAlg::Vector<double>>(fLTL_->get_map());
+    if (fLTLOld_->update(1.0, *fLTL_, 0.0)) FOUR_C_THROW("Update went wrong");
   }
 
   // abstract routine
@@ -5192,8 +5192,8 @@ void CONTACT::LagrangeStrategy::condense_friction(
   std::shared_ptr<Core::LinAlg::Vector<double>> feff =
       Core::Utils::shared_ptr_from_ref<Core::LinAlg::Vector<double>>(rhs);
 
-  feff->Update(-1. + alphaf_, *strcontactrhs_, 1.);
-  feff->Scale(-1.);
+  feff->update(-1. + alphaf_, *strcontactrhs_, 1.);
+  feff->scale(-1.);
 
   std::shared_ptr<Core::LinAlg::SparseOperator> kteff_op =
       std::dynamic_pointer_cast<Core::LinAlg::SparseOperator>(kteff);
@@ -5226,15 +5226,15 @@ void CONTACT::LagrangeStrategy::condense_friction(
   if (constr_direction_ == Inpar::CONTACT::constr_xyz)
   {
     gact = Core::LinAlg::create_vector(*gactivedofs_, true);
-    if (gact->GlobalLength()) Core::LinAlg::export_to(*wgap_, *gact);
+    if (gact->global_length()) Core::LinAlg::export_to(*wgap_, *gact);
   }
   else
   {
     gact = Core::LinAlg::create_vector(*gactivenodes_, true);
-    if (gact->GlobalLength())
+    if (gact->global_length())
     {
       Core::LinAlg::export_to(*wgap_, *gact);
-      gact->ReplaceMap(*gactiven_);
+      gact->replace_map(*gactiven_);
     }
   }
 
@@ -5666,7 +5666,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
   // fm: add T(mhat)*fa
   Core::LinAlg::Vector<double> fmmod(*gmdofrowmap_);
   if (aset) mhataam->multiply(true, *fa, fmmod);
-  fmmod.Update(1.0, *fm, 1.0);
+  fmmod.update(1.0, *fm, 1.0);
 
   //--------------------------------------------------------- THIRD LINE
   // fi: subtract alphaf * old contact forces (t_n)
@@ -5674,7 +5674,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
   // fi: add T(dhat)*fa
   Core::LinAlg::Vector<double> fimod(*gidofs);
   if (aset && iset) dhat->multiply(true, *fa, fimod);
-  fimod.Update(1.0, *fi, -1.0);
+  fimod.update(1.0, *fi, -1.0);
 
   //-------------------------------------------------------- FOURTH LINE
 
@@ -5711,7 +5711,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
       tempvec1 = std::make_shared<Core::LinAlg::Vector<double>>(*gstickt);
 
     linstickLM_->multiply(false, *zst, *tempvec1);
-    fstmod->Update(-1.0, *tempvec1, 1.0);
+    fstmod->update(-1.0, *tempvec1, 1.0);
   }
 
   //--------------------------------------------------------- SIXTH LINE
@@ -5736,7 +5736,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
 
     linslipLM_->multiply(false, *zsl, *tempvec1);
 
-    fslmod->Update(-1.0, *tempvec1, 1.0);
+    fslmod->update(-1.0, *tempvec1, 1.0);
   }
 
   /********************************************************************/
@@ -5871,13 +5871,13 @@ void CONTACT::LagrangeStrategy::condense_friction(
   // add n subvector to feffnew
   Core::LinAlg::Vector<double> fnexp(*problem_dofs());
   Core::LinAlg::export_to(*fn, fnexp);
-  feffnew->Update(1.0, fnexp, 1.0);
+  feffnew->update(1.0, fnexp, 1.0);
 
   //-------------------------------------------------------- SECOND LINE
   // add m subvector to feffnew
   Core::LinAlg::Vector<double> fmmodexp(*problem_dofs());
   Core::LinAlg::export_to(fmmod, fmmodexp);
-  feffnew->Update(1.0, fmmodexp, 1.0);
+  feffnew->update(1.0, fmmodexp, 1.0);
 
   //--------------------------------------------------------- THIRD LINE
   // add i subvector to feffnew
@@ -5886,7 +5886,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
   {
     fimodexp = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
     Core::LinAlg::export_to(fimod, *fimodexp);
-    feffnew->Update(1.0, *fimodexp, 1.0);
+    feffnew->update(1.0, *fimodexp, 1.0);
   }
 
   //-------------------------------------------------------- FOURTH LINE
@@ -5899,7 +5899,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
   {
     gexp = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
     Core::LinAlg::export_to(*gact, *gexp);
-    feffnew->Update(-1.0, *gexp, 1.0);
+    feffnew->update(-1.0, *gexp, 1.0);
   }
 
   //--------------------------------------------------------- FIFTH LINE
@@ -5909,7 +5909,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
   {
     fstmodexp = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
     Core::LinAlg::export_to(*fstmod, *fstmodexp);
-    feffnew->Update(1.0, *fstmodexp, +1.0);
+    feffnew->update(1.0, *fstmodexp, +1.0);
   }
 
   // add terms of linearization feffnew
@@ -5917,7 +5917,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
   {
     Core::LinAlg::Vector<double> linstickRHSexp(*problem_dofs());
     Core::LinAlg::export_to(*linstickRHS_, linstickRHSexp);
-    feffnew->Update(-1.0, linstickRHSexp, 1.0);
+    feffnew->update(-1.0, linstickRHSexp, 1.0);
   }
 
   //--------------------------------------------------------- SIXTH LINE
@@ -5932,14 +5932,14 @@ void CONTACT::LagrangeStrategy::condense_friction(
   {
     fslmodexp = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
     Core::LinAlg::export_to(*fslmod, *fslmodexp);
-    feffnew->Update(1.0, *fslmodexp, 1.0);
+    feffnew->update(1.0, *fslmodexp, 1.0);
   }
 
   if (slipset)
   {
     Core::LinAlg::Vector<double> linslipRHSexp(*problem_dofs());
     Core::LinAlg::export_to(*linslipRHS_, linslipRHSexp);
-    feffnew->Update(-1.0, linslipRHSexp, 1.0);
+    feffnew->update(-1.0, linslipRHSexp, 1.0);
   }
 
   // finally do the replacement
@@ -6022,7 +6022,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
   }
 #endif  // #ifdef CONTACTFDSLIP
 
-  feff->Scale(-1.);
+  feff->scale(-1.);
   return;
 }
 
@@ -6032,8 +6032,8 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
   std::shared_ptr<Core::LinAlg::Vector<double>> feff =
       Core::Utils::shared_ptr_from_ref<Core::LinAlg::Vector<double>>(rhs);
 
-  feff->Update(-1. + alphaf_, *strcontactrhs_, 1.);
-  feff->Scale(-1.);
+  feff->update(-1. + alphaf_, *strcontactrhs_, 1.);
+  feff->scale(-1.);
   std::shared_ptr<Core::LinAlg::SparseOperator> kteff_op =
       std::dynamic_pointer_cast<Core::LinAlg::SparseOperator>(kteff);
 
@@ -6071,7 +6071,7 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
   if (constr_direction_ == Inpar::CONTACT::constr_xyz)
   {
     gact = Core::LinAlg::create_vector(*gactivedofs_, true);
-    if (gact->GlobalLength())
+    if (gact->global_length())
     {
       Core::LinAlg::export_to(*wgap_, *gact);
     }
@@ -6079,10 +6079,10 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
   else
   {
     gact = Core::LinAlg::create_vector(*gactivenodes_, true);
-    if (gact->GlobalLength())
+    if (gact->global_length())
     {
       Core::LinAlg::export_to(*wgap_, *gact);
-      gact->ReplaceMap(*gactiven_);
+      gact->replace_map(*gactiven_);
     }
   }
 
@@ -6422,13 +6422,13 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
   // fm: add T(mhat)*fa
   Core::LinAlg::Vector<double> fmmod(*gmdofrowmap_);
   if (aset) mhataam->multiply(true, *fa, fmmod);
-  fmmod.Update(1.0, *fm, 1.0);
+  fmmod.update(1.0, *fm, 1.0);
 
   //----------------------------------------------------------- THIRD LINE
   // fi: add T(dhat)*fa
   Core::LinAlg::Vector<double> fimod(*gidofs);
   if (iset && aset) dhat->multiply(true, *fa, fimod);
-  fimod.Update(1.0, *fi, -1.0);
+  fimod.update(1.0, *fi, -1.0);
 
   //---------------------------------------------------------- FOURTH LINE
   // gactive: nothing to do
@@ -6543,13 +6543,13 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
   // add n subvector to feffnew
   Core::LinAlg::Vector<double> fnexp(*problem_dofs());
   Core::LinAlg::export_to(*fn, fnexp);
-  feffnew->Update(1.0, fnexp, 1.0);
+  feffnew->update(1.0, fnexp, 1.0);
 
   //---------------------------------------------------------- SECOND LINE
   // add m subvector to feffnew
   Core::LinAlg::Vector<double> fmmodexp(*problem_dofs());
   Core::LinAlg::export_to(fmmod, fmmodexp);
-  feffnew->Update(1.0, fmmodexp, 1.0);
+  feffnew->update(1.0, fmmodexp, 1.0);
 
   //----------------------------------------------------------- THIRD LINE
   // add i subvector to feffnew
@@ -6558,7 +6558,7 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
   {
     fimodexp = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
     Core::LinAlg::export_to(fimod, *fimodexp);
-    feffnew->Update(1.0, *fimodexp, 1.0);
+    feffnew->update(1.0, *fimodexp, 1.0);
   }
 
   //---------------------------------------------------------- FOURTH LINE
@@ -6568,7 +6568,7 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
   {
     gexp = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
     Core::LinAlg::export_to(*gact, *gexp);
-    feffnew->Update(-1.0, *gexp, 1.0);
+    feffnew->update(-1.0, *gexp, 1.0);
   }
 
   //----------------------------------------------------------- FIFTH LINE
@@ -6578,7 +6578,7 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
   {
     famodexp = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
     Core::LinAlg::export_to(*famod, *famodexp);
-    feffnew->Update(1.0, *famodexp, 1.0);
+    feffnew->update(1.0, *famodexp, 1.0);
   }
 
   // finally do the replacement
@@ -6611,7 +6611,7 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
 #endif  // #ifdef CONTACTFDTANGLM
 
 
-  feff->Scale(-1.);
+  feff->scale(-1.);
 }
 
 void CONTACT::LagrangeStrategy::run_pre_apply_jacobian_inverse(
@@ -6631,8 +6631,8 @@ void CONTACT::LagrangeStrategy::run_pre_apply_jacobian_inverse(
     Core::LinAlg::Vector<double> rhs_str2(*problem_dofs());
     Core::LinAlg::export_to(rhs, rhs_str);
     if (systrafo_->multiply(true, rhs_str, rhs_str2)) FOUR_C_THROW("multiply failed");
-    for (int i = 0; i < rhs_str2.Map().NumMyElements(); ++i)
-      rhs[rhs.Map().LID(rhs_str2.Map().GID(i))] = rhs_str2[i];
+    for (int i = 0; i < rhs_str2.get_map().NumMyElements(); ++i)
+      rhs[rhs.get_map().LID(rhs_str2.get_map().GID(i))] = rhs_str2[i];
   }
 
 
@@ -6659,7 +6659,7 @@ void CONTACT::LagrangeStrategy::run_post_apply_jacobian_inverse(
 
   std::shared_ptr<Core::LinAlg::Vector<double>> disi =
       Core::Utils::shared_ptr_from_ref<Core::LinAlg::Vector<double>>(result);
-  disi->Scale(-1.);
+  disi->scale(-1.);
   {
     // shape function type and type of LM interpolation for quadratic elements
     auto shapefcn = Teuchos::getIntegralValue<Inpar::Mortar::ShapeFcn>(params(), "LM_SHAPEFCN");
@@ -6705,38 +6705,38 @@ void CONTACT::LagrangeStrategy::run_post_apply_jacobian_inverse(
     {
       // full update
       z_ = std::make_shared<Core::LinAlg::Vector<double>>(*gsdofrowmap_);
-      z_->Update(1.0, *fs_, 0.0);
+      z_->update(1.0, *fs_, 0.0);
       Core::LinAlg::Vector<double> mod(*gsdofrowmap_);
       kss_->multiply(false, disis, mod);
-      z_->Update(-1.0, mod, 1.0);
+      z_->update(-1.0, mod, 1.0);
       ksm_->multiply(false, disim, mod);
-      z_->Update(-1.0, mod, 1.0);
+      z_->update(-1.0, mod, 1.0);
       ksn_->multiply(false, disin, mod);
-      z_->Update(-1.0, mod, 1.0);
+      z_->update(-1.0, mod, 1.0);
       Core::LinAlg::Vector<double> zcopy(*z_);
       invdmod.multiply(true, zcopy, *z_);
-      z_->Scale(1 / (1 - alphaf_));
+      z_->scale(1 / (1 - alphaf_));
     }
     else
     {
       // full update
-      z_->Update(1.0, *fs_, 0.0);
+      z_->update(1.0, *fs_, 0.0);
       Core::LinAlg::Vector<double> mod(*gsdofrowmap_);
       kss_->multiply(false, disis, mod);
-      z_->Update(-1.0, mod, 1.0);
+      z_->update(-1.0, mod, 1.0);
       ksm_->multiply(false, disim, mod);
-      z_->Update(-1.0, mod, 1.0);
+      z_->update(-1.0, mod, 1.0);
       ksn_->multiply(false, disin, mod);
-      z_->Update(-1.0, mod, 1.0);
+      z_->update(-1.0, mod, 1.0);
       Core::LinAlg::Vector<double> zcopy(*z_);
       invdmod.multiply(true, zcopy, *z_);
-      z_->Scale(1 / (1 - alphaf_));
+      z_->scale(1 / (1 - alphaf_));
     }
 
     // store updated LM into nodes
     store_nodal_quantities(Mortar::StrategyBase::lmupdate);
   }
-  disi->Scale(-1.);
+  disi->scale(-1.);
 }
 
 FOUR_C_NAMESPACE_CLOSE

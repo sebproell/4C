@@ -227,7 +227,7 @@ void FLD::XFluidFluid::evaluate(std::shared_ptr<const Core::LinAlg::Vector<doubl
     stepinc_emb = xff_state_->xffluidsplitter_->extract_fluid_vector(*stepinc);
 
     // compute increment
-    xff_state_->xffluidincvel_->Update(1.0, *stepinc, -1.0, *stepinc_, 0.0);
+    xff_state_->xffluidincvel_->update(1.0, *stepinc, -1.0, *stepinc_, 0.0);
 
     xff_state_->xffluiddbcmaps_->insert_cond_vector(
         *xff_state_->xffluiddbcmaps_->extract_cond_vector(*xff_state_->xffluidzeros_),
@@ -250,25 +250,25 @@ void FLD::XFluidFluid::evaluate(std::shared_ptr<const Core::LinAlg::Vector<doubl
   XFluid::evaluate();
 
   // update step increment
-  stepinc_->Update(1.0, *xff_state_->xffluidvelnp_, -1.0, *xff_state_->xffluidveln_, 0.0);
+  stepinc_->update(1.0, *xff_state_->xffluidvelnp_, -1.0, *xff_state_->xffluidveln_, 0.0);
 
   if (active_shapederivatives_)
   {
     extended_shapederivatives_->add(*embedded_fluid_->shape_derivatives(), false, 1.0, 0.0);
   }
 
-  xff_state_->xffluidincvel_->PutScalar(0.0);
+  xff_state_->xffluidincvel_->put_scalar(0.0);
 
   xff_state_->trueresidual_ =
       std::make_shared<Core::LinAlg::Vector<double>>(*xff_state_->xffluidresidual_);
-  xff_state_->trueresidual_->PutScalar(residual_scaling());
+  xff_state_->trueresidual_->put_scalar(residual_scaling());
 }
 
 void FLD::XFluidFluid::time_update()
 {
   embedded_fluid_->time_update();
   XFluid::time_update();
-  xff_state_->xffluidveln_->Update(1.0, *xff_state_->xffluidvelnp_, 0.0);
+  xff_state_->xffluidveln_->update(1.0, *xff_state_->xffluidvelnp_, 0.0);
 }
 
 std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> FLD::XFluidFluid::block_system_matrix(
@@ -398,14 +398,14 @@ void FLD::XFluidFluid::assemble_mat_and_rhs(int itnum  ///< iteration number
 
   {
     // adding rhC_s_ (coupling contribution) to residual of embedded fluid
-    for (int iter = 0; iter < coup_state->rhC_s_->MyLength(); ++iter)
+    for (int iter = 0; iter < coup_state->rhC_s_->local_length(); ++iter)
     {
-      const int rhsgid = coup_state->rhC_s_->Map().GID(iter);
-      if (coup_state->rhC_s_->Map().MyGID(rhsgid) == false)
+      const int rhsgid = coup_state->rhC_s_->get_map().GID(iter);
+      if (coup_state->rhC_s_->get_map().MyGID(rhsgid) == false)
         FOUR_C_THROW("rhC_s_ should be on all processors");
-      if (embedded_fluid_->residual()->Map().MyGID(rhsgid))
-        (*embedded_fluid_->residual())[embedded_fluid_->residual()->Map().LID(rhsgid)] +=
-            (*coup_state->rhC_s_)[coup_state->rhC_s_->Map().LID(rhsgid)];
+      if (embedded_fluid_->residual()->get_map().MyGID(rhsgid))
+        (*embedded_fluid_->residual())[embedded_fluid_->residual()->get_map().LID(rhsgid)] +=
+            (*coup_state->rhC_s_)[coup_state->rhC_s_->get_map().LID(rhsgid)];
       else
         FOUR_C_THROW("Interface dof %d does not belong to embedded discretization!", rhsgid);
     }
@@ -477,11 +477,11 @@ void FLD::XFluidFluid::update_by_increment()
   // Update merged
   XFluid::update_by_increment();
   // update xfluid
-  xff_state_->velnp_->Update(
+  xff_state_->velnp_->update(
       1.0, *xff_state_->xffluidsplitter_->extract_x_fluid_vector(*xff_state_->xffluidvelnp_), 0.0);
   // update embedded fluid
   // embedded_fluid_->IterUpdate(xff_state_->xffluidsplitter_->extract_fluid_vector(xff_state_->xffluidincvel_));
-  embedded_fluid_->write_access_velnp()->Update(
+  embedded_fluid_->write_access_velnp()->update(
       1.0, *xff_state_->xffluidsplitter_->extract_fluid_vector(*xff_state_->xffluidvelnp_), 0.0);
 }
 
@@ -543,11 +543,11 @@ void FLD::XFluidFluid::add_eos_pres_stab_to_emb_layer()
   //------------------------------------------------------------
   // need to export residual_col to embedded fluid residual
   {
-    Core::LinAlg::Vector<double> res_tmp(embedded_fluid_->residual()->Map(), true);
-    Epetra_Export exporter(residual_col->Map(), res_tmp.Map());
-    int err = res_tmp.Export(*residual_col, exporter, Add);
+    Core::LinAlg::Vector<double> res_tmp(embedded_fluid_->residual()->get_map(), true);
+    Epetra_Export exporter(residual_col->get_map(), res_tmp.get_map());
+    int err = res_tmp.export_to(*residual_col, exporter, Add);
     if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
-    embedded_fluid_->residual()->Update(1.0, res_tmp, 1.0);
+    embedded_fluid_->residual()->update(1.0, res_tmp, 1.0);
   }
 
   mc_xff_->get_coupling_dis()->clear_state();

@@ -201,12 +201,12 @@ namespace Core::FE
          */
         DbcInfo(const Core::LinAlg::Vector<int>& toggle_input)
             : toggle(toggle_input),
-              hierarchy(Core::LinAlg::Vector<int>(toggle_input.Map())),
-              condition(Core::LinAlg::Vector<int>(toggle_input.Map())),
-              values(Core::LinAlg::Vector<double>(toggle_input.Map(), true))
+              hierarchy(Core::LinAlg::Vector<int>(toggle_input.get_map())),
+              condition(Core::LinAlg::Vector<int>(toggle_input.get_map())),
+              values(Core::LinAlg::Vector<double>(toggle_input.get_map(), true))
         {
-          hierarchy.PutValue(std::numeric_limits<int>::max());
-          condition.PutValue(-1);
+          hierarchy.put_value(std::numeric_limits<int>::max());
+          condition.put_value(-1);
         }
 
         /*!
@@ -219,8 +219,8 @@ namespace Core::FE
               condition(Core::LinAlg::Vector<int>(toggle_map)),
               values(Core::LinAlg::Vector<double>(toggle_map, true))
         {
-          hierarchy.PutValue(std::numeric_limits<int>::max());
-          condition.PutValue(-1);
+          hierarchy.put_value(std::numeric_limits<int>::max());
+          condition.put_value(-1);
         }
       };
 

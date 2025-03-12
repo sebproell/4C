@@ -115,8 +115,8 @@ void CONSTRAINTS::ConstraintSolver::solve_uzawa(Core::LinAlg::SparseMatrix& stif
 
   const double computol = 1E-8;
 
-  Core::LinAlg::Vector<double> constrTLagrInc(rhsstand.Map());
-  Core::LinAlg::Vector<double> constrTDispInc(rhsconstr.Map());
+  Core::LinAlg::Vector<double> constrTLagrInc(rhsstand.get_map());
+  Core::LinAlg::Vector<double> constrTDispInc(rhsconstr.get_map());
   // Core::LinAlg::SparseMatrix constrT =
   // *(std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(constr));
 
@@ -125,7 +125,7 @@ void CONSTRAINTS::ConstraintSolver::solve_uzawa(Core::LinAlg::SparseMatrix& stif
   if (dirichtoggle_ != nullptr)
     dbcmaps_ = Core::LinAlg::convert_dirichlet_toggle_vector_to_maps(*dirichtoggle_);
 
-  Core::LinAlg::Vector<double> zeros(rhsstand.Map(), true);
+  Core::LinAlg::Vector<double> zeros(rhsstand.get_map(), true);
   std::shared_ptr<Core::LinAlg::Vector<double>> dirichzeros = dbcmaps_->extract_cond_vector(zeros);
 
   // Compute residual of the uzawa algorithm
@@ -133,16 +133,16 @@ void CONSTRAINTS::ConstraintSolver::solve_uzawa(Core::LinAlg::SparseMatrix& stif
       std::make_shared<Core::LinAlg::Vector<double>>(rhsstand);
   Core::LinAlg::Vector<double> uzawa_res(*fresmcopy);
   (stiff).multiply(false, *dispinc, uzawa_res);
-  uzawa_res.Update(1.0, *fresmcopy, -1.0);
+  uzawa_res.update(1.0, *fresmcopy, -1.0);
 
   // blank residual DOFs which are on Dirichlet BC
   dbcmaps_->insert_cond_vector(*dirichzeros, uzawa_res);
 
-  uzawa_res.Norm2(&norm_uzawa);
-  Core::LinAlg::Vector<double> constr_res(lagrinc.Map());
+  uzawa_res.norm_2(&norm_uzawa);
+  Core::LinAlg::Vector<double> constr_res(lagrinc.get_map());
 
-  constr_res.Update(1.0, (rhsconstr), 0.0);
-  constr_res.Norm2(&norm_constr_uzawa);
+  constr_res.update(1.0, (rhsconstr), 0.0);
+  constr_res.norm_2(&norm_constr_uzawa);
   quotient = 1;
   // Solve one iteration step with augmented lagrange
   // Since we calculate displacement norm as well, at least one step has to be taken
@@ -166,26 +166,26 @@ void CONSTRAINTS::ConstraintSolver::solve_uzawa(Core::LinAlg::SparseMatrix& stif
     solver_->reset_tolerance();
 
     // compute Lagrange multiplier increment
-    constrTDispInc.PutScalar(0.0);
+    constrTDispInc.put_scalar(0.0);
     constrT.multiply(true, *dispinc, constrTDispInc);
-    lagrinc.Update(iterationparam_, constrTDispInc, iterationparam_, rhsconstr, 1.0);
+    lagrinc.update(iterationparam_, constrTDispInc, iterationparam_, rhsconstr, 1.0);
 
     // Compute residual of the uzawa algorithm
     constr.multiply(false, lagrinc, constrTLagrInc);
 
-    fresmcopy->Update(-1.0, constrTLagrInc, 1.0, rhsstand, 0.0);
+    fresmcopy->update(-1.0, constrTLagrInc, 1.0, rhsstand, 0.0);
     Core::LinAlg::Vector<double> uzawa_res(*fresmcopy);
     (stiff).multiply(false, *dispinc, uzawa_res);
-    uzawa_res.Update(1.0, *fresmcopy, -1.0);
+    uzawa_res.update(1.0, *fresmcopy, -1.0);
 
     // blank residual DOFs which are on Dirichlet BC
     dbcmaps_->insert_cond_vector(*dirichzeros, uzawa_res);
     norm_uzawa_old = norm_uzawa;
-    uzawa_res.Norm2(&norm_uzawa);
-    Core::LinAlg::Vector<double> constr_res(lagrinc.Map());
+    uzawa_res.norm_2(&norm_uzawa);
+    Core::LinAlg::Vector<double> constr_res(lagrinc.get_map());
 
-    constr_res.Update(1.0, constrTDispInc, 1.0, rhsconstr, 0.0);
-    constr_res.Norm2(&norm_constr_uzawa);
+    constr_res.update(1.0, constrTDispInc, 1.0, rhsconstr, 0.0);
+    constr_res.norm_2(&norm_constr_uzawa);
     //-------------Adapt Uzawa parameter--------------
     // For a constant parameter the quotient of two successive residual norms
     // stays nearly constant during the computation. So this quotient seems to be a good
@@ -277,7 +277,7 @@ void CONSTRAINTS::ConstraintSolver::solve_direct(Core::LinAlg::SparseMatrix& sti
   mergedmatrix->complete(*mergedmap, *mergedmap);
   // fill merged vectors using Export
   Core::LinAlg::export_to(rhsconstr, *mergedrhs);
-  mergedrhs->Scale(-1.0);
+  mergedrhs->scale(-1.0);
   Core::LinAlg::export_to(rhsstand, *mergedrhs);
 
   // solve
@@ -322,7 +322,7 @@ void CONSTRAINTS::ConstraintSolver::solve_simple(Core::LinAlg::SparseMatrix& sti
     dbcmaps_ = Core::LinAlg::convert_dirichlet_toggle_vector_to_maps(*dirichtoggle_);
 
   // stuff needed for Dirichlet BCs
-  Core::LinAlg::Vector<double> zeros(rhsstand.Map(), true);
+  Core::LinAlg::Vector<double> zeros(rhsstand.get_map(), true);
   std::shared_ptr<Core::LinAlg::Vector<double>> dirichzeros = dbcmaps_->extract_cond_vector(zeros);
   Core::LinAlg::Vector<double> rhscopy(rhsstand);
 
@@ -366,7 +366,7 @@ void CONSTRAINTS::ConstraintSolver::solve_simple(Core::LinAlg::SparseMatrix& sti
   std::shared_ptr<Core::LinAlg::Vector<double>> mergedrhs =
       std::make_shared<Core::LinAlg::Vector<double>>(*mergedrowmap);
   Core::LinAlg::export_to(rhsconstr, *mergedrhs);
-  mergedrhs->Scale(-1.0);
+  mergedrhs->scale(-1.0);
   Core::LinAlg::export_to(rhscopy, *mergedrhs);
 
   // solution vector

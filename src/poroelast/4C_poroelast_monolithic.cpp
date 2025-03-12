@@ -587,7 +587,7 @@ void PoroElast::Monolithic::linear_solve()
     solver_params.nonlin_residual = normrhs_;
     solver_params.lin_tol_better = solveradaptolbetter_;
   }
-  iterinc_->PutScalar(0.0);  // Useful? depends on solver and more
+  iterinc_->put_scalar(0.0);  // Useful? depends on solver and more
 
   // equilibrate global system of equations if necessary
   equilibration_->equilibrate_system(systemmatrix_, rhs_, blockrowdofmap_);
@@ -740,7 +740,7 @@ void PoroElast::Monolithic::setup_vector(Core::LinAlg::Vector<double>& f,
   // noticing the block number
 
   extractor()->insert_vector(*sv, 0, f);
-  if (not oldstructimint_) f.Scale(-1);
+  if (not oldstructimint_) f.scale(-1);
   extractor()->insert_vector(*fv, 1, f);
 }
 
@@ -1165,21 +1165,21 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
   iterinc = Core::LinAlg::create_vector(*dof_row_map(), true);
   abs_iterinc = Core::LinAlg::create_vector(*dof_row_map(), true);
 
-  const int dofs = iterinc->GlobalLength();
+  const int dofs = iterinc->global_length();
   std::cout << "in total " << dofs << " DOFs" << std::endl;
   const double delta = 1e-8;
 
-  iterinc->PutScalar(0.0);
+  iterinc->put_scalar(0.0);
 
-  iterinc->ReplaceGlobalValue(0, 0, delta);
+  iterinc->replace_global_value(0, 0, delta);
 
-  abs_iterinc->Update(1.0, *iterinc_, 0.0);
+  abs_iterinc->update(1.0, *iterinc_, 0.0);
 
   std::shared_ptr<Epetra_CrsMatrix> stiff_approx = nullptr;
   stiff_approx = Core::LinAlg::create_matrix(*dof_row_map(), 81);
 
   Core::LinAlg::Vector<double> rhs_old(*dof_row_map(), true);
-  rhs_old.Update(1.0, *rhs_, 0.0);
+  rhs_old.update(1.0, *rhs_, 0.0);
   Core::LinAlg::Vector<double> rhs_copy(*dof_row_map(), true);
 
   std::shared_ptr<Core::LinAlg::SparseMatrix> sparse = systemmatrix_->merge();
@@ -1189,19 +1189,19 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
   if (output)
   {
     std::cout << "iterinc_" << std::endl;
-    iterinc_->Print(std::cout);
+    iterinc_->print(std::cout);
     std::cout << "meshdisp: " << std::endl;
-    fluid_field()->dispnp()->Print(std::cout);
+    fluid_field()->dispnp()->print(std::cout);
     std::cout << "disp: " << std::endl;
-    structure_field()->dispnp()->Print(std::cout);
+    structure_field()->dispnp()->print(std::cout);
     std::cout << "fluid vel" << std::endl;
-    fluid_field()->velnp()->Print(std::cout);
+    fluid_field()->velnp()->print(std::cout);
     std::cout << "fluid acc" << std::endl;
-    fluid_field()->accnp()->Print(std::cout);
+    fluid_field()->accnp()->print(std::cout);
     std::cout << "gridvel fluid" << std::endl;
-    fluid_field()->grid_vel()->Print(std::cout);
+    fluid_field()->grid_vel()->print(std::cout);
     std::cout << "gridvel struct" << std::endl;
-    structure_field()->velnp()->Print(std::cout);
+    structure_field()->velnp()->print(std::cout);
   }
 
   const int row_number = -1;
@@ -1210,9 +1210,9 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
   {
     if (combined_dbc_map()->MyGID(i))
     {
-      iterinc->ReplaceGlobalValue(i, 0, 0.0);
+      iterinc->replace_global_value(i, 0, 0.0);
     }
-    abs_iterinc->Update(1.0, *iterinc, 1.0);
+    abs_iterinc->update(1.0, *iterinc, 1.0);
 
     if (i == column_number)
       std::cout << "\n******************" << column_number + 1 << ". Spalte!!***************"
@@ -1220,9 +1220,9 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
 
     evaluate(iterinc, iter_ == 1);
 
-    rhs_copy.Update(1.0, *rhs_, 0.0);
+    rhs_copy.update(1.0, *rhs_, 0.0);
 
-    iterinc_->PutScalar(0.0);  // Useful? depends on solver and more
+    iterinc_->put_scalar(0.0);  // Useful? depends on solver and more
     Core::LinAlg::apply_dirichlet_to_system(
         sparse_copy, *iterinc_, rhs_copy, *zeros_, *combined_dbc_map());
 
@@ -1233,8 +1233,8 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
       std::cout << "rhs_old: " << (rhs_old)[row_number] << std::endl;
     }
 
-    rhs_copy.Update(-1.0, rhs_old, 1.0);
-    rhs_copy.Scale(-1.0 / delta);
+    rhs_copy.update(-1.0, rhs_old, 1.0);
+    rhs_copy.scale(-1.0 / delta);
 
     int* index = &i;
     for (int j = 0; j < dofs; ++j)
@@ -1247,19 +1247,19 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
         std::cout << "\n******************" << row_number + 1 << ". Row!!***************"
                   << std::endl;
         std::cout << "iterinc_" << std::endl;
-        iterinc_->Print(std::cout);
+        iterinc_->print(std::cout);
         std::cout << "meshdisp: " << std::endl;
-        fluid_field()->dispnp()->Print(std::cout);
+        fluid_field()->dispnp()->print(std::cout);
         std::cout << "disp: " << std::endl;
-        structure_field()->dispnp()->Print(std::cout);
+        structure_field()->dispnp()->print(std::cout);
         std::cout << "fluid vel" << std::endl;
-        fluid_field()->velnp()->Print(std::cout);
+        fluid_field()->velnp()->print(std::cout);
         std::cout << "fluid acc" << std::endl;
-        fluid_field()->accnp()->Print(std::cout);
+        fluid_field()->accnp()->print(std::cout);
         std::cout << "gridvel fluid" << std::endl;
-        fluid_field()->grid_vel()->Print(std::cout);
+        fluid_field()->grid_vel()->print(std::cout);
         std::cout << "gridvel struct" << std::endl;
-        structure_field()->velnp()->Print(std::cout);
+        structure_field()->velnp()->print(std::cout);
 
         std::cout << "stiff_apprx(" << row_number << "," << column_number
                   << "): " << (rhs_copy)[row_number] << std::endl;
@@ -1270,11 +1270,11 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
       }
     }
 
-    if (not combined_dbc_map()->MyGID(i)) iterinc->ReplaceGlobalValue(i, 0, -delta);
+    if (not combined_dbc_map()->MyGID(i)) iterinc->replace_global_value(i, 0, -delta);
 
-    iterinc->ReplaceGlobalValue(i - 1, 0, 0.0);
+    iterinc->replace_global_value(i - 1, 0, 0.0);
 
-    if (i != dofs - 1) iterinc->ReplaceGlobalValue(i + 1, 0, delta);
+    if (i != dofs - 1) iterinc->replace_global_value(i + 1, 0, delta);
 
     if (i == column_number)
       std::cout << "\n******************" << column_number + 1 << ". Column End!!***************"
@@ -1512,13 +1512,13 @@ void PoroElast::Monolithic::setup_newton()
   if (iterinc_ == nullptr)
     iterinc_ = Core::LinAlg::create_vector(*dof_row_map(), true);
   else
-    iterinc_->PutScalar(0.0);
+    iterinc_->put_scalar(0.0);
 
   // a zero vector of full length
   if (zeros_ == nullptr)
     zeros_ = Core::LinAlg::create_vector(*dof_row_map(), true);
   else
-    zeros_->PutScalar(0.0);
+    zeros_->put_scalar(0.0);
 
   // AitkenReset();
 }
@@ -1558,7 +1558,7 @@ void PoroElast::Monolithic::build_convergence_norms()
 
 
   //------------------------------------------------------------- build residual increment norms
-  iterinc_->Norm2(&norminc_);
+  iterinc_->norm_2(&norminc_);
 
   // displacement and fluid velocity & pressure incremental vector
   std::shared_ptr<const Core::LinAlg::Vector<double>> interincs;
@@ -1662,11 +1662,11 @@ void PoroElast::Monolithic::increment_poro_iter() { iter_ += 1; }
 
 void PoroElast::Monolithic::update_poro_iterinc(const Core::LinAlg::Vector<double>& poroinc)
 {
-  iterinc_->PutScalar(0.0);
-  iterinc_->Update(1.0, poroinc, 0.0);
+  iterinc_->put_scalar(0.0);
+  iterinc_->update(1.0, poroinc, 0.0);
 }
 
-void PoroElast::Monolithic::clear_poro_iterinc() { iterinc_->PutScalar(0.0); }
+void PoroElast::Monolithic::clear_poro_iterinc() { iterinc_->put_scalar(0.0); }
 
 void PoroElast::Monolithic::aitken()
 {
@@ -1677,26 +1677,26 @@ void PoroElast::Monolithic::aitken()
   {
     del_ = Core::LinAlg::create_vector(*dof_row_map(), true);
     delhist_ = Core::LinAlg::create_vector(*dof_row_map(), true);
-    del_->PutScalar(1.0e20);
-    delhist_->PutScalar(0.0);
+    del_->put_scalar(1.0e20);
+    delhist_->put_scalar(0.0);
   }
 
   // calculate difference of current (i+1) and old (i) residual vector
   // delhist = ( r^{i+1}_{n+1} - r^i_{n+1} )
   // update history vector old increment r^i_{n+1}
-  delhist_->Update(1.0, *del_, 0.0);         // r^i_{n+1}
-  delhist_->Update(1.0, *iterinc_, (-1.0));  // update r^{i+1}_{n+1}
+  delhist_->update(1.0, *del_, 0.0);         // r^i_{n+1}
+  delhist_->update(1.0, *iterinc_, (-1.0));  // update r^{i+1}_{n+1}
 
 
   // del_ = r^{i+1}_{n+1} = T^{i+1}_{n+1} - T^{i}_{n+1}
-  del_->Update(1.0, *iterinc_, 0.0);
+  del_->update(1.0, *iterinc_, 0.0);
   // den = |r^{i+1} - r^{i}|^2
   double den = 0.0;
-  delhist_->Norm2(&den);
+  delhist_->norm_2(&den);
   // calculate dot product
   // dot = delhist_ . del_ = ( r^{i+1}_{n+1} - r^i_{n+1} )^T . r^{i+1}_{n+1}
   double top = 0.0;
-  delhist_->Dot(*del_, &top);
+  delhist_->dot(*del_, &top);
 
   // mu_: Aikten factor in Mok's version
   // mu_: relaxation parameter in Irons & Tuck
@@ -1705,7 +1705,7 @@ void PoroElast::Monolithic::aitken()
   // Uli's implementation: mu_ = mu_ + (mu_ - 1.0) * top / (den*den). with '-' included in top
   mu_ = mu_ + (mu_ - 1) * (-top) / (den * den);
 
-  iterinc_->Scale(1.0 - mu_);
+  iterinc_->scale(1.0 - mu_);
 }
 
 [[maybe_unused]] void PoroElast::Monolithic::aitken_reset()
@@ -1715,8 +1715,8 @@ void PoroElast::Monolithic::aitken()
     del_ = Core::LinAlg::create_vector(*dof_row_map(), true);
     delhist_ = Core::LinAlg::create_vector(*dof_row_map(), true);
   }
-  del_->PutScalar(1.0e20);
-  delhist_->PutScalar(0.0);
+  del_->put_scalar(1.0e20);
+  delhist_->put_scalar(0.0);
   mu_ = 0.0;
 }
 
@@ -1827,13 +1827,13 @@ void PoroElast::Monolithic::set_poro_contact_states()
               std::make_shared<Core::LinAlg::Vector<double>>(
                   *fluid_field()->velocity_row_map(), true);
 
-          int* mygids = fpres->Map().MyGlobalElements();
-          double* val = fpres->Values();
+          int* mygids = fpres->get_map().MyGlobalElements();
+          double* val = fpres->get_values();
           const int ndim = Global::Problem::instance()->n_dim();
-          for (int i = 0; i < fpres->MyLength(); ++i)
+          for (int i = 0; i < fpres->local_length(); ++i)
           {
             int gid = mygids[i] - ndim;
-            modfpres->ReplaceGlobalValues(1, &val[i], &gid);
+            modfpres->replace_global_values(1, &val[i], &gid);
           }
 
           modfpres = fluid_structure_coupling().slave_to_master(*modfpres);

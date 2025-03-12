@@ -63,10 +63,10 @@ void Thermo::TimIntStatics::predict_const_temp_consist_rate()
 {
   //! constant predictor : temperature in domain
   // T_n+1,p = T_n
-  tempn_->Update(1.0, *(*temp_)(0), 0.0);
+  tempn_->update(1.0, *(*temp_)(0), 0.0);
 
   //! new end-point temperature rates, these stay zero in static calculation
-  raten_->PutScalar(0.0);
+  raten_->put_scalar(0.0);
 
   //! watch out
   return;
@@ -80,7 +80,7 @@ void Thermo::TimIntStatics::predict_const_temp_consist_rate()
 void Thermo::TimIntStatics::evaluate_rhs_tang_residual()
 {
   //! build new external forces
-  fextn_->PutScalar(0.0);
+  fextn_->put_scalar(0.0);
 
   //! initialise tangent matrix to zero
   tang_->zero();
@@ -94,14 +94,14 @@ void Thermo::TimIntStatics::evaluate_rhs_tang_residual()
   apply_force_external(timen_, (*temp_)(0), *fextn_);
 
   //! initialise internal forces
-  fintn_->PutScalar(0.0);
+  fintn_->put_scalar(0.0);
 
   //! ordinary internal force and tangent
   apply_force_tang_internal(timen_, (*dt_)[0], tempn_, tempi_, fintn_, tang_);
 
   //! build residual  Res = F_{int;n+1} - F_{ext;n+1}
-  fres_->Update(-1.0, *fextn_, 0.0);
-  fres_->Update(1.0, *fintn_, 1.0);
+  fres_->update(-1.0, *fextn_, 0.0);
+  fres_->update(1.0, *fintn_, 1.0);
 
   //! build tangent matrix : effective dynamic tangent matrix
   //!    K_{Teffdyn} = K_{T}
@@ -170,7 +170,7 @@ void Thermo::TimIntStatics::update_iter_incrementally()
 {
   //! new end-point temperatures
   //! T_{n+1}^{<k+1>} := T_{n+1}^{<k>} + IncT_{n+1}^{<k>}
-  tempn_->Update(1.0, *tempi_, 1.0);
+  tempn_->update(1.0, *tempi_, 1.0);
 
   //! bye
   return;
@@ -184,7 +184,7 @@ void Thermo::TimIntStatics::update_iter_iteratively()
 {
   //! new end-point temperatures
   //! T_{n+1}^{<k+1>} := T_{n+1}^{<k>} + IncT_{n+1}^{<k>}
-  tempn_->Update(1.0, *tempi_, 1.0);
+  tempn_->update(1.0, *tempi_, 1.0);
 
   //! bye
   return;
@@ -206,11 +206,11 @@ void Thermo::TimIntStatics::update_step_state()
 
   //! update new external force
   //!    F_{ext;n} := F_{ext;n+1}
-  fext_->Update(1.0, *fextn_, 0.0);
+  fext_->update(1.0, *fextn_, 0.0);
 
   //! update new internal force
   //!    F_{int;n} := F_{int;n+1}
-  fint_->Update(1.0, *fintn_, 0.0);
+  fint_->update(1.0, *fintn_, 0.0);
 
   //! look out
   return;

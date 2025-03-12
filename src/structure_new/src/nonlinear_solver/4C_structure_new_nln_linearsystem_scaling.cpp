@@ -100,7 +100,7 @@ void Solid::Nln::LinSystem::StcScaling::scaleLinearSystem(Epetra_LinearProblem& 
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs_scaled =
         Core::LinAlg::create_vector(problem.GetRHS()->Map(), true);
     stcmat_->multiply(true, rhs, *rhs_scaled);
-    rhs.Update(1.0, *rhs_scaled, 0.0);
+    rhs.update(1.0, *rhs_scaled, 0.0);
   }
 
   // set new stiffness matrix

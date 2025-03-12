@@ -88,7 +88,7 @@ namespace Utils
     double get_cardiovascular0_drhs_norm() const
     {
       double foo;
-      cardvasc0d_res_m_->Norm2(&foo);
+      cardvasc0d_res_m_->norm_2(&foo);
       return foo;
     };
 
@@ -98,7 +98,7 @@ namespace Utils
     double get_cardiovascular0_drhs_inf_norm() const
     {
       double foo;
-      cardvasc0d_res_m_->NormInf(&foo);
+      cardvasc0d_res_m_->norm_inf(&foo);
       return foo;
     };
 
@@ -108,7 +108,7 @@ namespace Utils
     double get_cardiovascular0_d_dof_incr_norm() const
     {
       double foo;
-      cv0ddofincrement_->Norm2(&foo);
+      cv0ddofincrement_->norm_2(&foo);
       return foo;
     };
 
@@ -247,20 +247,20 @@ namespace Utils
     void set0_d_v_n(Core::LinAlg::Vector<double>& newval  ///< new reference base values
     )
     {
-      v_n_->Update(1.0, newval, 0.0);
+      v_n_->update(1.0, newval, 0.0);
     }
 
     /// set df_n, f_n
     void set0_d_df_n(Core::LinAlg::Vector<double>& newval  ///< new Cardiovascular0D dofs
     )
     {
-      cardvasc0d_df_n_->Update(1.0, newval, 0.0);
+      cardvasc0d_df_n_->update(1.0, newval, 0.0);
       return;
     }
     void set0_d_f_n(Core::LinAlg::Vector<double>& newval  ///< new Cardiovascular0D dofs
     )
     {
-      cardvasc0d_f_n_->Update(1.0, newval, 0.0);
+      cardvasc0d_f_n_->update(1.0, newval, 0.0);
       return;
     }
 
@@ -268,8 +268,8 @@ namespace Utils
     void set0_d_dof_n(Core::LinAlg::Vector<double>& newdof  ///< new Cardiovascular0D dofs
     )
     {
-      cv0ddof_np_->Update(1.0, newdof, 0.0);
-      cv0ddof_n_->Update(1.0, newdof, 0.0);
+      cv0ddof_np_->update(1.0, newdof, 0.0);
+      cv0ddof_n_->update(1.0, newdof, 0.0);
       return;
     }
 

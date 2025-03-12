@@ -232,16 +232,16 @@ void Discret::Elements::AcinusImpl<distype>::initial(RedAcinus* ele, Teuchos::Pa
   {
     int gid = lm[0];
     double val = 0.0;
-    evaluation_data.p0np->ReplaceGlobalValues(1, &val, &gid);
-    evaluation_data.p0n->ReplaceGlobalValues(1, &val, &gid);
-    evaluation_data.p0nm->ReplaceGlobalValues(1, &val, &gid);
+    evaluation_data.p0np->replace_global_values(1, &val, &gid);
+    evaluation_data.p0n->replace_global_values(1, &val, &gid);
+    evaluation_data.p0nm->replace_global_values(1, &val, &gid);
   }
 
   // Find the volume of an acinus element
   {
     int gid2 = ele->id();
     double acin_vol = acinus_params.volume_relaxed;
-    evaluation_data.acini_e_volume->ReplaceGlobalValues(1, &acin_vol, &gid2);
+    evaluation_data.acini_e_volume->replace_global_values(1, &acin_vol, &gid2);
   }
 
   // Get the generation numbers
@@ -252,14 +252,14 @@ void Discret::Elements::AcinusImpl<distype>::initial(RedAcinus* ele, Teuchos::Pa
       // find the acinus condition
       int gid = ele->id();
       double val = 1.0;
-      evaluation_data.acini_bc->ReplaceGlobalValues(1, &val, &gid);
+      evaluation_data.acini_bc->replace_global_values(1, &val, &gid);
     }
   }
   {
     int gid = ele->id();
     int generation = -1;
     double val = double(generation);
-    evaluation_data.generations->ReplaceGlobalValues(1, &val, &gid);
+    evaluation_data.generations->replace_global_values(1, &val, &gid);
   }
 
 }  // AcinusImpl::Initial
@@ -602,11 +602,11 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
 
           gid = lm[i];
           val = BCin;
-          evaluation_data.bcval->ReplaceGlobalValues(1, &val, &gid);
+          evaluation_data.bcval->replace_global_values(1, &val, &gid);
 
           gid = lm[i];
           val = 1;
-          evaluation_data.dbctog->ReplaceGlobalValues(1, &val, &gid);
+          evaluation_data.dbctog->replace_global_values(1, &val, &gid);
         }
         /**
          * For flow bc
@@ -656,11 +656,11 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
 
           gid = lm[i];
           val = 0.0;
-          evaluation_data.bcval->ReplaceGlobalValues(1, &val, &gid);
+          evaluation_data.bcval->replace_global_values(1, &val, &gid);
 
           gid = lm[i];
           val = 1;
-          evaluation_data.dbctog->ReplaceGlobalValues(1, &val, &gid);
+          evaluation_data.dbctog->replace_global_values(1, &val, &gid);
         }
       }  // END of if there is no BC but the node still is at the terminal
 
@@ -753,19 +753,19 @@ void Discret::Elements::AcinusImpl<distype>::calc_flow_rates(RedAcinus* ele,
 
   int gid = ele->id();
 
-  evaluation_data.qin_np->ReplaceGlobalValues(1, &qnp, &gid);
-  evaluation_data.qout_np->ReplaceGlobalValues(1, &qnp, &gid);
+  evaluation_data.qin_np->replace_global_values(1, &qnp, &gid);
+  evaluation_data.qout_np->replace_global_values(1, &qnp, &gid);
 
   // Calculate the new volume of the acinus due to the incoming flow; 0.5*(qnp+qn)*dt
   {
     double acinus_volume = e_acin_vn;
     acinus_volume += 0.5 * (qnp + qn) * dt;
-    evaluation_data.acinar_vnp->ReplaceGlobalValues(1, &acinus_volume, &gid);
+    evaluation_data.acinar_vnp->replace_global_values(1, &acinus_volume, &gid);
 
     // Calculate corresponding acinar strain
     const double vo = acinus_params.volume_relaxed;
     double avs_np = (acinus_volume - vo) / vo;
-    evaluation_data.acinar_vnp_strain->ReplaceGlobalValues(1, &avs_np, &gid);
+    evaluation_data.acinar_vnp_strain->replace_global_values(1, &avs_np, &gid);
   }
 }
 
@@ -790,11 +790,11 @@ void Discret::Elements::AcinusImpl<distype>::calc_elem_volume(RedAcinus* ele,
   int gid = ele->id();
 
   // Update elem
-  evaluation_data.elemVolumenp->ReplaceGlobalValues(1, &evolnp, &gid);
+  evaluation_data.elemVolumenp->replace_global_values(1, &evolnp, &gid);
 
   // calculate and update element radius
   double eRadiusnp = std::pow(evolnp * 0.75 * M_1_PI, 1.0 / 3.0);
-  evaluation_data.elemRadiusnp->ReplaceGlobalValues(1, &eRadiusnp, &gid);
+  evaluation_data.elemRadiusnp->replace_global_values(1, &eRadiusnp, &gid);
 }
 
 /*----------------------------------------------------------------------*

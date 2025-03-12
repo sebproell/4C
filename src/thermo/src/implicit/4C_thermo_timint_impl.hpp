@@ -285,7 +285,7 @@ namespace Thermo
             tempi  //!< input residual temperatures
     )
     {
-      if (tempi != nullptr) tempi_->Update(1.0, *tempi, 0.0);
+      if (tempi != nullptr) tempi_->update(1.0, *tempi, 0.0);
     }
 
     //! Return effective residual force \f$R_{n+1}\f$

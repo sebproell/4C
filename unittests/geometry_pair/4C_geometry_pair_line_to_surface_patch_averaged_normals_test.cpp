@@ -149,7 +149,7 @@ namespace
     Epetra_Map gid_map(discret_->num_global_nodes() * 3, discret_->num_global_nodes() * 3, 0,
         Core::Communication::as_epetra_comm(discret_->get_comm()));
     auto displacement_vector = std::make_shared<Core::LinAlg::Vector<double>>(gid_map);
-    for (int i = 0; i < displacement_vector->GlobalLength(); i++)
+    for (int i = 0; i < displacement_vector->global_length(); i++)
       (*displacement_vector)[i] = i * 0.01;
     face_element->set_state(displacement_vector, face_elements_map);
     {

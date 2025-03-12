@@ -207,9 +207,9 @@ void PoroElastScaTra::PoroScatraPart2WC::solve()
 
     // store scalar from first solution for convergence check (like in
     // elch_algorithm: use current values)
-    scaincnp_->Update(1.0, *scatra_field()->phinp(), 0.0);
-    structincnp_->Update(1.0, *poro_field()->structure_field()->dispnp(), 0.0);
-    fluidincnp_->Update(1.0, *poro_field()->fluid_field()->velnp(), 0.0);
+    scaincnp_->update(1.0, *scatra_field()->phinp(), 0.0);
+    structincnp_->update(1.0, *poro_field()->structure_field()->dispnp(), 0.0);
+    fluidincnp_->update(1.0, *poro_field()->fluid_field()->velnp(), 0.0);
 
     // set structure-based scalar transport values
     set_scatra_solution();
@@ -255,17 +255,17 @@ bool PoroElastScaTra::PoroScatraPart2WC::convergence_check(int itnum)
 
   // build the current scalar increment Inc T^{i+1}
   // \f Delta T^{k+1} = Inc T^{k+1} = T^{k+1} - T^{k}  \f
-  scaincnp_->Update(1.0, *(scatra_field()->phinp()), -1.0);
-  structincnp_->Update(1.0, *(poro_field()->structure_field()->dispnp()), -1.0);
-  fluidincnp_->Update(1.0, *(poro_field()->fluid_field()->velnp()), -1.0);
+  scaincnp_->update(1.0, *(scatra_field()->phinp()), -1.0);
+  structincnp_->update(1.0, *(poro_field()->structure_field()->dispnp()), -1.0);
+  fluidincnp_->update(1.0, *(poro_field()->fluid_field()->velnp()), -1.0);
 
   // build the L2-norm of the scalar increment and the scalar
-  scaincnp_->Norm2(&scaincnorm_L2);
-  scatra_field()->phinp()->Norm2(&scanorm_L2);
-  structincnp_->Norm2(&dispincnorm_L2);
-  poro_field()->structure_field()->dispnp()->Norm2(&dispnorm_L2);
-  fluidincnp_->Norm2(&fluidincnorm_L2);
-  poro_field()->fluid_field()->velnp()->Norm2(&fluidnorm_L2);
+  scaincnp_->norm_2(&scaincnorm_L2);
+  scatra_field()->phinp()->norm_2(&scanorm_L2);
+  structincnp_->norm_2(&dispincnorm_L2);
+  poro_field()->structure_field()->dispnp()->norm_2(&dispnorm_L2);
+  fluidincnp_->norm_2(&fluidincnorm_L2);
+  poro_field()->fluid_field()->velnp()->norm_2(&fluidnorm_L2);
 
   // care for the case that there is (almost) zero scalar
   if (scanorm_L2 < 1e-6) scanorm_L2 = 1.0;

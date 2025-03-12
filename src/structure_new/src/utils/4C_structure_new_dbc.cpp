@@ -70,7 +70,7 @@ void Solid::Dbc::setup()
       "function_manager", &Global::Problem::instance()->function_manager());
   discret_ptr_->evaluate_dirichlet(p, zeros_ptr_, nullptr, nullptr, nullptr, dbcmap_ptr_);
   // clear the system vector of possibly inserted non-zero DBC values
-  zeros_ptr_->PutScalar(0.0);
+  zeros_ptr_->put_scalar(0.0);
 
   // ---------------------------------------------------------------------------
   // Create local coordinate system manager
@@ -173,7 +173,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Solid::Dbc::get_dirichlet_incremen
   /* Subtract the displacements of the last converged step:
    * --> DBC-DOFs hold increments of current step
    * --> free-DOFs hold zeros. */
-  dbcincr->Update(-1.0, *disn, 1.0);
+  dbcincr->update(-1.0, *disn, 1.0);
 
   return dbcincr;
 }
@@ -391,7 +391,7 @@ void Solid::Dbc::extract_freact(Core::LinAlg::Vector<double>& b) const
   check_init_setup();
 
   Core::LinAlg::extract_my_vector(b, freact());
-  freact().Scale(-1.0);
+  freact().scale(-1.0);
 
   // put zeros on all non-DBC dofs
   insert_vector_in_non_dbc_dofs(zeros_ptr_, Core::Utils::shared_ptr_from_ref(freact()));

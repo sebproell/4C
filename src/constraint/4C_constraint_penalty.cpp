@@ -139,7 +139,7 @@ void CONSTRAINTS::ConstraintPenalty::evaluate(Teuchos::ParameterList& params,
       FOUR_C_THROW("Unknown constraint/monitor type to be evaluated in Constraint class!");
   }
   // start computing
-  acterror_->PutScalar(0.0);
+  acterror_->put_scalar(0.0);
   evaluate_error(params, *acterror_);
 
   switch (constrtype_)
@@ -371,8 +371,8 @@ void CONSTRAINTS::ConstraintPenalty::evaluate_error(
     }
   }
   Core::LinAlg::Vector<double> acterrdist(*errormap_);
-  acterrdist.Export(systemvector, *errorexport_, Add);
-  systemvector.Import(acterrdist, *errorimport_, Insert);
+  acterrdist.export_to(systemvector, *errorexport_, Add);
+  systemvector.import(acterrdist, *errorimport_, Insert);
 }  // end of evaluate_error
 
 FOUR_C_NAMESPACE_CLOSE

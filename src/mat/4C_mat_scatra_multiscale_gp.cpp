@@ -248,8 +248,8 @@ void Mat::ScatraMultiScaleGP::init()
   ++global_micro_state().microdisnum_nummacrogp_map_[microdisnum_];
 
   // extract initial state vectors from micro-scale time integrator
-  phin_->Scale(1., *global_micro_state().microdisnum_microtimint_map_[microdisnum_]->phin());
-  phinp_->Scale(1., *global_micro_state().microdisnum_microtimint_map_[microdisnum_]->phinp());
+  phin_->scale(1., *global_micro_state().microdisnum_microtimint_map_[microdisnum_]->phin());
+  phinp_->scale(1., *global_micro_state().microdisnum_microtimint_map_[microdisnum_]->phinp());
 
   // create new result file
   new_result_file();

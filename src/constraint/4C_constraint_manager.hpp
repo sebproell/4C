@@ -107,7 +107,7 @@ namespace CONSTRAINTS
     double get_error_norm() const
     {
       double foo;
-      constrainterr_->Norm2(&foo);
+      constrainterr_->norm_2(&foo);
       return foo;
     };
 
@@ -122,7 +122,7 @@ namespace CONSTRAINTS
     void scale_lagr_mult(double d  ///< scale factor
     )
     {
-      lagr_mult_vec_->Scale(d);
+      lagr_mult_vec_->scale(d);
       return;
     };
 
@@ -266,8 +266,8 @@ namespace CONSTRAINTS
         Core::LinAlg::Vector<double>& newlagrmult  ///< new lagrange multipliers
     )
     {
-      lagr_mult_vec_->Update(1.0, newlagrmult, 0.0);
-      lagr_mult_vec_old_->Update(1.0, newlagrmult, 0.0);
+      lagr_mult_vec_->update(1.0, newlagrmult, 0.0);
+      lagr_mult_vec_old_->update(1.0, newlagrmult, 0.0);
       return;
     }
 

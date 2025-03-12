@@ -350,8 +350,8 @@ void ScaTra::ScaTraAlgorithm::outer_iteration_convection()
   {
     natconvitnum++;
 
-    phiincnp_->Update(1.0, *scatra_field()->phinp(), 0.0);
-    velincnp_->Update(1.0, *fluid_field()->extract_velocity_part(fluid_field()->velnp()), 0.0);
+    phiincnp_->update(1.0, *scatra_field()->phinp(), 0.0);
+    velincnp_->update(1.0, *fluid_field()->extract_velocity_part(fluid_field()->velnp()), 0.0);
 
     // solve nonlinear Navier-Stokes system with body forces
     do_fluid_step();
@@ -437,18 +437,18 @@ bool ScaTra::ScaTraAlgorithm::convergence_check(
   // Calculate velocity increment and velocity L2 - Norm
   // velincnp_ = 1.0 * convelnp_ - 1.0 * conveln_
 
-  velincnp_->Update(1.0, *fluid_field()->extract_velocity_part(fluid_field()->velnp()), -1.0);
-  velincnp_->Norm2(&velincnorm_L2);  // Estimation of the L2 - norm save values to both variables
-                                     // (velincnorm_L2 and velnorm_L2)
-  fluid_field()->extract_velocity_part(fluid_field()->velnp())->Norm2(&velnorm_L2);
+  velincnp_->update(1.0, *fluid_field()->extract_velocity_part(fluid_field()->velnp()), -1.0);
+  velincnp_->norm_2(&velincnorm_L2);  // Estimation of the L2 - norm save values to both variables
+                                      // (velincnorm_L2 and velnorm_L2)
+  fluid_field()->extract_velocity_part(fluid_field()->velnp())->norm_2(&velnorm_L2);
 
   // Calculate phi increment and phi L2 - Norm
   // tempincnp_ includes the concentration and the potential increment
   // tempincnp_ = 1.0 * phinp_ - 1.0 * phin_
 
-  phiincnp_->Update(1.0, *scatra_field()->phinp(), -1.0);
-  phiincnp_->Norm2(&phiincnorm_L2);
-  scatra_field()->phinp()->Norm2(&phinorm_L2);
+  phiincnp_->update(1.0, *scatra_field()->phinp(), -1.0);
+  phiincnp_->norm_2(&phiincnorm_L2);
+  scatra_field()->phinp()->norm_2(&phinorm_L2);
 
   // care for the case that there is (almost) zero temperature or velocity
   // (usually not required for temperature)

@@ -197,7 +197,7 @@ void POROFLUIDMULTIPHASE::MeshtyingStrategyArtery::linear_solve(
 {
   comb_systemmatrix_->complete();
 
-  comb_increment_->PutScalar(0.0);
+  comb_increment_->put_scalar(0.0);
 
   // standard solver call
   // system is ready to solve since Dirichlet Boundary conditions have been applied in

@@ -232,9 +232,9 @@ void FPSI::FpsiCoupling::evaluate_coupling_matrixes_rhs()
   c_fa_->zero();
   c_pa_->zero();
 
-  c_rhs_s_->PutScalar(0.0);
-  c_rhs_pf_->PutScalar(0.0);
-  c_rhs_f_->PutScalar(0.0);
+  c_rhs_s_->put_scalar(0.0);
+  c_rhs_pf_->put_scalar(0.0);
+  c_rhs_f_->put_scalar(0.0);
 
   k_pf_porofluid->zero();
 
@@ -548,8 +548,8 @@ void FPSI::FpsiCoupling::evaluate_coupling_matrixes_rhs()
     fparams.set("InterfaceFacingElementMap", fluid_poro_fluid_interface_map_);
     temprhs = std::make_shared<Core::LinAlg::Vector<double>>(*fluid_field()->dof_row_map(), true);
     temprhs2 = std::make_shared<Core::LinAlg::Vector<double>>(*poro_field()->dof_row_map(), true);
-    temprhs->PutScalar(0.0);
-    temprhs2->PutScalar(0.0);
+    temprhs->put_scalar(0.0);
+    temprhs2->put_scalar(0.0);
 
     Core::FE::AssembleStrategy rhscontistrategy(0,  // fluid dofset for row
         0,                                          // fluid dofset for column
@@ -572,8 +572,8 @@ void FPSI::FpsiCoupling::evaluate_coupling_matrixes_rhs()
 
     // add vector with full porofield length to global rhs
 
-    temprhs->PutScalar(0.0);
-    temprhs2->PutScalar(0.0);
+    temprhs->put_scalar(0.0);
+    temprhs2->put_scalar(0.0);
 
     fparams.set<std::string>("fillblock", "structure");
     fparams.set("InterfaceFacingElementMap", fluid_poro_fluid_interface_map_);
@@ -596,8 +596,8 @@ void FPSI::FpsiCoupling::evaluate_coupling_matrixes_rhs()
     // insert porofluid interface
     porostruct_extractor_->add_cond_vector(*temprhs, *c_rhs_s_);
 
-    temprhs->PutScalar(0.0);
-    temprhs2->PutScalar(0.0);
+    temprhs->put_scalar(0.0);
+    temprhs2->put_scalar(0.0);
 
     fparams.set<std::string>("fillblock", "fluid");
     fparams.set("InterfaceFacingElementMap", poro_fluid_fluid_interface_map_);
@@ -621,10 +621,10 @@ void FPSI::FpsiCoupling::evaluate_coupling_matrixes_rhs()
     // insert porofluid interface entries into vector with full fluidfield length
     fluidvelpres_extractor_->insert_cond_vector(*temprhs, *temprhs2);
     // add vector with full porofield length to global rhs
-    c_rhs_f_->Update(1.0, *temprhs2, 0.0);
+    c_rhs_f_->update(1.0, *temprhs2, 0.0);
 
-    temprhs->PutScalar(0.0);
-    temprhs2->PutScalar(0.0);
+    temprhs->put_scalar(0.0);
+    temprhs2->put_scalar(0.0);
 
     fparams.set<std::string>("fillblock", "fluidfluid");  // (wot,tangentialfac*uot) part
     fparams.set("InterfaceFacingElementMap", fluid_poro_fluid_interface_map_);
@@ -639,10 +639,10 @@ void FPSI::FpsiCoupling::evaluate_coupling_matrixes_rhs()
     fluid_field()->discretization()->evaluate_condition(
         fparams, rhsfluidfluidstrategy, "fpsi_coupling");
 
-    c_rhs_f_->Update(1.0, *temprhs, 1.0);
+    c_rhs_f_->update(1.0, *temprhs, 1.0);
 
-    temprhs->PutScalar(0.0);
-    temprhs2->PutScalar(0.0);
+    temprhs->put_scalar(0.0);
+    temprhs2->put_scalar(0.0);
 
     //////////////////////////////////////
     //////                          //////
@@ -664,8 +664,8 @@ void FPSI::FpsiCoupling::evaluate_coupling_matrixes_rhs()
       fluid_field()->discretization()->evaluate_condition(
           fparams, rhsfluidfluidstrategy2, "NeumannIntegration");
 
-      c_rhs_f_->Update(1.0, *temprhs, 1.0);
-      temprhs->PutScalar(0.0);
+      c_rhs_f_->update(1.0, *temprhs, 1.0);
+      temprhs->put_scalar(0.0);
 
       {
         fparams.set<std::string>("fillblock", "NeumannIntegration_Ale");
@@ -728,12 +728,12 @@ void FPSI::FpsiCoupling::evaluate_coupling_matrixes_rhs()
     {
       fparams.set<std::string>("fillblock", "NeumannIntegration");
       fparams.set("InterfaceFacingElementMap", fluid_poro_fluid_interface_map_);
-      temprhs->PutScalar(0.0);
-      temprhs2->PutScalar(0.0);
+      temprhs->put_scalar(0.0);
+      temprhs2->put_scalar(0.0);
       fluid_field()->discretization()->evaluate_condition(
           fparams, rhsfluidfluidstrategy, "NeumannIntegration");
 
-      c_rhs_f_->Update(1.0, *temprhs, 1.0);
+      c_rhs_f_->update(1.0, *temprhs, 1.0);
     }
 
     ////////////////////////////

@@ -518,7 +518,7 @@ double Solid::MonitorDbc::get_reaction_force(
         Core::LinAlg::extract_my_vector(complete_freact, *(react_maps[d]));
 
     double& lrforce_comp = lrforce_xyz(d, 0);
-    const double* vals = partial_freact_ptr->Values();
+    const double* vals = partial_freact_ptr->get_values();
     for (int i = 0; i < react_maps[d]->NumMyElements(); ++i) lrforce_comp += vals[i];
   }
 
@@ -571,10 +571,10 @@ double Solid::MonitorDbc::get_reaction_moment(Core::LinAlg::Matrix<DIM, 1>& rmom
     {
       if (onoff[i] == 1)
       {
-        const int lid = complete_freact.Map().LID(node_gid[i]);
+        const int lid = complete_freact.get_map().LID(node_gid[i]);
         if (lid < 0)
           FOUR_C_THROW("Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
-              Core::Communication::my_mpi_rank(complete_freact.Comm()), node_gid[i]);
+              Core::Communication::my_mpi_rank(complete_freact.get_comm()), node_gid[i]);
         node_reaction_force(i) = complete_freact[lid];
       }
     }

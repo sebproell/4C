@@ -49,8 +49,8 @@ void Solid::TimAdaZienXie::integrate_step_auxiliary()
 
   // build ZX displacements D_{n+1}^{ZX}
   // using the second order (or lower) accurate new accelerations
-  locerrdisn_->Update(1.0, *dis, stepsize_, *vel, 0.0);
-  locerrdisn_->Update(stepsize_ * stepsize_ / 3.0, *acc, stepsize_ * stepsize_ / 6.0, *accn, 1.0);
+  locerrdisn_->update(1.0, *dis, stepsize_, *vel, 0.0);
+  locerrdisn_->update(stepsize_ * stepsize_ / 3.0, *acc, stepsize_ * stepsize_ / 6.0, *accn, 1.0);
 
   return;
 }

@@ -89,7 +89,7 @@ void ScaTra::TimIntCardiacMonodomain::collect_runtime_output_data()
   // Compute and write activation time
   if (activation_time_np_ != nullptr)
   {
-    for (int k = 0; k < phinp_->MyLength(); k++)
+    for (int k = 0; k < phinp_->local_length(); k++)
     {
       if ((*phinp_)[k] >= activation_threshold_ && (*activation_time_np_)[k] <= dta_ * 0.9)
         (*activation_time_np_)[k] = time_;
@@ -199,7 +199,7 @@ void ScaTra::TimIntCardiacMonodomain::write_restart() const
   // Compute and write activation time
   if (activation_time_np_ != nullptr)
   {
-    for (int k = 0; k < phinp_->MyLength(); k++)
+    for (int k = 0; k < phinp_->local_length(); k++)
     {
       if ((*phinp_)[k] >= activation_threshold_ && (*activation_time_np_)[k] <= dta_ * 0.9)
         (*activation_time_np_)[k] = time_;

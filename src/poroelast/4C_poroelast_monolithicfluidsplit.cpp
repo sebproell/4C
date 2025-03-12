@@ -111,7 +111,7 @@ void PoroElast::MonolithicFluidSplit::setup_rhs(bool firstcall)
         std::make_shared<Core::LinAlg::Vector<double>>(fig.row_map());
 
     fig.Apply(*fveln, *rhs);
-    rhs->Scale(timescale * dt());
+    rhs->scale(timescale * dt());
 
 #ifdef FLUIDSPLITAMG
     rhs = fluid_field()->interface()->insert_other_vector(*rhs);
@@ -122,8 +122,8 @@ void PoroElast::MonolithicFluidSplit::setup_rhs(bool firstcall)
     rhs = std::make_shared<Core::LinAlg::Vector<double>>(fgg.row_map());
 
     fgg.Apply(*fveln, *rhs);
-    rhs->Scale(scale * timescale * dt());
-    rhs->Scale(
+    rhs->scale(scale * timescale * dt());
+    rhs->scale(
         (1.0 - stiparam) / (1.0 - ftiparam));  // scale 'rhs' due to consistent time integration
 
     rhs = fluid_to_structure_at_interface(*rhs);
@@ -134,7 +134,7 @@ void PoroElast::MonolithicFluidSplit::setup_rhs(bool firstcall)
     rhs = std::make_shared<Core::LinAlg::Vector<double>>(kig.row_map());
 
     kig.Apply(*fveln, *rhs);
-    rhs->Scale(timescale * dt());
+    rhs->scale(timescale * dt());
 
     rhs = structure_field()->interface()->insert_other_vector(*rhs);
 
@@ -143,7 +143,7 @@ void PoroElast::MonolithicFluidSplit::setup_rhs(bool firstcall)
     rhs = std::make_shared<Core::LinAlg::Vector<double>>(kgg.row_map());
 
     kgg.Apply(*fveln, *rhs);
-    rhs->Scale(timescale * dt());
+    rhs->scale(timescale * dt());
 
     rhs = structure_field()->interface()->insert_fsi_cond_vector(*rhs);
 
@@ -297,14 +297,14 @@ void PoroElast::MonolithicFluidSplit::extract_field_vectors(
 
     {
       double timescale = fluid_field()->time_scaling();
-      fcx->Scale(timescale);
+      fcx->scale(timescale);
     }
 
     std::shared_ptr<Core::LinAlg::Vector<double>> f =
         fluid_field()->interface()->insert_other_vector(*fox);
     fluid_field()->interface()->insert_fsi_cond_vector(*fcx, *f);
 
-    FourC::Core::LinAlg::Vector<double> zeros(f->Map(), true);
+    FourC::Core::LinAlg::Vector<double> zeros(f->get_map(), true);
     Core::LinAlg::apply_dirichlet_to_system(
         *f, zeros, *(fluid_field()->get_dbc_map_extractor()->cond_map()));
 
@@ -314,21 +314,21 @@ void PoroElast::MonolithicFluidSplit::extract_field_vectors(
     std::shared_ptr<Core::LinAlg::Vector<double>> sox =
         structure_field()->interface()->extract_other_vector(*sx);
     if (solipre_ != nullptr)
-      ddiinc_->Update(1.0, *sox, -1.0, *solipre_, 0.0);  // compute current iteration increment
+      ddiinc_->update(1.0, *sox, -1.0, *solipre_, 0.0);  // compute current iteration increment
     else
       ddiinc_ = std::make_shared<Core::LinAlg::Vector<double>>(*sox);  // first iteration increment
 
     solipre_ = sox;  // store current step increment
 
     if (solgvelpre_ != nullptr)
-      duginc_->Update(1.0, *fcx, -1.0, *solgvelpre_, 0.0);  // compute current iteration increment
+      duginc_->update(1.0, *fcx, -1.0, *solgvelpre_, 0.0);  // compute current iteration increment
     else
       duginc_ = std::make_shared<Core::LinAlg::Vector<double>>(*fcx);  // first iteration increment
 
     solgvelpre_ = fcx;  // store current step increment
 
     if (solivelpre_ != nullptr)
-      duiinc_->Update(1.0, *fox, -1.0, *solivelpre_, 0.0);  // compute current iteration increment
+      duiinc_->update(1.0, *fox, -1.0, *solivelpre_, 0.0);  // compute current iteration increment
     else
       duiinc_ = std::make_shared<Core::LinAlg::Vector<double>>(*fox);  // first iteration increment
 
@@ -372,7 +372,7 @@ void PoroElast::MonolithicFluidSplit::recover_lagrange_multiplier_after_time_ste
         Core::LinAlg::create_vector(*fluid_field()->interface()->fsi_cond_map(), true);
     // compute the above mentioned product
     cggcur_->multiply(false, *duginc_, *cggddg);
-    cggddg->Scale(1.0 / timescale);
+    cggddg->scale(1.0 / timescale);
 
     // Update the Lagrange multiplier:
     /* \lambda^{n+1} =  1/b * [ - a*\lambda^n - f_\Gamma^S
@@ -381,10 +381,10 @@ void PoroElast::MonolithicFluidSplit::recover_lagrange_multiplier_after_time_ste
      *                          - F_{\Gamma\Gamma} \Delta u_\Gamma]
      *                          - C_{\Gamma\Gamma} * Delta t / 2 * \Delta u_\Gamma]
      */
-    lambda_->Update(1.0, *fgcur_, -ftiparam);
-    lambda_->Update(-1.0, *fgiddi, -1.0, *sggddg, 1.0);
-    lambda_->Update(-1.0, *fgiddi, -1.0, *cggddg, 1.0);
-    lambda_->Scale(1 / (1.0 - ftiparam));  // entire Lagrange multiplier is divided by (1.-ftiparam)
+    lambda_->update(1.0, *fgcur_, -ftiparam);
+    lambda_->update(-1.0, *fgiddi, -1.0, *sggddg, 1.0);
+    lambda_->update(-1.0, *fgiddi, -1.0, *cggddg, 1.0);
+    lambda_->scale(1 / (1.0 - ftiparam));  // entire Lagrange multiplier is divided by (1.-ftiparam)
   }
 }
 

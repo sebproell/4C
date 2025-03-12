@@ -64,7 +64,7 @@ void Solid::IMPLICIT::Statics::set_state(const Core::LinAlg::Vector<double>& x)
   if (is_predictor_state()) return;
 
   std::shared_ptr<Core::LinAlg::Vector<double>> disnp_ptr = global_state().extract_displ_entries(x);
-  global_state().get_dis_np()->Scale(1.0, *disnp_ptr);
+  global_state().get_dis_np()->scale(1.0, *disnp_ptr);
 }
 
 /*----------------------------------------------------------------------------*
@@ -152,11 +152,11 @@ double Solid::IMPLICIT::Statics::calc_ref_norm_force(
 
   // switch from Core::LinAlg::Vector<double> to ::NOX::Epetra::Vector (view but read-only)
   const ::NOX::Epetra::Vector fintnp_nox_ptr(
-      Teuchos::rcpFromRef(*fintnp->get_ptr_of_Epetra_Vector()), ::NOX::Epetra::Vector::CreateView);
+      Teuchos::rcpFromRef(*fintnp->get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
   const ::NOX::Epetra::Vector fextnp_nox_ptr(
-      Teuchos::rcpFromRef(*fextnp->get_ptr_of_Epetra_Vector()), ::NOX::Epetra::Vector::CreateView);
+      Teuchos::rcpFromRef(*fextnp->get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
   const ::NOX::Epetra::Vector freactnp_nox_ptr(
-      Teuchos::rcpFromRef(*freactnp->get_ptr_of_Epetra_Vector()),
+      Teuchos::rcpFromRef(*freactnp->get_ptr_of_epetra_vector()),
       ::NOX::Epetra::Vector::CreateView);
 
   // norm of the internal forces
@@ -200,7 +200,7 @@ void Solid::IMPLICIT::Statics::pre_update()
       // read-only access
       std::shared_ptr<const Core::LinAlg::Vector<double>> veln_ptr = global_state().get_vel_n();
       // update the pseudo acceleration (statics!)
-      accnp_ptr->Update(1.0 / dt, *velnp_ptr, -1.0 / dt, *veln_ptr, 0.0);
+      accnp_ptr->update(1.0 / dt, *velnp_ptr, -1.0 / dt, *veln_ptr, 0.0);
 
       [[fallthrough]];
     }
@@ -211,7 +211,7 @@ void Solid::IMPLICIT::Statics::pre_update()
       std::shared_ptr<const Core::LinAlg::Vector<double>> disn_ptr = global_state().get_dis_n();
       std::shared_ptr<const Core::LinAlg::Vector<double>> disnp_ptr = global_state().get_dis_np();
       // update the pseudo velocity (statics!)
-      velnp_ptr->Update(1.0 / dt, *disnp_ptr, -1.0 / dt, *disn_ptr, 0.0);
+      velnp_ptr->update(1.0 / dt, *disnp_ptr, -1.0 / dt, *disn_ptr, 0.0);
       // ATTENTION: Break for both cases!
       break;
     }
@@ -246,11 +246,11 @@ void Solid::IMPLICIT::Statics::predict_const_dis_consist_vel_acc(
 {
   check_init_setup();
   // constant predictor : displacement in domain
-  disnp.Update(1.0, *global_state().get_dis_n(), 0.0);
+  disnp.update(1.0, *global_state().get_dis_n(), 0.0);
   // new end-point velocities, these stay zero in static calculation
-  velnp.PutScalar(0.0);
+  velnp.put_scalar(0.0);
   // new end-point accelerations, these stay zero in static calculation
-  accnp.PutScalar(0.0);
+  accnp.put_scalar(0.0);
 }
 
 /*----------------------------------------------------------------------------*
@@ -265,14 +265,14 @@ bool Solid::IMPLICIT::Statics::predict_const_vel_consist_acc(Core::LinAlg::Vecto
   // Displacement increment over last time step
   std::shared_ptr<Core::LinAlg::Vector<double>> disp_inc =
       std::make_shared<Core::LinAlg::Vector<double>>(*global_state().dof_row_map_view(), true);
-  disp_inc->Update((*global_state().get_delta_time())[0], *global_state().get_vel_n(), 0.);
+  disp_inc->update((*global_state().get_delta_time())[0], *global_state().get_vel_n(), 0.);
   // apply the dbc on the auxiliary vector
   tim_int().get_dbc().apply_dirichlet_to_vector(*disp_inc);
   // update the solution variables
-  disnp.Update(1.0, *global_state().get_dis_n(), 0.0);
-  disnp.Update(1.0, *disp_inc, 1.0);
-  velnp.Update(1.0, *global_state().get_vel_n(), 0.0);
-  accnp.Update(1.0, *global_state().get_acc_n(), 0.0);
+  disnp.update(1.0, *global_state().get_dis_n(), 0.0);
+  disnp.update(1.0, *disp_inc, 1.0);
+  velnp.update(1.0, *global_state().get_vel_n(), 0.0);
+  accnp.update(1.0, *global_state().get_acc_n(), 0.0);
 
   return true;
 }
@@ -291,15 +291,15 @@ bool Solid::IMPLICIT::Statics::predict_const_acc(Core::LinAlg::Vector<double>& d
   std::shared_ptr<Core::LinAlg::Vector<double>> disp_inc =
       std::make_shared<Core::LinAlg::Vector<double>>(*global_state().dof_row_map_view(), true);
   const double& dt = (*global_state().get_delta_time())[0];
-  disp_inc->Update(dt, *global_state().get_vel_n(), 0.);
-  disp_inc->Update(0.5 * dt * dt, *global_state().get_acc_n(), 1.0);
+  disp_inc->update(dt, *global_state().get_vel_n(), 0.);
+  disp_inc->update(0.5 * dt * dt, *global_state().get_acc_n(), 1.0);
   // apply the dbc on the auxiliary vector
   tim_int().get_dbc().apply_dirichlet_to_vector(*disp_inc);
   // update the solution variables
-  disnp.Update(1.0, *global_state().get_dis_n(), 0.0);
-  disnp.Update(1., *disp_inc, 1.);
-  velnp.Update(1.0, *global_state().get_vel_n(), 0.0);
-  accnp.Update(1.0, *global_state().get_acc_n(), 0.0);
+  disnp.update(1.0, *global_state().get_dis_n(), 0.0);
+  disnp.update(1., *disp_inc, 1.);
+  velnp.update(1.0, *global_state().get_vel_n(), 0.0);
+  accnp.update(1.0, *global_state().get_acc_n(), 0.0);
 
   return true;
 }
@@ -329,7 +329,7 @@ double Solid::IMPLICIT::Statics::get_model_value(const Core::LinAlg::Vector<doub
   str_model.determine_strain_energy(disnp, true);
   const double int_energy_np = eval_data().get_energy_data(Solid::internal_energy);
   double ext_energy_np = 0.0;
-  global_state().get_fext_np()->Dot(disnp, &ext_energy_np);
+  global_state().get_fext_np()->dot(disnp, &ext_energy_np);
   const double total = int_energy_np - ext_energy_np;
 
   std::ostream& os = Core::IO::cout.os(Core::IO::debug);

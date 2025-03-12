@@ -119,7 +119,7 @@ void Solid::Predict::TangDis::compute(::NOX::Abstract::Group& grp)
   std::shared_ptr<Core::LinAlg::Vector<double>> dbc_incr_exp_ptr =
       std::make_shared<Core::LinAlg::Vector<double>>(global_state().global_problem_map(), true);
   Core::LinAlg::export_to(*dbc_incr_ptr_, *dbc_incr_exp_ptr);
-  grp_ptr->computeX(*grp_ptr, dbc_incr_exp_ptr->get_ref_of_Epetra_Vector(), 1.0);
+  grp_ptr->computeX(*grp_ptr, dbc_incr_exp_ptr->get_ref_of_epetra_vector(), 1.0);
   // Reset the state variables
   const ::NOX::Epetra::Vector& x_eptra =
       dynamic_cast<const ::NOX::Epetra::Vector&>(grp_ptr->getX());
@@ -127,7 +127,7 @@ void Solid::Predict::TangDis::compute(::NOX::Abstract::Group& grp)
   impl_int().reset_model_states(Core::LinAlg::Vector<double>(x_eptra.getEpetraVector()));
 
   // For safety purposes, we set the dbc_incr vector to zero
-  dbc_incr_ptr_->PutScalar(0.0);
+  dbc_incr_ptr_->put_scalar(0.0);
 
   impl_int().model_eval().predict(get_type());
 
@@ -159,7 +159,7 @@ bool Solid::Predict::TangDis::pre_apply_force_external(Core::LinAlg::Vector<doub
 
   if (apply_linear_reaction_forces_)
   {
-    fextnp.Scale(1.0, *global_state().get_fext_n());
+    fextnp.scale(1.0, *global_state().get_fext_n());
     return true;
   }
   return false;
@@ -187,7 +187,7 @@ void NOX::Nln::GROUP::PrePostOp::TangDis::run_post_compute_f(
   const Core::LinAlg::Vector<double>& dbc_incr = tang_predict_ptr_->get_dbc_incr();
 
   double dbc_incr_nrm2 = 0.0;
-  dbc_incr.Norm2(&dbc_incr_nrm2);
+  dbc_incr.norm_2(&dbc_incr_nrm2);
 
   // If there are only Neumann loads, do a direct return.
   if (dbc_incr_nrm2 == 0.0) return;

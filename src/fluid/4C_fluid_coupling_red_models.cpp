@@ -1058,7 +1058,7 @@ void FLD::Utils::FluidCouplingBc::outflow_boundary(
         "3D/reduced-D coupling condition Id: %d Pressure %f at time %f\n", condid, pressure, time);
 
 
-  couplingbc_->PutScalar(0.0);
+  couplingbc_->put_scalar(0.0);
   const std::string condstring("Art_3D_redD_CouplingCond");
   discret_3d_->evaluate_condition(eleparams, couplingbc_, condstring, condid);
 
@@ -1118,7 +1118,7 @@ void FLD::Utils::FluidCouplingBc::inflow_boundary(
  */
 void FLD::Utils::FluidCouplingBc::update_residual(Core::LinAlg::Vector<double>& residual)
 {
-  residual.Update(1.0, *couplingbc_, 1.0);
+  residual.update(1.0, *couplingbc_, 1.0);
 }
 
 //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>//
@@ -1215,7 +1215,7 @@ void FLD::Utils::FluidCouplingBc::evaluate_dirichlet(
             exit(1);
           }
           std::cout << "[" << dof_gid << "]\t|" << val << "\t<-<" << (velnp)[lid] << "|\t";
-          velnp.ReplaceGlobalValues(1, &val, &dof_gid);
+          velnp.replace_global_values(1, &val, &dof_gid);
         }
       }
     }

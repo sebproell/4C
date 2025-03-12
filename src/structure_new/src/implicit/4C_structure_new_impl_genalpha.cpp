@@ -187,7 +187,7 @@ double Solid::IMPLICIT::GenAlpha::get_model_value(const Core::LinAlg::Vector<dou
   const Core::LinAlg::Vector<double>& accn = *accn_ptr;
 
   Core::LinAlg::Vector<double> accm(accnp);
-  accm.Update(alpham_, accn, 1.0 - alpham_);
+  accm.update(alpham_, accn, 1.0 - alpham_);
 
   const double dt = (*global_state().get_delta_time())[0];
   std::shared_ptr<const Core::LinAlg::SparseOperator> mass_ptr = global_state().get_mass_matrix();
@@ -197,7 +197,7 @@ double Solid::IMPLICIT::GenAlpha::get_model_value(const Core::LinAlg::Vector<dou
 
   double kin_energy_incr = 0.0;
   mass.multiply(false, accm, tmp);
-  tmp.Dot(accm, &kin_energy_incr);
+  tmp.dot(accm, &kin_energy_incr);
 
   kin_energy_incr *= 0.5 * beta_ * dt * dt / (1 - alpham_);
 
@@ -216,7 +216,7 @@ double Solid::IMPLICIT::GenAlpha::get_model_value(const Core::LinAlg::Vector<dou
 
   // --- external energy
   double ext_energy_np = 0.0;
-  global_state().get_fext_np()->Dot(disnp, &ext_energy_np);
+  global_state().get_fext_np()->dot(disnp, &ext_energy_np);
   ext_energy_np *= af_np;
 
   // --- old contributions
@@ -225,7 +225,7 @@ double Solid::IMPLICIT::GenAlpha::get_model_value(const Core::LinAlg::Vector<dou
   // the contact forces as well! See update_step_state in the different
   // model evaluator classes.
   double disNp_forcesN = 0.0;
-  global_state().get_fstructure_old()->Dot(disnp, &disNp_forcesN);
+  global_state().get_fstructure_old()->dot(disnp, &disNp_forcesN);
 
   const double total = kin_energy_incr + int_energy_np + disNp_forcesN - ext_energy_np;
 
@@ -257,18 +257,18 @@ void Solid::IMPLICIT::GenAlpha::set_state(const Core::LinAlg::Vector<double>& x)
   // new end-point displacements
   // ---------------------------------------------------------------------------
   std::shared_ptr<Core::LinAlg::Vector<double>> disnp_ptr = global_state().extract_displ_entries(x);
-  global_state().get_dis_np()->Scale(1.0, *disnp_ptr);
+  global_state().get_dis_np()->scale(1.0, *disnp_ptr);
 
   // ---------------------------------------------------------------------------
   // new end-point velocities
   // ---------------------------------------------------------------------------
-  global_state().get_vel_np()->Update(
+  global_state().get_vel_np()->update(
       1.0, (*const_vel_acc_update_ptr_)(0), gamma_ / (beta_ * dt), *disnp_ptr, 0.0);
 
   // ---------------------------------------------------------------------------
   // new end-point accelerations
   // ---------------------------------------------------------------------------
-  global_state().get_acc_np()->Update(
+  global_state().get_acc_np()->update(
       1.0, (*const_vel_acc_update_ptr_)(1), 1.0 / (beta_ * dt * dt), *disnp_ptr, 0.0);
 }
 
@@ -281,18 +281,18 @@ void Solid::IMPLICIT::GenAlpha::update_constant_state_contributions()
   // ---------------------------------------------------------------------------
   // velocity
   // ---------------------------------------------------------------------------
-  (*const_vel_acc_update_ptr_)(0).Scale((beta_ - gamma_) / beta_, *global_state().get_vel_n());
-  (*const_vel_acc_update_ptr_)(0).Update(
+  (*const_vel_acc_update_ptr_)(0).scale((beta_ - gamma_) / beta_, *global_state().get_vel_n());
+  (*const_vel_acc_update_ptr_)(0).update(
       (2.0 * beta_ - gamma_) * dt / (2.0 * beta_), *global_state().get_acc_n(), 1.0);
-  (*const_vel_acc_update_ptr_)(0).Update(-gamma_ / (beta_ * dt), *global_state().get_dis_n(), 1.0);
+  (*const_vel_acc_update_ptr_)(0).update(-gamma_ / (beta_ * dt), *global_state().get_dis_n(), 1.0);
 
   // ---------------------------------------------------------------------------
   // acceleration
   // ---------------------------------------------------------------------------
-  (*const_vel_acc_update_ptr_)(1).Scale(
+  (*const_vel_acc_update_ptr_)(1).scale(
       (2.0 * beta_ - 1.0) / (2.0 * beta_), *global_state().get_acc_n());
-  (*const_vel_acc_update_ptr_)(1).Update(-1.0 / (beta_ * dt), *global_state().get_vel_n(), 1.0);
-  (*const_vel_acc_update_ptr_)(1).Update(
+  (*const_vel_acc_update_ptr_)(1).update(-1.0 / (beta_ * dt), *global_state().get_vel_n(), 1.0);
+  (*const_vel_acc_update_ptr_)(1).update(
       -1.0 / (beta_ * dt * dt), *global_state().get_dis_n(), 1.0);
 }
 
@@ -473,10 +473,10 @@ void Solid::IMPLICIT::GenAlpha::update_step_state()
   // ---------------------------------------------------------------------------
   // new at t_{n+1} -> t_n
   //    finertial_{n} := finertial_{n+1}
-  finertian_ptr_->Scale(1.0, *global_state().get_finertial_np());
+  finertian_ptr_->scale(1.0, *global_state().get_finertial_np());
   // new at t_{n+1} -> t_n
   //    fviscous_{n} := fviscous_{n+1}
-  fviscon_ptr_->Scale(1.0, *fvisconp_ptr_);
+  fviscon_ptr_->scale(1.0, *fvisconp_ptr_);
 
   // ---------------------------------------------------------------------------
   // update model specific variables
@@ -509,20 +509,20 @@ void Solid::IMPLICIT::GenAlpha::predict_const_dis_consist_vel_acc(
   const double& dt = (*global_state().get_delta_time())[0];
 
   // constant predictor: displacement in domain
-  disnp.Scale(1.0, *disn);
+  disnp.scale(1.0, *disn);
 
   // consistent velocities following Newmark formulas
   /* Since disnp and disn are equal we can skip the current
    * update part and have to consider only the old state at t_{n}.
    *           disnp-disn = 0.0                                 */
-  velnp.Update(
+  velnp.update(
       (beta_ - gamma_) / beta_, *veln, (2.0 * beta_ - gamma_) * dt / (2.0 * beta_), *accn, 0.0);
 
   // consistent accelerations following Newmark formulas
   /* Since disnp and disn are equal we can skip the current
    * update part and have to consider only the old state at t_{n}.
    *           disnp-disn = 0.0                                 */
-  accnp.Update(-1.0 / (beta_ * dt), *veln, (2.0 * beta_ - 1.0) / (2.0 * beta_), *accn, 0.0);
+  accnp.update(-1.0 / (beta_ * dt), *veln, (2.0 * beta_ - 1.0) / (2.0 * beta_), *accn, 0.0);
 }
 
 /*----------------------------------------------------------------------------*
@@ -543,16 +543,16 @@ bool Solid::IMPLICIT::GenAlpha::predict_const_vel_consist_acc(Core::LinAlg::Vect
 
   // extrapolated displacements based upon constant velocities
   // d_{n+1} = d_{n} + dt * v_{n}
-  disnp.Update(1.0, *disn, dt, *veln, 0.0);
+  disnp.update(1.0, *disn, dt, *veln, 0.0);
 
   // consistent velocities following Newmark formulas
-  velnp.Update(1.0, disnp, -1.0, *disn, 0.0);
-  velnp.Update((beta_ - gamma_) / beta_, *veln, (2. * beta_ - gamma_) * dt / (2. * beta_), *accn,
+  velnp.update(1.0, disnp, -1.0, *disn, 0.0);
+  velnp.update((beta_ - gamma_) / beta_, *veln, (2. * beta_ - gamma_) * dt / (2. * beta_), *accn,
       gamma_ / (beta_ * dt));
 
   // consistent accelerations following Newmark formulas
-  accnp.Update(1.0, disnp, -1.0, *disn, 0.0);
-  accnp.Update(-1.0 / (beta_ * dt), *veln, (2.0 * beta_ - 1.0) / (2.0 * beta_), *accn,
+  accnp.update(1.0, disnp, -1.0, *disn, 0.0);
+  accnp.update(-1.0 / (beta_ * dt), *veln, (2.0 * beta_ - 1.0) / (2.0 * beta_), *accn,
       1. / (beta_ * dt * dt));
 
   return true;
@@ -576,15 +576,15 @@ bool Solid::IMPLICIT::GenAlpha::predict_const_acc(Core::LinAlg::Vector<double>& 
 
   // extrapolated displacements based upon constant accelerations
   // d_{n+1} = d_{n} + dt * v_{n} + dt^2 / 2 * a_{n}
-  disnp.Update(1.0, *disn, dt, *veln, 0.0);
-  disnp.Update(0.5 * dt * dt, *accn, 1.0);
+  disnp.update(1.0, *disn, dt, *veln, 0.0);
+  disnp.update(0.5 * dt * dt, *accn, 1.0);
 
   // extrapolated velocities (equal to consistent velocities)
   // v_{n+1} = v_{n} + dt * a_{n}
-  velnp.Update(1.0, *veln, dt, *accn, 0.0);
+  velnp.update(1.0, *veln, dt, *accn, 0.0);
 
   // constant accelerations (equal to consistent accelerations)
-  accnp.Update(1.0, *accn, 0.0);
+  accnp.update(1.0, *accn, 0.0);
 
   return true;
 }

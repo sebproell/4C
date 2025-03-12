@@ -94,7 +94,7 @@ Thermo::TimInt::TimInt(const Teuchos::ParameterList& ioparams,
     p.set<const Core::Utils::FunctionManager*>(
         "function_manager", &Global::Problem::instance()->function_manager());
     discret_->evaluate_dirichlet(p, zeros_, nullptr, nullptr, nullptr, dbcmaps_);
-    zeros_->PutScalar(0.0);  // just in case of change
+    zeros_->put_scalar(0.0);  // just in case of change
   }
 
   // temperatures T_{n}
@@ -229,7 +229,7 @@ void Thermo::TimInt::determine_capa_consist_temp_rate()
     // K . DT = - R_n+1 = - R_n - (fint_n+1 - fext_n+1)
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs =
         Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
-    rhs->Update(-1.0, *fint, 1.0, *fext, -1.0);
+    rhs->update(-1.0, *fint, 1.0, *fext, -1.0);
     // blank RHS on DBC DOFs
     dbcmaps_->insert_cond_vector(*dbcmaps_->extract_cond_vector(*zeros_), *rhs);
 
@@ -309,8 +309,8 @@ void Thermo::TimInt::update_step_time()
 void Thermo::TimInt::reset_step()
 {
   // reset state vectors
-  tempn_->Update(1.0, (*temp_)[0], 0.0);
-  raten_->Update(1.0, (*rate_)[0], 0.0);
+  tempn_->update(1.0, (*temp_)[0], 0.0);
+  raten_->update(1.0, (*rate_)[0], 0.0);
 
   // reset anything that needs to be reset at the element level
   {
@@ -860,8 +860,8 @@ void Thermo::TimInt::set_initial_field(const Thermo::InitialField init, const in
     {
       // extract temperature vector at time t_n (temp_ contains various vectors of
       // old(er) temperatures and is of type TimIntMStep<Core::LinAlg::Vector<double>>)
-      (*temp_)(0)->PutScalar(0.0);
-      tempn_->PutScalar(0.0);
+      (*temp_)(0)->put_scalar(0.0);
+      tempn_->put_scalar(0.0);
       break;
     }  // initfield_zero_field
 
@@ -888,12 +888,12 @@ void Thermo::TimInt::set_initial_field(const Thermo::InitialField init, const in
                                   .evaluate(lnode->x().data(), 0.0, k);
           // extract temperature vector at time t_n (temp_ contains various vectors of
           // old(er) temperatures and is of type TimIntMStep<Core::LinAlg::Vector<double>>)
-          int err1 = (*temp_)(0)->ReplaceMyValues(1, &initialval, &doflid);
+          int err1 = (*temp_)(0)->replace_local_values(1, &initialval, &doflid);
           if (err1 != 0) FOUR_C_THROW("dof not on proc");
           // initialise also the solution vector. These values are a pretty good
           // guess for the solution after the first time step (much better than
           // starting with a zero vector)
-          int err2 = tempn_->ReplaceMyValues(1, &initialval, &doflid);
+          int err2 = tempn_->replace_local_values(1, &initialval, &doflid);
           if (err2 != 0) FOUR_C_THROW("dof not on proc");
         }  // numdofs
       }

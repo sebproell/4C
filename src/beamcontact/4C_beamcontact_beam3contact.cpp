@@ -5416,13 +5416,13 @@ void CONTACT::Beam3contact<numnodes, numnodalvalues>::fd_check(
   // This FD-Check is very general, since it applies the complete method "Evaluate" recursively.
   // Therefore, all changes within this class are automatically considered and have not to be
   // adapted in this finite difference check!
-  if (fint.GlobalLength() > 2 * 3 * numnodes * numnodalvalues)
+  if (fint.global_length() > 2 * 3 * numnodes * numnodalvalues)
     FOUR_C_THROW("So far, this fd_check only works for simulations with two elements!!!");
 
   Core::LinAlg::Vector<double> fint1(fint);
-  fint1.PutScalar(0.0);
+  fint1.put_scalar(0.0);
   Core::LinAlg::Vector<double> fint2(fint);
-  fint2.PutScalar(0.0);
+  fint2.put_scalar(0.0);
 
   Core::LinAlg::SparseMatrix stiffmatrix_analyt(stiffmatrix);
   stiffmatrix_analyt.put_scalar(0.0);
@@ -5471,7 +5471,7 @@ void CONTACT::Beam3contact<numnodes, numnodalvalues>::fd_check(
     else
       ele2pos_(dof - 3 * numnodes * numnodalvalues) += delta;
 
-    fint2.PutScalar(0.0);
+    fint2.put_scalar(0.0);
     stiffmatrix_dummy.put_scalar(0.0);
 
     this->evaluate(stiffmatrix_dummy, fint2, pp, contactpairmap, timeintparams, true);

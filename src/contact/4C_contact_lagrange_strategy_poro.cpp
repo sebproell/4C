@@ -168,7 +168,7 @@ void CONTACT::LagrangeStrategyPoro::poro_initialize(
   else
   {
     // In the case of meshtying resetting the matrices is sufficient as they retain their size
-    NCoup_->PutScalar(0.0);
+    NCoup_->put_scalar(0.0);
 
     // (re)setup global linearisation matrices of nCoup
     NCoup_lindisp_->zero();
@@ -758,7 +758,7 @@ void CONTACT::LagrangeStrategyPoro::evaluate_mat_poro_no_pen(
   {
     Core::LinAlg::Vector<double> tempvecm(*fgmdofrowmap_);
     fmoldtransp_->multiply(false, *lambdaold_, tempvecm);
-    fm->Update(nopenalpha_, tempvecm, 1.0);
+    fm->update(nopenalpha_, tempvecm, 1.0);
   }
 
   // fs: prepare alphaf * old contact forces (t_n)
@@ -789,7 +789,7 @@ void CONTACT::LagrangeStrategyPoro::evaluate_mat_poro_no_pen(
     Core::LinAlg::Vector<double> faadd(*fgactivedofs_);
     Core::LinAlg::export_to(fsadd, faadd);
 
-    fa->Update(-nopenalpha_, faadd, 1.0);
+    fa->update(-nopenalpha_, faadd, 1.0);
   }
 
   // fm: add T(mhat)*fa
@@ -798,7 +798,7 @@ void CONTACT::LagrangeStrategyPoro::evaluate_mat_poro_no_pen(
   {
     fmmod = std::make_shared<Core::LinAlg::Vector<double>>(*fgmdofrowmap_);
     if (aset) fmhataam_->multiply(true, *fa, *fmmod);
-    fmmod->Update(1.0, *fm, 1.0);
+    fmmod->update(1.0, *fm, 1.0);
   }
 
   //----------------------------------------------------------- THIRD LINE
@@ -807,13 +807,13 @@ void CONTACT::LagrangeStrategyPoro::evaluate_mat_poro_no_pen(
   {
     Core::LinAlg::Vector<double> fiadd(*fgidofs);
     Core::LinAlg::export_to(fsadd, fiadd);
-    fi->Update(-nopenalpha_, fiadd, 1.0);
+    fi->update(-nopenalpha_, fiadd, 1.0);
   }
 
   // fi: add T(dhat)*fa
   Core::LinAlg::Vector<double> fimod(*fgidofs);
   if (aset) fdhat_->multiply(true, *fa, fimod);
-  fimod.Update(1.0, *fi, -1.0);
+  fimod.update(1.0, *fi, -1.0);
 
   //---------------------------------------------------------- FOURTH LINE
   // gactive: nothing to do
@@ -895,14 +895,14 @@ void CONTACT::LagrangeStrategyPoro::evaluate_mat_poro_no_pen(
 
   Core::LinAlg::export_to(*fn, fnexp);
 
-  feffnew->Update(1.0, fnexp, 1.0);
+  feffnew->update(1.0, fnexp, 1.0);
   //---------------------------------------------------------- SECOND LINE
   // add m subvector to feffnew
   if (mset)
   {
     Core::LinAlg::Vector<double> fmmodexp(*falldofrowmap_);
     Core::LinAlg::export_to(*fmmod, fmmodexp);
-    feffnew->Update(1.0, fmmodexp, 1.0);
+    feffnew->update(1.0, fmmodexp, 1.0);
   }
   //----------------------------------------------------------- THIRD LINE
   // add i subvector to feffnew
@@ -911,7 +911,7 @@ void CONTACT::LagrangeStrategyPoro::evaluate_mat_poro_no_pen(
   {
     fimodexp = std::make_shared<Core::LinAlg::Vector<double>>(*falldofrowmap_);
     Core::LinAlg::export_to(fimod, *fimodexp);
-    feffnew->Update(1.0, *fimodexp, 1.0);
+    feffnew->update(1.0, *fimodexp, 1.0);
   }
 
   //---------------------------------------------------------- FOURTH LINE
@@ -921,7 +921,7 @@ void CONTACT::LagrangeStrategyPoro::evaluate_mat_poro_no_pen(
   {
     nCoupexp = std::make_shared<Core::LinAlg::Vector<double>>(*falldofrowmap_);
     Core::LinAlg::export_to(*fNCoup_, *nCoupexp);
-    feffnew->Update(-1.0, *nCoupexp, 1.0);
+    feffnew->update(-1.0, *nCoupexp, 1.0);
   }
 
   //----------------------------------------------------------- FIFTH LINE
@@ -931,7 +931,7 @@ void CONTACT::LagrangeStrategyPoro::evaluate_mat_poro_no_pen(
   {
     famodexp = std::make_shared<Core::LinAlg::Vector<double>>(*falldofrowmap_);
     Core::LinAlg::export_to(*famod, *famodexp);
-    feffnew->Update(-1.0, *famodexp, 1.0);
+    feffnew->update(-1.0, *famodexp, 1.0);
   }
 
   // finally do the replacement
@@ -1204,11 +1204,11 @@ void CONTACT::LagrangeStrategyPoro::recover_poro_no_pen(Core::LinAlg::Vector<dou
       Core::LinAlg::Vector<double> mod(*fgsdofrowmap_);
 
       cfssn_->multiply(false, disin, mod);
-      flambda.Update(-1.0, mod, 0.0);
+      flambda.update(-1.0, mod, 0.0);
       cfssm_->multiply(false, disim, mod);
-      flambda.Update(-1.0, mod, 1.0);
+      flambda.update(-1.0, mod, 1.0);
       cfsss_->multiply(false, disis, mod);
-      flambda.Update(-1.0, mod, 1.0);
+      flambda.update(-1.0, mod, 1.0);
 
       // loop over all offdiag blocks!!!
       std::map<int, std::shared_ptr<Core::LinAlg::SparseOperator>>::iterator matiter;
@@ -1223,20 +1223,20 @@ void CONTACT::LagrangeStrategyPoro::recover_poro_no_pen(Core::LinAlg::Vector<dou
               matiter->first);
 
         matiter->second->multiply(false, *inciter->second, mod);
-        flambda.Update(-1.0, mod, 1.0);
+        flambda.update(-1.0, mod, 1.0);
       }
 
-      flambda.Update(1.0, *ffs_, 1.0);
+      flambda.update(1.0, *ffs_, 1.0);
 
       fdoldtransp_->multiply(false, *lambdaold_, mod);
 
-      flambda.Update(-nopenalpha_, mod, 1.0);
+      flambda.update(-nopenalpha_, mod, 1.0);
 
       Core::LinAlg::Vector<double> lambdacopy(flambda);
 
       finvdmod.multiply(true, lambdacopy, *lambda_);  // should be lambda_ at the end!!!
 
-      lambda_->Scale(
+      lambda_->scale(
           (1 - alphaf_) / (1 - nopenalpha_));  //-- is already scaled by this factor by scaling
                                                // invda_!!! --- scale it back to with nopenalpha_...
     }
@@ -1253,7 +1253,7 @@ void CONTACT::LagrangeStrategyPoro::update_poro_contact()
   if (no_penetration_)
   {
     // std::cout << "print lambda: " << *lambda_ << std::endl;
-    lambdaold_->Update(1.0, *lambda_, 0.0);
+    lambdaold_->update(1.0, *lambda_, 0.0);
   }
 }
 
@@ -1359,7 +1359,7 @@ void CONTACT::LagrangeStrategyPoro::set_state(
 
               fpres = node->dofs()[0];  // here get ids of first component of node
 
-              myfpres = global.Values()[global.Map().LID(fpres)];
+              myfpres = global.get_values()[global.get_map().LID(fpres)];
 
               *node->poro_data().fpres() = myfpres;
             }
@@ -1528,7 +1528,7 @@ void CONTACT::LagrangeStrategyPoro::poro_mt_set_coupling_matrices()
   //      (*diag)[i] = 1.0;
 
   // scalar inversion of diagonal values
-  err = diag->Reciprocal(*diag);
+  err = diag->reciprocal(*diag);
   if (err > 0) FOUR_C_THROW("ERROR: Reciprocal: Zero diagonal entry!");
 
   // re-insert inverted diagonal into invd

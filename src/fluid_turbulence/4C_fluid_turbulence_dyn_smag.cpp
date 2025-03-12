@@ -460,8 +460,8 @@ void FLD::DynSmagFilter::dyn_smag_compute_cs()
     double ele_Ci_delta_sq = calc_smag_const_params.get<double>("ele_Ci_delta_sq");
     // and store it in vector
     const int id = ele->id();
-    int myerr = Cs_delta_sq.ReplaceGlobalValues(1, &ele_Cs_delta_sq, &id);
-    myerr += Ci_delta_sq.ReplaceGlobalValues(1, &ele_Ci_delta_sq, &id);
+    int myerr = Cs_delta_sq.replace_global_values(1, &ele_Cs_delta_sq, &id);
+    myerr += Ci_delta_sq.replace_global_values(1, &ele_Ci_delta_sq, &id);
     if (myerr != 0) FOUR_C_THROW("Problem");
 
     // local contributions to in plane averaging for channel flows
@@ -591,12 +591,12 @@ void FLD::DynSmagFilter::dyn_smag_compute_cs()
   const Epetra_Map* elecolmap = discret_->element_col_map();
   std::shared_ptr<Core::LinAlg::Vector<double>> col_Cs_delta_sq =
       std::make_shared<Core::LinAlg::Vector<double>>(*elecolmap, true);
-  col_Cs_delta_sq->PutScalar(0.0);
+  col_Cs_delta_sq->put_scalar(0.0);
 
   Core::LinAlg::export_to(Cs_delta_sq, *col_Cs_delta_sq);
   std::shared_ptr<Core::LinAlg::Vector<double>> col_Ci_delta_sq =
       std::make_shared<Core::LinAlg::Vector<double>>(*elecolmap, true);
-  col_Ci_delta_sq->PutScalar(0.0);
+  col_Ci_delta_sq->put_scalar(0.0);
 
   Core::LinAlg::export_to(Ci_delta_sq, *col_Ci_delta_sq);
 
@@ -844,7 +844,7 @@ void FLD::DynSmagFilter::dyn_smag_compute_prt(
     double ele_Prt = calc_turb_prandtl_params.get<double>("ele_Prt");
     // and store it in vector
     const int id = ele->id();
-    int myerr = Prt.ReplaceGlobalValues(1, &ele_Prt, &id);
+    int myerr = Prt.replace_global_values(1, &ele_Prt, &id);
     if (myerr != 0) FOUR_C_THROW("Problem");
 
     // local contributions to in plane averaging for channel flows
@@ -962,7 +962,7 @@ void FLD::DynSmagFilter::dyn_smag_compute_prt(
   const Epetra_Map* elecolmap = scatradiscret_->element_col_map();
   std::shared_ptr<Core::LinAlg::Vector<double>> col_Prt =
       std::make_shared<Core::LinAlg::Vector<double>>(*elecolmap, true);
-  col_Prt->PutScalar(0.0);
+  col_Prt->put_scalar(0.0);
   Core::LinAlg::export_to(Prt, *col_Prt);
   // store in parameters
   Teuchos::ParameterList* modelparams = &(extraparams.sublist("TURBULENCE MODEL"));

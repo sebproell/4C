@@ -159,12 +159,12 @@ void Thermo::TimIntGenAlpha::predict_const_temp_consist_rate()
   const double dt = (*dt_)[0];
 
   // constant predictor : temperature in domain
-  tempn_->Update(1.0, *(*temp_)(0), 0.0);
+  tempn_->update(1.0, *(*temp_)(0), 0.0);
 
   // consistent temperature rates
   // R_{n+1}^{i+1} = (gamma - 1)/gamma . R_n + 1/(gamma . dt) . (T_{n+1}^{i+1} - T_n)
-  raten_->Update(1.0, *tempn_, -1.0, *(*temp_)(0), 0.0);
-  raten_->Update(-(1 - gamma_) / gamma_, *(*rate_)(0), (1 / (gamma_ * dt)));
+  raten_->update(1.0, *tempn_, -1.0, *(*temp_)(0), 0.0);
+  raten_->update(-(1 - gamma_) / gamma_, *(*rate_)(0), (1 / (gamma_ * dt)));
 
   // watch out
   return;
@@ -183,7 +183,7 @@ void Thermo::TimIntGenAlpha::evaluate_rhs_tang_residual()
   evaluate_mid_state();
 
   // build new external forces
-  fextn_->PutScalar(0.0);
+  fextn_->put_scalar(0.0);
 
   // initialise tangent matrix to zero
   tang_->zero();
@@ -203,34 +203,34 @@ void Thermo::TimIntGenAlpha::evaluate_rhs_tang_residual()
 
   // external mid-forces F_{ext;n+1-alpha_f} (fextm)
   //    F_{ext;n+alpha_f} := alpha_f * F_{ext;n+1} + (1. - alpha_f) * F_{ext;n}
-  fextm_->Update(alphaf_, *fextn_, (1. - alphaf_), *fext_, 0.0);
+  fextm_->update(alphaf_, *fextn_, (1. - alphaf_), *fext_, 0.0);
 
   // initialise internal forces
-  fintn_->PutScalar(0.0);
+  fintn_->put_scalar(0.0);
   // total capacity mid-forces are calculated in the element
   // F_{cap;n+alpha_m} := M_capa . R_{n+alpha_m}
-  fcapm_->PutScalar(0.0);
+  fcapm_->put_scalar(0.0);
 
   // ordinary internal force and tangent
   apply_force_tang_internal(timen_, (*dt_)[0], tempn_, tempi_, fcapm_, fintn_, tang_);
 
   // total internal mid-forces F_{int;n+alpha_f} ----> TR-like
   // F_{int;n+alpha_f} := alpha_f . F_{int;n+1} + (1. - alpha_f) . F_{int;n}
-  fintm_->Update(alphaf_, *fintn_, (1. - alphaf_), *fint_, 0.0);
+  fintm_->update(alphaf_, *fintn_, (1. - alphaf_), *fint_, 0.0);
 
   // total capacitiy forces F_{cap;n+1}
   // F_{cap;n+1} := 1/alpha_m . F_{cap;n+alpha_m} + (1. - alpha_m)/alpha_m . F_{cap;n}
   // using the interpolation to the midpoint
   // F_{cap;n+alpha_m} := alpha_m . F_{cap;n+1} + (1. - alpha_m) . F_{cap;n}
-  fcapn_->Update((1. / alpham_), *fcapm_, (1. - alpham_) / alpham_, *fcap_, 0.0);
+  fcapn_->update((1. / alpham_), *fcapm_, (1. - alpham_) / alpham_, *fcap_, 0.0);
 
   // build residual
   //    Res = F_{cap;n+alpha_m}
   //        + F_{int;n+alpha_f}
   //        - F_{ext;n+alpha_f}
-  fres_->Update(1.0, *fcapm_, 0.0);
-  fres_->Update(1.0, *fintm_, 1.0);
-  fres_->Update(-1.0, *fextm_, 1.0);
+  fres_->update(1.0, *fcapm_, 0.0);
+  fres_->update(1.0, *fintm_, 1.0);
+  fres_->update(-1.0, *fextm_, 1.0);
 
   // no further modification on tang_ required
   // tang_ is already effective dynamic tangent matrix
@@ -252,12 +252,12 @@ void Thermo::TimIntGenAlpha::evaluate_mid_state()
   // (1-alpha) is used for OLD solution at t_n
   // mid-temperatures T_{n+1-alpha_f} (tempm)
   // T_{n+alpha_f} := alphaf * T_{n+1} + (1.-alphaf) * T_n
-  tempm_->Update(alphaf_, *tempn_, (1. - alphaf_), (*temp_)[0], 0.0);
+  tempm_->update(alphaf_, *tempn_, (1. - alphaf_), (*temp_)[0], 0.0);
 
   // mid-temperature rates R_{n+1-alpha_f} (ratem)
   // R_{n+alpha_m} := alpham * R_{n+1} + (1.-alpham) * R_{n}
   // pass ratem_ to the element to calculate fcapm_
-  ratem_->Update(alpham_, *raten_, (1. - alpham_), (*rate_)[0], 0.0);
+  ratem_->update(alpham_, *raten_, (1. - alpham_), (*rate_)[0], 0.0);
 
   // jump
   return;
@@ -339,12 +339,12 @@ void Thermo::TimIntGenAlpha::update_iter_incrementally()
 
   // new end-point temperatures
   // T_{n+1}^{i+1} := T_{n+1}^{i} + IncT_{n+1}^{i+1}
-  tempn_->Update(1.0, *tempi_, 1.0);
+  tempn_->update(1.0, *tempi_, 1.0);
 
   // new end-point temperature rates
   // R_{n+1}^{i+1} = -(1- gamma)/gamma . R_n + 1/(gamma . dt) . (T_{n+1}^{i+1} - T_n)
-  aux->Update(1.0, *tempn_, -1.0, *(*temp_)(0), 0.0);
-  aux->Update(-(1.0 - gamma_) / gamma_, *(*rate_)(0), (1 / (gamma_ * dt)));
+  aux->update(1.0, *tempn_, -1.0, *(*temp_)(0), 0.0);
+  aux->update(-(1.0 - gamma_) / gamma_, *(*rate_)(0), (1 / (gamma_ * dt)));
   // put only to free/non-DBC DOFs
   dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*aux), *raten_);
 
@@ -361,11 +361,11 @@ void Thermo::TimIntGenAlpha::update_iter_iteratively()
 {
   // new end-point temperatures
   // T_{n+1}^{i+1} := T_{n+1}^{i} + IncT_{n+1}^{i}
-  tempn_->Update(1.0, *tempi_, 1.0);
+  tempn_->update(1.0, *tempi_, 1.0);
 
   // new end-point temperature rates
   // R_{n+1}^{i+1} := R_{n+1}^{i} + 1/(gamma . dt) IncT_{n+1}^{i+1}
-  raten_->Update(1.0 / (gamma_ * (*dt_)[0]), *tempi_, 1.0);
+  raten_->update(1.0 / (gamma_ * (*dt_)[0]), *tempi_, 1.0);
 
   // bye
   return;
@@ -389,15 +389,15 @@ void Thermo::TimIntGenAlpha::update_step_state()
 
   // update new external force
   //    F_{ext;n} := F_{ext;n+1}
-  fext_->Update(1.0, *fextn_, 0.0);
+  fext_->update(1.0, *fextn_, 0.0);
 
   // update new internal force
   //    F_{int;n} := F_{int;n+1}
-  fint_->Update(1.0, *fintn_, 0.0);
+  fint_->update(1.0, *fintn_, 0.0);
 
   // update new stored transient force
   //    F_{cap;n} := F_{cap;n+1}
-  fcap_->Update(1.0, *fcapn_, 0.0);
+  fcap_->update(1.0, *fcapn_, 0.0);
 
   // look out
   return;

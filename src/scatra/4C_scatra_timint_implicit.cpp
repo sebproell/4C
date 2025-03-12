@@ -408,7 +408,7 @@ void ScaTra::ScaTraTimIntImpl::setup()
     const Core::ProblemType problem_type = Core::ProblemType::scatra;
     eleparams.set<const Core::ProblemType*>("problem_type", &problem_type);
     discret_->evaluate_dirichlet(eleparams, zeros_, nullptr, nullptr, nullptr, dbcmaps_);
-    zeros_->PutScalar(0.0);  // just in case of change
+    zeros_->put_scalar(0.0);  // just in case of change
   }
 
   // -------------------------------------------------------------------
@@ -526,7 +526,7 @@ void ScaTra::ScaTraTimIntImpl::setup()
   {
     // allocate global density vector and initialize
     densafnp_ = Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
-    densafnp_->PutScalar(1.);
+    densafnp_->put_scalar(1.);
   }
 
   // -------------------------------------------------------------------
@@ -891,7 +891,7 @@ void ScaTra::ScaTraTimIntImpl::init_turbulence_model(
     if (extraparams_->sublist("TURBULENCE MODEL").get<std::string>("SCALAR_FORCING") == "isotropic")
     {
       forcing_ = Core::LinAlg::create_vector(*dofrowmap, true);
-      forcing_->PutScalar(0.0);
+      forcing_->put_scalar(0.0);
     }
   }
 }  // ScaTraTimIntImpl::InitTurbulenceModel()
@@ -1276,12 +1276,12 @@ void ScaTra::ScaTraTimIntImpl::set_velocity_field()
 
           // get global and local dof IDs
           const int gid = nodedofs[index];
-          const int lid = convel->Map().LID(gid);
+          const int lid = convel->get_map().LID(gid);
 
           if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
-          err = convel->ReplaceMyValue(lid, 0, value);
+          err = convel->replace_local_value(lid, 0, value);
           if (err != 0) FOUR_C_THROW("error while inserting a value into convel");
-          err = vel->ReplaceMyValue(lid, 0, value);
+          err = vel->replace_local_value(lid, 0, value);
           if (err != 0) FOUR_C_THROW("error while inserting a value into vel");
         }
       }
@@ -1342,19 +1342,21 @@ void ScaTra::ScaTraTimIntImpl::set_external_force()
       const double force_velocity_value = external_force_value * intrinsic_mobility_value;
 
       const int gid = nodedofs[spatial_dimension];
-      const int lid = force_velocity->Map().LID(gid);
+      const int lid = force_velocity->get_map().LID(gid);
 
       if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
-      const int error_force_velocity = force_velocity->ReplaceMyValue(lid, 0, force_velocity_value);
+      const int error_force_velocity =
+          force_velocity->replace_local_value(lid, 0, force_velocity_value);
       if (error_force_velocity != 0)
         FOUR_C_THROW("Error while inserting a force_velocity_value into force_velocity.");
 
-      const int error_external_force = external_force->ReplaceMyValue(lid, 0, external_force_value);
+      const int error_external_force =
+          external_force->replace_local_value(lid, 0, external_force_value);
       if (error_external_force != 0)
         FOUR_C_THROW("Error while inserting a external_force_value into external_force.");
 
       const int error_intrinsic_mobility =
-          intrinsic_mobility->ReplaceMyValue(lid, 0, intrinsic_mobility_value);
+          intrinsic_mobility->replace_local_value(lid, 0, intrinsic_mobility_value);
       if (error_intrinsic_mobility != 0)
         FOUR_C_THROW("Error while inserting a intrinsic_mobility_value into intrinsic_mobility.");
     }
@@ -1379,7 +1381,7 @@ void ScaTra::ScaTraTimIntImpl::set_wall_shear_stresses(
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  if (not wss->Map().SameAs(*discret_->dof_row_map(nds_wall_shear_stress())))
+  if (not wss->get_map().SameAs(*discret_->dof_row_map(nds_wall_shear_stress())))
     FOUR_C_THROW("Maps are NOT identical. Emergency!");
 #endif
 
@@ -1408,7 +1410,7 @@ void ScaTra::ScaTraTimIntImpl::set_pressure_field(
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  if (not pressure->Map().SameAs(*discret_->dof_row_map(nds_pressure())))
+  if (not pressure->get_map().SameAs(*discret_->dof_row_map(nds_pressure())))
     FOUR_C_THROW("Maps are NOT identical. Emergency!");
 #endif
 
@@ -1429,7 +1431,7 @@ void ScaTra::ScaTraTimIntImpl::set_membrane_concentration(
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  if (not MembraneConc->Map().SameAs(*discret_->dof_row_map(0)))
+  if (not MembraneConc->get_map().SameAs(*discret_->dof_row_map(0)))
     FOUR_C_THROW("Maps are NOT identical. Emergency!");
 #endif
 
@@ -1453,7 +1455,7 @@ void ScaTra::ScaTraTimIntImpl::set_mean_concentration(
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  if (not MeanConc->Map().SameAs(*discret_->dof_row_map(0)))
+  if (not MeanConc->get_map().SameAs(*discret_->dof_row_map(0)))
     FOUR_C_THROW("Maps are NOT identical. Emergency!");
 #endif
 
@@ -1772,7 +1774,7 @@ void ScaTra::ScaTraTimIntImpl::collect_runtime_output_data()
       Core::Nodes::Node* node = discret_->l_row_node(inode);
       for (int idim = 0; idim < nsd_; ++idim)
         (convel_multi)(idim)[inode] =
-            (*convel)[convel->Map().LID(discret_->dof(nds_vel(), node, idim))];
+            (*convel)[convel->get_map().LID(discret_->dof(nds_vel(), node, idim))];
     }
 
     std::vector<std::optional<std::string>> context(nsd_, "convec_velocity");
@@ -1794,7 +1796,7 @@ void ScaTra::ScaTraTimIntImpl::collect_runtime_output_data()
       Core::Nodes::Node* node = discret_->l_row_node(inode);
       for (int idim = 0; idim < nsd_; ++idim)
         (dispnp_multi)(idim)[inode] =
-            (*dispnp)[dispnp->Map().LID(discret_->dof(nds_disp(), node, idim))];
+            (*dispnp)[dispnp->get_map().LID(discret_->dof(nds_disp(), node, idim))];
     }
 
     std::vector<std::optional<std::string>> context(nsd_, "ale-displacement");
@@ -1886,8 +1888,8 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
   {
     case Inpar::ScaTra::initfield_zero_field:
     {
-      phin_->PutScalar(0.0);
-      phinp_->PutScalar(0.0);
+      phin_->put_scalar(0.0);
+      phinp_->put_scalar(0.0);
       break;
     }
     case Inpar::ScaTra::initfield_field_by_function:
@@ -1912,7 +1914,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
           double initialval =
               problem_->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)
                   .evaluate(lnode->x().data(), time_, k);
-          int err = phin_->ReplaceMyValues(1, &initialval, &doflid);
+          int err = phin_->replace_local_values(1, &initialval, &doflid);
           if (err != 0) FOUR_C_THROW("dof not on proc");
         }
       }
@@ -1940,7 +1942,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
 
       // initialize also the solution vector. These values are a pretty good guess for the
       // solution after the first time step (much better than starting with a zero vector)
-      phinp_->Update(1.0, *phin_, 0.0);
+      phinp_->update(1.0, *phin_, 0.0);
 
       // add random perturbation for initial field of turbulent flows
       if (init == Inpar::ScaTra::initfield_disturbed_field_by_function)
@@ -1962,19 +1964,19 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
         // get overall max and min values and range between min and max
         double maxphi(0.0);
         double minphi(0.0);
-        err = phinp_->MaxValue(&maxphi);
+        err = phinp_->max_value(&maxphi);
         if (err > 0) FOUR_C_THROW("Error during evaluation of maximum value.");
-        err = phinp_->MinValue(&minphi);
+        err = phinp_->min_value(&minphi);
         if (err > 0) FOUR_C_THROW("Error during evaluation of minimum value.");
         double range = abs(maxphi - minphi);
 
         // disturb initial field for all degrees of freedom
-        for (int k = 0; k < phinp_->MyLength(); ++k)
+        for (int k = 0; k < phinp_->local_length(); ++k)
         {
           double randomnumber = problem_->random()->uni();
           double noise = perc * range * randomnumber;
-          err += phinp_->SumIntoMyValues(1, &noise, &k);
-          err += phin_->SumIntoMyValues(1, &noise, &k);
+          err += phinp_->sum_into_local_values(1, &noise, &k);
+          err += phin_->sum_into_local_values(1, &noise, &k);
           if (err != 0) FOUR_C_THROW("Error while disturbing initial field.");
         }
       }
@@ -2020,7 +2022,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
 
       // initialize also the solution vector. These values are a pretty good guess for the
       // solution after the first time step (much better than starting with a zero vector)
-      phinp_->Update(1.0, *phin_, 0.0);
+      phinp_->update(1.0, *phin_, 0.0);
 
       break;
     }
@@ -2050,10 +2052,10 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
           if (x > -1e-10) initialval = 1.0;
 
           int err = 0;
-          err += phin_->ReplaceMyValues(1, &initialval, &doflid);
+          err += phin_->replace_local_values(1, &initialval, &doflid);
           // initialize also the solution vector. These values are a pretty good guess for the
           // solution after the first time step (much better than starting with a zero vector)
-          err += phinp_->ReplaceMyValues(1, &initialval, &doflid);
+          err += phinp_->replace_local_values(1, &initialval, &doflid);
           if (err != 0) FOUR_C_THROW("dof not on proc");
         }
       }
@@ -2113,10 +2115,10 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
             initialval = fac2 * (x2 - trans2) + abs2;
 
           int err = 0;
-          err += phin_->ReplaceMyValues(1, &initialval, &doflid);
+          err += phin_->replace_local_values(1, &initialval, &doflid);
           // initialize also the solution vector. These values are a pretty good guess for the
           // solution after the first time step (much better than starting with a zero vector)
-          err += phinp_->ReplaceMyValues(1, &initialval, &doflid);
+          err += phinp_->replace_local_values(1, &initialval, &doflid);
           if (err != 0) FOUR_C_THROW("dof not on proc");
         }
       }
@@ -2172,10 +2174,10 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
           initialval = 0.5 * (1.0 + (vp - vm) / (vp + vm));
 
           int err = 0;
-          err += phin_->ReplaceMyValues(1, &initialval, &doflid);
+          err += phin_->replace_local_values(1, &initialval, &doflid);
           // initialize also the solution vector. These values are a pretty good guess for the
           // solution after the first time step (much better than starting with a zero vector)
-          err += phinp_->ReplaceMyValues(1, &initialval, &doflid);
+          err += phinp_->replace_local_values(1, &initialval, &doflid);
           if (err != 0) FOUR_C_THROW("dof not on proc");
         }
       }
@@ -2209,11 +2211,11 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
           if ((x1 <= 0.25 and x2 <= 0.5) or (x1 <= 0.5 and x2 <= 0.25)) initialval = 1.0;
 
           int err = 0;
-          err += phin_->ReplaceMyValues(1, &initialval, &doflid);
+          err += phin_->replace_local_values(1, &initialval, &doflid);
           // initialize also the solution vector. These values are a pretty good
           // guess for the solution after the first time step (much better than
           // starting with a zero vector)
-          err += phinp_->ReplaceMyValues(1, &initialval, &doflid);
+          err += phinp_->replace_local_values(1, &initialval, &doflid);
           if (err != 0) FOUR_C_THROW("dof not on proc");
         }
       }
@@ -2248,10 +2250,10 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
             initialval = x1 - 0.75;
 
           int err = 0;
-          err += phin_->ReplaceMyValues(1, &initialval, &doflid);
+          err += phin_->replace_local_values(1, &initialval, &doflid);
           // initialize also the solution vector. These values are a pretty good guess for the
           // solution after the first time step (much better than starting with a zero vector)
-          err += phinp_->ReplaceMyValues(1, &initialval, &doflid);
+          err += phinp_->replace_local_values(1, &initialval, &doflid);
           if (err != 0) FOUR_C_THROW("dof not on proc");
         }
       }
@@ -2289,10 +2291,10 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
           else
             initval = (-0.0354 - x2) - eps;
           int err = 0;
-          err += phin_->ReplaceMyValues(1, &initval, &doflid);
+          err += phin_->replace_local_values(1, &initval, &doflid);
           // initialize also the solution vector. These values are a pretty good guess for the
           // solution after the first time step (much better than starting with a zero vector)
-          err += phinp_->ReplaceMyValues(1, &initval, &doflid);
+          err += phinp_->replace_local_values(1, &initval, &doflid);
           if (err != 0) FOUR_C_THROW("dof not on proc");
         }
       }
@@ -2320,10 +2322,10 @@ void ScaTra::ScaTraTimIntImpl::update_iter(const Core::LinAlg::Vector<double>& i
 {
   // store incremental vector to be available for convergence check
   // if incremental vector is received from outside for coupled problem
-  increment_->Update(1.0, inc, 0.0);
+  increment_->update(1.0, inc, 0.0);
 
   // update scalar values by adding increments
-  phinp_->Update(1.0, inc, 1.0);
+  phinp_->update(1.0, inc, 1.0);
 }
 
 /*--------------------------------------------------------------------------*
@@ -2546,7 +2548,7 @@ void ScaTra::ScaTraTimIntImpl::apply_dirichlet_to_system()
 
     //--------- Apply Dirichlet boundary conditions to system of equations
     // residual values are supposed to be zero at Dirichlet boundaries
-    increment_->PutScalar(0.0);
+    increment_->put_scalar(0.0);
 
     {
       // time measurement: application of DBC to system
@@ -2595,7 +2597,7 @@ void ScaTra::ScaTraTimIntImpl::scaling_and_neumann()
 {
   // scaling to get true residual vector for all time integration schemes
   // in incremental case: boundary flux values can be computed from trueresidual
-  if (incremental_) trueresidual_->Update(residual_scaling(), *residual_, 0.0);
+  if (incremental_) trueresidual_->update(residual_scaling(), *residual_, 0.0);
 
   // add Neumann b.c. scaled with a factor due to time discretization
   add_neumann_to_residual();
@@ -2614,7 +2616,7 @@ void ScaTra::ScaTraTimIntImpl::apply_neumann_bc(
     const std::shared_ptr<Core::LinAlg::Vector<double>>& neumann_loads)
 {
   // prepare load vector
-  neumann_loads->PutScalar(0.0);
+  neumann_loads->put_scalar(0.0);
 
   // create parameter list
   Teuchos::ParameterList condparams;
@@ -2660,7 +2662,7 @@ void ScaTra::ScaTraTimIntImpl::evaluate_solution_depending_conditions(
   {
     const auto fint_scatra =
         contact_strategy_nitsche_->get_rhs_block_ptr(CONTACT::VecBlockType::scatra);
-    if (residual_->Update(1.0, *fint_scatra, 1.0)) FOUR_C_THROW("update failed");
+    if (residual_->update(1.0, *fint_scatra, 1.0)) FOUR_C_THROW("update failed");
   }
 
   // evaluate macro-micro coupling on micro scale in multi-scale scalar transport problems
@@ -2728,7 +2730,7 @@ void ScaTra::ScaTraTimIntImpl::assemble_mat_and_rhs()
   sysmat_->zero();
 
   // reset the residual vector
-  residual_->PutScalar(0.0);
+  residual_->put_scalar(0.0);
 
   // create parameter list for elements
   Teuchos::ParameterList eleparams;
@@ -2859,8 +2861,8 @@ void ScaTra::ScaTraTimIntImpl::linear_solve()
     //--------------------------------------------- compute norm of increment
     double incnorm_L2(0.0);
     double scalnorm_L2(0.0);
-    increment_->Norm2(&incnorm_L2);
-    phinp_->Norm2(&scalnorm_L2);
+    increment_->norm_2(&incnorm_L2);
+    phinp_->norm_2(&scalnorm_L2);
 
     if (myrank_ == 0)
     {
@@ -2965,7 +2967,7 @@ void ScaTra::ScaTraTimIntImpl::nonlinear_solve()
     if (strategy_->abort_nonlin_iter(*this, actresidual)) break;
 
     // initialize increment vector
-    increment_->PutScalar(0.0);
+    increment_->put_scalar(0.0);
 
     {
       // get cpu time
@@ -3003,7 +3005,7 @@ void ScaTra::ScaTraTimIntImpl::nonlinear_solve()
     }
 
     //------------------------------------------------ update solution vector
-    phinp_->Update(1.0, *increment_, 1.0);
+    phinp_->update(1.0, *increment_, 1.0);
 
     //-------- update values at intermediate time steps (only for gen.-alpha)
     compute_intermediate_values();
@@ -3036,7 +3038,7 @@ void ScaTra::ScaTraTimIntImpl::nonlinear_multi_scale_solve()
     iternum_outer_++;
 
     // store current state vector on macro scale
-    phinp_inc_->Update(1., *phinp_relaxed, 0.);
+    phinp_inc_->update(1., *phinp_relaxed, 0.);
 
     // solve micro scale first and macro scale second
     if (solvtype_ == Inpar::ScaTra::solvertype_nonlinear_multiscale_macrotomicro or
@@ -3071,7 +3073,7 @@ void ScaTra::ScaTraTimIntImpl::nonlinear_multi_scale_solve()
     }
 
     // compute increment of macro-scale state vector
-    phinp_inc_->Update(1., *phinp_, -1.);
+    phinp_inc_->update(1., *phinp_, -1.);
 
     // convergence check
     if (strategy_->abort_outer_iter(*this)) break;
@@ -3081,13 +3083,13 @@ void ScaTra::ScaTraTimIntImpl::nonlinear_multi_scale_solve()
     {
       // compute difference between current and previous increments of macro-scale state vector
       Core::LinAlg::Vector<double> phinp_inc_diff(*phinp_inc_);
-      phinp_inc_diff.Update(-1., *phinp_inc_old_, 1.);
+      phinp_inc_diff.update(-1., *phinp_inc_old_, 1.);
 
       // perform Aitken relaxation
       perform_aitken_relaxation(*phinp_relaxed, phinp_inc_diff);
 
       // update increment of macro-scale state vector
-      phinp_inc_old_->Update(1., *phinp_inc_, 0.);
+      phinp_inc_old_->update(1., *phinp_inc_, 0.);
     }
 
     else
@@ -3159,7 +3161,7 @@ ScaTra::ScaTraTimIntImpl::convert_dof_vector_to_componentwise_node_vector(
     Core::Nodes::Node* node = discret_->l_row_node(inode);
     for (int idim = 0; idim < nsd_; ++idim)
       (*componentwise_node_vector)(idim)[inode] =
-          (dof_vector)[dof_vector.Map().LID(discret_->dof(nds, node, idim))];
+          (dof_vector)[dof_vector.get_map().LID(discret_->dof(nds, node, idim))];
   }
   return componentwise_node_vector;
 }
@@ -3760,7 +3762,7 @@ std::shared_ptr<Core::LinAlg::SparseOperator> ScaTra::ScaTraTimIntImpl::init_sys
  *----------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
 {
-  phinp_micro_->PutScalar(0.0);
+  phinp_micro_->put_scalar(0.0);
 
   if (nds_micro() < 0) FOUR_C_THROW("must set number of dofset for micro scale concentrations");
 
@@ -3793,15 +3795,15 @@ void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
       int dof_macro = discret_->dof(0, node)[0];
       int dof_micro = discret_->dof(nds_micro(), node)[0];
 
-      const int dof_lid_micro = phinp_micro_->Map().LID(dof_micro);
-      const int dof_lid_macro = phinp_->Map().LID(dof_macro);
+      const int dof_lid_micro = phinp_micro_->get_map().LID(dof_micro);
+      const int dof_lid_macro = phinp_->get_map().LID(dof_macro);
 
       // only if owned by this proc
       if (dof_lid_micro != -1 and dof_lid_macro != -1)
       {
         const double macro_value = (*phinp_)[dof_lid_macro];
         // Sum, because afterwards it is divided by the number of adjacent nodes
-        phinp_micro_->SumIntoMyValue(dof_lid_micro, 0, macro_value);
+        phinp_micro_->sum_into_local_value(dof_lid_micro, 0, macro_value);
       }
     }
   }
@@ -3817,7 +3819,7 @@ void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
     if (dofs.size() != 1) FOUR_C_THROW("Only one dof expected.");
 
     const int dof_gid = dofs[0];
-    const int dof_lid = phinp_micro_->Map().LID(dof_gid);
+    const int dof_lid = phinp_micro_->get_map().LID(dof_gid);
 
     // only if this dof is part of the phinp_micro_ vector/map
     if (dof_lid != -1)
@@ -3825,7 +3827,7 @@ void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
       const double old_value = (*phinp_micro_)[dof_lid];
       const int num_elements = node->num_element();
       const double new_value = old_value / static_cast<double>(num_elements);
-      phinp_micro_->ReplaceMyValue(dof_lid, 0, new_value);
+      phinp_micro_->replace_local_value(dof_lid, 0, new_value);
     }
   }
 
@@ -3894,12 +3896,12 @@ void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
   // correct values on hybrid dofs (value on node with 2 dofs is artificially set to 0.0)
   for (int hybrid_dof : hybrid_dofs)
   {
-    const int lid = phinp_micro_->Map().LID(hybrid_dof);
+    const int lid = phinp_micro_->get_map().LID(hybrid_dof);
     if (lid != -1)
     {
       const double value = (*phinp_micro_)[lid];
       const double corrected_value = 2.0 * value;
-      phinp_micro_->ReplaceMyValue(lid, 0, corrected_value);
+      phinp_micro_->replace_local_value(lid, 0, corrected_value);
     }
   }
 }

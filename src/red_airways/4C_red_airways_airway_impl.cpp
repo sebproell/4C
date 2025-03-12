@@ -705,18 +705,18 @@ void Discret::Elements::AirwayImpl<distype>::initial(RedAirway* ele, Teuchos::Pa
   {
     int gid = lm[0];
     double val = 0.0;
-    evaluation_data.p0np->ReplaceGlobalValues(1, &val, &gid);
-    evaluation_data.p0n->ReplaceGlobalValues(1, &val, &gid);
-    evaluation_data.p0nm->ReplaceGlobalValues(1, &val, &gid);
+    evaluation_data.p0np->replace_global_values(1, &val, &gid);
+    evaluation_data.p0n->replace_global_values(1, &val, &gid);
+    evaluation_data.p0nm->replace_global_values(1, &val, &gid);
   }
   {
     int gid = lm[1];
     double val = 0.0;
     if (myrank == ele->nodes()[1]->owner())
     {
-      evaluation_data.p0np->ReplaceGlobalValues(1, &val, &gid);
-      evaluation_data.p0n->ReplaceGlobalValues(1, &val, &gid);
-      evaluation_data.p0nm->ReplaceGlobalValues(1, &val, &gid);
+      evaluation_data.p0np->replace_global_values(1, &val, &gid);
+      evaluation_data.p0n->replace_global_values(1, &val, &gid);
+      evaluation_data.p0nm->replace_global_values(1, &val, &gid);
     }
 
     const double A = airway_params.area;
@@ -737,13 +737,13 @@ void Discret::Elements::AirwayImpl<distype>::initial(RedAirway* ele, Teuchos::Pa
     const int generation = airway_params.generation;
 
     double val = double(generation);
-    evaluation_data.generations->ReplaceGlobalValues(1, &val, &gid);
+    evaluation_data.generations->replace_global_values(1, &val, &gid);
 
 
     const double A = airway_params.area;
     double V = A * L;
-    evaluation_data.elemVolume->ReplaceGlobalValues(1, &V, &gid);
-    evaluation_data.elemArea0->ReplaceGlobalValues(1, &A, &gid);
+    evaluation_data.elemVolume->replace_global_values(1, &V, &gid);
+    evaluation_data.elemArea0->replace_global_values(1, &A, &gid);
   }
 
 }  // AirwayImpl::Initial
@@ -805,8 +805,8 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_collapse(
   }
 
   int gid = ele->id();
-  evaluation_data.x_np->ReplaceGlobalValues(1, &xnp, &gid);
-  evaluation_data.open->ReplaceGlobalValues(1, &opennp, &gid);
+  evaluation_data.x_np->replace_global_values(1, &xnp, &gid);
+  evaluation_data.open->replace_global_values(1, &opennp, &gid);
 }
 
 /*----------------------------------------------------------------------*
@@ -831,8 +831,8 @@ void Discret::Elements::AirwayImpl<distype>::compute_pext(RedAirway* ele,
 
 
   int gid = ele->id();
-  evaluation_data.p_extnp->ReplaceGlobalValues(1, &pextnp, &gid);
-  evaluation_data.p_extn->ReplaceGlobalValues(1, &pextn, &gid);
+  evaluation_data.p_extnp->replace_global_values(1, &pextnp, &gid);
+  evaluation_data.p_extn->replace_global_values(1, &pextn, &gid);
 }
 
 /*----------------------------------------------------------------------*
@@ -1072,11 +1072,11 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
 
           gid = lm[i];
           val = BCin;
-          evaluation_data.bcval->ReplaceGlobalValues(1, &val, &gid);
+          evaluation_data.bcval->replace_global_values(1, &val, &gid);
 
           gid = lm[i];
           val = 1;
-          evaluation_data.dbctog->ReplaceGlobalValues(1, &val, &gid);
+          evaluation_data.dbctog->replace_global_values(1, &val, &gid);
         }
         else if (Bc == "flow")
         {
@@ -1124,11 +1124,11 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
 
           gid = lm[i];
           val = 0.0;
-          evaluation_data.bcval->ReplaceGlobalValues(1, &val, &gid);
+          evaluation_data.bcval->replace_global_values(1, &val, &gid);
 
           gid = lm[i];
           val = 1;
-          evaluation_data.dbctog->ReplaceGlobalValues(1, &val, &gid);
+          evaluation_data.dbctog->replace_global_values(1, &val, &gid);
         }
       }  // END of if there is no BC but the node still is at the terminal
 
@@ -1245,8 +1245,8 @@ void Discret::Elements::AirwayImpl<distype>::calc_flow_rates(RedAirway* ele,
 
   int gid = ele->id();
 
-  evaluation_data.qin_np->ReplaceGlobalValues(1, &qinnp, &gid);
-  evaluation_data.qout_np->ReplaceGlobalValues(1, &qoutnp, &gid);
+  evaluation_data.qin_np->replace_global_values(1, &qinnp, &gid);
+  evaluation_data.qout_np->replace_global_values(1, &qoutnp, &gid);
 }  // CalcFlowRates
 
 
@@ -1305,11 +1305,11 @@ void Discret::Elements::AirwayImpl<distype>::calc_elem_volume(RedAirway* ele,
     eVolumenp = L * area0 * 0.01;
   }
   // update elem
-  evaluation_data.elemVolumenp->ReplaceGlobalValues(1, &eVolumenp, &gid);
+  evaluation_data.elemVolumenp->replace_global_values(1, &eVolumenp, &gid);
 
   // calculate and update element radius
   double eRadiusnp = std::sqrt(eVolumenp / L * M_1_PI);
-  evaluation_data.elemRadiusnp->ReplaceGlobalValues(1, &eRadiusnp, &gid);
+  evaluation_data.elemRadiusnp->replace_global_values(1, &eRadiusnp, &gid);
 }  // CalcElemVolume
 
 

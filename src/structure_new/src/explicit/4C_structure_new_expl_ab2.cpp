@@ -92,20 +92,20 @@ void Solid::EXPLICIT::AdamsBashforth2::set_state(const Core::LinAlg::Vector<doub
   // new end-point acceleration
   // ---------------------------------------------------------------------------
   std::shared_ptr<Core::LinAlg::Vector<double>> accnp_ptr = global_state().extract_displ_entries(x);
-  global_state().get_acc_np()->Scale(1.0, *accnp_ptr);
+  global_state().get_acc_np()->scale(1.0, *accnp_ptr);
 
   // ---------------------------------------------------------------------------
   // new end-point velocities
   // ---------------------------------------------------------------------------
-  global_state().get_vel_np()->Update(1.0, (*(global_state().get_multi_vel()))[0], 0.0);
-  global_state().get_vel_np()->Update(dta, (*(global_state().get_multi_acc()))[0], dtb,
+  global_state().get_vel_np()->update(1.0, (*(global_state().get_multi_vel()))[0], 0.0);
+  global_state().get_vel_np()->update(dta, (*(global_state().get_multi_acc()))[0], dtb,
       (*(global_state().get_multi_acc()))[-1], 1.0);
 
   // ---------------------------------------------------------------------------
   // new end-point displacements
   // ---------------------------------------------------------------------------
-  global_state().get_dis_np()->Update(1.0, (*(global_state().get_multi_dis()))[0], 0.0);
-  global_state().get_dis_np()->Update(dta, (*(global_state().get_multi_vel()))[0], dtb,
+  global_state().get_dis_np()->update(1.0, (*(global_state().get_multi_dis()))[0], 0.0);
+  global_state().get_dis_np()->update(dta, (*(global_state().get_multi_vel()))[0], dtb,
       (*(global_state().get_multi_vel()))[-1], 1.0);
 
   // ---------------------------------------------------------------------------
@@ -173,10 +173,10 @@ void Solid::EXPLICIT::AdamsBashforth2::update_step_state()
   // ---------------------------------------------------------------------------
   // new at t_{n+1} -> t_n
   //    finertial_{n} := finertial_{n+1}
-  finertian_ptr_->Scale(1.0, *finertianp_ptr_);
+  finertian_ptr_->scale(1.0, *finertianp_ptr_);
   // new at t_{n+1} -> t_n
   //    fviscous_{n} := fviscous_{n+1}
-  fviscon_ptr_->Scale(1.0, *fvisconp_ptr_);
+  fviscon_ptr_->scale(1.0, *fvisconp_ptr_);
 
   // ---------------------------------------------------------------------------
   // update model specific variables

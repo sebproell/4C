@@ -109,16 +109,16 @@ int Solid::TimIntExplEuler::integrate_step()
   const double dt = (*dt_)[0];  // \f$\Delta t_{n}\f$
 
   // new velocities \f$V_{n+1}\f$
-  veln_->Update(1.0, *(*vel_)(0), 0.0);
-  veln_->Update(dt, *(*acc_)(0), 1.0);
+  veln_->update(1.0, *(*vel_)(0), 0.0);
+  veln_->update(dt, *(*acc_)(0), 1.0);
 
   // new displacements \f$D_{n+1}\f$, modified expl Euler uses veln_ for
   // updating disn_
-  disn_->Update(1.0, *(*dis_)(0), 0.0);
+  disn_->update(1.0, *(*dis_)(0), 0.0);
   if (modexpleuler_ == true)
-    disn_->Update(dt, *veln_, 1.0);
+    disn_->update(dt, *veln_, 1.0);
   else
-    disn_->Update(dt, *(*vel_)(0), 1.0);
+    disn_->update(dt, *(*vel_)(0), 1.0);
 
   // *********** time measurement ***********
   double dtcpu = timer_->wallTime();
@@ -131,23 +131,23 @@ int Solid::TimIntExplEuler::integrate_step()
   stiff_->zero();
 
   // build new external forces
-  fextn_->PutScalar(0.0);
+  fextn_->put_scalar(0.0);
   apply_force_external(timen_, disn_, veln_, *fextn_);
 
   // additional external forces are added (e.g. interface forces)
-  fextn_->Update(1.0, *fifc_, 1.0);
+  fextn_->update(1.0, *fifc_, 1.0);
 
   // TIMING
   // double dtcpu = timer_->wallTime();
 
   // initialise internal forces
-  fintn_->PutScalar(0.0);
+  fintn_->put_scalar(0.0);
 
   // ordinary internal force and stiffness
   {
     // displacement increment in step
     Core::LinAlg::Vector<double> disinc = Core::LinAlg::Vector<double>(*disn_);
-    disinc.Update(-1.0, *(*dis_)(0), 1.0);
+    disinc.update(-1.0, *(*dis_)(0), 1.0);
     // internal force
     apply_force_internal(
         timen_, dt, disn_, Core::Utils::shared_ptr_from_ref(disinc), veln_, fintn_);
@@ -170,7 +170,7 @@ int Solid::TimIntExplEuler::integrate_step()
   // contact or meshtying forces
   if (have_contact_meshtying())
   {
-    fcmtn_->PutScalar(0.0);
+    fcmtn_->put_scalar(0.0);
 
     if (cmtbridge_->have_meshtying())
       cmtbridge_->mt_manager()->get_strategy().apply_force_stiff_cmt(
@@ -186,16 +186,16 @@ int Solid::TimIntExplEuler::integrate_step()
 
   // determine time derivative of linear momentum vector,
   // ie \f$\dot{P} = M \dot{V}_{n=1}\f$
-  frimpn_->Update(1.0, *fextn_, -1.0, *fintn_, 0.0);
+  frimpn_->update(1.0, *fextn_, -1.0, *fintn_, 0.0);
 
   if (damping_ == Inpar::Solid::damp_rayleigh)
   {
-    frimpn_->Update(-1.0, *fviscn_, 1.0);
+    frimpn_->update(-1.0, *fviscn_, 1.0);
   }
 
   if (have_contact_meshtying())
   {
-    frimpn_->Update(1.0, *fcmtn_, 1.0);
+    frimpn_->update(1.0, *fcmtn_, 1.0);
   }
 
   // *********** time measurement ***********
@@ -208,7 +208,7 @@ int Solid::TimIntExplEuler::integrate_step()
     // blank linear momentum zero on DOFs subjected to DBCs
     dbcmaps_->insert_cond_vector(*dbcmaps_->extract_cond_vector(*zeros_), *frimpn_);
     // get accelerations
-    accn_->PutScalar(0.0);
+    accn_->put_scalar(0.0);
 
     // in case of no lumping or if mass matrix is a BlockSparseMatrix, use solver
     if (lumpmass_ == false ||
@@ -229,7 +229,7 @@ int Solid::TimIntExplEuler::integrate_step()
           (std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(mass_))->row_map());
       (std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(mass_))->extract_diagonal_copy(*diag);
       // A_{n+1} = M^{-1} . ( -fint + fext )
-      accn_->ReciprocalMultiply(1.0, *diag, *frimpn_, 0.0);
+      accn_->reciprocal_multiply(1.0, *diag, *frimpn_, 0.0);
     }
   }
 

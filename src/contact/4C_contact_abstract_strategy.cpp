@@ -1017,8 +1017,8 @@ void CONTACT::AbstractStrategy::update_global_self_contact_state()
       std::make_shared<Core::LinAlg::Vector<double>>(*gsdofrowmap_, true);
 
   {
-    const int* oldgids = zincr_->Map().MyGlobalElements();
-    for (int i = 0; i < zincr_->Map().NumMyElements(); ++i)
+    const int* oldgids = zincr_->get_map().MyGlobalElements();
+    for (int i = 0; i < zincr_->get_map().NumMyElements(); ++i)
     {
       if (std::abs((*zincr_)[i]) > std::numeric_limits<double>::epsilon())
       {
@@ -1034,10 +1034,10 @@ void CONTACT::AbstractStrategy::update_global_self_contact_state()
     zincr_ = std::make_shared<Core::LinAlg::Vector<double>>(*tmp_ptr);
   }
 
-  tmp_ptr->PutScalar(0.0);
+  tmp_ptr->put_scalar(0.0);
   {
-    const int* oldgids = z_->Map().MyGlobalElements();
-    for (int i = 0; i < z_->Map().NumMyElements(); ++i)
+    const int* oldgids = z_->get_map().MyGlobalElements();
+    for (int i = 0; i < z_->get_map().NumMyElements(); ++i)
     {
       if (std::abs((*z_)[i]) > std::numeric_limits<double>::epsilon())
       {
@@ -1070,7 +1070,7 @@ void CONTACT::AbstractStrategy::calc_mean_velocity_for_binning(
 
     double meanVelocity = 0.0;
 
-    int err = interfaceVelocity.MeanValue(&meanVelocity);
+    int err = interfaceVelocity.mean_value(&meanVelocity);
     if (err)
       FOUR_C_THROW("Calculation of mean velocity for interface %s failed.",
           interface->discret().name().c_str());
@@ -1628,7 +1628,7 @@ void CONTACT::AbstractStrategy::store_nodal_quantities(Mortar::StrategyBase::Qua
 
       for (int dof = 0; dof < n_dim(); ++dof)
       {
-        locindex[dof] = (vectorinterface->Map()).LID(cnode->dofs()[dof]);
+        locindex[dof] = (vectorinterface->get_map()).LID(cnode->dofs()[dof]);
         if (locindex[dof] < 0) FOUR_C_THROW("StoreNodalQuantities: Did not find dof in map");
 
         switch (type)
@@ -1731,14 +1731,14 @@ void CONTACT::AbstractStrategy::compute_contact_stresses()
       // normal stress components
       for (int dof = 0; dof < n_dim(); ++dof)
       {
-        locindex[dof] = (stressnormal_->Map()).LID(cnode->dofs()[dof]);
+        locindex[dof] = (stressnormal_->get_map()).LID(cnode->dofs()[dof]);
         (*stressnormal_)[locindex[dof]] = -lmn * nn[dof];
       }
 
       // tangential stress components
       for (int dof = 0; dof < n_dim(); ++dof)
       {
-        locindex[dof] = (stresstangential_->Map()).LID(cnode->dofs()[dof]);
+        locindex[dof] = (stresstangential_->get_map()).LID(cnode->dofs()[dof]);
         (*stresstangential_)[locindex[dof]] = -lmt1 * nt1[dof] - lmt2 * nt2[dof];
       }
     }
@@ -1787,7 +1787,7 @@ void CONTACT::AbstractStrategy::store_dirichlet_status(
   // create old style dirichtoggle vector (supposed to go away)
   non_redist_gsdirichtoggle_ = Core::LinAlg::create_vector(slave_dof_row_map(true), true);
   Core::LinAlg::Vector<double> temp(*(dbcmaps->cond_map()));
-  temp.PutScalar(1.0);
+  temp.put_scalar(1.0);
   Core::LinAlg::export_to(temp, *non_redist_gsdirichtoggle_);
 
   post_store_dirichlet_status(dbcmaps);
@@ -1840,7 +1840,7 @@ void CONTACT::AbstractStrategy::update(std::shared_ptr<const Core::LinAlg::Vecto
   if (is_self_contact())
     zold_ = std::make_shared<Core::LinAlg::Vector<double>>(slave_dof_row_map(true));
 
-  zold_->Scale(1.0, *z_);
+  zold_->scale(1.0, *z_);
   store_nodal_quantities(Mortar::StrategyBase::lmold);
   store_dm("old");
 
@@ -1915,7 +1915,7 @@ void CONTACT::AbstractStrategy::do_write_restart(
       Core::Nodes::Node* node = interfaces()[i]->discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       Node* cnode = dynamic_cast<Node*>(node);
-      int dof = (activetoggle->Map()).LID(gid);
+      int dof = (activetoggle->get_map()).LID(gid);
 
       if (forcedrestart)
       {
@@ -2007,7 +2007,7 @@ void CONTACT::AbstractStrategy::do_read_restart(Core::IO::DiscretizationReader& 
     for (int j = 0; j < (interfaces()[i]->slave_row_nodes())->NumMyElements(); ++j)
     {
       int gid = (interfaces()[i]->slave_row_nodes())->GID(j);
-      int dof = (activetoggle->Map()).LID(gid);
+      int dof = (activetoggle->get_map()).LID(gid);
 
       if ((*activetoggle)[dof] == 1)
       {

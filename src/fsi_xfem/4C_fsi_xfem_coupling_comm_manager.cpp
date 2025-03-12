@@ -111,26 +111,26 @@ void XFEM::CouplingCommManager::insert_vector(const int idxA,
         if (!add)
           *vecB = *get_coupling(idxA, idxB)->master_to_slave(*vecA);
         else
-          vecB->Update(scale, *get_coupling(idxA, idxB)->master_to_slave(*vecA), 1.0);
+          vecB->update(scale, *get_coupling(idxA, idxB)->master_to_slave(*vecA), 1.0);
       }
       else if (idxA > idxB)  // just the inverse Coupling Object is stored
       {
         if (!add)
           *vecB = *get_coupling(idxB, idxA)->slave_to_master(*vecA);
         else
-          vecB->Update(scale, *get_coupling(idxB, idxA)->slave_to_master(*vecA), 1.0);
+          vecB->update(scale, *get_coupling(idxB, idxA)->slave_to_master(*vecA), 1.0);
       }
       else
       {
         if (!add)
         {
           // *vecB = *vecA; //we don't do any transformation!
-          vecB->Update(1.0, *vecA, 0.0);
+          vecB->update(1.0, *vecA, 0.0);
         }
         else
-          vecB->Update(scale, *vecA, 1.0);
+          vecB->update(scale, *vecA, 1.0);
       }
-      if (!add && scale != 1.0) vecB->Scale(scale);
+      if (!add && scale != 1.0) vecB->scale(scale);
       break;
     }
     case CouplingCommManager::partial_to_global:

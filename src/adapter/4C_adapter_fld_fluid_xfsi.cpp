@@ -187,7 +187,7 @@ void Adapter::XFluidFSI::displacement_to_velocity(
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   // check, whether maps are the same
-  if (!fcx->Map().PointSameAs(veln->Map()))
+  if (!fcx->get_map().PointSameAs(veln->get_map()))
   {
     FOUR_C_THROW("Maps do not match, but they have to.");
   }
@@ -201,7 +201,7 @@ void Adapter::XFluidFSI::displacement_to_velocity(
    *             \ = 1 / dt   if interface time integration is first order
    */
   const double timescale = time_scaling();
-  fcx->Update(-timescale * xfluid_->dt(), *veln, timescale);
+  fcx->update(-timescale * xfluid_->dt(), *veln, timescale);
 }
 
 

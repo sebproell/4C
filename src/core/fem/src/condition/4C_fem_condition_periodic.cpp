@@ -1358,7 +1358,7 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
 
     // weights for graph partition
     auto node_weights = Core::LinAlg::create_vector(*noderowmap, true);
-    node_weights->PutScalar(1.0);
+    node_weights->put_scalar(1.0);
 
     // apply weight of special elements
     for (int node_lid = 0; node_lid < noderowmap->NumMyElements(); ++node_lid)
@@ -1373,7 +1373,7 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
       for (int k = 0; k < node->num_element(); ++k)
         weight = std::max(weight, surrele[k]->evaluation_cost());
 
-      node_weights->ReplaceMyValue(node_lid, 0, weight);
+      node_weights->replace_local_value(node_lid, 0, weight);
     }
     // ----------------------------------------
     // loop masternodes to adjust weights of slavenodes
@@ -1393,7 +1393,7 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
       {
         const double initval = 1.0;
 
-        node_weights->ReplaceGlobalValues(1, &initval, &slave_gid);
+        node_weights->replace_global_values(1, &initval, &slave_gid);
       }
     }
 

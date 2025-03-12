@@ -126,7 +126,7 @@ void FLD::TimIntStationaryHDG::set_old_part_of_righthandside()
                   (con: hist_ = 0.0)
   */
 
-  hist_->PutScalar(0.0);
+  hist_->put_scalar(0.0);
 
   // This code is entered at the beginning of the nonlinear iteration, so
   // store that the assembly to be done next is going to be the first one
@@ -159,8 +159,8 @@ void FLD::TimIntStationaryHDG::clear_state_assemble_mat_and_rhs()
     // Wrote into the state vector during element calls, need to transfer the
     // data back before it disappears when clearing the state (at least for nproc>1)
     const Core::LinAlg::Vector<double>& intvelnpGhosted = *discret_->get_state(1, "intvelnp");
-    for (int i = 0; i < intvelnp_->MyLength(); ++i)
-      (*intvelnp_)[i] = intvelnpGhosted[intvelnpGhosted.Map().LID(intvelnp_->Map().GID(i))];
+    for (int i = 0; i < intvelnp_->local_length(); ++i)
+      (*intvelnp_)[i] = intvelnpGhosted[intvelnpGhosted.get_map().LID(intvelnp_->get_map().GID(i))];
   }
   first_assembly_ = false;
   FluidImplicitTimeInt::clear_state_assemble_mat_and_rhs();
@@ -214,7 +214,7 @@ void FLD::TimIntStationaryHDG::set_initial_flow_field(
           localDofs.size() == static_cast<std::size_t>(elevec2.numRows()), "Internal error");
       for (unsigned int i = 0; i < localDofs.size(); ++i)
         localDofs[i] = intdofrowmap->LID(localDofs[i]);
-      intvelnp_->ReplaceMyValues(localDofs.size(), elevec2.values(), localDofs.data());
+      intvelnp_->replace_local_values(localDofs.size(), elevec2.values(), localDofs.data());
     }
   }
   double globerror = 0;

@@ -612,8 +612,8 @@ void Solid::ModelEvaluator::BeamInteraction::reset(const Core::LinAlg::Vector<do
     (*some_iter)->reset();
 
   // Zero out force and stiffness contributions
-  force_beaminteraction_->PutScalar(0.0);
-  ia_force_beaminteraction_->PutScalar(0.0);
+  force_beaminteraction_->put_scalar(0.0);
+  ia_force_beaminteraction_->put_scalar(0.0);
   ia_state_ptr_->get_force_np()->PutScalar(0.0);
   stiff_beaminteraction_->zero();
   ia_state_ptr_->get_stiff()->zero();
@@ -646,7 +646,7 @@ bool Solid::ModelEvaluator::BeamInteraction::evaluate_force()
   if (ia_state_ptr_->get_force_np()->GlobalAssemble(Add, false) != 0)
     FOUR_C_THROW("GlobalAssemble failed");
   // add to non fe vector
-  if (ia_force_beaminteraction_->Update(1., *ia_state_ptr_->get_force_np(), 1.))
+  if (ia_force_beaminteraction_->update(1., *ia_state_ptr_->get_force_np(), 1.))
     FOUR_C_THROW("update went wrong");
 
   // transformation from ia_discret to problem discret
@@ -693,7 +693,7 @@ bool Solid::ModelEvaluator::BeamInteraction::evaluate_force_stiff()
     FOUR_C_THROW("GlobalAssemble failed");
 
   // add to non fe vector
-  if (ia_force_beaminteraction_->Update(1., *ia_state_ptr_->get_force_np(), 1.))
+  if (ia_force_beaminteraction_->update(1., *ia_state_ptr_->get_force_np(), 1.))
     FOUR_C_THROW("update went wrong");
   if (not ia_state_ptr_->get_stiff()->filled()) ia_state_ptr_->get_stiff()->complete();
 
@@ -852,7 +852,7 @@ void Solid::ModelEvaluator::BeamInteraction::update_step_state(const double& tim
   std::shared_ptr<Core::LinAlg::Vector<double>>& fstructold_ptr =
       global_state().get_fstructure_old();
 
-  fstructold_ptr->Update(timefac_n, *force_beaminteraction_, 1.0);
+  fstructold_ptr->update(timefac_n, *force_beaminteraction_, 1.0);
 
   // submodel loop
   Vector::iterator some_iter;
@@ -978,7 +978,7 @@ bool Solid::ModelEvaluator::BeamInteraction::check_if_beam_discret_redistributio
       // ( this one also does not get shifted, therefore we do not need to worry
       // about a periodic boundary shift of a node between dis_at_last_redistr_ and the current
       // disp)
-      doflid[dim] = dis_at_last_redistr_->Map().LID(dofnode[dim]);
+      doflid[dim] = dis_at_last_redistr_->get_map().LID(dofnode[dim]);
       (dis_increment)[doflid[dim]] =
           (*global_state().get_dis_np())[doflid[dim]] - (*dis_at_last_redistr_)[doflid[dim]];
     }
@@ -986,8 +986,8 @@ bool Solid::ModelEvaluator::BeamInteraction::check_if_beam_discret_redistributio
 
   // get maximal displacement increment since last redistribution over all procs
   std::array<double, 2> extrema = {0.0, 0.0};
-  dis_increment.MinValue(&extrema[0]);
-  dis_increment.MaxValue(&extrema[1]);
+  dis_increment.min_value(&extrema[0]);
+  dis_increment.max_value(&extrema[1]);
   double gmaxdisincr = std::max(-extrema[0], extrema[1]);
 
   // some verbose screen output

@@ -158,8 +158,8 @@ void ScaTra::LevelSetAlgorithm::prepare_time_loop_reinit()
   switchreinit_ = true;
 
   // initial or start phi of reinitialization process
-  initialphireinit_->Update(1.0, *phinp_, 0.0);
-  phin_->Update(1.0, *phinp_, 0.0);
+  initialphireinit_->update(1.0, *phinp_, 0.0);
+  phin_->update(1.0, *phinp_, 0.0);
 
   // set internal step counter to zero
   pseudostep_ = 0;
@@ -337,7 +337,7 @@ void ScaTra::LevelSetAlgorithm::calc_node_based_reinit_vel()
     const Epetra_Map* dofrowmap = discret_->dof_row_map();
     std::shared_ptr<Core::LinAlg::Vector<double>> velcomp =
         Core::LinAlg::create_vector(*dofrowmap, true);
-    velcomp->PutScalar(0.0);
+    velcomp->put_scalar(0.0);
 
     if (lsdim_ == Inpar::ScaTra::ls_3D or (lsdim_ == Inpar::ScaTra::ls_2Dx and idim != 0) or
         (lsdim_ == Inpar::ScaTra::ls_2Dy and idim != 1) or
@@ -345,7 +345,7 @@ void ScaTra::LevelSetAlgorithm::calc_node_based_reinit_vel()
     {
       // zero out matrix and rhs entries
       sysmat_->zero();
-      residual_->PutScalar(0.0);
+      residual_->put_scalar(0.0);
 
       // create the parameters for the discretization
       Teuchos::ParameterList eleparams;
@@ -414,7 +414,7 @@ void ScaTra::LevelSetAlgorithm::calc_node_based_reinit_vel()
     {
       // store velocity in reinitialization velocity
       const double val = (*velcomp)[lnodeid];
-      (*nb_grad_val_)(idim).ReplaceMyValues(1, &val, &lnodeid);
+      (*nb_grad_val_)(idim).replace_local_values(1, &val, &lnodeid);
     }
   }
   return;
@@ -453,7 +453,7 @@ void ScaTra::LevelSetAlgorithm::correction_reinit()
 
   // zero out matrix and rhs entries !
   sysmat_->zero();
-  residual_->PutScalar(0.0);
+  residual_->put_scalar(0.0);
 
   // generate a parameterlist for communication and control
   Teuchos::ParameterList eleparams;
@@ -956,7 +956,7 @@ void ScaTra::LevelSetAlgorithm::reinit_geo(
       if ((*phinp_)[doflid] < 0.0) eledistance.front().second = -eledistance.front().second;
     }
 
-    int err = phinp_->ReplaceMyValues(1, &(eledistance.front().second), &doflid);
+    int err = phinp_->replace_local_values(1, &(eledistance.front().second), &doflid);
     if (err) FOUR_C_THROW("this did not work");
   }
 
@@ -1397,11 +1397,11 @@ void ScaTra::LevelSetAlgorithm::correct_volume()
   // called after a reinitialization.
   const double thickness = -voldelta / surface;
 
-  Core::LinAlg::Vector<double> one(phin_->Map());
-  one.PutScalar(1.0);
+  Core::LinAlg::Vector<double> one(phin_->get_map());
+  one.put_scalar(1.0);
 
   // update phi
-  phinp_->Update(thickness, one, 1.0);
+  phinp_->update(thickness, one, 1.0);
 
   if (myrank_ == 0) Core::IO::cout << "done" << Core::IO::endl;
 
@@ -1475,9 +1475,9 @@ void ScaTra::LevelSetAlgorithm::reinitialize_with_elliptic_equation()
     //-----------------------------
     // check convergence
     //-----------------------------
-    inc.Update(1.0, *phinp_, -1.0, phinmloc, 0.0);
+    inc.update(1.0, *phinp_, -1.0, phinmloc, 0.0);
     double norm = 0.0;
-    inc.Norm2(&norm);
+    inc.norm_2(&norm);
 
     if (myrank_ == 0)
       std::cout << "STEP:  " << step << "/" << pseudostepmax_
@@ -1493,7 +1493,7 @@ void ScaTra::LevelSetAlgorithm::reinitialize_with_elliptic_equation()
       if (step >= pseudostepmax_) not_conv = false;
     }
 
-    phinmloc.Update(1.0, *phinp_, 0.0);
+    phinmloc.update(1.0, *phinp_, 0.0);
   }
 
   //-------------------------------------------------

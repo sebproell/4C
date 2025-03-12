@@ -30,10 +30,10 @@ Mat::PAR::AAAneohooke::AAAneohooke(const Core::Mat::PAR::Parameter::Data& matdat
   {
     matparams_.push_back(std::make_shared<Core::LinAlg::Vector<double>>(dummy_map, true));
   }
-  matparams_.at(young)->PutScalar(matdata.parameters.get<double>("YOUNG"));
-  matparams_.at(nue)->PutScalar(matdata.parameters.get<double>("NUE"));
-  matparams_.at(beta)->PutScalar(matdata.parameters.get<double>("BETA"));
-  matparams_.at(density)->PutScalar(matdata.parameters.get<double>("DENS"));
+  matparams_.at(young)->put_scalar(matdata.parameters.get<double>("YOUNG"));
+  matparams_.at(nue)->put_scalar(matdata.parameters.get<double>("NUE"));
+  matparams_.at(beta)->put_scalar(matdata.parameters.get<double>("BETA"));
+  matparams_.at(density)->put_scalar(matdata.parameters.get<double>("DENS"));
 }
 
 

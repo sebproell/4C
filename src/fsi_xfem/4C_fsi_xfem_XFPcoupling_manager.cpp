@@ -59,13 +59,13 @@ XFEM::XfpCouplingManager::XfpCouplingManager(std::shared_ptr<XFEM::ConditionMana
       *poro_->fluid_structure_coupling().perm_master_dof_map());
 
   // safety check
-  if (!mcfpi_ps_ps_->i_dispnp()->Map().SameAs(*get_map_extractor(0)->Map(1)))
+  if (!mcfpi_ps_ps_->i_dispnp()->get_map().SameAs(*get_map_extractor(0)->Map(1)))
     FOUR_C_THROW("XFPCoupling_Manager: Maps of Condition and Mesh Coupling do not fit (psps)!");
-  if (!mcfpi_ps_pf_->i_dispnp()->Map().SameAs(*get_map_extractor(0)->Map(1)))
+  if (!mcfpi_ps_pf_->i_dispnp()->get_map().SameAs(*get_map_extractor(0)->Map(1)))
     FOUR_C_THROW("XFPCoupling_Manager: Maps of Condition and Mesh Coupling do not fit (pspf)!");
-  if (!mcfpi_pf_ps_->i_dispnp()->Map().SameAs(*get_map_extractor(0)->Map(1)))
+  if (!mcfpi_pf_ps_->i_dispnp()->get_map().SameAs(*get_map_extractor(0)->Map(1)))
     FOUR_C_THROW("XFPCoupling_Manager: Maps of Condition and Mesh Coupling do not fit (pfps)!");
-  if (!mcfpi_pf_pf_->i_dispnp()->Map().SameAs(*get_map_extractor(0)->Map(1)))
+  if (!mcfpi_pf_pf_->i_dispnp()->get_map().SameAs(*get_map_extractor(0)->Map(1)))
     FOUR_C_THROW("XFPCoupling_Manager: Maps of Condition and Mesh Coupling do not fit (pfpf)!");
 
   // storage of the resulting Robin-type structural forces from the old timestep
@@ -342,12 +342,12 @@ void XFEM::XfpCouplingManager::update(double scaling)
   // scaling for the structural residual is done when it is added to the global residual vector
   // get the coupling rhs from the xfluid, this vector is based on the boundary dis which is part of
   // the structure dis
-  lambda_ps_->Update(scaling, *xfluid_->rhs_s_vec(cond_name_ps_ps_), 0.0);
-  lambda_ps_->Update(scaling, *xfluid_->rhs_s_vec(cond_name_ps_pf_), 1.0);
+  lambda_ps_->update(scaling, *xfluid_->rhs_s_vec(cond_name_ps_ps_), 0.0);
+  lambda_ps_->update(scaling, *xfluid_->rhs_s_vec(cond_name_ps_pf_), 1.0);
 
   const double dt = poro_->fluid_field()->dt();
-  lambda_pf_->Update(scaling * dt, *xfluid_->rhs_s_vec(cond_name_pf_ps_), 0.0);
-  lambda_pf_->Update(scaling * dt, *xfluid_->rhs_s_vec(cond_name_pf_pf_), 1.0);
+  lambda_pf_->update(scaling * dt, *xfluid_->rhs_s_vec(cond_name_pf_ps_), 0.0);
+  lambda_pf_->update(scaling * dt, *xfluid_->rhs_s_vec(cond_name_pf_pf_), 1.0);
   return;
 }
 

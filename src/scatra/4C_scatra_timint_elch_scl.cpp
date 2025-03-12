@@ -274,7 +274,7 @@ void ScaTra::ScaTraTimIntElchSCL::nonlinear_solve()
     iternum_++;
 
     // prepare load vector
-    neumann_loads_->PutScalar(0.0);
+    neumann_loads_->put_scalar(0.0);
 
     {
       TEUCHOS_FUNC_TIME_MONITOR("SCL: evaluate");
@@ -297,7 +297,7 @@ void ScaTra::ScaTraTimIntElchSCL::nonlinear_solve()
       if (break_newton_loop_and_print_convergence()) break;
     }
 
-    increment_elch_scl_->PutScalar(0.0);
+    increment_elch_scl_->put_scalar(0.0);
 
     {
       TEUCHOS_FUNC_TIME_MONITOR("SCL: solve");
@@ -486,14 +486,14 @@ bool ScaTra::ScaTraTimIntElchSCL::break_newton_loop_and_print_convergence()
 
   double residual_L2, micro_residual_L2, macro_residual_L2, increment_L2, micro_increment_L2,
       macro_increment_L2, micro_state_L2, macro_state_L2;
-  residual_elch_scl_->Norm2(&residual_L2);
-  micro_residual->Norm2(&micro_residual_L2);
-  macro_residual->Norm2(&macro_residual_L2);
-  increment_elch_scl_->Norm2(&increment_L2);
-  micro_increment->Norm2(&micro_increment_L2);
-  macro_increment->Norm2(&macro_increment_L2);
-  micro_scatra_field()->phinp()->Norm2(&micro_state_L2);
-  phinp()->Norm2(&macro_state_L2);
+  residual_elch_scl_->norm_2(&residual_L2);
+  micro_residual->norm_2(&micro_residual_L2);
+  macro_residual->norm_2(&macro_residual_L2);
+  increment_elch_scl_->norm_2(&increment_L2);
+  micro_increment->norm_2(&micro_increment_L2);
+  macro_increment->norm_2(&macro_increment_L2);
+  micro_scatra_field()->phinp()->norm_2(&micro_state_L2);
+  phinp()->norm_2(&macro_state_L2);
 
   // safety checks
   if (std::isnan(residual_L2) or std::isnan(micro_residual_L2) or std::isnan(macro_residual_L2) or
@@ -915,7 +915,7 @@ void ScaTra::ScaTraTimIntElchSCL::assemble_and_apply_mesh_tying()
   auto full_macro_vector = Core::LinAlg::create_vector(*dof_row_map(), true);
   macro_coupling_dofs_->insert_cond_vector(*micro_residual_on_macro_side, *full_macro_vector);
 
-  residual_elch_scl_->PutScalar(0.0);
+  residual_elch_scl_->put_scalar(0.0);
   system_matrix_elch_scl_->zero();
 
   macro_micro_dofs_->add_other_vector(*full_macro_vector, *residual_elch_scl_);
@@ -1129,7 +1129,7 @@ void ScaTra::ScaTraTimIntElchSCL::calc_initial_potential_field()
     iternum_++;
 
     // prepare load vector
-    neumann_loads_->PutScalar(0.0);
+    neumann_loads_->put_scalar(0.0);
 
     // assemble sub problems
     assemble_mat_and_rhs();
@@ -1158,16 +1158,16 @@ void ScaTra::ScaTraTimIntElchSCL::calc_initial_potential_field()
 
     // compute L2 norm of state vector
     double state_L2_macro, state_L2_micro;
-    phinp()->Norm2(&state_L2_macro);
-    micro_scatra_field()->phinp()->Norm2(&state_L2_micro);
+    phinp()->norm_2(&state_L2_macro);
+    micro_scatra_field()->phinp()->norm_2(&state_L2_micro);
     double state_L2 = std::sqrt(std::pow(state_L2_macro, 2) + std::pow(state_L2_micro, 2));
 
     // compute L2 residual vector
     double res_L2, inc_L2;
-    residual_elch_scl_->Norm2(&res_L2);
+    residual_elch_scl_->norm_2(&res_L2);
 
     // compute L2 norm of increment vector
-    increment_elch_scl_->Norm2(&inc_L2);
+    increment_elch_scl_->norm_2(&inc_L2);
 
     // safety checks
     if (std::isnan(inc_L2) or std::isnan(res_L2)) FOUR_C_THROW("calculated vector norm is NaN.");
@@ -1236,7 +1236,7 @@ void ScaTra::ScaTraTimIntElchSCL::calc_initial_potential_field()
     }
 
     // zero out increment vector
-    increment_elch_scl_->PutScalar(0.0);
+    increment_elch_scl_->put_scalar(0.0);
 
     Core::LinAlg::SolverParams solver_params;
     solver_params.refactor = true;
@@ -1247,8 +1247,8 @@ void ScaTra::ScaTraTimIntElchSCL::calc_initial_potential_field()
     update_iter_micro_macro();
 
     // copy initial state vector
-    phin_->Update(1., *phinp_, 0.);
-    micro_scatra_field()->phin()->Update(1.0, *micro_scatra_field()->phinp(), 0.0);
+    phin_->update(1., *phinp_, 0.);
+    micro_scatra_field()->phin()->update(1.0, *micro_scatra_field()->phinp(), 0.0);
 
     // update state vectors for intermediate time steps (only for generalized alpha)
     compute_intermediate_values();

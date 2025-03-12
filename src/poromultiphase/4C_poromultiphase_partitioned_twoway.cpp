@@ -190,20 +190,20 @@ bool POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::convergence_check(int itnu
 
   // build the current scalar increment Inc T^{i+1}
   // \f Delta T^{k+1} = Inc T^{k+1} = T^{k+1} - T^{k}  \f
-  phiincnp_->Update(1.0, *(fluid_field()->phinp()), -1.0);
+  phiincnp_->update(1.0, *(fluid_field()->phinp()), -1.0);
   if (artery_coupling_active_)
-    arterypressincnp_->Update(1.0, *fluid_field()->art_net_tim_int()->pressurenp(), -1.0);
-  dispincnp_->Update(1.0, *(structure_field()->dispnp()), -1.0);
+    arterypressincnp_->update(1.0, *fluid_field()->art_net_tim_int()->pressurenp(), -1.0);
+  dispincnp_->update(1.0, *(structure_field()->dispnp()), -1.0);
 
   // build the L2-norm of the scalar increment and the scalar
-  phiincnp_->Norm2(&phiincnorm_L2);
-  fluid_field()->phinp()->Norm2(&phinorm_L2);
-  dispincnp_->Norm2(&dispincnorm_L2);
-  structure_field()->dispnp()->Norm2(&dispnorm_L2);
+  phiincnp_->norm_2(&phiincnorm_L2);
+  fluid_field()->phinp()->norm_2(&phinorm_L2);
+  dispincnp_->norm_2(&dispincnorm_L2);
+  structure_field()->dispnp()->norm_2(&dispnorm_L2);
   if (artery_coupling_active_)
   {
-    arterypressincnp_->Norm2(&artpressincnorm_L2);
-    fluid_field()->art_net_tim_int()->pressurenp()->Norm2(&artpressnorm_L2);
+    arterypressincnp_->norm_2(&artpressincnorm_L2);
+    fluid_field()->art_net_tim_int()->pressurenp()->norm_2(&artpressnorm_L2);
   }
 
   // care for the case that there is (almost) zero scalar
@@ -328,7 +328,7 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::perform_relaxation(
     std::shared_ptr<const Core::LinAlg::Vector<double>> phi, const int itnum)
 {
   // get the increment vector
-  fluidphiincnp_->Update(1.0, *phi, -1.0, *fluidphioldnp_, 0.0);
+  fluidphiincnp_->update(1.0, *phi, -1.0, *fluidphioldnp_, 0.0);
 
   // perform relaxation
   switch (relaxationmethod_)
@@ -367,10 +367,10 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::perform_relaxation(
 
   // calculate the relaxed fluid solution as phi,n+1^i+1 = phi,n+1^i + \omega*(phi,n+1^i+1 -
   // phi,n+1^i) note: in first iteration step, omega = 1.0
-  fluidphinp_->Update(1.0, *fluidphioldnp_, omega_, *fluidphiincnp_, 0.0);
+  fluidphinp_->update(1.0, *fluidphioldnp_, omega_, *fluidphiincnp_, 0.0);
 
   // save the old fluid solution
-  fluidphioldnp_->Update(1.0, *fluidphinp_, 0.0);
+  fluidphioldnp_->update(1.0, *fluidphinp_, 0.0);
 
   return;
 }
@@ -384,10 +384,10 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::aitken_relaxation(
   // fluidphiincnpdiff =  r^{i+1}_{n+1} - r^i_{n+1}
   std::shared_ptr<Core::LinAlg::Vector<double>> fluidphiincnpdiff =
       Core::LinAlg::create_vector(*fluid_field()->discretization()->dof_row_map(), true);
-  fluidphiincnpdiff->Update(1.0, *fluidphiincnp_, (-1.0), *fluidphiincnpold_, 0.0);
+  fluidphiincnpdiff->update(1.0, *fluidphiincnp_, (-1.0), *fluidphiincnpold_, 0.0);
 
   double fluidphiincnpdiffnorm = 0.0;
-  fluidphiincnpdiff->Norm2(&fluidphiincnpdiffnorm);
+  fluidphiincnpdiff->norm_2(&fluidphiincnpdiffnorm);
 
   if (fluidphiincnpdiffnorm <= 1e-06 and Core::Communication::my_mpi_rank(get_comm()) == 0)
     std::cout << "Warning: The scalar increment is too small in order to use it for Aitken "
@@ -396,7 +396,7 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::aitken_relaxation(
 
   // calculate dot product
   double fluidphiincsdot = 0.0;  // delsdot = ( r^{i+1}_{n+1} - r^i_{n+1} )^T . r^{i+1}_{n+1}
-  fluidphiincnpdiff->Dot(*fluidphiincnp_, &fluidphiincsdot);
+  fluidphiincnpdiff->dot(*fluidphiincnp_, &fluidphiincsdot);
 
   if (itnum != 1 and fluidphiincnpdiffnorm > 1e-06)
   {
@@ -427,7 +427,7 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::aitken_relaxation(
   }
 
   // update history vector old increment r^i_{n+1}
-  fluidphiincnpold_->Update(1.0, *fluidphiincnp_, 0.0);
+  fluidphiincnpold_->update(1.0, *fluidphiincnp_, 0.0);
 }
 
 /*----------------------------------------------------------------------*
@@ -438,10 +438,10 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::iter_update_states()
   // store last solutions (current states).
   // will be compared in convergence_check to the solutions,
   // obtained from the next Struct and Scatra steps.
-  phiincnp_->Update(1.0, *fluid_field()->phinp(), 0.0);
+  phiincnp_->update(1.0, *fluid_field()->phinp(), 0.0);
   if (artery_coupling_active_)
-    arterypressincnp_->Update(1.0, *fluid_field()->art_net_tim_int()->pressurenp(), 0.0);
-  dispincnp_->Update(1.0, *structure_field()->dispnp(), 0.0);
+    arterypressincnp_->update(1.0, *fluid_field()->art_net_tim_int()->pressurenp(), 0.0);
+  dispincnp_->update(1.0, *structure_field()->dispnp(), 0.0);
 
   return;
 }  // iter_update_states()

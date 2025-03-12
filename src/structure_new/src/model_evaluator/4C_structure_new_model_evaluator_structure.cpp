@@ -82,7 +82,7 @@ void Solid::ModelEvaluator::Structure::setup()
   }
   // setup new variables
   {
-    dis_incr_ptr_ = std::make_shared<Core::LinAlg::Vector<double>>(dis_np().Map(), true);
+    dis_incr_ptr_ = std::make_shared<Core::LinAlg::Vector<double>>(dis_np().get_map(), true);
   }
 
   // setup output writers
@@ -139,12 +139,12 @@ void Solid::ModelEvaluator::Structure::reset(const Core::LinAlg::Vector<double>&
   /* --- reset external forces
    * Please note, that PutScalar is safer (but maybe slower) than
    * put_scalar(0.0), because of possible NaN and inf values! */
-  fext_np().PutScalar(0.0);
+  fext_np().put_scalar(0.0);
 
   /* --- reset internal forces
    * Please note, that PutScalar is safer (but maybe slower) than
    * put_scalar(0.0), because of possible NaN and inf values! */
-  fint_np().PutScalar(0.0);
+  fint_np().put_scalar(0.0);
 
   // reset stiffness matrix
   stiff().zero();
@@ -583,7 +583,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Solid::ModelEvaluator::Structure::
   {
     case Inpar::Solid::MassLin::ml_rotations:
     {
-      finertial_np().PutScalar(0.0);
+      finertial_np().put_scalar(0.0);
       // set inertial force
       return global_state().get_finertial_np();
       break;
@@ -1041,7 +1041,7 @@ void Solid::ModelEvaluator::Structure::output_runtime_structure_gauss_point_data
 void Solid::ModelEvaluator::Structure::init_output_runtime_beams()
 {
   beam_vtu_writer_ptr_ = std::make_shared<BeamDiscretizationRuntimeOutputWriter>(
-      visualization_params_, dis_np().Comm());
+      visualization_params_, dis_np().get_comm());
 
   // get the parameter container object
   const Discret::Elements::BeamRuntimeOutputParams& beam_output_params =
@@ -1404,23 +1404,23 @@ void Solid::ModelEvaluator::Structure::update_step_state(const double& timefac_n
   global_state().get_multi_acc()->update_steps(*global_state().get_acc_np());
 
   // store the old external force
-  global_state().get_fext_n()->Scale(1.0, fext_np());
+  global_state().get_fext_n()->scale(1.0, fext_np());
 
   // store the old reaction force
-  global_state().get_freact_n()->Scale(1.0, *global_state().get_freact_np());
+  global_state().get_freact_n()->scale(1.0, *global_state().get_freact_np());
 
   // store the old internal force
-  global_state().get_fint_n()->Scale(1.0, fint_np());
+  global_state().get_fint_n()->scale(1.0, fint_np());
 
   // new at t_{n+1} -> t_{n+timefac_n}
   //    F^{struct}_{n+timefac_n} := timefac_n * F^{struct}_{n+1}
   std::shared_ptr<Core::LinAlg::Vector<double>>& fstructold_ptr =
       global_state().get_fstructure_old();
-  fstructold_ptr->Update(timefac_n, fint_np(), 1.0);
-  fstructold_ptr->Update(-timefac_n, fext_np(), 1.0);
+  fstructold_ptr->update(timefac_n, fint_np(), 1.0);
+  fstructold_ptr->update(-timefac_n, fext_np(), 1.0);
 
   // set the displacement increment back to zero
-  dis_incr_ptr_->PutScalar(0.0);
+  dis_incr_ptr_->put_scalar(0.0);
 }
 
 
@@ -1499,7 +1499,7 @@ void Solid::ModelEvaluator::Structure::update_step_element()
 void Solid::ModelEvaluator::Structure::update_residual()
 {
   check_init_setup();
-  dis_incr_ptr_->Update(-1.0, *global_state().get_dis_n(), 1.0, *global_state().get_dis_np(), 0.0);
+  dis_incr_ptr_->update(-1.0, *global_state().get_dis_n(), 1.0, *global_state().get_dis_np(), 0.0);
 }
 
 /*----------------------------------------------------------------------------*
@@ -1602,7 +1602,7 @@ void Solid::ModelEvaluator::Structure::determine_energy(const Core::LinAlg::Vect
 
     mass().multiply(false, *velnp, *linear_momentum);
 
-    linear_momentum->Dot(*velnp, &kinetic_energy_times2);
+    linear_momentum->dot(*velnp, &kinetic_energy_times2);
 
     // only add the result on one processor because we sum over all procs later
     if (global or global_state().get_my_rank() == 0)
@@ -1705,9 +1705,9 @@ void Solid::ModelEvaluator::Structure::reset_step_state()
   check_init_setup();
 
   // reset disp, vel, acc state vector
-  global_state_ptr()->get_dis_np()->Update(1.0, (*global_state_ptr()->get_dis_n()), 0.0);
-  global_state_ptr()->get_vel_np()->Update(1.0, (*global_state_ptr()->get_vel_n()), 0.0);
-  global_state_ptr()->get_acc_np()->Update(1.0, (*global_state_ptr()->get_acc_n()), 0.0);
+  global_state_ptr()->get_dis_np()->update(1.0, (*global_state_ptr()->get_dis_n()), 0.0);
+  global_state_ptr()->get_vel_np()->update(1.0, (*global_state_ptr()->get_vel_n()), 0.0);
+  global_state_ptr()->get_acc_np()->update(1.0, (*global_state_ptr()->get_acc_n()), 0.0);
 
   // other parameters that might be needed by the elements
   eval_data().set_total_time(global_state().get_time_np());

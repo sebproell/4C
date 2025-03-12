@@ -64,27 +64,27 @@ void PARTICLEWALL::WallDataState::setup()
 void PARTICLEWALL::WallDataState::check_for_correct_maps()
 {
   if (disp_row_ != nullptr)
-    if (not disp_row_->Map().SameAs(*walldiscretization_->dof_row_map()))
+    if (not disp_row_->get_map().SameAs(*walldiscretization_->dof_row_map()))
       FOUR_C_THROW("map of state 'disp_row_' corrupt!");
 
   if (disp_col_ != nullptr)
-    if (not disp_col_->Map().SameAs(*walldiscretization_->dof_col_map()))
+    if (not disp_col_->get_map().SameAs(*walldiscretization_->dof_col_map()))
       FOUR_C_THROW("map of state 'disp_col_' corrupt!");
 
   if (disp_row_last_transfer_ != nullptr)
-    if (not disp_row_last_transfer_->Map().SameAs(*walldiscretization_->dof_row_map()))
+    if (not disp_row_last_transfer_->get_map().SameAs(*walldiscretization_->dof_row_map()))
       FOUR_C_THROW("map of state 'disp_row_last_transfer_' corrupt!");
 
   if (vel_col_ != nullptr)
-    if (not vel_col_->Map().SameAs(*walldiscretization_->dof_col_map()))
+    if (not vel_col_->get_map().SameAs(*walldiscretization_->dof_col_map()))
       FOUR_C_THROW("map of state 'vel_col_' corrupt!");
 
   if (acc_col_ != nullptr)
-    if (not acc_col_->Map().SameAs(*walldiscretization_->dof_col_map()))
+    if (not acc_col_->get_map().SameAs(*walldiscretization_->dof_col_map()))
       FOUR_C_THROW("map of state 'acc_col_' corrupt!");
 
   if (force_col_ != nullptr)
-    if (not force_col_->Map().SameAs(*walldiscretization_->dof_col_map()))
+    if (not force_col_->get_map().SameAs(*walldiscretization_->dof_col_map()))
       FOUR_C_THROW("map of state 'force_col_' corrupt!");
 }
 

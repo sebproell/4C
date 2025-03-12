@@ -146,7 +146,7 @@ void ScaTra::TimIntBDF2::set_old_part_of_righthandside()
   {
     double fact1 = 4.0 / 3.0;
     double fact2 = -1.0 / 3.0;
-    hist_->Update(fact1, *phin_, fact2, *phinm_, 0.0);
+    hist_->update(fact1, *phin_, fact2, *phinm_, 0.0);
 
     // for BDF2 theta is set to 2/3 for constant time-step length dt
     theta_ = 2.0 / 3.0;
@@ -154,7 +154,7 @@ void ScaTra::TimIntBDF2::set_old_part_of_righthandside()
   else
   {
     // for start-up of BDF2 we do one step with backward Euler
-    hist_->Update(1.0, *phin_, 0.0);
+    hist_->update(1.0, *phin_, 0.0);
 
     // backward Euler => use theta=1.0
     theta_ = 1.0;
@@ -168,7 +168,7 @@ void ScaTra::TimIntBDF2::explicit_predictor() const
   // call base class routine
   ScaTraTimIntImpl::explicit_predictor();
 
-  if (step_ > 1) phinp_->Update(-1.0, *phinm_, 2.0);
+  if (step_ > 1) phinp_->update(-1.0, *phinm_, 2.0);
   // for step == 1 phinp_ is already correctly initialized with the
   // initial field phin_
 }
@@ -177,7 +177,7 @@ void ScaTra::TimIntBDF2::explicit_predictor() const
  *----------------------------------------------------------------------*/
 void ScaTra::TimIntBDF2::add_neumann_to_residual()
 {
-  residual_->Update(theta_ * dta_, *neumann_loads_, 1.0);
+  residual_->update(theta_ * dta_, *neumann_loads_, 1.0);
 }
 
 /*----------------------------------------------------------------------*
@@ -243,14 +243,14 @@ void ScaTra::TimIntBDF2::compute_time_derivative()
     // time derivative of phi for first time step:
     // phidt(n+1) = (phi(n+1)-phi(n))/dt
     const double fact = 1.0 / dta_;
-    phidtnp_->Update(fact, *phinp_, -fact, *hist_, 0.0);
+    phidtnp_->update(fact, *phinp_, -fact, *hist_, 0.0);
   }
   else
   {
     // time derivative of phi:
     // phidt(n+1) = ((3/2)*phi(n+1)-2*phi(n)+(1/2)*phi(n-1))/dt
     const double fact = 3.0 / (2.0 * dta_);
-    phidtnp_->Update(fact, *phinp_, -fact, *hist_, 0.0);
+    phidtnp_->update(fact, *phinp_, -fact, *hist_, 0.0);
   }
 
   // We know the first time derivative on Dirichlet boundaries
@@ -277,8 +277,8 @@ void ScaTra::TimIntBDF2::update()
   }
 
   // solution of this step becomes most recent solution of the last step
-  phinm_->Update(1.0, *phin_, 0.0);
-  phin_->Update(1.0, *phinp_, 0.0);
+  phinm_->update(1.0, *phin_, 0.0);
+  phin_->update(1.0, *phinp_, 0.0);
 
   // call time update of forcing routine
   if (homisoturb_forcing_ != nullptr) homisoturb_forcing_->time_update_forcing();

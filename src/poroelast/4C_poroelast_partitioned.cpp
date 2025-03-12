@@ -27,7 +27,7 @@ PoroElast::Partitioned::Partitioned(MPI_Comm comm, const Teuchos::ParameterList&
   ittol_ = porodyn.get<double>("TOLINC_GLOBAL");  // default: =1e-8
 
   fluidveln_ = Core::LinAlg::create_vector(*(fluid_field()->dof_row_map()), true);
-  fluidveln_->PutScalar(0.0);
+  fluidveln_->put_scalar(0.0);
 }
 
 void PoroElast::Partitioned::do_time_step()
@@ -64,7 +64,7 @@ void PoroElast::Partitioned::solve()
 
   if (step() == 1)
   {
-    fluidveln_->Update(1.0, *(fluid_field()->veln()), 0.0);
+    fluidveln_->update(1.0, *(fluid_field()->veln()), 0.0);
   }
 
   while (!stopnonliniter)
@@ -73,19 +73,19 @@ void PoroElast::Partitioned::solve()
 
     // store increment from first solution for convergence check (like in
     // elch_algorithm: use current values)
-    fluidincnp_->Update(1.0, *fluid_field()->velnp(), 0.0);
-    structincnp_->Update(1.0, *structure_field()->dispnp(), 0.0);
+    fluidincnp_->update(1.0, *fluid_field()->velnp(), 0.0);
+    structincnp_->update(1.0, *structure_field()->dispnp(), 0.0);
 
     // get current fluid velocities due to solve fluid step, like predictor in FSI
     // 1. iteration: get velocities of old time step (T_n)
     if (itnum == 1)
     {
-      fluidveln_->Update(1.0, *(fluid_field()->veln()), 0.0);
+      fluidveln_->update(1.0, *(fluid_field()->veln()), 0.0);
     }
     else  // itnum > 1
     {
       // save velocity solution of old iteration step T_{n+1}^i
-      fluidveln_->Update(1.0, *(fluid_field()->velnp()), 0.0);
+      fluidveln_->update(1.0, *(fluid_field()->velnp()), 0.0);
     }
 
     // set fluid- and structure-based scalar transport values required in FSI
@@ -154,14 +154,14 @@ bool PoroElast::Partitioned::convergence_check(int itnum)
   double structnorm_L2(0.0);
 
   // build the current increment
-  fluidincnp_->Update(1.0, *(fluid_field()->velnp()), -1.0);
-  structincnp_->Update(1.0, *(structure_field()->dispnp()), -1.0);
+  fluidincnp_->update(1.0, *(fluid_field()->velnp()), -1.0);
+  structincnp_->update(1.0, *(structure_field()->dispnp()), -1.0);
 
   // build the L2-norm of the increment and the solution
-  fluidincnp_->Norm2(&fluidincnorm_L2);
-  fluid_field()->velnp()->Norm2(&fluidnorm_L2);
-  structincnp_->Norm2(&dispincnorm_L2);
-  structure_field()->dispnp()->Norm2(&structnorm_L2);
+  fluidincnp_->norm_2(&fluidincnorm_L2);
+  fluid_field()->velnp()->norm_2(&fluidnorm_L2);
+  structincnp_->norm_2(&dispincnorm_L2);
+  structure_field()->dispnp()->norm_2(&structnorm_L2);
 
   // care for the case that there is (almost) zero solution
   if (fluidnorm_L2 < 1e-6) fluidnorm_L2 = 1.0;

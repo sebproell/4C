@@ -149,7 +149,7 @@ void CONSTRAINTS::ConstrManager::setup(
     mpcnormcomp3dpen_->initialize(p);
 
     // Export redundant vector into distributed one
-    refbasevalues_->Export(*refbaseredundant, *conimpo_, Add);
+    refbasevalues_->export_to(*refbaseredundant, *conimpo_, Add);
 
     // Initialize Lagrange Multipliers, reference values and errors
     actdisc_->clear_state();
@@ -201,7 +201,7 @@ void CONSTRAINTS::ConstrManager::setup(
     areamonitor2d_->evaluate(p1, initialmonredundant);
 
     // Export redundant vector into distributed one
-    initialmonvalues_->Export(initialmonredundant, *monimpo_, Add);
+    initialmonvalues_->export_to(initialmonredundant, *monimpo_, Add);
     monitortypes_ = std::make_shared<Core::LinAlg::Vector<double>>(*redmonmap_);
     build_moni_type();
   }
@@ -273,19 +273,19 @@ void CONSTRAINTS::ConstrManager::evaluate_force_stiff(const double time,
   mpconline2d_->set_constr_state("displacement", *disp);
   mpconline2d_->evaluate(p, stiff, constr_matrix_, fint, refbaseredundant, actredundant);
   // Export redundant vectors into distributed ones
-  actvalues_->PutScalar(0.0);
-  actvalues_->Export(*actredundant, *conimpo_, Add);
+  actvalues_->put_scalar(0.0);
+  actvalues_->export_to(*actredundant, *conimpo_, Add);
   Core::LinAlg::Vector<double> addrefbase(*constrmap_);
-  addrefbase.Export(*refbaseredundant, *conimpo_, Add);
-  refbasevalues_->Update(1.0, addrefbase, 1.0);
-  fact_->PutScalar(0.0);
-  fact_->Export(*factredundant, *conimpo_, AbsMax);
+  addrefbase.export_to(*refbaseredundant, *conimpo_, Add);
+  refbasevalues_->update(1.0, addrefbase, 1.0);
+  fact_->put_scalar(0.0);
+  fact_->export_to(*factredundant, *conimpo_, AbsMax);
   // ----------------------------------------------------
   // -----------include possible further constraints here
   // ----------------------------------------------------
   // Compute current reference volumes as elemetwise product of timecurvefactor and initialvalues
-  referencevalues_->Multiply(1.0, *fact_, *refbasevalues_, 0.0);
-  constrainterr_->Update(scConMat, *referencevalues_, -1.0 * scConMat, *actvalues_, 0.0);
+  referencevalues_->multiply(1.0, *fact_, *refbasevalues_, 0.0);
+  constrainterr_->update(scConMat, *referencevalues_, -1.0 * scConMat, *actvalues_, 0.0);
   actdisc_->clear_state();
   // finalize the constraint matrix
   std::string label(constr_matrix_->Label());
@@ -325,10 +325,10 @@ void CONSTRAINTS::ConstrManager::compute_error(
   mpcnormcomp3d_->evaluate(p, nullptr, nullptr, nullptr, nullptr, actredundant);
 
   // Export redundant vectors into distributed ones
-  actvalues_->PutScalar(0.0);
-  actvalues_->Export(*actredundant, *conimpo_, Add);
+  actvalues_->put_scalar(0.0);
+  actvalues_->export_to(*actredundant, *conimpo_, Add);
 
-  constrainterr_->Update(1.0, *referencevalues_, -1.0, *actvalues_, 0.0);
+  constrainterr_->update(1.0, *referencevalues_, -1.0, *actvalues_, 0.0);
 }
 
 
@@ -360,14 +360,14 @@ void CONSTRAINTS::ConstrManager::set_ref_base_values(
   mpcnormcomp3d_->initialize(time);
   mpconline2d_->initialize(time);
 
-  refbasevalues_->Update(1.0, newrefval, 0.0);
+  refbasevalues_->update(1.0, newrefval, 0.0);
 }
 
 /*----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
 void CONSTRAINTS::ConstrManager::update_lagr_mult(double factor)
 {
-  lagr_mult_vec_->Update(factor, *constrainterr_, 1.0);
+  lagr_mult_vec_->update(factor, *constrainterr_, 1.0);
   if (volconstr3d_->have_constraint())
   {
     std::vector<int> volconID = volconstr3d_->get_active_cond_id();
@@ -382,18 +382,18 @@ void CONSTRAINTS::ConstrManager::update_lagr_mult(double factor)
   }
 }
 
-void CONSTRAINTS::ConstrManager::update() { lagr_mult_vec_old_->Update(1.0, *lagr_mult_vec_, 0.0); }
+void CONSTRAINTS::ConstrManager::update() { lagr_mult_vec_old_->update(1.0, *lagr_mult_vec_, 0.0); }
 
 /*----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
 void CONSTRAINTS::ConstrManager::update_lagr_mult(Core::LinAlg::Vector<double>& vect)
 {
-  lagr_mult_vec_->Update(1.0, vect, 1.0);
+  lagr_mult_vec_->update(1.0, vect, 1.0);
 }
 
 void CONSTRAINTS::ConstrManager::update_tot_lagr_mult(Core::LinAlg::Vector<double>& vect)
 {
-  lagr_mult_vec_->Update(1.0, vect, 1.0, *lagr_mult_vec_old_, 0.0);
+  lagr_mult_vec_->update(1.0, vect, 1.0, *lagr_mult_vec_old_, 0.0);
 }
 
 /*-----------------------------------------------------------------------*
@@ -402,7 +402,7 @@ void CONSTRAINTS::ConstrManager::compute_monitor_values(
     std::shared_ptr<Core::LinAlg::Vector<double>> disp)
 {
   std::vector<Core::Conditions::Condition*> monitcond(0);
-  monitorvalues_->PutScalar(0.0);
+  monitorvalues_->put_scalar(0.0);
   Teuchos::ParameterList p;
   actdisc_->set_state("displacement", disp);
 
@@ -414,7 +414,7 @@ void CONSTRAINTS::ConstrManager::compute_monitor_values(
   areamonitor2d_->evaluate(p, actmonredundant);
 
   Epetra_Import monimpo(*monitormap_, *redmonmap_);
-  monitorvalues_->Export(actmonredundant, *monimpo_, Add);
+  monitorvalues_->export_to(actmonredundant, *monimpo_, Add);
 }
 
 /*-----------------------------------------------------------------------*
@@ -423,9 +423,9 @@ void CONSTRAINTS::ConstrManager::compute_monitor_values(
     std::shared_ptr<const Core::LinAlg::Vector<double>> disp)
 {
   std::vector<Core::Conditions::Condition*> monitcond(0);
-  monitorvalues_->PutScalar(0.0);
+  monitorvalues_->put_scalar(0.0);
   Teuchos::ParameterList p;
-  if (not actdisc_->dof_row_map()->SameAs(disp->Map()))
+  if (not actdisc_->dof_row_map()->SameAs(disp->get_map()))
   {
     // build merged dof row map
     std::shared_ptr<Epetra_Map> largemap =
@@ -447,7 +447,7 @@ void CONSTRAINTS::ConstrManager::compute_monitor_values(
   areamonitor2d_->evaluate(p, actmonredundant);
 
   Epetra_Import monimpo(*monitormap_, *redmonmap_);
-  monitorvalues_->Export(actmonredundant, *monimpo_, Add);
+  monitorvalues_->export_to(actmonredundant, *monimpo_, Add);
 }
 
 /*----------------------------------------------------------------------*
@@ -485,36 +485,36 @@ void CONSTRAINTS::ConstrManager::build_moni_type()
   // do the volumes
   volmonitor3d_->evaluate(p1, dummymonredundant);
   // Export redundant vector into distributed one
-  dummymondist.Export(dummymonredundant, *monimpo_, Add);
+  dummymondist.export_to(dummymonredundant, *monimpo_, Add);
   // Now export back
   Core::LinAlg::export_to(dummymondist, dummymonredundant);
-  for (int i = 0; i < dummymonredundant.MyLength(); i++)
+  for (int i = 0; i < dummymonredundant.local_length(); i++)
   {
     if ((dummymonredundant)[i] != 0.0) (*monitortypes_)[i] = 1.0;
   }
 
   // do the area in 3D
-  dummymonredundant.PutScalar(0.0);
-  dummymondist.PutScalar(0.0);
+  dummymonredundant.put_scalar(0.0);
+  dummymondist.put_scalar(0.0);
   areamonitor3d_->evaluate(p1, dummymonredundant);
   // Export redundant vector into distributed one
-  dummymondist.Export(dummymonredundant, *monimpo_, Add);
+  dummymondist.export_to(dummymonredundant, *monimpo_, Add);
   // Now export back
   Core::LinAlg::export_to(dummymondist, dummymonredundant);
-  for (int i = 0; i < dummymonredundant.MyLength(); i++)
+  for (int i = 0; i < dummymonredundant.local_length(); i++)
   {
     if ((dummymonredundant)[i] != 0.0) (*monitortypes_)[i] = 2.0;
   }
 
   // do the area in 2D
-  dummymonredundant.PutScalar(0.0);
-  dummymondist.PutScalar(0.0);
+  dummymonredundant.put_scalar(0.0);
+  dummymondist.put_scalar(0.0);
   areamonitor2d_->evaluate(p1, dummymonredundant);
   // Export redundant vector into distributed one
-  dummymondist.Export(dummymonredundant, *monimpo_, Add);
+  dummymondist.export_to(dummymonredundant, *monimpo_, Add);
   // Now export back
   Core::LinAlg::export_to(dummymondist, dummymonredundant);
-  for (int i = 0; i < dummymonredundant.MyLength(); i++)
+  for (int i = 0; i < dummymonredundant.local_length(); i++)
   {
     if ((dummymonredundant)[i] != 0.0) (*monitortypes_)[i] = 3.0;
   }

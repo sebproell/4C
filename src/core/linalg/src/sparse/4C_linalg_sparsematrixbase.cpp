@@ -93,7 +93,7 @@ double Core::LinAlg::SparseMatrixBase::norm_frobenius() const { return sysmat_->
 int Core::LinAlg::SparseMatrixBase::multiply(
     bool TransA, const Core::LinAlg::Vector<double>& x, Core::LinAlg::Vector<double>& y) const
 {
-  return sysmat_->Multiply(TransA, x.get_ref_of_Epetra_Vector(), y.get_ref_of_Epetra_Vector());
+  return sysmat_->Multiply(TransA, x.get_ref_of_epetra_vector(), y.get_ref_of_epetra_vector());
 }
 
 
@@ -151,7 +151,7 @@ int Core::LinAlg::SparseMatrixBase::replace_diagonal_values(
 int Core::LinAlg::SparseMatrixBase::extract_diagonal_copy(
     Core::LinAlg::Vector<double>& Diagonal) const
 {
-  return sysmat_->ExtractDiagonalCopy(Diagonal.get_ref_of_Epetra_Vector());
+  return sysmat_->ExtractDiagonalCopy(Diagonal.get_ref_of_epetra_vector());
 }
 
 

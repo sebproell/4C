@@ -1257,7 +1257,7 @@ void SSTI::AssembleStrategyBase::assemble_rhs(std::shared_ptr<Core::LinAlg::Vect
     std::shared_ptr<const Core::LinAlg::Vector<double>> RHSthermo)
 {
   // zero out RHS
-  RHS->PutScalar(0.0);
+  RHS->put_scalar(0.0);
 
   // assemble scalar transport right-hand side vector into monolithic right-hand side vector
   all_maps()->maps_sub_problems()->insert_vector(
@@ -1299,7 +1299,7 @@ void SSTI::AssembleStrategyBase::assemble_rhs(std::shared_ptr<Core::LinAlg::Vect
 
     // apply pseudo Dirichlet conditions to transformed slave-side part of structural right-hand
     // side vector
-    Core::LinAlg::Vector<double> zeros(residual_structure.Map());
+    Core::LinAlg::Vector<double> zeros(residual_structure.get_map());
 
     if (locsysmanager_structure != nullptr)
       locsysmanager_structure->rotate_global_to_local(*rhs_structure_master);
@@ -1309,7 +1309,7 @@ void SSTI::AssembleStrategyBase::assemble_rhs(std::shared_ptr<Core::LinAlg::Vect
       locsysmanager_structure->rotate_local_to_global(*rhs_structure_master);
 
     // assemble master-side part of structure right-hand side vector
-    residual_structure.Update(1.0, *rhs_structure_master, 1.0);
+    residual_structure.update(1.0, *rhs_structure_master, 1.0);
 
     // assemble final structural right-hand side vector into monolithic right-hand side vector
     all_maps()->maps_sub_problems()->add_vector(

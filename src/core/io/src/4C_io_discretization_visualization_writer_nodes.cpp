@@ -79,9 +79,9 @@ namespace Core::IO
      * collected solution data vectors by calling AppendVisualizationPointDataVector() */
 
     std::vector<double> point_result_data;
-    point_result_data.reserve(result_data_dofbased.MyLength());
+    point_result_data.reserve(result_data_dofbased.local_length());
 
-    for (int lid = 0; lid < result_data_dofbased.MyLength(); ++lid)
+    for (int lid = 0; lid < result_data_dofbased.local_length(); ++lid)
       point_result_data.push_back((result_data_dofbased)[lid]);
 
     visualization_manager_->get_visualization_data().set_point_data_vector<double>(

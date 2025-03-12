@@ -72,8 +72,8 @@ void PoroElast::MonolithicSplit::prepare_time_step()
         fluid_field()->extract_interface_velnp();
     std::shared_ptr<Core::LinAlg::Vector<double>> ifveln = fluid_field()->extract_interface_veln();
 
-    ddi_->Update(1.0, *idispnp, -1.0, *idispn, 0.0);
-    ddi_->Update(-1.0, *ifveln, timescale);
+    ddi_->update(1.0, *idispnp, -1.0, *idispn, 0.0);
+    ddi_->update(-1.0, *ifveln, timescale);
 
     if (fsibcmap_->NumGlobalElements())
     {
@@ -149,7 +149,7 @@ std::shared_ptr<Epetra_Map> PoroElast::MonolithicSplit::fsidbc_map()
   {
     int gid = mygids[i];
     // FOUR_C_ASSERT(slavemastermap.count(gid),"master gid not found on slave side");
-    int err = gidmarker_struct->ReplaceGlobalValue(gid, 0, 1.0);
+    int err = gidmarker_struct->replace_global_value(gid, 0, 1.0);
     if (err) FOUR_C_THROW("ReplaceMyValue failed for gid %i error code %d", gid, err);
   }
 
@@ -158,9 +158,9 @@ std::shared_ptr<Epetra_Map> PoroElast::MonolithicSplit::fsidbc_map()
       structure_to_fluid_at_interface(*gidmarker_struct);
 
   std::vector<int> structfsidbcvector;
-  const int numgids = gidmarker_fluid->MyLength();  // on each processor (lids)
-  double* mygids_fluid = gidmarker_fluid->Values();
-  const int* fluidmap = gidmarker_fluid->Map().MyGlobalElements();
+  const int numgids = gidmarker_fluid->local_length();  // on each processor (lids)
+  double* mygids_fluid = gidmarker_fluid->get_values();
+  const int* fluidmap = gidmarker_fluid->get_map().MyGlobalElements();
   for (int i = 0; i < numgids; ++i)
   {
     double val = mygids_fluid[i];
@@ -200,7 +200,7 @@ void PoroElast::MonolithicSplit::setup_coupling_and_matrices()
 
     std::shared_ptr<const Core::LinAlg::Vector<double>> idispnp =
         structure_field()->interface()->extract_fsi_cond_vector(*structure_field()->dispnp());
-    ddi_ = std::make_shared<Core::LinAlg::Vector<double>>(idispnp->Map(), true);
+    ddi_ = std::make_shared<Core::LinAlg::Vector<double>>(idispnp->get_map(), true);
   }
 
   // initialize Poroelasticity-systemmatrix_

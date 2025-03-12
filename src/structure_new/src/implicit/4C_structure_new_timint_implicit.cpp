@@ -83,7 +83,7 @@ void Solid::TimeInt::Implicit::set_state(const std::shared_ptr<Core::LinAlg::Vec
 {
   integrator_ptr()->set_state(*x);
   ::NOX::Epetra::Vector x_nox(
-      Teuchos::rcpFromRef(*x->get_ptr_of_Epetra_Vector()), ::NOX::Epetra::Vector::CreateView);
+      Teuchos::rcpFromRef(*x->get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
   nln_solver().solution_group().setX(x_nox);
   set_state_in_sync_with_nox_group(true);
 }
@@ -170,7 +170,7 @@ void Solid::TimeInt::Implicit::update_state_incrementally(
 
   // wrap the displacement vector in a nox_epetra_Vector
   const ::NOX::Epetra::Vector nox_disiterinc_ptr(
-      Teuchos::rcpFromRef(*mutable_disiterinc->get_ptr_of_Epetra_Vector()),
+      Teuchos::rcpFromRef(*mutable_disiterinc->get_ptr_of_epetra_vector()),
       ::NOX::Epetra::Vector::CreateView);
 
   // updated the state vector in the nox group

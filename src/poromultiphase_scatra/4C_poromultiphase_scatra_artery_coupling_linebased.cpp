@@ -145,7 +145,8 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::get_additional_dbc_
       // 2) insert the negative value of all dofs of this node into the rhs, with the employed
       // incremental form this will force the value to zero
       for (const auto& mydof : dofs)
-        rhs_art_with_collapsed.ReplaceGlobalValue(mydof, 0, -(*phinp_art_)[dofrowmap->LID(mydof)]);
+        rhs_art_with_collapsed.replace_global_value(
+            mydof, 0, -(*phinp_art_)[dofrowmap->LID(mydof)]);
     }
   }
 
@@ -478,7 +479,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::
     const double volfrac = vol_art / vol_cont;
 
     // note: this works since we 2D/3D continuous element of each pair is always owned by this proc.
-    int err = bloodvesselvolfrac_->SumIntoGlobalValues(1, &volfrac, &contelegid);
+    int err = bloodvesselvolfrac_->sum_into_global_values(1, &volfrac, &contelegid);
     if (err) FOUR_C_THROW("SumIntoGlobalValues failed!");
   }
 
@@ -706,7 +707,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::reset_integrat
 void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::fill_artery_ele_diam_col()
 {
   // reset
-  ele_diams_artery_col_->PutScalar(0.0);
+  ele_diams_artery_col_->put_scalar(0.0);
   // set the diameter in the vector
   for (int i = 0; i < arterydis_->num_my_col_elements(); ++i)
   {
@@ -722,7 +723,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::fill_artery_el
         ((*integrated_diams_artery_col_)[i] + (*unaffected_integrated_diams_artery_col_)[i]) /
         curr_ele_length;
 
-    ele_diams_artery_col_->ReplaceMyValue(i, 0, diam);
+    ele_diams_artery_col_->replace_local_value(i, 0, diam);
   }
 }
 
@@ -867,7 +868,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::depth_first_se
     std::vector<int>& this_connected_comp)
 {
   // mark this node visited and add it to this connected component
-  const int lid = visited->Map().LID(actnode->id());
+  const int lid = visited->get_map().LID(actnode->id());
   (*visited)[lid] = 1;
   this_connected_comp.push_back(actnode->id());
 

@@ -109,10 +109,10 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FSI::DirichletNeumannSlideale::flu
     std::shared_ptr<Core::LinAlg::Vector<double>> idispn =
         structure_field()->extract_interface_dispn();
 
-    iale->Update(1.0, *idispcurr, 0.0);
+    iale->update(1.0, *idispcurr, 0.0);
 
     // iale reduced by old displacement dispn and instead added the real last displacements
-    iale->Update(1.0, *ft_stemp_, -1.0, *idispn, 1.0);
+    iale->update(1.0, *ft_stemp_, -1.0, *idispn, 1.0);
 
     mb_fluid_field()->nonlinear_solve(struct_to_fluid(iale), struct_to_fluid(ivel));
 

@@ -50,7 +50,7 @@ void Adapter::FieldWrapper::evaluate(
 /-----------------------------------------------------------------------*/
 void Adapter::FieldWrapper::reset_stepinc()
 {
-  if (stepinc_ != nullptr) stepinc_->PutScalar(0.);
+  if (stepinc_ != nullptr) stepinc_->put_scalar(0.);
 }
 
 /*-----------------------------------------------------------------------/
@@ -74,11 +74,11 @@ void Adapter::FieldWrapper::get_iterinc(
     Core::LinAlg::Vector<double> iterinc(*stepinc);
     if (stepinc_ != nullptr)
     {
-      iterinc.Update(-1.0, *stepinc_, 1.0);
+      iterinc.update(-1.0, *stepinc_, 1.0);
 
       // update incremental dof member to provided step increments
       // shortly: disinc_^<i> := disp^<i+1>
-      stepinc_->Update(1.0, *stepinc, 0.0);
+      stepinc_->update(1.0, *stepinc, 0.0);
     }
     else
     {

@@ -231,18 +231,18 @@ void CONTACT::MtPenaltyStrategy::evaluate_meshtying(
   Core::LinAlg::Vector<double> tempvec2(*gsdofrowmap_);
   Core::LinAlg::export_to(*dis, tempvec1);
   dmatrix_->multiply(false, tempvec1, tempvec2);
-  g_->Update(-1.0, tempvec2, 0.0);
+  g_->update(-1.0, tempvec2, 0.0);
 
   Core::LinAlg::Vector<double> tempvec3(*gmdofrowmap_);
   Core::LinAlg::Vector<double> tempvec4(*gsdofrowmap_);
   Core::LinAlg::export_to(*dis, tempvec3);
   mmatrix_->multiply(false, tempvec3, tempvec4);
-  g_->Update(1.0, tempvec4, 1.0);
+  g_->update(1.0, tempvec4, 1.0);
 
   // update LM vector
   // (in the pure penalty case, zuzawa is zero)
-  z_->Update(1.0, *zuzawa_, 0.0);
-  z_->Update(-pp, *g_, 1.0);
+  z_->update(1.0, *zuzawa_, 0.0);
+  z_->update(-pp, *g_, 1.0);
 
   // store updated LM into nodes
   store_nodal_quantities(Mortar::StrategyBase::lmupdate);
@@ -252,26 +252,26 @@ void CONTACT::MtPenaltyStrategy::evaluate_meshtying(
   mmatrix_->multiply(true, *z_, fm);
   Core::LinAlg::Vector<double> fmexp(*problem_dofs());
   Core::LinAlg::export_to(fm, fmexp);
-  feff->Update(1.0, fmexp, 1.0);
+  feff->update(1.0, fmexp, 1.0);
 
   Core::LinAlg::Vector<double> fs(*gsdofrowmap_);
   dmatrix_->multiply(true, *z_, fs);
   Core::LinAlg::Vector<double> fsexp(*problem_dofs());
   Core::LinAlg::export_to(fs, fsexp);
-  feff->Update(-1.0, fsexp, 1.0);
+  feff->update(-1.0, fsexp, 1.0);
 
   // add old contact forces (t_n)
   Core::LinAlg::Vector<double> fsold(*gsdofrowmap_);
   dmatrix_->multiply(true, *zold_, fsold);
   Core::LinAlg::Vector<double> fsoldexp(*problem_dofs());
   Core::LinAlg::export_to(fsold, fsoldexp);
-  feff->Update(alphaf_, fsoldexp, 1.0);
+  feff->update(alphaf_, fsoldexp, 1.0);
 
   Core::LinAlg::Vector<double> fmold(*gmdofrowmap_);
   mmatrix_->multiply(true, *zold_, fmold);
   Core::LinAlg::Vector<double> fmoldexp(*problem_dofs());
   Core::LinAlg::export_to(fmold, fmoldexp);
-  feff->Update(-alphaf_, fmoldexp, 1.0);
+  feff->update(-alphaf_, fmoldexp, 1.0);
 }
 
 /*----------------------------------------------------------------------*
@@ -286,31 +286,31 @@ void CONTACT::MtPenaltyStrategy::initialize_uzawa(
   mmatrix_->multiply(true, *z_, fm);
   Core::LinAlg::Vector<double> fmexp(*problem_dofs());
   Core::LinAlg::export_to(fm, fmexp);
-  feff->Update(-1.0, fmexp, 1.0);
+  feff->update(-1.0, fmexp, 1.0);
 
   Core::LinAlg::Vector<double> fs(*gsdofrowmap_);
   dmatrix_->multiply(false, *z_, fs);
   Core::LinAlg::Vector<double> fsexp(*problem_dofs());
   Core::LinAlg::export_to(fs, fsexp);
-  feff->Update(1.0, fsexp, 1.0);
+  feff->update(1.0, fsexp, 1.0);
 
   // update LM vector
   double pp = params().get<double>("PENALTYPARAM");
-  z_->Update(1.0, *zuzawa_, 0.0);
-  z_->Update(-pp, *g_, 1.0);
+  z_->update(1.0, *zuzawa_, 0.0);
+  z_->update(-pp, *g_, 1.0);
 
   // add penalty meshtying force terms
   Core::LinAlg::Vector<double> fmnew(*gmdofrowmap_);
   mmatrix_->multiply(true, *z_, fmnew);
   Core::LinAlg::Vector<double> fmexpnew(*problem_dofs());
   Core::LinAlg::export_to(fmnew, fmexpnew);
-  feff->Update(1.0, fmexpnew, 1.0);
+  feff->update(1.0, fmexpnew, 1.0);
 
   Core::LinAlg::Vector<double> fsnew(*gsdofrowmap_);
   dmatrix_->multiply(false, *z_, fsnew);
   Core::LinAlg::Vector<double> fsexpnew(*problem_dofs());
   Core::LinAlg::export_to(fsnew, fsexpnew);
-  feff->Update(-1.0, fsexpnew, 1.0);
+  feff->update(-1.0, fsexpnew, 1.0);
 }
 
 /*----------------------------------------------------------------------*
@@ -359,7 +359,7 @@ void CONTACT::MtPenaltyStrategy::update_constraint_norm(int uzawaiter)
   double ppcurr = params().get<double>("PENALTYPARAM");
 
   // compute constraint norm
-  g_->Norm2(&cnorm);
+  g_->norm_2(&cnorm);
 
   //********************************************************************
   // adaptive update of penalty parameter

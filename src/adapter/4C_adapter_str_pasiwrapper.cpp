@@ -27,7 +27,7 @@ Adapter::PASIStructureWrapper::PASIStructureWrapper(std::shared_ptr<Structure> s
 void Adapter::PASIStructureWrapper::apply_interface_force(
     std::shared_ptr<const Core::LinAlg::Vector<double>> intfforce)
 {
-  pasi_model_evaluator()->get_interface_force_np_ptr()->PutScalar(0.0);
+  pasi_model_evaluator()->get_interface_force_np_ptr()->put_scalar(0.0);
 
   if (intfforce != nullptr)
     interface_->add_pasi_cond_vector(

@@ -128,14 +128,14 @@ void XFEM::MeshCouplingFPI::complete_state_vectors()
   // finalize itrueresidual vector
 
   // need to export the interface forces
-  Core::LinAlg::Vector<double> iforce_tmp(itrueresidual_->Map(), true);
-  Epetra_Export exporter_iforce(iforcecol_->Map(), iforce_tmp.Map());
-  int err1 = iforce_tmp.Export(*iforcecol_, exporter_iforce, Add);
+  Core::LinAlg::Vector<double> iforce_tmp(itrueresidual_->get_map(), true);
+  Epetra_Export exporter_iforce(iforcecol_->get_map(), iforce_tmp.get_map());
+  int err1 = iforce_tmp.export_to(*iforcecol_, exporter_iforce, Add);
   if (err1) FOUR_C_THROW("Export using exporter returned err=%d", err1);
 
   // scale the interface trueresidual with -1.0 to get the forces acting on structural side (no
   // residual-scaling!)
-  itrueresidual_->Update(-1.0, iforce_tmp, 0.0);
+  itrueresidual_->update(-1.0, iforce_tmp, 0.0);
 }
 
 /*--------------------------------------------------------------------------*
@@ -562,8 +562,8 @@ void XFEM::MeshCouplingFPI::update_configuration_map_gp_contact(
  *--------------------------------------------------------------------------*/
 void XFEM::MeshCouplingFPI::zero_state_vectors_fpi()
 {
-  itrueresidual_->PutScalar(0.0);
-  iforcecol_->PutScalar(0.0);
+  itrueresidual_->put_scalar(0.0);
+  iforcecol_->put_scalar(0.0);
 }
 
 // -------------------------------------------------------------------
@@ -594,15 +594,15 @@ void XFEM::MeshCouplingFPI::read_restart(const int step)
   boundaryreader.read_vector(idispnp_, "idispnp_res");
   boundaryreader.read_vector(idispnpi_, "idispnpi_res");
 
-  if (not(cutter_dis_->dof_row_map())->SameAs(ivelnp_->Map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(ivelnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(iveln_->Map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(iveln_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispnp_->Map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(idispnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispn_->Map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(idispn_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispnpi_->Map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(idispnpi_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
 }
 
@@ -937,7 +937,7 @@ double XFEM::MeshCouplingFPI::compute_jacobianand_pressure(
           for (unsigned int idof = 0; idof < SLAVE_NUMDOF; ++idof)
           {
             int lid =
-                fulldispnp_->Map().LID(get_cond_dis()->dof(0, coupl_ele->nodes()[inode], idof));
+                fulldispnp_->get_map().LID(get_cond_dis()->dof(0, coupl_ele->nodes()[inode], idof));
 
             const auto& x = nodes[inode]->x();
             xrefe(idof, inode) = x[idof];
@@ -947,7 +947,7 @@ double XFEM::MeshCouplingFPI::compute_jacobianand_pressure(
             else
               FOUR_C_THROW("Local ID for dispnp not found (lid = -1)!");
           }
-          int lidp = fullpres_->Map().LID(lm_struct_x_lm_pres_.operator[](
+          int lidp = fullpres_->get_map().LID(lm_struct_x_lm_pres_.operator[](
               get_cond_dis()->dof(0, coupl_ele->nodes()[inode], 2)));
 
           if (lidp != -1)

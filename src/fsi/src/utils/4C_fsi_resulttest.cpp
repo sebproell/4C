@@ -91,7 +91,7 @@ FSI::FSIResultTest::FSIResultTest(
       // Lagrange multipliers live on the slave field
       slavedisc_ = fsiobject->fluid_field()->discretization();
       auto copy = std::make_shared<Core::LinAlg::Vector<double>>(*fsiobject->lag_mult_);
-      copy->ReplaceMap(*fsiobject->fluid_field()->interface()->fsi_cond_map());
+      copy->replace_map(*fsiobject->fluid_field()->interface()->fsi_cond_map());
       fsilambda_ = copy;
 
       break;
@@ -233,7 +233,7 @@ void FSI::FSIResultTest::test_node(
       // test Lagrange multipliers
       if (fsilambda_ != nullptr)
       {
-        const Epetra_BlockMap& fsilambdamap = fsilambda_->Map();
+        const Epetra_BlockMap& fsilambdamap = fsilambda_->get_map();
         if (quantity == "lambdax")
         {
           unknownquantity = false;

@@ -263,7 +263,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::setup_rhs(
     fgg.Apply(*fveln, *rhs);
 
     // Apply scaling
-    rhs->Scale(
+    rhs->scale(
         fluidresidualscale * (1.0 - stimintparam) / (1.0 - ftimintparam) * dt() * fluidtimescale);
 
     // Insert into structural side of the interface
@@ -291,7 +291,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::setup_rhs(
       fmgg.Apply(*struct_to_fluid(ddgpred_), *rhs);
 
       // Apply scaling
-      rhs->Scale(-1.0 * (1.0 - stimintparam) / (1.0 - ftimintparam));
+      rhs->scale(-1.0 * (1.0 - stimintparam) / (1.0 - ftimintparam));
 
       // Insert into structure side of the interface
       rhs = fluid_to_struct(rhs);
@@ -312,7 +312,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::setup_rhs(
     fgg.Apply(*struct_to_fluid(ddgpred_), *rhs);
 
     // Apply scaling
-    rhs->Scale(
+    rhs->scale(
         -1.0 * fluidresidualscale * (1.0 - stimintparam) / (1.0 - ftimintparam) * fluidtimescale);
 
     // Insert into structure side of the interface
@@ -344,7 +344,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::setup_rhs(
     fig.Apply(*fveln, *rhs);
 
     // Apply scaling
-    rhs->Scale(fluidtimescale * dt());
+    rhs->scale(fluidtimescale * dt());
 
     // Add to the final vector f, to the fluid block (index 1)
     extractor().add_vector(*rhs, 1, f);
@@ -362,7 +362,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::setup_rhs(
     fig.Apply(*struct_to_fluid(ddgpred_), *rhs);
 
     // Apply scaling
-    rhs->Scale(-fluidtimescale);
+    rhs->scale(-fluidtimescale);
 
     extractor().add_vector(*rhs, 1, f);
 
@@ -383,7 +383,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::setup_rhs(
       fmig.Apply(*struct_to_fluid(ddgpred_), *rhs);
 
       // Apply scaling
-      rhs->Scale(-1.0);
+      rhs->scale(-1.0);
 
       extractor().add_vector(*rhs, 1, f);
     }
@@ -401,7 +401,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::setup_rhs(
     aig.Apply(*struct_to_ale(ddgpred_), *rhs);
 
     // Apply scaling
-    rhs->Scale(-1.0);
+    rhs->scale(-1.0);
 
     extractor().add_vector(*rhs, 2, f);
   }
@@ -641,7 +641,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::setup_vector(Core::LinAlg::Vector
       structure_field()->interface()->insert_fsi_cond_vector(*fluid_to_struct(fcv));
 
   // Add the converted interface RHS-contributions (scaled) to the global structural RHS!
-  int err = modsv->Update(1.0, sv, (1.0 - stimintparam) / (1.0 - ftimintparam) * fluidscale);
+  int err = modsv->update(1.0, sv, (1.0 - stimintparam) / (1.0 - ftimintparam) * fluidscale);
   if (err) FOUR_C_THROW("Update of structural residual vector failed! Error code %i", err);
 
   // Add the previous Lagrange Multiplier
@@ -649,7 +649,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::setup_vector(Core::LinAlg::Vector
   {
     std::shared_ptr<Core::LinAlg::Vector<double>> lambdaglob =
         structure_field()->interface()->insert_fsi_cond_vector(*fluid_to_struct(lambda_));
-    err = modsv->Update(stimintparam - ftimintparam * (1.0 - stimintparam) / (1.0 - ftimintparam),
+    err = modsv->update(stimintparam - ftimintparam * (1.0 - stimintparam) / (1.0 - ftimintparam),
         *lambdaglob, 1.0);
     if (err) FOUR_C_THROW("Update of structural residual vector failed! Error code %i", err);
 
@@ -696,7 +696,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::extract_field_vectors(
   /*----------------------------------------------------------------------*/
   std::shared_ptr<const Core::LinAlg::Vector<double>> aox = extractor().extract_vector(*x, 2);
   // Update interface part of structure vector with predictor increment
-  scx->Update(1.0, *ddgpred_, 1.0);
+  scx->update(1.0, *ddgpred_, 1.0);
   std::shared_ptr<Core::LinAlg::Vector<double>> acx = struct_to_ale(scx);
 
   std::shared_ptr<Core::LinAlg::Vector<double>> a =
@@ -822,7 +822,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::newton()
   // Increment of structural interface displacement --> structural predictor!!
   ddgpred_ = std::make_shared<Core::LinAlg::Vector<double>>(
       *structure_field()->extract_interface_dispnp());
-  ddgpred_->Update(-1.0, *structure_field()->extract_interface_dispn(), 1.0);
+  ddgpred_->update(-1.0, *structure_field()->extract_interface_dispn(), 1.0);
 
   /*----------------------------------------------------------------------*/
   // Initialize the increment vectors, they are updated in evaluate(...)->extract_field_vectors(...)
@@ -844,12 +844,12 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::newton()
   // We need the last increment for the recovery of lambda.
   /*----------------------------------------------------------------------*/
   // Fluid
-  duiinc_->Update(1.0, *extractor().extract_vector(*iterinc_, 1), 0.0);
+  duiinc_->update(1.0, *extractor().extract_vector(*iterinc_, 1), 0.0);
   // Structure
   std::shared_ptr<Core::LinAlg::Vector<double>> ddinc = extractor().extract_vector(*iterinc_, 0);
-  ddginc_->Update(1.0, *structure_field()->interface()->extract_fsi_cond_vector(*ddinc), 0.0);
+  ddginc_->update(1.0, *structure_field()->interface()->extract_fsi_cond_vector(*ddinc), 0.0);
   // ALE
-  ddialeinc_->Update(1.0, *extractor().extract_vector(*iterinc_, 2), 0.0);
+  ddialeinc_->update(1.0, *extractor().extract_vector(*iterinc_, 2), 0.0);
 }
 
 /*----------------------------------------------------------------------
@@ -871,7 +871,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::build_convergence_norms()
   - complete interface residual
   ----------------------------------------------------------------------*/
   // Norm of global RHS vector
-  rhs_->Norm2(&normrhs_);
+  rhs_->norm_2(&normrhs_);
 
   // Inner structural RHS and interface RHS
 
@@ -884,11 +884,11 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::build_convergence_norms()
   // Norm of inner structural residual forces
   std::shared_ptr<const Core::LinAlg::Vector<double>> structrhs =
       extractor().extract_vector(*rhs_, 0);
-  structure_field()->interface()->extract_other_vector(*structrhs)->Norm2(&normstrrhsL2_);
-  structure_field()->interface()->extract_other_vector(*structrhs)->NormInf(&normstrrhsInf_);
+  structure_field()->interface()->extract_other_vector(*structrhs)->norm_2(&normstrrhsL2_);
+  structure_field()->interface()->extract_other_vector(*structrhs)->norm_inf(&normstrrhsInf_);
 
   // Norm of ALE residual forces
-  alerhs->Norm2(&normalerhsL2_);
+  alerhs->norm_2(&normalerhsL2_);
 
   // Norm of fluid velocity residual
   // This requires an Epetra_Map of the inner fluid velocity DOFs first!
@@ -901,16 +901,16 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::build_convergence_norms()
       std::make_shared<Core::LinAlg::MapExtractor>(*fluidmaps, innerfluidvel, true);
 
   // Finally, compute the fluid velocity RHS-norm
-  fluidvelextract->extract_cond_vector(*innerfluidfluidrhs)->Norm2(&normflvelrhsL2_);
-  fluidvelextract->extract_cond_vector(*innerfluidfluidrhs)->NormInf(&normflvelrhsInf_);
+  fluidvelextract->extract_cond_vector(*innerfluidfluidrhs)->norm_2(&normflvelrhsL2_);
+  fluidvelextract->extract_cond_vector(*innerfluidfluidrhs)->norm_inf(&normflvelrhsInf_);
 
   // Norm of fluid pressure residual
   // This requires an Epetra_Map of the fluid pressure DOFs
   if (fluid_field()->pressure_row_map() == nullptr) FOUR_C_THROW("Empty pressure row map!");
 
   // Finally, compute the fluid pressure RHS-norm
-  fluidvelextract->extract_other_vector(*innerfluidfluidrhs)->Norm2(&normflpresrhsL2_);
-  fluidvelextract->extract_other_vector(*innerfluidfluidrhs)->NormInf(&normflpresrhsInf_);
+  fluidvelextract->extract_other_vector(*innerfluidfluidrhs)->norm_2(&normflpresrhsL2_);
+  fluidvelextract->extract_other_vector(*innerfluidfluidrhs)->norm_inf(&normflpresrhsInf_);
 
   // The true RHS for the FSI interface equation block consists of
   // more than just the structure residual, namely the scaled fluid interface residual and the
@@ -918,8 +918,8 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::build_convergence_norms()
   // extracted from rhs_. For a more strict testing, the L_inf-norm should be employed!
   std::shared_ptr<Core::LinAlg::Vector<double>> interfaceresidual =
       structure_field()->interface()->extract_fsi_cond_vector(*structrhs);
-  interfaceresidual->Norm2(&norminterfacerhsL2_);
-  interfaceresidual->NormInf(&norminterfacerhsInf_);
+  interfaceresidual->norm_2(&norminterfacerhsL2_);
+  interfaceresidual->norm_inf(&norminterfacerhsInf_);
 
   /*----------------------------------------------------------------------
   Incremental norms - L2
@@ -930,7 +930,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::build_convergence_norms()
   - inner fluid-fluid pressure rhs
   ----------------------------------------------------------------------*/
   // Norm of global increment vector
-  iterinc_->Norm2(&norminc_);
+  iterinc_->norm_2(&norminc_);
 
   std::shared_ptr<const Core::LinAlg::Vector<double>> structinc =
       extractor().extract_vector(*iterinc_, 0);
@@ -938,35 +938,35 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::build_convergence_norms()
       extractor().extract_vector(*iterinc_, 1);
 
   // Norm of inner structural increment vector
-  structure_field()->interface()->extract_other_vector(*structinc)->Norm2(&normstrincL2_);
-  structure_field()->interface()->extract_other_vector(*structinc)->NormInf(&normstrincInf_);
+  structure_field()->interface()->extract_other_vector(*structinc)->norm_2(&normstrincL2_);
+  structure_field()->interface()->extract_other_vector(*structinc)->norm_inf(&normstrincInf_);
 
   // Norm of interface increment vector
-  structure_field()->interface()->extract_fsi_cond_vector(*structinc)->Norm2(&norminterfaceincL2_);
+  structure_field()->interface()->extract_fsi_cond_vector(*structinc)->norm_2(&norminterfaceincL2_);
   structure_field()
       ->interface()
       ->extract_fsi_cond_vector(*structinc)
-      ->NormInf(&norminterfaceincInf_);
+      ->norm_inf(&norminterfaceincInf_);
 
   // Norm of fluid velocity increment
-  fluidvelextract->extract_cond_vector(*fluidinc)->Norm2(&normflvelincL2_);
-  fluidvelextract->extract_cond_vector(*fluidinc)->NormInf(&normflvelincInf_);
+  fluidvelextract->extract_cond_vector(*fluidinc)->norm_2(&normflvelincL2_);
+  fluidvelextract->extract_cond_vector(*fluidinc)->norm_inf(&normflvelincInf_);
 
   // Norm of fluid pressure increment
-  fluidvelextract->extract_other_vector(*fluidinc)->Norm2(&normflpresincL2_);
-  fluidvelextract->extract_other_vector(*fluidinc)->NormInf(&normflpresincInf_);
+  fluidvelextract->extract_other_vector(*fluidinc)->norm_2(&normflpresincL2_);
+  fluidvelextract->extract_other_vector(*fluidinc)->norm_inf(&normflpresincInf_);
 
   // Norm of ALE increment vector
-  extractor().extract_vector(*iterinc_, 2)->Norm2(&normaleincL2_);
+  extractor().extract_vector(*iterinc_, 2)->norm_2(&normaleincL2_);
 
   // get length of the structural, fluid and ale vector
-  ni_ = (structure_field()->interface()->extract_fsi_cond_vector(*structrhs))->GlobalLength();
-  ns_ = (structure_field()->interface()->extract_other_vector(*structrhs))->GlobalLength();
-  nf_ = innerfluidfluidrhs->GlobalLength();
-  nfv_ = fluidvelextract->extract_cond_vector(*fluidinc)->GlobalLength();
-  nfp_ = fluidvelextract->extract_other_vector(*fluidinc)->GlobalLength();
-  na_ = alerhs->GlobalLength();
-  nall_ = rhs_->GlobalLength();
+  ni_ = (structure_field()->interface()->extract_fsi_cond_vector(*structrhs))->global_length();
+  ns_ = (structure_field()->interface()->extract_other_vector(*structrhs))->global_length();
+  nf_ = innerfluidfluidrhs->global_length();
+  nfv_ = fluidvelextract->extract_cond_vector(*fluidinc)->global_length();
+  nfp_ = fluidvelextract->extract_other_vector(*fluidinc)->global_length();
+  na_ = alerhs->global_length();
+  nall_ = rhs_->global_length();
 }
 
 /*----------------------------------------------------------------------
@@ -1036,11 +1036,11 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::recover_lagrange_multiplier()
       fluid_field()->interface()->extract_fsi_cond_vector(*fluid_field()->rhs());
 
   // ---------Addressing term (1)
-  lambda_->Update(ftimintparam, *lambda_, 0.0);
+  lambda_->update(ftimintparam, *lambda_, 0.0);
 
   // ---------Addressing term (2)
   tmpvec = std::make_shared<Core::LinAlg::Vector<double>>(*fluidresidual);
-  tmpvec->Scale(-1.0);
+  tmpvec->scale(-1.0);
 
 
   // ---------Addressing term (3)
@@ -1048,7 +1048,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::recover_lagrange_multiplier()
   {
     fggddg = std::make_shared<Core::LinAlg::Vector<double>>(fggprev_->range_map(), true);
     fggprev_->Apply(*struct_to_fluid(ddginc_), *fggddg);
-    tmpvec->Update(fluidtimescale, *fggddg, 1.0);
+    tmpvec->update(fluidtimescale, *fggddg, 1.0);
   }
 
   //(4)
@@ -1056,7 +1056,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::recover_lagrange_multiplier()
   {
     Core::LinAlg::Vector<double> fmggddg(fmggprev_->range_map(), true);
     fmggprev_->Apply(*struct_to_fluid(ddginc_), fmggddg);
-    tmpvec->Update(1.0, fmggddg, 1.0);
+    tmpvec->update(1.0, fmggddg, 1.0);
   }
 
   //(5)
@@ -1064,7 +1064,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::recover_lagrange_multiplier()
   {
     Core::LinAlg::Vector<double> fgidui(fgiprev_->range_map(), true);
     fgiprev_->Apply(*duiinc_, fgidui);
-    tmpvec->Update(1.0, fgidui, 1.0);
+    tmpvec->update(1.0, fgidui, 1.0);
   }
 
   //(6)
@@ -1100,7 +1100,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::recover_lagrange_multiplier()
     std::shared_ptr<Core::LinAlg::Vector<double>> tmp =
         fluid_field()->interface()->extract_other_vector(*aux);
     fmgiprev_->Apply(*tmp, fmgiddia);
-    tmpvec->Update(1.0, fmgiddia, 1.0);
+    tmpvec->update(1.0, fmgiddia, 1.0);
   }
 
   //(7)
@@ -1111,16 +1111,16 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::recover_lagrange_multiplier()
       Core::LinAlg::Vector<double> tmp(fggprev_->range_map(), true);
       std::shared_ptr<Core::LinAlg::Vector<double>> fveln = fluid_field()->extract_interface_veln();
       fggprev_->Apply(*fveln, tmp);
-      tmpvec->Update(dt() * fluidtimescale, tmp, 1.0);
+      tmpvec->update(dt() * fluidtimescale, tmp, 1.0);
     }
   }
 
   // ---------Adding tmpvec to lambda_
-  lambda_->Update(
+  lambda_->update(
       fluidresidualscale, *tmpvec, 1.0);  // scale with residual_scaling() to get [N/m^2]
 
   // Scaling everything with -1/(1-flintparam_)
-  lambda_->Scale(-1.0 / (1.0 - ftimintparam));
+  lambda_->scale(-1.0 / (1.0 - ftimintparam));
 
   return;
 }
@@ -1166,7 +1166,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::handle_fluid_dof_map_change_in_ne
   extractor().insert_vector(*ax_n, 2, *x_sum_);
 
   //  The fluid length may have changed
-  nf_ = fluid_field()->rhs()->GlobalLength();
+  nf_ = fluid_field()->rhs()->global_length();
 }
 
 /*----------------------------------------------------------------------*/

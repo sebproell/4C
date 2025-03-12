@@ -139,7 +139,7 @@ namespace Arteries
     //! iterative update of primary variable
     void update_iter(const std::shared_ptr<const Core::LinAlg::Vector<double>> inc) override
     {
-      pressurenp_->Update(1.0, *inc, 1.0);
+      pressurenp_->update(1.0, *inc, 1.0);
       return;
     }
 

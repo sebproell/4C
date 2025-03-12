@@ -341,8 +341,8 @@ void SSI::ScaTraManifoldScaTraFluxEvaluator::evaluate()
   matrix_scatra_manifold_->zero();
   matrix_scatra_structure_->zero();
 
-  rhs_manifold_->PutScalar(0.0);
-  rhs_scatra_->PutScalar(0.0);
+  rhs_manifold_->put_scalar(0.0);
+  rhs_scatra_->put_scalar(0.0);
 
   // evaluate all scatra-manifold coupling conditions
   for (const auto& scatra_manifold_coupling : scatra_manifold_couplings_)
@@ -362,8 +362,8 @@ void SSI::ScaTraManifoldScaTraFluxEvaluator::evaluate()
     matrix_scatra_structure_cond_->zero();
     matrix_scatra_structure_cond_->un_complete();
 
-    rhs_manifold_cond_->PutScalar(0.0);
-    rhs_scatra_cond_->PutScalar(0.0);
+    rhs_manifold_cond_->put_scalar(0.0);
+    rhs_scatra_cond_->put_scalar(0.0);
 
     evaluate_bulk_side(*scatra_manifold_coupling);
 
@@ -504,7 +504,7 @@ void SSI::ScaTraManifoldScaTraFluxEvaluator::copy_scatra_scatra_manifold_side(
 
     scatra_manifold_coupling->manifold_map_extractor()->add_cond_vector(
         *rhs_manifold_cond_extract, *rhs_manifold_cond_);
-    rhs_manifold_cond_->Scale(-inv_thickness);
+    rhs_manifold_cond_->scale(-inv_thickness);
   }
 
   // dmanifold_dscatra: scatra rows are transformed to manifold side (flux is scaled by -1.0)
@@ -535,8 +535,8 @@ void SSI::ScaTraManifoldScaTraFluxEvaluator::copy_scatra_scatra_manifold_side(
  *----------------------------------------------------------------------*/
 void SSI::ScaTraManifoldScaTraFluxEvaluator::add_condition_contribution()
 {
-  rhs_manifold_->Update(1.0, *rhs_manifold_cond_, 1.0);
-  rhs_scatra_->Update(1.0, *rhs_scatra_cond_, 1.0);
+  rhs_manifold_->update(1.0, *rhs_manifold_cond_, 1.0);
+  rhs_scatra_->update(1.0, *rhs_scatra_cond_, 1.0);
 
   switch (scatra_->scatra_field()->matrix_type())
   {

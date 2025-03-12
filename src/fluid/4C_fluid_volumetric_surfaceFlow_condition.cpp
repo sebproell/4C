@@ -668,10 +668,10 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::eval_local_normalized_radii(
           R = 1.0;
         }
         // update local radius
-        local_radii_->ReplaceGlobalValues(1, &R, &gid);
+        local_radii_->replace_global_values(1, &R, &gid);
 
         // update border radius
-        border_radii_->ReplaceGlobalValues(1, &border_radius, &gid);
+        border_radii_->replace_global_values(1, &border_radius, &gid);
       }
     }
   }
@@ -916,7 +916,7 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::evaluate_velocities(
  *----------------------------------------------------------------------*/
 void FLD::Utils::FluidVolumetricSurfaceFlowBc::reset_traction_velocity_comp()
 {
-  cond_traction_vel_->PutScalar(0.0);
+  cond_traction_vel_->put_scalar(0.0);
 }
 
 
@@ -1161,7 +1161,7 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::velocities(Core::FE::Discretizati
           //------------------------------------------------------------
           double Vdof = velocity * (normal)[ldof];
 
-          bcdof.ReplaceGlobalValues(1, &Vdof, &gdof);
+          bcdof.replace_global_values(1, &Vdof, &gdof);
         }
       }
     }
@@ -1267,12 +1267,12 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::correct_flow_rate(
     double correction_factor = (flowrate - actflowrate) / (corrective_flowrate);
 
     double correction = 0.0;
-    for (int lid = 0; lid < correction_velnp->MyLength(); lid++)
+    for (int lid = 0; lid < correction_velnp->local_length(); lid++)
     {
-      int gid = correction_velnp->Map().GID(lid);
+      int gid = correction_velnp->get_map().GID(lid);
       correction = correction_factor * (*correction_velnp)[lid];
 
-      int bc_lid = cond_velocities_->Map().LID(gid);
+      int bc_lid = cond_velocities_->get_map().LID(gid);
       (*cond_velocities_)[bc_lid] += correction;
     }
   }
@@ -1281,12 +1281,12 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::correct_flow_rate(
     double correction_factor = flowrate / (corrective_flowrate);
     correction_factor = sqrt(correction_factor);
     double correction = 0.0;
-    for (int lid = 0; lid < correction_velnp->MyLength(); lid++)
+    for (int lid = 0; lid < correction_velnp->local_length(); lid++)
     {
-      int gid = correction_velnp->Map().GID(lid);
+      int gid = correction_velnp->get_map().GID(lid);
       correction = correction_factor * (*correction_velnp)[lid];
 
-      int bc_lid = cond_velocities_->Map().LID(gid);
+      int bc_lid = cond_velocities_->get_map().LID(gid);
       (*cond_velocities_)[bc_lid] = correction;
     }
   }
@@ -1299,12 +1299,12 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::correct_flow_rate(
 void FLD::Utils::FluidVolumetricSurfaceFlowBc::set_velocities(
     Core::LinAlg::Vector<double>& velocities)
 {
-  for (int lid = 0; lid < cond_velocities_->MyLength(); lid++)
+  for (int lid = 0; lid < cond_velocities_->local_length(); lid++)
   {
-    int gid = cond_velocities_->Map().GID(lid);
+    int gid = cond_velocities_->get_map().GID(lid);
     double val = (*cond_velocities_)[lid];
 
-    velocities.ReplaceGlobalValues(1, &val, &gid);
+    velocities.replace_global_values(1, &val, &gid);
   }
 }
 
@@ -1768,7 +1768,7 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::interpolate(
 void FLD::Utils::FluidVolumetricSurfaceFlowBc::update_residual(
     Core::LinAlg::Vector<double>& residual)
 {
-  residual.Update(1.0, *cond_traction_vel_, 1.0);
+  residual.update(1.0, *cond_traction_vel_, 1.0);
 }
 
 /*----------------------------------------------------------------------*
@@ -1946,9 +1946,9 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::export_and_set_boundary_values(
     std::string name)
 {
   // define the exporter
-  Epetra_Export exporter(source.Map(), target->Map());
+  Epetra_Export exporter(source.get_map(), target->get_map());
   // Export source vector to target vector
-  int err = target->Export(source, exporter, Zero);
+  int err = target->export_to(source, exporter, Zero);
   // check if the exporting was successful
   if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
   // Set state
@@ -1963,9 +1963,9 @@ void FLD::Utils::TotalTractionCorrector::export_and_set_boundary_values(
     std::string name)
 {
   // define the exporter
-  Epetra_Export exporter(source.Map(), target->Map());
+  Epetra_Export exporter(source.get_map(), target->get_map());
   // Export source vector to target vector
-  int err = target->Export(source, exporter, Zero);
+  int err = target->export_to(source, exporter, Zero);
   // check if the exporting was successful
   if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
   // Set state

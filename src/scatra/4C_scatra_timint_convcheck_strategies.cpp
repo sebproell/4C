@@ -49,19 +49,19 @@ bool ScaTra::ConvCheckStrategyStd::abort_nonlin_iter(
 
   // compute L2 norm of concentration state vector
   double conc_state_L2(0.0);
-  scatratimint.phinp()->Norm2(&conc_state_L2);
+  scatratimint.phinp()->norm_2(&conc_state_L2);
 
   // compute L2 norm of concentration residual vector
   double conc_res_L2(0.);
-  scatratimint.residual()->Norm2(&conc_res_L2);
+  scatratimint.residual()->norm_2(&conc_res_L2);
 
   // compute infinity norm of concentration residual vector
   double conc_res_inf(0.);
-  scatratimint.residual()->NormInf(&conc_res_inf);
+  scatratimint.residual()->norm_inf(&conc_res_inf);
 
   // compute L2 norm of concentration increment vector
   double conc_inc_L2(0.);
-  scatratimint.increment()->Norm2(&conc_inc_L2);
+  scatratimint.increment()->norm_2(&conc_inc_L2);
 
   // safety checks
   if (std::isnan(conc_state_L2) or std::isnan(conc_res_L2) or std::isnan(conc_inc_L2))
@@ -177,8 +177,8 @@ bool ScaTra::ConvCheckStrategyStd::abort_outer_iter(
   // compute vector norms
   double L2_phinp(0.);
   double L2_phinp_inc(0.);
-  scatratimint.phinp()->Norm2(&L2_phinp);
-  scatratimint.phinp_inc()->Norm2(&L2_phinp_inc);
+  scatratimint.phinp()->norm_2(&L2_phinp);
+  scatratimint.phinp_inc()->norm_2(&L2_phinp_inc);
   if (L2_phinp < 1.e-10) L2_phinp = 1.;
 
   // print convergence status
@@ -251,19 +251,19 @@ bool ScaTra::ConvCheckStrategyStdMicroScale::abort_nonlin_iter(
 
   // compute L2 norm of concentration state vector
   double conc_state_L2(0.0);
-  scatratimint.phinp()->Norm2(&conc_state_L2);
+  scatratimint.phinp()->norm_2(&conc_state_L2);
 
   // compute L2 norm of concentration residual vector
   double conc_res_L2(0.);
-  scatratimint.residual()->Norm2(&conc_res_L2);
+  scatratimint.residual()->norm_2(&conc_res_L2);
 
   // compute infinity norm of concentration residual vector
   double conc_res_inf(0.);
-  scatratimint.residual()->NormInf(&conc_res_inf);
+  scatratimint.residual()->norm_inf(&conc_res_inf);
 
   // compute L2 norm of concentration increment vector
   double conc_inc_L2(0.);
-  scatratimint.increment()->Norm2(&conc_inc_L2);
+  scatratimint.increment()->norm_2(&conc_inc_L2);
 
   // safety checks
   if (std::isnan(conc_state_L2) or std::isnan(conc_res_L2) or std::isnan(conc_inc_L2))
@@ -308,37 +308,37 @@ bool ScaTra::ConvCheckStrategyStdElch::abort_nonlin_iter(
   std::shared_ptr<Core::LinAlg::Vector<double>> conc_vector =
       scatratimint.splitter()->extract_other_vector(*scatratimint.phinp());
   double conc_state_L2(0.0);
-  conc_vector->Norm2(&conc_state_L2);
+  conc_vector->norm_2(&conc_state_L2);
 
   // compute L2 norm of concentration residual vector
   scatratimint.splitter()->extract_other_vector(*scatratimint.residual(), *conc_vector);
   double conc_res_L2(0.);
-  conc_vector->Norm2(&conc_res_L2);
+  conc_vector->norm_2(&conc_res_L2);
 
   // compute infinity norm of concentration residual vector
   double conc_res_inf(0.);
-  conc_vector->NormInf(&conc_res_inf);
+  conc_vector->norm_inf(&conc_res_inf);
 
   // compute L2 norm of concentration increment vector
   scatratimint.splitter()->extract_other_vector(*scatratimint.increment(), *conc_vector);
   double conc_inc_L2(0.);
-  conc_vector->Norm2(&conc_inc_L2);
+  conc_vector->norm_2(&conc_inc_L2);
 
   // compute L2 norm of electric potential state vector
   std::shared_ptr<Core::LinAlg::Vector<double>> pot_vector =
       scatratimint.splitter()->extract_cond_vector(*scatratimint.phinp());
   double pot_state_L2(0.0);
-  pot_vector->Norm2(&pot_state_L2);
+  pot_vector->norm_2(&pot_state_L2);
 
   // compute L2 norm of electric potential residual vector
   scatratimint.splitter()->extract_cond_vector(*scatratimint.residual(), *pot_vector);
   double pot_res_L2(0.);
-  pot_vector->Norm2(&pot_res_L2);
+  pot_vector->norm_2(&pot_res_L2);
 
   // compute L2 norm of electric potential increment vector
   scatratimint.splitter()->extract_cond_vector(*scatratimint.increment(), *pot_vector);
   double pot_inc_L2(0.);
-  pot_vector->Norm2(&pot_inc_L2);
+  pot_vector->norm_2(&pot_inc_L2);
 
   // safety checks
   if (std::isnan(conc_state_L2) or std::isnan(conc_res_L2) or std::isnan(conc_inc_L2))
@@ -465,19 +465,19 @@ bool ScaTra::ConvCheckStrategyS2ILM::abort_nonlin_iter(
 
   // compute L2 norm of concentration state vector
   double conc_state_L2(0.0);
-  scatratimint.phinp()->Norm2(&conc_state_L2);
+  scatratimint.phinp()->norm_2(&conc_state_L2);
 
   // compute L2 norm of concentration residual vector
   double conc_res_L2(0.);
-  scatratimint.residual()->Norm2(&conc_res_L2);
+  scatratimint.residual()->norm_2(&conc_res_L2);
 
   // compute infinity norm of concentration residual vector
   double conc_res_inf(0.);
-  scatratimint.residual()->NormInf(&conc_res_inf);
+  scatratimint.residual()->norm_inf(&conc_res_inf);
 
   // compute L2 norm of concentration increment vector
   double conc_inc_L2(0.);
-  scatratimint.increment()->Norm2(&conc_inc_L2);
+  scatratimint.increment()->norm_2(&conc_inc_L2);
 
   // extract meshtying strategy from scalar transport time integrator
   const std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtyingstrategys2i =
@@ -486,15 +486,15 @@ bool ScaTra::ConvCheckStrategyS2ILM::abort_nonlin_iter(
 
   // compute L2 norm of Lagrange multiplier state vector
   double lm_state_L2(0.0);
-  meshtyingstrategys2i->lm()->Norm2(&lm_state_L2);
+  meshtyingstrategys2i->lm()->norm_2(&lm_state_L2);
 
   // compute L2 norm of Lagrange multiplier residual vector
   double lm_res_L2(0.);
-  meshtyingstrategys2i->lm_residual()->Norm2(&lm_res_L2);
+  meshtyingstrategys2i->lm_residual()->norm_2(&lm_res_L2);
 
   // compute L2 norm of Lagrange multiplier increment vector
   double lm_inc_L2(0.);
-  meshtyingstrategys2i->lm_increment()->Norm2(&lm_inc_L2);
+  meshtyingstrategys2i->lm_increment()->norm_2(&lm_inc_L2);
 
   // safety checks
   if (std::isnan(conc_state_L2) or std::isnan(conc_res_L2) or std::isnan(conc_inc_L2))
@@ -624,37 +624,37 @@ bool ScaTra::ConvCheckStrategyS2ILMElch::abort_nonlin_iter(
   std::shared_ptr<Core::LinAlg::Vector<double>> conc_vector =
       scatratimint.splitter()->extract_other_vector(*scatratimint.phinp());
   double conc_state_L2(0.0);
-  conc_vector->Norm2(&conc_state_L2);
+  conc_vector->norm_2(&conc_state_L2);
 
   // compute L2 norm of concentration residual vector
   scatratimint.splitter()->extract_other_vector(*scatratimint.residual(), *conc_vector);
   double conc_res_L2(0.);
-  conc_vector->Norm2(&conc_res_L2);
+  conc_vector->norm_2(&conc_res_L2);
 
   // compute infinity norm of concentration residual vector
   double conc_res_inf(0.);
-  conc_vector->NormInf(&conc_res_inf);
+  conc_vector->norm_inf(&conc_res_inf);
 
   // compute L2 norm of concentration increment vector
   scatratimint.splitter()->extract_other_vector(*scatratimint.increment(), *conc_vector);
   double conc_inc_L2(0.);
-  conc_vector->Norm2(&conc_inc_L2);
+  conc_vector->norm_2(&conc_inc_L2);
 
   // compute L2 norm of electric potential state vector
   std::shared_ptr<Core::LinAlg::Vector<double>> pot_vector =
       scatratimint.splitter()->extract_cond_vector(*scatratimint.phinp());
   double pot_state_L2(0.0);
-  pot_vector->Norm2(&pot_state_L2);
+  pot_vector->norm_2(&pot_state_L2);
 
   // compute L2 norm of electric potential residual vector
   scatratimint.splitter()->extract_cond_vector(*scatratimint.residual(), *pot_vector);
   double pot_res_L2(0.);
-  pot_vector->Norm2(&pot_res_L2);
+  pot_vector->norm_2(&pot_res_L2);
 
   // compute L2 norm of electric potential increment vector
   scatratimint.splitter()->extract_cond_vector(*scatratimint.increment(), *pot_vector);
   double pot_inc_L2(0.);
-  pot_vector->Norm2(&pot_inc_L2);
+  pot_vector->norm_2(&pot_inc_L2);
 
   // extract meshtying strategy from scalar transport time integrator
   const std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtyingstrategys2i =
@@ -663,15 +663,15 @@ bool ScaTra::ConvCheckStrategyS2ILMElch::abort_nonlin_iter(
 
   // compute L2 norm of Lagrange multiplier state vector
   double lm_state_L2(0.0);
-  meshtyingstrategys2i->lm()->Norm2(&lm_state_L2);
+  meshtyingstrategys2i->lm()->norm_2(&lm_state_L2);
 
   // compute L2 norm of Lagrange multiplier residual vector
   double lm_res_L2(0.);
-  meshtyingstrategys2i->lm_residual()->Norm2(&lm_res_L2);
+  meshtyingstrategys2i->lm_residual()->norm_2(&lm_res_L2);
 
   // compute L2 norm of Lagrange multiplier increment vector
   double lm_inc_L2(0.);
-  meshtyingstrategys2i->lm_increment()->Norm2(&lm_inc_L2);
+  meshtyingstrategys2i->lm_increment()->norm_2(&lm_inc_L2);
 
   // safety checks
   if (std::isnan(conc_state_L2) or std::isnan(conc_res_L2) or std::isnan(conc_inc_L2))
@@ -818,53 +818,53 @@ bool ScaTra::ConvCheckStrategyStdMacroScaleElch::abort_nonlin_iter(
   const std::shared_ptr<Core::LinAlg::Vector<double>> vector_conc_el =
       elchtimint->splitter_macro()->extract_vector(*scatratimint.phinp(), 0);
   double L2_state_conc_el(0.);
-  vector_conc_el->Norm2(&L2_state_conc_el);
+  vector_conc_el->norm_2(&L2_state_conc_el);
 
   // compute L2 norm of residual vector associated with electrolyte concentration
   elchtimint->splitter_macro()->extract_vector(*scatratimint.residual(), 0, *vector_conc_el);
   double L2_res_conc_el(0.);
-  vector_conc_el->Norm2(&L2_res_conc_el);
+  vector_conc_el->norm_2(&L2_res_conc_el);
 
   // compute infinity norm of residual vector associated with electrolyte concentration
   double inf_res_conc_el(0.);
-  vector_conc_el->NormInf(&inf_res_conc_el);
+  vector_conc_el->norm_inf(&inf_res_conc_el);
 
   // compute L2 norm of increment vector associated with electrolyte concentration
   elchtimint->splitter_macro()->extract_vector(*scatratimint.increment(), 0, *vector_conc_el);
   double L2_inc_conc_el(0.);
-  vector_conc_el->Norm2(&L2_inc_conc_el);
+  vector_conc_el->norm_2(&L2_inc_conc_el);
 
   // compute L2 norm of state vector associated with electrolyte potential
   const std::shared_ptr<Core::LinAlg::Vector<double>> vector_pot_el =
       elchtimint->splitter_macro()->extract_vector(*scatratimint.phinp(), 1);
   double L2_state_pot_el(0.);
-  vector_pot_el->Norm2(&L2_state_pot_el);
+  vector_pot_el->norm_2(&L2_state_pot_el);
 
   // compute L2 norm of residual vector associated with electrolyte potential
   elchtimint->splitter_macro()->extract_vector(*scatratimint.residual(), 1, *vector_pot_el);
   double L2_res_pot_el(0.);
-  vector_pot_el->Norm2(&L2_res_pot_el);
+  vector_pot_el->norm_2(&L2_res_pot_el);
 
   // compute L2 norm of increment vector associated with electrolyte potential
   elchtimint->splitter_macro()->extract_vector(*scatratimint.increment(), 1, *vector_pot_el);
   double L2_inc_pot_el(0.);
-  vector_pot_el->Norm2(&L2_inc_pot_el);
+  vector_pot_el->norm_2(&L2_inc_pot_el);
 
   // compute L2 norm of state vector associated with electrode potential
   const std::shared_ptr<Core::LinAlg::Vector<double>> vector_pot_ed =
       elchtimint->splitter_macro()->extract_vector(*scatratimint.phinp(), 2);
   double L2_state_pot_ed(0.);
-  vector_pot_ed->Norm2(&L2_state_pot_ed);
+  vector_pot_ed->norm_2(&L2_state_pot_ed);
 
   // compute L2 norm of residual vector associated with electrode potential
   elchtimint->splitter_macro()->extract_vector(*scatratimint.residual(), 2, *vector_pot_ed);
   double L2_res_pot_ed(0.);
-  vector_pot_ed->Norm2(&L2_res_pot_ed);
+  vector_pot_ed->norm_2(&L2_res_pot_ed);
 
   // compute L2 norm of increment vector associated with electrode potential
   elchtimint->splitter_macro()->extract_vector(*scatratimint.increment(), 2, *vector_pot_ed);
   double L2_inc_pot_ed(0.);
-  vector_pot_ed->Norm2(&L2_inc_pot_ed);
+  vector_pot_ed->norm_2(&L2_inc_pot_ed);
 
   // safety checks
   if (std::isnan(L2_state_conc_el) or std::isnan(L2_res_conc_el) or std::isnan(L2_inc_conc_el))
@@ -1011,24 +1011,24 @@ bool ScaTra::ConvCheckStrategyStdMacroScaleElch::abort_outer_iter(
   const std::shared_ptr<Core::LinAlg::Vector<double>> vector_conc_el =
       elchtimint->splitter_macro()->extract_vector(*scatratimint.phinp(), 0);
   double L2_state_conc_el(0.);
-  vector_conc_el->Norm2(&L2_state_conc_el);
+  vector_conc_el->norm_2(&L2_state_conc_el);
   elchtimint->splitter_macro()->extract_vector(*scatratimint.phinp_inc(), 0, *vector_conc_el);
   double L2_inc_conc_el(0.);
-  vector_conc_el->Norm2(&L2_inc_conc_el);
+  vector_conc_el->norm_2(&L2_inc_conc_el);
   const std::shared_ptr<Core::LinAlg::Vector<double>> vector_pot_el =
       elchtimint->splitter_macro()->extract_vector(*scatratimint.phinp(), 1);
   double L2_state_pot_el(0.);
-  vector_pot_el->Norm2(&L2_state_pot_el);
+  vector_pot_el->norm_2(&L2_state_pot_el);
   elchtimint->splitter_macro()->extract_vector(*scatratimint.phinp_inc(), 1, *vector_pot_el);
   double L2_inc_pot_el(0.);
-  vector_pot_el->Norm2(&L2_inc_pot_el);
+  vector_pot_el->norm_2(&L2_inc_pot_el);
   const std::shared_ptr<Core::LinAlg::Vector<double>> vector_pot_ed =
       elchtimint->splitter_macro()->extract_vector(*scatratimint.phinp(), 2);
   double L2_state_pot_ed(0.);
-  vector_pot_ed->Norm2(&L2_state_pot_ed);
+  vector_pot_ed->norm_2(&L2_state_pot_ed);
   elchtimint->splitter_macro()->extract_vector(*scatratimint.phinp_inc(), 2, *vector_pot_ed);
   double L2_inc_pot_ed(0.);
-  vector_pot_ed->Norm2(&L2_inc_pot_ed);
+  vector_pot_ed->norm_2(&L2_inc_pot_ed);
   if (L2_state_conc_el < 1.e-10) L2_state_conc_el = 1.;
   if (L2_state_pot_el < 1.e-10) L2_state_pot_el = 1.;
   if (L2_state_pot_ed < 1.e-10) L2_state_pot_ed = 1.;
@@ -1112,16 +1112,16 @@ bool ScaTra::ConvCheckStrategyPoroMultiphaseScatra::abort_nonlin_iter(
 
   // compute L2 norm of concentration state vector
   double conc_state_L2(0.0);
-  scatratimint.phinp()->Norm2(&conc_state_L2);
+  scatratimint.phinp()->norm_2(&conc_state_L2);
 
   // compute Rms norm of concentration residual vector
   double conc_res_Rms(0.);
-  scatratimint.residual()->Norm2(&conc_res_Rms);
-  conc_res_Rms /= sqrt(scatratimint.residual()->GlobalLength());
+  scatratimint.residual()->norm_2(&conc_res_Rms);
+  conc_res_Rms /= sqrt(scatratimint.residual()->global_length());
 
   // compute L2 norm of concentration increment vector
   double conc_inc_L2(0.);
-  scatratimint.increment()->Norm2(&conc_inc_L2);
+  scatratimint.increment()->norm_2(&conc_inc_L2);
 
   // safety checks
   if (std::isnan(conc_state_L2) or std::isnan(conc_res_Rms) or std::isnan(conc_inc_L2))
@@ -1241,9 +1241,9 @@ bool ScaTra::ConvCheckStrategyPoroMultiphaseScatraArtMeshTying::abort_nonlin_ite
 
   // compute L2 norm of concentration state vector
   double conc_state_L2(0.0);
-  scatratimint.phinp()->Norm2(&conc_state_L2);
+  scatratimint.phinp()->norm_2(&conc_state_L2);
   double conc_state_art_L2(0.0);
-  scatramsht->art_scatra_field()->phinp()->Norm2(&conc_state_art_L2);
+  scatramsht->art_scatra_field()->phinp()->norm_2(&conc_state_art_L2);
 
   // extract single field rhs vectors
   std::shared_ptr<const Core::LinAlg::Vector<double>> artscatrarhs;
@@ -1252,11 +1252,11 @@ bool ScaTra::ConvCheckStrategyPoroMultiphaseScatraArtMeshTying::abort_nonlin_ite
 
   // compute Rms norm of concentration residual vector
   double conc_res_Rms(0.);
-  contscatrarhs->Norm2(&conc_res_Rms);
-  conc_res_Rms /= sqrt(contscatrarhs->GlobalLength());
+  contscatrarhs->norm_2(&conc_res_Rms);
+  conc_res_Rms /= sqrt(contscatrarhs->global_length());
   double conc_res_art_Rms(0.);
-  artscatrarhs->Norm2(&conc_res_art_Rms);
-  conc_res_art_Rms /= sqrt(artscatrarhs->GlobalLength());
+  artscatrarhs->norm_2(&conc_res_art_Rms);
+  conc_res_art_Rms /= sqrt(artscatrarhs->global_length());
 
   // extract single field increment vectors
   std::shared_ptr<const Core::LinAlg::Vector<double>> artscatrainc;
@@ -1266,9 +1266,9 @@ bool ScaTra::ConvCheckStrategyPoroMultiphaseScatraArtMeshTying::abort_nonlin_ite
 
   // compute L2 norm of concentration increment vector
   double conc_inc_L2(0.);
-  contscatrainc->Norm2(&conc_inc_L2);
+  contscatrainc->norm_2(&conc_inc_L2);
   double conc_inc_art_L2(0.);
-  artscatrainc->Norm2(&conc_inc_art_L2);
+  artscatrainc->norm_2(&conc_inc_art_L2);
 
   // safety checks
   if (std::isnan(conc_state_L2) or std::isnan(conc_res_Rms) or std::isnan(conc_inc_L2) or

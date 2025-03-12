@@ -147,18 +147,18 @@ void FSI::MonolithicNoNOX::newton()
   iter_ = 1;
 
   x_sum_ = Core::LinAlg::create_vector(*dof_row_map(), true);
-  x_sum_->PutScalar(0.0);
+  x_sum_->put_scalar(0.0);
 
   // incremental solution vector with length of all FSI dofs
   iterinc_ = Core::LinAlg::create_vector(*dof_row_map(), true);
-  iterinc_->PutScalar(0.0);
+  iterinc_->put_scalar(0.0);
 
   zeros_ = Core::LinAlg::create_vector(*dof_row_map(), true);
-  zeros_->PutScalar(0.0);
+  zeros_->put_scalar(0.0);
 
   // residual vector with length of all FSI dofs
   rhs_ = Core::LinAlg::create_vector(*dof_row_map(), true);
-  rhs_->PutScalar(0.0);
+  rhs_->put_scalar(0.0);
 
   firstcall_ = true;
 
@@ -296,7 +296,7 @@ void FSI::MonolithicNoNOX::linear_solve()
   if (firstcall_)
     initial_guess(iterinc_);
   else
-    iterinc_->PutScalar(0.0);
+    iterinc_->put_scalar(0.0);
 
   Core::LinAlg::apply_dirichlet_to_system(*sparse, *iterinc_, *rhs_, *zeros_, *combined_dbc_map());
 
@@ -326,7 +326,8 @@ void FSI::MonolithicNoNOX::evaluate(const Core::LinAlg::Vector<double>& step_inc
 
   // Save the inner fluid map that includes the background fluid DOF in order to
   // determine a change.
-  const Epetra_BlockMap fluidincrementmap = extractor().extract_vector(step_increment, 1)->Map();
+  const Epetra_BlockMap fluidincrementmap =
+      extractor().extract_vector(step_increment, 1)->get_map();
 
   if (not firstcall_)
   {
@@ -340,7 +341,7 @@ void FSI::MonolithicNoNOX::evaluate(const Core::LinAlg::Vector<double>& step_inc
     // The update of the latest increment with step increment:
     // x^n+1_i+1 = x^n     + stepinc
 
-    x_sum_->Update(1.0, step_increment, 1.0);
+    x_sum_->update(1.0, step_increment, 1.0);
 
     extract_field_vectors(x_sum_, sx, fx, ax);
 

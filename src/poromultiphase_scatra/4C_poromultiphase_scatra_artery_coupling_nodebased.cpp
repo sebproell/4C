@@ -188,7 +188,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup_vector(
     std::shared_ptr<const Core::LinAlg::Vector<double>> vec_art)
 {
   // zero out
-  vec->PutScalar(0.0);
+  vec->put_scalar(0.0);
 
   // inner (uncoupled) DOFs of artery
   std::shared_ptr<Core::LinAlg::Vector<double>> vec2_uncoupled =
@@ -202,7 +202,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup_vector(
       contfieldex_->insert_vector(*artcontfieldcoup_->slave_to_master(*vec2_coupled), 1);
 
   // add to continuous vec
-  temp->Update(1.0, *vec_cont, 1.0);
+  temp->update(1.0, *vec_cont, 1.0);
 
   // set up global vector
   globalex_->insert_vector(*temp, 0, *vec);
@@ -335,11 +335,11 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::check_initial_
       contfieldex_->extract_vector(*vec_cont, 1);
 
   // subtract artery DOF values from continuous DOF values
-  boundary->Update(-1.0, *temp, 1.0);
+  boundary->update(-1.0, *temp, 1.0);
 
   // build L2 norm
   double diff(0.0);
-  boundary->Norm2(&diff);
+  boundary->norm_2(&diff);
 
   if (diff > 1.0e-9)
   {

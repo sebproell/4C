@@ -119,7 +119,7 @@ void Arteries::ArtNetImplStationary::init(const Teuchos::ParameterList& globalti
     eleparams.set<const Core::Utils::FunctionManager*>(
         "function_manager", &Global::Problem::instance()->function_manager());
     discret_->evaluate_dirichlet(eleparams, zeros_, nullptr, nullptr, nullptr, dbcmaps_);
-    zeros_->PutScalar(0.0);  // just in case of change
+    zeros_->put_scalar(0.0);  // just in case of change
   }
 
   // the vector containing body and surface forces
@@ -269,7 +269,7 @@ void Arteries::ArtNetImplStationary::assemble_mat_and_rhs()
 
   // set both system matrix and rhs vector to zero
   sysmat_->zero();
-  rhs_->PutScalar(0.0);
+  rhs_->put_scalar(0.0);
 
   // create the parameters for the discretization
   Teuchos::ParameterList eleparams;
@@ -322,7 +322,7 @@ void Arteries::ArtNetImplStationary::linear_solve()
   solver_->solve(sysmat_->epetra_operator(), pressureincnp_, rhs_, solver_params);
   // note: incremental form since rhs-coupling with poromultielastscatra-framework might be
   //       nonlinear
-  pressurenp_->Update(1.0, *pressureincnp_, 1.0);
+  pressurenp_->update(1.0, *pressureincnp_, 1.0);
 
   // end time measurement for solver
   double mydtsolve = Teuchos::Time::wallTime() - tcpusolve;
@@ -399,7 +399,7 @@ void Arteries::ArtNetImplStationary::reset_artery_diam_previous_time_step()
 void Arteries::ArtNetImplStationary::apply_neumann_bc(Core::LinAlg::Vector<double>& neumann_loads)
 {
   // prepare load vector
-  neumann_loads.PutScalar(0.0);
+  neumann_loads.put_scalar(0.0);
 
   // create parameter list
   Teuchos::ParameterList condparams;
@@ -419,7 +419,7 @@ void Arteries::ArtNetImplStationary::apply_neumann_bc(Core::LinAlg::Vector<doubl
  *----------------------------------------------------------------------*/
 void Arteries::ArtNetImplStationary::add_neumann_to_residual()
 {
-  rhs_->Update(1.0, *neumann_loads_, 1.0);
+  rhs_->update(1.0, *neumann_loads_, 1.0);
   return;
 }
 
@@ -561,7 +561,7 @@ void Arteries::ArtNetImplStationary::get_radius()
     if (arterymat == nullptr)
       FOUR_C_THROW("cast to Mat::Cnst1dArt failed during output of radius!");
     const double radius = arterymat->diam() / 2.0;
-    ele_radius_->ReplaceGlobalValue(actele->id(), 0, radius);
+    ele_radius_->replace_global_value(actele->id(), 0, radius);
   }
 }
 
@@ -599,7 +599,7 @@ void Arteries::ArtNetImplStationary::reconstruct_flow()
 
     actele->evaluate(p, *discret_, la, dummyMat, dummyMat, flowVec, dummyVec, dummyVec);
 
-    int err = ele_volflow_->ReplaceMyValue(i, 0, flowVec(0));
+    int err = ele_volflow_->replace_local_value(i, 0, flowVec(0));
     if (err != 0) FOUR_C_THROW("ReplaceMyValue failed with error code %d!", err);
   }
 }
@@ -694,7 +694,7 @@ void Arteries::ArtNetImplStationary::set_initial_field(
   {
     case Inpar::ArtDyn::initfield_zero_field:
     {
-      pressurenp_->PutScalar(0.0);
+      pressurenp_->put_scalar(0.0);
       break;
     }
     case Inpar::ArtDyn::initfield_field_by_function:
@@ -718,7 +718,7 @@ void Arteries::ArtNetImplStationary::set_initial_field(
           double initialval = Global::Problem::instance()
                                   ->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)
                                   .evaluate(lnode->x().data(), time_, k);
-          int err = pressurenp_->ReplaceMyValues(1, &initialval, &doflid);
+          int err = pressurenp_->replace_local_values(1, &initialval, &doflid);
           if (err != 0) FOUR_C_THROW("dof not on proc");
         }
       }

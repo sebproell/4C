@@ -242,17 +242,17 @@ void XFEM::MeshCoupling::set_state_displacement()
 void XFEM::MeshCoupling::update_state_vectors()
 {
   // update velocity n-1
-  ivelnm_->Update(1.0, *iveln_, 0.0);
+  ivelnm_->update(1.0, *iveln_, 0.0);
 
   // update velocity n
-  iveln_->Update(1.0, *ivelnp_, 0.0);
+  iveln_->update(1.0, *ivelnp_, 0.0);
 
   // update displacement n
-  idispn_->Update(1.0, *idispnp_, 0.0);
+  idispn_->update(1.0, *idispnp_, 0.0);
 
   // update displacement from last increment (also used for combinations of non-monolithic
   // fluidfluid and monolithic xfsi)
-  idispnpi_->Update(1.0, *idispnp_, 0.0);
+  idispnpi_->update(1.0, *idispnp_, 0.0);
 }
 
 /*--------------------------------------------------------------------------*
@@ -263,7 +263,7 @@ void XFEM::MeshCoupling::update_displacement_iteration_vectors()
 
   // update displacement from last increment (also used for combinations of non-monolithic
   // fluidfluid and monolithic xfsi)
-  idispnpi_->Update(1.0, *idispnp_, 0.0);
+  idispnpi_->update(1.0, *idispnp_, 0.0);
 }
 
 /*--------------------------------------------------------------------------*
@@ -629,9 +629,9 @@ void XFEM::MeshCouplingBC::do_condition_specific_setup()
   set_interface_displacement();
 
   // set the interface displacements also to idispn
-  idispn_->Update(1.0, *idispnp_, 0.0);
+  idispn_->update(1.0, *idispnp_, 0.0);
 
-  idispnpi_->Update(1.0, *idispnp_, 0.0);
+  idispnpi_->update(1.0, *idispnp_, 0.0);
 }
 
 /*--------------------------------------------------------------------------*
@@ -710,7 +710,7 @@ void XFEM::MeshCouplingBC::evaluate_condition(std::shared_ptr<Core::LinAlg::Vect
     for (int dof = 0; dof < numdof; ++dof)
     {
       int gid = nodedofset[dof];
-      ivec->ReplaceGlobalValues(1, &final_values[dof], &gid);
+      ivec->replace_global_values(1, &final_values[dof], &gid);
     }
 
   }  // loop row nodes
@@ -814,7 +814,7 @@ void XFEM::MeshCouplingBC::compute_interface_velocity_from_displacement(
   for (int dof = 0; dof < numdof; ++dof)
   {
     int gid = nodedofset[dof];
-    int lid = idispnp_->Map().LID(gid);
+    int lid = idispnp_->get_map().LID(gid);
 
     const double dispnp = (*idispnp_)[lid];
     const double dispn = (*idispn_)[lid];
@@ -966,7 +966,7 @@ void XFEM::MeshCouplingWeakDirichlet::do_condition_specific_setup()
   set_interface_velocity();
 
   // set the initial interface velocities also to iveln
-  iveln_->Update(1.0, *ivelnp_, 0.0);
+  iveln_->update(1.0, *ivelnp_, 0.0);
 }
 
 
@@ -1216,7 +1216,7 @@ void XFEM::MeshCouplingNavierSlip::do_condition_specific_setup()
   set_interface_velocity();
 
   // set the initial interface velocities also to iveln
-  iveln_->Update(1.0, *ivelnp_, 0.0);
+  iveln_->update(1.0, *ivelnp_, 0.0);
 }
 
 
@@ -1637,22 +1637,22 @@ void XFEM::MeshCouplingFSI::complete_state_vectors()
   // finalize itrueresidual vector
 
   // need to export the interface forces
-  Core::LinAlg::Vector<double> iforce_tmp(itrueresidual_->Map(), true);
-  Epetra_Export exporter_iforce(iforcecol_->Map(), iforce_tmp.Map());
-  int err1 = iforce_tmp.Export(*iforcecol_, exporter_iforce, Add);
+  Core::LinAlg::Vector<double> iforce_tmp(itrueresidual_->get_map(), true);
+  Epetra_Export exporter_iforce(iforcecol_->get_map(), iforce_tmp.get_map());
+  int err1 = iforce_tmp.export_to(*iforcecol_, exporter_iforce, Add);
   if (err1) FOUR_C_THROW("Export using exporter returned err=%d", err1);
 
   // scale the interface trueresidual with -1.0 to get the forces acting on structural side (no
   // residual-scaling!)
-  itrueresidual_->Update(-1.0, iforce_tmp, 0.0);
+  itrueresidual_->update(-1.0, iforce_tmp, 0.0);
 }
 
 /*--------------------------------------------------------------------------*
  *--------------------------------------------------------------------------*/
 void XFEM::MeshCouplingFSI::zero_state_vectors_fsi()
 {
-  itrueresidual_->PutScalar(0.0);
-  iforcecol_->PutScalar(0.0);
+  itrueresidual_->put_scalar(0.0);
+  iforcecol_->put_scalar(0.0);
 }
 
 // -------------------------------------------------------------------
@@ -1683,15 +1683,15 @@ void XFEM::MeshCouplingFSI::read_restart(const int step)
   boundaryreader.read_vector(idispnp_, "idispnp_res");
   boundaryreader.read_vector(idispnpi_, "idispnpi_res");
 
-  if (not(cutter_dis_->dof_row_map())->SameAs(ivelnp_->Map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(ivelnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(iveln_->Map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(iveln_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispnp_->Map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(idispnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispn_->Map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(idispn_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispnpi_->Map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(idispnpi_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
 }
 
@@ -2677,15 +2677,15 @@ void XFEM::MeshCouplingFluidFluid::read_restart(const int step)
   boundaryreader.read_vector(idispnp_, "idispnp_res");
   boundaryreader.read_vector(idispnpi_, "idispnpi_res");
 
-  if (not(cutter_dis_->dof_row_map())->SameAs(ivelnp_->Map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(ivelnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(iveln_->Map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(iveln_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispnp_->Map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(idispnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispn_->Map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(idispn_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispnpi_->Map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(idispnpi_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
 }
 

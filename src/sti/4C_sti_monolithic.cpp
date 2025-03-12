@@ -373,15 +373,15 @@ void STI::Monolithic::fd_check()
     if (maxcollid < 0) continue;
 
     // fill global state vector with original state variables
-    statenp->Update(1., *statenp_original, 0.);
+    statenp->update(1., *statenp_original, 0.);
 
     // impose perturbation
-    if (statenp->Map().MyGID(colgid))
-      if (statenp->SumIntoGlobalValue(colgid, 0, scatra_field()->fd_check_eps()))
+    if (statenp->get_map().MyGID(colgid))
+      if (statenp->sum_into_global_value(colgid, 0, scatra_field()->fd_check_eps()))
         FOUR_C_THROW(
             "Perturbation could not be imposed on state vector for finite difference check!");
-    scatra_field()->phinp()->Update(1., *maps_->extract_vector(*statenp, 0), 0.);
-    thermo_field()->phinp()->Update(1., *maps_->extract_vector(*statenp, 1), 0.);
+    scatra_field()->phinp()->update(1., *maps_->extract_vector(*statenp, 0), 0.);
+    thermo_field()->phinp()->update(1., *maps_->extract_vector(*statenp, 1), 0.);
 
     // carry perturbation over to state vectors at intermediate time stages if necessary
     scatra_field()->compute_intermediate_values();
@@ -517,9 +517,9 @@ void STI::Monolithic::fd_check()
   }
 
   // undo perturbations of state variables
-  scatra_field()->phinp()->Update(1., *maps_->extract_vector(*statenp_original, 0), 0.);
+  scatra_field()->phinp()->update(1., *maps_->extract_vector(*statenp_original, 0), 0.);
   scatra_field()->compute_intermediate_values();
-  thermo_field()->phinp()->Update(1., *maps_->extract_vector(*statenp_original, 1), 0.);
+  thermo_field()->phinp()->update(1., *maps_->extract_vector(*statenp_original, 1), 0.);
   thermo_field()->compute_intermediate_values();
 
   // recompute system matrix and right-hand side vector based on original state variables
@@ -1335,51 +1335,54 @@ bool STI::Monolithic::exit_newton_raphson()
       scatra_field()
           ->splitter()
           ->extract_other_vector(*scatra_field()->phinp())
-          ->Norm2(&concdofnorm);
+          ->norm_2(&concdofnorm);
 
       // compute L2 norm of concentration residual vector
       double concresnorm(0.);
       scatra_field()
           ->splitter()
           ->extract_other_vector(*maps_->extract_vector(*residual_, 0))
-          ->Norm2(&concresnorm);
+          ->norm_2(&concresnorm);
 
       // compute L2 norm of concentration increment vector
       double concincnorm(0.);
       scatra_field()
           ->splitter()
           ->extract_other_vector(*maps_->extract_vector(*increment_, 0))
-          ->Norm2(&concincnorm);
+          ->norm_2(&concincnorm);
 
       // compute L2 norm of potential state vector
       double potdofnorm(0.);
-      scatra_field()->splitter()->extract_cond_vector(*scatra_field()->phinp())->Norm2(&potdofnorm);
+      scatra_field()
+          ->splitter()
+          ->extract_cond_vector(*scatra_field()->phinp())
+          ->norm_2(&potdofnorm);
 
       // compute L2 norm of potential residual vector
       double potresnorm(0.);
       scatra_field()
           ->splitter()
           ->extract_cond_vector(*maps_->extract_vector(*residual_, 0))
-          ->Norm2(&potresnorm);
+          ->norm_2(&potresnorm);
 
       // compute L2 norm of potential increment vector
       double potincnorm(0.);
       scatra_field()
           ->splitter()
           ->extract_cond_vector(*maps_->extract_vector(*increment_, 0))
-          ->Norm2(&potincnorm);
+          ->norm_2(&potincnorm);
 
       // compute L2 norm of thermo state vector
       double thermodofnorm(0.);
-      thermo_field()->phinp()->Norm2(&thermodofnorm);
+      thermo_field()->phinp()->norm_2(&thermodofnorm);
 
       // compute L2 norm of thermo residual vector
       double thermoresnorm(0.);
-      maps_->extract_vector(*residual_, 1)->Norm2(&thermoresnorm);
+      maps_->extract_vector(*residual_, 1)->norm_2(&thermoresnorm);
 
       // compute L2 norm of thermo increment vector
       double thermoincnorm(0.);
-      maps_->extract_vector(*increment_, 1)->Norm2(&thermoincnorm);
+      maps_->extract_vector(*increment_, 1)->norm_2(&thermoincnorm);
 
       // safety checks
       if (std::isnan(concdofnorm) or std::isnan(concresnorm) or std::isnan(concincnorm) or
@@ -1543,7 +1546,7 @@ void STI::Monolithic::solve()
     if (exit_newton_raphson()) break;
 
     // initialize global increment vector
-    increment_->PutScalar(0.);
+    increment_->put_scalar(0.);
 
     // store time before solving global system of equations
     time = timer_->wallTime();
@@ -1568,7 +1571,7 @@ void STI::Monolithic::solve()
     // output performance statistics associated with linear solver into text file if applicable
     if (fieldparameters_->get<bool>("OUTPUTLINSOLVERSTATS"))
       scatra_field()->output_lin_solver_stats(*solver_, dtsolve_, step(), static_cast<int>(iter_),
-          residual_->Map().NumGlobalElements());
+          residual_->get_map().NumGlobalElements());
 
     // update scatra field
     scatra_field()->update_iter(*maps_->extract_vector(*increment_, 0));

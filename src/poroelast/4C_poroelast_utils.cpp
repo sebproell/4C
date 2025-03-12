@@ -335,7 +335,7 @@ double PoroElast::Utils::calculate_vector_norm(
   if (norm == Inpar::PoroElast::norm_l1)
   {
     double vectnorm;
-    vect.Norm1(&vectnorm);
+    vect.norm_1(&vectnorm);
     return vectnorm;
   }
   // L2/Euclidian norm
@@ -343,7 +343,7 @@ double PoroElast::Utils::calculate_vector_norm(
   else if (norm == Inpar::PoroElast::norm_l2)
   {
     double vectnorm;
-    vect.Norm2(&vectnorm);
+    vect.norm_2(&vectnorm);
     return vectnorm;
   }
   // RMS norm
@@ -351,23 +351,23 @@ double PoroElast::Utils::calculate_vector_norm(
   else if (norm == Inpar::PoroElast::norm_rms)
   {
     double vectnorm;
-    vect.Norm2(&vectnorm);
-    return vectnorm / sqrt((double)vect.GlobalLength());
+    vect.norm_2(&vectnorm);
+    return vectnorm / sqrt((double)vect.global_length());
   }
   // infinity/maximum norm
   // norm = max( vect[i] )
   else if (norm == Inpar::PoroElast::norm_inf)
   {
     double vectnorm;
-    vect.NormInf(&vectnorm);
+    vect.norm_inf(&vectnorm);
     return vectnorm;
   }
   // norm = sum_0^i vect[i]/length_vect
   else if (norm == Inpar::PoroElast::norm_l1_scaled)
   {
     double vectnorm;
-    vect.Norm1(&vectnorm);
-    return vectnorm / ((double)vect.GlobalLength());
+    vect.norm_1(&vectnorm);
+    return vectnorm / ((double)vect.global_length());
   }
   else
   {

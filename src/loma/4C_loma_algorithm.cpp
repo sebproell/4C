@@ -775,7 +775,7 @@ void LowMach::Algorithm::mono_loma_system_solve()
   check_is_setup();
 
   // set incremental solution vector to zero
-  lomaincrement_->PutScalar(0.0);
+  lomaincrement_->put_scalar(0.0);
 
   // apply Dirichlet boundary conditions to system
   Core::LinAlg::apply_dirichlet_to_system(

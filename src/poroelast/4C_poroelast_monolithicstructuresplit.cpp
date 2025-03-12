@@ -217,11 +217,11 @@ void PoroElast::MonolithicStructureSplit::setup_vector(Core::LinAlg::Vector<doub
         structure_field()->interface()->extract_fsi_cond_vector(sv);
     std::shared_ptr<Core::LinAlg::Vector<double>> modfv =
         fluid_field()->interface()->insert_fsi_cond_vector(*structure_to_fluid_at_interface(*scv));
-    modfv->Update(1.0, fv, (1.0 - ftiparam) / ((1.0 - stiparam) * fluidscale));
+    modfv->update(1.0, fv, (1.0 - ftiparam) / ((1.0 - stiparam) * fluidscale));
 
     // add contribution of Lagrange multiplier from previous time step
     if (lambda_ != nullptr)
-      modfv->Update(-ftiparam + stiparam * (1.0 - ftiparam) / (1.0 - stiparam),
+      modfv->update(-ftiparam + stiparam * (1.0 - ftiparam) / (1.0 - stiparam),
           *structure_to_fluid_at_interface(*lambda_), 1.0);
 
     extractor()->insert_vector(*modfv, 1, f);
@@ -252,7 +252,7 @@ void PoroElast::MonolithicStructureSplit::extract_field_vectors(
 
     {
       double timescale = 1. / fluid_field()->time_scaling();
-      fcx->Scale(timescale);
+      fcx->scale(timescale);
     }
 
     std::shared_ptr<Core::LinAlg::Vector<double>> scx = fluid_to_structure_at_interface(*fcx);
@@ -262,7 +262,7 @@ void PoroElast::MonolithicStructureSplit::extract_field_vectors(
         structure_field()->interface()->insert_other_vector(*sox);
     structure_field()->interface()->insert_fsi_cond_vector(*scx, *s);
 
-    FourC::Core::LinAlg::Vector<double> zeros(s->Map(), true);
+    FourC::Core::LinAlg::Vector<double> zeros(s->get_map(), true);
     Core::LinAlg::apply_dirichlet_to_system(
         *s, zeros, *(structure_field()->get_dbc_map_extractor()->cond_map()));
 
@@ -273,21 +273,21 @@ void PoroElast::MonolithicStructureSplit::extract_field_vectors(
 
     // Store field vectors to know them later on as previous quantities
     if (solipre_ != nullptr)
-      ddiinc_->Update(1.0, *sox, -1.0, *solipre_, 0.0);  // compute current iteration increment
+      ddiinc_->update(1.0, *sox, -1.0, *solipre_, 0.0);  // compute current iteration increment
     else
       ddiinc_ = std::make_shared<Core::LinAlg::Vector<double>>(*sox);  // first iteration increment
 
     solipre_ = sox;  // store current step increment
 
     if (solgpre_ != nullptr)
-      ddginc_->Update(1.0, *scx, -1.0, *solgpre_, 0.0);  // compute current iteration increment
+      ddginc_->update(1.0, *scx, -1.0, *solgpre_, 0.0);  // compute current iteration increment
     else
       ddginc_ = std::make_shared<Core::LinAlg::Vector<double>>(*scx);  // first iteration increment
 
     solgpre_ = scx;  // store current step increment
 
     if (solivelpre_ != nullptr)
-      duiinc_->Update(1.0, *fox, -1.0, *solivelpre_, 0.0);  // compute current iteration increment
+      duiinc_->update(1.0, *fox, -1.0, *solivelpre_, 0.0);  // compute current iteration increment
     else
       duiinc_ = std::make_shared<Core::LinAlg::Vector<double>>(*fox);  // first iteration increment
 
@@ -331,7 +331,7 @@ void PoroElast::MonolithicStructureSplit::recover_lagrange_multiplier_after_time
         Core::LinAlg::create_vector(*structure_field()->interface()->fsi_cond_map(), true);
     // compute the above mentioned product
     cggcur_->multiply(false, *ddginc_, *cggddg);
-    cggddg->Scale(timescale);
+    cggddg->scale(timescale);
 
     // Update the Lagrange multiplier:
     /* \lambda^{n+1} =  1/b * [ - a*\lambda^n - f_\Gamma^S
@@ -341,10 +341,10 @@ void PoroElast::MonolithicStructureSplit::recover_lagrange_multiplier_after_time
      *                          - C_{\Gamma\Gamma} * 2 / \Delta t * \Delta d_\Gamma]
      */
     // lambda_->Update(1.0, *fgpre_, -stiparam);
-    lambda_->Update(1.0, *fgcur_, -stiparam);
-    lambda_->Update(-1.0, *sgiddi, -1.0, *sggddg, 1.0);
-    lambda_->Update(-1.0, *fgiddi, -1.0, *cggddg, 1.0);
-    lambda_->Scale(1 / (1.0 - stiparam));  // entire Lagrange multiplier is divided by (1.-stiparam)
+    lambda_->update(1.0, *fgcur_, -stiparam);
+    lambda_->update(-1.0, *sgiddi, -1.0, *sggddg, 1.0);
+    lambda_->update(-1.0, *fgiddi, -1.0, *cggddg, 1.0);
+    lambda_->scale(1 / (1.0 - stiparam));  // entire Lagrange multiplier is divided by (1.-stiparam)
   }
 }
 

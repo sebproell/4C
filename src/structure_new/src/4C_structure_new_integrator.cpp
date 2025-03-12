@@ -105,8 +105,8 @@ void Solid::Integrator::set_initial_displacement(
   {
     case Inpar::Solid::initdisp_zero_disp:
     {
-      global_state().get_dis_n()->PutScalar(0.0);
-      global_state().get_dis_np()->PutScalar(0.0);
+      global_state().get_dis_n()->put_scalar(0.0);
+      global_state().get_dis_np()->put_scalar(0.0);
 
       break;
     }
@@ -135,13 +135,13 @@ void Solid::Integrator::set_initial_displacement(
                   ->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)
                   .evaluate(lnode->x().data(), global_state().get_time_n(), d);
 
-          const int err = global_state().get_dis_n()->ReplaceMyValues(1, &initialval, &doflid);
+          const int err = global_state().get_dis_n()->replace_local_values(1, &initialval, &doflid);
           if (err != 0) FOUR_C_THROW("dof not on proc");
         }
       }
 
       // initialize also the solution vector
-      global_state().get_dis_np()->Update(1.0, *global_state().get_dis_n(), 0.0);
+      global_state().get_dis_np()->update(1.0, *global_state().get_dis_n(), 0.0);
 
       break;
     }
@@ -227,8 +227,8 @@ void Solid::Integrator::equilibrate_initial_state()
   /* note: this needs to be done 'manually' here because in the RHS evaluation
    * routine of an ordinary time step, these contributions are scaled by weighting
    * factors inside the time integration scheme (e.g. alpha_f/m for GenAlpha) */
-  rhs_ptr->Update(1.0, *global_state().get_finertial_np(), 1.0);
-  rhs_ptr->Update(1.0, *global_state().get_fvisco_np(), 1.0);
+  rhs_ptr->update(1.0, *global_state().get_finertial_np(), 1.0);
+  rhs_ptr->update(1.0, *global_state().get_fvisco_np(), 1.0);
 
   /* Meier 2015: Here, we copy the mass matrix in the stiffness block in order to
    * not perform the Dirichlet conditions on the constant mass matrix later on.
@@ -254,7 +254,7 @@ void Solid::Integrator::equilibrate_initial_state()
   Core::LinAlg::Vector<double> soln_ptr(*global_state().dof_row_map_view(), true);
   // wrap the soln_ptr in a nox_epetra_Vector
   Teuchos::RCP<::NOX::Epetra::Vector> nox_soln_ptr = Teuchos::make_rcp<::NOX::Epetra::Vector>(
-      Teuchos::rcpFromRef(*soln_ptr.get_ptr_of_Epetra_Vector()), ::NOX::Epetra::Vector::CreateView);
+      Teuchos::rcpFromRef(*soln_ptr.get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
 
   // Check if we are using a Newton direction
   std::string dir_str = p_nox.sublist("Direction").get<std::string>("Method");
@@ -291,11 +291,11 @@ void Solid::Integrator::equilibrate_initial_state()
   // solve the linear system
   if (stiff_ptr->NormInf() == 0.0) FOUR_C_THROW("You are about to invert a singular matrix!");
 
-  linsys_ptr->applyJacobianInverse(p_ls, rhs_ptr->get_ref_of_Epetra_Vector(), *nox_soln_ptr);
+  linsys_ptr->applyJacobianInverse(p_ls, rhs_ptr->get_ref_of_epetra_vector(), *nox_soln_ptr);
   nox_soln_ptr->scale(-1.0);
 
   // get the solution vector and add it into the acceleration vector
-  accnp_ptr->Update(1.0, nox_soln_ptr->getEpetraVector(), 1.0);
+  accnp_ptr->update(1.0, nox_soln_ptr->getEpetraVector(), 1.0);
 
   // re-build the entire initial right-hand-side with correct accelerations
   model_eval().apply_initial_force(*disnp_ptr, *rhs_ptr);
@@ -333,12 +333,12 @@ bool Solid::Integrator::current_state_is_equilibrium(const double& tol)
   model_eval().apply_initial_force(*disnp_ptr, rhs_ptr);
 
   // add viscous contributions to rhs
-  rhs_ptr.Update(1.0, *global_state().get_fvisco_np(), 1.0);
+  rhs_ptr.update(1.0, *global_state().get_fvisco_np(), 1.0);
   // add inertial contributions to rhs
-  rhs_ptr.Update(1.0, *global_state().get_finertial_np(), 1.0);
+  rhs_ptr.update(1.0, *global_state().get_finertial_np(), 1.0);
 
   double resnorm = 0.0;
-  rhs_ptr.NormInf(&resnorm);
+  rhs_ptr.norm_inf(&resnorm);
 
   return (resnorm < tol ? true : false);
 }
@@ -402,7 +402,7 @@ double Solid::Integrator::get_total_mid_time_str_energy(const Core::LinAlg::Vect
   str_model.determine_energy(*dis_avg, vel_avg.get(), true);
   mt_energy_.int_energy_np_ = eval_data().get_energy_data(Solid::internal_energy);
   mt_energy_.kin_energy_np_ = eval_data().get_energy_data(Solid::kinetic_energy);
-  global_state().get_fext_np()->Dot(*dis_avg, &mt_energy_.ext_energy_np_);
+  global_state().get_fext_np()->dot(*dis_avg, &mt_energy_.ext_energy_np_);
 
   Core::IO::cout(Core::IO::debug) << __LINE__ << " -- " << __PRETTY_FUNCTION__ << "\n";
   mt_energy_.print(Core::IO::cout.os(Core::IO::debug));
@@ -774,7 +774,7 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> Solid::Integrator::MidTimeEn
       return state_avg;
     case Inpar::Solid::midavg_imrlike:
     {
-      state_avg->Update(fac_n, state_n, fac_np);
+      state_avg->update(fac_n, state_n, fac_np);
       return state_avg;
     }
     default:

@@ -59,7 +59,7 @@ double CONTACT::MtNoxInterface::get_constraint_rhs_norms(const Core::LinAlg::Vec
   if (!constrRhs) return 0.0;
 
   const ::NOX::Epetra::Vector constrRhs_nox(
-      Teuchos::rcpFromRef(*constrRhs->get_ptr_of_Epetra_Vector()),
+      Teuchos::rcpFromRef(*constrRhs->get_ptr_of_epetra_vector()),
       ::NOX::Epetra::Vector::CreateView);
 
   double constrNorm = -1.0;
@@ -86,9 +86,9 @@ double CONTACT::MtNoxInterface::get_lagrange_multiplier_update_rms(
   std::shared_ptr<const Core::LinAlg::Vector<double>> lagnew_ptr =
       gstate_ptr_->extract_model_entries(Inpar::Solid::model_meshtying, xNew);
 
-  lagincr_ptr->Update(1.0, *lagnew_ptr, -1.0);
+  lagincr_ptr->update(1.0, *lagnew_ptr, -1.0);
   const ::NOX::Epetra::Vector lagincr_nox_ptr(
-      Teuchos::rcpFromRef(*lagincr_ptr->get_ptr_of_Epetra_Vector()),
+      Teuchos::rcpFromRef(*lagincr_ptr->get_ptr_of_epetra_vector()),
       ::NOX::Epetra::Vector::CreateView);
 
   rms = NOX::Nln::Aux::root_mean_square_norm(
@@ -112,9 +112,9 @@ double CONTACT::MtNoxInterface::get_lagrange_multiplier_update_norms(
   std::shared_ptr<const Core::LinAlg::Vector<double>> lagnew_ptr =
       gstate_ptr_->extract_model_entries(Inpar::Solid::model_meshtying, xNew);
 
-  lagincr_ptr->Update(1.0, *lagnew_ptr, -1.0);
+  lagincr_ptr->update(1.0, *lagnew_ptr, -1.0);
   const ::NOX::Epetra::Vector lagincr_nox_ptr(
-      Teuchos::rcpFromRef(*lagincr_ptr->get_ptr_of_Epetra_Vector()),
+      Teuchos::rcpFromRef(*lagincr_ptr->get_ptr_of_epetra_vector()),
       ::NOX::Epetra::Vector::CreateView);
 
   double updatenorm = -1.0;
@@ -139,7 +139,7 @@ double CONTACT::MtNoxInterface::get_previous_lagrange_multiplier_norms(
       gstate_ptr_->extract_model_entries(Inpar::Solid::model_meshtying, xOld);
 
   const ::NOX::Epetra::Vector lagold_nox_ptr(
-      Teuchos::rcpFromRef(*lagold_ptr->get_ptr_of_Epetra_Vector()),
+      Teuchos::rcpFromRef(*lagold_ptr->get_ptr_of_epetra_vector()),
       ::NOX::Epetra::Vector::CreateView);
 
   double lagoldnorm = -1.0;

@@ -452,16 +452,16 @@ SSI::Utils::SSIVectors::SSIVectors(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void SSI::Utils::SSIVectors::clear_increment() { increment_->PutScalar(0.0); }
+void SSI::Utils::SSIVectors::clear_increment() { increment_->put_scalar(0.0); }
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void SSI::Utils::SSIVectors::clear_residuals()
 {
-  residual_->PutScalar(0.0);
-  scatra_residual_->PutScalar(0.0);
-  structure_residual_->PutScalar(0.0);
-  if (is_scatra_manifold_) manifold_residual_->PutScalar(0.0);
+  residual_->put_scalar(0.0);
+  scatra_residual_->put_scalar(0.0);
+  structure_residual_->put_scalar(0.0);
+  if (is_scatra_manifold_) manifold_residual_->put_scalar(0.0);
 }
 
 /*---------------------------------------------------------------------------------*

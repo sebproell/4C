@@ -242,7 +242,7 @@ void Utils::Cardiovascular0DArterialProxDist::evaluate(Teuchos::ParameterList& p
     {
       for (int j = 0; j < numdof_per_cond; j++)
       {
-        int err = sysvec1->SumIntoGlobalValues(1, &df_np[j], &gindex[j]);
+        int err = sysvec1->sum_into_global_values(1, &df_np[j], &gindex[j]);
         if (err) FOUR_C_THROW("SumIntoGlobalValues failed!");
       }
     }
@@ -251,7 +251,7 @@ void Utils::Cardiovascular0DArterialProxDist::evaluate(Teuchos::ParameterList& p
     {
       for (int j = 0; j < numdof_per_cond; j++)
       {
-        int err = sysvec2->SumIntoGlobalValues(1, &f_np[j], &gindex[j]);
+        int err = sysvec2->sum_into_global_values(1, &f_np[j], &gindex[j]);
         if (err) FOUR_C_THROW("SumIntoGlobalValues failed!");
       }
     }
@@ -367,10 +367,10 @@ void Utils::Cardiovascular0DArterialProxDist::initialize(Teuchos::ParameterList&
     double q_arp_0 = cardiovascular0dcond_[condID]->parameters().get<double>("y_arp_0");
     double p_ard_0 = cardiovascular0dcond_[condID]->parameters().get<double>("p_ard_0");
 
-    int err1 = sysvec2->SumIntoGlobalValues(1, &p_v_0, &gindex[0]);
-    int err2 = sysvec2->SumIntoGlobalValues(1, &p_arp_0, &gindex[1]);
-    int err3 = sysvec2->SumIntoGlobalValues(1, &q_arp_0, &gindex[2]);
-    int err4 = sysvec2->SumIntoGlobalValues(1, &p_ard_0, &gindex[3]);
+    int err1 = sysvec2->sum_into_global_values(1, &p_v_0, &gindex[0]);
+    int err2 = sysvec2->sum_into_global_values(1, &p_arp_0, &gindex[1]);
+    int err3 = sysvec2->sum_into_global_values(1, &q_arp_0, &gindex[2]);
+    int err4 = sysvec2->sum_into_global_values(1, &p_ard_0, &gindex[3]);
     if (err1 or err2 or err3 or err4) FOUR_C_THROW("SumIntoGlobalValues failed!");
 
     params.set<std::shared_ptr<Core::Conditions::Condition>>(

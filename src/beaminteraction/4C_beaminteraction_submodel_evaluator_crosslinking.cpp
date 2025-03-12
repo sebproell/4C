@@ -218,7 +218,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::post_setup()
       // loop over all dofs
       for (unsigned int dim = 0; dim < 3; ++dim)
       {
-        int doflid = dis_at_last_redistr_->Map().LID(dofnode[dim]);
+        int doflid = dis_at_last_redistr_->get_map().LID(dofnode[dim]);
         (*dis_at_last_redistr_)[doflid] = crosslinker_i->x()[dim];
       }
     }
@@ -995,7 +995,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::pre_update_step_element(b
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   // safety check
-  if (not dis_at_last_redistr_->Map().SameAs(*bin_discret().dof_row_map()))
+  if (not dis_at_last_redistr_->get_map().SameAs(*bin_discret().dof_row_map()))
     FOUR_C_THROW(
         "current linker dof map and map of disp vector after last redistribution are\n "
         "are not the same. Something went wrong");
@@ -1022,7 +1022,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::pre_update_step_element(b
 
     for (int dim = 0; dim < 3; ++dim)
     {
-      doflid[dim] = dis_at_last_redistr_->Map().LID(dofnode[dim]);
+      doflid[dim] = dis_at_last_redistr_->get_map().LID(dofnode[dim]);
       d(dim) = (*dis_at_last_redistr_)[doflid[dim]];
       (*linker_disnp_)[doflid[dim]] = ref(dim) = node->x()[dim];
     }
@@ -1034,8 +1034,8 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::pre_update_step_element(b
 
   // get maximal displacement increment since last redistribution over all procs
   std::array<double, 2> extrema = {0.0, 0.0};
-  dis_increment.MinValue(&extrema[0]);
-  dis_increment.MaxValue(&extrema[1]);
+  dis_increment.min_value(&extrema[0]);
+  dis_increment.max_value(&extrema[1]);
   const double gmaxdisincr = std::max(-extrema[0], extrema[1]);
 
   // some screen output
@@ -1305,7 +1305,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::fill_state_data_vectors_f
     // loop over all dofs
     for (unsigned int dim = 0; dim < num_spatial_dim; ++dim)
     {
-      int doflid = displacement.Map().LID(dofnode[dim]);
+      int doflid = displacement.get_map().LID(dofnode[dim]);
       (displacement)[doflid] = crosslinker_i->x()[dim];
 
       if (numbonds == 2)
@@ -1559,7 +1559,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::post_read_restart()
     // loop over all dofs
     for (unsigned int dim = 0; dim < 3; ++dim)
     {
-      int doflid = dis_at_last_redistr_->Map().LID(dofnode[dim]);
+      int doflid = dis_at_last_redistr_->get_map().LID(dofnode[dim]);
       (*dis_at_last_redistr_)[doflid] = crosslinker_i->x()[dim];
     }
   }

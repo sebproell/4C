@@ -147,7 +147,7 @@ void Thermo::TimIntImpl::prepare_step()
 
   // extract reaction forces
   // reactions are negative to balance residual on DBC
-  freact_->Update(-1.0, *fres_, 0.0);
+  freact_->update(-1.0, *fres_, 0.0);
   dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact_);
 
   // blank residual at DOFs on Dirichlet BC
@@ -174,8 +174,8 @@ void Thermo::TimIntImpl::prepare_step()
 void Thermo::TimIntImpl::predict_const_temp_rate()
 {
   // constant predictor
-  tempn_->Update(1.0, *(*temp_)(0), 0.0);
-  raten_->Update(1.0, *(*rate_)(0), 0.0);
+  tempn_->update(1.0, *(*temp_)(0), 0.0);
+  raten_->update(1.0, *(*rate_)(0), 0.0);
 }
 
 
@@ -184,16 +184,16 @@ void Thermo::TimIntImpl::predict_const_temp_rate()
 void Thermo::TimIntImpl::predict_tang_temp_consist_rate()
 {
   // initialise
-  tempn_->Update(1.0, *(*temp_)(0), 0.0);
-  raten_->Update(1.0, *(*rate_)(0), 0.0);
-  tempi_->PutScalar(0.0);
+  tempn_->update(1.0, *(*temp_)(0), 0.0);
+  raten_->update(1.0, *(*rate_)(0), 0.0);
+  tempi_->put_scalar(0.0);
 
   // for temperature increments on Dirichlet boundary
   std::shared_ptr<Core::LinAlg::Vector<double>> dbcinc =
       Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
 
   // copy last converged temperatures
-  dbcinc->Update(1.0, *(*temp_)(0), 0.0);
+  dbcinc->update(1.0, *(*temp_)(0), 0.0);
 
   // get Dirichlet values at t_{n+1}
   apply_dirichlet_bc(timen_, dbcinc, nullptr, false);
@@ -201,7 +201,7 @@ void Thermo::TimIntImpl::predict_tang_temp_consist_rate()
   // subtract the temperatures of the last converged step
   // DBC-DOFs hold increments of current step
   // free-DOFs hold zeros
-  dbcinc->Update(-1.0, *(*temp_)(0), 1.0);
+  dbcinc->update(-1.0, *(*temp_)(0), 1.0);
 
   // compute residual forces fres_ and tangent tang_
   // at tempn_, etc which are unchanged
@@ -215,11 +215,11 @@ void Thermo::TimIntImpl::predict_tang_temp_consist_rate()
     tang_->multiply(false, *dbcinc, *freact);
 
     // add linear reaction forces due to prescribed Dirichlet BCs
-    fres_->Update(1.0, *freact, 1.0);
+    fres_->update(1.0, *freact, 1.0);
   }
 
   // extract reaction forces
-  freact_->Update(-1.0, *fres_, 0.0);  // reactions are negative
+  freact_->update(-1.0, *fres_, 0.0);  // reactions are negative
   dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact_);
 
   // blank residual at DOFs on Dirichlet BC
@@ -227,10 +227,10 @@ void Thermo::TimIntImpl::predict_tang_temp_consist_rate()
 
   // make negative residual
   // K . DT = -fres = -(fint - fext)
-  fres_->Scale(-1.0);
+  fres_->scale(-1.0);
 
   // apply Dirichlet BCs to system of equations
-  tempi_->PutScalar(0.0);
+  tempi_->put_scalar(0.0);
   tang_->complete();
   Core::LinAlg::apply_dirichlet_to_system(
       *tang_, *tempi_, *fres_, *zeros_, *(dbcmaps_->cond_map()));
@@ -248,7 +248,7 @@ void Thermo::TimIntImpl::predict_tang_temp_consist_rate()
   normtempi_ = Thermo::Aux::calculate_vector_norm(iternorm_, *tempi_);
 
   // set Dirichlet increments in temperature increments
-  tempi_->Update(1.0, *dbcinc, 1.0);
+  tempi_->update(1.0, *dbcinc, 1.0);
 
   // update end-point temperatures etc
   update_iter_incrementally();
@@ -258,7 +258,7 @@ void Thermo::TimIntImpl::predict_tang_temp_consist_rate()
   // temperature rates unset on Dirichlet boundary
 
   // reset to zero
-  tempi_->PutScalar(0.0);
+  tempi_->put_scalar(0.0);
 
   // reset anything that needs to be reset at the element level
   {
@@ -391,10 +391,10 @@ Thermo::ConvergenceStatus Thermo::TimIntImpl::newton_full()
   while (((not converged()) and (iter_ <= itermax_)) or (iter_ <= itermin_))
   {
     // make negative residual
-    fres_->Scale(-1.0);
+    fres_->scale(-1.0);
 
     // apply Dirichlet BCs to system of equations
-    tempi_->PutScalar(0.0);  // Useful? depends on solver and more
+    tempi_->put_scalar(0.0);  // Useful? depends on solver and more
     Core::LinAlg::apply_dirichlet_to_system(
         *tang_, *tempi_, *fres_, *zeros_, *(dbcmaps_->cond_map()));
 
@@ -444,7 +444,7 @@ void Thermo::TimIntImpl::blank_dirichlet_and_calc_norms()
 {
   // extract reaction forces
   // reactions are negative to balance residual on DBC
-  freact_->Update(-1.0, *fres_, 0.0);
+  freact_->update(-1.0, *fres_, 0.0);
   // copy the dbc onto freact_,
   // everything that is not DBC node ("OtherVector") is blanked
   dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact_);
@@ -577,16 +577,16 @@ void Thermo::TimIntImpl::prepare_system_for_newton_solve()
 {
   // extract reaction forces
   // reactions are negative to balance residual on DBC
-  freact_->Update(-1.0, *fres_, 0.0);
+  freact_->update(-1.0, *fres_, 0.0);
   dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact_);
 
   // make the residual negative
-  fres_->Scale(-1.0);
+  fres_->scale(-1.0);
   // blank residual at DOFs on Dirichlet BCs, fres_=0 at nodes with DBC
   dbcmaps_->insert_cond_vector(*dbcmaps_->extract_cond_vector(*zeros_), *fres_);
 
   // apply Dirichlet BCs to system of equations
-  tempi_->PutScalar(0.0);  // Useful? depends on solver and more
+  tempi_->put_scalar(0.0);  // Useful? depends on solver and more
   // at dofs with DBC change tang_:
   // blank all off-diagonal terms and put 1s at diagonal terms of tang_
   Core::LinAlg::apply_dirichlet_to_system(
@@ -634,9 +634,9 @@ void Thermo::TimIntImpl::update_iter_incrementally(
   // select residual temperatures
   if (tempi != nullptr)
     // tempi_ = \f$\Delta{T}^{<k>}_{n+1}\f$
-    tempi_->Update(1.0, *tempi, 0.0);  // set the new solution we just got
+    tempi_->update(1.0, *tempi, 0.0);  // set the new solution we just got
   else
-    tempi_->PutScalar(0.0);
+    tempi_->put_scalar(0.0);
 
   // Update using #tempi_
   update_iter_incrementally();

@@ -102,7 +102,7 @@ void FLD::TimIntLoma::set_loma_iter_scalar_fields(
   // scalar time derivative values at pressure dofs
   //--------------------------------------------------------------------------
   // get velocity values at time n in scaam-vector as copy from veln-vector
-  scaam_->Update(1.0, *veln_, 0.0);
+  scaam_->update(1.0, *veln_, 0.0);
 
   // loop all nodes on the processor
   for (int lnodeid = 0; lnodeid < discret_->num_my_row_nodes(); lnodeid++)
@@ -113,7 +113,7 @@ void FLD::TimIntLoma::set_loma_iter_scalar_fields(
     // find out the global dof id of the last(!) dof at the scatra node
     const int numscatradof = scatradis->num_dof(0, lscatranode);
     const int globalscatradofid = scatradis->dof(0, lscatranode, numscatradof - 1);
-    const int localscatradofid = scalaraf->Map().LID(globalscatradofid);
+    const int localscatradofid = scalaraf->get_map().LID(globalscatradofid);
     if (localscatradofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
     // get the processor's local fluid node
@@ -123,16 +123,16 @@ void FLD::TimIntLoma::set_loma_iter_scalar_fields(
     // get global and processor's local pressure dof id (using the map!)
     const int numdof = discret_->num_dof(0, lnode);
     const int globaldofid = discret_->dof(0, lnode, numdof - 1);
-    const int localdofid = scaam_->Map().LID(globaldofid);
+    const int localdofid = scaam_->get_map().LID(globaldofid);
     if (localdofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
     // now copy the values
     value = (*scalaraf)[localscatradofid];
-    err = scaaf_->ReplaceMyValue(localdofid, 0, value);
+    err = scaaf_->replace_local_value(localdofid, 0, value);
     if (err != 0) FOUR_C_THROW("error while inserting value into scaaf_");
 
     value = (*scalaram)[localscatradofid];
-    err = scaam_->ReplaceMyValue(localdofid, 0, value);
+    err = scaam_->replace_local_value(localdofid, 0, value);
     if (err != 0) FOUR_C_THROW("error while inserting value into scaam_");
 
     if (scalardtam != nullptr)
@@ -143,7 +143,7 @@ void FLD::TimIntLoma::set_loma_iter_scalar_fields(
     {
       value = 0.0;  // for safety reasons: set zeros in accam_
     }
-    err = accam_->ReplaceMyValue(localdofid, 0, value);
+    err = accam_->replace_local_value(localdofid, 0, value);
     if (err != 0) FOUR_C_THROW("error while inserting value into accam_");
 
     if (turbmodel_ == Inpar::FLUID::multifractal_subgrid_scales)
@@ -153,7 +153,7 @@ void FLD::TimIntLoma::set_loma_iter_scalar_fields(
       else
         FOUR_C_THROW("Expected fine-scale scalar!");
 
-      err = fsscaaf_->ReplaceMyValue(localdofid, 0, value);
+      err = fsscaaf_->replace_local_value(localdofid, 0, value);
       if (err != 0) FOUR_C_THROW("error while inserting value into fsscaaf_");
     }
   }
@@ -304,7 +304,7 @@ void FLD::TimIntLoma::avm3_preparation()
 
   // necessary here, because some application time integrations add something to the residual
   // before the Neumann loads are added
-  residual_->PutScalar(0.0);
+  residual_->put_scalar(0.0);
 
   eleparams.set("thermpress at n+alpha_F/n+1", thermpressaf_);
   eleparams.set("thermpress at n+alpha_M/n", thermpressam_);

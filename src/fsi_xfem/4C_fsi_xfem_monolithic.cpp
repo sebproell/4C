@@ -557,7 +557,7 @@ void FSI::MonolithicXFEM::setup_rhs()
   TEUCHOS_FUNC_TIME_MONITOR("FSI::MonolithicXFEM::setup_rhs");
 
   // We want to add into a zero vector
-  rhs_->PutScalar(0.0);
+  rhs_->put_scalar(0.0);
 
   // contributions of single field residuals
   setup_rhs_residual(*rhs_);
@@ -600,10 +600,10 @@ void FSI::MonolithicXFEM::setup_rhs_residual(Core::LinAlg::Vector<double>& f)
   Core::LinAlg::Vector<double> fv(*fluid_field()->rhs());
 
   // scale the structural rhs
-  sv.Scale(scaling_S);
+  sv.scale(scaling_S);
 
   // scale the fluid rhs
-  fv.Scale(scaling_F);  // scale with fluid_field()->residual_scaling()
+  fv.scale(scaling_F);  // scale with fluid_field()->residual_scaling()
 
   // put the single field residuals together
   combine_field_vectors(f, sv, fv);
@@ -1062,7 +1062,7 @@ bool FSI::MonolithicXFEM::newton()
     // step-increment
 
     fx_sum_ = std::make_shared<Core::LinAlg::Vector<double>>(*fluid_field()->dof_row_map());
-    int errfx = fx_sum_->Update(1.0, *fluid_field()->velnp(), -1.0, *fluid_field()->veln(), 0.0);
+    int errfx = fx_sum_->update(1.0, *fluid_field()->velnp(), -1.0, *fluid_field()->veln(), 0.0);
     if (errfx != 0) FOUR_C_THROW("update not successful");
 
     //-------------------
@@ -1072,7 +1072,7 @@ bool FSI::MonolithicXFEM::newton()
     if (have_ale())
     {
       ax_sum_ = std::make_shared<Core::LinAlg::Vector<double>>(*(extractor().Map(ale_i_block_)));
-      int errax = ax_sum_->Update(1.0,
+      int errax = ax_sum_->update(1.0,
           *ale_field()->interface()->extract_other_vector(*ale_field()->dispnp()), -1.0,
           *ale_field()->interface()->extract_other_vector(*ale_field()->dispn()), 0.0);
 
@@ -1338,29 +1338,29 @@ void FSI::MonolithicXFEM::build_convergence_norms()
   //-------------------------------
 
   // build full residual norms
-  rhs_->Norm2(&normrhs_);
+  rhs_->norm_2(&normrhs_);
 
   // structural Dofs
-  extractor_merged_poro().extract_vector(*rhs_, structp_block_)->Norm2(&normstrrhs_l2_);
-  extractor_merged_poro().extract_vector(*rhs_, structp_block_)->NormInf(&normstrrhs_inf_);
+  extractor_merged_poro().extract_vector(*rhs_, structp_block_)->norm_2(&normstrrhs_l2_);
+  extractor_merged_poro().extract_vector(*rhs_, structp_block_)->norm_inf(&normstrrhs_inf_);
 
   // fluid velocity Dofs
   fluidvelpresextract.extract_vector(*extractor().extract_vector(*rhs_, fluid_block_), 0)
-      ->Norm2(&normflvelrhs_l2_);
+      ->norm_2(&normflvelrhs_l2_);
   fluidvelpresextract.extract_vector(*extractor().extract_vector(*rhs_, fluid_block_), 0)
-      ->NormInf(&normflvelrhs_inf_);
+      ->norm_inf(&normflvelrhs_inf_);
 
   // fluid pressure Dofs
   fluidvelpresextract.extract_vector(*extractor().extract_vector(*rhs_, fluid_block_), 1)
-      ->Norm2(&normflpresrhs_l2_);
+      ->norm_2(&normflpresrhs_l2_);
   fluidvelpresextract.extract_vector(*extractor().extract_vector(*rhs_, fluid_block_), 1)
-      ->NormInf(&normflpresrhs_inf_);
+      ->norm_inf(&normflpresrhs_inf_);
 
   if (structure_poro()->is_poro())
   {
     // porofluid Dofs
-    extractor().extract_vector(*rhs_, fluidp_block_)->Norm2(&normpflvelrhs_l2_);
-    extractor().extract_vector(*rhs_, fluidp_block_)->NormInf(&normpflvelrhs_inf_);
+    extractor().extract_vector(*rhs_, fluidp_block_)->norm_2(&normpflvelrhs_l2_);
+    extractor().extract_vector(*rhs_, fluidp_block_)->norm_inf(&normpflvelrhs_inf_);
   }
 
 
@@ -1369,30 +1369,30 @@ void FSI::MonolithicXFEM::build_convergence_norms()
   //-------------------------------
 
   // build full increment norm
-  iterinc_->Norm2(&norminc_);
+  iterinc_->norm_2(&norminc_);
 
   // structural Dofs
-  extractor_merged_poro().extract_vector(*iterinc_, structp_block_)->Norm2(&normstrinc_l2_);
-  extractor_merged_poro().extract_vector(*iterinc_, structp_block_)->NormInf(&normstrinc_inf_);
-  extractor().extract_vector(*iterinc_, structp_block_)->NormInf(&normstrincdisp_inf_);
+  extractor_merged_poro().extract_vector(*iterinc_, structp_block_)->norm_2(&normstrinc_l2_);
+  extractor_merged_poro().extract_vector(*iterinc_, structp_block_)->norm_inf(&normstrinc_inf_);
+  extractor().extract_vector(*iterinc_, structp_block_)->norm_inf(&normstrincdisp_inf_);
 
   // fluid velocity Dofs
   fluidvelpresextract.extract_vector(*extractor().extract_vector(*iterinc_, fluid_block_), 0)
-      ->Norm2(&normflvelinc_l2_);
+      ->norm_2(&normflvelinc_l2_);
   fluidvelpresextract.extract_vector(*extractor().extract_vector(*iterinc_, fluid_block_), 0)
-      ->NormInf(&normflvelinc_inf_);
+      ->norm_inf(&normflvelinc_inf_);
 
   // fluid pressure Dofs
   fluidvelpresextract.extract_vector(*extractor().extract_vector(*iterinc_, fluid_block_), 1)
-      ->Norm2(&normflpresinc_l2_);
+      ->norm_2(&normflpresinc_l2_);
   fluidvelpresextract.extract_vector(*extractor().extract_vector(*iterinc_, fluid_block_), 1)
-      ->NormInf(&normflpresinc_inf_);
+      ->norm_inf(&normflpresinc_inf_);
 
   if (structure_poro()->is_poro())
   {
     // porofluid Dofs
-    extractor().extract_vector(*iterinc_, fluidp_block_)->Norm2(&normpflvelinc_l2_);
-    extractor().extract_vector(*iterinc_, fluidp_block_)->NormInf(&normpflvelinc_inf_);
+    extractor().extract_vector(*iterinc_, fluidp_block_)->norm_2(&normpflvelinc_l2_);
+    extractor().extract_vector(*iterinc_, fluidp_block_)->norm_inf(&normpflvelinc_inf_);
   }
 
 
@@ -1400,15 +1400,15 @@ void FSI::MonolithicXFEM::build_convergence_norms()
   // get length of the structural and fluid vector
   //-------------------------------
   ns_ = (*(extractor_merged_poro().extract_vector(*rhs_, structp_block_)))
-            .GlobalLength();                                                  // structure
-  nf_ = (*(extractor().extract_vector(*rhs_, fluid_block_))).GlobalLength();  // fluid
+            .global_length();                                                  // structure
+  nf_ = (*(extractor().extract_vector(*rhs_, fluid_block_))).global_length();  // fluid
   nfv_ =
       (*(fluidvelpresextract.extract_vector(*extractor().extract_vector(*rhs_, fluid_block_), 0)))
-          .GlobalLength();  // fluid velocity
+          .global_length();  // fluid velocity
   nfp_ =
       (*(fluidvelpresextract.extract_vector(*extractor().extract_vector(*rhs_, fluid_block_), 1)))
-          .GlobalLength();         // fluid pressure
-  nall_ = (*rhs_).GlobalLength();  // all
+          .global_length();         // fluid pressure
+  nall_ = (*rhs_).global_length();  // all
 }
 
 
@@ -1452,7 +1452,7 @@ bool FSI::MonolithicXFEM::evaluate()
   if (iter_ > 1)
   {
     // update the step-increment
-    x_sum_->Update(1.0, *iterinc_, 1.0);
+    x_sum_->update(1.0, *iterinc_, 1.0);
 
     // extract the single field step-increments from the global step-increment
     extract_field_vectors(x_sum_, sx, fx, ax);
@@ -1496,7 +1496,7 @@ bool FSI::MonolithicXFEM::evaluate()
     if (have_ale() && ax != nullptr)  // we should move this into the ALE Field!
     {
       Core::LinAlg::Vector<double> DispnpAle(*ale_field()->dof_row_map());
-      DispnpAle.Update(1.0, *ale_field()->interface()->insert_other_vector(*ax), 1.0,
+      DispnpAle.update(1.0, *ale_field()->interface()->insert_other_vector(*ax), 1.0,
           *ale_field()->dispn(), 0.0);  // update ale disp here...
       ale_field()->get_dbc_map_extractor()->insert_other_vector(
           *ale_field()->get_dbc_map_extractor()->extract_other_vector(DispnpAle),
@@ -1926,14 +1926,15 @@ void FSI::MonolithicXFEM::permute_fluid_dofs_forward(Core::LinAlg::Vector<double
     {
       if (key + 1 != p_cycle.end())  // standard during the cycle
       {
-        tmp_value = (fx)[fx.Map().LID(*(key + 1))];  // save the value before it will be overwritten
-        (fx)[fx.Map().LID(*(key + 1))] =
-            (fx)[fx.Map().LID(*(key))];  // set current value to next position
+        tmp_value =
+            (fx)[fx.get_map().LID(*(key + 1))];  // save the value before it will be overwritten
+        (fx)[fx.get_map().LID(*(key + 1))] =
+            (fx)[fx.get_map().LID(*(key))];  // set current value to next position
         // std::cout << "copy value from gid " << *(key) << " to " << *(key+1) << std::endl;
       }
       else  // last value in cycle reached
       {
-        (fx)[fx.Map().LID(*p_cycle.begin())] = tmp_value;
+        (fx)[fx.get_map().LID(*p_cycle.begin())] = tmp_value;
         // std::cout << "copy value from tmp to " << *p_cycle.begin() << std::endl;
       }
     }
@@ -1979,16 +1980,16 @@ void FSI::MonolithicXFEM::permute_fluid_dofs_backward(Core::LinAlg::Vector<doubl
     {
       if (key_reverse != p_cycle.begin())  // standard during the cycle
       {
-        tmp_value =
-            (fx)[fx.Map().LID(*(key_reverse - 1))];  // save the value before it will be overwritten
-        (fx)[fx.Map().LID(*(key_reverse - 1))] =
-            (fx)[fx.Map().LID(*(key_reverse))];  // set current value to position before
+        tmp_value = (fx)[fx.get_map().LID(
+            *(key_reverse - 1))];  // save the value before it will be overwritten
+        (fx)[fx.get_map().LID(*(key_reverse - 1))] =
+            (fx)[fx.get_map().LID(*(key_reverse))];  // set current value to position before
         // std::cout << "copy value from gid " << *(key_reverse) << " to " << *(key_reverse-1) <<
         // std::endl;
       }
       else
       {
-        (fx)[fx.Map().LID(*(p_cycle.end() - 1))] = tmp_value;
+        (fx)[fx.get_map().LID(*(p_cycle.end() - 1))] = tmp_value;
         // std::cout << "copy value from tmp to " << *(p_cycle.end()-1) << std::endl;
       }
     }
@@ -2274,7 +2275,7 @@ void FSI::MonolithicXFEM::linear_solve()
   // \f$x_{i+1} = x_i + \Delta x_i\f$
 
   // apply Dirichlet BCs to system of equations
-  iterinc_->PutScalar(0.0);  // Useful? depends on solver and more
+  iterinc_->put_scalar(0.0);  // Useful? depends on solver and more
 
   // default: use block matrix
   if (merge_fsi_blockmatrix_ == false)
@@ -2371,8 +2372,8 @@ void FSI::MonolithicXFEM::scale_system(
     std::shared_ptr<Epetra_CrsMatrix> A = mat.matrix(0, 0).epetra_matrix();
     srowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
     scolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    A->InvRowSums(*srowsum_->get_ptr_of_Epetra_Vector());
-    A->InvColSums(*scolsum_->get_ptr_of_Epetra_Vector());
+    A->InvRowSums(*srowsum_->get_ptr_of_epetra_vector());
+    A->InvColSums(*scolsum_->get_ptr_of_epetra_vector());
 
     if (A->LeftScale(*srowsum_) or A->RightScale(*scolsum_) or
         mat.matrix(0, 1).epetra_matrix()->LeftScale(*srowsum_) or
@@ -2382,7 +2383,7 @@ void FSI::MonolithicXFEM::scale_system(
 
     std::shared_ptr<Core::LinAlg::Vector<double>> sx = extractor().extract_vector(b, 0);
 
-    if (sx->Multiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("structure scaling failed");
+    if (sx->multiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("structure scaling failed");
 
     extractor().insert_vector(*sx, 0, b);
   }
@@ -2400,19 +2401,19 @@ void FSI::MonolithicXFEM::unscale_solution(Core::LinAlg::BlockSparseMatrixBase& 
   {
     std::shared_ptr<Core::LinAlg::Vector<double>> sy = extractor().extract_vector(x, 0);
 
-    if (sy->Multiply(1.0, *scolsum_, *sy, 0.0)) FOUR_C_THROW("structure scaling failed");
+    if (sy->multiply(1.0, *scolsum_, *sy, 0.0)) FOUR_C_THROW("structure scaling failed");
 
     extractor().insert_vector(*sy, 0, x);
 
     std::shared_ptr<Core::LinAlg::Vector<double>> sx = extractor().extract_vector(b, 0);
 
-    if (sx->ReciprocalMultiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("structure scaling failed");
+    if (sx->reciprocal_multiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("structure scaling failed");
 
     extractor().insert_vector(*sx, 0, b);
 
     std::shared_ptr<Epetra_CrsMatrix> A = mat.matrix(0, 0).epetra_matrix();
-    srowsum_->Reciprocal(*srowsum_);
-    scolsum_->Reciprocal(*scolsum_);
+    srowsum_->reciprocal(*srowsum_);
+    scolsum_->reciprocal(*scolsum_);
     if (A->LeftScale(*srowsum_) or A->RightScale(*scolsum_) or
         mat.matrix(0, 1).epetra_matrix()->LeftScale(*srowsum_) or
         mat.matrix(1, 0).epetra_matrix()->RightScale(*scolsum_))
@@ -2643,7 +2644,7 @@ void FSI::MonolithicXFEM::apply_newton_damping()
   for (int level = nd_levels_ - 1; level > 0; --level)
     nd_normrhs_old_[level] = nd_normrhs_old_[level - 1];
   nd_normrhs_old_[0] = normrhs_;
-  rhs_->Norm2(&normrhs_);
+  rhs_->norm_2(&normrhs_);
   bool scaleup = false;
   bool scaledown = false;
   if (iter_ == 1 && iter_outer_ == 1)
@@ -2685,7 +2686,7 @@ void FSI::MonolithicXFEM::apply_newton_damping()
     if (!structure_poro()->is_poro())
     {
       if (nd_max_incnorm_[0] > 0)
-        extractor().extract_vector(*iterinc_, structp_block_)->NormInf(incnorm.data());
+        extractor().extract_vector(*iterinc_, structp_block_)->norm_inf(incnorm.data());
     }
     else if (nd_max_incnorm_[0] > 0 || nd_max_incnorm_[3] > 0 || nd_max_incnorm_[4] > 0)
     {
@@ -2695,11 +2696,11 @@ void FSI::MonolithicXFEM::apply_newton_damping()
       fluidvelpres.push_back(structure_poro()->fluid_field()->pressure_row_map());
       Core::LinAlg::MultiMapExtractor fluidvelpresextract(
           *(structure_poro()->fluid_field()->dof_row_map()), fluidvelpres);
-      extractor().extract_vector(*iterinc_, structp_block_)->NormInf(incnorm.data());
+      extractor().extract_vector(*iterinc_, structp_block_)->norm_inf(incnorm.data());
       fluidvelpresextract.extract_vector(*extractor().extract_vector(*iterinc_, fluidp_block_), 0)
-          ->NormInf(&incnorm[3]);
+          ->norm_inf(&incnorm[3]);
       fluidvelpresextract.extract_vector(*extractor().extract_vector(*iterinc_, fluidp_block_), 1)
-          ->NormInf(&incnorm[4]);
+          ->norm_inf(&incnorm[4]);
     }
     if (nd_max_incnorm_[1] > 0 || nd_max_incnorm_[2] > 0)
     {
@@ -2710,9 +2711,9 @@ void FSI::MonolithicXFEM::apply_newton_damping()
       Core::LinAlg::MultiMapExtractor fluidvelpresextract(
           *(fluid_field()->dof_row_map()), fluidvelpres);
       fluidvelpresextract.extract_vector(*extractor().extract_vector(*iterinc_, fluid_block_), 0)
-          ->NormInf(&incnorm[1]);  // fluid velocity Dofs
+          ->norm_inf(&incnorm[1]);  // fluid velocity Dofs
       fluidvelpresextract.extract_vector(*extractor().extract_vector(*iterinc_, fluid_block_), 1)
-          ->NormInf(&incnorm[2]);  // fluid pressure Dofs
+          ->norm_inf(&incnorm[2]);  // fluid pressure Dofs
     }
     for (int field = 0; field < 5; ++field)
     {
@@ -2729,7 +2730,7 @@ void FSI::MonolithicXFEM::apply_newton_damping()
       std::cout << "==| Incremental Based Damping of Newton Scheme with scaling " << nd_inc_scaling_
                 << "! |==" << std::endl;
     }
-    iterinc_->Scale(nd_inc_scaling_);
+    iterinc_->scale(nd_inc_scaling_);
   }
   else if (nd_act_scaling_ < 1)
   {
@@ -2738,7 +2739,7 @@ void FSI::MonolithicXFEM::apply_newton_damping()
       std::cout << "==| Residual Based Damping of Newton Scheme with scaling " << nd_act_scaling_
                 << "! |==" << std::endl;
     }
-    iterinc_->Scale(nd_act_scaling_);
+    iterinc_->scale(nd_act_scaling_);
   }
 }
 

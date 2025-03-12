@@ -194,7 +194,7 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::internal_add(Epetra_CrsM
   if (not esrc.Filled()) FOUR_C_THROW("filled source matrix expected");
 
   Core::LinAlg::Vector<double> dselector(esrc.DomainMap());
-  for (int i = 0; i < dselector.MyLength(); ++i)
+  for (int i = 0; i < dselector.local_length(); ++i)
   {
     const int gid = esrc.DomainMap().GID(i);
     if (logical_domain_map.MyGID(gid))

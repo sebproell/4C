@@ -77,7 +77,7 @@ void FLD::TimIntBDF2::set_theta()
   else
   {
     // use backward Euler for the first time step
-    velnm_->Update(1.0, *veln_, 0.0);  // results in hist_ = veln_
+    velnm_->update(1.0, *veln_, 0.0);  // results in hist_ = veln_
     theta_ = 1.0;
   }
 
@@ -97,7 +97,7 @@ void FLD::TimIntBDF2::set_old_part_of_righthandside()
 
   */
 
-  hist_->Update(4. / 3., *veln_, -1. / 3., *velnm_, 0.0);
+  hist_->update(4. / 3., *veln_, -1. / 3., *velnm_, 0.0);
 
   return;
 }
@@ -139,8 +139,8 @@ void FLD::TimIntBDF2::calculate_acceleration(
   if (dta_ * dtp_ < 1e-15) FOUR_C_THROW("Zero time step size!!!!!");
   const double sum = dta_ + dtp_;
 
-  accnp->Update((2.0 * dta_ + dtp_) / (dta_ * sum), *velnp, -sum / (dta_ * dtp_), *veln, 0.0);
-  accnp->Update(dta_ / (dtp_ * sum), *velnm, 1.0);
+  accnp->update((2.0 * dta_ + dtp_) / (dta_ * sum), *velnp, -sum / (dta_ * dtp_), *veln, 0.0);
+  accnp->update(dta_ / (dtp_ * sum), *velnm, 1.0);
 
   return;
 }
@@ -180,9 +180,9 @@ void FLD::TimIntBDF2::outputof_filtered_vel(std::shared_ptr<Core::LinAlg::Vector
     FOUR_C_THROW("Unknown separation type!");
 
   // get filtered or coarse scale velocity
-  outvec->Update(1.0, *velnp_, -1.0, *row_finescaleveltmp, 0.0);
+  outvec->update(1.0, *velnp_, -1.0, *row_finescaleveltmp, 0.0);
 
-  fsoutvec->Update(1.0, *row_finescaleveltmp, 0.0);
+  fsoutvec->update(1.0, *row_finescaleveltmp, 0.0);
 
   return;
 }

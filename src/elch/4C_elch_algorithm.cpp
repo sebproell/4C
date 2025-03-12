@@ -74,23 +74,23 @@ bool ElCh::Algorithm::convergence_check(
   // Calculate velocity increment and velocity L2 - Norm
   // velincnp_ = 1.0 * convelnp_ - 1.0 * conveln_
 
-  velincnp_->Update(1.0, *fluid_field()->extract_velocity_part(fluid_field()->velnp()), -1.0);
-  velincnp_->Norm2(&velincnorm_L2);  // Estimation of the L2 - norm save values to both variables
-                                     // (velincnorm_L2 and velnorm_L2)
-  fluid_field()->extract_velocity_part(fluid_field()->velnp())->Norm2(&velnorm_L2);
+  velincnp_->update(1.0, *fluid_field()->extract_velocity_part(fluid_field()->velnp()), -1.0);
+  velincnp_->norm_2(&velincnorm_L2);  // Estimation of the L2 - norm save values to both variables
+                                      // (velincnorm_L2 and velnorm_L2)
+  fluid_field()->extract_velocity_part(fluid_field()->velnp())->norm_2(&velnorm_L2);
 
   // Calculate concentration increment and concentration L2 - Norm
-  phiincnp_->Update(1.0, *scatra_field()->phinp(), -1.0);
+  phiincnp_->update(1.0, *scatra_field()->phinp(), -1.0);
   auto onlycon = conpotsplitter->extract_other_vector(*phiincnp_);
-  onlycon->Norm2(&conincnorm_L2);
+  onlycon->norm_2(&conincnorm_L2);
   conpotsplitter->extract_other_vector(*scatra_field()->phinp(), *onlycon);
-  onlycon->Norm2(&connorm_L2);
+  onlycon->norm_2(&connorm_L2);
 
   // Calculate potential increment and potential L2 - Norm
   auto onlypot = conpotsplitter->extract_cond_vector(*phiincnp_);
-  onlypot->Norm2(&potincnorm_L2);
+  onlypot->norm_2(&potincnorm_L2);
   conpotsplitter->extract_cond_vector(*scatra_field()->phinp(), *onlypot);
-  onlypot->Norm2(&potnorm_L2);
+  onlypot->norm_2(&potnorm_L2);
 
   // care for the case that there is (almost) zero temperature or velocity
   // (usually not required for temperature)

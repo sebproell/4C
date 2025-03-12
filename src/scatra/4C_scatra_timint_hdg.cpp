@@ -236,7 +236,7 @@ void ScaTra::TimIntHDG::gen_alpha_intermediate_values()
   //       n+alphaM                n+1                      n
   //  dtphi       = alpha_M * dtphi    + (1-alpha_M) * dtphi
   //       (i)                     (i)
-  phidtam_->Update((alphaM_), *phidtnp_, (1.0 - alphaM_), *phidtn_, 0.0);
+  phidtam_->update((alphaM_), *phidtnp_, (1.0 - alphaM_), *phidtn_, 0.0);
 
   // set intermediate values for concentration, concentration gradient
   //
@@ -246,9 +246,9 @@ void ScaTra::TimIntHDG::gen_alpha_intermediate_values()
   //
   // note that its af-genalpha with mid-point treatment of the pressure,
   // not implicit treatment as for the genalpha according to Whiting
-  phiaf_->Update((alphaF_), *phinp_, (1.0 - alphaF_), *phin_, 0.0);
+  phiaf_->update((alphaF_), *phinp_, (1.0 - alphaF_), *phin_, 0.0);
 
-  phiam_->Update(alphaM_, *phinp_, (1.0 - alphaM_), *phin_, 0.0);
+  phiam_->update(alphaM_, *phinp_, (1.0 - alphaM_), *phin_, 0.0);
 
 }  // gen_alpha_intermediate_values
 
@@ -258,7 +258,7 @@ void ScaTra::TimIntHDG::gen_alpha_intermediate_values()
 void ScaTra::TimIntHDG::set_old_part_of_righthandside()
 {
   set_theta();
-  hist_->PutScalar(0.0);
+  hist_->put_scalar(0.0);
 
   // This code is entered at the beginning of the nonlinear iteration, so
   // store that the assembly to be done next is going to be the first one
@@ -275,7 +275,7 @@ void ScaTra::TimIntHDG::update()
 
   // concentrations of this step become most recent
   // concentrations of the last step
-  intphin_->Update(1.0, *intphinp_, 0.0);
+  intphin_->update(1.0, *intphinp_, 0.0);
 
   if (padaptivity_) adapt_degree();
 
@@ -294,7 +294,7 @@ namespace
     dis.clear_state(true);
 
     // create dofsets for concentration at nodes
-    tracephi = std::make_shared<Core::LinAlg::Vector<double>>(phi->Map());
+    tracephi = std::make_shared<Core::LinAlg::Vector<double>>(phi->get_map());
     gradphi = std::make_shared<Core::LinAlg::MultiVector<double>>(*dis.node_row_map(), ndim);
 
     // call element routine to interpolate HDG to elements
@@ -309,7 +309,7 @@ namespace
     Core::LinAlg::SerialDenseVector interpolVec;
     std::vector<unsigned char> touchCount(dis.num_my_row_nodes());
 
-    phi->PutScalar(0.);
+    phi->put_scalar(0.);
 
     for (int el = 0; el < dis.num_my_col_elements(); ++el)
     {
@@ -334,7 +334,7 @@ namespace
     }
 
     // build average of values
-    for (int i = 0; i < phi->MyLength(); ++i)
+    for (int i = 0; i < phi->local_length(); ++i)
     {
       (*phi)[i] /= touchCount[i];
       (*tracephi)[i] /= touchCount[i];
@@ -369,7 +369,7 @@ void ScaTra::TimIntHDG::collect_runtime_output_data()
       discret_->num_dof_sets());
 
   // write vector to output file
-  std::vector<std::optional<std::string>> context(interpolatedPhinp_->NumVectors(), "phi");
+  std::vector<std::optional<std::string>> context(interpolatedPhinp_->num_vectors(), "phi");
   visualization_writer().append_result_data_vector_with_context(
       *interpolatedPhinp_, Core::IO::OutputEntity::node, context);
 
@@ -377,7 +377,7 @@ void ScaTra::TimIntHDG::collect_runtime_output_data()
   visualization_writer().append_result_data_vector_with_context(
       *interpolatedGradPhi, Core::IO::OutputEntity::node, context);
 
-  context.assign(interpolatedtracePhi->NumVectors(), "trace_phi");
+  context.assign(interpolatedtracePhi->num_vectors(), "trace_phi");
   visualization_writer().append_result_data_vector_with_context(
       *interpolatedtracePhi, Core::IO::OutputEntity::node, context);
 
@@ -487,8 +487,8 @@ void ScaTra::TimIntHDG::read_restart(const int step, std::shared_ptr<Core::IO::I
   reader.read_vector(phinp_, "phinp_trace");
   reader.read_vector(intphinp_, "intphinp");
 
-  intphin_->Update(1.0, *intphinp_, 0.0);
-  phin_->Update(1.0, *phinp_, 0.0);
+  intphin_->update(1.0, *intphinp_, 0.0);
+  phin_->update(1.0, *phinp_, 0.0);
 
   // reset vector
   interpolatedPhinp_ = std::make_shared<Core::LinAlg::Vector<double>>(*(discret_->node_row_map()));
@@ -506,10 +506,10 @@ void ScaTra::TimIntHDG::set_initial_field(
     case Inpar::ScaTra::initfield_zero_field:
     {
       // set initial field to zero
-      phin_->PutScalar(0.0);
-      phinp_->PutScalar(0.0);
-      intphin_->PutScalar(0.0);
-      intphinp_->PutScalar(0.0);
+      phin_->put_scalar(0.0);
+      phinp_->put_scalar(0.0);
+      intphin_->put_scalar(0.0);
+      intphinp_->put_scalar(0.0);
       break;
     }
     case Inpar::ScaTra::initfield_field_by_function:
@@ -555,7 +555,7 @@ void ScaTra::TimIntHDG::set_initial_field(
               localDofs.size() == static_cast<std::size_t>(updateVec2.numRows()), "Internal error");
           for (unsigned int i = 0; i < localDofs.size(); ++i)
             localDofs[i] = intdofrowmap->LID(localDofs[i]);
-          intphinp_->ReplaceMyValues(localDofs.size(), updateVec2.values(), localDofs.data());
+          intphinp_->replace_local_values(localDofs.size(), updateVec2.values(), localDofs.data());
         }
 
         // now fill the element vector into the discretization
@@ -580,7 +580,7 @@ void ScaTra::TimIntHDG::set_initial_field(
 
       // initialize also the solution vector. These values are a pretty good guess for the
       // solution after the first time step (much better than starting with a zero vector)
-      intphin_->Update(1.0, *intphinp_, 0.0);
+      intphin_->update(1.0, *intphinp_, 0.0);
 
       break;
     }
@@ -630,8 +630,8 @@ void ScaTra::TimIntHDG::gen_alpha_compute_time_derivative()
   const double fact1 = 1.0 / (gamma_ * dta_);
   const double fact2 = 1.0 - (1.0 / gamma_);
 
-  phidtnp_->Update(fact2, *phidtn_, 0.0);
-  phidtnp_->Update(fact1, *phinp_, -fact1, *phin_, 1.0);
+  phidtnp_->update(fact2, *phidtn_, 0.0);
+  phidtnp_->update(fact1, *phinp_, -fact1, *phin_, 1.0);
 
 }  // gen_alpha_compute_time_derivative
 
@@ -674,7 +674,7 @@ void ScaTra::TimIntHDG::update_interior_variables(
     {
       localDofs[i] = intdofrowmap->LID(localDofs[i]);
     }
-    updatevector->ReplaceMyValues(localDofs.size(), updateVec.values(), localDofs.data());
+    updatevector->replace_local_values(localDofs.size(), updateVec.values(), localDofs.data());
   }
 
   discret_->clear_state(true);
@@ -704,7 +704,7 @@ void ScaTra::TimIntHDG::fd_check()
       0, 0, systemmatrix1, systemmatrix2, systemvector1, systemvector2, systemvector3);
 
   // fill state vector with original state variables
-  phinp_->Update(1., phinp_original, 0.);
+  phinp_->update(1., phinp_original, 0.);
 
   // make temporary vector for interior variables for the update of the last step and use this
   // vector for the calculation of the original residual the temporary vector is necessary because
@@ -778,12 +778,12 @@ void ScaTra::TimIntHDG::fd_check()
       strategy.zero();
 
       // fill state vector with original state variables
-      phinp_->Update(1., phinp_original, 0.);
+      phinp_->update(1., phinp_original, 0.);
 
       // impose perturbation and update interior variables
-      if (phinp_->Map().MyGID(colgid))
+      if (phinp_->get_map().MyGID(colgid))
       {
-        if (phinp_->SumIntoGlobalValue(colgid, 0, eps))
+        if (phinp_->sum_into_global_value(colgid, 0, eps))
           FOUR_C_THROW(
               "Perturbation could not be imposed on state vector for finite difference check!");
       }
@@ -815,11 +815,11 @@ void ScaTra::TimIntHDG::fd_check()
         strategy.assemble_vector1(la[0].lm_, la[0].lmowner_);
       }
       strategy.complete();
-      fdvec->PutScalar(0.0);
+      fdvec->put_scalar(0.0);
 
       // finite difference suggestion (first divide by epsilon and then subtract for better
       // conditioning)
-      for (int j = 0; j < phinp_->MyLength(); ++j)
+      for (int j = 0; j < phinp_->local_length(); ++j)
         (*fdvec)[j] = -(*systemvector1)[j] / eps + (residualVec)[j] / eps;
 
       for (int rowlid = 0; rowlid < discret_->dof_row_map()->NumMyElements(); ++rowlid)
@@ -1244,8 +1244,8 @@ void ScaTra::TimIntHDG::adapt_degree()
   adapt_variable_vector(
       phinp_, phinp_old, intphinp_, intphinp_old, nds_var_old, nds_intvar_old, la_old);
 
-  intphin_->Update(1.0, *intphinp_, 0.0);
-  phin_->Update(1.0, *phinp_, 0.0);
+  intphin_->update(1.0, *intphinp_, 0.0);
+  phin_->update(1.0, *phinp_, 0.0);
 
   project_material();
 
@@ -1349,7 +1349,7 @@ void ScaTra::TimIntHDG::adapt_variable_vector(std::shared_ptr<Core::LinAlg::Vect
           localDofs.size() == static_cast<std::size_t>(intphi_ele.numRows()), "Internal error");
       for (unsigned int i = 0; i < localDofs.size(); ++i)
         localDofs[i] = intdofrowmap->LID(localDofs[i]);
-      (intphi_new)->ReplaceMyValues(localDofs.size(), intphi_ele.values(), localDofs.data());
+      (intphi_new)->replace_local_values(localDofs.size(), intphi_ele.values(), localDofs.data());
     }
 
     // now fill the element vector into the new state vector for the trace values
@@ -1390,7 +1390,7 @@ void ScaTra::TimIntHDG::assemble_rhs()
   const double tcpuele = Teuchos::Time::wallTime();
 
   // reset the residual vector
-  residual_->PutScalar(0.0);
+  residual_->put_scalar(0.0);
 
   // create parameter list for elements
   Teuchos::ParameterList eleparams;

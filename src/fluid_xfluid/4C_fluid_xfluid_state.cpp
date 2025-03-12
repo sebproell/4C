@@ -65,8 +65,8 @@ void FLD::XFluidState::CouplingState::zero_coupling_matrices_and_rhs()
   XFEM::zero_matrix(*C_sx_);
   XFEM::zero_matrix(*C_ss_);
 
-  rhC_s_->PutScalar(0.0);
-  rhC_s_col_->PutScalar(0.0);
+  rhC_s_->put_scalar(0.0);
+  rhC_s_col_->put_scalar(0.0);
 }
 
 /*----------------------------------------------------------------------*
@@ -89,12 +89,12 @@ void FLD::XFluidState::CouplingState::complete_coupling_matrices_and_rhs(
   //  C_ss_->EpetraMatrix()->MaxNumEntries() << std::endl;
   //-------------------------------------------------------------------------------
   // export the rhs coupling vector to a row vector
-  Core::LinAlg::Vector<double> rhC_s_tmp(rhC_s_->Map(), true);
-  Epetra_Export exporter_rhC_s_col(rhC_s_col_->Map(), rhC_s_tmp.Map());
-  int err = rhC_s_tmp.Export(*rhC_s_col_, exporter_rhC_s_col, Add);
+  Core::LinAlg::Vector<double> rhC_s_tmp(rhC_s_->get_map(), true);
+  Epetra_Export exporter_rhC_s_col(rhC_s_col_->get_map(), rhC_s_tmp.get_map());
+  int err = rhC_s_tmp.export_to(*rhC_s_col_, exporter_rhC_s_col, Add);
   if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
 
-  rhC_s_->Update(1.0, rhC_s_tmp, 0.0);
+  rhC_s_->update(1.0, rhC_s_tmp, 0.0);
 }
 
 
@@ -340,9 +340,9 @@ void FLD::XFluidState::zero_system_matrix_and_rhs()
   XFEM::zero_matrix(*sysmat_);
 
   // zero residual vectors
-  residual_col_->PutScalar(0.0);
-  residual_->PutScalar(0.0);
-  trueresidual_->PutScalar(0.0);
+  residual_col_->put_scalar(0.0);
+  residual_->put_scalar(0.0);
+  trueresidual_->put_scalar(0.0);
 }
 
 
@@ -362,7 +362,7 @@ void FLD::XFluidState::setup_map_extractors(
   dbcmaps_ = std::make_shared<Core::LinAlg::MapExtractor>();
   xfluiddiscret->evaluate_dirichlet(eleparams, zeros_, nullptr, nullptr, nullptr, dbcmaps_);
 
-  zeros_->PutScalar(0.0);
+  zeros_->put_scalar(0.0);
 
   // create vel-pres splitter
   const int numdim = Global::Problem::instance()->n_dim();

@@ -357,7 +357,7 @@ void Solid::TimInt::create_fields()
     }
 
     discret_->evaluate_dirichlet(p, zeros_, nullptr, nullptr, nullptr, dbcmaps_);
-    zeros_->PutScalar(0.0);  // just in case of change
+    zeros_->put_scalar(0.0);  // just in case of change
   }
 
   // create empty matrices
@@ -913,11 +913,11 @@ void Solid::TimInt::apply_mesh_initialization(
     // create new position vector
     for (int i = 0; i < numdim; ++i)
     {
-      const int lid = gvector.Map().LID(nodedofs[i]);
+      const int lid = gvector.get_map().LID(nodedofs[i]);
 
       if (lid < 0)
         FOUR_C_THROW("Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
-            Core::Communication::my_mpi_rank(gvector.Comm()), nodedofs[i]);
+            Core::Communication::my_mpi_rank(gvector.get_comm()), nodedofs[i]);
 
       nvector[i] += gvector[lid];
     }
@@ -968,7 +968,7 @@ void Solid::TimInt::determine_mass_damp_consist_accel()
   // accelerations in case of inhomogeneous Dirichlet conditions
   std::shared_ptr<Core::LinAlg::Vector<double>> acc_aux =
       Core::LinAlg::create_vector(*dof_row_map_view(), true);
-  acc_aux->PutScalar(0.0);
+  acc_aux->put_scalar(0.0);
 
   // overwrite initial state vectors with DirichletBCs
   apply_dirichlet_bc((*time_)[0], (*dis_)(0), (*vel_)(0), acc_aux, false);
@@ -1066,7 +1066,7 @@ void Solid::TimInt::determine_mass_damp_consist_accel()
     }
 
     // Contribution to rhs due to internal and external forces
-    rhs->Update(-1.0, *fint, 1.0, *fext, -1.0);
+    rhs->update(-1.0, *fint, 1.0, *fext, -1.0);
 
     // Contribution to rhs due to beam contact
     if (have_beam_contact())
@@ -1082,9 +1082,9 @@ void Solid::TimInt::determine_mass_damp_consist_accel()
     // Contribution to rhs due to inertia forces of inhomogeneous Dirichlet conditions
     std::shared_ptr<Core::LinAlg::Vector<double>> finert0 =
         Core::LinAlg::create_vector(*dof_row_map_view(), true);
-    finert0->PutScalar(0.0);
+    finert0->put_scalar(0.0);
     mass_->multiply(false, *acc_aux, *finert0);
-    rhs->Update(-1.0, *finert0, 1.0);
+    rhs->update(-1.0, *finert0, 1.0);
 
     // blank RHS and system matrix on DBC DOFs
     dbcmaps_->insert_cond_vector(*dbcmaps_->extract_cond_vector(*zeros_), *rhs);
@@ -1114,7 +1114,7 @@ void Solid::TimInt::determine_mass_damp_consist_accel()
     solver_->solve(mass->epetra_operator(), (*acc_)(0), rhs, solver_params);
 
     //*) Add contributions of inhomogeneous DBCs
-    (*acc_)(0)->Update(1.0, *acc_aux, 1.0);
+    (*acc_)(0)->update(1.0, *acc_aux, 1.0);
   }
 
   // We need to reset the stiffness matrix because its graph (topology)
@@ -1322,15 +1322,15 @@ void Solid::TimInt::update_step_contact_vum()
           Core::LinAlg::create_vector(*dofmap, true);
       int err = 0;
       Minv.extract_diagonal_copy(*diag);
-      err = diag->Reciprocal(*diag);
+      err = diag->reciprocal(*diag);
       if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
       err = Minv.replace_diagonal_values(*diag);
       Minv.complete(*dofmap, *dofmap);
 
       // displacement increment Dd
       std::shared_ptr<Core::LinAlg::Vector<double>> Dd = Core::LinAlg::create_vector(*dofmap, true);
-      Dd->Update(1.0, *disn_, 0.0);
-      Dd->Update(-1.0, (*dis_)[0], 1.0);
+      Dd->update(1.0, *disn_, 0.0);
+      Dd->update(-1.0, (*dis_)[0], 1.0);
 
       // mortar operator Bc
       std::shared_ptr<const Core::LinAlg::SparseMatrix> Mmat =
@@ -1404,9 +1404,9 @@ void Solid::TimInt::update_step_contact_vum()
           Core::LinAlg::create_vector(*slavenodemap, true);
       std::shared_ptr<Core::LinAlg::Vector<double>> b =
           Core::LinAlg::create_vector(*activenodemap, true);
-      btemp1->Update(R1, *Dd, 0.0);
-      btemp1->Update(R2, (*vel_)[0], 1.0);
-      btemp1->Update(R3, (*acc_)[0], 1.0);
+      btemp1->update(R1, *Dd, 0.0);
+      btemp1->update(R2, (*vel_)[0], 1.0);
+      btemp1->update(R3, (*acc_)[0], 1.0);
       BN->multiply(true, *btemp1, *btemp2);
       Core::LinAlg::export_to(*btemp2, *b);
 
@@ -1421,7 +1421,7 @@ void Solid::TimInt::update_step_contact_vum()
       // contact work wc
       std::shared_ptr<Core::LinAlg::Vector<double>> wc =
           Core::LinAlg::create_vector(*activenodemap, true);
-      wc->Multiply(1.0, *c, *z, 0.0);
+      wc->multiply(1.0, *c, *z, 0.0);
 
       // gain and loss of energy
       double gain = 0;
@@ -1458,8 +1458,8 @@ void Solid::TimInt::update_step_contact_vum()
           }
         }
       }
-      wp->Norm1(&loss);
-      wn->Norm1(&gain);
+      wp->norm_1(&loss);
+      wn->norm_1(&gain);
 
       // manipulated contact work w
       double tolerance = 0.01;
@@ -1476,7 +1476,7 @@ void Solid::TimInt::update_step_contact_vum()
       else if (gain > loss)
       {
         double C = (gain - loss) / gain;
-        wtemp1->Update(C, *wn, 0.0);
+        wtemp1->update(C, *wn, 0.0);
         for (int i = 0; i < activenodemap->NumMyElements(); ++i)
         {
           (*wtemp2)[i] = pow((*b)[i], 2) / (4 * (*AD)[i]);
@@ -1495,7 +1495,7 @@ void Solid::TimInt::update_step_contact_vum()
       else
       {
         double C = (loss - gain) / loss;
-        w->Update(C, *wp, 0.0);
+        w->update(C, *wp, 0.0);
       }
 
       // (1) initial solution p_0
@@ -1556,9 +1556,9 @@ void Solid::TimInt::update_step_contact_vum()
       // rhs f
       for (int i = 0; i < activenodemap->NumMyElements(); ++i)
       {
-        x->PutScalar(0.0);
+        x->put_scalar(0.0);
         (A->epetra_matrix())->ExtractMyRowView(i, NumEntries, Values, Indices);
-        x->ReplaceMyValues(NumEntries, Values, Indices);
+        x->replace_local_values(NumEntries, Values, Indices);
         (*f)[i] = (*b)[i] * (*p)[i] + (*w)[i];
         for (int j = 0; j < activenodemap->NumMyElements(); ++j)
         {
@@ -1567,15 +1567,15 @@ void Solid::TimInt::update_step_contact_vum()
       }
 
       // residual res
-      f->Norm2(&initres);
+      f->norm_2(&initres);
       res = initres;
 
       // jacobian DF
       for (int i = 0; i < activenodemap->NumMyElements(); ++i)
       {
-        x->PutScalar(0.0);
+        x->put_scalar(0.0);
         (A->epetra_matrix())->ExtractMyRowView(i, NumEntries, Values, Indices);
-        x->ReplaceMyValues(NumEntries, Values, Indices);
+        x->replace_local_values(NumEntries, Values, Indices);
         for (int k = 0; k < activenodemap->NumMyElements(); ++k)
         {
           if (k == i)
@@ -1607,20 +1607,20 @@ void Solid::TimInt::update_step_contact_vum()
       while (res > tol)
       {
         // solver for linear equations DF * dp = -f
-        mf->Update(-1.0, *f, 0.0);
+        mf->update(-1.0, *f, 0.0);
         Core::LinAlg::SolverParams solver_params;
         solver_params.refactor = true;
         solver_->solve(DF.epetra_operator(), dp, mf, solver_params);
 
         // Update solution p_n = p_n-1 + dp
-        p->Update(1.0, *dp, 1.0);
+        p->update(1.0, *dp, 1.0);
 
         // rhs f
         for (int i = 0; i < activenodemap->NumMyElements(); ++i)
         {
-          x->PutScalar(0.0);
+          x->put_scalar(0.0);
           (A->epetra_matrix())->ExtractMyRowView(i, NumEntries, Values, Indices);
-          x->ReplaceMyValues(NumEntries, Values, Indices);
+          x->replace_local_values(NumEntries, Values, Indices);
           (*f)[i] = (*b)[i] * (*p)[i] + (*w)[i];
           for (int j = 0; j < activenodemap->NumMyElements(); ++j)
           {
@@ -1629,16 +1629,16 @@ void Solid::TimInt::update_step_contact_vum()
         }
 
         // residual res
-        f->Norm2(&res);
+        f->norm_2(&res);
         res /= initres;
 
         // jacobian DF
         DF.put_scalar(0.0);
         for (int i = 0; i < activenodemap->NumMyElements(); ++i)
         {
-          x->PutScalar(0.0);
+          x->put_scalar(0.0);
           (A->epetra_matrix())->ExtractMyRowView(i, NumEntries, Values, Indices);
-          x->ReplaceMyValues(NumEntries, Values, Indices);
+          x->replace_local_values(NumEntries, Values, Indices);
           for (int k = 0; k < activenodemap->NumMyElements(); ++k)
           {
             if (k == i)
@@ -1676,7 +1676,7 @@ void Solid::TimInt::update_step_contact_vum()
       Core::LinAlg::export_to(*p, *ptemp1);
       BN->multiply(false, *ptemp1, *ptemp2);
       Minv.multiply(false, *ptemp2, *VU);
-      veln_->Update(1.0, *VU, 1.0);
+      veln_->update(1.0, *VU, 1.0);
     }
   }
 }
@@ -1686,9 +1686,9 @@ void Solid::TimInt::update_step_contact_vum()
 void Solid::TimInt::reset_step()
 {
   // reset state vectors
-  disn_->Update(1.0, (*dis_)[0], 0.0);
-  veln_->Update(1.0, (*vel_)[0], 0.0);
-  accn_->Update(1.0, (*acc_)[0], 0.0);
+  disn_->update(1.0, (*dis_)[0], 0.0);
+  veln_->update(1.0, (*vel_)[0], 0.0);
+  accn_->update(1.0, (*acc_)[0], 0.0);
 
   // reset anything that needs to be reset at the element level
   {
@@ -2345,7 +2345,7 @@ void Solid::TimInt::determine_energy()
       std::shared_ptr<Core::LinAlg::Vector<double>> linmom =
           Core::LinAlg::create_vector(*dof_row_map_view(), true);
       mass_->multiply(false, *veln_, *linmom);
-      linmom->Dot(*veln_, &kinergy_);
+      linmom->dot(*veln_, &kinergy_);
       kinergy_ *= 0.5;
     }
 
@@ -2355,7 +2355,7 @@ void Solid::TimInt::determine_energy()
       // WARNING: This will only work with dead loads and implicit time
       // integration (otherwise there is no fextn_)!!!
       std::shared_ptr<Core::LinAlg::Vector<double>> fext = fext_new();
-      fext->Dot(*disn_, &extergy_);
+      fext->dot(*disn_, &extergy_);
     }
   }
 }
@@ -2534,16 +2534,16 @@ void Solid::TimInt::nonlinear_mass_sanity_check(
     const Teuchos::ParameterList* sdynparams) const
 {
   double fextnorm;
-  fext->Norm2(&fextnorm);
+  fext->norm_2(&fextnorm);
 
   double dispnorm;
-  dis->Norm2(&dispnorm);
+  dis->norm_2(&dispnorm);
 
   double velnorm;
-  vel->Norm2(&velnorm);
+  vel->norm_2(&velnorm);
 
   double accnorm;
-  acc->Norm2(&accnorm);
+  acc->norm_2(&accnorm);
 
   if (fextnorm > 1.0e-14)
   {
@@ -2853,7 +2853,7 @@ void Solid::TimInt::set_force_interface(
     std::shared_ptr<Core::LinAlg::MultiVector<double>> iforce  ///< the force on interface
 )
 {
-  fifc_->Update(1.0, *iforce, 0.0);
+  fifc_->update(1.0, *iforce, 0.0);
 }
 
 /*----------------------------------------------------------------------*/

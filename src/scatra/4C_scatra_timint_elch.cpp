@@ -138,7 +138,7 @@ void ScaTra::ScaTraTimIntElch::setup()
   // additional flux terms / currents across Dirichlet boundaries for the standard element call
   std::shared_ptr<Core::LinAlg::Vector<double>> dirichones =
       Core::LinAlg::create_vector(*(dbcmaps_->cond_map()), false);
-  dirichones->PutScalar(1.0);
+  dirichones->put_scalar(1.0);
   dctoggle_ = Core::LinAlg::create_vector(*(discret_->dof_row_map()), true);
   dbcmaps_->insert_cond_vector(*dirichones, *dctoggle_);
 
@@ -1856,7 +1856,7 @@ void ScaTra::ScaTraTimIntElch::init_nernst_bc()
 
             // define electrode kinetics toggle
             // later on this toggle is used to blank the sysmat and rhs
-            ektoggle_->ReplaceGlobalValues(1, &one, &nodedofs[num_scal()]);
+            ektoggle_->replace_global_values(1, &one, &nodedofs[num_scal()]);
           }
         }
       }
@@ -1866,7 +1866,7 @@ void ScaTra::ScaTraTimIntElch::init_nernst_bc()
   }
 
   // At element level the Nernst condition has to be handled like a DC
-  if (ektoggle_ != nullptr) dctoggle_->Update(1.0, *ektoggle_, 1.0);
+  if (ektoggle_ != nullptr) dctoggle_->update(1.0, *ektoggle_, 1.0);
 }
 
 /*----------------------------------------------------------------------------------------*
@@ -1976,17 +1976,17 @@ void ScaTra::ScaTraTimIntElch::calc_initial_potential_field()
     std::shared_ptr<Core::LinAlg::Vector<double>> pot_vector =
         splitter_->extract_cond_vector(*phinp_);
     double pot_state_L2(0.0);
-    pot_vector->Norm2(&pot_state_L2);
+    pot_vector->norm_2(&pot_state_L2);
 
     // compute L2 norm of electric potential residual vector
     splitter_->extract_cond_vector(*residual_, *pot_vector);
     double pot_res_L2(0.);
-    pot_vector->Norm2(&pot_res_L2);
+    pot_vector->norm_2(&pot_res_L2);
 
     // compute L2 norm of electric potential increment vector
     splitter_->extract_cond_vector(*increment_, *pot_vector);
     double pot_inc_L2(0.);
-    pot_vector->Norm2(&pot_inc_L2);
+    pot_vector->norm_2(&pot_inc_L2);
 
     // care for the case that nothing really happens in the potential field
     if (pot_state_L2 < 1e-5) pot_state_L2 = 1.0;
@@ -2076,7 +2076,7 @@ void ScaTra::ScaTraTimIntElch::calc_initial_potential_field()
       FOUR_C_THROW("calculated vector norm is INF.");
 
     // zero out increment vector
-    increment_->PutScalar(0.);
+    increment_->put_scalar(0.);
 
     // store time before solving global system of equations
     const double time = Teuchos::Time::wallTime();
@@ -2097,7 +2097,7 @@ void ScaTra::ScaTraTimIntElch::calc_initial_potential_field()
     splitter_->add_cond_vector(*splitter_->extract_cond_vector(*increment_), *phinp_);
 
     // copy initial state vector
-    phin_->Update(1., *phinp_, 0.);
+    phin_->update(1., *phinp_, 0.);
 
     // update state vectors for intermediate time steps (only for generalized alpha)
     compute_intermediate_values();
@@ -2918,7 +2918,7 @@ void ScaTra::ScaTraTimIntElch::apply_dirichlet_bc(const double time,
                 dbcgids.insert(gid);
 
                 // apply cutoff voltage as Dirichlet boundary condition
-                phinp->ReplaceGlobalValue(gid, 0, cutoff_voltage);
+                phinp->replace_global_value(gid, 0, cutoff_voltage);
               }
             }
           }  // loop over all nodes
@@ -3026,7 +3026,7 @@ void ScaTra::ScaTraTimIntElch::apply_neumann_bc(
                                      ? *node->x().data() * *node->x().data() * four_pi
                                      : 1.0;
 
-              neumann_loads->SumIntoMyValue(dof_lid, 0, neumann_value * fac);
+              neumann_loads->sum_into_local_value(dof_lid, 0, neumann_value * fac);
             }
           }
 
@@ -3075,12 +3075,12 @@ void ScaTra::ScaTraTimIntElch::perform_aitken_relaxation(
       // compute L2 norm of difference between current and previous increments of current degree
       // of freedom
       double phinp_inc_diff_L2(0.);
-      phinp_inc_diff_dof->Norm2(&phinp_inc_diff_L2);
+      phinp_inc_diff_dof->norm_2(&phinp_inc_diff_L2);
 
       // compute dot product between increment of current degree of freedom and difference between
       // current and previous increments of current degree of freedom
       double phinp_inc_dot_phinp_inc_diff(0.);
-      if (phinp_inc_diff_dof->Dot(*phinp_inc_dof, &phinp_inc_dot_phinp_inc_diff))
+      if (phinp_inc_diff_dof->dot(*phinp_inc_dof, &phinp_inc_dot_phinp_inc_diff))
         FOUR_C_THROW("Couldn't compute dot product!");
 
       // compute Aitken relaxation factor for current degree of freedom

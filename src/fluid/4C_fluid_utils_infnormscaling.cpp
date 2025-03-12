@@ -50,25 +50,25 @@ void FLD::Utils::FluidInfNormScaling::scale_system(
 
     if (leftscale_momentum_)
     {
-      A00->InvRowSums(*srowsum_->get_ptr_of_Epetra_Vector());
+      A00->InvRowSums(*srowsum_->get_ptr_of_epetra_vector());
       if (myrank_ == 0) std::cout << "do left scaling momentum" << std::endl;
 
       // we want to have the infnorm of the whole(!) row including
       // the off-diagonal block matrix M_(0,1)
       Core::LinAlg::Vector<double> temp1(mat.matrix(0, 0).epetra_matrix()->RowMap(), false);
-      srowsum_->Reciprocal(*srowsum_);
-      mat.matrix(0, 1).epetra_matrix()->InvRowSums(*temp1.get_ptr_of_Epetra_Vector());
-      temp1.Reciprocal(temp1);
-      srowsum_->Update(1.0, temp1, 1.0);
-      srowsum_->Reciprocal(*srowsum_);
+      srowsum_->reciprocal(*srowsum_);
+      mat.matrix(0, 1).epetra_matrix()->InvRowSums(*temp1.get_ptr_of_epetra_vector());
+      temp1.reciprocal(temp1);
+      srowsum_->update(1.0, temp1, 1.0);
+      srowsum_->reciprocal(*srowsum_);
     }
     else
     {
       // no scaling
-      srowsum_->PutScalar(1.0);
+      srowsum_->put_scalar(1.0);
     }
 
-    scolsum_->PutScalar(1.0);
+    scolsum_->put_scalar(1.0);
 
     if (A00->LeftScale(*srowsum_) or A00->RightScale(*scolsum_) or
         mat.matrix(0, 1).epetra_matrix()->LeftScale(*srowsum_) or
@@ -77,7 +77,7 @@ void FLD::Utils::FluidInfNormScaling::scale_system(
 
     std::shared_ptr<Core::LinAlg::Vector<double>> sx = velpressplitter_.extract_vector(b, 0);
 
-    if (sx->Multiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("fluid scaling failed");
+    if (sx->multiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("fluid scaling failed");
 
     velpressplitter_.insert_vector(*sx, 0, b);
 
@@ -89,23 +89,23 @@ void FLD::Utils::FluidInfNormScaling::scale_system(
     Core::LinAlg::Vector<double> temp(A11->RowMap(), false);
     if (leftscale_continuity_)
     {
-      A11->InvRowSums(*prowsum_->get_ptr_of_Epetra_Vector());
+      A11->InvRowSums(*prowsum_->get_ptr_of_epetra_vector());
       if (myrank_ == 0) std::cout << "do left scaling continuity" << std::endl;
 
       // we want to have the infnorm of the whole(!) row including
       // the off-diagonal block matrix M_(1,0)
-      prowsum_->Reciprocal(*prowsum_);
-      mat.matrix(1, 0).epetra_matrix()->InvRowSums(*temp.get_ptr_of_Epetra_Vector());
-      temp.Reciprocal(temp);
-      prowsum_->Update(1.0, temp, 1.0);
-      prowsum_->Reciprocal(*prowsum_);
+      prowsum_->reciprocal(*prowsum_);
+      mat.matrix(1, 0).epetra_matrix()->InvRowSums(*temp.get_ptr_of_epetra_vector());
+      temp.reciprocal(temp);
+      prowsum_->update(1.0, temp, 1.0);
+      prowsum_->reciprocal(*prowsum_);
     }
     else
     {
-      prowsum_->PutScalar(1.0);
+      prowsum_->put_scalar(1.0);
     }
 
-    pcolsum_->PutScalar(1.0);
+    pcolsum_->put_scalar(1.0);
 
     if (A11->LeftScale(*prowsum_) or
         //      A->RightScale(*pcolsum_) or
@@ -117,7 +117,7 @@ void FLD::Utils::FluidInfNormScaling::scale_system(
 
     std::shared_ptr<Core::LinAlg::Vector<double>> px = velpressplitter_.extract_vector(b, 1);
 
-    if (px->Multiply(1.0, *prowsum_, *px, 0.0)) FOUR_C_THROW("fluid scaling failed");
+    if (px->multiply(1.0, *prowsum_, *px, 0.0)) FOUR_C_THROW("fluid scaling failed");
 
     velpressplitter_.insert_vector(*px, 1, b);
 
@@ -135,25 +135,25 @@ void FLD::Utils::FluidInfNormScaling::scale_system(
     prowsum_ = nullptr;
     pcolsum_ = nullptr;
 
-    smat->epetra_matrix()->InvRowSums(*srowsum_->get_ptr_of_Epetra_Vector());
+    smat->epetra_matrix()->InvRowSums(*srowsum_->get_ptr_of_epetra_vector());
     if (myrank_ == 0) std::cout << "do left scaling of SparseMatrix" << std::endl;
 
     // leave continuity equation unscaled! -> scaling factors are one
     std::shared_ptr<Core::LinAlg::Vector<double>> px =
         velpressplitter_.extract_vector(*srowsum_, 1);
-    px->PutScalar(1.0);
+    px->put_scalar(1.0);
     velpressplitter_.insert_vector(*px, 1, *srowsum_);
 
     if (smat->left_scale(*srowsum_)) FOUR_C_THROW("fluid scaling failed");
-    if (b.Multiply(1.0, *srowsum_, b, 0.0)) FOUR_C_THROW("fluid scaling failed");
+    if (b.multiply(1.0, *srowsum_, b, 0.0)) FOUR_C_THROW("fluid scaling failed");
 
-    smat->epetra_matrix()->InvColSums(*scolsum_->get_ptr_of_Epetra_Vector());
+    smat->epetra_matrix()->InvColSums(*scolsum_->get_ptr_of_epetra_vector());
     if (myrank_ == 0) std::cout << "do right scaling pressure" << std::endl;
 
     // leave velocity columns equation unscaled!
     std::shared_ptr<Core::LinAlg::Vector<double>> ux =
         velpressplitter_.extract_vector(*scolsum_, 0);
-    ux->PutScalar(1.0);
+    ux->put_scalar(1.0);
     velpressplitter_.insert_vector(*ux, 0, *scolsum_);
 
     if (smat->right_scale(*scolsum_)) FOUR_C_THROW("fluid scaling failed");
@@ -162,24 +162,24 @@ void FLD::Utils::FluidInfNormScaling::scale_system(
 
   // do output
   double srownorm, scolnorm, prownorm = 0.0;
-  srowsum_->MeanValue(&srownorm);
-  scolsum_->MeanValue(&scolnorm);
-  if (prowsum_ != nullptr) prowsum_->MeanValue(&prownorm);
+  srowsum_->mean_value(&srownorm);
+  scolsum_->mean_value(&scolnorm);
+  if (prowsum_ != nullptr) prowsum_->mean_value(&prownorm);
 
   if (myrank_ == 0)
     std::cout << "MEAN: leftscalemom: " << srownorm << "  rightscale: " << scolnorm
               << "  leftscaleconti: " << prownorm << std::endl;
 
-  srowsum_->MinValue(&srownorm);
-  scolsum_->MinValue(&scolnorm);
-  if (prowsum_ != nullptr) prowsum_->MinValue(&prownorm);
+  srowsum_->min_value(&srownorm);
+  scolsum_->min_value(&scolnorm);
+  if (prowsum_ != nullptr) prowsum_->min_value(&prownorm);
   if (myrank_ == 0)
     std::cout << "MIN: leftscalemom: " << srownorm << "  rightscale: " << scolnorm
               << "  leftscaleconti: " << prownorm << std::endl;
 
-  srowsum_->MaxValue(&srownorm);
-  scolsum_->MaxValue(&scolnorm);
-  if (prowsum_ != nullptr) prowsum_->MaxValue(&prownorm);
+  srowsum_->max_value(&srownorm);
+  scolsum_->max_value(&scolnorm);
+  if (prowsum_ != nullptr) prowsum_->max_value(&prownorm);
   if (myrank_ == 0)
     std::cout << "MAX: leftscalemom: " << srownorm << "  rightscale: " << scolnorm
               << "  leftscaleconti: " << prownorm << std::endl;
@@ -203,19 +203,19 @@ void FLD::Utils::FluidInfNormScaling::unscale_solution(
 
     std::shared_ptr<Core::LinAlg::Vector<double>> sy = velpressplitter_.extract_vector(x, 0);
 
-    if (sy->Multiply(1.0, *scolsum_, *sy, 0.0)) FOUR_C_THROW("fluid scaling failed");
+    if (sy->multiply(1.0, *scolsum_, *sy, 0.0)) FOUR_C_THROW("fluid scaling failed");
 
     velpressplitter_.insert_vector(*sy, 0, x);
 
     std::shared_ptr<Core::LinAlg::Vector<double>> sx = velpressplitter_.extract_vector(b, 0);
 
-    if (sx->ReciprocalMultiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("fluid scaling failed");
+    if (sx->reciprocal_multiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("fluid scaling failed");
 
     velpressplitter_.insert_vector(*sx, 0, b);
 
     std::shared_ptr<Epetra_CrsMatrix> A00 = mat.matrix(0, 0).epetra_matrix();
-    srowsum_->Reciprocal(*srowsum_);
-    scolsum_->Reciprocal(*scolsum_);
+    srowsum_->reciprocal(*srowsum_);
+    scolsum_->reciprocal(*scolsum_);
     if (A00->LeftScale(*srowsum_) or A00->RightScale(*scolsum_) or
         mat.matrix(0, 1).epetra_matrix()->LeftScale(*srowsum_) or
         mat.matrix(1, 0).epetra_matrix()->RightScale(*scolsum_))
@@ -223,16 +223,16 @@ void FLD::Utils::FluidInfNormScaling::unscale_solution(
 
     // undo left scaling of continuity equation
     std::shared_ptr<Epetra_CrsMatrix> A11 = mat.matrix(1, 1).epetra_matrix();
-    prowsum_->Reciprocal(*prowsum_);
+    prowsum_->reciprocal(*prowsum_);
     if (A11->LeftScale(*prowsum_) or mat.matrix(1, 0).epetra_matrix()->LeftScale(*prowsum_))
       FOUR_C_THROW("fluid scaling failed");
   }
   else
   {
-    if (x.Multiply(1.0, *scolsum_, x, 0.0)) FOUR_C_THROW("fluid unscaling failed");
+    if (x.multiply(1.0, *scolsum_, x, 0.0)) FOUR_C_THROW("fluid unscaling failed");
 
-    srowsum_->Reciprocal(*srowsum_);
-    scolsum_->Reciprocal(*scolsum_);
+    srowsum_->reciprocal(*srowsum_);
+    scolsum_->reciprocal(*scolsum_);
 
     // revert matrix and rhs here
     if (myrank_ == 0)

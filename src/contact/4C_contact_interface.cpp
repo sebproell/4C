@@ -302,14 +302,14 @@ void CONTACT::Interface::set_cn_ct_values(const int& iter)
 
   // set all nodal cn-values to the input value
   get_cn() = Core::LinAlg::create_vector(*slave_row_nodes(), true);
-  int err = get_cn()->PutScalar(cn);
+  int err = get_cn()->put_scalar(cn);
   if (err != 0) FOUR_C_THROW("cn definition failed!");
 
   // set all nodal ct-values to the input value
   if (friction_)
   {
     get_ct() = Core::LinAlg::create_vector(*slave_row_nodes(), true);
-    err = get_ct()->PutScalar(ct);
+    err = get_ct()->put_scalar(ct);
     if (err != 0) FOUR_C_THROW("cn definition failed!");
   }
 
@@ -349,15 +349,16 @@ void CONTACT::Interface::set_cn_ct_values(const int& iter)
 
     if (cnode->is_on_edge())
     {
-      get_cn_ref()[get_cn_ref().Map().LID(cnode->id())] = cn * (length * length);
-      if (friction_) get_ct_ref()[get_ct_ref().Map().LID(cnode->id())] = ct * (length * length);
+      get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())] = cn * (length * length);
+      if (friction_) get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())] = ct * (length * length);
     }
 
     if (cnode->is_on_corner())
     {
-      get_cn_ref()[get_cn_ref().Map().LID(cnode->id())] = cn * (length * length * length * length);
+      get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())] =
+          cn * (length * length * length * length);
       if (friction_)
-        get_ct_ref()[get_ct_ref().Map().LID(cnode->id())] =
+        get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())] =
             ct * (length * length * length * length);
     }
   }
@@ -6324,7 +6325,7 @@ void CONTACT::Interface::evaluate_relative_movement(
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* cnode = dynamic_cast<FriNode*>(node);
-    double cn = get_cn_ref()[get_cn_ref().Map().LID(cnode->id())];
+    double cn = get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())];
 
     // get some information form the node
     double gap = cnode->data().getg();
@@ -6415,7 +6416,7 @@ void CONTACT::Interface::evaluate_relative_movement(
 
         for (int dim = 0; dim < csnode->num_dof(); ++dim)
         {
-          int locid = (xsmod->Map()).LID(csnode->dofs()[dim]);
+          int locid = (xsmod->get_map()).LID(csnode->dofs()[dim]);
           jump[dim] -= (dik - dikold) * (*xsmod)[locid];
         }
       }  //  loop over adjacent slave nodes
@@ -6607,7 +6608,7 @@ void CONTACT::Interface::evaluate_relative_movement(
           // loop over dimensions
           for (int dim = 0; dim < cnode->num_dof(); ++dim)
           {
-            int locid = (xsmod->Map()).LID(csnode->dofs()[dim]);
+            int locid = (xsmod->get_map()).LID(csnode->dofs()[dim]);
             double val = -colcurr->second * (*xsmod)[locid];
             if (abs(val) > 1e-14) cnode->add_deriv_jump_value(dim, col, val);
           }
@@ -7064,8 +7065,8 @@ bool CONTACT::Interface::update_active_set_semi_smooth()
 
     Node* cnode = dynamic_cast<Node*>(node);
 
-    cn = get_cn_ref()[get_cn_ref().Map().LID(cnode->id())];
-    if (friction_) ct = get_ct_ref()[get_ct_ref().Map().LID(cnode->id())];
+    cn = get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())];
+    if (friction_) ct = get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())];
 
     // get weighted gap
     double wgap = cnode->data().getg();
@@ -7774,7 +7775,7 @@ void CONTACT::Interface::postprocess_quantities(const Teuchos::ParameterList& ou
   // Nodes: node-based vector with '0' at slave nodes and '1' at master nodes
   {
     Core::LinAlg::Vector<double> masterVec(*mnoderowmap_);
-    masterVec.PutScalar(1.0);
+    masterVec.put_scalar(1.0);
 
     std::shared_ptr<const Epetra_Map> nodeRowMap =
         Core::LinAlg::merge_map(snoderowmap_, mnoderowmap_, false);
@@ -7789,15 +7790,15 @@ void CONTACT::Interface::postprocess_quantities(const Teuchos::ParameterList& ou
   {
     // evaluate active set and slip set
     Core::LinAlg::Vector<double> activeset(*activenodes_);
-    activeset.PutScalar(1.0);
+    activeset.put_scalar(1.0);
 
     if (is_friction())
     {
       Core::LinAlg::Vector<double> slipset(*slipnodes_);
-      slipset.PutScalar(1.0);
+      slipset.put_scalar(1.0);
       Core::LinAlg::Vector<double> slipsetexp(*activenodes_);
       Core::LinAlg::export_to(slipset, slipsetexp);
-      activeset.Update(1.0, slipsetexp, 1.0);
+      activeset.update(1.0, slipsetexp, 1.0);
     }
 
     // export to interface node row map
@@ -7811,7 +7812,7 @@ void CONTACT::Interface::postprocess_quantities(const Teuchos::ParameterList& ou
   // Elements: element-based vector with '0' at slave elements and '1' at master elements
   {
     Core::LinAlg::Vector<double> masterVec(*melerowmap_);
-    masterVec.PutScalar(1.0);
+    masterVec.put_scalar(1.0);
 
     std::shared_ptr<const Epetra_Map> eleRowMap =
         Core::LinAlg::merge_map(selerowmap_, melerowmap_, false);

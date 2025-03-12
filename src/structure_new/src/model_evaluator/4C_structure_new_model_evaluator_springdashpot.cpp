@@ -75,7 +75,7 @@ void Solid::ModelEvaluator::SpringDashpot::reset(const Core::LinAlg::Vector<doub
   // update the structural displacement vector
   velnp_ptr_ = global_state().get_vel_np();
 
-  fspring_np_ptr_->PutScalar(0.0);
+  fspring_np_ptr_->put_scalar(0.0);
   stiff_spring_ptr_->zero();
 }
 
@@ -280,7 +280,7 @@ void Solid::ModelEvaluator::SpringDashpot::update_step_state(const double& timef
   // add the old time factor scaled contributions to the residual
   std::shared_ptr<Core::LinAlg::Vector<double>>& fstructold_ptr =
       global_state().get_fstructure_old();
-  fstructold_ptr->Update(timefac_n, *fspring_np_ptr_, 1.0);
+  fstructold_ptr->update(timefac_n, *fspring_np_ptr_, 1.0);
 
   // check for prestressing and reset if necessary
   const Inpar::Solid::PreStress prestress_type = tim_int().get_data_sdyn().get_pre_stress_type();

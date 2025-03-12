@@ -356,7 +356,7 @@ void ALE::Meshtying::multifield_split(std::shared_ptr<Core::LinAlg::SparseOperat
         std::dynamic_pointer_cast<Core::LinAlg::BlockSparseMatrixBase>(sysmat);
 
     Core::LinAlg::Vector<double> ones(sysmatnew->matrix(2, 2).row_map());
-    ones.PutScalar(1.0);
+    ones.put_scalar(1.0);
 
     Core::LinAlg::SparseMatrix onesdiag(ones);
     onesdiag.complete();
@@ -575,18 +575,18 @@ void ALE::Meshtying::condensation_operation_block_matrix(
   P->multiply(true, *(splitres[2]), fm_mod);
 
   // r_m: insert Dirichlet boundary conditions
-  if (dconmaster_ == true and firstnonliniter_ == true) fm_mod.Update(-1.0, *dcmm, 1.0);
+  if (dconmaster_ == true and firstnonliniter_ == true) fm_mod.update(-1.0, *dcmm, 1.0);
 
   // export and add r_m subvector to residual
   Core::LinAlg::Vector<double> fm_modexp(*dofrowmap_);
   Core::LinAlg::export_to(fm_mod, fm_modexp);
-  residual->Update(1.0, fm_modexp, 1.0);
+  residual->update(1.0, fm_modexp, 1.0);
 
   if (dconmaster_ == true and firstnonliniter_ == true)
   {
     Core::LinAlg::Vector<double> fn_exp(*dofrowmap_, true);
     Core::LinAlg::export_to(*dcnm, fn_exp);
-    residual->Update(-1.0, fn_exp, 1.0);
+    residual->update(-1.0, fn_exp, 1.0);
   }
 
   // export r_s = zero to residual
@@ -637,35 +637,35 @@ void ALE::Meshtying::update_slave_dof(std::shared_ptr<Core::LinAlg::Vector<doubl
   P->multiply(false, *(splitinc[1]), fs_mod);
 
   // delta_vp^s: subtract vp_i^s
-  fs_mod.Update(-1.0, *(splitdisp[2]), 1.0);
+  fs_mod.update(-1.0, *(splitdisp[2]), 1.0);
 
   // delta_vp^s: add P*vp_i^m
   Core::LinAlg::Vector<double> fs_mod_m(*gsdofrowmap_, true);
   P->multiply(false, *(splitdisp[1]), fs_mod_m);
-  fs_mod.Update(1.0, fs_mod_m, 1.0);
+  fs_mod.update(1.0, fs_mod_m, 1.0);
 
   // set Dirichlet boundary conditions, if any
   if (dconmaster_ == true and firstnonliniter_ == true)
   {
     Core::LinAlg::Vector<double> fsdc_mod(*gsdofrowmap_, true);
     P->multiply(false, *(splitdcmaster[1]), fsdc_mod);
-    fs_mod.Update(1.0, fsdc_mod, 1.0);
+    fs_mod.update(1.0, fsdc_mod, 1.0);
   }
 
   // export interior degrees of freedom
   Core::LinAlg::Vector<double> fnexp(*dofrowmap);
   Core::LinAlg::export_to(*(splitinc[0]), fnexp);
-  incnew->Update(1.0, fnexp, 1.0);
+  incnew->update(1.0, fnexp, 1.0);
 
   // export master degrees of freedom
   Core::LinAlg::Vector<double> fmexp(*dofrowmap);
   Core::LinAlg::export_to(*(splitinc[1]), fmexp);
-  incnew->Update(1.0, fmexp, 1.0);
+  incnew->update(1.0, fmexp, 1.0);
 
   // export slave degrees of freedom
   Core::LinAlg::Vector<double> fs_modexp(*dofrowmap);
   Core::LinAlg::export_to(fs_mod, fs_modexp);
-  incnew->Update(1.0, fs_modexp, 1.0);
+  incnew->update(1.0, fs_modexp, 1.0);
 
   // set iteration counter for Dirichlet boundary conditions, if any
   if (dconmaster_ == true and firstnonliniter_ == true) firstnonliniter_ = false;

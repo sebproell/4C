@@ -539,10 +539,10 @@ void FLD::TurbulenceStatisticsLdc::do_time_sample(Core::LinAlg::Vector<double>& 
   {
     // toggle vectors are one in the position of a dof for this line,
     // else 0
-    toggleu_->PutScalar(0.0);
-    togglev_->PutScalar(0.0);
-    togglew_->PutScalar(0.0);
-    togglep_->PutScalar(0.0);
+    toggleu_->put_scalar(0.0);
+    togglev_->put_scalar(0.0);
+    togglew_->put_scalar(0.0);
+    togglep_->put_scalar(0.0);
 
     // count the number of nodes contributing to this nodal value on x1-centerline
     int countnodes = 0;
@@ -561,10 +561,10 @@ void FLD::TurbulenceStatisticsLdc::do_time_sample(Core::LinAlg::Vector<double>& 
         std::vector<int> dof = discret_->dof(node);
         double one = 1.0;
 
-        toggleu_->ReplaceGlobalValues(1, &one, &(dof[0]));
-        togglev_->ReplaceGlobalValues(1, &one, &(dof[1]));
-        togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
-        togglep_->ReplaceGlobalValues(1, &one, &(dof[3]));
+        toggleu_->replace_global_values(1, &one, &(dof[0]));
+        togglev_->replace_global_values(1, &one, &(dof[1]));
+        togglew_->replace_global_values(1, &one, &(dof[2]));
+        togglep_->replace_global_values(1, &one, &(dof[3]));
 
         countnodes++;
       }
@@ -583,10 +583,10 @@ void FLD::TurbulenceStatisticsLdc::do_time_sample(Core::LinAlg::Vector<double>& 
       double v;
       double w;
       double p;
-      velnp.Dot(*toggleu_, &u);
-      velnp.Dot(*togglev_, &v);
-      velnp.Dot(*togglew_, &w);
-      velnp.Dot(*togglep_, &p);
+      velnp.dot(*toggleu_, &u);
+      velnp.dot(*togglev_, &v);
+      velnp.dot(*togglew_, &w);
+      velnp.dot(*togglep_, &p);
 
       //----------------------------------------------------------------------
       // calculate spatial means for velocity and pressure on this centerline
@@ -626,10 +626,10 @@ void FLD::TurbulenceStatisticsLdc::do_time_sample(Core::LinAlg::Vector<double>& 
   {
     // toggle vectors are one in the position of a dof for this line,
     // else 0
-    toggleu_->PutScalar(0.0);
-    togglev_->PutScalar(0.0);
-    togglew_->PutScalar(0.0);
-    togglep_->PutScalar(0.0);
+    toggleu_->put_scalar(0.0);
+    togglev_->put_scalar(0.0);
+    togglew_->put_scalar(0.0);
+    togglep_->put_scalar(0.0);
 
     // count the number of nodes contributing to this nodal value on x2-centerline
     int countnodes = 0;
@@ -648,10 +648,10 @@ void FLD::TurbulenceStatisticsLdc::do_time_sample(Core::LinAlg::Vector<double>& 
         std::vector<int> dof = discret_->dof(node);
         double one = 1.0;
 
-        toggleu_->ReplaceGlobalValues(1, &one, &(dof[0]));
-        togglev_->ReplaceGlobalValues(1, &one, &(dof[1]));
-        togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
-        togglep_->ReplaceGlobalValues(1, &one, &(dof[3]));
+        toggleu_->replace_global_values(1, &one, &(dof[0]));
+        togglev_->replace_global_values(1, &one, &(dof[1]));
+        togglew_->replace_global_values(1, &one, &(dof[2]));
+        togglep_->replace_global_values(1, &one, &(dof[3]));
 
         countnodes++;
       }
@@ -670,10 +670,10 @@ void FLD::TurbulenceStatisticsLdc::do_time_sample(Core::LinAlg::Vector<double>& 
       double v;
       double w;
       double p;
-      velnp.Dot(*toggleu_, &u);
-      velnp.Dot(*togglev_, &v);
-      velnp.Dot(*togglew_, &w);
-      velnp.Dot(*togglep_, &p);
+      velnp.dot(*toggleu_, &u);
+      velnp.dot(*togglev_, &v);
+      velnp.dot(*togglew_, &w);
+      velnp.dot(*togglep_, &p);
 
       //----------------------------------------------------------------------
       // calculate spatial means for velocity and pressure on this centerline
@@ -713,10 +713,10 @@ void FLD::TurbulenceStatisticsLdc::do_time_sample(Core::LinAlg::Vector<double>& 
   {
     // toggle vectors are one in the position of a dof for this line,
     // else 0
-    toggleu_->PutScalar(0.0);
-    togglev_->PutScalar(0.0);
-    togglew_->PutScalar(0.0);
-    togglep_->PutScalar(0.0);
+    toggleu_->put_scalar(0.0);
+    togglev_->put_scalar(0.0);
+    togglew_->put_scalar(0.0);
+    togglep_->put_scalar(0.0);
 
     // count the number of nodes contributing to this nodal value on x3-centerline
     int countnodes = 0;
@@ -735,10 +735,10 @@ void FLD::TurbulenceStatisticsLdc::do_time_sample(Core::LinAlg::Vector<double>& 
         std::vector<int> dof = discret_->dof(node);
         double one = 1.0;
 
-        toggleu_->ReplaceGlobalValues(1, &one, &(dof[0]));
-        togglev_->ReplaceGlobalValues(1, &one, &(dof[1]));
-        togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
-        togglep_->ReplaceGlobalValues(1, &one, &(dof[3]));
+        toggleu_->replace_global_values(1, &one, &(dof[0]));
+        togglev_->replace_global_values(1, &one, &(dof[1]));
+        togglew_->replace_global_values(1, &one, &(dof[2]));
+        togglep_->replace_global_values(1, &one, &(dof[3]));
 
         countnodes++;
       }
@@ -757,10 +757,10 @@ void FLD::TurbulenceStatisticsLdc::do_time_sample(Core::LinAlg::Vector<double>& 
       double v;
       double w;
       double p;
-      velnp.Dot(*toggleu_, &u);
-      velnp.Dot(*togglev_, &v);
-      velnp.Dot(*togglew_, &w);
-      velnp.Dot(*togglep_, &p);
+      velnp.dot(*toggleu_, &u);
+      velnp.dot(*togglev_, &v);
+      velnp.dot(*togglew_, &w);
+      velnp.dot(*togglep_, &p);
 
       //----------------------------------------------------------------------
       // calculate spatial means for velocity and pressure on this centerline
@@ -814,10 +814,10 @@ void FLD::TurbulenceStatisticsLdc::do_loma_time_sample(Core::LinAlg::Vector<doub
   {
     // toggle vectors are one in the position of a dof for this line,
     // else 0
-    toggleu_->PutScalar(0.0);
-    togglev_->PutScalar(0.0);
-    togglew_->PutScalar(0.0);
-    togglep_->PutScalar(0.0);
+    toggleu_->put_scalar(0.0);
+    togglev_->put_scalar(0.0);
+    togglew_->put_scalar(0.0);
+    togglep_->put_scalar(0.0);
 
     // count the number of nodes contributing to this nodal value on x1-centerline
     int countnodes = 0;
@@ -835,10 +835,10 @@ void FLD::TurbulenceStatisticsLdc::do_loma_time_sample(Core::LinAlg::Vector<doub
         std::vector<int> dof = discret_->dof(node);
         double one = 1.0;
 
-        toggleu_->ReplaceGlobalValues(1, &one, &(dof[0]));
-        togglev_->ReplaceGlobalValues(1, &one, &(dof[1]));
-        togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
-        togglep_->ReplaceGlobalValues(1, &one, &(dof[3]));
+        toggleu_->replace_global_values(1, &one, &(dof[0]));
+        togglev_->replace_global_values(1, &one, &(dof[1]));
+        togglew_->replace_global_values(1, &one, &(dof[2]));
+        togglep_->replace_global_values(1, &one, &(dof[3]));
 
         countnodes++;
       }
@@ -858,13 +858,13 @@ void FLD::TurbulenceStatisticsLdc::do_loma_time_sample(Core::LinAlg::Vector<doub
       double v;
       double w;
       double p;
-      velnp.Dot(*toggleu_, &u);
-      velnp.Dot(*togglev_, &v);
-      velnp.Dot(*togglew_, &w);
-      velnp.Dot(*togglep_, &p);
+      velnp.dot(*toggleu_, &u);
+      velnp.dot(*togglev_, &v);
+      velnp.dot(*togglew_, &w);
+      velnp.dot(*togglep_, &p);
 
       double T;
-      scanp.Dot(*togglep_, &T);
+      scanp.dot(*togglep_, &T);
 
       //----------------------------------------------------------------------
       // calculate spatial means for vel., press., dens. and temp.
@@ -915,10 +915,10 @@ void FLD::TurbulenceStatisticsLdc::do_loma_time_sample(Core::LinAlg::Vector<doub
   {
     // toggle vectors are one in the position of a dof for this line,
     // else 0
-    toggleu_->PutScalar(0.0);
-    togglev_->PutScalar(0.0);
-    togglew_->PutScalar(0.0);
-    togglep_->PutScalar(0.0);
+    toggleu_->put_scalar(0.0);
+    togglev_->put_scalar(0.0);
+    togglew_->put_scalar(0.0);
+    togglep_->put_scalar(0.0);
 
     // count the number of nodes contributing to this nodal value on x2-centerline
     int countnodes = 0;
@@ -936,10 +936,10 @@ void FLD::TurbulenceStatisticsLdc::do_loma_time_sample(Core::LinAlg::Vector<doub
         std::vector<int> dof = discret_->dof(node);
         double one = 1.0;
 
-        toggleu_->ReplaceGlobalValues(1, &one, &(dof[0]));
-        togglev_->ReplaceGlobalValues(1, &one, &(dof[1]));
-        togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
-        togglep_->ReplaceGlobalValues(1, &one, &(dof[3]));
+        toggleu_->replace_global_values(1, &one, &(dof[0]));
+        togglev_->replace_global_values(1, &one, &(dof[1]));
+        togglew_->replace_global_values(1, &one, &(dof[2]));
+        togglep_->replace_global_values(1, &one, &(dof[3]));
 
         countnodes++;
       }
@@ -959,13 +959,13 @@ void FLD::TurbulenceStatisticsLdc::do_loma_time_sample(Core::LinAlg::Vector<doub
       double v;
       double w;
       double p;
-      velnp.Dot(*toggleu_, &u);
-      velnp.Dot(*togglev_, &v);
-      velnp.Dot(*togglew_, &w);
-      velnp.Dot(*togglep_, &p);
+      velnp.dot(*toggleu_, &u);
+      velnp.dot(*togglev_, &v);
+      velnp.dot(*togglew_, &w);
+      velnp.dot(*togglep_, &p);
 
       double T;
-      scanp.Dot(*togglep_, &T);
+      scanp.dot(*togglep_, &T);
 
       //----------------------------------------------------------------------
       // calculate spatial means for vel., press., dens. and temp.
@@ -1016,10 +1016,10 @@ void FLD::TurbulenceStatisticsLdc::do_loma_time_sample(Core::LinAlg::Vector<doub
   {
     // toggle vectors are one in the position of a dof for this line,
     // else 0
-    toggleu_->PutScalar(0.0);
-    togglev_->PutScalar(0.0);
-    togglew_->PutScalar(0.0);
-    togglep_->PutScalar(0.0);
+    toggleu_->put_scalar(0.0);
+    togglev_->put_scalar(0.0);
+    togglew_->put_scalar(0.0);
+    togglep_->put_scalar(0.0);
 
     // count the number of nodes contributing to this nodal value on x3-centerline
     int countnodes = 0;
@@ -1036,10 +1036,10 @@ void FLD::TurbulenceStatisticsLdc::do_loma_time_sample(Core::LinAlg::Vector<doub
         std::vector<int> dof = discret_->dof(node);
         double one = 1.0;
 
-        toggleu_->ReplaceGlobalValues(1, &one, &(dof[0]));
-        togglev_->ReplaceGlobalValues(1, &one, &(dof[1]));
-        togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
-        togglep_->ReplaceGlobalValues(1, &one, &(dof[3]));
+        toggleu_->replace_global_values(1, &one, &(dof[0]));
+        togglev_->replace_global_values(1, &one, &(dof[1]));
+        togglew_->replace_global_values(1, &one, &(dof[2]));
+        togglep_->replace_global_values(1, &one, &(dof[3]));
 
         countnodes++;
       }
@@ -1059,13 +1059,13 @@ void FLD::TurbulenceStatisticsLdc::do_loma_time_sample(Core::LinAlg::Vector<doub
       double v;
       double w;
       double p;
-      velnp.Dot(*toggleu_, &u);
-      velnp.Dot(*togglev_, &v);
-      velnp.Dot(*togglew_, &w);
-      velnp.Dot(*togglep_, &p);
+      velnp.dot(*toggleu_, &u);
+      velnp.dot(*togglev_, &v);
+      velnp.dot(*togglew_, &w);
+      velnp.dot(*togglep_, &p);
 
       double T;
-      scanp.Dot(*togglep_, &T);
+      scanp.dot(*togglep_, &T);
 
       //----------------------------------------------------------------------
       // calculate spatial means for vel., press., dens. and temp.

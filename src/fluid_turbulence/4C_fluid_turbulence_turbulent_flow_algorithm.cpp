@@ -141,9 +141,9 @@ void FLD::TurbulentFlowAlgorithm::transfer_inflow_velocity()
   velnp_ = Core::LinAlg::create_vector(*fluiddis_->dof_row_map(), true);
 
   // get exporter for transfer of dofs from inflow discretization to complete fluid discretization
-  Epetra_Export exporter(inflowvelnp->Map(), velnp_->Map());
+  Epetra_Export exporter(inflowvelnp->get_map(), velnp_->get_map());
   // export inflow velocity
-  int err = velnp_->Export(*inflowvelnp, exporter, Insert);
+  int err = velnp_->export_to(*inflowvelnp, exporter, Insert);
   if (err != 0) FOUR_C_THROW("Export using exporter returned err=%d", err);
 
   if (Core::Communication::my_mpi_rank(fluiddis_->get_comm()) == 0)
@@ -200,20 +200,20 @@ void FLD::TurbulentFlowAlgorithm::read_restart(const int restart)
 
   // export vectors to inflow discretization
   int err = 0;
-  Epetra_Export exportvelnp(fluidvelnp->Map(), velnp->Map());
-  err = velnp->Export(*fluidvelnp, exportvelnp, Insert);
+  Epetra_Export exportvelnp(fluidvelnp->get_map(), velnp->get_map());
+  err = velnp->export_to(*fluidvelnp, exportvelnp, Insert);
   if (err != 0) FOUR_C_THROW("Export using exporter returned err=%d", err);
-  Epetra_Export exportveln(fluidveln->Map(), veln->Map());
-  err = veln->Export(*fluidveln, exportveln, Insert);
+  Epetra_Export exportveln(fluidveln->get_map(), veln->get_map());
+  err = veln->export_to(*fluidveln, exportveln, Insert);
   if (err != 0) FOUR_C_THROW("Export using exporter returned err=%d", err);
-  Epetra_Export exportvelnm(fluidvelnm->Map(), velnm->Map());
-  err = velnm->Export(*fluidvelnm, exportvelnm, Insert);
+  Epetra_Export exportvelnm(fluidvelnm->get_map(), velnm->get_map());
+  err = velnm->export_to(*fluidvelnm, exportvelnm, Insert);
   if (err != 0) FOUR_C_THROW("Export using exporter returned err=%d", err);
-  Epetra_Export exportaccnp(fluidaccnp->Map(), accnp->Map());
-  err = accnp->Export(*fluidaccnp, exportaccnp, Insert);
+  Epetra_Export exportaccnp(fluidaccnp->get_map(), accnp->get_map());
+  err = accnp->export_to(*fluidaccnp, exportaccnp, Insert);
   if (err != 0) FOUR_C_THROW("Export using exporter returned err=%d", err);
-  Epetra_Export exportaccn(fluidaccn->Map(), accn->Map());
-  err = accn->Export(*fluidaccn, exportaccn, Insert);
+  Epetra_Export exportaccn(fluidaccn->get_map(), accn->get_map());
+  err = accn->export_to(*fluidaccn, exportaccn, Insert);
   if (err != 0) FOUR_C_THROW("Export using exporter returned err=%d", err);
 
   // set values in the inflow field

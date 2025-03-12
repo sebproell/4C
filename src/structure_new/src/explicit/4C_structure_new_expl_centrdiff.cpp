@@ -78,19 +78,19 @@ void Solid::EXPLICIT::CentrDiff::set_state(const Core::LinAlg::Vector<double>& x
   // new end-point acceleration
   // ---------------------------------------------------------------------------
   std::shared_ptr<Core::LinAlg::Vector<double>> accnp_ptr = global_state().extract_displ_entries(x);
-  global_state().get_acc_np()->Scale(1.0, *accnp_ptr);
+  global_state().get_acc_np()->scale(1.0, *accnp_ptr);
 
   // ---------------------------------------------------------------------------
   // new half-point velocities
   // ---------------------------------------------------------------------------
-  global_state().get_vel_np()->Update(1.0, *global_state().get_vel_n(), 0.0);
-  global_state().get_vel_np()->Update(dthalf, *global_state().get_acc_n(), 1.0);
+  global_state().get_vel_np()->update(1.0, *global_state().get_vel_n(), 0.0);
+  global_state().get_vel_np()->update(dthalf, *global_state().get_acc_n(), 1.0);
 
   // ---------------------------------------------------------------------------
   // new end-point displacements
   // ---------------------------------------------------------------------------
-  global_state().get_dis_np()->Update(1.0, *global_state().get_dis_n(), 0.0);
-  global_state().get_dis_np()->Update(dt, *global_state().get_vel_np(), 1.0);
+  global_state().get_dis_np()->update(1.0, *global_state().get_dis_n(), 0.0);
+  global_state().get_dis_np()->update(dt, *global_state().get_vel_np(), 1.0);
 
   // ---------------------------------------------------------------------------
   // update the elemental state
@@ -159,15 +159,15 @@ void Solid::EXPLICIT::CentrDiff::update_step_state()
   // ---------------------------------------------------------------------------
   // new at t_{n+1} -> t_n
   //    finertial_{n} := finertial_{n+1}
-  finertian_ptr_->Scale(1.0, *finertianp_ptr_);
+  finertian_ptr_->scale(1.0, *finertianp_ptr_);
   // new at t_{n+1} -> t_n
   //    fviscous_{n} := fviscous_{n+1}
-  fviscon_ptr_->Scale(1.0, *fvisconp_ptr_);
+  fviscon_ptr_->scale(1.0, *fvisconp_ptr_);
 
   // recompute the velocity to account for new acceleration
-  global_state().get_vel_np()->Update(1.0, *global_state().get_vel_n(), 0.0);
-  global_state().get_vel_np()->Update(dthalf, *global_state().get_acc_n(), 1.0);
-  global_state().get_vel_np()->Update(dthalf, *global_state().get_acc_np(), 1.0);
+  global_state().get_vel_np()->update(1.0, *global_state().get_vel_n(), 0.0);
+  global_state().get_vel_np()->update(dthalf, *global_state().get_acc_n(), 1.0);
+  global_state().get_vel_np()->update(dthalf, *global_state().get_acc_np(), 1.0);
 
   // ---------------------------------------------------------------------------
   // update model specific variables

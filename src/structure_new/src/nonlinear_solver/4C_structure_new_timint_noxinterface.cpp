@@ -203,7 +203,7 @@ double Solid::TimeInt::NoxInterface::get_primary_rhs_norms(const Epetra_Vector& 
 
       int_ptr_->remove_condensed_contributions_from_rhs(*rhs_ptr);
 
-      rhsnorm = calculate_norm(rhs_ptr->get_ptr_of_Epetra_Vector(), type, isscaled);
+      rhsnorm = calculate_norm(rhs_ptr->get_ptr_of_epetra_vector(), type, isscaled);
 
       break;
     }
@@ -212,7 +212,7 @@ double Solid::TimeInt::NoxInterface::get_primary_rhs_norms(const Epetra_Vector& 
       // export the model specific solution if necessary
       auto rhs_ptr = gstate_ptr_->extract_model_entries(mt, Core::LinAlg::Vector<double>(F));
 
-      rhsnorm = calculate_norm(rhs_ptr->get_ptr_of_Epetra_Vector(), type, isscaled);
+      rhsnorm = calculate_norm(rhs_ptr->get_ptr_of_epetra_vector(), type, isscaled);
 
       break;
     }
@@ -266,7 +266,7 @@ double Solid::TimeInt::NoxInterface::get_primary_solution_update_rms(const Epetr
       auto model_xnew_ptr =
           gstate_ptr_->extract_model_entries(mt, Core::LinAlg::Vector<double>(xnew));
 
-      model_incr_ptr->Update(1.0, *model_xnew_ptr, -1.0);
+      model_incr_ptr->update(1.0, *model_xnew_ptr, -1.0);
       rms = NOX::Nln::Aux::root_mean_square_norm(
           atol, rtol, *model_xnew_ptr, *model_incr_ptr, disable_implicit_weighting);
       break;
@@ -310,8 +310,8 @@ double Solid::TimeInt::NoxInterface::get_primary_solution_update_norms(const Epe
       auto model_xnew_ptr =
           gstate_ptr_->extract_model_entries(mt, Core::LinAlg::Vector<double>(xnew));
 
-      model_incr_ptr->Update(1.0, *model_xnew_ptr, -1.0);
-      updatenorm = calculate_norm(model_incr_ptr->get_ptr_of_Epetra_Vector(), type, isscaled);
+      model_incr_ptr->update(1.0, *model_xnew_ptr, -1.0);
+      updatenorm = calculate_norm(model_incr_ptr->get_ptr_of_epetra_vector(), type, isscaled);
 
       break;
     }
@@ -323,8 +323,8 @@ double Solid::TimeInt::NoxInterface::get_primary_solution_update_norms(const Epe
       auto model_xnew_ptr =
           gstate_ptr_->extract_model_entries(mt, Core::LinAlg::Vector<double>(xnew));
 
-      model_incr_ptr->Update(1.0, *model_xnew_ptr, -1.0);
-      updatenorm = calculate_norm(model_incr_ptr->get_ptr_of_Epetra_Vector(), type, isscaled);
+      model_incr_ptr->update(1.0, *model_xnew_ptr, -1.0);
+      updatenorm = calculate_norm(model_incr_ptr->get_ptr_of_epetra_vector(), type, isscaled);
 
       break;
     }
@@ -372,7 +372,7 @@ double Solid::TimeInt::NoxInterface::get_previous_primary_solution_norms(const E
       auto model_xold_ptr =
           gstate_ptr_->extract_model_entries(mt, Core::LinAlg::Vector<double>(xold));
 
-      xoldnorm = calculate_norm(model_xold_ptr->get_ptr_of_Epetra_Vector(), type, isscaled);
+      xoldnorm = calculate_norm(model_xold_ptr->get_ptr_of_epetra_vector(), type, isscaled);
 
       break;
     }
@@ -382,7 +382,7 @@ double Solid::TimeInt::NoxInterface::get_previous_primary_solution_norms(const E
       auto model_xold_ptr =
           gstate_ptr_->extract_model_entries(mt, Core::LinAlg::Vector<double>(xold));
 
-      xoldnorm = calculate_norm(model_xold_ptr->get_ptr_of_Epetra_Vector(), type, isscaled);
+      xoldnorm = calculate_norm(model_xold_ptr->get_ptr_of_epetra_vector(), type, isscaled);
 
       break;
     }
@@ -506,7 +506,7 @@ double Solid::TimeInt::NoxInterface::get_linearized_energy_model_terms(
 
           // assemble the force and exclude all constraint models
           int_ptr_->assemble_force(str_gradient, &constraint_models);
-          str_gradient.Dot(dir, &lin_val);
+          str_gradient.dot(dir, &lin_val);
 
           Core::IO::cout(Core::IO::debug)
               << "LinEnergy   D_{d} (Energy) = " << lin_val << Core::IO::endl;

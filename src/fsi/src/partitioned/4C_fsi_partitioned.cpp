@@ -452,7 +452,7 @@ void FSI::Partitioned::timeloop(const Teuchos::RCP<::NOX::Epetra::Interface::Req
     std::shared_ptr<Core::LinAlg::Vector<double>> soln = initial_guess();
 
     ::NOX::Epetra::Vector noxSoln(
-        Teuchos::rcpFromRef(*soln->get_ptr_of_Epetra_Vector()), ::NOX::Epetra::Vector::CreateView);
+        Teuchos::rcpFromRef(*soln->get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
 
     // Create the linear system
     Teuchos::RCP<::NOX::Epetra::LinearSystem> linSys =
@@ -863,12 +863,12 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FSI::Partitioned::interface_veloci
   if (fsidyn.get<bool>("SECONDORDER"))
   {
     ivel = std::make_shared<Core::LinAlg::Vector<double>>(*iveln_);
-    ivel->Update(2. / dt(), idispnp, -2. / dt(), *idispn_, -1.);
+    ivel->update(2. / dt(), idispnp, -2. / dt(), *idispn_, -1.);
   }
   else
   {
     ivel = std::make_shared<Core::LinAlg::Vector<double>>(*idispn_);
-    ivel->Update(1. / dt(), idispnp, -1. / dt());
+    ivel->update(1. / dt(), idispnp, -1. / dt());
   }
   return ivel;
 }
@@ -906,9 +906,9 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FSI::Partitioned::fluid_to_struct(
     // Translate consistent nodal forces to interface loads
     const std::shared_ptr<Core::LinAlg::Vector<double>> ishape =
         mb_fluid_field()->integrate_interface_shape();
-    Core::LinAlg::Vector<double> iforce(iv->Map());
+    Core::LinAlg::Vector<double> iforce(iv->get_map());
 
-    if (iforce.ReciprocalMultiply(1.0, *ishape, *iv, 0.0))
+    if (iforce.reciprocal_multiply(1.0, *ishape, *iv, 0.0))
       FOUR_C_THROW("ReciprocalMultiply failed");
 
     return coupsfm_->slave_to_master(iforce);

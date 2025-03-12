@@ -623,9 +623,9 @@ namespace FLD
 
     // toggle vectors are one in the position of a dof of this node,
     // else 0
-    toggleu_->PutScalar(0.0);
-    togglev_->PutScalar(0.0);
-    togglew_->PutScalar(0.0);
+    toggleu_->put_scalar(0.0);
+    togglev_->put_scalar(0.0);
+    togglew_->put_scalar(0.0);
 
     for (int nn = 0; nn < discret_->num_my_row_nodes(); ++nn)
     {
@@ -637,16 +637,16 @@ namespace FLD
       double one = 1.0;
 
       // set one in respective position
-      toggleu_->ReplaceGlobalValues(1, &one, &(dof[0]));
-      togglev_->ReplaceGlobalValues(1, &one, &(dof[1]));
-      togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
+      toggleu_->replace_global_values(1, &one, &(dof[0]));
+      togglev_->replace_global_values(1, &one, &(dof[1]));
+      togglew_->replace_global_values(1, &one, &(dof[2]));
     }
 
     // compute squared values of velocity
     const Epetra_Map* dofrowmap = discret_->dof_row_map();
     std::shared_ptr<Core::LinAlg::Vector<double>> squaredvelnp =
         Core::LinAlg::create_vector(*dofrowmap, true);
-    squaredvelnp->Multiply(1.0, *velnp, *velnp, 0.0);
+    squaredvelnp->multiply(1.0, *velnp, *velnp, 0.0);
 
     //----------------------------------
     // get values for velocity
@@ -656,17 +656,17 @@ namespace FLD
     double u;
     double v;
     double w;
-    velnp->Dot(*toggleu_, &u);
-    velnp->Dot(*togglev_, &v);
-    velnp->Dot(*togglew_, &w);
+    velnp->dot(*toggleu_, &u);
+    velnp->dot(*togglev_, &v);
+    velnp->dot(*togglew_, &w);
 
     // square of velocity components
     double uu;
     double vv;
     double ww;
-    squaredvelnp->Dot(*toggleu_, &uu);
-    squaredvelnp->Dot(*togglev_, &vv);
-    squaredvelnp->Dot(*togglew_, &ww);
+    squaredvelnp->dot(*toggleu_, &uu);
+    squaredvelnp->dot(*togglev_, &vv);
+    squaredvelnp->dot(*togglew_, &ww);
 
     //-------------------------------------------------
     // add spatial mean values to statistical sample
@@ -1039,9 +1039,9 @@ namespace FLD
 
     // toggle vectors are one in the position of a dof of this node,
     // else 0
-    toggleu_->PutScalar(0.0);
-    togglev_->PutScalar(0.0);
-    togglew_->PutScalar(0.0);
+    toggleu_->put_scalar(0.0);
+    togglev_->put_scalar(0.0);
+    togglew_->put_scalar(0.0);
 
     for (int nn = 0; nn < discret_->num_my_row_nodes(); ++nn)
     {
@@ -1053,16 +1053,16 @@ namespace FLD
       double one = 1.0;
 
       // set one in respective position
-      toggleu_->ReplaceGlobalValues(1, &one, &(dof[0]));
-      togglev_->ReplaceGlobalValues(1, &one, &(dof[1]));
-      togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
+      toggleu_->replace_global_values(1, &one, &(dof[0]));
+      togglev_->replace_global_values(1, &one, &(dof[1]));
+      togglew_->replace_global_values(1, &one, &(dof[2]));
     }
 
     // compute squared values of velocity
     const Epetra_Map* dofrowmap = discret_->dof_row_map();
     std::shared_ptr<Core::LinAlg::Vector<double>> squaredvelnp =
         Core::LinAlg::create_vector(*dofrowmap, true);
-    squaredvelnp->Multiply(1.0, *velnp, *velnp, 0.0);
+    squaredvelnp->multiply(1.0, *velnp, *velnp, 0.0);
 
     //----------------------------------
     // get values for velocity
@@ -1072,17 +1072,17 @@ namespace FLD
     double u;
     double v;
     double w;
-    velnp->Dot(*toggleu_, &u);
-    velnp->Dot(*togglev_, &v);
-    velnp->Dot(*togglew_, &w);
+    velnp->dot(*toggleu_, &u);
+    velnp->dot(*togglev_, &v);
+    velnp->dot(*togglew_, &w);
 
     // square of velocity components
     double uu;
     double vv;
     double ww;
-    squaredvelnp->Dot(*toggleu_, &uu);
-    squaredvelnp->Dot(*togglev_, &vv);
-    squaredvelnp->Dot(*togglew_, &ww);
+    squaredvelnp->dot(*toggleu_, &uu);
+    squaredvelnp->dot(*togglev_, &vv);
+    squaredvelnp->dot(*togglew_, &ww);
 
     //-------------------------------------------------
     // add spatial mean values to statistical sample
@@ -2097,9 +2097,9 @@ namespace FLD
 
     // toggle vectors are one in the position of a dof of this node,
     // else 0
-    toggleu_->PutScalar(0.0);
-    togglev_->PutScalar(0.0);
-    togglew_->PutScalar(0.0);
+    toggleu_->put_scalar(0.0);
+    togglev_->put_scalar(0.0);
+    togglew_->put_scalar(0.0);
 
     //----------------------------------------------------------------------
     // increase sample counter

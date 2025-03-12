@@ -73,7 +73,7 @@ void FLD::TimIntStationary::set_old_part_of_righthandside()
                    (con: hist_ = 0.0)
   */
 
-  hist_->PutScalar(0.0);
+  hist_->put_scalar(0.0);
 
   return;
 }
@@ -171,7 +171,7 @@ void FLD::TimIntStationary::calculate_acceleration(
     const std::shared_ptr<const Core::LinAlg::Vector<double>> accn,
     const std::shared_ptr<Core::LinAlg::Vector<double>> accnp)
 {
-  accnp->PutScalar(0.0);
+  accnp->put_scalar(0.0);
 
   return;
 }

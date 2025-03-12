@@ -68,13 +68,14 @@ void Core::LinAlg::Equilibration::compute_inv_row_sums(const Core::LinAlg::Spars
     Core::LinAlg::Vector<double>& invrowsums, const EquilibrationMethod method) const
 {
   // compute inverse row sums of matrix
-  if (matrix.epetra_matrix()->InvRowSums(invrowsums.get_ref_of_Epetra_Vector()))
+  if (matrix.epetra_matrix()->InvRowSums(invrowsums.get_ref_of_epetra_vector()))
     FOUR_C_THROW("Inverse row sums of matrix could not be successfully computed!");
 
   // take square root of inverse row sums if matrix is scaled from left and right
   if (method == EquilibrationMethod::rowsandcolumns_full or
       method == EquilibrationMethod::rowsandcolumns_maindiag)
-    for (int i = 0; i < invrowsums.MyLength(); ++i) (invrowsums)[i] = std::sqrt((invrowsums)[i]);
+    for (int i = 0; i < invrowsums.local_length(); ++i)
+      (invrowsums)[i] = std::sqrt((invrowsums)[i]);
 }
 
 
@@ -84,13 +85,14 @@ void Core::LinAlg::Equilibration::compute_inv_col_sums(const Core::LinAlg::Spars
     Core::LinAlg::Vector<double>& invcolsums, const EquilibrationMethod method) const
 {
   // compute inverse column sums of matrix
-  if (matrix.epetra_matrix()->InvColSums(invcolsums.get_ref_of_Epetra_Vector()))
+  if (matrix.epetra_matrix()->InvColSums(invcolsums.get_ref_of_epetra_vector()))
     FOUR_C_THROW("Inverse column sums of matrix could not be successfully computed!");
 
   // take square root of inverse column sums if matrix is scaled from left and right
   if (method == EquilibrationMethod::rowsandcolumns_full or
       method == EquilibrationMethod::rowsandcolumns_maindiag)
-    for (int i = 0; i < invcolsums.MyLength(); ++i) (invcolsums)[i] = std::sqrt((invcolsums)[i]);
+    for (int i = 0; i < invcolsums.local_length(); ++i)
+      (invcolsums)[i] = std::sqrt((invcolsums)[i]);
 }
 
 /*-------------------------------------------------------------------------------*
@@ -102,7 +104,7 @@ void Core::LinAlg::Equilibration::compute_inv_symmetry(
       Core::LinAlg::create_vector(matrix.range_map(), true);
   matrix.extract_diagonal_copy(*diag);
 
-  for (int my_row = 0; my_row < diag->Map().NumMyElements(); ++my_row)
+  for (int my_row = 0; my_row < diag->get_map().NumMyElements(); ++my_row)
   {
     (invsymmetry)[my_row] = 1.0 / std::sqrt((*diag)[my_row]);
   }
@@ -150,7 +152,7 @@ void Core::LinAlg::EquilibrationUniversal::unequilibrate_increment(
       method() == EquilibrationMethod::rowsandcolumns_full or
       method() == EquilibrationMethod::rowsandcolumns_maindiag)
   {
-    if (increment->Multiply(1.0, *invcolsums_, *increment, 0.0))
+    if (increment->multiply(1.0, *invcolsums_, *increment, 0.0))
       FOUR_C_THROW("Unequilibration of global increment vector failed!");
   }
 }
@@ -165,7 +167,7 @@ void Core::LinAlg::EquilibrationUniversal::equilibrate_rhs(
       method() == EquilibrationMethod::rows_maindiag or
       method() == EquilibrationMethod::rowsandcolumns_full or
       method() == EquilibrationMethod::rowsandcolumns_maindiag)
-    if (residual->Multiply(1.0, *invrowsums_, *residual, 0.0))
+    if (residual->multiply(1.0, *invrowsums_, *residual, 0.0))
       FOUR_C_THROW("Equilibration of global residual vector failed!");
 }
 
@@ -174,7 +176,7 @@ void Core::LinAlg::EquilibrationUniversal::equilibrate_rhs(
 void Core::LinAlg::EquilibrationBlockSpecific::unequilibrate_increment(
     std::shared_ptr<Core::LinAlg::Vector<double>> increment) const
 {
-  if (increment->Multiply(1.0, *invcolsums_, *increment, 0.0))
+  if (increment->multiply(1.0, *invcolsums_, *increment, 0.0))
     FOUR_C_THROW("Unequilibration of global increment vector failed!");
 }
 
@@ -183,7 +185,7 @@ void Core::LinAlg::EquilibrationBlockSpecific::unequilibrate_increment(
 void Core::LinAlg::EquilibrationBlockSpecific::equilibrate_rhs(
     std::shared_ptr<Core::LinAlg::Vector<double>> residual) const
 {
-  if (residual->Multiply(1.0, *invrowsums_, *residual, 0.0))
+  if (residual->multiply(1.0, *invrowsums_, *residual, 0.0))
     FOUR_C_THROW("Equilibration of global residual vector failed!");
 }
 
@@ -290,12 +292,12 @@ void Core::LinAlg::EquilibrationBlock::equilibrate_matrix(
         }
 
         // invert row sums
-        if (invrowsums.Reciprocal(invrowsums)) FOUR_C_THROW("Vector could not be inverted!");
+        if (invrowsums.reciprocal(invrowsums)) FOUR_C_THROW("Vector could not be inverted!");
 
         // take square root of inverse row sums if matrix is scaled from left and right
         if (method() == EquilibrationMethod::rowsandcolumns_full or
             method() == EquilibrationMethod::rowsandcolumns_maindiag)
-          for (int j = 0; j < invrowsums.MyLength(); ++j)
+          for (int j = 0; j < invrowsums.local_length(); ++j)
             (invrowsums)[j] = std::sqrt((invrowsums)[j]);
       }
 
@@ -355,19 +357,19 @@ void Core::LinAlg::EquilibrationBlock::equilibrate_matrix(
 
               // add entries of current matrix row to column sums
               for (int ientry = 0; ientry < numentries; ++ientry)
-                invcolsums->SumIntoGlobalValue(
+                invcolsums->sum_into_global_value(
                     matrix.col_map().GID(indices[ientry]), 0, std::abs(values[ientry]));
             }
           }
         }
 
         // invert column sums
-        if (invcolsums->Reciprocal(*invcolsums)) FOUR_C_THROW("Vector could not be inverted!");
+        if (invcolsums->reciprocal(*invcolsums)) FOUR_C_THROW("Vector could not be inverted!");
 
         // take square root of inverse column sums if matrix is scaled from left and right
         if (method() == EquilibrationMethod::rowsandcolumns_full or
             method() == EquilibrationMethod::rowsandcolumns_maindiag)
-          for (int i = 0; i < invcolsums->MyLength(); ++i)
+          for (int i = 0; i < invcolsums->local_length(); ++i)
             (*invcolsums)[i] = std::sqrt((*invcolsums)[i]);
       }
 
@@ -395,8 +397,8 @@ void Core::LinAlg::EquilibrationBlockSpecific::equilibrate_matrix(
     FOUR_C_THROW("No match between number of equilibration methods and Matrix blocks");
 
   // init: no scaling
-  invcolsums_->PutScalar(1.0);
-  invrowsums_->PutScalar(1.0);
+  invcolsums_->put_scalar(1.0);
+  invrowsums_->put_scalar(1.0);
 
   // loop over all blocks of matrix and apply equilibration for each block
   for (int i = 0; i < blocksparsematrix->rows(); ++i)

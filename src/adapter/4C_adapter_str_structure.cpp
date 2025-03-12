@@ -191,10 +191,10 @@ void Adapter::StructureBaseAlgorithm::create_tim_int(const Teuchos::ParameterLis
     {
       const int size = actdis->dof_row_map()->NumMyElements();
       Core::LinAlg::Vector<double> vec(*(actdis->dof_row_map()), false);
-      std::copy(ns->data() + offset * size, ns->data() + (offset + 1) * size, vec.Values());
+      std::copy(ns->data() + offset * size, ns->data() + (offset + 1) * size, vec.get_values());
 
       stcinv->multiply(false, vec, temp);
-      std::copy(temp.Values(), temp.Values() + size, ns->data() + offset * size);
+      std::copy(temp.get_values(), temp.get_values() + size, ns->data() + offset * size);
     };
 
 

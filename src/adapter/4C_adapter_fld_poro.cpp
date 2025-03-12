@@ -65,9 +65,9 @@ void Adapter::FluidPoro::evaluate_no_penetration_cond(
     {
       const int ndim = Global::Problem::instance()->n_dim();
       const int ndof = ndim + 1;
-      const int length = condVector->MyLength();
+      const int length = condVector->local_length();
       const int nnod = length / ndof;
-      const Epetra_BlockMap& map = condVector->Map();
+      const Epetra_BlockMap& map = condVector->get_map();
       bool isset = false;
       for (int i = 0; i < nnod; i++)
       {

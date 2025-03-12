@@ -590,11 +590,11 @@ BeamInteraction::BeamToFluidMortarManager::get_global_lambda(
   Core::LinAlg::Vector<double> lambda_temp_2(*lambda_dof_rowmap_);
   int linalg_error = global_d_->multiply(false, beam_vel, lambda_temp_2);
   if (linalg_error != 0) FOUR_C_THROW("Error in Multiply!");
-  linalg_error = lambda_temp_1.Update(1.0, lambda_temp_2, 0.0);
+  linalg_error = lambda_temp_1.update(1.0, lambda_temp_2, 0.0);
   if (linalg_error != 0) FOUR_C_THROW("Error in Update!");
   linalg_error = global_m_->multiply(false, fluid_vel, lambda_temp_2);
   if (linalg_error != 0) FOUR_C_THROW("Error in Multiply!");
-  linalg_error = lambda_temp_1.Update(-1.0, lambda_temp_2, 1.0);
+  linalg_error = lambda_temp_1.update(-1.0, lambda_temp_2, 1.0);
   if (linalg_error != 0) FOUR_C_THROW("Error in Multiply!");
 
   // Scale Lambda with kappa^-1.
@@ -639,7 +639,7 @@ BeamInteraction::BeamToFluidMortarManager::invert_kappa() const
     else
       local_kappa_inv_value = 0.0;
 
-    global_kappa_inv->ReplaceMyValue(lid, 0, local_kappa_inv_value);
+    global_kappa_inv->replace_local_value(lid, 0, local_kappa_inv_value);
   }
 
   return global_kappa_inv;

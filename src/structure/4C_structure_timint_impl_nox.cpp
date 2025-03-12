@@ -287,7 +287,7 @@ bool Solid::TimIntImpl::computeF(const Epetra_Vector& x, Epetra_Vector& RHS,
    * #x holds the current trial total displacements due to NOX: D_{n+1}^{<k+1>}
    * #disn_ holds the total displacement of last NOX iteration: D_{n+1}^{<k>}
    */
-  disi_->Update(1.0, x, -1.0, *disn_, 0.0);
+  disi_->update(1.0, x, -1.0, *disn_, 0.0);
 
   // update end-point displacements etc.
   //   brings #disn_ in sync with #x, so we are ready for next call here
@@ -361,7 +361,7 @@ int Solid::TimIntImpl::nox_solve()
 
   // create initial guess vector of predictor result
   ::NOX::Epetra::Vector noxSoln(
-      Teuchos::rcpFromRef(*disn_->get_ptr_of_Epetra_Vector()), ::NOX::Epetra::Vector::CreateView);
+      Teuchos::rcpFromRef(*disn_->get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
 
   // Linear system
   Teuchos::RCP<::NOX::Epetra::LinearSystem> linSys =

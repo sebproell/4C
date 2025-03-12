@@ -633,8 +633,8 @@ void BeamInteraction::BeamToSolidMortarManager::add_global_force_stiffness_penal
     // respectively.
     Core::LinAlg::Vector<double> beam_force(*beam_dof_rowmap_);
     Core::LinAlg::Vector<double> solid_force(*solid_dof_rowmap_);
-    beam_force.PutScalar(0.);
-    solid_force.PutScalar(0.);
+    beam_force.put_scalar(0.);
+    solid_force.put_scalar(0.);
     linalg_error = force_beam_lin_lambda_->multiply(false, *lambda, beam_force);
     if (linalg_error != 0) FOUR_C_THROW("Error in Multiply!");
     linalg_error = force_solid_lin_lambda_->multiply(false, *lambda, solid_force);
@@ -739,7 +739,7 @@ BeamInteraction::BeamToSolidMortarManager::penalty_invert_kappa() const
       // This LID is inactive.
       local_kappa_inv_value = 0.0;
 
-    kappa_inv->ReplaceMyValue(lid, 0, local_kappa_inv_value);
+    kappa_inv->replace_local_value(lid, 0, local_kappa_inv_value);
   }
 
   return kappa_inv;

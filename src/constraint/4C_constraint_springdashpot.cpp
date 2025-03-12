@@ -243,7 +243,7 @@ CONSTRAINTS::SpringDashpot::SpringDashpot(std::shared_ptr<Core::FE::Discretizati
       offset_prestr_new_(nullptr)
 {
   offset_prestr_new_ = std::make_shared<Core::LinAlg::Vector<double>>(*actdisc_->dof_row_map());
-  offset_prestr_new_->PutScalar(0.0);
+  offset_prestr_new_->put_scalar(0.0);
 
   // set type of this spring
   set_spring_type();
@@ -725,7 +725,7 @@ void CONSTRAINTS::SpringDashpot::evaluate_force(Core::LinAlg::Vector<double>& fi
             const double val =
                 -nodalarea *
                 (springstiff * (gap - offsetprestr[k] - offset_) + viscosity_ * gapdt) * normal[k];
-            const int err = fint.SumIntoGlobalValues(1, &val, &dofs[k]);
+            const int err = fint.sum_into_global_values(1, &val, &dofs[k]);
             if (err) FOUR_C_THROW("SumIntoGlobalValues failed!");
 
             // store spring stress for output
@@ -848,7 +848,7 @@ void CONSTRAINTS::SpringDashpot::evaluate_force_stiff(Core::LinAlg::SparseMatrix
             const double val =
                 -nodalarea *
                 (springstiff * (gap - offsetprestr[k] - offset_) + viscosity_ * gapdt) * normal[k];
-            const int err = fint.SumIntoGlobalValues(1, &val, &dofs[k]);
+            const int err = fint.sum_into_global_values(1, &val, &dofs[k]);
             if (err) FOUR_C_THROW("SumIntoGlobalValues failed!");
 
             // stiffness
@@ -916,7 +916,7 @@ void CONSTRAINTS::SpringDashpot::reset_newton()
 void CONSTRAINTS::SpringDashpot::reset_prestress(const Core::LinAlg::Vector<double>& dis)
 {
   // this should be sufficient, no need to loop over nodes anymore
-  offset_prestr_new_->Update(1.0, dis, 1.0);
+  offset_prestr_new_->update(1.0, dis, 1.0);
 
   // loop over all nodes only necessary for cursurfnormal which does not use consistent integration
   if (springtype_ == RobinSpringDashpotType::cursurfnormal)
@@ -947,7 +947,7 @@ void CONSTRAINTS::SpringDashpot::reset_prestress(const Core::LinAlg::Vector<doub
  *----------------------------------------------------------------------*/
 void CONSTRAINTS::SpringDashpot::set_restart(Core::LinAlg::Vector<double>& vec)
 {
-  offset_prestr_new_->Update(1.0, vec, 0.0);
+  offset_prestr_new_->update(1.0, vec, 0.0);
 }
 
 /*----------------------------------------------------------------------*
@@ -1002,7 +1002,7 @@ void CONSTRAINTS::SpringDashpot::output_gap_normal(Core::LinAlg::Vector<double>&
   for (const auto& i : gap_)
   {
     // global id -> local id
-    const int lid = gap.Map().LID(i.first);
+    const int lid = gap.get_map().LID(i.first);
     // local id on processor
     if (lid >= 0) (gap)[lid] += i.second;
   }
@@ -1044,7 +1044,7 @@ void CONSTRAINTS::SpringDashpot::output_gap_normal(Core::LinAlg::Vector<double>&
 void CONSTRAINTS::SpringDashpot::output_prestr_offset(
     Core::LinAlg::Vector<double>& springprestroffset) const
 {
-  springprestroffset.Update(1.0, *offset_prestr_new_, 0.0);
+  springprestroffset.update(1.0, *offset_prestr_new_, 0.0);
 }
 
 /*----------------------------------------------------------------------*

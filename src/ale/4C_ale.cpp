@@ -130,8 +130,8 @@ void ALE::Ale::set_initial_displacement(const ALE::InitialDisp init, const int s
   {
     case ALE::initdisp_zero_disp:
     {
-      dispn_->PutScalar(0.0);
-      dispnp_->PutScalar(0.0);
+      dispn_->put_scalar(0.0);
+      dispnp_->put_scalar(0.0);
 
       break;
     }
@@ -159,13 +159,13 @@ void ALE::Ale::set_initial_displacement(const ALE::InitialDisp init, const int s
                                   ->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)
                                   .evaluate(lnode->x().data(), 0, d);
 
-          int err = dispn_->ReplaceMyValues(1, &initialval, &doflid);
+          int err = dispn_->replace_local_values(1, &initialval, &doflid);
           if (err != 0) FOUR_C_THROW("dof not on proc");
         }
       }
 
       // initialize also the solution vector
-      dispnp_->Update(1.0, *dispn_, 0.0);
+      dispnp_->update(1.0, *dispn_, 0.0);
 
       break;
     }
@@ -216,11 +216,11 @@ void ALE::Ale::evaluate(std::shared_ptr<const Core::LinAlg::Vector<double>> step
   // Note: What we get here is the sum of all increments in this time
   // step, not just the latest increment.
 
-  disi_->PutScalar(0.0);
+  disi_->put_scalar(0.0);
 
   if (stepinc != nullptr)
   {
-    dispnp_->Update(1.0, *stepinc, 1.0, *dispn_, 0.0);
+    dispnp_->update(1.0, *stepinc, 1.0, *dispn_, 0.0);
   }
 
   if (msht_ != ALE::no_meshtying)
@@ -271,7 +271,7 @@ void ALE::Ale::evaluate(std::shared_ptr<const Core::LinAlg::Vector<double>> step
   /* residual_ contains the most recent "mechanical" residual including DBCs.
    * We make this negative and store it in rhs_ for use in Newton-type methods.
    */
-  rhs_->Update(-1.0, *residual_, 0.0);
+  rhs_->update(-1.0, *residual_, 0.0);
 
   return;
 }
@@ -283,7 +283,7 @@ int ALE::Ale::solve()
   // We need the negative residual here as right hand side of the linear problem
   std::shared_ptr<Core::LinAlg::Vector<double>> rhs =
       std::make_shared<Core::LinAlg::Vector<double>>(*residual_);
-  rhs->Scale(-1.0);
+  rhs->scale(-1.0);
 
   // ToDo (mayr) Why can't we use rhs_ instead of local variable rhs???
   int errorcode = 0;
@@ -296,19 +296,19 @@ int ALE::Ale::solve()
   else
     errorcode = meshtying_->solve_meshtying(*solver_, sysmat_, disi_, rhs, dispnp_);
   // calc norm
-  disi_->Norm2(&normdisi_);
-  normdisi_ /= sqrt(disi_->GlobalLength());
+  disi_->norm_2(&normdisi_);
+  normdisi_ /= sqrt(disi_->global_length());
 
   return errorcode;
 }
 
 /*----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*/
-void ALE::Ale::update_iter() { dispnp_->Update(1.0, *disi_, 1.0); }
+void ALE::Ale::update_iter() { dispnp_->update(1.0, *disi_, 1.0); }
 
 /*----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*/
-void ALE::Ale::update() { dispn_->Update(1.0, *dispnp_, 0.0); }
+void ALE::Ale::update() { dispn_->update(1.0, *dispnp_, 0.0); }
 
 /*----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*/
@@ -319,8 +319,8 @@ bool ALE::Ale::converged(const int iter)
   bool converged = false;
   // determine norms
   double res_norm;
-  residual_->Norm2(&res_norm);
-  res_norm /= sqrt(residual_->GlobalLength());
+  residual_->norm_2(&res_norm);
+  res_norm /= sqrt(residual_->global_length());
   if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
     std::cout << "ITER: " << iter << "  RES NORM: " << res_norm << " DISP NORM: " << normdisi_
               << std::endl;
@@ -339,7 +339,7 @@ void ALE::Ale::evaluate_elements()
   sysmat_->zero();
 
   // zero out residual
-  residual_->PutScalar(0.0);
+  residual_->put_scalar(0.0);
 
   // create the parameters for the discretization
   Teuchos::ParameterList eleparams;
@@ -741,7 +741,7 @@ void ALE::Ale::reset()
 /*----------------------------------------------------------------------------*/
 void ALE::Ale::reset_step()
 {
-  dispnp_->Update(1.0, *dispn_, 0.0);
+  dispnp_->update(1.0, *dispn_, 0.0);
 
   return;
 }
@@ -820,8 +820,8 @@ bool ALE::Ale::evaluate_element_quality()
       actele->evaluate(
           eleparams, *discret_, la, elematrix1, elematrix2, elevector1, elevector2, elevector3);
 
-      eledetjac_->ReplaceMyValue(i, 0, elevector1[0]);
-      elequality_->ReplaceMyValue(i, 0, elevector1[1]);
+      eledetjac_->replace_local_value(i, 0, elevector1[0]);
+      elequality_->replace_local_value(i, 0, elevector1[1]);
 
     }  // loop elements
 
@@ -830,7 +830,7 @@ bool ALE::Ale::evaluate_element_quality()
     // check for non-valid elements
     bool validshapes = true;
     double negdetjac = 0.0;
-    eledetjac_->MinValue(&negdetjac);
+    eledetjac_->min_value(&negdetjac);
     if (negdetjac <= 0)
     {
       validshapes = false;

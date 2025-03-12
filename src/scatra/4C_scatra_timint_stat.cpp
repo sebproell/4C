@@ -126,7 +126,7 @@ void ScaTra::TimIntStationary::set_old_part_of_righthandside()
   // call base class routine
   ScaTraTimIntImpl::set_old_part_of_righthandside();
 
-  hist_->PutScalar(0.0);
+  hist_->put_scalar(0.0);
 }
 
 
@@ -135,7 +135,7 @@ void ScaTra::TimIntStationary::set_old_part_of_righthandside()
  *----------------------------------------------------------------------*/
 void ScaTra::TimIntStationary::add_neumann_to_residual()
 {
-  residual_->Update(1.0, *neumann_loads_, 1.0);
+  residual_->update(1.0, *neumann_loads_, 1.0);
 }
 
 

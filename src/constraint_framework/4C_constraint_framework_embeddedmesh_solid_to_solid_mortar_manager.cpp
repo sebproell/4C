@@ -430,8 +430,8 @@ void CONSTRAINTS::EMBEDDEDMESH::SolidToSolidMortarManager::
     Core::LinAlg::Vector<double> boundary_layer_interface_force(
         *boundary_layer_interface_dof_rowmap_);
     Core::LinAlg::Vector<double> background_force(*background_dof_rowmap_);
-    boundary_layer_interface_force.PutScalar(0.);
-    background_force.PutScalar(0.);
+    boundary_layer_interface_force.put_scalar(0.);
+    background_force.put_scalar(0.);
     linalg_error = global_fbl_l_->multiply(false, *lambda, boundary_layer_interface_force);
     if (linalg_error != 0) FOUR_C_THROW("Error in Multiply!");
     linalg_error = global_fbg_l_->multiply(false, *lambda, background_force);
@@ -441,7 +441,7 @@ void CONSTRAINTS::EMBEDDEDMESH::SolidToSolidMortarManager::
     Core::LinAlg::export_to(background_force, global_temp);
 
     // Add force contributions to global vector.
-    linalg_error = force->Update(rhs_factor, global_temp, 1.0);
+    linalg_error = force->update(rhs_factor, global_temp, 1.0);
     if (linalg_error != 0) FOUR_C_THROW("Error in Update");
   }
 }
@@ -513,7 +513,7 @@ CONSTRAINTS::EMBEDDEDMESH::SolidToSolidMortarManager::penalty_invert_kappa() con
       // This LID is inactive.
       local_kappa_inv_value = 0.0;
 
-    global_kappa_inv->ReplaceMyValue(lid, 0, local_kappa_inv_value);
+    global_kappa_inv->replace_local_value(lid, 0, local_kappa_inv_value);
   }
 
   return global_kappa_inv;

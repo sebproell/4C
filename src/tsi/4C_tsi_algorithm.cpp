@@ -396,7 +396,7 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> TSI::Algorithm::calc_velocit
   vel = std::make_shared<Core::LinAlg::Vector<double>>(*(structure_field()->dispn()));
   // calculate velocity with timestep Dt()
   //  V_n+1^k = (D_n+1^k - D_n) / Dt
-  vel->Update(1. / dt(), dispnp, -1. / dt());
+  vel->update(1. / dt(), dispnp, -1. / dt());
 
   return vel;
 }  // calc_velocity()

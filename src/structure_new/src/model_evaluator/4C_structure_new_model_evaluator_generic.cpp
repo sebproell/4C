@@ -215,7 +215,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Solid::ModelEvaluator::Generic::ge
 
   std::shared_ptr<Core::LinAlg::Vector<double>> fext_incr =
       std::make_shared<Core::LinAlg::Vector<double>>(fextnp);
-  fext_incr->Update(-1.0, fextn, 1.0);
+  fext_incr->update(-1.0, fextn, 1.0);
 
   return fext_incr;
 }

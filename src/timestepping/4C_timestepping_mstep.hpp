@@ -373,9 +373,9 @@ namespace TimeStepping
     {
       for (int ind = 0; ind < MStepBase::steps_ - 1; ++ind)
       {
-        (MStepBase::state_[ind]).Update(1.0, (MStepBase::state_[ind + 1]), 0.0);
+        (MStepBase::state_[ind]).update(1.0, (MStepBase::state_[ind + 1]), 0.0);
       }
-      (MStepBase::state_[steps_ - 1]).Update(1.0, staten, 0.0);
+      (MStepBase::state_[steps_ - 1]).update(1.0, staten, 0.0);
 
       return;
     }

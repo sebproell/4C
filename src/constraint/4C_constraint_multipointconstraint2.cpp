@@ -109,7 +109,7 @@ void CONSTRAINTS::MPConstraint2::initialize(
   // systemvector is supposed to be the vector with initial values of the constraints
   if (Core::Communication::my_mpi_rank(actdisc_->get_comm()) == 0)
   {
-    systemvector->ReplaceGlobalValues(amplit.size(), amplit.data(), IDs.data());
+    systemvector->replace_global_values(amplit.size(), amplit.data(), IDs.data());
   }
 }
 
@@ -308,7 +308,7 @@ void CONSTRAINTS::MPConstraint2::evaluate_constraint(std::shared_ptr<Core::FE::D
       // define global and local index of this bc in redundant vectors
       const int offsetID = params.get<int>("OffsetID");
       int gindex = condID - offsetID;
-      const int lindex = (systemvector3->Map()).LID(gindex);
+      const int lindex = (systemvector3->get_map()).LID(gindex);
 
       // Get the current lagrange multiplier value for this condition
       const std::shared_ptr<Core::LinAlg::Vector<double>> lagramul =
@@ -382,7 +382,7 @@ void CONSTRAINTS::MPConstraint2::evaluate_constraint(std::shared_ptr<Core::FE::D
 
       std::shared_ptr<Core::LinAlg::Vector<double>> timefact =
           params.get<std::shared_ptr<Core::LinAlg::Vector<double>>>("vector curve factors");
-      timefact->ReplaceGlobalValues(1, &curvefac, &gindex);
+      timefact->replace_global_values(1, &curvefac, &gindex);
     }
   }
 }  // end of evaluate_condition

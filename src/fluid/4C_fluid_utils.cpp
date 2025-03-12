@@ -131,7 +131,7 @@ FLD::Utils::StressManager::get_pre_calc_wall_shear_stresses(
       break;
     case Inpar::FLUID::wss_mean:
       if (sum_dt_wss_ > 0.0)  // iff we have actually calculated some mean wss
-        wss->Update(1.0 / sum_dt_wss_, *sum_wss_, 0.0);  // weighted sum of all prior stresses
+        wss->update(1.0 / sum_dt_wss_, *sum_wss_, 0.0);  // weighted sum of all prior stresses
       break;
     default:
       FOUR_C_THROW(
@@ -217,7 +217,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::Utils::StressManager::get_pre
       break;
     case Inpar::FLUID::wss_mean:
       if (sum_dt_stresses_ > 0.0)  // iff we have actually calculated some mean stresses
-        stresses->Update(
+        stresses->update(
             1.0 / sum_dt_stresses_, *sum_stresses_, 0.0);  // weighted sum of all prior stresses
       break;
     default:
@@ -240,7 +240,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::Utils::StressManager::calc_st
       integrate_interface_shape(condstring);
 
   // compute traction values at specified nodes; otherwise do not touch the zero values
-  for (int i = 0; i < integratedshapefunc->MyLength(); i++)
+  for (int i = 0; i < integratedshapefunc->local_length(); i++)
   {
     if ((*integratedshapefunc)[i] != 0.0)
     {
@@ -321,7 +321,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::Utils::StressManager::calc_wa
   // -------------------------------------------------------------------
   // normalize the normal vectors
   // -------------------------------------------------------------------
-  for (int i = 0; i < ndnorm0->MyLength(); i += numdim_ + 1)
+  for (int i = 0; i < ndnorm0->local_length(); i += numdim_ + 1)
   {
     // calculate the length of the normal
     double L = 0.0;
@@ -350,7 +350,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::Utils::StressManager::calc_wa
   std::shared_ptr<Core::LinAlg::Vector<double>> wss = stresses;
 
   // loop over all entities within the traction vector
-  for (int i = 0; i < ndnorm0->MyLength(); i += numdim_ + 1)
+  for (int i = 0; i < ndnorm0->local_length(); i += numdim_ + 1)
   {
     // evaluate the normal stress = < traction . normal >
     double normal_stress = 0.0;
@@ -396,12 +396,12 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::Utils::StressManager::aggreag
 std::shared_ptr<Core::LinAlg::Vector<double>> FLD::Utils::StressManager::time_average_stresses(
     const Core::LinAlg::Vector<double>& stresses, const double dt)
 {
-  sum_stresses_->Update(dt, stresses, 1.0);  // weighted sum of all prior stresses
+  sum_stresses_->update(dt, stresses, 1.0);  // weighted sum of all prior stresses
   sum_dt_stresses_ += dt;
 
   std::shared_ptr<Core::LinAlg::Vector<double>> mean_stresses =
       std::make_shared<Core::LinAlg::Vector<double>>(*(discret_->dof_row_map()), true);
-  mean_stresses->Update(1.0 / sum_dt_stresses_, *sum_stresses_, 0.0);
+  mean_stresses->update(1.0 / sum_dt_stresses_, *sum_stresses_, 0.0);
 
   return mean_stresses;
 }
@@ -412,12 +412,12 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::Utils::StressManager::time_av
 std::shared_ptr<Core::LinAlg::Vector<double>> FLD::Utils::StressManager::time_average_wss(
     const Core::LinAlg::Vector<double>& wss, const double dt)
 {
-  sum_wss_->Update(dt, wss, 1.0);  // weighted sum of all prior stresses
+  sum_wss_->update(dt, wss, 1.0);  // weighted sum of all prior stresses
   sum_dt_wss_ += dt;
 
   std::shared_ptr<Core::LinAlg::Vector<double>> mean_wss =
       std::make_shared<Core::LinAlg::Vector<double>>(*(discret_->dof_row_map()), true);
-  mean_wss->Update(1.0 / sum_dt_wss_, *sum_wss_, 0.0);
+  mean_wss->update(1.0 / sum_dt_wss_, *sum_wss_, 0.0);
 
   return mean_wss;
 }
@@ -646,7 +646,7 @@ void FLD::Utils::lift_drag(const std::shared_ptr<const Core::FE::Discretization>
       {
         const Core::LinAlg::Matrix<3, 1> x(
             (*actnode)->x().data(), false);  // pointer to nodal coordinates
-        const Epetra_BlockMap& rowdofmap = trueresidual.Map();
+        const Epetra_BlockMap& rowdofmap = trueresidual.get_map();
         const std::vector<int> dof = dis->dof(*actnode);
 
         // get nodal forces
@@ -710,9 +710,9 @@ void FLD::Utils::lift_drag(const std::shared_ptr<const Core::FE::Discretization>
 
       // care for the fact that we are (most likely) parallel
       Core::Communication::sum_all(
-          myforces.data(), ((*liftdragvals)[label]).data(), 3, trueresidual.Comm());
+          myforces.data(), ((*liftdragvals)[label]).data(), 3, trueresidual.get_comm());
       Core::Communication::sum_all(
-          mymoments.data(), ((*liftdragvals)[label]).data() + 3, 3, trueresidual.Comm());
+          mymoments.data(), ((*liftdragvals)[label]).data() + 3, 3, trueresidual.get_comm());
 
       // do the output
       if (myrank == 0)
@@ -976,7 +976,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> FLD::Utils::project_gradient(
   std::shared_ptr<Core::LinAlg::MultiVector<double>> projected_velgrad = nullptr;
 
   // dependent on the desired projection, just remove this line
-  if (not vel->Map().SameAs(*discret.dof_row_map()))
+  if (not vel->get_map().SameAs(*discret.dof_row_map()))
     FOUR_C_THROW("input map is not a dof row map of the fluid");
 
   switch (recomethod)

@@ -380,13 +380,13 @@ void Adapter::StructureTimeAda::evaluate_local_error_dis()
   {
     const double coeffmarch = sti.method_lin_err_coeff_dis();
     const double coeffaux = method_lin_err_coeff_dis();
-    locerrdisn_->Update(-1.0, *(gstate.get_dis_np()), 1.0);
-    locerrdisn_->Scale(coeffmarch / (coeffaux - coeffmarch));
+    locerrdisn_->update(-1.0, *(gstate.get_dis_np()), 1.0);
+    locerrdisn_->scale(coeffmarch / (coeffaux - coeffmarch));
   }
   else
   {
     // schemes do not have the same order of accuracy
-    locerrdisn_->Update(-1.0, *(gstate.get_dis_np()), 1.0);
+    locerrdisn_->update(-1.0, *(gstate.get_dis_np()), 1.0);
   }
 
   // blank Dirichlet DOFs since they always carry the exact solution
@@ -492,28 +492,28 @@ double Adapter::StructureTimeAda::calculate_vector_norm(const enum Inpar::Solid:
   if (norm == Inpar::Solid::norm_l1)
   {
     double vectnorm;
-    vect.Norm1(&vectnorm);
+    vect.norm_1(&vectnorm);
     return vectnorm;
   }
   // L2/Euclidian norm
   else if (norm == Inpar::Solid::norm_l2)
   {
     double vectnorm;
-    vect.Norm2(&vectnorm);
+    vect.norm_2(&vectnorm);
     return vectnorm;
   }
   // RMS norm
   else if (norm == Inpar::Solid::norm_rms)
   {
     double vectnorm;
-    vect.Norm2(&vectnorm);
-    return vectnorm / sqrt((double)(vect.GlobalLength() - numneglect));
+    vect.norm_2(&vectnorm);
+    return vectnorm / sqrt((double)(vect.global_length() - numneglect));
   }
   // infinity/maximum norm
   else if (norm == Inpar::Solid::norm_inf)
   {
     double vectnorm;
-    vect.NormInf(&vectnorm);
+    vect.norm_inf(&vectnorm);
     return vectnorm;
   }
   else

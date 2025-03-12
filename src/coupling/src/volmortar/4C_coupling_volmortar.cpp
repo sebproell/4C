@@ -1086,7 +1086,7 @@ void Coupling::VolMortar::VolMortarCoupl::check_initial_residuum()
         int id = discret1()->dof(0, cnode, jdof);
         double val = cnode->x()[jdof];
 
-        var_A->ReplaceGlobalValue(id, 0, val);
+        var_A->replace_global_value(id, 0, val);
       }
     }
   }
@@ -1106,7 +1106,7 @@ void Coupling::VolMortar::VolMortarCoupl::check_initial_residuum()
         int id = discret2()->dof(1, cnode, jdof);
         double val = cnode->x()[jdof];
 
-        var_B->ReplaceGlobalValue(id, 0, val);
+        var_B->replace_global_value(id, 0, val);
       }
     }
   }
@@ -1124,10 +1124,10 @@ void Coupling::VolMortar::VolMortarCoupl::check_initial_residuum()
   if (err != 0) FOUR_C_THROW("error");
 
   // subtract both results
-  result_A->Update(-1.0, *var_B, 1.0);
+  result_A->update(-1.0, *var_B, 1.0);
 
   std::cout << "Result of init check= " << std::endl;
-  result_A->Print(std::cout);
+  result_A->print(std::cout);
 
   return;
 }
@@ -1304,25 +1304,25 @@ void Coupling::VolMortar::VolMortarCoupl::mesh_init()
     err = mmatrix_xb_->multiply(false, *mergedXa, *solMB);
     if (err != 0) FOUR_C_THROW("stop");
 
-    err = solDA->Update(-1.0, *solMA, 1.0);
+    err = solDA->update(-1.0, *solMA, 1.0);
     if (err != 0) FOUR_C_THROW("stop");
 
-    err = solDB->Update(-1.0, *solMB, 1.0);
+    err = solDB->update(-1.0, *solMB, 1.0);
     if (err != 0) FOUR_C_THROW("stop");
 
     double ra = 0.0;
     double rb = 0.0;
 
     // Residuum k+1
-    solDA->Norm2(&ra);
-    solDB->Norm2(&rb);
+    solDA->norm_2(&ra);
+    solDB->norm_2(&rb);
 
     std::cout << "ra= " << ra << "    rb= " << rb << std::endl;
 
     if (ra < 1e-10 and rb < 1e-10) return;
 
-    solDA->Scale(-1.0 * omega);
-    solDB->Scale(-1.0 * omega);
+    solDA->scale(-1.0 * omega);
+    solDB->scale(-1.0 * omega);
 
     // Calc relaxation parameter nu:
     if (mi > 0)
@@ -1332,28 +1332,28 @@ void Coupling::VolMortar::VolMortarCoupl::mesh_init()
           Core::LinAlg::create_vector(*discret1()->dof_row_map(dofseta), true);
       std::shared_ptr<Core::LinAlg::Vector<double>> DiffB =
           Core::LinAlg::create_vector(*discret2()->dof_row_map(dofsetb), true);
-      err = DiffA->Update(1.0, *solDA, 0.0);
+      err = DiffA->update(1.0, *solDA, 0.0);
       if (err != 0) FOUR_C_THROW("stop");
-      err = DiffA->Update(-1.0, *ResoldA, 1.0);
+      err = DiffA->update(-1.0, *ResoldA, 1.0);
       if (err != 0) FOUR_C_THROW("stop");
-      err = DiffB->Update(1.0, *solDB, 0.0);
+      err = DiffB->update(1.0, *solDB, 0.0);
       if (err != 0) FOUR_C_THROW("stop");
-      err = DiffB->Update(-1.0, *ResoldB, 1.0);
+      err = DiffB->update(-1.0, *ResoldB, 1.0);
       if (err != 0) FOUR_C_THROW("stop");
 
       double topa = 0.0;
-      err = DiffA->Dot(*solDA, &topa);
+      err = DiffA->dot(*solDA, &topa);
       if (err != 0) FOUR_C_THROW("stop");
       double topb = 0.0;
-      err = DiffB->Dot(*solDB, &topb);
+      err = DiffB->dot(*solDB, &topb);
       if (err != 0) FOUR_C_THROW("stop");
       double top = -(topa + topb);
 
       double downa = 0.0;
-      err = DiffA->Dot(*DiffA, &downa);
+      err = DiffA->dot(*DiffA, &downa);
       if (err != 0) FOUR_C_THROW("stop");
       double downb = 0.0;
-      err = DiffB->Dot(*DiffB, &downb);
+      err = DiffB->dot(*DiffB, &downb);
       if (err != 0) FOUR_C_THROW("stop");
       double down = (downa + downb);
 
@@ -1362,10 +1362,10 @@ void Coupling::VolMortar::VolMortarCoupl::mesh_init()
       nu = nu + (nu - 1.0) * fac;
     }
 
-    err = ResoldA->Update(1.0, *solDA, 0.0);
+    err = ResoldA->update(1.0, *solDA, 0.0);
     if (err != 0) FOUR_C_THROW("stop");
 
-    err = ResoldB->Update(1.0, *solDB, 0.0);
+    err = ResoldB->update(1.0, *solDB, 0.0);
     if (err != 0) FOUR_C_THROW("stop");
     //--------------------------------------------------------------
     //--------------------------------------------------------------
@@ -1380,7 +1380,7 @@ void Coupling::VolMortar::VolMortarCoupl::mesh_init()
     k.add(*mmatrix_xb_, false, 1.0 * omega, 1.0);
 
     Core::LinAlg::Vector<double> ones(*mergedmap_);
-    ones.PutScalar(1.0);
+    ones.put_scalar(1.0);
     Core::LinAlg::SparseMatrix onesdiag(ones);
     onesdiag.complete();
     k.add(onesdiag, false, 1.0, 1.0);
@@ -1423,7 +1423,7 @@ void Coupling::VolMortar::VolMortarCoupl::mesh_init()
         // loop over slave dofs
         for (int jdof = 0; jdof < nsdof; ++jdof)
         {
-          const int lid = sola->Map().LID(discret1()->dof(dofseta, cnode, jdof));
+          const int lid = sola->get_map().LID(discret1()->dof(dofseta, cnode, jdof));
           nvector[jdof] = (*sola)[lid] - cnode->x()[jdof];
         }
         cnode->change_pos(nvector);
@@ -1442,7 +1442,7 @@ void Coupling::VolMortar::VolMortarCoupl::mesh_init()
         // loop over slave dofs
         for (int jdof = 0; jdof < nsdof; ++jdof)
         {
-          const int lid = solb->Map().LID(discret2()->dof(dofsetb, cnode, jdof));
+          const int lid = solb->get_map().LID(discret2()->dof(dofsetb, cnode, jdof));
           nvector[jdof] = (*solb)[lid] - cnode->x()[jdof];
         }
         cnode->change_pos(nvector);
@@ -1529,18 +1529,18 @@ void Coupling::VolMortar::VolMortarCoupl::mesh_init()
     err = mmatrix_xb_->multiply(false, *checka, *finalMB);
     if (err != 0) FOUR_C_THROW("stop");
 
-    err = finalDA->Update(-1.0, *finalMA, 1.0);
+    err = finalDA->update(-1.0, *finalMA, 1.0);
     if (err != 0) FOUR_C_THROW("stop");
 
-    err = finalDB->Update(-1.0, *finalMB, 1.0);
+    err = finalDB->update(-1.0, *finalMB, 1.0);
     if (err != 0) FOUR_C_THROW("stop");
 
     double finalra = 0.0;
     double finalrb = 0.0;
 
     // Residuum k+1
-    finalDA->Norm2(&finalra);
-    finalDB->Norm2(&finalrb);
+    finalDA->norm_2(&finalra);
+    finalDB->norm_2(&finalrb);
 
     std::cout << "final ra= " << finalra << "   final rb= " << finalrb << std::endl;
   }
@@ -3683,11 +3683,11 @@ void Coupling::VolMortar::VolMortarCoupl::create_projection_operator()
   invd1.extract_diagonal_copy(*diag1);
 
   // set zero diagonal values to dummy 1.0
-  for (int i = 0; i < diag1->MyLength(); ++i)
+  for (int i = 0; i < diag1->local_length(); ++i)
     if (abs((*diag1)[i]) < 1e-12) (*diag1)[i] = 1.0;
 
   // scalar inversion of diagonal values
-  err = diag1->Reciprocal(*diag1);
+  err = diag1->reciprocal(*diag1);
   if (err > 0) FOUR_C_THROW("ERROR: Reciprocal: Zero diagonal entry!");
 
   // re-insert inverted diagonal into invd
@@ -3708,11 +3708,11 @@ void Coupling::VolMortar::VolMortarCoupl::create_projection_operator()
   invd2.extract_diagonal_copy(*diag2);
 
   // set zero diagonal values to dummy 1.0
-  for (int i = 0; i < diag2->MyLength(); ++i)
+  for (int i = 0; i < diag2->local_length(); ++i)
     if (abs((*diag2)[i]) < 1e-12) (*diag2)[i] = 1.0;
 
   // scalar inversion of diagonal values
-  err = diag2->Reciprocal(*diag2);
+  err = diag2->reciprocal(*diag2);
   if (err > 0) FOUR_C_THROW("ERROR: Reciprocal: Zero diagonal entry!");
 
   // re-insert inverted diagonal into invd

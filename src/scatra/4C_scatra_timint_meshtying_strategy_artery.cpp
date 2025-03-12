@@ -237,7 +237,7 @@ void ScaTra::MeshtyingStrategyArtery::solve(
   comb_systemmatrix_->complete();
 
   // solve
-  comb_increment_->PutScalar(0.0);
+  comb_increment_->put_scalar(0.0);
   solver_params.refactor = true;
   solver_params.reset = iteration == 1;
   solver->solve(comb_systemmatrix_->epetra_operator(), comb_increment_, rhs_, solver_params);
@@ -248,7 +248,7 @@ void ScaTra::MeshtyingStrategyArtery::solve(
   extract_single_field_vectors(comb_increment_, myinc, artscatrainc);
 
   // update the scatra increment, update iter is performed outside
-  increment->Update(1.0, *(myinc), 1.0);
+  increment->update(1.0, *(myinc), 1.0);
   // update the artery-scatra field
   artscatratimint_->update_iter(*artscatrainc);
 

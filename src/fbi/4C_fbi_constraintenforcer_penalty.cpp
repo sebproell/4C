@@ -74,7 +74,7 @@ Adapter::FBIPenaltyConstraintenforcer::assemble_fluid_coupling_residual() const
   // correct direction
   std::shared_ptr<Core::LinAlg::Vector<double>> f = std::make_shared<Core::LinAlg::Vector<double>>(
       (bridge()->get_fluid_coupling_residual())->Map());
-  f->Update(-1.0, *(bridge()->get_fluid_coupling_residual()), 0.0);
+  f->update(-1.0, *(bridge()->get_fluid_coupling_residual()), 0.0);
   return f;
 }
 /*----------------------------------------------------------------------*/
@@ -88,7 +88,7 @@ Adapter::FBIPenaltyConstraintenforcer::assemble_structure_coupling_residual() co
   // correct direction
   std::shared_ptr<Core::LinAlg::Vector<double>> f = std::make_shared<Core::LinAlg::Vector<double>>(
       bridge()->get_structure_coupling_residual()->Map());
-  f->Update(-1.0, *(bridge()->get_structure_coupling_residual()), 0.0);
+  f->update(-1.0, *(bridge()->get_structure_coupling_residual()), 0.0);
 
   return f;
 }
@@ -116,7 +116,7 @@ void Adapter::FBIPenaltyConstraintenforcer::print_violation(double time, int ste
     double penalty_parameter = bridge()->get_params()->get_penalty_parameter();
 
     std::shared_ptr<Core::LinAlg::Vector<double>> violation = Core::LinAlg::create_vector(
-        std::dynamic_pointer_cast<Adapter::FBIFluidMB>(get_fluid())->velnp()->Map());
+        std::dynamic_pointer_cast<Adapter::FBIFluidMB>(get_fluid())->velnp()->get_map());
 
     int err = std::dynamic_pointer_cast<const Adapter::FBIConstraintBridgePenalty>(get_bridge())
                   ->get_cff()
@@ -126,7 +126,7 @@ void Adapter::FBIPenaltyConstraintenforcer::print_violation(double time, int ste
 
     if (err != 0) FOUR_C_THROW(" Matrix vector product threw error code %i ", err);
 
-    err = violation->Update(1.0, *assemble_fluid_coupling_residual(), -1.0);
+    err = violation->update(1.0, *assemble_fluid_coupling_residual(), -1.0);
     if (err != 0) FOUR_C_THROW(" Core::LinAlg::Vector<double> update threw error code %i ", err);
 
     double norm = 0.0, normf = 0.0, norms = 0.0, norm_vel = 0.0;
@@ -134,14 +134,14 @@ void Adapter::FBIPenaltyConstraintenforcer::print_violation(double time, int ste
     get_velocity_pressure_splitter()
         ->extract_other_vector(
             *std::dynamic_pointer_cast<Adapter::FBIFluidMB>(get_fluid())->velnp())
-        ->MaxValue(&norm_vel);
+        ->max_value(&norm_vel);
 
-    violation->MaxValue(&norm);
+    violation->max_value(&norm);
     if (norm_vel > 1e-15) normf = norm / norm_vel;
 
     std::dynamic_pointer_cast<const Adapter::FBIStructureWrapper>(get_structure())
         ->velnp()
-        ->MaxValue(&norm_vel);
+        ->max_value(&norm_vel);
     if (norm_vel > 1e-15) norms = norm / norm_vel;
 
     std::ofstream log;

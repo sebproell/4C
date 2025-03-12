@@ -28,10 +28,10 @@ void Core::FE::extract_my_values(const Core::LinAlg::Vector<double>& global,
   local.size(ldim);
   for (size_t i = 0; i < ldim; ++i)
   {
-    const int lid = global.Map().LID(lm[i]);
+    const int lid = global.get_map().LID(lm[i]);
     if (lid < 0)
       FOUR_C_THROW("Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
-          Core::Communication::my_mpi_rank(global.Comm()), lm[i]);
+          Core::Communication::my_mpi_rank(global.get_comm()), lm[i]);
     local[i] = global[lid];
   }
   return;

@@ -447,8 +447,8 @@ void FLD::TurbulenceStatisticsBfda::do_time_sample(Core::LinAlg::Vector<double>&
     znodnum++;
 
     // toggle vectors are one in the position of a dof of this node, else 0
-    togglew_->PutScalar(0.0);
-    togglep_->PutScalar(0.0);
+    togglew_->put_scalar(0.0);
+    togglep_->put_scalar(0.0);
 
     // count the number of nodes in x3-direction contributing to this nodal value
     int countnodes = 0;
@@ -470,8 +470,8 @@ void FLD::TurbulenceStatisticsBfda::do_time_sample(Core::LinAlg::Vector<double>&
         std::vector<int> dof = discret_->dof(node);
 
         double one = 1.0;
-        togglep_->ReplaceGlobalValues(1, &one, &(dof[3]));
-        togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
+        togglep_->replace_global_values(1, &one, &(dof[3]));
+        togglew_->replace_global_values(1, &one, &(dof[2]));
 
 
         // increase counter for evaluated nodes
@@ -488,9 +488,9 @@ void FLD::TurbulenceStatisticsBfda::do_time_sample(Core::LinAlg::Vector<double>&
       // get values for velocity derivative and pressure
       //----------------------------------------------------------------------
       double w;
-      velnp.Dot(*togglew_, &w);
+      velnp.dot(*togglew_, &w);
       double p;
-      velnp.Dot(*togglep_, &p);
+      velnp.dot(*togglep_, &p);
 
       //----------------------------------------------------------------------
       // add spatial mean values to statistical sample
@@ -528,8 +528,8 @@ void FLD::TurbulenceStatisticsBfda::do_time_sample(Core::LinAlg::Vector<double>&
         continue;
       }
 
-      togglew_->PutScalar(0.0);
-      togglep_->PutScalar(0.0);
+      togglew_->put_scalar(0.0);
+      togglep_->put_scalar(0.0);
 
       int countnodes = 0;
 
@@ -558,8 +558,8 @@ void FLD::TurbulenceStatisticsBfda::do_time_sample(Core::LinAlg::Vector<double>&
           {
             std::vector<int> dof = discret_->dof(node);
             double one = 1.0;
-            togglep_->ReplaceGlobalValues(1, &one, &(dof[3]));
-            togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
+            togglep_->replace_global_values(1, &one, &(dof[3]));
+            togglew_->replace_global_values(1, &one, &(dof[2]));
             countnodes++;
           }
         }
@@ -579,9 +579,9 @@ void FLD::TurbulenceStatisticsBfda::do_time_sample(Core::LinAlg::Vector<double>&
       {
         // Get sum of values of 4 nodes at specific radius and evaluation plane
         double w;
-        velnp.Dot(*togglew_, &w);
+        velnp.dot(*togglew_, &w);
         double p;
-        velnp.Dot(*togglep_, &p);
+        velnp.dot(*togglep_, &p);
 
         // Calculate mean value
         double wsm = w / countnodesonallprocs;

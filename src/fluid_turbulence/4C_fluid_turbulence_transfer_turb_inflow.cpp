@@ -648,7 +648,7 @@ void FLD::TransferTurbulentInflowCondition::set_values_available_on_this_proc(
             {
               double value = (mymasters_vel[rr])[nn];
 
-              velnp->ReplaceGlobalValues(1, &value, &gid);
+              velnp->replace_global_values(1, &value, &gid);
             }
             else
             {
@@ -867,7 +867,7 @@ void FLD::TransferTurbulentInflowConditionXW::set_values_available_on_this_proc(
             {
               double value = (mymasters_vel[rr])[nn];
 
-              velnp->ReplaceGlobalValues(1, &value, &gid);
+              velnp->replace_global_values(1, &value, &gid);
             }
             else
             {
@@ -895,7 +895,7 @@ void FLD::TransferTurbulentInflowConditionXW::set_values_available_on_this_proc(
               {
                 double value = (mymasters_vel[rr - 1])[nn];
 
-                velnp->ReplaceGlobalValues(1, &value, &gid);
+                velnp->replace_global_values(1, &value, &gid);
               }
               else
                 FOUR_C_THROW("xwall dofs don't have active dbc for transfer");
@@ -1040,7 +1040,7 @@ void FLD::TransferTurbulentInflowConditionNodal::set_values_available_on_this_pr
       {
         // is this slave id on this proc?
         if (dis_->node_row_map()->MyGID(*sid))
-          outvec->ReplaceGlobalValue(*sid, 0, (mymasters_vec[0])[nn]);
+          outvec->replace_global_value(*sid, 0, (mymasters_vec[0])[nn]);
       }
     }
   }

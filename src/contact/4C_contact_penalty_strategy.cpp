@@ -348,7 +348,7 @@ void CONTACT::PenaltyStrategy::evaluate_contact(
     dold_->multiply(true, *zold_, fcmdold);
     Core::LinAlg::Vector<double> fcmdoldtemp(*problem_dofs());
     Core::LinAlg::export_to(fcmdold, fcmdoldtemp);
-    feff->Update(-alphaf_, fcmdoldtemp, 1.0);
+    feff->update(-alphaf_, fcmdoldtemp, 1.0);
   }
 
   {
@@ -359,7 +359,7 @@ void CONTACT::PenaltyStrategy::evaluate_contact(
     mold_->multiply(true, *zold_, fcmmold);
     Core::LinAlg::Vector<double> fcmmoldtemp(*problem_dofs());
     Core::LinAlg::export_to(fcmmold, fcmmoldtemp);
-    feff->Update(alphaf_, fcmmoldtemp, 1.0);
+    feff->update(alphaf_, fcmmoldtemp, 1.0);
   }
 
   {
@@ -367,7 +367,7 @@ void CONTACT::PenaltyStrategy::evaluate_contact(
     dmatrix_->multiply(true, *z_, fcmd);
     Core::LinAlg::Vector<double> fcmdtemp(*problem_dofs());
     Core::LinAlg::export_to(fcmd, fcmdtemp);
-    feff->Update(-(1 - alphaf_), fcmdtemp, 1.0);
+    feff->update(-(1 - alphaf_), fcmdtemp, 1.0);
   }
 
   {
@@ -376,7 +376,7 @@ void CONTACT::PenaltyStrategy::evaluate_contact(
     mmatrix_->multiply(true, *z_, *fcmm);
     Core::LinAlg::Vector<double> fcmmtemp(*problem_dofs());
     Core::LinAlg::export_to(*fcmm, fcmmtemp);
-    feff->Update(1 - alphaf_, fcmmtemp, 1.0);
+    feff->update(1 - alphaf_, fcmmtemp, 1.0);
   }
 
 #ifdef CONTACTFDGAP
@@ -506,26 +506,26 @@ void CONTACT::PenaltyStrategy::initialize_uzawa(
   dold_->multiply(true, *zold_, fcmdold);
   Core::LinAlg::Vector<double> fcmdoldtemp(*problem_dofs());
   Core::LinAlg::export_to(fcmdold, fcmdoldtemp);
-  feff->Update(alphaf_, fcmdoldtemp, 1.0);
+  feff->update(alphaf_, fcmdoldtemp, 1.0);
 
   Core::LinAlg::Vector<double> fcmmold(mold_->domain_map());
   mold_->multiply(true, *zold_, fcmmold);
   Core::LinAlg::Vector<double> fcmmoldtemp(*problem_dofs());
   Core::LinAlg::export_to(fcmmold, fcmmoldtemp);
-  feff->Update(-alphaf_, fcmmoldtemp, 1.0);
+  feff->update(-alphaf_, fcmmoldtemp, 1.0);
 
   Core::LinAlg::Vector<double> fcmd(*gsdofrowmap_);
   dmatrix_->multiply(true, *z_, fcmd);
   Core::LinAlg::Vector<double> fcmdtemp(*problem_dofs());
   Core::LinAlg::export_to(fcmd, fcmdtemp);
-  feff->Update(1 - alphaf_, fcmdtemp, 1.0);
+  feff->update(1 - alphaf_, fcmdtemp, 1.0);
 
   std::shared_ptr<Core::LinAlg::Vector<double>> fcmm =
       Core::LinAlg::create_vector(*gmdofrowmap_, true);
   mmatrix_->multiply(true, *z_, *fcmm);
   Core::LinAlg::Vector<double> fcmmtemp(*problem_dofs());
   Core::LinAlg::export_to(*fcmm, fcmmtemp);
-  feff->Update(-(1 - alphaf_), fcmmtemp, 1.0);
+  feff->update(-(1 - alphaf_), fcmmtemp, 1.0);
 
   // reset some matrices
   // must use FE_MATRIX type here, as we will do non-local assembly!
@@ -603,11 +603,11 @@ void CONTACT::PenaltyStrategy::update_constraint_norm(int uzawaiter)
     else
     {
       gact = Core::LinAlg::create_vector(*gactivenodes_, true);
-      if (gact->GlobalLength()) Core::LinAlg::export_to(*wgap_, *gact);
+      if (gact->global_length()) Core::LinAlg::export_to(*wgap_, *gact);
     }
 
     // compute constraint norm
-    gact->Norm2(&cnorm);
+    gact->norm_2(&cnorm);
 
     // Evaluate norm in tangential direction for frictional contact
     if (friction_)
@@ -907,7 +907,7 @@ void CONTACT::PenaltyStrategy::assemble()
     dmatrix_->multiply(true, *z_, fcmd);
     Core::LinAlg::Vector<double> fcmdtemp(*problem_dofs());
     Core::LinAlg::export_to(fcmd, fcmdtemp);
-    fc_->Update(-(1.), fcmdtemp, 1.0);
+    fc_->update(-(1.), fcmdtemp, 1.0);
   }
 
   {
@@ -916,10 +916,10 @@ void CONTACT::PenaltyStrategy::assemble()
     mmatrix_->multiply(true, *z_, *fcmm);
     Core::LinAlg::Vector<double> fcmmtemp(*problem_dofs());
     Core::LinAlg::export_to(*fcmm, fcmmtemp);
-    fc_->Update(1, fcmmtemp, 1.0);
+    fc_->update(1, fcmmtemp, 1.0);
   }
 
-  fc_->Scale(-1.);
+  fc_->scale(-1.);
   kc_->complete();
 
 

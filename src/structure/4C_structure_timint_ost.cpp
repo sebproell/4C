@@ -97,7 +97,7 @@ void Solid::TimIntOneStepTheta::setup()
     // the case of nonlinear inertia terms works so far only for examples with vanishing initial
     // accelerations, i.e. the initial external forces and initial velocities have to be chosen
     // consistently!!!
-    (*acc_)(0)->PutScalar(0.0);
+    (*acc_)(0)->put_scalar(0.0);
   }
 
   // create state vectors
@@ -172,20 +172,20 @@ void Solid::TimIntOneStepTheta::predict_const_dis_consist_vel_acc()
   const double dt = (*dt_)[0];
 
   // constant predictor : displacement in domain
-  disn_->Update(1.0, *(*dis_)(0), 0.0);
+  disn_->update(1.0, *(*dis_)(0), 0.0);
 
   // new end-point velocities
-  veln_->Update(1.0 / (theta_ * dt), *disn_, -1.0 / (theta_ * dt), *(*dis_)(0), 0.0);
-  veln_->Update(-(1.0 - theta_) / theta_, *(*vel_)(0), 1.0);
+  veln_->update(1.0 / (theta_ * dt), *disn_, -1.0 / (theta_ * dt), *(*dis_)(0), 0.0);
+  veln_->update(-(1.0 - theta_) / theta_, *(*vel_)(0), 1.0);
 
   // new end-point accelerations
-  accn_->Update(1.0 / (theta_ * theta_ * dt * dt), *disn_, -1.0 / (theta_ * theta_ * dt * dt),
+  accn_->update(1.0 / (theta_ * theta_ * dt * dt), *disn_, -1.0 / (theta_ * theta_ * dt * dt),
       *(*dis_)(0), 0.0);
-  accn_->Update(
+  accn_->update(
       -1.0 / (theta_ * theta_ * dt), *(*vel_)(0), -(1.0 - theta_) / theta_, *(*acc_)(0), 1.0);
 
   // reset the residual displacement
-  disi_->PutScalar(0.0);
+  disi_->put_scalar(0.0);
 
   // watch out
   return;
@@ -201,20 +201,20 @@ void Solid::TimIntOneStepTheta::predict_const_vel_consist_acc()
 
   // extrapolated displacements based upon constant velocities
   // d_{n+1} = d_{n} + dt * v_{n}
-  disn_->Update(1.0, (*dis_)[0], dt, (*vel_)[0], 0.0);
+  disn_->update(1.0, (*dis_)[0], dt, (*vel_)[0], 0.0);
 
   // new end-point velocities
-  veln_->Update(1.0 / (theta_ * dt), *disn_, -1.0 / (theta_ * dt), *(*dis_)(0), 0.0);
-  veln_->Update(-(1.0 - theta_) / theta_, *(*vel_)(0), 1.0);
+  veln_->update(1.0 / (theta_ * dt), *disn_, -1.0 / (theta_ * dt), *(*dis_)(0), 0.0);
+  veln_->update(-(1.0 - theta_) / theta_, *(*vel_)(0), 1.0);
 
   // new end-point accelerations
-  accn_->Update(1.0 / (theta_ * theta_ * dt * dt), *disn_, -1.0 / (theta_ * theta_ * dt * dt),
+  accn_->update(1.0 / (theta_ * theta_ * dt * dt), *disn_, -1.0 / (theta_ * theta_ * dt * dt),
       *(*dis_)(0), 0.0);
-  accn_->Update(
+  accn_->update(
       -1.0 / (theta_ * theta_ * dt), *(*vel_)(0), -(1.0 - theta_) / theta_, *(*acc_)(0), 1.0);
 
   // reset the residual displacement
-  disi_->PutScalar(0.0);
+  disi_->put_scalar(0.0);
 
   // That's it!
   return;
@@ -230,21 +230,21 @@ void Solid::TimIntOneStepTheta::predict_const_acc()
 
   // extrapolated displacements based upon constant accelerations
   // d_{n+1} = d_{n} + dt * v_{n} + dt^2 / 2 * a_{n}
-  disn_->Update(1.0, (*dis_)[0], dt, (*vel_)[0], 0.0);
-  disn_->Update(dt * dt / 2., (*acc_)[0], 1.0);
+  disn_->update(1.0, (*dis_)[0], dt, (*vel_)[0], 0.0);
+  disn_->update(dt * dt / 2., (*acc_)[0], 1.0);
 
   // new end-point velocities
-  veln_->Update(1.0 / (theta_ * dt), *disn_, -1.0 / (theta_ * dt), *(*dis_)(0), 0.0);
-  veln_->Update(-(1.0 - theta_) / theta_, *(*vel_)(0), 1.0);
+  veln_->update(1.0 / (theta_ * dt), *disn_, -1.0 / (theta_ * dt), *(*dis_)(0), 0.0);
+  veln_->update(-(1.0 - theta_) / theta_, *(*vel_)(0), 1.0);
 
   // new end-point accelerations
-  accn_->Update(1.0 / (theta_ * theta_ * dt * dt), *disn_, -1.0 / (theta_ * theta_ * dt * dt),
+  accn_->update(1.0 / (theta_ * theta_ * dt * dt), *disn_, -1.0 / (theta_ * theta_ * dt * dt),
       *(*dis_)(0), 0.0);
-  accn_->Update(
+  accn_->update(
       -1.0 / (theta_ * theta_ * dt), *(*vel_)(0), -(1.0 - theta_) / theta_, *(*acc_)(0), 1.0);
 
   // reset the residual displacement
-  disi_->PutScalar(0.0);
+  disi_->put_scalar(0.0);
 
   // That's it!
   return;
@@ -269,16 +269,16 @@ void Solid::TimIntOneStepTheta::evaluate_force_stiff_residual(Teuchos::Parameter
   // ************************** (1) EXTERNAL FORCES ***************************
 
   // build new external forces
-  fextn_->PutScalar(0.0);
+  fextn_->put_scalar(0.0);
   apply_force_stiff_external(timen_, (*dis_)(0), disn_, (*vel_)(0), *fextn_, stiff_);
 
   // additional external forces are added (e.g. interface forces)
-  fextn_->Update(1.0, *fifc_, 1.0);
+  fextn_->update(1.0, *fifc_, 1.0);
 
   // ************************** (2) INTERNAL FORCES ***************************
 
   // initialise internal forces
-  fintn_->PutScalar(0.0);
+  fintn_->put_scalar(0.0);
 
   // build new internal forces and stiffness
   if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
@@ -296,7 +296,7 @@ void Solid::TimIntOneStepTheta::evaluate_force_stiff_residual(Teuchos::Parameter
 
     // If we have nonlinear inertia forces, the corresponding contributions are computed together
     // with the internal forces
-    finertn_->PutScalar(0.0);
+    finertn_->put_scalar(0.0);
     mass_->zero();
 
     // In general the nonlinear inertia force can depend on displacements, velocities and
@@ -364,13 +364,13 @@ void Solid::TimIntOneStepTheta::evaluate_force_stiff_residual(Teuchos::Parameter
   //                     + C . V_{n+theta}
   //                     + F_{int;n+theta}
   //                     - F_{ext;n+theta}
-  fres_->Update(-theta_, *fextn_, -(1.0 - theta_), *fext_, 0.0);
-  fres_->Update(theta_, *fintn_, (1.0 - theta_), *fint_, 1.0);
+  fres_->update(-theta_, *fextn_, -(1.0 - theta_), *fext_, 0.0);
+  fres_->update(theta_, *fintn_, (1.0 - theta_), *fint_, 1.0);
   if (damping_ == Inpar::Solid::damp_rayleigh)
   {
-    fres_->Update(1.0, *fvisct_, 1.0);
+    fres_->update(1.0, *fvisct_, 1.0);
   }
-  fres_->Update(1.0, *finertt_, 1.0);
+  fres_->update(1.0, *finertt_, 1.0);
 
   // std::cout << Solid::calculate_vector_norm(vectornorm_l2, fextn_) << std::endl;
 
@@ -411,7 +411,7 @@ void Solid::TimIntOneStepTheta::evaluate_force_stiff_residual_relax(Teuchos::Par
   evaluate_force_stiff_residual(params);
 
   // overwrite the residual forces #fres_ with interface load
-  fres_->Update(-theta_, *fifc_, 0.0);
+  fres_->update(-theta_, *fifc_, 0.0);
 }
 
 /*----------------------------------------------------------------------*/
@@ -424,16 +424,16 @@ void Solid::TimIntOneStepTheta::evaluate_force_residual()
   // ************************** (1) EXTERNAL FORCES ***************************
 
   // build new external forces
-  fextn_->PutScalar(0.0);
+  fextn_->put_scalar(0.0);
   apply_force_external(timen_, (*dis_)(0), disn_, (*vel_)(0), *fextn_);
 
   // additional external forces are added (e.g. interface forces)
-  fextn_->Update(1.0, *fifc_, 1.0);
+  fextn_->update(1.0, *fifc_, 1.0);
 
   // ************************** (2) INTERNAL FORCES ***************************
 
   // initialise internal forces
-  fintn_->PutScalar(0.0);
+  fintn_->put_scalar(0.0);
 
   // build new internal forces and stiffness
   if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
@@ -473,13 +473,13 @@ void Solid::TimIntOneStepTheta::evaluate_force_residual()
   //                     + C . V_{n+theta}
   //                     + F_{int;n+theta}
   //                     - F_{ext;n+theta}
-  fres_->Update(-theta_, *fextn_, -(1.0 - theta_), *fext_, 0.0);
-  fres_->Update(theta_, *fintn_, (1.0 - theta_), *fint_, 1.0);
+  fres_->update(-theta_, *fextn_, -(1.0 - theta_), *fext_, 0.0);
+  fres_->update(theta_, *fintn_, (1.0 - theta_), *fint_, 1.0);
   if (damping_ == Inpar::Solid::damp_rayleigh)
   {
-    fres_->Update(1.0, *fvisct_, 1.0);
+    fres_->update(1.0, *fvisct_, 1.0);
   }
-  fres_->Update(1.0, *finertt_, 1.0);
+  fres_->update(1.0, *finertt_, 1.0);
 
   return;
 }
@@ -490,7 +490,7 @@ void Solid::TimIntOneStepTheta::evaluate_force_residual()
 void Solid::TimIntOneStepTheta::determine_mass()
 {
   // F_{inert;1+theta} := theta * F_{inert;n+1} + (1-theta) * F_{inert;n}
-  finertt_->Update(theta_, *finertn_, (1.0 - theta_), *finert_, 0.0);
+  finertt_->update(theta_, *finertn_, (1.0 - theta_), *finert_, 0.0);
   return;
 }
 
@@ -500,15 +500,15 @@ void Solid::TimIntOneStepTheta::evaluate_mid_state()
 {
   // mid-displacements D_{n+1-alpha_f} (dism)
   //    D_{n+theta} := theta * D_{n+1} + (1-theta) * D_{n}
-  dist_->Update(theta_, *disn_, 1.0 - theta_, *(*dis_)(0), 0.0);
+  dist_->update(theta_, *disn_, 1.0 - theta_, *(*dis_)(0), 0.0);
 
   // mid-velocities V_{n+1-alpha_f} (velm)
   //    V_{n+theta} := theta * V_{n+1} + (1-theta) * V_{n}
-  velt_->Update(theta_, *veln_, 1.0 - theta_, *(*vel_)(0), 0.0);
+  velt_->update(theta_, *veln_, 1.0 - theta_, *(*vel_)(0), 0.0);
 
   // mid-accelerations A_{n+1-alpha_m} (accm)
   //    A_{n+theta} := theta * A_{n+1} + (1-theta) * A_{n}
-  acct_->Update(theta_, *accn_, 1.0 - theta_, *(*acc_)(0), 0.0);
+  acct_->update(theta_, *accn_, 1.0 - theta_, *(*acc_)(0), 0.0);
 
   // jump
   return;
@@ -558,16 +558,16 @@ void Solid::TimIntOneStepTheta::update_iter_incrementally()
 {
   // new end-point displacements
   // D_{n+1}^{<k+1>} := D_{n+1}^{<k>} + IncD_{n+1}^{<k>}
-  disn_->Update(1.0, *disi_, 1.0);
+  disn_->update(1.0, *disi_, 1.0);
 
   // new end-point velocities
-  veln_->Update(1.0 / (theta_ * (*dt_)[0]), *disn_, -1.0 / (theta_ * (*dt_)[0]), *(*dis_)(0), 0.0);
-  veln_->Update(-(1.0 - theta_) / theta_, *(*vel_)(0), 1.0);
+  veln_->update(1.0 / (theta_ * (*dt_)[0]), *disn_, -1.0 / (theta_ * (*dt_)[0]), *(*dis_)(0), 0.0);
+  veln_->update(-(1.0 - theta_) / theta_, *(*vel_)(0), 1.0);
 
   // new end-point accelerations
-  accn_->Update(1.0 / (theta_ * theta_ * (*dt_)[0] * (*dt_)[0]), *disn_,
+  accn_->update(1.0 / (theta_ * theta_ * (*dt_)[0] * (*dt_)[0]), *disn_,
       -1.0 / (theta_ * theta_ * (*dt_)[0] * (*dt_)[0]), *(*dis_)(0), 0.0);
-  accn_->Update(-1.0 / (theta_ * theta_ * (*dt_)[0]), *(*vel_)(0), -(1.0 - theta_) / theta_,
+  accn_->update(-1.0 / (theta_ * theta_ * (*dt_)[0]), *(*vel_)(0), -(1.0 - theta_) / theta_,
       *(*acc_)(0), 1.0);
 }
 
@@ -577,13 +577,13 @@ void Solid::TimIntOneStepTheta::update_iter_iteratively()
 {
   // new end-point displacements
   // D_{n+1}^{<k+1>} := D_{n+1}^{<k>} + IncD_{n+1}^{<k>}
-  disn_->Update(1.0, *disi_, 1.0);
+  disn_->update(1.0, *disi_, 1.0);
 
   // new end-point velocities
-  veln_->Update(1.0 / (theta_ * (*dt_)[0]), *disi_, 1.0);
+  veln_->update(1.0 / (theta_ * (*dt_)[0]), *disi_, 1.0);
 
   // new end-point accelerations
-  accn_->Update(1.0 / ((*dt_)[0] * (*dt_)[0] * theta_ * theta_), *disi_, 1.0);
+  accn_->update(1.0 / ((*dt_)[0] * (*dt_)[0] * theta_ * theta_), *disi_, 1.0);
 
   // bye
   return;
@@ -606,15 +606,15 @@ void Solid::TimIntOneStepTheta::update_step_state()
 
   // update new external force
   //    F_{ext;n} := F_{ext;n+1}
-  fext_->Update(1.0, *fextn_, 0.0);
+  fext_->update(1.0, *fextn_, 0.0);
 
   // update new internal force
   //    F_{int;n} := F_{int;n+1}
-  fint_->Update(1.0, *fintn_, 0.0);
+  fint_->update(1.0, *fintn_, 0.0);
 
   // update new inertial force
   //    F_{inert;n} := F_{inert;n+1}
-  finert_->Update(1.0, *finertn_, 0.0);
+  finert_->update(1.0, *finertn_, 0.0);
 
   // update constraints
   update_step_constraint();
@@ -677,12 +677,12 @@ void Solid::TimIntOneStepTheta::update_step_element()
 
     discret_->evaluate(p, nullptr, nullptr, update_disp, update_vel, update_acc);
 
-    disn_->Update(1.0, *update_disp, 1.0);
-    (*dis_)(0)->Update(1.0, *update_disp, 1.0);
-    veln_->Update(1.0, *update_vel, 1.0);
-    (*vel_)(0)->Update(1.0, *update_vel, 1.0);
-    accn_->Update(1.0, *update_acc, 1.0);
-    (*acc_)(0)->Update(1.0, *update_acc, 1.0);
+    disn_->update(1.0, *update_disp, 1.0);
+    (*dis_)(0)->update(1.0, *update_disp, 1.0);
+    veln_->update(1.0, *update_vel, 1.0);
+    (*vel_)(0)->update(1.0, *update_vel, 1.0);
+    accn_->update(1.0, *update_acc, 1.0);
+    (*acc_)(0)->update(1.0, *update_acc, 1.0);
   }
 
   discret_->clear_state();

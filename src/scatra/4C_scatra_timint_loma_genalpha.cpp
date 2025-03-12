@@ -121,7 +121,7 @@ void ScaTra::TimIntLomaGenAlpha::compute_therm_pressure_intermediate_values()
 void ScaTra::TimIntLomaGenAlpha::compute_therm_pressure()
 {
   // compute temperature at n+alpha_F
-  phiaf_->Update(alphaF_, *phinp_, (1.0 - alphaF_), *phin_, 0.0);
+  phiaf_->update(alphaF_, *phinp_, (1.0 - alphaF_), *phin_, 0.0);
 
   // define element parameter list
   Teuchos::ParameterList eleparams;

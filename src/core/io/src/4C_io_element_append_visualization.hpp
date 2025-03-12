@@ -205,7 +205,7 @@ namespace Core::IO
         if (nodedofs.size() > read_result_data_from_dofindex + idof)
         {
           const int lid =
-              result_data_dofbased.Map().LID(nodedofs[idof + read_result_data_from_dofindex]);
+              result_data_dofbased.get_map().LID(nodedofs[idof + read_result_data_from_dofindex]);
           vtu_point_result_data.push_back((result_data_dofbased)[lid]);
         }
         else

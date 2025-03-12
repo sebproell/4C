@@ -96,7 +96,7 @@ void Solid::EXPLICIT::AdamsBashforthX<t_order>::set_state(const Core::LinAlg::Ve
   // new end-point acceleration
   // ---------------------------------------------------------------------------
   std::shared_ptr<Core::LinAlg::Vector<double>> accnp_ptr = global_state().extract_displ_entries(x);
-  global_state().get_acc_np()->Scale(1.0, *accnp_ptr);
+  global_state().get_acc_np()->scale(1.0, *accnp_ptr);
   if (compute_phase_ < t_order)
   {
     const double dt = (*global_state().get_delta_time())[0];
@@ -104,14 +104,14 @@ void Solid::EXPLICIT::AdamsBashforthX<t_order>::set_state(const Core::LinAlg::Ve
     // ---------------------------------------------------------------------------
     // new end-point velocities
     // ---------------------------------------------------------------------------
-    global_state().get_vel_np()->Update(1.0, *global_state().get_vel_n(), 0.0);
-    global_state().get_vel_np()->Update(dt, *global_state().get_acc_n(), 1.0);
+    global_state().get_vel_np()->update(1.0, *global_state().get_vel_n(), 0.0);
+    global_state().get_vel_np()->update(dt, *global_state().get_acc_n(), 1.0);
 
     // ---------------------------------------------------------------------------
     // new end-point displacements
     // ---------------------------------------------------------------------------
-    global_state().get_dis_np()->Update(1.0, *global_state().get_dis_n(), 0.0);
-    global_state().get_dis_np()->Update(dt, *global_state().get_vel_np(), 1.0);
+    global_state().get_dis_np()->update(1.0, *global_state().get_dis_n(), 0.0);
+    global_state().get_dis_np()->update(dt, *global_state().get_vel_np(), 1.0);
   }
   else
   {
@@ -136,21 +136,21 @@ void Solid::EXPLICIT::AdamsBashforthX<t_order>::set_state(const Core::LinAlg::Ve
     // ---------------------------------------------------------------------------
     // new end-point velocities
     // ---------------------------------------------------------------------------
-    global_state().get_vel_np()->Update(1.0, (*(global_state().get_multi_vel()))[0], 0.0);
+    global_state().get_vel_np()->update(1.0, (*(global_state().get_multi_vel()))[0], 0.0);
     for (int i = 0; i < t_order; ++i)
     {
       double c = AdamsBashforthHelper<t_order>::exc[i];
-      global_state().get_vel_np()->Update(c * dt, (*(global_state().get_multi_acc()))[-i], 1.0);
+      global_state().get_vel_np()->update(c * dt, (*(global_state().get_multi_acc()))[-i], 1.0);
     }
 
     // ---------------------------------------------------------------------------
     // new end-point displacements
     // ---------------------------------------------------------------------------
-    global_state().get_dis_np()->Update(1.0, (*(global_state().get_multi_dis()))[0], 0.0);
+    global_state().get_dis_np()->update(1.0, (*(global_state().get_multi_dis()))[0], 0.0);
     for (int i = 0; i < t_order; ++i)
     {
       double c = AdamsBashforthHelper<t_order>::exc[i];
-      global_state().get_dis_np()->Update(c * dt, (*(global_state().get_multi_vel()))[-i], 1.0);
+      global_state().get_dis_np()->update(c * dt, (*(global_state().get_multi_vel()))[-i], 1.0);
     }
   }
 
@@ -281,10 +281,10 @@ void Solid::EXPLICIT::AdamsBashforthX<t_order>::update_step_state()
   // ---------------------------------------------------------------------------
   // new at t_{n+1} -> t_n
   //    finertial_{n} := finertial_{n+1}
-  finertian_ptr_->Scale(1.0, *finertianp_ptr_);
+  finertian_ptr_->scale(1.0, *finertianp_ptr_);
   // new at t_{n+1} -> t_n
   //    fviscous_{n} := fviscous_{n+1}
-  fviscon_ptr_->Scale(1.0, *fvisconp_ptr_);
+  fviscon_ptr_->scale(1.0, *fvisconp_ptr_);
 
   // ---------------------------------------------------------------------------
   // update model specific variables

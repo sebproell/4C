@@ -359,8 +359,9 @@ std::shared_ptr<Core::LinAlg::Vector<double>> PoroElast::PoroBase::structure_to_
     std::shared_ptr<Core::LinAlg::Vector<double>> sv =
         Core::LinAlg::create_vector(*(fluid_field()->vel_pres_splitter()->other_map()));
 
-    std::copy(mv->Values(),
-        mv->Values() + (static_cast<ptrdiff_t>(mv->MyLength() * mv->NumVectors())), sv->Values());
+    std::copy(mv->get_values(),
+        mv->get_values() + (static_cast<ptrdiff_t>(mv->local_length() * mv->num_vectors())),
+        sv->get_values());
     return sv;
   }
 }
@@ -585,20 +586,20 @@ void PoroElast::NoPenetrationConditionHandle::clear(PoroElast::Coupltype couplty
 {
   if (has_cond_)
   {
-    cond_rhs_->PutScalar(0.0);
+    cond_rhs_->put_scalar(0.0);
     cond_ids_->clear();
     switch (coupltype)
     {
       case PoroElast::fluidfluid:
         fluid_fluid_constraint_matrix_->zero();
-        cond_dofs_->PutScalar(0.0);
+        cond_dofs_->put_scalar(0.0);
         break;
       case PoroElast::fluidstructure:
         fluid_structure_constraint_matrix_->zero();
         structure_vel_constraint_matrix_->zero();
         break;
       default:
-        cond_dofs_->PutScalar(0.0);
+        cond_dofs_->put_scalar(0.0);
         fluid_fluid_constraint_matrix_->zero();
         fluid_structure_constraint_matrix_->zero();
         structure_vel_constraint_matrix_->zero();

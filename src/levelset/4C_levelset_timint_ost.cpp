@@ -126,7 +126,7 @@ void ScaTra::LevelSetTimIntOneStepTheta::set_old_part_of_righthandside()
     TimIntOneStepTheta::set_old_part_of_righthandside();
   else
     // hist_ = phin_ + dt*(1-Theta)*phidtn_
-    hist_->Update(1.0, *phin_, dtau_ * (1.0 - thetareinit_), *phidtn_, 0.0);
+    hist_->update(1.0, *phin_, dtau_ * (1.0 - thetareinit_), *phidtn_, 0.0);
 
   return;
 }
@@ -169,16 +169,16 @@ void ScaTra::LevelSetTimIntOneStepTheta::update_state()
     // compute_time_derivative() anymore within the current time step!!!
 
     // solution of this step becomes most recent solution of the last step
-    phin_->Update(1.0, *phinp_, 0.0);
+    phin_->update(1.0, *phinp_, 0.0);
 
     // time deriv. of this step becomes most recent time derivative of
     // last step
-    phidtn_->Update(1.0, *phidtnp_, 0.0);
+    phidtn_->update(1.0, *phidtnp_, 0.0);
   }
   else
   {
     // solution of this step becomes most recent solution of the last step
-    phin_->Update(1.0, *phinp_, 0.0);
+    phin_->update(1.0, *phinp_, 0.0);
 
     // reinitialization is done, reset flag
     if (switchreinit_ == true) switchreinit_ = false;
@@ -210,15 +210,15 @@ void ScaTra::LevelSetTimIntOneStepTheta::update_reinit()
   // phidt(n+1) = (phi(n+1)-phi(n)) / (theta*dt) + (1-(1/theta))*phidt(n)
   const double fact1 = 1.0 / (thetareinit_ * dtau_);
   const double fact2 = 1.0 - (1.0 / thetareinit_);
-  phidtnp_->Update(fact2, *phidtn_, 0.0);
-  phidtnp_->Update(fact1, *phinp_, -fact1, *phin_, 1.0);
+  phidtnp_->update(fact2, *phidtn_, 0.0);
+  phidtnp_->update(fact1, *phinp_, -fact1, *phin_, 1.0);
 
   // solution of this step becomes most recent solution of the last step
-  phin_->Update(1.0, *phinp_, 0.0);
+  phin_->update(1.0, *phinp_, 0.0);
 
   // time deriv. of this step becomes most recent time derivative of
   // last step
-  phidtn_->Update(1.0, *phidtnp_, 0.0);
+  phidtn_->update(1.0, *phidtnp_, 0.0);
 
   return;
 }
@@ -270,7 +270,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> ScaTra::LevelSetTimIntOneStepTheta
   const Epetra_Map* dofrowmap = discret_->dof_row_map();
   std::shared_ptr<Core::LinAlg::Vector<double>> phi_tmp =
       std::make_shared<Core::LinAlg::Vector<double>>(*dofrowmap, true);
-  phi_tmp->Update((1.0 - theta_inter), *phin_, theta_inter, *phinp_, 0.0);
+  phi_tmp->update((1.0 - theta_inter), *phin_, theta_inter, *phinp_, 0.0);
   return phi_tmp;
 }
 
@@ -284,7 +284,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> ScaTra::LevelSetTimIntOneStepTheta
   const Epetra_Map* dofrowmap = discret_->dof_row_map();
   std::shared_ptr<Core::LinAlg::Vector<double>> phidt_tmp =
       std::make_shared<Core::LinAlg::Vector<double>>(*dofrowmap, true);
-  phidt_tmp->Update((1.0 - theta_inter), *phidtn_, theta_inter, *phidtnp_, 0.0);
+  phidt_tmp->update((1.0 - theta_inter), *phidtn_, theta_inter, *phidtnp_, 0.0);
   return phidt_tmp;
 }
 
