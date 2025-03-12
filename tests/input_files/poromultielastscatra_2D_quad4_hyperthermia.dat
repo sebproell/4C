@@ -159,24 +159,24 @@ SRC_FIELD structure SRC_MAT 4 TAR_FIELD porofluid TAR_MAT 2
 SRC_FIELD structure SRC_MAT 4 TAR_FIELD scatra TAR_MAT 5
 
 ----------------------------------------------------------------------FUNCT1
-POROMULTIPHASESCATRA_FUNCTION TUMOR_GROWTH_LAW_HEAVISIDE NUMPARAMS 5 PARAMS gamma_T_growth 4.0e-8 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 lambda 0.0 p_t_crit 1.0e9
+POROMULTIPHASESCATRA_FUNCTION TUMOR_GROWTH_LAW_HEAVISIDE PARAMS gamma_T_growth 4.0e-8 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 lambda 0.0 p_t_crit 1.0e9
 ----------------------------------------------------------------------FUNCT2
 VARFUNCTION 4.2e-10*(VFP1-p3-1333.0)*VF1-2.0e-8*heaviside(p3)*p3*(1.0-p2/500.0)*heaviside(1.0-p2/500.0)
 ----------------------------------------------------------------------FUNCT3
 VARFUNCTION 4.2e-10*(VFP1-p3-1333.0)*VF1
 
 ----------------------------------------------------------------------FUNCT4
-POROMULTIPHASESCATRA_FUNCTION OXYGEN_CONSUMPTION_LAW_HEAVISIDE NUMPARAMS 5 PARAMS gamma_nl_growth 2.0e-10 gamma_0_nl 3.0e-10 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 p_t_crit 1.0e9
+POROMULTIPHASESCATRA_FUNCTION OXYGEN_CONSUMPTION_LAW_HEAVISIDE PARAMS gamma_nl_growth 2.0e-10 gamma_0_nl 3.0e-10 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 p_t_crit 1.0e9
 ----------------------------------------------------------------------FUNCT5
-POROMULTIPHASESCATRA_FUNCTION TUMOR_GROWTH_LAW_HEAVISIDE_OXY NUMPARAMS 5 PARAMS gamma_T_growth 4.0e-8 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 lambda 0.0 p_t_crit 1.0e9
+POROMULTIPHASESCATRA_FUNCTION TUMOR_GROWTH_LAW_HEAVISIDE_OXY PARAMS gamma_T_growth 4.0e-8 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 lambda 0.0 p_t_crit 1.0e9
 ----------------------------------------------------------------------FUNCT6
 VARFUNCTION ((phi4-phi1)*4.2e-10*(VFP1-p3-1333.0)+2.0e-4*heaviside(phi4-phi1)*(phi4-phi1))*VF1
 ----------------------------------------------------------------------FUNCT7
 VARFUNCTION 2.0e-4*heaviside(phi4-phi1)*(phi4-phi1)*VF1
 ----------------------------------------------------------------------FUNCT8
-POROMULTIPHASESCATRA_FUNCTION TUMOR_GROWTH_LAW_HEAVISIDE_NECRO NUMPARAMS 5 PARAMS gamma_T_growth 4.0e-8 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 lambda 0.0 p_t_crit 1.0e9
+POROMULTIPHASESCATRA_FUNCTION TUMOR_GROWTH_LAW_HEAVISIDE_NECRO PARAMS gamma_T_growth 4.0e-8 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 lambda 0.0 p_t_crit 1.0e9
 ----------------------------------------------------------------------FUNCT9
-POROMULTIPHASESCATRA_FUNCTION NECROSIS_LAW_HEAVISIDE NUMPARAMS 5 PARAMS gamma_t_necr 1.0e-8 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 delta_a_t 0.0 p_t_crit 1.0e9
+POROMULTIPHASESCATRA_FUNCTION NECROSIS_LAW_HEAVISIDE PARAMS gamma_t_necr 1.0e-8 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 delta_a_t 0.0 p_t_crit 1.0e9
 ----------------------------------------------------------------------FUNCT10
 VARFUNCTION 1.0e-16*heaviside(4.0e-6-phi1)*(0.5+0.5*cos(pi*phi1/4.0e-6))*(1-phi2)*S2*porosity//-nu_taf*phi3*VF1-beta_taf*phi3 NUMCONSTANTS 2 CONSTANTS nu_taf 1e-15 beta_taf 8e-13
 ----------------------------------------------------------------------FUNCT11

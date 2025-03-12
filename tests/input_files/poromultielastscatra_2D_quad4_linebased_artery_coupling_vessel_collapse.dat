@@ -160,21 +160,21 @@ COMPONENT 2 SYMBOLIC_FUNCTION_OF_SPACE_TIME 0.0
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME 2.0e-6
 COMPONENT 1 SYMBOLIC_FUNCTION_OF_SPACE_TIME 0.0
 ----------------------------------------------------------------------FUNCT5
-POROMULTIPHASESCATRA_FUNCTION TUMOR_GROWTH_LAW_HEAVISIDE NUMPARAMS 5 PARAMS gamma_T_growth 4.0e-8 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 lambda 0.0 p_t_crit 1.0e9
+POROMULTIPHASESCATRA_FUNCTION TUMOR_GROWTH_LAW_HEAVISIDE PARAMS gamma_T_growth 4.0e-8 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 lambda 0.0 p_t_crit 1.0e9
 ----------------------------------------------------------------------FUNCT6
-POROMULTIPHASESCATRA_FUNCTION NECROSIS_LAW_HEAVISIDE NUMPARAMS 5 PARAMS gamma_t_necr 1.0e-8 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 delta_a_t 0.0 p_t_crit 1.0e9
+POROMULTIPHASESCATRA_FUNCTION NECROSIS_LAW_HEAVISIDE PARAMS gamma_t_necr 1.0e-8 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 delta_a_t 0.0 p_t_crit 1.0e9
 ----------------------------------------------------------------------FUNCT7
-POROMULTIPHASESCATRA_FUNCTION OXYGEN_CONSUMPTION_LAW_HEAVISIDE NUMPARAMS 5 PARAMS gamma_nl_growth 9.6e-10 gamma_0_nl 24e-10 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 p_t_crit 1.0e9
+POROMULTIPHASESCATRA_FUNCTION OXYGEN_CONSUMPTION_LAW_HEAVISIDE PARAMS gamma_nl_growth 9.6e-10 gamma_0_nl 24e-10 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 p_t_crit 1.0e9
 ----------------------------------------------------------------------FUNCT8
-POROMULTIPHASESCATRA_FUNCTION TUMOR_GROWTH_LAW_HEAVISIDE_OXY NUMPARAMS 5 PARAMS gamma_T_growth 4.0e-8 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 lambda 0.0 p_t_crit 1.0e9
+POROMULTIPHASESCATRA_FUNCTION TUMOR_GROWTH_LAW_HEAVISIDE_OXY PARAMS gamma_T_growth 4.0e-8 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 lambda 0.0 p_t_crit 1.0e9
 ----------------------------------------------------------------------FUNCT9
-POROMULTIPHASESCATRA_FUNCTION TUMOR_GROWTH_LAW_HEAVISIDE_NECRO NUMPARAMS 5 PARAMS gamma_T_growth 4.0e-8 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 lambda 0.0 p_t_crit 1.0e9
+POROMULTIPHASESCATRA_FUNCTION TUMOR_GROWTH_LAW_HEAVISIDE_NECRO PARAMS gamma_T_growth 4.0e-8 w_nl_crit 1.0e-6 w_nl_env 4.2e-6 lambda 0.0 p_t_crit 1.0e9
 ----------------------------------------------------------------------FUNCT10 // lymphatic drainage
 VARFUNCTION 1.04e-6*1.0e-3*heaviside(p3)*p3*(1.0-p2/500.0)*heaviside(1.0-p2/500.0)
 ----------------------------------------------------------------------FUNCT11 // fluid extravasion from arteries
 VARFUNCTION pi*D*2.7e-9*1.06e-3*(p_art-p3-1333.0)
 ----------------------------------------------------------------------FUNCT12 // diffusive exchange of oxygen from arteries
-POROMULTIPHASESCATRA_FUNCTION OXYGEN_TRANSVASCULAR_EXCHANGE_LAW_DISC NUMPARAMS 10 PARAMS n 2.7 Pb50 37.0 CaO2_max 0.225 alpha_bl_eff 3.1e-5 gamma_rho 2.31e-11 rho_oxy 1.429e-6 rho_IF 1.0e-3 rho_bl 1.06e-3 S2_max 1.5 alpha_IF 3.0e-5
+POROMULTIPHASESCATRA_FUNCTION OXYGEN_TRANSVASCULAR_EXCHANGE_LAW_DISC PARAMS n 2.7 Pb50 37.0 CaO2_max 0.225 alpha_bl_eff 3.1e-5 gamma_rho 2.31e-11 rho_oxy 1.429e-6 rho_IF 1.0e-3 rho_bl 1.06e-3 S2_max 1.5 alpha_IF 3.0e-5
 ----------------------------------------------------------------------FUNCT13 // consumption by healthy cells
 VARFUNCTION porosity*S1*10e-10*sin(0.5*pi*phi1/4.2e-6)
 ----------------------------------------------------------------------FUNCT14 // diameter

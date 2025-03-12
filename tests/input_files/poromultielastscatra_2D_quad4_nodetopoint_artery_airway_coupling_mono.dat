@@ -161,11 +161,11 @@ COMPONENT 1 SYMBOLIC_FUNCTION_OF_SPACE_TIME 0.1
 ----------------------------------------------------------------------FUNCT8
 COMPONENT 0 SYMBOLIC_FUNCTION_OF_SPACE_TIME 0.0
 ----------------------------------------------------------------------FUNCT9
-POROMULTIPHASESCATRA_FUNCTION LUNG_OXYGEN_EXCHANGE_LAW NUMPARAMS 10 PARAMS rho_oxy 1.429e-9 DiffAdVTLC 5.38 alpha_oxy 2.1e-4 rho_air 1.0e-9 rho_bl 1.03e-6 n 3 P_oB50 3.6 NC_Hb 0.25 P_atmospheric 101.3 volfrac_blood_ref 0.3
+POROMULTIPHASESCATRA_FUNCTION LUNG_OXYGEN_EXCHANGE_LAW PARAMS rho_oxy 1.429e-9 DiffAdVTLC 5.38 alpha_oxy 2.1e-4 rho_air 1.0e-9 rho_bl 1.03e-6 n 3 P_oB50 3.6 NC_Hb 0.25 P_atmospheric 101.3 volfrac_blood_ref 0.3
 ----------------------------------------------------------------------FUNCT10
 SYMBOLIC_FUNCTION_OF_SPACE_TIME 2.5e-1*(1-cos(pi*t*0.4))
 ----------------------------------------------------------------------FUNCT11
-POROMULTIPHASESCATRA_FUNCTION LUNG_CARBONDIOXIDE_EXCHANGE_LAW NUMPARAMS 14 PARAMS rho_CO2 1.98e-9 DiffsolAdVTLC 4.5192e-3 pH 7.352 rho_air 1.0e-9 rho_bl 1.03e-6 rho_oxy 1.429e-9 n 3 P_oB50 3.6 C_Hb 18.2 NC_Hb 0.25 alpha_oxy 2.1e-4 P_atmospheric 101.3 ScalingFormmHg 133.3e-3 volfrac_blood_ref 0.1
+POROMULTIPHASESCATRA_FUNCTION LUNG_CARBONDIOXIDE_EXCHANGE_LAW PARAMS rho_CO2 1.98e-9 DiffsolAdVTLC 4.5192e-3 pH 7.352 rho_air 1.0e-9 rho_bl 1.03e-6 rho_oxy 1.429e-9 n 3 P_oB50 3.6 C_Hb 18.2 NC_Hb 0.25 alpha_oxy 2.1e-4 P_atmospheric 101.3 ScalingFormmHg 133.3e-3 volfrac_blood_ref 0.1
 ----------------------------------------------------------RESULT DESCRIPTION
 ARTNET DIS artery NODE 38 QUANTITY pressure VALUE 1.27520578358699255e+00 TOLERANCE 1e-08
 ARTNET DIS artery NODE 42 QUANTITY pressure VALUE 1.21239710820646662e+00 TOLERANCE 1e-08

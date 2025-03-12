@@ -202,7 +202,6 @@ void PoroMultiPhaseScaTra::add_valid_poro_functions(Core::Utils::FunctionManager
           deprecated_selection<std::string>("POROMULTIPHASESCATRA_FUNCTION",
               {"TUMOR_GROWTH_LAW_HEAVISIDE", "TUMOR_GROWTH_LAW_HEAVISIDE_OXY",
                   "TUMOR_GROWTH_LAW_HEAVISIDE_NECRO"}),
-          parameter<int>("NUMPARAMS"),
           group("PARAMS",
               {
                   parameter<double>("gamma_T_growth"),
@@ -215,7 +214,6 @@ void PoroMultiPhaseScaTra::add_valid_poro_functions(Core::Utils::FunctionManager
       all_of({
           deprecated_selection<std::string>(
               "POROMULTIPHASESCATRA_FUNCTION", {"NECROSIS_LAW_HEAVISIDE"}),
-          parameter<int>("NUMPARAMS"),
           group("PARAMS",
               {
                   parameter<double>("gamma_t_necr"),
@@ -228,7 +226,6 @@ void PoroMultiPhaseScaTra::add_valid_poro_functions(Core::Utils::FunctionManager
       all_of({
           deprecated_selection<std::string>(
               "POROMULTIPHASESCATRA_FUNCTION", {"OXYGEN_CONSUMPTION_LAW_HEAVISIDE"}),
-          parameter<int>("NUMPARAMS"),
           group("PARAMS",
               {
                   parameter<double>("gamma_nl_growth"),
@@ -241,7 +238,6 @@ void PoroMultiPhaseScaTra::add_valid_poro_functions(Core::Utils::FunctionManager
       all_of({
           deprecated_selection<std::string>(
               "POROMULTIPHASESCATRA_FUNCTION", {"OXYGEN_TRANSVASCULAR_EXCHANGE_LAW_CONT"}),
-          parameter<int>("NUMPARAMS"),
           group("PARAMS",
               {
                   parameter<double>("n"),
@@ -258,7 +254,6 @@ void PoroMultiPhaseScaTra::add_valid_poro_functions(Core::Utils::FunctionManager
       all_of({
           deprecated_selection<std::string>(
               "POROMULTIPHASESCATRA_FUNCTION", {"OXYGEN_TRANSVASCULAR_EXCHANGE_LAW_DISC"}),
-          parameter<int>("NUMPARAMS"),
           group("PARAMS",
               {
                   parameter<double>("n"),
@@ -276,7 +271,6 @@ void PoroMultiPhaseScaTra::add_valid_poro_functions(Core::Utils::FunctionManager
       all_of({
           deprecated_selection<std::string>(
               "POROMULTIPHASESCATRA_FUNCTION", {"LUNG_OXYGEN_EXCHANGE_LAW"}),
-          parameter<int>("NUMPARAMS"),
           group("PARAMS",
               {
                   parameter<double>("rho_oxy"),
@@ -294,7 +288,6 @@ void PoroMultiPhaseScaTra::add_valid_poro_functions(Core::Utils::FunctionManager
       all_of({
           deprecated_selection<std::string>(
               "POROMULTIPHASESCATRA_FUNCTION", {"LUNG_CARBONDIOXIDE_EXCHANGE_LAW"}),
-          parameter<int>("NUMPARAMS"),
           group("PARAMS",
               {
                   parameter<double>("rho_CO2"),
