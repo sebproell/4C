@@ -1158,7 +1158,7 @@ Core::Binstrategy::BinningStrategy::weighted_distribution_of_bins_to_procs(
       std::vector<int> neighbors;
       get_neighbor_bin_ids(binId, neighbors);
 
-      int err = bingraph->InsertGlobalIndices(binId, (int)neighbors.size(), neighbors.data());
+      int err = bingraph->insert_global_indices(binId, (int)neighbors.size(), neighbors.data());
       if (err < 0)
         FOUR_C_THROW(
             "Core::LinAlg::Graph::InsertGlobalIndices returned %d for global row %d", err, binId);
@@ -1223,7 +1223,7 @@ Core::Binstrategy::BinningStrategy::weighted_distribution_of_bins_to_procs(
     std::vector<int> neighbors;
     get_neighbor_bin_ids(rowbinid, neighbors);
 
-    int err = bingraph->InsertGlobalIndices(
+    int err = bingraph->insert_global_indices(
         rowbinid, static_cast<int>(neighbors.size()), neighbors.data());
     if (err < 0)
       FOUR_C_THROW(
@@ -1231,9 +1231,9 @@ Core::Binstrategy::BinningStrategy::weighted_distribution_of_bins_to_procs(
   }
 
   // complete graph
-  int err = bingraph->FillComplete();
+  int err = bingraph->fill_complete();
   if (err) FOUR_C_THROW("graph->FillComplete() returned err=%d", err);
-  err = bingraph->OptimizeStorage();
+  err = bingraph->optimize_storage();
   if (err) FOUR_C_THROW("graph->OptimizeStorage() returned err=%d", err);
 
   Teuchos::ParameterList paramlist;
@@ -1247,7 +1247,7 @@ Core::Binstrategy::BinningStrategy::weighted_distribution_of_bins_to_procs(
   auto balanced_bingraph = Core::Rebalance::rebalance_graph(*bingraph, paramlist, vweights);
 
   // extract repartitioned bin row map
-  const Epetra_BlockMap& rbinstmp = balanced_bingraph->RowMap();
+  const Epetra_BlockMap& rbinstmp = balanced_bingraph->row_map();
   std::shared_ptr<Epetra_Map> newrowbins =
       std::make_shared<Epetra_Map>(-1, rbinstmp.NumMyElements(), rbinstmp.MyGlobalElements(), 0,
           Core::Communication::as_epetra_comm(discret[0]->get_comm()));
@@ -1437,14 +1437,14 @@ void Core::Binstrategy::BinningStrategy::standard_discretization_ghosting(
   std::shared_ptr<Core::LinAlg::Graph> newnodegraph;
 
   newnodegraph = std::make_shared<Core::LinAlg::Graph>(Copy, *newnoderowmap, 108, false);
-  Epetra_Export exporter(initgraph->RowMap(), *newnoderowmap);
-  int err = newnodegraph->Export(initgraph->get_Epetra_CrsGraph(), exporter, Add);
+  Epetra_Export exporter(initgraph->row_map(), *newnoderowmap);
+  int err = newnodegraph->export_to(initgraph->get_epetra_crs_graph(), exporter, Add);
   if (err < 0) FOUR_C_THROW("Graph export returned err=%d", err);
-  newnodegraph->FillComplete();
-  newnodegraph->OptimizeStorage();
+  newnodegraph->fill_complete();
+  newnodegraph->optimize_storage();
 
   // the column map will become the new ghosted distribution of nodes (standard ghosting)
-  const Epetra_BlockMap cntmp = newnodegraph->ColMap();
+  const Epetra_BlockMap cntmp = newnodegraph->col_map();
   stdnodecolmap = std::make_shared<Epetra_Map>(-1, cntmp.NumMyElements(), cntmp.MyGlobalElements(),
       0, Core::Communication::as_epetra_comm(discret->get_comm()));
 

@@ -390,14 +390,14 @@ std::shared_ptr<Core::LinAlg::Graph> Core::FE::Discretization::build_node_graph(
       for (int col = 0; col < nnode; ++col)
       {
         int colnode = nodeids[col];
-        int err = graph->InsertGlobalIndices(rownode, 1, &colnode);
+        int err = graph->insert_global_indices(rownode, 1, &colnode);
         if (err < 0) FOUR_C_THROW("graph->InsertGlobalIndices returned err=%d", err);
       }
     }
   }
-  int err = graph->FillComplete();
+  int err = graph->fill_complete();
   if (err) FOUR_C_THROW("graph->FillComplete() returned err=%d", err);
-  err = graph->OptimizeStorage();
+  err = graph->optimize_storage();
   if (err) FOUR_C_THROW("graph->OptimizeStorage() returned err=%d", err);
 
   return graph;

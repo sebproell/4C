@@ -25,7 +25,7 @@ Core::LinAlg::SparseMatrix::SparseMatrix(std::shared_ptr<Core::LinAlg::Graph> cr
     std::shared_ptr<Core::LinAlg::MultiMapExtractor> dbcmaps)
     : explicitdirichlet_(true), savegraph_(true), matrixtype_(CRS_MATRIX)
 {
-  sysmat_ = std::make_shared<Epetra_CrsMatrix>(::Copy, crsgraph->get_Epetra_CrsGraph());
+  sysmat_ = std::make_shared<Epetra_CrsMatrix>(::Copy, crsgraph->get_epetra_crs_graph());
   graph_ = crsgraph;
   dbcmaps_ = dbcmaps;
 }
@@ -298,9 +298,9 @@ void Core::LinAlg::SparseMatrix::zero()
     // new matrix in memory at the same time!
     sysmat_ = nullptr;
     if (matrixtype_ == CRS_MATRIX)
-      sysmat_ = std::make_shared<Epetra_CrsMatrix>(::Copy, graph_->get_Epetra_CrsGraph());
+      sysmat_ = std::make_shared<Epetra_CrsMatrix>(::Copy, graph_->get_epetra_crs_graph());
     else if (matrixtype_ == FE_MATRIX)
-      sysmat_ = std::make_shared<Epetra_FECrsMatrix>(::Copy, graph_->get_Epetra_CrsGraph());
+      sysmat_ = std::make_shared<Epetra_FECrsMatrix>(::Copy, graph_->get_epetra_crs_graph());
     else
       FOUR_C_THROW("matrix type is not correct");
 
@@ -323,7 +323,7 @@ void Core::LinAlg::SparseMatrix::reset()
     for (std::size_t i = 0; i < numentries.size(); ++i)
     {
       int* indices;
-      int err = graph->ExtractMyRowView(i, numentries[i], indices);
+      int err = graph->extract_local_row_view(i, numentries[i], indices);
       if (err != 0) FOUR_C_THROW("ExtractMyRowView failed");
     }
   }
@@ -333,7 +333,7 @@ void Core::LinAlg::SparseMatrix::reset()
     // otherwise assembly would be extremely expensive!
     for (std::size_t i = 0; i < numentries.size(); ++i)
     {
-      numentries[i] = graph->NumAllocatedMyIndices(i);
+      numentries[i] = graph->num_allocated_local_indices(i);
     }
   }
   // Remove old matrix before creating a new one so we do not have old and
@@ -839,10 +839,10 @@ void Core::LinAlg::SparseMatrix::un_complete()
 
   auto graph = std::make_shared<Core::LinAlg::Graph>(sysmat_->Graph());
 
-  std::vector<int> nonzeros(graph->NumMyRows());
+  std::vector<int> nonzeros(graph->num_local_rows());
   for (std::size_t i = 0; i < nonzeros.size(); ++i)
   {
-    nonzeros[i] = graph->NumMyIndices(i);
+    nonzeros[i] = graph->num_local_indices(i);
   }
 
   const Epetra_Map& rowmap = sysmat_->RowMap();
@@ -905,7 +905,7 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet(
     if (savegraph_ and graph_ == nullptr)
     {
       graph_ = std::make_shared<Core::LinAlg::Graph>(sysmat_->Graph());
-      if (not graph_->Filled()) FOUR_C_THROW("got unfilled graph from filled matrix");
+      if (not graph_->filled()) FOUR_C_THROW("got unfilled graph from filled matrix");
     }
 
     // allocate a new matrix and copy all rows that are not dirichlet
@@ -1037,7 +1037,7 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet(const Epetra_Map& dbctoggle, bo
     if (savegraph_ and graph_ == nullptr)
     {
       graph_ = std::make_shared<Core::LinAlg::Graph>(sysmat_->Graph());
-      if (not graph_->Filled()) FOUR_C_THROW("got unfilled graph from filled matrix");
+      if (not graph_->filled()) FOUR_C_THROW("got unfilled graph from filled matrix");
     }
 
     // allocate a new matrix and copy all rows that are not dirichlet
@@ -1157,7 +1157,7 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet_with_trafo(const Core::LinAlg::
     if (savegraph_ and graph_ == nullptr)
     {
       graph_ = std::make_shared<Core::LinAlg::Graph>(sysmat_->Graph());
-      if (not graph_->Filled()) FOUR_C_THROW("got unfilled graph from filled matrix");
+      if (not graph_->filled()) FOUR_C_THROW("got unfilled graph from filled matrix");
     }
 
     // allocate a new matrix and copy all rows that are not dirichlet

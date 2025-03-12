@@ -7,11 +7,6 @@
 
 #include "4C_linalg_graph.hpp"
 
-// Do not lint the file for identifier names, since the naming of the Wrapper functions follow the
-// naming of the Epetra_CrsGraph
-
-// NOLINTBEGIN(readability-identifier-naming)
-
 FOUR_C_NAMESPACE_OPEN
 
 
@@ -32,13 +27,13 @@ Core::LinAlg::Graph::Graph(Epetra_DataAccess CV, const Epetra_BlockMap& RowMap,
 }
 
 Core::LinAlg::Graph::Graph(const Graph& other)
-    : graph_(std::make_unique<Epetra_CrsGraph>(other.get_Epetra_CrsGraph()))
+    : graph_(std::make_unique<Epetra_CrsGraph>(other.get_epetra_crs_graph()))
 {
 }
 
 Core::LinAlg::Graph& Core::LinAlg::Graph::operator=(const Graph& other)
 {
-  *graph_ = other.get_Epetra_CrsGraph();
+  *graph_ = other.get_epetra_crs_graph();
   return *this;
 }
 
@@ -49,18 +44,16 @@ Core::LinAlg::Graph::Graph(
 {
 }
 
-int Core::LinAlg::Graph::InsertGlobalIndices(int GlobalRow, int NumIndices, int* Indices)
+int Core::LinAlg::Graph::insert_global_indices(int GlobalRow, int NumIndices, int* Indices)
 {
   return graph_->InsertGlobalIndices(GlobalRow, NumIndices, Indices);
 }
 
 
-int Core::LinAlg::Graph::RemoveGlobalIndices(int GlobalRow, int NumIndices, int* Indices)
+int Core::LinAlg::Graph::remove_global_indices(int GlobalRow, int NumIndices, int* Indices)
 {
   return graph_->RemoveGlobalIndices(GlobalRow, NumIndices, Indices);
 }
 
 
 FOUR_C_NAMESPACE_CLOSE
-
-// NOLINTEND(readability-identifier-naming)

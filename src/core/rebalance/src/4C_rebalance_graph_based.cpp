@@ -46,11 +46,11 @@ Core::Rebalance::rebalance_node_maps(const Core::LinAlg::Graph& initialGraph,
 
   // extract repartitioned maps
   std::shared_ptr<Epetra_Map> rownodes =
-      std::make_shared<Epetra_Map>(-1, balanced_graph->RowMap().NumMyElements(),
-          balanced_graph->RowMap().MyGlobalElements(), 0, initialGraph.Comm());
+      std::make_shared<Epetra_Map>(-1, balanced_graph->row_map().NumMyElements(),
+          balanced_graph->row_map().MyGlobalElements(), 0, initialGraph.get_comm());
   std::shared_ptr<Epetra_Map> colnodes =
-      std::make_shared<Epetra_Map>(-1, balanced_graph->ColMap().NumMyElements(),
-          balanced_graph->ColMap().MyGlobalElements(), 0, initialGraph.Comm());
+      std::make_shared<Epetra_Map>(-1, balanced_graph->col_map().NumMyElements(),
+          balanced_graph->col_map().MyGlobalElements(), 0, initialGraph.get_comm());
 
   return {rownodes, colnodes};
 }
@@ -75,21 +75,21 @@ std::shared_ptr<Core::LinAlg::Graph> Core::Rebalance::rebalance_graph(
   if (initialNodeCoordinates)
   {
     partitioner = Teuchos::make_rcp<Isorropia::Epetra::Partitioner>(
-        &initialGraph.get_Epetra_CrsGraph(), &costs,
+        &initialGraph.get_epetra_crs_graph(), &costs,
         initialNodeCoordinates->get_ptr_of_Epetra_MultiVector().get(), nullptr, rebalanceParams);
   }
   else
   {
     partitioner = Teuchos::make_rcp<Isorropia::Epetra::Partitioner>(
-        &initialGraph.get_Epetra_CrsGraph(), &costs, rebalanceParams);
+        &initialGraph.get_epetra_crs_graph(), &costs, rebalanceParams);
   }
 
   Isorropia::Epetra::Redistributor rd(partitioner);
   auto balancedGraph = std::make_shared<Core::LinAlg::Graph>(
-      *rd.redistribute(initialGraph.get_Epetra_CrsGraph(), true));
+      *rd.redistribute(initialGraph.get_epetra_crs_graph(), true));
 
-  balancedGraph->FillComplete();
-  balancedGraph->OptimizeStorage();
+  balancedGraph->fill_complete();
+  balancedGraph->optimize_storage();
 
   return balancedGraph;
 }
@@ -271,7 +271,7 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_graph(
       std::vector<int> cols(0, 0);
       std::set<int>::iterator setfool = fool->second.begin();
       for (; setfool != fool->second.end(); ++setfool) cols.push_back(*setfool);
-      int err = graph->InsertGlobalIndices(grid, (int)cols.size(), &cols[0]);
+      int err = graph->insert_global_indices(grid, (int)cols.size(), &cols[0]);
       if (err < 0)
         FOUR_C_THROW(
             "Core::LinAlg::Graph::InsertGlobalIndices returned %d for global row %d", err, grid);
@@ -313,7 +313,7 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_graph(
         // see whether I have grid in my row map
         if (rownodes->LID(grid) != -1)  // I have it, put stuff in my graph
         {
-          int err = graph->InsertGlobalIndices(grid, num - 1, (ptr + 2));
+          int err = graph->insert_global_indices(grid, num - 1, (ptr + 2));
           if (err < 0) FOUR_C_THROW("Core::LinAlg::Graph::InsertGlobalIndices returned %d", err);
           ptr += (num + 1);
         }
@@ -328,8 +328,8 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_graph(
   Core::Communication::barrier(dis.get_comm());
 
   // finish graph
-  graph->FillComplete();
-  graph->OptimizeStorage();
+  graph->fill_complete();
+  graph->optimize_storage();
 
   Core::Communication::barrier(dis.get_comm());
 
@@ -368,11 +368,11 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_monolithic_nod
     {
       element_node_ids[i_node] = element->nodes()[i_node]->id();
     }
-    err = element_connectivity.InsertGlobalIndices(
+    err = element_connectivity.insert_global_indices(
         element->id(), element_node_ids.size(), element_node_ids.data());
     if (err != 0) FOUR_C_THROW("Core::LinAlg::Graph::InsertGlobalIndices returned %d", err);
   }
-  element_connectivity.FillComplete();
+  element_connectivity.fill_complete();
 
   // 3. Get the connectivity information of each element that collides with an element on this rank
   std::set<int> my_colliding_primitives;
@@ -387,8 +387,8 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_monolithic_nod
   Epetra_Import importer(my_colliding_primitives_map, *dis.element_row_map());
   Core::LinAlg::Graph my_colliding_primitives_connectivity(
       Copy, my_colliding_primitives_map, n_nodes_per_element_max, false);
-  err = my_colliding_primitives_connectivity.Import(
-      element_connectivity.get_Epetra_CrsGraph(), importer, Insert);
+  err = my_colliding_primitives_connectivity.import_from(
+      element_connectivity.get_epetra_crs_graph(), importer, Insert);
   if (err != 0) FOUR_C_THROW("Core::LinAlg::Graph::Import returned %d", err);
 
   // 4. Build and fill the graph with element internal connectivities
@@ -435,7 +435,7 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_monolithic_nod
 
       int primitive_num_nodes;
       int* primitive_node_indices;
-      err = my_colliding_primitives_connectivity.ExtractGlobalRowView(
+      err = my_colliding_primitives_connectivity.extract_global_row_view(
           primitive_gid, primitive_num_nodes, primitive_node_indices);
       if (err != 0) FOUR_C_THROW("Core::LinAlg::Graph::ExtractGlobalRowView returned %d", err);
 

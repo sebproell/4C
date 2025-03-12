@@ -632,7 +632,7 @@ Teuchos::RCP<::NOX::Epetra::LinearSystem> FSI::Partitioned::create_linear_system
       FOUR_C_THROW("unsupported difference type '%s'", dt.c_str());
 
     FD = Teuchos::make_rcp<::NOX::Epetra::FiniteDifference>(printParams, interface, noxSoln,
-        Teuchos::rcpFromRef(raw_graph_->get_Epetra_CrsGraph()), beta, alpha);
+        Teuchos::rcpFromRef(raw_graph_->get_epetra_crs_graph()), beta, alpha);
     FD->setDifferenceMethod(dtype);
 
     iJac = FD;
@@ -682,7 +682,7 @@ Teuchos::RCP<::NOX::Epetra::LinearSystem> FSI::Partitioned::create_linear_system
 
     Teuchos::RCP<::NOX::Epetra::FiniteDifference> precFD =
         Teuchos::make_rcp<::NOX::Epetra::FiniteDifference>(printParams, interface, noxSoln,
-            Teuchos::rcpFromRef(raw_graph_->get_Epetra_CrsGraph()), beta, alpha);
+            Teuchos::rcpFromRef(raw_graph_->get_epetra_crs_graph()), beta, alpha);
     iPrec = precFD;
     M = precFD;
 
