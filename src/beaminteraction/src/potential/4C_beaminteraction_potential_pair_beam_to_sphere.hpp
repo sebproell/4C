@@ -5,14 +5,14 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_BEAMINTERACTION_BEAM_TO_SPHERE_POTENTIAL_PAIR_HPP
-#define FOUR_C_BEAMINTERACTION_BEAM_TO_SPHERE_POTENTIAL_PAIR_HPP
+#ifndef FOUR_C_BEAMINTERACTION_POTENTIAL_PAIR_BEAM_TO_SPHERE_HPP
+#define FOUR_C_BEAMINTERACTION_POTENTIAL_PAIR_BEAM_TO_SPHERE_HPP
 
 #include "4C_config.hpp"
 
 #include "4C_beaminteraction_beam_to_beam_contact_defines.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_tangentsmoothing.hpp"
-#include "4C_beaminteraction_potential_pair.hpp"
+#include "4C_beaminteraction_potential_pair_base.hpp"
 #include "4C_fem_general_utils_integration.hpp"
 #include "4C_fem_general_utils_local_connectivity_matrices.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"

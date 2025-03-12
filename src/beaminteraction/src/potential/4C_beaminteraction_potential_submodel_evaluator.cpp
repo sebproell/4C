@@ -5,13 +5,13 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_beaminteraction_submodel_evaluator_potential.hpp"
+#include "4C_beaminteraction_potential_submodel_evaluator.hpp"
 
 #include "4C_beam3_base.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_utils.hpp"
 #include "4C_beaminteraction_calc_utils.hpp"
 #include "4C_beaminteraction_crosslinker_handler.hpp"
-#include "4C_beaminteraction_potential_pair.hpp"
+#include "4C_beaminteraction_potential_pair_base.hpp"
 #include "4C_beaminteraction_potential_params.hpp"
 #include "4C_beaminteraction_potential_runtime_visualization_output_params.hpp"
 #include "4C_beaminteraction_str_model_evaluator_datastate.hpp"

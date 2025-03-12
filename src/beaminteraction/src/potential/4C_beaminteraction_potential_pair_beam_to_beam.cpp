@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_beaminteraction_beam_to_beam_potential_pair.hpp"
+#include "4C_beaminteraction_potential_pair_beam_to_beam.hpp"
 
 #include "4C_beam3_base.hpp"
 #include "4C_beam3_spatial_discretization_utils.hpp"

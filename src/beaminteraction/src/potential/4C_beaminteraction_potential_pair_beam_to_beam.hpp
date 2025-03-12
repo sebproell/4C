@@ -5,12 +5,12 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_BEAMINTERACTION_BEAM_TO_BEAM_POTENTIAL_PAIR_HPP
-#define FOUR_C_BEAMINTERACTION_BEAM_TO_BEAM_POTENTIAL_PAIR_HPP
+#ifndef FOUR_C_BEAMINTERACTION_POTENTIAL_PAIR_BEAM_TO_BEAM_HPP
+#define FOUR_C_BEAMINTERACTION_POTENTIAL_PAIR_BEAM_TO_BEAM_HPP
 
 #include "4C_config.hpp"
 
-#include "4C_beaminteraction_potential_pair.hpp"
+#include "4C_beaminteraction_potential_pair_base.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 
 #include <Sacado.hpp>
