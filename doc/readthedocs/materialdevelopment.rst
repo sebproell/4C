@@ -109,8 +109,6 @@ The base classes of the material models representing a single physics environmen
      - ``Mat::Material``
    * - Electrochemistry
      - ``Mat::ElchSingleMat``
-   * - Electromagnetics
-     - ``Mat::``
    * - Scalar transport
      - ``Mat::Material``
 

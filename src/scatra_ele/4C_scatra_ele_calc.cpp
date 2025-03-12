@@ -821,11 +821,6 @@ void Discret::Elements::ScaTraEleCalc<distype, probdim>::sysmat(Core::Elements::
       if (ele->material()->material_type() == Core::Materials::m_scatra_multiscale)
         calc_mat_and_rhs_multi_scale(ele, emat, erhs, k, iquad, timefacfac, rhsfac);
 
-      //----------------------------------------------------------------
-      // 8) Compute Rhs for ElectroMagnetic Diffusion equation
-      // the term includes the divergence og the electric current
-      //----------------------------------------------------------------
-      if (scatrapara_->is_emd()) calc_rhsemd(ele, erhs, rhsfac);
     }  // end loop all scalars
   }  // end loop Gauss points
 }
@@ -2088,43 +2083,6 @@ void Discret::Elements::ScaTraEleCalc<distype, probdim>::calc_mat_and_rhs_multi_
   // macro-scale vector contribution
   const double rhsterm = rhsfac * q_micro * matmultiscale->specific_micro_scale_surface_area(detF);
   for (unsigned vi = 0; vi < nen_; ++vi) erhs[vi * numdofpernode_ + k] -= funct_(vi) * rhsterm;
-}
-
-/*-------------------------------------------------------------------- *
- *---------------------------------------------------------------------*/
-template <Core::FE::CellType distype, int probdim>
-void Discret::Elements::ScaTraEleCalc<distype, probdim>::calc_rhsemd(
-    const Core::Elements::Element* const ele, Core::LinAlg::SerialDenseVector& erhs,
-    const double rhsfac)
-{
-  // (SPATIAL) FUNCTION BUSINESS
-  const int functno = scatrapara_->emd_source();
-  if (functno <= 0)
-  {
-    FOUR_C_THROW(
-        "For electromagnetic diffusion simulations a current density source function has to be "
-        "given.");
-  }
-
-  std::vector<double> current(nsd_, 0);
-  for (unsigned jnode = 0; jnode < nen_; jnode++)
-  {
-    for (int d = 0; d < static_cast<int>(nsd_); ++d)
-    {
-      current[d] += funct_(jnode) *
-                    Global::Problem::instance()
-                        ->function_by_id<Core::Utils::FunctionOfSpaceTime>(functno)
-                        .evaluate((ele->nodes()[jnode])->x().data(), scatraparatimint_->time(), d);
-    }
-  }
-
-  for (int vi = 0; vi < static_cast<int>(nen_); ++vi)
-  {
-    for (unsigned int d = 0; d < nsd_; ++d)
-    {
-      erhs[vi] += derxy_(d, vi) * current[d] * rhsfac;
-    }
-  }
 }
 
 /*------------------------------------------------------------------------------*

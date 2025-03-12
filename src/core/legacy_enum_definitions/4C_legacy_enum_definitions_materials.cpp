@@ -349,8 +349,6 @@ std::string_view Core::Materials::to_string(Core::Materials::MaterialType materi
       return "MAT_ParticleDEM";
     case m_particle_wall_dem:
       return "MAT_ParticleWallDEM";
-    case m_electromagneticmat:
-      return "MAT_Electromagnetic";
     case m_mixture:
       return "MAT_Mixture";
     case mix_elasthyper:

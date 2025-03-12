@@ -137,7 +137,6 @@ Core::IO::InputFile Global::set_up_input_file(MPI_Comm comm)
       "THERMO ELEMENTS",
       "ARTERY ELEMENTS",
       "REDUCED D AIRWAYS ELEMENTS",
-      "ELECTROMAGNETIC ELEMENTS",
       "PARTICLES",
       "PERIODIC BOUNDINGBOX ELEMENTS",
       // domains
@@ -180,7 +179,6 @@ void Global::read_fields(Global::Problem& problem, Core::IO::InputFile& input, c
   std::shared_ptr<Core::FE::Discretization> airwaydis = nullptr;
   std::shared_ptr<Core::FE::Discretization> optidis = nullptr;
   std::shared_ptr<Core::FE::Discretization> porofluiddis = nullptr;  // fpsi, poroelast
-  std::shared_ptr<Core::FE::Discretization> elemagdis = nullptr;
   std::shared_ptr<Core::FE::Discretization> celldis = nullptr;
   std::shared_ptr<Core::FE::Discretization> pboxdis = nullptr;
 
@@ -1339,26 +1337,6 @@ void Global::read_fields(Global::Problem& problem, Core::IO::InputFile& input, c
     case Core::ProblemType::np_support:
     {
       // no discretizations and nodes needed for supporting procs
-      break;
-    }
-    case Core::ProblemType::elemag:
-    {
-      // create empty discretizations
-      elemagdis = std::make_shared<Core::FE::DiscretizationHDG>("elemag", comm, problem.n_dim());
-
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      elemagdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(elemagdis, output_control, distype));
-
-      problem.add_dis("elemag", elemagdis);
-
-      std::set<std::string> elemagelementtypes;
-      elemagelementtypes.insert("ELECTROMAGNETIC");
-      elemagelementtypes.insert("ELECTROMAGNETICDIFF");
-
-      meshreader.add_element_reader(Core::IO::ElementReader(
-          elemagdis, input, "ELECTROMAGNETIC ELEMENTS", elemagelementtypes));
-
       break;
     }
     case Core::ProblemType::redairways_tissue:

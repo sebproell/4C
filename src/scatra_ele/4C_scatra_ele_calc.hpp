@@ -908,13 +908,6 @@ namespace Discret
                                     //!< right-hand side vector
       );
 
-      //! Electromagnetic diffusion current density source RHS term
-      void calc_rhsemd(const Core::Elements::Element* const ele,  //!< element
-          Core::LinAlg::SerialDenseVector& erhs,  //!< element right-hand side vector
-          const double rhsfac  //!< domain integration factor times time integration factor for
-                               //!< right-hand side vector
-      );
-
       //! calculation of convective element matrix in convective form (off diagonal term fluid)
       virtual void calc_mat_conv_od_fluid(
           Core::LinAlg::SerialDenseMatrix& emat,  //!< element matrix to be filled

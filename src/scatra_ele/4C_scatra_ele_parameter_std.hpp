@@ -51,8 +51,6 @@ namespace Discret
       double int_layer_growth_conv_tol() const { return intlayergrowth_convtol_; };
       unsigned int_layer_growth_ite_max() const { return intlayergrowth_itemax_; };
       bool partitioned_multi_scale() const { return partitioned_multiscale_; };
-      bool is_emd() const { return is_emd_; };
-      int emd_source() const { return emd_source_; };
       //! return true if external force is applied
       [[nodiscard]] bool has_external_force() const { return has_external_force_; };
       //! number of dofset associated with displacement dofs
@@ -164,12 +162,6 @@ namespace Discret
 
       // flag for truly partitioned multi-scale simulation
       bool partitioned_multiscale_;
-
-      /// flag for electromagnetic diffusion simulation
-      bool is_emd_;
-
-      /// electromagnetic diffusion source function
-      int emd_source_;
 
       /// flag for external force
       bool has_external_force_;

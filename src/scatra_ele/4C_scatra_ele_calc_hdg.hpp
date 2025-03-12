@@ -256,10 +256,6 @@ namespace Discret
         //! concentrations) into the element matrix for the trace and similarly for the residuals
         void condense_local_part(Discret::Elements::ScaTraHDG* hdgele);
 
-        //! Compute divergence of current source (ELEMAG)
-        void compute_source(const Core::Elements::Element* ele,
-            Core::LinAlg::SerialDenseVector& elevec1, const double time);
-
         //! add diffusive term to element matrix
         void add_diff_mat(
             Core::LinAlg::SerialDenseMatrix& elemat, const Discret::Elements::ScaTraHDG* hdgele);

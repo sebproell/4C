@@ -82,8 +82,6 @@ ScaTra::ScaTraTimIntImpl::ScaTraTimIntImpl(std::shared_ptr<Core::FE::Discretizat
           problem_->materials()->first_id_by_type(Core::Materials::m_scatra_multiscale) != -1 or
           problem_->materials()->first_id_by_type(Core::Materials::m_newman_multiscale) != -1),
       micro_scale_(probnum != 0),
-      isemd_(extraparams->get<bool>("ELECTROMAGNETICDIFFUSION", false)),
-      emd_source_(extraparams->get<int>("EMDSOURCE", -1)),
       has_external_force_(params_->sublist("EXTERNAL FORCE").get<bool>("EXTERNAL_FORCE")),
       calcflux_domain_(
           Teuchos::getIntegralValue<Inpar::ScaTra::FluxType>(*params, "CALCFLUX_DOMAIN")),
@@ -1022,11 +1020,6 @@ void ScaTra::ScaTraTimIntImpl::set_element_general_parameters(bool calcinitialti
           solvtype_ ==
               Inpar::ScaTra::solvertype_nonlinear_multiscale_macrotomicro_aitken_dofsplit or
           solvtype_ == Inpar::ScaTra::solvertype_nonlinear_multiscale_microtomacro);
-
-  // flag for electromagnetic diffusion
-  eleparams.set<bool>("electromagnetic_diffusion", isemd_);
-  // current source function
-  if (isemd_) eleparams.set<int>("electromagnetic_diffusion_source", emd_source_);
 
   // flag for external force
   eleparams.set<bool>("has_external_force", has_external_force_);

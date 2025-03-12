@@ -13,4 +13,3 @@ Elements
    elementsthermo
    elementsartery
    elementsreduceddairways
-   elementselectromagnetic

@@ -83,21 +83,6 @@ and xxx is the flow.
 The element types used are given in :ref:`TRANSPORT ELEMENTS<transportelements>`, and the domain may be 1D, 2D, or 3D.
 
 
-
-Electromagnetics
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**General**
-
-.. ToDo::
-
-   No information about this special problem type.
-
-**Elements and Degrees of freedom**
-
-The element types used are given in :ref:`ELECTROMAGNETIC ELEMENTS<electromagneticelements>`. The number of degrees of freedom
-
-
 Fluid_Top_Opt
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 

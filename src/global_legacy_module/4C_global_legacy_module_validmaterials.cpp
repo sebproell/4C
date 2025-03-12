@@ -3798,18 +3798,6 @@ std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec> Global::v
   }
 
   /*----------------------------------------------------------------------*/
-  // electromagnetic material
-  {
-    known_materials[Core::Materials::m_electromagneticmat] = group("MAT_Electromagnetic",
-        {
-            parameter<double>("CONDUCTIVITY", {.description = "electrical conductivity"}),
-            parameter<double>("PERMITTIVITY", {.description = "Permittivity"}),
-            parameter<double>("PERMEABILITY", {.description = "Permeability"}),
-        },
-        {.description = "Electromagnetic material"});
-  }
-
-  /*----------------------------------------------------------------------*/
   // General mixture models (used for prestretching and for homogenized constrained mixture models)
   {
     known_materials[Core::Materials::m_mixture] = group("MAT_Mixture",

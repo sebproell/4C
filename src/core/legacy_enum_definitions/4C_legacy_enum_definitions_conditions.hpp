@@ -216,7 +216,6 @@ namespace Core::Conditions
     ScatraHeteroReactionCondMaster,
     ScatraHeteroReactionCondSlave,
     ScatraPartitioning,
-    SilverMueller,
     ElementTag,
     NodeTag,
     Embedded_Mesh_Solid_Surf_Coupling,
