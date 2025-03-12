@@ -538,8 +538,8 @@ to be changed:
       ::
 
           sectionname="STRUCTURE"
-          description="MAT 1 KINEM nonlinear EAS sosh8 ANS sosh8 THICKDIR auto"
-          elementname="SOLIDSH8"
+          description="MAT 1 KINEM nonlinear TECH eas_full"
+          elementname="SOLID"
 
 -  ``*eb2="ELEMENT"`` the fluid elements with ALE and their material
 

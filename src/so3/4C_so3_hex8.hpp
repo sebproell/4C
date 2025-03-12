@@ -58,7 +58,6 @@ namespace Discret
   {
     // forward declarations
     class PreStress;
-    class SoSh8Type;
 
 
     class SoHex8Type : public Core::Elements::ElementType
@@ -110,7 +109,6 @@ namespace Discret
      public:
       //! @name Friends
       friend class SoHex8Type;
-      friend class SoSh8Type;
 
       //@}
       //! @name Constructors and destructors and related methods
@@ -448,8 +446,6 @@ namespace Discret
       enum EASType  // with meaningful value for matrix size info
       {
         soh8_easnone = 0,   //!< no EAS i.e. displacement based with tremendous locking
-        soh8_eassosh8 = 7,  //!< related to Solid-Shell, 7 parameters to alleviate
-                            //!< inplane (membrane) locking and main modes for Poisson-locking
         soh8_easmild = 9,   //!< 9 parameters consisting of modes to alleviate
                             //!< shear locking (bending) and main incompressibility modes
                             //!< (for Solid Hex8)
@@ -595,9 +591,6 @@ namespace Discret
 
       //! EAS technology, init
       void soh8_easinit();
-
-      //! Re-initialize EAS data, needed for sosh8 morphing
-      void soh8_reiniteas(Discret::Elements::SoHex8::EASType EASType);
 
       //! EAS technology, setup necessary data
       void soh8_eassetup(

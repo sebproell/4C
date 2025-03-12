@@ -50,7 +50,7 @@ namespace EXODUS
     MeshEntity me;      ///< referring to underlying mesh entity
     std::string sec;    ///< FLUID,STRUCTURE,ALE,etc.
     std::string desc;   ///< like "MAT 1 EAS full"
-    std::string ename;  ///< FLUID,SOLIDSH8,etc
+    std::string ename;  ///< FLUID,SOLID,etc
   };
 
   //! this is what fully defines a 4C condition
