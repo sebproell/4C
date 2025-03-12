@@ -315,21 +315,21 @@ The solver sections appear in the following way:
 .. code-block:: yaml
 
     SOLVER 1:
-      NAME: "iterative_solver_with_ILU"
+      NAME: "iterative_solver_with_ILU_preconditioner"
       SOLVER: "Belos"
       SOLVER_XML_FILE: "gmres_template.xml"
       AZPREC: "ILU"
       IFPACK_XML_FILE: "<path/to/your/ifpack_parameters.xml>"
       # template file is located in <source-root>/tests/input-files/xml/preconditioner/ifpack.xml
     SOLVER 2:
-      NAME: "algebraic_multigrid_solver"
+      NAME: "iterative_solver_with_algebraic_multigrid_preconditioner"
       SOLVER: "Belos"
       SOLVER_XML_FILE: "gmres_template.xml"
       AZPREC: "MueLu"
       MUELU_XML_FILE: "<path/to/your/muelu_parameters.xml>"
       # template files for various problems are located in <source-root>/tests/input-files/xml/multigrid/*.xml
     SOLVER 3:
-      NAME: "block_multigrid_solver"
+      NAME: "iterative_solver_with_block_preconditioner"
       SOLVER: "Belos"
       SOLVER_XML_FILE: "gmres_template.xml"
       AZPREC: "Teko"
@@ -339,7 +339,7 @@ The solver sections appear in the following way:
       SOLVER: "Belos"
       AZPREC: "AMGnxn"
       SOLVER_XML_FILE: "gmres_template.xml"
-      NAME: "block_multigrid_solver"
+      NAME: "iterative_solver_with_AMGnxn_preconditioner"
       AMGNXN_TYPE: "XML"
       AMGNXN_XML_FILE: "<path/to/your/amgnxn_parameters.xml>"
       # template files for various problems are located in <source-root>/tests/input-files/*AMG*.xml
