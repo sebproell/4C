@@ -143,7 +143,7 @@ void Core::LinearSolver::Parameters::fix_null_space(std::string field, const Epe
   {
     auto& nullspaceData = (*nullspace)(i);
     auto& nullspaceDataNew = (*nullspaceNew)(i);
-    const int myLength = nullspaceDataNew.MyLength();
+    const int myLength = nullspaceDataNew.local_length();
 
     for (int j = 0; j < myLength; j++)
     {

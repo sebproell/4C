@@ -116,7 +116,7 @@ Adapter::FSIStructureWrapper::predict_interface_dispnp()
     std::shared_ptr<Core::LinAlg::Vector<double>> ivel =
         interface_->extract_fsi_cond_vector(*veln());
 
-    idis->Update(current_dt, *ivel, 1.0);
+    idis->update(current_dt, *ivel, 1.0);
   }
   else if (predictor_ == "d(n)+dt*v(n)+0.5*dt^2*a(n)")
   {
@@ -131,7 +131,7 @@ Adapter::FSIStructureWrapper::predict_interface_dispnp()
     std::shared_ptr<Core::LinAlg::Vector<double>> iacc =
         interface_->extract_fsi_cond_vector(*accn());
 
-    idis->Update(current_dt, *ivel, 0.5 * current_dt * current_dt, *iacc, 1.0);
+    idis->update(current_dt, *ivel, 0.5 * current_dt * current_dt, *iacc, 1.0);
   }
   else
   {
@@ -151,7 +151,7 @@ Adapter::FSIStructureWrapper::predict_interface_dispnp()
 std::shared_ptr<Core::LinAlg::Vector<double>>
 Adapter::FSIStructureWrapper::extract_interface_dispn()
 {
-  FOUR_C_ASSERT(interface_->full_map()->PointSameAs(dispn()->Map()),
+  FOUR_C_ASSERT(interface_->full_map()->PointSameAs(dispn()->get_map()),
       "Full map of map extractor and Dispn() do not match.");
 
   // prestressing business
@@ -171,7 +171,7 @@ Adapter::FSIStructureWrapper::extract_interface_dispn()
 std::shared_ptr<Core::LinAlg::Vector<double>>
 Adapter::FSIStructureWrapper::extract_interface_dispnp()
 {
-  FOUR_C_ASSERT(interface_->full_map()->PointSameAs(dispnp()->Map()),
+  FOUR_C_ASSERT(interface_->full_map()->PointSameAs(dispnp()->get_map()),
       "Full map of map extractor and Dispnp() do not match.");
 
   // prestressing business
@@ -195,7 +195,7 @@ Adapter::FSIStructureWrapper::extract_interface_dispnp()
 void Adapter::FSIStructureWrapper::apply_interface_forces(
     std::shared_ptr<Core::LinAlg::Vector<double>> iforce)
 {
-  fsi_model_evaluator()->get_interface_force_np_ptr()->PutScalar(0.0);
+  fsi_model_evaluator()->get_interface_force_np_ptr()->put_scalar(0.0);
   interface_->add_fsi_cond_vector(*iforce, *fsi_model_evaluator()->get_interface_force_np_ptr());
   return;
 }

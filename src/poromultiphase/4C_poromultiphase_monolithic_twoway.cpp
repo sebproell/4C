@@ -702,13 +702,13 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::setup_newton()
   if (iterinc_ == nullptr)
     iterinc_ = Core::LinAlg::create_vector(*dof_row_map(), true);
   else
-    iterinc_->PutScalar(0.0);
+    iterinc_->put_scalar(0.0);
 
   // a zero vector of full length
   if (zeros_ == nullptr)
     zeros_ = Core::LinAlg::create_vector(*dof_row_map(), true);
   else
-    zeros_->PutScalar(0.0);
+    zeros_->put_scalar(0.0);
 
   // AitkenReset();
 
@@ -905,7 +905,7 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::linear_solve()
     solver_params.nonlin_residual = std::max(maxres_, maxinc_);
     solver_params.lin_tol_better = solveradaptolbetter_;
   }
-  iterinc_->PutScalar(0.0);  // Useful? depends on solver and more
+  iterinc_->put_scalar(0.0);  // Useful? depends on solver and more
 
   // equilibrate global system of equations if necessary
   equilibration_->equilibrate_system(systemmatrix_, rhs_, blockrowdofmap_);
@@ -972,7 +972,7 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::setup_vector(Core::LinAlg::
 {
   extractor()->insert_vector(*sv, 0, f);
 
-  f.Scale(-1);
+  f.scale(-1);
   extractor()->insert_vector(*fv, 1, f);
 }
 /*----------------------------------------------------------------------*
@@ -1040,21 +1040,21 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::poro_fd_check()
   iterinc = Core::LinAlg::create_vector(*dof_row_map(), true);
   abs_iterinc = Core::LinAlg::create_vector(*dof_row_map(), true);
 
-  const int dofs = iterinc->GlobalLength();
+  const int dofs = iterinc->global_length();
   std::cout << "in total " << dofs << " DOFs" << std::endl;
   const double delta = 1e-8;
 
-  iterinc->PutScalar(0.0);
+  iterinc->put_scalar(0.0);
 
-  iterinc->ReplaceGlobalValue(0, 0, delta);
+  iterinc->replace_global_value(0, 0, delta);
 
-  abs_iterinc->Update(1.0, *iterinc_, 0.0);
+  abs_iterinc->update(1.0, *iterinc_, 0.0);
 
   std::shared_ptr<Epetra_CrsMatrix> stiff_approx = nullptr;
   stiff_approx = Core::LinAlg::create_matrix(*dof_row_map(), 81);
 
   Core::LinAlg::Vector<double> rhs_old(*dof_row_map(), true);
-  rhs_old.Update(1.0, *rhs_, 0.0);
+  rhs_old.update(1.0, *rhs_, 0.0);
   Core::LinAlg::Vector<double> rhs_copy(*dof_row_map(), true);
 
   std::shared_ptr<Core::LinAlg::SparseMatrix> sparse = systemmatrix_->merge();
@@ -1067,9 +1067,9 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::poro_fd_check()
   {
     if (combined_dbc_map()->MyGID(i))
     {
-      iterinc->ReplaceGlobalValue(i, 0, 0.0);
+      iterinc->replace_global_value(i, 0, 0.0);
     }
-    abs_iterinc->Update(1.0, *iterinc, 1.0);
+    abs_iterinc->update(1.0, *iterinc, 1.0);
 
     if (i == spaltenr)
       std::cout << "\n******************" << spaltenr + 1 << ". Spalte!!***************"
@@ -1077,9 +1077,9 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::poro_fd_check()
 
     evaluate(iterinc);
 
-    rhs_copy.Update(1.0, *rhs_, 0.0);
+    rhs_copy.update(1.0, *rhs_, 0.0);
 
-    iterinc_->PutScalar(0.0);  // Useful? depends on solver and more
+    iterinc_->put_scalar(0.0);  // Useful? depends on solver and more
     Core::LinAlg::apply_dirichlet_to_system(
         sparse_copy, *iterinc_, rhs_copy, *zeros_, *combined_dbc_map());
     std::shared_ptr<Epetra_CrsMatrix> test_crs = sparse_copy.epetra_matrix();
@@ -1098,8 +1098,8 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::poro_fd_check()
       std::cout << "rhs_old: " << (rhs_old)[zeilennr] << std::endl;
     }
     // rhs_copy = ( rhs_disturb - rhs_old ) . (-1)/delta with rhs_copy==rhs_disturb
-    rhs_copy.Update(-1.0, rhs_old, 1.0);
-    rhs_copy.Scale(-1.0 / delta);
+    rhs_copy.update(-1.0, rhs_old, 1.0);
+    rhs_copy.scale(-1.0 / delta);
 
     if (i == spaltenr)
     {
@@ -1130,11 +1130,11 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::poro_fd_check()
       }
     }
 
-    if (not combined_dbc_map()->MyGID(i)) iterinc->ReplaceGlobalValue(i, 0, -delta);
+    if (not combined_dbc_map()->MyGID(i)) iterinc->replace_global_value(i, 0, -delta);
 
-    iterinc->ReplaceGlobalValue(i - 1, 0, 0.0);
+    iterinc->replace_global_value(i - 1, 0, 0.0);
 
-    if (i != dofs - 1) iterinc->ReplaceGlobalValue(i + 1, 0, delta);
+    if (i != dofs - 1) iterinc->replace_global_value(i + 1, 0, delta);
 
     if (i == spaltenr)
       std::cout << "\n******************" << spaltenr + 1 << ". Spalte End!!***************"
@@ -1405,7 +1405,7 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWayArteryCoupling::setup_rhs()
 
   // insert and scale
   extractor()->insert_vector(*str_rhs, 0, *rhs_);
-  rhs_->Scale(-1.0);
+  rhs_->scale(-1.0);
 
   // insert artery part and porofluid part
   extractor()->insert_vector(

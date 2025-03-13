@@ -448,9 +448,9 @@ namespace FLD
     */
     void reset_step() override
     {
-      accnp_->Update(1.0, *accn_, 0.0);
-      velnp_->Update(1.0, *veln_, 0.0);
-      dispnp_->Update(1.0, *dispn_, 0.0);
+      accnp_->update(1.0, *accn_, 0.0);
+      velnp_->update(1.0, *veln_, 0.0);
+      dispnp_->update(1.0, *dispn_, 0.0);
 
       return;
     }
@@ -639,7 +639,7 @@ namespace FLD
       // separation matrix depends on the number of proc here
       if (turbmodel_ == Inpar::FLUID::multifractal_subgrid_scales and
           params_->sublist("MULTIFRACTAL SUBGRID SCALES").get<bool>("SET_FINE_SCALE_VEL"))
-        fsvelaf_->PutScalar(0.01);
+        fsvelaf_->put_scalar(0.01);
 
       return fsvelaf_;
     }
@@ -819,7 +819,7 @@ namespace FLD
     */
     void set_velocity_field(std::shared_ptr<const Core::LinAlg::Vector<double>> setvelnp) override
     {
-      velnp_->Update(1.0, *setvelnp, 0.0);
+      velnp_->update(1.0, *setvelnp, 0.0);
       return;
     }
 

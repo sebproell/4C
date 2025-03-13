@@ -32,10 +32,10 @@ namespace Core::FE
     {
       return [&](int global_id)
       {
-        const int local_id = global.Map().LID(global_id);
+        const int local_id = global.get_map().LID(global_id);
         FOUR_C_ASSERT_ALWAYS(local_id >= 0,
             "Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
-            Core::Communication::my_mpi_rank(global.Comm()), global_id);
+            Core::Communication::my_mpi_rank(global.get_comm()), global_id);
         return global[local_id];
       };
     }
@@ -138,12 +138,12 @@ namespace Core::FE
       for (unsigned idof = 0; idof < local.size(); ++idof)
       {
         // extract local ID of current dof
-        const int lid = global.Map().LID(lm[inode * local.size() + idof]);
+        const int lid = global.get_map().LID(lm[inode * local.size() + idof]);
 
         // safety check
         if (lid < 0)
           FOUR_C_THROW("Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
-              Core::Communication::my_mpi_rank(global.Comm()), lm[inode * local.size() + idof]);
+              Core::Communication::my_mpi_rank(global.get_comm()), lm[inode * local.size() + idof]);
 
         // store current dof in local matrix vector consisting of ndof matrices of size nnode x 1,
         // where nnode denotes the number of element nodes and ndof denotes the number of degrees
@@ -169,12 +169,12 @@ namespace Core::FE
       {
         // extract local ID of current dof
         const unsigned index = icol * local.num_rows() + irow;
-        const int lid = global.Map().LID(lm[index]);
+        const int lid = global.get_map().LID(lm[index]);
 
         // safety check
         if (lid < 0)
           FOUR_C_THROW("Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
-              Core::Communication::my_mpi_rank(global.Comm()), lm[index]);
+              Core::Communication::my_mpi_rank(global.get_comm()), lm[index]);
 
         // store current dof in local matrix, which is filled column-wise with the dofs listed in
         // the lm vector

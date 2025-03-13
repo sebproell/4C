@@ -397,10 +397,10 @@ void TSI::Monolithic::newton_full()
 
   // incremental solution vector with length of all TSI dofs
   iterinc_ = Core::LinAlg::create_vector(*dof_row_map(), true);
-  iterinc_->PutScalar(0.0);
+  iterinc_->put_scalar(0.0);
   // a zero vector of full length
   zeros_ = Core::LinAlg::create_vector(*dof_row_map(), true);
-  zeros_->PutScalar(0.0);
+  zeros_->put_scalar(0.0);
 
   // compute residual forces #rhs_ and tangent #systemmatrix_
   // whose components are globally oriented
@@ -522,11 +522,11 @@ void TSI::Monolithic::newton_full()
       {
         normstrrhs_ = calculate_vector_norm(iternormstr_, *structure_field()->rhs());
         normthrrhs_ = calculate_vector_norm(iternormthr_, *thermo_field()->rhs());
-        iterinc_->Scale(-1.);
+        iterinc_->scale(-1.);
 
         while (ls_step_length_ > 1.e-8 && !l_sadmissible())
         {
-          iterinc_->Scale(.5);
+          iterinc_->scale(.5);
           ls_step_length_ *= .5;
           evaluate(iterinc_);
           normstrrhs_ = calculate_vector_norm(iternormstr_, *structure_field()->rhs());
@@ -642,10 +642,10 @@ void TSI::Monolithic::ptc()
 
   // incremental solution vector with length of all TSI dofs
   iterinc_ = Core::LinAlg::create_vector(*dof_row_map(), true);
-  iterinc_->PutScalar(0.0);
+  iterinc_->put_scalar(0.0);
   // a zero vector of full length
   zeros_ = Core::LinAlg::create_vector(*dof_row_map(), true);
-  zeros_->PutScalar(0.0);
+  zeros_->put_scalar(0.0);
 
   // compute residual forces #rhs_ and tangent #systemmatrix_
   // whose components are globally oriented
@@ -694,7 +694,7 @@ void TSI::Monolithic::ptc()
   // here the new convergence test stuff has to be included
 
   normrhs_ = calculate_vector_norm(iternorm_, *rhs_);
-  rhs_->NormInf(&nc);
+  rhs_->norm_inf(&nc);
   // define the pseudo time step delta^{-1}
   double dti = 1 / ptcdt;
 
@@ -718,12 +718,12 @@ void TSI::Monolithic::ptc()
     {
       std::shared_ptr<Core::LinAlg::Vector<double>> tmp_SS =
           Core::LinAlg::create_vector(structure_field()->system_matrix()->row_map(), false);
-      tmp_SS->PutScalar(dti);
+      tmp_SS->put_scalar(dti);
       std::shared_ptr<Core::LinAlg::Vector<double>> diag_SS =
           Core::LinAlg::create_vector(structure_field()->system_matrix()->row_map(), false);
       structure_field()->system_matrix()->extract_diagonal_copy(*diag_SS);
 
-      diag_SS->Update(1.0, *tmp_SS, 1.0);
+      diag_SS->update(1.0, *tmp_SS, 1.0);
 
       structure_field()->system_matrix()->replace_diagonal_values(*diag_SS);
     }
@@ -731,11 +731,11 @@ void TSI::Monolithic::ptc()
     {
       std::shared_ptr<Core::LinAlg::Vector<double>> tmp_tt =
           Core::LinAlg::create_vector(thermo_field()->system_matrix()->row_map(), false);
-      tmp_tt->PutScalar(dti);
+      tmp_tt->put_scalar(dti);
       std::shared_ptr<Core::LinAlg::Vector<double>> diag_tt =
           Core::LinAlg::create_vector(thermo_field()->system_matrix()->row_map(), false);
       thermo_field()->system_matrix()->extract_diagonal_copy(*diag_tt);
-      diag_tt->Update(1.0, *tmp_tt, 1.0);
+      diag_tt->update(1.0, *tmp_tt, 1.0);
       thermo_field()->system_matrix()->replace_diagonal_values(*diag_tt);
     }
 
@@ -830,7 +830,7 @@ void TSI::Monolithic::ptc()
     // update ptc
     {
       double np = 0.0;
-      rhs_->NormInf(&np);
+      rhs_->norm_inf(&np);
       dti *= (np / nc);
       dti = std::max(dti, 0.0);
       nc = np;
@@ -1197,7 +1197,7 @@ void TSI::Monolithic::setup_rhs()
   if (Teuchos::getIntegralValue<Inpar::Solid::IntegrationStrategy>(
           Global::Problem::instance()->structural_dynamic_params(), "INT_STRATEGY") ==
       Inpar::Solid::int_standard)
-    str_rhs->Scale(-1.);
+    str_rhs->scale(-1.);
 
   // insert vectors to tsi rhs
   extractor()->insert_vector(*str_rhs, 0, *rhs_);
@@ -1238,7 +1238,7 @@ void TSI::Monolithic::linear_solve()
   // --> in setup_system_matrix() done for off-diagonal blocks k_st, k_ts
 
   // apply Dirichlet BCs to system of equations
-  iterinc_->PutScalar(0.0);  // Useful? depends on solver and more
+  iterinc_->put_scalar(0.0);  // Useful? depends on solver and more
 
   // default: use block matrix
   if (merge_tsi_blockmatrix_ == false)
@@ -2183,8 +2183,8 @@ void TSI::Monolithic::scale_system(
     std::shared_ptr<Epetra_CrsMatrix> A = mat.matrix(0, 0).epetra_matrix();
     srowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
     scolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    A->InvRowSums(srowsum_->get_ref_of_Epetra_Vector());
-    A->InvColSums(scolsum_->get_ref_of_Epetra_Vector());
+    A->InvRowSums(srowsum_->get_ref_of_epetra_vector());
+    A->InvColSums(scolsum_->get_ref_of_epetra_vector());
     if ((A->LeftScale(*srowsum_)) or (A->RightScale(*scolsum_)) or
         (mat.matrix(0, 1).epetra_matrix()->LeftScale(*srowsum_)) or
         (mat.matrix(1, 0).epetra_matrix()->RightScale(*scolsum_)))
@@ -2193,8 +2193,8 @@ void TSI::Monolithic::scale_system(
     A = mat.matrix(1, 1).epetra_matrix();
     trowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
     tcolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    A->InvRowSums(trowsum_->get_ref_of_Epetra_Vector());
-    A->InvColSums(tcolsum_->get_ref_of_Epetra_Vector());
+    A->InvRowSums(trowsum_->get_ref_of_epetra_vector());
+    A->InvColSums(tcolsum_->get_ref_of_epetra_vector());
     if ((A->LeftScale(*trowsum_)) or (A->RightScale(*tcolsum_)) or
         (mat.matrix(1, 0).epetra_matrix()->LeftScale(*trowsum_)) or
         (mat.matrix(0, 1).epetra_matrix()->RightScale(*tcolsum_)))
@@ -2203,8 +2203,8 @@ void TSI::Monolithic::scale_system(
     std::shared_ptr<Core::LinAlg::Vector<double>> sx = extractor()->extract_vector(b, 0);
     std::shared_ptr<Core::LinAlg::Vector<double>> tx = extractor()->extract_vector(b, 1);
 
-    if (sx->Multiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("structure scaling failed");
-    if (tx->Multiply(1.0, *trowsum_, *tx, 0.0)) FOUR_C_THROW("thermo scaling failed");
+    if (sx->multiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("structure scaling failed");
+    if (tx->multiply(1.0, *trowsum_, *tx, 0.0)) FOUR_C_THROW("thermo scaling failed");
 
     extractor()->insert_vector(*sx, 0, b);
     extractor()->insert_vector(*tx, 1, b);
@@ -2225,8 +2225,8 @@ void TSI::Monolithic::unscale_solution(Core::LinAlg::BlockSparseMatrixBase& mat,
     std::shared_ptr<Core::LinAlg::Vector<double>> sy = extractor()->extract_vector(x, 0);
     std::shared_ptr<Core::LinAlg::Vector<double>> ty = extractor()->extract_vector(x, 1);
 
-    if (sy->Multiply(1.0, *scolsum_, *sy, 0.0)) FOUR_C_THROW("structure scaling failed");
-    if (ty->Multiply(1.0, *tcolsum_, *ty, 0.0)) FOUR_C_THROW("thermo scaling failed");
+    if (sy->multiply(1.0, *scolsum_, *sy, 0.0)) FOUR_C_THROW("structure scaling failed");
+    if (ty->multiply(1.0, *tcolsum_, *ty, 0.0)) FOUR_C_THROW("thermo scaling failed");
 
     extractor()->insert_vector(*sy, 0, x);
     extractor()->insert_vector(*ty, 1, x);
@@ -2234,23 +2234,23 @@ void TSI::Monolithic::unscale_solution(Core::LinAlg::BlockSparseMatrixBase& mat,
     std::shared_ptr<Core::LinAlg::Vector<double>> sx = extractor()->extract_vector(b, 0);
     std::shared_ptr<Core::LinAlg::Vector<double>> tx = extractor()->extract_vector(b, 1);
 
-    if (sx->ReciprocalMultiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("structure scaling failed");
-    if (tx->ReciprocalMultiply(1.0, *trowsum_, *tx, 0.0)) FOUR_C_THROW("thermo scaling failed");
+    if (sx->reciprocal_multiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("structure scaling failed");
+    if (tx->reciprocal_multiply(1.0, *trowsum_, *tx, 0.0)) FOUR_C_THROW("thermo scaling failed");
 
     extractor()->insert_vector(*sx, 0, b);
     extractor()->insert_vector(*tx, 1, b);
 
     std::shared_ptr<Epetra_CrsMatrix> A = mat.matrix(0, 0).epetra_matrix();
-    srowsum_->Reciprocal(*srowsum_);
-    scolsum_->Reciprocal(*scolsum_);
+    srowsum_->reciprocal(*srowsum_);
+    scolsum_->reciprocal(*scolsum_);
     if ((A->LeftScale(*srowsum_)) or (A->RightScale(*scolsum_)) or
         (mat.matrix(0, 1).epetra_matrix()->LeftScale(*srowsum_)) or
         (mat.matrix(1, 0).epetra_matrix()->RightScale(*scolsum_)))
       FOUR_C_THROW("structure scaling failed");
 
     A = mat.matrix(1, 1).epetra_matrix();
-    trowsum_->Reciprocal(*trowsum_);
-    tcolsum_->Reciprocal(*tcolsum_);
+    trowsum_->reciprocal(*trowsum_);
+    tcolsum_->reciprocal(*tcolsum_);
     if ((A->LeftScale(*trowsum_)) or (A->RightScale(*tcolsum_)) or
         (mat.matrix(1, 0).epetra_matrix()->LeftScale(*trowsum_)) or
         (mat.matrix(0, 1).epetra_matrix()->RightScale(*tcolsum_)))
@@ -2272,7 +2272,7 @@ double TSI::Monolithic::calculate_vector_norm(
   if (norm == Inpar::TSI::norm_l1)
   {
     double vectnorm;
-    vect.Norm1(&vectnorm);
+    vect.norm_1(&vectnorm);
     return vectnorm;
   }
   // L2/Euclidian norm
@@ -2280,7 +2280,7 @@ double TSI::Monolithic::calculate_vector_norm(
   else if (norm == Inpar::TSI::norm_l2)
   {
     double vectnorm;
-    vect.Norm2(&vectnorm);
+    vect.norm_2(&vectnorm);
     return vectnorm;
   }
   // RMS norm
@@ -2288,23 +2288,23 @@ double TSI::Monolithic::calculate_vector_norm(
   else if (norm == Inpar::TSI::norm_rms)
   {
     double vectnorm;
-    vect.Norm2(&vectnorm);
-    return vectnorm / sqrt((double)vect.GlobalLength());
+    vect.norm_2(&vectnorm);
+    return vectnorm / sqrt((double)vect.global_length());
   }
   // infinity/maximum norm
   // norm = max( vect[i] )
   else if (norm == Inpar::TSI::norm_inf)
   {
     double vectnorm;
-    vect.NormInf(&vectnorm);
+    vect.norm_inf(&vectnorm);
     return vectnorm;
   }
   // norm = sum_0^i vect[i]/length_vect
   else if (norm == Inpar::TSI::norm_l1_scaled)
   {
     double vectnorm;
-    vect.Norm1(&vectnorm);
-    return vectnorm / ((double)vect.GlobalLength());
+    vect.norm_1(&vectnorm);
+    return vectnorm / ((double)vect.global_length());
   }
   else
   {
@@ -2574,7 +2574,7 @@ void TSI::Monolithic::calculate_necking_tsi_results()
   // copy the structural reaction force to tension
   Core::LinAlg::export_to(*(structure_field()->freact()), *tension);
   double top_force_local = 0.0;  // local force
-  for (int i = 0; i < tension->MyLength(); i++) top_force_local -= (*tension)[i];
+  for (int i = 0; i < tension->local_length(); i++) top_force_local -= (*tension)[i];
 
   // complete force pointing in axial direction
   double top_force_global = 0.0;

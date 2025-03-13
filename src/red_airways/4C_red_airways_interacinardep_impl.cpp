@@ -105,7 +105,7 @@ void Discret::Elements::InterAcinarDepImpl<distype>::initial(RedInterAcinarDep* 
   // Set the generation number for the inter-acinar linker element to -2.0
   int gid = ele->id();
   double val = -2.0;
-  evaluation_data.generations->ReplaceGlobalValues(1, &val, &gid);
+  evaluation_data.generations->replace_global_values(1, &val, &gid);
 
   // In this element, each node of an inter-acinar linker element has
   // one linker. The final sum of linkers for each node is automatically
@@ -362,11 +362,11 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
 
           gid = lm[i];
           val = BCin;
-          evaluation_data.bcval->ReplaceGlobalValues(1, &val, &gid);
+          evaluation_data.bcval->replace_global_values(1, &val, &gid);
 
           gid = lm[i];
           val = 1;
-          evaluation_data.dbctog->ReplaceGlobalValues(1, &val, &gid);
+          evaluation_data.dbctog->replace_global_values(1, &val, &gid);
         }
         else
         {
@@ -401,11 +401,11 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
 
           gid = lm[i];
           val = 0.0;
-          evaluation_data.bcval->ReplaceGlobalValues(1, &val, &gid);
+          evaluation_data.bcval->replace_global_values(1, &val, &gid);
 
           gid = lm[i];
           val = 1;
-          evaluation_data.dbctog->ReplaceGlobalValues(1, &val, &gid);
+          evaluation_data.dbctog->replace_global_values(1, &val, &gid);
         }
       }  // END of if there is no BC but the node still is at the terminal
     }  // END of if node is available on this processor

@@ -207,7 +207,7 @@ bool NOX::Nln::LinearSystem::apply_jacobian_block(const ::NOX::Epetra::Vector& i
   Core::LinAlg::Vector<double> input_v = Core::LinAlg::Vector<double>(input.getEpetraVector());
   std::shared_ptr<const Core::LinAlg::Vector<double>> input_apply = nullptr;
 
-  if (not input_v.Map().SameAs(domainmap))
+  if (not input_v.get_map().SameAs(domainmap))
   {
     input_apply = Core::LinAlg::extract_my_vector(input_v, domainmap);
   }
@@ -223,7 +223,7 @@ bool NOX::Nln::LinearSystem::apply_jacobian_block(const ::NOX::Epetra::Vector& i
   int status = block.Apply(*input_apply, *result_apply);
 
   result = Teuchos::make_rcp<::NOX::Epetra::Vector>(
-      Teuchos::rcpFromRef(*result_apply->get_ptr_of_Epetra_Vector()),
+      Teuchos::rcpFromRef(*result_apply->get_ptr_of_epetra_vector()),
       ::NOX::Epetra::Vector::CreateCopy);
 
   return (status == 0);
@@ -259,8 +259,8 @@ void NOX::Nln::LinearSystem::set_linear_problem_for_solve(Epetra_LinearProblem& 
     Core::LinAlg::Vector<double>& rhs) const
 {
   linear_problem.SetOperator(jac.epetra_operator().get());
-  linear_problem.SetLHS(lhs.get_ptr_of_Epetra_MultiVector().get());
-  linear_problem.SetRHS(rhs.get_ptr_of_Epetra_MultiVector().get());
+  linear_problem.SetLHS(lhs.get_ptr_of_epetra_multi_vector().get());
+  linear_problem.SetRHS(rhs.get_ptr_of_epetra_multi_vector().get());
 }
 
 /*----------------------------------------------------------------------*
@@ -454,7 +454,7 @@ void NOX::Nln::LinearSystem::adjust_pseudo_time_step(double& delta, const double
   // first undo the modification of the jacobian
   // ---------------------------------------------------------------------
   Core::LinAlg::Vector<double> v(scalingDiagOp);
-  v.Scale(ptcsolver.get_inverse_pseudo_time_step());
+  v.scale(ptcsolver.get_inverse_pseudo_time_step());
   Teuchos::RCP<Core::LinAlg::SparseMatrix> jac =
       Teuchos::rcp_dynamic_cast<Core::LinAlg::SparseMatrix>(jacobian_ptr());
   if (jac.is_null())
@@ -462,7 +462,7 @@ void NOX::Nln::LinearSystem::adjust_pseudo_time_step(double& delta, const double
   // get the diagonal terms of the jacobian
   auto diag = Core::LinAlg::create_vector(jac->row_map(), false);
   jac->extract_diagonal_copy(*diag);
-  diag->Update(-1.0, v, 1.0);
+  diag->update(-1.0, v, 1.0);
   // Finally undo the changes
   jac->replace_diagonal_values(*diag);
 
@@ -475,33 +475,33 @@ void NOX::Nln::LinearSystem::adjust_pseudo_time_step(double& delta, const double
   auto vec_1 = Core::LinAlg::create_vector(jac->row_map(), true);
   Core::LinAlg::Vector<double> vec_2(rhs.getEpetraVector());
   jac->multiply(false, Core::LinAlg::MultiVector<double>(dir.getEpetraVector()), *vec_1);
-  vec_2.Scale(stepSizeInv);
-  vec_1->Update(1.0, vec_2, 1.0);
+  vec_2.scale(stepSizeInv);
+  vec_1->update(1.0, vec_2, 1.0);
   /* evaluate the second vector:              d^{T} V                   */
-  vec_2.Multiply(1.0, scalingDiagOp, dir.getEpetraVector(), 0.0);
+  vec_2.multiply(1.0, scalingDiagOp, dir.getEpetraVector(), 0.0);
 
   // finally evaluate the scalar product
   double numerator = 0.0;
   double denominator = 0.0;
-  vec_2.Dot(*vec_1, &numerator);
-  vec_1->Dot(*vec_1, &denominator);
+  vec_2.dot(*vec_1, &numerator);
+  vec_1->dot(*vec_1, &denominator);
 
   // ---------------------------------------------------------------------
   // show the error (L2-norm)
   // ---------------------------------------------------------------------
   auto vec_err = Core::LinAlg::create_vector(jac->row_map(), true);
-  vec_err->Update(delta, *vec_1, 1.0, vec_2, 0.0);
+  vec_err->update(delta, *vec_1, 1.0, vec_2, 0.0);
   double error_start = 0.0;
-  vec_err->Norm2(&error_start);
+  vec_err->norm_2(&error_start);
 
   delta = -numerator / denominator;
 
   // ---------------------------------------------------------------------
   // show the actual remaining error (L2-norm)
   // ---------------------------------------------------------------------
-  vec_err->Update(delta, *vec_1, 1.0, vec_2, 0.0);
+  vec_err->update(delta, *vec_1, 1.0, vec_2, 0.0);
   double error_end = 0.0;
-  vec_err->Norm2(&error_end);
+  vec_err->norm_2(&error_end);
   if (utils_.isPrintType(::NOX::Utils::Details))
   {
     utils_.out() << "| Error: " << std::setw(5) << std::setprecision(3) << std::scientific

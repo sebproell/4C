@@ -84,7 +84,7 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::print_time_step_info()
 void POROFLUIDMULTIPHASE::TimIntOneStepTheta::set_old_part_of_righthandside()
 {
   // hist_ = phin_ + dt*(1-Theta)*phidtn_
-  hist_->Update(1.0, *phin_, dt_ * (1.0 - theta_), *phidtn_, 0.0);
+  hist_->update(1.0, *phin_, dt_ * (1.0 - theta_), *phidtn_, 0.0);
 }
 
 
@@ -93,7 +93,7 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::set_old_part_of_righthandside()
  *----------------------------------------------------------------------*/
 void POROFLUIDMULTIPHASE::TimIntOneStepTheta::explicit_predictor()
 {
-  phinp_->Update(dt_, *phidtn_, 1.0);
+  phinp_->update(dt_, *phidtn_, 1.0);
 }
 
 
@@ -103,7 +103,7 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::explicit_predictor()
  *----------------------------------------------------------------------*/
 void POROFLUIDMULTIPHASE::TimIntOneStepTheta::add_neumann_to_residual()
 {
-  residual_->Update(theta_ * dt_, *neumann_loads_, 1.0);
+  residual_->update(theta_ * dt_, *neumann_loads_, 1.0);
 }
 
 
@@ -128,8 +128,8 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::compute_time_derivative()
   // phidt(n+1) = (phi(n+1)-phi(n)) / (theta*dt) + (1-(1/theta))*phidt(n)
   const double fact1 = 1.0 / (theta_ * dt_);
   const double fact2 = 1.0 - (1.0 / theta_);
-  phidtnp_->Update(fact2, *phidtn_, 0.0);
-  phidtnp_->Update(fact1, *phinp_, -fact1, *phin_, 1.0);
+  phidtnp_->update(fact2, *phidtn_, 0.0);
+  phidtnp_->update(fact1, *phinp_, -fact1, *phin_, 1.0);
 }
 
 
@@ -146,11 +146,11 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::update()
   compute_time_derivative();
 
   // solution of this step becomes most recent solution of the last step
-  phin_->Update(1.0, *phinp_, 0.0);
+  phin_->update(1.0, *phinp_, 0.0);
 
   // time deriv. of this step becomes most recent time derivative of
   // last step
-  phidtn_->Update(1.0, *phidtnp_, 0.0);
+  phidtn_->update(1.0, *phidtnp_, 0.0);
 }
 
 

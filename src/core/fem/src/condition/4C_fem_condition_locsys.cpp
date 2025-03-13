@@ -31,7 +31,7 @@ Core::Conditions::LocsysManager::LocsysManager(Core::FE::Discretization& discret
 
   // create locsys vector and initialize to -1
   locsystoggle_ = Core::LinAlg::create_vector(*noderowmap, false);
-  locsystoggle_->PutScalar(-1.0);
+  locsystoggle_->put_scalar(-1.0);
 
   // check for locsys boundary conditions
   LocsysManager::discret().get_condition("Locsys", locsysconds_);
@@ -229,7 +229,7 @@ void Core::Conditions::LocsysManager::update(const double time,
 
             int indices = nodeGID;
             double values = i;
-            locsystoggle_->ReplaceGlobalValues(1, &values, &indices);
+            locsystoggle_->replace_global_values(1, &values, &indices);
           }
         }
       }
@@ -253,7 +253,7 @@ void Core::Conditions::LocsysManager::update(const double time,
   // transformed twice. This is a NURBS/periodic boundary feature.
   std::shared_ptr<Core::LinAlg::Vector<double>> already_processed =
       Core::LinAlg::create_vector(*dofrowmap, true);
-  already_processed->PutScalar(0.0);
+  already_processed->put_scalar(0.0);
 
   // Perform a check for zero diagonal elements. They will crash the SGS-like preconditioners
   bool sanity_check = false;
@@ -617,7 +617,7 @@ void Core::Conditions::LocsysManager::calc_rotation_vector_for_normal_system(
     double length = 0.0;
     for (int jdim = 0; jdim < dim_; jdim++)
     {
-      const int localId = massConsistentNodeNormals->Map().LID(nodeGIDs[jdim]);
+      const int localId = massConsistentNodeNormals->get_map().LID(nodeGIDs[jdim]);
       nodeNormal(jdim, 0) = (*massConsistentNodeNormals)[localId];
       length += nodeNormal(jdim, 0) * nodeNormal(jdim, 0);
     }
@@ -676,7 +676,7 @@ void Core::Conditions::LocsysManager::calc_rotation_vector_for_normal_system(
     // Do some locsys voodoo
     int indices = nodeGID;
     double values = numLocsysCond;
-    locsystoggle_->ReplaceGlobalValues(1, &values, &indices);
+    locsystoggle_->replace_global_values(1, &values, &indices);
   }
 }
 

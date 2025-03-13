@@ -894,7 +894,7 @@ Core::GeometricSearch::BoundingVolume Core::Elements::Element::get_bounding_volu
 
     for (unsigned int i_dir = 0; i_dir < 3; ++i_dir)
     {
-      const int lid = result_data_dofbased.Map().LID(nodedofs[i_dir]);
+      const int lid = result_data_dofbased.get_map().LID(nodedofs[i_dir]);
 
       if (lid > -1)
         point(i_dir) = node->x()[i_dir] + result_data_dofbased[lid];

@@ -140,14 +140,14 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraPartitionedTwoWay::iter_update_st
 {
   // store scalar from first solution for convergence check (like in
   // elch_algorithm: use current values)
-  scaincnp_->Update(1.0, *scatra_algo()->scatra_field()->phinp(), 0.0);
-  structincnp_->Update(1.0, *poro_field()->struct_dispnp(), 0.0);
-  fluidincnp_->Update(1.0, *poro_field()->fluid_phinp(), 0.0);
+  scaincnp_->update(1.0, *scatra_algo()->scatra_field()->phinp(), 0.0);
+  structincnp_->update(1.0, *poro_field()->struct_dispnp(), 0.0);
+  fluidincnp_->update(1.0, *poro_field()->fluid_phinp(), 0.0);
   if (artery_coupling_active_)
   {
-    arterypressincnp_->Update(
+    arterypressincnp_->update(
         1.0, *(poro_field()->fluid_field()->art_net_tim_int()->pressurenp()), 0.0);
-    artscaincnp_->Update(1.0, *(scatramsht_->art_scatra_field()->phinp()), 0.0);
+    artscaincnp_->update(1.0, *(scatramsht_->art_scatra_field()->phinp()), 0.0);
   }
 
 }  // iter_update_states()
@@ -179,29 +179,29 @@ bool PoroMultiPhaseScaTra::PoroMultiPhaseScaTraPartitionedTwoWay::convergence_ch
 
   // build the current scalar increment Inc T^{i+1}
   // \f Delta T^{k+1} = Inc T^{k+1} = T^{k+1} - T^{k}  \f
-  scaincnp_->Update(1.0, *(scatra_algo()->scatra_field()->phinp()), -1.0);
-  structincnp_->Update(1.0, *(poro_field()->struct_dispnp()), -1.0);
-  fluidincnp_->Update(1.0, *(poro_field()->fluid_phinp()), -1.0);
+  scaincnp_->update(1.0, *(scatra_algo()->scatra_field()->phinp()), -1.0);
+  structincnp_->update(1.0, *(poro_field()->struct_dispnp()), -1.0);
+  fluidincnp_->update(1.0, *(poro_field()->fluid_phinp()), -1.0);
   if (artery_coupling_active_)
   {
-    arterypressincnp_->Update(
+    arterypressincnp_->update(
         1.0, *(poro_field()->fluid_field()->art_net_tim_int()->pressurenp()), -1.0);
-    artscaincnp_->Update(1.0, *(scatramsht_->art_scatra_field()->phinp()), -1.0);
+    artscaincnp_->update(1.0, *(scatramsht_->art_scatra_field()->phinp()), -1.0);
   }
 
   // build the L2-norm of the scalar increment and the scalar
-  scaincnp_->Norm2(&scaincnorm_L2);
-  scatra_algo()->scatra_field()->phinp()->Norm2(&scanorm_L2);
-  structincnp_->Norm2(&dispincnorm_L2);
-  poro_field()->struct_dispnp()->Norm2(&dispnorm_L2);
-  fluidincnp_->Norm2(&fluidincnorm_L2);
-  poro_field()->fluid_phinp()->Norm2(&fluidnorm_L2);
+  scaincnp_->norm_2(&scaincnorm_L2);
+  scatra_algo()->scatra_field()->phinp()->norm_2(&scanorm_L2);
+  structincnp_->norm_2(&dispincnorm_L2);
+  poro_field()->struct_dispnp()->norm_2(&dispnorm_L2);
+  fluidincnp_->norm_2(&fluidincnorm_L2);
+  poro_field()->fluid_phinp()->norm_2(&fluidnorm_L2);
   if (artery_coupling_active_)
   {
-    arterypressincnp_->Norm2(&artpressincnorm_L2);
-    poro_field()->fluid_field()->art_net_tim_int()->pressurenp()->Norm2(&artpressnorm_L2);
-    artscaincnp_->Norm2(&artscaincnorm_L2);
-    poro_field()->fluid_field()->art_net_tim_int()->pressurenp()->Norm2(&artscanorm_L2);
+    arterypressincnp_->norm_2(&artpressincnorm_L2);
+    poro_field()->fluid_field()->art_net_tim_int()->pressurenp()->norm_2(&artpressnorm_L2);
+    artscaincnp_->norm_2(&artscaincnorm_L2);
+    poro_field()->fluid_field()->art_net_tim_int()->pressurenp()->norm_2(&artscanorm_L2);
   }
 
   // care for the case that there is (almost) zero scalar

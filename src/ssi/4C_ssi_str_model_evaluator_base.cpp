@@ -71,7 +71,7 @@ void Solid::ModelEvaluator::BaseSSI::determine_stress_strain()
 
     // extract dof lid of first degree of freedom associated with current node in second nodeset
     const int dofgid_epetra = discret().dof(2, node, 0);
-    const int doflid_epetra = mechanical_stress_state_->Map().LID(dofgid_epetra);
+    const int doflid_epetra = mechanical_stress_state_->get_map().LID(dofgid_epetra);
     if (doflid_epetra < 0) FOUR_C_THROW("Local ID not found in epetra vector!");
 
     (*mechanical_stress_state_)[doflid_epetra] = (nodal_stresses_source(0))[nodelid];

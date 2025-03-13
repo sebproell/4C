@@ -153,7 +153,7 @@ void SSI::SSIBase::setup()
       temperature_vector_ = std::make_shared<Core::LinAlg::Vector<double>>(
           *Global::Problem::instance()->get_dis("structure")->dof_row_map(2), true);
 
-      temperature_vector_->PutScalar(Global::Problem::instance()
+      temperature_vector_->put_scalar(Global::Problem::instance()
               ->function_by_id<Core::Utils::FunctionOfTime>(temperature_funct_num_)
               .evaluate(time()));
 
@@ -567,7 +567,7 @@ void SSI::SSIBase::evaluate_and_set_temperature_field()
         Global::Problem::instance()
             ->function_by_id<Core::Utils::FunctionOfTime>(temperature_funct_num_)
             .evaluate(time());
-    temperature_vector_->PutScalar(temperature);
+    temperature_vector_->put_scalar(temperature);
 
     // set temperature vector to structure discretization
     ssicoupling_->set_temperature_field(*structure_->discretization(), temperature_vector_);

@@ -411,7 +411,7 @@ void Discret::Elements::FluidEleCalcXWall<distype, enrtype>::get_ele_properties(
   // get element mk for stabilization
   const std::shared_ptr<Core::LinAlg::Vector<double>> mkvec =
       params.get<std::shared_ptr<Core::LinAlg::Vector<double>>>("mk");
-  mk_ = (*mkvec)[mkvec->Map().LID(ele->id())];
+  mk_ = (*mkvec)[mkvec->get_map().LID(ele->id())];
 
   numgpnorm_ = params.get<int>("gpnorm");
   numgpnormow_ = params.get<int>("gpnormow");

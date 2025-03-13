@@ -48,7 +48,7 @@ BeamInteraction::BeamToSolidMortarManagerContact::get_penalty_regularization(
   auto create_lambda_row_vector_with_zeros = [this]()
   {
     auto row_vector = std::make_shared<Core::LinAlg::Vector<double>>(*lambda_dof_rowmap_);
-    row_vector->PutScalar(0.0);
+    row_vector->put_scalar(0.0);
     return row_vector;
   };
   auto lambda = create_lambda_row_vector_with_zeros();
@@ -67,9 +67,9 @@ BeamInteraction::BeamToSolidMortarManagerContact::get_penalty_regularization(
       // The -1 here is due to the way the lagrange multipliers are defined in the coupling
       // constraints.
       const fad_type local_lambda = -1.0 * penalty_force(scaled_gap, *beam_to_solid_contact_params);
-      lambda->ReplaceMyValue(lid, 0, Core::FADUtils::cast_to_double(local_lambda));
-      lambda_lin_constraint->ReplaceMyValue(lid, 0, local_lambda.dx(0));
-      lambda_lin_kappa->ReplaceMyValue(lid, 0, local_lambda.dx(1));
+      lambda->replace_local_value(lid, 0, Core::FADUtils::cast_to_double(local_lambda));
+      lambda_lin_constraint->replace_local_value(lid, 0, local_lambda.dx(0));
+      lambda_lin_kappa->replace_local_value(lid, 0, local_lambda.dx(1));
     }
   }
   return {lambda, lambda_lin_constraint, lambda_lin_kappa};

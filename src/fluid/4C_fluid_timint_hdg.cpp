@@ -180,23 +180,23 @@ void FLD::TimIntHDG::explicit_predictor()
   }
   else if (predictor_ == "zero_acceleration")
   {
-    velnp_->Update(1.0, *veln_, (1.0 - theta_) * dta_, *accn_, 0.0);
-    intvelnp_->Update(1.0, *intveln_, (1.0 - theta_) * dta_, *intaccn_, 0.0);
+    velnp_->update(1.0, *veln_, (1.0 - theta_) * dta_, *accn_, 0.0);
+    intvelnp_->update(1.0, *intveln_, (1.0 - theta_) * dta_, *intaccn_, 0.0);
   }
   else if (predictor_ == "constant_acceleration")
   {
-    velnp_->Update(1.0, *veln_, dta_, *accn_, 0.0);
-    intvelnp_->Update(1.0, *intveln_, dta_, *intaccn_, 0.0);
+    velnp_->update(1.0, *veln_, dta_, *accn_, 0.0);
+    intvelnp_->update(1.0, *intveln_, dta_, *intaccn_, 0.0);
   }
   else if (predictor_ == "constant_increment")
   {
-    velnp_->Update(2.0, *veln_, -1.0, *velnm_, 0.0);
-    intvelnp_->Update(2.0, *intveln_, -1.0, *intvelnm_, 0.0);
+    velnp_->update(2.0, *veln_, -1.0, *velnm_, 0.0);
+    intvelnp_->update(2.0, *intveln_, -1.0, *intvelnm_, 0.0);
   }
   else if (predictor_ == "explicit_second_order_midpoint")
   {
-    velnp_->Update(1.0, *velnm_, 2.0 * dta_, *accn_, 0.0);
-    intvelnp_->Update(1.0, *intvelnm_, 2.0 * dta_, *intaccn_, 0.0);
+    velnp_->update(1.0, *velnm_, 2.0 * dta_, *accn_, 0.0);
+    intvelnp_->update(1.0, *intvelnm_, 2.0 * dta_, *intaccn_, 0.0);
   }
   else
     FOUR_C_THROW("Unknown fluid predictor %s", predictor_.c_str());
@@ -207,7 +207,7 @@ void FLD::TimIntHDG::explicit_predictor()
 *-----------------------------------------------------------------------*/
 void FLD::TimIntHDG::set_old_part_of_righthandside()
 {
-  hist_->PutScalar(0.0);
+  hist_->put_scalar(0.0);
 
   // This code is entered at the beginning of the nonlinear iteration, so
   // store that the assembly to be done next is going to be the first one
@@ -235,11 +235,11 @@ void FLD::TimIntHDG::gen_alpha_update_acceleration()
   const double fact1 = 1.0 / (gamma_ * dta_);
   const double fact2 = 1.0 - (1.0 / gamma_);
 
-  accnp_->Update(fact2, *accn_, 0.0);
-  accnp_->Update(fact1, *velnp_, -fact1, *veln_, 1.0);
+  accnp_->update(fact2, *accn_, 0.0);
+  accnp_->update(fact1, *velnp_, -fact1, *veln_, 1.0);
 
-  intaccnp_->Update(fact2, *intaccn_, 0.0);
-  intaccnp_->Update(fact1, *intvelnp_, -fact1, *intveln_, 1.0);
+  intaccnp_->update(fact2, *intaccn_, 0.0);
+  intaccnp_->update(fact1, *intvelnp_, -fact1, *intveln_, 1.0);
 }
 
 
@@ -254,8 +254,8 @@ void FLD::TimIntHDG::gen_alpha_intermediate_values()
   //       n+alphaM                n+1                      n
   //    acc         = alpha_M * acc     + (1-alpha_M) *  acc
   //       (i)                     (i)
-  accam_->Update((alphaM_), *accnp_, (1.0 - alphaM_), *accn_, 0.0);
-  intaccam_->Update((alphaM_), *intaccnp_, (1.0 - alphaM_), *intaccn_, 0.0);
+  accam_->update((alphaM_), *accnp_, (1.0 - alphaM_), *accn_, 0.0);
+  intaccam_->update((alphaM_), *intaccnp_, (1.0 - alphaM_), *intaccn_, 0.0);
 
   // set intermediate values for velocity, pressure, velocity gradient
   //
@@ -265,8 +265,8 @@ void FLD::TimIntHDG::gen_alpha_intermediate_values()
   //
   // note that its af-genalpha with mid-point treatment of the pressure,
   // not implicit treatment as for the genalpha according to Whiting
-  velaf_->Update((alphaF_), *velnp_, (1.0 - alphaF_), *veln_, 0.0);
-  intvelaf_->Update((alphaF_), *intvelnp_, (1.0 - alphaF_), *intveln_, 0.0);
+  velaf_->update((alphaF_), *velnp_, (1.0 - alphaF_), *veln_, 0.0);
+  intvelaf_->update((alphaF_), *intvelnp_, (1.0 - alphaF_), *intveln_, 0.0);
 }
 
 
@@ -299,8 +299,8 @@ void FLD::TimIntHDG::clear_state_assemble_mat_and_rhs()
     // Wrote into the state vector during element calls, need to transfer the
     // data back before it disappears when clearing the state (at least for nproc>1)
     const Core::LinAlg::Vector<double>& intvelnpGhosted = *discret_->get_state(1, "intvelnp");
-    for (int i = 0; i < intvelnp_->MyLength(); ++i)
-      (*intvelnp_)[i] = intvelnpGhosted[intvelnpGhosted.Map().LID(intvelnp_->Map().GID(i))];
+    for (int i = 0; i < intvelnp_->local_length(); ++i)
+      (*intvelnp_)[i] = intvelnpGhosted[intvelnpGhosted.get_map().LID(intvelnp_->get_map().GID(i))];
   }
   first_assembly_ = false;
   FluidImplicitTimeInt::clear_state_assemble_mat_and_rhs();
@@ -316,11 +316,11 @@ void FLD::TimIntHDG::time_update()
 
   // velocities/pressures of this step become most recent
   // velocities/pressures of the last step
-  intvelnm_->Update(1.0, *intveln_, 0.0);
-  intveln_->Update(1.0, *intvelnp_, 0.0);
+  intvelnm_->update(1.0, *intveln_, 0.0);
+  intveln_->update(1.0, *intvelnp_, 0.0);
 
-  intaccnm_->Update(1.0, *intaccn_, 0.0);
-  intaccn_->Update(1.0, *intaccnp_, 0.0);
+  intaccnm_->update(1.0, *intaccn_, 0.0);
+  intaccn_->update(1.0, *intaccnp_, 0.0);
 }
 
 
@@ -391,9 +391,9 @@ void FLD::TimIntHDG::set_initial_flow_field(
             localDofs.size() == static_cast<std::size_t>(elevec2.numRows()), "Internal error");
         for (unsigned int i = 0; i < localDofs.size(); ++i)
           localDofs[i] = intdofrowmap->LID(localDofs[i]);
-        intvelnp_->ReplaceMyValues(localDofs.size(), elevec2.values(), localDofs.data());
-        intveln_->ReplaceMyValues(localDofs.size(), elevec2.values(), localDofs.data());
-        intvelnm_->ReplaceMyValues(localDofs.size(), elevec2.values(), localDofs.data());
+        intvelnp_->replace_local_values(localDofs.size(), elevec2.values(), localDofs.data());
+        intveln_->replace_local_values(localDofs.size(), elevec2.values(), localDofs.data());
+        intvelnm_->replace_local_values(localDofs.size(), elevec2.values(), localDofs.data());
       }
     }
     double globerror = 0;
@@ -467,7 +467,7 @@ namespace
       std::shared_ptr<Core::LinAlg::Vector<double>>& cellPres)
   {
     // create dofsets for velocity and pressure at nodes
-    if (pressure.get() == nullptr || pressure->GlobalLength() != dis.num_global_nodes())
+    if (pressure.get() == nullptr || pressure->global_length() != dis.num_global_nodes())
     {
       velocity = std::make_shared<Core::LinAlg::MultiVector<double>>(*dis.node_row_map(), ndim);
       pressure = std::make_shared<Core::LinAlg::Vector<double>>(*dis.node_row_map());
@@ -486,7 +486,7 @@ namespace
     Core::LinAlg::SerialDenseVector interpolVec;
     std::vector<unsigned char> touchCount(dis.num_my_row_nodes());
     velocity->PutScalar(0.);
-    pressure->PutScalar(0.);
+    pressure->put_scalar(0.);
     for (int el = 0; el < dis.num_my_col_elements(); ++el)
     {
       Core::Elements::Element* ele = dis.l_col_element(el);
@@ -511,7 +511,7 @@ namespace
       if (eleIndex >= 0) (*cellPres)[eleIndex] += interpolVec((2 * ndim + 1) * ele->num_node());
     }
 
-    for (int i = 0; i < pressure->MyLength(); ++i)
+    for (int i = 0; i < pressure->local_length(); ++i)
     {
       (*pressure)[i] /= touchCount[i];
       for (int d = 0; d < ndim; ++d) (*velocity)(d)[i] /= touchCount[i];
@@ -570,11 +570,11 @@ void FLD::TimIntHDG::calc_intermediate_solution()
   {
     std::shared_ptr<Core::LinAlg::Vector<double>> inttmp =
         Core::LinAlg::create_vector(*discret_->dof_row_map(1), true);
-    inttmp->Update(1.0, *intvelnp_, 0.0);
+    inttmp->update(1.0, *intvelnp_, 0.0);
 
     FLD::FluidImplicitTimeInt::calc_intermediate_solution();
 
-    intvelnp_->Update(1.0, *inttmp, 0.0);
+    intvelnp_->update(1.0, *inttmp, 0.0);
 
     // This code is entered at the beginning of the nonlinear iteration, so
     // store that the assembly to be done next is going to be the first one

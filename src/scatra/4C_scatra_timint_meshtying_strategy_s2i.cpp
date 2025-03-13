@@ -313,7 +313,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
       // evaluate scatra-scatra interface coupling at time t_{n+1} or t_{n+alpha_F}
       islavematrix_->zero();
       if (not slaveonly_) imastermatrix_->zero();
-      islaveresidual_->PutScalar(0.);
+      islaveresidual_->put_scalar(0.);
       for (auto kinetics_slave_cond : kinetics_conditions_meshtying_slaveside_)
       {
         if (kinetics_slave_cond.second->parameters().get<Inpar::S2I::KineticModels>(
@@ -545,14 +545,14 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
           if (slavedofgid < 0) FOUR_C_THROW("Couldn't find local ID %d in map!", slavedoflid);
 
           // copy current vector entry into temporary vector
-          if (residualslave.ReplaceGlobalValue(slavedofgid, 0,
+          if (residualslave.replace_global_value(slavedofgid, 0,
                   (*scatratimint_->residual())[scatratimint_->dof_row_map()->LID(slavedofgid)]))
             FOUR_C_THROW(
                 "Cannot insert residual vector entry with global ID %d into temporary vector!",
                 slavedofgid);
 
           // zero out current vector entry
-          if (scatratimint_->residual()->ReplaceGlobalValue(slavedofgid, 0, 0.))
+          if (scatratimint_->residual()->replace_global_value(slavedofgid, 0, 0.))
             FOUR_C_THROW(
                 "Cannot insert zero into residual vector entry with global ID %d!", slavedofgid);
         }
@@ -580,7 +580,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
           lmside_ == Inpar::S2I::side_slave or couplingtype_ == Inpar::S2I::coupling_nts_standard)
       {
         islavematrix_->zero();
-        islaveresidual_->PutScalar(0.);
+        islaveresidual_->put_scalar(0.);
       }
 
       // initialize auxiliary system matrix and vector for master side
@@ -623,7 +623,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
               Inpar::S2I::side_master, imastermatrix_, Inpar::S2I::side_master,
               Inpar::S2I::side_slave, imastermatrix_, Inpar::S2I::side_master,
               Inpar::S2I::side_master,
-              islaveresidual_ != nullptr ? islaveresidual_->get_ptr_of_MultiVector() : nullptr,
+              islaveresidual_ != nullptr ? islaveresidual_->get_ptr_of_multi_vector() : nullptr,
               Inpar::S2I::side_slave, imasterresidual_, Inpar::S2I::side_master);
         }
 
@@ -640,7 +640,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
               Inpar::S2I::side_master, imastermatrix_, Inpar::S2I::side_master,
               Inpar::S2I::side_slave, imastermatrix_, Inpar::S2I::side_master,
               Inpar::S2I::side_master,
-              islaveresidual_ != nullptr ? islaveresidual_->get_ptr_of_MultiVector() : nullptr,
+              islaveresidual_ != nullptr ? islaveresidual_->get_ptr_of_multi_vector() : nullptr,
               Inpar::S2I::side_slave, imasterresidual_, Inpar::S2I::side_master);
         }
       }
@@ -712,12 +712,12 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
 
                 // build constraint residual vector associated with Lagrange multiplier dofs
                 Core::LinAlg::Vector<double> ilmresidual(*islaveresidual_);
-                if (ilmresidual.ReplaceMap(*extendedmaps_->Map(1)))
+                if (ilmresidual.replace_map(*extendedmaps_->Map(1)))
                   FOUR_C_THROW("Couldn't replace map!");
-                if (lmresidual_->Update(1., ilmresidual, 0.)) FOUR_C_THROW("Vector update failed!");
+                if (lmresidual_->update(1., ilmresidual, 0.)) FOUR_C_THROW("Vector update failed!");
                 if (E_->multiply(true, *lm_, ilmresidual))
                   FOUR_C_THROW("Matrix-vector multiplication failed!");
-                if (lmresidual_->Update(1., ilmresidual, 1.)) FOUR_C_THROW("Vector update failed!");
+                if (lmresidual_->update(1., ilmresidual, 1.)) FOUR_C_THROW("Vector update failed!");
               }
               else
               {
@@ -735,12 +735,12 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
 
                 // build constraint residual vector associated with Lagrange multiplier dofs
                 Core::LinAlg::Vector<double> ilmresidual(*imasterresidual_);
-                if (ilmresidual.ReplaceMap(*extendedmaps_->Map(1)))
+                if (ilmresidual.replace_map(*extendedmaps_->Map(1)))
                   FOUR_C_THROW("Couldn't replace map!");
-                if (lmresidual_->Update(1., ilmresidual, 0.)) FOUR_C_THROW("Vector update failed!");
+                if (lmresidual_->update(1., ilmresidual, 0.)) FOUR_C_THROW("Vector update failed!");
                 if (E_->multiply(true, *lm_, ilmresidual))
                   FOUR_C_THROW("Matrix-vector multiplication failed!");
-                if (lmresidual_->Update(1., ilmresidual, 1.)) FOUR_C_THROW("Vector update failed!");
+                if (lmresidual_->update(1., ilmresidual, 1.)) FOUR_C_THROW("Vector update failed!");
               }
 
               break;
@@ -898,7 +898,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
         // evaluate scatra-scatra interface coupling at time t_{n+1} or t_{n+alpha_F}
         islavematrix_->zero();
         imastermatrix_->zero();
-        islaveresidual_->PutScalar(0.);
+        islaveresidual_->put_scalar(0.);
 
         // collect condition specific data and store to scatra boundary parameter class
         set_condition_specific_scatra_parameters(*s2icoupling_growth_conditions[0]);
@@ -1330,7 +1330,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
           {
             // initialize matrix block and corresponding residual vector
             growthgrowthblock_->zero();
-            growthresidual_->PutScalar(0.);
+            growthresidual_->put_scalar(0.);
 
             // initialize assembly strategy for main-diagonal growth-growth block and
             Core::FE::AssembleStrategy strategy(
@@ -1386,10 +1386,10 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_and_assemble_capacitive_contribution
   // zero out matrices and vectors
   islavematrix_->zero();
   imasterslavematrix_->zero();
-  islaveresidual_->PutScalar(0.0);
+  islaveresidual_->put_scalar(0.0);
   auto imasterresidual_on_slave_side =
       std::make_shared<Core::LinAlg::Vector<double>>(*interfacemaps_->Map(1));
-  imasterresidual_on_slave_side->PutScalar(0.0);
+  imasterresidual_on_slave_side->put_scalar(0.0);
 
   // evaluate scatra-scatra interface coupling
   for (auto kinetics_slave_cond_cap : kinetics_conditions_meshtying_slaveside_)
@@ -1679,7 +1679,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_nts(
       vector1_side, systemvector2, vector2_side);
 
   // extract slave-side noderowmap
-  const Epetra_BlockMap& noderowmap_slave = islavenodestomasterelements.Map();
+  const Epetra_BlockMap& noderowmap_slave = islavenodestomasterelements.get_map();
 
   // loop over all slave-side nodes
   for (int inode = 0; inode < noderowmap_slave.NumMyElements(); ++inode)
@@ -2358,14 +2358,14 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
               islavenodestomasterelements_[condid];
           islavenodestomasterelements =
               std::make_shared<Core::LinAlg::Vector<int>>(noderowmap_slave, false);
-          islavenodestomasterelements->PutValue(-1);
+          islavenodestomasterelements->put_value(-1);
 
           // initialize vector for physical implementation types of slave-side nodes
           std::shared_ptr<Core::LinAlg::Vector<int>>& islavenodesimpltypes =
               islavenodesimpltypes_[condid];
           islavenodesimpltypes =
               std::make_shared<Core::LinAlg::Vector<int>>(noderowmap_slave, false);
-          islavenodesimpltypes->PutValue(Inpar::ScaTra::impltype_undefined);
+          islavenodesimpltypes->put_value(Inpar::ScaTra::impltype_undefined);
 
           // loop over all slave-side nodes
           for (int inode = 0; inode < noderowmap_slave.NumMyElements(); ++inode)
@@ -2436,7 +2436,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
 
           // initialize vector for physical implementation types of slave-side elements
           Core::LinAlg::Vector<int> islaveelementsimpltypes(elecolmap_slave, false);
-          islaveelementsimpltypes.PutValue(Inpar::ScaTra::impltype_undefined);
+          islaveelementsimpltypes.put_value(Inpar::ScaTra::impltype_undefined);
 
           // loop over all slave-side elements
           for (int ielement = 0; ielement < elecolmap_slave.NumMyElements(); ++ielement)
@@ -2466,7 +2466,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
               Inpar::S2I::side_undefined, Inpar::S2I::side_undefined, nullptr,
               Inpar::S2I::side_undefined, Inpar::S2I::side_undefined,
               islavenodeslumpedareas_dofvector != nullptr
-                  ? islavenodeslumpedareas_dofvector->get_ptr_of_MultiVector()
+                  ? islavenodeslumpedareas_dofvector->get_ptr_of_multi_vector()
                   : nullptr,
               Inpar::S2I::side_slave, nullptr, Inpar::S2I::side_undefined);
 
@@ -2612,7 +2612,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
                 D_diag = Core::LinAlg::create_vector(*interfacemaps_->Map(2));
               if (D_->extract_diagonal_copy(*D_diag))
                 FOUR_C_THROW("Couldn't extract main diagonal from mortar matrix D!");
-              if (D_diag->Reciprocal(*D_diag))
+              if (D_diag->reciprocal(*D_diag))
                 FOUR_C_THROW("Couldn't invert main diagonal entries of mortar matrix D!");
 
               P_ = std::make_shared<Core::LinAlg::SparseMatrix>(*M_);
@@ -2921,7 +2921,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
 
         // copy initial state
         if (intlayergrowth_evaluation_ == Inpar::S2I::growth_evaluation_monolithic)
-          growthnp_->Update(1., *growthn_, 0.);
+          growthnp_->update(1., *growthn_, 0.);
 
         break;
       }
@@ -2959,7 +2959,7 @@ void ScaTra::MeshtyingStrategyS2I::compute_time_derivative() const
 
     // compute state vector of time derivatives of discrete scatra-scatra interface layer
     // thicknesses
-    growthdtnp_->Update(timefac_inverse, *growthnp_, -timefac_inverse, *growthhist_, 0.);
+    growthdtnp_->update(timefac_inverse, *growthnp_, -timefac_inverse, *growthhist_, 0.);
   }
 }
 
@@ -2971,8 +2971,8 @@ void ScaTra::MeshtyingStrategyS2I::update() const
   if (intlayergrowth_evaluation_ == Inpar::S2I::growth_evaluation_monolithic)
   {
     // update state vectors
-    growthn_->Update(1., *growthnp_, 0.);
-    growthdtn_->Update(1., *growthdtnp_, 0.);
+    growthn_->update(1., *growthnp_, 0.);
+    growthdtn_->update(1., *growthdtnp_, 0.);
   }
 }
 
@@ -3186,7 +3186,7 @@ void ScaTra::MeshtyingStrategyS2I::set_old_part_of_rhs() const
                           scatratimint_->scatra_time_parameter_list()->get<double>("time factor");
 
     // compute history vector
-    growthhist_->Update(1., *growthn_, factor, *growthdtn_, 0.);
+    growthhist_->update(1., *growthn_, factor, *growthdtn_, 0.);
   }
 }
 
@@ -3239,8 +3239,8 @@ void ScaTra::MeshtyingStrategyS2I::read_restart(
       reader->read_vector(growthdtn_, "growthdtn");
 
       // copy restart state
-      growthnp_->Update(1., *growthn_, 0.);
-      growthdtnp_->Update(1., *growthdtn_, 0.);
+      growthnp_->update(1., *growthn_, 0.);
+      growthdtnp_->update(1., *growthdtn_, 0.);
     }
   }
 }
@@ -3392,7 +3392,7 @@ void ScaTra::MeshtyingStrategyS2I::explicit_predictor() const
   // only relevant for monolithic evaluation of scatra-scatra interface layer growth
   if (intlayergrowth_evaluation_ == Inpar::S2I::growth_evaluation_monolithic)
     // predict state vector of discrete scatra-scatra interface layer thicknesses at time n+1
-    growthnp_->Update(scatratimint_->dt(), *growthdtn_, 1.);
+    growthnp_->update(scatratimint_->dt(), *growthdtn_, 1.);
 }
 
 /*----------------------------------------------------------------------*
@@ -3775,7 +3775,7 @@ void ScaTra::MeshtyingStrategyS2I::solve(const std::shared_ptr<Core::LinAlg::Sol
           extendedmaps_->extract_vector(*extendedincrement, 1, *lmincrement_);
 
           // update Lagrange multipliers
-          lm_->Update(1., *lmincrement_, 1.);
+          lm_->update(1., *lmincrement_, 1.);
 
           break;
         }
@@ -3898,7 +3898,7 @@ void ScaTra::MeshtyingStrategyS2I::solve(const std::shared_ptr<Core::LinAlg::Sol
           extendedmaps_->extract_vector(*extendedincrement, 1, *growthincrement_);
 
           // update state vector of discrete scatra-scatra interface layer thicknesses
-          growthnp_->Update(1., *growthincrement_, 1.);
+          growthnp_->update(1., *growthincrement_, 1.);
 
           break;
         }
@@ -3997,15 +3997,15 @@ void ScaTra::MeshtyingStrategyS2I::fd_check(
     if (maxcollid < 0) continue;
 
     // fill global state vector with original state variables
-    statenp.Update(1., statenp_original, 0.);
+    statenp.update(1., statenp_original, 0.);
 
     // impose perturbation
-    if (statenp.Map().MyGID(colgid))
-      if (statenp.SumIntoGlobalValue(colgid, 0, fdcheckeps))
+    if (statenp.get_map().MyGID(colgid))
+      if (statenp.sum_into_global_value(colgid, 0, fdcheckeps))
         FOUR_C_THROW(
             "Perturbation could not be imposed on state vector for finite difference check!");
-    scatratimint_->phinp()->Update(1., *extendedmaps_->extract_vector(statenp, 0), 0.);
-    growthnp_->Update(1., *extendedmaps_->extract_vector(statenp, 1), 0.);
+    scatratimint_->phinp()->update(1., *extendedmaps_->extract_vector(statenp, 0), 0.);
+    growthnp_->update(1., *extendedmaps_->extract_vector(statenp, 1), 0.);
 
     // calculate global right-hand side contributions based on perturbed state
     scatratimint_->assemble_mat_and_rhs();
@@ -4140,8 +4140,8 @@ void ScaTra::MeshtyingStrategyS2I::fd_check(
   }
 
   // undo perturbations of state variables
-  scatratimint_->phinp()->Update(1., *extendedmaps_->extract_vector(statenp_original, 0), 0.);
-  growthnp_->Update(1., *extendedmaps_->extract_vector(statenp_original, 1), 0.);
+  scatratimint_->phinp()->update(1., *extendedmaps_->extract_vector(statenp_original, 0), 0.);
+  growthnp_->update(1., *extendedmaps_->extract_vector(statenp_original, 1), 0.);
 
   // recompute system matrix and right-hand side vector based on original state variables
   scatratimint_->assemble_mat_and_rhs();

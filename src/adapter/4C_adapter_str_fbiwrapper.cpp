@@ -39,8 +39,8 @@ Adapter::FBIStructureWrapper::FBIStructureWrapper(std::shared_ptr<Structure> str
 std::shared_ptr<Core::LinAlg::Vector<double>> Adapter::FBIStructureWrapper::extract_interface_veln()
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> veli =
-      std::make_shared<Core::LinAlg::Vector<double>>(veln()->Map());
-  veli->Update(1.0, *veln(), 0.0);
+      std::make_shared<Core::LinAlg::Vector<double>>(veln()->get_map());
+  veli->update(1.0, *veln(), 0.0);
   return veli;
 }
 
@@ -51,8 +51,8 @@ std::shared_ptr<Core::LinAlg::Vector<double>>
 Adapter::FBIStructureWrapper::extract_interface_velnp()
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> veli =
-      std::make_shared<Core::LinAlg::Vector<double>>(velnp()->Map());
-  veli->Update(1.0, *velnp(), 0.0);
+      std::make_shared<Core::LinAlg::Vector<double>>(velnp()->get_map());
+  veli->update(1.0, *velnp(), 0.0);
   return veli;
 }
 /*----------------------------------------------------------------------*/
@@ -61,8 +61,8 @@ std::shared_ptr<Core::LinAlg::Vector<double>>
 Adapter::FBIStructureWrapper::predict_interface_velnp()
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> veli =
-      std::make_shared<Core::LinAlg::Vector<double>>(veln()->Map());
-  veli->Update(1.0, *veln(), 0.0);
+      std::make_shared<Core::LinAlg::Vector<double>>(veln()->get_map());
+  veli->update(1.0, *veln(), 0.0);
   return veli;
 }
 /*----------------------------------------------------------------------*/
@@ -83,8 +83,8 @@ std::shared_ptr<Core::LinAlg::Vector<double>>
 Adapter::FBIStructureWrapper::predict_interface_dispnp()
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> disi =
-      std::make_shared<Core::LinAlg::Vector<double>>(dispn()->Map());
-  disi->Update(1.0, *dispnp(), 0.0);
+      std::make_shared<Core::LinAlg::Vector<double>>(dispn()->get_map());
+  disi->update(1.0, *dispnp(), 0.0);
   return disi;
 }
 
@@ -94,8 +94,8 @@ std::shared_ptr<Core::LinAlg::Vector<double>>
 Adapter::FBIStructureWrapper::extract_interface_dispnp()
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> disi =
-      std::make_shared<Core::LinAlg::Vector<double>>(dispnp()->Map());
-  disi->Update(1.0, *dispnp(), 0.0);
+      std::make_shared<Core::LinAlg::Vector<double>>(dispnp()->get_map());
+  disi->update(1.0, *dispnp(), 0.0);
   return disi;
 }
 /*----------------------------------------------------------------------*/
@@ -104,8 +104,8 @@ std::shared_ptr<Core::LinAlg::Vector<double>>
 Adapter::FBIStructureWrapper::extract_interface_dispn()
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> disi =
-      std::make_shared<Core::LinAlg::Vector<double>>(dispn()->Map());
-  disi->Update(1.0, *dispn(), 0.0);
+      std::make_shared<Core::LinAlg::Vector<double>>(dispn()->get_map());
+  disi->update(1.0, *dispn(), 0.0);
   return disi;
 }
 
@@ -115,7 +115,7 @@ Adapter::FBIStructureWrapper::extract_interface_dispn()
 void Adapter::FBIStructureWrapper::apply_interface_forces(
     std::shared_ptr<Core::LinAlg::Vector<double>> iforce)
 {
-  fsi_model_evaluator()->get_interface_force_np_ptr()->Update(
+  fsi_model_evaluator()->get_interface_force_np_ptr()->update(
       1.0, *iforce, 0.0);  // todo This has to be changed for mixed structure
   return;
 }

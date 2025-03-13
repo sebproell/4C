@@ -49,7 +49,7 @@ void FSI::DirichletNeumann::fsi_op(
     const std::shared_ptr<Core::LinAlg::Vector<double>> icoupnp = struct_op(iforce, fillFlag);
     if (my_debug_writer() != nullptr) my_debug_writer()->write_vector("icoupnp", *icoupnp);
 
-    F.Update(1.0, *icoupnp, -1.0, *icoupn, 0.0);
+    F.update(1.0, *icoupnp, -1.0, *icoupn, 0.0);
   }
   else  // coupling variable: interface forces
   {
@@ -63,7 +63,7 @@ void FSI::DirichletNeumann::fsi_op(
     const std::shared_ptr<Core::LinAlg::Vector<double>> iforcenp = fluid_op(icoupn, fillFlag);
     if (my_debug_writer() != nullptr) my_debug_writer()->write_vector("iforcenp", *iforcenp);
 
-    F.Update(1.0, *iforcenp, -1.0, *iforcen, 0.0);
+    F.update(1.0, *iforcenp, -1.0, *iforcen, 0.0);
   }
 }
 

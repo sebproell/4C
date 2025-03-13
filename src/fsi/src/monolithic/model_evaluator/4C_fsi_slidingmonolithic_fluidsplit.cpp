@@ -401,7 +401,7 @@ void FSI::SlidingMonolithicFluidSplit::setup_rhs_residual(Core::LinAlg::Vector<d
   mortarp->multiply(true, *fcv, *scv);
   std::shared_ptr<Core::LinAlg::Vector<double>> modsv =
       structure_field()->interface()->insert_fsi_cond_vector(*scv);
-  modsv->Update(1.0, sv, (1.0 - stiparam) / (1.0 - ftiparam) * fluidscale);
+  modsv->update(1.0, sv, (1.0 - stiparam) / (1.0 - ftiparam) * fluidscale);
 
   if (structure_field()->get_stc_algo() == Inpar::Solid::stc_currsym)
   {
@@ -438,7 +438,7 @@ void FSI::SlidingMonolithicFluidSplit::setup_rhs_lambda(Core::LinAlg::Vector<dou
     mortarm->multiply(true, *lambdaold_, lambda);
     std::shared_ptr<Core::LinAlg::Vector<double>> lambdafull =
         structure_field()->interface()->insert_fsi_cond_vector(lambda);
-    lambdafull->Scale(stiparam - (ftiparam * (1.0 - stiparam)) / (1.0 - ftiparam));
+    lambdafull->scale(stiparam - (ftiparam * (1.0 - stiparam)) / (1.0 - ftiparam));
 
     // add Lagrange multiplier
     extractor().add_vector(*lambdafull, 0, f);
@@ -527,7 +527,7 @@ void FSI::SlidingMonolithicFluidSplit::setup_rhs_firstiter(Core::LinAlg::Vector<
     stcmat->multiply(true, *rhs, *rhs);
   }
 
-  rhs->Scale(scale * (1. - stiparam) / (1. - ftiparam) * dt() * timescale);
+  rhs->scale(scale * (1. - stiparam) / (1. - ftiparam) * dt() * timescale);
   rhs = structure_field()->interface()->insert_fsi_cond_vector(*rhs);
 
   extractor().add_vector(*rhs, 0, f);
@@ -542,7 +542,7 @@ void FSI::SlidingMonolithicFluidSplit::setup_rhs_firstiter(Core::LinAlg::Vector<
   fgg.Apply(*tmpvec, *auxvec);
   mortarp->multiply(true, *auxvec, *rhs);
 
-  rhs->Scale(-scale * (1. - stiparam) / (1. - ftiparam) * timescale);
+  rhs->scale(-scale * (1. - stiparam) / (1. - ftiparam) * timescale);
   rhs = structure_field()->interface()->insert_fsi_cond_vector(*rhs);
 
   extractor().add_vector(*rhs, 0, f);
@@ -562,7 +562,7 @@ void FSI::SlidingMonolithicFluidSplit::setup_rhs_firstiter(Core::LinAlg::Vector<
     fmgg.Apply(*tmpvec, *auxvec);
     mortarp->multiply(true, *auxvec, *rhs);
 
-    rhs->Scale(-(1. - stiparam) / (1. - ftiparam));
+    rhs->scale(-(1. - stiparam) / (1. - ftiparam));
     rhs = structure_field()->interface()->insert_fsi_cond_vector(*rhs);
 
     extractor().add_vector(*rhs, 0, f);
@@ -591,7 +591,7 @@ void FSI::SlidingMonolithicFluidSplit::setup_rhs_firstiter(Core::LinAlg::Vector<
 
   fig.Apply(*fveln, *rhs);
 
-  rhs->Scale(dt() * timescale);
+  rhs->scale(dt() * timescale);
 
   rhs = fsi_fluid_field()->fsi_interface()->insert_other_vector(*rhs);
 
@@ -605,7 +605,7 @@ void FSI::SlidingMonolithicFluidSplit::setup_rhs_firstiter(Core::LinAlg::Vector<
   mortarp->Apply(*ddgpred_, *auxvec);
   fig.Apply(*auxvec, *rhs);
 
-  rhs->Scale(-timescale);
+  rhs->scale(-timescale);
 
   rhs = fsi_fluid_field()->fsi_interface()->insert_other_vector(*rhs);
 
@@ -624,7 +624,7 @@ void FSI::SlidingMonolithicFluidSplit::setup_rhs_firstiter(Core::LinAlg::Vector<
     mortarp->Apply(*ddgpred_, *auxvec);
     fmig.Apply(*auxvec, *rhs);
 
-    rhs->Scale(-1.);
+    rhs->scale(-1.);
 
     rhs = fsi_fluid_field()->fsi_interface()->insert_other_vector(*rhs);
 
@@ -648,7 +648,7 @@ void FSI::SlidingMonolithicFluidSplit::setup_rhs_firstiter(Core::LinAlg::Vector<
   mortarp->Apply(*ddgpred_, *auxvec);
   aig.Apply(*fluid_to_ale_interface(auxvec), *rhs);
 
-  rhs->Scale(-1.0);
+  rhs->scale(-1.0);
 
   extractor().add_vector(*rhs, 2, f);
   // ----------end of term 1
@@ -687,7 +687,7 @@ void FSI::SlidingMonolithicFluidSplit::setup_rhs_firstiter(Core::LinAlg::Vector<
 
       rhs = structure_field()->interface()->insert_fsi_cond_vector(tmprhs);
 
-      auto zeros = std::make_shared<Core::LinAlg::Vector<double>>(rhs->Map(), true);
+      auto zeros = std::make_shared<Core::LinAlg::Vector<double>>(rhs->get_map(), true);
       Core::LinAlg::apply_dirichlet_to_system(
           *rhs, *zeros, *(structure_field()->get_dbc_map_extractor()->cond_map()));
 
@@ -697,7 +697,7 @@ void FSI::SlidingMonolithicFluidSplit::setup_rhs_firstiter(Core::LinAlg::Vector<
         stcmat->multiply(true, *rhs, *rhs);
       }
 
-      rhs->Scale(dt() * timescale * (1. - stiparam) / (1. - ftiparam));
+      rhs->scale(dt() * timescale * (1. - stiparam) / (1. - ftiparam));
       extractor().add_vector(*rhs, 0, f);
 
       rhs = std::make_shared<Core::LinAlg::Vector<double>>(fmig.row_map());
@@ -706,11 +706,11 @@ void FSI::SlidingMonolithicFluidSplit::setup_rhs_firstiter(Core::LinAlg::Vector<
 
       rhs = fsi_fluid_field()->fsi_interface()->insert_other_vector(*rhs);
 
-      zeros = std::make_shared<Core::LinAlg::Vector<double>>(rhs->Map(), true);
+      zeros = std::make_shared<Core::LinAlg::Vector<double>>(rhs->get_map(), true);
       Core::LinAlg::apply_dirichlet_to_system(
           *rhs, *zeros, *(structure_field()->get_dbc_map_extractor()->cond_map()));
 
-      rhs->Scale(-timescale * dt());
+      rhs->scale(-timescale * dt());
 
       extractor().add_vector(*rhs, 1, f);
     }
@@ -998,8 +998,8 @@ void FSI::SlidingMonolithicFluidSplit::scale_system(
     std::shared_ptr<Epetra_CrsMatrix> A = mat.matrix(0, 0).epetra_matrix();
     srowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
     scolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    A->InvRowSums(*srowsum_->get_ptr_of_Epetra_Vector());
-    A->InvColSums(*scolsum_->get_ptr_of_Epetra_Vector());
+    A->InvRowSums(*srowsum_->get_ptr_of_epetra_vector());
+    A->InvColSums(*scolsum_->get_ptr_of_epetra_vector());
     if (A->LeftScale(*srowsum_) or A->RightScale(*scolsum_) or
         mat.matrix(0, 1).epetra_matrix()->LeftScale(*srowsum_) or
         mat.matrix(0, 2).epetra_matrix()->LeftScale(*srowsum_) or
@@ -1011,8 +1011,8 @@ void FSI::SlidingMonolithicFluidSplit::scale_system(
     A = mat.matrix(2, 2).epetra_matrix();
     arowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
     acolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    A->InvRowSums(*arowsum_->get_ptr_of_Epetra_Vector());
-    A->InvColSums(*acolsum_->get_ptr_of_Epetra_Vector());
+    A->InvRowSums(*arowsum_->get_ptr_of_epetra_vector());
+    A->InvColSums(*acolsum_->get_ptr_of_epetra_vector());
     if (A->LeftScale(*arowsum_) or A->RightScale(*acolsum_) or
         mat.matrix(2, 0).epetra_matrix()->LeftScale(*arowsum_) or
         mat.matrix(2, 1).epetra_matrix()->LeftScale(*arowsum_) or
@@ -1024,8 +1024,8 @@ void FSI::SlidingMonolithicFluidSplit::scale_system(
     std::shared_ptr<Core::LinAlg::Vector<double>> sx = extractor().extract_vector(b, 0);
     std::shared_ptr<Core::LinAlg::Vector<double>> ax = extractor().extract_vector(b, 2);
 
-    if (sx->Multiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("structure scaling failed");
-    if (ax->Multiply(1.0, *arowsum_, *ax, 0.0)) FOUR_C_THROW("ale scaling failed");
+    if (sx->multiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("structure scaling failed");
+    if (ax->multiply(1.0, *arowsum_, *ax, 0.0)) FOUR_C_THROW("ale scaling failed");
 
     extractor().insert_vector(*sx, 0, b);
     extractor().insert_vector(*ax, 2, b);
@@ -1046,8 +1046,8 @@ void FSI::SlidingMonolithicFluidSplit::unscale_solution(Core::LinAlg::BlockSpars
     std::shared_ptr<Core::LinAlg::Vector<double>> sy = extractor().extract_vector(x, 0);
     std::shared_ptr<Core::LinAlg::Vector<double>> ay = extractor().extract_vector(x, 2);
 
-    if (sy->Multiply(1.0, *scolsum_, *sy, 0.0)) FOUR_C_THROW("structure scaling failed");
-    if (ay->Multiply(1.0, *acolsum_, *ay, 0.0)) FOUR_C_THROW("ale scaling failed");
+    if (sy->multiply(1.0, *scolsum_, *sy, 0.0)) FOUR_C_THROW("structure scaling failed");
+    if (ay->multiply(1.0, *acolsum_, *ay, 0.0)) FOUR_C_THROW("ale scaling failed");
 
     // get info about STC feature and unscale solution if necessary
     Inpar::Solid::StcScale stcalgo = structure_field()->get_stc_algo();
@@ -1062,8 +1062,8 @@ void FSI::SlidingMonolithicFluidSplit::unscale_solution(Core::LinAlg::BlockSpars
     std::shared_ptr<Core::LinAlg::Vector<double>> sx = extractor().extract_vector(b, 0);
     std::shared_ptr<Core::LinAlg::Vector<double>> ax = extractor().extract_vector(b, 2);
 
-    if (sx->ReciprocalMultiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("structure scaling failed");
-    if (ax->ReciprocalMultiply(1.0, *arowsum_, *ax, 0.0)) FOUR_C_THROW("ale scaling failed");
+    if (sx->reciprocal_multiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("structure scaling failed");
+    if (ax->reciprocal_multiply(1.0, *arowsum_, *ax, 0.0)) FOUR_C_THROW("ale scaling failed");
 
     // get info about STC feature
     if (stcalgo != Inpar::Solid::stc_inactive)
@@ -1075,8 +1075,8 @@ void FSI::SlidingMonolithicFluidSplit::unscale_solution(Core::LinAlg::BlockSpars
     extractor().insert_vector(*ax, 2, b);
 
     std::shared_ptr<Epetra_CrsMatrix> A = mat.matrix(0, 0).epetra_matrix();
-    srowsum_->Reciprocal(*srowsum_);
-    scolsum_->Reciprocal(*scolsum_);
+    srowsum_->reciprocal(*srowsum_);
+    scolsum_->reciprocal(*scolsum_);
     if (A->LeftScale(*srowsum_) or A->RightScale(*scolsum_) or
         mat.matrix(0, 1).epetra_matrix()->LeftScale(*srowsum_) or
         mat.matrix(0, 2).epetra_matrix()->LeftScale(*srowsum_) or
@@ -1085,8 +1085,8 @@ void FSI::SlidingMonolithicFluidSplit::unscale_solution(Core::LinAlg::BlockSpars
       FOUR_C_THROW("structure scaling failed");
 
     A = mat.matrix(2, 2).epetra_matrix();
-    arowsum_->Reciprocal(*arowsum_);
-    acolsum_->Reciprocal(*acolsum_);
+    arowsum_->reciprocal(*arowsum_);
+    acolsum_->reciprocal(*acolsum_);
     if (A->LeftScale(*arowsum_) or A->RightScale(*acolsum_) or
         mat.matrix(2, 0).epetra_matrix()->LeftScale(*arowsum_) or
         mat.matrix(2, 1).epetra_matrix()->LeftScale(*arowsum_) or
@@ -1097,32 +1097,32 @@ void FSI::SlidingMonolithicFluidSplit::unscale_solution(Core::LinAlg::BlockSpars
 
   // very simple hack just to see the linear solution
 
-  Core::LinAlg::Vector<double> r(b.Map());
+  Core::LinAlg::Vector<double> r(b.get_map());
   mat.Apply(x, r);
-  r.Update(1., b, 1.);
+  r.update(1., b, 1.);
 
   std::shared_ptr<Core::LinAlg::Vector<double>> sr = extractor().extract_vector(r, 0);
   std::shared_ptr<Core::LinAlg::Vector<double>> fr = extractor().extract_vector(r, 1);
   std::shared_ptr<Core::LinAlg::Vector<double>> ar = extractor().extract_vector(r, 2);
 
   // increment additional ale residual
-  aleresidual_->Update(-1., *ar, 0.);
+  aleresidual_->update(-1., *ar, 0.);
 
   std::ios_base::fmtflags flags = utils()->out().flags();
 
   double n, ns, nf, na;
-  r.Norm2(&n);
-  sr->Norm2(&ns);
-  fr->Norm2(&nf);
-  ar->Norm2(&na);
+  r.norm_2(&n);
+  sr->norm_2(&ns);
+  fr->norm_2(&nf);
+  ar->norm_2(&na);
   utils()->out() << std::scientific << "\nlinear solver quality:\n"
                  << "L_2-norms:\n"
                  << "   |r|=" << n << "   |rs|=" << ns << "   |rf|=" << nf << "   |ra|=" << na
                  << "\n";
-  r.NormInf(&n);
-  sr->NormInf(&ns);
-  fr->NormInf(&nf);
-  ar->NormInf(&na);
+  r.norm_inf(&n);
+  sr->norm_inf(&ns);
+  fr->norm_inf(&nf);
+  ar->norm_inf(&na);
   utils()->out() << "L_inf-norms:\n"
                  << "   |r|=" << n << "   |rs|=" << ns << "   |rf|=" << nf << "   |ra|=" << na
                  << "\n";
@@ -1365,7 +1365,7 @@ void FSI::SlidingMonolithicFluidSplit::extract_field_vectors(
   // convert structure solution increment to ALE solution increment at the interface
   std::shared_ptr<Core::LinAlg::Vector<double>> scx =
       structure_field()->interface()->extract_fsi_cond_vector(*sx);
-  scx->Update(1.0, *ddgpred_, 1.0);
+  scx->update(1.0, *ddgpred_, 1.0);
   std::shared_ptr<Core::LinAlg::Vector<double>> acx =
       Core::LinAlg::create_vector(*fluid_field()->interface()->fsi_cond_map());
   mortarp->Apply(*scx, *acx);
@@ -1401,7 +1401,7 @@ void FSI::SlidingMonolithicFluidSplit::extract_field_vectors(
   // Store field vectors to know them later on as previous quantities
   // interface structure displacement increment
   if (disgprev_ != nullptr)
-    ddginc_->Update(1.0, *scx, -1.0, *disgprev_, 0.0);  // compute current iteration increment
+    ddginc_->update(1.0, *scx, -1.0, *disgprev_, 0.0);  // compute current iteration increment
   else
     ddginc_ = std::make_shared<Core::LinAlg::Vector<double>>(*scx);  // first iteration increment
 
@@ -1410,7 +1410,7 @@ void FSI::SlidingMonolithicFluidSplit::extract_field_vectors(
 
   // inner ale displacement increment
   if (aleiprev_ != nullptr)
-    ddialeinc_->Update(1.0, *aox, -1.0, *aleiprev_, 0.0);  // compute current iteration increment
+    ddialeinc_->update(1.0, *aox, -1.0, *aleiprev_, 0.0);  // compute current iteration increment
   else
     ddialeinc_ = std::make_shared<Core::LinAlg::Vector<double>>(*aox);  // first iteration increment
 
@@ -1419,7 +1419,7 @@ void FSI::SlidingMonolithicFluidSplit::extract_field_vectors(
 
   // inner fluid solution increment
   if (veliprev_ != nullptr)  // compute current iteration increment
-    duiinc_->Update(1.0, *fox, -1.0, *veliprev_, 0.0);
+    duiinc_->update(1.0, *fox, -1.0, *veliprev_, 0.0);
   else
     // first iteration increment
     duiinc_ = std::make_shared<Core::LinAlg::Vector<double>>(*fox);
@@ -1432,7 +1432,7 @@ void FSI::SlidingMonolithicFluidSplit::extract_field_vectors(
 /*----------------------------------------------------------------------------*/
 void FSI::SlidingMonolithicFluidSplit::update()
 {
-  lambdaold_->Update(1.0, *lambda_, 0.0);
+  lambdaold_->update(1.0, *lambda_, 0.0);
 
   // update history variables for sliding ale
   if (aleproj_ != Inpar::FSI::ALEprojection_none)
@@ -1444,7 +1444,7 @@ void FSI::SlidingMonolithicFluidSplit::update()
     slideale_->remeshing(*structure_field(), *fluid_field()->discretization(), *idispale,
         *iprojdisp_, *coupsfm_, get_comm());
 
-    iprojdispinc_->Update(-1.0, *iprojdisp_, 1.0, *idispale, 0.0);
+    iprojdispinc_->update(-1.0, *iprojdisp_, 1.0, *idispale, 0.0);
 
     slideale_->evaluate_mortar(
         *structure_field()->extract_interface_dispnp(), *iprojdisp_, *coupsfm_);
@@ -1452,7 +1452,7 @@ void FSI::SlidingMonolithicFluidSplit::update()
 
     std::shared_ptr<Core::LinAlg::Vector<double>> temp =
         std::make_shared<Core::LinAlg::Vector<double>>(*iprojdisp_);
-    temp->ReplaceMap(idispale->Map());
+    temp->replace_map(idispale->get_map());
     std::shared_ptr<Core::LinAlg::Vector<double>> acx = fluid_to_ale_interface(temp);
     ale_field()->apply_interface_displacements(acx);
     fluid_field()->apply_mesh_displacement(ale_to_fluid(ale_field()->dispnp()));
@@ -1653,13 +1653,13 @@ void FSI::SlidingMonolithicFluidSplit::recover_lagrange_multiplier()
    */
 
   // ---------Addressing term (1)
-  lambda_->Update(ftiparam, *lambdaold_, 0.0);
+  lambda_->update(ftiparam, *lambdaold_, 0.0);
   // ---------End of term (1)
 
   // ---------Addressing term (3)
   std::shared_ptr<Core::LinAlg::Vector<double>> fluidresidual =
       fluid_field()->interface()->extract_fsi_cond_vector(*fluid_field()->rhs());
-  fluidresidual->Scale(-1.0);
+  fluidresidual->scale(-1.0);
   tmpvec = std::make_shared<Core::LinAlg::Vector<double>>(*fluidresidual);
   // ---------End of term (3)
 
@@ -1668,7 +1668,7 @@ void FSI::SlidingMonolithicFluidSplit::recover_lagrange_multiplier()
   mortarp->Apply(*ddginc_, *auxvec);
   auxauxvec = std::make_shared<Core::LinAlg::Vector<double>>(fggprev_->range_map(), true);
   fggprev_->Apply(*auxvec, *auxauxvec);
-  tmpvec->Update(timescale, *auxauxvec, 1.0);
+  tmpvec->update(timescale, *auxauxvec, 1.0);
   // ---------End of term (4)
 
   // ---------Addressing term (5)
@@ -1677,14 +1677,14 @@ void FSI::SlidingMonolithicFluidSplit::recover_lagrange_multiplier()
     auxvec = std::make_shared<Core::LinAlg::Vector<double>>(mortarp->range_map(), true);
     mortarp->Apply(*ddginc_, *auxvec);
     fmggprev_->Apply(*auxvec, *auxauxvec);
-    tmpvec->Update(1.0, *auxauxvec, 1.0);
+    tmpvec->update(1.0, *auxauxvec, 1.0);
   }
   // ---------End of term (5)
 
   // ---------Addressing term (6)
   auxvec = std::make_shared<Core::LinAlg::Vector<double>>(fgiprev_->range_map(), true);
   fgiprev_->Apply(*duiinc_, *auxvec);
-  tmpvec->Update(1.0, *auxvec, 1.0);
+  tmpvec->update(1.0, *auxvec, 1.0);
   // ---------End of term (6)
 
   // ---------Addressing term (7)
@@ -1727,7 +1727,7 @@ void FSI::SlidingMonolithicFluidSplit::recover_lagrange_multiplier()
 
     // Now, do the actual matrix-vector-product
     fmgiprev_->Apply(*auxauxvec, *auxvec);
-    tmpvec->Update(1.0, *auxvec, 1.0);
+    tmpvec->update(1.0, *auxvec, 1.0);
   }
   // ---------End of term (7)
 
@@ -1736,18 +1736,18 @@ void FSI::SlidingMonolithicFluidSplit::recover_lagrange_multiplier()
   {
     auxvec = std::make_shared<Core::LinAlg::Vector<double>>(fggprev_->range_map(), true);
     fggprev_->Apply(*fluid_field()->extract_interface_veln(), *auxvec);
-    tmpvec->Update(dt() * timescale, *auxvec, 1.0);
+    tmpvec->update(dt() * timescale, *auxvec, 1.0);
   }
   // ---------End of term (8)
 
   // ---------Addressing term (2)
   auxvec = std::make_shared<Core::LinAlg::Vector<double>>(mortardinv->domain_map(), true);
   mortardinv->multiply(true, *tmpvec, *auxvec);
-  lambda_->Update(scale, *auxvec, 1.0);  // scale with residual_scaling() to get [N/m^2]
+  lambda_->update(scale, *auxvec, 1.0);  // scale with residual_scaling() to get [N/m^2]
   // ---------End of term (2)
 
   // Finally, divide by (1.0-ftiparam) which is common to all terms
-  lambda_->Scale(-1.0 / (1.0 - ftiparam));
+  lambda_->scale(-1.0 / (1.0 - ftiparam));
 
   /* Finally, the Lagrange multiplier lambda_ is recovered here. It has the
    * unit [N/m^2]. Actual nodal forces are obtained by multiplication with
@@ -1772,21 +1772,21 @@ void FSI::SlidingMonolithicFluidSplit::calculate_interface_energy_increment()
   const std::shared_ptr<Core::LinAlg::SparseMatrix> mortarm = coupsfm_->get_mortar_matrix_m();
 
   // interface traction weighted by time integration factors
-  Core::LinAlg::Vector<double> tractionfluid(lambda_->Map(), true);
+  Core::LinAlg::Vector<double> tractionfluid(lambda_->get_map(), true);
   std::shared_ptr<Core::LinAlg::Vector<double>> tractionstructure =
       std::make_shared<Core::LinAlg::Vector<double>>(
           *structure_field()->interface()->fsi_cond_map(), true);
-  tractionfluid.Update(stiparam - ftiparam, *lambdaold_, ftiparam - stiparam, *lambda_, 0.0);
+  tractionfluid.update(stiparam - ftiparam, *lambdaold_, ftiparam - stiparam, *lambda_, 0.0);
   mortarm->multiply(true, tractionfluid, *tractionstructure);
 
   // displacement increment of this time step
   std::shared_ptr<Core::LinAlg::Vector<double>> deltad =
       std::make_shared<Core::LinAlg::Vector<double>>(*structure_field()->dof_row_map(), true);
-  deltad->Update(1.0, *structure_field()->dispnp(), -1.0, *structure_field()->dispn(), 0.0);
+  deltad->update(1.0, *structure_field()->dispnp(), -1.0, *structure_field()->dispn(), 0.0);
 
   // calculate the energy increment
   double energy = 0.0;
-  tractionstructure->Dot(
+  tractionstructure->dot(
       *structure_field()->interface()->extract_fsi_cond_vector(*deltad), &energy);
 
   energysum_ += energy;
@@ -1838,18 +1838,18 @@ void FSI::SlidingMonolithicFluidSplit::check_kinematic_constraint()
 
   // calculate violation of kinematic interface constraint
   Core::LinAlg::Vector<double> violation(disnpproj);
-  violation.Update(-1.0, disnproj, 1.0);
-  violation.Update(-1.0 / timescale, velnpproj, 1.0 / timescale, velnproj, 1.0);
-  violation.Update(-dt(), velnproj, 1.0);
+  violation.update(-1.0, disnproj, 1.0);
+  violation.update(-1.0 / timescale, velnpproj, 1.0 / timescale, velnproj, 1.0);
+  violation.update(-dt(), velnproj, 1.0);
 
   // calculate some norms
   double violationl2 = 0.0;
   double violationinf = 0.0;
-  violation.Norm2(&violationl2);
-  violation.NormInf(&violationinf);
+  violation.norm_2(&violationl2);
+  violation.norm_inf(&violationinf);
 
   // scale L2-Norm with length of vector
-  violationl2 /= sqrt(violation.MyLength());
+  violationl2 /= sqrt(violation.local_length());
 
   // output to screen
   std::ios_base::fmtflags flags = utils()->out().flags();
@@ -1884,13 +1884,13 @@ void FSI::SlidingMonolithicFluidSplit::check_dynamic_equilibrium()
 
   // calculate violation of dynamic equilibrium
   Core::LinAlg::Vector<double> violation(tractionmaster);
-  violation.Update(-1.0, tractionslave, 1.0);
+  violation.update(-1.0, tractionslave, 1.0);
 
   // calculate some norms
   double violationl2 = 0.0;
   double violationinf = 0.0;
-  violation.Norm2(&violationl2);
-  violation.NormInf(&violationinf);
+  violation.norm_2(&violationl2);
+  violation.norm_inf(&violationinf);
 
   // scale L2-Norm with sqrt of length of interface vector
   violationl2 /= sqrt(fluid_field()->interface()->fsi_cond_map()->NumGlobalElements());

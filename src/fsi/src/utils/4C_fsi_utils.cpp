@@ -239,22 +239,22 @@ void FSI::Utils::SlideAleUtils::remeshing(Adapter::FSIStructureWrapper& structur
 
     for (int p = 0; p < dim; p++) finaldxyz[p] = (idispale)[(lids[p])];
 
-    int err = iprojdispale.ReplaceMyValues(dim, finaldxyz.data(), lids.data());
+    int err = iprojdispale.replace_local_values(dim, finaldxyz.data(), lids.data());
     if (err == 1) FOUR_C_THROW("error while replacing values");
   }
 
   // merge displacement values of interface nodes (struct+fluid) into idispms_ for mortar
-  idispms_->PutScalar(0.0);
+  idispms_->put_scalar(0.0);
 
   std::shared_ptr<Epetra_Map> dofrowmap =
       Core::LinAlg::merge_map(*structdofrowmap_, *fluiddofrowmap_, true);
   Epetra_Import msimpo(*dofrowmap, *structdofrowmap_);
   Epetra_Import slimpo(*dofrowmap, *fluiddofrowmap_);
 
-  idispms_->Import(*idisptotal, msimpo, Add);
-  idispms_->Import(iprojdispale, slimpo, Add);
+  idispms_->import(*idisptotal, msimpo, Add);
+  idispms_->import(iprojdispale, slimpo, Add);
 
-  iprojhist_->Update(1.0, iprojdispale, 0.0);
+  iprojhist_->update(1.0, iprojdispale, 0.0);
 
   return;
 }
@@ -265,15 +265,15 @@ void FSI::Utils::SlideAleUtils::evaluate_mortar(Core::LinAlg::Vector<double>& id
     Core::LinAlg::Vector<double>& idispfluid, Coupling::Adapter::CouplingMortar& coupsf)
 {
   // merge displacement values of interface nodes (struct+fluid) into idispms_ for mortar
-  idispms_->PutScalar(0.0);
+  idispms_->put_scalar(0.0);
 
   std::shared_ptr<Epetra_Map> dofrowmap =
       Core::LinAlg::merge_map(*structdofrowmap_, *fluiddofrowmap_, true);
   Epetra_Import master_importer(*dofrowmap, *structdofrowmap_);
   Epetra_Import slave_importer(*dofrowmap, *fluiddofrowmap_);
 
-  if (idispms_->Import(idispstruct, master_importer, Add)) FOUR_C_THROW("Import operation failed.");
-  if (idispms_->Import(idispfluid, slave_importer, Add)) FOUR_C_THROW("Import operation failed.");
+  if (idispms_->import(idispstruct, master_importer, Add)) FOUR_C_THROW("Import operation failed.");
+  if (idispms_->import(idispfluid, slave_importer, Add)) FOUR_C_THROW("Import operation failed.");
 
   // new D,M,Dinv out of disp of struct and fluid side
   coupsf.evaluate(idispms_);
@@ -295,7 +295,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FSI::Utils::SlideAleUtils::interpo
     const Core::LinAlg::Vector<double>& uold)
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> unew = coupff_->master_to_slave(uold);
-  unew->ReplaceMap(uold.Map());
+  unew->replace_map(uold.get_map());
 
   return unew;
 }
@@ -312,7 +312,7 @@ std::vector<double> FSI::Utils::SlideAleUtils::centerdisp(
   std::shared_ptr<Core::LinAlg::Vector<double>> idisptotal = structure.extract_interface_dispnp();
   std::shared_ptr<Core::LinAlg::Vector<double>> idispstep = structure.extract_interface_dispnp();
 
-  int err = idispstep->Update(-1.0, *idispn, 1.0);
+  int err = idispstep->update(-1.0, *idispn, 1.0);
   if (err != 0) FOUR_C_THROW("ERROR");
 
   const int dim = Global::Problem::instance()->n_dim();
@@ -448,7 +448,7 @@ void FSI::Utils::SlideAleUtils::slide_projection(
   Epetra_Import interimpo(*structfullnodemap_, *structdofrowmap_);
   std::shared_ptr<Core::LinAlg::Vector<double>> reddisp =
       Core::LinAlg::create_vector(*structfullnodemap_, true);
-  reddisp->Import(*idispnp, interimpo, Add);
+  reddisp->import(*idispnp, interimpo, Add);
 
   Core::FE::Discretization& interfacedis = coupsf.interface()->discret();
   std::map<int, double> rotrat;
@@ -566,7 +566,7 @@ void FSI::Utils::SlideAleUtils::slide_projection(
       }
 
       // store displacement into parallel vector
-      int err = iprojdispale.ReplaceMyValues(dim, finaldxyz.data(), lids.data());
+      int err = iprojdispale.replace_local_values(dim, finaldxyz.data(), lids.data());
       if (err == 1) FOUR_C_THROW("error while replacing values");
     }
   }
@@ -682,7 +682,7 @@ void FSI::Utils::SlideAleUtils::rotation(
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> idispstep =
       Core::LinAlg::create_vector(*fluiddofrowmap_, false);
-  idispstep->Update(1.0, idispale, -1.0, *iprojhist_, 0.0);
+  idispstep->update(1.0, idispale, -1.0, *iprojhist_, 0.0);
 
   // get structure and fluid discretizations  and set state for element evaluation
   const std::shared_ptr<Core::LinAlg::Vector<double>> idispstepcol =

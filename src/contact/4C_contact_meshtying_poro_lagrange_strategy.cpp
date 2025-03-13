@@ -164,18 +164,18 @@ void CONTACT::PoroMtLagrangeStrategy::recover_coupling_matrix_partof_lmp(
     Core::LinAlg::Vector<double>& veli)
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> zfluid =
-      std::make_shared<Core::LinAlg::Vector<double>>(z_->Map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(z_->get_map(), true);
 
   Core::LinAlg::Vector<double> mod(*gsdofrowmap_);
 
   cs_->multiply(false, veli, mod);
-  zfluid->Update(-1.0, mod, 1.0);
+  zfluid->update(-1.0, mod, 1.0);
   std::shared_ptr<Core::LinAlg::Vector<double>> zcopy =
       std::make_shared<Core::LinAlg::Vector<double>>(*zfluid);
   get_d_inverse()->multiply(true, *zcopy, *zfluid);
-  zfluid->Scale(1 / (1 - alphaf_));
+  zfluid->scale(1 / (1 - alphaf_));
 
-  z_->Update(1.0, *zfluid, 1.0);  // Add FluidCoupling Contribution to LM!
+  z_->update(1.0, *zfluid, 1.0);  // Add FluidCoupling Contribution to LM!
 }
 
 FOUR_C_NAMESPACE_CLOSE

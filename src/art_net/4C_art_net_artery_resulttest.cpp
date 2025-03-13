@@ -67,7 +67,7 @@ void Arteries::ArteryResultTest::test_node(
       if (actnode->owner() != Core::Communication::my_mpi_rank(dis_->get_comm())) return;
 
       double result = 0.;
-      const Epetra_BlockMap& pnpmap = mysol_->Map();
+      const Epetra_BlockMap& pnpmap = mysol_->get_map();
       std::string position = container.get<std::string>("QUANTITY");
 
       // test result value of single scalar field

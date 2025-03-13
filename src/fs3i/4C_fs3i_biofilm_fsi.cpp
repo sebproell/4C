@@ -214,16 +214,16 @@ void FS3I::BiofilmFSI::setup()
   scatra_fluid_growth_disp_ = std::make_shared<Core::LinAlg::MultiVector<double>>(
       *(scatravec_[0]->scatra_field()->discretization())->node_row_map(), 3, true);
 
-  idispn_->PutScalar(0.0);
-  idispnp_->PutScalar(0.0);
-  iveln_->PutScalar(0.0);
+  idispn_->put_scalar(0.0);
+  idispnp_->put_scalar(0.0);
+  iveln_->put_scalar(0.0);
 
-  struidispn_->PutScalar(0.0);
-  struidispnp_->PutScalar(0.0);
-  struiveln_->PutScalar(0.0);
+  struidispn_->put_scalar(0.0);
+  struidispnp_->put_scalar(0.0);
+  struiveln_->put_scalar(0.0);
 
-  struct_growth_disp_->PutScalar(0.0);
-  fluid_growth_disp_->PutScalar(0.0);
+  struct_growth_disp_->put_scalar(0.0);
+  fluid_growth_disp_->put_scalar(0.0);
   scatra_struct_growth_disp_->PutScalar(0.0);
   scatra_fluid_growth_disp_->PutScalar(0.0);
 
@@ -340,10 +340,10 @@ void FS3I::BiofilmFSI::inner_timeloop()
   double t = 0.;
   step_fsi_ = 0;
   // initialize fluxes and tractions each time we enter the innerloop
-  norminflux_->PutScalar(0.0);
-  normtraction_->PutScalar(0.0);
-  tangtractionone_->PutScalar(0.0);
-  tangtractiontwo_->PutScalar(0.0);
+  norminflux_->put_scalar(0.0);
+  normtraction_->put_scalar(0.0);
+  tangtractionone_->put_scalar(0.0);
+  tangtractiontwo_->put_scalar(0.0);
 
   // output of initial state
   //  ScatraOutput();
@@ -365,10 +365,10 @@ void FS3I::BiofilmFSI::inner_timeloop()
       *(fsi_->structure_field()->discretization()->node_row_map()));
   Core::LinAlg::Vector<double> tangtemptractiontwo_(
       *(fsi_->structure_field()->discretization()->node_row_map()));
-  normtempinflux_.PutScalar(0.0);
-  normtemptraction_.PutScalar(0.0);
-  tangtemptractionone_.PutScalar(0.0);
-  tangtemptractiontwo_.PutScalar(0.0);
+  normtempinflux_.put_scalar(0.0);
+  normtemptraction_.put_scalar(0.0);
+  tangtemptractionone_.put_scalar(0.0);
+  tangtemptractiontwo_.put_scalar(0.0);
 
   while (step_fsi_ < nstep_fsi_ and t + 1e-10 * dt_fsi_ < maxtime_fsi_)
   {
@@ -483,7 +483,7 @@ void FS3I::BiofilmFSI::inner_timeloop()
 
         double lambdai = (*lambdafull)[lid];
         int lnodeid = noderowmap->LID(lnode->id());
-        (lambdanode)(index).ReplaceMyValues(1, &lambdai, &lnodeid);
+        (lambdanode)(index).replace_local_values(1, &lambdai, &lnodeid);
       }
     }
     // loop over all local interface nodes of structure discretization
@@ -590,17 +590,17 @@ void FS3I::BiofilmFSI::inner_timeloop()
 
       if (avgrowth)
       {
-        (*((*normtempinflux_.get_ptr_of_Epetra_Vector())(0)))[lnodeid] += tempflux;
-        (*((*normtemptraction_.get_ptr_of_Epetra_Vector())(0)))[lnodeid] += abs(tempnormtrac);
-        (*((*tangtemptractionone_.get_ptr_of_Epetra_Vector())(0)))[lnodeid] += abs(temptangtracone);
-        (*((*tangtemptractiontwo_.get_ptr_of_Epetra_Vector())(0)))[lnodeid] += abs(temptangtractwo);
+        (*((*normtempinflux_.get_ptr_of_epetra_vector())(0)))[lnodeid] += tempflux;
+        (*((*normtemptraction_.get_ptr_of_epetra_vector())(0)))[lnodeid] += abs(tempnormtrac);
+        (*((*tangtemptractionone_.get_ptr_of_epetra_vector())(0)))[lnodeid] += abs(temptangtracone);
+        (*((*tangtemptractiontwo_.get_ptr_of_epetra_vector())(0)))[lnodeid] += abs(temptangtractwo);
       }
       else
       {
-        (*((*norminflux_->get_ptr_of_Epetra_Vector())(0)))[lnodeid] = tempflux;
-        (*((*normtraction_->get_ptr_of_Epetra_Vector())(0)))[lnodeid] = abs(tempnormtrac);
-        (*((*tangtractionone_->get_ptr_of_Epetra_Vector())(0)))[lnodeid] = abs(temptangtracone);
-        (*((*tangtractiontwo_->get_ptr_of_Epetra_Vector())(0)))[lnodeid] = abs(temptangtractwo);
+        (*((*norminflux_->get_ptr_of_epetra_vector())(0)))[lnodeid] = tempflux;
+        (*((*normtraction_->get_ptr_of_epetra_vector())(0)))[lnodeid] = abs(tempnormtrac);
+        (*((*tangtractionone_->get_ptr_of_epetra_vector())(0)))[lnodeid] = abs(temptangtracone);
+        (*((*tangtractiontwo_->get_ptr_of_epetra_vector())(0)))[lnodeid] = abs(temptangtractwo);
       }
     }
   }
@@ -621,14 +621,14 @@ void FS3I::BiofilmFSI::inner_timeloop()
       int lnodeid = strudis->node_row_map()->LID(gnodeid);
 
       // Fix this.
-      (*((*norminflux_->get_ptr_of_Epetra_Vector())(0)))[lnodeid] =
-          (*((*normtempinflux_.get_ptr_of_Epetra_Vector())(0)))[lnodeid] / step_fsi_;
-      (*((*normtraction_->get_ptr_of_Epetra_Vector())(0)))[lnodeid] =
-          (*((*normtemptraction_.get_ptr_of_Epetra_Vector())(0)))[lnodeid] / step_fsi_;
-      (*((*tangtractionone_->get_ptr_of_Epetra_Vector())(0)))[lnodeid] =
-          (*((*tangtemptractionone_.get_ptr_of_Epetra_Vector())(0)))[lnodeid] / step_fsi_;
-      (*((*tangtractiontwo_->get_ptr_of_Epetra_Vector())(0)))[lnodeid] =
-          (*((*tangtemptractiontwo_.get_ptr_of_Epetra_Vector())(0)))[lnodeid] / step_fsi_;
+      (*((*norminflux_->get_ptr_of_epetra_vector())(0)))[lnodeid] =
+          (*((*normtempinflux_.get_ptr_of_epetra_vector())(0)))[lnodeid] / step_fsi_;
+      (*((*normtraction_->get_ptr_of_epetra_vector())(0)))[lnodeid] =
+          (*((*normtemptraction_.get_ptr_of_epetra_vector())(0)))[lnodeid] / step_fsi_;
+      (*((*tangtractionone_->get_ptr_of_epetra_vector())(0)))[lnodeid] =
+          (*((*tangtemptractionone_.get_ptr_of_epetra_vector())(0)))[lnodeid] / step_fsi_;
+      (*((*tangtractiontwo_->get_ptr_of_epetra_vector())(0)))[lnodeid] =
+          (*((*tangtemptractiontwo_.get_ptr_of_epetra_vector())(0)))[lnodeid] / step_fsi_;
     }
   }
 
@@ -652,7 +652,7 @@ void FS3I::BiofilmFSI::compute_interface_vectors(Core::LinAlg::Vector<double>& i
 {
   // initialize structure interface displacement at time t^{n+1}
   // shouldn't that be zeroed?
-  struidispnp->PutScalar(0.0);
+  struidispnp->put_scalar(0.0);
 
   // select biofilm growth boundaries
   std::string biogrcondname = "BioGrCoupling";
@@ -720,14 +720,14 @@ void FS3I::BiofilmFSI::compute_interface_vectors(Core::LinAlg::Vector<double>& i
                   tangtwoforcecoef_ * tangtwoforce * unitnormal[j];
     }
 
-    int error = struiveln_->ReplaceGlobalValues(numdim, Values.data(), globaldofs.data());
+    int error = struiveln_->replace_global_values(numdim, Values.data(), globaldofs.data());
     if (error > 0) FOUR_C_THROW("Could not insert values into vector struiveln_: error %d", error);
   }
 
-  struidispnp->Update(dt_bio_, *struiveln_, 0.0);
+  struidispnp->update(dt_bio_, *struiveln_, 0.0);
 
   std::shared_ptr<Core::LinAlg::Vector<double>> fluididisp = fsi_->struct_to_fluid(struidispnp);
-  idispnp.Update(1.0, *fluididisp, 0.0);
+  idispnp.update(1.0, *fluididisp, 0.0);
 
   return;
 }
@@ -772,7 +772,7 @@ void FS3I::BiofilmFSI::fluid_ale_solve()
 
   // set the total displacement due to growth for output reasons
   // fluid
-  fluid_growth_disp_->Update(1.0, *fluiddisp, 1.0);
+  fluid_growth_disp_->update(1.0, *fluiddisp, 1.0);
   fsi_->fluid_field()->set_fld_gr_disp(fluid_growth_disp_);
   // fluid scatra
   vec_to_scatravec(*scatradis, *fluid_growth_disp_, *scatra_fluid_growth_disp_);
@@ -820,7 +820,7 @@ void FS3I::BiofilmFSI::struct_ale_solve()
 
   // set the total displacement due to growth for output reasons
   // structure
-  struct_growth_disp_->Update(1.0, *structdisp, 1.0);
+  struct_growth_disp_->update(1.0, *structdisp, 1.0);
   fsi_->structure_field()->set_str_gr_disp(struct_growth_disp_);
   // structure scatra
   vec_to_scatravec(*struscatradis, *struct_growth_disp_, *scatra_struct_growth_disp_);

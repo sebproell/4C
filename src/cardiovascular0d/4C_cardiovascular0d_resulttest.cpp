@@ -47,7 +47,7 @@ void Cardiovascular0DResultTest::test_special(
   double result = 0.0;          // will hold the actual result of run
 
 
-  const Epetra_BlockMap& cardvasc0dmap = cardvasc0d_dof_->Map();
+  const Epetra_BlockMap& cardvasc0dmap = cardvasc0d_dof_->get_map();
   const int offset = cardvasc0dmap.MinAllGID();
 
   bool havegid = false;

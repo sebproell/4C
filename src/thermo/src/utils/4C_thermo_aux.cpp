@@ -20,28 +20,28 @@ double Thermo::Aux::calculate_vector_norm(
   if (norm == Thermo::norm_l1)
   {
     double vectnorm;
-    vect.Norm1(&vectnorm);
+    vect.norm_1(&vectnorm);
     return vectnorm;
   }
   // L2/Euclidian norm
   else if (norm == Thermo::norm_l2)
   {
     double vectnorm;
-    vect.Norm2(&vectnorm);
+    vect.norm_2(&vectnorm);
     return vectnorm;
   }
   // RMS norm
   else if (norm == Thermo::norm_rms)
   {
     double vectnorm;
-    vect.Norm2(&vectnorm);
-    return vectnorm / std::sqrt((double)vect.GlobalLength());
+    vect.norm_2(&vectnorm);
+    return vectnorm / std::sqrt((double)vect.global_length());
   }
   // infinity/maximum norm
   else if (norm == Thermo::norm_inf)
   {
     double vectnorm;
-    vect.NormInf(&vectnorm);
+    vect.norm_inf(&vectnorm);
     return vectnorm;
   }
   else

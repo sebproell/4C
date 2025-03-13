@@ -193,9 +193,9 @@ bool FS3I::PartFpS3I1Wc::scatra_convergence_check(const int itnum)
       Teuchos::getIntegralValue<Inpar::ScaTra::SolverType>(fs3idyn, "SCATRA_SOLVERTYPE");
 
   double conresnorm(0.0);
-  scatrarhs_->Norm2(&conresnorm);
+  scatrarhs_->norm_2(&conresnorm);
   double incconnorm(0.0);
-  scatraincrement_->Norm2(&incconnorm);
+  scatraincrement_->norm_2(&incconnorm);
 
   switch (scatra_solvtype)
   {
@@ -224,13 +224,13 @@ bool FS3I::PartFpS3I1Wc::scatra_convergence_check(const int itnum)
 
       double connorm(0.0);
       // set up vector of absolute concentrations
-      Core::LinAlg::Vector<double> con(scatraincrement_->Map());
+      Core::LinAlg::Vector<double> con(scatraincrement_->get_map());
       std::shared_ptr<const Core::LinAlg::Vector<double>> scatra1 =
           scatravec_[0]->scatra_field()->phinp();
       std::shared_ptr<const Core::LinAlg::Vector<double>> scatra2 =
           scatravec_[1]->scatra_field()->phinp();
       setup_coupled_scatra_vector(con, *scatra1, *scatra2);
-      con.Norm2(&connorm);
+      con.norm_2(&connorm);
 
       // care for the case that nothing really happens in the concentration field
       if (connorm < 1e-5) connorm = 1.0;

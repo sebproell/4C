@@ -872,7 +872,7 @@ namespace Solid
             disi  //!< input residual displacements
     )
     {
-      if (disi != nullptr) disi_->Update(1.0, *disi, 0.0);
+      if (disi != nullptr) disi_->update(1.0, *disi, 0.0);
     }
 
     //! Return the rhs-vector (negative sign for Newton is already included.)

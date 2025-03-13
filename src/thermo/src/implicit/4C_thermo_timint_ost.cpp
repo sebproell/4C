@@ -99,12 +99,12 @@ void Thermo::TimIntOneStepTheta::predict_const_temp_consist_rate()
   const double dt = (*dt_)[0];
 
   // constant predictor : temperature in domain
-  tempn_->Update(1.0, *(*temp_)(0), 0.0);
+  tempn_->update(1.0, *(*temp_)(0), 0.0);
 
   // new end-point temperature rates
   // R_{n+1}^{i+1} = -(1 - theta)/theta . R_n + 1/(theta . dt) . (T_{n+1}^{i+1} - T_n)
-  raten_->Update(1.0, *tempn_, -1.0, *(*temp_)(0), 0.0);
-  raten_->Update(-(1.0 - theta_) / theta_, *(*rate_)(0), 1.0 / (theta_ * dt));
+  raten_->update(1.0, *tempn_, -1.0, *(*temp_)(0), 0.0);
+  raten_->update(-(1.0 - theta_) / theta_, *(*rate_)(0), 1.0 / (theta_ * dt));
 
   // watch out
   return;
@@ -122,7 +122,7 @@ void Thermo::TimIntOneStepTheta::evaluate_rhs_tang_residual()
   evaluate_mid_state();
 
   // build new external forces
-  fextn_->PutScalar(0.0);
+  fextn_->put_scalar(0.0);
 
   // initialise tangent matrix to zero
   tang_->zero();
@@ -141,8 +141,8 @@ void Thermo::TimIntOneStepTheta::evaluate_rhs_tang_residual()
   apply_force_external(timen_, (*temp_)(0), *fextn_);
 
   // initialise internal forces
-  fintn_->PutScalar(0.0);
-  fcapn_->PutScalar(0.0);
+  fintn_->put_scalar(0.0);
+  fcapn_->put_scalar(0.0);
 
   // ordinary internal force and tangent
   apply_force_tang_internal(timen_, (*dt_)[0], tempn_, tempi_, fcapn_, fintn_, tang_);
@@ -155,10 +155,10 @@ void Thermo::TimIntOneStepTheta::evaluate_rhs_tang_residual()
   //      F_{ext;n+theta} = - theta * F_{ext;n+1} - (1 - theta) * F_{ext;n}
 
   // here the time derivative is introduced needed for fcap depending on T'!
-  fres_->Scale(1.0, *fcapn_);  // fcap already contains full R_{n+theta}
-  fres_->Update(theta_, *fintn_, (1.0 - theta_), *fint_, 1.0);
+  fres_->scale(1.0, *fcapn_);  // fcap already contains full R_{n+theta}
+  fres_->update(theta_, *fintn_, (1.0 - theta_), *fint_, 1.0);
   // here is the negative sign for the external forces (heatfluxes)
-  fres_->Update(-theta_, *fextn_, -(1.0 - theta_), *fext_, 1.0);
+  fres_->update(-theta_, *fextn_, -(1.0 - theta_), *fext_, 1.0);
 
   // no further modification on tang_ required
   // tang_ is already effective dynamic tangent matrix
@@ -178,7 +178,7 @@ void Thermo::TimIntOneStepTheta::evaluate_mid_state()
 {
   // mid-temperatures T_{n+1-alpha_f} (tempm)
   //    T_{n+theta} := theta * T_{n+1} + (1-theta) * T_{n}
-  tempt_->Update(theta_, *tempn_, 1.0 - theta_, *(*temp_)(0), 0.0);
+  tempt_->update(theta_, *tempn_, 1.0 - theta_, *(*temp_)(0), 0.0);
 
   // jump
   return;
@@ -256,12 +256,12 @@ void Thermo::TimIntOneStepTheta::update_iter_incrementally()
 
   // new end-point temperatures
   // T_{n+1}^{i+1} := T_{n+1}^{<k>} + IncT_{n+1}^{i}
-  tempn_->Update(1.0, *tempi_, 1.0);
+  tempn_->update(1.0, *tempi_, 1.0);
 
   // new end-point temperature rates
   // aux = - (1-theta)/theta R_n + 1/(theta . dt) (T_{n+1}^{i+1} - T_{n+1}^i)
-  aux->Update(1.0, *tempn_, -1.0, *(*temp_)(0), 0.0);
-  aux->Update(-(1.0 - theta_) / theta_, *(*rate_)(0), 1.0 / (theta_ * (*dt_)[0]));
+  aux->update(1.0, *tempn_, -1.0, *(*temp_)(0), 0.0);
+  aux->update(-(1.0 - theta_) / theta_, *(*rate_)(0), 1.0 / (theta_ * (*dt_)[0]));
   // put only to free/non-DBC DOFs
   dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*aux), *raten_);
 
@@ -278,11 +278,11 @@ void Thermo::TimIntOneStepTheta::update_iter_iteratively()
 {
   // new end-point temperatures
   // T_{n+1}^{<k+1>} := T_{n+1}^{<k>} + IncT_{n+1}^{<k>}
-  tempn_->Update(1.0, *tempi_, 1.0);
+  tempn_->update(1.0, *tempi_, 1.0);
 
   // new end-point temperature rates
   // R_{n+1}^{<k+1>} := R_{n+1}^{<k>} + 1/(theta . dt)IncT_{n+1}^{<k>}
-  raten_->Update(1.0 / (theta_ * (*dt_)[0]), *tempi_, 1.0);
+  raten_->update(1.0 / (theta_ * (*dt_)[0]), *tempi_, 1.0);
 
   // bye
   return;
@@ -305,15 +305,15 @@ void Thermo::TimIntOneStepTheta::update_step_state()
 
   // update new external force
   //    F_{ext;n} := F_{ext;n+1}
-  fext_->Update(1.0, *fextn_, 0.0);
+  fext_->update(1.0, *fextn_, 0.0);
 
   // update new internal force
   //    F_{int;n} := F_{int;n+1}
-  fint_->Update(1.0, *fintn_, 0.0);
+  fint_->update(1.0, *fintn_, 0.0);
 
   // update new stored transient force
   //    F_{cap;n} := F_{cap;n+1}
-  fcap_->Update(1.0, *fcapn_, 0.0);
+  fcap_->update(1.0, *fcapn_, 0.0);
 
 
   // look out

@@ -1232,14 +1232,14 @@ void CONTACT::Manager::postprocess_quantities(Core::IO::DiscretizationWriter& ou
 
   // evaluate active set and slip set
   Core::LinAlg::Vector<double> activeset(*get_strategy().active_row_nodes());
-  activeset.PutScalar(1.0);
+  activeset.put_scalar(1.0);
   if (get_strategy().is_friction())
   {
     Core::LinAlg::Vector<double> slipset(*get_strategy().slip_row_nodes());
-    slipset.PutScalar(1.0);
+    slipset.put_scalar(1.0);
     Core::LinAlg::Vector<double> slipsetexp(*get_strategy().active_row_nodes());
     Core::LinAlg::export_to(slipset, slipsetexp);
-    activeset.Update(1.0, slipsetexp, 1.0);
+    activeset.update(1.0, slipsetexp, 1.0);
   }
 
   // export to problem node row map
@@ -1251,16 +1251,16 @@ void CONTACT::Manager::postprocess_quantities(Core::IO::DiscretizationWriter& ou
   if (get_strategy().wear_both_discrete())
   {
     Core::LinAlg::Vector<double> mactiveset(*get_strategy().master_active_nodes());
-    mactiveset.PutScalar(1.0);
+    mactiveset.put_scalar(1.0);
     Core::LinAlg::Vector<double> slipset(*get_strategy().master_slip_nodes());
-    slipset.PutScalar(1.0);
+    slipset.put_scalar(1.0);
     Core::LinAlg::Vector<double> slipsetexp(*get_strategy().master_active_nodes());
     Core::LinAlg::export_to(slipset, slipsetexp);
-    mactiveset.Update(1.0, slipsetexp, 1.0);
+    mactiveset.update(1.0, slipsetexp, 1.0);
 
     Core::LinAlg::Vector<double> mactivesetexp(*problemnodes);
     Core::LinAlg::export_to(mactiveset, mactivesetexp);
-    activesetexp->Update(1.0, mactivesetexp, 1.0);
+    activesetexp->update(1.0, mactivesetexp, 1.0);
   }
 
   output.write_vector("activeset", activesetexp);

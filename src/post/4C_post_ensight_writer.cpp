@@ -1503,7 +1503,7 @@ void EnsightWriter::write_dof_result_step(std::ofstream& file, PostResult& resul
   const int numnp = nodemap->NumGlobalElements();
 
   const std::shared_ptr<Core::LinAlg::Vector<double>> data = result.read_result(groupname);
-  const Epetra_BlockMap& datamap = data->Map();
+  const Epetra_BlockMap& datamap = data->get_map();
 
   // do stupid conversion into Epetra map
   std::shared_ptr<Epetra_Map> epetradatamap;
@@ -1561,10 +1561,10 @@ void EnsightWriter::write_dof_result_step(std::ofstream& file, PostResult& resul
     // contract result values on proc0 (proc0 gets everything, other procs empty)
     Epetra_Import proc0dataimporter(*proc0datamap, *epetradatamap);
     Core::LinAlg::Vector<double> proc0data(*proc0datamap);
-    int err = proc0data.Import(*data, proc0dataimporter, Insert);
+    int err = proc0data.import(*data, proc0dataimporter, Insert);
     if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns %d", err);
 
-    const Epetra_BlockMap& finaldatamap = proc0data.Map();
+    const Epetra_BlockMap& finaldatamap = proc0data.get_map();
 
     //------------------------------------------------------------------
     // each processor provides its dof global id information for proc 0
@@ -1813,7 +1813,7 @@ void EnsightWriter::write_element_dof_result_step(std::ofstream& file, PostResul
   const Epetra_Map* elementmap = dis->element_row_map();  // local node row map
 
   const std::shared_ptr<Core::LinAlg::Vector<double>> data = result.read_result(groupname);
-  const Epetra_BlockMap& datamap = data->Map();
+  const Epetra_BlockMap& datamap = data->get_map();
 
   // do stupid conversion into Epetra map
   std::shared_ptr<Epetra_Map> epetradatamap;
@@ -1830,10 +1830,10 @@ void EnsightWriter::write_element_dof_result_step(std::ofstream& file, PostResul
   // contract result values on proc0 (proc0 gets everything, other procs empty)
   Epetra_Import proc0dataimporter(*proc0datamap, *epetradatamap);
   Core::LinAlg::Vector<double> proc0data(*proc0datamap);
-  int err = proc0data.Import(*data, proc0dataimporter, Insert);
+  int err = proc0data.import(*data, proc0dataimporter, Insert);
   if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns %d", err);
 
-  const Epetra_BlockMap& finaldatamap = proc0data.Map();
+  const Epetra_BlockMap& finaldatamap = proc0data.get_map();
 
   //------------------------------------------------------------------
   // each processor provides its dof global id information for proc 0

@@ -219,7 +219,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
           Core::LinAlg::create_vector(*interface_->active_dofs(), true);
       interface_->assemble_lin_slip_normal_regularization(*dcsdLMc, *dcsdd, *rcsa_fr);
       interface_->assemble_lin_stick(*dcsdLMc, *dcsdd, *rcsa_fr);
-      rcsa_fr->Scale(-1.);
+      rcsa_fr->scale(-1.);
       CONTACT::Utils::add_vector(*rcsa_fr, *fcsa);
     }
     else
@@ -229,7 +229,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
       interface_->assemble_tn(dcsdLMc, nullptr);
       interface_->assemble_t_nderiv(dcsdd, nullptr);
       interface_->assemble_tangrhs(*rcsa_fr);
-      rcsa_fr->Scale(-1.);
+      rcsa_fr->scale(-1.);
       CONTACT::Utils::add_vector(*rcsa_fr, *fcsa);
     }
   }
@@ -246,19 +246,19 @@ void Adapter::CouplingEhlMortar::condense_contact(
   if (constr_direction_ == Inpar::CONTACT::constr_xyz)
   {
     gact = Core::LinAlg::create_vector(*interface_->active_dofs(), true);
-    if (gact->GlobalLength()) Core::LinAlg::export_to(*g_all, *gact);
+    if (gact->global_length()) Core::LinAlg::export_to(*g_all, *gact);
   }
   else
   {
     gact = Core::LinAlg::create_vector(*interface_->active_nodes(), true);
-    if (gact->GlobalLength())
+    if (gact->global_length())
     {
       Core::LinAlg::export_to(*g_all, *gact);
-      if (gact->ReplaceMap(*interface_->active_n_dofs())) FOUR_C_THROW("replaceMap went wrong");
+      if (gact->replace_map(*interface_->active_n_dofs())) FOUR_C_THROW("replaceMap went wrong");
     }
   }
   CONTACT::Utils::add_vector(*gact, *fcsa);
-  fcsa->Norm2(&contact_rhs_norm_);
+  fcsa->norm_2(&contact_rhs_norm_);
 
   // complete all the new matrix blocks
   // Note: since the contact interface assemled them, they are all based
@@ -289,8 +289,8 @@ void Adapter::CouplingEhlMortar::condense_contact(
   Core::LinAlg::export_to(*combined_RHS, rt);
 
   // we don't want the rhs but the residual
-  rs.Scale(-1.);
-  rt.Scale(-1.);
+  rs.scale(-1.);
+  rt.scale(-1.);
 
   // add last time step contact forces to rhs
   if (fscn_ != nullptr)  // in the first time step, we don't have any history of the
@@ -298,7 +298,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
   {
     Core::LinAlg::Vector<double> tmp(kss->row_map());
     Core::LinAlg::export_to(*fscn_, tmp);
-    if (rs.Update(alphaf_, tmp, 1.) != 0)  // fscn already scaled with alphaf_ in update
+    if (rs.update(alphaf_, tmp, 1.) != 0)  // fscn already scaled with alphaf_ in update
       FOUR_C_THROW("update went wrong");
   }
 
@@ -443,7 +443,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
   // invert D-matrix
   Core::LinAlg::Vector<double> dDiag(*interface_->active_dofs());
   dInvA->extract_diagonal_copy(dDiag);
-  if (dDiag.Reciprocal(dDiag)) FOUR_C_THROW("inversion of diagonal D matrix failed");
+  if (dDiag.reciprocal(dDiag)) FOUR_C_THROW("inversion of diagonal D matrix failed");
   dInvA->replace_diagonal_values(dDiag);
 
   dummy_map1 = dummy_map2 = nullptr;
@@ -464,7 +464,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
       std::make_shared<Core::LinAlg::Vector<double>>(*interface_->active_dofs());
   Core::LinAlg::export_to(*z_, *tmpv2);
   dcsdLMc->multiply(false, *tmpv2, *tmpv);
-  tmpv->Scale(-1.);
+  tmpv->scale(-1.);
   CONTACT::Utils::add_vector(*tmpv, *fcsa);
   tmpv = nullptr;
   tmpv2 = nullptr;
@@ -480,7 +480,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
   if (constr_direction_ == Inpar::CONTACT::constr_xyz)
   {
     double haveDBC = 0;
-    sdirichtoggle_->Norm1(&haveDBC);
+    sdirichtoggle_->norm_1(&haveDBC);
     if (haveDBC > 0.)
     {
       std::shared_ptr<Core::LinAlg::Vector<double>> diag =
@@ -491,8 +491,8 @@ void Adapter::CouplingEhlMortar::condense_contact(
       Core::LinAlg::export_to(*sdirichtoggle_, *lmDBC);
       std::shared_ptr<Core::LinAlg::Vector<double>> tmp =
           Core::LinAlg::create_vector(*interface_->active_dofs(), true);
-      tmp->Multiply(1., *diag, *lmDBC, 0.);
-      diag->Update(-1., *tmp, 1.);
+      tmp->multiply(1., *diag, *lmDBC, 0.);
+      diag->update(-1., *tmp, 1.);
       dInvA->replace_diagonal_values(*diag);
       dInvMa = Core::LinAlg::matrix_multiply(*dInvA, false, *mA, false, false, false, true);
     }
@@ -516,7 +516,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
   // reynolds equation blocks remain untouched
 
   // reset rhs
-  combined_RHS->PutScalar(0.);
+  combined_RHS->put_scalar(0.);
   CONTACT::Utils::add_vector(rt, *combined_RHS);
 
   // **********************************************************************
@@ -560,7 +560,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
       false, -1. / (1. - alphaf_), 1.);
   tmpv = std::make_shared<Core::LinAlg::Vector<double>>(*interface_->active_dofs());
   wDinv->multiply(false, *rsa, *tmpv);
-  tmpv->Scale(-1. / (1. - alphaf_));
+  tmpv->scale(-1. / (1. - alphaf_));
   CONTACT::Utils::add_vector(*tmpv, *combined_RHS);
   tmpv = nullptr;
   wDinv = nullptr;
@@ -569,7 +569,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
   sysmat->complete();
 
   // we need to return the rhs, not the residual
-  combined_RHS->Scale(-1.);
+  combined_RHS->scale(-1.);
 
   return;
 }
@@ -613,13 +613,13 @@ void Adapter::CouplingEhlMortar::recover_coupled(std::shared_ptr<Core::LinAlg::V
 
     Core::LinAlg::Vector<double> lmc_a_new(*interface_->active_dofs(), false);
     Core::LinAlg::Vector<double> tmp(*interface_->active_dofs(), false);
-    lmc_a_new.Update(1., *rs_a_, 0.);
+    lmc_a_new.update(1., *rs_a_, 0.);
     kss_a_->multiply(false, *sinc, tmp);
-    lmc_a_new.Update(1., tmp, 1.);
+    lmc_a_new.update(1., tmp, 1.);
     kst_a_->multiply(false, *tinc, tmp);
-    lmc_a_new.Update(1., tmp, 1.);
+    lmc_a_new.update(1., tmp, 1.);
     dinvA_->multiply(false, lmc_a_new, tmp);
-    tmp.Scale(-1. / (1. - alphaf_));
+    tmp.scale(-1. / (1. - alphaf_));
     z_ = std::make_shared<Core::LinAlg::Vector<double>>(*interface_->slave_row_dofs());
 
     Core::LinAlg::export_to(tmp, *z_);
@@ -630,8 +630,8 @@ void Adapter::CouplingEhlMortar::recover_coupled(std::shared_ptr<Core::LinAlg::V
 
   if (z_old != nullptr)
   {
-    z_old->Update(-1., *z_, 1.);
-    z_old->Norm2(&contact_LM_incr_norm_);
+    z_old->update(-1., *z_, 1.);
+    z_old->norm_2(&contact_LM_incr_norm_);
   }
 
   // store updated LM into nodes
@@ -639,7 +639,7 @@ void Adapter::CouplingEhlMortar::recover_coupled(std::shared_ptr<Core::LinAlg::V
   {
     CONTACT::Node* cnode = dynamic_cast<CONTACT::Node*>(interface_->discret().l_row_node(i));
     for (int dof = 0; dof < interface_->n_dim(); ++dof)
-      cnode->mo_data().lm()[dof] = z_->operator[](z_->Map().LID(cnode->dofs()[dof]));
+      cnode->mo_data().lm()[dof] = z_->operator[](z_->get_map().LID(cnode->dofs()[dof]));
   }
 
   return;
@@ -685,7 +685,7 @@ void Adapter::CouplingEhlMortar::store_dirichlet_status(const Core::LinAlg::MapE
   sdirichtoggle_ =
       std::make_shared<Core::LinAlg::Vector<double>>(*interface_->slave_row_dofs(), true);
   Core::LinAlg::Vector<double> temp(*(dbcmaps.cond_map()));
-  temp.PutScalar(1.0);
+  temp.put_scalar(1.0);
   Core::LinAlg::export_to(temp, *sdirichtoggle_);
 
   return;
@@ -698,9 +698,9 @@ bool Adapter::CouplingEhlMortar::already_evaluated(
 {
   if (!evaluated_state_) return false;
   Core::LinAlg::Vector<double> diff(*disp);
-  if (diff.Update(-1., *evaluated_state_, 1.)) FOUR_C_THROW("update failed");
+  if (diff.update(-1., *evaluated_state_, 1.)) FOUR_C_THROW("update failed");
   double inf_diff = -1.;
-  if (diff.NormInf(&inf_diff)) FOUR_C_THROW("NormInf failed");
+  if (diff.norm_inf(&inf_diff)) FOUR_C_THROW("NormInf failed");
   if (inf_diff < 1.e-13) return true;
 
   return false;
@@ -752,7 +752,7 @@ void Adapter::CouplingEhlMortar::assemble_normals()
     if (!cnode) FOUR_C_THROW("not a contact node");
 
     for (int d = 0; d < interface_->n_dim(); ++d)
-      normals_->ReplaceGlobalValue(cnode->dofs()[d], 0, cnode->mo_data().n()[d]);
+      normals_->replace_global_value(cnode->dofs()[d], 0, cnode->mo_data().n()[d]);
   }
 }
 
@@ -800,12 +800,13 @@ void Adapter::CouplingEhlMortar::assemble_real_gap()
             "GetD should be of size 0 (unprojectable) or 1 (projectable). Are you not using "
             "duals?");
     }
-    nodal_gap_->ReplaceGlobalValue(cnode->id(), 0, real_gap);
+    nodal_gap_->replace_global_value(cnode->id(), 0, real_gap);
   }
 
   static const double offset =
       Global::Problem::instance()->lubrication_dynamic_params().get<double>("GAP_OFFSET");
-  for (int i = 0; i < nodal_gap_->Map().NumMyElements(); ++i) nodal_gap_->operator[](i) += offset;
+  for (int i = 0; i < nodal_gap_->get_map().NumMyElements(); ++i)
+    nodal_gap_->operator[](i) += offset;
 }
 
 void Adapter::CouplingEhlMortar::assemble_real_gap_deriv()
@@ -900,9 +901,9 @@ void Adapter::CouplingEhlMortar::assemble_interface_velocities(const double dt)
 
     for (int d = 0; d < interface()->n_dim(); ++d)
     {
-      relTangVel_->ReplaceGlobalValue(
+      relTangVel_->replace_global_value(
           cnode->dofs()[d], 0, cnode->ehl_data().get_weighted_rel_tang_vel()(d) / d_val);
-      avTangVel_->ReplaceGlobalValue(
+      avTangVel_->replace_global_value(
           cnode->dofs()[d], 0, cnode->ehl_data().get_weighted_av_tang_vel()(d) / d_val);
     }
 
@@ -945,8 +946,8 @@ void Adapter::CouplingEhlMortar::assemble_interface_velocities(const double dt)
     }
   }
 
-  relTangVel_->Scale(1. / dt);
-  avTangVel_->Scale(1. / dt);
+  relTangVel_->scale(1. / dt);
+  avTangVel_->scale(1. / dt);
   relTangVel_deriv_->complete(*smdofrowmap_, *slavedofrowmap_);
   avTangVel_deriv_->complete(*smdofrowmap_, *slavedofrowmap_);
   relTangVel_deriv_->scale(1. / dt);
@@ -1028,7 +1029,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Adapter::CouplingEhlMortar::assemble
       const int col = p->first;
       for (auto q = p->second.begin(); q != p->second.end(); ++q)
       {
-        const int lid = x.Map().LID(q->first);
+        const int lid = x.get_map().LID(q->first);
         if (lid < 0) FOUR_C_THROW("not my gid");
         const double x_val = x.operator[](lid);
         for (int d = 0; d < interface()->n_dim(); ++d)
@@ -1051,7 +1052,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Adapter::CouplingEhlMortar::assemble
           {
             const int row = cnode->dofs()[d];
             const int x_gid = q->first;
-            const int x_lid = x.Map().LID(x_gid);
+            const int x_lid = x.get_map().LID(x_gid);
             if (x_lid < 0) FOUR_C_THROW("not my gid");
             double x_val = x.operator[](x_lid);
             const double val = -x_val * q->second(d) / (dval * dval) * p->second;
@@ -1083,8 +1084,8 @@ void Adapter::CouplingEhlMortar::create_force_vec(std::shared_ptr<Core::LinAlg::
     lmt.update(-1., lmn, 1.);
     for (int d = 0; d < 3; ++d)
     {
-      n->operator[](n->Map().LID(cnode->dofs()[d])) = lmn(d);
-      t->operator[](t->Map().LID(cnode->dofs()[d])) = lmt(d);
+      n->operator[](n->get_map().LID(cnode->dofs()[d])) = lmn(d);
+      t->operator[](t->get_map().LID(cnode->dofs()[d])) = lmt(d);
     }
   }
 }
@@ -1161,7 +1162,7 @@ void Adapter::CouplingEhlMortar::read_restart(Core::IO::DiscretizationReader& re
     cnode->fri_data().slip() = slip_toggle->operator[](i);
     cnode->data().active_old() = active_old_toggle->operator[](i);
     for (int d = 0; d < interface_->n_dim(); ++d)
-      cnode->mo_data().lm()[d] = z_->operator[](z_->Map().LID(cnode->dofs()[d]));
+      cnode->mo_data().lm()[d] = z_->operator[](z_->get_map().LID(cnode->dofs()[d]));
   }
 }
 

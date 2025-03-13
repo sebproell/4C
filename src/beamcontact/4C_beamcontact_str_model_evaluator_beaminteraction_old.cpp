@@ -68,7 +68,7 @@ void Solid::ModelEvaluator::BeamInteractionOld::reset(const Core::LinAlg::Vector
   disnp_ptr_ = global_state().get_dis_np();
 
   // Zero out force and stiffness contributions
-  f_beaminteract_np_ptr_->PutScalar(0.0);
+  f_beaminteract_np_ptr_->put_scalar(0.0);
   stiff_beaminteract_ptr_->zero();
 }
 
@@ -201,7 +201,7 @@ void Solid::ModelEvaluator::BeamInteractionOld::update_step_state(const double& 
       global_state().get_fstructure_old();
 
   // Todo take care of the minus sign in front of timefac_np
-  fstructold_ptr->Update(-timefac_n, *f_beaminteract_np_ptr_, 1.0);
+  fstructold_ptr->update(-timefac_n, *f_beaminteract_np_ptr_, 1.0);
 }
 
 /*----------------------------------------------------------------------*

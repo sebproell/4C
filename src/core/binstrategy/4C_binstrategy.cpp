@@ -1180,7 +1180,7 @@ Core::Binstrategy::BinningStrategy::weighted_distribution_of_bins_to_procs(
 
   // set weights of bins related to the number of nodes of discrets that are contained
   // empty bins have weight of 1
-  vweights->PutScalar(1.0);
+  vweights->put_scalar(1.0);
 
   // determine which node is in which bin and weight each bin according to
   // "weight" times the number of nodes it contains

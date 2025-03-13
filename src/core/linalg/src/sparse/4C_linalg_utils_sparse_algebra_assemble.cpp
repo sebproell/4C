@@ -78,14 +78,14 @@ void Core::LinAlg::assemble(Core::LinAlg::Vector<double>& V,
   // therefore check only for ">" rather than "!="
   if (ldim != (int)lmowner.size() || ldim > Vele.length()) FOUR_C_THROW("Mismatch in dimensions");
 
-  const int myrank = Core::Communication::my_mpi_rank(V.Comm());
+  const int myrank = Core::Communication::my_mpi_rank(V.get_comm());
 
   for (int lrow = 0; lrow < ldim; ++lrow)
   {
     if (lmowner[lrow] != myrank) continue;
     int rgid = lm[lrow];
-    if (!V.Map().MyGID(rgid)) FOUR_C_THROW("Sparse vector V does not have global row %d", rgid);
-    int rlid = V.Map().LID(rgid);
+    if (!V.get_map().MyGID(rgid)) FOUR_C_THROW("Sparse vector V does not have global row %d", rgid);
+    int rlid = V.get_map().LID(rgid);
     V[rlid] += Vele[lrow];
   }  // for (int lrow=0; lrow<ldim; ++lrow)
 }
@@ -95,15 +95,15 @@ void Core::LinAlg::assemble(Core::LinAlg::Vector<double>& V,
 void Core::LinAlg::assemble_my_vector(double scalar_target, Core::LinAlg::Vector<double>& target,
     double scalar_source, const Core::LinAlg::Vector<double>& source)
 {
-  for (int slid = 0; slid < source.Map().NumMyElements(); ++slid)
+  for (int slid = 0; slid < source.get_map().NumMyElements(); ++slid)
   {
-    const int sgid = source.Map().GID(slid);
-    const int tlid = target.Map().LID(sgid);
+    const int sgid = source.get_map().GID(slid);
+    const int tlid = target.get_map().LID(sgid);
     if (tlid == -1)
       FOUR_C_THROW(
           "The target vector has no global row %i"
           " on processor %i!",
-          sgid, Core::Communication::my_mpi_rank(target.Comm()));
+          sgid, Core::Communication::my_mpi_rank(target.get_comm()));
 
     // update the vector row
     target[tlid] = scalar_target * target[tlid] + scalar_source * source[slid];
@@ -127,7 +127,7 @@ void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::Vector<double>& x,
     const Core::LinAlg::Vector<double>& dbctoggle)
 {
   // set the prescribed value in x and b
-  const int mylength = dbcval.MyLength();
+  const int mylength = dbcval.local_length();
   for (int i = 0; i < mylength; ++i)
   {
     if (dbctoggle[i] == 1.0)
@@ -148,8 +148,8 @@ void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::Vector<double>& x,
 
   // We use two maps since we want to allow dbcv and X to be independent of
   // each other. So we are slow and flexible...
-  const Epetra_BlockMap& xmap = x.Map();
-  const Epetra_BlockMap& dbcvmap = dbcval.Map();
+  const Epetra_BlockMap& xmap = x.get_map();
+  const Epetra_BlockMap& dbcvmap = dbcval.get_map();
 
   const int mylength = dbcmap.NumMyElements();
   const int* mygids = dbcmap.MyGlobalElements();
@@ -181,9 +181,9 @@ void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::Vector<double>& b,
   {
     const int gid = mygids[i];
 
-    const int dbcvlid = dbcval.Map().LID(gid);
+    const int dbcvlid = dbcval.get_map().LID(gid);
 
-    const int blid = b.Map().LID(gid);
+    const int blid = b.get_map().LID(gid);
     // Note:
     // if gid is not found in vector b, just continue
     // b might only be a subset of a larger field vector
@@ -233,13 +233,13 @@ void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::SparseMatrix& A,
 std::shared_ptr<Core::LinAlg::MapExtractor> Core::LinAlg::convert_dirichlet_toggle_vector_to_maps(
     const Core::LinAlg::Vector<double>& dbctoggle)
 {
-  const Epetra_BlockMap& fullblockmap = dbctoggle.Map();
+  const Epetra_BlockMap& fullblockmap = dbctoggle.get_map();
   // this copy is needed because the constructor of Core::LinAlg::MapExtractor
   // accepts only Epetra_Map and not Epetra_BlockMap
   const Epetra_Map fullmap =
       Epetra_Map(fullblockmap.NumGlobalElements(), fullblockmap.NumMyElements(),
           fullblockmap.MyGlobalElements(), fullblockmap.IndexBase(), fullblockmap.Comm());
-  const int mylength = dbctoggle.MyLength();
+  const int mylength = dbctoggle.local_length();
   const int* fullgids = fullmap.MyGlobalElements();
   // build sets containing the DBC or free global IDs, respectively
   std::vector<int> dbcgids;

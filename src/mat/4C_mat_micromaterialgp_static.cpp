@@ -131,7 +131,7 @@ void Mat::MicroMaterialGP::read_restart()
 
   *oldalpha_ = *lastalpha_;
 
-  disn_->Update(1.0, *dis_, 0.0);
+  disn_->update(1.0, *dis_, 0.0);
 }
 
 
@@ -343,7 +343,7 @@ void Mat::MicroMaterialGP::update()
   step_ = stepn_;
   stepn_++;
 
-  dis_->Update(1.0, *disn_, 0.0);
+  dis_->update(1.0, *disn_, 0.0);
 
   Global::Problem* microproblem = Global::Problem::instance(microdisnum_);
   std::shared_ptr<Core::FE::Discretization> microdis = microproblem->get_dis("structure");

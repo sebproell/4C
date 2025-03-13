@@ -175,21 +175,21 @@ double NOX::Nln::Aux::root_mean_square_norm(const double& atol, const double& rt
 
   // calculate the old iterate (k-1)
   Core::LinAlg::Vector<double> v(xnew);
-  v.Update(-1.0, xincr, 1.0);
+  v.update(-1.0, xincr, 1.0);
 
   // new auxiliary vector
-  Core::LinAlg::Vector<double> u(xnew.Map(), false);
+  Core::LinAlg::Vector<double> u(xnew.get_map(), false);
 
   // create the weighting factor u = RTOL |x^(k-1)| + ATOL
-  u.PutScalar(1.0);
-  u.Update(rtol, v, atol);
+  u.put_scalar(1.0);
+  u.update(rtol, v, atol);
 
   // v = xincr/u (elementwise)
-  v.ReciprocalMultiply(1.0, u, xincr, 0);
+  v.reciprocal_multiply(1.0, u, xincr, 0);
 
   // rval = sqrt (v * v / N)
-  v.Norm2(&rval);
-  rval /= std::sqrt(static_cast<double>(v.GlobalLength()));
+  v.norm_2(&rval);
+  rval /= std::sqrt(static_cast<double>(v.global_length()));
 
   return rval;
 }

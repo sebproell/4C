@@ -307,25 +307,25 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::initial(Artery* ele,
     {
       int gid = lm[0];
       double val = M_PI * pow(actmat->diam() / 2, 2);
-      qa0->ReplaceGlobalValues(1, &val, &gid);
+      qa0->replace_global_values(1, &val, &gid);
     }
     if (myrank == nodes[0]->owner())
     {
       int gid = lm[1];
       double val = 0.0;
-      qa0->ReplaceGlobalValues(1, &val, &gid);
+      qa0->replace_global_values(1, &val, &gid);
     }
     if (myrank == nodes[1]->owner())
     {
       int gid = lm[2];
       double val = M_PI * pow(actmat->diam() / 2, 2);
-      qa0->ReplaceGlobalValues(1, &val, &gid);
+      qa0->replace_global_values(1, &val, &gid);
     }
     if (myrank == nodes[1]->owner())
     {
       int gid = lm[3];
       double val = 0.0;
-      qa0->ReplaceGlobalValues(1, &val, &gid);
+      qa0->replace_global_values(1, &val, &gid);
     }
     // Calculate Wfo and Wbo
     // Read in initial cross-sectional area at node 1
@@ -353,19 +353,19 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::initial(Artery* ele,
 
     int gid = ele->nodes()[0]->id();
     double val = 4.0 * co1;
-    wfo->ReplaceGlobalValues(1, &val, &gid);
+    wfo->replace_global_values(1, &val, &gid);
 
     gid = ele->nodes()[0]->id();
     val = -4.0 * co2;
-    wbo->ReplaceGlobalValues(1, &val, &gid);
+    wbo->replace_global_values(1, &val, &gid);
 
     gid = ele->nodes()[1]->id();
     val = 4.0 * co2;
-    wfo->ReplaceGlobalValues(1, &val, &gid);
+    wfo->replace_global_values(1, &val, &gid);
 
     gid = ele->nodes()[1]->id();
     val = -4.0 * co2;
-    wbo->ReplaceGlobalValues(1, &val, &gid);
+    wbo->replace_global_values(1, &val, &gid);
   }
   else
     FOUR_C_THROW("Material law is not an artery");
@@ -1108,9 +1108,9 @@ bool Discret::Elements::ArteryEleCalcLinExp<distype>::solve_riemann(Artery* ele,
         int gid = ele->nodes()[i]->id();
         double val = Wnp;
         if (TermIO == -1.0)
-          Wbnp->ReplaceGlobalValues(1, &val, &gid);
+          Wbnp->replace_global_values(1, &val, &gid);
         else if (TermIO == 1.0)
-          Wfnp->ReplaceGlobalValues(1, &val, &gid);
+          Wfnp->replace_global_values(1, &val, &gid);
       }
 
       // -----------------------------------------------------------------------------
@@ -1385,12 +1385,12 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_terminal_bc(Arter
           if (TermIO == -1.0)
           {
             double val1 = Wf;
-            Wfnp->ReplaceGlobalValues(1, &val1, &gid);
+            Wfnp->replace_global_values(1, &val1, &gid);
           }
           else
           {
             double val2 = Wb;
-            Wbnp->ReplaceGlobalValues(1, &val2, &gid);
+            Wbnp->replace_global_values(1, &val2, &gid);
             int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
             Wf = (*Wfnp)[local_id];
           }
@@ -1405,20 +1405,20 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_terminal_bc(Arter
 
         gid = lm[2 * i];
         val = cross_area;
-        bcval->ReplaceGlobalValues(1, &val, &gid);
+        bcval->replace_global_values(1, &val, &gid);
 
         gid = lm[2 * i];
         val = 1;
-        dbctog->ReplaceGlobalValues(1, &val, &gid);
+        dbctog->replace_global_values(1, &val, &gid);
 
         // calculating Q at node i
         gid = lm[2 * i + 1];
         val = (cross_area) * (Wf + Wb) / 2.0;
-        bcval->ReplaceGlobalValues(1, &val, &gid);
+        bcval->replace_global_values(1, &val, &gid);
 
         gid = lm[2 * i + 1];
         val = 1;
-        dbctog->ReplaceGlobalValues(1, &val, &gid);
+        dbctog->replace_global_values(1, &val, &gid);
       }
     }  // End of node i has a condition
   }  // End of for loop
@@ -1450,18 +1450,18 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_terminal_bc(Arter
       // set A at node i
       gid = lm[2 * i];
       val = (*junc_nodal_vals)[local_id]->A_;
-      bcval->ReplaceGlobalValues(1, &val, &gid);
+      bcval->replace_global_values(1, &val, &gid);
 
       val = 1;
-      dbctog->ReplaceGlobalValues(1, &val, &gid);
+      dbctog->replace_global_values(1, &val, &gid);
 
       // set Q at node i
       gid = lm[2 * i + 1];
       val = (*junc_nodal_vals)[local_id]->Q_;
-      bcval->ReplaceGlobalValues(1, &val, &gid);
+      bcval->replace_global_values(1, &val, &gid);
 
       val = 1;
-      dbctog->ReplaceGlobalValues(1, &val, &gid);
+      dbctog->replace_global_values(1, &val, &gid);
     }
   }
 }
@@ -1527,11 +1527,11 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_scatra_bc(Artery*
 
       int gid = lm[2 * i + dof];
       double val = 1;
-      dbctog->ReplaceGlobalValues(1, &val, &gid);
+      dbctog->replace_global_values(1, &val, &gid);
 
       gid = lm[2 * i + dof];
       val = curvefac;
-      bcval->ReplaceGlobalValues(1, &val, &gid);
+      bcval->replace_global_values(1, &val, &gid);
     }
   }
 }
@@ -1670,15 +1670,15 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::calc_postprocessing_values
 
       gid = ele->nodes()[i]->id();
       val = pressure;
-      on->ReplaceGlobalValues(1, &val, &gid);
+      on->replace_global_values(1, &val, &gid);
 
       // calculating Q at node i
       val = qn_(i);
-      qn->ReplaceGlobalValues(1, &val, &gid);
+      qn->replace_global_values(1, &val, &gid);
 
       // evaluate area
       val = an_(i);
-      an->ReplaceGlobalValues(1, &val, &gid);
+      an->replace_global_values(1, &val, &gid);
     }
   }  // End of node i has a condition
 }
@@ -1711,7 +1711,7 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::calc_scatra_from_scatra_fw
     // split area and volumetric flow rate, insert into element arrays
     val = myscatra_fb[i * 2] + myscatra_fb[i * 2 + 1];
     gid = ele->nodes()[i]->id();
-    scatra->ReplaceGlobalValues(1, &val, &gid);
+    scatra->replace_global_values(1, &val, &gid);
   }
 }
 
@@ -1843,8 +1843,8 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_wf_and_wb(Artery*
 
     //    std::cout<<"Wb:  "<<Wb<<std::endl;
     int gid = ele->nodes()[i]->id();
-    Wbnp->ReplaceGlobalValues(1, &Wb, &gid);
-    Wfnp->ReplaceGlobalValues(1, &Wf, &gid);
+    Wbnp->replace_global_values(1, &Wb, &gid);
+    Wfnp->replace_global_values(1, &Wf, &gid);
   }
 }
 
@@ -1946,7 +1946,7 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::solve_scatra_analytically(
     double cn2 = escatran(2);
 
     double val = cn1 * N1 + cn2 * N2;
-    scatranp->ReplaceGlobalValues(1, &val, &gid);
+    scatranp->replace_global_values(1, &val, &gid);
   }
 
   // Evaluate backward Scalar transport at n+1
@@ -1968,7 +1968,7 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::solve_scatra_analytically(
     double cn2 = escatran(3);
 
     double val = cn1 * N1 + cn2 * N2;
-    scatranp->ReplaceGlobalValues(1, &val, &gid);
+    scatranp->replace_global_values(1, &val, &gid);
   }
 }
 /*----------------------------------------------------------------------*

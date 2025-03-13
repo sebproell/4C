@@ -303,7 +303,7 @@ void Adapter::FluidFSI::displacement_to_velocity(std::shared_ptr<Core::LinAlg::V
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   // check, whether maps are the same
-  if (!fcx->Map().PointSameAs(veln_vector->Map()))
+  if (!fcx->get_map().PointSameAs(veln_vector->get_map()))
   {
     FOUR_C_THROW("Maps do not match, but they have to.");
   }
@@ -317,7 +317,7 @@ void Adapter::FluidFSI::displacement_to_velocity(std::shared_ptr<Core::LinAlg::V
    *             \ = 1 / dt   if interface time integration is first order
    */
   const double timescale = time_scaling();
-  fcx->Update(-timescale * dt(), *veln_vector, timescale);
+  fcx->update(-timescale * dt(), *veln_vector, timescale);
 }
 
 /*----------------------------------------------------------------------*/
@@ -330,7 +330,7 @@ void Adapter::FluidFSI::velocity_to_displacement(std::shared_ptr<Core::LinAlg::V
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   // check, whether maps are the same
-  if (!fcx->Map().PointSameAs(veln_vector->Map()))
+  if (!fcx->get_map().PointSameAs(veln_vector->get_map()))
   {
     FOUR_C_THROW("Maps do not match, but they have to.");
   }
@@ -344,7 +344,7 @@ void Adapter::FluidFSI::velocity_to_displacement(std::shared_ptr<Core::LinAlg::V
    *             \ = dt       if interface time integration is first order
    */
   const double tau = 1. / time_scaling();
-  fcx->Update(dt(), *veln_vector, tau);
+  fcx->update(dt(), *veln_vector, tau);
 }
 
 /*----------------------------------------------------------------------*/
@@ -513,9 +513,9 @@ void Adapter::FluidFSI::proj_vel_to_div_zero()
   solver->solve(BTB->epetra_operator(), x, BTvR, solver_params);
 
   std::shared_ptr<Core::LinAlg::Vector<double>> vmod =
-      std::make_shared<Core::LinAlg::Vector<double>>(velnp()->Map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(velnp()->get_map(), true);
   B->Apply(*x, *vmod);
-  write_access_velnp()->Update(-1.0, *vmod, 1.0);
+  write_access_velnp()->update(-1.0, *vmod, 1.0);
 }
 
 /*----------------------------------------------------------------------*
@@ -594,7 +594,7 @@ void Adapter::FluidFSI::explicit_euler(const Core::LinAlg::Vector<double>& veln,
     const Core::LinAlg::Vector<double>& accn, Core::LinAlg::Vector<double>& velnp) const
 {
   // Do a single explicit Euler step
-  velnp.Update(1.0, veln, dt(), accn, 0.0);
+  velnp.update(1.0, veln, dt(), accn, 0.0);
 
   return;
 }
@@ -610,8 +610,8 @@ void Adapter::FluidFSI::adams_bashforth2(const Core::LinAlg::Vector<double>& vel
   const double dto = fluidimpl_->dt_previous();
 
   // Do a single Adams-Bashforth 2 step
-  velnp.Update(1.0, veln, 0.0);
-  velnp.Update((2.0 * current_dt * dto + current_dt * current_dt) / (2 * dto), accn,
+  velnp.update(1.0, veln, 0.0);
+  velnp.update((2.0 * current_dt * dto + current_dt * current_dt) / (2 * dto), accn,
       -current_dt * current_dt / (2.0 * dto), accnm, 1.0);
 
   return;
@@ -627,23 +627,23 @@ void Adapter::FluidFSI::indicate_error_norms(double& err, double& errcond, doubl
   {
     const double coeffmarch = fluidimpl_->method_lin_err_coeff_vel();
     const double coeffaux = aux_method_lin_err_coeff_vel();
-    locerrvelnp_->Update(-1.0, *velnp(), 1.0);
-    locerrvelnp_->Scale(coeffmarch / (coeffaux - coeffmarch));
+    locerrvelnp_->update(-1.0, *velnp(), 1.0);
+    locerrvelnp_->scale(coeffmarch / (coeffaux - coeffmarch));
   }
   else
   {
     // schemes do not have the same order of accuracy
-    locerrvelnp_->Update(-1.0, *velnp(), 1.0);
+    locerrvelnp_->update(-1.0, *velnp(), 1.0);
   }
 
   // set '0' on all pressure DOFs
-  auto zeros = std::make_shared<Core::LinAlg::Vector<double>>(locerrvelnp_->Map(), true);
+  auto zeros = std::make_shared<Core::LinAlg::Vector<double>>(locerrvelnp_->get_map(), true);
   Core::LinAlg::apply_dirichlet_to_system(*locerrvelnp_, *zeros, *pressure_row_map());
   // TODO: Do not misuse apply_dirichlet_to_system()...works for this purpose here: writes zeros
   // into all pressure DoFs
 
   // set '0' on Dirichlet DOFs
-  zeros = std::make_shared<Core::LinAlg::Vector<double>>(locerrvelnp_->Map(), true);
+  zeros = std::make_shared<Core::LinAlg::Vector<double>>(locerrvelnp_->get_map(), true);
   Core::LinAlg::apply_dirichlet_to_system(
       *locerrvelnp_, *zeros, *(get_dbc_map_extractor()->cond_map()));
 
@@ -667,9 +667,9 @@ void Adapter::FluidFSI::indicate_error_norms(double& err, double& errcond, doubl
                        (get_dbc_map_extractor()->cond_map()->NumGlobalElements() - numfsidbcdofs_));
 
   // calculate L-inf-norms of temporal discretization errors
-  locerrvelnp_->NormInf(&errinf);
-  errorcond.NormInf(&errinfcond);
-  errorother->NormInf(&errinfother);
+  locerrvelnp_->norm_inf(&errinf);
+  errorcond.norm_inf(&errinfcond);
+  errorother->norm_inf(&errinfother);
 
   return;
 }
@@ -704,10 +704,10 @@ double Adapter::FluidFSI::calculate_error_norm(
 {
   double norm = 1.0e+12;
 
-  vec.Norm2(&norm);
+  vec.norm_2(&norm);
 
-  if (vec.GlobalLength() - numneglect > 0.0)
-    norm /= sqrt((double)(vec.GlobalLength() - numneglect));
+  if (vec.global_length() - numneglect > 0.0)
+    norm /= sqrt((double)(vec.global_length() - numneglect));
   else
     norm = 0.0;
 

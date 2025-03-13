@@ -105,16 +105,16 @@ void Solid::TimIntStatics::setup()
 void Solid::TimIntStatics::predict_const_dis_consist_vel_acc()
 {
   // constant predictor : displacement in domain
-  disn_->Update(1.0, *(*dis_)(0), 0.0);
+  disn_->update(1.0, *(*dis_)(0), 0.0);
 
   // new end-point velocities, these stay zero in static calculation
-  veln_->PutScalar(0.0);
+  veln_->put_scalar(0.0);
 
   // new end-point accelerations, these stay zero in static calculation
-  accn_->PutScalar(0.0);
+  accn_->put_scalar(0.0);
 
   // reset the residual displacement
-  disi_->PutScalar(0.0);
+  disi_->put_scalar(0.0);
 
   // watch out
   return;
@@ -136,13 +136,13 @@ void Solid::TimIntStatics::predict_const_vel_consist_acc()
     // Displacement increment over last time step
     std::shared_ptr<Core::LinAlg::Vector<double>> disp_inc =
         Core::LinAlg::create_vector(*dof_row_map_view(), true);
-    disp_inc->Update((*dt_)[0], *(*vel_)(0), 0.);
+    disp_inc->update((*dt_)[0], *(*vel_)(0), 0.);
     Core::LinAlg::apply_dirichlet_to_system(*disp_inc, *zeros_, *(dbcmaps_->cond_map()));
-    disn_->Update(1.0, *(*dis_)(0), 0.0);
-    disn_->Update(1., *disp_inc, 1.);
-    veln_->Update(1.0, *(*vel_)(0), 0.0);
-    accn_->Update(1.0, *(*acc_)(0), 0.0);
-    disi_->PutScalar(0.0);
+    disn_->update(1.0, *(*dis_)(0), 0.0);
+    disn_->update(1., *disp_inc, 1.);
+    veln_->update(1.0, *(*vel_)(0), 0.0);
+    accn_->update(1.0, *(*acc_)(0), 0.0);
+    disi_->put_scalar(0.0);
     return;
   }
 }
@@ -168,14 +168,14 @@ void Solid::TimIntStatics::predict_const_acc()
     // Displacement increment over last time step
     std::shared_ptr<Core::LinAlg::Vector<double>> disp_inc =
         Core::LinAlg::create_vector(*dof_row_map_view(), true);
-    disp_inc->Update((*dt_)[0], *(*vel_)(0), 0.);
-    disp_inc->Update(.5 * (*dt_)[0] * (*dt_)[0], *(*acc_)(0), 1.);
+    disp_inc->update((*dt_)[0], *(*vel_)(0), 0.);
+    disp_inc->update(.5 * (*dt_)[0] * (*dt_)[0], *(*acc_)(0), 1.);
     Core::LinAlg::apply_dirichlet_to_system(*disp_inc, *zeros_, *(dbcmaps_->cond_map()));
-    disn_->Update(1.0, *(*dis_)(0), 0.0);
-    disn_->Update(1., *disp_inc, 1.);
-    veln_->Update(1.0, *(*vel_)(0), 0.0);
-    accn_->Update(1.0, *(*acc_)(0), 0.0);
-    disi_->PutScalar(0.0);
+    disn_->update(1.0, *(*dis_)(0), 0.0);
+    disn_->update(1., *disp_inc, 1.);
+    veln_->update(1.0, *(*vel_)(0), 0.0);
+    accn_->update(1.0, *(*acc_)(0), 0.0);
+    disi_->put_scalar(0.0);
     return;
   }
 }
@@ -195,16 +195,16 @@ void Solid::TimIntStatics::evaluate_force_stiff_residual(Teuchos::ParameterList&
   // ************************** (1) EXTERNAL FORCES ***************************
 
   // build new external forces
-  fextn_->PutScalar(0.0);
+  fextn_->put_scalar(0.0);
   apply_force_stiff_external(timen_, (*dis_)(0), disn_, (*vel_)(0), *fextn_, stiff_);
 
   // additional external forces are added (e.g. interface forces)
-  fextn_->Update(1.0, *fifc_, 1.0);
+  fextn_->update(1.0, *fifc_, 1.0);
 
   // ************************** (2) INTERNAL FORCES ***************************
 
   // initialize internal forces
-  fintn_->PutScalar(0.0);
+  fintn_->put_scalar(0.0);
 
   // ordinary internal force and stiffness
   apply_force_stiff_internal(timen_, (*dt_)[0], disn_, disi_, veln_, fintn_, stiff_, params);
@@ -232,14 +232,14 @@ void Solid::TimIntStatics::evaluate_force_stiff_residual(Teuchos::ParameterList&
 
   // build residual  Res = F_{int;n+1}
   //                     - F_{ext;n+1}
-  fres_->Update(-1.0, *fextn_, 0.0);
-  fres_->Update(1.0, *fintn_, 1.0);
+  fres_->update(-1.0, *fextn_, 0.0);
+  fres_->update(1.0, *fintn_, 1.0);
 
   // build pure structural residual (only LS with EAS)
   if (fresn_str_ != nullptr)
   {
-    fresn_str_->Update(1., *fintn_str_, 0.);
-    fresn_str_->Update(-1., *fextn_, 1.);
+    fresn_str_->update(1., *fintn_str_, 0.);
+    fresn_str_->update(-1., *fextn_, 1.);
     Core::LinAlg::apply_dirichlet_to_system(*fresn_str_, *zeros_, *(dbcmaps_->cond_map()));
   }
 
@@ -268,7 +268,7 @@ void Solid::TimIntStatics::evaluate_force_stiff_residual_relax(Teuchos::Paramete
   evaluate_force_stiff_residual(params);
 
   // overwrite the residual forces #fres_ with interface load
-  fres_->Update(-1.0, *fifc_, 0.0);
+  fres_->update(-1.0, *fifc_, 0.0);
 }
 
 /*----------------------------------------------------------------------*/
@@ -278,16 +278,16 @@ void Solid::TimIntStatics::evaluate_force_residual()
   // ************************** (1) EXTERNAL FORCES ***************************
 
   // build new external forces
-  fextn_->PutScalar(0.0);
+  fextn_->put_scalar(0.0);
   apply_force_external(timen_, (*dis_)(0), disn_, (*vel_)(0), *fextn_);
 
   // additional external forces are added (e.g. interface forces)
-  fextn_->Update(1.0, *fifc_, 1.0);
+  fextn_->update(1.0, *fifc_, 1.0);
 
   // ************************** (2) INTERNAL FORCES ***************************
 
   // initialize internal forces
-  fintn_->PutScalar(0.0);
+  fintn_->put_scalar(0.0);
 
   // ordinary internal force and stiffness
   apply_force_internal(timen_, (*dt_)[0], disn_, disi_, veln_, fintn_);
@@ -302,14 +302,14 @@ void Solid::TimIntStatics::evaluate_force_residual()
 
   // build residual  Res = F_{int;n+1}
   //                     - F_{ext;n+1}
-  fres_->Update(-1.0, *fextn_, 0.0);
-  fres_->Update(1.0, *fintn_, 1.0);
+  fres_->update(-1.0, *fextn_, 0.0);
+  fres_->update(1.0, *fintn_, 1.0);
 
   // build pure structural residual (only LS with EAS)
   if (fresn_str_ != nullptr)
   {
-    fresn_str_->Update(1., *fintn_str_, 0.);
-    fresn_str_->Update(-1., *fextn_, 1.);
+    fresn_str_->update(1., *fintn_str_, 0.);
+    fresn_str_->update(-1., *fextn_, 1.);
     Core::LinAlg::apply_dirichlet_to_system(*fresn_str_, *zeros_, *(dbcmaps_->cond_map()));
   }
 
@@ -348,7 +348,7 @@ void Solid::TimIntStatics::update_iter_incrementally()
 {
   // new end-point displacements
   // D_{n+1}^{<k+1>} := D_{n+1}^{<k>} + IncD_{n+1}^{<k>}
-  disn_->Update(1.0, *disi_, 1.0);
+  disn_->update(1.0, *disi_, 1.0);
 }
 
 /*----------------------------------------------------------------------*/
@@ -357,7 +357,7 @@ void Solid::TimIntStatics::update_iter_iteratively()
 {
   // new end-point displacements
   // D_{n+1}^{<k+1>} := D_{n+1}^{<k>} + IncD_{n+1}^{<k>}
-  disn_->Update(1.0, *disi_, 1.0);
+  disn_->update(1.0, *disi_, 1.0);
 
   // bye
   return;
@@ -371,9 +371,9 @@ void Solid::TimIntStatics::update_step_state()
   // of the contact interface before updates
   if (pred_ == Inpar::Solid::pred_constvel || pred_ == Inpar::Solid::pred_constacc ||
       have_contact_meshtying())
-    veln_->Update(1. / (*(*dt_)(0)), *disn_, -1. / (*(*dt_)(0)), *(*dis_)(0), 0.);
+    veln_->update(1. / (*(*dt_)(0)), *disn_, -1. / (*(*dt_)(0)), *(*dis_)(0), 0.);
   if (pred_ == Inpar::Solid::pred_constacc)
-    accn_->Update(1. / (*(*dt_)(0)), *veln_, -1. / (*(*dt_)(0)), *(*vel_)(0), 0.);
+    accn_->update(1. / (*(*dt_)(0)), *veln_, -1. / (*(*dt_)(0)), *(*vel_)(0), 0.);
 
   // update state
   // new displacements at t_{n+1} -> t_n
@@ -404,11 +404,11 @@ void Solid::TimIntStatics::update_step_state()
 
   // update new external force
   //    F_{ext;n} := F_{ext;n+1}
-  fext_->Update(1.0, *fextn_, 0.0);
+  fext_->update(1.0, *fextn_, 0.0);
 
   // update new internal force
   //    F_{int;n} := F_{int;n+1}
-  fint_->Update(1.0, *fintn_, 0.0);
+  fint_->update(1.0, *fintn_, 0.0);
 
   // look out
   return;
@@ -463,8 +463,8 @@ void Solid::TimIntStatics::apply_dirichlet_bc(const double time,
   Solid::TimInt::apply_dirichlet_bc(time, dis, vel, acc, recreatemap);
 
   // statics: set velocities and accelerations to zero
-  if (vel != nullptr) vel->PutScalar(0.0);
-  if (acc != nullptr) acc->PutScalar(0.0);
+  if (vel != nullptr) vel->put_scalar(0.0);
+  if (acc != nullptr) acc->put_scalar(0.0);
 
   return;
 }

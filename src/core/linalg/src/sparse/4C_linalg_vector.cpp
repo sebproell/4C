@@ -13,10 +13,6 @@
 
 #include <Epetra_Vector.h>
 
-// Do not lint the file for identifier names, since the naming of the Wrapper functions follow the
-// naming of the Epetra_Vector
-
-// NOLINTBEGIN(readability-identifier-naming)
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -41,7 +37,7 @@ Core::LinAlg::Vector<T>::Vector(const Epetra_FEVector& Source)
 
 template <typename T>
 Core::LinAlg::Vector<T>::Vector(const Vector& other)
-    : vector_(std::make_shared<Epetra_Vector>(other.get_ref_of_Epetra_Vector()))
+    : vector_(std::make_shared<Epetra_Vector>(other.get_ref_of_epetra_vector()))
 {
 }
 
@@ -49,7 +45,7 @@ Core::LinAlg::Vector<T>::Vector(const Vector& other)
 template <typename T>
 Core::LinAlg::Vector<T>& Core::LinAlg::Vector<T>::operator=(const Vector& other)
 {
-  *vector_ = other.get_ref_of_Epetra_Vector();
+  *vector_ = other.get_ref_of_epetra_vector();
   return *this;
 }
 
@@ -73,67 +69,67 @@ Core::LinAlg::Vector<T>::operator Core::LinAlg::MultiVector<T>&()
 
 
 template <typename T>
-int Core::LinAlg::Vector<T>::Norm1(double* Result) const
+int Core::LinAlg::Vector<T>::norm_1(double* Result) const
 {
   return vector_->Norm1(Result);
 }
 
 template <typename T>
-int Core::LinAlg::Vector<T>::Norm2(double* Result) const
+int Core::LinAlg::Vector<T>::norm_2(double* Result) const
 {
   return vector_->Norm2(Result);
 }
 
 template <typename T>
-int Core::LinAlg::Vector<T>::NormInf(double* Result) const
+int Core::LinAlg::Vector<T>::norm_inf(double* Result) const
 {
   return vector_->NormInf(Result);
 }
 
 template <typename T>
-int Core::LinAlg::Vector<T>::MinValue(double* Result) const
+int Core::LinAlg::Vector<T>::min_value(double* Result) const
 {
   return vector_->MinValue(Result);
 }
 
 template <typename T>
-int Core::LinAlg::Vector<T>::MaxValue(double* Result) const
+int Core::LinAlg::Vector<T>::max_value(double* Result) const
 {
   return vector_->MaxValue(Result);
 }
 
 template <typename T>
-int Core::LinAlg::Vector<T>::MeanValue(double* Result) const
+int Core::LinAlg::Vector<T>::mean_value(double* Result) const
 {
   return vector_->MeanValue(Result);
 }
 
 template <typename T>
-int Core::LinAlg::Vector<T>::Dot(const Epetra_MultiVector& A, double* Result) const
+int Core::LinAlg::Vector<T>::dot(const Epetra_MultiVector& A, double* Result) const
 {
   return vector_->Dot(A, Result);
 }
 
 template <typename T>
-int Core::LinAlg::Vector<T>::Abs(const Epetra_MultiVector& A)
+int Core::LinAlg::Vector<T>::abs(const Epetra_MultiVector& A)
 {
   return vector_->Abs(A);
 }
 
 template <typename T>
-int Core::LinAlg::Vector<T>::Scale(double ScalarA, const Epetra_MultiVector& A)
+int Core::LinAlg::Vector<T>::scale(double ScalarA, const Epetra_MultiVector& A)
 {
   return vector_->Scale(ScalarA, A);
 }
 
 template <typename T>
-int Core::LinAlg::Vector<T>::Update(double ScalarA, const Epetra_MultiVector& A, double ScalarThis)
+int Core::LinAlg::Vector<T>::update(double ScalarA, const Epetra_MultiVector& A, double ScalarThis)
 {
   return vector_->Update(ScalarA, A, ScalarThis);
 }
 
 template <typename T>
-int Core::LinAlg::Vector<T>::Update(double ScalarA, const Epetra_MultiVector& A, double ScalarB,
+int Core::LinAlg::Vector<T>::update(double ScalarA, const Epetra_MultiVector& A, double ScalarB,
     const Epetra_MultiVector& B, double ScalarThis)
 {
   return vector_->Update(ScalarA, A, ScalarB, B, ScalarThis);
@@ -141,52 +137,52 @@ int Core::LinAlg::Vector<T>::Update(double ScalarA, const Epetra_MultiVector& A,
 
 
 template <typename T>
-int Core::LinAlg::Vector<T>::Dot(const Vector& A, double* Result) const
+int Core::LinAlg::Vector<T>::dot(const Vector& A, double* Result) const
 {
   return vector_->Dot(A, Result);
 }
 
 template <typename T>
-int Core::LinAlg::Vector<T>::Abs(const Vector& A)
+int Core::LinAlg::Vector<T>::abs(const Vector& A)
 {
   return vector_->Abs(A);
 }
 
 template <typename T>
-int Core::LinAlg::Vector<T>::Scale(double ScalarA, const Vector& A)
+int Core::LinAlg::Vector<T>::scale(double ScalarA, const Vector& A)
 {
   return vector_->Scale(ScalarA, A);
 }
 
 template <typename T>
-int Core::LinAlg::Vector<T>::Update(double ScalarA, const Vector& A, double ScalarThis)
+int Core::LinAlg::Vector<T>::update(double ScalarA, const Vector& A, double ScalarThis)
 {
   return vector_->Update(ScalarA, A, ScalarThis);
 }
 
 template <typename T>
-int Core::LinAlg::Vector<T>::Update(
+int Core::LinAlg::Vector<T>::update(
     double ScalarA, const Vector& A, double ScalarB, const Vector& B, double ScalarThis)
 {
-  return vector_->Update(ScalarA, A, ScalarB, B.get_ref_of_Epetra_Vector(), ScalarThis);
+  return vector_->Update(ScalarA, A, ScalarB, B.get_ref_of_epetra_vector(), ScalarThis);
 }
 
 template <typename T>
-int Core::LinAlg::Vector<T>::PutScalar(double ScalarConstant)
+int Core::LinAlg::Vector<T>::put_scalar(double ScalarConstant)
 {
   return vector_->PutScalar(ScalarConstant);
 }
 
 
 template <typename T>
-int Core::LinAlg::Vector<T>::ReplaceMap(const Epetra_BlockMap& map)
+int Core::LinAlg::Vector<T>::replace_map(const Epetra_BlockMap& map)
 {
   if (multi_vector_view_) multi_vector_view_->ReplaceMap(map);
   return vector_->ReplaceMap(map);
 }
 
 template <typename T>
-MPI_Comm Core::LinAlg::Vector<T>::Comm() const
+MPI_Comm Core::LinAlg::Vector<T>::get_comm() const
 {
   return Core::Communication::unpack_epetra_comm(vector_->Comm());
 }
@@ -233,20 +229,18 @@ Core::LinAlg::Vector<int>& Core::LinAlg::Vector<int>::operator=(Vector&& other) 
 }
 
 
-int Core::LinAlg::Vector<int>::PutValue(int Value) { return vector_->PutValue(Value); }
+int Core::LinAlg::Vector<int>::put_value(int Value) { return vector_->PutValue(Value); }
 
-int Core::LinAlg::Vector<int>::MaxValue() { return vector_->MaxValue(); }
+int Core::LinAlg::Vector<int>::max_value() { return vector_->MaxValue(); }
 
-int Core::LinAlg::Vector<int>::MinValue() { return vector_->MinValue(); }
+int Core::LinAlg::Vector<int>::min_value() { return vector_->MinValue(); }
 
-void Core::LinAlg::Vector<int>::Print(std::ostream& os) const { vector_->Print(os); }
+void Core::LinAlg::Vector<int>::print(std::ostream& os) const { vector_->Print(os); }
 
-MPI_Comm Core::LinAlg::Vector<int>::Comm() const
+MPI_Comm Core::LinAlg::Vector<int>::get_comm() const
 {
   return Core::Communication::unpack_epetra_comm(vector_->Comm());
 }
 
 
 FOUR_C_NAMESPACE_CLOSE
-
-// NOLINTEND(readability-identifier-naming)

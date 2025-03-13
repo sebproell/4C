@@ -98,8 +98,8 @@ void EHL::Partitioned::outer_loop()
 
     // store pressure from first solution for convergence check (like in
     // elch_algorithm: use current values)
-    preincnp_->Update(1.0, *lubrication_->lubrication_field()->prenp(), 0.0);
-    dispincnp_->Update(1.0, *structure_->dispnp(), 0.0);
+    preincnp_->update(1.0, *lubrication_->lubrication_field()->prenp(), 0.0);
+    dispincnp_->update(1.0, *structure_->dispnp(), 0.0);
 
     // set the external fluid force on the structure, which result from the fluid pressure
     set_lubrication_solution(lubrication_->lubrication_field()->prenp());
@@ -202,14 +202,14 @@ bool EHL::Partitioned::convergence_check(int itnum)
 
   // build the current pressure increment Inc T^{i+1}
   // \f Delta T^{k+1} = Inc T^{k+1} = T^{k+1} - T^{k}  \f
-  preincnp_->Update(1.0, *(lubrication_->lubrication_field()->prenp()), -1.0);
-  dispincnp_->Update(1.0, *(structure_->dispnp()), -1.0);
+  preincnp_->update(1.0, *(lubrication_->lubrication_field()->prenp()), -1.0);
+  dispincnp_->update(1.0, *(structure_->dispnp()), -1.0);
 
   // build the L2-norm of the pressure increment and the pressure
-  preincnp_->Norm2(&preincnorm_L2);
-  lubrication_->lubrication_field()->prenp()->Norm2(&prenorm_L2);
-  dispincnp_->Norm2(&dispincnorm_L2);
-  structure_->dispnp()->Norm2(&dispnorm_L2);
+  preincnp_->norm_2(&preincnorm_L2);
+  lubrication_->lubrication_field()->prenp()->norm_2(&prenorm_L2);
+  dispincnp_->norm_2(&dispincnorm_L2);
+  structure_->dispnp()->norm_2(&dispnorm_L2);
 
   // care for the case that there is (almost) zero pressure
   if (prenorm_L2 < 1e-6) prenorm_L2 = 1.0;
@@ -233,8 +233,8 @@ bool EHL::Partitioned::convergence_check(int itnum)
     printf(
         "|   %3d/%3d    |  %10.3E[L_2 ]   |  %10.3E      |  %10.3E     |  %10.3E          |  "
         "%10.3E      |",
-        itnum, itmax_, ittol_, preincnorm_L2 / dt() / sqrt(preincnp_->GlobalLength()),
-        dispincnorm_L2 / dt() / sqrt(dispincnp_->GlobalLength()), preincnorm_L2 / prenorm_L2,
+        itnum, itmax_, ittol_, preincnorm_L2 / dt() / sqrt(preincnp_->global_length()),
+        dispincnorm_L2 / dt() / sqrt(dispincnp_->global_length()), preincnorm_L2 / prenorm_L2,
         dispincnorm_L2 / dispnorm_L2);
     printf("\n");
     printf(
@@ -244,8 +244,8 @@ bool EHL::Partitioned::convergence_check(int itnum)
 
   // converged
   if (((preincnorm_L2 / prenorm_L2) <= ittol_) and ((dispincnorm_L2 / dispnorm_L2) <= ittol_) and
-      ((dispincnorm_L2 / dt() / sqrt(dispincnp_->GlobalLength())) <= ittol_) and
-      ((preincnorm_L2 / dt() / sqrt(preincnp_->GlobalLength())) <= ittol_))
+      ((dispincnorm_L2 / dt() / sqrt(dispincnp_->global_length())) <= ittol_) and
+      ((preincnorm_L2 / dt() / sqrt(preincnp_->global_length())) <= ittol_))
   {
     stopnonliniter = true;
     if (Core::Communication::my_mpi_rank(get_comm()) == 0)
@@ -265,8 +265,8 @@ bool EHL::Partitioned::convergence_check(int itnum)
   // timestep
   if ((itnum == itmax_) and
       (((preincnorm_L2 / prenorm_L2) > ittol_) or ((dispincnorm_L2 / dispnorm_L2) > ittol_) or
-          ((dispincnorm_L2 / dt() / sqrt(dispincnp_->GlobalLength())) > ittol_) or
-          (preincnorm_L2 / dt() / sqrt(preincnp_->GlobalLength())) > ittol_))
+          ((dispincnorm_L2 / dt() / sqrt(dispincnp_->global_length())) > ittol_) or
+          (preincnorm_L2 / dt() / sqrt(preincnp_->global_length())) > ittol_))
   {
     stopnonliniter = true;
     if ((Core::Communication::my_mpi_rank(get_comm()) == 0))

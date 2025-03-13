@@ -131,7 +131,7 @@ void FLD::TimIntPoro::set_initial_porosity_field(
           const int dofgid = nodedofset[k];
           int doflid = dofrowmap->LID(dofgid);
           // evaluate component k of spatial function
-          int err = init_porosity_field_->ReplaceMyValues(1, &initialval, &doflid);
+          int err = init_porosity_field_->replace_local_values(1, &initialval, &doflid);
           if (err != 0) FOUR_C_THROW("dof not on proc");
         }
       }
@@ -159,8 +159,8 @@ void FLD::TimIntPoro::update_iter_incrementally(
 
     // only one step theta
     // new end-point accelerations
-    aux->Update(1.0 / (theta_ * dta_), *velnp_, -1.0 / (theta_ * dta_), *veln_, 0.0);
-    aux->Update(-(1.0 - theta_) / theta_, *accn_, 1.0);
+    aux->update(1.0 / (theta_ * dta_), *velnp_, -1.0 / (theta_ * dta_), *veln_, 0.0);
+    aux->update(-(1.0 - theta_) / theta_, *accn_, 1.0);
     // put only to free/non-DBC DOFs
     dbcmaps_->insert_cond_vector(*dbcmaps_->extract_cond_vector(*accnp_), *aux);
     *accnp_ = *aux;
@@ -175,7 +175,7 @@ void FLD::TimIntPoro::output()
   {
     std::shared_ptr<Core::LinAlg::Vector<double>> convel =
         std::make_shared<Core::LinAlg::Vector<double>>(*velnp_);
-    convel->Update(-1.0, *gridv_, 1.0);
+    convel->update(-1.0, *gridv_, 1.0);
     output_->write_vector("convel", convel);
     output_->write_vector("gridv", gridv_);
   }

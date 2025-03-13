@@ -221,7 +221,7 @@ Core::LinAlg::Vector<double> SSI::MeshtyingStrategyBase::apply_meshtying_to_stru
   }
 
   // assemble master-side part of structure right-hand side vector
-  rhs_structure.Update(1.0, *rhs_structure_master, 1.0);
+  rhs_structure.update(1.0, *rhs_structure_master, 1.0);
 
   return rhs_structure;
 }

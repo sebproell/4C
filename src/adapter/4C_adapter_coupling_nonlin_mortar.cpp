@@ -1065,7 +1065,7 @@ void Adapter::CouplingNonLinMortar::create_p()
   Dinv_->extract_diagonal_copy(*diag);
 
   // set zero diagonal values to dummy 1.0
-  for (int i = 0; i < diag->MyLength(); ++i)
+  for (int i = 0; i < diag->local_length(); ++i)
   {
     if (abs((*diag)[i]) < 1e-12)
     {
@@ -1076,7 +1076,7 @@ void Adapter::CouplingNonLinMortar::create_p()
   }
 
   // scalar inversion of diagonal values
-  err = diag->Reciprocal(*diag);
+  err = diag->reciprocal(*diag);
   if (err > 0) FOUR_C_THROW("ERROR: Reciprocal: Zero diagonal entry!");
 
   // re-insert inverted diagonal into invd

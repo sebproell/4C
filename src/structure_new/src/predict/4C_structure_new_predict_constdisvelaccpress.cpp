@@ -69,9 +69,9 @@ void Solid::Predict::ConstDisVelAccPress::compute(::NOX::Abstract::Group& grp)
     case Inpar::Solid::pred_constdisvelacc:
     case Inpar::Solid::pred_constdisvelaccpres:
     {
-      disnp_ptr->Update(1.0, *global_state().get_dis_n(), 0.0);
-      velnp_ptr->Update(1.0, *global_state().get_vel_n(), 0.0);
-      accnp_ptr->Update(1.0, *global_state().get_acc_n(), 0.0);
+      disnp_ptr->update(1.0, *global_state().get_dis_n(), 0.0);
+      velnp_ptr->update(1.0, *global_state().get_vel_n(), 0.0);
+      accnp_ptr->update(1.0, *global_state().get_acc_n(), 0.0);
       break;
     }
     default:

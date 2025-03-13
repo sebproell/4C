@@ -350,8 +350,8 @@ void CONTACT::MtAbstractStrategy::mortar_coupling(
   dmatrix_->multiply(false, *xs, Dxs);
   Core::LinAlg::Vector<double> Mxm(*gsdofrowmap_);
   mmatrix_->multiply(false, *xm, Mxm);
-  g_->Update(1.0, Dxs, 1.0);
-  g_->Update(-1.0, Mxm, 1.0);
+  g_->update(1.0, Dxs, 1.0);
+  g_->update(-1.0, Mxm, 1.0);
 
   return;
 }
@@ -523,7 +523,7 @@ void CONTACT::MtAbstractStrategy::mesh_initialization(
 
       for (int dof = 0; dof < numdof; ++dof)
       {
-        locindex[dof] = (Xslavemodcol.Map()).LID(mtnode->dofs()[dof]);
+        locindex[dof] = (Xslavemodcol.get_map()).LID(mtnode->dofs()[dof]);
         if (locindex[dof] < 0) FOUR_C_THROW("Did not find dof in map");
         Xnew[dof] = Xslavemodcol[locindex[dof]];
       }
@@ -581,8 +581,8 @@ void CONTACT::MtAbstractStrategy::mesh_initialization(
   dmatrix_->multiply(false, *xs, Dxs);
   Core::LinAlg::Vector<double> Mxm(*gsdofrowmap_);
   mmatrix_->multiply(false, *xm, Mxm);
-  g_->Update(1.0, Dxs, 1.0);
-  g_->Update(-1.0, Mxm, 1.0);
+  g_->update(1.0, Dxs, 1.0);
+  g_->update(-1.0, Mxm, 1.0);
 }
 
 /*----------------------------------------------------------------------*
@@ -663,7 +663,7 @@ void CONTACT::MtAbstractStrategy::store_nodal_quantities(Mortar::StrategyBase::Q
 
       for (int dof = 0; dof < n_dim(); ++dof)
       {
-        locindex[dof] = (vectorinterface.Map()).LID(mtnode->dofs()[dof]);
+        locindex[dof] = (vectorinterface.get_map()).LID(mtnode->dofs()[dof]);
         if (locindex[dof] < 0) FOUR_C_THROW("StoreNodalQuantities: Did not find dof in map");
 
         switch (type)
@@ -747,7 +747,7 @@ void CONTACT::MtAbstractStrategy::store_dirichlet_status(
   // create old style dirichtoggle vector (supposed to go away)
   non_redist_gsdirichtoggle_ = Core::LinAlg::create_vector(*gsdofrowmap_, true);
   Core::LinAlg::Vector<double> temp(*(dbcmaps->cond_map()));
-  temp.PutScalar(1.0);
+  temp.put_scalar(1.0);
   Core::LinAlg::export_to(temp, *non_redist_gsdirichtoggle_);
 
   return;
@@ -760,7 +760,7 @@ void CONTACT::MtAbstractStrategy::update(std::shared_ptr<const Core::LinAlg::Vec
 {
   // store Lagrange multipliers
   // (we need this for interpolation of the next generalized mid-point)
-  zold_->Update(1.0, *z_, 0.0);
+  zold_->update(1.0, *z_, 0.0);
   store_nodal_quantities(Mortar::StrategyBase::lmold);
 
   // old displacements in nodes

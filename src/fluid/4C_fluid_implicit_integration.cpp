@@ -228,7 +228,7 @@ void FLD::FluidImplicitTimeInt::init()
     apply_dirichlet_bc(eleparams, zeros_, nullptr, nullptr, true);
     // zeros_ has to be reset to zero here, since it has a different value after call of
     // apply_dirichlet_bc(...)
-    zeros_->PutScalar(0.0);
+    zeros_->put_scalar(0.0);
   }
 
   // a vector containing the integrated traction in boundary normal direction for slip boundary
@@ -500,7 +500,7 @@ void FLD::FluidImplicitTimeInt::complete_general_init()
 
     // necessary here, because some application time integrations add something to the residual
     // before the Neumann loads are added
-    residual_->PutScalar(0.0);
+    residual_->put_scalar(0.0);
 
     avm3_assemble_mat_and_rhs(eleparams);
     stressmanager_->init_aggr(sysmat_);
@@ -995,12 +995,12 @@ void FLD::FluidImplicitTimeInt::assemble_mat_and_rhs()
   if (shapederivatives_ != nullptr) shapederivatives_->zero();
 
   // set old residual to zero and add Neumann loads
-  residual_->Update(1.0, *neumann_loads_, 0.0);
+  residual_->update(1.0, *neumann_loads_, 0.0);
 
   // add external loads
   if (external_loads_ != nullptr)
   {
-    residual_->Update(1.0 / residual_scaling(), *external_loads_, 1.0);
+    residual_->update(1.0 / residual_scaling(), *external_loads_, 1.0);
   }
 
   // set external volume force (required, e.g., for forced homogeneous isotropic turbulence)
@@ -1055,7 +1055,7 @@ void FLD::FluidImplicitTimeInt::assemble_mat_and_rhs()
   if (forcing_ != nullptr)
   {
     eleparams.set("forcing", true);
-    if (forcing_->Map().SameAs(*discret_->dof_row_map()))
+    if (forcing_->get_map().SameAs(*discret_->dof_row_map()))
       discret_->set_state("forcing", forcing_);
     else
       discret_->set_state(1, "forcing", forcing_);
@@ -1099,7 +1099,7 @@ void FLD::FluidImplicitTimeInt::assemble_mat_and_rhs()
   }
 
   // scaling to get true residual vector
-  trueresidual_->Update(residual_scaling(), *residual_, 0.0);
+  trueresidual_->update(residual_scaling(), *residual_, 0.0);
 
   // finalize the complete matrix
   sysmat_->complete();
@@ -1168,7 +1168,7 @@ void FLD::FluidImplicitTimeInt::evaluate_mat_and_rhs(Teuchos::ParameterList& ele
               Core::Communication::my_mpi_rank(discret_->get_comm()), actele->id(), err);
       }
       std::vector<int> myowner(la[0].lmowner_.size(),
-          Core::Communication::my_mpi_rank(strategy.systemvector1()->Comm()));
+          Core::Communication::my_mpi_rank(strategy.systemvector1()->get_comm()));
       {
         // calls the Assemble function for EpetraFECrs matrices including communication of non-row
         // entries
@@ -1188,10 +1188,10 @@ void FLD::FluidImplicitTimeInt::evaluate_mat_and_rhs(Teuchos::ParameterList& ele
     std::shared_ptr<Core::LinAlg::Vector<double>> tmp =
         Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
 
-    Epetra_Export exporter(residual_col->Map(), tmp->Map());
-    int err = tmp->Export(*residual_col, exporter, Add);
+    Epetra_Export exporter(residual_col->get_map(), tmp->get_map());
+    int err = tmp->export_to(*residual_col, exporter, Add);
     if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
-    residual_->Update(1.0, *tmp, 1.0);
+    residual_->update(1.0, *tmp, 1.0);
   }
   else
     discret_->evaluate(eleparams, sysmat_, shapederivatives_, residual_, nullptr, nullptr);
@@ -1762,10 +1762,10 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
           slip_bc_normal_tractions_scaled, nullptr, nullptr, sscbcondname, sscbcondid);
 
       // Update residual vector
-      residual_->Update(1.0, *slip_bc_normal_tractions_scaled, 1.0);
+      residual_->update(1.0, *slip_bc_normal_tractions_scaled, 1.0);
 
       // Add to tractions vector
-      slip_bc_normal_tractions_->Update(
+      slip_bc_normal_tractions_->update(
           (-1) * residual_scaling(), *slip_bc_normal_tractions_scaled, 1.0);
 
       // clear state
@@ -2003,11 +2003,11 @@ void FLD::FluidImplicitTimeInt::evaluate_fluid_edge_based(
 
   //------------------------------------------------------------
   // need to export residual_col to systemvector1 (residual_)
-  Core::LinAlg::Vector<double> res_tmp(systemvector1.Map(), false);
-  Epetra_Export exporter(residual_col->Map(), res_tmp.Map());
-  int err2 = res_tmp.Export(*residual_col, exporter, Add);
+  Core::LinAlg::Vector<double> res_tmp(systemvector1.get_map(), false);
+  Epetra_Export exporter(residual_col->get_map(), res_tmp.get_map());
+  int err2 = res_tmp.export_to(*residual_col, exporter, Add);
   if (err2) FOUR_C_THROW("Export using exporter returned err=%d", err2);
-  systemvector1.Update(1.0, res_tmp, 1.0);
+  systemvector1.update(1.0, res_tmp, 1.0);
 
   return;
 }
@@ -2023,7 +2023,7 @@ void FLD::FluidImplicitTimeInt::apply_dirichlet_to_system()
   // - Residual displacements are supposed to be zero for resp. dofs.
   // - Time for applying Dirichlet boundary conditions is measured.
   // -------------------------------------------------------------------
-  incvel_->PutScalar(0.0);
+  incvel_->put_scalar(0.0);
 
   if (locsysman_ != nullptr)
   {
@@ -2135,7 +2135,7 @@ void FLD::FluidImplicitTimeInt::update_krylov_space_projection()
   // scope to modify c
   {
     auto& c0 = (*c)(0);
-    c0.PutScalar(0.0);
+    c0.put_scalar(0.0);
     // extract vector of pressure-dofs
     std::shared_ptr<Core::LinAlg::Vector<double>> presmode =
         velpressplitter_->extract_cond_vector(c0);
@@ -2164,7 +2164,7 @@ void FLD::FluidImplicitTimeInt::update_krylov_space_projection()
       // get std::shared_ptr to weight vector of projector
       std::shared_ptr<Core::LinAlg::MultiVector<double>> w = projector_->get_non_const_weights();
       auto& w0 = (*w)(0);
-      w0.PutScalar(0.0);
+      w0.put_scalar(0.0);
 
       // create parameter list for condition evaluate and ...
       Teuchos::ParameterList mode_params;
@@ -2204,7 +2204,7 @@ void FLD::FluidImplicitTimeInt::update_krylov_space_projection()
     }
 
     // construct c by setting all pressure values to 1.0 and export to c
-    presmode->PutScalar(1.0);
+    presmode->put_scalar(1.0);
     std::shared_ptr<Core::LinAlg::Vector<double>> tmpc =
         Core::LinAlg::create_vector(*(discret_->dof_row_map()), true);
     Core::LinAlg::export_to(*presmode, *tmpc);
@@ -2256,7 +2256,7 @@ void FLD::FluidImplicitTimeInt::check_matrix_nullspace()
 
     double norm = 1e9;
 
-    result.Norm2(&norm);
+    result.norm_2(&norm);
 
     if (norm > 1e-12)
     {
@@ -2288,10 +2288,10 @@ void FLD::FluidImplicitTimeInt::iter_update(
 {
   // store incremental vector to be available for convergence check
   // if incremental vector is received from outside for coupled problems
-  incvel_->Update(1.0, *increment, 0.0);
+  incvel_->update(1.0, *increment, 0.0);
 
   // update velocity and pressure values by adding increments
-  velnp_->Update(1.0, *increment, 1.0);
+  velnp_->update(1.0, *increment, 1.0);
 
   // -------------------------------------------------------------------
   // For af-generalized-alpha: update accelerations
@@ -2350,25 +2350,25 @@ bool FLD::FluidImplicitTimeInt::convergence_check(int itnum, int itmax, const do
   std::shared_ptr<Core::LinAlg::Vector<double>> onlyvel =
       velpressplitter_->extract_other_vector(*residual_);
 
-  onlyvel->Norm2(&vresnorm_);
+  onlyvel->norm_2(&vresnorm_);
 
   velpressplitter_->extract_other_vector(*incvel_, *onlyvel);
 
-  onlyvel->Norm2(&incvelnorm_L2_);
+  onlyvel->norm_2(&incvelnorm_L2_);
 
   velpressplitter_->extract_other_vector(*velnp_, *onlyvel);
 
-  onlyvel->Norm2(&velnorm_L2_);
+  onlyvel->norm_2(&velnorm_L2_);
 
   std::shared_ptr<Core::LinAlg::Vector<double>> onlypre =
       velpressplitter_->extract_cond_vector(*residual_);
-  onlypre->Norm2(&presnorm_);
+  onlypre->norm_2(&presnorm_);
 
   velpressplitter_->extract_cond_vector(*incvel_, *onlypre);
-  onlypre->Norm2(&incprenorm_L2_);
+  onlypre->norm_2(&incprenorm_L2_);
 
   velpressplitter_->extract_cond_vector(*velnp_, *onlypre);
-  onlypre->Norm2(&prenorm_L2_);
+  onlypre->norm_2(&prenorm_L2_);
 
   // check for any INF's and NaN's
   if (std::isnan(vresnorm_) or std::isnan(incvelnorm_L2_) or std::isnan(velnorm_L2_) or
@@ -2932,7 +2932,7 @@ void FLD::FluidImplicitTimeInt::ale_update(std::string condName)
     // Update Ale variables
     // ************************************************************************
     // Update the displacements at n+1
-    dispnp->Update(1.0, *disp, dta_, *gridv, 0.0);
+    dispnp->update(1.0, *disp, dta_, *gridv, 0.0);
 
     // Insert calculated displacements and velocities at n+1 into global Ale variables
     if (condName == "ALEUPDATECoupling")
@@ -2969,9 +2969,9 @@ void FLD::FluidImplicitTimeInt::get_dofs_vector_local_indicesfor_node(int nodeGi
   for (int i = 0; i < dim; i++)
   {
     int dofGid = dofsGid[i];
-    if (!vec.Map().MyGID(dofGid))
+    if (!vec.get_map().MyGID(dofGid))
       FOUR_C_THROW("Sparse vector does not have global row  %d or vectors don't match", dofGid);
-    (*dofsLocalInd)[i] = vec.Map().LID(dofGid);
+    (*dofsLocalInd)[i] = vec.get_map().LID(dofGid);
   }
 }
 
@@ -2989,7 +2989,7 @@ void FLD::FluidImplicitTimeInt::evaluate(
     // Add stepinc to veln_ for non-Dirichlet values.
     std::shared_ptr<Core::LinAlg::Vector<double>> aux =
         Core::LinAlg::create_vector(*(discret_->dof_row_map()), true);
-    aux->Update(1.0, *veln_, 1.0, *stepinc, 0.0);
+    aux->update(1.0, *veln_, 1.0, *stepinc, 0.0);
 
     // Set Dirichlet values
     dbcmaps_->insert_cond_vector(*dbcmaps_->extract_cond_vector(*velnp_), *aux);
@@ -3017,7 +3017,7 @@ void FLD::FluidImplicitTimeInt::evaluate(
     discret_->set_state(ndsale_, "dispnp", dispnp_);
 
     // evaluate Neumann conditions
-    neumann_loads_->PutScalar(0.0);
+    neumann_loads_->put_scalar(0.0);
     discret_->set_state("scaaf", scaaf_);
     discret_->evaluate_neumann(eleparams, *neumann_loads_);
     discret_->clear_state();
@@ -3107,23 +3107,23 @@ void FLD::FluidImplicitTimeInt::time_update()
 
   // acceleration of this step becomes most recent
   // acceleration of the last step
-  accnm_->Update(1.0, *accn_, 0.0);
-  accn_->Update(1.0, *accnp_, 0.0);
+  accnm_->update(1.0, *accn_, 0.0);
+  accn_->update(1.0, *accnp_, 0.0);
 
   // velocities/pressures of this step become most recent
   // velocities/pressures of the last step
-  velnm_->Update(1.0, *veln_, 0.0);
-  veln_->Update(1.0, *velnp_, 0.0);
+  velnm_->update(1.0, *veln_, 0.0);
+  veln_->update(1.0, *velnp_, 0.0);
 
   // displacement vectors for ALE
   if (alefluid_)
   {
-    dispnm_->Update(1.0, *dispn_, 0.0);
-    dispn_->Update(1.0, *dispnp_, 0.0);
+    dispnm_->update(1.0, *dispn_, 0.0);
+    dispn_->update(1.0, *dispnp_, 0.0);
 
     // gridvelocities of this step become most recent
     // gridvelocities of the last step
-    gridvn_->Update(1.0, *gridv_, 0.0);
+    gridvn_->update(1.0, *gridv_, 0.0);
   }
 
   // update stresses and wss
@@ -3274,17 +3274,17 @@ void FLD::FluidImplicitTimeInt::calc_intermediate_solution()
       const Epetra_Map* dofrowmap = discret_->dof_row_map();
       std::shared_ptr<Core::LinAlg::Vector<double>> tmp =
           Core::LinAlg::create_vector(*dofrowmap, true);
-      tmp->Update(1.0, *velnp_, 0.0);
+      tmp->update(1.0, *velnp_, 0.0);
 
       // compute intermediate solution without forcing
-      forcing_->PutScalar(0.0);  // just to be sure
+      forcing_->put_scalar(0.0);  // just to be sure
       solve();
 
       // calculate required forcing
       forcing_interface_->calculate_forcing(step_);
 
       // reset velnp_
-      velnp_->Update(1.0, *tmp, 0.0);
+      velnp_->update(1.0, *tmp, 0.0);
 
       // recompute intermediate values, since they have been likewise overwritten
       // --------------------------------------------------
@@ -3315,7 +3315,7 @@ void FLD::FluidImplicitTimeInt::calc_intermediate_solution()
     }
     else
       // set force to zero
-      forcing_->PutScalar(0.0);
+      forcing_->put_scalar(0.0);
   }
 }
 
@@ -3723,7 +3723,7 @@ void FLD::FluidImplicitTimeInt::output_external_forces()
 {
   if (external_loads_ != nullptr)
   {
-    output_->write_int("have_fexternal", external_loads_->GlobalLength());
+    output_->write_int("have_fexternal", external_loads_->global_length());
     output_->write_vector("fexternal", external_loads_);
   }
   else
@@ -3830,7 +3830,7 @@ void FLD::FluidImplicitTimeInt::read_restart(int step)
   {
     external_loads_ = Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
     reader.read_vector(external_loads_, "fexternal");
-    if (have_fexternal != external_loads_->GlobalLength())
+    if (have_fexternal != external_loads_->global_length())
       FOUR_C_THROW("reading of external loads failed");
   }
 
@@ -3845,11 +3845,11 @@ void FLD::FluidImplicitTimeInt::read_restart(int step)
   // that was used when the restart data was written. Especially
   // in case of multiphysics problems & periodic boundary conditions
   // it is better to check the consistency of the maps here:
-  if (not(discret_->dof_row_map())->SameAs(velnp_->Map()))
+  if (not(discret_->dof_row_map())->SameAs(velnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(discret_->dof_row_map())->SameAs(veln_->Map()))
+  if (not(discret_->dof_row_map())->SameAs(veln_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(discret_->dof_row_map())->SameAs(accn_->Map()))
+  if (not(discret_->dof_row_map())->SameAs(accn_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
 }
 
@@ -3867,11 +3867,11 @@ void FLD::FluidImplicitTimeInt::set_restart(const int step, const double time,
   time_ = time;
   step_ = step;
 
-  velnp_->Update(1.0, *readvelnp, 0.0);
-  veln_->Update(1.0, *readveln, 0.0);
-  velnm_->Update(1.0, *readvelnm, 0.0);
-  accnp_->Update(1.0, *readaccnp, 0.0);
-  accn_->Update(1.0, *readaccn, 0.0);
+  velnp_->update(1.0, *readvelnp, 0.0);
+  veln_->update(1.0, *readveln, 0.0);
+  velnm_->update(1.0, *readvelnm, 0.0);
+  accnp_->update(1.0, *readaccnp, 0.0);
+  accn_->update(1.0, *readaccn, 0.0);
 
   if ((fssgv_ != Inpar::FLUID::no_fssgv) or
       (scale_sep_ == Inpar::FLUID::algebraic_multigrid_operator))
@@ -3904,23 +3904,23 @@ void FLD::FluidImplicitTimeInt::update_gridv()
                   x^n+1 - x^n
              uG = -----------
                     Delta t                        */
-      gridv_->Update(1 / dta_, *dispnp_, -1 / dta_, *dispn_, 0.0);
+      gridv_->update(1 / dta_, *dispnp_, -1 / dta_, *dispn_, 0.0);
       break;
     case Inpar::FLUID::BDF2:
       /* get gridvelocity from BDF2 time discretisation of mesh motion:
            -> requires one more previous mesh position or displacement
            -> somewhat more complicated
            -> allows second order accuracy for the overall flow solution  */
-      gridv_->Update(1.5 / dta_, *dispnp_, -2.0 / dta_, *dispn_, 0.0);
-      gridv_->Update(0.5 / dta_, *dispnm_, 1.0);
+      gridv_->update(1.5 / dta_, *dispnp_, -2.0 / dta_, *dispn_, 0.0);
+      gridv_->update(0.5 / dta_, *dispnm_, 1.0);
       break;
     case Inpar::FLUID::OST:
     {
       /* get gridvelocity from OST time discretisation of mesh motion:
          -> needed to allow consistent linearization of FPSI problem  */
       const double theta = fluiddynparams.get<double>("THETA");
-      gridv_->Update(1 / (theta * dta_), *dispnp_, -1 / (theta * dta_), *dispn_, 0.0);
-      gridv_->Update(-((1.0 / theta) - 1.0), *gridvn_, 1.0);
+      gridv_->update(1 / (theta * dta_), *dispnp_, -1 / (theta * dta_), *dispn_, 0.0);
+      gridv_->update(-((1.0 / theta) - 1.0), *gridvn_, 1.0);
     }
     break;
   }
@@ -3956,7 +3956,7 @@ void FLD::FluidImplicitTimeInt::avm3_preparation()
 
   // necessary here, because some application time integrations add something to the residual
   // before the Neumann loads are added
-  residual_->PutScalar(0.0);
+  residual_->put_scalar(0.0);
 
   // Maybe this needs to be inserted in case of impedanceBC + AVM3
   //  if (nonlinearbc_ && isimpedancebc_)
@@ -3983,7 +3983,7 @@ void FLD::FluidImplicitTimeInt::avm3_assemble_mat_and_rhs(Teuchos::ParameterList
 
   // add Neumann loads
   // has been set to zero before
-  residual_->Update(1.0, *neumann_loads_, 1.0);
+  residual_->update(1.0, *neumann_loads_, 1.0);
 
   // set action type
   eleparams.set<FLD::Action>("action", FLD::calc_fluid_systemmat_and_residual);
@@ -4004,9 +4004,9 @@ void FLD::FluidImplicitTimeInt::avm3_assemble_mat_and_rhs(Teuchos::ParameterList
   // as this function has not been called yet
   // we have to replace the zeros by ones
   // otherwise nans are occur
-  scaaf_->PutScalar(1.0);
+  scaaf_->put_scalar(1.0);
   discret_->set_state("scaaf", scaaf_);
-  scaam_->PutScalar(1.0);
+  scaam_->put_scalar(1.0);
   discret_->set_state("scaam", scaam_);
 
   // set fine-scale vector
@@ -4046,8 +4046,8 @@ void FLD::FluidImplicitTimeInt::avm3_assemble_mat_and_rhs(Teuchos::ParameterList
   discret_->evaluate(eleparams, sysmat_, nullptr, residual_, nullptr, nullptr);
   discret_->clear_state();
   // reset the vector modified above
-  scaaf_->PutScalar(0.0);
-  scaam_->PutScalar(0.0);
+  scaaf_->put_scalar(0.0);
+  scaam_->put_scalar(0.0);
 
   // complete system matrix
   sysmat_->complete();
@@ -4079,11 +4079,11 @@ void FLD::FluidImplicitTimeInt::avm3_get_scale_separation_matrix()
   Sep_->scale(-1.0);
   std::shared_ptr<Core::LinAlg::Vector<double>> tmp =
       Core::LinAlg::create_vector(Sep_->row_map(), false);
-  tmp->PutScalar(1.0);
+  tmp->put_scalar(1.0);
   std::shared_ptr<Core::LinAlg::Vector<double>> diag =
       Core::LinAlg::create_vector(Sep_->row_map(), false);
   Sep_->extract_diagonal_copy(*diag);
-  diag->Update(1.0, *tmp, 1.0);
+  diag->update(1.0, *tmp, 1.0);
   // Hint: replace_diagonal_values doesn't do anything if nothing in graph before
   Sep_->replace_diagonal_values(*diag);
 
@@ -4138,7 +4138,7 @@ void FLD::FluidImplicitTimeInt::set_initial_flow_field(
                                 ->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)
                                 .evaluate(lnode->x().data(), time_, index);
 
-        velnp_->ReplaceGlobalValues(1, &initialval, &gid);
+        velnp_->replace_global_values(1, &initialval, &gid);
       }
     }
 
@@ -4173,7 +4173,7 @@ void FLD::FluidImplicitTimeInt::set_initial_flow_field(
     }
 
     // initialize veln_ as well. That's what we actually want to do here!
-    veln_->Update(1.0, *velnp_, 0.0);
+    veln_->update(1.0, *velnp_, 0.0);
 
     // add random perturbation of certain percentage to function
     if (initfield == Inpar::FLUID::initfield_disturbed_field_from_function)
@@ -4253,8 +4253,8 @@ void FLD::FluidImplicitTimeInt::set_initial_flow_field(
 
           double noise = perc * bmvel * randomnumber;
 
-          err += velnp_->SumIntoGlobalValues(1, &noise, &gid);
-          err += veln_->SumIntoGlobalValues(1, &noise, &gid);
+          err += velnp_->sum_into_global_values(1, &noise, &gid);
+          err += veln_->sum_into_global_values(1, &noise, &gid);
         }
 
         if (err != 0)
@@ -4385,9 +4385,9 @@ void FLD::FluidImplicitTimeInt::set_initial_flow_field(
       {
         const int gid = nodedofset[nveldof];
         int lid = dofrowmap->LID(gid);
-        err += velnp_->ReplaceMyValues(1, &(u[nveldof]), &lid);
-        err += veln_->ReplaceMyValues(1, &(u[nveldof]), &lid);
-        err += velnm_->ReplaceMyValues(1, &(u[nveldof]), &lid);
+        err += velnp_->replace_local_values(1, &(u[nveldof]), &lid);
+        err += veln_->replace_local_values(1, &(u[nveldof]), &lid);
+        err += velnm_->replace_local_values(1, &(u[nveldof]), &lid);
       }
     }  // end loop nodes lnodeid
 
@@ -4465,23 +4465,23 @@ void FLD::FluidImplicitTimeInt::set_initial_flow_field(
       {
         const int gid = nodedofset[nveldof];
         int lid = dofrowmap->LID(gid);
-        err += velnp_->ReplaceMyValues(1, &(u[nveldof]), &lid);
-        err += veln_->ReplaceMyValues(1, &(u[nveldof]), &lid);
-        err += velnm_->ReplaceMyValues(1, &(u[nveldof]), &lid);
+        err += velnp_->replace_local_values(1, &(u[nveldof]), &lid);
+        err += veln_->replace_local_values(1, &(u[nveldof]), &lid);
+        err += velnm_->replace_local_values(1, &(u[nveldof]), &lid);
 
         // set additionally the values for the time derivative to start with an exact acceleration
         // in case of OST (theta!=1.0) set initial acceleration components
-        err += accnp_->ReplaceMyValues(1, &(acc[nveldof]), &lid);
-        err += accn_->ReplaceMyValues(1, &(acc[nveldof]), &lid);
-        err += accam_->ReplaceMyValues(1, &(acc[nveldof]), &lid);
+        err += accnp_->replace_local_values(1, &(acc[nveldof]), &lid);
+        err += accn_->replace_local_values(1, &(acc[nveldof]), &lid);
+        err += accam_->replace_local_values(1, &(acc[nveldof]), &lid);
       }
 
       // set initial pressure
       const int gid = nodedofset[npredof];
       int lid = dofrowmap->LID(gid);
-      err += velnp_->ReplaceMyValues(1, &p, &lid);
-      err += veln_->ReplaceMyValues(1, &p, &lid);
-      err += velnm_->ReplaceMyValues(1, &p, &lid);
+      err += velnp_->replace_local_values(1, &p, &lid);
+      err += veln_->replace_local_values(1, &p, &lid);
+      err += velnm_->replace_local_values(1, &p, &lid);
     }  // end loop nodes lnodeid
 
     if (err != 0) FOUR_C_THROW("dof not on proc");
@@ -4539,7 +4539,7 @@ void FLD::FluidImplicitTimeInt::set_iter_scalar_fields(
   // scalar time derivative values at pressure dofs
   //--------------------------------------------------------------------------
   // get velocity values at time n in scaam-vector as copy from veln-vector
-  scaam_->Update(1.0, *veln_, 0.0);
+  scaam_->update(1.0, *veln_, 0.0);
 
   if (scatradis != nullptr)
   {
@@ -4552,7 +4552,7 @@ void FLD::FluidImplicitTimeInt::set_iter_scalar_fields(
       // find out the global dof id of the last(!) dof at the scatra node
       const int numscatradof = scatradis->num_dof(dofset, lscatranode);
       const int globalscatradofid = scatradis->dof(dofset, lscatranode, numscatradof - 1);
-      const int localscatradofid = scalaraf->Map().LID(globalscatradofid);
+      const int localscatradofid = scalaraf->get_map().LID(globalscatradofid);
       if (localscatradofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
       // get the processor's local fluid node
@@ -4560,16 +4560,16 @@ void FLD::FluidImplicitTimeInt::set_iter_scalar_fields(
       // get global and processor's local pressure dof id (using the map!)
       const int numdof = discret_->num_dof(0, lnode);
       const int globaldofid = discret_->dof(0, lnode, numdof - 1);
-      const int localdofid = scaam_->Map().LID(globaldofid);
+      const int localdofid = scaam_->get_map().LID(globaldofid);
       if (localdofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
       // now copy the values
       value = (*scalaraf)[localscatradofid];
-      err = scaaf_->ReplaceMyValue(localdofid, 0, value);
+      err = scaaf_->replace_local_value(localdofid, 0, value);
       if (err != 0) FOUR_C_THROW("error while inserting value into scaaf_");
 
       value = (*scalaram)[localscatradofid];
-      err = scaam_->ReplaceMyValue(localdofid, 0, value);
+      err = scaam_->replace_local_value(localdofid, 0, value);
       if (err != 0) FOUR_C_THROW("error while inserting value into scaam_");
 
       if (scalardtam != nullptr)
@@ -4580,7 +4580,7 @@ void FLD::FluidImplicitTimeInt::set_iter_scalar_fields(
       {
         value = 0.0;  // for safety reasons: set zeros in accam_
       }
-      err = accam_->ReplaceMyValue(localdofid, 0, value);
+      err = accam_->replace_local_value(localdofid, 0, value);
       if (err != 0) FOUR_C_THROW("error while inserting value into accam_");
     }
   }
@@ -4588,7 +4588,8 @@ void FLD::FluidImplicitTimeInt::set_iter_scalar_fields(
   {
     // given vectors are already in dofrowmap layout of fluid and values can
     // be copied directly
-    if (not scalaraf->Map().SameAs(scaaf_->Map()) or not scalaram->Map().SameAs(scaam_->Map()))
+    if (not scalaraf->get_map().SameAs(scaaf_->get_map()) or
+        not scalaram->get_map().SameAs(scaam_->get_map()))
       FOUR_C_THROW("fluid dofrowmap layout expected");
 
     // loop all nodes on the processor
@@ -4599,16 +4600,16 @@ void FLD::FluidImplicitTimeInt::set_iter_scalar_fields(
       // get global and processor's local pressure dof id (using the map!)
       const int numdof = discret_->num_dof(0, lnode);
       const int globaldofid = discret_->dof(0, lnode, numdof - 1);
-      const int localdofid = scaam_->Map().LID(globaldofid);
+      const int localdofid = scaam_->get_map().LID(globaldofid);
       if (localdofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
       // now copy the values
       value = (*scalaraf)[localdofid];
-      err = scaaf_->ReplaceMyValue(localdofid, 0, value);
+      err = scaaf_->replace_local_value(localdofid, 0, value);
       if (err != 0) FOUR_C_THROW("error while inserting value into scaaf_");
 
       value = (*scalaram)[localdofid];
-      err = scaam_->ReplaceMyValue(localdofid, 0, value);
+      err = scaam_->replace_local_value(localdofid, 0, value);
       if (err != 0) FOUR_C_THROW("error while inserting value into scaam_");
 
       if (scalardtam != nullptr)
@@ -4619,7 +4620,7 @@ void FLD::FluidImplicitTimeInt::set_iter_scalar_fields(
       {
         value = 0.0;  // for safety reasons: set zeros in accam_
       }
-      err = accam_->ReplaceMyValue(localdofid, 0, value);
+      err = accam_->replace_local_value(localdofid, 0, value);
       if (err != 0) FOUR_C_THROW("error while inserting value into accam_");
     }
   }
@@ -4664,7 +4665,7 @@ void FLD::FluidImplicitTimeInt::set_scalar_fields(
       // respect the explicit wish of the user
       globalscatradofid = scatradis->dof(0, lscatranode, whichscalar);
     }
-    const int localscatradofid = scalarnp->Map().LID(globalscatradofid);
+    const int localscatradofid = scalarnp->get_map().LID(globalscatradofid);
     if (localscatradofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
     // get the processor's local fluid node
@@ -4673,11 +4674,11 @@ void FLD::FluidImplicitTimeInt::set_scalar_fields(
     nodedofs = discret_->dof(0, lnode);
     // get global and processor's local pressure dof id (using the map!)
     const int globaldofid = nodedofs[numdim_];
-    const int localdofid = scaam_->Map().LID(globaldofid);
+    const int localdofid = scaam_->get_map().LID(globaldofid);
     if (localdofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
     value = (*scalarnp)[localscatradofid];
-    err = scaaf_->ReplaceMyValue(localdofid, 0, value);
+    err = scaaf_->replace_local_value(localdofid, 0, value);
     if (err != 0) FOUR_C_THROW("error while inserting value into scaaf_");
 
     //--------------------------------------------------------------------------
@@ -4686,7 +4687,7 @@ void FLD::FluidImplicitTimeInt::set_scalar_fields(
     if (scatraresidual != nullptr)
     {
       value = (*scatraresidual)[localscatradofid];
-      trueresidual_->ReplaceMyValue(localdofid, 0, value);
+      trueresidual_->replace_local_value(localdofid, 0, value);
     }
   }
 
@@ -5055,7 +5056,7 @@ void FLD::FluidImplicitTimeInt::lift_drag() const
       std::shared_ptr<Core::LinAlg::Vector<double>> forces;
       forces = Core::LinAlg::create_vector(*(discret_->dof_row_map()), true);
 
-      forces->Update(1.0, *trueresidual_, 1.0, *slip_bc_normal_tractions_, 0.0);
+      forces->update(1.0, *trueresidual_, 1.0, *slip_bc_normal_tractions_, 0.0);
 
       FLD::Utils::lift_drag(discret_, *forces, dispnp_, numdim_, liftdragvals, alefluid_);
     }
@@ -5256,7 +5257,7 @@ void FLD::FluidImplicitTimeInt::linear_relaxation_solve(
 
     // set the grid displacement independent of the trial value at the
     // interface
-    griddisp->Update(1., *dispnp_, -1., *dispn_, 0.);
+    griddisp->update(1., *dispnp_, -1., *dispn_, 0.);
 
     // dbcmaps_ has already been set up
 
@@ -5264,7 +5265,7 @@ void FLD::FluidImplicitTimeInt::linear_relaxation_solve(
     sysmat_->zero();
 
     // zero out residual, no neumann bc
-    residual_->PutScalar(0.0);
+    residual_->put_scalar(0.0);
 
     // Get matrix for mesh derivatives. This is not meant to be efficient.
     if (params_->get<bool>("shape derivatives"))
@@ -5326,20 +5327,20 @@ void FLD::FluidImplicitTimeInt::linear_relaxation_solve(
   }
 
   // No, we do not want to have any rhs. There cannot be any.
-  residual_->PutScalar(0.0);
+  residual_->put_scalar(0.0);
 
   if (meshmatrix_ != nullptr)
   {
     // Calculate rhs due to mesh movement induced by the interface
     // displacement.
     meshmatrix_->Apply(*gridv_, *residual_);
-    residual_->Scale(-dta_);
+    residual_->scale(-dta_);
   }
 
   //--------- Apply dirichlet boundary conditions to system of equations
   //          residual displacements are supposed to be zero at
   //          boundary conditions
-  incvel_->PutScalar(0.0);
+  incvel_->put_scalar(0.0);
 
   Core::LinAlg::apply_dirichlet_to_system(*incvel_, *residual_, *relax, *(dbcmaps_->cond_map()));
 
@@ -5360,10 +5361,10 @@ void FLD::FluidImplicitTimeInt::linear_relaxation_solve(
     // Calculate rhs due to mesh movement induced by the interface
     // displacement.
     meshmatrix_->Apply(*gridv_, *residual_);
-    trueresidual_->Update(dta_, *residual_, 1.0);
+    trueresidual_->update(dta_, *residual_, 1.0);
   }
 
-  trueresidual_->Scale(-residual_scaling());
+  trueresidual_->scale(-residual_scaling());
 
   if (not inrelaxation_) inrelaxation_ = true;
 }
@@ -5399,7 +5400,7 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> FLD::FluidImplicitTimeInt::d
   if (dbcmaps_ == nullptr) FOUR_C_THROW("Dirichlet map has not been allocated");
   std::shared_ptr<Core::LinAlg::Vector<double>> dirichones =
       Core::LinAlg::create_vector(*(dbcmaps_->cond_map()), false);
-  dirichones->PutScalar(1.0);
+  dirichones->put_scalar(1.0);
   std::shared_ptr<Core::LinAlg::Vector<double>> dirichtoggle =
       Core::LinAlg::create_vector(*(discret_->dof_row_map()), true);
   dbcmaps_->insert_cond_vector(*dirichones, *dirichtoggle);
@@ -5415,7 +5416,7 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> FLD::FluidImplicitTimeInt::i
       Core::LinAlg::create_vector(*(dbcmaps_->cond_map()), true);
   std::shared_ptr<Core::LinAlg::Vector<double>> invtoggle =
       Core::LinAlg::create_vector(*(discret_->dof_row_map()), false);
-  invtoggle->PutScalar(1.0);
+  invtoggle->put_scalar(1.0);
   dbcmaps_->insert_cond_vector(*dirichzeros, *invtoggle);
   return invtoggle;
 }
@@ -5692,7 +5693,7 @@ void FLD::FluidImplicitTimeInt::update_iter_incrementally(
     // values.
     std::shared_ptr<Core::LinAlg::Vector<double>> aux =
         Core::LinAlg::create_vector(*(discret_->dof_row_map(0)), true);
-    aux->Update(1.0, *velnp_, 1.0, *vel, 0.0);
+    aux->update(1.0, *velnp_, 1.0, *vel, 0.0);
     //    dbcmaps_->insert_other_vector(dbcmaps_->extract_other_vector(*aux), velnp_);
     dbcmaps_->insert_cond_vector(*dbcmaps_->extract_cond_vector(*velnp_), *aux);
 
@@ -5954,7 +5955,7 @@ void FLD::FluidImplicitTimeInt::apply_scale_separation_for_les()
         // separation matrix depends on the number of proc here
         if (turbmodel_ == Inpar::FLUID::multifractal_subgrid_scales and
             (params_->sublist("MULTIFRACTAL SUBGRID SCALES").get<bool>("SET_FINE_SCALE_VEL")))
-          fsvelaf_->PutScalar(0.01);
+          fsvelaf_->put_scalar(0.01);
 
         break;
       }
@@ -6120,7 +6121,7 @@ void FLD::FluidImplicitTimeInt::apply_external_forces(
   if (external_loads_ == nullptr)
     external_loads_ = Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
 
-  external_loads_->Update(1.0, *fext, 0.0);
+  external_loads_->update(1.0, *fext, 0.0);
 }
 
 
@@ -6146,7 +6147,7 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> FLD::FluidImplicitTimeInt::c
     std::shared_ptr<Core::LinAlg::Vector<double>> convel =
         std::make_shared<Core::LinAlg::Vector<double>>(*(velnp()));
     // now subtract the grid velocity
-    convel->Update(-1.0, *(grid_vel()), 1.0);
+    convel->update(-1.0, *(grid_vel()), 1.0);
 
     return convel;
   }
@@ -6164,7 +6165,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::FluidImplicitTimeInt::calc_di
 
   // integrated divergence operator B in vector form
   std::shared_ptr<Core::LinAlg::Vector<double>> divop =
-      std::make_shared<Core::LinAlg::Vector<double>>(velnp_->Map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(velnp_->get_map(), true);
 
   // copy row map of mesh displacement to column map (only if ALE is used)
   discret_->clear_state();
@@ -6273,16 +6274,16 @@ void FLD::FluidImplicitTimeInt::predict_tang_vel_consist_acc()
   eleparams.set("total time", time_);
 
   // initialize
-  velnp_->Update(1.0, *veln_, 0.0);
-  accnp_->Update(1.0, *accn_, 0.0);
-  incvel_->PutScalar(0.0);
+  velnp_->update(1.0, *veln_, 0.0);
+  accnp_->update(1.0, *accn_, 0.0);
+  incvel_->put_scalar(0.0);
 
   // for solution increments on Dirichlet boundary
   std::shared_ptr<Core::LinAlg::Vector<double>> dbcinc =
       Core::LinAlg::create_vector(*(discret_->dof_row_map()), true);
 
   // copy last converged solution
-  dbcinc->Update(1.0, *veln_, 0.0);
+  dbcinc->update(1.0, *veln_, 0.0);
 
   // get Dirichlet values at t_{n+1}
   // set vector values needed by elements
@@ -6296,7 +6297,7 @@ void FLD::FluidImplicitTimeInt::predict_tang_vel_consist_acc()
   // subtract the displacements of the last converged step
   // DBC-DOFs hold increments of current step
   // free-DOFs hold zeros
-  dbcinc->Update(-1.0, *veln_, 1.0);
+  dbcinc->update(-1.0, *veln_, 1.0);
 
   // compute residual forces residual_ and stiffness sysmat_
   // at velnp_, etc which are unchanged
@@ -6309,17 +6310,17 @@ void FLD::FluidImplicitTimeInt::predict_tang_vel_consist_acc()
   sysmat_->multiply(false, *dbcinc, *freact);
 
   // add linear reaction forces due to prescribed Dirichlet BCs
-  residual_->Update(1.0, *freact, 1.0);
+  residual_->update(1.0, *freact, 1.0);
 
   // extract reaction forces
-  freact->Update(1.0, *residual_, 0.0);
+  freact->update(1.0, *residual_, 0.0);
   dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact);
 
   // blank residual at DOFs on Dirichlet BC
   dbcmaps_->insert_cond_vector(*dbcmaps_->extract_cond_vector(*zeros_), *residual_);
 
   // apply Dirichlet BCs to system of equations
-  incvel_->PutScalar(0.0);
+  incvel_->put_scalar(0.0);
   sysmat_->complete();
   Core::LinAlg::apply_dirichlet_to_system(
       *sysmat_, *incvel_, *residual_, *zeros_, *(dbcmaps_->cond_map()));
@@ -6331,7 +6332,7 @@ void FLD::FluidImplicitTimeInt::predict_tang_vel_consist_acc()
   solver_->solve(sysmat_->epetra_operator(), incvel_, residual_, solver_params);
 
   // set Dirichlet increments in solution increments
-  incvel_->Update(1.0, *dbcinc, 1.0);
+  incvel_->update(1.0, *dbcinc, 1.0);
 
   // update end-point velocities and pressure
   update_iter_incrementally(incvel_);
@@ -6342,7 +6343,7 @@ void FLD::FluidImplicitTimeInt::predict_tang_vel_consist_acc()
   // Note: accelerations on Dirichlet DOFs are not set.
 
   // reset to zero
-  incvel_->PutScalar(0.0);
+  incvel_->put_scalar(0.0);
 }
 
 /*----------------------------------------------------------------------*/
@@ -6406,7 +6407,7 @@ void FLD::FluidImplicitTimeInt::write_output_kinetic_energy()
   double energy = 0.0;
   Core::LinAlg::Vector<double> mtimesu(massmat_->OperatorRangeMap(), true);
   massmat_->Apply(*velnp_, mtimesu);
-  velnp_->Dot(mtimesu, &energy);
+  velnp_->dot(mtimesu, &energy);
   energy *= 0.5;
 
   // write to file
@@ -6471,7 +6472,7 @@ void FLD::FluidImplicitTimeInt::set_dirichlet_neumann_bc()
   if (alefluid_) discret_->set_state(ndsale_, "dispnp", dispnp_);
 
   // evaluate Neumann conditions
-  neumann_loads_->PutScalar(0.0);
+  neumann_loads_->put_scalar(0.0);
   discret_->set_state("scaaf", scaaf_);
   discret_->set_state("velaf", velaf_);
   discret_->evaluate_neumann(eleparams, *neumann_loads_);
@@ -6568,12 +6569,12 @@ void FLD::FluidImplicitTimeInt::explicit_predictor()
     //      p    = p
     //       (0)
     //
-    velnp_->Update(1.0, *veln_, 0.0);
+    velnp_->update(1.0, *veln_, 0.0);
 
     // split between acceleration and pressure
     std::shared_ptr<Core::LinAlg::Vector<double>> inc =
         velpressplitter_->extract_other_vector(*accn_);
-    inc->Scale((1.0 - theta_) * dta_);
+    inc->scale((1.0 - theta_) * dta_);
 
     velpressplitter_->add_other_vector(*inc, *velnp_);
   }
@@ -6591,11 +6592,11 @@ void FLD::FluidImplicitTimeInt::explicit_predictor()
     //      p    = p
     //       (0)
     //
-    velnp_->Update(1.0, *veln_, 0.0);
+    velnp_->update(1.0, *veln_, 0.0);
 
     std::shared_ptr<Core::LinAlg::Vector<double>> inc =
         velpressplitter_->extract_other_vector(*accn_);
-    inc->Scale(dta_);
+    inc->scale(dta_);
 
     velpressplitter_->add_other_vector(*inc, *velnp_);
   }
@@ -6613,13 +6614,13 @@ void FLD::FluidImplicitTimeInt::explicit_predictor()
     //      p    = p
     //       (0)
     //
-    velnp_->Update(1.0, *veln_, 0.0);
+    velnp_->update(1.0, *veln_, 0.0);
 
     std::shared_ptr<Core::LinAlg::Vector<double>> un =
         velpressplitter_->extract_other_vector(*veln_);
     std::shared_ptr<Core::LinAlg::Vector<double>> unm =
         velpressplitter_->extract_other_vector(*velnm_);
-    unm->Scale(-1.0);
+    unm->scale(-1.0);
 
     velpressplitter_->add_other_vector(*un, *velnp_);
     velpressplitter_->add_other_vector(*unm, *velnp_);
@@ -6646,7 +6647,7 @@ void FLD::FluidImplicitTimeInt::explicit_predictor()
     //      p    = p
     //       (0)
     */
-    velnp_->Update(1.0, *veln_, 0.0);
+    velnp_->update(1.0, *veln_, 0.0);
 
     // split between acceleration and pressure
     std::shared_ptr<Core::LinAlg::Vector<double>> unm =
@@ -6654,7 +6655,7 @@ void FLD::FluidImplicitTimeInt::explicit_predictor()
     std::shared_ptr<Core::LinAlg::Vector<double>> an =
         velpressplitter_->extract_other_vector(*accn_);
 
-    unm->Update(2.0 * dta_, *an, 1.0);
+    unm->update(2.0 * dta_, *an, 1.0);
 
     velpressplitter_->insert_other_vector(*unm, *velnp_);
   }
@@ -6682,7 +6683,7 @@ void FLD::FluidImplicitTimeInt::add_contribution_to_external_loads(
   if (external_loads_ == nullptr)
     external_loads_ = Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
 
-  int err = external_loads_->Update(1.0, *contributing_vector, 1.0);
+  int err = external_loads_->update(1.0, *contributing_vector, 1.0);
 
   if (err != 0) FOUR_C_THROW(" Core::LinAlg::Vector<double> update threw error code %i ", err);
 }
@@ -6742,7 +6743,7 @@ void FLD::FluidImplicitTimeInt::assemble_coupling_contributions()
 
     if (err != 0) FOUR_C_THROW(" Linalg Sparse Matrix Multiply threw error code %i ", err);
 
-    err = residual_->Update(-1.0 / residual_scaling(), *tmp, 1.0);
+    err = residual_->update(-1.0 / residual_scaling(), *tmp, 1.0);
 
     if (err != 0) FOUR_C_THROW(" Core::LinAlg::Vector<double> update threw error code %i ", err);
   }
@@ -6792,7 +6793,7 @@ void FLD::FluidImplicitTimeInt::reset_external_forces()
 {
   if (external_loads_ == nullptr)
     external_loads_ = Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
-  external_loads_->PutScalar(0);
+  external_loads_->put_scalar(0);
 }
 
 FOUR_C_NAMESPACE_CLOSE

@@ -149,7 +149,7 @@ void Core::LinAlg::KrylovProjector::fill_complete()
               w * c
        */
       double wTc;
-      (*w_)(mm).Dot((*c_)(rr), &wTc);
+      (*w_)(mm).dot((*c_)(rr), &wTc);
 
       // make sure c_i and w_i must not be krylov.
       if ((rr == mm) and (abs(wTc) < 1e-14))
@@ -310,7 +310,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::KrylovProjector::proje
   std::shared_ptr<Core::LinAlg::SerialDenseMatrix> cTAc =
       std::make_shared<Core::LinAlg::SerialDenseMatrix>(nsdim_, nsdim_, false);
   for (int i = 0; i < nsdim_; ++i)
-    for (int j = 0; j < nsdim_; ++j) (*c_)(i).Dot((*matvec)(j), &((*cTAc)(i, j)));
+    for (int j = 0; j < nsdim_; ++j) (*c_)(i).dot((*matvec)(j), &((*cTAc)(i, j)));
   // std::cout << *matvec << std::endl;
   // std::cout << A << std::endl;
 
@@ -433,7 +433,7 @@ int Core::LinAlg::KrylovProjector::apply_projector(Core::LinAlg::MultiVector<dou
   Core::LinAlg::SerialDenseVector temp1(nsdim_);
   for (int rr = 0; rr < nsdim_; ++rr)
   {
-    (Y(0)).Dot((v1)(rr), &(temp1(rr)));
+    (Y(0)).dot((v1)(rr), &(temp1(rr)));
   }
 
   // compute temp2 from matrix-vector-product:
@@ -444,7 +444,7 @@ int Core::LinAlg::KrylovProjector::apply_projector(Core::LinAlg::MultiVector<dou
   // loop
   for (int rr = 0; rr < nsdim_; ++rr)
   {
-    Y(0).Update(-temp2(rr), v2(rr), 1.0);
+    Y(0).update(-temp2(rr), v2(rr), 1.0);
   }
 
   return (ierr);
@@ -476,7 +476,7 @@ Core::LinAlg::KrylovProjector::multiply_multi_vector_dense_matrix(
     {
       // scale j-th (mm-th) vector of mv with corresponding entry of dm
       // and add to i-th (rr-th) vector of mvout
-      mvouti.Update((*dm)(mm, rr), (*mv)(mm), 1.0);
+      mvouti.update((*dm)(mm, rr), (*mv)(mm), 1.0);
     }
   }
 
@@ -505,13 +505,13 @@ Core::LinAlg::KrylovProjector::multiply_multi_vector_multi_vector(
     FOUR_C_THROW("id must be 1 or 2");
 
   Core::LinAlg::Vector<double> prod((*temp)(0));
-  for (int i = 1; i < nsdim_; ++i) prod.Multiply(1.0, (*temp)(i), prod, 1.0);
+  for (int i = 1; i < nsdim_; ++i) prod.multiply(1.0, (*temp)(i), prod, 1.0);
   int numnonzero = 0;
-  for (int i = 0; i < prod.MyLength(); ++i)
+  for (int i = 0; i < prod.local_length(); ++i)
     if (prod[i] != 0.0) numnonzero++;
 
   int glob_numnonzero = 0;
-  Core::Communication::sum_all(&numnonzero, &glob_numnonzero, 1, prod.Comm());
+  Core::Communication::sum_all(&numnonzero, &glob_numnonzero, 1, prod.get_comm());
 
   // do stupid conversion into Epetra map
   Epetra_Map mv1map(mv1->Map().NumGlobalElements(), mv1->Map().NumMyElements(),

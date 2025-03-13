@@ -218,8 +218,8 @@ MultiScale::MicroStatic::MicroStatic(const int microdisnum, const double V0)
   freactn_ = Core::LinAlg::create_vector(*pdof_, true);
 
   //----------------------- compute an inverse of the dirichtoggle vector
-  invtoggle_->PutScalar(1.0);
-  invtoggle_->Update(-1.0, *dirichtoggle_, 1.0);
+  invtoggle_->put_scalar(1.0);
+  invtoggle_->update(-1.0, *dirichtoggle_, 1.0);
 
   // ------------------------- Calculate initial volume and density of microstructure
   // the macroscopic density has to be averaged over the entire
@@ -313,10 +313,10 @@ void MultiScale::MicroStatic::predict_const_dis(Core::LinAlg::Matrix<3, 3>* defg
     p.set("delta time", dt_);
     // set vector values needed by elements
     discret_->clear_state();
-    disi_->PutScalar(0.0);
+    disi_->put_scalar(0.0);
     discret_->set_state("residual displacement", disi_);
     discret_->set_state("displacement", disn_);
-    fintn_->PutScalar(0.0);  // initialise internal force vector
+    fintn_->put_scalar(0.0);  // initialise internal force vector
 
     discret_->evaluate(p, stiff_, nullptr, fintn_, nullptr, nullptr);
     discret_->clear_state();
@@ -330,17 +330,17 @@ void MultiScale::MicroStatic::predict_const_dis(Core::LinAlg::Matrix<3, 3>* defg
 
   //-------------------------------------------- compute residual forces
   // add static mid-balance
-  fresn_->Update(-1.0, *fintn_, 0.0);
+  fresn_->update(-1.0, *fintn_, 0.0);
 
   // extract reaction forces
-  int err = freactn_->Import(*fresn_, *importp_, Insert);
+  int err = freactn_->import(*fresn_, *importp_, Insert);
   if (err)
     FOUR_C_THROW(
         "Importing reaction forces of prescribed dofs using importer returned err=%d", err);
 
   // blank residual at DOFs on Dirichlet BC
   Core::LinAlg::Vector<double> fresncopy(*fresn_);
-  fresn_->Multiply(1.0, *invtoggle_, fresncopy, 0.0);
+  fresn_->multiply(1.0, *invtoggle_, fresncopy, 0.0);
 
   // store norm of residual
   normfres_ = Solid::calculate_vector_norm(iternorm_, *fresn_);
@@ -359,7 +359,7 @@ void MultiScale::MicroStatic::predict_tang_dis(Core::LinAlg::Matrix<3, 3>* defgr
       Core::LinAlg::create_vector(*(discret_->dof_row_map()), true);
 
   // copy last converged displacements
-  dbcinc->Update(1.0, *disn_, 0.0);
+  dbcinc->update(1.0, *disn_, 0.0);
 
   // apply new displacements at DBCs -> this has to be done with the
   // mid-displacements since the given macroscopic deformation
@@ -373,7 +373,7 @@ void MultiScale::MicroStatic::predict_tang_dis(Core::LinAlg::Matrix<3, 3>* defgr
   // subtract the displacements of the last converged step
   // DBC-DOFs hold increments of current step
   // free-DOFs hold zeros
-  dbcinc->Update(-1.0, *disn_, 1.0);
+  dbcinc->update(-1.0, *disn_, 1.0);
 
   //--------------------------------- set EAS internal data if necessary
 
@@ -395,10 +395,10 @@ void MultiScale::MicroStatic::predict_tang_dis(Core::LinAlg::Matrix<3, 3>* defgr
     p.set("delta time", dt_);
     // set vector values needed by elements
     discret_->clear_state();
-    disi_->PutScalar(0.0);
+    disi_->put_scalar(0.0);
     discret_->set_state("residual displacement", disi_);
     discret_->set_state("displacement", disn_);
-    fintn_->PutScalar(0.0);  // initialise internal force vector
+    fintn_->put_scalar(0.0);  // initialise internal force vector
 
     discret_->evaluate(p, stiff_, nullptr, fintn_, nullptr, nullptr);
     discret_->clear_state();
@@ -408,7 +408,7 @@ void MultiScale::MicroStatic::predict_tang_dis(Core::LinAlg::Matrix<3, 3>* defgr
 
   //-------------------------------------------- compute residual forces
   // add static mid-balance
-  fresn_->Update(-1.0, *fintn_, 0.0);
+  fresn_->update(-1.0, *fintn_, 0.0);
 
   // add linear reaction forces to residual
   {
@@ -418,17 +418,17 @@ void MultiScale::MicroStatic::predict_tang_dis(Core::LinAlg::Matrix<3, 3>* defgr
     stiff_->multiply(false, *dbcinc, *freact);
 
     // add linear reaction forces due to prescribed Dirichlet BCs
-    fresn_->Update(-1.0, *freact, 1.0);
+    fresn_->update(-1.0, *freact, 1.0);
   }
 
   // blank residual at DOFs on Dirichlet BC
   {
     Core::LinAlg::Vector<double> fresncopy(*fresn_);
-    fresn_->Multiply(1.0, *invtoggle_, fresncopy, 0.0);
+    fresn_->multiply(1.0, *invtoggle_, fresncopy, 0.0);
   }
 
   // apply Dirichlet BCs to system of equations
-  disi_->PutScalar(0.0);
+  disi_->put_scalar(0.0);
   stiff_->complete();
   Core::LinAlg::apply_dirichlet_to_system(*stiff_, *disi_, *fresn_, *zeros_, *dirichtoggle_);
 
@@ -446,10 +446,10 @@ void MultiScale::MicroStatic::predict_tang_dis(Core::LinAlg::Matrix<3, 3>* defgr
 
   //---------------------------------- update mid configuration values
   // set Dirichlet increments in displacement increments
-  disi_->Update(1.0, *dbcinc, 1.0);
+  disi_->update(1.0, *dbcinc, 1.0);
 
   // displacements
-  disn_->Update(1.0, *disi_, 1.0);
+  disn_->update(1.0, *disi_, 1.0);
 
   // reset anything that needs to be reset at the element level
 
@@ -480,10 +480,10 @@ void MultiScale::MicroStatic::predict_tang_dis(Core::LinAlg::Matrix<3, 3>* defgr
     p.set("delta time", dt_);
     // set vector values needed by elements
     discret_->clear_state();
-    disi_->PutScalar(0.0);
+    disi_->put_scalar(0.0);
     discret_->set_state("residual displacement", disi_);
     discret_->set_state("displacement", disn_);
-    fintn_->PutScalar(0.0);  // initialise internal force vector
+    fintn_->put_scalar(0.0);  // initialise internal force vector
 
     discret_->evaluate(p, stiff_, nullptr, fintn_, nullptr, nullptr);
     discret_->clear_state();
@@ -491,17 +491,17 @@ void MultiScale::MicroStatic::predict_tang_dis(Core::LinAlg::Matrix<3, 3>* defgr
 
   //-------------------------------------------- compute residual forces
   // add static mid-balance
-  fresn_->Update(-1.0, *fintn_, 0.0);
+  fresn_->update(-1.0, *fintn_, 0.0);
 
   // extract reaction forces
-  int err = freactn_->Import(*fresn_, *importp_, Insert);
+  int err = freactn_->import(*fresn_, *importp_, Insert);
   if (err)
     FOUR_C_THROW(
         "Importing reaction forces of prescribed dofs using importer returned err=%d", err);
 
   // blank residual at DOFs on Dirichlet BC
   Core::LinAlg::Vector<double> fresncopy(*fresn_);
-  fresn_->Multiply(1.0, *invtoggle_, fresncopy, 0.0);
+  fresn_->multiply(1.0, *invtoggle_, fresncopy, 0.0);
 
   // store norm of residual
   normfres_ = Solid::calculate_vector_norm(iternorm_, *fresn_);
@@ -533,7 +533,7 @@ void MultiScale::MicroStatic::full_newton()
   while (!converged() && numiter_ <= maxiter_)
   {
     //----------------------- apply dirichlet BCs to system of equations
-    disi_->PutScalar(0.0);  // Useful? depends on solver and more
+    disi_->put_scalar(0.0);  // Useful? depends on solver and more
 
     Core::LinAlg::apply_dirichlet_to_system(*stiff_, *disi_, *fresn_, *zeros_, *dirichtoggle_);
 
@@ -553,7 +553,7 @@ void MultiScale::MicroStatic::full_newton()
 
     //---------------------------------- update mid configuration values
     // displacements
-    disn_->Update(1.0, *disi_, 1.0);
+    disn_->update(1.0, *disi_, 1.0);
 
     //---------------------------- compute internal forces and stiffness
     {
@@ -574,7 +574,7 @@ void MultiScale::MicroStatic::full_newton()
       // of the time step after having finished a macroscopic dt
       discret_->set_state("residual displacement", disi_);
       discret_->set_state("displacement", disn_);
-      fintn_->PutScalar(0.0);  // initialise internal force vector
+      fintn_->put_scalar(0.0);  // initialise internal force vector
 
       discret_->evaluate(p, stiff_, nullptr, fintn_, nullptr, nullptr);
       discret_->clear_state();
@@ -585,17 +585,17 @@ void MultiScale::MicroStatic::full_newton()
 
     //------------------------------------------ compute residual forces
     // add static mid-balance
-    fresn_->Update(-1.0, *fintn_, 0.0);
+    fresn_->update(-1.0, *fintn_, 0.0);
 
     // extract reaction forces
-    int err = freactn_->Import(*fresn_, *importp_, Insert);
+    int err = freactn_->import(*fresn_, *importp_, Insert);
     if (err)
       FOUR_C_THROW(
           "Importing reaction forces of prescribed dofs using importer returned err=%d", err);
 
     // blank residual DOFs which are on Dirichlet BC
     Core::LinAlg::Vector<double> fresncopy(*fresn_);
-    fresn_->Multiply(1.0, *invtoggle_, fresncopy, 0.0);
+    fresn_->multiply(1.0, *invtoggle_, fresncopy, 0.0);
 
     //---------------------------------------------- build residual norm
     normdisi_ = Solid::calculate_vector_norm(iternorm_, *disi_);
@@ -830,7 +830,7 @@ void MultiScale::MicroStatic::evaluate_micro_bc(
       {
         const int gid = dofs[l];
 
-        const int lid = disp.Map().LID(gid);
+        const int lid = disp.get_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Global id %d not on this proc in system vector", gid);
         (disp)[lid] = disp_prescribed[l];
       }
@@ -946,7 +946,7 @@ void MultiScale::MicroStatic::static_homogenization(Core::LinAlg::Matrix<6, 1>* 
   // IMPORTANT: the RVE has to be centered around (0,0,0), otherwise
   // modifications of this approach are necessary.
 
-  freactn_->Scale(-1.0);
+  freactn_->scale(-1.0);
 
   Core::LinAlg::Matrix<3, 3> P(true);
 
@@ -1052,7 +1052,7 @@ void MultiScale::MicroStatic::static_homogenization(Core::LinAlg::Matrix<6, 1>* 
           solver_params.refactor = true;
           solver_params.reset = true;
           solver.solve_with_multi_vector(stiff_->epetra_operator(),
-              (*iterinc)(i).get_ptr_of_MultiVector(), (*rhs_)(i).get_ptr_of_MultiVector(),
+              (*iterinc)(i).get_ptr_of_multi_vector(), (*rhs_)(i).get_ptr_of_multi_vector(),
               solver_params);
         }
         break;

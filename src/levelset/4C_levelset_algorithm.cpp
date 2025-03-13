@@ -193,7 +193,7 @@ void ScaTra::LevelSetAlgorithm::setup()
       // reset phin vector
       // remark: for BDF2, we do not have to set phinm,
       //        since it is not used for the first time step as a backward Euler step is performed
-      phin_->Update(1.0, *phinp_, 0.0);
+      phin_->update(1.0, *phinp_, 0.0);
 
       // reinitialization is done, reset flag
       switchreinit_ = false;

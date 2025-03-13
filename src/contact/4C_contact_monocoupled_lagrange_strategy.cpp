@@ -373,16 +373,16 @@ void CONTACT::MonoCoupledLagrangeStrategy::recover_coupled(
       }
       else
       {
-        Core::LinAlg::Vector<double> zfluid(z_->Map(), true);
+        Core::LinAlg::Vector<double> zfluid(z_->get_map(), true);
 
         Core::LinAlg::Vector<double> mod(*gsdofrowmap_);
         matiter->second->multiply(false, *inciter->second, mod);
-        zfluid.Update(-1.0, mod, 0.0);
+        zfluid.update(-1.0, mod, 0.0);
         Core::LinAlg::Vector<double> zcopy(zfluid);
         invdmod.multiply(true, zcopy, zfluid);
-        zfluid.Scale(1 / (1 - alphaf_));
+        zfluid.scale(1 / (1 - alphaf_));
 
-        z_->Update(1.0, zfluid, 1.0);  // Add Offdiag  -  Coupling Contribution to LM!!!
+        z_->update(1.0, zfluid, 1.0);  // Add Offdiag  -  Coupling Contribution to LM!!!
       }
     }
   }

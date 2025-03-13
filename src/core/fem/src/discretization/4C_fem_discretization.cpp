@@ -521,7 +521,7 @@ void Core::FE::Discretization::set_state(const unsigned nds, const std::string& 
   FOUR_C_ASSERT_ALWAYS(
       have_dofs(), "fill_complete() was not called for discretization %s!", name_.c_str());
   const Epetra_Map* colmap = dof_col_map(nds);
-  const Epetra_BlockMap& vecmap = state->Map();
+  const Epetra_BlockMap& vecmap = state->get_map();
 
   if (state_.size() <= nds) state_.resize(nds + 1);
 
@@ -536,12 +536,12 @@ void Core::FE::Discretization::set_state(const unsigned nds, const std::string& 
         name_.c_str(), name.c_str());
     // make a copy as in parallel such that no additional RCP points to the state vector
     std::shared_ptr<Core::LinAlg::Vector<double>> tmp = Core::LinAlg::create_vector(*colmap, false);
-    tmp->Update(1.0, *state, 0.0);
+    tmp->update(1.0, *state, 0.0);
     state_[nds][name] = tmp;
   }
   else  // if it's not in column map export and allocate
   {
-    FOUR_C_ASSERT(dof_row_map(nds)->SameAs(state->Map()),
+    FOUR_C_ASSERT(dof_row_map(nds)->SameAs(state->get_map()),
         "row map of discretization %s and state vector %s are different. This is a fatal bug!",
         name_.c_str(), name.c_str());
     std::shared_ptr<Core::LinAlg::Vector<double>> tmp = Core::LinAlg::create_vector(*colmap, false);
@@ -554,14 +554,14 @@ void Core::FE::Discretization::set_state(const unsigned nds, const std::string& 
     }
     // (re)build importer if necessary
     if (stateimporter_[nds] == nullptr or
-        not stateimporter_[nds]->SourceMap().SameAs(state->Map()) or
+        not stateimporter_[nds]->SourceMap().SameAs(state->get_map()) or
         not stateimporter_[nds]->TargetMap().SameAs(*colmap))
     {
-      stateimporter_[nds] = std::make_shared<Epetra_Import>(*colmap, state->Map());
+      stateimporter_[nds] = std::make_shared<Epetra_Import>(*colmap, state->get_map());
     }
 
     // transfer data
-    int err = tmp->Import(*state, (*stateimporter_[nds]), Insert);
+    int err = tmp->import(*state, (*stateimporter_[nds]), Insert);
     FOUR_C_ASSERT_ALWAYS(!err,
         "Export using importer failed for Core::LinAlg::Vector<double>: return value = %d", err);
 

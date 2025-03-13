@@ -64,7 +64,7 @@ void Solid::IMPLICIT::GenAlphaLieGroup::post_setup()
 
     // so far, we are restricted to vanishing initial accelerations
     std::shared_ptr<Core::LinAlg::Vector<double>> accnp_ptr = global_state().get_acc_np();
-    accnp_ptr->PutScalar(0.0);
+    accnp_ptr->put_scalar(0.0);
 
     // sanity check whether assumption is fulfilled
     /* ToDo tolerance value is experience and based on following consideration:
@@ -103,7 +103,7 @@ void Solid::IMPLICIT::GenAlphaLieGroup::set_state(const Core::LinAlg::Vector<dou
   // new end-point displacements
   // ---------------------------------------------------------------------------
   std::shared_ptr<Core::LinAlg::Vector<double>> disnp_ptr = global_state().extract_displ_entries(x);
-  global_state().get_dis_np()->Scale(1.0, *disnp_ptr);
+  global_state().get_dis_np()->scale(1.0, *disnp_ptr);
 
   /* ToDo in case we want to handle rotation vector DoFs correctly on time
    *      integrator level, the update procedure needs to be adapted here;
@@ -113,13 +113,13 @@ void Solid::IMPLICIT::GenAlphaLieGroup::set_state(const Core::LinAlg::Vector<dou
   // ---------------------------------------------------------------------------
   // new end-point velocities
   // ---------------------------------------------------------------------------
-  global_state().get_vel_np()->Update(
+  global_state().get_vel_np()->update(
       1.0, (*const_vel_acc_update_ptr_)(0), gamma_ / (beta_ * dt), *disnp_ptr, 0.0);
 
   // ---------------------------------------------------------------------------
   // new end-point accelerations
   // ---------------------------------------------------------------------------
-  global_state().get_acc_np()->Update(1.0, (*const_vel_acc_update_ptr_)(1),
+  global_state().get_acc_np()->update(1.0, (*const_vel_acc_update_ptr_)(1),
       (1.0 - alpham_) / (beta_ * dt * dt * (1.0 - alphaf_)), *disnp_ptr, 0.0);
 }
 
@@ -153,9 +153,9 @@ void Solid::IMPLICIT::GenAlphaLieGroup::update_step_state()
 
   // new at t_{n+1} -> t_n
   //    acc_mod_{n} := -alpha_m/(1-alpha_m) * acc_mod_{n}
-  accn_mod_->Scale(-alpham_ / (1.0 - alpham_));
-  accn_mod_->Update(alphaf_ / (1.0 - alpham_), *global_state().get_acc_n(), 1.0);
-  accn_mod_->Update((1.0 - alphaf_) / (1.0 - alpham_), *global_state().get_acc_np(), 1.0);
+  accn_mod_->scale(-alpham_ / (1.0 - alpham_));
+  accn_mod_->update(alphaf_ / (1.0 - alpham_), *global_state().get_acc_n(), 1.0);
+  accn_mod_->update((1.0 - alphaf_) / (1.0 - alpham_), *global_state().get_acc_np(), 1.0);
 
   // ---------------------------------------------------------------------------
   // update model specific variables
@@ -177,20 +177,20 @@ void Solid::IMPLICIT::GenAlphaLieGroup::update_constant_state_contributions()
   // ---------------------------------------------------------------------------
   // velocity
   // ---------------------------------------------------------------------------
-  (*const_vel_acc_update_ptr_)(0).Scale((1.0 - gamma_ / (2.0 * beta_)) * dt, *accn_mod_);
-  (*const_vel_acc_update_ptr_)(0).Update(1.0 - gamma_ / beta_, *global_state().get_vel_n(), 1.0);
-  (*const_vel_acc_update_ptr_)(0).Update(-gamma_ / (beta_ * dt), *global_state().get_dis_n(), 1.0);
+  (*const_vel_acc_update_ptr_)(0).scale((1.0 - gamma_ / (2.0 * beta_)) * dt, *accn_mod_);
+  (*const_vel_acc_update_ptr_)(0).update(1.0 - gamma_ / beta_, *global_state().get_vel_n(), 1.0);
+  (*const_vel_acc_update_ptr_)(0).update(-gamma_ / (beta_ * dt), *global_state().get_dis_n(), 1.0);
 
   // ---------------------------------------------------------------------------
   // acceleration
   // ---------------------------------------------------------------------------
-  (*const_vel_acc_update_ptr_)(1).Scale(alphaf_ / (alphaf_ - 1.0), *global_state().get_acc_n());
-  (*const_vel_acc_update_ptr_)(1).Update(
+  (*const_vel_acc_update_ptr_)(1).scale(alphaf_ / (alphaf_ - 1.0), *global_state().get_acc_n());
+  (*const_vel_acc_update_ptr_)(1).update(
       alpham_ / (1.0 - alphaf_) - (1.0 - alpham_) * (0.5 - beta_) / (beta_ * (1.0 - alphaf_)),
       *accn_mod_, 1.0);
-  (*const_vel_acc_update_ptr_)(1).Update(
+  (*const_vel_acc_update_ptr_)(1).update(
       -(1.0 - alpham_) / (beta_ * dt * (1.0 - alphaf_)), *global_state().get_vel_n(), 1.0);
-  (*const_vel_acc_update_ptr_)(1).Update(
+  (*const_vel_acc_update_ptr_)(1).update(
       -(1.0 - alpham_) / (beta_ * dt * dt * (1.0 - alphaf_)), *global_state().get_dis_n(), 1.0);
 }
 
@@ -247,18 +247,18 @@ void Solid::IMPLICIT::GenAlphaLieGroup::predict_const_dis_consist_vel_acc(
   const double& dt = (*global_state().get_delta_time())[0];
 
   // constant predictor: displacement in domain
-  disnp.Update(1.0, *disn, 0.0);
+  disnp.update(1.0, *disn, 0.0);
 
   // consistent velocities following Newmark formulas
-  velnp.Update(1.0, disnp, -1.0, *disn, 0.0);
-  velnp.Update((beta_ - gamma_) / beta_, *veln, (2.0 * beta_ - gamma_) * dt / (2.0 * beta_),
+  velnp.update(1.0, disnp, -1.0, *disn, 0.0);
+  velnp.update((beta_ - gamma_) / beta_, *veln, (2.0 * beta_ - gamma_) * dt / (2.0 * beta_),
       *accn_mod_, gamma_ / (beta_ * dt));
 
   // consistent accelerations following Newmark formulas
-  accnp.Update(1.0, disnp, -1.0, *disn, 0.0);
-  accnp.Update(-(1.0 - alpham_) / (beta_ * dt * (1 - alphaf_)), *veln, -alphaf_ / (1.0 - alphaf_),
+  accnp.update(1.0, disnp, -1.0, *disn, 0.0);
+  accnp.update(-(1.0 - alpham_) / (beta_ * dt * (1 - alphaf_)), *veln, -alphaf_ / (1.0 - alphaf_),
       *accn, (1.0 - alpham_) / (beta_ * dt * dt * (1.0 - alphaf_)));
-  accnp.Update(
+  accnp.update(
       alpham_ / (1.0 - alphaf_) - (1.0 - alpham_) * (0.5 - beta_) / (beta_ * (1.0 - alphaf_)),
       *accn_mod_, 1.0);
 }

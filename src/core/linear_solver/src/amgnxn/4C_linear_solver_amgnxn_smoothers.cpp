@@ -2217,14 +2217,14 @@ Core::LinearSolver::AMGNxN::SimpleSmootherFactory::approximate_inverse(
   if (method == "diagonal")
   {
     A.extract_diagonal_copy(invAVector);
-    int err = invAVector.Reciprocal(invAVector);
+    int err = invAVector.reciprocal(invAVector);
     if (err)
       FOUR_C_THROW(
           "Core::LinAlg::MultiVector<double>::Reciprocal returned %d, are we dividing by 0?", err);
   }
   else if (method == "row sums" or method == "row sums diagonal blocks")
   {
-    int err = A.epetra_matrix()->InvRowSums(invAVector.get_ref_of_Epetra_Vector());
+    int err = A.epetra_matrix()->InvRowSums(invAVector.get_ref_of_epetra_vector());
     if (err) FOUR_C_THROW("Epetra_CrsMatrix::InvRowSums returned %d, are we dividing by 0?", err);
   }
   else

@@ -199,11 +199,11 @@ void PoroElastScaTra::PoroScatraMono::solve()
 
   // incremental solution vector with length of all dofs
   iterinc_ = Core::LinAlg::create_vector(*dof_row_map(), true);
-  iterinc_->PutScalar(0.0);
+  iterinc_->put_scalar(0.0);
 
   // a zero vector of full length
   zeros_ = Core::LinAlg::create_vector(*dof_row_map(), true);
-  zeros_->PutScalar(0.0);
+  zeros_->put_scalar(0.0);
 
   //---------------------------------------------- iteration loop
 
@@ -522,7 +522,7 @@ void PoroElastScaTra::PoroScatraMono::linear_solve()
     solver_params.lin_tol_better = solveradaptolbetter_;
   }
   // apply Dirichlet BCs to system of equations
-  iterinc_->PutScalar(0.0);  // Useful? depends on solver and more
+  iterinc_->put_scalar(0.0);  // Useful? depends on solver and more
 
   if (directsolve_)
   {
@@ -970,7 +970,7 @@ void PoroElastScaTra::PoroScatraMono::build_convergence_norms()
 
 
   //------------------------------------------------------------- build residual increment norms
-  iterinc_->Norm2(&norminc_);
+  iterinc_->norm_2(&norminc_);
 
   // displacement and fluid velocity & pressure incremental vector
   std::shared_ptr<const Core::LinAlg::Vector<double>> interincs;
@@ -1228,19 +1228,19 @@ void PoroElastScaTra::PoroScatraMono::fd_check()
   std::shared_ptr<Core::LinAlg::Vector<double>> iterinc = nullptr;
   iterinc = Core::LinAlg::create_vector(*dof_row_map(), true);
 
-  const int dofs = iterinc->GlobalLength();
+  const int dofs = iterinc->global_length();
   std::cout << "in total " << dofs << " DOFs" << std::endl;
   const double delta = 1e-8;
 
-  iterinc->PutScalar(0.0);
+  iterinc->put_scalar(0.0);
 
-  iterinc->ReplaceGlobalValue(0, 0, delta);
+  iterinc->replace_global_value(0, 0, delta);
 
   std::shared_ptr<Epetra_CrsMatrix> stiff_approx = nullptr;
   stiff_approx = Core::LinAlg::create_matrix(*dof_row_map(), 81);
 
   Core::LinAlg::Vector<double> rhs_old(*dof_row_map(), true);
-  rhs_old.Update(1.0, *rhs_, 0.0);
+  rhs_old.update(1.0, *rhs_, 0.0);
   Core::LinAlg::Vector<double> rhs_copy(*dof_row_map(), true);
 
   std::shared_ptr<Core::LinAlg::SparseMatrix> sparse = systemmatrix_->merge();
@@ -1253,7 +1253,7 @@ void PoroElastScaTra::PoroScatraMono::fd_check()
   {
     if (combined_dbc_map()->MyGID(i))
     {
-      iterinc->ReplaceGlobalValue(i, 0, 0.0);
+      iterinc->replace_global_value(i, 0, 0.0);
     }
 
     if (i == spaltenr)
@@ -1263,9 +1263,9 @@ void PoroElastScaTra::PoroScatraMono::fd_check()
     evaluate(iterinc);
     setup_rhs();
 
-    rhs_copy.Update(1.0, *rhs_, 0.0);
+    rhs_copy.update(1.0, *rhs_, 0.0);
 
-    iterinc_->PutScalar(0.0);  // Useful? depends on solver and more
+    iterinc_->put_scalar(0.0);  // Useful? depends on solver and more
     Core::LinAlg::apply_dirichlet_to_system(
         sparse_copy, *iterinc_, rhs_copy, *zeros_, *combined_dbc_map());
 
@@ -1276,8 +1276,8 @@ void PoroElastScaTra::PoroScatraMono::fd_check()
       std::cout << "rhs_old: " << (rhs_old)[zeilennr] << std::endl;
     }
 
-    rhs_copy.Update(-1.0, rhs_old, 1.0);
-    rhs_copy.Scale(-1.0 / delta);
+    rhs_copy.update(-1.0, rhs_old, 1.0);
+    rhs_copy.scale(-1.0 / delta);
 
     int* index = &i;
     for (int j = 0; j < dofs; ++j)
@@ -1314,11 +1314,11 @@ void PoroElastScaTra::PoroScatraMono::fd_check()
       }
     }
 
-    if (not combined_dbc_map()->MyGID(i)) iterinc->ReplaceGlobalValue(i, 0, -delta);
+    if (not combined_dbc_map()->MyGID(i)) iterinc->replace_global_value(i, 0, -delta);
 
-    iterinc->ReplaceGlobalValue(i - 1, 0, 0.0);
+    iterinc->replace_global_value(i - 1, 0, 0.0);
 
-    if (i != dofs - 1) iterinc->ReplaceGlobalValue(i + 1, 0, delta);
+    if (i != dofs - 1) iterinc->replace_global_value(i + 1, 0, delta);
 
     if (i == spaltenr)
       std::cout << "\n******************" << spaltenr + 1 << ". Spalte End!!***************"

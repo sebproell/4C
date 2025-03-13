@@ -49,7 +49,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> XFEM::XFieldField::Coupling::maste
       break;
   }
 
-  master_to_slave(*mv->get_ptr_of_MultiVector(), map_type, *sv->get_ptr_of_MultiVector());
+  master_to_slave(*mv->get_ptr_of_multi_vector(), map_type, *sv->get_ptr_of_multi_vector());
   return sv;
 }
 
@@ -70,7 +70,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> XFEM::XFieldField::Coupling::slave
       break;
   }
 
-  slave_to_master(*sv->get_ptr_of_MultiVector(), map_type, *mv->get_ptr_of_MultiVector());
+  slave_to_master(*sv->get_ptr_of_multi_vector(), map_type, *mv->get_ptr_of_multi_vector());
   return mv;
 }
 

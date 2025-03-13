@@ -62,7 +62,7 @@ namespace
         indices[lid] = lid;
         values[lid] = map->GID(lid);
       }
-      epetraVector_->ReplaceMyValues(numMyEles, values, indices);
+      epetraVector_->replace_local_values(numMyEles, values, indices);
     }
 
     void TearDown() override { Core::IO::cout.close(); }
@@ -235,9 +235,9 @@ namespace
   TEST_F(SetupCompareParallelVectorsTest, NegativeTestCompareVectors)
   {
     // disturb one value on each proc which leads to a failure of the comparison
-    const int lastLocalIndex = epetraVector_->MyLength() - 1;
+    const int lastLocalIndex = epetraVector_->local_length() - 1;
     double disturbedValue = static_cast<double>(lastLocalIndex);
-    epetraVector_->ReplaceMyValues(1, &disturbedValue, &lastLocalIndex);
+    epetraVector_->replace_local_values(1, &disturbedValue, &lastLocalIndex);
 
     EXPECT_THROW(Core::Communication::are_distributed_vectors_identical(
                      *communicators_, *epetraVector_, "epetraVector"),

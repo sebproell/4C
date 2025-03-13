@@ -84,7 +84,7 @@ void FLD::TimIntOneStepTheta::set_old_part_of_righthandside()
                   (con: hist_ = densn_ + dt*(1-Theta)*densdtn_)
   */
 
-  hist_->Update(1.0, *veln_, dta_ * (1.0 - theta_), *accn_, 0.0);
+  hist_->update(1.0, *veln_, dta_ * (1.0 - theta_), *accn_, 0.0);
 }
 
 /*----------------------------------------------------------------------*
@@ -123,9 +123,9 @@ void FLD::TimIntOneStepTheta::calculate_acceleration(
   const double fact1 = 1.0 / (theta_ * dta_);
   const double fact2 = -1.0 / theta_ + 1.0; /* = -1/Theta + 1 */
 
-  accnp->Update(fact1, *velnp, 0.0);
-  accnp->Update(-fact1, *veln, 1.0);
-  accnp->Update(fact2, *accn, 1.0);
+  accnp->update(fact1, *velnp, 0.0);
+  accnp->update(-fact1, *veln, 1.0);
+  accnp->update(fact2, *accn, 1.0);
 }
 
 /*----------------------------------------------------------------------*
@@ -159,9 +159,9 @@ void FLD::TimIntOneStepTheta::outputof_filtered_vel(
     FOUR_C_THROW("Unknown separation type!");
 
   // get filtered or coarse scale velocity
-  outvec->Update(1.0, *velnp_, -1.0, *row_finescaleveltmp, 0.0);
+  outvec->update(1.0, *velnp_, -1.0, *row_finescaleveltmp, 0.0);
 
-  fsoutvec->Update(1.0, *row_finescaleveltmp, 0.0);
+  fsoutvec->update(1.0, *row_finescaleveltmp, 0.0);
 }
 
 // -------------------------------------------------------------------
@@ -242,10 +242,10 @@ void FLD::TimIntOneStepTheta::apply_external_forces(
   }
 
   // set external force for t_{n+1}
-  external_loadsnp_->Update(1.0, *fext, 0.0);
+  external_loadsnp_->update(1.0, *fext, 0.0);
 
   // compute interpolated external force at t_{n+\theta}
-  external_loads_->Update(theta_, *external_loadsnp_, (1.0 - theta_), *external_loadsn_, 0.0);
+  external_loads_->update(theta_, *external_loadsnp_, (1.0 - theta_), *external_loadsn_, 0.0);
 }
 
 
@@ -283,7 +283,7 @@ void FLD::TimIntOneStepTheta::read_restart(int step)
     if (step_ > numstasteps_ && params_->get<double>("theta") != 1.0)
     {
       reader.read_vector(external_loadsn_, "fexternal_n");
-      if (have_fexternal != external_loadsn_->GlobalLength())
+      if (have_fexternal != external_loadsn_->global_length())
         FOUR_C_THROW("reading of external loads failed");
     }
   }
@@ -295,7 +295,7 @@ void FLD::TimIntOneStepTheta::read_restart(int step)
  *----------------------------------------------------------------------*/
 void FLD::TimIntOneStepTheta::time_update_external_forces()
 {
-  if (external_loadsn_ != nullptr) external_loadsn_->Update(1.0, *external_loadsnp_, 0.0);
+  if (external_loadsn_ != nullptr) external_loadsn_->update(1.0, *external_loadsnp_, 0.0);
 }
 
 /*----------------------------------------------------------------------*|

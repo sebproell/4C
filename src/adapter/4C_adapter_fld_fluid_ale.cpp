@@ -345,14 +345,14 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Adapter::FluidAle::relaxation_solv
   ale_field()->solve();
   std::shared_ptr<Core::LinAlg::Vector<double>> fluiddisp =
       ale_to_fluid_field(ale_field()->dispnp());
-  fluiddisp->Scale(1. / dt);
+  fluiddisp->scale(1. / dt);
 
   fluid_field()->apply_mesh_velocity(fluiddisp);
 
   // grid position is done inside RelaxationSolve
 
   // the displacement -> velocity conversion at the interface
-  idisp->Scale(1. / dt);
+  idisp->scale(1. / dt);
 
   return fluid_field()->relaxation_solve(idisp);
 }

@@ -456,7 +456,7 @@ void FS3I::FS3IBase::evaluate_scatra_fields()
       std::shared_ptr<Core::LinAlg::Vector<double>> coupforce = scatracoupforce_[i];
       std::shared_ptr<Core::LinAlg::SparseMatrix> coupmat = scatracoupmat_[i];
 
-      coupforce->PutScalar(0.0);
+      coupforce->put_scalar(0.0);
       coupmat->zero();
 
       scatra->surface_permeability(coupmat, coupforce);
@@ -549,7 +549,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FS3I::FS3IBase::calc_membrane_conc
 
   // nodewise calculation of mean concentration in the interface
 
-  for (int i = 0; i < temp->MyLength(); i++)
+  for (int i = 0; i < temp->local_length(); i++)
   {
     // here the unweighted average is uses. One could also use a logarithmic average...
     (*temp)[i] =
@@ -603,13 +603,13 @@ void FS3I::FS3IBase::setup_coupled_scatra_rhs()
         scatrafieldexvec_[0]->extract_vector(*coup1, 1);
     std::shared_ptr<Core::LinAlg::Vector<double>> temp =
         scatrafieldexvec_[1]->insert_vector(*scatra1_to_scatra2(*coup1_boundary), 1);
-    temp->Scale(-1.0);
+    temp->scale(-1.0);
     scatraglobalex_->add_vector(*temp, 1, *scatrarhs_);
 
     std::shared_ptr<Core::LinAlg::Vector<double>> coup2_boundary =
         scatrafieldexvec_[1]->extract_vector(*coup2, 1);
     temp = scatrafieldexvec_[0]->insert_vector(*scatra2_to_scatra1(*coup2_boundary), 1);
-    temp->Scale(-1.0);
+    temp->scale(-1.0);
     scatraglobalex_->add_vector(*temp, 0, *scatrarhs_);
   }
 }
@@ -631,7 +631,7 @@ void FS3I::FS3IBase::setup_coupled_scatra_vector(Core::LinAlg::Vector<double>& g
         scatrafieldexvec_[1]->extract_vector(vec2, 1);
     std::shared_ptr<Core::LinAlg::Vector<double>> temp =
         scatrafieldexvec_[0]->insert_vector(*scatra2_to_scatra1(*vec2_boundary), 1);
-    temp->Update(1.0, vec1, 1.0);
+    temp->update(1.0, vec1, 1.0);
 
     scatraglobalex_->insert_vector(*temp, 0, globalvec);
     scatraglobalex_->insert_vector(*vec2_other, 1, globalvec);
@@ -739,7 +739,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FS3I::FS3IBase::scatra1_to_scatra2
 /*----------------------------------------------------------------------*/
 void FS3I::FS3IBase::linear_solve_scatra()
 {
-  scatraincrement_->PutScalar(0.0);
+  scatraincrement_->put_scalar(0.0);
 
   Core::LinAlg::SolverParams solver_params;
   solver_params.refactor = true;

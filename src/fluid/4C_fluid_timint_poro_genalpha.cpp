@@ -41,7 +41,7 @@ void FLD::TimIntPoroGenAlpha::gen_alpha_intermediate_values()
   //       (i)                     (i)
 
   // consider both velocity and pressure degrees of freedom
-  accam_->Update((alphaM_), *accnp_, (1.0 - alphaM_), *accn_, 0.0);
+  accam_->update((alphaM_), *accnp_, (1.0 - alphaM_), *accn_, 0.0);
 
   // set intermediate values for velocity
   //
@@ -57,7 +57,7 @@ void FLD::TimIntPoroGenAlpha::gen_alpha_intermediate_values()
   //
   // note that its af-genalpha with mid-point treatment of the pressure,
   // not implicit treatment as for the genalpha according to Whiting
-  velaf_->Update((alphaF_), *velnp_, (1.0 - alphaF_), *veln_, 0.0);
+  velaf_->update((alphaF_), *velnp_, (1.0 - alphaF_), *veln_, 0.0);
 }
 
 void FLD::TimIntPoroGenAlpha::read_restart(int step)

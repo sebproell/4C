@@ -4370,7 +4370,7 @@ void Mortar::Interface::postprocess_quantities(const Teuchos::ParameterList& out
   // Nodes: node-based vector with '0' at slave nodes and '1' at master nodes
   {
     Core::LinAlg::Vector<double> masterVec(*mnoderowmap_);
-    masterVec.PutScalar(1.0);
+    masterVec.put_scalar(1.0);
 
     std::shared_ptr<const Epetra_Map> nodeRowMap =
         Core::LinAlg::merge_map(snoderowmap_, mnoderowmap_, false);
@@ -4384,7 +4384,7 @@ void Mortar::Interface::postprocess_quantities(const Teuchos::ParameterList& out
   // Elements: element-based vector with '0' at slave elements and '1' at master elements
   {
     Core::LinAlg::Vector<double> masterVec(*melerowmap_);
-    masterVec.PutScalar(1.0);
+    masterVec.put_scalar(1.0);
 
     std::shared_ptr<const Epetra_Map> eleRowMap =
         Core::LinAlg::merge_map(selerowmap_, melerowmap_, false);

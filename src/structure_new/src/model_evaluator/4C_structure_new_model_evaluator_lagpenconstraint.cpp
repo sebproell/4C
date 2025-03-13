@@ -85,7 +85,7 @@ void Solid::ModelEvaluator::LagPenConstraint::reset(const Core::LinAlg::Vector<d
   // update the structural displacement vector
   disnp_ptr_ = global_state().get_dis_np();
 
-  fstrconstr_np_ptr_->PutScalar(0.0);
+  fstrconstr_np_ptr_->put_scalar(0.0);
   stiff_constr_ptr_->zero();
 }
 
@@ -162,7 +162,7 @@ bool Solid::ModelEvaluator::LagPenConstraint::assemble_force(
           "the structural part indicates, that constraint contributions \n"
           "are present!");
 
-    const int elements_f = f.Map().NumGlobalElements();
+    const int elements_f = f.get_map().NumGlobalElements();
     const int max_gid = get_block_dof_row_map_ptr()->MaxAllGID();
     // only call when f is the rhs of the full problem (not for structural
     // equilibriate initial state call)
@@ -253,7 +253,7 @@ void Solid::ModelEvaluator::LagPenConstraint::update_step_state(const double& ti
   {
     std::shared_ptr<Core::LinAlg::Vector<double>>& fstructold_ptr =
         global_state().get_fstructure_old();
-    fstructold_ptr->Update(timefac_n, *fstrconstr_np_ptr_, 1.0);
+    fstructold_ptr->update(timefac_n, *fstrconstr_np_ptr_, 1.0);
   }
 }
 

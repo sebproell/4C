@@ -254,7 +254,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::init(bool isale, int nds_disp, int nds_vel
         eleparams, zeros_, nullptr, nullptr, nullptr, dbcmaps_with_volfracpress_);
     discret_->evaluate_dirichlet(
         eleparams, zeros_, nullptr, nullptr, nullptr, dbcmaps_starting_condition_);
-    zeros_->PutScalar(0.0);  // just in case of change
+    zeros_->put_scalar(0.0);  // just in case of change
   }
 
   // -------------------------------------------------------------------
@@ -863,7 +863,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::apply_dirichlet_bc(const double time,
 void POROFLUIDMULTIPHASE::TimIntImpl::scaling_and_neumann()
 {
   // scaling to get true residual vector for all time integration schemes
-  trueresidual_->Update(residual_scaling(), *residual_, 0.0);
+  trueresidual_->update(residual_scaling(), *residual_, 0.0);
 
   // add Neumann b.c. scaled with a factor due to time discretization
   add_neumann_to_residual();
@@ -880,7 +880,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::apply_neumann_bc(
 )
 {
   // prepare load vector
-  neumann_loads.PutScalar(0.0);
+  neumann_loads.put_scalar(0.0);
 
   // create parameter list
   Teuchos::ParameterList condparams;
@@ -917,7 +917,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::assemble_mat_and_rhs()
   sysmat_->zero();
 
   // reset the residual vector
-  residual_->PutScalar(0.0);
+  residual_->put_scalar(0.0);
 
   // create parameter list for elements
   Teuchos::ParameterList eleparams;
@@ -960,8 +960,8 @@ void POROFLUIDMULTIPHASE::TimIntImpl::evaluate_valid_volume_frac_press_and_spec(
   TEUCHOS_FUNC_TIME_MONITOR("POROFLUIDMULTIPHASE:       + element calls");
 
   // reset valid_volfracpress_dofs and _spec_dofs-vector
-  valid_volfracpress_dofs_->PutScalar(0.0);
-  valid_volfracspec_dofs_->PutScalar(0.0);
+  valid_volfracpress_dofs_->put_scalar(0.0);
+  valid_volfracspec_dofs_->put_scalar(0.0);
 
   // create parameter list for elements
   Teuchos::ParameterList eleparams;
@@ -1039,7 +1039,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::apply_additional_dbc_for_vol_frac_press()
                     mydirichdofs.end()))
             {
               mydirichdofs.push_back(dofs[idof]);
-              phinp_->ReplaceGlobalValue(dofs[idof], 0, 0.0);
+              phinp_->replace_global_value(dofs[idof], 0, 0.0);
             }
         }
       }
@@ -1098,7 +1098,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::apply_starting_dbc()
                                            ->function_by_id<Core::Utils::FunctionOfSpaceTime>(
                                                starting_dbc_funct_[dof_idx])
                                            .evaluate(current_node->x().data(), time_, 0);
-              phinp_->ReplaceGlobalValue(gid, 0, dbc_value);
+              phinp_->replace_global_value(gid, 0, dbc_value);
             }
           }
         }
@@ -1248,7 +1248,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::nonlinear_solve()
     if (abort_nonlin_iter(iternum_, itemax_, abstolres, actresidual)) break;
 
     // initialize increment vector
-    increment_->PutScalar(0.0);
+    increment_->put_scalar(0.0);
 
     linear_solve(isadapttol, actresidual, adaptolbetter);
 
@@ -1427,8 +1427,8 @@ void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_pressures_and_saturations()
   if (output_satpress_)
   {
     // reset
-    pressure_->PutScalar(0.0);
-    saturation_->PutScalar(0.0);
+    pressure_->put_scalar(0.0);
+    saturation_->put_scalar(0.0);
 
     // create parameter list for elements
     Teuchos::ParameterList eleparams;
@@ -1472,7 +1472,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_pressures_and_saturations()
 void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_solid_pressures()
 {
   // reset
-  solidpressure_->PutScalar(0.0);
+  solidpressure_->put_scalar(0.0);
 
   // create parameter list for elements
   Teuchos::ParameterList eleparams;
@@ -1568,7 +1568,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_porosity()
   TEUCHOS_FUNC_TIME_MONITOR("POROFLUIDMULTIPHASE:    + reconstruct porosity");
 
   // reset
-  porosity_->PutScalar(0.0);
+  porosity_->put_scalar(0.0);
 
   // create parameter list for elements
   Teuchos::ParameterList eleparams;
@@ -1944,10 +1944,10 @@ void POROFLUIDMULTIPHASE::TimIntImpl::update_iter(
       strategy_->extract_and_update_iter(inc);
   // store incremental vector to be available for convergence check
   // if incremental vector is received from outside for coupled problem
-  increment_->Update(1.0, *extractedinc, 0.0);
+  increment_->update(1.0, *extractedinc, 0.0);
 
   // update scalar values by adding increments
-  phinp_->Update(1.0, *extractedinc, 1.0);
+  phinp_->update(1.0, *extractedinc, 1.0);
 
   // compute time derivative at time n+1
   compute_time_derivative();
@@ -1976,7 +1976,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::set_velocity_field(
   if (nds_vel_ >= discret_->num_dof_sets())
     FOUR_C_THROW("Too few dofsets on poro fluid discretization!");
 
-  if (not vel->Map().SameAs(*discret_->dof_row_map(nds_vel_)))
+  if (not vel->get_map().SameAs(*discret_->dof_row_map(nds_vel_)))
     FOUR_C_THROW(
         "Map of given velocity and associated dof row map in poro fluid discretization"
         " do not match!");
@@ -2010,8 +2010,8 @@ void POROFLUIDMULTIPHASE::TimIntImpl::set_initial_field(
   {
     case Inpar::POROFLUIDMULTIPHASE::initfield_zero_field:
     {
-      phin_->PutScalar(0.0);
-      phinp_->PutScalar(0.0);
+      phin_->put_scalar(0.0);
+      phinp_->put_scalar(0.0);
       break;
     }
     case Inpar::POROFLUIDMULTIPHASE::initfield_field_by_function:
@@ -2035,14 +2035,14 @@ void POROFLUIDMULTIPHASE::TimIntImpl::set_initial_field(
           double initialval = Global::Problem::instance()
                                   ->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)
                                   .evaluate(lnode->x().data(), time_, k);
-          int err = phin_->ReplaceMyValues(1, &initialval, &doflid);
+          int err = phin_->replace_local_values(1, &initialval, &doflid);
           if (err != 0) FOUR_C_THROW("dof not on proc");
         }
       }
 
       // initialize also the solution vector. These values are a pretty good guess for the
       // solution after the first time step (much better than starting with a zero vector)
-      phinp_->Update(1.0, *phin_, 0.0);
+      phinp_->update(1.0, *phin_, 0.0);
 
       break;
     }
@@ -2083,7 +2083,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::set_initial_field(
 
       // initialize also the solution vector. These values are a pretty good guess for the
       // solution after the first time step (much better than starting with a zero vector)
-      phinp_->Update(1.0, *phin_, 0.0);
+      phinp_->update(1.0, *phin_, 0.0);
 
       break;
     }
@@ -2132,7 +2132,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::calc_initial_time_derivative()
   sysmat_->zero();
 
   // reset the residual vector
-  residual_->PutScalar(0.0);
+  residual_->put_scalar(0.0);
 
   // evaluate Dirichlet and Neumann boundary conditions at time t = 0 to ensure consistent
   // computation of initial time derivative vector Dirichlet boundary conditions should be
@@ -2163,7 +2163,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::calc_initial_time_derivative()
   // We have to Scale the system matrix consistently
   // TODO: this is kind of a hack, does it work for other schemes than one-step theta??
   // sysmat_->Scale(1.0/residual_scaling());
-  residual_->Scale(residual_scaling());
+  residual_->scale(residual_scaling());
 
   // finalize assembly of system matrix
   sysmat_->complete();
@@ -2175,7 +2175,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::calc_initial_time_derivative()
   solver_->solve(sysmat_->epetra_operator(), phidtnp_, residual_, solver_params);
 
   // copy solution
-  phidtn_->Update(1.0, *phidtnp_, 0.0);
+  phidtn_->update(1.0, *phidtnp_, 0.0);
 
   // reset global system matrix and its graph, since we solved a very special problem with a special
   // sparsity pattern
@@ -2186,10 +2186,10 @@ void POROFLUIDMULTIPHASE::TimIntImpl::calc_initial_time_derivative()
 
   // reset true residual vector computed during assembly of the standard global system of equations,
   // since not yet needed
-  trueresidual_->PutScalar(0.0);
+  trueresidual_->put_scalar(0.0);
 
   double maxval = 0.0;
-  phidtnp_->MaxValue(&maxval);
+  phidtnp_->max_value(&maxval);
   // final screen output
   if (myrank_ == 0)
   {
@@ -2245,11 +2245,11 @@ void POROFLUIDMULTIPHASE::TimIntImpl::fd_check()
     if (maxcollid < 0) continue;
 
     // fill state vector with original state variables
-    phinp_->Update(1., phinp_original, 0.);
+    phinp_->update(1., phinp_original, 0.);
 
     // impose perturbation
-    if (phinp_->Map().MyGID(colgid))
-      if (phinp_->SumIntoGlobalValue(colgid, 0, fdcheckeps_))
+    if (phinp_->get_map().MyGID(colgid))
+      if (phinp_->sum_into_global_value(colgid, 0, fdcheckeps_))
         FOUR_C_THROW(
             "Perturbation could not be imposed on state vector for finite difference check!");
 
@@ -2385,7 +2385,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::fd_check()
   }
 
   // undo perturbations of state variables
-  phinp_->Update(1., phinp_original, 0.);
+  phinp_->update(1., phinp_original, 0.);
   compute_intermediate_values();
   compute_time_derivative();
 

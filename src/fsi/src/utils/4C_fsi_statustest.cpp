@@ -227,7 +227,7 @@ double NOX::FSI::PartialSumNormF::compute_norm(const ::NOX::Abstract::Group& grp
   std::shared_ptr<Core::LinAlg::Vector<double>> v2 = extractor2_.extract_cond_vector(f);
 
   std::shared_ptr<Core::LinAlg::Vector<double>> v = converter_->src_to_dst(v2);
-  v->Update(scale1_, *v1, scale2_);
+  v->update(scale1_, *v1, scale2_);
 
   double norm = FSI::GenericNormF::compute_norm(*v);
 

@@ -84,12 +84,12 @@ void ScaTra::ScaTraTimIntPoroMulti::set_l2_flux_of_multi_fluid(
       {
         // get global and local dof IDs
         const int gid = nodedofs[index];
-        const int lid = phaseflux->Map().LID(gid);
+        const int lid = phaseflux->get_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
 
         const double value = ((*multiflux)(curphase * nsd_ + index))[lnodeid];
 
-        int err = phaseflux->ReplaceMyValue(lid, 0, value);
+        int err = phaseflux->replace_local_value(lid, 0, value);
         if (err != 0) FOUR_C_THROW("error while inserting a value into convel");
       }
     }
@@ -148,7 +148,7 @@ void ScaTra::ScaTraTimIntPoroMulti::collect_runtime_output_data()
       Core::Nodes::Node* node = discret_->l_row_node(inode);
       for (int idim = 0; idim < nsd_; ++idim)
         (dispnp_multi)(idim)[inode] =
-            (*dispnp)[dispnp->Map().LID(discret_->dof(nds_disp(), node, idim))];
+            (*dispnp)[dispnp->get_map().LID(discret_->dof(nds_disp(), node, idim))];
     }
 
     std::vector<std::optional<std::string>> context(nsd_, "ale-displacement");
@@ -209,12 +209,12 @@ void ScaTra::ScaTraTimIntPoroMulti::collect_runtime_output_data()
           PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<double>(
               Pb, CaO2, CaO2_max, Pb50, n, alpha_eff);
           // replace value
-          oxypartpress.ReplaceGlobalValue(node->id(), 0, Pb);
+          oxypartpress.replace_global_value(node->id(), 0, Pb);
         }
       }
     }
 
-    std::vector<std::optional<std::string>> context(oxypartpress.NumVectors(), "oxypartpress");
+    std::vector<std::optional<std::string>> context(oxypartpress.num_vectors(), "oxypartpress");
     visualization_writer().append_result_data_vector_with_context(
         oxypartpress, Core::IO::OutputEntity::node, context);
   }

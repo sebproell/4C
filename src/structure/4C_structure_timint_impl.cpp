@@ -436,7 +436,7 @@ void Solid::TimIntImpl::predict()
 
   // extract reaction forces
   // reactions are negative to balance residual on DBC
-  freact_->Update(-1.0, *fres_, 0.0);
+  freact_->update(-1.0, *fres_, 0.0);
   dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact_);
   // rotate reaction forces back to global coordinate system
   if (locsysman_ != nullptr) locsysman_->rotate_local_to_global(*freact_);
@@ -498,7 +498,7 @@ void Solid::TimIntImpl::prepare_partition_step()
 
   // extract reaction forces
   // reactions are negative to balance residual on DBC
-  freact_->Update(-1.0, *fres_, 0.0);
+  freact_->update(-1.0, *fres_, 0.0);
   dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact_);
   // rotate reaction forces back to global co-ordinate system
   if (locsysman_ != nullptr) locsysman_->rotate_local_to_global(*freact_);
@@ -569,10 +569,10 @@ void Solid::TimIntImpl::prepare_line_search()
 void Solid::TimIntImpl::predict_const_dis_vel_acc()
 {
   // constant predictor
-  disn_->Update(1.0, *(*dis_)(0), 0.0);
-  veln_->Update(1.0, *(*vel_)(0), 0.0);
-  accn_->Update(1.0, *(*acc_)(0), 0.0);
-  disi_->PutScalar(0.0);
+  disn_->update(1.0, *(*dis_)(0), 0.0);
+  veln_->update(1.0, *(*vel_)(0), 0.0);
+  accn_->update(1.0, *(*acc_)(0), 0.0);
+  disi_->put_scalar(0.0);
 
   // see you next time step
   return;
@@ -582,17 +582,17 @@ void Solid::TimIntImpl::predict_const_dis_vel_acc()
 void Solid::TimIntImpl::predict_tang_dis_consist_vel_acc()
 {
   // initialise
-  disn_->Update(1.0, *(*dis_)(0), 0.0);
-  veln_->Update(1.0, *(*vel_)(0), 0.0);
-  accn_->Update(1.0, *(*acc_)(0), 0.0);
-  disi_->PutScalar(0.0);
+  disn_->update(1.0, *(*dis_)(0), 0.0);
+  veln_->update(1.0, *(*vel_)(0), 0.0);
+  accn_->update(1.0, *(*acc_)(0), 0.0);
+  disi_->put_scalar(0.0);
 
   // for displacement increments on Dirichlet boundary
   std::shared_ptr<Core::LinAlg::Vector<double>> dbcinc =
       Core::LinAlg::create_vector(*dof_row_map_view(), true);
 
   // copy last converged displacements
-  dbcinc->Update(1.0, *(*dis_)(0), 0.0);
+  dbcinc->update(1.0, *(*dis_)(0), 0.0);
 
   // get Dirichlet values at t_{n+1}
   apply_dirichlet_bc(timen_, dbcinc, nullptr, nullptr, false);
@@ -600,7 +600,7 @@ void Solid::TimIntImpl::predict_tang_dis_consist_vel_acc()
   // subtract the displacements of the last converged step
   // DBC-DOFs hold increments of current step
   // free-DOFs hold zeros
-  dbcinc->Update(-1.0, *(*dis_)(0), 1.0);
+  dbcinc->update(-1.0, *(*dis_)(0), 1.0);
 
   // create parameter list to hand in boolean flag indicating that this a predictor
   Teuchos::ParameterList params;
@@ -618,14 +618,14 @@ void Solid::TimIntImpl::predict_tang_dis_consist_vel_acc()
     stiff_->multiply(false, *dbcinc, *freact);
 
     // add linear reaction forces due to prescribed Dirichlet BCs
-    fres_->Update(1.0, *freact, 1.0);
+    fres_->update(1.0, *freact, 1.0);
   }
 
   // rotate to local co-ordinate systems
   if (locsysman_ != nullptr) locsysman_->rotate_global_to_local(*fres_);
 
   // extract reaction forces
-  freact_->Update(-1.0, *fres_, 0.0);  // reactions are negative
+  freact_->update(-1.0, *fres_, 0.0);  // reactions are negative
   dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact_);
   // rotate reaction forces back to global co-ordinate system
   if (locsysman_ != nullptr) locsysman_->rotate_local_to_global(*freact_);
@@ -636,13 +636,13 @@ void Solid::TimIntImpl::predict_tang_dis_consist_vel_acc()
   if (locsysman_ != nullptr) locsysman_->rotate_local_to_global(*fres_);
 
   // make negative residual
-  fres_->Scale(-1.0);
+  fres_->scale(-1.0);
 
   // transform to local co-ordinate systems
   if (locsysman_ != nullptr) locsysman_->rotate_global_to_local(system_matrix(), *fres_);
 
   // apply Dirichlet BCs to system of equations
-  disi_->PutScalar(0.0);
+  disi_->put_scalar(0.0);
   stiff_->complete();
   if (get_loc_sys_trafo() != nullptr)
   {
@@ -718,7 +718,7 @@ void Solid::TimIntImpl::predict_tang_dis_consist_vel_acc()
   }
 
   // set Dirichlet increments in displacement increments
-  disi_->Update(1.0, *dbcinc, 1.0);
+  disi_->update(1.0, *dbcinc, 1.0);
 
   // update end-point displacements etc
   update_iter_incrementally();
@@ -728,7 +728,7 @@ void Solid::TimIntImpl::predict_tang_dis_consist_vel_acc()
   // velocities and accelerations unset on Dirichlet boundary
 
   // reset to zero
-  disi_->PutScalar(0.0);
+  disi_->put_scalar(0.0);
 
   // reset anything that needs to be reset at the element level
   {
@@ -808,7 +808,7 @@ void Solid::TimIntImpl::update_krylov_space_projection()
   {
     auto& ci = (*c)(i);
     auto& ni = (*nullspace)(modeids[i]);
-    const size_t myLength = ci.MyLength();
+    const size_t myLength = ci.local_length();
     for (size_t j = 0; j < myLength; j++)
     {
       ci[j] = ni[j];
@@ -893,7 +893,7 @@ void Solid::TimIntImpl::apply_force_stiff_internal(const double time, const doub
    * In such cases, fint_str_ contains the right hand side
    * without the modifications due to the local condensation procedure.
    */
-  if (fintn_str_ != nullptr) fintn_str_->PutScalar(0.);
+  if (fintn_str_ != nullptr) fintn_str_->put_scalar(0.);
   discret_->evaluate(params, stiff, damp, fint, nullptr, fintn_str_);
   discret_->clear_state();
 
@@ -1020,7 +1020,7 @@ void Solid::TimIntImpl::apply_force_stiff_contact_meshtying(
     // *********** time measurement ***********
 
     // contact / meshtying modifications need -fres
-    fresm->Scale(-1.0);
+    fresm->scale(-1.0);
 
     if (cmtbridge_->have_contact())
     {
@@ -1046,7 +1046,7 @@ void Solid::TimIntImpl::apply_force_stiff_contact_meshtying(
     }
 
     // scaling back
-    fresm->Scale(-1.0);
+    fresm->scale(-1.0);
 
     // *********** time measurement ***********
     dtcmt_ = timer_->wallTime() - dtcpu;
@@ -1068,7 +1068,7 @@ void Solid::TimIntImpl::apply_force_stiff_beam_contact(Core::LinAlg::SparseOpera
     // *********** time measurement ***********
 
     // contact / meshtying modifications need -fres
-    fresm.Scale(-1.0);
+    fresm.scale(-1.0);
 
     // create empty parameter list
     Teuchos::ParameterList beamcontactparams;
@@ -1083,7 +1083,7 @@ void Solid::TimIntImpl::apply_force_stiff_beam_contact(Core::LinAlg::SparseOpera
     beamcman_->evaluate(*system_matrix(), fresm, dis, beamcontactparams, true, timen_);
 
     // scaling back
-    fresm.Scale(-1.0);
+    fresm.scale(-1.0);
 
     // *********** time measurement ***********
     dtcmt_ = timer_->wallTime() - dtcpu;
@@ -1111,7 +1111,7 @@ void Solid::TimIntImpl::limit_stepsize_beam_contact(Core::LinAlg::Vector<double>
     if (maxdisiscalefac > 0)
     {
       double disi_infnorm = 0.0;
-      disi.NormInf(&disi_infnorm);
+      disi.norm_inf(&disi_infnorm);
 
       while (disi_infnorm > maxdisiscalefac * minimal_radius)
       {
@@ -1119,8 +1119,8 @@ void Solid::TimIntImpl::limit_stepsize_beam_contact(Core::LinAlg::Vector<double>
           std::cout << "      Residual displacement scaled! (Minimal element radius: "
                     << minimal_radius << ")" << std::endl;
 
-        disi.Scale(0.5);
-        disi.NormInf(&disi_infnorm);
+        disi.scale(0.5);
+        disi.norm_inf(&disi_infnorm);
       }
     }
   }
@@ -1478,7 +1478,7 @@ int Solid::TimIntImpl::newton_full()
          (iter_ <= itermin_))
   {
     // make negative residual
-    fres_->Scale(-1.0);
+    fres_->scale(-1.0);
 
     // transform to local co-ordinate systems
     if (locsysman_ != nullptr) locsysman_->rotate_global_to_local(system_matrix(), *fres_);
@@ -1487,7 +1487,7 @@ int Solid::TimIntImpl::newton_full()
     stc_preconditioning();
 
     // apply Dirichlet BCs to system of equations
-    disi_->PutScalar(0.0);  // Useful? depends on solver and more
+    disi_->put_scalar(0.0);  // Useful? depends on solver and more
     if (get_loc_sys_trafo() != nullptr)
     {
       Core::LinAlg::apply_dirichlet_to_system(
@@ -1575,7 +1575,7 @@ int Solid::TimIntImpl::newton_full()
 
     // extract reaction forces
     // reactions are negative to balance residual on DBC
-    freact_->Update(-1.0, *fres_, 0.0);
+    freact_->update(-1.0, *fres_, 0.0);
     dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact_);
     // rotate reaction forces back to global co-ordinate system
     if (locsysman_ != nullptr) locsysman_->rotate_local_to_global(*freact_);
@@ -1884,9 +1884,9 @@ int Solid::TimIntImpl::newton_ls()
 
     // It's necessary to save a temporal copy of the end-point displacements,
     // before any update is performed (because of the pseudo energy norm):
-    tdisn.Update(1.0, *disn_, 0.0);  // copy of the displ vector
-    tveln.Update(1.0, *veln_, 0.0);  // copy of the velocity vector
-    taccn.Update(1.0, *accn_, 0.0);  // copy of the acceleration vector
+    tdisn.update(1.0, *disn_, 0.0);  // copy of the displ vector
+    tveln.update(1.0, *veln_, 0.0);  // copy of the velocity vector
+    taccn.update(1.0, *accn_, 0.0);  // copy of the acceleration vector
 
     /**************************************************************
     ***                       Solver Call                       ***
@@ -1957,7 +1957,7 @@ int Solid::TimIntImpl::newton_ls()
 
     // extract reaction forces
     // reactions are negative to balance residual on DBC
-    freact_->Update(-1.0, *fres_, 0.0);
+    freact_->update(-1.0, *fres_, 0.0);
     dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact_);
     // rotate reaction forces back to global co-ordinate system
     if (locsysman_ != nullptr) locsysman_->rotate_local_to_global(*freact_);
@@ -2000,13 +2000,13 @@ int Solid::TimIntImpl::newton_ls()
       step_red *= alpha_ls_;
       // >>>> displacement, velocity, acceleration <<<<<<<<<<<<<<<
       // scale displ. increment
-      disi_->Scale(alpha_ls_);
+      disi_->scale(alpha_ls_);
       // load old displ. vector
-      disn_->Update(1.0, tdisn, 0.0);
+      disn_->update(1.0, tdisn, 0.0);
       // load old vel. vector
-      veln_->Update(1.0, tveln, 0.0);
+      veln_->update(1.0, tveln, 0.0);
       // load old acc. vector
-      accn_->Update(1.0, taccn, 0.0);
+      accn_->update(1.0, taccn, 0.0);
 
       // Update nodal displ., vel., acc., etc.
       update_iter(iter_);
@@ -2073,7 +2073,7 @@ int Solid::TimIntImpl::ls_solve_newton_step()
   ***           Prepare the solution procedure                ***
   ***************************************************************/
   // make negative residual
-  fres_->Scale(-1.0);
+  fres_->scale(-1.0);
 
   // transform to local co-ordinate systems
   if (locsysman_ != nullptr) locsysman_->rotate_global_to_local(system_matrix(), *fres_);
@@ -2082,7 +2082,7 @@ int Solid::TimIntImpl::ls_solve_newton_step()
   stc_preconditioning();
 
   // apply Dirichlet BCs to system of equations
-  disi_->PutScalar(0.0);  // Useful? depends on solver and more
+  disi_->put_scalar(0.0);  // Useful? depends on solver and more
   if (get_loc_sys_trafo() != nullptr)
   {
     Core::LinAlg::apply_dirichlet_to_system(
@@ -2202,7 +2202,7 @@ void Solid::TimIntImpl::ls_update_structural_rh_sand_stiff(bool& isexcept, doubl
 
   // extract reaction forces
   // reactions are negative to balance residual on DBC
-  freact_->Update(-1.0, *fres_, 0.0);
+  freact_->update(-1.0, *fres_, 0.0);
   dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact_);
   // rotate reaction forces back to global co-ordinate system
   if (locsysman_ != nullptr) locsysman_->rotate_local_to_global(*freact_);
@@ -2239,12 +2239,12 @@ int Solid::TimIntImpl::ls_eval_merit_fct(double& merit_fct)
   // Calculate the merit function value: (1/2) * <RHS,RHS>
   if (fresn_str_ == nullptr)
   {
-    err = fres_->Dot(*fres_, &merit_fct);
+    err = fres_->dot(*fres_, &merit_fct);
   }
   else
   {
     merit_fct = 0.;
-    err = fresn_str_->Dot(*fresn_str_, &merit_fct);
+    err = fresn_str_->dot(*fresn_str_, &merit_fct);
     merit_fct += cond_res_;
   }
   merit_fct *= 0.5;
@@ -2492,7 +2492,7 @@ int Solid::TimIntImpl::uzawa_linear_newton_full()
            (iter_ <= itermin_))
     {
       // make negative residual
-      fres_->Scale(-1.0);
+      fres_->scale(-1.0);
 
       //    // uncomplete stiffness matrix, so stuff can be inserted again
       //    stiff_->UnComplete();
@@ -2501,7 +2501,7 @@ int Solid::TimIntImpl::uzawa_linear_newton_full()
       if (locsysman_ != nullptr) locsysman_->rotate_global_to_local(system_matrix(), *fres_);
 
       // apply Dirichlet BCs to system of equations
-      disi_->PutScalar(0.0);  // Useful? depends on solver and more
+      disi_->put_scalar(0.0);  // Useful? depends on solver and more
       if (get_loc_sys_trafo() != nullptr)
       {
         Core::LinAlg::apply_dirichlet_to_system(
@@ -2515,7 +2515,7 @@ int Solid::TimIntImpl::uzawa_linear_newton_full()
       }
 
       // prepare residual Lagrange multiplier
-      lagrincr.PutScalar(0.0);
+      lagrincr.put_scalar(0.0);
 
       // *********** time measurement ***********
       double dtcpu = timer_->wallTime();
@@ -2591,7 +2591,7 @@ int Solid::TimIntImpl::uzawa_linear_newton_full()
 
       // extract reaction forces
       // reactions are negative to balance residual on DBC
-      freact_->Update(-1.0, *fres_, 0.0);
+      freact_->update(-1.0, *fres_, 0.0);
       dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact_);
       // rotate reaction forces back to global co-ordinate system
       if (locsysman_ != nullptr) locsysman_->rotate_local_to_global(*freact_);
@@ -2661,7 +2661,7 @@ int Solid::TimIntImpl::uzawa_linear_newton_full()
 
     double nc;
     double ncstr;
-    fres_->NormInf(&ncstr);
+    fres_->norm_inf(&ncstr);
     double nc0d = 0.0;  // cardvasc0dman_->get_cardiovascular0_drhs_inf_norm();
     if (ncstr >= nc0d)
       nc = ncstr;
@@ -2679,7 +2679,7 @@ int Solid::TimIntImpl::uzawa_linear_newton_full()
            (iter_ <= itermin_))
     {
       // make negative residual
-      fres_->Scale(-1.0);
+      fres_->scale(-1.0);
 
       // modify stiffness matrix with dti
       if (ptc_3D0D)
@@ -2694,7 +2694,7 @@ int Solid::TimIntImpl::uzawa_linear_newton_full()
       if (locsysman_ != nullptr) locsysman_->rotate_global_to_local(system_matrix(), *fres_);
 
       // apply Dirichlet BCs to system of equations
-      disi_->PutScalar(0.0);  // Useful? depends on solver and more
+      disi_->put_scalar(0.0);  // Useful? depends on solver and more
       if (get_loc_sys_trafo() != nullptr)
       {
         Core::LinAlg::apply_dirichlet_to_system(
@@ -2769,7 +2769,7 @@ int Solid::TimIntImpl::uzawa_linear_newton_full()
 
       // extract reaction forces
       // reactions are negative to balance residual on DBC
-      freact_->Update(-1.0, *fres_, 0.0);
+      freact_->update(-1.0, *fres_, 0.0);
       dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact_);
       // rotate reaction forces back to global co-ordinate system
       if (locsysman_ != nullptr) locsysman_->rotate_local_to_global(*freact_);
@@ -2824,7 +2824,7 @@ int Solid::TimIntImpl::uzawa_linear_newton_full()
       {
         double np;
         double npstr;
-        fres_->NormInf(&npstr);
+        fres_->norm_inf(&npstr);
         double np0d = 0.0;  // cardvasc0dman_->get_cardiovascular0_drhs_inf_norm();
         if (npstr >= np0d)
           np = npstr;
@@ -3054,9 +3054,9 @@ int Solid::TimIntImpl::cmt_nonlinear_solve()
       // for second, third,... Uzawa step: out-of-balance force
       if (uzawaiter > 1)
       {
-        fres_->Scale(-1.0);
+        fres_->scale(-1.0);
         cmtbridge_->get_strategy().initialize_uzawa(stiff_, fres_);
-        fres_->Scale(-1.0);
+        fres_->scale(-1.0);
       }
 
       // nonlinear iteration
@@ -3325,7 +3325,7 @@ int Solid::TimIntImpl::ptc()
 
   double ptcdt = ptcdt_;
   double nc;
-  fres_->NormInf(&nc);
+  fres_->norm_inf(&nc);
   double dti = 1 / ptcdt;
 
   int element_error = 0;
@@ -3336,7 +3336,7 @@ int Solid::TimIntImpl::ptc()
          (iter_ <= itermin_))
   {
     // make negative residual
-    fres_->Scale(-1.0);
+    fres_->scale(-1.0);
 
     // transform to local co-ordinate systems
     if (locsysman_ != nullptr) locsysman_->rotate_global_to_local(system_matrix(), *fres_);
@@ -3345,16 +3345,16 @@ int Solid::TimIntImpl::ptc()
     {
       std::shared_ptr<Core::LinAlg::Vector<double>> tmp =
           Core::LinAlg::create_vector(system_matrix()->row_map(), false);
-      tmp->PutScalar(dti);
+      tmp->put_scalar(dti);
       std::shared_ptr<Core::LinAlg::Vector<double>> diag =
           Core::LinAlg::create_vector(system_matrix()->row_map(), false);
       system_matrix()->extract_diagonal_copy(*diag);
-      diag->Update(1.0, *tmp, 1.0);
+      diag->update(1.0, *tmp, 1.0);
       system_matrix()->replace_diagonal_values(*diag);
     }
 
     // apply Dirichlet BCs to system of equations
-    disi_->PutScalar(0.0);  // Useful? depends on solver and more
+    disi_->put_scalar(0.0);  // Useful? depends on solver and more
     if (get_loc_sys_trafo() != nullptr)
     {
       Core::LinAlg::apply_dirichlet_to_system(
@@ -3440,7 +3440,7 @@ int Solid::TimIntImpl::ptc()
 
     // extract reaction forces
     // reactions are negative to balance residual on DBC
-    freact_->Update(-1.0, *fres_, 0.0);
+    freact_->update(-1.0, *fres_, 0.0);
     dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact_);
     // rotate reaction forces back to global co-ordinate system
     if (locsysman_ != nullptr) locsysman_->rotate_local_to_global(*freact_);
@@ -3517,7 +3517,7 @@ int Solid::TimIntImpl::ptc()
     // update ptc
     {
       double np;
-      fres_->NormInf(&np);
+      fres_->norm_inf(&np);
       dti *= (np / nc);
       dti = std::max(dti, 0.0);
       nc = np;
@@ -3576,9 +3576,9 @@ void Solid::TimIntImpl::update_iter_incrementally(
 {
   // select residual displacements
   if (disi != nullptr)
-    disi_->Update(1.0, *disi, 0.0);  // set the new solution we just got
+    disi_->update(1.0, *disi, 0.0);  // set the new solution we just got
   else
-    disi_->PutScalar(0.0);
+    disi_->put_scalar(0.0);
 
   // recover contact / meshtying Lagrange multipliers (monolithic FSI)
   // not in the case of TSI with contact
@@ -4101,10 +4101,10 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Solid::TimIntImpl::solve_relaxatio
   evaluate_force_stiff_residual_relax(params);
 
   // negative residual
-  fres_->Scale(-1.0);
+  fres_->scale(-1.0);
 
   // apply Dirichlet BCs to system of equations
-  disi_->PutScalar(0.0);  // Useful? depends on solver and more
+  disi_->put_scalar(0.0);  // Useful? depends on solver and more
   Core::LinAlg::apply_dirichlet_to_system(
       *stiff_, *disi_, *fres_, *zeros_, *(dbcmaps_->cond_map()));
 
@@ -4127,7 +4127,7 @@ void Solid::TimIntImpl::prepare_system_for_newton_solve(const bool preparejacobi
 
   // extract reaction forces
   // reactions are negative to balance residual on DBC
-  freact_->Update(-1.0, *fres_, 0.0);
+  freact_->update(-1.0, *fres_, 0.0);
   dbcmaps_->insert_other_vector(*dbcmaps_->extract_other_vector(*zeros_), *freact_);
   // rotate reaction forces back to global coordinate system
   if (locsysman_ != nullptr) locsysman_->rotate_local_to_global(*freact_);
@@ -4137,7 +4137,7 @@ void Solid::TimIntImpl::prepare_system_for_newton_solve(const bool preparejacobi
   if (locsysman_ != nullptr) locsysman_->rotate_local_to_global(*fres_);
 
   // make the residual negative
-  fres_->Scale(-1.0);
+  fres_->scale(-1.0);
 
   // transform stiff_ and fres_ to local coordinate system
   if (locsysman_ != nullptr) locsysman_->rotate_global_to_local(system_matrix(), *fres_);
@@ -4146,7 +4146,7 @@ void Solid::TimIntImpl::prepare_system_for_newton_solve(const bool preparejacobi
   // and a '1.0' is put at the diagonal term
 
   // blank iterative increment
-  disi_->PutScalar(0.0);  // Useful? depends on solver and more
+  disi_->put_scalar(0.0);  // Useful? depends on solver and more
 
   // apply Dirichlet BCs to system of equations
   if (preparejacobian)
@@ -4273,7 +4273,7 @@ void Solid::TimIntImpl::stc_preconditioning()
       std::shared_ptr<Core::LinAlg::Vector<double>> fressdc =
           Core::LinAlg::create_vector(*dof_row_map_view(), true);
       stcmat_->multiply(true, *fres_, *fressdc);
-      fres_->Update(1.0, *fressdc, 0.0);
+      fres_->update(1.0, *fressdc, 0.0);
     }
   }
 }
@@ -4351,7 +4351,7 @@ void Solid::TimIntImpl::recover_stc_solution()
         Core::LinAlg::create_vector(*dof_row_map_view(), true);
 
     stcmat_->multiply(false, *disi_, *disisdc);
-    disi_->Update(1.0, *disisdc, 0.0);
+    disi_->update(1.0, *disisdc, 0.0);
   }
 
   return;
@@ -4474,9 +4474,9 @@ int Solid::TimIntImpl::cmt_windk_constr_nonlinear_solve()
       // for second, third,... Uzawa step: out-of-balance force
       if (uzawaiter > 1)
       {
-        fres_->Scale(-1.0);
+        fres_->scale(-1.0);
         cmtbridge_->get_strategy().initialize_uzawa(stiff_, fres_);
-        fres_->Scale(-1.0);
+        fres_->scale(-1.0);
       }
 
       // nonlinear iteration

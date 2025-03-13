@@ -478,18 +478,18 @@ void FLD::TurbulenceStatisticsCcy::do_time_sample(Core::LinAlg::Vector<double>& 
   numsamp_++;
 
   // meanvelnp is a refcount copy of velnp
-  meanvelnp_->Update(1.0, velnp, 0.0);
+  meanvelnp_->update(1.0, velnp, 0.0);
 
   if (withscatra_)
   {
     if (scanp != nullptr)
-      meanscanp_->Update(1.0, *scanp, 0.0);
+      meanscanp_->update(1.0, *scanp, 0.0);
     else
       FOUR_C_THROW("Vector scanp is nullptr");
 
     if (fullphinp != nullptr)
     {
-      int err = meanfullphinp_->Update(1.0, *fullphinp, 0.0);
+      int err = meanfullphinp_->update(1.0, *fullphinp, 0.0);
       if (err) FOUR_C_THROW("Could not update meanfullphinp_");
     }
     else
@@ -591,10 +591,10 @@ void FLD::TurbulenceStatisticsCcy::evaluate_pointwise_mean_values_in_planes()
     else
       scatranurbsdis->set_state("phinp_for_statistics", meanfullphinp_);
 
-    if (not(scatranurbsdis->dof_row_map())->SameAs(meanfullphinp_->Map()))
+    if (not(scatranurbsdis->dof_row_map())->SameAs(meanfullphinp_->get_map()))
     {
       scatranurbsdis->dof_row_map()->Print(std::cout);
-      meanfullphinp_->Map().Print(std::cout);
+      meanfullphinp_->get_map().Print(std::cout);
       FOUR_C_THROW("Global dof numbering in maps does not match");
     }
   }
@@ -1453,7 +1453,7 @@ void FLD::TurbulenceStatisticsCcy::clear_statistics()
     (*pointsumvw_)[i] = 0;
   }
 
-  meanvelnp_->PutScalar(0.0);
+  meanvelnp_->put_scalar(0.0);
 
   if (withscatra_)
   {
@@ -1467,11 +1467,11 @@ void FLD::TurbulenceStatisticsCcy::clear_statistics()
     if (meanscanp_ == nullptr)
       FOUR_C_THROW("meanscanp_ is nullptr");
     else
-      meanscanp_->PutScalar(0.0);
+      meanscanp_->put_scalar(0.0);
 
     if (meanfullphinp_ != nullptr)
     {
-      meanfullphinp_->PutScalar(0.0);
+      meanfullphinp_->put_scalar(0.0);
 
       // ToDo Is is a good way to initialize everything to zero??
       // Use Shape() instead???

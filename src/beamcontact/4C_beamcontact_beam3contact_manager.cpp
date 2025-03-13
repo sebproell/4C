@@ -76,8 +76,8 @@ CONTACT::Beam3cmanager::Beam3cmanager(Core::FE::Discretization& discret, double 
   // initialize vectors of contact forces
   fc_ = Core::LinAlg::create_vector(*discret.dof_row_map(), false);
   fcold_ = Core::LinAlg::create_vector(*discret.dof_row_map(), false);
-  fc_->PutScalar(0.0);
-  fcold_->PutScalar(0.0);
+  fc_->put_scalar(0.0);
+  fcold_->put_scalar(0.0);
 
   contactpairmap_.clear();
   oldcontactpairmap_.clear();
@@ -415,7 +415,7 @@ void CONTACT::Beam3cmanager::evaluate(Core::LinAlg::SparseMatrix& stiffmatrix,
   timen_ = time;
 
   // Set class variable
-  dis_->Update(1.0, disrow, 0.0);
+  dis_->update(1.0, disrow, 0.0);
 
   // map linking node numbers and current node positions
   std::map<int, Core::LinAlg::Matrix<3, 1>> currentpositions;
@@ -530,7 +530,7 @@ void CONTACT::Beam3cmanager::evaluate(Core::LinAlg::SparseMatrix& stiffmatrix,
   // integration class.
   //**********************************************************************
   // initialize global contact force vectors
-  fc_->PutScalar(0.0);
+  fc_->put_scalar(0.0);
 
   // initialize contact stiffness and uncomplete global stiffness
   stiffc_ = std::make_shared<Core::LinAlg::SparseMatrix>(stiffmatrix.range_map(), 100);
@@ -559,8 +559,8 @@ void CONTACT::Beam3cmanager::evaluate(Core::LinAlg::SparseMatrix& stiffmatrix,
       Inpar::Solid::MassLin::ml_rotations)
   {
     // assemble contact forces into global fres vector
-    fres.Update(1.0 - alphaf_, *fc_, 1.0);
-    fres.Update(alphaf_, *fcold_, 1.0);
+    fres.update(1.0 - alphaf_, *fc_, 1.0);
+    fres.update(alphaf_, *fcold_, 1.0);
     // determine contact stiffness matrix scaling factor (new STI)
     // (this is due to the fact that in the new STI, we hand in the
     // already appropriately scaled effective stiffness matrix. Thus,
@@ -578,7 +578,7 @@ void CONTACT::Beam3cmanager::evaluate(Core::LinAlg::SparseMatrix& stiffmatrix,
   else
   {
     // assemble contact forces into global fres vector
-    fres.Update(1.0, *fc_, 1.0);
+    fres.update(1.0, *fc_, 1.0);
 
     // assemble contact stiffness into global stiffness matrix
     stiffc_->complete();
@@ -614,7 +614,7 @@ void CONTACT::Beam3cmanager::shift_dis_map(
     int btsolcontact_gid = (*bt_sol_discret().dof_row_map()).GID(i);
     int problem_gid = dofoffsetmap_[btsolcontact_gid];
     double disp = disrow[(*problem_discret().dof_row_map()).LID(problem_gid)];
-    discrow.ReplaceGlobalValue(btsolcontact_gid, 0, disp);
+    discrow.replace_global_value(btsolcontact_gid, 0, disp);
   }
   Core::LinAlg::export_to(discrow, disccol);
 
@@ -2012,19 +2012,19 @@ void CONTACT::Beam3cmanager::update(
     const Core::LinAlg::Vector<double>& disrow, const int& timestep, const int& newtonstep)
 {
   // store values of fc_ into fcold_ (generalized alpha)
-  fcold_->Update(1.0, *fc_, 0.0);
+  fcold_->update(1.0, *fc_, 0.0);
 
   double disold_L2 = 0.0;
-  dis_old_->Norm2(&disold_L2);
+  dis_old_->norm_2(&disold_L2);
 
   // calculate (dis_old_-dis_):
-  dis_old_->Update(-1.0, *dis_, 1.0);
+  dis_old_->update(-1.0, *dis_, 1.0);
   // calculate inf-norm of (dis_old_-dis_)
-  dis_old_->NormInf(&maxdeltadisp_);
+  dis_old_->norm_inf(&maxdeltadisp_);
   // invert the last step and get again dis_old_
-  dis_old_->Update(1.0, *dis_, 1.0);
+  dis_old_->update(1.0, *dis_, 1.0);
   // update dis_old_ -> dis_
-  dis_old_->Update(1.0, *dis_, 0.0);
+  dis_old_->update(1.0, *dis_, 0.0);
 
   if (maxdeltadisp_ > totalmaxdeltadisp_ and
       disold_L2 > 1.0e-12)  // don't consider the first time step where disold_L2=0!
@@ -3177,12 +3177,12 @@ void CONTACT::Beam3cmanager::update_constr_norm()
   // Calculate contact work
   double deltapenaltywork = 0.0;
   Core::LinAlg::Vector<double> delta_disp(*dis_);
-  delta_disp.Update(-1.0, *dis_old_, 1.0);
+  delta_disp.update(-1.0, *dis_old_, 1.0);
 
   Core::LinAlg::Vector<double> fc_alpha(*fc_);
-  fc_alpha.Update(alphaf_, *fcold_, 1.0 - alphaf_);
+  fc_alpha.update(alphaf_, *fcold_, 1.0 - alphaf_);
 
-  delta_disp.Dot(fc_alpha, &deltapenaltywork);
+  delta_disp.dot(fc_alpha, &deltapenaltywork);
 
   deltapenaltywork = -deltapenaltywork;
 

@@ -162,7 +162,7 @@ void FSI::MonolithicBase::prepare_time_step_fsi()
 {
   ddgpred_ = std::make_shared<Core::LinAlg::Vector<double>>(
       *structure_field()->extract_interface_dispnp());
-  ddgpred_->Update(-1.0, *structure_field()->extract_interface_dispn(), 1.0);
+  ddgpred_->update(-1.0, *structure_field()->extract_interface_dispn(), 1.0);
 
   return;
 }
@@ -628,7 +628,7 @@ void FSI::Monolithic::time_step(
       std::make_shared<Core::LinAlg::Vector<double>>(*dof_row_map(), true);
   initial_guess(initial_guess_v);
 
-  ::NOX::Epetra::Vector noxSoln(Teuchos::rcpFromRef(*initial_guess_v->get_ptr_of_Epetra_Vector()),
+  ::NOX::Epetra::Vector noxSoln(Teuchos::rcpFromRef(*initial_guess_v->get_ptr_of_epetra_vector()),
       ::NOX::Epetra::Vector::CreateView);
 
   // Create the linear system
@@ -1017,7 +1017,7 @@ void FSI::Monolithic::setup_rhs(Core::LinAlg::Vector<double>& f, bool firstcall)
   firstcall_ = firstcall;
 
   // We want to add into a zero vector
-  f.PutScalar(0.0);
+  f.put_scalar(0.0);
 
   // contributions of single field residuals
   setup_rhs_residual(f);
@@ -1033,15 +1033,15 @@ void FSI::Monolithic::setup_rhs(Core::LinAlg::Vector<double>& f, bool firstcall)
   {
     // Finally, we take care of Dirichlet boundary conditions
     Core::LinAlg::Vector<double> rhs(f);
-    const Core::LinAlg::Vector<double> zeros(f.Map(), true);
+    const Core::LinAlg::Vector<double> zeros(f.get_map(), true);
     Core::LinAlg::apply_dirichlet_to_system(rhs, zeros, *(dbcmaps_->cond_map()));
-    f.Update(1.0, rhs, 0.0);
+    f.update(1.0, rhs, 0.0);
   }
 
   // NOX expects the 'positive' residual. The negative sign for the
   // linearized Newton system J*dx=-r is done internally by NOX.
   // Since we assembled the right hand side, we have to invert the sign here.
-  f.Scale(-1.);
+  f.scale(-1.);
 }
 
 /*----------------------------------------------------------------------------*/

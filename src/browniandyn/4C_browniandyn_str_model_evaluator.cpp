@@ -116,11 +116,11 @@ void Solid::ModelEvaluator::BrownianDyn::reset(const Core::LinAlg::Vector<double
   // -------------------------------------------------------------------------
   // reset brownian (stochastic and damping) forces
   // -------------------------------------------------------------------------
-  f_brown_np_ptr_->PutScalar(0.0);
+  f_brown_np_ptr_->put_scalar(0.0);
   // -------------------------------------------------------------------------
   // reset external forces
   // -------------------------------------------------------------------------
-  f_ext_np_ptr_->PutScalar(0.0);
+  f_ext_np_ptr_->put_scalar(0.0);
   // -------------------------------------------------------------------------
   // zero out brownian stiffness contributions
   // -------------------------------------------------------------------------
@@ -456,8 +456,8 @@ void Solid::ModelEvaluator::BrownianDyn::update_step_state(const double& timefac
   // -------------------------------------------------------------------------
   std::shared_ptr<Core::LinAlg::Vector<double>>& fstructold_ptr =
       global_state().get_fstructure_old();
-  fstructold_ptr->Update(timefac_n, *f_brown_np_ptr_, 1.0);
-  fstructold_ptr->Update(-timefac_n, *f_ext_np_ptr_, 1.0);
+  fstructold_ptr->update(timefac_n, *f_brown_np_ptr_, 1.0);
+  fstructold_ptr->update(-timefac_n, *f_ext_np_ptr_, 1.0);
 
   return;
 }
@@ -578,15 +578,15 @@ void Solid::ModelEvaluator::BrownianDyn::reset_step_state()
    * in any other case*/
   // todo: is this the right place for this (originally done in brownian predictor,
   // should work as prediction is the next thing that is done)
-  global_state_ptr()->get_dis_np()->PutScalar(0.0);
-  global_state_ptr()->get_vel_np()->PutScalar(0.0);
+  global_state_ptr()->get_dis_np()->put_scalar(0.0);
+  global_state_ptr()->get_vel_np()->put_scalar(0.0);
   // we only need this in case we use Lie Group gen alpha and calculate a consistent
   // mass matrix and acc vector (i.e. we are not neglecting inertia forces)
-  global_state_ptr()->get_acc_np()->PutScalar(0.0);
+  global_state_ptr()->get_acc_np()->put_scalar(0.0);
 
-  global_state_ptr()->get_dis_np()->Update(1.0, (*global_state_ptr()->get_dis_n()), 0.0);
-  global_state_ptr()->get_vel_np()->Update(1.0, (*global_state_ptr()->get_vel_n()), 0.0);
-  global_state_ptr()->get_acc_np()->Update(1.0, (*global_state_ptr()->get_acc_n()), 0.0);
+  global_state_ptr()->get_dis_np()->update(1.0, (*global_state_ptr()->get_dis_n()), 0.0);
+  global_state_ptr()->get_vel_np()->update(1.0, (*global_state_ptr()->get_vel_n()), 0.0);
+  global_state_ptr()->get_acc_np()->update(1.0, (*global_state_ptr()->get_acc_n()), 0.0);
 
 
   return;

@@ -199,7 +199,7 @@ void Airway::RedAirwayTissue::integrate()
       iter++;
     } while (not_converged(iter) && iter < itermax_);
 
-    if ((iter >= itermax_) && (Core::Communication::my_mpi_rank(couppres_ip_->Comm()) == 0))
+    if ((iter >= itermax_) && (Core::Communication::my_mpi_rank(couppres_ip_->get_comm()) == 0))
     {
       FOUR_C_THROW("FIELD ITERATION NOT CONVERGED IN %d STEPS AT TIME T=%f", itermax_, time());
     }
@@ -215,12 +215,12 @@ void Airway::RedAirwayTissue::integrate()
 void Airway::RedAirwayTissue::do_red_airway_step()
 {
   // Scale with -1 (redairway convention: outflow is negative)
-  coupflux_ip_->Scale(-1.0);
+  coupflux_ip_->scale(-1.0);
 
   redairways_->set_airway_flux_from_tissue(*coupflux_ip_);
   redairways_->integrate_step();
   redairways_->extract_pressure(*couppres_ip_tilde_);
-  couppres_ip_tilde_->Update(0.0, *couppres_ip_tilde_, normal_);
+  couppres_ip_tilde_->update(0.0, *couppres_ip_tilde_, normal_);
 }
 
 /*----------------------------------------------------------------------*
@@ -235,7 +235,7 @@ void Airway::RedAirwayTissue::relax_pressure(int iter)
     case Inpar::ArteryNetwork::norelaxation:
     {
       printf("No dynamic relaxation \n");
-      couppres_ip_->Update(1.0, *couppres_ip_tilde_, 0.0);
+      couppres_ip_->update(1.0, *couppres_ip_tilde_, 0.0);
     }
     break;
 
@@ -249,7 +249,7 @@ void Airway::RedAirwayTissue::relax_pressure(int iter)
       // p^{n+1}_{i+1} = \omega_i \tilde{p}^{n+1}_{i+1} + (1-\omega_i) p^{n+1}_{i}
       // where \tilde{p}^{n+1}_{i+1} = couppres_ip_
       //                 p^{n+1}_{i} = couppres_im_
-      couppres_ip_->Update(omega_, *couppres_ip_tilde_, (1.0 - omega_), *couppres_im_, 0.0);
+      couppres_ip_->update(omega_, *couppres_ip_tilde_, (1.0 - omega_), *couppres_im_, 0.0);
     }
     break;
 
@@ -260,7 +260,7 @@ void Airway::RedAirwayTissue::relax_pressure(int iter)
       // thus the relaxation factor is fixed for the first two steps to \omega = 1.0
       if (iter < 2)
       {
-        omega_np_->PutScalar(1.0);
+        omega_np_->put_scalar(1.0);
       }
       else if (iter >= 2)
       {
@@ -270,15 +270,15 @@ void Airway::RedAirwayTissue::relax_pressure(int iter)
         //          p_{i+1} = couppres_im_
         //  \tilde{p}_{i+1} = couppres_im_tilde_
         //  \tilde{p}_{i+2} = couppres_ip_tilde_
-        omega_np_->Update(1.0, *couppres_il_, -1.0, *couppres_im_, 0.0);
+        omega_np_->update(1.0, *couppres_il_, -1.0, *couppres_im_, 0.0);
 
         Core::LinAlg::Vector<double> denominator(*omega_np_);
-        denominator.Update(-1.0, *couppres_im_tilde_, +1.0, *couppres_ip_tilde_, 1.0);
+        denominator.update(-1.0, *couppres_im_tilde_, +1.0, *couppres_ip_tilde_, 1.0);
 
-        omega_np_->ReciprocalMultiply(1.0, denominator, *omega_np_, 0.0);
+        omega_np_->reciprocal_multiply(1.0, denominator, *omega_np_, 0.0);
 
         // Safety check for \omega_i+1
-        for (int i = 0; i < couppres_ip_->Map().NumMyElements(); ++i)
+        for (int i = 0; i < couppres_ip_->get_map().NumMyElements(); ++i)
         {
           if ((*omega_np_)[i] < 0.0)
             (*omega_np_)[i] = 0.0;
@@ -289,17 +289,17 @@ void Airway::RedAirwayTissue::relax_pressure(int iter)
 
       // Aitken Relaxation formula (35)
       // p^{n+1}_{i+1} = \omega_i \tilde{p}^{n+1}_{i+1} + (1-\omega_i) p^{n+1}_{i}
-      for (int i = 0; i < couppres_ip_->Map().NumMyElements(); ++i)
+      for (int i = 0; i < couppres_ip_->get_map().NumMyElements(); ++i)
       {
         (*couppres_ip_)[i] =
             (*omega_np_)[i] * (*couppres_ip_tilde_)[i] + (1 - (*omega_np_)[i]) * (*couppres_im_)[i];
       }
 
       // Print relaxation factor \omega_np_
-      if (Core::Communication::my_mpi_rank(couppres_ip_->Comm()) == 0)
+      if (Core::Communication::my_mpi_rank(couppres_ip_->get_comm()) == 0)
       {
         printf("Aitken Relaxation: \n");
-        for (int i = 0; i < couppres_ip_->Map().NumMyElements(); ++i)
+        for (int i = 0; i < couppres_ip_->get_map().NumMyElements(); ++i)
           std::cout << "omega_np_[" << i << "]: " << (*omega_np_)[i] << std::endl;
         std::cout << std::endl;
       }
@@ -357,7 +357,7 @@ bool Airway::RedAirwayTissue::not_converged(int iter)
   Core::LinAlg::Vector<double> scaled_flux_inc(*coupflux_ip_);
 
   // Calculate Pressure Norm
-  for (int i = 0; i < couppres_ip_->Map().NumMyElements(); ++i)
+  for (int i = 0; i < couppres_ip_->get_map().NumMyElements(); ++i)
   {
     // Calculate pressure increment
     (pres_inc)[i] = abs((*couppres_ip_)[i] - (*couppres_im_)[i]);
@@ -370,7 +370,7 @@ bool Airway::RedAirwayTissue::not_converged(int iter)
   }
 
   // Calculate Flux Norm
-  for (int i = 0; i < coupflux_ip_->Map().NumMyElements(); ++i)
+  for (int i = 0; i < coupflux_ip_->get_map().NumMyElements(); ++i)
   {
     // Calculate flux increment
     (flux_inc)[i] = abs((*coupflux_ip_)[i] - (*coupflux_im_)[i]);
@@ -386,15 +386,15 @@ bool Airway::RedAirwayTissue::not_converged(int iter)
   output_iteration(pres_inc, scaled_pres_inc, flux_inc, scaled_flux_inc, iter);
 
   // Update values
-  couppres_il_->Update(1.0, *couppres_im_, 0.0);
-  couppres_im_->Update(1.0, *couppres_ip_, 0.0);
-  couppres_im_tilde_->Update(1.0, *couppres_ip_tilde_, 0.0);
-  coupflux_im_->Update(1.0, *coupflux_ip_, 0.0);
-  coupvol_im_->Update(1.0, *coupvol_ip_, 0.0);
+  couppres_il_->update(1.0, *couppres_im_, 0.0);
+  couppres_im_->update(1.0, *couppres_ip_, 0.0);
+  couppres_im_tilde_->update(1.0, *couppres_ip_tilde_, 0.0);
+  coupflux_im_->update(1.0, *coupflux_ip_, 0.0);
+  coupvol_im_->update(1.0, *coupvol_ip_, 0.0);
 
   double pres_max, flux_max;
-  scaled_pres_inc.NormInf(&pres_max);
-  scaled_flux_inc.NormInf(&flux_max);
+  scaled_pres_inc.norm_inf(&pres_max);
+  scaled_flux_inc.norm_inf(&flux_max);
 
   if (pres_max < tolp_ and flux_max < tolq_ and iter > 1) return false;
 
@@ -409,7 +409,7 @@ void Airway::RedAirwayTissue::output_iteration(Core::LinAlg::Vector<double>& pre
     Core::LinAlg::Vector<double>& scaled_pres_inc, Core::LinAlg::Vector<double>& flux_inc,
     Core::LinAlg::Vector<double>& scaled_flux_inc, int iter)
 {
-  if (Core::Communication::my_mpi_rank(couppres_ip_->Comm()) == 0)
+  if (Core::Communication::my_mpi_rank(couppres_ip_->get_comm()) == 0)
   {
     printf("\nFIELD ITERATION: %i / %i\n", iter, itermax_);
     printf(
@@ -419,10 +419,10 @@ void Airway::RedAirwayTissue::output_iteration(Core::LinAlg::Vector<double>& pre
     printf(
         " Volume ID      Vol            P             Q            dP            dQ           "
         "dP_scal       dQ_scal\n");
-    for (int i = 0; i < couppres_ip_->Map().NumMyElements(); ++i)
+    for (int i = 0; i < couppres_ip_->get_map().NumMyElements(); ++i)
     {
       printf("     %d       %4.3e     %4.3e     %4.3e     %4.3e     %4.3e     %4.3e     %4.3e\n",
-          couppres_ip_->Map().GID(i), (*coupvol_ip_)[i], (*couppres_ip_)[i], (*coupflux_ip_)[i],
+          couppres_ip_->get_map().GID(i), (*coupvol_ip_)[i], (*couppres_ip_)[i], (*coupflux_ip_)[i],
           (pres_inc)[i], (flux_inc)[i], (scaled_pres_inc)[i], (scaled_flux_inc)[i]);
     }
     printf(

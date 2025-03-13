@@ -74,11 +74,11 @@ void CONTACT::MtLagrangeStrategy::mortar_coupling(
   invd_->extract_diagonal_copy(*diag);
 
   // set zero diagonal values to dummy 1.0
-  for (int i = 0; i < diag->MyLength(); ++i)
+  for (int i = 0; i < diag->local_length(); ++i)
     if ((*diag)[i] == 0.0) (*diag)[i] = 1.0;
 
   // scalar inversion of diagonal values
-  err = diag->Reciprocal(*diag);
+  err = diag->reciprocal(*diag);
   if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
 
   // re-insert inverted diagonal into invd
@@ -320,11 +320,11 @@ CONTACT::MtLagrangeStrategy::mesh_initialization()
   invd_->extract_diagonal_copy(*diag);
 
   // set zero diagonal values to dummy 1.0
-  for (int i = 0; i < diag->MyLength(); ++i)
+  for (int i = 0; i < diag->local_length(); ++i)
     if ((*diag)[i] == 0.0) (*diag)[i] = 1.0;
 
   // scalar inversion of diagonal values
-  err = diag->Reciprocal(*diag);
+  err = diag->reciprocal(*diag);
   if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
 
   std::shared_ptr<Core::LinAlg::Vector<double>> lmDBC =
@@ -332,8 +332,8 @@ CONTACT::MtLagrangeStrategy::mesh_initialization()
   Core::LinAlg::export_to(*non_redist_gsdirichtoggle_, *lmDBC);
   std::shared_ptr<Core::LinAlg::Vector<double>> tmp =
       Core::LinAlg::create_vector(*gsdofrowmap_, true);
-  tmp->Multiply(1., *diag, *lmDBC, 0.);
-  diag->Update(-1., *tmp, 1.);
+  tmp->multiply(1., *diag, *lmDBC, 0.);
+  diag->update(-1., *tmp, 1.);
 
   // re-insert inverted diagonal into invd
   err = invd_->replace_diagonal_values(*diag);
@@ -574,17 +574,17 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
     // fs: subtract alphaf * old interface forces (t_n)
     Core::LinAlg::Vector<double> tempvecs(*gsdofrowmap_);
     dmatrix_->multiply(true, *zold_, tempvecs);
-    tempvecs.Update(1.0, *fs, -alphaf_);
+    tempvecs.update(1.0, *fs, -alphaf_);
 
     // fm: add alphaf * old interface forces (t_n)
     Core::LinAlg::Vector<double> tempvecm(*gmdofrowmap_);
     mmatrix_->multiply(true, *zold_, tempvecm);
-    fm->Update(alphaf_, tempvecm, 1.0);
+    fm->update(alphaf_, tempvecm, 1.0);
 
     // fm: add T(mbar)*fs
     Core::LinAlg::Vector<double> fmmod(*gmdofrowmap_);
     mhatmatrix_->multiply(true, tempvecs, fmmod);
-    fmmod.Update(1.0, *fm, 1.0);
+    fmmod.update(1.0, *fm, 1.0);
 
     // fm: subtract kmsmod*inv(D)*g
     // (nothing needs to be done, since the right hand side g is ALWAYS zero)
@@ -592,7 +592,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
     // RHS can remain unchanged, if slave displacement increments are not condensed
     // build identity matrix for slave dofs
     Core::LinAlg::Vector<double> ones(*gsdofrowmap_);
-    ones.PutScalar(1.0);
+    ones.put_scalar(1.0);
     std::shared_ptr<Core::LinAlg::SparseMatrix> onesdiag =
         std::make_shared<Core::LinAlg::SparseMatrix>(ones);
     onesdiag->complete();
@@ -657,12 +657,12 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
     // add n subvector to feffnew
     Core::LinAlg::Vector<double> fnexp(*problem_dofs());
     Core::LinAlg::export_to(*fn, fnexp);
-    feffnew->Update(1.0, fnexp, 1.0);
+    feffnew->update(1.0, fnexp, 1.0);
 
     // add m subvector to feffnew
     Core::LinAlg::Vector<double> fmmodexp(*problem_dofs());
     Core::LinAlg::export_to(fmmod, fmmodexp);
-    feffnew->Update(1.0, fmmodexp, 1.0);
+    feffnew->update(1.0, fmmodexp, 1.0);
 
     /**********************************************************************/
     /* Replace kteff and feff by kteffnew and feffnew                     */
@@ -715,26 +715,26 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
     dmatrix_->multiply(true, *z_, fs);
     Core::LinAlg::Vector<double> fsexp(*problem_dofs());
     Core::LinAlg::export_to(fs, fsexp);
-    feff->Update(-(1.0 - alphaf_), fsexp, 1.0);
+    feff->update(-(1.0 - alphaf_), fsexp, 1.0);
 
     Core::LinAlg::Vector<double> fm(*gmdofrowmap_);
     mmatrix_->multiply(true, *z_, fm);
     Core::LinAlg::Vector<double> fmexp(*problem_dofs());
     Core::LinAlg::export_to(fm, fmexp);
-    feff->Update(1.0 - alphaf_, fmexp, 1.0);
+    feff->update(1.0 - alphaf_, fmexp, 1.0);
 
     // add old contact forces (t_n)
     Core::LinAlg::Vector<double> fsold(*gsdofrowmap_);
     dmatrix_->multiply(true, *zold_, fsold);
     Core::LinAlg::Vector<double> fsoldexp(*problem_dofs());
     Core::LinAlg::export_to(fsold, fsoldexp);
-    feff->Update(-alphaf_, fsoldexp, 1.0);
+    feff->update(-alphaf_, fsoldexp, 1.0);
 
     Core::LinAlg::Vector<double> fmold(*gmdofrowmap_);
     mmatrix_->multiply(true, *zold_, fmold);
     Core::LinAlg::Vector<double> fmoldexp(*problem_dofs());
     Core::LinAlg::export_to(fmold, fmoldexp);
-    feff->Update(alphaf_, fmoldexp, 1.0);
+    feff->update(alphaf_, fmoldexp, 1.0);
   }
 }
 
@@ -753,7 +753,7 @@ void CONTACT::MtLagrangeStrategy::build_saddle_point_system(
   // conditions on different matrix blocks separately.
   Core::LinAlg::Vector<double> dirichtoggle(*(dbcmaps->full_map()));
   Core::LinAlg::Vector<double> temp(*(dbcmaps->cond_map()));
-  temp.PutScalar(1.0);
+  temp.put_scalar(1.0);
   Core::LinAlg::export_to(temp, dirichtoggle);
 
   //**********************************************************************
@@ -820,10 +820,10 @@ void CONTACT::MtLagrangeStrategy::build_saddle_point_system(
     // we also need merged rhs here
     Core::LinAlg::Vector<double> fresmexp(*mergedmap);
     Core::LinAlg::export_to(*fd, fresmexp);
-    mergedrhs->Update(1.0, fresmexp, 1.0);
+    mergedrhs->update(1.0, fresmexp, 1.0);
     Core::LinAlg::Vector<double> constrexp(*mergedmap);
     Core::LinAlg::export_to(*constrrhs, constrexp);
-    mergedrhs->Update(1.0, constrexp, 1.0);
+    mergedrhs->update(1.0, constrexp, 1.0);
 
     // apply Dirichlet B.C. to mergedrhs and mergedsol
     Core::LinAlg::Vector<double> dirichtoggleexp(*mergedmap);
@@ -862,10 +862,10 @@ void CONTACT::MtLagrangeStrategy::update_displacements_and_l_mincrements(
   Core::LinAlg::MapExtractor mapext(*mergedmap, problem_dofs(), glmdofrowmap_);
   mapext.extract_cond_vector(*blocksol, *sold);
   mapext.extract_other_vector(*blocksol, sollm);
-  sollm.ReplaceMap(*gsdofrowmap_);
+  sollm.replace_map(*gsdofrowmap_);
 
-  zincr_->Update(1.0, sollm, 0.0);
-  z_->Update(1.0, *zincr_, 1.0);
+  zincr_->update(1.0, sollm, 0.0);
+  z_->update(1.0, *zincr_, 1.0);
 }
 
 
@@ -913,7 +913,7 @@ void CONTACT::MtLagrangeStrategy::recover(std::shared_ptr<Core::LinAlg::Vector<d
       mhatmatrix_->multiply(false, disim, disis);
       Core::LinAlg::Vector<double> disisexp(*problem_dofs());
       Core::LinAlg::export_to(disis, disisexp);
-      disi->Update(1.0, disisexp, 1.0);
+      disi->update(1.0, disisexp, 1.0);
     }
 
     /**********************************************************************/
@@ -942,19 +942,19 @@ void CONTACT::MtLagrangeStrategy::recover(std::shared_ptr<Core::LinAlg::Vector<d
     // approximate update
     // invd_->Multiply(false,*fs_,*z_);
     // full update
-    z_->Update(1.0, *fs_, 0.0);
+    z_->update(1.0, *fs_, 0.0);
     Core::LinAlg::Vector<double> mod(*gsdofrowmap_);
     kss_->multiply(false, disis, mod);
-    z_->Update(-1.0, mod, 1.0);
+    z_->update(-1.0, mod, 1.0);
     ksm_->multiply(false, disim, mod);
-    z_->Update(-1.0, mod, 1.0);
+    z_->update(-1.0, mod, 1.0);
     ksn_->multiply(false, disin, mod);
-    z_->Update(-1.0, mod, 1.0);
+    z_->update(-1.0, mod, 1.0);
     dmatrix_->multiply(true, *zold_, mod);
-    z_->Update(-alphaf_, mod, 1.0);
+    z_->update(-alphaf_, mod, 1.0);
     Core::LinAlg::Vector<double> zcopy(*z_);
     invd_->multiply(true, zcopy, *z_);
-    z_->Scale(1 / (1 - alphaf_));
+    z_->scale(1 / (1 - alphaf_));
   }
 
   //**********************************************************************
@@ -996,7 +996,7 @@ bool CONTACT::MtLagrangeStrategy::evaluate_force(
     const std::shared_ptr<const Core::LinAlg::Vector<double>> dis)
 {
   if (!f_) f_ = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
-  f_->PutScalar(0.);
+  f_->put_scalar(0.);
 
   if (system_type() != Inpar::CONTACT::system_condensed)
   {
@@ -1005,13 +1005,13 @@ bool CONTACT::MtLagrangeStrategy::evaluate_force(
     if (dmatrix_->multiply(true, *z_, fs)) FOUR_C_THROW("multiply failed");
     Core::LinAlg::Vector<double> fsexp(*problem_dofs());
     Core::LinAlg::export_to(fs, fsexp);
-    f_->Update(1.0, fsexp, 1.0);
+    f_->update(1.0, fsexp, 1.0);
 
     Core::LinAlg::Vector<double> fm(*gmdofrowmap_);
     mmatrix_->multiply(true, *z_, fm);
     Core::LinAlg::Vector<double> fmexp(*problem_dofs());
     Core::LinAlg::export_to(fm, fmexp);
-    f_->Update(-1.0, fmexp, 1.0);
+    f_->update(-1.0, fmexp, 1.0);
   }
 
   return true;
@@ -1203,8 +1203,8 @@ void CONTACT::MtLagrangeStrategy::run_post_compute_x(const Core::LinAlg::Vector<
   {
     Core::LinAlg::Vector<double> zdir_ptr(*glmdofrowmap_, true);
     Core::LinAlg::export_to(dir, zdir_ptr);
-    zdir_ptr.ReplaceMap(*gsdofrowmap_);
-    z_->Update(1., zdir_ptr, 1.);
+    zdir_ptr.replace_map(*gsdofrowmap_);
+    z_->update(1., zdir_ptr, 1.);
   }
 }
 

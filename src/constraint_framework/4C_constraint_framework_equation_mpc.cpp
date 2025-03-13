@@ -32,8 +32,8 @@ void CONSTRAINTS::SUBMODELEVALUATOR::LinearCoupledEquation::evaluate_equation(
     Q_Ld.assemble(coefficient, rowId, dofId);
 
     // force contribution
-    constraintViolation = D_np1.Values()[dofId] * coefficient;
-    constraint_vector.SumIntoGlobalValues(1, &constraintViolation, &rowId);
+    constraintViolation = D_np1.get_values()[dofId] * coefficient;
+    constraint_vector.sum_into_global_values(1, &constraintViolation, &rowId);
   }
 }
 /*----------------------------------------------------------------------------*

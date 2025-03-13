@@ -466,7 +466,7 @@ void FPSI::Monolithic::evaluate(std::shared_ptr<const Core::LinAlg::Vector<doubl
     ale_field()->apply_fsi_interface_displacements(porointerfacedisplacements_FSI);
   }
 
-  ale_field()->write_access_dispnp()->Update(
+  ale_field()->write_access_dispnp()->update(
       1.0, *ax, 1.0);  // displacement increments on the interfaces are zero!!!
   ale_field()->evaluate(nullptr);
 
@@ -757,7 +757,7 @@ void FPSI::Monolithic::linear_solve()
     fpsifd_check();
   }
 
-  iterinc_->PutScalar(0.0);  // Useful? depends on solver and more
+  iterinc_->put_scalar(0.0);  // Useful? depends on solver and more
   poro_field()->clear_poro_iterinc();
 
   if (directsolve_)
@@ -816,7 +816,7 @@ void FPSI::Monolithic::line_search(Core::LinAlg::SparseMatrix& sparse)
 
   if (iter_ > 1)
   {
-    rhs_->Norm2(&normofrhs_);
+    rhs_->norm_2(&normofrhs_);
     if (normofrhs_ - normofrhsold_ > 1e-13)
     {
       if (linesearch_counter > 0.5)
@@ -824,7 +824,7 @@ void FPSI::Monolithic::line_search(Core::LinAlg::SparseMatrix& sparse)
                   << normofrhs_ << std::endl;
 
       islinesearch_ = true;
-      iterinc_->Update(pow(0.5, (linesearch_counter)), *iterincold_, 0.0);
+      iterinc_->update(pow(0.5, (linesearch_counter)), *iterincold_, 0.0);
       linesearch_counter = linesearch_counter + 1.0;
       std::cout << "linesearch_ : " << std::setprecision(1)
                 << static_cast<int>(linesearch_counter + 0.5) << " iterinc_ multiplied by "
@@ -847,16 +847,16 @@ void FPSI::Monolithic::line_search(Core::LinAlg::SparseMatrix& sparse)
       fx = std::make_shared<Core::LinAlg::Vector<double>>(*fluid_field()->dof_row_map(), true);
 
       extract_field_vectors(iterinc_, constsx, constfpx, constfx, ax, iter_ == 1);
-      iterinc_->Norm2(&normofiterinc_);
+      iterinc_->norm_2(&normofiterinc_);
       std::cout << "            Norm of step back: " << normofiterinc_ << std::endl;
       // poro_field()  ->ResetNewton(sx);
       // fluid_field() ->ResetNewton(fx);
-      sx->Update(1.0, *constsx, 0.0);
-      pfx->Update(1.0, *constfpx, 0.0);
-      fx->Update(1.0, *constfx, 0.0);
-      sx->Scale(-1.0);
-      pfx->Scale(-1.0);
-      fx->Scale(-1.0);
+      sx->update(1.0, *constsx, 0.0);
+      pfx->update(1.0, *constfpx, 0.0);
+      fx->update(1.0, *constfx, 0.0);
+      sx->scale(-1.0);
+      pfx->scale(-1.0);
+      fx->scale(-1.0);
 
       poro_field()->update_state_incrementally(sx, pfx);
       poro_field()->evaluate_fields(nullptr);
@@ -871,8 +871,8 @@ void FPSI::Monolithic::line_search(Core::LinAlg::SparseMatrix& sparse)
 
 
       // set iterinc_ to a fraction of the old iterinc_
-      iterinc_->Update(pow(0.5, linesearch_counter), *iterincold_, 0.0);
-      iterinc_->Norm2(&normofiterinc_);
+      iterinc_->update(pow(0.5, linesearch_counter), *iterincold_, 0.0);
+      iterinc_->norm_2(&normofiterinc_);
       std::cout << "            Norm of old increment: " << normofiterincold_
                 << "  Norm of bisected increment: " << normofiterinc_ << std::endl;
     }
@@ -891,8 +891,8 @@ void FPSI::Monolithic::line_search(Core::LinAlg::SparseMatrix& sparse)
   if (linesearch_ and islinesearch_ == false)
   {
     rhsold_ = Core::LinAlg::create_vector(*dof_row_map(), true);
-    rhsold_->Update(1.0, *rhs_, 0.0);
-    rhsold_->Norm2(&normofrhsold_);
+    rhsold_->update(1.0, *rhs_, 0.0);
+    rhsold_->norm_2(&normofrhsold_);
     if (abs(normofrhs_ - normofrhsold_) > 1.e-12 and iter_ > 1)
       FOUR_C_THROW(" wrong copy of rhs_ ");
   }
@@ -914,7 +914,7 @@ void FPSI::Monolithic::line_search(Core::LinAlg::SparseMatrix& sparse)
         Core::LinAlg::create_vector(*dof_row_map(), true);
     sparse.multiply(true, *rhs_, *tempvec);
     double climb = 0.0;
-    tempvec->Dot(*iterinc_, &climb);
+    tempvec->dot(*iterinc_, &climb);
     climb = -climb;
 
     if (climb > 0.0)
@@ -933,15 +933,15 @@ void FPSI::Monolithic::line_search(Core::LinAlg::SparseMatrix& sparse)
                 << std::endl;
       std::cout << "########################################################################"
                 << std::endl;
-      iterinc_->Update(-1.0, *iterinc_, 0.0);
+      iterinc_->update(-1.0, *iterinc_, 0.0);
     }
   }
 
   if (linesearch_ and islinesearch_ == false)
   {
     iterincold_ = Core::LinAlg::create_vector(*dof_row_map(), true);
-    iterincold_->Update(1.0, *iterinc_, 0.0);
-    iterincold_->Norm2(&normofiterincold_);
+    iterincold_->update(1.0, *iterinc_, 0.0);
+    iterincold_->norm_2(&normofiterincold_);
   }
 }
 
@@ -1048,7 +1048,7 @@ bool FPSI::Monolithic::converged()
 /*----------------------------------------------------------------------*/
 void FPSI::Monolithic::build_convergence_norms()
 {
-  rhs_->Norm2(&normofrhs_);
+  rhs_->norm_2(&normofrhs_);
   std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_fluid;
   std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_fluidvelocity;
   std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_fluidpressure;
@@ -1083,23 +1083,23 @@ void FPSI::Monolithic::build_convergence_norms()
   rhs_ale =
       extractor().extract_vector(*rhs_, ale_i_block_);  // Extractor().extract_vector(*rhs_, 2);
 
-  rhs_porostruct->Norm2(&normrhsporostruct_);
-  rhs_fluid->Norm2(&normrhsfluid_);
-  rhs_fluidvelocity->Norm2(&normrhsfluidvelocity_);
-  rhs_fluidpressure->Norm2(&normrhsfluidpressure_);
-  rhs_porofluidvelocity->Norm2(&normrhsporofluidvelocity_);
-  rhs_porofluidpressure->Norm2(&normrhsporofluidpressure_);
-  rhs_porointerface->Norm2(&normrhsporointerface_);
-  rhs_fluidinterface->Norm2(&normrhsfluidinterface_);
-  rhs_ale->Norm2(&normrhsale_);
+  rhs_porostruct->norm_2(&normrhsporostruct_);
+  rhs_fluid->norm_2(&normrhsfluid_);
+  rhs_fluidvelocity->norm_2(&normrhsfluidvelocity_);
+  rhs_fluidpressure->norm_2(&normrhsfluidpressure_);
+  rhs_porofluidvelocity->norm_2(&normrhsporofluidvelocity_);
+  rhs_porofluidpressure->norm_2(&normrhsporofluidpressure_);
+  rhs_porointerface->norm_2(&normrhsporointerface_);
+  rhs_fluidinterface->norm_2(&normrhsfluidinterface_);
+  rhs_ale->norm_2(&normrhsale_);
 
   // get length of the porostructural, porofluid, fluid and ale vector
-  sqrtnfv_ = rhs_fluidvelocity->GlobalLength();  // correct length here
-  sqrtnfp_ = rhs_fluidpressure->GlobalLength();
-  sqrtnpfv_ = rhs_porofluidvelocity->GlobalLength();
-  sqrtnpfp_ = rhs_porofluidpressure->GlobalLength();
-  sqrtnps_ = rhs_porostruct->GlobalLength();
-  sqrtna_ = rhs_ale->GlobalLength();
+  sqrtnfv_ = rhs_fluidvelocity->global_length();  // correct length here
+  sqrtnfp_ = rhs_fluidpressure->global_length();
+  sqrtnpfv_ = rhs_porofluidvelocity->global_length();
+  sqrtnpfp_ = rhs_porofluidpressure->global_length();
+  sqrtnps_ = rhs_porostruct->global_length();
+  sqrtna_ = rhs_ale->global_length();
   sqrtnall_ = sqrtnfv_ + sqrtnfp_ + sqrtnpfv_ + sqrtnpfp_ + sqrtnps_ + sqrtna_;
 
   sqrtnfv_ = sqrt(sqrtnfv_);
@@ -1110,7 +1110,7 @@ void FPSI::Monolithic::build_convergence_norms()
   sqrtna_ = sqrt(sqrtna_);
   sqrtnall_ = sqrt(sqrtnall_);
 
-  if (islinesearch_ == false) iterinc_->Norm2(&normofiterinc_);
+  if (islinesearch_ == false) iterinc_->norm_2(&normofiterinc_);
 
   std::shared_ptr<const Core::LinAlg::Vector<double>> iterincporostruct;
   std::shared_ptr<const Core::LinAlg::Vector<double>> iterincporofluid;
@@ -1145,18 +1145,18 @@ void FPSI::Monolithic::build_convergence_norms()
 
   iterincale = extractor().extract_vector(*iterinc_, ale_i_block_);
 
-  iterincporostruct->Norm2(&normofiterincporostruct_);
-  iterincporofluid->Norm2(&normofiterincporofluid_);
-  iterincporofluidvelocity->Norm2(&normofiterincporofluidvelocity_);
-  iterincporofluidpressure->Norm2(&normofiterincporofluidpressure_);
-  iterincporointerface->Norm2(&normofiterincporointerface_);
+  iterincporostruct->norm_2(&normofiterincporostruct_);
+  iterincporofluid->norm_2(&normofiterincporofluid_);
+  iterincporofluidvelocity->norm_2(&normofiterincporofluidvelocity_);
+  iterincporofluidpressure->norm_2(&normofiterincporofluidpressure_);
+  iterincporointerface->norm_2(&normofiterincporointerface_);
 
-  iterincfluid->Norm2(&normofiterincfluid_);
-  iterincfluidvelocity->Norm2(&normofiterincfluidvelocity_);
-  iterincfluidpressure->Norm2(&normofiterincfluidpressure_);
-  iterincfluidinterface->Norm2(&normofiterincfluidinterface_);
+  iterincfluid->norm_2(&normofiterincfluid_);
+  iterincfluidvelocity->norm_2(&normofiterincfluidvelocity_);
+  iterincfluidpressure->norm_2(&normofiterincfluidpressure_);
+  iterincfluidinterface->norm_2(&normofiterincfluidinterface_);
 
-  iterincale->Norm2(&normofiterincale_);
+  iterincale->norm_2(&normofiterincale_);
 
   // Get Norm1 of dof values for each field
 
@@ -1181,12 +1181,12 @@ void FPSI::Monolithic::build_convergence_norms()
   aledisplacements = ale_field()->dispnp();
 
 
-  porofluidvelocity->Norm1(&norm1_pfv_);
-  porofluidpressure->Norm1(&norm1_pfp_);
-  porostructdisplacements->Norm1(&norm1_ps_);
-  fluidvelocity->Norm1(&norm1_fv_);
-  fluidpressure->Norm1(&norm1_fp_);
-  aledisplacements->Norm1(&norm1_a_);
+  porofluidvelocity->norm_1(&norm1_pfv_);
+  porofluidpressure->norm_1(&norm1_pfp_);
+  porostructdisplacements->norm_1(&norm1_ps_);
+  fluidvelocity->norm_1(&norm1_fv_);
+  fluidpressure->norm_1(&norm1_fp_);
+  aledisplacements->norm_1(&norm1_a_);
   norm1_alldof_ = norm1_pfv_ + norm1_pfp_ + norm1_ps_ + norm1_fv_ + norm1_fp_ + norm1_a_;
 
   // add small number to avoid division by 0 --> division by 10^-10 results anyway in 'not
@@ -1496,11 +1496,11 @@ void FPSI::Monolithic::setup_newton()
 
   // incremental solution vector with length of all dofs
   iterinc_ = Core::LinAlg::create_vector(*dof_row_map(), true);
-  iterinc_->PutScalar(0.0);
+  iterinc_->put_scalar(0.0);
 
   // a zero vector of full length
   zeros_ = Core::LinAlg::create_vector(*dof_row_map(), true);
-  zeros_->PutScalar(0.0);
+  zeros_->put_scalar(0.0);
 }
 
 /*----------------------------------------------------------------------*/
@@ -1549,16 +1549,16 @@ void FPSI::Monolithic::fpsifd_check()
   // build artificial iteration increment
   std::shared_ptr<Core::LinAlg::Vector<double>> iterinc =
       Core::LinAlg::create_vector(*dof_row_map(), true);
-  const int dofs = iterinc->GlobalLength();
-  iterinc->PutScalar(0.0);
-  iterinc->ReplaceGlobalValue(0, 0, delta);
+  const int dofs = iterinc->global_length();
+  iterinc->put_scalar(0.0);
+  iterinc->replace_global_value(0, 0, delta);
 
   // build approximated FD stiffness matrix
   std::shared_ptr<Epetra_CrsMatrix> stiff_approx = Core::LinAlg::create_matrix(*dof_row_map(), 81);
 
   // store old rhs
   Core::LinAlg::Vector<double> rhs_old(*dof_row_map(), true);
-  rhs_old.Update(1.0, *rhs_, 0.0);
+  rhs_old.update(1.0, *rhs_, 0.0);
 
   Core::LinAlg::Vector<double> rhs_copy(*dof_row_map(), true);
 
@@ -1589,31 +1589,31 @@ void FPSI::Monolithic::fpsifd_check()
     std::cout << i << "... " << std::flush;
     if (combined_dbc_map()->MyGID(i) or fluid_field()->interface()->fsi_cond_map()->MyGID(i))
     {
-      iterinc->ReplaceGlobalValue(i, 0, 0.0);
+      iterinc->replace_global_value(i, 0, 0.0);
     }
     evaluate(iterinc);  // initial iterinc is varied at first dof (0-th element)
     setup_system_matrix();
 
-    rhs_copy.Update(1.0, *rhs_, 0.0);
+    rhs_copy.update(1.0, *rhs_, 0.0);
 
-    iterinc_->PutScalar(0.0);  // Useful? depends on solver and more
+    iterinc_->put_scalar(0.0);  // Useful? depends on solver and more
     poro_field()->clear_poro_iterinc();
     Core::LinAlg::apply_dirichlet_to_system(
         sparse_copy, *iterinc_, rhs_copy, *zeros_, *fluid_field()->interface()->fsi_cond_map());
     Core::LinAlg::apply_dirichlet_to_system(
         sparse_copy, *iterinc_, rhs_copy, *zeros_, *combined_dbc_map());
 
-    rhs_copy.Update(-1.0, rhs_old, 1.0);  // finite difference approximation of partial derivative
-    rhs_copy.Scale(-1.0 / delta);
+    rhs_copy.update(-1.0, rhs_old, 1.0);  // finite difference approximation of partial derivative
+    rhs_copy.scale(-1.0 / delta);
 
     if (i == columntocheck)
     {
       std::cout << "iterinc:  " << std::endl;
-      iterinc->Print(std::cout);
+      iterinc->print(std::cout);
       std::cout << "rhs_old:  " << std::endl;
-      rhs_old.Print(std::cout);
+      rhs_old.print(std::cout);
       std::cout << "rhs_copy: " << std::endl;
-      rhs_copy.Print(std::cout);
+      rhs_copy.print(std::cout);
       FOUR_C_THROW("Stopped by FPSI - fd_check!");
     }
 
@@ -1630,11 +1630,11 @@ void FPSI::Monolithic::fpsifd_check()
 
     if (not combined_dbc_map()->MyGID(i) and
         not fluid_field()->interface()->fsi_cond_map()->MyGID(i))
-      iterinc->ReplaceGlobalValue(i, 0, -delta);
+      iterinc->replace_global_value(i, 0, -delta);
 
-    iterinc->ReplaceGlobalValue(im1, 0, 0.0);
+    iterinc->replace_global_value(im1, 0, 0.0);
 
-    if (i_loc != dofs - 1) iterinc->ReplaceGlobalValue(ip1, 0, delta);
+    if (i_loc != dofs - 1) iterinc->replace_global_value(ip1, 0, delta);
 
   }  // i-loop (columns)
   evaluate(iterinc);

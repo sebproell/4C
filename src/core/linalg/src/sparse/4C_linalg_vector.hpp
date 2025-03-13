@@ -19,10 +19,7 @@
 
 #include <memory>
 
-// Do not lint the file for identifier names, since the naming of the Wrapper functions follow the
-// naming of the Epetra_Vector
 
-// NOLINTBEGIN(readability-identifier-naming)
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -60,11 +57,11 @@ namespace Core::LinAlg
     operator MultiVector<T>&();
 
     // (Implicit) conversions: they all return references or RCPs, never copies
-    const Epetra_Vector& get_ref_of_Epetra_Vector() const { return *vector_; }
+    const Epetra_Vector& get_ref_of_epetra_vector() const { return *vector_; }
 
-    Epetra_Vector& get_ref_of_Epetra_Vector() { return *vector_; }
+    Epetra_Vector& get_ref_of_epetra_vector() { return *vector_; }
 
-    std::shared_ptr<Epetra_Vector> get_ptr_of_Epetra_Vector() { return vector_; }
+    std::shared_ptr<Epetra_Vector> get_ptr_of_epetra_vector() { return vector_; }
 
     operator Epetra_MultiVector&() { return *vector_; }
 
@@ -75,76 +72,76 @@ namespace Core::LinAlg
     operator const Epetra_Vector&() const { return *vector_; }
 
     //! get pointer of epetra multi vector
-    std::shared_ptr<Epetra_MultiVector> get_ptr_of_Epetra_MultiVector() { return vector_; }
+    std::shared_ptr<Epetra_MultiVector> get_ptr_of_epetra_multi_vector() { return vector_; }
 
     //! Temporary helper to ease transition from Epetra and simplify interfacing with RCP-laden code
-    std::shared_ptr<MultiVector<T>> get_ptr_of_MultiVector() const
+    std::shared_ptr<MultiVector<T>> get_ptr_of_multi_vector() const
     {
       sync_view();
       return multi_vector_view_;
     }
 
     //! Computes dot product of each corresponding pair of vectors.
-    int Dot(const Epetra_MultiVector& A, double* Result) const;
+    int dot(const Epetra_MultiVector& A, double* Result) const;
 
     //! Puts element-wise absolute values of input Multi-vector in target.
-    int Abs(const Epetra_MultiVector& A);
+    int abs(const Epetra_MultiVector& A);
 
     //! Replace multi-vector values with scaled values of A, \e this = ScalarA*A.
-    int Scale(double ScalarA, const Epetra_MultiVector& A);
+    int scale(double ScalarA, const Epetra_MultiVector& A);
 
     //! Update multi-vector values with scaled values of A, \e this = ScalarThis*\e this +
     //! ScalarA*A.
-    int Update(double ScalarA, const Epetra_MultiVector& A, double ScalarThis);
+    int update(double ScalarA, const Epetra_MultiVector& A, double ScalarThis);
 
     //! Update multi-vector with scaled values of A and B, \e this = ScalarThis*\e this + ScalarA*A
     //! + ScalarB*B.
-    int Update(double ScalarA, const Epetra_MultiVector& A, double ScalarB,
+    int update(double ScalarA, const Epetra_MultiVector& A, double ScalarB,
         const Epetra_MultiVector& B, double ScalarThis);
 
 
     ///
 
     //! Compute 1-norm of each vector
-    int Norm1(double* Result) const;
+    int norm_1(double* Result) const;
 
     //! Compute 2-norm of each vector
-    int Norm2(double* Result) const;
+    int norm_2(double* Result) const;
 
     //! Compute Inf-norm of each vector
-    int NormInf(double* Result) const;
+    int norm_inf(double* Result) const;
 
     //! Compute minimum value of each vector
-    int MinValue(double* Result) const;
+    int min_value(double* Result) const;
 
     //! Compute maximum value of each vector
-    int MaxValue(double* Result) const;
+    int max_value(double* Result) const;
 
     //! Compute mean (average) value of each vector
-    int MeanValue(double* Result) const;
+    int mean_value(double* Result) const;
 
     //! Scale the current values of a multi-vector, \e this = ScalarValue*\e this.
-    int Scale(double ScalarValue) { return vector_->Scale(ScalarValue); }
+    int scale(double ScalarValue) { return vector_->Scale(ScalarValue); }
 
     //! Computes dot product of each corresponding pair of vectors.
-    int Dot(const Vector& A, double* Result) const;
+    int dot(const Vector& A, double* Result) const;
 
     //! Puts element-wise absolute values of input Multi-vector in target.
-    int Abs(const Vector& A);
+    int abs(const Vector& A);
 
     //! Replace multi-vector values with scaled values of A, \e this = ScalarA*A.
-    int Scale(double ScalarA, const Vector& A);
+    int scale(double ScalarA, const Vector& A);
 
     //! Update multi-vector values with scaled values of A, \e this = ScalarThis*\e this +
     //! ScalarA*A.
-    int Update(double ScalarA, const Vector& A, double ScalarThis);
+    int update(double ScalarA, const Vector& A, double ScalarThis);
 
     //! Update multi-vector with scaled values of A and B, \e this = ScalarThis*\e this + ScalarA*A
     //! + ScalarB*B.
-    int Update(double ScalarA, const Vector& A, double ScalarB, const Vector& B, double ScalarThis);
+    int update(double ScalarA, const Vector& A, double ScalarB, const Vector& B, double ScalarThis);
 
     //! Initialize all values in a multi-vector with const value.
-    int PutScalar(double ScalarConstant);
+    int put_scalar(double ScalarConstant);
 
     //! Element access function
     double& operator[](int index) { return (*vector_)[index]; }
@@ -152,29 +149,29 @@ namespace Core::LinAlg
     double operator[](int const index) const { return (*vector_)[index]; }
 
     //! Returns the address of the Epetra_BlockMap for this multi-vector.
-    const Epetra_BlockMap& Map() const { return (vector_->Map()); };
+    const Epetra_BlockMap& get_map() const { return (vector_->Map()); };
 
     //! Returns the MPI_Comm for this multi-vector.
-    MPI_Comm Comm() const;
+    MPI_Comm get_comm() const;
 
     //! Returns true if this multi-vector is distributed global, i.e., not local replicated.
-    bool DistributedGlobal() const { return (vector_->Map().DistributedGlobal()); };
+    bool distributed_global() const { return (vector_->Map().DistributedGlobal()); };
 
     //! Print method
-    void Print(std::ostream& os) const { vector_->Print(os); }
+    void print(std::ostream& os) const { vector_->Print(os); }
 
     //! Returns the number of vectors in the multi-vector.
-    int NumVectors() const { return vector_->NumVectors(); }
+    int num_vectors() const { return vector_->NumVectors(); }
 
     //! Returns the local vector length on the calling processor of vectors in the multi-vector.
-    int MyLength() const { return vector_->MyLength(); }
+    int local_length() const { return vector_->MyLength(); }
 
     //! Returns the global vector length of vectors in the multi-vector.
-    int GlobalLength() const { return vector_->GlobalLength(); }
+    int global_length() const { return vector_->GlobalLength(); }
 
     //! Replace values in a vector with a given indexed list of values, indices are in local index
     //! space.
-    int ReplaceMyValues(int NumEntries, const double* Values, const int* Indices)
+    int replace_local_values(int NumEntries, const double* Values, const int* Indices)
     {
       return vector_->ReplaceMyValues(NumEntries, Values, Indices);
     }
@@ -182,125 +179,127 @@ namespace Core::LinAlg
 
     //! Replace values in a vector with a given indexed list of values at the specified BlockOffset,
     //! indices are in local index space.
-    int ReplaceMyValues(int NumEntries, int BlockOffset, const double* Values, const int* Indices)
+    int replace_local_values(
+        int NumEntries, int BlockOffset, const double* Values, const int* Indices)
     {
       return vector_->ReplaceMyValues(NumEntries, BlockOffset, Values, Indices);
     }
 
-    int ReplaceMyValue(int MyRow, int VectorIndex, double ScalarValue)
+    int replace_local_value(int MyRow, int VectorIndex, double ScalarValue)
     {
       return vector_->ReplaceMyValue(MyRow, VectorIndex, ScalarValue);
     }
 
-    double* Values() const { return vector_->Values(); }
+    double* get_values() const { return vector_->Values(); }
 
     /** Replace map, only if new map has same point-structure as current map.
         return 0 if map is replaced, -1 if not.
      */
-    int ReplaceMap(const Epetra_BlockMap& map);
+    int replace_map(const Epetra_BlockMap& map);
 
-    int ReplaceGlobalValue(int GlobalRow, int VectorIndex, double ScalarValue)
+    int replace_global_value(int GlobalRow, int VectorIndex, double ScalarValue)
     {
       return vector_->ReplaceGlobalValue(GlobalRow, VectorIndex, ScalarValue);
     }
 
-    int ReplaceGlobalValue(long long GlobalRow, int VectorIndex, double ScalarValue)
+    int replace_global_value(long long GlobalRow, int VectorIndex, double ScalarValue)
     {
       return vector_->ReplaceGlobalValue(GlobalRow, VectorIndex, ScalarValue);
     }
 
     //! Matrix-Matrix multiplication, \e this = ScalarThis*\e this + ScalarAB*A*B.
-    int Multiply(char TransA, char TransB, double ScalarAB, const Epetra_MultiVector& A,
+    int multiply(char TransA, char TransB, double ScalarAB, const Epetra_MultiVector& A,
         const Epetra_MultiVector& B, double ScalarThis)
     {
       return vector_->Multiply(TransA, TransB, ScalarAB, A, B, ScalarThis);
     }
 
     //! Puts element-wise reciprocal values of input Multi-vector in target.
-    int Reciprocal(const Epetra_MultiVector& A) { return vector_->Reciprocal(A); }
+    int reciprocal(const Epetra_MultiVector& A) { return vector_->Reciprocal(A); }
 
     //! Multiply a Core::LinAlg::MultiVector<double> with another, element-by-element.
-    int Multiply(double ScalarAB, const Epetra_MultiVector& A, const Epetra_MultiVector& B,
+    int multiply(double ScalarAB, const Epetra_MultiVector& A, const Epetra_MultiVector& B,
         double ScalarThis)
     {
       return vector_->Multiply(ScalarAB, A, B, ScalarThis);
     }
 
-    int ReplaceGlobalValues(int NumEntries, const double* Values, const int* Indices)
+    int replace_global_values(int NumEntries, const double* Values, const int* Indices)
     {
       return vector_->ReplaceGlobalValues(NumEntries, Values, Indices);
     }
 
-    int ReplaceGlobalValues(int NumEntries, const double* Values, const long long* Indices)
+    int replace_global_values(int NumEntries, const double* Values, const long long* Indices)
     {
       return vector_->ReplaceGlobalValues(NumEntries, Values, Indices);
     }
 
     //! Imports an Epetra_DistObject using the Epetra_Import object.
-    int Import(const Epetra_SrcDistObject& A, const Epetra_Import& Importer,
+    int import(const Epetra_SrcDistObject& A, const Epetra_Import& Importer,
         Epetra_CombineMode CombineMode, const Epetra_OffsetIndex* Indexor = nullptr)
     {
       return vector_->Import(A, Importer, CombineMode, Indexor);
     }
 
     //! Imports an Epetra_DistObject using the Epetra_Export object.
-    int Import(const Epetra_SrcDistObject& A, const Epetra_Export& Exporter,
+    int import(const Epetra_SrcDistObject& A, const Epetra_Export& Exporter,
         Epetra_CombineMode CombineMode, const Epetra_OffsetIndex* Indexor = nullptr)
     {
       return vector_->Import(A, Exporter, CombineMode, Indexor);
     }
 
-    int Export(const Epetra_SrcDistObject& A, const Epetra_Import& Importer,
+    int export_to(const Epetra_SrcDistObject& A, const Epetra_Import& Importer,
         Epetra_CombineMode CombineMode, const Epetra_OffsetIndex* Indexor = nullptr)
     {
       return vector_->Export(A, Importer, CombineMode, Indexor);
     }
 
-    int Export(const Epetra_SrcDistObject& A, const Epetra_Export& Exporter,
+    int export_to(const Epetra_SrcDistObject& A, const Epetra_Export& Exporter,
         Epetra_CombineMode CombineMode, const Epetra_OffsetIndex* Indexor = nullptr)
     {
       return vector_->Export(A, Exporter, CombineMode, Indexor);
     }
 
-    int SumIntoGlobalValue(int GlobalRow, int VectorIndex, double ScalarValue)
+    int sum_into_global_value(int GlobalRow, int VectorIndex, double ScalarValue)
     {
       return vector_->SumIntoGlobalValue(GlobalRow, VectorIndex, ScalarValue);
     }
 
-    int SumIntoGlobalValue(long long GlobalRow, int VectorIndex, double ScalarValue)
+    int sum_into_global_value(long long GlobalRow, int VectorIndex, double ScalarValue)
     {
       return vector_->SumIntoGlobalValue(GlobalRow, VectorIndex, ScalarValue);
     }
 
-    int SumIntoGlobalValues(
+    int sum_into_global_values(
         int NumEntries, int BlockOffset, const double* Values, const int* Indices)
     {
       return vector_->SumIntoGlobalValues(NumEntries, BlockOffset, Values, Indices);
     }
 
-    int SumIntoGlobalValues(int NumEntries, const double* Values, const int* Indices)
+    int sum_into_global_values(int NumEntries, const double* Values, const int* Indices)
     {
       return vector_->SumIntoGlobalValues(NumEntries, Values, Indices);
     }
 
-    int ReciprocalMultiply(double ScalarAB, const Epetra_MultiVector& A,
+    int reciprocal_multiply(double ScalarAB, const Epetra_MultiVector& A,
         const Epetra_MultiVector& B, double ScalarThis)
     {
       return vector_->ReciprocalMultiply(ScalarAB, A, B, ScalarThis);
     }
 
-    int SumIntoMyValue(int MyRow, int VectorIndex, double ScalarValue)
+    int sum_into_local_value(int MyRow, int VectorIndex, double ScalarValue)
     {
       return vector_->SumIntoMyValue(MyRow, VectorIndex, ScalarValue);
     }
 
 
-    int SumIntoMyValue(int MyBlockRow, int BlockRowOffset, int VectorIndex, double ScalarValue)
+    int sum_into_local_value(
+        int MyBlockRow, int BlockRowOffset, int VectorIndex, double ScalarValue)
     {
       return vector_->SumIntoMyValue(MyBlockRow, BlockRowOffset, VectorIndex, ScalarValue);
     }
 
-    int SumIntoMyValues(int NumEntries, const double* Values, const int* Indices)
+    int sum_into_local_values(int NumEntries, const double* Values, const int* Indices)
     {
       return vector_->SumIntoMyValues(NumEntries, Values, Indices);
     }
@@ -356,53 +355,53 @@ namespace Core::LinAlg
     Vector(Vector&& other) noexcept;
     Vector& operator=(Vector&& other) noexcept;
 
-    int PutValue(int Value);
+    int put_value(int Value);
 
-    int MaxValue();
+    int max_value();
 
-    int MinValue();
+    int min_value();
 
     int& operator[](int index) { return (*vector_)[index]; }
 
     const int& operator[](int index) const { return (*vector_)[index]; }
 
-    int* Values() const { return vector_->Values(); };
+    int* get_values() const { return vector_->Values(); };
 
-    int MyLength() const { return vector_->MyLength(); };
+    int local_length() const { return vector_->MyLength(); };
 
-    int GlobalLength() const { return vector_->GlobalLength(); };
+    int global_length() const { return vector_->GlobalLength(); };
 
-    void Print(std::ostream& os) const;
+    void print(std::ostream& os) const;
 
-    const Epetra_BlockMap& Map() const { return (vector_->Map()); };
+    const Epetra_BlockMap& get_map() const { return (vector_->Map()); };
 
     //! Imports an Epetra_DistObject using the Epetra_Import object.
-    int Import(const Vector& A, const Epetra_Import& Importer, Epetra_CombineMode CombineMode,
+    int import(const Vector& A, const Epetra_Import& Importer, Epetra_CombineMode CombineMode,
         const Epetra_OffsetIndex* Indexor = nullptr)
     {
       return vector_->Import(*A.vector_, Importer, CombineMode, Indexor);
     }
 
     //! Imports an Epetra_DistObject using the Epetra_Export object.
-    int Import(const Vector& A, const Epetra_Export& Exporter, Epetra_CombineMode CombineMode,
+    int import(const Vector& A, const Epetra_Export& Exporter, Epetra_CombineMode CombineMode,
         const Epetra_OffsetIndex* Indexor = nullptr)
     {
       return vector_->Import(*A.vector_, Exporter, CombineMode, Indexor);
     }
 
-    int Export(const Vector& A, const Epetra_Import& Importer, Epetra_CombineMode CombineMode,
+    int export_to(const Vector& A, const Epetra_Import& Importer, Epetra_CombineMode CombineMode,
         const Epetra_OffsetIndex* Indexor = nullptr)
     {
       return vector_->Export(*A.vector_, Importer, CombineMode, Indexor);
     }
 
-    int Export(const Vector& A, const Epetra_Export& Exporter, Epetra_CombineMode CombineMode,
+    int export_to(const Vector& A, const Epetra_Export& Exporter, Epetra_CombineMode CombineMode,
         const Epetra_OffsetIndex* Indexor = nullptr)
     {
       return vector_->Export(*A.vector_, Exporter, CombineMode, Indexor);
     }
 
-    [[nodiscard]] MPI_Comm Comm() const;
+    [[nodiscard]] MPI_Comm get_comm() const;
 
    private:
     std::shared_ptr<Epetra_IntVector> vector_;
@@ -458,6 +457,5 @@ namespace Core::LinAlg
 
 FOUR_C_NAMESPACE_CLOSE
 
-// NOLINTEND(readability-identifier-naming)
 
 #endif

@@ -483,7 +483,7 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
 
 
   // compute squared values of velocity
-  squaredvelnp_->Multiply(1.0, velnp, velnp, 0.0);
+  squaredvelnp_->multiply(1.0, velnp, velnp, 0.0);
 
   //----------------------------------------------------------------------
   // increase sample counter
@@ -502,7 +502,7 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
     double x2cwall_plw = x2statlocations_(k, 0);
 
     // toggle vectors are one in the position of a dof of this node,
-    toggleu_->PutScalar(0.0);
+    toggleu_->put_scalar(0.0);
 
     // du1/dx
     {
@@ -519,7 +519,7 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
           std::vector<int> dof = discret_->dof(node);
           double one = 1.0;
 
-          toggleu_->ReplaceGlobalValues(1, &one, dof.data());
+          toggleu_->replace_global_values(1, &one, dof.data());
           countnodes++;
         }
       }
@@ -535,7 +535,7 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
         // get values for velocity derivative and pressure
         //----------------------------------------------------------------------
         double u;
-        velnp.Dot(*toggleu_, &u);
+        velnp.dot(*toggleu_, &u);
 
         //----------------------------------------------------------------------
         // calculate spatial means
@@ -548,7 +548,7 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
       }
     }
 
-    togglep_->PutScalar(0.0);
+    togglep_->put_scalar(0.0);
     // p, lower wall
     {
       // count the number of nodes in x3-direction contributing to this nodal value
@@ -564,7 +564,7 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
           std::vector<int> dof = discret_->dof(node);
           double one = 1.0;
 
-          togglep_->ReplaceGlobalValues(1, &one, &(dof[3]));
+          togglep_->replace_global_values(1, &one, &(dof[3]));
           countnodes++;
         }
       }
@@ -580,7 +580,7 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
         // get values for velocity derivative and pressure
         //----------------------------------------------------------------------
         double p;
-        velnp.Dot(*togglep_, &p);
+        velnp.dot(*togglep_, &p);
 
         //----------------------------------------------------------------------
         // calculate spatial means
@@ -593,7 +593,7 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
       }
     }
 
-    togglep_->PutScalar(0.0);
+    togglep_->put_scalar(0.0);
     // p, upper wall
     {
       // count the number of nodes in x3-direction contributing to this nodal value
@@ -609,7 +609,7 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
           std::vector<int> dof = discret_->dof(node);
           double one = 1.0;
 
-          togglep_->ReplaceGlobalValues(1, &one, &(dof[3]));
+          togglep_->replace_global_values(1, &one, &(dof[3]));
           countnodes++;
         }
       }
@@ -625,7 +625,7 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
         // get values for velocity derivative and pressure
         //----------------------------------------------------------------------
         double p;
-        velnp.Dot(*togglep_, &p);
+        velnp.dot(*togglep_, &p);
 
         //----------------------------------------------------------------------
         // calculate spatial means
@@ -649,9 +649,9 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
 
     // toggle vectors are one in the position of a dof of this node,
     // else 0
-    toggleu_->PutScalar(0.0);
-    togglev_->PutScalar(0.0);
-    togglew_->PutScalar(0.0);
+    toggleu_->put_scalar(0.0);
+    togglev_->put_scalar(0.0);
+    togglew_->put_scalar(0.0);
 
     // count the number of nodes in x3-direction contributing to this nodal value
     int countnodes = 0;
@@ -666,9 +666,9 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
         std::vector<int> dof = discret_->dof(node);
         double one = 1.0;
 
-        toggleu_->ReplaceGlobalValues(1, &one, &(dof[0]));
-        togglev_->ReplaceGlobalValues(1, &one, &(dof[1]));
-        togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
+        toggleu_->replace_global_values(1, &one, &(dof[0]));
+        togglev_->replace_global_values(1, &one, &(dof[1]));
+        togglew_->replace_global_values(1, &one, &(dof[2]));
         countnodes++;
       }
     }
@@ -684,11 +684,11 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
       // get values for velocity derivative and pressure
       //----------------------------------------------------------------------
       double fx;
-      stresses.Dot(*toggleu_, &fx);
+      stresses.dot(*toggleu_, &fx);
       double fy;
-      stresses.Dot(*togglev_, &fy);
+      stresses.dot(*togglev_, &fy);
       double fz;
-      stresses.Dot(*togglew_, &fz);
+      stresses.dot(*togglew_, &fz);
 
       //----------------------------------------------------------------------
       // add spatial mean values to statistical sample
@@ -717,10 +717,10 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
     {
       // toggle vectors are one in the position of a dof of this node,
       // else 0
-      toggleu_->PutScalar(0.0);
-      togglev_->PutScalar(0.0);
-      togglew_->PutScalar(0.0);
-      togglep_->PutScalar(0.0);
+      toggleu_->put_scalar(0.0);
+      togglev_->put_scalar(0.0);
+      togglew_->put_scalar(0.0);
+      togglep_->put_scalar(0.0);
 
       // count the number of nodes in x3-direction contributing to this nodal value
       int countnodes = 0;
@@ -739,10 +739,10 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
           std::vector<int> dof = discret_->dof(node);
           double one = 1.0;
 
-          toggleu_->ReplaceGlobalValues(1, &one, &(dof[0]));
-          togglev_->ReplaceGlobalValues(1, &one, &(dof[1]));
-          togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
-          togglep_->ReplaceGlobalValues(1, &one, &(dof[3]));
+          toggleu_->replace_global_values(1, &one, &(dof[0]));
+          togglev_->replace_global_values(1, &one, &(dof[1]));
+          togglew_->replace_global_values(1, &one, &(dof[2]));
+          togglep_->replace_global_values(1, &one, &(dof[3]));
 
           countnodes++;
         }
@@ -764,19 +764,19 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
         double v;
         double w;
         double p;
-        velnp.Dot(*toggleu_, &u);
-        velnp.Dot(*togglev_, &v);
-        velnp.Dot(*togglew_, &w);
-        velnp.Dot(*togglep_, &p);
+        velnp.dot(*toggleu_, &u);
+        velnp.dot(*togglev_, &v);
+        velnp.dot(*togglew_, &w);
+        velnp.dot(*togglep_, &p);
 
         double uu;
         double vv;
         double ww;
         double pp;
-        squaredvelnp_->Dot(*toggleu_, &uu);
-        squaredvelnp_->Dot(*togglev_, &vv);
-        squaredvelnp_->Dot(*togglew_, &ww);
-        squaredvelnp_->Dot(*togglep_, &pp);
+        squaredvelnp_->dot(*toggleu_, &uu);
+        squaredvelnp_->dot(*togglev_, &vv);
+        squaredvelnp_->dot(*togglew_, &ww);
+        squaredvelnp_->dot(*togglep_, &pp);
 
         double uv;
         double uw;
@@ -784,17 +784,17 @@ void FLD::TurbulenceStatisticsPh::do_time_sample(
         double locuv = 0.0;
         double locuw = 0.0;
         double locvw = 0.0;
-        for (int rr = 1; rr < velnp.MyLength(); ++rr)
+        for (int rr = 1; rr < velnp.local_length(); ++rr)
         {
           locuv += ((velnp)[rr - 1] * (*toggleu_)[rr - 1]) * ((velnp)[rr] * (*togglev_)[rr]);
         }
         Core::Communication::sum_all(&locuv, &uv, 1, discret_->get_comm());
-        for (int rr = 2; rr < velnp.MyLength(); ++rr)
+        for (int rr = 2; rr < velnp.local_length(); ++rr)
         {
           locuw += ((velnp)[rr - 2] * (*toggleu_)[rr - 2]) * ((velnp)[rr] * (*togglew_)[rr]);
         }
         Core::Communication::sum_all(&locuw, &uw, 1, discret_->get_comm());
-        for (int rr = 2; rr < velnp.MyLength(); ++rr)
+        for (int rr = 2; rr < velnp.local_length(); ++rr)
         {
           locvw += ((velnp)[rr - 1] * (*togglev_)[rr - 1]) * ((velnp)[rr] * (*togglew_)[rr]);
         }

@@ -427,7 +427,7 @@ void Beam3ContactOctTree::initialize_octree_search()
   {
     // for this case, the diameter is calculated in create_spbb()
     case Beam3ContactOctTree::spherical:
-      diameter_->PutScalar(0.0);
+      diameter_->put_scalar(0.0);
       break;
     default:
     {
@@ -1812,15 +1812,16 @@ void Beam3ContactOctTree::communicate_vector(Core::LinAlg::Vector<double>& InVec
    * on all processors. */
 
   // first, export the values of OutVec on Proc 0 to InVecs of all participating processors
-  Epetra_Export exporter(OutVec.Map(), InVec.Map());
-  Epetra_Import importer(OutVec.Map(), InVec.Map());
+  Epetra_Export exporter(OutVec.get_map(), InVec.get_map());
+  Epetra_Import importer(OutVec.get_map(), InVec.get_map());
   if (doexport)
   {
     // zero out all vectors which are not Proc 0. Then, export Proc 0 data to InVec map.
-    if (Core::Communication::my_mpi_rank(discret_.get_comm()) != 0 && zerofy) OutVec.PutScalar(0.0);
-    InVec.Export(OutVec, exporter, Add);
+    if (Core::Communication::my_mpi_rank(discret_.get_comm()) != 0 && zerofy)
+      OutVec.put_scalar(0.0);
+    InVec.export_to(OutVec, exporter, Add);
   }
-  if (doimport) OutVec.Import(InVec, importer, Insert);
+  if (doimport) OutVec.import(InVec, importer, Insert);
   return;
 }
 

@@ -124,7 +124,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> EHL::Base::calc_velocity(
   vel = std::make_shared<Core::LinAlg::Vector<double>>(*(structure_->dispn()));
   // calculate velocity with timestep Dt()
   //  V_n+1^k = (D_n+1^k - D_n) / Dt
-  vel->Update(1. / dt(), dispnp, -1. / dt());
+  vel->update(1. / dt(), dispnp, -1. / dt());
 
   return vel;
 }  // calc_velocity()
@@ -234,10 +234,10 @@ std::shared_ptr<Core::LinAlg::Vector<double>> EHL::Base::evaluate_fluid_force(
 {
   // safety: unprojectable nodes to zero pressure
   if (inf_gap_toggle_lub_ != nullptr)
-    for (int i = 0; i < lubrication_->lubrication_field()->prenp()->Map().NumMyElements(); ++i)
+    for (int i = 0; i < lubrication_->lubrication_field()->prenp()->get_map().NumMyElements(); ++i)
     {
-      if (abs(inf_gap_toggle_lub_->operator[](inf_gap_toggle_lub_->Map().LID(
-                  lubrication_->lubrication_field()->prenp()->Map().GID(i))) -
+      if (abs(inf_gap_toggle_lub_->operator[](inf_gap_toggle_lub_->get_map().LID(
+                  lubrication_->lubrication_field()->prenp()->get_map().GID(i))) -
               1) < 1.e-2)
         lubrication_->lubrication_field()->prenp()->operator[](i) = 0.;
     }
@@ -278,7 +278,7 @@ void EHL::Base::set_lubrication_solution(
   // Provide the structure field with the force vector
   // Note that the mid-point values (gen-alpha) of the interface forces are evaluated in
   // Solid::TimIntGenAlpha::evaluate_force_residual()
-  structure_->set_force_interface(evaluate_fluid_force(*pressure)->get_ptr_of_MultiVector());
+  structure_->set_force_interface(evaluate_fluid_force(*pressure)->get_ptr_of_multi_vector());
 }
 
 void EHL::Base::add_pressure_force(
@@ -295,7 +295,7 @@ void EHL::Base::add_pressure_force(
       std::make_shared<Core::LinAlg::Vector<double>>(*mortaradapter_->slave_dof_map());
   p_exp = ada_strDisp_to_lubDisp_->slave_to_master(*p_full);
   stritraction = std::make_shared<Core::LinAlg::Vector<double>>(*mortaradapter_->normals());
-  stritraction->Multiply(-1., *mortaradapter_->normals(), *p_exp, 0.);
+  stritraction->multiply(-1., *mortaradapter_->normals(), *p_exp, 0.);
 
   // Get the Mortar D and M Matrix
   const std::shared_ptr<Core::LinAlg::SparseMatrix> mortard = mortaradapter_->get_mortar_matrix_d();
@@ -304,13 +304,13 @@ void EHL::Base::add_pressure_force(
   // f_slave = D^T*t
   int err = mortard->multiply(true, *stritraction, slaveiforce);
   if (err != 0) FOUR_C_THROW("error while calculating slave side interface force");
-  if (stritraction_D_->Update(1., *stritraction, 1.)) FOUR_C_THROW("Update failed");
+  if (stritraction_D_->update(1., *stritraction, 1.)) FOUR_C_THROW("Update failed");
 
   // f_master = -M^T*t
   err = mortarm->multiply(true, *stritraction, masteriforce);
   if (err != 0) FOUR_C_THROW("error while calculating master side interface force");
-  masteriforce.Scale(-1.0);
-  if (stritraction_M_->Update(-1., *stritraction, 1.)) FOUR_C_THROW("update failed");
+  masteriforce.scale(-1.0);
+  if (stritraction_M_->update(-1., *stritraction, 1.)) FOUR_C_THROW("update failed");
 }
 
 void EHL::Base::add_poiseuille_force(
@@ -340,17 +340,17 @@ void EHL::Base::add_poiseuille_force(
   // f_slave = D^T*t
   if (mortaradapter_->get_mortar_matrix_d()->multiply(true, poiseuille_force, slave_psl))
     FOUR_C_THROW("Multiply failed");
-  if (stritraction_D_->Update(1., poiseuille_force, 1.)) FOUR_C_THROW("Update failed");
+  if (stritraction_D_->update(1., poiseuille_force, 1.)) FOUR_C_THROW("Update failed");
 
   // f_master = +M^T*t // attention: no minus sign here: poiseuille points in same direction on
   // slave and master side
   if (mortaradapter_->get_mortar_matrix_m()->multiply(true, poiseuille_force, master_psl))
     FOUR_C_THROW("Multiply failed");
-  if (stritraction_M_->Update(1., poiseuille_force, 1.)) FOUR_C_THROW("update failed");
+  if (stritraction_M_->update(1., poiseuille_force, 1.)) FOUR_C_THROW("update failed");
 
   // add the contribution
-  if (slaveiforce.Update(1., slave_psl, 1.)) FOUR_C_THROW("Update failed");
-  if (masteriforce.Update(1., master_psl, 1.)) FOUR_C_THROW("Update failed");
+  if (slaveiforce.update(1., slave_psl, 1.)) FOUR_C_THROW("Update failed");
+  if (masteriforce.update(1., master_psl, 1.)) FOUR_C_THROW("Update failed");
 }
 
 
@@ -363,9 +363,9 @@ void EHL::Base::add_couette_force(
   if (slavemaptransform_->multiply(false, *mortaradapter_->nodal_gap(), height))
     FOUR_C_THROW("multiply failed");
   Core::LinAlg::Vector<double> h_inv(*mortaradapter_->slave_dof_map());
-  if (h_inv.Reciprocal(height)) FOUR_C_THROW("Reciprocal failed");
+  if (h_inv.reciprocal(height)) FOUR_C_THROW("Reciprocal failed");
   Core::LinAlg::Vector<double> hinv_relV(*mortaradapter_->slave_dof_map());
-  hinv_relV.Multiply(1., h_inv, *relVel, 0.);
+  hinv_relV.multiply(1., h_inv, *relVel, 0.);
 
   Core::FE::Discretization& lub_dis = *lubrication_->lubrication_field()->discretization();
   Core::LinAlg::Vector<double> visc_vec(*lubrication_->lubrication_field()->dof_row_map(1));
@@ -374,35 +374,35 @@ void EHL::Base::add_couette_force(
     Core::Nodes::Node* lnode = lub_dis.l_row_node(i);
     if (!lnode) FOUR_C_THROW("node not found");
     const double p = lubrication_->lubrication_field()->prenp()->operator[](
-        lubrication_->lubrication_field()->prenp()->Map().LID(lub_dis.dof(0, lnode, 0)));
+        lubrication_->lubrication_field()->prenp()->get_map().LID(lub_dis.dof(0, lnode, 0)));
 
     std::shared_ptr<Core::Mat::Material> mat = lnode->elements()[0]->material(0);
     if (!mat) FOUR_C_THROW("null pointer");
     std::shared_ptr<Mat::LubricationMat> lmat = std::dynamic_pointer_cast<Mat::LubricationMat>(mat);
     const double visc = lmat->compute_viscosity(p);
 
-    for (int d = 0; d < ndim; ++d) visc_vec.ReplaceGlobalValue(lub_dis.dof(1, lnode, d), 0, visc);
+    for (int d = 0; d < ndim; ++d) visc_vec.replace_global_value(lub_dis.dof(1, lnode, d), 0, visc);
   }
   std::shared_ptr<Core::LinAlg::Vector<double>> visc_vec_str =
       ada_strDisp_to_lubDisp_->slave_to_master(visc_vec);
   Core::LinAlg::Vector<double> couette_force(*mortaradapter_->slave_dof_map());
-  couette_force.Multiply(-1., *visc_vec_str, hinv_relV, 0.);
+  couette_force.multiply(-1., *visc_vec_str, hinv_relV, 0.);
 
   Core::LinAlg::Vector<double> slave_cou(mortaradapter_->get_mortar_matrix_d()->domain_map());
   Core::LinAlg::Vector<double> master_cou(mortaradapter_->get_mortar_matrix_m()->domain_map());
   // f_slave = D^T*t
   if (mortaradapter_->get_mortar_matrix_d()->multiply(true, couette_force, slave_cou))
     FOUR_C_THROW("Multiply failed");
-  if (stritraction_D_->Update(1., couette_force, 1.)) FOUR_C_THROW("Update failed");
+  if (stritraction_D_->update(1., couette_force, 1.)) FOUR_C_THROW("Update failed");
 
   // f_master = -M^T*t
   if (mortaradapter_->get_mortar_matrix_m()->multiply(true, couette_force, master_cou))
     FOUR_C_THROW("Multiply failed");
-  if (stritraction_M_->Update(-1., couette_force, 1.)) FOUR_C_THROW("update failed");
+  if (stritraction_M_->update(-1., couette_force, 1.)) FOUR_C_THROW("update failed");
 
   // add the contribution
-  if (slaveiforce.Update(1., slave_cou, 1.)) FOUR_C_THROW("Update failed");
-  if (masteriforce.Update(-1., master_cou, 1.)) FOUR_C_THROW("Update failed");
+  if (slaveiforce.update(1., slave_cou, 1.)) FOUR_C_THROW("Update failed");
+  if (masteriforce.update(-1., master_cou, 1.)) FOUR_C_THROW("Update failed");
 }
 
 /*----------------------------------------------------------------------*
@@ -456,7 +456,7 @@ void EHL::Base::set_height_dot()
   Core::LinAlg::Vector<double> heightdot(*(mortaradapter_->nodal_gap()));
   std::shared_ptr<const Core::LinAlg::Vector<double>> heightnp = mortaradapter_->nodal_gap();
 
-  heightdot.Update(-1.0 / dt(), *heightold_, 1.0 / dt());
+  heightdot.update(-1.0 / dt(), *heightold_, 1.0 / dt());
 
   std::shared_ptr<Core::LinAlg::Vector<double>> discretegap =
       Core::LinAlg::create_vector(*(slaverowmapextr_->Map(0)), true);
@@ -540,7 +540,7 @@ void EHL::Base::setup_unprojectable_dbc()
   static std::shared_ptr<Core::LinAlg::Vector<double>> old_toggle = nullptr;
   if (old_toggle != nullptr)
   {
-    for (int i = 0; i < inf_gap_toggle_lub_->Map().NumMyElements(); ++i)
+    for (int i = 0; i < inf_gap_toggle_lub_->get_map().NumMyElements(); ++i)
       if (abs(inf_gap_toggle_lub_->operator[](i) - old_toggle->operator[](i)) > 1.e-12)
       {
         if (!Core::Communication::my_mpi_rank(get_comm()))
@@ -551,7 +551,7 @@ void EHL::Base::setup_unprojectable_dbc()
   else
   {
     double d = 0.;
-    inf_gap_toggle_lub_->MaxValue(&d);
+    inf_gap_toggle_lub_->max_value(&d);
 
     if (!Core::Communication::my_mpi_rank(get_comm()))
       std::cout << "dbc of unprojectable nodes changed boundary condition" << std::endl;
@@ -720,7 +720,7 @@ void EHL::Base::output(bool forced_writerestart)
   {
     std::shared_ptr<Core::LinAlg::Vector<double>> active_toggle, slip_toggle;
     mortaradapter_->create_active_slip_toggle(&active_toggle, &slip_toggle);
-    for (int i = 0; i < active_toggle->Map().NumMyElements(); ++i)
+    for (int i = 0; i < active_toggle->get_map().NumMyElements(); ++i)
       slip_toggle->operator[](i) += active_toggle->operator[](i);
     std::shared_ptr<Core::LinAlg::Vector<double>> active =
         std::make_shared<Core::LinAlg::Vector<double>>(
@@ -796,7 +796,7 @@ void EHL::Base::output(bool forced_writerestart)
       Core::Nodes::Node* lnode = lubrication_->lubrication_field()->discretization()->l_row_node(i);
       if (!lnode) FOUR_C_THROW("node not found");
       const double p = lubrication_->lubrication_field()->prenp()->operator[](
-          lubrication_->lubrication_field()->prenp()->Map().LID(
+          lubrication_->lubrication_field()->prenp()->get_map().LID(
               lubrication_->lubrication_field()->discretization()->dof(0, lnode, 0)));
       std::shared_ptr<Core::Mat::Material> mat = lnode->elements()[0]->material(0);
       if (!mat) FOUR_C_THROW("null pointer");
@@ -805,7 +805,7 @@ void EHL::Base::output(bool forced_writerestart)
       const double visc = lmat->compute_viscosity(p);
 
       for (int d = 0; d < ndim; ++d)
-        visc_vec.ReplaceGlobalValue(
+        visc_vec.replace_global_value(
             lubrication_->lubrication_field()->discretization()->dof(1, lnode, d), 0, visc);
     }
 

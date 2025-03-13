@@ -713,7 +713,7 @@ void FS3I::PartFPS3I::evaluate_scatra_fields()
       std::shared_ptr<Core::LinAlg::Vector<double>> coupforce = scatracoupforce_[i];
       std::shared_ptr<Core::LinAlg::SparseMatrix> coupmat = scatracoupmat_[i];
 
-      coupforce->PutScalar(0.0);
+      coupforce->put_scalar(0.0);
       coupmat->zero();
 
       // evaluate interface; second Kedem-Katchalsky equation for coupling of solute flux

@@ -187,7 +187,7 @@ void Core::FE::Discretization::evaluate_neumann(Teuchos::ParameterList& params,
   for (const auto& [name, cond] : condition_)
   {
     if (name != (std::string) "PointNeumann") continue;
-    if (assemblemat && !Core::Communication::my_mpi_rank(systemvector.Comm()))
+    if (assemblemat && !Core::Communication::my_mpi_rank(systemvector.get_comm()))
     {
       std::cout << "WARNING: System matrix handed in but no linearization of "
                    "PointNeumann conditions implemented. Did you set the LOADLIN-flag "
@@ -234,7 +234,7 @@ void Core::FE::Discretization::evaluate_neumann(Teuchos::ParameterList& params,
             });
 
         value *= functfac;
-        const int lid = systemvector.Map().LID(gid);
+        const int lid = systemvector.get_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Global id %d not on this proc in system vector", gid);
         systemvector[lid] += value;
       }

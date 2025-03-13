@@ -93,7 +93,7 @@ void Solid::ModelEvaluator::PartitionedFSI::update_step_state(const double& time
     // add the old time factor scaled contributions to the residual
     std::shared_ptr<Core::LinAlg::Vector<double>>& fstructold_ptr =
         global_state().get_fstructure_old();
-    fstructold_ptr->Update(-timefac_n, *interface_force_np_ptr_, 1.0);
+    fstructold_ptr->update(-timefac_n, *interface_force_np_ptr_, 1.0);
   }
   else
   {
@@ -143,10 +143,10 @@ Solid::ModelEvaluator::PartitionedFSI::solve_relaxation_linear(
   grp_ptr->computeJacobian();
 
   // overwrite F with boundary force
-  interface_force_np_ptr_->Scale(-(ti_impl->tim_int_param()));
+  interface_force_np_ptr_->scale(-(ti_impl->tim_int_param()));
   ti_impl->dbc_ptr()->apply_dirichlet_to_rhs(*interface_force_np_ptr_);
   Teuchos::RCP<::NOX::Epetra::Vector> nox_force = Teuchos::make_rcp<::NOX::Epetra::Vector>(
-      Teuchos::rcpFromRef(*interface_force_np_ptr_->get_ptr_of_Epetra_Vector()));
+      Teuchos::rcpFromRef(*interface_force_np_ptr_->get_ptr_of_epetra_vector()));
   grp_ptr->set_f(nox_force);
 
   // ---------------------------------------------------------------------------

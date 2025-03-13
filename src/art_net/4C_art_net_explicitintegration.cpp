@@ -184,8 +184,8 @@ void Arteries::ArtNetExplicitTimeInt::init(const Teuchos::ParameterList& globalt
     eleparams.set("qa0", qanp_);
     eleparams.set("wfo", Wfo_);
     eleparams.set("wbo", Wbo_);
-    Wfn_->Update(1.0, *Wfo_, 0.0);
-    Wbn_->Update(1.0, *Wbo_, 0.0);
+    Wfn_->update(1.0, *Wfo_, 0.0);
+    Wbn_->update(1.0, *Wbo_, 0.0);
     // eleparams.set("lmowner",lmowner);
     eleparams.set<Arteries::Action>("action", Arteries::get_initial_artery_state);
     discret_->evaluate(eleparams, nullptr, nullptr, nullptr, nullptr, nullptr);
@@ -209,13 +209,13 @@ void Arteries::ArtNetExplicitTimeInt::init(const Teuchos::ParameterList& globalt
     {
       int gid = lm[0];
       double val = gid;
-      nodeIds_->ReplaceGlobalValues(1, &val, &gid);
+      nodeIds_->replace_global_values(1, &val, &gid);
     }
     if (myrank_ == (lmowner)[1])
     {
       int gid = lm[1];
       double val = gid;
-      nodeIds_->ReplaceGlobalValues(1, &val, &gid);
+      nodeIds_->replace_global_values(1, &val, &gid);
     }
   }
 
@@ -283,7 +283,7 @@ void Arteries::ArtNetExplicitTimeInt::solve(
 
     // set both system matrix and rhs vector to zero
     sysmat_->zero();
-    rhs_->PutScalar(0.0);
+    rhs_->put_scalar(0.0);
 
 
     // create the parameters for the discretization
@@ -338,8 +338,8 @@ void Arteries::ArtNetExplicitTimeInt::solve(
   }
 
   // Solve the boundary conditions
-  bcval_->PutScalar(0.0);
-  dbctog_->PutScalar(0.0);
+  bcval_->put_scalar(0.0);
+  dbctog_->put_scalar(0.0);
   // Solve terminal BCs
 
   {
@@ -432,7 +432,7 @@ void Arteries::ArtNetExplicitTimeInt::solve(
 void Arteries::ArtNetExplicitTimeInt::solve_scatra()
 {
   {
-    scatraO2np_->PutScalar(0.0);
+    scatraO2np_->put_scalar(0.0);
     // create the parameters for the discretization
     Teuchos::ParameterList eleparams;
 
@@ -455,8 +455,8 @@ void Arteries::ArtNetExplicitTimeInt::solve_scatra()
     discret_->evaluate(eleparams, scatra_sysmat_, scatra_rhs_);
   }
   {
-    scatra_bcval_->PutScalar(0.0);
-    scatra_dbctog_->PutScalar(0.0);
+    scatra_bcval_->put_scalar(0.0);
+    scatra_dbctog_->put_scalar(0.0);
     // create the parameters for the discretization
     Teuchos::ParameterList eleparams;
 
@@ -475,7 +475,7 @@ void Arteries::ArtNetExplicitTimeInt::solve_scatra()
     // call standard loop over all elements
     discret_->evaluate(eleparams, scatra_sysmat_, scatra_rhs_);
   }
-  scatraO2np_->Update(1.0, *scatra_bcval_, 1.0);
+  scatraO2np_->update(1.0, *scatra_bcval_, 1.0);
 }
 
 /*----------------------------------------------------------------------*
@@ -489,17 +489,17 @@ void Arteries::ArtNetExplicitTimeInt::solve_scatra()
 void Arteries::ArtNetExplicitTimeInt::time_update()
 {
   // Volumetric Flow rate/Cross-sectional area of this step become most recent
-  qanm_->Update(1.0, *qan_, 0.0);
-  qan_->Update(1.0, *qanp_, 0.0);
-  Wfn_->Update(1.0, *Wfnp_, 0.0);
-  Wbn_->Update(1.0, *Wbnp_, 0.0);
+  qanm_->update(1.0, *qan_, 0.0);
+  qan_->update(1.0, *qanp_, 0.0);
+  Wfn_->update(1.0, *Wfnp_, 0.0);
+  Wbn_->update(1.0, *Wbnp_, 0.0);
 
   if (solvescatra_)
   {
     //    scatraO2wfn_->Update(1.0,*scatraO2wfnp_ ,0.0);
     //    scatraO2wbn_->Update(1.0,*scatraO2wbnp_ ,0.0);
-    scatraO2nm_->Update(1.0, *scatraO2n_, 0.0);
-    scatraO2n_->Update(1.0, *scatraO2np_, 0.0);
+    scatraO2nm_->update(1.0, *scatraO2n_, 0.0);
+    scatraO2n_->update(1.0, *scatraO2np_, 0.0);
   }
 
   return;
@@ -555,23 +555,23 @@ void Arteries::ArtNetExplicitTimeInt::init_save_state()
 void Arteries::ArtNetExplicitTimeInt::save_state()
 {
   // Volumetric Flow rate/Cross-sectional area of this step become most recent
-  saved_qanp_->Update(1.0, *qanp_, 0.0);
-  saved_qan_->Update(1.0, *qan_, 0.0);
-  saved_qanm_->Update(1.0, *qanm_, 0.0);
+  saved_qanp_->update(1.0, *qanp_, 0.0);
+  saved_qan_->update(1.0, *qan_, 0.0);
+  saved_qanm_->update(1.0, *qanm_, 0.0);
 
-  saved_Wfnp_->Update(1.0, *Wfnp_, 0.0);
-  saved_Wfn_->Update(1.0, *Wfn_, 0.0);
-  saved_Wfnm_->Update(1.0, *Wfnm_, 0.0);
+  saved_Wfnp_->update(1.0, *Wfnp_, 0.0);
+  saved_Wfn_->update(1.0, *Wfn_, 0.0);
+  saved_Wfnm_->update(1.0, *Wfnm_, 0.0);
 
-  saved_Wbnp_->Update(1.0, *Wbnp_, 0.0);
-  saved_Wbn_->Update(1.0, *Wbn_, 0.0);
-  saved_Wbnm_->Update(1.0, *Wbnm_, 0.0);
+  saved_Wbnp_->update(1.0, *Wbnp_, 0.0);
+  saved_Wbn_->update(1.0, *Wbn_, 0.0);
+  saved_Wbnm_->update(1.0, *Wbnm_, 0.0);
 
   if (solvescatra_)
   {
-    saved_scatraO2np_->Update(1.0, *scatraO2np_, 0.0);
-    saved_scatraO2n_->Update(1.0, *scatraO2n_, 0.0);
-    saved_scatraO2nm_->Update(1.0, *scatraO2nm_, 0.0);
+    saved_scatraO2np_->update(1.0, *scatraO2np_, 0.0);
+    saved_scatraO2n_->update(1.0, *scatraO2n_, 0.0);
+    saved_scatraO2nm_->update(1.0, *scatraO2nm_, 0.0);
   }
 
   return;
@@ -591,23 +591,23 @@ void Arteries::ArtNetExplicitTimeInt::save_state()
 void Arteries::ArtNetExplicitTimeInt::load_state()
 {
   // Volumetric Flow rate/Cross-sectional area of this step become most recent
-  qanp_->Update(1.0, *saved_qanp_, 0.0);
-  qan_->Update(1.0, *saved_qan_, 0.0);
-  qanm_->Update(1.0, *saved_qanm_, 0.0);
+  qanp_->update(1.0, *saved_qanp_, 0.0);
+  qan_->update(1.0, *saved_qan_, 0.0);
+  qanm_->update(1.0, *saved_qanm_, 0.0);
 
-  Wfnp_->Update(1.0, *saved_Wfnp_, 0.0);
-  Wfn_->Update(1.0, *saved_Wfn_, 0.0);
-  Wfnm_->Update(1.0, *saved_Wfnm_, 0.0);
+  Wfnp_->update(1.0, *saved_Wfnp_, 0.0);
+  Wfn_->update(1.0, *saved_Wfn_, 0.0);
+  Wfnm_->update(1.0, *saved_Wfnm_, 0.0);
 
-  Wbnp_->Update(1.0, *saved_Wbnp_, 0.0);
-  Wbn_->Update(1.0, *saved_Wbn_, 0.0);
-  Wbnm_->Update(1.0, *saved_Wbnm_, 0.0);
+  Wbnp_->update(1.0, *saved_Wbnp_, 0.0);
+  Wbn_->update(1.0, *saved_Wbn_, 0.0);
+  Wbnm_->update(1.0, *saved_Wbnm_, 0.0);
 
   if (solvescatra_)
   {
-    scatraO2np_->Update(1.0, *saved_scatraO2np_, 0.0);
-    scatraO2n_->Update(1.0, *saved_scatraO2n_, 0.0);
-    scatraO2nm_->Update(1.0, *saved_scatraO2nm_, 0.0);
+    scatraO2np_->update(1.0, *saved_scatraO2np_, 0.0);
+    scatraO2n_->update(1.0, *saved_scatraO2n_, 0.0);
+    scatraO2nm_->update(1.0, *saved_scatraO2nm_, 0.0);
   }
 
   return;
@@ -822,7 +822,7 @@ void Arteries::ArtNetExplicitTimeInt::calc_scatra_from_scatra_fw(
     std::shared_ptr<Core::LinAlg::Vector<double>> scatra,
     std::shared_ptr<Core::LinAlg::Vector<double>> scatra_fb)
 {
-  scatra->PutScalar(0.0);
+  scatra->put_scalar(0.0);
 
   // create the parameters for the discretization
   Teuchos::ParameterList eleparams;

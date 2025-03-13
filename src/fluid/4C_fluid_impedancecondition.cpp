@@ -384,7 +384,7 @@ void FLD::Utils::FluidImpedanceBc::calculate_impedance_tractions_and_update_resi
   //    "<<pressure<<std::endl;
 
 
-  impedancetbc_->PutScalar(0.0);
+  impedancetbc_->put_scalar(0.0);
 
   discret_->evaluate_condition(eleparams, impedancetbc_, "ImpedanceCond", condid);
 
@@ -424,13 +424,13 @@ void FLD::Utils::FluidImpedanceBc::calculate_impedance_tractions_and_update_resi
 
     const double tfaclhs = eleparams2.get<double>("tfaclhs", 0.0);
 
-    for (int lid = 0; lid < dQdu->MyLength(); lid++)
+    for (int lid = 0; lid < dQdu->local_length(); lid++)
     {
       const int gid = dofrowmap->GID(lid);
       const double val = (*dQdu)[lid];
       if (abs(val) > 1e-15)
       {
-        for (int lid2 = 0; lid2 < dQdu_full.MyLength(); lid2++)
+        for (int lid2 = 0; lid2 < dQdu_full.local_length(); lid2++)
         {
           const int gid2 = dofrowmapred->GID(lid2);
           const double val2 = (dQdu_full)[lid2];
@@ -457,7 +457,7 @@ void FLD::Utils::FluidImpedanceBc::calculate_impedance_tractions_and_update_resi
   // ---------------------------------------------------------------------//
 
   // Apply traction vector to fluid residual
-  residual.Update(1.0, *impedancetbc_, 1.0);
+  residual.update(1.0, *impedancetbc_, 1.0);
 
   // Add linearisation to fluid sysmat
   sysmat.add(*impedancetbcsysmat_, false, Q_np_fac, 1.0);

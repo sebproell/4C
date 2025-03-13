@@ -38,7 +38,7 @@ double BeamInteraction::SUBMODELEVALUATOR::BeamContactAssemblyManagerInDirect::g
 
   // The value we returned here is summed up over all processors. Since we already have the global
   // energy here, we only return it on rank 0.
-  if (Core::Communication::my_mpi_rank(disp->Comm()) == 0)
+  if (Core::Communication::my_mpi_rank(disp->get_comm()) == 0)
     return global_mortar_energy;
   else
     return 0.0;

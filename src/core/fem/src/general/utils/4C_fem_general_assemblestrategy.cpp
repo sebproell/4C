@@ -43,15 +43,15 @@ void Core::FE::AssembleStrategy::zero()
   }
   if (assemblevec1())
   {
-    systemvector1_->PutScalar(0.0);
+    systemvector1_->put_scalar(0.0);
   }
   if (assemblevec2())
   {
-    systemvector2_->PutScalar(0.0);
+    systemvector2_->put_scalar(0.0);
   }
   if (assemblevec3())
   {
-    systemvector3_->PutScalar(0.0);
+    systemvector3_->put_scalar(0.0);
   }
 }
 

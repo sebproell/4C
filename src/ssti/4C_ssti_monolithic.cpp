@@ -574,7 +574,7 @@ void SSTI::SSTIMono::linear_solve()
 {
   double starttime = timer_->wallTime();
 
-  increment_->PutScalar(0.0);
+  increment_->put_scalar(0.0);
 
   if (!ssti_matrices_->system_matrix()->filled())
     FOUR_C_THROW("Complete() has not been called on global system matrix yet!");

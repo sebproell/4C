@@ -516,18 +516,18 @@ namespace FLD
       // get local dof id corresponding to the global id
       int lid = discret_->dof_row_map()->LID(dofs[0]);
       // set value
-      int err = velnp_->ReplaceMyValues(1, &((u1)[pos]), &lid);
+      int err = velnp_->replace_local_values(1, &((u1)[pos]), &lid);
       // analogous for remaining directions
       lid = discret_->dof_row_map()->LID(dofs[1]);
-      err = velnp_->ReplaceMyValues(1, &((u2)[pos]), &lid);
+      err = velnp_->replace_local_values(1, &((u2)[pos]), &lid);
       lid = discret_->dof_row_map()->LID(dofs[2]);
-      err = velnp_->ReplaceMyValues(1, &((u3)[pos]), &lid);
+      err = velnp_->replace_local_values(1, &((u3)[pos]), &lid);
       if (err > 0) FOUR_C_THROW("Could not set initial field!");
     }
 
     // initialize veln_ as well
-    veln_->Update(1.0, *velnp_, 0.0);
-    velnm_->Update(1.0, *velnp_, 0.0);
+    veln_->update(1.0, *velnp_, 0.0);
+    velnm_->update(1.0, *velnp_, 0.0);
 
     return;
 #else
@@ -1160,7 +1160,7 @@ namespace FLD
     Core::LinAlg::SerialDenseMatrix dummyMat;
     Core::LinAlg::SerialDenseVector dummyVec;
     // this is a dummy, should be zero is written in the first components of interpolVec
-    intvelnp_->PutScalar(0.0);
+    intvelnp_->put_scalar(0.0);
     // set dummy
     discret_->set_state(1, "intvelnp", intvelnp_);
 
@@ -1238,7 +1238,7 @@ namespace FLD
             localDofs.size() == static_cast<std::size_t>(elevec1.numRows()), "Internal error");
         for (unsigned int i = 0; i < localDofs.size(); ++i)
           localDofs[i] = intdofrowmap->LID(localDofs[i]);
-        intvelnp_->ReplaceMyValues(localDofs.size(), elevec1.values(), localDofs.data());
+        intvelnp_->replace_local_values(localDofs.size(), elevec1.values(), localDofs.data());
       }
 
       // now fill the ele vector into the discretization
@@ -1265,10 +1265,10 @@ namespace FLD
               << std::endl;
 
     // initialize veln_ as well
-    intveln_->Update(1.0, *intvelnp_, 0.0);
-    intvelnm_->Update(1.0, *intvelnp_, 0.0);
-    veln_->Update(1.0, *velnp_, 0.0);
-    velnm_->Update(1.0, *velnp_, 0.0);
+    intveln_->update(1.0, *intvelnp_, 0.0);
+    intvelnm_->update(1.0, *intvelnp_, 0.0);
+    veln_->update(1.0, *velnp_, 0.0);
+    velnm_->update(1.0, *velnp_, 0.0);
     discret_->clear_state(true);
     return;
 #else

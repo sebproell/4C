@@ -108,7 +108,7 @@ void FLD::TimIntRedModels::init()
     }
 
 
-    zeros_->PutScalar(0.0);  // just in case of change
+    zeros_->put_scalar(0.0);  // just in case of change
   }
 
   traction_vel_comp_adder_bc_ = std::make_shared<Utils::TotalTractionCorrector>(discret_, dta_);
@@ -398,7 +398,7 @@ void FLD::TimIntRedModels::avm3_preparation()
 
   // necessary here, because some application time integrations add something to the residual
   // before the Neumann loads are added
-  residual_->PutScalar(0.0);
+  residual_->put_scalar(0.0);
 
   // Maybe this needs to be inserted in case of impedanceBC + AVM3
   //  if (nonlinearbc_ && isimpedancebc_)

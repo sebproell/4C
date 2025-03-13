@@ -36,7 +36,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
     FOUR_C_THROW("action type for element is missing");
 
   // decide whether a dof or an element based map is given
-  FOUR_C_ASSERT(state.Map().PointSameAs(*dis.dof_row_map()), "Only works for same maps.");
+  FOUR_C_ASSERT(state.get_map().PointSameAs(*dis.dof_row_map()), "Only works for same maps.");
 
   // handle pbcs if existing
   // build inverse map from slave to master nodes

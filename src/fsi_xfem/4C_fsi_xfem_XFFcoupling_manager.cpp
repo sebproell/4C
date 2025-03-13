@@ -58,11 +58,11 @@ void XFEM::XffCouplingManager::set_coupling_states()
   Core::LinAlg::export_to(*fluid_->veln(), *mcffi_->i_veln());
 
   std::shared_ptr<Core::LinAlg::Vector<double>> tmp_diff =
-      std::make_shared<Core::LinAlg::Vector<double>>((*mcffi_->i_dispnp()).Map());
-  tmp_diff->Update(1.0, *mcffi_->i_dispnp(), -1.0, *mcffi_->i_dispnpi(), 0.0);
+      std::make_shared<Core::LinAlg::Vector<double>>((*mcffi_->i_dispnp()).get_map());
+  tmp_diff->update(1.0, *mcffi_->i_dispnp(), -1.0, *mcffi_->i_dispnpi(), 0.0);
 
   double norm = 0.0;
-  tmp_diff->NormInf(&norm);
+  tmp_diff->norm_inf(&norm);
 
   if (norm < 1e-12)
     std::cout << "No change in XFF interface position!!!" << std::endl;
@@ -119,7 +119,7 @@ void XFEM::XffCouplingManager::add_coupling_rhs(std::shared_ptr<Core::LinAlg::Ve
   // REMARK: Copy this vector to store the correct lambda_ in update!
   Core::LinAlg::Vector<double> coup_rhs_sum(*xfluid_->rhs_s_vec(cond_name_));
 
-  coup_rhs_sum.Scale(scaling);
+  coup_rhs_sum.scale(scaling);
 
   Core::LinAlg::Vector<double> coup_rhs(*me.Map(idx_[0]), true);
   Core::LinAlg::export_to(coup_rhs_sum, coup_rhs);

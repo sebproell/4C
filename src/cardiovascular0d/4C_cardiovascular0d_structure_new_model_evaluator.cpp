@@ -56,7 +56,7 @@ void Solid::ModelEvaluator::Cardiovascular0D::setup()
   Core::Utils::add_enum_class_to_parameter_list<Core::LinearSolver::SolverType>(
       "SOLVER", Core::LinearSolver::SolverType::umfpack, solvparams);
   std::shared_ptr<Core::LinAlg::Solver> dummysolver(new Core::LinAlg::Solver(
-      solvparams, disnp_ptr_->Comm(), nullptr, Core::IO::Verbositylevel::standard));
+      solvparams, disnp_ptr_->get_comm(), nullptr, Core::IO::Verbositylevel::standard));
 
   // ToDo: we do not want to hand in the structural dynamics parameter list
   // to the manager in the future! -> get rid of it as soon as old
@@ -79,7 +79,7 @@ void Solid::ModelEvaluator::Cardiovascular0D::reset(const Core::LinAlg::Vector<d
   // update the structural displacement vector
   disnp_ptr_ = global_state().get_dis_np();
 
-  fstructcardio_np_ptr_->PutScalar(0.0);
+  fstructcardio_np_ptr_->put_scalar(0.0);
   stiff_cardio_ptr_->zero();
 
   return;
@@ -158,7 +158,7 @@ bool Solid::ModelEvaluator::Cardiovascular0D::assemble_force(
         "the structural part indicates, that 0D cardiovascular model contributions \n"
         "are present!");
 
-  const int elements_f = f.Map().NumGlobalElements();
+  const int elements_f = f.get_map().NumGlobalElements();
   const int max_gid = get_block_dof_row_map_ptr()->MaxAllGID();
   // only call when f is the full rhs of the coupled problem (not for structural
   // equilibriate initial state call)
@@ -262,7 +262,7 @@ void Solid::ModelEvaluator::Cardiovascular0D::update_step_state(const double& ti
   {
     std::shared_ptr<Core::LinAlg::Vector<double>>& fstructold_ptr =
         global_state().get_fstructure_old();
-    fstructold_ptr->Update(timefac_n, *fstructcardio_np_ptr_, 1.0);
+    fstructold_ptr->update(timefac_n, *fstructcardio_np_ptr_, 1.0);
   }
 
   return;

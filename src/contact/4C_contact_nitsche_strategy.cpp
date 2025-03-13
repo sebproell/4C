@@ -34,7 +34,7 @@ void CONTACT::NitscheStrategy::apply_force_stiff_cmt(
   set_state(Mortar::state_new_displacement, *dis);
 
   // just a Nitsche-version
-  std::shared_ptr<Epetra_FEVector> fc = std::make_shared<Epetra_FEVector>(f->Map());
+  std::shared_ptr<Epetra_FEVector> fc = std::make_shared<Epetra_FEVector>(f->get_map());
   std::shared_ptr<Core::LinAlg::SparseMatrix> kc = std::make_shared<Core::LinAlg::SparseMatrix>(
       (dynamic_cast<Epetra_CrsMatrix*>(&(*kt->epetra_operator())))->RowMap(), 100, true, false,
       Core::LinAlg::SparseMatrix::FE_MATRIX);
@@ -58,7 +58,7 @@ void CONTACT::NitscheStrategy::apply_force_stiff_cmt(
 
   if (fc->GlobalAssemble(Add, false) != 0) FOUR_C_THROW("GlobalAssemble failed");
   // add negative contact force here since the time integrator handed me a rhs!
-  if (f->Update(-1., *fc, 1.)) FOUR_C_THROW("update went wrong");
+  if (f->update(-1., *fc, 1.)) FOUR_C_THROW("update went wrong");
   dynamic_cast<Epetra_FECrsMatrix&>(*kc->epetra_matrix()).GlobalAssemble(true, Add);
   kt->un_complete();
   kt->add(*kc, false, 1., 1.);
@@ -115,8 +115,8 @@ void CONTACT::NitscheStrategy::set_state(
     else
     {
       Core::LinAlg::Vector<double> delta(vec);
-      delta.Update(-1., *curr_state_, 1.);
-      delta.NormInf(&inf_delta);
+      delta.update(-1., *curr_state_, 1.);
+      delta.norm_inf(&inf_delta);
     }
     if (inf_delta < 1.e-12)
       return;

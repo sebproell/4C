@@ -260,7 +260,7 @@ bool Solid::ModelEvaluatorManager::apply_initial_force(
 
   bool ok = true;
   // initialize right hand side to zero
-  f.PutScalar(0.0);
+  f.put_scalar(0.0);
 
   // ---------------------------------------------------------------------------
   // reset model specific variables
@@ -284,9 +284,9 @@ bool Solid::ModelEvaluatorManager::apply_initial_force(
   // ---------------------------------------------------------------------------
   // subtract mass and viscous contributions from initial force vector
   // ---------------------------------------------------------------------------
-  f.Scale(-1.);
+  f.scale(-1.);
   int_ptr_->add_visco_mass_contributions(f);
-  f.Scale(-1.);
+  f.scale(-1.);
 
   return ok;
 }
@@ -324,7 +324,7 @@ bool Solid::ModelEvaluatorManager::apply_force(const Core::LinAlg::Vector<double
   check_init_setup();
   bool ok = true;
   // initialize right hand side to zero
-  f.PutScalar(0.0);
+  f.put_scalar(0.0);
 
   // ---------------------------------------------------------------------------
   // reset model specific variables
@@ -415,7 +415,7 @@ bool Solid::ModelEvaluatorManager::apply_force_stiff(const Core::LinAlg::Vector<
   check_init_setup();
   bool ok = true;
   // initialize stiffness matrix and right hand side to zero
-  f.PutScalar(0.0);
+  f.put_scalar(0.0);
   jac.zero();
 
   // ---------------------------------------------------------------------------
@@ -452,7 +452,7 @@ bool Solid::ModelEvaluatorManager::apply_cheap_soc_rhs(const enum NOX::Nln::Corr
 
   bool ok = true;
   // initialize right hand side to zero
-  f.PutScalar(0.0);
+  f.put_scalar(0.0);
 
   // ---------------------------------------------------------------------------
   // update the state variables of the current time integrator
@@ -688,7 +688,7 @@ void Solid::ModelEvaluatorManager::update_step_state(const double& timefac_n)
   check_init_setup();
   /* Reset old structural right hand side.
    * It will be filled within the model evaluators */
-  gstate_ptr_->get_fstructure_old()->PutScalar(0.0);
+  gstate_ptr_->get_fstructure_old()->put_scalar(0.0);
   for (const auto& me_iter : *me_vec_ptr_) me_iter->update_step_state(timefac_n);
 }
 

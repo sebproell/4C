@@ -529,7 +529,7 @@ namespace
 
     // always refactor and reset the matrix before a single new solver call
 
-    initialvals->PutScalar(0.0);
+    initialvals->put_scalar(0.0);
     Core::LinAlg::SolverParams solver_params;
     solver_params.refactor = true;
     solver_params.reset = true;

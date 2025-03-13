@@ -72,8 +72,8 @@ Mat::PAR::ConstraintMixture::ConstraintMixture(const Core::Mat::PAR::Parameter::
   {
     matparams_.push_back(std::make_shared<Core::LinAlg::Vector<double>>(dummy_map, true));
   }
-  matparams_.at(growthfactor)->PutScalar(matdata.parameters.get<double>("GROWTHFAC"));
-  matparams_.at(elastin_survival)->PutScalar(matdata.parameters.get<double>("ELASTINFAC"));
+  matparams_.at(growthfactor)->put_scalar(matdata.parameters.get<double>("GROWTHFAC"));
+  matparams_.at(elastin_survival)->put_scalar(matdata.parameters.get<double>("ELASTINFAC"));
 }
 
 

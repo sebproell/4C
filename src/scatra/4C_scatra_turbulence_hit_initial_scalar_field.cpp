@@ -430,13 +430,13 @@ namespace ScaTra
       // get local dof id corresponding to the global id
       int lid = discret_->dof_row_map()->LID(dofs[0]);
       // set value
-      int err = phinp_->ReplaceMyValues(1, &((phi)[pos]), &lid);
+      int err = phinp_->replace_local_values(1, &((phi)[pos]), &lid);
 
       if (err > 0) FOUR_C_THROW("Could not set initial field!");
     }
 
     // initialize phin_ as well
-    phin_->Update(1.0, *phinp_, 0.0);
+    phin_->update(1.0, *phinp_, 0.0);
 
     return;
 #else

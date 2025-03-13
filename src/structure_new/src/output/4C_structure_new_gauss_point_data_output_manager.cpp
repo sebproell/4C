@@ -164,7 +164,7 @@ void Solid::ModelEvaluator::GaussPointDataOutputManager::post_evaluate()
       {
         auto& data_item = nodal_data(col);
 
-        for (int i = 0; i < data_item.MyLength(); ++i)
+        for (int i = 0; i < data_item.local_length(); ++i)
         {
           if (nodal_count[i] != 0)
           {

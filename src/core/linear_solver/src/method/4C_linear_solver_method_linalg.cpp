@@ -219,7 +219,7 @@ int Core::LinAlg::Solver::solve(std::shared_ptr<Epetra_Operator> matrix,
     std::shared_ptr<Core::LinAlg::Vector<double>> x,
     std::shared_ptr<Core::LinAlg::Vector<double>> b, const SolverParams& params)
 {
-  setup(matrix, x->get_ptr_of_MultiVector(), b->get_ptr_of_MultiVector(), params);
+  setup(matrix, x->get_ptr_of_multi_vector(), b->get_ptr_of_multi_vector(), params);
 
   int error_value = 0;
   {

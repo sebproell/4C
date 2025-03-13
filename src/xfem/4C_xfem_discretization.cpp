@@ -127,20 +127,20 @@ void XFEM::DiscretizationXFEM::export_initialto_active_vector(
   {  // Export manually as target.Map().UniqueGIDs() gives = true, although this shouldn't be the
      // case
     //(UniqueGIDs() just checks if gid occurs on more procs!)
-    if (Core::Communication::num_mpi_ranks(initialvec.Comm()) == 1 &&
-        Core::Communication::num_mpi_ranks(activevec.Comm()) ==
+    if (Core::Communication::num_mpi_ranks(initialvec.get_comm()) == 1 &&
+        Core::Communication::num_mpi_ranks(activevec.get_comm()) ==
             1)  // for one proc , Export works fine!
     {
       Core::LinAlg::export_to(initialvec, fullvec);
     }
     else
     {
-      Epetra_Import importer(fullvec.Map(), initialvec.Map());
-      int err = fullvec.Import(initialvec, importer, Insert);
+      Epetra_Import importer(fullvec.get_map(), initialvec.get_map());
+      int err = fullvec.import(initialvec, importer, Insert);
       if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
     }
   }
-  fullvec.ReplaceMap(*initialfulldofrowmap_);  /// replace |1 2 3 4|1 2 3 4| -> |1 2 3 4|5 6 7 8|
+  fullvec.replace_map(*initialfulldofrowmap_);  /// replace |1 2 3 4|1 2 3 4| -> |1 2 3 4|5 6 7 8|
   Core::LinAlg::export_to(fullvec, activevec);
 }
 
@@ -215,7 +215,7 @@ void XFEM::DiscretizationXFEM::set_initial_state(unsigned nds, const std::string
 
   if (!have_dofs()) FOUR_C_THROW("fill_complete() was not called");
   const Epetra_Map* colmap = initial_dof_col_map(nds);
-  const Epetra_BlockMap& vecmap = state->Map();
+  const Epetra_BlockMap& vecmap = state->get_map();
 
   if (state_.size() <= nds) state_.resize(nds + 1);
 
@@ -230,7 +230,7 @@ void XFEM::DiscretizationXFEM::set_initial_state(unsigned nds, const std::string
   else  // if it's not in column map export and allocate
   {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-    if (not initial_dof_row_map(nds)->SameAs(state->Map()))
+    if (not initial_dof_row_map(nds)->SameAs(state->get_map()))
     {
       FOUR_C_THROW(
           "row map of discretization and state vector %s are different. This is a fatal bug!",

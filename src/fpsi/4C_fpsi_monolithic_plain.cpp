@@ -581,7 +581,7 @@ void FPSI::MonolithicPlain::setup_vector(Core::LinAlg::Vector<double>& f,
     // add fluid interface values to structure vector
     std::shared_ptr<Core::LinAlg::Vector<double>> fcvgfsi =
         fluid_field()->interface()->extract_fsi_cond_vector(fv);
-    fcvgfsi->Update(1.0,
+    fcvgfsi->update(1.0,
         *(fluid_field()->interface()->extract_fsi_cond_vector(*fpsi_coupl()->rhs_f())),
         1.0);  // add rhs contribution of fpsi coupling rhs
 
@@ -589,7 +589,7 @@ void FPSI::MonolithicPlain::setup_vector(Core::LinAlg::Vector<double>& f,
         poro_field()->structure_field()->interface()->insert_fsi_cond_vector(
             *fluid_to_struct_fsi(fcvgfsi));  //(fvg)fg -> (fvg)sg -> (fvg)s
 
-    modsv->Update(1.0, sv, (1.0 - stiparam) / (1.0 - ftiparam) * fluidscale);
+    modsv->update(1.0, sv, (1.0 - stiparam) / (1.0 - ftiparam) * fluidscale);
 
     extractor().insert_vector(*modsv, structure_block_, f);  // add poroelast contributions to 'f'
     extractor().insert_vector(pfv, porofluid_block_, f);
@@ -625,7 +625,7 @@ void FPSI::MonolithicPlain::setup_rhs_lambda(Core::LinAlg::Vector<double>& f)
     std::shared_ptr<Core::LinAlg::Vector<double>> lambdafull =
         poro_field()->structure_field()->interface()->insert_fsi_cond_vector(
             *fluid_to_struct_fsi(lambda_));  //(lambda)fg -> (lambda)sg -> (lambda)s
-    lambdafull->Scale(stiparam - (ftiparam * (1.0 - stiparam)) / (1.0 - ftiparam));
+    lambdafull->scale(stiparam - (ftiparam * (1.0 - stiparam)) / (1.0 - ftiparam));
 
     // add Lagrange multiplier
     extractor().add_vector(*lambdafull, structure_block_, f);
@@ -710,7 +710,7 @@ void FPSI::MonolithicPlain::setup_rhs_first_iter(Core::LinAlg::Vector<double>& f
 
   fgg.Apply(*fveln, *rhs);
 
-  rhs->Scale(scale * (1. - stiparam) / (1. - ftiparam) * dt() * timescale);
+  rhs->scale(scale * (1. - stiparam) / (1. - ftiparam) * dt() * timescale);
   rhs = fluid_to_struct_fsi(rhs);
   rhs = poro_field()->structure_field()->interface()->insert_fsi_cond_vector(*rhs);
   rhs = poro_field()->extractor()->insert_vector(*rhs, 0);  // s->p
@@ -775,7 +775,7 @@ void FPSI::MonolithicPlain::setup_rhs_first_iter(Core::LinAlg::Vector<double>& f
 
   fig.Apply(*fveln, *rhs);
 
-  rhs->Scale(dt() * timescale);
+  rhs->scale(dt() * timescale);
 
 #ifdef FLUIDSPLITAMG
   rhs = fluid_field()->Interface()->insert_other_vector(*rhs);
@@ -903,7 +903,7 @@ void FPSI::MonolithicPlain::extract_field_vectors(
       std::shared_ptr<Core::LinAlg::Vector<double>> dispnpfsi =
           poro_field()->structure_field()->interface()->extract_fsi_cond_vector(
               *poro_field()->structure_field()->dispnp());
-      scx_fsi->Update(1.0, *dispnpfsi, -1.0, *dispnfsi, 1.0);
+      scx_fsi->update(1.0, *dispnpfsi, -1.0, *dispnfsi, 1.0);
     }
 
     std::shared_ptr<const Core::LinAlg::Vector<double>> acx_fsi = struct_to_ale_fsi(scx_fsi);
@@ -915,7 +915,7 @@ void FPSI::MonolithicPlain::extract_field_vectors(
       fluid_field()->displacement_to_velocity(
           fcx_fsi);  // Delta u(n+1,i+1) = fac * (Delta d(n+1,i+1) - dt * u(n))
     else
-      fcx_fsi->Scale(fluid_field()->time_scaling());  // Delta u(n+1,i+1) = fac * (Delta d(n+1,i+1)
+      fcx_fsi->scale(fluid_field()->time_scaling());  // Delta u(n+1,i+1) = fac * (Delta d(n+1,i+1)
 
     fluid_field()->interface()->insert_fsi_cond_vector(*fcx_fsi, *f);
     // ---------------------------------------------------------------------------
@@ -924,7 +924,7 @@ void FPSI::MonolithicPlain::extract_field_vectors(
     // inner ale displacement increment
     // interface structure displacement increment
     if (disgprev_ != nullptr)
-      ddginc_->Update(1.0, *scx_fsi, -1.0, *disgprev_, 0.0);  // compute current iteration increment
+      ddginc_->update(1.0, *scx_fsi, -1.0, *disgprev_, 0.0);  // compute current iteration increment
     else
       ddginc_ =
           std::make_shared<Core::LinAlg::Vector<double>>(*scx_fsi);  // first iteration increment
@@ -939,7 +939,7 @@ void FPSI::MonolithicPlain::extract_field_vectors(
   fx = f;
   // inner ale displacement increment
   if (solialeprev_ != nullptr)
-    ddialeinc_->Update(1.0, *aox, -1.0, *solialeprev_, 0.0);  // compute current iteration increment
+    ddialeinc_->update(1.0, *aox, -1.0, *solialeprev_, 0.0);  // compute current iteration increment
   else
     ddialeinc_ = std::make_shared<Core::LinAlg::Vector<double>>(*aox);  // first iteration increment
 
@@ -948,7 +948,7 @@ void FPSI::MonolithicPlain::extract_field_vectors(
 
   // fluid solution increment
   if (soliprev_ != nullptr)  // compute current iteration increment
-    duiinc_->Update(1.0, *fox, -1.0, *soliprev_, 0.0);
+    duiinc_->update(1.0, *fox, -1.0, *soliprev_, 0.0);
   else
     // first iteration increment
     duiinc_ = std::make_shared<Core::LinAlg::Vector<double>>(*fox);
@@ -1030,13 +1030,13 @@ void FPSI::MonolithicPlain::recover_lagrange_multiplier()
      */
 
     // ---------Addressing term (1)
-    lambda_->Update(ftiparam, *lambda_, 0.0);
+    lambda_->update(ftiparam, *lambda_, 0.0);
     // ---------End of term (1)
 
     // ---------Addressing term (3)
     std::shared_ptr<Core::LinAlg::Vector<double>> fluidresidual =
         fluid_field()->interface()->extract_fsi_cond_vector(*fluid_field()->rhs());
-    fluidresidual->Scale(-1.0);  // invert sign to obtain residual, not rhs
+    fluidresidual->scale(-1.0);  // invert sign to obtain residual, not rhs
     tmpvec = std::make_shared<Core::LinAlg::Vector<double>>(*fluidresidual);
     // ---------End of term (3)
 
@@ -1044,7 +1044,7 @@ void FPSI::MonolithicPlain::recover_lagrange_multiplier()
     auxvec = std::make_shared<Core::LinAlg::Vector<double>>(fggprev_->range_map(), true);
 
     fggprev_->Apply(*struct_to_fluid_fsi(ddginc_), *auxvec);
-    tmpvec->Update(timescale, *auxvec, 1.0);
+    tmpvec->update(timescale, *auxvec, 1.0);
     // ---------End of term (4)
 
     // ---------Addressing term (5)
@@ -1052,7 +1052,7 @@ void FPSI::MonolithicPlain::recover_lagrange_multiplier()
     {
       auxvec = std::make_shared<Core::LinAlg::Vector<double>>(fmggprev_->range_map(), true);
       fmggprev_->Apply(*struct_to_fluid_fsi(ddginc_), *auxvec);
-      tmpvec->Update(1.0, *auxvec, 1.0);
+      tmpvec->update(1.0, *auxvec, 1.0);
     }
     // ---------End of term (5)
 
@@ -1061,7 +1061,7 @@ void FPSI::MonolithicPlain::recover_lagrange_multiplier()
     Core::LinAlg::Vector<double> tmp(fgiprev_->domain_map(), true);
     Core::LinAlg::export_to(*duiinc_, tmp);
     fgiprev_->Apply(tmp, *auxvec);
-    tmpvec->Update(1.0, *auxvec, 1.0);
+    tmpvec->update(1.0, *auxvec, 1.0);
     // ---------End of term (6)
 
     // ---------Addressing term (7)
@@ -1102,7 +1102,7 @@ void FPSI::MonolithicPlain::recover_lagrange_multiplier()
 
       // Now, do the actual matrix-vector-product
       fmgiprev_->Apply(*auxauxvec, *auxvec);
-      tmpvec->Update(1.0, *auxvec, 1.0);
+      tmpvec->update(1.0, *auxvec, 1.0);
     }
     // ---------End of term (7)
 
@@ -1111,16 +1111,16 @@ void FPSI::MonolithicPlain::recover_lagrange_multiplier()
     {
       auxvec = std::make_shared<Core::LinAlg::Vector<double>>(fggprev_->range_map(), true);
       fggprev_->Apply(*fluid_field()->extract_interface_veln(), *auxvec);
-      tmpvec->Update(dt() * timescale, *auxvec, 1.0);
+      tmpvec->update(dt() * timescale, *auxvec, 1.0);
     }
     // ---------End of term (8)
 
     // ---------Addressing term (2)
-    lambda_->Update(scale, *tmpvec, 1.0);  // scale with residual_scaling() to get [N/m^2]
+    lambda_->update(scale, *tmpvec, 1.0);  // scale with residual_scaling() to get [N/m^2]
     // ---------End of term (2)
 
     // Finally, divide by (1.0-ftiparam) which is common to all terms
-    lambda_->Scale(-1.0 / (1.0 - ftiparam));
+    lambda_->scale(-1.0 / (1.0 - ftiparam));
 
     // Finally, the Lagrange multiplier 'lambda_' is recovered here.
     // It represents nodal forces acting onto the structure.

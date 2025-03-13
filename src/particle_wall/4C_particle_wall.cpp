@@ -198,8 +198,8 @@ void PARTICLEWALL::WallHandlerBase::get_max_wall_position_increment(
     if (walldatastate_->get_disp_row_last_transfer() == nullptr)
       FOUR_C_THROW("vector of wall displacements after last transfer not set!");
 
-    if (not walldatastate_->get_disp_row()->Map().SameAs(
-            walldatastate_->get_disp_row_last_transfer()->Map()))
+    if (not walldatastate_->get_disp_row()->get_map().SameAs(
+            walldatastate_->get_disp_row_last_transfer()->get_map()))
       FOUR_C_THROW("maps are not equal as expected!");
 #endif
 
@@ -207,7 +207,7 @@ void PARTICLEWALL::WallHandlerBase::get_max_wall_position_increment(
     double maxpositionincrement = 0.0;
 
     // iterate over coordinate values of wall displacements
-    for (int i = 0; i < walldatastate_->get_disp_row()->MyLength(); ++i)
+    for (int i = 0; i < walldatastate_->get_disp_row()->local_length(); ++i)
     {
       // get position increment of wall node in current spatial dimension since last transfer
       double absolutpositionincrement =

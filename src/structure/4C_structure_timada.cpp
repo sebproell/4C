@@ -241,18 +241,18 @@ void Solid::TimAda::evaluate_local_error_dis()
   {
     const double coeffmarch = sti_->method_lin_err_coeff_dis();
     const double coeffaux = method_lin_err_coeff_dis();
-    locerrdisn_->Update(-1.0, *(sti_->disn_), 1.0);
-    locerrdisn_->Scale(coeffmarch / (coeffaux - coeffmarch));
+    locerrdisn_->update(-1.0, *(sti_->disn_), 1.0);
+    locerrdisn_->scale(coeffmarch / (coeffaux - coeffmarch));
   }
   else
   {
     // schemes do not have the same order of accuracy
-    locerrdisn_->Update(-1.0, *(sti_->disn_), 1.0);
+    locerrdisn_->update(-1.0, *(sti_->disn_), 1.0);
   }
 
   // blank Dirichlet DOFs since they always carry the exact solution
   std::shared_ptr<Core::LinAlg::Vector<double>> zeros =
-      std::make_shared<Core::LinAlg::Vector<double>>(locerrdisn_->Map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(locerrdisn_->get_map(), true);
   Core::LinAlg::apply_dirichlet_to_system(
       *locerrdisn_, *zeros, *(sti_->get_dbc_map_extractor()->cond_map()));
 }

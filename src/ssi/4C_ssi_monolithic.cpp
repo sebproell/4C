@@ -148,7 +148,7 @@ void SSI::SsiMono::apply_meshtying_to_sub_problems()
         ssi_matrices_->structure_scatra_matrix(),
         is_uncomplete_of_matrices_necessary_for_mesh_tying());
 
-    ssi_vectors_->structure_residual()->Update(
+    ssi_vectors_->structure_residual()->update(
         1.0, strategy_meshtying_->apply_meshtying_to_structure_rhs(*structure_field()->rhs()), 1.0);
 
     if (is_scatra_manifold())
@@ -176,7 +176,7 @@ void SSI::SsiMono::apply_meshtying_to_sub_problems()
   // copy the structure residual and matrix if we do not have a mesh tying problem
   else
   {
-    ssi_vectors_->structure_residual()->Update(1.0, *(structure_field()->rhs()), 1.0);
+    ssi_vectors_->structure_residual()->update(1.0, *(structure_field()->rhs()), 1.0);
     ssi_matrices_->structure_matrix()->add(*structure_field()->system_matrix(), false, 1.0, 1.0);
   }
 }
@@ -880,7 +880,7 @@ void SSI::SsiMono::newton_loop()
     // applicable
     if (scatra_field()->scatra_parameter_list()->get<bool>("OUTPUTLINSOLVERSTATS"))
       scatra_field()->output_lin_solver_stats(*solver_, dt_solve_, step(), iteration_count(),
-          ssi_vectors_->residual()->Map().NumGlobalElements());
+          ssi_vectors_->residual()->get_map().NumGlobalElements());
 
     // update states for next Newton iteration
     update_iter_scatra();
@@ -1100,7 +1100,7 @@ void SSI::SsiMono::evaluate_scatra()
 
   // copy the residual to the corresponding ssi vector to enable application of contact
   // contributions before assembly
-  ssi_vectors_->scatra_residual()->Update(1.0, *scatra_field()->residual(), 1.0);
+  ssi_vectors_->scatra_residual()->update(1.0, *scatra_field()->residual(), 1.0);
 }
 
 /*--------------------------------------------------------------------------------------*
@@ -1110,13 +1110,13 @@ void SSI::SsiMono::evaluate_scatra_manifold()
   // evaluate single problem
   scatra_manifold()->prepare_linear_solve();
 
-  ssi_vectors_->manifold_residual()->Update(1.0, *scatra_manifold()->residual(), 1.0);
+  ssi_vectors_->manifold_residual()->update(1.0, *scatra_manifold()->residual(), 1.0);
 
   // evaluate coupling fluxes
   manifoldscatraflux_->evaluate();
 
-  ssi_vectors_->manifold_residual()->Update(1.0, *manifoldscatraflux_->rhs_manifold(), 1.0);
-  ssi_vectors_->scatra_residual()->Update(1.0, *manifoldscatraflux_->rhs_scatra(), 1.0);
+  ssi_vectors_->manifold_residual()->update(1.0, *manifoldscatraflux_->rhs_manifold(), 1.0);
+  ssi_vectors_->scatra_residual()->update(1.0, *manifoldscatraflux_->rhs_scatra(), 1.0);
 }
 
 /*--------------------------------------------------------------------------------------*
@@ -1152,7 +1152,7 @@ void SSI::SsiMono::distribute_solution_all_fields(const bool restore_velocity)
   {
     auto vel_temp = *structure_field()->velnp();
     structure_field()->set_state(structure_field()->write_access_dispnp());
-    structure_field()->write_access_velnp()->Update(1.0, vel_temp, 0.0);
+    structure_field()->write_access_velnp()->update(1.0, vel_temp, 0.0);
   }
   else
     structure_field()->set_state(structure_field()->write_access_dispnp());
@@ -1237,7 +1237,7 @@ void SSI::SsiMono::calc_initial_potential_field()
     auto rhs = ssi_vectors_->residual();
     Core::LinAlg::apply_dirichlet_to_system(*ssi_matrices_->system_matrix(),
         *ssi_vectors_->increment(), *rhs, dbc_zeros, *pseudo_dbc_map);
-    ssi_vectors_->residual()->Update(1.0, *rhs, 0.0);
+    ssi_vectors_->residual()->update(1.0, *rhs, 0.0);
 
     // time needed for evaluating elements and assembling global system of equations
     double my_evaluation_time = timer_->wallTime() - time_before_evaluate;
@@ -1261,9 +1261,9 @@ void SSI::SsiMono::calc_initial_potential_field()
     update_iter_scatra();
 
     // copy initial state vector
-    scatra_field()->phin()->Update(1.0, *scatra_field()->phinp(), 0.0);
+    scatra_field()->phin()->update(1.0, *scatra_field()->phinp(), 0.0);
     if (is_scatra_manifold())
-      scatra_manifold()->phin()->Update(1.0, *scatra_manifold()->phinp(), 0.0);
+      scatra_manifold()->phin()->update(1.0, *scatra_manifold()->phinp(), 0.0);
 
     // update state vectors for intermediate time steps (only for generalized alpha)
     scatra_field()->compute_intermediate_values();
@@ -1273,7 +1273,7 @@ void SSI::SsiMono::calc_initial_potential_field()
   scatra_elch->post_calc_initial_potential_field();
   if (is_scatra_manifold()) manifold_elch->post_calc_initial_potential_field();
 
-  structure_field()->write_access_velnp()->Update(1.0, init_velocity, 0.0);
+  structure_field()->write_access_velnp()->update(1.0, init_velocity, 0.0);
 }
 
 /*--------------------------------------------------------------------------------------*
@@ -1308,8 +1308,8 @@ void SSI::SsiMono::calc_initial_time_derivative()
   if (is_scatra_manifold()) scatra_manifold()->apply_bc_to_system();
 
   // clear history values (this is the first step)
-  scatra_field()->hist()->PutScalar(0.0);
-  if (is_scatra_manifold()) scatra_manifold()->hist()->PutScalar(0.0);
+  scatra_field()->hist()->put_scalar(0.0);
+  if (is_scatra_manifold()) scatra_manifold()->hist()->put_scalar(0.0);
 
   // In a first step, we assemble the standard global system of equations (we need the residual)
   distribute_solution_all_fields(true);
@@ -1351,7 +1351,7 @@ void SSI::SsiMono::calc_initial_time_derivative()
   // fill ones on main diag of structure block (not solved)
   auto ones_struct =
       std::make_shared<Core::LinAlg::Vector<double>>(*structure_field()->dof_row_map(), true);
-  ones_struct->PutScalar(1.0);
+  ones_struct->put_scalar(1.0);
   matrix_type() == Core::LinAlg::MatrixType::sparse
       ? Core::LinAlg::insert_my_row_diagonal_into_unfilled_matrix(
             *Core::LinAlg::cast_to_sparse_matrix_and_check_success(massmatrix_system), *ones_struct)
@@ -1368,13 +1368,13 @@ void SSI::SsiMono::calc_initial_time_derivative()
                                                  *scatra_manifold()->dof_row_map(), true)
                                            : nullptr;
 
-  rhs_scatra->Update(1.0,
+  rhs_scatra->update(1.0,
       *maps_sub_problems()->extract_vector(*ssi_vectors_->residual(),
           Utils::SSIMaps::get_problem_position(Subproblem::scalar_transport)),
       0.0);
   if (is_scatra_manifold())
   {
-    rhs_manifold->Update(1.0,
+    rhs_manifold->update(1.0,
         *maps_sub_problems()->extract_vector(
             *ssi_vectors_->residual(), Utils::SSIMaps::get_problem_position(Subproblem::manifold)),
         0.0);
@@ -1531,15 +1531,15 @@ void SSI::SsiMono::calc_initial_time_derivative()
   // copy solution to sub problems
   auto phidtnp_scatra = maps_sub_problems()->extract_vector(
       *phidtnp_system, Utils::SSIMaps::get_problem_position(Subproblem::scalar_transport));
-  scatra_field()->phidtnp()->Update(1.0, *phidtnp_scatra, 0.0);
-  scatra_field()->phidtn()->Update(1.0, *phidtnp_scatra, 0.0);
+  scatra_field()->phidtnp()->update(1.0, *phidtnp_scatra, 0.0);
+  scatra_field()->phidtn()->update(1.0, *phidtnp_scatra, 0.0);
 
   if (is_scatra_manifold())
   {
     auto phidtnp_manifold = maps_sub_problems()->extract_vector(
         *phidtnp_system, Utils::SSIMaps::get_problem_position(Subproblem::manifold));
-    scatra_manifold()->phidtnp()->Update(1.0, *phidtnp_manifold, 0.0);
-    scatra_manifold()->phidtn()->Update(1.0, *phidtnp_manifold, 0.0);
+    scatra_manifold()->phidtnp()->update(1.0, *phidtnp_manifold, 0.0);
+    scatra_manifold()->phidtn()->update(1.0, *phidtnp_manifold, 0.0);
   }
 
   // reset solver
@@ -1548,7 +1548,7 @@ void SSI::SsiMono::calc_initial_time_derivative()
   scatra_field()->post_calc_initial_time_derivative();
   if (is_scatra_manifold()) scatra_manifold()->post_calc_initial_time_derivative();
 
-  structure_field()->write_access_velnp()->Update(1.0, init_velocity, 0.0);
+  structure_field()->write_access_velnp()->update(1.0, init_velocity, 0.0);
 }
 
 /*--------------------------------------------------------------------------------------*

@@ -158,7 +158,7 @@ int Core::DOFSets::DofSetDefinedMappingWrapper::assign_degrees_of_freedom(
   targetlidtosourcegidmapping_ = std::make_shared<Core::LinAlg::Vector<int>>(*dis.node_col_map());
 
   // default value -1
-  targetlidtosourcegidmapping_->PutValue(-1);
+  targetlidtosourcegidmapping_->put_value(-1);
 
   // export to column map
   Core::LinAlg::export_to(permsourcenodevec, *targetlidtosourcegidmapping_);
@@ -205,7 +205,8 @@ const Core::Nodes::Node* Core::DOFSets::DofSetDefinedMappingWrapper::get_source_
     int targetLid) const
 {
   // check
-  FOUR_C_ASSERT(targetLid <= targetlidtosourcegidmapping_->MyLength(), "Target Lid out of range!");
+  FOUR_C_ASSERT(
+      targetLid <= targetlidtosourcegidmapping_->local_length(), "Target Lid out of range!");
 
   // get the gid of the source node
   int sourcegid = (*targetlidtosourcegidmapping_)[targetLid];

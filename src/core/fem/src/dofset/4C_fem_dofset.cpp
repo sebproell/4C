@@ -45,12 +45,14 @@ std::ostream& operator<<(std::ostream& os, const Core::DOFSets::DofSet& dofset)
  *----------------------------------------------------------------------*/
 void Core::DOFSets::DofSet::print(std::ostream& os) const
 {
-  for (int proc = 0; proc < Core::Communication::num_mpi_ranks(numdfcolelements_->Comm()); ++proc)
+  for (int proc = 0; proc < Core::Communication::num_mpi_ranks(numdfcolelements_->get_comm());
+      ++proc)
   {
-    if (proc == Core::Communication::my_mpi_rank(numdfcolelements_->Comm()))
+    if (proc == Core::Communication::my_mpi_rank(numdfcolelements_->get_comm()))
     {
-      if (numdfcolelements_->MyLength()) os << "-------------------------- Proc " << proc << " :\n";
-      for (int i = 0; i < numdfcolelements_->MyLength(); ++i)
+      if (numdfcolelements_->local_length())
+        os << "-------------------------- Proc " << proc << " :\n";
+      for (int i = 0; i < numdfcolelements_->local_length(); ++i)
       {
         int numdf = (*numdfcolelements_)[i];
         int idx = (*idxcolelements_)[i];
@@ -60,14 +62,15 @@ void Core::DOFSets::DofSet::print(std::ostream& os) const
       }
       os << std::endl;
     }
-    Core::Communication::barrier(numdfcolelements_->Comm());
+    Core::Communication::barrier(numdfcolelements_->get_comm());
   }
-  for (int proc = 0; proc < Core::Communication::num_mpi_ranks(numdfcolnodes_->Comm()); ++proc)
+  for (int proc = 0; proc < Core::Communication::num_mpi_ranks(numdfcolnodes_->get_comm()); ++proc)
   {
-    if (proc == Core::Communication::my_mpi_rank(numdfcolnodes_->Comm()))
+    if (proc == Core::Communication::my_mpi_rank(numdfcolnodes_->get_comm()))
     {
-      if (numdfcolnodes_->MyLength()) os << "-------------------------- Proc " << proc << " :\n";
-      for (int i = 0; i < numdfcolnodes_->MyLength(); ++i)
+      if (numdfcolnodes_->local_length())
+        os << "-------------------------- Proc " << proc << " :\n";
+      for (int i = 0; i < numdfcolnodes_->local_length(); ++i)
       {
         int numdf = (*numdfcolnodes_)[i];
         int idx = (*idxcolnodes_)[i];
@@ -77,14 +80,15 @@ void Core::DOFSets::DofSet::print(std::ostream& os) const
       }
       os << std::endl;
     }
-    Core::Communication::barrier(numdfcolnodes_->Comm());
+    Core::Communication::barrier(numdfcolnodes_->get_comm());
   }
-  for (int proc = 0; proc < Core::Communication::num_mpi_ranks(numdfcolfaces_->Comm()); ++proc)
+  for (int proc = 0; proc < Core::Communication::num_mpi_ranks(numdfcolfaces_->get_comm()); ++proc)
   {
-    if (proc == Core::Communication::my_mpi_rank(numdfcolfaces_->Comm()))
+    if (proc == Core::Communication::my_mpi_rank(numdfcolfaces_->get_comm()))
     {
-      if (numdfcolfaces_->MyLength()) os << "-------------------------- Proc " << proc << " :\n";
-      for (int i = 0; i < numdfcolfaces_->MyLength(); ++i)
+      if (numdfcolfaces_->local_length())
+        os << "-------------------------- Proc " << proc << " :\n";
+      for (int i = 0; i < numdfcolfaces_->local_length(); ++i)
       {
         int numdf = (*numdfcolfaces_)[i];
         int idx = (*idxcolfaces_)[i];
@@ -94,7 +98,7 @@ void Core::DOFSets::DofSet::print(std::ostream& os) const
       }
       os << std::endl;
     }
-    Core::Communication::barrier(numdfcolfaces_->Comm());
+    Core::Communication::barrier(numdfcolfaces_->get_comm());
   }
 }
 
@@ -221,7 +225,7 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
     }
 
     int minnodegid = get_minimal_node_gid_if_relevant(dis);
-    maxnodenumdf = numdfrownodes.MaxValue();
+    maxnodenumdf = numdfrownodes.max_value();
     get_reserved_max_num_dofper_node(maxnodenumdf);  // XFEM::XFEMDofSet set to const number!
 
     for (int i = 0; i < numrownodes; ++i)
@@ -337,13 +341,13 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
       // **********************************************************************
     }
 
-    Epetra_Import nodeimporter(numdfcolnodes_->Map(), numdfrownodes.Map());
-    int err = numdfcolnodes_->Import(numdfrownodes, nodeimporter, Insert);
+    Epetra_Import nodeimporter(numdfcolnodes_->get_map(), numdfrownodes.get_map());
+    int err = numdfcolnodes_->import(numdfrownodes, nodeimporter, Insert);
     if (err) FOUR_C_THROW("Import using importer returned err=%d", err);
-    err = idxcolnodes_->Import(idxrownodes, nodeimporter, Insert);
+    err = idxcolnodes_->import(idxrownodes, nodeimporter, Insert);
     if (err) FOUR_C_THROW("Import using importer returned err=%d", err);
 
-    count = maxnodenumdf > 0 ? idxrownodes.MaxValue() + maxnodenumdf : 0;
+    count = maxnodenumdf > 0 ? idxrownodes.max_value() + maxnodenumdf : 0;
 
     //////////////////////////////////////////////////////////////////
 
@@ -369,7 +373,7 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
       }
 
       int minfacegid = facedis->face_row_map()->MinAllGID();
-      int maxfacenumdf = numdfrowfaces.MaxValue();
+      int maxfacenumdf = numdfrowfaces.max_value();
 
       for (int i = 0; i < numcolelements; ++i)
       {
@@ -396,13 +400,13 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
           }
       }
 
-      Epetra_Import faceimporter(numdfcolfaces_->Map(), numdfrowfaces.Map());
-      err = numdfcolfaces_->Import(numdfrowfaces, faceimporter, Insert);
+      Epetra_Import faceimporter(numdfcolfaces_->get_map(), numdfrowfaces.get_map());
+      err = numdfcolfaces_->import(numdfrowfaces, faceimporter, Insert);
       if (err) FOUR_C_THROW("Import using importer returned err=%d", err);
-      err = idxcolfaces_->Import(idxrowfaces, faceimporter, Insert);
+      err = idxcolfaces_->import(idxrowfaces, faceimporter, Insert);
       if (err) FOUR_C_THROW("Import using importer returned err=%d", err);
 
-      count = idxrowfaces.MaxValue() + maxfacenumdf;
+      count = idxrowfaces.max_value() + maxfacenumdf;
     }
 
     //////////////////////////////////////////////////////////////////
@@ -421,7 +425,7 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
     }
 
     int minelementgid = dis.element_row_map()->MinAllGID();
-    maxelementnumdf = numdfrowelements.MaxValue();
+    maxelementnumdf = numdfrowelements.max_value();
 
     for (int i = 0; i < numrowelements; ++i)
     {
@@ -438,10 +442,10 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
       }
     }
 
-    Epetra_Import elementimporter(numdfcolelements_->Map(), numdfrowelements.Map());
-    err = numdfcolelements_->Import(numdfrowelements, elementimporter, Insert);
+    Epetra_Import elementimporter(numdfcolelements_->get_map(), numdfrowelements.get_map());
+    err = numdfcolelements_->import(numdfrowelements, elementimporter, Insert);
     if (err) FOUR_C_THROW("Import using importer returned err=%d", err);
-    err = idxcolelements_->Import(idxrowelements, elementimporter, Insert);
+    err = idxcolelements_->import(idxrowelements, elementimporter, Insert);
     if (err) FOUR_C_THROW("Import using importer returned err=%d", err);
   }
 

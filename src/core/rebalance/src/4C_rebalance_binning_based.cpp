@@ -549,7 +549,7 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> Core::Rebalance::get_col_ver
 
   if (!dis.have_dofs()) FOUR_C_THROW("fill_complete() was not called");
   const Epetra_Map* colmap = dis.dof_col_map(nds);
-  const Epetra_BlockMap& vecmap = state->Map();
+  const Epetra_BlockMap& vecmap = state->get_map();
 
   // if it's already in column map just set a reference
   // This is a rought test, but it might be ok at this place. It is an

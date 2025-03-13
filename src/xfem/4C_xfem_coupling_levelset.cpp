@@ -377,8 +377,8 @@ bool XFEM::LevelSetCoupling::set_level_set_field(const double time)
   // make a copy of last time step
 
   std::shared_ptr<Core::LinAlg::Vector<double>> delta_phi =
-      Core::LinAlg::create_vector(cutter_phinp_->Map(), true);
-  delta_phi->Update(1.0, *cutter_phinp_, 0.0);
+      Core::LinAlg::create_vector(cutter_phinp_->get_map(), true);
+  delta_phi->update(1.0, *cutter_phinp_, 0.0);
 
   // initializations
   int err(0);
@@ -413,8 +413,8 @@ bool XFEM::LevelSetCoupling::set_level_set_field(const double time)
     if (lm.size() != 1) FOUR_C_THROW("assume 1 dof in cutterdis-Dofset for phi vector");
 
     const int gid = lm[0];
-    const int lid = cutter_phinp_->Map().LID(gid);
-    err = cutter_phinp_->ReplaceMyValues(1, &value, &lid);
+    const int lid = cutter_phinp_->get_map().LID(gid);
+    err = cutter_phinp_->replace_local_values(1, &value, &lid);
     if (err) FOUR_C_THROW("could not replace values for phi vector");
   }
 
@@ -453,7 +453,7 @@ bool XFEM::LevelSetCoupling::set_level_set_field(const double time)
       std::shared_ptr<Core::LinAlg::Vector<double>> modphinp =
           std::make_shared<Core::LinAlg::Vector<double>>(*modphinp_dofrowmap, true);
 
-      double* val = cutter_phinp_->Values();
+      double* val = cutter_phinp_->get_values();
 
       int numrows = cutter_dis_->num_my_row_nodes();
       // loop all column nodes on the processor
@@ -471,14 +471,14 @@ bool XFEM::LevelSetCoupling::set_level_set_field(const double time)
 
         const int gid = initialdof[3];
 
-        int err = modphinp->ReplaceGlobalValues(1, &val[lnodeid], &gid);
+        int err = modphinp->replace_global_values(1, &val[lnodeid], &gid);
         if (err != 0) FOUR_C_THROW("Something went wrong when replacing the values.");
 
       }  // Loop over all nodes
 
       // SAFETY check
       // dependent on the desired projection, just remove this line
-      if (not modphinp->Map().SameAs(
+      if (not modphinp->get_map().SameAs(
               *std::dynamic_pointer_cast<XFEM::DiscretizationXFEM>(cutter_dis_)
                   ->initial_dof_row_map()))
         FOUR_C_THROW("input map is not a dof row map of the fluid");
@@ -503,7 +503,7 @@ bool XFEM::LevelSetCoupling::set_level_set_field(const double time)
         for (int ivec = 0; ivec < gradphinp_smoothed_rownode->NumVectors(); ivec++)
         {
           auto& itemp = (*gradphinp_smoothed_rownode)(ivec);
-          for (int jlength = 0; jlength < itemp.MyLength(); jlength++)
+          for (int jlength = 0; jlength < itemp.local_length(); jlength++)
           {
             gradphinp_smoothed_node_->ReplaceMyValue(jlength, ivec, itemp[jlength]);
           }
@@ -522,10 +522,10 @@ bool XFEM::LevelSetCoupling::set_level_set_field(const double time)
 
   // check if boundary position changed from the last step
 
-  delta_phi->Update(1.0, *cutter_phinp_, -1.0);  // phinp - phin
+  delta_phi->update(1.0, *cutter_phinp_, -1.0);  // phinp - phin
 
   double norm = 0.0;
-  delta_phi->Norm2(&norm);
+  delta_phi->norm_2(&norm);
 
   return (norm > 1e-14);  // did interface change?
 }
@@ -565,8 +565,8 @@ void XFEM::LevelSetCoupling::map_cutter_to_bg_vector(Core::FE::Discretization& s
       std::vector<double> val_source = Core::FE::extract_values(source_vec_dofbased, lm_source);
 
       // set to a dofrowmap based vector!
-      const int lid_target = target_vec_dofbased.Map().LID(lm_target[0]);
-      const int err = target_vec_dofbased.ReplaceMyValues(1, val_source.data(), &lid_target);
+      const int lid_target = target_vec_dofbased.get_map().LID(lm_target[0]);
+      const int err = target_vec_dofbased.replace_local_values(1, val_source.data(), &lid_target);
       if (err) FOUR_C_THROW("could not replace values for convective velocity");
     }
   }
@@ -594,7 +594,7 @@ XFEM::LevelSetCoupling::get_level_set_field_as_node_row_vector()
     if (val_source.size() != 1) FOUR_C_THROW("we expect only one dof");
 
     const int lid_target = bg_dis_->node_row_map()->LID(node->id());
-    const int err = bg_phinp_nodemap_->ReplaceMyValues(1, val_source.data(), &lid_target);
+    const int err = bg_phinp_nodemap_->replace_local_values(1, val_source.data(), &lid_target);
     if (err) FOUR_C_THROW("could not replace values for phi vector");
   }
 

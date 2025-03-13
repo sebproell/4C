@@ -201,11 +201,11 @@ namespace Core::IO
 
     auto convert_to_col_map_if_necessary = [&](const Core::LinAlg::Vector<double>& vector)
     {
-      if (discretization_->dof_col_map()->SameAs(vector.Map()))
+      if (discretization_->dof_col_map()->SameAs(vector.get_map()))
       {
         return vector;
       }
-      else if (discretization_->dof_row_map()->SameAs(vector.Map()))
+      else if (discretization_->dof_row_map()->SameAs(vector.get_map()))
       {
         auto vector_col_map = Core::LinAlg::Vector<double>(*discretization_->dof_col_map(), true);
         Core::LinAlg::export_to(vector, vector_col_map);
@@ -217,7 +217,7 @@ namespace Core::IO
     auto result_data_dofbased_col_map = convert_to_col_map_if_necessary(result_data_dofbased);
 
     // safety checks
-    FOUR_C_ASSERT(discretization_->dof_col_map()->SameAs(result_data_dofbased_col_map.Map()),
+    FOUR_C_ASSERT(discretization_->dof_col_map()->SameAs(result_data_dofbased_col_map.get_map()),
         "Received map of dof-based result data vector does not match the discretization's dof "
         "col map.");
 

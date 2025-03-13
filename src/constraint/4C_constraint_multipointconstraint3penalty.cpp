@@ -167,7 +167,7 @@ void CONSTRAINTS::MPConstraint3Penalty::evaluate(Teuchos::ParameterList& params,
       FOUR_C_THROW("Constraint/monitor is not an multi point constraint!");
   }
 
-  acterror_->PutScalar(0.0);
+  acterror_->put_scalar(0.0);
   std::map<int, std::shared_ptr<Core::FE::Discretization>>::iterator discriter;
   for (discriter = constraintdis_.begin(); discriter != constraintdis_.end(); discriter++)
     evaluate_error(*discriter->second, params, *acterror_);
@@ -501,8 +501,8 @@ void CONSTRAINTS::MPConstraint3Penalty::evaluate_error(Core::FE::Discretization&
   }
 
   Core::LinAlg::Vector<double> acterrdist(*errormap_);
-  acterrdist.Export(systemvector, *errorexport_, Add);
-  systemvector.Import(acterrdist, *errorimport_, Insert);
+  acterrdist.export_to(systemvector, *errorexport_, Add);
+  systemvector.import(acterrdist, *errorimport_, Insert);
   return;
 }  // end of evaluate_error
 

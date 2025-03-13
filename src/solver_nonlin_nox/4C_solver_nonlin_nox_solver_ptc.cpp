@@ -145,7 +145,7 @@ void NOX::Nln::Solver::PseudoTransient::create_scaling_operator()
       scalingDiagOpPtr_ = Teuchos::make_rcp<Core::LinAlg::Vector<double>>(
           epetraXPtr->getEpetraVector().Map(), false);
 
-      scalingDiagOpPtr_->PutScalar(1.0);
+      scalingDiagOpPtr_->put_scalar(1.0);
 
       isScalingOperator_ = true;
 
@@ -844,11 +844,11 @@ void NOX::Nln::LinSystem::PrePostOp::PseudoTransient::modify_jacobian(
        *        (\delta^{-1} \boldsymbol{I} + \boldsymbol{J}) */
       Core::LinAlg::Vector<double> v(*scaling_diag_op_ptr_);
       // Scale v with scaling factor
-      v.Scale(deltaInv * scaleFactor);
+      v.scale(deltaInv * scaleFactor);
       // get the diagonal terms of the jacobian
       auto diag = Core::LinAlg::create_vector(jac.row_map(), false);
       jac.extract_diagonal_copy(*diag);
-      diag->Update(1.0, v, 1.0);
+      diag->update(1.0, v, 1.0);
       // Finally modify the jacobian
       jac.replace_diagonal_values(*diag);
       break;
@@ -920,7 +920,7 @@ NOX::Nln::GROUP::PrePostOp::PseudoTransient::eval_pseudo_transient_f_update(
     case NOX::Nln::Solver::PseudoTransient::scale_op_identity:
     {
       ::NOX::Epetra::Vector v = ::NOX::Epetra::Vector(
-          Teuchos::rcpFromRef(*scaling_diag_op_ptr_->get_ptr_of_Epetra_Vector()));
+          Teuchos::rcpFromRef(*scaling_diag_op_ptr_->get_ptr_of_epetra_vector()));
       v.scale(ptcsolver_.get_inverse_pseudo_time_step());
       xUpdate->scale(v);
 
@@ -959,7 +959,7 @@ void NOX::Nln::GROUP::PrePostOp::PseudoTransient::run_post_compute_f(
   Teuchos::RCP<::NOX::Epetra::Vector> fUpdate = eval_pseudo_transient_f_update(grp);
 
   // add the transient part
-  F.Update(1.0, fUpdate->getEpetraVector(), 1.0);
+  F.update(1.0, fUpdate->getEpetraVector(), 1.0);
 
   // set the flag
   is_pseudo_transient_residual_ = true;
@@ -988,7 +988,7 @@ void NOX::Nln::GROUP::PrePostOp::PseudoTransient::run_pre_compute_f(
   Teuchos::RCP<::NOX::Epetra::Vector> fUpdate = eval_pseudo_transient_f_update(grp);
 
   // subtract the transient part
-  F.Update(-1.0, fUpdate->getEpetraVector(), 1.0);
+  F.update(-1.0, fUpdate->getEpetraVector(), 1.0);
 
   // set flag
   is_pseudo_transient_residual_ = false;

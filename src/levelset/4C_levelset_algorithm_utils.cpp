@@ -261,7 +261,7 @@ void ScaTra::LevelSetAlgorithm::evaluate_error_compared_to_analytical_sol()
             double initialval =
                 problem_->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)
                     .evaluate(lnode->x().data(), time_, k);
-            int err = phiref->ReplaceMyValues(1, &initialval, &doflid);
+            int err = phiref->replace_local_values(1, &initialval, &doflid);
             if (err != 0) FOUR_C_THROW("dof not on proc");
           }
         }
@@ -280,9 +280,9 @@ void ScaTra::LevelSetAlgorithm::evaluate_error_compared_to_analytical_sol()
         // division by thickness of element layer for 2D problems with domain size 1
         double errL1 = (*errors)[0] / (*errors)[1];
         Core::LinAlg::Vector<double> phidiff(*phinp_);
-        phidiff.Update(-1.0, *phiref, 1.0);
+        phidiff.update(-1.0, *phiref, 1.0);
         double errLinf = 0.0;
-        phidiff.NormInf(&errLinf);
+        phidiff.norm_inf(&errLinf);
 
         const std::string simulation = problem_->output_control_file()->file_name();
         const std::string fname = simulation + "_shape.error";
@@ -444,10 +444,10 @@ void ScaTra::LevelSetAlgorithm::apply_contact_point_boundary_condition()
     {
       // get global and local dof IDs
       const int gid = nodedofs[index];
-      const int lid = convel_new->Map().LID(gid);
+      const int lid = convel_new->get_map().LID(gid);
       if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
       const double convelocity = myvel[index];
-      int err = convel_new->ReplaceMyValue(lid, 0, convelocity);
+      int err = convel_new->replace_local_value(lid, 0, convelocity);
       if (err != 0) FOUR_C_THROW("Error while inserting value into vector convel!");
     }
   }
@@ -588,7 +588,7 @@ void ScaTra::LevelSetAlgorithm::manipulate_fluid_field_for_gfunc()
           const int nodegid = nodeids[inode];
           Core::Nodes::Node* node = discret_->g_node(nodegid);
           const int dofgid = discret_->dof(0, node, 0);
-          const int doflid = phinpcol.Map().LID(dofgid);
+          const int doflid = phinpcol.get_map().LID(dofgid);
           if (doflid < 0)
             FOUR_C_THROW(
                 "Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>", myrank_, dofgid);
@@ -734,7 +734,7 @@ void ScaTra::LevelSetAlgorithm::manipulate_fluid_field_for_gfunc()
       {
         // get global and local dof IDs
         const int gid = nodedofs[i];
-        const int lid = convel.Map().LID(gid);
+        const int lid = convel.get_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
         coordandvel(i, 0) = coord[i];
         coordandvel(i, 1) = (convel)[lid];
@@ -768,7 +768,7 @@ void ScaTra::LevelSetAlgorithm::manipulate_fluid_field_for_gfunc()
     {
       // get global and local dof IDs
       const int gid = nodedofs[i];
-      const int lid = convel.Map().LID(gid);
+      const int lid = convel.get_map().LID(gid);
       if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
 
       fluidvel(i) = (convel)[lid];
@@ -873,10 +873,10 @@ void ScaTra::LevelSetAlgorithm::manipulate_fluid_field_for_gfunc()
       {
         // get global and local dof IDs
         const int gid = nodedofs[icomp];
-        const int lid = convel.Map().LID(gid);
+        const int lid = convel.get_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
 
-        int err = conveltmp->ReplaceMyValue(lid, 0, closestnodedata(icomp, 1));
+        int err = conveltmp->replace_local_value(lid, 0, closestnodedata(icomp, 1));
         if (err) FOUR_C_THROW("could not replace values for convective velocity");
       }
     }
@@ -886,10 +886,10 @@ void ScaTra::LevelSetAlgorithm::manipulate_fluid_field_for_gfunc()
       {
         // get global and local dof IDs
         const int gid = nodedofs[icomp];
-        const int lid = convel.Map().LID(gid);
+        const int lid = convel.get_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
 
-        int err = conveltmp->ReplaceMyValue(lid, 0, fluidvel(icomp));
+        int err = conveltmp->replace_local_value(lid, 0, fluidvel(icomp));
         if (err) FOUR_C_THROW("could not replace values for convective velocity");
       }
     }

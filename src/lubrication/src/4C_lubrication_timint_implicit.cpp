@@ -134,7 +134,7 @@ void Lubrication::TimIntImpl::init()
     eleparams.set<const Core::Utils::FunctionManager*>(
         "function_manager", &Global::Problem::instance()->function_manager());
     discret_->evaluate_dirichlet(eleparams, zeros_, nullptr, nullptr, nullptr, dbcmaps_);
-    zeros_->PutScalar(0.0);  // just in case of change
+    zeros_->put_scalar(0.0);  // just in case of change
   }
 
   // -------------------------------------------------------------------
@@ -296,10 +296,10 @@ void Lubrication::TimIntImpl::set_height_field_pure_lub(const int nds)
 
       // get global and local dof IDs
       const int gid = nodedofs[index];
-      const int lid = height->Map().LID(gid);
+      const int lid = height->get_map().LID(gid);
 
       if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
-      err = height->ReplaceMyValue(lid, 0, heightfuncvalue);
+      err = height->replace_local_value(lid, 0, heightfuncvalue);
       if (err != 0) FOUR_C_THROW("error while inserting a value into height");
     }
   }
@@ -340,10 +340,10 @@ void Lubrication::TimIntImpl::set_average_velocity_field_pure_lub(const int nds)
 
       // get global and local dof IDs
       const int gid = nodedofs[index];
-      const int lid = vel->Map().LID(gid);
+      const int lid = vel->get_map().LID(gid);
 
       if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
-      err = vel->ReplaceMyValue(lid, 0, velfuncvalue);
+      err = vel->replace_local_value(lid, 0, velfuncvalue);
       if (err != 0) FOUR_C_THROW("error while inserting a value into vel");
     }
   }
@@ -547,7 +547,7 @@ void Lubrication::TimIntImpl::scaling_and_neumann()
 {
   // scaling to get true residual vector for all time integration schemes
   // in incremental case: boundary flux values can be computed from trueresidual
-  if (incremental_) trueresidual_->Update(residual_scaling(), *residual_, 0.0);
+  if (incremental_) trueresidual_->update(residual_scaling(), *residual_, 0.0);
 
   // add Neumann b.c. scaled with a factor due to time discretization
   add_neumann_to_residual();
@@ -564,7 +564,7 @@ void Lubrication::TimIntImpl::apply_neumann_bc(
 )
 {
   // prepare load vector
-  neumann_loads.PutScalar(0.0);
+  neumann_loads.put_scalar(0.0);
 
   // create parameter list
   Teuchos::ParameterList condparams;
@@ -621,7 +621,7 @@ void Lubrication::TimIntImpl::assemble_mat_and_rhs()
   sysmat_->zero();
 
   // reset the residual vector
-  residual_->PutScalar(0.0);
+  residual_->put_scalar(0.0);
 
   // create parameter list for elements
   Teuchos::ParameterList eleparams;
@@ -720,7 +720,7 @@ void Lubrication::TimIntImpl::nonlinear_solve()
     if (abort_nonlin_iter(iternum_, itemax, ittol, abstolres, actresidual)) break;
 
     // initialize increment vector
-    increment_->PutScalar(0.0);
+    increment_->put_scalar(0.0);
 
     {
       // get cpu time
@@ -750,7 +750,7 @@ void Lubrication::TimIntImpl::nonlinear_solve()
     }
 
     //------------------------------------------------ update solution vector
-    prenp_->Update(1.0, *increment_, 1.0);
+    prenp_->update(1.0, *increment_, 1.0);
 
   }  // nonlinear iteration
 
@@ -901,10 +901,10 @@ void Lubrication::TimIntImpl::set_average_velocity_field(
 void Lubrication::TimIntImpl::calc_problem_specific_norm(
     double& preresnorm, double& incprenorm_L2, double& prenorm_L2, double& preresnorminf)
 {
-  residual_->Norm2(&preresnorm);
-  increment_->Norm2(&incprenorm_L2);
-  prenp_->Norm2(&prenorm_L2);
-  residual_->NormInf(&preresnorminf);
+  residual_->norm_2(&preresnorm);
+  increment_->norm_2(&incprenorm_L2);
+  prenp_->norm_2(&prenorm_L2);
+  residual_->norm_inf(&preresnorminf);
 
   return;
 }
@@ -1012,7 +1012,7 @@ void Lubrication::TimIntImpl::output_state()
       Core::Nodes::Node* node = discret_->l_row_node(inode);
       for (int idim = 0; idim < nsd_; ++idim)
         (dispnp_multi)(idim)[discret_->node_row_map()->LID(node->id())] =
-            (*dispnp)[dispnp->Map().LID(discret_->dof(nds_disp_, node, idim))];
+            (*dispnp)[dispnp->get_map().LID(discret_->dof(nds_disp_, node, idim))];
     }
 
     output_->write_multi_vector("dispnp", dispnp_multi, Core::IO::nodevector);
@@ -1264,9 +1264,9 @@ void Lubrication::TimIntImpl::update_iter_incrementally(
   // select residual pressures
   if (prei != nullptr)
     // tempi_ = \f$\Delta{T}^{<k>}_{n+1}\f$
-    prei_->Update(1.0, *prei, 0.0);  // set the new solution we just got
+    prei_->update(1.0, *prei, 0.0);  // set the new solution we just got
   else
-    prei_->PutScalar(0.0);
+    prei_->put_scalar(0.0);
 
   // Update using #prei_
   update_iter_incrementally();

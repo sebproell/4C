@@ -85,7 +85,7 @@ void Lubrication::TimIntStationary::set_time_for_neumann_evaluation(Teuchos::Par
  *----------------------------------------------------------------------*/
 void Lubrication::TimIntStationary::add_neumann_to_residual()
 {
-  residual_->Update(1.0, *neumann_loads_, 1.0);
+  residual_->update(1.0, *neumann_loads_, 1.0);
 }
 
 
@@ -135,7 +135,7 @@ void Lubrication::TimIntStationary::update_iter_incrementally()
 {
   //! new end-point temperatures
   //! T_{n+1}^{<k+1>} := T_{n+1}^{<k>} + IncT_{n+1}^{<k>}
-  prenp_->Update(1.0, *prei_, 1.0);
+  prenp_->update(1.0, *prei_, 1.0);
 }  // update_iter_incrementally()
 
 FOUR_C_NAMESPACE_CLOSE

@@ -439,7 +439,7 @@ void FSI::MortarMonolithicStructureSplit::setup_rhs_residual(Core::LinAlg::Vecto
   mortarp->multiply(true, *scv, *fcv);
   std::shared_ptr<Core::LinAlg::Vector<double>> modfv =
       fluid_field()->interface()->insert_fsi_cond_vector(*fcv);
-  modfv->Update(1.0, fv, (1.0 - ftiparam) / ((1.0 - stiparam) * fluidscale));
+  modfv->update(1.0, fv, (1.0 - ftiparam) / ((1.0 - stiparam) * fluidscale));
 
   // put the single field residuals together
   FSI::Monolithic::combine_field_vectors(f, *sov, *modfv, *aov);
@@ -473,7 +473,7 @@ void FSI::MortarMonolithicStructureSplit::setup_rhs_lambda(Core::LinAlg::Vector<
     mortarm->multiply(true, *lambdaold_, lambda);
     std::shared_ptr<Core::LinAlg::Vector<double>> lambdafull =
         fluid_field()->interface()->insert_fsi_cond_vector(lambda);
-    lambdafull->Scale((-ftiparam + (stiparam * (1.0 - ftiparam)) / (1.0 - stiparam)) / fluidscale);
+    lambdafull->scale((-ftiparam + (stiparam * (1.0 - ftiparam)) / (1.0 - stiparam)) / fluidscale);
 
     // add Lagrange multiplier
     extractor().add_vector(*lambdafull, 1, f);
@@ -554,7 +554,7 @@ void FSI::MortarMonolithicStructureSplit::setup_rhs_firstiter(Core::LinAlg::Vect
   mortarp->Apply(*fveln, *auxvec);
   sig.Apply(*auxvec, *rhs);
 
-  rhs->Scale(-dt());
+  rhs->scale(-dt());
 
   extractor().add_vector(*rhs, 0, f);
   // ----------end of term 1
@@ -586,7 +586,7 @@ void FSI::MortarMonolithicStructureSplit::setup_rhs_firstiter(Core::LinAlg::Vect
 
     fmig.Apply(*fveln, *rhs);
 
-    rhs->Scale(-dt());
+    rhs->scale(-dt());
     rhs = fluid_field()->interface()->insert_other_vector(*rhs);
 
     extractor().add_vector(*rhs, 1, f);
@@ -620,7 +620,7 @@ void FSI::MortarMonolithicStructureSplit::setup_rhs_firstiter(Core::LinAlg::Vect
 
     fmgg.Apply(*fveln, *rhs);
 
-    rhs->Scale(-dt());
+    rhs->scale(-dt());
     rhs = fluid_field()->interface()->insert_fsi_cond_vector(*rhs);
 
     extractor().add_vector(*rhs, 1, f);
@@ -636,7 +636,7 @@ void FSI::MortarMonolithicStructureSplit::setup_rhs_firstiter(Core::LinAlg::Vect
   sgg.Apply(*tmpvec, *auxvec);
   mortarp->multiply(true, *auxvec, *rhs);
 
-  rhs->Scale(-(1. - ftiparam) / (1. - stiparam) * dt() / scale);
+  rhs->scale(-(1. - ftiparam) / (1. - stiparam) * dt() / scale);
   rhs = fluid_field()->interface()->insert_fsi_cond_vector(*rhs);
 
   extractor().add_vector(*rhs, 1, f);
@@ -649,7 +649,7 @@ void FSI::MortarMonolithicStructureSplit::setup_rhs_firstiter(Core::LinAlg::Vect
   sgg.Apply(*ddgpred_, *auxvec);
   mortarp->multiply(true, *auxvec, *rhs);
 
-  rhs->Scale((1. - ftiparam) / (1. - stiparam) / scale);
+  rhs->scale((1. - ftiparam) / (1. - stiparam) / scale);
   rhs = fluid_field()->interface()->insert_fsi_cond_vector(*rhs);
 
   extractor().add_vector(*rhs, 1, f);
@@ -669,7 +669,7 @@ void FSI::MortarMonolithicStructureSplit::setup_rhs_firstiter(Core::LinAlg::Vect
 
   aig.Apply(*fluid_to_ale_interface(fveln), *rhs);
 
-  rhs->Scale(-dt());
+  rhs->scale(-dt());
 
   extractor().add_vector(*rhs, 2, f);
   // ----------end of term 1
@@ -845,7 +845,7 @@ void FSI::MortarMonolithicStructureSplit::setup_system_matrix(
 /*----------------------------------------------------------------------------*/
 void FSI::MortarMonolithicStructureSplit::update()
 {
-  lambdaold_->Update(1.0, *lambda_, 0.0);
+  lambdaold_->update(1.0, *lambda_, 0.0);
 
   // update history variables for sliding ale
   if (aleproj_ != Inpar::FSI::ALEprojection_none)
@@ -857,7 +857,7 @@ void FSI::MortarMonolithicStructureSplit::update()
     slideale_->remeshing(*structure_field(), *fluid_field()->discretization(), *idispale,
         *iprojdisp_, *coupsfm_, get_comm());
 
-    iprojdispinc_->Update(-1.0, *iprojdisp_, 1.0, *idispale, 0.0);
+    iprojdispinc_->update(-1.0, *iprojdisp_, 1.0, *idispale, 0.0);
 
     slideale_->evaluate_mortar(
         *structure_field()->extract_interface_dispnp(), *iprojdisp_, *coupsfm_);
@@ -865,7 +865,7 @@ void FSI::MortarMonolithicStructureSplit::update()
 
     std::shared_ptr<Core::LinAlg::Vector<double>> temp =
         std::make_shared<Core::LinAlg::Vector<double>>(*iprojdisp_);
-    temp->ReplaceMap(idispale->Map());
+    temp->replace_map(idispale->get_map());
     std::shared_ptr<Core::LinAlg::Vector<double>> acx = fluid_to_ale_interface(temp);
     ale_field()->apply_interface_displacements(acx);
     fluid_field()->apply_mesh_displacement(ale_to_fluid(ale_field()->dispnp()));
@@ -896,8 +896,8 @@ void FSI::MortarMonolithicStructureSplit::scale_system(
     std::shared_ptr<Epetra_CrsMatrix> A = mat.matrix(0, 0).epetra_matrix();
     srowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
     scolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    A->InvRowSums(*srowsum_->get_ptr_of_Epetra_Vector());
-    A->InvColSums(*scolsum_->get_ptr_of_Epetra_Vector());
+    A->InvRowSums(*srowsum_->get_ptr_of_epetra_vector());
+    A->InvColSums(*scolsum_->get_ptr_of_epetra_vector());
     if (A->LeftScale(*srowsum_) or A->RightScale(*scolsum_) or
         mat.matrix(0, 1).epetra_matrix()->LeftScale(*srowsum_) or
         mat.matrix(0, 2).epetra_matrix()->LeftScale(*srowsum_) or
@@ -909,8 +909,8 @@ void FSI::MortarMonolithicStructureSplit::scale_system(
     A = mat.matrix(2, 2).epetra_matrix();
     arowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
     acolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    A->InvRowSums(*arowsum_->get_ptr_of_Epetra_Vector());
-    A->InvColSums(*acolsum_->get_ptr_of_Epetra_Vector());
+    A->InvRowSums(*arowsum_->get_ptr_of_epetra_vector());
+    A->InvColSums(*acolsum_->get_ptr_of_epetra_vector());
     if (A->LeftScale(*arowsum_) or A->RightScale(*acolsum_) or
         mat.matrix(2, 0).epetra_matrix()->LeftScale(*arowsum_) or
         mat.matrix(2, 1).epetra_matrix()->LeftScale(*arowsum_) or
@@ -922,8 +922,8 @@ void FSI::MortarMonolithicStructureSplit::scale_system(
     std::shared_ptr<Core::LinAlg::Vector<double>> sx = extractor().extract_vector(b, 0);
     std::shared_ptr<Core::LinAlg::Vector<double>> ax = extractor().extract_vector(b, 2);
 
-    if (sx->Multiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("structure scaling failed");
-    if (ax->Multiply(1.0, *arowsum_, *ax, 0.0)) FOUR_C_THROW("ale scaling failed");
+    if (sx->multiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("structure scaling failed");
+    if (ax->multiply(1.0, *arowsum_, *ax, 0.0)) FOUR_C_THROW("ale scaling failed");
 
     extractor().insert_vector(*sx, 0, b);
     extractor().insert_vector(*ax, 2, b);
@@ -945,8 +945,8 @@ void FSI::MortarMonolithicStructureSplit::unscale_solution(Core::LinAlg::BlockSp
     std::shared_ptr<Core::LinAlg::Vector<double>> sy = extractor().extract_vector(x, 0);
     std::shared_ptr<Core::LinAlg::Vector<double>> ay = extractor().extract_vector(x, 2);
 
-    if (sy->Multiply(1.0, *scolsum_, *sy, 0.0)) FOUR_C_THROW("structure scaling failed");
-    if (ay->Multiply(1.0, *acolsum_, *ay, 0.0)) FOUR_C_THROW("ale scaling failed");
+    if (sy->multiply(1.0, *scolsum_, *sy, 0.0)) FOUR_C_THROW("structure scaling failed");
+    if (ay->multiply(1.0, *acolsum_, *ay, 0.0)) FOUR_C_THROW("ale scaling failed");
 
     extractor().insert_vector(*sy, 0, x);
     extractor().insert_vector(*ay, 2, x);
@@ -954,15 +954,15 @@ void FSI::MortarMonolithicStructureSplit::unscale_solution(Core::LinAlg::BlockSp
     std::shared_ptr<Core::LinAlg::Vector<double>> sx = extractor().extract_vector(b, 0);
     std::shared_ptr<Core::LinAlg::Vector<double>> ax = extractor().extract_vector(b, 2);
 
-    if (sx->ReciprocalMultiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("structure scaling failed");
-    if (ax->ReciprocalMultiply(1.0, *arowsum_, *ax, 0.0)) FOUR_C_THROW("ale scaling failed");
+    if (sx->reciprocal_multiply(1.0, *srowsum_, *sx, 0.0)) FOUR_C_THROW("structure scaling failed");
+    if (ax->reciprocal_multiply(1.0, *arowsum_, *ax, 0.0)) FOUR_C_THROW("ale scaling failed");
 
     extractor().insert_vector(*sx, 0, b);
     extractor().insert_vector(*ax, 2, b);
 
     std::shared_ptr<Epetra_CrsMatrix> A = mat.matrix(0, 0).epetra_matrix();
-    srowsum_->Reciprocal(*srowsum_);
-    scolsum_->Reciprocal(*scolsum_);
+    srowsum_->reciprocal(*srowsum_);
+    scolsum_->reciprocal(*scolsum_);
     if (A->LeftScale(*srowsum_) or A->RightScale(*scolsum_) or
         mat.matrix(0, 1).epetra_matrix()->LeftScale(*srowsum_) or
         mat.matrix(0, 2).epetra_matrix()->LeftScale(*srowsum_) or
@@ -971,8 +971,8 @@ void FSI::MortarMonolithicStructureSplit::unscale_solution(Core::LinAlg::BlockSp
       FOUR_C_THROW("structure scaling failed");
 
     A = mat.matrix(2, 2).epetra_matrix();
-    arowsum_->Reciprocal(*arowsum_);
-    acolsum_->Reciprocal(*acolsum_);
+    arowsum_->reciprocal(*arowsum_);
+    acolsum_->reciprocal(*acolsum_);
     if (A->LeftScale(*arowsum_) or A->RightScale(*acolsum_) or
         mat.matrix(2, 0).epetra_matrix()->LeftScale(*arowsum_) or
         mat.matrix(2, 1).epetra_matrix()->LeftScale(*arowsum_) or
@@ -983,32 +983,32 @@ void FSI::MortarMonolithicStructureSplit::unscale_solution(Core::LinAlg::BlockSp
 
   // very simple hack just to see the linear solution
 
-  Core::LinAlg::Vector<double> r(b.Map());
+  Core::LinAlg::Vector<double> r(b.get_map());
   mat.Apply(x, r);
-  r.Update(1., b, 1.);
+  r.update(1., b, 1.);
 
   std::shared_ptr<Core::LinAlg::Vector<double>> sr = extractor().extract_vector(r, 0);
   std::shared_ptr<Core::LinAlg::Vector<double>> fr = extractor().extract_vector(r, 1);
   std::shared_ptr<Core::LinAlg::Vector<double>> ar = extractor().extract_vector(r, 2);
 
   // increment additional ale residual
-  aleresidual_->Update(-1., *ar, 0.);
+  aleresidual_->update(-1., *ar, 0.);
 
   std::ios_base::fmtflags flags = utils()->out().flags();
 
   double n, ns, nf, na;
-  r.Norm2(&n);
-  sr->Norm2(&ns);
-  fr->Norm2(&nf);
-  ar->Norm2(&na);
+  r.norm_2(&n);
+  sr->norm_2(&ns);
+  fr->norm_2(&nf);
+  ar->norm_2(&na);
   utils()->out() << std::scientific << "\nlinear solver quality:\n"
                  << "L_2-norms:\n"
                  << "   |r|=" << n << "   |rs|=" << ns << "   |rf|=" << nf << "   |ra|=" << na
                  << "\n";
-  r.NormInf(&n);
-  sr->NormInf(&ns);
-  fr->NormInf(&nf);
-  ar->NormInf(&na);
+  r.norm_inf(&n);
+  sr->norm_inf(&ns);
+  fr->norm_inf(&nf);
+  ar->norm_inf(&na);
   utils()->out() << "L_inf-norms:\n"
                  << "   |r|=" << n << "   |rs|=" << ns << "   |rf|=" << nf << "   |ra|=" << na
                  << "\n";
@@ -1270,7 +1270,7 @@ void FSI::MortarMonolithicStructureSplit::extract_field_vectors(
       Core::LinAlg::create_vector(*structure_field()->interface()->fsi_cond_map());
   acx = ale_to_fluid_interface(acx);
   mortarp->Apply(*acx, *scx);
-  scx->Update(-1.0, *ddgpred_, 1.0);
+  scx->update(-1.0, *ddgpred_, 1.0);
 
   // put inner and interface structure solution increments together
   std::shared_ptr<Core::LinAlg::Vector<double>> s =
@@ -1282,14 +1282,14 @@ void FSI::MortarMonolithicStructureSplit::extract_field_vectors(
 
   // Store field vectors to know them later on as previous quantities
   if (disiprev_ != nullptr)
-    ddiinc_->Update(1.0, *sox, -1.0, *disiprev_, 0.0);  // compute current iteration increment
+    ddiinc_->update(1.0, *sox, -1.0, *disiprev_, 0.0);  // compute current iteration increment
   else
     ddiinc_ = std::make_shared<Core::LinAlg::Vector<double>>(*sox);  // first iteration increment
 
   disiprev_ = sox;  // store current step increment
 
   if (velgprev_ != nullptr)
-    duginc_->Update(1.0, *fcx, -1.0, *velgprev_, 0.0);  // compute current iteration increment
+    duginc_->update(1.0, *fcx, -1.0, *velgprev_, 0.0);  // compute current iteration increment
   else
     duginc_ = std::make_shared<Core::LinAlg::Vector<double>>(*fcx);  // first iteration increment
 
@@ -1453,14 +1453,14 @@ void FSI::MortarMonolithicStructureSplit::recover_lagrange_multiplier()
    */
 
   // ---------Addressing term (1)
-  lambda_->Update(-stiparam, *lambdaold_, 0.0);
+  lambda_->update(-stiparam, *lambdaold_, 0.0);
   // ---------End of term (1)
 
   // ---------Addressing term (3)
   std::shared_ptr<Core::LinAlg::Vector<double>> structureresidual =
       std::make_shared<Core::LinAlg::Vector<double>>(
           *structure_field()->interface()->extract_fsi_cond_vector(*structure_field()->rhs()));
-  structureresidual->Scale(-1.0);  // invert sign to obtain residual, not rhs
+  structureresidual->scale(-1.0);  // invert sign to obtain residual, not rhs
   tmpvec = std::make_shared<Core::LinAlg::Vector<double>>(*structureresidual);
   // ---------End of term (3)
 
@@ -1498,11 +1498,11 @@ void FSI::MortarMonolithicStructureSplit::recover_lagrange_multiplier()
   // ---------Addressing term (2)
   auxvec = std::make_shared<Core::LinAlg::Vector<double>>(mortardinv->domain_map(), true);
   mortardinv->multiply(true, *tmpvec, *auxvec);
-  lambda_->Update(1.0, *auxvec, 1.0);
+  lambda_->update(1.0, *auxvec, 1.0);
   // ---------End of term (2)
 
   // finally, divide by -(1.-stiparam) which is common to all terms
-  lambda_->Scale(1. / (1.0 - stiparam));
+  lambda_->scale(1. / (1.0 - stiparam));
 
   /* Finally, the Lagrange multiplier lambda_ is recovered here. It has the
    * unit [N/m^2]. Actual nodal forces are obtained by multiplication with
@@ -1526,17 +1526,17 @@ void FSI::MortarMonolithicStructureSplit::calculate_interface_energy_increment()
 
   // interface traction weighted by time integration factors
   std::shared_ptr<Core::LinAlg::Vector<double>> tractionstructure =
-      std::make_shared<Core::LinAlg::Vector<double>>(lambda_->Map(), true);
-  tractionstructure->Update(stiparam - ftiparam, *lambdaold_, ftiparam - stiparam, *lambda_, 0.0);
+      std::make_shared<Core::LinAlg::Vector<double>>(lambda_->get_map(), true);
+  tractionstructure->update(stiparam - ftiparam, *lambdaold_, ftiparam - stiparam, *lambda_, 0.0);
 
   // displacement increment of this time step
   std::shared_ptr<Core::LinAlg::Vector<double>> deltad =
       std::make_shared<Core::LinAlg::Vector<double>>(*structure_field()->dof_row_map(), true);
-  deltad->Update(1.0, *structure_field()->dispnp(), -1.0, *structure_field()->dispn(), 0.0);
+  deltad->update(1.0, *structure_field()->dispnp(), -1.0, *structure_field()->dispn(), 0.0);
 
   // calculate the energy increment
   double energy = 0.0;
-  tractionstructure->Dot(
+  tractionstructure->dot(
       *structure_field()->interface()->extract_fsi_cond_vector(*deltad), &energy);
 
   energysum_ += energy;
@@ -1580,18 +1580,18 @@ void FSI::MortarMonolithicStructureSplit::check_kinematic_constraint()
 
   // calculate violation of kinematic interface constraint
   Core::LinAlg::Vector<double> violation(disnpproj);
-  violation.Update(-1.0, disnproj, 1.0);
-  violation.Update(-1.0 / timescale, velnpproj, 1.0 / timescale, velnproj, 1.0);
-  violation.Update(-dt(), velnproj, 1.0);
+  violation.update(-1.0, disnproj, 1.0);
+  violation.update(-1.0 / timescale, velnpproj, 1.0 / timescale, velnproj, 1.0);
+  violation.update(-dt(), velnproj, 1.0);
 
   // calculate some norms
   double violationl2 = 0.0;
   double violationinf = 0.0;
-  violation.Norm2(&violationl2);
-  violation.NormInf(&violationinf);
+  violation.norm_2(&violationl2);
+  violation.norm_inf(&violationinf);
 
   // scale L2-Norm with length of vector
-  violationl2 /= sqrt(violation.MyLength());
+  violationl2 /= sqrt(violation.local_length());
 
   // output to screen
   std::ios_base::fmtflags flags = utils()->out().flags();
@@ -1626,13 +1626,13 @@ void FSI::MortarMonolithicStructureSplit::check_dynamic_equilibrium()
 
   // calculate violation of dynamic equilibrium
   Core::LinAlg::Vector<double> violation(tractionmaster);
-  violation.Update(-1.0, tractionslave, 1.0);
+  violation.update(-1.0, tractionslave, 1.0);
 
   // calculate some norms
   double violationl2 = 0.0;
   double violationinf = 0.0;
-  violation.Norm2(&violationl2);
-  violation.NormInf(&violationinf);
+  violation.norm_2(&violationl2);
+  violation.norm_inf(&violationinf);
 
   // scale L2-Norm with sqrt of length of interface vector
   violationl2 /= sqrt(structure_field()->interface()->fsi_cond_map()->NumGlobalElements());

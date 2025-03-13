@@ -61,8 +61,8 @@ void CONTACT::NitscheStrategySsi::set_state(
       else
       {
         auto delta(vec);
-        delta.Update(-1.0, *curr_state_scalar_, 1.0);
-        delta.NormInf(&inf_delta);
+        delta.update(-1.0, *curr_state_scalar_, 1.0);
+        delta.norm_inf(&inf_delta);
       }
       if (inf_delta < 1.0e-16)
         return;

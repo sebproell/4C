@@ -334,7 +334,7 @@ int Discret::Elements::FluidEleCalcHDG<distype>::compute_error(Discret::Elements
 
   for (unsigned int i = 0; i < localDofs.size(); ++i)
   {
-    const int lid = matrix_state->Map().LID(localDofs[i]);
+    const int lid = matrix_state->get_map().LID(localDofs[i]);
     vecValues[i] = (*matrix_state)[lid];
   }
 
@@ -701,7 +701,7 @@ int Discret::Elements::FluidEleCalcHDG<distype>::interpolate_solution_to_nodes(
   for (unsigned int i = 0; i < solvalues.size(); ++i)
   {
     // Finding the local id of the current "localDofs"
-    const int lid = matrix_state->Map().LID(localDofs[i]);
+    const int lid = matrix_state->get_map().LID(localDofs[i]);
     // Saving the value of the "localDofs[i]" in the "solvalues" vector
     solvalues[i] = (*matrix_state)[lid];
   }
@@ -771,7 +771,7 @@ int Discret::Elements::FluidEleCalcHDG<distype>::interpolate_solution_to_nodes(
 
   for (unsigned int i = 0; i < solvalues.size(); ++i)
   {
-    const int lid = matrix_state->Map().LID(localDofs[i]);
+    const int lid = matrix_state->get_map().LID(localDofs[i]);
     solvalues[i] = (*matrix_state)[lid];
   }
 
@@ -891,7 +891,7 @@ int Discret::Elements::FluidEleCalcHDG<distype>::interpolate_solution_for_hit(
 
   for (unsigned int i = 0; i < solvalues.size(); ++i)
   {
-    const int lid = matrix_state->Map().LID(localDofs[i]);
+    const int lid = matrix_state->get_map().LID(localDofs[i]);
     solvalues[i] = (*matrix_state)[lid];
   }
 

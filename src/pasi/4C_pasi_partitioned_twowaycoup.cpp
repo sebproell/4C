@@ -192,14 +192,14 @@ void PaSI::PasiPartTwoWayCoup::output()
 void PaSI::PasiPartTwoWayCoup::reset_increment_states(
     const Core::LinAlg::Vector<double>& intfdispnp, const Core::LinAlg::Vector<double>& intfforcenp)
 {
-  intfdispincnp_->Update(1.0, intfdispnp, 0.0);
-  intfforceincnp_->Update(1.0, intfforcenp, 0.0);
+  intfdispincnp_->update(1.0, intfdispnp, 0.0);
+  intfforceincnp_->update(1.0, intfforcenp, 0.0);
 }
 
 void PaSI::PasiPartTwoWayCoup::build_increment_states()
 {
-  intfdispincnp_->Update(1.0, *intfdispnp_, -1.0);
-  intfforceincnp_->Update(1.0, *intfforcenp_, -1.0);
+  intfdispincnp_->update(1.0, *intfdispnp_, -1.0);
+  intfforceincnp_->update(1.0, *intfforcenp_, -1.0);
 }
 
 void PaSI::PasiPartTwoWayCoup::set_interface_forces(
@@ -214,7 +214,7 @@ void PaSI::PasiPartTwoWayCoup::set_interface_forces(
   if (print_screen_every() and (step() % print_screen_every() == 0))
   {
     double normintfforce(0.0);
-    intfforcenp->Norm2(&normintfforce);
+    intfforcenp->norm_2(&normintfforce);
 
     if (Core::Communication::my_mpi_rank(get_comm()) == 0)
       printf("--> Norm of interface force: %10.5E\n", normintfforce);
@@ -289,7 +289,7 @@ void PaSI::PasiPartTwoWayCoup::clear_interface_forces()
 #endif
 
   // clear interface forces
-  walldatastate->get_force_col()->PutScalar(0.0);
+  walldatastate->get_force_col()->put_scalar(0.0);
 }
 
 void PaSI::PasiPartTwoWayCoup::get_interface_forces()
@@ -309,11 +309,11 @@ void PaSI::PasiPartTwoWayCoup::get_interface_forces()
 #endif
 
   // clear interface forces
-  intfforcenp_->PutScalar(0.0);
+  intfforcenp_->put_scalar(0.0);
 
   // assemble interface forces
-  Epetra_Export exporter(walldatastate->get_force_col()->Map(), intfforcenp_->Map());
-  int err = intfforcenp_->Export(*walldatastate->get_force_col(), exporter, Add);
+  Epetra_Export exporter(walldatastate->get_force_col()->get_map(), intfforcenp_->get_map());
+  int err = intfforcenp_->export_to(*walldatastate->get_force_col(), exporter, Add);
   if (err) FOUR_C_THROW("export of interface forces failed with err=%d", err);
 }
 
@@ -328,23 +328,23 @@ bool PaSI::PasiPartTwoWayCoup::convergence_check(int itnum)
   double intfforcenorm_L2(0.0);
 
   // build L2-norm of interface displacement increment and interface displacement
-  intfdispincnp_->Norm2(&intfdispincnorm_L2);
-  intfdispnp_->Norm2(&intfdispnorm_L2);
+  intfdispincnp_->norm_2(&intfdispincnorm_L2);
+  intfdispnp_->norm_2(&intfdispnorm_L2);
 
   // build L2-norm of interface force increment and interface force
-  intfforceincnp_->Norm2(&intfforceincnorm_L2);
-  intfforcenp_->Norm2(&intfforcenorm_L2);
+  intfforceincnp_->norm_2(&intfforceincnorm_L2);
+  intfforcenp_->norm_2(&intfforcenorm_L2);
 
   // care for the case that there is (almost) zero scalar
   if (intfdispnorm_L2 < 1e-6) intfdispnorm_L2 = 1.0;
   if (intfforcenorm_L2 < 1e-6) intfforcenorm_L2 = 1.0;
 
   // scaled and relative interface displacement increment
-  double scaled_disp_inc = intfdispincnorm_L2 / (dt() * sqrt(intfdispincnp_->GlobalLength()));
+  double scaled_disp_inc = intfdispincnorm_L2 / (dt() * sqrt(intfdispincnp_->global_length()));
   double relative_disp_inc = intfdispincnorm_L2 / intfdispnorm_L2;
 
   // scaled and relative interface force increment
-  double scaled_force_inc = intfforceincnorm_L2 / (dt() * sqrt(intfforceincnp_->GlobalLength()));
+  double scaled_force_inc = intfforceincnorm_L2 / (dt() * sqrt(intfforceincnp_->global_length()));
   double relative_force_inc = intfforceincnorm_L2 / intfforcenorm_L2;
 
   // print the incremental based convergence check to the screen
@@ -572,20 +572,20 @@ void PaSI::PasiPartTwoWayCoupDispRelax::calc_omega(double& omega, const int itnu
 
 void PaSI::PasiPartTwoWayCoupDispRelax::init_relaxation_interface_states()
 {
-  relaxintfdispnp_->Update(1.0, *intfdispnp_, 0.0);
-  relaxintfvelnp_->Update(1.0, *intfvelnp_, 0.0);
-  relaxintfaccnp_->Update(1.0, *intfaccnp_, 0.0);
+  relaxintfdispnp_->update(1.0, *intfdispnp_, 0.0);
+  relaxintfvelnp_->update(1.0, *intfvelnp_, 0.0);
+  relaxintfaccnp_->update(1.0, *intfaccnp_, 0.0);
 }
 
 void PaSI::PasiPartTwoWayCoupDispRelax::perform_relaxation_interface_states()
 {
-  relaxintfdispnp_->Update(omega_, *intfdispincnp_, 1.0);
+  relaxintfdispnp_->update(omega_, *intfdispincnp_, 1.0);
 
-  relaxintfvelnp_->Update(1.0, *intfdispnp_, 0.0);
-  relaxintfvelnp_->Update(1.0 / dt(), *relaxintfdispnp_, -1.0 / dt());
+  relaxintfvelnp_->update(1.0, *intfdispnp_, 0.0);
+  relaxintfvelnp_->update(1.0 / dt(), *relaxintfdispnp_, -1.0 / dt());
 
-  relaxintfaccnp_->Update(1.0, *intfvelnp_, 0.0);
-  relaxintfaccnp_->Update(1.0 / dt(), *relaxintfvelnp_, -1.0 / dt());
+  relaxintfaccnp_->update(1.0, *intfvelnp_, 0.0);
+  relaxintfaccnp_->update(1.0 / dt(), *relaxintfvelnp_, -1.0 / dt());
 }
 
 PaSI::PasiPartTwoWayCoupDispRelaxAitken::PasiPartTwoWayCoupDispRelaxAitken(
@@ -640,10 +640,10 @@ void PaSI::PasiPartTwoWayCoupDispRelaxAitken::calc_omega(double& omega, const in
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> intfdispincnpdiff =
       Core::LinAlg::create_vector(*interface_->pasi_cond_map(), true);
-  intfdispincnpdiff->Update(1.0, *intfdispincnp_, (-1.0), *intfdispincnpold_, 0.0);
+  intfdispincnpdiff->update(1.0, *intfdispincnp_, (-1.0), *intfdispincnpold_, 0.0);
 
   double dispincnpdiffnorm(0.0);
-  intfdispincnpdiff->Norm2(&dispincnpdiffnorm);
+  intfdispincnpdiff->norm_2(&dispincnpdiffnorm);
 
   if (dispincnpdiffnorm <= 1e-06)
   {
@@ -658,7 +658,7 @@ void PaSI::PasiPartTwoWayCoupDispRelaxAitken::calc_omega(double& omega, const in
   if (itnum != 1 and dispincnpdiffnorm > 1e-06)
   {
     double dispincsdot(0.0);
-    intfdispincnpdiff->Dot(*intfdispincnp_, &dispincsdot);
+    intfdispincnpdiff->dot(*intfdispincnp_, &dispincsdot);
 
     // update Aitken relaxation parameter
     omega = omega * (1.0 - (dispincsdot) / (dispincnpdiffnorm * dispincnpdiffnorm));
@@ -690,7 +690,7 @@ void PaSI::PasiPartTwoWayCoupDispRelaxAitken::calc_omega(double& omega, const in
     std::cout << "Aitken relaxation parameter: " << omega << std::endl;
 
   // store current interface displacement increment for next iteration
-  intfdispincnpold_->Update(1.0, *intfdispincnp_, 0.0);
+  intfdispincnpold_->update(1.0, *intfdispincnp_, 0.0);
 }
 
 FOUR_C_NAMESPACE_CLOSE

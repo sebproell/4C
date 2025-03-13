@@ -187,7 +187,7 @@ bool Solid::ModelEvaluator::Constraints::assemble_force(
     Core::LinAlg::Vector<double>& f, const double& timefac_np) const
 {
   Core::LinAlg::assemble_my_vector(1.0, f, timefac_np, *constraint_force_ptr_);
-  constraint_force_ptr_->PutScalar(0.0);
+  constraint_force_ptr_->put_scalar(0.0);
   return true;
 }
 
@@ -230,7 +230,7 @@ void Solid::ModelEvaluator::Constraints::update_step_state(const double& timefac
   {
     std::shared_ptr<Core::LinAlg::Vector<double>>& fstruct_ptr =
         global_state().get_fstructure_old();
-    fstruct_ptr->Update(timefac_n, *constraint_force_ptr_, 1.0);
+    fstruct_ptr->update(timefac_n, *constraint_force_ptr_, 1.0);
   }
 }
 

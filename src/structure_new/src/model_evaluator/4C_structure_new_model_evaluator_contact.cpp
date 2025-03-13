@@ -231,9 +231,9 @@ bool Solid::ModelEvaluator::Contact::assemble_force(
     // --- constr. - block --------------------------------------------------
     block_vec_ptr = strategy().get_rhs_block_ptr(CONTACT::VecBlockType::constraint);
     if (!block_vec_ptr) return true;
-    Core::LinAlg::Vector<double> tmp(f.Map());
+    Core::LinAlg::Vector<double> tmp(f.get_map());
     Core::LinAlg::export_to(*block_vec_ptr, tmp);
-    f.Update(1., tmp, 1.);
+    f.update(1., tmp, 1.);
   }
 
   return true;
@@ -323,7 +323,7 @@ bool Solid::ModelEvaluator::Contact::assemble_jacobian(
     else
     {
       Core::LinAlg::Vector<double> ones(global_state().block_map(type()), false);
-      err = ones.PutScalar(1.0);
+      err = ones.put_scalar(1.0);
       block_ptr = std::make_shared<Core::LinAlg::SparseMatrix>(ones);
       global_state().assign_model_block(jac, *block_ptr, type(), Solid::MatBlockType::lm_lm);
     }
@@ -383,7 +383,7 @@ void Solid::ModelEvaluator::Contact::update_step_state(const double& timefac_n)
   {
     std::shared_ptr<Core::LinAlg::Vector<double>>& fstructold_ptr =
         global_state().get_fstructure_old();
-    fstructold_ptr->Update(timefac_n, *strcontactrhs_ptr, 1.0);
+    fstructold_ptr->update(timefac_n, *strcontactrhs_ptr, 1.0);
   }
 
   /* Note: DisN() and dis_np() have the same value at this stage, since
@@ -480,14 +480,14 @@ void Solid::ModelEvaluator::Contact::output_step_state(
 
   // evaluate active set and slip set
   Core::LinAlg::Vector<double> activeset(*strategy().active_row_nodes());
-  activeset.PutScalar(1.0);
+  activeset.put_scalar(1.0);
   if (strategy().is_friction())
   {
     Core::LinAlg::Vector<double> slipset(*strategy().slip_row_nodes());
-    slipset.PutScalar(1.0);
+    slipset.put_scalar(1.0);
     Core::LinAlg::Vector<double> slipsetexp(*strategy().active_row_nodes());
     Core::LinAlg::export_to(slipset, slipsetexp);
-    activeset.Update(1.0, slipsetexp, 1.0);
+    activeset.update(1.0, slipsetexp, 1.0);
   }
 
   // export to problem node row map
@@ -499,16 +499,16 @@ void Solid::ModelEvaluator::Contact::output_step_state(
   if (strategy().wear_both_discrete())
   {
     Core::LinAlg::Vector<double> mactiveset(*strategy().master_active_nodes());
-    mactiveset.PutScalar(1.0);
+    mactiveset.put_scalar(1.0);
     Core::LinAlg::Vector<double> slipset(*strategy().master_slip_nodes());
-    slipset.PutScalar(1.0);
+    slipset.put_scalar(1.0);
     Core::LinAlg::Vector<double> slipsetexp(*strategy().master_active_nodes());
     Core::LinAlg::export_to(slipset, slipsetexp);
-    mactiveset.Update(1.0, slipsetexp, 1.0);
+    mactiveset.update(1.0, slipsetexp, 1.0);
 
     Core::LinAlg::Vector<double> mactivesetexp(*problemnodes);
     Core::LinAlg::export_to(mactiveset, mactivesetexp);
-    activesetexp->Update(1.0, mactivesetexp, 1.0);
+    activesetexp->update(1.0, mactivesetexp, 1.0);
   }
 
   iowriter.write_vector("activeset", activesetexp, Core::IO::nodevector);
@@ -657,7 +657,7 @@ Solid::ModelEvaluator::Contact::get_current_solution_ptr() const
   {
     std::shared_ptr<Core::LinAlg::Vector<double>> curr_lm_ptr =
         std::make_shared<Core::LinAlg::Vector<double>>(*strategy().lagrange_multiplier_np(false));
-    if (curr_lm_ptr) curr_lm_ptr->ReplaceMap(strategy().lm_dof_row_map(false));
+    if (curr_lm_ptr) curr_lm_ptr->replace_map(strategy().lm_dof_row_map(false));
 
     extend_lagrange_multiplier_domain(curr_lm_ptr);
 
@@ -681,7 +681,7 @@ Solid::ModelEvaluator::Contact::get_last_time_step_solution_ptr() const
 
   std::shared_ptr<Core::LinAlg::Vector<double>> old_lm_ptr =
       std::make_shared<Core::LinAlg::Vector<double>>(*strategy().lagrange_multiplier_n(false));
-  if (old_lm_ptr) old_lm_ptr->ReplaceMap(strategy().lm_dof_row_map(false));
+  if (old_lm_ptr) old_lm_ptr->replace_map(strategy().lm_dof_row_map(false));
 
   extend_lagrange_multiplier_domain(old_lm_ptr);
 

@@ -431,12 +431,12 @@ void Coupling::Adapter::Coupling::finish_coupling(const Core::FE::Discretization
       std::make_shared<Core::LinAlg::Vector<int>>(*slavenodemap);
 
   Epetra_Export masternodeexport(*permslavenodemap, *slavenodemap);
-  const int err = permmasternodevec->Export(*masternodevec, masternodeexport, Insert);
+  const int err = permmasternodevec->export_to(*masternodevec, masternodeexport, Insert);
   if (err) FOUR_C_THROW("failed to export master nodes");
 
-  std::shared_ptr<const Epetra_Map> permmasternodemap =
-      std::make_shared<Epetra_Map>(-1, permmasternodevec->MyLength(), permmasternodevec->Values(),
-          0, Core::Communication::as_epetra_comm(masterdis.get_comm()));
+  std::shared_ptr<const Epetra_Map> permmasternodemap = std::make_shared<Epetra_Map>(-1,
+      permmasternodevec->local_length(), permmasternodevec->get_values(), 0,
+      Core::Communication::as_epetra_comm(masterdis.get_comm()));
 
   if (not slavenodemap->PointSameAs(*permmasternodemap))
     FOUR_C_THROW("slave and permuted master node maps do not match");
@@ -696,9 +696,9 @@ void Coupling::Adapter::Coupling::master_to_slave(
     const Core::LinAlg::Vector<int>& mv, Core::LinAlg::Vector<int>& sv) const
 {
   Core::LinAlg::Vector<int> perm(*permslavedofmap_);
-  std::copy(mv.Values(), mv.Values() + (mv.MyLength()), perm.Values());
+  std::copy(mv.get_values(), mv.get_values() + (mv.local_length()), perm.get_values());
 
-  const int err = sv.Export(perm, *slaveexport_, Insert);
+  const int err = sv.export_to(perm, *slaveexport_, Insert);
   if (err) FOUR_C_THROW("Export to slave distribution returned err=%d", err);
 }
 
@@ -736,9 +736,9 @@ void Coupling::Adapter::Coupling::slave_to_master(
     const Core::LinAlg::Vector<int>& sv, Core::LinAlg::Vector<int>& mv) const
 {
   Core::LinAlg::Vector<int> perm(*permmasterdofmap_);
-  std::copy(sv.Values(), sv.Values() + (sv.MyLength()), perm.Values());
+  std::copy(sv.get_values(), sv.get_values() + (sv.local_length()), perm.get_values());
 
-  const int err = mv.Export(perm, *masterexport_, Insert);
+  const int err = mv.export_to(perm, *masterexport_, Insert);
   if (err) FOUR_C_THROW("Export to master distribution returned err=%d", err);
 }
 

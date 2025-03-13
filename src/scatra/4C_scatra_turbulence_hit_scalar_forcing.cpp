@@ -786,13 +786,13 @@ namespace ScaTra
         // get local dof id corresponding to the global id
         int lid = discret_->dof_row_map()->LID(dofs[0]);
         // set value
-        int err = forcing_->ReplaceMyValues(1, &((fphi)[pos]), &lid);
+        int err = forcing_->replace_local_values(1, &((fphi)[pos]), &lid);
         if (err > 0) FOUR_C_THROW("Could not set forcing!");
       }
     }
     else
       // set force to zero
-      forcing_->PutScalar(0.0);
+      forcing_->put_scalar(0.0);
 
     return;
 #else
@@ -822,7 +822,7 @@ namespace ScaTra
     for (int rr = 0; rr < (nummodes_ * nummodes_ * (nummodes_ / 2 + 1)); rr++)
       (*force_fac_)(rr) = 0.0;
 
-    forcing_->PutScalar(0.0);
+    forcing_->put_scalar(0.0);
 
     return;
   }

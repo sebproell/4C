@@ -75,7 +75,7 @@ void Solid::IMPLICIT::PreStress::update_step_state()
   check_init_setup();
 
   // Compute norm of the displacements
-  global_state().get_dis_np()->NormInf(&absolute_displacement_norm_);
+  global_state().get_dis_np()->norm_inf(&absolute_displacement_norm_);
 
   model_eval().update_step_state(0.0);
 }
@@ -102,9 +102,9 @@ void Solid::IMPLICIT::PreStress::post_update()
     // This is a MULF step, hence we do not update the displacements at the end of the
     // timestep. This is achieved by resetting the displacements, velocities and
     // accelerations.
-    global_state().get_dis_n()->PutScalar(0.0);
-    global_state().get_vel_n()->PutScalar(0.0);
-    global_state().get_acc_n()->PutScalar(0.0);
+    global_state().get_dis_n()->put_scalar(0.0);
+    global_state().get_vel_n()->put_scalar(0.0);
+    global_state().get_acc_n()->put_scalar(0.0);
   }
   else if (is_material_iterative_active(global_state().get_time_n()))
   {

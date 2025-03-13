@@ -249,7 +249,7 @@ void FLD::XWall::setup()
   inctauw_ = std::make_shared<Core::LinAlg::Vector<double>>(*(discret_->node_col_map()), true);
 
   // initialize for first call or for constant tauw setting
-  tauw_->PutScalar(constant_tauw_);
+  tauw_->put_scalar(constant_tauw_);
 
   wdistxwdis_ = std::make_shared<Core::LinAlg::Vector<double>>(*(xwdiscret_->node_col_map()), true);
   Core::LinAlg::export_to(*walldist_, *wdistxwdis_);
@@ -259,7 +259,7 @@ void FLD::XWall::setup()
       std::make_shared<Core::LinAlg::Vector<double>>(*(xwdiscret_->node_col_map()), true);
 
   // initialize for first call or for constant tauw setting
-  tauwxwdis_->PutScalar(constant_tauw_);
+  tauwxwdis_->put_scalar(constant_tauw_);
 
   init_toggle_vector();
 
@@ -270,9 +270,9 @@ void FLD::XWall::setup()
     // initialize just in case
     mkxwstate_ =
         std::make_shared<Core::LinAlg::Vector<double>>(*(xwdiscret_->element_col_map()), true);
-    mkxwstate_->PutScalar(0.33333333333);
+    mkxwstate_->put_scalar(0.33333333333);
     mkstate_ = std::make_shared<Core::LinAlg::Vector<double>>(*(discret_->element_col_map()), true);
-    mkstate_->PutScalar(0.33333333333);
+    mkstate_->put_scalar(0.33333333333);
 
     restart_wss_ = nullptr;
   }
@@ -466,7 +466,7 @@ void FLD::XWall::init_wall_dist()
     // now write this value in the node based vector
     if (xwallrownodemap_->MyGID(xwallgid))
     {
-      int err = walldist_->ReplaceGlobalValues(1, &gdist, &xwallgid);
+      int err = walldist_->replace_global_values(1, &gdist, &xwallgid);
       if (err > 0)
         FOUR_C_THROW("global row not on proc");
       else if (err < 0)
@@ -484,7 +484,7 @@ void FLD::XWall::init_wall_dist()
   tauwcouplingmattrans_->complete();
 
   double mean = 0.0;
-  walldist_->MeanValue(&mean);
+  walldist_->mean_value(&mean);
 
   if (myrank_ == 0)
     std::cout << "the mean distance from the wall of all XWall nodes is: " << mean << "... ";
@@ -535,14 +535,14 @@ void FLD::XWall::init_toggle_vector()
 
       if (fullyenriched == true)
       {
-        int err = xtoggleloc_->ReplaceMyValue(j, 0, 1.0);
+        int err = xtoggleloc_->replace_local_value(j, 0, 1.0);
         if (err != 0) FOUR_C_THROW("something went wrong");
       }
       else
       {
         if (blendingtype_ != Inpar::FLUID::ramp_function)
         {
-          int err = xtoggleloc_->ReplaceMyValue(j, 0, 0.7);
+          int err = xtoggleloc_->replace_local_value(j, 0, 0.7);
           if (err != 0) FOUR_C_THROW("something went wrong");
         }
         count++;
@@ -894,7 +894,7 @@ void FLD::XWall::update_tau_w(int step, std::shared_ptr<Core::LinAlg::Vector<dou
     break;
     case Inpar::FLUID::between_steps:
     {
-      inctauw_->PutScalar(0.0);
+      inctauw_->put_scalar(0.0);
 
       if (itnum == 0)  // in between steps
         calc_tau_w(step, *velnp, *wss);
@@ -910,18 +910,18 @@ void FLD::XWall::update_tau_w(int step, std::shared_ptr<Core::LinAlg::Vector<dou
   Core::LinAlg::export_to(*tauw_, newtauw);
 
   double actmean = -1.0;
-  newtauw.MeanValue(&actmean);
+  newtauw.mean_value(&actmean);
 
   double min = -1.0;
-  newtauw.MinValue(&min);
+  newtauw.min_value(&min);
   if (min < 1e-10) FOUR_C_THROW("tauw is zero");
   double max = -1.0;
-  newtauw.MaxValue(&max);
+  newtauw.max_value(&max);
 
   // convergence check, works only if we don't take the mean
-  newtauw.PutScalar(0.0);
+  newtauw.put_scalar(0.0);
   Core::LinAlg::export_to(*inctauw_, newtauw);
-  newtauw.Norm2(&inctauwnorm_);
+  newtauw.norm_2(&inctauwnorm_);
   // rescale inctauw to full increment
   if (fac_ > 1.0e-8) inctauwnorm_ /= fac_;
 
@@ -940,7 +940,7 @@ void FLD::XWall::update_tau_w(int step, std::shared_ptr<Core::LinAlg::Vector<dou
       l2_project_vector(*veln, nullptr, accn);
 
       // at the beginning of this time step they are equal -> calculate only one of them
-      velnp->Update(1.0, *veln, 0.0);
+      velnp->update(1.0, *veln, 0.0);
     }
     else
       l2_project_vector(*veln, velnp, accn);
@@ -985,7 +985,7 @@ void FLD::XWall::calc_tau_w(
         if (!node) FOUR_C_THROW("ERROR: Cannot find off wall node with gid %", gid);
 
         int firstglobaldofid = discret_->dof(0, node, 0);
-        int firstlocaldofid = wss.Map().LID(firstglobaldofid);
+        int firstlocaldofid = wss.get_map().LID(firstglobaldofid);
 
         if (firstlocaldofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
         double forcex = (wss)[firstlocaldofid];
@@ -998,7 +998,7 @@ void FLD::XWall::calc_tau_w(
         // also, the shape functions become singular, if tauw==0
         if (tauw < min_tauw_) tauw = min_tauw_;
         // store in vector
-        int err = newtauw.ReplaceGlobalValue(gid, 0, tauw);
+        int err = newtauw.replace_global_value(gid, 0, tauw);
         if (err != 0) FOUR_C_THROW("something went wrong during replacemyvalue");
       }
     }
@@ -1086,7 +1086,7 @@ void FLD::XWall::calc_tau_w(
         newtauwsc = sumnewtauw / timesfac;
 
         if (newtauwsc < min_tauw_) newtauwsc = min_tauw_;
-        int err = newtauwxwdis.ReplaceMyValue(l, 0, newtauwsc);
+        int err = newtauwxwdis.replace_local_value(l, 0, newtauwsc);
         if (err != 0) FOUR_C_THROW("something went wrong during replacemyvalue");
       }
     }
@@ -1095,20 +1095,20 @@ void FLD::XWall::calc_tau_w(
   else
     FOUR_C_THROW("unknown tauwcalctype_");
 
-  tauw.Update(1.0, *tauw_, 0.0);
+  tauw.update(1.0, *tauw_, 0.0);
 
 
-  inctauw_->Update(1.0, tauw, 0.0);
-  tauw.PutScalar(0.0);
+  inctauw_->update(1.0, tauw, 0.0);
+  tauw.put_scalar(0.0);
 
   tauwcouplingmattrans_->multiply(true, newtauw, newtauw2);
   double meansp = 0.0;
-  newtauw2.MeanValue(&meansp);
+  newtauw2.mean_value(&meansp);
 
   Core::LinAlg::export_to(newtauw2, tauw);
-  inctauw_->Update(fac_, tauw, -fac_);  // now this is the increment (new-old)
+  inctauw_->update(fac_, tauw, -fac_);  // now this is the increment (new-old)
 
-  tauw_->Update(1.0, *inctauw_, 1.0);
+  tauw_->update(1.0, *inctauw_, 1.0);
 
   overwrite_transferred_values();
 
@@ -1135,14 +1135,14 @@ void FLD::XWall::l2_project_vector(Core::LinAlg::Vector<double>& veln,
     std::shared_ptr<Core::LinAlg::Vector<double>> velnp,
     std::shared_ptr<Core::LinAlg::Vector<double>> accn)
 {
-  if (not veln.Map().SameAs(*discret_->dof_row_map()))
+  if (not veln.get_map().SameAs(*discret_->dof_row_map()))
     FOUR_C_THROW("input map is not the dof row map of the fluid discretization");
 
   massmatrix_->zero();
 
-  incveln_->PutScalar(0.0);
-  if (accn != nullptr) incaccn_->PutScalar(0.0);
-  if (velnp != nullptr) incvelnp_->PutScalar(0.0);
+  incveln_->put_scalar(0.0);
+  if (accn != nullptr) incaccn_->put_scalar(0.0);
+  if (velnp != nullptr) incvelnp_->put_scalar(0.0);
 
   Core::LinAlg::export_to(veln, *stateveln_);
   if (accn != nullptr) Core::LinAlg::export_to(*accn, *stateaccn_);
@@ -1258,9 +1258,9 @@ void FLD::XWall::l2_project_vector(Core::LinAlg::Vector<double>& veln,
   if (numberofrhs > 1) Core::LinAlg::export_to(((*resultvec)(1)), *incaccn_);
   if (numberofrhs > 2) Core::LinAlg::export_to(((*resultvec)(2)), *incvelnp_);
 
-  veln.Update(1.0, *incveln_, 1.0);
-  if (accn != nullptr) accn->Update(1.0, *incaccn_, 1.0);
-  if (velnp != nullptr) velnp->Update(1.0, *incvelnp_, 1.0);
+  veln.update(1.0, *incveln_, 1.0);
+  if (accn != nullptr) accn->update(1.0, *incaccn_, 1.0);
+  if (velnp != nullptr) velnp->update(1.0, *incvelnp_, 1.0);
 
 
   return;
@@ -1353,10 +1353,10 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::XWall::get_output_vector(
     int firstglobaldofid = discret_->dof(xwallnode, 0);
     int firstlocaldofid = discret_->dof_row_map()->LID(firstglobaldofid);
 
-    int err = velenr->ReplaceMyValue(firstlocaldofid, 0, (vel)[firstlocaldofid + 4]);
-    err += velenr->ReplaceMyValue(firstlocaldofid + 1, 0, (vel)[firstlocaldofid + 5]);
-    err += velenr->ReplaceMyValue(firstlocaldofid + 2, 0, (vel)[firstlocaldofid + 6]);
-    err += velenr->ReplaceMyValue(firstlocaldofid + 3, 0, (vel)[firstlocaldofid + 7]);
+    int err = velenr->replace_local_value(firstlocaldofid, 0, (vel)[firstlocaldofid + 4]);
+    err += velenr->replace_local_value(firstlocaldofid + 1, 0, (vel)[firstlocaldofid + 5]);
+    err += velenr->replace_local_value(firstlocaldofid + 2, 0, (vel)[firstlocaldofid + 6]);
+    err += velenr->replace_local_value(firstlocaldofid + 3, 0, (vel)[firstlocaldofid + 7]);
     if (err != 0) FOUR_C_THROW("error during replacemyvalue");
   }
   return velenr;
@@ -1411,8 +1411,8 @@ void FLD::XWall::overwrite_transferred_values()
           const std::string& mytoggle = (*cond)->parameters().get<std::string>("toggle");
           if (mytoggle == "slave")
           {
-            inctauwtmp.ReplaceMyValue(i, 0, (*oldinctauw_)[i]);
-            tauwtmp.ReplaceMyValue(i, 0, (*oldtauw_)[i]);
+            inctauwtmp.replace_local_value(i, 0, (*oldinctauw_)[i]);
+            tauwtmp.replace_local_value(i, 0, (*oldtauw_)[i]);
           }
         }
       }
@@ -1450,7 +1450,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::XWall::fix_dirichlet_inflow(
   // copy for safety reasons
   std::shared_ptr<Core::LinAlg::Vector<double>> fixedtrueresidual =
       std::make_shared<Core::LinAlg::Vector<double>>(*(discret_->dof_row_map()), true);
-  fixedtrueresidual->Update(1.0, trueresidual, 0.0);
+  fixedtrueresidual->update(1.0, trueresidual, 0.0);
 
   // fix nodal forces on dirichlet inflow surfaces
   if (fix_residual_on_inflow_)
@@ -1576,12 +1576,12 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::XWall::fix_dirichlet_inflow(
               double newvalue2 = 0.5 * (res)[firstlocaldofidnewvalue + 1];
               double newvalue3 = 0.5 * (res)[firstlocaldofidnewvalue + 2];
 
-              int err =
-                  fixedtrueresidual->ReplaceGlobalValues(1, &newvalue1, &firstglobaldofidtoreplace);
-              err = fixedtrueresidual->ReplaceGlobalValues(
+              int err = fixedtrueresidual->replace_global_values(
+                  1, &newvalue1, &firstglobaldofidtoreplace);
+              err = fixedtrueresidual->replace_global_values(
                   1, &newvalue2, &secondglobaldofidtoreplace);
-              err =
-                  fixedtrueresidual->ReplaceGlobalValues(1, &newvalue3, &thirdglobaldofidtoreplace);
+              err = fixedtrueresidual->replace_global_values(
+                  1, &newvalue3, &thirdglobaldofidtoreplace);
               if (err != 0) FOUR_C_THROW("something wrong");
             }
           }
@@ -1612,7 +1612,7 @@ FLD::XWallAleFSI::XWallAleFSI(std::shared_ptr<Core::FE::Discretization> dis, int
 void FLD::XWallAleFSI::update_w_dist_wale()
 {
   // save old one for projection
-  incwdistxwdis_->Update(1.0, *wdistxwdis_, 0.0);
+  incwdistxwdis_->update(1.0, *wdistxwdis_, 0.0);
 
   Core::LinAlg::Vector<double> x(*xwallrownodemap_, true);
   Core::LinAlg::Vector<double> y(*xwallrownodemap_, true);
@@ -1631,9 +1631,9 @@ void FLD::XWallAleFSI::update_w_dist_wale()
     int firstglobaldofid = discret_->dof(xwallnode, 0);
     int firstlocaldofid = discret_->dof_row_map()->LID(firstglobaldofid);
 
-    int err = x.ReplaceMyValue(j, 0, (xwallnode->x())[0] + (*mydispnp_)[firstlocaldofid]);
-    err += y.ReplaceMyValue(j, 0, (xwallnode->x())[1] + (*mydispnp_)[firstlocaldofid + 1]);
-    err += z.ReplaceMyValue(j, 0, (xwallnode->x())[2] + (*mydispnp_)[firstlocaldofid + 2]);
+    int err = x.replace_local_value(j, 0, (xwallnode->x())[0] + (*mydispnp_)[firstlocaldofid]);
+    err += y.replace_local_value(j, 0, (xwallnode->x())[1] + (*mydispnp_)[firstlocaldofid + 1]);
+    err += z.replace_local_value(j, 0, (xwallnode->x())[2] + (*mydispnp_)[firstlocaldofid + 2]);
     if (err > 0) FOUR_C_THROW("something wrong");
   }
 
@@ -1647,9 +1647,9 @@ void FLD::XWallAleFSI::update_w_dist_wale()
   tauwcouplingmattrans_->multiply(true, z, wdistz);
 
   // get delta
-  wdistx.Update(-1.0, x, 1.0);
-  wdisty.Update(-1.0, y, 1.0);
-  wdistz.Update(-1.0, z, 1.0);
+  wdistx.update(-1.0, x, 1.0);
+  wdisty.update(-1.0, y, 1.0);
+  wdistz.update(-1.0, z, 1.0);
 
   // fill vectors with coords
   for (int j = 0; j < xwallrownodemap_->NumMyElements(); ++j)
@@ -1664,17 +1664,17 @@ void FLD::XWallAleFSI::update_w_dist_wale()
     double y = (wdisty)[j];
     double z = (wdistz)[j];
     double newwdist = sqrt(x * x + y * y + z * z);
-    int err = walldist_->ReplaceMyValue(j, 0, newwdist);
+    int err = walldist_->replace_local_value(j, 0, newwdist);
     if (err > 0) FOUR_C_THROW("something wrong");
   }
 
   Core::LinAlg::export_to(*walldist_, *wdist_);
   Core::LinAlg::export_to(*walldist_, *wdistxwdis_);
   // save old one for projection
-  incwdistxwdis_->Update(1.0, *wdistxwdis_, -1.0);
+  incwdistxwdis_->update(1.0, *wdistxwdis_, -1.0);
 
   double mean = 0.0;
-  walldist_->MeanValue(&mean);
+  walldist_->mean_value(&mean);
 
   if (myrank_ == 0)
     std::cout << "the new mean distance from the wall of all XWall nodes is: " << mean << std::endl;
@@ -1733,7 +1733,7 @@ void FLD::XWallAleFSI::update_tau_w(int step,
       l2_project_vector(*veln, nullptr, accn);
 
       // at the beginning of this time step they are equal -> calculate only one of them
-      velnp->Update(1.0, *veln, 0.0);
+      velnp->update(1.0, *veln, 0.0);
 
       if (myrank_ == 0) std::cout << "done!" << std::endl;
     }

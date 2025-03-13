@@ -1362,7 +1362,7 @@ void FLD::TurbulenceStatisticsCha::do_time_sample(
   numsamp_++;
 
   // meanvelnp is a refcount copy of velnp
-  meanvelnp_->Update(1.0, velnp, 0.0);
+  meanvelnp_->update(1.0, velnp, 0.0);
 
   //----------------------------------------------------------------------
   // loop planes and calculate integral means in each plane
@@ -1396,9 +1396,9 @@ void FLD::TurbulenceStatisticsCha::do_time_sample(
     {
       // toggle vectors are one in the position of a dof in this plane,
       // else 0
-      toggleu_->PutScalar(0.0);
-      togglev_->PutScalar(0.0);
-      togglew_->PutScalar(0.0);
+      toggleu_->put_scalar(0.0);
+      togglev_->put_scalar(0.0);
+      togglew_->put_scalar(0.0);
 
       // activate toggles for in plane dofs
       for (int nn = 0; nn < discret_->num_my_row_nodes(); ++nn)
@@ -1420,9 +1420,9 @@ void FLD::TurbulenceStatisticsCha::do_time_sample(
             std::vector<int> dof = discret_->dof(node);
             double one = 1.0;
 
-            toggleu_->ReplaceGlobalValues(1, &one, &(dof[0]));
-            togglev_->ReplaceGlobalValues(1, &one, &(dof[1]));
-            togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
+            toggleu_->replace_global_values(1, &one, &(dof[0]));
+            togglev_->replace_global_values(1, &one, &(dof[1]));
+            togglew_->replace_global_values(1, &one, &(dof[2]));
           }
         }
       }
@@ -1431,7 +1431,7 @@ void FLD::TurbulenceStatisticsCha::do_time_sample(
       double inc = 0.0;
       {
         double local_inc = 0.0;
-        for (int rr = 0; rr < (*toggleu_).MyLength(); ++rr)
+        for (int rr = 0; rr < (*toggleu_).local_length(); ++rr)
         {
           local_inc += (*toggleu_)[rr] * (*toggleu_)[rr];
         }
@@ -1443,7 +1443,7 @@ void FLD::TurbulenceStatisticsCha::do_time_sample(
         }
 
         local_inc = 0.0;
-        for (int rr = 0; rr < force.MyLength(); ++rr)
+        for (int rr = 0; rr < force.local_length(); ++rr)
         {
           local_inc += (force)[rr] * (*toggleu_)[rr];
         }
@@ -1451,7 +1451,7 @@ void FLD::TurbulenceStatisticsCha::do_time_sample(
         sumforceu_ += inc;
 
         local_inc = 0.0;
-        for (int rr = 0; rr < force.MyLength(); ++rr)
+        for (int rr = 0; rr < force.local_length(); ++rr)
         {
           local_inc += (force)[rr] * (*togglev_)[rr];
         }
@@ -1460,7 +1460,7 @@ void FLD::TurbulenceStatisticsCha::do_time_sample(
 
 
         local_inc = 0.0;
-        for (int rr = 0; rr < force.MyLength(); ++rr)
+        for (int rr = 0; rr < force.local_length(); ++rr)
         {
           local_inc += (force)[rr] * (*togglew_)[rr];
         }
@@ -1508,8 +1508,8 @@ void FLD::TurbulenceStatisticsCha::do_loma_time_sample(const Core::LinAlg::Vecto
   numsamp_++;
 
   // meanvelnp and meanscanp are refcount copies
-  meanvelnp_->Update(1.0, velnp, 0.0);
-  meanscanp_->Update(1.0, scanp, 0.0);
+  meanvelnp_->update(1.0, velnp, 0.0);
+  meanscanp_->update(1.0, scanp, 0.0);
 
   //----------------------------------------------------------------------
   // loop planes and calculate pointwise means in each plane
@@ -1527,10 +1527,10 @@ void FLD::TurbulenceStatisticsCha::do_loma_time_sample(const Core::LinAlg::Vecto
     {
       // toggle vectors are one in the position of a dof in this plane,
       // else 0
-      toggleu_->PutScalar(0.0);
-      togglev_->PutScalar(0.0);
-      togglew_->PutScalar(0.0);
-      togglep_->PutScalar(0.0);
+      toggleu_->put_scalar(0.0);
+      togglev_->put_scalar(0.0);
+      togglew_->put_scalar(0.0);
+      togglep_->put_scalar(0.0);
 
       // activate toggles for in plane dofs
       for (int nn = 0; nn < discret_->num_my_row_nodes(); ++nn)
@@ -1552,25 +1552,25 @@ void FLD::TurbulenceStatisticsCha::do_loma_time_sample(const Core::LinAlg::Vecto
             std::vector<int> dof = discret_->dof(node);
             double one = 1.0;
 
-            toggleu_->ReplaceGlobalValues(1, &one, &(dof[0]));
-            togglev_->ReplaceGlobalValues(1, &one, &(dof[1]));
-            togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
-            togglep_->ReplaceGlobalValues(1, &one, &(dof[3]));
+            toggleu_->replace_global_values(1, &one, &(dof[0]));
+            togglev_->replace_global_values(1, &one, &(dof[1]));
+            togglew_->replace_global_values(1, &one, &(dof[2]));
+            togglep_->replace_global_values(1, &one, &(dof[3]));
           }
         }
       }
 
       double inc = 0.0;
-      force.Dot(*toggleu_, &inc);
+      force.dot(*toggleu_, &inc);
       sumforcebu_ += inc;
       inc = 0.0;
-      force.Dot(*togglev_, &inc);
+      force.dot(*togglev_, &inc);
       sumforcebv_ += inc;
       inc = 0.0;
-      force.Dot(*togglew_, &inc);
+      force.dot(*togglew_, &inc);
       sumforcebw_ += inc;
       inc = 0.0;
-      force.Dot(*togglep_, &inc);
+      force.dot(*togglep_, &inc);
       sumqwb_ += inc;
     }
 
@@ -1580,10 +1580,10 @@ void FLD::TurbulenceStatisticsCha::do_loma_time_sample(const Core::LinAlg::Vecto
     {
       // toggle vectors are one in the position of a dof in this plane,
       // else 0
-      toggleu_->PutScalar(0.0);
-      togglev_->PutScalar(0.0);
-      togglew_->PutScalar(0.0);
-      togglep_->PutScalar(0.0);
+      toggleu_->put_scalar(0.0);
+      togglev_->put_scalar(0.0);
+      togglew_->put_scalar(0.0);
+      togglep_->put_scalar(0.0);
 
       // activate toggles for in plane dofs
       for (int nn = 0; nn < discret_->num_my_row_nodes(); ++nn)
@@ -1605,25 +1605,25 @@ void FLD::TurbulenceStatisticsCha::do_loma_time_sample(const Core::LinAlg::Vecto
             std::vector<int> dof = discret_->dof(node);
             double one = 1.0;
 
-            toggleu_->ReplaceGlobalValues(1, &one, &(dof[0]));
-            togglev_->ReplaceGlobalValues(1, &one, &(dof[1]));
-            togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
-            togglep_->ReplaceGlobalValues(1, &one, &(dof[3]));
+            toggleu_->replace_global_values(1, &one, &(dof[0]));
+            togglev_->replace_global_values(1, &one, &(dof[1]));
+            togglew_->replace_global_values(1, &one, &(dof[2]));
+            togglep_->replace_global_values(1, &one, &(dof[3]));
           }
         }
       }
 
       double inc = 0.0;
-      force.Dot(*toggleu_, &inc);
+      force.dot(*toggleu_, &inc);
       sumforcetu_ += inc;
       inc = 0.0;
-      force.Dot(*togglev_, &inc);
+      force.dot(*togglev_, &inc);
       sumforcetv_ += inc;
       inc = 0.0;
-      force.Dot(*togglew_, &inc);
+      force.dot(*togglew_, &inc);
       sumforcetw_ += inc;
       inc = 0.0;
-      force.Dot(*togglep_, &inc);
+      force.dot(*togglep_, &inc);
       sumqwt_ += inc;
     }
   }
@@ -1666,8 +1666,8 @@ void FLD::TurbulenceStatisticsCha::do_scatra_time_sample(const Core::LinAlg::Vec
   numsamp_++;
 
   // meanvelnp and meanscanp are refcount copies
-  meanvelnp_->Update(1.0, velnp, 0.0);
-  meanscanp_->Update(1.0, scanp, 0.0);
+  meanvelnp_->update(1.0, velnp, 0.0);
+  meanscanp_->update(1.0, scanp, 0.0);
 
   //----------------------------------------------------------------------
   // loop planes and calculate pointwise means in each plane
@@ -1685,10 +1685,10 @@ void FLD::TurbulenceStatisticsCha::do_scatra_time_sample(const Core::LinAlg::Vec
     {
       // toggle vectors are one in the position of a dof in this plane,
       // else 0
-      toggleu_->PutScalar(0.0);
-      togglev_->PutScalar(0.0);
-      togglew_->PutScalar(0.0);
-      togglep_->PutScalar(0.0);
+      toggleu_->put_scalar(0.0);
+      togglev_->put_scalar(0.0);
+      togglew_->put_scalar(0.0);
+      togglep_->put_scalar(0.0);
 
       // activate toggles for in plane dofs
       for (int nn = 0; nn < discret_->num_my_row_nodes(); ++nn)
@@ -1710,25 +1710,25 @@ void FLD::TurbulenceStatisticsCha::do_scatra_time_sample(const Core::LinAlg::Vec
             std::vector<int> dof = discret_->dof(node);
             double one = 1.0;
 
-            toggleu_->ReplaceGlobalValues(1, &one, &(dof[0]));
-            togglev_->ReplaceGlobalValues(1, &one, &(dof[1]));
-            togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
-            togglep_->ReplaceGlobalValues(1, &one, &(dof[3]));
+            toggleu_->replace_global_values(1, &one, &(dof[0]));
+            togglev_->replace_global_values(1, &one, &(dof[1]));
+            togglew_->replace_global_values(1, &one, &(dof[2]));
+            togglep_->replace_global_values(1, &one, &(dof[3]));
           }
         }
       }
 
       double inc = 0.0;
-      force.Dot(*toggleu_, &inc);
+      force.dot(*toggleu_, &inc);
       sumforcebu_ += inc;
       inc = 0.0;
-      force.Dot(*togglev_, &inc);
+      force.dot(*togglev_, &inc);
       sumforcebv_ += inc;
       inc = 0.0;
-      force.Dot(*togglew_, &inc);
+      force.dot(*togglew_, &inc);
       sumforcebw_ += inc;
       inc = 0.0;
-      force.Dot(*togglep_, &inc);
+      force.dot(*togglep_, &inc);
       sumqwb_ += inc;
     }
 
@@ -1738,10 +1738,10 @@ void FLD::TurbulenceStatisticsCha::do_scatra_time_sample(const Core::LinAlg::Vec
     {
       // toggle vectors are one in the position of a dof in this plane,
       // else 0
-      toggleu_->PutScalar(0.0);
-      togglev_->PutScalar(0.0);
-      togglew_->PutScalar(0.0);
-      togglep_->PutScalar(0.0);
+      toggleu_->put_scalar(0.0);
+      togglev_->put_scalar(0.0);
+      togglew_->put_scalar(0.0);
+      togglep_->put_scalar(0.0);
 
       // activate toggles for in plane dofs
       for (int nn = 0; nn < discret_->num_my_row_nodes(); ++nn)
@@ -1763,25 +1763,25 @@ void FLD::TurbulenceStatisticsCha::do_scatra_time_sample(const Core::LinAlg::Vec
             std::vector<int> dof = discret_->dof(node);
             double one = 1.0;
 
-            toggleu_->ReplaceGlobalValues(1, &one, &(dof[0]));
-            togglev_->ReplaceGlobalValues(1, &one, &(dof[1]));
-            togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
-            togglep_->ReplaceGlobalValues(1, &one, &(dof[3]));
+            toggleu_->replace_global_values(1, &one, &(dof[0]));
+            togglev_->replace_global_values(1, &one, &(dof[1]));
+            togglew_->replace_global_values(1, &one, &(dof[2]));
+            togglep_->replace_global_values(1, &one, &(dof[3]));
           }
         }
       }
 
       double inc = 0.0;
-      force.Dot(*toggleu_, &inc);
+      force.dot(*toggleu_, &inc);
       sumforcetu_ += inc;
       inc = 0.0;
-      force.Dot(*togglev_, &inc);
+      force.dot(*togglev_, &inc);
       sumforcetv_ += inc;
       inc = 0.0;
-      force.Dot(*togglew_, &inc);
+      force.dot(*togglew_, &inc);
       sumforcetw_ += inc;
       inc = 0.0;
-      force.Dot(*togglep_, &inc);
+      force.dot(*togglep_, &inc);
       sumqwt_ += inc;
     }
   }
@@ -2480,7 +2480,7 @@ void FLD::TurbulenceStatisticsCha::evaluate_pointwise_mean_values_in_planes()
   //----------------------------------------------------------------------
   // pointwise multiplication to get squared values
 
-  pointsquaredvelnp_->Multiply(1.0, *meanvelnp_, *meanvelnp_, 0.0);
+  pointsquaredvelnp_->multiply(1.0, *meanvelnp_, *meanvelnp_, 0.0);
 
 
   //----------------------------------------------------------------------
@@ -2491,10 +2491,10 @@ void FLD::TurbulenceStatisticsCha::evaluate_pointwise_mean_values_in_planes()
   {
     // toggle vectors are one in the position of a dof in this plane,
     // else 0
-    toggleu_->PutScalar(0.0);
-    togglev_->PutScalar(0.0);
-    togglew_->PutScalar(0.0);
-    togglep_->PutScalar(0.0);
+    toggleu_->put_scalar(0.0);
+    togglev_->put_scalar(0.0);
+    togglew_->put_scalar(0.0);
+    togglep_->put_scalar(0.0);
 
     // count the number of nodes in plane (required to calc. in plane mean)
     int countnodesinplane = 0;
@@ -2521,10 +2521,10 @@ void FLD::TurbulenceStatisticsCha::evaluate_pointwise_mean_values_in_planes()
           std::vector<int> dof = discret_->dof(node);
           double one = 1.0;
 
-          toggleu_->ReplaceGlobalValues(1, &one, &(dof[0]));
-          togglev_->ReplaceGlobalValues(1, &one, &(dof[1]));
-          togglew_->ReplaceGlobalValues(1, &one, &(dof[2]));
-          togglep_->ReplaceGlobalValues(1, &one, &(dof[3]));
+          toggleu_->replace_global_values(1, &one, &(dof[0]));
+          togglev_->replace_global_values(1, &one, &(dof[1]));
+          togglew_->replace_global_values(1, &one, &(dof[2]));
+          togglep_->replace_global_values(1, &one, &(dof[3]));
 
           // now check whether we have a pbc condition on this node
           std::vector<Core::Conditions::Condition*> mypbc;
@@ -2573,7 +2573,7 @@ void FLD::TurbulenceStatisticsCha::evaluate_pointwise_mean_values_in_planes()
         // compute scalar products from velnp and toggle vec to sum up
         // values in this plane
         double local_inc = 0.0;
-        for (int rr = 0; rr < meanvelnp_->MyLength(); ++rr)
+        for (int rr = 0; rr < meanvelnp_->local_length(); ++rr)
         {
           local_inc += (*meanvelnp_)[rr] * (*toggleu_)[rr];
         }
@@ -2581,7 +2581,7 @@ void FLD::TurbulenceStatisticsCha::evaluate_pointwise_mean_values_in_planes()
         (*pointsumu_)[planenum] += inc / countnodesinplaneonallprocs;
 
         local_inc = 0.0;
-        for (int rr = 0; rr < meanvelnp_->MyLength(); ++rr)
+        for (int rr = 0; rr < meanvelnp_->local_length(); ++rr)
         {
           local_inc += (*meanvelnp_)[rr] * (*togglev_)[rr];
         }
@@ -2589,7 +2589,7 @@ void FLD::TurbulenceStatisticsCha::evaluate_pointwise_mean_values_in_planes()
         (*pointsumv_)[planenum] += inc / countnodesinplaneonallprocs;
 
         local_inc = 0.0;
-        for (int rr = 0; rr < meanvelnp_->MyLength(); ++rr)
+        for (int rr = 0; rr < meanvelnp_->local_length(); ++rr)
         {
           local_inc += (*meanvelnp_)[rr] * (*togglew_)[rr];
         }
@@ -2597,7 +2597,7 @@ void FLD::TurbulenceStatisticsCha::evaluate_pointwise_mean_values_in_planes()
         (*pointsumw_)[planenum] += inc / countnodesinplaneonallprocs;
 
         local_inc = 0.0;
-        for (int rr = 0; rr < meanvelnp_->MyLength(); ++rr)
+        for (int rr = 0; rr < meanvelnp_->local_length(); ++rr)
         {
           local_inc += (*meanvelnp_)[rr] * (*togglep_)[rr];
         }
@@ -2608,7 +2608,7 @@ void FLD::TurbulenceStatisticsCha::evaluate_pointwise_mean_values_in_planes()
         // compute scalar products from squaredvelnp and toggle vec to
         // sum up values for second order moments in this plane
         local_inc = 0.0;
-        for (int rr = 0; rr < pointsquaredvelnp_->MyLength(); ++rr)
+        for (int rr = 0; rr < pointsquaredvelnp_->local_length(); ++rr)
         {
           local_inc += (*pointsquaredvelnp_)[rr] * (*toggleu_)[rr];
         }
@@ -2616,7 +2616,7 @@ void FLD::TurbulenceStatisticsCha::evaluate_pointwise_mean_values_in_planes()
         (*pointsumsqu_)[planenum] += inc / countnodesinplaneonallprocs;
 
         local_inc = 0.0;
-        for (int rr = 0; rr < pointsquaredvelnp_->MyLength(); ++rr)
+        for (int rr = 0; rr < pointsquaredvelnp_->local_length(); ++rr)
         {
           local_inc += (*pointsquaredvelnp_)[rr] * (*togglev_)[rr];
         }
@@ -2624,7 +2624,7 @@ void FLD::TurbulenceStatisticsCha::evaluate_pointwise_mean_values_in_planes()
         (*pointsumsqv_)[planenum] += inc / countnodesinplaneonallprocs;
 
         local_inc = 0.0;
-        for (int rr = 0; rr < pointsquaredvelnp_->MyLength(); ++rr)
+        for (int rr = 0; rr < pointsquaredvelnp_->local_length(); ++rr)
         {
           local_inc += (*pointsquaredvelnp_)[rr] * (*togglew_)[rr];
         }
@@ -2632,7 +2632,7 @@ void FLD::TurbulenceStatisticsCha::evaluate_pointwise_mean_values_in_planes()
         (*pointsumsqw_)[planenum] += inc / countnodesinplaneonallprocs;
 
         local_inc = 0.0;
-        for (int rr = 0; rr < pointsquaredvelnp_->MyLength(); ++rr)
+        for (int rr = 0; rr < pointsquaredvelnp_->local_length(); ++rr)
         {
           local_inc += (*pointsquaredvelnp_)[rr] * (*togglep_)[rr];
         }
@@ -5744,8 +5744,8 @@ void FLD::TurbulenceStatisticsCha::clear_statistics()
     (*pointsumsqp_)[i] = 0.0;
   }
 
-  meanvelnp_->PutScalar(0.0);
-  if (physicaltype_ == Inpar::FLUID::loma) meanscanp_->PutScalar(0.0);
+  meanvelnp_->put_scalar(0.0);
+  if (physicaltype_ == Inpar::FLUID::loma) meanscanp_->put_scalar(0.0);
 
   // reset sampling for dynamic Smagorinsky model
   if (smagorinsky_)

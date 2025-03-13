@@ -1026,10 +1026,10 @@ void XFEM::XFluidTimeInt::copy_dofs(const Core::Nodes::Node* node,  /// drt node
     // copy values from old vector to new vector
     for (size_t i = 0; i < dofs_new.size(); i++)
     {
-      int dof_lid_new = vec_new->Map().LID(dofs_new[i]);
+      int dof_lid_new = vec_new->get_map().LID(dofs_new[i]);
       if (dof_lid_new == -1) FOUR_C_THROW("new dof %d not local on this proc!", dofs_new[i]);
 
-      int dof_lid_old = vec_old->Map().LID(dofs_old[i]);
+      int dof_lid_old = vec_old->get_map().LID(dofs_old[i]);
       if (dof_lid_old == -1) FOUR_C_THROW("old dof %d not local on this proc!", dofs_old[i]);
 
       (*vec_new)[dof_lid_new] = (*vec_old)[dof_lid_old];
@@ -1144,7 +1144,7 @@ void XFEM::XFluidTimeInt::mark_dofs(const Core::Nodes::Node* node,  /// drt node
     // set a dummy value for dofs in the vector
     for (size_t i = 0; i < dofs_new.size(); i++)
     {
-      int dof_lid_new = vec_new->Map().LID(dofs_new[i]);
+      int dof_lid_new = vec_new->get_map().LID(dofs_new[i]);
       if (dof_lid_new == -1) FOUR_C_THROW("new dof %d not local on this proc!", dofs_new[i]);
 
       (*vec_new)[dof_lid_new] =

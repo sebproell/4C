@@ -148,12 +148,12 @@ void FLD::TurbulenceStatisticsGeneralMean::add_to_current_time_average(const dou
   const double oldfac = old_time / curr_avg_time_;
   const double incfac = dt / curr_avg_time_;
 
-  curr_avg_->Update(incfac, vec, oldfac);
+  curr_avg_->update(incfac, vec, oldfac);
 
   if (withscatra_)
   {
     if ((curr_avg_sca_ != nullptr) and (scavec != nullptr))
-      curr_avg_sca_->Update(incfac, *scavec, oldfac);
+      curr_avg_sca_->update(incfac, *scavec, oldfac);
     else
     {
       // any XFEM problem with scatra will crash here, it could probably be removed     henke 12/11
@@ -167,7 +167,7 @@ void FLD::TurbulenceStatisticsGeneralMean::add_to_current_time_average(const dou
 
     if ((curr_avg_scatra_ != nullptr) and (scatravec != nullptr))
     {
-      curr_avg_scatra_->Update(incfac, *scatravec, oldfac);
+      curr_avg_scatra_->update(incfac, *scatravec, oldfac);
     }
   }
 
@@ -898,25 +898,25 @@ void FLD::TurbulenceStatisticsGeneralMean::space_average_in_one_direction(const 
           gid = nodedofset[0];
           lid = dofrowmap->LID(gid);
 
-          err += curr_avg_->ReplaceMyValues(1, &(avg_u[pos]), &lid);
+          err += curr_avg_->replace_local_values(1, &(avg_u[pos]), &lid);
 
           // v velocity
           gid = nodedofset[1];
           lid = dofrowmap->LID(gid);
 
-          err += curr_avg_->ReplaceMyValues(1, &(avg_v[pos]), &lid);
+          err += curr_avg_->replace_local_values(1, &(avg_v[pos]), &lid);
 
           // w velocity
           gid = nodedofset[2];
           lid = dofrowmap->LID(gid);
 
-          err += curr_avg_->ReplaceMyValues(1, &(avg_w[pos]), &lid);
+          err += curr_avg_->replace_local_values(1, &(avg_w[pos]), &lid);
 
           // pressure p
           gid = nodedofset[3];
           lid = dofrowmap->LID(gid);
 
-          err += curr_avg_->ReplaceMyValues(1, &(avg_p[pos]), &lid);
+          err += curr_avg_->replace_local_values(1, &(avg_p[pos]), &lid);
 
           if (err > 0)
           {
@@ -990,15 +990,15 @@ void FLD::TurbulenceStatisticsGeneralMean::add_to_total_time_average()
   const double oldfac = old_time / prev_avg_time_;
   const double incfac = curr_avg_time_ / prev_avg_time_;
 
-  prev_avg_->Update(incfac, *curr_avg_, oldfac);
+  prev_avg_->update(incfac, *curr_avg_, oldfac);
 
   if (withscatra_)
   {
-    prev_avg_sca_->Update(incfac, *curr_avg_sca_, oldfac);
+    prev_avg_sca_->update(incfac, *curr_avg_sca_, oldfac);
 
     if ((prev_avg_scatra_ != nullptr) and (curr_avg_scatra_ != nullptr))
     {
-      prev_avg_scatra_->Update(incfac, *curr_avg_scatra_, oldfac);
+      prev_avg_scatra_->update(incfac, *curr_avg_scatra_, oldfac);
     }
   }
 

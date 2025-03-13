@@ -1074,18 +1074,18 @@ namespace FLD
         // get local dof id corresponding to the global id
         int lid = discret_->dof_row_map()->LID(dofs[0]);
         // set value
-        int err = forcing_->ReplaceMyValues(1, &((f1)[pos]), &lid);
+        int err = forcing_->replace_local_values(1, &((f1)[pos]), &lid);
         // analogous for remaining directions
         lid = discret_->dof_row_map()->LID(dofs[1]);
-        err = forcing_->ReplaceMyValues(1, &((f2)[pos]), &lid);
+        err = forcing_->replace_local_values(1, &((f2)[pos]), &lid);
         lid = discret_->dof_row_map()->LID(dofs[2]);
-        err = forcing_->ReplaceMyValues(1, &((f3)[pos]), &lid);
+        err = forcing_->replace_local_values(1, &((f3)[pos]), &lid);
         if (err > 0) FOUR_C_THROW("Could not set forcing!");
       }
     }
     else
       // set force to zero
-      forcing_->PutScalar(0.0);
+      forcing_->put_scalar(0.0);
 
     return;
 #else
@@ -1119,7 +1119,7 @@ namespace FLD
     for (int rr = 0; rr < (nummodes_ * nummodes_ * (nummodes_ / 2 + 1)); rr++)
       (*force_fac_)(rr) = 0.0;
 
-    forcing_->PutScalar(0.0);
+    forcing_->put_scalar(0.0);
 
     return;
   }
@@ -1953,13 +1953,13 @@ namespace FLD
               localDofs.size() == static_cast<std::size_t>(elevec1.numRows()), "Internal error");
           for (unsigned int i = 0; i < localDofs.size(); ++i)
             localDofs[i] = intdofrowmap->LID(localDofs[i]);
-          forcing_->ReplaceMyValues(localDofs.size(), elevec1.values(), localDofs.data());
+          forcing_->replace_local_values(localDofs.size(), elevec1.values(), localDofs.data());
         }
       }
     }
     else
       // set force to zero
-      forcing_->PutScalar(0.0);
+      forcing_->put_scalar(0.0);
     discret_->clear_state(true);
 
     return;
@@ -2065,7 +2065,7 @@ namespace FLD
     newforce = 500.0 * dgoalm - 30000.0 * dm + oldforce_;
 
     // now insert values in vector
-    forcing_->PutScalar(0.0);
+    forcing_->put_scalar(0.0);
 
     for (int i = 0; i < discret_->node_row_map()->NumMyElements(); ++i)
     {
@@ -2075,9 +2075,9 @@ namespace FLD
 
       int firstgdofid = discret_->dof(0, node, 0);
 
-      int firstldofid = forcing_->Map().LID(firstgdofid);
+      int firstldofid = forcing_->get_map().LID(firstgdofid);
 
-      int err = forcing_->ReplaceMyValue(firstldofid, 0, newforce);
+      int err = forcing_->replace_local_value(firstldofid, 0, newforce);
       if (err != 0) FOUR_C_THROW("something went wrong during replacemyvalue");
     }
 

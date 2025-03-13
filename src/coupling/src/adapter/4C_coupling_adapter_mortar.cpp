@@ -559,7 +559,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
       for (int k = 0; k < dim; ++k)
       {
-        val[k] += (*idisp)[(idisp->Map()).LID(gdofs[k])];
+        val[k] += (*idisp)[(idisp->get_map()).LID(gdofs[k])];
       }
     }
 
@@ -598,7 +598,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
       for (int k = 0; k < dim; ++k)
       {
-        val[k] += (*idisp)[(idisp->Map()).LID(gdofs[k])];
+        val[k] += (*idisp)[(idisp->get_map()).LID(gdofs[k])];
       }
     }
 
@@ -615,11 +615,11 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
   M_->multiply(false, *xm, *Mxm);
   std::shared_ptr<Core::LinAlg::Vector<double>> gold =
       Core::LinAlg::create_vector(*slavedofrowmap, true);
-  gold->Update(1.0, *Dxs, 1.0);
-  gold->Update(-1.0, *Mxm, 1.0);
+  gold->update(1.0, *Dxs, 1.0);
+  gold->update(-1.0, *Mxm, 1.0);
   double gnorm = 0.0;
-  gold->Norm2(&gnorm);
-  gnorm /= sqrt((double)gold->GlobalLength());  // scale with length of vector
+  gold->norm_2(&gnorm);
+  gnorm /= sqrt((double)gold->global_length());  // scale with length of vector
 
   const double tol = 1.0e-12;
   // no need to do mesh relocation if g already very small
@@ -693,11 +693,11 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
     for (int k = 0; k < dim; ++k)
     {
       int dof = mtnode->dofs()[k];
-      (*Xmaster)[(Xmaster->Map()).LID(dof)] = mtnode->x()[k];
+      (*Xmaster)[(Xmaster->get_map()).LID(dof)] = mtnode->x()[k];
 
       // add ALE displacements, if required
       if (idisp != nullptr)
-        (*Xmaster)[(Xmaster->Map()).LID(dof)] += (*idisp)[(idisp->Map()).LID(dof)];
+        (*Xmaster)[(Xmaster->get_map()).LID(dof)] += (*idisp)[(idisp->get_map()).LID(dof)];
     }
   }
 
@@ -792,12 +792,12 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
         for (int k = 0; k < numdim; ++k)
         {
-          locindex[k] = (Xslavemodcol.Map()).LID(mtnode->dofs()[k]);
+          locindex[k] = (Xslavemodcol.get_map()).LID(mtnode->dofs()[k]);
           if (locindex[k] < 0) FOUR_C_THROW("Did not find dof in map");
           Xnew[k] = Xslavemodcol[locindex[k]];
           Xold[k] = mtnode->x()[k];
           if (idisp != nullptr)
-            Xold[k] += (*idisp)[(idisp->Map()).LID(interface_->discret().dof(node)[k])];
+            Xold[k] += (*idisp)[(idisp->get_map()).LID(interface_->discret().dof(node)[k])];
         }
 
         // check is mesh distortion is still OK
@@ -872,11 +872,11 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
           for (int k = 0; k < dim; ++k)
           {
             // get global ID of degree of freedom for this spatial direction
-            int dofgid = (idisp->Map()).LID(gdofs[k]);
+            int dofgid = (idisp->get_map()).LID(gdofs[k]);
             // get new coordinate value for this spatial direction
             const double value = Xnewglobal[k] - node->x()[k];
             // replace respective value in displacement vector
-            err = idisp->ReplaceMyValues(1, &value, &dofgid);
+            err = idisp->replace_local_values(1, &value, &dofgid);
             // check whether there was a problem in the replacement process
             if (err != 0)
               FOUR_C_THROW("error while inserting a value into ALE displacement vector!");
@@ -923,7 +923,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
       for (int k = 0; k < dim; ++k)
       {
-        val[k] += (*idisp)[(idisp->Map()).LID(gdofs[k])];
+        val[k] += (*idisp)[(idisp->get_map()).LID(gdofs[k])];
       }
     }
 
@@ -959,7 +959,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
       for (int k = 0; k < dim; ++k)
       {
-        val[k] += (*idisp)[(idisp->Map()).LID(gdofs[k])];
+        val[k] += (*idisp)[(idisp->get_map()).LID(gdofs[k])];
       }
     }
 
@@ -974,10 +974,10 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
   M_->multiply(false, *xm, *Mxm);
   std::shared_ptr<Core::LinAlg::Vector<double>> gnew =
       Core::LinAlg::create_vector(*slavedofrowmap, true);
-  gnew->Update(1.0, *Dxs, 1.0);
-  gnew->Update(-1.0, *Mxm, 1.0);
-  gnew->Norm2(&gnorm);
-  gnorm /= sqrt((double)gnew->GlobalLength());  // scale with length of vector
+  gnew->update(1.0, *Dxs, 1.0);
+  gnew->update(-1.0, *Mxm, 1.0);
+  gnew->norm_2(&gnorm);
+  gnorm /= sqrt((double)gnew->global_length());  // scale with length of vector
 
   if (gnorm > tol)
     FOUR_C_THROW(
@@ -1034,7 +1034,7 @@ void Coupling::Adapter::CouplingMortar::create_p()
   Dinv_->extract_diagonal_copy(*diag);
 
   // set zero diagonal values to dummy 1.0
-  for (int i = 0; i < diag->MyLength(); ++i)
+  for (int i = 0; i < diag->local_length(); ++i)
   {
     if (abs((*diag)[i]) < 1e-12)
     {
@@ -1045,7 +1045,7 @@ void Coupling::Adapter::CouplingMortar::create_p()
   }
 
   // scalar inversion of diagonal values
-  err = diag->Reciprocal(*diag);
+  err = diag->reciprocal(*diag);
   if (err != 0) FOUR_C_THROW("Reciprocal: Zero diagonal entry!");
 
   // re-insert inverted diagonal into invd
@@ -1091,13 +1091,13 @@ void Coupling::Adapter::CouplingMortar::evaluate(
 {
   // safety checks
   check_setup();
-  FOUR_C_ASSERT(idispma->Map().PointSameAs(*pmasterdofrowmap_),
+  FOUR_C_ASSERT(idispma->get_map().PointSameAs(*pmasterdofrowmap_),
       "Map of incoming master vector does not match the stored master dof row map.");
-  FOUR_C_ASSERT(idispsl->Map().PointSameAs(*pslavedofrowmap_),
+  FOUR_C_ASSERT(idispsl->get_map().PointSameAs(*pslavedofrowmap_),
       "Map of incoming slave vector does not match the stored slave dof row map.");
 
-  const Epetra_BlockMap stdmap = idispsl->Map();
-  idispsl->ReplaceMap(*slavedofrowmap_);
+  const Epetra_BlockMap stdmap = idispsl->get_map();
+  idispsl->replace_map(*slavedofrowmap_);
 
   std::shared_ptr<Epetra_Map> dofrowmap =
       Core::LinAlg::merge_map(*pmasterdofrowmap_, *pslavedofrowmap_, false);
@@ -1108,10 +1108,10 @@ void Coupling::Adapter::CouplingMortar::evaluate(
   int err = 0;
   std::shared_ptr<Core::LinAlg::Vector<double>> idisp_master_slave =
       Core::LinAlg::create_vector(*dofrowmap, true);
-  err = idisp_master_slave->Import(*idispma, master_importer, Add);
+  err = idisp_master_slave->import(*idispma, master_importer, Add);
   if (err != 0)
     FOUR_C_THROW("Import failed with error code %d. See Epetra source code for details.", err);
-  err = idisp_master_slave->Import(*idispsl, slaveImporter, Add);
+  err = idisp_master_slave->import(*idispsl, slaveImporter, Add);
   if (err != 0)
     FOUR_C_THROW("Import failed with error code %d. See Epetra source code for details.", err);
 
@@ -1121,7 +1121,7 @@ void Coupling::Adapter::CouplingMortar::evaluate(
   evaluate();
   matrix_row_col_transform();
 
-  idispsl->ReplaceMap(stdmap);
+  idispsl->replace_map(stdmap);
 
   return;
 }
@@ -1249,11 +1249,11 @@ void Coupling::Adapter::CouplingMortar::evaluate_with_mesh_relocation(
   Dinv_->extract_diagonal_copy(*diag);
 
   // set zero diagonal values to dummy 1.0
-  for (int i = 0; i < diag->MyLength(); ++i)
+  for (int i = 0; i < diag->local_length(); ++i)
     if ((*diag)[i] == 0.0) (*diag)[i] = 1.0;
 
   // scalar inversion of diagonal values
-  diag->Reciprocal(*diag);
+  diag->reciprocal(*diag);
   Dinv_->replace_diagonal_values(*diag);
   Dinv_->complete(D_->range_map(), D_->domain_map());
   P_ = Core::LinAlg::matrix_multiply(*Dinv_, false, *M_, false, false, false, true);
@@ -1309,7 +1309,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Coupling::Adapter::CouplingMortar:
   // safety check
   check_setup();
 
-  FOUR_C_ASSERT(masterdofrowmap_->SameAs(mv.Map()), "Vector with master dof map expected");
+  FOUR_C_ASSERT(masterdofrowmap_->SameAs(mv.get_map()), "Vector with master dof map expected");
 
   Core::LinAlg::Vector<double> tmp = Core::LinAlg::Vector<double>(M_->row_map());
 
@@ -1367,13 +1367,14 @@ void Coupling::Adapter::CouplingMortar::slave_to_master(
   check_setup();
 
   Core::LinAlg::Vector<double> tmp = Core::LinAlg::Vector<double>(M_->range_map());
-  std::copy(sv.Values(), sv.Values() + sv.MyLength(), tmp.Values());
+  std::copy(sv.Values(), sv.Values() + sv.MyLength(), tmp.get_values());
 
   Core::LinAlg::Vector<double> tempm(*pmasterdofrowmap_);
   if (M_->multiply(true, tmp, tempm)) FOUR_C_THROW("M^{T}*sv multiplication failed");
 
   // copy from auxiliary to physical map (needed for coupling in fluid ale algorithm)
-  std::copy(tempm.Values(), tempm.Values() + (tempm.MyLength() * tempm.NumVectors()), mv.Values());
+  std::copy(tempm.get_values(), tempm.get_values() + (tempm.local_length() * tempm.num_vectors()),
+      mv.Values());
 
   // in contrast to the Adapter::Coupling class we do not need to export here, as
   // the mortar interface itself has (or should have) guaranteed the same distribution of master and
@@ -1390,7 +1391,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Coupling::Adapter::CouplingMortar:
   check_setup();
 
   Core::LinAlg::Vector<double> tmp = Core::LinAlg::Vector<double>(M_->range_map());
-  std::copy(sv.Values(), sv.Values() + sv.MyLength(), tmp.Values());
+  std::copy(sv.get_values(), sv.get_values() + sv.local_length(), tmp.get_values());
 
   std::shared_ptr<Core::LinAlg::Vector<double>> mv =
       std::make_shared<Core::LinAlg::Vector<double>>(*pmasterdofrowmap_);

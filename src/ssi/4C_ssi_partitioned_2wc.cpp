@@ -256,8 +256,8 @@ void SSI::SSIPart2WC::iter_update_states()
   // store last solutions (current states).
   // will be compared in convergence_check to the solutions,
   // obtained from the next Struct and Scatra steps.
-  scaincnp_->Update(1.0, *scatra_field()->phinp(), 0.0);
-  dispincnp_->Update(1.0, *structure_field()->dispnp(), 0.0);
+  scaincnp_->update(1.0, *scatra_field()->phinp(), 0.0);
+  dispincnp_->update(1.0, *structure_field()->dispnp(), 0.0);
 }  // iter_update_states()
 
 
@@ -334,14 +334,14 @@ bool SSI::SSIPart2WC::convergence_check(int itnum)
 
   // build the current scalar increment Inc T^{i+1}
   // \f Delta T^{k+1} = Inc T^{k+1} = T^{k+1} - T^{k}  \f
-  scaincnp_->Update(1.0, *(scatra_field()->phinp()), -1.0);
-  dispincnp_->Update(1.0, *(structure_field()->dispnp()), -1.0);
+  scaincnp_->update(1.0, *(scatra_field()->phinp()), -1.0);
+  dispincnp_->update(1.0, *(structure_field()->dispnp()), -1.0);
 
   // build the L2-norm of the scalar increment and the scalar
-  scaincnp_->Norm2(&scaincnorm_L2);
-  scatra_field()->phinp()->Norm2(&scanorm_L2);
-  dispincnp_->Norm2(&dispincnorm_L2);
-  structure_field()->dispnp()->Norm2(&dispnorm_L2);
+  scaincnp_->norm_2(&scaincnorm_L2);
+  scatra_field()->phinp()->norm_2(&scanorm_L2);
+  dispincnp_->norm_2(&dispincnorm_L2);
+  structure_field()->dispnp()->norm_2(&dispnorm_L2);
 
   // care for the case that there is (almost) zero scalar
   if (scanorm_L2 < 1e-6) scanorm_L2 = 1.0;
@@ -365,8 +365,8 @@ bool SSI::SSIPart2WC::convergence_check(int itnum)
     printf(
         "|   %3d/%3d    |  %10.3E[L_2 ]   |  %10.3E    |  %10.3E      |  %10.3E        |  %10.3E   "
         "   |",
-        itnum, itmax_, ittol_, scaincnorm_L2 / dt() / sqrt(scaincnp_->GlobalLength()),
-        dispincnorm_L2 / dt() / sqrt(dispincnp_->GlobalLength()), scaincnorm_L2 / scanorm_L2,
+        itnum, itmax_, ittol_, scaincnorm_L2 / dt() / sqrt(scaincnp_->global_length()),
+        dispincnorm_L2 / dt() / sqrt(dispincnp_->global_length()), scaincnorm_L2 / scanorm_L2,
         dispincnorm_L2 / dispnorm_L2);
     printf("\n");
     printf(
@@ -376,8 +376,8 @@ bool SSI::SSIPart2WC::convergence_check(int itnum)
 
   // converged
   if (((scaincnorm_L2 / scanorm_L2) <= ittol_) and ((dispincnorm_L2 / dispnorm_L2) <= ittol_) and
-      ((dispincnorm_L2 / dt() / sqrt(dispincnp_->GlobalLength())) <= ittol_) and
-      ((scaincnorm_L2 / dt() / sqrt(scaincnp_->GlobalLength())) <= ittol_))
+      ((dispincnorm_L2 / dt() / sqrt(dispincnp_->global_length())) <= ittol_) and
+      ((scaincnorm_L2 / dt() / sqrt(scaincnp_->global_length())) <= ittol_))
   {
     stopnonliniter = true;
     if (Core::Communication::my_mpi_rank(get_comm()) == 0)
@@ -396,8 +396,8 @@ bool SSI::SSIPart2WC::convergence_check(int itnum)
   // timestep
   if ((itnum == itmax_) and
       (((scaincnorm_L2 / scanorm_L2) > ittol_) or ((dispincnorm_L2 / dispnorm_L2) > ittol_) or
-          ((dispincnorm_L2 / dt() / sqrt(dispincnp_->GlobalLength())) > ittol_) or
-          (scaincnorm_L2 / dt() / sqrt(scaincnp_->GlobalLength())) > ittol_))
+          ((dispincnorm_L2 / dt() / sqrt(dispincnp_->global_length())) > ittol_) or
+          (scaincnorm_L2 / dt() / sqrt(scaincnp_->global_length())) > ittol_))
   {
     stopnonliniter = true;
     if ((Core::Communication::my_mpi_rank(get_comm()) == 0))
@@ -428,7 +428,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> SSI::SSIPart2WC::calc_velocity(
   vel = std::make_shared<Core::LinAlg::Vector<double>>(*(structure_field()->dispn()));
   // calculate velocity with timestep Dt()
   //  V_n+1^k = (D_n+1^k - D_n) / Dt
-  vel->Update(1. / dt(), dispnp, -1. / dt());
+  vel->update(1. / dt(), dispnp, -1. / dt());
 
   return vel;
 }  // calc_velocity()
@@ -492,13 +492,13 @@ void SSI::SSIPart2WCSolidToScatraRelax::outer_loop()
 
     if (iteration_count() == 1)
     {
-      dispnp->Update(1.0, *(structure_field()->dispnp()), 0.0);  // TSI does Dispn()
-      velnp->Update(1.0, *(structure_field()->velnp()), 0.0);
+      dispnp->update(1.0, *(structure_field()->dispnp()), 0.0);  // TSI does Dispn()
+      velnp->update(1.0, *(structure_field()->velnp()), 0.0);
     }
 
     // store scalars and displacements for the convergence check later
-    scaincnp_->Update(1.0, *scatra_field()->phinp(), 0.0);
-    dispincnp_->Update(1.0, *dispnp, 0.0);
+    scaincnp_->update(1.0, *scatra_field()->phinp(), 0.0);
+    dispincnp_->update(1.0, *dispnp, 0.0);
 
     // begin nonlinear solver / outer iteration ***************************
 
@@ -527,7 +527,7 @@ void SSI::SSIPart2WCSolidToScatraRelax::outer_loop()
     // do the relaxation
     // d^{i+1} = omega^{i+1} . d^{i+1} + (1- omega^{i+1}) d^i
     //         = d^i + omega^{i+1} * ( d^{i+1} - d^i )
-    dispnp->Update(omega_, *dispincnp_, 1.0);
+    dispnp->update(omega_, *dispincnp_, 1.0);
 
     // since the velocity field has to fit to the relaxated displacements we also have to relaxate
     // them.
@@ -543,7 +543,7 @@ void SSI::SSIPart2WCSolidToScatraRelax::outer_loop()
       // set_state(dispnp) will automatically be undone during the next evaluation of the structural
       // field
       structure_field()->set_state(dispnp);
-      velnp->Update(1., *structure_field()->velnp(), 0.);
+      velnp->update(1., *structure_field()->velnp(), 0.);
     }
   }
 }
@@ -601,11 +601,11 @@ void SSI::SSIPart2WCSolidToScatraRelaxAitken::calc_omega(double& omega, const in
   // dispincnpdiff = ( r^{i+1}_{n+1} - r^i_{n+1} )
   std::shared_ptr<Core::LinAlg::Vector<double>> dispincnpdiff =
       Core::LinAlg::create_vector(*(structure_field()->dof_row_map(0)), true);
-  dispincnpdiff->Update(
+  dispincnpdiff->update(
       1.0, *dispincnp_, (-1.0), *dispincnpold_, 0.0);  // update r^{i+1}_{n+1} - r^i_{n+1}
 
   double dispincnpdiffnorm = 0.0;
-  dispincnpdiff->Norm2(&dispincnpdiffnorm);
+  dispincnpdiff->norm_2(&dispincnpdiffnorm);
   if (dispincnpdiffnorm <= 1e-06 and Core::Communication::my_mpi_rank(get_comm()) == 0)
   {
     std::cout << "Warning: The structure increment is to small in order to use it for Aitken "
@@ -615,7 +615,7 @@ void SSI::SSIPart2WCSolidToScatraRelaxAitken::calc_omega(double& omega, const in
 
   // calculate dot product
   double dispincsdot = 0.0;  // delsdot = ( r^{i+1}_{n+1} - r^i_{n+1} )^T . r^{i+1}_{n+1}
-  dispincnpdiff->Dot(*dispincnp_, &dispincsdot);
+  dispincnpdiff->dot(*dispincnp_, &dispincsdot);
 
   if (itnum != 1 and dispincnpdiffnorm > 1e-06)
   {  // relaxation parameter
@@ -655,7 +655,7 @@ void SSI::SSIPart2WCSolidToScatraRelaxAitken::calc_omega(double& omega, const in
               << std::endl;
 
   // update history vector old increment r^i_{n+1}
-  dispincnpold_->Update(1.0, *dispincnp_, 0.0);
+  dispincnpold_->update(1.0, *dispincnp_, 0.0);
 }
 
 
@@ -726,12 +726,12 @@ void SSI::SSIPart2WCScatraToSolidRelax::outer_loop()
 
     if (iteration_count() == 1)
     {
-      phinp->Update(1.0, *(scatra_field()->phinp()), 0.0);  // TSI does Dispn()
+      phinp->update(1.0, *(scatra_field()->phinp()), 0.0);  // TSI does Dispn()
     }
 
     // store scalars and displacements for the convergence check later
-    scaincnp_->Update(1.0, *phinp, 0.0);
-    dispincnp_->Update(1.0, *structure_field()->dispnp(), 0.0);
+    scaincnp_->update(1.0, *phinp, 0.0);
+    dispincnp_->update(1.0, *structure_field()->dispnp(), 0.0);
 
 
     // begin nonlinear solver / outer iteration ***************************
@@ -762,7 +762,7 @@ void SSI::SSIPart2WCScatraToSolidRelax::outer_loop()
     // do the relaxation
     // d^{i+1} = omega^{i+1} . d^{i+1} + (1- omega^{i+1}) d^i
     //         = d^i + omega^{i+1} * ( d^{i+1} - d^i )
-    phinp->Update(omega_, *scaincnp_, 1.0);
+    phinp->update(omega_, *scaincnp_, 1.0);
   }
 }
 
@@ -819,10 +819,10 @@ void SSI::SSIPart2WCScatraToSolidRelaxAitken::calc_omega(double& omega, const in
   // scaincnpdiff =  r^{i+1}_{n+1} - r^i_{n+1}
   std::shared_ptr<Core::LinAlg::Vector<double>> scaincnpdiff =
       Core::LinAlg::create_vector(*scatra_field()->discretization()->dof_row_map(0), true);
-  scaincnpdiff->Update(1.0, *scaincnp_, (-1.0), *scaincnpold_, 0.0);
+  scaincnpdiff->update(1.0, *scaincnp_, (-1.0), *scaincnpold_, 0.0);
 
   double scaincnpdiffnorm = 0.0;
-  scaincnpdiff->Norm2(&scaincnpdiffnorm);
+  scaincnpdiff->norm_2(&scaincnpdiffnorm);
 
   if (scaincnpdiffnorm <= 1e-06 and Core::Communication::my_mpi_rank(get_comm()) == 0)
   {
@@ -833,7 +833,7 @@ void SSI::SSIPart2WCScatraToSolidRelaxAitken::calc_omega(double& omega, const in
 
   // calculate dot product
   double scaincsdot = 0.0;  // delsdot = ( r^{i+1}_{n+1} - r^i_{n+1} )^T . r^{i+1}_{n+1}
-  scaincnpdiff->Dot(*scaincnp_, &scaincsdot);
+  scaincnpdiff->dot(*scaincnp_, &scaincsdot);
 
   if (itnum != 1 and scaincnpdiffnorm > 1e-06)
   {  // relaxation parameter
@@ -873,7 +873,7 @@ void SSI::SSIPart2WCScatraToSolidRelaxAitken::calc_omega(double& omega, const in
               << std::endl;
 
   // update history vector old increment r^i_{n+1}
-  scaincnpold_->Update(1.0, *scaincnp_, 0.0);
+  scaincnpold_->update(1.0, *scaincnp_, 0.0);
 }
 
 FOUR_C_NAMESPACE_CLOSE

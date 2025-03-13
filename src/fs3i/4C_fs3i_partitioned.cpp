@@ -725,7 +725,7 @@ void FS3I::PartFS3I::extract_vel(
           std::make_shared<Core::LinAlg::Vector<double>>(*(fsi_->fluid_field()->velaf()));
       vel.push_back(fluidconvel);
       // now subtract the grid velocity
-      fluidconvel->Update(-1.0, *(fsi_->fluid_field()->grid_vel()), 1.0);
+      fluidconvel->update(-1.0, *(fsi_->fluid_field()->grid_vel()), 1.0);
       convel.push_back(fluidconvel);
     }
     break;
@@ -747,7 +747,7 @@ void FS3I::PartFS3I::extract_vel(
   vel.push_back(velocity);
   // structure ScaTra: velocity and grid velocity are identical!
   std::shared_ptr<Core::LinAlg::Vector<double>> zeros =
-      std::make_shared<Core::LinAlg::Vector<double>>(velocity->Map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(velocity->get_map(), true);
   convel.push_back(zeros);
 }
 

@@ -452,7 +452,7 @@ void TSI::Partitioned::outer_iteration_loop()
           Core::LinAlg::create_vector(*(structure_field()->dof_row_map(0)), true);
       if (step() == 1)
       {
-        dispnp->Update(1.0, *(structure_field()->dispn()), 0.0);
+        dispnp->update(1.0, *(structure_field()->dispn()), 0.0);
         vel_ = structure_field()->veln();
       }
       // else: use the velocity of the last converged step
@@ -464,13 +464,13 @@ void TSI::Partitioned::outer_iteration_loop()
 
         // kind of mechanical predictor
         // 1st iteration: get structure variables of old time step (d_n, v_n)
-        if (itnum == 1) dispnp->Update(1.0, *(structure_field()->dispn()), 0.0);
+        if (itnum == 1) dispnp->update(1.0, *(structure_field()->dispn()), 0.0);
         // else (itnum>1) use the current solution dispnp of old iteration step
 
         // store temperature from first solution for convergence check (like in
         // elch_algorithm: use current values)
-        tempincnp_->Update(1.0, *thermo_field()->tempnp(), 0.0);
-        dispincnp_->Update(1.0, *structure_field()->dispnp(), 0.0);
+        tempincnp_->update(1.0, *thermo_field()->tempnp(), 0.0);
+        dispincnp_->update(1.0, *structure_field()->dispnp(), 0.0);
 
         // begin nonlinear solver / outer iteration ***************************
 
@@ -504,7 +504,7 @@ void TSI::Partitioned::outer_iteration_loop()
         do_structure_step();
 
         // extract current displacements
-        dispnp->Update(1.0, *(structure_field()->dispnp()), 0.0);
+        dispnp->update(1.0, *(structure_field()->dispnp()), 0.0);
 
         if (quasistatic_)
           vel_ = calc_velocity(*dispnp);
@@ -622,7 +622,7 @@ void TSI::Partitioned::outer_iteration_loop()
           Core::LinAlg::create_vector(*(structure_field()->dof_row_map(0)), true);
       if (step() == 1)
       {
-        dispnp->Update(1.0, *(structure_field()->dispn()), 0.0);
+        dispnp->update(1.0, *(structure_field()->dispn()), 0.0);
       }
       // else: use the velocity of the last converged step
 
@@ -638,7 +638,7 @@ void TSI::Partitioned::outer_iteration_loop()
         // reset in every new time step
         if (del_ != nullptr)
         {
-          del_->PutScalar(1.0e20);
+          del_->put_scalar(1.0e20);
         }
       }
 
@@ -649,7 +649,7 @@ void TSI::Partitioned::outer_iteration_loop()
 
         // kind of mechanical predictor
         // 1st iteration: get structure variables of old time step (d_n, v_n)
-        if (itnum == 1) dispnp->Update(1.0, *(structure_field()->dispn()), 0.0);
+        if (itnum == 1) dispnp->update(1.0, *(structure_field()->dispn()), 0.0);
         // else (itnum>1) use the current solution dispnp of old iteration step
 
         // store temperature from first solution for convergence check (like in
@@ -660,8 +660,8 @@ void TSI::Partitioned::outer_iteration_loop()
         //                          so far no solving has occurred: T^{n+1} = T^{n}
         // i+1. iteration step:     Inc T^{i+1}_{n+1} = T^{i+1}_{n+1} - T^{i}_{n+1}
         //                     fill Inc T^{i+1}_{n+1} = T^{i}_{n+1}
-        tempincnp_->Update(1.0, *thermo_field()->tempnp(), 0.0);
-        dispincnp_->Update(1.0, *structure_field()->dispnp(), 0.0);
+        tempincnp_->update(1.0, *thermo_field()->tempnp(), 0.0);
+        dispincnp_->update(1.0, *structure_field()->dispnp(), 0.0);
 
         // begin nonlinear solver / outer iteration ***************************
 
@@ -693,7 +693,7 @@ void TSI::Partitioned::outer_iteration_loop()
         if (coupling == Inpar::TSI::IterStaggFixedRel)
         {
           // get the displacements of the old iteration step d^i_{n+1}
-          dispnp->Update(1.0, *(structure_field()->dispnp()), 0.0);
+          dispnp->update(1.0, *(structure_field()->dispnp()), 0.0);
         }
 
         // solve coupled structural equation
@@ -717,7 +717,7 @@ void TSI::Partitioned::outer_iteration_loop()
           // fixed relaxation can be applied even in the 1st iteration
           // d^{i+1} = omega^{i+1} . d^{i+1} + (1- omega^{i+1}) d^i
           //         = d^i + omega^{i+1} * ( d^{i+1} - d^i )
-          dispnp->Update(fixedomega, *dispincnp_, 1.0);
+          dispnp->update(fixedomega, *dispincnp_, 1.0);
 
           // ------------------------------------------ end of relaxation
         }
@@ -747,25 +747,25 @@ void TSI::Partitioned::outer_iteration_loop()
           {
             del_ = Core::LinAlg::create_vector(*(thermo_field()->dof_row_map(0)), true);
             delhist_ = Core::LinAlg::create_vector(*(thermo_field()->dof_row_map(0)), true);
-            del_->PutScalar(1.0e20);
-            delhist_->PutScalar(0.0);
+            del_->put_scalar(1.0e20);
+            delhist_->put_scalar(0.0);
           }
 
           // calculate difference of current (i+1) and old (i) residual vector
           // delhist = ( r^{i+1}_{n+1} - r^i_{n+1} )
           // update history vector old increment r^i_{n+1}
-          delhist_->Update(1.0, *del_, 0.0);           // r^i_{n+1}
-          delhist_->Update(1.0, *dispincnp_, (-1.0));  // update r^{i+1}_{n+1}
+          delhist_->update(1.0, *del_, 0.0);           // r^i_{n+1}
+          delhist_->update(1.0, *dispincnp_, (-1.0));  // update r^{i+1}_{n+1}
 
           // del_ = r^{i+1}_{n+1} = T^{i+1}_{n+1} - T^{i}_{n+1}
-          del_->Update(1.0, *dispincnp_, 0.0);
+          del_->update(1.0, *dispincnp_, 0.0);
           // den = |r^{i+1} - r^{i}|^2
           double den = 0.0;
-          delhist_->Norm2(&den);
+          delhist_->norm_2(&den);
           // calculate dot product
           // dot = delhist_ . del_ = ( r^{i+1}_{n+1} - r^i_{n+1} )^T . r^{i+1}_{n+1}
           double top = 0.0;
-          delhist_->Dot(*del_, &top);
+          delhist_->dot(*del_, &top);
 
           // Aikten factor
           // nu^{i+1} = nu^i + (nu^i -1) . (r^{i+1} - r^i)^T . (-r^{i+1}) / |r^{i+1} - r^{i}|^2
@@ -783,7 +783,7 @@ void TSI::Partitioned::outer_iteration_loop()
           // --> start relaxation process if two iterative residuals are available
           if (itnum == 1)
           {
-            dispnp->Update(1.0, *(structure_field()->dispnp()), 0.0);
+            dispnp->update(1.0, *(structure_field()->dispnp()), 0.0);
 
             // calculate the velocities with the updated/relaxed displacements
             if (quasistatic_) vel_ = calc_velocity(*dispnp);
@@ -797,7 +797,7 @@ void TSI::Partitioned::outer_iteration_loop()
               // overwrite temp_ with relaxed solution vector
               // d^{i+1} = omega^{i+1} . d^{i+1} + (1- omega^{i+1}) d^i
               //         = d^i + omega^{i+1} * ( d^{i+1} - d^i )
-              dispnp->Update(omega, *dispincnp_, 1.0);
+              dispnp->update(omega, *dispincnp_, 1.0);
             }
             // another notation of relaxation according to Paper by Irons & Tuck (1969)
             // 1. calculate an Aitken factor mu == relaxation factor
@@ -810,7 +810,7 @@ void TSI::Partitioned::outer_iteration_loop()
               // d^{i+1} = d^{i+1} - mu^{i+1} * r^{i+1}
               //         = d^{i+1} - mu^{i+1} * ( d^{i+1} - d^i )
               //         = (1 - mu^{i+1}) d^{i+1} + mu^{i+1} d^i
-              dispnp->Update(1.0, *(structure_field()->dispnp()), (-mu_), *dispincnp_, 0.0);
+              dispnp->update(1.0, *(structure_field()->dispnp()), (-mu_), *dispincnp_, 0.0);
             }
           }  // itnum>1
         }  // dynamic relaxation
@@ -831,7 +831,7 @@ void TSI::Partitioned::outer_iteration_loop()
         // thermal predictor for the coupling iteration outside the loop
         // get temperature of old time step (T_n)
         // T^p_n+1 = T_n
-        temp_->Update(1.0, *(thermo_field()->tempn()), 0.0);
+        temp_->update(1.0, *(thermo_field()->tempn()), 0.0);
       }
 
       if ((coupling == Inpar::TSI::IterStaggAitken) or
@@ -851,7 +851,7 @@ void TSI::Partitioned::outer_iteration_loop()
         // reset in every new time step
         if (del_ != nullptr)
         {
-          del_->PutScalar(1.0e20);
+          del_->put_scalar(1.0e20);
         }
       }
 
@@ -864,7 +864,7 @@ void TSI::Partitioned::outer_iteration_loop()
         // 1. iteration: get newest temperatures, i.e. T_{n+1} == T_n
         if (itnum == 1)
         {
-          temp_->Update(1.0, *(thermo_field()->tempn()), 0.0);
+          temp_->update(1.0, *(thermo_field()->tempn()), 0.0);
         }
         // else: use solution vector temp_ of old iteration step i
 
@@ -876,8 +876,8 @@ void TSI::Partitioned::outer_iteration_loop()
         //                          so far no solving has occurred: T^{n+1} = T^{n}
         // i+1. iteration step:     Inc T^{i+1}_{n+1} = T^{i+1}_{n+1} - T^{i}_{n+1}
         //                     fill Inc T^{i+1}_{n+1} = T^{i}_{n+1}
-        tempincnp_->Update(1.0, *thermo_field()->tempnp(), 0.0);
-        dispincnp_->Update(1.0, *structure_field()->dispnp(), 0.0);
+        tempincnp_->update(1.0, *thermo_field()->tempnp(), 0.0);
+        dispincnp_->update(1.0, *structure_field()->dispnp(), 0.0);
 
         // begin nonlinear solver / outer iteration ***************************
 
@@ -915,7 +915,7 @@ void TSI::Partitioned::outer_iteration_loop()
         if (coupling == Inpar::TSI::IterStaggFixedRel)
         {
           // get temperature solution of old iteration step T_{n+1}^i
-          temp_->Update(1.0, *(thermo_field()->tempnp()), 0.0);
+          temp_->update(1.0, *(thermo_field()->tempnp()), 0.0);
         }
 
         /// solve coupled thermal system
@@ -939,7 +939,7 @@ void TSI::Partitioned::outer_iteration_loop()
           // fixed relaxation can be applied even in the 1st iteration
           // T^{i+1} = omega^{i+1} . T^{i+1} + (1- omega^{i+1}) T^i
           //         = T^i + omega^{i+1} . ( T^{i+1} - T^i )
-          temp_->Update(fixedomega, *tempincnp_, 1.0);
+          temp_->update(fixedomega, *tempincnp_, 1.0);
 
           // ------------------------------------------ end of relaxation
         }
@@ -974,25 +974,25 @@ void TSI::Partitioned::outer_iteration_loop()
           {
             del_ = Core::LinAlg::create_vector(*(thermo_field()->dof_row_map(0)), true);
             delhist_ = Core::LinAlg::create_vector(*(thermo_field()->dof_row_map(0)), true);
-            del_->PutScalar(1.0e20);
-            delhist_->PutScalar(0.0);
+            del_->put_scalar(1.0e20);
+            delhist_->put_scalar(0.0);
           }
 
           // calculate difference of current (i+1) and old (i) residual vector
           // delhist = ( r^{i+1}_{n+1} - r^i_{n+1} )
           // update history vector old increment r^i_{n+1}
-          delhist_->Update(1.0, *del_, 0.0);           // r^i_{n+1}
-          delhist_->Update(1.0, *tempincnp_, (-1.0));  // update r^{i+1}_{n+1}
+          delhist_->update(1.0, *del_, 0.0);           // r^i_{n+1}
+          delhist_->update(1.0, *tempincnp_, (-1.0));  // update r^{i+1}_{n+1}
 
           // del_ = r^{i+1}_{n+1} = T^{i+1}_{n+1} - T^{i}_{n+1}
-          del_->Update(1.0, *tempincnp_, 0.0);
+          del_->update(1.0, *tempincnp_, 0.0);
           // den = |r^{i+1} - r^{i}|^2
           double den = 0.0;
-          delhist_->Norm2(&den);
+          delhist_->norm_2(&den);
           // calculate dot product
           // dot = delhist_ . del_ = ( r^{i+1}_{n+1} - r^i_{n+1} )^T . r^{i+1}_{n+1}
           double top = 0.0;
-          delhist_->Dot(*del_, &top);
+          delhist_->dot(*del_, &top);
 
           // mu_: Aikten factor in Mok's version
           // mu_: relaxation parameter in Irons & Tuck
@@ -1007,7 +1007,7 @@ void TSI::Partitioned::outer_iteration_loop()
           // --> start relaxation process if two iterative residuals are available
           if (itnum == 1)
             // get temperature T_{n+1}^{i=1}
-            temp_->Update(1.0, *(thermo_field()->tempnp()), 0.0);
+            temp_->update(1.0, *(thermo_field()->tempnp()), 0.0);
           else  // (itnum > 1)
           {
             if (coupling == Inpar::TSI::IterStaggAitken)
@@ -1020,7 +1020,7 @@ void TSI::Partitioned::outer_iteration_loop()
               // overwrite temp_ with relaxed solution vector
               // T^{i+1} = omega^{i+1} . T^{i+1} + (1- omega^{i+1}) T^i
               //         = T^i + omega^{i+1} * ( T^{i+1} - T^i )
-              temp_->Update(omega, *tempincnp_, 1.0);
+              temp_->update(omega, *tempincnp_, 1.0);
             }
             else if (coupling == Inpar::TSI::IterStaggAitkenIrons)
             {
@@ -1030,7 +1030,7 @@ void TSI::Partitioned::outer_iteration_loop()
               //         = T^{i+1} - mu^{i+1} * ( T^{i+1} - T^i )
               //         = (1 - mu^{i+1}) T^{i+1} + mu^{i+1} T^i
               // --> Irons T^{i+1} = T^{i+1} + mu^{i+1} * DEL^{i+1} with DEL = T^i - T^{i+1}
-              temp_->Update(1.0, *(thermo_field()->tempnp()), (-mu_), *tempincnp_, 0.0);
+              temp_->update(1.0, *(thermo_field()->tempnp()), (-mu_), *tempincnp_, 0.0);
             }
           }  // itnum > 1
         }  // dynamic relaxation
@@ -1120,18 +1120,18 @@ bool TSI::Partitioned::convergence_check(int itnum, const int itmax, const doubl
 
   // build the current temperature increment Inc T^{i+1} with Newton iteration index i
   // \f Delta T^{i+1} = Inc T^{i+1} = T^{i+1} - T^{i}  \f
-  tempincnp_->Update(1.0, *(thermo_field()->tempnp()), -1.0);
-  dispincnp_->Update(1.0, *(structure_field()->dispnp()), -1.0);
+  tempincnp_->update(1.0, *(thermo_field()->tempnp()), -1.0);
+  dispincnp_->update(1.0, *(structure_field()->dispnp()), -1.0);
 
   // for convergence test choose the last converged solution vector T_n/D_n,
   // be careful to check the convergence with the current, NOT yet converged values n+1
   // if a solution n+1 is highly difficult to find, the norm can oscillate
 
   // build the L2-norm of the increments and the old solution vectors
-  tempincnp_->Norm2(&tempincnorm_L2);
-  thermo_field()->tempn()->Norm2(&tempnorm_L2);
-  dispincnp_->Norm2(&dispincnorm_L2);
-  structure_field()->dispn()->Norm2(&dispnorm_L2);
+  tempincnp_->norm_2(&tempincnorm_L2);
+  thermo_field()->tempn()->norm_2(&tempnorm_L2);
+  dispincnp_->norm_2(&dispincnorm_L2);
+  structure_field()->dispn()->norm_2(&dispnorm_L2);
 
   // care for the case that there is (almost) zero temperature
   // (usually not required for temperature)

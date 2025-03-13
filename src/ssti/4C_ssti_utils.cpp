@@ -485,7 +485,7 @@ bool SSTI::ConvCheckMono::converged(const SSTI::SSTIMono& ssti_mono)
   ssti_mono.scatra_field()
       ->splitter()
       ->extract_other_vector(*ssti_mono.scatra_field()->phinp())
-      ->Norm2(&concdofnorm);
+      ->norm_2(&concdofnorm);
 
   // compute L2 norm of concentration increment vector
   double concincnorm(0.0);
@@ -493,7 +493,7 @@ bool SSTI::ConvCheckMono::converged(const SSTI::SSTIMono& ssti_mono)
       ->splitter()
       ->extract_other_vector(*ssti_mono.all_maps()->maps_sub_problems()->extract_vector(
           *ssti_mono.increment(), ssti_mono.get_problem_position(Subproblem::scalar_transport)))
-      ->Norm2(&concincnorm);
+      ->norm_2(&concincnorm);
 
   // compute L2 norm of concentration residual vector
   double concresnorm(0.0);
@@ -501,14 +501,14 @@ bool SSTI::ConvCheckMono::converged(const SSTI::SSTIMono& ssti_mono)
       ->splitter()
       ->extract_other_vector(*ssti_mono.all_maps()->maps_sub_problems()->extract_vector(
           *ssti_mono.residual(), ssti_mono.get_problem_position(Subproblem::scalar_transport)))
-      ->Norm2(&concresnorm);
+      ->norm_2(&concresnorm);
 
   // compute L2 norm of potential state vector
   double potdofnorm(0.0);
   ssti_mono.scatra_field()
       ->splitter()
       ->extract_cond_vector(*ssti_mono.scatra_field()->phinp())
-      ->Norm2(&potdofnorm);
+      ->norm_2(&potdofnorm);
 
   // compute L2 norm of potential increment vector
   double potincnorm(0.0);
@@ -516,7 +516,7 @@ bool SSTI::ConvCheckMono::converged(const SSTI::SSTIMono& ssti_mono)
       ->splitter()
       ->extract_cond_vector(*ssti_mono.all_maps()->maps_sub_problems()->extract_vector(
           *ssti_mono.increment(), ssti_mono.get_problem_position(Subproblem::scalar_transport)))
-      ->Norm2(&potincnorm);
+      ->norm_2(&potincnorm);
 
   // compute L2 norm of potential residual vector
   double potresnorm(0.0);
@@ -524,18 +524,18 @@ bool SSTI::ConvCheckMono::converged(const SSTI::SSTIMono& ssti_mono)
       ->splitter()
       ->extract_cond_vector(*ssti_mono.all_maps()->maps_sub_problems()->extract_vector(
           *ssti_mono.residual(), ssti_mono.get_problem_position(Subproblem::scalar_transport)))
-      ->Norm2(&potresnorm);
+      ->norm_2(&potresnorm);
 
   // compute L2 norm of structural state vector
   double structuredofnorm(0.0);
-  ssti_mono.structure_field()->dispnp()->Norm2(&structuredofnorm);
+  ssti_mono.structure_field()->dispnp()->norm_2(&structuredofnorm);
 
   // compute L2 norm of structural residual vector
   double structureresnorm(0.0);
   ssti_mono.all_maps()
       ->maps_sub_problems()
       ->extract_vector(*ssti_mono.residual(), ssti_mono.get_problem_position(Subproblem::structure))
-      ->Norm2(&structureresnorm);
+      ->norm_2(&structureresnorm);
 
   // compute L2 norm of structural increment vector
   double structureincnorm(0.0);
@@ -543,29 +543,29 @@ bool SSTI::ConvCheckMono::converged(const SSTI::SSTIMono& ssti_mono)
       ->maps_sub_problems()
       ->extract_vector(
           *ssti_mono.increment(), ssti_mono.get_problem_position(Subproblem::structure))
-      ->Norm2(&structureincnorm);
+      ->norm_2(&structureincnorm);
 
   // compute L2 norm of thermo state vector
   double thermodofnorm(0.0);
-  ssti_mono.thermo_field()->phinp()->Norm2(&thermodofnorm);
+  ssti_mono.thermo_field()->phinp()->norm_2(&thermodofnorm);
 
   // compute L2 norm of thermo residual vector
   double thermoresnorm(0.0);
   ssti_mono.all_maps()
       ->maps_sub_problems()
       ->extract_vector(*ssti_mono.residual(), ssti_mono.get_problem_position(Subproblem::thermo))
-      ->Norm2(&thermoresnorm);
+      ->norm_2(&thermoresnorm);
 
   // compute L2 norm of thermo increment vector
   double thermoincnorm(0.0);
   ssti_mono.all_maps()
       ->maps_sub_problems()
       ->extract_vector(*ssti_mono.increment(), ssti_mono.get_problem_position(Subproblem::thermo))
-      ->Norm2(&thermoincnorm);
+      ->norm_2(&thermoincnorm);
 
   // compute L2 norm of total residual vector
   double totresnorm(0.0);
-  ssti_mono.residual()->Norm2(&totresnorm);
+  ssti_mono.residual()->norm_2(&totresnorm);
 
   // safety checks
   if (std::isnan(concdofnorm) or std::isnan(concresnorm) or std::isnan(concincnorm) or
