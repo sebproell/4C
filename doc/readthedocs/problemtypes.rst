@@ -111,21 +111,6 @@ Fluid_XFEM
 The element types used are given in xxx. The number of degrees of freedom
 
 
-Inverse_Analysis
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**General**
-
-.. ToDo::
-
-   No information about this special problem type.
-
-**Elements and Degrees of freedom**
-
-The element types used are given in :ref:`STRUCTURE ELEMENTS<structureelements>`.
-The number of degrees of freedom
-
-
 Level_Set
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -302,11 +287,6 @@ Fluid_Structure_Interaction
 
 One has to define solvers for the following dynamics:
 
-Fluid_Structure_Interaction_Lung
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-One has to define solvers for the following dynamics:
-
 Fluid_Structure_Interaction_RedModels
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -323,11 +303,6 @@ Fluid_XFEM_LevelSet
 One has to define solvers for the following dynamics:
 
 Gas_Fluid_Structure_Interaction
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-One has to define solvers for the following dynamics:
-
-Immersed_FSI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 One has to define solvers for the following dynamics:
