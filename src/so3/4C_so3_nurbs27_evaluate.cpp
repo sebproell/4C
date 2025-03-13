@@ -72,10 +72,6 @@ int Discret::Elements::Nurbs::SoNurbs27::evaluate(Teuchos::ParameterList& params
     act = SoNurbs27::calc_struct_fsiload;
   else if (action == "calc_struct_update_istep")
     act = SoNurbs27::calc_struct_update_istep;
-  else if (action == "calc_stc_matrix")
-    act = SoNurbs27::calc_stc_matrix;
-  else if (action == "calc_stc_matrix_inverse")
-    act = SoNurbs27::calc_stc_matrix_inverse;
   else if (action == "calc_struct_reset_istep")
     act = SoNurbs27::calc_struct_reset_istep;
   else if (action == "calc_struct_energy")

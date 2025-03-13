@@ -143,67 +143,6 @@ void Adapter::StructureBaseAlgorithm::create_tim_int(const Teuchos::ParameterLis
   if (onlymeshtying or onlycontact or meshtyingandcontact)
     contactsolver = create_contact_meshtying_solver(*actdis, sdyn);
 
-  if (solver != nullptr && (solver->params().isSublist("Belos Parameters")) &&
-      solver->params().isSublist("ML Parameters")  // TODO what about MueLu?
-      && Teuchos::getIntegralValue<Inpar::Solid::StcScale>(sdyn, "STC_SCALING") !=
-             Inpar::Solid::stc_inactive)
-  {
-    Teuchos::ParameterList& mllist = solver->params().sublist("ML Parameters");
-    std::shared_ptr<std::vector<double>> ns =
-        mllist.get<std::shared_ptr<std::vector<double>>>("nullspace");
-
-    // prepare matrix for scaled thickness business of thin shell structures
-    std::shared_ptr<Core::LinAlg::SparseMatrix> stcinv =
-        std::make_shared<Core::LinAlg::SparseMatrix>(*actdis->dof_row_map(), 81, true, true);
-
-    stcinv->zero();
-    // create the parameters for the discretization
-    Teuchos::ParameterList p;
-    // action for elements
-    const std::string action = "calc_stc_matrix_inverse";
-    p.set("action", action);
-    p.set<Inpar::Solid::StcScale>("stc_scaling", sdyn.get<Inpar::Solid::StcScale>("STC_SCALING"));
-    p.set("stc_layer", 1);
-
-    actdis->evaluate(p, stcinv, nullptr, nullptr, nullptr, nullptr);
-
-    stcinv->complete();
-
-    for (int lay = 2; lay <= sdyn.get<int>("STC_LAYER"); ++lay)
-    {
-      Teuchos::ParameterList pe;
-
-      p.set("stc_layer", lay);
-
-      std::shared_ptr<Core::LinAlg::SparseMatrix> tmpstcmat =
-          std::make_shared<Core::LinAlg::SparseMatrix>(*actdis->dof_row_map(), 81, true, true);
-      tmpstcmat->zero();
-
-      actdis->evaluate(p, tmpstcmat, nullptr, nullptr, nullptr, nullptr);
-      tmpstcmat->complete();
-
-      stcinv = Core::LinAlg::matrix_multiply(*stcinv, false, *tmpstcmat, false, false, false, true);
-    }
-
-    Core::LinAlg::Vector<double> temp(*(actdis->dof_row_map()), false);
-
-    const auto multiply_nullspace_vector = [&](std::size_t offset)
-    {
-      const int size = actdis->dof_row_map()->NumMyElements();
-      Core::LinAlg::Vector<double> vec(*(actdis->dof_row_map()), false);
-      std::copy(ns->data() + offset * size, ns->data() + (offset + 1) * size, vec.get_values());
-
-      stcinv->multiply(false, vec, temp);
-      std::copy(temp.get_values(), temp.get_values() + size, ns->data() + offset * size);
-    };
-
-
-    // extract and modify the six nullspace vectors corresponding to the modes
-    // trans x, trans y, trans z, rot x, rot y, rot z
-    // Note: We assume 3d here!
-    for (int i = 0; i < 6; ++i) multiply_nullspace_vector(i);
-  }
-
   // Checks in case of multi-scale simulations
   {
     // make sure we IMR-like generalised-alpha requested for multi-scale

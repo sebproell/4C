@@ -37,6 +37,7 @@
 #include "4C_solid_3D_ele.hpp"
 #include "4C_structure_aux.hpp"
 #include "4C_structure_timint.hpp"
+#include "4C_utils_exceptions.hpp"
 
 #include <Teuchos_RCPStdSharedPtrConversions.hpp>
 
@@ -109,11 +110,12 @@ Solid::TimIntImpl::TimIntImpl(const Teuchos::ParameterList& timeparams,
       fres_(nullptr),
       freact_(nullptr),
       updateprojection_(false),
-      stcscale_(Teuchos::getIntegralValue<Inpar::Solid::StcScale>(sdynparams, "STC_SCALING")),
-      stclayer_(sdynparams.get<int>("STC_LAYER")),
       ptcdt_(sdynparams.get<double>("PTCDT")),
       dti_(1.0 / ptcdt_)
 {
+  FOUR_C_ASSERT_ALWAYS(Teuchos::getIntegralValue<Inpar::Solid::StcScale>(
+                           sdynparams, "STC_SCALING") == Inpar::Solid::StcScale::stc_inactive,
+      "STC is not supported in the old time integration framework");
   // Keep this constructor empty!
   // First do everything on the more basic objects like the discretizations, like e.g.
   // redistribution of elements. Only then call the setup to this class. This will call the setup to
@@ -293,10 +295,6 @@ void Solid::TimIntImpl::setup()
   // iterative displacement increments IncD_{n+1}
   // also known as residual displacements
   disi_ = Core::LinAlg::create_vector(*dof_row_map_view(), true);
-
-  // prepare matrix for scaled thickness business of thin shell structures
-  stcmat_ = std::make_shared<Core::LinAlg::SparseMatrix>(*dof_row_map_view(), 81, true, true);
-  stccompl_ = false;
 
   return;
 }
@@ -1483,9 +1481,6 @@ int Solid::TimIntImpl::newton_full()
     // transform to local co-ordinate systems
     if (locsysman_ != nullptr) locsysman_->rotate_global_to_local(system_matrix(), *fres_);
 
-    // STC preconditioning
-    stc_preconditioning();
-
     // apply Dirichlet BCs to system of equations
     disi_->put_scalar(0.0);  // Useful? depends on solver and more
     if (get_loc_sys_trafo() != nullptr)
@@ -1533,9 +1528,6 @@ int Solid::TimIntImpl::newton_full()
     // In beam contact applications it can be necessary to limit the Newton step size (scaled
     // residual displacements)
     limit_stepsize_beam_contact(*disi_);
-
-    // recover standard displacements
-    recover_stc_solution();
 
     // recover contact / meshtying Lagrange multipliers
     if (have_contact_meshtying()) cmtbridge_->recover(disi_);
@@ -2078,9 +2070,6 @@ int Solid::TimIntImpl::ls_solve_newton_step()
   // transform to local co-ordinate systems
   if (locsysman_ != nullptr) locsysman_->rotate_global_to_local(system_matrix(), *fres_);
 
-  // STC preconditioning
-  stc_preconditioning();
-
   // apply Dirichlet BCs to system of equations
   disi_->put_scalar(0.0);  // Useful? depends on solver and more
   if (get_loc_sys_trafo() != nullptr)
@@ -2127,9 +2116,6 @@ int Solid::TimIntImpl::ls_solve_newton_step()
   limit_stepsize_beam_contact(*disi_);
 
   solver_->reset_tolerance();
-
-  // recover standard displacements
-  recover_stc_solution();
 
   // *********** time measurement ***********
   dtsolve_ = timer_->wallTime() - dtcpu;
@@ -2521,9 +2507,6 @@ int Solid::TimIntImpl::uzawa_linear_newton_full()
       double dtcpu = timer_->wallTime();
       // *********** time measurement ***********
 
-      // Use STC preconditioning on system matrix
-      stc_preconditioning();
-
       // get constraint matrix with and without Dirichlet zeros
       std::shared_ptr<Core::LinAlg::SparseMatrix> constr =
           (std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(conman_->get_constr_matrix()));
@@ -2532,23 +2515,8 @@ int Solid::TimIntImpl::uzawa_linear_newton_full()
 
       constr->apply_dirichlet(*(dbcmaps_->cond_map()), false);
 
-      // Apply STC on constraint matrices of desired
-      if (stcscale_ != Inpar::Solid::stc_inactive)
-      {
-        // std::cout<<"scaling constraint matrices"<<std::endl;
-        constrT =
-            Core::LinAlg::matrix_multiply(*stcmat_, true, *constrT, false, false, false, true);
-        if (stcscale_ == Inpar::Solid::stc_currsym)
-        {
-          constr =
-              Core::LinAlg::matrix_multiply(*stcmat_, true, *constr, false, false, false, true);
-        }
-      }
       // Call constraint solver to solve system with zeros on diagonal
       consolv_->solve(*system_matrix(), *constr, *constrT, disi_, lagrincr, *fres_, *conrhs);
-
-      // recover unscaled solution
-      recover_stc_solution();
 
       // *********** time measurement ***********
       dtsolve_ = timer_->wallTime() - dtcpu;
@@ -2710,9 +2678,6 @@ int Solid::TimIntImpl::uzawa_linear_newton_full()
       // *********** time measurement ***********
       double dtcpu = timer_->wallTime();
       // *********** time measurement ***********
-
-      // Use STC preconditioning on system matrix
-      stc_preconditioning();
 
       // linear solver call (contact / meshtying case or default)
       if (have_contact_meshtying())
@@ -3371,10 +3336,6 @@ int Solid::TimIntImpl::ptc()
     double dtcpu = timer_->wallTime();
     // *********** time measurement ***********
 
-    // STC preconditioning
-    stc_preconditioning();
-
-
     // solve for disi_
     // Solve K_Teffdyn . IncD = -R  ===>  IncD_{n+1}
     Core::LinAlg::SolverParams solver_params;
@@ -3398,9 +3359,6 @@ int Solid::TimIntImpl::ptc()
       linsolve_error = lin_solve_error_check(linsolve_error);
     }
     solver_->reset_tolerance();
-
-    // recover standard displacements
-    recover_stc_solution();
 
     // recover contact / meshtying Lagrange multipliers
     if (have_contact_meshtying()) cmtbridge_->recover(disi_);
@@ -4250,113 +4208,6 @@ void Solid::TimIntImpl::use_block_matrix(
   // effects (basically managers).
   stiff_->reset();
 }
-
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-void Solid::TimIntImpl::stc_preconditioning()
-{
-  if (stcscale_ != Inpar::Solid::stc_inactive)
-  {
-    if (!stccompl_)
-    {
-      compute_stc_matrix();
-      stccompl_ = true;
-    }
-
-    stiff_ = matrix_multiply(*(std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(stiff_)),
-        false, *stcmat_, false, true, false, true);
-    if (stcscale_ == Inpar::Solid::stc_currsym)
-    {
-      stiff_ = matrix_multiply(*stcmat_, true,
-          *(std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(stiff_)), false, true, false,
-          true);
-      std::shared_ptr<Core::LinAlg::Vector<double>> fressdc =
-          Core::LinAlg::create_vector(*dof_row_map_view(), true);
-      stcmat_->multiply(true, *fres_, *fressdc);
-      fres_->update(1.0, *fressdc, 0.0);
-    }
-  }
-}
-
-/*----------------------------------------------------------------------------*/
-void Solid::TimIntImpl::compute_stc_matrix()
-{
-  stcmat_->zero();
-  // create the parameters for the discretization
-  Teuchos::ParameterList p;
-  // action for elements
-  discret_->set_state("residual displacement", disi_);
-  discret_->set_state("displacement", disn_);
-
-  const std::string action = "calc_stc_matrix";
-  p.set("action", action);
-  p.set<Inpar::Solid::StcScale>("stc_scaling", stcscale_);
-  p.set("stc_layer", 1);
-
-  discret_->evaluate(p, stcmat_, nullptr, nullptr, nullptr, nullptr);
-
-  stcmat_->complete();
-
-#ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (iter_ == 1 && step_ == 0)
-  {
-    std::string fname = Global::Problem::instance()->output_control_file()->file_name_only_prefix();
-    fname += ".stcmatrix1.mtl";
-    if (myrank_ == 0) std::cout << "Printing stcmatrix1 to file" << std::endl;
-    Core::LinAlg::print_matrix_in_matlab_format(fname,
-        *((std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(stcmat_))->epetra_matrix()));
-  }
-#endif
-
-  for (int lay = 2; lay <= stclayer_; ++lay)
-  {
-    Teuchos::ParameterList pe;
-
-    pe.set("action", action);
-    pe.set<Inpar::Solid::StcScale>("stc_scaling", stcscale_);
-    pe.set("stc_layer", lay);
-
-    std::shared_ptr<Core::LinAlg::SparseMatrix> tmpstcmat =
-        std::make_shared<Core::LinAlg::SparseMatrix>(*dof_row_map_view(), 81, true, true);
-    tmpstcmat->zero();
-
-    discret_->evaluate(pe, tmpstcmat, nullptr, nullptr, nullptr, nullptr);
-    tmpstcmat->complete();
-
-#ifdef FOUR_C_ENABLE_ASSERTIONS
-    if (iter_ == 1 && step_ == 0)
-    {
-      std::string fname =
-          Global::Problem::instance()->output_control_file()->file_name_only_prefix();
-      fname += ".stcmatrix2.mtl";
-      if (myrank_ == 0) std::cout << "Printing stcmatrix2 to file" << std::endl;
-      Core::LinAlg::print_matrix_in_matlab_format(fname,
-          *((std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(tmpstcmat))->epetra_matrix()));
-    }
-#endif
-
-    stcmat_ = matrix_multiply(*tmpstcmat, false, *stcmat_, false, false, false, true);
-  }
-
-  discret_->clear_state();
-}
-
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-void Solid::TimIntImpl::recover_stc_solution()
-{
-  if (stcscale_ != Inpar::Solid::stc_inactive)
-  {
-    std::shared_ptr<Core::LinAlg::Vector<double>> disisdc =
-        Core::LinAlg::create_vector(*dof_row_map_view(), true);
-
-    stcmat_->multiply(false, *disi_, *disisdc);
-    disi_->update(1.0, *disisdc, 0.0);
-  }
-
-  return;
-}
-
 
 /*----------------------------------------------------------------------*/
 /* solution with nonlinear iteration for contact / meshtying AND Cardiovascular0D bcs*/
