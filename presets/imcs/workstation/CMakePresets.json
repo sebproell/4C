@@ -7,9 +7,9 @@
       "generator": "Ninja",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "RELEASE",
-        "CMAKE_CXX_COMPILER": "/imcs/public/compsim/spack_packages/linux-ubuntu20.04-broadwell/gcc-13.2.0/bin/g++",
+        "CMAKE_CXX_COMPILER": "g++",
         "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
-        "CMAKE_C_COMPILER": "/imcs/public/compsim/spack_packages/linux-ubuntu20.04-broadwell/gcc-13.2.0/bin/gcc",
+        "CMAKE_C_COMPILER": "gcc",
         "CMAKE_C_COMPILER_LAUNCHER": "ccache",
         "CMAKE_CXX_FLAGS": "-msse3",
         "FOUR_C_TRILINOS_ROOT": "/imcs/public/compsim/lib/2024_2/install",
