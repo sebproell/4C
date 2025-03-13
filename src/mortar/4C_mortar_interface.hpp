@@ -1348,12 +1348,6 @@ namespace Mortar
     //! @name Visualization and Debugging methods
 
     /*!
-    \brief Visualize mortar stuff with gmsh (may be overloaded)
-    */
-    virtual void visualize_gmsh(
-        const int step, const int iter, const std::string& file_name_only_prefix) const;
-
-    /*!
     \brief Print shape function type (enum)
     */
     void print_shape_fcn() const { std::cout << shapefcn_ << std::endl; };

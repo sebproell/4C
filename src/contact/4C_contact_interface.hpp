@@ -1199,17 +1199,6 @@ namespace CONTACT
     */
     virtual void store_to_old(Mortar::StrategyBase::QuantityType type);
 
-    //@}
-
-    /*!
-    \brief Visualize contact stuff with gmsh
-
-    \param[in] step Time step index
-    \param[in] iter Nonlinear iteration index
-    */
-    void visualize_gmsh(
-        const int step, const int iter, const std::string& file_name_only_prefix) const final;
-
     //! @name Finite difference checks
     //!@{
 
