@@ -864,7 +864,7 @@ void CONTACT::Interface::redistribute()
         nodeids[n] = ele->node_ids()[n];
       }
 
-      int err = graph->InsertGlobalIndices(gid, numnode, nodeids.data());
+      int err = graph->insert_global_indices(gid, numnode, nodeids.data());
       if (err < 0)
       {
         FOUR_C_THROW("graph->InsertGlobalIndices returned %d", err);
@@ -877,8 +877,8 @@ void CONTACT::Interface::redistribute()
   }
 
   // fill graph and optimize storage
-  graph->FillComplete();
-  graph->OptimizeStorage();
+  graph->fill_complete();
+  graph->optimize_storage();
 
   //**********************************************************************
   // (4) CLOSE SLAVE redistribution
@@ -1017,20 +1017,20 @@ void CONTACT::Interface::redistribute()
   // create the output graph (with new slave node row map) and export to it
   std::shared_ptr<Core::LinAlg::Graph> outgraph =
       std::make_shared<Core::LinAlg::Graph>(Copy, *srownodes, 108, false);
-  Epetra_Export exporter(graph->RowMap(), *srownodes);
-  int err = outgraph->Export(graph->get_Epetra_CrsGraph(), exporter, Add);
+  Epetra_Export exporter(graph->row_map(), *srownodes);
+  int err = outgraph->export_to(graph->get_epetra_crs_graph(), exporter, Add);
   if (err < 0) FOUR_C_THROW("Graph export returned err=%d", err);
 
   // trash old graph
   graph = nullptr;
 
   // call fill complete and optimize storage
-  outgraph->FillComplete();
-  outgraph->OptimizeStorage();
+  outgraph->fill_complete();
+  outgraph->optimize_storage();
 
   // get column map from the graph -> build slave node column map
   // (do stupid conversion from Epetra_BlockMap to Epetra_Map)
-  const Epetra_BlockMap& bcol = outgraph->ColMap();
+  const Epetra_BlockMap& bcol = outgraph->col_map();
   std::shared_ptr<Epetra_Map> scolnodes =
       std::make_shared<Epetra_Map>(bcol.NumGlobalElements(), bcol.NumMyElements(),
           bcol.MyGlobalElements(), 0, Core::Communication::as_epetra_comm(Interface::get_comm()));

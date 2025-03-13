@@ -231,10 +231,10 @@ namespace Core::IO::GridGenerator
     {
       std::shared_ptr<const Core::LinAlg::Graph> graph =
           Core::Rebalance::build_graph(dis, *elementRowMap);
-      nodeRowMap = std::make_shared<Epetra_Map>(-1, graph->RowMap().NumMyElements(),
-          graph->RowMap().MyGlobalElements(), 0, Core::Communication::as_epetra_comm(comm));
-      nodeColMap = std::make_shared<Epetra_Map>(-1, graph->ColMap().NumMyElements(),
-          graph->ColMap().MyGlobalElements(), 0, Core::Communication::as_epetra_comm(comm));
+      nodeRowMap = std::make_shared<Epetra_Map>(-1, graph->row_map().NumMyElements(),
+          graph->row_map().MyGlobalElements(), 0, Core::Communication::as_epetra_comm(comm));
+      nodeColMap = std::make_shared<Epetra_Map>(-1, graph->col_map().NumMyElements(),
+          graph->col_map().MyGlobalElements(), 0, Core::Communication::as_epetra_comm(comm));
     }
 
 

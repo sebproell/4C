@@ -344,16 +344,16 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::matrix_sparse_inverse(
       std::make_shared<SparseMatrix>(sparsity_pattern, dbc_map);
 
   // gather missing rows from other procs to generate an overlapping map
-  Epetra_Import rowImport = Epetra_Import(sparsity_pattern->ColMap(), sparsity_pattern->RowMap());
+  Epetra_Import rowImport = Epetra_Import(sparsity_pattern->col_map(), sparsity_pattern->row_map());
   Epetra_CrsMatrix A_overlap = Epetra_CrsMatrix(*A.epetra_matrix(), rowImport);
 
   // loop over all rows of the inverse sparsity pattern (this can be done in parallel)
-  for (int k = 0; k < sparsity_pattern->NumMyRows(); k++)
+  for (int k = 0; k < sparsity_pattern->num_local_rows(); k++)
   {
     // 1. get column indices Ik of local row k
     int* Ik;
     int Ik_size;
-    sparsity_pattern->ExtractMyRowView(k, Ik_size, Ik);
+    sparsity_pattern->extract_local_row_view(k, Ik_size, Ik);
 
     // 2. get all local A(Ik,:) rows
     std::vector<int*> J(Ik_size);

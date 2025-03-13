@@ -103,7 +103,7 @@ namespace
     std::shared_ptr<Core::LinAlg::Graph> G = Core::LinAlg::threshold_matrix_graph(A_sparse, tol);
 
     // Check for global entries
-    const int A_thresh_nnz = G->NumGlobalNonzeros();
+    const int A_thresh_nnz = G->num_global_nonzeros();
     EXPECT_EQ(A_thresh_nnz, 13);
   }
 
@@ -130,7 +130,7 @@ namespace
           Core::LinAlg::enrich_matrix_graph(A_sparse, power);
 
       // Check for global entries
-      EXPECT_EQ(graph_enriched->NumGlobalNonzeros(), 58);
+      EXPECT_EQ(graph_enriched->num_global_nonzeros(), 58);
     }
 
     {
@@ -139,7 +139,7 @@ namespace
           Core::LinAlg::enrich_matrix_graph(A_sparse, power);
 
       // Check for global entries
-      EXPECT_EQ(graph_enriched->NumGlobalNonzeros(), 58);
+      EXPECT_EQ(graph_enriched->num_global_nonzeros(), 58);
     }
 
     {
@@ -148,7 +148,7 @@ namespace
           Core::LinAlg::enrich_matrix_graph(A_sparse, power);
 
       // Check for global entries
-      EXPECT_EQ(graph_enriched->NumGlobalNonzeros(), 58);
+      EXPECT_EQ(graph_enriched->num_global_nonzeros(), 58);
     }
 
     {
@@ -157,7 +157,7 @@ namespace
           Core::LinAlg::enrich_matrix_graph(A_sparse, power);
 
       // Check for global entries
-      EXPECT_EQ(graph_enriched->NumGlobalNonzeros(), 94);
+      EXPECT_EQ(graph_enriched->num_global_nonzeros(), 94);
     }
 
     {
@@ -166,7 +166,7 @@ namespace
           Core::LinAlg::enrich_matrix_graph(A_sparse, power);
 
       // Check for global entries
-      EXPECT_EQ(graph_enriched->NumGlobalNonzeros(), 128);
+      EXPECT_EQ(graph_enriched->num_global_nonzeros(), 128);
     }
 
     {
@@ -175,7 +175,7 @@ namespace
           Core::LinAlg::enrich_matrix_graph(A_sparse, power);
 
       // Check for global entries
-      EXPECT_EQ(graph_enriched->NumGlobalNonzeros(), 160);
+      EXPECT_EQ(graph_enriched->num_global_nonzeros(), 160);
     }
   }
 
@@ -196,7 +196,7 @@ namespace
           Core::LinAlg::enrich_matrix_graph(A_sparse, power);
 
       // Check for global entries
-      EXPECT_EQ(graph_enriched->NumGlobalNonzeros(), 228400);
+      EXPECT_EQ(graph_enriched->num_global_nonzeros(), 228400);
     }
   }
 }  // namespace

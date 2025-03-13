@@ -1133,14 +1133,14 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
 
     {
       Epetra_Export exporter(*discret_->node_row_map(), *newrownodemap);
-      int err = nodegraph.Export(oldnodegraph->get_Epetra_CrsGraph(), exporter, Add);
+      int err = nodegraph.export_to(oldnodegraph->get_epetra_crs_graph(), exporter, Add);
       if (err < 0) FOUR_C_THROW("Graph export returned err=%d", err);
     }
-    nodegraph.FillComplete();
-    nodegraph.OptimizeStorage();
+    nodegraph.fill_complete();
+    nodegraph.optimize_storage();
 
     // build nodecolmap for new distribution of nodes
-    const Epetra_BlockMap cntmp = nodegraph.ColMap();
+    const Epetra_BlockMap cntmp = nodegraph.col_map();
 
     std::shared_ptr<Epetra_Map> newcolnodemap;
 
@@ -1430,7 +1430,7 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
         for (int col = 0; col < num_nodes_per_ele; ++col)
         {
           int neighbor_node = node_gids_per_ele[col];
-          const int err = nodegraph->InsertGlobalIndices(node_gid, 1, &neighbor_node);
+          const int err = nodegraph->insert_global_indices(node_gid, 1, &neighbor_node);
           if (err < 0) FOUR_C_THROW("nodegraph->InsertGlobalIndices returned err=%d", err);
         }
       }
@@ -1473,13 +1473,13 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
               // add connection to all slaves
               for (auto other_slave_gid : other_slave_gids)
               {
-                int err = nodegraph->InsertGlobalIndices(node_gid, 1, &other_slave_gid);
+                int err = nodegraph->insert_global_indices(node_gid, 1, &other_slave_gid);
                 if (err < 0) FOUR_C_THROW("nodegraph->InsertGlobalIndices returned err=%d", err);
 
                 if (noderowmap->MyGID(other_slave_gid))
                 {
                   int masterindex = node_gid;
-                  err = nodegraph->InsertGlobalIndices(other_slave_gid, 1, &masterindex);
+                  err = nodegraph->insert_global_indices(other_slave_gid, 1, &masterindex);
                   if (err < 0) FOUR_C_THROW("nodegraph->InsertGlobalIndices returned err=%d", err);
                 }
               }
@@ -1490,7 +1490,7 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
     }
 
     // finalize construction of initial graph
-    int err = nodegraph->FillComplete();
+    int err = nodegraph->fill_complete();
     if (err) FOUR_C_THROW("graph->FillComplete returned %d", err);
 
     //
@@ -1498,27 +1498,28 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
     //
 
     const int myrank = Core::Communication::my_mpi_rank(
-        Core::Communication::unpack_epetra_comm(nodegraph->Comm()));
+        Core::Communication::unpack_epetra_comm(nodegraph->get_comm()));
     const int numproc = Core::Communication::num_mpi_ranks(
-        Core::Communication::unpack_epetra_comm(nodegraph->Comm()));
+        Core::Communication::unpack_epetra_comm(nodegraph->get_comm()));
 
     if (numproc > 1)
     {
       // get rowmap of the graph  (from blockmap -> map)
-      const Epetra_BlockMap& graph_row_map = nodegraph->RowMap();
+      const Epetra_BlockMap& graph_row_map = nodegraph->row_map();
       const Epetra_Map graph_rowmap(graph_row_map.NumGlobalElements(),
-          graph_row_map.NumMyElements(), graph_row_map.MyGlobalElements(), 0, nodegraph->Comm());
+          graph_row_map.NumMyElements(), graph_row_map.MyGlobalElements(), 0,
+          nodegraph->get_comm());
 
       // set standard value of edge weight to 1.0
       auto edge_weights = std::make_shared<Epetra_CrsMatrix>(Copy, graph_rowmap, 15);
-      for (int i = 0; i < nodegraph->NumMyRows(); ++i)
+      for (int i = 0; i < nodegraph->num_local_rows(); ++i)
       {
-        const int grow = nodegraph->RowMap().GID(i);
+        const int grow = nodegraph->row_map().GID(i);
 
-        const int glob_length = nodegraph->NumGlobalIndices(grow);
+        const int glob_length = nodegraph->num_global_indices(grow);
         int numentries = 0;
         std::vector<int> indices(glob_length);
-        nodegraph->ExtractGlobalRowCopy(grow, glob_length, numentries, indices.data());
+        nodegraph->extract_global_row_copy(grow, glob_length, numentries, indices.data());
 
         std::vector<double> values(numentries, 1.0);
         edge_weights->InsertGlobalValues(grow, numentries, values.data(), indices.data());
@@ -1567,16 +1568,16 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
 
       auto newnodegraph =
           Core::Rebalance::rebalance_graph(*const_nodegraph, paramlist, node_weights, edge_weights);
-      newnodegraph->OptimizeStorage();
+      newnodegraph->optimize_storage();
 
       // the rowmap will become the new distribution of nodes
-      const Epetra_Map newnoderowmap(-1, newnodegraph->RowMap().NumMyElements(),
-          newnodegraph->RowMap().MyGlobalElements(), 0,
+      const Epetra_Map newnoderowmap(-1, newnodegraph->row_map().NumMyElements(),
+          newnodegraph->row_map().MyGlobalElements(), 0,
           Core::Communication::as_epetra_comm(discret_->get_comm()));
 
       // the column map will become the new ghosted distribution of nodes
-      const Epetra_Map newnodecolmap(-1, newnodegraph->ColMap().NumMyElements(),
-          newnodegraph->ColMap().MyGlobalElements(), 0,
+      const Epetra_Map newnodecolmap(-1, newnodegraph->col_map().NumMyElements(),
+          newnodegraph->col_map().MyGlobalElements(), 0,
           Core::Communication::as_epetra_comm(discret_->get_comm()));
 
       // do the redistribution without assigning dofs
