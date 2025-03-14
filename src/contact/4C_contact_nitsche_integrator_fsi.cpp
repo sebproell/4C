@@ -10,7 +10,6 @@
 #include "4C_contact_element.hpp"
 #include "4C_contact_node.hpp"
 #include "4C_fem_general_utils_boundary_integration.hpp"
-#include "4C_so3_hex8.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_solid_3D_ele_calc_lib_nitsche.hpp"
 #include "4C_solid_poro_3D_ele_calc_lib_nitsche.hpp"

@@ -14,7 +14,6 @@
 #include "4C_contact_paramsinterface.hpp"
 #include "4C_mat_structporo.hpp"
 #include "4C_so3_base.hpp"
-#include "4C_so3_hex8.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_solid_poro_3D_ele_pressure_velocity_based.hpp"
 #include "4C_utils_exceptions.hpp"

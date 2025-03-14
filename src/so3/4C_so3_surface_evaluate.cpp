@@ -19,15 +19,29 @@
 #include "4C_linalg_utils_densematrix_multiply.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_mat_structporo.hpp"
-#include "4C_so3_prestress_service.hpp"
 #include "4C_so3_surface.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_function.hpp"
 #include "4C_utils_function_of_time.hpp"
 
 #include <Sacado.hpp>
+#include <Teuchos_StandardParameterEntryValidators.hpp>
+
 
 FOUR_C_NAMESPACE_OPEN
+namespace
+{
+  bool is_mulf_active(const double time)
+  {
+    static const bool is_mulf = Teuchos::getIntegralValue<Inpar::Solid::PreStress>(
+                                    Global::Problem::instance()->structural_dynamic_params(),
+                                    "PRESTRESS") == Inpar::Solid::PreStress::mulf;
+    static const double is_mulf_time =
+        Global::Problem::instance()->structural_dynamic_params().get<double>("PRESTRESSTIME");
+
+    return is_mulf && time <= is_mulf_time + 1.0e-15;
+  }
+}  // namespace
 
 /*----------------------------------------------------------------------*
  * Integrate a Surface Neumann boundary condition (public)     gee 04/08|
@@ -152,7 +166,7 @@ int Discret::Elements::StructuralSurface::evaluate_neumann(Teuchos::ParameterLis
 
 
       // The true spatial configuration is the material configuration for mulf
-      if (Prestress::is_mulf_active(time))
+      if (is_mulf_active(time))
       {
         // no linearization needed for mulf
         loadlin = false;
