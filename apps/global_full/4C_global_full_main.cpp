@@ -27,6 +27,7 @@
 #include <unistd.h>
 
 #include <csignal>
+#include <filesystem>
 #include <format>
 #include <iostream>
 
@@ -47,7 +48,7 @@ namespace
         << "\n"
         << "SYNOPSIS\n"
         << "\t"
-        << "4C [-h | --help] [-p | --parameters] [--dat_to_yaml] [-d | --datfile] [-ngroup=<x>] \\ "
+        << "4C [-h | --help] [-p | --parameters] [--to-yaml] [-d | --datfile] [-ngroup=<x>] \\ "
            "\n"
            "\t\t[-glayout=a,b,c,...] [-nptype=<parallelism_type>] \\ \n"
         << "\t\t<dat_name> <output_name> [restart=<y>] [restartfrom=restart_file_name] \\ \n"
@@ -65,8 +66,9 @@ namespace
         << "\t--parameters or -p\n"
         << "\t\tDumps information about the parameters for consumption by additional tools.\n"
         << "\n"
-        << "\t--to-yaml <in_file_name> <out_file_name>\n"
-        << "\t\tRewrites a dat file to a yaml file.\n"
+        << "\t--to-yaml <in_file_name> [<out_file_name>]\n"
+        << "\t\tRewrites a dat file to a yaml file. (default output: "
+           "<in_file_name_without_suffix>.4C.yaml\n"
         << "\n"
         << "\t--datfile or -d\n"
         << "\t\tPrint example dat_file with all available parameters.\n"
@@ -343,14 +345,35 @@ int main(int argc, char* argv[])
       input_file.emit_metadata(std::cout);
     }
   }
-  else if ((argc == 4) && (strcmp(argv[1], "--to-yaml") == 0))
+  else if ((argc >= 3) && (strcmp(argv[1], "--to-yaml") == 0))
   {
     if (Core::Communication::my_mpi_rank(lcomm) == 0)
     {
+      std::filesystem::path inputfile_name = argv[2];
+      std::filesystem::path outputfile_name;
       Core::IO::InputFile input_file = Global::set_up_input_file(lcomm);
-      input_file.read(argv[2]);
-      std::ofstream output_file(argv[3]);
+      input_file.read(inputfile_name);
+      if (argc == 3)
+      {
+        outputfile_name = inputfile_name.replace_extension("4C.yaml");
+        if (std::filesystem::exists(outputfile_name))
+        {
+          printf("You did not provide an output file name.\n");
+          printf("The default is to replace the original suffix by .4C.yaml.\n");
+          printf("However, the file '%s' already exists. I will not continue\n",
+              outputfile_name.c_str());
+          exit(1);
+        }
+      }
+      else
+      {
+        outputfile_name = argv[3];
+      }
+      std::ofstream output_file(outputfile_name);
       input_file.write_as_yaml(output_file);
+      printf("The input file has been converted to yaml format");
+      if (argc == 3) printf(", saved as %s", outputfile_name.c_str());
+      printf("\n");
     }
   }
   else if ((argc == 2) && ((strcmp(argv[1], "-d") == 0) || (strcmp(argv[1], "--datfile") == 0)))
