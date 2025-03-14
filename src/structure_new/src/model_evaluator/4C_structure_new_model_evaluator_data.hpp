@@ -1281,8 +1281,6 @@ namespace Solid
 
       enum Mortar::ActionType mortar_action_;
 
-      enum CONTACT::VariationalApproach var_type_;
-
       enum CONTACT::CouplingScheme coupling_scheme_;
 
       std::shared_ptr<const Solid::ModelEvaluator::Data> str_data_ptr_;
