@@ -28,10 +28,13 @@ namespace CONTACT::CONSTITUTIVELAW
   class ConstitutiveLaw;
 }  // namespace CONTACT::CONSTITUTIVELAW
 
+/*----------------------------------------------------------------------*/
+/* declarations */
 
 
-namespace Inpar::CONTACT
+namespace CONTACT::CONSTITUTIVELAW
 {
+
   /// Type of contact constitutive law
   enum class ConstitutiveLawType
   {
@@ -42,15 +45,7 @@ namespace Inpar::CONTACT
     colaw_power,           ///< simple power law as constitutive law
     colaw_mirco            ///< mirco constitutive law
   };
-}  // namespace Inpar::CONTACT
 
-
-/*----------------------------------------------------------------------*/
-/* declarations */
-
-
-namespace CONTACT::CONSTITUTIVELAW
-{
   /**
    * \brief Base object to hold 'quick' access contact constitutive law parameters
    */
