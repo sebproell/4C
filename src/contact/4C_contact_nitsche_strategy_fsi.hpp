@@ -38,11 +38,11 @@ namespace CONTACT
         : NitscheStrategy(
               dof_row_map, NodeRowMap, params, std::move(interface), dim, comm, alphaf, maxdof),
           pen_n_(params.get<double>("PENALTYPARAM")),
-          weighting_(Teuchos::getIntegralValue<Inpar::CONTACT::NitscheWeighting>(
-              params, "NITSCHE_WEIGHTING"))
+          weighting_(
+              Teuchos::getIntegralValue<CONTACT::NitscheWeighting>(params, "NITSCHE_WEIGHTING"))
     {
-      if (Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(params, "FRICTION") !=
-          Inpar::CONTACT::friction_none)
+      if (Teuchos::getIntegralValue<CONTACT::FrictionType>(params, "FRICTION") !=
+          CONTACT::friction_none)
         FOUR_C_THROW("NitscheStrategyFsi: No frictional contact implemented for Nitsche FSCI!");
     }
 
@@ -54,11 +54,11 @@ namespace CONTACT
         : NitscheStrategy(data_ptr, dof_row_map, NodeRowMap, params, std::move(interface), dim,
               comm, alphaf, maxdof),
           pen_n_(params.get<double>("PENALTYPARAM")),
-          weighting_(Teuchos::getIntegralValue<Inpar::CONTACT::NitscheWeighting>(
-              params, "NITSCHE_WEIGHTING"))
+          weighting_(
+              Teuchos::getIntegralValue<CONTACT::NitscheWeighting>(params, "NITSCHE_WEIGHTING"))
     {
-      if (Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(params, "FRICTION") !=
-          Inpar::CONTACT::friction_none)
+      if (Teuchos::getIntegralValue<CONTACT::FrictionType>(params, "FRICTION") !=
+          CONTACT::friction_none)
         FOUR_C_THROW("NitscheStrategyFsi: No frictional contact implemented for Nitsche FSCI!");
     }
     //! Evaluate and apply RHS and Stiffness Matrix for Contact
@@ -87,7 +87,7 @@ namespace CONTACT
     //! Nitsche normal penalty parameter
     double pen_n_;
     //! Nitsche weighting strategy
-    Inpar::CONTACT::NitscheWeighting weighting_;
+    CONTACT::NitscheWeighting weighting_;
   };
 
   namespace Utils
@@ -95,12 +95,12 @@ namespace CONTACT
     //! The the contact state at local coord of Element cele and compare to the fsi_traction,
     //! return true if contact is evaluated, return false if FSI is evaluated
     bool check_nitsche_contact_state(CONTACT::Interface& contactinterface,  ///< Contact interface
-        const double& pen_n,                         ///< Nitsche normal penalty parameter
-        Inpar::CONTACT::NitscheWeighting weighting,  ///< Nitsche interface stress weighting
-        CONTACT::Element* cele,                      ///< the contact element
-        const Core::LinAlg::Matrix<2, 1>& xsi,       ///< local coord on the ele element
-        const double& full_fsi_traction,             ///< stressfluid + penalty
-        double& gap                                  ///< gap
+        const double& pen_n,                    ///< Nitsche normal penalty parameter
+        CONTACT::NitscheWeighting weighting,    ///< Nitsche interface stress weighting
+        CONTACT::Element* cele,                 ///< the contact element
+        const Core::LinAlg::Matrix<2, 1>& xsi,  ///< local coord on the ele element
+        const double& full_fsi_traction,        ///< stressfluid + penalty
+        double& gap                             ///< gap
     );
   }  // namespace Utils
 }  // namespace CONTACT

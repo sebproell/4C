@@ -8,7 +8,7 @@
 #include "4C_contact_meshtying_penalty_strategy.hpp"
 
 #include "4C_comm_mpi_utils.hpp"
-#include "4C_inpar_contact.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
@@ -365,9 +365,9 @@ void CONTACT::MtPenaltyStrategy::update_constraint_norm(int uzawaiter)
   // adaptive update of penalty parameter
   // (only for Uzawa Augmented Lagrange strategy)
   //********************************************************************
-  auto soltype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(params(), "STRATEGY");
+  auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params(), "STRATEGY");
 
-  if (soltype == Inpar::CONTACT::solution_uzawa)
+  if (soltype == CONTACT::solution_uzawa)
   {
     // check convergence of cnorm and update penalty parameter
     // only do this for second, third, ... Uzawa iteration

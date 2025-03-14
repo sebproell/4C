@@ -38,11 +38,11 @@ namespace CONTACT
         : NitscheStrategyPoro(
               dof_row_map, NodeRowMap, params, std::move(interface), dim, comm, alphaf, maxdof),
           pen_n_(params.get<double>("PENALTYPARAM")),
-          weighting_(Teuchos::getIntegralValue<Inpar::CONTACT::NitscheWeighting>(
-              params, "NITSCHE_WEIGHTING"))
+          weighting_(
+              Teuchos::getIntegralValue<CONTACT::NitscheWeighting>(params, "NITSCHE_WEIGHTING"))
     {
-      if (Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(params, "FRICTION") !=
-          Inpar::CONTACT::friction_none)
+      if (Teuchos::getIntegralValue<CONTACT::FrictionType>(params, "FRICTION") !=
+          CONTACT::friction_none)
         FOUR_C_THROW("NitscheStrategyFpi: No frictional contact implemented for Nitsche FPSCI!");
     }
 
@@ -54,11 +54,11 @@ namespace CONTACT
         : NitscheStrategyPoro(data_ptr, dof_row_map, NodeRowMap, params, std::move(interface), dim,
               comm, alphaf, maxdof),
           pen_n_(params.get<double>("PENALTYPARAM")),
-          weighting_(Teuchos::getIntegralValue<Inpar::CONTACT::NitscheWeighting>(
-              params, "NITSCHE_WEIGHTING"))
+          weighting_(
+              Teuchos::getIntegralValue<CONTACT::NitscheWeighting>(params, "NITSCHE_WEIGHTING"))
     {
-      if (Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(params, "FRICTION") !=
-          Inpar::CONTACT::friction_none)
+      if (Teuchos::getIntegralValue<CONTACT::FrictionType>(params, "FRICTION") !=
+          CONTACT::friction_none)
         FOUR_C_THROW("NitscheStrategyFpi: No frictional contact implemented for Nitsche FPSCI!");
     }
     //! Set Contact State and update search tree and normals
@@ -81,7 +81,7 @@ namespace CONTACT
     //! Nitsche normal penalty parameter
     double pen_n_;
     //! Nitsche weighting strategy
-    Inpar::CONTACT::NitscheWeighting weighting_;
+    CONTACT::NitscheWeighting weighting_;
   };
 }  // namespace CONTACT
 FOUR_C_NAMESPACE_CLOSE

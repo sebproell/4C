@@ -9,10 +9,10 @@
 
 #include "4C_beam3_euler_bernoulli.hpp"
 #include "4C_beaminteraction_calc_utils.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_cardiovascular0d.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_io_control.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
@@ -175,10 +175,9 @@ std::shared_ptr<Core::LinAlg::Solver> Solid::SOLVER::Factory::build_meshtying_co
 {
   const Teuchos::ParameterList& mcparams = Global::Problem::instance()->contact_dynamic_params();
 
-  const auto sol_type =
-      Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(mcparams, "STRATEGY");
+  const auto sol_type = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(mcparams, "STRATEGY");
 
-  const auto sys_type = Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(mcparams, "SYSTEM");
+  const auto sys_type = Teuchos::getIntegralValue<CONTACT::SystemType>(mcparams, "SYSTEM");
 
   const int lin_solver_id = mcparams.get<int>("LINEAR_SOLVER");
 
@@ -188,8 +187,8 @@ std::shared_ptr<Core::LinAlg::Solver> Solid::SOLVER::Factory::build_meshtying_co
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::Solver> Solid::SOLVER::Factory::build_meshtying_contact_lin_solver(
-    Core::FE::Discretization& actdis, enum Inpar::CONTACT::SolvingStrategy sol_type,
-    enum Inpar::CONTACT::SystemType sys_type, const int lin_solver_id)
+    Core::FE::Discretization& actdis, enum CONTACT::SolvingStrategy sol_type,
+    enum CONTACT::SystemType sys_type, const int lin_solver_id)
 {
   std::shared_ptr<Core::LinAlg::Solver> linsolver = nullptr;
 
@@ -207,7 +206,7 @@ std::shared_ptr<Core::LinAlg::Solver> Solid::SOLVER::Factory::build_meshtying_co
 
   switch (sys_type)
   {
-    case Inpar::CONTACT::system_saddlepoint:
+    case CONTACT::system_saddlepoint:
     {
       // meshtying/contact for structure
       // check if the meshtying/contact solver has a valid solver number
@@ -255,7 +254,7 @@ std::shared_ptr<Core::LinAlg::Solver> Solid::SOLVER::Factory::build_meshtying_co
             "this cannot be: no saddlepoint problem for beamcontact "
             "or pure structure problem.");
 
-      if (sol_type == Inpar::CONTACT::solution_lagmult)
+      if (sol_type == CONTACT::solution_lagmult)
       {
         // provide null space information
         if (prec == Core::LinearSolver::PreconditionerType::multigrid_muelu)

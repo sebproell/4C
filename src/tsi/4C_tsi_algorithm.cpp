@@ -458,10 +458,10 @@ void TSI::Algorithm::apply_struct_coupling_state(
 /*----------------------------------------------------------------------*/
 void TSI::Algorithm::prepare_contact_strategy()
 {
-  auto stype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
+  auto stype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
       Global::Problem::instance()->contact_dynamic_params(), "STRATEGY");
 
-  if (stype == Inpar::CONTACT::solution_lagmult)
+  if (stype == CONTACT::solution_lagmult)
   {
     if (structure_field()->have_model(Inpar::Solid::model_contact))
       FOUR_C_THROW(

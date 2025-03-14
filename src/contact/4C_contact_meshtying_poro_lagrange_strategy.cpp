@@ -7,7 +7,7 @@
 
 #include "4C_contact_meshtying_poro_lagrange_strategy.hpp"
 
-#include "4C_inpar_contact.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 
@@ -47,7 +47,7 @@ void CONTACT::PoroMtLagrangeStrategy::evaluate_meshtying_poro_off_diag(
     std::shared_ptr<Core::LinAlg::SparseMatrix>& kteffoffdiag)
 {
   // system type
-  auto systype = Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(params(), "SYSTEM");
+  auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(params(), "SYSTEM");
 
   // shape function
   auto shapefcn = Teuchos::getIntegralValue<Inpar::Mortar::ShapeFcn>(params(), "LM_SHAPEFCN");
@@ -57,8 +57,7 @@ void CONTACT::PoroMtLagrangeStrategy::evaluate_meshtying_poro_off_diag(
   // CASE A: CONDENSED SYSTEM (DUAL)
   //**********************************************************************
   //**********************************************************************
-  if (systype == Inpar::CONTACT::system_condensed ||
-      systype == Inpar::CONTACT::system_condensed_lagmult)
+  if (systype == CONTACT::system_condensed || systype == CONTACT::system_condensed_lagmult)
   {
     // double-check if this is a dual LM system
     if (shapefcn != Inpar::Mortar::shape_dual && shapefcn != Inpar::Mortar::shape_petrovgalerkin)

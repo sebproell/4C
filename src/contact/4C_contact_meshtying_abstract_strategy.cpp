@@ -9,10 +9,10 @@
 
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_comm_parobjectfactory.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_meshtying_noxinterface.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"
 #include "4C_linalg_sparsematrix.hpp"
@@ -792,8 +792,8 @@ void CONTACT::MtAbstractStrategy::do_read_restart(
   store_nodal_quantities(Mortar::StrategyBase::lmold);
 
   // only for Uzawa strategy
-  auto st = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(params(), "STRATEGY");
-  if (st == Inpar::CONTACT::solution_uzawa)
+  auto st = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params(), "STRATEGY");
+  if (st == CONTACT::solution_uzawa)
   {
     zuzawa_ = std::make_shared<Core::LinAlg::Vector<double>>(*gsdofrowmap_);
     if (!restartwithmeshtying) reader.read_vector(zuzawa_, "mt_lagrmultold");
@@ -925,7 +925,7 @@ void CONTACT::MtAbstractStrategy::collect_maps_for_preconditioner(
  *----------------------------------------------------------------------*/
 bool CONTACT::MtAbstractStrategy::is_saddle_point_system() const
 {
-  if (system_type() == Inpar::CONTACT::system_saddlepoint) return true;
+  if (system_type() == CONTACT::system_saddlepoint) return true;
 
   return false;
 }
@@ -934,7 +934,7 @@ bool CONTACT::MtAbstractStrategy::is_saddle_point_system() const
  *----------------------------------------------------------------------*/
 bool CONTACT::MtAbstractStrategy::is_condensed_system() const
 {
-  if (system_type() != Inpar::CONTACT::system_saddlepoint) return true;
+  if (system_type() != CONTACT::system_saddlepoint) return true;
 
   return false;
 }

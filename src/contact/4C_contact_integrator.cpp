@@ -11,11 +11,11 @@
 #include "4C_contact_defines.hpp"
 #include "4C_contact_element.hpp"
 #include "4C_contact_friction_node.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_node.hpp"
 #include "4C_contact_paramsinterface.hpp"
 #include "4C_fem_general_utils_boundary_integration.hpp"
 #include "4C_fem_general_utils_integration.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_wear.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
@@ -41,7 +41,7 @@ CONTACT::Integrator::Integrator(
       lagmultquad_(Teuchos::getIntegralValue<Inpar::Mortar::LagMultQuad>(imortar_, "LM_QUAD")),
       gpslip_(imortar_.get<bool>("GP_SLIP_INCR")),
       algo_(Teuchos::getIntegralValue<Inpar::Mortar::AlgorithmType>(imortar_, "ALGORITHM")),
-      stype_(Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(imortar_, "STRATEGY")),
+      stype_(Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(imortar_, "STRATEGY")),
       cppnormal_(imortar_.get<bool>("CPP_NORMALS")),
       wearlaw_(Teuchos::getIntegralValue<Inpar::Wear::WearLaw>(imortar_, "WEARLAW")),
       wearimpl_(false),
@@ -5840,8 +5840,8 @@ void CONTACT::Integrator::integrate_gp_3d(Mortar::Element& sele, Mortar::Element
       // PORO stuff
       //*******************************
       bool poroprob = false;
-      if (imortar_.get<int>("PROBTYPE") == Inpar::CONTACT::poroelast ||
-          imortar_.get<int>("PROBTYPE") == Inpar::CONTACT::poroscatra)
+      if (imortar_.get<int>("PROBTYPE") == CONTACT::poroelast ||
+          imortar_.get<int>("PROBTYPE") == CONTACT::poroscatra)
         if (imortar_.get<bool>("CONTACT_NO_PENETRATION"))  // evaluate additional terms just in case
                                                            // of no penectration condition
           poroprob = true;
@@ -6036,8 +6036,8 @@ void CONTACT::Integrator::integrate_gp_2d(Mortar::Element& sele, Mortar::Element
       // PORO stuff
       //*******************************
       bool poroprob = false;
-      if (imortar_.get<int>("PROBTYPE") == Inpar::CONTACT::poroelast ||
-          imortar_.get<int>("PROBTYPE") == Inpar::CONTACT::poroscatra)
+      if (imortar_.get<int>("PROBTYPE") == CONTACT::poroelast ||
+          imortar_.get<int>("PROBTYPE") == CONTACT::poroscatra)
         if (imortar_.get<bool>("CONTACT_NO_PENETRATION"))  // evaluate additional terms just in case
                                                            // of no penectration condition
           poroprob = true;

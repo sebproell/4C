@@ -62,7 +62,7 @@ void Adapter::CouplingEhlMortar::read_mortar_condition(
   Adapter::CouplingNonLinMortar::read_mortar_condition(masterdis, slavedis, coupleddof,
       couplingcond, input, mastergnodes, slavegnodes, masterelements, slaveelements);
 
-  input.set<int>("PROBTYPE", Inpar::CONTACT::ehl);
+  input.set<int>("PROBTYPE", CONTACT::ehl);
 }
 
 void Adapter::CouplingEhlMortar::setup(std::shared_ptr<Core::FE::Discretization> masterdis,
@@ -73,7 +73,7 @@ void Adapter::CouplingEhlMortar::setup(std::shared_ptr<Core::FE::Discretization>
   z_ = std::make_shared<Core::LinAlg::Vector<double>>(*interface_->slave_row_dofs(), true);
   fscn_ = std::make_shared<Core::LinAlg::Vector<double>>(*interface_->slave_row_dofs(), true);
 
-  auto ftype = Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(
+  auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(
       Global::Problem::instance()->contact_dynamic_params(), "FRICTION");
 
   std::vector<Core::Conditions::Condition*> ehl_conditions(0);
@@ -91,12 +91,12 @@ void Adapter::CouplingEhlMortar::setup(std::shared_ptr<Core::FE::Discretization>
 
   switch (ftype)
   {
-    case Inpar::CONTACT::friction_tresca:
+    case CONTACT::friction_tresca:
       FOUR_C_THROW("no tresca friction supported");
       break;
-    case Inpar::CONTACT::friction_none:
+    case CONTACT::friction_none:
       break;
-    case Inpar::CONTACT::friction_coulomb:
+    case CONTACT::friction_coulomb:
       interface_->interface_params().set<double>("FRCOEFF", fr_coeff);
       interface_->interface_params().set<double>("FRBOUND", -1.);
       break;
@@ -158,8 +158,8 @@ void Adapter::CouplingEhlMortar::condense_contact(
     std::shared_ptr<const Core::LinAlg::Vector<double>> disp, const double dt)
 {
   const double alphaf_ = 0.;  // statics!
-  const Inpar::CONTACT::ConstraintDirection& constr_direction_ =
-      Teuchos::getIntegralValue<Inpar::CONTACT::ConstraintDirection>(
+  const CONTACT::ConstraintDirection& constr_direction_ =
+      Teuchos::getIntegralValue<CONTACT::ConstraintDirection>(
           interface()->interface_params(), "CONSTRAINT_DIRECTIONS");
 
   // return if this state has already been evaluated
@@ -181,7 +181,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
   std::shared_ptr<Core::LinAlg::Vector<double>> fcsa =
       Core::LinAlg::create_vector(*interface_->active_dofs(), true);
   std::shared_ptr<Core::LinAlg::Vector<double>> g_all;
-  if (constr_direction_ == Inpar::CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::constr_xyz)
     g_all = Core::LinAlg::create_vector(*interface_->slave_row_dofs(), true);
   else
     g_all = Core::LinAlg::create_vector(*interface_->slave_row_nodes(), true);
@@ -243,7 +243,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
 
   // normal contact
   std::shared_ptr<Core::LinAlg::Vector<double>> gact;
-  if (constr_direction_ == Inpar::CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::constr_xyz)
   {
     gact = Core::LinAlg::create_vector(*interface_->active_dofs(), true);
     if (gact->global_length()) Core::LinAlg::export_to(*g_all, *gact);
@@ -477,7 +477,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
   rs_a_ = rsa;
   // apply contact symmetry conditions
   if (!sdirichtoggle_) FOUR_C_THROW("you didn't call store_dirichlet_status");
-  if (constr_direction_ == Inpar::CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::constr_xyz)
   {
     double haveDBC = 0;
     sdirichtoggle_->norm_1(&haveDBC);

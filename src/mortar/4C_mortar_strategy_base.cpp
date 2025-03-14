@@ -32,7 +32,7 @@ Mortar::StrategyDataContainer::StrategyDataContainer()
       alphaf_(0.0),
       parredist_(false),
       maxdof_(0),
-      systype_(Inpar::CONTACT::system_none),
+      systype_(CONTACT::system_none),
       dyntype_(Inpar::Solid::dyna_statics),
       dynparam_n_(0.0)
 {
@@ -64,7 +64,7 @@ Mortar::StrategyBase::StrategyBase(const std::shared_ptr<Mortar::StrategyDataCon
   data().n_dim() = spatialDim;
   data().alpha_f() = alphaf;
   data().max_dof() = maxdof;
-  data().sys_type() = Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(scontact_, "SYSTEM");
+  data().sys_type() = Teuchos::getIntegralValue<CONTACT::SystemType>(scontact_, "SYSTEM");
 }
 
 /*----------------------------------------------------------------------*

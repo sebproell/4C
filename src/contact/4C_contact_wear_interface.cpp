@@ -1260,8 +1260,7 @@ void Wear::WearInterface::assemble_lin_stick(Core::LinAlg::SparseMatrix& linstic
   double ct = interface_params().get<double>("SEMI_SMOOTH_CT");
   double cn = interface_params().get<double>("SEMI_SMOOTH_CN");
 
-  auto ftype =
-      Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(interface_params(), "FRICTION");
+  auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(interface_params(), "FRICTION");
 
   bool consistent = false;
 
@@ -1274,7 +1273,7 @@ void Wear::WearInterface::assemble_lin_stick(Core::LinAlg::SparseMatrix& linstic
   consistent = true;
 #endif
 
-  if (consistent && ftype == Inpar::CONTACT::friction_coulomb)
+  if (consistent && ftype == CONTACT::friction_coulomb)
   {
     // loop over all stick nodes of the interface
     for (int i = 0; i < sticknodes->NumMyElements(); ++i)
@@ -1772,8 +1771,7 @@ void Wear::WearInterface::assemble_lin_slip_w(Core::LinAlg::SparseMatrix& linsli
   if (slipnodes_->NumMyElements() == 0) return;
 
   // information from interface contact parameter list
-  auto ftype =
-      Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(interface_params(), "FRICTION");
+  auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(interface_params(), "FRICTION");
   double frcoeff = interface_params().get<double>("FRCOEFF");
   double ct = interface_params().get<double>("SEMI_SMOOTH_CT");
   double cn = interface_params().get<double>("SEMI_SMOOTH_CN");
@@ -1785,7 +1783,7 @@ void Wear::WearInterface::assemble_lin_slip_w(Core::LinAlg::SparseMatrix& linsli
   //**********************************************************************
   //**********************************************************************
   //**********************************************************************
-  if (ftype == Inpar::CONTACT::friction_coulomb)
+  if (ftype == CONTACT::friction_coulomb)
   {
     // loop over all slip nodes of the interface
     for (int i = 0; i < slipnodes_->NumMyElements(); ++i)
@@ -1958,8 +1956,7 @@ void Wear::WearInterface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipL
   if (slipnodes_->NumMyElements() == 0) return;
 
   // information from interface contact parameter list
-  auto ftype =
-      Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(interface_params(), "FRICTION");
+  auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(interface_params(), "FRICTION");
   double frcoeff = interface_params().get<double>("FRCOEFF");
   double ct = interface_params().get<double>("SEMI_SMOOTH_CT");
   double cn = interface_params().get<double>("SEMI_SMOOTH_CN");
@@ -1971,7 +1968,7 @@ void Wear::WearInterface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipL
   //**********************************************************************
   //**********************************************************************
   //**********************************************************************
-  if (ftype == Inpar::CONTACT::friction_coulomb)
+  if (ftype == CONTACT::friction_coulomb)
   {
     // loop over all slip nodes of the interface
     for (int i = 0; i < slipnodes_->NumMyElements(); ++i)
@@ -2728,7 +2725,7 @@ void Wear::WearInterface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipL
   //**********************************************************************
   //**********************************************************************
   //**********************************************************************
-  if (ftype == Inpar::CONTACT::friction_tresca)
+  if (ftype == CONTACT::friction_tresca)
   {
     FOUR_C_THROW("Tresca friction not implemented for wear !!!");
   }
@@ -3630,8 +3627,7 @@ void Wear::WearInterface::assemble_wear_cond_rhs(Core::LinAlg::Vector<double>& r
     considerednodes = slipnodes_;
   }
 
-  auto systype =
-      Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(interface_params(), "SYSTEM");
+  auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(interface_params(), "SYSTEM");
 
   double wcoeff = interface_params().get<double>("WEARCOEFF");
 
@@ -3676,7 +3672,7 @@ void Wear::WearInterface::assemble_wear_cond_rhs(Core::LinAlg::Vector<double>& r
     /**************************************************** T-matrix ******/
     // for condensation of lm and wear we condense the system with absol. lm
     // --> therefore we do not need the lm^i term...
-    if (((fnode->wear_data().get_t()).size() > 0) && systype != Inpar::CONTACT::system_condensed)
+    if (((fnode->wear_data().get_t()).size() > 0) && systype != CONTACT::system_condensed)
     {
       std::map<int, double> tmap = fnode->wear_data().get_t()[0];
 
@@ -3721,8 +3717,7 @@ void Wear::WearInterface::assemble_wear_cond_rhs_master(Epetra_FEVector& RHS)
   // nothing to do if no active nodes
   if (slipmasternodes_ == nullptr) return;
 
-  auto systype =
-      Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(interface_params(), "SYSTEM");
+  auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(interface_params(), "SYSTEM");
 
   double wcoeff = interface_params().get<double>("WEARCOEFF_MASTER");
 
@@ -3770,7 +3765,7 @@ void Wear::WearInterface::assemble_wear_cond_rhs_master(Epetra_FEVector& RHS)
     /**************************************************** T-matrix ******/
     // for condensation of lm and wear we condense the system with absol. lm
     // --> therefore we do not need the lm^i term...
-    if (((fnode->wear_data().get_t()).size() > 0) && systype != Inpar::CONTACT::system_condensed)
+    if (((fnode->wear_data().get_t()).size() > 0) && systype != CONTACT::system_condensed)
     {
       std::map<int, double> tmap = fnode->wear_data().get_t()[0];
 

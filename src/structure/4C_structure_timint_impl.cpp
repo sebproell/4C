@@ -16,11 +16,11 @@
 #include "4C_constraint_springdashpot_manager.hpp"
 #include "4C_contact_abstract_strategy.hpp"  // needed in CmtLinearSolve (for feeding the contact solver with latest information about the contact status)
 #include "4C_contact_defines.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_meshtying_contact_bridge.hpp"
 #include "4C_fem_condition_locsys.hpp"
 #include "4C_fem_discretization_nullspace.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_wear.hpp"
 #include "4C_io_control.hpp"
 #include "4C_io_pstream.hpp"
@@ -675,14 +675,12 @@ void Solid::TimIntImpl::predict_tang_dis_consist_vel_acc()
   bool bPressure = pressure_ != nullptr;
   bool bContactSP =
       (have_contact_meshtying() &&
-          Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
-              cmtbridge_->get_strategy().params(), "STRATEGY") ==
-              Inpar::CONTACT::solution_lagmult &&
-          (Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(
-               cmtbridge_->get_strategy().params(), "SYSTEM") != Inpar::CONTACT::system_condensed ||
-              Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(
-                  cmtbridge_->get_strategy().params(), "SYSTEM") !=
-                  Inpar::CONTACT::system_condensed_lagmult));
+          Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
+              cmtbridge_->get_strategy().params(), "STRATEGY") == CONTACT::solution_lagmult &&
+          (Teuchos::getIntegralValue<CONTACT::SystemType>(
+               cmtbridge_->get_strategy().params(), "SYSTEM") != CONTACT::system_condensed ||
+              Teuchos::getIntegralValue<CONTACT::SystemType>(cmtbridge_->get_strategy().params(),
+                  "SYSTEM") != CONTACT::system_condensed_lagmult));
 
   if (bPressure && bContactSP)
     FOUR_C_THROW(
@@ -1235,18 +1233,18 @@ bool Solid::TimIntImpl::converged()
   if (have_contact_meshtying())
   {
     // check which case (application, strategy) we are in
-    auto stype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
+    auto stype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
         cmtbridge_->get_strategy().params(), "STRATEGY");
     const bool semismooth = cmtbridge_->get_strategy().params().get<bool>("SEMI_SMOOTH_NEWTON");
 
     // only do this convergence check for semi-smooth Lagrange multiplier contact
-    if (cmtbridge_->have_contact() && (stype == Inpar::CONTACT::solution_lagmult) && semismooth)
+    if (cmtbridge_->have_contact() && (stype == CONTACT::solution_lagmult) && semismooth)
       ccontact = cmtbridge_->get_strategy().active_set_converged();
 
     // add convergence check for saddlepoint formulations
     // use separate convergence checks for contact constraints and
     // LM increments
-    if (stype == Inpar::CONTACT::solution_lagmult)
+    if (stype == CONTACT::solution_lagmult)
     {
       bool convDispLagrIncr = false;
       bool convDispWIncr = false;
@@ -1592,15 +1590,14 @@ int Solid::TimIntImpl::newton_full()
     // decide which norms have to be evaluated
     bool bPressure = pressure_ != nullptr;
     bool bContactSP =
-        (have_contact_meshtying() && ((Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
-                                           cmtbridge_->get_strategy().params(), "STRATEGY") ==
-                                             Inpar::CONTACT::solution_lagmult &&
-                                         (Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(
-                                              cmtbridge_->get_strategy().params(), "SYSTEM") !=
-                                                 Inpar::CONTACT::system_condensed ||
-                                             Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(
-                                                 cmtbridge_->get_strategy().params(), "SYSTEM") !=
-                                                 Inpar::CONTACT::system_condensed_lagmult))));
+        (have_contact_meshtying() &&
+            ((Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
+                  cmtbridge_->get_strategy().params(), "STRATEGY") == CONTACT::solution_lagmult &&
+                (Teuchos::getIntegralValue<CONTACT::SystemType>(
+                     cmtbridge_->get_strategy().params(), "SYSTEM") != CONTACT::system_condensed ||
+                    Teuchos::getIntegralValue<CONTACT::SystemType>(
+                        cmtbridge_->get_strategy().params(), "SYSTEM") !=
+                        CONTACT::system_condensed_lagmult))));
 
     if (bPressure && bContactSP)
       FOUR_C_THROW(
@@ -2937,7 +2934,7 @@ int Solid::TimIntImpl::cmt_nonlinear_solve()
   // get some parameters
   //********************************************************************
   // strategy type
-  auto soltype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
+  auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
       cmtbridge_->get_strategy().params(), "STRATEGY");
 
   // semi-smooth Newton type
@@ -2950,7 +2947,7 @@ int Solid::TimIntImpl::cmt_nonlinear_solve()
   //********************************************************************
   // Solving Strategy using Lagrangian Multipliers
   //********************************************************************
-  if (soltype == Inpar::CONTACT::solution_lagmult)
+  if (soltype == CONTACT::solution_lagmult)
   {
     //********************************************************************
     // 1) SEMI-SMOOTH NEWTON FOR CONTACT
@@ -3012,8 +3009,7 @@ int Solid::TimIntImpl::cmt_nonlinear_solve()
   //********************************************************************
   // Solving Strategy using Regularization Techniques (Penalty Method)
   //********************************************************************
-  else if (soltype == Inpar::CONTACT::solution_penalty ||
-           soltype == Inpar::CONTACT::solution_multiscale)
+  else if (soltype == CONTACT::solution_penalty || soltype == CONTACT::solution_multiscale)
   {
     // nonlinear iteration
     int error = newton_full();
@@ -3026,7 +3022,7 @@ int Solid::TimIntImpl::cmt_nonlinear_solve()
   //********************************************************************
   // Solving Strategy using Nitsche's method
   //********************************************************************
-  else if (soltype == Inpar::CONTACT::solution_nitsche)
+  else if (soltype == CONTACT::solution_nitsche)
   {
     // nonlinear iteration
     return newton_full();
@@ -3035,7 +3031,7 @@ int Solid::TimIntImpl::cmt_nonlinear_solve()
   //********************************************************************
   // Solving Strategy using Augmented Lagrange Techniques with Uzawa
   //********************************************************************
-  else if (soltype == Inpar::CONTACT::solution_uzawa)
+  else if (soltype == CONTACT::solution_uzawa)
   {
     // get tolerance and maximum Uzawa steps
     double eps = cmtbridge_->get_strategy().params().get<double>("UZAWACONSTRTOL");
@@ -3093,10 +3089,10 @@ void Solid::TimIntImpl::cmt_linear_solve()
     solver_params.lin_tol_better = solveradaptolbetter_;
   }
 
-  auto soltype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
+  auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
       cmtbridge_->get_strategy().params(), "STRATEGY");
-  auto systype = Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(
-      cmtbridge_->get_strategy().params(), "SYSTEM");
+  auto systype =
+      Teuchos::getIntegralValue<CONTACT::SystemType>(cmtbridge_->get_strategy().params(), "SYSTEM");
 
   // update information about active slave dofs
   //**********************************************************************
@@ -3140,9 +3136,8 @@ void Solid::TimIntImpl::cmt_linear_solve()
   //**********************************************************************
   solver_params.refactor = true;
   solver_params.reset = iter_ == 1;
-  if (soltype == Inpar::CONTACT::solution_lagmult &&
-      (systype != Inpar::CONTACT::system_condensed &&
-          systype != Inpar::CONTACT::system_condensed_lagmult))
+  if (soltype == CONTACT::solution_lagmult &&
+      (systype != CONTACT::system_condensed && systype != CONTACT::system_condensed_lagmult))
   {
     // check if contact contributions are present,
     // if not we make a standard solver call to speed things up
@@ -3452,16 +3447,14 @@ int Solid::TimIntImpl::ptc()
 
     // decide which norms have to be evaluated
     bool bPressure = pressure_ != nullptr;
-    bool bContactSP = (have_contact_meshtying() &&
-                       Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
-                           cmtbridge_->get_strategy().params(), "STRATEGY") ==
-                           Inpar::CONTACT::solution_lagmult &&
-                       (Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(
-                            cmtbridge_->get_strategy().params(), "SYSTEM") !=
-                               Inpar::CONTACT::system_condensed ||
-                           Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(
-                               cmtbridge_->get_strategy().params(), "SYSTEM") !=
-                               Inpar::CONTACT::system_condensed));
+    bool bContactSP =
+        (have_contact_meshtying() &&
+            Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
+                cmtbridge_->get_strategy().params(), "STRATEGY") == CONTACT::solution_lagmult &&
+            (Teuchos::getIntegralValue<CONTACT::SystemType>(
+                 cmtbridge_->get_strategy().params(), "SYSTEM") != CONTACT::system_condensed ||
+                Teuchos::getIntegralValue<CONTACT::SystemType>(
+                    cmtbridge_->get_strategy().params(), "SYSTEM") != CONTACT::system_condensed));
 
     if (bPressure && bContactSP)
       FOUR_C_THROW(
@@ -3719,18 +3712,17 @@ void Solid::TimIntImpl::print_newton_iter_header(FILE* ofile)
   if (have_contact_meshtying())
   {
     // strategy and system setup types
-    auto soltype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
+    auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
         cmtbridge_->get_strategy().params(), "STRATEGY");
-    auto systype = Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(
+    auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(
         cmtbridge_->get_strategy().params(), "SYSTEM");
     auto wtype = Teuchos::getIntegralValue<Inpar::Wear::WearType>(
         cmtbridge_->get_strategy().params(), "WEARTYPE");
     auto wside = Teuchos::getIntegralValue<Inpar::Wear::WearSide>(
         cmtbridge_->get_strategy().params(), "WEAR_SIDE");
 
-    if (soltype == Inpar::CONTACT::solution_lagmult &&
-        (systype != Inpar::CONTACT::system_condensed &&
-            systype != Inpar::CONTACT::system_condensed_lagmult))
+    if (soltype == CONTACT::solution_lagmult &&
+        (systype != CONTACT::system_condensed && systype != CONTACT::system_condensed_lagmult))
     {
       switch (normtypecontconstr_)
       {
@@ -3900,18 +3892,17 @@ void Solid::TimIntImpl::print_newton_iter_text(FILE* ofile)
   if (have_contact_meshtying())
   {
     // strategy and system setup types
-    auto soltype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
+    auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
         cmtbridge_->get_strategy().params(), "STRATEGY");
-    auto systype = Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(
+    auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(
         cmtbridge_->get_strategy().params(), "SYSTEM");
     auto wtype = Teuchos::getIntegralValue<Inpar::Wear::WearType>(
         cmtbridge_->get_strategy().params(), "WEARTYPE");
     auto wside = Teuchos::getIntegralValue<Inpar::Wear::WearSide>(
         cmtbridge_->get_strategy().params(), "WEAR_SIDE");
 
-    if (soltype == Inpar::CONTACT::solution_lagmult &&
-        (systype != Inpar::CONTACT::system_condensed &&
-            systype != Inpar::CONTACT::system_condensed_lagmult))
+    if (soltype == CONTACT::solution_lagmult &&
+        (systype != CONTACT::system_condensed && systype != CONTACT::system_condensed_lagmult))
     {
       // we only support abs norms
       oss << std::setw(20) << std::setprecision(5) << std::scientific
@@ -4366,7 +4357,7 @@ int Solid::TimIntImpl::cmt_windk_constr_nonlinear_solve()
   // get some parameters
   //********************************************************************
   // strategy type
-  auto soltype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
+  auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
       cmtbridge_->get_strategy().params(), "STRATEGY");
 
   // semi-smooth Newton type
@@ -4380,7 +4371,7 @@ int Solid::TimIntImpl::cmt_windk_constr_nonlinear_solve()
   //********************************************************************
   // Solving Strategy using Lagrangian Multipliers
   //********************************************************************
-  if (soltype == Inpar::CONTACT::solution_lagmult)
+  if (soltype == CONTACT::solution_lagmult)
   {
     //********************************************************************
     // 1) SEMI-SMOOTH NEWTON FOR CONTACT
@@ -4442,7 +4433,7 @@ int Solid::TimIntImpl::cmt_windk_constr_nonlinear_solve()
   //********************************************************************
   // Solving Strategy using Regularization Techniques (Penalty Method)
   //********************************************************************
-  else if (soltype == Inpar::CONTACT::solution_penalty)
+  else if (soltype == CONTACT::solution_penalty)
   {
     // nonlinear iteration
     int error = uzawa_linear_newton_full();
@@ -4455,7 +4446,7 @@ int Solid::TimIntImpl::cmt_windk_constr_nonlinear_solve()
   //********************************************************************
   // Solving Strategy using Augmented Lagrange Techniques with Uzawa
   //********************************************************************
-  else if (soltype == Inpar::CONTACT::solution_uzawa)
+  else if (soltype == CONTACT::solution_uzawa)
   {
     // get tolerance and maximum Uzawa steps
     double eps = cmtbridge_->get_strategy().params().get<double>("UZAWACONSTRTOL");
@@ -4506,10 +4497,10 @@ int Solid::TimIntImpl::cmt_windk_constr_nonlinear_solve()
 int Solid::TimIntImpl::cmt_windk_constr_linear_solve(const double k_ptc)
 {
   // strategy and system setup types
-  auto soltype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
+  auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
       cmtbridge_->get_strategy().params(), "STRATEGY");
-  auto systype = Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(
-      cmtbridge_->get_strategy().params(), "SYSTEM");
+  auto systype =
+      Teuchos::getIntegralValue<CONTACT::SystemType>(cmtbridge_->get_strategy().params(), "SYSTEM");
 
   int linsolve_error = 0;
 
@@ -4556,9 +4547,8 @@ int Solid::TimIntImpl::cmt_windk_constr_linear_solve(const double k_ptc)
   // (1) Standard / Dual Lagrange multipliers -> SaddlePointCoupled
   // (2) Standard / Dual Lagrange multipliers -> SaddlePointSimpler
   //**********************************************************************
-  if (soltype == Inpar::CONTACT::solution_lagmult &&
-      (systype != Inpar::CONTACT::system_condensed &&
-          systype != Inpar::CONTACT::system_condensed_lagmult))
+  if (soltype == CONTACT::solution_lagmult &&
+      (systype != CONTACT::system_condensed && systype != CONTACT::system_condensed_lagmult))
   {
     FOUR_C_THROW(
         "Constraints / Cardiovascular0D bcs together with saddle point contact system does not "

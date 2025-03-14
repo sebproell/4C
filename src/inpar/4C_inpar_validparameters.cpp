@@ -10,6 +10,7 @@
 #include "4C_ale_input.hpp"
 #include "4C_beamcontact_input.hpp"
 #include "4C_browniandyn_input.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_cut_input.hpp"
 #include "4C_inpar_beaminteraction.hpp"
 #include "4C_inpar_beampotential.hpp"
@@ -18,7 +19,6 @@
 #include "4C_inpar_cardiac_monodomain.hpp"
 #include "4C_inpar_cardiovascular0d.hpp"
 #include "4C_inpar_constraint_framework.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_ehl.hpp"
 #include "4C_inpar_elch.hpp"
 #include "4C_inpar_fbi.hpp"
@@ -160,7 +160,7 @@ std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
   Inpar::IORuntimeOutput::set_valid_parameters(list);
   Inpar::IORuntimeVTPStructure::set_valid_parameters(list);
   Inpar::Mortar::set_valid_parameters(list);
-  Inpar::CONTACT::set_valid_parameters(list);
+  CONTACT::set_valid_parameters(list);
   Inpar::VolMortar::set_valid_parameters(list);
   Inpar::Wear::set_valid_parameters(list);
   Inpar::IORuntimeOutput::FLUID::set_valid_parameters(list);

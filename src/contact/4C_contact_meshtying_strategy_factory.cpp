@@ -9,13 +9,13 @@
 
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_contact_abstract_strategy.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_meshtying_abstract_strategy.hpp"
 #include "4C_contact_meshtying_lagrange_strategy.hpp"
 #include "4C_contact_meshtying_penalty_strategy.hpp"
 #include "4C_contact_utils.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_validparameters.hpp"
 #include "4C_io.hpp"
 #include "4C_io_pstream.hpp"
@@ -85,38 +85,38 @@ void Mortar::STRATEGY::FactoryMT::read_and_check_input(Teuchos::ParameterList& p
   // *********************************************************************
   // invalid parameter combinations
   // *********************************************************************
-  if (Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(meshtying, "STRATEGY") ==
-          Inpar::CONTACT::solution_penalty &&
+  if (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(meshtying, "STRATEGY") ==
+          CONTACT::solution_penalty &&
       meshtying.get<double>("PENALTYPARAM") <= 0.0)
     FOUR_C_THROW("Penalty parameter eps = 0, must be greater than 0");
 
-  if (Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(meshtying, "STRATEGY") ==
-          Inpar::CONTACT::solution_uzawa &&
+  if (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(meshtying, "STRATEGY") ==
+          CONTACT::solution_uzawa &&
       meshtying.get<double>("PENALTYPARAM") <= 0.0)
     FOUR_C_THROW("Penalty parameter eps = 0, must be greater than 0");
 
-  if (Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(meshtying, "STRATEGY") ==
-          Inpar::CONTACT::solution_uzawa &&
+  if (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(meshtying, "STRATEGY") ==
+          CONTACT::solution_uzawa &&
       meshtying.get<int>("UZAWAMAXSTEPS") < 2)
     FOUR_C_THROW("Maximum number of Uzawa / Augmentation steps must be at least 2");
 
-  if (Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(meshtying, "STRATEGY") ==
-          Inpar::CONTACT::solution_uzawa &&
+  if (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(meshtying, "STRATEGY") ==
+          CONTACT::solution_uzawa &&
       meshtying.get<double>("UZAWACONSTRTOL") <= 0.0)
     FOUR_C_THROW("Constraint tolerance for Uzawa / Augmentation scheme must be greater than 0");
 
-  if (onlymeshtying && Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(
-                           meshtying, "FRICTION") != Inpar::CONTACT::friction_none)
+  if (onlymeshtying && Teuchos::getIntegralValue<CONTACT::FrictionType>(meshtying, "FRICTION") !=
+                           CONTACT::friction_none)
     FOUR_C_THROW("Friction law supplied for mortar meshtying");
 
-  if (Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(meshtying, "STRATEGY") ==
-          Inpar::CONTACT::solution_lagmult &&
+  if (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(meshtying, "STRATEGY") ==
+          CONTACT::solution_lagmult &&
       Teuchos::getIntegralValue<Inpar::Mortar::ShapeFcn>(mortar, "LM_SHAPEFCN") ==
           Inpar::Mortar::shape_standard &&
-      (Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(meshtying, "SYSTEM") ==
-              Inpar::CONTACT::system_condensed ||
-          Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(meshtying, "SYSTEM") ==
-              Inpar::CONTACT::system_condensed_lagmult))
+      (Teuchos::getIntegralValue<CONTACT::SystemType>(meshtying, "SYSTEM") ==
+              CONTACT::system_condensed ||
+          Teuchos::getIntegralValue<CONTACT::SystemType>(meshtying, "SYSTEM") ==
+              CONTACT::system_condensed_lagmult))
     FOUR_C_THROW("Condensation of linear system only possible for dual Lagrange multipliers");
 
   if (Teuchos::getIntegralValue<Inpar::Mortar::ParallelRedist>(mortarParallelRedistParams,
@@ -132,8 +132,8 @@ void Mortar::STRATEGY::FactoryMT::read_and_check_input(Teuchos::ParameterList& p
 
   if (Teuchos::getIntegralValue<Inpar::Mortar::ConsistentDualType>(mortar, "LM_DUAL_CONSISTENT") !=
           Inpar::Mortar::consistent_none &&
-      Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(meshtying, "STRATEGY") !=
-          Inpar::CONTACT::solution_lagmult &&
+      Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(meshtying, "STRATEGY") !=
+          CONTACT::solution_lagmult &&
       Teuchos::getIntegralValue<Inpar::Mortar::ShapeFcn>(mortar, "LM_SHAPEFCN") !=
           Inpar::Mortar::shape_standard)
     FOUR_C_THROW(
@@ -226,11 +226,10 @@ void Mortar::STRATEGY::FactoryMT::read_and_check_input(Teuchos::ParameterList& p
     params.set<double>("SEARCH_PARAM", 0.3);
     params.set<bool>("SEARCH_USE_AUX_POS", false);
     params.set<Inpar::Mortar::ShapeFcn>("LM_SHAPEFCN", Inpar::Mortar::shape_dual);
-    params.set<Inpar::CONTACT::SystemType>("SYSTEM", Inpar::CONTACT::SystemType::system_condensed);
+    params.set<CONTACT::SystemType>("SYSTEM", CONTACT::SystemType::system_condensed);
     params.set<bool>("NURBS", false);
     params.set<int>("NUMGP_PER_DIM", -1);
-    params.set<Inpar::CONTACT::SolvingStrategy>(
-        "STRATEGY", Inpar::CONTACT::SolvingStrategy::solution_lagmult);
+    params.set<CONTACT::SolvingStrategy>("STRATEGY", CONTACT::SolvingStrategy::solution_lagmult);
     params.set<Inpar::Mortar::IntType>("INTTYPE", Inpar::Mortar::IntType::inttype_segments);
     params.sublist("PARALLEL REDISTRIBUTION").set<std::string>("REDUNDANT_STORAGE", "Master");
     params.sublist("PARALLEL REDISTRIBUTION")
@@ -277,14 +276,14 @@ void Mortar::STRATEGY::FactoryMT::read_and_check_input(Teuchos::ParameterList& p
 
   if ((problemtype == Core::ProblemType::poroelast || problemtype == Core::ProblemType::fpsi ||
           problemtype == Core::ProblemType::fpsi_xfem) &&
-      Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(meshtying, "STRATEGY") !=
-          Inpar::CONTACT::solution_lagmult)
+      Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(meshtying, "STRATEGY") !=
+          CONTACT::solution_lagmult)
     FOUR_C_THROW("POROCONTACT: Use Lagrangean Strategy for poro meshtying!");
 
   if ((problemtype == Core::ProblemType::poroelast || problemtype == Core::ProblemType::fpsi ||
           problemtype == Core::ProblemType::fpsi_xfem) &&
-      Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(meshtying, "SYSTEM") !=
-          Inpar::CONTACT::system_condensed_lagmult)
+      Teuchos::getIntegralValue<CONTACT::SystemType>(meshtying, "SYSTEM") !=
+          CONTACT::system_condensed_lagmult)
     FOUR_C_THROW("POROCONTACT: Just lagrange multiplier should be condensed for poro meshtying!");
 
   if ((problemtype == Core::ProblemType::poroelast || problemtype == Core::ProblemType::fpsi ||
@@ -579,7 +578,7 @@ std::shared_ptr<CONTACT::MtAbstractStrategy> Mortar::STRATEGY::FactoryMT::build_
     const Teuchos::ParameterList& params, const bool& poroslave, const bool& poromaster,
     const int& dof_offset, std::vector<std::shared_ptr<Mortar::Interface>>& interfaces) const
 {
-  const auto stype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(params, "STRATEGY");
+  const auto stype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params, "STRATEGY");
   std::shared_ptr<CONTACT::AbstractStrategyDataContainer> data_ptr = nullptr;
 
   return build_strategy(stype, params, poroslave, poromaster, dof_offset, interfaces,
@@ -589,7 +588,7 @@ std::shared_ptr<CONTACT::MtAbstractStrategy> Mortar::STRATEGY::FactoryMT::build_
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 std::shared_ptr<CONTACT::MtAbstractStrategy> Mortar::STRATEGY::FactoryMT::build_strategy(
-    const Inpar::CONTACT::SolvingStrategy stype, const Teuchos::ParameterList& params,
+    const CONTACT::SolvingStrategy stype, const Teuchos::ParameterList& params,
     const bool& poroslave, const bool& poromaster, const int& dof_offset,
     std::vector<std::shared_ptr<Mortar::Interface>>& interfaces, const Epetra_Map* dof_row_map,
     const Epetra_Map* node_row_map, const int dim, const MPI_Comm& comm_ptr,
@@ -611,12 +610,12 @@ std::shared_ptr<CONTACT::MtAbstractStrategy> Mortar::STRATEGY::FactoryMT::build_
   // time integration.
   const double dummy = -1.0;
 
-  if (stype == Inpar::CONTACT::solution_lagmult)
+  if (stype == CONTACT::solution_lagmult)
   {
     strategy_ptr = std::make_shared<CONTACT::MtLagrangeStrategy>(
         dof_row_map, node_row_map, params, interfaces, dim, comm_ptr, dummy, dof_offset);
   }
-  else if (stype == Inpar::CONTACT::solution_penalty or stype == Inpar::CONTACT::solution_uzawa)
+  else if (stype == CONTACT::solution_penalty or stype == CONTACT::solution_uzawa)
     strategy_ptr = std::make_shared<CONTACT::MtPenaltyStrategy>(
         dof_row_map, node_row_map, params, interfaces, dim, comm_ptr, dummy, dof_offset);
   else

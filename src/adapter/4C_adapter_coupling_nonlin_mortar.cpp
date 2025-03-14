@@ -10,6 +10,7 @@
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_contact_element.hpp"
 #include "4C_contact_friction_node.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_integrator.hpp"
 #include "4C_contact_interface.hpp"
 #include "4C_coupling_adapter_mortar.hpp"
@@ -19,7 +20,6 @@
 #include "4C_fem_nurbs_discretization_control_point.hpp"
 #include "4C_fem_nurbs_discretization_knotvector.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_linalg_sparsematrix.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
@@ -198,8 +198,8 @@ void Adapter::CouplingNonLinMortar::read_mortar_condition(
   input.setParameters(meshtying);
   input.setParameters(wearlist);
 
-  input.set<int>("PROBTYPE", Inpar::CONTACT::other);  // if other probtypes, this will be
-                                                      // overwritten in overloaded function
+  input.set<int>("PROBTYPE", CONTACT::other);  // if other probtypes, this will be
+                                               // overwritten in overloaded function
 
   // is this a nurbs problem?
   bool isnurbs = false;
@@ -632,7 +632,7 @@ void Adapter::CouplingNonLinMortar::setup_spring_dashpot(
   input.setParameters(Global::Problem::instance()->mortar_coupling_params());
   input.setParameters(Global::Problem::instance()->contact_dynamic_params());
   input.setParameters(Global::Problem::instance()->wear_params());
-  input.set<int>("PROBTYPE", Inpar::CONTACT::other);
+  input.set<int>("PROBTYPE", CONTACT::other);
 
   // is this a nurbs problem?
   Core::FE::ShapeFunctionType distype = Global::Problem::instance()->spatial_approximation_type();

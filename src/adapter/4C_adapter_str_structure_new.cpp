@@ -21,12 +21,12 @@
 #include "4C_beamcontact_input.hpp"
 #include "4C_binstrategy.hpp"
 #include "4C_comm_utils.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_fem_condition.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_beam_to_solid.hpp"
 #include "4C_inpar_beaminteraction.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_fsi.hpp"
 #include "4C_inpar_poroelast.hpp"
 #include "4C_io.hpp"
@@ -343,8 +343,8 @@ void Adapter::StructureBaseAlgorithmNew::set_model_types(
     if (probtype == Core::ProblemType::tsi)
     {
       const Teuchos::ParameterList& contact = Global::Problem::instance()->contact_dynamic_params();
-      if (Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(contact, "STRATEGY") ==
-          Inpar::CONTACT::solution_nitsche)
+      if (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(contact, "STRATEGY") ==
+          CONTACT::solution_nitsche)
         modeltypes.insert(Inpar::Solid::model_contact);
     }
     else

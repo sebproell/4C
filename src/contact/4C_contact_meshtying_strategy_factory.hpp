@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_contact.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_mortar_element.hpp"
 #include "4C_mortar_strategy_factory.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
@@ -106,7 +106,7 @@ namespace Mortar
        *
        * */
       static std::shared_ptr<CONTACT::MtAbstractStrategy> build_strategy(
-          const Inpar::CONTACT::SolvingStrategy stype, const Teuchos::ParameterList& params,
+          const CONTACT::SolvingStrategy stype, const Teuchos::ParameterList& params,
           const bool& poroslave, const bool& poromaster, const int& dof_offset,
           std::vector<std::shared_ptr<Mortar::Interface>>& interfaces,
           const Epetra_Map* dof_row_map, const Epetra_Map* node_row_map, const int dim,

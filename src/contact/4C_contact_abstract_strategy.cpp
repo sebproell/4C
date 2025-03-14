@@ -10,13 +10,13 @@
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_contact_defines.hpp"
 #include "4C_contact_friction_node.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_interface.hpp"
 #include "4C_contact_noxinterface.hpp"
 #include "4C_contact_paramsinterface.hpp"
 #include "4C_contact_utils_parallel.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"
@@ -114,16 +114,16 @@ CONTACT::AbstractStrategy::AbstractStrategy(
 {
   // set data container pointer (only PRIVATE direct access!)
   data_ptr_->sol_type() =
-      Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(params_in, "STRATEGY");
-  data_ptr_->constr_direction() = Teuchos::getIntegralValue<Inpar::CONTACT::ConstraintDirection>(
-      params_in, "CONSTRAINT_DIRECTIONS");
+      Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params_in, "STRATEGY");
+  data_ptr_->constr_direction() =
+      Teuchos::getIntegralValue<CONTACT::ConstraintDirection>(params_in, "CONSTRAINT_DIRECTIONS");
   data_ptr_->par_type() = Teuchos::getIntegralValue<Inpar::Mortar::ParallelRedist>(
       params_in.sublist("PARALLEL REDISTRIBUTION"), "PARALLEL_REDIST");
 
-  auto ftype = Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(params(), "FRICTION");
+  auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(params(), "FRICTION");
 
   // set frictional contact status
-  if (ftype != Inpar::CONTACT::friction_none) friction_ = true;
+  if (ftype != CONTACT::friction_none) friction_ = true;
 
   // set nonsmooth contact status
   if (params().get<bool>("NONSMOOTH_GEOMETRIES")) nonSmoothContact_ = true;
@@ -1312,9 +1312,9 @@ void CONTACT::AbstractStrategy::initialize_mortar()
   dmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(slave_dof_row_map(true), 10);
   mmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(slave_dof_row_map(true), 100);
 
-  if (constr_direction_ == Inpar::CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::constr_xyz)
     wgap_ = Core::LinAlg::create_vector(slave_dof_row_map(true), true);
-  else if (constr_direction_ == Inpar::CONTACT::constr_ntt)
+  else if (constr_direction_ == CONTACT::constr_ntt)
     wgap_ = Core::LinAlg::create_vector(slave_row_nodes(), true);
   else
     FOUR_C_THROW("unknown contact constraint direction");
@@ -2050,7 +2050,7 @@ void CONTACT::AbstractStrategy::do_read_restart(Core::IO::DiscretizationReader& 
 
   // only for Uzawa augmented strategy
   // TODO: this should be moved to contact_penalty_strategy
-  if (stype_ == Inpar::CONTACT::solution_uzawa)
+  if (stype_ == CONTACT::solution_uzawa)
   {
     zuzawa_ = std::make_shared<Core::LinAlg::Vector<double>>(slave_dof_row_map(true));
     if (!restartwithcontact) reader.read_vector(data().lm_uzawa_ptr(), "lagrmultold");
@@ -2825,8 +2825,7 @@ void CONTACT::AbstractStrategy::reset_lagrange_multipliers(
  *----------------------------------------------------------------------*/
 bool CONTACT::AbstractStrategy::is_saddle_point_system() const
 {
-  if ((stype_ == Inpar::CONTACT::solution_lagmult) and
-      system_type() == Inpar::CONTACT::system_saddlepoint)
+  if ((stype_ == CONTACT::solution_lagmult) and system_type() == CONTACT::system_saddlepoint)
   {
     if (is_in_contact() or was_in_contact() or was_in_contact_last_time_step()) return true;
   }
@@ -2837,8 +2836,7 @@ bool CONTACT::AbstractStrategy::is_saddle_point_system() const
  *----------------------------------------------------------------------*/
 bool CONTACT::AbstractStrategy::is_condensed_system() const
 {
-  if (stype_ == Inpar::CONTACT::solution_lagmult and
-      system_type() != Inpar::CONTACT::system_saddlepoint)
+  if (stype_ == CONTACT::solution_lagmult and system_type() != CONTACT::system_saddlepoint)
   {
     if (is_in_contact() or was_in_contact() or was_in_contact_last_time_step()) return true;
   }
@@ -2920,7 +2918,7 @@ double CONTACT::AbstractStrategy::get_potential_value(
     const enum NOX::Nln::MeritFunction::MeritFctName mrt_type) const
 {
   FOUR_C_THROW("The currently active strategy \"%s\" does not support this method!",
-      Inpar::CONTACT::solving_strategy_to_string(type()).c_str());
+      CONTACT::solving_strategy_to_string(type()).c_str());
   exit(EXIT_FAILURE);
 }
 
@@ -2933,7 +2931,7 @@ double CONTACT::AbstractStrategy::get_linearized_potential_value_terms(
     const enum NOX::Nln::MeritFunction::LinType lintype) const
 {
   FOUR_C_THROW("The currently active strategy \"%s\" does not support this method!",
-      Inpar::CONTACT::solving_strategy_to_string(type()).c_str());
+      CONTACT::solving_strategy_to_string(type()).c_str());
   exit(EXIT_FAILURE);
 }
 

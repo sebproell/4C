@@ -7,8 +7,8 @@
 
 #include "4C_structure_new_nln_solver_utils.hpp"
 
+#include "4C_contact_input.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_structure_new_timint_base.hpp"
 #include "4C_utils_exceptions.hpp"
 
@@ -113,11 +113,10 @@ void Solid::Nln::SOLVER::convert_model_type_to_quantity_type(const enum Inpar::S
       // check for friction
       const Teuchos::ParameterList& p_contact =
           Global::Problem::instance()->contact_dynamic_params();
-      auto frictiontype =
-          Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(p_contact, "FRICTION");
+      auto frictiontype = Teuchos::getIntegralValue<CONTACT::FrictionType>(p_contact, "FRICTION");
       switch (frictiontype)
       {
-        case Inpar::CONTACT::friction_none:
+        case CONTACT::friction_none:
         {
           break;
         }

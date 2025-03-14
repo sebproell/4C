@@ -7,7 +7,7 @@
 
 #include "4C_inpar_tsi.hpp"
 
-#include "4C_inpar_contact.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -179,13 +179,11 @@ void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "NITSCHE_THETA_TSI", {.description = "+1: symmetric, 0: non-symmetric, -1: skew-symmetric",
                                .default_value = 0.0}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::NitscheWeighting>(
-      "NITSCHE_WEIGHTING_TSI", "harmonic",
-      "how to weight consistency terms in Nitsche contact formulation",
+  Core::Utils::string_to_integral_parameter<CONTACT::NitscheWeighting>("NITSCHE_WEIGHTING_TSI",
+      "harmonic", "how to weight consistency terms in Nitsche contact formulation",
       tuple<std::string>("slave", "master", "harmonic", "physical"),
-      tuple<Inpar::CONTACT::NitscheWeighting>(Inpar::CONTACT::NitWgt_slave,
-          Inpar::CONTACT::NitWgt_master, Inpar::CONTACT::NitWgt_harmonic,
-          Inpar::CONTACT::NitWgt_physical),
+      tuple<CONTACT::NitscheWeighting>(CONTACT::NitWgt_slave, CONTACT::NitWgt_master,
+          CONTACT::NitWgt_harmonic, CONTACT::NitWgt_physical),
       tsic);
 
   tsic.specs.emplace_back(parameter<bool>("NITSCHE_PENALTY_ADAPTIVE_TSI",
@@ -195,13 +193,13 @@ void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   tsic.specs.emplace_back(parameter<double>("PENALTYPARAM_THERMO",
       {.description = "Penalty parameter for Nitsche solution strategy", .default_value = 0.0}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::NitscheThermoMethod>(
-      "NITSCHE_METHOD_TSI", "nitsche",
+  Core::Utils::string_to_integral_parameter<CONTACT::NitscheThermoMethod>("NITSCHE_METHOD_TSI",
+      "nitsche",
       "how to treat thermal interface problem: strong substitution or Nitsche for general "
       "interface conditions",
       tuple<std::string>("nitsche", "substitution"),
-      tuple<Inpar::CONTACT::NitscheThermoMethod>(
-          Inpar::CONTACT::NitThermo_nitsche, Inpar::CONTACT::NitThermo_substitution),
+      tuple<CONTACT::NitscheThermoMethod>(
+          CONTACT::NitThermo_nitsche, CONTACT::NitThermo_substitution),
       tsic);
 
 

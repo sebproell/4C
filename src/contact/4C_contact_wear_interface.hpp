@@ -10,8 +10,8 @@
 
 #include "4C_config.hpp"
 
+#include "4C_contact_input.hpp"
 #include "4C_contact_interface.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_wear.hpp"
 
 #include <Epetra_FEVector.h>

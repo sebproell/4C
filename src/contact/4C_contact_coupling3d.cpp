@@ -8,12 +8,12 @@
 #include "4C_contact_coupling3d.hpp"
 
 #include "4C_contact_element.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_integrator.hpp"
 #include "4C_contact_integrator_factory.hpp"
 #include "4C_contact_interpolator.hpp"
 #include "4C_contact_node.hpp"
 #include "4C_fem_discretization.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_linalg_utils_densematrix_inverse.hpp"
@@ -30,7 +30,7 @@ FOUR_C_NAMESPACE_OPEN
 CONTACT::Coupling3d::Coupling3d(Core::FE::Discretization& idiscret, int dim, bool quad,
     Teuchos::ParameterList& params, Mortar::Element& sele, Mortar::Element& mele)
     : Mortar::Coupling3d(idiscret, dim, quad, params, sele, mele),
-      stype_(Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(params, "STRATEGY"))
+      stype_(Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params, "STRATEGY"))
 {
   // empty constructor
 
@@ -1061,7 +1061,7 @@ CONTACT::Coupling3dManager::Coupling3dManager(Core::FE::Discretization& idiscret
       sele_(sele),
       mele_(mele),
       ncells_(0),
-      stype_(Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(params, "STRATEGY"))
+      stype_(Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params, "STRATEGY"))
 {
   return;
 }
@@ -1255,7 +1255,7 @@ bool CONTACT::Coupling3dManager::evaluate_coupling(
     FOUR_C_THROW("chose contact algorithm not supported!");
 
   // interpolate temperatures in TSI case
-  if (imortar_.get<int>("PROBTYPE") == Inpar::CONTACT::tsi)
+  if (imortar_.get<int>("PROBTYPE") == CONTACT::tsi)
     NTS::Interpolator(imortar_, dim_)
         .interpolate_master_temp_3d(slave_element(), master_elements());
 

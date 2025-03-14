@@ -954,10 +954,10 @@ void SSI::SSIBase::setup_model_evaluator()
 void SSI::SSIBase::setup_contact_strategy()
 {
   // get the contact solution strategy
-  auto contact_solution_type = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
+  auto contact_solution_type = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
       Global::Problem::instance()->contact_dynamic_params(), "STRATEGY");
 
-  if (contact_solution_type == Inpar::CONTACT::solution_nitsche)
+  if (contact_solution_type == CONTACT::solution_nitsche)
   {
     if (Teuchos::getIntegralValue<Inpar::Solid::IntegrationStrategy>(
             Global::Problem::instance()->structural_dynamic_params(), "INT_STRATEGY") !=

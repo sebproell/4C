@@ -15,12 +15,12 @@
 #include "4C_constraint_manager.hpp"
 #include "4C_constraint_solver.hpp"
 #include "4C_constraint_springdashpot_manager.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_meshtying_contact_bridge.hpp"
 #include "4C_fem_condition_locsys.hpp"
 #include "4C_fem_discretization_faces.hpp"
 #include "4C_fem_discretization_utils.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_mortar.hpp"
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"
@@ -450,8 +450,8 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
   const Teuchos::ParameterList& smortar = Global::Problem::instance()->mortar_coupling_params();
   const Teuchos::ParameterList& scontact = Global::Problem::instance()->contact_dynamic_params();
   auto shapefcn = Teuchos::getIntegralValue<Inpar::Mortar::ShapeFcn>(smortar, "LM_SHAPEFCN");
-  auto soltype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(scontact, "STRATEGY");
-  auto systype = Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(scontact, "SYSTEM");
+  auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(scontact, "STRATEGY");
+  auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(scontact, "SYSTEM");
   auto algorithm = Teuchos::getIntegralValue<Inpar::Mortar::AlgorithmType>(smortar, "ALGORITHM");
 
   // check mortar contact or meshtying conditions
@@ -567,10 +567,9 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
       if (algorithm == Inpar::Mortar::algorithm_mortar)
       {
         // saddle point formulation
-        if (systype == Inpar::CONTACT::system_saddlepoint)
+        if (systype == CONTACT::system_saddlepoint)
         {
-          if (soltype == Inpar::CONTACT::solution_lagmult &&
-              shapefcn == Inpar::Mortar::shape_standard)
+          if (soltype == CONTACT::solution_lagmult && shapefcn == Inpar::Mortar::shape_standard)
           {
             std::cout << "================================================================"
                       << std::endl;
@@ -581,8 +580,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_lagmult &&
-                   shapefcn == Inpar::Mortar::shape_dual)
+          else if (soltype == CONTACT::solution_lagmult && shapefcn == Inpar::Mortar::shape_dual)
           {
             std::cout << "================================================================"
                       << std::endl;
@@ -593,7 +591,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_multiscale &&
+          else if (soltype == CONTACT::solution_multiscale &&
                    shapefcn == Inpar::Mortar::shape_standard)
           {
             std::cout << "================================================================"
@@ -605,8 +603,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_multiscale &&
-                   shapefcn == Inpar::Mortar::shape_dual)
+          else if (soltype == CONTACT::solution_multiscale && shapefcn == Inpar::Mortar::shape_dual)
           {
             std::cout << "================================================================"
                       << std::endl;
@@ -617,7 +614,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_lagmult &&
+          else if (soltype == CONTACT::solution_lagmult &&
                    Teuchos::getIntegralValue<Inpar::Mortar::LagMultQuad>(smortar, "LM_QUAD") ==
                        Inpar::Mortar::lagmult_const)
           {
@@ -630,7 +627,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_lagmult &&
+          else if (soltype == CONTACT::solution_lagmult &&
                    shapefcn == Inpar::Mortar::shape_petrovgalerkin)
           {
             std::cout << "================================================================"
@@ -642,7 +639,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_penalty &&
+          else if (soltype == CONTACT::solution_penalty &&
                    shapefcn == Inpar::Mortar::shape_standard)
           {
             std::cout << "================================================================"
@@ -654,8 +651,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_penalty &&
-                   shapefcn == Inpar::Mortar::shape_dual)
+          else if (soltype == CONTACT::solution_penalty && shapefcn == Inpar::Mortar::shape_dual)
           {
             std::cout << "================================================================"
                       << std::endl;
@@ -666,8 +662,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_uzawa &&
-                   shapefcn == Inpar::Mortar::shape_standard)
+          else if (soltype == CONTACT::solution_uzawa && shapefcn == Inpar::Mortar::shape_standard)
           {
             std::cout << "================================================================"
                       << std::endl;
@@ -678,8 +673,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_uzawa &&
-                   shapefcn == Inpar::Mortar::shape_dual)
+          else if (soltype == CONTACT::solution_uzawa && shapefcn == Inpar::Mortar::shape_dual)
           {
             std::cout << "================================================================"
                       << std::endl;
@@ -695,10 +689,10 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
         }
 
         // condensed formulation
-        else if (systype == Inpar::CONTACT::system_condensed ||
-                 systype == Inpar::CONTACT::system_condensed_lagmult)
+        else if (systype == CONTACT::system_condensed ||
+                 systype == CONTACT::system_condensed_lagmult)
         {
-          if (soltype == Inpar::CONTACT::solution_lagmult && shapefcn == Inpar::Mortar::shape_dual)
+          if (soltype == CONTACT::solution_lagmult && shapefcn == Inpar::Mortar::shape_dual)
           {
             std::cout << "================================================================"
                       << std::endl;
@@ -709,7 +703,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_lagmult &&
+          else if (soltype == CONTACT::solution_lagmult &&
                    shapefcn == Inpar::Mortar::shape_petrovgalerkin)
           {
             std::cout << "================================================================"
@@ -721,7 +715,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_lagmult &&
+          else if (soltype == CONTACT::solution_lagmult &&
                    Teuchos::getIntegralValue<Inpar::Mortar::LagMultQuad>(smortar, "LM_QUAD") ==
                        Inpar::Mortar::lagmult_const)
           {
@@ -734,7 +728,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_multiscale &&
+          else if (soltype == CONTACT::solution_multiscale &&
                    shapefcn == Inpar::Mortar::shape_standard)
           {
             std::cout << "================================================================"
@@ -746,8 +740,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_multiscale &&
-                   shapefcn == Inpar::Mortar::shape_dual)
+          else if (soltype == CONTACT::solution_multiscale && shapefcn == Inpar::Mortar::shape_dual)
           {
             std::cout << "================================================================"
                       << std::endl;
@@ -758,7 +751,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_penalty &&
+          else if (soltype == CONTACT::solution_penalty &&
                    shapefcn == Inpar::Mortar::shape_standard)
           {
             std::cout << "================================================================"
@@ -770,8 +763,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_penalty &&
-                   shapefcn == Inpar::Mortar::shape_dual)
+          else if (soltype == CONTACT::solution_penalty && shapefcn == Inpar::Mortar::shape_dual)
           {
             std::cout << "================================================================"
                       << std::endl;
@@ -782,8 +774,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_uzawa &&
-                   shapefcn == Inpar::Mortar::shape_standard)
+          else if (soltype == CONTACT::solution_uzawa && shapefcn == Inpar::Mortar::shape_standard)
           {
             std::cout << "================================================================"
                       << std::endl;
@@ -794,8 +785,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
             std::cout << "================================================================\n"
                       << std::endl;
           }
-          else if (soltype == Inpar::CONTACT::solution_uzawa &&
-                   shapefcn == Inpar::Mortar::shape_dual)
+          else if (soltype == CONTACT::solution_uzawa && shapefcn == Inpar::Mortar::shape_dual)
           {
             std::cout << "================================================================"
                       << std::endl;

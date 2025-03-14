@@ -10,8 +10,8 @@
 #include "4C_cardiovascular0d_manager.hpp"
 #include "4C_constraint_manager.hpp"
 #include "4C_constraint_springdashpot_manager.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_meshtying_contact_bridge.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_mortar_manager_base.hpp"
 #include "4C_mortar_strategy_base.hpp"
@@ -72,10 +72,9 @@ void Solid::TimIntExpl::setup()
   // explicit time integrators can only handle penalty contact / meshtying
   if (have_contact_meshtying())
   {
-    auto soltype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
+    auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
         cmtbridge_->get_strategy().params(), "STRATEGY");
-    if (soltype != Inpar::CONTACT::solution_penalty &&
-        (soltype != Inpar::CONTACT::solution_multiscale))
+    if (soltype != CONTACT::solution_penalty && (soltype != CONTACT::solution_multiscale))
       FOUR_C_THROW(
           "Currently, only penalty or multi-scale contact / meshtying can be done with explicit "
           "time integration schemes.");
