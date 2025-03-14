@@ -7,9 +7,9 @@
 
 #include "4C_beaminteraction_submodel_evaluator_factory.hpp"
 
+#include "4C_beaminteraction_potential_submodel_evaluator.hpp"
 #include "4C_beaminteraction_submodel_evaluator_beamcontact.hpp"
 #include "4C_beaminteraction_submodel_evaluator_crosslinking.hpp"
-#include "4C_beaminteraction_submodel_evaluator_potential.hpp"
 #include "4C_beaminteraction_submodel_evaluator_spherebeamlinking.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_beaminteraction.hpp"
