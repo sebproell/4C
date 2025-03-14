@@ -16,7 +16,6 @@
 
 #include <algorithm>
 #include <format>
-#include <iostream>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -75,6 +74,7 @@ void Core::DOFSets::DofSet::print(std::ostream& os) const
       {
         int numdf = (*numdfcolnodes_)[i];
         int idx = (*idxcolnodes_)[i];
+
         os << i << ": ";
         for (int j = 0; j < numdf; ++j) os << (idx + j) << " ";
         os << "\n";
@@ -203,22 +203,23 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
   //////////////////////////////////////////////////////////////////
   int maxnodenumdf = 0;
   int maxelementnumdf = 0;
+  int numrownodes = dis.num_my_row_nodes();
+  int numrowelements = dis.num_my_row_elements();
   std::map<int, std::vector<int>> nodedofset;
-  std::map<int, std::vector<int>> nodeduplicatedofset;
   std::map<int, std::vector<int>> elementdofset;
   std::map<int, std::vector<int>> facedofset;
+  std::vector<int> localrowdofs;
 
   {
     // get DoF coupling conditions
     std::vector<Core::Conditions::Condition*> couplingconditions(0);
     dis.get_condition("PointCoupling", couplingconditions);
-    if ((int)couplingconditions.size() > 0) pccdofhandling_ = true;
+    if (!couplingconditions.empty()) pccdofhandling_ = true;
 
     // do the nodes first
     Core::LinAlg::Vector<int> num_dof_rownodes(*dis.node_row_map());
     Core::LinAlg::Vector<int> idxrownodes(*dis.node_row_map());
 
-    int numrownodes = dis.num_my_row_nodes();
     for (int i = 0; i < numrownodes; ++i)
     {
       Core::Nodes::Node* actnode = dis.l_row_node(i);
@@ -228,31 +229,21 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
     int minnodegid = get_minimal_node_gid_if_relevant(dis);
     maxnodenumdf = num_dof_rownodes.max_value();
     get_reserved_max_num_dofper_node(maxnodenumdf);  // XFEM::XFEMDofSet set to const number!
+    localrowdofs.reserve(numrownodes * maxnodenumdf);
 
     std::vector<std::vector<int>> onoffcond;  // vector of onoff status for each condition
     std::vector<int> numdofcond;              // vector of NUMDOF for each condition
     std::vector<std::vector<int>> nodeids;    // vector of node IDs for each condition
-    std::vector<int> mgids;                   // vector of master node IDs for each condition
+    std::vector<int> masterIds;               // vector of master node IDs for each condition
 
-    for (int k = 0; k < (int)couplingconditions.size(); ++k)
+    for (const auto* condition : couplingconditions)
     {
-      onoffcond.push_back(couplingconditions[k]->parameters().get<std::vector<int>>("ONOFF"));
-      numdofcond.push_back(couplingconditions[k]->parameters().get<int>("NUMDOF"));
-      nodeids.push_back(*couplingconditions[k]->get_nodes());
-      mgids.push_back(nodeids[k][0]);
-      std::cout << "Coupling condition " << k << " contains " << nodeids[k].size()
-                << " nodes, master: " << mgids[k] << "\n";
-
-      // check if all nodes in this condition are on same processor
-      // (otherwise throw a FOUR_C_THROW for now - not yet implemented)
-      bool allononeproc = true;
-      for (auto nd : nodeids[k])
-      {
-        if (!dis.node_row_map()->MyGID(nd)) allononeproc = false;
-      }
-      if (!allononeproc)
-        FOUR_C_THROW(
-            "ERROR: Nodes in point coupling condition must all be on same processor (for now)");
+      onoffcond.push_back(condition->parameters().get<std::vector<int>>("ONOFF"));
+      numdofcond.push_back(condition->parameters().get<int>("NUMDOF"));
+      const auto conditioned_node_ids = condition->get_nodes();
+      nodeids.push_back(*conditioned_node_ids);
+      // The first node ID of each condition serves as the master node:
+      masterIds.push_back(*conditioned_node_ids->begin());
     }
 
     for (int i = 0; i < numrownodes; ++i)
@@ -267,119 +258,110 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
       std::vector<int> applied_condition(maxnodenumdf, -1);
       if (dspos_ == 0)
       {
-        for (int icond = 0; icond < (int)couplingconditions.size(); ++icond)
+        for (size_t condition_id = 0; condition_id < couplingconditions.size(); ++condition_id)
         {
-          // check total number of dofs and determine which dofs are to be coupled
-          if (numdofcond[icond] != num_dof_rownodes[i])
-            FOUR_C_THROW(
-                "ERROR: Number of DoFs in coupling condition (%i) does not match node (%i)",
-                numdofcond[icond], num_dof_rownodes[i]);
-
-          // check if the node i is contained in the coupling condition
-          auto found = std::find(nodeids[icond].begin(), nodeids[icond].end(), gid);
-          if (found != nodeids[icond].end())
+          // check if the node gid is contained in the coupling condition
+          if (couplingconditions[condition_id]->contains_node(gid))
           {
-            for (int k_on = 0; k_on < (int)onoffcond[icond].size(); ++k_on)
+            for (size_t k_on = 0; k_on < onoffcond[condition_id].size(); ++k_on)
             {
-              if (onoffcond[icond][k_on] == 0) continue;
+              if (onoffcond[condition_id][k_on] == 0) continue;
               FOUR_C_ASSERT(applied_condition[k_on] == -1,
                   "ERROR: Two coupling conditions on the same degree of freedom");
-              applied_condition[k_on] = icond;
+              applied_condition[k_on] = condition_id;
             }
           }
         }
       }
-      // check for node coupling condition and slave/master status
-      bool specialtreatment(false);
+      // check if all nodes in this condition are on the same processor
+      // (otherwise throw a FOUR_C_THROW for now - not yet implemented)
+      bool allononeproc = true;
 
-      // for (int idim = 0; idim < (int)applied_condition.size(); ++idim);
-      if (*std::ranges::max_element(applied_condition.begin(), applied_condition.end()) >= 0)
+      for (int k_on = 0; k_on < maxnodenumdf; ++k_on)
       {
-        // do nothing if the node is the master in all of the applied conditions
-        // do something for second, third, ... (slave) node
-        // also if the node is a master in one condition, but a slave in another
-        bool allmaster = true;
-        for (auto condition_id : applied_condition)
+        if (applied_condition[k_on] == -1) continue;
+        const int condition_id = applied_condition[k_on];
+        const std::vector<int>* ndvec = couplingconditions[condition_id]->get_nodes();
+        for (const auto nd : *ndvec)
         {
-          if (condition_id == -1) continue;
-          if (mgids[condition_id] != gid) allmaster = false;
-        }
-        if (!allmaster)
-        {
-          // critical case
-          specialtreatment = true;
-
-          // special treatment
-          int numdf = num_dof_rownodes[i];
-          int dof = count + (gid - minnodegid) * maxnodenumdf;
-          idxrownodes[i] = dof;
-          std::vector<int>& dofs = nodedofset[gid];
-          std::vector<int>& duplicatedofs = nodeduplicatedofset[gid];
-          dofs.reserve(numdf);
-          duplicatedofs.reserve(numdf);
-          for (int j = 0; j < numdf; ++j)
+          if (!dis.node_row_map()->MyGID(nd))
           {
-            // push back master node DoF ID if the id is coupled
-            // it might be that the node is the master in one direction and a slave in another
-            if (applied_condition[j] >= 0 && mgids[applied_condition[j]] != gid)
-            {
-              std::vector<int>& mdofs = nodedofset[mgids[applied_condition[j]]];
-              dofs.push_back(mdofs[j]);
-              duplicatedofs.push_back(1);
-            }
-            // push back new DoF ID if not coupled
-            else
-            {
-              dofs.push_back(dof + j);
-              duplicatedofs.push_back(0);
-            }
+            allononeproc = false;
+            std::cout << "Node " << nd << " (LID " << dis.node_row_map()->LID(nd)
+                      << ") in condition " << condition_id << "(" << k_on
+                      << ") is not in the current row map!\n";
           }
         }
       }
+      if (!allononeproc)
+        FOUR_C_THROW(
+            "ERROR: Nodes in point coupling condition must all be on same processor (for now).");
 
+      // check for node coupling condition and slave/master status
+
+      // do nothing if the node is the master in all of the applied conditions
+      // do something for second, third, ... (slave) node
+      // also if the node is a master in one condition, but a slave in another
+      bool is_slave = false;
+      for (auto condition_id : applied_condition)
+      {
+        if (condition_id == -1) continue;
+        // check total number of dofs and determine which dofs are to be coupled
+        if (numdofcond[condition_id] != num_dof_rownodes[i])
+          FOUR_C_THROW("ERROR: Number of DoFs in coupling condition {} does not match node {}",
+              numdofcond[condition_id], num_dof_rownodes[i]);
+        if (masterIds[condition_id] != gid) is_slave = true;
+      }
+
+      if (is_slave)
+      {  // in case it is a slave node (in some dof): the dof is cancelled, replaced by the master
+         // dof
+        int numdf = num_dof_rownodes[i];
+        int dof = count + (gid - minnodegid) * maxnodenumdf;
+        idxrownodes[i] = dof;
+        std::vector<int>& dofs = nodedofset[gid];
+        dofs.reserve(numdf);
+        for (int j = 0; j < numdf; ++j)
+        {
+          // push back master node DoF ID if the id is coupled
+          // it might be that the node is the master in one direction and a slave in another
+          if (applied_condition[j] >= 0 && masterIds[applied_condition[j]] != gid)
+          {
+            std::vector<int>& mdofs = nodedofset[masterIds[applied_condition[j]]];
+            dofs.push_back(mdofs[j]);
+          }
+          // push back new DoF ID if not coupled
+          else
+          {
+            dofs.push_back(dof + j);
+            localrowdofs.push_back(dof + j);
+          }
+        }
+      }
+      else
       // standard treatment for non-coupling nodes and master coupling nodes
-      if (!specialtreatment)
       {
         // now treat only the nodes, which are master and thus did not get the special treatment
         int numdf = num_dof_rownodes[i];
         int dof = count + (gid - minnodegid) * maxnodenumdf;
         idxrownodes[i] = dof;
         std::vector<int>& dofs = nodedofset[gid];
-        std::vector<int>& duplicatedofs = nodeduplicatedofset[gid];
         dofs.reserve(numdf);
-        duplicatedofs.reserve(numdf);
         for (int j = 0; j < numdf; ++j)
         {
           dofs.push_back(dof + j);
-          duplicatedofs.push_back(0);
+          localrowdofs.push_back(dof + j);
         }
       }
       // **********************************************************************
       // **********************************************************************
       // **********************************************************************
       // **********************************************************************
-      // std::cout << "Node ID " << gid << " - 0:" << nodedofset[gid][0] << "/"
-      // << nodeduplicatedofset[gid][0] << ", 2:" << nodedofset[gid][2] << "/"
-      // << nodeduplicatedofset[gid][2]<< "\n";
-    }
-    for (int i = 0; i < numrownodes; ++i)
-    {
-      const int gid = dis.l_row_node(i)->id();
-      std::string s = std::format("Node {}: ", gid + 1);
-      bool printflag = false;
-      for (int j = 0; j < 3; ++j)
-      {
-        const int dupnode = nodeduplicatedofset[gid][j];
-        s += std::format("{}/{}, ", nodedofset[gid][j], dupnode);
-        if (dupnode == 1) printflag = true;
-      }
-      if (printflag) std::cout << s << std::endl;
     }
 
-
-    Epetra_Import nodeimporter(numdfcolnodes_->get_map(), num_dof_rownodes.get_map());
+    Epetra_Import nodeimporter(numdfcolnodes_->get_block_map(), num_dof_rownodes.get_block_map());
     int err = numdfcolnodes_->import(num_dof_rownodes, nodeimporter, Insert);
-    if (err) FOUR_C_THROW("Import using importer returned err=%d", err);
+    if (err) FOUR_C_THROW("Import using importer returned err={}", err);
     err = idxcolnodes_->import(idxrownodes, nodeimporter, Insert);
     if (err) FOUR_C_THROW("Import using importer returned err={}", err);
 
@@ -451,7 +433,6 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
     Core::LinAlg::Vector<int> numdfrowelements(*dis.element_row_map());
     Core::LinAlg::Vector<int> idxrowelements(*dis.element_row_map());
 
-    int numrowelements = dis.num_my_row_elements();
     for (int i = 0; i < numrowelements; ++i)
     {
       Core::Elements::Element* actele = dis.l_row_element(i);
@@ -462,6 +443,7 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
 
     int minelementgid = dis.element_row_map()->MinAllGID();
     maxelementnumdf = numdfrowelements.max_value();
+    localrowdofs.reserve(numrownodes * maxnodenumdf + numrowelements * maxelementnumdf);
 
     for (int i = 0; i < numrowelements; ++i)
     {
@@ -479,7 +461,7 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
     }
 
     Epetra_Import elementimporter(
-        numdfcolelements_->get_map(), numdfrowelements.get_map());
+        numdfcolelements_->get_block_map(), numdfrowelements.get_block_map());
     err = numdfcolelements_->import(numdfrowelements, elementimporter, Insert);
     if (err) FOUR_C_THROW("Import using importer returned err={}", err);
     err = idxcolelements_->import(idxrowelements, elementimporter, Insert);
@@ -487,56 +469,21 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
   }
 
   // Now finally we have everything in place to build the maps.
-  int numrownodes = dis.num_my_row_nodes();
-  int numrowelements = dis.num_my_row_elements();
-
-  std::vector<int> localrowdofs;
-  std::vector<int> localcoldofs;
-  localrowdofs.reserve(numrownodes * maxnodenumdf + numrowelements * maxelementnumdf);
-  localcoldofs.reserve(numrownodes * maxnodenumdf + numrowelements * maxelementnumdf);
-
-  std::vector<int> allnodelocalcoldofs;
-  allnodelocalcoldofs.reserve(numrownodes * maxnodenumdf);
-
-  for (std::map<int, std::vector<int>>::iterator i = nodedofset.begin(); i != nodedofset.end(); ++i)
-  {
-    std::vector<int>& dofs = i->second;
-    std::vector<int>& duplicatedofs = nodeduplicatedofset[i->first];
-    std::vector<int> cleandofs;
-    for (unsigned j = 0; j < dofs.size(); ++j)
-    {
-      if (duplicatedofs[j] == 0) cleandofs.push_back(dofs[j]);
-    }
-    std::copy(cleandofs.begin(), cleandofs.end(), std::back_inserter(localrowdofs));
-    // printf("Proc %d nodal gid %d ndofs %d\n",proc,i->first,(int)dofs.size());
-    // for (unsigned j=0; j<dofs.size(); ++j) printf(" %d ",dofs[j]);
-    // printf("\n");
-  }
   for (std::map<int, std::vector<int>>::iterator i = facedofset.begin(); i != facedofset.end(); ++i)
   {
     std::vector<int>& dofs = i->second;
     std::copy(dofs.begin(), dofs.end(), std::back_inserter(localrowdofs));
-    // printf("Proc %d ele gid %d ndofs %d\n",dis.Comm().MyPID(),i->first,(int)dofs.size());
-    // for (unsigned j=0; j<dofs.size(); ++j) printf(" %d ",dofs[j]);
-    // printf("\n");
   }
   for (std::map<int, std::vector<int>>::iterator i = elementdofset.begin();
       i != elementdofset.end(); ++i)
   {
     std::vector<int>& dofs = i->second;
     std::copy(dofs.begin(), dofs.end(), std::back_inserter(localrowdofs));
-    // printf("Proc %d ele gid %d ndofs %d\n",dis.Comm().MyPID(),i->first,(int)dofs.size());
-    // for (unsigned j=0; j<dofs.size(); ++j) printf(" %d ",dofs[j]);
-    // printf("\n");
   }
 
   Core::Communication::Exporter nodeexporter(
       *dis.node_row_map(), *dis.node_col_map(), dis.get_comm());
   nodeexporter.do_export(nodedofset);
-
-  Core::Communication::Exporter elementexporter(
-      *dis.element_row_map(), *dis.element_col_map(), dis.get_comm());
-  elementexporter.do_export(elementdofset);
 
   if (facedis != nullptr && facedis->face_row_map() != nullptr)
   {
@@ -544,6 +491,15 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
         *facedis->face_row_map(), *facedis->face_col_map(), dis.get_comm());
     faceexporter.do_export(facedofset);
   }
+
+  Core::Communication::Exporter elementexporter(
+      *dis.element_row_map(), *dis.element_col_map(), dis.get_comm());
+  elementexporter.do_export(elementdofset);
+
+  std::vector<int> localcoldofs;
+  localcoldofs.reserve(numrownodes * maxnodenumdf + numrowelements * maxelementnumdf);
+  std::vector<int> allnodelocalcoldofs;
+  allnodelocalcoldofs.reserve(numrownodes * maxnodenumdf);
 
   for (std::map<int, std::vector<int>>::iterator i = nodedofset.begin(); i != nodedofset.end(); ++i)
   {
