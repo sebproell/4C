@@ -103,6 +103,11 @@ Core::FE::IntegrationPoints3D::IntegrationPoints3D(const GaussRule3D intrule) : 
 
       break;
     }
+    case GaussRule3D::hex_lobatto8point:
+    {
+      Internal::fillquadrature(GaussRule1D::line_lobatto2point, qxg, qwgt, nquad);
+      break;
+    }
     case GaussRule3D::hex_18point:
     {
       nquad = 18;
@@ -238,9 +243,19 @@ Core::FE::IntegrationPoints3D::IntegrationPoints3D(const GaussRule3D intrule) : 
       qwgt[26] = w2 * w2 * w2;
       break;
     }
+    case GaussRule3D::hex_lobatto27point:
+    {
+      Internal::fillquadrature(GaussRule1D::line_lobatto3point, qxg, qwgt, nquad);
+      break;
+    }
     case GaussRule3D::hex_64point:
     {
       Internal::fillquadrature(GaussRule1D::line_4point, qxg, qwgt, nquad);
+      break;
+    }
+    case GaussRule3D::hex_lobatto64point:
+    {
+      Internal::fillquadrature(GaussRule1D::line_lobatto4point, qxg, qwgt, nquad);
       break;
     }
     case GaussRule3D::hex_125point:
@@ -248,9 +263,19 @@ Core::FE::IntegrationPoints3D::IntegrationPoints3D(const GaussRule3D intrule) : 
       Internal::fillquadrature(GaussRule1D::line_5point, qxg, qwgt, nquad);
       break;
     }
+    case GaussRule3D::hex_lobatto125point:
+    {
+      Internal::fillquadrature(GaussRule1D::line_lobatto5point, qxg, qwgt, nquad);
+      break;
+    }
     case GaussRule3D::hex_216point:
     {
       Internal::fillquadrature(GaussRule1D::line_6point, qxg, qwgt, nquad);
+      break;
+    }
+    case GaussRule3D::hex_lobatto216point:
+    {
+      Internal::fillquadrature(GaussRule1D::line_lobatto6point, qxg, qwgt, nquad);
       break;
     }
     case GaussRule3D::hex_343point:
@@ -258,9 +283,19 @@ Core::FE::IntegrationPoints3D::IntegrationPoints3D(const GaussRule3D intrule) : 
       Internal::fillquadrature(GaussRule1D::line_7point, qxg, qwgt, nquad);
       break;
     }
+    case GaussRule3D::hex_lobatto343point:
+    {
+      Internal::fillquadrature(GaussRule1D::line_lobatto7point, qxg, qwgt, nquad);
+      break;
+    }
     case GaussRule3D::hex_512point:
     {
       Internal::fillquadrature(GaussRule1D::line_8point, qxg, qwgt, nquad);
+      break;
+    }
+    case GaussRule3D::hex_lobatto512point:
+    {
+      Internal::fillquadrature(GaussRule1D::line_lobatto8point, qxg, qwgt, nquad);
       break;
     }
     case GaussRule3D::hex_729point:
@@ -268,9 +303,19 @@ Core::FE::IntegrationPoints3D::IntegrationPoints3D(const GaussRule3D intrule) : 
       Internal::fillquadrature(GaussRule1D::line_9point, qxg, qwgt, nquad);
       break;
     }
+    case GaussRule3D::hex_lobatto729point:
+    {
+      Internal::fillquadrature(GaussRule1D::line_lobatto9point, qxg, qwgt, nquad);
+      break;
+    }
     case GaussRule3D::hex_1000point:
     {
       Internal::fillquadrature(GaussRule1D::line_10point, qxg, qwgt, nquad);
+      break;
+    }
+    case GaussRule3D::hex_lobatto1000point:
+    {
+      Internal::fillquadrature(GaussRule1D::line_lobatto10point, qxg, qwgt, nquad);
       break;
     }
     case GaussRule3D::tet_1point:

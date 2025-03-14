@@ -37,20 +37,29 @@ namespace Core::FE
   //! and none on the boundary of the integrated domain
   enum class GaussRule3D
   {
-    undefined,    ///< use this to initialize a gaussrule, if you don't know the value,
-                  ///< yet!
-    hex_1point,   ///< GAUSS INTEGRATION, DEG.OF PRECISION 1 (open)
-    hex_8point,   ///< GAUSS INTEGRATION, DEG.OF PRECISION 3 (open)
-    hex_18point,  ///< GAUSS INTEGRATION, DEG.OF PRECISION 5 in xy-plane, 3 in z-direction
-                  ///< (open)
-    hex_27point,  ///< GAUSS INTEGRATION, DEG.OF PRECISION 5 (open)
+    undefined,           ///< use this to initialize a gaussrule, if you don't know the value,
+                         ///< yet!
+    hex_1point,          ///< GAUSS INTEGRATION, DEG.OF PRECISION 1 (open)
+    hex_8point,          ///< GAUSS INTEGRATION, DEG.OF PRECISION 3 (open)
+    hex_lobatto8point,   ///< DEG.OF PRECISION 1 (closed)
+    hex_18point,         ///< GAUSS INTEGRATION, DEG.OF PRECISION 5 in xy-plane, 3 in z-direction
+                         ///< (open)
+    hex_27point,         ///< GAUSS INTEGRATION, DEG.OF PRECISION 5 (open)
+    hex_lobatto27point,  ///< GAUSS-LOBATTO (closed)
     hex_64point,
+    hex_lobatto64point,  ///< GAUSS-LOBATTO (closed)
     hex_125point,
+    hex_lobatto125point,  ///< GAUSS-LOBATTO (closed)
     hex_216point,
+    hex_lobatto216point,  ///< GAUSS-LOBATTO (closed)
     hex_343point,
+    hex_lobatto343point,  ///< GAUSS-LOBATTO (closed)
     hex_512point,
+    hex_lobatto512point,  ///< GAUSS-LOBATTO(closed)
     hex_729point,
+    hex_lobatto729point,  ///< GAUSS-LOBATTO (closed)
     hex_1000point,
+    hex_lobatto1000point,    ///< GAUSS-LOBATTO (closed)
     tet_1point,              ///< GAUSS INTEGRATION, DEG.OF PRECISION 1 (open)
     tet_4point,              ///< GAUSS INTEGRATION, DEG.OF PRECISION 2 (open)
     tet_4point_gauss_radau,  ///< GAUSS INTEGRATION, DEG.OF PRECISION 2 (closed)
@@ -203,6 +212,11 @@ namespace Core::FE
     static constexpr unsigned value = 8;
   };
   template <>
+  struct GaussRule3DToNumGaussPoints<GaussRule3D::hex_lobatto8point>
+  {
+    static constexpr unsigned value = 8;
+  };
+  template <>
   struct GaussRule3DToNumGaussPoints<GaussRule3D::hex_18point>
   {
     static constexpr unsigned value = 18;
@@ -213,7 +227,17 @@ namespace Core::FE
     static constexpr unsigned value = 27;
   };
   template <>
+  struct GaussRule3DToNumGaussPoints<GaussRule3D::hex_lobatto27point>
+  {
+    static constexpr unsigned value = 27;
+  };
+  template <>
   struct GaussRule3DToNumGaussPoints<GaussRule3D::hex_64point>
+  {
+    static constexpr unsigned value = 64;
+  };
+  template <>
+  struct GaussRule3DToNumGaussPoints<GaussRule3D::hex_lobatto64point>
   {
     static constexpr unsigned value = 64;
   };
@@ -223,7 +247,17 @@ namespace Core::FE
     static constexpr unsigned value = 125;
   };
   template <>
+  struct GaussRule3DToNumGaussPoints<GaussRule3D::hex_lobatto125point>
+  {
+    static constexpr unsigned value = 125;
+  };
+  template <>
   struct GaussRule3DToNumGaussPoints<GaussRule3D::hex_216point>
+  {
+    static constexpr unsigned value = 216;
+  };
+  template <>
+  struct GaussRule3DToNumGaussPoints<GaussRule3D::hex_lobatto216point>
   {
     static constexpr unsigned value = 216;
   };
@@ -233,7 +267,17 @@ namespace Core::FE
     static constexpr unsigned value = 343;
   };
   template <>
+  struct GaussRule3DToNumGaussPoints<GaussRule3D::hex_lobatto343point>
+  {
+    static constexpr unsigned value = 343;
+  };
+  template <>
   struct GaussRule3DToNumGaussPoints<GaussRule3D::hex_512point>
+  {
+    static constexpr unsigned value = 512;
+  };
+  template <>
+  struct GaussRule3DToNumGaussPoints<GaussRule3D::hex_lobatto512point>
   {
     static constexpr unsigned value = 512;
   };
@@ -243,7 +287,17 @@ namespace Core::FE
     static constexpr unsigned value = 729;
   };
   template <>
+  struct GaussRule3DToNumGaussPoints<GaussRule3D::hex_lobatto729point>
+  {
+    static constexpr unsigned value = 729;
+  };
+  template <>
   struct GaussRule3DToNumGaussPoints<GaussRule3D::hex_1000point>
+  {
+    static constexpr unsigned value = 1000;
+  };
+  template <>
+  struct GaussRule3DToNumGaussPoints<GaussRule3D::hex_lobatto1000point>
   {
     static constexpr unsigned value = 1000;
   };
