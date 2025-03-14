@@ -389,7 +389,7 @@ NODE 22    COORD  -0.5  0.5  0.5
 NODE 23    COORD  -0.5  0.5  -0.5
 NODE 24    COORD  -1.5  0.5  -0.5
 ------------------------------------------------STRUCTURE ELEMENTS
-1 SOLIDH8PORO HEX8  5 6 7 8 9 10 11 12  MAT 1 KINEM nonlinear EAS none
+1 SOLIDPORO_PRESSURE_VELOCITY_BASED HEX8 5 6 7 8 9 10 11 12 MAT 1 KINEM nonlinear
 2 SOLID HEX8 1 2 3 4 5 6 7 8 MAT 2 KINEM nonlinear
 ----------------------------------------------------FLUID ELEMENTS
 3 FLUID HEX8  13 14 15 16 17 18 19 20   MAT 4 NA ALE

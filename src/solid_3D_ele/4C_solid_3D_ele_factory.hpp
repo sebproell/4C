@@ -81,10 +81,6 @@ namespace Discret::Elements
 
   using SolidCalcVariant = CreateVariantType<Internal::SolidEvaluators>;
 
-  // forward declaration
-  class SolidEleCalcInterface;
-  class Solid;
-
   SolidCalcVariant create_solid_calculation_interface(Core::FE::CellType celltype,
       const Discret::Elements::SolidElementProperties& element_properties);
 

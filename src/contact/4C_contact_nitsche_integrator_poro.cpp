@@ -15,7 +15,6 @@
 #include "4C_mat_structporo.hpp"
 #include "4C_so3_base.hpp"
 #include "4C_so3_hex8.hpp"
-#include "4C_so3_poro.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_solid_poro_3D_ele_pressure_velocity_based.hpp"
 #include "4C_utils_exceptions.hpp"
@@ -233,14 +232,6 @@ void CONTACT::IntegratorNitschePoro::so_ele_cauchy(Mortar::Element& moEle, doubl
 
       sigma_nt = solid_ele->get_normal_cauchy_stress_at_xi(moEle.mo_data().parent_disp(),
           moEle.mo_data().parent_pf_pres(), pxsi, normal, direction, cauchy_linearizations);
-    }
-    else if (auto* solid_ele = dynamic_cast<
-                 Discret::Elements::So3Poro<Discret::Elements::SoHex8, Core::FE::CellType::hex8>*>(
-                 moEle.parent_element()))
-    {
-      solid_ele->get_cauchy_n_dir_and_derivatives_at_xi(pxsi, moEle.mo_data().parent_disp(),
-          moEle.mo_data().parent_pf_pres(), normal, direction, sigma_nt, &dsntdd, &dsntdp, &dsntdn,
-          &dsntdt, &dsntdpxi);
     }
     else
     {
