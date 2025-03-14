@@ -12,6 +12,7 @@
 #include "4C_contact_coupling3d.hpp"
 #include "4C_contact_element.hpp"
 #include "4C_contact_friction_node.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_integrator.hpp"
 #include "4C_contact_interpolator.hpp"
 #include "4C_contact_line_coupling.hpp"
@@ -7055,7 +7056,7 @@ bool CONTACT::Interface::update_active_set_semi_smooth()
     // adhesion
     double adhbound = 0.0;
     if (Teuchos::getIntegralValue<CONTACT::AdhesionType>(interface_params(), "ADHESION") ==
-        CONTACT::adhesion_bound)
+        CONTACT::AdhesionType::bound)
       adhbound = interface_params().get<double>("ADHESION_BOUND");
 
     // check nodes of inactive set *************************************

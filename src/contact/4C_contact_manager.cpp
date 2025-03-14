@@ -244,7 +244,7 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
     }
 
     // find out if interface-specific coefficients of adhesion are given
-    if (adhesionType == CONTACT::adhesion_bound)
+    if (adhesionType == CONTACT::AdhesionType::bound)
     {
       // read interface COFs
       std::vector<double> ad_bound(currentgroup.size());
@@ -701,13 +701,13 @@ bool CONTACT::Manager::read_and_check_input(Teuchos::ParameterList& cparams) con
   // adhesive contact
   // *********************************************************************
   if (Teuchos::getIntegralValue<CONTACT::AdhesionType>(contact, "ADHESION") !=
-          CONTACT::adhesion_none and
+          CONTACT::AdhesionType::none and
       Teuchos::getIntegralValue<Inpar::Wear::WearLaw>(wearlist, "WEARLAW") !=
           Inpar::Wear::wear_none)
     FOUR_C_THROW("Adhesion combined with wear not yet tested!");
 
   if (Teuchos::getIntegralValue<CONTACT::AdhesionType>(contact, "ADHESION") !=
-          CONTACT::adhesion_none and
+          CONTACT::AdhesionType::none and
       Teuchos::getIntegralValue<CONTACT::FrictionType>(contact, "FRICTION") !=
           CONTACT::friction_none)
     FOUR_C_THROW("Adhesion combined with friction not yet tested!");

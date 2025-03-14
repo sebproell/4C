@@ -32,10 +32,10 @@ namespace CONTACT
 
   /// Type of contact adhesion law
   /// (this enum represents the input file parameter ADHESION)
-  enum AdhesionType
+  enum class AdhesionType
   {
-    adhesion_none,  ///< no adhesion
-    adhesion_bound  ///< fix bounded adhesion
+    none,  ///< no adhesion
+    bound  ///< fix bounded adhesion
   };
 
   /// Type of employed solving strategy

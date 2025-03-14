@@ -32,7 +32,8 @@ void CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& l
 
   Core::Utils::string_to_integral_parameter<CONTACT::AdhesionType>("ADHESION", "None",
       "Type of adhesion law", tuple<std::string>("None", "none", "bounded", "b"),
-      tuple<CONTACT::AdhesionType>(adhesion_none, adhesion_none, adhesion_bound, adhesion_bound),
+      tuple<CONTACT::AdhesionType>(CONTACT::AdhesionType::none, CONTACT::AdhesionType::none,
+          CONTACT::AdhesionType::bound, CONTACT::AdhesionType::bound),
       scontact);
 
   Core::Utils::string_to_integral_parameter<CONTACT::FrictionType>("FRICTION", "None",
