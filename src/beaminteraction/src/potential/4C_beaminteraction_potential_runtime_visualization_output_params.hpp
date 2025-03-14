@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_beampotential.hpp"
+#include "4C_beaminteraction_potential_input.hpp"
 #include "4C_io_visualization_parameters.hpp"
 
 FOUR_C_NAMESPACE_OPEN

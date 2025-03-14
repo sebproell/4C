@@ -9,11 +9,11 @@
 
 #include "4C_beam3_base.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_utils.hpp"
+#include "4C_beaminteraction_potential_input.hpp"
 #include "4C_beaminteraction_potential_params.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_general_utils_fem_shapefunctions.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_beampotential.hpp"
 #include "4C_io_input_parameter_container.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
@@ -152,7 +152,7 @@ bool BeamInteraction::BeamToSpherePotentialPair<numnodes, numnodalvalues>::evalu
   // Todo allow for independent choice of strategy for beam-to-sphere potentials
   switch (params()->strategy())
   {
-    case Inpar::BeamPotential::strategy_doublelengthspec_largesepapprox:
+    case BeamPotential::strategy_doublelengthspec_largesepapprox:
     {
       evaluate_fpotand_stiffpot_large_sep_approx();
       break;
@@ -272,10 +272,10 @@ void BeamInteraction::BeamToSpherePotentialPair<numnodes,
 
   switch (params()->potential_type())  // Todo do we need a own Beam-to-sphere potential type here?
   {
-    case Inpar::BeamPotential::beampot_surf:
+    case BeamPotential::beampot_surf:
       prefactor *= 2 * radius1_ * M_PI;
       break;
-    case Inpar::BeamPotential::beampot_vol:
+    case BeamPotential::beampot_vol:
       prefactor *= std::pow(radius1_, 2) * M_PI;
       break;
     default:
