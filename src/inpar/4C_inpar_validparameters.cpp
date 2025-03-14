@@ -9,10 +9,10 @@
 
 #include "4C_ale_input.hpp"
 #include "4C_beamcontact_input.hpp"
+#include "4C_beaminteraction_potential_input.hpp"
 #include "4C_browniandyn_input.hpp"
 #include "4C_cut_input.hpp"
 #include "4C_inpar_beaminteraction.hpp"
-#include "4C_inpar_beampotential.hpp"
 #include "4C_inpar_binningstrategy.hpp"
 #include "4C_inpar_bio.hpp"
 #include "4C_inpar_cardiac_monodomain.hpp"
@@ -167,7 +167,7 @@ std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
   Inpar::IORuntimeOutput::Solid::set_valid_parameters(list);
   Inpar::IORuntimeOutput::Beam::set_valid_parameters(list);
   BeamContact::set_valid_parameters(list);
-  Inpar::BeamPotential::set_valid_parameters(list);
+  BeamPotential::set_valid_parameters(list);
   Inpar::BeamInteraction::set_valid_parameters(list);
   Inpar::RveMpc::set_valid_parameters(list);
   BrownianDynamics::set_valid_parameters(list);

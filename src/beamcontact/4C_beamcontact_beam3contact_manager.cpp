@@ -15,12 +15,12 @@
 #include "4C_beamcontact_input.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_defines.hpp"
 #include "4C_beaminteraction_beam_to_beam_contact_utils.hpp"
+#include "4C_beaminteraction_potential_input.hpp"
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_contact_element.hpp"
 #include "4C_contact_node.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_beampotential.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_io.hpp"
 #include "4C_io_pstream.hpp"
@@ -315,15 +315,15 @@ CONTACT::Beam3cmanager::Beam3cmanager(Core::FE::Discretization& discret, double 
     {
       std::cout << "=============== Beam Potential-Based Interaction ===============" << std::endl;
 
-      switch (Teuchos::getIntegralValue<Inpar::BeamPotential::BeamPotentialType>(
+      switch (Teuchos::getIntegralValue<BeamPotential::BeamPotentialType>(
           sbeampotential_, "BEAMPOTENTIAL_TYPE"))
       {
-        case Inpar::BeamPotential::beampot_surf:
+        case BeamPotential::beampot_surf:
         {
           std::cout << "Potential Type:      Surface" << std::endl;
           break;
         }
-        case Inpar::BeamPotential::beampot_vol:
+        case BeamPotential::beampot_vol:
         {
           std::cout << "Potential Type:      Volume" << std::endl;
           break;

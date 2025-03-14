@@ -8,9 +8,9 @@
 #include "4C_inpar_validconditions.hpp"
 
 #include "4C_ale_input.hpp"
+#include "4C_beaminteraction_potential_input.hpp"
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_beaminteraction.hpp"
-#include "4C_inpar_beampotential.hpp"
 #include "4C_inpar_bio.hpp"
 #include "4C_inpar_cardiac_monodomain.hpp"
 #include "4C_inpar_cardiovascular0d.hpp"
@@ -851,7 +851,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
   Inpar::SSTI::set_valid_conditions(condlist);
   Inpar::PARTICLE::set_valid_conditions(condlist);
   Inpar::LevelSet::set_valid_conditions(condlist);
-  Inpar::BeamPotential::set_valid_conditions(condlist);
+  BeamPotential::set_valid_conditions(condlist);
   Inpar::RveMpc::set_valid_conditions(condlist);
   Inpar::BeamInteraction::set_valid_conditions(condlist);
   Inpar::EHL::set_valid_conditions(condlist);

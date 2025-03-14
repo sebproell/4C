@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_beampotential.hpp"
+#include "4C_beaminteraction_potential_input.hpp"
 
 #include "4C_beamcontact_input.hpp"
 #include "4C_fem_condition_definition.hpp"
@@ -16,7 +16,7 @@ FOUR_C_NAMESPACE_OPEN
 
 
 
-void Inpar::BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
+void BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
@@ -33,22 +33,20 @@ void Inpar::BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::
       {.description = "prefactor(s) $k_i$ of potential law $\\Phi(r) = \\sum_i (k_i * r^{-m_i})$.",
           .default_value = "0.0"}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::BeamPotential::BeamPotentialType>(
-      "BEAMPOTENTIAL_TYPE", "Surface",
-      "Type of potential interaction: surface (default) or volume potential",
+  Core::Utils::string_to_integral_parameter<BeamPotential::BeamPotentialType>("BEAMPOTENTIAL_TYPE",
+      "Surface", "Type of potential interaction: surface (default) or volume potential",
       tuple<std::string>("Surface", "surface", "Volume", "volume"),
-      tuple<Inpar::BeamPotential::BeamPotentialType>(
-          beampot_surf, beampot_surf, beampot_vol, beampot_vol),
+      tuple<BeamPotential::BeamPotentialType>(beampot_surf, beampot_surf, beampot_vol, beampot_vol),
       beampotential);
 
-  Core::Utils::string_to_integral_parameter<Inpar::BeamPotential::BeamPotentialStrategy>("STRATEGY",
+  Core::Utils::string_to_integral_parameter<BeamPotential::BeamPotentialStrategy>("STRATEGY",
       "DoubleLengthSpecific_LargeSepApprox",
       "strategy to evaluate interaction potential: double/single length specific, "
       "small/large separation approximation, ...",
       tuple<std::string>("DoubleLengthSpecific_LargeSepApprox",
           "DoubleLengthSpecific_SmallSepApprox", "SingleLengthSpecific_SmallSepApprox",
           "SingleLengthSpecific_SmallSepApprox_Simple"),
-      tuple<Inpar::BeamPotential::BeamPotentialStrategy>(strategy_doublelengthspec_largesepapprox,
+      tuple<BeamPotential::BeamPotentialStrategy>(strategy_doublelengthspec_largesepapprox,
           strategy_doublelengthspec_smallsepapprox, strategy_singlelengthspec_smallsepapprox,
           strategy_singlelengthspec_smallsepapprox_simple),
       beampotential);
@@ -58,10 +56,10 @@ void Inpar::BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::
               "Neglect all potential contributions at separation largerthan this cutoff radius",
           .default_value = -1.0}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::BeamPotential::BeamPotentialRegularizationType>(
+  Core::Utils::string_to_integral_parameter<BeamPotential::BeamPotentialRegularizationType>(
       "REGULARIZATION_TYPE", "none", "Type of regularization applied to the force law",
       tuple<std::string>("linear_extrapolation", "constant_extrapolation", "None", "none"),
-      tuple<Inpar::BeamPotential::BeamPotentialRegularizationType>(
+      tuple<BeamPotential::BeamPotentialRegularizationType>(
           regularization_linear, regularization_constant, regularization_none, regularization_none),
       beampotential);
 
@@ -162,7 +160,7 @@ void Inpar::BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::
   beampotential_output_sublist.move_into_collection(list);
 }
 
-void Inpar::BeamPotential::set_valid_conditions(
+void BeamPotential::set_valid_conditions(
     std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
   using namespace Core::IO::InputSpecBuilders;
