@@ -386,16 +386,15 @@ void CONTACT::NitscheStrategy::setup(bool redistributed, bool init)
 
 void CONTACT::NitscheStrategy::update_trace_ineq_etimates()
 {
-  auto NitWgt =
-      Teuchos::getIntegralValue<Inpar::CONTACT::NitscheWeighting>(params(), "NITSCHE_WEIGHTING");
+  auto NitWgt = Teuchos::getIntegralValue<CONTACT::NitscheWeighting>(params(), "NITSCHE_WEIGHTING");
   for (const auto& interface : interface_)
   {
     for (int e = 0; e < interface->discret().element_col_map()->NumMyElements(); ++e)
     {
       auto* mele = dynamic_cast<Mortar::Element*>(
           interface->discret().g_element(interface->discret().element_col_map()->GID(e)));
-      if (NitWgt == Inpar::CONTACT::NitWgt_slave && !mele->is_slave()) continue;
-      if (NitWgt == Inpar::CONTACT::NitWgt_master && mele->is_slave()) continue;
+      if (NitWgt == CONTACT::NitWgt_slave && !mele->is_slave()) continue;
+      if (NitWgt == CONTACT::NitWgt_master && mele->is_slave()) continue;
       mele->estimate_nitsche_trace_max_eigenvalue();
     }
   }

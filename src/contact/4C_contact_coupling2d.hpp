@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_contact.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_inpar_wear.hpp"
 #include "4C_mortar_coupling2d.hpp"
 
@@ -82,7 +82,7 @@ namespace CONTACT
     Coupling2d(const Coupling2d& old) = delete;
 
     // new variables as compared to base class
-    Inpar::CONTACT::SolvingStrategy stype_;
+    CONTACT::SolvingStrategy stype_;
   };  // class Coupling2d
 
   /*!
@@ -147,7 +147,7 @@ namespace CONTACT
     Coupling2dManager operator=(const Coupling2dManager& old) = delete;
     Coupling2dManager(const Coupling2dManager& old) = delete;
 
-    Inpar::CONTACT::SolvingStrategy stype_;  // solving strategy
+    CONTACT::SolvingStrategy stype_;  // solving strategy
 
   };  // class Coupling2dManager
 

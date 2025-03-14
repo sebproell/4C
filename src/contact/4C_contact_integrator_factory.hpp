@@ -10,8 +10,8 @@
 
 #include "4C_config.hpp"
 
+#include "4C_contact_input.hpp"
 #include "4C_fem_general_element.hpp"
-#include "4C_inpar_contact.hpp"
 
 // forward declaration
 #include "4C_utils_parameter_list.fwd.hpp"
@@ -31,14 +31,13 @@ namespace CONTACT
 
        * */
       std::shared_ptr<CONTACT::Integrator> build_integrator(
-          const Inpar::CONTACT::SolvingStrategy& sol_type, Teuchos::ParameterList& mortar_params,
+          const CONTACT::SolvingStrategy& sol_type, Teuchos::ParameterList& mortar_params,
           const Core::FE::CellType& slave_type, MPI_Comm comm) const;
     };  // class Factory
 
     // non-member function, please call this one from outside!
-    std::shared_ptr<CONTACT::Integrator> build_integrator(
-        const Inpar::CONTACT::SolvingStrategy& sol_type, Teuchos::ParameterList& mortar_params,
-        const Core::FE::CellType& slave_type, MPI_Comm comm);
+    std::shared_ptr<CONTACT::Integrator> build_integrator(const CONTACT::SolvingStrategy& sol_type,
+        Teuchos::ParameterList& mortar_params, const Core::FE::CellType& slave_type, MPI_Comm comm);
   }  // namespace INTEGRATOR
 }  // namespace CONTACT
 

@@ -7,11 +7,11 @@
 
 #include "4C_contact_defines.hpp"
 #include "4C_contact_friction_node.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_integrator.hpp"
 #include "4C_contact_interface.hpp"
 #include "4C_contact_selfcontact_binarytree.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_io_control.hpp"
 #include "4C_io_gmsh.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
@@ -4414,8 +4414,7 @@ void CONTACT::Interface::fd_check_slip_deriv(
     FOUR_C_THROW("FD checks only for serial case");
 
   // information from interface contact parameter list
-  auto ftype =
-      Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(interface_params(), "FRICTION");
+  auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(interface_params(), "FRICTION");
   double frbound = interface_params().get<double>("FRBOUND");
   double frcoeff = interface_params().get<double>("FRCOEFF");
   double ct = interface_params().get<double>("SEMI_SMOOTH_CT");
@@ -4512,12 +4511,12 @@ void CONTACT::Interface::fd_check_slip_deriv(
     }  // if cnode == Slip
 
     // store C in vector
-    if (ftype == Inpar::CONTACT::friction_tresca)
+    if (ftype == CONTACT::friction_tresca)
     {
       refCtxi[i] = euclidean * ztxi - frbound * (ztxi + ct * jumptxi);
       refCteta[i] = euclidean * zteta - frbound * (zteta + ct * jumpteta);
     }
-    else if (ftype == Inpar::CONTACT::friction_coulomb)
+    else if (ftype == CONTACT::friction_coulomb)
     {
       refCtxi[i] = euclidean * ztxi - (frcoeff * znor) * (ztxi + ct * jumptxi);
       refCteta[i] = euclidean * zteta - (frcoeff * znor) * (zteta + ct * jumpteta);
@@ -4642,12 +4641,12 @@ void CONTACT::Interface::fd_check_slip_deriv(
       }  // if cnode == Slip
 
       // store C in vector
-      if (ftype == Inpar::CONTACT::friction_tresca)
+      if (ftype == CONTACT::friction_tresca)
       {
         newCtxi[k] = euclidean * ztxi - frbound * (ztxi + ct * jumptxi);
         newCteta[k] = euclidean * zteta - frbound * (zteta + ct * jumpteta);
       }
-      else if (ftype == Inpar::CONTACT::friction_coulomb)
+      else if (ftype == CONTACT::friction_coulomb)
       {
         newCtxi[k] = euclidean * ztxi - (frcoeff * znor) * (ztxi + ct * jumptxi);
         newCteta[k] = euclidean * zteta - (frcoeff * znor) * (zteta + ct * jumpteta);
@@ -4879,12 +4878,12 @@ void CONTACT::Interface::fd_check_slip_deriv(
       }  // if cnode == Slip
 
       // store C in vector
-      if (ftype == Inpar::CONTACT::friction_tresca)
+      if (ftype == CONTACT::friction_tresca)
       {
         newCtxi[k] = euclidean * ztxi - frbound * (ztxi + ct * jumptxi);
         newCteta[k] = euclidean * zteta - frbound * (zteta + ct * jumpteta);
       }
-      else if (ftype == Inpar::CONTACT::friction_coulomb)
+      else if (ftype == CONTACT::friction_coulomb)
       {
         newCtxi[k] = euclidean * ztxi - (frcoeff * znor) * (ztxi + ct * jumptxi);
         newCteta[k] = euclidean * zteta - (frcoeff * znor) * (zteta + ct * jumpteta);
@@ -5117,12 +5116,12 @@ void CONTACT::Interface::fd_check_slip_deriv(
       }  // if cnode == Slip
 
       // store C in vector
-      if (ftype == Inpar::CONTACT::friction_tresca)
+      if (ftype == CONTACT::friction_tresca)
       {
         newCtxi[k] = euclidean * ztxi - frbound * (ztxi + ct * jumptxi);
         newCteta[k] = euclidean * zteta - frbound * (zteta + ct * jumpteta);
       }
-      else if (ftype == Inpar::CONTACT::friction_coulomb)
+      else if (ftype == CONTACT::friction_coulomb)
       {
         newCtxi[k] = euclidean * ztxi - (frcoeff * znor) * (ztxi + ct * jumptxi);
         newCteta[k] = euclidean * zteta - (frcoeff * znor) * (zteta + ct * jumpteta);
@@ -5622,10 +5621,10 @@ void CONTACT::Interface::fd_check_penalty_trac_fric()
     Core::LinAlg::SerialDenseMatrix lmuzawatan(dim, 1);
     Core::LinAlg::multiply(lmuzawatan, tanplane, lmuzawa);
 
-    if ((Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
-             interface_params(), "STRATEGY") == Inpar::CONTACT::solution_penalty) ||
-        (Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
-             interface_params(), "STRATEGY") == Inpar::CONTACT::solution_multiscale))
+    if ((Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(interface_params(), "STRATEGY") ==
+            CONTACT::solution_penalty) ||
+        (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(interface_params(), "STRATEGY") ==
+            CONTACT::solution_multiscale))
     {
       for (int j = 0; j < dim; j++)
       {
@@ -5779,11 +5778,11 @@ void CONTACT::Interface::fd_check_penalty_trac_fric()
       Core::LinAlg::SerialDenseMatrix lmuzawatan(dim, 1);
       Core::LinAlg::multiply(lmuzawatan, tanplane, lmuzawa);
 
-      const auto contact_strategy = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
-          interface_params(), "STRATEGY");
+      const auto contact_strategy =
+          Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(interface_params(), "STRATEGY");
 
-      if ((contact_strategy == Inpar::CONTACT::solution_penalty) ||
-          (contact_strategy == Inpar::CONTACT::solution_multiscale))
+      if ((contact_strategy == CONTACT::solution_penalty) ||
+          (contact_strategy == CONTACT::solution_multiscale))
       {
         for (int j = 0; j < dim; j++)
         {
@@ -5998,10 +5997,10 @@ void CONTACT::Interface::fd_check_penalty_trac_fric()
       Core::LinAlg::SerialDenseMatrix lmuzawatan(dim, 1);
       Core::LinAlg::multiply(lmuzawatan, tanplane, lmuzawa);
 
-      if ((Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
-               interface_params(), "STRATEGY") == Inpar::CONTACT::solution_penalty) ||
-          (Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
-               interface_params(), "STRATEGY") == Inpar::CONTACT::solution_multiscale))
+      if ((Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(interface_params(), "STRATEGY") ==
+              CONTACT::solution_penalty) ||
+          (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(interface_params(), "STRATEGY") ==
+              CONTACT::solution_multiscale))
       {
         for (int j = 0; j < dim; j++)
         {

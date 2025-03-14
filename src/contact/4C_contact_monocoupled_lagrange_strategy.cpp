@@ -92,7 +92,7 @@ void CONTACT::MonoCoupledLagrangeStrategy::evaluate_off_diag_contact(
   std::shared_ptr<Epetra_Map> domainmap = std::make_shared<Epetra_Map>(kteff->domain_map());
 
   // system type
-  auto systype = Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(params(), "SYSTEM");
+  auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(params(), "SYSTEM");
 
   // shape function
   auto shapefcn = Teuchos::getIntegralValue<Inpar::Mortar::ShapeFcn>(params(), "LM_SHAPEFCN");
@@ -102,7 +102,7 @@ void CONTACT::MonoCoupledLagrangeStrategy::evaluate_off_diag_contact(
   // CASE A: CONDENSED SYSTEM (DUAL)
   //**********************************************************************
   //**********************************************************************
-  if (systype == Inpar::CONTACT::system_condensed)
+  if (systype == CONTACT::system_condensed)
   {
     // double-check if this is a dual LM system
     if (shapefcn != Inpar::Mortar::shape_dual && shapefcn != Inpar::Mortar::shape_petrovgalerkin)
@@ -291,14 +291,14 @@ void CONTACT::MonoCoupledLagrangeStrategy::recover_coupled(
 
   // shape function and system types
   auto shapefcn = Teuchos::getIntegralValue<Inpar::Mortar::ShapeFcn>(params(), "LM_SHAPEFCN");
-  auto systype = Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(params(), "SYSTEM");
+  auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(params(), "SYSTEM");
 
   //**********************************************************************
   //**********************************************************************
   // CASE A: CONDENSED SYSTEM (DUAL)
   //**********************************************************************
   //**********************************************************************
-  if (systype == Inpar::CONTACT::system_condensed)
+  if (systype == CONTACT::system_condensed)
   {
     // double-check if this is a dual LM system
     if (shapefcn != Inpar::Mortar::shape_dual && shapefcn != Inpar::Mortar::shape_petrovgalerkin)

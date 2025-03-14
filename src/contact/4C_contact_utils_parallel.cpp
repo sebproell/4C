@@ -7,8 +7,8 @@
 
 #include "4C_contact_utils_parallel.hpp"
 
+#include "4C_contact_input.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_mortar.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_legacy_enum_definitions_problem_type.hpp"

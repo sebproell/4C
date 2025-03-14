@@ -8,7 +8,7 @@
 #include "4C_contact_nox_nln_meshtying_linearsystem.hpp"  // base class
 
 #include "4C_contact_abstract_strategy.hpp"
-#include "4C_inpar_contact.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_linalg_blocksparsematrix.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_linear_solver_method_linalg.hpp"

@@ -856,7 +856,7 @@ namespace CONTACT
     //! contact algorithm
     Inpar::Mortar::AlgorithmType algo_;
     //! solution stratety
-    Inpar::CONTACT::SolvingStrategy stype_;
+    CONTACT::SolvingStrategy stype_;
     //! flag for closest point normal -> change in linsize
     bool cppnormal_;
 

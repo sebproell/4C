@@ -75,13 +75,13 @@ void CONTACT::IntegratorNitsche::gpts_forces(Mortar::Element& sele, Mortar::Elem
 
   if (dim != n_dim()) FOUR_C_THROW("dimension inconsistency");
 
-  if (frtype_ != Inpar::CONTACT::friction_none && dim != 3) FOUR_C_THROW("only 3D friction");
-  if (frtype_ != Inpar::CONTACT::friction_none && frtype_ != Inpar::CONTACT::friction_coulomb &&
-      frtype_ != Inpar::CONTACT::friction_tresca)
+  if (frtype_ != CONTACT::friction_none && dim != 3) FOUR_C_THROW("only 3D friction");
+  if (frtype_ != CONTACT::friction_none && frtype_ != CONTACT::friction_coulomb &&
+      frtype_ != CONTACT::friction_tresca)
     FOUR_C_THROW("only coulomb or tresca friction");
-  if (frtype_ == Inpar::CONTACT::friction_coulomb && frcoeff_ < 0.)
+  if (frtype_ == CONTACT::friction_coulomb && frcoeff_ < 0.)
     FOUR_C_THROW("negative coulomb friction coefficient");
-  if (frtype_ == Inpar::CONTACT::friction_tresca && frbound_ < 0.)
+  if (frtype_ == CONTACT::friction_tresca && frbound_ < 0.)
     FOUR_C_THROW("negative tresca friction bound");
 
   Core::LinAlg::Matrix<dim, 1> slave_normal, master_normal;
@@ -97,7 +97,7 @@ void CONTACT::IntegratorNitsche::gpts_forces(Mortar::Element& sele, Mortar::Elem
 
   const Core::LinAlg::Matrix<dim, 1> contact_normal(gpn, true);
 
-  if (stype_ == Inpar::CONTACT::solution_nitsche)
+  if (stype_ == CONTACT::solution_nitsche)
   {
     double cauchy_nn_weighted_average = 0.;
     Core::Gen::Pairedvector<int, double> cauchy_nn_weighted_average_deriv(
@@ -287,10 +287,10 @@ void CONTACT::IntegratorNitsche::gpts_forces(Mortar::Element& sele, Mortar::Elem
         double fr = 0.0;
         switch (frtype_)
         {
-          case Inpar::CONTACT::friction_coulomb:
+          case CONTACT::friction_coulomb:
             fr = frcoeff_ * (-1.) * (snn_av_pen_gap);
             break;
-          case Inpar::CONTACT::friction_tresca:
+          case CONTACT::friction_tresca:
             fr = frbound_;
             break;
           default:
@@ -322,7 +322,7 @@ void CONTACT::IntegratorNitsche::gpts_forces(Mortar::Element& sele, Mortar::Elem
               dgapgp.size() + cauchy_nn_weighted_average_deriv.size() +
                   cauchy_nt1_weighted_average_deriv.size() + dvt1.size(),
               0, 0);
-          if (frtype_ == Inpar::CONTACT::friction_coulomb)
+          if (frtype_ == CONTACT::friction_coulomb)
             for (const auto& p : d_snn_av_pen_gap) tmp_d[p.first] += -frcoeff_ / tan_tr * p.second;
 
           for (const auto& p : cauchy_nt1_weighted_average_deriv)
@@ -380,8 +380,7 @@ void CONTACT::IntegratorNitsche::gpts_forces(Mortar::Element& sele, Mortar::Elem
       }
     }
   }
-  else if ((stype_ == Inpar::CONTACT::solution_penalty) ||
-           stype_ == Inpar::CONTACT::solution_multiscale)
+  else if ((stype_ == CONTACT::solution_penalty) || stype_ == CONTACT::solution_multiscale)
   {
     if (gap < 0.)
     {
@@ -689,15 +688,15 @@ void CONTACT::IntegratorNitsche::integrate_adjoint_test(const double fac, const 
 }
 
 void CONTACT::Utils::nitsche_weights_and_scaling(Mortar::Element& sele, Mortar::Element& mele,
-    const Inpar::CONTACT::NitscheWeighting nit_wgt, const double dt, double& ws, double& wm,
-    double& pen, double& pet)
+    const CONTACT::NitscheWeighting nit_wgt, const double dt, double& ws, double& wm, double& pen,
+    double& pet)
 {
   const double he_slave = dynamic_cast<CONTACT::Element&>(sele).trace_he();
   const double he_master = dynamic_cast<CONTACT::Element&>(mele).trace_he();
 
   switch (nit_wgt)
   {
-    case Inpar::CONTACT::NitWgt_slave:
+    case CONTACT::NitWgt_slave:
     {
       ws = 1.;
       wm = 0.;
@@ -705,7 +704,7 @@ void CONTACT::Utils::nitsche_weights_and_scaling(Mortar::Element& sele, Mortar::
       pet /= he_slave;
     }
     break;
-    case Inpar::CONTACT::NitWgt_master:
+    case CONTACT::NitWgt_master:
     {
       wm = 1.;
       ws = 0.;
@@ -713,7 +712,7 @@ void CONTACT::Utils::nitsche_weights_and_scaling(Mortar::Element& sele, Mortar::
       pet /= he_master;
     }
     break;
-    case Inpar::CONTACT::NitWgt_harmonic:
+    case CONTACT::NitWgt_harmonic:
       ws = 1. / he_master;
       wm = 1. / he_slave;
       ws /= (ws + wm);

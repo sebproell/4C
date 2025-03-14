@@ -9,8 +9,8 @@
 
 #include "4C_beaminteraction_str_model_evaluator.hpp"
 #include "4C_comm_utils.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"
 #include "4C_io_gmsh.hpp"

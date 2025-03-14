@@ -11,6 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_browniandyn_input.hpp"        // enums
+#include "4C_contact_input.hpp"            // enums
 #include "4C_contact_paramsinterface.hpp"  // base class of the ContactData class
 #include "4C_fem_discretization.hpp"
 #include "4C_structure_new_elements_paramsinterface.hpp"  // base class of the Data class
@@ -1172,27 +1173,25 @@ namespace Solid
       [[nodiscard]] std::string get_output_file_path() const override;
 
       //! get variational approach enumerator
-      [[nodiscard]] enum Inpar::CONTACT::VariationalApproach get_variational_approach_type()
-          const override
+      [[nodiscard]] enum CONTACT::VariationalApproach get_variational_approach_type() const override
       {
         return var_type_;
       }
 
       //! set variational approach enumerator
-      void set_variational_approach_type(
-          const enum Inpar::CONTACT::VariationalApproach var_type) override
+      void set_variational_approach_type(const enum CONTACT::VariationalApproach var_type) override
       {
         var_type_ = var_type;
       }
 
       //! set coupling mode enumerator
-      [[nodiscard]] enum Inpar::CONTACT::CouplingScheme get_coupling_scheme() const override
+      [[nodiscard]] enum CONTACT::CouplingScheme get_coupling_scheme() const override
       {
         return coupling_scheme_;
       }
 
       //! set coupling mode enumerator
-      void set_coupling_scheme(const enum Inpar::CONTACT::CouplingScheme scheme) override
+      void set_coupling_scheme(const enum CONTACT::CouplingScheme scheme) override
       {
         coupling_scheme_ = scheme;
       }
@@ -1294,9 +1293,9 @@ namespace Solid
 
       enum Mortar::ActionType mortar_action_;
 
-      enum Inpar::CONTACT::VariationalApproach var_type_;
+      enum CONTACT::VariationalApproach var_type_;
 
-      enum Inpar::CONTACT::CouplingScheme coupling_scheme_;
+      enum CONTACT::CouplingScheme coupling_scheme_;
 
       std::shared_ptr<const Solid::ModelEvaluator::Data> str_data_ptr_;
 

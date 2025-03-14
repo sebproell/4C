@@ -11,9 +11,9 @@
 #include "4C_contact_constitutivelaw_contactconstitutivelaw_parameter.hpp"
 #include "4C_contact_defines.hpp"
 #include "4C_contact_element.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_general_node.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_mortar.hpp"
 #include "4C_utils_exceptions.hpp"
 

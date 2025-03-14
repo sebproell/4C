@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_contact.hpp"
+#include "4C_contact_input.hpp"
 
 #include <mpi.h>
 

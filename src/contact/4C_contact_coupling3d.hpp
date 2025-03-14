@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_contact.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_inpar_wear.hpp"
 #include "4C_mortar_coupling3d.hpp"
 
@@ -164,7 +164,7 @@ namespace CONTACT
     Coupling3d(const Coupling3d& old) = delete;
 
     // new variables as compared to base class
-    Inpar::CONTACT::SolvingStrategy stype_;
+    CONTACT::SolvingStrategy stype_;
 
   };  // class Coupling3d
 
@@ -386,7 +386,7 @@ namespace CONTACT
     std::vector<Mortar::Element*> mele_;  // master elements
     std::vector<std::shared_ptr<Coupling3d>> coup_;  // coupling pairs
     int ncells_;                                     // total number of integration cells
-    Inpar::CONTACT::SolvingStrategy stype_;          // solving strategy
+    CONTACT::SolvingStrategy stype_;                 // solving strategy
   };
   // class Coupling3dManager
 

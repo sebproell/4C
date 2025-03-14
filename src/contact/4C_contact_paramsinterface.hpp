@@ -29,12 +29,13 @@ namespace Inpar
   {
     enum PredEnum : int;
   }  // namespace Solid
-  namespace CONTACT
-  {
-    enum VariationalApproach : int;
-    enum class CouplingScheme : int;
-  }  // namespace CONTACT
 }  // namespace Inpar
+
+namespace CONTACT
+{
+  enum VariationalApproach : int;
+  enum class CouplingScheme : int;
+}  // namespace CONTACT
 
 namespace Solid
 {
@@ -79,17 +80,17 @@ namespace CONTACT
     virtual std::string get_output_file_path() const = 0;
 
     //! get the variational approach type
-    virtual enum Inpar::CONTACT::VariationalApproach get_variational_approach_type() const = 0;
+    virtual enum CONTACT::VariationalApproach get_variational_approach_type() const = 0;
 
     //! set the variational approach type
     virtual void set_variational_approach_type(
-        const enum Inpar::CONTACT::VariationalApproach var_type) = 0;
+        const enum CONTACT::VariationalApproach var_type) = 0;
 
     //! set the coupling approach mode
-    virtual enum Inpar::CONTACT::CouplingScheme get_coupling_scheme() const = 0;
+    virtual enum CONTACT::CouplingScheme get_coupling_scheme() const = 0;
 
     //! set the coupling scheme
-    virtual void set_coupling_scheme(const enum Inpar::CONTACT::CouplingScheme scheme) = 0;
+    virtual void set_coupling_scheme(const enum CONTACT::CouplingScheme scheme) = 0;
 
     //! Get any additional data that has been set.
     virtual const std::any& get_user_data() const = 0;

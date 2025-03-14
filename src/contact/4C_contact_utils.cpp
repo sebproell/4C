@@ -7,11 +7,11 @@
 
 #include "4C_contact_utils.hpp"
 
+#include "4C_contact_input.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_general_element.hpp"
 #include "4C_fem_general_node.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_mortar.hpp"
 #include "4C_io_every_iteration_writer.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
@@ -331,11 +331,11 @@ void CONTACT::Utils::get_initialization_info(bool& Two_half_pass,
         (problemtype != Core::ProblemType::fpsi_xfem) and (problemtype != Core::ProblemType::ssi))
       FOUR_C_THROW(
           "two half pass algorithm only implemented in structural, fsi/fpsi and ssi problems");
-    if (Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(contact, "STRATEGY") !=
-        Inpar::CONTACT::solution_nitsche)
+    if (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(contact, "STRATEGY") !=
+        CONTACT::solution_nitsche)
       FOUR_C_THROW("two half pass algorithm only with nitsche contact formulation");
-    if (Teuchos::getIntegralValue<Inpar::CONTACT::NitscheWeighting>(contact, "NITSCHE_WEIGHTING") !=
-        Inpar::CONTACT::NitWgt_harmonic)
+    if (Teuchos::getIntegralValue<CONTACT::NitscheWeighting>(contact, "NITSCHE_WEIGHTING") !=
+        CONTACT::NitWgt_harmonic)
       FOUR_C_THROW("two half pass algorithm only with harmonic weighting");
   }
 

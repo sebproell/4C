@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_contact.hpp"  // for the Inpar::CONTACT enums
+#include "4C_contact_input.hpp"  // for the CONTACT enums
 #include "4C_linalg_vector.hpp"
 #include "4C_mortar_interface.hpp"                                       // for the enum state type
 #include "4C_solver_nonlin_nox_constraint_interface_preconditioner.hpp"  // interface specifications
@@ -112,8 +112,8 @@ namespace Mortar
     const int& max_dof() const { return maxdof_; }
 
     //! Return current used system type
-    Inpar::CONTACT::SystemType& sys_type() { return systype_; }
-    const Inpar::CONTACT::SystemType& sys_type() const { return systype_; }
+    CONTACT::SystemType& sys_type() { return systype_; }
+    const CONTACT::SystemType& sys_type() const { return systype_; }
 
    private:
     //! Underlying problem dof row map (not only interfaces)
@@ -141,7 +141,7 @@ namespace Mortar
     int maxdof_;
 
     //! Current used system type
-    Inpar::CONTACT::SystemType systype_;
+    CONTACT::SystemType systype_;
 
     //! time integration type
     Inpar::Solid::DynamicType dyntype_;
@@ -213,7 +213,7 @@ namespace Mortar
     const Teuchos::ParameterList& params() const { return scontact_; }
 
     //! return the current system type
-    const Inpar::CONTACT::SystemType& system_type() const { return systype_; }
+    const CONTACT::SystemType& system_type() const { return systype_; }
 
     //! Get problem dimension
     int n_dim() const { return dim_; }
@@ -424,8 +424,8 @@ namespace Mortar
     double& alphaf_;                    //!< ref. to generalized-alpha parameter (0.0 for statics)
     bool& parredist_;                   //!< ref. to flag indicating parallel redistribution status
     int& maxdof_;                       //!< ref. to highest dof number in problem discretization
-    Inpar::CONTACT::SystemType& systype_;  //!< ref. to current used system type
-                                           //! @}
+    CONTACT::SystemType& systype_;      //!< ref. to current used system type
+                                        //! @}
 
    private:
     //! pointer to the data container object

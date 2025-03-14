@@ -511,12 +511,12 @@ namespace CONTACT
     const std::vector<double>& mean_interface_vels() const { return ivel_; };
 
     //! return current used solving strategy
-    Inpar::CONTACT::SolvingStrategy& sol_type() { return stype_; };
-    Inpar::CONTACT::SolvingStrategy sol_type() const { return stype_; };
+    CONTACT::SolvingStrategy& sol_type() { return stype_; };
+    CONTACT::SolvingStrategy sol_type() const { return stype_; };
 
     //! return direction in which the contact constraints are formulated
-    Inpar::CONTACT::ConstraintDirection& constr_direction() { return constr_direction_; };
-    Inpar::CONTACT::ConstraintDirection constr_direction() const { return constr_direction_; };
+    CONTACT::ConstraintDirection& constr_direction() { return constr_direction_; };
+    CONTACT::ConstraintDirection constr_direction() const { return constr_direction_; };
 
     Inpar::Mortar::ParallelRedist& par_type() { return partype_; };
     Inpar::Mortar::ParallelRedist par_type() const { return partype_; };
@@ -760,10 +760,10 @@ namespace CONTACT
     std::vector<double> ivel_;
 
     //! current used solving strategy
-    Inpar::CONTACT::SolvingStrategy stype_;
+    CONTACT::SolvingStrategy stype_;
 
     //! direction in which the contact constraints are formulated
-    Inpar::CONTACT::ConstraintDirection constr_direction_;
+    CONTACT::ConstraintDirection constr_direction_;
 
   };  // class AbstractStrategyDataContainer
 

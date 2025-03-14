@@ -10,11 +10,11 @@
 #include "4C_contact_constitutivelaw_cubic_contactconstitutivelaw.hpp"
 #include "4C_contact_defines.hpp"
 #include "4C_contact_element.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_interface.hpp"
 #include "4C_contact_node.hpp"
 #include "4C_contact_paramsinterface.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_linalg_sparsematrix.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
@@ -178,13 +178,13 @@ void CONTACT::PenaltyStrategy::evaluate_contact(
     interface_[i]->assemble_reg_normal_forces(localisincontact, localactivesetchange);
 
     // evaluate lagrange multipliers (regularized forces) in tangential direction
-    auto soltype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(params(), "STRATEGY");
+    auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params(), "STRATEGY");
 
-    if (friction_ and (soltype == Inpar::CONTACT::solution_penalty or
-                          soltype == Inpar::CONTACT::solution_multiscale))
+    if (friction_ and
+        (soltype == CONTACT::solution_penalty or soltype == CONTACT::solution_multiscale))
       interface_[i]->assemble_reg_tangent_forces_penalty();
 
-    if (friction_ and soltype == Inpar::CONTACT::solution_uzawa)
+    if (friction_ and soltype == CONTACT::solution_uzawa)
       interface_[i]->assemble_reg_tangent_forces_uzawa();
 
     isincontact = isincontact || localisincontact;
@@ -271,19 +271,19 @@ void CONTACT::PenaltyStrategy::evaluate_contact(
   }
 
 #ifdef CONTACTFDPENALTYTRAC
-  auto ftype = Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(Params(), "FRICTION");
+  auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(Params(), "FRICTION");
 
   // check derivatives of penalty traction
   for (int i = 0; i < (int)interface_.size(); ++i)
   {
     if (IsInContact())
     {
-      if (ftype == Inpar::CONTACT::friction_coulomb)
+      if (ftype == CONTACT::friction_coulomb)
       {
         std::cout << "LINZMATRIX" << *linzmatrix_ << std::endl;
         interface_[i]->fd_check_penalty_trac_fric();
       }
-      else if (ftype == Inpar::CONTACT::friction_none)
+      else if (ftype == CONTACT::friction_none)
       {
         std::cout << "-- CONTACTFDDERIVZ --------------------" << std::endl;
         interface_[i]->fd_check_penalty_trac_nor();
@@ -403,14 +403,14 @@ void CONTACT::PenaltyStrategy::evaluate_friction(
   // one difference
 
   // check if friction should be applied
-  auto ftype = Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(params(), "FRICTION");
+  auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(params(), "FRICTION");
 
   // coulomb friction case
-  if (ftype == Inpar::CONTACT::friction_coulomb || ftype == Inpar::CONTACT::friction_stick)
+  if (ftype == CONTACT::friction_coulomb || ftype == CONTACT::friction_stick)
   {
     evaluate_contact(kteff, feff);
   }
-  else if (ftype == Inpar::CONTACT::friction_tresca)
+  else if (ftype == CONTACT::friction_tresca)
   {
     FOUR_C_THROW(
         "Error in AbstractStrategy::Evaluate: Penalty Strategy for"
@@ -595,7 +595,7 @@ void CONTACT::PenaltyStrategy::update_constraint_norm(int uzawaiter)
   {
     // export weighted gap vector to gactiveN-map
     std::shared_ptr<Core::LinAlg::Vector<double>> gact;
-    if (constr_direction_ == Inpar::CONTACT::constr_xyz)
+    if (constr_direction_ == CONTACT::constr_xyz)
     {
       gact = Core::LinAlg::create_vector(*gactivedofs_, true);
       Core::LinAlg::export_to(*wgap_, *gact);
@@ -622,9 +622,9 @@ void CONTACT::PenaltyStrategy::update_constraint_norm(int uzawaiter)
     // adaptive update of penalty parameter
     // (only for Uzawa Augmented Lagrange strategy)
     //********************************************************************
-    auto soltype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(params(), "STRATEGY");
+    auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params(), "STRATEGY");
 
-    if (soltype == Inpar::CONTACT::solution_uzawa)
+    if (soltype == CONTACT::solution_uzawa)
     {
       // check convergence of cnorm and update penalty parameter
       // only do this for second, third, ... Uzawa iteration
@@ -770,13 +770,13 @@ void CONTACT::PenaltyStrategy::assemble()
     interface_[i]->assemble_reg_normal_forces(localisincontact, localactivesetchange);
 
     // evaluate lagrange multipliers (regularized forces) in tangential direction
-    auto soltype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(params(), "STRATEGY");
+    auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params(), "STRATEGY");
 
-    if (friction_ and (soltype == Inpar::CONTACT::solution_penalty or
-                          soltype == Inpar::CONTACT::solution_multiscale))
+    if (friction_ and
+        (soltype == CONTACT::solution_penalty or soltype == CONTACT::solution_multiscale))
       interface_[i]->assemble_reg_tangent_forces_penalty();
 
-    if (friction_ and soltype == Inpar::CONTACT::solution_uzawa)
+    if (friction_ and soltype == CONTACT::solution_uzawa)
       interface_[i]->assemble_reg_tangent_forces_uzawa();
 
     isincontact = isincontact || localisincontact;

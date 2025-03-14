@@ -9,12 +9,12 @@
 
 #include "4C_contact_defines.hpp"
 #include "4C_contact_friction_node.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_interface.hpp"
 #include "4C_contact_tsi_interface.hpp"
 #include "4C_coupling_adapter.hpp"
 #include "4C_coupling_adapter_converter.hpp"
 #include "4C_fem_general_extract_values.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_io.hpp"
 #include "4C_linalg_sparsematrix.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
@@ -118,8 +118,8 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
   set_state(Mortar::state_temperature, *temp2);
 
   // error checks
-  if (Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(params(), "SYSTEM") !=
-      Inpar::CONTACT::system_condensed)
+  if (Teuchos::getIntegralValue<CONTACT::SystemType>(params(), "SYSTEM") !=
+      CONTACT::system_condensed)
     FOUR_C_THROW("only condensed system implemented");
 
   // First, we need to evaluate all the interfaces
@@ -156,7 +156,7 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
   std::shared_ptr<Core::LinAlg::Vector<double>> rcsa =
       Core::LinAlg::create_vector(*gactivedofs_, true);
   std::shared_ptr<Core::LinAlg::Vector<double>> g_all;
-  if (constr_direction_ == Inpar::CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::constr_xyz)
     g_all = Core::LinAlg::create_vector(*gsdofrowmap_, true);
   else
     g_all = Core::LinAlg::create_vector(*gsnoderowmap_, true);
@@ -250,7 +250,7 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
 
   // normal contact
   std::shared_ptr<Core::LinAlg::Vector<double>> gact;
-  if (constr_direction_ == Inpar::CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::constr_xyz)
   {
     gact = Core::LinAlg::create_vector(*gactivedofs_, true);
     if (gact->global_length()) Core::LinAlg::export_to(*g_all, *gact);
@@ -639,7 +639,7 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
   dInvMaThermo.complete(*thermo_m_dofs, *thermo_act_dofs);
 
   // apply contact symmetry conditions
-  if (constr_direction_ == Inpar::CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::constr_xyz)
   {
     double haveDBC = 0;
     non_redist_gsdirichtoggle_->norm_1(&haveDBC);

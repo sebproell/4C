@@ -8,11 +8,11 @@
 #include "4C_structure_new_timint_basedataglobalstate.hpp"
 
 #include "4C_beam3_base.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_meshtying_abstract_strategy.hpp"
 #include "4C_fem_discretization_utils.hpp"
 #include "4C_fem_general_largerotations.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_linalg_sparsematrix.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
@@ -282,22 +282,20 @@ int Solid::TimeInt::BaseDataGlobalState::setup_block_information(
     }
     case Inpar::Solid::model_contact:
     {
-      auto systype = Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(
+      auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(
           problem->contact_dynamic_params(), "SYSTEM");
 
-      auto soltype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
+      auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
           problem->contact_dynamic_params(), "STRATEGY");
 
       // systems without additional dofs
-      if (soltype == Inpar::CONTACT::solution_nitsche ||
-          soltype == Inpar::CONTACT::solution_penalty ||
-          soltype == Inpar::CONTACT::solution_uzawa ||
-          soltype == Inpar::CONTACT::solution_multiscale)
+      if (soltype == CONTACT::solution_nitsche || soltype == CONTACT::solution_penalty ||
+          soltype == CONTACT::solution_uzawa || soltype == CONTACT::solution_multiscale)
       {
         model_block_id_[mt] = 0;
       }
       // --- saddle-point system
-      else if (systype == Inpar::CONTACT::system_saddlepoint)
+      else if (systype == CONTACT::system_saddlepoint)
       {
         model_block_id_[mt] = max_block_num_;
         ++max_block_num_;
@@ -314,27 +312,25 @@ int Solid::TimeInt::BaseDataGlobalState::setup_block_information(
       const Solid::ModelEvaluator::Meshtying& mt_me =
           dynamic_cast<const Solid::ModelEvaluator::Meshtying&>(me);
 
-      enum Inpar::CONTACT::SystemType systype = mt_me.strategy().system_type();
+      enum CONTACT::SystemType systype = mt_me.strategy().system_type();
 
-      auto soltype = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(
+      auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
           mt_me.strategy().params(), "STRATEGY");
 
       // systems without additional dofs
-      if (soltype == Inpar::CONTACT::solution_nitsche ||
-          soltype == Inpar::CONTACT::solution_penalty ||
-          soltype == Inpar::CONTACT::solution_uzawa ||
-          soltype == Inpar::CONTACT::solution_multiscale)
+      if (soltype == CONTACT::solution_nitsche || soltype == CONTACT::solution_penalty ||
+          soltype == CONTACT::solution_uzawa || soltype == CONTACT::solution_multiscale)
       {
         model_block_id_[mt] = 0;
       }
       // --- saddle-point system
-      else if (systype == Inpar::CONTACT::system_saddlepoint)
+      else if (systype == CONTACT::system_saddlepoint)
       {
         model_block_id_[mt] = max_block_num_;
         ++max_block_num_;
       }
       // --- condensed system
-      else if (systype == Inpar::CONTACT::system_condensed)
+      else if (systype == CONTACT::system_condensed)
       {
         model_block_id_[mt] = 0;
       }

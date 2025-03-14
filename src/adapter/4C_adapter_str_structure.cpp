@@ -16,8 +16,8 @@
 #include "4C_adapter_str_timint_adaptive.hpp"
 #include "4C_adapter_str_wrapper.hpp"
 #include "4C_comm_utils.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_fsi.hpp"
 #include "4C_inpar_poroelast.hpp"
 #include "4C_inpar_structure.hpp"
@@ -409,9 +409,9 @@ Adapter::StructureBaseAlgorithm::create_contact_meshtying_solver(
         "CONTACT DYNAMIC to a valid number!");
 
   // Distinguish the system type, i.e. condensed vs. saddle-point
-  switch (Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(mcparams, "SYSTEM"))
+  switch (Teuchos::getIntegralValue<CONTACT::SystemType>(mcparams, "SYSTEM"))
   {
-    case Inpar::CONTACT::system_saddlepoint:
+    case CONTACT::system_saddlepoint:
     {
       /* Plausibility check
        *
@@ -456,9 +456,8 @@ Adapter::StructureBaseAlgorithm::create_contact_meshtying_solver(
             "Problems like beamcontact or pure structure problem w/o contact do not support a "
             "saddle-point formulation.");
 
-      auto soltype =
-          Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(mcparams, "STRATEGY");
-      if (soltype == Inpar::CONTACT::solution_lagmult)
+      auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(mcparams, "STRATEGY");
+      if (soltype == CONTACT::solution_lagmult)
       {
         // get the solver number used for structural problems
         const int linsolvernumber = sdyn.get<int>("LINEAR_SOLVER");

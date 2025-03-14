@@ -29,7 +29,7 @@ FOUR_C_NAMESPACE_OPEN
 CONTACT::Coupling2d::Coupling2d(Core::FE::Discretization& idiscret, int dim, bool quad,
     Teuchos::ParameterList& params, Mortar::Element& sele, Mortar::Element& mele)
     : Mortar::Coupling2d(idiscret, dim, quad, params, sele, mele),
-      stype_(Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(params, "STRATEGY"))
+      stype_(Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params, "STRATEGY"))
 {
   // empty constructor
 
@@ -144,7 +144,7 @@ CONTACT::Coupling2dManager::Coupling2dManager(Core::FE::Discretization& idiscret
     bool quad, Teuchos::ParameterList& params, Mortar::Element* sele,
     std::vector<Mortar::Element*> mele)
     : Mortar::Coupling2dManager(idiscret, dim, quad, params, sele, mele),
-      stype_(Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(params, "STRATEGY"))
+      stype_(Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params, "STRATEGY"))
 {
   // empty constructor
   return;

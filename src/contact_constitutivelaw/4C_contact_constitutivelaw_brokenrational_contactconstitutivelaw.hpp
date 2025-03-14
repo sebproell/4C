@@ -67,9 +67,9 @@ namespace CONTACT
       //! @name Access methods
 
       /// return contact constitutive law type
-      Inpar::CONTACT::ConstitutiveLawType get_constitutive_law_type() const override
+      CONTACT::CONSTITUTIVELAW::ConstitutiveLawType get_constitutive_law_type() const override
       {
-        return Inpar::CONTACT::ConstitutiveLawType::colaw_brokenrational;
+        return CONTACT::CONSTITUTIVELAW::ConstitutiveLawType::colaw_brokenrational;
       }
 
       /// Get scaling factor of the broken rational function

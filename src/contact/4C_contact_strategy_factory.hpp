@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_contact.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_mortar_element.hpp"
 #include "4C_mortar_strategy_factory.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
@@ -74,8 +74,8 @@ namespace CONTACT
        *
        *  */
       static std::shared_ptr<CONTACT::Interface> create_interface(
-          const enum Inpar::CONTACT::SolvingStrategy stype, const int id, MPI_Comm comm,
-          const int dim, Teuchos::ParameterList& icparams, const bool selfcontact,
+          const enum CONTACT::SolvingStrategy stype, const int id, MPI_Comm comm, const int dim,
+          Teuchos::ParameterList& icparams, const bool selfcontact,
           std::shared_ptr<CONTACT::InterfaceDataContainer> interface_data_ptr,
           const int contactconstitutivelaw_id = -1);
 
@@ -94,7 +94,7 @@ namespace CONTACT
        *
        * */
       static std::shared_ptr<CONTACT::AbstractStrategy> build_strategy(
-          const Inpar::CONTACT::SolvingStrategy stype, const Teuchos::ParameterList& params,
+          const CONTACT::SolvingStrategy stype, const Teuchos::ParameterList& params,
           const bool& poroslave, const bool& poromaster, const int& dof_offset,
           std::vector<std::shared_ptr<CONTACT::Interface>>& interfaces,
           const Epetra_Map* dof_row_map, const Epetra_Map* node_row_map, const int dim,
@@ -113,7 +113,7 @@ namespace CONTACT
       /*! \brief print strategy banner
        *
        *  \param soltype (in) : contact solving strategy type */
-      static void print_strategy_banner(const enum Inpar::CONTACT::SolvingStrategy soltype);
+      static void print_strategy_banner(const enum CONTACT::SolvingStrategy soltype);
 
      protected:
      private:

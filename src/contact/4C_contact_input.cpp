@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_contact.hpp"
+#include "4C_contact_input.hpp"
 
 #include "4C_inpar_structure.hpp"
 #include "4C_utils_parameter_list.hpp"
@@ -14,7 +14,7 @@ FOUR_C_NAMESPACE_OPEN
 
 
 
-void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
+void CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
@@ -30,15 +30,14 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
       {.description = "Must be chosen if a non-contact simulation is to be restarted with contact",
           .default_value = false}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::AdhesionType>("ADHESION", "None",
+  Core::Utils::string_to_integral_parameter<CONTACT::AdhesionType>("ADHESION", "None",
       "Type of adhesion law", tuple<std::string>("None", "none", "bounded", "b"),
-      tuple<Inpar::CONTACT::AdhesionType>(
-          adhesion_none, adhesion_none, adhesion_bound, adhesion_bound),
+      tuple<CONTACT::AdhesionType>(adhesion_none, adhesion_none, adhesion_bound, adhesion_bound),
       scontact);
 
-  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::FrictionType>("FRICTION", "None",
+  Core::Utils::string_to_integral_parameter<CONTACT::FrictionType>("FRICTION", "None",
       "Type of friction law", tuple<std::string>("None", "Stick", "Tresca", "Coulomb"),
-      tuple<Inpar::CONTACT::FrictionType>(
+      tuple<CONTACT::FrictionType>(
           friction_none, friction_stick, friction_tresca, friction_coulomb),
       scontact);
 
@@ -53,20 +52,20 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
               "quantity, but this would be consistent to wear and tsi calculations.",
           .default_value = false}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::SolvingStrategy>("STRATEGY",
+  Core::Utils::string_to_integral_parameter<CONTACT::SolvingStrategy>("STRATEGY",
       "LagrangianMultipliers", "Type of employed solving strategy",
       tuple<std::string>("LagrangianMultipliers", "lagrange", "Lagrange", "penalty", "Penalty",
           "Uzawa", "Nitsche", "Ehl", "MultiScale"),
-      tuple<Inpar::CONTACT::SolvingStrategy>(solution_lagmult, solution_lagmult, solution_lagmult,
+      tuple<CONTACT::SolvingStrategy>(solution_lagmult, solution_lagmult, solution_lagmult,
           solution_penalty, solution_penalty, solution_uzawa, solution_nitsche, solution_ehl,
           solution_multiscale),
       scontact);
 
-  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::SystemType>("SYSTEM", "Condensed",
+  Core::Utils::string_to_integral_parameter<CONTACT::SystemType>("SYSTEM", "Condensed",
       "Type of linear system setup / solution",
       tuple<std::string>("Condensed", "condensed", "cond", "Condensedlagmult", "condensedlagmult",
           "condlm", "SaddlePoint", "Saddlepoint", "saddlepoint", "sp", "none"),
-      tuple<Inpar::CONTACT::SystemType>(system_condensed, system_condensed, system_condensed,
+      tuple<CONTACT::SystemType>(system_condensed, system_condensed, system_condensed,
           system_condensed_lagmult, system_condensed_lagmult, system_condensed_lagmult,
           system_saddlepoint, system_saddlepoint, system_saddlepoint, system_saddlepoint,
           system_none),
@@ -129,11 +128,10 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
               "tolerance in the LM norm for the newton iteration (saddlepoint formulation only)",
           .default_value = 1.0E-6}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::ConstraintDirection>(
-      "CONSTRAINT_DIRECTIONS", "ntt",
-      "formulation of constraints in normal/tangential or xyz-direction",
-      tuple<std::string>("ntt", "xyz"),
-      tuple<Inpar::CONTACT::ConstraintDirection>(constr_ntt, constr_xyz), scontact);
+  Core::Utils::string_to_integral_parameter<CONTACT::ConstraintDirection>("CONSTRAINT_DIRECTIONS",
+      "ntt", "formulation of constraints in normal/tangential or xyz-direction",
+      tuple<std::string>("ntt", "xyz"), tuple<CONTACT::ConstraintDirection>(constr_ntt, constr_xyz),
+      scontact);
 
   scontact.specs.emplace_back(parameter<bool>("NONSMOOTH_GEOMETRIES",
       {.description = "If chosen the contact algorithm combines mortar and nts formulations. This "
@@ -174,11 +172,10 @@ void Inpar::CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputS
       {.description = "+1: Chouly-type, 0: Burman penalty-free (only with theta=-1)",
           .default_value = 1.0}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::CONTACT::NitscheWeighting>("NITSCHE_WEIGHTING",
+  Core::Utils::string_to_integral_parameter<CONTACT::NitscheWeighting>("NITSCHE_WEIGHTING",
       "harmonic", "how to weight consistency terms in Nitsche contact formulation",
       tuple<std::string>("slave", "master", "harmonic"),
-      tuple<Inpar::CONTACT::NitscheWeighting>(NitWgt_slave, NitWgt_master, NitWgt_harmonic),
-      scontact);
+      tuple<CONTACT::NitscheWeighting>(NitWgt_slave, NitWgt_master, NitWgt_harmonic), scontact);
 
   scontact.specs.emplace_back(parameter<bool>("NITSCHE_PENALTY_ADAPTIVE",
       {.description = "adapt penalty parameter after each converged time step",

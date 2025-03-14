@@ -10,8 +10,8 @@
 
 #include "4C_config.hpp"
 
+#include "4C_contact_input.hpp"
 #include "4C_fem_general_utils_local_connectivity_matrices.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_mortar.hpp"
 #include "4C_utils_singleton_owner.hpp"
 

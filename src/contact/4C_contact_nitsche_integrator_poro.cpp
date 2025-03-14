@@ -51,7 +51,7 @@ void CONTACT::IntegratorNitschePoro::integrate_gp_3d(Mortar::Element& sele, Mort
 {
   // TEUCHOS_FUNC_TIME_MONITOR("CONTACT::IntegratorNitsche::integrate_gp_3d");
   // We use the consistent element normal for poro contact!
-  // if (nit_normal_==Inpar::CONTACT::NitNor_ele)
+  // if (nit_normal_==CONTACT::NitNor_ele)
   {
     double n[3];
     sele.compute_unit_normal_at_xi(sxi, n);
@@ -61,7 +61,7 @@ void CONTACT::IntegratorNitschePoro::integrate_gp_3d(Mortar::Element& sele, Mort
     gpts_forces<3>(sele, mele, sval, sderiv, derivsxi, mval, mderiv, derivmxi, jac, derivjac, wgt,
         gap, deriv_gap, n, dn, sxi, mxi);
   }
-  //  else if (nit_normal_==Inpar::CONTACT::NitNor_sm)
+  //  else if (nit_normal_==CONTACT::NitNor_sm)
   //    FOUR_C_THROW("Want to use the element normal!");
 }
 

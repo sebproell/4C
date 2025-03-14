@@ -10,11 +10,11 @@
 #include "4C_contact_defines.hpp"
 #include "4C_contact_element.hpp"
 #include "4C_contact_friction_node.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_interface.hpp"
 #include "4C_contact_lagrange_strategy.hpp"
 #include "4C_contact_wear_interface.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_wear.hpp"
 #include "4C_io.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
@@ -415,8 +415,7 @@ void Wear::LagrangeStrategyWear::assemble_mortar()
   // wearvector_ only updated at the end of a time step --> this newton-step-wise
   // update is not elegant!
   // *********************************************************************************
-  if (!wearimpl_ and !wearprimvar_ and
-      params().get<int>("PROBTYPE") != Inpar::CONTACT::structalewear)
+  if (!wearimpl_ and !wearprimvar_ and params().get<int>("PROBTYPE") != CONTACT::structalewear)
   {
     wgap_->update(1.0, *wearvector_, 1.0);
   }
@@ -2665,7 +2664,7 @@ void Wear::LagrangeStrategyWear::evaluate_friction(
   kteff->complete();
 
   // systemtype
-  auto systype = Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(params(), "SYSTEM");
+  auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(params(), "SYSTEM");
 
   // get wear shapefunction type
   auto wearshapefcn = Teuchos::getIntegralValue<Inpar::Wear::WearShape>(params(), "WEAR_SHAPEFCN");
@@ -2696,8 +2695,7 @@ void Wear::LagrangeStrategyWear::evaluate_friction(
     interface_[i]->assemble_lin_dm(*lindmatrix_, *linmmatrix_);
     interface_[i]->assemble_lin_stick(*linstickLM_, *linstickDIS_, *linstickRHS_);
     interface_[i]->assemble_lin_slip(*linslipLM_, *linslipDIS_, *linslipRHS_);
-    if (systype != Inpar::CONTACT::system_condensed)
-      interface_[i]->assemble_inactiverhs(*inactiverhs_);
+    if (systype != CONTACT::system_condensed) interface_[i]->assemble_inactiverhs(*inactiverhs_);
 
     //***************************************************
     // Assemble lin. for implicit internal state wear algorithm
@@ -2867,7 +2865,7 @@ void Wear::LagrangeStrategyWear::evaluate_friction(
   // HERE THE LM ARE SOLVED ABSOLUTELY !!!
   //**********************************************************************
   //**********************************************************************
-  if ((systype == Inpar::CONTACT::system_condensed) && wearprimvar_)
+  if ((systype == CONTACT::system_condensed) && wearprimvar_)
   {
     condense_wear_discr(kteff, feff, *gact);
   }
@@ -2877,7 +2875,7 @@ void Wear::LagrangeStrategyWear::evaluate_friction(
   // HERE THE LM ARE SOLVED ABSOLUTELY !!!
   //**********************************************************************
   //**********************************************************************
-  else if ((systype == Inpar::CONTACT::system_condensed) && !wearprimvar_)
+  else if ((systype == CONTACT::system_condensed) && !wearprimvar_)
   {
     condense_wear_impl_expl(kteff, feff, *gact);
   }
@@ -3177,7 +3175,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
   Core::LinAlg::export_to(temp, dirichtoggle);
 
   // get system type
-  auto systype = Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(params(), "SYSTEM");
+  auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(params(), "SYSTEM");
 
   //**********************************************************************
   // prepare saddle point system
@@ -3787,7 +3785,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
   //**********************************************************************
   // build and solve saddle point system
   //**********************************************************************
-  if (systype == Inpar::CONTACT::system_saddlepoint)
+  if (systype == CONTACT::system_saddlepoint)
   {
     // apply Dirichlet conditions to (0,0) and (0,1) blocks
     Core::LinAlg::Vector<double> zeros(*problem_dofs(), true);
@@ -4341,14 +4339,14 @@ void Wear::LagrangeStrategyWear::recover(std::shared_ptr<Core::LinAlg::Vector<do
 
   // shape function and system types
   auto shapefcn = Teuchos::getIntegralValue<Inpar::Mortar::ShapeFcn>(params(), "LM_SHAPEFCN");
-  auto systype = Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(params(), "SYSTEM");
+  auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(params(), "SYSTEM");
 
   //**********************************************************************
   //**********************************************************************
   // CASE A: CONDENSED SYSTEM (DUAL) + WEAR DISCR (DUAL)
   //**********************************************************************
   //**********************************************************************
-  if ((systype == Inpar::CONTACT::system_condensed) && wearprimvar_)
+  if ((systype == CONTACT::system_condensed) && wearprimvar_)
   {
     // double-check if this is a dual LM system
     if (shapefcn != Inpar::Mortar::shape_dual && shapefcn != Inpar::Mortar::shape_petrovgalerkin)
@@ -4462,7 +4460,7 @@ void Wear::LagrangeStrategyWear::recover(std::shared_ptr<Core::LinAlg::Vector<do
   // CASE B: CONDENSED SYSTEM (DUAL) + WEAR IMPLICIT/EXPLICIT
   //**********************************************************************
   //**********************************************************************
-  else if ((systype == Inpar::CONTACT::system_condensed) && !wearprimvar_)
+  else if ((systype == CONTACT::system_condensed) && !wearprimvar_)
   {
     // double-check if this is a dual LM system
     if (shapefcn != Inpar::Mortar::shape_dual && shapefcn != Inpar::Mortar::shape_petrovgalerkin)
@@ -4853,8 +4851,8 @@ void Wear::LagrangeStrategyWear::do_read_restart(
 
   // only for Uzawa Augmented strategy
   // TODO: this should be moved to contact_penalty_strategy
-  auto st = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(params(), "STRATEGY");
-  if (st == Inpar::CONTACT::solution_uzawa)
+  auto st = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params(), "STRATEGY");
+  if (st == CONTACT::solution_uzawa)
   {
     zuzawa_ = std::make_shared<Core::LinAlg::Vector<double>>(*gsdofrowmap_);
     if (!restartwithcontact) reader.read_vector(data().lm_uzawa_ptr(), "lagrmultold");
@@ -5245,7 +5243,7 @@ void Wear::LagrangeStrategyWear::store_nodal_quantities(Mortar::StrategyBase::Qu
                 const double wearcoeff = wearcoeffs + wearcoeffm;
 
                 // amount of wear
-                if (params().get<int>("PROBTYPE") != Inpar::CONTACT::structalewear)
+                if (params().get<int>("PROBTYPE") != CONTACT::structalewear)
                   frinode->wear_data().weighted_wear() +=
                       wearcoeff * frinode->wear_data().delta_weighted_wear();
 

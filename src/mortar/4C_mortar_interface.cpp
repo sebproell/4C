@@ -4162,13 +4162,13 @@ void Mortar::Interface::detect_tied_slave_nodes(int& founduntied)
 void Mortar::Interface::create_volume_ghosting(
     const std::map<std::string, std::shared_ptr<Core::FE::Discretization>>& discretization_map)
 {
-  Inpar::CONTACT::Problemtype prb = (Inpar::CONTACT::Problemtype)interface_params().get<int>(
-      "PROBTYPE", (int)Inpar::CONTACT::other);
+  CONTACT::Problemtype prb =
+      (CONTACT::Problemtype)interface_params().get<int>("PROBTYPE", (int)CONTACT::other);
 
   switch (prb)
   {
-    case Inpar::CONTACT::ssi:
-    case Inpar::CONTACT::ssi_elch:
+    case CONTACT::ssi:
+    case CONTACT::ssi_elch:
     {
       std::vector<std::shared_ptr<Core::FE::Discretization>> tar_dis;
       FOUR_C_ASSERT(discretization_map.find("structure") != discretization_map.end(),
@@ -4199,7 +4199,7 @@ void Mortar::Interface::create_volume_ghosting(
 
       break;
     }
-    case Inpar::CONTACT::tsi:
+    case CONTACT::tsi:
     {
       std::vector<std::shared_ptr<Core::FE::Discretization>> tar_dis;
       FOUR_C_ASSERT(discretization_map.find("structure") != discretization_map.end(),

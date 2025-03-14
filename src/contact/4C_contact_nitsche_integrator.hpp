@@ -49,13 +49,13 @@ namespace CONTACT
         : Integrator(params, eletype, comm),
           theta_(params.get<double>("NITSCHE_THETA")),
           theta_2_(params.get<double>("NITSCHE_THETA_2")),
-          nit_wgt_(Teuchos::getIntegralValue<Inpar::CONTACT::NitscheWeighting>(
-              params, "NITSCHE_WEIGHTING")),
+          nit_wgt_(
+              Teuchos::getIntegralValue<CONTACT::NitscheWeighting>(params, "NITSCHE_WEIGHTING")),
           ppn_(imortar_.get<double>("PENALTYPARAM")),
           ppt_(imortar_.get<double>("PENALTYPARAMTAN")),
           frcoeff_(imortar_.get<double>("FRCOEFF", -1.)),
           frbound_(imortar_.get<double>("FRBOUND", -1.)),
-          frtype_(Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(imortar_, "FRICTION")),
+          frtype_(Teuchos::getIntegralValue<CONTACT::FrictionType>(imortar_, "FRICTION")),
           dt_(imortar_.get<double>("TIMESTEP")),
           two_half_pass_(imortar_.get<bool>("Two_half_pass"))
     {
@@ -191,7 +191,7 @@ namespace CONTACT
     //! nitsche theta 2
     double theta_2_;
     //! type of nitsche weighting
-    Inpar::CONTACT::NitscheWeighting nit_wgt_;
+    CONTACT::NitscheWeighting nit_wgt_;
     //! nitsche penalty parameter in normal direction
     double ppn_;
     //! nitsche penalty parameter in tangential direction
@@ -201,7 +201,7 @@ namespace CONTACT
     //! tresca friction bound
     double frbound_;
     //! type of contact friction law
-    Inpar::CONTACT::FrictionType frtype_;
+    CONTACT::FrictionType frtype_;
     //! time step size
     double dt_;
     //! flag indicating if unbiased two half pass algorithm is activated or not
@@ -270,7 +270,7 @@ namespace CONTACT
      * @param[out] pet     scaled nitsche penalty parameter in tangential direction
      */
     void nitsche_weights_and_scaling(Mortar::Element& sele, Mortar::Element& mele,
-        Inpar::CONTACT::NitscheWeighting nit_wgt, double dt, double& ws, double& wm, double& pen,
+        CONTACT::NitscheWeighting nit_wgt, double dt, double& ws, double& wm, double& pen,
         double& pet);
 
 

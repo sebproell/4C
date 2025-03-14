@@ -73,8 +73,8 @@ CONTACT::AbstractStrategyDataContainer::AbstractStrategyDataContainer()
       doldmod_(nullptr),
       inttime_(0.0),
       ivel_(0),
-      stype_(Inpar::CONTACT::solution_vague),
-      constr_direction_(Inpar::CONTACT::constr_vague)
+      stype_(CONTACT::solution_vague),
+      constr_direction_(CONTACT::constr_vague)
 {
   return;
 }

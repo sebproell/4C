@@ -11,9 +11,9 @@
 #include "4C_config.hpp"
 
 #include "4C_contact_abstract_data_container.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_paramsinterface.hpp"
 #include "4C_contact_utils.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_inpar_mortar.hpp"
 #include "4C_mortar_strategy_base.hpp"
 
@@ -109,7 +109,7 @@ namespace CONTACT
 
 
     //! return the current solution type
-    virtual Inpar::CONTACT::SolvingStrategy type() const { return stype_; }
+    virtual CONTACT::SolvingStrategy type() const { return stype_; }
 
     //! @name Access methods
     //!@{
@@ -146,7 +146,7 @@ namespace CONTACT
      *  */
     virtual std::shared_ptr<const Epetra_Map> lin_system_lm_dof_row_map_ptr() const
     {
-      if (system_type() != Inpar::CONTACT::system_saddlepoint) return nullptr;
+      if (system_type() != CONTACT::system_saddlepoint) return nullptr;
 
       if (is_self_contact())
       {
@@ -1714,10 +1714,10 @@ namespace CONTACT
     std::vector<double>& ivel_;
 
     //! Current used solving strategy
-    Inpar::CONTACT::SolvingStrategy& stype_;
+    CONTACT::SolvingStrategy& stype_;
 
     //! Direction in which the contact constraints are formulated
-    Inpar::CONTACT::ConstraintDirection& constr_direction_;
+    CONTACT::ConstraintDirection& constr_direction_;
 
    private:
     /*!

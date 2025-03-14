@@ -245,7 +245,7 @@ bool Solid::ModelEvaluator::Meshtying::assemble_jacobian(
   // ---------------------------------------------------------------------
   // saddle-point system of equations or no contact contributions
   // ---------------------------------------------------------------------
-  else if (strategy().system_type() == Inpar::CONTACT::system_saddlepoint)
+  else if (strategy().system_type() == CONTACT::system_saddlepoint)
   {
     // --- Kdd - block ---------------------------------------------------
     block_ptr = strategy().get_matrix_block_ptr(CONTACT::MatBlockType::displ_displ);
@@ -325,10 +325,9 @@ std::shared_ptr<const Epetra_Map> Solid::ModelEvaluator::Meshtying::get_block_do
     return global_state().dof_row_map();
   else
   {
-    auto systype =
-        Teuchos::getIntegralValue<Inpar::CONTACT::SystemType>(strategy().params(), "SYSTEM");
+    auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(strategy().params(), "SYSTEM");
 
-    if (systype == Inpar::CONTACT::system_saddlepoint)
+    if (systype == CONTACT::system_saddlepoint)
       return strategy().lm_dof_row_map_ptr();
     else
       return global_state().dof_row_map();

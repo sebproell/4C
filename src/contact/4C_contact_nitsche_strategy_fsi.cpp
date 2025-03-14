@@ -54,7 +54,7 @@ bool CONTACT::NitscheStrategyFsi::check_nitsche_contact_state(CONTACT::Element* 
 }
 
 bool CONTACT::Utils::check_nitsche_contact_state(CONTACT::Interface& contactinterface,
-    const double& pen_n, Inpar::CONTACT::NitscheWeighting weighting, CONTACT::Element* cele,
+    const double& pen_n, CONTACT::NitscheWeighting weighting, CONTACT::Element* cele,
     const Core::LinAlg::Matrix<2, 1>& xsi, const double& full_fsi_traction, double& gap)
 {
   // No master elements found

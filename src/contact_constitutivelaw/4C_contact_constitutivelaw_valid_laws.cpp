@@ -22,7 +22,7 @@ Core::IO::InputSpec CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws()
   using namespace Core::IO::InputSpecBuilders;
 
   std::vector<Core::IO::InputSpec> specs;
-  std::vector<Inpar::CONTACT::ConstitutiveLawType> group_index_to_type;
+  std::vector<CONTACT::CONSTITUTIVELAW::ConstitutiveLawType> group_index_to_type;
 
   /*----------------------------------------------------------------------*/
   // broken rational function
@@ -38,7 +38,8 @@ Core::IO::InputSpec CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws()
         {
             .description = "Broken rational law",
         }));
-    group_index_to_type.push_back(Inpar::CONTACT::ConstitutiveLawType::colaw_brokenrational);
+    group_index_to_type.push_back(
+        CONTACT::CONSTITUTIVELAW::ConstitutiveLawType::colaw_brokenrational);
   }
   // power law function
   {
@@ -52,7 +53,7 @@ Core::IO::InputSpec CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws()
         {
             .description = "Power law",
         }));
-    group_index_to_type.push_back(Inpar::CONTACT::ConstitutiveLawType::colaw_power);
+    group_index_to_type.push_back(CONTACT::CONSTITUTIVELAW::ConstitutiveLawType::colaw_power);
   }
 
   // cubic function
@@ -69,7 +70,7 @@ Core::IO::InputSpec CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws()
         {
             .description = "Cubic function",
         }));
-    group_index_to_type.push_back(Inpar::CONTACT::ConstitutiveLawType::colaw_cubic);
+    group_index_to_type.push_back(CONTACT::CONSTITUTIVELAW::ConstitutiveLawType::colaw_cubic);
   }
 
   // linear function
@@ -84,7 +85,7 @@ Core::IO::InputSpec CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws()
         {
             .description = "Linear function",
         }));
-    group_index_to_type.push_back(Inpar::CONTACT::ConstitutiveLawType::colaw_linear);
+    group_index_to_type.push_back(CONTACT::CONSTITUTIVELAW::ConstitutiveLawType::colaw_linear);
   }
 
   // mirco function
@@ -131,7 +132,7 @@ Core::IO::InputSpec CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws()
         {
             .description = "Mirco function",
         }));
-    group_index_to_type.push_back(Inpar::CONTACT::ConstitutiveLawType::colaw_mirco);
+    group_index_to_type.push_back(CONTACT::CONSTITUTIVELAW::ConstitutiveLawType::colaw_mirco);
   }
 
   auto valid_law = all_of({

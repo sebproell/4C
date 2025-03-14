@@ -10,8 +10,8 @@
 
 #include "4C_config.hpp"
 
+#include "4C_contact_input.hpp"
 #include "4C_coupling_adapter.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_mortar_interface.hpp"
 #include "4C_mortar_strategy_base.hpp"
@@ -78,12 +78,9 @@ namespace CONTACT
 
     inline bool& is_two_half_pass() { return two_half_pass_; }
 
-    inline enum Inpar::CONTACT::ConstraintDirection& constraint_direction()
-    {
-      return constr_direction_;
-    }
+    inline enum CONTACT::ConstraintDirection& constraint_direction() { return constr_direction_; }
 
-    [[nodiscard]] inline enum Inpar::CONTACT::ConstraintDirection constraint_direction() const
+    [[nodiscard]] inline enum CONTACT::ConstraintDirection constraint_direction() const
     {
       return constr_direction_;
     }
@@ -255,7 +252,7 @@ namespace CONTACT
     bool two_half_pass_;
 
     //! direction in which the contact constraints are formulated
-    Inpar::CONTACT::ConstraintDirection constr_direction_;
+    CONTACT::ConstraintDirection constr_direction_;
 
     //! @name Maps
     //! @{
@@ -1646,7 +1643,7 @@ namespace CONTACT
     bool& friction_;          ///< ref. to flag for frictional contact
     bool& nonSmoothContact_;  ///< ref. to flag for non-smooth contact algorithm
     bool& two_half_pass_;     ///< ref. to flag for two half pass contact algorithm
-    Inpar::CONTACT::ConstraintDirection&
+    CONTACT::ConstraintDirection&
         constr_direction_;  ///< ref. to direction in which the contact constraints are formulated
 
     std::shared_ptr<Epetra_Map>& activenodes_;    ///< ref. to row map of all active slave nodes

@@ -10,11 +10,11 @@
 #include "4C_contact_defines.hpp"
 #include "4C_contact_element.hpp"
 #include "4C_contact_friction_node.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_integrator.hpp"
 #include "4C_contact_integrator_factory.hpp"
 #include "4C_contact_node.hpp"
 #include "4C_fem_discretization.hpp"
-#include "4C_inpar_contact.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_linalg_utils_densematrix_inverse.hpp"
@@ -410,7 +410,7 @@ void CONTACT::LineToSurfaceCoupling3d::consist_dual_shape()
 void CONTACT::LineToSurfaceCoupling3d::integrate_line()
 {
   // get solution strategy
-  auto sol = Teuchos::getIntegralValue<Inpar::CONTACT::SolvingStrategy>(imortar_, "STRATEGY");
+  auto sol = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(imortar_, "STRATEGY");
 
   // create integrator object
   std::shared_ptr<CONTACT::Integrator> integrator =
@@ -2372,9 +2372,8 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
     Core::Gen::Pairedvector<int, double>& dsxi, Core::Gen::Pairedvector<int, double>& dmxi)
 {
   bool friction = false;
-  auto ftype =
-      Teuchos::getIntegralValue<Inpar::CONTACT::FrictionType>(interface_params(), "FRICTION");
-  if (ftype != Inpar::CONTACT::friction_none) friction = true;
+  auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(interface_params(), "FRICTION");
+  if (ftype != CONTACT::friction_none) friction = true;
 
   // get slave element nodes themselves for normal evaluation
   Core::Nodes::Node** mynodes = line_slave_element()->nodes();

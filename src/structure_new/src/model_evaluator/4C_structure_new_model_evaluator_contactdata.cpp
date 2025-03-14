@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_contact.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_structure_new_integrator.hpp"
 #include "4C_structure_new_model_evaluator_data.hpp"
 #include "4C_structure_new_nln_solver_nox.hpp"
@@ -19,8 +19,8 @@ Solid::ModelEvaluator::ContactData::ContactData()
     : isinit_(false),
       issetup_(false),
       mortar_action_(Mortar::eval_none),
-      var_type_(Inpar::CONTACT::var_unknown),
-      coupling_scheme_(Inpar::CONTACT::CouplingScheme::unknown),
+      var_type_(CONTACT::var_unknown),
+      coupling_scheme_(CONTACT::CouplingScheme::unknown),
       str_data_ptr_(nullptr)
 {
   // empty constructor
