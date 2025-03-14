@@ -13,13 +13,13 @@
 #include "4C_browniandyn_input.hpp"
 #include "4C_contact_input.hpp"
 #include "4C_cut_input.hpp"
+#include "4C_ehl_input.hpp"
 #include "4C_inpar_beaminteraction.hpp"
 #include "4C_inpar_binningstrategy.hpp"
 #include "4C_inpar_bio.hpp"
 #include "4C_inpar_cardiac_monodomain.hpp"
 #include "4C_inpar_cardiovascular0d.hpp"
 #include "4C_inpar_constraint_framework.hpp"
-#include "4C_inpar_ehl.hpp"
 #include "4C_inpar_elch.hpp"
 #include "4C_inpar_fbi.hpp"
 #include "4C_inpar_fluid.hpp"
@@ -197,7 +197,7 @@ std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
   Inpar::POROMULTIPHASE::set_valid_parameters(list);
   Inpar::PoroMultiPhaseScaTra::set_valid_parameters(list);
   Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(list);
-  Inpar::EHL::set_valid_parameters(list);
+  EHL::set_valid_parameters(list);
   Inpar::SSI::set_valid_parameters(list);
   Inpar::SSTI::set_valid_parameters(list);
   ALE::set_valid_parameters(list);
