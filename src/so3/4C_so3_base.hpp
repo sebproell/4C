@@ -17,14 +17,12 @@
 FOUR_C_NAMESPACE_OPEN
 
 // forward declaration ...
-namespace Solid
+namespace Solid::Elements
 {
-  namespace Elements
-  {
-    class ParamsInterface;
-    enum EvalErrorFlag : int;
-  }  // namespace Elements
-}  // namespace Solid
+  class ParamsInterface;
+  enum EvalErrorFlag : int;
+}  // namespace Solid::Elements
+
 namespace Mat
 {
   class So3Material;
@@ -284,13 +282,13 @@ namespace Discret
       /** \brief get access to the structure interface
        *
        */
-      Solid::Elements::ParamsInterface& str_params_interface();
+      FourC::Solid::Elements::ParamsInterface& str_params_interface();
 
       /** \brief error handling for structural elements
        *
        *  */
       void error_handling(const double& det_curr, Teuchos::ParameterList& params, int line_id,
-          Solid::Elements::EvalErrorFlag flag);
+          FourC::Solid::Elements::EvalErrorFlag flag);
 
      protected:
       /*!

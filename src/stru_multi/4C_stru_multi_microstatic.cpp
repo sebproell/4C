@@ -21,7 +21,6 @@
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 #include "4C_linear_solver_method.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
-#include "4C_so3_hex8.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_structure_aux.hpp"
 #include "4C_utils_exceptions.hpp"
@@ -881,36 +880,7 @@ void MultiScale::MicroStatic::clear_state()
   disn_ = nullptr;
 }
 
-void MultiScale::MicroStatic::set_eas_data()
-{
-  for (int lid = 0; lid < discret_->element_row_map()->NumMyElements(); ++lid)
-  {
-    Core::Elements::Element* actele = discret_->l_row_element(lid);
-
-    if (actele->element_type() == Discret::Elements::SoHex8Type::instance())
-    {
-      // create the parameters for the discretization
-      Teuchos::ParameterList p;
-      // action for elements
-      p.set("action", "multi_eas_set");
-
-      p.set("oldalpha", oldalpha_);
-      p.set("oldfeas", oldfeas_);
-      p.set("oldKaainv", oldKaainv_);
-      p.set("oldKda", oldKda_);
-
-      Core::LinAlg::SerialDenseMatrix elematrix1;
-      Core::LinAlg::SerialDenseMatrix elematrix2;
-      Core::LinAlg::SerialDenseVector elevector1;
-      Core::LinAlg::SerialDenseVector elevector2;
-      Core::LinAlg::SerialDenseVector elevector3;
-      std::vector<int> lm;
-
-      actele->evaluate(
-          p, *discret_, lm, elematrix1, elematrix2, elevector1, elevector2, elevector3);
-    }
-  }
-}
+void MultiScale::MicroStatic::set_eas_data() {}
 
 
 
