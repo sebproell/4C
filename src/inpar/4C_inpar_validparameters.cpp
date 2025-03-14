@@ -14,6 +14,7 @@
 #include "4C_contact_input.hpp"
 #include "4C_cut_input.hpp"
 #include "4C_ehl_input.hpp"
+#include "4C_fbi_input.hpp"
 #include "4C_inpar_beaminteraction.hpp"
 #include "4C_inpar_binningstrategy.hpp"
 #include "4C_inpar_bio.hpp"
@@ -21,7 +22,6 @@
 #include "4C_inpar_cardiovascular0d.hpp"
 #include "4C_inpar_constraint_framework.hpp"
 #include "4C_inpar_elch.hpp"
-#include "4C_inpar_fbi.hpp"
 #include "4C_inpar_fluid.hpp"
 #include "4C_inpar_fpsi.hpp"
 #include "4C_inpar_fs3i.hpp"
@@ -209,7 +209,7 @@ std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
   Inpar::ReducedLung::set_valid_parameters(list);
   Inpar::Cardiovascular0D::set_valid_parameters(list);
   Inpar::FPSI::set_valid_parameters(list);
-  Inpar::FBI::set_valid_parameters(list);
+  FBI::set_valid_parameters(list);
 
   Inpar::PARTICLE::set_valid_parameters(list);
 
