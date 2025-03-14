@@ -16,8 +16,6 @@
 #include "4C_so3_hex27.hpp"
 #include "4C_so3_hex8.hpp"
 #include "4C_so3_nurbs27.hpp"
-#include "4C_so3_poro_p1_scatra.hpp"
-#include "4C_so3_poro_scatra.hpp"
 #include "4C_so3_tet10.hpp"
 #include "4C_so3_tet4.hpp"
 #include "4C_solid_poro_3D_ele_pressure_based.hpp"
@@ -36,63 +34,8 @@ Inpar::ScaTra::ImplType PoroElastScaTra::Utils::PoroScatraCloneStrategy::get_imp
   // the element type name, needed to cast correctly in the following
   const std::string eletypename = ele->element_type().name();
 
-  // TET 4 Elements
-  // tet 4 solid poro scatra
-  if (eletypename == "So_tet4PoroScatraType")
-  {
-    return (
-        dynamic_cast<
-            Discret::Elements::So3PoroScatra<Discret::Elements::SoTet4, Core::FE::CellType::tet4>*>(
-            ele))
-        ->impl_type();
-  }
-  // tet4 solid porop1 scatra
-  else if (eletypename == "So_tet4PoroP1ScatraType")
-  {
-    return (dynamic_cast<Discret::Elements::So3PoroP1Scatra<Discret::Elements::SoTet4,
-                Core::FE::CellType::tet4>*>(ele))
-        ->impl_type();
-  }
-  // tet 10 solid poro scatra
-  else if (eletypename == "So_tet10PoroScatraType")
-  {
-    return (dynamic_cast<Discret::Elements::So3PoroScatra<Discret::Elements::SoTet10,
-                Core::FE::CellType::tet10>*>(ele))
-        ->impl_type();
-  }
-  // HEX 8 Elements
-  // hex8 solid poro scatra
-  else if (eletypename == "So_hex8PoroScatraType")
-  {
-    return (
-        dynamic_cast<
-            Discret::Elements::So3PoroScatra<Discret::Elements::SoHex8, Core::FE::CellType::hex8>*>(
-            ele))
-        ->impl_type();
-  }
-  // hex8 solid porop1 scatra
-  else if (eletypename == "So_hex8PoroP1ScatraType")
-  {
-    return (dynamic_cast<Discret::Elements::So3PoroP1Scatra<Discret::Elements::SoHex8,
-                Core::FE::CellType::hex8>*>(ele))
-        ->impl_type();
-  }
-  // hex27 solid poro scatra
-  else if (eletypename == "So_hex27PoroScatraType")
-  {
-    return (dynamic_cast<Discret::Elements::So3PoroScatra<Discret::Elements::SoHex27,
-                Core::FE::CellType::hex27>*>(ele))
-        ->impl_type();
-  }
-  // nurbs 27
-  else if (eletypename == "So_nurbs27PoroScatraType")
-  {
-    return (dynamic_cast<Discret::Elements::So3PoroScatra<Discret::Elements::Nurbs::SoNurbs27,
-                Core::FE::CellType::nurbs27>*>(ele))
-        ->impl_type();
-  }
   // Solidporo
-  else if (eletypename == "SolidPoroPressureBasedType")
+  if (eletypename == "SolidPoroPressureBasedType")
   {
     return (dynamic_cast<Discret::Elements::SolidPoroPressureBased*>(ele))->get_impl_type();
   }

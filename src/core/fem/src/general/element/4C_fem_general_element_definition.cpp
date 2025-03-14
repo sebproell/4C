@@ -45,16 +45,10 @@ void Core::Elements::ElementDefinition::print_element_dat_header_to_stream(std::
   print_element_lines(stream, "SOLIDPORO_PRESSURE_VELOCITY_BASED_P1");
   print_element_lines(stream, "SOLIDSCATRA");
   print_element_lines(stream, "SOLIDH27_DEPRECATED");
-  print_element_lines(stream, "SOLIDH27PORO");
   print_element_lines(stream, "SOLIDH8_DEPRECATED");
   print_element_lines(stream, "MEMBRANE3");
-  print_element_lines(stream, "SOLIDH8PORO");
-  print_element_lines(stream, "SOLIDH8POROSCATRA");
-  print_element_lines(stream, "SOLIDH8POROP1");
-  print_element_lines(stream, "SOLIDH8POROP1SCATRA");
   print_element_lines(stream, "SOLIDT10_DEPRECATED");
   print_element_lines(stream, "SOLIDT4_DEPRECATED");
-  print_element_lines(stream, "SOLIDT4PORO");
   print_element_lines(stream, "TORSION3");
   print_element_lines(stream, "TRUSS3");
   print_element_lines(stream, "TRUSS3SCATRA");
