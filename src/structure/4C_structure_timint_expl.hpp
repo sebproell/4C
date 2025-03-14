@@ -342,15 +342,7 @@ namespace Solid
     //! Get type of thickness scaling for thin shell structures
     Inpar::Solid::StcScale get_stc_algo() override
     {
-      FOUR_C_THROW("get_stc_algo() has not been tested for explicit time integrators");
-      return Inpar::Solid::stc_inactive;
-    };
-
-    //! Access to scaling matrix for STC
-    std::shared_ptr<Core::LinAlg::SparseMatrix> get_stc_mat() override
-    {
-      FOUR_C_THROW("get_stc_mat() has not been tested for explicit time integrators");
-      return nullptr;
+      FOUR_C_THROW("STC is not supported in the old time integration framework!");
     };
 
     void update_iter_incr_constr(

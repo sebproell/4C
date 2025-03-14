@@ -4,8 +4,8 @@ of Shape: HEX8
 has 32 Elements
 *eb1="ELEMENT"
 sectionname="STRUCTURE"
-description="MAT 1 KINEM nonlinear EAS sosh8 ANS sosh8 THICKDIR auto"
-elementname="SOLIDSH8"
+description="MAT 1 KINEM nonlinear TECH eas_full"
+elementname="SOLID"
 
 Element Block, named: fluid
 of Shape: HEX8

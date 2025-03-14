@@ -783,14 +783,13 @@ namespace Solid
     //! get spring dashpot manager defined in the structure
     std::shared_ptr<CONSTRAINTS::SpringDashpotManager> get_spring_dashpot_manager() override = 0;
 
-    //! get type of thickness scaling for thin shell structures
-    Inpar::Solid::StcScale get_stc_algo() override = 0;
-
-    //! Access to scaling matrix for STC
-    std::shared_ptr<Core::LinAlg::SparseMatrix> get_stc_mat() override = 0;
-
-
     //@}
+
+    /// Access to scaling matrix for STC
+    std::shared_ptr<Core::LinAlg::SparseMatrix> get_stc_mat() override
+    {
+      FOUR_C_THROW("STC is not implemented in the old time integration framework.");
+    }
 
     //! @name Time step helpers
     //@{

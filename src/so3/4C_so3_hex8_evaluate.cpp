@@ -619,13 +619,6 @@ int Discret::Elements::SoHex8::evaluate(Teuchos::ParameterList& params,
               Core::LinAlg::DenseFunctions::multiply<double, Mat::NUM_STRESS_3D, soh8_easmild, 1>(
                   1.0, glstrain.data(), 1.0, M.values(), alpha->values());
               break;
-            case Discret::Elements::SoHex8::soh8_eassosh8:
-              Core::LinAlg::DenseFunctions::multiply<double, Mat::NUM_STRESS_3D, Mat::NUM_STRESS_3D,
-                  soh8_eassosh8>(
-                  M.values(), detJ0 / detJ_[gp], T0invT.data(), (M_GP->at(gp)).values());
-              Core::LinAlg::DenseFunctions::multiply<double, Mat::NUM_STRESS_3D, soh8_eassosh8, 1>(
-                  1.0, glstrain.data(), 1.0, M.values(), alpha->values());
-              break;
             case Discret::Elements::SoHex8::soh8_easnone:
               break;
             default:
@@ -1356,14 +1349,6 @@ void Discret::Elements::SoHex8::nlnstiffmass(std::vector<int>& lm,  // location 
             Core::LinAlg::DenseFunctions::update<double, soh8_easmild, 1>(
                 1., alpha->values(), 1., eas_inc->values());
             break;
-          case Discret::Elements::SoHex8::soh8_eassosh8:
-            Core::LinAlg::DenseFunctions::multiply<double, soh8_eassosh8, NUMDOF_SOH8, 1>(
-                1.0, oldfeas->values(), 1.0, oldKda->values(), res_d_eas.values());
-            Core::LinAlg::DenseFunctions::multiply<double, soh8_eassosh8, soh8_eassosh8, 1>(
-                0.0, eas_inc->values(), -1.0, oldKaainv->values(), oldfeas->values());
-            Core::LinAlg::DenseFunctions::update<double, soh8_eassosh8, 1>(
-                1., alpha->values(), 1., eas_inc->values());
-            break;
           case Discret::Elements::SoHex8::soh8_easnone:
             break;
           default:
@@ -1564,12 +1549,6 @@ void Discret::Elements::SoHex8::nlnstiffmass(std::vector<int>& lm,  // location 
           Core::LinAlg::DenseFunctions::multiply<double, Mat::NUM_STRESS_3D, Mat::NUM_STRESS_3D,
               soh8_easmild>(M.values(), detJ0 / detJ, T0invT.data(), (M_GP->at(gp)).values());
           Core::LinAlg::DenseFunctions::multiply<double, Mat::NUM_STRESS_3D, soh8_easmild, 1>(
-              1.0, glstrain.data(), 1.0, M.values(), alpha->values());
-          break;
-        case Discret::Elements::SoHex8::soh8_eassosh8:
-          Core::LinAlg::DenseFunctions::multiply<double, Mat::NUM_STRESS_3D, Mat::NUM_STRESS_3D,
-              soh8_eassosh8>(M.values(), detJ0 / detJ, T0invT.data(), (M_GP->at(gp)).values());
-          Core::LinAlg::DenseFunctions::multiply<double, Mat::NUM_STRESS_3D, soh8_eassosh8, 1>(
               1.0, glstrain.data(), 1.0, M.values(), alpha->values());
           break;
         case Discret::Elements::SoHex8::soh8_easnone:
@@ -1969,16 +1948,6 @@ void Discret::Elements::SoHex8::nlnstiffmass(std::vector<int>& lm,  // location 
             Core::LinAlg::DenseFunctions::multiply_tn<double, soh8_easmild, Mat::NUM_STRESS_3D, 1>(
                 1.0, feas.values(), detJ_w, M.values(), stress.data());
             break;
-          case Discret::Elements::SoHex8::soh8_eassosh8:
-            Core::LinAlg::DenseFunctions::multiply<double, Mat::NUM_STRESS_3D, Mat::NUM_STRESS_3D,
-                soh8_eassosh8>(cM.values(), cmat.data(), M.values());
-            Core::LinAlg::DenseFunctions::multiply_tn<double, soh8_eassosh8, Mat::NUM_STRESS_3D,
-                soh8_eassosh8>(1.0, Kaa.values(), detJ_w, M.values(), cM.values());
-            Core::LinAlg::DenseFunctions::multiply_tn<double, soh8_eassosh8, Mat::NUM_STRESS_3D,
-                NUMDOF_SOH8>(1.0, Kda.values(), detJ_w, M.values(), cb.data());
-            Core::LinAlg::DenseFunctions::multiply_tn<double, soh8_eassosh8, Mat::NUM_STRESS_3D, 1>(
-                1.0, feas.values(), detJ_w, M.values(), stress.data());
-            break;
           case Discret::Elements::SoHex8::soh8_easnone:
             break;
           default:
@@ -2136,14 +2105,6 @@ void Discret::Elements::SoHex8::nlnstiffmass(std::vector<int>& lm,  // location 
           Core::LinAlg::DenseFunctions::multiply<double, NUMDOF_SOH8, soh8_easmild, NUMDOF_SOH8>(
               1.0, stiffmatrix->data(), -1.0, KdaKaa.values(), Kda.values());
           Core::LinAlg::DenseFunctions::multiply<double, NUMDOF_SOH8, soh8_easmild, 1>(
-              1.0, force->data(), -1.0, KdaKaa.values(), feas.values());
-          break;
-        case Discret::Elements::SoHex8::soh8_eassosh8:
-          Core::LinAlg::DenseFunctions::multiply_tn<double, NUMDOF_SOH8, soh8_eassosh8,
-              soh8_eassosh8>(KdaKaa.values(), Kda.values(), Kaa.values());
-          Core::LinAlg::DenseFunctions::multiply<double, NUMDOF_SOH8, soh8_eassosh8, NUMDOF_SOH8>(
-              1.0, stiffmatrix->data(), -1.0, KdaKaa.values(), Kda.values());
-          Core::LinAlg::DenseFunctions::multiply<double, NUMDOF_SOH8, soh8_eassosh8, 1>(
               1.0, force->data(), -1.0, KdaKaa.values(), feas.values());
           break;
         case Discret::Elements::SoHex8::soh8_easnone:
@@ -2716,12 +2677,6 @@ void Discret::Elements::SoHex8::evaluate_finite_difference_material_tangent(
           Core::LinAlg::DenseFunctions::multiply<double, Mat::NUM_STRESS_3D, Mat::NUM_STRESS_3D,
               soh8_easmild>(M.values(), detJ0 / detJ, T0invT.data(), (M_GP->at(gp)).values());
           Core::LinAlg::DenseFunctions::multiply<double, Mat::NUM_STRESS_3D, soh8_easmild, 1>(
-              1.0, glstrain_fd.data(), 1.0, M.values(), alpha->values());
-          break;
-        case Discret::Elements::SoHex8::soh8_eassosh8:
-          Core::LinAlg::DenseFunctions::multiply<double, Mat::NUM_STRESS_3D, Mat::NUM_STRESS_3D,
-              soh8_eassosh8>(M.values(), detJ0 / detJ, T0invT.data(), (M_GP->at(gp)).values());
-          Core::LinAlg::DenseFunctions::multiply<double, Mat::NUM_STRESS_3D, soh8_eassosh8, 1>(
               1.0, glstrain_fd.data(), 1.0, M.values(), alpha->values());
           break;
         case Discret::Elements::SoHex8::soh8_easnone:

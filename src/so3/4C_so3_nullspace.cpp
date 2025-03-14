@@ -28,7 +28,7 @@ namespace Discret::Elements
     y   |    0       1       0      -z+z0       0          x-x0
     z   |    0       0       1       y-y0      -x+x0       0
 
-    valid element types: ale3, so_hex8, so_hex20, so_hex27, sosh8, so_tet4,
+    valid element types: ale3, so_hex8, so_hex20, so_hex27, so_tet4,
                          so_tet10, so_weg6, sodisp, so_shw6, truss3, torsion3
     */
 

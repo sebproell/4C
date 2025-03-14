@@ -500,18 +500,6 @@ namespace Solid
 
     //@}
 
-    //! @name STC business
-    //@{
-    //! Precondition system and return operator
-    void stc_preconditioning();
-
-    //! Build up STC Matrix
-    void compute_stc_matrix();
-
-    //! recover standard solution
-    void recover_stc_solution();
-    //@}
-
     //! @name NOX solution
     //@{
 
@@ -722,15 +710,7 @@ namespace Solid
     }
 
     //! Get type of thickness scaling for thin shell structures
-    Inpar::Solid::StcScale get_stc_algo() override { return stcscale_; }
-
-    //! Access to scaling matrix for STC
-    std::shared_ptr<Core::LinAlg::SparseMatrix> get_stc_mat() override
-    {
-      if (!stccompl_) compute_stc_matrix();
-      stccompl_ = true;
-      return stcmat_;
-    }
+    Inpar::Solid::StcScale get_stc_algo() override { return Inpar::Solid::StcScale::stc_inactive; }
 
     //! Update iteration
     //! Add residual increment to Lagrange multipliers stored in Constraint manager
@@ -1021,15 +1001,6 @@ namespace Solid
     //! @name Krylov projection variables
     bool updateprojection_;  //!< bool triggering update of Krylov projection
     std::shared_ptr<Core::LinAlg::KrylovProjector> projector_;  //!< Krylov projector himself
-    //@}
-
-    //! @name STC Scaling for thin shell structures
-    //@{
-    enum Inpar::Solid::StcScale stcscale_;                //!< scale thickness of shells?
-    double stcfact_;                                      //!< scaling factor for STC
-    int stclayer_;                                        //! number of layers for multilayered case
-    std::shared_ptr<Core::LinAlg::SparseMatrix> stcmat_;  //!< scaling matrix for STC
-    bool stccompl_;  //!< keep track if stc matrix has been evaluated
     //@}
 
     //! @name Pseudo Transient Continuation Parameters

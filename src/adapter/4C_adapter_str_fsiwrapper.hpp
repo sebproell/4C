@@ -72,8 +72,8 @@ namespace Adapter
 
     /// remove as soon as new structure is fully usable ! todo
     /// only 3 nightly tests use this method:
-    /// fsi_dc3D_part_ait_ga_ost_xwall (no solidsh8 possible yet)
-    /// fsi_ow3D_mtr_drt (no solidsh8 possible yet)
+    /// fsi_dc3D_part_ait_ga_ost_xwall
+    /// fsi_ow3D_mtr_drt
     /// constr2D_fsi (newtonlinuzawa not implemented; but really needed ?)
     virtual void apply_interface_forces_temporary_deprecated(
         std::shared_ptr<Core::LinAlg::Vector<double>> iforce);

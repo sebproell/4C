@@ -58,7 +58,6 @@ namespace Discret
   {
     // forward declarations
     class PreStress;
-    class SoSh8Type;
 
 
     class SoHex8Type : public Core::Elements::ElementType
@@ -110,7 +109,6 @@ namespace Discret
      public:
       //! @name Friends
       friend class SoHex8Type;
-      friend class SoSh8Type;
 
       //@}
       //! @name Constructors and destructors and related methods
@@ -429,16 +427,13 @@ namespace Discret
                                   //!< to state in the beginning of the computation
         calc_struct_energy,       //!< compute internal energy
         prestress_update,
-        multi_readrestart,           //!< multi-scale: read restart on microscale
-        multi_eas_init,              //!< multi-scale: initialize EAS parameters on microscale
-        multi_eas_set,               //!< multi-scale: set EAS parameters on microscale
-        multi_calc_dens,             //!< multi-scale: calculate homogenized density
-        calc_stc_matrix,             //! calculate scaled director matrix for thin shell structures
-        calc_stc_matrix_inverse,     //! calculate inverse of scaled director matrix for thin shell
-                                     //! structures
-        calc_struct_stifftemp,       //!< TSI specific: mechanical-thermal stiffness
-        calc_global_gpstresses_map,  //! basically calc_struct_stress but with assembly of global
-                                     //! gpstresses map
+        multi_readrestart,              //!< multi-scale: read restart on microscale
+        multi_eas_init,                 //!< multi-scale: initialize EAS parameters on microscale
+        multi_eas_set,                  //!< multi-scale: set EAS parameters on microscale
+        multi_calc_dens,                //!< multi-scale: calculate homogenized density
+        calc_struct_stifftemp,          //!< TSI specific: mechanical-thermal stiffness
+        calc_global_gpstresses_map,     //! basically calc_struct_stress but with assembly of global
+                                        //! gpstresses map
         interpolate_velocity_to_point,  //! interpolate the structural velocity to a given point
         calc_recover                    //! recover condensed eas variables
       };
@@ -451,8 +446,6 @@ namespace Discret
       enum EASType  // with meaningful value for matrix size info
       {
         soh8_easnone = 0,   //!< no EAS i.e. displacement based with tremendous locking
-        soh8_eassosh8 = 7,  //!< related to Solid-Shell, 7 parameters to alleviate
-                            //!< inplane (membrane) locking and main modes for Poisson-locking
         soh8_easmild = 9,   //!< 9 parameters consisting of modes to alleviate
                             //!< shear locking (bending) and main incompressibility modes
                             //!< (for Solid Hex8)
@@ -598,9 +591,6 @@ namespace Discret
 
       //! EAS technology, init
       void soh8_easinit();
-
-      //! Re-initialize EAS data, needed for sosh8 morphing
-      void soh8_reiniteas(Discret::Elements::SoHex8::EASType EASType);
 
       //! EAS technology, setup necessary data
       void soh8_eassetup(

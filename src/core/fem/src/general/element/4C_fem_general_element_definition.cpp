@@ -52,7 +52,6 @@ void Core::Elements::ElementDefinition::print_element_dat_header_to_stream(std::
   print_element_lines(stream, "SOLIDH8POROSCATRA");
   print_element_lines(stream, "SOLIDH8POROP1");
   print_element_lines(stream, "SOLIDH8POROP1SCATRA");
-  print_element_lines(stream, "SOLIDSH8");
   print_element_lines(stream, "SOLIDT10_DEPRECATED");
   print_element_lines(stream, "SOLIDT4_DEPRECATED");
   print_element_lines(stream, "SOLIDT4PORO");
