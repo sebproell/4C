@@ -11,7 +11,6 @@
 #include "4C_comm_utils_factory.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_io_input_spec_builders.hpp"
-#include "4C_so3_nullspace.hpp"
 #include "4C_utils_exceptions.hpp"
 
 FOUR_C_NAMESPACE_OPEN

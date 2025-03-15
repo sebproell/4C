@@ -20,7 +20,6 @@
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
-#include "4C_so3_nullspace.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_shared_ptr_from_ref.hpp"
 
