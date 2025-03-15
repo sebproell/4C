@@ -115,34 +115,6 @@ namespace CONTACT
     physical
   };
 
-  /// Constraint enfrocement method method for thermal conduction and frictional dissipation
-  enum NitscheThermoMethod
-  {
-    NitThermo_substitution,
-    NitThermo_nitsche
-  };
-
-  /// Assemble strategy for the augmented Lagrangian framework
-  enum AssembleStrategy : int
-  {
-    assemble_none,
-    assemble_node_based  ///< assemble based on nodal data containers
-  };
-
-  /// convert assemble strategy to string
-  inline std::string assemble_strategy_to_string(enum AssembleStrategy assemble_type)
-  {
-    switch (assemble_type)
-    {
-      case assemble_none:
-        return "assemble_none";
-      case assemble_node_based:
-        return "assemble_node_based";
-      default:
-        return "INVALID assemble strategy";
-    }
-  }
-
   /// Contact coupling mode for multiphysics solver
   enum class CouplingScheme : int
   {
