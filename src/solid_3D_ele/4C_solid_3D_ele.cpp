@@ -15,10 +15,10 @@
 #include "4C_io_input_spec.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_mat_so3_material.hpp"
-#include "4C_so3_line.hpp"
 #include "4C_so3_surface.hpp"
 #include "4C_solid_3D_ele_factory.hpp"
 #include "4C_solid_3D_ele_interface_serializable.hpp"
+#include "4C_solid_3D_ele_line.hpp"
 #include "4C_solid_3D_ele_nullspace.hpp"
 #include "4C_solid_3D_ele_properties.hpp"
 #include "4C_solid_3D_ele_utils.hpp"
@@ -211,7 +211,7 @@ int Discret::Elements::Solid::num_volume() const
 
 std::vector<std::shared_ptr<Core::Elements::Element>> Discret::Elements::Solid::lines()
 {
-  return Core::Communication::get_element_lines<StructuralLine, Solid>(*this);
+  return Core::Communication::get_element_lines<SolidLine<3>, Solid>(*this);
 }
 
 std::vector<std::shared_ptr<Core::Elements::Element>> Discret::Elements::Solid::surfaces()

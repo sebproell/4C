@@ -12,9 +12,9 @@
 #include "4C_inpar_scatra.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_io_input_spec_builders.hpp"
-#include "4C_so3_line.hpp"
 #include "4C_so3_surface.hpp"
 #include "4C_solid_3D_ele_interface_serializable.hpp"
+#include "4C_solid_3D_ele_line.hpp"
 #include "4C_solid_3D_ele_nullspace.hpp"
 #include "4C_solid_3D_ele_properties.hpp"
 #include "4C_solid_scatra_3D_ele_factory.hpp"
@@ -168,7 +168,7 @@ int Discret::Elements::SolidScatra::num_volume() const
 
 std::vector<std::shared_ptr<Core::Elements::Element>> Discret::Elements::SolidScatra::lines()
 {
-  return Core::Communication::get_element_lines<StructuralLine, SolidScatra>(*this);
+  return Core::Communication::get_element_lines<SolidLine<3>, SolidScatra>(*this);
 }
 
 std::vector<std::shared_ptr<Core::Elements::Element>> Discret::Elements::SolidScatra::surfaces()

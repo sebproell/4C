@@ -69,9 +69,10 @@ namespace Core::Elements
     ElementNodes<celltype, dim> element_nodes;
     for (int i = 0; i < Core::FE::num_nodes<celltype>; ++i)
     {
+      const std::vector<double>& x = ele.nodes()[i]->x();
       for (unsigned d = 0; d < dim; ++d)
       {
-        element_nodes.coordinates(i, d) = ele.nodes()[i]->x()[d];
+        element_nodes.coordinates(i, d) = x[d];
       }
     }
 
