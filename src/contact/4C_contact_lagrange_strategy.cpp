@@ -4657,7 +4657,7 @@ void CONTACT::LagrangeStrategy::update_active_set()
         else
         {
           // friction tresca
-          if (ftype == CONTACT::friction_tresca)
+          if (ftype == CONTACT::FrictionType::tresca)
           {
             FriNode* frinode = dynamic_cast<FriNode*>(cnode);
             const Core::LinAlg::Vector<double>& ct_ref = interface_[i]->ct_ref();
@@ -4692,10 +4692,10 @@ void CONTACT::LagrangeStrategy::update_active_set()
                 activesetconv_ = false;
               }
             }
-          }  // if (ftype == CONTACT::friction_tresca)
+          }  // if (ftype == CONTACT::FrictionType::tresca)
 
           // friction coulomb
-          if (ftype == CONTACT::friction_coulomb)
+          if (ftype == CONTACT::FrictionType::coulomb)
           {
             FriNode* frinode = dynamic_cast<FriNode*>(cnode);
             const Core::LinAlg::Vector<double>& ct_ref = interface_[i]->ct_ref();
@@ -4730,7 +4730,7 @@ void CONTACT::LagrangeStrategy::update_active_set()
                 activesetconv_ = false;
               }
             }
-          }  // if (ftype == CONTACT::friction_coulomb)
+          }  // if (ftype == CONTACT::FrictionType::coulomb)
         }  // if (nz <= 0)
       }  // if (cnode->Active()==false)
     }  // loop over all slave nodes
@@ -4809,7 +4809,7 @@ void CONTACT::LagrangeStrategy::update_active_set()
   // *********************************************************************
   bool zigzagging = false;
   // FIXGIT: For tresca friction zig-zagging is not eliminated
-  if (ftype != CONTACT::friction_tresca && ftype != CONTACT::friction_coulomb)
+  if (ftype != CONTACT::FrictionType::tresca && ftype != CONTACT::FrictionType::coulomb)
   {
     // frictionless contact
     if (active_set_steps() > 2)
@@ -4842,7 +4842,7 @@ void CONTACT::LagrangeStrategy::update_active_set()
         }
       }
     }
-  }  // if (ftype != CONTACT::friction_tresca && ftype != CONTACT::friction_coulomb)
+  }  // if (ftype != CONTACT::FrictionType::tresca && ftype != CONTACT::FrictionType::coulomb)
 
 
   // reset zig-zagging history
@@ -5025,7 +5025,7 @@ void CONTACT::LagrangeStrategy::update_active_set_semi_smooth(const bool firstSt
   // *********************************************************************
   int zigzagging = 0;
   // FIXGIT: For friction zig-zagging is not eliminated
-  if (ftype != CONTACT::friction_tresca && ftype != CONTACT::friction_coulomb)
+  if (ftype != CONTACT::FrictionType::tresca && ftype != CONTACT::FrictionType::coulomb)
   {
     // frictionless contact
     if (active_set_steps() > 2)
@@ -5048,7 +5048,7 @@ void CONTACT::LagrangeStrategy::update_active_set_semi_smooth(const bool firstSt
         }
       }
     }
-  }  // if (ftype != CONTACT::friction_tresca && ftype != CONTACT::friction_coulomb)
+  }  // if (ftype != CONTACT::FrictionType::tresca && ftype != CONTACT::FrictionType::coulomb)
 
   // output to screen
   if (Core::Communication::my_mpi_rank(get_comm()) == 0)

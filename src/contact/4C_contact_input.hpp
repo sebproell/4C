@@ -22,12 +22,12 @@ namespace CONTACT
 {
   /// Type of contact friction law
   /// (this enum represents the input file parameter FRICTION)
-  enum FrictionType
+  enum class FrictionType
   {
-    friction_none = 0,  ///< no friction
-    friction_stick,     ///< perfect stick
-    friction_tresca,    ///< Tresca friction law
-    friction_coulomb    ///< Coulomb friction law
+    none,    ///< no friction
+    stick,   ///< perfect stick
+    tresca,  ///< Tresca friction law
+    coulomb  ///< Coulomb friction law
   };
 
   /// Type of contact adhesion law
