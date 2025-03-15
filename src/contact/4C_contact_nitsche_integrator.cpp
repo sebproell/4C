@@ -8,6 +8,7 @@
 #include "4C_contact_nitsche_integrator.hpp"
 
 #include "4C_contact_element.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_nitsche_utils.hpp"
 #include "4C_contact_node.hpp"
 #include "4C_contact_paramsinterface.hpp"
@@ -696,7 +697,7 @@ void CONTACT::Utils::nitsche_weights_and_scaling(Mortar::Element& sele, Mortar::
 
   switch (nit_wgt)
   {
-    case CONTACT::NitWgt_slave:
+    case CONTACT::NitscheWeighting::slave:
     {
       ws = 1.;
       wm = 0.;
@@ -704,7 +705,7 @@ void CONTACT::Utils::nitsche_weights_and_scaling(Mortar::Element& sele, Mortar::
       pet /= he_slave;
     }
     break;
-    case CONTACT::NitWgt_master:
+    case CONTACT::NitscheWeighting::master:
     {
       wm = 1.;
       ws = 0.;
@@ -712,7 +713,7 @@ void CONTACT::Utils::nitsche_weights_and_scaling(Mortar::Element& sele, Mortar::
       pet /= he_master;
     }
     break;
-    case CONTACT::NitWgt_harmonic:
+    case CONTACT::NitscheWeighting::harmonic:
       ws = 1. / he_master;
       wm = 1. / he_slave;
       ws /= (ws + wm);

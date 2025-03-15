@@ -107,12 +107,12 @@ namespace CONTACT
   };
 
   /// weighting in Nitsche contact
-  enum NitscheWeighting
+  enum class NitscheWeighting
   {
-    NitWgt_slave,
-    NitWgt_master,
-    NitWgt_harmonic,
-    NitWgt_physical
+    slave,
+    master,
+    harmonic,
+    physical
   };
 
   /// Constraint enfrocement method method for thermal conduction and frictional dissipation

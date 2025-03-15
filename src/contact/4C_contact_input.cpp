@@ -176,7 +176,9 @@ void CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& l
   Core::Utils::string_to_integral_parameter<CONTACT::NitscheWeighting>("NITSCHE_WEIGHTING",
       "harmonic", "how to weight consistency terms in Nitsche contact formulation",
       tuple<std::string>("slave", "master", "harmonic"),
-      tuple<CONTACT::NitscheWeighting>(NitWgt_slave, NitWgt_master, NitWgt_harmonic), scontact);
+      tuple<CONTACT::NitscheWeighting>(CONTACT::NitscheWeighting::slave,
+          CONTACT::NitscheWeighting::master, CONTACT::NitscheWeighting::harmonic),
+      scontact);
 
   scontact.specs.emplace_back(parameter<bool>("NITSCHE_PENALTY_ADAPTIVE",
       {.description = "adapt penalty parameter after each converged time step",
