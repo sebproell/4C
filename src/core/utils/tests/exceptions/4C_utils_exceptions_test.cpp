@@ -24,12 +24,21 @@ namespace
     return (a / b);
   }
 
+  //! Check that the compiler can infer that this function will never return.
+  //! It should not warn about the missing return statement.
+  bool test_no_return() { FOUR_C_THROW("No return."); }
+
   TEST(ExceptionsTest, Exception)
   {
     int a = 1, b = 0;
 
     FOUR_C_EXPECT_THROW_WITH_MESSAGE(
         division(a, b), Core::Exception, "Division by zero condition!");
+  }
+
+  TEST(ExceptionTest, NoReturn)
+  {
+    FOUR_C_EXPECT_THROW_WITH_MESSAGE(test_no_return(), Core::Exception, "No return.");
   }
 
   TEST(ExceptionsTest, AssertAlwaysPrintsTest)
