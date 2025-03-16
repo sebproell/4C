@@ -363,7 +363,7 @@ namespace Core::FE
 
     if (found_position == std::end(all_names))
     {
-      FOUR_C_THROW("Unknown celltype %s", celltype_str.c_str());
+      FOUR_C_THROW("Unknown celltype {}", celltype_str);
     }
 
     constexpr std::array all_celltypes_enum = celltype_array<all_celltypes>;

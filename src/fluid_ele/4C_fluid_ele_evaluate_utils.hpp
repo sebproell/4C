@@ -334,7 +334,7 @@ namespace FLD
 
           // check for degenerated elements
           if (det <= 0.0)
-            FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nNEGATIVE JACOBIAN DETERMINANT: %f", ele->id(), det);
+            FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nNEGATIVE JACOBIAN DETERMINANT: {}", ele->id(), det);
 
           // interpolated values at gausspoints
           double ugp = 0;
@@ -734,7 +734,7 @@ namespace FLD
 
           // check for degenerated elements
           if (det <= 0.0)
-            FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nNEGATIVE JACOBIAN DETERMINANT: %f", ele->id(), det);
+            FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nNEGATIVE JACOBIAN DETERMINANT: {}", ele->id(), det);
 
           // interpolated values at gausspoints
           double ugp = 0;
@@ -2094,7 +2094,7 @@ namespace FLD
       // check for degenerated elements
       if (det < 1E-16)
         FOUR_C_THROW(
-            "GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", ele->id(), det);
+            "GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", ele->id(), det);
 
       // set element area or volume
       vol = wquad * det;
@@ -2807,7 +2807,7 @@ namespace FLD
       // check for degenerated elements
       if (det < 1E-16)
         FOUR_C_THROW(
-            "GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", ele->id(), det);
+            "GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", ele->id(), det);
 
       // set element volume
       vol = wquad * det;
@@ -2838,7 +2838,7 @@ namespace FLD
         // check for degenerated elements
         if (det < 1E-16)
           FOUR_C_THROW(
-              "GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", ele->id(), det);
+              "GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", ele->id(), det);
 
         double fac = wquad * det;
 
@@ -3228,7 +3228,7 @@ namespace FLD
       // check for degenerated elements
       if (det < 0.0)
       {
-        FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nNEGATIVE JACOBIAN DETERMINANT: %f", ele->id(), det);
+        FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nNEGATIVE JACOBIAN DETERMINANT: {}", ele->id(), det);
       }
 
       // set total integration factor

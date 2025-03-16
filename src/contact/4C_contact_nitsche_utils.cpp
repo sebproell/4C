@@ -24,7 +24,7 @@ void Mortar::ElementNitscheData<parent_distype>::assemble_rhs(Mortar::Element* m
   const int nen = Core::FE::num_nodes<parent_distype>;
 
   if (num_dof_per_node * nen > dofs.size())
-    FOUR_C_THROW("num_dof_per_node*nen>dofs.size() %d > %d", num_dof_per_node * nen, dofs.size());
+    FOUR_C_THROW("num_dof_per_node*nen>dofs.size() {} > {}", num_dof_per_node * nen, dofs.size());
 
   if (fc != nullptr)
   {

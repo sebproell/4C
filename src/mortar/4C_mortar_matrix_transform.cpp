@@ -129,7 +129,7 @@ void Mortar::MatrixRowColTransformer::redistributed_to_unredistributed(
   // reset the distributor of the exporter after use
   reset_exporter(slave_to_master_[bt]);
 
-  if (err) FOUR_C_THROW("Import failed with err=%d", err);
+  if (err) FOUR_C_THROW("Import failed with err={}", err);
 }
 
 /*----------------------------------------------------------------------------*
@@ -164,7 +164,7 @@ void Mortar::MatrixRowColTransformer::unredistributed_to_redistributed(
   // reset the distributor of the exporter after use
   reset_exporter(master_to_slave_[bt]);
 
-  if (err) FOUR_C_THROW("Import failed with err=%d", err);
+  if (err) FOUR_C_THROW("Import failed with err={}", err);
 }
 
 /*----------------------------------------------------------------------------*

@@ -232,7 +232,7 @@ namespace Discret::Elements::Shell::EAS
         default:
           FOUR_C_THROW(
               "EAS Membrane locking: Only 0, 7, 9, 11 EAS modes are implemented. Given: "
-              "%d",
+              "{}",
               locking_types.membrane);
       }
       // bending locking: E_{11}, E_{12], E_{22} linear
@@ -267,7 +267,7 @@ namespace Discret::Elements::Shell::EAS
           M_index += 11;
           break;
         default:
-          FOUR_C_THROW("EAS bending part: Only 0, 9, 11 EAS modes are implemented. Given: %d",
+          FOUR_C_THROW("EAS bending part: Only 0, 9, 11 EAS modes are implemented. Given: {}",
               locking_types.bending);
       }
       // locking due to thickness changes E_{33} linear
@@ -327,7 +327,7 @@ namespace Discret::Elements::Shell::EAS
         default:
           FOUR_C_THROW(
               "EAS thickness locking: Only 0, 1, 3, 4, 5, 8, 9 EAS modes are implemented. Given: "
-              "%d",
+              "{}",
               locking_types.thickness);
       }
       // transverse shear strain locking: E_{13}, E_{23} constant
@@ -359,7 +359,7 @@ namespace Discret::Elements::Shell::EAS
         default:
           FOUR_C_THROW(
               "EAS transverse shear strain locking: Only 0, 2, 4, 6 EAS modes are implemented. "
-              "Given: %d",
+              "Given: {}",
               locking_types.transverse_shear_strain_const);
       }
       // transverse shear strain locking: E_{13}, E_{23} linear
@@ -391,7 +391,7 @@ namespace Discret::Elements::Shell::EAS
         default:
           FOUR_C_THROW(
               "EAS transverse shear strain locking: Only 0, 2, 4, 6 EAS modes are implemented. "
-              "Given: %d",
+              "Given: {}",
               locking_types.transverse_shear_strain_lin);
       }
     }
@@ -445,7 +445,7 @@ namespace Discret::Elements::Shell::EAS
           break;
         default:
           FOUR_C_THROW(
-              "EAS Membrane locking: Only 0, 1, 2, 3, 4, 5, 7 EAS modes are implemented. Given: %d",
+              "EAS Membrane locking: Only 0, 1, 2, 3, 4, 5, 7 EAS modes are implemented. Given: {}",
               locking_types.membrane);
       }
       // bending part: E_{11}, E_{12], E_{22} linear
@@ -488,7 +488,7 @@ namespace Discret::Elements::Shell::EAS
           M_index += 7;
           break;
         default:
-          FOUR_C_THROW("EAS bending part: Only 0, 4, 5, 7, 8 EAS modes are implemented. Given: %d",
+          FOUR_C_THROW("EAS bending part: Only 0, 4, 5, 7, 8 EAS modes are implemented. Given: {}",
               locking_types.bending);
       }
       // locking due to thickness changes E_{33} linear
@@ -547,7 +547,7 @@ namespace Discret::Elements::Shell::EAS
           break;
         default:
           FOUR_C_THROW(
-              "EAS thickness locking: Only 0, 3, 4, 6, 8, 9 EAS modes are implemented. Given: %d",
+              "EAS thickness locking: Only 0, 3, 4, 6, 8, 9 EAS modes are implemented. Given: {}",
               locking_types.thickness);
       }
       // transverse shear strain locking: E_{13}, E_{23} const
@@ -570,7 +570,7 @@ namespace Discret::Elements::Shell::EAS
         default:
           FOUR_C_THROW(
               "EAS transverse shear strain locking: Only 0, 2, 4 EAS modes are implemented. Given: "
-              "%d",
+              "{}",
               locking_types.transverse_shear_strain_const);
       }
       // transverse shear strain locking: E_{13}, E_{23} linear
@@ -593,7 +593,7 @@ namespace Discret::Elements::Shell::EAS
         default:
           FOUR_C_THROW(
               "EAS transverse shear strain locking: Only 0, 2, 4 EAS modes are implemented. Given: "
-              "%d",
+              "{}",
               locking_types.transverse_shear_strain_lin);
       }
     }  // else if (iel==4)

@@ -83,7 +83,7 @@ void CONTACT::MtLagrangeStrategy::mortar_coupling(
 
   // re-insert inverted diagonal into invd
   err = invd_->replace_diagonal_values(*diag);
-  if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+  if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
 
   // do the multiplication M^ = inv(D) * M
   mhatmatrix_ = Core::LinAlg::matrix_multiply(*invd_, false, *mmatrix_, false, false, false, true);
@@ -336,7 +336,7 @@ CONTACT::MtLagrangeStrategy::mesh_initialization()
 
   // re-insert inverted diagonal into invd
   err = invd_->replace_diagonal_values(*diag);
-  if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+  if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
 
   // do the multiplication M^ = inv(D) * M
   mhatmatrix_ = Core::LinAlg::matrix_multiply(*invd_, false, *mmatrix_, false, false, false, true);

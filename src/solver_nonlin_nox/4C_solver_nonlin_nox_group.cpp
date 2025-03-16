@@ -514,7 +514,7 @@ void NOX::Nln::Group::throw_error(
   std::ostringstream msg;
   msg << "ERROR - NOX::Nln::Group::" << functionName << " - " << errorMsg << std::endl;
 
-  FOUR_C_THROW(msg.str());
+  FOUR_C_THROW("{}", msg.str());
 }
 
 /*----------------------------------------------------------------------------*

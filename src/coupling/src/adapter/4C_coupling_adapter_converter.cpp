@@ -140,7 +140,7 @@ bool Coupling::Adapter::MatrixLogicalSplitAndTransform::operator()(
       std::shared_ptr<Epetra_CrsMatrix> permsrc =
           std::make_shared<Epetra_CrsMatrix>(::Copy, permsrcmap, 0);
       int err = permsrc->Import(*src.epetra_matrix(), *exporter_, Insert);
-      if (err) FOUR_C_THROW("Import failed with err=%d", err);
+      if (err) FOUR_C_THROW("Import failed with err={}", err);
 
       permsrc->FillComplete(src.domain_map(), permsrcmap);
       esrc = permsrc;
@@ -254,12 +254,12 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::add_into_filled(Epetra_C
     const int rowA = esrc.RowMap().LID(logical_range_map.GID(i));
     if (rowA == -1) FOUR_C_THROW("Internal error");
     int err = esrc.ExtractMyRowView(rowA, NumEntriesA, ValuesA, IndicesA);
-    if (err != 0) FOUR_C_THROW("ExtractMyRowView error: %d", err);
+    if (err != 0) FOUR_C_THROW("ExtractMyRowView error: {}", err);
 
     // identify the local row index in the destination matrix corresponding to i
     const int rowB = dstrowmap.LID(matching_dst_rows.GID(i));
     err = edst.ExtractMyRowView(rowB, NumEntriesB, ValuesB, IndicesB);
-    if (err != 0) FOUR_C_THROW("ExtractMyRowView error: %d", err);
+    if (err != 0) FOUR_C_THROW("ExtractMyRowView error: {}", err);
 
     // loop through the columns in source matrix and find respective place in destination
     for (int jA = 0, jB = 0; jA < NumEntriesA; ++jA)
@@ -271,7 +271,7 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::add_into_filled(Epetra_C
       if (col == -1)
       {
         if (exactmatch)
-          FOUR_C_THROW("gid %d not found in map for lid %d at %d", srccolmap.GID(IndicesA[jA]),
+          FOUR_C_THROW("gid {} not found in map for lid {} at {}", srccolmap.GID(IndicesA[jA]),
               IndicesA[jA], jA);
         else
           continue;
@@ -289,8 +289,8 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::add_into_filled(Epetra_C
       if (jB == NumEntriesB || IndicesB[jB] != col)
       {
         FOUR_C_THROW(
-            "Source matrix entry with global row ID %d and global column ID %d couldn't be added to"
-            " destination matrix entry with global row ID %d and unknown global column ID %d!",
+            "Source matrix entry with global row ID {} and global column ID {} couldn't be added to"
+            " destination matrix entry with global row ID {} and unknown global column ID {}!",
             esrc.RowMap().GID(i), srccolmap.GID(IndicesA[jA]), matching_dst_rows.GID(i),
             edst.ColMap().GID(col));
       }
@@ -322,7 +322,7 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::add_into_unfilled(Epetra
     int* Indices;
     int err = esrc.ExtractMyRowView(
         esrc.RowMap().LID(logical_range_map.GID(i)), NumEntries, Values, Indices);
-    if (err != 0) FOUR_C_THROW("ExtractMyRowView error: %d", err);
+    if (err != 0) FOUR_C_THROW("ExtractMyRowView error: {}", err);
 
     idx.clear();
     vals.clear();
@@ -343,7 +343,7 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::add_into_unfilled(Epetra
       {
         // only complain if an exact match is demanded
         if (exactmatch)
-          FOUR_C_THROW("gid %d not found in map for lid %d at %d", gid, Indices[j], j);
+          FOUR_C_THROW("gid {} not found in map for lid {} at {}", gid, Indices[j], j);
       }
     }
 
@@ -358,7 +358,7 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::add_into_unfilled(Epetra
     if (edst.NumAllocatedGlobalEntries(globalRow) == 0)
     {
       int err = edst.InsertGlobalValues(globalRow, NumEntries, vals.data(), idx.data());
-      if (err < 0) FOUR_C_THROW("InsertGlobalValues error: %d", err);
+      if (err < 0) FOUR_C_THROW("InsertGlobalValues error: {}", err);
     }
     else
       for (int j = 0; j < NumEntries; ++j)
@@ -368,10 +368,10 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::add_into_unfilled(Epetra
         if (err > 0)
         {
           err = edst.InsertGlobalValues(globalRow, 1, &vals[j], &idx[j]);
-          if (err < 0) FOUR_C_THROW("InsertGlobalValues error: %d", err);
+          if (err < 0) FOUR_C_THROW("InsertGlobalValues error: {}", err);
         }
         else if (err < 0)
-          FOUR_C_THROW("SumIntoGlobalValues error: %d", err);
+          FOUR_C_THROW("SumIntoGlobalValues error: {}", err);
       }
   }
 }

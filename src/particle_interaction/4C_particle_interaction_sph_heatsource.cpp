@@ -75,7 +75,7 @@ void ParticleInteraction::SPHHeatSourceBase::setup(
     {
       // safety check
       if (not potentialabsorbingtypes.count(type_i))
-        FOUR_C_THROW("thermal absorptivity for particles of type '%s' not possible!",
+        FOUR_C_THROW("thermal absorptivity for particles of type '{}' not possible!",
             PARTICLEENGINE::enum_to_type_name(type_i).c_str());
 
       absorbingtypes_.insert(type_i);
@@ -166,7 +166,7 @@ void ParticleInteraction::SPHHeatSourceSurface::init()
 
   // safety check
   if (static_cast<int>(direction_.size()) != 3)
-    FOUR_C_THROW("dimension (dim = %d) of heat source direction vector is wrong!",
+    FOUR_C_THROW("dimension (dim = {}) of heat source direction vector is wrong!",
         static_cast<int>(direction_.size()));
 
   // normalize heat source direction vector

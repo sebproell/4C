@@ -235,7 +235,7 @@ int Discret::Elements::FluidHDGWeakComp::evaluate(Teuchos::ParameterList& params
       break;
 
     default:
-      FOUR_C_THROW("Unknown type of action '%i' for FluidHDGWeakComp", act);
+      FOUR_C_THROW("Unknown type of action '{}' for FluidHDGWeakComp", act);
       break;
   }
 

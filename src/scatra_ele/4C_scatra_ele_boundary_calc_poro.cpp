@@ -168,7 +168,7 @@ int Discret::Elements::ScaTraEleBoundaryCalcPoro<distype, probdim>::evaluate_act
     }
     default:
     {
-      FOUR_C_THROW("Invalid action parameter nr. %i!", action);
+      FOUR_C_THROW("Invalid action parameter nr. {}!", action);
       break;
     }
   }  // switch(action)

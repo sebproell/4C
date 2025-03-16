@@ -122,7 +122,7 @@ std::shared_ptr<BeamInteraction::BeamContactPair> BeamInteraction::BeamContactPa
           default:
           {
             FOUR_C_THROW(
-                "%d and %d is no valid template parameter combination for the "
+                "{} and {} is no valid template parameter combination for the "
                 "number of nodes and number of types of nodal DoFs used for centerline "
                 "interpolation!",
                 numnodes_centerline, numnodalvalues);
@@ -142,7 +142,7 @@ std::shared_ptr<BeamInteraction::BeamContactPair> BeamInteraction::BeamContactPa
           default:
           {
             FOUR_C_THROW(
-                "%d and %d is no valid template parameter combination for the "
+                "{} and {} is no valid template parameter combination for the "
                 "number of nodes and number of types of nodal DoFs used for centerline "
                 "interpolation!",
                 numnodes_centerline, numnodalvalues);
@@ -154,7 +154,7 @@ std::shared_ptr<BeamInteraction::BeamContactPair> BeamInteraction::BeamContactPa
       default:
       {
         FOUR_C_THROW(
-            "%d and %d is no valid template parameter combination for the "
+            "{} and {} is no valid template parameter combination for the "
             "number of nodes and number of types of nodal DoFs used for centerline "
             "interpolation!",
             numnodes_centerline, numnodalvalues);

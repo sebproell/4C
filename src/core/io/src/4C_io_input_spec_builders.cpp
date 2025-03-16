@@ -107,7 +107,7 @@ namespace
     for (const auto& entry : unnamed_entries)
     {
       // Unnamed entries contain a useful description, which indicates what is missing.
-      FOUR_C_ASSERT_ALWAYS(!entry->impl().required(), "Required '%s' not found in input line",
+      FOUR_C_ASSERT_ALWAYS(!entry->impl().required(), "Required '{}' not found in input line",
           entry->impl().description().c_str());
     }
 
@@ -116,7 +116,7 @@ namespace
     {
       if (entry->impl().required())
       {
-        FOUR_C_THROW("Required value '%s' not found in input line", name.c_str());
+        FOUR_C_THROW("Required value '{}' not found in input line", name.c_str());
       }
       else if (entry->impl().has_default_value())
       {
@@ -132,7 +132,7 @@ namespace
     {
       if (!spec.impl().name().empty())
         FOUR_C_ASSERT_ALWAYS(names.insert(spec.impl().name()).second,
-            "Duplicate component name '%s' found in input line.", spec.impl().name().c_str());
+            "Duplicate component name '{}' found in input line.", spec.impl().name().c_str());
     }
   }
 
@@ -521,7 +521,7 @@ void Core::IO::Internal::MatchTree::assert_match() const
   {
     ss << "This was the best attempt to match the input:\n\n";
     recursively_print_match_entries(entries_.front(), ss, 0);
-    FOUR_C_THROW("%s", ss.str().c_str());
+    FOUR_C_THROW("{}", ss.str().c_str());
   }
 
   // Check that everything in the input was actually used.
@@ -534,7 +534,7 @@ void Core::IO::Internal::MatchTree::assert_match() const
     {
       ss << node_.node.tree()->ref(id) << "\n";
     }
-    FOUR_C_THROW("%s", ss.str().c_str());
+    FOUR_C_THROW("{}", ss.str().c_str());
   }
 }
 
@@ -597,8 +597,8 @@ InputSpecTypeErasedBase::InputSpecTypeErasedBase(InputSpecTypeErasedBase::Common
         }
       }
       FOUR_C_THROW(
-          "A %s may only consist of printable characters. Here is the offending "
-          "%s with unprintable characters marked in angle brackets:\n'%s'",
+          "A {} may only consist of printable characters. Here is the offending "
+          "{} with unprintable characters marked in angle brackets:\n'{}'",
           field_type, field_type, escaped_string.str().c_str());
     }
   };
@@ -886,7 +886,7 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::parse(
           // Backtrack to the original position.
           parser.backtrack();
           FOUR_C_THROW(
-              "Ambiguous input: both '%s' and '%s' could be parsed, but only one of them is "
+              "Ambiguous input: both '{}' and '{}' could be parsed, but only one of them is "
               "expected.",
               describe(*component).c_str(), describe(*other).c_str());
         }
@@ -902,7 +902,7 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::parse(
 
   // Convert remainder into a null-terminated string for the error message.
   std::string remainder(parser.get_unparsed_remainder());
-  FOUR_C_THROW("While parsing '%s'.\nNone of the specs fit the input. Expected %s",
+  FOUR_C_THROW("While parsing '{}'.\nNone of the specs fit the input. Expected {}",
       remainder.c_str(), data.description.c_str());
 }
 
@@ -1200,12 +1200,12 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
   }
   if (data.required.value() && data.defaultable)
   {
-    FOUR_C_THROW("Group '%s': a group cannot be both required and defaultable.", name.c_str());
+    FOUR_C_THROW("Group '{}': a group cannot be both required and defaultable.", name.c_str());
   }
   if (data.defaultable && !all_have_default_values(flattened_specs))
   {
     FOUR_C_THROW(
-        "Group '%s': a group cannot be defaultable if not all of its child specs have default "
+        "Group '{}': a group cannot be defaultable if not all of its child specs have default "
         "values.",
         name.c_str());
   }
@@ -1291,7 +1291,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> s
 
     FOUR_C_THROW(
         "All specs in a 'one_of' must be required to avoid confusion. The following InputSpecs "
-        "are not required:\n%s",
+        "are not required:\n{}",
         non_required.c_str());
   }
 

@@ -134,7 +134,7 @@ namespace Discret::Elements
             std::integral_constant<Inpar::Solid::KinemType, Inpar::Solid::KinemType::vague>{});
     }
 
-    FOUR_C_THROW("Your kinematic type is unknown: %d", kinem_type);
+    FOUR_C_THROW("Your kinematic type is unknown: {}", kinem_type);
   }
 }  // namespace Discret::Elements
 

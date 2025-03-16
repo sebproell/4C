@@ -512,7 +512,7 @@ void PARTICLEALGORITHM::ParticleAlgorithm::init_particle_gravity()
 
   // safety check
   if (static_cast<int>(gravity.size()) != 3)
-    FOUR_C_THROW("dimension (dim = %d) of gravity acceleration vector is wrong!",
+    FOUR_C_THROW("dimension (dim = {}) of gravity acceleration vector is wrong!",
         static_cast<int>(gravity.size()));
 
   // get magnitude of gravity
@@ -572,7 +572,7 @@ void PARTICLEALGORITHM::ParticleAlgorithm::determine_particle_types()
   // safety check
   for (auto& particle : particlestodistribute_)
     if (not particlestatestotypes_.count(particle->return_particle_type()))
-      FOUR_C_THROW("particle type '%s' of initial particle not defined!",
+      FOUR_C_THROW("particle type '{}' of initial particle not defined!",
           PARTICLEENGINE::enum_to_type_name(particle->return_particle_type()).c_str());
 }
 

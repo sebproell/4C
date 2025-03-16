@@ -125,7 +125,7 @@ void Mat::Damage::unpack(Core::Communication::UnpackBuffer& buffer)
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::Damage*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 
@@ -1353,7 +1353,7 @@ void Mat::Damage::evaluate_full_lemaitre(const Core::LinAlg::Matrix<3, 3>* defgr
       if (itnum > itermax)
       {
         FOUR_C_THROW(
-            "local Newton iteration did not converge after iteration %3d/%3d", itnum, itermax);
+            "local Newton iteration did not converge after iteration {:3d}/{:3d}", itnum, itermax);
       }
       // else: continue loop m <= m_max
 
@@ -1588,7 +1588,7 @@ void Mat::Damage::evaluate_full_lemaitre(const Core::LinAlg::Matrix<3, 3>* defgr
       else
         FOUR_C_THROW("do not divide by zero!");
 
-      if (g <= 0.0) FOUR_C_THROW("factor g has to be greater zero! g =  %-14.8E", g);
+      if (g <= 0.0) FOUR_C_THROW("factor g has to be greater zero! g =  {:<14.8E}", g);
 
       // h_alg = 3 G + [ (1 - D_{n+1}) - y . Delta_astrain +
       //         + 2 G . (Delta_astrain)^2 . dy/ds_tilde : N_tilde ]
@@ -2202,7 +2202,7 @@ void Mat::Damage::setup_cmat_elasto_plastic(Core::LinAlg::Matrix<NUM_STRESS_3D, 
 
       // check if omega is admissible
       if (omega < 1.0e-20)
-        FOUR_C_THROW("Omega has to be greater than zero! omega = %-14.8E\n", omega);
+        FOUR_C_THROW("Omega has to be greater than zero! omega = {:<14.8E}\n", omega);
 
       // be aware: in the 1st equilibrium (Newton) iteration (i=0) C^{ep} is
       // indeterminate due to Dgamma == 0.0

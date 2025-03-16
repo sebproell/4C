@@ -87,7 +87,7 @@ void Mortar::StrategyBase::set_time_integration_info(
       break;
     default:
       FOUR_C_THROW(
-          "Unsupported time integration detected! [\"%s\"]", dynamic_type_string(dyntype).c_str());
+          "Unsupported time integration detected! [\"{}\"]", dynamic_type_string(dyntype).c_str());
       exit(EXIT_FAILURE);
   }
 

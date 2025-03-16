@@ -119,7 +119,7 @@ bool Solid::EXPLICIT::Generic::apply_force_stiff(const Core::LinAlg::Vector<doub
 double Solid::EXPLICIT::Generic::calc_ref_norm_force(
     const enum ::NOX::Abstract::Vector::NormType& type) const
 {
-  FOUR_C_THROW("%s is not yet implemented", __FUNCTION__);
+  FOUR_C_THROW("{} is not yet implemented", __FUNCTION__);
   return 0.0;
 }
 
@@ -128,7 +128,7 @@ double Solid::EXPLICIT::Generic::calc_ref_norm_force(
 void Solid::EXPLICIT::Generic::compute_jacobian_contributions_from_element_level_for_ptc(
     std::shared_ptr<Core::LinAlg::SparseMatrix>& scalingMatrixOpPtr)
 {
-  FOUR_C_THROW("%s is not yet implemented", __FUNCTION__);
+  FOUR_C_THROW("{} is not yet implemented", __FUNCTION__);
 }
 
 /*----------------------------------------------------------------------------*
@@ -136,7 +136,7 @@ void Solid::EXPLICIT::Generic::compute_jacobian_contributions_from_element_level
 bool Solid::EXPLICIT::Generic::assemble_force(Core::LinAlg::Vector<double>& f,
     const std::vector<Inpar::Solid::ModelType>* without_these_models) const
 {
-  FOUR_C_THROW("%s is not yet implemented", __FUNCTION__);
+  FOUR_C_THROW("{} is not yet implemented", __FUNCTION__);
   return false;
 }
 

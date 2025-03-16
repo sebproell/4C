@@ -158,7 +158,7 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
     }
 
     // now we should have found a group of conds
-    if (!foundit) FOUR_C_THROW("Cannot find matching contact condition for id %d", groupid1);
+    if (!foundit) FOUR_C_THROW("Cannot find matching contact condition for id {}", groupid1);
 
     // see whether we found this group before
     bool foundbefore = false;
@@ -217,11 +217,11 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
       for (unsigned j = 1; j < currentgroup.size(); ++j)
       {
         if (frcoeff[j] != frcoeff[0])
-          FOUR_C_THROW("Inconsistency in friction coefficients of interface %i", groupid1);
+          FOUR_C_THROW("Inconsistency in friction coefficients of interface {}", groupid1);
       }
 
       // check for infeasible value of COF
-      if (frcoeff[0] < 0.0) FOUR_C_THROW("Negative FrCoeff / FrBound on interface %i", groupid1);
+      if (frcoeff[0] < 0.0) FOUR_C_THROW("Negative FrCoeff / FrBound on interface {}", groupid1);
 
       // add COF locally to contact parameter list of this interface
       if (frictionType == CONTACT::friction_tresca)
@@ -255,11 +255,11 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
       for (unsigned j = 1; j < currentgroup.size(); ++j)
       {
         if (ad_bound[j] != ad_bound[0])
-          FOUR_C_THROW("Inconsistency in adhesion bounds of interface %i", groupid1);
+          FOUR_C_THROW("Inconsistency in adhesion bounds of interface {}", groupid1);
       }
 
       // check for infeasible value of COF
-      if (ad_bound[0] < 0.0) FOUR_C_THROW("Negative adhesion bound on interface %i", groupid1);
+      if (ad_bound[0] < 0.0) FOUR_C_THROW("Negative adhesion bound on interface {}", groupid1);
 
       // add COF locally to contact parameter list of this interface
       icparams.setEntry("ADHESION_BOUND", static_cast<Teuchos::ParameterEntry>(ad_bound[0]));
@@ -1400,7 +1400,7 @@ void CONTACT::Manager::reconnect_parent_elements()
         int volgid = faceele->parent_element_id();
         if (elecolmap->LID(volgid) == -1)  // Volume discretization has not Element
           FOUR_C_THROW(
-              "Manager::reconnect_parent_elements: Element %d does not exist on this Proc!",
+              "Manager::reconnect_parent_elements: Element {} does not exist on this Proc!",
               volgid);
 
         Core::Elements::Element* vele = discret_.g_element(volgid);

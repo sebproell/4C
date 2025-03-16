@@ -72,7 +72,7 @@ enum ::NOX::Abstract::Vector::NormType Solid::Nln::convert2_nox_norm_type(
     case Inpar::Solid::norm_rms:
     case Inpar::Solid::norm_vague:
     default:
-      FOUR_C_THROW("Unknown conversion for the given vector norm type: \" %s \"!",
+      FOUR_C_THROW("Unknown conversion for the given vector norm type: \" {} \"!",
           Inpar::Solid::vector_norm_string(normtype).c_str());
       break;
   }  // switch case normtype
@@ -148,7 +148,7 @@ enum NOX::Nln::SolutionType Solid::Nln::convert_model_type2_sol_type(
       if (do_check)
         FOUR_C_THROW(
             "The corresponding solution-type was not found. "
-            "Given string: %s",
+            "Given string: {}",
             Inpar::Solid::model_type_string(modeltype).c_str());
       break;
   }
@@ -184,7 +184,7 @@ enum Inpar::Solid::ModelType Solid::Nln::convert_sol_type2_model_type(
       if (do_check)
         FOUR_C_THROW(
             "The corresponding model-type was not found. "
-            "Given string: %s",
+            "Given string: {}",
             NOX::Nln::solution_type_to_string(soltype).c_str());
       break;
   }
@@ -213,7 +213,7 @@ enum Inpar::Solid::EleTech Solid::Nln::convert_quantity_type2_ele_tech(
       eletech = Inpar::Solid::EleTech::eas;
       break;
     default:
-      FOUR_C_THROW("Cannot convert QuantityType %s to EleTech.",
+      FOUR_C_THROW("Cannot convert QuantityType {} to EleTech.",
           NOX::Nln::StatusTest::quantity_type_to_string(qtype).c_str());
       break;
   }

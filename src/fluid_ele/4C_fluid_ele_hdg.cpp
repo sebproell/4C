@@ -290,7 +290,7 @@ int Discret::Elements::FluidHDG::evaluate(Teuchos::ParameterList& params,
       break;
 
     default:
-      FOUR_C_THROW("Unknown type of action '%i' for FluidHDG", act);
+      FOUR_C_THROW("Unknown type of action '{}' for FluidHDG", act);
       break;
   }
 

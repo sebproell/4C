@@ -360,7 +360,7 @@ void Discret::Elements::FluidEleBoundaryCalcPoro<distype>::fpsi_coupling(
           Global::Problem::instance()->get_dis("porofluid");
       it = InterfaceFacingElementMap->find(ele->id());
       if (it == InterfaceFacingElementMap->end())
-        FOUR_C_THROW("Couldn't find ele %d in InterfaceFacingElementMap", ele->id());
+        FOUR_C_THROW("Couldn't find ele {} in InterfaceFacingElementMap", ele->id());
 
       Core::Elements::Element* porofluidelement = porofluiddis->g_element(it->second);
 
@@ -385,7 +385,7 @@ void Discret::Elements::FluidEleBoundaryCalcPoro<distype>::fpsi_coupling(
         Global::Problem::instance()->get_dis("fluid");
     it = InterfaceFacingElementMap->find(ele->id());
     if (it == InterfaceFacingElementMap->end())
-      FOUR_C_THROW("Couldn't find ele %d in InterfaceFacingElementMap", ele->id());
+      FOUR_C_THROW("Couldn't find ele {} in InterfaceFacingElementMap", ele->id());
 
     Core::Elements::Element* fluidelement = fluiddis->g_element(it->second);
 
@@ -514,7 +514,7 @@ void Discret::Elements::FluidEleBoundaryCalcPoro<distype>::fpsi_coupling(
 
   if (structele == nullptr && block != "NeumannIntegration" && block != "NeumannIntegration_Ale")
   {
-    FOUR_C_THROW("Structure element %i not on local processor", currparenteleid);
+    FOUR_C_THROW("Structure element {} not on local processor", currparenteleid);
   }
 
   // get porous material

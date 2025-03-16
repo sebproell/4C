@@ -905,7 +905,7 @@ void XFEM::ConditionManager::get_interface_slave_material(
   }
   else
     FOUR_C_THROW(
-        "The coupling-side id: %d does not correspond to a mesh or levelset coupling object.",
+        "The coupling-side id: {} does not correspond to a mesh or levelset coupling object.",
         coup_sid);
 }
 
@@ -998,7 +998,7 @@ Core::Elements::Element* XFEM::ConditionManager::get_coupling_element(
   }
   else
     FOUR_C_THROW(
-        "there is no valid mesh-/levelset-coupling condition object for side: %i", coup_sid);
+        "there is no valid mesh-/levelset-coupling condition object for side: {}", coup_sid);
 
 
   return nullptr;

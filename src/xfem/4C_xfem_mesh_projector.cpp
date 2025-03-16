@@ -436,7 +436,7 @@ void XFEM::MeshProjector::find_covering_elements_and_interpolate_values(
                 pele, node_xyz, interpolatedvec);
             break;
           default:
-            FOUR_C_THROW("Unsupported element shape %s!",
+            FOUR_C_THROW("Unsupported element shape {}!",
                 Core::FE::cell_type_to_string(pele->shape()).c_str());
             break;
         }

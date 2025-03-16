@@ -284,7 +284,7 @@ namespace GEOMETRYPAIR
       // Sanity check that eta_a is larger than eta_b.
       if (!(get_eta_a() < get_eta_b()))
         FOUR_C_THROW(
-            "The segment is created with eta_a=%f and eta_b=%f, this is not possible, as eta_a "
+            "The segment is created with eta_a={} and eta_b={}, this is not possible, as eta_a "
             "has "
             "to be smaller than eta_b!",
             Core::FADUtils::cast_to_double(get_eta_a()),

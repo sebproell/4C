@@ -46,7 +46,7 @@ void Lubrication::ResultTest::test_node(
 
   if (isnodeofanybody == 0)
   {
-    FOUR_C_THROW("Node %d does not belong to discretization %s", node + 1, dis_->name().c_str());
+    FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1, dis_->name().c_str());
   }
   else
   {
@@ -89,7 +89,7 @@ double Lubrication::ResultTest::result_node(
 
   // catch unknown quantity strings
   else
-    FOUR_C_THROW("Quantity '%s' not supported in result test!", quantity.c_str());
+    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity.c_str());
 
   return result;
 }  // Lubrication::ResultTest::ResultNode
@@ -131,7 +131,7 @@ double Lubrication::ResultTest::result_special(
   if (quantity == "numiterlastnewton") result = (double)mynumiter_;
   // catch unknown quantity strings
   else
-    FOUR_C_THROW("Quantity '%s' not supported in result test!", quantity.c_str());
+    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity.c_str());
 
   return result;
 }  // Lubrication::ResultTest::result_special

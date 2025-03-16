@@ -337,7 +337,7 @@ Teuchos::ParameterList translate_four_c_to_belos(const Teuchos::ParameterList& i
         break;
       default:
       {
-        FOUR_C_THROW("Flag '%s'! \nUnknown solver for Belos.",
+        FOUR_C_THROW("Flag '{}'! \nUnknown solver for Belos.",
             Teuchos::getIntegralValue<Core::LinearSolver::IterativeSolverType>(
                 inparams, "AZSOLVE"));
         break;

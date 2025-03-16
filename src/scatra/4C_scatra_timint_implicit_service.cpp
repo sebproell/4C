@@ -1447,9 +1447,9 @@ void ScaTra::ScaTraTimIntImpl::avm3_scaling(Teuchos::ParameterList& eleparams)
 
   // left and right scaling of normalized fine-scale subgrid-viscosity matrix
   ierr = sysmat_sd_->left_scale(*subgrdiff_);
-  if (ierr) FOUR_C_THROW("Epetra_CrsMatrix::LeftScale returned err=%d", ierr);
+  if (ierr) FOUR_C_THROW("Epetra_CrsMatrix::LeftScale returned err={}", ierr);
   ierr = sysmat_sd_->right_scale(*subgrdiff_);
-  if (ierr) FOUR_C_THROW("Epetra_CrsMatrix::RightScale returned err=%d", ierr);
+  if (ierr) FOUR_C_THROW("Epetra_CrsMatrix::RightScale returned err={}", ierr);
 
   // add the subgrid-viscosity-scaled fine-scale matrix to obtain complete matrix
   std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat = system_matrix();
@@ -1588,7 +1588,7 @@ void ScaTra::ScaTraTimIntImpl::recompute_mean_csgs_b()
 
       // call the element evaluate method to integrate functions
       int err = ele->evaluate(myparams, *discret_, la, emat1, emat2, evec1, evec2, evec2);
-      if (err) FOUR_C_THROW("Proc %d: Element %d returned err=%d", myrank_, ele->id(), err);
+      if (err) FOUR_C_THROW("Proc {}: Element {} returned err={}", myrank_, ele->id(), err);
 
       // get contributions of this element and add it up
       local_sumCai += myparams.get<double>("Cai_int");

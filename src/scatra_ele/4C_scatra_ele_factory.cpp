@@ -123,7 +123,7 @@ Discret::Elements::ScaTraEleInterface* Discret::Elements::ScaTraFactory::provide
       else
       {
         FOUR_C_THROW(
-            "QUAD9 transport element not implemented as part of %i-dimensional problem. Just do it",
+            "QUAD9 transport element not implemented as part of {}-dimensional problem. Just do it",
             ndim);
       }
       break;
@@ -136,7 +136,7 @@ Discret::Elements::ScaTraEleInterface* Discret::Elements::ScaTraFactory::provide
       else
       {
         FOUR_C_THROW(
-            "NURBS9 transport element not implemented as part of %i-dimensional problem. Just do "
+            "NURBS9 transport element not implemented as part of {}-dimensional problem. Just do "
             "it",
             ndim);
       }
@@ -162,7 +162,7 @@ Discret::Elements::ScaTraEleInterface* Discret::Elements::ScaTraFactory::provide
       else
       {
         FOUR_C_THROW(
-            "TRI6 transport element not implemented as part of %i-dimensional problem. Just do it",
+            "TRI6 transport element not implemented as part of {}-dimensional problem. Just do it",
             ndim);
       }
       break;
@@ -187,7 +187,7 @@ Discret::Elements::ScaTraEleInterface* Discret::Elements::ScaTraFactory::provide
       if (ndim != 1)
       {
         FOUR_C_THROW(
-            "LINE3 transport element not implemented as part of %i-dimensional problem. Just do it",
+            "LINE3 transport element not implemented as part of {}-dimensional problem. Just do it",
             ndim);
       }
       else
@@ -196,7 +196,7 @@ Discret::Elements::ScaTraEleInterface* Discret::Elements::ScaTraFactory::provide
       break;
     }
     default:
-      FOUR_C_THROW("Element shape %s not activated. Just do it.",
+      FOUR_C_THROW("Element shape {} not activated. Just do it.",
           Core::FE::cell_type_to_string(distype).c_str());
       break;
   }
@@ -281,7 +281,7 @@ Discret::Elements::ScaTraEleInterface* Discret::Elements::ScaTraFactory::provide
           problem, numdofpernode, numscal, disname);
     }
     default:
-      FOUR_C_THROW("Element shape %s not activated. Just do it.",
+      FOUR_C_THROW("Element shape {} not activated. Just do it.",
           Core::FE::cell_type_to_string(distype).c_str());
       break;
   }
@@ -305,7 +305,7 @@ Discret::Elements::ScaTraEleInterface* Discret::Elements::ScaTraFactory::define_
         problem != Inpar::ScaTra::impltype_no_physics and
         problem != Inpar::ScaTra::impltype_elch_electrode and
         problem != Inpar::ScaTra::impltype_elch_diffcond)
-      FOUR_C_THROW("ImplType '%s' not implemented for transport on manifolds!",
+      FOUR_C_THROW("ImplType '{}' not implemented for transport on manifolds!",
           ScaTra::impl_type_to_string(problem).c_str());
   }
 
@@ -451,7 +451,7 @@ Discret::Elements::ScaTraEleInterface* Discret::Elements::ScaTraFactory::define_
   {
     if (problem != Inpar::ScaTra::impltype_std and
         problem != Inpar::ScaTra::impltype_cardiac_monodomain)
-      FOUR_C_THROW("ImplType '%s' not implemented for transport on manifolds!",
+      FOUR_C_THROW("ImplType '{}' not implemented for transport on manifolds!",
           ScaTra::impl_type_to_string(problem).c_str());
   }
 

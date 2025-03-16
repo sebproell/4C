@@ -782,7 +782,7 @@ std::string Inpar::ScaTra::impltype_to_string(ImplType impltype)
       return "NoPhysics";
   }
 
-  FOUR_C_THROW("Unknown implementation type given: %d", impltype);
+  FOUR_C_THROW("Unknown implementation type given: {}", impltype);
 }
 
 FOUR_C_NAMESPACE_CLOSE

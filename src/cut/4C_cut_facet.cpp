@@ -93,7 +93,7 @@ void Cut::Facet::register_entity(VolumeCell* cell)
 
     std::ostringstream ostr;
     ostr << "Too many volume cells at facet! ( num cells = " << cells_.size() << " )";
-    FOUR_C_THROW(ostr.str().c_str());
+    FOUR_C_THROW("{}", ostr.str());
   }
 }
 

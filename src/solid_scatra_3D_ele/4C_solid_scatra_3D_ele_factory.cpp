@@ -140,8 +140,8 @@ Discret::Elements::create_solid_scatra_calculation_interface(Core::FE::CellType 
                           }
 
                           FOUR_C_THROW(
-                              "Your element formulation with cell type %s, kinematic type %s,"
-                              " element technology %s and prestress type %s does not exist in the "
+                              "Your element formulation with cell type {}, kinematic type {},"
+                              " element technology {} and prestress type {} does not exist in the "
                               "solid-scatra context.",
                               Core::FE::celltype_string<celltype_t()>,
                               Inpar::Solid::kinem_type_string(element_properties.kintype).c_str(),

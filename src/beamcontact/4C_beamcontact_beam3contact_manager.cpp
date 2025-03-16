@@ -966,7 +966,7 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
     if (btsolnodedofids.size() != originalnodedofids.size())
       FOUR_C_THROW(
           "Number of nodal DoFs does not match! "
-          "node (GID %d) originally had %d DoFs, now in BTSOLdiscret %d DoFs!",
+          "node (GID {}) originally had {} DoFs, now in BTSOLdiscret {} DoFs!",
           nodeid, originalnodedofids.size(), btsolnodedofids.size());
 
     for (int j = 0; j < (int)btsolnodedofids.size(); j++)
@@ -2506,7 +2506,7 @@ void CONTACT::Beam3cmanager::gmsh_output(const Core::LinAlg::Vector<double>& dis
               default:
               {
                 FOUR_C_THROW(
-                    "Gmsh output for %i noded element not yet implemented!", element->num_node());
+                    "Gmsh output for {} noded element not yet implemented!", element->num_node());
                 break;
               }
             }

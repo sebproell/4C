@@ -139,7 +139,7 @@ void FLD::TimIntPoro::set_initial_porosity_field(
       break;
     }
     default:
-      FOUR_C_THROW("Unknown option for initial field: %d", init);
+      FOUR_C_THROW("Unknown option for initial field: {}", init);
       break;
   }
 }

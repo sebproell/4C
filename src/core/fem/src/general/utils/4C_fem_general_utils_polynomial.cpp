@@ -41,7 +41,7 @@ namespace
       case 9:
         return Core::FE::GaussRule1D::line_lobatto10point;
       default:
-        FOUR_C_THROW("The Lobatto Gauss rule is not implemented for degree %d", degree);
+        FOUR_C_THROW("The Lobatto Gauss rule is not implemented for degree {}", degree);
     }
   }
 }  // namespace
@@ -646,7 +646,7 @@ namespace Core::FE
   template <int nsd>
   void Core::FE::LagrangeBasisTet<nsd>::fill_fekete_points(const unsigned int)
   {
-    FOUR_C_THROW("Not implemented for dim = %d", nsd);
+    FOUR_C_THROW("Not implemented for dim = {}", nsd);
   }
 
 
@@ -683,9 +683,9 @@ namespace Core::FE
       for (unsigned int j = 0; j < size(); ++j)
         if (i != j)
           FOUR_C_ASSERT(std::abs(values(j)) < 1e-11,
-              "Lagrange polynomial seems to not be nodal, p_j(xi_i) = %lf!", values(j));
+              "Lagrange polynomial seems to not be nodal, p_j(xi_i) = {}!", values(j));
       FOUR_C_ASSERT(std::abs(values(i) - 1.) < 1e-11,
-          "Lagrange polynomial seems to not be nodal, p_i(xi_i) = %lf!", values(i));
+          "Lagrange polynomial seems to not be nodal, p_i(xi_i) = {}!", values(i));
     }
 #endif
   }

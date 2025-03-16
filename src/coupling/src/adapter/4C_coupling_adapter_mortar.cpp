@@ -311,8 +311,8 @@ void Coupling::Adapter::CouplingMortar::setup_interface(
     FOUR_C_THROW(
         "The size of the coupling vector coupleddof and dof defined in the discretization does not "
         "fit!! \n"
-        "dof defined in the discretization: %i \n"
-        "length of coupleddof: %i",
+        "dof defined in the discretization: {} \n"
+        "length of coupleddof: {}",
         masterdis->num_dof(nds_master, masterdis->l_row_node(0)), dof);
   }
 
@@ -982,7 +982,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
   if (gnorm > tol)
     FOUR_C_THROW(
         "Mesh relocation was not successful! \n "
-        "Gap norm %e is larger than tolerance %e",
+        "Gap norm {} is larger than tolerance {}",
         gnorm, tol);
 
   //**********************************************************************
@@ -1050,7 +1050,7 @@ void Coupling::Adapter::CouplingMortar::create_p()
 
   // re-insert inverted diagonal into invd
   err = Dinv_->replace_diagonal_values(*diag);
-  if (err != 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+  if (err != 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
 
   // complete inverse D matrix
   Dinv_->complete();
@@ -1110,10 +1110,10 @@ void Coupling::Adapter::CouplingMortar::evaluate(
       Core::LinAlg::create_vector(*dofrowmap, true);
   err = idisp_master_slave->import(*idispma, master_importer, Add);
   if (err != 0)
-    FOUR_C_THROW("Import failed with error code %d. See Epetra source code for details.", err);
+    FOUR_C_THROW("Import failed with error code {}. See Epetra source code for details.", err);
   err = idisp_master_slave->import(*idispsl, slaveImporter, Add);
   if (err != 0)
-    FOUR_C_THROW("Import failed with error code %d. See Epetra source code for details.", err);
+    FOUR_C_THROW("Import failed with error code {}. See Epetra source code for details.", err);
 
   // set new displacement state in mortar interface
   interface_->set_state(Mortar::state_new_displacement, *idisp_master_slave);
@@ -1296,7 +1296,7 @@ Coupling::Adapter::CouplingMortar::master_to_slave(
   std::shared_ptr<Core::LinAlg::MultiVector<double>> sv =
       std::make_shared<Core::LinAlg::MultiVector<double>>(*pslavedofrowmap_, mv.NumVectors());
 
-  if (Dinv_->multiply(false, tmp, *sv)) FOUR_C_THROW("D^{-1}*v multiplication failed");
+  if (Dinv_->multiply(false, tmp, *sv)) FOUR_C_THROW("D^{{-1}}*v multiplication failed");
 
   return sv;
 }
@@ -1318,7 +1318,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Coupling::Adapter::CouplingMortar:
   std::shared_ptr<Core::LinAlg::Vector<double>> sv =
       std::make_shared<Core::LinAlg::Vector<double>>(*pslavedofrowmap_);
 
-  if (Dinv_->multiply(false, tmp, *sv)) FOUR_C_THROW("D^{-1}*v multiplication failed");
+  if (Dinv_->multiply(false, tmp, *sv)) FOUR_C_THROW("D^{{-1}}*v multiplication failed");
 
   return sv;
 }
@@ -1370,7 +1370,7 @@ void Coupling::Adapter::CouplingMortar::slave_to_master(
   std::copy(sv.Values(), sv.Values() + sv.MyLength(), tmp.get_values());
 
   Core::LinAlg::Vector<double> tempm(*pmasterdofrowmap_);
-  if (M_->multiply(true, tmp, tempm)) FOUR_C_THROW("M^{T}*sv multiplication failed");
+  if (M_->multiply(true, tmp, tempm)) FOUR_C_THROW("M^{{T}}*sv multiplication failed");
 
   // copy from auxiliary to physical map (needed for coupling in fluid ale algorithm)
   std::copy(tempm.get_values(), tempm.get_values() + (tempm.local_length() * tempm.num_vectors()),
@@ -1395,7 +1395,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Coupling::Adapter::CouplingMortar:
 
   std::shared_ptr<Core::LinAlg::Vector<double>> mv =
       std::make_shared<Core::LinAlg::Vector<double>>(*pmasterdofrowmap_);
-  if (M_->multiply(true, tmp, *mv)) FOUR_C_THROW("M^{T}*sv multiplication failed");
+  if (M_->multiply(true, tmp, *mv)) FOUR_C_THROW("M^{{T}}*sv multiplication failed");
 
   return mv;
 }
@@ -1416,7 +1416,7 @@ Coupling::Adapter::CouplingMortar::slave_to_master(
 
   std::shared_ptr<Core::LinAlg::MultiVector<double>> mv =
       std::make_shared<Core::LinAlg::MultiVector<double>>(*pmasterdofrowmap_, sv.NumVectors());
-  if (M_->multiply(true, tmp, *mv)) FOUR_C_THROW("M^{T}*sv multiplication failed");
+  if (M_->multiply(true, tmp, *mv)) FOUR_C_THROW("M^{{T}}*sv multiplication failed");
 
   return mv;
 }

@@ -147,7 +147,7 @@ void Mixture::TimestepAdaptivityInfo::split_level(
       return;
     }
   }
-  FOUR_C_THROW("Could not find refinement level %d in the list", level);
+  FOUR_C_THROW("Could not find refinement level {} in the list", level);
 }
 
 unsigned int Mixture::TimestepAdaptivityInfo::max_level()
@@ -189,7 +189,7 @@ unsigned int Mixture::TimestepAdaptivityInfo::get_number_of_simpson_intervals(
 
   FOUR_C_THROW(
       "Cou can only call this item for a level within 0 < x <= max_level(). You called it with "
-      "%d",
+      "{}",
       level);
 }
 

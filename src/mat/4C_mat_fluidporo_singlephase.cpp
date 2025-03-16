@@ -66,7 +66,7 @@ Mat::PAR::FluidPoroSinglePhase::FluidPoroSinglePhase(const Core::Mat::PAR::Param
       break;
     }
     default:
-      FOUR_C_THROW("invalid pressure-saturation law for material %d", curmat->type());
+      FOUR_C_THROW("invalid pressure-saturation law for material {}", curmat->type());
       break;
   }
 }
@@ -157,7 +157,7 @@ void Mat::FluidPoroSinglePhase::unpack(Core::Communication::UnpackBuffer& buffer
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::FluidPoroSinglePhase*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 }
@@ -378,7 +378,7 @@ void Mat::FluidPoroSingleVolFrac::unpack(Core::Communication::UnpackBuffer& buff
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::FluidPoroSingleVolFrac*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 }
@@ -499,7 +499,7 @@ void Mat::FluidPoroVolFracPressure::unpack(Core::Communication::UnpackBuffer& bu
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::FluidPoroVolFracPressure*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 }

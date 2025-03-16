@@ -432,7 +432,7 @@ Adapter::StructureBaseAlgorithm::create_contact_meshtying_solver(
               "You have chosen an iterative linear solver. For mortar meshtying/contact problems "
               "in saddle-point formulation, a block preconditioner is required. Choose an "
               "appropriate block preconditioner such as CheapSIMPLE or MueLu "
-              "(if MueLu is available) in the SOLVER %i block in your input file.",
+              "(if MueLu is available) in the SOLVER {} block in your input file.",
               linsolvernumber);
       }
 

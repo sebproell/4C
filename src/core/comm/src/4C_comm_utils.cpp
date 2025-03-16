@@ -387,7 +387,7 @@ namespace Core::Communication
       // do comparison of names
       if (std::strcmp(name, receivename.data()))
         FOUR_C_THROW(
-            "comparison of different vectors: communicators 0 (%s) and communicators 1 (%s)", name,
+            "comparison of different vectors: communicators 0 ({}) and communicators 1 ({})", name,
             receivename.data());
 
       // compare data
@@ -411,7 +411,7 @@ namespace Core::Communication
       int mylength = fullvec.MyLength() * vec.NumVectors();
       if (mylength != lengthRecv)
         FOUR_C_THROW(
-            "length of received data (%i) does not match own data (%i)", lengthRecv, mylength);
+            "length of received data ({}) does not match own data ({})", lengthRecv, mylength);
 
       for (int i = 0; i < mylength; ++i)
       {
@@ -463,7 +463,7 @@ namespace Core::Communication
     {
       std::stringstream diff;
       diff << std::scientific << std::setprecision(16) << maxdiff;
-      FOUR_C_THROW("vectors %s do not match, maximum difference between entries is: %s", name,
+      FOUR_C_THROW("vectors {} do not match, maximum difference between entries is: {}", name,
           diff.str().c_str());
     }
 
@@ -527,7 +527,7 @@ namespace Core::Communication
         double* Values;
         int* Indices;
         int err = serialCrsMatrix.ExtractMyRowView(i, NumEntries, Values, Indices);
-        if (err != 0) FOUR_C_THROW("ExtractMyRowView error: %d", err);
+        if (err != 0) FOUR_C_THROW("ExtractMyRowView error: {}", err);
 
         for (int j = 0; j < NumEntries; ++j)
         {
@@ -563,7 +563,7 @@ namespace Core::Communication
       // do comparison of names
       if (std::strcmp(name, receivename.data()))
         FOUR_C_THROW(
-            "comparison of different vectors: communicators 0 (%s) and communicators 1 (%s)", name,
+            "comparison of different vectors: communicators 0 ({}) and communicators 1 ({})", name,
             receivename.data());
 
       // compare data: indices
@@ -587,7 +587,7 @@ namespace Core::Communication
       int mylength = data_indices.size();
       if (mylength != lengthRecv)
         FOUR_C_THROW(
-            "length of received data (%i) does not match own data (%i)", lengthRecv, mylength);
+            "length of received data ({}) does not match own data ({})", lengthRecv, mylength);
 
       for (int i = 0; i < mylength; ++i)
       {
@@ -595,7 +595,7 @@ namespace Core::Communication
         {
           bool iscolindex = data_indices[i] % 2;
           FOUR_C_THROW(
-              "%s index of matrix %s does not match: communicators 0 (%i) and communicators 1 (%i)",
+              "{} index of matrix {} does not match: communicators 0 ({}) and communicators 1 ({})",
               iscolindex == 0 ? "row" : "col", name, data_indices[i], receivebuf_indices[i]);
         }
       }
@@ -623,7 +623,7 @@ namespace Core::Communication
       mylength = data_values.size();
       if (mylength != lengthRecv)
         FOUR_C_THROW(
-            "length of received data (%i) does not match own data (%i)", lengthRecv, mylength);
+            "length of received data ({}) does not match own data ({})", lengthRecv, mylength);
 
       for (int i = 0; i < mylength; ++i)
       {
@@ -684,7 +684,7 @@ namespace Core::Communication
     {
       std::stringstream diff;
       diff << std::scientific << std::setprecision(16) << maxdiff;
-      FOUR_C_THROW("matrices %s do not match, maximum difference between entries is: %s in row",
+      FOUR_C_THROW("matrices {} do not match, maximum difference between entries is: {} in row",
           name, diff.str().c_str());
     }
 

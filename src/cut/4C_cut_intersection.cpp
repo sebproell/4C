@@ -186,7 +186,7 @@ bool Cut::Intersection<probdim, edgetype, sidetype, debug, dimedge, dimside, num
     {
       FOUR_C_THROW(
           "The given side element type is currently unsupported! \n"
-          "( dim = %d | sideType = %s ",
+          "( dim = {} | sideType = {} ",
           dimside, Core::FE::cell_type_to_string(sidetype).c_str());
       exit(EXIT_FAILURE);
     }
@@ -269,7 +269,7 @@ bool Cut::Intersection<probdim, edgetype, sidetype, debug, dimedge, dimside, num
   FOUR_C_THROW("Is this used?");
   if (num_nodes_edge != 2 or num_nodes_side != 2)
     FOUR_C_THROW(
-        "Two line2 elements are expected, but instead a %s (edge) and %s (side) "
+        "Two line2 elements are expected, but instead a {} (edge) and {} (side) "
         "element were given.",
         Core::FE::cell_type_to_string(edgetype).c_str(),
         Core::FE::cell_type_to_string(sidetype).c_str());
@@ -479,7 +479,7 @@ Cut::ParallelIntersectionStatus Cut::Intersection<probdim, edgetype, sidetype, d
       id_end = 1;
     else
       FOUR_C_THROW(
-          "Trying to skip id = %d of the edge nodes. You can only skip BeginNode(0) or "
+          "Trying to skip id = {} of the edge nodes. You can only skip BeginNode(0) or "
           "EndNode(1)\n",
           skip_id);
 
@@ -887,7 +887,7 @@ void Cut::Intersection<probdim, edgetype, sidetype, debug, dimedge, dimside, num
   catch (Core::Exception& e)
   {
     FOUR_C_THROW(
-        "Cautch error in the cut_intersection:  \n%s . Current tolerance must be increased",
+        "Cautch error in the cut_intersection:  \n{} . Current tolerance must be increased",
         e.what_with_stacktrace().c_str());
   }
 }
@@ -924,7 +924,7 @@ bool Cut::Intersection<probdim, edgetype, sidetype, debug, dimedge, dimside, num
         }
         FOUR_C_THROW(
             "compute_edge_side_intersection for Quad4 didn't converge, "
-            "but compute_edge_tri3_intersection for triangulation (id=%d) is inside the Element!",
+            "but compute_edge_tri3_intersection for triangulation (id={}) is inside the Element!",
             tri);
       }
     }
@@ -968,7 +968,7 @@ bool Cut::Intersection<probdim, edgetype, sidetype, debug, dimedge, dimside, num
       {
         generate_gmsh_dump();
         FOUR_C_THROW(
-            "Cautch error in cut kernel. Current tolerance must be increased! Error is: \n %s ",
+            "Cautch error in cut kernel. Current tolerance must be increased! Error is: \n {} ",
             e.what_with_stacktrace().c_str());
       }
 
@@ -1018,7 +1018,7 @@ bool Cut::Intersection<probdim, edgetype, sidetype, debug, dimedge, dimside, num
         {
           generate_gmsh_dump();
           FOUR_C_THROW(
-              "Cautch error in cut kernel. Current tolerance must be increased! Error is: \n %s ",
+              "Cautch error in cut kernel. Current tolerance must be increased! Error is: \n {} ",
               e.what_with_stacktrace().c_str());
         }
         if (tri_status[tri] != intersect_newton_failed)
@@ -1099,7 +1099,7 @@ bool Cut::Intersection<probdim, edgetype, sidetype, debug, dimedge, dimside, num
             }
             generate_gmsh_dump();
 
-            FOUR_C_THROW(err_msg.str());
+            FOUR_C_THROW("{}", err_msg.str());
           }
           else
           {
@@ -1184,7 +1184,7 @@ bool Cut::Intersection<probdim, edgetype, sidetype, debug, dimedge, dimside, num
     {
       generate_gmsh_dump();
       FOUR_C_THROW(
-          "Cautch error in cut kernel. Current tolerance must be increased! Error is: \n %s ",
+          "Cautch error in cut kernel. Current tolerance must be increased! Error is: \n {} ",
           e.what_with_stacktrace().c_str());
     }
 
@@ -1398,7 +1398,7 @@ std::shared_ptr<Cut::IntersectionBase> Cut::IntersectionFactory::create_intersec
     default:
       FOUR_C_THROW(
           "Unsupported edgeType! If meaningful, add your edgeType here. \n"
-          "Given edgeType = %s",
+          "Given edgeType = {}",
           Core::FE::cell_type_to_string(edge_type).c_str());
       break;
   }

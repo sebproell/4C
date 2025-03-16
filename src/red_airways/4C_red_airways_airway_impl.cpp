@@ -198,7 +198,7 @@ namespace
     }
     else
     {
-      FOUR_C_THROW("[%s] is not a defined ElemSolvingType of a RED_AIRWAY element",
+      FOUR_C_THROW("[{}] is not a defined ElemSolvingType of a RED_AIRWAY element",
           ele->elem_solving_type().c_str());
     }
 
@@ -379,7 +379,7 @@ namespace
     }
     else
     {
-      FOUR_C_THROW("[%s] is not a defined resistance model", ele->resistance().c_str());
+      FOUR_C_THROW("[{}] is not a defined resistance model", ele->resistance().c_str());
     }
 
     //------------------------------------------------------------
@@ -502,7 +502,7 @@ namespace
     }
     else
     {
-      FOUR_C_THROW("[%s] is not an implemented element yet", (ele->type()).c_str());
+      FOUR_C_THROW("[{}] is not an implemented element yet", (ele->type()).c_str());
       exit(1);
     }
 
@@ -554,7 +554,7 @@ Discret::Elements::RedAirwayImplInterface* Discret::Elements::RedAirwayImplInter
     }
     default:
       FOUR_C_THROW(
-          "shape %d (%d nodes) not supported", red_airway->shape(), red_airway->num_node());
+          "shape {} ({} nodes) not supported", red_airway->shape(), red_airway->num_node());
       break;
   }
   return nullptr;
@@ -927,7 +927,7 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
             else
             {
               FOUR_C_THROW(
-                  "FUNCTION %i has to take either value 0.0 or 1.0. Not clear if flow or pressure "
+                  "FUNCTION {} has to take either value 0.0 or 1.0. Not clear if flow or pressure "
                   "boundary condition should be active.",
                   (funct_id_switch - 1));
               exit(1);
@@ -991,7 +991,7 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
           int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
           if (local_id < 0)
           {
-            FOUR_C_THROW("node (%d) doesn't exist on proc(%d)", ele->nodes()[i]->id(),
+            FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
                 Core::Communication::my_mpi_rank(discretization.get_comm()));
             exit(1);
           }
@@ -1094,7 +1094,7 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
         }
         else
         {
-          FOUR_C_THROW("precribed [%s] is not defined for reduced airways", Bc.c_str());
+          FOUR_C_THROW("precribed [{}] is not defined for reduced airways", Bc.c_str());
           exit(1);
         }
       }
@@ -1113,7 +1113,7 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
           int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
           if (local_id < 0)
           {
-            FOUR_C_THROW("node (%d) doesn't exist on proc(%d)", ele->nodes()[i],
+            FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
                 Core::Communication::my_mpi_rank(discretization.get_comm()));
             exit(1);
           }
@@ -1415,7 +1415,7 @@ void Discret::Elements::AirwayImpl<distype>::get_coupled_values(RedAirway* ele,
         else
         {
           std::string str = (condition->parameters().get<std::string>("ReturnedVariable"));
-          FOUR_C_THROW("%s, is an unimplemented type of coupling", str.c_str());
+          FOUR_C_THROW("{}, is an unimplemented type of coupling", str.c_str());
           exit(1);
         }
         std::stringstream returnedBCwithId;
@@ -1433,7 +1433,7 @@ void Discret::Elements::AirwayImpl<distype>::get_coupled_values(RedAirway* ele,
         itrMap1D = map1D->find(returnedBCwithId.str());
         if (itrMap1D == map1D->end())
         {
-          FOUR_C_THROW("The 3D map for (1D - 3D coupling) has no variable (%s) for ID [%d]",
+          FOUR_C_THROW("The 3D map for (1D - 3D coupling) has no variable ({}) for ID [{}]",
               returnedBC.c_str(), ID);
           exit(1);
         }

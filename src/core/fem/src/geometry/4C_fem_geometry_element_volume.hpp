@@ -136,7 +136,7 @@ namespace Core::Geo
       const double det = xjm.determinant();
       const double fac = intpoints.weight(iquad) * det;
 
-      if (det <= 0.0) FOUR_C_THROW("NEGATIVE JACOBIAN DETERMINANT: %g", det);
+      if (det <= 0.0) FOUR_C_THROW("NEGATIVE JACOBIAN DETERMINANT: {}", det);
 
       vol += fac;
     }  // end loop over gauss points

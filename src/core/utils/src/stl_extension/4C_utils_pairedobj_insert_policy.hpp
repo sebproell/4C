@@ -323,10 +323,7 @@ namespace Core::Gen
         id_map_size_ = id_map_.size();
         if (id_index_ != id_map_size_)
         {
-          std::stringstream msg;
-          msg << "Size (== " << id_map_.size() << " ) <--> count (== " << id_index_
-              << " ) mismatch!\n";
-          FOUR_C_THROW(msg.str());
+          FOUR_C_THROW("Size (== {}) <--> count (== {}) mismatch!\n", id_map_.size(), id_index_);
         }
       }
 
@@ -394,11 +391,10 @@ namespace Core::Gen
       pair_type& curr_pair = data[get_id()];
       if (curr_pair.first != k)
       {
-        std::stringstream msg;
-        msg << "quick_insert_policy::subsequent_access(): Mismatch of stored "
-               "key and given key: "
-            << curr_pair.first << " <--> " << k << "\n";
-        FOUR_C_THROW(msg.str());
+        FOUR_C_THROW(
+            "quick_insert_policy::subsequent_access(): Mismatch of stored "
+            "key and given key: {} <--> {}",
+            curr_pair.first, k);
       }
 
       return curr_pair.second;
@@ -616,11 +612,7 @@ namespace Core::Gen
     {
       if (not isfilled_)
       {
-        std::stringstream msg;
-        msg << "LINE " << linenumber << " in " << functname
-            << ": access denied! "
-               "call complete first.";
-        FOUR_C_THROW(msg.str());
+        FOUR_C_THROW("LINE {} in {}: access denied! call complete first.", linenumber, functname);
       }
     }
 

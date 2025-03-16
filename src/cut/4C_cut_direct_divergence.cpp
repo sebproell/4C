@@ -82,7 +82,7 @@ std::shared_ptr<Core::FE::GaussPoints> Cut::DirectDivergence::vc_integration_rul
       err_msg << "x-component normal is zero on all the facets? It should not be. Volume of the "
                  "bounding box around facets is "
               << totalVolume;
-      FOUR_C_THROW(err_msg.str());
+      FOUR_C_THROW("{}", err_msg.str());
     }
   }
 

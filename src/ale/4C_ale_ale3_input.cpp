@@ -54,7 +54,7 @@ bool Discret::Elements::Ale3::read_element(const std::string& eletype, const std
       break;
     }
     default:
-      FOUR_C_THROW("Unknown distype %s for ALE3 element", distype.c_str());
+      FOUR_C_THROW("Unknown distype {} for ALE3 element", distype.c_str());
       // just set to something to shutup compiler
       gaussrule = Core::FE::GaussRule3D::undefined;
       break;

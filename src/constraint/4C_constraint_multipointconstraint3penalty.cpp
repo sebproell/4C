@@ -406,7 +406,7 @@ void CONSTRAINTS::MPConstraint3Penalty::evaluate_constraint(
       int err = actele->evaluate(
           params, *disc, lm, elematrix1, elematrix2, elevector1, elevector2, elevector3);
       if (err)
-        FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+        FOUR_C_THROW("Proc {}: Element {} returned err={}",
             Core::Communication::my_mpi_rank(disc->get_comm()), eid, err);
 
       // loadcurve business
@@ -479,7 +479,7 @@ void CONSTRAINTS::MPConstraint3Penalty::evaluate_error(Core::FE::Discretization&
       int err = actele->evaluate(
           params, disc, lm, elematrix1, elematrix2, elevector1, elevector2, elevector3);
       if (err)
-        FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+        FOUR_C_THROW("Proc {}: Element {} returned err={}",
             Core::Communication::my_mpi_rank(disc.get_comm()), eid, err);
     }
 

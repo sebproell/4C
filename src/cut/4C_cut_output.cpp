@@ -141,7 +141,7 @@ char Cut::Output::gmsh_element_type(Core::FE::CellType shape)
     }
     default:
       FOUR_C_THROW(
-          "Unsupported cell shape! ( shape = %s )", Core::FE::cell_type_to_string(shape).c_str());
+          "Unsupported cell shape! ( shape = {} )", Core::FE::cell_type_to_string(shape).c_str());
       exit(EXIT_FAILURE);
   }
   // impossible to reach this point
@@ -252,7 +252,7 @@ void Cut::Output::gmsh_side_dump(std::ofstream& file, const Side* s, bool to_loc
     default:
       std::stringstream str;
       str << "unknown element type in gmsh_side_dump for " << nodes.size() << " nodes!";
-      FOUR_C_THROW(str.str());
+      FOUR_C_THROW("{}", str.str());
       exit(EXIT_FAILURE);
   }
   gmsh_element_dump(file, nodes, elementtype, to_local, ele);
@@ -277,7 +277,7 @@ void Cut::Output::gmsh_tri_side_dump(
     {
       std::stringstream str;
       str << "unknown element type in GmshTriSideDump for " << points.size() << " points!";
-      FOUR_C_THROW(str.str());
+      FOUR_C_THROW("{}", str.str());
       exit(EXIT_FAILURE);
     }
   }
@@ -1006,7 +1006,7 @@ void Cut::Output::gmsh_write_coords(
   if (coord.size() <= 3)
     std::copy(coord.begin(), coord.end(), xyz.data());
   else
-    FOUR_C_THROW("The coord vector dimension is wrong! (coord.size() = %d)", coord.size());
+    FOUR_C_THROW("The coord vector dimension is wrong! (coord.size() = {})", coord.size());
 
   if (to_local)
   {

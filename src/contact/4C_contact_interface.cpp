@@ -318,7 +318,7 @@ void CONTACT::Interface::set_cn_ct_values(const int& iter)
   {
     int gid = slave_row_nodes()->GID(i);
     Core::Nodes::Node* node = discret().g_node(gid);
-    if (!node) FOUR_C_THROW("Cannot find node with gid %i", gid);
+    if (!node) FOUR_C_THROW("Cannot find node with gid {}", gid);
     Node* cnode = dynamic_cast<Node*>(node);
 
     // calculate characteristic edge length:
@@ -757,7 +757,7 @@ void CONTACT::Interface::redistribute()
   {
     int gid = slave_col_elements()->GID(i);
     Core::Elements::Element* ele = discret().g_element(gid);
-    if (!ele) FOUR_C_THROW("Cannot find ele with gid %i", gid);
+    if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
     auto* mele = dynamic_cast<Mortar::Element*>(ele);
 
     mele->mo_data().search_elements().resize(0);
@@ -868,11 +868,11 @@ void CONTACT::Interface::redistribute()
       int err = graph->insert_global_indices(gid, numnode, nodeids.data());
       if (err < 0)
       {
-        FOUR_C_THROW("graph->InsertGlobalIndices returned %d", err);
+        FOUR_C_THROW("graph->InsertGlobalIndices returned {}", err);
       }
       if (err == 1)
       {
-        FOUR_C_THROW("graph->InsertGlobalIndices returned %d", err);
+        FOUR_C_THROW("graph->InsertGlobalIndices returned {}", err);
       }
     }
   }
@@ -1020,7 +1020,7 @@ void CONTACT::Interface::redistribute()
       std::make_shared<Core::LinAlg::Graph>(Copy, *srownodes, 108, false);
   Epetra_Export exporter(graph->row_map(), *srownodes);
   int err = outgraph->export_to(graph->get_epetra_crs_graph(), exporter, Add);
-  if (err < 0) FOUR_C_THROW("Graph export returned err=%d", err);
+  if (err < 0) FOUR_C_THROW("Graph export returned err={}", err);
 
   // trash old graph
   graph = nullptr;
@@ -1241,7 +1241,7 @@ void CONTACT::Interface::initialize_data_container()
     {
       int gid = masternodes->GID(i);
       Core::Nodes::Node* node = discret().g_node(gid);
-      if (!node) FOUR_C_THROW("Cannot find node with gid %i", gid);
+      if (!node) FOUR_C_THROW("Cannot find node with gid {}", gid);
       auto* mnode = dynamic_cast<CONTACT::Node*>(node);
       mnode->initialize_data_container();
     }
@@ -1460,7 +1460,7 @@ void CONTACT::Interface::initialize()
     {
       int gid = slave_col_elements()->GID(i);
       Core::Elements::Element* ele = discret().g_element(gid);
-      if (!ele) FOUR_C_THROW("Cannot find ele with gid %i", gid);
+      if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
       auto* mele = dynamic_cast<Mortar::Element*>(ele);
 
       mele->mo_data().search_elements().resize(0);
@@ -3693,7 +3693,7 @@ double CONTACT::Interface::compute_normal_node_to_edge(const Mortar::Node& snode
            slavebasednormal[2] * slavebasednormal[2]);
   if (abs(length) < 1e-12)
   {
-    FOUR_C_THROW("Nodal normal length 0, node ID %i", snode.id());
+    FOUR_C_THROW("Nodal normal length 0, node ID {}", snode.id());
   }
   else
   {
@@ -3828,7 +3828,7 @@ double CONTACT::Interface::compute_normal_node_to_node(const Mortar::Node& snode
            slavebasednormal[2] * slavebasednormal[2]);
   if (abs(length) < 1e-12)
   {
-    FOUR_C_THROW("Nodal normal length 0, node ID %i", snode.id());
+    FOUR_C_THROW("Nodal normal length 0, node ID {}", snode.id());
   }
   else
   {
@@ -5297,7 +5297,7 @@ bool CONTACT::Interface::evaluate_search_binarytree()
     {
       int gid = slave_col_nodes_bound()->GID(i);
       Core::Nodes::Node* node = discret().g_node(gid);
-      if (!node) FOUR_C_THROW("Cannot find node with gid %i", gid);
+      if (!node) FOUR_C_THROW("Cannot find node with gid {}", gid);
       auto* mnode = dynamic_cast<Mortar::Node*>(node);
 
       // initialize container if not yet initialized before
@@ -6467,12 +6467,12 @@ void CONTACT::Interface::evaluate_relative_movement(
           int err = (dmatrixmod->epetra_matrix())
                         ->ExtractGlobalRowCopy(row, (dmatrixmod->epetra_matrix())->MaxNumEntries(),
                             NumEntries, Values.data(), Indices.data());
-          if (err) FOUR_C_THROW("ExtractMyRowView failed: err=%d", err);
+          if (err) FOUR_C_THROW("ExtractMyRowView failed: err={}", err);
 
           int errold = (doldmod->epetra_matrix())
                            ->ExtractGlobalRowCopy(row, (doldmod->epetra_matrix())->MaxNumEntries(),
                                NumEntriesOld, ValuesOld.data(), IndicesOld.data());
-          if (errold) FOUR_C_THROW("ExtractMyRowView failed: err=%d", err);
+          if (errold) FOUR_C_THROW("ExtractMyRowView failed: err={}", err);
 
           // loop over entries of this vector
           for (int j = 0; j < NumEntries; ++j)
@@ -7529,7 +7529,7 @@ void CONTACT::Interface::update_self_contact_lag_mult_set(
     if (ref_lid == -1)
     {
       FOUR_C_THROW(
-          "Couldn't find the current slave gid #%d in the reference self "
+          "Couldn't find the current slave gid #{} in the reference self "
           "contact slave master map.",
           sgid);
     }

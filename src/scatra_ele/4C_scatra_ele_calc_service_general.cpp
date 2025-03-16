@@ -753,7 +753,7 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_action(
       if (params.get<int>("NUMSCAL") > numscal_)
       {
         FOUR_C_THROW(
-            "you requested the pointvalue of the %d-th scalar but there is only %d scalars",
+            "you requested the pointvalue of the {}-th scalar but there is only {} scalars",
             params.get<int>("NUMSCAL"), numscal_);
       }
 

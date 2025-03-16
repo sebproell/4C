@@ -261,7 +261,7 @@ Core::LinAlg::Matrix<2, 2, T> Mixture::Implementation::RemodelFiberImplementatio
     if (iteration >= 500)
     {
       FOUR_C_THROW(
-          "The local newton didn't converge within 500 iterations. Residuum is %.3e > %.3e",
+          "The local newton didn't converge within 500 iterations. Residuum is {:.3e} > {:.3e}",
           Core::FADUtils::cast_to_double(Core::FADUtils::vector_norm(b)), 1e-10);
     }
     K.invert();

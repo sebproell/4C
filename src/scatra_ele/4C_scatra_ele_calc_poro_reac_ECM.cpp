@@ -76,7 +76,7 @@ void Discret::Elements::ScaTraEleCalcPoroReacECM<distype>::materials(
       pororeac::mat_scatra(material, k, densn, densnp, densam, visc, iquad);
       break;
     default:
-      FOUR_C_THROW("Material type %i is not supported", material->material_type());
+      FOUR_C_THROW("Material type {} is not supported", material->material_type());
       break;
   }
   return;

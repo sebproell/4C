@@ -92,7 +92,7 @@ void Discret::Elements::Artery::set_diam_in_material(const double diam)
     arterymat->set_diam_initial(diam);
   }
   else
-    FOUR_C_THROW("Artery element got unsupported material type %d", mat->material_type());
+    FOUR_C_THROW("Artery element got unsupported material type {}", mat->material_type());
   return;
 }
 

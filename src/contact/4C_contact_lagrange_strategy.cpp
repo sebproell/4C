@@ -339,11 +339,11 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
 
       // re-insert inverted diagonal into invd
       err = invdV.replace_diagonal_values(*diagV);
-      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
       err = invdE.replace_diagonal_values(*diagE);
-      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
       err = invdS.replace_diagonal_values(*diagS);
-      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
 
       // 3. multiply all sub matrices
       invd = std::make_shared<Core::LinAlg::SparseMatrix>(*gsdofrowmap_, 100, true, true);
@@ -421,7 +421,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
 
       // re-insert inverted diagonal into invd
       err = invd->replace_diagonal_values(*diag);
-      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
     }
 
     // do the multiplication mhat = inv(D) * M
@@ -2109,11 +2109,11 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
 
       // re-insert inverted diagonal into invd
       err = invdV.replace_diagonal_values(*diagV);
-      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
       err = invdE.replace_diagonal_values(*diagE);
-      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
       err = invdS.replace_diagonal_values(*diagS);
-      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
 
       // 3. multiply all sub matrices
       invd = std::make_shared<Core::LinAlg::SparseMatrix>(*gsdofrowmap_, 100, true, true);
@@ -2190,7 +2190,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
 
       // re-insert inverted diagonal into invd
       err = invd->replace_diagonal_values(*diag);
-      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
     }
 
     // do the multiplication mhat = inv(D) * M
@@ -3603,11 +3603,11 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_friction()
 
       // re-insert inverted diagonal into invd
       err = invdV.replace_diagonal_values(*diagV);
-      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
       err = invdE.replace_diagonal_values(*diagE);
-      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
       err = invdS.replace_diagonal_values(*diagS);
-      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
 
       // 3. multiply all sub matrices
       invd = std::make_shared<Core::LinAlg::SparseMatrix>(*gsdofrowmap_, 100, true, true);
@@ -3685,7 +3685,7 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_friction()
 
       // re-insert inverted diagonal into invd
       err = invd->replace_diagonal_values(*diag);
-      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
     }
 
     invd_ = invd;
@@ -3865,11 +3865,11 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_frictionless()
 
       // re-insert inverted diagonal into invd
       err = invdV.replace_diagonal_values(*diagV);
-      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
       err = invdE.replace_diagonal_values(*diagE);
-      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
       err = invdS.replace_diagonal_values(*diagS);
-      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
 
       // 3. multiply all sub matrices
       invd = std::make_shared<Core::LinAlg::SparseMatrix>(*gsdofrowmap_, 100, true, true);
@@ -3946,7 +3946,7 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_frictionless()
 
       // re-insert inverted diagonal into invd
       err = invd->replace_diagonal_values(*diag);
-      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+      if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
     }
 
     invd_ = invd;
@@ -4906,7 +4906,7 @@ void CONTACT::LagrangeStrategy::update_active_set_semi_smooth(const bool firstSt
         // updates the active set after EACH Newton step, see below, and thus
         // would always set the corresponding nodes to INACTIVE.)
         if (cnode->active() && !cnode->has_segment() && !cnode->is_on_boundor_ce())
-          FOUR_C_THROW("Active node %i without any segment/cell attached", cnode->id());
+          FOUR_C_THROW("Active node {} without any segment/cell attached", cnode->id());
       }
     }
     return;

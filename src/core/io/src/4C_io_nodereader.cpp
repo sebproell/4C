@@ -82,8 +82,8 @@ void Core::IO::read_nodes(Core::IO::InputFile& input, const std::string& node_se
       max_node_id = std::max(max_node_id, cpid) + 1;
       if (cpid != line_count)
         FOUR_C_THROW(
-            "Reading of control points %d failed: They must be numbered consecutive!!", cpid);
-      if (tmp != "COORD") FOUR_C_THROW("failed to read control point %d", cpid);
+            "Reading of control points {} failed: They must be numbered consecutive!!", cpid);
+      if (tmp != "COORD") FOUR_C_THROW("failed to read control point {}", cpid);
       std::vector<std::shared_ptr<Core::FE::Discretization>> diss =
           find_dis_node(element_readers, cpid);
 
@@ -212,7 +212,7 @@ void Core::IO::read_nodes(Core::IO::InputFile& input, const std::string& node_se
       }
     }
     else
-      FOUR_C_THROW("unexpected word '%s'", tmp.c_str());
+      FOUR_C_THROW("unexpected word '{}'", tmp.c_str());
 
     ++line_count;
   }

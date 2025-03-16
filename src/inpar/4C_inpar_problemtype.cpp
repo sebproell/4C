@@ -123,7 +123,7 @@ Core::ProblemType Inpar::PROBLEMTYPE::string_to_problem_type(std::string name)
   std::map<std::string, Core::ProblemType> map = string_to_problem_type_map();
   std::map<std::string, Core::ProblemType>::const_iterator i = map.find(name);
   if (i != map.end()) return i->second;
-  FOUR_C_THROW("unsupported problem name '%s'", name.c_str());
+  FOUR_C_THROW("unsupported problem name '{}'", name.c_str());
 
   return Core::ProblemType::none;
 }

@@ -162,7 +162,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_transform_gids(
     double* Values;
     int* Indices;
     int err = (inmat.epetra_matrix())->ExtractMyRowView(i, NumEntries, Values, Indices);
-    if (err != 0) FOUR_C_THROW("ExtractMyRowView error: %d", err);
+    if (err != 0) FOUR_C_THROW("ExtractMyRowView error: {}", err);
 
     // pull indices back to global
     std::vector<int> idx(NumEntries);
@@ -174,7 +174,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_transform_gids(
     err = (outmat->epetra_matrix())
               ->InsertGlobalValues(
                   newrowmap.GID(i), NumEntries, const_cast<double*>(Values), idx.data());
-    if (err < 0) FOUR_C_THROW("InsertGlobalValues error: %d", err);
+    if (err < 0) FOUR_C_THROW("InsertGlobalValues error: {}", err);
   }
 
   // complete output matrix
@@ -208,7 +208,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_col_transform_gids(
     double* Values;
     int* Indices;
     int err = (inmat.epetra_matrix())->ExtractMyRowView(i, NumEntries, Values, Indices);
-    if (err != 0) FOUR_C_THROW("ExtractMyRowView error: %d", err);
+    if (err != 0) FOUR_C_THROW("ExtractMyRowView error: {}", err);
     std::vector<int> idx;
     std::vector<double> vals;
     idx.reserve(NumEntries);
@@ -224,7 +224,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_col_transform_gids(
         vals.push_back(Values[j]);
       }
       else
-        FOUR_C_THROW("gid %d not found in map for lid %d at %d", gid, Indices[j], j);
+        FOUR_C_THROW("gid {} not found in map for lid {} at {}", gid, Indices[j], j);
     }
 
     Values = vals.data();
@@ -232,7 +232,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_col_transform_gids(
     err = (outmat->epetra_matrix())
               ->InsertGlobalValues(
                   inmat.row_map().GID(i), NumEntries, const_cast<double*>(Values), idx.data());
-    if (err < 0) FOUR_C_THROW("InsertGlobalValues error: %d", err);
+    if (err < 0) FOUR_C_THROW("InsertGlobalValues error: {}", err);
   }
 
   // complete output matrix
@@ -274,7 +274,7 @@ void Mortar::create_new_col_map(const Core::LinAlg::SparseMatrix& mat,
   {
     const int lid = mat.col_map().LID(cit->first);
     if (lid == -1)
-      FOUR_C_THROW("Couldn't find the GID %d in the old column map on proc %d.", cit->first,
+      FOUR_C_THROW("Couldn't find the GID {} in the old column map on proc {}.", cit->first,
           Core::Communication::my_mpi_rank(Core::Communication::unpack_epetra_comm(mat.Comm())));
 
     my_col_gids[lid] = cit->second;
@@ -301,12 +301,12 @@ void Mortar::replace_column_and_domain_map(Core::LinAlg::SparseMatrix& mat,
     create_new_col_map(mat, newdomainmap, newcolmap);
 
   int err = mat.epetra_matrix()->ReplaceColMap(*newcolmap);
-  if (err) FOUR_C_THROW("ReplaceColMap failed! ( err = %d )", err);
+  if (err) FOUR_C_THROW("ReplaceColMap failed! ( err = {} )", err);
 
   Epetra_Import importer(*newcolmap, newdomainmap);
 
   err = mat.epetra_matrix()->ReplaceDomainMapAndImporter(newdomainmap, &importer);
-  if (err) FOUR_C_THROW("ReplaceDomainMapAndImporter failed! ( err = %d )", err);
+  if (err) FOUR_C_THROW("ReplaceDomainMapAndImporter failed! ( err = {} )", err);
 }
 
 /*----------------------------------------------------------------------*
@@ -335,7 +335,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform_gid
     double* Values;
     int* Indices;
     int err = (inmat.epetra_matrix())->ExtractMyRowView(i, NumEntries, Values, Indices);
-    if (err != 0) FOUR_C_THROW("ExtractMyRowView error: %d", err);
+    if (err != 0) FOUR_C_THROW("ExtractMyRowView error: {}", err);
     std::vector<int> idx;
     std::vector<double> vals;
     idx.reserve(NumEntries);
@@ -351,7 +351,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform_gid
         vals.push_back(Values[j]);
       }
       else
-        FOUR_C_THROW("gid %d not found in map for lid %d at %d", gid, Indices[j], j);
+        FOUR_C_THROW("gid {} not found in map for lid {} at {}", gid, Indices[j], j);
     }
 
     Values = vals.data();
@@ -359,7 +359,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform_gid
     err = (outmat->epetra_matrix())
               ->InsertGlobalValues(
                   newrowmap.GID(i), NumEntries, const_cast<double*>(Values), idx.data());
-    if (err < 0) FOUR_C_THROW("InsertGlobalValues error: %d", err);
+    if (err < 0) FOUR_C_THROW("InsertGlobalValues error: {}", err);
   }
 
   // complete output matrix
@@ -428,7 +428,7 @@ std::shared_ptr<Epetra_CrsMatrix> Mortar::redistribute(const Core::LinAlg::Spars
   std::shared_ptr<Epetra_CrsMatrix> permsrc =
       std::make_shared<Epetra_CrsMatrix>(Copy, permrowmap, src.max_num_entries());
   int err = permsrc->Import(*src.epetra_matrix(), exporter, Insert);
-  if (err) FOUR_C_THROW("Import failed with err=%d", err);
+  if (err) FOUR_C_THROW("Import failed with err={}", err);
 
   permsrc->FillComplete(permdomainmap, permrowmap);
   return permsrc;
@@ -784,7 +784,7 @@ void Mortar::Utils::create_volume_ghosting(const Core::FE::Discretization& dis_s
       int volgid = faceele->parent_element_id();
 
       if (elecolmap->LID(volgid) == -1)  // Volume discretization has not Element
-        FOUR_C_THROW("create_volume_ghosting: Element %d does not exist on this Proc!", volgid);
+        FOUR_C_THROW("create_volume_ghosting: Element {} does not exist on this Proc!", volgid);
 
       Core::Elements::Element* vele = voldis[0]->g_element(volgid);
       if (!vele) FOUR_C_THROW("Cannot find element with gid %", volgid);

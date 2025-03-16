@@ -34,7 +34,7 @@ void MultiScale::MicroStatic::determine_toggle()
       // do only nodes in my row map
       if (!discret_->node_row_map()->MyGID(i)) continue;
       Core::Nodes::Node* actnode = discret_->g_node(i);
-      if (!actnode) FOUR_C_THROW("Cannot find global node %d", i);
+      if (!actnode) FOUR_C_THROW("Cannot find global node {}", i);
       std::vector<int> dofs = discret_->dof(actnode);
       const unsigned numdf = dofs.size();
 
@@ -43,7 +43,7 @@ void MultiScale::MicroStatic::determine_toggle()
         const int gid = dofs[j];
 
         const int lid = disn_->get_map().LID(gid);
-        if (lid < 0) FOUR_C_THROW("Global id %d not on this proc in system vector", gid);
+        if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
 
         if ((*dirichtoggle_)[lid] != 1.0)  // be careful not to count dofs more
                                            // than once since nodes belong to
@@ -112,7 +112,7 @@ void MultiScale::MicroStatic::set_up_homogenization()
       // do only nodes in my row map
       if (!discret_->node_row_map()->MyGID(i)) continue;
       Core::Nodes::Node* actnode = discret_->g_node(i);
-      if (!actnode) FOUR_C_THROW("Cannot find global node %d", i);
+      if (!actnode) FOUR_C_THROW("Cannot find global node {}", i);
 
       // nodal coordinates
       const auto& x = actnode->x();
@@ -124,7 +124,7 @@ void MultiScale::MicroStatic::set_up_homogenization()
         const int gid = dofs[k];
 
         const int lid = disn_->get_map().LID(gid);
-        if (lid < 0) FOUR_C_THROW("Global id %d not on this proc in system vector", gid);
+        if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
 
         for (int l = 0; l < np_; ++l)
         {

@@ -30,8 +30,8 @@ Mixture::PAR::MixtureConstituentElastHyperBase::MixtureConstituentElastHyperBase
   if (nummat_ != (int)matids_.size())
   {
     FOUR_C_THROW(
-        "number of summands %d does not fit to the size of the summands vector"
-        " %d",
+        "number of summands {} does not fit to the size of the summands vector"
+        " {}",
         nummat_, matids_.size());
   }
 }
@@ -116,7 +116,7 @@ void Mixture::MixtureConstituentElastHyperBase::unpack_constituent(
       }
       else
       {
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
       }
     }

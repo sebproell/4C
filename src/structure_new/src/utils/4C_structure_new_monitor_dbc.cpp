@@ -98,7 +98,7 @@ int Solid::MonitorDbc::get_unique_id(int tagged_id, Core::Conditions::GeometryTy
     case Core::Conditions::geometry_type_surface:
       return tagged_id + 10000;
     default:
-      FOUR_C_THROW("Unsupported geometry type! (enum=%d)", gtype);
+      FOUR_C_THROW("Unsupported geometry type! (enum={})", gtype);
       exit(EXIT_FAILURE);
   }
 }
@@ -146,7 +146,7 @@ void Solid::MonitorDbc::setup()
         std::make_pair(rcond.id(), std::vector<std::shared_ptr<Epetra_Map>>(3, nullptr)));
 
     if (not ipair.second)
-      FOUR_C_THROW("The reaction condition id #%d seems to be non-unique!", rcond.id());
+      FOUR_C_THROW("The reaction condition id #{} seems to be non-unique!", rcond.id());
 
     create_reaction_maps(*discret_ptr_, rcond, ipair.first->second.data());
   }
@@ -573,7 +573,7 @@ double Solid::MonitorDbc::get_reaction_moment(Core::LinAlg::Matrix<DIM, 1>& rmom
       {
         const int lid = complete_freact.get_map().LID(node_gid[i]);
         if (lid < 0)
-          FOUR_C_THROW("Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
+          FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
               Core::Communication::my_mpi_rank(complete_freact.get_comm()), node_gid[i]);
         node_reaction_force(i) = complete_freact[lid];
       }

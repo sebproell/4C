@@ -54,13 +54,13 @@ Mat::PAR::GrowthRemodelElastHyper::GrowthRemodelElastHyper(
   // check if sizes fit
   if (nummat_remodelfiber_ != (int)matids_remodelfiber_.size())
     FOUR_C_THROW(
-        "number of remodelfiber materials %d does not fit to size of remodelfiber material vector "
-        "%d",
+        "number of remodelfiber materials {} does not fit to size of remodelfiber material vector "
+        "{}",
         nummat_remodelfiber_, matids_remodelfiber_.size());
 
   if (nummat_elastinmem_ != (int)matids_elastinmem_.size())
     FOUR_C_THROW(
-        "number of elastin materials %d does not fit to size of elastin material vector %d",
+        "number of elastin materials {} does not fit to size of elastin material vector {}",
         nummat_elastinmem_, matids_elastinmem_.size());
 
   if (membrane_ == 1)
@@ -74,7 +74,7 @@ Mat::PAR::GrowthRemodelElastHyper::GrowthRemodelElastHyper(
   {
     if (nummat_elastiniso_ != (int)matids_elastiniso_.size())
       FOUR_C_THROW(
-          "number of elastin materials %d does not fit to size of elastin material vector %d",
+          "number of elastin materials {} does not fit to size of elastin material vector {}",
           nummat_elastiniso_, matids_elastiniso_.size());
     if (nummat_elastiniso_ == 0) FOUR_C_THROW("you have to set a 3D elastin material");
     if (matid_penalty_ == -1) FOUR_C_THROW("you have to set a volumetric penalty material");
@@ -283,7 +283,7 @@ void Mat::GrowthRemodelElastHyper::unpack(Core::Communication::UnpackBuffer& buf
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::GrowthRemodelElastHyper*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
   }

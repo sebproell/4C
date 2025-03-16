@@ -567,7 +567,7 @@ int Discret::Elements::Fluid::evaluate(Teuchos::ParameterList& params,
         }
       }
       else
-        FOUR_C_THROW("%i D elements does not support calculation of model parameters", nsd);
+        FOUR_C_THROW("{} D elements does not support calculation of model parameters", nsd);
     }
     break;
     case FLD::calc_mean_Cai:
@@ -640,7 +640,7 @@ int Discret::Elements::Fluid::evaluate(Teuchos::ParameterList& params,
         params.set<double>("ele_vol", vol);
       }
       else
-        FOUR_C_THROW("%i D elements does not support calculation of mean Cai", nsd);
+        FOUR_C_THROW("{} D elements does not support calculation of mean Cai", nsd);
     }
     break;
     case FLD::set_mean_Cai:
@@ -732,7 +732,7 @@ int Discret::Elements::Fluid::evaluate(Teuchos::ParameterList& params,
     // one-step-theta, BDF2, and generalized-alpha (n+alpha_F and n+1)
     //-----------------------------------------------------------------------
     default:
-      FOUR_C_THROW("Unknown type of action '%i' for Fluid", act);
+      FOUR_C_THROW("Unknown type of action '{}' for Fluid", act);
       break;
   }  // end of switch(act)
 

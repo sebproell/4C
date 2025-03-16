@@ -193,8 +193,8 @@ void Discret::Elements::ScaTraEleCalcLoma<distype>::mat_thermo_st_venant_kirchho
   // and set derivative of reaction coefficient
   // if (reacoef > 1e-14) reaction_ = true;
   // if (reacoef < -1e-14)
-  //  FOUR_C_THROW("Reaction coefficient for Thermo St. Venant-Kirchhoff material is not positive:
-  //  %f",0, reacoef);
+  //   FOUR_C_THROW("Reaction coefficient for Thermo St. Venant-Kirchhoff material is not positive:
+  //  {}",0, reacoef);
   // reacoeffderiv_[0] = reacoef;
 
   // set different reaction terms in the reaction manager

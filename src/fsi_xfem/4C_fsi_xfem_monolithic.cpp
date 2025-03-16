@@ -344,14 +344,14 @@ void FSI::MonolithicXFEM::validate_parameters()
   // Check for the timestepsize
   if (fabs(fluid_field()->dt() - structure_poro()->structure_field()->dt()) > 1e-16)
   {
-    FOUR_C_THROW("validate_parameters(): Timestep of fluid and structure not equal (%f != %f)!",
+    FOUR_C_THROW("validate_parameters(): Timestep of fluid and structure not equal ({} != {})!",
         fluid_field()->dt(), structure_poro()->structure_field()->dt());
   }
   if (have_ale())
   {
     if (fabs(fluid_field()->dt() - ale_field()->dt()) > 1e-16)
     {
-      FOUR_C_THROW("validate_parameters(): Timestep of fluid and ale not equal (%f != %f)!",
+      FOUR_C_THROW("validate_parameters(): Timestep of fluid and ale not equal ({} != {})!",
           fluid_field()->dt(), ale_field()->dt());
     }
   }
@@ -359,7 +359,7 @@ void FSI::MonolithicXFEM::validate_parameters()
   {
     if (fabs(fluid_field()->dt() - structure_poro()->poro_field()->dt()) > 1e-16)
     {
-      FOUR_C_THROW("validate_parameters(): Timestep of fluid and poro not equal (%f != %f)!",
+      FOUR_C_THROW("validate_parameters(): Timestep of fluid and poro not equal ({} != {})!",
           fluid_field()->dt(), structure_poro()->poro_field()->dt());
     }
   }
@@ -412,7 +412,7 @@ void FSI::MonolithicXFEM::create_system_matrix()
   if (systemmatrix_.use_count() > 1)
   {
     FOUR_C_THROW(
-        "deleting systemmatrix does not work properly, the number of RCPs pointing to it is %i",
+        "deleting systemmatrix does not work properly, the number of RCPs pointing to it is {}",
         systemmatrix_.use_count());
   }
 
@@ -1031,7 +1031,7 @@ bool FSI::MonolithicXFEM::newton()
     {
       FOUR_C_THROW(
           "deleting block sparse matrix does not work properly, the number of RCPs pointing to it "
-          "is %i",
+          "is {}",
           systemmatrix_.use_count());
     }
 

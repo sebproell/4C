@@ -123,7 +123,7 @@ void Wear::WearInterface::assemble_te(
         ++k;
       }
 
-      if (k != colsize) FOUR_C_THROW("AssembleTE: k = %i but colsize = %i", k, colsize);
+      if (k != colsize) FOUR_C_THROW("AssembleTE: k = {} but colsize = {}", k, colsize);
     }
 
     /**************************************************** E-matrix ******/
@@ -163,7 +163,7 @@ void Wear::WearInterface::assemble_te(
           FOUR_C_THROW("Chosen wear shape function not supported!");
       }
 
-      if (k != colsize) FOUR_C_THROW("AssembleTE: k = %i but colsize = %i", k, colsize);
+      if (k != colsize) FOUR_C_THROW("AssembleTE: k = {} but colsize = {}", k, colsize);
     }
   }
 
@@ -232,7 +232,7 @@ void Wear::WearInterface::assemble_te_master(
         ++k;
       }
 
-      if (k != colsize) FOUR_C_THROW("AssembleTE: k = %i but colsize = %i", k, colsize);
+      if (k != colsize) FOUR_C_THROW("AssembleTE: k = {} but colsize = {}", k, colsize);
     }
 
     /**************************************************** E-matrix ******/
@@ -272,7 +272,7 @@ void Wear::WearInterface::assemble_te_master(
           FOUR_C_THROW("Chosen wear shape function not supported!");
       }
 
-      if (k != colsize) FOUR_C_THROW("AssembleTE: k = %i but colsize = %i", k, colsize);
+      if (k != colsize) FOUR_C_THROW("AssembleTE: k = {} but colsize = {}", k, colsize);
     }
   }
 
@@ -3082,7 +3082,7 @@ void Wear::WearInterface::assemble_d2(Core::LinAlg::SparseMatrix& dglobal)
           ++k;
         }
 
-        if (k != colsize) FOUR_C_THROW("AssembleDM: k = %i but colsize = %i", k, colsize);
+        if (k != colsize) FOUR_C_THROW("AssembleDM: k = {} but colsize = {}", k, colsize);
       }
     }
   }
@@ -3451,7 +3451,7 @@ void Wear::WearInterface::initialize_data_container()
     {
       int gid = masternodes->GID(i);
       Core::Nodes::Node* node = discret().g_node(gid);
-      if (!node) FOUR_C_THROW("Cannot find node with gid %i", gid);
+      if (!node) FOUR_C_THROW("Cannot find node with gid {}", gid);
       Mortar::Node* mnode = dynamic_cast<Mortar::Node*>(node);
 
       //********************************************************
@@ -4009,7 +4009,7 @@ void Wear::WearInterface::initialize()
     {
       int gid = slave_col_elements()->GID(i);
       Core::Elements::Element* ele = discret().g_element(gid);
-      if (!ele) FOUR_C_THROW("Cannot find ele with gid %i", gid);
+      if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
       Mortar::Element* mele = dynamic_cast<Mortar::Element*>(ele);
 
       mele->mo_data().search_elements().resize(0);

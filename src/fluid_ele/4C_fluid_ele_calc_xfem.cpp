@@ -369,7 +369,7 @@ namespace Discret
             position[2] = xyzint(2);
           }
           else
-            FOUR_C_THROW("invalid nsd %d", nsd_);
+            FOUR_C_THROW("invalid nsd {}", nsd_);
 
           // evaluate velocity and pressure
           std::shared_ptr<Core::Utils::FunctionOfSpaceTime> function = nullptr;
@@ -496,7 +496,7 @@ namespace Discret
             position[2] = xyzint(2);
           }
           else
-            FOUR_C_THROW("invalid nsd %d", nsd_);
+            FOUR_C_THROW("invalid nsd {}", nsd_);
 
           // evaluate velocity and pressure
           std::shared_ptr<Core::Utils::FunctionOfSpaceTime> function = nullptr;
@@ -643,7 +643,7 @@ namespace Discret
             position[2] = xyzint(2);
           }
           else
-            FOUR_C_THROW("invalid nsd %d", nsd_);
+            FOUR_C_THROW("invalid nsd {}", nsd_);
 
           if (nsd_ == 2)
           {
@@ -962,10 +962,10 @@ namespace Discret
 #ifdef FOUR_C_ENABLE_ASSERTIONS
         if (is_ls_coupling_side and is_mesh_coupling_side)
           FOUR_C_THROW(
-              "side cannot be a levelset-coupling side and a mesh coupling side at once: side %i",
+              "side cannot be a levelset-coupling side and a mesh coupling side at once: side {}",
               coup_sid);
         if (!is_ls_coupling_side and !is_mesh_coupling_side)
-          FOUR_C_THROW("side is neither a levelset-coupling side nor a mesh coupling side: side %i",
+          FOUR_C_THROW("side is neither a levelset-coupling side nor a mesh coupling side: side {}",
               coup_sid);
 #endif
         //-----------------------------------------------------------------------------------
@@ -1597,10 +1597,10 @@ namespace Discret
 #ifdef FOUR_C_ENABLE_ASSERTIONS
         if (is_ls_coupling_side and is_mesh_coupling_side)
           FOUR_C_THROW(
-              "side cannot be a levelset-coupling side and a mesh coupling side at once: side %i",
+              "side cannot be a levelset-coupling side and a mesh coupling side at once: side {}",
               coup_sid);
         if (!is_ls_coupling_side and !is_mesh_coupling_side)
-          FOUR_C_THROW("side is neither a levelset-coupling side nor a mesh coupling side: side %i",
+          FOUR_C_THROW("side is neither a levelset-coupling side nor a mesh coupling side: side {}",
               coup_sid);
 #endif
 
@@ -1684,7 +1684,7 @@ namespace Discret
 
           if (side_matrices.size() != 3)
             FOUR_C_THROW(
-                "Obtained only %d side coupling matrices. 3 required.", side_matrices.size());
+                "Obtained only {} side coupling matrices. 3 required.", side_matrices.size());
 
           // coupling matrices between background element and one! side
           Core::LinAlg::SerialDenseMatrix& C_you = side_matrices[0];
@@ -1787,7 +1787,7 @@ namespace Discret
             }
           }
           else
-            FOUR_C_THROW("no mesh-/level-set coupling object for coupling sid %i", coup_sid);
+            FOUR_C_THROW("no mesh-/level-set coupling object for coupling sid {}", coup_sid);
         }
 
         // Set State for current and previous time
@@ -2464,9 +2464,9 @@ namespace Discret
 #ifdef FOUR_C_ENABLE_ASSERTIONS
           if (side_matrices.size() != 3)
             FOUR_C_THROW(
-                "Obtained only %d side coupling matrices. 3 required.", side_matrices.size());
+                "Obtained only {} side coupling matrices. 3 required.", side_matrices.size());
           if (side_matrices_extra.size() != 4)
-            FOUR_C_THROW("Obtained only %d conv. side coupling matrices. 4 required.",
+            FOUR_C_THROW("Obtained only {} conv. side coupling matrices. 4 required.",
                 side_matrices_extra.size());
 #endif
 
@@ -2499,9 +2499,9 @@ namespace Discret
 #ifdef FOUR_C_ENABLE_ASSERTIONS
           if (side_matrices.size() != 3)
             FOUR_C_THROW(
-                "Obtained only %d side coupling matrices. 3 required.", side_matrices.size());
+                "Obtained only {} side coupling matrices. 3 required.", side_matrices.size());
           if (side_matrices_extra.size() != 4)
-            FOUR_C_THROW("Obtained only %d conv. side coupling matrices. 4 required.",
+            FOUR_C_THROW("Obtained only {} conv. side coupling matrices. 4 required.",
                 side_matrices_extra.size());
           if (side_matrices[2].numRows() != side_matrices_extra[2].numRows() ||
               side_matrices[2].numCols() != side_matrices_extra[2].numCols())
@@ -3411,10 +3411,10 @@ namespace Discret
 #ifdef FOUR_C_ENABLE_ASSERTIONS
         if (is_ls_coupling_side and is_mesh_coupling_side)
           FOUR_C_THROW(
-              "side cannot be a levelset-coupling side and a mesh coupling side at once: side %i",
+              "side cannot be a levelset-coupling side and a mesh coupling side at once: side {}",
               coup_sid);
         if (!is_ls_coupling_side and !is_mesh_coupling_side)
-          FOUR_C_THROW("side is neither a levelset-coupling side nor a mesh coupling side: side %i",
+          FOUR_C_THROW("side is neither a levelset-coupling side nor a mesh coupling side: side {}",
               coup_sid);
 #endif
 
@@ -3480,7 +3480,7 @@ namespace Discret
         {
           coupl_ele = cond_manager->get_coupling_element(coup_sid, ele);
           if (coupl_ele == nullptr)
-            FOUR_C_THROW("Failed to obtain coupling element for global coup_sid %d", coup_sid);
+            FOUR_C_THROW("Failed to obtain coupling element for global coup_sid {}", coup_sid);
           Core::Geo::initial_position_array(coupl_xyze, coupl_ele);
         }
 
@@ -4121,7 +4121,7 @@ namespace Discret
         // Neumann boundary conditions for Mesh and Levelset
         default:
           FOUR_C_THROW(
-              "invalid type of condition %i, which prescribed interface vectors have to be set?",
+              "invalid type of condition {}, which prescribed interface vectors have to be set?",
               cond_type);
           break;
       }
@@ -4274,7 +4274,7 @@ namespace Discret
         // Neumann boundary conditions for Mesh and Levelset
         default:
           FOUR_C_THROW(
-              "invalid type of condition %i, which prescribed interface vectors have to be set?",
+              "invalid type of condition {}, which prescribed interface vectors have to be set?",
               cond_type);
           break;
       }

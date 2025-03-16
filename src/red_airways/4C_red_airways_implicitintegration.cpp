@@ -649,7 +649,7 @@ void Airway::RedAirwayImplicitTimeInt::time_step(
   }
   else
   {
-    FOUR_C_THROW("RedAirwaysDynType %d is not a defined solver",
+    FOUR_C_THROW("RedAirwaysDynType {} is not a defined solver",
         params_.get<RedAirwaysDyntype>("solver type"));
   }
 
@@ -701,7 +701,7 @@ void Airway::RedAirwayImplicitTimeInt::integrate_step(
   }
   else
   {
-    FOUR_C_THROW("RedAirwaysDynType %d is not a defined solver",
+    FOUR_C_THROW("RedAirwaysDynType {} is not a defined solver",
         params_.get<RedAirwaysDyntype>("solver type"));
   }
 
@@ -1431,31 +1431,31 @@ void Airway::RedAirwayImplicitTimeInt::output(
     {
       Epetra_Export exporter(acini_e_volumenm_->get_map(), qexp_->get_map());
       int err = qexp_->export_to(*acini_e_volumenm_, exporter, Zero);
-      if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
+      if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       output_.write_vector("acini_vnm", qexp_);
     }
     {
       Epetra_Export exporter(acini_e_volumen_->get_map(), qexp_->get_map());
       int err = qexp_->export_to(*acini_e_volumen_, exporter, Zero);
-      if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
+      if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       output_.write_vector("acini_vn", qexp_);
     }
     {
       Epetra_Export exporter(acini_e_volumenp_->get_map(), qexp_->get_map());
       int err = qexp_->export_to(*acini_e_volumenp_, exporter, Zero);
-      if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
+      if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       output_.write_vector("acini_vnp", qexp_);
     }
     {
       Epetra_Export exporter(acini_e_volume_strain_->get_map(), qexp_->get_map());
       int err = qexp_->export_to(*acini_e_volume_strain_, exporter, Zero);
-      if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
+      if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       output_.write_vector("acini_volumetric_strain", qexp_);
     }
     {
       Epetra_Export exporter(acini_e_volume0_->get_map(), qexp_->get_map());
       int err = qexp_->export_to(*acini_e_volume0_, exporter, Zero);
-      if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
+      if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       output_.write_vector("acini_v0", qexp_);
     }
 
@@ -1865,7 +1865,7 @@ void Airway::RedAirwayImplicitTimeInt::extract_pressure(Core::LinAlg::Vector<dou
     Core::Conditions::Condition* cond = coupcond_[condgid];
     const std::vector<int>* nodes = cond->get_nodes();
     if (nodes->size() != 1)
-      FOUR_C_THROW("Too many nodes on coupling with tissue condition ID=[%d]\n", condgid);
+      FOUR_C_THROW("Too many nodes on coupling with tissue condition ID=[{}]\n", condgid);
 
     int gid = (*nodes)[0];
     double pressure = 0.0;
@@ -1907,12 +1907,12 @@ bool Airway::RedAirwayImplicitTimeInt::sum_all_col_elem_val(
     Epetra_Export exporter(vec.get_map(), qexp_->get_map());
     // export from ColMap to RowMap
     int err = qexp_->export_to(vec, exporter, Zero);
-    if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
+    if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
 
     Epetra_Export exporter2(sumCond.get_map(), qexp2_->get_map());
     // export from ColMap to RowMap
     err = qexp2_->export_to(sumCond, exporter2, Zero);
-    if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
+    if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
   }
 
   // Get the mean acinar volume on the current processor

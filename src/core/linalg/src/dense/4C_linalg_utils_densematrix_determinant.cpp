@@ -30,7 +30,7 @@ double Core::LinAlg::determinant_lu(const Core::LinAlg::SerialDenseMatrix& A)
   lapack.GETRF(m, n, tmp.values(), tmp.stride(), ipiv.data(), &info);
 
   if (info < 0)
-    FOUR_C_THROW("Lapack's dgetrf returned %d", info);
+    FOUR_C_THROW("Lapack's dgetrf returned {}", info);
   else if (info > 0)
     return 0.0;
   double d = tmp(0, 0);

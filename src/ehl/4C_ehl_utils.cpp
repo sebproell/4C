@@ -35,7 +35,7 @@ int EHL::Utils::check_time_stepping(double dt1, double dt2)
       break;
 
     else if (t1 > workdt2)
-      FOUR_C_THROW("Chosen time steps %f and %f are not a multiplicative of each other", dt1, dt2);
+      FOUR_C_THROW("Chosen time steps {} and {} are not a multiplicative of each other", dt1, dt2);
   }
   return i;
 }

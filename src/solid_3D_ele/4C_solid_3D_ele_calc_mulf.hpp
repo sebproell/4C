@@ -192,7 +192,7 @@ namespace Discret::Elements
       void operator()(T& other)
       {
         FOUR_C_THROW(
-            "Your element evaluation %s does not allow to update prestress. You may need to add "
+            "Your element evaluation {} does not allow to update prestress. You may need to add "
             "MULF to your element line definitions.",
             Core::Utils::get_type_name<T>().c_str());
       }

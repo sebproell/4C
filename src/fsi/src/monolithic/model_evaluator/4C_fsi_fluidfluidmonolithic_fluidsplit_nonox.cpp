@@ -95,7 +95,7 @@ FSI::FluidFluidMonolithicFluidSplitNoNOX::FluidFluidMonolithicFluidSplitNoNOX(
                 "------------+"
              << std::endl;
 
-    FOUR_C_THROW(errormsg.str());
+    FOUR_C_THROW("{}", errormsg.str());
   }
 
   // Initialization of row/column transformation objects
@@ -642,7 +642,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::setup_vector(Core::LinAlg::Vector
 
   // Add the converted interface RHS-contributions (scaled) to the global structural RHS!
   int err = modsv->update(1.0, sv, (1.0 - stimintparam) / (1.0 - ftimintparam) * fluidscale);
-  if (err) FOUR_C_THROW("Update of structural residual vector failed! Error code %i", err);
+  if (err) FOUR_C_THROW("Update of structural residual vector failed! Error code {}", err);
 
   // Add the previous Lagrange Multiplier
   if (lambda_ != nullptr)
@@ -651,7 +651,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::setup_vector(Core::LinAlg::Vector
         structure_field()->interface()->insert_fsi_cond_vector(*fluid_to_struct(lambda_));
     err = modsv->update(stimintparam - ftimintparam * (1.0 - stimintparam) / (1.0 - ftimintparam),
         *lambdaglob, 1.0);
-    if (err) FOUR_C_THROW("Update of structural residual vector failed! Error code %i", err);
+    if (err) FOUR_C_THROW("Update of structural residual vector failed! Error code {}", err);
 
     // Insert structural contribution
     extractor().insert_vector(*modsv, 0, f);

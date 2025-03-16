@@ -335,7 +335,7 @@ void Core::Binstrategy::BinningStrategy::convert_gid_to_ijk(const int gid, int* 
   // found ijk is outside of XAABB
   if (ijk[0] < 0 || ijk[1] < 0 || ijk[2] < 0 || ijk[0] >= bin_per_dir_[0] ||
       ijk[1] >= bin_per_dir_[1] || ijk[2] >= bin_per_dir_[2])
-    FOUR_C_THROW("ijk (%d %d %d) for given gid: %d is outside of range (bin per dir: %d %d %d)",
+    FOUR_C_THROW("ijk ({} {} {}) for given gid: {} is outside of range (bin per dir: {} {} {})",
         ijk[0], ijk[1], ijk[2], gid, bin_per_dir_[0], bin_per_dir_[1], bin_per_dir_[2]);
 }
 
@@ -1005,7 +1005,7 @@ void Core::Binstrategy::BinningStrategy::distribute_row_nodes_to_bins(
     const int binid = convert_ijk_to_gid(ijk);
 
     FOUR_C_ASSERT_ALWAYS(binid != -1,
-        "Node %i in your discretization resides outside the binning \n"
+        "Node {} in your discretization resides outside the binning \n"
         "domain, this does not work at this point.",
         node->id());
 
@@ -1126,7 +1126,7 @@ Core::Binstrategy::BinningStrategy::weighted_distribution_of_bins_to_procs(
     if (numbin < Core::Communication::num_mpi_ranks(discret[0]->get_comm()) && myrank_ == 0)
     {
       FOUR_C_THROW(
-          "ERROR:NumProc %i > NumBin %i. Too many processors to "
+          "ERROR:NumProc {} > NumBin {}. Too many processors to "
           "distribute your bins properly!!!",
           Core::Communication::num_mpi_ranks(discret[0]->get_comm()), numbin);
     }
@@ -1161,7 +1161,7 @@ Core::Binstrategy::BinningStrategy::weighted_distribution_of_bins_to_procs(
       int err = bingraph->insert_global_indices(binId, (int)neighbors.size(), neighbors.data());
       if (err < 0)
         FOUR_C_THROW(
-            "Core::LinAlg::Graph::InsertGlobalIndices returned %d for global row %d", err, binId);
+            "Core::LinAlg::Graph::InsertGlobalIndices returned {} for global row {}", err, binId);
     }
   }
   else
@@ -1206,7 +1206,7 @@ Core::Binstrategy::BinningStrategy::weighted_distribution_of_bins_to_procs(
       int lid = rowbins->LID(biniter->first);
       // safety check
       if (lid < 0)
-        FOUR_C_THROW("Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
+        FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
             Core::Communication::my_mpi_rank(discret[i]->get_comm()), biniter->first);
 
       // weighting
@@ -1227,14 +1227,14 @@ Core::Binstrategy::BinningStrategy::weighted_distribution_of_bins_to_procs(
         rowbinid, static_cast<int>(neighbors.size()), neighbors.data());
     if (err < 0)
       FOUR_C_THROW(
-          "Core::LinAlg::Graph::InsertGlobalIndices returned %d for global row %d", err, rowbinid);
+          "Core::LinAlg::Graph::InsertGlobalIndices returned {} for global row {}", err, rowbinid);
   }
 
   // complete graph
   int err = bingraph->fill_complete();
-  if (err) FOUR_C_THROW("graph->FillComplete() returned err=%d", err);
+  if (err) FOUR_C_THROW("graph->FillComplete() returned err={}", err);
   err = bingraph->optimize_storage();
-  if (err) FOUR_C_THROW("graph->OptimizeStorage() returned err=%d", err);
+  if (err) FOUR_C_THROW("graph->OptimizeStorage() returned err={}", err);
 
   Teuchos::ParameterList paramlist;
   paramlist.set("PARTITIONING METHOD", "GRAPH");
@@ -1381,7 +1381,7 @@ void Core::Binstrategy::BinningStrategy::extend_ghosting_of_binning_discretizati
       int gidofbin = convert_ijk_to_gid(ijk.data());
       if (gidofbin != binid)
         FOUR_C_THROW(
-            "after ghosting: particle which should be in bin no. %i is in %i", gidofbin, binid);
+            "after ghosting: particle which should be in bin no. {} is in {}", gidofbin, binid);
     }
   }
 #endif
@@ -1439,7 +1439,7 @@ void Core::Binstrategy::BinningStrategy::standard_discretization_ghosting(
   newnodegraph = std::make_shared<Core::LinAlg::Graph>(Copy, *newnoderowmap, 108, false);
   Epetra_Export exporter(initgraph->row_map(), *newnoderowmap);
   int err = newnodegraph->export_to(initgraph->get_epetra_crs_graph(), exporter, Add);
-  if (err < 0) FOUR_C_THROW("Graph export returned err=%d", err);
+  if (err < 0) FOUR_C_THROW("Graph export returned err={}", err);
   newnodegraph->fill_complete();
   newnodegraph->optimize_storage();
 

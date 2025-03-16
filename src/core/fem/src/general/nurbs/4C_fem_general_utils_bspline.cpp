@@ -35,17 +35,4 @@ Core::FE::Nurbs::BsplinePolynomial::BsplinePolynomial(const BsplinePolynomial& o
 }
 
 
-
-void Core::FE::Nurbs::BsplinePolynomial::throwerror(const std::string errormessage)
-{
-  // give some information on bspline
-  print_bspline();
-
-  // and the throw the error and exit with a
-  // sigsegv
-  FOUR_C_THROW(errormessage);
-
-  return;
-}
-
 FOUR_C_NAMESPACE_CLOSE

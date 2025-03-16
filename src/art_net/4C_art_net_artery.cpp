@@ -110,7 +110,7 @@ Core::FE::CellType Discret::Elements::Artery::shape() const
     case 2:
       return Core::FE::CellType::line2;
     default:
-      FOUR_C_THROW("unexpected number of nodes %d", num_node());
+      FOUR_C_THROW("unexpected number of nodes {}", num_node());
   }
 }
 

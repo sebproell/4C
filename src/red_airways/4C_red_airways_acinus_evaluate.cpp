@@ -48,7 +48,7 @@ int Discret::Elements::RedAcinus::evaluate(Teuchos::ParameterList& params,
     act = RedAcinus::get_coupled_values;
   else
   {
-    FOUR_C_THROW("Unknown type of action (%s) for reduced dimensional acinus", action.c_str());
+    FOUR_C_THROW("Unknown type of action ({}) for reduced dimensional acinus", action.c_str());
   }
 
   /*

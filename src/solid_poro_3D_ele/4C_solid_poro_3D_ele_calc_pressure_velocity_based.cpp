@@ -45,9 +45,9 @@ namespace
     if (opt_mat->num_rows() == 0 || opt_mat->num_cols() == 0) return std::nullopt;
 
     FOUR_C_ASSERT(
-        opt_mat->num_cols() == cols, "Columns do not match. %i vs %i", opt_mat->num_cols(), cols);
+        opt_mat->num_cols() == cols, "Columns do not match. {} vs {}", opt_mat->num_cols(), cols);
     FOUR_C_ASSERT(
-        opt_mat->num_rows() == rows, "Rows do not match. %i vs %i", opt_mat->num_rows(), rows);
+        opt_mat->num_rows() == rows, "Rows do not match. {} vs {}", opt_mat->num_rows(), rows);
 
     return std::make_optional<Core::LinAlg::Matrix<rows, cols>>(opt_mat->values(), true);
   }
@@ -61,7 +61,7 @@ namespace
     if (opt_vec->num_rows() == 0) return std::nullopt;
 
     FOUR_C_ASSERT(
-        opt_vec->num_rows() == rows, "Rows do not match. %i vs %i", opt_vec->num_rows(), rows);
+        opt_vec->num_rows() == rows, "Rows do not match. {} vs {}", opt_vec->num_rows(), rows);
 
     return std::make_optional<Core::LinAlg::Matrix<rows, 1>>(opt_vec->values(), true);
   }

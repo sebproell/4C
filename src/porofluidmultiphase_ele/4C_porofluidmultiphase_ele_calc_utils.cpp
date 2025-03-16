@@ -45,7 +45,7 @@ POROFLUIDMULTIPHASE::ElementUtils::get_single_phase_mat_from_multi_material(
 
   // safety check and cast
   if (singlemat->material_type() != Core::Materials::m_fluidporo_singlephase)
-    FOUR_C_THROW("check at position %i/%i failed, only poro singlephase material valid",
+    FOUR_C_THROW("check at position {}/{} failed, only poro singlephase material valid",
         phasenum + 1, multiphasemat.num_mat());
 
   return static_cast<const Mat::FluidPoroSinglePhase&>(*singlemat);
@@ -83,7 +83,7 @@ POROFLUIDMULTIPHASE::ElementUtils::get_single_vol_frac_mat_from_multi_material(
 
   // safety check and cast
   if (singlemat->material_type() != Core::Materials::m_fluidporo_singlevolfrac)
-    FOUR_C_THROW("check at position %i/%i failed, only poro single vol fraction material valid",
+    FOUR_C_THROW("check at position {}/{} failed, only poro single vol fraction material valid",
         volfracnum + 1, multiphasemat.num_mat());
 
   return static_cast<const Mat::FluidPoroSingleVolFrac&>(*singlemat);
@@ -121,7 +121,7 @@ POROFLUIDMULTIPHASE::ElementUtils::get_vol_frac_pressure_mat_from_multi_material
 
   // safety check and cast
   if (singlemat->material_type() != Core::Materials::m_fluidporo_volfracpressure)
-    FOUR_C_THROW("check at position %i/%i failed, only poro single vol fraction material valid",
+    FOUR_C_THROW("check at position {}/{} failed, only poro single vol fraction material valid",
         volfracnum + 1, multiphasemat.num_mat());
 
   return static_cast<const Mat::FluidPoroVolFracPressure&>(*singlemat);

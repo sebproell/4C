@@ -27,12 +27,12 @@ namespace
     if (delimiter != 0)
     {
       FOUR_C_ASSERT_ALWAYS(line[start_of_token] == delimiter,
-          "Delimiter mismatch. Expected delimiter '%c' at position %d, but found '%c'.", delimiter,
+          "Delimiter mismatch. Expected delimiter '{}' at position {}, but found '{}'.", delimiter,
           start_of_token, line[start_of_token]);
       ++index;
       while (index < line.size() && line[index] != delimiter) ++index;
       FOUR_C_ASSERT_ALWAYS(line[index] == delimiter,
-          "Delimiter mismatch. Expected delimiter '%c' at position %d, but found '%c'.", delimiter,
+          "Delimiter mismatch. Expected delimiter '{}' at position {}, but found '{}'.", delimiter,
           index, line[index]);
 
       // Skip the delimiter chars at start and end.
@@ -66,7 +66,7 @@ void Core::IO::ValueParser::read_internal(bool& value)
   else
   {
     FOUR_C_THROW(
-        "Could not parse '%s' as a boolean value.\nPossible values are (case insensitive): "
+        "Could not parse '{}' as a boolean value.\nPossible values are (case insensitive): "
         "'true' (equivalent to 'yes', 'on', '1') or 'false' (equivalent to 'no', 'off', '0').",
         token.c_str());
   }
@@ -82,10 +82,10 @@ void Core::IO::ValueParser::read_internal(int& value)
   }
   catch (const std::logic_error&)
   {
-    FOUR_C_THROW("Could not parse '%s' as an integer value.", token.c_str());
+    FOUR_C_THROW("Could not parse '{}' as an integer value.", token.c_str());
   }
 
-  if (end != token.size()) FOUR_C_THROW("Could not parse '%s' as an integer value.", token.c_str());
+  if (end != token.size()) FOUR_C_THROW("Could not parse '{}' as an integer value.", token.c_str());
 }
 
 void Core::IO::ValueParser::read_internal(double& value)
@@ -98,10 +98,10 @@ void Core::IO::ValueParser::read_internal(double& value)
   }
   catch (const std::logic_error&)
   {
-    FOUR_C_THROW("Could not parse '%s' as a double value.", token.c_str());
+    FOUR_C_THROW("Could not parse '{}' as a double value.", token.c_str());
   }
 
-  if (end != token.size()) FOUR_C_THROW("Could not parse '%s' as a double value.", token.c_str());
+  if (end != token.size()) FOUR_C_THROW("Could not parse '{}' as a double value.", token.c_str());
 }
 
 void Core::IO::ValueParser::read_internal(std::string& value)
@@ -127,7 +127,7 @@ void Core::IO::ValueParser::consume(const std::string& expected)
 {
   std::string_view read_string = advance_token();
   if (read_string != std::string_view(expected))
-    FOUR_C_THROW("%sCould not read expected string '%s'.", context_.user_scope_message.c_str(),
+    FOUR_C_THROW("{}Could not read expected string '{}'.", context_.user_scope_message.c_str(),
         expected.c_str());
 }
 
@@ -136,8 +136,8 @@ void Core::IO::ValueParser::consume_comment(const std::string& comment_marker)
 {
   std::string token(advance_token());
   if (token != comment_marker)
-    FOUR_C_THROW("%sExpected comment marker '%s', but found '%s'.",
-        context_.user_scope_message.c_str(), comment_marker.c_str(), token.c_str());
+    FOUR_C_THROW("{}', but found '{}'.", context_.user_scope_message.c_str(),
+        comment_marker.c_str(), token.c_str());
 
   // Consume the rest of the line
   current_index_ = line_.size();
@@ -165,7 +165,7 @@ std::string_view Core::IO::ValueParser::advance_token()
 {
   auto token = advance_token_impl(line_, current_index_, context_.token_delimiter);
 
-  FOUR_C_ASSERT_ALWAYS(!token.empty(), "%sExpected more tokens, but reached the end of the line.",
+  FOUR_C_ASSERT_ALWAYS(!token.empty(), "{}Expected more tokens, but reached the end of the line.",
       context_.user_scope_message.c_str());
 
   return token;

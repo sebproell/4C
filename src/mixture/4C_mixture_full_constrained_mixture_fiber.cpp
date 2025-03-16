@@ -183,7 +183,7 @@ namespace
     {
       FOUR_C_THROW(
           "The timestep is not constant within the interval. The interval currently relies on a "
-          "constant timestep of %f. You are stepping with %f (err = %f). You need to extend the "
+          "constant timestep of {}. You are stepping with {} (err = {}). You need to extend the "
           "implementation such that it can also handle adaptive/non equidistant timestepping.",
           deposition_history_interval.base_dt, dt,
           std::abs(deposition_history_interval.base_dt - dt));

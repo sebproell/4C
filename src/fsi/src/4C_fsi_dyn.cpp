@@ -536,7 +536,7 @@ void fsi_ale_drt()
       else
       {
         FOUR_C_THROW(
-            "Cannot find appropriate monolithic solver for coupling %d and linear strategy %d",
+            "Cannot find appropriate monolithic solver for coupling {} and linear strategy {}",
             coupling, linearsolverstrategy);
       }
 

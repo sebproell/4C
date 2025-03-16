@@ -246,7 +246,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::pre_evaluate_c
     // should always be a multiple of six because we should always find exactly two/four, etc.
     // duplicates
     if (myduplicates.size() % 6 != 0)
-      FOUR_C_THROW("duplicate vector has size %i, should be multiple of six", myduplicates.size());
+      FOUR_C_THROW("duplicate vector has size {}, should be multiple of six", myduplicates.size());
     // compare the possible duplicates
     for (int idupl = 0; idupl < (int)(myduplicates.size() / 3); idupl++)
     {
@@ -563,7 +563,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::create_gid_to_
     if ((int)gid_to_segment_[artelegid].size() > 2 * maxnumsegperartele_)
     {
       FOUR_C_THROW(
-          "Artery element %i has %i segments, which is more than the maximum allowed number of %i "
+          "Artery element {} has {} segments, which is more than the maximum allowed number of {} "
           "segments per artery element, increase MAXNUMSEGPERARTELE",
           artelegid, (int)(gid_to_segment_[artelegid].size() / 2), maxnumsegperartele_);
     }
@@ -579,7 +579,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::create_gid_to_
           std::cout << "[" << gid_to_segment_[artelegid][2 * jseg] << ", "
                     << gid_to_segment_[artelegid][2 * jseg + 1] << "]" << std::endl;
         }
-        FOUR_C_THROW("artery element %i has probably not found all possible segments", artelegid);
+        FOUR_C_THROW("artery element {} has probably not found all possible segments", artelegid);
       }
     }
   }

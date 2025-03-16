@@ -1538,7 +1538,7 @@ void Discret::Elements::FluidEleCalc<distype, enrtype>::body_force(Discret::Elem
                          ->function_by_id<Core::Utils::FunctionOfTime>(funct[0].value())
                          .evaluate(time);
         else
-          FOUR_C_THROW("Negative time in bodyforce calculation: time = %f", time);
+          FOUR_C_THROW("Negative time in bodyforce calculation: time = {}", time);
       }
       else
         functfac = 1.0;
@@ -1704,7 +1704,7 @@ void Discret::Elements::FluidEleCalc<distype, enrtype>::eval_shape_func_and_deri
   det_ = xji_.invert(xjm_);
 
   if (det_ < 1E-16)
-    FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", eid_, det_);
+    FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", eid_, det_);
 
   // compute integration factor
   fac_ = gpweight * det_;
@@ -2836,7 +2836,7 @@ void Discret::Elements::FluidEleCalc<distype, enrtype>::calc_stab_parameter(cons
       {
         if (not(fldpara_->stab_type() == Inpar::FLUID::stabtype_edgebased and
                 fldpara_->which_tau() == Inpar::FLUID::tau_not_defined))
-          FOUR_C_THROW("unknown definition for tau_M\n %i  ", fldpara_->which_tau());
+          FOUR_C_THROW("unknown definition for tau_M\n {}  ", fldpara_->which_tau());
 
         break;
       }
@@ -3068,7 +3068,7 @@ void Discret::Elements::FluidEleCalc<distype, enrtype>::calc_stab_parameter(cons
       {
         if (not(fldpara_->stab_type() == Inpar::FLUID::stabtype_edgebased and
                 fldpara_->which_tau() == Inpar::FLUID::tau_not_defined))
-          FOUR_C_THROW("unknown definition for tau_C\n %i  ", fldpara_->which_tau());
+          FOUR_C_THROW("unknown definition for tau_C\n {}  ", fldpara_->which_tau());
 
         break;
       }
@@ -5854,7 +5854,7 @@ int Discret::Elements::FluidEleCalc<distype, enrtype>::evaluate_service(
         }
       }
       else
-        FOUR_C_THROW("%i D elements does not support calculation of dissipation", nsd_);
+        FOUR_C_THROW("{} D elements does not support calculation of dissipation", nsd_);
     }
     break;
     case FLD::integrate_shape:
@@ -5923,7 +5923,7 @@ int Discret::Elements::FluidEleCalc<distype, enrtype>::evaluate_service(
     }
     break;
     default:
-      FOUR_C_THROW("Unknown type of action '%i' for Fluid evaluate_service()", act);
+      FOUR_C_THROW("Unknown type of action '{}' for Fluid evaluate_service()", act);
       break;
   }  // end of switch(act)
 
@@ -6665,7 +6665,7 @@ void Discret::Elements::FluidEleCalc<distype, enrtype>::evaluate_analytic_soluti
         position[2] = xyzint(2);
       }
       else
-        FOUR_C_THROW("invalid nsd %d", nsd_);
+        FOUR_C_THROW("invalid nsd {}", nsd_);
 
       if (nsd_ == 2)
       {
@@ -7052,7 +7052,7 @@ void Discret::Elements::FluidEleCalc<distype, enrtype>::extract_values_from_glob
   std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
       discretization.get_state(state);
 
-  if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector %s", state.c_str());
+  if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state.c_str());
 
   // extract local values of the global vectors
   std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
@@ -9039,7 +9039,7 @@ int Discret::Elements::FluidEleCalc<distype, enrtype>::calc_channel_statistics(
         // check for degenerated elements
         if (det <= 0.0)
         {
-          FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nNEGATIVE JACOBIAN DETERMINANT: %f", ele->id(), det);
+          FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nNEGATIVE JACOBIAN DETERMINANT: {}", ele->id(), det);
         }
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
@@ -9286,7 +9286,7 @@ int Discret::Elements::FluidEleCalc<distype, enrtype>::calc_channel_statistics(
         // check for degenerated elements
         if (det <= 0.0)
         {
-          FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nNEGATIVE JACOBIAN DETERMINANT: %f", ele->id(), det);
+          FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nNEGATIVE JACOBIAN DETERMINANT: {}", ele->id(), det);
         }
 
         // interpolated values at gausspoints

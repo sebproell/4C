@@ -104,7 +104,7 @@ void Mat::Elastic::CoupAnisoExpoShearAnisotropyExtension::on_global_element_data
   {
     FOUR_C_THROW(
         "This material only supports the fiber prescription with the FIBER1 FIBER2 notation and "
-        "INIT modes %d and %d.",
+        "INIT modes {} and {}.",
         DefaultAnisotropyExtension<2>::INIT_MODE_ELEMENT_FIBERS,
         DefaultAnisotropyExtension<2>::INIT_MODE_NODAL_FIBERS);
   }
@@ -146,7 +146,7 @@ void Mat::Elastic::CoupAnisoExpoShearAnisotropyExtension::on_global_gp_data_init
   {
     FOUR_C_THROW(
         "This material only supports the fiber prescription with the FIBER1 FIBER2 notation and "
-        "INIT modes %d and %d.",
+        "INIT modes {} and {}.",
         DefaultAnisotropyExtension<2>::INIT_MODE_ELEMENT_FIBERS,
         DefaultAnisotropyExtension<2>::INIT_MODE_NODAL_FIBERS);
   }

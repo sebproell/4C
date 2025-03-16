@@ -126,7 +126,7 @@ namespace Core::FE
           derxy2(0, node) *= xji[0][0] * xji[0][0];
           break;
         default:
-          FOUR_C_THROW("Illegal number of space dimensions: %d", nsd);
+          FOUR_C_THROW("Illegal number of space dimensions: {}", nsd);
           break;
       }
     }

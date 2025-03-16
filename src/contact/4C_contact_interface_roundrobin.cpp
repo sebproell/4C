@@ -27,7 +27,7 @@ void CONTACT::Interface::round_robin_extend_ghosting(bool firstevaluation)
   {
     int gid = slave_col_elements()->GID(k);
     Core::Elements::Element* ele = discret().g_element(gid);
-    if (!ele) FOUR_C_THROW("Cannot find ele with gid %i", gid);
+    if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
     Element* slave_ele = dynamic_cast<Element*>(ele);
 
     for (int j = 0; j < slave_ele->mo_data().num_search_elements(); ++j)
@@ -127,7 +127,7 @@ void CONTACT::Interface::round_robin_change_ownership()
   {
     int gid = MasterColelesdummy.GID(i);
     Core::Elements::Element* ele = discret().g_element(gid);
-    if (!ele) FOUR_C_THROW("Cannot find ele with gid %i", gid);
+    if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
     Mortar::Element* mele = dynamic_cast<Mortar::Element*>(ele);
 
     mele->pack(dataeles);
@@ -142,7 +142,7 @@ void CONTACT::Interface::round_robin_change_ownership()
   {
     int gid = MasterColelesdummy.GID(i);
     Core::Elements::Element* ele = discret().g_element(gid);
-    if (!ele) FOUR_C_THROW("Cannot find ele with gid %i", gid);
+    if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
     Mortar::Element* mele = dynamic_cast<Mortar::Element*>(ele);
 
     // check for ghosting
@@ -162,7 +162,7 @@ void CONTACT::Interface::round_robin_change_ownership()
   int from = -1;
   exporter.receive_any(from, tag, rdataeles, length);
   if (tag != 1234 or from != fromrank)
-    FOUR_C_THROW("Received data from the wrong proc soll(%i -> %i) is(%i -> %i)", fromrank, myrank,
+    FOUR_C_THROW("Received data from the wrong proc soll({} -> {}) is({} -> {})", fromrank, myrank,
         from, myrank);
 
   // ---- unpack ----
@@ -215,7 +215,7 @@ void CONTACT::Interface::round_robin_change_ownership()
   {
     int gid = MasterColNodesdummy.GID(i);
     Core::Nodes::Node* node = discret().g_node(gid);
-    if (!node) FOUR_C_THROW("Cannot find ele with gid %i", gid);
+    if (!node) FOUR_C_THROW("Cannot find ele with gid {}", gid);
 
     // check for ghosting
     int ghost;
@@ -250,7 +250,7 @@ void CONTACT::Interface::round_robin_change_ownership()
   {
     int gid = MasterColNodesdummy.GID(i);
     Core::Nodes::Node* node = discret().g_node(gid);
-    if (!node) FOUR_C_THROW("Cannot find ele with gid %i", gid);
+    if (!node) FOUR_C_THROW("Cannot find ele with gid {}", gid);
 
     if (ftype == CONTACT::friction_none)
     {
@@ -274,7 +274,7 @@ void CONTACT::Interface::round_robin_change_ownership()
   int fromn = -1;
   exportern.receive_any(fromn, tagn, rdatanodes, lengthn);
   if (tagn != 1234 or fromn != fromrank)
-    FOUR_C_THROW("Received data from the wrong proc soll(%i -> %i) is(%i -> %i)", fromrank, myrank,
+    FOUR_C_THROW("Received data from the wrong proc soll({} -> {}) is({} -> {})", fromrank, myrank,
         fromn, myrank);
 
   // ---- unpack ----

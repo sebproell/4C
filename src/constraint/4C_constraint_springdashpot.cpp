@@ -493,7 +493,7 @@ void CONSTRAINTS::SpringDashpot::evaluate_robin(std::shared_ptr<Core::LinAlg::Sp
               }
               else
               {
-                FOUR_C_THROW("Robin surface direction type %i not implemented!", direction);
+                FOUR_C_THROW("Robin surface direction type {} not implemented!", direction);
               }
             });
 
@@ -646,7 +646,7 @@ void CONSTRAINTS::SpringDashpot::evaluate_force(Core::LinAlg::Vector<double>& fi
     {
       int gid = node_gid;
       Core::Nodes::Node* node = actdisc_->g_node(gid);
-      if (!node) FOUR_C_THROW("Cannot find global node %d", gid);
+      if (!node) FOUR_C_THROW("Cannot find global node {}", gid);
 
       // get nodal values
       const double nodalarea = area_[gid];               // nodal area
@@ -768,7 +768,7 @@ void CONSTRAINTS::SpringDashpot::evaluate_force_stiff(Core::LinAlg::SparseMatrix
     if (actdisc_->node_row_map()->MyGID(node_gid))
     {
       Core::Nodes::Node* node = actdisc_->g_node(node_gid);
-      if (!node) FOUR_C_THROW("Cannot find global node %d", node_gid);
+      if (!node) FOUR_C_THROW("Cannot find global node {}", node_gid);
 
       // get nodal values
       const double nodalarea = area_[node_gid];               // nodal area
@@ -927,7 +927,7 @@ void CONSTRAINTS::SpringDashpot::reset_prestress(const Core::LinAlg::Vector<doub
       if (actdisc_->node_row_map()->MyGID(node_gid))
       {
         Core::Nodes::Node* node = actdisc_->g_node(node_gid);
-        if (!node) FOUR_C_THROW("Cannot find global node %d", node_gid);
+        if (!node) FOUR_C_THROW("Cannot find global node {}", node_gid);
 
         const int numdof = actdisc_->num_dof(0, node);
         assert(numdof == 3);
@@ -962,7 +962,7 @@ void CONSTRAINTS::SpringDashpot::set_restart_old(Core::LinAlg::MultiVector<doubl
     if (actdisc_->node_row_map()->MyGID(node_gid))
     {
       Core::Nodes::Node* node = actdisc_->g_node(node_gid);
-      if (!node) FOUR_C_THROW("Cannot find global node %d", node_gid);
+      if (!node) FOUR_C_THROW("Cannot find global node {}", node_gid);
 
       [[maybe_unused]] const int numdof = actdisc_->num_dof(0, node);
       assert(numdof == 3);
@@ -1239,7 +1239,7 @@ void CONSTRAINTS::SpringDashpot::initialize_prestr_offset()
     if (actdisc_->node_row_map()->MyGID(node_gid))
     {
       Core::Nodes::Node* node = actdisc_->g_node(node_gid);
-      if (!node) FOUR_C_THROW("Cannot find global node %d", node_gid);
+      if (!node) FOUR_C_THROW("Cannot find global node {}", node_gid);
 
       int numdof = actdisc_->num_dof(0, node);
       std::vector<int> dofs = actdisc_->dof(0, node);

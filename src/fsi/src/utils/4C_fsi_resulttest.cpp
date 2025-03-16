@@ -213,7 +213,7 @@ void FSI::FSIResultTest::test_node(
   if (isnodeofanybody == 0)
   {
     FOUR_C_THROW(
-        "Node %d does not belong to discretization %s", node + 1, slavedisc_->name().c_str());
+        "Node {} does not belong to discretization {}", node + 1, slavedisc_->name().c_str());
   }
   else
   {
@@ -253,7 +253,7 @@ void FSI::FSIResultTest::test_node(
 
       // catch quantity strings, which are not handled by fsi result test
       if (unknownquantity)
-        FOUR_C_THROW("Quantity '%s' not supported in fsi testing", quantity.c_str());
+        FOUR_C_THROW("Quantity '{}' not supported in fsi testing", quantity.c_str());
 
       // compare values
       const int err = compare_values(result, "NODE", container);
@@ -302,7 +302,7 @@ void FSI::FSIResultTest::test_special(
   }
 
   // catch quantity strings, which are not handled by fsi result test
-  if (unknownquantity) FOUR_C_THROW("Quantity '%s' not supported in fsi testing", quantity.c_str());
+  if (unknownquantity) FOUR_C_THROW("Quantity '{}' not supported in fsi testing", quantity.c_str());
 
   // compare values
   const int err = compare_values(result, "SPECIAL", container);

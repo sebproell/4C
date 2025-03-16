@@ -1440,11 +1440,6 @@ namespace Core::FE::Nurbs
 
     //! both bspline derivatives from the p-1 level
     double pmo_deriv_[2];
-
-    //--------------------------------------------------
-    //! \brief throw an errormessage
-    //--------------------------------------------------
-    void throwerror(const std::string errormessage);
   };
 
 }  // namespace Core::FE::Nurbs

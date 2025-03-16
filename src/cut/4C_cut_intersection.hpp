@@ -137,8 +137,8 @@ namespace Cut
           static_cast<unsigned>(xyze_lineElement.num_cols()) != get_num_nodes_edge())
         FOUR_C_THROW(
             "Dimension mismatch of xyze_lineElement! \n"
-            "expected input: %d x %d (rows x cols)\n"
-            "current input : %d x %d (rows x cols)",
+            "expected input: {} x {} (rows x cols)\n"
+            "current input : {} x {} (rows x cols)",
             n_prob_dim(), get_num_nodes_edge(), xyze_lineElement.num_rows(),
             xyze_lineElement.num_cols());
 
@@ -146,8 +146,8 @@ namespace Cut
           static_cast<unsigned>(xyze_surfaceElement.num_cols()) != get_num_nodes_side())
         FOUR_C_THROW(
             "Dimension mismatch of xyze_surfaceElement! \n"
-            "expected input: %d x %d (rows x cols)\n"
-            "current input : %d x %d (rows x cols)",
+            "expected input: {} x {} (rows x cols)\n"
+            "current input : {} x {} (rows x cols)",
             n_prob_dim(), get_num_nodes_side(), xyze_surfaceElement.num_rows(),
             xyze_surfaceElement.num_cols());
 
@@ -231,7 +231,7 @@ namespace Cut
     void local_side_coordinates(std::vector<Core::LinAlg::Matrix<dimside, 1>>& side_rs_cuts)
     {
       if (get_intersection_status() < intersect_single_cut_point)
-        FOUR_C_THROW("INVALID IntersectionStatus! ( istatus = \"%s\" )",
+        FOUR_C_THROW("INVALID IntersectionStatus! ( istatus = \"{}\" )",
             intersection_status_to_string(get_intersection_status()).c_str());
 
       side_rs_cuts.clear();
@@ -249,7 +249,7 @@ namespace Cut
     void final_points(std::vector<Core::LinAlg::Matrix<probdim, 1>>& xyz_cuts)
     {
       if (get_intersection_status() < intersect_single_cut_point)
-        FOUR_C_THROW("INVALID IntersectionStatus! ( istatus = \"%s\" )",
+        FOUR_C_THROW("INVALID IntersectionStatus! ( istatus = \"{}\" )",
             intersection_status_to_string(get_intersection_status()).c_str());
 
       xyz_cuts.clear();
@@ -548,7 +548,7 @@ namespace Cut
       if (istatus_ != intersect_single_cut_point)
         FOUR_C_THROW(
             "INVALID IntersectionStatus: This routine is restricted to one single "
-            "cut point only! ( istatus_ = \"%s\" )",
+            "cut point only! ( istatus_ = \"{}\" )",
             intersection_status_to_string(istatus_).c_str());
 
       final_point(xsi_edge_, x_);
@@ -728,7 +728,7 @@ namespace Cut
             err_msg << "Touching " << touched.size()
                     << " edges, but no intersection! This should not happen! ";
             generate_gmsh_dump();
-            FOUR_C_THROW(err_msg.str());
+            FOUR_C_THROW("{}", err_msg.str());
           }
         }
       }
@@ -963,7 +963,7 @@ namespace Cut
       TEUCHOS_FUNC_TIME_MONITOR("compute_edge_tri3_intersection");
       Core::LinAlg::Matrix<3, 1> xsi;
       if (xsi_.m() != 3)
-        FOUR_C_THROW("xsi_ has the wrong dimension! (dimedge + 2 = %d + 2)", dimedge);
+        FOUR_C_THROW("xsi_ has the wrong dimension! (dimedge + 2 = {} + 2)", dimedge);
       else
         xsi.set_view(xsi_.data());
 
@@ -1012,7 +1012,7 @@ namespace Cut
       TEUCHOS_FUNC_TIME_MONITOR("compute_edge_tri3_intersection");
       Core::LinAlg::Matrix<3, 1> xsi;
       if (xsi_.m() != 3)
-        FOUR_C_THROW("xsi_ has the wrong dimension! (dimedge + 2 = %d + 2)", dimedge);
+        FOUR_C_THROW("xsi_ has the wrong dimension! (dimedge + 2 = {} + 2)", dimedge);
       else
         xsi.set_view(xsi_.data());
 
@@ -1202,14 +1202,14 @@ namespace Cut
         FOUR_C_THROW(
             "This compute_distance routine is only meaningful for "
             "QUAD4 side elements! But you passed in a side element "
-            "of type %i | %s.",
+            "of type {} | {}.",
             sidetype, Core::FE::cell_type_to_string(sidetype).c_str());
 
       TEUCHOS_FUNC_TIME_MONITOR("compute_distance");
 
       // dimension of xsi: element dimension of 2 + 1 entry for the distance
       if (xsi_.m() != 3)
-        FOUR_C_THROW("xsi_ has the wrong dimension! (dimedge + 2 = %d + 2)", dimedge);
+        FOUR_C_THROW("xsi_ has the wrong dimension! (dimedge + 2 = {} + 2)", dimedge);
       Core::LinAlg::Matrix<3, 1> xsi(xsi_.data(), true);
 
       // Kernel::DebugComputeDistance<probdim,Core::FE::CellType::tri3, floattype>
@@ -1335,7 +1335,7 @@ namespace Cut
         default:
           FOUR_C_THROW(
               "Unsupported SideType! If meaningful, add your sideType here. \n"
-              "Given SideType = %s",
+              "Given SideType = {}",
               Core::FE::cell_type_to_string(side_type).c_str());
           exit(EXIT_FAILURE);
       }
@@ -1355,7 +1355,7 @@ namespace Cut
           inter_ptr = new Cut::Intersection<3, edge_type, side_type>();
           break;
         default:
-          FOUR_C_THROW("Unsupported ProbDim! ( probdim = %d )", probdim);
+          FOUR_C_THROW("Unsupported ProbDim! ( probdim = {} )", probdim);
           exit(EXIT_FAILURE);
       }
       return inter_ptr;

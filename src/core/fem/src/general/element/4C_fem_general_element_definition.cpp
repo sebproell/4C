@@ -105,7 +105,7 @@ void Core::Elements::ElementDefinition::print_section_header(std::ostream& strea
 /*----------------------------------------------------------------------*/
 void Core::Elements::ElementDefinition::print_element_lines(std::ostream& stream, std::string name)
 {
-  FOUR_C_ASSERT(definitions_.contains(name), "Element type not found: " + name);
+  FOUR_C_ASSERT(definitions_.contains(name), "Element type not found: {}", name);
   auto& defs = definitions_[name];
 
   for (const auto& [cell_type, spec] : defs)
@@ -130,9 +130,9 @@ void Core::Elements::ElementDefinition::setup_valid_element_lines()
 const Core::IO::InputSpec& Core::Elements::ElementDefinition::element_lines(
     std::string name, std::string cell_type)
 {
-  FOUR_C_ASSERT(definitions_.contains(name), "Element type not found: " + name);
+  FOUR_C_ASSERT(definitions_.contains(name), "Element type not found: {}", name);
   auto& defs = definitions_.at(name);
-  FOUR_C_ASSERT(defs.contains(cell_type), "Cell type not found: " + cell_type);
+  FOUR_C_ASSERT(defs.contains(cell_type), "Cell type not found: {}", cell_type);
   return defs.at(cell_type);
 }
 

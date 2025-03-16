@@ -1468,7 +1468,7 @@ void FLD::Meshtying::analyze_matrix(Core::LinAlg::SparseMatrix& sparsematrix)
 
       int error =
           matrix->ExtractMyRowCopy(i, maxnumentries, numOfNonZeros, values.data(), indices.data());
-      if (error != 0) FOUR_C_THROW("Epetra_CrsMatrix::ExtractMyRowCopy returned err=%d", error);
+      if (error != 0) FOUR_C_THROW("Epetra_CrsMatrix::ExtractMyRowCopy returned err={}", error);
 
       for (int ii = 0; ii < numOfNonZeros; ii++)
       {

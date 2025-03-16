@@ -288,7 +288,7 @@ void EHL::Monolithic::newton_full()
            Inpar::Solid::divcont_continue)
     ;
   else if (iter_ >= itermax_)
-    FOUR_C_THROW("Newton unconverged in %d iterations", iter_);
+    FOUR_C_THROW("Newton unconverged in {} iterations", iter_);
 
 }  // NewtonFull()
 

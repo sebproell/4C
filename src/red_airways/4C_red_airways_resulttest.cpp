@@ -49,7 +49,7 @@ void Airway::RedAirwayResultTest::test_node(
 
   if (isnodeofanybody == 0)
   {
-    FOUR_C_THROW("Node %d does not belong to discretisation %s", node + 1, dis_->name().c_str());
+    FOUR_C_THROW("Node {} does not belong to discretisation {}", node + 1, dis_->name().c_str());
   }
   else
   {
@@ -81,7 +81,7 @@ void Airway::RedAirwayResultTest::test_node(
       else
       {
         FOUR_C_THROW(
-            "Quantity '%s' not supported in result-test of red_airway problems", position.c_str());
+            "Quantity '{}' not supported in result-test of red_airway problems", position.c_str());
       }
 
       nerr += compare_values(result, "NODE", container);
@@ -112,7 +112,7 @@ void Airway::RedAirwayResultTest::test_element(
 
   if (iselementofanybody == 0)
   {
-    FOUR_C_THROW("Node %d does not belong to discretisation %s", element + 1, dis_->name().c_str());
+    FOUR_C_THROW("Node {} does not belong to discretisation {}", element + 1, dis_->name().c_str());
   }
   else
   {
@@ -149,7 +149,7 @@ void Airway::RedAirwayResultTest::test_element(
       else
       {
         FOUR_C_THROW(
-            "Quantity '%s' not supported in result-test of red_airway problems.", position.c_str());
+            "Quantity '{}' not supported in result-test of red_airway problems.", position.c_str());
       }
 
       nerr += compare_values(result, "ELEMENT", container);

@@ -67,7 +67,7 @@ int Core::DOFSets::PBCDofSet::assign_degrees_of_freedom(
 
     if (master_lid < 0)
     {
-      FOUR_C_THROW("master gid %d not on proc %d, but required by slave %d", master->first,
+      FOUR_C_THROW("master gid {} not on proc {}, but required by slave {}", master->first,
           Core::Communication::my_mpi_rank(dis.get_comm()), master->second[0]);
     }
 

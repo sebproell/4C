@@ -310,7 +310,7 @@ int Discret::Elements::SolidPoroPressureVelocityBased::evaluate(Teuchos::Paramet
       return 0;
     }
     default:
-      FOUR_C_THROW("The element action %s is not yet implemented for the new solid elements",
+      FOUR_C_THROW("The element action {} is not yet implemented for the new solid elements",
           action_type_to_string(action).c_str());
       // do nothing (no error because there are some actions the poro element is supposed to ignore)
       return 0;

@@ -138,7 +138,7 @@ void Discret::Elements::ScaTraEleParameterBoundary::set_parameters(
 
         default:
         {
-          FOUR_C_THROW("Not implemented for this kinetic model: %i", kineticmodel_);
+          FOUR_C_THROW("Not implemented for this kinetic model: {}", kineticmodel_);
         }
       }
 
@@ -168,7 +168,7 @@ void Discret::Elements::ScaTraEleParameterBoundary::set_parameters(
 
         default:
         {
-          FOUR_C_THROW("Not implemented for this kinetic model: %i", kineticmodel_);
+          FOUR_C_THROW("Not implemented for this kinetic model: {}", kineticmodel_);
         }
       }
       break;
@@ -176,7 +176,7 @@ void Discret::Elements::ScaTraEleParameterBoundary::set_parameters(
 
     default:
     {
-      FOUR_C_THROW("Not implemented for this condition type: %i", conditiontype_);
+      FOUR_C_THROW("Not implemented for this condition type: {}", conditiontype_);
     }
   }
 }

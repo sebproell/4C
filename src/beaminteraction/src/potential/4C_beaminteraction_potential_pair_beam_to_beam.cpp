@@ -1054,7 +1054,7 @@ void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
   // safety checks
   if (m_ < 6.0)
     FOUR_C_THROW(
-        "Invalid exponent m=%f. The strategy 'SingleLengthSpecific_SmallSepApprox' to evaluate the "
+        "Invalid exponent m={}. The strategy 'SingleLengthSpecific_SmallSepApprox' to evaluate the "
         "interaction potential is only applicable for exponents m>=6 of the point potential law, "
         "e.g. van der Waals (m=6) or the repulsive part of Lennard-Jones (m=12)!",
         m_);
@@ -1232,7 +1232,7 @@ void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
     default:
       FOUR_C_THROW(
           "Please implement the prefactor of the analytical disk-cylinder potential law for "
-          "exponent m=%f. So far, only exponent 6 and 12 is supported.",
+          "exponent m={}. So far, only exponent 6 and 12 is supported.",
           m_);
       break;
   }
@@ -1326,7 +1326,7 @@ void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
       else if (Core::FADUtils::norm(xi_master) >= 1.0 - 1.0e-10)
       {
         FOUR_C_THROW(
-            "Point-to-curve projection yields xi_master= %f. This is a critical case "
+            "Point-to-curve projection yields xi_master= {}. This is a critical case "
             "since it is very close to the element boundary!",
             Core::FADUtils::cast_to_double(xi_master));
       }
@@ -1369,7 +1369,7 @@ void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
       BeamInteraction::Geo::calc_enclosed_angle(alpha, cos_alpha, r_xi_slave, r_xi_master);
 
       if (alpha < 0.0 or alpha > M_PI_2)
-        FOUR_C_THROW("alpha=%f, should be in [0,pi/2]", Core::FADUtils::cast_to_double(alpha));
+        FOUR_C_THROW("alpha={}, should be in [0,pi/2]", Core::FADUtils::cast_to_double(alpha));
 
       // Todo: maybe avoid this assembly of shape fcns into matrices
       // Fixme: at least, do this only in case of FAD-based linearization
@@ -2519,7 +2519,7 @@ bool BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues,
 
   if (std::norm(Core::FADUtils::cast_to_double(gap_bl) + radius2_) < 1e-14)
     FOUR_C_THROW(
-        "bilateral gap=%f is close to negative radius and thus the interaction potential is "
+        "bilateral gap={} is close to negative radius and thus the interaction potential is "
         "close to singular! Fatal error. Take care of this case!",
         Core::FADUtils::cast_to_double(gap_bl));
 
@@ -2527,7 +2527,7 @@ bool BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues,
       (gap_bl + radius2_) * (gap_bl + radius2_) + x * x * sin_alpha * sin_alpha);
 
   if (beta < 1e-14)
-    FOUR_C_THROW("beta=%f is negative or very close to zero! Fatal error. Take care of this case!",
+    FOUR_C_THROW("beta={} is negative or very close to zero! Fatal error. Take care of this case!",
         Core::FADUtils::cast_to_double(beta));
 
   beta_exp2 = beta * beta;
@@ -2551,7 +2551,7 @@ bool BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues,
     std::cout << "\nbeta: " << Core::FADUtils::cast_to_double(beta);
     std::cout << "\na: " << Core::FADUtils::cast_to_double(a);
 
-    FOUR_C_THROW("Delta=%f is negative or very close to zero! Use a regularization to handle this!",
+    FOUR_C_THROW("Delta={} is negative or very close to zero! Use a regularization to handle this!",
         Core::FADUtils::cast_to_double(Delta));
   }
 
@@ -3124,7 +3124,7 @@ bool BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues,
     std::cout << "\nalpha: " << Core::FADUtils::cast_to_double(alpha * 180 / M_PI) << "degrees";
 
     FOUR_C_THROW(
-        "gap_ul=%f is negative or very close to zero! Fatal error. Use regularization to"
+        "gap_ul={} is negative or very close to zero! Fatal error. Use regularization to"
         " handle this!",
         Core::FADUtils::cast_to_double(gap_ul));
   }

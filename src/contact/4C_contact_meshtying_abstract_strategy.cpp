@@ -291,7 +291,7 @@ void CONTACT::MtAbstractStrategy::set_state(
     }
     default:
     {
-      FOUR_C_THROW("Unsupported state type! (state type = %s)",
+      FOUR_C_THROW("Unsupported state type! (state type = {})",
           Mortar::state_type_to_string(statetype).c_str());
       break;
     }
@@ -688,7 +688,7 @@ void CONTACT::MtAbstractStrategy::store_nodal_quantities(Mortar::StrategyBase::Q
             // throw a FOUR_C_THROW if node is Active and DBC
             if (mtnode->is_dbc())
               FOUR_C_THROW(
-                  "Slave Node %i is active and at the same time carries D.B.C.s!", mtnode->id());
+                  "Slave Node {} is active and at the same time carries D.B.C.s!", mtnode->id());
 
             // store updated LM into node
             mtnode->mo_data().lm()[dof] = (vectorinterface)[locindex[dof]];

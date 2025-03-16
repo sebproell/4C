@@ -143,7 +143,7 @@ void Cut::ColoredGraph::Graph::test_closed()
       // In such situations, geometrically two separate volumecells can't be formed
       // Check your cut_mesh from cut_mesh*.pos
       // -------------------------------------------------------------------
-      FOUR_C_THROW("open point in colored graph ( facet-id = %d )", i->first);
+      FOUR_C_THROW("open point in colored graph ( facet-id = {} )", i->first);
       FOUR_C_THROW("open point in colored graph");
     }
   }
@@ -598,7 +598,7 @@ void Cut::ColoredGraph::Graph::split_splittrace(const std::vector<int>& split_tr
         else
         {
           FOUR_C_THROW(
-              "Unknown case of the line in split trace connected to %d lines at the same time"
+              "Unknown case of the line in split trace connected to {} lines at the same time"
               "It should be 2",
               connected_lines.size());
         }

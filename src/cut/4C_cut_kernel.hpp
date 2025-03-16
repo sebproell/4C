@@ -259,7 +259,7 @@ namespace Cut::Kernel
     if (xsi.Rows() < Core::FE::dim<element_type>)
       FOUR_C_THROW(
           "The given local coordinate has the wrong dimension!\n"
-          "xsi.Rows() < Dim <===> %d<%d",
+          "xsi.Rows() < Dim <===> {}<{}",
           xsi.Rows(), Core::FE::dim<element_type>);
 
     switch (element_type)
@@ -290,7 +290,7 @@ namespace Cut::Kernel
         break;
       }
       default:
-        FOUR_C_THROW("unsupported element type: %i | %s", element_type,
+        FOUR_C_THROW("unsupported element type: {} | {}", element_type,
             Core::FE::cell_type_to_string(element_type).c_str());
         break;
     }
@@ -325,7 +325,7 @@ namespace Cut::Kernel
     if (xsi.m() < Core::FE::dim<element_type>)
       FOUR_C_THROW(
           "The given local coordinate has the wrong dimension!\n"
-          "xsi.Rows() < eleDim <===> %d<%d",
+          "xsi.Rows() < eleDim <===> {}<{}",
           xsi.m(), Core::FE::dim<element_type>);
 
     switch (element_type)
@@ -431,7 +431,7 @@ namespace Cut::Kernel
         break;
       }
       default:
-        FOUR_C_THROW("unsupported element type: %i | %s", element_type,
+        FOUR_C_THROW("unsupported element type: {} | {}", element_type,
             Core::FE::cell_type_to_string(element_type).c_str());
         break;
     }  // switch ( elementType )
@@ -453,7 +453,7 @@ namespace Cut::Kernel
     if (xsi.m() < Core::FE::dim<element_type>)
       FOUR_C_THROW(
           "The given local coordinate has the wrong dimension!\n"
-          "xsi.Rows() < eleDim <===> %d<%d",
+          "xsi.Rows() < eleDim <===> {}<{}",
           xsi.m(), Core::FE::dim<element_type>);
 
     switch (element_type)
@@ -524,7 +524,7 @@ namespace Cut::Kernel
         break;
       }
       default:
-        FOUR_C_THROW("unsupported element type: %i | %s", element_type,
+        FOUR_C_THROW("unsupported element type: {} | {}", element_type,
             Core::FE::cell_type_to_string(element_type).c_str());
         break;
     }  // switch ( elementType )
@@ -660,7 +660,7 @@ namespace Cut::Kernel
       FOUR_C_THROW(
           "A QUAD4 is supposed to be split into 2 TRI3 elements, \n"
           "therefore you have the choice between the tri3_id's 0 and 1. \n"
-          "Nevertheless, you tried to access the id %d.",
+          "Nevertheless, you tried to access the id {}.",
           tri3_id);
 
     unsigned n0 = 2 * tri3_id;
@@ -1398,7 +1398,7 @@ namespace Cut::Kernel
               (element_type == Core::FE::CellType::wedge6)))
       {
         FOUR_C_THROW(
-            "This type of element %s  is not yet implemented for the CLN calculation. You are "
+            "This type of element {}  is not yet implemented for the CLN calculation. You are "
             "welcome to edit fem_shapefunctions.H file to fix it",
             Core::FE::cell_type_to_string(element_type).c_str());
       }
@@ -2473,7 +2473,7 @@ namespace Cut::Kernel
           (side_type == Core::FE::CellType::pyramid5))
       {
         FOUR_C_THROW(
-            "This type of element (%s)  is not tested for the CLN calculation. You are welcome "
+            "This type of element ({})  is not tested for the CLN calculation. You are welcome "
             "to edit ../fem_general/utils_fem_shapefunctions.H file to fix it. Just "
             "change all the integers occurring there double for CLN to work.",
             Core::FE::cell_type_to_string(side_type).c_str());
@@ -3068,7 +3068,7 @@ namespace Cut::Kernel
     PointOnSurfaceLoc get_side_location_triangle_split()
     {
       if (side_type != Core::FE::CellType::tri3)
-        FOUR_C_THROW("This method only works for tri3 side. Current side is %s",
+        FOUR_C_THROW("This method only works for tri3 side. Current side is {}",
             Core::FE::cell_type_to_string(side_type).c_str());
 
       Core::LinAlg::Matrix<dim_side, 1> scaled_tolerance;
@@ -3665,9 +3665,9 @@ namespace Cut::Kernel
           break;
         default:
           FOUR_C_THROW(
-              "unsupported element type ( % s ) in write_to_gmsh."
+              "unsupported element type ({}) in write_to_gmsh."
               " Please feel free to extend the functionality if necessary.",
-              Core::FE::cell_type_to_string(side_type).c_str());
+              Core::FE::cell_type_to_string(side_type));
       }
 
       file << "View \""
@@ -3915,7 +3915,7 @@ namespace Cut::Kernel
                   (side_type == Core::FE::CellType::hex8))))
       {
         FOUR_C_THROW(
-            "This type of element (%s)  is not tested for the CLN calculation. You are welcome "
+            "This type of element ({})  is not tested for the CLN calculation. You are welcome "
             "to edit ../fem_general/utils_fem_shapefunctions.H file to fix it. Just "
             "change all the integers occurring there double for CLN to work.",
             Core::FE::cell_type_to_string(side_type).c_str());
@@ -4241,7 +4241,7 @@ namespace Cut::Kernel
               msg << "NOTICE: intersection point is close to 2 side edges, but too far from "
                      "the corner point"
                   << "\n Distance is " << min_dist;
-              FOUR_C_THROW(msg.str());
+              FOUR_C_THROW("{}", msg.str());
             }
           }
         }
@@ -4452,7 +4452,7 @@ namespace Cut::Kernel
     PointOnSurfaceLoc get_side_location_triangle_split()
     {
       if (side_type != Core::FE::CellType::tri3)
-        FOUR_C_THROW("This method only works for tri3 side. Current side is %s",
+        FOUR_C_THROW("This method only works for tri3 side. Current side is {}",
             Core::FE::cell_type_to_string(side_type).c_str());
 
       double distance_tolerance = TOPOLOGICAL_TOLERANCE;

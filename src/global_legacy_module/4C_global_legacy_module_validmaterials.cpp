@@ -463,7 +463,7 @@ std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec> Global::v
       const auto& map_file = container.get<std::filesystem::path>("MAPFILE");
       std::ifstream file_stream(map_file);
 
-      if (file_stream.fail()) FOUR_C_THROW("Invalid file %s!", map_file.string().c_str());
+      if (file_stream.fail()) FOUR_C_THROW("Invalid file {}!", map_file.string().c_str());
 
       auto map_reduction_operation = [](actMapType acc, const actMapType& next)
       {
@@ -4146,7 +4146,7 @@ std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec> Global::v
       const auto& map_file = container.get<std::filesystem::path>("MASSFRACMAPFILE");
       std::ifstream file_stream(map_file);
 
-      if (file_stream.fail()) FOUR_C_THROW("Invalid file %s!", map_file.string().c_str());
+      if (file_stream.fail()) FOUR_C_THROW("Invalid file {}!", map_file.string().c_str());
 
       auto map_reduction_operation = [](mapType acc, const mapType& next)
       {

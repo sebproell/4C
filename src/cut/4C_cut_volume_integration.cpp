@@ -91,7 +91,7 @@ Core::LinAlg::SerialDenseVector Cut::VolumeIntegration::compute_rhs_moment()
       break;
     }
     default:
-      FOUR_C_THROW("unsupported integration cell type ( cell type = %s )",
+      FOUR_C_THROW("unsupported integration cell type ( cell type = {} )",
           Core::FE::cell_type_to_string(elem1_->shape()).c_str());
       exit(EXIT_FAILURE);
   }

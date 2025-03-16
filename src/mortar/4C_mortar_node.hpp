@@ -533,12 +533,12 @@ namespace Mortar
      */
     inline Mortar::NodeDataContainer& mo_data()
     {
-      if (modata_ == nullptr) FOUR_C_THROW("No mortar data attached. (node-id = %d)", id());
+      if (modata_ == nullptr) FOUR_C_THROW("No mortar data attached. (node-id = {})", id());
       return *modata_;
     }
     inline const Mortar::NodeDataContainer& mo_data() const
     {
-      if (modata_ == nullptr) FOUR_C_THROW("No mortar data attached. (node-id = %d)", id());
+      if (modata_ == nullptr) FOUR_C_THROW("No mortar data attached. (node-id = {})", id());
       return *modata_;
     }
 

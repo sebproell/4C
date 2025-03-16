@@ -160,7 +160,7 @@ void Core::FE::extrapolate_gauss_point_quantity_to_nodes(Core::Elements::Element
     }
     break;
     default:
-      FOUR_C_THROW("Your discretization type (%s) is not yet in the list!",
+      FOUR_C_THROW("Your discretization type ({}) is not yet in the list!",
           Core::FE::cell_type_to_string(ele.shape()).c_str());
   }
 }

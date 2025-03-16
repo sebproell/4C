@@ -335,7 +335,7 @@ void MultiScale::MicroStatic::predict_const_dis(Core::LinAlg::Matrix<3, 3>* defg
   int err = freactn_->import(*fresn_, *importp_, Insert);
   if (err)
     FOUR_C_THROW(
-        "Importing reaction forces of prescribed dofs using importer returned err=%d", err);
+        "Importing reaction forces of prescribed dofs using importer returned err={}", err);
 
   // blank residual at DOFs on Dirichlet BC
   Core::LinAlg::Vector<double> fresncopy(*fresn_);
@@ -496,7 +496,7 @@ void MultiScale::MicroStatic::predict_tang_dis(Core::LinAlg::Matrix<3, 3>* defgr
   int err = freactn_->import(*fresn_, *importp_, Insert);
   if (err)
     FOUR_C_THROW(
-        "Importing reaction forces of prescribed dofs using importer returned err=%d", err);
+        "Importing reaction forces of prescribed dofs using importer returned err={}", err);
 
   // blank residual at DOFs on Dirichlet BC
   Core::LinAlg::Vector<double> fresncopy(*fresn_);
@@ -590,7 +590,7 @@ void MultiScale::MicroStatic::full_newton()
     int err = freactn_->import(*fresn_, *importp_, Insert);
     if (err)
       FOUR_C_THROW(
-          "Importing reaction forces of prescribed dofs using importer returned err=%d", err);
+          "Importing reaction forces of prescribed dofs using importer returned err={}", err);
 
     // blank residual DOFs which are on Dirichlet BC
     Core::LinAlg::Vector<double> fresncopy(*fresn_);
@@ -609,7 +609,7 @@ void MultiScale::MicroStatic::full_newton()
   //-------------------------------- test whether max iterations was hit
   if (numiter_ >= maxiter_)
   {
-    FOUR_C_THROW("Newton unconverged in %d iterations", numiter_);
+    FOUR_C_THROW("Newton unconverged in {} iterations", numiter_);
   }
 
   return;
@@ -796,7 +796,7 @@ void MultiScale::MicroStatic::evaluate_micro_bc(
       // do only nodes in my row map
       if (!discret_->node_row_map()->MyGID(nodeid)) continue;
       Core::Nodes::Node* actnode = discret_->g_node(nodeid);
-      if (!actnode) FOUR_C_THROW("Cannot find global node %d", nodeid);
+      if (!actnode) FOUR_C_THROW("Cannot find global node {}", nodeid);
 
       // nodal coordinates
       const auto& x = actnode->x();
@@ -830,7 +830,7 @@ void MultiScale::MicroStatic::evaluate_micro_bc(
         const int gid = dofs[l];
 
         const int lid = disp.get_map().LID(gid);
-        if (lid < 0) FOUR_C_THROW("Global id %d not on this proc in system vector", gid);
+        if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
         (disp)[lid] = disp_prescribed[l];
       }
     }
@@ -1038,7 +1038,7 @@ void MultiScale::MicroStatic::static_homogenization(Core::LinAlg::Matrix<6, 1>* 
 
     Core::LinAlg::MultiVector<double> fexp(*pdof_, 9);
     int err = fexp.Import(temp, *importp_, Insert);
-    if (err) FOUR_C_THROW("Export of boundary 'forces' failed with err=%d", err);
+    if (err) FOUR_C_THROW("Export of boundary 'forces' failed with err={}", err);
 
     // multiply manually D_ and fexp because D_ is not distributed as usual
     // Core::LinAlg::MultiVector<double>s and, hence, standard Multiply functions do not apply.

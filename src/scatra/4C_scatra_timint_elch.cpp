@@ -1001,7 +1001,7 @@ ScaTra::ScaTraTimIntElch::evaluate_single_electrode_info(
     Core::Utils::add_enum_class_to_parameter_list<ScaTra::BoundaryAction>(
         "action", ScaTra::BoundaryAction::calc_elch_boundary_kinetics, eleparams);
   else
-    FOUR_C_THROW("Invalid action " + condstring + " for output of electrode status information!");
+    FOUR_C_THROW("Invalid action {} for output of electrode status information!", condstring);
 
   eleparams.set("calc_status", true);  // just want to have a status output!
 
@@ -1096,7 +1096,7 @@ ScaTra::ScaTraTimIntElch::evaluate_single_electrode_info_point(
 
     // safety checks
     if (node == nullptr)
-      FOUR_C_THROW("Cannot find node with global ID %d on discretization!", nodeid);
+      FOUR_C_THROW("Cannot find node with global ID {} on discretization!", nodeid);
     if (node->num_element() != 1)
     {
       FOUR_C_THROW(
@@ -1121,7 +1121,7 @@ ScaTra::ScaTraTimIntElch::evaluate_single_electrode_info_point(
 
     // safety check
     if (error)
-      FOUR_C_THROW("Element with global ID %d returned error code %d on processor %d!",
+      FOUR_C_THROW("Element with global ID {} returned error code {} on processor {}!",
           element->id(), error, Core::Communication::my_mpi_rank(discret_->get_comm()));
   }
 
@@ -1528,7 +1528,7 @@ void ScaTra::ScaTraTimIntElch::evaluate_cell_voltage()
           Core::Nodes::Node* node = discret_->g_node(nodeid);
           if (node == nullptr)
             FOUR_C_THROW(
-                "Cannot extract node with global ID %d from scalar transport discretization!",
+                "Cannot extract node with global ID {} from scalar transport discretization!",
                 nodeid);
 
           // extract degrees of freedom from node
@@ -1537,7 +1537,7 @@ void ScaTra::ScaTraTimIntElch::evaluate_cell_voltage()
           // extract local ID of degree of freedom associated with electrode potential
           const int lid = discret_->dof_row_map()->LID(*dofs.rbegin());
           if (lid < 0)
-            FOUR_C_THROW("Cannot extract degree of freedom with global ID %d!", *dofs.rbegin());
+            FOUR_C_THROW("Cannot extract degree of freedom with global ID {}!", *dofs.rbegin());
 
           // extract electrode potential
           potential = (*phinp_)[lid];
@@ -1660,7 +1660,7 @@ void ScaTra::ScaTraTimIntElch::collect_runtime_output_data()
 void ScaTra::ScaTraTimIntElch::setup_nat_conv()
 {
   // calculate the initial mean concentration value
-  if (num_scal() < 1) FOUR_C_THROW("Error since numscal = %d. Not allowed since < 1", num_scal());
+  if (num_scal() < 1) FOUR_C_THROW("Error since numscal = {}. Not allowed since < 1", num_scal());
   c0_.resize(num_scal());
 
   discret_->set_state("phinp", phinp_);
@@ -1720,7 +1720,7 @@ void ScaTra::ScaTraTimIntElch::setup_nat_conv()
     densific_[0] = actmat->densification();
 
     if (densific_[0] < 0.0) FOUR_C_THROW("received negative densification value");
-    if (num_scal() > 1) FOUR_C_THROW("Single species calculation but numscal = %d > 1", num_scal());
+    if (num_scal() > 1) FOUR_C_THROW("Single species calculation but numscal = {} > 1", num_scal());
   }
   else
     FOUR_C_THROW("Material type is not allowed!");
@@ -2418,7 +2418,7 @@ bool ScaTra::ScaTraTimIntElch::apply_galvanostatic_control()
         // safety check
         if (abs((currtangent)[condid_cathode]) < 1e-13)
           FOUR_C_THROW(
-              "Tangent in galvanostatic control is near zero: %lf", (currtangent)[condid_cathode]);
+              "Tangent in galvanostatic control is near zero: {}", (currtangent)[condid_cathode]);
       }
 
       // calculate the cell potential increment due to ohmic resistance
@@ -2504,8 +2504,8 @@ bool ScaTra::ScaTraTimIntElch::apply_galvanostatic_control()
       else
       {
         FOUR_C_THROW(
-            "The combination of the parameter GSTAT_APPROX_ELECT_RESIST %i and the number of "
-            "electrodes %i\n is not valid!",
+            "The combination of the parameter GSTAT_APPROX_ELECT_RESIST {} and the number of "
+            "electrodes {}\n is not valid!",
             approxelctresist, conditions.size());
       }
 
@@ -2698,7 +2698,7 @@ void ScaTra::ScaTraTimIntElch::evaluate_electrode_boundary_kinetics_point_condit
 
       // safety checks
       if (node == nullptr)
-        FOUR_C_THROW("Cannot find node with global ID %d on discretization!", nodeid);
+        FOUR_C_THROW("Cannot find node with global ID {} on discretization!", nodeid);
       if (node->num_element() != 1)
       {
         FOUR_C_THROW(
@@ -2738,7 +2738,7 @@ void ScaTra::ScaTraTimIntElch::evaluate_electrode_boundary_kinetics_point_condit
 
       // safety check
       if (error)
-        FOUR_C_THROW("Element with global ID %d returned error code %d on processor %d!",
+        FOUR_C_THROW("Element with global ID {} returned error code {} on processor {}!",
             element->id(), error, Core::Communication::my_mpi_rank(discret_->get_comm()));
 
       // assemble element matrix and right-hand side vector into global system of equations

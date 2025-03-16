@@ -122,7 +122,7 @@ void Discret::Elements::Shell::evaluate_neumann(Core::Elements::Element& ele,
     if (onoff[checkdof] != 0)
     {
       FOUR_C_THROW(
-          "You have activated more than %d dofs in your Neumann boundary condition. This is higher "
+          "You have activated more than {} dofs in your Neumann boundary condition. This is higher "
           "than the dimension of the element.",
           num_dim);
     }

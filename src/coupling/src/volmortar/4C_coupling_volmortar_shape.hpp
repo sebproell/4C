@@ -432,7 +432,7 @@ namespace Coupling::VolMortar
 
           invJ.multiply(derivs, xrefe);
           jac = invJ.invert();
-          if (jac <= 0.0) FOUR_C_THROW("Element Jacobian mapping %10.5e <= 0.0", jac);
+          if (jac <= 0.0) FOUR_C_THROW("Element Jacobian mapping {:10.5e} <= 0.0", jac);
 
           break;
         }
@@ -538,7 +538,7 @@ namespace Coupling::VolMortar
 
           invJ.Multiply(deriv, xrefe);
           jac = invJ.invert();
-          if (jac <= 0.0) FOUR_C_THROW("Element Jacobian mapping %10.5e <= 0.0", jac);
+          if (jac <= 0.0) FOUR_C_THROW("Element Jacobian mapping {:10.5e} <= 0.0", jac);
 
           break;
         }

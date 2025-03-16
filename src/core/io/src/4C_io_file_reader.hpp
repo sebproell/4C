@@ -131,8 +131,8 @@ namespace Core::IO
       catch (...)
       {
         FOUR_C_THROW(
-            "Could not read line '%s' from input stream. Likely the string's pattern is not "
-            "convertible to an object of type %s",
+            "Could not read line '{}' from input stream. Likely the string's pattern is not "
+            "convertible to an object of type {}",
             line_str.c_str(), Core::Utils::get_type_name<T>().c_str());
       }
     }

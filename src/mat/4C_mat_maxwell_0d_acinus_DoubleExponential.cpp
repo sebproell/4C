@@ -115,7 +115,7 @@ void Mat::Maxwell0dAcinusDoubleExponential::unpack(Core::Communication::UnpackBu
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::Maxwell0dAcinusDoubleExponential*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 }
@@ -170,7 +170,7 @@ void Mat::Maxwell0dAcinusDoubleExponential::evaluate(Core::LinAlg::SerialDenseVe
   // Safety check for NumOfAcini
   if (NumOfAcini < 1.0)
   {
-    FOUR_C_THROW("Acinus condition at node (%d) has zero acini");
+    FOUR_C_THROW("Acinus condition has zero acini");
   }
 
   // Calculate volume and flow difference per acinuar duct

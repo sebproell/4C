@@ -124,7 +124,7 @@ namespace
       }
     }
 
-    FOUR_C_THROW("No parent material found for inelastic defgrad factor ID %d", mat_id);
+    FOUR_C_THROW("No parent material found for inelastic defgrad factor ID {}", mat_id);
   }
 
   // assemble Jacobian from components (helper function:
@@ -772,7 +772,7 @@ std::shared_ptr<Mat::InelasticDefgradFactors> Mat::InelasticDefgradFactors::fact
     }
 
     default:
-      FOUR_C_THROW("cannot deal with type %d", curmat->type());
+      FOUR_C_THROW("cannot deal with type {}", curmat->type());
   }
 }
 
@@ -2480,7 +2480,8 @@ void Mat::InelasticDefgradTransvIsotropElastViscoplast::evaluate_inverse_inelast
 
     // throw error if the Local Newton Loop cannot be evaluated with the given substepping
     // settings
-    if (err_status != Mat::ViscoplastErrorType::NoErrors) FOUR_C_THROW(Mat::to_string(err_status));
+    if (err_status != Mat::ViscoplastErrorType::NoErrors)
+      FOUR_C_THROW("{}", Mat::to_string(err_status));
 
     // extract the inverse inelastic defgrad from the LNL solution
     iFinM = extract_inverse_inelastic_defgrad(sol);

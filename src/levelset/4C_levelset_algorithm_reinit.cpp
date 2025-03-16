@@ -665,7 +665,7 @@ void ScaTra::LevelSetAlgorithm::reinit_geo(
     int doflid = dofrowmap->LID(dofgid);
     if (doflid < 0)
       FOUR_C_THROW(
-          "Proc %d: Cannot find dof gid=%d in Core::LinAlg::Vector<double>", myrank_, dofgid);
+          "Proc {}: Cannot find dof gid={} in Core::LinAlg::Vector<double>", myrank_, dofgid);
 
     // get physical coordinates of this node
     Core::LinAlg::Matrix<3, 1> nodecoord(false);
@@ -755,7 +755,7 @@ void ScaTra::LevelSetAlgorithm::reinit_geo(
         std::map<int, Core::Geo::BoundaryIntCells>::const_iterator elepatches =
             interface.find(eledistance.front().first);
         if (elepatches == interface.end())
-          FOUR_C_THROW("Could not find the boundary integration cells belonging to Element %d.",
+          FOUR_C_THROW("Could not find the boundary integration cells belonging to Element {}.",
               eledistance.front().first);
 
         // number of flamefront patches for this element

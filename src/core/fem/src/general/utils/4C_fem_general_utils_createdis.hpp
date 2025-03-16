@@ -161,7 +161,7 @@ namespace Core::FE
         if (std::count_if(nids.begin(), nids.end(),
                 Core::Conditions::MyGID(sourcedis.node_col_map())) != (int)(nids.size()))
         {
-          FOUR_C_THROW("element %d owned by proc %d has remote non-ghost nodes", sourceele->id(),
+          FOUR_C_THROW("element {} owned by proc {} has remote non-ghost nodes", sourceele->id(),
               sourceele->owner());
         }
 
@@ -313,7 +313,7 @@ namespace Core::FE
       std::pair<std::string, std::string> key(sourcedis.name(), targetdis.name());
       matmap = clonefieldmatmap.at(key);
       if (matmap.size() < 1)
-        FOUR_C_THROW("Key pair '%s/%s' not defined in --CLONING MATERIAL MAP.",
+        FOUR_C_THROW("Key pair '{}/{}' not defined in --CLONING MATERIAL MAP.",
             sourcedis.name().c_str(), targetdis.name().c_str());
 
       return;
@@ -366,7 +366,7 @@ namespace Core::FE
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (!(sourcedis.have_global_node(sourcedis.node_row_map()->GID(0))))
-        FOUR_C_THROW("Cloning not possible since node with GID %d is not stored on this proc!",
+        FOUR_C_THROW("Cloning not possible since node with GID {} is not stored on this proc!",
             sourcedis.node_row_map()->GID(0));
 #endif
       // try to cast sourcedis to NurbsDiscretisation
@@ -572,7 +572,7 @@ namespace Core::FE
           if (std::count_if(nids.begin(), nids.end(), Core::Conditions::MyGID(sourcenodecolmap)) !=
               (int)(nids.size()))
           {
-            FOUR_C_THROW("element %d owned by proc %d has remote non-ghost nodes", actele->id(),
+            FOUR_C_THROW("element {} owned by proc {} has remote non-ghost nodes", actele->id(),
                 actele->owner());
           }
 
@@ -683,7 +683,7 @@ namespace Core::FE
           for (mat_iter = matmap.begin(); mat_iter != matmap.end(); mat_iter++)
             std::cout << mat_iter->first << " -> " << mat_iter->second << std::endl;
 
-          FOUR_C_THROW("no matching material ID (%d) in map", src_matid);
+          FOUR_C_THROW("no matching material ID ({}) in map", src_matid);
         }
         it++;
       }
@@ -717,7 +717,7 @@ namespace Core::FE
             sourceelements.find(*it);
         if (src_ele_citer == sourceelements.end())
           FOUR_C_THROW(
-              "The source element %d could not be found in the source "
+              "The source element {} could not be found in the source "
               "condition element map!",
               *it);
 
@@ -810,7 +810,7 @@ namespace Core::FE
           for (mat_iter = matmap.begin(); mat_iter != matmap.end(); mat_iter++)
             std::cout << mat_iter->first << " -> " << mat_iter->second << std::endl;
 
-          FOUR_C_THROW("no matching material ID (%d) in map", src_matid);
+          FOUR_C_THROW("no matching material ID ({}) in map", src_matid);
         }
         it++;
       }

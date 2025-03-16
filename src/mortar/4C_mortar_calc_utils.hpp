@@ -360,7 +360,7 @@ namespace Mortar
       static constexpr int ndim = Core::FE::dim<distype>;
 
       if ((int)edisp.size() != n * globdim)
-        FOUR_C_THROW("ERROR: vector of element displacements has wrong dimension (%d != %d)",
+        FOUR_C_THROW("ERROR: vector of element displacements has wrong dimension ({} != {})",
             n * globdim, edisp.size());
 
       Core::Nodes::Node** mynodes = ele.nodes();

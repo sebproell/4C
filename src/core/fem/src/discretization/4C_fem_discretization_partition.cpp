@@ -77,7 +77,7 @@ void Core::FE::Discretization::export_column_nodes(
   {
     int gid = oldmap.GID(i);
     if (!(newmap.MyGID(gid)))
-      FOUR_C_THROW("Proc %d: Node gid=%d from oldmap is not in newmap", myrank, gid);
+      FOUR_C_THROW("Proc {}: Node gid={} from oldmap is not in newmap", myrank, gid);
   }
 
   // create an exporter object that will figure out the communication pattern
@@ -100,7 +100,7 @@ void Core::FE::Discretization::proc_zero_distribute_elements_to_all(
   int size = (int)gidlist.size();
   std::vector<int> pidlist(size);  // gids on proc 0
   int err = target.RemoteIDList(size, gidlist.data(), pidlist.data(), nullptr);
-  if (err < 0) FOUR_C_THROW("Epetra_BlockMap::RemoteIDList returned err=%d", err);
+  if (err < 0) FOUR_C_THROW("Epetra_BlockMap::RemoteIDList returned err={}", err);
 
   std::map<int, std::vector<char>> sendmap;  // proc to send a set of elements to
   if (!myrank)
@@ -110,7 +110,7 @@ void Core::FE::Discretization::proc_zero_distribute_elements_to_all(
     {
       if (pidlist[i] == myrank or pidlist[i] < 0) continue;  // do not send to myself
       Core::Elements::Element* actele = g_element(gidlist[i]);
-      if (!actele) FOUR_C_THROW("Cannot find global element %d", gidlist[i]);
+      if (!actele) FOUR_C_THROW("Cannot find global element {}", gidlist[i]);
       actele->pack(sendpb[pidlist[i]]);
       element_.erase(actele->id());
     }
@@ -200,7 +200,7 @@ void Core::FE::Discretization::proc_zero_distribute_nodes_to_all(Epetra_Map& tar
   std::vector<int> pidlist(size, -1);
   {
     int err = target.RemoteIDList(size, oldmap.MyGlobalElements(), pidlist.data(), nullptr);
-    if (err) FOUR_C_THROW("Epetra_BlockMap::RemoteIDLis returned err=%d", err);
+    if (err) FOUR_C_THROW("Epetra_BlockMap::RemoteIDLis returned err={}", err);
   }
 
   std::map<int, std::vector<char>> sendmap;
@@ -212,7 +212,7 @@ void Core::FE::Discretization::proc_zero_distribute_nodes_to_all(Epetra_Map& tar
       // proc 0 does not send to itself
       if (pidlist[i] == myrank || pidlist[i] == -1) continue;
       Core::Nodes::Node* node = g_node(oldmap.MyGlobalElements()[i]);
-      if (!node) FOUR_C_THROW("Proc 0 cannot find global node %d", oldmap.MyGlobalElements()[i]);
+      if (!node) FOUR_C_THROW("Proc 0 cannot find global node {}", oldmap.MyGlobalElements()[i]);
       node->pack(sendpb[pidlist[i]]);
       node_.erase(node->id());
     }
@@ -349,7 +349,7 @@ void Core::FE::Discretization::export_column_elements(
   {
     int gid = oldmap.GID(i);
     if (!(newmap.MyGID(gid)))
-      FOUR_C_THROW("Proc %d: Element gid=%d from oldmap is not in newmap", myrank, gid);
+      FOUR_C_THROW("Proc {}: Element gid={} from oldmap is not in newmap", myrank, gid);
   }
 
   // create an exporter object that will figure out the communication pattern
@@ -391,14 +391,14 @@ std::shared_ptr<Core::LinAlg::Graph> Core::FE::Discretization::build_node_graph(
       {
         int colnode = nodeids[col];
         int err = graph->insert_global_indices(rownode, 1, &colnode);
-        if (err < 0) FOUR_C_THROW("graph->InsertGlobalIndices returned err=%d", err);
+        if (err < 0) FOUR_C_THROW("graph->InsertGlobalIndices returned err={}", err);
       }
     }
   }
   int err = graph->fill_complete();
-  if (err) FOUR_C_THROW("graph->FillComplete() returned err=%d", err);
+  if (err) FOUR_C_THROW("graph->FillComplete() returned err={}", err);
   err = graph->optimize_storage();
-  if (err) FOUR_C_THROW("graph->OptimizeStorage() returned err=%d", err);
+  if (err) FOUR_C_THROW("graph->OptimizeStorage() returned err={}", err);
 
   return graph;
 }
@@ -445,7 +445,7 @@ Core::FE::Discretization::build_element_row_column(
   std::vector<int> cnodeowner(ncnode);
   int err =
       noderowmap.RemoteIDList(ncnode, nodecolmap.MyGlobalElements(), cnodeowner.data(), nullptr);
-  if (err) FOUR_C_THROW("Epetra_BlockMap::RemoteIDLis returned err=%d", err);
+  if (err) FOUR_C_THROW("Epetra_BlockMap::RemoteIDLis returned err={}", err);
 
   // build connectivity of elements
   // storing :  element gid
@@ -542,7 +542,7 @@ Core::FE::Discretization::build_element_row_column(
       // this is necessary to be able to own or ghost the element
       for (int j = 0; j < numnode; ++j)
         if (!nodecolmap.MyGID(nodeids[j]))
-          FOUR_C_THROW("I do not have own/ghosted node gid=%d", nodeids[j]);
+          FOUR_C_THROW("I do not have own/ghosted node gid={}", nodeids[j]);
 
       // find out who owns how many of the nodes
       std::vector<int> nodeowner(numnode);
@@ -638,7 +638,7 @@ void Core::FE::Discretization::redistribute(const Epetra_Map& noderowmap,
   int err = fill_complete(options_redistribution.assign_degrees_of_freedom,
       options_redistribution.init_elements, options_redistribution.do_boundary_conditions);
 
-  if (err) FOUR_C_THROW("fill_complete() returned err=%d", err);
+  if (err) FOUR_C_THROW("fill_complete() returned err={}", err);
 }
 
 /*----------------------------------------------------------------------*
@@ -657,7 +657,7 @@ void Core::FE::Discretization::redistribute(const Epetra_Map& noderowmap,
   // these exports have set Filled()=false as all maps are invalid now
   int err = fill_complete(assigndegreesoffreedom, initelements, doboundaryconditions);
 
-  if (err) FOUR_C_THROW("fill_complete() returned err=%d", err);
+  if (err) FOUR_C_THROW("fill_complete() returned err={}", err);
 }
 
 /*----------------------------------------------------------------------*
@@ -674,7 +674,7 @@ void Core::FE::Discretization::extended_ghosting(const Epetra_Map& elecolmap,
     {
       bool hasgid = elecolmap.MyGID(oldelecolmap->GID(i));
       if (!hasgid)
-        FOUR_C_THROW("standard ghosting of ele %d is not included in extended ghosting",
+        FOUR_C_THROW("standard ghosting of ele {} is not included in extended ghosting",
             oldelecolmap->GID(i));
     }
 
@@ -800,7 +800,7 @@ void Core::FE::Discretization::extended_ghosting(const Epetra_Map& elecolmap,
 
   // these exports have set Filled()=false as all maps are invalid now
   int err = fill_complete(assigndegreesoffreedom, initelements, doboundaryconditions);
-  if (err) FOUR_C_THROW("fill_complete() threw error code %d", err);
+  if (err) FOUR_C_THROW("fill_complete() threw error code {}", err);
 }
 
 /*----------------------------------------------------------------------*
@@ -865,7 +865,7 @@ void Core::FE::Discretization::setup_ghosting(
     rowset.clear();
 
     int err = graph->InsertGlobalIndices(1, &i->first, row.size(), row.data());
-    if (err < 0) FOUR_C_THROW("graph->InsertGlobalIndices returned %d", err);
+    if (err < 0) FOUR_C_THROW("graph->InsertGlobalIndices returned {}", err);
   }
 
   localgraph.clear();
@@ -874,7 +874,7 @@ void Core::FE::Discretization::setup_ghosting(
   // happens. The ghosting problem is solved at this point.
 
   int err = graph->GlobalAssemble(rownodes, rownodes);
-  if (err) FOUR_C_THROW("graph->GlobalAssemble returned %d", err);
+  if (err) FOUR_C_THROW("graph->GlobalAssemble returned {}", err);
 
   // replace rownodes, colnodes with row and column maps from the graph
   // do stupid conversion from Epetra_BlockMap to Epetra_Map

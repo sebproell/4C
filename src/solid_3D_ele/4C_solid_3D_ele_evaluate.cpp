@@ -269,7 +269,7 @@ int Discret::Elements::Solid::evaluate(Teuchos::ParameterList& params,
     }
 
     default:
-      FOUR_C_THROW("The element action %s is not yet implemented for the new solid elements",
+      FOUR_C_THROW("The element action {} is not yet implemented for the new solid elements",
           action_type_to_string(action).c_str());
   }
 

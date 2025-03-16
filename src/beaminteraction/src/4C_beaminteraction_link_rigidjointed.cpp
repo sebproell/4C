@@ -81,7 +81,7 @@ void BeamInteraction::BeamLinkRigidJointed::init(const int id,
     inittriad[1].print(std::cout);
 
     FOUR_C_THROW(
-        "Initialization of BeamLinkRigidJointed between element %i and %i failed because the two "
+        "Initialization of BeamLinkRigidJointed between element {} and {} failed because the two "
         "given binding "
         "spot positions are almost identical!",
         eleids[0].first, eleids[1].first);

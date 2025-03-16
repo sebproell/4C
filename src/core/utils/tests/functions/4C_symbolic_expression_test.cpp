@@ -141,7 +141,7 @@ namespace
   {
     FOUR_C_EXPECT_THROW_WITH_MESSAGE(
         Core::Utils::SymbolicExpression<double> symbolicexpression("2 ** 4"), Core::Exception,
-        "unexpected token 7");
+        "unexpected token tok_mul");
   }
 
 
@@ -156,7 +156,7 @@ namespace
   {
     FOUR_C_EXPECT_THROW_WITH_MESSAGE(
         Core::Utils::SymbolicExpression<double> symbolicexpression("2*4 - (3 + "), Core::Exception,
-        "unexpected token 1");
+        "unexpected token tok_done");
   }
 
 

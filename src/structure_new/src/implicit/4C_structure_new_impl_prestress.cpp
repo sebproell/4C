@@ -152,7 +152,7 @@ void Solid::IMPLICIT::PreStress::post_time_loop()
       FOUR_C_THROW(
           "Prestress algorithm did not converged within the given timesteps. "
           "abs-dis-inf-norm is "
-          "%f",
+          "{}",
           absolute_displacement_norm_);
     }
   }

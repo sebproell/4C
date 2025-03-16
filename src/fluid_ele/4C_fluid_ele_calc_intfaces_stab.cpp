@@ -197,7 +197,7 @@ Discret::Elements::FluidIntFaceStab* Discret::Elements::FluidIntFaceStab::impl(
     }
     default:
       FOUR_C_THROW(
-          "shape %d (%d nodes) not supported by internalfaces stabilization. Just switch on!",
+          "shape {} ({} nodes) not supported by internalfaces stabilization. Just switch on!",
           surfele->shape(), surfele->num_node());
       break;
   }
@@ -351,7 +351,7 @@ Discret::Elements::FluidInternalSurfaceStab<distype, pdistype, ndistype>::FluidI
     s_connectivity_ = Core::FE::get_ele_node_numbering_lines(ndistype);
   }
   else
-    FOUR_C_THROW("not valid nsd %i", nsd_);
+    FOUR_C_THROW("not valid nsd {}", nsd_);
 
   // get the connectivity between lines and surfaces of an parent element
   connectivity_line_nodes_ = Core::FE::get_ele_node_numbering_lines(pdistype);
@@ -651,9 +651,9 @@ int Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (master_numdof != numdofpernode_ * piel)
-    FOUR_C_THROW("wrong number of master dofs %i", master_numdof);
+    FOUR_C_THROW("wrong number of master dofs {}", master_numdof);
   if (slave_numdof != numdofpernode_ * niel)
-    FOUR_C_THROW("wrong number of slave dofs %i", slave_numdof);
+    FOUR_C_THROW("wrong number of slave dofs {}", slave_numdof);
   if (master_numdof != slave_numdof) FOUR_C_THROW("Different element typs?");
 #endif
 
@@ -935,7 +935,7 @@ int Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
           break;
         }
         default:
-          FOUR_C_THROW("intface type not supported %d", distype);
+          FOUR_C_THROW("intface type not supported {}", distype);
           break;
       }
     }
@@ -1670,7 +1670,7 @@ double Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
   // check for degenerated elements
   if (pdet < 0.0)
   {
-    FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nNEGATIVE JACOBIAN DETERMINANT: %f", master_eid, pdet);
+    FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nNEGATIVE JACOBIAN DETERMINANT: {}", master_eid, pdet);
   }
 
   //-----------------------------------------------------
@@ -1694,7 +1694,7 @@ double Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
   // check for degenerated elements
   if (ndet < 0.0)
   {
-    FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nNEGATIVE JACOBIAN DETERMINANT: %f", slave_eid, ndet);
+    FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nNEGATIVE JACOBIAN DETERMINANT: {}", slave_eid, ndet);
   }
 
   //-----------------------------------------------------
@@ -2097,7 +2097,7 @@ double Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
   // check for degenerated elements
   if (pdet < 0.0)
   {
-    FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nNEGATIVE JACOBIAN DETERMINANT: %f", master_eid, pdet);
+    FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nNEGATIVE JACOBIAN DETERMINANT: {}", master_eid, pdet);
   }
 
   //-----------------------------------------------------
@@ -2121,7 +2121,7 @@ double Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
   // check for degenerated elements
   if (ndet < 0.0)
   {
-    FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nNEGATIVE JACOBIAN DETERMINANT: %f", slave_eid, ndet);
+    FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nNEGATIVE JACOBIAN DETERMINANT: {}", slave_eid, ndet);
   }
 
   //-----------------------------------------------------
@@ -4189,7 +4189,7 @@ void Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
     }
     break;
     default:
-      FOUR_C_THROW("unknown definition for tau\n %i  ", tautype);
+      FOUR_C_THROW("unknown definition for tau\n {}  ", tautype);
       break;
   }
 

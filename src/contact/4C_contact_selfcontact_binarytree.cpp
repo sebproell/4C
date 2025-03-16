@@ -774,7 +774,7 @@ void CONTACT::SelfBinaryTree::calculate_dual_graph(
 
     // get current elements and its nodes
     Core::Elements::Element* element = discret().g_element(gid);
-    if (!element) FOUR_C_THROW("Cannot find element with gid %\n", gid);
+    if (!element) FOUR_C_THROW("Cannot find element with gid {}", gid);
     Core::Nodes::Node** nodes = element->nodes();
     if (!nodes) FOUR_C_THROW("Null pointer!");
 
@@ -891,7 +891,7 @@ void CONTACT::SelfBinaryTree::set_enlarge()
   {
     int gid = elements_->GID(i);
     Core::Elements::Element* element = discret().g_element(gid);
-    if (!element) FOUR_C_THROW("Cannot find element with gid %\n", gid);
+    if (!element) FOUR_C_THROW("Cannot find element with gid {}", gid);
     CONTACT::Element* celement = dynamic_cast<Element*>(element);
     double mincurrent = celement->min_edge_size();
     if (mincurrent < lmin) lmin = mincurrent;

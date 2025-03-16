@@ -191,7 +191,7 @@ void Mortar::BinaryTreeNode::divide_tree_node()
 
       int gid = elelist()[i];
       Core::Elements::Element* element = discret().g_element(gid);
-      if (!element) FOUR_C_THROW("Cannot find element with gid %\n", gid);
+      if (!element) FOUR_C_THROW("Cannot find element with gid {}", gid);
       Core::Nodes::Node** nodes = element->points();
 
       // vector of values of Hesse-Normalform of nodes of elements
@@ -544,7 +544,7 @@ void Mortar::BinaryTree::init_search_elements()
   {
     int gid = selements_->GID(i);
     Core::Elements::Element* ele = discret().g_element(gid);
-    if (!ele) FOUR_C_THROW("Cannot find ele with gid %i", gid);
+    if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
     Mortar::Element* sele = dynamic_cast<Mortar::Element*>(ele);
 
     sele->mo_data().search_elements().resize(0);
@@ -605,7 +605,7 @@ void Mortar::BinaryTree::set_enlarge()
   {
     int gid = selements_->GID(i);
     Core::Elements::Element* element = discret().g_element(gid);
-    if (!element) FOUR_C_THROW("Cannot find element with gid %\n", gid);
+    if (!element) FOUR_C_THROW("Cannot find element with gid {}", gid);
     Mortar::Element* mrtrelement = dynamic_cast<Mortar::Element*>(element);
     double mincurrent = mrtrelement->min_edge_size();
     if (mincurrent < lmin) lmin = mincurrent;
@@ -616,7 +616,7 @@ void Mortar::BinaryTree::set_enlarge()
   {
     int gid = melements_->GID(i);
     Core::Elements::Element* element = discret().g_element(gid);
-    if (!element) FOUR_C_THROW("Cannot find element with gid %\n", gid);
+    if (!element) FOUR_C_THROW("Cannot find element with gid {}", gid);
     Mortar::Element* mrtrelement = dynamic_cast<Mortar::Element*>(element);
     double mincurrent = mrtrelement->min_edge_size();
     if (mincurrent < lmin) lmin = mincurrent;

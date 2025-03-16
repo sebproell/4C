@@ -81,7 +81,7 @@ Mat::ThermoPlasticHyperElast::ThermoPlasticHyperElast(Mat::PAR::ThermoPlasticHyp
   if (thermoMatId != -1)
   {
     auto mat = Mat::factory(thermoMatId);
-    if (mat == nullptr) FOUR_C_THROW("Failed to create thermo material, id=%d", thermoMatId);
+    if (mat == nullptr) FOUR_C_THROW("Failed to create thermo material, id={}", thermoMatId);
     thermo_ = std::dynamic_pointer_cast<Mat::Trait::Thermo>(mat);
   }
 }
@@ -160,7 +160,7 @@ void Mat::ThermoPlasticHyperElast::unpack(Core::Communication::UnpackBuffer& buf
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::ThermoPlasticHyperElast*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
   }
@@ -523,7 +523,7 @@ void Mat::ThermoPlasticHyperElast::evaluate(const Core::LinAlg::Matrix<3, 3>* de
   {
     // TSI, i.e. temperature is available --> use this temperature
     scalartemp = params.get<double>("temperature", -1.0);
-    if (scalartemp < 0.0) FOUR_C_THROW("INadmissible value for the temperature: T=%3d", scalartemp);
+    if (scalartemp < 0.0) FOUR_C_THROW("INadmissible value for the temperature: T={}", scalartemp);
   }
   // in case of purely structural analysis, i.e. isothermal: T = T_0, DeltaT = 0
   else
@@ -641,7 +641,8 @@ void Mat::ThermoPlasticHyperElast::evaluate(const Core::LinAlg::Matrix<3, 3>* de
       // check for convergence
       if (itnum > itermax)
       {
-        FOUR_C_THROW("local Newton iteration did not converge after iteration %3d/%3d with Res=%3d",
+        FOUR_C_THROW(
+            "local Newton iteration did not converge after iteration {:3d}/{:3d} with Res={:3f}",
             itnum, itermax, Res);
       }  // itnum > itermax
       // else: continue loop, i.e. m <= m_max

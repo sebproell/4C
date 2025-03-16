@@ -1146,8 +1146,8 @@ void Cut::SelfCut::erase_inside_sides()
   erase_inside_side(cutsideids);
   if (mesh_.sides().size() == 0)
     FOUR_C_THROW(
-        "All self-cut positions are undecided\n. The initial number of cutsides is %d, the number "
-        "of erased cutsides is %d",
+        "All self-cut positions are undecided\n. The initial number of cutsides is {}, the number "
+        "of erased cutsides is {}",
         initial_cutsides, final_cutsides);
 }
 

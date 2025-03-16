@@ -206,8 +206,8 @@ namespace Core::IO
       }
       else
       {
-        FOUR_C_THROW(std::format("Could not parse value '{}' as an enum constant of type '{}'.",
-            string, magic_enum::enum_type_name<Enum>()));
+        FOUR_C_THROW("Could not parse value '{}' as an enum constant of type '{}'.", string,
+            magic_enum::enum_type_name<Enum>());
       }
     }
 

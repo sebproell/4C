@@ -91,8 +91,8 @@ void FBI::Utils::assemble_centerline_dof_force_stiff_into_fbi_element_force_stif
       if ((unsigned int)eleforce_centerlineDOFs[iele].numRows() !=
           ele_centerlinedofindices[iele].size())
         FOUR_C_THROW(
-            "size mismatch! need to assemble %d values of centerline-Dof based "
-            "force vector into element vector but only got %d element-local Dof indices",
+            "size mismatch! need to assemble {} values of centerline-Dof based "
+            "force vector into element vector but only got {} element-local Dof indices",
             eleforce_centerlineDOFs[iele].numRows(), ele_centerlinedofindices[iele].size());
 
       // Todo maybe use a more general 'SerialDenseAssemble' method here
@@ -115,15 +115,15 @@ void FBI::Utils::assemble_centerline_dof_force_stiff_into_fbi_element_force_stif
         if ((unsigned int)elestiff_centerlineDOFs[iele][jele].numRows() !=
             ele_centerlinedofindices[iele].size())
           FOUR_C_THROW(
-              "size mismatch! need to assemble %d row values of centerline-Dof based "
-              "stiffness matrix into element matrix but only got %d element-local Dof indices",
+              "size mismatch! need to assemble {} row values of centerline-Dof based "
+              "stiffness matrix into element matrix but only got {} element-local Dof indices",
               elestiff_centerlineDOFs[iele][jele].numRows(), ele_centerlinedofindices[iele].size());
 
         if ((unsigned int)elestiff_centerlineDOFs[iele][jele].numCols() !=
             ele_centerlinedofindices[jele].size())
           FOUR_C_THROW(
-              "size mismatch! need to assemble %d column values of centerline-Dof based "
-              "stiffness matrix into element matrix but only got %d element-local Dof indices",
+              "size mismatch! need to assemble {} column values of centerline-Dof based "
+              "stiffness matrix into element matrix but only got {} element-local Dof indices",
               elestiff_centerlineDOFs[iele][jele].numCols(), ele_centerlinedofindices[jele].size());
 
         for (unsigned int idof = 0; idof < ele_centerlinedofindices[iele].size(); ++idof)

@@ -40,7 +40,7 @@ GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Line, Surface>::GeometryPair
   if (element1->owner() != myrank)
     FOUR_C_THROW(
         "The GeometryPairLineToSurface pair has to be on the same processor as the line element! "
-        "Currently the pair is on rank %d, the line element on %d!",
+        "Currently the pair is on rank {}, the line element on {}!",
         myrank, element1->owner());
 }
 

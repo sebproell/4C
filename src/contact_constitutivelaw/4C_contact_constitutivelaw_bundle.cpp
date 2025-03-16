@@ -43,12 +43,12 @@ void CONTACT::CONSTITUTIVELAW::Bundle::make_parameters()
 /*----------------------------------------------------------------------*/
 Core::IO::InputParameterContainer& CONTACT::CONSTITUTIVELAW::Bundle::by_id(const int id)
 {
-  if (map_.size() == 0) FOUR_C_THROW("No contact constitutivelaws available, num=%d", id);
+  if (map_.size() == 0) FOUR_C_THROW("No contact constitutivelaws available, num={}", id);
 
   auto m = map_.find(id);
 
   if (m == map_.end())
-    FOUR_C_THROW("Contact Constitutive Law 'Law %d' could not be found", id);
+    FOUR_C_THROW("Contact Constitutive Law 'Law {}' could not be found", id);
   else
     return m->second;
 }

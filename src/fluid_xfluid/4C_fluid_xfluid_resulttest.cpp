@@ -71,7 +71,7 @@ void FLD::XFluidResultTest::test_node(const Core::IO::InputParameterContainer& c
 
   if (isnodeofanybody == 0)
   {
-    FOUR_C_THROW("Node %d does not belong to discretization %s", node + 1, discret.name().c_str());
+    FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1, discret.name().c_str());
   }
   else
   {
@@ -104,7 +104,7 @@ void FLD::XFluidResultTest::test_node(const Core::IO::InputParameterContainer& c
       }
       else
       {
-        FOUR_C_THROW("Quantity '%s' not supported in ale testing", position.c_str());
+        FOUR_C_THROW("Quantity '{}' not supported in ale testing", position.c_str());
       }
 
       nerr += compare_values(result, "NODE", container);

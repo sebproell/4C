@@ -236,7 +236,7 @@ FLD::Utils::FluidVolumetricSurfaceFlowBc::FluidVolumetricSurfaceFlowBc(
   }
   else
   {
-    FOUR_C_THROW("[%s]: is not a defined normal evaluation type", normal_info.c_str());
+    FOUR_C_THROW("[{}]: is not a defined normal evaluation type", normal_info.c_str());
     exit(1);
   }
 
@@ -264,7 +264,7 @@ FLD::Utils::FluidVolumetricSurfaceFlowBc::FluidVolumetricSurfaceFlowBc(
   }
   else
   {
-    FOUR_C_THROW("[%s]: is not a defined center-of-mass evaluation type", normal_info.c_str());
+    FOUR_C_THROW("[{}]: is not a defined center-of-mass evaluation type", normal_info.c_str());
     exit(1);
   }
 
@@ -281,7 +281,7 @@ FLD::Utils::FluidVolumetricSurfaceFlowBc::FluidVolumetricSurfaceFlowBc(
   }
   else
   {
-    FOUR_C_THROW("[%s]: is not a defined flow-direction-type", normal_info.c_str());
+    FOUR_C_THROW("[{}]: is not a defined flow-direction-type", normal_info.c_str());
     exit(1);
   }
 
@@ -1051,7 +1051,7 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::velocities(Core::FE::Discretizati
   {
     if (n_harmonics < 1)
     {
-      FOUR_C_THROW("The number of Womersley harmonics is %d (less than 1)", n_harmonics);
+      FOUR_C_THROW("The number of Womersley harmonics is {} (less than 1)", n_harmonics);
     }
 
     this->dft(velocities, Vn, flowratespos_);
@@ -1147,7 +1147,7 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::velocities(Core::FE::Discretizati
         else
         {
           FOUR_C_THROW(
-              "[%s] in cond (%d): No such profile is defined. Please correct the input file ",
+              "[{}] in cond ({}): No such profile is defined. Please correct the input file ",
               flowType.c_str(), condid);
         }
         velocity *= flow_dir_;
@@ -1950,7 +1950,7 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::export_and_set_boundary_values(
   // Export source vector to target vector
   int err = target->export_to(source, exporter, Zero);
   // check if the exporting was successful
-  if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
+  if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
   // Set state
   discret_->set_state(name, target);
 }
@@ -1967,7 +1967,7 @@ void FLD::Utils::TotalTractionCorrector::export_and_set_boundary_values(
   // Export source vector to target vector
   int err = target->export_to(source, exporter, Zero);
   // check if the exporting was successful
-  if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
+  if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
   // Set state
   discret_->set_state(name, target);
 }

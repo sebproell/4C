@@ -499,7 +499,7 @@ namespace Cut
           point = std::make_shared<ConcretePoint<3>>(pid, x, cut_edge, cut_side, tolerance);
           break;
         default:
-          FOUR_C_THROW("Unsupported problem dimension! (probdim=%d)", probdim);
+          FOUR_C_THROW("Unsupported problem dimension! (probdim={})", probdim);
           break;
       }
       return point;

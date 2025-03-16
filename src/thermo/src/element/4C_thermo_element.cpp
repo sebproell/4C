@@ -408,13 +408,13 @@ Core::FE::CellType Thermo::FaceElement::shape() const
       else
       {
         FOUR_C_THROW(
-            "Your parent discretization type is %s. Ccurrently only hex27 and nurbs27 are "
+            "Your parent discretization type is {}. Ccurrently only hex27 and nurbs27 are "
             "implemented.",
             Core::FE::cell_type_to_string(parent_element()->shape()).c_str());
       }
       break;
     default:
-      FOUR_C_THROW("unexpected number of nodes %d", num_node());
+      FOUR_C_THROW("unexpected number of nodes {}", num_node());
   }
 }  // Shape()
 

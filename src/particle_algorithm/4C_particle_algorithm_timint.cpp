@@ -169,7 +169,7 @@ void PARTICLEALGORITHM::TimInt::add_initial_random_noise_to_position()
 
   // safety check
   if (static_cast<int>(amplitude.size()) != 3)
-    FOUR_C_THROW("dimension (dim = %d) of initial position amplitude vector is wrong!",
+    FOUR_C_THROW("dimension (dim = {}) of initial position amplitude vector is wrong!",
         static_cast<int>(amplitude.size()));
 
   // safety check

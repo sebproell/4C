@@ -77,7 +77,7 @@ namespace Core::IO
       case Core::FE::CellType::point1:
         return {1, {0}};
       default:
-        FOUR_C_THROW("VTK cell type not implemented for element: %s",
+        FOUR_C_THROW("VTK cell type not implemented for element: {}",
             Core::FE::cell_type_to_string(four_c_ele_shape_type).c_str());
     }
   }

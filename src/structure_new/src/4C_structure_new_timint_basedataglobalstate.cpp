@@ -478,7 +478,7 @@ Solid::TimeInt::BaseDataGlobalState::get_element_technology_map_extractor(
     const enum Inpar::Solid::EleTech etech) const
 {
   if (mapextractors_.find(etech) == mapextractors_.end())
-    FOUR_C_THROW("Could not find element technology \"%s\" in map extractors.",
+    FOUR_C_THROW("Could not find element technology \"{}\" in map extractors.",
         Inpar::Solid::ele_tech_string(etech).c_str());
 
   return mapextractors_.at(etech);
@@ -524,7 +524,7 @@ void Solid::TimeInt::BaseDataGlobalState::setup_rot_vec_map_extractor(
 
       if (nodaladditdofs.size() + nodalrotvecdofs.size() !=
           (unsigned)beameleptr->num_dof_per_node(*nodeptr))
-        FOUR_C_THROW("Expected %d DoFs for node with GID %d but collected %d DoFs",
+        FOUR_C_THROW("Expected {} DoFs for node with GID {} but collected {} DoFs",
             beameleptr->num_dof_per_node(*nodeptr), discret_->node_row_map()->GID(i),
             nodaladditdofs.size() + nodalrotvecdofs.size());
     }
@@ -822,7 +822,7 @@ void Solid::TimeInt::BaseDataGlobalState::assign_model_block(Core::LinAlg::Spars
       }
       default:
       {
-        FOUR_C_THROW("model block %s is not supported", mat_block_type_to_string(bt).c_str());
+        FOUR_C_THROW("model block {} is not supported", mat_block_type_to_string(bt).c_str());
         break;
       }
     }
@@ -888,7 +888,7 @@ Solid::TimeInt::BaseDataGlobalState::extract_model_block(Core::LinAlg::SparseOpe
       }
       default:
       {
-        FOUR_C_THROW("model block %s is not supported", mat_block_type_to_string(bt).c_str());
+        FOUR_C_THROW("model block {} is not supported", mat_block_type_to_string(bt).c_str());
         break;
       }
     }
@@ -1012,7 +1012,7 @@ Solid::TimeInt::BaseDataGlobalState::get_jacobian_block(
 int Solid::TimeInt::BaseDataGlobalState::get_last_lin_iteration_number(const unsigned step) const
 {
   check_init_setup();
-  if (step < 1) FOUR_C_THROW("The given step number must be larger than 1. (step=%d)", step);
+  if (step < 1) FOUR_C_THROW("The given step number must be larger than 1. (step={})", step);
 
   auto linsolvers = datasdyn_->get_lin_solvers();
   int iter = -1;
@@ -1036,7 +1036,7 @@ int Solid::TimeInt::BaseDataGlobalState::get_last_lin_iteration_number(const uns
       }
       default:
         FOUR_C_THROW(
-            "The given model type '%s' is not supported for linear iteration output right now.",
+            "The given model type '{}' is not supported for linear iteration output right now.",
             Inpar::Solid::model_structure);
     }
   }
@@ -1049,7 +1049,7 @@ int Solid::TimeInt::BaseDataGlobalState::get_last_lin_iteration_number(const uns
 int Solid::TimeInt::BaseDataGlobalState::get_nln_iteration_number(const unsigned step) const
 {
   check_init_setup();
-  if (step < 1) FOUR_C_THROW("The given step number must be larger than 1. (step=%d)", step);
+  if (step < 1) FOUR_C_THROW("The given step number must be larger than 1. (step={})", step);
 
   auto cit = nln_iter_numbers_.begin();
   while (cit != nln_iter_numbers_.end())
@@ -1058,7 +1058,7 @@ int Solid::TimeInt::BaseDataGlobalState::get_nln_iteration_number(const unsigned
     ++cit;
   }
 
-  FOUR_C_THROW("There is no nonlinear iteration number for the given step %d.", step);
+  FOUR_C_THROW("There is no nonlinear iteration number for the given step {}.", step);
   exit(EXIT_FAILURE);
 }
 
@@ -1076,7 +1076,7 @@ void Solid::TimeInt::BaseDataGlobalState::set_nln_iteration_number(const int nln
       if (cit->second != nln_iter)
         FOUR_C_THROW(
             "There is already a different nonlinear iteration number "
-            "for step %d.",
+            "for step {}.",
             stepn_);
       else
         return;

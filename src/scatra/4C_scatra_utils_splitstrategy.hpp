@@ -148,8 +148,8 @@ namespace ScaTra
             rlid0 = rowmap00.LID(rgid);
             rlid1 = rowmap01.LID(rgid);
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-            if (rlid0 < 0) FOUR_C_THROW("Sparse matrix A00 does not have global row %d", rgid);
-            if (rlid1 < 0) FOUR_C_THROW("Sparse matrix A01 does not have global row %d", rgid);
+            if (rlid0 < 0) FOUR_C_THROW("Sparse matrix A00 does not have global row {}", rgid);
+            if (rlid1 < 0) FOUR_C_THROW("Sparse matrix A01 does not have global row {}", rgid);
 #endif
 
             // separate the (non-zero!) values of the current row
@@ -169,12 +169,12 @@ namespace ScaTra
                 rlid0, nnode, values00.data(), localcol00map[scalarid].data());
             if (errone)
               FOUR_C_THROW(
-                  "Epetra_CrsMatrix::SumIntoMyValues returned error code %d for A00", errone);
+                  "Epetra_CrsMatrix::SumIntoMyValues returned error code {} for A00", errone);
             errone = matrix01_.epetra_matrix()->SumIntoMyValues(
                 rlid1, nnode, values1.data(), localcol01.data());
             if (errone)
               FOUR_C_THROW(
-                  "Epetra_CrsMatrix::SumIntoMyValues returned error code %d for A01", errone);
+                  "Epetra_CrsMatrix::SumIntoMyValues returned error code {} for A01", errone);
           }
           else
           {
@@ -182,8 +182,8 @@ namespace ScaTra
             rlid0 = rowmap10.LID(rgid);
             rlid1 = rowmap11.LID(rgid);
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-            if (rlid0 < 0) FOUR_C_THROW("Sparse matrix A10 does not have global row %d", rgid);
-            if (rlid1 < 0) FOUR_C_THROW("Sparse matrix A11 does not have global row %d", rgid);
+            if (rlid0 < 0) FOUR_C_THROW("Sparse matrix A10 does not have global row {}", rgid);
+            if (rlid1 < 0) FOUR_C_THROW("Sparse matrix A11 does not have global row {}", rgid);
 #endif
             // separate the values of the current row
             int nodespassed = 0;
@@ -208,12 +208,12 @@ namespace ScaTra
                 rlid0, nnode * numscal_, values0.data(), localcol10.data());
             if (errone)
               FOUR_C_THROW(
-                  "Epetra_CrsMatrix::SumIntoMyValues returned error code %d for A10", errone);
+                  "Epetra_CrsMatrix::SumIntoMyValues returned error code {} for A10", errone);
             errone = matrix11_.epetra_matrix()->SumIntoMyValues(
                 rlid1, nnode, values1.data(), localcol11.data());
             if (errone)
               FOUR_C_THROW(
-                  "Epetra_CrsMatrix::SumIntoMyValues returned error code %d for A11", errone);
+                  "Epetra_CrsMatrix::SumIntoMyValues returned error code {} for A11", errone);
           }
         }  // for (int lrow=0; lrow<ldim; ++lrow)
       }

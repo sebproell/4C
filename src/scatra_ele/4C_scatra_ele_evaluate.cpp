@@ -301,7 +301,7 @@ int Discret::Elements::Transport::evaluate(Teuchos::ParameterList& params,
 
     default:
     {
-      FOUR_C_THROW("Unknown type of action '%i' for ScaTra", action);
+      FOUR_C_THROW("Unknown type of action '{}' for ScaTra", action);
       break;
     }
   }  // switch(action)

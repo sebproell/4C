@@ -89,7 +89,7 @@ namespace Core::IO
     {
       if (vec.size() != expectedSize)
       {
-        FOUR_C_THROW("Parsed %d values but expected %d", vec.size(), expectedSize);
+        FOUR_C_THROW("Parsed {} values but expected {}", vec.size(), expectedSize);
       }
     }
 
@@ -335,7 +335,7 @@ namespace Core::IO
 
       if (!(is >> std::boolalpha >> d))
       {
-        FOUR_C_THROW("String %s cannot be converted to a boolean", str.c_str());
+        FOUR_C_THROW("String {} cannot be converted to a boolean", str.c_str());
       }
 
       return d;

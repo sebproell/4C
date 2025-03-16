@@ -28,7 +28,7 @@ double Core::LinAlg::DenseFunctions::determinant_large_matrix(
   lapack.GETRF(i, j, tmp.data(), i, ipiv.data(), &info);
 
   if (info < 0)
-    FOUR_C_THROW("Lapack's dgetrf returned %d", info);
+    FOUR_C_THROW("Lapack's dgetrf returned {}", info);
   else if (info > 0)
     return 0.0;
   double d = tmp[0];

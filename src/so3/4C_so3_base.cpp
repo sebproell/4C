@@ -137,9 +137,10 @@ void Discret::Elements::SoBase::error_handling(const double& det_curr,
     else
     {
       if (det_curr == 0.0)
-        FOUR_C_THROW("ZERO DETERMINANT DETECTED in line %d", line_id);
+        FOUR_C_THROW("ZERO DETERMINANT DETECTED in line {}", line_id);
       else if (det_curr < 0.0)
-        FOUR_C_THROW("NEGATIVE DETERMINANT DETECTED in line %d (value = %.5e)", line_id, det_curr);
+        FOUR_C_THROW(
+            "NEGATIVE DETERMINANT DETECTED in line {} (value = {:.5e})", line_id, det_curr);
     }
   }
 }

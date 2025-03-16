@@ -26,7 +26,7 @@ void Core::FE::DiscretizationCreatorBase::initial_checks(
   // is the target discretization really empty?
   if (targetdis.num_global_elements() or targetdis.num_global_nodes())
   {
-    FOUR_C_THROW("There are %d elements and %d nodes in target discretization. Panic.",
+    FOUR_C_THROW("There are {} elements and {} nodes in target discretization. Panic.",
         targetdis.num_global_elements(), targetdis.num_global_nodes());
   }
   // Ok. Let's go on

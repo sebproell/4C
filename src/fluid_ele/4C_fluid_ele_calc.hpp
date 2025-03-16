@@ -1169,7 +1169,7 @@ namespace Discret
       //    // get state of the global vector
       //    std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
       //    discretization.GetState(state); if(matrix_state == nullptr)
-      //      FOUR_C_THROW("Cannot get state vector %s", state.c_str());
+      //       FOUR_C_THROW("Cannot get state vector {}", state.c_str());
       //
       //    // extract local values of the global vectors
       //    std::vector<double> mymatrix(lm.size());

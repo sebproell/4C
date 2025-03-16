@@ -165,7 +165,7 @@ void NOX::Nln::CONTACT::LinearSystem::set_linear_problem_for_solve(
     }
     default:
     {
-      FOUR_C_THROW("Unsupported matrix type! Type = %s",
+      FOUR_C_THROW("Unsupported matrix type! Type = {}",
           NOX::Nln::LinSystem::operator_type_to_string(jacType_).c_str());
 
       exit(EXIT_FAILURE);
@@ -428,10 +428,10 @@ void NOX::Nln::CONTACT::LinearSystem::apply_diagonal_inverse(Core::LinAlg::Spars
 
   Core::LinAlg::Vector<double> diag_mat(mat.range_map(), true);
   int err = mat.extract_diagonal_copy(diag_mat);
-  if (err) FOUR_C_THROW("ExtractDiagonalCopy failed! (err=%d)", err);
+  if (err) FOUR_C_THROW("ExtractDiagonalCopy failed! (err={})", err);
 
   err = lhs_block.reciprocal_multiply(1.0, diag_mat, rhs_block, 0.0);
-  if (err) FOUR_C_THROW("ReciprocalMultiply failed! (err=%d)", err);
+  if (err) FOUR_C_THROW("ReciprocalMultiply failed! (err={})", err);
 
   Core::LinAlg::assemble_my_vector(0.0, lhs, 1.0, lhs_block);
 }

@@ -28,7 +28,7 @@ void STI::ScatraThermoCloneStrategy::check_material_type(const int matid)
     default:
     {
       // throw error in case of incompatible material
-      FOUR_C_THROW("Material with ID %d is not compatible with cloned transport element!", matid);
+      FOUR_C_THROW("Material with ID {} is not compatible with cloned transport element!", matid);
       break;
     }
   }
@@ -72,7 +72,7 @@ void STI::ScatraThermoCloneStrategy::set_element_data(
 
   // safety check
   if (oldele_transport == nullptr or newele_transport == nullptr)
-    FOUR_C_THROW("Expected transport element, but received element of type '%s'!",
+    FOUR_C_THROW("Expected transport element, but received element of type '{}'!",
         Core::Utils::get_dynamic_type_name(*newele).c_str());
 
   // provide cloned element with material

@@ -99,7 +99,7 @@ int Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::setup_calc(
           if (poromat->phase_id() < 0 or
               poromat->phase_id() >= var_manager()->multiphase_mat()->num_fluid_phases())
             FOUR_C_THROW(
-                "Invalid phase ID %i for scalar %i (species in fluid = MAT_scatra_multiporo_fluid)",
+                "Invalid phase ID {} for scalar {} (species in fluid = MAT_scatra_multiporo_fluid)",
                 poromat->phase_id(), k);
 
           const int singlephasematid = var_manager()->multiphase_mat()->mat_id(poromat->phase_id());
@@ -108,7 +108,7 @@ int Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::setup_calc(
 
           if (singlemat->material_type() != Core::Materials::m_fluidporo_singlephase)
             FOUR_C_THROW(
-                "Invalid phase ID for scalar %i (species in fluid = MAT_scatra_multiporo_fluid)",
+                "Invalid phase ID for scalar {} (species in fluid = MAT_scatra_multiporo_fluid)",
                 k);
 
           var_manager()->set_phase_id_and_species_type(
@@ -134,7 +134,7 @@ int Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::setup_calc(
               poromat->phase_id() >= var_manager()->multiphase_mat()->num_fluid_phases() +
                                          var_manager()->multiphase_mat()->num_vol_frac())
             FOUR_C_THROW(
-                "Invalid phase ID %i for scalar %i (species in volume fraction = "
+                "Invalid phase ID {} for scalar {} (species in volume fraction = "
                 "MAT_scatra_multiporo_volfrac)",
                 poromat->phase_id(), k);
 
@@ -144,7 +144,7 @@ int Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::setup_calc(
 
           if (singlemat->material_type() != Core::Materials::m_fluidporo_singlevolfrac)
             FOUR_C_THROW(
-                "Invalid phase ID for scalar %i (species in volume fraction = "
+                "Invalid phase ID for scalar {} (species in volume fraction = "
                 "MAT_scatra_multiporo_volfrac)",
                 k);
 
@@ -213,7 +213,7 @@ int Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::setup_calc(
         default:
         {
           FOUR_C_THROW(
-              "Material type %i is not supported for multiphase flow through porous media!",
+              "Material type {} is not supported for multiphase flow through porous media!",
               singlemat->material_type());
           break;
         }
@@ -233,7 +233,7 @@ int Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::setup_calc(
         if (poromat->phase_id() < 0 or
             poromat->phase_id() >= var_manager()->multiphase_mat()->num_fluid_phases())
           FOUR_C_THROW(
-              "Invalid phase ID %i for scalar %i (species in fluid = MAT_scatra_multiporo_fluid)",
+              "Invalid phase ID {} for scalar {} (species in fluid = MAT_scatra_multiporo_fluid)",
               poromat->phase_id(), 0);
 
         const int singlephasematid = var_manager()->multiphase_mat()->mat_id(poromat->phase_id());
@@ -242,7 +242,7 @@ int Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::setup_calc(
 
         if (singlemat->material_type() != Core::Materials::m_fluidporo_singlephase)
           FOUR_C_THROW(
-              "Invalid phase ID for scalar %i (species in fluid = MAT_scatra_multiporo_fluid)", 0);
+              "Invalid phase ID for scalar {} (species in fluid = MAT_scatra_multiporo_fluid)", 0);
 
         var_manager()->set_phase_id_and_species_type(
             0, poromat->phase_id(), Mat::ScaTraMatMultiPoro::SpeciesType::species_in_fluid);
@@ -266,7 +266,7 @@ int Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::setup_calc(
             poromat->phase_id() >= var_manager()->multiphase_mat()->num_fluid_phases() +
                                        var_manager()->multiphase_mat()->num_vol_frac())
           FOUR_C_THROW(
-              "Invalid phase ID %i for scalar %i (species in volume fraction = "
+              "Invalid phase ID {} for scalar {} (species in volume fraction = "
               "MAT_scatra_multiporo_volfrac)",
               poromat->phase_id(), 0);
 
@@ -276,7 +276,7 @@ int Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::setup_calc(
 
         if (singlemat->material_type() != Core::Materials::m_fluidporo_singlevolfrac)
           FOUR_C_THROW(
-              "Invalid phase ID for scalar %i (species in volume fraction = "
+              "Invalid phase ID for scalar {} (species in volume fraction = "
               "MAT_scatra_multiporo_volfrac)",
               0);
 
@@ -341,7 +341,7 @@ int Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::setup_calc(
 
       default:
       {
-        FOUR_C_THROW("Material type %i is not supported for multiphase flow through porous media!",
+        FOUR_C_THROW("Material type {} is not supported for multiphase flow through porous media!",
             material->material_type());
         break;
       }
@@ -505,7 +505,7 @@ void Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::extract_nodal_flux(
     // get convective (velocity - mesh displacement) velocity at nodes
     std::shared_ptr<const Core::LinAlg::Vector<double>> convel =
         discretization.get_state(ndsvel, statename.str());
-    if (convel == nullptr) FOUR_C_THROW("Cannot get state vector %s", statename.str().c_str());
+    if (convel == nullptr) FOUR_C_THROW("Cannot get state vector {}", statename.str().c_str());
 
     // extract local values of convective velocity field from global state vector
     Core::FE::extract_my_values<Core::LinAlg::Matrix<nsd_, nen_>>(
@@ -566,7 +566,7 @@ void Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::materials(
 
     default:
     {
-      FOUR_C_THROW("Material type %i is not supported for multiphase flow through porous media!",
+      FOUR_C_THROW("Material type {} is not supported for multiphase flow through porous media!",
           material->material_type());
       break;
     }
@@ -858,7 +858,7 @@ void Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::set_advanced_reacti
     }
     default:
     {
-      FOUR_C_THROW("Wrong action type in var_manager(), action type is %d", act);
+      FOUR_C_THROW("Wrong action type in var_manager(), action type is {}", act);
     }
   }
 }

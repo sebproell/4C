@@ -329,7 +329,7 @@ void TSI::Monolithic::solve()
       break;
     // catch problems
     default:
-      FOUR_C_THROW("Solution technique \"%s\" is not implemented",
+      FOUR_C_THROW("Solution technique \"{}\" is not implemented",
           Inpar::TSI::nln_sol_tech_string(soltech_).c_str());
       break;
   }  // end switch (soltechnique_)
@@ -609,7 +609,7 @@ void TSI::Monolithic::newton_full()
         Inpar::Solid::divcont_continue)
       ;  // do nothing
     else
-      FOUR_C_THROW("Newton unconverged in %d iterations", iter_);
+      FOUR_C_THROW("Newton unconverged in {} iterations", iter_);
   }
   // for validation with literature calculate nodal TSI values
   if ((tsidynmono_.get<bool>("CALC_NECKING_TSI_VALUES")) == true) calculate_necking_tsi_results();
@@ -849,7 +849,7 @@ void TSI::Monolithic::ptc()
     print_newton_conv();
   }
   else if (iter_ >= itermax_)
-    FOUR_C_THROW("PTC unconverged in %d iterations", iter_);
+    FOUR_C_THROW("PTC unconverged in {} iterations", iter_);
 
 }  // PTC()
 

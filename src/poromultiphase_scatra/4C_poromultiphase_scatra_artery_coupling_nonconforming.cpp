@@ -687,7 +687,7 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::create_new_arte
               return std::make_shared<PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<
                   Core::FE::CellType::line2, Core::FE::CellType::quad4, 3>>();
             default:
-              FOUR_C_THROW("Unsupported dimension %d.", Global::Problem::instance()->n_dim());
+              FOUR_C_THROW("Unsupported dimension {}.", Global::Problem::instance()->n_dim());
           }
         }
         case Core::FE::CellType::hex8:
@@ -704,7 +704,7 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::create_new_arte
               return std::make_shared<PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<
                   Core::FE::CellType::line2, Core::FE::CellType::hex8, 3>>();
             default:
-              FOUR_C_THROW("Unsupported dimension %d.", Global::Problem::instance()->n_dim());
+              FOUR_C_THROW("Unsupported dimension {}.", Global::Problem::instance()->n_dim());
           }
         }
         case Core::FE::CellType::tet4:
@@ -721,7 +721,7 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::create_new_arte
               return std::make_shared<PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<
                   Core::FE::CellType::line2, Core::FE::CellType::tet4, 3>>();
             default:
-              FOUR_C_THROW("Unsupported dimension %d.", Global::Problem::instance()->n_dim());
+              FOUR_C_THROW("Unsupported dimension {}.", Global::Problem::instance()->n_dim());
           }
         }
         case Core::FE::CellType::tet10:
@@ -738,7 +738,7 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::create_new_arte
               return std::make_shared<PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<
                   Core::FE::CellType::line2, Core::FE::CellType::tet10, 3>>();
             default:
-              FOUR_C_THROW("Unsupported dimension %d.", Global::Problem::instance()->n_dim());
+              FOUR_C_THROW("Unsupported dimension {}.", Global::Problem::instance()->n_dim());
           }
         }
         default:

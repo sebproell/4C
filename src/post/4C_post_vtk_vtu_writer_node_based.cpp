@@ -313,7 +313,7 @@ void PostVtuWriterNode::write_dof_result_step(std::ofstream& file,
         if (fillzeros)
           solution.push_back(0.);
         else
-          FOUR_C_THROW("received illegal dof local id: %d", lid);
+          FOUR_C_THROW("received illegal dof local id: {}", lid);
       }
     }
 

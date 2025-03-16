@@ -408,13 +408,13 @@ namespace XFEM
 
       if (dis_id >= master_interface_node_maps_.size())
         FOUR_C_THROW(
-            "The index %d exceeds the master interface node row map size! "
-            "(size = %d)",
+            "The index {} exceeds the master interface node row map size! "
+            "(size = {})",
             dis_id, master_interface_node_maps_.size());
 
       if (master_interface_node_maps_[dis_id] == nullptr)
         FOUR_C_THROW(
-            "The master interface node row map %d was not initialized "
+            "The master interface node row map {} was not initialized "
             "correctly.",
             dis_id);
 
@@ -452,13 +452,13 @@ namespace XFEM
 
       if (dis_id >= slave_map_extractors_.size())
         FOUR_C_THROW(
-            "The index %d exceeds the slave map extractor size! "
-            "(size = %d)",
+            "The index {} exceeds the slave map extractor size! "
+            "(size = {})",
             dis_id, slave_map_extractors_.size());
 
       if (slave_map_extractors_[dis_id].at(map_type) == nullptr)
         FOUR_C_THROW(
-            "The slave dof/node map extractor %d was not initialized "
+            "The slave dof/node map extractor {} was not initialized "
             "correctly.",
             dis_id);
 
@@ -478,13 +478,13 @@ namespace XFEM
 
       if (dis_id >= interface_matrix_row_transformers_.size())
         FOUR_C_THROW(
-            "The index %d exceeds the matrix row transformer size! "
-            "(size = %d)",
+            "The index {} exceeds the matrix row transformer size! "
+            "(size = {})",
             dis_id, interface_matrix_row_transformers_.size());
 
       if (interface_matrix_row_transformers_[dis_id] == nullptr)
         FOUR_C_THROW(
-            "The interface matrix row transformer %d was not initialized "
+            "The interface matrix row transformer {} was not initialized "
             "correctly.",
             dis_id);
 
@@ -504,13 +504,13 @@ namespace XFEM
 
       if (dis_id >= interface_matrix_col_transformers_.size())
         FOUR_C_THROW(
-            "The index %d exceeds the matrix column transformer size! "
-            "(size = %d)",
+            "The index {} exceeds the matrix column transformer size! "
+            "(size = {})",
             dis_id, interface_matrix_col_transformers_.size());
 
       if (interface_matrix_col_transformers_[dis_id] == nullptr)
         FOUR_C_THROW(
-            "The interface matrix column transformer %d was not initialized "
+            "The interface matrix column transformer {} was not initialized "
             "correctly.",
             dis_id);
 
@@ -530,13 +530,13 @@ namespace XFEM
 
       if (dis_id >= interface_matrix_row_col_transformers_.size())
         FOUR_C_THROW(
-            "The index %d exceeds the matrix row col transformer size! "
-            "(size = %d)",
+            "The index {} exceeds the matrix row col transformer size! "
+            "(size = {})",
             dis_id, interface_matrix_row_col_transformers_.size());
 
       if (interface_matrix_row_col_transformers_[dis_id] == nullptr)
         FOUR_C_THROW(
-            "The interface matrix row col transformer %d was not initialized "
+            "The interface matrix row col transformer {} was not initialized "
             "correctly.",
             dis_id);
 
@@ -562,13 +562,13 @@ namespace XFEM
 
       if (dis_id >= num_sl_dis())
         FOUR_C_THROW(
-            "The index %d exceeds the slave discretization vector size! "
-            "(size = %d)",
+            "The index {} exceeds the slave discretization vector size! "
+            "(size = {})",
             dis_id, sl_dis_vec().size());
 
       if (sl_dis_vec()[dis_id] == nullptr)
         FOUR_C_THROW(
-            "The slave discretization %d was not initialized "
+            "The slave discretization {} was not initialized "
             "correctly.",
             dis_id);
 
@@ -580,12 +580,12 @@ namespace XFEM
       check_init();
       if (dis_id >= interface_couplings_.size())
         FOUR_C_THROW(
-            "The index %d exceeds the interface coupling size! "
-            "(size = %d)",
+            "The index {} exceeds the interface coupling size! "
+            "(size = {})",
             dis_id, interface_couplings_.size());
       if (interface_couplings_[dis_id] == nullptr)
         FOUR_C_THROW(
-            "The interface coupling %d was not initialized "
+            "The interface coupling {} was not initialized "
             "correctly.",
             dis_id);
 

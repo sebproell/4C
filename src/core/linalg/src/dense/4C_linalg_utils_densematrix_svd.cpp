@@ -32,7 +32,7 @@ void Core::LinAlg::svd(const Core::LinAlg::SerialDenseMatrix::Base& A,
   lapack.GESVD(jobu, jobvt, m, n, tmp.values(), tmp.stride(), s.data(), Q.values(), Q.stride(),
       VT.values(), VT.stride(), work.data(), lwork, &rwork, &info);
 
-  if (info) FOUR_C_THROW("Lapack's dgesvd returned %d", info);
+  if (info) FOUR_C_THROW("Lapack's dgesvd returned {}", info);
 
   // 0 for off-diagonal, otherwise s
   S.putScalar(0.0);

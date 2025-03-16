@@ -899,7 +899,7 @@ void Mortar::Interface::initialize_data_container()
   {
     int gid = slave_col_nodes_bound()->GID(i);
     Core::Nodes::Node* node = discret().g_node(gid);
-    if (!node) FOUR_C_THROW("Cannot find node with gid %i", gid);
+    if (!node) FOUR_C_THROW("Cannot find node with gid {}", gid);
     auto* mnode = dynamic_cast<Node*>(node);
 
     //********************************************************
@@ -925,7 +925,7 @@ void Mortar::Interface::initialize_data_container()
     {
       int gid = masternodes->GID(i);
       Core::Nodes::Node* node = discret().g_node(gid);
-      if (!node) FOUR_C_THROW("Cannot find node with gid %i", gid);
+      if (!node) FOUR_C_THROW("Cannot find node with gid {}", gid);
       auto* mnode = dynamic_cast<Node*>(node);
 
       // ATM just implemented for ContactNode ... otherwise error!!!
@@ -941,7 +941,7 @@ void Mortar::Interface::initialize_data_container()
   {
     int gid = slave_col_elements()->GID(i);
     Core::Elements::Element* ele = discret().g_element(gid);
-    if (!ele) FOUR_C_THROW("Cannot find ele with gid %i", gid);
+    if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
     auto* mele = dynamic_cast<Mortar::Element*>(ele);
 
     // initialize container if not yet initialized before
@@ -955,7 +955,7 @@ void Mortar::Interface::initialize_data_container()
     {
       int gid = master_col_elements()->GID(i);
       Core::Elements::Element* ele = discret().g_element(gid);
-      if (!ele) FOUR_C_THROW("Cannot find ele with gid %i", gid);
+      if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
       auto* mele = dynamic_cast<Mortar::Element*>(ele);
 
       // initialize container if not yet initialized before
@@ -999,7 +999,7 @@ std::shared_ptr<Core::Binstrategy::BinningStrategy> Mortar::Interface::setup_bin
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node)
       FOUR_C_THROW(
-          "Cannot find node with gid %i in discretization '%s'.", gid, discret().name().c_str());
+          "Cannot find node with gid {} in discretization '{}'.", gid, discret().name().c_str());
     auto* mtrnode = dynamic_cast<Mortar::Node*>(node);
 
     for (unsigned int dim = 0; dim < 3; ++dim)
@@ -1029,7 +1029,7 @@ std::shared_ptr<Core::Binstrategy::BinningStrategy> Mortar::Interface::setup_bin
     Core::Elements::Element* ele = discret().g_element(gid);
     if (!ele)
       FOUR_C_THROW(
-          "Cannot find element with gid %i in discretization '%s'.", gid, discret().name().c_str());
+          "Cannot find element with gid {} in discretization '{}'.", gid, discret().name().c_str());
     auto* mtrele = dynamic_cast<Mortar::Element*>(ele);
 
     // to be thought about, whether this is enough (safety = 2??)
@@ -2018,7 +2018,7 @@ void Mortar::Interface::initialize()
   {
     int gid = slave_col_elements()->GID(i);
     Core::Elements::Element* ele = discret().g_element(gid);
-    if (!ele) FOUR_C_THROW("Cannot find ele with gid %i", gid);
+    if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
     auto* mele = dynamic_cast<Mortar::Element*>(ele);
 
     mele->mo_data().search_elements().resize(0);
@@ -2126,7 +2126,7 @@ void Mortar::Interface::set_state(
     }
     default:
     {
-      FOUR_C_THROW("The given state type is unsupported! (type = %s)",
+      FOUR_C_THROW("The given state type is unsupported! (type = {})",
           state_type_to_string(statetype).c_str());
       break;
     }
@@ -2145,7 +2145,7 @@ void Mortar::Interface::set_element_areas()
   {
     int gid = slave_col_elements()->GID(i);
     Core::Elements::Element* ele = discret().g_element(gid);
-    if (!ele) FOUR_C_THROW("Cannot find ele with gid %i", gid);
+    if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
     auto* mele = dynamic_cast<Mortar::Element*>(ele);
 
     mele->mo_data().area() = mele->compute_area();
@@ -2409,7 +2409,7 @@ void Mortar::Interface::evaluate_sts(
   {
     const int gid1 = selecolmap.GID(i);
     Core::Elements::Element* ele1 = idiscret_->g_element(gid1);
-    if (!ele1) FOUR_C_THROW("Cannot find slave element with gid %d", gid1);
+    if (!ele1) FOUR_C_THROW("Cannot find slave element with gid {}", gid1);
 
     auto* selement = dynamic_cast<Mortar::Element*>(ele1);
 
@@ -2425,7 +2425,7 @@ void Mortar::Interface::evaluate_sts(
     {
       int gid2 = selement->mo_data().search_elements()[j];
       Core::Elements::Element* ele2 = idiscret_->g_element(gid2);
-      if (!ele2) FOUR_C_THROW("Cannot find master element with gid %d", gid2);
+      if (!ele2) FOUR_C_THROW("Cannot find master element with gid {}", gid2);
       auto* melement = dynamic_cast<Mortar::Element*>(ele2);
 
       // skip zero-sized nurbs elements (master)
@@ -2769,7 +2769,7 @@ void Mortar::Interface::evaluate_search_brute_force(const double& eps)
   for (int i = 0; i < selecolmap_->NumMyElements(); ++i)
   {
     Core::Elements::Element* element = idiscret_->g_element(selecolmap_->GID(i));
-    if (!element) FOUR_C_THROW("Cannot find element with gid %\n", selecolmap_->GID(i));
+    if (!element) FOUR_C_THROW("Cannot find element with gid {}", selecolmap_->GID(i));
     auto* mrtrelement = dynamic_cast<Mortar::Element*>(element);
     if (mrtrelement->min_edge_size() < lmin) lmin = mrtrelement->min_edge_size();
   }
@@ -2778,7 +2778,7 @@ void Mortar::Interface::evaluate_search_brute_force(const double& eps)
   for (int i = 0; i < melefullmap->NumMyElements(); ++i)
   {
     Core::Elements::Element* element = idiscret_->g_element(melefullmap->GID(i));
-    if (!element) FOUR_C_THROW("Cannot find element with gid %\n", melefullmap->GID(i));
+    if (!element) FOUR_C_THROW("Cannot find element with gid {}", melefullmap->GID(i));
     auto* mrtrelement = dynamic_cast<Mortar::Element*>(element);
     if (mrtrelement->min_edge_size() < lmin) lmin = mrtrelement->min_edge_size();
   }
@@ -2865,7 +2865,7 @@ void Mortar::Interface::evaluate_search_brute_force(const double& eps)
     // initialize slabs with first node
     int sgid = selecolmap_->GID(i);
     Core::Elements::Element* element = idiscret_->g_element(sgid);
-    if (!element) FOUR_C_THROW("Cannot find element with gid %\n", sgid);
+    if (!element) FOUR_C_THROW("Cannot find element with gid {}", sgid);
     Core::Nodes::Node** node = element->nodes();
     auto* mrtrnode = dynamic_cast<Node*>(node[0]);
     const double* posnode = mrtrnode->xspatial();
@@ -2947,7 +2947,7 @@ void Mortar::Interface::evaluate_search_brute_force(const double& eps)
       // initialize slabs with first node
       int mgid = melefullmap->GID(j);
       Core::Elements::Element* element = idiscret_->g_element(mgid);
-      if (!element) FOUR_C_THROW("Cannot find element with gid %\n", mgid);
+      if (!element) FOUR_C_THROW("Cannot find element with gid {}", mgid);
       Core::Nodes::Node** node = element->nodes();
       auto* mrtrnode = dynamic_cast<Node*>(node[0]);
       const double* posnode = mrtrnode->xspatial();
@@ -4419,7 +4419,7 @@ bool Mortar::Interface::check_output_list(
   {
     if (not outParams.isParameter(requiredEntry))
     {
-      FOUR_C_THROW("Parameter list is missing the required entry '%s'.", (requiredEntry).c_str());
+      FOUR_C_THROW("Parameter list is missing the required entry '{}'.", (requiredEntry).c_str());
       return false;
     }
   }

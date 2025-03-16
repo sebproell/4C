@@ -758,7 +758,7 @@ void NOX::Nln::Solver::PseudoTransient::throw_error(
     std::ostringstream msg;
     msg << "ERROR - NOX::Nln::Solver::PseudoTransient::" << functionName << " - " << errorMsg
         << std::endl;
-    FOUR_C_THROW(msg.str());
+    FOUR_C_THROW("{}", msg.str());
   }
   throw "NOX Error";
 }
@@ -805,7 +805,7 @@ void NOX::Nln::LinSystem::PrePostOp::PseudoTransient::run_post_compute_jacobian(
     }
     default:
     {
-      FOUR_C_THROW("Unsupported jacobian operator type: %s",
+      FOUR_C_THROW("Unsupported jacobian operator type: {}",
           NOX::Nln::LinSystem::operator_type_to_string(jactype).c_str());
       break;
     }

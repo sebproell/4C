@@ -404,7 +404,7 @@ bool Cut::Impl::find_cycles(graph_t& g, Cut::Cycle& cycle,
             << previous->id() << std::endl;
         file.close();
 
-        FOUR_C_THROW(err_msg.str());
+        FOUR_C_THROW("{}", err_msg.str());
       }
 
       arcs[arc] = *ai;
@@ -1032,7 +1032,7 @@ bool Cut::Impl::PointGraph::Graph::has_touching_edge(Element* element, Side* sid
           err_msg << "The single cut point in pointgraph(Id=" << cut_point->id() << ")"
                   << " is not a nodal point of any of the edges connected to it (Not Touching)\n\
             This can for instance happen if your cut surface is not closed, so check your geometry first!\n";
-          FOUR_C_THROW(err_msg.str());
+          FOUR_C_THROW("{}", err_msg.str());
         }
       }
     }
@@ -1132,7 +1132,7 @@ Cut::Impl::PointGraph* Cut::Impl::PointGraph::create(Mesh& mesh, Element* elemen
       pg = new PointGraph(mesh, element, side, location, strategy);
       break;
     default:
-      FOUR_C_THROW("Unsupported element dimension! ( dim = %d )", dim);
+      FOUR_C_THROW("Unsupported element dimension! ( dim = {} )", dim);
       break;
   }
   return pg;

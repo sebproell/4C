@@ -100,7 +100,7 @@ void ScaTra::ScaTraUtils::check_consistency_with_s2_i_kinetics_condition(
       }
       default:
       {
-        FOUR_C_THROW("interface side of %s has to be either 'Slave' or 'Master'",
+        FOUR_C_THROW("interface side of {} has to be either 'Slave' or 'Master'",
             condition_to_be_tested.c_str());
         break;
       }
@@ -323,7 +323,7 @@ ScaTra::ScaTraUtils::compute_gradient_at_nodes_mean_average(Core::FE::Discretiza
     // get local processor id according to global node id
     const int lid = (*gradphirow).Map().LID(GID);
     if (lid < 0)
-      FOUR_C_THROW("Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
+      FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
           Core::Communication::my_mpi_rank((*gradphirow).Comm()), GID);
 
     const int numcol = (*gradphirow).NumVectors();

@@ -771,13 +771,13 @@ void Discret::Elements::Beam3r::set_up_reference_geometry(
     if (xrefe.size() != 3 * nnodecl)
       FOUR_C_THROW(
           "size mismatch in given position vector for stress-free reference geometry of beam3r:"
-          " expected %d and got %d entries!",
+          " expected {} and got {} entries!",
           3 * nnodecl, xrefe.size());
 
     if (rotrefe.size() != 3 * nnodetriad)
       FOUR_C_THROW(
           "size mismatch in given rotation vector for stress-free reference geometry of beam3r:"
-          " expected %d and got %d entries!",
+          " expected {} and got {} entries!",
           3 * nnodetriad, rotrefe.size());
 
 
@@ -1182,8 +1182,8 @@ void Discret::Elements::Beam3r::get_pos_at_xi(
     extract_centerline_dof_values_from_element_state_vector(disp, disp_centerline);
   else
     FOUR_C_THROW(
-        "size mismatch: expected either %d values for disp_centerline or "
-        "%d values for full disp state vector of this element and got %d",
+        "size mismatch: expected either {} values for disp_centerline or "
+        "{} values for full disp state vector of this element and got {}",
         3 * numnodalvalues * nnodecl, 3 * numnodalvalues * nnodecl + 3 * nnodetriad, disp.size());
 
   switch (nnodecl)
@@ -1291,8 +1291,8 @@ void Discret::Elements::Beam3r::get_triad_at_xi(
   else
   {
     FOUR_C_THROW(
-        "size mismatch: expected either %d values for psi (rotation vecs) or "
-        "%d values for for full disp state vector of this element and got %d",
+        "size mismatch: expected either {} values for psi (rotation vecs) or "
+        "{} values for for full disp state vector of this element and got {}",
         3 * nnodetriad, 3 * numnodalvalues * nnodecl + 3 * nnodetriad, disp.size());
   }
 
@@ -1326,7 +1326,7 @@ void Discret::Elements::Beam3r::get_triad_at_xi(
       break;
     }
     default:
-      FOUR_C_THROW("%d is no valid number of nodes for beam3r triad interpolation", nnodetriad);
+      FOUR_C_THROW("{} is no valid number of nodes for beam3r triad interpolation", nnodetriad);
       break;
   }
 }
@@ -1343,7 +1343,7 @@ void Discret::Elements::Beam3r::get_generalized_interpolation_matrix_variations_
   // safety check
   if (static_cast<unsigned int>(Ivar.numRows()) != 6 or
       static_cast<unsigned int>(Ivar.numCols()) != 3 * vpernode * nnodecl + 3 * nnodetriad)
-    FOUR_C_THROW("size mismatch! expected %dx%d matrix and got %dx%d", 6,
+    FOUR_C_THROW("size mismatch! expected {}x{} matrix and got {}x{}", 6,
         3 * vpernode * nnodecl + 3 * nnodetriad, Ivar.numRows(), Ivar.numCols());
 
   switch (nnodetriad)
@@ -1461,7 +1461,7 @@ void Discret::Elements::Beam3r::get_generalized_interpolation_matrix_increments_
   // safety check
   if (static_cast<unsigned int>(Iinc.numRows()) != 6 or
       static_cast<unsigned int>(Iinc.numCols()) != 3 * vpernode * nnodecl + 3 * nnodetriad)
-    FOUR_C_THROW("size mismatch! expected %dx%d matrix and got %dx%d", 6,
+    FOUR_C_THROW("size mismatch! expected {}x{} matrix and got {}x{}", 6,
         3 * vpernode * nnodecl + 3 * nnodetriad, Iinc.numRows(), Iinc.numCols());
 
   switch (nnodetriad)
@@ -1696,7 +1696,7 @@ void Discret::Elements::Beam3r::extract_centerline_dof_values_from_element_state
   const int dofpercombinode = dofperclnode + dofpertriadnode;
 
   if (dofvec.size() != dofperclnode * nnodecl + dofpertriadnode * this->num_node())
-    FOUR_C_THROW("size mismatch: expected %d values for element state vector and got %d",
+    FOUR_C_THROW("size mismatch: expected {} values for element state vector and got {}",
         dofperclnode * nnodecl + dofpertriadnode * this->num_node(), dofvec.size());
 
   // get current values for DOFs relevant for centerline interpolation
@@ -1788,7 +1788,7 @@ void Discret::Elements::Beam3r::extract_rot_vec_dof_values(const std::vector<dou
   const int dofpercombinode = dofperclnode + dofpertriadnode;
 
   if (dofvec.size() != dofperclnode * nnodecl + dofpertriadnode * nnodetriad)
-    FOUR_C_THROW("size mismatch: expected %d values for element state vector and got %d",
+    FOUR_C_THROW("size mismatch: expected {} values for element state vector and got {}",
         dofperclnode * nnodecl + dofpertriadnode * nnodetriad, dofvec.size());
 
   // get current values for DOFs relevant for triad interpolation
@@ -1919,8 +1919,8 @@ void Discret::Elements::Beam3r::get_nodal_triads_from_full_disp_vec_or_from_disp
   else
   {
     FOUR_C_THROW(
-        "size mismatch: expected either %d values for psi (rotation vecs) or "
-        "%d values for for full disp state vector of this element and got %d",
+        "size mismatch: expected either {} values for psi (rotation vecs) or "
+        "{} values for for full disp state vector of this element and got {}",
         3 * nnodetriad, 3 * vpernode * nnodecl + 3 * nnodetriad, dispvec.size());
   }
 

@@ -127,9 +127,9 @@ namespace Cut
     void coordinates(T& xyze_lineElement)
     {
       if (static_cast<unsigned>(xyze_lineElement.num_rows()) != n_prob_dim())
-        FOUR_C_THROW("xyze_lineElement has the wrong number of rows! (probdim = %d)", n_prob_dim());
+        FOUR_C_THROW("xyze_lineElement has the wrong number of rows! (probdim = {})", n_prob_dim());
       if (static_cast<unsigned>(xyze_lineElement.num_cols()) != num_nodes())
-        FOUR_C_THROW("xyze_lineElement has the wrong number of columns! (dim = %d)", num_nodes());
+        FOUR_C_THROW("xyze_lineElement has the wrong number of columns! (dim = {})", num_nodes());
 
       coordinates(xyze_lineElement.values());
     }
@@ -426,7 +426,7 @@ namespace Cut
           e = new ConcreteEdge<3, edgetype>(nodes);
           break;
         default:
-          FOUR_C_THROW("Unsupported problem dimension! (probdim=%d)", probdim);
+          FOUR_C_THROW("Unsupported problem dimension! (probdim={})", probdim);
           break;
       }
       return e;

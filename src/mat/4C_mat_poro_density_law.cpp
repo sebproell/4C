@@ -46,7 +46,7 @@ Mat::PAR::PoroDensityLaw* Mat::PAR::PoroDensityLaw::create_density_law(int matID
       break;
     }
     default:
-      FOUR_C_THROW("invalid material for density law %d", curmat->type());
+      FOUR_C_THROW("invalid material for density law {}", curmat->type());
       break;
   }
 

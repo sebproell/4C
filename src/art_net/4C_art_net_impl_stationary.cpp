@@ -600,7 +600,7 @@ void Arteries::ArtNetImplStationary::reconstruct_flow()
     actele->evaluate(p, *discret_, la, dummyMat, dummyMat, flowVec, dummyVec, dummyVec);
 
     int err = ele_volflow_->replace_local_value(i, 0, flowVec(0));
-    if (err != 0) FOUR_C_THROW("ReplaceMyValue failed with error code %d!", err);
+    if (err != 0) FOUR_C_THROW("ReplaceMyValue failed with error code {}!", err);
   }
 }
 
@@ -738,7 +738,7 @@ void Arteries::ArtNetImplStationary::set_initial_field(
       break;
     }
     default:
-      FOUR_C_THROW("Unknown option for initial field: %d", init);
+      FOUR_C_THROW("Unknown option for initial field: {}", init);
       break;
   }  // switch(init)
 

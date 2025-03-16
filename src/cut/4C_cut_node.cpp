@@ -787,7 +787,7 @@ void Cut::Node::remove_non_standard_nodal_dof_sets()
     {
       if (nodaldofset.use_count() > 1)
         FOUR_C_THROW(
-            "nodaldofset cannot be destroyed! (strong_count = %d)", nodaldofset.use_count());
+            "nodaldofset cannot be destroyed! (strong_count = {})", nodaldofset.use_count());
       nodaldofset = nullptr;
     }
   }

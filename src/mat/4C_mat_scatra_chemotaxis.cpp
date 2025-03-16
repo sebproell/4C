@@ -27,7 +27,7 @@ Mat::PAR::ScatraChemotaxisMat::ScatraChemotaxisMat(const Core::Mat::PAR::Paramet
 {
   // Some checks for more safety
   if (numscal_ != (int)pair_.size())
-    FOUR_C_THROW("number of materials %d does not fit to size of material vector %d", numscal_,
+    FOUR_C_THROW("number of materials {} does not fit to size of material vector {}", numscal_,
         pair_.size());
 
   // is there exactly one '1' (i.e. attractant) and at least one '-1' (i.e. chemotractant)?
@@ -114,7 +114,7 @@ void Mat::ScatraChemotaxisMat::unpack(Core::Communication::UnpackBuffer& buffer)
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::ScatraChemotaxisMat*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 }

@@ -199,7 +199,7 @@ void FLD::TimIntHDG::explicit_predictor()
     intvelnp_->update(1.0, *intvelnm_, 2.0 * dta_, *intaccn_, 0.0);
   }
   else
-    FOUR_C_THROW("Unknown fluid predictor %s", predictor_.c_str());
+    FOUR_C_THROW("Unknown fluid predictor {}", predictor_.c_str());
 }
 
 /*----------------------------------------------------------------------*

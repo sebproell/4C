@@ -106,7 +106,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FSI::DirichletNeumannDisp::initial
     if (fsipart.get<std::string>("PREDICTOR") != "d(n)")
     {
       FOUR_C_THROW(
-          "unknown interface force predictor '%s'", fsipart.get<std::string>("PREDICTOR").c_str());
+          "unknown interface force predictor '{}'", fsipart.get<std::string>("PREDICTOR").c_str());
     }
     return interface_force();
   }

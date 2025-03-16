@@ -1202,7 +1202,7 @@ namespace Discret
       //! Set the isotropic diffusion coefficient
       virtual void set_isotropic_diff(const double& diff, const int& k)
       {
-        //      if (diff < 0.0) FOUR_C_THROW("negative (physical) diffusivity: %f",0,diff);
+        //      if (diff < 0.0)  FOUR_C_THROW("negative (physical) diffusivity: {}",0,diff);
 
         diff_[k] = diff;
       }

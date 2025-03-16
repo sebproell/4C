@@ -45,7 +45,7 @@ Discret::Elements::RedAcinusImplInterface* Discret::Elements::RedAcinusImplInter
     }
     default:
       FOUR_C_THROW(
-          "shape %d (%d nodes) not supported", red_acinus->shape(), red_acinus->num_node());
+          "shape {} ({} nodes) not supported", red_acinus->shape(), red_acinus->num_node());
       break;
   }
   return nullptr;
@@ -367,7 +367,7 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
           int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
           if (local_id < 0)
           {
-            FOUR_C_THROW("node (%d) doesn't exist on proc(%d)", ele->nodes()[i]->id(),
+            FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
                 Core::Communication::my_mpi_rank(discretization.get_comm()));
             exit(1);
           }
@@ -483,7 +483,7 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
           int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
           if (local_id < 0)
           {
-            FOUR_C_THROW("node (%d) doesn't exist on proc(%d)", ele->nodes()[i]->id(),
+            FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
                 Core::Communication::my_mpi_rank(discretization.get_comm()));
             exit(1);
           }
@@ -535,7 +535,7 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
               {
                 FOUR_C_THROW(
                     "TLC is not used for the following type of VolumeDependentPleuralPressure BC: "
-                    "%s.\n Set TLC = 0.0",
+                    "{}.\n Set TLC = 0.0",
                     ppl_Type.c_str());
               }
 
@@ -582,7 +582,7 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
               }
               else
               {
-                FOUR_C_THROW("Unknown volume pleural pressure type: %s", ppl_Type.c_str());
+                FOUR_C_THROW("Unknown volume pleural pressure type: {}", ppl_Type.c_str());
               }
               Pp_np *= curvefac * (vals[0]);
             }
@@ -626,7 +626,7 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
         }
         else
         {
-          FOUR_C_THROW("prescribed [%s] is not defined for reduced acinuss", Bc.c_str());
+          FOUR_C_THROW("prescribed [{}] is not defined for reduced acinuss", Bc.c_str());
           exit(1);
         }
       }
@@ -642,7 +642,7 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
           int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
           if (local_id < 0)
           {
-            FOUR_C_THROW("node (%d) doesn't exist on proc(%d)", ele->nodes()[i],
+            FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
                 Core::Communication::my_mpi_rank(discretization.get_comm()));
             exit(1);
           }
@@ -893,7 +893,7 @@ void Discret::Elements::AcinusImpl<distype>::get_coupled_values(RedAcinus* ele,
         else
         {
           std::string str = (condition->parameters().get<std::string>("ReturnedVariable"));
-          FOUR_C_THROW("%s, is an unimplemented type of coupling", str.c_str());
+          FOUR_C_THROW("{}, is an unimplemented type of coupling", str.c_str());
           exit(1);
         }
         std::stringstream returnedBCwithId;
@@ -913,7 +913,7 @@ void Discret::Elements::AcinusImpl<distype>::get_coupled_values(RedAcinus* ele,
         itrMap1D = map1D->find(returnedBCwithId.str());
         if (itrMap1D == map1D->end())
         {
-          FOUR_C_THROW("The 3D map for (1D - 3D coupling) has no variable (%s) for ID [%d]",
+          FOUR_C_THROW("The 3D map for (1D - 3D coupling) has no variable ({}) for ID [{}]",
               returnedBC.c_str(), ID);
           exit(1);
         }

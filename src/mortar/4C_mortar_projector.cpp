@@ -79,7 +79,7 @@ Mortar::Projector* Mortar::Projector::impl(Mortar::Element& ele)
     }
     default:
       FOUR_C_THROW(
-          "Element shape %d (%d nodes) not activated. Just do it.", ele.shape(), ele.num_node());
+          "Element shape {} ({} nodes) not activated. Just do it.", ele.shape(), ele.num_node());
       break;
   }
   return nullptr;
@@ -402,7 +402,7 @@ Mortar::Projector* Mortar::Projector::impl(const Mortar::Element& sele, const Mo
     }
     default:
       FOUR_C_THROW(
-          "Element shape %d (%d nodes) not activated. Just do it.", sele.shape(), sele.num_node());
+          "Element shape {} ({} nodes) not activated. Just do it.", sele.shape(), sele.num_node());
       break;
   }
   return nullptr;
@@ -658,8 +658,8 @@ bool Mortar::ProjectorCalcEleBased<distype_s, distype_m>::project_gauss_point_2d
 
       return ok;
 
-      //      FOUR_C_THROW("ProjectGaussPoint: Newton unconverged for GP at xi=%d"
-      //          " from Mortar::ElementID %i", gpeta[0], gpele.Id());
+      //        FOUR_C_THROW("ProjectGaussPoint: Newton unconverged for GP at xi={}"
+      //          " from Mortar::ElementID {}", gpeta[0], gpele.Id());
     }
   }
 
@@ -1037,8 +1037,8 @@ bool Mortar::ProjectorCalc<distype>::project_gauss_point_auxn_3d(const double* g
     if (conv > MORTARCONVTOL)
     {
       //      std::cout << "res= " << conv << std::endl;
-      //      FOUR_C_THROW("project_gauss_point_auxn_3d: Newton unconverged for GP"
-      //          "at xi = (%f,%f,%f) onto Mortar::ElementID %i", globgp[0], globgp[1],
+      //          FOUR_C_THROW("project_gauss_point_auxn_3d: Newton unconverged for GP"
+      //          "at xi = ({},{},{}) onto Mortar::ElementID {}", globgp[0], globgp[1],
       //          globgp[2], ele.Id());
       xi[0] = 1e12;
       xi[1] = 1e12;

@@ -280,7 +280,7 @@ void Core::LinAlg::EquilibrationBlock::equilibrate_matrix(
               int numentries(0);
               std::vector<double> values(length, 0.);
               if (matrix.epetra_matrix()->ExtractMyRowCopy(irow, length, numentries, values.data()))
-                FOUR_C_THROW("Cannot extract matrix row with local ID %d from matrix block!", irow);
+                FOUR_C_THROW("Cannot extract matrix row with local ID {} from matrix block!", irow);
 
               // compute and store current row sum
               double rowsum(0.);
@@ -353,7 +353,7 @@ void Core::LinAlg::EquilibrationBlock::equilibrate_matrix(
               std::vector<int> indices(length, 0);
               if (matrix.epetra_matrix()->ExtractMyRowCopy(
                       irow, length, numentries, values.data(), indices.data()))
-                FOUR_C_THROW("Cannot extract matrix row with local ID %d from matrix block!", irow);
+                FOUR_C_THROW("Cannot extract matrix row with local ID {} from matrix block!", irow);
 
               // add entries of current matrix row to column sums
               for (int ientry = 0; ientry < numentries; ++ientry)

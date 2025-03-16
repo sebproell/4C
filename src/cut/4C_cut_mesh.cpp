@@ -81,7 +81,7 @@ Cut::Element* Cut::Mesh::create_element(
       return create_wedge6(eid, nids);
     default:
       FOUR_C_THROW(
-          "unsupported distype ( distype = %s )", Core::FE::cell_type_to_string(distype).c_str());
+          "unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype).c_str());
       exit(EXIT_FAILURE);
   }
   return nullptr;
@@ -101,7 +101,7 @@ Cut::Side* Cut::Mesh::create_side(int sid, const std::vector<int>& nids, Core::F
       return create_tri3_side(sid, nids);
     default:
       FOUR_C_THROW(
-          "unsupported distype ( distype = %s )", Core::FE::cell_type_to_string(distype).c_str());
+          "unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype).c_str());
       exit(EXIT_FAILURE);
   }
   return nullptr;
@@ -1670,7 +1670,7 @@ void Cut::Mesh::test_element_volume(
 
       // Cut test is written for level-set cases as well.
       debug_dump(&e, __FILE__, __LINE__);
-      FOUR_C_THROW(err.str());
+      FOUR_C_THROW("{}", err.str());
     }
   }
 }
@@ -2647,7 +2647,7 @@ Cut::Element* Cut::Mesh::get_element(
     case 3:
       return get_element<3>(eid, nodes, top_data, active);
     default:
-      FOUR_C_THROW("Element dimension out of range! ( dim = %d )", top_data.dimension);
+      FOUR_C_THROW("Element dimension out of range! ( dim = {} )", top_data.dimension);
       exit(EXIT_FAILURE);
   }
   exit(EXIT_FAILURE);
@@ -2965,7 +2965,7 @@ void Cut::Mesh::assign_other_volume_cells_cut_test(const Mesh& other)
   {
     std::stringstream str;
     str << cells.size() << " volume cells left. Need to handle those.";
-    FOUR_C_THROW(str.str());
+    FOUR_C_THROW("{}", str.str());
   }
 }
 

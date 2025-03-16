@@ -355,7 +355,7 @@ double Solid::TimeInt::BaseDataSDyn::get_res_tolerance(
     default:
       FOUR_C_THROW(
           "There is no residual tolerance for the given quantity type! "
-          "(quantity: %s)",
+          "(quantity: {})",
           NOX::Nln::StatusTest::quantity_type_to_string(qtype).c_str());
       break;
   }
@@ -395,7 +395,7 @@ double Solid::TimeInt::BaseDataSDyn::get_incr_tolerance(
     default:
       FOUR_C_THROW(
           "There is no increment tolerance for the given quantity type! "
-          "(quantity: %s)",
+          "(quantity: {})",
           NOX::Nln::StatusTest::quantity_type_to_string(qtype).c_str());
       break;
   }
@@ -435,7 +435,7 @@ enum Inpar::Solid::ConvNorm Solid::TimeInt::BaseDataSDyn::get_res_tolerance_type
     default:
       FOUR_C_THROW(
           "There is no residual tolerance type for the given quantity type! "
-          "(quantity: %s)",
+          "(quantity: {})",
           NOX::Nln::StatusTest::quantity_type_to_string(qtype).c_str());
       break;
   }
@@ -475,7 +475,7 @@ enum Inpar::Solid::ConvNorm Solid::TimeInt::BaseDataSDyn::get_incr_tolerance_typ
     default:
       FOUR_C_THROW(
           "There is no increment tolerance type for the given quantity type! "
-          "(quantity: %s)",
+          "(quantity: {})",
           NOX::Nln::StatusTest::quantity_type_to_string(qtype).c_str());
       break;
   }
@@ -546,7 +546,7 @@ enum Inpar::Solid::BinaryOp Solid::TimeInt::BaseDataSDyn::get_res_combo_type(
   else
     FOUR_C_THROW(
         "There is no combination type for the given quantity types! "
-        "(quantity_1: %s, quantity_2: %s)",
+        "(quantity_1: {}, quantity_2: {})",
         NOX::Nln::StatusTest::quantity_type_to_string(qtype_1).c_str(),
         NOX::Nln::StatusTest::quantity_type_to_string(qtype_2).c_str());
 
@@ -616,7 +616,7 @@ enum Inpar::Solid::BinaryOp Solid::TimeInt::BaseDataSDyn::get_incr_combo_type(
   else
     FOUR_C_THROW(
         "There is no combination type for the given quantity types! "
-        "(quantity_1: %s, quantity_2: %s)",
+        "(quantity_1: {}, quantity_2: {})",
         NOX::Nln::StatusTest::quantity_type_to_string(qtype_1).c_str(),
         NOX::Nln::StatusTest::quantity_type_to_string(qtype_2).c_str());
 
@@ -639,7 +639,7 @@ enum Inpar::Solid::BinaryOp Solid::TimeInt::BaseDataSDyn::get_res_incr_combo_typ
   else
     FOUR_C_THROW(
         "There is no res-incr-combination type for the given quantity types! "
-        "(quantity_res: %s, quantity_incr: %s)",
+        "(quantity_res: {}, quantity_incr: {})",
         NOX::Nln::StatusTest::quantity_type_to_string(qtype_res).c_str(),
         NOX::Nln::StatusTest::quantity_type_to_string(qtype_incr).c_str());
 

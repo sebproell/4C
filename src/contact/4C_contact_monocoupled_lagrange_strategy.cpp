@@ -307,7 +307,7 @@ void CONTACT::MonoCoupledLagrangeStrategy::recover_coupled(
     if (inc.size() != csx_s_.size())
       FOUR_C_THROW(
           "CONTACT::MonoCoupledLagrangeStrategy::RecoverCoupled: For Recovery the same number of "
-          "off-diagonal increment blocks is required! %d != %d !",
+          "off-diagonal increment blocks is required! {} != {} !",
           inc.size(), csx_s_.size());
 
     // condensation has been performed for active LM only,
@@ -333,7 +333,7 @@ void CONTACT::MonoCoupledLagrangeStrategy::recover_coupled(
       if (inciter == inc.end())
         FOUR_C_THROW(
             "CONTACT::MonoCoupledLagrangeStrategy::RecoverCoupled: Couldn't find increment block "
-            "%d for recovery of the lagrange multiplier!",
+            "{} for recovery of the lagrange multiplier!",
             matiter->first);
 
       /**********************************************************************/

@@ -131,7 +131,7 @@ void XFEM::MeshCouplingFPI::complete_state_vectors()
   Core::LinAlg::Vector<double> iforce_tmp(itrueresidual_->get_map(), true);
   Epetra_Export exporter_iforce(iforcecol_->get_map(), iforce_tmp.get_map());
   int err1 = iforce_tmp.export_to(*iforcecol_, exporter_iforce, Add);
-  if (err1) FOUR_C_THROW("Export using exporter returned err=%d", err1);
+  if (err1) FOUR_C_THROW("Export using exporter returned err={}", err1);
 
   // scale the interface trueresidual with -1.0 to get the forces acting on structural side (no
   // residual-scaling!)
@@ -813,7 +813,7 @@ double XFEM::MeshCouplingFPI::calctr_permeability(
   if (coupl_ele->num_material() > 1)
     poromat = std::dynamic_pointer_cast<Mat::FluidPoro>(coupl_ele->material(1));
   else
-    FOUR_C_THROW("no second material defined for element %i", ele->id());
+    FOUR_C_THROW("no second material defined for element {}", ele->id());
 
   static Core::LinAlg::Matrix<3, 3> reactiontensor(true);
   poromat->compute_reaction_tensor(reactiontensor, J, porosity);
@@ -848,7 +848,7 @@ double XFEM::MeshCouplingFPI::calc_porosity(
       FOUR_C_THROW("invalid structure material for poroelasticity");
   }
   else
-    FOUR_C_THROW("no second material defined for element %i", ele->id());
+    FOUR_C_THROW("no second material defined for element {}", ele->id());
 
   Teuchos::ParameterList params;  // empty parameter list;
   double porosity;
@@ -966,13 +966,13 @@ double XFEM::MeshCouplingFPI::compute_jacobianand_pressure(
     }
     else
       FOUR_C_THROW(
-          "t_det_deformation_gradient for type %s not yet implemented, just add your element type!",
+          "t_det_deformation_gradient for type {} not yet implemented, just add your element type!",
           (Core::FE::cell_type_to_string(coupl_ele->shape())).c_str());
     return -1.0;
   }
   else
     FOUR_C_THROW(
-        "t_det_deformation_gradient for type %s not yet implemented, just add your element type!",
+        "t_det_deformation_gradient for type {} not yet implemented, just add your element type!",
         (Core::FE::cell_type_to_string(fele->shape())).c_str());
   return -1.0;
 }

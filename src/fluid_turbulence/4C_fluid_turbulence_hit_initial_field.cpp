@@ -79,7 +79,7 @@ namespace FLD
       }
       default:
       {
-        FOUR_C_THROW("Set problem size! %i", discret_->num_global_elements());
+        FOUR_C_THROW("Set problem size! {}", discret_->num_global_elements());
         break;
       }
     }

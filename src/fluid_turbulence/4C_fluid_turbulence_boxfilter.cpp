@@ -318,7 +318,7 @@ void FLD::Boxfilter::apply_box_filter(
     // against heaviside function element
     int err = ele->evaluate(filterparams, *discret_, lm, emat1, emat2, evec1, evec2, evec2);
     if (err)
-      FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+      FOUR_C_THROW("Proc {}: Element {} returned err={}",
           Core::Communication::my_mpi_rank(discret_->get_comm()), ele->id(), err);
 
     // get contribution to patch volume of this element. Add it up.
@@ -1087,7 +1087,7 @@ void FLD::Boxfilter::apply_box_filter_scatra(
     // against heaviside function element
     int err = ele->evaluate(filterparams, *scatradiscret_, la, emat1, emat2, evec1, evec2, evec2);
     if (err)
-      FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+      FOUR_C_THROW("Proc {}: Element {} returned err={}",
           Core::Communication::my_mpi_rank(scatradiscret_->get_comm()), ele->id(), err);
 
     // get contribution to patch volume of this element. Add it up.

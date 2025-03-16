@@ -186,7 +186,7 @@ namespace Core::IO
                      << " in...." << Core::IO::flush;
 
     int err = dis_->fill_complete(false, false, false);
-    if (err) FOUR_C_THROW("dis_->fill_complete() returned %d", err);
+    if (err) FOUR_C_THROW("dis_->fill_complete() returned {}", err);
 
     if (!myrank) Core::IO::cout << time.totalElapsedTime(true) << " secs" << Core::IO::endl;
 

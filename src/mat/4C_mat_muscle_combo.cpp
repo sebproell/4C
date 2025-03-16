@@ -213,7 +213,7 @@ void Mat::MuscleCombo::unpack(Core::Communication::UnpackBuffer& buffer)
         activation_evaluator_ = std::visit(ActivationParamsVisitor(), params_->activationParams_);
       }
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
   }

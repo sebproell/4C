@@ -496,7 +496,7 @@ void Cut::TetMesh::call_q_hull(
     {
       std::stringstream str;
       str << "did not free " << totlong << " bytes of long memory (" << curlong << " pieces)";
-      FOUR_C_THROW(str.str());
+      FOUR_C_THROW("{}", str.str());
     }
 
     if (tets.size() > 0)

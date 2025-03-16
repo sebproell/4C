@@ -441,7 +441,7 @@ void FPSI::InterfaceUtils::setup_local_interface_facing_element_map(
   else if (abs(globalslavegeomsize - globalmatchedelements) > 1e-3 and
            Core::Communication::my_mpi_rank(mastercomm) == 0)
   {
-    FOUR_C_THROW("ERROR: globalslavegeomsize != globalmatchedelements (%d,%d)", globalslavegeomsize,
+    FOUR_C_THROW("ERROR: globalslavegeomsize != globalmatchedelements ({},{})", globalslavegeomsize,
         globalmatchedelements);
   }
 
@@ -575,7 +575,7 @@ void FPSI::InterfaceUtils::redistribute_interface(Core::FE::Discretization& mast
           // "<<masterdis->HaveGlobalElement(mastereleid)<<" on proc "<<slaveeleowner<<endl;
           after = masterdis.have_global_element(mastereleid);
           if (after == 0 and before == 0)
-            FOUR_C_THROW("Element with gid=%d has not been redistributed ! ", mastereleid);
+            FOUR_C_THROW("Element with gid={} has not been redistributed ! ", mastereleid);
         }
       }
 

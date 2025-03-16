@@ -49,7 +49,7 @@ void ParticleInteraction::InteractionWriter::register_specific_runtime_output_wr
 {
   // safety check
   if (runtime_visualization_managers_.count(fieldname))
-    FOUR_C_THROW("a runtime output writer for field '%s' is already stored!", fieldname.c_str());
+    FOUR_C_THROW("a runtime output writer for field '{}' is already stored!", fieldname.c_str());
 
   // construct and init the output writer object
   std::shared_ptr<Core::IO::VisualizationManager> runtime_visualization_manager =
@@ -68,7 +68,7 @@ void ParticleInteraction::InteractionWriter::register_specific_runtime_csv_write
 {
   // safety check
   if (runtime_csvwriters_.count(fieldname))
-    FOUR_C_THROW("a runtime csv writer for field '%s' is already stored!", fieldname.c_str());
+    FOUR_C_THROW("a runtime csv writer for field '{}' is already stored!", fieldname.c_str());
 
   // set the csv writer object
   runtime_csvwriters_[fieldname] =

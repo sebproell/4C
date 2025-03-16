@@ -82,7 +82,7 @@ namespace Thermo
       case calc_thermo_fintcond:
         return "calc_thermo_fintcond";
       default:
-        FOUR_C_THROW("no string for action %d defined!", action);
+        FOUR_C_THROW("no string for action {} defined!", action);
     };
   }
 
@@ -97,7 +97,7 @@ namespace Thermo
       case calc_thermo_fextconvection_coupltang:
         return "calc_thermo_fextconvection_coupltang";
       default:
-        FOUR_C_THROW("no string for the boundary action %d defined!", baction);
+        FOUR_C_THROW("no string for the boundary action {} defined!", baction);
     };
   }
 

@@ -47,7 +47,7 @@ void POROFLUIDMULTIPHASE::ResultTest::test_node(
 
   if (isnodeofanybody == 0)
   {
-    FOUR_C_THROW("Node %d does not belong to discretization %s", node + 1,
+    FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1,
         porotimint_.discretization()->name().c_str());
   }
   else
@@ -96,7 +96,7 @@ void POROFLUIDMULTIPHASE::ResultTest::test_element(
 
   if (iselementofanybody == 0)
   {
-    FOUR_C_THROW("Element %d does not belong to discretization %s", element + 1,
+    FOUR_C_THROW("Element {} does not belong to discretization {}", element + 1,
         porotimint_.discretization()->name().c_str());
   }
   else
@@ -199,7 +199,7 @@ double POROFLUIDMULTIPHASE::ResultTest::result_node(
 
   // catch unknown quantity strings
   else
-    FOUR_C_THROW("Quantity '%s' not supported in result test!", quantity.c_str());
+    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity.c_str());
 
   return result;
 }  // POROFLUIDMULTIPHASE::ResultTest::ResultNode
@@ -244,7 +244,7 @@ double POROFLUIDMULTIPHASE::ResultTest::result_element(
   }
   // catch unknown quantity strings
   else
-    FOUR_C_THROW("Quantity '%s' not supported in result test!", quantity.c_str());
+    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity.c_str());
 
   return result;
 }
@@ -303,7 +303,7 @@ double POROFLUIDMULTIPHASE::ResultTest::result_special(
 
     // index should be in range [0, number_functions - 1]
     if (idx < 0 || idx >= porotimint_.num_domain_int_functions())
-      FOUR_C_THROW("detected wrong index %i, index should be in range [0,%i]", idx,
+      FOUR_C_THROW("detected wrong index {}, index should be in range [0,{}]", idx,
           porotimint_.num_domain_int_functions() - 1);
 
     // return the result
@@ -311,7 +311,7 @@ double POROFLUIDMULTIPHASE::ResultTest::result_special(
   }
   // catch unknown quantity strings
   else
-    FOUR_C_THROW("Quantity '%s' not supported in result test!", quantity.c_str());
+    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity.c_str());
 
   return result;
 }  // POROFLUIDMULTIPHASE::ResultTest::result_special

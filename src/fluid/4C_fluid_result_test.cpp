@@ -54,7 +54,7 @@ void FLD::FluidResultTest::test_node(
   if (isnodeofanybody == 0)
   {
     FOUR_C_THROW(
-        "Node %d does not belong to discretization %s", node + 1, fluiddis_->name().c_str());
+        "Node {} does not belong to discretization {}", node + 1, fluiddis_->name().c_str());
   }
   else
   {
@@ -84,7 +84,7 @@ void FLD::FluidResultTest::test_node(
       else if (position == "pressure")
       {
         if (fluiddis_->num_dof(0, actnode) < (numdim + 1))
-          FOUR_C_THROW("too few dofs at node %d for pressure testing", actnode->id());
+          FOUR_C_THROW("too few dofs at node {} for pressure testing", actnode->id());
         result = (*mysol_)[velnpmap.LID(fluiddis_->dof(0, actnode, numdim))];
       }
       else if (position == "tractionx")
@@ -120,7 +120,7 @@ void FLD::FluidResultTest::test_node(
       else if (position == "L2errmom")
         result = (*myerror_)[2];
       else
-        FOUR_C_THROW("Quantity '%s' not supported in fluid testing", position.c_str());
+        FOUR_C_THROW("Quantity '{}' not supported in fluid testing", position.c_str());
 
       nerr += compare_values(result, "NODE", container);
       test_count++;

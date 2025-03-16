@@ -28,7 +28,7 @@ XFEM::XfaCouplingManager::XfaCouplingManager(std::shared_ptr<FLD::XFluid> xfluid
       structure_(structure)
 {
   if (idx_.size() != static_cast<std::size_t>(2 + (structure_ != nullptr)))
-    FOUR_C_THROW("XFACoupling_Manager required (two + num coupled block) ( %d != %d)",
+    FOUR_C_THROW("XFACoupling_Manager required (two + num coupled block) ( {} != {})",
         (2 + (structure_ != nullptr)), idx_.size());
 
   if (structure_ != nullptr)
@@ -39,7 +39,7 @@ XFEM::XfaCouplingManager::XfaCouplingManager(std::shared_ptr<FLD::XFluid> xfluid
       if (ale_->discretization()->get_condition("StructAleCoupling")->get_nodes()->size() !=
           structure_->discretization()->get_condition("StructAleCoupling")->get_nodes()->size())
       {
-        FOUR_C_THROW("XFACoupling_Manager: For StructAleCoupling NumNodes not equal! (%d != %d)",
+        FOUR_C_THROW("XFACoupling_Manager: For StructAleCoupling NumNodes not equal! ({} != {})",
             ale_->discretization()->get_condition("StructAleCoupling")->get_nodes()->size(),
             structure_->discretization()->get_condition("StructAleCoupling")->get_nodes()->size());
       }

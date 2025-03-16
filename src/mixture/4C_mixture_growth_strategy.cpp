@@ -58,7 +58,7 @@ Mixture::PAR::MixtureGrowthStrategy* Mixture::PAR::MixtureGrowthStrategy::factor
     }
     default:
       FOUR_C_THROW(
-          "The referenced material with id %d is not registered as a mixture growth strategy!",
+          "The referenced material with id {} is not registered as a mixture growth strategy!",
           matid);
   }
   return nullptr;

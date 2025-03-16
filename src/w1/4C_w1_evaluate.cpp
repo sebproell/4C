@@ -83,7 +83,7 @@ int Discret::Elements::Wall1::evaluate(Teuchos::ParameterList& params,
     else if (action == "calc_struct_energy")
       act = Core::Elements::struct_calc_energy;
     else
-      FOUR_C_THROW("Unknown type of action %s for Wall1", action.c_str());
+      FOUR_C_THROW("Unknown type of action {} for Wall1", action.c_str());
   }
   // get the material law
   std::shared_ptr<const Core::Mat::Material> actmat = material();
@@ -385,7 +385,7 @@ int Discret::Elements::Wall1::evaluate(Teuchos::ParameterList& params,
     default:
     {
       FOUR_C_THROW(
-          "Unknown type of action for Wall1 element: %s", action_type_to_string(act).c_str());
+          "Unknown type of action for Wall1 element: {}", action_type_to_string(act).c_str());
       break;
     }
   }
@@ -1211,7 +1211,7 @@ void Discret::Elements::Wall1::w1_jacobianmatrix(const Core::LinAlg::SerialDense
   /*------------------------------------------ determinant of jacobian ---*/
   *det = xjm[0][0] * xjm[1][1] - xjm[1][0] * xjm[0][1];
 
-  if (*det < 0.0) FOUR_C_THROW("NEGATIVE JACOBIAN DETERMINANT %8.5f in ELEMENT %d\n", *det, id());
+  if (*det < 0.0) FOUR_C_THROW("NEGATIVE JACOBIAN DETERMINANT {:8.5f} in ELEMENT {}\n", *det, id());
   /*----------------------------------------------------------------------*/
 }  // Discret::Elements::Wall1::w1_jacobianmatrix
 

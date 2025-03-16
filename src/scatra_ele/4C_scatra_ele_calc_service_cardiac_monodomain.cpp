@@ -118,7 +118,7 @@ int Discret::Elements::ScaTraEleCalcCardiacMonodomain<distype, probdim>::evaluat
           {
             int err = material_internal_state->ReplaceGlobalValue(
                 ele->id(), k, material->get_internal_state(k));
-            if (err != 0) FOUR_C_THROW("%i", err);
+            if (err != 0) FOUR_C_THROW("{}", err);
           }
         }
         params.set<std::shared_ptr<Core::LinAlg::MultiVector<double>>>(
@@ -170,7 +170,7 @@ int Discret::Elements::ScaTraEleCalcCardiacMonodomain<distype, probdim>::evaluat
           {
             int err = material_ionic_currents->ReplaceGlobalValue(
                 ele->id(), k, material->get_ionic_currents(k));
-            if (err != 0) FOUR_C_THROW("%i", err);
+            if (err != 0) FOUR_C_THROW("{}", err);
           }
         }
         params.set<std::shared_ptr<Core::LinAlg::MultiVector<double>>>(

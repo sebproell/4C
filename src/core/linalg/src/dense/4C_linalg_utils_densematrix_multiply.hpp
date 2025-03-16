@@ -86,22 +86,18 @@ namespace Core::LinAlg::Internal
       int errorCode, const VectorOrMatrix1& a, const VectorOrMatrix2& b, const VectorOrMatrix2& c)
   {
     FOUR_C_ASSERT(errorCode == 0,
-        std::string(
-            "Error code (" + std::to_string(errorCode) +
-            ") is returned. Something goes wrong with the " +
-            get_matrix_or_vector_string<VectorOrMatrix1>() + "-" +
-            get_matrix_or_vector_string<VectorOrMatrix2>() + " multiplication " +
-            get_matrix_or_vector_case<VectorOrMatrix2>('c') + " = " +
-            get_matrix_or_vector_case<VectorOrMatrix1>('a') + get_transpose_string<transpose1>() +
-            " * " + get_matrix_or_vector_case<VectorOrMatrix2>('b') +
-            get_transpose_string<transpose2>() + ". Dimensions of " +
-            get_matrix_or_vector_case<VectorOrMatrix1>('a') + ", " +
-            get_matrix_or_vector_case<VectorOrMatrix2>('b') + " and " +
-            get_matrix_or_vector_case<VectorOrMatrix2>('c') + " are (" +
-            std::to_string(a.numRows()) + "x" + std::to_string(a.numCols()) + "), (" +
-            std::to_string(b.numRows()) + "x" + std::to_string(b.numCols()) + ") and (" +
-            std::to_string(c.numRows()) + "x" + std::to_string(c.numCols()) + ") respectively.")
-            .c_str());
+        "Error code ({}) is returned. Something went wrong with the {}-{} multiplication {} = {}{} "
+        "* {}{}. "
+        "Dimensions of {}, {}, and {} are ({}x{}), ({}x{}), and ({}x{}) respectively.",
+        errorCode, get_matrix_or_vector_string<VectorOrMatrix1>(),
+        get_matrix_or_vector_string<VectorOrMatrix2>(),
+        get_matrix_or_vector_case<VectorOrMatrix2>('c'),
+        get_matrix_or_vector_case<VectorOrMatrix1>('a'), get_transpose_string<transpose1>(),
+        get_matrix_or_vector_case<VectorOrMatrix2>('b'), get_transpose_string<transpose2>(),
+        get_matrix_or_vector_case<VectorOrMatrix1>('a'),
+        get_matrix_or_vector_case<VectorOrMatrix2>('b'),
+        get_matrix_or_vector_case<VectorOrMatrix2>('c'), a.numRows(), a.numCols(), b.numRows(),
+        b.numCols(), c.numRows(), c.numCols());
   }
 }  // namespace Core::LinAlg::Internal
 

@@ -217,7 +217,7 @@ enum PARTICLEENGINE::ParticleState PARTICLEENGINE::enum_from_state_name(const st
   else if (name == "temperature")
     state = Temperature;
   else
-    FOUR_C_THROW("particle state '%s' unknown!", name.c_str());
+    FOUR_C_THROW("particle state '{}' unknown!", name.c_str());
 
   return state;
 }
@@ -270,7 +270,7 @@ enum PARTICLEENGINE::ParticleType PARTICLEENGINE::enum_from_type_name(const std:
   else if (name == "neumannphase")
     type = NeumannPhase;
   else
-    FOUR_C_THROW("particle type '%s' unknown!", name.c_str());
+    FOUR_C_THROW("particle type '{}' unknown!", name.c_str());
 
   return type;
 }

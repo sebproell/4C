@@ -749,10 +749,10 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
       // check consistency of interface COFs
       for (std::size_t j = 1; j < currentgroup.size(); ++j)
         if (frcoeff[j] != frcoeff[0])
-          FOUR_C_THROW("Inconsistency in friction coefficients of interface %i", groupid1);
+          FOUR_C_THROW("Inconsistency in friction coefficients of interface {}", groupid1);
 
       // check for infeasible value of COF
-      if (frcoeff[0] < 0.0) FOUR_C_THROW("Negative FrCoeff / FrBound on interface %i", groupid1);
+      if (frcoeff[0] < 0.0) FOUR_C_THROW("Negative FrCoeff / FrBound on interface {}", groupid1);
 
       // add COF locally to contact parameter list of this interface
       if (ftype == CONTACT::friction_tresca)
@@ -785,10 +785,10 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
       // check consistency of interface COFs
       for (std::size_t j = 1; j < currentgroup.size(); ++j)
         if (ad_bound[j] != ad_bound[0])
-          FOUR_C_THROW("Inconsistency in adhesion bounds of interface %i", groupid1);
+          FOUR_C_THROW("Inconsistency in adhesion bounds of interface {}", groupid1);
 
       // check for infeasible value of COF
-      if (ad_bound[0] < 0.0) FOUR_C_THROW("Negative adhesion bound on interface %i", groupid1);
+      if (ad_bound[0] < 0.0) FOUR_C_THROW("Negative adhesion bound on interface {}", groupid1);
 
       // add COF locally to contact parameter list of this interface
       icparams.setEntry("ADHESION_BOUND", static_cast<Teuchos::ParameterEntry>(ad_bound[0]));
@@ -846,7 +846,7 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
         {
           FOUR_C_THROW(
               "surface node without adjacent element detected! "
-              "(node-id = %d)",
+              "(node-id = {})",
               node->id());
         }
 
@@ -1233,7 +1233,7 @@ int CONTACT::STRATEGY::Factory::identify_full_subset(
     {
       if (throw_if_partial_subset_on_proc)
         FOUR_C_THROW(
-            "Partial sub-map detected on proc #%d!", Core::Communication::my_mpi_rank(get_comm()));
+            "Partial sub-map detected on proc #{}!", Core::Communication::my_mpi_rank(get_comm()));
       is_fullsubmap = false;
     }
   }
@@ -1624,7 +1624,7 @@ std::shared_ptr<CONTACT::AbstractStrategy> CONTACT::STRATEGY::Factory::build_str
   else
   {
     FOUR_C_THROW(
-        "Unrecognized strategy: \"%s\"", CONTACT::solving_strategy_to_string(stype).c_str());
+        "Unrecognized strategy: \"{}\"", CONTACT::solving_strategy_to_string(stype).c_str());
   }
 
   // setup the strategy object

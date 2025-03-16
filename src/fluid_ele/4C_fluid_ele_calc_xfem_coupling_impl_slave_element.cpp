@@ -50,7 +50,7 @@ namespace Discret
         std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
             slavedis.get_state(disp_statename_);
         if (matrix_state == nullptr)
-          FOUR_C_THROW("Cannot get state vector %s", disp_statename_.c_str());
+          FOUR_C_THROW("Cannot get state vector {}", disp_statename_.c_str());
 
         // extract local values of the global vector
         mymatrix = Core::FE::extract_values(*matrix_state, lm);
@@ -90,7 +90,7 @@ namespace Discret
         std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
             slavedis.get_state(vel_statename_);
         if (matrix_state == nullptr)
-          FOUR_C_THROW("Cannot get state vector %s", vel_statename_.c_str());
+          FOUR_C_THROW("Cannot get state vector {}", vel_statename_.c_str());
 
         // extract local values of the global vectors
         std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
@@ -123,7 +123,7 @@ namespace Discret
         std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
             slavedis.get_state(veln_statename_);
         if (matrix_state == nullptr)
-          FOUR_C_THROW("Cannot get state vector %s", veln_statename_.c_str());
+          FOUR_C_THROW("Cannot get state vector {}", veln_statename_.c_str());
 
         // extract local values of the global vectors
         std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
@@ -240,7 +240,7 @@ namespace Discret
         // get state of the global vector
         std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
             cutterdis.get_state(state);
-        if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector %s", state.c_str());
+        if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state.c_str());
 
         // extract local values of the global vectors
         std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
@@ -273,7 +273,7 @@ namespace Discret
         // get state of the global vector
         std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
             cutterdis.get_state(state);
-        if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector %s", state.c_str());
+        if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state.c_str());
 
         // extract local values of the global vectors
         std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);

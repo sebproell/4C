@@ -3335,7 +3335,7 @@ namespace Core::LinAlg
   {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     if (r >= rows or c >= cols)
-      FOUR_C_THROW("Indices %i,%i out of range in Matrix<%i,%i>.", r, c, rows, cols);
+      FOUR_C_THROW("Indices {},{} out of range in Matrix<{},{}>.", r, c, rows, cols);
 #endif
     return data()[r + c * rows];
   }
@@ -3346,7 +3346,7 @@ namespace Core::LinAlg
   {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     if (r >= rows or c >= cols)
-      FOUR_C_THROW("Indices %i,%i out of range in Matrix<%i,%i>.", r, c, rows, cols);
+      FOUR_C_THROW("Indices {},{} out of range in Matrix<{},{}>.", r, c, rows, cols);
 #endif
     return data()[r + c * rows];
   }
@@ -3357,7 +3357,7 @@ namespace Core::LinAlg
     static_assert((cols == 1) or (rows == 1), "cannot call 1-d access function on 2-d matrix");
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     if (r >= (cols == 1 ? rows : cols))
-      FOUR_C_THROW("Index %i out of range in Matrix<%i,%i>.", r, rows, cols);
+      FOUR_C_THROW("Index {} out of range in Matrix<{},{}>.", r, rows, cols);
 #endif
     return data()[r];
   }
@@ -3368,7 +3368,7 @@ namespace Core::LinAlg
     static_assert((cols == 1) or (rows == 1), "cannot call 1-d access function on 2-d matrix");
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     if (r >= (cols == 1 ? rows : cols))
-      FOUR_C_THROW("Index %i out of range in Matrix<%i,%i>.", r, rows, cols);
+      FOUR_C_THROW("Index {} out of range in Matrix<{},{}>.", r, rows, cols);
 #endif
     return data()[r];
   }

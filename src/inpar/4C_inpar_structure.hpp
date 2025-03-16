@@ -55,7 +55,7 @@ namespace Inpar
           return "rotationvectorDOFs";
           break;
         default:
-          FOUR_C_THROW("Cannot make std::string for element technology %d", name);
+          FOUR_C_THROW("Cannot make std::string for element technology {}", name);
           break;
       }
       return "";
@@ -135,7 +135,7 @@ namespace Inpar
           break;
 
         default:
-          FOUR_C_THROW("Cannot make std::string for model type %d", name);
+          FOUR_C_THROW("Cannot make std::string for model type {}", name);
           return "";
       }
     };
@@ -173,7 +173,7 @@ namespace Inpar
       else if (name == "Multiscale")
         type = model_multiscale;
       else
-        FOUR_C_THROW("Unknown Inpar::Solid::ModelType with name '%s'.", name.c_str());
+        FOUR_C_THROW("Unknown Inpar::Solid::ModelType with name '{}'.", name.c_str());
 
       return type;
     };
@@ -239,7 +239,7 @@ namespace Inpar
           return "AdamsBashforth4";
           break;
         default:
-          FOUR_C_THROW("Cannot make std::string for time integrator %d", name);
+          FOUR_C_THROW("Cannot make std::string for time integrator {}", name);
           return "";
       }
     }
@@ -288,7 +288,7 @@ namespace Inpar
           return "TR-like";
           break;
         default:
-          FOUR_C_THROW("Cannot make std::string for time integrator %d", name);
+          FOUR_C_THROW("Cannot make std::string for time integrator {}", name);
           return "";
       }
     }
@@ -341,7 +341,7 @@ namespace Inpar
         case pred_constdisvelaccpres:
           return "ConstDisVelAccPres";
         default:
-          FOUR_C_THROW("Cannot make std::string for predictor %d", name);
+          FOUR_C_THROW("Cannot make std::string for predictor {}", name);
           exit(EXIT_FAILURE);
       }
     }
@@ -418,7 +418,7 @@ namespace Inpar
           return "singlestep";
           break;
         default:
-          FOUR_C_THROW("Cannot make std::string for solution technique %d", name);
+          FOUR_C_THROW("Cannot make std::string for solution technique {}", name);
           return "";
       }
     }
@@ -479,7 +479,7 @@ namespace Inpar
           return "adapt_3D0Dptc_ele_err";
           break;
         default:
-          FOUR_C_THROW("Cannot make string for solution div cont technique %d", name);
+          FOUR_C_THROW("Cannot make string for solution div cont technique {}", name);
           return "";
       }
     }
@@ -545,7 +545,7 @@ namespace Inpar
           return "stc_currsym";
           break;
         default:
-          FOUR_C_THROW("Cannot make std::string for stc method %d", name);
+          FOUR_C_THROW("Cannot make std::string for stc method {}", name);
           return "";
       }
     }
@@ -689,7 +689,7 @@ namespace Inpar
           return "Inf";
           break;
         default:
-          FOUR_C_THROW("Cannot make std::string to vector norm %d", norm);
+          FOUR_C_THROW("Cannot make std::string to vector norm {}", norm);
           return "";
       }
     }
@@ -714,7 +714,7 @@ namespace Inpar
           return "nonlinear";
       }
 
-      FOUR_C_THROW("Unknown kinematic type %d", kinem_type);
+      FOUR_C_THROW("Unknown kinematic type {}", kinem_type);
     }
     //!@}
 

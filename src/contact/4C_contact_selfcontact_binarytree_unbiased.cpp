@@ -77,7 +77,7 @@ void CONTACT::UnbiasedSelfBinaryTree::calculate_proc_specific_dual_graph(
 
     // get current elements and its nodes
     Core::Elements::Element* element = discret().g_element(gid);
-    if (!element) FOUR_C_THROW("Cannot find element with gid %\n", gid);
+    if (!element) FOUR_C_THROW("Cannot find element with gid {}", gid);
     Core::Nodes::Node** nodes = element->nodes();
     if (!nodes) FOUR_C_THROW("Null pointer!");
 
@@ -312,7 +312,7 @@ void CONTACT::UnbiasedSelfBinaryTree::initialize_tree_bottom_up(std::map<int,
         "thereby assigned to a root node in this algorithm), if they are owned by the same "
         "processor. So in the rare case when there are <= 2 surface elements that are connected "
         "and owned by one processor appear at one of the contact surfaces, those elements can not "
-        "be assigned to a root node and the algorithm fails! %i elements were not assigned to a "
+        "be assigned to a root node and the algorithm fails! {} elements were not assigned to a "
         "root node!\n\n"
         "POSSIBLE SOLUTION: choose a different number of processors!",
         leafsmap().size() - list.size());

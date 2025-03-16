@@ -610,7 +610,7 @@ BeamInteraction::create_beam_to_solid_volume_pair_mortar_cross_section(
           return std::make_shared<BeamToSolidVolumeMeshtyingPair2D3DMortar<GEOMETRYPAIR::t_hermite,
               GEOMETRYPAIR::t_hex8, GEOMETRYPAIR::t_line2_fourier_3>>();
         default:
-          FOUR_C_THROW("Got wrong number of fourier mortar modes %i.", n_fourier_modes);
+          FOUR_C_THROW("Got wrong number of fourier mortar modes {}.", n_fourier_modes);
       }
     }
     default:

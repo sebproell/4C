@@ -119,7 +119,7 @@ namespace Core::LinAlg
         int NumEntries = 0;
         int ierr =
             A.ExtractGlobalRowCopy(Row, Values.size(), NumEntries, Values.data(), Indices.data());
-        if (ierr) FOUR_C_THROW("Epetra_CrsMatrix::ExtractGlobalRowCopy returned err=%d", ierr);
+        if (ierr) FOUR_C_THROW("Epetra_CrsMatrix::ExtractGlobalRowCopy returned err={}", ierr);
         if (scalarA != 1.0)
           for (int j = 0; j < NumEntries; ++j) Values[j] *= scalarA;
         for (int j = 0; j < NumEntries; ++j)
@@ -128,7 +128,7 @@ namespace Core::LinAlg
           if (err < 0 || err == 2) err = B.InsertGlobalValues(Row, 1, &Values[j], &Indices[j]);
           if (err < 0)
             FOUR_C_THROW(
-                "Epetra_CrsMatrix::InsertGlobalValues returned err=%d at row %d", err, Row);
+                "Epetra_CrsMatrix::InsertGlobalValues returned err={} at row {}", err, Row);
         }
       }
 
@@ -185,7 +185,7 @@ void Core::LinAlg::matrix_put(const Core::LinAlg::SparseMatrix& A, const double 
 {
   // put values onto sysmat
   if (A.get_matrixtype() != Core::LinAlg::SparseMatrix::CRS_MATRIX)
-    FOUR_C_THROW("Please check code and see whether it is save to apply it to matrix type %d",
+    FOUR_C_THROW("Please check code and see whether it is save to apply it to matrix type {}",
         A.get_matrixtype());
   Epetra_CrsMatrix* Aprime = const_cast<Epetra_CrsMatrix*>(&(*(A.epetra_matrix())));
   if (Aprime == nullptr) FOUR_C_THROW("Cast failed");
@@ -214,11 +214,11 @@ void Core::LinAlg::matrix_put(const Core::LinAlg::SparseMatrix& A, const double 
     if (Row < 0) FOUR_C_THROW("DOF not found on processor.");
     err =
         Aprime->ExtractGlobalRowCopy(Row, MaxNumEntries, NumEntries, Values.data(), Indices.data());
-    if (err) FOUR_C_THROW("ExtractGlobalRowCopy returned err=%d", err);
+    if (err) FOUR_C_THROW("ExtractGlobalRowCopy returned err={}", err);
     if (scalarA != 1.0)
       for (int j = 0; j < NumEntries; ++j) Values[j] *= scalarA;
     err = B.epetra_matrix()->ReplaceGlobalValues(Row, NumEntries, Values.data(), Indices.data());
-    if (err) FOUR_C_THROW("ReplaceGlobalValues returned err=%d", err);
+    if (err) FOUR_C_THROW("ReplaceGlobalValues returned err={}", err);
   }
 }
 
@@ -264,7 +264,7 @@ std::unique_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::matrix_multiply(
 
   int err = EpetraExt::MatrixMatrix::Multiply(
       *Atrans, transA, *Btrans, transB, *C->epetra_matrix(), complete);
-  if (err) FOUR_C_THROW("EpetraExt::MatrixMatrix::MatrixMultiply returned err = %d", err);
+  if (err) FOUR_C_THROW("EpetraExt::MatrixMatrix::MatrixMultiply returned err = {}", err);
 
   return C;
 }
@@ -312,7 +312,7 @@ std::unique_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::matrix_multiply(const 
 
   int err = EpetraExt::MatrixMatrix::Multiply(
       *Atrans, transA, *Btrans, transB, *C->epetra_matrix(), complete);
-  if (err) FOUR_C_THROW("EpetraExt::MatrixMatrix::MatrixMultiply returned err = %d", err);
+  if (err) FOUR_C_THROW("EpetraExt::MatrixMatrix::MatrixMultiply returned err = {}", err);
 
   return C;
 }

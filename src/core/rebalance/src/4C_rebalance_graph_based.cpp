@@ -274,7 +274,7 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_graph(
       int err = graph->insert_global_indices(grid, (int)cols.size(), &cols[0]);
       if (err < 0)
         FOUR_C_THROW(
-            "Core::LinAlg::Graph::InsertGlobalIndices returned %d for global row %d", err, grid);
+            "Core::LinAlg::Graph::InsertGlobalIndices returned {} for global row {}", err, grid);
     }
     locals.clear();
   }
@@ -314,7 +314,7 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_graph(
         if (rownodes->LID(grid) != -1)  // I have it, put stuff in my graph
         {
           int err = graph->insert_global_indices(grid, num - 1, (ptr + 2));
-          if (err < 0) FOUR_C_THROW("Core::LinAlg::Graph::InsertGlobalIndices returned %d", err);
+          if (err < 0) FOUR_C_THROW("Core::LinAlg::Graph::InsertGlobalIndices returned {}", err);
           ptr += (num + 1);
         }
         else  // I don't have it so I don't care for entries of this row, goto next row
@@ -370,7 +370,7 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_monolithic_nod
     }
     err = element_connectivity.insert_global_indices(
         element->id(), element_node_ids.size(), element_node_ids.data());
-    if (err != 0) FOUR_C_THROW("Core::LinAlg::Graph::InsertGlobalIndices returned %d", err);
+    if (err != 0) FOUR_C_THROW("Core::LinAlg::Graph::InsertGlobalIndices returned {}", err);
   }
   element_connectivity.fill_complete();
 
@@ -389,7 +389,7 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_monolithic_nod
       Copy, my_colliding_primitives_map, n_nodes_per_element_max, false);
   err = my_colliding_primitives_connectivity.import_from(
       element_connectivity.get_epetra_crs_graph(), importer, Insert);
-  if (err != 0) FOUR_C_THROW("Core::LinAlg::Graph::Import returned %d", err);
+  if (err != 0) FOUR_C_THROW("Core::LinAlg::Graph::Import returned {}", err);
 
   // 4. Build and fill the graph with element internal connectivities
   auto my_graph = std::make_shared<Epetra_FECrsGraph>(Copy, *(dis.node_row_map()), 40, false);
@@ -407,7 +407,7 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_monolithic_nod
 
         int err = my_graph->InsertGlobalIndices(1, &index_main, 1, &index);
         if (err != 0)
-          FOUR_C_THROW("Core::LinAlg::Graph::InsertGlobalIndices returned %d for global row %d",
+          FOUR_C_THROW("Core::LinAlg::Graph::InsertGlobalIndices returned {} for global row {}",
               err, node_main->id());
       }
     }
@@ -419,14 +419,14 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_monolithic_nod
   {
     int predicate_lid_discretization = dis.element_row_map()->LID(predicate_gid);
     if (predicate_lid_discretization < 0)
-      FOUR_C_THROW("Could not find lid for predicate with gid %d on rank %d", predicate_gid,
+      FOUR_C_THROW("Could not find lid for predicate with gid {} on rank {}", predicate_gid,
           Core::Communication::my_mpi_rank(dis.get_comm()));
     if (predicate_lid != predicate_lid_discretization)
       FOUR_C_THROW("The ids dont match from arborx and the discretization");
     const auto* predicate = dis.g_element(predicate_gid);
 
     int primitive_lid_in_map = my_colliding_primitives_map.LID(primitive_gid);
-    if (primitive_lid_in_map < 0) FOUR_C_THROW("Could not find lid for gid %d", primitive_gid);
+    if (primitive_lid_in_map < 0) FOUR_C_THROW("Could not find lid for gid {}", primitive_gid);
 
     for (int i_node = 0; i_node < predicate->num_node(); ++i_node)
     {
@@ -437,12 +437,12 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_monolithic_nod
       int* primitive_node_indices;
       err = my_colliding_primitives_connectivity.extract_global_row_view(
           primitive_gid, primitive_num_nodes, primitive_node_indices);
-      if (err != 0) FOUR_C_THROW("Core::LinAlg::Graph::ExtractGlobalRowView returned %d", err);
+      if (err != 0) FOUR_C_THROW("Core::LinAlg::Graph::ExtractGlobalRowView returned {}", err);
 
       int err = my_graph->InsertGlobalIndices(
           1, &index_main, primitive_num_nodes, primitive_node_indices);
       if (err != 0)
-        FOUR_C_THROW("Core::LinAlg::Graph::InsertGlobalIndices returned %d for global row %d", err,
+        FOUR_C_THROW("Core::LinAlg::Graph::InsertGlobalIndices returned {} for global row {}", err,
             node_main->id());
     }
   }

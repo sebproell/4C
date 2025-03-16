@@ -127,7 +127,7 @@ namespace Cut
     bool is_closer_side(const T& startpoint_xyz, Cut::Side* other, bool& is_closer)
     {
       if (startpoint_xyz.m() != n_prob_dim())
-        FOUR_C_THROW("The dimension of startpoint_xyz is wrong! (probdim = %d)", n_prob_dim());
+        FOUR_C_THROW("The dimension of startpoint_xyz is wrong! (probdim = {})", n_prob_dim());
       return is_closer_side(startpoint_xyz.data(), other, is_closer);
     }
 
@@ -145,7 +145,7 @@ namespace Cut
     void edge_at(const T1& rs, std::vector<Edge*>& edges)
     {
       if (static_cast<unsigned>(rs.m()) != n_dim())
-        FOUR_C_THROW("The dimension of rs is wrong! (dim = %d)", n_dim());
+        FOUR_C_THROW("The dimension of rs is wrong! (dim = {})", n_dim());
 
       EdgeAt(rs.data(), edges);
     }
@@ -155,9 +155,9 @@ namespace Cut
     void point_at(const T1& rs, T2& xyz)
     {
       if (static_cast<unsigned>(xyz.m()) < n_prob_dim())
-        FOUR_C_THROW("The dimension of xyz is wrong! (probdim = %d)", n_prob_dim());
+        FOUR_C_THROW("The dimension of xyz is wrong! (probdim = {})", n_prob_dim());
       if (static_cast<unsigned>(rs.m()) != n_dim())
-        FOUR_C_THROW("The dimension of rs is wrong! (dim = %d)", n_dim());
+        FOUR_C_THROW("The dimension of rs is wrong! (dim = {})", n_dim());
 
       PointAt(rs.data(), xyz.data());
 
@@ -170,7 +170,7 @@ namespace Cut
     void side_center(T1& midpoint)
     {
       if (midpoint.m() != n_prob_dim())
-        FOUR_C_THROW("The dimension of xyz is wrong! (probdim = %d)", n_prob_dim());
+        FOUR_C_THROW("The dimension of xyz is wrong! (probdim = {})", n_prob_dim());
       SideCenter(midpoint.data());
     }
 
@@ -183,9 +183,9 @@ namespace Cut
         const T1& xyz, T2& rsd, bool allow_dist = false, double tol = POSITIONTOL)
     {
       if (static_cast<unsigned>(xyz.m()) < n_prob_dim())
-        FOUR_C_THROW("The dimension of xyz is wrong! (probdim = %d)", n_prob_dim());
+        FOUR_C_THROW("The dimension of xyz is wrong! (probdim = {})", n_prob_dim());
       if (static_cast<unsigned>(rsd.m()) < n_prob_dim())
-        FOUR_C_THROW("The dimension of rsd is wrong! (dim = %d)", n_dim());
+        FOUR_C_THROW("The dimension of rsd is wrong! (dim = {})", n_dim());
 
       const bool check = local_coordinates(xyz.data(), rsd.data(), allow_dist, tol);
 
@@ -203,9 +203,9 @@ namespace Cut
     bool within_side(const T1& xyz, T2& rs, double& dist)
     {
       if (static_cast<unsigned>(xyz.m()) != n_prob_dim())
-        FOUR_C_THROW("The dimension of xyz is wrong! (probdim = %d)", n_prob_dim());
+        FOUR_C_THROW("The dimension of xyz is wrong! (probdim = {})", n_prob_dim());
       if (static_cast<unsigned>(rs.m()) != n_dim())
-        FOUR_C_THROW("The dimension of rs is wrong! (dim = %d)", n_dim());
+        FOUR_C_THROW("The dimension of rs is wrong! (dim = {})", n_dim());
 
       return WithinSide(xyz.data(), rs.data(), dist);
     }
@@ -216,8 +216,8 @@ namespace Cut
     bool ray_cut(const T1& p1_xyz, const T1& p2_xyz, T2& rs, double& line_xi)
     {
       if (p1_xyz.m() != n_prob_dim())
-        FOUR_C_THROW("The dimension of xyz is wrong! (probdim = %d)", n_prob_dim());
-      if (rs.m() != n_dim()) FOUR_C_THROW("The dimension of rs is wrong! (dim = %d)", n_dim());
+        FOUR_C_THROW("The dimension of xyz is wrong! (probdim = {})", n_prob_dim());
+      if (rs.m() != n_dim()) FOUR_C_THROW("The dimension of rs is wrong! (dim = {})", n_dim());
       return ray_cut(p1_xyz.data(), p2_xyz.data(), rs.data(), line_xi);
     }
 
@@ -227,9 +227,9 @@ namespace Cut
     void normal(const T1& rs, T2& n, bool unitnormal = true)
     {
       if (static_cast<unsigned>(n.m()) != n_prob_dim())
-        FOUR_C_THROW("The dimension of xyz is wrong! (probdim = %d)", n_prob_dim());
+        FOUR_C_THROW("The dimension of xyz is wrong! (probdim = {})", n_prob_dim());
       if (static_cast<unsigned>(rs.m()) != n_dim())
-        FOUR_C_THROW("The dimension of rs is wrong! (dim = %d)", n_dim());
+        FOUR_C_THROW("The dimension of rs is wrong! (dim = {})", n_dim());
 
       normal(rs.data(), n.data(), unitnormal);
     }
@@ -241,9 +241,9 @@ namespace Cut
     void basis(const T1& rs, T2& t1, T2& t2, T2& n)
     {
       if (static_cast<unsigned>(t1.m()) != n_prob_dim())
-        FOUR_C_THROW("The dimension of xyz is wrong! (probdim = %d)", n_prob_dim());
+        FOUR_C_THROW("The dimension of xyz is wrong! (probdim = {})", n_prob_dim());
       if (static_cast<unsigned>(rs.m()) != n_dim())
-        FOUR_C_THROW("The dimension of rs is wrong! (dim = %d)", n_dim());
+        FOUR_C_THROW("The dimension of rs is wrong! (dim = {})", n_dim());
 
       Basis(rs.data(), t1.data(), t2.data(), n.data());
     }
@@ -255,7 +255,7 @@ namespace Cut
     void basis_at_center(T& t1, T& t2, T& n)
     {
       if (static_cast<unsigned>(t1.m()) != n_prob_dim())
-        FOUR_C_THROW("The dimension of xyz is wrong! (probdim = %d)", n_prob_dim());
+        FOUR_C_THROW("The dimension of xyz is wrong! (probdim = {})", n_prob_dim());
 
       basis_at_center(t1.data(), t2.data(), n.data());
     }
@@ -299,9 +299,9 @@ namespace Cut
     void coordinates(T& xyze) const
     {
       if (static_cast<unsigned>(xyze.num_rows()) < n_prob_dim())
-        FOUR_C_THROW("The row dimension of xyze is wrong! (probdim = %d)", n_prob_dim());
+        FOUR_C_THROW("The row dimension of xyze is wrong! (probdim = {})", n_prob_dim());
       if (static_cast<unsigned>(xyze.num_cols()) < num_nodes())
-        FOUR_C_THROW("The col dimension of xyze is wrong! (numNodesSide = %d)", num_nodes());
+        FOUR_C_THROW("The col dimension of xyze is wrong! (numNodesSide = {})", num_nodes());
 
       // if the matrix
       if (static_cast<unsigned>(xyze.num_rows()) > n_prob_dim() or
@@ -398,7 +398,7 @@ namespace Cut
     Node* on_node(const T& x)
     {
       if (x.m() != n_prob_dim())
-        FOUR_C_THROW("x has the wrong dimension! (probDim = %d)", n_prob_dim());
+        FOUR_C_THROW("x has the wrong dimension! (probDim = {})", n_prob_dim());
 
       T nx;
       for (std::vector<Node*>::iterator i = nodes_.begin(); i != nodes_.end(); ++i)
@@ -696,7 +696,7 @@ namespace Cut
           return shards::getCellTopologyData<shards::Line<2>>();
           break;
         default:
-          FOUR_C_THROW("Unknown sidetype! (%d | %s)\n", sidetype,
+          FOUR_C_THROW("Unknown sidetype! ({} | {})\n", sidetype,
               Core::FE::cell_type_to_string(sidetype).c_str());
           break;
       }
@@ -1054,7 +1054,7 @@ namespace Cut
           s = new ConcreteSide<3, sidetype>(sid, nodes, edges);
           break;
         default:
-          FOUR_C_THROW("Unsupported problem dimension! (probdim = %d)", probdim);
+          FOUR_C_THROW("Unsupported problem dimension! (probdim = {})", probdim);
           break;
       }
       return s;

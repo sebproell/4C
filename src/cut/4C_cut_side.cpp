@@ -97,7 +97,7 @@ bool Cut::Side::find_cut_lines(Mesh& mesh, Element* element, Side& other)
       if (not l->is_cut(element))
       {
         FOUR_C_THROW(
-            "Line (%d, %d) is cut by both sides but not by the element, check this "
+            "Line ({}, {}) is cut by both sides but not by the element, check this "
             "situation as it is not expected!",
             l->begin_point()->id(), l->end_point()->id());
         // l->add_element( element );
@@ -860,7 +860,7 @@ bool Cut::Side::create_parallel_cut_surface(Mesh& mesh, Element* element, Side& 
       Point* p1 = *it;
       Point* p2 = *next;
       if (p1 == p2)
-        FOUR_C_THROW("Trying to create line between two points, which are the same! Point id is %d",
+        FOUR_C_THROW("Trying to create line between two points, which are the same! Point id is {}",
             p1->id());
       mesh.new_line(p1, p2, this, &other, element);
     }
@@ -1381,7 +1381,7 @@ unsigned Cut::Side::uncut_facet_number_per_side() const
     case 1:
       return 2;
     default:
-      FOUR_C_THROW("Unsupported parent element dimension! (ele->Dim() = %d )", ele_dim);
+      FOUR_C_THROW("Unsupported parent element dimension! (ele->Dim() = {} )", ele_dim);
       exit(EXIT_FAILURE);
   }
   // can never be reached
@@ -1876,7 +1876,7 @@ Cut::Side* Cut::SideFactory::create_side(Core::FE::CellType sidetype, int sid,
       break;
     default:
     {
-      FOUR_C_THROW("Unsupported side type! ( %d | %s )", sidetype,
+      FOUR_C_THROW("Unsupported side type! ( {} | {} )", sidetype,
           Core::FE::cell_type_to_string(sidetype).c_str());
       break;
     }
@@ -1900,7 +1900,7 @@ Cut::Side* Cut::Side::create_level_set_side(const int& sid)
       lvs_side_ptr = new LevelSetSide<3>(sid);
       break;
     default:
-      FOUR_C_THROW("Unsupported problem dimension! (probdim=%d)", probdim);
+      FOUR_C_THROW("Unsupported problem dimension! (probdim={})", probdim);
       break;
   }
   return lvs_side_ptr;

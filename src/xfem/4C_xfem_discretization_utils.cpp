@@ -410,7 +410,7 @@ void XFEM::Utils::XFEMDiscretizationBuilder::split_discretization(
   }
   // delete conditioned nodes, which are not connected to any unconditioned elements
   for (std::set<int>::iterator it = condnodecolset.begin(); it != condnodecolset.end(); ++it)
-    if (not sourcedis.delete_node(*it)) FOUR_C_THROW("Node %d could not be deleted!", *it);
+    if (not sourcedis.delete_node(*it)) FOUR_C_THROW("Node {} could not be deleted!", *it);
 
   // delete conditioned elements from source discretization
   for (std::map<int, std::shared_ptr<Core::Elements::Element>>::const_iterator sourceele_iter =
@@ -508,7 +508,7 @@ void XFEM::Utils::XFEMDiscretizationBuilder::split_discretization_by_boundary_co
     Core::Elements::FaceElement* src_face_element =
         dynamic_cast<Core::Elements::FaceElement*>(cit->second.get());
     if (src_face_element == nullptr)
-      FOUR_C_THROW("Dynamic cast failed! The src element %d is no Core::Elements::FaceElement!",
+      FOUR_C_THROW("Dynamic cast failed! The src element {} is no Core::Elements::FaceElement!",
           cit->second->id());
     // get the parent element
     Core::Elements::Element* src_ele = src_face_element->parent_element();

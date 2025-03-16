@@ -292,12 +292,12 @@ void NOX::Nln::GlobalData::set_status_test_parameters()
       FOUR_C_THROW(
           "The \"Status Test\"->\"XML File\" was not found! "
           "Please check the path in your input file! \n"
-          "CURRENT PATH = %s",
+          "CURRENT PATH = {}",
           xmlfilename->c_str());
     }
   }
   else
-    FOUR_C_THROW("The file name '%s' is not a valid XML file name.", xmlfilename->c_str());
+    FOUR_C_THROW("The file name '{}' is not a valid XML file name.", xmlfilename->c_str());
 
   // copy the "Outer Status Test" into the nox parameter list
   if (not xmlParams.isSublist("Outer Status Test"))

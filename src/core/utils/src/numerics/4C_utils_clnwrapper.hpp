@@ -134,7 +134,7 @@ namespace Core::CLN
 
     static void set_precision(int precision)
     {
-      if (precision <= 0) FOUR_C_THROW("Invalid preciso of %d", precision);
+      if (precision <= 0) FOUR_C_THROW("Invalid preciso of {}", precision);
       precision_ = precision;
     }
 

@@ -749,7 +749,7 @@ void BeamInteraction::check_plane_rotations(
   }
   if (Core::FADUtils::sqrt(out_of_plane_values) > tol)
     FOUR_C_THROW(
-        "The solid deformation is not just in plane. Out of plane value: %f, tolerance: %f",
+        "The solid deformation is not just in plane. Out of plane value: {}, tolerance: {}",
         Core::FADUtils::sqrt(out_of_plane_values), tol);
   Core::LinAlg::Matrix<2, 1, double> projection_on_x;
   Core::LinAlg::Matrix<3, 1, double> beam_ref_psi;
@@ -757,7 +757,7 @@ void BeamInteraction::check_plane_rotations(
   for (unsigned int i = 0; i < 2; i++) projection_on_x(i) = beam_ref_psi(i + 1);
   if (Core::FADUtils::vector_norm(projection_on_x) > tol)
     FOUR_C_THROW(
-        "The beam reference rotation is not just in plane. Projection value: %f, tolerance: %f",
+        "The beam reference rotation is not just in plane. Projection value: {}, tolerance: {}",
         Core::FADUtils::vector_norm(projection_on_x), tol);
 }
 

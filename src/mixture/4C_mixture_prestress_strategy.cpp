@@ -59,7 +59,7 @@ Mixture::PAR::PrestressStrategy* Mixture::PAR::PrestressStrategy::factory(int ma
     }
     default:
       FOUR_C_THROW(
-          "The referenced material with id %d is not registered as a prestress strategy!", matid);
+          "The referenced material with id {} is not registered as a prestress strategy!", matid);
   }
 
   return nullptr;

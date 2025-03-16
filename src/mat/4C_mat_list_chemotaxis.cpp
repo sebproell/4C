@@ -26,7 +26,7 @@ Mat::PAR::MatListChemotaxis::MatListChemotaxis(const Core::Mat::PAR::Parameter::
 {
   // check if sizes fit
   if (numpair_ != (int)pairids_.size())
-    FOUR_C_THROW("number of materials %d does not fit to size of material vector %d", nummat_,
+    FOUR_C_THROW("number of materials {} does not fit to size of material vector {}", nummat_,
         pairids_.size());
 
   if (numpair_ < 1)
@@ -165,7 +165,7 @@ void Mat::MatListChemotaxis::unpack(Core::Communication::UnpackBuffer& buffer)
         paramschemo_ = dynamic_cast<Mat::PAR::MatListChemotaxis*>(mat);
       }
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 

@@ -532,7 +532,7 @@ void Solid::TimeInt::Implicit::print_jacobian_in_matlab_format(
     }
     default:
     {
-      FOUR_C_THROW("Unsupported NOX::Nln::LinSystem::OperatorType: \"%s\"",
+      FOUR_C_THROW("Unsupported NOX::Nln::LinSystem::OperatorType: \"{}\"",
           NOX::Nln::LinSystem::operator_type_to_string(jac_type).c_str());
       exit(EXIT_FAILURE);
     }

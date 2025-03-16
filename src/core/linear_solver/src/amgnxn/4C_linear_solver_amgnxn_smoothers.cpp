@@ -295,12 +295,12 @@ void Core::LinearSolver::AMGNxN::CoupledAmg::setup()
     std::string param_name = "muelu parameters for block " + ss.str();
     std::string list_name = amgnxn_params_.get<std::string>(param_name, "none");
     if (list_name == "none")
-      FOUR_C_THROW("You must specify the parameters for creating the AMG on block %d", i);
+      FOUR_C_THROW("You must specify the parameters for creating the AMG on block {}", i);
 
     // Parse contents of the list
     Teuchos::ParameterList muelu_list_this_block;
     if (not muelu_params_.isSublist(list_name))
-      FOUR_C_THROW("list %s not found", list_name.c_str());
+      FOUR_C_THROW("list {} not found", list_name.c_str());
     std::string xml_file = muelu_params_.sublist(list_name).get<std::string>("xml file", "none");
     if (xml_file != "none")
     {
@@ -1518,14 +1518,14 @@ Core::LinearSolver::AMGNxN::SingleFieldAMGFactory::create()
   std::string fine_smoother = get_params().get<std::string>("fine smoother", "none");
   if (fine_smoother == "none") FOUR_C_THROW("You have to set: fine smoother");
   if (not get_params_smoother().isSublist(fine_smoother))
-    FOUR_C_THROW("Not found a list named %s", fine_smoother.c_str());
+    FOUR_C_THROW("Not found a list named {}", fine_smoother.c_str());
   Teuchos::ParameterList fine_smoother_list = get_params_smoother().sublist(fine_smoother);
 
   // std::string coarsest_smoother = GetParams().get<std::string>("coarsest smoother","none");
   // if(coarsest_smoother == "none")
   //  FOUR_C_THROW("You have to set: fine smoother");
   // if(not GetParamsSmoother().isSublist(coarsest_smoother))
-  //  FOUR_C_THROW("Not found a list named %s", coarsest_smoother.c_str() );
+  //   FOUR_C_THROW("Not found a list named {}", coarsest_smoother.c_str() );
   // Teuchos::ParameterList fine_smoother_list = GetParamsSmoother().sublist(coarsest_smoother);
 
 
@@ -1755,10 +1755,10 @@ Core::LinearSolver::AMGNxN::BgsSmootherFactory::create()
     unsigned ib = 0;
     while (std::getline(ss, token, ','))
     {
-      if (ib >= NumSuperBlocks) FOUR_C_THROW("too many comas in %s", local_sweeps.c_str());
+      if (ib >= NumSuperBlocks) FOUR_C_THROW("too many comas in {}", local_sweeps.c_str());
       iters[ib++] = atoi(token.c_str());
     }
-    if (ib < NumSuperBlocks) FOUR_C_THROW("too less comas in %s", local_sweeps.c_str());
+    if (ib < NumSuperBlocks) FOUR_C_THROW("too less comas in {}", local_sweeps.c_str());
   }
   if (local_omegas != "none")
   {
@@ -1767,10 +1767,10 @@ Core::LinearSolver::AMGNxN::BgsSmootherFactory::create()
     unsigned ib = 0;
     while (std::getline(ss, token, ','))
     {
-      if (ib >= NumSuperBlocks) FOUR_C_THROW("too many comas in %s", local_omegas.c_str());
+      if (ib >= NumSuperBlocks) FOUR_C_THROW("too many comas in {}", local_omegas.c_str());
       omegas[ib++] = atof(token.c_str());
     }
-    if (ib < NumSuperBlocks) FOUR_C_THROW("too less comas in %s", local_omegas.c_str());
+    if (ib < NumSuperBlocks) FOUR_C_THROW("too less comas in {}", local_omegas.c_str());
   }
 
 
@@ -2220,12 +2220,12 @@ Core::LinearSolver::AMGNxN::SimpleSmootherFactory::approximate_inverse(
     int err = invAVector.reciprocal(invAVector);
     if (err)
       FOUR_C_THROW(
-          "Core::LinAlg::MultiVector<double>::Reciprocal returned %d, are we dividing by 0?", err);
+          "Core::LinAlg::MultiVector<double>::Reciprocal returned {}, are we dividing by 0?", err);
   }
   else if (method == "row sums" or method == "row sums diagonal blocks")
   {
     int err = A.epetra_matrix()->InvRowSums(invAVector.get_ref_of_epetra_vector());
-    if (err) FOUR_C_THROW("Epetra_CrsMatrix::InvRowSums returned %d, are we dividing by 0?", err);
+    if (err) FOUR_C_THROW("Epetra_CrsMatrix::InvRowSums returned {}, are we dividing by 0?", err);
   }
   else
     FOUR_C_THROW("Invalid value for \"predictor inverse\". Fix your xml file.");

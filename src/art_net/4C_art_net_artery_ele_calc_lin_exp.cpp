@@ -181,7 +181,7 @@ int Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_service(Artery* el
     }
     break;
     default:
-      FOUR_C_THROW("Unknown type of action %d for Artery (LinExp formulation)", action);
+      FOUR_C_THROW("Unknown type of action {} for Artery (LinExp formulation)", action);
   }  // end of switch(act)
 
   return 0;
@@ -1027,7 +1027,7 @@ bool Discret::Elements::ArteryEleCalcLinExp<distype>::solve_riemann(Artery* ele,
   // get the number of nodes per element
   const int numnds = ele->num_node();
 
-  if (numnds != 2) FOUR_C_THROW("An element with %d nodes is not supported", numnds);
+  if (numnds != 2) FOUR_C_THROW("An element with {} nodes is not supported", numnds);
 
   // check for the CFL number CFL = Max(abs(3/sqrt(3) * lambda2_i * dt/dx), abs(3/sqrt(3) *
   // lambda1_i * dt/dx))
@@ -1047,7 +1047,7 @@ bool Discret::Elements::ArteryEleCalcLinExp<distype>::solve_riemann(Artery* ele,
   if (3.0 / sqrt(3.0) * lambda_max * dt / L >= 1.0)
   {
     FOUR_C_THROW(
-        "CFL number at element %d is %f", ele->id(), 3.0 / sqrt(3.0) * lambda_max * dt / L);
+        "CFL number at element {} is {}", ele->id(), 3.0 / sqrt(3.0) * lambda_max * dt / L);
   }
 
   // Solve Riemann problem at the terminals
@@ -1127,9 +1127,8 @@ bool Discret::Elements::ArteryEleCalcLinExp<distype>::solve_riemann(Artery* ele,
         int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
         if (local_id < 0)
         {
-          FOUR_C_THROW("node (%d) doesn't exist on proc(%d)", ele->nodes()[i],
+          FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
               Core::Communication::my_mpi_rank(discretization.get_comm()));
-          exit(1);
         }
         if (TermIO == -1.0)
           (*junc_nodal_vals)[local_id]->W_ = (*Wbnp)[local_id];
@@ -1302,7 +1301,7 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_terminal_bc(Arter
       int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
       if (local_id < 0)
       {
-        FOUR_C_THROW("node (%d) doesn't exist on proc(%d)", ele->nodes()[i],
+        FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
             Core::Communication::my_mpi_rank(discretization.get_comm()));
         exit(1);
       }
@@ -1830,7 +1829,7 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_wf_and_wb(Artery*
   // get the number of nodes per element
   const int numnds = ele->num_node();
 
-  if (numnds != 2) FOUR_C_THROW("An element with %d nodes is not supported", numnds);
+  if (numnds != 2) FOUR_C_THROW("An element with {} nodes is not supported", numnds);
 
   // check for the CFL number CFL = Max(abs(3/sqrt(3) * lambda2_i * dt/dx), abs(3/sqrt(3) *
   // lambda1_i * dt/dx))

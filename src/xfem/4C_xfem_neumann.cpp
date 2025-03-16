@@ -132,7 +132,7 @@ void XFEM::evaluate_neumann_standard(
       // do only nodes in my row map
       if (!discret.node_row_map()->MyGID((*nodeids)[i])) continue;
       Core::Nodes::Node* actnode = discret.g_node((*nodeids)[i]);
-      if (!actnode) FOUR_C_THROW("Cannot find global node %d", (*nodeids)[i]);
+      if (!actnode) FOUR_C_THROW("Cannot find global node {}", (*nodeids)[i]);
       // call explicitly the main dofset, i.e. the first column
       std::vector<int> dofs = discret.dof(0, actnode);
       const unsigned numdf = dofs.size();
@@ -143,7 +143,7 @@ void XFEM::evaluate_neumann_standard(
         double value = val[j];
         value *= functfac;
         const int lid = systemvector.get_map().LID(gid);
-        if (lid < 0) FOUR_C_THROW("Global id %d not on this proc in system vector", gid);
+        if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
         systemvector[lid] += value;
       }
     }

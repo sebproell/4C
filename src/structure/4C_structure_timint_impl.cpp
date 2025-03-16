@@ -199,21 +199,21 @@ void Solid::TimIntImpl::setup()
   {
     if ((itertype_ != Inpar::Solid::soltech_newtonuzawalin) and
         (itertype_ != Inpar::Solid::soltech_newtonuzawanonlin))
-      FOUR_C_THROW("Chosen solution technique %s does not work constrained.",
+      FOUR_C_THROW("Chosen solution technique {} does not work constrained.",
           Inpar::Solid::nonlin_sol_tech_string(itertype_).c_str());
   }
   else if (cardvasc0dman_->have_cardiovascular0_d())
   {
     if (itertype_ != Inpar::Solid::soltech_newtonuzawalin)
       if (myrank_ == 0)
-        FOUR_C_THROW("Chosen solution technique %s does not work with Cardiovascular0D bc.",
+        FOUR_C_THROW("Chosen solution technique {} does not work with Cardiovascular0D bc.",
             Inpar::Solid::nonlin_sol_tech_string(itertype_).c_str());
   }
   else if ((itertype_ == Inpar::Solid::soltech_newtonuzawalin) or
            (itertype_ == Inpar::Solid::soltech_newtonuzawanonlin))
   {
     FOUR_C_THROW(
-        "Chosen solution technique %s does only work constrained or with Cardiovascular0D bc.",
+        "Chosen solution technique {} does only work constrained or with Cardiovascular0D bc.",
         Inpar::Solid::nonlin_sol_tech_string(itertype_).c_str());
   }
 
@@ -384,7 +384,7 @@ void Solid::TimIntImpl::predict()
   }
   else
   {
-    FOUR_C_THROW("Trouble in determining predictor %i", pred_);
+    FOUR_C_THROW("Trouble in determining predictor {}", pred_);
   }
 
   // zerofy pressure DOFs and time-derivatives
@@ -1154,13 +1154,13 @@ bool Solid::TimIntImpl::converged()
   // verify: #normcharforce_ has been delivered strictly larger than zero
   if (normcharforce_ <= 0.0)
   {
-    FOUR_C_THROW("Characteristic force norm %g must be strictly larger than 0", normcharforce_);
+    FOUR_C_THROW("Characteristic force norm {} must be strictly larger than 0", normcharforce_);
   }
   // verify: #normchardis_ has been delivered strictly larger than zero
   if (normchardis_ <= 0.0)
   {
     FOUR_C_THROW(
-        "Characteristic displacement norm %g must be strictly larger than 0", normchardis_);
+        "Characteristic displacement norm {} must be strictly larger than 0", normchardis_);
   }
 
 
@@ -1414,7 +1414,7 @@ Inpar::Solid::ConvergenceStatus Solid::TimIntImpl::solve()
         break;
       // catch problems
       default:
-        FOUR_C_THROW("Solution technique \"%s\" is not implemented.",
+        FOUR_C_THROW("Solution technique \"{}\" is not implemented.",
             Inpar::Solid::nonlin_sol_tech_string(itertype_).c_str());
         break;
     }
@@ -1749,7 +1749,7 @@ int Solid::TimIntImpl::newton_full_error_check(int linerror, int eleerror)
       // write restart output of last converged step before stopping
       output(true);
 
-      FOUR_C_THROW("Newton unconverged in %d iterations", iter_);
+      FOUR_C_THROW("Newton unconverged in {} iterations", iter_);
       return 1;
     }
     else if ((iter_ >= itermax_) and (divcontype_ == Inpar::Solid::divcont_continue))
@@ -2860,7 +2860,7 @@ int Solid::TimIntImpl::uzawa_linear_newton_full_error_check(int linerror, int el
       // write restart output of last converged step before stopping
       output(true);
 
-      FOUR_C_THROW("Newton unconverged in %d iterations", iter_);
+      FOUR_C_THROW("Newton unconverged in {} iterations", iter_);
       return 1;
     }
     else if ((iter_ >= itermax_) and (divcontype_ == Inpar::Solid::divcont_continue))
@@ -3008,7 +3008,7 @@ int Solid::TimIntImpl::cmt_nonlinear_solve()
       // increase iteration index
       ++uzawaiter;
       if (uzawaiter > maxuzawaiter)
-        FOUR_C_THROW("Uzawa unconverged in %d iterations", maxuzawaiter);
+        FOUR_C_THROW("Uzawa unconverged in {} iterations", maxuzawaiter);
       if (!myrank_) std::cout << "Starting Uzawa step No. " << uzawaiter << std::endl;
 
       // for second, third,... Uzawa step: out-of-balance force
@@ -4309,7 +4309,7 @@ int Solid::TimIntImpl::cmt_windk_constr_nonlinear_solve()
       // increase iteration index
       ++uzawaiter;
       if (uzawaiter > maxuzawaiter)
-        FOUR_C_THROW("Uzawa unconverged in %d iterations", maxuzawaiter);
+        FOUR_C_THROW("Uzawa unconverged in {} iterations", maxuzawaiter);
       if (!myrank_) std::cout << "Starting Uzawa step No. " << uzawaiter << std::endl;
 
       // for second, third,... Uzawa step: out-of-balance force

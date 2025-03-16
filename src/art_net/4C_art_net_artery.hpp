@@ -196,7 +196,7 @@ namespace Discret
           }
           default:
           {
-            FOUR_C_THROW("Defined problem type %d does not exist!!", impltype_);
+            FOUR_C_THROW("Defined problem type {} does not exist!!", impltype_);
             break;
           }
         }

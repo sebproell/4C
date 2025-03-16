@@ -80,7 +80,7 @@ Cut::SideHandle* Cut::MeshHandle::create_side(
       }
       default:
         FOUR_C_THROW(
-            "unsupported distype ( distype = %s )", Core::FE::cell_type_to_string(distype).c_str());
+            "unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype).c_str());
         exit(EXIT_FAILURE);
     }
     quadraticsides_[sid] = std::shared_ptr<QuadraticSideHandle>(qsh);
@@ -89,7 +89,7 @@ Cut::SideHandle* Cut::MeshHandle::create_side(
   else
   {
     FOUR_C_THROW(
-        "unsupported distype ( distype = %s )", Core::FE::cell_type_to_string(distype).c_str());
+        "unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype).c_str());
     exit(EXIT_FAILURE);
   }
 }
@@ -696,7 +696,7 @@ void Cut::MeshHandle::create_element_sides(const std::vector<int>& nids, Core::F
     }
     default:
       FOUR_C_THROW(
-          "unsupported distype ( distype = %s )", Core::FE::cell_type_to_string(distype).c_str());
+          "unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype).c_str());
       exit(EXIT_FAILURE);
   }
 }
@@ -771,7 +771,7 @@ Cut::ElementHandle* Cut::MeshHandle::create_element(
           break;
         }
         default:
-          FOUR_C_THROW("unsupported distype ( distype = %s )",
+          FOUR_C_THROW("unsupported distype ( distype = {} )",
               Core::FE::cell_type_to_string(distype).c_str());
           exit(EXIT_FAILURE);
       }
@@ -781,7 +781,7 @@ Cut::ElementHandle* Cut::MeshHandle::create_element(
     }
     default:
       FOUR_C_THROW(
-          "unsupported distype ( distype = %s )", Core::FE::cell_type_to_string(distype).c_str());
+          "unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype).c_str());
       exit(EXIT_FAILURE);
   }
 }
@@ -885,7 +885,7 @@ void Cut::MeshHandle::remove_sub_side(Cut::Side* side)
       qsh.remove_sub_side_pointer(side);
     }
     else
-      FOUR_C_THROW("Couldn't Identify side %d!", side->id());
+      FOUR_C_THROW("Couldn't Identify side {}!", side->id());
   }
 }
 
@@ -911,7 +911,7 @@ void Cut::MeshHandle::add_sub_side(Cut::Side* side)
     else
     {
       FOUR_C_THROW(
-          "MeshHandle::AddSubSide: The SideHandle for Side %d does not exist yet!", side->id());
+          "MeshHandle::AddSubSide: The SideHandle for Side {} does not exist yet!", side->id());
       // One could create a new QuadraticSideHandle, if there is a reason to do so.
     }
   }
@@ -938,7 +938,7 @@ void Cut::MeshHandle::mark_sub_sideas_unphysical(Cut::Side* side)
     }
     else
       FOUR_C_THROW(
-          "MeshHandle::mark_sub_sideas_unphysical: The SideHandle for Side %d does not exist yet!",
+          "MeshHandle::mark_sub_sideas_unphysical: The SideHandle for Side {} does not exist yet!",
           side->id());
   }
 }

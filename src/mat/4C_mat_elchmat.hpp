@@ -47,7 +47,7 @@ namespace Mat
 
           if (m == mat_.end())
           {
-            FOUR_C_THROW("Material %d could not be found", id);
+            FOUR_C_THROW("Material {} could not be found", id);
             return nullptr;
           }
           else
@@ -190,7 +190,7 @@ namespace Mat
         std::map<int, std::shared_ptr<Core::Mat::Material>>::const_iterator m = mat_.find(id);
         if (m == mat_.end())
         {
-          FOUR_C_THROW("Material %d could not be found", id);
+          FOUR_C_THROW("Material {} could not be found", id);
           return nullptr;
         }
         else

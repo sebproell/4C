@@ -195,8 +195,8 @@ namespace Core::IO::Internal::InputParameterContainerImplementation
     else
     {
       FOUR_C_THROW(
-          "You tried to get the data named %s from the container as type '%s'.\n"
-          "Actually, it has type '%s'.",
+          "You tried to get the data named {} from the container as type '{}'.\n"
+          "Actually, it has type '{}'.",
           name.c_str(), Core::Utils::get_type_name<T>().c_str(),
           Core::Utils::try_demangle(data.type().name()).c_str());
     }
@@ -273,7 +273,7 @@ const T& Core::IO::InputParameterContainer::get(const std::string& name) const
   if (const T* p = get_if<T>(name))
     return *p;
   else
-    FOUR_C_THROW("Key '%s' cannot be found in the container.", name.c_str());
+    FOUR_C_THROW("Key '{}' cannot be found in the container.", name.c_str());
 }
 
 template <typename T>

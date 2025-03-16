@@ -114,7 +114,7 @@ std::shared_ptr<PoroElast::PoroBase> PoroElast::Utils::create_poro_algorithm(
       break;
     }
     default:
-      FOUR_C_THROW("Unknown solutiontype for poroelasticity: %d", coupling);
+      FOUR_C_THROW("Unknown solutiontype for poroelasticity: {}", coupling);
       break;
   }
 
@@ -275,7 +275,7 @@ void PoroElast::Utils::set_slave_and_master(const Core::FE::Discretization& vold
   int volgid = faceele->parent_element_id();
 
   if (elecolmap->LID(volgid) == -1)  // Volume discretization has not Element
-    FOUR_C_THROW("create_volume_ghosting: Element %d does not exist on this Proc!", volgid);
+    FOUR_C_THROW("create_volume_ghosting: Element {} does not exist on this Proc!", volgid);
 
   Core::Elements::Element* vele = voldiscret.g_element(volgid);
   if (!vele) FOUR_C_THROW("ERROR: Cannot find element with gid %", volgid);
@@ -414,7 +414,7 @@ void PoroElast::Utils::PoroMaterialStrategy::assign_material2_to1(
   else
   {
     FOUR_C_THROW(
-        "ERROR: Unsupported element type '%s'", Core::Utils::get_dynamic_type_name(*ele2).c_str());
+        "ERROR: Unsupported element type '{}'", Core::Utils::get_dynamic_type_name(*ele2).c_str());
   }
 }
 
@@ -472,7 +472,7 @@ void PoroElast::Utils::PoroMaterialStrategy::assign_material1_to2(
   else
   {
     FOUR_C_THROW(
-        "ERROR: Unsupported element type '%s'", Core::Utils::get_dynamic_type_name(*ele2).c_str());
+        "ERROR: Unsupported element type '{}'", Core::Utils::get_dynamic_type_name(*ele2).c_str());
   }
 }
 

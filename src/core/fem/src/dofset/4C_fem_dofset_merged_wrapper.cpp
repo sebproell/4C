@@ -88,7 +88,7 @@ int Core::DOFSets::DofSetMergedWrapper::assign_degrees_of_freedom(
   // all nodes should be coupled
   if (masternodes.size() != coupling.size())
     FOUR_C_THROW(
-        "Did not get 1:1 correspondence. \nmasternodes.size()=%d, coupling.size()=%d."
+        "Did not get 1:1 correspondence. \nmasternodes.size()={}, coupling.size()={}."
         "DofSetMergedWrapper requires matching slave and master meshes!",
         masternodes.size(), coupling.size());
 
@@ -109,7 +109,7 @@ int Core::DOFSets::DofSetMergedWrapper::assign_degrees_of_freedom(
       std::pair<int, double>& coupled = coupling[gid];
       int slavegid = coupled.first;
       int slavelid = dis.node_row_map()->LID(slavegid);
-      if (slavelid == -1) FOUR_C_THROW("slave gid %d was not found on this proc", slavegid);
+      if (slavelid == -1) FOUR_C_THROW("slave gid {} was not found on this proc", slavegid);
 
       // save master gid at col lid of corresponding slave node
       (my_master_nodegids_row_layout)[slavelid] = gid;
@@ -145,7 +145,7 @@ int Core::DOFSets::DofSetMergedWrapper::assign_degrees_of_freedom(
   // all nodes should be coupled
   if (masternodes.size() != coupling.size())
     FOUR_C_THROW(
-        "Did not get 1:1 correspondence. \nmasternodes.size()=%d, coupling.size()=%d."
+        "Did not get 1:1 correspondence. \nmasternodes.size()={}, coupling.size()={}."
         "DofSetMergedWrapper requires matching slave and master meshes!",
         masternodes.size(), coupling.size());
 
@@ -166,7 +166,7 @@ int Core::DOFSets::DofSetMergedWrapper::assign_degrees_of_freedom(
       std::pair<int, double>& coupled = coupling[gid];
       int slavegid = coupled.first;
       int slavelid = dis.node_row_map()->LID(slavegid);
-      if (slavelid == -1) FOUR_C_THROW("slave gid %d was not found on this proc", slavegid);
+      if (slavelid == -1) FOUR_C_THROW("slave gid {} was not found on this proc", slavegid);
 
       // save master gid at col lid of corresponding slave node
       (my_slave_nodegids_row_layout)[slavelid] = gid;

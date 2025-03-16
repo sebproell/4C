@@ -439,7 +439,7 @@ void XFEM::XFluidContactComm::get_penalty_param(Core::Elements::Element* fluidel
     std::map<int, std::vector<Core::FE::GaussIntegration>> bintpoints;
 
     Cut::ElementHandle* cele = cutwizard_->get_element(fluidele);
-    if (cele == nullptr) FOUR_C_THROW("Couldn't find cut element for ele %d", fluidele->id());
+    if (cele == nullptr) FOUR_C_THROW("Couldn't find cut element for ele {}", fluidele->id());
 
     std::vector<Cut::plain_volumecell_set> cell_sets;
     {
@@ -727,7 +727,7 @@ bool XFEM::XFluidContactComm::get_volumecell(Discret::Elements::StructuralSurfac
       elenormal.scale(-1.0);  // flip direction
       sele = dynamic_cast<Discret::Elements::StructuralSurface*>(
           condition_manager_->get_side(side->id()));
-      if (!sele) FOUR_C_THROW("Couldn't Identify new sele %d", side->id());
+      if (!sele) FOUR_C_THROW("Couldn't Identify new sele {}", side->id());
       facets = side->facets();
     }
 
@@ -785,7 +785,7 @@ bool XFEM::XFluidContactComm::get_volumecell(Discret::Elements::StructuralSurfac
           for (std::size_t tri = 0; tri < triangulation.size(); ++tri)
           {
             if (triangulation[tri].size() != 3)
-              FOUR_C_THROW("Triangulation with another number of points than 3 (%d)?",
+              FOUR_C_THROW("Triangulation with another number of points than 3 ({})?",
                   triangulation[tri].size());
 
             // Compute local coords and take first possible facet ...
@@ -801,7 +801,7 @@ bool XFEM::XFluidContactComm::get_volumecell(Discret::Elements::StructuralSurfac
             {
               pos->local_coordinates(tmpxsi);
               if (fabs(tmpxsi(2, 0)) > 1e-3)
-                FOUR_C_THROW("To far away from this facet %f!", tmpxsi(2, 0));
+                FOUR_C_THROW("To far away from this facet {}!", tmpxsi(2, 0));
               facet = afacet;
               break;
             }
@@ -893,7 +893,7 @@ Cut::Side* XFEM::XFluidContactComm::findnext_physical_side(Core::LinAlg::Matrix<
 
   if (!newSide)
   {
-    FOUR_C_THROW("Couldn't identify a new side (number of identified physical sides: %d)!",
+    FOUR_C_THROW("Couldn't identify a new side (number of identified physical sides: {})!",
         physical_sides.size());
   }
 
@@ -907,7 +907,7 @@ Cut::Side* XFEM::XFluidContactComm::findnext_physical_side(Core::LinAlg::Matrix<
     std::cout << "The Side pointer is " << newSide << std::endl;
     std::cout << "Couldn't get Sidehandle for side " << newSide->id() << std::endl;
     // newSide->print();
-    FOUR_C_THROW("Couldn't get Sidehandle for side %f", newSide->id());
+    FOUR_C_THROW("Couldn't get Sidehandle for side {}", newSide->id());
   }
 
   Core::LinAlg::SerialDenseMatrix xyzs;
@@ -983,7 +983,7 @@ void XFEM::XFluidContactComm::update_physical_sides(
   {
     performed_sides.insert(neibs[sid]);
     Cut::SideHandle* sh = cutwizard_->get_cut_side(neibs[sid]->id());
-    if (!sh) FOUR_C_THROW("Couldn't Get Sidehandle %d!", neibs[sid]->id());
+    if (!sh) FOUR_C_THROW("Couldn't Get Sidehandle {}!", neibs[sid]->id());
     if (sh->isunphysical_sub_side(neibs[sid]))
       update_physical_sides(neibs[sid], performed_sides, physical_sides);
     else
@@ -1320,7 +1320,7 @@ void XFEM::XFluidContactComm::fill_complete_sele_map()
     if (mortar_id_to_sosid_[i] == -1) continue;  // this entry is not set!
     Cut::SideHandle* sh = cutwizard_->get_cut_side(mortar_id_to_sosid_[i]);
     if (!sh)
-      FOUR_C_THROW("Couldn't get Sidhandle for mortarId %d, soid %d!", i + min_mortar_id_,
+      FOUR_C_THROW("Couldn't get Sidhandle for mortarId {}, soid {}!", i + min_mortar_id_,
           mortar_id_to_sosid_[i]);
     if (cutwizard_->get_cut_side(mortar_id_to_sosid_[i])->hasunphysical_sub_side())
     {

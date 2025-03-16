@@ -78,7 +78,7 @@ int Discret::Elements::Beam3eb::evaluate(Teuchos::ParameterList& params,
     else if (action == "calc_struct_energy")
       act = Core::Elements::struct_calc_energy;
     else
-      FOUR_C_THROW("Unknown type of action '%s' for Beam3eb", action.c_str());
+      FOUR_C_THROW("Unknown type of action '{}' for Beam3eb", action.c_str());
   }
 
   std::string test = params.get<std::string>("action", "calc_none");

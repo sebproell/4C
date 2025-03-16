@@ -183,7 +183,7 @@ namespace GEOMETRYPAIR
     if (std::abs(tangent(2)) > Constants::pos_tol)
       FOUR_C_THROW(
           "EvaluateTriadAtPlaneCurve: The tangent vector can not have a component in z direction! "
-          "The component is %f!",
+          "The component is {}!",
           Core::FADUtils::cast_to_double(tangent(2)));
 
     // Create the director vectors in the cross-section
@@ -387,7 +387,7 @@ namespace GEOMETRYPAIR
           "since we only want to call the templated versions. You are calling it with the "
           "DiscretizationTypeGeometry ";
       error_string += discretization_type_geometry_to_string(geometry_type);
-      FOUR_C_THROW(error_string.c_str());
+      FOUR_C_THROW("{}", error_string);
     }
   };
 

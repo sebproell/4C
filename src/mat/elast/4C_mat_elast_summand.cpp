@@ -317,7 +317,7 @@ std::shared_ptr<Mat::Elastic::Summand> Mat::Elastic::Summand::factory(int matnum
       return std::make_shared<ViscoPart>(params);
     }
     default:
-      FOUR_C_THROW("cannot deal with type %d", curmat->type());
+      FOUR_C_THROW("cannot deal with type {}", curmat->type());
   }
   return nullptr;
 }

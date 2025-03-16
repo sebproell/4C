@@ -2615,7 +2615,7 @@ void Discret::Elements::PoroFluidEvaluator::EvaluatorPressureAndSaturation<nsd,
     }
   }
   else
-    FOUR_C_THROW("wrong value for curphase: %i", curphase);
+    FOUR_C_THROW("wrong value for curphase: {}", curphase);
 };
 
 /*----------------------------------------------------------------------*
@@ -3343,7 +3343,7 @@ void Discret::Elements::PoroFluidEvaluator::EvaluatorPhaseVelocities<nsd,
     }
   }
   else
-    FOUR_C_THROW("Invalid phase index for current phase: %i", curphase);
+    FOUR_C_THROW("Invalid phase index for current phase: {}", curphase);
 }
 
 /*----------------------------------------------------------------------*

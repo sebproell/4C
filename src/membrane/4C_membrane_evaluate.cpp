@@ -121,7 +121,7 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
       act = Core::Elements::struct_postprocess_thickness;
     else
     {
-      FOUR_C_THROW("Unknown type of action for Membrane: %s", action.c_str());
+      FOUR_C_THROW("Unknown type of action for Membrane: {}", action.c_str());
     }
   }
 
@@ -492,7 +492,7 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
      | default                                                                       |
      *===============================================================================*/
     default:
-      FOUR_C_THROW("Unknown type of action for Membrane: %s", action_type_to_string(act).c_str());
+      FOUR_C_THROW("Unknown type of action for Membrane: {}", action_type_to_string(act).c_str());
       break;
   }
 
@@ -1113,7 +1113,8 @@ void Discret::Elements::Membrane<distype>::mem_nlnstiffmass(
             if (diffCG(i, j) > 1e-10)
             {
               FOUR_C_THROW(
-                  "eigenvector orientation error with the diffCG giving problems: %10.5e \n BUILD "
+                  "eigenvector orientation error with the diffCG giving problems: {:10.5e} \n "
+                  "BUILD "
                   "SOLUTION TO FIX IT",
                   diffCG(i, j));
             }

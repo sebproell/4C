@@ -658,8 +658,8 @@ bool Cut::Element::position_by_angle(Point* p, Point* cutpoint, Side* s)
   {
     double distance_between = Cut::distance_between_points(p, cutpoint);
     FOUR_C_THROW(
-        " the norm of line_vec or n_norm is smaller than %lf, should these "
-        "points be one point in pointpool?, lnorm=%lf, nnorm=%lf, distance between them = %lf",
+        " the norm of line_vec or n_norm is smaller than {}, should these "
+        "points be one point in pointpool?, lnorm={}, nnorm={}, distance between them = {}",
         REFERENCETOL, l_norm, n_norm, distance_between);
   }
 
@@ -716,7 +716,7 @@ bool Cut::Element::is_orthogonal_side(Side* s, Point* p, Point* cutpoint)
     {
       std::cout << "point: " << p_xyz << std::endl;
       std::cout << "cutpoint: " << cut_point_xyz << std::endl;
-      FOUR_C_THROW("the line has nearly zero length: %d", line_norm);
+      FOUR_C_THROW("the line has nearly zero length: {}", line_norm);
     }
 
     if (s->shape() != Core::FE::CellType::tri3)
@@ -1336,7 +1336,7 @@ std::shared_ptr<Cut::Element> Cut::ElementFactory::create_element(Core::FE::Cell
       break;
     default:
     {
-      FOUR_C_THROW("Unsupported element type! ( %d | %s )", elementtype,
+      FOUR_C_THROW("Unsupported element type! ( {} | {} )", elementtype,
           Core::FE::cell_type_to_string(elementtype).c_str());
       break;
     }

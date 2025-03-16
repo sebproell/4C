@@ -478,7 +478,7 @@ void BeamInteraction::BeamToSolidConditionSurface::setup(
     }
     else
     {
-      FOUR_C_THROW("The face of the solid element %d is not in the current condition!",
+      FOUR_C_THROW("The face of the solid element {} is not in the current condition!",
           pair->element2()->id());
     }
   }
@@ -793,6 +793,7 @@ BeamInteraction::BeamToSolidConditionSurface::create_contact_pair_internal(
             default:
               FOUR_C_THROW("Wrong contact type.");
           }
+          break;
         }
         case Inpar::BeamToSolid::BeamToSolidContactDiscretization::mortar:
         {

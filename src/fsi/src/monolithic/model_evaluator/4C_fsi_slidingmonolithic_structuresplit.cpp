@@ -134,7 +134,7 @@ FSI::SlidingMonolithicStructureSplit::SlidingMonolithicStructureSplit(
                 "------------+"
              << std::endl;
 
-    FOUR_C_THROW(errormsg.str());
+    FOUR_C_THROW("{}", errormsg.str());
   }
   // ---------------------------------------------------------------------------
 
@@ -1375,7 +1375,7 @@ void FSI::SlidingMonolithicStructureSplit::recover_lagrange_multiplier()
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (mortarp == nullptr) FOUR_C_THROW("Expected Teuchos::rcp to mortar matrix P.");
-  if (mortardinv == nullptr) FOUR_C_THROW("Expected Teuchos::rcp to mortar matrix D^{-1}.");
+  if (mortardinv == nullptr) FOUR_C_THROW("Expected Teuchos::rcp to mortar matrix D^{{-1}}.");
 #endif
 
   // some often re-used vectors

@@ -197,7 +197,7 @@ void loma_dyn(int restart)
       break;
     }
     default:
-      FOUR_C_THROW("Unknown velocity field type for low-Mach-number flow: %d", veltype);
+      FOUR_C_THROW("Unknown velocity field type for low-Mach-number flow: {}", veltype);
       break;
   }
 

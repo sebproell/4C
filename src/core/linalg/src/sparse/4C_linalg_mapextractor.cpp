@@ -64,11 +64,11 @@ void Core::LinAlg::MultiMapExtractor::check_for_valid_map_extractor() const
     {
       if (maps_[i]->DataPtr() == nullptr)
       {
-        FOUR_C_THROW("Got zero data pointer on setup of block %d of maps_\n", i);
+        FOUR_C_THROW("Got zero data pointer on setup of block {} of maps_\n", i);
       }
       if (not maps_[i]->UniqueGIDs())
       {
-        FOUR_C_THROW("map %d not unique", i);
+        FOUR_C_THROW("map {} not unique", i);
       }
     }
   }
@@ -86,7 +86,7 @@ std::shared_ptr<Epetra_Map> Core::LinAlg::MultiMapExtractor::merge_maps(
   for (unsigned i = 0; i < maps.size(); ++i)
   {
     if (maps[i] == nullptr) FOUR_C_THROW("can not merge extractor with null maps");
-    if (not maps[i]->UniqueGIDs()) FOUR_C_THROW("map %d not unique", i);
+    if (not maps[i]->UniqueGIDs()) FOUR_C_THROW("map {} not unique", i);
   }
   std::set<int> mapentries;
   for (unsigned i = 0; i < maps.size(); ++i)
@@ -111,7 +111,7 @@ std::shared_ptr<Epetra_Map> Core::LinAlg::MultiMapExtractor::merge_maps_keep_ord
   for (std::size_t i = 0; i < maps.size(); ++i)
   {
     if (maps[i] == nullptr) FOUR_C_THROW("can not merge extractor with null maps");
-    if (not maps[i]->UniqueGIDs()) FOUR_C_THROW("map %d not unique", i);
+    if (not maps[i]->UniqueGIDs()) FOUR_C_THROW("map {} not unique", i);
   }
 
   // collect gids
@@ -138,7 +138,7 @@ std::shared_ptr<Epetra_Map> Core::LinAlg::MultiMapExtractor::intersect_maps(
   for (unsigned i = 0; i < maps.size(); ++i)
   {
     if (maps[i] == nullptr) FOUR_C_THROW("can not intersect extractor with null maps");
-    if (not maps[i]->UniqueGIDs()) FOUR_C_THROW("map %d not unique", i);
+    if (not maps[i]->UniqueGIDs()) FOUR_C_THROW("map {} not unique", i);
   }
   std::set<int> mapentries(
       maps[0]->MyGlobalElements(), maps[0]->MyGlobalElements() + maps[0]->NumMyElements());
@@ -167,7 +167,7 @@ std::shared_ptr<Epetra_Map> Core::LinAlg::MultiMapExtractor::intersect_maps(
 std::shared_ptr<Core::LinAlg::Vector<double>> Core::LinAlg::MultiMapExtractor::extract_vector(
     const Core::LinAlg::Vector<double>& full, int block) const
 {
-  if (maps_[block] == nullptr) FOUR_C_THROW("null map at block %d", block);
+  if (maps_[block] == nullptr) FOUR_C_THROW("null map at block {}", block);
   std::shared_ptr<Core::LinAlg::Vector<double>> vec =
       std::make_shared<Core::LinAlg::Vector<double>>(*maps_[block]);
   extract_vector(full, block, *vec);
@@ -180,7 +180,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Core::LinAlg::MultiMapExtractor::e
 std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::LinAlg::MultiMapExtractor::extract_vector(
     const Core::LinAlg::MultiVector<double>& full, int block) const
 {
-  if (maps_[block] == nullptr) FOUR_C_THROW("null map at block %d", block);
+  if (maps_[block] == nullptr) FOUR_C_THROW("null map at block {}", block);
   std::shared_ptr<Core::LinAlg::MultiVector<double>> vec =
       std::make_shared<Core::LinAlg::MultiVector<double>>(*maps_[block], full.NumVectors());
   extract_vector(full, block, *vec);
@@ -193,9 +193,9 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::LinAlg::MultiMapExtract
 void Core::LinAlg::MultiMapExtractor::extract_vector(const Core::LinAlg::MultiVector<double>& full,
     int block, Core::LinAlg::MultiVector<double>& partial) const
 {
-  if (maps_[block] == nullptr) FOUR_C_THROW("null map at block %d", block);
+  if (maps_[block] == nullptr) FOUR_C_THROW("null map at block {}", block);
   int err = partial.Import(full, *importer_[block], Insert);
-  if (err) FOUR_C_THROW("Import using importer returned err=%d", err);
+  if (err) FOUR_C_THROW("Import using importer returned err={}", err);
 }
 
 
@@ -229,9 +229,9 @@ void Core::LinAlg::MultiMapExtractor::insert_vector(
     const Core::LinAlg::MultiVector<double>& partial, int block,
     Core::LinAlg::MultiVector<double>& full) const
 {
-  if (maps_[block] == nullptr) FOUR_C_THROW("null map at block %d", block);
+  if (maps_[block] == nullptr) FOUR_C_THROW("null map at block {}", block);
   int err = full.Export(partial, *importer_[block], Insert);
-  if (err) FOUR_C_THROW("Export using importer returned err=%d", err);
+  if (err) FOUR_C_THROW("Export using importer returned err={}", err);
 }
 
 

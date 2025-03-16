@@ -49,7 +49,7 @@ int SSI::Utils::check_time_stepping(double dt1, double dt2)
     if (std::abs(t1 - workdt2) < 10E-10)
       break;
     else if (t1 > workdt2)
-      FOUR_C_THROW("Chosen time steps %f and %f are not a multiplicative of each other", dt1, dt2);
+      FOUR_C_THROW("Chosen time steps {} and {} are not a multiplicative of each other", dt1, dt2);
   }
   return i;
 }
@@ -884,9 +884,9 @@ void SSI::Utils::check_consistency_of_ssi_interface_contact_condition(
         FOUR_C_THROW(
             "The following conditions are defined on a non-consistent set of nodes!\n"
             "The Conditions defined from 'SSIInterfaceContact' condition with the condition-ID: "
-            "%i:\n"
-            "'S2ICoupling' conditions with ID: %i;\n"
-            "'Contact' conditions with ID: %i;\n"
+            "{}:\n"
+            "'S2ICoupling' conditions with ID: {};\n"
+            "'Contact' conditions with ID: {};\n"
             "The last two conditions are NOT defined on the same node-sets which is not "
             "reasonable. Check your Input-File!",
             conditionToBeTested->parameters().get<int>("ConditionID"), S2IKineticsID,

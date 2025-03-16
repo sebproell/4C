@@ -952,7 +952,7 @@ double Discret::Utils::TaylorCouetteFlow::evaluate(
       return (c1_ * c1_) * (radius * radius) * 0.5 + 2.0 * c1_ * c2_ * log(radius) -
              (c2_ * c2_) / (2.0 * (radius * radius)) + c3_;
     default:
-      FOUR_C_THROW("wrong component %d", component);
+      FOUR_C_THROW("wrong component {}", component);
       break;
   }
 
@@ -1008,7 +1008,7 @@ std::vector<double> Discret::Utils::TaylorCouetteFlow::evaluate_spatial_derivati
       break;
     }
     default:
-      FOUR_C_THROW("wrong component %d", component);
+      FOUR_C_THROW("wrong component {}", component);
       break;
   }
 
@@ -1206,7 +1206,7 @@ double Discret::Utils::UrquizaBoxFlow::evaluate(
     case 3:  // pressure
       return px;
     default:
-      FOUR_C_THROW("wrong component %d", component);
+      FOUR_C_THROW("wrong component {}", component);
       break;
   }
 
@@ -1301,7 +1301,7 @@ std::vector<double> Discret::Utils::UrquizaBoxFlow::evaluate_spatial_derivative(
       break;
     }
     default:
-      FOUR_C_THROW("wrong component %d", component);
+      FOUR_C_THROW("wrong component {}", component);
       break;
   }
 
@@ -1455,7 +1455,7 @@ double Discret::Utils::UrquizaBoxFlowForce::evaluate(
     case 2:  // z-dir = 0.0
       return 0.0;
     default:
-      FOUR_C_THROW("wrong component %d", component);
+      FOUR_C_THROW("wrong component {}", component);
       break;
   }
 
@@ -1636,7 +1636,7 @@ double Discret::Utils::UrquizaBoxFlowTraction::evaluate(
     case 2:  // z-dir = 0.0
       return 0.0;
     default:
-      FOUR_C_THROW("wrong component %d", component);
+      FOUR_C_THROW("wrong component {}", component);
       break;
   }
 

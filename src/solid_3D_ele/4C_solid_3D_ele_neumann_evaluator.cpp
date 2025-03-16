@@ -92,7 +92,7 @@ void Discret::Elements::evaluate_neumann(Core::Elements::Element& element,
     if (onoff[checkdof] != 0)
     {
       FOUR_C_THROW(
-          "You have activated more than %d dofs in your Neumann boundary condition. This is higher "
+          "You have activated more than {} dofs in your Neumann boundary condition. This is higher "
           "than the dimension of the element.",
           numdim);
     }
@@ -111,9 +111,9 @@ void Discret::Elements::evaluate_neumann(Core::Elements::Element& element,
       {
         if (jacobian_mapping.determinant_ == 0.0)
           FOUR_C_THROW(
-              "The determinant of the jacobian is zero for element with id %i", element.id());
+              "The determinant of the jacobian is zero for element with id {}", element.id());
         else if (jacobian_mapping.determinant_ < 0.0)
-          FOUR_C_THROW("The determinant of the jacobian is negative (%d) for element with id %i",
+          FOUR_C_THROW("The determinant of the jacobian is negative ({}) for element with id {}",
               jacobian_mapping.determinant_, element.id());
 
         // material/reference co-ordinates of Gauss point

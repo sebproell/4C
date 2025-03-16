@@ -121,7 +121,7 @@ namespace Core::Binstrategy::Utils
       int from = -1;
       exporter.receive_any(from, tag, rdata, length);
       if (tag != 1234)
-        FOUR_C_THROW("Received on proc %i data with wrong tag from proc %i",
+        FOUR_C_THROW("Received on proc {} data with wrong tag from proc {}",
             Core::Communication::my_mpi_rank(discret.get_comm()), from);
 
       // ---- unpack ----
@@ -139,7 +139,7 @@ namespace Core::Binstrategy::Utils
           // safety check
           if (discret.have_global_element(element->id()) != true)
             FOUR_C_THROW(
-                "%i is getting owner of element %i without having it ghosted before, "
+                "{} is getting owner of element {} without having it ghosted before, "
                 "this is not intended.",
                 Core::Communication::my_mpi_rank(discret.get_comm()), element->id());
 
@@ -216,7 +216,7 @@ namespace Core::Binstrategy::Utils
       int from = -1;
       exporter.receive_any(from, tag, rdata, length);
       if (tag != 1234)
-        FOUR_C_THROW("Received on proc %i data with wrong tag from proc %i",
+        FOUR_C_THROW("Received on proc {} data with wrong tag from proc {}",
             Core::Communication::my_mpi_rank(discret.get_comm()), from);
 
       // ---- unpack ----

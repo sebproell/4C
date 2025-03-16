@@ -264,7 +264,7 @@ void CONTACT::IntegratorNitscheSsiElch::calculate_spatial_derivative_of_det_f(co
     }
     default:
     {
-      FOUR_C_THROW("Not implemented for discretization type: %i!", electrode_ele->shape());
+      FOUR_C_THROW("Not implemented for discretization type: {}!", electrode_ele->shape());
       break;
     }
   }
@@ -481,7 +481,7 @@ void CONTACT::IntegratorNitscheSsiElch::integrate_ssi_interface_condition(
     default:
     {
       FOUR_C_THROW(
-          "Evaluation is not implemented for this scatra-scatra interface kinetic model: %i",
+          "Evaluation is not implemented for this scatra-scatra interface kinetic model: {}",
           kinetic_model);
     }
   }

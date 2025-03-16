@@ -387,7 +387,7 @@ void Core::LinearSolver::AMGNxN::BlockedMatrix::parse_blocks(const std::string& 
           std::find(blocks.begin(), blocks.end(), superblocks_to_blocks[i][j]) - blocks.begin();
       if (blocks_processed[pos])
         FOUR_C_THROW(
-            "Matrix block %d has been specified multiple times in the *.xml file!", blocks[pos]);
+            "Matrix block {} has been specified multiple times in the *.xml file!", blocks[pos]);
       else
       {
         blocks_processed[pos] = true;
@@ -397,7 +397,7 @@ void Core::LinearSolver::AMGNxN::BlockedMatrix::parse_blocks(const std::string& 
   }
   for (unsigned iblock = 0; iblock < blocks_processed.size(); ++iblock)
     if (not blocks_processed[iblock])
-      FOUR_C_THROW("Matrix block %d has not been specified in the *.xml file!", blocks[iblock]);
+      FOUR_C_THROW("Matrix block {} has not been specified in the *.xml file!", blocks[iblock]);
 
   return;
 }

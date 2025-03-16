@@ -132,7 +132,7 @@ void Solid::ModelEvaluator::Meshtying::setup()
           Epetra_Export exporter(Xslavemod->get_map(), *strategy_ptr_->non_redist_slave_row_dofs());
 
           int err = original_vec->export_to(*Xslavemod, exporter, Insert);
-          if (err) FOUR_C_THROW("Import failed with err=%d", err);
+          if (err) FOUR_C_THROW("Import failed with err={}", err);
 
           Xslavemod_noredist = original_vec;
         }
@@ -443,7 +443,7 @@ void Solid::ModelEvaluator::Meshtying::apply_mesh_initialization(
       const int lid = gvector.get_map().LID(nodedofs[i]);
 
       if (lid < 0)
-        FOUR_C_THROW("ERROR: Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
+        FOUR_C_THROW("ERROR: Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
             Core::Communication::my_mpi_rank(gvector.get_comm()), nodedofs[i]);
 
       nvector[i] += gvector[lid];

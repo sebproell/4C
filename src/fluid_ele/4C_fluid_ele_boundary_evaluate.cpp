@@ -98,7 +98,7 @@ int Discret::Elements::FluidBoundary::evaluate(Teuchos::ParameterList& params,
     }
     default:
     {
-      FOUR_C_THROW("Unknown type of action '%i' for Fluid Boundary", act);
+      FOUR_C_THROW("Unknown type of action '{}' for Fluid Boundary", act);
       break;
     }
   }  // end of switch(act)

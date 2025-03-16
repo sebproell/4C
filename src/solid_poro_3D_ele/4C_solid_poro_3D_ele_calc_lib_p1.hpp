@@ -53,7 +53,7 @@ namespace Discret::Elements
     if constexpr (type == SolidPoroDofType::displacement)
     {
       FOUR_C_ASSERT_ALWAYS(num_local_size % dim == 0,
-          "Local size does not match the dimension. Expecting a multiple of %i but got %i", dim,
+          "Local size does not match the dimension. Expecting a multiple of {} but got {}", dim,
           num_local_size);
       return num_local_size / dim * (dim + 1);
     }
@@ -73,14 +73,14 @@ namespace Discret::Elements
   {
     FOUR_C_ASSERT(
         (get_expected_target_matrix_size<row_type, dim>(source.num_rows()) == target.num_rows()),
-        "Source and target matrix dimensions do not match for the specified row type. Got %i but "
-        "expected %i.",
+        "Source and target matrix dimensions do not match for the specified row type. Got {} but "
+        "expected {}.",
         target.num_rows(), get_expected_target_matrix_size<row_type, dim>(source.num_rows()));
 
     FOUR_C_ASSERT(
         (get_expected_target_matrix_size<col_type, dim>(source.num_cols()) == target.num_cols()),
-        "Source and target matrix dimensions do not match for the specified col type. Got %i but "
-        "expected %i",
+        "Source and target matrix dimensions do not match for the specified col type. Got {} but "
+        "expected {}",
         target.num_cols(), get_expected_target_matrix_size<col_type, dim>(source.num_cols()));
 
     for (int i = 0; i < source.num_rows(); ++i)
@@ -99,8 +99,8 @@ namespace Discret::Elements
   {
     FOUR_C_ASSERT(
         (get_expected_target_matrix_size<dof_type, dim>(source.num_rows()) == target.num_rows()),
-        "Source and target vector dimensions do not match for the specified dof type. Got %i but "
-        "expected %i",
+        "Source and target vector dimensions do not match for the specified dof type. Got {} but "
+        "expected {}",
         target.num_rows(), get_expected_target_matrix_size<dof_type, dim>(source.num_rows()));
 
     for (int i = 0; i < source.num_rows(); ++i)
