@@ -284,7 +284,7 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> CONTACT::NitscheStrategy::ge
     const enum CONTACT::VecBlockType& bt) const
 {
   if (!curr_state_eval_)
-    FOUR_C_THROW("you didn't evaluate this contact state for %s first",
+    FOUR_C_THROW("you didn't evaluate this contact state for {} first",
         CONTACT::vec_block_type_to_str(bt).c_str());
 
   switch (bt)
@@ -451,7 +451,7 @@ void CONTACT::NitscheStrategy::reconnect_parent_elements()
       const int volgid = faceele->parent_element_id();
       if (elecolmap->LID(volgid) == -1)  // Volume discretization has not Element
         FOUR_C_THROW(
-            "Manager::reconnect_parent_elements: Element %d does not exist on this Proc!", volgid);
+            "Manager::reconnect_parent_elements: Element {} does not exist on this Proc!", volgid);
 
       Core::Elements::Element* vele = voldis->g_element(volgid);
       if (!vele) FOUR_C_THROW("Cannot find element with gid %", volgid);

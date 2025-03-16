@@ -53,7 +53,7 @@ double SSI::SSIResultTest::result_special(const std::string& quantity) const
   else
   {
     FOUR_C_THROW(
-        "Quantity '%s' not supported by result testing functionality for scalar-structure "
+        "Quantity '{}' not supported by result testing functionality for scalar-structure "
         "interaction!",
         quantity.c_str());
   }

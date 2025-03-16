@@ -60,8 +60,8 @@ namespace
     if (length != static_cast<int>(mysize.size()) or tag != frompid)
       FOUR_C_THROW(
           "Size information got mixed up!\n"
-          "Received length = %d, Expected length = %d \n"
-          "Received tag    = %d, Expected tag    = %d",
+          "Received length = {}, Expected length = {} \n"
+          "Received tag    = {}, Expected tag    = {}",
           length, mysize.size(), tag, frompid);
 
     exporter.wait(sizerequest);
@@ -71,8 +71,8 @@ namespace
     if (length != receivedsize[0] or tag != frompid * 10)
       FOUR_C_THROW(
           "Data information got mixed up! \n"
-          "Received length = %d, Expected length = %d \n"
-          "Received tag    = %d, Expected tag    = %d",
+          "Received length = {}, Expected length = {} \n"
+          "Received tag    = {}, Expected tag    = {}",
           length, receivedsize[0], tag, frompid * 10);
 
     exporter.wait(datarequest);
@@ -298,13 +298,13 @@ void Solid::ModelEvaluator::Data::fill_norm_type_maps()
          * during the summation. */
         double atol = NOX::Nln::Aux::get_norm_wrms_class_variable(ostatus, *qiter, "ATOL");
         if (atol < 0.0)
-          FOUR_C_THROW("The absolute wrms tolerance of the quantity %s is missing.",
+          FOUR_C_THROW("The absolute wrms tolerance of the quantity {} is missing.",
               NOX::Nln::StatusTest::quantity_type_to_string(*qiter).c_str());
         else
           atol_wrms_[*qiter] = atol;
         double rtol = NOX::Nln::Aux::get_norm_wrms_class_variable(ostatus, *qiter, "RTOL");
         if (rtol < 0.0)
-          FOUR_C_THROW("The relative wrms tolerance of the quantity %s is missing.",
+          FOUR_C_THROW("The relative wrms tolerance of the quantity {} is missing.",
               NOX::Nln::StatusTest::quantity_type_to_string(*qiter).c_str());
         else
           rtol_wrms_[*qiter] = rtol;
@@ -649,7 +649,7 @@ double Solid::ModelEvaluator::Data::get_energy_data(enum Solid::EnergyType type)
 {
   auto check = get_energy_data().find(type);
   if (check == get_energy_data().cend())
-    FOUR_C_THROW("Couldn't find the energy contribution: \"%s\".",
+    FOUR_C_THROW("Couldn't find the energy contribution: \"{}\".",
         Solid::energy_type_to_string(type).c_str());
 
   return check->second;

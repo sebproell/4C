@@ -223,8 +223,8 @@ void Core::Elements::Element::set_material(
     add_material(mat);
   else
     FOUR_C_THROW(
-        "Setting material at index %d not possible (neither overwrite nor append) since currently  "
-        "only %d materials are stored",
+        "Setting material at index {} not possible (neither overwrite nor append) since currently  "
+        "only {} materials are stored",
         index, num_material());
 }
 
@@ -322,7 +322,7 @@ bool Core::Elements::Element::build_nodal_pointers(
     std::map<int, std::shared_ptr<Core::Nodes::Node>>::const_iterator curr = nodes.find(nodeids[i]);
     // this node is not on this proc
     if (curr == nodes.end())
-      FOUR_C_THROW("Element %d cannot find node %d", id(), nodeids[i]);
+      FOUR_C_THROW("Element {} cannot find node {}", id(), nodeids[i]);
     else
       node_[i] = curr->second.get();
   }
@@ -389,7 +389,7 @@ void Core::Elements::Element::nodal_connectivity(
     }
   }
   else
-    FOUR_C_THROW("implementation is missing for this distype (%s)",
+    FOUR_C_THROW("implementation is missing for this distype ({})",
         Core::FE::cell_type_to_string(shape()).c_str());
 }
 
@@ -716,7 +716,7 @@ int Core::Elements::Element::num_face() const
     case 3:
       return num_surface();
     default:
-      FOUR_C_THROW("faces for discretization type %s not yet implemented",
+      FOUR_C_THROW("faces for discretization type {} not yet implemented",
           (Core::FE::cell_type_to_string(shape())).c_str());
       return 0;
   }
@@ -899,7 +899,7 @@ Core::GeometricSearch::BoundingVolume Core::Elements::Element::get_bounding_volu
       if (lid > -1)
         point(i_dir) = node->x()[i_dir] + result_data_dofbased[lid];
       else
-        FOUR_C_THROW("received illegal dof local id: %d", lid);
+        FOUR_C_THROW("received illegal dof local id: {}", lid);
     }
     bounding_box.add_point(point);
   }

@@ -37,7 +37,7 @@ Coupling::VolMortar::Cell::Cell(int id, int nvertices,
 
     // volume of the element
     vol_ = jac.determinant() / 6.0;
-    if (vol_ <= 0.0) FOUR_C_THROW("Element volume %10.5e <= 0.0", vol_);
+    if (vol_ <= 0.0) FOUR_C_THROW("Element volume {:10.5e} <= 0.0", vol_);
   }
   else
     vol_ = 0.0;
@@ -76,7 +76,7 @@ double Coupling::VolMortar::Cell::calc_jac(const double* xi)
 
   invJ.multiply(derivs, xrefe);
   jac = invJ.invert();
-  if (jac <= 0.0) FOUR_C_THROW("Element Jacobian mapping %10.5e <= 0.0", jac);
+  if (jac <= 0.0) FOUR_C_THROW("Element Jacobian mapping {:10.5e} <= 0.0", jac);
 
   return jac;
 }

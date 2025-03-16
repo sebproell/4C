@@ -406,7 +406,7 @@ void Cut::TetMeshIntersection::map_volume_cells(Mesh& parent_mesh, Element* elem
                   std::stringstream str;
                   str << "illegal number of neighbouring volume cells: child_cells.size()=="
                       << child_cells.size();
-                  FOUR_C_THROW(str.str());
+                  FOUR_C_THROW("{}", str.str());
                 }
               }
 
@@ -501,7 +501,7 @@ void Cut::TetMeshIntersection::map_volume_cells(Mesh& parent_mesh, Element* elem
                   std::stringstream str;
                   str << "illegal number of neighbouring volume cells: child_cells.size() == "
                       << child_cells.size();
-                  FOUR_C_THROW(str.str());
+                  FOUR_C_THROW("{}", str.str());
                 }
               }
 
@@ -953,20 +953,20 @@ void Cut::TetMeshIntersection::fill(Mesh& parent_mesh, Element* element,
               else
               {
                 str << "parent facet not unique";
-                FOUR_C_THROW(str.str());
+                FOUR_C_THROW("{}", str.str());
               }
             }
           }
           if (parent_facet == nullptr)
           {
             str << "no parent facet found";
-            FOUR_C_THROW(str.str());
+            FOUR_C_THROW("{}", str.str());
           }
         }
         else
         {
           str << "empty list bug";
-          FOUR_C_THROW(str.str());
+          FOUR_C_THROW("{}", str.str());
         }
 
         parent_cell->new_boundary_cell(parent_mesh, bc->shape(), parent_facet, parent_points);

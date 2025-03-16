@@ -464,7 +464,7 @@ namespace Discret
       //! Set the isotropic diffusion coefficient
       virtual void set_isotropic_visc(const double visc)
       {
-        if (visc < 0.0) FOUR_C_THROW("negative (physical) viscosity: %f", 0, visc);
+        if (visc < 0.0) FOUR_C_THROW("negative (physical) viscosity: {}", 0, visc);
 
         visc_ = visc;
         return;

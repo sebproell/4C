@@ -55,7 +55,7 @@ void Mat::FiberAnisotropyExtension<numfib>::set_fibers(
   if (gp >= get_anisotropy()->get_number_of_gauss_points())
   {
     FOUR_C_THROW(
-        "The current Gauss point %i is out of range of the expected number of Gauss points %i.", gp,
+        "The current Gauss point {} is out of range of the expected number of Gauss points {}.", gp,
         get_anisotropy()->get_number_of_gauss_points());
   }
 

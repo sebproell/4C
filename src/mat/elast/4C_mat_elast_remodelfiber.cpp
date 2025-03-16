@@ -27,7 +27,7 @@ Mat::Elastic::PAR::RemodelFiber::RemodelFiber(const Core::Mat::PAR::Parameter::D
 {
   // check if sizes fit
   if (nummat_ != (int)matids_.size())
-    FOUR_C_THROW("number of materials %d does not fit to size of material vector %d", nummat_,
+    FOUR_C_THROW("number of materials {} does not fit to size of material vector {}", nummat_,
         matids_.size());
 
   // check decay time validity

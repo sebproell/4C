@@ -69,7 +69,7 @@ void SSI::ScatraStructureCloneStrategy::check_material_type(const int matid)
       (mtype != Core::Materials::m_electrode) && (mtype != Core::Materials::m_matlist) &&
       (mtype != Core::Materials::m_matlist_reactions) && (mtype != Core::Materials::m_myocard) &&
       (mtype != Core::Materials::m_thermostvenant))
-    FOUR_C_THROW("Material with ID %d is not admissible for scalar transport elements", matid);
+    FOUR_C_THROW("Material with ID {} is not admissible for scalar transport elements", matid);
 }
 
 
@@ -110,7 +110,7 @@ void SSI::ScatraStructureCloneStrategy::set_element_data(
   else
   {
     FOUR_C_THROW(
-        "unsupported element type '%s'", Core::Utils::get_dynamic_type_name(*newele).c_str());
+        "unsupported element type '{}'", Core::Utils::get_dynamic_type_name(*newele).c_str());
   }
 }
 

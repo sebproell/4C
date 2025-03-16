@@ -343,7 +343,7 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
     case Core::Conditions::NodeTag:
       return "Tagged nodes";
     default:
-      FOUR_C_THROW("Unknown condition type for enum constant %d.", condition_type);
+      FOUR_C_THROW("Unknown condition type for enum constant {}.", condition_type);
   }
 }
 

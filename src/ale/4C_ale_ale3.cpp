@@ -174,7 +174,7 @@ Core::FE::CellType Discret::Elements::Ale3::shape() const
     case 27:
       return Core::FE::CellType::hex27;
     default:
-      FOUR_C_THROW("unexpected number of nodes %d", num_node());
+      FOUR_C_THROW("unexpected number of nodes {}", num_node());
       break;
   }
 }

@@ -381,8 +381,8 @@ void CONTACT::Node::unpack(Core::Communication::UnpackBuffer& buffer)
 void CONTACT::Node::addg_value(const double val)
 {
   // check if this is a master node or slave boundary node
-  if (is_slave() == false) FOUR_C_THROW("AddgValue: function called for master node %i", id());
-  if (is_on_bound() == true) FOUR_C_THROW("AddgValue: function called for boundary node %i", id());
+  if (is_slave() == false) FOUR_C_THROW("AddgValue: function called for master node {}", id());
+  if (is_on_bound() == true) FOUR_C_THROW("AddgValue: function called for boundary node {}", id());
 
   // initialize if called for the first time
   if (data().getg() == 1.0e12) data().getg() = 0.0;
@@ -423,8 +423,8 @@ void CONTACT::Node::addlts_gap_value(const double val)
 void CONTACT::Node::addltl_gap_value(const double* val)
 {
   // check if this is a master node or slave boundary node
-  if (is_slave() == false) FOUR_C_THROW("function called for master node %i", id());
-  if (!is_on_edge()) FOUR_C_THROW("function call for non edge node! %i", id());
+  if (is_slave() == false) FOUR_C_THROW("function called for master node {}", id());
+  if (!is_on_edge()) FOUR_C_THROW("function call for non edge node! {}", id());
 
   // initialize if called for the first time
   if (data().getgltl()[0] == 1.0e12 or data().getgltl()[1] == 1.0e12 or
@@ -447,8 +447,8 @@ void CONTACT::Node::addltl_gap_value(const double* val)
 void CONTACT::Node::addltl_jump_value(const double* val)
 {
   // check if this is a master node or slave boundary node
-  if (is_slave() == false) FOUR_C_THROW("function called for master node %i", id());
-  if (!is_on_edge()) FOUR_C_THROW("function call for non edge node! %i", id());
+  if (is_slave() == false) FOUR_C_THROW("function called for master node {}", id());
+  if (!is_on_edge()) FOUR_C_THROW("function call for non edge node! {}", id());
 
   // initialize if called for the first time
   if (data().getjumpltl()[0] == 1.0e12 or data().getjumpltl()[1] == 1.0e12 or
@@ -472,8 +472,8 @@ void CONTACT::Node::addltl_jump_value(const double* val)
 void CONTACT::Node::add_deriv_z_value(const int row, const int col, const double val)
 {
   // check if this is a master node or slave boundary node
-  if (is_slave() == false) FOUR_C_THROW("AddZValue: function called for master node %i", id());
-  if (is_on_bound() == true) FOUR_C_THROW("AddZValue: function called for boundary node %i", id());
+  if (is_slave() == false) FOUR_C_THROW("AddZValue: function called for master node {}", id());
+  if (is_on_bound() == true) FOUR_C_THROW("AddZValue: function called for boundary node {}", id());
 
   // check if this has been called before
   if ((int)data().get_deriv_z().size() == 0) data().get_deriv_z().resize(num_dof());
@@ -869,7 +869,7 @@ void CONTACT::Node::build_averaged_normal()
   if (length < 1e-12)
   {
     std::cout << "normal zero: node slave= " << is_slave() << "  length= " << length << std::endl;
-    FOUR_C_THROW("Nodal normal length 0, node ID %i", id());
+    FOUR_C_THROW("Nodal normal length 0, node ID {}", id());
   }
   else
   {
@@ -930,7 +930,7 @@ void CONTACT::Node::build_averaged_normal()
     {
       std::cout << "tangent 1 zero: node slave= " << is_slave() << "  length= " << ltxi
                 << std::endl;
-      FOUR_C_THROW("Nodal tangent length 0, node ID %i", id());
+      FOUR_C_THROW("Nodal tangent length 0, node ID {}", id());
     }
     else
     {
@@ -1232,9 +1232,9 @@ void CONTACT::Node::deriv_averaged_normal(
 void CONTACT::Node::add_ncoup_value(const double val)
 {
   // check if this is a master node or slave boundary node
-  if (is_slave() == false) FOUR_C_THROW("AddNcoupValue: function called for master node %i", id());
+  if (is_slave() == false) FOUR_C_THROW("AddNcoupValue: function called for master node {}", id());
   if (is_on_bound() == true)
-    FOUR_C_THROW("AddNcoupValue: function called for boundary node %i", id());
+    FOUR_C_THROW("AddNcoupValue: function called for boundary node {}", id());
 
   // add given value to ncoup
   poro_data().getn_coup() += val;

@@ -198,7 +198,7 @@ void Mat::SuperElasticSMA::unpack(Core::Communication::UnpackBuffer& buffer)
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::SuperElasticSMA*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 
@@ -677,7 +677,7 @@ void Mat::SuperElasticSMA::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
       }
       else
       {
-        FOUR_C_THROW("Local Newton iteration unconverged in %i iterations. Residual: %e Tol: %e",
+        FOUR_C_THROW("Local Newton iteration unconverged in {} iterations. Residual: {} Tol: {}",
             maxiter, fp, tol);
       }
     }

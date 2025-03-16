@@ -178,7 +178,7 @@ namespace
       case 3:
         return try_create_poro_function<3>(parameters);
       default:
-        FOUR_C_THROW("Unsupported dimension %d.", Global::Problem::instance()->n_dim());
+        FOUR_C_THROW("Unsupported dimension {}.", Global::Problem::instance()->n_dim());
     }
   }
 }  // namespace
@@ -1278,7 +1278,7 @@ void PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::check_order(
   }
   else
   {
-    FOUR_C_THROW("Variable <%s> not supported on position 0. Wrong order in variable vector! ",
+    FOUR_C_THROW("Variable <{}> not supported on position 0. Wrong order in variable vector! ",
         variables[0].first.c_str());
   }
 
@@ -1372,7 +1372,7 @@ std::vector<double> PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::evaluate_d
     volfrac_blood = variables[3].second;
   }
   else
-    FOUR_C_THROW("Derivative w.r.t. <%s> not supported in LUNG_OXYGEN_EXCHANGE_LAW.",
+    FOUR_C_THROW("Derivative w.r.t. <{}> not supported in LUNG_OXYGEN_EXCHANGE_LAW.",
         variables[0].first.c_str());
 
   // volfrac relation
@@ -1406,7 +1406,7 @@ std::vector<double> PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::evaluate_d
                (1 / parameters_.volfrac_blood_ref) * (P_oA - P_oB.val());
   }
   else
-    FOUR_C_THROW("Derivative w.r.t. <%s> not supported in LUNG_OXYGEN_EXCHANGE_LAW.",
+    FOUR_C_THROW("Derivative w.r.t. <{}> not supported in LUNG_OXYGEN_EXCHANGE_LAW.",
         variables[0].first.c_str());
 
   return deriv;
@@ -1463,7 +1463,7 @@ void PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::check_order(
   }
   else
   {
-    FOUR_C_THROW("Variable <%s> not supported on position 0. Wrong order in variable vector! ",
+    FOUR_C_THROW("Variable <{}> not supported on position 0. Wrong order in variable vector! ",
         variables[0].first.c_str());
   }
 
@@ -1576,7 +1576,7 @@ std::vector<double> PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::eva
     volfrac_blood = variables[3].second;
   }
   else
-    FOUR_C_THROW("Derivative w.r.t. <%s> not supported in LUNG_CARBONDIOXIDE_EXCHANGE_LAW.",
+    FOUR_C_THROW("Derivative w.r.t. <{}> not supported in LUNG_CARBONDIOXIDE_EXCHANGE_LAW.",
         variables[0].first.c_str());
 
   // volfrac relation
@@ -1639,7 +1639,7 @@ std::vector<double> PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::eva
                (1 / parameters_.volfrac_blood_ref) * (P_CO2B - P_CO2A);
   }
   else
-    FOUR_C_THROW("Derivative w.r.t. <%s> not supported in LUNG_CARBONDIOXIDE_EXCHANGE_LAW.",
+    FOUR_C_THROW("Derivative w.r.t. <{}> not supported in LUNG_CARBONDIOXIDE_EXCHANGE_LAW.",
         variables[0].first.c_str());
 
   return deriv;

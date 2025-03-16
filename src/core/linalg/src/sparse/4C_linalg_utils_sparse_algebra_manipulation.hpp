@@ -206,7 +206,7 @@ namespace Core::LinAlg
       split_matrixmxn(ASparse, *blockA);
     else
       FOUR_C_THROW(
-          "Invalid number %d of row blocks or %d of column blocks for splitting operation!",
+          "Invalid number {} of row blocks or {} of column blocks for splitting operation!",
           rangemaps.num_maps(), domainmaps.num_maps());
 
     return blockA;

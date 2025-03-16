@@ -855,7 +855,7 @@ namespace Discret::Elements
     FOUR_C_ASSERT(std::all_of(anisotropic_permeability_nodal_coeffs.begin(),
                       anisotropic_permeability_nodal_coeffs.end(), [](const auto& nodal_coeffs)
                       { return nodal_coeffs.size() == Core::FE::num_nodes<celltype>; }),
-        "Given permeability coefficients do not match the number of nodes. Expecting %d.",
+        "Given permeability coefficients do not match the number of nodes. Expecting {}.",
         Core::FE::num_nodes<celltype>);
 
     for (int node = 0; node < Internal::num_nodes<celltype>; ++node)
@@ -1898,7 +1898,7 @@ namespace Discret::Elements
       inverse.setMatrix(Teuchos::rcpFromRef(pressderiv));
       int err = inverse.invert();
       if (err != 0)
-        FOUR_C_THROW("Inversion of matrix for pressure derivative failed with error code %d.", err);
+        FOUR_C_THROW("Inversion of matrix for pressure derivative failed with error code {}.", err);
     }
 
     // calculate derivatives of saturation w.r.t. pressure

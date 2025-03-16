@@ -615,7 +615,7 @@ void STI::Monolithic::output_matrix_to_file(
       double* values;
       int* indices;
       if (crsmatrix.ExtractGlobalRowView(rowgid, numentries, values, indices))
-        FOUR_C_THROW("Cannot extract matrix row with global ID %d!", rowgid);
+        FOUR_C_THROW("Cannot extract matrix row with global ID {}!", rowgid);
 
       // sort entries in current matrix row in ascending order of column global ID via map
       std::map<int, double> entries;

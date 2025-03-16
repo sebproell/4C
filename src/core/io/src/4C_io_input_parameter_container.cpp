@@ -36,14 +36,14 @@ Core::IO::InputParameterContainer& Core::IO::InputParameterContainer::group(cons
 const Core::IO::InputParameterContainer& Core::IO::InputParameterContainer::group(
     const std::string& name) const
 {
-  FOUR_C_ASSERT_ALWAYS(groups_.count(name) > 0, "Group '%s' not found in container.", name.c_str());
+  FOUR_C_ASSERT_ALWAYS(groups_.count(name) > 0, "Group '{}' not found in container.", name.c_str());
   return groups_.at(name);
 }
 
 void Core::IO::InputParameterContainer::add_list(const std::string& name, List&& list)
 {
   FOUR_C_ASSERT_ALWAYS(
-      !entries_.contains(name), "Key '%s' already exists in container.", name.c_str());
+      !entries_.contains(name), "Key '{}' already exists in container.", name.c_str());
 
   entries_[name] = {std::move(list)};
 
@@ -93,7 +93,7 @@ void Core::IO::InputParameterContainer::merge(const Core::IO::InputParameterCont
     {
       if (map1.count(key) > 0)
       {
-        FOUR_C_THROW("Duplicate key '%s' encountered while merging two containers.", key.c_str());
+        FOUR_C_THROW("Duplicate key '{}' encountered while merging two containers.", key.c_str());
       }
       map1[key] = value;
     }

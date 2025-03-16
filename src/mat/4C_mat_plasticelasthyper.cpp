@@ -50,7 +50,7 @@ Mat::PAR::PlasticElastHyper::PlasticElastHyper(const Core::Mat::PAR::Parameter::
 {
   // check if sizes fit
   if (nummat_ != (int)matids_.size())
-    FOUR_C_THROW("number of materials %d does not fit to size of material vector %d", nummat_,
+    FOUR_C_THROW("number of materials {} does not fit to size of material vector {}", nummat_,
         matids_.size());
 
   // check plastic parameter validity
@@ -231,7 +231,7 @@ void Mat::PlasticElastHyper::unpack(Core::Communication::UnpackBuffer& buffer)
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::PlasticElastHyper*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
   }
@@ -892,7 +892,7 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
   double absHeta = norm_stress_like(tmp61);
   double abseta_H = tmp61.dot(eta_v_strainlike);
   if (abseta_H < -1.e-16)
-    FOUR_C_THROW("this should not happen. eta : H : eta =%f < 0", abseta_H);
+    FOUR_C_THROW("this should not happen. eta : H : eta ={} < 0", abseta_H);
   else if (abseta_H >= 0.)
     abseta_H = sqrt(abseta_H);
   else
@@ -901,7 +901,7 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
   tmp61.multiply(PlAniso_full_, etatr_v);
   double absetatr_H = tmp61.dot(etatr_v_strainlike);
   if (absetatr_H < -1.e-16)
-    FOUR_C_THROW("this should not happen. eta_tr : H : eta_tr =%f < 0", absetatr_H);
+    FOUR_C_THROW("this should not happen. eta_tr : H : eta_tr ={} < 0", absetatr_H);
   else if (absetatr_H >= 0.)
     absetatr_H = sqrt(absetatr_H);
   else
@@ -1085,7 +1085,7 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
             plHeating += eta_v_strainlike.dot(deltaDp_v);
             break;
           default:
-            FOUR_C_THROW("unknown plastic dissipation mode: %d", dis_mode());
+            FOUR_C_THROW("unknown plastic dissipation mode: {}", dis_mode());
             break;
         }
 
@@ -1106,7 +1106,7 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
             // do nothing
             break;
           default:
-            FOUR_C_THROW("unknown plastic dissipation mode: %d", dis_mode());
+            FOUR_C_THROW("unknown plastic dissipation mode: {}", dis_mode());
             break;
         }
 
@@ -1134,7 +1134,7 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
             // do nothing
             break;
           default:
-            FOUR_C_THROW("unknown plastic dissipation mode: %d", dis_mode());
+            FOUR_C_THROW("unknown plastic dissipation mode: {}", dis_mode());
             break;
         }
 
@@ -1429,20 +1429,20 @@ void Mat::PlasticElastHyper::evaluate_nc_pand_spin(const Core::LinAlg::Matrix<3,
   double absHeta = norm_stress_like(tmp61);
   double abseta_H = tmp61.dot(eta_v_strainlike);
   if (abseta_H < -1.e-16)
-    FOUR_C_THROW("this should not happen. tmp=%f", abseta_H);
+    FOUR_C_THROW("this should not happen. tmp={}", abseta_H);
   else if (abseta_H >= 0.)
     abseta_H = sqrt(abseta_H);
   else
-    FOUR_C_THROW("this should not happen. tmp=%f", abseta_H);
+    FOUR_C_THROW("this should not happen. tmp={}", abseta_H);
   double dDpHeta = tmp61.dot(deltaDp_v_strainlike);
   tmp61.multiply(PlAniso_full_, etatr_v);
   double absetatr_H = tmp61.dot(etatr_v_strainlike);
   if (absetatr_H < -1.e-16)
-    FOUR_C_THROW("this should not happen. tmp=%f", absetatr_H);
+    FOUR_C_THROW("this should not happen. tmp={}", absetatr_H);
   else if (absetatr_H >= 0.)
     absetatr_H = sqrt(absetatr_H);
   else
-    FOUR_C_THROW("this should not happen. tmp=%f", absetatr_H);
+    FOUR_C_THROW("this should not happen. tmp={}", absetatr_H);
   Core::LinAlg::Matrix<6, 1> HdDp;
   HdDp.multiply(PlAniso_full_, deltaDp_v);
   Core::LinAlg::Matrix<6, 1> HdDp_strainlike;

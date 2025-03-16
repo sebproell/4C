@@ -107,7 +107,7 @@ void PARTICLEALGORITHM::InitialFieldHandler::set_initial_fields()
       // safety check
       if (static_cast<std::size_t>(statedim) != function.number_components())
         FOUR_C_THROW(
-            "dimensions of function defining initial field and of state '%s' not matching!",
+            "dimensions of function defining initial field and of state '{}' not matching!",
             PARTICLEENGINE::enum_to_state_name(particleState).c_str());
 
       // iterate over owned particles of current type

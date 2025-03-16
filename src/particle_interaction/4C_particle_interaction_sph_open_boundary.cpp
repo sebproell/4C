@@ -69,7 +69,7 @@ void ParticleInteraction::SPHOpenBoundaryBase::setup(
   // safety check
   for (const auto& type_i : {fluidphase_, openboundaryphase_})
     if (not particlecontainerbundle_->get_particle_types().count(type_i))
-      FOUR_C_THROW("no particle container for particle type '%s' found!",
+      FOUR_C_THROW("no particle container for particle type '{}' found!",
           PARTICLEENGINE::enum_to_type_name(type_i).c_str());
 }
 
@@ -226,7 +226,7 @@ void ParticleInteraction::SPHOpenBoundaryDirichlet::init()
 
     // safety check
     if (static_cast<int>(outwardnormal_.size()) != 3)
-      FOUR_C_THROW("dimension (dim = %d) of outward normal is wrong!",
+      FOUR_C_THROW("dimension (dim = {}) of outward normal is wrong!",
           static_cast<int>(outwardnormal_.size()));
 
     // normalize outward normal
@@ -245,7 +245,7 @@ void ParticleInteraction::SPHOpenBoundaryDirichlet::init()
     // safety check
     if (static_cast<int>(planepoint_.size()) != 3)
       FOUR_C_THROW(
-          "dimension (dim = %d) of plane point is wrong!", static_cast<int>(planepoint_.size()));
+          "dimension (dim = {}) of plane point is wrong!", static_cast<int>(planepoint_.size()));
   }
 
   // init fluid phase and open boundary phase
@@ -427,7 +427,7 @@ void ParticleInteraction::SPHOpenBoundaryNeumann::init()
 
     // safety check
     if (static_cast<int>(outwardnormal_.size()) != 3)
-      FOUR_C_THROW("dimension (dim = %d) of outward normal is wrong!",
+      FOUR_C_THROW("dimension (dim = {}) of outward normal is wrong!",
           static_cast<int>(outwardnormal_.size()));
 
     // normalize outward normal
@@ -446,7 +446,7 @@ void ParticleInteraction::SPHOpenBoundaryNeumann::init()
     // safety check
     if (static_cast<int>(planepoint_.size()) != 3)
       FOUR_C_THROW(
-          "dimension (dim = %d) of plane point is wrong!", static_cast<int>(planepoint_.size()));
+          "dimension (dim = {}) of plane point is wrong!", static_cast<int>(planepoint_.size()));
   }
 
   // init fluid phase and open boundary phase

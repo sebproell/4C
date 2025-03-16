@@ -284,7 +284,7 @@ void FS3I::FS3IBase::check_f_s3_i_inputs()
 
         if (scatravec_[i]->scatra_field()->num_scal() != params->at(6))
           FOUR_C_THROW(
-              "Number of scalars NUMSCAL in ScaTra coupling conditions with COUPID %i does not "
+              "Number of scalars NUMSCAL in ScaTra coupling conditions with COUPID {} does not "
               "equal the number of scalars your scalar field has!",
               myID);
 
@@ -330,46 +330,46 @@ void FS3I::FS3IBase::check_f_s3_i_inputs()
       // no the actual testing
       if (fluid_permcoeffs->at(0) != structure_permcoeffs->at(0))
         FOUR_C_THROW(
-            "Permeability coefficient PERMCOEF of ScaTra couplings with COUPID %i needs to be the "
+            "Permeability coefficient PERMCOEF of ScaTra couplings with COUPID {} needs to be the "
             "same!",
             ID);
       if (fluid_permcoeffs->at(1) != structure_permcoeffs->at(1))
         FOUR_C_THROW(
-            "Hydraulic conductivity coefficient CONDUCT of ScaTra couplings with COUPID %i needs "
+            "Hydraulic conductivity coefficient CONDUCT of ScaTra couplings with COUPID {} needs "
             "to be the same!",
             ID);
       if (fluid_permcoeffs->at(2) != structure_permcoeffs->at(2))
         FOUR_C_THROW(
-            "Filtration coefficient coefficient FILTR of ScaTra couplings with COUPID %i needs to "
+            "Filtration coefficient coefficient FILTR of ScaTra couplings with COUPID {} needs to "
             "be the same!",
             ID);
       if (fluid_permcoeffs->at(2) < 0 or fluid_permcoeffs->at(2) > 1)
         FOUR_C_THROW(
-            "The filtration coefficient FILTR of ScaTra couplings with COUPID %i must be in [0;1], "
+            "The filtration coefficient FILTR of ScaTra couplings with COUPID {} must be in [0;1], "
             "since it is the ratio of average pore size per area!",
             ID);
       if (fluid_permcoeffs->at(3) != structure_permcoeffs->at(3))
         FOUR_C_THROW(
-            "WSS onoff flag WSSON of ScaTra couplings with COUPID %i needs to be the same!", ID);
+            "WSS onoff flag WSSON of ScaTra couplings with COUPID {} needs to be the same!", ID);
       if (fluid_permcoeffs->at(4) != structure_permcoeffs->at(4))
         FOUR_C_THROW(
-            "First WSS coefficient WSSCOEFFS of ScaTra couplings with COUPID %i needs to be the "
+            "First WSS coefficient WSSCOEFFS of ScaTra couplings with COUPID {} needs to be the "
             "same!",
             ID);
       if (fluid_permcoeffs->at(5) != structure_permcoeffs->at(5))
         FOUR_C_THROW(
-            "Second WSS coefficient WSSCOEFFS of ScaTra couplings with COUPID %i needs to be the "
+            "Second WSS coefficient WSSCOEFFS of ScaTra couplings with COUPID {} needs to be the "
             "same!",
             ID);
       if (fluid_permcoeffs->at(6) != structure_permcoeffs->at(6))
         FOUR_C_THROW(
-            "Number of scalars NUMSCAL of ScaTra couplings with COUPID %i needs to be the same!",
+            "Number of scalars NUMSCAL of ScaTra couplings with COUPID {} needs to be the same!",
             ID);
 
       for (int k = 0; k < numscal; k++)
       {
         if (fluid_permcoeffs->at(7 + k) != structure_permcoeffs->at(7 + k))
-          FOUR_C_THROW("ONOFF vector of ScaTra couplings with COUPID %i needs to be the same!", ID);
+          FOUR_C_THROW("ONOFF vector of ScaTra couplings with COUPID {} needs to be the same!", ID);
 
         onoff_sum->at(k) += fluid_permcoeffs->at(7 + k);
       }
@@ -379,7 +379,7 @@ void FS3I::FS3IBase::check_f_s3_i_inputs()
     {
       if (onoff_sum->at(j) > 1)
         FOUR_C_THROW(
-            "In the ONOFF vector the %i-th scalar has been switched on multiple times. The ON is "
+            "In the ONOFF vector the {}-th scalar has been switched on multiple times. The ON is "
             "allowed only once per scalar!",
             j);
     }

@@ -29,7 +29,7 @@ Discret::Elements::ScaTraEleCalcArtery<distype, probdim>::ScaTraEleCalcArtery(
   if (nen_ != 2)
   {
     FOUR_C_THROW(
-        "Only line2 elements supported so far, you have %d nodes, if called with 2D or 3D element, "
+        "Only line2 elements supported so far, you have {} nodes, if called with 2D or 3D element, "
         "think again",
         nen_);
   }
@@ -104,7 +104,7 @@ void Discret::Elements::ScaTraEleCalcArtery<distype, probdim>::materials(
     }
     default:
     {
-      FOUR_C_THROW("Material type %i is not supported!", material->material_type());
+      FOUR_C_THROW("Material type {} is not supported!", material->material_type());
       break;
     }
   }

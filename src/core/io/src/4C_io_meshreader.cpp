@@ -91,7 +91,7 @@ void Core::IO::MeshReader::read_and_partition()
     Core::Communication::max_all(&local_max_node_id, &max_node_id, 1, comm_);
 
     if (max_node_id > 0 && max_node_id < Core::Communication::num_mpi_ranks(comm_))
-      FOUR_C_THROW("Bad idea: Simulation with %d procs for problem with %d nodes",
+      FOUR_C_THROW("Bad idea: Simulation with {} procs for problem with {} nodes",
           Core::Communication::num_mpi_ranks(comm_), max_node_id);
   }
 }

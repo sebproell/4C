@@ -592,7 +592,7 @@ void Wear::LagrangeStrategyWear::condense_wear_impl_expl(
 
   // re-insert inverted diagonal into invd
   err = invd->replace_diagonal_values(*diag);
-  if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+  if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
 
   // do the multiplication mhat = inv(D) * M
   mhatmatrix_ = Core::LinAlg::matrix_multiply(*invd, false, *mmatrix_, false, false, false, true);
@@ -1597,7 +1597,7 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
 
   // re-insert inverted diagonal into invd
   err = invd->replace_diagonal_values(*diag);
-  if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code %d.", err);
+  if (err < 0) FOUR_C_THROW("replace_diagonal_values() failed with error code {}.", err);
 
   // do the multiplication mhat = inv(D) * M
   mhatmatrix_ = Core::LinAlg::matrix_multiply(*invd, false, *mmatrix_, false, false, false, true);
@@ -5187,7 +5187,7 @@ void Wear::LagrangeStrategyWear::store_nodal_quantities(Mortar::StrategyBase::Qu
             {
               // throw a FOUR_C_THROW if node is Active and DBC
               if (cnode->is_dbc() && cnode->active())
-                FOUR_C_THROW("Slave node %i is active AND carries D.B.C.s!", cnode->id());
+                FOUR_C_THROW("Slave node {} is active AND carries D.B.C.s!", cnode->id());
 
               // explicitly set global Lag. Mult. to zero for D.B.C nodes
               if (cnode->is_dbc()) (*vectorinterface)[locindex[dof]] = 0.0;
@@ -5202,7 +5202,7 @@ void Wear::LagrangeStrategyWear::store_nodal_quantities(Mortar::StrategyBase::Qu
             {
               // throw a FOUR_C_THROW if node is Active and DBC
               if (cnode->is_dbc() && cnode->active())
-                FOUR_C_THROW("Slave node %i is active AND carries D.B.C.s!", cnode->id());
+                FOUR_C_THROW("Slave node {} is active AND carries D.B.C.s!", cnode->id());
 
               // explicitly set global Lag. Mult. to zero for D.B.C nodes
               if (cnode->is_dbc()) (*vectorinterface)[locindex[dof]] = 0.0;
@@ -5217,7 +5217,7 @@ void Wear::LagrangeStrategyWear::store_nodal_quantities(Mortar::StrategyBase::Qu
             {
               // throw a FOUR_C_THROW if node is Active and DBC
               if (cnode->is_dbc() && cnode->active())
-                FOUR_C_THROW("Slave node %i is active AND carries D.B.C.s!", cnode->id());
+                FOUR_C_THROW("Slave node {} is active AND carries D.B.C.s!", cnode->id());
 
               // explicitly set global Lag. Mult. to zero for D.B.C nodes
               if (cnode->is_dbc()) (*vectorinterface)[locindex[dof]] = 0.0;

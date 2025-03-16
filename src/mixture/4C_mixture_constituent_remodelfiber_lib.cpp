@@ -47,7 +47,7 @@ Mixture::PAR::fiber_material_factory(int matid)
           Mixture::PAR::RemodelFiberMaterialExponentialActive<double>>(curmat);
     default:
       FOUR_C_THROW(
-          "The referenced material with id %d is not registered as a remodel fiber material!",
+          "The referenced material with id {} is not registered as a remodel fiber material!",
           matid);
   }
 

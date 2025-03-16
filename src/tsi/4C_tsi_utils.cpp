@@ -46,7 +46,7 @@ void TSI::Utils::ThermoStructureCloneStrategy::check_material_type(const int mat
   //  Core::Materials::MaterialType mtype =
   //  Global::Problem::instance()->Materials()->ParameterById(matid)->Type(); if ((mtype !=
   //  Core::Materials::m_thermo_fourier))
-  //    FOUR_C_THROW("Material with ID %d is not admissible for thermo elements",matid);
+  //     FOUR_C_THROW("Material with ID {} is not admissible for thermo elements",matid);
 
 }  // check_material_type()
 
@@ -91,7 +91,7 @@ void TSI::Utils::ThermoStructureCloneStrategy::set_element_data(
   else
   {
     FOUR_C_THROW(
-        "unsupported element type '%s'", Core::Utils::get_dynamic_type_name(*newele).c_str());
+        "unsupported element type '{}'", Core::Utils::get_dynamic_type_name(*newele).c_str());
   }
   return;
 }  // set_element_data()

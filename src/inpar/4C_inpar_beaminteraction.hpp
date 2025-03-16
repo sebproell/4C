@@ -151,7 +151,7 @@ namespace Inpar
       else
       {
         FOUR_C_THROW(
-            "invalid crosslinker type %s. Possible values are arbitrary, actin, collagen and "
+            "invalid crosslinker type {}. Possible values are arbitrary, actin, collagen and "
             "integrin.",
             name.c_str());
       }

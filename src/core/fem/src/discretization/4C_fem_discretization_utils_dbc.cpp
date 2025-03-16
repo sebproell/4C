@@ -284,14 +284,14 @@ void Core::FE::Utils::Dbc::read_dirichlet_condition(const Teuchos::ParameterList
 
     if ((total_numdf % numdf) != 0)
       FOUR_C_THROW(
-          "Illegal number of DoF's at this node! (nGID=%d)\n"
-          "%d is not a multiple of %d",
+          "Illegal number of DoF's at this node! (nGID={})\n"
+          "{} is not a multiple of {}",
           actnode->id(), total_numdf, numdf);
 
     // is the number of degrees of freedom given in the constraint definition sufficient?
     const int num_dbc_dofs = static_cast<int>(onoff.size());
     if (num_dbc_dofs < numdf)
-      FOUR_C_THROW("%d DOFs given but %d expected in %s", num_dbc_dofs, numdf,
+      FOUR_C_THROW("{} DOFs given but {} expected in {}", num_dbc_dofs, numdf,
           Core::Conditions::to_string(cond.type()).data());
 
     // loop over dofs of current nnode
@@ -303,7 +303,7 @@ void Core::FE::Utils::Dbc::read_dirichlet_condition(const Teuchos::ParameterList
       // get corresponding lid
       const int lid = info.toggle.get_map().LID(gid);
       if (lid < 0)
-        FOUR_C_THROW("Global id %d not on this proc %d in system vector", dofs[j],
+        FOUR_C_THROW("Global id {} not on this proc {} in system vector", dofs[j],
             Core::Communication::my_mpi_rank(discret.get_comm()));
 
       // get position of label for this dof in condition line ( e.g. for XFEM )
@@ -384,7 +384,7 @@ void Core::FE::Utils::Dbc::read_dirichlet_condition(const Teuchos::ParameterList
                << " with new value of " << value << " at time " << time << ".\nThe difference is "
                << std::setprecision(13) << std::abs(current_val - value) << " > " << dbc_tol
                << ".\nPlease try to adjust the input.";
-            FOUR_C_THROW(ss.str());
+            FOUR_C_THROW("{}", ss.str());
           }
         }
 
@@ -508,8 +508,8 @@ void Core::FE::Utils::Dbc::do_dirichlet_condition(const Teuchos::ParameterList& 
 
     if ((total_numdf % numdf) != 0)
       FOUR_C_THROW(
-          "Illegal number of DoF's at this node! (nGID=%d)\n"
-          "%d is not a multiple of %d",
+          "Illegal number of DoF's at this node! (nGID={})\n"
+          "{} is not a multiple of {}",
           actnode->id(), total_numdf, numdf);
 
     // loop over dofs of current nnode
@@ -520,7 +520,7 @@ void Core::FE::Utils::Dbc::do_dirichlet_condition(const Teuchos::ParameterList& 
       // get corresponding lid
       const int lid = toggle.get_map().LID(gid);
       if (lid < 0)
-        FOUR_C_THROW("Global id %d not on this proc %d in system vector", dofs[j],
+        FOUR_C_THROW("Global id {} not on this proc {} in system vector", dofs[j],
             Core::Communication::my_mpi_rank(discret.get_comm()));
       // get position of label for this dof in condition line
       const int onesetj = j % numdf;

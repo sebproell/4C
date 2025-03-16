@@ -31,10 +31,10 @@ void Core::LinAlg::symmetric_inverse(Core::LinAlg::SerialDenseMatrix& A, const i
   int m = dim;
 
   dsytrf(uplo, &m, a, &n, ipiv.data(), work.data(), &lwork, &info);
-  if (info) FOUR_C_THROW("dsytrf returned info=%d", info);
+  if (info) FOUR_C_THROW("dsytrf returned info={}", info);
 
   dsytri(uplo, &m, a, &n, ipiv.data(), work.data(), &info);
-  if (info) FOUR_C_THROW("dsytri returned info=%d", info);
+  if (info) FOUR_C_THROW("dsytri returned info={}", info);
 
   for (int i = 0; i < dim; ++i)
     for (int j = 0; j < i; ++j) A(j, i) = A(i, j);

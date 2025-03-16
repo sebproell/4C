@@ -43,7 +43,7 @@ void ScaTra::ScaTraResultTest::test_node(
 
   if (isnodeofanybody == 0)
   {
-    FOUR_C_THROW("Node %d does not belong to discretization %s", node + 1,
+    FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1,
         scatratimint_->discretization()->name().c_str());
   }
   else
@@ -213,7 +213,7 @@ double ScaTra::ScaTraResultTest::result_node(
 
   // catch unknown quantity strings
   else
-    FOUR_C_THROW("Quantity '%s' not supported in result test!", quantity.c_str());
+    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity.c_str());
 
   return result;
 }  // ScaTra::ScaTraResultTest::ResultNode
@@ -342,8 +342,8 @@ double ScaTra::ScaTraResultTest::result_special(
       std::map<const int, std::vector<double>>::const_iterator iterator = map->find(domain);
       if (iterator == map->end() or species < 0 or species >= (int)iterator->second.size())
         FOUR_C_THROW(
-            "Couldn't extract total or mean value of transported scalar with ID %d inside domain "
-            "with ID %d from time integrator!",
+            "Couldn't extract total or mean value of transported scalar with ID {} inside domain "
+            "with ID {} from time integrator!",
             species, domain);
       result = iterator->second[species];
     }
@@ -442,7 +442,7 @@ double ScaTra::ScaTraResultTest::result_special(
     // extract domain ID
     int domain = strtol(index, &locator, 10);
     if (domain < 0 || domain > (int)(scatratimint_->domain_integrals().size() - 1))
-      FOUR_C_THROW("Value for domain integral has to lie between 0 and %i",
+      FOUR_C_THROW("Value for domain integral has to lie between 0 and {}",
           (int)(scatratimint_->domain_integrals().size() - 1));
     result = scatratimint_->domain_integrals()[domain];
   }
@@ -456,14 +456,14 @@ double ScaTra::ScaTraResultTest::result_special(
     // extract boundary ID
     int boundary = strtol(index, &locator, 10);
     if (boundary < 0 || boundary > (int)(scatratimint_->boundary_integrals().size() - 1))
-      FOUR_C_THROW("Value for boundary integral has to lie between 0 and %i",
+      FOUR_C_THROW("Value for boundary integral has to lie between 0 and {}",
           (int)(scatratimint_->domain_integrals().size() - 1));
     result = scatratimint_->boundary_integrals()[boundary];
   }
 
   // catch unknown quantity strings
   else
-    FOUR_C_THROW("Quantity '%s' not supported in result test!", quantity.c_str());
+    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity.c_str());
 
   return result;
 }  // ScaTra::ScaTraResultTest::result_special

@@ -270,7 +270,7 @@ void PoroElastScaTra::PoroScatraMono::solve()
   }
   else if (iter_ >= itermax_)
   {
-    FOUR_C_THROW("Newton unconverged in %d iterations", iter_);
+    FOUR_C_THROW("Newton unconverged in {} iterations", iter_);
   }
 
 }  // Solve()

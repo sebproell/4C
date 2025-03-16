@@ -22,7 +22,7 @@ std::vector<double> Cut::DirectDivergenceGlobalRefplane::get_reference_plane()
 {
   if (elem1_->shape() != Core::FE::CellType::hex8)
   {
-    FOUR_C_THROW("Currently can handle only hexagonal family, not %d\n", elem1_->shape());
+    FOUR_C_THROW("Currently can handle only hexagonal family, not {}\n", elem1_->shape());
   }
 
   std::vector<double> RefPlaneEqn(4, 0.0);

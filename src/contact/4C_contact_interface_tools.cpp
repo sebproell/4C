@@ -3394,7 +3394,7 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
     {
       int gid = slave_col_elements()->GID(i);
       Core::Elements::Element* ele = discret().g_element(gid);
-      if (!ele) FOUR_C_THROW("Cannot find ele with gid %i", gid);
+      if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
       Mortar::Element* mele = dynamic_cast<Mortar::Element*>(ele);
 
       mele->mo_data().search_elements().resize(0);
@@ -3596,7 +3596,7 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
     {
       int gid = slave_col_elements()->GID(i);
       Core::Elements::Element* ele = discret().g_element(gid);
-      if (!ele) FOUR_C_THROW("Cannot find ele with gid %i", gid);
+      if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
       Mortar::Element* mele = dynamic_cast<Mortar::Element*>(ele);
 
       mele->mo_data().search_elements().resize(0);
@@ -3797,7 +3797,7 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
   {
     int gid = slave_col_elements()->GID(i);
     Core::Elements::Element* ele = discret().g_element(gid);
-    if (!ele) FOUR_C_THROW("Cannot find ele with gid %i", gid);
+    if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
     Mortar::Element* mele = dynamic_cast<Mortar::Element*>(ele);
 
     mele->mo_data().search_elements().resize(0);

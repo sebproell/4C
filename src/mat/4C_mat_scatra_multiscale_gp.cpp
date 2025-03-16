@@ -178,7 +178,7 @@ void Mat::ScatraMultiScaleGP::init()
           if (node == nullptr)
           {
             FOUR_C_THROW(
-                "Cannot extract node with global ID %d from micro-scale discretization!", inode);
+                "Cannot extract node with global ID {} from micro-scale discretization!", inode);
           }
           else if (node->x()[0] <= 0.0)
             FOUR_C_THROW(

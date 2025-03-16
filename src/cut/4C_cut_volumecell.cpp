@@ -420,7 +420,7 @@ void Cut::VolumeCell::new_boundary_cell(
       break;
     default:
       FOUR_C_THROW(
-          "Unsupported shape ( shape = %s )", Core::FE::cell_type_to_string(shape).c_str());
+          "Unsupported shape ( shape = {} )", Core::FE::cell_type_to_string(shape).c_str());
       exit(EXIT_FAILURE);
   }
 }
@@ -539,7 +539,7 @@ void Cut::VolumeCell::new_integration_cell(
       break;
     default:
       FOUR_C_THROW(
-          "Unsupported shape ( shape = %s )", Core::FE::cell_type_to_string(shape).c_str());
+          "Unsupported shape ( shape = {} )", Core::FE::cell_type_to_string(shape).c_str());
       exit(EXIT_FAILURE);
   }
 }
@@ -1646,7 +1646,7 @@ bool Cut::VolumeCell::set_position_cut_side_based()
 {
   if (position() != Point::undecided)
     FOUR_C_THROW(
-        "Do not call FindPositionCutSideBased() if Position for volumecell is already set (%d)!",
+        "Do not call FindPositionCutSideBased() if Position for volumecell is already set ({})!",
         (int)position());
 
   std::map<Facet*, bool> outsidenormal;
@@ -1711,7 +1711,7 @@ bool Cut::VolumeCell::set_position_cut_side_based()
                   << ref_vec(2, 0) << ")" << std::endl;
         std::cout << "Facet Vector: (" << norm_fac(0, 0) << "," << norm_fac(1, 0) << ","
                   << norm_fac(2, 0) << ")" << std::endl;
-        FOUR_C_THROW("Check this really small dotProduct! %d", dotProduct);
+        FOUR_C_THROW("Check this really small dotProduct! {}", dotProduct);
       }
 
       outsidenormal[f] = (dotProduct > 0);

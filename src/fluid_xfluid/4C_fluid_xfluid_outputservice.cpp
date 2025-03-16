@@ -1265,7 +1265,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_boundary_cell(
           }
           default:
           {
-            FOUR_C_THROW("unsupported side shape %d", side->shape());
+            FOUR_C_THROW("unsupported side shape {}", side->shape());
             break;
           }
         }
@@ -1359,7 +1359,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_eos(
                 double(ghost_penalty), actele, gmshfilecontent);
         }
         else
-          FOUR_C_THROW("face %d in map not found", actele->id());
+          FOUR_C_THROW("face {} in map not found", actele->id());
       }
       gmshfilecontent << "};\n";
     }

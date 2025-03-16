@@ -161,7 +161,7 @@ namespace CONTACT
 
     FOUR_C_ASSERT_ALWAYS(nodes, "ERROR: Did not get nodes of element!");
     FOUR_C_ASSERT_ALWAYS(probdim == nodedim,
-        "Problem dimension: %i and dimension of nodes: %i does not match!", probdim, nodedim);
+        "Problem dimension: {} and dimension of nodes: {} does not match!", probdim, nodedim);
 
     for (int i = 0; i < Core::FE::num_nodes<distype>; ++i)
     {

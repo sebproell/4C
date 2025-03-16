@@ -28,7 +28,7 @@ Mat::PAR::ElchPhase::ElchPhase(const Core::Mat::PAR::Parameter::Data& matdata)
 {
   if (nummat_ != (int)matids_.size())
     FOUR_C_THROW(
-        "number of phases %d does not fit to size of phase vector %d", nummat_, matids_.size());
+        "number of phases {} does not fit to size of phase vector {}", nummat_, matids_.size());
 
   if (not local_)
   {
@@ -159,7 +159,7 @@ void Mat::ElchPhase::unpack(Core::Communication::UnpackBuffer& buffer)
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::ElchPhase*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 

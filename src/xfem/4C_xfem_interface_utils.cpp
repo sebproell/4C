@@ -321,7 +321,7 @@ double XFEM::Utils::nit_get_trace_estimate_constant(
       return 4.10462;
       break;  /// d=3, p(v_h) = 2 -> p(grad(v_h)) = 2   =>  CT taken from hex20
     default:
-      FOUR_C_THROW("constant for trace inequality not specified for this element type yet: % i",
+      FOUR_C_THROW("constant for trace inequality not specified for this element type yet: {}",
           trace_inequality_distype);
       break;
   };
@@ -645,7 +645,7 @@ double XFEM::Utils::eval_element_volume(Core::LinAlg::Matrix<3, Core::FE::num_no
   xjm.multiply_nt(deriv, xyze);
   double det = xji.invert(xjm);
 
-  if (det < 1E-16) FOUR_C_THROW("GLOBAL ELEMENT ZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", det);
+  if (det < 1E-16) FOUR_C_THROW("GLOBAL ELEMENT ZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", det);
 
   // compute integration factor
   return gpweight * det;
@@ -738,7 +738,7 @@ double XFEM::Utils::compute_char_ele_length(Core::Elements::Element* ele,  ///< 
 
       if (meas_vol < 0.0)
         FOUR_C_THROW(
-            " measure of cut partial volume is smaller than 0.0: %f Attention with increasing "
+            " measure of cut partial volume is smaller than 0.0: {} Attention with increasing "
             "Nitsche-Parameter!!!",
             meas_vol);
 

@@ -59,7 +59,7 @@ void Mat::PAR::FluidPoroMultiPhase::initialize()
   // safety check
   if ((int)matids_.size() != (int)(numvolfrac_ * 2 + numfluidphases_))
     FOUR_C_THROW(
-        "You have chosen %i materials, %i fluidphases and %f volume fractions, check your input "
+        "You have chosen {} materials, {} fluidphases and {} volume fractions, check your input "
         "definition\n"
         "Your Input should always look like (for example: 4 fluid phases, 2 volume fractions):\n"
         "MAT 0 MAT_FluidPoroMultiPhase LOCAL No PERMEABILITY 1.0 NUMMAT 8 MATIDS    1 2 3 4 5 6 7 "
@@ -83,7 +83,7 @@ void Mat::PAR::FluidPoroMultiPhase::initialize()
       // safety check and cast
       if (singlemat->material_type() != Core::Materials::m_fluidporo_singlephase)
         FOUR_C_THROW(
-            "You have chosen %i fluidphases, however your material number %i is no poro "
+            "You have chosen {} fluidphases, however your material number {} is no poro "
             "singlephase material\n"
             "Your Input should always look like (for example: 4 fluid phases, 2 volume "
             "fractions):\n"
@@ -115,8 +115,8 @@ void Mat::PAR::FluidPoroMultiPhase::initialize()
       // safety check
       if (singlemat->material_type() != Core::Materials::m_fluidporo_singlevolfrac)
         FOUR_C_THROW(
-            "You have chosen %i fluid phases and %i volume fractions, however your material number "
-            "%i is no poro volume fraction material\n"
+            "You have chosen {} fluid phases and {} volume fractions, however your material number "
+            "{} is no poro volume fraction material\n"
             "Your Input should always look like (for example: 4 fluid phases, 2 volume "
             "fractions):\n"
             "MAT 0 MAT_FluidPoroMultiPhase LOCAL No PERMEABILITY 1.0 NUMMAT 8 MATIDS    1 2 3 4 5 "
@@ -133,8 +133,8 @@ void Mat::PAR::FluidPoroMultiPhase::initialize()
       // safety check
       if (singlemat->material_type() != Core::Materials::m_fluidporo_volfracpressure)
         FOUR_C_THROW(
-            "You have chosen %i fluid phases and %i volume fractions, however your material number "
-            "%i is no poro volume fraction pressure material\n"
+            "You have chosen {} fluid phases and {} volume fractions, however your material number "
+            "{} is no poro volume fraction pressure material\n"
             "Your Input should always look like (for example: 4 fluid phases, 2 volume "
             "fractions):\n"
             "MAT 0 MAT_FluidPoroMultiPhase LOCAL No PERMEABILITY 1.0 NUMMAT 8 MATIDS    1 2 3 4 5 "
@@ -146,7 +146,7 @@ void Mat::PAR::FluidPoroMultiPhase::initialize()
             numfluidphases_, (int)matids_.size() - numfluidphases_, iphase + 1);
     }
     else
-      FOUR_C_THROW("something went wrong here, why is iphase = %i", iphase);
+      FOUR_C_THROW("something went wrong here, why is iphase = {}", iphase);
   }
 
   // check
@@ -165,7 +165,7 @@ void Mat::PAR::FluidPoroMultiPhase::initialize()
     int err = inverse.invert();
     if (err != 0)
       FOUR_C_THROW(
-          "Inversion of matrix for DOF transform failed with errorcode %d. Is your system of DOFs "
+          "Inversion of matrix for DOF transform failed with errorcode {}. Is your system of DOFs "
           "linear independent?",
           err);
   }
@@ -288,7 +288,7 @@ void Mat::FluidPoroMultiPhase::unpack(Core::Communication::UnpackBuffer& buffer)
         paramsporo_ = dynamic_cast<Mat::PAR::FluidPoroMultiPhase*>(mat);
       }
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 

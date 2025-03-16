@@ -177,7 +177,7 @@ void Core::Utils::ResultTestManager::test_all(MPI_Comm comm)
 
   if (numerr > 0)
   {
-    FOUR_C_THROW("Result check failed with %d errors out of %d tests", numerr, size);
+    FOUR_C_THROW("Result check failed with {} errors out of {} tests", numerr, size);
   }
 
   /* test_count == -1 means we had a special test routine. It's thus
@@ -194,7 +194,7 @@ void Core::Utils::ResultTestManager::test_all(MPI_Comm comm)
      * FOUR_C_THROW to go off in that case. */
     if (count < size)
     {
-      FOUR_C_THROW("expected %d tests but performed %d", size, count);
+      FOUR_C_THROW("expected {} tests but performed {}", size, count);
     }
   }
 

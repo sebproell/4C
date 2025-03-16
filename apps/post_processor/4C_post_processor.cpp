@@ -270,7 +270,7 @@ namespace
           // runtime output is used for scatra
         }
         else
-          FOUR_C_THROW("number of fields does not match: got %d", numfields);
+          FOUR_C_THROW("number of fields does not match: got {}", numfields);
 
         break;
       }
@@ -329,7 +329,7 @@ namespace
           }
           else
             FOUR_C_THROW(
-                "You try to postprocess a discretization with name %s, maybe you should add it "
+                "You try to postprocess a discretization with name {}, maybe you should add it "
                 "here?",
                 disname.c_str());
         }
@@ -351,7 +351,7 @@ namespace
                     << std::endl;
         }
 
-        if (numfield == 0) FOUR_C_THROW("we expect at least a fluid field, numfield=%i", numfield);
+        if (numfield == 0) FOUR_C_THROW("we expect at least a fluid field, numfield={}", numfield);
         std::string basename = problem.outname();
 
         // XFluid in the standard case, embedded fluid for XFF
@@ -432,7 +432,7 @@ namespace
           // runtime output is used for scatra
         }
         else
-          FOUR_C_THROW("number of fields does not match: got %d", numfield);
+          FOUR_C_THROW("number of fields does not match: got {}", numfield);
         break;
       }
       case Core::ProblemType::art_net:
@@ -588,7 +588,7 @@ namespace
         break;
       }
       default:
-        FOUR_C_THROW("problem type %d not yet supported", problem.problemtype());
+        FOUR_C_THROW("problem type {} not yet supported", problem.problemtype());
         break;
     }
   }
@@ -626,7 +626,7 @@ int main(int argc, char** argv)
     if (filter == "ensight" || filter == "vtu" || filter == "vtu_node_based" || filter == "vti")
       run_ensight_vtu_filter(problem);
     else
-      FOUR_C_THROW("Unknown filter %s given, supported filters: [ensight|vtu|vti]", filter.c_str());
+      FOUR_C_THROW("Unknown filter {} given, supported filters: [ensight|vtu|vti]", filter.c_str());
 
   }  // try
   catch (Core::Exception& err)

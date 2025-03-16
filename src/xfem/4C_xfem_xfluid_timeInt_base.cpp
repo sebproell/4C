@@ -1130,7 +1130,7 @@ void XFEM::XfluidStd::get_gp_values_t(Core::Elements::Element* ele,  ///< pointe
   //-------------------------------------------------------
   // get element location vector, dirichlet flags and ownerships (discret, nds, la, doDirichlet)
   if ((int)(nds.size()) != numnode)
-    FOUR_C_THROW("size of nds-vector (%d) != numnode(%d)", nds.size(), numnode);
+    FOUR_C_THROW("size of nds-vector ({}) != numnode({})", nds.size(), numnode);
 
   std::vector<int> lm;
 
@@ -1331,7 +1331,7 @@ void XFEM::XfluidStd::project_and_trackback(TimeIntData& data)
   }
 
   if (points.size() == 0 and sides.size() == 0)
-    FOUR_C_THROW("there are no cutting sides for node %d, that cannot be anymore", data.node_.id());
+    FOUR_C_THROW("there are no cutting sides for node {}, that cannot be anymore", data.node_.id());
 
   //-------------------------------------
   // initialize data holding information about minimal distance
@@ -1430,7 +1430,7 @@ void XFEM::XfluidStd::project_and_trackback(TimeIntData& data)
 
 
   if (data.proj_ == TimeIntData::failed_)
-    FOUR_C_THROW("projection of node %d not successful!", n_new->id());
+    FOUR_C_THROW("projection of node {} not successful!", n_new->id());
 
 #ifdef DEBUG_TIMINT_STD
   Core::IO::cout << "\n\t => Projection of node lies on (side=0, line=1, point=2, failed=3): "
@@ -1443,7 +1443,7 @@ void XFEM::XfluidStd::project_and_trackback(TimeIntData& data)
   {
     Core::Elements::Element* side = boundarydis_->g_element(proj_sid);
 
-    if (side == nullptr) FOUR_C_THROW("side with id %d not found ", proj_sid);
+    if (side == nullptr) FOUR_C_THROW("side with id {} not found ", proj_sid);
 
     // side geometry at initial state t^0
     const int numnodes = side->num_node();
@@ -1479,7 +1479,7 @@ void XFEM::XfluidStd::project_and_trackback(TimeIntData& data)
       if (sides.size() <= 0)
       {
         FOUR_C_THROW(
-            "there must be at least one found side adjacent to this line, but there are %d sides",
+            "there must be at least one found side adjacent to this line, but there are {} sides",
             sides.size());
       }
       else if (sides.size() == 1)
@@ -1666,7 +1666,7 @@ void XFEM::XfluidStd::project_and_trackback(TimeIntData& data)
 
     std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
         boundarydis_->get_state(state);
-    if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector %s", state.c_str());
+    if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state.c_str());
 
     // extract local values of the global vectors
     std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
@@ -1781,7 +1781,7 @@ bool XFEM::XfluidStd::project_to_surface(
 
   if (points.size() == 0 and sides.size() == 0)
     FOUR_C_THROW(
-        "there are no cutting sides around current point (%d,%d,%d), Projection on surface not "
+        "there are no cutting sides around current point ({},{},{}), Projection on surface not "
         "possible here",
         x(0), x(1), x(2));
 
@@ -1878,7 +1878,7 @@ bool XFEM::XfluidStd::project_to_surface(
 
 
   if (proj == TimeIntData::failed_)
-    FOUR_C_THROW("projection of point (%d,%d,%d) not successful!", x(0), x(1), x(2));
+    FOUR_C_THROW("projection of point ({},{},{}) not successful!", x(0), x(1), x(2));
 
 #ifdef DEBUG_TIMINT_STD
   Core::IO::cout << "\n\t => Projection of node lies on (side=0, line=1, point=2, failed=3): "
@@ -2069,7 +2069,7 @@ void XFEM::XfluidStd::callget_normal_side_tn(
         //        lm, proj_x_n, xi_side); break;
         //      }
       default:
-        FOUR_C_THROW("unsupported side shape %d", side->shape());
+        FOUR_C_THROW("unsupported side shape {}", side->shape());
         break;
     }
   }
@@ -2103,7 +2103,7 @@ void XFEM::XfluidStd::callget_normal_side_tn(
         //        lm, proj_x_n, xi_side); break;
         //      }
       default:
-        FOUR_C_THROW("unsupported side shape %d", side->shape());
+        FOUR_C_THROW("unsupported side shape {}", side->shape());
         break;
     }
   }
@@ -2206,7 +2206,7 @@ void XFEM::XfluidStd::call_get_projxn_line(
         break;
       }
       default:
-        FOUR_C_THROW("unsupported line shape %d", line->shape());
+        FOUR_C_THROW("unsupported line shape {}", line->shape());
         break;
     }
   }
@@ -2220,7 +2220,7 @@ void XFEM::XfluidStd::call_get_projxn_line(
         break;
       }
       default:
-        FOUR_C_THROW("unsupported line shape %d", line->shape());
+        FOUR_C_THROW("unsupported line shape {}", line->shape());
         break;
     }
   }
@@ -2280,7 +2280,7 @@ void XFEM::XfluidStd::addeidisp(
 
   // get state of the global vector
   std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state = cutdis.get_state(state);
-  if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector %s", state.c_str());
+  if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state.c_str());
 
   // extract local values of the global vectors
   std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
@@ -2380,7 +2380,7 @@ void XFEM::XfluidStd::call_project_on_side(
         break;
       }
       default:
-        FOUR_C_THROW("unsupported side shape %d", side->shape());
+        FOUR_C_THROW("unsupported side shape {}", side->shape());
         break;
     }
   }
@@ -2417,7 +2417,7 @@ void XFEM::XfluidStd::call_project_on_side(
         //        cutla[0].lm_,state,newNodeCoords,x_side,xi_side, curr_dist); break;
         //      }
       default:
-        FOUR_C_THROW("unsupported side shape %d", side->shape());
+        FOUR_C_THROW("unsupported side shape {}", side->shape());
         break;
     }
   }
@@ -2524,7 +2524,7 @@ void XFEM::XfluidStd::call_project_on_line(
         break;
       }
       default:
-        FOUR_C_THROW("unsupported line shape %d", line->shape());
+        FOUR_C_THROW("unsupported line shape {}", line->shape());
         break;
     }
   }
@@ -2545,7 +2545,7 @@ void XFEM::XfluidStd::call_project_on_line(
         break;
       }
       default:
-        FOUR_C_THROW("unsupported line shape %d", line->shape());
+        FOUR_C_THROW("unsupported line shape {}", line->shape());
         break;
     }
   }
@@ -3069,7 +3069,7 @@ void XFEM::XfluidStd::project_on_point(
 )
 {
   std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state = boundarydis_->get_state(state);
-  if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector %s", state.c_str());
+  if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state.c_str());
 
   // extract local values of the global vectors
   std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
@@ -3170,13 +3170,13 @@ void XFEM::XfluidStd::set_final_data()
 #endif
 
     if (data->nds_np_ == -1)
-      FOUR_C_THROW("cannot get dofs for dofset with number %d", data->nds_np_);
+      FOUR_C_THROW("cannot get dofs for dofset with number {}", data->nds_np_);
 
     std::vector<int> dofs;
     dofset_new_->dof(dofs, node, data->nds_np_);
 
     if (dofs.size() != (nsd + 1))
-      FOUR_C_THROW("not the right number of dofs %d for this node ", dofs.size());
+      FOUR_C_THROW("not the right number of dofs {} for this node ", dofs.size());
 
 
     // set velocity dofs

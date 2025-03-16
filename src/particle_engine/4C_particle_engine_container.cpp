@@ -82,7 +82,7 @@ void PARTICLEENGINE::ParticleContainer::decrease_container_size()
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (particlestored_ > containersize_)
     FOUR_C_THROW(
-        "decreasing size of container not possible: particles stored %d > new container size %d!",
+        "decreasing size of container not possible: particles stored {} > new container size {}!",
         particlestored_, containersize_);
 #endif
 
@@ -121,7 +121,7 @@ void PARTICLEENGINE::ParticleContainer::add_particle(
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (static_cast<int>(states[state].size()) != statedim_[state])
-        FOUR_C_THROW("can not add particle: dimensions of state '%s' do not match!",
+        FOUR_C_THROW("can not add particle: dimensions of state '{}' do not match!",
             enum_to_state_name(state).c_str());
 #endif
 
@@ -143,7 +143,7 @@ void PARTICLEENGINE::ParticleContainer::replace_particle(
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (index < 0 or index > (particlestored_ - 1))
-    FOUR_C_THROW("can not replace particle as index %d out of bounds!", index);
+    FOUR_C_THROW("can not replace particle as index {} out of bounds!", index);
 #endif
 
   // replace global id in container
@@ -162,7 +162,7 @@ void PARTICLEENGINE::ParticleContainer::replace_particle(
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (static_cast<int>(states[state].size()) != statedim_[state])
-        FOUR_C_THROW("can not replace particle: dimensions of state '%s' do not match!",
+        FOUR_C_THROW("can not replace particle: dimensions of state '{}' do not match!",
             enum_to_state_name(state).c_str());
 #endif
 
@@ -178,7 +178,7 @@ void PARTICLEENGINE::ParticleContainer::get_particle(
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (index < 0 or index > (particlestored_ - 1))
-    FOUR_C_THROW("can not return particle as index %d out of bounds!", index);
+    FOUR_C_THROW("can not return particle as index {} out of bounds!", index);
 #endif
 
   // get global id from container
@@ -202,7 +202,7 @@ void PARTICLEENGINE::ParticleContainer::remove_particle(int index)
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (index < 0 or index > (particlestored_ - 1))
-    FOUR_C_THROW("can not remove particle as index %d out of bounds!", index);
+    FOUR_C_THROW("can not remove particle as index {} out of bounds!", index);
 #endif
 
   // decrease counter of stored particles
@@ -225,7 +225,7 @@ double PARTICLEENGINE::ParticleContainer::get_min_value_of_state(ParticleState s
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (not storedstates_.count(state))
-    FOUR_C_THROW("particle state '%s' not stored in container!", enum_to_state_name(state).c_str());
+    FOUR_C_THROW("particle state '{}' not stored in container!", enum_to_state_name(state).c_str());
 #endif
 
   if (particlestored_ <= 0) return 0.0;
@@ -242,7 +242,7 @@ double PARTICLEENGINE::ParticleContainer::get_max_value_of_state(ParticleState s
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (not storedstates_.count(state))
-    FOUR_C_THROW("particle state '%s' not stored in container!", enum_to_state_name(state).c_str());
+    FOUR_C_THROW("particle state '{}' not stored in container!", enum_to_state_name(state).c_str());
 #endif
 
   if (particlestored_ <= 0) return 0.0;

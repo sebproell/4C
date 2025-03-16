@@ -211,7 +211,7 @@ namespace Discret
           Core::LinAlg::Matrix<3, 1>& Tref_i, const int& i) const override
       {
         if (not((unsigned)i < tref().size()))
-          FOUR_C_THROW("asked for tangent at node index %d, but only %d centerline nodes existing",
+          FOUR_C_THROW("asked for tangent at node index {}, but only {} centerline nodes existing",
               i, tref().size());
         Tref_i = tref()[i];
       }

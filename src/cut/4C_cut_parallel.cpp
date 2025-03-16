@@ -298,7 +298,7 @@ void Cut::Parallel::export_node_position_data()
         else if ((pos != Point::undecided) and (my_pos != Point::undecided) and (pos != my_pos))
         {  // only an additional check for not unique node positions
           FOUR_C_THROW(
-              "current position on myproc and received position for node %d are set, but not equal",
+              "current position on myproc and received position for node {} are set, but not equal",
               nid);
         }
       }
@@ -573,7 +573,7 @@ void Cut::Parallel::export_dof_set_data(bool include_inner)
       {
         if ((*vc_data)->inside_cell_ == true)
           FOUR_C_THROW(
-              "why did you communicate volumecells with inside position in element %d, where "
+              "why did you communicate volumecells with inside position in element {}, where "
               "include_inner is set to false",
               (*vc_data)->peid_);
       }
@@ -629,7 +629,7 @@ void Cut::Parallel::export_dof_set_data(bool include_inner)
       }
 
       if (my_vc == nullptr)
-        FOUR_C_THROW("no corresponding volumecell for vc in element %d found", peid);
+        FOUR_C_THROW("no corresponding volumecell for vc in element {} found", peid);
 
 
       for (std::map<int, int>::iterator node_dofsetnumber_it = node_dofsetnumber_map.begin();
@@ -684,21 +684,21 @@ void Cut::Parallel::export_dof_set_data(bool include_inner)
                 std::cout << "Is the element cut = " << my_vc->parent_element()->is_cut() << "\n";
                 std::cout << "VC_DATA is inside: Is the element cut = " << (*vc_data)->inside_cell_
                           << "\n";
-                FOUR_C_THROW("the nds-vector of volume cell in element %d on proc %d has size %d",
+                FOUR_C_THROW("the nds-vector of volume cell in element {} on proc {} has size {}",
                     my_vc->parent_element()->id(), myrank_, (int)(nds.size()));
               }
               if (index >= (int)(nds.size()))
               {
                 FOUR_C_THROW(
-                    " index %d exceeds the nds vector of my vc with size %d in element %d on proc "
-                    "%d",
+                    " index {} exceeds the nds vector of my vc with size {} in element {} on proc "
+                    "{}",
                     index, nds.size(), my_vc->parent_element()->id(), myrank_);
               }
 
               new_dofset_number = nds[index];
 
               if (new_dofset_number == -1)
-                FOUR_C_THROW("the new dofset number for node %d is not valid", nid);
+                FOUR_C_THROW("the new dofset number for node {} is not valid", nid);
             }
             else
               FOUR_C_THROW("Volumecell Pointer is nullptr");
@@ -784,7 +784,7 @@ void Cut::Parallel::distribute_dof_set_data()
     else
     {
       FOUR_C_THROW(
-          "there must be an elementhandle for element %d on my original proc %d", peid, myrank_);
+          "there must be an elementhandle for element {} on my original proc {}", peid, myrank_);
     }
 
 
@@ -798,7 +798,7 @@ void Cut::Parallel::distribute_dof_set_data()
       // safety check if setting dofset for data was successful
       if (dofnumber_map->second == -1)
       {
-        FOUR_C_THROW("dofset number for node %d for vc in element %d could not be determined",
+        FOUR_C_THROW("dofset number for node {} for vc in element {} could not be determined",
             dofnumber_map->first, (*data)->peid_);
       }
     }
@@ -823,7 +823,7 @@ Cut::VolumeCell* Cut::Parallel::find_volume_cell(
   ElementHandle* pele = parentintersection_.get_element(vc_data.peid_);
 
   if (pele == nullptr)
-    FOUR_C_THROW("element with Id %i not found on proc %i", vc_data.peid_, myrank_);
+    FOUR_C_THROW("element with Id {} not found on proc {}", vc_data.peid_, myrank_);
 
   plain_volumecell_set my_vcs;
 
@@ -1202,7 +1202,7 @@ int Cut::Parallel::get_dof_set_vec_index(int nid, int eid)
 {
   Core::Elements::Element* ele = discret_->g_element(eid);
 
-  if (ele == nullptr) FOUR_C_THROW("element %d not available on proc %d", eid, myrank_);
+  if (ele == nullptr) FOUR_C_THROW("element {} not available on proc {}", eid, myrank_);
 
   int numnode = ele->num_node();
 
@@ -1218,7 +1218,7 @@ int Cut::Parallel::get_dof_set_vec_index(int nid, int eid)
 
   if (index > numnode)
   {
-    FOUR_C_THROW("nid %d not found in nodes for element %d!", nid, eid);
+    FOUR_C_THROW("nid {} not found in nodes for element {}!", nid, eid);
     return -1;
   }
 

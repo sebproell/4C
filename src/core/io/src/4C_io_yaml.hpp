@@ -180,8 +180,8 @@ namespace Core::IO
     }
     else
     {
-      FOUR_C_THROW(std::format("Could not parse value '{}' as an enum constant of type '{}'.",
-          std::string_view(substr.data(), substr.size()), magic_enum::enum_type_name<T>()));
+      FOUR_C_THROW("Could not parse value '{}' as an enum constant of type '{}'.",
+          std::string_view(substr.data(), substr.size()), magic_enum::enum_type_name<T>());
     }
   }
 

@@ -386,7 +386,7 @@ double CONTACT::NoxInterface::get_model_value(NOX::Nln::MeritFunction::MeritFctN
       return 0.0;
     }
     default:
-      FOUR_C_THROW("Unsupported Merit function name! (enum = %d)", name);
+      FOUR_C_THROW("Unsupported Merit function name! (enum = {})", name);
       exit(EXIT_FAILURE);
   }
 
@@ -414,7 +414,7 @@ double CONTACT::NoxInterface::get_linearized_model_terms(const Core::LinAlg::Vec
       return lin_val;
     }
     default:
-      FOUR_C_THROW("Unsupported Merit function name! (enum = %d)", name);
+      FOUR_C_THROW("Unsupported Merit function name! (enum = {})", name);
       exit(EXIT_FAILURE);
   }
 

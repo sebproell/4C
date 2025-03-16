@@ -337,7 +337,7 @@ namespace XFEM
       }
       else
         FOUR_C_THROW(
-            "there is no valid mesh-/levelset-coupling condition object for side: %i", coup_sid);
+            "there is no valid mesh-/levelset-coupling condition object for side: {}", coup_sid);
 
       return Inpar::XFEM::invalid;
     }
@@ -348,12 +348,12 @@ namespace XFEM
       // safety checks
       if (coup_sid < 0)
       {
-        //      FOUR_C_THROW("invalid negative coupling side id %i", coup_sid);
+        //       FOUR_C_THROW("invalid negative coupling side id {}", coup_sid);
         return -1;
       }
       if (levelset_gid_ >= 0 and coup_sid > levelset_gid_)
       {
-        //      FOUR_C_THROW("invalid coupling side id %i", coup_sid);
+        //       FOUR_C_THROW("invalid coupling side id {}", coup_sid);
         return -1;
       }
 
@@ -548,7 +548,7 @@ namespace XFEM
       }
       else
         FOUR_C_THROW(
-            "there is no valid mesh-/levelset-coupling condition object for side: %i", coup_sid);
+            "there is no valid mesh-/levelset-coupling condition object for side: {}", coup_sid);
 
       return EleCoupCond(Inpar::XFEM::CouplingCond_NONE, nullptr);
     }
@@ -596,7 +596,7 @@ namespace XFEM
           break;
         }
         default:
-          FOUR_C_THROW("coupling condition type not known %i", cond_type);
+          FOUR_C_THROW("coupling condition type not known {}", cond_type);
           break;
       }
 

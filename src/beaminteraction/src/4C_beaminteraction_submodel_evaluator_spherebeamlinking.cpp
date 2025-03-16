@@ -1154,11 +1154,11 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::update_linker_length
       // some safety checks
       if (scalefac < 0.0)
         FOUR_C_THROW(
-            "Contraction %f of a linker of more than its reference length %f in one time step "
+            "Contraction {} of a linker of more than its reference length {} in one time step "
             "does not make sense.",
             contraction_per_dt, elepairptr->get_reference_length());
       if (contraction_per_dt > elepairptr->get_current_linker_length())
-        FOUR_C_THROW("Contraction of %f for a linker with current length %f does not make sense.",
+        FOUR_C_THROW("Contraction of {} for a linker with current length {} does not make sense.",
             contraction_per_dt, elepairptr->get_current_linker_length());
 
       // scale linker length / contract linker

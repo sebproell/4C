@@ -109,7 +109,7 @@ Discret::Elements::ScaTraBoundaryInterface* Discret::Elements::ScaTraBoundaryFac
     default:
     {
       FOUR_C_THROW(
-          "Element shape %d (%d nodes) not activated. Just do it.", ele->shape(), ele->num_node());
+          "Element shape {} ({} nodes) not activated. Just do it.", ele->shape(), ele->num_node());
       break;
     }
   }

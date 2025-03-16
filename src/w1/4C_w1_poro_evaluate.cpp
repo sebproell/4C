@@ -1836,7 +1836,7 @@ void Discret::Elements::Wall1Poro<distype>::init_element()
 
       invJ_[gp].multiply(deriv, xrefe);
       detJ_[gp] = invJ_[gp].invert();
-      if (detJ_[gp] <= 0.0) FOUR_C_THROW("Element Jacobian mapping %10.5e <= 0.0", detJ_[gp]);
+      if (detJ_[gp] <= 0.0) FOUR_C_THROW("Element Jacobian mapping {:10.5e} <= 0.0", detJ_[gp]);
     }
   }
 
@@ -2025,7 +2025,7 @@ void Discret::Elements::Wall1Poro<distype>::compute_shape_functions_and_derivati
     }
     invJ_[gp].multiply(deriv, xrefe);
     detJ_[gp] = invJ_[gp].invert();
-    if (detJ_[gp] <= 0.0) FOUR_C_THROW("Element Jacobian mapping %10.5e <= 0.0", detJ_[gp]);
+    if (detJ_[gp] <= 0.0) FOUR_C_THROW("Element Jacobian mapping {:10.5e} <= 0.0", detJ_[gp]);
   }
 
   /* get the inverse of the Jacobian matrix which looks like:
@@ -2220,7 +2220,7 @@ void Discret::Elements::Wall1Poro<distype>::compute_sol_pressure_deriv(
     inverse.setMatrix(Teuchos::rcpFromRef(pressderiv));
     int err = inverse.invert();
     if (err != 0)
-      FOUR_C_THROW("Inversion of matrix for pressure derivative failed with error code %d.", err);
+      FOUR_C_THROW("Inversion of matrix for pressure derivative failed with error code {}.", err);
   }
 
   // calculate derivatives of saturation w.r.t. pressure
@@ -2388,7 +2388,7 @@ void Discret::Elements::Wall1Poro<distype>::extract_values_from_global_vector(
   // get state of the global vector
   std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
       discretization.get_state(dofset, state);
-  if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector %s", state.c_str());
+  if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state.c_str());
 
   const int numdofpernode = discretization.num_dof(dofset, nodes()[0]);
 

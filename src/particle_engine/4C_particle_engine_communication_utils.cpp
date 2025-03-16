@@ -54,7 +54,7 @@ void PARTICLEENGINE::COMMUNICATION::immediate_recv_blocking_send(
 
     // check sending size of message
     if (not(msgsizetosend > 0))
-      FOUR_C_THROW("sending non-positive message size %i to proc %i!", msgsizetosend, torank);
+      FOUR_C_THROW("sending non-positive message size {} to proc {}!", msgsizetosend, torank);
 
     // perform non-blocking send operation
     MPI_Isend(&msgsizetosend, 1, MPI_INT, torank, 1234, comm, &sizerequest[counter]);
@@ -77,7 +77,7 @@ void PARTICLEENGINE::COMMUNICATION::immediate_recv_blocking_send(
 
     // check message tag
     if (msgtag != 1234)
-      FOUR_C_THROW("received data on proc %i with wrong tag from proc %i", myrank, msgsource);
+      FOUR_C_THROW("received data on proc {} with wrong tag from proc {}", myrank, msgsource);
 
     // get message size
     int msgsize = -1;
@@ -92,7 +92,7 @@ void PARTICLEENGINE::COMMUNICATION::immediate_recv_blocking_send(
 
     // check received size of message
     if (not(msgsizetorecv > 0))
-      FOUR_C_THROW("received non-positive message size %i from proc %i!", msgsizetorecv, msgsource);
+      FOUR_C_THROW("received non-positive message size {} from proc {}!", msgsizetorecv, msgsource);
 
     // resize receiving buffer to received size
     std::vector<char>& rbuffer = rdata[msgsource];

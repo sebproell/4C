@@ -152,7 +152,7 @@ void Coupling::VolMortar::VolMortarCoupl::build_maps(std::shared_ptr<Core::FE::D
 
     const std::vector<int> dof = dis->dof(dofset, actnode);
     if (numcoupleddofs > dof.size())
-      FOUR_C_THROW("got just %d dofs at node %d (lid=%d) but expected %d", dof.size(), nodes[i], i,
+      FOUR_C_THROW("got just {} dofs at node {} (lid={}) but expected {}", dof.size(), nodes[i], i,
           numcoupleddofs);
 
     for (unsigned j = 0; j < dof.size(); ++j)

@@ -452,7 +452,7 @@ void FLD::DynSmagFilter::dyn_smag_compute_cs()
     int err = ele->evaluate(
         calc_smag_const_params, *discret_, lm, dummym1, dummym2, dummyv1, dummyv2, dummyv3);
     if (err)
-      FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+      FOUR_C_THROW("Proc {}: Element {} returned err={}",
           Core::Communication::my_mpi_rank(discret_->get_comm()), ele->id(), err);
 
     // get turbulent Cs and Ci of this element
@@ -837,7 +837,7 @@ void FLD::DynSmagFilter::dyn_smag_compute_prt(
     int err = ele->evaluate(
         calc_turb_prandtl_params, *scatradiscret_, la, dummym1, dummym2, dummyv1, dummyv2, dummyv3);
     if (err)
-      FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+      FOUR_C_THROW("Proc {}: Element {} returned err={}",
           Core::Communication::my_mpi_rank(scatradiscret_->get_comm()), ele->id(), err);
 
     // get turbulent Prandlt number of this element

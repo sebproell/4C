@@ -238,8 +238,8 @@ void XFEM::MultiFieldMapExtractor::init(const XDisVec& dis_vec, int max_num_rese
       if (length != 2 or tag != frompid)
         FOUR_C_THROW(
             "Size information got mixed up!\n"
-            "Received length = %d, Expected length = %d \n"
-            "Received tag    = %d, Expected tag    = %d",
+            "Received length = {}, Expected length = {} \n"
+            "Received tag    = {}, Expected tag    = {}",
             length, 2, tag, frompid);
 
       exporter.wait(sizerequest);
@@ -249,8 +249,8 @@ void XFEM::MultiFieldMapExtractor::init(const XDisVec& dis_vec, int max_num_rese
       if (length != receivedsize[0] or tag != frompid * 10)
         FOUR_C_THROW(
             "GID information got mixed up! \n"
-            "Received length = %d, Expected length = %d \n"
-            "Received tag    = %d, Expected tag    = %d",
+            "Received length = {}, Expected length = {} \n"
+            "Received tag    = {}, Expected tag    = {}",
             length, receivedsize[0], tag, frompid * 10);
 
       exporter.wait(gidrequest);
@@ -260,8 +260,8 @@ void XFEM::MultiFieldMapExtractor::init(const XDisVec& dis_vec, int max_num_rese
       if (length != receivedsize[1] or tag != frompid * 100)
         FOUR_C_THROW(
             "Set information got mixed up! \n"
-            "Received length = %d, Expected length = %d \n"
-            "Received tag    = %d, Expected tag    = %d",
+            "Received length = {}, Expected length = {} \n"
+            "Received tag    = {}, Expected tag    = {}",
             length, receivedsize[1], tag, frompid * 100);
 
       exporter.wait(setrequest);
@@ -747,7 +747,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> XFEM::MultiFieldMapExtractor::extr
   const std::shared_ptr<const Epetra_Map>& sl_full_map =
       sl_map_extractor(dis_id, map_type).full_map();
 
-  if (!sl_full_map) FOUR_C_THROW("null full map for field %s", field_name_to_string(field).c_str());
+  if (!sl_full_map) FOUR_C_THROW("null full map for field {}", field_name_to_string(field).c_str());
 
   // create a new vector
   std::shared_ptr<Core::LinAlg::Vector<double>> vec =
@@ -772,7 +772,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> XFEM::MultiFieldMapExtractor:
   const std::shared_ptr<const Epetra_Map>& sl_full_map =
       sl_map_extractor(dis_id, map_type).full_map();
 
-  if (!sl_full_map) FOUR_C_THROW("null full map for field %s", field_name_to_string(field).c_str());
+  if (!sl_full_map) FOUR_C_THROW("null full map for field {}", field_name_to_string(field).c_str());
 
   // create a new multi vector
   std::shared_ptr<Core::LinAlg::MultiVector<double>> vec =
@@ -927,7 +927,7 @@ void XFEM::MultiFieldMapExtractor::build_slave_discret_id_map()
     else if (name == "xstructure")
       slave_discret_id_map_[xstructure] = dis_count;
     else
-      FOUR_C_THROW("Unknown field discretization name \"%s\"!", name.c_str());
+      FOUR_C_THROW("Unknown field discretization name \"{}\"!", name.c_str());
     // increase counter
     ++dis_count;
   }
@@ -953,7 +953,7 @@ int XFEM::MultiFieldMapExtractor::slave_id(enum FieldName field) const
 {
   std::map<enum FieldName, int>::const_iterator cit = slave_discret_id_map_.find(field);
   if (cit == slave_discret_id_map_.end())
-    FOUR_C_THROW("The slave field \"%s\" could not be found!", field_name_to_string(field).c_str());
+    FOUR_C_THROW("The slave field \"{}\" could not be found!", field_name_to_string(field).c_str());
 
   return cit->second;
 }

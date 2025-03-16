@@ -136,7 +136,7 @@ Core::FE::CellType Discret::Elements::RedAirway::shape() const
     case 3:
       return Core::FE::CellType::line3;
     default:
-      FOUR_C_THROW("unexpected number of nodes %d", num_node());
+      FOUR_C_THROW("unexpected number of nodes {}", num_node());
   }
 }
 

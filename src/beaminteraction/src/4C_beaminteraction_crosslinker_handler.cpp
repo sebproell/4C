@@ -116,7 +116,7 @@ void BeamInteraction::BeamCrosslinkerHandler::fill_linker_into_bins_round_robin(
     int from = -1;
     exporter.receive_any(from, tag, rdata, length);
     if (tag != 1234 or from != fromrank)
-      FOUR_C_THROW("Received data from the wrong proc soll(%i -> %i) is(%i -> %i)", fromrank,
+      FOUR_C_THROW("Received data from the wrong proc soll({} -> {}) is({} -> {})", fromrank,
           myrank, from, myrank);
 
 
@@ -195,7 +195,7 @@ BeamInteraction::BeamCrosslinkerHandler::fill_linker_into_bins_remote_id_list(
     std::vector<int> unique_pidlist(uniquesize);
     int err = binstrategy_->bin_discret()->element_row_map()->RemoteIDList(
         uniquesize, uniquevec_targetbinIdlist.data(), unique_pidlist.data(), nullptr);
-    if (err < 0) FOUR_C_THROW("Epetra_BlockMap::RemoteIDList returned err=%d", err);
+    if (err < 0) FOUR_C_THROW("Epetra_BlockMap::RemoteIDList returned err={}", err);
 
     // 3) build full pid list via lookup table
     std::map<int, int> lookuptable;
@@ -300,7 +300,7 @@ BeamInteraction::BeamCrosslinkerHandler::fill_linker_into_bins_using_ghosting(
       if (not binstrategy_->bin_discret()->have_global_element(binId))
         FOUR_C_THROW(
             "To transfer linker using ghosting you need to provide a one layer ghosting,"
-            " that is not the case. Bin with gid %i not ghosted on rank %i ",
+            " that is not the case. Bin with gid {} not ghosted on rank {} ",
             binId, myrank_);
 #endif
       binowner = binstrategy_->bin_discret()->g_element(binId)->owner();
@@ -397,7 +397,7 @@ void BeamInteraction::BeamCrosslinkerHandler::receive_linker_and_fill_them_in_bi
     int from = -1;
     exporter.receive_any(from, tag, rdata, length);
     if (tag != 1234)
-      FOUR_C_THROW("Received on proc %i data with wrong tag from proc %i", myrank_, from);
+      FOUR_C_THROW("Received on proc {} data with wrong tag from proc {}", myrank_, from);
 
     // ---- unpack ----
     {
@@ -416,7 +416,7 @@ void BeamInteraction::BeamCrosslinkerHandler::receive_linker_and_fill_them_in_bi
         place_node_correctly(node, currpos, homelesslinker);
         if (homelesslinker.size())
           FOUR_C_THROW(
-              "linker (id: %i) was sent to proc %i but corresponding bin (gid: %i) "
+              "linker (id: {}) was sent to proc {} but corresponding bin (gid: {}) "
               " is missing",
               node->id(), myrank_, binstrategy_->convert_pos_to_gid(currpos));
       }

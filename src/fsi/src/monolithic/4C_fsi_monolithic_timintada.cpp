@@ -84,11 +84,11 @@ void FSI::Monolithic::init_tim_int_ada(const Teuchos::ParameterList& fsidyn)
       sum += (*it);
     if (sum < 0.99)
     {
-      FOUR_C_THROW("Sum of weights for dt: %f < 1.0", sum);
+      FOUR_C_THROW("Sum of weights for dt: {} < 1.0", sum);
     }
     if (sum > 1.01)
     {
-      FOUR_C_THROW("Sum of weights for dt: %f > 1.0", sum);
+      FOUR_C_THROW("Sum of weights for dt: {} > 1.0", sum);
     }
   }
 
@@ -152,12 +152,12 @@ void FSI::Monolithic::init_tim_int_ada(const Teuchos::ParameterList& fsidyn)
   const double safetyfac = fsiada.get<double>("SAFETYFACTOR");
   if (safetyfac > 1.0)
     FOUR_C_THROW(
-        "SAFETYFACTOR in FSI DYNAMIC/TIMEADAPTIVITY is %f > 1.0 and, "
+        "SAFETYFACTOR in FSI DYNAMIC/TIMEADAPTIVITY is {} > 1.0 and, "
         "thus, too large.",
         safetyfac);
 
   if (dtmax_ < dtmin_)
-    FOUR_C_THROW("DTMAX = %f is not allowed to be smaller than DTMIN = %f.", dtmax_, dtmin_);
+    FOUR_C_THROW("DTMAX = {} is not allowed to be smaller than DTMIN = {}.", dtmax_, dtmin_);
 
   /* safety check for BDF2 time integration in fluid
    * (cf. PhD Thesis [Bornemann, 2003, p. 61, eq. (3.40)]) */
@@ -252,8 +252,8 @@ void FSI::Monolithic::timeloop_ada_dt(
                                            erroraction_ == FSI::Monolithic::erroraction_continue))
           {
             FOUR_C_THROW(
-                "Nonlinear solver did not converge after %i repetitions of "
-                "time step %i.",
+                "Nonlinear solver did not converge after {} repetitions of "
+                "time step {}.",
                 adaptstepmax, step());
           }
         }

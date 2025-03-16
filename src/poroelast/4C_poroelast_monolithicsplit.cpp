@@ -150,7 +150,7 @@ std::shared_ptr<Epetra_Map> PoroElast::MonolithicSplit::fsidbc_map()
     int gid = mygids[i];
     // FOUR_C_ASSERT(slavemastermap.count(gid),"master gid not found on slave side");
     int err = gidmarker_struct->replace_global_value(gid, 0, 1.0);
-    if (err) FOUR_C_THROW("ReplaceMyValue failed for gid %i error code %d", gid, err);
+    if (err) FOUR_C_THROW("ReplaceMyValue failed for gid {} error code {}", gid, err);
   }
 
   // transfer to fluid side

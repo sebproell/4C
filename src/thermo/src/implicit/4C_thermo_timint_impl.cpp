@@ -127,7 +127,7 @@ void Thermo::TimIntImpl::predict_step()
       break;
     }
     default:
-      FOUR_C_THROW("Trouble in determining predictor %i.", pred_);
+      FOUR_C_THROW("Trouble in determining predictor {}.", pred_);
   }
 }
 
@@ -282,13 +282,13 @@ bool Thermo::TimIntImpl::converged()
   // verify: #normcharforce_ has been delivered strictly larger than zero
   if (normcharforce_ <= 0.0)
   {
-    FOUR_C_THROW("Characteristic force norm %g must be strictly larger than 0", normcharforce_);
+    FOUR_C_THROW("Characteristic force norm {} must be strictly larger than 0", normcharforce_);
   }
   // verify: #normchartemp_ has been delivered strictly larger than zero
   if (normchartemp_ <= 0.0)
   {
     FOUR_C_THROW(
-        "Characteristic temperature norm %g must be strictly larger than 0", normchartemp_);
+        "Characteristic temperature norm {} must be strictly larger than 0", normchartemp_);
   }
 
   // check for single norms
@@ -356,7 +356,7 @@ Thermo::ConvergenceStatus Thermo::TimIntImpl::solve()
       return newton_full();
     // catch problems
     default:
-      FOUR_C_THROW("Solution technique \"%s\" is not implemented",
+      FOUR_C_THROW("Solution technique \"{}\" is not implemented",
           Thermo::nonlin_sol_tech_string(itertype_).c_str());
       return Thermo::conv_nonlin_fail;  // compiler happiness
   }
@@ -473,7 +473,7 @@ Thermo::ConvergenceStatus Thermo::TimIntImpl::newton_full_error_check()
     // write restart output of last converged step before stopping
     output(true);
 
-    FOUR_C_THROW("Newton unconverged in %d iterations", iter_);
+    FOUR_C_THROW("Newton unconverged in {} iterations", iter_);
     return Thermo::conv_nonlin_fail;
   }
   else if ((iter_ >= itermax_) and (divcontype_ == Thermo::divcont_continue))

@@ -112,7 +112,7 @@ void Discret::Elements::calculate_butler_volmer_elch_linearizations(const int ki
     }  // case Inpar::S2I::kinetics_butlervolmerreducedwithresistance
     default:
     {
-      FOUR_C_THROW("Unknown scatra-scatra interface kinetic model: %i", kineticmodel);
+      FOUR_C_THROW("Unknown scatra-scatra interface kinetic model: {}", kineticmodel);
     }
   }  // switch(kineticmodel)
 }

@@ -170,7 +170,7 @@ void ALE::Ale::set_initial_displacement(const ALE::InitialDisp init, const int s
       break;
     }
     default:
-      FOUR_C_THROW("Unknown option for initial displacement: %d", init);
+      FOUR_C_THROW("Unknown option for initial displacement: {}", init);
       break;
   }
 
@@ -384,7 +384,7 @@ std::string ALE::Ale::element_action_string(const enum ALE::AleDynamic name)
       return "calc_ale_springs_spatial";
       break;
     default:
-      FOUR_C_THROW("Cannot make std::string for ALE type %d", name);
+      FOUR_C_THROW("Cannot make std::string for ALE type {}", name);
       return "";
   }
 }
@@ -572,7 +572,7 @@ void ALE::Ale::time_step(ALE::Utils::MapExtractor::AleDBCSetType dbc_type)
     switch (divercont_)
     {
       case ALE::divcont_stop:
-        FOUR_C_THROW("ALE newton not converged in %i iterations. Abort! ", maxiter_);
+        FOUR_C_THROW("ALE newton not converged in {} iterations. Abort! ", maxiter_);
         break;
       case ALE::divcont_continue:
         if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
@@ -834,7 +834,7 @@ bool ALE::Ale::evaluate_element_quality()
     if (negdetjac <= 0)
     {
       validshapes = false;
-      FOUR_C_THROW("Negative determinant %e in time step %i", negdetjac, step_);
+      FOUR_C_THROW("Negative determinant {} in time step {}", negdetjac, step_);
     }
 
     return validshapes;

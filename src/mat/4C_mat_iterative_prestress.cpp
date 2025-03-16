@@ -166,7 +166,7 @@ void Mat::IterativePrestressMaterial::unpack(Core::Communication::UnpackBuffer& 
           Global::Problem::instance(probinst)->materials()->parameter_by_id(matid);
 
       FOUR_C_ASSERT_ALWAYS(mat->type() == material_type(),
-          "Type of parameter material %d does not fit to calling type %d", mat->type(),
+          "Type of parameter material {} does not fit to calling type {}", mat->type(),
           material_type());
 
 

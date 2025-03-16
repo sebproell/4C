@@ -212,7 +212,7 @@ Discret::Elements::PoroFluidManager::PhaseManagerInterface::wrap_phase_manager(
       break;
     }
     default:
-      FOUR_C_THROW("unknown action %i for creating the phase manager!", action);
+      FOUR_C_THROW("unknown action {} for creating the phase manager!", action);
       break;
   }  // switch(action)
 
@@ -299,7 +299,7 @@ void Discret::Elements::PoroFluidManager::PhaseManagerCore::setup(
       totalnumdofpernode_ != multiphasemat.num_mat() || numvolfrac_ != multiphasemat.num_vol_frac())
     FOUR_C_THROW(
         "Number of phases given by the poro multiphase material does not match number "
-        "of DOFs (%i phases and %i Fluid DOFs, %i vol fracs and %i volfracs, %i total dofs and %i "
+        "of DOFs ({} phases and {} Fluid DOFs, {} vol fracs and {} volfracs, {} total dofs and {} "
         "Total DOFs)!",
         numfluidphases_, multiphasemat.num_fluid_phases(), numvolfrac_,
         multiphasemat.num_vol_frac(), totalnumdofpernode_, multiphasemat.num_mat());
@@ -717,7 +717,7 @@ void Discret::Elements::PoroFluidManager::PhaseManagerDeriv::evaluate_gp_state(
     inverse.setMatrix(Teuchos::rcpFromRef(*pressurederiv_));
     int err = inverse.invert();
     if (err != 0)
-      FOUR_C_THROW("Inversion of matrix for pressure derivative failed with error code %d.", err);
+      FOUR_C_THROW("Inversion of matrix for pressure derivative failed with error code {}.", err);
   }
 
   // calculate derivatives of saturation w.r.t. pressure
@@ -1691,7 +1691,7 @@ void Discret::Elements::PoroFluidManager::PhaseManagerVolFrac<nsd>::setup(
   const int numvolfrac = phasemanager_->num_vol_frac();
 
   if (numfluidphases >= totalnumdof)
-    FOUR_C_THROW("We should not be here, total numdof is %d, numfluidphases is %d",
+    FOUR_C_THROW("We should not be here, total numdof is {}, numfluidphases is {}",
         phasemanager_->total_num_dof(), phasemanager_->num_fluid_phases());
 
   difftensorsvolfrac_.resize(numvolfrac);

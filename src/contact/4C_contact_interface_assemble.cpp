@@ -951,7 +951,7 @@ void CONTACT::Interface::assemble_lin_z(Core::LinAlg::SparseMatrix& linzglobal)
           l++;
         }
 
-        if (l != colsize) FOUR_C_THROW("AssembleLinZ: l = %i but colsize = %i", k, colsize);
+        if (l != colsize) FOUR_C_THROW("AssembleLinZ: l = {} but colsize = {}", k, colsize);
       }
     }
   }
@@ -1235,7 +1235,7 @@ void CONTACT::Interface::assemble_t_nderiv(std::shared_ptr<Core::LinAlg::SparseM
             ++k;
           }
 
-          if (k != colsize) FOUR_C_THROW("AssembleTNderiv: k = %i but colsize = %i", k, colsize);
+          if (k != colsize) FOUR_C_THROW("AssembleTNderiv: k = {} but colsize = {}", k, colsize);
         }
       }
     }
@@ -1284,7 +1284,7 @@ void CONTACT::Interface::assemble_t_nderiv(std::shared_ptr<Core::LinAlg::SparseM
           ++k;
         }
 
-        if (k != colsize) FOUR_C_THROW("AssembleTNderiv: k = %i but colsize = %i", k, colsize);
+        if (k != colsize) FOUR_C_THROW("AssembleTNderiv: k = {} but colsize = {}", k, colsize);
       }
     }
 
@@ -3972,7 +3972,7 @@ void CONTACT::Interface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipLM
             ++k;
           }
 
-          if (k != colsize) FOUR_C_THROW("AssembleLinSlip: k = %i but colsize = %i", k, colsize);
+          if (k != colsize) FOUR_C_THROW("AssembleLinSlip: k = {} but colsize = {}", k, colsize);
         }
 
         /*********************************** Deriv(abs)*DerivT.z*ztan ***/
@@ -4003,7 +4003,7 @@ void CONTACT::Interface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipLM
             ++k;
           }
 
-          if (k != colsize) FOUR_C_THROW("AssembleLinSlip: k = %i but colsize = %i", k, colsize);
+          if (k != colsize) FOUR_C_THROW("AssembleLinSlip: k = {} but colsize = {}", k, colsize);
         }
 
         /******************************* Deriv(abs)*DerivT.jump+*ztan ***/
@@ -4034,7 +4034,7 @@ void CONTACT::Interface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipLM
             ++k;
           }
 
-          if (k != colsize) FOUR_C_THROW("AssembleLinSlip: k = %i but colsize = %i", k, colsize);
+          if (k != colsize) FOUR_C_THROW("AssembleLinSlip: k = {} but colsize = {}", k, colsize);
         }
 
         /*************************** -Deriv(abs).ct.tan.DerivD.x*ztan ***/
@@ -4135,7 +4135,7 @@ void CONTACT::Interface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipLM
             ++k;
           }
 
-          if (k != colsize) FOUR_C_THROW("AssembleLinSlip: k = %i but colsize = %i", k, colsize);
+          if (k != colsize) FOUR_C_THROW("AssembleLinSlip: k = {} but colsize = {}", k, colsize);
         }
 
         /************************************ -frbound.ct.DerivT.jump ***/
@@ -4166,7 +4166,7 @@ void CONTACT::Interface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipLM
             ++k;
           }
 
-          if (k != colsize) FOUR_C_THROW("AssembleLinSlip: k = %i but colsize = %i", k, colsize);
+          if (k != colsize) FOUR_C_THROW("AssembleLinSlip: k = {} but colsize = {}", k, colsize);
         }
 
         /************************************* +frbound.ct.T.DerivD.x ***/

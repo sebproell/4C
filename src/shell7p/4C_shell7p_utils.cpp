@@ -125,7 +125,7 @@ namespace
     else
       FOUR_C_THROW(
           "Unrecognized EAS type for quad4 to alleviate membrane locking. Only none, N_1, N_2, "
-          "N_3, N_4, N_5, N_7 are allowed. Given: %s",
+          "N_3, N_4, N_5, N_7 are allowed. Given: {}",
           type.c_str());
   }
 
@@ -154,7 +154,7 @@ namespace
     else
       FOUR_C_THROW(
           "Unrecognized EAS type for quad4 to alleviate bending locking. Only none, N_4, N_5, N_6, "
-          "N_7 are allowed. Given: %s",
+          "N_7 are allowed. Given: {}",
           type.c_str());
   }
 
@@ -192,7 +192,7 @@ namespace
       FOUR_C_THROW(
           "Unrecognized EAS type for quad4 to alleviate thickness locking. Only none, N_1, N_3, "
           "N_4, "
-          "N_6, N_8, N_9 are allowed. Given: %s",
+          "N_6, N_8, N_9 are allowed. Given: {}",
           type.c_str());
   }
 
@@ -213,7 +213,7 @@ namespace
     else
       FOUR_C_THROW(
           "Unrecognized EAS type for quad4 to alleviate transverse shear strain locking: Only "
-          "none, N_2, N_4 are allowed. Given: %s",
+          "none, N_2, N_4 are allowed. Given: {}",
           type.c_str());
   }
 
@@ -234,7 +234,7 @@ namespace
     else
       FOUR_C_THROW(
           "Unrecognized EAS type for quad9 to alleviate membrane locking. Only none, N_7, N_9 are "
-          "allowed. Given: %s",
+          "allowed. Given: {}",
           type.c_str());
   }
 
@@ -255,7 +255,7 @@ namespace
     else
       FOUR_C_THROW(
           "Unrecognized EAS type for quad9 to alleviate bending locking. Only none, N_9, N_11 are "
-          "allowed. Given: %s",
+          "allowed. Given: {}",
           type.c_str());
   }
 
@@ -292,7 +292,7 @@ namespace
     else
       FOUR_C_THROW(
           "Unrecognized EAS type for quad9 to alleviate thickness locking. Only none, N_1, N_3, "
-          "N_4, N_6, N_8, N_9 are allowed. Given: %s",
+          "N_4, N_6, N_8, N_9 are allowed. Given: {}",
           type.c_str());
   }
 
@@ -317,7 +317,7 @@ namespace
     else
       FOUR_C_THROW(
           "Unrecognized EAS type for quad9 to alleviate transverse shear strain locking. Only "
-          "none, N_2, N_4, N_6 are allowed. Given: %s",
+          "none, N_2, N_4, N_6 are allowed. Given: {}",
           type.c_str());
   }
 
@@ -694,7 +694,7 @@ void Solid::Utils::Shell::ReadElement::read_and_set_locking_types(const Core::FE
       break;
     }
     default:
-      FOUR_C_THROW("EAS is not supported with %s", distype);
+      FOUR_C_THROW("EAS is not supported with {}", distype);
   }
   locking_types.total = locking_types.membrane + locking_types.bending + locking_types.thickness +
                         locking_types.transverse_shear_strain_const +
@@ -721,7 +721,7 @@ int Solid::Utils::Shell::ReadElement::read_and_set_num_ans(const Core::FE::CellT
       return 6;
     }
     default:
-      FOUR_C_THROW("ANS is not supported with %s", distype);
+      FOUR_C_THROW("ANS is not supported with {}", distype);
   }
 }
 FOUR_C_NAMESPACE_CLOSE

@@ -45,7 +45,7 @@ bool Core::LinAlg::BlockSparseMatrixBase::destroy(bool throw_exception_for_block
   /// destroy full matrix row map
   if (fullrowmap_.use_count() > 1)
   {
-    FOUR_C_THROW("fullrowmap_ cannot be finally deleted - any RCP (%i>1) still points to it",
+    FOUR_C_THROW("fullrowmap_ cannot be finally deleted - any RCP ({}>1) still points to it",
         fullrowmap_.use_count());
   }
   fullrowmap_ = nullptr;
@@ -53,7 +53,7 @@ bool Core::LinAlg::BlockSparseMatrixBase::destroy(bool throw_exception_for_block
   /// destroy full matrix column map
   if (fullcolmap_.use_count() > 1)
   {
-    FOUR_C_THROW("fullrowmap_ cannot be finally deleted - any RCP (%i>1) still points to it",
+    FOUR_C_THROW("fullrowmap_ cannot be finally deleted - any RCP ({}>1) still points to it",
         fullrowmap_.use_count());
   }
   fullcolmap_ = nullptr;
@@ -266,7 +266,7 @@ int Core::LinAlg::BlockSparseMatrixBase::Apply(
         int err = bmat.Apply(*colx, *rowy);
         if (err != 0)
           FOUR_C_THROW(
-              "failed to apply vector to matrix block (%d,%d): err=%d", rblock, cblock, err);
+              "failed to apply vector to matrix block ({},{}): err={}", rblock, cblock, err);
         rowresult->Update(1.0, *rowy, 1.0);
       }
       VectorView Y_view(Y);
@@ -287,7 +287,7 @@ int Core::LinAlg::BlockSparseMatrixBase::Apply(
             domainmaps_.extract_vector(Core::LinAlg::MultiVector<double>(X), cblock);
         const Core::LinAlg::SparseMatrix& bmat = matrix(cblock, rblock);
         int err = bmat.Apply(*colx, *rowy);
-        if (err != 0) FOUR_C_THROW("failed to apply vector to matrix: err=%d", err);
+        if (err != 0) FOUR_C_THROW("failed to apply vector to matrix: err={}", err);
         rowresult->Update(1.0, *rowy, 1.0);
       }
       VectorView Y_view(Y);
@@ -363,7 +363,7 @@ int Core::LinAlg::BlockSparseMatrixBase::scale(double ScalarConstant)
     for (int j = 0; j < cols(); j++)
     {
       int err = matrix(i, j).scale(ScalarConstant);
-      if (err != 0) FOUR_C_THROW("Scaling of matrix block (%d,%d) failed", i, j);
+      if (err != 0) FOUR_C_THROW("Scaling of matrix block ({},{}) failed", i, j);
     }
   }
   return 0;
@@ -593,7 +593,7 @@ void Core::LinAlg::DefaultBlockMatrixStrategy::complete(bool enforce_complete)
 
       if (block[proc].size() != i + 1)
       {
-        FOUR_C_THROW("gid %d not owned by any domain map", gid);
+        FOUR_C_THROW("gid {} not owned by any domain map", gid);
       }
     }
   }
@@ -619,7 +619,7 @@ void Core::LinAlg::DefaultBlockMatrixStrategy::complete(bool enforce_complete)
       int cgid = ghostgids[proc][i];
 
       if (ghostmap.find(cgid) != ghostmap.end())
-        FOUR_C_THROW("column gid %d defined more often that once", cgid);
+        FOUR_C_THROW("column gid {} defined more often that once", cgid);
 
       ghostmap[cgid] = cblock;
     }
@@ -640,7 +640,7 @@ void Core::LinAlg::DefaultBlockMatrixStrategy::complete(bool enforce_complete)
     for (auto& icol : irow.second)
     {
       int cgid = icol.first;
-      if (ghostmap.find(cgid) == ghostmap.end()) FOUR_C_THROW("unknown ghost gid %d", cgid);
+      if (ghostmap.find(cgid) == ghostmap.end()) FOUR_C_THROW("unknown ghost gid {}", cgid);
 
       int cblock = ghostmap[cgid];
       double val = icol.second;

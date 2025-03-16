@@ -52,7 +52,7 @@ void Mat::PAR::FluidPoroSingleReaction::initialize()
     case 3:
       return initialize_internal<3>();
     default:
-      FOUR_C_THROW("Unsupported dimension %d.", Global::Problem::instance()->n_dim());
+      FOUR_C_THROW("Unsupported dimension {}.", Global::Problem::instance()->n_dim());
   }
 }
 
@@ -142,7 +142,7 @@ void Mat::PAR::FluidPoroSingleReaction::evaluate_function(std::vector<double>& r
           reacderivsporosity, reacderivsvolfrac, reacderivsvolfracpressure, reacderivsscalar,
           pressure, saturation, porosity, volfracs, volfracpressures, scalar);
     default:
-      FOUR_C_THROW("Unsupported dimension %d.", Global::Problem::instance()->n_dim());
+      FOUR_C_THROW("Unsupported dimension {}.", Global::Problem::instance()->n_dim());
   }
 }
 
@@ -420,7 +420,7 @@ void Mat::FluidPoroSingleReaction::unpack(Core::Communication::UnpackBuffer& buf
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::FluidPoroSingleReaction*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 }

@@ -121,7 +121,7 @@ void Core::FE::Utils::evaluate(Core::FE::Discretization& discret, Teuchos::Param
       int err = actele->evaluate(eparams, discret, la, strategy.elematrix1(), strategy.elematrix2(),
           strategy.elevector1(), strategy.elevector2(), strategy.elevector3());
       if (err)
-        FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+        FOUR_C_THROW("Proc {}: Element {} returned err={}",
             Core::Communication::my_mpi_rank(discret.get_comm()), actele->id(), err);
     }
 

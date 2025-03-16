@@ -625,7 +625,7 @@ inline void Core::LinAlg::DefaultBlockMatrixStrategy::assemble(
     double val, int lrow, int rgid, int rblock, int lcol, int cgid, int cblock)
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (rblock == -1) FOUR_C_THROW("no block entry found for row gid=%d", rgid);
+  if (rblock == -1) FOUR_C_THROW("no block entry found for row gid={}", rgid);
 #endif
 
   if (cblock > -1)

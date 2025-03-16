@@ -591,7 +591,7 @@ void ScaTra::LevelSetAlgorithm::manipulate_fluid_field_for_gfunc()
           const int doflid = phinpcol.get_map().LID(dofgid);
           if (doflid < 0)
             FOUR_C_THROW(
-                "Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>", myrank_, dofgid);
+                "Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>", myrank_, dofgid);
 
           if (plus_domain((phinpcol)[doflid]) == false)
             gotnegativephi = true;

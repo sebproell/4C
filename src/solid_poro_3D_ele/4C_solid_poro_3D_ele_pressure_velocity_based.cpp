@@ -392,7 +392,7 @@ Mat::FluidPoro& Discret::Elements::SolidPoroPressureVelocityBased::fluid_poro_ma
 {
   if (this->num_material() <= 1)
   {
-    FOUR_C_THROW("No second material defined for SolidPoroPressureVelocityBased element %i", id());
+    FOUR_C_THROW("No second material defined for SolidPoroPressureVelocityBased element {}", id());
   }
 
   auto fluidmulti_mat =

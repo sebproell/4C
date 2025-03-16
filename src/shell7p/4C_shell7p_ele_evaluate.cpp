@@ -180,7 +180,7 @@ int Discret::Elements::Shell7p::evaluate(Teuchos::ParameterList& params,
     }
     break;
     default:
-      FOUR_C_THROW("The element action %s is not yet implemented for the Shell element yet",
+      FOUR_C_THROW("The element action {} is not yet implemented for the Shell element yet",
           action_type_to_string(action).c_str());
   }
   return 0;

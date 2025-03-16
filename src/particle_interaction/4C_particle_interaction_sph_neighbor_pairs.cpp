@@ -171,7 +171,7 @@ void ParticleInteraction::SPHNeighborPairs::evaluate_particle_pairs()
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     if (absdist < (1.0e-10 * rad_i[0]) or absdist < (1.0e-10 * rad_j[0]))
-      FOUR_C_THROW("absolute distance %f between particles close to zero!", absdist);
+      FOUR_C_THROW("absolute distance {} between particles close to zero!", absdist);
 #endif
 
     // neighboring particles within interaction distance
@@ -296,7 +296,7 @@ void ParticleInteraction::SPHNeighborPairs::evaluate_particle_wall_pairs()
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     if (absdist < (1.0e-10 * rad_i[0]))
-      FOUR_C_THROW("absolute distance %f between particle and wall close to zero!", absdist);
+      FOUR_C_THROW("absolute distance {} between particle and wall close to zero!", absdist);
 #endif
 
     // neighboring particle and wall element within interaction distance

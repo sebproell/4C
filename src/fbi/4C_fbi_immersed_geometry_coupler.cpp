@@ -209,7 +209,7 @@ void FBI::FBIGeometryCoupler::prepare_pair_creation(
       beamelementiterator++)
   {
     Core::Elements::Element* beamele = discretizations[0]->g_element(beamelementiterator->first);
-    if (!beamele) FOUR_C_THROW("There is no element with gid %i", beamelementiterator->first);
+    if (!beamele) FOUR_C_THROW("There is no element with gid {}", beamelementiterator->first);
     owner = beamele->owner();
     for (std::vector<int>::const_iterator fluideleIter = beamelementiterator->second.begin();
         fluideleIter != (beamelementiterator->second).end(); fluideleIter++)

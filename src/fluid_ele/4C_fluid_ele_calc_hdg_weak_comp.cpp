@@ -2038,7 +2038,7 @@ void Discret::Elements::FluidEleCalcHDGWeakComp<distype>::LocalSolver::invert_lo
   KlocallocalInv = Klocallocal;
   KlocallocalInvSolver.setMatrix(Teuchos::rcpFromRef(KlocallocalInv));
   int err = KlocallocalInvSolver.invert();
-  if (err != 0) FOUR_C_THROW("Inversion of local-local matrix failed with errorcode %d", err);
+  if (err != 0) FOUR_C_THROW("Inversion of local-local matrix failed with errorcode {}", err);
 }
 
 

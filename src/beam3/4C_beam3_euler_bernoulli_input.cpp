@@ -26,10 +26,10 @@ bool Discret::Elements::Beam3eb::read_element(const std::string& eletype,
   FOUR_C_ASSERT_ALWAYS(
       mat_type == Core::Materials::m_beam_kirchhoff_torsionfree_elast_hyper ||
           mat_type == Core::Materials::m_beam_kirchhoff_torsionfree_elast_hyper_bymodes,
-      "The material parameter definition '%s' is not supported by Beam3eb element! "
+      "The material parameter definition '{}' is not supported by Beam3eb element! "
       "Choose MAT_BeamKirchhoffTorsionFreeElastHyper or "
       "MAT_BeamKirchhoffTorsionFreeElastHyper_ByModes!",
-      to_string(mat_type).data());
+      mat_type);
 
   return true;
 }

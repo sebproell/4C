@@ -358,7 +358,8 @@ void FLD::TurbulenceStatisticsGeneralMean::space_average_in_one_direction(const 
   // than the slave side.
   if (numlines == 0)
   {
-    // FOUR_C_THROW("No node with the smallest coordinate in direction %d found. Changing master and
+    //  FOUR_C_THROW("No node with the smallest coordinate in direction {} found. Changing master
+    //  and
     // slave of the pbc might help. Read remark.");
     if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
       std::cout << "Warning: Sampling for paraview output (averaged velocity/pressure) is "
@@ -639,7 +640,7 @@ void FLD::TurbulenceStatisticsGeneralMean::space_average_in_one_direction(const 
           {
             if (numprocs == 1)
             {
-              FOUR_C_THROW("didn\'t find node %d on single proc\n", lnode->id());
+              FOUR_C_THROW("didn\'t find node {} on single proc\n", lnode->id());
             }
           }
         }
@@ -647,7 +648,7 @@ void FLD::TurbulenceStatisticsGeneralMean::space_average_in_one_direction(const 
         {
           if (numprocs == 1)
           {
-            FOUR_C_THROW("didn\'t find node %d on single proc\n", lnode->id());
+            FOUR_C_THROW("didn\'t find node {} on single proc\n", lnode->id());
           }
         }
       }
@@ -692,7 +693,7 @@ void FLD::TurbulenceStatisticsGeneralMean::space_average_in_one_direction(const 
   {
     if (count[i] == 0)
     {
-      FOUR_C_THROW("no layers have been detected along line %d\n", i);
+      FOUR_C_THROW("no layers have been detected along line {}\n", i);
     }
 
     avg_u[i] /= count[i];
@@ -920,7 +921,7 @@ void FLD::TurbulenceStatisticsGeneralMean::space_average_in_one_direction(const 
 
           if (err > 0)
           {
-            FOUR_C_THROW("lid was not on proc %d\n", myrank);
+            FOUR_C_THROW("lid was not on proc {}\n", myrank);
           }
         }
       }

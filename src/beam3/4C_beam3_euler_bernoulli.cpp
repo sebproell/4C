@@ -77,13 +77,13 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::Beam3ebType::compute_null_spa
   if (numdof != 6)
     FOUR_C_THROW(
         "The computation of the euler-bernoulli beam nullspace in three dimensions requires six"
-        "DOFs per node, however the current node carries %d DOFs.",
+        "DOFs per node, however the current node carries {} DOFs.",
         numdof);
 
   if (dimnsp != 5)
     FOUR_C_THROW(
         "The computation of the euler-bernoulli beam nullspace in three dimensions requires five"
-        " nullspace vectors per node, however the current node carries %d vectors.",
+        " nullspace vectors per node, however the current node carries {} vectors.",
         dimnsp);
 
   constexpr std::size_t spacedim = 3;
@@ -531,7 +531,7 @@ void Discret::Elements::Beam3eb::get_pos_at_xi(
   if (disp.size() != 12)
     FOUR_C_THROW(
         "size mismatch: expected 12 values for element displacement vector "
-        "and got %d",
+        "and got {}",
         disp.size());
 
   // add reference positions and tangents => total Lagrangean state vector
@@ -549,7 +549,7 @@ void Discret::Elements::Beam3eb::get_triad_at_xi(
   if (disp.size() != 12)
     FOUR_C_THROW(
         "size mismatch: expected 12 values for element displacement vector "
-        "and got %d",
+        "and got {}",
         disp.size());
 
   // add reference positions and tangents => total Lagrangean state vector

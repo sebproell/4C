@@ -156,7 +156,7 @@ void Core::LinAlg::KrylovProjector::fill_complete()
       {
         // not sure whether c_i and w_i must not be krylov.
         // delete dserror in case you are sure what you are doing!
-        FOUR_C_THROW("weight vector w_%i must not be orthogonal to c_%i", rr, mm);
+        FOUR_C_THROW("weight vector w_{} must not be orthogonal to c_{}", rr, mm);
       }
       // fill matrix (w_^T * c_) - not yet inverted!
       (*invw_tc_)(mm, rr) = wTc;
@@ -581,7 +581,7 @@ Core::LinAlg::KrylovProjector::multiply_multi_vector_multi_vector(
     if (err < 0)
     {
       FOUR_C_THROW(
-          "insertion error when trying to compute krylov projection matrix (error code: %i).", err);
+          "insertion error when trying to compute krylov projection matrix (error code: {}).", err);
     }
   }
 

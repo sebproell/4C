@@ -907,7 +907,7 @@ void Cut::FacetIntegration::divergence_integration_rule_new(
           break;
         }
         default:
-          FOUR_C_THROW("unsupported integration cell type ( cell type = %s )",
+          FOUR_C_THROW("unsupported integration cell type ( cell type = {} )",
               Core::FE::cell_type_to_string(bcell->shape()).c_str());
           exit(EXIT_FAILURE);
       }

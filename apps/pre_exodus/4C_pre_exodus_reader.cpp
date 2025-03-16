@@ -32,7 +32,7 @@ EXODUS::Mesh::Mesh(const std::string exofilename)
 
   // open EXODUS II file
   exoid_ = ex_open(exofilenamechar, EX_READ, &CPU_word_size, &IO_word_size, &exoversion);
-  if (exoid_ <= 0) FOUR_C_THROW("Error while opening EXODUS II file %s", exofilenamechar);
+  if (exoid_ <= 0) FOUR_C_THROW("Error while opening EXODUS II file {}", exofilenamechar);
 
   // print version
   std::cout << "File " << exofilename << " was created with EXODUS II library version "
@@ -414,7 +414,7 @@ std::string EXODUS::Mesh::get_title() const
 std::shared_ptr<EXODUS::ElementBlock> EXODUS::Mesh::get_element_block(const int id) const
 {
   if (element_blocks_.find(id) == element_blocks_.end())
-    FOUR_C_THROW("ElementBlock %d not found.", id);
+    FOUR_C_THROW("ElementBlock {} not found.", id);
 
   return (element_blocks_.find(id))->second;
 }
@@ -423,7 +423,7 @@ std::shared_ptr<EXODUS::ElementBlock> EXODUS::Mesh::get_element_block(const int 
 /*----------------------------------------------------------------------*/
 EXODUS::NodeSet EXODUS::Mesh::get_node_set(const int id) const
 {
-  if (node_sets_.find(id) == node_sets_.end()) FOUR_C_THROW("NodeSet %d not found.", id);
+  if (node_sets_.find(id) == node_sets_.end()) FOUR_C_THROW("NodeSet {} not found.", id);
 
   return (node_sets_.find(id))->second;
 }
@@ -432,7 +432,7 @@ EXODUS::NodeSet EXODUS::Mesh::get_node_set(const int id) const
 /*----------------------------------------------------------------------*/
 EXODUS::SideSet EXODUS::Mesh::get_side_set(const int id) const
 {
-  if (side_sets_.find(id) == side_sets_.end()) FOUR_C_THROW("SideSet %d not found.", id);
+  if (side_sets_.find(id) == side_sets_.end()) FOUR_C_THROW("SideSet {} not found.", id);
 
   return (side_sets_.find(id))->second;
 }
@@ -1007,7 +1007,7 @@ void EXODUS::Mesh::write_mesh(const std::string newexofilename) const
       std::vector<int> nodelist(num_nodes_in_set);
       ns.fill_nodelist_array(nodelist.data());
       error = ex_put_set(exoid, EX_NODE_SET, nsID, nodelist.data(), nullptr);
-      if (error != 0) FOUR_C_THROW("error writing node set \"%s\" ", nsname);
+      if (error != 0) FOUR_C_THROW("error writing node set \"{}\" ", nsname);
       error = ex_put_name(exoid, EX_NODE_SET, nsID, nsname);
       if (error != 0) FOUR_C_THROW("error writing node set name");
     }

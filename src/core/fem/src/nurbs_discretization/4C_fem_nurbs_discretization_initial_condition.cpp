@@ -344,7 +344,7 @@ namespace
                 // check for degenerated elements
                 if (det < 1E-16)
                 {
-                  FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f",
+                  FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}",
                       actele->id(), det);
                 }
 
@@ -469,7 +469,7 @@ namespace
                 if (det < 0.0)
                 {
                   FOUR_C_THROW(
-                      "GLOBAL ELEMENT NO.%i\nNEGATIVE JACOBIAN DETERMINANT: %f", actele->id(), det);
+                      "GLOBAL ELEMENT NO.{}\nNEGATIVE JACOBIAN DETERMINANT: {}", actele->id(), det);
                 }
 
                 // set total integration factor

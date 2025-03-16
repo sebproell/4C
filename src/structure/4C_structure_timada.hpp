@@ -79,7 +79,7 @@ namespace Solid
           return "CentralDifference";
           break;
         default:
-          FOUR_C_THROW("Cannot cope with name enum %d", term);
+          FOUR_C_THROW("Cannot cope with name enum {}", term);
           return "";
           break;
       }

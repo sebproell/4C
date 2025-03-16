@@ -260,7 +260,7 @@ void Solid::ModelEvaluator::BeamInteraction::post_setup_submodels()
     // safety checks
     if (half_interaction_distance_ > (0.5 * binstrategy_->get_min_bin_size()))
       FOUR_C_THROW(
-          "Your half interaction distance %f is larger than half your smallest bin %f. You will "
+          "Your half interaction distance {} is larger than half your smallest bin {}. You will "
           "not be\n"
           "able to track all interactions like this. Increase bin size?",
           half_interaction_distance_, 0.5 * binstrategy_->get_min_bin_size());

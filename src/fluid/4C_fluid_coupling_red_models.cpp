@@ -109,7 +109,7 @@ FLD::Utils::FluidCouplingWrapperBase::FluidCouplingWrapperBase(
       if (!CondIsFine)
       {
         FOUR_C_THROW(
-            "[3D/Reduced-D COUPLING] condition [%d] is defined only on the 3D side", condid);
+            "[3D/Reduced-D COUPLING] condition [{}] is defined only on the 3D side", condid);
       }
     }
 
@@ -316,7 +316,7 @@ void FLD::Utils::FluidCouplingWrapperBase::apply_boundary_conditions(
           auto itr = map3_dnp_->find(CouplingVariable.str());
           if (itr == map3_dnp_->end())
           {
-            FOUR_C_THROW("[3D/Reduced-D COUPLING] 3D map has no variable %s for condition [%d]",
+            FOUR_C_THROW("[3D/Reduced-D COUPLING] 3D map has no variable {} for condition [{}]",
                 variable_str.c_str(), condID);
           }
           (*map3_dnp_)[CouplingVariable.str()] =
@@ -327,7 +327,7 @@ void FLD::Utils::FluidCouplingWrapperBase::apply_boundary_conditions(
           std::map<std::string, double>::iterator itr = map3_dnp_->find(CouplingVariable.str());
           if (itr == map3_dnp_->end())
           {
-            FOUR_C_THROW("[3D/Reduced-D COUPLING] 3D map has no variable %s for condition [%d]",
+            FOUR_C_THROW("[3D/Reduced-D COUPLING] 3D map has no variable {} for condition [{}]",
                 variable_str.c_str(), condID);
           }
           double density = 0.0;
@@ -340,7 +340,7 @@ void FLD::Utils::FluidCouplingWrapperBase::apply_boundary_conditions(
         }
         else
         {
-          FOUR_C_THROW("(%s): No such coupling variable on the 3D side is defined yet",
+          FOUR_C_THROW("({}): No such coupling variable on the 3D side is defined yet",
               variable_str.c_str());
         }
         if (Core::Communication::my_mpi_rank(discret_3d_->get_comm()) == 0)
@@ -388,7 +388,7 @@ void FLD::Utils::FluidCouplingWrapperBase::apply_boundary_conditions(
             if (itr == map_red_dnp_->end())
             {
               FOUR_C_THROW(
-                  "[3D/Reduced-D COUPLING] reduced-D map has no variable %s for condition [%d]",
+                  "[3D/Reduced-D COUPLING] reduced-D map has no variable {} for condition [{}]",
                   variable_str.c_str(), condID);
             }
             (*map_red_dnp_)[CouplingVariable.str()] = 0.0;
@@ -400,7 +400,7 @@ void FLD::Utils::FluidCouplingWrapperBase::apply_boundary_conditions(
             if (itr == map_red_dnp_->end())
             {
               FOUR_C_THROW(
-                  "[3D/Reduced-D COUPLING] reduced-D map has no variable %s for condition [%d]",
+                  "[3D/Reduced-D COUPLING] reduced-D map has no variable {} for condition [{}]",
                   variable_str.c_str(), condID);
             }
             (*map_red_dnp_)[CouplingVariable.str()] = 0.0;
@@ -408,7 +408,7 @@ void FLD::Utils::FluidCouplingWrapperBase::apply_boundary_conditions(
 
           else
           {
-            FOUR_C_THROW("(%s): No such coupling variable on the 3D side is defined yet",
+            FOUR_C_THROW("({}): No such coupling variable on the 3D side is defined yet",
                 variable_str.c_str());
           }
           break;
@@ -519,7 +519,7 @@ void FLD::Utils::FluidCouplingWrapperBase::apply_boundary_conditions(
     else
     {
       FOUR_C_THROW(
-          "Reduced-dimensional problem, returned a value of type [%s] at the condition (%d)",
+          "Reduced-dimensional problem, returned a value of type [{}] at the condition ({})",
           ReturnedVariable.c_str(), ID);
       exit(0);
     }
@@ -765,7 +765,7 @@ FLD::Utils::FluidCouplingBc::FluidCouplingBc(std::shared_ptr<Core::FE::Discretiz
     if (flowrate == 0.0)
     {
       FOUR_C_THROW(
-          "3D SURF condition (%d) expects a flowrate from 1D problem,\nthus it must have a "
+          "3D SURF condition ({}) expects a flowrate from 1D problem,\nthus it must have a "
           "Dirichlet BC of 1 in the direction of flow",
           condid);
     }

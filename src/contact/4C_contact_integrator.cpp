@@ -759,7 +759,7 @@ void CONTACT::Integrator::integrate_deriv_segment_2d(Mortar::Element& sele, doub
       std::cout << "Gauss point: " << sxi[0] << " " << sxi[1] << std::endl;
       std::cout << "Projection: " << mxi[0] << " " << mxi[1] << std::endl;
       std::cout << "Projection bounds: " << mxia << " " << mxib << std::endl;
-      // FOUR_C_THROW("IntegrateAndDerivSegment: Gauss point projection failed! mxi=%d",mxi[0]);
+      //  FOUR_C_THROW("IntegrateAndDerivSegment: Gauss point projection failed! mxi={}",mxi[0]);
     }
 
     // evaluate Lagrange multiplier shape functions (on slave element)

@@ -49,7 +49,7 @@ int Discret::Elements::Ale2::evaluate(Teuchos::ParameterList& params,
   else if (action == "calc_jacobian_determinant")
     act = Ale2::calc_det_jac;
   else
-    FOUR_C_THROW("%s is an unknown type of action for Ale2", action.c_str());
+    FOUR_C_THROW("{} is an unknown type of action for Ale2", action.c_str());
 
   bool spatialconfiguration = true;
   if (params.isParameter("use spatial configuration"))
@@ -947,7 +947,7 @@ void Discret::Elements::Ale2::jacobian_matrix(const Core::LinAlg::SerialDenseMat
   /*------------------------------------------ determinant of jacobian ---*/
   *det = xjm[0][0] * xjm[1][1] - xjm[1][0] * xjm[0][1];
 
-  if (*det < 0.0) FOUR_C_THROW("NEGATIVE JACOBIAN DETERMINANT %8.5f in ELEMENT %d\n", *det, id());
+  if (*det < 0.0) FOUR_C_THROW("NEGATIVE JACOBIAN DETERMINANT {:8.5f} in ELEMENT {}\n", *det, id());
   /*----------------------------------------------------------------------*/
 
   return;

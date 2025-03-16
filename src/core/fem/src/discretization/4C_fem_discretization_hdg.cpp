@@ -376,7 +376,7 @@ void Core::FE::Utils::DbcHDG::read_dirichlet_condition(const Teuchos::ParameterL
         // get corresponding local id
         const int lid = info.toggle.get_map().LID(gid);
         if (lid < 0)
-          FOUR_C_THROW("Global id %d not on this proc %d in system vector", dofs[j],
+          FOUR_C_THROW("Global id {} not on this proc {} in system vector", dofs[j],
               Core::Communication::my_mpi_rank(discret.get_comm()));
         // get position of label for this dof in condition line
         int onesetj = j / dofpercomponent;
@@ -574,7 +574,7 @@ void Core::FE::Utils::DbcHDG::do_dirichlet_condition(const Teuchos::ParameterLis
         // get corresponding local id
         const int lid = toggle.get_map().LID(gid);
         if (lid < 0)
-          FOUR_C_THROW("Global id %d not on this proc %d in system vector", dofs[j],
+          FOUR_C_THROW("Global id {} not on this proc {} in system vector", dofs[j],
               Core::Communication::my_mpi_rank(discret.get_comm()));
         // get position of label for this dof in condition line
         int onesetj = j / dofpercomponent;

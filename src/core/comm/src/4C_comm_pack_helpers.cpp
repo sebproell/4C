@@ -74,10 +74,9 @@ int Core::Communication::extract_and_assert_id(UnpackBuffer& buffer, const int d
   int type_id = 0;
   Core::Communication::extract_from_pack(buffer, type_id);
 
-  std::string error_message = "Wrong instance type data. The extracted type id is " +
-                              std::to_string(type_id) + ", while the desired type id is " +
-                              std::to_string(desired_type_id);
-  FOUR_C_ASSERT(type_id == desired_type_id, error_message.c_str());
+  FOUR_C_ASSERT(type_id == desired_type_id,
+      "Wrong instance type data. The extracted type id is {}, while the desired type id is {}",
+      type_id, desired_type_id);
 
   return type_id;
 }

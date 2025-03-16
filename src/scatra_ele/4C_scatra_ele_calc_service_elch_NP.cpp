@@ -373,7 +373,7 @@ void Discret::Elements::ScaTraEleCalcElchNP<distype>::cal_error_compared_to_anal
           c_0_0_0_t = A0 + (A_mnk * exp((-D) * (m * m) * t * M_PI * M_PI));
         }
         else
-          FOUR_C_THROW("Illegal number of space dimensions for analyt. solution: %d", nsd_);
+          FOUR_C_THROW("Illegal number of space dimensions for analyt. solution: {}", nsd_);
 
         // compute analytical solution for anion concentration
         c(1) = (-myelch::diff_manager()->get_valence(0) / myelch::diff_manager()->get_valence(1)) *
@@ -440,7 +440,7 @@ void Discret::Elements::ScaTraEleCalcElchNP<distype>::cal_error_compared_to_anal
           c(0) = c0_inner + ((c0_outer - c0_inner) * (log(r) - log(r_inner)) / b);
         }
         else
-          FOUR_C_THROW("Illegal number of space dimensions for analyt. solution: %d", nsd_);
+          FOUR_C_THROW("Illegal number of space dimensions for analyt. solution: {}", nsd_);
 
         // compute analytical solution for anion concentration
         c(1) = (-myelch::diff_manager()->get_valence(0) / myelch::diff_manager()->get_valence(1)) *

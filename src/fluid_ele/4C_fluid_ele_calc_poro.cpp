@@ -4938,7 +4938,7 @@ void Discret::Elements::FluidEleCalcPoro<distype>::get_struct_material(
         FOUR_C_THROW("invalid structure material for poroelasticity");
     }
     else
-      FOUR_C_THROW("no second material defined for element %i", Base::eid_);
+      FOUR_C_THROW("no second material defined for element {}", Base::eid_);
   }
 }
 
@@ -6227,7 +6227,7 @@ void Discret::Elements::FluidEleCalcPoro<distype>::compute_def_gradient(
     for (int i = 0; i < nsd_; i++) defgrd(i, i) = 1.0;
   }
   else
-    FOUR_C_THROW("invalid kinematic type! %d", kintype_);
+    FOUR_C_THROW("invalid kinematic type! {}", kintype_);
 }
 
 template <Core::FE::CellType distype>
@@ -6359,7 +6359,7 @@ int Discret::Elements::FluidEleCalcPoro<distype>::compute_error(Discret::Element
           position[2] = xyzint(2);
         }
         else
-          FOUR_C_THROW("invalid nsd %d", nsd_);
+          FOUR_C_THROW("invalid nsd {}", nsd_);
 
         if (nsd_ == 2)
         {
@@ -6803,7 +6803,7 @@ double Discret::Elements::FluidEleCalcPoro<distype>::compute_effective_stiffness
     default:
       FOUR_C_THROW(
           "calculation of effective stiffness for biot stabilization not implemented for Material "
-          "Type %i",
+          "Type {}",
           struct_mat_->get_material()->material_type());
       break;
   }
@@ -6811,7 +6811,7 @@ double Discret::Elements::FluidEleCalcPoro<distype>::compute_effective_stiffness
   if (effective_stiffness < 1e-14)
   {
     FOUR_C_THROW(
-        "Effective stiffness is very small (%f). shear_mod() method not implemented in material?",
+        "Effective stiffness is very small ({}). shear_mod() method not implemented in material?",
         effective_stiffness);
   }
 

@@ -78,7 +78,7 @@ namespace Solid
     else if (type == "beam_to_sphere_link_kinetic_energy")
       return beam_to_sphere_link_kinetic_energy;
     else
-      FOUR_C_THROW("Unknown type of energy %s", type.c_str());
+      FOUR_C_THROW("Unknown type of energy {}", type.c_str());
     exit(EXIT_FAILURE);
   };
 

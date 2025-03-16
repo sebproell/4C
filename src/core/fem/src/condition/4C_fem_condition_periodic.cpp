@@ -345,7 +345,7 @@ void Core::Conditions::PeriodicBoundaryConditions::put_all_slaves_to_masters_pro
                   // check for angle of rotation (has to be zero for master plane)
                   const double angle = mastercond->parameters().get<double>("ANGLE");
                   if (abs(angle) > 1e-13)
-                    FOUR_C_THROW("Angle is not zero for master plane: %f", angle);
+                    FOUR_C_THROW("Angle is not zero for master plane: {}", angle);
                 }
               }
               else if (mymasterslavetoggle == "Slave")
@@ -414,8 +414,8 @@ void Core::Conditions::PeriodicBoundaryConditions::put_all_slaves_to_masters_pro
                 if (fabs(abs_tol - tol) > 1e-5)
                 {
                   FOUR_C_THROW(
-                      "none matching tolerances %12.5e neq %12.5e for nodmatching octree. All "
-                      "values in direction %s have to match\n",
+                      "none matching tolerances {:12.5e} neq {:12.5e} for nodmatching octree. All "
+                      "values in direction {} have to match\n",
                       abs_tol, tol, plane.c_str());
                 }
               }
@@ -530,8 +530,8 @@ void Core::Conditions::PeriodicBoundaryConditions::put_all_slaves_to_masters_pro
                             << "  coord: x=" << x[0] << " y=" << x[1] << " z=" << x[2];
                 }
               }
-              // now it is time for the FOUR_C_THROW
-              FOUR_C_THROW("have %d masters in midtosid list, %d expected\n", midtosid.size(),
+              // now it is time for the   FOUR_C_THROW
+              FOUR_C_THROW("have {} masters in midtosid list, {} expected\n", midtosid.size(),
                   masternodeids.size());
             }
           }
@@ -693,7 +693,7 @@ void Core::Conditions::PeriodicBoundaryConditions::add_connectivity(
       {
         slaveid = *i;
         if (slaveid == masterid)
-          FOUR_C_THROW("Node %d is master AND slave node of periodic boundary condition", masterid);
+          FOUR_C_THROW("Node {} is master AND slave node of periodic boundary condition", masterid);
 
         // is masterid already in allcoupledrownodes?
         {
@@ -825,7 +825,7 @@ void Core::Conditions::PeriodicBoundaryConditions::add_connectivity(
           int from = -1;
           exporter.receive_any(from, tag, rdata, length);
           if (tag != 1337 or from != fromrank)
-            FOUR_C_THROW("Received data from the wrong proc soll(%i -> %i) is(%i -> %i)", fromrank,
+            FOUR_C_THROW("Received data from the wrong proc soll({} -> {}) is({} -> {})", fromrank,
                 myrank, from, myrank);
 
           // ---- unpack ----
@@ -1134,7 +1134,7 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
     {
       Epetra_Export exporter(*discret_->node_row_map(), *newrownodemap);
       int err = nodegraph.export_to(oldnodegraph->get_epetra_crs_graph(), exporter, Add);
-      if (err < 0) FOUR_C_THROW("Graph export returned err=%d", err);
+      if (err < 0) FOUR_C_THROW("Graph export returned err={}", err);
     }
     nodegraph.fill_complete();
     nodegraph.optimize_storage();
@@ -1431,7 +1431,7 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
         {
           int neighbor_node = node_gids_per_ele[col];
           const int err = nodegraph->insert_global_indices(node_gid, 1, &neighbor_node);
-          if (err < 0) FOUR_C_THROW("nodegraph->InsertGlobalIndices returned err=%d", err);
+          if (err < 0) FOUR_C_THROW("nodegraph->InsertGlobalIndices returned err={}", err);
         }
       }
     }
@@ -1474,13 +1474,13 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
               for (auto other_slave_gid : other_slave_gids)
               {
                 int err = nodegraph->insert_global_indices(node_gid, 1, &other_slave_gid);
-                if (err < 0) FOUR_C_THROW("nodegraph->InsertGlobalIndices returned err=%d", err);
+                if (err < 0) FOUR_C_THROW("nodegraph->InsertGlobalIndices returned err={}", err);
 
                 if (noderowmap->MyGID(other_slave_gid))
                 {
                   int masterindex = node_gid;
                   err = nodegraph->insert_global_indices(other_slave_gid, 1, &masterindex);
-                  if (err < 0) FOUR_C_THROW("nodegraph->InsertGlobalIndices returned err=%d", err);
+                  if (err < 0) FOUR_C_THROW("nodegraph->InsertGlobalIndices returned err={}", err);
                 }
               }
             }
@@ -1491,7 +1491,7 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
 
     // finalize construction of initial graph
     int err = nodegraph->fill_complete();
-    if (err) FOUR_C_THROW("graph->FillComplete returned %d", err);
+    if (err) FOUR_C_THROW("graph->FillComplete returned {}", err);
 
     //
     // nodegraph: row for each node, column with nodes from the same element and coupled nodes
@@ -1523,7 +1523,7 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
 
         std::vector<double> values(numentries, 1.0);
         edge_weights->InsertGlobalValues(grow, numentries, values.data(), indices.data());
-        if (err < 0) FOUR_C_THROW("edge_weights->InsertGlobalValues returned err=%d", err);
+        if (err < 0) FOUR_C_THROW("edge_weights->InsertGlobalValues returned err={}", err);
       }
 
       // loop all master nodes on this proc
@@ -1550,9 +1550,9 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
           std::vector<double> value(1, 99.0);
 
           err = edge_weights->InsertGlobalValues(master->id(), 1, value.data(), slave_gid.data());
-          if (err < 0) FOUR_C_THROW("InsertGlobalIndices returned err=%d", err);
+          if (err < 0) FOUR_C_THROW("InsertGlobalIndices returned err={}", err);
           err = edge_weights->InsertGlobalValues(slave->id(), 1, value.data(), master_gid.data());
-          if (err < 0) FOUR_C_THROW("InsertGlobalIndices returned err=%d", err);
+          if (err < 0) FOUR_C_THROW("InsertGlobalIndices returned err={}", err);
         }
       }
 

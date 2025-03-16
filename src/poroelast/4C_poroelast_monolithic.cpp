@@ -231,7 +231,7 @@ void PoroElast::Monolithic::solve()
   }
   else if (iter_ >= itermax_)
   {
-    FOUR_C_THROW("Newton unconverged in %d iterations", iter_);
+    FOUR_C_THROW("Newton unconverged in {} iterations", iter_);
   }
 }
 
@@ -1409,7 +1409,7 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
     std::cout << "******************finite difference check done***************\n\n" << std::endl;
   }
   else
-    FOUR_C_THROW("PoroFDCheck failed in step: %d, iter: %d", step(), iter_);
+    FOUR_C_THROW("PoroFDCheck failed in step: {}, iter: {}", step(), iter_);
 }
 
 void PoroElast::Monolithic::evaluate_condition(

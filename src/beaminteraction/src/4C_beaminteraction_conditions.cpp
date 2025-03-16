@@ -121,14 +121,14 @@ void BeamInteraction::BeamInteractionConditions::set_beam_interaction_conditions
                   condition_1, condition_2));
         }
         else
-          FOUR_C_THROW("Could not find both conditions (%s) for the COUPLING_ID %d",
+          FOUR_C_THROW("Could not find both conditions ({}) for the COUPLING_ID {}",
               condition_name.c_str(), map_item.first);
       }
 
       // Check that all conditions were added, i.e. that there are no double definitions of
       // COUPLING_ID.
       if (2 * interaction_vector.size() != condition_lines.size())
-        FOUR_C_THROW("There are multiple definitions of the same COUPLING_ID for %s",
+        FOUR_C_THROW("There are multiple definitions of the same COUPLING_ID for {}",
             condition_name.c_str());
     }
     else if (interaction_type == Inpar::BeamInteraction::BeamInteractionConditions::
@@ -154,7 +154,7 @@ void BeamInteraction::BeamInteractionConditions::set_beam_interaction_conditions
 
       // There has to be an equal number of sections for lines and surfaces / volumes.
       if (condition_line.size() != condition_other.size())
-        FOUR_C_THROW("There are %d %s sections and %d %s sections. The numbers have to match!",
+        FOUR_C_THROW("There are {} {} sections and {} {} sections. The numbers have to match!",
             condition_line.size(), condition_names[0].c_str(), condition_other.size(),
             condition_names[1].c_str());
 
@@ -192,14 +192,14 @@ void BeamInteraction::BeamInteractionConditions::set_beam_interaction_conditions
           interaction_vector.push_back(new_condition);
         }
         else
-          FOUR_C_THROW("Could not find both conditions (%s, %s) for the COUPLING_ID %d",
+          FOUR_C_THROW("Could not find both conditions ({}, {}) for the COUPLING_ID {}",
               condition_names[0].c_str(), condition_names[1].c_str(), map_item.first);
       }
 
       // Check that all conditions were added, i.e. that there are no double definitions of
       // COUPLING_ID.
       if (interaction_vector.size() != condition_line.size())
-        FOUR_C_THROW("There are multiple definitions of the same COUPLING_ID for %s and %s",
+        FOUR_C_THROW("There are multiple definitions of the same COUPLING_ID for {} and {}",
             condition_names[0].c_str(), condition_names[1].c_str());
     }
     else if (interaction_type ==

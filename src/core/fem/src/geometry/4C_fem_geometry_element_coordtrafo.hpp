@@ -223,7 +223,7 @@ namespace Core::Geo
         b_tet(3) = 1.0;
 
         double det = Core::LinAlg::gauss_elimination<true, 4>(A_tet, b_tet, x_tet);
-        if (fabs(det) < 1E-14) FOUR_C_THROW("determinant is near zero %d", det);
+        if (fabs(det) < 1E-14) FOUR_C_THROW("determinant is near zero {}", det);
 
         bool inside = true;
         for (int i = 0; i < 4; ++i)
@@ -273,7 +273,7 @@ namespace Core::Geo
         b_tet(3) = 1.0;
 
         det = Core::LinAlg::gauss_elimination<true, 4>(A_tet, b_tet, x_tet);
-        if (fabs(det) < 1E-14) FOUR_C_THROW("determinant is near zero %d", det);
+        if (fabs(det) < 1E-14) FOUR_C_THROW("determinant is near zero {}", det);
 
         inside = true;
         for (int i = 0; i < 4; ++i)
@@ -323,7 +323,7 @@ namespace Core::Geo
         b_tet(3) = 1.0;
 
         det = Core::LinAlg::gauss_elimination<true, 4>(A_tet, b_tet, x_tet);
-        if (fabs(det) < 1E-14) FOUR_C_THROW("determinant is near zero %d", det);
+        if (fabs(det) < 1E-14) FOUR_C_THROW("determinant is near zero {}", det);
 
         inside = true;
         for (int i = 0; i < 4; ++i)
@@ -373,7 +373,7 @@ namespace Core::Geo
         b_tet(3) = 1.0;
 
         det = Core::LinAlg::gauss_elimination<true, 4>(A_tet, b_tet, x_tet);
-        if (fabs(det) < 1E-14) FOUR_C_THROW("determinant is near zero %d", det);
+        if (fabs(det) < 1E-14) FOUR_C_THROW("determinant is near zero {}", det);
 
         inside = true;
         for (int i = 0; i < 4; ++i)
@@ -423,7 +423,7 @@ namespace Core::Geo
         b_tet(3) = 1.0;
 
         det = Core::LinAlg::gauss_elimination<true, 4>(A_tet, b_tet, x_tet);
-        if (fabs(det) < 1E-14) FOUR_C_THROW("determinant is near zero %d", det);
+        if (fabs(det) < 1E-14) FOUR_C_THROW("determinant is near zero {}", det);
 
         inside = true;
         for (int i = 0; i < 4; ++i)
@@ -718,7 +718,7 @@ namespace Core::Geo
 
       if (fabs(det) < Core::Geo::TOL14)
       {
-        FOUR_C_THROW("determinant is near zero %d", det);
+        FOUR_C_THROW("determinant is near zero {}", det);
       }
 
       xsi += dx;
@@ -1146,7 +1146,7 @@ namespace Core::Geo
 
       if (fabs(det) < Core::Geo::TOL14)
       {
-        FOUR_C_THROW("determinant is near zero %d", det);
+        FOUR_C_THROW("determinant is near zero {}", det);
       }
 
       // update rhs b= -(x(xi)-x_point)

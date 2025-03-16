@@ -234,7 +234,7 @@ void Discret::Elements::Wall1Poro<distype>::get_materials()
         FOUR_C_THROW("invalid fluid material for poroelasticity");
     }
     else
-      FOUR_C_THROW("no second material defined for element %i", id());
+      FOUR_C_THROW("no second material defined for element {}", id());
   }
 }
 
@@ -272,7 +272,7 @@ void Discret::Elements::Wall1Poro<distype>::get_materials_pressure_based()
       }
     }
     else
-      FOUR_C_THROW("no second material defined for element %i", id());
+      FOUR_C_THROW("no second material defined for element {}", id());
   }
 }
 

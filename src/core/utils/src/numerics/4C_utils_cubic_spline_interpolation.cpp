@@ -71,7 +71,7 @@ double Core::Utils::CubicSplineInterpolation::evaluate(const double x) const
 {
   // safety check
   if (x < x_.front() or x > x_.back())
-    FOUR_C_THROW("Sampling point x = %lf lies outside sampling point range!", x);
+    FOUR_C_THROW("Sampling point x = {} lies outside sampling point range!", x);
 
   auto greater_equal_x = [x](const double val) { return val >= x; };
   auto right_position = std::find_if(x_.begin(), x_.end(), greater_equal_x);
@@ -90,7 +90,7 @@ double Core::Utils::CubicSplineInterpolation::evaluate_derivative(
 {
   // safety check
   if (x < x_.front() or x > x_.back())
-    FOUR_C_THROW("Sampling point x = %lf lies outside sampling point range!", x);
+    FOUR_C_THROW("Sampling point x = {} lies outside sampling point range!", x);
 
   auto greater_equal_x = [x](const double val) { return val >= x; };
   auto right_position = std::find_if(x_.begin(), x_.end(), greater_equal_x);
@@ -114,7 +114,7 @@ double Core::Utils::CubicSplineInterpolation::evaluate_derivative(
   }
 
   FOUR_C_THROW(
-      "Evaluation of %i derivative is not implemented for CubicSplineInterpolation", deriv_order);
+      "Evaluation of {} derivative is not implemented for CubicSplineInterpolation", deriv_order);
 }
 
 /*----------------------------------------------------------------------*/

@@ -29,7 +29,7 @@ namespace
     if (upper_bound_time == time_value_pairs.begin() || upper_bound_time == time_value_pairs.end())
     {
       FOUR_C_THROW(
-          "Linear interpolation failed. The given time %f is outside the range of provided "
+          "Linear interpolation failed. The given time {} is outside the range of provided "
           "time-value pairs.",
           time);
     }
@@ -75,7 +75,7 @@ void Mat::Utils::Muscle::evaluate_lambert(
   {
     FOUR_C_THROW(
         "Maximal number of iterations for evaluation of Lambert W function with Halley's method "
-        "exceeded for tolerance %E.",
+        "exceeded for tolerance {}.",
         tol);
   }
 }
@@ -389,7 +389,7 @@ double Mat::Utils::Muscle::evaluate_time_space_dependent_active_stress_by_map(
 
   if (it == activation_map.end())
   {
-    FOUR_C_THROW("Key (element id) %d not found in activation map.", activation_map_key);
+    FOUR_C_THROW("Key (element id) {} not found in activation map.", activation_map_key);
   }
   const double ft = lineraly_interpolate_between_times(it->second, t_current);
 

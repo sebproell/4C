@@ -118,7 +118,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased::pre_evaluate_c
         for (int igp = 0; igp < numgp_per_artele; igp++)
         {
           int err = gp_vector->ReplaceMyValue(mylid, igp, static_cast<double>(sumgpvec[igp]));
-          if (err != 0) FOUR_C_THROW("ReplaceMyValue failed with error code %d!", err);
+          if (err != 0) FOUR_C_THROW("ReplaceMyValue failed with error code {}!", err);
         }
       }
     }

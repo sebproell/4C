@@ -44,7 +44,7 @@ Discret::Elements::RedInterAcinarDepImplInterface::impl(
     }
     default:
       FOUR_C_THROW(
-          "shape %d (%d nodes) not supported", red_acinus->shape(), red_acinus->num_node());
+          "shape {} ({} nodes) not supported", red_acinus->shape(), red_acinus->num_node());
       break;
   }
   return nullptr;
@@ -243,7 +243,7 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
           int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
           if (local_id < 0)
           {
-            FOUR_C_THROW("node (%d) doesn't exist on proc(%d)", ele->nodes()[i]->id(),
+            FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
                 Core::Communication::my_mpi_rank(discretization.get_comm()));
             exit(1);
           }
@@ -291,7 +291,7 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
               {
                 FOUR_C_THROW(
                     "TLC is not used for the following type of VolumeDependentPleuralPressure BC: "
-                    "%s.\n Set TLC = 0.0",
+                    "{}.\n Set TLC = 0.0",
                     ppl_Type.c_str());
               }
               // Safety check: in case of Ogden TLC, P_PLEURAL_0, and P_PLEURAL_LIN
@@ -340,7 +340,7 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
               }
               else
               {
-                FOUR_C_THROW("Unknown volume pleural pressure type: %s", ppl_Type.c_str());
+                FOUR_C_THROW("Unknown volume pleural pressure type: {}", ppl_Type.c_str());
               }
               Pp_np *= curvefac * (vals[0]);
             }
@@ -371,7 +371,7 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
         else
         {
           FOUR_C_THROW(
-              "Prescribed [%s] is not defined for reduced-inter-acinar linkers", Bc.c_str());
+              "Prescribed [{}] is not defined for reduced-inter-acinar linkers", Bc.c_str());
           exit(1);
         }
       }
@@ -387,7 +387,7 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
           int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
           if (local_id < 0)
           {
-            FOUR_C_THROW("node (%d) doesn't exist on proc(%d)", ele->nodes()[i],
+            FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
                 Core::Communication::my_mpi_rank(discretization.get_comm()));
             exit(1);
           }

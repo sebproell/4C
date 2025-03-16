@@ -90,7 +90,7 @@ FSI::FluidFluidMonolithicStructureSplitNoNOX::FluidFluidMonolithicStructureSplit
                 "------------+"
              << std::endl;
 
-    FOUR_C_THROW(errormsg.str());
+    FOUR_C_THROW("{}", errormsg.str());
   }
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS

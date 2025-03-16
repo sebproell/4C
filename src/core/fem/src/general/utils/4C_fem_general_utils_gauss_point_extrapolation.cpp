@@ -163,7 +163,7 @@ namespace
         FOUR_C_THROW(
             "Failed to invert the matrix of the shapefunctions evaluated at the Gauss points. It "
             "looks like this element does not support the default way to extrapolate quantities "
-            "from Gauss points to nodes. Error code: %d",
+            "from Gauss points to nodes. Error code: {}",
             error_code);
       }
 
@@ -191,7 +191,7 @@ namespace
         FOUR_C_THROW(
             "Failed to invert the matrix of the shapefunctions evaluated at the Gauss points. It "
             "looks like this element does not support the default way to extrapolate quantities "
-            "from Gauss points to nodes. Error code %d",
+            "from Gauss points to nodes. Error code {}",
             error_code);
       }
 
@@ -246,7 +246,7 @@ namespace
         }
         break;
         default:
-          FOUR_C_THROW("This function is not implemented for space dimension %d.", nsd);
+          FOUR_C_THROW("This function is not implemented for space dimension {}.", nsd);
       }
       for (int basedis_inode = 0; basedis_inode < base_numnod; ++basedis_inode)
       {
@@ -326,7 +326,7 @@ Core::FE::evaluate_gauss_points_to_nodes_extrapolation_matrix<Core::FE::CellType
   if (intpoints.num_points() != 8)
   {
     FOUR_C_THROW(
-        "Gauss point extrapolation is not yet implemented for Pyramid5 elements with %d Gauss "
+        "Gauss point extrapolation is not yet implemented for Pyramid5 elements with {} Gauss "
         "points. Currently, only 8 are supported",
         intpoints.num_points());
   }

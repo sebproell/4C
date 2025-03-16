@@ -184,7 +184,7 @@ void Mat::ConstraintMixture::unpack(Core::Communication::UnpackBuffer& buffer)
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::ConstraintMixture*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 
@@ -704,7 +704,7 @@ void Mat::ConstraintMixture::update()
     else
     {
       FOUR_C_THROW(
-          "You should not change your timestep size in the case time < starttime! %f", deptime);
+          "You should not change your timestep size in the case time < starttime! {}", deptime);
     }
   }  // time < starttime
 }
@@ -972,7 +972,7 @@ void Mat::ConstraintMixture::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
                        ->function_by_id<Core::Utils::FunctionOfTime>(curvenum)
                        .evaluate(time);
       if (curvefac > (1.0 + eps) || curvefac < (0.0 - eps))
-        FOUR_C_THROW("correct your time curve for prestretch, just values in [0,1] are allowed %f",
+        FOUR_C_THROW("correct your time curve for prestretch, just values in [0,1] are allowed {}",
             curvefac);
       if (params_->numhom_ == 1)
       {
@@ -1164,7 +1164,7 @@ void Mat::ConstraintMixture::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
       }
       else
         FOUR_C_THROW(
-            "times do not match: %f actual time, %f deposition time of last fiber", time, temptime);
+            "times do not match: {} actual time, {} deposition time of last fiber", time, temptime);
     }
     else
     {
@@ -1409,7 +1409,7 @@ void Mat::ConstraintMixture::evaluate_single_fiber_scalars(
 
   // stress
   const double exp1 = std::exp(k2 * (I4 - 1.) * (I4 - 1.));
-  if (std::isinf(exp1)) FOUR_C_THROW("stretch in fiber direction is too high %e", sqrt(I4));
+  if (std::isinf(exp1)) FOUR_C_THROW("stretch in fiber direction is too high {}", sqrt(I4));
   fac_stress = 2. * (k1 * (I4 - 1.) * exp1);  // 2 dW/dI4
 
   // cmat
@@ -1448,7 +1448,7 @@ void Mat::ConstraintMixture::evaluate_elastin(const Core::LinAlg::Matrix<NUM_STR
                      .evaluate(time);
     if (curvefac > 1.0 || curvefac < 0.0)
       FOUR_C_THROW(
-          "correct your time curve for prestretch, just values in [0,1] are allowed %f", curvefac);
+          "correct your time curve for prestretch, just values in [0,1] are allowed {}", curvefac);
     prestretchelastin = 1.0 + (params_->prestretchelastin_ - 1.0) * curvefac;
   }
   // account for isotropic prestretch of elastin
@@ -2391,7 +2391,7 @@ void Mat::ConstraintMixture::evaluate_implicit_all(Core::LinAlg::Matrix<3, 3> de
 
   }  // while loop
   if (localistep == maxstep && Residual.norm2() > params_->abstol_ * (*stress).norm_inf())
-    FOUR_C_THROW("local Newton iteration did not converge %e", Residual.norm2());
+    FOUR_C_THROW("local Newton iteration did not converge {}", Residual.norm2());
 
   Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D> cmatelastic(true);
   evaluate_stress(glstrain, gp, &cmatelastic, stress, firstiter, time, elastin_survival);
@@ -2670,7 +2670,7 @@ void Mat::ConstraintMixture::evaluate_implicit_single(Core::LinAlg::Matrix<3, 3>
 
     }  // while loop
     if (localistep == maxstep && Residual.norm2() > params_->abstol_ * stressfiber.norm_inf())
-      FOUR_C_THROW("local Newton iteration did not converge %e", Residual.norm2());
+      FOUR_C_THROW("local Newton iteration did not converge {}", Residual.norm2());
 
     currmassdensfiber = 0.0;
     Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D> cmatelastic(true);
@@ -3150,19 +3150,19 @@ void Mat::constraint_mixture_output_to_gmsh(
       case Core::FE::CellType::hex8:
       {
         gaussrule_ = Core::FE::GaussRule3D::hex_8point;
-        if (ngp != 8) FOUR_C_THROW("hex8 has not 8 gauss points: %d", ngp);
+        if (ngp != 8) FOUR_C_THROW("hex8 has not 8 gauss points: {}", ngp);
         break;
       }
       case Core::FE::CellType::wedge6:
       {
         gaussrule_ = Core::FE::GaussRule3D::wedge_6point;
-        if (ngp != 6) FOUR_C_THROW("wedge6 has not 6 gauss points: %d", ngp);
+        if (ngp != 6) FOUR_C_THROW("wedge6 has not 6 gauss points: {}", ngp);
         break;
       }
       case Core::FE::CellType::tet4:
       {
         gaussrule_ = Core::FE::GaussRule3D::tet_1point;
-        if (ngp != 1) FOUR_C_THROW("tet4 has not 1 gauss point: %d", ngp);
+        if (ngp != 1) FOUR_C_THROW("tet4 has not 1 gauss point: {}", ngp);
         break;
       }
       default:

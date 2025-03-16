@@ -638,7 +638,7 @@ void XFEM::MeshCouplingBC::do_condition_specific_setup()
 bool XFEM::MeshCouplingBC::has_moving_interface()
 {
   // get the first local col(!) node
-  if (cutter_dis_->num_my_col_nodes() == 0) FOUR_C_THROW("no col node on proc %i", myrank_);
+  if (cutter_dis_->num_my_col_nodes() == 0) FOUR_C_THROW("no col node on proc {}", myrank_);
 
   Core::Nodes::Node* lnode = cutter_dis_->l_col_node(0);
 
@@ -702,7 +702,7 @@ void XFEM::MeshCouplingBC::evaluate_condition(std::shared_ptr<Core::LinAlg::Vect
     else if (condname == "XFEMSurfWeakDirichlet" or condname == "XFEMRobinDirichletSurf")
       evaluate_interface_velocity(final_values, lnode, cond, time, dt);
     else
-      FOUR_C_THROW("non supported condname for evaluation %s", condname.c_str());
+      FOUR_C_THROW("non supported condname for evaluation {}", condname.c_str());
 
 
     // set final values to vector
@@ -754,7 +754,7 @@ void XFEM::MeshCouplingBC::evaluate_interface_velocity(std::vector<double>& fina
       compute_interface_velocity_from_displacement(final_values, node, dt, evaltype);
   }
   else
-    FOUR_C_THROW("evaltype not supported %s", evaltype->c_str());
+    FOUR_C_THROW("evaltype not supported {}", evaltype->c_str());
 }
 
 /*--------------------------------------------------------------------------*
@@ -781,7 +781,7 @@ void XFEM::MeshCouplingBC::evaluate_interface_displacement(std::vector<double>& 
     evaluate_implementation(final_values, node->x().data(), cond, time, function_name);
   }
   else
-    FOUR_C_THROW("evaltype not supported %s", evaltype.c_str());
+    FOUR_C_THROW("evaltype not supported {}", evaltype.c_str());
 }
 
 
@@ -866,7 +866,7 @@ void XFEM::MeshCouplingBC::evaluate_implementation(std::vector<double>& final_va
     arg = -angle_vel * (time - t_4) + M_PI / T * (t_2 - t_1) + 2.0 * M_PI / T * (t_3 - t_2);
   }
   else
-    FOUR_C_THROW("for that time we did not define an implemented rotation %f", time);
+    FOUR_C_THROW("for that time we did not define an implemented rotation {}", time);
 
 
   // rotation with constant angle velocity around point
@@ -1639,7 +1639,7 @@ void XFEM::MeshCouplingFSI::complete_state_vectors()
   Core::LinAlg::Vector<double> iforce_tmp(itrueresidual_->get_map(), true);
   Epetra_Export exporter_iforce(iforcecol_->get_map(), iforce_tmp.get_map());
   int err1 = iforce_tmp.export_to(*iforcecol_, exporter_iforce, Add);
-  if (err1) FOUR_C_THROW("Export using exporter returned err=%d", err1);
+  if (err1) FOUR_C_THROW("Export using exporter returned err={}", err1);
 
   // scale the interface trueresidual with -1.0 to get the forces acting on structural side (no
   // residual-scaling!)
@@ -2122,7 +2122,7 @@ void XFEM::MeshCouplingFSI::update_configuration_map_gp(double& kappa_m,  //< fl
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if ((kappa_m != 1 && get_averaging_strategy() == Inpar::XFEM::Xfluid_Sided) ||
       (kappa_m != 0 && get_averaging_strategy() == Inpar::XFEM::Embedded_Sided))
-    FOUR_C_THROW("XFEM::MeshCouplingFSI::update_configuration_map_gp: kappa_m == %f", kappa_m);
+    FOUR_C_THROW("XFEM::MeshCouplingFSI::update_configuration_map_gp: kappa_m == {}", kappa_m);
 #endif
 
   if (get_averaging_strategy() == Inpar::XFEM::Xfluid_Sided)
@@ -2385,7 +2385,7 @@ void XFEM::MeshCouplingFSI::evaluate_structural_cauchy_stress(Core::Elements::El
   }
 
   FOUR_C_ASSERT_ALWAYS(timefac_ > 0,
-      "XFEM::MeshCouplingFSI::evaluate_structural_cauchy_stress: timefac = %f, not set!", timefac_);
+      "XFEM::MeshCouplingFSI::evaluate_structural_cauchy_stress: timefac = {}, not set!", timefac_);
 
   // Change from linearization w.r.t. displacements to linearization w.r.t. velocities
   // (All other linearizations on the Nitsche Interface are evaluated like this)

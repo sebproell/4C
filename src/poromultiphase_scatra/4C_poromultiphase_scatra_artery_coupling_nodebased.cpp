@@ -343,7 +343,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::check_initial_
 
   if (diff > 1.0e-9)
   {
-    FOUR_C_THROW("Your initial fields apparently are different with an L2 norm of %f", diff);
+    FOUR_C_THROW("Your initial fields apparently are different with an L2 norm of {}", diff);
   }
 }
 

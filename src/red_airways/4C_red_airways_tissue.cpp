@@ -201,7 +201,7 @@ void Airway::RedAirwayTissue::integrate()
 
     if ((iter >= itermax_) && (Core::Communication::my_mpi_rank(couppres_ip_->get_comm()) == 0))
     {
-      FOUR_C_THROW("FIELD ITERATION NOT CONVERGED IN %d STEPS AT TIME T=%f", itermax_, time());
+      FOUR_C_THROW("FIELD ITERATION NOT CONVERGED IN {} STEPS AT TIME T={}", itermax_, time());
     }
 
     update_and_output();

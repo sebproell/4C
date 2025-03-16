@@ -739,7 +739,7 @@ void FSI::Monolithic::non_lin_error_check()
         erroraction_ = erroraction_stop;
 
         // stop the simulation
-        FOUR_C_THROW("Nonlinear solver did not converge in %i iterations in time step %i.",
+        FOUR_C_THROW("Nonlinear solver did not converge in {} iterations in time step {}.",
             noxiter_, step());
         break;
       }

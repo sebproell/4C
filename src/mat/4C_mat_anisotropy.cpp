@@ -171,7 +171,7 @@ void Mat::Anisotropy::set_gauss_point_fibers(
   // Check whether the size of the first vector is the number of Gauss points
   if (fibers.size() != numgp_)
   {
-    FOUR_C_THROW("The Gauss point fibers don't have the expected size of %d (%d given).", numgp_,
+    FOUR_C_THROW("The Gauss point fibers don't have the expected size of {} ({} given).", numgp_,
         fibers.size());
   }
 
@@ -188,7 +188,7 @@ void Mat::Anisotropy::set_gauss_point_fibers(
     {
       FOUR_C_THROW(
           "The size of the Gauss point do not match! At every Gauss point, the same amount of "
-          "fibers are necessary. Error occurred at Gauss point %d. Expected %d fibers, but got %d.",
+          "fibers are necessary. Error occurred at Gauss point {}. Expected {} fibers, but got {}.",
           i, num_fibs, gpfibers.size());
     }
   }
@@ -207,7 +207,7 @@ const Core::LinAlg::Matrix<3, 1>& Mat::Anisotropy::get_element_fiber(unsigned in
   if (i >= element_fibers_.size())
   {
     FOUR_C_THROW(
-        "You requested fiber %d, but only %d fibers are available", i + 1, element_fibers_.size());
+        "You requested fiber {}, but only {} fibers are available", i + 1, element_fibers_.size());
   }
   return element_fibers_[i];
 }
@@ -241,14 +241,13 @@ const Core::LinAlg::Matrix<3, 1>& Mat::Anisotropy::get_gauss_point_fiber(
 
   if (gp >= gp_fibers_.size())
   {
-    FOUR_C_THROW("The number of GP is too large. %d instead of maximum allowed %d", gp + 1,
+    FOUR_C_THROW("The number of GP is too large. {} instead of maximum allowed {}", gp + 1,
         gp_fibers_.size());
   }
 
   if (i >= gp_fibers_[gp].size())
   {
-    FOUR_C_THROW(
-        "You requested fiber %d, but only %d fibers are available", i + 1, element_fibers_.size());
+    FOUR_C_THROW("You requested fiber {} fibers are available", i + 1, element_fibers_.size());
   }
   return gp_fibers_[gp][i];
 }

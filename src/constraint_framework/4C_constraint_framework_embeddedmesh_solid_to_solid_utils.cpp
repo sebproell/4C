@@ -124,7 +124,7 @@ std::shared_ptr<CONSTRAINTS::EMBEDDEDMESH::SolidInteractionPair> coupling_pair_m
         }
         default:
           FOUR_C_THROW(
-              "The interaction pairs with background element of type %s not yet implemented",
+              "The interaction pairs with background element of type {} not yet implemented",
               (Core::FE::cell_type_to_string(background_ele->shape())).c_str());
           break;
       }
@@ -143,14 +143,14 @@ std::shared_ptr<CONSTRAINTS::EMBEDDEDMESH::SolidInteractionPair> coupling_pair_m
         }
         default:
           FOUR_C_THROW(
-              "The interaction pairs with background element of type %s not yet implemented",
+              "The interaction pairs with background element of type {} not yet implemented",
               (Core::FE::cell_type_to_string(background_ele->shape())).c_str());
           break;
       }
       break;
     }
     default:
-      FOUR_C_THROW("The interaction pairs with interface element of type %s not yet implemented",
+      FOUR_C_THROW("The interaction pairs with interface element of type {} not yet implemented",
           (Core::FE::cell_type_to_string(background_ele->shape())).c_str());
   }
 }

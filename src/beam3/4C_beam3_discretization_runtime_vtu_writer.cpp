@@ -224,21 +224,21 @@ void BeamDiscretizationRuntimeOutputWriter::set_geometry_from_beam_discretizatio
   // safety checks
   if (cell_types.size() != cell_offsets.size())
   {
-    FOUR_C_THROW("RuntimeVtuWriter expected %d cell type values, but got %d", num_beam_row_elements,
+    FOUR_C_THROW("RuntimeVtuWriter expected {} cell type values, but got {}", num_beam_row_elements,
         cell_types.size());
   }
 
   if (periodic_boundingbox_ != nullptr and !periodic_boundingbox_->have_pbc() and
       (point_coordinates.size() != num_spatial_dimensions * num_visualization_points))
   {
-    FOUR_C_THROW("RuntimeVtuWriter expected %d coordinate values, but got %d",
+    FOUR_C_THROW("RuntimeVtuWriter expected {} coordinate values, but got {}",
         num_spatial_dimensions * num_visualization_points, point_coordinates.size());
   }
 
   if (periodic_boundingbox_ != nullptr and !periodic_boundingbox_->have_pbc() and
       (cell_offsets.size() != num_beam_row_elements))
   {
-    FOUR_C_THROW("RuntimeVtuWriter expected %d cell offset values, but got %d",
+    FOUR_C_THROW("RuntimeVtuWriter expected {} cell offset values, but got {}",
         num_beam_row_elements, cell_offsets.size());
   }
 }
@@ -618,7 +618,7 @@ void BeamDiscretizationRuntimeOutputWriter::append_element_filament_id_and_type(
     // get filament number (note so far only one filament for each element and node)
     Core::Conditions::Condition* cond = ele->nodes()[0]->get_condition("BeamLineFilamentCondition");
     if (cond == nullptr)
-      FOUR_C_THROW(" No filament number assigned to element with gid %i .", ele->id());
+      FOUR_C_THROW(" No filament number assigned to element with gid {} .", ele->id());
 
     double current_id = cond->parameters().get<int>("ID");
     double current_type = Inpar::BeamInteraction::string_to_filament_type(

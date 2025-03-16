@@ -129,7 +129,7 @@ namespace BeamInteraction
       else if (index == 1)
         return element2_;
       else
-        FOUR_C_THROW("Index has to be 0 or 1, got %d", index);
+        FOUR_C_THROW("Index has to be 0 or 1, got {}", index);
       return nullptr;
     };
 

@@ -483,7 +483,7 @@ int Discret::Elements::FluidBoundaryImpl<distype>::evaluate_neumann(
       }
       else
         FOUR_C_THROW(
-            "The type '%s' is not supported in the fluid neumann condition!", type->c_str());
+            "The type '{}' is not supported in the fluid neumann condition!", type->c_str());
 
     }  // for(int idim=0; idim<(nsd_); ++idim)
   }
@@ -1944,7 +1944,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::calc_traction_velocity_compo
     density = actmat->density();
   }
   else
-    FOUR_C_THROW("Fluid material expected but got type %d", mat->material_type());
+    FOUR_C_THROW("Fluid material expected but got type {}", mat->material_type());
 
   //-------------------------------------------------------------------
   // get the tractions velocity component

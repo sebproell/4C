@@ -179,7 +179,7 @@ std::string XFEM::XFluidTimeInt::map_method_enum_to_string(
     case Inpar::XFEM::Xf_TimeInt_undefined:
       return "undefined:                                 ";
     default:
-      FOUR_C_THROW("Cannot cope with name enum %d", term);
+      FOUR_C_THROW("Cannot cope with name enum {}", term);
       return "";
       break;
   }
@@ -377,7 +377,7 @@ void XFEM::XFluidTimeInt::transfer_nodal_dofs_to_new_map(
     if (numdofs_new != numdofpernode)
     {
       FOUR_C_THROW(
-          "XFLUID-TIMINIT CASE B: node %d,\t %d dofs for node without nodehandle at timestep "
+          "XFLUID-TIMINIT CASE B: node {},\t {} dofs for node without nodehandle at timestep "
           "t^(n+1) ?!",
           gid, numdofs_new);
     }
@@ -413,7 +413,7 @@ void XFEM::XFluidTimeInt::transfer_nodal_dofs_to_new_map(
         //      structural movement more than one element near node, (here SEMILAGRANGE possible!)
 
         if (timeint_scheme_ == Inpar::XFEM::Xf_TimeIntScheme_STD_by_Copy_AND_GHOST_by_Copy_or_GP)
-          FOUR_C_THROW("structural movement more than one element near node %d", gid);
+          FOUR_C_THROW("structural movement more than one element near node {}", gid);
         else if (timeint_scheme_ ==
                      Inpar::XFEM::Xf_TimeIntScheme_STD_by_Copy_or_SL_AND_GHOST_by_Copy_or_GP or
                  timeint_scheme_ ==
@@ -439,7 +439,7 @@ void XFEM::XFluidTimeInt::transfer_nodal_dofs_to_new_map(
 
       if (timeint_scheme_ == Inpar::XFEM::Xf_TimeIntScheme_STD_by_Copy_AND_GHOST_by_Copy_or_GP)
         FOUR_C_THROW(
-            "no dofset at t^n available, structural movement more than one element for node %d",
+            "no dofset at t^n available, structural movement more than one element for node {}",
             gid);
       else if (timeint_scheme_ ==
                    Inpar::XFEM::Xf_TimeIntScheme_STD_by_Copy_or_SL_AND_GHOST_by_Copy_or_GP or
@@ -472,7 +472,7 @@ void XFEM::XFluidTimeInt::transfer_nodal_dofs_to_new_map(
         if (timeint_scheme_ == Inpar::XFEM::Xf_TimeIntScheme_STD_by_Copy_AND_GHOST_by_Copy_or_GP)
           FOUR_C_THROW(
               "all dofset at t^n are ghost-dofsets, structural movement more than one element for "
-              "node %d",
+              "node {}",
               gid);
         else if (timeint_scheme_ ==
                      Inpar::XFEM::Xf_TimeIntScheme_STD_by_Copy_or_SL_AND_GHOST_by_Copy_or_GP or
@@ -533,7 +533,7 @@ void XFEM::XFluidTimeInt::transfer_nodal_dofs_to_new_map(
     if (numdofs_old != numdofpernode)
     {
       FOUR_C_THROW(
-          "XFLUID-TIMINIT CASE C: node %d,\t %d dofs for node without nodehandle at timestep t^n "
+          "XFLUID-TIMINIT CASE C: node {},\t {} dofs for node without nodehandle at timestep t^n "
           "?!",
           gid, numdofs_old);
     }
@@ -700,7 +700,7 @@ void XFEM::XFluidTimeInt::transfer_nodal_dofs_to_new_map(
 
           if (nds_old < 0)
             FOUR_C_THROW(
-                "Projection failed and there is no old dofset to be copied for node %d", gid);
+                "Projection failed and there is no old dofset to be copied for node {}", gid);
         }
       }
 
@@ -715,7 +715,7 @@ void XFEM::XFluidTimeInt::transfer_nodal_dofs_to_new_map(
         {
           if (timeint_scheme_ == Inpar::XFEM::Xf_TimeIntScheme_STD_by_Copy_AND_GHOST_by_Copy_or_GP)
             FOUR_C_THROW(
-                "no corresponding dofset at t^n, choose a SL-based-approach for node %d", gid);
+                "no corresponding dofset at t^n, choose a SL-based-approach for node {}", gid);
           else if (timeint_scheme_ ==
                        Inpar::XFEM::Xf_TimeIntScheme_STD_by_Copy_or_SL_AND_GHOST_by_Copy_or_GP or
                    timeint_scheme_ ==
@@ -831,7 +831,7 @@ void XFEM::XFluidTimeInt::transfer_nodal_dofs_to_new_map(
         else if (!is_std_set_np and !is_std_set_n)
         {
           // copy values, should be reasonable since dofsets identified
-          // FOUR_C_THROW("Copy for node %d", gid);
+          //  FOUR_C_THROW("Copy for node {}", gid);
           copy_dofs(node, nds_new, nds_old, Inpar::XFEM::Xf_TimeInt_GHOST_by_COPY_from_GHOST,
               newRowStateVectors, oldRowStateVectors, dbcgids);
           //            mark_dofs(node, nds_new, newRowStateVectors,
@@ -901,7 +901,7 @@ void XFEM::XFluidTimeInt::find_surrounding_ghost_dofsets(
 )
 {
   if (nds_new != 0)
-    FOUR_C_THROW("do you really want to find ghost dofsets surrounding a non-std node with id %i?",
+    FOUR_C_THROW("do you really want to find ghost dofsets surrounding a non-std node with id {}?",
         node->id());
 
   Cut::Node* n = wizard_new_->get_node(node->id());
@@ -1003,8 +1003,8 @@ void XFEM::XFluidTimeInt::copy_dofs(const Core::Nodes::Node* node,  /// drt node
   if (dofs_new.size() != dofs_old.size())
   {
     FOUR_C_THROW(
-        "XFLUID-TIMINIT: unequal number of dofs for node %d at old timestep (set %d, %d dofs) and "
-        "new timestep (set %d, %d dofs)",
+        "XFLUID-TIMINIT: unequal number of dofs for node {} at old timestep (set {}, {} dofs) and "
+        "new timestep (set {}, {} dofs)",
         node->Id(), nds_old, dofs_old.size(), nds_new, dofs_new.size());
   }
 #endif
@@ -1027,10 +1027,10 @@ void XFEM::XFluidTimeInt::copy_dofs(const Core::Nodes::Node* node,  /// drt node
     for (size_t i = 0; i < dofs_new.size(); i++)
     {
       int dof_lid_new = vec_new->get_map().LID(dofs_new[i]);
-      if (dof_lid_new == -1) FOUR_C_THROW("new dof %d not local on this proc!", dofs_new[i]);
+      if (dof_lid_new == -1) FOUR_C_THROW("new dof {} not local on this proc!", dofs_new[i]);
 
       int dof_lid_old = vec_old->get_map().LID(dofs_old[i]);
-      if (dof_lid_old == -1) FOUR_C_THROW("old dof %d not local on this proc!", dofs_old[i]);
+      if (dof_lid_old == -1) FOUR_C_THROW("old dof {} not local on this proc!", dofs_old[i]);
 
       (*vec_new)[dof_lid_new] = (*vec_old)[dof_lid_old];
 
@@ -1145,7 +1145,7 @@ void XFEM::XFluidTimeInt::mark_dofs(const Core::Nodes::Node* node,  /// drt node
     for (size_t i = 0; i < dofs_new.size(); i++)
     {
       int dof_lid_new = vec_new->get_map().LID(dofs_new[i]);
-      if (dof_lid_new == -1) FOUR_C_THROW("new dof %d not local on this proc!", dofs_new[i]);
+      if (dof_lid_new == -1) FOUR_C_THROW("new dof {} not local on this proc!", dofs_new[i]);
 
       (*vec_new)[dof_lid_new] =
           0.0;  // zero value as start value for newton for gradient reconstruction
@@ -1189,8 +1189,8 @@ void XFEM::XFluidTimeInt::mark_dofs_for_export(const int nid,  /// node id
     {
       if (nds_it->second != (int)method)
         FOUR_C_THROW(
-            "you want to mark one dofset twice with different methods! nid: %d, dofset: %d, set "
-            "method: %d, new method: %d",
+            "you want to mark one dofset twice with different methods! nid: {}, dofset: {}, set "
+            "method: {}, new method: {}",
             nid, dofset, (int)nds_it->second, (int)method);
       else
         return;  // already set
@@ -1235,7 +1235,7 @@ bool XFEM::XFluidTimeInt::set_reconstr_method(const Core::Nodes::Node* node,  //
   if (it != node_to_reconstr_method_.end())
   {
     // assume that we call this function for all nodal dofsets in the right order
-    if (nds_new >= numdofsets) FOUR_C_THROW("no valid nds %d for node %d", nds_new, n->id());
+    if (nds_new >= numdofsets) FOUR_C_THROW("no valid nds {} for node {}", nds_new, n->id());
 
     //---------------------------------------------------------
     // check if the current set method can be overwritten
@@ -1254,8 +1254,8 @@ bool XFEM::XFluidTimeInt::set_reconstr_method(const Core::Nodes::Node* node,  //
     )
     {
       FOUR_C_THROW(
-          "inconsistency in reconstruction method, why do want to replace reconstruction method %d "
-          "with %d for node=%d and nds=%d",
+          "inconsistency in reconstruction method, why do want to replace reconstruction method {} "
+          "with {} for node={} and nds={}",
           it->second[nds_new], method, node->id(), nds_new);
     }
     //---------------------------------------------------------
@@ -1431,7 +1431,7 @@ int XFEM::XFluidTimeInt::identify_old_sets(const Cut::Node* n_old,  /// node w.r
 
       if (pos_old == Cut::Point::undecided or pos_old == Cut::Point::oncutsurface)
         FOUR_C_THROW(
-            "why is the cellcet position undecided or oncutsurface %i, something wrong", pos_old);
+            "why is the cellcet position undecided or oncutsurface {}, something wrong", pos_old);
 
       // dof-cellsets at new and old time have to correspond to each other w.r.t position of their
       // cellsets (same fluid phase)
@@ -1728,7 +1728,7 @@ bool XFEM::XFluidTimeInt::special_check_interface_tips(
     changed_side = false;
     return true;
 
-    // FOUR_C_THROW("node %i seems to move. Check the SpaceTimeChangingSide-Check for ALE!",
+    //  FOUR_C_THROW("node {} seems to move. Check the SpaceTimeChangingSide-Check for ALE!",
     // n_old->Id());
   }
 
@@ -1837,7 +1837,7 @@ bool XFEM::XFluidTimeInt::special_check_interface_tips_space_time(
     }
     default:
       FOUR_C_THROW(
-          "side-distype %s not handled", Core::FE::cell_type_to_string(side_distype).c_str());
+          "side-distype {} not handled", Core::FE::cell_type_to_string(side_distype).c_str());
       break;
   }
 
@@ -1959,7 +1959,7 @@ bool XFEM::XFluidTimeInt::within_space_time_side(
       xi_side(1) = 0.0;
     }
     else
-      FOUR_C_THROW("unknown side type with %d nodes", numnode_side);
+      FOUR_C_THROW("unknown side type with {} nodes", numnode_side);
 
     // Initialization
     Core::LinAlg::Matrix<2, numnode_side> deriv(true);  // derivatives dr, ds

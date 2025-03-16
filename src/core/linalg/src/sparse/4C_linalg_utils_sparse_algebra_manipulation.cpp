@@ -49,14 +49,14 @@ void Core::LinAlg::export_to(
     {
       Epetra_Export exporter(source.Map(), target.Map());
       int err = target.Export(source, exporter, Insert);
-      if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
+      if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       return;
     }
     else if (sourceunique && !targetunique)
     {
       Epetra_Import importer(target.Map(), source.Map());
       int err = target.Import(source, importer, Insert);
-      if (err) FOUR_C_THROW("Export using importer returned err=%d", err);
+      if (err) FOUR_C_THROW("Export using importer returned err={}", err);
       return;
     }
     else if (!sourceunique && targetunique)
@@ -90,7 +90,7 @@ void Core::LinAlg::export_to(
   }
   catch (int error)
   {
-    FOUR_C_THROW("Caught an Epetra exception %d", error);
+    FOUR_C_THROW("Caught an Epetra exception {}", error);
   }
 
   return;
@@ -125,21 +125,21 @@ void Core::LinAlg::export_to(
     {
       Epetra_Export exporter(source.get_map(), target.get_map());
       int err = target.export_to(source, exporter, Insert);
-      if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
+      if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       return;
     }
     else if (sourceunique && !targetunique)
     {
       Epetra_Import importer(target.get_map(), source.get_map());
       int err = target.import(source, importer, Insert);
-      if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
+      if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       return;
     }
     else if (!sourceunique && targetunique)
     {
       Epetra_Export exporter(source.get_map(), target.get_map());
       int err = target.export_to(source, exporter, Insert);
-      if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
+      if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       return;
     }
     else if (!sourceunique && !targetunique)
@@ -155,7 +155,7 @@ void Core::LinAlg::export_to(
   }
   catch (int error)
   {
-    FOUR_C_THROW("Caught an Epetra exception %d", error);
+    FOUR_C_THROW("Caught an Epetra exception {}", error);
   }
 
   return;
@@ -193,7 +193,7 @@ void Core::LinAlg::extract_my_vector(
     const int src_lid = source.get_map().LID(target_gid);
     // check if the target_map is a local sub-set of the source map on each proc
     if (src_lid == -1)
-      FOUR_C_THROW("Couldn't find the target GID %d in the source map on proc %d.", target_gid,
+      FOUR_C_THROW("Couldn't find the target GID {} in the source map on proc {}.", target_gid,
           Core::Communication::my_mpi_rank(source.get_comm()));
 
     target_values[tar_lid] = src_values[src_lid];
@@ -447,7 +447,7 @@ void Core::LinAlg::split_matrix2x2(
     double* values;
     int* cindices;
     int err = A->ExtractMyRowView(i, numentries, values, cindices);
-    if (err) FOUR_C_THROW("ExtractMyRowView returned %d", err);
+    if (err) FOUR_C_THROW("ExtractMyRowView returned {}", err);
     for (int j = 0; j < numentries; ++j)
     {
       const int gcid = A->ColMap().GID(cindices[j]);
@@ -479,7 +479,7 @@ void Core::LinAlg::split_matrix2x2(
     }
 
     if (err1 < 0 || err2 < 0)
-      FOUR_C_THROW("InsertGlobalValues returned err1=%d / err2=%d", err1, err2);
+      FOUR_C_THROW("InsertGlobalValues returned err1={} / err2={}", err1, err2);
   }
 }
 
@@ -510,7 +510,7 @@ void Core::LinAlg::split_matrixmxn(
   for (int collid = 0; collid < dselector.local_length(); ++collid)
   {
     const int colgid = ASparse.domain_map().GID(collid);
-    if (colgid < 0) FOUR_C_THROW("Couldn't find local column ID %d in domain map!", collid);
+    if (colgid < 0) FOUR_C_THROW("Couldn't find local column ID {} in domain map!", collid);
 
     int n(0);
     for (n = 0; n < N; ++n)
@@ -545,7 +545,7 @@ void Core::LinAlg::split_matrixmxn(
     for (int j = 0; j < numentries; ++j)
     {
       const int collid = indices[j];
-      if (collid >= selector.local_length()) FOUR_C_THROW("Invalid local column ID %d!", collid);
+      if (collid >= selector.local_length()) FOUR_C_THROW("Invalid local column ID {}!", collid);
 
       const int blockid = static_cast<int>(selector[collid]);
       colgids[blockid][counters[blockid]] = A.ColMap().GID(collid);
@@ -597,8 +597,8 @@ int Core::LinAlg::insert_my_row_diagonal_into_unfilled_matrix(
     // skip rows which are not part of the matrix
     if (not dst_mat.RangeMap().MyGID(rgid))
       FOUR_C_THROW(
-          "Could not find the row GID %d in the destination matrix RowMap"
-          " on proc %d.",
+          "Could not find the row GID {} in the destination matrix RowMap"
+          " on proc {}.",
           rgid,
           Core::Communication::my_mpi_rank(
               Core::Communication::unpack_epetra_comm(dst_mat.Comm())));
@@ -610,15 +610,15 @@ int Core::LinAlg::insert_my_row_diagonal_into_unfilled_matrix(
       if (err > 0)
       {
         err = dst_mat.InsertGlobalValues(rgid, 1, (diag_values + lid), &rgid);
-        if (err < 0) FOUR_C_THROW("InsertGlobalValues error: %d", err);
+        if (err < 0) FOUR_C_THROW("InsertGlobalValues error: {}", err);
       }
       else if (err < 0)
-        FOUR_C_THROW("SumIntoGlobalValues error: %d", err);
+        FOUR_C_THROW("SumIntoGlobalValues error: {}", err);
     }
     else
     {
       const int err = dst_mat.InsertGlobalValues(rgid, 1, (diag_values + lid), &rgid);
-      if (err < 0) FOUR_C_THROW("InsertGlobalValues error: %d", err);
+      if (err < 0) FOUR_C_THROW("InsertGlobalValues error: {}", err);
     }
   }
 

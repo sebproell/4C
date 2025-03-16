@@ -19,7 +19,7 @@ namespace
   {
     if (b == 0)
     {
-      FOUR_C_THROW("Division by zero condition!");
+      FOUR_C_THROW("Division by zero {}/{}!", a, b);
     }
     return (a / b);
   }
@@ -32,8 +32,7 @@ namespace
   {
     int a = 1, b = 0;
 
-    FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-        division(a, b), Core::Exception, "Division by zero condition!");
+    FOUR_C_EXPECT_THROW_WITH_MESSAGE(division(a, b), Core::Exception, "Division by zero 1/0!");
   }
 
   TEST(ExceptionTest, NoReturn)

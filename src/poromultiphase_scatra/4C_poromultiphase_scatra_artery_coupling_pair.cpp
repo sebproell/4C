@@ -125,9 +125,9 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
   }
   else
   {
-    FOUR_C_THROW("Your selected coupling is not possible, type of element1: " +
-                 element1_->element_type().name() +
-                 ", type of element2: " + element2_->element_type().name());
+    FOUR_C_THROW(
+        "Your selected coupling is not possible, type of element1: {}, type of element2: {}",
+        element1_->element_type().name(), element2_->element_type().name());
   }
 
   if (couplmethod_ == Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::ntp)
@@ -146,7 +146,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
             "NTP-coupling is only possible for coupling type: "
             " 'ARTERY' or 'AIRWAY'. "
             "Your coupling type "
-            "is: " +
+            "is: {}",
             coupling_element_type_);
       }
       else
@@ -156,7 +156,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
             "NTP-coupling is only possible for coupling type: "
             "'ARTERY' or 'AIRWAY'. "
             "Your coupling type "
-            "is: " +
+            "is: {}",
             coupling_element_type_);
       }
     }
@@ -216,13 +216,13 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
     if (coupleddofs_cont_[icont] >= numdof_cont_)
     {
       FOUR_C_THROW(
-          "You try to couple DOF %d, which is larger than the number of dofs of the continuous "
+          "You try to couple DOF {}, which is larger than the number of dofs of the continuous "
           "discretization",
           coupleddofs_cont_[icont] + 1);
     }
     if (coupleddofs_cont_[icont] < 0)
     {
-      FOUR_C_THROW("Your coupling DOF of the continuous discretization must be >= 0, your DOF = %d",
+      FOUR_C_THROW("Your coupling DOF of the continuous discretization must be >= 0, your DOF = {}",
           coupleddofs_cont_[icont] + 1);
     }
   }
@@ -231,13 +231,13 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
     if (coupleddofs_art_[iart] >= numdof_art_)
     {
       FOUR_C_THROW(
-          "You try to couple DOF %d, which is larger than the number of dofs of the artery "
+          "You try to couple DOF {}, which is larger than the number of dofs of the artery "
           "discretization",
           coupleddofs_art_[iart] + 1);
     }
     if (coupleddofs_art_[iart] < 0)
     {
-      FOUR_C_THROW("Your coupling DOF of the reduced discretization must be >= 0, your DOF = %d",
+      FOUR_C_THROW("Your coupling DOF of the reduced discretization must be >= 0, your DOF = {}",
           coupleddofs_art_[iart] + 1);
     }
   }
@@ -314,7 +314,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
         {
           FOUR_C_THROW(
               "You can only couple volume fraction pressures or fluid phases in multiphase "
-              "porespace, your material is of type %d",
+              "porespace, your material is of type {}",
               singlemat->material_type());
         }
       }
@@ -383,7 +383,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
         {
           FOUR_C_THROW(
               "You can only couple Mat::ScatraMatMultiPoroVolFrac or Mat::ScatraMatMultiPoroFluid, "
-              "your material is of type %d",
+              "your material is of type {}",
               singlemat->material_type());
         }
 
@@ -1066,7 +1066,7 @@ double PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art,
   xjm.multiply_nt(deriv, ele2pos_);
   double det = xji.invert(xjm);
 
-  if (det < 1E-16) FOUR_C_THROW("GLOBAL ELEMENT ZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", det);
+  if (det < 1E-16) FOUR_C_THROW("GLOBAL ELEMENT ZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", det);
 
   // compute integration factor
   return gpweight * det;
@@ -2067,7 +2067,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
           FOUR_C_THROW(
               "Only Mat::ScatraMatMultiPoroVolFrac and Mat::ScatraMatMultiPoroFluid, your "
               "material "
-              "is of type %d",
+              "is of type {}",
               singlemat->material_type());
         timefacrhs_cont_dens_[idof] = timefacrhs_cont_ / fluiddensities[phaseid];
       }
@@ -2741,7 +2741,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
   // rest is not possible
   else
     FOUR_C_THROW(
-        "Found more than two intersections for artery element %d and 2D/3D element %d, this "
+        "Found more than two intersections for artery element {} and 2D/3D element {}, this "
         "should "
         "not be possible",
         ele1_gid(), ele2_gid());
@@ -2751,12 +2751,12 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
   {
     if (eta_a_ > eta_b_)
       FOUR_C_THROW(
-          "something went terribly wrong for artery element %d and 2D/3D element %d, eta_a is "
+          "something went terribly wrong for artery element {} and 2D/3D element {}, eta_a is "
           "bigger than eta_b",
           ele1_gid(), ele2_gid());
     if (fabs(eta_a_ - eta_b_) < XIETATOL)
       FOUR_C_THROW(
-          "something went terribly wrong for artery element %d and 2D/3D element %d, found "
+          "something went terribly wrong for artery element {} and 2D/3D element {}, found "
           "extremely small integration segment",
           ele1_gid(), ele2_gid());
   }

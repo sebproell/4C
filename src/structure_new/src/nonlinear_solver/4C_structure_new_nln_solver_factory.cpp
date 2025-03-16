@@ -48,7 +48,7 @@ std::shared_ptr<Solid::Nln::SOLVER::Generic> Solid::Nln::SOLVER::Factory::build_
       //      nlnSolver = Teuchos::rcp(new Solid::Nln::SOLVER::Uzawa());
       //      break;
     default:
-      FOUR_C_THROW("Solution technique \"%s\" is not implemented.",
+      FOUR_C_THROW("Solution technique \"{}\" is not implemented.",
           Inpar::Solid::nonlin_sol_tech_string(nlnSolType).c_str());
       break;
   }

@@ -284,7 +284,7 @@ void XFEM::XfemEdgeStab::evaluate_edge_stab_ghost_penalty(
           }
           else if (vcs.size() == 1)
           {
-            FOUR_C_THROW("just one vcs reasonable?! face %d", faceele->id());
+            FOUR_C_THROW("just one vcs reasonable?! face {}", faceele->id());
           }
         }  // facet outside or (inside and include_inner)
         else if ((*f)->position() == Cut::Point::undecided)
@@ -422,7 +422,7 @@ void XFEM::XfemEdgeStab::evaluate_edge_stab_ghost_penalty(
           }
           else if (vcs.size() == 1)
           {
-            FOUR_C_THROW("just one vcs reasonable?! face %d", faceele->id());
+            FOUR_C_THROW("just one vcs reasonable?! face {}", faceele->id());
           }
         }  // facet outside or (inside and include_inner)
         else if ((*f)->position() == Cut::Point::undecided)

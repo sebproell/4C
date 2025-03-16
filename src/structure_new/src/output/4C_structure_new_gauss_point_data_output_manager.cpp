@@ -40,7 +40,7 @@ void Solid::ModelEvaluator::GaussPointDataOutputManager::add_quantity_if_not_exi
     if (item->second != size)
     {
       FOUR_C_THROW(
-          "The quantity %s is already registered, but with a different size (%d vs. %d). This is "
+          "The quantity {} is already registered, but with a different size ({} vs. {}). This is "
           "fatal!",
           name.c_str(), size, item->second);
     }
@@ -50,7 +50,7 @@ void Solid::ModelEvaluator::GaussPointDataOutputManager::add_quantity_if_not_exi
     if (name.find(MPI_DELIMITER) != std::string::npos)
     {
       FOUR_C_THROW(
-          "The quantity name %s for Gauss Point VTK runtime output contains the delimiter %s that "
+          "The quantity name {} for Gauss Point VTK runtime output contains the delimiter {} that "
           "is used for MPI communication. This is not allowed.",
           name.c_str(), MPI_DELIMITER);
     }

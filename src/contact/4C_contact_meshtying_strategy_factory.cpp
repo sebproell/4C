@@ -364,7 +364,7 @@ void Mortar::STRATEGY::FactoryMT::build_interfaces(const Teuchos::ParameterList&
     }
 
     // now we should have found a group of conds
-    if (!foundit) FOUR_C_THROW("Cannot find matching contact condition for id %d", groupid1);
+    if (!foundit) FOUR_C_THROW("Cannot find matching contact condition for id {}", groupid1);
 
     // see whether we found this group before
     bool foundbefore = false;

@@ -100,9 +100,9 @@ namespace Discret::Elements
         requires(!can_evaluate_solid_scatra_cauchy_n_dir_at_xi<T&, dim>)
       {
         FOUR_C_THROW(
-            "Your element evaluation %s does not allow to evaluate the Cauchy stress at a "
+            "Your element evaluation {} does not allow to evaluate the Cauchy stress at a "
             "specific "
-            "point in a specific direction in the dimension dim=%d.",
+            "point in a specific direction in the dimension dim={}.",
             typeid(T).name(), dim);
       }
 

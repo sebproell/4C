@@ -431,8 +431,8 @@ namespace Discret::Elements
         requires(!can_evaluate_cauchy_n_dir<T&, dim>)
       {
         FOUR_C_THROW(
-            "Your element evaluation %s does not allow to evaluate the Cauchy stress at a specific "
-            "point in a specific direction in the dimension dim=%d.",
+            "Your element evaluation {} does not allow to evaluate the Cauchy stress at a specific "
+            "point in a specific direction in the dimension dim={}.",
             typeid(T).name(), dim);
       }
 

@@ -135,7 +135,7 @@ namespace Core::LinAlg
   {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     if (i1 >= dim or i2 >= dim or i3 >= dim or i4 >= dim)
-      FOUR_C_THROW("Indices %i,%i,%i,%i out of range in FourTensor<%i>.", i1, i2, i3, i4, dim);
+      FOUR_C_THROW("Indices {},{},{},{} out of range in FourTensor<{}>.", i1, i2, i3, i4, dim);
 #endif
     return get()[i1][i2][i3][i4];
   }
@@ -145,7 +145,7 @@ namespace Core::LinAlg
   {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     if (i1 >= dim or i2 >= dim or i3 >= dim or i4 >= dim)
-      FOUR_C_THROW("Indices %i,%i,%i,%i out of range in FourTensor<%i>.", i1, i2, i3, i4, dim);
+      FOUR_C_THROW("Indices {},{},{},{} out of range in FourTensor<{}>.", i1, i2, i3, i4, dim);
 #endif
     return get_const()[i1][i2][i3][i4];
   }

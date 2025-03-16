@@ -135,14 +135,14 @@ void XFEM::XFieldField::Coupling::master_to_slave(const Core::LinAlg::MultiVecto
         FOUR_C_THROW("master node map vector expected");
       if (not sv.Map().PointSameAs(*slavenodemap_)) FOUR_C_THROW("slave node map vector expected");
       if (sv.NumVectors() != mv.NumVectors())
-        FOUR_C_THROW("column number mismatch %d!=%d", sv.NumVectors(), mv.NumVectors());
+        FOUR_C_THROW("column number mismatch {}!={}", sv.NumVectors(), mv.NumVectors());
 #endif
 
       Core::LinAlg::MultiVector<double> perm(*permslavenodemap_, mv.NumVectors());
       std::copy(mv.Values(), mv.Values() + (mv.MyLength() * mv.NumVectors()), perm.Values());
 
       const int err = sv.Export(perm, *nodal_slaveexport_, Insert);
-      if (err) FOUR_C_THROW("Export to nodal slave distribution returned err=%d", err);
+      if (err) FOUR_C_THROW("Export to nodal slave distribution returned err={}", err);
     }  // end: case XFEM::MultiFieldMapExtractor::map_nodes
   }  // end: switch (map_type)
 }
@@ -166,14 +166,14 @@ void XFEM::XFieldField::Coupling::slave_to_master(const Core::LinAlg::MultiVecto
         FOUR_C_THROW("master node map vector expected");
       if (not sv.Map().PointSameAs(*slavenodemap_)) FOUR_C_THROW("slave node map vector expected");
       if (sv.NumVectors() != mv.NumVectors())
-        FOUR_C_THROW("column number mismatch %d!=%d", sv.NumVectors(), mv.NumVectors());
+        FOUR_C_THROW("column number mismatch {}!={}", sv.NumVectors(), mv.NumVectors());
 #endif
 
       Core::LinAlg::MultiVector<double> perm(*permmasternodemap_, sv.NumVectors());
       std::copy(sv.Values(), sv.Values() + (sv.MyLength() * sv.NumVectors()), perm.Values());
 
       const int err = mv.Export(perm, *nodal_masterexport_, Insert);
-      if (err) FOUR_C_THROW("Export to nodal master distribution returned err=%d", err);
+      if (err) FOUR_C_THROW("Export to nodal master distribution returned err={}", err);
     }
   }
 }
@@ -276,7 +276,7 @@ void XFEM::XFieldField::Coupling::build_min_dof_maps(const Core::FE::Discretizat
   }
 
   std::vector<int>::const_iterator pos = std::min_element(dofmapvec.begin(), dofmapvec.end());
-  if (pos != dofmapvec.end() and *pos < 0) FOUR_C_THROW("Illegal DoF number %d", *pos);
+  if (pos != dofmapvec.end() and *pos < 0) FOUR_C_THROW("Illegal DoF number {}", *pos);
 
   // dof map is the original, unpermuted distribution of dofs
   min_dofmap = std::make_shared<Epetra_Map>(-1, dofmapvec.size(), dofmapvec.data(), 0,
@@ -339,13 +339,13 @@ void XFEM::XFieldField::Coupling::build_max_dof_maps(const Core::FE::Discretizat
     // check if the nodal GID is part of the mindofmap
     std::map<int, unsigned>::const_iterator pos = my_mindofpernode.find(ngids[i]);
     if (pos == my_mindofpernode.end())
-      FOUR_C_THROW("The GID %d could not be found in the my_mindofpernode map!", ngids[i]);
+      FOUR_C_THROW("The GID {} could not be found in the my_mindofpernode map!", ngids[i]);
 
     // get the number of dofs to copy
     const unsigned numdof = pos->second;
     const std::vector<int> dof = max_dis.dof(0, actnode);
     if (numdof > dof.size())
-      FOUR_C_THROW("Got just %d DoF's at node %d (LID=%d) but expected at least %d", dof.size(),
+      FOUR_C_THROW("Got just {} DoF's at node {} (LID={}) but expected at least {}", dof.size(),
           ngids[i], i, numdof);
 
     // copy the first numdof dofs
@@ -354,7 +354,7 @@ void XFEM::XFieldField::Coupling::build_max_dof_maps(const Core::FE::Discretizat
   }
 
   std::vector<int>::const_iterator pos = std::min_element(dofmapvec.begin(), dofmapvec.end());
-  if (pos != dofmapvec.end() and *pos < 0) FOUR_C_THROW("Illegal DoF number %d", *pos);
+  if (pos != dofmapvec.end() and *pos < 0) FOUR_C_THROW("Illegal DoF number {}", *pos);
 
   // dof map is the original, unpermuted distribution of dofs
   max_dofmap = std::make_shared<Epetra_Map>(-1, dofmapvec.size(), dofmapvec.data(), 0,

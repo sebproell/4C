@@ -80,7 +80,7 @@ std::shared_ptr<Solid::SOLVER::Factory::LinSolMap> Solid::SOLVER::Factory::build
         (*linsolvers)[*mt_iter] = build_cardiovascular0_d_lin_solver(sdyn, actdis);
         break;
       default:
-        FOUR_C_THROW("No idea which solver to use for the given model type %s",
+        FOUR_C_THROW("No idea which solver to use for the given model type {}",
             model_type_string(*mt_iter).c_str());
     }
   }
@@ -231,7 +231,7 @@ std::shared_ptr<Core::LinAlg::Solver> Solid::SOLVER::Factory::build_meshtying_co
           FOUR_C_THROW(
               "You have chosen an iterative linear solver. For mortar/Contact in saddlepoint "
               "formulation you have to choose a block preconditioner such as SIMPLE. Choose "
-              "Teko or MueLu in the SOLVER %i block in your input file.",
+              "Teko or MueLu in the SOLVER {} block in your input file.",
               lin_solver_id);
       }
 

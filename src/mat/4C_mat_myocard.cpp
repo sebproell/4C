@@ -153,7 +153,7 @@ void Mat::Myocard::unpack(Core::Communication::UnpackBuffer& buffer)
         params_ = static_cast<Mat::PAR::Myocard*>(mat);
       }
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
 
       // Set number of Gauss points
@@ -213,7 +213,7 @@ void Mat::Myocard::unpack_material(Core::Communication::UnpackBuffer& buffer)
         params_ = static_cast<Mat::PAR::Myocard*>(mat);
       }
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
 
       // Set number of Gauss points

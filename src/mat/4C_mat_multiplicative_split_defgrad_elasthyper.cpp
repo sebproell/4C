@@ -43,14 +43,14 @@ Mat::PAR::MultiplicativeSplitDefgradElastHyper::MultiplicativeSplitDefgradElastH
   // check if sizes fit
   if (nummat_elast_ != static_cast<int>(matids_elast_.size()))
     FOUR_C_THROW(
-        "number of elastic materials %d does not fit to size of elastic material ID vector %d",
+        "number of elastic materials {} does not fit to size of elastic material ID vector {}",
         nummat_elast_, matids_elast_.size());
 
   if (numfac_inel_ != static_cast<int>(inel_defgradfacids_.size()))
   {
     FOUR_C_THROW(
-        "number of inelastic deformation gradient factors %d does not fit to size of inelastic "
-        "deformation gradient ID vector %d",
+        "number of inelastic deformation gradient factors {} does not fit to size of inelastic "
+        "deformation gradient ID vector {}",
         numfac_inel_, inel_defgradfacids_.size());
   }
 }
@@ -166,7 +166,7 @@ void Mat::MultiplicativeSplitDefgradElastHyper::unpack(Core::Communication::Unpa
       if (mat->type() == material_type())
         params_ = dynamic_cast<Mat::PAR::MultiplicativeSplitDefgradElastHyper*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
   }

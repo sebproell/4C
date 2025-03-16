@@ -473,7 +473,7 @@ namespace Discret::Elements
     {
       if (dofvec.size() != 12)
         FOUR_C_THROW(
-            "size mismatch: expected 12 values for element state vector and got %d", dofvec.size());
+            "size mismatch: expected 12 values for element state vector and got {}", dofvec.size());
 
       dofvec_centerline.resize(12, 0.0);
       std::copy(dofvec.begin(), dofvec.end(), dofvec_centerline.begin());

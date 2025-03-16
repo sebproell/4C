@@ -846,7 +846,7 @@ void Discret::Elements::ScaTraEleCalc<distype, probdim>::body_force(
       Core::Conditions::find_element_conditions(ele, "LineNeumann", myneumcond);
       break;
     default:
-      FOUR_C_THROW("Illegal number of spatial dimensions: %d", nsd_ele_);
+      FOUR_C_THROW("Illegal number of spatial dimensions: {}", nsd_ele_);
       break;
   }
 
@@ -966,7 +966,7 @@ double Discret::Elements::ScaTraEleCalc<distype, probdim>::eval_shape_func_and_d
   const double det = eval_shape_func_and_derivs_in_parameter_space();
 
   if (det < 1E-16)
-    FOUR_C_THROW("GLOBAL ELEMENT NO. %d \nZERO OR NEGATIVE JACOBIAN DETERMINANT: %lf", eid_, det);
+    FOUR_C_THROW("GLOBAL ELEMENT NO. {} \nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", eid_, det);
 
   // compute global spatial derivatives
   derxy_.multiply(xij_, deriv_);
@@ -1082,7 +1082,7 @@ Discret::Elements::ScaTraEleCalc<distype, probdim>::eval_shape_func_and_derivs_i
         xyze_, deriv_red, metrictensor, det, throw_error_if_negative_determinant, &normalvec);
 
     if (det < 1E-16)
-      FOUR_C_THROW("GLOBAL ELEMENT NO. %d \nZERO OR NEGATIVE JACOBIAN DETERMINANT: %lf", eid_, det);
+      FOUR_C_THROW("GLOBAL ELEMENT NO. {} \nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", eid_, det);
 
     // transform the derivatives and Jacobians to the higher dimensional coordinates(problem
     // dimension)
@@ -1199,7 +1199,7 @@ void Discret::Elements::ScaTraEleCalc<distype, probdim>::materials(
 
     default:
     {
-      FOUR_C_THROW("Material type %i is not supported!", material->material_type());
+      FOUR_C_THROW("Material type {} is not supported!", material->material_type());
       break;
     }
   }
@@ -1232,7 +1232,7 @@ void Discret::Elements::ScaTraEleCalc<distype, probdim>::mat_scatra(
     // get corresponding fluid element (it has the same global ID as the scatra element)
     Core::Elements::Element* fluidele = fluiddis->g_element(eid_);
     if (fluidele == nullptr)
-      FOUR_C_THROW("Fluid element %i not on local processor", eid_);
+      FOUR_C_THROW("Fluid element {} not on local processor", eid_);
     else
     {
       // get fluid material

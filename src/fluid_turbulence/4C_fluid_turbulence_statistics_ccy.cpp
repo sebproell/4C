@@ -327,7 +327,7 @@ FLD::TurbulenceStatisticsCcy::TurbulenceStatisticsCcy(
       {
         if (fabs(nodeshells_numnodes[rr]) < 1e-9)
         {
-          FOUR_C_THROW("zero nodes in shell layer %d\n", rr);
+          FOUR_C_THROW("zero nodes in shell layer {}\n", rr);
         }
 
         (*nodeshells_)[rr] /= (double)(nodeshells_numnodes[rr]);
@@ -338,7 +338,7 @@ FLD::TurbulenceStatisticsCcy::TurbulenceStatisticsCcy(
       {
         if (fabs(shellcoordinates_numnodes[rr]) < 1e-9)
         {
-          FOUR_C_THROW("zero nodes in sampling shell layer %d\n", rr);
+          FOUR_C_THROW("zero nodes in sampling shell layer {}\n", rr);
         }
 
         (*shellcoordinates_)[rr] /= (double)(shellcoordinates_numnodes[rr]);
@@ -702,7 +702,7 @@ void FLD::TurbulenceStatisticsCcy::evaluate_pointwise_mean_values_in_planes()
       // get pointer to corresponding scatra element with identical global id
       Core::Elements::Element* const actscatraele = scatranurbsdis->g_element(gid);
       if (actscatraele == nullptr)
-        FOUR_C_THROW("could not access transport element with gid %d", gid);
+        FOUR_C_THROW("could not access transport element with gid {}", gid);
 
       // extract local values from the global vectors
       std::vector<int> scatralm;
@@ -831,7 +831,7 @@ void FLD::TurbulenceStatisticsCcy::evaluate_pointwise_mean_values_in_planes()
             std::map<double, int, PlaneSortCriterion>::iterator shell = countpoints.find(r);
             if (shell == countpoints.end())
             {
-              FOUR_C_THROW("radial coordinate %12.5e was not map\n", r);
+              FOUR_C_THROW("radial coordinate {:12.5e} was not map\n", r);
             }
             else
             {
@@ -927,7 +927,7 @@ void FLD::TurbulenceStatisticsCcy::evaluate_pointwise_mean_values_in_planes()
               std::map<double, int, PlaneSortCriterion>::iterator shell = countpoints.find(r);
               if (shell == countpoints.end())
               {
-                FOUR_C_THROW("radial coordinate %12.5e was not map\n", r);
+                FOUR_C_THROW("radial coordinate {:12.5e} was not map\n", r);
               }
               else
               {
@@ -1028,7 +1028,7 @@ void FLD::TurbulenceStatisticsCcy::evaluate_pointwise_mean_values_in_planes()
               std::map<double, int, PlaneSortCriterion>::iterator shell = countpoints.find(r);
               if (shell == countpoints.end())
               {
-                FOUR_C_THROW("radial coordinate %12.5e was not map\n", r);
+                FOUR_C_THROW("radial coordinate {:12.5e} was not map\n", r);
               }
               else
               {
@@ -1130,7 +1130,7 @@ void FLD::TurbulenceStatisticsCcy::evaluate_pointwise_mean_values_in_planes()
   {
     if (fabs(pointcount[rr]) < 1e-6)
     {
-      FOUR_C_THROW("zero pointcount during computation of averages, layer %d\n", rr);
+      FOUR_C_THROW("zero pointcount during computation of averages, layer {}\n", rr);
     }
 
     lmeanu.push_back(shell->second / pointcount[rr]);
@@ -1274,11 +1274,11 @@ void FLD::TurbulenceStatisticsCcy::evaluate_pointwise_mean_values_in_planes()
 
     // safety checks
     if ((size != pointsumphi_->numRows()) or (size != pointsumphiphi_->numRows()))
-      FOUR_C_THROW("Size mismatch: size = %d <-> M = %d", size, pointsumphi_->numRows());
+      FOUR_C_THROW("Size mismatch: size = {} <-> M = {}", size, pointsumphi_->numRows());
     if ((numscatradofpernode_ != pointsumphi_->numCols()) or
         (numscatradofpernode_ != pointsumphiphi_->numCols()))
       FOUR_C_THROW(
-          "Size mismatch: numdof = %d <-> N = %d", numscatradofpernode_, pointsumphi_->numCols());
+          "Size mismatch: numdof = {} <-> N = {}", numscatradofpernode_, pointsumphi_->numCols());
 
     // loop all available scatra fields
     for (int k = 0; k < numscatradofpernode_; ++k)

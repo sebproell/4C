@@ -73,7 +73,7 @@ Mixture::PAR::MixtureRule* Mixture::PAR::MixtureRule::factory(int matid)
           curmat);
     }
     default:
-      FOUR_C_THROW("The referenced material with id %d is not registered as a mixturerule!", matid);
+      FOUR_C_THROW("The referenced material with id {} is not registered as a mixturerule!", matid);
   }
   return nullptr;
 }

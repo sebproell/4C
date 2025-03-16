@@ -1906,7 +1906,7 @@ void FLD::TurbulenceStatisticsBfs::convert_string_to_geo_type(const std::string&
   else if (geotype == "geometry_EXP_vogel_eaton")
     geotype_ = TurbulenceStatisticsBfs::geometry_EXP_vogel_eaton;
   else
-    FOUR_C_THROW("(%s) geometry for backward facing step", geotype.c_str());
+    FOUR_C_THROW("({}) geometry for backward facing step", geotype.c_str());
   return;
 }
 

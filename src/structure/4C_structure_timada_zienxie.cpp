@@ -29,8 +29,8 @@ Solid::TimAdaZienXie::TimAdaZienXie(
   if (sti_->method_order_of_accuracy_dis() != 2)
   {
     FOUR_C_THROW(
-        "%s can only work with 2nd order accurate marching scheme,"
-        " whereas the actual %s is of order %i",
+        "{} can only work with 2nd order accurate marching scheme,"
+        " whereas the actual {} is of order {}",
         method_title().c_str(), sti_->method_title().c_str(), sti_->method_order_of_accuracy_dis());
   }
 

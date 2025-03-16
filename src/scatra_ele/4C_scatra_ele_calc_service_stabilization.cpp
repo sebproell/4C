@@ -951,7 +951,7 @@ void Discret::Elements::ScaTraEleCalc<distype, probdim>::calc_subgr_velocity(
       Core::Conditions::find_element_conditions(ele, "FluidLineNeumann", myfluidneumcond);
       break;
     default:
-      FOUR_C_THROW("Illegal number of space dimensions: %d", nsd_);
+      FOUR_C_THROW("Illegal number of space dimensions: {}", nsd_);
       break;
   }
 
@@ -995,7 +995,7 @@ void Discret::Elements::ScaTraEleCalc<distype, probdim>::calc_subgr_velocity(
                     .evaluate((ele->nodes()[jnode])->x().data(), scatraparatimint_->time(), isd);
           }
           else
-            FOUR_C_THROW("Negative time value in body force calculation: time = %f",
+            FOUR_C_THROW("Negative time value in body force calculation: time = {}",
                 scatraparatimint_->time());
         }
         else

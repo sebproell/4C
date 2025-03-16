@@ -1164,7 +1164,7 @@ void FLD::FluidImplicitTimeInt::evaluate_mat_and_rhs(Teuchos::ParameterList& ele
             strategy.elevector3());
 
         if (err)
-          FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+          FOUR_C_THROW("Proc {}: Element {} returned err={}",
               Core::Communication::my_mpi_rank(discret_->get_comm()), actele->id(), err);
       }
       std::vector<int> myowner(la[0].lmowner_.size(),
@@ -1190,7 +1190,7 @@ void FLD::FluidImplicitTimeInt::evaluate_mat_and_rhs(Teuchos::ParameterList& ele
 
     Epetra_Export exporter(residual_col->get_map(), tmp->get_map());
     int err = tmp->export_to(*residual_col, exporter, Add);
-    if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
+    if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
     residual_->update(1.0, *tmp, 1.0);
   }
   else
@@ -1370,7 +1370,7 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
       {
         if ((*fdpcondid_from_container) != fdpcondid)
           FOUR_C_THROW(
-              "Flow-dependent pressure condition %s has non-matching ID", fdpcondname.c_str());
+              "Flow-dependent pressure condition {} has non-matching ID", fdpcondname.c_str());
       }
       else
         fdpcond[fdpcondid]->parameters().add("ConditionID", fdpcondid);
@@ -1727,7 +1727,7 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
       if (sscbcondid_from_container)
       {
         if (sscbcondid_from_container != sscbcondid)
-          FOUR_C_THROW("Slip Supplemental Curved Boundary condition %s has non-matching ID",
+          FOUR_C_THROW("Slip Supplemental Curved Boundary condition {} has non-matching ID",
               sscbcondname.c_str());
       }
       else
@@ -1814,7 +1814,7 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
       if (nscondid_from_container)
       {
         if (nscondid_from_container != nscondid)
-          FOUR_C_THROW("Navier slip boundary condition %s has non-matching ID", nscondname.c_str());
+          FOUR_C_THROW("Navier slip boundary condition {} has non-matching ID", nscondname.c_str());
       }
       else
         nscond[nscondid]->parameters().add("ConditionID", nscondid);
@@ -2006,7 +2006,7 @@ void FLD::FluidImplicitTimeInt::evaluate_fluid_edge_based(
   Core::LinAlg::Vector<double> res_tmp(systemvector1.get_map(), false);
   Epetra_Export exporter(residual_col->get_map(), res_tmp.get_map());
   int err2 = res_tmp.export_to(*residual_col, exporter, Add);
-  if (err2) FOUR_C_THROW("Export using exporter returned err=%d", err2);
+  if (err2) FOUR_C_THROW("Export using exporter returned err={}", err2);
   systemvector1.update(1.0, res_tmp, 1.0);
 
   return;
@@ -2274,7 +2274,7 @@ void FLD::FluidImplicitTimeInt::check_matrix_nullspace()
       std::cout << "   for xfem, yet). In this case sysmat_ could be     " << std::endl;
       std::cout << "   correct. -> adapt nullspace vector                " << std::endl;
       std::cout << "#####################################################" << std::endl;
-      FOUR_C_THROW("Nullspace check for sysmat_ failed, Ac returned %12.5e", norm);
+      FOUR_C_THROW("Nullspace check for sysmat_ failed, Ac returned {:12.5e}", norm);
     }
   }
 }
@@ -2970,7 +2970,7 @@ void FLD::FluidImplicitTimeInt::get_dofs_vector_local_indicesfor_node(int nodeGi
   {
     int dofGid = dofsGid[i];
     if (!vec.get_map().MyGID(dofGid))
-      FOUR_C_THROW("Sparse vector does not have global row  %d or vectors don't match", dofGid);
+      FOUR_C_THROW("Sparse vector does not have global row  {} or vectors don't match", dofGid);
     (*dofsLocalInd)[i] = vec.get_map().LID(dofGid);
   }
 }
@@ -6045,7 +6045,7 @@ void FLD::FluidImplicitTimeInt::recompute_mean_csgs_b()
 
       // call the element evaluate method to integrate functions
       int err = ele->evaluate(myparams, *discret_, lm, emat1, emat2, evec1, evec2, evec2);
-      if (err) FOUR_C_THROW("Proc %d: Element %d returned err=%d", myrank_, ele->id(), err);
+      if (err) FOUR_C_THROW("Proc {}: Element {} returned err={}", myrank_, ele->id(), err);
 
       // get contributions of this element and add it up
       local_sumCai += myparams.get<double>("Cai_int");
@@ -6092,7 +6092,7 @@ void FLD::FluidImplicitTimeInt::recompute_mean_csgs_b()
 
       // call the element evaluate method to integrate functions
       int err = ele->evaluate(myparams, *discret_, lm, emat1, emat2, evec1, evec2, evec2);
-      if (err) FOUR_C_THROW("Proc %d: Element %d returned err=%d", myrank_, ele->id(), err);
+      if (err) FOUR_C_THROW("Proc {}: Element {} returned err={}", myrank_, ele->id(), err);
     }
   }
 }
@@ -6660,7 +6660,7 @@ void FLD::FluidImplicitTimeInt::explicit_predictor()
     velpressplitter_->insert_other_vector(*unm, *velnp_);
   }
   else
-    FOUR_C_THROW("Unknown fluid predictor %s", predictor_.c_str());
+    FOUR_C_THROW("Unknown fluid predictor {}", predictor_.c_str());
 
   if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
   {
@@ -6685,7 +6685,7 @@ void FLD::FluidImplicitTimeInt::add_contribution_to_external_loads(
 
   int err = external_loads_->update(1.0, *contributing_vector, 1.0);
 
-  if (err != 0) FOUR_C_THROW(" Core::LinAlg::Vector<double> update threw error code %i ", err);
+  if (err != 0) FOUR_C_THROW(" Core::LinAlg::Vector<double> update threw error code {} ", err);
 }
 
 /*----------------------------------------------------------------------------*
@@ -6741,11 +6741,11 @@ void FLD::FluidImplicitTimeInt::assemble_coupling_contributions()
         Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
     int err = couplingcontributions_->multiply(false, *velnp_, *tmp);
 
-    if (err != 0) FOUR_C_THROW(" Linalg Sparse Matrix Multiply threw error code %i ", err);
+    if (err != 0) FOUR_C_THROW(" Linalg Sparse Matrix Multiply threw error code {} ", err);
 
     err = residual_->update(-1.0 / residual_scaling(), *tmp, 1.0);
 
-    if (err != 0) FOUR_C_THROW(" Core::LinAlg::Vector<double> update threw error code %i ", err);
+    if (err != 0) FOUR_C_THROW(" Core::LinAlg::Vector<double> update threw error code {} ", err);
   }
 }
 /*----------------------------------------------------------------------*

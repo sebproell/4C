@@ -64,7 +64,7 @@ namespace Core::IO
     if (point_coordinates.size() != num_spatial_dimensions * num_row_nodes)
     {
       FOUR_C_THROW(
-          "DiscretizationVisualizationWriterNodes expected %d coordinate values, but got %d",
+          "DiscretizationVisualizationWriterNodes expected {} coordinate values, but got {}",
           num_spatial_dimensions * num_row_nodes, point_coordinates.size());
     }
   }
@@ -105,8 +105,8 @@ namespace Core::IO
     if ((unsigned int)result_data_nodebased.NumVectors() != result_num_components_per_node)
       FOUR_C_THROW(
           "DiscretizationVisualizationWriterNodes: expected Core::LinAlg::MultiVector<double> with "
-          "%d columns but "
-          "got %d",
+          "{} columns but "
+          "got {}",
           result_num_components_per_node, result_data_nodebased.NumVectors());
 
 

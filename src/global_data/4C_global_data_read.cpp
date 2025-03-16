@@ -1361,7 +1361,7 @@ void Global::read_fields(Global::Problem& problem, Core::IO::InputFile& input, c
     }
     break;
     default:
-      FOUR_C_THROW("Unknown problem type: %d", problem.get_problem_type());
+      FOUR_C_THROW("Unknown problem type: {}", problem.get_problem_type());
       break;
   }
 
@@ -1945,19 +1945,19 @@ void Global::read_materials(Global::Problem& problem, Core::IO::InputFile& input
     if (!container.has_value())
     {
       std::string l(fragment.get_as_dat_style_string());
-      FOUR_C_THROW("Invalid material specification. Could not parse line:\n  %s", l.c_str());
+      FOUR_C_THROW("Invalid material specification. Could not parse line:\n  {}", l.c_str());
     }
 
     const int mat_id = container->get<int>("MAT");
 
-    FOUR_C_ASSERT_ALWAYS(mat_id >= 0, "Material ID must be non-negative. Found: %d", mat_id);
+    FOUR_C_ASSERT_ALWAYS(mat_id >= 0, "Material ID must be non-negative. Found: {}", mat_id);
 
     if (problem.materials()->id_exists(mat_id))
-      FOUR_C_THROW("More than one material with 'MAT %d'", mat_id);
+      FOUR_C_THROW("More than one material with 'MAT {}'", mat_id);
 
     const std::string material_name = all_specs[current_index].impl().name();
     FOUR_C_ASSERT_ALWAYS(container->has_group(material_name),
-        "Material type '%s' does not have a corresponding group in the input file.",
+        "Material type '{}' does not have a corresponding group in the input file.",
         material_name.c_str());
 
     problem.materials()->insert(
@@ -2105,7 +2105,7 @@ void Global::read_conditions(Global::Problem& problem, Core::IO::InputFile& inpu
           if (curr->first < 0 or static_cast<unsigned>(curr->first) >= dnode_fenode.size())
           {
             FOUR_C_THROW(
-                "DPoint %d not in range [0:%d[\n"
+                "DPoint {} not in range [0:{}[\n"
                 "DPoint condition on non existent DPoint?",
                 curr->first, dnode_fenode.size());
           }
@@ -2115,7 +2115,7 @@ void Global::read_conditions(Global::Problem& problem, Core::IO::InputFile& inpu
           if (curr->first < 0 or static_cast<unsigned>(curr->first) >= dline_fenode.size())
           {
             FOUR_C_THROW(
-                "DLine %d not in range [0:%d[\n"
+                "DLine {} not in range [0:{}[\n"
                 "DLine condition on non existent DLine?",
                 curr->first, dline_fenode.size());
           }
@@ -2125,7 +2125,7 @@ void Global::read_conditions(Global::Problem& problem, Core::IO::InputFile& inpu
           if (curr->first < 0 or static_cast<unsigned>(curr->first) >= dsurf_fenode.size())
           {
             FOUR_C_THROW(
-                "DSurface %d not in range [0:%d[\n"
+                "DSurface {} not in range [0:{}[\n"
                 "DSurface condition on non existent DSurface?",
                 curr->first, dsurf_fenode.size());
           }
@@ -2135,7 +2135,7 @@ void Global::read_conditions(Global::Problem& problem, Core::IO::InputFile& inpu
           if (curr->first < 0 or static_cast<unsigned>(curr->first) >= dvol_fenode.size())
           {
             FOUR_C_THROW(
-                "DVolume %d not in range [0:%d[\n"
+                "DVolume {} not in range [0:{}[\n"
                 "DVolume condition on non existent DVolume?",
                 curr->first, dvol_fenode.size());
           }
@@ -2153,7 +2153,7 @@ void Global::read_conditions(Global::Problem& problem, Core::IO::InputFile& inpu
       {
         const std::vector<int>* nodes = curr->second->get_nodes();
         if (nodes->size() == 0)
-          FOUR_C_THROW("%s condition %d has no nodal cloud", condition.description().c_str(),
+          FOUR_C_THROW("{} condition {} has no nodal cloud", condition.description().c_str(),
               curr->second->id());
 
         int foundit = 0;
@@ -2200,7 +2200,7 @@ void Global::read_knots(Global::Problem& problem, Core::IO::InputFile& input)
       auto* nurbsdis = dynamic_cast<Core::FE::Nurbs::NurbsDiscretization*>(&(*dis));
 
       if (nurbsdis == nullptr)
-        FOUR_C_THROW("discretization %s is not a NurbsDiscretization! Panic.", dis->name().c_str());
+        FOUR_C_THROW("discretization {} is not a NurbsDiscretization! Panic.", dis->name().c_str());
 
       // define an empty knot vector object
       std::shared_ptr<Core::FE::Nurbs::Knotvector> disknots = nullptr;

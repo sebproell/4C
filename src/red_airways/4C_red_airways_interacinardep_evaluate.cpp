@@ -52,7 +52,7 @@ int Discret::Elements::RedInterAcinarDep::evaluate(Teuchos::ParameterList& param
     act = RedInterAcinarDep::get_coupled_values;
   else
   {
-    FOUR_C_THROW("Unknown type of action (%s) for inter-acinar linker element", action.c_str());
+    FOUR_C_THROW("Unknown type of action ({}) for inter-acinar linker element", action.c_str());
   }
 
   /*

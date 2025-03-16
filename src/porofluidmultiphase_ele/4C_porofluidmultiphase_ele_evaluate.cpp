@@ -67,7 +67,7 @@ int Discret::Elements::PoroFluidMultiPhase::evaluate(Teuchos::ParameterList& par
       break;
     default:
     {
-      FOUR_C_THROW("Unknown type of action '%i' for PoroFluidMultiPhase", action);
+      FOUR_C_THROW("Unknown type of action '{}' for PoroFluidMultiPhase", action);
       break;
     }
   }  // switch(action)

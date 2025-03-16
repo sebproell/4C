@@ -131,7 +131,7 @@ void Core::LinearSolver::Parameters::fix_null_space(std::string field, const Epe
 
   if (nullspaceLength == newmapLength) return;
   if (nullspaceLength != oldmap.NumMyElements())
-    FOUR_C_THROW("Nullspace map of length %d does not match old map length of %d", nullspaceLength,
+    FOUR_C_THROW("Nullspace map of length {} does not match old map length of {}", nullspaceLength,
         oldmap.NumMyElements());
   if (newmapLength > nullspaceLength)
     FOUR_C_THROW("New problem size larger than old - full rebuild of nullspace necessary");

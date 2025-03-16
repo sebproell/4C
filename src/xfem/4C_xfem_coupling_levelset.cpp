@@ -243,7 +243,7 @@ void XFEM::LevelSetCoupling::set_level_set_boolean_type()
   else if (booleantype == "sym_difference")
     ls_boolean_type_ = ls_sym_difference;
   else
-    FOUR_C_THROW("not a valid boolean type %s: ", booleantype.c_str());
+    FOUR_C_THROW("not a valid boolean type {}: ", booleantype.c_str());
 }
 
 
@@ -467,7 +467,7 @@ bool XFEM::LevelSetCoupling::set_level_set_field(const double time)
             std::dynamic_pointer_cast<XFEM::DiscretizationXFEM>(cutter_dis_)->initial_dof(lsnode);
 
         if (initialdof.size() != 4)
-          FOUR_C_THROW("Initial Dof Size is not 4! Size: %d", initialdof.size());
+          FOUR_C_THROW("Initial Dof Size is not 4! Size: {}", initialdof.size());
 
         const int gid = initialdof[3];
 
@@ -1310,7 +1310,7 @@ void XFEM::LevelSetCouplingNavierSlip::set_element_specific_conditions(
     if (mynewcond.size() != 1)
     {
       FOUR_C_THROW(
-          "%i conditions of the same name with robin id %i, for element %i! %s coupling-condition "
+          "{} conditions of the same name with robin id {}, for element {}! {} coupling-condition "
           "not unique!",
           mynewcond.size(), robin_id, cutele->id(), cond_name.c_str());
     }
@@ -1328,7 +1328,7 @@ void XFEM::LevelSetCouplingNavierSlip::set_element_specific_conditions(
   for (int lid = 0; lid < nummycolele; ++lid)
   {
     if (cutterele_cond[lid] == nullptr)
-      FOUR_C_THROW("cutter element with local id %i has no Robin-condition!!!", lid);
+      FOUR_C_THROW("cutter element with local id {} has no Robin-condition!!!", lid);
   }
 }
 

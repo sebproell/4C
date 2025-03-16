@@ -39,7 +39,7 @@ std::string CONTACT::vec_block_type_to_str(const CONTACT::VecBlockType bt)
     case VecBlockType::elch:
       return "elch";
     default:
-      FOUR_C_THROW("Unknown block type %d", bt);
+      FOUR_C_THROW("Unknown block type {}", bt);
   }
 }
 
@@ -139,7 +139,7 @@ void CONTACT::Utils::get_contact_condition_groups(
     }
 
     // now we should have found a group of conditions
-    if (!foundit) FOUR_C_THROW("Cannot find matching contact condition for id %i", groupid1);
+    if (!foundit) FOUR_C_THROW("Cannot find matching contact condition for id {}", groupid1);
 
     // see whether we found this group before
     bool foundbefore = false;
@@ -470,7 +470,7 @@ void CONTACT::Utils::DbcHandler::detect_dbc_slave_nodes_and_elements(
           break;
         }
         default:
-          FOUR_C_THROW("Unknown dbc_handlin enum %d", dbc_handling);
+          FOUR_C_THROW("Unknown dbc_handlin enum {}", dbc_handling);
       }
     }
   }

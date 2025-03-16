@@ -56,7 +56,7 @@ Discret::Elements::FluidIntFaceImplInterface* Discret::Elements::FluidIntFaceImp
     }
     default:
       FOUR_C_THROW(
-          "Element shape %d (%d nodes) not activated. Just do it.", ele->shape(), ele->num_node());
+          "Element shape {} ({} nodes) not activated. Just do it.", ele->shape(), ele->num_node());
       break;
   }
   return nullptr;
@@ -197,7 +197,7 @@ void Discret::Elements::FluidIntFaceImpl<distype>::assemble_internal_faces_using
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   for (int isd = 0; isd < numdofpernode; isd++)
     if ((int)(patch_components_lm[isd].size()) != numnodeinpatch)
-      FOUR_C_THROW("patch_components_lm[%d] has wrong size: size is %i but expected %i", isd,
+      FOUR_C_THROW("patch_components_lm[{}] has wrong size: size is {} but expected {}", isd,
           (int)(patch_components_lm[isd].size()), numnodeinpatch);
 #endif
 

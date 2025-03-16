@@ -397,7 +397,7 @@ void CONTACT::FriNode::add_m_node(int node) { fri_data().get_m_nodes().insert(no
 void CONTACT::FriNode::add_d2_value(int row, int col, double val)
 {
   // check if this is a master node or slave boundary node
-  if (is_slave() == true) FOUR_C_THROW("AddD2Value: function called for slave node %i", id());
+  if (is_slave() == true) FOUR_C_THROW("AddD2Value: function called for slave node {}", id());
 
   // check if this has been called before
   if ((int)wear_data().get_d2().size() == 0) wear_data().get_d2().resize(num_dof());
@@ -417,9 +417,9 @@ void CONTACT::FriNode::add_d2_value(int row, int col, double val)
 void CONTACT::FriNode::add_deriv_jump_value(int row, int col, double val)
 {
   // check if this is a master node or slave boundary node
-  if (is_slave() == false) FOUR_C_THROW("AddJumpValue: function called for master node %i", id());
+  if (is_slave() == false) FOUR_C_THROW("AddJumpValue: function called for master node {}", id());
   if (is_on_bound() == true)
-    FOUR_C_THROW("AddJumpValue: function called for boundary node %i", id());
+    FOUR_C_THROW("AddJumpValue: function called for boundary node {}", id());
 
   // check if this has been called before
   if ((int)fri_data().get_deriv_jump().size() == 0) fri_data().get_deriv_jump().resize(num_dof());
@@ -439,9 +439,9 @@ void CONTACT::FriNode::add_deriv_jump_value(int row, int col, double val)
 void CONTACT::FriNode::add_jump_value(double val, int k)
 {
   // check if this is a master node or slave boundary node
-  if (is_slave() == false) FOUR_C_THROW("AddJumpValue: function called for master node %i", id());
+  if (is_slave() == false) FOUR_C_THROW("AddJumpValue: function called for master node {}", id());
   if (is_on_bound() == true)
-    FOUR_C_THROW("AddJumpValue: function called for boundary node %i", id());
+    FOUR_C_THROW("AddJumpValue: function called for boundary node {}", id());
 
   fri_data().jump_var()[k] += val;
 }
@@ -453,7 +453,7 @@ void CONTACT::FriNode::add_t_value(int row, int col, double val)
 {
   // check if this is a master node or slave boundary node
   //  if (IsSlave()==false)
-  //    FOUR_C_THROW("AddTValue: function called for master node %i", Id());
+  //     FOUR_C_THROW("AddTValue: function called for master node {}", Id());
 
   // check if this has been called before
   if ((int)wear_data().get_t().size() == 0) wear_data().get_t().resize(num_dof());
@@ -474,7 +474,7 @@ void CONTACT::FriNode::add_e_value(int row, int col, double val)
 {
   // check if this is a master node or slave boundary node
   //  if (IsSlave()==false)
-  //    FOUR_C_THROW("AddEValue: function called for master node %i", Id());
+  //     FOUR_C_THROW("AddEValue: function called for master node {}", Id());
 
   // check if this has been called before
   if ((int)wear_data().get_e().size() == 0) wear_data().get_e().resize(num_dof());

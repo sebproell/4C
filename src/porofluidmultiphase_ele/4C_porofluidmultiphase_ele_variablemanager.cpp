@@ -283,8 +283,9 @@ void Discret::Elements::PoroFluidManager::VariableManagerStruct<nsd,
 {
   if (dofsetnum != 0)
     FOUR_C_THROW(
-        "VariableManagerStruct has been called with dofsetnum = %d, this is not possible.\n"
-        "The VariableManagerStruct always has to be called with a porofluid-element");
+        "VariableManagerStruct has been called with dofsetnum = {}, this is not possible.\n"
+        "The VariableManagerStruct always has to be called with a porofluid-element",
+        dofsetnum);
 
   // call internal class
   this->varmanager_->extract_element_and_node_values(ele, discretization, la, xyze, dofsetnum);

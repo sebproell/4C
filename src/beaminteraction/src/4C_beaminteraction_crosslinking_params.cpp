@@ -221,7 +221,7 @@ void BeamInteraction::CrosslinkingParams::init(Solid::TimeInt::BaseDataGlobalSta
     if (max_num_bonds_per_filament_bspot_.size() != linkertypes_.size())
     {
       FOUR_C_THROW(
-          " Num linker types %i does not match num input for MAXNUMBONDSPERFILAMENTBSPOT %i. ",
+          " Num linker types {} does not match num input for MAXNUMBONDSPERFILAMENTBSPOT {}. ",
           linkertypes_.size(), max_num_bonds_per_filament_bspot_.size());
     }
   }

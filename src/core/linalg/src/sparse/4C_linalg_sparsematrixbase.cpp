@@ -216,7 +216,7 @@ bool Core::LinAlg::SparseMatrixBase::is_dbc_applied(
     // handle a diagonal block
     if (diagonalblock)
     {
-      if (NumEntries == 0) FOUR_C_THROW("Row %d is empty and part of a diagonal block!", row);
+      if (NumEntries == 0) FOUR_C_THROW("Row {} is empty and part of a diagonal block!", row);
 
       if (trafo)
       {
@@ -240,7 +240,7 @@ bool Core::LinAlg::SparseMatrixBase::is_dbc_applied(
             if (Indices[k] == tIndices[j]) break;
 
           if (k == NumEntries)
-            FOUR_C_THROW("Couldn't find column index %d in row %d.", tIndices[j], row);
+            FOUR_C_THROW("Couldn't find column index {} in row {}.", tIndices[j], row);
 
           if (std::abs(Values[k] - tValues[j]) > std::numeric_limits<double>::epsilon())
           {

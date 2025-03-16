@@ -1218,7 +1218,7 @@ void CONTACT::LagrangeStrategyPoro::recover_poro_no_pen(Core::LinAlg::Vector<dou
         inciter = inc.find(matiter->first);
         if (inciter == inc.end())
           FOUR_C_THROW(
-              "CONTACT::LagrangeStrategyPoro::RecoverPoroNoPen: Couldn't find increment block %d "
+              "CONTACT::LagrangeStrategyPoro::RecoverPoroNoPen: Couldn't find increment block {} "
               "for recovery of the lagrange multiplier!",
               matiter->first);
 

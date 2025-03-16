@@ -53,7 +53,7 @@ Teuchos::RCP<::NOX::LineSearch::Generic> NOX::Nln::LineSearch::Factory::build_li
            "\""
         << method << "\" is not a valid linesearch option. " << std::endl
         << "Please fix your parameter list!" << std::endl;
-    FOUR_C_THROW(msg.str());
+    FOUR_C_THROW("{}", msg.str());
   }
 
   return line_search;

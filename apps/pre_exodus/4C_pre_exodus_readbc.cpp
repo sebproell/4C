@@ -270,7 +270,7 @@ void EXODUS::read_bc_file(const std::string& bcfile, std::vector<EXODUS::ElemDef
     }
     else
       FOUR_C_THROW(
-          "Cannot identify marker '%s'. Use *el (element block), *ns (nodeset) or *ss (sideset)",
+          "Cannot identify marker '{}'. Use *el (element block), *ns (nodeset) or *ss (sideset)",
           mesh_entity.c_str());
   }
 
@@ -539,7 +539,7 @@ void EXODUS::correct_yz_plane_for_periodic_boundary_conditions(
             equal = true;
 
           if ((count_slavenodes == (int)slave_nodeset_ids.size()) && !equal)
-            FOUR_C_THROW("no matching slave node %d found, adjust your tolerance", *m_node_id);
+            FOUR_C_THROW("no matching slave node {} found, adjust your tolerance", *m_node_id);
 
           if (!equal)
             continue;
@@ -677,7 +677,7 @@ void EXODUS::correct_xz_plane_for_periodic_boundary_conditions(
             equal = true;
 
           if ((count_slavenodes == (int)slave_nodeset_ids.size()) && !equal)
-            FOUR_C_THROW("no matching slave node %d found, adjust your tolerance", *m_node_id);
+            FOUR_C_THROW("no matching slave node {} found, adjust your tolerance", *m_node_id);
 
           if (!equal)
             continue;
@@ -814,7 +814,7 @@ void EXODUS::correct_xy_plane_for_periodic_boundary_conditions(
             equal = true;
 
           if ((count_slavenodes == (int)slave_nodeset_ids.size()) && !equal)
-            FOUR_C_THROW("no matching slave node %d found, adjust your tolerance", *m_node_id);
+            FOUR_C_THROW("no matching slave node {} found, adjust your tolerance", *m_node_id);
 
           if (!equal)
             continue;

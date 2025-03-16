@@ -284,8 +284,8 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_elch_d
   if ((unsigned int)my::numscal_ != (*stoich).size())
   {
     FOUR_C_THROW(
-        "Electrode kinetics: number of stoichiometry coefficients %u does not match"
-        " the number of ionic species %d",
+        "Electrode kinetics: number of stoichiometry coefficients {} does not match"
+        " the number of ionic species {}",
         (*stoich).size(), my::numscal_);
   }
 
@@ -792,7 +792,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype,
           c_0_0_0_t = A0 + (A_mnk * exp((-D) * (m * m) * t * M_PI * M_PI));
         }
         else
-          FOUR_C_THROW("Illegal number of space dimensions for analyt. solution: %d", nsd_);
+          FOUR_C_THROW("Illegal number of space dimensions for analyt. solution: {}", nsd_);
 
         // compute analytical solution for el. potential
         // const double pot =

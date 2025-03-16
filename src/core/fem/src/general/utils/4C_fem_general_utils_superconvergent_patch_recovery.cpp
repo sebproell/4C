@@ -170,7 +170,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
   {
     const int nodegid = nodecolmap.GID(i);
     const Core::Nodes::Node* node = dis.g_node(nodegid);
-    if (!node) FOUR_C_THROW("Cannot find with gid: %d", nodegid);
+    if (!node) FOUR_C_THROW("Cannot find with gid: {}", nodegid);
 
     // distinction between inner nodes and boundary nodes
     if (conds.size() == 0 || !conds[0]->contains_node(nodegid))

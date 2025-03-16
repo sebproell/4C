@@ -105,7 +105,7 @@ int Core::DOFSets::DofSetDefinedMappingWrapper::assign_degrees_of_freedom(
     if (targetnodes.size() != condcoupling.size())
       FOUR_C_THROW(
           "Did not get unique target to source spatial node coordinate mapping.\n"
-          "targetnodes.size()=%d, coupling.size()=%d.\n"
+          "targetnodes.size()={}, coupling.size()={}.\n"
           "The heterogeneous reaction strategy requires matching source and target meshes!",
           targetnodes.size(), condcoupling.size());
 

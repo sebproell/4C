@@ -314,7 +314,7 @@ int Discret::Elements::ScaTraHDG::initialize()
         default:
           FOUR_C_THROW(
               "Integration rule for TET elements only until polynomial order 5 for TET defined. "
-              "You specified a degree of %d ",
+              "You specified a degree of {} ",
               degree_old_);
           gp = 0;
           break;
@@ -485,7 +485,7 @@ int Discret::Elements::ScaTraHDG::evaluate(Teuchos::ParameterList& params,
       break;
 
     default:
-      FOUR_C_THROW("Unknown type of action '%i' for ScaTraHDG", act);
+      FOUR_C_THROW("Unknown type of action '{}' for ScaTraHDG", act);
       break;
   }  // switch(action)
 
@@ -948,7 +948,7 @@ void Discret::Elements::ScaTraHDGIntFace::patch_location_vector(
       }
 
       if (offset % size != 0)
-        FOUR_C_THROW("there was at least one node with not %d dofs per node", size);
+        FOUR_C_THROW("there was at least one node with not {} dofs per node", size);
       int patchnode_index = offset / size;
 
       lm_slaveNodeToPatch.push_back(patchnode_index);

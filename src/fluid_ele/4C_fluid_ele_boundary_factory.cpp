@@ -67,7 +67,7 @@ Discret::Elements::FluidBoundaryInterface* Discret::Elements::FluidBoundaryFacto
       return define_problem_type<Core::FE::CellType::nurbs9>(problem);
     }
     default:
-      FOUR_C_THROW("Element shape %s not activated. Just do it.",
+      FOUR_C_THROW("Element shape {} not activated. Just do it.",
           Core::FE::cell_type_to_string(distype).c_str());
       break;
   }

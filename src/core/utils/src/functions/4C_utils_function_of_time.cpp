@@ -117,7 +117,7 @@ std::shared_ptr<Core::Utils::FunctionOfTime> Core::Utils::try_create_function_of
 
     // check the validity of the n-th component
     int compid = functcomp.get_or<int>("COMPONENT", 0);
-    if (compid != n) FOUR_C_THROW("expected COMPONENT %d but got COMPONENT %d", n, compid);
+    if (compid != n) FOUR_C_THROW("expected COMPONENT {} but got COMPONENT {}", n, compid);
 
     // read the expression of the n-th component of the i-th function
     functstring[n] = functcomp.get<std::string>("SYMBOLIC_FUNCTION_OF_TIME");
@@ -166,7 +166,7 @@ std::shared_ptr<Core::Utils::FunctionOfTime> Core::Utils::try_create_function_of
             if (description_vec.size() != 1)
             {
               FOUR_C_THROW(
-                  "Only expect one DESCRIPTION for variable of type 'expression' but %d were "
+                  "Only expect one DESCRIPTION for variable of type 'expression' but {} were "
                   "given.",
                   description_vec.size());
             }
@@ -236,7 +236,7 @@ std::shared_ptr<Core::Utils::FunctionOfTime> Core::Utils::try_create_function_of
       const bool names_of_all_pieces_equal = std::all_of(
           pieces.begin(), pieces.end(), [&name](auto& var) { return var->name() == name; });
       if (not names_of_all_pieces_equal)
-        FOUR_C_THROW("Variable %d has a piece-wise definition with inconsistent names.", id);
+        FOUR_C_THROW("Variable {} has a piece-wise definition with inconsistent names.", id);
 
       functvarvector.emplace_back(std::make_shared<PiecewiseVariable>(name, pieces));
     }

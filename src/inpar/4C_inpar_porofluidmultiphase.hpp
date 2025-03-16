@@ -109,7 +109,7 @@ namespace Inpar
           return "Inf";
           break;
         default:
-          FOUR_C_THROW("Cannot make std::string to vector norm %d", norm);
+          FOUR_C_THROW("Cannot make std::string to vector norm {}", norm);
           return "";
       }
     }

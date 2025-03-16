@@ -104,18 +104,18 @@ Beam3ContactOctTree::Beam3ContactOctTree(Teuchos::ParameterList& params,
   }
   else
   {
-    FOUR_C_THROW("OctTree called with unknown parameter list named '%s'!", params.name().c_str());
+    FOUR_C_THROW("OctTree called with unknown parameter list named '{}'!", params.name().c_str());
   }
 
   // sanity checks for extrusion value(s)
   if ((int)extrusionvalue_->size() > 2)
-    FOUR_C_THROW("You gave %i values for BEAMS_EXTVAL! Check your input file.",
+    FOUR_C_THROW("You gave {} values for BEAMS_EXTVAL! Check your input file.",
         (int)extrusionvalue_->size());
   if ((int)extrusionvalue_->size() == 1) extrusionvalue_->push_back(extrusionvalue_->at(0));
   for (int i = 0; i < (int)extrusionvalue_->size(); i++)
     if (extrusionvalue_->at(i) < 1.0 && !additiveextrusion_)
       FOUR_C_THROW(
-          "BEAMS_EXTVAL( %i ) = %4.2f < 1.0 does not make any sense! Check your input file.", i,
+          "BEAMS_EXTVAL( {} ) = {:4.2f} < 1.0 does not make any sense! Check your input file.", i,
           extrusionvalue_->at(i));
   if (boundingbox_ == Beam3ContactOctTree::cyloriented && (int)extrusionvalue_->size() != 2)
     FOUR_C_THROW(
@@ -611,7 +611,7 @@ void Beam3ContactOctTree::create_aabb(Core::LinAlg::SerialDenseMatrix& coord, co
   double extrusionvalue = get_bounding_box_extrusion_value();
 
   if (elecolid < 0 || elecolid >= searchdis_.element_col_map()->NumMyElements())
-    FOUR_C_THROW("Given Element Column Map ID is %d !", elecolid);
+    FOUR_C_THROW("Given Element Column Map ID is {} !", elecolid);
 
   int elegid = searchdis_.element_col_map()->GID(elecolid);
 
@@ -1897,7 +1897,7 @@ void Beam3ContactOctTree::undo_effect_of_periodic_boundary_condition(
 {
   if (coord.numRows() != 3 || coord.numCols() != 2)
     FOUR_C_THROW("coord must have the dimension m()==3, n()==2!");
-  if ((int)cut.size() != 3) FOUR_C_THROW("cut is of wrong size %i!", (int)cut.size());
+  if ((int)cut.size() != 3) FOUR_C_THROW("cut is of wrong size {}!", (int)cut.size());
   // By definition, we shift the second position!
   for (int dof = 0; dof < coord.numRows(); dof++)
   {
@@ -1939,7 +1939,7 @@ double Beam3ContactOctTree::get_bounding_box_extrusion_value()
       FOUR_C_THROW("No bounding box type chosen!");
   }
   if (extrusionvalue < 0.0)
-    FOUR_C_THROW("Check bounding box extrusion value %d < 0.0!", extrusionvalue);
+    FOUR_C_THROW("Check bounding box extrusion value {} < 0.0!", extrusionvalue);
   return extrusionvalue;
 }
 

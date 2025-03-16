@@ -186,7 +186,7 @@ namespace Discret
         if (ele->num_material() < 2) FOUR_C_THROW("no second material available");
         // check for artery material
         if (ele->material(1)->material_type() != Core::Materials::MaterialType::m_cnst_art)
-          FOUR_C_THROW("Secondary material is not of type m_cnst_art, but %d",
+          FOUR_C_THROW("Secondary material is not of type m_cnst_art, but {}",
               ele->material(1)->material_type());
 
         // here we rely that the Artery material has been added as second material

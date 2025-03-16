@@ -82,7 +82,7 @@ Thermo::BaseAlgorithm::BaseAlgorithm(
       break;
     }
     default:
-      FOUR_C_THROW("Unknown time integration scheme '%s'!", timinttype);
+      FOUR_C_THROW("Unknown time integration scheme '{}'!", timinttype);
   }
 }
 

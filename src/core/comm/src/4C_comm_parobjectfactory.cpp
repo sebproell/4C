@@ -110,12 +110,12 @@ Core::Communication::ParObject* Core::Communication::ParObjectFactory::create(
   if (i == type_map_.end())
   {
     FOUR_C_THROW(
-        "object id %d undefined. Have you extended Core::Communication::ParObjectList()?", type);
+        "object id {} undefined. Have you extended Core::Communication::ParObjectList()?", type);
   }
 
   ParObject* o = i->second->create(buffer);
 
-  FOUR_C_ASSERT_ALWAYS(o, "failed to create object of type %d", type);
+  FOUR_C_ASSERT_ALWAYS(o, "failed to create object of type {}", type);
 
   return o;
 }
@@ -150,7 +150,7 @@ std::shared_ptr<Core::Elements::Element> Core::Communication::ParObjectFactory::
     }
   }
 
-  FOUR_C_THROW("Unknown type '%s' of finite element", eletype.c_str());
+  FOUR_C_THROW("Unknown type '{}' of finite element", eletype.c_str());
   return nullptr;
 }
 
@@ -175,7 +175,7 @@ void Core::Communication::ParObjectFactory::do_register(ParObjectType* object_ty
   std::map<int, ParObjectType*>::iterator i = type_map_.find(hash);
   if (i != type_map_.end())
   {
-    FOUR_C_THROW("object (%s,%d) already defined: (%s,%d)", name.c_str(), hash,
+    FOUR_C_THROW("object ({},{}) already defined: ({},{})", name.c_str(), hash,
         i->second->name().c_str(), i->first);
   }
 
@@ -234,11 +234,11 @@ void Core::Communication::ParObjectFactory::initialize_elements(Core::FE::Discre
     {
       ae.insert(eot);
       int err = eot->initialize(dis);
-      if (err) FOUR_C_THROW("Element Initialize returned err=%d", err);
+      if (err) FOUR_C_THROW("Element Initialize returned err={}", err);
     }
     else
     {
-      FOUR_C_THROW("illegal element type id %d", *i);
+      FOUR_C_THROW("illegal element type id {}", *i);
     }
   }
 }

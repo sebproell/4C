@@ -281,7 +281,7 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
           if (couplingconditions[relevantcondid]->parameters().get<int>("NUMDOF") !=
               numdfrownodes[i])
             FOUR_C_THROW(
-                "ERROR: Number of DoFs in coupling condition (%i) does not match node (%i)",
+                "ERROR: Number of DoFs in coupling condition ({}) does not match node ({})",
                 couplingconditions[relevantcondid]->parameters().get<int>("NUMDOF"),
                 numdfrownodes[i]);
           const std::vector<int>& onoffcond =
@@ -343,9 +343,9 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
 
     Epetra_Import nodeimporter(numdfcolnodes_->get_map(), numdfrownodes.get_map());
     int err = numdfcolnodes_->import(numdfrownodes, nodeimporter, Insert);
-    if (err) FOUR_C_THROW("Import using importer returned err=%d", err);
+    if (err) FOUR_C_THROW("Import using importer returned err={}", err);
     err = idxcolnodes_->import(idxrownodes, nodeimporter, Insert);
-    if (err) FOUR_C_THROW("Import using importer returned err=%d", err);
+    if (err) FOUR_C_THROW("Import using importer returned err={}", err);
 
     count = maxnodenumdf > 0 ? idxrownodes.max_value() + maxnodenumdf : 0;
 
@@ -402,9 +402,9 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
 
       Epetra_Import faceimporter(numdfcolfaces_->get_map(), numdfrowfaces.get_map());
       err = numdfcolfaces_->import(numdfrowfaces, faceimporter, Insert);
-      if (err) FOUR_C_THROW("Import using importer returned err=%d", err);
+      if (err) FOUR_C_THROW("Import using importer returned err={}", err);
       err = idxcolfaces_->import(idxrowfaces, faceimporter, Insert);
-      if (err) FOUR_C_THROW("Import using importer returned err=%d", err);
+      if (err) FOUR_C_THROW("Import using importer returned err={}", err);
 
       count = idxrowfaces.max_value() + maxfacenumdf;
     }
@@ -444,9 +444,9 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
 
     Epetra_Import elementimporter(numdfcolelements_->get_map(), numdfrowelements.get_map());
     err = numdfcolelements_->import(numdfrowelements, elementimporter, Insert);
-    if (err) FOUR_C_THROW("Import using importer returned err=%d", err);
+    if (err) FOUR_C_THROW("Import using importer returned err={}", err);
     err = idxcolelements_->import(idxrowelements, elementimporter, Insert);
-    if (err) FOUR_C_THROW("Import using importer returned err=%d", err);
+    if (err) FOUR_C_THROW("Import using importer returned err={}", err);
   }
 
   // Now finally we have everything in place to build the maps.

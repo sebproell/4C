@@ -304,7 +304,7 @@ void Core::FE::Discretization::build_node_to_element_pointers()
       Core::Nodes::Node* node = g_node(nodes[j]);
       if (!node)
         FOUR_C_THROW(
-            "Node %d is not on this proc %d", j, Core::Communication::my_mpi_rank(get_comm()));
+            "Node {} is not on this proc {}", j, Core::Communication::my_mpi_rank(get_comm()));
       else
         node->add_element_ptr(elecurr->second.get());
     }

@@ -99,7 +99,7 @@ bool Cut::Edge::find_cut_points_mesh_cut(
   if (point_stack.size() > 2)
   {
     Cut::Output::debug_dump_more_than_two_intersection_points(this, &other, point_stack);
-    FOUR_C_THROW("Line x Side has more than 2 intersection points.Namely %u", point_stack.size());
+    FOUR_C_THROW("Line x Side has more than 2 intersection points.Namely {}", point_stack.size());
   }
 
   // if 2 points found - we are done
@@ -736,7 +736,7 @@ void Cut::ConcreteEdge<prob_dim, edge_type, dim_edge, num_nodes_edge>::get_touch
         err_msg << "Distance between points is " << std::setprecision(15)
                 << Cut::distance_between_points(p, edge_point)
                 << " This two points should have been merged!";
-        FOUR_C_THROW(err_msg.str());
+        FOUR_C_THROW("{}", err_msg.str());
       }
     }
   }
@@ -868,7 +868,7 @@ bool Cut::ConcreteEdge<prob_dim, edge_type, dim_edge, num_nodes_edge>::compute_c
         break;
       }
       default:
-        FOUR_C_THROW("Unsupported intersection status! ( status = %d )", istatus);
+        FOUR_C_THROW("Unsupported intersection status! ( status = {} )", istatus);
         exit(EXIT_FAILURE);
     }
     return (static_cast<bool>(retstatus));
@@ -905,7 +905,7 @@ std::shared_ptr<Cut::Edge> Cut::EdgeFactory::create_edge(
     }
     default:
     {
-      FOUR_C_THROW("Unsupported edge type! ( %d | %s )", edgetype,
+      FOUR_C_THROW("Unsupported edge type! ( {} | {} )", edgetype,
           Core::FE::cell_type_to_string(edgetype).c_str());
       break;
     }

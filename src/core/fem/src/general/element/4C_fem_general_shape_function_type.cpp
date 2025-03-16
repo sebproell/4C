@@ -29,7 +29,7 @@ namespace Core::FE
     const auto it = string2shapefuntype.find(name);
     if (it != string2shapefuntype.end()) return it->second;
     FOUR_C_THROW(
-        "'%s' does not name a shape function type. Check for typos or consider adding the shape "
+        "'{}' does not name a shape function type. Check for typos or consider adding the shape "
         "function type to the map.",
         name.c_str());
   }

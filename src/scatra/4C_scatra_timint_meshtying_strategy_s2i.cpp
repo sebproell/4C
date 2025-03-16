@@ -396,12 +396,12 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
             {
               // determine global ID of current matrix row
               const int slavedofgid = icoup_->slave_dof_map()->GID(slavedoflid);
-              if (slavedofgid < 0) FOUR_C_THROW("Couldn't find local ID %d in map!", slavedoflid);
+              if (slavedofgid < 0) FOUR_C_THROW("Couldn't find local ID {} in map!", slavedoflid);
 
               // determine global ID of associated master-side matrix column
               const int masterdofgid = icoup_->perm_master_dof_map()->GID(slavedoflid);
               if (masterdofgid < 0)
-                FOUR_C_THROW("Couldn't find local ID %d in permuted map!", slavedoflid);
+                FOUR_C_THROW("Couldn't find local ID {} in permuted map!", slavedoflid);
 
               // insert value -1. into intersection of slave-side row and master-side column in
               // system matrix this effectively forces the slave-side degree of freedom to assume
@@ -411,8 +411,8 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
                       slavedofgid, 1, &value, &masterdofgid) < 0)
               {
                 FOUR_C_THROW(
-                    "Cannot insert value -1. into matrix row with global ID %d and matrix column "
-                    "with global ID %d!",
+                    "Cannot insert value -1. into matrix row with global ID {} and matrix column "
+                    "with global ID {}!",
                     slavedofgid, masterdofgid);
               }
 
@@ -424,8 +424,8 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
                       slavedofgid, 1, &zero, &masterdofgid) < 0)
               {
                 FOUR_C_THROW(
-                    "Cannot insert zero into matrix row with global ID %d and matrix column with "
-                    "global ID %d!",
+                    "Cannot insert zero into matrix row with global ID {} and matrix column with "
+                    "global ID {}!",
                     slavedofgid, masterdofgid);
               }
             }
@@ -542,19 +542,19 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
         {
           // determine global ID of current vector entry
           const int slavedofgid = icoup_->slave_dof_map()->GID(slavedoflid);
-          if (slavedofgid < 0) FOUR_C_THROW("Couldn't find local ID %d in map!", slavedoflid);
+          if (slavedofgid < 0) FOUR_C_THROW("Couldn't find local ID {} in map!", slavedoflid);
 
           // copy current vector entry into temporary vector
           if (residualslave.replace_global_value(slavedofgid, 0,
                   (*scatratimint_->residual())[scatratimint_->dof_row_map()->LID(slavedofgid)]))
             FOUR_C_THROW(
-                "Cannot insert residual vector entry with global ID %d into temporary vector!",
+                "Cannot insert residual vector entry with global ID {} into temporary vector!",
                 slavedofgid);
 
           // zero out current vector entry
           if (scatratimint_->residual()->replace_global_value(slavedofgid, 0, 0.))
             FOUR_C_THROW(
-                "Cannot insert zero into residual vector entry with global ID %d!", slavedofgid);
+                "Cannot insert zero into residual vector entry with global ID {}!", slavedofgid);
         }
 
         // add slave-side entries of residual vector to corresponding master-side entries to
@@ -1941,7 +1941,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
           s2ikinetics_cond->parameters().get<Inpar::S2I::InterfaceSides>("INTERFACE_SIDE");
 
       if (s2ikinetics_cond_id < 0)
-        FOUR_C_THROW("Invalid condition ID %i for S2IKinetics Condition!", s2ikinetics_cond_id);
+        FOUR_C_THROW("Invalid condition ID {} for S2IKinetics Condition!", s2ikinetics_cond_id);
 
       // only continue if ID's match
       if (s2imeshtying_cond->parameters().get<int>("S2I_KINETICS_ID") != s2ikinetics_cond_id)
@@ -1965,7 +1965,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
           {
             FOUR_C_THROW(
                 "Cannot have multiple slave-side scatra-scatra interface kinetics conditions with "
-                "the same ID %i!",
+                "the same ID {}!",
                 s2ikinetics_cond_id);
           }
 
@@ -2003,7 +2003,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
           {
             FOUR_C_THROW(
                 "Cannot have multiple master-side scatra-scatra interface kinetics conditions with "
-                "the same ID %i!",
+                "the same ID {}!",
                 s2ikinetics_cond_id);
           }
           break;
@@ -2755,7 +2755,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
     default:
     {
       FOUR_C_THROW(
-          "%i is not a valid 'ScaTra::MatrixType'. Set a valid 'ScaTra::MatrixType' in your input "
+          "{} is not a valid 'ScaTra::MatrixType'. Set a valid 'ScaTra::MatrixType' in your input "
           "file!",
           static_cast<int>(matrixtype_));
       break;
@@ -3117,7 +3117,7 @@ void ScaTra::MeshtyingStrategyS2I::write_s2_i_kinetics_specific_scatra_parameter
 
         default:
         {
-          FOUR_C_THROW("Not implemented for this kinetic model: %i", kineticmodel);
+          FOUR_C_THROW("Not implemented for this kinetic model: {}", kineticmodel);
         }
       }
       break;
@@ -3161,7 +3161,7 @@ void ScaTra::MeshtyingStrategyS2I::write_s2_i_kinetics_specific_scatra_parameter
 
         default:
         {
-          FOUR_C_THROW("Not implemented for this kinetic model: %i", kineticmodel);
+          FOUR_C_THROW("Not implemented for this kinetic model: {}", kineticmodel);
         }
       }
       break;
@@ -3169,7 +3169,7 @@ void ScaTra::MeshtyingStrategyS2I::write_s2_i_kinetics_specific_scatra_parameter
 
     default:
     {
-      FOUR_C_THROW("Not implemented for this condition type: %i", conditiontype);
+      FOUR_C_THROW("Not implemented for this condition type: {}", conditiontype);
     }
   }
 }
@@ -3412,7 +3412,7 @@ void ScaTra::MeshtyingStrategyS2I::extract_matrix_rows(
   {
     // determine global ID of current matrix row
     const int dofgid = rowmap.GID(doflid);
-    if (dofgid < 0) FOUR_C_THROW("Couldn't find local ID %d in map!", doflid);
+    if (dofgid < 0) FOUR_C_THROW("Couldn't find local ID {} in map!", doflid);
 
     // extract current matrix row from source matrix
     const int length = matrix.epetra_matrix()->NumGlobalEntries(dofgid);
@@ -3421,12 +3421,12 @@ void ScaTra::MeshtyingStrategyS2I::extract_matrix_rows(
     std::vector<int> indices(length, 0);
     if (matrix.epetra_matrix()->ExtractGlobalRowCopy(
             dofgid, length, numentries, values.data(), indices.data()))
-      FOUR_C_THROW("Cannot extract matrix row with global ID %d from source matrix!", dofgid);
+      FOUR_C_THROW("Cannot extract matrix row with global ID {} from source matrix!", dofgid);
 
     // copy current source matrix row into destination matrix
     if (rows.epetra_matrix()->InsertGlobalValues(
             dofgid, numentries, values.data(), indices.data()) < 0)
-      FOUR_C_THROW("Cannot insert matrix row with global ID %d into destination matrix!", dofgid);
+      FOUR_C_THROW("Cannot insert matrix row with global ID {} into destination matrix!", dofgid);
   }
 }
 
@@ -4340,8 +4340,7 @@ void ScaTra::MortarCellCalc<distype_s, distype_m>::extract_node_values(
   const std::shared_ptr<const Core::LinAlg::Vector<double>> state =
       idiscret.get_state(nds, statename);
   if (state == nullptr)
-    FOUR_C_THROW(
-        "Cannot extract state vector \"" + statename + "\" from interface discretization!");
+    FOUR_C_THROW("Cannot extract state vector \"{}\" from interface discretization!", statename);
 
   // extract nodal state variables associated with slave element
   Core::FE::extract_my_values<Core::LinAlg::Matrix<nen_slave_, 1>>(
@@ -4362,8 +4361,7 @@ void ScaTra::MortarCellCalc<distype_s, distype_m>::extract_node_values(
   const std::shared_ptr<const Core::LinAlg::Vector<double>> state =
       idiscret.get_state(nds, statename);
   if (state == nullptr)
-    FOUR_C_THROW(
-        "Cannot extract state vector \"" + statename + "\" from interface discretization!");
+    FOUR_C_THROW("Cannot extract state vector \"{}\" from interface discretization!", statename);
 
   // extract nodal state variables associated with slave and master elements
   Core::FE::extract_my_values<Core::LinAlg::Matrix<nen_slave_, 1>>(

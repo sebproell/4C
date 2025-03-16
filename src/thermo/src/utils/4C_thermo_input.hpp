@@ -55,7 +55,7 @@ namespace Thermo
         return "GenAlpha";
         break;
       default:
-        FOUR_C_THROW("Cannot make std::string for time integrator %d", name);
+        FOUR_C_THROW("Cannot make std::string for time integrator {}", name);
         return "";
     }
   }  // DynamicTypeString()
@@ -99,7 +99,7 @@ namespace Thermo
         return "TR-like";
         break;
       default:
-        FOUR_C_THROW("Cannot make std::string for time integrator %d", name);
+        FOUR_C_THROW("Cannot make std::string for time integrator {}", name);
         return "";
     }
   }
@@ -128,7 +128,7 @@ namespace Thermo
         return "fullnewton";
         break;
       default:
-        FOUR_C_THROW("Cannot make std::string for solution technique %d", name);
+        FOUR_C_THROW("Cannot make std::string for solution technique {}", name);
         return "";
     }
   }
@@ -176,7 +176,7 @@ namespace Thermo
         return "repeat_simulation";
         break;
       default:
-        FOUR_C_THROW("Cannot make string for solution div cont technique %d", name);
+        FOUR_C_THROW("Cannot make string for solution div cont technique {}", name);
         return "";
     }
   }
@@ -212,7 +212,7 @@ namespace Thermo
         return "TangTemp";
         break;
       default:
-        FOUR_C_THROW("Cannot make std::string for predictor %d", name);
+        FOUR_C_THROW("Cannot make std::string for predictor {}", name);
         return "";
     }
   }
@@ -261,7 +261,7 @@ namespace Thermo
         return "heatflux_initial";
         break;
       default:
-        FOUR_C_THROW("Cannot make std::string for predictor %d", name);
+        FOUR_C_THROW("Cannot make std::string for predictor {}", name);
         return "";
     }
   }
@@ -290,7 +290,7 @@ namespace Thermo
         return "tempgrad_initial";
         break;
       default:
-        FOUR_C_THROW("Cannot make std::string for predictor %d", name);
+        FOUR_C_THROW("Cannot make std::string for predictor {}", name);
         return "";
     }
   }
@@ -331,7 +331,7 @@ namespace Thermo
         return "Inf";
         break;
       default:
-        FOUR_C_THROW("Cannot make std::string to vector norm %d", norm);
+        FOUR_C_THROW("Cannot make std::string to vector norm {}", norm);
         return "";
     }
   }

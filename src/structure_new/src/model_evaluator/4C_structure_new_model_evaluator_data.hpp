@@ -399,7 +399,7 @@ namespace Solid
             enum ::NOX::Abstract::Vector::NormType>::const_iterator c_it;
         c_it = normtype_update_.find(qtype);
         if (c_it == normtype_update_.end())
-          FOUR_C_THROW("The corresponding norm type could not be found! (quantity: %s)",
+          FOUR_C_THROW("The corresponding norm type could not be found! (quantity: {})",
               NOX::Nln::StatusTest::quantity_type_to_string(qtype).c_str());
         return c_it->second;
       }

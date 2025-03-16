@@ -100,7 +100,7 @@ void PARTICLEENGINE::UniqueGlobalIdHandler::draw_requested_number_of_global_ids(
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (myrank_ != masterrank_ and (not preparedglobalids.empty()))
-    FOUR_C_THROW("generated global ids on processor %d", myrank_);
+    FOUR_C_THROW("generated global ids on processor {}", myrank_);
 #endif
 
   // extract requested global ids on master processor
@@ -112,7 +112,7 @@ void PARTICLEENGINE::UniqueGlobalIdHandler::draw_requested_number_of_global_ids(
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (numberofrequestedgids != static_cast<int>(requesteduniqueglobalids.size()))
-    FOUR_C_THROW("requested %d global ids on processor %d but received only %d global ids!",
+    FOUR_C_THROW("requested {} global ids on processor {} but received only {} global ids!",
         numberofrequestedgids, myrank_, requesteduniqueglobalids.size());
 #endif
 
@@ -153,7 +153,7 @@ void PARTICLEENGINE::UniqueGlobalIdHandler::
 
       if (rmsg.size() != 0)
         FOUR_C_THROW(
-            "not expected to received reusable global ids on processor %d from processor %d!",
+            "not expected to received reusable global ids on processor {} from processor {}!",
             myrank_, msgsource);
     }
   }
@@ -303,7 +303,7 @@ void PARTICLEENGINE::UniqueGlobalIdHandler::
     const std::vector<char>& rmsg = p.second;
 
     if (msgsource != masterrank_ and rmsg.size() != 0)
-      FOUR_C_THROW("not expected to received global ids on processor %d from processor %d!",
+      FOUR_C_THROW("not expected to received global ids on processor {} from processor {}!",
           myrank_, msgsource);
   }
 #endif

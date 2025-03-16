@@ -707,7 +707,7 @@ namespace Discret
           this->varmanager_->check_is_extracted();
           if (ivolfrac >= numvolfrac_)
             FOUR_C_THROW(
-                "%i is bigger than the number of volume fractions %i in the VariableManager",
+                "{} is bigger than the number of volume fractions {} in the VariableManager",
                 ivolfrac + 1, numvolfrac_);
 
           return ele_has_valid_volfrac_press_[ivolfrac];
@@ -718,7 +718,7 @@ namespace Discret
           this->varmanager_->check_is_extracted();
           if (ivolfrac >= numvolfrac_)
             FOUR_C_THROW(
-                "%i is bigger than the number of volume fractions %i in the VariableManager",
+                "{} is bigger than the number of volume fractions {} in the VariableManager",
                 ivolfrac + 1, numvolfrac_);
 
           return ele_has_valid_volfrac_spec_[ivolfrac];

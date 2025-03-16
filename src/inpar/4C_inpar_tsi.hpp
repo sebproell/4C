@@ -87,7 +87,7 @@ namespace Inpar
           return "ptc";
           break;
         default:
-          FOUR_C_THROW("Cannot make std::string for solution technique %d", name);
+          FOUR_C_THROW("Cannot make std::string for solution technique {}", name);
           return "";
       }
     }
@@ -133,7 +133,7 @@ namespace Inpar
           return "Inf";
           break;
         default:
-          FOUR_C_THROW("Cannot make std::string to vector norm %d", norm);
+          FOUR_C_THROW("Cannot make std::string to vector norm {}", norm);
           return "";
       }
     }

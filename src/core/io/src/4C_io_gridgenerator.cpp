@@ -208,7 +208,7 @@ namespace Core::IO::GridGenerator
         }
         default:
           FOUR_C_THROW(
-              "The discretization type %s, is not implemented. Currently only HEX(8,20,27) and "
+              "The discretization type {}, is not implemented. Currently only HEX(8,20,27) and "
               "WEDGE(6,15) are implemented for the box geometry generation.",
               inputData.distype_.c_str());
       }
@@ -380,7 +380,7 @@ namespace Core::IO::GridGenerator
         nodeids[7] = nodeOffset + ((ez + 2) * ny + ey + 2) * nx + ex;
         break;
       default:
-        FOUR_C_THROW("The number of nodeids: %d, does not correspond to a supported HEX-element.",
+        FOUR_C_THROW("The number of nodeids: {}, does not correspond to a supported HEX-element.",
             nodeids.size());
         break;
     }
@@ -445,7 +445,7 @@ namespace Core::IO::GridGenerator
           //---------------------
         default:
           FOUR_C_THROW(
-              "The number of nodeids: %d, does not correspond to a supported WEDGE-element.",
+              "The number of nodeids: {}, does not correspond to a supported WEDGE-element.",
               nodeids.size());
           break;
       }
@@ -476,7 +476,7 @@ namespace Core::IO::GridGenerator
           //---------------------
         default:
           FOUR_C_THROW(
-              "The number of nodeids: %d, does not correspond to a supported WEDGE-element.",
+              "The number of nodeids: {}, does not correspond to a supported WEDGE-element.",
               nodeids.size());
           break;
       }

@@ -30,7 +30,7 @@ std::vector<std::vector<double>> Core::IO::read_csv_as_columns(
     {
       FOUR_C_THROW(
           "\nInvalid csv file!\n"
-          "The csv file has to consist of only %d columns separated by commas but without a "
+          "The csv file has to consist of only {} columns separated by commas but without a "
           "trailing comma! Might also be that your columns do not have the same length!",
           number_of_columns);
     }
@@ -52,7 +52,7 @@ std::vector<std::vector<double>> Core::IO::read_csv_as_columns(
       FOUR_C_THROW(
           "\nInvalid csv file!\n"
           "Besides a recommended header line starting with '#' the csv file must only consist of "
-          "numbers in %d columns separated by commas.",
+          "numbers in {} columns separated by commas.",
           number_of_columns);
     }
   }

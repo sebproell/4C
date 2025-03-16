@@ -292,7 +292,7 @@ namespace ScaTra
         default:
           FOUR_C_THROW(
               "Integration rule only until degree 19 for HEX elements defined. You used a degree "
-              "of %d",
+              "of {}",
               degree);
           return Core::FE::GaussRule3D::undefined;
           break;
@@ -349,7 +349,7 @@ namespace ScaTra
         default:
           FOUR_C_THROW(
               "Integration rule only until degree 19 for HEX elements defined. You used a degree "
-              "of %d",
+              "of {}",
               degree);
           return Core::FE::GaussRule3D::undefined;
           break;
@@ -406,7 +406,7 @@ namespace ScaTra
         default:
           FOUR_C_THROW(
               "Integration rule only until degree 19 for HEX elements defined. You used a degree "
-              "of %d",
+              "of {}",
               degree);
           return Core::FE::GaussRule3D::undefined;
           break;
@@ -460,7 +460,7 @@ namespace ScaTra
         default:
           FOUR_C_THROW(
               "Integration rule only until degree 16 for TET elements defined. You used a degree "
-              "of %d",
+              "of {}",
               degree);
           return Core::FE::GaussRule3D::undefined;
           break;
@@ -514,7 +514,7 @@ namespace ScaTra
         default:
           FOUR_C_THROW(
               "Integration rule only until degree 16 for TET elements defined. You used a degree "
-              "of %d",
+              "of {}",
               degree);
           return Core::FE::GaussRule3D::undefined;
           break;
@@ -607,7 +607,7 @@ namespace ScaTra
         default:
           FOUR_C_THROW(
               "Integration rule only until degree 19 for QUAD elements defined. You used a degree "
-              "of %d",
+              "of {}",
               degree);
           return Core::FE::GaussRule2D::undefined;
           break;
@@ -664,7 +664,7 @@ namespace ScaTra
         default:
           FOUR_C_THROW(
               "Integration rule only until degree 19 for QUAD elements defined. You used a degree "
-              "of %d",
+              "of {}",
               degree);
           return Core::FE::GaussRule2D::undefined;
           break;
@@ -721,7 +721,7 @@ namespace ScaTra
         default:
           FOUR_C_THROW(
               "Integration rule only until degree 19 for QUAD elements defined. You used a degree "
-              "of %d",
+              "of {}",
               degree);
           return Core::FE::GaussRule2D::undefined;
           break;
@@ -772,7 +772,7 @@ namespace ScaTra
         default:
           FOUR_C_THROW(
               "Integration rule only until degree 15 for TRI elements defined. You used a degree "
-              "of %d",
+              "of {}",
               degree);
           return Core::FE::GaussRule2D::undefined;
           break;
@@ -855,7 +855,7 @@ namespace ScaTra
         default:
           FOUR_C_THROW(
               "Integration rule only until degree 19 for LINE elements defined. You used a degree "
-              "of %d",
+              "of {}",
               degree);
           return Core::FE::GaussRule1D::undefined;
           break;

@@ -62,7 +62,7 @@ double SSTI::SSTIResultTest::result_special(const std::string& quantity) const
   else
   {
     FOUR_C_THROW(
-        "Quantity '%s' not supported by result testing functionality for scalar-structure-thermo "
+        "Quantity '{}' not supported by result testing functionality for scalar-structure-thermo "
         "interaction!",
         quantity.c_str());
   }

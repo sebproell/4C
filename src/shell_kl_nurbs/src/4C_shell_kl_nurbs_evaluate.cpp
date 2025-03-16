@@ -110,7 +110,7 @@ int Discret::Elements::KirchhoffLoveShellNurbs::evaluate(Teuchos::ParameterList&
       break;
     default:
     {
-      FOUR_C_THROW("Unknown type of action for KirchhoffLoveShellNurbs element: %s",
+      FOUR_C_THROW("Unknown type of action for KirchhoffLoveShellNurbs element: {}",
           action_type_to_string(act).c_str());
       break;
     }
@@ -146,7 +146,7 @@ int Discret::Elements::KirchhoffLoveShellNurbs::evaluate_neumann(Teuchos::Parame
 
   // ensure that the boundary condition has the correct size
   if (onoff.size() != n_nodal_dof)
-    FOUR_C_THROW("Wrong number of BC values. Expected %d, got %d.", n_nodal_dof, onoff.size());
+    FOUR_C_THROW("Wrong number of BC values. Expected {}, got {}.", n_nodal_dof, onoff.size());
 
   // Get the functions from the global problem
   std::array<const Core::Utils::FunctionOfSpaceTime*, n_nodal_dof> functions;

@@ -72,7 +72,7 @@ int Discret::Elements::Artery::evaluate(Teuchos::ParameterList& params,
     }
     break;
     default:
-      FOUR_C_THROW("Unknown type of action %d for Artery", action);
+      FOUR_C_THROW("Unknown type of action {} for Artery", action);
   }  // end of switch(act)
 
 

@@ -62,7 +62,7 @@ void Core::IO::HDFReader::open(
     {
       filenames_.push_back(buf.str());
       files_.push_back(H5Fopen(buf.str().c_str(), H5F_ACC_RDONLY, h5_plist_));
-      if (files_[i] < 0) FOUR_C_THROW("Failed to open HDF-file %s", filenames_[i].c_str());
+      if (files_[i] < 0) FOUR_C_THROW("Failed to open HDF-file {}", filenames_[i].c_str());
     }
     else
     {
@@ -186,11 +186,11 @@ std::shared_ptr<std::vector<char>> Core::IO::HDFReader::read_char_data(
     hid_t dataset = H5Dopen(files_[i], cpath, H5P_DEFAULT);
     if (dataset < 0)
     {
-      FOUR_C_THROW("Failed to open dataset %s in HDF-file %s", cpath, filenames_[i].c_str());
+      FOUR_C_THROW("Failed to open dataset {} in HDF-file {}", cpath, filenames_[i].c_str());
     }
     hid_t dataspace = H5Dget_space(dataset);
     if (dataspace < 0)
-      FOUR_C_THROW("Failed to get dataspace from dataset %s in HDF-file %s", path.c_str(),
+      FOUR_C_THROW("Failed to get dataspace from dataset {} in HDF-file {}", path.c_str(),
           filenames_[i].c_str());
     int rank = H5Sget_simple_extent_ndims(dataspace);
     switch (rank)
@@ -202,7 +202,7 @@ std::shared_ptr<std::vector<char>> Core::IO::HDFReader::read_char_data(
         hsize_t dim, maxdim;
         int res = H5Sget_simple_extent_dims(dataspace, &dim, &maxdim);
         if (res < 0)
-          FOUR_C_THROW("Failed to get size from dataspace in HDF-file %s", filenames_[i].c_str());
+          FOUR_C_THROW("Failed to get size from dataspace in HDF-file {}", filenames_[i].c_str());
         data->resize(offset + dim);
         herr_t status =
             H5Dread(dataset, H5T_NATIVE_CHAR, H5S_ALL, H5S_ALL, H5P_DEFAULT, &((*data)[offset]));
@@ -215,7 +215,7 @@ std::shared_ptr<std::vector<char>> Core::IO::HDFReader::read_char_data(
         break;
       }
       default:
-        FOUR_C_THROW("HDF5 rank=%d unsupported", rank);
+        FOUR_C_THROW("HDF5 rank={} unsupported", rank);
         break;
     }
 
@@ -244,11 +244,11 @@ std::shared_ptr<std::vector<int>> Core::IO::HDFReader::read_int_data(
     hid_t dataset = H5Dopen(files_[i], path.c_str(), H5P_DEFAULT);
     if (dataset < 0)
     {
-      FOUR_C_THROW("Failed to open dataset %s in HDF-file %s", path.c_str(), filenames_[i].c_str());
+      FOUR_C_THROW("Failed to open dataset {} in HDF-file {}", path.c_str(), filenames_[i].c_str());
     }
     hid_t dataspace = H5Dget_space(dataset);
     if (dataspace < 0)
-      FOUR_C_THROW("Failed to get dataspace from dataset %s in HDF-file %s", path.c_str(),
+      FOUR_C_THROW("Failed to get dataspace from dataset {} in HDF-file {}", path.c_str(),
           filenames_[i].c_str());
     int rank = H5Sget_simple_extent_ndims(dataspace);
     switch (rank)
@@ -260,29 +260,29 @@ std::shared_ptr<std::vector<int>> Core::IO::HDFReader::read_int_data(
         hsize_t dim, maxdim;
         int res = H5Sget_simple_extent_dims(dataspace, &dim, &maxdim);
         if (res < 0)
-          FOUR_C_THROW("Failed to get size from dataspace in HDF-file %s", filenames_[i].c_str());
+          FOUR_C_THROW("Failed to get size from dataspace in HDF-file {}", filenames_[i].c_str());
         data->resize(offset + dim);
         herr_t status =
             H5Dread(dataset, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, &((*data)[offset]));
         offset += dim;
         if (status < 0)
-          FOUR_C_THROW("Failed to read data from dataset %s in HDF-file %s", path.c_str(),
+          FOUR_C_THROW("Failed to read data from dataset {} in HDF-file {}", path.c_str(),
               filenames_[i].c_str());
         break;
       }
       default:
-        FOUR_C_THROW("HDF5 rank=%d unsupported", rank);
+        FOUR_C_THROW("HDF5 rank={} unsupported", rank);
         break;
     }
 
     herr_t status = H5Sclose(dataspace);
     if (status < 0)
       FOUR_C_THROW(
-          "Failed to close node dataspace %s in HDF-file %s", path.c_str(), filenames_[i].c_str());
+          "Failed to close node dataspace {} in HDF-file {}", path.c_str(), filenames_[i].c_str());
     status = H5Dclose(dataset);
     if (status < 0)
       FOUR_C_THROW(
-          "Failed to close node dataset %s in HDF-file %s", path.c_str(), filenames_[i].c_str());
+          "Failed to close node dataset {} in HDF-file {}", path.c_str(), filenames_[i].c_str());
   }
   return data;
 }
@@ -299,10 +299,10 @@ std::shared_ptr<std::vector<double>> Core::IO::HDFReader::read_double_data(
   {
     hid_t dataset = H5Dopen(files_[i], path.c_str(), H5P_DEFAULT);
     if (dataset < 0)
-      FOUR_C_THROW("Failed to open dataset %s in HDF-file %s", path.c_str(), filenames_[i].c_str());
+      FOUR_C_THROW("Failed to open dataset {} in HDF-file {}", path.c_str(), filenames_[i].c_str());
     hid_t dataspace = H5Dget_space(dataset);
     if (dataspace < 0)
-      FOUR_C_THROW("Failed to get dataspace from dataset %s in HDF-file %s", path.c_str(),
+      FOUR_C_THROW("Failed to get dataspace from dataset {} in HDF-file {}", path.c_str(),
           filenames_[i].c_str());
     int rank = H5Sget_simple_extent_ndims(dataspace);
     switch (rank)
@@ -315,30 +315,30 @@ std::shared_ptr<std::vector<double>> Core::IO::HDFReader::read_double_data(
         hsize_t dim, maxdim;
         int res = H5Sget_simple_extent_dims(dataspace, &dim, &maxdim);
         if (res < 0)
-          FOUR_C_THROW("Failed to get size from dataspace in HDF-file %s", filenames_[i].c_str());
+          FOUR_C_THROW("Failed to get size from dataspace in HDF-file {}", filenames_[i].c_str());
         data->resize(offset + dim);
         herr_t status =
             H5Dread(dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &((*data)[offset]));
         lengths.push_back(dim);
         offset += dim;
         if (status < 0)
-          FOUR_C_THROW("Failed to read data from dataset %s in HDF-file %s", path.c_str(),
+          FOUR_C_THROW("Failed to read data from dataset {} in HDF-file {}", path.c_str(),
               filenames_[i].c_str());
         break;
       }
       default:
-        FOUR_C_THROW("HDF5 rank=%d unsupported", rank);
+        FOUR_C_THROW("HDF5 rank={} unsupported", rank);
         break;
     }
 
     herr_t status = H5Sclose(dataspace);
     if (status < 0)
       FOUR_C_THROW(
-          "Failed to close node dataspace %s in HDF-file %s", path.c_str(), filenames_[i].c_str());
+          "Failed to close node dataspace {} in HDF-file {}", path.c_str(), filenames_[i].c_str());
     status = H5Dclose(dataset);
     if (status < 0)
       FOUR_C_THROW(
-          "Failed to close node dataset %s in HDF-file %s", path.c_str(), filenames_[i].c_str());
+          "Failed to close node dataset {} in HDF-file {}", path.c_str(), filenames_[i].c_str());
   }
   return data;
 }
@@ -366,7 +366,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::IO::HDFReader::read_res
   std::shared_ptr<std::vector<double>> values = read_double_data(value_path, start, end, lengths);
 
   if (static_cast<int>(values->size()) != res->MyLength() * res->NumVectors())
-    FOUR_C_THROW("vector value size mismatch: %d != %d", values->size(),
+    FOUR_C_THROW("vector value size mismatch: {} != {}", values->size(),
         res->MyLength() * res->NumVectors());
 
   // Rearrange multi vectors that are read with fewer processors than written.
@@ -438,7 +438,7 @@ void Core::IO::HDFReader::close()
     if (files_[i] != -1)
     {
       herr_t status = H5Fclose(files_[i]);
-      if (status < 0) FOUR_C_THROW("Failed to close HDF-file %s", filenames_[i].c_str());
+      if (status < 0) FOUR_C_THROW("Failed to close HDF-file {}", filenames_[i].c_str());
       files_[i] = -1;
     }
   }

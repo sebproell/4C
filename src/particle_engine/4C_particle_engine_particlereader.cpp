@@ -79,10 +79,10 @@ void PARTICLEENGINE::read_particles(Core::IO::InputFile& input, const std::strin
             linestream >> state[0];
           }
           else
-            FOUR_C_THROW("optional particle state with label '%s' unknown!", statelabel.c_str());
+            FOUR_C_THROW("optional particle state with label '{}' unknown!", statelabel.c_str());
 
           if (not linestream)
-            FOUR_C_THROW("expecting values of state '%s' if label '%s' is set!",
+            FOUR_C_THROW("expecting values of state '{}' if label '{}' is set!",
                 PARTICLEENGINE::enum_to_state_name(particlestate).c_str(), statelabel.c_str());
 
           // allocate memory to hold optional particle state

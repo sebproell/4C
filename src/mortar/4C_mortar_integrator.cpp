@@ -935,7 +935,7 @@ void Mortar::IntegratorCalc<distype_s, distype_m>::integrate_segment_2d(Mortar::
       std::cout << "Slave ID: " << sele.id() << " Master ID: " << mele.id() << std::endl;
       std::cout << "Gauss point: " << sxi[0] << " " << sxi[1] << std::endl;
       std::cout << "Projection: " << mxi[0] << " " << mxi[1] << std::endl;
-      FOUR_C_THROW("IntegrateAndDerivSegment: Gauss point projection failed! mxi=%d", mxi[0]);
+      FOUR_C_THROW("IntegrateAndDerivSegment: Gauss point projection failed! mxi={}", mxi[0]);
     }
 
     // evaluate Lagrange multiplier shape functions (on slave element)

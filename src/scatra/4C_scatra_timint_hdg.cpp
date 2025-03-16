@@ -586,7 +586,7 @@ void ScaTra::TimIntHDG::set_initial_field(
     }
 
     default:
-      FOUR_C_THROW("Option for initial field not implemented: %d", init);
+      FOUR_C_THROW("Option for initial field not implemented: {}", init);
       break;
   }  // switch(init)
 
@@ -1039,7 +1039,7 @@ void ScaTra::TimIntHDG::calc_mat_initial()
     int err = ele->evaluate(eleparams, *discret_, la, strategy.elematrix1(), strategy.elematrix2(),
         strategy.elevector1(), strategy.elevector2(), strategy.elevector3());
     if (err)
-      FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+      FOUR_C_THROW("Proc {}: Element {} returned err={}",
           Core::Communication::my_mpi_rank(discret_->get_comm()), ele->id(), err);
 
     int eid = ele->id();

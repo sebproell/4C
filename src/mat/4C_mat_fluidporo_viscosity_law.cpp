@@ -46,7 +46,7 @@ Mat::PAR::FluidPoroViscosityLaw* Mat::PAR::FluidPoroViscosityLaw::create_viscosi
       break;
     }
     default:
-      FOUR_C_THROW("invalid material for viscosity law %d", curmat->type());
+      FOUR_C_THROW("invalid material for viscosity law {}", curmat->type());
       break;
   }
 

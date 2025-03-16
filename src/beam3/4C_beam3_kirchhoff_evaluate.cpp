@@ -2378,7 +2378,7 @@ void Discret::Elements::Beam3k::evaluate_stiff_matrix_analytic_from_point_neuman
   }
   else
   {
-    FOUR_C_THROW("%d is an invalid value for element local node ID! Expected 0 or 1", node);
+    FOUR_C_THROW("{} is an invalid value for element local node ID! Expected 0 or 1", node);
   }
 
   // matrices storing the assembled shape functions or s-derivative

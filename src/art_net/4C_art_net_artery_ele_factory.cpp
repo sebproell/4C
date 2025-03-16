@@ -65,7 +65,7 @@ Discret::Elements::ArteryEleInterface* Discret::Elements::ArtNetFactory::define_
     }
     default:
     {
-      FOUR_C_THROW("Defined problem type %d does not exist!!", problem);
+      FOUR_C_THROW("Defined problem type {} does not exist!!", problem);
       break;
     }
   }

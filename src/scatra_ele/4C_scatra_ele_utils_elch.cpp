@@ -114,18 +114,18 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_elch_kinetics_at_i
       if (i0 < -1e-14)
         FOUR_C_THROW(
             "i0 is negative, \n"
-            "a positive definition is necessary due to generalized reaction models: %f",
+            "a positive definition is necessary due to generalized reaction models: {}",
             i0);
       // add time factor
       i0 *= timefac;
       const auto gamma = cond.parameters().get<double>("GAMMA");
       const auto refcon = cond.parameters().get<double>("REFCON");
-      if (refcon < 1e-12) FOUR_C_THROW("reference concentration is too small: %f", refcon);
+      if (refcon < 1e-12) FOUR_C_THROW("reference concentration is too small: {}", refcon);
 
       if (valence_k != nume)
         FOUR_C_THROW(
             "Kinetic model Butler-Volmer: The number of transferred electrons need to be  \n "
-            "the same as the charge number of the reacting species %i",
+            "the same as the charge number of the reacting species {}",
             k);
 
       // open circuit potential is assumed to be zero
@@ -258,7 +258,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_elch_kinetics_at_i
       i0 *= timefac;
       const auto gamma = cond.parameters().get<double>("GAMMA");
       const auto refcon = cond.parameters().get<double>("REFCON");
-      if (refcon < 1e-12) FOUR_C_THROW("reference concentration is too small: %f", refcon);
+      if (refcon < 1e-12) FOUR_C_THROW("reference concentration is too small: {}", refcon);
       const auto dlcap = cond.parameters().get<double>("DL_SPEC_CAP");
       if (dlcap != 0.0)
         FOUR_C_THROW("double layer charging is not implemented for Tafel electrode kinetics");
@@ -266,7 +266,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_elch_kinetics_at_i
       if (valence_k != nume)
         FOUR_C_THROW(
             "Kinetic model Butler-Volmer: The number of transferred electrons need to be  \n "
-            "the same as the charge number of the reacting species %i",
+            "the same as the charge number of the reacting species {}",
             k);
       // opencircuit potential is assumed to be zero
       const double ocp = 0.0;
@@ -339,16 +339,16 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_elch_kinetics_at_i
       if (i0 < -1e-14)
         FOUR_C_THROW(
             "i0 is negative, \n"
-            "a positive definition is necessary due to generalized reaction models: %f",
+            "a positive definition is necessary due to generalized reaction models: {}",
             i0);
       const auto gamma = cond.parameters().get<double>("GAMMA");
       const auto refcon = cond.parameters().get<double>("REFCON");
-      if (refcon < 1e-12) FOUR_C_THROW("reference concentration is too small: %f", refcon);
+      if (refcon < 1e-12) FOUR_C_THROW("reference concentration is too small: {}", refcon);
 
       if (valence_k != nume)
         FOUR_C_THROW(
             "Kinetic model Butler-Volmer: The number of transferred electrons need to be  \n "
-            "the same as the charge number of the reacting species %i",
+            "the same as the charge number of the reacting species {}",
             k);
       // opencircuit potential is assumed to be zero
       const double ocp = 0.0;
@@ -743,11 +743,11 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_electrode_status_a
       if (i0 < -1e-14)
         FOUR_C_THROW(
             "i0 is negative, \n"
-            "a positive definition is necessary due to generalized reaction models: %f",
+            "a positive definition is necessary due to generalized reaction models: {}",
             i0);
       const auto gamma = cond.parameters().get<double>("GAMMA");
       const auto refcon = cond.parameters().get<double>("REFCON");
-      if (refcon < 1e-12) FOUR_C_THROW("reference concentration is too small: %f", refcon);
+      if (refcon < 1e-12) FOUR_C_THROW("reference concentration is too small: {}", refcon);
 
       const auto dlcap = cond.parameters().get<double>("DL_SPEC_CAP");
       double pot0dtnp = 0.0;
@@ -848,7 +848,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_electrode_status_a
 
       const auto gamma = cond.parameters().get<double>("GAMMA");
       const auto refcon = cond.parameters().get<double>("REFCON");
-      if (refcon < 1e-12) FOUR_C_THROW("reference concentration is too small: %f", refcon);
+      if (refcon < 1e-12) FOUR_C_THROW("reference concentration is too small: {}", refcon);
       const auto dlcap = cond.parameters().get<double>("DL_SPEC_CAP");
       if (dlcap != 0.0)
         FOUR_C_THROW("double layer charging is not implemented for Tafel electrode kinetics");
@@ -905,11 +905,11 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_electrode_status_a
       if (i0 < -1e-14)
         FOUR_C_THROW(
             "i0 is negative, \n"
-            "a positive definition is necessary due to generalized reaction models: %f",
+            "a positive definition is necessary due to generalized reaction models: {}",
             i0);
       const auto gamma = cond.parameters().get<double>("GAMMA");
       const auto refcon = cond.parameters().get<double>("REFCON");
-      if (refcon < 1e-12) FOUR_C_THROW("reference concentration is too small: %f", refcon);
+      if (refcon < 1e-12) FOUR_C_THROW("reference concentration is too small: {}", refcon);
       const auto dlcap = cond.parameters().get<double>("DL_SPEC_CAP");
       double pot0dtnp = 0.0;
       double pot0hist = 0.0;

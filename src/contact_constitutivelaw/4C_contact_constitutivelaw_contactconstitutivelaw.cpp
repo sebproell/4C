@@ -86,7 +86,7 @@ CONTACT::CONSTITUTIVELAW::ConstitutiveLaw::factory(const int id)
       FOUR_C_THROW("No contact constitutive law found\n");
     }
     default:
-      FOUR_C_THROW("unknown type of contact constitutive law %d\n", type);
+      FOUR_C_THROW("unknown type of contact constitutive law {}\n", type);
   }
 }
 

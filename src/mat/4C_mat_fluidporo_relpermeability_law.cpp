@@ -46,7 +46,7 @@ Mat::PAR::FluidPoroRelPermeabilityLaw::create_rel_permeability_law(int matID)
       break;
     }
     default:
-      FOUR_C_THROW("invalid material for permeability law %d", curmat->type());
+      FOUR_C_THROW("invalid material for permeability law {}", curmat->type());
       break;
   }
 

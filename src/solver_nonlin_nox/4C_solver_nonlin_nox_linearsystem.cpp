@@ -693,7 +693,7 @@ const Core::LinAlg::SparseMatrix& NOX::Nln::LinearSystem::get_jacobian_block(
     }
     default:
     {
-      FOUR_C_THROW("Unsupported LinSystem::OperatorType: %d | %s", jacType_,
+      FOUR_C_THROW("Unsupported LinSystem::OperatorType: {} | {}", jacType_,
           NOX::Nln::LinSystem::operator_type_to_string(jacType_).c_str());
       exit(EXIT_FAILURE);
     }
@@ -919,17 +919,17 @@ void NOX::Nln::LinearSystem::convert_sparse_to_dense_matrix(
     const int rgid = rgids[rlid];
     const int full_rlid = full_rangemap.LID(rgid);
     if (full_rlid == -1)
-      FOUR_C_THROW("Row/Range: Couldn't find the corresponding LID to GID %d", rgid);
+      FOUR_C_THROW("Row/Range: Couldn't find the corresponding LID to GID {}", rgid);
 
     for (int i = 0; i < numentries; ++i)
     {
       const int cgid = sparse.col_map().GID(indices[i]);
       if (cgid == -1)
-        FOUR_C_THROW("Column/Domain: Couldn't find the corresponding GID to LID %d", indices[i]);
+        FOUR_C_THROW("Column/Domain: Couldn't find the corresponding GID to LID {}", indices[i]);
 
       const int full_clid = full_domainmap.LID(cgid);
       if (full_clid == -1)
-        FOUR_C_THROW("Column/Domain: Couldn't find the corresponding LID to GID %d", cgid);
+        FOUR_C_THROW("Column/Domain: Couldn't find the corresponding LID to GID {}", cgid);
 
       dense(full_rlid, full_clid) = rvals[i];
     }
@@ -998,7 +998,7 @@ void NOX::Nln::LinearSystem::call_ggev(Core::LinAlg::SerialDenseMatrix& mat,
     ieigenvalues(i) /= beta(i);
   }
 
-  if (info) FOUR_C_THROW("GGEV failed! (info = %d)", info);
+  if (info) FOUR_C_THROW("GGEV failed! (info = {})", info);
 }
 
 /*----------------------------------------------------------------------*

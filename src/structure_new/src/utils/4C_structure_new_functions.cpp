@@ -22,7 +22,7 @@ namespace
   {
     auto* params = Global::Problem::instance()->materials()->parameter_by_id(mat_id);
     if (params->type() != Core::Materials::m_stvenant)
-      FOUR_C_THROW("Material %d is not a St.Venant-Kirchhoff structure material", mat_id);
+      FOUR_C_THROW("Material {} is not a St.Venant-Kirchhoff structure material", mat_id);
     auto* fparams = dynamic_cast<Mat::PAR::StVenantKirchhoff*>(params);
     if (!fparams) FOUR_C_THROW("Material does not cast to St.Venant-Kirchhoff structure material");
     return *fparams;

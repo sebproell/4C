@@ -309,7 +309,7 @@ double Cut::Point::t(Edge* edge, const Core::LinAlg::Matrix<3, 1>& coord)
           << " (Tol = " << Tolerance() + p1->Tolerance() + p2->Tolerance() << ")"
           << "\n"
           << x << x1 << x2 << "\n";
-      FOUR_C_THROW(str.str());
+      FOUR_C_THROW("{}", str.str());
     }
     // transformation to the parameter space coordinate t of the edge (between -1 and 1)
     Core::CLN::ClnWrapper t_cln = 2.0 * z_cln - 1.0;
@@ -345,7 +345,7 @@ double Cut::Point::t(Edge* edge, const Core::LinAlg::Matrix<3, 1>& coord)
           << " (Tol = " << tolerance() + p1->tolerance() + p2->tolerance() << ")"
           << "\n"
           << x << x1 << x2 << "\n";
-      FOUR_C_THROW(str.str());
+      FOUR_C_THROW("{}", str.str());
     }
     // transformation to the parameter space coordinate t of the edge (between -1 and 1)
     double t = 2.0 * z - 1.0;
@@ -397,7 +397,7 @@ double Cut::Point::t(Edge* edge, const Core::LinAlg::Matrix<3, 1>& coord)
           file.close();
           dump_connectivity_info();
           (*it)->dump_connectivity_info();
-          FOUR_C_THROW(str.str());
+          FOUR_C_THROW("{}", str.str());
         }
       }
     }

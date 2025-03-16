@@ -452,7 +452,7 @@ namespace Cut
             xyze, rst, normalvec1, normalvec2, unit_normal);
         break;
       default:
-        FOUR_C_THROW("Currently unsupported discretization type: %s",
+        FOUR_C_THROW("Currently unsupported discretization type: {}",
             Core::FE::cell_type_to_string(distype).c_str());
         exit(EXIT_FAILURE);
     }

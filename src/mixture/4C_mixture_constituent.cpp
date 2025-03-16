@@ -89,7 +89,7 @@ Mixture::PAR::MixtureConstituent* Mixture::PAR::MixtureConstituent::factory(int 
       break;
   }
   FOUR_C_THROW(
-      "The referenced material with id %d is not registered as a Mixture Constituent!", matnum);
+      "The referenced material with id {} is not registered as a Mixture Constituent!", matnum);
 }
 
 Mixture::MixtureConstituent::MixtureConstituent(Mixture::PAR::MixtureConstituent* params, int id)

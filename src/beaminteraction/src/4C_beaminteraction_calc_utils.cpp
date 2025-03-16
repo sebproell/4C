@@ -664,8 +664,8 @@ namespace BeamInteraction
         if (local_centerline_dof_indices.size() != n_centerline_dof)
           FOUR_C_THROW(
               "get_element_centerline_gid_indices: The size of the local_centerline_dof_indices "
-              "(%d) "
-              "does not match the number of beam dofs (%d).",
+              "({}) "
+              "does not match the number of beam dofs ({}).",
               local_centerline_dof_indices.size(), n_centerline_dof);
       }
       else
@@ -777,8 +777,8 @@ namespace BeamInteraction
           if ((unsigned int)eleforce_centerlineDOFs[iele].numRows() !=
               ele_centerlinedofindices[iele].size())
             FOUR_C_THROW(
-                "size mismatch! need to assemble %d values of centerline-Dof based "
-                "force vector into element vector but only got %d element-local Dof indices",
+                "size mismatch! need to assemble {} values of centerline-Dof based "
+                "force vector into element vector but only got {} element-local Dof indices",
                 eleforce_centerlineDOFs[iele].numRows(), ele_centerlinedofindices[iele].size());
 
           // Todo maybe use a more general 'SerialDenseAssemble' method here
@@ -801,16 +801,16 @@ namespace BeamInteraction
             if ((unsigned int)elestiff_centerlineDOFs[iele][jele].numRows() !=
                 ele_centerlinedofindices[iele].size())
               FOUR_C_THROW(
-                  "size mismatch! need to assemble %d row values of centerline-Dof based "
-                  "stiffness matrix into element matrix but only got %d element-local Dof indices",
+                  "size mismatch! need to assemble {} row values of centerline-Dof based "
+                  "stiffness matrix into element matrix but only got {} element-local Dof indices",
                   elestiff_centerlineDOFs[iele][jele].numRows(),
                   ele_centerlinedofindices[iele].size());
 
             if ((unsigned int)elestiff_centerlineDOFs[iele][jele].numCols() !=
                 ele_centerlinedofindices[jele].size())
               FOUR_C_THROW(
-                  "size mismatch! need to assemble %d column values of centerline-Dof based "
-                  "stiffness matrix into element matrix but only got %d element-local Dof indices",
+                  "size mismatch! need to assemble {} column values of centerline-Dof based "
+                  "stiffness matrix into element matrix but only got {} element-local Dof indices",
                   elestiff_centerlineDOFs[iele][jele].numCols(),
                   ele_centerlinedofindices[jele].size());
 
@@ -844,8 +844,8 @@ namespace BeamInteraction
       // Safety check: dimensions.
       if ((unsigned int)row_matrix_centerlineDOFs.numCols() != ele_centerlinedofindices.size())
         FOUR_C_THROW(
-            "Size mismatch! Need to assemble %d col values of centerline-Dof based "
-            "stiffness matrix into element matrix but only got %d element-local Dof indices",
+            "Size mismatch! Need to assemble {} col values of centerline-Dof based "
+            "stiffness matrix into element matrix but only got {} element-local Dof indices",
             row_matrix_centerlineDOFs.numCols(), ele_centerlinedofindices.size());
 
       // Fill in the values.
@@ -1282,7 +1282,7 @@ namespace BeamInteraction
         FOUR_C_THROW(" Your cantor paired value exceeds limit of data type int.");
       if (pair != cantor_de_pairing(z))
         FOUR_C_THROW(
-            " %i and %i cannot be paired using Cantor pairing function", pair.first, pair.second);
+            " {} and {} cannot be paired using Cantor pairing function", pair.first, pair.second);
 #endif
 
       return z;

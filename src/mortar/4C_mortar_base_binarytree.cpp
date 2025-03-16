@@ -150,7 +150,7 @@ void Mortar::BaseBinaryTreeNode::calculate_slabs_dop()
   {
     int gid = elelist()[i];
     Core::Elements::Element* element = discret().g_element(gid);
-    if (!element) FOUR_C_THROW("ERROR: Cannot find element with gid %\n", gid);
+    if (!element) FOUR_C_THROW("ERROR: Cannot find element with gid {}", gid);
     Mortar::Element* mrtrelement = dynamic_cast<Mortar::Element*>(element);
     Core::Nodes::Node** nodes = mrtrelement->points();
     if (!nodes) FOUR_C_THROW("ERROR: Null pointer!");

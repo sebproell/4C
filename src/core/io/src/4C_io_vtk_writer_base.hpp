@@ -276,13 +276,13 @@ class VtkWriterBase
     std::size_t start = line.find(name + "=\"");
     if (start == std::string::npos)
     {
-      FOUR_C_THROW("Could not find parameter %s in line %s", name.c_str(), line.c_str());
+      FOUR_C_THROW("Could not find parameter {} in line {}", name.c_str(), line.c_str());
     }
     start += name.length() + 2;
     std::size_t end = line.find('"', start + 1);
     if (end == std::string::npos)
     {
-      FOUR_C_THROW("Syntax error in line %s", line.c_str());
+      FOUR_C_THROW("Syntax error in line {}", line.c_str());
     }
     return line.substr(start, end - start);
   }

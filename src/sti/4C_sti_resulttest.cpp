@@ -76,7 +76,7 @@ double STI::STIResultTest::result_special(
   // catch unknown quantity strings
   else
     FOUR_C_THROW(
-        "Quantity '%s' not supported by result testing functionality for scatra-thermo "
+        "Quantity '{}' not supported by result testing functionality for scatra-thermo "
         "interaction!",
         quantity.c_str());
 

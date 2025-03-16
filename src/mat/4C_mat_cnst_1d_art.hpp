@@ -217,7 +217,7 @@ namespace Mat
       else if (i == 1)
         return params_->pext2_;
       else
-        FOUR_C_THROW("There is no pressure with id %d", i);
+        FOUR_C_THROW("There is no pressure with id {}", i);
       return 0.0;
     }
 

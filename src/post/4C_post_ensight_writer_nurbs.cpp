@@ -1363,7 +1363,7 @@ void EnsightWriter::write_coordinates_for_nurbs_shapefunctions(
   Epetra_Import proc0importer(*proc0map, *vispointmap_);
   Core::LinAlg::MultiVector<double> allnodecoords(*proc0map, 3);
   int err = allnodecoords.Import(*nodecoords, proc0importer, Insert);
-  if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns %d", err);
+  if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
 
   // write the node coordinates (only proc 0)
   // ensight format requires x_1 .. x_n, y_1 .. y_n, z_1 ... z_n
@@ -1804,7 +1804,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
       {
         if (dim != numdf)
         {
-          FOUR_C_THROW("dim and numdf not matching for field %s", name.c_str());
+          FOUR_C_THROW("dim and numdf not matching for field {}", name.c_str());
         }
 
         for (int rr = 0; rr < dim; ++rr)
@@ -1816,7 +1816,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
       {
         if (dim != numdf)
         {
-          FOUR_C_THROW("dim and numdf not matching for field %s", name.c_str());
+          FOUR_C_THROW("dim and numdf not matching for field {}", name.c_str());
         }
         for (int rr = 0; rr < dim; ++rr)
         {
@@ -1856,7 +1856,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
         else if ((name == "c_5") or (name == "averaged_c_5"))
           k = 4;
         else
-          FOUR_C_THROW("Up to now, I'm not able to write a field named %s\n", name.c_str());
+          FOUR_C_THROW("Up to now, I'm not able to write a field named {}\n", name.c_str());
 
         Core::Nodes::Node* n = nurbsdis->l_row_node(inode);
         int numdofpernode = actele->num_dof_per_node(*n);
@@ -1878,7 +1878,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
       {
         if (dim != numdf)
         {
-          FOUR_C_THROW("dim and numdf not matching for field %s", name.c_str());
+          FOUR_C_THROW("dim and numdf not matching for field {}", name.c_str());
         }
         for (int rr = 0; rr < dim; ++rr)
         {
@@ -1891,7 +1891,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
       }
       else
       {
-        FOUR_C_THROW("Up to now, I'm not able to write a field named %s\n", name.c_str());
+        FOUR_C_THROW("Up to now, I'm not able to write a field named {}\n", name.c_str());
       }
     }
   }
@@ -2057,7 +2057,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
       else if ((name == "c_5") or (name == "averaged_c_5"))
         k = 4;
       else
-        FOUR_C_THROW("Up to now, I'm not able to write a field named %s\n", name.c_str());
+        FOUR_C_THROW("Up to now, I'm not able to write a field named {}\n", name.c_str());
 
       for (int inode = 0; inode < numnp; ++inode)
       {
@@ -2103,7 +2103,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
     }
     else
     {
-      FOUR_C_THROW("Up to now, I'm not able to write a field named %s\n", name.c_str());
+      FOUR_C_THROW("Up to now, I'm not able to write a field named {}\n", name.c_str());
     }
 
     interpolate_nurbs_result_to_viz_points(*idata, dim, npatch, vpoff, ele_cart_id, actele,
@@ -2115,7 +2115,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
   Epetra_Import proc0importer(*proc0map_, *vispointmap_);
   Core::LinAlg::MultiVector<double> allsols(*proc0map_, numdf);
   int err = allsols.Import(*idata, proc0importer, Insert);
-  if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns %d", err);
+  if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
 
   // write the node results (only proc 0)
   // ensight format requires u_1 .. u_n, v_1 .. v_n, w_1 ... w_n, as for nodes
@@ -3515,7 +3515,7 @@ void EnsightWriter::write_nodal_result_step_for_nurbs(std::ofstream& file, const
   Epetra_Import proc0importer(*proc0map_, *vispointmap_);
   Core::LinAlg::MultiVector<double> allsols(*proc0map_, numdf);
   int err = allsols.Import(*idata, proc0importer, Insert);
-  if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns %d", err);
+  if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
 
   //---------------
   // write results

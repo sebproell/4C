@@ -1272,7 +1272,7 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::poro_fd_check()
     std::cout << "******************finite difference check done***************\n\n" << std::endl;
   }
   else
-    FOUR_C_THROW("PoroFDCheck failed in step: %d, iter: %d", step(), itnum_);
+    FOUR_C_THROW("PoroFDCheck failed in step: {}, iter: {}", step(), itnum_);
 
   return;
 }

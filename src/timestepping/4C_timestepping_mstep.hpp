@@ -55,7 +55,7 @@ namespace TimeStepping
     STATE& operator[](const int step  //!< inquiry step
     )
     {
-      if (not step_exists(step)) FOUR_C_THROW("Step %d is not admissible", step);
+      if (not step_exists(step)) FOUR_C_THROW("Step {} is not admissible", step);
       return state_[index_by_step(step)];
     }
 
@@ -63,7 +63,7 @@ namespace TimeStepping
     const STATE& operator[](const int step  //!< inquiry step
     ) const
     {
-      if (not step_exists(step)) FOUR_C_THROW("Step %d is not admissible", step);
+      if (not step_exists(step)) FOUR_C_THROW("Step {} is not admissible", step);
       return state_[index_by_step(step)];
     }
 
@@ -71,7 +71,7 @@ namespace TimeStepping
     std::shared_ptr<STATE> operator()(const int step  //!< inquiry step
     )
     {
-      if (not step_exists(step)) FOUR_C_THROW("Step %d is not admissible", step);
+      if (not step_exists(step)) FOUR_C_THROW("Step {} is not admissible", step);
       return Core::Utils::shared_ptr_from_ref(state_[index_by_step(step)]);
     }
 
