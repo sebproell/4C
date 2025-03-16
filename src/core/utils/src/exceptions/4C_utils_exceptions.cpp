@@ -27,12 +27,7 @@ namespace Core
 {
   namespace Internal
   {
-    void ErrorHelper::throw_error(const std::string& format, ...) const
-    {
-      throw_error(format.c_str());
-    }
-
-    void ErrorHelper::throw_error(const char* format, ...) const
+    void throw_error(const ErrorHelper& error_helper, const std::string& formatted_message)
     {
       int initialized;
       MPI_Initialized(&initialized);
@@ -42,23 +37,15 @@ namespace Core
         MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
       }
 
-      va_list arglist;
-      va_start(arglist, format);
-      constexpr int buffer_size = 8096;
-      std::array<char, buffer_size> buffer;
-      const int written_size = std::vsnprintf(buffer.data(), buffer_size, format, arglist);
-      va_end(arglist);
-
-      std::string formatted_msg(buffer.data(), std::min(buffer_size, written_size));
-
       std::stringstream compound_message;
-      compound_message << "PROC " << myrank << " ERROR in " << file_name << ", line " << line_number
-                       << ":\n";
+      compound_message << "PROC " << myrank << " ERROR in " << error_helper.file_name << ", line "
+                       << error_helper.line_number << ":\n";
 
-      if (failed_assertion_string != nullptr)
-        compound_message << "The following test failed:\n  " << failed_assertion_string << "\n";
+      if (error_helper.failed_assertion_string)
+        compound_message << "The following test failed:\n  " << error_helper.failed_assertion_string
+                         << "\n";
 
-      compound_message << "Error message:\n  " << formatted_msg;
+      compound_message << "Error message:\n  " << formatted_message;
       compound_message << "\n------------------\n";
 
       throw Core::Exception(compound_message.str());
