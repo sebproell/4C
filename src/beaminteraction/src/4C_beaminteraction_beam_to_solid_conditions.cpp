@@ -36,6 +36,7 @@
 #include "4C_geometry_pair_line_to_3D_evaluation_data.hpp"
 #include "4C_geometry_pair_line_to_surface_evaluation_data.hpp"
 #include "4C_inpar_beam_to_solid.hpp"
+#include "4C_utils_std23_unreachable.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -877,6 +878,7 @@ BeamInteraction::BeamToSolidConditionSurface::create_contact_pair_internal(
       }
     }
   }
+  std23::unreachable();
 }
 
 FOUR_C_NAMESPACE_CLOSE
