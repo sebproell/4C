@@ -595,7 +595,7 @@ void CONTACT::PenaltyStrategy::update_constraint_norm(int uzawaiter)
   {
     // export weighted gap vector to gactiveN-map
     std::shared_ptr<Core::LinAlg::Vector<double>> gact;
-    if (constr_direction_ == CONTACT::constr_xyz)
+    if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
     {
       gact = Core::LinAlg::create_vector(*gactivedofs_, true);
       Core::LinAlg::export_to(*wgap_, *gact);

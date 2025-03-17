@@ -83,11 +83,11 @@ namespace CONTACT
 
   /// Type of formulation of constraint equations
   /// (this enum represents the input file parameter CONSTRAINT_DIRECTIONS)
-  enum ConstraintDirection
+  enum class ConstraintDirection
   {
-    constr_vague,  ///< no constraint directions defined
-    constr_ntt,    ///< local normal and tangential coordinates
-    constr_xyz     ///< global Cartesian coordinates
+    vague,  ///< no constraint directions defined
+    ntt,    ///< local normal and tangential coordinates
+    xyz     ///< global Cartesian coordinates
   };
 
   /// Local definition of problemtype to avoid use of globalproblem.H

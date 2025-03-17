@@ -130,7 +130,9 @@ void CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& l
 
   Core::Utils::string_to_integral_parameter<CONTACT::ConstraintDirection>("CONSTRAINT_DIRECTIONS",
       "ntt", "formulation of constraints in normal/tangential or xyz-direction",
-      tuple<std::string>("ntt", "xyz"), tuple<CONTACT::ConstraintDirection>(constr_ntt, constr_xyz),
+      tuple<std::string>("ntt", "xyz"),
+      tuple<CONTACT::ConstraintDirection>(
+          CONTACT::ConstraintDirection::ntt, CONTACT::ConstraintDirection::xyz),
       scontact);
 
   scontact.specs.emplace_back(parameter<bool>("NONSMOOTH_GEOMETRIES",

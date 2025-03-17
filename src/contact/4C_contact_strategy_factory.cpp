@@ -931,7 +931,8 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
               const auto& onoff = condition->parameters().get<std::vector<int>>("ONOFF");
               for (unsigned k = 0; k < onoff.size(); k++)
                 if (onoff.at(k) == 1) cnode->dbc_dofs()[k] = true;
-              if (stype == CONTACT::solution_lagmult && constr_direction != CONTACT::constr_xyz)
+              if (stype == CONTACT::solution_lagmult &&
+                  constr_direction != CONTACT::ConstraintDirection::xyz)
               {
                 FOUR_C_THROW(
                     "Contact symmetry with Lagrange multiplier method"
@@ -1005,7 +1006,8 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
                 if (onoff.at(k) == 1)
                 {
                   cnode->dbc_dofs()[k] = true;
-                  if (stype == CONTACT::solution_lagmult && constr_direction != CONTACT::constr_xyz)
+                  if (stype == CONTACT::solution_lagmult &&
+                      constr_direction != CONTACT::ConstraintDirection::xyz)
                   {
                     FOUR_C_THROW(
                         "Contact symmetry with Lagrange multiplier method"

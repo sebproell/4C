@@ -1312,9 +1312,9 @@ void CONTACT::AbstractStrategy::initialize_mortar()
   dmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(slave_dof_row_map(true), 10);
   mmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(slave_dof_row_map(true), 100);
 
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
     wgap_ = Core::LinAlg::create_vector(slave_dof_row_map(true), true);
-  else if (constr_direction_ == CONTACT::constr_ntt)
+  else if (constr_direction_ == CONTACT::ConstraintDirection::ntt)
     wgap_ = Core::LinAlg::create_vector(slave_row_nodes(), true);
   else
     FOUR_C_THROW("unknown contact constraint direction");

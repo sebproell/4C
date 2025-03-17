@@ -67,7 +67,7 @@ void CONTACT::LagrangeStrategy::initialize()
   linmmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *gmdofrowmap_, 100, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     // (re)setup global tangent matrix
     if (!friction_) tmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gactivedofs_, 3);
@@ -175,7 +175,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
   /* export weighted gap vector to gactiveN-map                         */
   /**********************************************************************/
   std::shared_ptr<Core::LinAlg::Vector<double>> gact;
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     gact = Core::LinAlg::create_vector(*gactivedofs_, true);
     if (gact->global_length()) Core::LinAlg::export_to(*wgap_, *gact);
@@ -206,7 +206,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     if (system_type() != CONTACT::system_condensed)
       interface_[i]->assemble_inactiverhs(*inactiverhs_);
   }
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     smatrix_->complete(*gsmdofrowmap_, *gactivedofs_);
   }
@@ -226,7 +226,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
   std::shared_ptr<Epetra_Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
   std::shared_ptr<Epetra_Map> gstickdofs = Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);
 
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     linstickLM_->complete(*gstickdofs, *gstickdofs);
     linstickDIS_->complete(*gsmdofrowmap_, *gstickdofs);
@@ -969,7 +969,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     std::shared_ptr<Core::LinAlg::Vector<double>> fstmod;
     if (stickset)
     {
-      if (constr_direction_ == CONTACT::constr_xyz)
+      if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
         fstmod = std::make_shared<Core::LinAlg::Vector<double>>(*gstickdofs);
       else
         fstmod = std::make_shared<Core::LinAlg::Vector<double>>(*gstickt);
@@ -977,7 +977,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
           Core::LinAlg::matrix_multiply(*linstickLM_, false, *invdst, true, false, false, true);
       temp1->multiply(false, *fa, *fstmod);
 
-      if (constr_direction_ == CONTACT::constr_xyz)
+      if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
         tempvec1 = std::make_shared<Core::LinAlg::Vector<double>>(*gstickdofs);
       else
         tempvec1 = std::make_shared<Core::LinAlg::Vector<double>>(*gstickt);
@@ -993,7 +993,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
 
     if (slipset)
     {
-      if (constr_direction_ == CONTACT::constr_xyz)
+      if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
         fslmod = std::make_shared<Core::LinAlg::Vector<double>>(*gslipdofs_);
       else
         fslmod = std::make_shared<Core::LinAlg::Vector<double>>(*gslipt_);
@@ -1001,7 +1001,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
           Core::LinAlg::matrix_multiply(*linslipLM_, false, *invdsl, true, false, false, true);
       temp->multiply(false, *fa, *fslmod);
 
-      if (constr_direction_ == CONTACT::constr_xyz)
+      if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
         tempvec1 = std::make_shared<Core::LinAlg::Vector<double>>(*gslipdofs_);
       else
         tempvec1 = std::make_shared<Core::LinAlg::Vector<double>>(*gslipt_);
@@ -1917,7 +1917,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
   /* export weighted gap vector to gactiveN-map                         */
   /**********************************************************************/
   std::shared_ptr<Core::LinAlg::Vector<double>> gact;
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     gact = Core::LinAlg::create_vector(*gactivedofs_, true);
     if (gact->global_length())
@@ -1960,7 +1960,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
       interface_[i]->assemble_tangrhs(*tangrhs_);
     }
   }
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     // fill_complete() global matrix T
     tmatrix_->complete(*gactivedofs_, *gactivedofs_);
@@ -2649,7 +2649,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
     std::shared_ptr<Core::LinAlg::SparseMatrix> tinvda;
     if (aset)
     {
-      if (constr_direction_ == CONTACT::constr_xyz)
+      if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
         famod = std::make_shared<Core::LinAlg::Vector<double>>(*gactivedofs_);
       else
         famod = std::make_shared<Core::LinAlg::Vector<double>>(*gactivet_);
@@ -2990,7 +2990,7 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
   if (!friction_)
   {
     // build constraint matrix kzd
-    if (constr_direction_ == CONTACT::constr_xyz)
+    if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
     {
       if (gactivedofs_->NumGlobalElements())
       {
@@ -3029,7 +3029,7 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
     std::shared_ptr<Epetra_Map> gstickdofs = Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);
 
     // build constraint matrix kzd
-    if (constr_direction_ == CONTACT::constr_xyz)
+    if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
     {
       if (gactivedofs_->NumGlobalElements()) kzd.add(*smatrix_, false, 1.0, 1.0);
       if (gstickdofs->NumGlobalElements()) kzd.add(*linstickDIS_, false, 1.0, 1.0);
@@ -3051,7 +3051,7 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
     onesdiag.complete();
 
     // build constraint matrix kzz
-    if (constr_direction_ == CONTACT::constr_xyz)
+    if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
     {
       if (gidofs->NumGlobalElements()) kzz.add(onesdiag, false, 1.0, 1.0);
       if (gstickdofs->NumGlobalElements()) kzz.add(*linstickLM_, false, 1.0, 1.0);
@@ -3277,7 +3277,7 @@ void CONTACT::LagrangeStrategy::evaluate_constr_rhs()
 
   // export weighted gap vector
   std::shared_ptr<Core::LinAlg::Vector<double>> gact;
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     gact = Core::LinAlg::create_vector(*gactivedofs_, true);
     if (gact->global_length())
@@ -3481,7 +3481,7 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_friction()
     if (system_type() != CONTACT::system_condensed)
       interface_[i]->assemble_inactiverhs(*inactiverhs_);
   }
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     smatrix_->complete(*gsmdofrowmap_, *gactivedofs_);
   }
@@ -3501,7 +3501,7 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_friction()
   std::shared_ptr<Epetra_Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
   std::shared_ptr<Epetra_Map> gstickdofs = Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);
 
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     linstickLM_->complete(*gstickdofs, *gstickdofs);
     linstickDIS_->complete(*gsmdofrowmap_, *gstickdofs);
@@ -3742,7 +3742,7 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_frictionless()
       interface_[i]->assemble_tangrhs(*tangrhs_);
     }
   }
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     // fill_complete() global matrix T
     tmatrix_->complete(*gactivedofs_, *gactivedofs_);
@@ -5223,7 +5223,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
   /* export weighted gap vector to gactiveN-map                         */
   /**********************************************************************/
   std::shared_ptr<Core::LinAlg::Vector<double>> gact;
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     gact = Core::LinAlg::create_vector(*gactivedofs_, true);
     if (gact->global_length()) Core::LinAlg::export_to(*wgap_, *gact);
@@ -5697,7 +5697,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
   std::shared_ptr<Core::LinAlg::Vector<double>> fstmod;
   if (stickset)
   {
-    if (constr_direction_ == CONTACT::constr_xyz)
+    if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
       fstmod = std::make_shared<Core::LinAlg::Vector<double>>(*gstickdofs);
     else
       fstmod = std::make_shared<Core::LinAlg::Vector<double>>(*gstickt);
@@ -5705,7 +5705,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
         Core::LinAlg::matrix_multiply(*linstickLM_, false, *invdst, true, false, false, true);
     temp1->multiply(false, *fa, *fstmod);
 
-    if (constr_direction_ == CONTACT::constr_xyz)
+    if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
       tempvec1 = std::make_shared<Core::LinAlg::Vector<double>>(*gstickdofs);
     else
       tempvec1 = std::make_shared<Core::LinAlg::Vector<double>>(*gstickt);
@@ -5721,7 +5721,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
 
   if (slipset)
   {
-    if (constr_direction_ == CONTACT::constr_xyz)
+    if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
       fslmod = std::make_shared<Core::LinAlg::Vector<double>>(*gslipdofs_);
     else
       fslmod = std::make_shared<Core::LinAlg::Vector<double>>(*gslipt_);
@@ -5729,7 +5729,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
         Core::LinAlg::matrix_multiply(*linslipLM_, false, *invdsl, true, false, false, true);
     temp->multiply(false, *fa, *fslmod);
 
-    if (constr_direction_ == CONTACT::constr_xyz)
+    if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
       tempvec1 = std::make_shared<Core::LinAlg::Vector<double>>(*gslipdofs_);
     else
       tempvec1 = std::make_shared<Core::LinAlg::Vector<double>>(*gslipt_);
@@ -6068,7 +6068,7 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
   /* export weighted gap vector to gactiveN-map                         */
   /**********************************************************************/
   std::shared_ptr<Core::LinAlg::Vector<double>> gact;
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     gact = Core::LinAlg::create_vector(*gactivedofs_, true);
     if (gact->global_length())
@@ -6439,7 +6439,7 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
   std::shared_ptr<Core::LinAlg::SparseMatrix> tinvda;
   if (aset)
   {
-    if (constr_direction_ == CONTACT::constr_xyz)
+    if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
       famod = std::make_shared<Core::LinAlg::Vector<double>>(*gactivedofs_);
     else
       famod = std::make_shared<Core::LinAlg::Vector<double>>(*gactivet_);

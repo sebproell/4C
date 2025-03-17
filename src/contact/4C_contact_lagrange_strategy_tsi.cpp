@@ -156,7 +156,7 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
   std::shared_ptr<Core::LinAlg::Vector<double>> rcsa =
       Core::LinAlg::create_vector(*gactivedofs_, true);
   std::shared_ptr<Core::LinAlg::Vector<double>> g_all;
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
     g_all = Core::LinAlg::create_vector(*gsdofrowmap_, true);
   else
     g_all = Core::LinAlg::create_vector(*gsnoderowmap_, true);
@@ -250,7 +250,7 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
 
   // normal contact
   std::shared_ptr<Core::LinAlg::Vector<double>> gact;
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     gact = Core::LinAlg::create_vector(*gactivedofs_, true);
     if (gact->global_length()) Core::LinAlg::export_to(*g_all, *gact);
@@ -639,7 +639,7 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
   dInvMaThermo.complete(*thermo_m_dofs, *thermo_act_dofs);
 
   // apply contact symmetry conditions
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     double haveDBC = 0;
     non_redist_gsdirichtoggle_->norm_1(&haveDBC);

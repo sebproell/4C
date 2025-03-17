@@ -181,7 +181,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
   std::shared_ptr<Core::LinAlg::Vector<double>> fcsa =
       Core::LinAlg::create_vector(*interface_->active_dofs(), true);
   std::shared_ptr<Core::LinAlg::Vector<double>> g_all;
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
     g_all = Core::LinAlg::create_vector(*interface_->slave_row_dofs(), true);
   else
     g_all = Core::LinAlg::create_vector(*interface_->slave_row_nodes(), true);
@@ -243,7 +243,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
 
   // normal contact
   std::shared_ptr<Core::LinAlg::Vector<double>> gact;
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     gact = Core::LinAlg::create_vector(*interface_->active_dofs(), true);
     if (gact->global_length()) Core::LinAlg::export_to(*g_all, *gact);
@@ -477,7 +477,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
   rs_a_ = rsa;
   // apply contact symmetry conditions
   if (!sdirichtoggle_) FOUR_C_THROW("you didn't call store_dirichlet_status");
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     double haveDBC = 0;
     sdirichtoggle_->norm_1(&haveDBC);

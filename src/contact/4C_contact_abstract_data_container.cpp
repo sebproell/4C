@@ -74,7 +74,7 @@ CONTACT::AbstractStrategyDataContainer::AbstractStrategyDataContainer()
       inttime_(0.0),
       ivel_(0),
       stype_(CONTACT::solution_vague),
-      constr_direction_(CONTACT::constr_vague)
+      constr_direction_(CONTACT::ConstraintDirection::vague)
 {
   return;
 }

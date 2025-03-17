@@ -46,7 +46,7 @@ CONTACT::InterfaceDataContainer::InterfaceDataContainer()
       friction_(false),
       non_smooth_contact_(false),
       two_half_pass_(false),
-      constr_direction_(CONTACT::constr_vague),
+      constr_direction_(CONTACT::ConstraintDirection::vague),
       activenodes_(nullptr),
       activedofs_(nullptr),
       inactivenodes_(nullptr),
@@ -6585,7 +6585,7 @@ void CONTACT::Interface::evaluate_relative_movement(
         }
       }
 
-      if (constr_direction_ == CONTACT::constr_xyz)
+      if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
       {
         for (int j = 0; j < n_dim(); j++)
         {
