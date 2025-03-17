@@ -7,8 +7,10 @@
 
 #include "4C_w1.hpp"
 
+#include "4C_comm_pack_helpers.hpp"
 #include "4C_comm_utils_factory.hpp"
 #include "4C_fem_discretization.hpp"
+#include "4C_fem_general_element.hpp"
 #include "4C_fem_general_utils_fem_shapefunctions.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_solid_3D_ele_nullspace.hpp"
@@ -155,7 +157,7 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::Wall1LineType::creat
  |  ctor (public)                                            mgit 01/08/|
  *----------------------------------------------------------------------*/
 Discret::Elements::Wall1::Wall1(int id, int owner)
-    : SoBase(id, owner),
+    : Core::Elements::Element(id, owner),
       material_(0),
       thickness_(0.0),
       old_step_length_(0.0),
@@ -173,7 +175,7 @@ Discret::Elements::Wall1::Wall1(int id, int owner)
  |  copy-ctor (public)                                       mgit 01/08|
  *----------------------------------------------------------------------*/
 Discret::Elements::Wall1::Wall1(const Discret::Elements::Wall1& old)
-    : SoBase(old),
+    : Core::Elements::Element(old),
       material_(old.material_),
       thickness_(old.thickness_),
       old_step_length_(old.old_step_length_),
@@ -182,6 +184,9 @@ Discret::Elements::Wall1::Wall1(const Discret::Elements::Wall1& old)
       stresstype_(old.stresstype_),
       iseas_(old.iseas_),
       eastype_(old.eas_vague),
+      interface_ptr_(old.interface_ptr_),
+      material_post_setup_(old.material_post_setup_),
+      kintype_(old.kintype_),
       easdata_(old.easdata_),
       distype_(old.distype_)
 {
@@ -214,7 +219,7 @@ void Discret::Elements::Wall1::pack(Core::Communication::PackBuffer& data) const
   int type = unique_par_object_id();
   add_to_pack(data, type);
   // add base class Element
-  SoBase::pack(data);
+  Core::Elements::Element::pack(data);
   // material_
   add_to_pack(data, material_);
   // thickness
@@ -235,6 +240,8 @@ void Discret::Elements::Wall1::pack(Core::Communication::PackBuffer& data) const
   add_to_pack(data, distype_);
   // line search
   add_to_pack(data, old_step_length_);
+  Core::Communication::add_to_pack(data, material_post_setup_);
+  Core::Communication::add_to_pack(data, kintype_);
 
   return;
 }
@@ -249,7 +256,7 @@ void Discret::Elements::Wall1::unpack(Core::Communication::UnpackBuffer& buffer)
   Core::Communication::extract_and_assert_id(buffer, unique_par_object_id());
 
   // extract base class Element
-  SoBase::unpack(buffer);
+  Core::Elements::Element::unpack(buffer);
   // material_
   extract_from_pack(buffer, material_);
   // thickness_
@@ -270,6 +277,8 @@ void Discret::Elements::Wall1::unpack(Core::Communication::UnpackBuffer& buffer)
   extract_from_pack(buffer, distype_);
   // line search
   extract_from_pack(buffer, old_step_length_);
+  Core::Communication::extract_from_pack(buffer, material_post_setup_);
+  Core::Communication::extract_from_pack(buffer, kintype_);
 
   return;
 }
@@ -308,6 +317,46 @@ void Discret::Elements::Wall1::green_lagrange_plane3d(
   gl3d(5) = 0.0;                      // 2*E_{31}
 
   return;
+}
+
+void Discret::Elements::Wall1::set_params_interface_ptr(const Teuchos::ParameterList& p)
+{
+  if (p.isParameter("interface"))
+    interface_ptr_ = p.get<std::shared_ptr<Core::Elements::ParamsInterface>>("interface");
+  else
+    interface_ptr_ = nullptr;
+}
+
+std::shared_ptr<Core::Elements::ParamsInterface> Discret::Elements::Wall1::params_interface_ptr()
+{
+  return interface_ptr_;
+}
+
+// Check, whether the material post setup routine was
+void Discret::Elements::Wall1::ensure_material_post_setup(Teuchos::ParameterList& params)
+{
+  if (!material_post_setup_)
+  {
+    material_post_setup(params);
+  }
+}
+
+void Discret::Elements::Wall1::material_post_setup(Teuchos::ParameterList& params)
+{
+  // This is the minimal implementation. Advanced materials may need extra implementation here.
+  solid_material()->post_setup(params, id());
+  material_post_setup_ = true;
+}
+
+std::shared_ptr<Mat::So3Material> Discret::Elements::Wall1::solid_material(int nummat) const
+{
+  return std::dynamic_pointer_cast<Mat::So3Material>(Core::Elements::Element::material(nummat));
+}
+
+Solid::Elements::ParamsInterface& Discret::Elements::Wall1::str_params_interface()
+{
+  if (not is_params_interface()) FOUR_C_THROW("The interface ptr is not set!");
+  return *(std::dynamic_pointer_cast<Solid::Elements::ParamsInterface>(interface_ptr_));
 }
 
 FOUR_C_NAMESPACE_CLOSE

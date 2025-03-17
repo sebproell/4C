@@ -24,7 +24,8 @@
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_linalg_vector.hpp"
-#include "4C_so3_base.hpp"
+#include "4C_mat_so3_material.hpp"
+#include "4C_structure_new_elements_paramsinterface.hpp"
 
 #include <memory>
 
@@ -105,7 +106,7 @@ namespace Discret
      * - [4] WA Wall and B Bornemann, Nichtlineare Finite-Element-Methods,
      *   Vorlesungsskript, Lehrstuhl fuer Numerische Mechanik, SS 2007.
      */
-    class Wall1 : public SoBase
+    class Wall1 : public Core::Elements::Element
     {
      public:
       /// @name Friends
@@ -197,7 +198,7 @@ namespace Discret
       /*!
       \brief Does this element use EAS?
       */
-      bool have_eas() const override { return (eastype_ != eas_vague); };
+      [[nodiscard]] bool have_eas() const { return (eastype_ != eas_vague); };
 
       /// Get number of degrees of freedom of a certain node
       /// (implements pure virtual Core::Elements::Element)
@@ -280,6 +281,40 @@ namespace Discret
 
       //@}
 
+      /*!
+      \brief Return the material of this element
+
+      Note: The input parameter nummat is not the material number from input file
+            as in set_material(int matnum), but the number of the material within
+            the vector of materials the element holds
+
+      \param nummat (in): number of requested material
+      */
+      std::shared_ptr<Mat::So3Material> solid_material(int nummat = 0) const;
+
+      /** \brief get access to the interface
+       *
+       */
+      inline Core::Elements::ParamsInterface& params_interface()
+      {
+        if (not is_params_interface()) FOUR_C_THROW("The interface ptr is not set!");
+        return *interface_ptr_;
+      }
+
+      [[nodiscard]] inline bool is_params_interface() const override
+      {
+        return (interface_ptr_ != nullptr);
+      }
+
+      std::shared_ptr<Core::Elements::ParamsInterface> params_interface_ptr() override;
+
+      void set_params_interface_ptr(const Teuchos::ParameterList& p) override;
+
+      FourC::Solid::Elements::ParamsInterface& str_params_interface();
+
+      // get the kinematic type from the element
+      [[nodiscard]] Inpar::Solid::KinemType kinematic_type() const { return kintype_; }
+
      protected:
       /// type of 2D dimension reduction
       enum DimensionalReduction
@@ -323,6 +358,17 @@ namespace Discret
       bool iseas_;
       /// EAS type
       enum EasType eastype_;
+
+      /** \brief interface ptr
+       *
+       *  data exchange between the element and the time integrator. */
+      std::shared_ptr<Core::Elements::ParamsInterface> interface_ptr_ = nullptr;
+
+      //! Flag of the status of the material post setup routine
+      bool material_post_setup_ = false;
+
+      //! kinematic type
+      Inpar::Solid::KinemType kintype_ = Inpar::Solid::KinemType::vague;
 
       struct EASData
       {
@@ -653,6 +699,24 @@ namespace Discret
       /// set number of gauss points to element shape default
       Core::FE::GaussRule2D get_gaussrule(int* ngp  ///< number of Gauss points
       );
+
+      /*!
+       * \brief This method executes the material_post_setup if not already executed.
+       *
+       * This method should be placed in the Evaluate call. It will internally check, whether the
+       * material post_setup() routine was already called in if not, it invokes this call directly.
+       *
+       * @param params Container for additional information
+       */
+      void ensure_material_post_setup(Teuchos::ParameterList& params);
+
+      /*!
+       * \brief This method calls the post_setup routine of all materials.
+       *
+       * It can be used to pass information from the element to the materials after everything
+       * is set up. For a simple element, the ParameterList is passed unchanged to the materials.
+       */
+      virtual void material_post_setup(Teuchos::ParameterList& params);
     };  // class Wall1
 
 

@@ -75,8 +75,8 @@ void PoroElast::Utils::PoroelastCloneStrategy::set_element_data(
     {
       fluid->set_kinematic_type(solid_poro_pressure_velocity_based_p1->kinematic_type());
     }
-    else if (auto* so_base = dynamic_cast<Discret::Elements::SoBase*>(oldele); so_base)
-      fluid->set_kinematic_type(so_base->kinematic_type());
+    else if (auto* wall_ele = dynamic_cast<Discret::Elements::Wall1*>(oldele); wall_ele)
+      fluid->set_kinematic_type(wall_ele->kinematic_type());
     else
       FOUR_C_THROW(
           " dynamic cast from Core::Elements::Element* to Discret::Elements::So_base* or "

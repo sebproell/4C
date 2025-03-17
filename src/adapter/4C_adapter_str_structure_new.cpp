@@ -36,7 +36,6 @@
 #include "4C_rebalance_binning_based.hpp"
 #include "4C_rigidsphere.hpp"
 #include "4C_shell7p_ele.hpp"
-#include "4C_so3_base.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_solver_nonlin_nox_group.hpp"
 #include "4C_solver_nonlin_nox_group_prepostoperator.hpp"
@@ -46,6 +45,7 @@
 #include "4C_structure_new_timint_factory.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_parameter_list.hpp"
+#include "4C_w1.hpp"
 
 #include <Teuchos_ParameterList.hpp>
 #include <Teuchos_StandardParameterEntryValidators.hpp>
@@ -593,10 +593,10 @@ void Adapter::StructureBaseAlgorithmNew::detect_element_technologies(
   {
     Core::Elements::Element* actele = actdis_->l_row_element(i);
     // Detect EAS --------------------------------------------------------------
-    auto* so_base_ele = dynamic_cast<Discret::Elements::SoBase*>(actele);
-    if (so_base_ele != nullptr)
+    auto* wall_ele = dynamic_cast<Discret::Elements::Wall1*>(actele);
+    if (wall_ele != nullptr)
     {
-      if (so_base_ele->have_eas()) iseas_local = 1;
+      if (wall_ele->have_eas()) iseas_local = 1;
     }
 
     Discret::Elements::Shell7p* shell7p = dynamic_cast<Discret::Elements::Shell7p*>(actele);

@@ -17,7 +17,6 @@
 #include "4C_geometry_pair.hpp"
 #include "4C_rigidsphere.hpp"
 #include "4C_shell_kl_nurbs.hpp"
-#include "4C_so3_base.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_utils_exceptions.hpp"
 
@@ -74,7 +73,6 @@ std::shared_ptr<BeamInteraction::BeamContactPair> BeamInteraction::BeamContactPa
   const bool other_is_beam =
       dynamic_cast<Discret::Elements::Beam3Base const*>(ele_ptrs[1]) != nullptr;
   const bool other_is_solid =
-      dynamic_cast<Discret::Elements::SoBase const*>(ele_ptrs[1]) != nullptr ||
       dynamic_cast<Discret::Elements::Solid const*>(ele_ptrs[1]) != nullptr ||
       dynamic_cast<Discret::Elements::KirchhoffLoveShellNurbs const*>(ele_ptrs[1]) != nullptr;
   const bool other_is_sphere =

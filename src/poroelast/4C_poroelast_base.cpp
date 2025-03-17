@@ -27,7 +27,6 @@
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_mortar_manager_base.hpp"
 #include "4C_poroelast_utils.hpp"
-#include "4C_so3_base.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_structure_aux.hpp"
 #include "4C_utils_parameter_list.hpp"

@@ -15,9 +15,9 @@
 #include "4C_fem_general_utils_boundary_integration.hpp"
 #include "4C_linalg_utils_densematrix_multiply.hpp"
 #include "4C_mat_elasthyper.hpp"
-#include "4C_so3_base.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_solid_3D_ele_calc_lib_nitsche.hpp"
+#include "4C_utils_exceptions.hpp"
 
 #include <Epetra_FEVector.h>
 
@@ -475,37 +475,10 @@ void CONTACT::IntegratorNitsche::so_ele_cauchy(Mortar::Element& moEle, double* b
   linearizations.d_cauchyndir_ddir = &d_cauchyndir_ddir;
   linearizations.d_cauchyndir_dxi = &d_cauchyndir_dxi;
 
-  // check for old or new solid element
-  const double cauchy_n_dir = std::invoke(
-      [&]()
-      {
-        if (auto* solid_ele = dynamic_cast<Discret::Elements::SoBase*>(moEle.parent_element());
-            solid_ele != nullptr)
-        {
-          // old solid element
-          double cauchy_n_dir = 0;
-          solid_ele->get_cauchy_n_dir_and_derivatives_at_xi(pxsi, moEle.mo_data().parent_disp(),
-              normal, direction, cauchy_n_dir, linearizations.d_cauchyndir_dd,
-              linearizations.d2_cauchyndir_dd2, linearizations.d2_cauchyndir_dd_dn,
-              linearizations.d2_cauchyndir_dd_ddir, linearizations.d2_cauchyndir_dd_dxi,
-              linearizations.d_cauchyndir_dn, linearizations.d_cauchyndir_ddir,
-              linearizations.d_cauchyndir_dxi, nullptr, nullptr, nullptr, nullptr, nullptr);
-
-          return cauchy_n_dir;
-        }
-        else if (auto* solid_ele = dynamic_cast<Discret::Elements::Solid*>(moEle.parent_element());
-            solid_ele != nullptr)
-        {
-          // new solid element
-          return solid_ele->get_normal_cauchy_stress_at_xi<dim>(
-              moEle.mo_data().parent_disp(), pxsi, normal, direction, linearizations);
-        }
-        else
-        {
-          FOUR_C_THROW("Unknown solid element type");
-        }
-      });
-
+  auto* solid_ele = dynamic_cast<Discret::Elements::Solid*>(moEle.parent_element());
+  FOUR_C_ASSERT_ALWAYS(solid_ele, "Unknown solid element type");
+  const double cauchy_n_dir = solid_ele->get_normal_cauchy_stress_at_xi<dim>(
+      moEle.mo_data().parent_disp(), pxsi, normal, direction, linearizations);
 
   cauchy_nt += w * cauchy_n_dir;
 
