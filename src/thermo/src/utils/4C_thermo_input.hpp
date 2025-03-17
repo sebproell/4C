@@ -310,32 +310,6 @@ namespace Thermo
     norm_inf         //!< Maximum/infinity norm
   };
 
-  //! map enum term to std::string
-  static inline std::string vector_norm_string(const enum VectorNorm norm)
-  {
-    switch (norm)
-    {
-      case norm_vague:
-        return "Vague";
-        break;
-      case norm_l1:
-        return "L1";
-        break;
-      case norm_l2:
-        return "L2";
-        break;
-      case norm_rms:
-        return "Rms";
-        break;
-      case norm_inf:
-        return "Inf";
-        break;
-      default:
-        FOUR_C_THROW("Cannot make std::string to vector norm {}", norm);
-        return "";
-    }
-  }
-
   //@}
 
   //! error calculation

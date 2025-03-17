@@ -17,6 +17,7 @@
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_material_base.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
 
 #include <memory>

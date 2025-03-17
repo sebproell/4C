@@ -470,7 +470,7 @@ void Solid::TimAda::print_constants(std::ostream& str) const
       << "   Max size ratio = " << sizeratiomax_ << std::endl
       << "   Min size ratio = " << sizeratiomin_ << std::endl
       << "   Size ratio scale = " << sizeratioscale_ << std::endl
-      << "   Error norm = " << Inpar::Solid::vector_norm_string(errnorm_) << std::endl
+      << "   Error norm = " << Inpar::Solid::magic_enum::enum_name(errnorm_) << std::endl
       << "   Error order = " << errorder_ << std::endl
       << "   Error tolerance = " << errtol_ << std::endl
       << "   Max adaptations = " << adaptstepmax_ << std::endl;

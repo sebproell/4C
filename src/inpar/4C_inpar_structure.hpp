@@ -12,6 +12,7 @@
 #include "4C_config.hpp"
 
 #include "4C_io_input_spec.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
 
 #include <map>
@@ -667,32 +668,6 @@ namespace Inpar
       byfunct                ///< evaluate error from function
     };
 
-    /// map enum term to std::string
-    static inline std::string vector_norm_string(const enum VectorNorm norm  ///< input enum term
-    )
-    {
-      switch (norm)
-      {
-        case Inpar::Solid::norm_vague:
-          return "Vague";
-          break;
-        case Inpar::Solid::norm_l1:
-          return "L1";
-          break;
-        case Inpar::Solid::norm_l2:
-          return "L2";
-          break;
-        case Inpar::Solid::norm_rms:
-          return "Rms";
-          break;
-        case Inpar::Solid::norm_inf:
-          return "Inf";
-          break;
-        default:
-          FOUR_C_THROW("Cannot make std::string to vector norm {}", norm);
-          return "";
-      }
-    }
 
     /// kinematic description
     enum class KinemType

@@ -7,6 +7,7 @@
 
 #include "4C_legacy_enum_definitions_conditions.hpp"
 
+#include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
 
 FOUR_C_NAMESPACE_OPEN

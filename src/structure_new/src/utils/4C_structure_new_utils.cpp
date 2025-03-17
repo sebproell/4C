@@ -73,7 +73,7 @@ enum ::NOX::Abstract::Vector::NormType Solid::Nln::convert2_nox_norm_type(
     case Inpar::Solid::norm_vague:
     default:
       FOUR_C_THROW("Unknown conversion for the given vector norm type: \" {} \"!",
-          Inpar::Solid::vector_norm_string(normtype).c_str());
+          Inpar::Solid::magic_enum::enum_name(normtype).c_str());
       break;
   }  // switch case normtype
 

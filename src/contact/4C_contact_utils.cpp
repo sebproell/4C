@@ -15,6 +15,7 @@
 #include "4C_inpar_mortar.hpp"
 #include "4C_io_every_iteration_writer.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 

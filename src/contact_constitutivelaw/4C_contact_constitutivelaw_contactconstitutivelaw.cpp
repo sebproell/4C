@@ -14,6 +14,7 @@
 #include "4C_contact_constitutivelaw_linear_contactconstitutivelaw.hpp"
 #include "4C_contact_constitutivelaw_power_contactconstitutivelaw.hpp"
 #include "4C_global_data.hpp"
+#include "4C_utils_enum.hpp"
 
 #ifdef FOUR_C_WITH_MIRCO
 #include "4C_contact_constitutivelaw_mirco_contactconstitutivelaw.hpp"
