@@ -13,6 +13,7 @@
 #include "4C_linalg_sparsematrix.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_mortar_defines.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 
@@ -33,7 +34,7 @@ Mortar::StrategyDataContainer::StrategyDataContainer()
       parredist_(false),
       maxdof_(0),
       systype_(CONTACT::SystemType::none),
-      dyntype_(Inpar::Solid::dyna_statics),
+      dyntype_(Inpar::Solid::DynamicType::Statics),
       dynparam_n_(0.0)
 {
 }
@@ -77,18 +78,16 @@ void Mortar::StrategyBase::set_time_integration_info(
   data().set_dyn_type(dyntype);
   switch (dyntype)
   {
-    case Inpar::Solid::dyna_statics:
+    case Inpar::Solid::DynamicType::Statics:
       data().set_dyn_parameter_n(0.0);
       break;
-    case Inpar::Solid::dyna_genalpha:
-    case Inpar::Solid::dyna_genalpha_liegroup:
-    case Inpar::Solid::dyna_onesteptheta:
+    case Inpar::Solid::DynamicType::GenAlpha:
+    case Inpar::Solid::DynamicType::GenAlphaLieGroup:
+    case Inpar::Solid::DynamicType::OneStepTheta:
       data().set_dyn_parameter_n(time_fac);
       break;
     default:
-      FOUR_C_THROW(
-          "Unsupported time integration detected! [\"{}\"]", dynamic_type_string(dyntype).c_str());
-      exit(EXIT_FAILURE);
+      FOUR_C_THROW("Unsupported time integration detected! [\"{}\"]", dyntype);
   }
 
   // Check if we only want to compute the contact force at the time endpoint

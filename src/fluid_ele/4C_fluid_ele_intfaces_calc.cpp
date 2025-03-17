@@ -14,6 +14,7 @@
 #include "4C_fluid_ele_parameter_std.hpp"
 #include "4C_fluid_ele_parameter_timint.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <Teuchos_TimeMonitor.hpp>
 

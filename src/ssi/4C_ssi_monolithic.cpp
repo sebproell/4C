@@ -486,7 +486,7 @@ void SSI::SsiMono::init(MPI_Comm comm, const Teuchos::ParameterList& globaltimep
     FOUR_C_THROW("Invalid type of velocity field for scalar-structure interaction!");
 
   if (Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(structparams, "DYNAMICTYPE") ==
-      Inpar::Solid::DynamicType::dyna_statics)
+      Inpar::Solid::DynamicType::Statics)
     FOUR_C_THROW(
         "Mass conservation is not fulfilled if 'Statics' time integration is chosen since the "
         "deformation velocities are incorrectly calculated.\n"

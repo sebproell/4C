@@ -175,7 +175,7 @@ void FS3I::FS3IBase::check_f_s3_i_inputs()
   if (fluidtimealgo == Inpar::FLUID::timeint_one_step_theta)
   {
     if (scatratimealgo != Inpar::ScaTra::timeint_one_step_theta or
-        structtimealgo != Inpar::Solid::dyna_onesteptheta)
+        structtimealgo != Inpar::Solid::DynamicType::OneStepTheta)
       FOUR_C_THROW(
           "Partitioned FS3I computations should feature consistent time-integration schemes for "
           "the subproblems; in this case, a one-step-theta scheme is intended to be used for the "
@@ -192,7 +192,7 @@ void FS3I::FS3IBase::check_f_s3_i_inputs()
   else if (fluidtimealgo == Inpar::FLUID::timeint_afgenalpha)
   {
     if (scatratimealgo != Inpar::ScaTra::timeint_gen_alpha or
-        structtimealgo != Inpar::Solid::dyna_genalpha)
+        structtimealgo != Inpar::Solid::DynamicType::GenAlpha)
       FOUR_C_THROW(
           "Partitioned FS3I computations should feature consistent time-integration schemes for "
           "the subproblems; in this case, a (alpha_f-based) generalized-alpha scheme is intended "
@@ -232,7 +232,7 @@ void FS3I::FS3IBase::check_f_s3_i_inputs()
       Global::Problem::instance()->structural_dynamic_params(), "PRESTRESS");
   // is structure calculated dynamic when not prestressing?
   if (Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(structdynparams, "DYNAMICTYPE") ==
-          Inpar::Solid::dyna_statics and
+          Inpar::Solid::DynamicType::Statics and
       pstype != Inpar::Solid::PreStress::mulf)
     FOUR_C_THROW(
         "Since we need a velocity field in the structure domain for the scalar field you need do "

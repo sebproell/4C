@@ -13,6 +13,7 @@
 #include "4C_io.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_poroelast_utils.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_function.hpp"
 
 FOUR_C_NAMESPACE_OPEN

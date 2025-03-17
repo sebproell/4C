@@ -413,7 +413,7 @@ void PoroElast::Monolithic::setup_system()
     }
   }
 
-  if (no_penetration_ && not(strmethodname_ == Inpar::Solid::dyna_onesteptheta))
+  if (no_penetration_ && not(strmethodname_ == Inpar::Solid::DynamicType::OneStepTheta))
   {
     FOUR_C_THROW(
         "Porous contact with no penetration is only implemented for OneStepTheta. Please set "

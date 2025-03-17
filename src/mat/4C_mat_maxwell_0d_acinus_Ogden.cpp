@@ -12,6 +12,7 @@
 #include "4C_mat_par_bundle.hpp"
 #include "4C_red_airways_elem_params.hpp"
 #include "4C_red_airways_elementbase.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <vector>
 

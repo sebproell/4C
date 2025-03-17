@@ -122,7 +122,10 @@ namespace Solid
     //@{
 
     //! Return time integrator name
-    enum Inpar::Solid::DynamicType method_name() const override { return Inpar::Solid::dyna_ab2; }
+    enum Inpar::Solid::DynamicType method_name() const override
+    {
+      return Inpar::Solid::DynamicType::AdamsBashforth2;
+    }
 
     //! Provide number of steps, e.g. a single-step method returns 1,
     //! a m-multistep method returns m

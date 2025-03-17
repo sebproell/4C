@@ -14,6 +14,7 @@
 #include "4C_global_data.hpp"
 #include "4C_linalg_mapextractor.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_xfem_discretization.hpp"
 #include "4C_xfem_xfield_field_coupling.hpp"
 #include "4C_xfem_xfield_field_coupling_dofset.hpp"
@@ -747,7 +748,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> XFEM::MultiFieldMapExtractor::extr
   const std::shared_ptr<const Epetra_Map>& sl_full_map =
       sl_map_extractor(dis_id, map_type).full_map();
 
-  if (!sl_full_map) FOUR_C_THROW("null full map for field {}", field_name_to_string(field).c_str());
+  if (!sl_full_map) FOUR_C_THROW("null full map for field {}", field);
 
   // create a new vector
   std::shared_ptr<Core::LinAlg::Vector<double>> vec =
@@ -772,7 +773,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> XFEM::MultiFieldMapExtractor:
   const std::shared_ptr<const Epetra_Map>& sl_full_map =
       sl_map_extractor(dis_id, map_type).full_map();
 
-  if (!sl_full_map) FOUR_C_THROW("null full map for field {}", field_name_to_string(field).c_str());
+  if (!sl_full_map) FOUR_C_THROW("null full map for field {}", field);
 
   // create a new multi vector
   std::shared_ptr<Core::LinAlg::MultiVector<double>> vec =
@@ -953,7 +954,7 @@ int XFEM::MultiFieldMapExtractor::slave_id(enum FieldName field) const
 {
   std::map<enum FieldName, int>::const_iterator cit = slave_discret_id_map_.find(field);
   if (cit == slave_discret_id_map_.end())
-    FOUR_C_THROW("The slave field \"{}\" could not be found!", field_name_to_string(field).c_str());
+    FOUR_C_THROW("The slave field \"{}\" could not be found!", field);
 
   return cit->second;
 }

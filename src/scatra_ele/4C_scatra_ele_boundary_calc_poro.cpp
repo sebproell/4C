@@ -19,6 +19,7 @@
 #include "4C_scatra_ele.hpp"
 #include "4C_scatra_ele_action.hpp"
 #include "4C_scatra_ele_parameter_std.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_singleton_owner.hpp"
 
 FOUR_C_NAMESPACE_OPEN

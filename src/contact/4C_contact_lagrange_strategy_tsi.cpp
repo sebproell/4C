@@ -1006,13 +1006,13 @@ void CONTACT::LagrangeStrategyTsi::set_alphaf_thermo(const Teuchos::ParameterLis
   auto dyn_type = Teuchos::getIntegralValue<Thermo::DynamicType>(tdyn, "DYNAMICTYPE");
   switch (dyn_type)
   {
-    case Thermo::dyna_genalpha:
+    case Thermo::DynamicType::GenAlpha:
       tsi_alpha_ = tdyn.sublist("GENALPHA").get<double>("ALPHA_F");
       break;
-    case Thermo::dyna_onesteptheta:
+    case Thermo::DynamicType::OneStepTheta:
       tsi_alpha_ = tdyn.sublist("ONESTEPTHETA").get<double>("THETA");
       break;
-    case Thermo::dyna_statics:
+    case Thermo::DynamicType::Statics:
       tsi_alpha_ = 1.;
       break;
     default:

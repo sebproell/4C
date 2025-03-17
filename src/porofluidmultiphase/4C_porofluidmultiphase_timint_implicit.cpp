@@ -26,6 +26,7 @@
 #include "4C_porofluidmultiphase_meshtying_strategy_std.hpp"
 #include "4C_porofluidmultiphase_resulttest.hpp"
 #include "4C_porofluidmultiphase_utils.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_function.hpp"
 
 #include <Teuchos_TimeMonitor.hpp>
@@ -1715,14 +1716,14 @@ inline void POROFLUIDMULTIPHASE::TimIntImpl::print_convergence_values_first_iter
   {
     std::cout << "|  " << std::setw(3) << itnum << "/" << std::setw(3) << itemax << "   | "
               << std::setw(10) << std::setprecision(3) << std::scientific << ittolres_ << " ["
-              << std::setw(3) << magic_enum::enum_name(vectornormfres_).c_str() << "]  | ";
+              << std::setw(3) << vectornormfres_ << "]  | ";
 
     for (std::size_t i = 0; i < preresnorm.size(); ++i)
       std::cout << std::setw(10) << std::setprecision(3) << std::scientific << preresnorm[i]
                 << "   | ";
 
     std::cout << std::setw(10) << std::setprecision(3) << std::scientific << ittolinc_ << " ["
-              << std::setw(3) << magic_enum::enum_name(vectornorminc_).c_str() << "]  |";
+              << std::setw(3) << vectornorminc_ << "]  |";
 
     for (std::size_t i = 0; i < preresnorm.size(); ++i) std::cout << "      --      |";
     std::cout << " (    --   ,te=" << std::setw(10) << std::setprecision(3) << std::scientific
@@ -1749,12 +1750,12 @@ inline void POROFLUIDMULTIPHASE::TimIntImpl::print_convergence_values(
   {
     std::cout << "|  " << std::setw(3) << itnum << "/" << std::setw(3) << itemax << "   | "
               << std::setw(10) << std::setprecision(3) << std::scientific << ittolres_ << " ["
-              << std::setw(3) << magic_enum::enum_name(vectornormfres_).c_str() << "]  | ";
+              << std::setw(3) << vectornormfres_ << "]  | ";
     for (std::size_t i = 0; i < preresnorm.size(); ++i)
       std::cout << std::setw(10) << std::setprecision(3) << std::scientific << preresnorm[i]
                 << "   | ";
     std::cout << std::setw(10) << std::setprecision(3) << std::scientific << ittolres_ << " ["
-              << std::setw(3) << magic_enum::enum_name(vectornorminc_).c_str() << "]  | ";
+              << std::setw(3) << vectornorminc_ << "]  | ";
     for (std::size_t i = 0; i < preresnorm.size(); ++i)
       std::cout << std::setw(10) << std::setprecision(3) << std::scientific
                 << incprenorm[i] / prenorm[i] << "   | ";

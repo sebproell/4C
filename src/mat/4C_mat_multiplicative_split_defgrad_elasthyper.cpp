@@ -21,6 +21,7 @@
 #include "4C_mat_multiplicative_split_defgrad_elasthyper_service.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_structure_new_enum_lists.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 

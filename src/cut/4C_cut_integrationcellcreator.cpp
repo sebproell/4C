@@ -14,6 +14,7 @@
 #include "4C_cut_pointgraph_simple.hpp"
 #include "4C_cut_position.hpp"
 #include "4C_cut_side.hpp"
+#include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

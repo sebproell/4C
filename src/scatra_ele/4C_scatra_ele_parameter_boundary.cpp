@@ -7,6 +7,7 @@
 
 #include "4C_scatra_ele_parameter_boundary.hpp"
 
+#include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_singleton_owner.hpp"
 

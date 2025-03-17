@@ -12,6 +12,7 @@
 #include "4C_cut_point_impl.hpp"
 #include "4C_cut_position.hpp"
 #include "4C_global_data.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <stack>
 #include <string>
@@ -869,7 +870,6 @@ bool Cut::ConcreteEdge<prob_dim, edge_type, dim_edge, num_nodes_edge>::compute_c
       }
       default:
         FOUR_C_THROW("Unsupported intersection status! ( status = {} )", istatus);
-        exit(EXIT_FAILURE);
     }
     return (static_cast<bool>(retstatus));
   }
@@ -905,8 +905,7 @@ std::shared_ptr<Cut::Edge> Cut::EdgeFactory::create_edge(
     }
     default:
     {
-      FOUR_C_THROW("Unsupported edge type! ( {} | {} )", edgetype,
-          Core::FE::cell_type_to_string(edgetype).c_str());
+      FOUR_C_THROW("Unsupported edge type! ({})", Core::FE::cell_type_to_string(edgetype));
       break;
     }
   }

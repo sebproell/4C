@@ -17,6 +17,7 @@
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 #include "4C_structure_aux.hpp"
 #include "4C_structure_new_impl_genalpha.hpp"
+#include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -76,7 +77,7 @@ void Solid::TimIntGenAlpha::verify_coeff()
   if (midavg_ != Inpar::Solid::midavg_trlike)
     FOUR_C_THROW("mid-averaging of internal forces only implemented TR-like");
   else
-    std::cout << "   midavg = " << Inpar::Solid::mid_average_string(midavg_) << '\n';
+    std::cout << "   midavg = " << midavg_ << '\n';
 }
 
 /*----------------------------------------------------------------------*/

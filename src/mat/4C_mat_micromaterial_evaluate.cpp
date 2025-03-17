@@ -15,6 +15,7 @@
 #include "4C_mat_micromaterialgp_static.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_stru_multi_microstatic.hpp"
+#include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

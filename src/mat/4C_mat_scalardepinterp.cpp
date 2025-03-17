@@ -11,6 +11,7 @@
 #include "4C_comm_utils_factory.hpp"
 #include "4C_global_data.hpp"
 #include "4C_mat_par_bundle.hpp"
+#include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

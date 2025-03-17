@@ -12,6 +12,7 @@
 #include "4C_thermo_aux.hpp"
 #include "4C_thermo_ele_action.hpp"
 #include "4C_thermo_timint.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 
@@ -356,8 +357,7 @@ Thermo::ConvergenceStatus Thermo::TimIntImpl::solve()
       return newton_full();
     // catch problems
     default:
-      FOUR_C_THROW("Solution technique \"{}\" is not implemented",
-          Thermo::nonlin_sol_tech_string(itertype_).c_str());
+      FOUR_C_THROW("Solution technique \"{}\" is not implemented", itertype_);
       return Thermo::conv_nonlin_fail;  // compiler happiness
   }
 }

@@ -290,8 +290,7 @@ namespace Cut::Kernel
         break;
       }
       default:
-        FOUR_C_THROW("unsupported element type: {} | {}", element_type,
-            Core::FE::cell_type_to_string(element_type).c_str());
+        FOUR_C_THROW("unsupported element type: {}", Core::FE::cell_type_to_string(element_type));
         break;
     }
   }
@@ -431,8 +430,7 @@ namespace Cut::Kernel
         break;
       }
       default:
-        FOUR_C_THROW("unsupported element type: {} | {}", element_type,
-            Core::FE::cell_type_to_string(element_type).c_str());
+        FOUR_C_THROW("unsupported element type: {}", Core::FE::cell_type_to_string(element_type));
         break;
     }  // switch ( elementType )
     return false;
@@ -524,8 +522,7 @@ namespace Cut::Kernel
         break;
       }
       default:
-        FOUR_C_THROW("unsupported element type: {} | {}", element_type,
-            Core::FE::cell_type_to_string(element_type).c_str());
+        FOUR_C_THROW("unsupported element type: {}", Core::FE::cell_type_to_string(element_type));
         break;
     }  // switch ( elementType )
     return false;

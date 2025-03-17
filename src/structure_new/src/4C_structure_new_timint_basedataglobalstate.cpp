@@ -217,7 +217,7 @@ void Solid::TimeInt::BaseDataGlobalState::setup()
     }
   }
 
-  if (datasdyn_->get_dynamic_type() == Inpar::Solid::dyna_statics and
+  if (datasdyn_->get_dynamic_type() == Inpar::Solid::DynamicType::Statics and
       datasdyn_->get_mass_lin_type() != Inpar::Solid::MassLin::ml_none)
     FOUR_C_THROW(
         "Do not set parameter MASSLIN in static simulations as this leads to undesired"

@@ -128,7 +128,7 @@ int Discret::Elements::Beam3eb::evaluate(Teuchos::ParameterList& params,
       const Teuchos::ParameterList& sdyn = Global::Problem::instance()->structural_dynamic_params();
 
       if (Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(sdyn, "DYNAMICTYPE") !=
-          Inpar::Solid::dyna_statics)
+          Inpar::Solid::DynamicType::Statics)
       {
         vel = discretization.get_state("velocity");
         if (vel == nullptr) FOUR_C_THROW("Cannot get state vectors 'velocity'");
@@ -250,7 +250,7 @@ int Discret::Elements::Beam3eb::evaluate_neumann(Teuchos::ParameterList& params,
   // (UNCOMMENT IF NEEDED)
   const Teuchos::ParameterList& sdyn = Global::Problem::instance()->structural_dynamic_params();
   if (Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(sdyn, "DYNAMICTYPE") !=
-      Inpar::Solid::dyna_statics)
+      Inpar::Solid::DynamicType::Statics)
   {
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel = discretization.get_state("velocity");
     if (vel == nullptr) FOUR_C_THROW("Cannot get state vectors 'velocity'");

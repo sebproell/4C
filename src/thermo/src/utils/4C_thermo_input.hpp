@@ -29,36 +29,13 @@ namespace Thermo
   //@{
 
   //! Type of time integrator including statics
-  enum DynamicType
+  enum class DynamicType
   {
-    dyna_undefined,     //!< undefined integrator (sth like a default)
-    dyna_statics,       //!< static analysis
-    dyna_onesteptheta,  //!< one-step-theta time integrator (implicit)
-    dyna_genalpha,      //!< generalised-alpha time integrator (implicit)
+    Undefined,     //!< undefined integrator (sth like a default)
+    Statics,       //!< static analysis
+    OneStepTheta,  //!< one-step-theta time integrator (implicit)
+    GenAlpha,      //!< generalised-alpha time integrator (implicit)
   };  // DynamicType()
-
-  //! Map time integrator to std::string
-  static inline std::string dynamic_type_string(const enum DynamicType name)
-  {
-    switch (name)
-    {
-      case dyna_undefined:
-        return "Undefined";
-        break;
-      case dyna_statics:
-        return "Statics";
-        break;
-      case dyna_onesteptheta:
-        return "OneStepTheta";
-        break;
-      case dyna_genalpha:
-        return "GenAlpha";
-        break;
-      default:
-        FOUR_C_THROW("Cannot make std::string for time integrator {}", name);
-        return "";
-    }
-  }  // DynamicTypeString()
 
   //! initial field for scalar transport problem
   enum InitialField
@@ -85,25 +62,6 @@ namespace Thermo
                        //!<  (TR means trapezoidal rule.)
   };  // MidAverageEnum()
 
-  /// Map mid-averaging to std::string
-  static inline std::string mid_average_string(const enum MidAverageEnum name)
-  {
-    switch (name)
-    {
-      case midavg_vague:
-        return "Vague";
-        break;
-      case midavg_imrlike:
-        return "IMR-like";
-      case midavg_trlike:
-        return "TR-like";
-        break;
-      default:
-        FOUR_C_THROW("Cannot make std::string for time integrator {}", name);
-        return "";
-    }
-  }
-
   //@}
 
   //! @name Solution technique and related
@@ -115,23 +73,6 @@ namespace Thermo
     soltech_vague,      //!< undefined
     soltech_newtonfull  //!< full Newton-Raphson iteration
   };
-
-  //! Map solution technique enum to std::string
-  static inline std::string nonlin_sol_tech_string(const enum NonlinSolTech name)
-  {
-    switch (name)
-    {
-      case soltech_vague:
-        return "vague";
-        break;
-      case soltech_newtonfull:
-        return "fullnewton";
-        break;
-      default:
-        FOUR_C_THROW("Cannot make std::string for solution technique {}", name);
-        return "";
-    }
-  }
 
   /// type of solution techniques
   enum DivContAct
@@ -155,32 +96,6 @@ namespace Thermo
   };
 
 
-  /// Map  enum to string
-  static inline std::string div_cont_act_string(const enum DivContAct name)
-  {
-    switch (name)
-    {
-      case divcont_stop:
-        return "stop";
-        break;
-      case divcont_continue:
-        return "continue";
-        break;
-      case divcont_repeat_step:
-        return "repeat_step";
-        break;
-      case divcont_halve_step:
-        return "halve_step";
-        break;
-      case divcont_repeat_simulation:
-        return "repeat_simulation";
-        break;
-      default:
-        FOUR_C_THROW("Cannot make string for solution div cont technique {}", name);
-        return "";
-    }
-  }
-
   //! Type of predictor
   enum PredEnum
   {
@@ -193,29 +108,6 @@ namespace Thermo
                    //!< inverse of Ktan_{n} due to the application of the Dirichlet BCs (i.e. the
                    //!< reduction to the test space).
   };
-
-  //! Map predictor enum term to std::string
-  static inline std::string pred_enum_string(const PredEnum name)
-  {
-    switch (name)
-    {
-      case pred_vague:
-        return "Vague";
-        break;
-      case pred_consttemp:
-        return "ConstTemp";
-        break;
-      case pred_consttemprate:
-        return "ConstTempRate";
-        break;
-      case pred_tangtemp:
-        return "TangTemp";
-        break;
-      default:
-        FOUR_C_THROW("Cannot make std::string for predictor {}", name);
-        return "";
-    }
-  }
 
   //! type of norm to check for convergence
   enum ConvNorm
@@ -246,26 +138,6 @@ namespace Thermo
     heatflux_initial   //!< output of heat flux in initial configuration
   };
 
-  //! Map predictor enum term to std::string
-  static inline std::string heat_flux_string(const HeatFluxType& name)
-  {
-    switch (name)
-    {
-      case heatflux_none:
-        return "none";
-        break;
-      case heatflux_current:
-        return "heatflux_current";
-        break;
-      case heatflux_initial:
-        return "heatflux_initial";
-        break;
-      default:
-        FOUR_C_THROW("Cannot make std::string for predictor {}", name);
-        return "";
-    }
-  }
-
   //! Type of thermal gradient output
   //! (this enum represents the input file parameter THERM_TEMPGRAD) CHECK IT!
   enum TempGradType
@@ -274,26 +146,6 @@ namespace Thermo
     tempgrad_current,  //!< output of thermal gradient in current configuration
     tempgrad_initial   //!< output of thermal gradient in initial configuration
   };
-
-  //! Map predictor enum term to std::string
-  static inline std::string temp_grad_string(const TempGradType& name)
-  {
-    switch (name)
-    {
-      case tempgrad_none:
-        return "none";
-        break;
-      case tempgrad_current:
-        return "tempgrad_current";
-        break;
-      case tempgrad_initial:
-        return "tempgrad_initial";
-        break;
-      default:
-        FOUR_C_THROW("Cannot make std::string for predictor {}", name);
-        return "";
-    }
-  }
 
   //@}
 

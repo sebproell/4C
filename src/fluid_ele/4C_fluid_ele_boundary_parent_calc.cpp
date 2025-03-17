@@ -23,6 +23,7 @@
 #include "4C_mat_modpowerlaw.hpp"
 #include "4C_mat_newtonianfluid.hpp"
 #include "4C_mat_sutherland.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_function.hpp"
 #include "4C_utils_function_of_time.hpp"
 

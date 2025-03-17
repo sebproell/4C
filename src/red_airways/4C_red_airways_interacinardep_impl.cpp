@@ -16,6 +16,7 @@
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_mat_newtonianfluid.hpp"
 #include "4C_red_airways_evaluation_data.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_function.hpp"
 #include "4C_utils_function_of_time.hpp"
 

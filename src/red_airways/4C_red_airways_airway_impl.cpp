@@ -18,6 +18,7 @@
 #include "4C_mat_par_bundle.hpp"
 #include "4C_red_airways_elem_params.hpp"
 #include "4C_red_airways_evaluation_data.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_function.hpp"
 #include "4C_utils_function_of_time.hpp"
 

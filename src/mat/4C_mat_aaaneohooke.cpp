@@ -14,6 +14,7 @@
 #include "4C_io_pstream.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
 #include "4C_mat_par_bundle.hpp"
+#include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

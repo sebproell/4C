@@ -23,6 +23,7 @@
 #include "4C_io_control.hpp"
 #include "4C_io_gmsh.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_xfem_dofset.hpp"
 
 FOUR_C_NAMESPACE_OPEN

@@ -947,4 +947,9 @@ bool Solid::TimeInt::Base::has_final_state_been_written() const
   return dataio_->get_last_written_results() == dataglobalstate_->get_step_n();
 }
 
+std::string Solid::TimeInt::Base::method_title() const
+{
+  return std::string(magic_enum::enum_name(method_name()));
+}
+
 FOUR_C_NAMESPACE_CLOSE

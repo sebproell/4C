@@ -13,6 +13,7 @@
 #include "4C_fluid_ele_nullspace.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_mat_fluidporo_multiphase.hpp"
+#include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

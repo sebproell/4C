@@ -11,6 +11,7 @@
 #include "4C_lubrication_ele_factory.hpp"
 #include "4C_lubrication_ele_interface.hpp"
 #include "4C_lubrication_ele_parameter.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN

@@ -20,6 +20,7 @@
 #include "4C_porofluidmultiphase_ele_parameter.hpp"
 #include "4C_poromultiphase_scatra_artery_coupling_defines.hpp"
 #include "4C_scatra_ele_parameter_timint.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_fad.hpp"
 #include "4C_utils_function.hpp"
 

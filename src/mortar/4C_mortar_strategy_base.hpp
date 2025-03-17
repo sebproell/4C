@@ -28,7 +28,7 @@ namespace Inpar
 {
   namespace Solid
   {
-    enum DynamicType : int;
+    enum class DynamicType : int;
   }  // namespace Solid
 }  // namespace Inpar
 namespace Core::FE

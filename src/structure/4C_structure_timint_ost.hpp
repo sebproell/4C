@@ -205,7 +205,7 @@ namespace Solid
     //! Return name
     enum Inpar::Solid::DynamicType method_name() const override
     {
-      return Inpar::Solid::dyna_onesteptheta;
+      return Inpar::Solid::DynamicType::OneStepTheta;
     }
 
     //! Provide number of steps, a single-step method returns 1

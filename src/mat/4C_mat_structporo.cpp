@@ -13,6 +13,7 @@
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_poro_law.hpp"
 #include "4C_mat_so3_material.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <vector>
 

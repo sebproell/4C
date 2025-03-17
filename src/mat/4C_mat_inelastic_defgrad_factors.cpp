@@ -22,6 +22,7 @@
 #include "4C_mat_multiplicative_split_defgrad_elasthyper.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_vplast_law.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_function_of_time.hpp"
 

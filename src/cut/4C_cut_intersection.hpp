@@ -1202,8 +1202,8 @@ namespace Cut
         FOUR_C_THROW(
             "This compute_distance routine is only meaningful for "
             "QUAD4 side elements! But you passed in a side element "
-            "of type {} | {}.",
-            sidetype, Core::FE::cell_type_to_string(sidetype).c_str());
+            "of type {}.",
+            Core::FE::cell_type_to_string(sidetype));
 
       TEUCHOS_FUNC_TIME_MONITOR("compute_distance");
 

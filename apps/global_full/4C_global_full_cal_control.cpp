@@ -35,6 +35,7 @@
 #include "4C_structure_dyn_nln_drt.hpp"
 #include "4C_thermo_dyn.hpp"
 #include "4C_tsi_dyn.hpp"
+#include "4C_utils_enum.hpp"
 
 /*----------------------------------------------------------------------*
  |  routine to control execution phase                   m.gee 6/01     |

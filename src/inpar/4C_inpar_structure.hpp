@@ -196,54 +196,18 @@ namespace Inpar
     };
 
     /// Type of time integrator including statics
-    enum DynamicType : int
+    enum class DynamicType : int
     {
-      dyna_statics,            ///< static analysis
-      dyna_genalpha,           ///< generalised-alpha time integrator (implicit)
-      dyna_genalpha_liegroup,  ///< generalised-alpha time integrator for Lie groups (e.g. SO3 group
-                               ///< of rotation matrices) (implicit)
-      dyna_onesteptheta,       ///< one-step-theta time integrator (implicit)
-      dyna_expleuler,          ///< forward Euler (explicit)
-      dyna_centrdiff,          ///< central differences (explicit)
-      dyna_ab2,                ///< Adams-Bashforth 2nd order (explicit)
-      dyna_ab4                 ///< Adams-Bashforth 4th order (explicit)
+      Statics,           ///< static analysis
+      GenAlpha,          ///< generalised-alpha time integrator (implicit)
+      GenAlphaLieGroup,  ///< generalised-alpha time integrator for Lie groups (e.g. SO3 group
+                         ///< of rotation matrices) (implicit)
+      OneStepTheta,      ///< one-step-theta time integrator (implicit)
+      ExplEuler,         ///< forward Euler (explicit)
+      CentrDiff,         ///< central differences (explicit)
+      AdamsBashforth2,   ///< Adams-Bashforth 2nd order (explicit)
+      AdamsBashforth4    ///< Adams-Bashforth 4th order (explicit)
     };
-
-    /// Map time integrator to std::string
-    static inline std::string dynamic_type_string(const enum DynamicType name  ///< enum to convert
-    )
-    {
-      switch (name)
-      {
-        case dyna_statics:
-          return "Statics";
-          break;
-        case dyna_genalpha:
-          return "GenAlpha";
-          break;
-        case dyna_genalpha_liegroup:
-          return "GenAlphaLieGroup";
-          break;
-        case dyna_onesteptheta:
-          return "OneStepTheta";
-          break;
-        case dyna_expleuler:
-          return "ExplEuler";
-          break;
-        case dyna_centrdiff:
-          return "CentrDiff";
-          break;
-        case dyna_ab2:
-          return "AdamsBashforth2";
-          break;
-        case dyna_ab4:
-          return "AdamsBashforth4";
-          break;
-        default:
-          FOUR_C_THROW("Cannot make std::string for time integrator {}", name);
-          return "";
-      }
-    }
 
     /// Type of (global) damping
     enum DampKind
@@ -273,26 +237,6 @@ namespace Inpar
                          ///<  (TR means trapezoidal rule.)
     };
 
-    /// Map mid-averaging to std::string
-    static inline std::string mid_average_string(
-        const enum MidAverageEnum name  ///< enum to convert
-    )
-    {
-      switch (name)
-      {
-        case midavg_vague:
-          return "Vague";
-          break;
-        case midavg_imrlike:
-          return "IMR-like";
-        case midavg_trlike:
-          return "TR-like";
-          break;
-        default:
-          FOUR_C_THROW("Cannot make std::string for time integrator {}", name);
-          return "";
-      }
-    }
 
     /// Type of predictor
     enum PredEnum : int
@@ -378,51 +322,6 @@ namespace Inpar
       soltech_singlestep            ///< single step for explicit dynamics
     };
 
-    /// Map solution technique enum to std::string
-    static inline std::string nonlin_sol_tech_string(
-        const enum NonlinSolTech name  ///< enum to convert
-    )
-    {
-      switch (name)
-      {
-        case soltech_vague:
-          return "vague";
-          break;
-        case soltech_newtonfull:
-          return "fullnewton";
-          break;
-        case soltech_newtonls:
-          return "lsnewton";
-          break;
-        case soltech_newtonmod:
-          return "modnewton";
-          break;
-        case soltech_newtonuzawalin:
-          return "newtonlinuzawa";
-          break;
-        case soltech_newtonuzawanonlin:
-          return "augmentedlagrange";
-          break;
-        case soltech_noxnewtonlinesearch:
-          return "NoxNewtonLineSearch";
-          break;
-        case soltech_noxgeneral:
-          return "noxgeneral";
-          break;
-        case soltech_nox_nln:
-          return "nox_nln";
-          break;
-        case soltech_ptc:
-          return "ptc";
-          break;
-        case soltech_singlestep:
-          return "singlestep";
-          break;
-        default:
-          FOUR_C_THROW("Cannot make std::string for solution technique {}", name);
-          return "";
-      }
-    }
 
     /// Handling of non-converged nonlinear solver
     enum DivContAct

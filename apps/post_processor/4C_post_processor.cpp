@@ -11,6 +11,7 @@
 #include "4C_post_processor_single_field_writers.hpp"
 #include "4C_post_writer_base.hpp"
 #include "4C_scatra_ele.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_singleton_owner.hpp"
 

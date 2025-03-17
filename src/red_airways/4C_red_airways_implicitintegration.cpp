@@ -22,6 +22,7 @@
 #include "4C_rebalance_print.hpp"
 #include "4C_red_airways_evaluation_data.hpp"
 #include "4C_red_airways_resulttest.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_function.hpp"
 

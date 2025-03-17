@@ -14,6 +14,7 @@
 #include "4C_io_legacy_table_iter.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
 #include "4C_post_common.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_xfem_discretization.hpp"
 
 #include <numeric>

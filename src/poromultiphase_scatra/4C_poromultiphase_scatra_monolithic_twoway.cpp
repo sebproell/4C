@@ -962,11 +962,11 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::newton_error_ch
       printf(
           "|  Max. rel. increment [%3s]:  %10.3E  < %10.3E                                        "
           "       |\n",
-          magic_enum::enum_name(vectornorminc_).c_str(), maxinc_, ittolinc_);
+          magic_enum::enum_name(vectornorminc_).data(), maxinc_, ittolinc_);
       printf(
           "|  Maximum    residual [%3s]:  %10.3E  < %10.3E                                        "
           "       |\n",
-          magic_enum::enum_name(vectornormfres_).c_str(), maxres_, ittolres_);
+          magic_enum::enum_name(vectornormfres_).data(), maxres_, ittolres_);
       printf(
           "+--------------+-------------+-------------+--------------+------------+-----"
           "-------+-----------------+\n");
@@ -987,11 +987,11 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::newton_error_ch
       printf(
           "|  Max. rel. increment [%3s]:  %10.3E    %10.3E                                        "
           "|\n",
-          magic_enum::enum_name(vectornorminc_).c_str(), maxinc_, ittolinc_);
+          magic_enum::enum_name(vectornorminc_).data(), maxinc_, ittolinc_);
       printf(
           "|  Maximum    residual [%3s]:  %10.3E    %10.3E                                        "
           "|\n",
-          magic_enum::enum_name(vectornormfres_).c_str(), maxres_, ittolres_);
+          magic_enum::enum_name(vectornormfres_).data(), maxres_, ittolres_);
       printf(
           "+--------------+-------------+-------------+--------------+------------+-----"
           "-------+-----------------+\n");

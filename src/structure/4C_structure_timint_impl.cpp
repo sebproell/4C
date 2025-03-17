@@ -36,6 +36,7 @@
 #include "4C_solid_3D_ele.hpp"
 #include "4C_structure_aux.hpp"
 #include "4C_structure_timint.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
 
 #include <Teuchos_RCPStdSharedPtrConversions.hpp>
@@ -199,22 +200,21 @@ void Solid::TimIntImpl::setup()
   {
     if ((itertype_ != Inpar::Solid::soltech_newtonuzawalin) and
         (itertype_ != Inpar::Solid::soltech_newtonuzawanonlin))
-      FOUR_C_THROW("Chosen solution technique {} does not work constrained.",
-          Inpar::Solid::nonlin_sol_tech_string(itertype_).c_str());
+      FOUR_C_THROW("Chosen solution technique {} does not work constrained.", itertype_);
   }
   else if (cardvasc0dman_->have_cardiovascular0_d())
   {
     if (itertype_ != Inpar::Solid::soltech_newtonuzawalin)
       if (myrank_ == 0)
-        FOUR_C_THROW("Chosen solution technique {} does not work with Cardiovascular0D bc.",
-            Inpar::Solid::nonlin_sol_tech_string(itertype_).c_str());
+        FOUR_C_THROW(
+            "Chosen solution technique {} does not work with Cardiovascular0D bc.", itertype_);
   }
   else if ((itertype_ == Inpar::Solid::soltech_newtonuzawalin) or
            (itertype_ == Inpar::Solid::soltech_newtonuzawanonlin))
   {
     FOUR_C_THROW(
         "Chosen solution technique {} does only work constrained or with Cardiovascular0D bc.",
-        Inpar::Solid::nonlin_sol_tech_string(itertype_).c_str());
+        itertype_);
   }
 
   // setup tolerances and binary operators for convergence check of contact/meshtying problems
@@ -1414,8 +1414,7 @@ Inpar::Solid::ConvergenceStatus Solid::TimIntImpl::solve()
         break;
       // catch problems
       default:
-        FOUR_C_THROW("Solution technique \"{}\" is not implemented.",
-            Inpar::Solid::nonlin_sol_tech_string(itertype_).c_str());
+        FOUR_C_THROW("Solution technique \"{}\" is not implemented.", itertype_);
         break;
     }
   }

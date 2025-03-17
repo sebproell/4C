@@ -41,6 +41,7 @@
 #include "4C_scatra_turbulence_hit_scalar_forcing.hpp"
 #include "4C_scatra_utils.hpp"
 #include "4C_ssi_contact_strategy.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_function.hpp"
 #include "4C_utils_parameter_list.hpp"
 

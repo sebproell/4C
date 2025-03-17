@@ -1336,8 +1336,7 @@ std::shared_ptr<Cut::Element> Cut::ElementFactory::create_element(Core::FE::Cell
       break;
     default:
     {
-      FOUR_C_THROW("Unsupported element type! ( {} | {} )", elementtype,
-          Core::FE::cell_type_to_string(elementtype).c_str());
+      FOUR_C_THROW("Unsupported element type! ( {} )", Core::FE::cell_type_to_string(elementtype));
       break;
     }
   }

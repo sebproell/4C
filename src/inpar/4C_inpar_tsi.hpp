@@ -74,24 +74,6 @@ namespace Inpar
       LS_and,        //!< line-search based on structural and thermal residual
     };
 
-    //! Map solution technique enum to std::string
-    static inline std::string nln_sol_tech_string(const enum NlnSolTech name  //!< enum to convert
-    )
-    {
-      switch (name)
-      {
-        case soltech_newtonfull:
-          return "fullnewton";
-          break;
-        case soltech_ptc:
-          return "ptc";
-          break;
-        default:
-          FOUR_C_THROW("Cannot make std::string for solution technique {}", name);
-          return "";
-      }
-    }
-
     //@}
 
     //! @name General

@@ -13,6 +13,7 @@
 #include "4C_thermo_timint_genalpha.hpp"
 #include "4C_thermo_timint_ost.hpp"
 #include "4C_thermo_timint_statics.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 #include <Teuchos_TimeMonitor.hpp>
@@ -63,19 +64,19 @@ Thermo::BaseAlgorithm::BaseAlgorithm(
 
   switch (timinttype)
   {
-    case Thermo::dyna_statics:
+    case Thermo::DynamicType::Statics:
     {
       thermo_ = std::make_shared<Thermo::TimIntStatics>(
           ioflags, parameters, xparams, actdis, solver, output);
       break;
     }
-    case Thermo::dyna_onesteptheta:
+    case Thermo::DynamicType::OneStepTheta:
     {
       thermo_ = std::make_shared<Thermo::TimIntOneStepTheta>(
           ioflags, parameters, xparams, actdis, solver, output);
       break;
     }
-    case Thermo::dyna_genalpha:
+    case Thermo::DynamicType::GenAlpha:
     {
       thermo_ = std::make_shared<Thermo::TimIntGenAlpha>(
           ioflags, parameters, xparams, actdis, solver, output);

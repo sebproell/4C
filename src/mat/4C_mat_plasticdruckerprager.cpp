@@ -19,6 +19,7 @@
 #include "4C_mat_stvenantkirchhoff.hpp"
 #include "4C_material_base.hpp"
 #include "4C_material_parameter_base.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_local_newton.hpp"
 
 FOUR_C_NAMESPACE_OPEN

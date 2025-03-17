@@ -13,6 +13,7 @@
 #include "4C_linalg_utils_densematrix_inverse.hpp"
 #include "4C_mat_membrane_elasthyper.hpp"
 #include "4C_mat_par_bundle.hpp"
+#include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

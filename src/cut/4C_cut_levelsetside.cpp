@@ -270,8 +270,8 @@ bool Cut::LevelSetSide<probdim>::find_ambiguous_cut_lines(
       break;
     }  // case Core::FE::CellType::quad4:
     default:
-      FOUR_C_THROW("Unsupported side shape! (shape = {} | {} )", side.shape(),
-          Core::FE::cell_type_to_string(side.shape()).c_str());
+      FOUR_C_THROW(
+          "Unsupported side shape! (shape = {} )", Core::FE::cell_type_to_string(side.shape()));
       break;
   }
   return false;

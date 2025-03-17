@@ -143,7 +143,10 @@ namespace Thermo
     //@{
 
     //! Return name
-    enum Thermo::DynamicType method_name() const override { return Thermo::dyna_onesteptheta; }
+    enum Thermo::DynamicType method_name() const override
+    {
+      return Thermo::DynamicType::OneStepTheta;
+    }
 
     //! Consistent predictor with constant temperatures
     //! and consistent temperature rates and temperatures

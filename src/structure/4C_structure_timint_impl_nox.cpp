@@ -118,8 +118,7 @@ Teuchos::RCP<::NOX::StatusTest::Combo> Solid::TimIntImpl::nox_create_status_test
   }
   else
   {
-    FOUR_C_THROW(
-        "Norm {} is not available", Inpar::Solid::magic_enum::enum_name(iternorm_).c_str());
+    FOUR_C_THROW("Norm {} is not available", iternorm_);
   }
 
   // combined residual force and displacement test

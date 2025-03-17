@@ -16,6 +16,7 @@
 #include "4C_mortar_defines.hpp"
 #include "4C_mortar_element.hpp"
 #include "4C_mortar_node.hpp"
+#include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
