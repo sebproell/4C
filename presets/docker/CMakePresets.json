@@ -99,6 +99,21 @@
         "CMAKE_CXX_COMPILER": "clang++",
         "CMAKE_C_COMPILER": "clang"
       }
+    },
+    {
+      "name": "docker_minimal",
+      "displayName": "Minimal build for Docker image",
+      "description": "Build minimal Docker image without source, build folder, and tests",
+      "inherits": [
+        ".docker_base"
+      ],
+      "cacheVariables": {
+        "FOUR_C_PVPYTHON": "",
+        "FOUR_C_WITH_GOOGLETEST": "OFF",
+        "FOUR_C_BUILD_DOXYGEN": "OFF",
+        "FOUR_C_BUILD_DOCUMENTATION": "OFF",
+        "FOUR_C_DOXYGEN_USE_LOCAL_MATHJAX": "OFF"
+      }
     }
   ]
 }
