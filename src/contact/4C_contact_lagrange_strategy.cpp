@@ -203,7 +203,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     interface_[i]->assemble_lin_dm(*lindmatrix_, *linmmatrix_);
     interface_[i]->assemble_lin_stick(*linstickLM_, *linstickDIS_, *linstickRHS_);
     interface_[i]->assemble_lin_slip(*linslipLM_, *linslipDIS_, *linslipRHS_);
-    if (system_type() != CONTACT::system_condensed)
+    if (system_type() != CONTACT::SystemType::condensed)
       interface_[i]->assemble_inactiverhs(*inactiverhs_);
   }
   if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
@@ -264,7 +264,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
   // CASE A: CONDENSED SYSTEM (DUAL)
   //**********************************************************************
   //**********************************************************************
-  if (systype_ == CONTACT::system_condensed)
+  if (systype_ == CONTACT::SystemType::condensed)
   {
     // double-check if this is a dual LM system
     if (shapefcn != Inpar::Mortar::shape_dual && shapefcn != Inpar::Mortar::shape_petrovgalerkin)
@@ -1954,7 +1954,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
     interface_[i]->assemble_t_nderiv(tderivmatrix_, nderivmatrix_);
     interface_[i]->assemble_lin_dm(*lindmatrix_, *linmmatrix_);
 
-    if (system_type() != CONTACT::system_condensed)
+    if (system_type() != CONTACT::SystemType::condensed)
     {
       interface_[i]->assemble_inactiverhs(*inactiverhs_);
       interface_[i]->assemble_tangrhs(*tangrhs_);
@@ -2032,7 +2032,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
   // CASE A: CONDENSED SYSTEM (DUAL)
   //**********************************************************************
   //**********************************************************************
-  if (systype_ == CONTACT::system_condensed)
+  if (systype_ == CONTACT::SystemType::condensed)
   {
     // double-check if this is a dual LM system
     if (shapefcn != Inpar::Mortar::shape_dual && shapefcn != Inpar::Mortar::shape_petrovgalerkin &&
@@ -2957,7 +2957,7 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
     std::shared_ptr<Core::LinAlg::Vector<double>>& blockrhs)
 {
   // Check for saddle-point formulation
-  if (system_type() != CONTACT::system_saddlepoint)
+  if (system_type() != CONTACT::SystemType::saddlepoint)
     FOUR_C_THROW("Invalid system type! Cannot build a saddle-point system for this system type.");
 
   // create old style dirichtoggle vector (supposed to go away)
@@ -3256,7 +3256,7 @@ void CONTACT::LagrangeStrategy::update_displacements_and_l_mincrements(
  *----------------------------------------------------------------------*/
 void CONTACT::LagrangeStrategy::evaluate_constr_rhs()
 {
-  if (system_type() == CONTACT::system_condensed) return;
+  if (system_type() == CONTACT::SystemType::condensed) return;
 
   if (!is_in_contact() && !was_in_contact() && !was_in_contact_last_time_step())
   {
@@ -3383,7 +3383,7 @@ void CONTACT::LagrangeStrategy::evaluate_force(CONTACT::ParamsInterface& cparams
   initialize();  // init lin-matrices
   assemble_all_contact_terms();
 
-  if (system_type() != CONTACT::system_condensed)
+  if (system_type() != CONTACT::SystemType::condensed)
   {
     eval_str_contact_rhs();  // evaluate the structure/displacement rhs
     evaluate_constr_rhs();   // evaluate the constraint rhs (saddle-point system only)
@@ -3478,7 +3478,7 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_friction()
     interface_[i]->assemble_lin_dm(*lindmatrix_, *linmmatrix_);
     interface_[i]->assemble_lin_stick(*linstickLM_, *linstickDIS_, *linstickRHS_);
     interface_[i]->assemble_lin_slip(*linslipLM_, *linslipDIS_, *linslipRHS_);
-    if (system_type() != CONTACT::system_condensed)
+    if (system_type() != CONTACT::SystemType::condensed)
       interface_[i]->assemble_inactiverhs(*inactiverhs_);
   }
   if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
@@ -3532,7 +3532,7 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_friction()
     }
   }
 
-  if (system_type() == CONTACT::system_condensed)
+  if (system_type() == CONTACT::SystemType::condensed)
   {
     /**********************************************************************/
     /* (1) Multiply Mortar matrices: m^ = inv(d) * m                      */
@@ -3700,7 +3700,7 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_friction()
     std::shared_ptr<Core::LinAlg::SparseMatrix> temp2 =
         Core::LinAlg::matrix_multiply(*dmatrix_, false, *invtrafo_, false, false, false, true);
     dmatrix_ = temp2;
-    if (system_type() == CONTACT::system_condensed)
+    if (system_type() == CONTACT::SystemType::condensed)
     {
       std::shared_ptr<Core::LinAlg::SparseMatrix> temp3 =
           Core::LinAlg::matrix_multiply(*trafo_, false, *invd_, false, false, false, true);
@@ -3736,7 +3736,7 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_frictionless()
     interface_[i]->assemble_t_nderiv(tderivmatrix_, nderivmatrix_);
     interface_[i]->assemble_lin_dm(*lindmatrix_, *linmmatrix_);
 
-    if (system_type() != CONTACT::system_condensed)
+    if (system_type() != CONTACT::SystemType::condensed)
     {
       interface_[i]->assemble_inactiverhs(*inactiverhs_);
       interface_[i]->assemble_tangrhs(*tangrhs_);
@@ -3794,7 +3794,7 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_frictionless()
     }
   }
 
-  if (system_type() == CONTACT::system_condensed)
+  if (system_type() == CONTACT::SystemType::condensed)
   {
     /**********************************************************************/
     /* (1) Multiply Mortar matrices: m^ = inv(d) * m                      */
@@ -3961,7 +3961,7 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_frictionless()
     std::shared_ptr<Core::LinAlg::SparseMatrix> temp2 =
         Core::LinAlg::matrix_multiply(*dmatrix_, false, *invtrafo_, false, false, false, true);
     dmatrix_ = temp2;
-    if (system_type() == CONTACT::system_condensed)
+    if (system_type() == CONTACT::SystemType::condensed)
     {
       std::shared_ptr<Core::LinAlg::SparseMatrix> temp3 =
           Core::LinAlg::matrix_multiply(*trafo_, false, *invd_, false, false, false, true);
@@ -3983,7 +3983,7 @@ void CONTACT::LagrangeStrategy::assemble_contact_rhs()
 
   for (int i = 0; i < (int)interface_.size(); ++i)
   {
-    if (system_type() != CONTACT::system_condensed)
+    if (system_type() != CONTACT::SystemType::condensed)
     {
       interface_[i]->assemble_inactiverhs(*inactiverhs_);
       if (!is_friction()) interface_[i]->assemble_tangrhs(*tangrhs_);
@@ -4298,7 +4298,7 @@ void CONTACT::LagrangeStrategy::run_post_compute_x(const CONTACT::ParamsInterfac
     const Core::LinAlg::Vector<double>& xold, const Core::LinAlg::Vector<double>& dir,
     const Core::LinAlg::Vector<double>& xnew)
 {
-  if (system_type() != CONTACT::system_condensed)
+  if (system_type() != CONTACT::SystemType::condensed)
   {
     if (lm_dof_row_map(true).NumGlobalElements() > 0)
     {
@@ -4389,7 +4389,7 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> CONTACT::LagrangeStrategy::g
 void CONTACT::LagrangeStrategy::reset_lagrange_multipliers(
     const CONTACT::ParamsInterface& cparams, const Core::LinAlg::Vector<double>& xnew)
 {
-  if (system_type() != CONTACT::system_condensed)
+  if (system_type() != CONTACT::SystemType::condensed)
   {
     if (lm_dof_row_map(true).NumGlobalElements() == 0) return;
 
@@ -4430,7 +4430,7 @@ void CONTACT::LagrangeStrategy::recover(std::shared_ptr<Core::LinAlg::Vector<dou
   // CASE A: CONDENSED SYSTEM (DUAL)
   //**********************************************************************
   //**********************************************************************
-  if (system_type() == CONTACT::system_condensed)
+  if (system_type() == CONTACT::SystemType::condensed)
   {
     // double-check if this is a dual LM system
     if ((shapefcn != Inpar::Mortar::shape_dual &&
@@ -6636,7 +6636,7 @@ void CONTACT::LagrangeStrategy::run_pre_apply_jacobian_inverse(
   }
 
 
-  if (systype_ != CONTACT::system_condensed) return;
+  if (systype_ != CONTACT::SystemType::condensed) return;
 
   if (friction_)
     condense_friction(kteff, rhs);
@@ -6651,7 +6651,7 @@ void CONTACT::LagrangeStrategy::run_post_apply_jacobian_inverse(
     Core::LinAlg::Vector<double>& result, const Core::LinAlg::Vector<double>& xold,
     const NOX::Nln::Group& grp)
 {
-  if (system_type() != CONTACT::system_condensed) return;
+  if (system_type() != CONTACT::SystemType::condensed) return;
 
   // check if contact contributions are present,
   // if not we can skip this routine to speed things up

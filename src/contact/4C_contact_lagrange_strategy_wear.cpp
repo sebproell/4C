@@ -2695,7 +2695,8 @@ void Wear::LagrangeStrategyWear::evaluate_friction(
     interface_[i]->assemble_lin_dm(*lindmatrix_, *linmmatrix_);
     interface_[i]->assemble_lin_stick(*linstickLM_, *linstickDIS_, *linstickRHS_);
     interface_[i]->assemble_lin_slip(*linslipLM_, *linslipDIS_, *linslipRHS_);
-    if (systype != CONTACT::system_condensed) interface_[i]->assemble_inactiverhs(*inactiverhs_);
+    if (systype != CONTACT::SystemType::condensed)
+      interface_[i]->assemble_inactiverhs(*inactiverhs_);
 
     //***************************************************
     // Assemble lin. for implicit internal state wear algorithm
@@ -2865,7 +2866,7 @@ void Wear::LagrangeStrategyWear::evaluate_friction(
   // HERE THE LM ARE SOLVED ABSOLUTELY !!!
   //**********************************************************************
   //**********************************************************************
-  if ((systype == CONTACT::system_condensed) && wearprimvar_)
+  if ((systype == CONTACT::SystemType::condensed) && wearprimvar_)
   {
     condense_wear_discr(kteff, feff, *gact);
   }
@@ -2875,7 +2876,7 @@ void Wear::LagrangeStrategyWear::evaluate_friction(
   // HERE THE LM ARE SOLVED ABSOLUTELY !!!
   //**********************************************************************
   //**********************************************************************
-  else if ((systype == CONTACT::system_condensed) && !wearprimvar_)
+  else if ((systype == CONTACT::SystemType::condensed) && !wearprimvar_)
   {
     condense_wear_impl_expl(kteff, feff, *gact);
   }
@@ -3785,7 +3786,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
   //**********************************************************************
   // build and solve saddle point system
   //**********************************************************************
-  if (systype == CONTACT::system_saddlepoint)
+  if (systype == CONTACT::SystemType::saddlepoint)
   {
     // apply Dirichlet conditions to (0,0) and (0,1) blocks
     Core::LinAlg::Vector<double> zeros(*problem_dofs(), true);
@@ -4346,7 +4347,7 @@ void Wear::LagrangeStrategyWear::recover(std::shared_ptr<Core::LinAlg::Vector<do
   // CASE A: CONDENSED SYSTEM (DUAL) + WEAR DISCR (DUAL)
   //**********************************************************************
   //**********************************************************************
-  if ((systype == CONTACT::system_condensed) && wearprimvar_)
+  if ((systype == CONTACT::SystemType::condensed) && wearprimvar_)
   {
     // double-check if this is a dual LM system
     if (shapefcn != Inpar::Mortar::shape_dual && shapefcn != Inpar::Mortar::shape_petrovgalerkin)
@@ -4460,7 +4461,7 @@ void Wear::LagrangeStrategyWear::recover(std::shared_ptr<Core::LinAlg::Vector<do
   // CASE B: CONDENSED SYSTEM (DUAL) + WEAR IMPLICIT/EXPLICIT
   //**********************************************************************
   //**********************************************************************
-  else if ((systype == CONTACT::system_condensed) && !wearprimvar_)
+  else if ((systype == CONTACT::SystemType::condensed) && !wearprimvar_)
   {
     // double-check if this is a dual LM system
     if (shapefcn != Inpar::Mortar::shape_dual && shapefcn != Inpar::Mortar::shape_petrovgalerkin)

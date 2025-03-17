@@ -2825,7 +2825,7 @@ void CONTACT::AbstractStrategy::reset_lagrange_multipliers(
  *----------------------------------------------------------------------*/
 bool CONTACT::AbstractStrategy::is_saddle_point_system() const
 {
-  if ((stype_ == CONTACT::solution_lagmult) and system_type() == CONTACT::system_saddlepoint)
+  if ((stype_ == CONTACT::solution_lagmult) and system_type() == CONTACT::SystemType::saddlepoint)
   {
     if (is_in_contact() or was_in_contact() or was_in_contact_last_time_step()) return true;
   }
@@ -2836,7 +2836,7 @@ bool CONTACT::AbstractStrategy::is_saddle_point_system() const
  *----------------------------------------------------------------------*/
 bool CONTACT::AbstractStrategy::is_condensed_system() const
 {
-  if (stype_ == CONTACT::solution_lagmult and system_type() != CONTACT::system_saddlepoint)
+  if (stype_ == CONTACT::solution_lagmult and system_type() != CONTACT::SystemType::saddlepoint)
   {
     if (is_in_contact() or was_in_contact() or was_in_contact_last_time_step()) return true;
   }

@@ -411,7 +411,7 @@ Adapter::StructureBaseAlgorithm::create_contact_meshtying_solver(
   // Distinguish the system type, i.e. condensed vs. saddle-point
   switch (Teuchos::getIntegralValue<CONTACT::SystemType>(mcparams, "SYSTEM"))
   {
-    case CONTACT::system_saddlepoint:
+    case CONTACT::SystemType::saddlepoint:
     {
       /* Plausibility check
        *

@@ -295,7 +295,7 @@ int Solid::TimeInt::BaseDataGlobalState::setup_block_information(
         model_block_id_[mt] = 0;
       }
       // --- saddle-point system
-      else if (systype == CONTACT::system_saddlepoint)
+      else if (systype == CONTACT::SystemType::saddlepoint)
       {
         model_block_id_[mt] = max_block_num_;
         ++max_block_num_;
@@ -324,13 +324,13 @@ int Solid::TimeInt::BaseDataGlobalState::setup_block_information(
         model_block_id_[mt] = 0;
       }
       // --- saddle-point system
-      else if (systype == CONTACT::system_saddlepoint)
+      else if (systype == CONTACT::SystemType::saddlepoint)
       {
         model_block_id_[mt] = max_block_num_;
         ++max_block_num_;
       }
       // --- condensed system
-      else if (systype == CONTACT::system_condensed)
+      else if (systype == CONTACT::SystemType::condensed)
       {
         model_block_id_[mt] = 0;
       }

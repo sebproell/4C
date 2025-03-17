@@ -436,9 +436,9 @@ bool CONTACT::MtManager::read_and_check_input(
       Teuchos::getIntegralValue<Inpar::Mortar::ShapeFcn>(mortar, "LM_SHAPEFCN") ==
           Inpar::Mortar::shape_standard &&
       (Teuchos::getIntegralValue<CONTACT::SystemType>(meshtying, "SYSTEM") ==
-              CONTACT::system_condensed ||
+              CONTACT::SystemType::condensed ||
           Teuchos::getIntegralValue<CONTACT::SystemType>(meshtying, "SYSTEM") ==
-              CONTACT::system_condensed_lagmult))
+              CONTACT::SystemType::condensed_lagmult))
     FOUR_C_THROW("Condensation of linear system only possible for dual Lagrange multipliers");
 
   if (Teuchos::getIntegralValue<Inpar::Mortar::ParallelRedist>(mortarParallelRedistParams,
@@ -548,7 +548,7 @@ bool CONTACT::MtManager::read_and_check_input(
     mtparams.set<double>("SEARCH_PARAM", 0.3);
     mtparams.set<bool>("SEARCH_USE_AUX_POS", false);
     mtparams.set<Inpar::Mortar::ShapeFcn>("LM_SHAPEFCN", Inpar::Mortar::shape_dual);
-    mtparams.set<CONTACT::SystemType>("SYSTEM", CONTACT::SystemType::system_condensed);
+    mtparams.set<CONTACT::SystemType>("SYSTEM", CONTACT::SystemType::condensed);
     mtparams.set<bool>("NURBS", false);
     mtparams.set<int>("NUMGP_PER_DIM", -1);
     mtparams.set<CONTACT::SolvingStrategy>("STRATEGY", CONTACT::SolvingStrategy::solution_lagmult);
@@ -605,7 +605,7 @@ bool CONTACT::MtManager::read_and_check_input(
   if ((problemtype == Core::ProblemType::poroelast || problemtype == Core::ProblemType::fpsi ||
           problemtype == Core::ProblemType::fpsi_xfem) &&
       Teuchos::getIntegralValue<CONTACT::SystemType>(meshtying, "SYSTEM") !=
-          CONTACT::system_condensed_lagmult)
+          CONTACT::SystemType::condensed_lagmult)
     FOUR_C_THROW("POROCONTACT: Just lagrange multiplier should be condensed for poro meshtying!");
 
   if ((problemtype == Core::ProblemType::poroelast || problemtype == Core::ProblemType::fpsi ||

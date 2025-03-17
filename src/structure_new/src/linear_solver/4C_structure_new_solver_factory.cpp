@@ -206,7 +206,7 @@ std::shared_ptr<Core::LinAlg::Solver> Solid::SOLVER::Factory::build_meshtying_co
 
   switch (sys_type)
   {
-    case CONTACT::system_saddlepoint:
+    case CONTACT::SystemType::saddlepoint:
     {
       // meshtying/contact for structure
       // check if the meshtying/contact solver has a valid solver number

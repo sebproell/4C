@@ -279,7 +279,7 @@ bool Solid::ModelEvaluator::Contact::assemble_jacobian(
   // ---------------------------------------------------------------------
   // saddle-point system of equations or no contact contributions
   // ---------------------------------------------------------------------
-  else if (strategy().system_type() == CONTACT::system_saddlepoint)
+  else if (strategy().system_type() == CONTACT::SystemType::saddlepoint)
   {
     // --- Kdd - block ---------------------------------------------------
     block_ptr =
@@ -635,7 +635,7 @@ std::shared_ptr<const Epetra_Map> Solid::ModelEvaluator::Contact::get_block_dof_
     auto systype =
         Teuchos::getIntegralValue<CONTACT::SystemType>(problem->contact_dynamic_params(), "SYSTEM");
 
-    if (systype == CONTACT::system_saddlepoint)
+    if (systype == CONTACT::SystemType::saddlepoint)
       return strategy().lin_system_lm_dof_row_map_ptr();
     else
       return global_state().dof_row_map();
@@ -651,7 +651,7 @@ Solid::ModelEvaluator::Contact::get_current_solution_ptr() const
   Global::Problem* problem = Global::Problem::instance();
   auto systype =
       Teuchos::getIntegralValue<CONTACT::SystemType>(problem->contact_dynamic_params(), "SYSTEM");
-  if (systype == CONTACT::system_condensed) return nullptr;
+  if (systype == CONTACT::SystemType::condensed) return nullptr;
 
   if (strategy().lagrange_multiplier_np(false) != nullptr)
   {
@@ -675,7 +675,7 @@ Solid::ModelEvaluator::Contact::get_last_time_step_solution_ptr() const
   Global::Problem* problem = Global::Problem::instance();
   auto systype =
       Teuchos::getIntegralValue<CONTACT::SystemType>(problem->contact_dynamic_params(), "SYSTEM");
-  if (systype == CONTACT::system_condensed) return nullptr;
+  if (systype == CONTACT::SystemType::condensed) return nullptr;
 
   if (strategy().lagrange_multiplier_n(false) == nullptr) return nullptr;
 

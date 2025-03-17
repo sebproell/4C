@@ -671,7 +671,7 @@ bool CONTACT::Manager::read_and_check_input(Teuchos::ParameterList& cparams) con
 
   // in case just System type system_condensed_lagmult
   if (Teuchos::getIntegralValue<CONTACT::SystemType>(contact, "SYSTEM") ==
-      CONTACT::system_condensed_lagmult)
+      CONTACT::SystemType::condensed_lagmult)
     FOUR_C_THROW(
         "For Contact anyway just the lagrange multiplier can be condensed, choose SYSTEM = "
         "Condensed.");
@@ -818,7 +818,7 @@ bool CONTACT::Manager::read_and_check_input(Teuchos::ParameterList& cparams) con
             Teuchos::getIntegralValue<Inpar::Mortar::LagMultQuad>(mortar, "LM_QUAD") !=
                 Inpar::Mortar::lagmult_const) &&
         Teuchos::getIntegralValue<CONTACT::SystemType>(contact, "SYSTEM") ==
-            CONTACT::system_condensed)
+            CONTACT::SystemType::condensed)
       FOUR_C_THROW("Condensation of linear system only possible for dual Lagrange multipliers");
 
     if (Teuchos::getIntegralValue<Inpar::Mortar::ConsistentDualType>(
@@ -896,7 +896,7 @@ bool CONTACT::Manager::read_and_check_input(Teuchos::ParameterList& cparams) con
 
     if (problemtype == Core::ProblemType::tsi &&
         Teuchos::getIntegralValue<CONTACT::SystemType>(contact, "SYSTEM") !=
-            CONTACT::system_condensed)
+            CONTACT::SystemType::condensed)
       FOUR_C_THROW("Thermal contact only for dual shape functions with condensed system");
 
     // no nodal scaling in for thermal-structure-interaction
@@ -985,7 +985,7 @@ bool CONTACT::Manager::read_and_check_input(Teuchos::ParameterList& cparams) con
         FOUR_C_THROW("POROCONTACT: is_friction for poro contact not implemented!");
 
       if (Teuchos::getIntegralValue<CONTACT::SystemType>(contact, "SYSTEM") !=
-              CONTACT::system_condensed &&
+              CONTACT::SystemType::condensed &&
           Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(contact, "STRATEGY") ==
               CONTACT::solution_lagmult)
         FOUR_C_THROW("POROCONTACT: System has to be condensed for poro contact!");
@@ -1040,7 +1040,7 @@ bool CONTACT::Manager::read_and_check_input(Teuchos::ParameterList& cparams) con
            Inpar::Mortar::algorithm_gpts)
   {
     const_cast<Teuchos::ParameterList&>(Global::Problem::instance()->contact_dynamic_params())
-        .set("SYSTEM", CONTACT::SystemType::system_none);
+        .set("SYSTEM", CONTACT::SystemType::none);
 
     if (contact.get<double>("PENALTYPARAM") <= 0.0)
       FOUR_C_THROW("Penalty parameter eps = 0, must be greater than 0");

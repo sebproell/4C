@@ -3672,7 +3672,7 @@ void Wear::WearInterface::assemble_wear_cond_rhs(Core::LinAlg::Vector<double>& r
     /**************************************************** T-matrix ******/
     // for condensation of lm and wear we condense the system with absol. lm
     // --> therefore we do not need the lm^i term...
-    if (((fnode->wear_data().get_t()).size() > 0) && systype != CONTACT::system_condensed)
+    if (((fnode->wear_data().get_t()).size() > 0) && systype != CONTACT::SystemType::condensed)
     {
       std::map<int, double> tmap = fnode->wear_data().get_t()[0];
 
@@ -3765,7 +3765,7 @@ void Wear::WearInterface::assemble_wear_cond_rhs_master(Epetra_FEVector& RHS)
     /**************************************************** T-matrix ******/
     // for condensation of lm and wear we condense the system with absol. lm
     // --> therefore we do not need the lm^i term...
-    if (((fnode->wear_data().get_t()).size() > 0) && systype != CONTACT::system_condensed)
+    if (((fnode->wear_data().get_t()).size() > 0) && systype != CONTACT::SystemType::condensed)
     {
       std::map<int, double> tmap = fnode->wear_data().get_t()[0];
 

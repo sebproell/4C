@@ -119,7 +119,7 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
 
   // error checks
   if (Teuchos::getIntegralValue<CONTACT::SystemType>(params(), "SYSTEM") !=
-      CONTACT::system_condensed)
+      CONTACT::SystemType::condensed)
     FOUR_C_THROW("only condensed system implemented");
 
   // First, we need to evaluate all the interfaces

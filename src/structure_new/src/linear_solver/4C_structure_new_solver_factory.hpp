@@ -29,7 +29,7 @@ namespace Inpar
 namespace CONTACT
 {
   enum SolvingStrategy : int;
-  enum SystemType : int;
+  enum class SystemType;
 }  // namespace CONTACT
 namespace Core::LinAlg
 {

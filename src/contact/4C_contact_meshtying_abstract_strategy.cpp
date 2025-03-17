@@ -925,7 +925,7 @@ void CONTACT::MtAbstractStrategy::collect_maps_for_preconditioner(
  *----------------------------------------------------------------------*/
 bool CONTACT::MtAbstractStrategy::is_saddle_point_system() const
 {
-  if (system_type() == CONTACT::system_saddlepoint) return true;
+  if (system_type() == CONTACT::SystemType::saddlepoint) return true;
 
   return false;
 }
@@ -934,7 +934,7 @@ bool CONTACT::MtAbstractStrategy::is_saddle_point_system() const
  *----------------------------------------------------------------------*/
 bool CONTACT::MtAbstractStrategy::is_condensed_system() const
 {
-  if (system_type() != CONTACT::system_saddlepoint) return true;
+  if (system_type() != CONTACT::SystemType::saddlepoint) return true;
 
   return false;
 }

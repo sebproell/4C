@@ -675,9 +675,9 @@ void Solid::TimIntImpl::predict_tang_dis_consist_vel_acc()
           Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
               cmtbridge_->get_strategy().params(), "STRATEGY") == CONTACT::solution_lagmult &&
           (Teuchos::getIntegralValue<CONTACT::SystemType>(
-               cmtbridge_->get_strategy().params(), "SYSTEM") != CONTACT::system_condensed ||
+               cmtbridge_->get_strategy().params(), "SYSTEM") != CONTACT::SystemType::condensed ||
               Teuchos::getIntegralValue<CONTACT::SystemType>(cmtbridge_->get_strategy().params(),
-                  "SYSTEM") != CONTACT::system_condensed_lagmult));
+                  "SYSTEM") != CONTACT::SystemType::condensed_lagmult));
 
   if (bPressure && bContactSP)
     FOUR_C_THROW(
@@ -1584,11 +1584,11 @@ int Solid::TimIntImpl::newton_full()
         (have_contact_meshtying() &&
             ((Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
                   cmtbridge_->get_strategy().params(), "STRATEGY") == CONTACT::solution_lagmult &&
-                (Teuchos::getIntegralValue<CONTACT::SystemType>(
-                     cmtbridge_->get_strategy().params(), "SYSTEM") != CONTACT::system_condensed ||
+                (Teuchos::getIntegralValue<CONTACT::SystemType>(cmtbridge_->get_strategy().params(),
+                     "SYSTEM") != CONTACT::SystemType::condensed ||
                     Teuchos::getIntegralValue<CONTACT::SystemType>(
                         cmtbridge_->get_strategy().params(), "SYSTEM") !=
-                        CONTACT::system_condensed_lagmult))));
+                        CONTACT::SystemType::condensed_lagmult))));
 
     if (bPressure && bContactSP)
       FOUR_C_THROW(
@@ -3101,7 +3101,8 @@ void Solid::TimIntImpl::cmt_linear_solve()
   solver_params.refactor = true;
   solver_params.reset = iter_ == 1;
   if (soltype == CONTACT::solution_lagmult &&
-      (systype != CONTACT::system_condensed && systype != CONTACT::system_condensed_lagmult))
+      (systype != CONTACT::SystemType::condensed &&
+          systype != CONTACT::SystemType::condensed_lagmult))
   {
     // check if contact contributions are present,
     // if not we make a standard solver call to speed things up
@@ -3409,9 +3410,9 @@ int Solid::TimIntImpl::ptc()
             Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
                 cmtbridge_->get_strategy().params(), "STRATEGY") == CONTACT::solution_lagmult &&
             (Teuchos::getIntegralValue<CONTACT::SystemType>(
-                 cmtbridge_->get_strategy().params(), "SYSTEM") != CONTACT::system_condensed ||
-                Teuchos::getIntegralValue<CONTACT::SystemType>(
-                    cmtbridge_->get_strategy().params(), "SYSTEM") != CONTACT::system_condensed));
+                 cmtbridge_->get_strategy().params(), "SYSTEM") != CONTACT::SystemType::condensed ||
+                Teuchos::getIntegralValue<CONTACT::SystemType>(cmtbridge_->get_strategy().params(),
+                    "SYSTEM") != CONTACT::SystemType::condensed));
 
     if (bPressure && bContactSP)
       FOUR_C_THROW(
@@ -3679,7 +3680,8 @@ void Solid::TimIntImpl::print_newton_iter_header(FILE* ofile)
         cmtbridge_->get_strategy().params(), "WEAR_SIDE");
 
     if (soltype == CONTACT::solution_lagmult &&
-        (systype != CONTACT::system_condensed && systype != CONTACT::system_condensed_lagmult))
+        (systype != CONTACT::SystemType::condensed &&
+            systype != CONTACT::SystemType::condensed_lagmult))
     {
       switch (normtypecontconstr_)
       {
@@ -3859,7 +3861,8 @@ void Solid::TimIntImpl::print_newton_iter_text(FILE* ofile)
         cmtbridge_->get_strategy().params(), "WEAR_SIDE");
 
     if (soltype == CONTACT::solution_lagmult &&
-        (systype != CONTACT::system_condensed && systype != CONTACT::system_condensed_lagmult))
+        (systype != CONTACT::SystemType::condensed &&
+            systype != CONTACT::SystemType::condensed_lagmult))
     {
       // we only support abs norms
       oss << std::setw(20) << std::setprecision(5) << std::scientific
@@ -4398,7 +4401,8 @@ int Solid::TimIntImpl::cmt_windk_constr_linear_solve(const double k_ptc)
   // (2) Standard / Dual Lagrange multipliers -> SaddlePointSimpler
   //**********************************************************************
   if (soltype == CONTACT::solution_lagmult &&
-      (systype != CONTACT::system_condensed && systype != CONTACT::system_condensed_lagmult))
+      (systype != CONTACT::SystemType::condensed &&
+          systype != CONTACT::SystemType::condensed_lagmult))
   {
     FOUR_C_THROW(
         "Constraints / Cardiovascular0D bcs together with saddle point contact system does not "

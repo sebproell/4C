@@ -567,7 +567,7 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
       if (algorithm == Inpar::Mortar::algorithm_mortar)
       {
         // saddle point formulation
-        if (systype == CONTACT::system_saddlepoint)
+        if (systype == CONTACT::SystemType::saddlepoint)
         {
           if (soltype == CONTACT::solution_lagmult && shapefcn == Inpar::Mortar::shape_standard)
           {
@@ -689,8 +689,8 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
         }
 
         // condensed formulation
-        else if (systype == CONTACT::system_condensed ||
-                 systype == CONTACT::system_condensed_lagmult)
+        else if (systype == CONTACT::SystemType::condensed ||
+                 systype == CONTACT::SystemType::condensed_lagmult)
         {
           if (soltype == CONTACT::solution_lagmult && shapefcn == Inpar::Mortar::shape_dual)
           {

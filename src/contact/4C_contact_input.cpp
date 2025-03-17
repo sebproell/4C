@@ -65,10 +65,12 @@ void CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& l
       "Type of linear system setup / solution",
       tuple<std::string>("Condensed", "condensed", "cond", "Condensedlagmult", "condensedlagmult",
           "condlm", "SaddlePoint", "Saddlepoint", "saddlepoint", "sp", "none"),
-      tuple<CONTACT::SystemType>(system_condensed, system_condensed, system_condensed,
-          system_condensed_lagmult, system_condensed_lagmult, system_condensed_lagmult,
-          system_saddlepoint, system_saddlepoint, system_saddlepoint, system_saddlepoint,
-          system_none),
+      tuple<CONTACT::SystemType>(CONTACT::SystemType::condensed, CONTACT::SystemType::condensed,
+          CONTACT::SystemType::condensed, CONTACT::SystemType::condensed_lagmult,
+          CONTACT::SystemType::condensed_lagmult, CONTACT::SystemType::condensed_lagmult,
+          CONTACT::SystemType::saddlepoint, CONTACT::SystemType::saddlepoint,
+          CONTACT::SystemType::saddlepoint, CONTACT::SystemType::saddlepoint,
+          CONTACT::SystemType::none),
       scontact);
 
   scontact.specs.emplace_back(parameter<double>("PENALTYPARAM",

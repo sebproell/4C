@@ -72,13 +72,13 @@ namespace CONTACT
 
   /// Type of linear system setup and solution
   /// (this enum represents the input file parameter SYSTEM)
-  enum SystemType : int
+  enum class SystemType
   {
-    system_none,               ///< no system defined
-    system_condensed,          ///< condensed system
-    system_condensed_lagmult,  ///< system with condensed lagrange multiplier (differs just in
-                               ///< meshtying case)
-    system_saddlepoint         ///< saddle point system
+    none,               ///< no system defined
+    condensed,          ///< condensed system
+    condensed_lagmult,  ///< system with condensed lagrange multiplier (differs just in
+                        ///< meshtying case)
+    saddlepoint         ///< saddle point system
   };
 
   /// Type of formulation of constraint equations

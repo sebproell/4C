@@ -57,7 +57,8 @@ void CONTACT::PoroMtLagrangeStrategy::evaluate_meshtying_poro_off_diag(
   // CASE A: CONDENSED SYSTEM (DUAL)
   //**********************************************************************
   //**********************************************************************
-  if (systype == CONTACT::system_condensed || systype == CONTACT::system_condensed_lagmult)
+  if (systype == CONTACT::SystemType::condensed ||
+      systype == CONTACT::SystemType::condensed_lagmult)
   {
     // double-check if this is a dual LM system
     if (shapefcn != Inpar::Mortar::shape_dual && shapefcn != Inpar::Mortar::shape_petrovgalerkin)
