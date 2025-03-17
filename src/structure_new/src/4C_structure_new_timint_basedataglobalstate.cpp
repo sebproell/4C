@@ -289,8 +289,10 @@ int Solid::TimeInt::BaseDataGlobalState::setup_block_information(
           problem->contact_dynamic_params(), "STRATEGY");
 
       // systems without additional dofs
-      if (soltype == CONTACT::solution_nitsche || soltype == CONTACT::solution_penalty ||
-          soltype == CONTACT::solution_uzawa || soltype == CONTACT::solution_multiscale)
+      if (soltype == CONTACT::SolvingStrategy::nitsche ||
+          soltype == CONTACT::SolvingStrategy::penalty ||
+          soltype == CONTACT::SolvingStrategy::uzawa ||
+          soltype == CONTACT::SolvingStrategy::multiscale)
       {
         model_block_id_[mt] = 0;
       }
@@ -318,8 +320,10 @@ int Solid::TimeInt::BaseDataGlobalState::setup_block_information(
           mt_me.strategy().params(), "STRATEGY");
 
       // systems without additional dofs
-      if (soltype == CONTACT::solution_nitsche || soltype == CONTACT::solution_penalty ||
-          soltype == CONTACT::solution_uzawa || soltype == CONTACT::solution_multiscale)
+      if (soltype == CONTACT::SolvingStrategy::nitsche ||
+          soltype == CONTACT::SolvingStrategy::penalty ||
+          soltype == CONTACT::SolvingStrategy::uzawa ||
+          soltype == CONTACT::SolvingStrategy::multiscale)
       {
         model_block_id_[mt] = 0;
       }

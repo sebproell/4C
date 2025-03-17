@@ -326,7 +326,7 @@ CONTACT::MtManager::MtManager(Core::FE::Discretization& discret, double alphaf)
   const Core::ProblemType problemtype = Global::Problem::instance()->get_problem_type();
 
   auto stype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(mtparams, "STRATEGY");
-  if (stype == CONTACT::solution_lagmult)
+  if (stype == CONTACT::SolvingStrategy::lagmult)
   {
     // finally we should use another criteria to decide which strategy
     if (problemtype != Core::ProblemType::poroelast && problemtype != Core::ProblemType::fpsi &&
@@ -341,7 +341,7 @@ CONTACT::MtManager::MtManager(Core::FE::Discretization& discret, double alphaf)
           discret.node_row_map(), mtparams, interfaces, spatialDim, comm_, alphaf, maxdof);
     }
   }
-  else if (stype == CONTACT::solution_penalty or stype == CONTACT::solution_uzawa)
+  else if (stype == CONTACT::SolvingStrategy::penalty or stype == CONTACT::SolvingStrategy::uzawa)
     strategy_ = std::make_shared<MtPenaltyStrategy>(discret.dof_row_map(), discret.node_row_map(),
         mtparams, interfaces, spatialDim, comm_, alphaf, maxdof);
   else
@@ -408,22 +408,22 @@ bool CONTACT::MtManager::read_and_check_input(
   // invalid parameter combinations
   // *********************************************************************
   if (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(meshtying, "STRATEGY") ==
-          CONTACT::solution_penalty &&
+          CONTACT::SolvingStrategy::penalty &&
       meshtying.get<double>("PENALTYPARAM") <= 0.0)
     FOUR_C_THROW("Penalty parameter eps <= 0, must be greater than 0");
 
   if (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(meshtying, "STRATEGY") ==
-          CONTACT::solution_uzawa &&
+          CONTACT::SolvingStrategy::uzawa &&
       meshtying.get<double>("PENALTYPARAM") <= 0.0)
     FOUR_C_THROW("Penalty parameter eps <= 0, must be greater than 0");
 
   if (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(meshtying, "STRATEGY") ==
-          CONTACT::solution_uzawa &&
+          CONTACT::SolvingStrategy::uzawa &&
       meshtying.get<int>("UZAWAMAXSTEPS") < 2)
     FOUR_C_THROW("Maximum number of Uzawa / Augmentation steps must be at least 2");
 
   if (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(meshtying, "STRATEGY") ==
-          CONTACT::solution_uzawa &&
+          CONTACT::SolvingStrategy::uzawa &&
       meshtying.get<double>("UZAWACONSTRTOL") <= 0.0)
     FOUR_C_THROW("Constraint tolerance for Uzawa / Augmentation scheme must be greater than 0");
 
@@ -432,7 +432,7 @@ bool CONTACT::MtManager::read_and_check_input(
     FOUR_C_THROW("Friction law supplied for mortar meshtying");
 
   if (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(meshtying, "STRATEGY") ==
-          CONTACT::solution_lagmult &&
+          CONTACT::SolvingStrategy::lagmult &&
       Teuchos::getIntegralValue<Inpar::Mortar::ShapeFcn>(mortar, "LM_SHAPEFCN") ==
           Inpar::Mortar::shape_standard &&
       (Teuchos::getIntegralValue<CONTACT::SystemType>(meshtying, "SYSTEM") ==
@@ -455,7 +455,7 @@ bool CONTACT::MtManager::read_and_check_input(
   if (Teuchos::getIntegralValue<Inpar::Mortar::ConsistentDualType>(mortar, "LM_DUAL_CONSISTENT") !=
           Inpar::Mortar::consistent_none &&
       Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(meshtying, "STRATEGY") !=
-          CONTACT::solution_lagmult &&
+          CONTACT::SolvingStrategy::lagmult &&
       Teuchos::getIntegralValue<Inpar::Mortar::ShapeFcn>(mortar, "LM_SHAPEFCN") !=
           Inpar::Mortar::shape_standard)
     FOUR_C_THROW(
@@ -551,7 +551,7 @@ bool CONTACT::MtManager::read_and_check_input(
     mtparams.set<CONTACT::SystemType>("SYSTEM", CONTACT::SystemType::condensed);
     mtparams.set<bool>("NURBS", false);
     mtparams.set<int>("NUMGP_PER_DIM", -1);
-    mtparams.set<CONTACT::SolvingStrategy>("STRATEGY", CONTACT::SolvingStrategy::solution_lagmult);
+    mtparams.set<CONTACT::SolvingStrategy>("STRATEGY", CONTACT::SolvingStrategy::lagmult);
     mtparams.set<Inpar::Mortar::IntType>("INTTYPE", Inpar::Mortar::IntType::inttype_segments);
     mtparams.sublist("PARALLEL REDISTRIBUTION").set<std::string>("REDUNDANT_STORAGE", "Master");
     mtparams.sublist("PARALLEL REDISTRIBUTION")
@@ -599,7 +599,7 @@ bool CONTACT::MtManager::read_and_check_input(
   if ((problemtype == Core::ProblemType::poroelast || problemtype == Core::ProblemType::fpsi ||
           problemtype == Core::ProblemType::fpsi_xfem) &&
       Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(meshtying, "STRATEGY") !=
-          CONTACT::solution_lagmult)
+          CONTACT::SolvingStrategy::lagmult)
     FOUR_C_THROW("POROCONTACT: Use Lagrangean Strategy for poro meshtying!");
 
   if ((problemtype == Core::ProblemType::poroelast || problemtype == Core::ProblemType::fpsi ||

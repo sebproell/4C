@@ -5622,9 +5622,9 @@ void CONTACT::Interface::fd_check_penalty_trac_fric()
     Core::LinAlg::multiply(lmuzawatan, tanplane, lmuzawa);
 
     if ((Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(interface_params(), "STRATEGY") ==
-            CONTACT::solution_penalty) ||
+            CONTACT::SolvingStrategy::penalty) ||
         (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(interface_params(), "STRATEGY") ==
-            CONTACT::solution_multiscale))
+            CONTACT::SolvingStrategy::multiscale))
     {
       for (int j = 0; j < dim; j++)
       {
@@ -5781,8 +5781,8 @@ void CONTACT::Interface::fd_check_penalty_trac_fric()
       const auto contact_strategy =
           Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(interface_params(), "STRATEGY");
 
-      if ((contact_strategy == CONTACT::solution_penalty) ||
-          (contact_strategy == CONTACT::solution_multiscale))
+      if ((contact_strategy == CONTACT::SolvingStrategy::penalty) ||
+          (contact_strategy == CONTACT::SolvingStrategy::multiscale))
       {
         for (int j = 0; j < dim; j++)
         {
@@ -5998,9 +5998,9 @@ void CONTACT::Interface::fd_check_penalty_trac_fric()
       Core::LinAlg::multiply(lmuzawatan, tanplane, lmuzawa);
 
       if ((Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(interface_params(), "STRATEGY") ==
-              CONTACT::solution_penalty) ||
+              CONTACT::SolvingStrategy::penalty) ||
           (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(interface_params(), "STRATEGY") ==
-              CONTACT::solution_multiscale))
+              CONTACT::SolvingStrategy::multiscale))
       {
         for (int j = 0; j < dim; j++)
         {

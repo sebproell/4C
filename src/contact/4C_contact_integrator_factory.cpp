@@ -26,30 +26,33 @@ std::shared_ptr<CONTACT::Integrator> CONTACT::INTEGRATOR::Factory::build_integra
   std::shared_ptr<CONTACT::Integrator> integrator = nullptr;
   switch (sol_type)
   {
-    case CONTACT::solution_nitsche:
+    case CONTACT::SolvingStrategy::nitsche:
     {
-      if (mortar_params.get<int>("PROBTYPE") == CONTACT::ssi)
+      if (mortar_params.get<CONTACT::Problemtype>("PROBTYPE") == CONTACT::Problemtype::ssi)
       {
         integrator =
             std::make_shared<CONTACT::IntegratorNitscheSsi>(mortar_params, slave_type, comm);
       }
-      else if (mortar_params.get<int>("PROBTYPE") == CONTACT::ssi_elch)
+      else if (mortar_params.get<CONTACT::Problemtype>("PROBTYPE") ==
+               CONTACT::Problemtype::ssi_elch)
       {
         integrator =
             std::make_shared<CONTACT::IntegratorNitscheSsiElch>(mortar_params, slave_type, comm);
       }
-      else if (mortar_params.get<int>("PROBTYPE") == CONTACT::poroelast ||
-               mortar_params.get<int>("PROBTYPE") == CONTACT::poroscatra)
+      else if (mortar_params.get<CONTACT::Problemtype>("PROBTYPE") ==
+                   CONTACT::Problemtype::poroelast ||
+               mortar_params.get<CONTACT::Problemtype>("PROBTYPE") ==
+                   CONTACT::Problemtype::poroscatra)
       {
         integrator =
             std::make_shared<CONTACT::IntegratorNitschePoro>(mortar_params, slave_type, comm);
       }
-      else if (mortar_params.get<int>("PROBTYPE") == CONTACT::fsi)
+      else if (mortar_params.get<CONTACT::Problemtype>("PROBTYPE") == CONTACT::Problemtype::fsi)
       {
         integrator =
             std::make_shared<CONTACT::IntegratorNitscheFsi>(mortar_params, slave_type, comm);
       }
-      else if (mortar_params.get<int>("PROBTYPE") == CONTACT::fpi)
+      else if (mortar_params.get<CONTACT::Problemtype>("PROBTYPE") == CONTACT::Problemtype::fpi)
       {
         integrator =
             std::make_shared<CONTACT::IntegratorNitscheFpi>(mortar_params, slave_type, comm);
@@ -60,8 +63,8 @@ std::shared_ptr<CONTACT::Integrator> CONTACT::INTEGRATOR::Factory::build_integra
       }
       break;
     }
-    case CONTACT::solution_penalty:
-    case CONTACT::solution_multiscale:
+    case CONTACT::SolvingStrategy::penalty:
+    case CONTACT::SolvingStrategy::multiscale:
     {
       if (Teuchos::getIntegralValue<Inpar::Mortar::AlgorithmType>(mortar_params, "ALGORITHM") ==
           Inpar::Mortar::algorithm_gpts)
@@ -70,13 +73,13 @@ std::shared_ptr<CONTACT::Integrator> CONTACT::INTEGRATOR::Factory::build_integra
         integrator = std::make_shared<CONTACT::Integrator>(mortar_params, slave_type, comm);
       break;
     }
-    case CONTACT::solution_lagmult:
-    case CONTACT::solution_uzawa:
+    case CONTACT::SolvingStrategy::lagmult:
+    case CONTACT::SolvingStrategy::uzawa:
     {
       integrator = std::make_shared<CONTACT::Integrator>(mortar_params, slave_type, comm);
       break;
     }
-    case CONTACT::solution_ehl:
+    case CONTACT::SolvingStrategy::ehl:
     {
       integrator = std::make_shared<CONTACT::IntegratorEhl>(mortar_params, slave_type, comm);
 

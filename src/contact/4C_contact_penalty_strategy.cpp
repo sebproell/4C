@@ -180,11 +180,11 @@ void CONTACT::PenaltyStrategy::evaluate_contact(
     // evaluate lagrange multipliers (regularized forces) in tangential direction
     auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params(), "STRATEGY");
 
-    if (friction_ and
-        (soltype == CONTACT::solution_penalty or soltype == CONTACT::solution_multiscale))
+    if (friction_ and (soltype == CONTACT::SolvingStrategy::penalty or
+                          soltype == CONTACT::SolvingStrategy::multiscale))
       interface_[i]->assemble_reg_tangent_forces_penalty();
 
-    if (friction_ and soltype == CONTACT::solution_uzawa)
+    if (friction_ and soltype == CONTACT::SolvingStrategy::uzawa)
       interface_[i]->assemble_reg_tangent_forces_uzawa();
 
     isincontact = isincontact || localisincontact;
@@ -624,7 +624,7 @@ void CONTACT::PenaltyStrategy::update_constraint_norm(int uzawaiter)
     //********************************************************************
     auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params(), "STRATEGY");
 
-    if (soltype == CONTACT::solution_uzawa)
+    if (soltype == CONTACT::SolvingStrategy::uzawa)
     {
       // check convergence of cnorm and update penalty parameter
       // only do this for second, third, ... Uzawa iteration
@@ -772,11 +772,11 @@ void CONTACT::PenaltyStrategy::assemble()
     // evaluate lagrange multipliers (regularized forces) in tangential direction
     auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params(), "STRATEGY");
 
-    if (friction_ and
-        (soltype == CONTACT::solution_penalty or soltype == CONTACT::solution_multiscale))
+    if (friction_ and (soltype == CONTACT::SolvingStrategy::penalty or
+                          soltype == CONTACT::SolvingStrategy::multiscale))
       interface_[i]->assemble_reg_tangent_forces_penalty();
 
-    if (friction_ and soltype == CONTACT::solution_uzawa)
+    if (friction_ and soltype == CONTACT::SolvingStrategy::uzawa)
       interface_[i]->assemble_reg_tangent_forces_uzawa();
 
     isincontact = isincontact || localisincontact;

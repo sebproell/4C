@@ -254,7 +254,7 @@ std::shared_ptr<Core::LinAlg::Solver> Solid::SOLVER::Factory::build_meshtying_co
             "this cannot be: no saddlepoint problem for beamcontact "
             "or pure structure problem.");
 
-      if (sol_type == CONTACT::solution_lagmult)
+      if (sol_type == CONTACT::SolvingStrategy::lagmult)
       {
         // provide null space information
         if (prec == Core::LinearSolver::PreconditionerType::multigrid_muelu)

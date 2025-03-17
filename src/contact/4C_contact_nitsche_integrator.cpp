@@ -98,7 +98,7 @@ void CONTACT::IntegratorNitsche::gpts_forces(Mortar::Element& sele, Mortar::Elem
 
   const Core::LinAlg::Matrix<dim, 1> contact_normal(gpn, true);
 
-  if (stype_ == CONTACT::solution_nitsche)
+  if (stype_ == CONTACT::SolvingStrategy::nitsche)
   {
     double cauchy_nn_weighted_average = 0.;
     Core::Gen::Pairedvector<int, double> cauchy_nn_weighted_average_deriv(
@@ -381,7 +381,8 @@ void CONTACT::IntegratorNitsche::gpts_forces(Mortar::Element& sele, Mortar::Elem
       }
     }
   }
-  else if ((stype_ == CONTACT::solution_penalty) || stype_ == CONTACT::solution_multiscale)
+  else if ((stype_ == CONTACT::SolvingStrategy::penalty) ||
+           stype_ == CONTACT::SolvingStrategy::multiscale)
   {
     if (gap < 0.)
     {

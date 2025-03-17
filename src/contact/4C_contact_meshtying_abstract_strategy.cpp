@@ -793,7 +793,7 @@ void CONTACT::MtAbstractStrategy::do_read_restart(
 
   // only for Uzawa strategy
   auto st = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params(), "STRATEGY");
-  if (st == CONTACT::solution_uzawa)
+  if (st == CONTACT::SolvingStrategy::uzawa)
   {
     zuzawa_ = std::make_shared<Core::LinAlg::Vector<double>>(*gsdofrowmap_);
     if (!restartwithmeshtying) reader.read_vector(zuzawa_, "mt_lagrmultold");

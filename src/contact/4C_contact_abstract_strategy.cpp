@@ -2050,7 +2050,7 @@ void CONTACT::AbstractStrategy::do_read_restart(Core::IO::DiscretizationReader& 
 
   // only for Uzawa augmented strategy
   // TODO: this should be moved to contact_penalty_strategy
-  if (stype_ == CONTACT::solution_uzawa)
+  if (stype_ == CONTACT::SolvingStrategy::uzawa)
   {
     zuzawa_ = std::make_shared<Core::LinAlg::Vector<double>>(slave_dof_row_map(true));
     if (!restartwithcontact) reader.read_vector(data().lm_uzawa_ptr(), "lagrmultold");
@@ -2825,7 +2825,8 @@ void CONTACT::AbstractStrategy::reset_lagrange_multipliers(
  *----------------------------------------------------------------------*/
 bool CONTACT::AbstractStrategy::is_saddle_point_system() const
 {
-  if ((stype_ == CONTACT::solution_lagmult) and system_type() == CONTACT::SystemType::saddlepoint)
+  if ((stype_ == CONTACT::SolvingStrategy::lagmult) and
+      system_type() == CONTACT::SystemType::saddlepoint)
   {
     if (is_in_contact() or was_in_contact() or was_in_contact_last_time_step()) return true;
   }
@@ -2836,7 +2837,8 @@ bool CONTACT::AbstractStrategy::is_saddle_point_system() const
  *----------------------------------------------------------------------*/
 bool CONTACT::AbstractStrategy::is_condensed_system() const
 {
-  if (stype_ == CONTACT::solution_lagmult and system_type() != CONTACT::SystemType::saddlepoint)
+  if (stype_ == CONTACT::SolvingStrategy::lagmult and
+      system_type() != CONTACT::SystemType::saddlepoint)
   {
     if (is_in_contact() or was_in_contact() or was_in_contact_last_time_step()) return true;
   }

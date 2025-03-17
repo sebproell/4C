@@ -56,9 +56,11 @@ void CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& l
       "LagrangianMultipliers", "Type of employed solving strategy",
       tuple<std::string>("LagrangianMultipliers", "lagrange", "Lagrange", "penalty", "Penalty",
           "Uzawa", "Nitsche", "Ehl", "MultiScale"),
-      tuple<CONTACT::SolvingStrategy>(solution_lagmult, solution_lagmult, solution_lagmult,
-          solution_penalty, solution_penalty, solution_uzawa, solution_nitsche, solution_ehl,
-          solution_multiscale),
+      tuple<CONTACT::SolvingStrategy>(CONTACT::SolvingStrategy::lagmult,
+          CONTACT::SolvingStrategy::lagmult, CONTACT::SolvingStrategy::lagmult,
+          CONTACT::SolvingStrategy::penalty, CONTACT::SolvingStrategy::penalty,
+          CONTACT::SolvingStrategy::uzawa, CONTACT::SolvingStrategy::nitsche,
+          CONTACT::SolvingStrategy::ehl, CONTACT::SolvingStrategy::multiscale),
       scontact);
 
   Core::Utils::string_to_integral_parameter<CONTACT::SystemType>("SYSTEM", "Condensed",

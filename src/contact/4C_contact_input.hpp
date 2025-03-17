@@ -40,33 +40,33 @@ namespace CONTACT
 
   /// Type of employed solving strategy
   /// (this enum represents the input file parameter STRATEGY)
-  enum SolvingStrategy : int
+  enum class SolvingStrategy
   {
-    solution_vague,      ///< no solving strategy defined
-    solution_lagmult,    ///< method of Lagrange multipliers
-    solution_penalty,    ///< penalty approach
-    solution_uzawa,      ///< Uzawa augmented Lagrange approach
-    solution_nitsche,    ///< Nitsche contact solution method
-    solution_ehl,        ///< method for elasto-hydrodynamic lubrication
-    solution_multiscale  ///< method for contact of rough surfaces with a multi scale approach
+    vague,      ///< no solving strategy defined
+    lagmult,    ///< method of Lagrange multipliers
+    penalty,    ///< penalty approach
+    uzawa,      ///< Uzawa augmented Lagrange approach
+    nitsche,    ///< Nitsche contact solution method
+    ehl,        ///< method for elasto-hydrodynamic lubrication
+    multiscale  ///< method for contact of rough surfaces with a multi scale approach
   };
 
   inline std::string solving_strategy_to_string(enum SolvingStrategy stype)
   {
     switch (stype)
     {
-      case solution_vague:
-        return "solution_vague";
-      case solution_lagmult:
-        return "solution_lagmult";
-      case solution_penalty:
-        return "solution_penalty";
-      case solution_uzawa:
-        return "solution_uzawa";
-      case solution_nitsche:
-        return "solution_nitsche";
+      case SolvingStrategy::vague:
+        return "CONTACT::SolvingStrategy::vague";
+      case SolvingStrategy::lagmult:
+        return "CONTACT::SolvingStrategy::lagmult";
+      case SolvingStrategy::penalty:
+        return "CONTACT::SolvingStrategy::penalty";
+      case SolvingStrategy::uzawa:
+        return "CONTACT::SolvingStrategy::uzawa";
+      case SolvingStrategy::nitsche:
+        return "CONTACT::SolvingStrategy::nitsche";
       default:
-        return "INVALID SolvingStrategy";
+        return "Invalid CONTACT::SolvingStrategy";
     }
   }
 
@@ -91,7 +91,7 @@ namespace CONTACT
   };
 
   /// Local definition of problemtype to avoid use of globalproblem.H
-  enum Problemtype
+  enum class Problemtype
   {
     structure,      ///< structural contact problem
     tsi,            ///< coupled TSI problem with contact

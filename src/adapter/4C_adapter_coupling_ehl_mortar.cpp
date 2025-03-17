@@ -62,7 +62,7 @@ void Adapter::CouplingEhlMortar::read_mortar_condition(
   Adapter::CouplingNonLinMortar::read_mortar_condition(masterdis, slavedis, coupleddof,
       couplingcond, input, mastergnodes, slavegnodes, masterelements, slaveelements);
 
-  input.set<int>("PROBTYPE", CONTACT::ehl);
+  input.set<CONTACT::Problemtype>("PROBTYPE", CONTACT::Problemtype::ehl);
 }
 
 void Adapter::CouplingEhlMortar::setup(std::shared_ptr<Core::FE::Discretization> masterdis,

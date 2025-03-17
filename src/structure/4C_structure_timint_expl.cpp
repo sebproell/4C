@@ -74,7 +74,8 @@ void Solid::TimIntExpl::setup()
   {
     auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
         cmtbridge_->get_strategy().params(), "STRATEGY");
-    if (soltype != CONTACT::solution_penalty && (soltype != CONTACT::solution_multiscale))
+    if (soltype != CONTACT::SolvingStrategy::penalty &&
+        (soltype != CONTACT::SolvingStrategy::multiscale))
       FOUR_C_THROW(
           "Currently, only penalty or multi-scale contact / meshtying can be done with explicit "
           "time integration schemes.");

@@ -461,7 +461,7 @@ void TSI::Algorithm::prepare_contact_strategy()
   auto stype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
       Global::Problem::instance()->contact_dynamic_params(), "STRATEGY");
 
-  if (stype == CONTACT::solution_lagmult)
+  if (stype == CONTACT::SolvingStrategy::lagmult)
   {
     if (structure_field()->have_model(Inpar::Solid::model_contact))
       FOUR_C_THROW(

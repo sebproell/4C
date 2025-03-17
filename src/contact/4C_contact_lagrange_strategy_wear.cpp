@@ -415,7 +415,8 @@ void Wear::LagrangeStrategyWear::assemble_mortar()
   // wearvector_ only updated at the end of a time step --> this newton-step-wise
   // update is not elegant!
   // *********************************************************************************
-  if (!wearimpl_ and !wearprimvar_ and params().get<int>("PROBTYPE") != CONTACT::structalewear)
+  if (!wearimpl_ and !wearprimvar_ and
+      params().get<CONTACT::Problemtype>("PROBTYPE") != CONTACT::Problemtype::structalewear)
   {
     wgap_->update(1.0, *wearvector_, 1.0);
   }
@@ -4853,7 +4854,7 @@ void Wear::LagrangeStrategyWear::do_read_restart(
   // only for Uzawa Augmented strategy
   // TODO: this should be moved to contact_penalty_strategy
   auto st = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params(), "STRATEGY");
-  if (st == CONTACT::solution_uzawa)
+  if (st == CONTACT::SolvingStrategy::uzawa)
   {
     zuzawa_ = std::make_shared<Core::LinAlg::Vector<double>>(*gsdofrowmap_);
     if (!restartwithcontact) reader.read_vector(data().lm_uzawa_ptr(), "lagrmultold");
@@ -5244,7 +5245,8 @@ void Wear::LagrangeStrategyWear::store_nodal_quantities(Mortar::StrategyBase::Qu
                 const double wearcoeff = wearcoeffs + wearcoeffm;
 
                 // amount of wear
-                if (params().get<int>("PROBTYPE") != CONTACT::structalewear)
+                if (params().get<CONTACT::Problemtype>("PROBTYPE") !=
+                    CONTACT::Problemtype::structalewear)
                   frinode->wear_data().weighted_wear() +=
                       wearcoeff * frinode->wear_data().delta_weighted_wear();
 

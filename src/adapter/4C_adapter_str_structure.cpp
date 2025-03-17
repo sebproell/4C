@@ -457,7 +457,7 @@ Adapter::StructureBaseAlgorithm::create_contact_meshtying_solver(
             "saddle-point formulation.");
 
       auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(mcparams, "STRATEGY");
-      if (soltype == CONTACT::solution_lagmult)
+      if (soltype == CONTACT::SolvingStrategy::lagmult)
       {
         // get the solver number used for structural problems
         const int linsolvernumber = sdyn.get<int>("LINEAR_SOLVER");
