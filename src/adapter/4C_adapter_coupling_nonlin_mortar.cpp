@@ -198,8 +198,9 @@ void Adapter::CouplingNonLinMortar::read_mortar_condition(
   input.setParameters(meshtying);
   input.setParameters(wearlist);
 
-  input.set<int>("PROBTYPE", CONTACT::other);  // if other probtypes, this will be
-                                               // overwritten in overloaded function
+  input.set<CONTACT::Problemtype>(
+      "PROBTYPE", CONTACT::Problemtype::other);  // if other probtypes, this will be
+                                                 // overwritten in overloaded function
 
   // is this a nurbs problem?
   bool isnurbs = false;
@@ -632,7 +633,7 @@ void Adapter::CouplingNonLinMortar::setup_spring_dashpot(
   input.setParameters(Global::Problem::instance()->mortar_coupling_params());
   input.setParameters(Global::Problem::instance()->contact_dynamic_params());
   input.setParameters(Global::Problem::instance()->wear_params());
-  input.set<int>("PROBTYPE", CONTACT::other);
+  input.set<CONTACT::Problemtype>("PROBTYPE", CONTACT::Problemtype::other);
 
   // is this a nurbs problem?
   Core::FE::ShapeFunctionType distype = Global::Problem::instance()->spatial_approximation_type();

@@ -32,7 +32,7 @@ Mortar::StrategyDataContainer::StrategyDataContainer()
       alphaf_(0.0),
       parredist_(false),
       maxdof_(0),
-      systype_(CONTACT::system_none),
+      systype_(CONTACT::SystemType::none),
       dyntype_(Inpar::Solid::dyna_statics),
       dynparam_n_(0.0)
 {

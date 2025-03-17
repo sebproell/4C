@@ -55,7 +55,7 @@ void CONTACT::TSIInterface::assemble_lin_stick(Core::LinAlg::SparseMatrix& linst
 
   // information from interface contact parameter list
   auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(interface_params(), "FRICTION");
-  if (ftype != CONTACT::friction_coulomb) FOUR_C_THROW("only coulomb friction for CTSI");
+  if (ftype != CONTACT::FrictionType::coulomb) FOUR_C_THROW("only coulomb friction for CTSI");
 
   double frcoeff_in =
       interface_params().get<double>("FRCOEFF");  // the friction coefficient from the input
@@ -111,7 +111,7 @@ void CONTACT::TSIInterface::assemble_lin_stick(Core::LinAlg::SparseMatrix& linst
     double fac = lm_n - cn * wgap;
     for (_CI p = dfrdT.begin(); p != dfrdT.end(); ++p)
     {
-      if (constr_direction_ == CONTACT::constr_xyz)
+      if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
         for (int j = 0; j < Dim(); j++)
         {
           linstickTEMPglobal.Assemble(
@@ -127,7 +127,7 @@ void CONTACT::TSIInterface::assemble_lin_stick(Core::LinAlg::SparseMatrix& linst
     }
     for (_CI p = dfrdD.begin(); p != dfrdD.end(); ++p)
     {
-      if (constr_direction_ == CONTACT::constr_xyz)
+      if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
         for (int j = 0; j < Dim(); j++)
         {
           linstickDISglobal.Assemble(
@@ -175,7 +175,7 @@ void CONTACT::TSIInterface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linsli
 
   // information from interface contact parameter list
   auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(interface_params(), "FRICTION");
-  if (ftype != CONTACT::friction_coulomb) FOUR_C_THROW("only coulomb friction for CTSI");
+  if (ftype != CONTACT::FrictionType::coulomb) FOUR_C_THROW("only coulomb friction for CTSI");
 
   if (n_dim() != 3) FOUR_C_THROW("CTSI only for 3D");
 
@@ -241,7 +241,7 @@ void CONTACT::TSIInterface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linsli
     double fac = lm_n - cn * wgap;
     for (_CI p = dfrdT.begin(); p != dfrdT.end(); ++p)
     {
-      if (constr_direction_ == CONTACT::constr_xyz)
+      if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
         for (int j = 0; j < n_dim(); ++j)
         {
           linslipTEMPglobal.assemble(
@@ -257,7 +257,7 @@ void CONTACT::TSIInterface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linsli
     }
     for (_CI p = dfrdD.begin(); p != dfrdD.end(); ++p)
     {
-      if (constr_direction_ == CONTACT::constr_xyz)
+      if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
         for (int j = 0; j < n_dim(); ++j)
         {
           linslipDISglobal.assemble(

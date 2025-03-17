@@ -102,7 +102,7 @@ void CONTACT::MonoCoupledLagrangeStrategy::evaluate_off_diag_contact(
   // CASE A: CONDENSED SYSTEM (DUAL)
   //**********************************************************************
   //**********************************************************************
-  if (systype == CONTACT::system_condensed)
+  if (systype == CONTACT::SystemType::condensed)
   {
     // double-check if this is a dual LM system
     if (shapefcn != Inpar::Mortar::shape_dual && shapefcn != Inpar::Mortar::shape_petrovgalerkin)
@@ -298,7 +298,7 @@ void CONTACT::MonoCoupledLagrangeStrategy::recover_coupled(
   // CASE A: CONDENSED SYSTEM (DUAL)
   //**********************************************************************
   //**********************************************************************
-  if (systype == CONTACT::system_condensed)
+  if (systype == CONTACT::SystemType::condensed)
   {
     // double-check if this is a dual LM system
     if (shapefcn != Inpar::Mortar::shape_dual && shapefcn != Inpar::Mortar::shape_petrovgalerkin)

@@ -793,7 +793,7 @@ void CONTACT::MtAbstractStrategy::do_read_restart(
 
   // only for Uzawa strategy
   auto st = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params(), "STRATEGY");
-  if (st == CONTACT::solution_uzawa)
+  if (st == CONTACT::SolvingStrategy::uzawa)
   {
     zuzawa_ = std::make_shared<Core::LinAlg::Vector<double>>(*gsdofrowmap_);
     if (!restartwithmeshtying) reader.read_vector(zuzawa_, "mt_lagrmultold");
@@ -925,7 +925,7 @@ void CONTACT::MtAbstractStrategy::collect_maps_for_preconditioner(
  *----------------------------------------------------------------------*/
 bool CONTACT::MtAbstractStrategy::is_saddle_point_system() const
 {
-  if (system_type() == CONTACT::system_saddlepoint) return true;
+  if (system_type() == CONTACT::SystemType::saddlepoint) return true;
 
   return false;
 }
@@ -934,7 +934,7 @@ bool CONTACT::MtAbstractStrategy::is_saddle_point_system() const
  *----------------------------------------------------------------------*/
 bool CONTACT::MtAbstractStrategy::is_condensed_system() const
 {
-  if (system_type() != CONTACT::system_saddlepoint) return true;
+  if (system_type() != CONTACT::SystemType::saddlepoint) return true;
 
   return false;
 }

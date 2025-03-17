@@ -123,7 +123,7 @@ CONTACT::AbstractStrategy::AbstractStrategy(
   auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(params(), "FRICTION");
 
   // set frictional contact status
-  if (ftype != CONTACT::friction_none) friction_ = true;
+  if (ftype != CONTACT::FrictionType::none) friction_ = true;
 
   // set nonsmooth contact status
   if (params().get<bool>("NONSMOOTH_GEOMETRIES")) nonSmoothContact_ = true;
@@ -1312,9 +1312,9 @@ void CONTACT::AbstractStrategy::initialize_mortar()
   dmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(slave_dof_row_map(true), 10);
   mmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(slave_dof_row_map(true), 100);
 
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
     wgap_ = Core::LinAlg::create_vector(slave_dof_row_map(true), true);
-  else if (constr_direction_ == CONTACT::constr_ntt)
+  else if (constr_direction_ == CONTACT::ConstraintDirection::ntt)
     wgap_ = Core::LinAlg::create_vector(slave_row_nodes(), true);
   else
     FOUR_C_THROW("unknown contact constraint direction");
@@ -2050,7 +2050,7 @@ void CONTACT::AbstractStrategy::do_read_restart(Core::IO::DiscretizationReader& 
 
   // only for Uzawa augmented strategy
   // TODO: this should be moved to contact_penalty_strategy
-  if (stype_ == CONTACT::solution_uzawa)
+  if (stype_ == CONTACT::SolvingStrategy::uzawa)
   {
     zuzawa_ = std::make_shared<Core::LinAlg::Vector<double>>(slave_dof_row_map(true));
     if (!restartwithcontact) reader.read_vector(data().lm_uzawa_ptr(), "lagrmultold");
@@ -2825,7 +2825,8 @@ void CONTACT::AbstractStrategy::reset_lagrange_multipliers(
  *----------------------------------------------------------------------*/
 bool CONTACT::AbstractStrategy::is_saddle_point_system() const
 {
-  if ((stype_ == CONTACT::solution_lagmult) and system_type() == CONTACT::system_saddlepoint)
+  if ((stype_ == CONTACT::SolvingStrategy::lagmult) and
+      system_type() == CONTACT::SystemType::saddlepoint)
   {
     if (is_in_contact() or was_in_contact() or was_in_contact_last_time_step()) return true;
   }
@@ -2836,7 +2837,8 @@ bool CONTACT::AbstractStrategy::is_saddle_point_system() const
  *----------------------------------------------------------------------*/
 bool CONTACT::AbstractStrategy::is_condensed_system() const
 {
-  if (stype_ == CONTACT::solution_lagmult and system_type() != CONTACT::system_saddlepoint)
+  if (stype_ == CONTACT::SolvingStrategy::lagmult and
+      system_type() != CONTACT::SystemType::saddlepoint)
   {
     if (is_in_contact() or was_in_contact() or was_in_contact_last_time_step()) return true;
   }

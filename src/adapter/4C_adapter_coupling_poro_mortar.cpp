@@ -57,10 +57,10 @@ void Adapter::CouplingPoroMortar::read_mortar_condition(
   switch (Global::Problem::instance()->get_problem_type())
   {
     case Core::ProblemType::poroelast:
-      input.set<int>("PROBTYPE", CONTACT::poroelast);
+      input.set<CONTACT::Problemtype>("PROBTYPE", CONTACT::Problemtype::poroelast);
       break;
     case Core::ProblemType::poroscatra:
-      input.set<int>("PROBTYPE", CONTACT::poroscatra);
+      input.set<CONTACT::Problemtype>("PROBTYPE", CONTACT::Problemtype::poroscatra);
       break;
     default:
       FOUR_C_THROW("Invalid poro problem is specified");

@@ -1255,7 +1255,7 @@ bool CONTACT::Coupling3dManager::evaluate_coupling(
     FOUR_C_THROW("chose contact algorithm not supported!");
 
   // interpolate temperatures in TSI case
-  if (imortar_.get<int>("PROBTYPE") == CONTACT::tsi)
+  if (imortar_.get<CONTACT::Problemtype>("PROBTYPE") == CONTACT::Problemtype::tsi)
     NTS::Interpolator(imortar_, dim_)
         .interpolate_master_temp_3d(slave_element(), master_elements());
 

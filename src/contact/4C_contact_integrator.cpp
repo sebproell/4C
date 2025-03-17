@@ -5840,8 +5840,8 @@ void CONTACT::Integrator::integrate_gp_3d(Mortar::Element& sele, Mortar::Element
       // PORO stuff
       //*******************************
       bool poroprob = false;
-      if (imortar_.get<int>("PROBTYPE") == CONTACT::poroelast ||
-          imortar_.get<int>("PROBTYPE") == CONTACT::poroscatra)
+      if (imortar_.get<CONTACT::Problemtype>("PROBTYPE") == CONTACT::Problemtype::poroelast ||
+          imortar_.get<CONTACT::Problemtype>("PROBTYPE") == CONTACT::Problemtype::poroscatra)
         if (imortar_.get<bool>("CONTACT_NO_PENETRATION"))  // evaluate additional terms just in case
                                                            // of no penectration condition
           poroprob = true;
@@ -6036,8 +6036,8 @@ void CONTACT::Integrator::integrate_gp_2d(Mortar::Element& sele, Mortar::Element
       // PORO stuff
       //*******************************
       bool poroprob = false;
-      if (imortar_.get<int>("PROBTYPE") == CONTACT::poroelast ||
-          imortar_.get<int>("PROBTYPE") == CONTACT::poroscatra)
+      if (imortar_.get<CONTACT::Problemtype>("PROBTYPE") == CONTACT::Problemtype::poroelast ||
+          imortar_.get<CONTACT::Problemtype>("PROBTYPE") == CONTACT::Problemtype::poroscatra)
         if (imortar_.get<bool>("CONTACT_NO_PENETRATION"))  // evaluate additional terms just in case
                                                            // of no penectration condition
           poroprob = true;

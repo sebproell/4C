@@ -4511,12 +4511,12 @@ void CONTACT::Interface::fd_check_slip_deriv(
     }  // if cnode == Slip
 
     // store C in vector
-    if (ftype == CONTACT::friction_tresca)
+    if (ftype == CONTACT::FrictionType::tresca)
     {
       refCtxi[i] = euclidean * ztxi - frbound * (ztxi + ct * jumptxi);
       refCteta[i] = euclidean * zteta - frbound * (zteta + ct * jumpteta);
     }
-    else if (ftype == CONTACT::friction_coulomb)
+    else if (ftype == CONTACT::FrictionType::coulomb)
     {
       refCtxi[i] = euclidean * ztxi - (frcoeff * znor) * (ztxi + ct * jumptxi);
       refCteta[i] = euclidean * zteta - (frcoeff * znor) * (zteta + ct * jumpteta);
@@ -4641,12 +4641,12 @@ void CONTACT::Interface::fd_check_slip_deriv(
       }  // if cnode == Slip
 
       // store C in vector
-      if (ftype == CONTACT::friction_tresca)
+      if (ftype == CONTACT::FrictionType::tresca)
       {
         newCtxi[k] = euclidean * ztxi - frbound * (ztxi + ct * jumptxi);
         newCteta[k] = euclidean * zteta - frbound * (zteta + ct * jumpteta);
       }
-      else if (ftype == CONTACT::friction_coulomb)
+      else if (ftype == CONTACT::FrictionType::coulomb)
       {
         newCtxi[k] = euclidean * ztxi - (frcoeff * znor) * (ztxi + ct * jumptxi);
         newCteta[k] = euclidean * zteta - (frcoeff * znor) * (zteta + ct * jumpteta);
@@ -4878,12 +4878,12 @@ void CONTACT::Interface::fd_check_slip_deriv(
       }  // if cnode == Slip
 
       // store C in vector
-      if (ftype == CONTACT::friction_tresca)
+      if (ftype == CONTACT::FrictionType::tresca)
       {
         newCtxi[k] = euclidean * ztxi - frbound * (ztxi + ct * jumptxi);
         newCteta[k] = euclidean * zteta - frbound * (zteta + ct * jumpteta);
       }
-      else if (ftype == CONTACT::friction_coulomb)
+      else if (ftype == CONTACT::FrictionType::coulomb)
       {
         newCtxi[k] = euclidean * ztxi - (frcoeff * znor) * (ztxi + ct * jumptxi);
         newCteta[k] = euclidean * zteta - (frcoeff * znor) * (zteta + ct * jumpteta);
@@ -5116,12 +5116,12 @@ void CONTACT::Interface::fd_check_slip_deriv(
       }  // if cnode == Slip
 
       // store C in vector
-      if (ftype == CONTACT::friction_tresca)
+      if (ftype == CONTACT::FrictionType::tresca)
       {
         newCtxi[k] = euclidean * ztxi - frbound * (ztxi + ct * jumptxi);
         newCteta[k] = euclidean * zteta - frbound * (zteta + ct * jumpteta);
       }
-      else if (ftype == CONTACT::friction_coulomb)
+      else if (ftype == CONTACT::FrictionType::coulomb)
       {
         newCtxi[k] = euclidean * ztxi - (frcoeff * znor) * (ztxi + ct * jumptxi);
         newCteta[k] = euclidean * zteta - (frcoeff * znor) * (zteta + ct * jumpteta);
@@ -5622,9 +5622,9 @@ void CONTACT::Interface::fd_check_penalty_trac_fric()
     Core::LinAlg::multiply(lmuzawatan, tanplane, lmuzawa);
 
     if ((Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(interface_params(), "STRATEGY") ==
-            CONTACT::solution_penalty) ||
+            CONTACT::SolvingStrategy::penalty) ||
         (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(interface_params(), "STRATEGY") ==
-            CONTACT::solution_multiscale))
+            CONTACT::SolvingStrategy::multiscale))
     {
       for (int j = 0; j < dim; j++)
       {
@@ -5781,8 +5781,8 @@ void CONTACT::Interface::fd_check_penalty_trac_fric()
       const auto contact_strategy =
           Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(interface_params(), "STRATEGY");
 
-      if ((contact_strategy == CONTACT::solution_penalty) ||
-          (contact_strategy == CONTACT::solution_multiscale))
+      if ((contact_strategy == CONTACT::SolvingStrategy::penalty) ||
+          (contact_strategy == CONTACT::SolvingStrategy::multiscale))
       {
         for (int j = 0; j < dim; j++)
         {
@@ -5998,9 +5998,9 @@ void CONTACT::Interface::fd_check_penalty_trac_fric()
       Core::LinAlg::multiply(lmuzawatan, tanplane, lmuzawa);
 
       if ((Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(interface_params(), "STRATEGY") ==
-              CONTACT::solution_penalty) ||
+              CONTACT::SolvingStrategy::penalty) ||
           (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(interface_params(), "STRATEGY") ==
-              CONTACT::solution_multiscale))
+              CONTACT::SolvingStrategy::multiscale))
       {
         for (int j = 0; j < dim; j++)
         {

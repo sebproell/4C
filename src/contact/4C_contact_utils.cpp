@@ -332,10 +332,10 @@ void CONTACT::Utils::get_initialization_info(bool& Two_half_pass,
       FOUR_C_THROW(
           "two half pass algorithm only implemented in structural, fsi/fpsi and ssi problems");
     if (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(contact, "STRATEGY") !=
-        CONTACT::solution_nitsche)
+        CONTACT::SolvingStrategy::nitsche)
       FOUR_C_THROW("two half pass algorithm only with nitsche contact formulation");
     if (Teuchos::getIntegralValue<CONTACT::NitscheWeighting>(contact, "NITSCHE_WEIGHTING") !=
-        CONTACT::NitWgt_harmonic)
+        CONTACT::NitscheWeighting::harmonic)
       FOUR_C_THROW("two half pass algorithm only with harmonic weighting");
   }
 

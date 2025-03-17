@@ -1273,7 +1273,7 @@ void Wear::WearInterface::assemble_lin_stick(Core::LinAlg::SparseMatrix& linstic
   consistent = true;
 #endif
 
-  if (consistent && ftype == CONTACT::friction_coulomb)
+  if (consistent && ftype == CONTACT::FrictionType::coulomb)
   {
     // loop over all stick nodes of the interface
     for (int i = 0; i < sticknodes->NumMyElements(); ++i)
@@ -1783,7 +1783,7 @@ void Wear::WearInterface::assemble_lin_slip_w(Core::LinAlg::SparseMatrix& linsli
   //**********************************************************************
   //**********************************************************************
   //**********************************************************************
-  if (ftype == CONTACT::friction_coulomb)
+  if (ftype == CONTACT::FrictionType::coulomb)
   {
     // loop over all slip nodes of the interface
     for (int i = 0; i < slipnodes_->NumMyElements(); ++i)
@@ -1968,7 +1968,7 @@ void Wear::WearInterface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipL
   //**********************************************************************
   //**********************************************************************
   //**********************************************************************
-  if (ftype == CONTACT::friction_coulomb)
+  if (ftype == CONTACT::FrictionType::coulomb)
   {
     // loop over all slip nodes of the interface
     for (int i = 0; i < slipnodes_->NumMyElements(); ++i)
@@ -2725,7 +2725,7 @@ void Wear::WearInterface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipL
   //**********************************************************************
   //**********************************************************************
   //**********************************************************************
-  if (ftype == CONTACT::friction_tresca)
+  if (ftype == CONTACT::FrictionType::tresca)
   {
     FOUR_C_THROW("Tresca friction not implemented for wear !!!");
   }
@@ -3672,7 +3672,7 @@ void Wear::WearInterface::assemble_wear_cond_rhs(Core::LinAlg::Vector<double>& r
     /**************************************************** T-matrix ******/
     // for condensation of lm and wear we condense the system with absol. lm
     // --> therefore we do not need the lm^i term...
-    if (((fnode->wear_data().get_t()).size() > 0) && systype != CONTACT::system_condensed)
+    if (((fnode->wear_data().get_t()).size() > 0) && systype != CONTACT::SystemType::condensed)
     {
       std::map<int, double> tmap = fnode->wear_data().get_t()[0];
 
@@ -3765,7 +3765,7 @@ void Wear::WearInterface::assemble_wear_cond_rhs_master(Epetra_FEVector& RHS)
     /**************************************************** T-matrix ******/
     // for condensation of lm and wear we condense the system with absol. lm
     // --> therefore we do not need the lm^i term...
-    if (((fnode->wear_data().get_t()).size() > 0) && systype != CONTACT::system_condensed)
+    if (((fnode->wear_data().get_t()).size() > 0) && systype != CONTACT::SystemType::condensed)
     {
       std::map<int, double> tmap = fnode->wear_data().get_t()[0];
 

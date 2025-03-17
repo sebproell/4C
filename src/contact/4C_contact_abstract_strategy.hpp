@@ -146,7 +146,7 @@ namespace CONTACT
      *  */
     virtual std::shared_ptr<const Epetra_Map> lin_system_lm_dof_row_map_ptr() const
     {
-      if (system_type() != CONTACT::system_saddlepoint) return nullptr;
+      if (system_type() != CONTACT::SystemType::saddlepoint) return nullptr;
 
       if (is_self_contact())
       {

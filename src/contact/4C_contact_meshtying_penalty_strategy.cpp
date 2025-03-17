@@ -367,7 +367,7 @@ void CONTACT::MtPenaltyStrategy::update_constraint_norm(int uzawaiter)
   //********************************************************************
   auto soltype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params(), "STRATEGY");
 
-  if (soltype == CONTACT::solution_uzawa)
+  if (soltype == CONTACT::SolvingStrategy::uzawa)
   {
     // check convergence of cnorm and update penalty parameter
     // only do this for second, third, ... Uzawa iteration

@@ -595,7 +595,8 @@ void EHL::Base::setup_field_coupling(
   mortaradapter_->setup(structdis, structdis, coupleddof, "EHLCoupling");
 
   if (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(
-          mortaradapter_->interface()->interface_params(), "STRATEGY") != CONTACT::solution_ehl)
+          mortaradapter_->interface()->interface_params(), "STRATEGY") !=
+      CONTACT::SolvingStrategy::ehl)
     FOUR_C_THROW("you need to set ---CONTACT DYNAMIC: STRATEGY   Ehl");
 
   std::shared_ptr<Core::LinAlg::Vector<double>> idisp = Core::LinAlg::create_vector(

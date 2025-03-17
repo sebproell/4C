@@ -132,7 +132,8 @@ void CONTACT::MtLagrangeStrategy::mortar_coupling(
   //----------------------------------------------------------------------
   bool setup = true;
   auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(params(), "SYSTEM");
-  if (systype == CONTACT::system_condensed || systype == CONTACT::system_condensed_lagmult)
+  if (systype == CONTACT::SystemType::condensed ||
+      systype == CONTACT::SystemType::condensed_lagmult)
     setup = false;
 
   // build constraint matrix only if necessary
@@ -363,7 +364,8 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
   // CASE A: CONDENSED SYSTEM (DUAL)
   //**********************************************************************
   //**********************************************************************
-  if (systype == CONTACT::system_condensed || systype == CONTACT::system_condensed_lagmult)
+  if (systype == CONTACT::SystemType::condensed ||
+      systype == CONTACT::SystemType::condensed_lagmult)
   {
     // double-check if this is a dual LM system
     if (shapefcn != Inpar::Mortar::shape_dual) FOUR_C_THROW("Condensation only for dual LM");
@@ -488,7 +490,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
 
     // knm:
     std::shared_ptr<Core::LinAlg::SparseMatrix> knmmod;
-    if (systype == CONTACT::system_condensed)
+    if (systype == CONTACT::SystemType::condensed)
     {
       // knm: add kns*mbar
       knmmod = std::make_shared<Core::LinAlg::SparseMatrix>(*gndofrowmap_, 100);
@@ -515,7 +517,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmmadd =
         Core::LinAlg::matrix_multiply(*mhatmatrix_, true, *ksm, false, false, false, true);
     kmmmod->add(*kmmadd, false, 1.0, 1.0);
-    if (systype == CONTACT::system_condensed)
+    if (systype == CONTACT::SystemType::condensed)
     {
       // kmm: add kms*mbar + T(mbar)*kss*mbar - additionally
       std::shared_ptr<Core::LinAlg::SparseMatrix> kmmadd2 =
@@ -536,7 +538,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
 
     // kms: add T(mbar)*kss
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmsmod;
-    if (systype == CONTACT::system_condensed_lagmult)
+    if (systype == CONTACT::SystemType::condensed_lagmult)
     {
       kmsmod = std::make_shared<Core::LinAlg::SparseMatrix>(*gmdofrowmap_, 100);
       kmsmod->add(*kms, false, 1.0, 1.0);
@@ -550,7 +552,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
 
     // ksm: subtract mmatrix
     std::shared_ptr<Core::LinAlg::SparseMatrix> ksmmod;
-    if (systype == CONTACT::system_condensed_lagmult)
+    if (systype == CONTACT::SystemType::condensed_lagmult)
     {
       ksmmod = std::make_shared<Core::LinAlg::SparseMatrix>(*gsdofrowmap_, 100);
       ksmmod->add(*mmatrix_, false, -1.0, 1.0);  //<---- causes problems in parallel
@@ -559,7 +561,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
 
     // kss: add dmatrix
     std::shared_ptr<Core::LinAlg::SparseMatrix> kssmod;
-    if (systype == CONTACT::system_condensed_lagmult)
+    if (systype == CONTACT::SystemType::condensed_lagmult)
     {
       kssmod = std::make_shared<Core::LinAlg::SparseMatrix>(*gsdofrowmap_, 100);
       kssmod->add(*dmatrix_, false, 1.0, 1.0);  //<---- causes problems in parallel
@@ -621,11 +623,11 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
 
     // add n submatrices to kteffnew
     kteffnew->add(*knn, false, 1.0, 1.0);
-    if (systype == CONTACT::system_condensed)
+    if (systype == CONTACT::SystemType::condensed)
     {
       kteffnew->add(*knmmod, false, 1.0, 1.0);
     }
-    else if (systype == CONTACT::system_condensed_lagmult)
+    else if (systype == CONTACT::SystemType::condensed_lagmult)
     {
       kteffnew->add(*knm, false, 1.0, 1.0);
       kteffnew->add(*kns, false, 1.0, 1.0);
@@ -634,10 +636,10 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
     // add m submatrices to kteffnew
     kteffnew->add(*kmnmod, false, 1.0, 1.0);
     kteffnew->add(*kmmmod, false, 1.0, 1.0);
-    if (systype == CONTACT::system_condensed_lagmult) kteffnew->add(*kmsmod, false, 1.0, 1.0);
+    if (systype == CONTACT::SystemType::condensed_lagmult) kteffnew->add(*kmsmod, false, 1.0, 1.0);
 
     // add s submatrices to kteffnew
-    if (systype == CONTACT::system_condensed)
+    if (systype == CONTACT::SystemType::condensed)
     {
       // add identity for slave increments
       kteffnew->add(*onesdiag, false, 1.0, 1.0);
@@ -785,7 +787,7 @@ void CONTACT::MtLagrangeStrategy::build_saddle_point_system(
   //**********************************************************************
   // build and solve saddle point system
   //**********************************************************************
-  if (systype == CONTACT::system_saddlepoint)
+  if (systype == CONTACT::SystemType::saddlepoint)
   {
     // build transposed constraint matrix
     Core::LinAlg::SparseMatrix trconstrmt(*glmdofrowmap_, 100, false, true);
@@ -883,7 +885,8 @@ void CONTACT::MtLagrangeStrategy::recover(std::shared_ptr<Core::LinAlg::Vector<d
   // CASE A: CONDENSED SYSTEM (DUAL)
   //**********************************************************************
   //**********************************************************************
-  if (systype == CONTACT::system_condensed || systype == CONTACT::system_condensed_lagmult)
+  if (systype == CONTACT::SystemType::condensed ||
+      systype == CONTACT::SystemType::condensed_lagmult)
   {
     // double-check if this is a dual LM system
     if (shapefcn != Inpar::Mortar::shape_dual) FOUR_C_THROW("Condensation only for dual LM");
@@ -904,7 +907,7 @@ void CONTACT::MtLagrangeStrategy::recover(std::shared_ptr<Core::LinAlg::Vector<d
     /* Update slave increment \Delta d_s                                  */
     /**********************************************************************/
 
-    if (systype == CONTACT::system_condensed)
+    if (systype == CONTACT::SystemType::condensed)
     {
       mhatmatrix_->multiply(false, disim, disis);
       Core::LinAlg::Vector<double> disisexp(*problem_dofs());
@@ -994,7 +997,7 @@ bool CONTACT::MtLagrangeStrategy::evaluate_force(
   if (!f_) f_ = std::make_shared<Core::LinAlg::Vector<double>>(*problem_dofs());
   f_->put_scalar(0.);
 
-  if (system_type() != CONTACT::system_condensed)
+  if (system_type() != CONTACT::SystemType::condensed)
   {
     // add meshtying force terms
     Core::LinAlg::Vector<double> fs(*gsdofrowmap_);
@@ -1145,7 +1148,7 @@ void CONTACT::MtLagrangeStrategy::run_pre_apply_jacobian_inverse(
 {
   auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(params(), "SYSTEM");
 
-  if (systype == CONTACT::system_condensed)
+  if (systype == CONTACT::SystemType::condensed)
   {
     std::shared_ptr<Core::LinAlg::SparseMatrix> k =
         std::make_shared<Core::LinAlg::SparseMatrix>(*kteff);
@@ -1178,7 +1181,7 @@ void CONTACT::MtLagrangeStrategy::run_post_apply_jacobian_inverse(
 {
   auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(params(), "SYSTEM");
   auto lagmultquad = Teuchos::getIntegralValue<Inpar::Mortar::LagMultQuad>(params(), "LM_QUAD");
-  if (systype == CONTACT::system_condensed)
+  if (systype == CONTACT::SystemType::condensed)
   {
     std::shared_ptr<Core::LinAlg::Vector<double>> inc =
         Core::Utils::shared_ptr_from_ref<Core::LinAlg::Vector<double>>(result);
@@ -1195,7 +1198,7 @@ void CONTACT::MtLagrangeStrategy::run_post_apply_jacobian_inverse(
 void CONTACT::MtLagrangeStrategy::run_post_compute_x(const Core::LinAlg::Vector<double>& xold,
     const Core::LinAlg::Vector<double>& dir, const Core::LinAlg::Vector<double>& xnew)
 {
-  if (system_type() != CONTACT::system_condensed)
+  if (system_type() != CONTACT::SystemType::condensed)
   {
     Core::LinAlg::Vector<double> zdir_ptr(*glmdofrowmap_, true);
     Core::LinAlg::export_to(dir, zdir_ptr);
@@ -1211,7 +1214,7 @@ void CONTACT::MtLagrangeStrategy::remove_condensed_contributions_from_rhs(
 {
   auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(params(), "SYSTEM");
   auto lagmultquad = Teuchos::getIntegralValue<Inpar::Mortar::LagMultQuad>(params(), "LM_QUAD");
-  if (systype == CONTACT::system_condensed)
+  if (systype == CONTACT::SystemType::condensed)
   {
     // undo basis transformation to solution
     if (dualquadslavetrafo() && lagmultquad == Inpar::Mortar::lagmult_lin)

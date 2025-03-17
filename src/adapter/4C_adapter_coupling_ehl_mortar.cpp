@@ -62,7 +62,7 @@ void Adapter::CouplingEhlMortar::read_mortar_condition(
   Adapter::CouplingNonLinMortar::read_mortar_condition(masterdis, slavedis, coupleddof,
       couplingcond, input, mastergnodes, slavegnodes, masterelements, slaveelements);
 
-  input.set<int>("PROBTYPE", CONTACT::ehl);
+  input.set<CONTACT::Problemtype>("PROBTYPE", CONTACT::Problemtype::ehl);
 }
 
 void Adapter::CouplingEhlMortar::setup(std::shared_ptr<Core::FE::Discretization> masterdis,
@@ -91,12 +91,12 @@ void Adapter::CouplingEhlMortar::setup(std::shared_ptr<Core::FE::Discretization>
 
   switch (ftype)
   {
-    case CONTACT::friction_tresca:
+    case CONTACT::FrictionType::tresca:
       FOUR_C_THROW("no tresca friction supported");
       break;
-    case CONTACT::friction_none:
+    case CONTACT::FrictionType::none:
       break;
-    case CONTACT::friction_coulomb:
+    case CONTACT::FrictionType::coulomb:
       interface_->interface_params().set<double>("FRCOEFF", fr_coeff);
       interface_->interface_params().set<double>("FRBOUND", -1.);
       break;
@@ -181,7 +181,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
   std::shared_ptr<Core::LinAlg::Vector<double>> fcsa =
       Core::LinAlg::create_vector(*interface_->active_dofs(), true);
   std::shared_ptr<Core::LinAlg::Vector<double>> g_all;
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
     g_all = Core::LinAlg::create_vector(*interface_->slave_row_dofs(), true);
   else
     g_all = Core::LinAlg::create_vector(*interface_->slave_row_nodes(), true);
@@ -243,7 +243,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
 
   // normal contact
   std::shared_ptr<Core::LinAlg::Vector<double>> gact;
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     gact = Core::LinAlg::create_vector(*interface_->active_dofs(), true);
     if (gact->global_length()) Core::LinAlg::export_to(*g_all, *gact);
@@ -477,7 +477,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
   rs_a_ = rsa;
   // apply contact symmetry conditions
   if (!sdirichtoggle_) FOUR_C_THROW("you didn't call store_dirichlet_status");
-  if (constr_direction_ == CONTACT::constr_xyz)
+  if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
     double haveDBC = 0;
     sdirichtoggle_->norm_1(&haveDBC);

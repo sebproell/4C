@@ -12,6 +12,7 @@
 #include "4C_contact_coupling3d.hpp"
 #include "4C_contact_element.hpp"
 #include "4C_contact_friction_node.hpp"
+#include "4C_contact_input.hpp"
 #include "4C_contact_integrator.hpp"
 #include "4C_contact_interpolator.hpp"
 #include "4C_contact_line_coupling.hpp"
@@ -45,7 +46,7 @@ CONTACT::InterfaceDataContainer::InterfaceDataContainer()
       friction_(false),
       non_smooth_contact_(false),
       two_half_pass_(false),
-      constr_direction_(CONTACT::constr_vague),
+      constr_direction_(CONTACT::ConstraintDirection::vague),
       activenodes_(nullptr),
       activedofs_(nullptr),
       inactivenodes_(nullptr),
@@ -175,21 +176,22 @@ CONTACT::Interface::Interface(const std::shared_ptr<Mortar::InterfaceDataContain
 
   // set frictional contact status
   auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(icontact, "FRICTION");
-  if (ftype != CONTACT::friction_none) friction_ = true;
+  if (ftype != CONTACT::FrictionType::none) friction_ = true;
 
   // set poro contact
-  if (icontact.get<int>("PROBTYPE") == CONTACT::poroelast ||
-      icontact.get<int>("PROBTYPE") == CONTACT::poroscatra ||
-      icontact.get<int>("PROBTYPE") == CONTACT::fpi)
+  if (icontact.get<CONTACT::Problemtype>("PROBTYPE") == CONTACT::Problemtype::poroelast ||
+      icontact.get<CONTACT::Problemtype>("PROBTYPE") == CONTACT::Problemtype::poroscatra ||
+      icontact.get<CONTACT::Problemtype>("PROBTYPE") == CONTACT::Problemtype::fpi)
   {
     set_poro_flag(true);
     set_poro_type(Inpar::Mortar::poroelast);
   }
-  if (icontact.get<int>("PROBTYPE") == CONTACT::poroscatra)
+  if (icontact.get<CONTACT::Problemtype>("PROBTYPE") == CONTACT::Problemtype::poroscatra)
     set_poro_type(Inpar::Mortar::poroscatra);
 
   // set ehl contact
-  if (icontact.get<int>("PROBTYPE") == CONTACT::ehl) set_ehl_flag(true);
+  if (icontact.get<CONTACT::Problemtype>("PROBTYPE") == CONTACT::Problemtype::ehl)
+    set_ehl_flag(true);
 
   // check for redundant slave storage
   // needed for self contact but not wanted for general contact
@@ -6294,9 +6296,9 @@ void CONTACT::Interface::evaluate_relative_movement(
     const auto contact_strategy =
         Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(interface_params(), "STRATEGY");
 
-    if (contact_strategy == CONTACT::solution_penalty ||
-        contact_strategy == CONTACT::solution_multiscale ||
-        (contact_strategy == CONTACT::solution_lagmult and
+    if (contact_strategy == CONTACT::SolvingStrategy::penalty ||
+        contact_strategy == CONTACT::SolvingStrategy::multiscale ||
+        (contact_strategy == CONTACT::SolvingStrategy::lagmult and
             not interface_params().get<bool>("SEMI_SMOOTH_NEWTON")))
     {
       if (-gap >= 0)
@@ -6304,7 +6306,7 @@ void CONTACT::Interface::evaluate_relative_movement(
         activeinfuture = true;
       }
     }
-    else if (contact_strategy == CONTACT::solution_lagmult and
+    else if (contact_strategy == CONTACT::SolvingStrategy::lagmult and
              interface_params().get<bool>("SEMI_SMOOTH_NEWTON"))
     {
       if ((nz - cn * gap > 0) or cnode->active())
@@ -6312,7 +6314,7 @@ void CONTACT::Interface::evaluate_relative_movement(
         activeinfuture = true;
       }
     }
-    else if (contact_strategy == CONTACT::solution_uzawa)
+    else if (contact_strategy == CONTACT::SolvingStrategy::uzawa)
     {
       if (lmuzawan - kappa * pp * gap >= 0)
       {
@@ -6584,7 +6586,7 @@ void CONTACT::Interface::evaluate_relative_movement(
         }
       }
 
-      if (constr_direction_ == CONTACT::constr_xyz)
+      if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
       {
         for (int j = 0; j < n_dim(); j++)
         {
@@ -7055,7 +7057,7 @@ bool CONTACT::Interface::update_active_set_semi_smooth()
     // adhesion
     double adhbound = 0.0;
     if (Teuchos::getIntegralValue<CONTACT::AdhesionType>(interface_params(), "ADHESION") ==
-        CONTACT::adhesion_bound)
+        CONTACT::AdhesionType::bounded)
       adhbound = interface_params().get<double>("ADHESION_BOUND");
 
     // check nodes of inactive set *************************************
@@ -7098,7 +7100,7 @@ bool CONTACT::Interface::update_active_set_semi_smooth()
       else
       {
         // friction tresca
-        if (ftype == CONTACT::friction_tresca)
+        if (ftype == CONTACT::FrictionType::tresca)
         {
           auto* frinode = dynamic_cast<FriNode*>(cnode);
 
@@ -7134,7 +7136,7 @@ bool CONTACT::Interface::update_active_set_semi_smooth()
         }  // if (fytpe=="tresca")
 
         // friction coulomb
-        if (ftype == CONTACT::friction_coulomb)
+        if (ftype == CONTACT::FrictionType::coulomb)
         {
           auto* frinode = dynamic_cast<FriNode*>(cnode);
 
@@ -7186,7 +7188,7 @@ bool CONTACT::Interface::update_active_set_semi_smooth()
               localcheck = false;
             }
           }
-        }  // if (ftype == CONTACT::friction_coulomb)
+        }  // if (ftype == CONTACT::FrictionType::coulomb)
       }  // if (nz - cn*wgap <= 0)
     }  // if (cnode->Active()==false)
   }  // loop over all slave nodes

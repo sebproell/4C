@@ -344,7 +344,7 @@ void Adapter::StructureBaseAlgorithmNew::set_model_types(
     {
       const Teuchos::ParameterList& contact = Global::Problem::instance()->contact_dynamic_params();
       if (Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(contact, "STRATEGY") ==
-          CONTACT::solution_nitsche)
+          CONTACT::SolvingStrategy::nitsche)
         modeltypes.insert(Inpar::Solid::model_contact);
     }
     else
