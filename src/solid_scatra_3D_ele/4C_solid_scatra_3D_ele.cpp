@@ -13,9 +13,9 @@
 #include "4C_inpar_structure.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_so3_line.hpp"
-#include "4C_so3_nullspace.hpp"
 #include "4C_so3_surface.hpp"
 #include "4C_solid_3D_ele_interface_serializable.hpp"
+#include "4C_solid_3D_ele_nullspace.hpp"
 #include "4C_solid_3D_ele_properties.hpp"
 #include "4C_solid_scatra_3D_ele_factory.hpp"
 #include "4C_solid_scatra_3D_ele_lib.hpp"
@@ -139,7 +139,7 @@ void Discret::Elements::SolidScatraType::nodal_block_information(
 Core::LinAlg::SerialDenseMatrix Discret::Elements::SolidScatraType::compute_null_space(
     Core::Nodes::Node& node, const double* x0, const int numdof, const int dimnsp)
 {
-  return compute_solid_3d_null_space(node, x0);
+  return compute_solid_null_space<3>(node.x(), x0);
 }
 
 Discret::Elements::SolidScatra::SolidScatra(int id, int owner) : Core::Elements::Element(id, owner)

@@ -7,7 +7,8 @@
 
 #include "4C_ale_ale3_nurbs.hpp"
 
-#include "4C_so3_nullspace.hpp"
+#include "4C_fem_general_node.hpp"
+#include "4C_solid_3D_ele_nullspace.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -66,7 +67,7 @@ void Discret::Elements::Nurbs::Ale3NurbsType::nodal_block_information(
 Core::LinAlg::SerialDenseMatrix Discret::Elements::Nurbs::Ale3NurbsType::compute_null_space(
     Core::Nodes::Node& node, const double* x0, const int numdof, const int dimnsp)
 {
-  return compute_solid_3d_null_space(node, x0);
+  return compute_solid_null_space<3>(node.x(), x0);
 }
 
 /*----------------------------------------------------------------------------*/

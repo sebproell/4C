@@ -17,10 +17,10 @@
 #include "4C_mat_fluidporo.hpp"
 #include "4C_mat_structporo.hpp"
 #include "4C_so3_line.hpp"
-#include "4C_so3_nullspace.hpp"
 #include "4C_so3_surface.hpp"
 #include "4C_solid_3D_ele_factory.hpp"
 #include "4C_solid_3D_ele_interface_serializable.hpp"
+#include "4C_solid_3D_ele_nullspace.hpp"
 #include "4C_solid_3D_ele_utils.hpp"
 #include "4C_solid_poro_3D_ele_factory.hpp"
 #include "4C_solid_poro_3D_ele_utils.hpp"
@@ -145,7 +145,7 @@ Core::LinAlg::SerialDenseMatrix
 Discret::Elements::SolidPoroPressureVelocityBasedType::compute_null_space(
     Core::Nodes::Node& node, const double* x0, const int numdof, const int dimnsp)
 {
-  return compute_solid_3d_null_space(node, x0);
+  return compute_solid_null_space<3>(node.x(), x0);
 }
 
 Discret::Elements::SolidPoroPressureVelocityBased::SolidPoroPressureVelocityBased(int id, int owner)

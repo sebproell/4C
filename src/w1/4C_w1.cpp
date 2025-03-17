@@ -11,7 +11,7 @@
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_general_utils_fem_shapefunctions.hpp"
 #include "4C_io_input_spec_builders.hpp"
-#include "4C_so3_nullspace.hpp"
+#include "4C_solid_3D_ele_nullspace.hpp"
 #include "4C_utils_exceptions.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -61,7 +61,7 @@ void Discret::Elements::Wall1Type::nodal_block_information(
 Core::LinAlg::SerialDenseMatrix Discret::Elements::Wall1Type::compute_null_space(
     Core::Nodes::Node& node, const double* x0, int const numdof, int const dimnsp)
 {
-  return compute_solid_2d_null_space(node, x0);
+  return compute_solid_null_space<2>(node.x(), x0);
 }
 
 void Discret::Elements::Wall1Type::setup_element_definition(

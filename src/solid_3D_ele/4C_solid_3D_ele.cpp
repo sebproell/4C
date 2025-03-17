@@ -16,10 +16,10 @@
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_mat_so3_material.hpp"
 #include "4C_so3_line.hpp"
-#include "4C_so3_nullspace.hpp"
 #include "4C_so3_surface.hpp"
 #include "4C_solid_3D_ele_factory.hpp"
 #include "4C_solid_3D_ele_interface_serializable.hpp"
+#include "4C_solid_3D_ele_nullspace.hpp"
 #include "4C_solid_3D_ele_properties.hpp"
 #include "4C_solid_3D_ele_utils.hpp"
 #include "4C_structure_new_elements_paramsinterface.hpp"
@@ -178,9 +178,9 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::SolidType::compute_null_space
   switch (numdof)
   {
     case 3:
-      return compute_solid_3d_null_space(node, x0);
+      return compute_solid_null_space<3>(node.x(), x0);
     case 2:
-      return compute_solid_2d_null_space(node, x0);
+      return compute_solid_null_space<2>(node.x(), x0);
     default:
       FOUR_C_THROW(
           "The null space computation of a solid element of dimension %d is not yet implemented",

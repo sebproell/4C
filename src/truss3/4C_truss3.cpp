@@ -12,7 +12,7 @@
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_general_node.hpp"
 #include "4C_io_input_spec_builders.hpp"
-#include "4C_so3_nullspace.hpp"
+#include "4C_solid_3D_ele_nullspace.hpp"
 #include "4C_structure_new_elements_paramsinterface.hpp"
 #include "4C_utils_shared_ptr_from_ref.hpp"
 
@@ -64,7 +64,7 @@ void Discret::Elements::Truss3Type::nodal_block_information(
 Core::LinAlg::SerialDenseMatrix Discret::Elements::Truss3Type::compute_null_space(
     Core::Nodes::Node& node, const double* x0, const int numdof, const int dimnsp)
 {
-  return compute_solid_3d_null_space(node, x0);
+  return compute_solid_null_space<3>(node.x(), x0);
 }
 
 void Discret::Elements::Truss3Type::setup_element_definition(
