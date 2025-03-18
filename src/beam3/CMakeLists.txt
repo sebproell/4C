@@ -15,7 +15,6 @@ set(_dependencies
     global_data
     inpar
     mat
-    so3
     structure_new
     )
 

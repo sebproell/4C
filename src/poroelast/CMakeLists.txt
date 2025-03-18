@@ -20,7 +20,6 @@ set(_dependencies
     inpar
     mat
     mortar
-    so3
     solid_poro_3D_ele
     structure
     w1

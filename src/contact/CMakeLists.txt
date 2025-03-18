@@ -18,7 +18,6 @@ set(_dependencies
     mortar
     scatra
     scatra_ele
-    so3
     solver_nonlin_nox
     structure_new
     xfem

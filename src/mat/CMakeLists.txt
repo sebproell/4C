@@ -18,7 +18,6 @@ set(_dependencies
     red_airways
     scatra
     scatra_ele
-    so3
     stru_multi
     structure_new
     tsi

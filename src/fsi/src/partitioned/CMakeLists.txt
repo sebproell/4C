@@ -23,7 +23,6 @@ set(_dependencies
     mat
     mortar
     poroelast
-    so3
     solver_nonlin_nox
     structure
     structure_new

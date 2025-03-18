@@ -17,7 +17,6 @@ set(_dependencies
     inpar
     mat
     poroelast
-    so3
     structure_new
     )
 

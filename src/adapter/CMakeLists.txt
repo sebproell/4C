@@ -35,7 +35,6 @@ set(_dependencies
     porofluidmultiphase
     scatra
     shell7p
-    so3
     solid_3D_ele
     solver_nonlin_nox
     ssi
