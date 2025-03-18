@@ -28,7 +28,6 @@
 #include "4C_mat_elasthyper.hpp"
 #include "4C_mat_newtonianfluid.hpp"
 #include "4C_rebalance_binning_based.hpp"
-#include "4C_so3_base.hpp"
 #include "4C_so3_surface.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_solid_3D_ele_calc_lib_nitsche.hpp"
@@ -2343,19 +2342,7 @@ void XFEM::MeshCouplingFSI::evaluate_structural_cauchy_stress(Core::Elements::El
       [&]() -> std::function<void(const Core::LinAlg::Matrix<num_dim, 1>&, double&,
                 Core::LinAlg::SerialDenseMatrix&, Core::LinAlg::SerialDenseMatrix&)>
       {
-        if (auto* solid_ele = dynamic_cast<Discret::Elements::SoBase*>(coupl_ele);
-            solid_ele != nullptr)
-        {
-          return [&, solid_ele](const Core::LinAlg::Matrix<num_dim, 1>& dir, double& cauchy_n_dir,
-                     Core::LinAlg::SerialDenseMatrix& d_cauchy_d_d,
-                     Core::LinAlg::SerialDenseMatrix& d2_cauchy_d_d2)
-          {
-            solid_ele->get_cauchy_n_dir_and_derivatives_at_xi(rst_slave, eledisp, normal, dir,
-                cauchy_n_dir, &d_cauchy_d_d, &d2_cauchy_d_d2, nullptr, nullptr, nullptr, nullptr,
-                nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
-          };
-        }
-        else if (auto* solid_ele = dynamic_cast<Discret::Elements::Solid*>(coupl_ele);
+        if (auto* solid_ele = dynamic_cast<Discret::Elements::Solid*>(coupl_ele);
             solid_ele != nullptr)
         {
           return [&, solid_ele](const Core::LinAlg::Matrix<num_dim, 1>& dir, double& cauchy_n_dir,
@@ -2372,7 +2359,7 @@ void XFEM::MeshCouplingFSI::evaluate_structural_cauchy_stress(Core::Elements::El
         }
         else
         {
-          FOUR_C_THROW("Unknown solid element type");
+          FOUR_C_THROW("Unknown 3D solid element type");
         }
       });
 

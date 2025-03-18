@@ -26,7 +26,6 @@
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_rigidsphere.hpp"
 #include "4C_shell_kl_nurbs.hpp"
-#include "4C_so3_base.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_utils_exceptions.hpp"
 
@@ -1235,8 +1234,7 @@ namespace BeamInteraction
         {
           eletypeset[1].insert(eleptr->id());
         }
-        else if (dynamic_cast<Discret::Elements::SoBase const*>(eleptr) != nullptr ||
-                 dynamic_cast<Discret::Elements::Solid const*>(eleptr) != nullptr ||
+        else if (dynamic_cast<Discret::Elements::Solid const*>(eleptr) != nullptr ||
                  dynamic_cast<Discret::Elements::KirchhoffLoveShellNurbs const*>(eleptr) != nullptr)
         {
           eletypeset[2].insert(eleptr->id());
@@ -1322,8 +1320,7 @@ namespace BeamInteraction
       {
         return Core::Binstrategy::Utils::BinContentType::RigidSphere;
       }
-      else if (dynamic_cast<Discret::Elements::SoBase const*>(ele) != nullptr ||
-               dynamic_cast<Discret::Elements::Solid const*>(ele) != nullptr ||
+      else if (dynamic_cast<Discret::Elements::Solid const*>(ele) != nullptr ||
                dynamic_cast<Discret::Elements::KirchhoffLoveShellNurbs const*>(ele) != nullptr)
       {
         return Core::Binstrategy::Utils::BinContentType::Solid;

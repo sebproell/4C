@@ -462,9 +462,9 @@ void PoroElast::Utils::PoroMaterialStrategy::assign_material1_to2(
     {
       fluid->set_kinematic_type(solid_poro->kinematic_type());
     }
-    else if (auto* sobase = dynamic_cast<Discret::Elements::SoBase*>(ele1); sobase != nullptr)
+    else if (auto* wall_ele = dynamic_cast<Discret::Elements::Wall1*>(ele1); wall_ele != nullptr)
     {
-      fluid->set_kinematic_type(sobase->kinematic_type());
+      fluid->set_kinematic_type(wall_ele->kinematic_type());
     }
     else
       FOUR_C_THROW("ERROR: ele1 is not a solid element");

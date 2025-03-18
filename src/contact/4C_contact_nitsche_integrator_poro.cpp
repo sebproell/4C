@@ -13,7 +13,6 @@
 #include "4C_contact_node.hpp"
 #include "4C_contact_paramsinterface.hpp"
 #include "4C_mat_structporo.hpp"
-#include "4C_so3_base.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_solid_poro_3D_ele_pressure_velocity_based.hpp"
 #include "4C_utils_exceptions.hpp"
@@ -178,15 +177,8 @@ void CONTACT::IntegratorNitschePoro::so_ele_cauchy(Mortar::Element& moEle, doubl
 
   if (!moEle.mo_data().parent_pf_pres().size())
   {
-    // The element can be either an old so3 element or a new solid element
-    if (auto* solid_ele = dynamic_cast<Discret::Elements::SoBase*>(moEle.parent_element());
-        solid_ele != nullptr)
-    {
-      solid_ele->get_cauchy_n_dir_and_derivatives_at_xi(pxsi, moEle.mo_data().parent_disp(), normal,
-          direction, sigma_nt, &dsntdd, nullptr, nullptr, nullptr, nullptr, &dsntdn, &dsntdt,
-          &dsntdpxi, nullptr, nullptr, nullptr, nullptr, nullptr);
-    }
-    else if (auto* solid_ele = dynamic_cast<Discret::Elements::Solid*>(moEle.parent_element());
+    // The element can be either a solid or solid-poro element
+    if (auto* solid_ele = dynamic_cast<Discret::Elements::Solid*>(moEle.parent_element());
         solid_ele != nullptr)
     {
       Discret::Elements::CauchyNDirLinearizations<3> cauchy_linearizations{};
