@@ -15,10 +15,10 @@
 #include "4C_mat_fluidporo.hpp"
 #include "4C_mat_fluidporo_multiphase.hpp"
 #include "4C_mat_structporo.hpp"
-#include "4C_so3_line.hpp"
 #include "4C_so3_surface.hpp"
 #include "4C_solid_3D_ele_factory.hpp"
 #include "4C_solid_3D_ele_interface_serializable.hpp"
+#include "4C_solid_3D_ele_line.hpp"
 #include "4C_solid_3D_ele_nullspace.hpp"
 #include "4C_solid_3D_ele_utils.hpp"
 #include "4C_solid_poro_3D_ele_factory.hpp"
@@ -152,7 +152,7 @@ int Discret::Elements::SolidPoroPressureBased::num_volume() const
 std::vector<std::shared_ptr<Core::Elements::Element>>
 Discret::Elements::SolidPoroPressureBased::lines()
 {
-  return Core::Communication::get_element_lines<StructuralLine, SolidPoroPressureBased>(*this);
+  return Core::Communication::get_element_lines<SolidLine<3>, SolidPoroPressureBased>(*this);
 }
 
 std::vector<std::shared_ptr<Core::Elements::Element>>

@@ -17,9 +17,9 @@
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_mat_fluidporo.hpp"
 #include "4C_mat_structporo.hpp"
-#include "4C_so3_line.hpp"
 #include "4C_so3_surface.hpp"
 #include "4C_solid_3D_ele_interface_serializable.hpp"
+#include "4C_solid_3D_ele_line.hpp"
 #include "4C_solid_3D_ele_properties.hpp"
 #include "4C_solid_3D_ele_utils.hpp"
 #include "4C_solid_poro_3D_ele_factory.hpp"
@@ -174,7 +174,7 @@ int Discret::Elements::SolidPoroPressureVelocityBasedP1::num_volume() const
 std::vector<std::shared_ptr<Core::Elements::Element>>
 Discret::Elements::SolidPoroPressureVelocityBasedP1::lines()
 {
-  return Core::Communication::get_element_lines<StructuralLine, SolidPoroPressureVelocityBasedP1>(
+  return Core::Communication::get_element_lines<SolidLine<3>, SolidPoroPressureVelocityBasedP1>(
       *this);
 }
 

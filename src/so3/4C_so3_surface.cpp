@@ -11,7 +11,7 @@
 #include "4C_comm_utils_factory.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
-#include "4C_so3_line.hpp"
+#include "4C_solid_3D_ele_line.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -162,7 +162,7 @@ void Discret::Elements::StructuralSurface::print(std::ostream& os) const
 
 std::vector<std::shared_ptr<Core::Elements::Element>> Discret::Elements::StructuralSurface::lines()
 {
-  return Core::Communication::element_boundary_factory<Discret::Elements::StructuralLine,
+  return Core::Communication::element_boundary_factory<Discret::Elements::SolidLine<3>,
       Discret::Elements::StructuralSurface>(Core::Communication::buildLines, *this);
 }
 

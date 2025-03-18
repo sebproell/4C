@@ -299,8 +299,8 @@ int Discret::Elements::Solid::evaluate_neumann(Teuchos::ParameterList& params,
           return params.get("total time", -1.0);
       });
 
-  Discret::Elements::evaluate_neumann_by_element(
-      *this, discretization, condition, lm, elevec1, time);
+  Discret::Elements::evaluate_neumann_by_element<3>(
+      *this, discretization, condition, elevec1, time);
   return 0;
 }
 
