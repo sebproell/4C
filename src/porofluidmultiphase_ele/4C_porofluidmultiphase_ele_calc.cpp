@@ -498,7 +498,7 @@ int Discret::Elements::PoroFluidMultiPhaseEleCalc<distype>::setup_calc(Core::Ele
   if (mat->material_type() != Core::Materials::m_fluidporo_multiphase and
       mat->material_type() != Core::Materials::m_fluidporo_multiphase_reactions)
     FOUR_C_THROW(
-        "PoroFluidMultiPhase element got unsupported material type %d", mat->material_type());
+        "PoroFluidMultiPhase element got unsupported material type {}", mat->material_type());
 
   std::shared_ptr<Mat::FluidPoroMultiPhase> actmat =
       std::static_pointer_cast<Mat::FluidPoroMultiPhase>(mat);
@@ -560,7 +560,7 @@ Discret::Elements::PoroFluidMultiPhaseEleCalc<distype>::eval_shape_func_and_deri
 
   if (det_ < 1E-16)
     FOUR_C_THROW(
-        "GLOBAL ELEMENT NO. %d \nZERO OR NEGATIVE JACOBIAN DETERMINANT: %lf", ele_->id(), det_);
+        "GLOBAL ELEMENT NO. {} \nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", ele_->id(), det_);
 
   // compute global spatial derivatives
   derxy_.multiply(xij_, deriv_);
@@ -651,7 +651,7 @@ void Discret::Elements::PoroFluidMultiPhaseEleCalc<distype>::compute_jacobian_at
 
   if (det_ < 1E-16)
     FOUR_C_THROW(
-        "GLOBAL ELEMENT NO. %d \nZERO OR NEGATIVE JACOBIAN DETERMINANT: %lf", ele_->id(), det_);
+        "GLOBAL ELEMENT NO. {} \nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", ele_->id(), det_);
 
   // compute global spatial derivatives
   derxy_.multiply(xij_, deriv_);

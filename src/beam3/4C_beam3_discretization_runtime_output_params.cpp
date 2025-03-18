@@ -90,7 +90,7 @@ void Discret::Elements::BeamRuntimeOutputParams::init(
 
   n_subsegments_ = IO_vtk_structure_beams_paramslist.get<int>("NUMBER_SUBSEGMENTS");
   if (n_subsegments_ < 1)
-    FOUR_C_THROW("The number of subsegments has to be at least 1. Got %d", n_subsegments_);
+    FOUR_C_THROW("The number of subsegments has to be at least 1. Got {}", n_subsegments_);
 
   isinit_ = true;
 }

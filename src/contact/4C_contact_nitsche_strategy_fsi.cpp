@@ -80,7 +80,7 @@ bool CONTACT::Utils::check_nitsche_contact_state(CONTACT::Interface& contactinte
     auto* test_ele = dynamic_cast<CONTACT::Element*>(
         contactinterface.discret().g_element(cele->mo_data().search_elements()[m]));
     if (!test_ele)
-      FOUR_C_THROW("Cannot find element with gid %d", cele->mo_data().search_elements()[m]);
+      FOUR_C_THROW("Cannot find element with gid {}", cele->mo_data().search_elements()[m]);
 
     Mortar::Projector::impl(*cele, *test_ele)
         ->project_gauss_point_3d(*cele, xsi.data(), *test_ele, mxi, projalpha);
@@ -93,7 +93,7 @@ bool CONTACT::Utils::check_nitsche_contact_state(CONTACT::Interface& contactinte
         if (abs(mxi[0]) < 1. + tol && abs(mxi[1]) < 1. + tol) is_inside = true;
         break;
       default:
-        FOUR_C_THROW("This element shape is not yet implemented (%d)!", test_ele->shape());
+        FOUR_C_THROW("This element shape is not yet implemented ({})!", test_ele->shape());
     }
     if (is_inside) other_cele = test_ele;
     // distance check

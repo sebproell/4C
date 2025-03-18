@@ -158,7 +158,7 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::extract_displac
       break;
     }
     default:
-      FOUR_C_THROW("Not implemented for discretization type: %i!", ele->parent_element()->shape());
+      FOUR_C_THROW("Not implemented for discretization type: {}!", ele->parent_element()->shape());
       break;
   }
 }
@@ -1331,7 +1331,7 @@ Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::calculate_det_f_of_p
       default:
       {
         FOUR_C_THROW(
-            "Not implemented for discretization type: %i!", faceele->parent_element()->shape());
+            "Not implemented for discretization type: {}!", faceele->parent_element()->shape());
         break;
       }
     }
@@ -1549,7 +1549,7 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::extract_node_va
   const std::shared_ptr<const Core::LinAlg::Vector<double>> state =
       discretization.get_state(nds, statename);
   if (state == nullptr)
-    FOUR_C_THROW("Cannot extract state vector \"" + statename + "\" from discretization!");
+    FOUR_C_THROW("Cannot extract state vector \"{}\" from discretization!", statename);
 
   // extract nodal state variables associated with boundary element
   Core::FE::extract_my_values<Core::LinAlg::Matrix<nen_, 1>>(*state, estate, la[nds].lm_);
@@ -1643,7 +1643,7 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::calc_robin_boun
   if ((int)(onoff.size()) != numscal_)
   {
     FOUR_C_THROW(
-        "Mismatch in size for Robin boundary conditions, onoff has length %i, but you have %i "
+        "Mismatch in size for Robin boundary conditions, onoff has length {}, but you have {} "
         "scalars",
         onoff.size(), numscal_);
   }
@@ -2282,7 +2282,7 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::weak_dirichlet(
   else if (consistency == "diffusive-optimal")
     gamma = -1.0;
   else
-    FOUR_C_THROW("unknown definition for gamma parameter: %s", consistency.c_str());
+    FOUR_C_THROW("unknown definition for gamma parameter: {}", consistency.c_str());
 
   // use one-point Gauss rule to do calculations at element center
   const Core::FE::IntPointsAndWeights<bnsd> intpoints_tau(
@@ -2365,7 +2365,7 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::weak_dirichlet(
       const double det = pxji.invert(pxjm);
       if (det < 1E-16)
         FOUR_C_THROW(
-            "GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", pele->id(), det);
+            "GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", pele->id(), det);
 
       // compute integration factor
       const double fac = pintpoints.ip().qwgt[iquad] * det;
@@ -2512,7 +2512,7 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::weak_dirichlet(
     const double det = pxji.invert(pxjm);
     if (det < 1E-16)
       FOUR_C_THROW(
-          "GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", pele->id(), det);
+          "GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", pele->id(), det);
 
     // compute measure tensor for surface element, infinitesimal area element drs
     // and (outward-pointing) unit normal vector
@@ -2554,7 +2554,7 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::weak_dirichlet(
       {
         printf("%12.5e %12.5e\n", check(j), coordgp(j));
       }
-      FOUR_C_THROW("Gausspoint matching error %12.5e\n", norm);
+      FOUR_C_THROW("Gausspoint matching error {:12.5e}\n", norm);
     }
 
     //--------------------------------------------------------------------
@@ -3024,7 +3024,7 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype,
     const double det = pxji.invert(pxjm);
     if (det < 1E-16)
       FOUR_C_THROW(
-          "GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", pele->id(), det);
+          "GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", pele->id(), det);
 
     // compute measure tensor for surface element, infinitesimal area element drs
     // and (outward-pointing) unit normal vector

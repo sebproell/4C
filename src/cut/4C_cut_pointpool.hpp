@@ -177,7 +177,7 @@ namespace Cut
           return tree_.new_point(
               x, cut_edge, cut_side, get_tolerance(x, tolerance), merge_strategy_);
         default:
-          FOUR_C_THROW("Unsupported problem dimension! (probdim = %d)", probdim_);
+          FOUR_C_THROW("Unsupported problem dimension! (probdim = {})", probdim_);
           exit(EXIT_FAILURE);
       }
 

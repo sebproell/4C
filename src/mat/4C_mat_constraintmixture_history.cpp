@@ -220,7 +220,7 @@ void Mat::ConstraintMixtureHistory::set_mass(int gp, double massprod, int idfibe
       massprod4_->at(gp) = massprod;
     }
     else
-      FOUR_C_THROW("no valid fiber id: %d", idfiber);
+      FOUR_C_THROW("no valid fiber id: {}", idfiber);
   }
   else
     FOUR_C_THROW("gp out of range in set_mass");
@@ -266,7 +266,7 @@ void Mat::ConstraintMixtureHistory::set_var_degrad(int gp, int idfiber, double v
       vardegrad4_->at(gp) = vardegrad;
     }
     else
-      FOUR_C_THROW("no valid fiber id: %d", idfiber);
+      FOUR_C_THROW("no valid fiber id: {}", idfiber);
   }
   else
     FOUR_C_THROW("gp out of range in set_var_degrad");
@@ -296,7 +296,7 @@ void Mat::ConstraintMixtureHistory::get_var_degrad(int gp, int idfiber, double* 
       *vardegrad = vardegrad4_->at(gp);
     }
     else
-      FOUR_C_THROW("no valid fiber id: %d", idfiber);
+      FOUR_C_THROW("no valid fiber id: {}", idfiber);
   }
   else
     FOUR_C_THROW("gp out of range in get_var_degrad");

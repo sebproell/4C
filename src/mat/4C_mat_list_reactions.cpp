@@ -26,7 +26,7 @@ Mat::PAR::MatListReactions::MatListReactions(const Core::Mat::PAR::Parameter::Da
 {
   // check if sizes fit
   if (numreac_ != (int)reacids_.size())
-    FOUR_C_THROW("number of materials %d does not fit to size of material vector %d", nummat_,
+    FOUR_C_THROW("number of materials {} does not fit to size of material vector {}", nummat_,
         reacids_.size());
 
   if (numreac_ < 1)
@@ -192,7 +192,7 @@ void Mat::MatListReactions::unpack(Core::Communication::UnpackBuffer& buffer)
         paramsreac_ = dynamic_cast<Mat::PAR::MatListReactions*>(mat);
       }
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 

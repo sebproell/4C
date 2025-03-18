@@ -199,13 +199,13 @@ class Beam3ContactOctTree
   {
     if (std::strcmp(typeid(TYPE).name(), "i") != 0 && std::strcmp(typeid(TYPE).name(), "f") != 0 &&
         std::strcmp(typeid(TYPE).name(), "d") != 0)
-      FOUR_C_THROW("Template of wrong type %s! Only int, float, and double are permitted!",
+      FOUR_C_THROW("Template of wrong type {}! Only int, float, and double are permitted!",
           typeid(TYPE).name());
     if (epetravec.MyLength() != (int)stdvec.size()) FOUR_C_THROW("Sizes differ!");
     for (int i = 0; i < (int)stdvec.size(); i++)
     {
       if ((int)stdvec[i].size() > epetravec.NumVectors())
-        FOUR_C_THROW("stdvec[%i].size() = %i is larger than epetravec.NumVectors() = %i", i,
+        FOUR_C_THROW("stdvec[{}].size() = {} is larger than epetravec.NumVectors() = {}", i,
             (int)stdvec[i].size(), epetravec.NumVectors());
       for (int j = 0; j < (int)stdvec[i].size(); j++) epetravec(j)[i] = (TYPE)stdvec[i][j];
     }
@@ -218,7 +218,7 @@ class Beam3ContactOctTree
   {
     if (std::strcmp(typeid(TYPE).name(), "i") != 0 && std::strcmp(typeid(TYPE).name(), "f") != 0 &&
         std::strcmp(typeid(TYPE).name(), "d") != 0)
-      FOUR_C_THROW("Template of wrong type %s! Only int, float, and double are permitted!",
+      FOUR_C_THROW("Template of wrong type {}! Only int, float, and double are permitted!",
           typeid(TYPE).name());
     if (epetravec.MyLength() != (int)stdvec.size()) FOUR_C_THROW("Sizes differ!");
     for (int i = 0; i < epetravec.NumVectors(); i++)
@@ -226,7 +226,7 @@ class Beam3ContactOctTree
       for (int j = 0; j < epetravec.MyLength(); j++)
       {
         if ((int)stdvec[j].size() < epetravec.NumVectors())
-          FOUR_C_THROW("stdvec[%i].size() = %i is larger than epetravec.NumVectors() = %i", j,
+          FOUR_C_THROW("stdvec[{}].size() = {} is larger than epetravec.NumVectors() = {}", j,
               (int)stdvec[j].size(), epetravec.NumVectors());
         stdvec[j][i] = epetravec(i)[j];
       }

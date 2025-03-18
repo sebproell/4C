@@ -83,7 +83,7 @@ Discret::Elements::FluidBoundaryParentInterface::impl(Core::Elements::FaceElemen
     }*/
     default:
       FOUR_C_THROW(
-          "Element shape %d (%d nodes) not activated for boundary conditions requiring "
+          "Element shape {} ({} nodes) not activated for boundary conditions requiring "
           "parent-element evaluations. Just do it.",
           ele->shape(), ele->num_node());
       break;
@@ -577,7 +577,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::flow_dep_pressure_bc(
       pressure = fdp_cond->parameters().get<double>("ConstCoeff") * curvefac;
     }
     else
-      FOUR_C_THROW("Unknown type of flow-dependent pressure condition: %s", condtype.c_str());
+      FOUR_C_THROW("Unknown type of flow-dependent pressure condition: {}", condtype.c_str());
 
     // get thermodynamic pressure at n+1/n+alpha_F
     const double thermpressaf = params.get<double>("thermpress at n+alpha_F/n+1", 1.0);
@@ -767,7 +767,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::flow_dep_pressure_bc(
       pxjm.multiply_nt(pderiv, pxyze);
       const double pdet = pxji.invert(pxjm);
       if (pdet < 1E-16)
-        FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", pid, pdet);
+        FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", pid, pdet);
 
       // compute measure tensor, infinitesimal area and outward unit normal
       // for boundary element
@@ -1433,7 +1433,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::slip_supp_bc(
     pxjm.multiply_nt(pderiv, pxyze);
     const double pdet = pxji.invert(pxjm);
     if (pdet < 1E-16)
-      FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", pid, pdet);
+      FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", pid, pdet);
 
     // compute measure tensor, infinitesimal area and outward unit normal
     // for boundary element
@@ -1757,7 +1757,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::navier_slip_bc(
     pxjm.multiply_nt(pderiv, pxyze);
     const double pdet = pxji.invert(pxjm);
     if (pdet < 1E-16)
-      FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", pid, pdet);
+      FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", pid, pdet);
 
     // compute measure tensor, infinitesimal area and outward unit normal
     // for boundary element
@@ -1841,7 +1841,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
   else if (consistency == "diffusive-optimal")
     wd_gamma = -1.0;
   else
-    FOUR_C_THROW("unknown type of consistency for weak DBC: %s", consistency.c_str());
+    FOUR_C_THROW("unknown type of consistency for weak DBC: {}", consistency.c_str());
 
   // decide whether to use it or not
   const std::string& deftauB = (*wdbc_cond).parameters().get<std::string>("PENTYPE");
@@ -1851,7 +1851,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
   else if (deftauB == "constant")
     spalding = false;
   else
-    FOUR_C_THROW("unknown PENTYPE tauB for weak DBC: %s", deftauB.c_str());
+    FOUR_C_THROW("unknown PENTYPE tauB for weak DBC: {}", deftauB.c_str());
 
   // linearisation of adjoint convective flux
   const std::string& linearisation_approach =
@@ -1862,7 +1862,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
   else if (linearisation_approach == "no_lin_conv_inflow")
     complete_linearisation = false;
   else
-    FOUR_C_THROW("unknown linearisation for weak DBC: %s", linearisation_approach.c_str());
+    FOUR_C_THROW("unknown linearisation for weak DBC: {}", linearisation_approach.c_str());
 
   // find out whether there is a time curve and get factor
   // (time curve at n+1 applied for all time-integration schemes, but
@@ -1885,7 +1885,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
     onlynormal = true;
   else
     FOUR_C_THROW(
-        "unknown definition of active components for weak DBC: %s", active_components.c_str());
+        "unknown definition of active components for weak DBC: {}", active_components.c_str());
 
   // optional scaling of penalty parameter
   const double scaling = wdbc_cond->parameters().get<double>("TauBscaling");
@@ -2110,7 +2110,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
     pxjm.multiply_nt(pderiv, pxyze);
     const double pdet = pxji.invert(pxjm);
     if (pdet < 1E-16)
-      FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", pid, pdet);
+      FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", pid, pdet);
 
     // compute measure tensor, infinitesimal area and outward unit normal
     // for boundary element
@@ -3874,7 +3874,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::estimate_nitsche_trace_max
     pxjm.multiply_nt(pderiv, pxyze);
     const double pdet = pxji.invert(pxjm);
     if (pdet < 1E-16)
-      FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", pid, pdet);
+      FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", pid, pdet);
 
     // compute measure tensor, infinitesimal area and outward unit normal
     // for boundary element
@@ -4141,7 +4141,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::estimate_nitsche_trace_max
     //    const double pdet = pxji.invert(pxjm);
     pdet = pxji.invert(pxjm);
     if (pdet < 1E-16)
-      FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", pid, pdet);
+      FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", pid, pdet);
 
     // compute integration factor for boundary element
     fac_ = pintpoints.ip().qwgt[iquad] * pdet;
@@ -4340,7 +4340,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
   }
   else
   {
-    FOUR_C_THROW("Unknown definition of penalty parameter: %s", deftauB.c_str());
+    FOUR_C_THROW("Unknown definition of penalty parameter: {}", deftauB.c_str());
   }
 
   // flag for utau computation (viscous tangent or at wall (a la Michler))
@@ -4535,7 +4535,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
 
       if (det < 1E-16)
         FOUR_C_THROW(
-            "GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", parent->id(), det);
+            "GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", parent->id(), det);
 
       // compute integration factor
       fac_ = pintpoints.ip().qwgt[iquad] * det;
@@ -5145,7 +5145,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
 
       if (det < 1E-16)
         FOUR_C_THROW(
-            "GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", parent->id(), det);
+            "GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", parent->id(), det);
 
       //-----------------------------------------------------
       /*          +-           -+   +-           -+   +-           -+

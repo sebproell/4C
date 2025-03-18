@@ -145,7 +145,7 @@ int Discret::Elements::Rigidsphere::evaluate(Teuchos::ParameterList& params,
 
     default:
     {
-      FOUR_C_THROW("Unknown type of action for Rigidsphere %d", act);
+      FOUR_C_THROW("Unknown type of action for Rigidsphere {}", act);
       break;
     }
   }
@@ -342,7 +342,7 @@ Core::GeometricSearch::BoundingVolume Discret::Elements::Rigidsphere::get_boundi
 
   // Add reference position.
   if (mydisp.size() != 3)
-    FOUR_C_THROW("Got unexpected number of DOFs. Expected 3, but received %d", mydisp.size());
+    FOUR_C_THROW("Got unexpected number of DOFs. Expected 3, but received {}", mydisp.size());
   Core::LinAlg::Matrix<3, 1, double> sphere_center;
   for (unsigned int i_dof = 0; i_dof < 3; i_dof++)
     sphere_center(i_dof) = mydisp[i_dof] + nodes()[0]->x()[i_dof];

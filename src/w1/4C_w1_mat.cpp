@@ -299,7 +299,7 @@ void Discret::Elements::Wall1::material_response3d_plane(Core::LinAlg::SerialDen
   }
   else
   {
-    FOUR_C_THROW("Dimension reduction type wtype_=%d is not available.", wtype_);
+    FOUR_C_THROW("Dimension reduction type wtype_={} is not available.", wtype_);
   }
 
   // transform 2nd Piola--Kirchhoff stress back to 2d stress matrix

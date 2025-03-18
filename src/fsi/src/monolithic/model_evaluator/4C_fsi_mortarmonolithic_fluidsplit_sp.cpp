@@ -134,7 +134,7 @@ FSI::MortarMonolithicFluidSplitSaddlePoint::MortarMonolithicFluidSplitSaddlePoin
                 "------------+"
              << std::endl;
 
-    FOUR_C_THROW(errormsg.str());
+    FOUR_C_THROW("{}", errormsg.str());
   }
   // ---------------------------------------------------------------------------
 

@@ -176,7 +176,7 @@ void ntacal()
       break;
 
     default:
-      FOUR_C_THROW("solution of unknown problemtype %d requested",
+      FOUR_C_THROW("solution of unknown problemtype {} requested",
           Global::Problem::instance()->get_problem_type());
       break;
   }

@@ -32,7 +32,7 @@ void PARTICLEALGORITHM::Utils::read_params_types_related_to_values(
 
   // safety check
   if (static_cast<int>(typetoval.size()) % 2)
-    FOUR_C_THROW("input of '%s' (size = %d) relating particle type to value is odd!", name.c_str(),
+    FOUR_C_THROW("input of '{}' (size = {}) relating particle type to value is odd!", name.c_str(),
         typetoval.size());
 
   std::string typestring;
@@ -63,7 +63,7 @@ void PARTICLEALGORITHM::Utils::read_params_types_related_to_values(
 
     // safety check
     if (not iterator.second)
-      FOUR_C_THROW("failed inserting numeric value into map since key '%s' is already existing!",
+      FOUR_C_THROW("failed inserting numeric value into map since key '{}' is already existing!",
           PARTICLEENGINE::enum_to_type_name(particleType).c_str());
   }
 }

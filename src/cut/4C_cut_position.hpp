@@ -161,7 +161,7 @@ namespace Cut
     {
       if (rst.m() < n_dim())
         FOUR_C_THROW(
-            "rst has the wrong row number! ( DIM = %d ( rst.m() = %d < DIM ) )", n_dim(), rst.m());
+            "rst has the wrong row number! ( DIM = {} ( rst.m() = {} < DIM ) )", n_dim(), rst.m());
       local_coordinates(rst.data());
 
       std::fill(rst.data() + n_dim(), rst.data() + rst.m(), 0.0);
@@ -193,7 +193,7 @@ namespace Cut
       if (d.m() < (n_prob_dim() - n_dim()))
         FOUR_C_THROW(
             "The distance vector has the wrong row number! "
-            "( DIM = %d ( rst.m() = %d < DIM ) )",
+            "( DIM = {} ( rst.m() = {} < DIM ) )",
             n_dim(), d.m());
 
       distance(d.data());
@@ -300,7 +300,7 @@ namespace Cut
         msg << "The local coordinates are not valid. "
                "( Position::Status = "
             << status_to_string(pos_status_) << " )";
-        FOUR_C_THROW(msg.str());
+        FOUR_C_THROW("{}", msg.str());
       }
 
       std::copy(xsi_.data(), xsi_.data() + xsi_.m(), rst);
@@ -319,7 +319,7 @@ namespace Cut
         FOUR_C_THROW(
             "The compute_tolerance seems not trustworthy, "
             "properly the Compute() routine failed in some way. "
-            "( tol = %e )",
+            "( tol = {} )",
             compute_tolerance_);
       return compute_tolerance_;
     }
@@ -474,7 +474,7 @@ namespace Cut
         msg << "Neither the position nor the distance value is valid! "
                "( Position::Status = "
             << Position::status_to_string(this->pos_status_) << " )";
-        FOUR_C_THROW(msg.str());
+        FOUR_C_THROW("{}", msg.str());
       }
 
       switch (probdim - dim)
@@ -495,7 +495,7 @@ namespace Cut
         msg << "Neither the position nor the distance value is valid! "
                "( Position::Status = "
             << Position::status_to_string(this->pos_status_) << " )";
-        FOUR_C_THROW(msg.str());
+        FOUR_C_THROW("{}", msg.str());
       }
 
       std::copy(xsi_aug_.data() + dim, xsi_aug_.data() + probdim, distance);
@@ -769,7 +769,7 @@ namespace Cut
       else
         FOUR_C_THROW(
             "The element dimension is larger than the problem dimension! \n"
-            "dim = %d, probdim = %d",
+            "dim = {}, probdim = {}",
             dim, probdim);
 
       exit(EXIT_FAILURE);
@@ -784,7 +784,7 @@ namespace Cut
       if (dim > probdim_)
         FOUR_C_THROW(
             "The element dimension is larger than the problem dimension! \n"
-            "dim = %d, probdim = %d",
+            "dim = {}, probdim = {}",
             dim, probdim_);
 
       switch (probdim_)
@@ -794,7 +794,7 @@ namespace Cut
         case 3:
           return build_position<3, eletype>(element, point, floattype);
         default:
-          FOUR_C_THROW("Unsupported problem dimension! (probdim = %d)", probdim_);
+          FOUR_C_THROW("Unsupported problem dimension! (probdim = {})", probdim_);
           exit(EXIT_FAILURE);
       }
 
@@ -835,7 +835,7 @@ namespace Cut
       else
         FOUR_C_THROW(
             "The element dimension is larger than the problem dimension! \n"
-            "dim = %d, probdim = %d",
+            "dim = {}, probdim = {}",
             dim, probdim);
 
       exit(EXIT_FAILURE);
@@ -851,7 +851,7 @@ namespace Cut
       if (dim > probdim_)
         FOUR_C_THROW(
             "The element dimension is larger than the problem dimension! \n"
-            "dim = %d, probdim = %d",
+            "dim = {}, probdim = {}",
             dim, probdim_);
 
       switch (probdim_)
@@ -867,7 +867,7 @@ namespace Cut
           return build_position<3, eletype>(element, xyz_mat, floattype);
         }
         default:
-          FOUR_C_THROW("Unsupported problem dimension! (probdim = %d)", probdim_);
+          FOUR_C_THROW("Unsupported problem dimension! (probdim = {})", probdim_);
           exit(EXIT_FAILURE);
       }
 
@@ -905,7 +905,7 @@ namespace Cut
       else
         FOUR_C_THROW(
             "The element dimension is larger than the problem dimension! \n"
-            "dim = %d, probdim = %d",
+            "dim = {}, probdim = {}",
             dim, probdim);
 
       exit(EXIT_FAILURE);
@@ -933,7 +933,7 @@ namespace Cut
           return build_position<3, eletype>(xyze_mat, xyz_mat, floattype);
         }
         default:
-          FOUR_C_THROW("Unsupported problem dimension! (probdim = %d)", probdim_);
+          FOUR_C_THROW("Unsupported problem dimension! (probdim = {})", probdim_);
           exit(EXIT_FAILURE);
       }
 
@@ -960,7 +960,7 @@ namespace Cut
       if (not(nodes.size() == num_nodes_element))
         FOUR_C_THROW(
             "node number for this element is not correct\n"
-            "numNodesElement = %d, nodes.size() = %d",
+            "numNodesElement = {}, nodes.size() = {}",
             num_nodes_element, nodes.size());
 
       Core::LinAlg::Matrix<probdim, num_nodes_element> xyze;
@@ -983,7 +983,7 @@ namespace Cut
       else
         FOUR_C_THROW(
             "The element dimension is larger than the problem dimension! \n"
-            "dim = %d, probdim = %d",
+            "dim = {}, probdim = {}",
             dim, probdim);
 
       exit(EXIT_FAILURE);
@@ -1008,7 +1008,7 @@ namespace Cut
           return build_position<3, eletype>(nodes, xyz_mat, floattype);
         }
         default:
-          FOUR_C_THROW("Unsupported problem dimension! (probdim = %d)", probdim_);
+          FOUR_C_THROW("Unsupported problem dimension! (probdim = {})", probdim_);
           exit(EXIT_FAILURE);
       }
 

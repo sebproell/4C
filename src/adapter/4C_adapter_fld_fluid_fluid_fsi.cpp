@@ -274,11 +274,9 @@ void Adapter::FluidFluidFSI::setup_interface(const int nds_master)
 
   if (mergedfluidinterface_ == nullptr)
   {
-    std::stringstream errmsg;
-    errmsg
-        << "Uninitialized map  map extractor for merged background & embedded inner/FSI fluid DOFs."
-        << "\nFailed to perform map extractor setup.";
-    FOUR_C_THROW(errmsg.str());
+    FOUR_C_THROW(
+        "Uninitialized map  map extractor for merged background & embedded inner/FSI fluid DOFs."
+        "\nFailed to perform map extractor setup.");
   }
 
   FluidFSI::setup_interface();

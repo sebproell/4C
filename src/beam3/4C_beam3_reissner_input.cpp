@@ -38,10 +38,10 @@ bool Discret::Elements::Beam3r::read_element(const std::string& eletype, const s
   FOUR_C_ASSERT_ALWAYS(mat_type == Core::Materials::m_beam_reissner_elast_hyper ||
                            mat_type == Core::Materials::m_beam_reissner_elast_plastic ||
                            mat_type == Core::Materials::m_beam_reissner_elast_hyper_bymodes,
-      "The material parameter definition '%s' is not supported by Beam3r element! "
+      "The material parameter definition '{}' is not supported by Beam3r element! "
       "Choose MAT_BeamReissnerElastHyper, MAT_BeamReissnerElastHyper_ByModes or "
       "MAT_BeamReissnerElastPlastic!",
-      to_string(mat_type).data());
+      mat_type);
 
 
   if (container.get_if<std::vector<int>>("HERM2LINE2") != nullptr or

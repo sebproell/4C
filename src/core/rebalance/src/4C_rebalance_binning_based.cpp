@@ -244,7 +244,7 @@ void Core::Rebalance::match_element_distribution_of_matching_discretizations(
     ////////////////////////////////////////
     int err = dis_to_rebalance.fill_complete(false, false, false);
 
-    if (err) FOUR_C_THROW("fill_complete() returned err=%d", err);
+    if (err) FOUR_C_THROW("fill_complete() returned err={}", err);
 
     // print to screen
     Core::Rebalance::Utils::print_parallel_distribution(dis_to_rebalance);
@@ -528,7 +528,7 @@ void Core::Rebalance::match_element_distribution_of_matching_conditioned_element
     ////////////////////////////////////////
     int err = dis_to_rebalance.fill_complete(false, false, false);
 
-    if (err) FOUR_C_THROW("fill_complete() returned err=%d", err);
+    if (err) FOUR_C_THROW("fill_complete() returned err={}", err);
 
     // print to screen
     Core::Rebalance::Utils::print_parallel_distribution(dis_to_rebalance);

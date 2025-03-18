@@ -449,7 +449,7 @@ double Solid::TimeInt::NoxInterface::get_model_value(const Epetra_Vector& x, con
     }
     default:
     {
-      FOUR_C_THROW("There is no objective model value for %s | %d.",
+      FOUR_C_THROW("There is no objective model value for {} | {}.",
           NOX::Nln::MeritFunction::merit_func_name_to_string(merit_func_type).c_str(),
           merit_func_type);
       exit(EXIT_FAILURE);
@@ -473,7 +473,7 @@ double Solid::TimeInt::NoxInterface::get_linearized_model_terms(const ::NOX::Abs
       return 0.0;
     default:
     {
-      FOUR_C_THROW("There is no linearization for the objective model %s | %d.",
+      FOUR_C_THROW("There is no linearization for the objective model {} | {}.",
           NOX::Nln::MeritFunction::merit_func_name_to_string(mf_type).c_str(), mf_type);
       exit(EXIT_FAILURE);
     }

@@ -214,7 +214,7 @@ void XFEM::XfpCouplingManager::add_coupling_matrix(
   }
   else
     FOUR_C_THROW(
-        "XFPCoupling_Manager::AddCouplingMatrix: Not implemented for number of blocks = %d",
+        "XFPCoupling_Manager::AddCouplingMatrix: Not implemented for number of blocks = {}",
         idx_.size());
 }
 
@@ -326,7 +326,7 @@ void XFEM::XfpCouplingManager::add_coupling_rhs(std::shared_ptr<Core::LinAlg::Ve
     me.add_vector(*pfrhs, idx_[2], *rhs);
   }
   else
-    FOUR_C_THROW("XFPCoupling_Manager::AddCouplingRHS: Not implemented for number of blocks = %d",
+    FOUR_C_THROW("XFPCoupling_Manager::AddCouplingRHS: Not implemented for number of blocks = {}",
         idx_.size());
 }
 

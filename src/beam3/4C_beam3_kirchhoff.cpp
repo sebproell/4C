@@ -1004,7 +1004,7 @@ void Discret::Elements::Beam3k::get_pos_at_xi(
   {
     FOUR_C_THROW(
         "size mismatch: expected either 12 values for disp_centerline or 15 for "
-        "full element disp vector and got %d",
+        "full element disp vector and got {}",
         disp.size());
   }
 
@@ -1021,7 +1021,7 @@ void Discret::Elements::Beam3k::get_triad_at_xi(
 
   if (disp.size() != 15)
     FOUR_C_THROW(
-        "size mismatch: expected 15 values for element disp vector and got %d", disp.size());
+        "size mismatch: expected 15 values for element disp vector and got {}", disp.size());
 
 
   // Dof vector in total Lagrangian style, i.e. "displacement + reference values"
@@ -1102,7 +1102,7 @@ void Discret::Elements::Beam3k::get_generalized_interpolation_matrix_variations_
 
   // safety check
   if ((unsigned int)Ivar.numRows() != 2 * ndim or (unsigned int) Ivar.numCols() != numdof)
-    FOUR_C_THROW("size mismatch! expected %dx%d matrix and got %dx%d", 6, numdof, Ivar.numRows(),
+    FOUR_C_THROW("size mismatch! expected {}x{} matrix and got {}x{}", 6, numdof, Ivar.numRows(),
         Ivar.numCols());
 
   Ivar.putScalar(0.0);
@@ -1258,7 +1258,7 @@ void Discret::Elements::Beam3k::get_stiffmat_resulting_from_generalized_interpol
 
   // safety check
   if ((unsigned int)stiffmat.numRows() != numdof or (unsigned int) stiffmat.numCols() != numdof)
-    FOUR_C_THROW("size mismatch! expected %dx%d matrix and got %dx%d", numdof, numdof,
+    FOUR_C_THROW("size mismatch! expected {}x{} matrix and got {}x{}", numdof, numdof,
         stiffmat.numRows(), stiffmat.numCols());
 
   stiffmat.putScalar(0.0);
@@ -1396,7 +1396,7 @@ void Discret::Elements::Beam3k::get_generalized_interpolation_matrix_increments_
 
   // safety check
   if ((unsigned int)Iinc.numRows() != 2 * ndim or (unsigned int) Iinc.numCols() != numdof)
-    FOUR_C_THROW("size mismatch! expected %dx%d matrix and got %dx%d", 6, numdof, Iinc.numRows(),
+    FOUR_C_THROW("size mismatch! expected {}x{} matrix and got {}x{}", 6, numdof, Iinc.numRows(),
         Iinc.numCols());
 
   Iinc.putScalar(0.0);
@@ -1579,7 +1579,7 @@ void Discret::Elements::Beam3k::extract_centerline_dof_values_from_element_state
 {
   if (dofvec.size() != 15)
     FOUR_C_THROW(
-        "size mismatch: expected 15 values for element state vector and got %d", dofvec.size());
+        "size mismatch: expected 15 values for element state vector and got {}", dofvec.size());
 
   dofvec_centerline.resize(12, 0.0);
 

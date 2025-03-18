@@ -129,7 +129,7 @@ void BeamInteraction::BeamToBeamContactPair<numnodes, numnodalvalues>::setup()
   if (element1()->id() >= element2()->id())
   {
     FOUR_C_THROW(
-        "Element 1 has to have the smaller element-ID. Ele1GID: %d, Ele2GID: %d. Adapt your "
+        "Element 1 has to have the smaller element-ID. Ele1GID: {}, Ele2GID: {}. Adapt your "
         "contact search!",
         element1()->id(), element2()->id());
   }

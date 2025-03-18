@@ -218,7 +218,7 @@ void EnsightWriter::write_geo_file(const std::string& geofilename)
   if (myrank_ == 0)
   {
     geofile.open(geofilename.c_str());
-    if (!geofile) FOUR_C_THROW("failed to open file: %s", geofilename.c_str());
+    if (!geofile) FOUR_C_THROW("failed to open file: {}", geofilename.c_str());
   }
 
   // header
@@ -898,7 +898,7 @@ std::string EnsightWriter::get_ensight_string(const Core::FE::CellType distype) 
   }
   if (entry == distype2ensightstring_.end())
     FOUR_C_THROW(
-        "No entry in distype2ensightstring_ found for Core::FE::CellType = '%d'.", distype);
+        "No entry in distype2ensightstring_ found for Core::FE::CellType = '{}'.", distype);
   return entry->second;
 }
 
@@ -1117,7 +1117,7 @@ void EnsightWriter::write_result_one_time_step(PostResult& result, const std::st
     bool laststep, const int from)
 {
   if (not map_has_map(result.group(), groupname.c_str()))
-    FOUR_C_THROW("expected result: %s in step %i. Probably a return is missing here. But check!",
+    FOUR_C_THROW("expected result: {} in step {}. Probably a return is missing here. But check!",
         groupname.c_str(), result.step());
 
   // FILE CONTINUATION NOT SUPPORTED DUE TO ITS COMPLEXITY FOR VARIABLE GEOMETRY ghamm 03.03.2014
@@ -1562,7 +1562,7 @@ void EnsightWriter::write_dof_result_step(std::ofstream& file, PostResult& resul
     Epetra_Import proc0dataimporter(*proc0datamap, *epetradatamap);
     Core::LinAlg::Vector<double> proc0data(*proc0datamap);
     int err = proc0data.import(*data, proc0dataimporter, Insert);
-    if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns %d", err);
+    if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
 
     const Epetra_BlockMap& finaldatamap = proc0data.get_map();
 
@@ -1599,7 +1599,7 @@ void EnsightWriter::write_dof_result_step(std::ofstream& file, PostResult& resul
     Core::LinAlg::MultiVector<double> dofgidpernodelid_proc0(*proc0map_, numdf);
     Epetra_Import proc0dofimporter(*proc0map_, *nodemap);
     err = dofgidpernodelid_proc0.Import(dofgidpernodelid, proc0dofimporter, Insert);
-    if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns %d", err);
+    if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
 
 
     //---------------
@@ -1651,7 +1651,7 @@ void EnsightWriter::write_dof_result_step(std::ofstream& file, PostResult& resul
             if (fillzeros)
               write<float>(file, 0.);
             else
-              FOUR_C_THROW("received illegal dof local id: %d (gid=%d)", lid, actdofgid);
+              FOUR_C_THROW("received illegal dof local id: {} (gid={})", lid, actdofgid);
           }
         }
       }  // for idf
@@ -1735,7 +1735,7 @@ void EnsightWriter::write_nodal_result_step(std::ofstream& file,
     Core::LinAlg::MultiVector<double> data_proc0(*proc0map_, numdf);
     Epetra_Import proc0dofimporter(*proc0map_, datamap);
     int err = data_proc0.Import(*data, proc0dofimporter, Insert);
-    if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns %d", err);
+    if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
 
     //---------------
     // write results
@@ -1831,7 +1831,7 @@ void EnsightWriter::write_element_dof_result_step(std::ofstream& file, PostResul
   Epetra_Import proc0dataimporter(*proc0datamap, *epetradatamap);
   Core::LinAlg::Vector<double> proc0data(*proc0datamap);
   int err = proc0data.import(*data, proc0dataimporter, Insert);
-  if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns %d", err);
+  if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
 
   const Epetra_BlockMap& finaldatamap = proc0data.get_map();
 
@@ -1864,7 +1864,7 @@ void EnsightWriter::write_element_dof_result_step(std::ofstream& file, PostResul
   Core::LinAlg::MultiVector<double> dofgidperelementlid_proc0(*proc0map_, numdof);
   Epetra_Import proc0dofimporter(*proc0map_, *elementmap);
   err = dofgidperelementlid_proc0.Import(dofgidperelementlid, proc0dofimporter, Insert);
-  if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns %d", err);
+  if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
 
   const int numglobelem = elementmap->NumGlobalElements();
 
@@ -1910,7 +1910,7 @@ void EnsightWriter::write_element_dof_result_step(std::ofstream& file, PostResul
             write(file, static_cast<float>((proc0data)[lid]));
           }
           else
-            FOUR_C_THROW("received illegal dof local id: %d", lid);
+            FOUR_C_THROW("received illegal dof local id: {}", lid);
         }
       }
     }  // for idf
@@ -1997,7 +1997,7 @@ void EnsightWriter::write_element_result_step(std::ofstream& file,
   Epetra_Import proc0dataimporter(*proc0datamap, *epetradatamap);
   Core::LinAlg::MultiVector<double> proc0data(*proc0datamap, numcol);
   int err = proc0data.Import(*data, proc0dataimporter, Insert);
-  if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns %d", err);
+  if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
 
   const Epetra_BlockMap& finaldatamap = proc0data.Map();
 
@@ -2028,7 +2028,7 @@ void EnsightWriter::write_element_result_step(std::ofstream& file,
     if (myrank_ == 0)
     {
       if (numdf + from > numcol)
-        FOUR_C_THROW("violated column range of Core::LinAlg::MultiVector<double>: %d", numcol);
+        FOUR_C_THROW("violated column range of Core::LinAlg::MultiVector<double>: {}", numcol);
       std::vector<int> mycols(numdf);
       std::iota(std::begin(mycols), std::end(mycols), 0);
       // swap entries 5 and 6 (inside 4C we use XY, YZ, XZ, however, ensight-format expects
@@ -2056,7 +2056,7 @@ void EnsightWriter::write_element_result_step(std::ofstream& file,
             for (int i = 0; i < numsubele; ++i) write(file, static_cast<float>((datacolumn)[lid]));
           }
           else
-            FOUR_C_THROW("received illegal dof local id: %d", lid);
+            FOUR_C_THROW("received illegal dof local id: {}", lid);
         }
       }
     }  // if (myrank_==0)
@@ -2144,7 +2144,7 @@ std::string EnsightWriter::get_variable_section(std::map<std::string, std::vecto
     const int setnumber = entry1->second;
 
     std::map<std::string, std::vector<int>>::const_iterator entry2 = filesetmap.find(key);
-    if (entry2 == filesetmap.end()) FOUR_C_THROW("filesetmap not defined for '%s'", key.c_str());
+    if (entry2 == filesetmap.end()) FOUR_C_THROW("filesetmap not defined for '{}'", key.c_str());
 
     const int numsubfilesteps = entry2->second.size();
     std::string filename_for_casefile;
@@ -2361,7 +2361,7 @@ void EnsightWriter::write_coordinates_for_polynomial_shapefunctions(
   Epetra_Import proc0importer(*proc0map, *nodemap);
   Core::LinAlg::MultiVector<double> allnodecoords(*proc0map, 3);
   int err = allnodecoords.Import(*nodecoords, proc0importer, Insert);
-  if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns %d", err);
+  if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
 
   // write the node coordinates (only proc 0)
   // ensight format requires x_1 .. x_n, y_1 .. y_n, z_1 ... z_n

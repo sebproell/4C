@@ -147,7 +147,7 @@ namespace GEOMETRYPAIR
       }
       else
       {
-        FOUR_C_THROW("Got unexpected element dimension %d", ElementType::element_dim_);
+        FOUR_C_THROW("Got unexpected element dimension {}", ElementType::element_dim_);
       }
     }
   };

@@ -151,7 +151,7 @@ void Mat::MembraneActiveStrain::unpack(Core::Communication::UnpackBuffer& buffer
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::MembraneActiveStrain*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 
@@ -449,7 +449,7 @@ void Mat::MembraneActiveStrain::setup_fiber_vectors(
   // Check orthonormal basis
   if (fibervecs_.size() != 3)
     FOUR_C_THROW(
-        "Wrong number of fiber vectors. This material need three, it is %i", fibervecs_.size());
+        "Wrong number of fiber vectors. This material need three, it is {}", fibervecs_.size());
 
   double eps = 1e-12;
   if (std::abs(fibervecs_[0].dot(fibervecs_[1])) > eps or

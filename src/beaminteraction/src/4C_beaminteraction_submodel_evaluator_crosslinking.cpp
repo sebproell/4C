@@ -767,7 +767,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::reset()
     BeamInteraction::Data::CrosslinkerData const* cldata_i = crosslinker_data_[cl_i->lid()].get();
 
     if (cldata_i->get_number_of_bonds() != 2)
-      FOUR_C_THROW("Cl with gid %i Owner %i on myrank %i and numbonds %i", elepairptr->id(),
+      FOUR_C_THROW("Cl with gid {} Owner {} on myrank {} and numbonds {}", elepairptr->id(),
           cl_i->owner(), g_state_ptr()->get_my_rank(), cldata_i->get_number_of_bonds());
 #endif
 
@@ -783,7 +783,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::reset()
       if (discret_ptr()->element_col_map()->LID(elegid) < 0)
       {
         elepairptr->print(std::cout);
-        FOUR_C_THROW("reset(): elegid %i not there on proc %i ", elegid, g_state().get_my_rank());
+        FOUR_C_THROW("reset(): elegid {} not there on proc {} ", elegid, g_state().get_my_rank());
       }
 
       int locbspotnum = elepairptr->get_loc_b_spot_num(i);
@@ -809,7 +809,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::reset()
       {
         FOUR_C_THROW(
             "You are trying to set the binding spot positions of this crosslinker "
-            "in at least one direction\n at a distance larger than %f, which is "
+            "in at least one direction\n at a distance larger than {}, which is "
             " half of the period length in the respective direction",
             0.5 * periodic_bounding_box_ptr()->edge_length(i));
       }
@@ -1380,7 +1380,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::write_restart(
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     if (beam_data_i == nullptr)
-      FOUR_C_THROW("beam data of row beam with gid %i not there", beamgid);
+      FOUR_C_THROW("beam data of row beam with gid {} not there", beamgid);
 #endif
 
     beam_data_i->pack(beamdata_buffer);
@@ -1718,13 +1718,13 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::diffuse_crosslinker()
         const int colelelid = discret_ptr()->element_col_map()->LID(elegid);
         if (colelelid < 0)
           FOUR_C_THROW(
-              "Crosslinker has %i bonds but his binding partner with gid %i "
-              "is \nnot ghosted/owned on proc %i (owner of crosslinker)",
+              "Crosslinker has {} bonds but his binding partner with gid {} "
+              "is \nnot ghosted/owned on proc {} (owner of crosslinker)",
               cldata_i->get_number_of_bonds(), elegid, g_state().get_my_rank());
         // safety check
         if (ele == nullptr)
           FOUR_C_THROW(
-              "Dynamic cast of ele with gid %i failed on proc ", elegid, g_state().get_my_rank());
+              "Dynamic cast of ele with gid {} failed on proc ", elegid, g_state().get_my_rank());
 #endif
 
         // get current position of filament binding spot
@@ -1764,8 +1764,8 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::diffuse_crosslinker()
         int colelelid = discret_ptr()->element_col_map()->LID(elegid);
         if (colelelid < 0)
           FOUR_C_THROW(
-              "Crosslinker has %i bonds but his binding partner with gid %i "
-              "is not \nghosted/owned on proc %i (owner of crosslinker)",
+              "Crosslinker has {} bonds but his binding partner with gid {} "
+              "is not \nghosted/owned on proc {} (owner of crosslinker)",
               cldata_i->get_number_of_bonds(), elegid, g_state().get_my_rank());
 #endif
 
@@ -1776,7 +1776,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::diffuse_crosslinker()
         // safety check
         if (ele == nullptr)
           FOUR_C_THROW(
-              "Dynamic cast of ele with gid %i failed on proc ", elegid, g_state().get_my_rank());
+              "Dynamic cast of ele with gid {} failed on proc ", elegid, g_state().get_my_rank());
 #endif
 
         // get current position of filament binding spot
@@ -1802,8 +1802,8 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::diffuse_crosslinker()
         colelelid = discret_ptr()->element_col_map()->LID(elegid);
         if (colelelid < 0)
           FOUR_C_THROW(
-              "Crosslinker has %i bonds but his binding partner with gid %i "
-              "is \nnot ghosted/owned on proc %i (owner of crosslinker)",
+              "Crosslinker has {} bonds but his binding partner with gid {} "
+              "is \nnot ghosted/owned on proc {} (owner of crosslinker)",
               cldata_i->get_number_of_bonds(), elegid, g_state().get_my_rank());
 #endif
 
@@ -1813,7 +1813,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::diffuse_crosslinker()
         // safety check
         if (ele == nullptr)
           FOUR_C_THROW(
-              "Dynamic cast of ele with gid %i failed on proc ", elegid, g_state().get_my_rank());
+              "Dynamic cast of ele with gid {} failed on proc ", elegid, g_state().get_my_rank());
 #endif
 
         // get current position of filament binding spot
@@ -1838,7 +1838,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::diffuse_crosslinker()
       default:
       {
         FOUR_C_THROW(
-            "Unrealistic number %i of bonds for a crosslinker.", cldata_i->get_number_of_bonds());
+            "Unrealistic number {} of bonds for a crosslinker.", cldata_i->get_number_of_bonds());
         exit(EXIT_FAILURE);
       }
     }
@@ -1990,7 +1990,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   // safety check
   if (collidoccbeam < 0)
-    FOUR_C_THROW("element with gid %i not ghosted on proc %i",
+    FOUR_C_THROW("element with gid {} not ghosted on proc {}",
         cldata->get_b_spots()[stayoccpotid].first, g_state().get_my_rank());
 #endif
 
@@ -2111,14 +2111,14 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_and_export_beam_da
 
     // safety check
     if (beam_data_i == nullptr)
-      FOUR_C_THROW("beam data container for beam with gid %i not there on rank %i ", elegid,
+      FOUR_C_THROW("beam data container for beam with gid {} not there on rank {} ", elegid,
           g_state().get_my_rank());
 
     if (update_states)
     {
       // safety check
       if (discret().element_col_map()->LID(elegid) < 0)
-        FOUR_C_THROW(" Element %i has moved too far between two redistributions.", elegid);
+        FOUR_C_THROW(" Element {} has moved too far between two redistributions.", elegid);
 
       // beam element i for which data will be collected
       Discret::Elements::Beam3Base* beamele_i =
@@ -2277,7 +2277,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::find_potential_binding_ev
     Core::Elements::Element* currentbin = currcrosslinker->elements()[0];
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-    if (currentbin->id() < 0) FOUR_C_THROW(" negative bin id number %i ", currentbin->id());
+    if (currentbin->id() < 0) FOUR_C_THROW(" negative bin id number {} ", currentbin->id());
 #endif
 
     // if a bin has already been examined --> continue with next crosslinker
@@ -2439,7 +2439,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::prepare_binding(Core::Nod
 
       // safety check
       if (discret().element_col_map()->LID(cl_bondedtogid) < 0)
-        FOUR_C_THROW("Element %i not ghosted on rank %i", cl_bondedtogid, g_state().get_my_rank());
+        FOUR_C_THROW("Element {} not ghosted on rank {}", cl_bondedtogid, g_state().get_my_rank());
 
       // 2. criterion:
       // exclude binding of a single bonded crosslinker in close proximity on the
@@ -2554,7 +2554,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::check_bind_event_criteria
   // safety check
   if (linkdistmax > bin_strategy().bin_size_lower_bound())
     FOUR_C_THROW(
-        "The allowed binding distance of linker %i (in case it is single bonded) is"
+        "The allowed binding distance of linker {} (in case it is single bonded) is"
         "\ngreater than the lower bound for bin size, this could lead to missing a binding event",
         crosslinker_i->id());
 #endif
@@ -2649,7 +2649,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   // safety check
   if (elecollid < 0)
-    FOUR_C_THROW("element with gid %i not on proc %i", elegid, g_state().get_my_rank());
+    FOUR_C_THROW("element with gid {} not on proc {}", elegid, g_state().get_my_rank());
 #endif
 
   // loop over crosslinker that are already bonded to binding spot to which current linker is bonded
@@ -2670,7 +2670,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     // safety check
     if (bonded_crosslinker_i == nullptr)
-      FOUR_C_THROW(" Linker with gid %i not on rank %i", iter, g_state().get_my_rank());
+      FOUR_C_THROW(" Linker with gid {} not on rank {}", iter, g_state().get_my_rank());
 #endif
 
     BeamInteraction::Data::CrosslinkerData const* bondedcl_data_i =
@@ -2679,7 +2679,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     // safety check
     if (bonded_crosslinker_i == nullptr)
-      FOUR_C_THROW("Data for crosslinker %i not there on rank %i", bonded_crosslinker_i->id(),
+      FOUR_C_THROW("Data for crosslinker {} not there on rank {}", bonded_crosslinker_i->id(),
           g_state().get_my_rank());
 #endif
 
@@ -2705,8 +2705,8 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
     else
     {
       FOUR_C_THROW(
-          " unrealistic number of bonds (%i) for crosslinker (gid %i) at this point. Beam %i local "
-          "%i ",
+          " unrealistic number of bonds ({}) for crosslinker (gid {}) at this point. Beam {} local "
+          "{} ",
           bondedcl_data_i->get_number_of_bonds(), bonded_crosslinker_i->owner(), elegid,
           locbspotnum);
     }
@@ -2773,7 +2773,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::get_occupied_cl_b_spot_be
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (elecollid < 0)
-    FOUR_C_THROW(" Element with gid %i bonded to cl %i on rank %i not even ghosted", elegid, clgid,
+    FOUR_C_THROW(" Element with gid {} bonded to cl {} on rank {} not even ghosted", elegid, clgid,
         g_state().get_my_rank());
 #endif
 
@@ -2858,7 +2858,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_my_crosslinker_bin
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     if (binevdata->get_permission() != 1)
       FOUR_C_THROW(
-          " Rank %i wants to bind crosslinker %i without permission, "
+          " Rank {} wants to bind crosslinker {} without permission, "
           " something went wrong",
           g_state().get_my_rank(), cliter.first);
 #endif
@@ -2870,7 +2870,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_my_crosslinker_bin
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     // safety checks
     if (clcollid < 0) FOUR_C_THROW("Crosslinker not even ghosted, should be owned here.");
-    if (colelelid < 0) FOUR_C_THROW("Element with gid %i not ghosted.", binevdata->get_ele_id());
+    if (colelelid < 0) FOUR_C_THROW("Element with gid {} not ghosted.", binevdata->get_ele_id());
 #endif
     CrossLinking::CrosslinkerNode* crosslinker_i =
         dynamic_cast<CrossLinking::CrosslinkerNode*>(bin_discret_ptr()->l_col_node(clcollid));
@@ -3025,7 +3025,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_my_crosslinker_bin
       {
         FOUR_C_THROW(
             "You should not be here, crosslinker has unrealistic number "
-            "%i of bonds.",
+            "{} of bonds.",
             cldata_i->get_number_of_bonds());
         exit(EXIT_FAILURE);
       }
@@ -3061,7 +3061,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_my_element_binding
     if (linker == nullptr)
       FOUR_C_THROW("Crosslinker needs to be ghosted, but this isn't the case.");
     if (colelelid < 0)
-      FOUR_C_THROW("element with gid %i not ghosted on proc %i", binevdata->get_ele_id(),
+      FOUR_C_THROW("element with gid {} not ghosted on proc {}", binevdata->get_ele_id(),
           g_state().get_my_rank());
 #endif
 
@@ -3099,7 +3099,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_my_element_binding
       {
         FOUR_C_THROW(
             "You should not be here, crosslinker has unrealistic number "
-            "%i of bonds.",
+            "{} of bonds.",
             cldata_i->get_number_of_bonds());
         exit(EXIT_FAILURE);
       }
@@ -3149,7 +3149,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
         crosslinker_data_[crosslinker_i->lid()].get();
 
     if (cldata_i->get_number_of_bonds() != 2)
-      FOUR_C_THROW("Setup: Cl with gid %i Owner %i on myrank %i and numbonds %i",
+      FOUR_C_THROW("Setup: Cl with gid {} Owner {} on myrank {} and numbonds {}",
           linkelepairptr->id(), crosslinker_i->owner(), g_state_ptr()->get_my_rank(),
           cldata_i->get_number_of_bonds());
 #endif
@@ -3313,7 +3313,7 @@ int BeamInteraction::SUBMODELEVALUATOR::Crosslinking::un_bind_crosslinker()
       default:
       {
         FOUR_C_THROW(
-            "Unrealistic number %i of bonds for a crosslinker.", cldata_i->get_number_of_bonds());
+            "Unrealistic number {} of bonds for a crosslinker.", cldata_i->get_number_of_bonds());
         exit(EXIT_FAILURE);
       }
     }
@@ -3414,7 +3414,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_beam_binding_statu
     // safety check
     if (discret().element_row_map()->LID(elegidtoupdate) < 0)
       FOUR_C_THROW(
-          "element with gid %i not owned by proc %i", elegidtoupdate, g_state().get_my_rank());
+          "element with gid {} not owned by proc {}", elegidtoupdate, g_state().get_my_rank());
 #endif
 
     // erase current bond
@@ -3441,7 +3441,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_my_double_bonds_af
     // safety check
     if (bin_discret_ptr()->node_col_map()->LID(clgid) < 0)
       FOUR_C_THROW(
-          "Crosslinker %i moved further than the bin length in one time step on rank %i, "
+          "Crosslinker {} moved further than the bin length in one time step on rank {}, "
           "this is not allowed (maybe increase cutoff radius). ",
           clgid, g_state().get_my_rank());
 
@@ -3453,7 +3453,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_my_double_bonds_af
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not doublebondcl_.count(clgid))
-        FOUR_C_THROW("willing to delete double bond %i which is not existing", clgid);
+        FOUR_C_THROW("willing to delete double bond {} which is not existing", clgid);
 #endif
       dbcltosend[owner].push_back(iter->second);
       dbtoerase.insert(clgid);
@@ -3492,7 +3492,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_my_double_bonds_re
   // find new host procs for double bonded crosslinker by communication
   int err = bin_discret_ptr()->node_row_map()->RemoteIDList(
       size, unique_clgidlist.data(), unique_pidlist.data(), nullptr);
-  if (err < 0) FOUR_C_THROW("Epetra_BlockMap::RemoteIDList returned err=%d", err);
+  if (err < 0) FOUR_C_THROW("Epetra_BlockMap::RemoteIDList returned err={}", err);
 
   std::map<int, std::vector<std::shared_ptr<BeamInteraction::BeamLink>>> dbcltosend;
   for (unsigned int i = 0; i < static_cast<unsigned int>(unique_clgidlist.size()); ++i)
@@ -3551,8 +3551,8 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::unbind_crosslinker_in_bin
       // safety checks
       if (crosslinker_i->owner() != g_state().get_my_rank())
         FOUR_C_THROW(
-            " Only row owner of crosslinker changes its state, rank %i is not owner "
-            "of linker with gid %i, but rank %i",
+            " Only row owner of crosslinker changes its state, rank {} is not owner "
+            "of linker with gid {}, but rank {}",
             g_state().get_my_rank(), crosslinker_i->id(), crosslinker_i->owner());
 #endif
 
@@ -3583,7 +3583,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::unbind_crosslinker_in_bin
         }
         default:
         {
-          FOUR_C_THROW(" Unrealistic number %i of bonds for a crosslinker.",
+          FOUR_C_THROW(" Unrealistic number {} of bonds for a crosslinker.",
               cldata_i->get_number_of_bonds());
           exit(EXIT_FAILURE);
         }
@@ -3684,7 +3684,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::communicate_bin_ids(
     int from = -1;
     exporter.receive_any(from, tag, rdata, length);
     if (tag != 1234)
-      FOUR_C_THROW("Received on proc %i data with wrong tag from proc %i", myrank, from);
+      FOUR_C_THROW("Received on proc {} data with wrong tag from proc {}", myrank, from);
 
     // insert in binsonmyrank
     binsonmyrank.insert(rdata.begin(), rdata.end());
@@ -3754,7 +3754,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::dissolve_bond(Core::Nodes
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     // safety check
     if (not doublebondcl_.count(linker->id()))
-      FOUR_C_THROW("crosslinker %i with %i bonds is not in double bonded map of rank %i",
+      FOUR_C_THROW("crosslinker {} with {} bonds is not in double bonded map of rank {}",
           linker->id(), cldata->get_number_of_bonds() + 1, g_state_ptr()->get_my_rank());
 #endif
 
@@ -3981,7 +3981,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::communicate_beam_link_aft
     exporter.receive_any(from, tag, rdata, length);
     if (tag != 1234)
       FOUR_C_THROW(
-          "Received on proc %i data with wrong tag from proc %i", g_state().get_my_rank(), from);
+          "Received on proc {} data with wrong tag from proc {}", g_state().get_my_rank(), from);
 
     // store received data
 
@@ -3998,11 +3998,11 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::communicate_beam_link_aft
       // some safety checks
       if (bin_discret_ptr()->g_node(beamtobeamlink->id())->owner() != g_state_ptr()->get_my_rank())
         FOUR_C_THROW(
-            " A double bond was sent to rank %i, although it is not the owner of "
-            "the cl with gid %i ",
+            " A double bond was sent to rank {}, although it is not the owner of "
+            "the cl with gid {} ",
             g_state_ptr()->get_my_rank(), beamtobeamlink->id());
       if (doublebondcl_.count(beamtobeamlink->id()))
-        FOUR_C_THROW(" Rank %i got sent double bonded crosslinker %i which it already has ",
+        FOUR_C_THROW(" Rank {} got sent double bonded crosslinker {} which it already has ",
             g_state_ptr()->get_my_rank(), beamtobeamlink->id());
 #endif
 
@@ -4105,7 +4105,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::recv_any(
     exporter.receive_any(from, tag, rdata, length);
     if (tag != 1234)
       FOUR_C_THROW(
-          "Received on proc %i data with wrong tag from proc %i", g_state().get_my_rank(), from);
+          "Received on proc {} data with wrong tag from proc {}", g_state().get_my_rank(), from);
 
     // store received data
 

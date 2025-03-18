@@ -357,7 +357,7 @@ void FSI::Partitioned::set_default_parameters(
     }
     default:
     {
-      FOUR_C_THROW("Coupling method type %d unsupported",
+      FOUR_C_THROW("Coupling method type {} unsupported",
           Teuchos::getIntegralValue<FsiCoupling>(fsidyn, "COUPALGO"));
     }
   }
@@ -629,7 +629,7 @@ Teuchos::RCP<::NOX::Epetra::LinearSystem> FSI::Partitioned::create_linear_system
     else if (dt == "Centered")
       dtype = ::NOX::Epetra::FiniteDifference::Centered;
     else
-      FOUR_C_THROW("unsupported difference type '%s'", dt.c_str());
+      FOUR_C_THROW("unsupported difference type '{}'", dt.c_str());
 
     FD = Teuchos::make_rcp<::NOX::Epetra::FiniteDifference>(printParams, interface, noxSoln,
         Teuchos::rcpFromRef(raw_graph_->get_epetra_crs_graph()), beta, alpha);
@@ -640,7 +640,7 @@ Teuchos::RCP<::NOX::Epetra::LinearSystem> FSI::Partitioned::create_linear_system
   }
   else
   {
-    FOUR_C_THROW("unsupported Jacobian '%s'", jacobian.c_str());
+    FOUR_C_THROW("unsupported Jacobian '{}'", jacobian.c_str());
   }
 
   // ==================================================================
@@ -691,7 +691,7 @@ Teuchos::RCP<::NOX::Epetra::LinearSystem> FSI::Partitioned::create_linear_system
   }
   else
   {
-    FOUR_C_THROW("unsupported preconditioner '%s'", preconditioner.c_str());
+    FOUR_C_THROW("unsupported preconditioner '{}'", preconditioner.c_str());
   }
 
   return linSys;

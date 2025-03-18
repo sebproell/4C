@@ -146,7 +146,7 @@ void Solid::Integrator::set_initial_displacement(
       break;
     }
     default:
-      FOUR_C_THROW("Unknown option for initial displacement: %d", init);
+      FOUR_C_THROW("Unknown option for initial displacement: {}", init);
   }
 }
 

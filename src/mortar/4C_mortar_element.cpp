@@ -327,8 +327,9 @@ bool Mortar::Element::local_coordinates_of_node(int lid, double* xi) const
           xi[0] = 0.0;
           break;
         default:
-          FOUR_C_THROW("ERROR: local_coordinates_of_node: Node number % in segment % out of range",
-              lid, id());
+          FOUR_C_THROW(
+              "ERROR: local_coordinates_of_node: Node number {} in segment {} out of range", lid,
+              id());
       }
       // we are in the 2D case here!
       xi[1] = 0.0;
@@ -380,7 +381,7 @@ bool Mortar::Element::local_coordinates_of_node(int lid, double* xi) const
           break;
         }
         default:
-          FOUR_C_THROW("LocCoordsOfNode: Node number % in segment % out of range", lid, id());
+          FOUR_C_THROW("LocCoordsOfNode: Node number {} in segment {} out of range", lid, id());
       }
 
       break;
@@ -450,7 +451,7 @@ bool Mortar::Element::local_coordinates_of_node(int lid, double* xi) const
           break;
         }
         default:
-          FOUR_C_THROW("LocCoordsOfNode: Node number % in segment % out of range", lid, id());
+          FOUR_C_THROW("LocCoordsOfNode: Node number {} in segment {} out of range", lid, id());
       }
 
       break;
@@ -465,8 +466,8 @@ bool Mortar::Element::local_coordinates_of_node(int lid, double* xi) const
       else if (lid == 1)
         xi[0] = 1.0;
       else
-        FOUR_C_THROW(
-            "ERROR: local_coordinates_of_node: Node number % in segment % out of range", lid, id());
+        FOUR_C_THROW("ERROR: local_coordinates_of_node: Node number {} in segment {} out of range",
+            lid, id());
 
       // we are in the 2D case here!
       xi[1] = 0.0;
@@ -482,8 +483,8 @@ bool Mortar::Element::local_coordinates_of_node(int lid, double* xi) const
       else if (lid == 2)
         xi[0] = 1.0;
       else
-        FOUR_C_THROW(
-            "ERROR: local_coordinates_of_node: Node number % in segment % out of range", lid, id());
+        FOUR_C_THROW("ERROR: local_coordinates_of_node: Node number {} in segment {} out of range",
+            lid, id());
 
       // we are in the 2D case here!
       xi[1] = 0.0;
@@ -549,7 +550,7 @@ bool Mortar::Element::local_coordinates_of_node(int lid, double* xi) const
           break;
         }
         default:
-          FOUR_C_THROW("LocCoordsOfNode: Node number % in segment % out of range", lid, id());
+          FOUR_C_THROW("LocCoordsOfNode: Node number {} in segment {} out of range", lid, id());
       }
 
       break;
@@ -577,7 +578,7 @@ int Mortar::Element::get_local_node_id(int nid) const
       break;
     }
 
-  if (lid < 0) FOUR_C_THROW("Cannot find node % in segment %", nid, id());
+  if (lid < 0) FOUR_C_THROW("Cannot find node {} in segment {}", nid, id());
 
   return lid;
 }
@@ -1481,13 +1482,13 @@ double Mortar::Element::min_edge_size() const
     }
     default:
     {
-      FOUR_C_THROW("%s is not implemented for discretization type '%s' of Mortar::Element.",
+      FOUR_C_THROW("{} is not implemented for discretization type '{}' of Mortar::Element.",
           __PRETTY_FUNCTION__, Core::FE::cell_type_to_string(shape()).c_str());
       break;
     }
   }
 
-  if (minedgesize == 1.0e12) FOUR_C_THROW("%s went wrong...!", __FUNCTION__);
+  if (minedgesize == 1.0e12) FOUR_C_THROW("{} went wrong...!", __FUNCTION__);
   return minedgesize;
 }
 
@@ -1556,7 +1557,7 @@ double Mortar::Element::max_edge_size() const
     }
     default:
     {
-      FOUR_C_THROW("%s is not implemented for discretization type '%s' of Mortar::Element.",
+      FOUR_C_THROW("{} is not implemented for discretization type '{}' of Mortar::Element.",
           __PRETTY_FUNCTION__, Core::FE::cell_type_to_string(shape()).c_str());
       break;
     }

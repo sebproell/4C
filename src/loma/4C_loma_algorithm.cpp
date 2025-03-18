@@ -180,7 +180,7 @@ void LowMach::Algorithm::setup()
 
     if (solvertype != Core::LinearSolver::SolverType::belos)
       FOUR_C_THROW(
-          "SOLVER %i is not valid for LOMA. It has to be an iterative Solver (with BGS2x2 block "
+          "SOLVER {} is not valid for LOMA. It has to be an iterative Solver (with BGS2x2 block "
           "preconditioner)",
           linsolvernumber);
 
@@ -188,7 +188,7 @@ void LowMach::Algorithm::setup()
         lomasolverparams, "AZPREC");
     if (azprectype != Core::LinearSolver::PreconditionerType::block_teko)
       FOUR_C_THROW(
-          "SOLVER %i is not valid for LOMA. It has to be an iterative Solver with 2x2 block "
+          "SOLVER {} is not valid for LOMA. It has to be an iterative Solver with 2x2 block "
           "preconditioner",
           linsolvernumber);
 

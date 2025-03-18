@@ -910,7 +910,7 @@ void Solid::TimInt::apply_mesh_initialization(
       const int lid = gvector.get_map().LID(nodedofs[i]);
 
       if (lid < 0)
-        FOUR_C_THROW("Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
+        FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
             Core::Communication::my_mpi_rank(gvector.get_comm()), nodedofs[i]);
 
       nvector[i] += gvector[lid];
@@ -2546,9 +2546,9 @@ void Solid::TimInt::nonlinear_mass_sanity_check(
         "Nonlinear inertia terms (input flag 'MASSLIN' not set to 'none') "
         "are only possible for vanishing initial displacements, velocities and "
         "accelerations so far!!!\n"
-        "norm disp = %f \n"
-        "norm vel  = %f \n"
-        "norm acc  = %f",
+        "norm disp = {} \n"
+        "norm vel  = {} \n"
+        "norm acc  = {}",
         dispnorm, velnorm, accnorm);
   }
 

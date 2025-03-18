@@ -305,7 +305,7 @@ void Discret::Elements::PoroFluidMultiPhase::set_material(
   }
   else
     FOUR_C_THROW(
-        "PoroFluidMultiPhase element got unsupported material type %d", mat->material_type());
+        "PoroFluidMultiPhase element got unsupported material type {}", mat->material_type());
 }
 
 /*----------------------------------------------------------------------*

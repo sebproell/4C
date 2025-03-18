@@ -57,7 +57,7 @@ int Discret::Elements::Lubrication::evaluate(Teuchos::ParameterList& params,
       break;
     default:
     {
-      FOUR_C_THROW("Unknown type of action '%i' for Lubrication", action);
+      FOUR_C_THROW("Unknown type of action '{}' for Lubrication", action);
       break;
     }
   }  // switch(action)

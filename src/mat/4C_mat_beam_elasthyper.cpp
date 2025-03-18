@@ -130,7 +130,7 @@ void Mat::BeamElastHyperMaterial<T>::unpack(Core::Communication::UnpackBuffer& b
           mat->type() == Core::Materials::m_beam_kirchhoff_torsionfree_elast_hyper_bymodes)
         params_ = static_cast<Mat::PAR::BeamElastHyperMaterialParameterGeneric*>(mat);
       else
-        FOUR_C_THROW("Type of material parameter %d does not fit to type of material law %d",
+        FOUR_C_THROW("Type of material parameter {} does not fit to type of material law {}",
             mat->type(), material_type());
     }
 }

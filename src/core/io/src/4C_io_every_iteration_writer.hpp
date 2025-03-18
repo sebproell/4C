@@ -175,13 +175,13 @@ namespace Core::IO
     /// Throw if init() has not been called.
     inline void throw_if_not_initialized(const int line) const
     {
-      if (not isinit_) FOUR_C_THROW("LINE %d: Call init() first!", line);
+      if (not isinit_) FOUR_C_THROW("LINE {}: Call init() first!", line);
     }
 
     /// Throw if setup() has not been called.
     inline void throw_if_not_setup(const int line) const
     {
-      if (not issetup_) FOUR_C_THROW("LINE %d: Call setup() first!", line);
+      if (not issetup_) FOUR_C_THROW("LINE {}: Call setup() first!", line);
     }
 
     /// Returns true if the current load/time step is supposed to be written.

@@ -298,11 +298,11 @@ void XFEM::CouplingCommManager::setup_couplings(
       std::map<int, std::shared_ptr<const Core::FE::Discretization>>::iterator alphadis =
           dis.find((*mmealpha).first);
       if (alphadis == dis.end())
-        FOUR_C_THROW("Couldn't find discretization for key %d", (*mmealpha).first);
+        FOUR_C_THROW("Couldn't find discretization for key {}", (*mmealpha).first);
       std::map<int, std::shared_ptr<const Core::FE::Discretization>>::iterator betadis =
           dis.find((*mmebeta).first);
       if (betadis == dis.end())
-        FOUR_C_THROW("Couldn't find discretization for key %d", (*mmebeta).first);
+        FOUR_C_THROW("Couldn't find discretization for key {}", (*mmebeta).first);
 
       coup_[key]->setup_condition_coupling(*(*alphadis).second, (*mmealpha).second->Map(1),
           *(*betadis).second, (*mmebeta).second->Map(1), cond_name_, enddim_ - startdim_, true);
@@ -331,10 +331,10 @@ void XFEM::CouplingCommManager::setup_full_couplings(
 
       std::map<int, std::shared_ptr<const Core::FE::Discretization>>::iterator alphadis =
           dis.find(idx_a);
-      if (alphadis == dis.end()) FOUR_C_THROW("Couldn't find discretization for key %d", idx_a);
+      if (alphadis == dis.end()) FOUR_C_THROW("Couldn't find discretization for key {}", idx_a);
       std::map<int, std::shared_ptr<const Core::FE::Discretization>>::iterator betadis =
           dis.find(idx_b);
-      if (betadis == dis.end()) FOUR_C_THROW("Couldn't find discretization for key %d", idx_b);
+      if (betadis == dis.end()) FOUR_C_THROW("Couldn't find discretization for key {}", idx_b);
 
       coup_[key]->setup_coupling(*(*alphadis).second, *(*betadis).second,
           *(*alphadis).second->node_row_map(), *(*betadis).second->node_row_map(),
@@ -380,7 +380,7 @@ XFEM::CouplingCommManager::get_coupling_converter(int idxA, int idxB)
   else
   {
     FOUR_C_THROW(
-        "Coupling_Comm_Manager::get_coupling_converter: Coupling Converter from %d to %d makes not "
+        "Coupling_Comm_Manager::get_coupling_converter: Coupling Converter from {} to {} makes not "
         "really sense, does it?",
         idxA, idxB);
   }
@@ -404,7 +404,7 @@ std::shared_ptr<Coupling::Adapter::Coupling> XFEM::CouplingCommManager::get_coup
     }
     else
     {
-      FOUR_C_THROW("Coupling_Comm_Manager::GetCoupling: Couldn't find Coupling for key (%d,%d)",
+      FOUR_C_THROW("Coupling_Comm_Manager::GetCoupling: Couldn't find Coupling for key ({},{})",
           key.first, key.second);
     }
   }
@@ -451,7 +451,7 @@ std::shared_ptr<Core::LinAlg::MultiMapExtractor> XFEM::CouplingCommManager::get_
   else
   {
     FOUR_C_THROW(
-        "Coupling_Comm_Manager::GetMapExtractor: Couldn't find Map Extractor for key (%d)", idx);
+        "Coupling_Comm_Manager::GetMapExtractor: Couldn't find Map Extractor for key ({})", idx);
   }
   return nullptr;  // to guarantee that the compiler feels comfortable in his skin...
 }

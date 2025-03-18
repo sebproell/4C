@@ -220,7 +220,7 @@ void Core::LinAlg::all_to_all_communication(
 
     int status = MPI_Alltoall(sendcounts.data(), 1, MPI_INT, recvcounts.data(), 1, MPI_INT, comm);
 
-    if (status != MPI_SUCCESS) FOUR_C_THROW("MPI_Alltoall returned status=%d", status);
+    if (status != MPI_SUCCESS) FOUR_C_THROW("MPI_Alltoall returned status={}", status);
 
     std::vector<int> rdispls;
     rdispls.reserve(Core::Communication::num_mpi_ranks(comm));
@@ -240,7 +240,7 @@ void Core::LinAlg::all_to_all_communication(
 
     status = MPI_Alltoallv(sendbuf.data(), sendcounts.data(), sdispls.data(), MPI_INT,
         recvbuf.data(), recvcounts.data(), rdispls.data(), MPI_INT, comm);
-    if (status != MPI_SUCCESS) FOUR_C_THROW("MPI_Alltoallv returned status=%d", status);
+    if (status != MPI_SUCCESS) FOUR_C_THROW("MPI_Alltoallv returned status={}", status);
 
     recv.clear();
     for (int proc = 0; proc < Core::Communication::num_mpi_ranks(comm); ++proc)
@@ -291,7 +291,7 @@ void Core::LinAlg::all_to_all_communication(
 
     int status = MPI_Alltoall(sendcounts.data(), 1, MPI_INT, recvcounts.data(), 1, MPI_INT, comm);
 
-    if (status != MPI_SUCCESS) FOUR_C_THROW("MPI_Alltoall returned status=%d", status);
+    if (status != MPI_SUCCESS) FOUR_C_THROW("MPI_Alltoall returned status={}", status);
 
     std::vector<int> rdispls;
     rdispls.reserve(Core::Communication::num_mpi_ranks(comm));
@@ -314,7 +314,7 @@ void Core::LinAlg::all_to_all_communication(
 
     status = MPI_Alltoallv(sendbuf.data(), sendcounts.data(), sdispls.data(), MPI_INT, recv.data(),
         recvcounts.data(), rdispls.data(), MPI_INT, comm);
-    if (status != MPI_SUCCESS) FOUR_C_THROW("MPI_Alltoallv returned status=%d", status);
+    if (status != MPI_SUCCESS) FOUR_C_THROW("MPI_Alltoallv returned status={}", status);
   }
 }
 

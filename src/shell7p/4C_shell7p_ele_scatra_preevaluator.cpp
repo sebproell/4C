@@ -70,7 +70,7 @@ void Discret::Elements::Shell::pre_evaluate_scatra(Core::Elements::Element& ele,
       std::shared_ptr<const Core::LinAlg::Vector<double>> scalarnp =
           discretization.get_state(1, scalarfield);
 
-      if (scalarnp == nullptr) FOUR_C_THROW("can not get state vector %s", scalarfield.c_str());
+      if (scalarnp == nullptr) FOUR_C_THROW("can not get state vector {}", scalarfield.c_str());
 
       // extract local values of the global vectors
       std::vector<double> myscalar = Core::FE::extract_values(*scalarnp, dof_index_array[1].lm_);

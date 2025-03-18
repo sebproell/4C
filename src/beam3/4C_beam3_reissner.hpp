@@ -283,7 +283,7 @@ namespace Discret
         // safety check
         if ((unsigned int)stiffmat.numRows() != 3 * vpernode * nnodecl + 3 * nnodetriad or
             (unsigned int) stiffmat.numCols() != 3 * vpernode * nnodecl + 3 * nnodetriad)
-          FOUR_C_THROW("size mismatch! expected %dx%d matrix and got %dx%d",
+          FOUR_C_THROW("size mismatch! expected {}x{} matrix and got {}x{}",
               3 * vpernode * nnodecl + 3 * nnodetriad, 3 * vpernode * nnodecl + 3 * nnodetriad,
               stiffmat.numRows(), stiffmat.numCols());
 
@@ -307,7 +307,7 @@ namespace Discret
           Core::LinAlg::Matrix<3, 1>& Tref_i, const int& i) const override
       {
         if (not((unsigned)i < tref().size()))
-          FOUR_C_THROW("asked for tangent at node index %d, but only %d centerline nodes existing",
+          FOUR_C_THROW("asked for tangent at node index {}, but only {} centerline nodes existing",
               i, tref().size());
 
         Tref_i = tref()[i];

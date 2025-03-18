@@ -56,7 +56,7 @@ Mat::PAR::REACTIONCOUPLING::ReactionInterface::create_reaction(
       FOUR_C_THROW("reac_coup_none is not a valid coupling");
       break;
     default:
-      FOUR_C_THROW("The couplingtype %i is not a valid coupling type.", couplingtype);
+      FOUR_C_THROW("The couplingtype {} is not a valid coupling type.", couplingtype);
       break;
   }
 
@@ -581,7 +581,7 @@ void Mat::PAR::REACTIONCOUPLING::ByFunction::initialize(int numscal,  //!< numbe
       return initialize_internal<3>(numscal, couprole);
 
     default:
-      FOUR_C_THROW("Unsupported dimension %d.", Global::Problem::instance()->n_dim());
+      FOUR_C_THROW("Unsupported dimension {}.", Global::Problem::instance()->n_dim());
   }
 }
 
@@ -655,7 +655,7 @@ double Mat::PAR::REACTIONCOUPLING::ByFunction::calc_rea_body_force_term(
           k, numscal, phinp, constants, couprole, scale_reac);
 
     default:
-      FOUR_C_THROW("Unsupported dimension %d.", Global::Problem::instance()->n_dim());
+      FOUR_C_THROW("Unsupported dimension {}.", Global::Problem::instance()->n_dim());
       return 0.0;
   }
 }
@@ -711,7 +711,7 @@ void Mat::PAR::REACTIONCOUPLING::ByFunction::calc_rea_body_force_deriv(
       return calc_rea_body_force_deriv_internal<3>(
           k, numscal, derivs, phinp, constants, couprole, scale_reac);
     default:
-      FOUR_C_THROW("Unsupported dimension %d.", Global::Problem::instance()->n_dim());
+      FOUR_C_THROW("Unsupported dimension {}.", Global::Problem::instance()->n_dim());
   }
 }
 
@@ -768,7 +768,7 @@ void Mat::PAR::REACTIONCOUPLING::ByFunction::calc_rea_body_force_deriv_add_varia
       return calc_rea_body_force_deriv_add_variables_internal<3>(
           k, derivs, variables, constants, couprole, scale_reac);
     default:
-      FOUR_C_THROW("Unsupported dimension %d.", Global::Problem::instance()->n_dim());
+      FOUR_C_THROW("Unsupported dimension {}.", Global::Problem::instance()->n_dim());
   }
 }
 
@@ -793,7 +793,7 @@ void Mat::PAR::REACTIONCOUPLING::ByFunction::calc_rea_body_force_deriv_add_varia
 
   if (myderivs.size() != derivs.size())
   {
-    FOUR_C_THROW("mismatch in dimensions, Input %d, Output %d", derivs.size(), myderivs.size());
+    FOUR_C_THROW("mismatch in dimensions, Input {}, Output {}", derivs.size(), myderivs.size());
   }
 
   // add it to derivs
@@ -820,7 +820,7 @@ void Mat::PAR::REACTIONCOUPLING::ByFunction::add_additional_variables(
     case 3:
       return add_additional_variables_internal<3>(k, variables, couprole);
     default:
-      FOUR_C_THROW("Unsupported dimension %d.", Global::Problem::instance()->n_dim());
+      FOUR_C_THROW("Unsupported dimension {}.", Global::Problem::instance()->n_dim());
   }
 }
 

@@ -174,7 +174,7 @@ void PARTICLEWALL::WallHandlerBase::check_wall_nodes_located_in_bounding_box() c
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
         // safety check
-        if (lid < 0) FOUR_C_THROW("dof gid=%d not in dof row map!", lm[dim]);
+        if (lid < 0) FOUR_C_THROW("dof gid={} not in dof row map!", lm[dim]);
 #endif
 
         currpos(dim) += walldatastate_->get_disp_row()->operator[](lid);
@@ -184,7 +184,7 @@ void PARTICLEWALL::WallHandlerBase::check_wall_nodes_located_in_bounding_box() c
     // safety check
     for (int dim = 0; dim < 3; ++dim)
       if (currpos(dim) < boundingbox(dim, 0) or boundingbox(dim, 1) < currpos(dim))
-        FOUR_C_THROW("node gid=%d resides outside of bounding box!", node->id());
+        FOUR_C_THROW("node gid={} resides outside of bounding box!", node->id());
   }
 }
 
@@ -381,7 +381,7 @@ void PARTICLEWALL::WallHandlerBase::determine_col_wall_ele_nodal_pos(
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (walldiscretization_->element_col_map()->LID(ele->id()) < 0)
-    FOUR_C_THROW("element gid=%d not in element column map!", ele->id());
+    FOUR_C_THROW("element gid={} not in element column map!", ele->id());
 #endif
 
   // get pointer to nodes of current column wall element
@@ -392,7 +392,7 @@ void PARTICLEWALL::WallHandlerBase::determine_col_wall_ele_nodal_pos(
   for (int i = 0; i < numnodes; ++i)
     if (walldiscretization_->node_col_map()->LID(nodes[i]->id()) < 0)
       FOUR_C_THROW(
-          "node gid=%d of column element gid=%d not in node column map", nodes[i]->id(), ele->id());
+          "node gid={} of column element gid={} not in node column map", nodes[i]->id(), ele->id());
 #endif
 
   // determine nodal displacements
@@ -408,7 +408,7 @@ void PARTICLEWALL::WallHandlerBase::determine_col_wall_ele_nodal_pos(
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     for (int i = 0; i < numnodes * 3; ++i)
       if (walldiscretization_->dof_col_map()->LID(lm_wall[i]) < 0)
-        FOUR_C_THROW("dof gid=%d not in dof column map!", lm_wall[i]);
+        FOUR_C_THROW("dof gid={} not in dof column map!", lm_wall[i]);
 #endif
 
     nodal_disp = Core::FE::extract_values(*walldatastate_->get_disp_col(), lm_wall);

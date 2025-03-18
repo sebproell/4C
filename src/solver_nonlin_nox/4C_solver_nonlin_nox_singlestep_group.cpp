@@ -89,7 +89,7 @@ void NOX::Nln::SINGLESTEP::Group::throw_error(
   std::ostringstream msg;
   msg << "ERROR - NOX::Nln::SINGLESTEP::Group::" << functionName << " - " << errorMsg << std::endl;
 
-  FOUR_C_THROW(msg.str());
+  FOUR_C_THROW("{}", msg.str());
 }
 
 FOUR_C_NAMESPACE_CLOSE

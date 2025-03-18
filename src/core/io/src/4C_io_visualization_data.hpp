@@ -348,7 +348,7 @@ namespace Core::IO
     {
       if (field_data_.find(data_name) != field_data_.end())
         FOUR_C_THROW(
-            "The field data vector with the name \"%s\" you want to register already exists.",
+            "The field data vector with the name \"{}\" you want to register already exists.",
             data_name.c_str());
 
       std::vector<T> new_vector;
@@ -407,8 +407,8 @@ namespace Core::IO
         if (vector.size() != result.size())
         {
           FOUR_C_THROW(
-              "The field array \"%s\" is registered with %d components, you are trying to set it "
-              "to %d components, this is not supported.",
+              "The field array \"{}\" is registered with {} components, you are trying to set it "
+              "to {} components, this is not supported.",
               data_name, vector.size(), result.size());
         }
       }
@@ -607,7 +607,7 @@ namespace Core::IO
     {
       if (data.find(data_name) == data.end())
       {
-        FOUR_C_THROW("The requested %s field \"%s\" does not exist", get_data_type(data).c_str(),
+        FOUR_C_THROW("The requested {} field \"{}\" does not exist", get_data_type(data).c_str(),
             data_name.c_str());
       }
       else
@@ -642,7 +642,7 @@ namespace Core::IO
         else
           allocated_type = "UNKNOWN";
 
-        FOUR_C_THROW("Requested %s field \"%s\" with type %s, but the allocated type is %s",
+        FOUR_C_THROW("Requested {} field \"{}\" with type {}, but the allocated type is {}",
             get_data_type(data).c_str(), data_name.c_str(), requested_type.c_str(),
             allocated_type.c_str());
       }
@@ -698,13 +698,13 @@ namespace Core::IO
     {
       if (data.find(data_name) != data.end())
       {
-        FOUR_C_THROW("The %s vector with the name \"%s\" you want to add already exists.",
+        FOUR_C_THROW("The {} vector with the name \"{}\" you want to add already exists.",
             get_data_type(data).c_str(), data_name.c_str());
       }
       if (n_dim == 0)
       {
         FOUR_C_THROW(
-            "You are trying to set the %s vector with the name \"%s\" and n_dim==0, this is not "
+            "You are trying to set the {} vector with the name \"{}\" and n_dim==0, this is not "
             "possible.",
             get_data_type(data).c_str(), data_name.c_str());
       }

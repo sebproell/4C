@@ -6924,7 +6924,7 @@ Core::FE::IntegrationPoints2D::IntegrationPoints2D(const GaussRule2D intrule) : 
       break;
     }
     default:
-      FOUR_C_THROW("unknown 2D integration rule, GaussRule2D: %d", intrule);
+      FOUR_C_THROW("unknown 2D integration rule, GaussRule2D: {}", intrule);
       break;
   }
   FOUR_C_ASSERT(max_nquad >= nquad, "increase size of double array in IntegrationPoints class");

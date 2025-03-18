@@ -335,7 +335,7 @@ namespace Core::Utils::SymbolicExpressionDetails
             }
             else
             {
-              FOUR_C_THROW("no digits after point at pos %d", pos_);
+              FOUR_C_THROW("no digits after point at pos {}", pos_);
             }
           }
           if ((t == 'E') || (t == 'e'))
@@ -354,7 +354,7 @@ namespace Core::Utils::SymbolicExpressionDetails
             }
             else
             {
-              FOUR_C_THROW("no digits after exponent at pos %d", pos_);
+              FOUR_C_THROW("no digits after exponent at pos {}", pos_);
             }
           }
           if (t != EOF)
@@ -423,9 +423,9 @@ namespace Core::Utils::SymbolicExpressionDetails
         else
         {
           if (t >= 32)
-            FOUR_C_THROW("unexpected char '%c' at pos %d", t, pos_);
+            FOUR_C_THROW("unexpected char '{}' at pos {}", t, pos_);
           else
-            FOUR_C_THROW("unexpected char '%d' at pos %d", t, pos_);
+            FOUR_C_THROW("unexpected char '{}' at pos {}", t, pos_);
           tok_ = Lexer::tok_none;
           return;
         }
@@ -507,9 +507,9 @@ namespace Core::Utils::SymbolicExpressionDetails
       FOUR_C_THROW(
           "Some variables that this parser encountered in the expression are not passed to "
           "the Evaluate function.\n\n"
-          "Expression:  %s \n"
-          "Variables passed to Evaluate: %s \n"
-          "Constants passed to Evaluate: %s",
+          "Expression:  {} \n"
+          "Variables passed to Evaluate: {} \n"
+          "Constants passed to Evaluate: {}",
           symbolicexpression_.c_str(), evaluate_variable_names.c_str(),
           evaluate_constant_names.c_str());
     }
@@ -610,7 +610,7 @@ namespace Core::Utils::SymbolicExpressionDetails
             lhs->function_ = name;
             lexer.lexan();
             if (lexer.tok_ != Lexer::tok_lpar)
-              FOUR_C_THROW("'(' expected after function name '%s'", name.c_str());
+              FOUR_C_THROW("'(' expected after function name '{}'", name.c_str());
             lexer.lexan();
             lhs->lhs_ = parse_expr(lexer);
             if (lexer.tok_ != Lexer::tok_rpar) FOUR_C_THROW("')' expected");
@@ -624,14 +624,14 @@ namespace Core::Utils::SymbolicExpressionDetails
             lhs->function_ = name;
             lexer.lexan();
             if (lexer.tok_ != Lexer::tok_lpar)
-              FOUR_C_THROW("'(' expected after function name '%s'", name.c_str());
+              FOUR_C_THROW("'(' expected after function name '{}'", name.c_str());
             lexer.lexan();
             lhs->lhs_ = parse_expr(lexer);
             if (lexer.tok_ != Lexer::tok_comma) FOUR_C_THROW("',' expected");
             lexer.lexan();
             lhs->rhs_ = parse_expr(lexer);
             if (lexer.tok_ != Lexer::tok_rpar)
-              FOUR_C_THROW("')' expected for function name '%s'", name.c_str());
+              FOUR_C_THROW("')' expected for function name '{}'", name.c_str());
             lexer.lexan();
             break;
           }
@@ -647,7 +647,7 @@ namespace Core::Utils::SymbolicExpressionDetails
         break;
       }
       default:
-        FOUR_C_THROW("unexpected token %d", lexer.tok_);
+        FOUR_C_THROW("unexpected token {}", lexer.tok_);
         break;
     }
 
@@ -738,7 +738,7 @@ namespace Core::Utils::SymbolicExpressionDetails
     // check if parsing ended before processing the entire string
     if (lexer.tok_ != Lexer::tok_done)
     {
-      FOUR_C_THROW("Invalid syntax: The remaining string '%s' is not parsed.",
+      FOUR_C_THROW("Invalid syntax: The remaining string '{}' is not parsed.",
           lexer.funct_.c_str() + lexer.pos_);
     }
 
@@ -829,7 +829,7 @@ namespace Core::Utils::SymbolicExpressionDetails
             res = std::pow(lhs, rhs);
             break;
           default:
-            FOUR_C_THROW("unsupported operator '%c'", node.v_.op);
+            FOUR_C_THROW("unsupported operator '{}'", node.v_.op);
         }
         break;
       }
@@ -842,7 +842,7 @@ namespace Core::Utils::SymbolicExpressionDetails
           {
             if (variable_values_->find(node.variable_) == variable_values_->end())
             {
-              FOUR_C_THROW("variable or constant '%s' not given as input in evaluate()",
+              FOUR_C_THROW("variable or constant '{}' not given as input in evaluate()",
                   node.variable_.c_str());
             }
             else
@@ -855,7 +855,7 @@ namespace Core::Utils::SymbolicExpressionDetails
             if ((variable_values_->find(node.variable_) == variable_values_->end()) &&
                 (constant_values_->find(node.variable_) == constant_values_->end()))
             {
-              FOUR_C_THROW("variable or constant '%s' not given as input in EvaluateDeriv()",
+              FOUR_C_THROW("variable or constant '{}' not given as input in EvaluateDeriv()",
                   node.variable_.c_str());
             }
             else
@@ -874,7 +874,7 @@ namespace Core::Utils::SymbolicExpressionDetails
           }
         }
         else
-          FOUR_C_THROW("unknown variable '%s'", node.variable_.c_str());
+          FOUR_C_THROW("unknown variable '{}'", node.variable_.c_str());
         break;
       }
       // unary operators
@@ -929,7 +929,7 @@ namespace Core::Utils::SymbolicExpressionDetails
           }
         }
         else
-          FOUR_C_THROW("unknown function_ '%s'", node.function_.c_str());
+          FOUR_C_THROW("unknown function_ '{}'", node.function_.c_str());
         break;
       }
       default:

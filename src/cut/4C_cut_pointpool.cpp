@@ -114,7 +114,7 @@ Cut::Point* Cut::OctTreeNode::get_point(const double* x, Edge* cut_edge, Side* c
         if (cut_side and cut_edge)
         {
           FOUR_C_THROW(
-              "Scaling is %lf for non-nullptr cut_side and cut_edge. This should not be possible!",
+              "Scaling is {} for non-nullptr cut_side and cut_edge. This should not be possible!",
               NODAL_POINT_TOLERANCE_SCALE);
         }
 #endif
@@ -126,7 +126,7 @@ Cut::Point* Cut::OctTreeNode::get_point(const double* x, Edge* cut_edge, Side* c
         break;
       }
       default:
-        FOUR_C_THROW("Unknown merge strategy is equal to %d", merge_strategy);
+        FOUR_C_THROW("Unknown merge strategy is equal to {}", merge_strategy);
     }
 
     // linear search for the node in the current leaf
@@ -203,7 +203,7 @@ Cut::Point* Cut::OctTreeNode::get_point(const double* x, Edge* cut_edge, Side* c
         }
 
         file.close();
-        FOUR_C_THROW(err_msg.str());
+        FOUR_C_THROW("{}", err_msg.str());
       }
 
       // if there are no points intersected by same side and edge but there  are still other points

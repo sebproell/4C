@@ -80,7 +80,7 @@ namespace PARTICLEENGINE
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (particlestored_ > containersize_)
         FOUR_C_THROW(
-            "checking size of container not possible: particles stored %d > new container size %d!",
+            "checking size of container not possible: particles stored {} > new container size {}!",
             particlestored_, containersize_);
 #endif
 
@@ -168,7 +168,7 @@ namespace PARTICLEENGINE
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedstates_.count(state))
         FOUR_C_THROW(
-            "particle state '%s' not stored in container!", enum_to_state_name(state).c_str());
+            "particle state '{}' not stored in container!", enum_to_state_name(state).c_str());
 #endif
 
       return statedim_[state];
@@ -197,11 +197,11 @@ namespace PARTICLEENGINE
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedstates_.count(state))
         FOUR_C_THROW(
-            "particle state '%s' not stored in container!", enum_to_state_name(state).c_str());
+            "particle state '{}' not stored in container!", enum_to_state_name(state).c_str());
 
       if (index < 0 or index > (particlestored_ - 1))
         FOUR_C_THROW(
-            "can not return pointer to state of particle as index %d out of bounds!", index);
+            "can not return pointer to state of particle as index {} out of bounds!", index);
 #endif
 
       return &((states_[state])[index * statedim_[state]]);
@@ -228,7 +228,7 @@ namespace PARTICLEENGINE
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (index < 0 or index > (particlestored_ - 1))
         FOUR_C_THROW(
-            "can not return pointer to state of particle as index %d out of bounds!", index);
+            "can not return pointer to state of particle as index {} out of bounds!", index);
 #endif
 
       if (storedstates_.count(state)) return &((states_[state])[index * statedim_[state]]);
@@ -249,7 +249,7 @@ namespace PARTICLEENGINE
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (index < 0 or index > (particlestored_ - 1))
         FOUR_C_THROW(
-            "can not return pointer to global id of particle as index %d out of bounds!", index);
+            "can not return pointer to global id of particle as index {} out of bounds!", index);
 #endif
 
       return &(globalids_[index]);
@@ -272,7 +272,7 @@ namespace PARTICLEENGINE
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedstates_.count(state))
         FOUR_C_THROW(
-            "particle state '%s' not stored in container!", enum_to_state_name(state).c_str());
+            "particle state '{}' not stored in container!", enum_to_state_name(state).c_str());
 #endif
 
       for (int i = 0; i < (particlestored_ * statedim_[state]); ++i) (states_[state])[i] *= fac;
@@ -292,11 +292,11 @@ namespace PARTICLEENGINE
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedstates_.count(stateA))
         FOUR_C_THROW(
-            "particle state '%s' not stored in container!", enum_to_state_name(stateA).c_str());
+            "particle state '{}' not stored in container!", enum_to_state_name(stateA).c_str());
 
       if (not storedstates_.count(stateB))
         FOUR_C_THROW(
-            "particle state '%s' not stored in container!", enum_to_state_name(stateB).c_str());
+            "particle state '{}' not stored in container!", enum_to_state_name(stateB).c_str());
 
       if (statedim_[stateA] != statedim_[stateB])
         FOUR_C_THROW("dimensions of states do not match!");
@@ -318,7 +318,7 @@ namespace PARTICLEENGINE
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedstates_.count(state))
         FOUR_C_THROW(
-            "particle state '%s' not stored in container!", enum_to_state_name(state).c_str());
+            "particle state '{}' not stored in container!", enum_to_state_name(state).c_str());
 
       if (statedim_[state] != static_cast<int>(val.size()))
         FOUR_C_THROW("dimensions of states do not match!");
@@ -340,7 +340,7 @@ namespace PARTICLEENGINE
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedstates_.count(state))
         FOUR_C_THROW(
-            "particle state '%s' not stored in container!", enum_to_state_name(state).c_str());
+            "particle state '{}' not stored in container!", enum_to_state_name(state).c_str());
 #endif
 
       for (int i = 0; i < (particlestored_ * statedim_[state]); ++i) (states_[state])[i] = 0.0;

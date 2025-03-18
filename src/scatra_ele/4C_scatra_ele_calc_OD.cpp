@@ -86,7 +86,7 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_action_od(
 
     default:
     {
-      FOUR_C_THROW("Not acting on action %i. Forgot implementation?", action);
+      FOUR_C_THROW("Not acting on action {}. Forgot implementation?", action);
       break;
     }
   }  // switch(action)

@@ -97,7 +97,7 @@ namespace
         else
         {
           FOUR_C_THROW(
-              "Pair {%d, %d} not found in reference map", pair.gid_predicate, pair.gid_primitive);
+              "Pair <{}, {}> not found in reference map", pair.gid_predicate, pair.gid_primitive);
         }
       }
     };

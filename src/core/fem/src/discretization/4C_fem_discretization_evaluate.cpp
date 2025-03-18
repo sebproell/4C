@@ -55,7 +55,7 @@ void Core::FE::Discretization::evaluate(
             ele.evaluate(params, *this, la, strategy.elematrix1(), strategy.elematrix2(),
                 strategy.elevector1(), strategy.elevector2(), strategy.elevector3());
         if (err)
-          FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+          FOUR_C_THROW("Proc {}: Element {} returned err={}",
               Core::Communication::my_mpi_rank(get_comm()), ele.id(), err);
       });
 }
@@ -155,7 +155,7 @@ void Core::FE::Discretization::evaluate(Teuchos::ParameterList& params)
         const int err = ele.evaluate(
             params, *this, la, elematrix1, elematrix2, elevector1, elevector2, elevector3);
         if (err)
-          FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+          FOUR_C_THROW("Proc {}: Element {} returned err={}",
               Core::Communication::my_mpi_rank(get_comm()), ele.id(), err);
       });
 }
@@ -204,7 +204,7 @@ void Core::FE::Discretization::evaluate_neumann(Teuchos::ParameterList& params,
       // do only nodes in my row map
       if (!node_row_map()->MyGID(nodeid)) continue;
       Core::Nodes::Node* actnode = g_node(nodeid);
-      if (!actnode) FOUR_C_THROW("Cannot find global node %d", nodeid);
+      if (!actnode) FOUR_C_THROW("Cannot find global node {}", nodeid);
       // call explicitly the main dofset, nodeid.e. the first column
       std::vector<int> dofs = dof(0, actnode);
       const unsigned numdf = dofs.size();
@@ -235,7 +235,7 @@ void Core::FE::Discretization::evaluate_neumann(Teuchos::ParameterList& params,
 
         value *= functfac;
         const int lid = systemvector.get_map().LID(gid);
-        if (lid < 0) FOUR_C_THROW("Global id %d not on this proc in system vector", gid);
+        if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
         systemvector[lid] += value;
       }
     }
@@ -304,7 +304,7 @@ void Core::FE::Discretization::evaluate_neumann(Teuchos::ParameterList& params,
 
       // get global node
       Core::Nodes::Node* actnode = g_node(nodeid);
-      if (!actnode) FOUR_C_THROW("Cannot find global node %d", nodeid);
+      if (!actnode) FOUR_C_THROW("Cannot find global node {}", nodeid);
 
       // get elements attached to global node
       Core::Elements::Element** curreleptr = actnode->elements();
@@ -515,7 +515,7 @@ void Core::FE::Discretization::evaluate_scalars(
       int err = actele->evaluate(
           params, *this, la, elematrix1, elematrix2, elescalars, elevector2, elevector3);
       if (err)
-        FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+        FOUR_C_THROW("Proc {}: Element {} returned err={}",
             Core::Communication::my_mpi_rank(get_comm()), actele->id(), err);
     }
 
@@ -597,7 +597,7 @@ void Core::FE::Discretization::evaluate_scalars(
             if (error)
             {
               FOUR_C_THROW(
-                  "Element evaluation failed for element %d on processor %d with error code %d!",
+                  "Element evaluation failed for element {} on processor {} with error code {}!",
                   element->id(), Core::Communication::my_mpi_rank(get_comm()), error);
             }
 
@@ -644,7 +644,7 @@ void Core::FE::Discretization::evaluate_scalars(
     Core::Elements::Element* actele = l_row_element(i);
 
     if (!scalars.Map().MyGID(actele->id()))
-      FOUR_C_THROW("Proc does not have global element %d", actele->id());
+      FOUR_C_THROW("Proc does not have global element {}", actele->id());
 
     // get element location vector
     Core::Elements::LocationArray la(dofsets_.size());
@@ -658,7 +658,7 @@ void Core::FE::Discretization::evaluate_scalars(
       int err = actele->evaluate(
           params, *this, la, elematrix1, elematrix2, elescalars, elevector2, elevector3);
       if (err)
-        FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+        FOUR_C_THROW("Proc {}: Element {} returned err={}",
             Core::Communication::my_mpi_rank(get_comm()), actele->id(), err);
     }
 

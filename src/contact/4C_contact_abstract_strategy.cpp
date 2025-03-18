@@ -809,8 +809,8 @@ std::shared_ptr<Epetra_Map> CONTACT::AbstractStrategy::create_deterministic_lm_d
 
     if (interface_slid == -1)
       FOUR_C_THROW(
-          "Couldn't find the global slave dof id #%d in the local interface "
-          "maps on proc #%d!",
+          "Couldn't find the global slave dof id #{} in the local interface "
+          "maps on proc #{}!",
           sgid, Core::Communication::my_mpi_rank(get_comm()));
 
     // get the corresponding Lagrange Multiplier GID
@@ -965,7 +965,7 @@ void CONTACT::AbstractStrategy::set_state(
     }
     default:
     {
-      FOUR_C_THROW("Unsupported state type! (state type = %s)",
+      FOUR_C_THROW("Unsupported state type! (state type = {})",
           Mortar::state_type_to_string(statetype).c_str());
       break;
     }
@@ -1072,7 +1072,7 @@ void CONTACT::AbstractStrategy::calc_mean_velocity_for_binning(
 
     int err = interfaceVelocity.mean_value(&meanVelocity);
     if (err)
-      FOUR_C_THROW("Calculation of mean velocity for interface %s failed.",
+      FOUR_C_THROW("Calculation of mean velocity for interface {} failed.",
           interface->discret().name().c_str());
     meanVelocity = abs(meanVelocity);
 
@@ -1653,7 +1653,7 @@ void CONTACT::AbstractStrategy::store_nodal_quantities(Mortar::StrategyBase::Qua
 #ifndef CONTACTPSEUDO2D
             // throw a FOUR_C_THROW if node is Active and DBC
             if (cnode->is_dbc() && cnode->active())
-              FOUR_C_THROW("Slave node %i is active AND carries D.B.C.s!", cnode->id());
+              FOUR_C_THROW("Slave node {} is active AND carries D.B.C.s!", cnode->id());
 #endif  // #ifndef CONTACTPSEUDO2D
 
             // store updated LM into node
@@ -2350,7 +2350,7 @@ void CONTACT::AbstractStrategy::print_active_set() const
 
         // invalid status **************************************************
         else
-          FOUR_C_THROW("Invalid node status %i for frictionless case", gsta[k]);
+          FOUR_C_THROW("Invalid node status {} for frictionless case", gsta[k]);
       }
     }
 
@@ -2386,7 +2386,7 @@ void CONTACT::AbstractStrategy::print_active_set() const
 
         // invalid status **************************************************
         else
-          FOUR_C_THROW("Invalid node status %i for frictional case", gsta[k]);
+          FOUR_C_THROW("Invalid node status {} for frictional case", gsta[k]);
       }
     }
   }
@@ -2575,7 +2575,7 @@ void CONTACT::AbstractStrategy::evaluate(CONTACT::ParamsInterface& cparams,
         FOUR_C_THROW(
             "The \"Mortar::eval_reset\" action expects \n"
             "exactly 2 evaluation vector pointers! But you \n"
-            "passed %i vector pointers!",
+            "passed {} vector pointers!",
             eval_vec->size());
       const Core::LinAlg::Vector<double>& dispnp = *((*eval_vec)[0]);
       const Core::LinAlg::Vector<double>& xnew = *((*eval_vec)[1]);
@@ -2594,7 +2594,7 @@ void CONTACT::AbstractStrategy::evaluate(CONTACT::ParamsInterface& cparams,
         FOUR_C_THROW(
             "The \"Mortar::eval_recover\" action expects \n"
             "exactly 3 evaluation vector pointers! But you \n"
-            "passed %i vector pointers!",
+            "passed {} vector pointers!",
             eval_vec->size());
 
       const std::shared_ptr<const Core::LinAlg::Vector<double>>& xold_ptr = (*eval_vec)[0];
@@ -2619,14 +2619,14 @@ void CONTACT::AbstractStrategy::evaluate(CONTACT::ParamsInterface& cparams,
         FOUR_C_THROW(
             "The \"Mortar::eval_augment_direction\" action expects \n"
             "exactly 1 constant evaluation vector pointer! But you \n"
-            "passed %i vector pointers!",
+            "passed {} vector pointers!",
             eval_vec->size());
 
       if (eval_vec_mutable->size() != 1)
         FOUR_C_THROW(
             "The \"Mortar::eval_augment_direction\" action expects \n"
             "exactly 1 mutable evaluation vector pointer! But you \n"
-            "passed %i vector pointers!",
+            "passed {} vector pointers!",
             eval_vec->size());
 
       const std::shared_ptr<const Core::LinAlg::Vector<double>>& xold_ptr = eval_vec->front();
@@ -2697,7 +2697,7 @@ void CONTACT::AbstractStrategy::evaluate(CONTACT::ParamsInterface& cparams,
     // -------------------------------------------------------------------
     default:
     {
-      FOUR_C_THROW("Unsupported action type: %i | %s", act, action_type_to_string(act).c_str());
+      FOUR_C_THROW("Unsupported action type: {} | {}", act, action_type_to_string(act).c_str());
       break;
     }
   }
@@ -2919,7 +2919,7 @@ CONTACT::AbstractStrategy::lagrange_multiplier_n(const bool& redist) const
 double CONTACT::AbstractStrategy::get_potential_value(
     const enum NOX::Nln::MeritFunction::MeritFctName mrt_type) const
 {
-  FOUR_C_THROW("The currently active strategy \"%s\" does not support this method!",
+  FOUR_C_THROW("The currently active strategy \"{}\" does not support this method!",
       CONTACT::solving_strategy_to_string(type()).c_str());
   exit(EXIT_FAILURE);
 }
@@ -2932,7 +2932,7 @@ double CONTACT::AbstractStrategy::get_linearized_potential_value_terms(
     const enum NOX::Nln::MeritFunction::LinOrder linorder,
     const enum NOX::Nln::MeritFunction::LinType lintype) const
 {
-  FOUR_C_THROW("The currently active strategy \"%s\" does not support this method!",
+  FOUR_C_THROW("The currently active strategy \"{}\" does not support this method!",
       CONTACT::solving_strategy_to_string(type()).c_str());
   exit(EXIT_FAILURE);
 }

@@ -66,7 +66,7 @@ Discret::Elements::Ale3ImplInterface* Discret::Elements::Ale3ImplInterface::impl
       return Ale3Impl<Core::FE::CellType::nurbs27>::instance(Core::Utils::SingletonAction::create);
     }
     default:
-      FOUR_C_THROW("shape %d (%d nodes) not supported", ele->shape(), ele->num_node());
+      FOUR_C_THROW("shape {} ({} nodes) not supported", ele->shape(), ele->num_node());
       break;
   }
   return nullptr;
@@ -1582,7 +1582,7 @@ void Discret::Elements::Ale3Impl<distype>::static_ke_laplace(Ale3* ele,
 
   //  get material using class StVenantKirchhoff
   //  if (material->material_type()!=Core::Materials::m_stvenant)
-  //    FOUR_C_THROW("stvenant material expected but got type %d", material->material_type());
+  //     FOUR_C_THROW("stvenant material expected but got type {}", material->material_type());
   //  Mat::StVenantKirchhoff* actmat = static_cast<Mat::StVenantKirchhoff*>(material.get());
 
   Core::LinAlg::Matrix<3, iel> xyze;

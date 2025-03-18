@@ -64,7 +64,7 @@ namespace Core::IO
       case Core::FE::CellType::nurbs27:
         return get_vtk_cell_type_from_element_cell_type(Core::FE::CellType::hex27);
       default:
-        FOUR_C_THROW("The VTK cell type for the NURBS element %s is not implemented",
+        FOUR_C_THROW("The VTK cell type for the NURBS element {} is not implemented",
             Core::FE::cell_type_to_string(celltype).c_str());
     }
   }
@@ -132,7 +132,7 @@ namespace Core::IO
                                                                   [i_dim_nurbs];
               break;
             default:
-              FOUR_C_THROW("The node numbering for the nurbs element shape %s is not implemented",
+              FOUR_C_THROW("The node numbering for the nurbs element shape {} is not implemented",
                   Core::FE::cell_type_to_string(ele.shape()).c_str());
           }
         }
@@ -248,7 +248,7 @@ namespace Core::IO
         if (lid > -1)
           point_result_data.push_back(column[lid]);
         else
-          FOUR_C_THROW("received illegal node local id: %d", lid);
+          FOUR_C_THROW("received illegal node local id: {}", lid);
       }
     }
 
@@ -324,7 +324,7 @@ namespace Core::IO
               xi(i) = Core::FE::eleNodeNumbering_hex27_nodes_reference[numbering[i_node_nurbs]][i];
               break;
             default:
-              FOUR_C_THROW("The node numbering for the nurbs element shape %s is not implemented",
+              FOUR_C_THROW("The node numbering for the nurbs element shape {} is not implemented",
                   Core::FE::cell_type_to_string(ele.shape()).c_str());
           }
         }
@@ -406,7 +406,7 @@ namespace Core::IO
               xi(i) = Core::FE::eleNodeNumbering_hex27_nodes_reference[numbering[i_node_nurbs]][i];
               break;
             default:
-              FOUR_C_THROW("The node numbering for the nurbs element shape %s is not implemented",
+              FOUR_C_THROW("The node numbering for the nurbs element shape {} is not implemented",
                   Core::FE::cell_type_to_string(ele.shape()).c_str());
           }
         }
@@ -461,7 +461,7 @@ namespace Core::IO
                   discret, result_data_dofbased, read_result_data_from_dofindex,
                   vtu_point_result_data);
             default:
-              FOUR_C_THROW("The case for result_num_dofs_per_node = %i is not implemented",
+              FOUR_C_THROW("The case for result_num_dofs_per_node = {} is not implemented",
                   result_num_dofs_per_node);
           }
         });
@@ -496,7 +496,7 @@ namespace Core::IO
               return append_visualization_node_based_result_data_vector_nurbs<celltype_t(), 6>(
                   ele, discret, result_data_nodebased, vtu_point_result_data);
             default:
-              FOUR_C_THROW("The case for result_num_components_per_node = %i is not implemented",
+              FOUR_C_THROW("The case for result_num_components_per_node = {} is not implemented",
                   result_num_components_per_node);
           }
         });

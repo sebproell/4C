@@ -268,7 +268,7 @@ void Discret::Elements::FluidIntFace::patch_location_vector(
       }
 
       if (offset % size != 0)
-        FOUR_C_THROW("there was at least one node with not %d dofs per node", size);
+        FOUR_C_THROW("there was at least one node with not {} dofs per node", size);
       int patchnode_index = offset / size;
 
       lm_slaveNodeToPatch.push_back(patchnode_index);
@@ -505,7 +505,7 @@ void Discret::Elements::FluidIntFace::patch_location_vector(
       }
 
       if (offset % size != 0)
-        FOUR_C_THROW("there was at least one node with not %d dofs per node", size);
+        FOUR_C_THROW("there was at least one node with not {} dofs per node", size);
       int patchnode_index = offset / size;
 
       lm_slaveNodeToPatch.push_back(patchnode_index);

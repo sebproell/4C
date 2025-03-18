@@ -127,9 +127,9 @@ namespace
       if (discretization.has_state(field_index, field_name))
       {
         FOUR_C_ASSERT_ALWAYS(!detected_field_index.has_value(),
-            "There are multiple dofsets with the field name %s in the discretization. Found %s at "
-            "least in dofset %d and %d.",
-            field_name.c_str(), *detected_field_index, field_index);
+            "There are multiple dofsets with the field name {} in the discretization. Found at "
+            "least in dofset {} and {}.",
+            field_name, *detected_field_index, field_index);
 
         detected_field_index = field_index;
       }
@@ -161,7 +161,7 @@ namespace
     std::shared_ptr<const Core::LinAlg::Vector<double>> quantities_np =
         discretization.get_state(*field_index, field_name);
 
-    if (quantities_np == nullptr) FOUR_C_THROW("Cannot get state vector '%s' ", field_name.c_str());
+    if (quantities_np == nullptr) FOUR_C_THROW("Cannot get state vector '{}' ", field_name.c_str());
 
     const auto my_quantities = Core::FE::extract_values(*quantities_np, la[*field_index].lm_);
 
@@ -695,7 +695,7 @@ Discret::Elements::SolidScatraEleCalc<celltype, SolidFormulation>::get_normal_ca
   {
     FOUR_C_THROW(
         "Cannot evaluate the Cauchy stress at xi with an element formulation with Gauss point "
-        "history. The element formulation is %s.",
+        "history. The element formulation is {}.",
         Core::Utils::get_type_name<SolidFormulation>().c_str());
   }
   else

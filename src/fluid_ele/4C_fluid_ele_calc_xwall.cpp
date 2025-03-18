@@ -534,7 +534,7 @@ void Discret::Elements::FluidEleCalcXWall<distype, enrtype>::
 
   if (my::det_ < 1E-16)
     FOUR_C_THROW(
-        "GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", my::eid_, my::det_);
+        "GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", my::eid_, my::det_);
 
   // compute integration factor
   my::fac_ = gpweight * my::det_;

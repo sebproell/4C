@@ -262,7 +262,7 @@ bool Mortar::Coupling2d::detect_overlap()
                 << (master_element().nodes()[1])->id() << '\n';
       std::cout << "SPROJXI_0: " << sprojxi[0] << " SPROJXI_1: " << sprojxi[1] << '\n';
       std::cout << "MPROJXI_0: " << mprojxi[0] << " MPROJXI_1: " << mprojxi[1] << '\n';
-      FOUR_C_THROW("IntegrateOverlap: Significant overlap ignored S%i M%i!", slave_element().id(),
+      FOUR_C_THROW("IntegrateOverlap: Significant overlap ignored S{} M{}!", slave_element().id(),
           master_element().id());
     }
   }
@@ -277,7 +277,7 @@ bool Mortar::Coupling2d::detect_overlap()
                 << (master_element().nodes()[1])->id() << '\n';
       std::cout << "SPROJXI_0: " << sprojxi[0] << " SPROJXI_1: " << sprojxi[1] << '\n';
       std::cout << "MPROJXI_0: " << mprojxi[0] << " MPROJXI_1: " << mprojxi[1] << '\n';
-      FOUR_C_THROW("IntegrateOverlap: Significant overlap ignored S%i M%i!", slave_element().id(),
+      FOUR_C_THROW("IntegrateOverlap: Significant overlap ignored S{} M{}!", slave_element().id(),
           master_element().id());
     }
   }
@@ -292,7 +292,7 @@ bool Mortar::Coupling2d::detect_overlap()
                 << (master_element().nodes()[1])->id() << '\n';
       std::cout << "SPROJXI_0: " << sprojxi[0] << " SPROJXI_1: " << sprojxi[1] << '\n';
       std::cout << "MPROJXI_0: " << mprojxi[0] << " MPROJXI_1: " << mprojxi[1] << '\n';
-      FOUR_C_THROW("IntegrateOverlap: Significant overlap ignored S%i M%i!", slave_element().id(),
+      FOUR_C_THROW("IntegrateOverlap: Significant overlap ignored S{} M{}!", slave_element().id(),
           master_element().id());
     }
   }
@@ -307,7 +307,7 @@ bool Mortar::Coupling2d::detect_overlap()
                 << (master_element().nodes()[1])->id() << '\n';
       std::cout << "SPROJXI_0: " << sprojxi[0] << " SPROJXI_1: " << sprojxi[1] << '\n';
       std::cout << "MPROJXI_0: " << mprojxi[0] << " MPROJXI_1: " << mprojxi[1] << '\n';
-      FOUR_C_THROW("IntegrateOverlap: Significant overlap ignored S%i M%i!", slave_element().id(),
+      FOUR_C_THROW("IntegrateOverlap: Significant overlap ignored S{} M{}!", slave_element().id(),
           master_element().id());
     }
   }

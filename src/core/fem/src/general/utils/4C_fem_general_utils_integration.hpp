@@ -119,7 +119,7 @@ namespace Core::FE
       case 1000:
         return GaussRule3D::hex_1000point;
       default:
-        FOUR_C_THROW("I don't know the GaussRule3D for hex elements with %d Gauss points", numgp);
+        FOUR_C_THROW("I don't know the GaussRule3D for hex elements with {} Gauss points", numgp);
     }
   }
 
@@ -132,7 +132,7 @@ namespace Core::FE
       case 27:
         return GaussRule3D::hex_27point;
       default:
-        FOUR_C_THROW("I don't know the GaussRule3D for nurbs elements with %d Gauss points", numgp);
+        FOUR_C_THROW("I don't know the GaussRule3D for nurbs elements with {} Gauss points", numgp);
     }
   }
 
@@ -154,7 +154,7 @@ namespace Core::FE
         return GaussRule3D::tet_45point;
       default:
         FOUR_C_THROW(
-            "I don't know an open GaussRule3D for tet elements with %d Gauss points", numgp);
+            "I don't know an open GaussRule3D for tet elements with {} Gauss points", numgp);
     }
   }
 
@@ -171,7 +171,7 @@ namespace Core::FE
       case 9:
         return GaussRule3D::wedge_9point;
       default:
-        FOUR_C_THROW("I don't know the GaussRule3D for wedge elements with %d Gauss points", numgp);
+        FOUR_C_THROW("I don't know the GaussRule3D for wedge elements with {} Gauss points", numgp);
     }
   }
 
@@ -187,7 +187,7 @@ namespace Core::FE
         return GaussRule3D::pyramid_8point;
       default:
         FOUR_C_THROW(
-            "I don't know the GaussRule3D for pyramid elements with %d Gauss points", numgp);
+            "I don't know the GaussRule3D for pyramid elements with {} Gauss points", numgp);
     }
   }
 
@@ -473,7 +473,7 @@ namespace Core::FE
       case 1024:
         return GaussRule2D::quad_1024point;
       default:
-        FOUR_C_THROW("I don't know the GaussRule2D for quad elements with %d Gauss points", numgp);
+        FOUR_C_THROW("I don't know the GaussRule2D for quad elements with {} Gauss points", numgp);
     }
   }
 
@@ -502,7 +502,7 @@ namespace Core::FE
       case 64:
         return GaussRule2D::tri_64point;
       default:
-        FOUR_C_THROW("I don't know the GaussRule2D for tri elements with %d Gauss points", numgp);
+        FOUR_C_THROW("I don't know the GaussRule2D for tri elements with {} Gauss points", numgp);
     }
   }
 
@@ -590,7 +590,7 @@ namespace Core::FE
       case 50:
         return GaussRule1D::line_50point;
       default:
-        FOUR_C_THROW("I don't know the GaussRule1D for line elements with %d Gauss points", numgp);
+        FOUR_C_THROW("I don't know the GaussRule1D for line elements with {} Gauss points", numgp);
     }
   }
 

@@ -1310,7 +1310,7 @@ void Discret::Elements::FluidEleCalcHDG<distype>::evaluate_all(const int startfu
     break;
 
     default:
-      FOUR_C_THROW("Given field %i not yet implemented.", initfield);
+      FOUR_C_THROW("Given field {} not yet implemented.", initfield);
       break;
   }
 }

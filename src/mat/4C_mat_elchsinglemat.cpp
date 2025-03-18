@@ -206,7 +206,7 @@ void Mat::PAR::ElchSingleMat::check_provided_params(
       }
       default:
       {
-        FOUR_C_THROW("Curve number %i is not implemented", functnr);
+        FOUR_C_THROW("Curve number {} is not implemented", functnr);
         break;
       }
     }
@@ -216,7 +216,7 @@ void Mat::PAR::ElchSingleMat::check_provided_params(
     {
       FOUR_C_THROW(
           "Number of provided parameters does not match number of expected parameters for function "
-          "with curve number %i (%s)!",
+          "with curve number {} ({})!",
           functnr, functionname.c_str());
     }
   }
@@ -586,13 +586,13 @@ double Mat::ElchSingleMat::eval_pre_defined_funct(
     case GOLDIN:
     {
       // safety check
-      if (scalar < 1.e-12) FOUR_C_THROW("scalar value %lf is zero or negative!", scalar);
+      if (scalar < 1.e-12) FOUR_C_THROW("scalar value {} is zero or negative!", scalar);
 
       const double exponent = functparams[1] * std::pow(scalar, functparams[2]);
 
       // safety check
       if (exponent > 20.)
-        FOUR_C_THROW("Overflow detected during conductivity evaluation! Exponent is too large: %lf",
+        FOUR_C_THROW("Overflow detected during conductivity evaluation! Exponent is too large: {}",
             exponent);
 
       functval = functparams[0] * scalar * std::exp(exponent);
@@ -643,7 +643,7 @@ double Mat::ElchSingleMat::eval_pre_defined_funct(
     }
     default:
     {
-      FOUR_C_THROW("Curve number %i is not implemented!", functnr);
+      FOUR_C_THROW("Curve number {} is not implemented!", functnr);
       break;
     }
   }
@@ -753,7 +753,7 @@ double Mat::ElchSingleMat::eval_first_deriv_pre_defined_funct(
     case GOLDIN:
     {
       // safety check
-      if (scalar < 1.0e-12) FOUR_C_THROW("scalar value %lf is zero or negative!", scalar);
+      if (scalar < 1.0e-12) FOUR_C_THROW("scalar value {} is zero or negative!", scalar);
 
       const double exponent = functparams[1] * std::pow(scalar, functparams[2]);
 
@@ -762,7 +762,7 @@ double Mat::ElchSingleMat::eval_first_deriv_pre_defined_funct(
       {
         FOUR_C_THROW(
             "Overflow detected during conductivity evaluation! Absolute value of exponent is too "
-            "large: %lf",
+            "large: {}",
             exponent);
       }
 
@@ -816,7 +816,7 @@ double Mat::ElchSingleMat::eval_first_deriv_pre_defined_funct(
     }
     default:
     {
-      FOUR_C_THROW("Curve number %i is not implemented!", functnr);
+      FOUR_C_THROW("Curve number {} is not implemented!", functnr);
       break;
     }
   }

@@ -132,7 +132,7 @@ NOX::Nln::Inner::StatusTest::Factory::build_upper_bound_test(
     std::ostringstream msg;
     FOUR_C_THROW(
         "The \"Quantity Type\" is a required parameter "
-        "and the chosen option \"%s\" is invalid!",
+        "and the chosen option \"{}\" is invalid!",
         quantity_type_string.c_str());
   }
 
@@ -180,7 +180,7 @@ void NOX::Nln::Inner::StatusTest::Factory::throw_error(
   std::ostringstream msg;
   msg << "ERROR - NOX::Nln::Inner::StatusTest::Factory::" << functionName << " - " << errorMsg
       << std::endl;
-  FOUR_C_THROW(msg.str());
+  FOUR_C_THROW("{}", msg.str());
 }
 
 /*----------------------------------------------------------------------------*

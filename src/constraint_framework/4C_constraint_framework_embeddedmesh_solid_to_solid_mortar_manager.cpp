@@ -167,7 +167,7 @@ void CONSTRAINTS::EMBEDDEDMESH::SolidToSolidMortarManager::setup(
 
         // Set the global Lagrange multiplier id for this node.
         error_code = node_gid_to_lambda_gid_->ReplaceMyValue(i_node, i_lambda, lagrange_gid);
-        if (error_code != 0) FOUR_C_THROW("Got error code %d!", error_code);
+        if (error_code != 0) FOUR_C_THROW("Got error code {}!", error_code);
       }
   }
 
@@ -251,7 +251,7 @@ void CONSTRAINTS::EMBEDDEDMESH::SolidToSolidMortarManager::set_local_maps(
           "The current implementation needs the background element of "
           "a interface coupling pair to be on on the same "
           "processor as the pair! The background element id"
-          " is %i trying to be processed in proc %i",
+          " is {} trying to be processed in proc {}",
           pair->element_2().id(), Core::Communication::my_mpi_rank(discret_->get_comm()));
 
     // Get the global id of the nodes that the pairs on this rank need.
@@ -327,7 +327,7 @@ void CONSTRAINTS::EMBEDDEDMESH::SolidToSolidMortarManager::location_vector(
       // Check if the id is in the map. If it is, add it to the output vector.
       auto search_key_in_map = node_gid_to_lambda_gid_map_.find(node_id);
       if (search_key_in_map == node_gid_to_lambda_gid_map_.end())
-        FOUR_C_THROW("Global node id %d not in map!", node_id);
+        FOUR_C_THROW("Global node id {} not in map!", node_id);
       for (auto const& lambda_gid : search_key_in_map->second) lambda_row.push_back(lambda_gid);
     }
   }
@@ -505,7 +505,7 @@ CONSTRAINTS::EMBEDDEDMESH::SolidToSolidMortarManager::penalty_invert_kappa() con
       if (lambda_dof_rowmap_->LID(gid) != -1)
         penalty = penalty_params;
       else
-        FOUR_C_THROW("Could not find the GID %d in translation map", gid);
+        FOUR_C_THROW("Could not find the GID {} in translation map", gid);
 
       local_kappa_inv_value = penalty / global_kappa_->Values()[lid];
     }

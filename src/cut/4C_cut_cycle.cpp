@@ -168,7 +168,7 @@ void Cut::Cycle::test_unique()
         std::stringstream str;
         str << "Multiple( " << num_occ << " ) occcurence of point " << (*it)->id()
             << " in the cycle" << std::endl;
-        FOUR_C_THROW(str.str());
+        FOUR_C_THROW("{}", str.str());
       }
     }
   }

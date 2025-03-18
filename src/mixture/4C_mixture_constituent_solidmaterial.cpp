@@ -47,11 +47,11 @@ Mixture::MixtureConstituentSolidMaterial::MixtureConstituentSolidMaterial(
   // ensure cast was successful
   if (!(mat))
     FOUR_C_THROW(
-        "The solid material constituent with ID %d needs to be an So3Material.", params_->matid_);
+        "The solid material constituent with ID {} needs to be an So3Material.", params_->matid_);
 
   if (material_->density() - 1.0 > 1e-16)
     FOUR_C_THROW(
-        "Please set the density of the solid material constituent with ID %d to 1.0 and prescribe "
+        "Please set the density of the solid material constituent with ID {} to 1.0 and prescribe "
         "a combined density for the entire mixture material.",
         material_->parameter()->id());
 }
@@ -110,7 +110,7 @@ void Mixture::MixtureConstituentSolidMaterial::unpack_constituent(
       }
       else
       {
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
       }
     }

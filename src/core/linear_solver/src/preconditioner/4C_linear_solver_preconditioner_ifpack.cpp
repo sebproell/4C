@@ -54,7 +54,7 @@ void Core::LinearSolver::IFPACKPreconditioner::setup(bool create, Epetra_Operato
         std::shared_ptr<Ifpack_Preconditioner>(Factory.Create(prectype, pmatrix_.get(), overlap));
 
     if (!prec_)
-      FOUR_C_THROW("Creation of IFPACK preconditioner of type '%s' failed.", prectype.c_str());
+      FOUR_C_THROW("Creation of IFPACK preconditioner of type '{}' failed.", prectype.c_str());
 
     // setup
     prec_->SetParameters(ifpacklist_);

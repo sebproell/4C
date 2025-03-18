@@ -77,7 +77,7 @@ Mat::ThermoPlasticLinElast::ThermoPlasticLinElast(Mat::PAR::ThermoPlasticLinElas
   if (thermoMatId != -1)
   {
     auto mat = Mat::factory(thermoMatId);
-    if (mat == nullptr) FOUR_C_THROW("Failed to create thermo material, id=%d", thermoMatId);
+    if (mat == nullptr) FOUR_C_THROW("Failed to create thermo material, id={}", thermoMatId);
     thermo_ = std::dynamic_pointer_cast<Mat::Trait::Thermo>(mat);
   }
 }
@@ -156,7 +156,7 @@ void Mat::ThermoPlasticLinElast::unpack(Core::Communication::UnpackBuffer& buffe
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::ThermoPlasticLinElast*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 
@@ -561,7 +561,8 @@ void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
       // if not converged and (m > m_max)
       if (itnum > itermax)
       {
-        FOUR_C_THROW("local Newton iteration did not converge after iteration %3d/%3d with Res=%3f",
+        FOUR_C_THROW(
+            "local Newton iteration did not converge after iteration {:3d}/{:3d} with Res={:3f}",
             itnum, itermax, Res);
       }
       // else: continue loop (m <= m_max)

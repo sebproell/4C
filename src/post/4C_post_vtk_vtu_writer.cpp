@@ -323,7 +323,7 @@ void PostVtuWriter::write_dof_result_step(std::ofstream& file,
             if (fillzeros)
               solution.push_back(0.);
             else
-              FOUR_C_THROW("received illegal dof local id: %d", lid);
+              FOUR_C_THROW("received illegal dof local id: {}", lid);
           }
         }
         for (int d = numdf; d < ncomponents; ++d) solution.push_back(0.);
@@ -418,7 +418,7 @@ void PostVtuWriter::write_nodal_result_step(std::ofstream& file,
             solution.push_back((column)[lid]);
           else
           {
-            FOUR_C_THROW("received illegal node local id: %d", lid);
+            FOUR_C_THROW("received illegal node local id: {}", lid);
           }
         }
         for (int d = numdf; d < ncomponents; ++d) solution.push_back(0.);
@@ -469,7 +469,7 @@ void PostVtuWriter::write_element_result_step(std::ofstream& file,
 
   const int numcol = data->NumVectors();
   if (numdf + from > numcol)
-    FOUR_C_THROW("violated column range of Core::LinAlg::MultiVector<double>: %d", numcol);
+    FOUR_C_THROW("violated column range of Core::LinAlg::MultiVector<double>: {}", numcol);
 
   std::shared_ptr<Core::LinAlg::MultiVector<double>> importedData;
   if (dis->element_row_map()->SameAs(data->Map()))
@@ -809,7 +809,7 @@ void PostVtuWriter::write_dof_result_step_nurbs_ele(const Core::Elements::Elemen
           if (fillzeros)
             val[d] += 0.;
           else
-            FOUR_C_THROW("received illegal dof local id: %d", lid);
+            FOUR_C_THROW("received illegal dof local id: {}", lid);
         }
       }
     }
@@ -856,7 +856,7 @@ void PostVtuWriter::write_dof_result_step_beam_ele(const Discret::Elements::Beam
         if (fillzeros)
           elementdofvals.push_back(0.);
         else
-          FOUR_C_THROW("received illegal dof local id: %d", lid);
+          FOUR_C_THROW("received illegal dof local id: {}", lid);
       }
     }
   }
@@ -994,7 +994,7 @@ void PostVtuWriter::write_nodal_result_step_nurbs_ele(const Core::Elements::Elem
         if (lid > -1)
           val[idf] += funct(m) * (column)[lid];
         else
-          FOUR_C_THROW("received illegal node local id: %d", lid);
+          FOUR_C_THROW("received illegal node local id: {}", lid);
       }
     }
 

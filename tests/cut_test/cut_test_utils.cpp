@@ -423,7 +423,7 @@ void SimpleWrapper::assume_volume_cells(unsigned num)
   {
     std::stringstream str;
     str << "expected " << num << " volume cells, but got " << numvc;
-    FOUR_C_THROW(str.str());
+    FOUR_C_THROW("{}", str.str());
   }
 }
 

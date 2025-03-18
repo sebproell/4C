@@ -10,10 +10,24 @@
 
 #include "4C_config.hpp"
 
+#include <magic_enum/magic_enum.hpp>
+
+#include <format>
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
+
+// Specialize formatting for any enum type.
+template <typename T>
+  requires std::is_enum_v<T>
+struct std::formatter<T> : std::formatter<std::string_view>
+{
+  auto format(T e, std::format_context& ctx) const
+  {
+    return std::formatter<std::string_view>::format(magic_enum::enum_name(e), ctx);
+  }
+};
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -31,19 +45,30 @@ namespace Core
       const char* file_name;
       int line_number;
       const char* failed_assertion_string = nullptr;
-
-      template <typename StringType, typename... Args>
-      [[noreturn]] void operator()(const StringType& format, Args&&... args) const
-      {
-        static_assert(
-            (... && std::is_trivial_v<std::decay_t<Args>>), "Can only format trivial types.");
-        throw_error(format, std::forward<Args>(args)...);
-      }
-
-      [[noreturn]] void throw_error(const char* format, ...) const;
-
-      [[noreturn]] void throw_error(const std::string& format, ...) const;
     };
+
+    /**
+     * Check if a string literal contains C-style format specifiers.
+     */
+    [[nodiscard]] consteval bool contains_c_format_specifiers(std::string_view str)
+    {
+      for (size_t i = 0; i < str.size(); ++i)
+      {
+        // A rough check for C-style format specifiers
+        if (str[i] == '%' && i + 1 < str.size() && str[i + 1] != '%') return true;
+      }
+      return false;
+    }
+
+    template <typename... Args>
+    [[noreturn]] void constexpr format_and_throw_error(
+        ErrorHelper error_helper, std::format_string<Args...> fmt, Args&&... args)
+    {
+      throw_error(error_helper, std::format(std::move(fmt), std::forward<Args>(args)...));
+    }
+
+    [[noreturn]] void throw_error(
+        const ErrorHelper& error_helper, const std::string& formatted_message);
   }  // namespace Internal
 
   /**
@@ -95,33 +120,47 @@ namespace Core
  * @note Consider using the more expressive FOUR_C_ASSERT and FOUR_C_ASSERT_ALWAYS macros which
  * take a violated assertion as an argument and print it in the error message.
  *
- * This macro takes an error message, which may contain C-style formatting.
- * All format arguments are passed as additional arguments. For example:
+ * This macro takes an error message, which may contain replacement fields for formatting.
+ * The format arguments are passed as additional arguments. For example:
  *
  * @code
- *   FOUR_C_THROW("An error occurred in iteration %d.", iter);
+ *    FOUR_C_THROW("An error occurred in iteration {}.", iter);
  * @endcode
  */
-#define FOUR_C_THROW \
-  FourC::Core::Internal::ErrorHelper { .file_name = __FILE__, .line_number = __LINE__ }
+#define FOUR_C_THROW(fmt, ...)                                                              \
+  do                                                                                        \
+  {                                                                                         \
+    static_assert(!FourC::Core::Internal::contains_c_format_specifiers(fmt),                \
+        "Use C++20 formatting with braces {} instead of C-style formatting with %.");       \
+    FourC::Core::Internal::format_and_throw_error(                                          \
+        FourC::Core::Internal::ErrorHelper{.file_name = __FILE__, .line_number = __LINE__}, \
+        fmt __VA_OPT__(, ) __VA_ARGS__);                                                    \
+  } while (0)
 
 /**
  * Assert that @p test is `true`. If not issue an error in the form of a Core::Exception.
  *
- * This macro takes the test to evaluate and an error message which may contain C-style formatting.
- * All format arguments are passed as additional arguments. For example:
+ * This macro takes an error message, which may contain replacement fields for formatting.
+ * The format arguments are passed as additional arguments. For example:
  *
  * @code
- *   FOUR_C_ASSERT_ALWAYS(vector.size() == dim, "Vector size does not equal dimension d=%d.", dim);
+ *    FOUR_C_ASSERT_ALWAYS(vector.size() == dim, "Vector size {} does not equal dimension {}.",
+ *      vector.size(), dim);
  * @endcode
  */
-#define FOUR_C_ASSERT_ALWAYS(test, args...)                                                      \
-  if (!(test))                                                                                   \
+#define FOUR_C_ASSERT_ALWAYS(test, fmt, ...)                                                     \
+  do                                                                                             \
   {                                                                                              \
-    FourC::Core::Internal::ErrorHelper{                                                          \
-        .file_name = __FILE__, .line_number = __LINE__, .failed_assertion_string = #test}(args); \
-  }                                                                                              \
-  static_assert(true, "Terminate with a comma.")
+    static_assert(!FourC::Core::Internal::contains_c_format_specifiers(fmt),                     \
+        "Use C++20 formatting with braces {} instead of C-style formatting with %.");            \
+    if (!(test))                                                                                 \
+    {                                                                                            \
+      FourC::Core::Internal::format_and_throw_error(                                             \
+          FourC::Core::Internal::ErrorHelper{                                                    \
+              .file_name = __FILE__, .line_number = __LINE__, .failed_assertion_string = #test}, \
+          fmt __VA_OPT__(, ) __VA_ARGS__);                                                       \
+    }                                                                                            \
+  } while (0)
 
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
@@ -131,14 +170,15 @@ namespace Core
  * This macro is only active if FOUR_C_ENABLE_ASSERTIONS is set and may therefore be used for
  * expensive checks. Use FOUR_C_ASSERT_ALWAYS if you want to evaluate the test in any case.
  *
- * This macro takes the test to evaluate and an error message which may contain C-style formatting.
- * All format arguments are passed as additional arguments. For example:
+ * This macro takes an error message, which may contain replacement fields for formatting.
+ * The format arguments are passed as additional arguments. For example:
  *
  * @code
- *   FOUR_C_ASSERT(vector.size() == dim, "Vector size does not equal dimension.");
+ *   FOUR_C_ASSERT(vector.size() == dim, "Vector size {} does not equal dimension {}.",
+ *     vector.size(), dim);
  * @endcode
  */
-#define FOUR_C_ASSERT(test, args...) FOUR_C_ASSERT_ALWAYS(test, args)
+#define FOUR_C_ASSERT FOUR_C_ASSERT_ALWAYS
 
 #else
 

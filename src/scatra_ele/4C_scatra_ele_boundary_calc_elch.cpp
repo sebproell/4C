@@ -124,8 +124,8 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_elch_b
   const auto* stoich = &cond->parameters().get<std::vector<int>>("STOICH");
   if ((unsigned int)my::numscal_ != (*stoich).size())
     FOUR_C_THROW(
-        "Electrode kinetics: number of stoichiometry coefficients %u does not match"
-        " the number of ionic species %d",
+        "Electrode kinetics: number of stoichiometry coefficients {} does not match"
+        " the number of ionic species {}",
         (*stoich).size(), my::numscal_);
 
   // the classical implementations of kinetic electrode models does not support
@@ -250,8 +250,8 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_nernst
     const auto* stoich = &cond->parameters().get<std::vector<int>>("STOICH");
     if ((unsigned int)my::numscal_ != (*stoich).size())
       FOUR_C_THROW(
-          "Electrode kinetics: number of stoichiometry coefficients %u does not match"
-          " the number of ionic species %d",
+          "Electrode kinetics: number of stoichiometry coefficients {} does not match"
+          " the number of ionic species {}",
           (*stoich).size(), my::numscal_);
 
     // access input parameter
@@ -296,7 +296,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_nernst
         const double potint = my::funct_.dot(my::ephinp_[my::numscal_]);
 
         if (c0 < 1e-12)
-          FOUR_C_THROW("reference concentration is too small (c0 < 1.0E-12) : %f", c0);
+          FOUR_C_THROW("reference concentration is too small (c0 < 1.0E-12) : {}", c0);
 
         for (int vi = 0; vi < nen_; ++vi)
         {

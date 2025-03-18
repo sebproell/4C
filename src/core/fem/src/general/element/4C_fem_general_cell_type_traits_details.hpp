@@ -143,8 +143,8 @@ namespace Core::FE::Internal
       }
 
       FOUR_C_THROW(
-          "The function you are calling is not implemented for the cell type %s. Supported "
-          "celltypes are %s",
+          "The function you are calling is not implemented for the cell type {}. Supported "
+          "celltypes are {}",
           Internal::CellTypeInformation<celltype_t()>::name, celltypes_str_acc.c_str());
     }
   };

@@ -106,7 +106,7 @@ Core::FE::CellType Discret::Elements::Nurbs::Ale3Nurbs::shape() const
     case 27:
       return Core::FE::CellType::nurbs27;
     default:
-      FOUR_C_THROW("unexpected number of nodes %d", num_node());
+      FOUR_C_THROW("unexpected number of nodes {}", num_node());
       break;
   }
 }

@@ -57,7 +57,7 @@ bool Cut::IntegrationCellCreator::create_cells(
         break;
       }
       default:
-        FOUR_C_THROW("Wrong element dimension! ( element dim = %d )", element->n_dim());
+        FOUR_C_THROW("Wrong element dimension! ( element dim = {} )", element->n_dim());
         exit(EXIT_FAILURE);
     }
 
@@ -110,7 +110,7 @@ bool Cut::IntegrationCellCreator::create_cell(
       break;
     default:
       FOUR_C_THROW(
-          "unsupported element shape ( shape = %s )", Core::FE::cell_type_to_string(shape).c_str());
+          "unsupported element shape ( shape = {} )", Core::FE::cell_type_to_string(shape).c_str());
       exit(EXIT_FAILURE);
   }
   // if the create process was successful, we can finally create the integration cell
@@ -174,7 +174,7 @@ void Cut::IntegrationCellCreator::add_side(Cut::BoundaryCellPosition bcell_posit
       break;
     default:
     {
-      FOUR_C_THROW("Unknown boundary creation position type! ( enum = %d )", bcell_position);
+      FOUR_C_THROW("Unknown boundary creation position type! ( enum = {} )", bcell_position);
       exit(EXIT_FAILURE);
     }
   }

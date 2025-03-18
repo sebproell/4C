@@ -87,7 +87,7 @@ std::shared_ptr<CONTACT::Integrator> CONTACT::INTEGRATOR::Factory::build_integra
     }
     default:
     {
-      FOUR_C_THROW("Unsupported solving strategy! (stype = %s | %d)",
+      FOUR_C_THROW("Unsupported solving strategy! (stype = {} | {})",
           CONTACT::solving_strategy_to_string(sol_type).c_str(), sol_type);
       exit(EXIT_FAILURE);
     }

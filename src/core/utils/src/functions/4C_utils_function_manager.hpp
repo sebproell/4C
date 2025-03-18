@@ -107,7 +107,7 @@ template <typename T>
 const T& Core::Utils::FunctionManager::function_by_id(int num) const
 {
   if (functions_.size() < (unsigned int)(num) || num < 1)
-    FOUR_C_THROW("Function with index %d (i.e. input FUNCT%d) not available.", num);
+    FOUR_C_THROW("Function with index {} (i.e. input FUNCT{}) not available.", num, num);
 
   const auto& function_any = functions_[num - 1];
   FOUR_C_ASSERT(function_any.has_value(), "Implementation error.");
@@ -141,8 +141,8 @@ const T& Core::Utils::FunctionManager::function_by_id(int num) const
         });
 
     FOUR_C_THROW(
-        "You tried to query function %d as a function of type '%s'.\n"
-        "Actually, it has type '%s'.",
+        "You tried to query function {} as a function of type '{}'.\n"
+        "Actually, it has type '{}'.",
         num, Core::Utils::get_type_name<T>().c_str(), actual_type_name.c_str());
   }
 }

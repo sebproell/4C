@@ -103,8 +103,8 @@ Mixture::PAR::MixtureConstituentElastHyperElastinMembrane::
   if (nummat_membrane_ != (int)matids_membrane_.size())
   {
     FOUR_C_THROW(
-        "number of membrane summands %d does not fit to the size of the membrane summands vector"
-        " %d",
+        "number of membrane summands {} does not fit to the size of the membrane summands vector"
+        " {}",
         nummat_membrane_, matids_membrane_.size());
   }
 }

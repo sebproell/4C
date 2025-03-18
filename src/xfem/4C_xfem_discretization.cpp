@@ -137,7 +137,7 @@ void XFEM::DiscretizationXFEM::export_initialto_active_vector(
     {
       Epetra_Import importer(fullvec.get_map(), initialvec.get_map());
       int err = fullvec.import(initialvec, importer, Insert);
-      if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
+      if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
     }
   }
   fullvec.replace_map(*initialfulldofrowmap_);  /// replace |1 2 3 4|1 2 3 4| -> |1 2 3 4|5 6 7 8|
@@ -233,7 +233,7 @@ void XFEM::DiscretizationXFEM::set_initial_state(unsigned nds, const std::string
     if (not initial_dof_row_map(nds)->SameAs(state->get_map()))
     {
       FOUR_C_THROW(
-          "row map of discretization and state vector %s are different. This is a fatal bug!",
+          "row map of discretization and state vector {} are different. This is a fatal bug!",
           name.c_str());
     }
 #endif

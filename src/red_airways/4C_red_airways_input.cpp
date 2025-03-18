@@ -20,7 +20,7 @@ bool Discret::Elements::RedAirway::read_element(const std::string& eletype,
 {
   const int ndim = Global::Problem::instance()->n_dim();
   if (ndim != 3)
-    FOUR_C_THROW("Problem defined as %dd, but found Reduced dimensional AIRWAY element.", ndim);
+    FOUR_C_THROW("Problem defined as {}d, but found Reduced dimensional AIRWAY element.", ndim);
 
   // Read number of material model
   int material_id = container.get<int>("MAT");
@@ -75,7 +75,7 @@ bool Discret::Elements::RedAcinus::read_element(const std::string& eletype,
 {
   const int ndim = Global::Problem::instance()->n_dim();
   if (ndim != 3)
-    FOUR_C_THROW("Problem defined as %dd, but found Reduced dimensional ACINUS element.", ndim);
+    FOUR_C_THROW("Problem defined as {}d, but found Reduced dimensional ACINUS element.", ndim);
 
   // Read number of material model
   int material_id = container.get<int>("MAT");
@@ -108,7 +108,7 @@ bool Discret::Elements::RedInterAcinarDep::read_element(const std::string& elety
   const int ndim = Global::Problem::instance()->n_dim();
   if (ndim != 3)
     FOUR_C_THROW(
-        "Problem defined as %dd, but found Reduced dimensional INTER ACINAR DEPENDENCE element.",
+        "Problem defined as {}d, but found Reduced dimensional INTER ACINAR DEPENDENCE element.",
         ndim);
 
   // set generation

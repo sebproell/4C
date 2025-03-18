@@ -111,7 +111,7 @@ void Discret::Elements::calculate_s2_i_growth_elch_linearizations(const double j
     }
     default:
     {
-      FOUR_C_THROW("Regularization type %i not recognized!",
+      FOUR_C_THROW("Regularization type {} not recognized!",
           static_cast<int>(scatraeleparamsboundary->regularization_type()));
     }
   }
@@ -171,7 +171,7 @@ double Discret::Elements::calculate_s2_i_elch_growth_linearizations(const double
     }
     default:
     {
-      FOUR_C_THROW("Regularization type %i not recognized!",
+      FOUR_C_THROW("Regularization type {} not recognized!",
           static_cast<int>(scatraeleparamsboundary->regularization_type()));
     }
   }
@@ -326,7 +326,7 @@ double Discret::Elements::get_regularization_factor(const double thickness, cons
       }
       // safety check
       default:
-        FOUR_C_THROW("Invalid type of regularization: %i for lithium stripping!",
+        FOUR_C_THROW("Invalid type of regularization: {} for lithium stripping!",
             static_cast<int>(regularizationtype));
     }
   }
@@ -400,7 +400,7 @@ double Discret::Elements::get_regularization_factor_derivative(const double thic
       // safety check
       default:
       {
-        FOUR_C_THROW("Invalid type of regularization: %i for lithium stripping!",
+        FOUR_C_THROW("Invalid type of regularization: {} for lithium stripping!",
             static_cast<int>(regularizationtype));
       }
     }

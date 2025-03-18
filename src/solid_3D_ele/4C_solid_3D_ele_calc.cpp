@@ -498,7 +498,7 @@ Discret::Elements::SolidEleCalc<celltype, ElementFormulation>::get_normal_cauchy
   {
     FOUR_C_THROW(
         "Cannot evaluate the Cauchy stress at xi with an element formulation with Gauss point "
-        "history. The element formulation is %s.",
+        "history. The element formulation is {}.",
         Core::Utils::get_type_name<ElementFormulation>().c_str());
   }
   else

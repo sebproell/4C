@@ -278,7 +278,7 @@ void elch_dyn(int restart)
       break;
     }
     default:
-      FOUR_C_THROW("Unknown velocity field type for transport of passive scalar: %d", veltype);
+      FOUR_C_THROW("Unknown velocity field type for transport of passive scalar: {}", veltype);
   }
 }
 

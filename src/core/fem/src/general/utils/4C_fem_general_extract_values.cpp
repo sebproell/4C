@@ -30,7 +30,7 @@ void Core::FE::extract_my_values(const Core::LinAlg::Vector<double>& global,
   {
     const int lid = global.get_map().LID(lm[i]);
     if (lid < 0)
-      FOUR_C_THROW("Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
+      FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
           Core::Communication::my_mpi_rank(global.get_comm()), lm[i]);
     local[i] = global[lid];
   }
@@ -53,7 +53,7 @@ void Core::FE::extract_my_node_based_values(const Core::Elements::Element* ele,
     const int nodegid = (ele->nodes()[i])->id();
     const int lid = global.Map().LID(nodegid);
     if (lid < 0)
-      FOUR_C_THROW("Proc %d: Cannot find gid=%d in Core::LinAlg::Vector<double>",
+      FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
           Core::Communication::my_mpi_rank(global.Comm()), nodegid);
 
     // loop over multi vector columns (numcol=1 for Core::LinAlg::Vector<double>)
@@ -73,7 +73,7 @@ void Core::FE::extract_my_node_based_values(const Core::Elements::Element* ele,
     const int nsd)
 {
   if (nsd > global.NumVectors())
-    FOUR_C_THROW("Requested %d of %d available columns", nsd, global.NumVectors());
+    FOUR_C_THROW("Requested {} of {} available columns", nsd, global.NumVectors());
   const int iel = ele->num_node();  // number of nodes
   if (local.length() != (iel * nsd)) FOUR_C_THROW("vector size mismatch.");
 
@@ -86,7 +86,7 @@ void Core::FE::extract_my_node_based_values(const Core::Elements::Element* ele,
       const int nodegid = (ele->nodes()[j])->id();
       const int lid = global.Map().LID(nodegid);
       if (lid < 0)
-        FOUR_C_THROW("Proc %d: Cannot find gid=%d in Core::LinAlg::MultiVector<double>",
+        FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::MultiVector<double>",
             Core::Communication::my_mpi_rank(global.Comm()), nodegid);
       local(i + (nsd * j)) = global(i)[lid];
     }

@@ -93,14 +93,14 @@ namespace Core::IO
 
     // safety checks
     FOUR_C_ASSERT_ALWAYS(point_coordinates.size() == num_spatial_dimensions * pointcounter,
-        "Expected %i coordinate values, but got %i.", num_spatial_dimensions * pointcounter,
+        "Expected {} coordinate values, but got {}.", num_spatial_dimensions * pointcounter,
         point_coordinates.size());
 
     FOUR_C_ASSERT_ALWAYS(cell_types.size() == num_row_elements - num_skipped_eles,
-        "Expected %i cell type values, but got %i.", num_row_elements, cell_types.size());
+        "Expected {} cell type values, but got {}.", num_row_elements, cell_types.size());
 
     FOUR_C_ASSERT_ALWAYS(cell_offsets.size() == num_row_elements - num_skipped_eles,
-        "Expected %i cell offset values, but got %i.", num_row_elements, cell_offsets.size());
+        "Expected {} cell offset values, but got {}.", num_row_elements, cell_offsets.size());
 
     // store node row and col maps (needed to check for changed parallel distribution)
     noderowmap_last_geometry_set_ = std::make_shared<Epetra_Map>(*discretization_->node_row_map());
@@ -245,7 +245,7 @@ namespace Core::IO
 
     // sanity check
     FOUR_C_ASSERT_ALWAYS(point_result_data.size() == result_num_dofs_per_node * pointcounter,
-        "Expected %i result values, but got %i.", result_num_dofs_per_node * pointcounter,
+        "Expected {} result values, but got {}.", result_num_dofs_per_node * pointcounter,
         point_result_data.size());
 
     visualization_manager_->get_visualization_data().set_point_data_vector(
@@ -283,7 +283,7 @@ namespace Core::IO
     // safety checks
     FOUR_C_ASSERT(static_cast<unsigned int>(result_data_nodebased_col_map.NumVectors()) ==
                       result_num_components_per_node,
-        "Expected Core::LinAlg::MultiVector<double> with %i columns but got %i.",
+        "Expected Core::LinAlg::MultiVector<double> with {} columns but got {}.",
         result_num_components_per_node, result_data_nodebased_col_map.NumVectors());
 
     FOUR_C_ASSERT(discretization_->node_col_map()->SameAs(result_data_nodebased_col_map.Map()),
@@ -313,7 +313,7 @@ namespace Core::IO
 
     // sanity check
     FOUR_C_ASSERT_ALWAYS(point_result_data.size() == result_num_components_per_node * pointcounter,
-        "Expected %i result values, but got %i.", result_num_components_per_node * pointcounter,
+        "Expected {} result values, but got {}.", result_num_components_per_node * pointcounter,
         point_result_data.size());
 
     visualization_manager_->get_visualization_data().set_point_data_vector(
@@ -333,7 +333,7 @@ namespace Core::IO
     // safety check
     FOUR_C_ASSERT(static_cast<unsigned int>(result_data_elementbased.NumVectors()) ==
                       result_num_components_per_element,
-        "Expected Core::LinAlg::MultiVector<double> with %i columns but got %i.",
+        "Expected Core::LinAlg::MultiVector<double> with {} columns but got {}.",
         result_num_components_per_element, result_data_elementbased.NumVectors());
 
     FOUR_C_ASSERT(discretization_->element_row_map()->SameAs(result_data_elementbased.Map()),
@@ -366,7 +366,7 @@ namespace Core::IO
 
     // sanity check
     FOUR_C_ASSERT_ALWAYS(cell_result_data.size() == result_num_components_per_element * cellcounter,
-        "Expected %i result values, but got %i.", result_num_components_per_element * cellcounter,
+        "Expected {} result values, but got {}.", result_num_components_per_element * cellcounter,
         cell_result_data.size());
 
     visualization_manager_->get_visualization_data().set_cell_data_vector(

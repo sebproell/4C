@@ -593,7 +593,7 @@ namespace Discret
 
             default:
               FOUR_C_THROW(
-                  "unknown species type %i for species %i!", scalartophasemap_[k].species_type, k);
+                  "unknown species type {} for species {}!", scalartophasemap_[k].species_type, k);
               break;
           }
           // set flag if we actually have to evaluate the species
@@ -628,7 +628,7 @@ namespace Discret
         for (auto& k : scalartophasemap_)
         {
           if (k.phaseID < 0 or k.phaseID >= numfluidphases)
-            FOUR_C_THROW("Invalid phase ID %i", k.phaseID);
+            FOUR_C_THROW("Invalid phase ID {}", k.phaseID);
         }
 
         // set convective term
@@ -648,7 +648,7 @@ namespace Discret
 
             default:
               FOUR_C_THROW(
-                  "unknown species type %i for species %i!", scalartophasemap_[k].species_type, k);
+                  "unknown species type {} for species {}!", scalartophasemap_[k].species_type, k);
               break;
           }
         }
@@ -682,7 +682,7 @@ namespace Discret
             return pressure_[scalartophasemap_[k].phaseID];
 
           default:
-            FOUR_C_THROW("ScalartophaseID = %i for species %i", scalartophasemap_[k].phaseID, k);
+            FOUR_C_THROW("ScalartophaseID = {} for species {}", scalartophasemap_[k].phaseID, k);
             return 0;
         }
       };
@@ -699,7 +699,7 @@ namespace Discret
             return saturation_[scalartophasemap_[k].phaseID];
 
           default:
-            FOUR_C_THROW("ScalartophaseID = %i for species %i", scalartophasemap_[k].phaseID, k);
+            FOUR_C_THROW("ScalartophaseID = {} for species {}", scalartophasemap_[k].phaseID, k);
             return 0;
         }
       };
@@ -725,7 +725,7 @@ namespace Discret
 
           default:
             FOUR_C_THROW(
-                "unknown species type %i for species %i!", scalartophasemap_[k].species_type, k);
+                "unknown species type {} for species {}!", scalartophasemap_[k].species_type, k);
             return 0;
         }
       };
@@ -746,7 +746,7 @@ namespace Discret
             return volfrac_[get_phase_id(k) - phasemanager_->num_fluid_phases()];
 
           default:
-            FOUR_C_THROW("ScalartophaseID = %i for species %i", scalartophasemap_[k].phaseID, k);
+            FOUR_C_THROW("ScalartophaseID = {} for species {}", scalartophasemap_[k].phaseID, k);
             return 0;
         }
       };
@@ -770,7 +770,7 @@ namespace Discret
       {
         if (scalartophasemap_[scalarID].phaseID < 0)
           FOUR_C_THROW(
-              "ScalartophaseID = %i for species %i", scalartophasemap_[scalarID].phaseID, scalarID);
+              "ScalartophaseID = {} for species {}", scalartophasemap_[scalarID].phaseID, scalarID);
 
         return scalartophasemap_[scalarID].phaseID;
       };
@@ -897,7 +897,7 @@ namespace Discret
           }
           default:
             FOUR_C_THROW(
-                "unknown species type %i for species %i!", scalartophasemap_[k].species_type, k);
+                "unknown species type {} for species {}!", scalartophasemap_[k].species_type, k);
             break;
         }  // switch(species type)
 
@@ -987,7 +987,7 @@ namespace Discret
           default:
           {
             FOUR_C_THROW(
-                "unknown species type %i for species %i!", scalartophasemap_[k].species_type, k);
+                "unknown species type {} for species {}!", scalartophasemap_[k].species_type, k);
             break;
           }
         }  // switch(species type)
@@ -1074,7 +1074,7 @@ namespace Discret
           (*prefaclinconvodfluid)[phase + numvolfrac] += laplawf;
         }
         else
-          FOUR_C_THROW("get_pre_fac_lin_conv_od_fluid has been called with phase %i", phase);
+          FOUR_C_THROW("get_pre_fac_lin_conv_od_fluid has been called with phase {}", phase);
 
         return;
       };
@@ -1158,7 +1158,7 @@ namespace Discret
           }
           default:
             FOUR_C_THROW(
-                "unknown species type %i for species %i!", scalartophasemap_[k].species_type, k);
+                "unknown species type {} for species {}!", scalartophasemap_[k].species_type, k);
             break;
         }  // switch(species type)
 
@@ -1260,7 +1260,7 @@ namespace Discret
           default:
           {
             FOUR_C_THROW(
-                "unknown species type %i for species %i!", scalartophasemap_[k].species_type, k);
+                "unknown species type {} for species {}!", scalartophasemap_[k].species_type, k);
             break;
           }
         }  // switch(species type)
@@ -1284,7 +1284,7 @@ namespace Discret
           case Mat::ScaTraMatMultiPoro::SpeciesType::species_in_solid:
           default:
             FOUR_C_THROW(
-                "unknown species type %i for species %i!", scalartophasemap_[k].species_type, k);
+                "unknown species type {} for species {}!", scalartophasemap_[k].species_type, k);
             break;
         }  // switch(species type)
 
@@ -1323,7 +1323,7 @@ namespace Discret
           refgradpres.multiply(xjm, pressuregrad_[phase]);
         }
         else
-          FOUR_C_THROW("GetRefGradPres has been called with phase %i", phase);
+          FOUR_C_THROW("GetRefGradPres has been called with phase {}", phase);
 
         return;
       }
@@ -1362,7 +1362,7 @@ namespace Discret
           default:
           {
             FOUR_C_THROW(
-                "unknown species type %i for species %i!", scalartophasemap_[k].species_type, k);
+                "unknown species type {} for species {}!", scalartophasemap_[k].species_type, k);
             break;
           }
         }  // switch(species type)
@@ -1438,7 +1438,7 @@ namespace Discret
 
           default:
             FOUR_C_THROW(
-                "unknown species type %i for species %i!", scalartophasemap_[k].species_type, k);
+                "unknown species type {} for species {}!", scalartophasemap_[k].species_type, k);
             break;
         }  // switch(species type)
 

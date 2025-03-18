@@ -913,7 +913,7 @@ void Thermo::TimInt::set_initial_field(const Thermo::InitialField init, const in
     }  // initfield_field_by_condition
 
     default:
-      FOUR_C_THROW("Unknown option for initial field: %d", init);
+      FOUR_C_THROW("Unknown option for initial field: {}", init);
       break;
   }  // switch(init)
 

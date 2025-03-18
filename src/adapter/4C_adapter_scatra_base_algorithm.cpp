@@ -63,7 +63,7 @@ Adapter::ScaTraBaseAlgorithm::ScaTraBaseAlgorithm(const Teuchos::ParameterList& 
   // -------------------------------------------------------------------
   auto output = discret->writer();
   if (discret->num_global_elements() == 0)
-    FOUR_C_THROW("No elements in discretization %s", discret->name().c_str());
+    FOUR_C_THROW("No elements in discretization {}", discret->name().c_str());
   output->write_mesh(0, 0.0);
 
   // -------------------------------------------------------------------

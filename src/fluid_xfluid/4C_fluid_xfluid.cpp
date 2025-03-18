@@ -802,7 +802,7 @@ void FLD::XFluid::assemble_mat_and_rhs(int itnum)
     Core::LinAlg::Vector<double> res_tmp(state_->residual_->get_map(), true);
     Epetra_Export exporter(state_->residual_col_->get_map(), res_tmp.get_map());
     int err2 = res_tmp.export_to(*state_->residual_col_, exporter, Add);
-    if (err2) FOUR_C_THROW("Export using exporter returned err=%d", err2);
+    if (err2) FOUR_C_THROW("Export using exporter returned err={}", err2);
 
     // add Neumann loads and contributions from evaluate of volume and face integrals
     state_->residual_->update(1.0, res_tmp, 1.0, *state_->neumann_loads_, 0.0);
@@ -912,7 +912,7 @@ void FLD::XFluid::assemble_mat_and_rhs_vol_terms()
               strategy.elevector3());
 
           if (err)
-            FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+            FOUR_C_THROW("Proc {}: Element {} returned err={}",
                 Core::Communication::my_mpi_rank(discret_->get_comm()), actele->id(), err);
         }
         else
@@ -930,7 +930,7 @@ void FLD::XFluid::assemble_mat_and_rhs_vol_terms()
               strategy.elevector2(), strategy.elevector3(), intpoints_sets[set_counter], cells);
 
           if (err)
-            FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+            FOUR_C_THROW("Proc {}: Element {} returned err={}",
                 Core::Communication::my_mpi_rank(discret_->get_comm()), actele->id(), err);
         }
 
@@ -1256,7 +1256,7 @@ void FLD::XFluid::assemble_mat_and_rhs_vol_terms()
             strategy.elevector3());
 
         if (err)
-          FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+          FOUR_C_THROW("Proc {}: Element {} returned err={}",
               Core::Communication::my_mpi_rank(discret_->get_comm()), actele->id(), err);
       }
 
@@ -1422,7 +1422,7 @@ void FLD::XFluid::integrate_shape_function(Teuchos::ParameterList& eleparams,
               strategy.elevector1(), elevec2, elevec3);
 
           if (err)
-            FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+            FOUR_C_THROW("Proc {}: Element {} returned err={}",
                 Core::Communication::my_mpi_rank(discret.get_comm()), actele->id(), err);
         }
         else
@@ -1439,7 +1439,7 @@ void FLD::XFluid::integrate_shape_function(Teuchos::ParameterList& eleparams,
               ele, discret, la[0].lm_, strategy.elevector1(), intpoints_sets[set_counter], cells);
 
           if (err)
-            FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+            FOUR_C_THROW("Proc {}: Element {} returned err={}",
                 Core::Communication::my_mpi_rank(discret.get_comm()), actele->id(), err);
         }
 
@@ -1490,7 +1490,7 @@ void FLD::XFluid::integrate_shape_function(Teuchos::ParameterList& eleparams,
           strategy.elevector1(), elevec2, elevec3);
 
       if (err)
-        FOUR_C_THROW("Proc %d: Element %d returned err=%d",
+        FOUR_C_THROW("Proc {}: Element {} returned err={}",
             Core::Communication::my_mpi_rank(discret.get_comm()), actele->id(), err);
 
       // introduce an vector containing the rows for that values have to be communicated
@@ -1518,7 +1518,7 @@ void FLD::XFluid::integrate_shape_function(Teuchos::ParameterList& eleparams,
   Core::LinAlg::Vector<double> vec_tmp(vec.get_map(), false);
   Epetra_Export exporter(strategy.systemvector1()->get_map(), vec_tmp.get_map());
   int err2 = vec_tmp.export_to(*strategy.systemvector1(), exporter, Add);
-  if (err2) FOUR_C_THROW("Export using exporter returned err=%d", err2);
+  if (err2) FOUR_C_THROW("Export using exporter returned err={}", err2);
   vec.scale(1.0, vec_tmp);
 }
 
@@ -1592,7 +1592,7 @@ void FLD::XFluid::assemble_mat_and_rhs_gradient_penalty(
         double v = 1.0;
 #ifdef FOUR_C_ENABLE_ASSERTIONS
         int err = sysmat_gp->epetra_matrix()->InsertGlobalValues(row, 1, &v, &row);
-        if (err < 0) FOUR_C_THROW("Epetra_CrsMatrix::InsertGlobalValues returned err=%d", err);
+        if (err < 0) FOUR_C_THROW("Epetra_CrsMatrix::InsertGlobalValues returned err={}", err);
 #else
         sysmat_gp->epetra_matrix()->InsertGlobalValues(row, 1, &v, &row);
 #endif
@@ -1605,7 +1605,7 @@ void FLD::XFluid::assemble_mat_and_rhs_gradient_penalty(
   Core::LinAlg::Vector<double> res_tmp(residual_gp.get_map(), false);
   Epetra_Export exporter(residual_gp_col->get_map(), res_tmp.get_map());
   int err2 = res_tmp.export_to(*residual_gp_col, exporter, Add);
-  if (err2) FOUR_C_THROW("Export using exporter returned err=%d", err2);
+  if (err2) FOUR_C_THROW("Export using exporter returned err={}", err2);
   residual_gp.update(1.0, res_tmp, 1.0);
 
   //-------------------------------------------------------------------------------
@@ -2934,7 +2934,7 @@ void FLD::XFluid::check_matrix_nullspace()
       std::cout << "   for xfem, yet). In this case sysmat_ could be     " << std::endl;
       std::cout << "   correct. -> adapt nullspace vector                " << std::endl;
       std::cout << "#####################################################" << std::endl;
-      FOUR_C_THROW("Nullspace check for sysmat_ failed, Ac returned %12.5e", norm);
+      FOUR_C_THROW("Nullspace check for sysmat_ failed, Ac returned {:12.5e}", norm);
     }
   }
 
@@ -3616,7 +3616,7 @@ void FLD::XFluid::x_timint_do_time_step_transfer(const bool screen_out)
               .empty())
         FOUR_C_THROW(
             "Even though projection failed, some nodes still demand projection. No alternatives "
-            "found for e.g. %d",
+            "found for e.g. {}",
             xfluid_timeint
                 ->get_node_to_dof_map_for_reconstr(Inpar::XFEM::Xf_TimeInt_by_PROJ_from_DIS)
                 .begin()
@@ -3822,7 +3822,7 @@ bool FLD::XFluid::x_timint_do_increment_step_transfer(
               .empty())
         FOUR_C_THROW(
             "Even though projection failed, some nodes still hold a projection label. No "
-            "alternatives found for e.g. %d",
+            "alternatives found for e.g. {}",
             xfluid_timeint
                 ->get_node_to_dof_map_for_reconstr(Inpar::XFEM::Xf_TimeInt_by_PROJ_from_DIS)
                 .begin()
@@ -4947,7 +4947,7 @@ void FLD::XFluid::explicit_predictor()
     state_->velpressplitter_->insert_other_vector(*unm, *state_->velnp_);
   }
   else
-    FOUR_C_THROW("Unknown fluid predictor %s", predictor_.c_str());
+    FOUR_C_THROW("Unknown fluid predictor {}", predictor_.c_str());
 
   if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
   {

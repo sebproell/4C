@@ -830,7 +830,7 @@ void FLD::XWall::setup_l2_projection()
                 const int dof = actdofs.at(j);
 
                 const int lid = enrdofrowmap_->LID(dof);
-                if (lid < 0) FOUR_C_THROW("Cannot find dof %i", dof);
+                if (lid < 0) FOUR_C_THROW("Cannot find dof {}", dof);
 
                 for (unsigned k = 0; k < ndof; ++k)
                 {

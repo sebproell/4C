@@ -732,9 +732,9 @@ namespace Discret
         static unsigned m_index(unsigned inod, unsigned idof)
         {
           //          if (idof >= master_numdof_)
-          //            FOUR_C_THROW("Coupling master element has only %d dof!", master_numdof_);
+          //             FOUR_C_THROW("Coupling master element has only {} dof!", master_numdof_);
           //          if (inod >= nen_)
-          //            FOUR_C_THROW("Coupling master element has only %d nodes!", nen_);
+          //             FOUR_C_THROW("Coupling master element has only {} nodes!", nen_);
           return inod * master_numdof_ + idof;
         }
 
@@ -743,9 +743,9 @@ namespace Discret
         static unsigned s_index(unsigned inod, unsigned idof)
         {
           //          if (idof >= slave_numdof)
-          //            FOUR_C_THROW("Coupling slave element has only %d dof!", slave_numdof);
+          //             FOUR_C_THROW("Coupling slave element has only {} dof!", slave_numdof);
           //          if (inod >= slave_nen_)
-          //            FOUR_C_THROW("Coupling slave element has only %d nodes!", slave_nen_);
+          //             FOUR_C_THROW("Coupling slave element has only {} nodes!", slave_nen_);
           return inod * slave_numdof + idof;
         }
 
@@ -1012,7 +1012,7 @@ namespace Discret
         static unsigned stress_index(unsigned xi, unsigned xj)
         {
           if (xi > 2 || xj > 2)
-            FOUR_C_THROW("Invalid index combination (%d,%d) for stress tensor!", xi, xj);
+            FOUR_C_THROW("Invalid index combination ({},{}) for stress tensor!", xi, xj);
 
           return (xi * xj > 0) ? xi + xj + 1 : xi + xj;
         }
@@ -1022,9 +1022,9 @@ namespace Discret
         static unsigned m_index(unsigned inod, unsigned idof)
         {
           //          if (idof >= master_numdof_)
-          //            FOUR_C_THROW("Coupling master element has only %d dof!", master_numdof_);
+          //             FOUR_C_THROW("Coupling master element has only {} dof!", master_numdof_);
           //          if (inod >= nen_)
-          //            FOUR_C_THROW("Coupling master element has only %d nodes!", nen_);
+          //             FOUR_C_THROW("Coupling master element has only {} nodes!", nen_);
           return inod * master_numdof_ + idof;
         }
 
@@ -1033,9 +1033,9 @@ namespace Discret
         static unsigned s_index(unsigned inod, unsigned idof)
         {
           //          if (idof >= slave_numdof)
-          //            FOUR_C_THROW("Coupling slave element has only %d dof!", slave_numdof);
+          //             FOUR_C_THROW("Coupling slave element has only {} dof!", slave_numdof);
           //          if (inod >= slave_nen_)
-          //            FOUR_C_THROW("Coupling slave element has only %d nodes!", slave_nen_);
+          //             FOUR_C_THROW("Coupling slave element has only {} nodes!", slave_nen_);
           return inod * slave_numdof + idof;
         }
 

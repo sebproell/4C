@@ -250,7 +250,7 @@ void Mat::CrystalPlasticity::unpack(Core::Communication::UnpackBuffer& buffer)
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::CrystalPlasticity*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
   }
@@ -598,7 +598,7 @@ void Mat::CrystalPlasticity::setup_lattice_vectors()
     def_system_count_ = 2;  // 1 slip systems and 1 twinning system
   else if (lattice_type_ == "D019" && is_twinning_)
     FOUR_C_THROW(
-        "Twinning does not occur in the chosen lattice type %s or is not yet implemented. Omit "
+        "Twinning does not occur in the chosen lattice type {} or is not yet implemented. Omit "
         "all optional parameters of the material input line to switch off twinning.",
         lattice_type_.c_str());
 
@@ -608,18 +608,18 @@ void Mat::CrystalPlasticity::setup_lattice_vectors()
   {
     if (!is_twinning_)
       FOUR_C_THROW(
-          "The number of slip systems NUMSLIPSYS = %d given in the input does not match the "
-          "expected total number of %d deformation systems that is expected for %s lattices in "
+          "The number of slip systems NUMSLIPSYS = {} given in the input does not match the "
+          "expected total number of {} deformation systems that is expected for {} lattices in "
           "the "
           "absence of twinning!",
           params_->num_slip_sys_, params_->num_twin_sys_, def_system_count_, lattice_type_.c_str());
 
     else if (is_twinning_)
       FOUR_C_THROW(
-          "The sum of the number of slip systems NUMSLIPSYS = %d and the number twinning "
+          "The sum of the number of slip systems NUMSLIPSYS = {} and the number twinning "
           "systems "
-          "NUMTWINSYS = %d given in the input does not match the expected total number of %d "
-          "deformation systems that is expected for %s lattices!",
+          "NUMTWINSYS = {} given in the input does not match the expected total number of {} "
+          "deformation systems that is expected for {} lattices!",
           params_->num_slip_sys_, params_->num_twin_sys_, def_system_count_, lattice_type_.c_str());
   }
 
@@ -972,7 +972,7 @@ void Mat::CrystalPlasticity::setup_lattice_vectors()
   }
   else if (lattice_type_ == "HCP" or lattice_type_ == "BCC" or lattice_type_ == "FCC")
     FOUR_C_THROW(
-        "%s lattices are not yet implemented. If you want to use these lattice types you "
+        "{} lattices are not yet implemented. If you want to use these lattice types you "
         "need to extend the SetupLatticeVectors() method accordingly.",
         lattice_type_.c_str());
   // academic test lattice containing only one slip system
@@ -1012,7 +1012,7 @@ void Mat::CrystalPlasticity::setup_lattice_vectors()
     if (!is_perpendicular_)
       FOUR_C_THROW(
           "Warning, slip direction and slip plane normal of slip system "
-          "%s are not perpendicular! Check implementation of lattice vectors.",
+          "{} are not perpendicular! Check implementation of lattice vectors.",
           def_system_id_[i].c_str());
   }
   if (is_twinning_)
@@ -1026,7 +1026,7 @@ void Mat::CrystalPlasticity::setup_lattice_vectors()
       if (!is_perpendicular_)
         FOUR_C_THROW(
             "Warning, twinning direction and twinning plane normal of twinning system "
-            "%s are not perpendicular! Check implementation of lattice vectors.",
+            "{} are not perpendicular! Check implementation of lattice vectors.",
             def_system_id_[i].c_str());
 
       is_non_coplanar_[i].resize(def_system_count_);

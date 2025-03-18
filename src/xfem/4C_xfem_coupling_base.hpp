@@ -77,7 +77,7 @@ namespace XFEM
     int get_coupling_dofset_nds(const std::string& name)
     {
       if (not(dofset_coupling_map_.count(name) == 1))
-        FOUR_C_THROW("%s -dofset not set in dofset_coupling_map for fluid dis!", name.c_str());
+        FOUR_C_THROW("{} -dofset not set in dofset_coupling_map for fluid dis!", name.c_str());
 
       return dofset_coupling_map_[name];
     }
@@ -169,7 +169,7 @@ namespace XFEM
       else if (type == Inpar::XFEM::CouplingCond_EMBEDDEDMESH_BACKGROUND_SOLID_VOL)
         return "XFEM Background Solid Volume";
       else
-        FOUR_C_THROW("unsupported coupling condition type %i", type);
+        FOUR_C_THROW("unsupported coupling condition type {}", type);
 
       return "UNKNOWN";
     }
@@ -187,7 +187,7 @@ namespace XFEM
       else if (strategy == Inpar::XFEM::invalid)
         return "INVALID";
       else
-        FOUR_C_THROW("unsupported averaging strategy %i", strategy);
+        FOUR_C_THROW("unsupported averaging strategy {}", strategy);
 
       return "UNKNOWN";
     }
@@ -293,7 +293,7 @@ namespace XFEM
           fabs(configuration_map_.at(Inpar::XFEM::F_Adj_Col).second -
                configuration_map_.at(Inpar::XFEM::F_Pen_Col).second) > 1e-16)
         FOUR_C_THROW(
-            "%s: You should set Scalings for Adjoint and Penalty Column, even if just one is used, "
+            "{}: You should set Scalings for Adjoint and Penalty Column, even if just one is used, "
             "as we support at the moment just equal penalty and adjoint consistent constraints!",
             cond_name_.c_str());
       if (((configuration_map_.at(Inpar::XFEM::X_Adj_Col).first &&
@@ -303,7 +303,7 @@ namespace XFEM
           fabs(configuration_map_.at(Inpar::XFEM::X_Adj_Col).second -
                configuration_map_.at(Inpar::XFEM::X_Pen_Col).second) > 1e-16)
         FOUR_C_THROW(
-            "%s: You should set Scalings for Adjoint and Penalty Column, even if just one is used, "
+            "{}: You should set Scalings for Adjoint and Penalty Column, even if just one is used, "
             "as we support at the moment just equal penalty and adjoint consistent constraints!",
             cond_name_.c_str());
       if (((configuration_map_.at(Inpar::XFEM::F_Adj_n_Col).first &&
@@ -313,7 +313,7 @@ namespace XFEM
           fabs(configuration_map_.at(Inpar::XFEM::F_Adj_n_Col).second -
                configuration_map_.at(Inpar::XFEM::F_Pen_n_Col).second) > 1e-16)
         FOUR_C_THROW(
-            "%s: You should set Scalings for Adjoint and Penalty Column, even if just one is used, "
+            "{}: You should set Scalings for Adjoint and Penalty Column, even if just one is used, "
             "as we support at the moment just equal penalty and adjoint consistent constraints!",
             cond_name_.c_str());
       if (((configuration_map_.at(Inpar::XFEM::X_Adj_n_Col).first &&
@@ -323,7 +323,7 @@ namespace XFEM
           fabs(configuration_map_.at(Inpar::XFEM::X_Adj_n_Col).second -
                configuration_map_.at(Inpar::XFEM::X_Pen_n_Col).second) > 1e-16)
         FOUR_C_THROW(
-            "%s: You should set Scalings for Adjoint and Penalty Column, even if just one is used, "
+            "{}: You should set Scalings for Adjoint and Penalty Column, even if just one is used, "
             "as we support at the moment just equal penalty and adjoint consistent constraints!",
             cond_name_.c_str());
       if (((configuration_map_.at(Inpar::XFEM::F_Adj_t_Col).first &&
@@ -333,7 +333,7 @@ namespace XFEM
           fabs(configuration_map_.at(Inpar::XFEM::F_Adj_t_Col).second -
                configuration_map_.at(Inpar::XFEM::F_Pen_t_Col).second) > 1e-16)
         FOUR_C_THROW(
-            "%s: You should set Scalings for Adjoint and Penalty Column, even if just one is used, "
+            "{}: You should set Scalings for Adjoint and Penalty Column, even if just one is used, "
             "as we support at the moment just equal penalty and adjoint consistent constraints!",
             cond_name_.c_str());
       if (((configuration_map_.at(Inpar::XFEM::X_Adj_t_Col).first &&
@@ -343,7 +343,7 @@ namespace XFEM
           fabs(configuration_map_.at(Inpar::XFEM::X_Adj_t_Col).second -
                configuration_map_.at(Inpar::XFEM::X_Pen_t_Col).second) > 1e-16)
         FOUR_C_THROW(
-            "%s: You should set Scalings for Adjoint and Penalty Column, even if just one is used, "
+            "{}: You should set Scalings for Adjoint and Penalty Column, even if just one is used, "
             "as we support at the moment just equal penalty and adjoint consistent constraints!",
             cond_name_.c_str());
 
@@ -381,7 +381,7 @@ namespace XFEM
                   << configuration_map_.at(Inpar::XFEM::X_Adj_t_Col).second << "/"
                   << configuration_map_.at(Inpar::XFEM::X_Pen_t_Col).second << std::endl;
         FOUR_C_THROW(
-            "%s: Your consistent constraint for Penalty and Adjoint term is not equal, go to "
+            "{}: Your consistent constraint for Penalty and Adjoint term is not equal, go to "
             "element level and split up velint_diff_ for penalty and adjoint!",
             cond_name_.c_str());
       }

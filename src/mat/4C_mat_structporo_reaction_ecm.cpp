@@ -134,7 +134,7 @@ void Mat::StructPoroReactionECM::unpack(Core::Communication::UnpackBuffer& buffe
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::StructPoroReactionECM*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 

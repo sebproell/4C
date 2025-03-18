@@ -263,7 +263,7 @@ void Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::elliptic_newto
         if (normgradphi < 1.0e-8)
           FOUR_C_THROW(
               " The gradient l2-norm is smaller than 1.0e-8! "
-              "( value = %e )",
+              "( value = {} )",
               normgradphi);
 
         double inv_normgradphi = 1.0 / normgradphi;
@@ -1170,7 +1170,7 @@ void Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::evaluate_inter
         break;
       }
       default:
-        FOUR_C_THROW("cell distype not implemented yet ( cellType = %s )",
+        FOUR_C_THROW("cell distype not implemented yet ( cellType = {} )",
             Core::FE::cell_type_to_string(celldistype).c_str());
         break;
     }

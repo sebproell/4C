@@ -154,8 +154,8 @@ namespace
       FOUR_C_THROW(
           "It is not allowed to set primary variables of your problem as constants in the "
           "VARFUNCTION.\n\n"
-          "Variables passed to Evaluate: %s \n"
-          "Constants from Input: %s",
+          "Variables passed to Evaluate: {} \n"
+          "Constants from Input: {}",
           join_keys(variable_values).c_str(), join_keys(constants_from_input).c_str());
     }
   }
@@ -244,7 +244,7 @@ Core::Utils::try_create_symbolic_function_of_space_time(
 
     // check the validity of the n-th component
     const int compid = functcomp.get<std::optional<int>>("COMPONENT").value_or(0);
-    if (compid != n) FOUR_C_THROW("expected COMPONENT %d but got COMPONENT %d", n, compid);
+    if (compid != n) FOUR_C_THROW("expected COMPONENT {} but got COMPONENT {}", n, compid);
 
 
     // read the expression of the n-th component of the i-th function
@@ -357,7 +357,7 @@ Core::Utils::try_create_symbolic_function_of_space_time(
       const bool names_of_all_pieces_equal = std::all_of(
           pieces.begin(), pieces.end(), [&name](auto& var) { return var->name() == name; });
       if (not names_of_all_pieces_equal)
-        FOUR_C_THROW("Variable %d has a piece-wise definition with inconsistent names.", id);
+        FOUR_C_THROW("Variable {} has a piece-wise definition with inconsistent names.", id);
 
       functvarvector.emplace_back(std::make_shared<PiecewiseVariable>(name, pieces));
     }
@@ -388,7 +388,7 @@ double Core::Utils::SymbolicFunctionOfSpaceTime::evaluate(
 
   if (component_mod >= expr_.size())
     FOUR_C_THROW(
-        "There are %d expressions but tried to access component %d", expr_.size(), component);
+        "There are {} expressions but tried to access component {}", expr_.size(), component);
 
   // create map for variables
   std::map<std::string, double> variable_values;
@@ -418,7 +418,7 @@ std::vector<double> Core::Utils::SymbolicFunctionOfSpaceTime::evaluate_spatial_d
 
   if (component_mod >= expr_.size())
     FOUR_C_THROW(
-        "There are %d expressions but tried to access component %d", expr_.size(), component);
+        "There are {} expressions but tried to access component {}", expr_.size(), component);
 
 
   // variables

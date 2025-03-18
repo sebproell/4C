@@ -86,7 +86,7 @@ struct WriteNodalHeatfluxStep : SpecialFieldInterface
       numdf = 1;
     else
       FOUR_C_THROW(
-          "Cannot handle dimension %g", filter_.get_writer().get_field()->problem()->num_dim());
+          "Cannot handle dimension {}", filter_.get_writer().get_field()->problem()->num_dim());
     return numdf;
   }
 
@@ -183,7 +183,7 @@ struct WriteNodalHeatfluxStep : SpecialFieldInterface
     }
     else
     {
-      FOUR_C_THROW("Cannot handle numdf=%g", numdf);
+      FOUR_C_THROW("Cannot handle numdf={}", numdf);
     }
 
     filter_.get_writer().write_nodal_result_step(
@@ -213,7 +213,7 @@ struct WriteElementCenterHeatfluxStep : SpecialFieldInterface
       numdf = 1;
     else
       FOUR_C_THROW(
-          "Cannot handle dimension %g", filter_.get_writer().get_field()->problem()->num_dim());
+          "Cannot handle dimension {}", filter_.get_writer().get_field()->problem()->num_dim());
     return numdf;
   }
 

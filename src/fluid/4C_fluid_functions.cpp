@@ -27,7 +27,7 @@ namespace
   {
     auto* params = Global::Problem::instance()->materials()->parameter_by_id(mat_id);
     if (params->type() != Core::Materials::m_fluid_weakly_compressible)
-      FOUR_C_THROW("Material %d is not a weakly compressible fluid", mat_id);
+      FOUR_C_THROW("Material {} is not a weakly compressible fluid", mat_id);
     auto* fparams = dynamic_cast<Mat::PAR::WeaklyCompressibleFluid*>(params);
     if (!fparams) FOUR_C_THROW("Material does not cast to Weakly compressible fluid");
     return *fparams;
@@ -38,7 +38,7 @@ namespace
   {
     auto* params = Global::Problem::instance()->materials()->parameter_by_id(mat_id);
     if (params->type() != Core::Materials::m_fluid)
-      FOUR_C_THROW("Material %d is not a fluid", mat_id);
+      FOUR_C_THROW("Material {} is not a fluid", mat_id);
     auto* fparams = dynamic_cast<Mat::PAR::NewtonianFluid*>(params);
     if (!fparams) FOUR_C_THROW("Material does not cast to Newtonian fluid");
     return *fparams;
@@ -49,7 +49,7 @@ namespace
   {
     auto* params = Global::Problem::instance()->materials()->parameter_by_id(mat_id);
     if (params->type() != Core::Materials::m_stvenant)
-      FOUR_C_THROW("Material %d is not a St.Venant-Kirchhoff structure material", mat_id);
+      FOUR_C_THROW("Material {} is not a St.Venant-Kirchhoff structure material", mat_id);
     auto* fparams = dynamic_cast<Mat::PAR::StVenantKirchhoff*>(params);
     if (!fparams) FOUR_C_THROW("Material does not cast to St.Venant-Kirchhoff structure material");
     return *fparams;
@@ -6666,7 +6666,7 @@ double FLD::BeltramiUP::evaluate(
     case 3:
       return c * (1.0 / K3 + 1.0 / K2 + 1.0 / K1) * density_;
     default:
-      FOUR_C_THROW("wrong component %d", component);
+      FOUR_C_THROW("wrong component {}", component);
       break;
   }
 
@@ -6695,7 +6695,7 @@ std::vector<double> FLD::BeltramiUP::evaluate_time_derivative(
         res[1] = 0;
         [[fallthrough]];
       default:
-        FOUR_C_THROW("wrong component %d", component);
+        FOUR_C_THROW("wrong component {}", component);
         break;
     }
   }
@@ -6712,7 +6712,7 @@ std::vector<double> FLD::BeltramiUP::evaluate_time_derivative(
         res[2] = 0;
         [[fallthrough]];
       default:
-        FOUR_C_THROW("wrong component %d", component);
+        FOUR_C_THROW("wrong component {}", component);
         break;
     }
   }
@@ -6767,7 +6767,7 @@ double FLD::BeltramiGradU::evaluate(
     case 8:  // w,z
       return a * b * (K2 - K3);
     default:
-      FOUR_C_THROW("wrong component %d", component);
+      FOUR_C_THROW("wrong component {}", component);
       break;
   }
 
@@ -6801,7 +6801,7 @@ std::vector<double> FLD::BeltramiGradU::evaluate_time_derivative(
         res[1] = 0;
         [[fallthrough]];
       default:
-        FOUR_C_THROW("wrong component %d", component);
+        FOUR_C_THROW("wrong component {}", component);
         break;
     }
   }
@@ -6823,7 +6823,7 @@ std::vector<double> FLD::BeltramiGradU::evaluate_time_derivative(
         res[2] = 0;
         [[fallthrough]];
       default:
-        FOUR_C_THROW("wrong component %d", component);
+        FOUR_C_THROW("wrong component {}", component);
         break;
     }
   }
@@ -6889,7 +6889,7 @@ double FLD::BeltramiRHS::evaluate(
       return c * (-b / K3 - a / K2 + (a + b) / K1 - 2. * kinviscosity_ * (b * K2 - a * K3)) +
              conv_z;
     default:
-      FOUR_C_THROW("wrong component %d", component);
+      FOUR_C_THROW("wrong component {}", component);
       break;
   }
 
@@ -6917,7 +6917,7 @@ std::vector<double> FLD::BeltramiRHS::evaluate_time_derivative(
         res[1] = 0;
         [[fallthrough]];
       default:
-        FOUR_C_THROW("wrong component %d", component);
+        FOUR_C_THROW("wrong component {}", component);
         break;
     }
   }
@@ -6933,7 +6933,7 @@ std::vector<double> FLD::BeltramiRHS::evaluate_time_derivative(
         res[2] = 0;
         [[fallthrough]];
       default:
-        FOUR_C_THROW("wrong component %d", component);
+        FOUR_C_THROW("wrong component {}", component);
         break;
     }
   }
@@ -6989,7 +6989,7 @@ double FLD::KimMoinUP::evaluate(const double* xp, const double t, const std::siz
     case 3:
       return -1. / 4. * (cos(2.0 * a_pi_x) + cos(2.0 * a_pi_y)) * gp * density_;
     default:
-      FOUR_C_THROW("wrong component %d", component);
+      FOUR_C_THROW("wrong component {}", component);
       break;
   }
 
@@ -7045,7 +7045,7 @@ std::vector<double> FLD::KimMoinUP::evaluate_time_derivative(
         res[1] = -1. / 4. * (cos(2.0 * a_pi_x) + cos(2.0 * a_pi_y)) * gp * density_;
         [[fallthrough]];
       default:
-        FOUR_C_THROW("wrong component %d", component);
+        FOUR_C_THROW("wrong component {}", component);
         break;
     }
   }
@@ -7082,7 +7082,7 @@ std::vector<double> FLD::KimMoinUP::evaluate_time_derivative(
         res[2] = -1. / 4. * (cos(2.0 * a_pi_x) + cos(2.0 * a_pi_y)) * gp * density_;
         [[fallthrough]];
       default:
-        FOUR_C_THROW("wrong component %d", component);
+        FOUR_C_THROW("wrong component {}", component);
         break;
     }
   }
@@ -7148,7 +7148,7 @@ double FLD::KimMoinGradU::evaluate(
     case 8:  // w,z
       return 0.0;
     default:
-      FOUR_C_THROW("wrong component %d", component);
+      FOUR_C_THROW("wrong component {}", component);
       break;
   }
 
@@ -7220,7 +7220,7 @@ std::vector<double> FLD::KimMoinGradU::evaluate_time_derivative(
         res[1] = 0.0;
         [[fallthrough]];
       default:
-        FOUR_C_THROW("wrong component %d", component);
+        FOUR_C_THROW("wrong component {}", component);
         break;
     }
   }
@@ -7268,7 +7268,7 @@ std::vector<double> FLD::KimMoinGradU::evaluate_time_derivative(
         res[2] = 0.0;
         [[fallthrough]];
       default:
-        FOUR_C_THROW("wrong component %d", component);
+        FOUR_C_THROW("wrong component {}", component);
         break;
     }
   }
@@ -7348,7 +7348,7 @@ double FLD::KimMoinRHS::evaluate(
     case 2:
       return 0.0;
     default:
-      FOUR_C_THROW("wrong component %d", component);
+      FOUR_C_THROW("wrong component {}", component);
       break;
   }
 
@@ -7414,7 +7414,7 @@ std::vector<double> FLD::KimMoinRHS::evaluate_time_derivative(
         res[1] = 0.0;
         [[fallthrough]];
       default:
-        FOUR_C_THROW("wrong component %d", component);
+        FOUR_C_THROW("wrong component {}", component);
         break;
     }
   }
@@ -7464,7 +7464,7 @@ std::vector<double> FLD::KimMoinRHS::evaluate_time_derivative(
         res[2] = 0.0;
         [[fallthrough]];
       default:
-        FOUR_C_THROW("wrong component %d", component);
+        FOUR_C_THROW("wrong component {}", component);
         break;
     }
   }
@@ -7539,7 +7539,7 @@ double FLD::KimMoinStress::evaluate(
     case 5:  // sigma_zx
       return 0.0;
     default:
-      FOUR_C_THROW("wrong component %d", component);
+      FOUR_C_THROW("wrong component {}", component);
       break;
   }
 

@@ -476,7 +476,7 @@ namespace XFEM
       }
       else
       {
-        FOUR_C_THROW("This option for a projection matrix %d does not exist. \n", projtosurf_);
+        FOUR_C_THROW("This option for a projection matrix {} does not exist. \n", projtosurf_);
       }
 
       // Normalize the smoothed gradient

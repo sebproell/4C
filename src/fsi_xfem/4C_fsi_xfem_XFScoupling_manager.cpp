@@ -31,7 +31,7 @@ XFEM::XfsCouplingManager::XfsCouplingManager(std::shared_ptr<ConditionManager> c
       interface_second_order_(false)
 {
   if (idx_.size() != 2)
-    FOUR_C_THROW("XFSCoupling_Manager required two block ( 2 != %d)", idx_.size());
+    FOUR_C_THROW("XFSCoupling_Manager required two block ( 2 != {})", idx_.size());
 
   const Teuchos::ParameterList& fsidyn = Global::Problem::instance()->fsi_dynamic_params();
   interface_second_order_ = fsidyn.get<bool>("SECONDORDER");
@@ -196,7 +196,7 @@ void XFEM::XfsCouplingManager::add_coupling_rhs(std::shared_ptr<Core::LinAlg::Ve
     const double scaling_S = 1.0 / (1.0 - stiparam);  // 1/(1-alpha_F) = 1/weight^S_np
     // add Lagrange multiplier (structural forces from t^n)
     int err = coup_rhs_sum.update(stiparam * scaling_S, *lambda_, scaling);
-    if (err) FOUR_C_THROW("Update of Nit_Struct_FSI RHS failed with errcode = %d!", err);
+    if (err) FOUR_C_THROW("Update of Nit_Struct_FSI RHS failed with errcode = {}!", err);
   }
   else
   {

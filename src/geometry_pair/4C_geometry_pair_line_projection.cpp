@@ -168,10 +168,10 @@ void GEOMETRYPAIR::LineTo3DBase<PairType>::project_gauss_points_on_segment_to_ot
     }
     else
     {
-      FOUR_C_THROW(error_message.str() +
-                       "\n\nError when projecting the Gauss points. There are %d Gauss points, %d "
-                       "could be projected and %d of the projected ones are valid.",
-          gauss_points.nquad, n_projections, n_valid_projections);
+      FOUR_C_THROW(
+          "{}\n\nError when projecting the Gauss points. There are {} Gauss points, {} "
+          "could be projected and {} of the projected ones are valid.",
+          error_message.str(), gauss_points.nquad, n_projections, n_valid_projections);
     }
   }
 }
@@ -273,7 +273,7 @@ void GEOMETRYPAIR::LineTo3DGaussPointProjection<PairType>::evaluate(const PairTy
   if (segments.size() > 1)
     FOUR_C_THROW(
         "There should be zero or one segments for the Gauss point projection method. The actual "
-        "value is %d!",
+        "value is {}!",
         segments.size());
 
   // Check if one point projected in pre_evaluate.
@@ -297,7 +297,7 @@ void GEOMETRYPAIR::LineTo3DGaussPointProjection<PairType>::evaluate(const PairTy
       // This algorithm only works if one intersection point was found.
       if (intersection_points.size() != 1)
         FOUR_C_THROW(
-            "In the segmentation case we expect exactly one found intersection point. Got: %d!",
+            "In the segmentation case we expect exactly one found intersection point. Got: {}!",
             intersection_points.size());
 
       // Get the limits of the segmented line.
@@ -336,7 +336,7 @@ std::vector<bool>& GEOMETRYPAIR::LineTo3DGaussPointProjection<PairType>::get_lin
       pair->get_evaluation_data()->get_gauss_point_projection_tracker();
   auto find = projection_tracker.find(line_element_id);
   if (find == projection_tracker.end())
-    FOUR_C_THROW("Could not find the projection tracker for line id %d.", line_element_id);
+    FOUR_C_THROW("Could not find the projection tracker for line id {}.", line_element_id);
   return find->second;
 }
 
@@ -353,7 +353,7 @@ void GEOMETRYPAIR::LineTo3DSegmentation<PairType>::evaluate(const PairType* pair
   // Only zero segments are expected.
   if (segments.size() > 0)
     FOUR_C_THROW(
-        "There should be zero segments for the segmentation method. The actual value is %d!",
+        "There should be zero segments for the segmentation method. The actual value is {}!",
         segments.size());
 
   // Number of search points.
@@ -522,7 +522,7 @@ GEOMETRYPAIR::LineTo3DSegmentation<PairType>::get_segment_tracking_set(const Pai
       pair->get_evaluation_data()->get_segment_tracker();
   auto find = segment_tracker_map.find(line_element_id);
   if (find == segment_tracker_map.end())
-    FOUR_C_THROW("Could not find the segment tracker for line id %d.", line_element_id);
+    FOUR_C_THROW("Could not find the segment tracker for line id {}.", line_element_id);
   return find->second;
 }
 

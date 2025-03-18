@@ -200,7 +200,7 @@ namespace Discret::Utils::Beam
   {
     if (I_i.size() != (unsigned int)gausspoints.nquad)
       FOUR_C_THROW(
-          "vector for individual shape functions to be evaluated at %d GPs has wrong size: %d",
+          "vector for individual shape functions to be evaluated at {} GPs has wrong size: {}",
           gausspoints.nquad, I_i.size());
 
     for (int numgp = 0; numgp < gausspoints.nquad; numgp++)
@@ -229,8 +229,8 @@ namespace Discret::Utils::Beam
   {
     if (I_i_xi.size() != (unsigned int)gausspoints.nquad)
       FOUR_C_THROW(
-          "vector for individual shape function derivatives to be evaluated at %d GPs has "
-          "wrong size: %d",
+          "vector for individual shape function derivatives to be evaluated at {} GPs has "
+          "wrong size: {}",
           gausspoints.nquad, I_i_xi.size());
 
     for (int numgp = 0; numgp < gausspoints.nquad; ++numgp)

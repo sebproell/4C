@@ -59,7 +59,7 @@ Discret::Elements::StructuralSurface::StructuralSurface(int id, int owner, int n
     if (numdofpernode_ !=
         parent_master_element()->num_dof_per_node(*StructuralSurface::nodes()[nlid]))
       FOUR_C_THROW(
-          "You need different NumDofPerNode for each node on this structural surface? (%d != %d)",
+          "You need different NumDofPerNode for each node on this structural surface? ({} != {})",
           numdofpernode_,
           parent_master_element()->num_dof_per_node(*StructuralSurface::nodes()[nlid]));
   }

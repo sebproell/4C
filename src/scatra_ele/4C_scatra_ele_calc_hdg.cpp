@@ -611,14 +611,14 @@ void Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::LocalSolver::compute
   {
     if (scatraparatimint_->is_stationary())
       FOUR_C_THROW(
-          "Inversion for AMmat failed with errorcode %d. This might be due to the fact that in "
+          "Inversion for AMmat failed with errorcode {}. This might be due to the fact that in "
           "stationary problems Mmat_ is a zero matrix and AMat_ (if there is no convection) only "
           "has boundary integrals. Therefore, if you are using elements with internal degrees of "
           "freedom (high degree?), invAMmat_ matrix will be singular. If none of this is the case, "
           "you'll need to find the problem yourself.",
           err);
     else
-      FOUR_C_THROW("Inversion for AMmat failed with errorcode %d", err);
+      FOUR_C_THROW("Inversion for AMmat failed with errorcode {}", err);
   }
 }
 
@@ -1172,7 +1172,7 @@ void Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::LocalSolver::condens
   int err = inverseinW.invert();
   if (err != 0)
     FOUR_C_THROW(
-        "Inversion of temporary matrix for Schur complement failed with errorcode %d", err);
+        "Inversion of temporary matrix for Schur complement failed with errorcode {}", err);
   // tempMat2 = (  D - H A^{-1} B )^{-1}
 
   hdgele->invCondmat_ = tempMat2;
@@ -1628,7 +1628,7 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::set_initial_field(
       inverseMass.factorWithEquilibration(true);
       int err2 = inverseMass.factor();
       int err = inverseMass.solve();
-      if (err != 0 || err2 != 0) FOUR_C_THROW("Inversion of matrix failed with errorcode %d", err);
+      if (err != 0 || err2 != 0) FOUR_C_THROW("Inversion of matrix failed with errorcode {}", err);
     }
   }
 
@@ -1678,7 +1678,7 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::set_initial_field(
     inverseMass.factorWithEquilibration(true);
     int err2 = inverseMass.factor();
     int err = inverseMass.solve();
-    if (err != 0 || err2 != 0) FOUR_C_THROW("Inversion of matrix failed with errorcode %d", err);
+    if (err != 0 || err2 != 0) FOUR_C_THROW("Inversion of matrix failed with errorcode {}", err);
     for (unsigned int i = 0; i < shapesface_->nfdofs_; ++i) elevec1(nfdofs + i) = trVec(i, 0);
 
     nfdofs += shapesface_->nfdofs_;
@@ -1754,7 +1754,7 @@ void Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::LocalSolver::prepare
   Teuchos::SerialDenseSolver<ordinalType, scalarType> inverseindifftensor;
   inverseindifftensor.setMatrix(Teuchos::rcpFromRef(difftensor));
   int err = inverseindifftensor.invert();
-  if (err != 0) FOUR_C_THROW("Inversion of diffusion tensor failed with errorcode %d", err);
+  if (err != 0) FOUR_C_THROW("Inversion of diffusion tensor failed with errorcode {}", err);
 
   hdgele->invdiff_.push_back(difftensor);
 }
@@ -1839,7 +1839,7 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::project_field(
   std::vector<double> intphi = Core::FE::extract_values(*matrix_state, la[nds_intvar_old].lm_);
   if (intphi.size() != shapes_old->ndofs_ * (nsd_ + 1))
     FOUR_C_THROW(
-        "node number not matching: %d vs. %d", intphi.size(), shapes_old->ndofs_ * (nsd_ + 1));
+        "node number not matching: {} vs. {}", intphi.size(), shapes_old->ndofs_ * (nsd_ + 1));
 
   for (unsigned int i = 0; i < shapes_old->ndofs_ * (nsd_ + 1); ++i) interiorPhi_old(i) = intphi[i];
 

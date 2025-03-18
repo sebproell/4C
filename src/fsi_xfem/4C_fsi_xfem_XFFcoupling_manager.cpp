@@ -27,7 +27,7 @@ XFEM::XffCouplingManager::XffCouplingManager(std::shared_ptr<ConditionManager> c
       idx_(idx)
 {
   if (idx_.size() != 2)
-    FOUR_C_THROW("XFFCoupling_Manager required two block ( 2 != %d)", idx_.size());
+    FOUR_C_THROW("XFFCoupling_Manager required two block ( 2 != {})", idx_.size());
 
   // Coupling_Comm_Manager create all Coupling Objects now with Fluid has idx = 0, Fluid has idx =
   // 1!

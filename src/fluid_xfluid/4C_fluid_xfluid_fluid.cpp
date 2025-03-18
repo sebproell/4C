@@ -407,7 +407,7 @@ void FLD::XFluidFluid::assemble_mat_and_rhs(int itnum  ///< iteration number
         (*embedded_fluid_->residual())[embedded_fluid_->residual()->get_map().LID(rhsgid)] +=
             (*coup_state->rhC_s_)[coup_state->rhC_s_->get_map().LID(rhsgid)];
       else
-        FOUR_C_THROW("Interface dof %d does not belong to embedded discretization!", rhsgid);
+        FOUR_C_THROW("Interface dof {} does not belong to embedded discretization!", rhsgid);
     }
   }
 
@@ -546,7 +546,7 @@ void FLD::XFluidFluid::add_eos_pres_stab_to_emb_layer()
     Core::LinAlg::Vector<double> res_tmp(embedded_fluid_->residual()->get_map(), true);
     Epetra_Export exporter(residual_col->get_map(), res_tmp.get_map());
     int err = res_tmp.export_to(*residual_col, exporter, Add);
-    if (err) FOUR_C_THROW("Export using exporter returned err=%d", err);
+    if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
     embedded_fluid_->residual()->update(1.0, res_tmp, 1.0);
   }
 

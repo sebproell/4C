@@ -43,7 +43,7 @@ namespace Core::FE
       Core::FE::num_nodes<celltype>, typename std::remove_cvref_t<R>::value_type>
   {
     FOUR_C_ASSERT(std::ranges::size(values) == num_dof_per_node * Core::FE::num_nodes<celltype>,
-        "Expecting a size of the span of %d, but got %d",
+        "Expecting a size of the span of {}, but got {}",
         num_dof_per_node * Core::FE::num_nodes<celltype>, values.size());
 
     constexpr bool view = false;
@@ -64,7 +64,7 @@ namespace Core::FE
       Core::FE::num_nodes<celltype>, typename std::remove_cvref_t<R>::value_type>
   {
     FOUR_C_ASSERT(std::ranges::size(values) == num_dof_per_node * Core::FE::num_nodes<celltype>,
-        "Expecting a size of the span of %d, but got %d",
+        "Expecting a size of the span of {}, but got {}",
         num_dof_per_node * Core::FE::num_nodes<celltype>, values.size());
     constexpr bool view = true;
     return Core::LinAlg::Matrix<num_dof_per_node, Core::FE::num_nodes<celltype>,

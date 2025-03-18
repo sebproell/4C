@@ -223,7 +223,7 @@ Arteries::Utils::ArtJunctionWrapper::ArtJunctionWrapper(
 
           int local_id = discret_->node_row_map()->LID((*nodes)[0]);
           inserted = nodalParams->insert(std::make_pair(local_id, nodeparams)).second;
-          if (!inserted) FOUR_C_THROW("Node %d has more than one condition", (*nodes)[0] + 1);
+          if (!inserted) FOUR_C_THROW("Node {} has more than one condition", (*nodes)[0] + 1);
         }
       }
 
@@ -289,10 +289,10 @@ Arteries::Utils::ArtJunctionBc::ArtJunctionBc(std::shared_ptr<Core::FE::Discreti
   if (!IOartFlags_are_fine)
   {
     if (IOartFlag == 1)
-      FOUR_C_THROW("Junction (%d) has all of its nodes defined as outlets",
+      FOUR_C_THROW("Junction ({}) has all of its nodes defined as outlets",
           conds[0]->parameters().get<int>("ConditionID"));
     else
-      FOUR_C_THROW("Junction (%d) has all of its nodes defined as inlets",
+      FOUR_C_THROW("Junction ({}) has all of its nodes defined as inlets",
           conds[0]->parameters().get<int>("ConditionID"));
   }
 
@@ -481,7 +481,7 @@ int Arteries::Utils::ArtJunctionBc::solve(Teuchos::ParameterList& params)
     if (err != 0 || err2 != 0)
     {
       FOUR_C_THROW(
-          "Unable to solve for the jacobian in junction %d, error number %d", condid_, err);
+          "Unable to solve for the jacobian in junction {}, error number {}", condid_, err);
     }
 
     //--------------------------------------------------------------------
@@ -501,7 +501,7 @@ int Arteries::Utils::ArtJunctionBc::solve(Teuchos::ParameterList& params)
     if (itr++ >= 20)
     {
       delete[] pivot;
-      FOUR_C_THROW("Junction [%d] is not converging!", condid_);
+      FOUR_C_THROW("Junction [{}] is not converging!", condid_);
     }
 
     //--------------------------------------------------------------------

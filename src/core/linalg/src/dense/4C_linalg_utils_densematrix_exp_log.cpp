@@ -63,7 +63,7 @@ Core::LinAlg::Matrix<dim, dim> Core::LinAlg::matrix_exp(const Core::LinAlg::Matr
     }
 
     // throw error if no convergence is reached after the maximum number of terms
-    FOUR_C_ASSERT_ALWAYS(n < n_max, "Matrix exponential unconverged in %i steps.", n);
+    FOUR_C_ASSERT_ALWAYS(n < n_max, "Matrix exponential unconverged in {} steps.", n);
 
     return output;
   }
@@ -218,7 +218,7 @@ Core::LinAlg::Matrix<dim, dim> Core::LinAlg::matrix_log(const Core::LinAlg::Matr
       FOUR_C_ASSERT_ALWAYS(eigenval_matrix(i, i).real() >= 0.0,
           "The current matrix logarithm implementation only considers the case where all "
           "eigenvalues "
-          "possess positive real parts! This is not given here, real part:  %d",
+          "possess positive real parts! This is not given here, real part:  {}",
           eigenval_matrix(i, i).real());
       eigenval_matrix(i, i) = std::log(eigenval_matrix(i, i));
     }
@@ -280,7 +280,7 @@ Core::LinAlg::Matrix<9, 9> Core::LinAlg::matrix_3x3_exp_1st_deriv(
     tmp2 = tmp1;
   }
 
-  FOUR_C_ASSERT_ALWAYS(nIter < 50, "matrix exponential unconverged in %i steps", nIter);
+  FOUR_C_ASSERT_ALWAYS(nIter < 50, "matrix exponential unconverged in {} steps", nIter);
   nmax = nIter;
 
   // compose derivative of matrix exponential (non-symmetric Voigt-notation)
@@ -343,7 +343,7 @@ Core::LinAlg::Matrix<6, 6> Core::LinAlg::sym_matrix_3x3_exp_1st_deriv(
       Xn.push_back(tmp1);
       tmp2 = tmp1;
     }
-    FOUR_C_ASSERT_ALWAYS(nIter < 50, "matrix exponential unconverged in %i steps", nIter);
+    FOUR_C_ASSERT_ALWAYS(nIter < 50, "matrix exponential unconverged in {} steps", nIter);
     nmax = nIter;
 
     // compose derivative of matrix exponential (symmetric Voigt-notation)
@@ -783,7 +783,7 @@ void Core::LinAlg::sym_matrix_3x3_exp_2nd_deriv_voigt(const Core::LinAlg::Matrix
   } while (k < kmax && ak.norm2() > 1.e-16);
 
 
-  FOUR_C_ASSERT_ALWAYS(k < kmax, "Matrix exponential unconverged with %i summands", k);
+  FOUR_C_ASSERT_ALWAYS(k < kmax, "Matrix exponential unconverged with {} summands", k);
 
   // Additions: 1. Map first derivative from [6](3,3) to (6,6)
   for (int i = 0; i < 6; i++)

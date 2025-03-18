@@ -144,7 +144,7 @@ void FLD::TurbulentFlowAlgorithm::transfer_inflow_velocity()
   Epetra_Export exporter(inflowvelnp->get_map(), velnp_->get_map());
   // export inflow velocity
   int err = velnp_->export_to(*inflowvelnp, exporter, Insert);
-  if (err != 0) FOUR_C_THROW("Export using exporter returned err=%d", err);
+  if (err != 0) FOUR_C_THROW("Export using exporter returned err={}", err);
 
   if (Core::Communication::my_mpi_rank(fluiddis_->get_comm()) == 0)
     std::cout << "done\n" << std::endl;
@@ -202,19 +202,19 @@ void FLD::TurbulentFlowAlgorithm::read_restart(const int restart)
   int err = 0;
   Epetra_Export exportvelnp(fluidvelnp->get_map(), velnp->get_map());
   err = velnp->export_to(*fluidvelnp, exportvelnp, Insert);
-  if (err != 0) FOUR_C_THROW("Export using exporter returned err=%d", err);
+  if (err != 0) FOUR_C_THROW("Export using exporter returned err={}", err);
   Epetra_Export exportveln(fluidveln->get_map(), veln->get_map());
   err = veln->export_to(*fluidveln, exportveln, Insert);
-  if (err != 0) FOUR_C_THROW("Export using exporter returned err=%d", err);
+  if (err != 0) FOUR_C_THROW("Export using exporter returned err={}", err);
   Epetra_Export exportvelnm(fluidvelnm->get_map(), velnm->get_map());
   err = velnm->export_to(*fluidvelnm, exportvelnm, Insert);
-  if (err != 0) FOUR_C_THROW("Export using exporter returned err=%d", err);
+  if (err != 0) FOUR_C_THROW("Export using exporter returned err={}", err);
   Epetra_Export exportaccnp(fluidaccnp->get_map(), accnp->get_map());
   err = accnp->export_to(*fluidaccnp, exportaccnp, Insert);
-  if (err != 0) FOUR_C_THROW("Export using exporter returned err=%d", err);
+  if (err != 0) FOUR_C_THROW("Export using exporter returned err={}", err);
   Epetra_Export exportaccn(fluidaccn->get_map(), accn->get_map());
   err = accn->export_to(*fluidaccn, exportaccn, Insert);
-  if (err != 0) FOUR_C_THROW("Export using exporter returned err=%d", err);
+  if (err != 0) FOUR_C_THROW("Export using exporter returned err={}", err);
 
   // set values in the inflow field
   inflowfluidalgo_->fluid_field()->set_restart(

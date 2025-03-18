@@ -154,7 +154,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcLoma<distype, probdim>::calc_loma_t
   if (f != nullptr)
     Core::FE::extract_my_node_based_values(peleptr, eflux, **f, 3);
   else
-    FOUR_C_THROW("MultiVector %s has not been found!", name.c_str());
+    FOUR_C_THROW("MultiVector {} has not been found!", name.c_str());
 
   // calculate normal diffusive and velocity flux at each node of the
   // present boundary element

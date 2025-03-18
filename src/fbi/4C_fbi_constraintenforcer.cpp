@@ -226,9 +226,9 @@ void Adapter::FBIConstraintenforcer::create_pairs(
     if (ele_ptrs[0]->owner() !=
         Core::Communication::my_mpi_rank(structure_->discretization()->get_comm()))
       FOUR_C_THROW(
-          "For now we can only create the pair on the beam owner, but beam element owner is %i "
+          "For now we can only create the pair on the beam owner, but beam element owner is {} "
           "and "
-          "we are on proc %i \n",
+          "we are on proc {} \n",
           ele_ptrs[0]->owner(),
           Core::Communication::my_mpi_rank(structure_->discretization()->get_comm()));
 

@@ -48,7 +48,7 @@ namespace
 
     // open default bc specification file
     std::ofstream defaultbc(defaultbcfilename.c_str());
-    if (!defaultbc) FOUR_C_THROW("failed to open file: %s", defaultbcfilename.c_str());
+    if (!defaultbc) FOUR_C_THROW("failed to open file: {}", defaultbcfilename.c_str());
 
     // write mesh verbosely
     defaultbc << "----------- Mesh contents -----------" << std::endl << std::endl;
@@ -303,7 +303,7 @@ int main(int argc, char** argv)
 
       // open default header file
       std::ofstream defaulthead(defaultheadfilename.c_str());
-      if (!defaulthead) FOUR_C_THROW("failed to open file: %s", defaultheadfilename.c_str());
+      if (!defaulthead) FOUR_C_THROW("failed to open file: {}", defaultheadfilename.c_str());
 
       // get valid input parameters
       auto parameters = Input::valid_parameters();

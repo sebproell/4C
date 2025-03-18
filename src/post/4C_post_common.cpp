@@ -282,7 +282,7 @@ void PostProblem::setup_filter(std::string control_file_name, std::string output
     SYMBOL* first_result = map_find_symbol(&control_table_, "result");
     if (first_result == nullptr)
     {
-      FOUR_C_THROW("no result sections in control file '%s'\n", control_file_name.c_str());
+      FOUR_C_THROW("no result sections in control file '{}'\n", control_file_name.c_str());
     }
     while (first_result->next != nullptr)
     {
@@ -465,7 +465,7 @@ void PostProblem::read_meshes()
       const char* fn;
       if (!map_find_string(meshmap, "mesh_file", &fn))
         FOUR_C_THROW(
-            "No meshfile name for discretization %s.", currfield.discretization()->name().c_str());
+            "No meshfile name for discretization {}.", currfield.discretization()->name().c_str());
       std::string filename = fn;
       Core::IO::HDFReader reader = Core::IO::HDFReader(input_dir_);
       reader.open(filename, num_output_procs, Core::Communication::num_mpi_ranks(comm_),
@@ -498,7 +498,7 @@ void PostProblem::read_meshes()
               dynamic_cast<Core::FE::Nurbs::NurbsDiscretization*>(&(*currfield.discretization()));
 
           if (nurbsdis == nullptr)
-            FOUR_C_THROW("discretization %s is not a NurbsDiscretization",
+            FOUR_C_THROW("discretization {} is not a NurbsDiscretization",
                 currfield.discretization()->name().c_str());
 
           std::shared_ptr<std::vector<char>> packed_knots;
@@ -707,7 +707,7 @@ std::vector<double> PostResult::get_result_times(const std::string& fieldname)
   if (times.size() == 0)
   {
     FOUR_C_THROW(
-        "PostResult::get_result_times(fieldname='%s'):\n  no solution steps found in specified "
+        "PostResult::get_result_times(fieldname='{}'):\n  no solution steps found in specified "
         "timestep range! Check --start, --end, --step parameters.",
         fieldname.c_str());
   }
@@ -727,14 +727,14 @@ std::vector<double> PostResult::get_result_times(
   if (this->next_result(groupname))
     times.push_back(this->time());
   else
-    FOUR_C_THROW("no solution found in field '%s'", fieldname.c_str());
+    FOUR_C_THROW("no solution found in field '{}'", fieldname.c_str());
 
   while (this->next_result(groupname)) times.push_back(this->time());
 
   if (times.size() == 0)
   {
     FOUR_C_THROW(
-        "PostResult::get_result_times(fieldname='%s', groupname='%s'):\n  no solution steps found "
+        "PostResult::get_result_times(fieldname='{}', groupname='{}'):\n  no solution steps found "
         "in specified timestep range! Check --start, --end, --step parameters.",
         fieldname.c_str(), groupname.c_str());
   }
@@ -757,7 +757,7 @@ void PostResult::get_result_timesandsteps(
   if (times.size() == 0 or steps.size() == 0)
   {
     FOUR_C_THROW(
-        "PostResult::get_result_timesandsteps(fieldname='%s'):\n  no solution steps found in "
+        "PostResult::get_result_timesandsteps(fieldname='{}'):\n  no solution steps found in "
         "specified range! Check --start, --end, --step parameters.",
         fieldname.c_str());
   }
@@ -875,7 +875,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> PostResult::read_result(const std:
   int columns;
   if (map_find_int(result, "columns", &columns))
   {
-    if (columns != 1) FOUR_C_THROW("got multivector with name '%s', vector expected", name.c_str());
+    if (columns != 1) FOUR_C_THROW("got multivector with name '{}', vector expected", name.c_str());
   }
   auto test = read_multi_result(name);
   return std::make_shared<Core::LinAlg::Vector<double>>((*test)(0));
@@ -901,7 +901,7 @@ PostResult::read_result_serialdensematrix(const std::string name)
     columns = 1;
   }
   if (columns != 1)
-    FOUR_C_THROW("got multivector with name '%s', std::vector<char> expected", name.c_str());
+    FOUR_C_THROW("got multivector with name '{}', std::vector<char> expected", name.c_str());
 
   std::shared_ptr<Epetra_Map> elemap;
   std::shared_ptr<std::vector<char>> data =

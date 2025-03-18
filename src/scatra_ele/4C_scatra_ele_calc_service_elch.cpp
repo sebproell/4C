@@ -373,8 +373,8 @@ void Discret::Elements::ScaTraEleCalcElch<distype, probdim>::calc_elch_boundary_
   if ((unsigned int)my::numscal_ != (*stoich).size())
   {
     FOUR_C_THROW(
-        "Electrode kinetics: number of stoichiometry coefficients %u does not match"
-        " the number of ionic species %d",
+        "Electrode kinetics: number of stoichiometry coefficients {} does not match"
+        " the number of ionic species {}",
         (*stoich).size(), my::numscal_);
   }
 

@@ -104,7 +104,7 @@ void PARTICLEENGINE::ParticleRuntimeVtpWriter::set_particle_positions_and_states
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       // safety check
       if (not container->have_stored_state(Position))
-        FOUR_C_THROW("particle state '%s' not found!", enum_to_state_name(Position).c_str());
+        FOUR_C_THROW("particle state '{}' not found!", enum_to_state_name(Position).c_str());
 #endif
 
       // iterate over particle states
@@ -136,7 +136,7 @@ void PARTICLEENGINE::ParticleRuntimeVtpWriter::set_particle_positions_and_states
 #ifdef FOUR_C_ENABLE_ASSERTIONS
           // safety check
           if (static_cast<int>(positiondata.size()) != statedim * particlestored)
-            FOUR_C_THROW("ParticleRuntimeVtpWriter expected %d coordinate values, but got %d!",
+            FOUR_C_THROW("ParticleRuntimeVtpWriter expected {} coordinate values, but got {}!",
                 statedim * particlestored, positiondata.size());
 #endif
         }

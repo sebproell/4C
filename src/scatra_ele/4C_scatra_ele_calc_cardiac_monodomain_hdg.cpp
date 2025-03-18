@@ -296,7 +296,7 @@ void Discret::Elements::ScaTraEleCalcHDGCardiacMonodomain<distype, probdim>::mat
 
     if (nqpoints != actmat->get_number_of_gp())
       FOUR_C_THROW(
-          "Number of quadrature points (%d) does not match number of points in material (%d)!",
+          "Number of quadrature points ({}) does not match number of points in material ({})!",
           nqpoints, actmat->get_number_of_gp());
 
     if (values_mat_gp_all_.empty() or
@@ -335,7 +335,7 @@ void Discret::Elements::ScaTraEleCalcHDGCardiacMonodomain<distype, probdim>::mat
 
     if (nqpoints != actmat->get_number_of_gp())
       FOUR_C_THROW(
-          "Number of quadrature points (%d) does not match number of points in material (%d)!",
+          "Number of quadrature points ({}) does not match number of points in material ({})!",
           nqpoints, actmat->get_number_of_gp());
 
     if (values_mat_gp_all_.empty() or
@@ -486,7 +486,7 @@ void Discret::Elements::ScaTraEleCalcHDGCardiacMonodomain<distype,
         }
         int err =
             material_internal_state->ReplaceGlobalValue(ele->id(), k, material_state / nqpoints);
-        if (err != 0) FOUR_C_THROW("%i", err);
+        if (err != 0) FOUR_C_THROW("{}", err);
       }
     }
 
@@ -631,7 +631,7 @@ int Discret::Elements::ScaTraEleCalcHDGCardiacMonodomain<distype,
   inverseMat.factorWithEquilibration(true);
   int err2 = inverseMat.factor();
   int err = inverseMat.solve();
-  if (err != 0 || err2 != 0) FOUR_C_THROW("Inversion of matrix failed with errorcode %d", err);
+  if (err != 0 || err2 != 0) FOUR_C_THROW("Inversion of matrix failed with errorcode {}", err);
 
   Core::LinAlg::SerialDenseMatrix tempMat2(
       shapes->nqpoints_, actmat->get_number_of_internal_state_variables());
@@ -761,7 +761,7 @@ int Discret::Elements::ScaTraEleCalcHDGCardiacMonodomain<distype,
   inverseMat.factorWithEquilibration(true);
   int err2 = inverseMat.factor();
   int err = inverseMat.solve();
-  if (err != 0 || err2 != 0) FOUR_C_THROW("Inversion of matrix failed with errorcode %d", err);
+  if (err != 0 || err2 != 0) FOUR_C_THROW("Inversion of matrix failed with errorcode {}", err);
 
   Core::LinAlg::SerialDenseMatrix tempMat2(
       shape_gp.size(), actmat->get_number_of_internal_state_variables());

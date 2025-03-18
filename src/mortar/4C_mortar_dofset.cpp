@@ -40,7 +40,7 @@ int Mortar::DofSet::assign_degrees_of_freedom(
   for (int i = 0; i < numMyColumnNodes; ++i)
   {
     Core::Nodes::Node* node = dis.l_col_node(i);
-    if (!node) FOUR_C_THROW("Cannot find local column node %d", i);
+    if (!node) FOUR_C_THROW("Cannot find local column node {}", i);
 
     // get dofs of node as created by base class DofSet
     std::vector<int> gdofs = dof(node);

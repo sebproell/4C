@@ -183,7 +183,7 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::SolidType::compute_null_space
       return compute_solid_null_space<2>(node.x(), x0);
     default:
       FOUR_C_THROW(
-          "The null space computation of a solid element of dimension %d is not yet implemented",
+          "The null space computation of a solid element of dimension {} is not yet implemented",
           numdof);
   }
   exit(1);

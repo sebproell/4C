@@ -314,7 +314,7 @@ void PaSI::PasiPartTwoWayCoup::get_interface_forces()
   // assemble interface forces
   Epetra_Export exporter(walldatastate->get_force_col()->get_map(), intfforcenp_->get_map());
   int err = intfforcenp_->export_to(*walldatastate->get_force_col(), exporter, Add);
-  if (err) FOUR_C_THROW("export of interface forces failed with err=%d", err);
+  if (err) FOUR_C_THROW("export of interface forces failed with err={}", err);
 }
 
 bool PaSI::PasiPartTwoWayCoup::convergence_check(int itnum)

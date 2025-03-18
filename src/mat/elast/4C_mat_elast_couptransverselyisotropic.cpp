@@ -130,7 +130,7 @@ void Mat::Elastic::CoupTransverselyIsotropic::set_fiber_vecs(const double newang
     const Core::LinAlg::Matrix<3, 3>& locsys, const Core::LinAlg::Matrix<3, 3>& defgrd)
 {
   if ((params_->angle_ < -90) || (params_->angle_ > 90))
-    FOUR_C_THROW("Fiber angle not in [-90,90]! Given angle = %d", params_->angle_);
+    FOUR_C_THROW("Fiber angle not in [-90,90]! Given angle = {}", params_->angle_);
   // convert
   const double angle = (params_->angle_ * M_PI) / 180.;
 
@@ -343,6 +343,6 @@ void Mat::Elastic::CoupTransverselyIsotropic::error_handling(
     }
   }
 
-  FOUR_C_THROW("Uncaught error detected:\n%s", msg.str().c_str());
+  FOUR_C_THROW("Uncaught error detected:\n{}", msg.str().c_str());
 }
 FOUR_C_NAMESPACE_CLOSE

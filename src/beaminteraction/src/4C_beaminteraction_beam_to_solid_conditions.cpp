@@ -36,6 +36,7 @@
 #include "4C_geometry_pair_line_to_3D_evaluation_data.hpp"
 #include "4C_geometry_pair_line_to_surface_evaluation_data.hpp"
 #include "4C_inpar_beam_to_solid.hpp"
+#include "4C_utils_std23_unreachable.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -478,7 +479,7 @@ void BeamInteraction::BeamToSolidConditionSurface::setup(
     }
     else
     {
-      FOUR_C_THROW("The face of the solid element %d is not in the current condition!",
+      FOUR_C_THROW("The face of the solid element {} is not in the current condition!",
           pair->element2()->id());
     }
   }
@@ -793,6 +794,7 @@ BeamInteraction::BeamToSolidConditionSurface::create_contact_pair_internal(
             default:
               FOUR_C_THROW("Wrong contact type.");
           }
+          break;
         }
         case Inpar::BeamToSolid::BeamToSolidContactDiscretization::mortar:
         {
@@ -876,6 +878,7 @@ BeamInteraction::BeamToSolidConditionSurface::create_contact_pair_internal(
       }
     }
   }
+  std23::unreachable();
 }
 
 FOUR_C_NAMESPACE_CLOSE

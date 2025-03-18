@@ -68,7 +68,7 @@ Thermo::TemperBoundaryImplInterface* Thermo::TemperBoundaryImplInterface::impl(
       return cp3;
     }
     default:
-      FOUR_C_THROW("Shape %d (%d nodes) not supported", ele->shape(), ele->num_node());
+      FOUR_C_THROW("Shape {} ({} nodes) not supported", ele->shape(), ele->num_node());
       break;
   }
   return nullptr;
@@ -514,7 +514,7 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
   }  // calc_thermo_fextconvection_coupltang
 
   else
-    FOUR_C_THROW("Unknown type of action for Temperature Implementation: %s",
+    FOUR_C_THROW("Unknown type of action for Temperature Implementation: {}",
         Thermo::boundary_action_to_string(action).c_str());
 
   return 0;
@@ -964,7 +964,7 @@ void Thermo::TemperBoundaryImpl<distype>::get_const_normal(
     }
     break;
     default:
-      FOUR_C_THROW("Illegal number of space dimensions: %d", nsd_);
+      FOUR_C_THROW("Illegal number of space dimensions: {}", nsd_);
       break;
   }  // switch(nsd)
 
@@ -1085,7 +1085,7 @@ void Thermo::TemperBoundaryImpl<distype>::surface_integration(
     }
     break;
     default:
-      FOUR_C_THROW("Illegal number of space dimensions: %d", nsd_);
+      FOUR_C_THROW("Illegal number of space dimensions: {}", nsd_);
       break;
   }  // switch(nsd)
 

@@ -52,7 +52,7 @@ void caldyn_drt()
       break;
     default:
       FOUR_C_THROW(
-          "unknown time integration scheme '%s'", sdyn.get<std::string>("DYNAMICTYPE").c_str());
+          "unknown time integration scheme '{}'", sdyn.get<std::string>("DYNAMICTYPE").c_str());
       break;
   }
 

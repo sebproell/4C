@@ -31,7 +31,7 @@ std::shared_ptr<Cut::Position> Cut::Position::create(
   if (rdim < factory.n_prob_dim())
     FOUR_C_THROW(
         "The given point has the wrong row dimension!\n"
-        "rdim < prodbim <--> %d < %d",
+        "rdim < prodbim <--> {} < {}",
         rdim, factory.n_prob_dim());
   return factory.create_position(element, xyz.data(), floattype);
 }
@@ -50,8 +50,8 @@ std::shared_ptr<Cut::Position> Cut::Position::create(const Core::LinAlg::Matrix<
   if (rdim < probdim or cdim != num_nodes_ele)
     FOUR_C_THROW(
         "Dimension mismatch of xyze! \n"
-        "expected input: %d x %d (rows x cols)\n"
-        "received input : %d x %d (rows x cols)",
+        "expected input: {} x {} (rows x cols)\n"
+        "received input : {} x {} (rows x cols)",
         probdim, num_nodes_ele, xyze.m(), xyze.n());
 
   const double* xyze_ptr = xyze.data();
@@ -66,8 +66,8 @@ std::shared_ptr<Cut::Position> Cut::Position::create(const Core::LinAlg::Matrix<
   if (rdim_2 < probdim)
     FOUR_C_THROW(
         "Dimension mismatch of xyz! \n"
-        "expected input: %d x 1 (rows x cols)\n"
-        "received input : %d x 1 (rows x cols)",
+        "expected input: {} x 1 (rows x cols)\n"
+        "received input : {} x 1 (rows x cols)",
         probdim, rdim_2);
 
   return factory.create_position(xyze_ptr, xyz.data(), distype, floattype);
@@ -88,8 +88,8 @@ std::shared_ptr<Cut::Position> Cut::Position::create(const Core::LinAlg::SerialD
       static_cast<unsigned>(xyze.numCols()) != num_nodes_ele)
     FOUR_C_THROW(
         "Dimension mismatch of xyze! \n"
-        "expected input: %d x %d (rows x cols)\n"
-        "received input : %d x %d (rows x cols)",
+        "expected input: {} x {} (rows x cols)\n"
+        "received input : {} x {} (rows x cols)",
         probdim, num_nodes_ele, xyze.numRows(), xyze.numCols());
 
   const double* xyze_ptr = xyze.values();
@@ -104,8 +104,8 @@ std::shared_ptr<Cut::Position> Cut::Position::create(const Core::LinAlg::SerialD
   if (xyz.num_rows() < probdim)
     FOUR_C_THROW(
         "Dimension mismatch of xyz! \n"
-        "expected input: %d x 1 (rows x cols)\n"
-        "received input : %d x 1 (rows x cols)",
+        "expected input: {} x 1 (rows x cols)\n"
+        "received input : {} x 1 (rows x cols)",
         probdim, xyz.num_rows());
 
   return factory.create_position(xyze_ptr, xyz.data(), distype, floattype);
@@ -122,7 +122,7 @@ std::shared_ptr<Cut::Position> Cut::Position::create(const std::vector<Node*> no
   if (rdim < factory.n_prob_dim())
     FOUR_C_THROW(
         "The given point has the wrong row dimension!\n"
-        "rdim < prodbim <--> %d < %d",
+        "rdim < prodbim <--> {} < {}",
         rdim, factory.n_prob_dim());
   return factory.create_position(nodes, xyz.data(), distype, floattype);
 }
@@ -303,7 +303,7 @@ std::shared_ptr<Cut::Position> Cut::PositionFactory::create_position(
     case Core::FE::CellType::wedge6:
       return create_concrete_position<Core::FE::CellType::wedge6>(element, point, floattype);
     default:
-      FOUR_C_THROW("Unsupported distype = %s", Core::FE::cell_type_to_string(distype).c_str());
+      FOUR_C_THROW("Unsupported distype = {}", Core::FE::cell_type_to_string(distype).c_str());
       exit(EXIT_FAILURE);
   }
 
@@ -342,7 +342,7 @@ std::shared_ptr<Cut::Position> Cut::PositionFactory::create_position(
     case Core::FE::CellType::wedge6:
       return create_concrete_position<Core::FE::CellType::wedge6>(element, xyz, floattype);
     default:
-      FOUR_C_THROW("Unsupported distype = %s", Core::FE::cell_type_to_string(distype).c_str());
+      FOUR_C_THROW("Unsupported distype = {}", Core::FE::cell_type_to_string(distype).c_str());
       exit(EXIT_FAILURE);
   }
 
@@ -379,7 +379,7 @@ std::shared_ptr<Cut::Position> Cut::PositionFactory::create_position(const doubl
     case Core::FE::CellType::wedge6:
       return create_concrete_position<Core::FE::CellType::wedge6>(xyze, xyz, floattype);
     default:
-      FOUR_C_THROW("Unsupported distype = %s", Core::FE::cell_type_to_string(distype).c_str());
+      FOUR_C_THROW("Unsupported distype = {}", Core::FE::cell_type_to_string(distype).c_str());
       exit(EXIT_FAILURE);
   }
 
@@ -427,7 +427,7 @@ std::shared_ptr<Cut::Position> Cut::PositionFactory::create_position(
     case Core::FE::CellType::wedge6:
       return create_concrete_position<Core::FE::CellType::wedge6>(nodes, xyz, floattype);
     default:
-      FOUR_C_THROW("Unsupported distype = %s", Core::FE::cell_type_to_string(distype).c_str());
+      FOUR_C_THROW("Unsupported distype = {}", Core::FE::cell_type_to_string(distype).c_str());
       exit(EXIT_FAILURE);
   }
 

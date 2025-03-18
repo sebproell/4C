@@ -167,7 +167,7 @@ void MultiScale::np_support_drt()
         return;
       }
       default:
-        FOUR_C_THROW("Supporting processors do not know what to do (%i)!", whattodo);
+        FOUR_C_THROW("Supporting processors do not know what to do ({})!", whattodo);
         break;
     }
 

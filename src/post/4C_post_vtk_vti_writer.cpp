@@ -196,7 +196,7 @@ void PostVtiWriter::write_dof_result_step(std::ofstream& file,
         }
         else
         {
-          if (!fillzeros) FOUR_C_THROW("received illegal dof local id: %d", lid);
+          if (!fillzeros) FOUR_C_THROW("received illegal dof local id: {}", lid);
         }
       }
       for (int d = numdf; d < ncomponents; ++d) solution[inpos + d] = 0.0;
@@ -282,7 +282,7 @@ void PostVtiWriter::write_nodal_result_step(std::ofstream& file,
         }
         else
         {
-          FOUR_C_THROW("received illegal node local id: %d", lid);
+          FOUR_C_THROW("received illegal node local id: {}", lid);
         }
       }
       for (int d = numdf; d < ncomponents; ++d) solution[inpos + d] = 0.;
@@ -332,7 +332,7 @@ void PostVtiWriter::write_element_result_step(std::ofstream& file,
 
   const int numcol = data->NumVectors();
   if (numdf + from > numcol)
-    FOUR_C_THROW("violated column range of Core::LinAlg::MultiVector<double>: %d", numcol);
+    FOUR_C_THROW("violated column range of Core::LinAlg::MultiVector<double>: {}", numcol);
 
   std::shared_ptr<Core::LinAlg::MultiVector<double>> importedData;
   if (dis->element_col_map()->SameAs(data->Map()))
@@ -425,8 +425,8 @@ void PostVtiWriter::writer_prep_timestep()
         ++it, ++k)
       if (*it - lorigin[i] - k * spacing_[i] > TOL_N || *it - lorigin[i] - k * spacing_[i] < -TOL_N)
         FOUR_C_THROW(
-            "The mesh is not a uniform rectangular grid: grid coordinate[%d]: %lf, "
-            "node coordinate[%d]: %lf, difference: %e",
+            "The mesh is not a uniform rectangular grid: grid coordinate[{}]: {}, "
+            "node coordinate[{}]: {}, difference: {}",
             i, lorigin[i] + k * spacing_[i], i, *it, *it - lorigin[i] - k * spacing_[i]);
   }
 

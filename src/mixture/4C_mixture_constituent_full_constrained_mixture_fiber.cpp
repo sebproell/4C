@@ -68,7 +68,7 @@ namespace
     }
     else
     {
-      FOUR_C_THROW("Unknown history adaption strategy %s!", input.c_str());
+      FOUR_C_THROW("Unknown history adaption strategy {}!", input.c_str());
     }
   }
 }  // namespace

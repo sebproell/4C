@@ -168,7 +168,7 @@ void EXODUS::validate_element_jacobian(
         // double check
         if (!positive_ele(i_ele->first, i_ele->second, mymesh, deriv))
           FOUR_C_THROW(
-              "No proper rewinding for element id %d at gauss point %d", i_ele->first, igp);
+              "No proper rewinding for element id {} at gauss point {}", i_ele->first, igp);
         rewcount++;
       }
     }
@@ -279,7 +279,7 @@ bool EXODUS::positive_ele(const int& eleid, const std::vector<int>& nodes, const
     const double det = jac.determinant();
 
     if (abs(det) < 1E-16)
-      FOUR_C_THROW("ZERO JACOBIAN DETERMINANT FOR ELEMENT %d: DET = %f", eleid, det);
+      FOUR_C_THROW("ZERO JACOBIAN DETERMINANT FOR ELEMENT {}: DET = {}", eleid, det);
 
     if (det < 0.0)
     {

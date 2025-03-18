@@ -449,7 +449,7 @@ void GEOMETRYPAIR::FaceElementTemplateExtendedVolume<Surface, ScalarType, Volume
       surface_dof_lid_map_(i_dof_surf) = dof_iterator - this->patch_dof_gid_.begin();
     }
     else
-      FOUR_C_THROW("Could not find the surface DOF %d in the volume DOFs", surface_gid[i_dof_surf]);
+      FOUR_C_THROW("Could not find the surface DOF {} in the volume DOFs", surface_gid[i_dof_surf]);
   }
 
   // Set the reference position.

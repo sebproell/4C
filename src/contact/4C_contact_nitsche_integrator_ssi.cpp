@@ -445,7 +445,7 @@ void CONTACT::IntegratorNitscheSsi::integrate_ssi_interface_condition(Mortar::El
     {
       FOUR_C_THROW(
           "Integration can not be performed as kinetic model of scatra-scatra interface condition "
-          "is not recognized: %i",
+          "is not recognized: {}",
           kinetic_model);
 
       break;

@@ -487,7 +487,7 @@ namespace Discret::Elements
           evaluate_jacobian_mapping(shape_functions, element_nodes);
 
       FOUR_C_ASSERT_ALWAYS(jacobian_mapping.determinant_ > 0,
-          "determinant of jacobian is %f <= 0 at one node of the element.",
+          "determinant of jacobian is {} <= 0 at one node of the element.",
           jacobian_mapping.determinant_);
     }
   }
@@ -1234,7 +1234,7 @@ namespace Discret::Elements
     solve_for_inverse.set_matrix(TinvT);
 
     int err_inv = solve_for_inverse.invert();
-    FOUR_C_ASSERT_ALWAYS(!err_inv, "Inversion of matrix failed with LAPACK error code %d", err_inv);
+    FOUR_C_ASSERT_ALWAYS(!err_inv, "Inversion of matrix failed with LAPACK error code {}", err_inv);
 
     return TinvT;
   }

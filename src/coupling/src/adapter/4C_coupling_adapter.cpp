@@ -48,7 +48,7 @@ void Coupling::Adapter::Coupling::setup_condition_coupling(
   const int numdof = masterdofs.size();
   const int numdof_slave = slavedofs.size();
   if (numdof != numdof_slave)
-    FOUR_C_THROW("Received %d master DOFs, but %d slave DOFs", numdof, numdof_slave);
+    FOUR_C_THROW("Received {} master DOFs, but {} slave DOFs", numdof, numdof_slave);
 
   std::vector<int> masternodes;
   Core::Conditions::find_conditioned_nodes(masterdis, condname, masternodes);
@@ -64,7 +64,7 @@ void Coupling::Adapter::Coupling::setup_condition_coupling(
   Core::Communication::sum_all(&localslavecount, &slavecount, 1, slavedis.get_comm());
 
   if (mastercount != slavecount)
-    FOUR_C_THROW("got %d master nodes but %d slave nodes for coupling", mastercount, slavecount);
+    FOUR_C_THROW("got {} master nodes but {} slave nodes for coupling", mastercount, slavecount);
 
   setup_coupling(masterdis, slavedis, masternodes, slavenodes, masterdofs, slavedofs, matchall,
       1.0e-3, nds_master, nds_slave);
@@ -194,7 +194,7 @@ void Coupling::Adapter::Coupling::setup_constrained_condition_coupling(
   Core::Communication::sum_all(&localslavecount, &slavecount, 1, slavedis.get_comm());
 
   if (mastercount != slavecount and matchall)
-    FOUR_C_THROW("got %d master nodes but %d slave nodes for coupling", mastercount, slavecount);
+    FOUR_C_THROW("got {} master nodes but {} slave nodes for coupling", mastercount, slavecount);
 
   setup_coupling(masterdis, slavedis, masternodes, slavenodes, numdof, matchall);
 
@@ -248,7 +248,7 @@ void Coupling::Adapter::Coupling::setup_coupling(const Core::FE::Discretization&
     const int nds_master, const int nds_slave)
 {
   if (masternodes.NumGlobalElements() != slavenodes.NumGlobalElements() and matchall)
-    FOUR_C_THROW("got %d master nodes but %d slave nodes for coupling",
+    FOUR_C_THROW("got {} master nodes but {} slave nodes for coupling",
         masternodes.NumGlobalElements(), slavenodes.NumGlobalElements());
 
   std::vector<int> mastervect(
@@ -283,7 +283,7 @@ void Coupling::Adapter::Coupling::setup_coupling(const Core::FE::Discretization&
     const Epetra_Map& slavenodemap, const Epetra_Map& permslavenodemap, const int numdof)
 {
   if (masternodemap.NumGlobalElements() != slavenodemap.NumGlobalElements())
-    FOUR_C_THROW("got %d master nodes but %d slave nodes for coupling",
+    FOUR_C_THROW("got {} master nodes but {} slave nodes for coupling",
         masternodemap.NumGlobalElements(), slavenodemap.NumGlobalElements());
 
   // just copy Epetra maps
@@ -306,7 +306,7 @@ void Coupling::Adapter::Coupling::setup_coupling(
 {
   // safety check
   if (masterdis.dof_row_map()->NumGlobalElements() != slavedis.dof_row_map()->NumGlobalElements())
-    FOUR_C_THROW("got %d master nodes but %d slave nodes for coupling",
+    FOUR_C_THROW("got {} master nodes but {} slave nodes for coupling",
         masterdis.dof_row_map()->NumGlobalElements(), slavedis.dof_row_map()->NumGlobalElements());
 
   // get master dof maps and build exporter
@@ -379,7 +379,7 @@ void Coupling::Adapter::Coupling::match_nodes(const Core::FE::Discretization& ma
 
   if (masternodes.size() != coupling.size() and matchall)
     FOUR_C_THROW(
-        "Did not get 1:1 correspondence. \nmasternodes.size()=%d (%s), coupling.size()=%d (%s)",
+        "Did not get 1:1 correspondence. \nmasternodes.size()={} ({}), coupling.size()={} ({})",
         masternodes.size(), masterdis.name().c_str(), coupling.size(), slavedis.name().c_str());
 
   // extract permutation
@@ -539,7 +539,7 @@ void Coupling::Adapter::Coupling::build_dof_maps(const Core::FE::Discretization&
     const int numdof = coupled_dofs.size();
     if (numdof > static_cast<int>(dof.size()))
       FOUR_C_THROW(
-          "got just %d dofs at node %d (lid=%d) but expected %d", dof.size(), nodes[i], i, numdof);
+          "got just {} dofs at node {} (lid={}) but expected {}", dof.size(), nodes[i], i, numdof);
     for (int idof = 0; idof < numdof; idof++)
     {
       copy(dof.data() + coupled_dofs[idof], dof.data() + coupled_dofs[idof] + 1,
@@ -550,7 +550,7 @@ void Coupling::Adapter::Coupling::build_dof_maps(const Core::FE::Discretization&
   }
 
   std::vector<int>::const_iterator pos = std::min_element(dofmapvec.begin(), dofmapvec.end());
-  if (pos != dofmapvec.end() and *pos < 0) FOUR_C_THROW("illegal dof number %d", *pos);
+  if (pos != dofmapvec.end() and *pos < 0) FOUR_C_THROW("illegal dof number {}", *pos);
 
   // dof map is the original, unpermuted distribution of dofs
   dofmap = std::make_shared<Epetra_Map>(-1, dofmapvec.size(), dofmapvec.data(), 0,
@@ -679,14 +679,14 @@ void Coupling::Adapter::Coupling::master_to_slave(
   if (not mv.Map().PointSameAs(*masterdofmap_)) FOUR_C_THROW("master dof map vector expected");
   if (not sv.Map().PointSameAs(*slavedofmap_)) FOUR_C_THROW("slave dof map vector expected");
   if (sv.NumVectors() != mv.NumVectors())
-    FOUR_C_THROW("column number mismatch %d!=%d", sv.NumVectors(), mv.NumVectors());
+    FOUR_C_THROW("column number mismatch {}!={}", sv.NumVectors(), mv.NumVectors());
 #endif
 
   Core::LinAlg::MultiVector<double> perm(*permslavedofmap_, mv.NumVectors());
   std::copy(mv.Values(), mv.Values() + (mv.MyLength() * mv.NumVectors()), perm.Values());
 
   const int err = sv.Export(perm, *slaveexport_, Insert);
-  if (err) FOUR_C_THROW("Export to slave distribution returned err=%d", err);
+  if (err) FOUR_C_THROW("Export to slave distribution returned err={}", err);
 }
 
 
@@ -699,7 +699,7 @@ void Coupling::Adapter::Coupling::master_to_slave(
   std::copy(mv.get_values(), mv.get_values() + (mv.local_length()), perm.get_values());
 
   const int err = sv.export_to(perm, *slaveexport_, Insert);
-  if (err) FOUR_C_THROW("Export to slave distribution returned err=%d", err);
+  if (err) FOUR_C_THROW("Export to slave distribution returned err={}", err);
 }
 
 
@@ -719,14 +719,14 @@ void Coupling::Adapter::Coupling::slave_to_master(
     FOUR_C_THROW("slave dof map vector expected");
   }
   if (sv.NumVectors() != mv.NumVectors())
-    FOUR_C_THROW("column number mismatch %d!=%d", sv.NumVectors(), mv.NumVectors());
+    FOUR_C_THROW("column number mismatch {}!={}", sv.NumVectors(), mv.NumVectors());
 #endif
 
   Core::LinAlg::MultiVector<double> perm(*permmasterdofmap_, sv.NumVectors());
   std::copy(sv.Values(), sv.Values() + (sv.MyLength() * sv.NumVectors()), perm.Values());
 
   const int err = mv.Export(perm, *masterexport_, Insert);
-  if (err) FOUR_C_THROW("Export to master distribution returned err=%d", err);
+  if (err) FOUR_C_THROW("Export to master distribution returned err={}", err);
 }
 
 
@@ -739,7 +739,7 @@ void Coupling::Adapter::Coupling::slave_to_master(
   std::copy(sv.get_values(), sv.get_values() + (sv.local_length()), perm.get_values());
 
   const int err = mv.export_to(perm, *masterexport_, Insert);
-  if (err) FOUR_C_THROW("Export to master distribution returned err=%d", err);
+  if (err) FOUR_C_THROW("Export to master distribution returned err={}", err);
 }
 
 
@@ -818,7 +818,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Coupling::Adapter::Coupling::master_
   Epetra_Export exporter(*permmasterdofmap_, *masterdofmap_);
   int err = permsm->Import(*sm.epetra_matrix(), exporter, Insert);
 
-  if (err) FOUR_C_THROW("Import failed with err=%d", err);
+  if (err) FOUR_C_THROW("Import failed with err={}", err);
 
   permsm->FillComplete(sm.domain_map(), *permmasterdofmap_);
 
@@ -847,7 +847,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Coupling::Adapter::Coupling::slave_t
   Epetra_Export exporter(*permslavedofmap_, *slavedofmap_);
   int err = permsm->Import(*sm.epetra_matrix(), exporter, Insert);
 
-  if (err) FOUR_C_THROW("Import failed with err=%d", err);
+  if (err) FOUR_C_THROW("Import failed with err={}", err);
 
   permsm->FillComplete(sm.domain_map(), *permslavedofmap_);
 
@@ -880,22 +880,22 @@ void Coupling::Adapter::Coupling::setup_coupling_matrices(const Epetra_Map& shif
     int err = matmm_->InsertGlobalValues(shiftedmgid, 1, &one, &mgid);
     if (err != 0)
       FOUR_C_THROW(
-          "InsertGlobalValues for entry (%d,%d) failed with err=%d", shiftedmgid, mgid, err);
+          "InsertGlobalValues for entry ({},{}) failed with err={}", shiftedmgid, mgid, err);
 
     err = matsm_->InsertGlobalValues(shiftedmgid, 1, &one, &sgid);
     if (err != 0)
       FOUR_C_THROW(
-          "InsertGlobalValues for entry (%d,%d) failed with err=%d", shiftedmgid, sgid, err);
+          "InsertGlobalValues for entry ({},{}) failed with err={}", shiftedmgid, sgid, err);
 
     err = matmm_trans_->InsertGlobalValues(mgid, 1, &one, &shiftedmgid);
     if (err != 0)
       FOUR_C_THROW(
-          "InsertGlobalValues for entry (%d,%d) failed with err=%d", mgid, shiftedmgid, err);
+          "InsertGlobalValues for entry ({},{}) failed with err={}", mgid, shiftedmgid, err);
 
     err = matsm_trans_->InsertGlobalValues(sgid, 1, &one, &shiftedmgid);
     if (err != 0)
       FOUR_C_THROW(
-          "InsertGlobalValues for entry (%d,%d) failed with err=%d", sgid, shiftedmgid, err);
+          "InsertGlobalValues for entry ({},{}) failed with err={}", sgid, shiftedmgid, err);
   }
 
   matmm_->FillComplete(masterdomainmap, shiftedmastermap);
@@ -911,7 +911,7 @@ void Coupling::Adapter::Coupling::setup_coupling_matrices(const Epetra_Map& shif
 
   Epetra_Import exporter(slavedomainmap, *perm_slave_dof_map());
   int err = tmp->Import(*matsm_trans_, exporter, Insert);
-  if (err) FOUR_C_THROW("Import failed with err=%d", err);
+  if (err) FOUR_C_THROW("Import failed with err={}", err);
 
   tmp->FillComplete(shiftedmastermap, slavedomainmap);
   matsm_trans_ = tmp;

@@ -91,7 +91,7 @@ Discret::Elements::TemperImplInterface* Discret::Elements::TemperImplInterface::
       return TemperImpl<Core::FE::CellType::nurbs27>::instance();
     }
     default:
-      FOUR_C_THROW("Element shape %s (%d nodes) not activated. Just do it.",
+      FOUR_C_THROW("Element shape {} ({} nodes) not activated. Just do it.",
           Core::FE::cell_type_to_string(ele->shape()).c_str(), ele->num_node());
       break;
   }
@@ -618,7 +618,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
   //============================================================================
   else
   {
-    FOUR_C_THROW("Unknown type of action for Temperature Implementation: %s",
+    FOUR_C_THROW("Unknown type of action for Temperature Implementation: {}",
         Thermo::action_to_string(action).c_str());
   }
 
@@ -669,7 +669,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate_neumann(const Core::Element
   }
   else
   {
-    FOUR_C_THROW("Unknown type of action for Temperature Implementation: %s",
+    FOUR_C_THROW("Unknown type of action for Temperature Implementation: {}",
         Thermo::action_to_string(action).c_str());
   }
 
@@ -2710,7 +2710,7 @@ void Discret::Elements::TemperImpl<distype>::radiation(
       Core::Conditions::find_element_conditions(ele, "LineNeumann", myneumcond);
       break;
     default:
-      FOUR_C_THROW("Illegal number of space dimensions: %d", nsd_);
+      FOUR_C_THROW("Illegal number of space dimensions: {}", nsd_);
       break;
   }
 
@@ -2857,7 +2857,7 @@ void Discret::Elements::TemperImpl<distype>::eval_shape_func_and_derivs_at_int_p
   const double det = xij_.invert(xjm_);
 
   if (det < 1e-16)
-    FOUR_C_THROW("GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", eleid, det);
+    FOUR_C_THROW("GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", eleid, det);
 
   // set integration factor: fac = Gauss weight * det(J)
   fac_ = intpoints.ip().qwgt[iquad] * det;
@@ -3259,7 +3259,7 @@ std::shared_ptr<Core::Mat::Material> Discret::Elements::TemperImpl<distype>::get
   if (ele->num_material() > 1)
     structmat = ele->material(1);
   else
-    FOUR_C_THROW("no second material defined for element %i", ele->id());
+    FOUR_C_THROW("no second material defined for element {}", ele->id());
 
   return structmat;
 }

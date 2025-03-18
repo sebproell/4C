@@ -83,7 +83,7 @@ void ParticleInteraction::ParticleInteractionBase::
 
   // bin size safety check
   if (allprocmaxinteractiondistance > particleengineinterface_->min_bin_size())
-    FOUR_C_THROW("the particle interaction distance is larger than the minimal bin size (%f > %f)!",
+    FOUR_C_THROW("the particle interaction distance is larger than the minimal bin size ({} > {})!",
         allprocmaxinteractiondistance, particleengineinterface_->min_bin_size());
 
   // periodic length safety check

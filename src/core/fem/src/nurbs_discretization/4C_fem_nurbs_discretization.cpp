@@ -49,7 +49,7 @@ void Core::FE::Nurbs::NurbsDiscretization::set_knot_vector(
     FOUR_C_THROW(
         "You're trying to set an invalid knotvector in the "
         "Core::FE::Nurbs::NurbsDiscretization "
-        "'%s'. The given know vector is a null vector and can't be set as such.",
+        "'{}'. The given know vector is a null vector and can't be set as such.",
         (this->name()).c_str());
   }
 
@@ -68,7 +68,7 @@ std::shared_ptr<Core::FE::Nurbs::Knotvector> Core::FE::Nurbs::NurbsDiscretizatio
     FOUR_C_THROW(
         "You're trying to access the NURBS knot vector in the "
         "Core::FE::Nurbs::NurbsDiscretization "
-        "'%s'. The required knot vector is a null vector and can't be accessed as such.",
+        "'{}'. The required knot vector is a null vector and can't be accessed as such.",
         (this->name()).c_str());
   }
   return knots_;
@@ -87,7 +87,7 @@ Core::FE::Nurbs::NurbsDiscretization::get_knot_vector() const
     FOUR_C_THROW(
         "You're trying to access the NURBS knot vector in the "
         "Core::FE::Nurbs::NurbsDiscretization "
-        "'%s'. The required knot vector is a null vector and can't be accessed as such.",
+        "'{}'. The required knot vector is a null vector and can't be accessed as such.",
         (this->name()).c_str());
   }
   return knots_;
@@ -414,7 +414,7 @@ void Core::FE::Utils::DbcNurbs::do_dirichlet_condition(const Teuchos::ParameterL
                 *params.get<const Core::Utils::FunctionManager*>("function_manager"));
             break;
           default:
-            FOUR_C_THROW("invalid element shape for least squares dirichlet evaluation: %s",
+            FOUR_C_THROW("invalid element shape for least squares dirichlet evaluation: {}",
                 Core::FE::cell_type_to_string(distype).c_str());
             break;
         }
@@ -452,7 +452,7 @@ void Core::FE::Utils::DbcNurbs::do_dirichlet_condition(const Teuchos::ParameterL
                 *params.get<const Core::Utils::FunctionManager*>("function_manager"));
             break;
           default:
-            FOUR_C_THROW("invalid element shape for least squares dirichlet evaluation: %s",
+            FOUR_C_THROW("invalid element shape for least squares dirichlet evaluation: {}",
                 Core::FE::cell_type_to_string(distype).c_str());
             break;
         }
@@ -728,7 +728,7 @@ void Core::FE::Utils::DbcNurbs::fill_matrix_and_rhs_for_ls_dirichlet_domain(
 
     if (det < 1E-16)
       FOUR_C_THROW(
-          "GLOBAL ELEMENT NO.%i\nZERO OR NEGATIVE JACOBIAN DETERMINANT: %f", actele.id(), det);
+          "GLOBAL ELEMENT NO.{}\nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", actele.id(), det);
 
     // compute integration factor
     double fac = intpoints.ip().qwgt[iquad] * det;

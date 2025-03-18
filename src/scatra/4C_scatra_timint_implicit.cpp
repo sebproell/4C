@@ -483,7 +483,7 @@ void ScaTra::ScaTraTimIntImpl::setup()
         const int id = (*writefluxids_)[i];
         Core::IO::cout << id << " ";
         if ((id < 1) or (id > num_dof_per_node()))  // check validity of these numbers as well !
-          FOUR_C_THROW("Received illegal scalar id for flux output: %d", id);
+          FOUR_C_THROW("Received illegal scalar id for flux output: {}", id);
       }
       Core::IO::cout << Core::IO::endl;
     }
@@ -688,7 +688,7 @@ void ScaTra::ScaTraTimIntImpl::setup_context_vector()
 void ScaTra::ScaTraTimIntImpl::setup_nat_conv()
 {
   // calculate the initial mean concentration value
-  if (num_scal() < 1) FOUR_C_THROW("Error since numscal = %d. Not allowed since < 1", num_scal());
+  if (num_scal() < 1) FOUR_C_THROW("Error since numscal = {}. Not allowed since < 1", num_scal());
   c0_.resize(num_scal());
 
   discret_->set_state("phinp", phinp_);
@@ -748,7 +748,7 @@ void ScaTra::ScaTraTimIntImpl::setup_nat_conv()
     densific_[0] = actmat->densification();
 
     if (densific_[0] < 0.0) FOUR_C_THROW("received negative densification value");
-    if (num_scal() > 1) FOUR_C_THROW("Single species calculation but numscal = %d > 1", num_scal());
+    if (num_scal() > 1) FOUR_C_THROW("Single species calculation but numscal = {} > 1", num_scal());
   }
   else
     FOUR_C_THROW("Material type is not allowed!");
@@ -1291,7 +1291,7 @@ void ScaTra::ScaTraTimIntImpl::set_velocity_field()
 
     default:
     {
-      FOUR_C_THROW("Wrong SetVelocity() action for velocity field type %d!", velocity_field_type_);
+      FOUR_C_THROW("Wrong SetVelocity() action for velocity field type {}!", velocity_field_type_);
       break;
     }
   }
@@ -1483,7 +1483,7 @@ void ScaTra::ScaTraTimIntImpl::set_velocity_field(
 
   if (velocity_field_type_ != Inpar::ScaTra::velocity_Navier_Stokes)
     FOUR_C_THROW(
-        "Wrong set_velocity_field() called for velocity field type %d!", velocity_field_type_);
+        "Wrong set_velocity_field() called for velocity field type {}!", velocity_field_type_);
 
   if (nds_vel() >= discret_->num_dof_sets())
     FOUR_C_THROW("Too few dofsets on scatra discretization!");
@@ -2311,7 +2311,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
       break;
     }
     default:
-      FOUR_C_THROW("Unknown option for initial field: %d", init);
+      FOUR_C_THROW("Unknown option for initial field: {}", init);
       break;
   }  // switch(init)
 }
@@ -3140,7 +3140,7 @@ std::string ScaTra::ScaTraTimIntImpl::map_tim_int_enum_to_string(
       return "  Gen. Alpha  ";
       break;
     default:
-      FOUR_C_THROW("Cannot cope with name enum %d", term);
+      FOUR_C_THROW("Cannot cope with name enum {}", term);
       return "";
       break;
   }
@@ -3357,7 +3357,7 @@ void ScaTra::ScaTraTimIntImpl::evaluate_macro_micro_coupling()
         Core::Nodes::Node* node = discret_->g_node(inode);
         if (node == nullptr)
           FOUR_C_THROW(
-              "Cannot extract node with global ID %d from micro-scale discretization!", inode);
+              "Cannot extract node with global ID {} from micro-scale discretization!", inode);
 
         // safety check
         if (node->num_element() != 1)
@@ -3377,7 +3377,7 @@ void ScaTra::ScaTraTimIntImpl::evaluate_macro_micro_coupling()
         {
           // extract global and local IDs of degree of freedom
           const int lid = discret_->dof_row_map()->LID(gid);
-          if (lid < 0) FOUR_C_THROW("Cannot extract degree of freedom with global ID %d!", gid);
+          if (lid < 0) FOUR_C_THROW("Cannot extract degree of freedom with global ID {}!", gid);
 
           // compute matrix and vector contributions according to kinetic model for current
           // macro-micro coupling condition
@@ -3713,7 +3713,7 @@ void ScaTra::ScaTraTimIntImpl::setup_matrix_block_maps_and_meshtying()
     }
     default:
     {
-      FOUR_C_THROW("ScaTra Matrixtype %i not recognised", static_cast<int>(matrix_type()));
+      FOUR_C_THROW("ScaTra Matrixtype {} not recognised", static_cast<int>(matrix_type()));
       break;
     }
   }

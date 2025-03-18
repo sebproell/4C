@@ -163,7 +163,7 @@ void XFEM::XfluidSemiLagrange::compute(
             {
               data->state_ = TimeIntData::failedSL_;
               FOUR_C_THROW(
-                  "<<< WARNING! Initial point for node %d for finding the Lagrangean origin not in "
+                  "<<< WARNING! Initial point for node {} for finding the Lagrangean origin not in "
                   "domain! >>>",
                   data->node_.id());
             }
@@ -547,7 +547,7 @@ void XFEM::XfluidSemiLagrange::newton_loop(Core::Elements::Element*& ele,  /// p
         // TODO: modify the ChangedSide check for intersections with all sides in the boundary-dis
         // this is not so efficient but should not be called not so often
         // the check itself does not need information about the background elements
-        //              FOUR_C_THROW("element where initial point lies in not available on proc %d,
+        //               FOUR_C_THROW("element where initial point lies in not available on proc {},
         //              no ChangedSide comparison possible", myrank_);
       }
       else
@@ -999,7 +999,7 @@ void XFEM::XfluidSemiLagrange::new_iteration_nodal_data(
         int peid = vc->parent_element()->get_parent_id();
 
         if (!discret_->have_global_element(peid))
-          FOUR_C_THROW("element %d for averaging not on proc %d", peid, myrank_);
+          FOUR_C_THROW("element {} for averaging not on proc {}", peid, myrank_);
 
         // get the element
         Core::Elements::Element* e = discret_->g_element(peid);
@@ -1419,7 +1419,7 @@ void XFEM::XfluidSemiLagrange::back_tracking(
         int peid = vc->parent_element()->get_parent_id();
 
         if (!discret_->have_global_element(peid))
-          FOUR_C_THROW("element %d for averaging not on proc %d", peid, myrank_);
+          FOUR_C_THROW("element {} for averaging not on proc {}", peid, myrank_);
 
         // get the element
         Core::Elements::Element* e = discret_->g_element(peid);
@@ -1574,7 +1574,7 @@ void XFEM::XfluidSemiLagrange::get_nodal_dof_set(
     e->get_volume_cells(cells);
 
     if (cells.size() == 0)
-      FOUR_C_THROW("Cut::Element %d does not contain any volume cell", ele->id());
+      FOUR_C_THROW("Cut::Element {} does not contain any volume cell", ele->id());
 
     for (Cut::plain_volumecell_set::iterator cell_it = cells.begin(); cell_it != cells.end();
         cell_it++)
@@ -1670,7 +1670,7 @@ void XFEM::XfluidSemiLagrange::get_nodal_dof_set(
     Core::IO::cout << "error: coordinates of point x " << x
                    << " number of volumecells: " << cells.size() << Core::IO::endl;
     FOUR_C_THROW(
-        "there is no volume cell in element %d which contains point with coordinates (%f,%f,%f) -> "
+        "there is no volume cell in element {} which contains point with coordinates ({},{},{}) -> "
         "void element???",
         ele->id(), x(0), x(1), x(2));
   }

@@ -61,7 +61,7 @@ Mat::PAR::FluidPoroPhaseDof* Mat::PAR::FluidPoroPhaseDof::create_phase_dof(int p
       break;
     }
     default:
-      FOUR_C_THROW("invalid pressure-saturation law for material %d", curmat->type());
+      FOUR_C_THROW("invalid pressure-saturation law for material {}", curmat->type());
       break;
   }
 
@@ -108,8 +108,8 @@ void Mat::PAR::FluidPoroPhaseDofDiffPressure::fill_do_f_matrix(
   // safety check
   if ((int)diffpresCoeffs_.size() != dofmat.numCols())
     FOUR_C_THROW(
-        "Number of phases given by the poro singlephase material %i "
-        "does not match number of DOFs (%i phases and %i DOFs)!",
+        "Number of phases given by the poro singlephase material {} "
+        "does not match number of DOFs ({} phases and {} DOFs)!",
         phaselaw_->id(), diffpresCoeffs_.size(), dofmat.numCols());
 
   // fill pressure coefficients into matrix
@@ -314,8 +314,8 @@ void Mat::PAR::FluidPoroPhaseDofSaturation::fill_do_f_matrix(
   // safety check
   if ((int)presIDs->size() != dofmat.numCols())
     FOUR_C_THROW(
-        "Number of phases given by the poro phase law material %i "
-        "does not match number of DOFs (%i phases and %i DOFs)!",
+        "Number of phases given by the poro phase law material {} "
+        "does not match number of DOFs ({} phases and {} DOFs)!",
         phaselaw_->id(), presIDs->size(), dofmat.numCols());
 
   // fill pressure coefficients of phase law into matrix

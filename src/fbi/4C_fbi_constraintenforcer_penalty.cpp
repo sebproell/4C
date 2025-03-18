@@ -124,10 +124,10 @@ void Adapter::FBIPenaltyConstraintenforcer::print_violation(double time, int ste
                       *(std::dynamic_pointer_cast<Adapter::FBIFluidMB>(get_fluid())->velnp()),
                       *violation);
 
-    if (err != 0) FOUR_C_THROW(" Matrix vector product threw error code %i ", err);
+    if (err != 0) FOUR_C_THROW(" Matrix vector product threw error code {} ", err);
 
     err = violation->update(1.0, *assemble_fluid_coupling_residual(), -1.0);
-    if (err != 0) FOUR_C_THROW(" Core::LinAlg::Vector<double> update threw error code %i ", err);
+    if (err != 0) FOUR_C_THROW(" Core::LinAlg::Vector<double> update threw error code {} ", err);
 
     double norm = 0.0, normf = 0.0, norms = 0.0, norm_vel = 0.0;
 

@@ -54,7 +54,7 @@ Discret::Elements::FluidBoundary::FluidBoundary(int id, int owner, int nnode, co
   {
     if (numdofpernode_ != parent_master_element()->num_dof_per_node(*FluidBoundary::nodes()[nlid]))
       FOUR_C_THROW(
-          "You need different NumDofPerNode for each node on this fluid boundary? (%d != %d)",
+          "You need different NumDofPerNode for each node on this fluid boundary? ({} != {})",
           numdofpernode_, parent_master_element()->num_dof_per_node(*FluidBoundary::nodes()[nlid]));
   }
   return;

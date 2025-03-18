@@ -118,7 +118,7 @@ void Core::FE::Nurbs::Knotvector::convert_ele_gid_to_knot_ids(
 {
   if ((int)loc_cart_id.size() != dim_)
   {
-    FOUR_C_THROW("size vector not of appropriate size (%d,%d)\n", (int)loc_cart_id.size(), dim_);
+    FOUR_C_THROW("size vector not of appropriate size ({},{})\n", (int)loc_cart_id.size(), dim_);
   }
 
   if (filled_ == false)
@@ -551,7 +551,7 @@ void Core::FE::Nurbs::Knotvector::set_knots(const int& direction, const int& npa
   }
   else
   {
-    FOUR_C_THROW("unknown knotvector-type '%s'\n", knotvectortype.c_str());
+    FOUR_C_THROW("unknown knotvector-type '{}'\n", knotvectortype.c_str());
   }
 
   // set the degree of the added knotvector
@@ -646,7 +646,7 @@ void Core::FE::Nurbs::Knotvector::finish_knots(const int smallest_gid_in_dis)
       // has it the correct size?
       if ((int)(*((knot_values_[np])[rr])).size() != (n_x_m_x_l_[np])[rr])
       {
-        FOUR_C_THROW("knotvector size mismatch to n_x_m_x_l_ %d!=%d\n",
+        FOUR_C_THROW("knotvector size mismatch to n_x_m_x_l_ {}!={}\n",
             (*((knot_values_[np])[rr])).size(), (n_x_m_x_l_[np])[rr]);
       }
 

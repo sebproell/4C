@@ -43,7 +43,7 @@ void Core::LinAlg::assemble(Epetra_CrsMatrix& A, const Core::LinAlg::SerialDense
 
       // check whether I have that global row
       int rgid = lmrow[lrow];
-      if (!(rowmap.MyGID(rgid))) FOUR_C_THROW("Sparse matrix A does not have global row %d", rgid);
+      if (!(rowmap.MyGID(rgid))) FOUR_C_THROW("Sparse matrix A does not have global row {}", rgid);
 
       for (int lcol = 0; lcol < lcoldim; ++lcol)
       {
@@ -57,10 +57,10 @@ void Core::LinAlg::assemble(Epetra_CrsMatrix& A, const Core::LinAlg::SerialDense
         {
           int errtwo = A.InsertGlobalValues(rgid, 1, &val, &cgid);
           if (errtwo < 0)
-            FOUR_C_THROW("Epetra_CrsMatrix::InsertGlobalValues returned error code %d", errtwo);
+            FOUR_C_THROW("Epetra_CrsMatrix::InsertGlobalValues returned error code {}", errtwo);
         }
         else if (errone)
-          FOUR_C_THROW("Epetra_CrsMatrix::SumIntoGlobalValues returned error code %d", errone);
+          FOUR_C_THROW("Epetra_CrsMatrix::SumIntoGlobalValues returned error code {}", errone);
       }  // for (int lcol=0; lcol<lcoldim; ++lcol)
     }  // for (int lrow=0; lrow<lrowdim; ++lrow)
   }
@@ -84,7 +84,7 @@ void Core::LinAlg::assemble(Core::LinAlg::Vector<double>& V,
   {
     if (lmowner[lrow] != myrank) continue;
     int rgid = lm[lrow];
-    if (!V.get_map().MyGID(rgid)) FOUR_C_THROW("Sparse vector V does not have global row %d", rgid);
+    if (!V.get_map().MyGID(rgid)) FOUR_C_THROW("Sparse vector V does not have global row {}", rgid);
     int rlid = V.get_map().LID(rgid);
     V[rlid] += Vele[lrow];
   }  // for (int lrow=0; lrow<ldim; ++lrow)
@@ -101,8 +101,8 @@ void Core::LinAlg::assemble_my_vector(double scalar_target, Core::LinAlg::Vector
     const int tlid = target.get_map().LID(sgid);
     if (tlid == -1)
       FOUR_C_THROW(
-          "The target vector has no global row %i"
-          " on processor %i!",
+          "The target vector has no global row {}"
+          " on processor {}!",
           sgid, Core::Communication::my_mpi_rank(target.get_comm()));
 
     // update the vector row
@@ -253,7 +253,7 @@ std::shared_ptr<Core::LinAlg::MapExtractor> Core::LinAlg::convert_dirichlet_togg
     else if (compo == 1)
       dbcgids.push_back(gid);
     else
-      FOUR_C_THROW("Unexpected component %f. It is neither 1.0 nor 0.0.", (dbctoggle)[i]);
+      FOUR_C_THROW("Unexpected component {}. It is neither 1.0 nor 0.0.", (dbctoggle)[i]);
   }
   // build map of Dirichlet DOFs
   std::shared_ptr<Epetra_Map> dbcmap = nullptr;

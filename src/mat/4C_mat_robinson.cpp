@@ -87,7 +87,7 @@ Mat::Robinson::Robinson(Mat::PAR::Robinson* params) : params_(params), thermo_(n
   if (thermoMatId != -1)
   {
     auto mat = Mat::factory(thermoMatId);
-    if (mat == nullptr) FOUR_C_THROW("Failed to create thermo material, id=%d", thermoMatId);
+    if (mat == nullptr) FOUR_C_THROW("Failed to create thermo material, id={}", thermoMatId);
     thermo_ = std::dynamic_pointer_cast<Mat::Trait::Thermo>(mat);
   }
 }
@@ -160,7 +160,7 @@ void Mat::Robinson::unpack(Core::Communication::UnpackBuffer& buffer)
       if (mat->type() == material_type())
         params_ = static_cast<Mat::PAR::Robinson*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
 

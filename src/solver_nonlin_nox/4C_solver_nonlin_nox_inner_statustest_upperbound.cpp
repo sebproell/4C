@@ -150,7 +150,7 @@ void NOX::Nln::Inner::StatusTest::UpperBound::throw_error(
   std::ostringstream msg;
   msg << "ERROR - NOX::Nln::Inner::StatusTest::UpperBound::" << functionName << " - " << errorMsg
       << std::endl;
-  FOUR_C_THROW(msg.str());
+  FOUR_C_THROW("{}", msg.str());
 }
 
 FOUR_C_NAMESPACE_CLOSE

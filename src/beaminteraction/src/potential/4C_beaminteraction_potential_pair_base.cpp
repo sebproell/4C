@@ -135,7 +135,7 @@ std::shared_ptr<BeamInteraction::BeamPotentialPair> BeamInteraction::BeamPotenti
         default:
         {
           FOUR_C_THROW(
-              "%d and %d is no valid template parameter combination for the "
+              "{} and {} is no valid template parameter combination for the "
               "number of nodes and number of types of nodal DoFs used for centerline "
               "interpolation!",
               numnodes_centerline, numnodalvalues);
@@ -163,7 +163,7 @@ std::shared_ptr<BeamInteraction::BeamPotentialPair> BeamInteraction::BeamPotenti
         }
         default:
           FOUR_C_THROW(
-              "%d and %d is no valid template parameter combination for the "
+              "{} and {} is no valid template parameter combination for the "
               "number of nodes and number of types of nodal DoFs used for centerline "
               "interpolation!",
               numnodes_centerline, numnodalvalues);
@@ -174,7 +174,7 @@ std::shared_ptr<BeamInteraction::BeamPotentialPair> BeamInteraction::BeamPotenti
     default:
     {
       FOUR_C_THROW(
-          "%d and %d is no valid template parameter combination for the "
+          "{} and {} is no valid template parameter combination for the "
           "number of nodes and number of types of nodal DoFs used for centerline "
           "interpolation!",
           numnodes_centerline, numnodalvalues);
@@ -236,7 +236,7 @@ Core::FE::GaussRule1D BeamInteraction::BeamPotentialPair::get_gauss_rule() const
     }
 
     default:
-      FOUR_C_THROW("%d Gauss points are not supported yet!", params()->number_gauss_points());
+      FOUR_C_THROW("{} Gauss points are not supported yet!", params()->number_gauss_points());
   }
 
   return Core::FE::GaussRule1D::undefined;

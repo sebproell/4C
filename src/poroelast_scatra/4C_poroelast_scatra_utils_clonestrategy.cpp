@@ -126,7 +126,7 @@ void PoroElastScaTra::Utils::PoroScatraCloneStrategy::set_element_data(
   auto* trans = dynamic_cast<Discret::Elements::Transport*>(newele.get());
   if (trans == nullptr)
     FOUR_C_THROW(
-        "unsupported element type '%s'", Core::Utils::get_dynamic_type_name(*newele).c_str());
+        "unsupported element type '{}'", Core::Utils::get_dynamic_type_name(*newele).c_str());
 
 
   // set material
@@ -177,7 +177,7 @@ void PoroElastScaTra::Utils::PoroScatraCloneStrategy::check_material_type(const 
       (mtype != Core::Materials::m_electrode) && (mtype != Core::Materials::m_matlist) &&
       (mtype != Core::Materials::m_matlist_reactions) && (mtype != Core::Materials::m_myocard) &&
       (mtype != Core::Materials::m_thermostvenant))
-    FOUR_C_THROW("Material with ID %d is not admissible for scalar transport elements", matid);
+    FOUR_C_THROW("Material with ID {} is not admissible for scalar transport elements", matid);
 }
 
 bool PoroElastScaTra::Utils::PoroelastCloneStrategyforScatraElements::determine_ele_type(

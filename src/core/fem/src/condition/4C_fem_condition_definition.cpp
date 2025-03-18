@@ -73,13 +73,13 @@ void Core::Conditions::ConditionDefinition::read(Core::IO::InputFile& input,
     }
     catch (const Core::Exception& e)
     {
-      FOUR_C_THROW("Failed to match condition specification in section '%s'. The error was:\n%s.",
+      FOUR_C_THROW("Failed to match condition specification in section '{}'. The error was:\n{}.",
           section_name().c_str(), e.what());
     }
     if (!data)
     {
       FOUR_C_THROW(
-          "Failed to match condition specification in section '%s'.", sectionname_.c_str());
+          "Failed to match condition specification in section '{}'.", sectionname_.c_str());
     }
 
     // Read a one-based condition number but convert it to zero-based for internal use.

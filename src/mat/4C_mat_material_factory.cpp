@@ -1009,7 +1009,7 @@ std::unique_ptr<Core::Mat::PAR::Parameter> Mat::make_parameter(
       return make_parameter_impl<Mat::PAR::LinElast1DGrowth>(id, type, input_data);
     }
     default:
-      FOUR_C_THROW("unknown material type %d", type);
+      FOUR_C_THROW("unknown material type {}", type);
   }
 }
 

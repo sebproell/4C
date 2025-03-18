@@ -403,7 +403,7 @@ void Discret::Elements::Transport::set_material(
       const int stoichlength = reacmat->num_scal();
       if (stoichlength != numdofpernode_)
         FOUR_C_THROW(
-            "The number of scalars in your MAT_scatra_reaction material with ID %i does not fit to "
+            "The number of scalars in your MAT_scatra_reaction material with ID {} does not fit to "
             "the number of scalars!",
             actmat->reac_id(jj));
     }
@@ -442,7 +442,7 @@ void Discret::Elements::Transport::set_material(
       const int pairlength = reacmat->pair()->size();
       if (pairlength != numdofpernode_)
         FOUR_C_THROW(
-            "The number of scalars in your MAT_scatra_chemotaxis material with ID %i does not fit "
+            "The number of scalars in your MAT_scatra_chemotaxis material with ID {} does not fit "
             "to the number of scalars!",
             actmat->pair_id(jj));
     }
@@ -482,7 +482,7 @@ void Discret::Elements::Transport::set_material(
       const int stoichlength = reacmat->num_scal();
       if (stoichlength != numdofpernode_)
         FOUR_C_THROW(
-            "The number of scalars in your MAT_scatra_reaction material with ID %i does not fit to "
+            "The number of scalars in your MAT_scatra_reaction material with ID {} does not fit to "
             "the number of scalars!",
             actmat->reac_id(jj));
     }
@@ -505,7 +505,7 @@ void Discret::Elements::Transport::set_material(
       const int pairlength = reacmat->pair()->size();
       if (pairlength != numdofpernode_)
         FOUR_C_THROW(
-            "The number of scalars in your MAT_scatra_chemotaxis material with ID %i does not fit "
+            "The number of scalars in your MAT_scatra_chemotaxis material with ID {} does not fit "
             "to the number of scalars!",
             actmat->pair_id(jj));
     }
@@ -517,7 +517,7 @@ void Discret::Elements::Transport::set_material(
     numdofpernode_ = actmat->num_dof();
   }
   else
-    FOUR_C_THROW("Transport element got unsupported material type %d", mat->material_type());
+    FOUR_C_THROW("Transport element got unsupported material type {}", mat->material_type());
 
   return;
 }

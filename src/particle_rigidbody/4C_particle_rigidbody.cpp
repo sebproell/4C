@@ -76,7 +76,7 @@ void ParticleRigidBody::RigidBodyHandler::setup(
         particleengineinterface_->get_particle_container_bundle();
 
     if (not particlecontainerbundle->get_particle_types().count(PARTICLEENGINE::RigidPhase))
-      FOUR_C_THROW("no particle container for particle type '%s' found!",
+      FOUR_C_THROW("no particle container for particle type '{}' found!",
           PARTICLEENGINE::enum_to_type_name(PARTICLEENGINE::RigidPhase).c_str());
   }
 
@@ -808,7 +808,7 @@ void ParticleRigidBody::RigidBodyHandler::compute_partial_mass_quantities()
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     // no affiliation pair for current global id
     if (it == affiliationpairdata.end())
-      FOUR_C_THROW("no affiliated rigid body found for particle with global id %d", globalid_i[0]);
+      FOUR_C_THROW("no affiliated rigid body found for particle with global id {}", globalid_i[0]);
 #endif
 
     // get global id of affiliated rigid body k
@@ -835,7 +835,7 @@ void ParticleRigidBody::RigidBodyHandler::compute_partial_mass_quantities()
     double* pos_k = rigidbodydatastate_->get_ref_position()[rigidbody_k].data();
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-    if (not(mass_k[0] > 0.0)) FOUR_C_THROW("partial mass of rigid body %d is zero!", rigidbody_k);
+    if (not(mass_k[0] > 0.0)) FOUR_C_THROW("partial mass of rigid body {} is zero!", rigidbody_k);
 #endif
 
     // determine center of gravity of (partial) rigid body k
@@ -853,7 +853,7 @@ void ParticleRigidBody::RigidBodyHandler::compute_partial_mass_quantities()
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     // no affiliation pair for current global id
     if (it == affiliationpairdata.end())
-      FOUR_C_THROW("no affiliated rigid body found for particle with global id %d", globalid_i[0]);
+      FOUR_C_THROW("no affiliated rigid body found for particle with global id {}", globalid_i[0]);
 #endif
 
     // get global id of affiliated rigid body k
@@ -975,7 +975,7 @@ void ParticleRigidBody::RigidBodyHandler::compute_full_mass_quantities(
     if (static_cast<int>(partialmass_k.size()) != numpartial_k or
         static_cast<int>(partialpos_k.size()) != numpartial_k)
       FOUR_C_THROW(
-          "the number of partial mass quantities of rigid body %d do not match!", rigidbody_k);
+          "the number of partial mass quantities of rigid body {} do not match!", rigidbody_k);
 #endif
 
     // get pointer to rigid body states
@@ -1012,7 +1012,7 @@ void ParticleRigidBody::RigidBodyHandler::compute_full_mass_quantities(
     if (static_cast<int>(partialmass_k.size()) != numpartial_k or
         static_cast<int>(partialinertia_k.size()) != numpartial_k)
       FOUR_C_THROW(
-          "the number of partial mass quantities of rigid body %d do not match!", rigidbody_k);
+          "the number of partial mass quantities of rigid body {} do not match!", rigidbody_k);
 #endif
 
     // get pointer to rigid body states
@@ -1101,7 +1101,7 @@ void ParticleRigidBody::RigidBodyHandler::compute_partial_force_and_torque()
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     // no affiliation pair for current global id
     if (it == affiliationpairdata.end())
-      FOUR_C_THROW("no affiliated rigid body found for particle with global id %d", globalid_i[0]);
+      FOUR_C_THROW("no affiliated rigid body found for particle with global id {}", globalid_i[0]);
 #endif
 
     // get global id of affiliated rigid body k
@@ -1513,7 +1513,7 @@ void ParticleRigidBody::RigidBodyHandler::set_rigid_particle_relative_position_i
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     // no affiliation pair for current global id
     if (it == affiliationpairdata.end())
-      FOUR_C_THROW("no affiliated rigid body found for particle with global id %d", globalid_i[0]);
+      FOUR_C_THROW("no affiliated rigid body found for particle with global id {}", globalid_i[0]);
 #endif
 
     // get global id of affiliated rigid body k
@@ -1562,7 +1562,7 @@ void ParticleRigidBody::RigidBodyHandler::update_rigid_particle_relative_positio
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     // no affiliation pair for current global id
     if (it == affiliationpairdata.end())
-      FOUR_C_THROW("no affiliated rigid body found for particle with global id %d", globalid_i[0]);
+      FOUR_C_THROW("no affiliated rigid body found for particle with global id {}", globalid_i[0]);
 #endif
 
     // get global id of affiliated rigid body k
@@ -1611,7 +1611,7 @@ void ParticleRigidBody::RigidBodyHandler::set_rigid_particle_position()
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     // no affiliation pair for current global id
     if (it == affiliationpairdata.end())
-      FOUR_C_THROW("no affiliated rigid body found for particle with global id %d", globalid_i[0]);
+      FOUR_C_THROW("no affiliated rigid body found for particle with global id {}", globalid_i[0]);
 #endif
 
     // get global id of affiliated rigid body k
@@ -1661,7 +1661,7 @@ void ParticleRigidBody::RigidBodyHandler::set_rigid_particle_velocities()
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     // no affiliation pair for current global id
     if (it == affiliationpairdata.end())
-      FOUR_C_THROW("no affiliated rigid body found for particle with global id %d", globalid_i[0]);
+      FOUR_C_THROW("no affiliated rigid body found for particle with global id {}", globalid_i[0]);
 #endif
 
     // get global id of affiliated rigid body k
@@ -1715,7 +1715,7 @@ void ParticleRigidBody::RigidBodyHandler::set_rigid_particle_accelerations()
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     // no affiliation pair for current global id
     if (it == affiliationpairdata.end())
-      FOUR_C_THROW("no affiliated rigid body found for particle with global id %d", globalid_i[0]);
+      FOUR_C_THROW("no affiliated rigid body found for particle with global id {}", globalid_i[0]);
 #endif
 
     // get global id of affiliated rigid body k
@@ -1767,7 +1767,7 @@ void ParticleRigidBody::RigidBodyHandler::evaluate_rigid_body_melting(
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       // no affiliation pair for current global id
       if (it == affiliationpairdata.end())
-        FOUR_C_THROW("no affiliated rigid body found for particle with global id %d", globalid_i);
+        FOUR_C_THROW("no affiliated rigid body found for particle with global id {}", globalid_i);
 #endif
 
       // erase affiliation pair
@@ -1810,7 +1810,7 @@ void ParticleRigidBody::RigidBodyHandler::evaluate_rigid_body_solidification(
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not localindextuple)
-        FOUR_C_THROW("particle with global id %d not found on this processor!", globalid_i);
+        FOUR_C_THROW("particle with global id {} not found on this processor!", globalid_i);
 
       // access values of local index tuples of particle i
       PARTICLEENGINE::TypeEnum type_i;
@@ -1818,11 +1818,11 @@ void ParticleRigidBody::RigidBodyHandler::evaluate_rigid_body_solidification(
       std::tie(type_i, status_i, std::ignore) = *localindextuple;
 
       if (type_i != PARTICLEENGINE::RigidPhase)
-        FOUR_C_THROW("particle with global id %d not of particle type '%s'!", globalid_i,
+        FOUR_C_THROW("particle with global id {} not of particle type '{}'!", globalid_i,
             PARTICLEENGINE::enum_to_type_name(PARTICLEENGINE::RigidPhase).c_str());
 
       if (status_i == PARTICLEENGINE::Ghosted)
-        FOUR_C_THROW("particle with global id %d not owned on this processor!", globalid_i);
+        FOUR_C_THROW("particle with global id {} not owned on this processor!", globalid_i);
 #endif
 
       // access values of local index tuples of particle i

@@ -72,7 +72,7 @@ Core::FE::CellType Discret::Elements::Vele3Surface::shape() const
     case 9:
       return Core::FE::CellType::quad9;
     default:
-      FOUR_C_THROW("unexpected number of nodes %d", num_node());
+      FOUR_C_THROW("unexpected number of nodes {}", num_node());
   }
 }
 

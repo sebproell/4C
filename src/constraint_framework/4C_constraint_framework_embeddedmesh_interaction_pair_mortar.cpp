@@ -450,7 +450,7 @@ void CONSTRAINTS::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<Interface,
       FOUR_C_THROW(
           "The physical coordinates of the gauss points of the "
           "interface and background do not "
-          "coincide. The difference is %f.",
+          "coincide. The difference is {}.",
           norm2);
     }
 

@@ -711,7 +711,7 @@ void Discret::Elements::LubricationEleCalc<distype, probdim>::materials(
       mat_lubrication(material, densn, densnp, densam, visc, dvisc, iquad);
       break;
     default:
-      FOUR_C_THROW("Material type %i is not supported", material->material_type());
+      FOUR_C_THROW("Material type {} is not supported", material->material_type());
       break;
   }
   return;
@@ -1030,7 +1030,7 @@ Discret::Elements::LubricationEleCalc<distype, probdim>::eval_shape_func_and_der
   const double det = eval_shape_func_and_derivs_in_parameter_space();
 
   if (det < 1E-16)
-    FOUR_C_THROW("GLOBAL ELEMENT NO. %d \nZERO OR NEGATIVE JACOBIAN DETERMINANT: %lf", eid_, det);
+    FOUR_C_THROW("GLOBAL ELEMENT NO. {} \nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", eid_, det);
 
   // compute global spatial derivatives
   derxy_.multiply(xij_, deriv_);
@@ -1099,7 +1099,7 @@ double Discret::Elements::LubricationEleCalc<distype,
         xyze_, deriv_red, metrictensor, det, throw_error_if_negative_determinant, &normalvec);
 
     if (det < 1E-16)
-      FOUR_C_THROW("GLOBAL ELEMENT NO. %d \nZERO OR NEGATIVE JACOBIAN DETERMINANT: %lf", eid_, det);
+      FOUR_C_THROW("GLOBAL ELEMENT NO. {} \nZERO OR NEGATIVE JACOBIAN DETERMINANT: {}", eid_, det);
 
     // transform the derivatives and Jacobians to the higher dimensional coordinates(problem
     // dimension)

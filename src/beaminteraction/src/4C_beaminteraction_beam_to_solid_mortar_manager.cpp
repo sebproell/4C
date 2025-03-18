@@ -204,7 +204,7 @@ void BeamInteraction::BeamToSolidMortarManager::setup()
 
         // Set the global Lagrange multiplier id for this node.
         error_code = node_gid_to_lambda_gid_->ReplaceMyValue(i_node, i_lambda, lagrange_gid);
-        if (error_code != 0) FOUR_C_THROW("Got error code %d!", error_code);
+        if (error_code != 0) FOUR_C_THROW("Got error code {}!", error_code);
       }
   }
   if (element_gid_to_lambda_gid_ != nullptr)
@@ -218,7 +218,7 @@ void BeamInteraction::BeamToSolidMortarManager::setup()
 
         // Set the global Lagrange multiplier id for this element.
         error_code = element_gid_to_lambda_gid_->ReplaceMyValue(i_element, i_lambda, lagrange_gid);
-        if (error_code != 0) FOUR_C_THROW("Got error code %d!", error_code);
+        if (error_code != 0) FOUR_C_THROW("Got error code {}!", error_code);
       }
   }
 
@@ -417,7 +417,7 @@ BeamInteraction::BeamToSolidMortarManager::location_vector(
         // Check if the id is in the map. If it is, add it to the output vector.
         auto search_key_in_map = node_gid_to_lambda_gid_map_.find(node_id);
         if (search_key_in_map == node_gid_to_lambda_gid_map_.end())
-          FOUR_C_THROW("Global node id %d not in map!", node_id);
+          FOUR_C_THROW("Global node id {} not in map!", node_id);
         const auto node_lambda_gid = search_key_in_map->second;
         for (unsigned int i_pos = 0; i_pos < n_lambda_node_translational_; i_pos++)
         {
@@ -442,7 +442,7 @@ BeamInteraction::BeamToSolidMortarManager::location_vector(
       // Check if the id is in the map. If it is, add it to the output vector.
       auto search_key_in_map = element_gid_to_lambda_gid_map_.find(element_id);
       if (search_key_in_map == element_gid_to_lambda_gid_map_.end())
-        FOUR_C_THROW("Global element id %d not in map!", element_id);
+        FOUR_C_THROW("Global element id {} not in map!", element_id);
       const auto element_lambda_gid = search_key_in_map->second;
       for (unsigned int i_pos = 0; i_pos < n_lambda_element_translational_; i_pos++)
       {
@@ -730,7 +730,7 @@ BeamInteraction::BeamToSolidMortarManager::penalty_invert_kappa() const
       else if (lambda_dof_rowmap_rotations_->LID(gid) != -1)
         penalty = penalty_rotation;
       else
-        FOUR_C_THROW("Could not find the GID %d in translation or rotation map", gid);
+        FOUR_C_THROW("Could not find the GID {} in translation or rotation map", gid);
 
       local_kappa_inv_value = penalty / kappa_->Values()[lid];
     }

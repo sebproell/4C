@@ -1974,7 +1974,7 @@ namespace Mortar
         }
         default:
         {
-          FOUR_C_THROW("shape unknown: %d\n", shape);
+          FOUR_C_THROW("shape unknown: {}\n", shape);
           break;
         }
       }

@@ -160,7 +160,7 @@ void Discret::Elements::Wall1::w1_call_defgrad_enh(Core::LinAlg::SerialDenseMatr
   }
   else
   {
-    FOUR_C_THROW("Cannot handle EAS type=%d", eastype_);
+    FOUR_C_THROW("Cannot handle EAS type={}", eastype_);
   }
 
   // inverse of jacobian matrix at element origin
@@ -185,7 +185,7 @@ void Discret::Elements::Wall1::w1_call_defgrad_enh(Core::LinAlg::SerialDenseMatr
   else if (eastype_ == eas_q1et4)
     Core::LinAlg::multiply(0.0, A, detJ0 / det, xjm0, M_temp);
   else
-    FOUR_C_THROW("Cannot handle EAS type=%d", eastype_);
+    FOUR_C_THROW("Cannot handle EAS type={}", eastype_);
 
   // enhanced deformation gradient at origin (four rows, one column)
 
@@ -247,7 +247,7 @@ void Discret::Elements::Wall1::w1_call_defgrad_enh(Core::LinAlg::SerialDenseMatr
   }
   else
   {
-    FOUR_C_THROW("Cannot handle EAS type=%d", eastype_);
+    FOUR_C_THROW("Cannot handle EAS type={}", eastype_);
   }
 
   // declaration of matrix (4x4) without eas-parameter alpha
@@ -269,7 +269,7 @@ void Discret::Elements::Wall1::w1_call_defgrad_enh(Core::LinAlg::SerialDenseMatr
     else if (eastype_ == eas_q1et4)
       Core::LinAlg::multiply(0.0, A_ges[i], detJ0 / det, xjm0, M_temp);
     else
-      FOUR_C_THROW("Cannot handle EAS type=%d", eastype_);
+      FOUR_C_THROW("Cannot handle EAS type={}", eastype_);
 
     // fill G-operator
 

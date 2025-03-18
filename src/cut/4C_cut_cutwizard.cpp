@@ -170,7 +170,7 @@ void Cut::CutWizard::add_cutter_state(const int mc_idx,
   std::map<int, std::shared_ptr<CutterMesh>>::iterator cm = cutter_meshes_.find(mc_idx);
 
   if (cm != cutter_meshes_.end())
-    FOUR_C_THROW("cutter mesh with mesh coupling index %i already set", mc_idx);
+    FOUR_C_THROW("cutter mesh with mesh coupling index {} already set", mc_idx);
 
   cutter_meshes_[mc_idx] = std::make_shared<CutterMesh>(cutter_dis, cutter_disp_col, start_ele_gid);
 
@@ -482,7 +482,7 @@ void evaluate_position_on_lagrange_element(Core::Elements::Element* element,
         mydisp = Core::FE::extract_values(*cutter_disp_col, lm_red);
       }
       else
-        FOUR_C_THROW("wrong number of dofs for node %i", lm.size());
+        FOUR_C_THROW("wrong number of dofs for node {}", lm.size());
 
       Core::LinAlg::Matrix<3, 1> disp(mydisp.data(), true);
 
@@ -689,7 +689,7 @@ Core::LinAlg::SerialDenseMatrix Cut::CutWizard::get_current_element_position(
       FOUR_C_ASSERT(global_dof_indices_, "global_dof_indices callback not set.");
       global_dof_indices_(node, lm);
 
-      FOUR_C_ASSERT(lm.size() == 4, "Wrong number of dofs for node %i", lm.size());
+      FOUR_C_ASSERT(lm.size() == 4, "Wrong number of dofs for node {}", lm.size());
 
       // copy the first three entries for the displacement, the fourth entry an all others
       std::vector<int> lm_red;  // reduced local map
@@ -1064,7 +1064,7 @@ void Cut::CutWizard::update_boundary_cell_coords(
           mydisp = Core::FE::extract_values(*cutter_disp_col, lm_red);
         }
         else
-          FOUR_C_THROW("wrong number of dofs for node %i", lm.size());
+          FOUR_C_THROW("wrong number of dofs for node {}", lm.size());
 
         if (mydisp.size() != 3) FOUR_C_THROW("we need 3 displacements here");
 

@@ -85,7 +85,7 @@ void POROFLUIDMULTIPHASE::Utils::setup_material(
     std::pair<std::string, std::string> key(fluid_disname, struct_disname);
     matmap = clonefieldmatmap[key];
     if (matmap.size() < 1)
-      FOUR_C_THROW("Key pair '%s/%s' not defined in --CLONING MATERIAL MAP.", fluid_disname.c_str(),
+      FOUR_C_THROW("Key pair '{}/{}' not defined in --CLONING MATERIAL MAP.", fluid_disname.c_str(),
           struct_disname.c_str());
   }
 
@@ -120,7 +120,7 @@ void POROFLUIDMULTIPHASE::Utils::setup_material(
       for (mat_iter = matmap.begin(); mat_iter != matmap.end(); mat_iter++)
         std::cout << mat_iter->first << " -> " << mat_iter->second << std::endl;
 
-      FOUR_C_THROW("no matching material ID (%d) in map", src_matid);
+      FOUR_C_THROW("no matching material ID ({}) in map", src_matid);
     }
 
   }  // end loop over column elements

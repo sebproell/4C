@@ -407,7 +407,7 @@ void FPSI::Monolithic::time_step()
   }
   else if (iter_ >= maximumiterations_)
   {
-    FOUR_C_THROW("Newton found no convergence in %d iterations", iter_);
+    FOUR_C_THROW("Newton found no convergence in {} iterations", iter_);
   }
 
   poro_field()->recover_lagrange_multiplier_after_time_step();
@@ -1641,7 +1641,7 @@ void FPSI::Monolithic::fpsifd_check()
   setup_system_matrix();
 
   int err = stiff_approx->FillComplete();
-  if (err) FOUR_C_THROW("FD_Check: FillComplete failed with err-code: %d", err);
+  if (err) FOUR_C_THROW("FD_Check: FillComplete failed with err-code: {}", err);
 
   Core::LinAlg::SparseMatrix temp(stiff_approx, Core::LinAlg::Copy);
 

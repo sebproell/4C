@@ -55,7 +55,7 @@ namespace Discret::Elements
         return "shell_eas_ans";
     }
 
-    FOUR_C_THROW("Unknown element technology %d", ele_tech);
+    FOUR_C_THROW("Unknown element technology {}", ele_tech);
   }
 
   template <typename Function>
@@ -79,7 +79,7 @@ namespace Discret::Elements
         return fct(std::integral_constant<ElementTechnology, ElementTechnology::shell_eas_ans>{});
     }
 
-    FOUR_C_THROW("Your element technology is unknown: %d", eletech);
+    FOUR_C_THROW("Your element technology is unknown: {}", eletech);
   }
 
   enum class PrestressTechnology
@@ -98,7 +98,7 @@ namespace Discret::Elements
         return "mulf";
     }
 
-    FOUR_C_THROW("Unknown prestress technology %d", prestress_tech);
+    FOUR_C_THROW("Unknown prestress technology {}", prestress_tech);
   }
 
   template <typename Function>
@@ -112,7 +112,7 @@ namespace Discret::Elements
         return fct(std::integral_constant<PrestressTechnology, PrestressTechnology::mulf>{});
     }
 
-    FOUR_C_THROW("Your prestress technology is unknown: %d", prestress_technology);
+    FOUR_C_THROW("Your prestress technology is unknown: {}", prestress_technology);
   }
 
 

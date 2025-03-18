@@ -187,7 +187,7 @@ double Discret::Elements::ScaTraEleCalc<distype, probdim>::get_density(
     fluiddis = Global::Problem::instance()->get_dis("fluid");
     // get corresponding fluid element (it has the same global ID as the scatra element)
     Core::Elements::Element* fluidele = fluiddis->g_element(ele->id());
-    if (fluidele == nullptr) FOUR_C_THROW("Fluid element %i not on local processor", ele->id());
+    if (fluidele == nullptr) FOUR_C_THROW("Fluid element {} not on local processor", ele->id());
     // get fluid material
     std::shared_ptr<Core::Mat::Material> fluidmat = fluidele->material();
     if (fluidmat->material_type() != Core::Materials::m_fluid)

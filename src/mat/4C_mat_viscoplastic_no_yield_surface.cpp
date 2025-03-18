@@ -120,7 +120,7 @@ void Mat::ViscoPlasticNoYieldSurface::unpack(Core::Communication::UnpackBuffer& 
       if (mat->type() == material_type())
         params_ = dynamic_cast<Mat::PAR::ViscoPlasticNoYieldSurface*>(mat);
       else
-        FOUR_C_THROW("Type of parameter material %d does not fit to calling type %d", mat->type(),
+        FOUR_C_THROW("Type of parameter material {} does not fit to calling type {}", mat->type(),
             material_type());
     }
   }

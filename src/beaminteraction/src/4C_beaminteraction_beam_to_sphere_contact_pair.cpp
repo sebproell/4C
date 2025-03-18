@@ -1113,11 +1113,11 @@ void BeamInteraction::BeamToSphereContactPair<numnodes, numnodalvalues>::reset_s
     const std::vector<double>& centerline_dofvec_ele2)
 {
   if (centerline_dofvec_ele1.size() != 3 * numnodes * numnodalvalues)
-    FOUR_C_THROW("size mismatch! expected %d values for centerline_dofvec_ele1, but got %d",
+    FOUR_C_THROW("size mismatch! expected {} values for centerline_dofvec_ele1, but got {}",
         3 * numnodes * numnodalvalues, centerline_dofvec_ele1.size());
 
   if (centerline_dofvec_ele2.size() != 3)
-    FOUR_C_THROW("size mismatch! expected %d values for centerline_dofvec_ele2, but got %d", 3,
+    FOUR_C_THROW("size mismatch! expected {} values for centerline_dofvec_ele2, but got {}", 3,
         centerline_dofvec_ele1.size());
 
   for (unsigned int i = 0; i < 3 * numnodalvalues * numnodalvalues; ++i)

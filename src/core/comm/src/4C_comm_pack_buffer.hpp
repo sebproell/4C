@@ -114,7 +114,7 @@ namespace Core::Communication
       std::memcpy(&hash, &data_[position_], sizeof(hash));
       position_ += sizeof(hash);
       FOUR_C_ASSERT(hash == typeid(T).hash_code(),
-          "Type mismatch during unpacking. Tried to extract type %s", typeid(T).name());
+          "Type mismatch during unpacking. Tried to extract type {}", typeid(T).name());
 #endif
 
       memcpy(&stuff, &data_[position_], sizeof(T));
@@ -138,7 +138,7 @@ namespace Core::Communication
       std::memcpy(&hash, &data_[position_], sizeof(hash));
       position_ += sizeof(hash);
       FOUR_C_ASSERT(hash == typeid(T).hash_code(),
-          "Type mismatch during unpacking. Tried to extract type %s", typeid(T).name());
+          "Type mismatch during unpacking. Tried to extract type {}", typeid(T).name());
 #endif
 
 

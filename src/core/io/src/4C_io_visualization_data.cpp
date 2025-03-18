@@ -22,8 +22,8 @@ size_t Core::IO::VisualizationData::get_point_coordinates_number_of_points() con
   if (point_coordinates_.size() % n_dim_ != 0)
   {
     FOUR_C_THROW(
-        "The size of the point coordinate vector (%d) is not a multiple of the spatial "
-        "dimension (%d)!",
+        "The size of the point coordinate vector ({}) is not a multiple of the spatial "
+        "dimension ({})!",
         point_coordinates_.size(), n_dim_);
   }
   return point_coordinates_.size() / n_dim_;
@@ -77,23 +77,23 @@ void Core::IO::VisualizationData::consistency_check() const
   // Check basic cell consistency
   const auto n_cells = cell_types_.size();
   if (cell_offsets_.size() != n_cells)
-    FOUR_C_THROW("The cell offset data array length (%d) does not match the number of cells (%d)",
+    FOUR_C_THROW("The cell offset data array length ({}) does not match the number of cells ({})",
         cell_offsets_.size(), n_cells);
   if (cell_connectivity_.size() < n_cells)
-    FOUR_C_THROW("The number of cells is %d, however, there are fewer connectivity entries (%d)",
+    FOUR_C_THROW("The number of cells is {}, however, there are fewer connectivity entries ({})",
         n_cells, cell_connectivity_.size());
   if (!cell_offsets_.empty() &&
       cell_connectivity_.size() <
           static_cast<std::vector<index_type>::size_type>(cell_offsets_.back()))
   {
     FOUR_C_THROW(
-        "The last entry in the cell offset data is %d, however, there are fewer connectivity "
-        "entries (%d)",
+        "The last entry in the cell offset data is {}, however, there are fewer connectivity "
+        "entries ({})",
         cell_offsets_.back(), cell_connectivity_.size());
   }
   if (n_cells == 0 && cell_connectivity_.size() > 0)
     FOUR_C_THROW(
-        "There are no cells, but there are %d connectivity entries", cell_connectivity_.size());
+        "There are no cells, but there are {} connectivity entries", cell_connectivity_.size());
 
   // Check basic face consistency. Only check if the number of entries makes sense, a more
   // sophisticated check (but also more expensive) is performed in CompleteFaceData
@@ -112,13 +112,13 @@ void Core::IO::VisualizationData::consistency_check() const
     const auto size = get_data_vector_size(get_data_vector_from_map_item(map_item));
     const auto n_dim = get_data_dimension(map_item);
     if (size % n_dim != 0)
-      FOUR_C_THROW("The size of the data vector %s (%d) is not a multiple of the dimension (%d)!",
+      FOUR_C_THROW("The size of the data vector {} ({}) is not a multiple of the dimension ({})!",
           data_name.c_str(), size, n_dim);
     if (size / n_dim != n_items)
     {
       FOUR_C_THROW(
-          "The size of the data vector %s (%d) does not match the total number of point/cells "
-          "(%d with dimension = %d)!",
+          "The size of the data vector {} ({}) does not match the total number of point/cells "
+          "({} with dimension = {})!",
           data_name.c_str(), size, n_items, n_dim);
     }
   };
@@ -185,8 +185,8 @@ void Core::IO::VisualizationData::complete_face_connectivity()
   {
     FOUR_C_THROW(
         "Error in the consistency of the face connectivity and offsets. Number of polyhedrons "
-        "(%d), cell size (%d), face "
-        "connectivity size (%d), face offsets size (%d)",
+        "({}), cell size ({}), face "
+        "connectivity size ({}), face offsets size ({})",
         n_polyhedron, cell_offsets_.size(), face_connectivity_.size(), face_offsets_.size());
   }
 }

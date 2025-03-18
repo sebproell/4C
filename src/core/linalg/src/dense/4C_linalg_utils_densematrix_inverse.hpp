@@ -144,7 +144,7 @@ namespace Core::LinAlg
   void inverse(Core::LinAlg::Matrix<dim, dim, T>& A)
   {
     T det = determinant(A);
-    if (det == 0.0) FOUR_C_THROW("determinant of %dx%d matrix is exactly zero", dim, dim);
+    if (det == 0.0) FOUR_C_THROW("determinant of {}x{} matrix is exactly zero", dim, dim);
     inverse_reorder_matrix_entries(A);
     A.scale(1. / det);
   }

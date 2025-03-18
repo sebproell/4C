@@ -341,7 +341,7 @@ namespace Mat
         else
         {
           FOUR_C_THROW(
-              "Given anisotropy type %s not defined for InelasticDefgradTransvIsotropViscoplast",
+              "Given anisotropy type {} not defined for InelasticDefgradTransvIsotropViscoplast",
               anisotropy_type.c_str());
         }
       };

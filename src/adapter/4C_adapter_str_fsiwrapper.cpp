@@ -135,7 +135,7 @@ Adapter::FSIStructureWrapper::predict_interface_dispnp()
   }
   else
   {
-    FOUR_C_THROW("unknown interface displacement predictor '%s'", Global::Problem::instance()
+    FOUR_C_THROW("unknown interface displacement predictor '{}'", Global::Problem::instance()
                                                                       ->fsi_dynamic_params()
                                                                       .sublist("PARTITIONED SOLVER")
                                                                       .get<std::string>("PREDICTOR")
