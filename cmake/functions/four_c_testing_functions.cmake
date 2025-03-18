@@ -311,7 +311,7 @@ function(four_c_test)
   if(${_parsed_OMP_THREADS})
     set(name_of_test ${name_of_test}-OMP${_parsed_OMP_THREADS})
     set(test_command
-        "export OMP_NUM_THREADS=${_parsed_OMP_THREADS}; ${test_command}; unset OMP_NUM_THREADS"
+        "export OMP_NUM_THREADS=${_parsed_OMP_THREADS} && ${test_command} && unset OMP_NUM_THREADS"
         )
     math(EXPR total_procs "${_parsed_NP}*${_parsed_OMP_THREADS}")
   endif()
@@ -370,7 +370,7 @@ function(four_c_test)
     if(${_parsed_OMP_THREADS})
       set(name_of_test ${name_of_test}-OMP${_parsed_OMP_THREADS})
       set(test_command
-          "export OMP_NUM_THREADS=${_parsed_OMP_THREADS}; ${test_command}; unset OMP_NUM_THREADS"
+          "export OMP_NUM_THREADS=${_parsed_OMP_THREADS} && ${test_command} && unset OMP_NUM_THREADS"
           )
       math(EXPR total_procs "${_parsed_NP}*${_parsed_OMP_THREADS}")
     endif()
