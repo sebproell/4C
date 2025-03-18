@@ -703,13 +703,14 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
           CONTACT::CONSTITUTIVELAW::ConstitutiveLawType::colaw_mirco)
       {
         mircolaw = true;
-        resolution = coconstlaw.get<int>("Resolution");
-        randomtopologyflag = coconstlaw.get<bool>("RandomTopologyFlag");
-        randomseedflag = coconstlaw.get<bool>("RandomSeedFlag");
-        randomgeneratorseed = coconstlaw.get<int>("RandomGeneratorSeed");
-        hurstexponentfunction = coconstlaw.get<int>("HurstExponentFunct");
+        const auto& mirco_data = coconstlaw.group("CoConstLaw_mirco");
+        resolution = mirco_data.get<int>("Resolution");
+        randomtopologyflag = mirco_data.get<bool>("RandomTopologyFlag");
+        randomseedflag = mirco_data.get<bool>("RandomSeedFlag");
+        randomgeneratorseed = mirco_data.get<int>("RandomGeneratorSeed");
+        hurstexponentfunction = mirco_data.get<int>("HurstExponentFunct");
         initialtopologystddeviationfunction =
-            coconstlaw.get<int>("InitialTopologyStdDeviationFunct");
+            mirco_data.get<int>("InitialTopologyStdDeviationFunct");
       }
     }
 
