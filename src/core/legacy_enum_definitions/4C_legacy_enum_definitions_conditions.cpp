@@ -31,6 +31,8 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "Surface Neumann boundary condition";
     case Core::Conditions::VolumeNeumann:
       return "Volume Neumann boundary condition";
+    case Core::Conditions::PointNeumannEB:
+      return "Point Neumann boundary condition for Euler-Bernoulli beam";
     case Core::Conditions::PointInitfield:
       return "Point Initfield boundary condition";
     case Core::Conditions::LineInitfield:
@@ -41,6 +43,8 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "Volume Initfield boundary condition";
     case Core::Conditions::Mortar:
       return "Mortar coupling boundary condition";
+    case Core::Conditions::MortarMulti:
+      return "Mortar multi-coupling boundary condition";
     case Core::Conditions::Contact:
       return "Mortar contact boundary condition";
     case Core::Conditions::AleWear:
@@ -49,6 +53,12 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "Line contact symmetry condition";
     case Core::Conditions::PointMrtrSym:
       return "Point contact symmetry condition";
+    case Core::Conditions::EdgeMrtr:
+      return "Geometrical edge for 2D/3D contact";
+    case Core::Conditions::CornerMrtr:
+      return "Geometrical corner for 2/3D contact";
+    case Core::Conditions::EHLCoupling:
+      return "EHL (elastohydrodynamic lubrication) coupling condition";
     case Core::Conditions::PointLocsys:
       return "Point local coordinate system condition";
     case Core::Conditions::LineLocsys:
@@ -101,6 +111,8 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "ALE Fluid Coupling condition";
     case Core::Conditions::FluidMesh:
       return "Create standalone fluid mesh from condition";
+    case Core::Conditions::FluidStressCalc:
+      return "Fluid stress calculation";
     case Core::Conditions::LineLIFTDRAG:
       return "Line LIFTDRAG condition";
     case Core::Conditions::SurfLIFTDRAG:
@@ -111,6 +123,8 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "Microscale boundary condition";
     case Core::Conditions::VolumeConstraint_3D:
       return "Volume constraint surface boundary condition";
+    case Core::Conditions::VolumeConstraint_3D_pen:
+      return "Volume constraint surface boundary with penalty";
     case Core::Conditions::AreaConstraint_3D:
       return "Area constraint surface boundary condition";
     case Core::Conditions::AreaConstraint_2D:
@@ -141,6 +155,10 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "Multipoint constraint on a line";
     case Core::Conditions::MPC_NodeOnLine_2D:
       return "Multipoint constraint on a line";
+    case Core::Conditions::MPC_NormalComponent_3D:
+      return "Node on plane constraint";
+    case Core::Conditions::MPC_NormalComponent_3D_pen:
+      return "Node on plane penalty constraint";
     case Core::Conditions::LJ_Potential_Volume:
       return "Lennard-Jones potential in a volume";
     case Core::Conditions::LJ_Potential_Surface:
@@ -173,10 +191,22 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "line weak Dirichlet condition";
     case Core::Conditions::SurfaceWeakDirichlet:
       return "surface weak Dirichlet condition";
+    case Core::Conditions::LineMixHybDirichlet:
+      return "Mixed/hybrid dirichlet line condition";
+    case Core::Conditions::SurfaceMixHybDirichlet:
+      return "Mixed/hybrid dirichlet surface condition";
+    case Core::Conditions::SurfaceConservativeOutflowConsistency:
+      return "Surace conservative outflow consistency condition";
     case Core::Conditions::LinePeriodic:
       return "line periodic boundary condition";
     case Core::Conditions::SurfacePeriodic:
       return "surface periodic boundary condition";
+    case Core::Conditions::LineRvePeriodic:
+      return "Line RVE periodic boundary condition";
+    case Core::Conditions::SurfaceRvePeriodic:
+      return "Surface RVE periodic boundary condition";
+    case Core::Conditions::PointRvePeriodicReference:
+      return "Reference point for RVE periodic boundary condition";
     case Core::Conditions::TransferTurbulentInflow:
       return "transfer turbulent inflow";
     case Core::Conditions::TurbulentInflowSection:
@@ -185,8 +215,16 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "blend materials";
     case Core::Conditions::FilamentBeamLineCondition:
       return "line condition for polymer networks";
+    case Core::Conditions::PointCoupling:
+      return "Multi point constraint coupling";
     case Core::Conditions::PenaltyPointCouplingCondition:
       return "condition for beam-to-beam point coupling based on a penalty potential";
+    case Core::Conditions::PointLinearCoupledEquation:
+      return "Point linear coupling equation";
+    case Core::Conditions::RigidspherePotential_PointCharge:
+      return "Rigid sphere potential point charge";
+    case Core::Conditions::BeamPotential_LineChargeDensity:
+      return "Beam potential line charge density";
     case Core::Conditions::BeamToBeamContact:
       return "condition for beam-to-beam contact";
     case Core::Conditions::BeamToSolidVolumeMeshtyingLine:
@@ -207,8 +245,20 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "Monitor flow rate through a surface interface";
     case Core::Conditions::FluidNeumannInflow:
       return "Fluid Neumann inflow";
+    case Core::Conditions::TransportNeumannInflow:
+      return "Scalar transport Neumann inflow";
     case Core::Conditions::ElchBoundaryKinetics:
       return "Electrode kinetics as boundary condition";
+    case Core::Conditions::ElchDomainKinetics:
+      return "Electrode domain kinetcs";
+    case Core::Conditions::ElectrodeSOC:
+      return "Electrode state of charge (soc)";
+    case Core::Conditions::CCCVCycling:
+      return "Constant-current constant-voltage (CCCV) cell cycling";
+    case Core::Conditions::CCCVHalfCycle:
+      return "Constant-current constant-voltage (CCCV) half-cycle";
+    case Core::Conditions::CellVoltage:
+      return "Cell voltage condition";
     case Core::Conditions::ArtJunctionCond:
       return "Artery junction boundary condition";
     case Core::Conditions::ArtPrescribedCond:
@@ -243,6 +293,8 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "Reduced d airway prescribed boundary condition";
     case Core::Conditions::RedAirwayPrescribedExternalPressure:
       return "Reduced d airway prescribed external pressure boundary condition";
+    case Core::Conditions::RedAirwayPrescribedSwitchCond:
+      return "Reduced dim airway switch flow pressure condition";
     case Core::Conditions::VolumetricSurfaceFlowCond:
       return "Volumetric Surface Flow Profile";
     case Core::Conditions::VolumetricFlowBorderNodes:
@@ -283,6 +335,8 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "condition for boundary integral computation";
     case Core::Conditions::ScaTraFluxCalc:
       return "Scalar transport flux calculation boundary condition";
+    case Core::Conditions::TotalAndMeanScalar:
+      return "Calculation of total and mean scatra values";
     case Core::Conditions::ScaTraCoupling:
       return "scatra coupling condition";
     case Core::Conditions::ParticleWall:
@@ -305,6 +359,8 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "Reduced D airways evaluate lung volume condition";
     case Core::Conditions::TransportRobin:
       return "Scalar transport Robin boundary condition";
+    case Core::Conditions::ThermoRobin:
+      return "thermal Robin condition";
     case Core::Conditions::ScatraMultiScaleCoupling:
       return "Scalar transport multi-scale coupling condition";
     case Core::Conditions::ScatraHeteroReactionCondMaster:
@@ -313,12 +369,16 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "Scalar transport reaction coupling condition (Slave:";
     case Core::Conditions::ScatraPartitioning:
       return "Scalar transport partitioning condition for block preconditioning";
+    case Core::Conditions::ScatraRelError:
+      return "Relative error to analytical solution";
     case Core::Conditions::SSICoupling:
       return "Scalar-Structure coupling condition";
     case Core::Conditions::SSICouplingSolidToScatra:
       return "Scalar-Structure coupling condition from Solid to Scatra";
     case Core::Conditions::SSICouplingScatraToSolid:
       return "Scalar-Structure coupling condition from Scatra to Solid";
+    case Core::Conditions::SSIInterfaceContact:
+      return "Scalar-structure interface contact condition";
     case Core::Conditions::ssi_interface_meshtying:
       return "Scalar-Structure interaction interface meshtying condition";
     case Core::Conditions::SSIMeshtying3DomainIntersection:
@@ -336,12 +396,28 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "Scalar transport boundary condition depending on structural surface stress";
     case Core::Conditions::S2IKinetics:
       return "Scatra-scatra interface kinetics";
+    case Core::Conditions::S2IKineticsGrowth:
+      return "Scatra-scatra kinetics growth";
+    case Core::Conditions::S2INoEvaluation:
+      return "Scatra-scatra no evaluation";
     case Core::Conditions::S2IMeshtying:
       return "Scatra-scatra interface mesh tying";
+    case Core::Conditions::S2ISCLCoupling:
+      return "Scatra-scatra with space-charge layer coupling";
     case Core::Conditions::ElementTag:
       return "Tagged elements";
     case Core::Conditions::NodeTag:
       return "Tagged nodes";
+    case Core::Conditions::Embedded_Mesh_Solid_Surf_Coupling:
+      return "Embedded mesh solid surface coupling";
+    case Core::Conditions::Embedded_Mesh_Solid_Volume_Background:
+      return "Embedded mesh solid volume background";
+    case Core::Conditions::ReinitializationTaylorGalerkin:
+      return "Reinitialization Taylor Galerkin condition";
+    case Core::Conditions::TaylorGalerkinNeumannInflow:
+      return "Taylor Galerkin neumann inflow";
+    case Core::Conditions::TaylorGalerkinOutflow:
+      return "Taylor Galerkin outflow";
     default:
       FOUR_C_THROW("Unknown condition type for enum constant {}.", condition_type);
   }

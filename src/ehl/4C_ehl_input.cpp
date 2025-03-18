@@ -158,11 +158,11 @@ void EHL::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition
   // ehl mortar coupling
 
   Core::Conditions::ConditionDefinition lineehl("DESIGN LINE EHL MORTAR COUPLING CONDITIONS 2D",
-      "EHLCoupling", "Line EHL Coupling", Core::Conditions::EHLCoupling, true,
-      Core::Conditions::geometry_type_line);
+      "EHLCoupling", "Line EHL (elasto-hydro-dynamic) Coupling", Core::Conditions::EHLCoupling,
+      true, Core::Conditions::geometry_type_line);
   Core::Conditions::ConditionDefinition surfehl("DESIGN SURF EHL MORTAR COUPLING CONDITIONS 3D",
-      "EHLCoupling", "Surface EHL Coupling", Core::Conditions::EHLCoupling, true,
-      Core::Conditions::geometry_type_surface);
+      "EHLCoupling", "Surface EHL (elasto-hydro-dynamic) Coupling", Core::Conditions::EHLCoupling,
+      true, Core::Conditions::geometry_type_surface);
 
   const auto make_ehl_cond = [&condlist](Core::Conditions::ConditionDefinition& cond)
   {
