@@ -30,6 +30,37 @@ FOURC_BASE_TYPES_TO_JSON_SCHEMA_DICT = {
 }
 
 
+def _check_for_multiple_one_ofs(metadata_object):
+    """Check if object contains multiple one_ofs.
+
+    Args:
+        metadata_object (Group, All_of): object to check.
+    """
+
+    hint_text = """
+    In general, this error indicates that the input construct is suboptimal. Transform the
+    different One_ofs into Groups or Selections, e.g., in pseudo code for parameters a,b,c,d:
+
+    From this:  All_of
+                  {
+                    One_of{a,b},
+                    One_of{c,d}
+                  }
+
+    To this:    All_of
+                  {
+                    Group{"good_group_name", One_of{a,b}},
+                    Group{"other_good_group_name", One_of{c,d}}
+                  }
+    """
+
+    if len(metadata_object.one_ofs()) > 1:
+        raise NotImplementedError(
+            f"More than one One_of within an {type(metadata_object)} is not supported.\n"
+            f"Here the object you provided: {metadata_object}\n\n{hint_text}"
+        )
+
+
 @dataclass
 class Parameter:
     """Base parameter."""
@@ -103,7 +134,7 @@ class Collection(Parameter):
     """Collection parameter."""
 
     def __post_init__(self):
-        self.type = self._type
+        self.type = type(self).__name__.lower()
         for i, spec in enumerate(self.specs):
             if isinstance(spec, dict):
                 spec = _metadata_object_from_dict(spec)
@@ -210,7 +241,6 @@ class One_Of(Collection):
 
     specs: list = field(default_factory=list)
     name: str = ""
-    _type = "one_of"
 
 
 @dataclass
@@ -219,12 +249,10 @@ class All_Of(Collection):
 
     specs: list = field(default_factory=list)
     name: str = ""
-    _type = "all_of"
 
     def __post_init__(self):
         super().__post_init__()
-        if len(self.one_ofs()) > 1:
-            raise ValueError("More than one One_of is not supported.")
+        _check_for_multiple_one_ofs(self)
 
 
 @dataclass
@@ -235,11 +263,14 @@ class Group(Collection):
     name: str = None
     noneable: bool = False
     defaultable: bool = False
-    _type = "group"
 
     def short_description(self):
         """Create short description."""
         return f"{self.name} ({self.type})"
+
+    def __post_init__(self):
+        super().__post_init__()
+        _check_for_multiple_one_ofs(self)
 
 
 @dataclass
@@ -257,10 +288,9 @@ class Selection(Collection):
     noneable: bool = False
     required: bool = False
     selector: str = None
-    _type = "selection"
 
     def __post_init__(self):
-        self.type = self._type
+        self.type = "selection"
         for i, choice in enumerate(self.choices):
             if isinstance(choice, dict):
                 spec = _metadata_object_from_dict(choice["spec"])
@@ -285,10 +315,9 @@ class List(Parameter):
     size: int = None
     spec: Parameter = None
     noneable: bool = False
-    _type = "list"
 
     def __post_init__(self):
-        self.type = self._type
+        self.type = "list"
         if isinstance(self.spec, dict):
             self.spec = _metadata_object_from_dict(self.spec)
 
@@ -348,28 +377,42 @@ def metadata_object_from_file(metadata_4C_path):
     Returns:
         tuple: All_of and description section name and 4C code metadata
     """
-    metadata = YAML().load(Path(metadata_4C_path).read_text())
 
-    # Title section
-    description_section_name = metadata["metadata"]["description_section_name"]
-    metadata_description = f"Schema for 4C\nCommit hash: {metadata['metadata']['commit_hash']}\nVersion: {metadata['metadata']['version']}"
+    metadata_4C_path = Path(metadata_4C_path)
+    if not metadata_4C_path.exists():
+        raise FileNotFoundError(
+            f"Metadata file {metadata_4C_path.resolve()} not found."
+        )
 
-    # Legacy section
-    sections = metadata["sections"]
-    legacy_sections = [
-        {
-            "name": name,
-            "description": name + f" [legacy section] ",
-            "type": "vector",
-            "value_type": {"type": "string"},
-        }
-        for name in metadata["legacy_string_sections"]
-    ]
+    try:
+        metadata = YAML().load(metadata_4C_path.read_text(encoding="utf-8"))
 
-    # Combine sections with legacy sections
-    all_of = All_Of(
-        description=metadata_description,
-        specs=sections + legacy_sections,
-        name="Sections",
-    )
+        # Title section
+        description_section_name = metadata["metadata"]["description_section_name"]
+        metadata_description = f"Schema for 4C\nCommit hash: {metadata['metadata']['commit_hash']}\nVersion: {metadata['metadata']['version']}"
+
+        # Legacy section
+        sections = metadata["sections"]
+        legacy_sections = [
+            {
+                "name": name,
+                "description": name + " [legacy section] ",
+                "type": "vector",
+                "value_type": {"type": "string"},
+            }
+            for name in metadata["legacy_string_sections"]
+        ]
+
+        # Combine sections with legacy sections
+        all_of = All_Of(
+            description=metadata_description,
+            specs=sections + legacy_sections,
+            name="Sections",
+        )
+    except Exception as exception:
+        raise ValueError(
+            "Could not read the 4C metadata file.\nThis generally indicates that input parameters"
+            " were added or modified in a non-conforming way."
+        ) from exception
+
     return all_of, description_section_name, metadata["metadata"]
