@@ -11,8 +11,8 @@
 
 #include "4C_fem_discretization.hpp"
 #include "4C_geometry_pair_element_faces.hpp"
-#include "4C_so3_surface.hpp"
 #include "4C_solid_3D_ele.hpp"
+#include "4C_solid_3D_ele_surface.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -146,8 +146,8 @@ namespace
         }
 
         // Create the Core::Elements::FaceElement.
-        auto face_element = std::make_shared<Discret::Elements::StructuralSurface>(i_el, 0,
-            n_nodes_face, node_ids.data(), element_nodes.data(), discret.g_element(parent_id), 0);
+        auto face_element = std::make_shared<Discret::Elements::SolidSurface>(i_el, 0, n_nodes_face,
+            node_ids.data(), element_nodes.data(), discret.g_element(parent_id), 0);
 
         // Create the geometry pair face element.
         face_elements_map[parent_id] = std::make_shared<FaceElementType>(face_element, true);

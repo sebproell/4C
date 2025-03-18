@@ -28,9 +28,9 @@
 #include "4C_mat_elasthyper.hpp"
 #include "4C_mat_newtonianfluid.hpp"
 #include "4C_rebalance_binning_based.hpp"
-#include "4C_so3_surface.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_solid_3D_ele_calc_lib_nitsche.hpp"
+#include "4C_solid_3D_ele_surface.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_xfem_discretization_utils.hpp"
 #include "4C_xfem_interface_utils.hpp"
@@ -2417,8 +2417,8 @@ void XFEM::MeshCouplingFSI::get_stress_tangent_slave(
  *--------------------------------------------------------------------------*/
 void XFEM::MeshCouplingFSI::estimate_nitsche_trace_max_eigenvalue(Core::Elements::Element* ele)
 {
-  auto* solidfaceele = dynamic_cast<Discret::Elements::StructuralSurface*>(ele);
-  FOUR_C_ASSERT(solidfaceele != nullptr, "Cast to StructuralSurface failed!");
+  auto* solidfaceele = dynamic_cast<Discret::Elements::SolidSurface*>(ele);
+  FOUR_C_ASSERT(solidfaceele != nullptr, "Cast to SolidSurface failed!");
 
   solidfaceele->set_parent_master_element(
       coupl_dis_->g_element(solidfaceele->parent_element_id()), solidfaceele->face_parent_number());

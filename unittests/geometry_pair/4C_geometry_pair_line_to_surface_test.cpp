@@ -15,7 +15,6 @@
 #include "4C_geometry_pair_line_to_surface_geometry_test.hpp"
 #include "4C_geometry_pair_utility_classes.hpp"
 #include "4C_inpar_beam_to_solid.hpp"
-#include "4C_so3_surface.hpp"
 
 using namespace GEOMETRYPAIR;
 

@@ -15,11 +15,11 @@
 #include "4C_mat_fluidporo.hpp"
 #include "4C_mat_fluidporo_multiphase.hpp"
 #include "4C_mat_structporo.hpp"
-#include "4C_so3_surface.hpp"
 #include "4C_solid_3D_ele_factory.hpp"
 #include "4C_solid_3D_ele_interface_serializable.hpp"
 #include "4C_solid_3D_ele_line.hpp"
 #include "4C_solid_3D_ele_nullspace.hpp"
+#include "4C_solid_3D_ele_surface.hpp"
 #include "4C_solid_3D_ele_utils.hpp"
 #include "4C_solid_poro_3D_ele_factory.hpp"
 #include "4C_solid_poro_3D_ele_utils.hpp"
@@ -158,8 +158,7 @@ Discret::Elements::SolidPoroPressureBased::lines()
 std::vector<std::shared_ptr<Core::Elements::Element>>
 Discret::Elements::SolidPoroPressureBased::surfaces()
 {
-  return Core::Communication::get_element_surfaces<StructuralSurface, SolidPoroPressureBased>(
-      *this);
+  return Core::Communication::get_element_surfaces<SolidSurface, SolidPoroPressureBased>(*this);
 }
 
 void Discret::Elements::SolidPoroPressureBased::set_params_interface_ptr(

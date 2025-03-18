@@ -43,7 +43,7 @@ namespace Discret
 {
   namespace Elements
   {
-    class StructuralSurface;
+    class SolidSurface;
   }
 }  // namespace Discret
 
@@ -98,7 +98,7 @@ namespace XFEM
           min_surf_id_(-1),
           min_mortar_id_(-1),
           so_surf_id_to_mortar_ele_(std::vector<CONTACT::Element*>()),
-          mortar_id_to_so_surf_ele_(std::vector<Discret::Elements::StructuralSurface*>()),
+          mortar_id_to_so_surf_ele_(std::vector<Discret::Elements::SolidSurface*>()),
           mortar_id_to_somc_(std::vector<int>()),
           mortar_id_to_sosid_(std::vector<int>()),
           extrapolate_to_zero_(false),
@@ -168,7 +168,7 @@ namespace XFEM
       return so_surf_id_to_mortar_ele_.at(soSurfId - min_surf_id_);
     }
     /// Get the solid surface element for the contact element id
-    Discret::Elements::StructuralSurface* get_surf_ele(const int mortarId)
+    Discret::Elements::SolidSurface* get_surf_ele(const int mortarId)
     {
       return mortar_id_to_so_surf_ele_.at(mortarId - min_mortar_id_);
     }
@@ -245,7 +245,7 @@ namespace XFEM
 
     /// Get the fluid states at specific selexi
     void get_states(const int fluidele_id, const std::vector<int>& fluid_nds,
-        const Discret::Elements::StructuralSurface* sele, const Core::LinAlg::Matrix<2, 1>& selexsi,
+        const Discret::Elements::SolidSurface* sele, const Core::LinAlg::Matrix<2, 1>& selexsi,
         const Core::LinAlg::Matrix<3, 1>& x, Core::Elements::Element*& fluidele,
         Core::LinAlg::SerialDenseMatrix& ele_xyze, std::vector<double>& velpres,
         std::vector<double>& disp, std::vector<double>& ivel, double& pres_m,
@@ -258,12 +258,12 @@ namespace XFEM
         double& penalty_fac, const Core::LinAlg::Matrix<3, 1>& vel_m);
 
     /// Get the Nitsche penalty parameter
-    void get_penalty_param(Discret::Elements::StructuralSurface* sele, double& penalty_fac);
+    void get_penalty_param(Discret::Elements::SolidSurface* sele, double& penalty_fac);
 
     /// Get the volumecell for local coord xsi on sele
-    bool get_volumecell(Discret::Elements::StructuralSurface*& sele,
-        Core::LinAlg::Matrix<2, 1>& xsi, Cut::SideHandle*& sidehandle, std::vector<int>& nds,
-        int& eleid, Cut::VolumeCell*& volumecell, Core::LinAlg::Matrix<3, 1>& elenormal,
+    bool get_volumecell(Discret::Elements::SolidSurface*& sele, Core::LinAlg::Matrix<2, 1>& xsi,
+        Cut::SideHandle*& sidehandle, std::vector<int>& nds, int& eleid,
+        Cut::VolumeCell*& volumecell, Core::LinAlg::Matrix<3, 1>& elenormal,
         Core::LinAlg::Matrix<3, 1>& x, bool& FSI_integrated, double& distance);
 
     /// Evaluate the distance of x the boundary of a side
@@ -335,7 +335,7 @@ namespace XFEM
     /// Vector for translation of Structural Surface Id to Contact Element
     std::vector<CONTACT::Element*> so_surf_id_to_mortar_ele_;
     /// Vector for translation of Mortar Element Id to Structural Surface
-    std::vector<Discret::Elements::StructuralSurface*> mortar_id_to_so_surf_ele_;
+    std::vector<Discret::Elements::SolidSurface*> mortar_id_to_so_surf_ele_;
     /// Vector for translation of Mortar Element Id to Mesh Coupling Object Id
     std::vector<int> mortar_id_to_somc_;
     /// Vector for translation of Mortar Element Id to Structural Surface Id

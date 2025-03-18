@@ -11,18 +11,15 @@
 #include "4C_fem_general_utils_fem_shapefunctions.hpp"
 #include "4C_fem_general_utils_nurbs_shapefunctions.hpp"
 #include "4C_fem_nurbs_discretization.hpp"
-#include "4C_fluid_ele_action.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_fsi.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_linalg_utils_densematrix_multiply.hpp"
-#include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_mat_structporo.hpp"
-#include "4C_so3_surface.hpp"
+#include "4C_solid_3D_ele_surface.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_function.hpp"
-#include "4C_utils_function_of_time.hpp"
 
 #include <Sacado.hpp>
 #include <Teuchos_StandardParameterEntryValidators.hpp>
@@ -43,10 +40,7 @@ namespace
   }
 }  // namespace
 
-/*----------------------------------------------------------------------*
- * Integrate a Surface Neumann boundary condition (public)     gee 04/08|
- * ---------------------------------------------------------------------*/
-int Discret::Elements::StructuralSurface::evaluate_neumann(Teuchos::ParameterList& params,
+int Discret::Elements::SolidSurface::evaluate_neumann(Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
@@ -397,10 +391,7 @@ int Discret::Elements::StructuralSurface::evaluate_neumann(Teuchos::ParameterLis
   return 0;
 }
 
-/*----------------------------------------------------------------------*
- * Evaluate normal at gp (private)                             gee 08/08|
- * ---------------------------------------------------------------------*/
-void Discret::Elements::StructuralSurface::surface_integration(std::vector<double>& normal,
+void Discret::Elements::SolidSurface::surface_integration(std::vector<double>& normal,
     const Core::LinAlg::SerialDenseMatrix& x, const Core::LinAlg::SerialDenseMatrix& deriv)
 {
   // note that the length of this normal is the area dA
@@ -412,16 +403,10 @@ void Discret::Elements::StructuralSurface::surface_integration(std::vector<doubl
   normal[0] = dxyzdrs(0, 1) * dxyzdrs(1, 2) - dxyzdrs(0, 2) * dxyzdrs(1, 1);
   normal[1] = dxyzdrs(0, 2) * dxyzdrs(1, 0) - dxyzdrs(0, 0) * dxyzdrs(1, 2);
   normal[2] = dxyzdrs(0, 0) * dxyzdrs(1, 1) - dxyzdrs(0, 1) * dxyzdrs(1, 0);
-
-  return;
 }
 
-/*----------------------------------------------------------------------*
- * Evaluate sqrt of determinant of metric at gp (private)      gee 04/08|
- * ---------------------------------------------------------------------*/
-void Discret::Elements::StructuralSurface::surface_integration(double& detA,
-    std::vector<double>& normal, const Core::LinAlg::SerialDenseMatrix& x,
-    const Core::LinAlg::SerialDenseMatrix& deriv)
+void Discret::Elements::SolidSurface::surface_integration(double& detA, std::vector<double>& normal,
+    const Core::LinAlg::SerialDenseMatrix& x, const Core::LinAlg::SerialDenseMatrix& deriv)
 {
   // compute dXYZ / drs
   Core::LinAlg::SerialDenseMatrix dxyzdrs(2, 3);
@@ -443,14 +428,12 @@ void Discret::Elements::StructuralSurface::surface_integration(double& detA,
   normal[0] = dxyzdrs(0, 1) * dxyzdrs(1, 2) - dxyzdrs(0, 2) * dxyzdrs(1, 1);
   normal[1] = dxyzdrs(0, 2) * dxyzdrs(1, 0) - dxyzdrs(0, 0) * dxyzdrs(1, 2);
   normal[2] = dxyzdrs(0, 0) * dxyzdrs(1, 1) - dxyzdrs(0, 1) * dxyzdrs(1, 0);
-
-  return;
 }
 
 /*----------------------------------------------------------------------*
  * Calculates dnormal/dx_j with Sacado DFAD                   popp 06/13|
  * ---------------------------------------------------------------------*/
-void Discret::Elements::StructuralSurface::automatic_d_surface_integration(
+void Discret::Elements::SolidSurface::automatic_d_surface_integration(
     Core::LinAlg::SerialDenseMatrix& d_normal, const Core::LinAlg::SerialDenseMatrix& x,
     const Core::LinAlg::SerialDenseMatrix& deriv)
 {
@@ -510,15 +493,13 @@ void Discret::Elements::StructuralSurface::automatic_d_surface_integration(
       d_normal(dim, dxyz) = saccado_normal[dim].fastAccessDx(dxyz);
     }
   }
-
-  return;
 }
 
 
 /*----------------------------------------------------------------------*
  * Calculates dnormal/dx_j analytically                       popp 06/13|
  * ---------------------------------------------------------------------*/
-void Discret::Elements::StructuralSurface::analytical_d_surface_integration(
+void Discret::Elements::SolidSurface::analytical_d_surface_integration(
     Core::LinAlg::SerialDenseMatrix& d_normal, const Core::LinAlg::SerialDenseMatrix& x,
     const Core::LinAlg::SerialDenseMatrix& deriv)
 {
@@ -565,50 +546,48 @@ void Discret::Elements::StructuralSurface::analytical_d_surface_integration(
     d_normal(2, dof) =
         dg1(0, dof) * g2[1] + g1[0] * dg2(1, dof) - dg1(1, dof) * g2[0] - g1[1] * dg2(0, dof);
   }
-
-  return;
 }
 
 /*----------------------------------------------------------------------*
- * Evaluate method for StructuralSurface-Elements               tk 10/07*
+ * Evaluate method for SolidSurface-Elements               tk 10/07*
  * ---------------------------------------------------------------------*/
-int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& params,
+int Discret::Elements::SolidSurface::evaluate(Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, std::vector<int>& lm,
     Core::LinAlg::SerialDenseMatrix& elematrix1, Core::LinAlg::SerialDenseMatrix& elematrix2,
     Core::LinAlg::SerialDenseVector& elevector1, Core::LinAlg::SerialDenseVector& elevector2,
     Core::LinAlg::SerialDenseVector& elevector3)
 {
   // start with "none"
-  Discret::Elements::StructuralSurface::ActionType act = StructuralSurface::none;
+  Discret::Elements::SolidSurface::ActionType act = SolidSurface::none;
 
   // get the required action
   std::string action = params.get<std::string>("action", "none");
   if (action == "none")
     FOUR_C_THROW("No action supplied");
   else if (action == "calc_struct_constrvol")
-    act = StructuralSurface::calc_struct_constrvol;
+    act = SolidSurface::calc_struct_constrvol;
   else if (action == "calc_struct_volconstrstiff")
-    act = StructuralSurface::calc_struct_volconstrstiff;
+    act = SolidSurface::calc_struct_volconstrstiff;
   else if (action == "calc_struct_monitarea")
-    act = StructuralSurface::calc_struct_monitarea;
+    act = SolidSurface::calc_struct_monitarea;
   else if (action == "calc_struct_constrarea")
-    act = StructuralSurface::calc_struct_constrarea;
+    act = SolidSurface::calc_struct_constrarea;
   else if (action == "calc_struct_areaconstrstiff")
-    act = StructuralSurface::calc_struct_areaconstrstiff;
+    act = SolidSurface::calc_struct_areaconstrstiff;
   else if (action == "calc_struct_centerdisp")
-    act = StructuralSurface::calc_struct_centerdisp;
+    act = SolidSurface::calc_struct_centerdisp;
   else if (action == "calc_struct_rotation")
-    act = StructuralSurface::calc_struct_rotation;
+    act = SolidSurface::calc_struct_rotation;
   else if (action == "calc_undo_struct_rotation")
-    act = StructuralSurface::calc_undo_struct_rotation;
+    act = SolidSurface::calc_undo_struct_rotation;
   else if (action == "calc_ref_nodal_normals")
-    act = StructuralSurface::calc_ref_nodal_normals;
+    act = SolidSurface::calc_ref_nodal_normals;
   else if (action == "calc_cur_nodal_normals")
-    act = StructuralSurface::calc_cur_nodal_normals;
+    act = SolidSurface::calc_cur_nodal_normals;
   else
   {
     std::cout << action << std::endl;
-    FOUR_C_THROW("Unknown type of action for StructuralSurface");
+    FOUR_C_THROW("Unknown type of action for SolidSurface");
   }
 
   // create communicator
@@ -1069,16 +1048,13 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
     break;
 
     default:
-      FOUR_C_THROW("Unimplemented type of action for StructuralSurface");
+      FOUR_C_THROW("Unimplemented type of action for SolidSurface");
       break;
   }
   return 0;
 }
 
-/*----------------------------------------------------------------------*
- * Evaluate method for StructuralSurface-Elements               tk 10/07*
- * ---------------------------------------------------------------------*/
-int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& params,
+int Discret::Elements::SolidSurface::evaluate(Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
     Core::LinAlg::SerialDenseMatrix& elematrix1, Core::LinAlg::SerialDenseMatrix& elematrix2,
     Core::LinAlg::SerialDenseVector& elevector1, Core::LinAlg::SerialDenseVector& elevector2,
@@ -1092,20 +1068,20 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
   }
 
   // start with "none"
-  Discret::Elements::StructuralSurface::ActionType act = StructuralSurface::none;
+  Discret::Elements::SolidSurface::ActionType act = SolidSurface::none;
 
   // get the required action
   std::string action = params.get<std::string>("action", "none");
   if (action == "none")
     FOUR_C_THROW("No action supplied");
   else if (action == "calc_struct_area_poro")
-    act = StructuralSurface::calc_struct_area_poro;
+    act = SolidSurface::calc_struct_area_poro;
   else if (action == "calc_cur_nodal_normals")
-    act = StructuralSurface::calc_cur_nodal_normals;
+    act = SolidSurface::calc_cur_nodal_normals;
   else if (action == "calc_ref_nodal_normals")
-    act = StructuralSurface::calc_ref_nodal_normals;
+    act = SolidSurface::calc_ref_nodal_normals;
   else
-    FOUR_C_THROW("Unknown type of action for StructuralSurface");
+    FOUR_C_THROW("Unknown type of action for SolidSurface");
 
   // what the element has to do
   switch (act)
@@ -1124,16 +1100,13 @@ int Discret::Elements::StructuralSurface::evaluate(Teuchos::ParameterList& param
     }
     break;
     default:
-      FOUR_C_THROW("Unimplemented type of action for StructuralSurface");
+      FOUR_C_THROW("Unimplemented type of action for SolidSurface");
       break;
   }
   return 0;
 }
 
-/*----------------------------------------------------------------------*
- * Compute Volume enclosed by surface.                          tk 10/07*
- * ---------------------------------------------------------------------*/
-double Discret::Elements::StructuralSurface::compute_constr_vols(
+double Discret::Elements::SolidSurface::compute_constr_vols(
     const Core::LinAlg::SerialDenseMatrix& xc, const int numnode)
 {
   double V = 0.0;
@@ -1195,13 +1168,8 @@ double Discret::Elements::StructuralSurface::compute_constr_vols(
   return V / 3.0;
 }
 
-/*----------------------------------------------------------------------*
- * Compute volume and its first and second derivatives          tk 02/09*
- * with respect to the displacements                                    *
- * ---------------------------------------------------------------------*/
-void Discret::Elements::StructuralSurface::compute_vol_deriv(
-    const Core::LinAlg::SerialDenseMatrix& xc, const int numnode, const int ndof, double& V,
-    Core::LinAlg::SerialDenseVector& Vdiff1,
+void Discret::Elements::SolidSurface::compute_vol_deriv(const Core::LinAlg::SerialDenseMatrix& xc,
+    const int numnode, const int ndof, double& V, Core::LinAlg::SerialDenseVector& Vdiff1,
     const std::shared_ptr<Core::LinAlg::SerialDenseMatrix>& Vdiff2, const int minindex,
     const int maxindex)
 {
@@ -1316,14 +1284,8 @@ void Discret::Elements::StructuralSurface::compute_vol_deriv(
   return;
 }
 
-
-/*----------------------------------------------------------------------*
- * Compute surface area and its first and second derivatives    lw 05/08*
- * with respect to the displacements                                    *
- * ---------------------------------------------------------------------*/
-void Discret::Elements::StructuralSurface::compute_area_deriv(
-    const Core::LinAlg::SerialDenseMatrix& x, const int numnode, const int ndof, double& A,
-    Core::LinAlg::SerialDenseVector& Adiff,
+void Discret::Elements::SolidSurface::compute_area_deriv(const Core::LinAlg::SerialDenseMatrix& x,
+    const int numnode, const int ndof, double& A, Core::LinAlg::SerialDenseVector& Adiff,
     const std::shared_ptr<Core::LinAlg::SerialDenseMatrix>& Adiff2)
 {
   // initialization
@@ -1452,12 +1414,10 @@ void Discret::Elements::StructuralSurface::compute_area_deriv(
       }
     }
   }
-
-  return;
 }
 
 
-void Discret::Elements::StructuralSurface::build_normals_at_nodes(
+void Discret::Elements::SolidSurface::build_normals_at_nodes(
     Core::LinAlg::SerialDenseVector& nodenormals, const std::vector<double>& mydisp, bool refconfig)
 {
   const int numnode = num_node();
@@ -1498,11 +1458,8 @@ void Discret::Elements::StructuralSurface::build_normals_at_nodes(
   }
 }
 
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-void Discret::Elements::StructuralSurface::calculate_surface_porosity(
-    Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-    Core::Elements::LocationArray& la)
+void Discret::Elements::SolidSurface::calculate_surface_porosity(Teuchos::ParameterList& params,
+    Core::FE::Discretization& discretization, Core::Elements::LocationArray& la)
 {
   // get the parent element
   Core::Elements::Element* parentele = parent_element();

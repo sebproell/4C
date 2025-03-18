@@ -23,7 +23,7 @@
 #include "4C_fluid_ele.hpp"
 #include "4C_mat_newtonianfluid.hpp"
 #include "4C_mortar_element.hpp"
-#include "4C_so3_surface.hpp"
+#include "4C_solid_3D_ele_surface.hpp"
 #include "4C_xfem_condition_manager.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -139,7 +139,7 @@ double XFEM::XFluidContactComm::get_fsi_traction(Mortar::Element* ele,
     }
   }
 
-  Discret::Elements::StructuralSurface* sele = get_surf_ele(ele->id());
+  Discret::Elements::SolidSurface* sele = get_surf_ele(ele->id());
   mcidx_ = get_surf_mc(ele->id());
 
   if (std::dynamic_pointer_cast<XFEM::MeshCouplingFPI>(mc_[mcidx_]) != nullptr)
@@ -287,7 +287,7 @@ bool XFEM::XFluidContactComm::get_contact_state(int sid,        // Solid Surface
 }
 
 void XFEM::XFluidContactComm::get_states(const int fluidele_id, const std::vector<int>& fluid_nds,
-    const Discret::Elements::StructuralSurface* sele, const Core::LinAlg::Matrix<2, 1>& selexsi,
+    const Discret::Elements::SolidSurface* sele, const Core::LinAlg::Matrix<2, 1>& selexsi,
     const Core::LinAlg::Matrix<3, 1>& x, Core::Elements::Element*& fluidele,
     Core::LinAlg::SerialDenseMatrix& ele_xyze, std::vector<double>& velpres,
     std::vector<double>& disp, std::vector<double>& ivel, double& pres_m,
@@ -538,7 +538,7 @@ void XFEM::XFluidContactComm::get_penalty_param(Core::Elements::Element* fluidel
 }
 
 void XFEM::XFluidContactComm::get_penalty_param(
-    Discret::Elements::StructuralSurface* sele, double& penalty_fac)
+    Discret::Elements::SolidSurface* sele, double& penalty_fac)
 {
   penalty_fac = nit_stab_gamma_ *
                 std::dynamic_pointer_cast<XFEM::MeshCouplingFSI>(mc_[mcidx_])->get_time_fac() *
@@ -598,9 +598,8 @@ void XFEM::XFluidContactComm::setup_surf_ele_ptrs(Core::FE::Discretization& cont
       {
         int startgid = condition_manager_->get_mesh_coupling_start_gid(
             condition_manager_->get_coupling_index(mc_[mc]->get_name()));
-        Discret::Elements::StructuralSurface* fele =
-            dynamic_cast<Discret::Elements::StructuralSurface*>(
-                mc_[mc]->get_cutter_dis()->l_col_element(j));
+        Discret::Elements::SolidSurface* fele = dynamic_cast<Discret::Elements::SolidSurface*>(
+            mc_[mc]->get_cutter_dis()->l_col_element(j));
         if (!fele) FOUR_C_THROW("no face element or no element at all");
         const int f_parent_id = fele->parent_element_id();
         const int f_parent_surf = fele->face_parent_number();
@@ -620,9 +619,8 @@ void XFEM::XFluidContactComm::setup_surf_ele_ptrs(Core::FE::Discretization& cont
       {
         int startgid = condition_manager_->get_mesh_coupling_start_gid(
             condition_manager_->get_coupling_index(mcfpi_ps_pf_->get_name()));
-        Discret::Elements::StructuralSurface* fele =
-            dynamic_cast<Discret::Elements::StructuralSurface*>(
-                mcfpi_ps_pf_->get_cutter_dis()->l_col_element(j));
+        Discret::Elements::SolidSurface* fele = dynamic_cast<Discret::Elements::SolidSurface*>(
+            mcfpi_ps_pf_->get_cutter_dis()->l_col_element(j));
         if (!fele) FOUR_C_THROW("no face element or no element at all");
         const int f_parent_id = fele->parent_element_id();
         const int f_parent_surf = fele->face_parent_number();
@@ -644,7 +642,7 @@ void XFEM::XFluidContactComm::setup_surf_ele_ptrs(Core::FE::Discretization& cont
       dynamic_cast<CONTACT::NitscheStrategyFpi*>(&contact_strategy_);  // might be nullptr
 }
 
-bool XFEM::XFluidContactComm::get_volumecell(Discret::Elements::StructuralSurface*& sele,
+bool XFEM::XFluidContactComm::get_volumecell(Discret::Elements::SolidSurface*& sele,
     Core::LinAlg::Matrix<2, 1>& xsi, Cut::SideHandle*& sidehandle, std::vector<int>& nds,
     int& eleid, Cut::VolumeCell*& volumecell, Core::LinAlg::Matrix<3, 1>& elenormal,
     Core::LinAlg::Matrix<3, 1>& x, bool& FSI_integrated, double& distance)
@@ -725,8 +723,8 @@ bool XFEM::XFluidContactComm::get_volumecell(Discret::Elements::StructuralSurfac
       side = findnext_physical_side(x, subsides[found_side], sidehandle, xsi, distance);
       side->normal(xsi, elenormal, true);
       elenormal.scale(-1.0);  // flip direction
-      sele = dynamic_cast<Discret::Elements::StructuralSurface*>(
-          condition_manager_->get_side(side->id()));
+      sele =
+          dynamic_cast<Discret::Elements::SolidSurface*>(condition_manager_->get_side(side->id()));
       if (!sele) FOUR_C_THROW("Couldn't Identify new sele {}", side->id());
       facets = side->facets();
     }

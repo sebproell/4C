@@ -143,7 +143,7 @@ namespace FSI
 
       /// Build full redundant structure and fluid elements.
       /// Necessary for search-trees since MORTAR elements do not know about their facets and edges.
-      /// Furthermore, this function builds StructuralSurface elements from the fluid outer surface
+      /// Furthermore, this function builds SolidSurface elements from the fluid outer surface
       /// for rotation.
       void redundant_elements(Coupling::Adapter::CouplingMortar& coupsf, MPI_Comm comm);
 

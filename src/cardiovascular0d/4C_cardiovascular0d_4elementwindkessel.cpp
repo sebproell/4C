@@ -15,7 +15,6 @@
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
-#include "4C_so3_surface.hpp"
 
 #include <iostream>
 

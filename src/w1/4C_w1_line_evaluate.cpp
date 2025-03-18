@@ -612,7 +612,7 @@ int Discret::Elements::Wall1Line::evaluate(Teuchos::ParameterList& params,
   else if (action == "calc_struct_area_poro")
     act = Wall1Line::calc_struct_area_poro;
   else
-    FOUR_C_THROW("Unknown type of action for StructuralSurface");
+    FOUR_C_THROW("Unknown type of action for SolidSurface");
 
   // what the element has to do
   switch (act)

@@ -142,7 +142,7 @@ void SSI::ScatraStructureCloneStrategyManifold::set_element_data(
     FOUR_C_THROW("Scatra Impltype not supported for SSI with transport on manifolds");
 
   auto* trans = dynamic_cast<Discret::Elements::Transport*>(newele.get());
-  if (trans == nullptr or oldele->element_type().name() != "StructuralSurfaceType")
+  if (trans == nullptr or oldele->element_type().name() != "SolidSurfaceType")
     FOUR_C_THROW("element type not supported");
 
   // set distype

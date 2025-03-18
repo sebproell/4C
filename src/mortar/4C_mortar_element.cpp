@@ -13,7 +13,7 @@
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_material_base.hpp"
 #include "4C_mortar_node.hpp"
-#include "4C_so3_surface.hpp"
+#include "4C_solid_3D_ele_surface.hpp"
 
 #include <memory>
 
@@ -1649,7 +1649,7 @@ void Mortar::Element::estimate_nitsche_trace_max_eigenvalue()
       "support 2D problems.");
 
   auto surf_ele = parent_element()->surfaces()[face_parent_number()];
-  auto* surf = dynamic_cast<Discret::Elements::StructuralSurface*>(surf_ele.get());
+  auto* surf = dynamic_cast<Discret::Elements::SolidSurface*>(surf_ele.get());
 
   if (mo_data().parent_scalar().empty())
     traceHE_ = 1.0 / surf->estimate_nitsche_trace_max_eigenvalue(mo_data().parent_disp());

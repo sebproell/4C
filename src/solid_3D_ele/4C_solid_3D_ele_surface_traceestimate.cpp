@@ -18,24 +18,19 @@
 #include "4C_linalg_utils_densematrix_eigen.hpp"
 #include "4C_mat_fourier.hpp"
 #include "4C_mat_so3_material.hpp"
-#include "4C_so3_surface.hpp"
+#include "4C_solid_3D_ele_surface.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
 
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-double Discret::Elements::StructuralSurface::estimate_nitsche_trace_max_eigenvalue(
+double Discret::Elements::SolidSurface::estimate_nitsche_trace_max_eigenvalue(
     const std::vector<double>& parent_disp)
 {
   // call the implementation that is dependent on scalars with an empty scalar vector
   return estimate_nitsche_trace_max_eigenvalue(parent_disp, {});
 }
 
-
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-double Discret::Elements::StructuralSurface::estimate_nitsche_trace_max_eigenvalue(
+double Discret::Elements::SolidSurface::estimate_nitsche_trace_max_eigenvalue(
     const std::vector<double>& parent_disp, const std::vector<double>& parent_scalar)
 {
   switch (parent_element()->shape())
@@ -66,7 +61,7 @@ double Discret::Elements::StructuralSurface::estimate_nitsche_trace_max_eigenval
 
 
 template <Core::FE::CellType dt_vol, Core::FE::CellType dt_surf>
-double Discret::Elements::StructuralSurface::estimate_nitsche_trace_max_eigenvalue(
+double Discret::Elements::SolidSurface::estimate_nitsche_trace_max_eigenvalue(
     const std::vector<double>& parent_disp, const std::vector<double>& parent_scalar)
 {
   const int dim = Core::FE::dim<dt_vol>;
@@ -110,7 +105,7 @@ double Discret::Elements::StructuralSurface::estimate_nitsche_trace_max_eigenval
 
 
 template <Core::FE::CellType dt_vol>
-void Discret::Elements::StructuralSurface::trace_estimate_vol_matrix(
+void Discret::Elements::SolidSurface::trace_estimate_vol_matrix(
     const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xrefe,
     const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
     const std::vector<double>& parent_scalar,
@@ -152,7 +147,7 @@ void Discret::Elements::StructuralSurface::trace_estimate_vol_matrix(
 
 
 template <Core::FE::CellType dt_vol, Core::FE::CellType dt_surf>
-void Discret::Elements::StructuralSurface::trace_estimate_surf_matrix(
+void Discret::Elements::SolidSurface::trace_estimate_surf_matrix(
     const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xrefe,
     const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
     const std::vector<double>& parent_scalar,
@@ -261,7 +256,7 @@ void Discret::Elements::StructuralSurface::trace_estimate_surf_matrix(
 
 
 template <Core::FE::CellType dt_vol>
-void Discret::Elements::StructuralSurface::strains(
+void Discret::Elements::SolidSurface::strains(
     const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xrefe,
     const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
     const Core::LinAlg::Matrix<3, 1>& xi, double& jac, Core::LinAlg::Matrix<3, 3>& defgrd,
@@ -333,7 +328,7 @@ void Discret::Elements::StructuralSurface::strains(
 
 
 template <Core::FE::CellType dt_vol>
-void Discret::Elements::StructuralSurface::subspace_projector(
+void Discret::Elements::SolidSurface::subspace_projector(
     const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
     Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol> * Core::FE::dim<dt_vol>,
         Core::FE::num_nodes<dt_vol> * Core::FE::dim<dt_vol> -
@@ -415,10 +410,7 @@ void Discret::Elements::StructuralSurface::subspace_projector(
     for (int j = 6; j < dim * num_node; ++j) proj(i, j - 6) = basis[j](i);
 }
 
-/*----------------------------------------------------------------------*
- |                                                           seitz 11/16|
- *----------------------------------------------------------------------*/
-double Discret::Elements::StructuralSurface::estimate_nitsche_trace_max_eigenvalue_tsi(
+double Discret::Elements::SolidSurface::estimate_nitsche_trace_max_eigenvalue_tsi(
     std::vector<double>& parent_disp)
 {
   switch (parent_element()->shape())
@@ -429,7 +421,6 @@ double Discret::Elements::StructuralSurface::estimate_nitsche_trace_max_eigenval
             Core::FE::CellType::quad4>(parent_disp);
       else
         FOUR_C_THROW("how can an hex8 element have a surface that is not quad4 ???");
-      break;
     case Core::FE::CellType::hex27:
       return estimate_nitsche_trace_max_eigenvalue_tsi<Core::FE::CellType::hex27,
           Core::FE::CellType::quad9>(parent_disp);
@@ -447,7 +438,7 @@ double Discret::Elements::StructuralSurface::estimate_nitsche_trace_max_eigenval
 }
 
 template <Core::FE::CellType dt_vol, Core::FE::CellType dt_surf>
-double Discret::Elements::StructuralSurface::estimate_nitsche_trace_max_eigenvalue_tsi(
+double Discret::Elements::SolidSurface::estimate_nitsche_trace_max_eigenvalue_tsi(
     std::vector<double>& parent_disp)
 {
   const int dim = Core::FE::dim<dt_vol>;
@@ -489,7 +480,7 @@ double Discret::Elements::StructuralSurface::estimate_nitsche_trace_max_eigenval
 }
 
 template <Core::FE::CellType dt_vol>
-void Discret::Elements::StructuralSurface::trace_estimate_vol_matrix_tsi(
+void Discret::Elements::SolidSurface::trace_estimate_vol_matrix_tsi(
     const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xrefe,
     const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
     Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, Core::FE::num_nodes<dt_vol>>& vol)
@@ -532,7 +523,7 @@ void Discret::Elements::StructuralSurface::trace_estimate_vol_matrix_tsi(
 
 
 template <Core::FE::CellType dt_vol, Core::FE::CellType dt_surf>
-void Discret::Elements::StructuralSurface::trace_estimate_surf_matrix_tsi(
+void Discret::Elements::SolidSurface::trace_estimate_surf_matrix_tsi(
     const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xrefe,
     const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
     Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, Core::FE::num_nodes<dt_vol>>& surf)
@@ -604,7 +595,7 @@ void Discret::Elements::StructuralSurface::trace_estimate_surf_matrix_tsi(
 
 
 template <Core::FE::CellType dt_vol>
-void Discret::Elements::StructuralSurface::subspace_projector_scalar(
+void Discret::Elements::SolidSurface::subspace_projector_scalar(
     Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, Core::FE::num_nodes<dt_vol> - 1>& proj)
 {
   const int num_node = Core::FE::num_nodes<dt_vol>;
