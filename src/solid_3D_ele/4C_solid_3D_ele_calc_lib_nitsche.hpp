@@ -452,15 +452,15 @@ namespace Discret::Elements
    *
    * @return double
    */
-  template <int dim, typename VariantType>
+  template <typename VariantType>
   double get_normal_cauchy_stress_at_xi(VariantType& variant,
       const Core::Elements::Element& element, Mat::So3Material& mat,
-      const std::vector<double>& disp, const Core::LinAlg::Matrix<dim, 1>& xi,
-      const Core::LinAlg::Matrix<dim, 1>& n, const Core::LinAlg::Matrix<dim, 1>& dir,
-      CauchyNDirLinearizations<dim>& linearizations)
+      const std::vector<double>& disp, const Core::LinAlg::Matrix<3, 1>& xi,
+      const Core::LinAlg::Matrix<3, 1>& n, const Core::LinAlg::Matrix<3, 1>& dir,
+      CauchyNDirLinearizations<3>& linearizations)
   {
     return std::visit(
-        Internal::EvaluateCauchyNDirAction<dim>(element, mat, disp, xi, n, dir, linearizations),
+        Internal::EvaluateCauchyNDirAction<3>(element, mat, disp, xi, n, dir, linearizations),
         variant);
   }
 }  // namespace Discret::Elements

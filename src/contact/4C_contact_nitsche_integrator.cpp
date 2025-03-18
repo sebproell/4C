@@ -451,61 +451,68 @@ void CONTACT::IntegratorNitsche::so_ele_cauchy(Mortar::Element& moEle, double* b
     Core::LinAlg::SerialDenseVector& adjoint_test,
     Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseVector>& deriv_adjoint_test)
 {
-  Core::LinAlg::Matrix<dim, 1> pxsi(true);
-  Core::LinAlg::Matrix<dim, dim> derivtravo_slave;
-  CONTACT::Utils::map_gp_to_parent<dim>(moEle, boundary_gpcoord, gp_wgt, pxsi, derivtravo_slave);
-
-  // define which linearizations we need
-  Core::LinAlg::SerialDenseMatrix d_cauchyndir_dd{};
-  Core::LinAlg::SerialDenseMatrix d2_cauchyndir_dd2{};
-  Core::LinAlg::SerialDenseMatrix d2_cauchyndir_dd_dn{};
-  Core::LinAlg::SerialDenseMatrix d2_cauchyndir_dd_ddir{};
-  Core::LinAlg::SerialDenseMatrix d2_cauchyndir_dd_dxi{};
-  Core::LinAlg::Matrix<dim, 1> d_cauchyndir_dn{};
-  Core::LinAlg::Matrix<dim, 1> d_cauchyndir_ddir{};
-  Core::LinAlg::Matrix<dim, 1> d_cauchyndir_dxi{};
-
-  Discret::Elements::CauchyNDirLinearizations<dim> linearizations{};
-  linearizations.d_cauchyndir_dd = &d_cauchyndir_dd;
-  linearizations.d2_cauchyndir_dd2 = &d2_cauchyndir_dd2;
-  linearizations.d2_cauchyndir_dd_dn = &d2_cauchyndir_dd_dn;
-  linearizations.d2_cauchyndir_dd_ddir = &d2_cauchyndir_dd_ddir;
-  linearizations.d2_cauchyndir_dd_dxi = &d2_cauchyndir_dd_dxi;
-  linearizations.d_cauchyndir_dn = &d_cauchyndir_dn;
-  linearizations.d_cauchyndir_ddir = &d_cauchyndir_ddir;
-  linearizations.d_cauchyndir_dxi = &d_cauchyndir_dxi;
-
-  auto* solid_ele = dynamic_cast<Discret::Elements::Solid*>(moEle.parent_element());
-  FOUR_C_ASSERT_ALWAYS(solid_ele, "Unknown solid element type");
-  const double cauchy_n_dir = solid_ele->get_normal_cauchy_stress_at_xi<dim>(
-      moEle.mo_data().parent_disp(), pxsi, normal, direction, linearizations);
-
-  cauchy_nt += w * cauchy_n_dir;
-
-  for (int i = 0; i < moEle.parent_element()->num_node() * dim; ++i)
-    deriv_sigma_nt[moEle.mo_data().parent_dof().at(i)] += w * d_cauchyndir_dd(i, 0);
-
-  for (int i = 0; i < dim - 1; ++i)
+  if constexpr (dim == 3)
   {
-    for (const auto& p : boundary_gpcoord_lin[i])
-      for (int k = 0; k < dim; ++k)
-        deriv_sigma_nt[p.first] += d_cauchyndir_dxi(k) * derivtravo_slave(k, i) * p.second * w;
+    Core::LinAlg::Matrix<dim, 1> pxsi(true);
+    Core::LinAlg::Matrix<dim, dim> derivtravo_slave;
+    CONTACT::Utils::map_gp_to_parent<dim>(moEle, boundary_gpcoord, gp_wgt, pxsi, derivtravo_slave);
+
+    // define which linearizations we need
+    Core::LinAlg::SerialDenseMatrix d_cauchyndir_dd{};
+    Core::LinAlg::SerialDenseMatrix d2_cauchyndir_dd2{};
+    Core::LinAlg::SerialDenseMatrix d2_cauchyndir_dd_dn{};
+    Core::LinAlg::SerialDenseMatrix d2_cauchyndir_dd_ddir{};
+    Core::LinAlg::SerialDenseMatrix d2_cauchyndir_dd_dxi{};
+    Core::LinAlg::Matrix<dim, 1> d_cauchyndir_dn{};
+    Core::LinAlg::Matrix<dim, 1> d_cauchyndir_ddir{};
+    Core::LinAlg::Matrix<dim, 1> d_cauchyndir_dxi{};
+
+    Discret::Elements::CauchyNDirLinearizations<dim> linearizations{};
+    linearizations.d_cauchyndir_dd = &d_cauchyndir_dd;
+    linearizations.d2_cauchyndir_dd2 = &d2_cauchyndir_dd2;
+    linearizations.d2_cauchyndir_dd_dn = &d2_cauchyndir_dd_dn;
+    linearizations.d2_cauchyndir_dd_ddir = &d2_cauchyndir_dd_ddir;
+    linearizations.d2_cauchyndir_dd_dxi = &d2_cauchyndir_dd_dxi;
+    linearizations.d_cauchyndir_dn = &d_cauchyndir_dn;
+    linearizations.d_cauchyndir_ddir = &d_cauchyndir_ddir;
+    linearizations.d_cauchyndir_dxi = &d_cauchyndir_dxi;
+
+    auto* solid_ele = dynamic_cast<Discret::Elements::Solid*>(moEle.parent_element());
+    FOUR_C_ASSERT_ALWAYS(solid_ele, "Unknown solid element type");
+    const double cauchy_n_dir = solid_ele->get_normal_cauchy_stress_at_xi(
+        moEle.mo_data().parent_disp(), pxsi, normal, direction, linearizations);
+
+    cauchy_nt += w * cauchy_n_dir;
+
+    for (int i = 0; i < moEle.parent_element()->num_node() * dim; ++i)
+      deriv_sigma_nt[moEle.mo_data().parent_dof().at(i)] += w * d_cauchyndir_dd(i, 0);
+
+    for (int i = 0; i < dim - 1; ++i)
+    {
+      for (const auto& p : boundary_gpcoord_lin[i])
+        for (int k = 0; k < dim; ++k)
+          deriv_sigma_nt[p.first] += d_cauchyndir_dxi(k) * derivtravo_slave(k, i) * p.second * w;
+    }
+
+
+    for (int d = 0; d < dim; ++d)
+      for (const auto& p : normal_deriv[d])
+        deriv_sigma_nt[p.first] += d_cauchyndir_dn(d) * p.second * w;
+
+    for (int d = 0; d < dim; ++d)
+      for (const auto& p : direction_deriv[d])
+        deriv_sigma_nt[p.first] += d_cauchyndir_ddir(d) * p.second * w;
+
+    if (abs(theta_) > 1.e-12)
+    {
+      build_adjoint_test<dim>(moEle, w, d_cauchyndir_dd, d2_cauchyndir_dd2, d2_cauchyndir_dd_dn,
+          d2_cauchyndir_dd_ddir, d2_cauchyndir_dd_dxi, boundary_gpcoord_lin, derivtravo_slave,
+          normal_deriv, direction_deriv, adjoint_test, deriv_adjoint_test);
+    }
   }
-
-
-  for (int d = 0; d < dim; ++d)
-    for (const auto& p : normal_deriv[d])
-      deriv_sigma_nt[p.first] += d_cauchyndir_dn(d) * p.second * w;
-
-  for (int d = 0; d < dim; ++d)
-    for (const auto& p : direction_deriv[d])
-      deriv_sigma_nt[p.first] += d_cauchyndir_ddir(d) * p.second * w;
-
-  if (abs(theta_) > 1.e-12)
+  else
   {
-    build_adjoint_test<dim>(moEle, w, d_cauchyndir_dd, d2_cauchyndir_dd2, d2_cauchyndir_dd_dn,
-        d2_cauchyndir_dd_ddir, d2_cauchyndir_dd_dxi, boundary_gpcoord_lin, derivtravo_slave,
-        normal_deriv, direction_deriv, adjoint_test, deriv_adjoint_test);
+    FOUR_C_THROW("Only 3D elements are supported!");
   }
 }
 
