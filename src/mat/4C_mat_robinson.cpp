@@ -15,6 +15,7 @@
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_tsi_defines.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <vector>
 

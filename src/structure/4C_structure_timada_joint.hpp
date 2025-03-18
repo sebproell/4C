@@ -57,13 +57,13 @@ namespace Solid
     {
       switch (term)
       {
-        case Inpar::Solid::dyna_ab2:
+        case Inpar::Solid::DynamicType::AdamsBashforth2:
           return Inpar::Solid::timada_kind_ab2;
           break;
-        case Inpar::Solid::dyna_expleuler:
+        case Inpar::Solid::DynamicType::ExplEuler:
           return Inpar::Solid::timada_kind_expleuler;
           break;
-        case Inpar::Solid::dyna_centrdiff:
+        case Inpar::Solid::DynamicType::CentrDiff:
           return Inpar::Solid::timada_kind_centraldiff;
           break;
         default:

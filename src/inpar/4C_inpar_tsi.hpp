@@ -74,24 +74,6 @@ namespace Inpar
       LS_and,        //!< line-search based on structural and thermal residual
     };
 
-    //! Map solution technique enum to std::string
-    static inline std::string nln_sol_tech_string(const enum NlnSolTech name  //!< enum to convert
-    )
-    {
-      switch (name)
-      {
-        case soltech_newtonfull:
-          return "fullnewton";
-          break;
-        case soltech_ptc:
-          return "ptc";
-          break;
-        default:
-          FOUR_C_THROW("Cannot make std::string for solution technique {}", name);
-          return "";
-      }
-    }
-
     //@}
 
     //! @name General
@@ -107,36 +89,6 @@ namespace Inpar
       norm_rms,        //!< root mean square (RMS) norm
       norm_inf         //!< Maximum/infinity norm
     };
-
-    //! map enum term to std::string
-    static inline std::string vector_norm_string(const enum VectorNorm norm  //!< input enum term
-    )
-    {
-      switch (norm)
-      {
-        case Inpar::TSI::norm_vague:
-          return "Vague";
-          break;
-        case Inpar::TSI::norm_l1:
-          return "L1";
-          break;
-        case Inpar::TSI::norm_l1_scaled:
-          return "L1_scaled";
-          break;
-        case Inpar::TSI::norm_l2:
-          return "L2";
-          break;
-        case Inpar::TSI::norm_rms:
-          return "Rms";
-          break;
-        case Inpar::TSI::norm_inf:
-          return "Inf";
-          break;
-        default:
-          FOUR_C_THROW("Cannot make std::string to vector norm {}", norm);
-          return "";
-      }
-    }
 
     //! Method used to calculate plastic dissipation
     enum DissipationMode

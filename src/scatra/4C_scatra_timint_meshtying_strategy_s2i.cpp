@@ -38,6 +38,7 @@
 #include "4C_scatra_ele_parameter_timint.hpp"
 #include "4C_scatra_timint_implicit.hpp"
 #include "4C_scatra_timint_meshtying_strategy_s2i_elch.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN

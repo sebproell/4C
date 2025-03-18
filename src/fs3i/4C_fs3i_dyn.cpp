@@ -15,6 +15,7 @@
 #include "4C_fs3i_partitioned_1wc.hpp"
 #include "4C_fs3i_partitioned_2wc.hpp"
 #include "4C_global_data.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <Teuchos_TimeMonitor.hpp>
 

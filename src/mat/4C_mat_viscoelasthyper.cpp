@@ -16,6 +16,7 @@
 #include "4C_mat_elast_visco_generalizedgenmax.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_service.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 
@@ -857,7 +858,7 @@ void Mat::ViscoElastHyper::evaluate_visco_gen_max(Core::LinAlg::Matrix<6, 1>* st
     // 09/14)
     const auto dyntype = Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(
         Global::Problem::instance()->structural_dynamic_params(), "DYNAMICTYPE");
-    if (dyntype == Inpar::Solid::DynamicType::dyna_onesteptheta)
+    if (dyntype == Inpar::Solid::DynamicType::OneStepTheta)
       theta = Global::Problem::instance()
                   ->structural_dynamic_params()
                   .sublist("ONESTEPTHETA")
@@ -1065,7 +1066,7 @@ void Mat::ViscoElastHyper::evaluate_visco_generalized_gen_max(Core::LinAlg::Matr
       // 09/14)
       const auto dyntype = Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(
           Global::Problem::instance()->structural_dynamic_params(), "DYNAMICTYPE");
-      if (dyntype == Inpar::Solid::DynamicType::dyna_onesteptheta)
+      if (dyntype == Inpar::Solid::DynamicType::OneStepTheta)
         theta = Global::Problem::instance()
                     ->structural_dynamic_params()
                     .sublist("ONESTEPTHETA")

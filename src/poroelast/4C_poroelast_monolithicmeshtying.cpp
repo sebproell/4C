@@ -287,8 +287,8 @@ void PoroElast::MonolithicMeshtying::print_newton_iter_header_stream(std::ostrin
 {
   oss << "------------------------------------------------------------" << std::endl;
   oss << "                   Newton-Raphson Scheme                    " << std::endl;
-  oss << "                NormRES " << vector_norm_string(vectornormfres_);
-  oss << "     NormINC " << vector_norm_string(vectornorminc_) << "                    "
+  oss << "                NormRES " << magic_enum::enum_name(vectornormfres_);
+  oss << "     NormINC " << magic_enum::enum_name(vectornorminc_) << "                    "
       << std::endl;
   oss << "------------------------------------------------------------" << std::endl;
 

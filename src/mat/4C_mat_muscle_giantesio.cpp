@@ -16,6 +16,7 @@
 #include "4C_mat_elast_aniso_structuraltensor_strategy.hpp"
 #include "4C_mat_muscle_utils.hpp"
 #include "4C_mat_par_bundle.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_local_newton.hpp"
 
 FOUR_C_NAMESPACE_OPEN

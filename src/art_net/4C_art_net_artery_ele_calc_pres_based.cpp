@@ -13,11 +13,11 @@
 #include "4C_fem_general_utils_fem_shapefunctions.hpp"
 #include "4C_global_data.hpp"
 #include "4C_mat_cnst_1d_art.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_function.hpp"
 #include "4C_utils_singleton_owner.hpp"
 
 #include <fstream>
-#include <iomanip>
 
 FOUR_C_NAMESPACE_OPEN
 

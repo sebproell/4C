@@ -15,6 +15,7 @@
 #include "4C_mat_fluidporo.hpp"
 #include "4C_mat_list.hpp"
 #include "4C_mat_newtonianfluid.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_function.hpp"
 
 #include <Teuchos_TimeMonitor.hpp>

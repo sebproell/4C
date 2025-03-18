@@ -334,7 +334,7 @@ void Adapter::CouplingPoroMortar::create_strategy(
   // to other time integration strategies
 
   if (Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(stru, "DYNAMICTYPE") ==
-      Inpar::Solid::dyna_statics)
+      Inpar::Solid::DynamicType::Statics)
   {
     theta = 1.0;
   }

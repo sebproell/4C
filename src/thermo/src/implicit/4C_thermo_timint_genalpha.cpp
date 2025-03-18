@@ -8,6 +8,7 @@
 #include "4C_thermo_timint_genalpha.hpp"
 
 #include "4C_thermo_ele_action.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 
@@ -101,7 +102,7 @@ Thermo::TimIntGenAlpha::TimIntGenAlpha(const Teuchos::ParameterList& ioparams,
               << "   alpha_f = " << alphaf_ << std::endl
               << "   alpha_m = " << alpham_ << std::endl
               << "   gamma = " << gamma_ << std::endl
-              << "   midavg = " << Thermo::mid_average_string(midavg_) << std::endl;
+              << "   midavg = " << magic_enum::enum_name(midavg_) << std::endl;
   }
 
   // determine capacity and initial temperature rates

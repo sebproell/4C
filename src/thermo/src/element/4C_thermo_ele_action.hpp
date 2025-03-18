@@ -50,57 +50,6 @@ namespace Thermo
     calc_thermo_fextconvection_coupltang,
   };
 
-  /*!
-   * \brief translate to string for screen output
-   */
-  inline std::string action_to_string(const Action action)
-  {
-    switch (action)
-    {
-      case none:
-        return "none";
-      case calc_thermo_fint:
-        return "calc_thermo_fint";
-      case calc_thermo_fintcapa:
-        return "calc_thermo_fintcapa";
-      case calc_thermo_finttang:
-        return "calc_thermo_finttang";
-      case calc_thermo_heatflux:
-        return "calc_thermo_heatflux";
-      case postproc_thermo_heatflux:
-        return "postproc_thermo_heatflux";
-      case integrate_shape_functions:
-        return "integrate_shape_functions";
-      case calc_thermo_update_istep:
-        return "calc_thermo_update_istep";
-      case calc_thermo_reset_istep:
-        return "calc_thermo_reset_istep";
-      case calc_thermo_energy:
-        return "calc_thermo_energy";
-      case calc_thermo_coupltang:
-        return "calc_thermo_coupltang";
-      case calc_thermo_fintcond:
-        return "calc_thermo_fintcond";
-      default:
-        FOUR_C_THROW("no string for action {} defined!", action);
-    };
-  }
-
-  inline std::string boundary_action_to_string(const BoundaryAction baction)
-  {
-    switch (baction)
-    {
-      case boundary_none:
-        return "boundary_none";
-      case calc_thermo_fextconvection:
-        return "calc_thermo_fextconvection";
-      case calc_thermo_fextconvection_coupltang:
-        return "calc_thermo_fextconvection_coupltang";
-      default:
-        FOUR_C_THROW("no string for the boundary action {} defined!", baction);
-    };
-  }
-
 }  // namespace Thermo
 
 FOUR_C_NAMESPACE_CLOSE

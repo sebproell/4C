@@ -12,6 +12,7 @@
 #include "4C_mat_fluidporo_singlephaseDof.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_poro_density_law.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <vector>
 

@@ -15,6 +15,7 @@
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_solver_nonlin_nox_globaldata.hpp"
 #include "4C_structure_new_nox_nln_str_linearsystem.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
 
 #include <NOX_Epetra_Interface_Jacobian.H>
@@ -119,8 +120,8 @@ Teuchos::RCP<::NOX::Epetra::LinearSystem> NOX::Nln::LinSystem::Factory::build_li
     {
       FOUR_C_THROW(
           "ERROR - NOX::Nln::LinSystem::Factory::BuildLinearSystem - "
-          "No capable LinearSystem constructor was found (enum = {}|{})!",
-          NOX::Nln::LinSystem::linear_system_type_to_string(linsystype).c_str(), linsystype);
+          "No capable LinearSystem constructor was found (enum = {})!",
+          linsystype);
       break;
     }
   }  // end switch

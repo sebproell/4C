@@ -1265,7 +1265,7 @@ void Solid::TimInt::update_step_contact_vum()
       double beta = 0.0;
       double gamma = 0.0;
       if (Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(sdynparams, "DYNAMICTYPE") ==
-          Inpar::Solid::dyna_genalpha)
+          Inpar::Solid::DynamicType::GenAlpha)
       {
         auto* genAlpha = dynamic_cast<Solid::TimIntGenAlpha*>(this);
         alpham = genAlpha->tim_int_param_alpham();
@@ -2565,7 +2565,7 @@ void Solid::TimInt::nonlinear_mass_sanity_check(
   {
     if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_rotations and
         Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(*sdynparams, "DYNAMICTYPE") !=
-            Inpar::Solid::dyna_genalpha)
+            Inpar::Solid::DynamicType::GenAlpha)
     {
       FOUR_C_THROW(
           "Nonlinear inertia forces for rotational DoFs only implemented "
@@ -2842,6 +2842,11 @@ void Solid::TimInt::set_force_interface(
 )
 {
   fifc_->update(1.0, *iforce, 0.0);
+}
+
+std::string Solid::TimInt::method_title() const
+{
+  return std::string(magic_enum::enum_name(method_name()));
 }
 
 /*----------------------------------------------------------------------*/

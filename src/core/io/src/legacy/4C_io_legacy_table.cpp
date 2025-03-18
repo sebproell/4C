@@ -8,6 +8,7 @@
 #include "4C_io_legacy_table.hpp"
 
 #include "4C_io_legacy_types.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
 
 #include <cctype>

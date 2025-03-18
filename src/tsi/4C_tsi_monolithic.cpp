@@ -36,6 +36,7 @@
 #include "4C_thermo_timint.hpp"
 #include "4C_tsi_defines.hpp"
 #include "4C_tsi_utils.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <Teuchos_ParameterList.hpp>
 #include <Teuchos_TimeMonitor.hpp>
@@ -329,8 +330,7 @@ void TSI::Monolithic::solve()
       break;
     // catch problems
     default:
-      FOUR_C_THROW("Solution technique \"{}\" is not implemented",
-          Inpar::TSI::nln_sol_tech_string(soltech_).c_str());
+      FOUR_C_THROW("Solution technique \"{}\" is not implemented", soltech_);
       break;
   }  // end switch (soltechnique_)
 
@@ -962,7 +962,7 @@ void TSI::Monolithic::evaluate(std::shared_ptr<Core::LinAlg::Vector<double>> ste
   Teuchos::Time timerthermo("", true);
 
   // apply current displacements and velocities to the thermo field
-  if (strmethodname_ == Inpar::Solid::dyna_statics)
+  if (strmethodname_ == Inpar::Solid::DynamicType::Statics)
   {
     // calculate velocity V_n+1^k = (D_n+1^k-D_n)/Dt()
     vel_ = calc_velocity(*structure_field()->dispnp());
@@ -1898,19 +1898,19 @@ void TSI::Monolithic::apply_str_coupl_matrix(
   // major switch to different time integrators
   switch (strmethodname_)
   {
-    case Inpar::Solid::dyna_statics:
+    case Inpar::Solid::DynamicType::Statics:
     {
       // continue
       break;
     }
-    case Inpar::Solid::dyna_onesteptheta:
+    case Inpar::Solid::DynamicType::OneStepTheta:
     {
       double theta = sdyn_.sublist("ONESTEPTHETA").get<double>("THETA");
       // K_Teffdyn(T_n+1^i) = theta * k_st
       k_st->scale(theta);
       break;
     }
-    case Inpar::Solid::dyna_genalpha:
+    case Inpar::Solid::DynamicType::GenAlpha:
     {
       double alphaf = sdyn_.sublist("GENALPHA").get<double>("ALPHA_F");
       // K_Teffdyn(T_n+1) = (1-alphaf_) . kst
@@ -1957,26 +1957,26 @@ void TSI::Monolithic::apply_thermo_coupl_matrix(
   switch (Teuchos::getIntegralValue<Thermo::DynamicType>(tdyn, "DYNAMICTYPE"))
   {
     // static analysis
-    case Thermo::dyna_statics:
+    case Thermo::DynamicType::Statics:
     {
       // continue
       break;
     }
     // dynamic analysis
-    case Thermo::dyna_onesteptheta:
+    case Thermo::DynamicType::OneStepTheta:
     {
       // K_Td = theta . k_Td^e
       double theta = tdyn.sublist("ONESTEPTHETA").get<double>("THETA");
       tparams.set("theta", theta);
       break;
     }
-    case Thermo::dyna_genalpha:
+    case Thermo::DynamicType::GenAlpha:
     {
       double alphaf = tdyn.sublist("GENALPHA").get<double>("ALPHA_F");
       tparams.set("alphaf", alphaf);
       break;
     }
-    case Thermo::dyna_undefined:
+    case Thermo::DynamicType::Undefined:
     default:
     {
       FOUR_C_THROW("Don't know what to do...");
@@ -1986,19 +1986,19 @@ void TSI::Monolithic::apply_thermo_coupl_matrix(
 
   switch (strmethodname_)
   {
-    case Inpar::Solid::dyna_statics:
+    case Inpar::Solid::DynamicType::Statics:
     {
       // continue
       break;
     }
-    case Inpar::Solid::dyna_onesteptheta:
+    case Inpar::Solid::DynamicType::OneStepTheta:
     {
       // put the structural theta value to the thermal parameter list
       double str_theta = sdyn_.sublist("ONESTEPTHETA").get<double>("THETA");
       tparams.set("str_theta", str_theta);
       break;
     }
-    case Inpar::Solid::dyna_genalpha:
+    case Inpar::Solid::DynamicType::GenAlpha:
     {
       // put the structural theta value to the thermal parameter list
       double str_beta = sdyn_.sublist("GENALPHA").get<double>("BETA");
@@ -2069,12 +2069,12 @@ void TSI::Monolithic::apply_thermo_coupl_matrix_conv_bc(
     switch (Teuchos::getIntegralValue<Thermo::DynamicType>(tdyn, "DYNAMICTYPE"))
     {
       // static analysis
-      case Thermo::dyna_statics:
+      case Thermo::DynamicType::Statics:
       {
         break;
       }
       // dynamic analysis
-      case Thermo::dyna_onesteptheta:
+      case Thermo::DynamicType::OneStepTheta:
       {
         // K_Td = theta . k_Td^e
         double theta = tdyn.sublist("ONESTEPTHETA").get<double>("THETA");
@@ -2084,7 +2084,7 @@ void TSI::Monolithic::apply_thermo_coupl_matrix_conv_bc(
         tparams.set("str_theta", str_theta);
         break;
       }
-      case Thermo::dyna_genalpha:
+      case Thermo::DynamicType::GenAlpha:
       {
         // K_Td = alphaf . k_Td^e
         double alphaf = tdyn.sublist("GENALPHA").get<double>("ALPHA_F");
@@ -2097,7 +2097,7 @@ void TSI::Monolithic::apply_thermo_coupl_matrix_conv_bc(
         tparams.set("str_gamma", str_gamma);
         break;
       }
-      case Thermo::dyna_undefined:
+      case Thermo::DynamicType::Undefined:
       default:
       {
         FOUR_C_THROW("Don't know what to do...");
@@ -2788,7 +2788,7 @@ void TSI::Monolithic::fix_time_integration_params()
 {
   if (Teuchos::getIntegralValue<Thermo::DynamicType>(
           Global::Problem::instance()->thermal_dynamic_params(), "DYNAMICTYPE") ==
-      Thermo::dyna_genalpha)
+      Thermo::DynamicType::GenAlpha)
   {
     Teuchos::ParameterList& ga = const_cast<Teuchos::ParameterList&>(
         Global::Problem::instance()->thermal_dynamic_params().sublist("GENALPHA"));
@@ -2808,7 +2808,7 @@ void TSI::Monolithic::fix_time_integration_params()
 
   if (Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(
           Global::Problem::instance()->structural_dynamic_params(), "DYNAMICTYPE") ==
-      Inpar::Solid::dyna_genalpha)
+      Inpar::Solid::DynamicType::GenAlpha)
   {
     Teuchos::ParameterList& ga = const_cast<Teuchos::ParameterList&>(
         Global::Problem::instance()->structural_dynamic_params().sublist("GENALPHA"));

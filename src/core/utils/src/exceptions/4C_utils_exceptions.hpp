@@ -10,24 +10,10 @@
 
 #include "4C_config.hpp"
 
-#include <magic_enum/magic_enum.hpp>
-
+#include <exception>
 #include <format>
 #include <memory>
-#include <stdexcept>
 #include <string>
-#include <type_traits>
-
-// Specialize formatting for any enum type.
-template <typename T>
-  requires std::is_enum_v<T>
-struct std::formatter<T> : std::formatter<std::string_view>
-{
-  auto format(T e, std::format_context& ctx) const
-  {
-    return std::formatter<std::string_view>::format(magic_enum::enum_name(e), ctx);
-  }
-};
 
 FOUR_C_NAMESPACE_OPEN
 

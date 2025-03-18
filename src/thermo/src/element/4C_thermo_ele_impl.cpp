@@ -254,22 +254,22 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
     if (params.get<bool>("lump capa matrix", false))
     {
       const auto timint =
-          params.get<Thermo::DynamicType>("time integrator", Thermo::dyna_undefined);
+          params.get<Thermo::DynamicType>("time integrator", Thermo::DynamicType::Undefined);
       switch (timint)
       {
-        case Thermo::dyna_onesteptheta:
+        case Thermo::DynamicType::OneStepTheta:
         {
           calculate_lump_matrix(&ecapa);
 
           break;
         }
-        case Thermo::dyna_genalpha:
-        case Thermo::dyna_statics:
+        case Thermo::DynamicType::GenAlpha:
+        case Thermo::DynamicType::Statics:
         {
           FOUR_C_THROW("Lumped capacity matrix has not yet been tested");
           break;
         }
-        case Thermo::dyna_undefined:
+        case Thermo::DynamicType::Undefined:
         default:
         {
           FOUR_C_THROW("Undefined time integration scheme for thermal problem!");
@@ -330,15 +330,16 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
     // combine capacity and conductivity matrix to one global tangent matrix
     // check the time integrator
     // K_T = fac_capa . C + fac_cond . K
-    const auto timint = params.get<Thermo::DynamicType>("time integrator", Thermo::dyna_undefined);
+    const auto timint =
+        params.get<Thermo::DynamicType>("time integrator", Thermo::DynamicType::Undefined);
     switch (timint)
     {
-      case Thermo::dyna_statics:
+      case Thermo::DynamicType::Statics:
       {
         // continue
         break;
       }
-      case Thermo::dyna_onesteptheta:
+      case Thermo::DynamicType::OneStepTheta:
       {
         // extract time values from parameter list
         const double theta = params.get<double>("theta");
@@ -362,7 +363,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
         break;
       }  // ost
 
-      case Thermo::dyna_genalpha:
+      case Thermo::DynamicType::GenAlpha:
       {
         // extract time values from parameter list
         const double alphaf = params.get<double>("alphaf");
@@ -396,7 +397,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
         break;
 
       }  // genalpha
-      case Thermo::dyna_undefined:
+      case Thermo::DynamicType::Undefined:
       default:
       {
         FOUR_C_THROW("Don't know what to do...");
@@ -618,8 +619,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
   //============================================================================
   else
   {
-    FOUR_C_THROW("Unknown type of action for Temperature Implementation: {}",
-        Thermo::action_to_string(action).c_str());
+    FOUR_C_THROW("Unknown type of action for Temperature Implementation: {}", action);
   }
 
 #ifdef THRASOUTPUT
@@ -669,8 +669,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate_neumann(const Core::Element
   }
   else
   {
-    FOUR_C_THROW("Unknown type of action for Temperature Implementation: {}",
-        Thermo::action_to_string(action).c_str());
+    FOUR_C_THROW("Unknown type of action for Temperature Implementation: {}", action);
   }
 
   return 0;
@@ -1170,7 +1169,7 @@ void Discret::Elements::TemperImpl<distype>::linear_coupled_tang(
 
   // --------------------------------------------------- time integration
   // check the time integrator and add correct time factor
-  Thermo::DynamicType timint = Thermo::dyna_undefined;
+  Thermo::DynamicType timint = Thermo::DynamicType::Undefined;
   if (params.isParameter("time integrator"))
   {
     timint = Teuchos::getIntegralValue<Thermo::DynamicType>(params, "time integrator");
@@ -1184,7 +1183,7 @@ void Discret::Elements::TemperImpl<distype>::linear_coupled_tang(
   // consider linearisation of velocities due to displacements
   switch (timint)
   {
-    case Thermo::dyna_statics:
+    case Thermo::DynamicType::Statics:
     {
       // k_Td = k_Td^e . time_fac_d'
       timefac = 1.0;
@@ -1193,7 +1192,7 @@ void Discret::Elements::TemperImpl<distype>::linear_coupled_tang(
       timefac_d = 1.0 / stepsize;
       break;
     }
-    case Thermo::dyna_onesteptheta:
+    case Thermo::DynamicType::OneStepTheta:
     {
       // k_Td = theta . k_Td^e . time_fac_d'
       timefac = params.get<double>("theta");
@@ -1203,7 +1202,7 @@ void Discret::Elements::TemperImpl<distype>::linear_coupled_tang(
       timefac_d = 1.0 / (str_theta * stepsize);
       break;
     }
-    case Thermo::dyna_genalpha:
+    case Thermo::DynamicType::GenAlpha:
     {
       // k_Td = alphaf . k_Td^e . time_fac_d'
       timefac = params.get<double>("alphaf");
@@ -1214,7 +1213,7 @@ void Discret::Elements::TemperImpl<distype>::linear_coupled_tang(
       timefac_d = str_gamma / (str_beta * stepsize);
       break;
     }
-    case Thermo::dyna_undefined:
+    case Thermo::DynamicType::Undefined:
     default:
     {
       FOUR_C_THROW("Add correct temporal coefficient here!");
@@ -1634,15 +1633,16 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_coupled_tang(
   double timefac_d = 0.0;
   double timefac = 0.0;
   // check the time integrator and add correct time factor
-  const auto timint = params.get<Thermo::DynamicType>("time integrator", Thermo::dyna_undefined);
+  const auto timint =
+      params.get<Thermo::DynamicType>("time integrator", Thermo::DynamicType::Undefined);
   switch (timint)
   {
-    case Thermo::dyna_statics:
+    case Thermo::DynamicType::Statics:
     {
       timefac = 1.0;
       break;
     }
-    case Thermo::dyna_onesteptheta:
+    case Thermo::DynamicType::OneStepTheta:
     {
       // k^e_Td += + theta . N_T^T . (-C_T) . 1/2 dC'/dd . N_T . T . detJ . w(gp) -
       //           - theta . ( B_T^T . C_mat . dC^{-1}/dd . B_T . T . detJ . w(gp) )
@@ -1652,12 +1652,12 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_coupled_tang(
       timefac = theta;
       break;
     }
-    case Thermo::dyna_genalpha:
+    case Thermo::DynamicType::GenAlpha:
     {
       timefac = params.get<double>("alphaf");
       break;
     }
-    case Thermo::dyna_undefined:
+    case Thermo::DynamicType::Undefined:
     default:
     {
       FOUR_C_THROW("Add correct temporal coefficient here!");
@@ -1669,19 +1669,19 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_coupled_tang(
       Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(params, "structural time integrator");
   switch (s_timint)
   {
-    case Inpar::Solid::dyna_statics:
+    case Inpar::Solid::DynamicType::Statics:
     {
       timefac_d = 1.0 / stepsize;
       break;
     }
-    case Inpar::Solid::dyna_genalpha:
+    case Inpar::Solid::DynamicType::GenAlpha:
     {
       const double str_beta = params.get<double>("str_beta");
       const double str_gamma = params.get<double>("str_gamma");
       timefac_d = str_gamma / (str_beta * stepsize);
       break;
     }
-    case Inpar::Solid::dyna_onesteptheta:
+    case Inpar::Solid::DynamicType::OneStepTheta:
     {
       const double str_theta = params.get<double>("str_theta");
       timefac_d = 1.0 / (stepsize * str_theta);
@@ -2132,33 +2132,34 @@ void Discret::Elements::TemperImpl<distype>::linear_dissipation_coupled_tang(
   const double stepsize = params.get<double>("delta time");
 
   // check the time integrator and add correct time factor
-  const auto timint = params.get<Thermo::DynamicType>("time integrator", Thermo::dyna_undefined);
+  const auto timint =
+      params.get<Thermo::DynamicType>("time integrator", Thermo::DynamicType::Undefined);
   // initialise time_fac of velocity discretisation w.r.t. displacements
   double timefac = 0.0;
   switch (timint)
   {
-    case Thermo::dyna_statics:
+    case Thermo::DynamicType::Statics:
     {
       // evolution equation of plastic material use implicit Euler
       // put str_timefac = 1.0
       timefac = 1.0;
       break;
     }
-    case Thermo::dyna_onesteptheta:
+    case Thermo::DynamicType::OneStepTheta:
     {
       // k_Td = theta . k_Td^e . timefac_Dgamma = theta . k_Td / Dt
       double theta = params.get<double>("theta");
       timefac = theta;
       break;
     }
-    case Thermo::dyna_genalpha:
+    case Thermo::DynamicType::GenAlpha:
     {
       // k_Td = alphaf . k_Td^e . timefac_Dgamma = alphaf . k_Td / Dt
       double alphaf = params.get<double>("alphaf");
       timefac = alphaf;
       break;
     }
-    case Thermo::dyna_undefined:
+    case Thermo::DynamicType::Undefined:
     default:
     {
       FOUR_C_THROW("Add correct temporal coefficient here!");
@@ -2409,33 +2410,34 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_dissipation_coupled_tang(
   const double stepsize = params.get<double>("delta time");
 
   // check the time integrator and add correct time factor
-  const auto timint = params.get<Thermo::DynamicType>("time integrator", Thermo::dyna_undefined);
+  const auto timint =
+      params.get<Thermo::DynamicType>("time integrator", Thermo::DynamicType::Undefined);
   // initialise time_fac of velocity discretisation w.r.t. displacements
   double timefac = 0.0;
   switch (timint)
   {
-    case Thermo::dyna_statics:
+    case Thermo::DynamicType::Statics:
     {
       // evolution equation of plastic material use implicit Euler
       // put str_timefac = 1.0
       timefac = 1.0;
       break;
     }
-    case Thermo::dyna_onesteptheta:
+    case Thermo::DynamicType::OneStepTheta:
     {
       // k_Td = theta . k_Td^e . timefac_Dgamma = theta . k_Td / Dt
       double theta = params.get<double>("theta");
       timefac = theta;
       break;
     }
-    case Thermo::dyna_genalpha:
+    case Thermo::DynamicType::GenAlpha:
     {
       // k_Td = alphaf . k_Td^e . timefac_Dgamma = alphaf . k_Td / Dt
       double alphaf = params.get<double>("alphaf");
       timefac = alphaf;
       break;
     }
-    case Thermo::dyna_undefined:
+    case Thermo::DynamicType::Undefined:
     default:
     {
       FOUR_C_THROW("Add correct temporal coefficient here!");

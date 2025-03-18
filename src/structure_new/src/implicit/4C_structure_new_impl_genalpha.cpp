@@ -97,7 +97,7 @@ void Solid::IMPLICIT::GenAlpha::setup()
     if (midavg != Inpar::Solid::midavg_trlike)
       FOUR_C_THROW("mid-averaging of internal forces only implemented TR-like");
     else
-      std::cout << "   midavg = " << Inpar::Solid::mid_average_string(midavg) << std::endl;
+      std::cout << "   midavg = " << midavg << std::endl;
   }
 
   // ---------------------------------------------------------------------------

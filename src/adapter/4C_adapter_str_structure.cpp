@@ -59,12 +59,12 @@ void Adapter::StructureBaseAlgorithm::create_structure(const Teuchos::ParameterL
   // major switch to different time integrators
   switch (Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(sdyn, "DYNAMICTYPE"))
   {
-    case Inpar::Solid::dyna_statics:
-    case Inpar::Solid::dyna_genalpha:
-    case Inpar::Solid::dyna_onesteptheta:
-    case Inpar::Solid::dyna_expleuler:
-    case Inpar::Solid::dyna_centrdiff:
-    case Inpar::Solid::dyna_ab2:
+    case Inpar::Solid::DynamicType::Statics:
+    case Inpar::Solid::DynamicType::GenAlpha:
+    case Inpar::Solid::DynamicType::OneStepTheta:
+    case Inpar::Solid::DynamicType::ExplEuler:
+    case Inpar::Solid::DynamicType::CentrDiff:
+    case Inpar::Solid::DynamicType::AdamsBashforth2:
       create_tim_int(prbdyn, sdyn, actdis);  // <-- here is the show
       break;
     default:
@@ -153,7 +153,7 @@ void Adapter::StructureBaseAlgorithm::create_tim_int(const Teuchos::ParameterLis
       if (par->type() == Core::Materials::m_struct_multiscale)
       {
         if (Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(sdyn, "DYNAMICTYPE") !=
-            Inpar::Solid::dyna_genalpha)
+            Inpar::Solid::DynamicType::GenAlpha)
           FOUR_C_THROW("In multi-scale simulations, you have to use DYNAMICTYPE=GenAlpha");
         else if (Teuchos::getIntegralValue<Inpar::Solid::MidAverageEnum>(
                      sdyn.sublist("GENALPHA"), "GENAVG") != Inpar::Solid::midavg_trlike)

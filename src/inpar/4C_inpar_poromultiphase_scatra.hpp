@@ -63,33 +63,6 @@ namespace Inpar
       divcont_continue  ///< continue nevertheless
     };
 
-    //! map enum term to std::string
-    static inline std::string vector_norm_string(const enum VectorNorm norm  //!< input enum term
-    )
-    {
-      switch (norm)
-      {
-        case Inpar::PoroMultiPhaseScaTra::norm_l1:
-          return "L1";
-          break;
-        case Inpar::PoroMultiPhaseScaTra::norm_l1_scaled:
-          return "L1_scaled";
-          break;
-        case Inpar::PoroMultiPhaseScaTra::norm_l2:
-          return "L2";
-          break;
-        case Inpar::PoroMultiPhaseScaTra::norm_rms:
-          return "Rms";
-          break;
-        case Inpar::PoroMultiPhaseScaTra::norm_inf:
-          return "Inf";
-          break;
-        default:
-          FOUR_C_THROW("Cannot make std::string to vector norm {}", norm);
-          return "";
-      }
-    }
-
     /// set the poromultiphasescatra parameters
     void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
 

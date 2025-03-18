@@ -53,7 +53,7 @@ void SSI::SSIPart2WC::init(MPI_Comm comm, const Teuchos::ParameterList& globalti
   {
     auto structtimealgo =
         Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(structparams, "DYNAMICTYPE");
-    if (structtimealgo == Inpar::Solid::dyna_statics)
+    if (structtimealgo == Inpar::Solid::DynamicType::Statics)
     {
       FOUR_C_THROW(
           "If you use statics as the structural time integrator no velocities will be calculated "

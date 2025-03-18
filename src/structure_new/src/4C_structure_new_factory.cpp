@@ -64,28 +64,28 @@ std::shared_ptr<Solid::Integrator> Solid::Factory::build_implicit_integrator(
   switch (dyntype)
   {
     // Static analysis
-    case Inpar::Solid::dyna_statics:
+    case Inpar::Solid::DynamicType::Statics:
     {
       impl_int_ptr = std::make_shared<Solid::IMPLICIT::Statics>();
       break;
     }
 
     // Generalised-alpha time integration
-    case Inpar::Solid::dyna_genalpha:
+    case Inpar::Solid::DynamicType::GenAlpha:
     {
       impl_int_ptr = std::make_shared<Solid::IMPLICIT::GenAlpha>();
       break;
     }
 
     // Generalised-alpha time integration for Lie groups (e.g. SO3 group of rotation matrices)
-    case Inpar::Solid::dyna_genalpha_liegroup:
+    case Inpar::Solid::DynamicType::GenAlphaLieGroup:
     {
       impl_int_ptr = std::make_shared<Solid::IMPLICIT::GenAlphaLieGroup>();
       break;
     }
 
     // One-step-theta (OST) time integration
-    case Inpar::Solid::dyna_onesteptheta:
+    case Inpar::Solid::DynamicType::OneStepTheta:
     {
       impl_int_ptr = std::make_shared<Solid::IMPLICIT::OneStepTheta>();
       break;
@@ -112,28 +112,28 @@ std::shared_ptr<Solid::Integrator> Solid::Factory::build_explicit_integrator(
   switch (datasdyn.get_dynamic_type())
   {
     // Forward Euler Scheme
-    case Inpar::Solid::dyna_expleuler:
+    case Inpar::Solid::DynamicType::ExplEuler:
     {
       expl_int_ptr = std::make_shared<Solid::EXPLICIT::ForwardEuler>();
       break;
     }
 
     // Central Difference Scheme
-    case Inpar::Solid::dyna_centrdiff:
+    case Inpar::Solid::DynamicType::CentrDiff:
     {
       expl_int_ptr = std::make_shared<Solid::EXPLICIT::CentrDiff>();
       break;
     }
 
     // Adams-Bashforth-2 Scheme
-    case Inpar::Solid::dyna_ab2:
+    case Inpar::Solid::DynamicType::AdamsBashforth2:
     {
       expl_int_ptr = std::make_shared<Solid::EXPLICIT::AdamsBashforth2>();
       break;
     }
 
     // Adams-Bashforth-4 Scheme
-    case Inpar::Solid::dyna_ab4:
+    case Inpar::Solid::DynamicType::AdamsBashforth4:
     {
       expl_int_ptr = std::make_shared<Solid::EXPLICIT::AdamsBashforthX<4>>();
       break;

@@ -21,6 +21,7 @@
 #include "4C_mat_service.hpp"
 #include "4C_mat_so3_material.hpp"
 #include "4C_mixture_rule.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
 
 #include <Teuchos_ENull.hpp>

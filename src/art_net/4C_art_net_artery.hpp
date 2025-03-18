@@ -180,29 +180,7 @@ namespace Discret
       number of degrees of freedom per node along the way for each of it's nodes
       separately.
       */
-      int num_dof_per_node(const Core::Nodes::Node& node) const override
-      {
-        switch (impltype_)
-        {
-          case Inpar::ArtDyn::impltype_lin_exp:
-          {
-            return 2;
-            break;
-          }
-          case Inpar::ArtDyn::impltype_pressure_based:
-          {
-            return 1;
-            break;
-          }
-          default:
-          {
-            FOUR_C_THROW("Defined problem type {} does not exist!!", impltype_);
-            break;
-          }
-        }
-
-        return 0;
-      }
+      int num_dof_per_node(const Core::Nodes::Node& node) const override;
 
       /*!
       \brief Get number of degrees of freedom per element

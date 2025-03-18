@@ -68,7 +68,7 @@ TSI::Partitioned::Partitioned(MPI_Comm comm)
   const Teuchos::ParameterList& sdyn = Global::Problem::instance()->structural_dynamic_params();
   // major switch to different time integrators
   quasistatic_ = (Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(sdyn, "DYNAMICTYPE") ==
-                  Inpar::Solid::dyna_statics);
+                  Inpar::Solid::DynamicType::Statics);
 
   // initialise internal variables with values
   tempincnp_ = std::make_shared<Core::LinAlg::Vector<double>>(*(thermo_field()->tempnp()));

@@ -7,6 +7,7 @@
 
 #include "4C_fem_general_utils_integration.hpp"
 
+#include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
 
 #include <cmath>

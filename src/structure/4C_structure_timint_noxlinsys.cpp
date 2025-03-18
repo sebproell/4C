@@ -13,6 +13,7 @@
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <Epetra_CrsMatrix.h>
 #include <Epetra_LinearProblem.h>

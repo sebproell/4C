@@ -18,6 +18,7 @@
 #include "4C_lubrication_ele_parameter.hpp"
 #include "4C_lubrication_input.hpp"
 #include "4C_mat_lubrication_mat.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_function.hpp"
 #include "4C_utils_singleton_owner.hpp"
 

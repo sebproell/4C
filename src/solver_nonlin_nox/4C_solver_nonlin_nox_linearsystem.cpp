@@ -693,8 +693,8 @@ const Core::LinAlg::SparseMatrix& NOX::Nln::LinearSystem::get_jacobian_block(
     }
     default:
     {
-      FOUR_C_THROW("Unsupported LinSystem::OperatorType: {} | {}", jacType_,
-          NOX::Nln::LinSystem::operator_type_to_string(jacType_).c_str());
+      FOUR_C_THROW("Unsupported LinSystem::OperatorType: {}",
+          NOX::Nln::LinSystem::operator_type_to_string(jacType_));
       exit(EXIT_FAILURE);
     }
   }

@@ -151,11 +151,11 @@ PoroElast::PoroBase::PoroBase(MPI_Comm comm, const Teuchos::ParameterList& timep
     auto fluidtimealgo =
         Teuchos::getIntegralValue<Inpar::FLUID::TimeIntegrationScheme>(fdyn, "TIMEINTEGR");
 
-    if (not((structtimealgo == Inpar::Solid::dyna_onesteptheta and
+    if (not((structtimealgo == Inpar::Solid::DynamicType::OneStepTheta and
                 fluidtimealgo == Inpar::FLUID::timeint_one_step_theta) or
-            (structtimealgo == Inpar::Solid::dyna_statics and
+            (structtimealgo == Inpar::Solid::DynamicType::Statics and
                 fluidtimealgo == Inpar::FLUID::timeint_stationary) or
-            (structtimealgo == Inpar::Solid::dyna_genalpha and
+            (structtimealgo == Inpar::Solid::DynamicType::GenAlpha and
                 (fluidtimealgo == Inpar::FLUID::timeint_afgenalpha or
                     fluidtimealgo == Inpar::FLUID::timeint_npgenalpha))))
     {
@@ -171,7 +171,7 @@ PoroElast::PoroBase::PoroBase(MPI_Comm comm, const Teuchos::ParameterList& timep
           "theory or use afgenalpha instead!");
     }
 
-    if (structtimealgo == Inpar::Solid::dyna_onesteptheta and
+    if (structtimealgo == Inpar::Solid::DynamicType::OneStepTheta and
         fluidtimealgo == Inpar::FLUID::timeint_one_step_theta)
     {
       double theta_struct = sdyn.sublist("ONESTEPTHETA").get<double>("THETA");
@@ -187,7 +187,7 @@ PoroElast::PoroBase::PoroBase(MPI_Comm comm, const Teuchos::ParameterList& timep
 
     auto damping = Teuchos::getIntegralValue<Inpar::Solid::DampKind>(sdyn, "DAMPING");
     if (damping != Inpar::Solid::DampKind::damp_material &&
-        structtimealgo != Inpar::Solid::dyna_statics)
+        structtimealgo != Inpar::Solid::DynamicType::Statics)
     {
       FOUR_C_THROW(
           "Material damping has to be used for dynamic porous media simulations! Set DAMPING to "

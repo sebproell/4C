@@ -103,7 +103,7 @@ namespace Solid
       //! Return name
       enum Inpar::Solid::DynamicType method_name() const override
       {
-        return Inpar::Solid::dyna_statics;
+        return Inpar::Solid::DynamicType::Statics;
       }
 
       //! Provide number of steps, a single-step method returns 1

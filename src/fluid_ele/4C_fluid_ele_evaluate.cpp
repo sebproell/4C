@@ -18,6 +18,7 @@
 #include "4C_fluid_ele_parameter_xfem.hpp"
 #include "4C_fluid_ele_tds.hpp"
 #include "4C_fluid_ele_xwall.hpp"
+#include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

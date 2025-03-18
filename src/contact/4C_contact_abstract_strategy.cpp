@@ -2697,7 +2697,7 @@ void CONTACT::AbstractStrategy::evaluate(CONTACT::ParamsInterface& cparams,
     // -------------------------------------------------------------------
     default:
     {
-      FOUR_C_THROW("Unsupported action type: {} | {}", act, action_type_to_string(act).c_str());
+      FOUR_C_THROW("Unsupported action type: {}", action_type_to_string(act));
       break;
     }
   }

@@ -18,6 +18,7 @@
 #include "4C_scatra_ele.hpp"
 #include "4C_scatra_timint_elch.hpp"
 #include "4C_scatra_utils_clonestrategy.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 #include <Teuchos_TimeMonitor.hpp>

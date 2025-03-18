@@ -70,7 +70,7 @@ namespace Thermo
     //@{
 
     //! Return name
-    enum Thermo::DynamicType method_name() const override { return Thermo::dyna_genalpha; }
+    enum Thermo::DynamicType method_name() const override { return Thermo::DynamicType::GenAlpha; }
 
     //! Consistent predictor with constant temperatures
     //! and consistent temperature rates and temperatures

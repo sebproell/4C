@@ -15,6 +15,7 @@
 #include "4C_io_legacy_table.hpp"
 #include "4C_post_common.hpp"
 #include "4C_thermo_ele_action.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_singleton_owner.hpp"
 
 #include <Teuchos_CommandLineProcessor.hpp>

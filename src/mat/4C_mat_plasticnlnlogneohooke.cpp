@@ -13,6 +13,7 @@
 #include "4C_linalg_utils_densematrix_eigen.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_service.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_function.hpp"
 #include "4C_utils_local_newton.hpp"
 

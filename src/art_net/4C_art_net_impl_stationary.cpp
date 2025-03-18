@@ -24,6 +24,7 @@
 #include "4C_mat_cnst_1d_art.hpp"
 #include "4C_scatra_resulttest.hpp"
 #include "4C_scatra_timint_implicit.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_function.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>

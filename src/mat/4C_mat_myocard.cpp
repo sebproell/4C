@@ -15,6 +15,7 @@
 #include "4C_mat_myocard_san_garny.hpp"
 #include "4C_mat_myocard_tentusscher.hpp"
 #include "4C_mat_par_bundle.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <Teuchos_ENull.hpp>
 

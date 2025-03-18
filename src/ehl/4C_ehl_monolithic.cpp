@@ -438,12 +438,12 @@ void EHL::Monolithic::setup_system_matrix()
   double alphaf = -1.;
   switch (Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(sdyn_, "DYNAMICTYPE"))
   {
-    case Inpar::Solid::dyna_genalpha:
+    case Inpar::Solid::DynamicType::GenAlpha:
     {
       alphaf = sdyn_.sublist("GENALPHA").get<double>("ALPHA_F");
       break;
     }
-    case Inpar::Solid::dyna_statics:
+    case Inpar::Solid::DynamicType::Statics:
     {
       alphaf = 0.;
       break;

@@ -12,6 +12,7 @@
 #include "4C_structure_new_nln_solver_ptc.hpp"
 #include "4C_structure_new_nln_solver_singlestep.hpp"
 #include "4C_structure_new_nln_solver_uzawa.hpp"
+#include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -48,8 +49,7 @@ std::shared_ptr<Solid::Nln::SOLVER::Generic> Solid::Nln::SOLVER::Factory::build_
       //      nlnSolver = Teuchos::rcp(new Solid::Nln::SOLVER::Uzawa());
       //      break;
     default:
-      FOUR_C_THROW("Solution technique \"{}\" is not implemented.",
-          Inpar::Solid::nonlin_sol_tech_string(nlnSolType).c_str());
+      FOUR_C_THROW("Solution technique \"{}\" is not implemented.", nlnSolType);
       break;
   }
 

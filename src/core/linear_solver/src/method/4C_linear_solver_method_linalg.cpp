@@ -12,6 +12,7 @@
 #include "4C_linalg_sparsematrix.hpp"
 #include "4C_linear_solver_method_direct.hpp"
 #include "4C_linear_solver_method_iterative.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 #include <BelosTypes.hpp>  // for Belos verbosity codes

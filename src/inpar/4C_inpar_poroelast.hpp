@@ -86,33 +86,6 @@ namespace Inpar
       //   initfield_field_by_condition
     };
 
-    //! map enum term to std::string
-    static inline std::string vector_norm_string(const enum VectorNorm norm  //!< input enum term
-    )
-    {
-      switch (norm)
-      {
-        case Inpar::PoroElast::norm_l1:
-          return "L1";
-          break;
-        case Inpar::PoroElast::norm_l1_scaled:
-          return "L1_scaled";
-          break;
-        case Inpar::PoroElast::norm_l2:
-          return "L2";
-          break;
-        case Inpar::PoroElast::norm_rms:
-          return "Rms";
-          break;
-        case Inpar::PoroElast::norm_inf:
-          return "Inf";
-          break;
-        default:
-          FOUR_C_THROW("Cannot make std::string to vector norm {}", norm);
-          return "";
-      }
-    }
-
     //@}
 
 

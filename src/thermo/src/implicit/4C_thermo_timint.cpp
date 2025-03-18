@@ -16,6 +16,7 @@
 #include "4C_thermo_ele_action.hpp"
 #include "4C_thermo_resulttest.hpp"
 #include "4C_timestepping_mstep.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_function.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
@@ -801,7 +802,7 @@ void Thermo::TimInt::apply_force_tang_internal(
 
   // in case of genalpha extract midpoint temperature rate R_{n+alpha_m}
   // extract it after ClearState() is called.
-  if (method_name() == Thermo::dyna_genalpha)
+  if (method_name() == Thermo::DynamicType::GenAlpha)
   {
     std::shared_ptr<const Core::LinAlg::Vector<double>> ratem =
         p.get<std::shared_ptr<const Core::LinAlg::Vector<double>>>("mid-temprate");

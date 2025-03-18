@@ -11,6 +11,7 @@
 #include "4C_global_data.hpp"
 #include "4C_porofluidmultiphase_ele_boundary_calc.hpp"
 #include "4C_porofluidmultiphase_ele_interface.hpp"
+#include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

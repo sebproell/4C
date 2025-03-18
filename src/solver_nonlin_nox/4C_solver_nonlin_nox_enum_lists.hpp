@@ -148,29 +148,6 @@ namespace NOX
         linear_system_undefined
       };
 
-      /// Map linear system type to std::string
-      inline std::string linear_system_type_to_string(const enum LinearSystemType type)
-      {
-        switch (type)
-        {
-          case linear_system_structure:
-            return "linear_system_structure";
-          case linear_system_structure_contact:
-            return "linear_system_structure_contact";
-          case linear_system_structure_cardiovascular0d:
-            return "linear_system_structure_cardiovascular0d";
-          case linear_system_structure_lag_pen_constraint:
-            return "linear_system_structure_lag_pen_constraint";
-          case linear_system_undefined:
-            return "linear_system_undefined";
-          case linear_system_scatra:
-            return "linear_system_scatra";
-          default:
-            return "unknown operator type";
-        }
-        exit(EXIT_FAILURE);
-      };
-
       //! List of types of epetra objects that can be used for the Jacobian and/or Preconditioner.
       enum OperatorType : int
       {

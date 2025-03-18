@@ -40,14 +40,14 @@ void caldyn_drt()
   // major switch to different time integrators
   switch (Teuchos::getIntegralValue<Inpar::Solid::DynamicType>(sdyn, "DYNAMICTYPE"))
   {
-    case Inpar::Solid::dyna_statics:
-    case Inpar::Solid::dyna_genalpha:
-    case Inpar::Solid::dyna_genalpha_liegroup:
-    case Inpar::Solid::dyna_onesteptheta:
-    case Inpar::Solid::dyna_expleuler:
-    case Inpar::Solid::dyna_centrdiff:
-    case Inpar::Solid::dyna_ab2:
-    case Inpar::Solid::dyna_ab4:
+    case Inpar::Solid::DynamicType::Statics:
+    case Inpar::Solid::DynamicType::GenAlpha:
+    case Inpar::Solid::DynamicType::GenAlphaLieGroup:
+    case Inpar::Solid::DynamicType::OneStepTheta:
+    case Inpar::Solid::DynamicType::ExplEuler:
+    case Inpar::Solid::DynamicType::CentrDiff:
+    case Inpar::Solid::DynamicType::AdamsBashforth2:
+    case Inpar::Solid::DynamicType::AdamsBashforth4:
       dyn_nlnstructural_drt();
       break;
     default:

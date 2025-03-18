@@ -696,8 +696,7 @@ namespace Cut
           return shards::getCellTopologyData<shards::Line<2>>();
           break;
         default:
-          FOUR_C_THROW("Unknown sidetype! ({} | {})\n", sidetype,
-              Core::FE::cell_type_to_string(sidetype).c_str());
+          FOUR_C_THROW("Unknown sidetype! ({})\n", Core::FE::cell_type_to_string(sidetype));
           break;
       }
       exit(EXIT_FAILURE);

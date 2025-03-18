@@ -413,7 +413,7 @@ void PoroElast::Monolithic::setup_system()
     }
   }
 
-  if (no_penetration_ && not(strmethodname_ == Inpar::Solid::dyna_onesteptheta))
+  if (no_penetration_ && not(strmethodname_ == Inpar::Solid::DynamicType::OneStepTheta))
   {
     FOUR_C_THROW(
         "Porous contact with no penetration is only implemented for OneStepTheta. Please set "
@@ -846,8 +846,8 @@ void PoroElast::Monolithic::print_newton_iter_header_stream(std::ostringstream& 
 {
   oss << "------------------------------------------------------------" << std::endl;
   oss << "                   Newton-Raphson Scheme                    " << std::endl;
-  oss << "                NormRES " << vector_norm_string(vectornormfres_);
-  oss << "     NormINC " << vector_norm_string(vectornorminc_) << "                    "
+  oss << "                NormRES " << magic_enum::enum_name(vectornormfres_);
+  oss << "     NormINC " << magic_enum::enum_name(vectornorminc_) << "                    "
       << std::endl;
   oss << "------------------------------------------------------------" << std::endl;
 

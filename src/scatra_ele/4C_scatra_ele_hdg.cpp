@@ -23,6 +23,7 @@
 #include "4C_scatra_ele_factory.hpp"
 #include "4C_scatra_ele_hdg_boundary_calc.hpp"
 #include "4C_scatra_ele_interface.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 

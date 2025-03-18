@@ -12,6 +12,7 @@
 #include "4C_contact_nitsche_integrator_fsi.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_mortar_projector.hpp"
+#include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

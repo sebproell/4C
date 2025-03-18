@@ -11,6 +11,7 @@
 #include "4C_global_data.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
 #include "4C_mat_par_bundle.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <vector>
 

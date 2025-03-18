@@ -37,8 +37,9 @@ namespace Inpar
           "type of the specific dynamic time integration scheme",
           tuple<std::string>("Statics", "GenAlpha", "GenAlphaLieGroup", "OneStepTheta",
               "ExplicitEuler", "CentrDiff", "AdamsBashforth2", "AdamsBashforth4"),
-          tuple<Solid::DynamicType>(dyna_statics, dyna_genalpha, dyna_genalpha_liegroup,
-              dyna_onesteptheta, dyna_expleuler, dyna_centrdiff, dyna_ab2, dyna_ab4),
+          tuple<Solid::DynamicType>(DynamicType::Statics, DynamicType::GenAlpha,
+              DynamicType::GenAlphaLieGroup, DynamicType::OneStepTheta, DynamicType::ExplEuler,
+              DynamicType::CentrDiff, DynamicType::AdamsBashforth2, DynamicType::AdamsBashforth4),
           sdyn);
 
       Core::Utils::string_to_integral_parameter<Inpar::Solid::PreStress>("PRESTRESS", "none",
@@ -371,7 +372,8 @@ namespace Inpar
       Core::Utils::string_to_integral_parameter<Inpar::Solid::DynamicType>("DYNAMICTYPE",
           "CentrDiff", "type of the specific auxiliary dynamic time integration scheme",
           tuple<std::string>("ExplicitEuler", "CentrDiff", "AdamsBashforth2", "AdamsBashforth4"),
-          tuple<Inpar::Solid::DynamicType>(dyna_expleuler, dyna_centrdiff, dyna_ab2, dyna_ab4),
+          tuple<Inpar::Solid::DynamicType>(DynamicType::ExplEuler, DynamicType::CentrDiff,
+              DynamicType::AdamsBashforth2, DynamicType::AdamsBashforth4),
           jep);
 
       jep.specs.emplace_back(parameter<bool>(

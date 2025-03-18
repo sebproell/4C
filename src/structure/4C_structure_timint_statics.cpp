@@ -54,7 +54,8 @@ void Solid::TimIntStatics::init(const Teuchos::ParameterList& timeparams,
       Teuchos::getIntegralValue<Inpar::Solid::PreStress>(
           Global::Problem::instance()->structural_dynamic_params(), "PRESTRESS");
 
-  if (pre_stress_type != Inpar::Solid::PreStress::none && dyntype != Inpar::Solid::dyna_statics)
+  if (pre_stress_type != Inpar::Solid::PreStress::none &&
+      dyntype != Inpar::Solid::DynamicType::Statics)
   {
     FOUR_C_THROW(
         "Paranoia Error: PRESTRESS is only allowed in combinations with DYNAMICTYPE Statics!!");

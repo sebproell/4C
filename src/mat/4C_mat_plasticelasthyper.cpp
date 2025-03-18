@@ -15,6 +15,7 @@
 #include "4C_linalg_utils_densematrix_exp_log.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_service.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <Teuchos_SerialDenseSolver.hpp>
 

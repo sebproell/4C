@@ -25,6 +25,7 @@
 #include "4C_porofluidmultiphase_ele_phasemanager.hpp"
 #include "4C_porofluidmultiphase_ele_variablemanager.hpp"
 #include "4C_scatra_ele_calc_poro_reac.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_function.hpp"
 
 FOUR_C_NAMESPACE_OPEN

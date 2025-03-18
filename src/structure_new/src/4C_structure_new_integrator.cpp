@@ -800,7 +800,7 @@ bool Solid::Integrator::MidTimeEnergy::is_correctly_configured() const
 
   if (avg_type_ == Inpar::Solid::midavg_vague)
   {
-    if (integrator_.s_dyn().get_dynamic_type() != Inpar::Solid::dyna_statics) return false;
+    if (integrator_.s_dyn().get_dynamic_type() != Inpar::Solid::DynamicType::Statics) return false;
   }
   return true;
 }

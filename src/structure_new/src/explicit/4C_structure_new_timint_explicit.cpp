@@ -50,8 +50,8 @@ void Solid::TimeInt::Explicit::setup()
   if (nlnSolverType != Inpar::Solid::soltech_singlestep)
   {
     std::cout << "WARNING!!!Nonlinear solver for explicit dynamics is given (in the input file) as "
-              << Inpar::Solid::nonlin_sol_tech_string(nlnSolverType)
-              << ". This is not compatible. singlestep solver will be selected." << std::endl;
+              << nlnSolverType << ". This is not compatible. singlestep solver will be selected."
+              << std::endl;
     nlnSolverType = Inpar::Solid::soltech_singlestep;
   }
   nlnsolver_ptr_ = Solid::Nln::SOLVER::build_nln_solver(nlnSolverType);

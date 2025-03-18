@@ -26,6 +26,7 @@
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_truss3.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_function.hpp"
 #include "4C_utils_function_of_time.hpp"

@@ -11,6 +11,7 @@
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_solver_nonlin_nox_aux.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <NOX_Epetra_Vector.H>
 #include <Teuchos_RCPStdSharedPtrConversions.hpp>

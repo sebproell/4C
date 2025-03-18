@@ -21,9 +21,9 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
 
   Core::Utils::SectionSpecs tdyn{"THERMAL DYNAMIC"};
 
-  Core::Utils::string_to_integral_parameter<DynamicType>("DYNAMICTYPE", "OneStepTheta",
-      "type of time integration control", tuple<std::string>("Statics", "OneStepTheta", "GenAlpha"),
-      tuple<DynamicType>(dyna_statics, dyna_onesteptheta, dyna_genalpha), tdyn);
+  tdyn.specs.emplace_back(parameter<Thermo::DynamicType>(
+      "DYNAMICTYPE", {.description = "type of time integration control",
+                         .default_value = Thermo::DynamicType::OneStepTheta}));
 
   // output type
   tdyn.specs.emplace_back(parameter<int>("RESULTSEVERY",

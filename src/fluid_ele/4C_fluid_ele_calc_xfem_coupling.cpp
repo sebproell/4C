@@ -9,6 +9,7 @@
 
 #include "4C_bele_bele3.hpp"
 #include "4C_fluid_ele_calc_xfem_coupling_impl.hpp"
+#include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

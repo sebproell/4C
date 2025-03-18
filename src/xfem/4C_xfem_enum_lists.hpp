@@ -26,41 +26,6 @@ namespace XFEM
     xstructure = 1
   };
 
-  /// map field name enumerator to string
-  static inline std::string field_name_to_string(const enum FieldName& field)
-  {
-    switch (field)
-    {
-      case structure:
-        return "structure";
-        break;
-      case xstructure:
-        return "xstructure";
-        break;
-      default:
-        FOUR_C_THROW("Unknown FieldName enumerator (enum = {})!", field);
-        break;
-    }
-    return "";
-  }
-
-  /// map field name enumerator to string
-  static inline enum FieldName string_to_field_name(const std::string& name)
-  {
-    enum FieldName field = unknown;
-    if (name == "structure")
-      field = structure;
-    else if (name == "xstructure")
-      field = xstructure;
-    else
-      FOUR_C_THROW(
-          "No known conversion for the given discretization "
-          "name \"{}\"!",
-          name.c_str());
-
-    return field;
-  }
-
   /// map types
   enum MapType
   {
