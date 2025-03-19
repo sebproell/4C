@@ -12,7 +12,7 @@
 #include "4C_linalg_utils_densematrix_communication.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_mat_cnst_1d_art.hpp"
-#include "4C_porofluidmultiphase_utils.hpp"
+#include "4C_porofluid_pressure_based_utils.hpp"
 #include "4C_poromultiphase_scatra_artery_coupling_defines.hpp"
 #include "4C_poromultiphase_scatra_artery_coupling_pair.hpp"
 

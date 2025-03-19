@@ -12,11 +12,11 @@
 #include "4C_adapter_str_structure_new.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_porofluidmultiphase.hpp"
+#include "4C_inpar_porofluid_pressure_based.hpp"
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
-#include "4C_porofluidmultiphase_utils.hpp"
+#include "4C_porofluid_pressure_based_utils.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 

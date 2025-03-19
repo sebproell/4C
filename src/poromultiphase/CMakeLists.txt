@@ -16,7 +16,7 @@ set(_dependencies
     inpar
     mat
     poroelast
-    porofluidmultiphase
+    porofluid_pressure_based
     porofluidmultiphase_ele
     )
 

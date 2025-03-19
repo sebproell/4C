@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_porofluidmultiphase.hpp"
+#include "4C_inpar_porofluid_pressure_based.hpp"
 
 #include "4C_inpar_bio.hpp"
 #include "4C_utils_parameter_list.hpp"

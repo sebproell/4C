@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_porofluidmultiphase_utils.hpp"
+#include "4C_porofluid_pressure_based_utils.hpp"
 
 #include "4C_adapter_porofluidmultiphase.hpp"
 #include "4C_fem_general_utils_createdis.hpp"
@@ -20,7 +20,7 @@
 #include "4C_mat_cnst_1d_art.hpp"
 #include "4C_mat_material_factory.hpp"
 #include "4C_material_base.hpp"
-#include "4C_porofluidmultiphase_timint_ost.hpp"
+#include "4C_porofluid_pressure_based_timint_ost.hpp"
 #include "4C_rebalance_binning_based.hpp"
 #include "4C_rebalance_print.hpp"
 

@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_porofluidmultiphase_timint_ost.hpp"
+#include "4C_porofluid_pressure_based_timint_ost.hpp"
 
 #include "4C_global_data.hpp"
 #include "4C_io.hpp"
