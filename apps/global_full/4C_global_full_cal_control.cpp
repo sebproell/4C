@@ -21,7 +21,7 @@
 #include "4C_pasi_dyn.hpp"
 #include "4C_poroelast_dyn.hpp"
 #include "4C_poroelast_scatra_dyn.hpp"
-#include "4C_porofluidmultiphase_dyn.hpp"
+#include "4C_porofluid_pressure_based_dyn.hpp"
 #include "4C_poromultiphase_dyn.hpp"
 #include "4C_poromultiphase_scatra_dyn.hpp"
 #include "4C_red_airways_dyn_drt.hpp"

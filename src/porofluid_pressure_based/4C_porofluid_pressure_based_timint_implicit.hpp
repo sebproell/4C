@@ -5,8 +5,8 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_POROFLUIDMULTIPHASE_TIMINT_IMPLICIT_HPP
-#define FOUR_C_POROFLUIDMULTIPHASE_TIMINT_IMPLICIT_HPP
+#ifndef FOUR_C_POROFLUID_PRESSURE_BASED_TIMINT_IMPLICIT_HPP
+#define FOUR_C_POROFLUID_PRESSURE_BASED_TIMINT_IMPLICIT_HPP
 
 
 
@@ -15,7 +15,7 @@
 #include "4C_adapter_art_net.hpp"
 #include "4C_adapter_porofluidmultiphase.hpp"
 #include "4C_fem_discretization.hpp"
-#include "4C_inpar_porofluidmultiphase.hpp"
+#include "4C_inpar_porofluid_pressure_based.hpp"
 #include "4C_io_discretization_visualization_writer_mesh.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"

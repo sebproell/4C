@@ -5,10 +5,10 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_porofluidmultiphase_meshtying_strategy_std.hpp"
+#include "4C_porofluid_pressure_based_meshtying_strategy_std.hpp"
 
 #include "4C_linear_solver_method_linalg.hpp"
-#include "4C_porofluidmultiphase_utils.hpp"
+#include "4C_porofluid_pressure_based_utils.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

@@ -11,8 +11,8 @@
 #include "4C_global_data.hpp"
 #include "4C_inpar_validparameters.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
-#include "4C_porofluidmultiphase_timint_implicit.hpp"
-#include "4C_porofluidmultiphase_timint_ost.hpp"
+#include "4C_porofluid_pressure_based_timint_implicit.hpp"
+#include "4C_porofluid_pressure_based_timint_ost.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 

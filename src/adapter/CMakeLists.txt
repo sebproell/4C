@@ -32,7 +32,7 @@ set(_dependencies
     mortar
     pasi
     poroelast
-    porofluidmultiphase
+    porofluid_pressure_based
     scatra
     shell7p
     solid_3D_ele

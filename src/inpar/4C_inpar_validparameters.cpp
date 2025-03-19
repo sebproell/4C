@@ -41,7 +41,7 @@
 #include "4C_inpar_pasi.hpp"
 #include "4C_inpar_plasticity.hpp"
 #include "4C_inpar_poroelast.hpp"
-#include "4C_inpar_porofluidmultiphase.hpp"
+#include "4C_inpar_porofluid_pressure_based.hpp"
 #include "4C_inpar_poromultiphase.hpp"
 #include "4C_inpar_poromultiphase_scatra.hpp"
 #include "4C_inpar_poroscatra.hpp"

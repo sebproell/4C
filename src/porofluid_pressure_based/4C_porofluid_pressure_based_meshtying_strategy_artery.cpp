@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_porofluidmultiphase_meshtying_strategy_artery.hpp"
+#include "4C_porofluid_pressure_based_meshtying_strategy_artery.hpp"
 
 #include "4C_art_net_utils.hpp"
 #include "4C_global_data.hpp"
@@ -16,7 +16,7 @@
 #include "4C_linear_solver_method.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_linear_solver_method_parameters.hpp"
-#include "4C_porofluidmultiphase_utils.hpp"
+#include "4C_porofluid_pressure_based_utils.hpp"
 #include "4C_poromultiphase_scatra_artery_coupling_base.hpp"
 #include "4C_poromultiphase_scatra_utils.hpp"
 

@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_porofluidmultiphase_dyn.hpp"
+#include "4C_porofluid_pressure_based_dyn.hpp"
 
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_dofset_predefineddofnumber.hpp"
@@ -13,9 +13,9 @@
 #include "4C_inpar_bio.hpp"
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"
-#include "4C_porofluidmultiphase_timint_implicit.hpp"
-#include "4C_porofluidmultiphase_timint_ost.hpp"
-#include "4C_porofluidmultiphase_utils.hpp"
+#include "4C_porofluid_pressure_based_timint_implicit.hpp"
+#include "4C_porofluid_pressure_based_timint_ost.hpp"
+#include "4C_porofluid_pressure_based_utils.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 #include <Teuchos_TimeMonitor.hpp>
