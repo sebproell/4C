@@ -16,7 +16,7 @@ set(_dependencies
     global_data
     inpar
     mat
-    porofluidmultiphase_ele
+    porofluid_pressure_based_ele
     poromultiphase_scatra
     )
 

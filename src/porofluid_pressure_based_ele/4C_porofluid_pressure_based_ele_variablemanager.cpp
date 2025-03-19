@@ -5,13 +5,13 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_porofluidmultiphase_ele_variablemanager.hpp"
+#include "4C_porofluid_pressure_based_ele_variablemanager.hpp"
 
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_general_extract_values.hpp"
 #include "4C_mat_fluidporo_singlephase.hpp"
-#include "4C_porofluidmultiphase_ele_calc_utils.hpp"
-#include "4C_porofluidmultiphase_ele_parameter.hpp"
+#include "4C_porofluid_pressure_based_ele_calc_utils.hpp"
+#include "4C_porofluid_pressure_based_ele_parameter.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

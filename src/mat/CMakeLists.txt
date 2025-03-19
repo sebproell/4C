@@ -14,7 +14,7 @@ set(_dependencies
     global_data
     inpar
     mixture
-    porofluidmultiphase_ele
+    porofluid_pressure_based_ele
     red_airways
     scatra
     scatra_ele

@@ -108,7 +108,7 @@
 #include "4C_mortar_element.hpp"
 #include "4C_mortar_node.hpp"
 #include "4C_particle_engine_object.hpp"
-#include "4C_porofluidmultiphase_ele.hpp"
+#include "4C_porofluid_pressure_based_ele.hpp"
 #include "4C_poromultiphase_scatra_function.hpp"
 #include "4C_red_airways_elementbase.hpp"
 #include "4C_rigidsphere.hpp"
