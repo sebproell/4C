@@ -17,7 +17,6 @@ set(_dependencies
     mat
     poroelast
     poroelast_scatra
-    so3
     solver_nonlin_nox
     structure_new
     )

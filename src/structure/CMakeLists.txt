@@ -22,7 +22,6 @@ set(_dependencies
     mat
     mortar
     poroelast
-    so3
     stru_multi
     structure_new
     timestepping

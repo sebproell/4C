@@ -34,7 +34,6 @@ set(_dependencies
     scatra_ele
     shell7p
     shell_kl_nurbs
-    so3
     solid_3D_ele
     solid_poro_3D_ele
     solid_scatra_3D_ele

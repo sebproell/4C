@@ -13,7 +13,6 @@ set(_dependencies
     core
     inpar
     mat
-    so3
     solid_3D_ele
     structure_new
     )

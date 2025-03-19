@@ -12,11 +12,11 @@
 #include "4C_inpar_scatra.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_io_input_spec_builders.hpp"
-#include "4C_so3_surface.hpp"
 #include "4C_solid_3D_ele_interface_serializable.hpp"
 #include "4C_solid_3D_ele_line.hpp"
 #include "4C_solid_3D_ele_nullspace.hpp"
 #include "4C_solid_3D_ele_properties.hpp"
+#include "4C_solid_3D_ele_surface.hpp"
 #include "4C_solid_scatra_3D_ele_factory.hpp"
 #include "4C_solid_scatra_3D_ele_lib.hpp"
 
@@ -173,7 +173,7 @@ std::vector<std::shared_ptr<Core::Elements::Element>> Discret::Elements::SolidSc
 
 std::vector<std::shared_ptr<Core::Elements::Element>> Discret::Elements::SolidScatra::surfaces()
 {
-  return Core::Communication::get_element_surfaces<StructuralSurface, SolidScatra>(*this);
+  return Core::Communication::get_element_surfaces<SolidSurface, SolidScatra>(*this);
 }
 
 void Discret::Elements::SolidScatra::set_params_interface_ptr(const Teuchos::ParameterList& p)

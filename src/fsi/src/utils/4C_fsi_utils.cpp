@@ -23,8 +23,8 @@
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_mortar_interface.hpp"
-#include "4C_so3_surface.hpp"
 #include "4C_solid_3D_ele_line.hpp"
+#include "4C_solid_3D_ele_surface.hpp"
 
 #include <map>
 #include <set>
@@ -636,7 +636,7 @@ void FSI::Utils::SlideAleUtils::redundant_elements(
         if (dim == 3)
         {
           structreduelements_[i][tmpele->id()] =
-              std::make_shared<Discret::Elements::StructuralSurface>(tmpele->id(), tmpele->owner(),
+              std::make_shared<Discret::Elements::SolidSurface>(tmpele->id(), tmpele->owner(),
                   tmpele->num_node(), tmpele->node_ids(), tmpele->nodes(), &(*tmpele), 0);
         }
         else if (dim == 2)
@@ -656,7 +656,7 @@ void FSI::Utils::SlideAleUtils::redundant_elements(
         if (dim == 3)
         {
           ifluidslidstructeles_[i][tmpele->id()] =
-              std::make_shared<Discret::Elements::StructuralSurface>(tmpele->id(), tmpele->owner(),
+              std::make_shared<Discret::Elements::SolidSurface>(tmpele->id(), tmpele->owner(),
                   tmpele->num_node(), tmpele->node_ids(), tmpele->nodes(), &(*tmpele), 0);
         }
         else if (dim == 2)

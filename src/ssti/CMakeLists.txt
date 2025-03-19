@@ -17,7 +17,6 @@ set(_dependencies
     mat
     scatra
     scatra_ele
-    so3
     ssi
     sti
     structure_new

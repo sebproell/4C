@@ -19,7 +19,6 @@ set(_dependencies
     poroelast
     scatra
     scatra_ele
-    so3
     solid_poro_3D_ele
     w1
     )
