@@ -26,12 +26,11 @@ namespace Core::Conditions
 namespace BeamPotential
 {
   /// type of potential interaction
-  /// (this enum represents the input file parameter BEAMPOTENTIAL_TYPE)
-  enum BeamPotentialType
+  enum class Type
   {
-    beampot_surf,  ///< surface potential
-    beampot_vol,   ///< volume potential
-    beampot_vague
+    surface,  ///< surface potential
+    volume,   ///< volume potential
+    vague
   };
 
   /// available strategies/methods to evaluate potential interaction

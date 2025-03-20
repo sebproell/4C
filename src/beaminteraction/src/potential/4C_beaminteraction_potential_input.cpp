@@ -24,25 +24,20 @@ void BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   /* parameters for potential-based beam interaction */
   Core::Utils::SectionSpecs beampotential{"BEAM POTENTIAL"};
 
+  // TODO change to vector and remove default value
   beampotential.specs.emplace_back(parameter<std::string>(
       "POT_LAW_EXPONENT", {.description = "negative(!) exponent(s)  $m_i$ of potential law  "
                                           "$\\Phi(r) = \\sum_i (k_i * r^{-m_i}).$",
                               .default_value = "1.0"}));
 
+  // TODO change to vector and remove default value
   beampotential.specs.emplace_back(parameter<std::string>("POT_LAW_PREFACTOR",
       {.description = "prefactor(s) $k_i$ of potential law $\\Phi(r) = \\sum_i (k_i * r^{-m_i})$.",
           .default_value = "0.0"}));
 
-  beampotential.specs.emplace_back(
-      deprecated_selection<BeamPotential::BeamPotentialType>("BEAMPOTENTIAL_TYPE",
-          {
-              {"Surface", beampot_surf},
-              {"surface", beampot_surf},
-              {"Volume", beampot_vol},
-              {"volume", beampot_vol},
-          },
-          {.description = "Type of potential interaction: surface (default) or volume potential",
-              .default_value = beampot_surf}));
+  beampotential.specs.emplace_back(parameter<BeamPotential::Type>("TYPE",
+      {.description = "Type of potential interaction: surface (default) or volume potential",
+          .default_value = BeamPotential::Type::surface}));
 
   beampotential.specs.emplace_back(
       deprecated_selection<BeamPotential::BeamPotentialStrategy>("STRATEGY",

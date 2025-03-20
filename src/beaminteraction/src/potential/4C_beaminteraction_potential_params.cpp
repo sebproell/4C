@@ -24,7 +24,7 @@ BeamInteraction::BeamPotentialParams::BeamPotentialParams()
       issetup_(false),
       pot_law_exponents_(nullptr),
       pot_law_prefactors_(nullptr),
-      potential_type_(BeamPotential::beampot_vague),
+      potential_type_(BeamPotential::Type::vague),
       strategy_(BeamPotential::strategy_vague),
       cutoff_radius_(0.0),
       regularization_type_(BeamPotential::regularization_none),
@@ -105,13 +105,13 @@ void BeamInteraction::BeamPotentialParams::init(const double restart_time)
     FOUR_C_THROW("You must specify a strategy to be used to evaluate beam interaction potential!");
 
   /****************************************************************************/
-  potential_type_ = Teuchos::getIntegralValue<BeamPotential::BeamPotentialType>(
-      beam_potential_params_list, "BEAMPOTENTIAL_TYPE");
+  potential_type_ =
+      Teuchos::getIntegralValue<BeamPotential::Type>(beam_potential_params_list, "TYPE");
 
-  if (potential_type_ == BeamPotential::beampot_vague)
+  if (potential_type_ == BeamPotential::Type::vague)
     FOUR_C_THROW("You must specify the type of the specified beam interaction potential!");
 
-  if (potential_type_ == BeamPotential::beampot_surf and
+  if (potential_type_ == BeamPotential::Type::surface and
       strategy_ != BeamPotential::strategy_doublelengthspec_largesepapprox)
   {
     FOUR_C_THROW("Surface interaction is not implemented for this strategy yet!");

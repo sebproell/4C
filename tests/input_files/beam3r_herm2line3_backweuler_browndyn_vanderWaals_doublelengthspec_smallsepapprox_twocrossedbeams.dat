@@ -64,7 +64,7 @@ REPARTITIONSTRATEGY             Everydt
 --------------------------------------------------------------BEAM POTENTIAL
 POT_LAW_PREFACTOR               -3e-5
 POT_LAW_EXPONENT                6.0
-BEAMPOTENTIAL_TYPE              Volume
+TYPE                            volume
 STRATEGY                        DoubleLengthSpecific_SmallSepApprox
 NUM_GAUSSPOINTS                 32
 AUTOMATIC_DIFFERENTIATION       no

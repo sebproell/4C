@@ -260,15 +260,14 @@ void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
 
   switch (params()->potential_type())
   {
-    case BeamPotential::beampot_surf:
+    case BeamPotential::Type::surface:
       prefactor *= 4 * radius1_ * radius2_ * M_PI * M_PI;
       break;
-    case BeamPotential::beampot_vol:
+    case BeamPotential::Type::volume:
       prefactor *= radius1_ * radius1_ * radius2_ * radius2_ * M_PI * M_PI;
       break;
     default:
-      FOUR_C_THROW(
-          "No valid BEAMPOTENTIAL_TYPE specified. Choose either Surface or Volume in input file!");
+      FOUR_C_THROW("No valid TYPE specified. Choose either `surface` or `volume` in input file!");
   }
 
   // prepare data storage for visualization

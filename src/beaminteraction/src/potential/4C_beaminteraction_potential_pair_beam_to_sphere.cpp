@@ -272,15 +272,14 @@ void BeamInteraction::BeamToSpherePotentialPair<numnodes,
 
   switch (params()->potential_type())  // Todo do we need a own Beam-to-sphere potential type here?
   {
-    case BeamPotential::beampot_surf:
+    case BeamPotential::Type::surface:
       prefactor *= 2 * radius1_ * M_PI;
       break;
-    case BeamPotential::beampot_vol:
+    case BeamPotential::Type::volume:
       prefactor *= std::pow(radius1_, 2) * M_PI;
       break;
     default:
-      FOUR_C_THROW(
-          "No valid BEAMPOTENTIAL_TYPE specified. Choose either Surface or Volume in input file!");
+      FOUR_C_THROW("No valid TYPE specified. Choose either `surface` `volume` in input file!");
   }
 
   // get sphere midpoint position

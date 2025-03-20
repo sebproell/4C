@@ -90,7 +90,7 @@ GAPS                            yes
 --------------------------------------------------------------BEAM POTENTIAL
 POT_LAW_PREFACTOR               0.3 0.1
 POT_LAW_EXPONENT                1.0 1.0
-BEAMPOTENTIAL_TYPE              Surface
+TYPE                            surface
 STRATEGY                        DoubleLengthSpecific_LargeSepApprox
 NUM_INTEGRATION_SEGMENTS        1
 NUM_GAUSSPOINTS                 10
