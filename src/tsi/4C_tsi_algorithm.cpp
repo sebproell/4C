@@ -105,10 +105,10 @@ TSI::Algorithm::Algorithm(MPI_Comm comm)
         Inpar::TSI::Monolithic)
     {
       if (matchinggrid_)
-        structdis->set_state(1, "temperature", thermo_field()->tempnp());
+        structdis->set_state(1, "temperature", *thermo_field()->tempnp());
       else
         structdis->set_state(
-            1, "temperature", volcoupl_->apply_vector_mapping12(*thermo_field()->tempnp()));
+            1, "temperature", *volcoupl_->apply_vector_mapping12(*thermo_field()->tempnp()));
     }
 
     adapterbase_ptr->setup();
@@ -411,15 +411,15 @@ void TSI::Algorithm::apply_thermo_coupling_state(
 {
   if (matchinggrid_)
   {
-    if (temp != nullptr) structure_field()->discretization()->set_state(1, "temperature", temp);
+    if (temp != nullptr) structure_field()->discretization()->set_state(1, "temperature", *temp);
     if (temp_res != nullptr)
-      structure_field()->discretization()->set_state(1, "residual temperature", temp_res);
+      structure_field()->discretization()->set_state(1, "residual temperature", *temp_res);
   }
   else
   {
     if (temp != nullptr)
       structure_field()->discretization()->set_state(
-          1, "temperature", volcoupl_->apply_vector_mapping12(*temp));
+          1, "temperature", *volcoupl_->apply_vector_mapping12(*temp));
   }
 
   // set new temperatures to contact
@@ -440,17 +440,17 @@ void TSI::Algorithm::apply_struct_coupling_state(
 {
   if (matchinggrid_)
   {
-    if (disp != nullptr) thermo_field()->discretization()->set_state(1, "displacement", disp);
-    if (vel != nullptr) thermo_field()->discretization()->set_state(1, "velocity", vel);
+    if (disp != nullptr) thermo_field()->discretization()->set_state(1, "displacement", *disp);
+    if (vel != nullptr) thermo_field()->discretization()->set_state(1, "velocity", *vel);
   }
   else
   {
     if (disp != nullptr)
       thermo_field()->discretization()->set_state(
-          1, "displacement", volcoupl_->apply_vector_mapping21(*disp));
+          1, "displacement", *volcoupl_->apply_vector_mapping21(*disp));
     if (vel != nullptr)
       thermo_field()->discretization()->set_state(
-          1, "velocity", volcoupl_->apply_vector_mapping21(*vel));
+          1, "velocity", *volcoupl_->apply_vector_mapping21(*vel));
   }
 }  // apply_struct_coupling_state()
 

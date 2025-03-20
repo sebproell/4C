@@ -50,7 +50,7 @@ void CONSTRAINTS::MPConstraint::set_constr_state(
           Core::LinAlg::create_vector(*(discrit->second)->dof_col_map(), false);
       Core::LinAlg::export_to(V, *tmp);
       (discrit->second)->clear_state();
-      (discrit->second)->set_state(state, tmp);
+      (discrit->second)->set_state(state, *tmp);
     }
   }
 }

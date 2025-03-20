@@ -115,7 +115,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::cal
       "action", ScaTra::Action::calc_flux_domain, params);
 
   // provide discretization with state vector
-  discret_->set_state("phinp", phinp_);
+  discret_->set_state("phinp", *phinp_);
 
   // evaluate flux vector field inside the whole computational domain (e.g., for visualization of
   // particle path lines)
@@ -808,7 +808,7 @@ void ScaTra::ScaTraTimIntImpl::surface_permeability(
     // TODO: (thon) this is not a nice way of using the mean concentration instead of phinp!
     // Note: meanconc_ is not cleared by calling 'discret_->ClearState()', hence if you
     // don't want to do this replacement here any more call 'ClearMeanConcentration()'
-    discret_->set_state("phinp", mean_conc_);
+    discret_->set_state("phinp", *mean_conc_);
 
     if (myrank_ == 0)
       std::cout << "Replacing 'phinp' by 'meanconc_' in the evaluation of the surface permeability"
@@ -817,7 +817,7 @@ void ScaTra::ScaTraTimIntImpl::surface_permeability(
 
   if (membrane_conc_ == nullptr)
     FOUR_C_THROW("Membrane concentration must already been saved before calling this function!");
-  discret_->set_state("MembraneConcentration", membrane_conc_);
+  discret_->set_state("MembraneConcentration", *membrane_conc_);
 
   // test if all necessary ingredients had been set
   if (not discret_->has_state(nds_wall_shear_stress(), "WallShearStress"))
@@ -867,7 +867,7 @@ void ScaTra::ScaTraTimIntImpl::kedem_katchalsky(
 
   if (membrane_conc_ == nullptr)
     FOUR_C_THROW("Membrane concentration must already been saved before calling this function!");
-  discret_->set_state("MembraneConcentration", membrane_conc_);
+  discret_->set_state("MembraneConcentration", *membrane_conc_);
 
   // Evaluate condition
   discret_->evaluate_condition(
@@ -1278,7 +1278,7 @@ void ScaTra::ScaTraTimIntImpl::output_integr_reac(const int num)
     if (!discret_->have_dofs()) FOUR_C_THROW("assign_degrees_of_freedom() was not called");
 
     // set scalar values needed by elements
-    discret_->set_state("phinp", phinp_);
+    discret_->set_state("phinp", *phinp_);
     // set action for elements
     Teuchos::ParameterList eleparams;
     Core::Utils::add_enum_class_to_parameter_list<ScaTra::Action>(
@@ -1728,7 +1728,7 @@ ScaTra::ScaTraTimIntImpl::compute_superconvergent_patch_recovery(
     FOUR_C_THROW("input map is not a dof row map of the fluid");
 
   // set given state for element evaluation
-  discret_->set_state(statename, state);
+  discret_->set_state(statename, *state);
 
   switch (dim)
   {
@@ -2105,7 +2105,7 @@ void ScaTra::ScaTraTimIntImpl::evaluate_error_compared_to_analytical_sol()
       }
 
       // set vector values needed by elements
-      discret_->set_state("phinp", phinp_);
+      discret_->set_state("phinp", *phinp_);
 
       // get (squared) error values
       std::shared_ptr<Core::LinAlg::SerialDenseVector> errors =
@@ -2177,7 +2177,7 @@ void ScaTra::ScaTraTimIntImpl::evaluate_error_compared_to_analytical_sol()
         eleparams.set<int>("error function number", errorfunctnumber);
 
         // set state vector needed by elements
-        discret_->set_state("phinp", phinp_);
+        discret_->set_state("phinp", *phinp_);
 
         // get (squared) error values
         Core::LinAlg::SerialDenseVector errors(4 * num_dof_per_node());
@@ -2368,7 +2368,7 @@ void ScaTra::OutputScalarsStrategyBase::prepare_evaluate(
   const std::shared_ptr<Core::FE::Discretization>& discret = scatratimint->discret_;
 
   // add state vector to discretization
-  discret->set_state("phinp", scatratimint->phinp_);
+  discret->set_state("phinp", *scatratimint->phinp_);
 
   // set action for elements
   Core::Utils::add_enum_class_to_parameter_list<ScaTra::Action>(

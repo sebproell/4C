@@ -164,7 +164,7 @@ void ScaTra::TimIntCardiacMonodomain::element_material_time_update()
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state("phinp", phinp_);
+  discret_->set_state("phinp", *phinp_);
 
   // go to elements
   discret_->evaluate(p, nullptr, nullptr, nullptr, nullptr, nullptr);

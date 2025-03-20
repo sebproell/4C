@@ -107,10 +107,10 @@ void Solid::TimIntExpl::apply_force_external(const double time,  //!< evaluation
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state(0, "displacement", dis);
-  discret_->set_state(0, "displacement new", dis);
+  discret_->set_state(0, "displacement", *dis);
+  discret_->set_state(0, "displacement new", *dis);
 
-  if (damping_ == Inpar::Solid::damp_material) discret_->set_state(0, "velocity", vel);
+  if (damping_ == Inpar::Solid::damp_material) discret_->set_state(0, "velocity", *vel);
   // get load vector
   discret_->evaluate_neumann(p, fext);
 

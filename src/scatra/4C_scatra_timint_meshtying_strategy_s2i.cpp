@@ -603,7 +603,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
         std::shared_ptr<Core::LinAlg::Vector<double>> iphinp =
             std::make_shared<Core::LinAlg::Vector<double>>(*idiscret.dof_col_map(), false);
         Core::LinAlg::export_to(*scatratimint_->phiafnp(), *iphinp);
-        idiscret.set_state("iphinp", iphinp);
+        idiscret.set_state("iphinp", *iphinp);
 
         // create parameter list for mortar integration cells
         Teuchos::ParameterList params;
@@ -1345,7 +1345,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
                 "action", ScaTra::BoundaryAction::calc_s2icoupling_growthgrowth, condparams);
 
             // set history vector associated with discrete scatra-scatra interface layer thicknesses
-            scatratimint_->discretization()->set_state(2, "growthhist", growthhist_);
+            scatratimint_->discretization()->set_state(2, "growthhist", *growthhist_);
 
             // evaluate main-diagonal linearizations and corresponding residuals
             scatratimint_->discretization()->evaluate_condition(
@@ -3442,17 +3442,17 @@ void ScaTra::MeshtyingStrategyS2I::add_time_integration_specific_vectors() const
     interfacemaps_->insert_vector(
         *icoup_->master_to_slave(*interfacemaps_->extract_vector(*(scatratimint_->phiafnp()), 2)),
         1, *imasterphi_on_slave_side_np_);
-    scatratimint_->discretization()->set_state("imasterphinp", imasterphi_on_slave_side_np_);
+    scatratimint_->discretization()->set_state("imasterphinp", *imasterphi_on_slave_side_np_);
 
     if (has_capacitive_contributions_)
     {
       interfacemaps_->insert_vector(
           *interfacemaps_->extract_vector(*(scatratimint_->phidtnp()), 1), 1, *islavephidtnp_);
-      scatratimint_->discretization()->set_state("islavephidtnp", islavephidtnp_);
+      scatratimint_->discretization()->set_state("islavephidtnp", *islavephidtnp_);
       interfacemaps_->insert_vector(
           *icoup_->master_to_slave(*interfacemaps_->extract_vector(*(scatratimint_->phidtnp()), 2)),
           1, *imasterphidt_on_slave_side_np_);
-      scatratimint_->discretization()->set_state("imasterphidtnp", imasterphidt_on_slave_side_np_);
+      scatratimint_->discretization()->set_state("imasterphidtnp", *imasterphidt_on_slave_side_np_);
     }
   }
 
@@ -3467,7 +3467,7 @@ void ScaTra::MeshtyingStrategyS2I::add_time_integration_specific_vectors() const
                                                                                : growthn_;
 
     // set state vector
-    scatratimint_->discretization()->set_state(2, "growth", growth);
+    scatratimint_->discretization()->set_state(2, "growth", *growth);
   }
 }
 

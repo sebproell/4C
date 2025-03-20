@@ -112,10 +112,10 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::add_neumann_to_residual()
  *---------------------------------------------------------------------------*/
 void POROFLUIDMULTIPHASE::TimIntOneStepTheta::add_time_integration_specific_vectors()
 {
-  discret_->set_state("hist", hist_);
-  discret_->set_state("phinp_fluid", phinp_);
-  discret_->set_state("phin_fluid", phin_);
-  discret_->set_state("phidtnp", phidtnp_);
+  discret_->set_state("hist", *hist_);
+  discret_->set_state("phinp_fluid", *phinp_);
+  discret_->set_state("phin_fluid", *phin_);
+  discret_->set_state("phidtnp", *phidtnp_);
 }
 
 
@@ -125,7 +125,7 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::add_time_integration_specific_vect
 void POROFLUIDMULTIPHASE::TimIntOneStepTheta::compute_time_derivative()
 {
   // time derivative of phi:
-  // phidt(n+1) = (phi(n+1)-phi(n)) / (theta*dt) + (1-(1/theta))*phidt(n)
+  // *phidt(n+1) = (phi(n+1)-phi(n)) / (theta*dt) + (1-(1/theta))*phidt(n)
   const double fact1 = 1.0 / (theta_ * dt_);
   const double fact2 = 1.0 - (1.0 / theta_);
   phidtnp_->update(fact2, *phidtn_, 0.0);

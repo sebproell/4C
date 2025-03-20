@@ -255,7 +255,7 @@ bool Solid::ModelEvaluator::BrownianDyn::apply_force_external()
   // set vector values needed by elements
   // -------------------------------------------------------------------------
   discret().clear_state();
-  discret().set_state(0, "displacement", global_state().get_dis_n());
+  discret().set_state(0, "displacement", *global_state().get_dis_n());
   // -------------------------------------------------------------------------
   // Evaluate brownian specific neumann conditions
   // -------------------------------------------------------------------------
@@ -289,8 +289,8 @@ bool Solid::ModelEvaluator::BrownianDyn::apply_force_brownian()
   // set vector values needed by elements
   // -------------------------------------------------------------------------
   discret().clear_state();
-  discret().set_state(0, "displacement", global_state_ptr()->get_dis_np());
-  discret().set_state(0, "velocity", global_state().get_vel_np());
+  discret().set_state(0, "displacement", *global_state_ptr()->get_dis_np());
+  discret().set_state(0, "velocity", *global_state().get_vel_np());
   // -------------------------------------------------------------------------
   // Evaluate Browian (stochastic and damping forces)
   // -------------------------------------------------------------------------
@@ -317,7 +317,7 @@ bool Solid::ModelEvaluator::BrownianDyn::apply_force_stiff_external()
   // set vector values needed by elements
   // -------------------------------------------------------------------------
   discret().clear_state();
-  discret().set_state(0, "displacement", global_state().get_dis_n());
+  discret().set_state(0, "displacement", *global_state().get_dis_n());
   // -------------------------------------------------------------------------
   // Evaluate brownian specific neumann conditions
   // -------------------------------------------------------------------------
@@ -352,8 +352,8 @@ bool Solid::ModelEvaluator::BrownianDyn::apply_force_stiff_brownian()
   // set vector values needed by elements
   // -------------------------------------------------------------------------
   discret().clear_state();
-  discret().set_state(0, "displacement", global_state_ptr()->get_dis_np());
-  discret().set_state(0, "velocity", global_state().get_vel_np());
+  discret().set_state(0, "displacement", *global_state_ptr()->get_dis_np());
+  discret().set_state(0, "velocity", *global_state().get_vel_np());
   // -------------------------------------------------------------------------
   // Evaluate brownian (stochastic and damping) forces
   evaluate_brownian(eval_mat.data(), eval_vec.data());

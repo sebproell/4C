@@ -90,10 +90,10 @@ TSI::Monolithic::Monolithic(MPI_Comm comm, const Teuchos::ParameterList& sdynpar
   if (thermo_field()->tempnp() == nullptr) FOUR_C_THROW("this is nullptr");
 
   if (matchinggrid_)
-    structure_field()->discretization()->set_state(1, "temperature", thermo_field()->tempnp());
+    structure_field()->discretization()->set_state(1, "temperature", *thermo_field()->tempnp());
   else
     structure_field()->discretization()->set_state(
-        1, "temperature", volcoupl_->apply_vector_mapping12(*thermo_field()->tempnp()));
+        1, "temperature", *volcoupl_->apply_vector_mapping12(*thermo_field()->tempnp()));
 
   // setup structural time integrator with initial temperature
   structure_->setup();
@@ -1873,7 +1873,7 @@ void TSI::Monolithic::apply_str_coupl_matrix(
   sparams.set("total time", time());
 
   structure_field()->discretization()->clear_state(true);
-  structure_field()->discretization()->set_state(0, "displacement", structure_field()->dispnp());
+  structure_field()->discretization()->set_state(0, "displacement", *structure_field()->dispnp());
 
   apply_thermo_coupling_state(thermo_field()->tempnp());
 
@@ -2016,7 +2016,7 @@ void TSI::Monolithic::apply_thermo_coupl_matrix(
 
   thermo_field()->discretization()->clear_state(true);
   // set the variables that are needed by the elements
-  thermo_field()->discretization()->set_state(0, "temperature", thermo_field()->tempnp());
+  thermo_field()->discretization()->set_state(0, "temperature", *thermo_field()->tempnp());
 
   apply_struct_coupling_state(structure_field()->dispnp(), vel_);
 
@@ -2107,7 +2107,7 @@ void TSI::Monolithic::apply_thermo_coupl_matrix_conv_bc(
     // clear all states set in discretization
     thermo_field()->discretization()->clear_state(true);
     // set the variables that are needed by the elements
-    thermo_field()->discretization()->set_state(0, "temperature", thermo_field()->tempnp());
+    thermo_field()->discretization()->set_state(0, "temperature", *thermo_field()->tempnp());
     apply_struct_coupling_state(structure_field()->dispnp(), vel_);
 
     // build specific assemble strategy for the thermal-mechanical system matrix
@@ -2765,17 +2765,17 @@ void TSI::Monolithic::apply_struct_coupling_state(
 {
   if (matchinggrid_)
   {
-    if (disp != nullptr) thermo_field()->discretization()->set_state(1, "displacement", disp);
-    if (vel != nullptr) thermo_field()->discretization()->set_state(1, "velocity", vel);
+    if (disp != nullptr) thermo_field()->discretization()->set_state(1, "displacement", *disp);
+    if (vel != nullptr) thermo_field()->discretization()->set_state(1, "velocity", *vel);
   }
   else
   {
     if (disp != nullptr)
       thermo_field()->discretization()->set_state(
-          1, "displacement", volcoupl_->apply_vector_mapping21(*disp));
+          1, "displacement", *volcoupl_->apply_vector_mapping21(*disp));
     if (vel != nullptr)
       thermo_field()->discretization()->set_state(
-          1, "velocity", volcoupl_->apply_vector_mapping21(*vel));
+          1, "velocity", *volcoupl_->apply_vector_mapping21(*vel));
   }
 }  // apply_struct_coupling_state()
 

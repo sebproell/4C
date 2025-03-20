@@ -275,10 +275,10 @@ void FLD::TimIntHDG::gen_alpha_intermediate_values()
 *-----------------------------------------------------------------------*/
 void FLD::TimIntHDG::set_state_tim_int()
 {
-  discret_->set_state(0, "velaf", velaf_);
-  discret_->set_state(1, "intvelaf", intvelaf_);
-  discret_->set_state(1, "intaccam", intaccam_);
-  discret_->set_state(1, "intvelnp", intvelnp_);
+  discret_->set_state(0, "velaf", *velaf_);
+  discret_->set_state(1, "intvelaf", *intvelaf_);
+  discret_->set_state(1, "intaccam", *intaccam_);
+  discret_->set_state(1, "intvelnp", *intvelnp_);
 }
 
 /*----------------------------------------------------------------------*
@@ -422,7 +422,7 @@ std::shared_ptr<std::vector<double>> FLD::TimIntHDG::evaluate_error_compared_to_
     case Inpar::FLUID::shear_flow:
     case Inpar::FLUID::fsi_fluid_pusher:
     case Inpar::FLUID::byfunct:
-      discret_->set_state(1, "intvelnp", intvelnp_);
+      discret_->set_state(1, "intvelnp", *intvelnp_);
       break;
     default:
       break;
@@ -478,8 +478,8 @@ namespace
     // call element routine for interpolate HDG to elements
     Teuchos::ParameterList params;
     params.set<FLD::Action>("action", FLD::interpolate_hdg_to_node);
-    dis.set_state(1, "intvelnp", interiorValues);
-    dis.set_state(0, "velnp", traceValues);
+    dis.set_state(1, "intvelnp", *interiorValues);
+    dis.set_state(0, "velnp", *traceValues);
     std::vector<int> dummy;
     Core::LinAlg::SerialDenseMatrix dummyMat;
     Core::LinAlg::SerialDenseVector dummyVec;

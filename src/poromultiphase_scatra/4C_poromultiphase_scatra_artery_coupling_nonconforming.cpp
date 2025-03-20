@@ -449,9 +449,9 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::evaluate_c
   // set states
   if (contdis_->name() == "porofluid")
   {
-    contdis_->set_state("phinp_fluid", phinp_cont_);
-    contdis_->set_state("phin_fluid", phin_cont_);
-    arterydis_->set_state("one_d_artery_pressure", phinp_art_);
+    contdis_->set_state("phinp_fluid", *phinp_cont_);
+    contdis_->set_state("phin_fluid", *phin_cont_);
+    arterydis_->set_state("one_d_artery_pressure", *phinp_art_);
     if (not evaluate_in_ref_config_ && not contdis_->has_state(1, "velocity field"))
       FOUR_C_THROW(
           "evaluation in current configuration wanted but solid phase velocity not available!");
@@ -459,8 +459,8 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::evaluate_c
   }
   else if (contdis_->name() == "scatra")
   {
-    contdis_->set_state("phinp", phinp_cont_);
-    arterydis_->set_state("one_d_artery_phinp", phinp_art_);
+    contdis_->set_state("phinp", *phinp_cont_);
+    arterydis_->set_state("one_d_artery_phinp", *phinp_art_);
   }
   else
     FOUR_C_THROW(

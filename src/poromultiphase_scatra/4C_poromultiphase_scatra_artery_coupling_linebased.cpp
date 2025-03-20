@@ -1042,8 +1042,8 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::apply_mesh_mov
   }
 
   // set state on artery dis
-  arterydis_->set_state(1, "curr_seg_lengths",
-      std::make_shared<Core::LinAlg::Vector<double>>(*current_seg_lengths_artery_));
+  arterydis_->set_state(
+      1, "curr_seg_lengths", Core::LinAlg::Vector<double>(*current_seg_lengths_artery_));
 }
 
 /*----------------------------------------------------------------------*

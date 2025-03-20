@@ -178,8 +178,8 @@ void FLD::Boxfilter::apply_box_filter(
 
   // set state vector to pass distributed vector to the element
   discret_->clear_state();
-  discret_->set_state("u and p (trial)", velocity);
-  discret_->set_state("T (trial)", scalar);
+  discret_->set_state("u and p (trial)", *velocity);
+  discret_->set_state("T (trial)", *scalar);
 
   // dummies
   Core::LinAlg::SerialDenseMatrix emat1;
@@ -978,7 +978,7 @@ void FLD::Boxfilter::apply_box_filter_scatra(
 
   // set state vector to pass distributed vector to the element
   scatradiscret_->clear_state();
-  scatradiscret_->set_state("scalar", scalar);
+  scatradiscret_->set_state("scalar", *scalar);
 
   // dummies
   Core::LinAlg::SerialDenseMatrix emat1;

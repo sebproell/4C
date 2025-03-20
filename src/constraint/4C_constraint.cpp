@@ -231,11 +231,11 @@ void CONSTRAINTS::Constraint::evaluate_constraint(Teuchos::ParameterList& params
         const std::string action = params.get<std::string>("action");
         std::shared_ptr<Core::LinAlg::Vector<double>> displast =
             params.get<std::shared_ptr<Core::LinAlg::Vector<double>>>("old disp");
-        actdisc_->set_state("displacement", displast);
+        actdisc_->set_state("displacement", *displast);
         initialize(params, systemvector2);
         std::shared_ptr<Core::LinAlg::Vector<double>> disp =
             params.get<std::shared_ptr<Core::LinAlg::Vector<double>>>("new disp");
-        actdisc_->set_state("displacement", disp);
+        actdisc_->set_state("displacement", *disp);
         params.set("action", action);
       }
 

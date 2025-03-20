@@ -151,7 +151,7 @@ void ScaTra::TimIntStationary::avm3_separation()
   Sep_->multiply(false, *phinp_, *fsphinp_);
 
   // set fine-scale vector
-  discret_->set_state("fsphinp", fsphinp_);
+  discret_->set_state("fsphinp", *fsphinp_);
 }
 
 
@@ -163,8 +163,8 @@ void ScaTra::TimIntStationary::add_time_integration_specific_vectors(bool forced
   // call base class routine
   ScaTraTimIntImpl::add_time_integration_specific_vectors(forcedincrementalsolver);
 
-  discret_->set_state("hist", hist_);
-  discret_->set_state("phinp", phinp_);
+  discret_->set_state("hist", *hist_);
+  discret_->set_state("phinp", *phinp_);
 }
 
 

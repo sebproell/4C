@@ -305,7 +305,7 @@ void Utils::Cardiovascular0D::evaluate_d_struct_dp(
 
     std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
         params.get<std::shared_ptr<const Core::LinAlg::Vector<double>>>("new disp");
-    actdisc_->set_state("displacement", disp);
+    actdisc_->set_state("displacement", *disp);
 
     // global and local ID of this bc in the redundant vectors
     std::vector<int> gindex(numdof_per_cond);
@@ -493,11 +493,10 @@ void Utils::Cardiovascular0D::evaluate_d_struct_dp(
 
 /*-----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void Utils::Cardiovascular0D::set_state(const std::string& state,  ///< name of state to set
-    std::shared_ptr<Core::LinAlg::Vector<double>> V                ///< values to set
-)
+void Utils::Cardiovascular0D::set_state(
+    const std::string& state, std::shared_ptr<Core::LinAlg::Vector<double>> V)
 {
-  actdisc_->set_state(state, V);
+  actdisc_->set_state(state, *V);
 }
 
 FOUR_C_NAMESPACE_CLOSE

@@ -352,7 +352,7 @@ void ALE::Ale::evaluate_elements()
   eleparams.set<std::string>("action", element_action_string(aletype_));
   eleparams.set<bool>("use spatial configuration", update_sys_mat_every_step());
 
-  discret_->set_state("dispnp", dispnp_);
+  discret_->set_state("dispnp", *dispnp_);
 
   discret_->evaluate(eleparams, sysmat_, residual_);
   discret_->clear_state();
@@ -529,7 +529,7 @@ void ALE::Ale::prepare_time_step()
   if (locsysman_ != nullptr)
   {
     discret_->clear_state();
-    discret_->set_state("dispnp", dispnp_);
+    discret_->set_state("dispnp", *dispnp_);
     locsysman_->update(time_, {}, Global::Problem::instance()->function_manager());
     discret_->clear_state();
   }
@@ -796,7 +796,7 @@ bool ALE::Ale::evaluate_element_quality()
     Teuchos::ParameterList eleparams;
 
     discret_->clear_state();
-    discret_->set_state("dispnp", dispnp_);
+    discret_->set_state("dispnp", *dispnp_);
 
     for (int i = 0; i < discretization()->num_my_row_elements(); ++i)
     {

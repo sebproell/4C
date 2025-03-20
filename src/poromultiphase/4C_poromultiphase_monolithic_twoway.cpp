@@ -285,7 +285,7 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::evaluate(
   if (solve_structure_)
   {
     // (2) set fluid solution in structure field
-    structure_field()->discretization()->set_state(1, "porofluid", fluid_field()->phinp());
+    structure_field()->discretization()->set_state(1, "porofluid", *fluid_field()->phinp());
 
     // (3) evaluate structure
     if (firstcall)  // first call (iterinc_ = 0) --> sx = 0
@@ -557,9 +557,9 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::apply_str_coupl_matrix(
     sparams.set<double>("total time", time());
 
     structure_field()->discretization()->clear_state();
-    structure_field()->discretization()->set_state(0, "displacement", structure_field()->dispnp());
-    structure_field()->discretization()->set_state(0, "velocity", structure_field()->velnp());
-    structure_field()->discretization()->set_state(1, "porofluid", fluid_field()->phinp());
+    structure_field()->discretization()->set_state(0, "displacement", *structure_field()->dispnp());
+    structure_field()->discretization()->set_state(0, "velocity", *structure_field()->velnp());
+    structure_field()->discretization()->set_state(1, "porofluid", *fluid_field()->phinp());
 
     // build specific assemble strategy for mechanical-fluid system matrix
     // from the point of view of structure_field:

@@ -304,7 +304,7 @@ void Lubrication::TimIntImpl::set_height_field_pure_lub(const int nds)
     }
   }
   // provide lubrication discretization with height
-  discret_->set_state(nds, "height", height);
+  discret_->set_state(nds, "height", *height);
 
 }  // Lubrication::TimIntImpl::set_height_field_pure_lub
 
@@ -348,7 +348,7 @@ void Lubrication::TimIntImpl::set_average_velocity_field_pure_lub(const int nds)
     }
   }
   // provide lubrication discretization with velocity
-  discret_->set_state(nds, "av_tang_vel", vel);
+  discret_->set_state(nds, "av_tang_vel", *vel);
 
 }  // Lubrication::TimIntImpl::set_average_velocity_field_pure_lub
 /*----------------------------------------------------------------------*
@@ -443,7 +443,7 @@ void Lubrication::TimIntImpl::apply_mesh_movement(
     nds_disp_ = nds;
 
     // provide lubrication discretization with displacement field
-    discret_->set_state(nds_disp_, "dispnp", dispnp);
+    discret_->set_state(nds_disp_, "dispnp", *dispnp);
   }  // if (isale_)
 
   return;
@@ -852,7 +852,7 @@ void Lubrication::TimIntImpl::set_height_field(
     const int nds, std::shared_ptr<const Core::LinAlg::Vector<double>> gap)
 {
   if (gap == nullptr) FOUR_C_THROW("Gap vector is empty.");
-  discret_->set_state(nds, "height", gap);
+  discret_->set_state(nds, "height", *gap);
 
   return;
 }
@@ -865,7 +865,7 @@ void Lubrication::TimIntImpl::set_height_dot_field(
     const int nds, std::shared_ptr<const Core::LinAlg::Vector<double>> heightdot)
 {
   if (heightdot == nullptr) FOUR_C_THROW("hdot vector is empty.");
-  discret_->set_state(nds, "heightdot", heightdot);
+  discret_->set_state(nds, "heightdot", *heightdot);
 
   return;
 }
@@ -879,7 +879,7 @@ void Lubrication::TimIntImpl::set_relative_velocity_field(
   if (nds >= discret_->num_dof_sets())
     FOUR_C_THROW("Too few dofsets on lubrication discretization!");
   if (rel_vel == nullptr) FOUR_C_THROW("no velocity provided.");
-  discret_->set_state(nds, "rel_tang_vel", rel_vel);
+  discret_->set_state(nds, "rel_tang_vel", *rel_vel);
 }
 
 /*----------------------------------------------------------------------*
@@ -892,7 +892,7 @@ void Lubrication::TimIntImpl::set_average_velocity_field(
     FOUR_C_THROW("Too few dofsets on lubrication discretization!");
   if (av_vel == nullptr) FOUR_C_THROW("no velocity provided");
 
-  discret_->set_state(nds, "av_tang_vel", av_vel);
+  discret_->set_state(nds, "av_tang_vel", *av_vel);
 }
 
 /*----------------------------------------------------------------------*
@@ -1069,7 +1069,7 @@ void Lubrication::TimIntImpl::evaluate_error_compared_to_analytical_sol()
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state("prenp", prenp_);
+  discret_->set_state("prenp", *prenp_);
 
   // get (squared) error values
   std::shared_ptr<Core::LinAlg::SerialDenseVector> errors =
@@ -1161,7 +1161,7 @@ void Lubrication::TimIntImpl::output_mean_pressures(const int num)
   {
     // set pressure values needed by elements
     discret_->clear_state();
-    discret_->set_state("prenp", prenp_);
+    discret_->set_state("prenp", *prenp_);
     // set action for elements
     Teuchos::ParameterList eleparams;
     eleparams.set<Lubrication::Action>("action", Lubrication::calc_mean_pressures);

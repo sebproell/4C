@@ -672,7 +672,7 @@ void FS3I::PartFS3I::set_fsi_solution()
 void FS3I::PartFS3I::set_struct_scatra_solution() const
 {
   fsi_->structure_field()->discretization()->set_state(
-      1, "scalarfield", structure_scalar_to_structure(scatravec_[1]->scatra_field()->phinp()));
+      1, "scalarfield", *structure_scalar_to_structure(scatravec_[1]->scatra_field()->phinp()));
 }
 
 

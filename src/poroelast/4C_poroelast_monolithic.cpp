@@ -1024,8 +1024,8 @@ void PoroElast::Monolithic::apply_str_coupl_matrix(
   }
 
   structure_field()->discretization()->clear_state();
-  structure_field()->discretization()->set_state(0, "displacement", structure_field()->dispnp());
-  structure_field()->discretization()->set_state(0, "velocity", structure_field()->velnp());
+  structure_field()->discretization()->set_state(0, "displacement", *structure_field()->dispnp());
+  structure_field()->discretization()->set_state(0, "velocity", *structure_field()->velnp());
 
   // build specific assemble strategy for mechanical-fluid system matrix
   // from the point of view of structure_field:
@@ -1063,27 +1063,27 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
   fluid_field()->discretization()->clear_state();
 
   // set general vector values needed by elements
-  fluid_field()->discretization()->set_state(0, "dispnp", fluid_field()->dispnp());
-  fluid_field()->discretization()->set_state(0, "dispn", fluid_field()->dispn());
-  fluid_field()->discretization()->set_state(0, "gridv", fluid_field()->grid_vel());
-  fluid_field()->discretization()->set_state(0, "gridvn", fluid_field()->grid_veln());
-  fluid_field()->discretization()->set_state(0, "veln", fluid_field()->veln());
-  fluid_field()->discretization()->set_state(0, "accnp", fluid_field()->accnp());
-  fluid_field()->discretization()->set_state(0, "accam", fluid_field()->accam());
-  fluid_field()->discretization()->set_state(0, "accn", fluid_field()->accn());
+  fluid_field()->discretization()->set_state(0, "dispnp", *fluid_field()->dispnp());
+  fluid_field()->discretization()->set_state(0, "dispn", *fluid_field()->dispn());
+  fluid_field()->discretization()->set_state(0, "gridv", *fluid_field()->grid_vel());
+  fluid_field()->discretization()->set_state(0, "gridvn", *fluid_field()->grid_veln());
+  fluid_field()->discretization()->set_state(0, "veln", *fluid_field()->veln());
+  fluid_field()->discretization()->set_state(0, "accnp", *fluid_field()->accnp());
+  fluid_field()->discretization()->set_state(0, "accam", *fluid_field()->accam());
+  fluid_field()->discretization()->set_state(0, "accn", *fluid_field()->accn());
 
-  fluid_field()->discretization()->set_state(0, "scaaf", fluid_field()->scaaf());
+  fluid_field()->discretization()->set_state(0, "scaaf", *fluid_field()->scaaf());
 
-  fluid_field()->discretization()->set_state(0, "hist", fluid_field()->hist());
+  fluid_field()->discretization()->set_state(0, "hist", *fluid_field()->hist());
 
   // set scheme-specific element parameters and vector values
   if (fluid_field()->tim_int_scheme() == Inpar::FLUID::timeint_npgenalpha or
       fluid_field()->tim_int_scheme() == Inpar::FLUID::timeint_npgenalpha)
-    fluid_field()->discretization()->set_state(0, "velaf", fluid_field()->velaf());
+    fluid_field()->discretization()->set_state(0, "velaf", *fluid_field()->velaf());
   else
-    fluid_field()->discretization()->set_state(0, "velaf", fluid_field()->velnp());
+    fluid_field()->discretization()->set_state(0, "velaf", *fluid_field()->velnp());
 
-  fluid_field()->discretization()->set_state(0, "velnp", fluid_field()->velnp());
+  fluid_field()->discretization()->set_state(0, "velnp", *fluid_field()->velnp());
 
   // build specific assemble strategy for the fluid-mechanical system matrix
   // from the point of view of fluid_field:
@@ -1112,10 +1112,10 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
     params.set<Inpar::FLUID::PhysicalType>("Physical Type", fluid_field()->physical_type());
 
     fluid_field()->discretization()->clear_state();
-    fluid_field()->discretization()->set_state(0, "dispnp", fluid_field()->dispnp());
-    fluid_field()->discretization()->set_state(0, "gridv", fluid_field()->grid_vel());
-    fluid_field()->discretization()->set_state(0, "velnp", fluid_field()->velnp());
-    fluid_field()->discretization()->set_state(0, "scaaf", fluid_field()->scaaf());
+    fluid_field()->discretization()->set_state(0, "dispnp", *fluid_field()->dispnp());
+    fluid_field()->discretization()->set_state(0, "gridv", *fluid_field()->grid_vel());
+    fluid_field()->discretization()->set_state(0, "velnp", *fluid_field()->velnp());
+    fluid_field()->discretization()->set_state(0, "scaaf", *fluid_field()->scaaf());
 
     fluid_field()->discretization()->evaluate_condition(params, fluidstrategy, "PoroPartInt");
 
@@ -1131,8 +1131,8 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
     params.set<Inpar::FLUID::PhysicalType>("Physical Type", fluid_field()->physical_type());
 
     fluid_field()->discretization()->clear_state();
-    fluid_field()->discretization()->set_state(0, "dispnp", fluid_field()->dispnp());
-    fluid_field()->discretization()->set_state(0, "velnp", fluid_field()->velnp());
+    fluid_field()->discretization()->set_state(0, "dispnp", *fluid_field()->dispnp());
+    fluid_field()->discretization()->set_state(0, "velnp", *fluid_field()->velnp());
 
     fluid_field()->discretization()->evaluate_condition(params, fluidstrategy, "PoroPresInt");
 

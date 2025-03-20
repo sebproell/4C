@@ -151,7 +151,7 @@ void Solid::Dbc::update_loc_sys_manager()
 {
   if (!is_loc_sys()) return;
 
-  discret_ptr()->set_state("dispnp", g_state().get_dis_np());
+  discret_ptr()->set_state("dispnp", *g_state().get_dis_np());
   locsysman_ptr_->update(
       g_state().get_time_np(), {}, Global::Problem::instance()->function_manager());
   discret_ptr()->clear_state();

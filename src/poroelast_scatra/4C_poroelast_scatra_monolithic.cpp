@@ -1074,17 +1074,17 @@ void PoroElastScaTra::PoroScatraMono::evaluate_od_block_mat_poro()
   porofluiddis->clear_state();
 
   // set general vector values needed by elements
-  porofluiddis->set_state(0, "dispnp", poro_field()->fluid_field()->dispnp());
-  porofluiddis->set_state(0, "gridv", poro_field()->fluid_field()->grid_vel());
-  porofluiddis->set_state(0, "veln", poro_field()->fluid_field()->veln());
-  porofluiddis->set_state(0, "accnp", poro_field()->fluid_field()->accnp());
-  porofluiddis->set_state(0, "hist", poro_field()->fluid_field()->hist());
+  porofluiddis->set_state(0, "dispnp", *poro_field()->fluid_field()->dispnp());
+  porofluiddis->set_state(0, "gridv", *poro_field()->fluid_field()->grid_vel());
+  porofluiddis->set_state(0, "veln", *poro_field()->fluid_field()->veln());
+  porofluiddis->set_state(0, "accnp", *poro_field()->fluid_field()->accnp());
+  porofluiddis->set_state(0, "hist", *poro_field()->fluid_field()->hist());
 
   poro_field()->fluid_field()->discretization()->set_state(
-      0, "scaaf", poro_field()->fluid_field()->scaaf());
+      0, "scaaf", *poro_field()->fluid_field()->scaaf());
 
-  porofluiddis->set_state(0, "velaf", poro_field()->fluid_field()->velnp());
-  porofluiddis->set_state(0, "velnp", poro_field()->fluid_field()->velnp());
+  porofluiddis->set_state(0, "velaf", *poro_field()->fluid_field()->velnp());
+  porofluiddis->set_state(0, "velnp", *poro_field()->fluid_field()->velnp());
 
   // build specific assemble strategy for the fluid-mechanical system matrix
   // from the point of view of fluid_field:
@@ -1119,9 +1119,9 @@ void PoroElastScaTra::PoroScatraMono::evaluate_od_block_mat_poro()
 
   poro_field()->structure_field()->discretization()->clear_state();
   poro_field()->structure_field()->discretization()->set_state(
-      0, "displacement", poro_field()->structure_field()->dispnp());
+      0, "displacement", *poro_field()->structure_field()->dispnp());
   poro_field()->structure_field()->discretization()->set_state(
-      0, "velocity", poro_field()->structure_field()->velnp());
+      0, "velocity", *poro_field()->structure_field()->velnp());
 
   // build specific assemble strategy for mechanical-fluid system matrix
   // from the point of view of structure_field:
@@ -1157,8 +1157,8 @@ void PoroElastScaTra::PoroScatraMono::evaluate_od_block_mat_scatra()
   sparams_struct.set("total time", time());
 
   scatra_field()->discretization()->clear_state();
-  scatra_field()->discretization()->set_state(0, "hist", scatra_field()->hist());
-  scatra_field()->discretization()->set_state(0, "phinp", scatra_field()->phinp());
+  scatra_field()->discretization()->set_state(0, "hist", *scatra_field()->hist());
+  scatra_field()->discretization()->set_state(0, "phinp", *scatra_field()->phinp());
 
   // build specific assemble strategy for mechanical-fluid system matrix
   // from the point of view of structure_field:
@@ -1190,8 +1190,8 @@ void PoroElastScaTra::PoroScatraMono::evaluate_od_block_mat_scatra()
   sparams_fluid.set("total time", time());
 
   scatra_field()->discretization()->clear_state();
-  scatra_field()->discretization()->set_state(0, "hist", scatra_field()->hist());
-  scatra_field()->discretization()->set_state(0, "phinp", scatra_field()->phinp());
+  scatra_field()->discretization()->set_state(0, "hist", *scatra_field()->hist());
+  scatra_field()->discretization()->set_state(0, "phinp", *scatra_field()->phinp());
 
   // build specific assemble strategy for mechanical-fluid system matrix
   // from the point of view of structure_field:

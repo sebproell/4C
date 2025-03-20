@@ -51,7 +51,7 @@ void FLD::TimIntRedModels::init()
   // create the volumetric-surface-flow condition
   if (alefluid_)
   {
-    discret_->set_state("dispnp", dispn_);
+    discret_->set_state("dispnp", *dispn_);
   }
 
   vol_surf_flow_bc_ = std::make_shared<Utils::FluidVolumetricSurfaceFlowWrapper>(discret_, dta_);
@@ -77,10 +77,10 @@ void FLD::TimIntRedModels::init()
           Global::Problem::instance()->output_control_file(),
           Global::Problem::instance()->spatial_approximation_type());
       discret_->clear_state();
-      discret_->set_state("velaf", zeros_);
+      discret_->set_state("velaf", *zeros_);
       if (alefluid_)
       {
-        discret_->set_state("dispnp", dispnp_);
+        discret_->set_state("dispnp", *dispnp_);
       }
       coupled3D_redDbc_art_ =
           std::make_shared<Utils::FluidCouplingWrapper<Adapter::ArtNet>>(discret_,
@@ -96,10 +96,10 @@ void FLD::TimIntRedModels::init()
           Global::Problem::instance()->output_control_file(),
           Global::Problem::instance()->spatial_approximation_type());
       discret_->clear_state();
-      discret_->set_state("velaf", zeros_);
+      discret_->set_state("velaf", *zeros_);
       if (alefluid_)
       {
-        discret_->set_state("dispnp", dispnp_);
+        discret_->set_state("dispnp", *dispnp_);
       }
       coupled3D_redDbc_airways_ =
           std::make_shared<Utils::FluidCouplingWrapper<Airway::RedAirwayImplicitTimeInt>>(discret_,
@@ -138,7 +138,7 @@ void FLD::TimIntRedModels::do_problem_specific_boundary_conditions()
 {
   if (alefluid_)
   {
-    discret_->set_state("dispnp", dispnp_);
+    discret_->set_state("dispnp", *dispnp_);
   }
 
   // Check if one-dimensional artery network problem exist
@@ -164,12 +164,12 @@ void FLD::TimIntRedModels::update_3d_to_reduced_mat_and_rhs()
 {
   discret_->clear_state();
 
-  discret_->set_state("velaf", velnp_);
-  discret_->set_state("hist", hist_);
+  discret_->set_state("velaf", *velnp_);
+  discret_->set_state("hist", *hist_);
 
   if (alefluid_)
   {
-    discret_->set_state("dispnp", dispnp_);
+    discret_->set_state("dispnp", *dispnp_);
   }
 
   // Check if one-dimensional artery network problem exist
@@ -437,10 +437,10 @@ void FLD::TimIntRedModels::prepare_time_step()
   FluidImplicitTimeInt::prepare_time_step();
 
   discret_->clear_state();
-  discret_->set_state("velaf", velnp_);
-  discret_->set_state("hist", hist_);
+  discret_->set_state("velaf", *velnp_);
+  discret_->set_state("hist", *hist_);
 
-  if (alefluid_) discret_->set_state("dispnp", dispnp_);
+  if (alefluid_) discret_->set_state("dispnp", *dispnp_);
 
   // Check if one-dimensional artery network problem exist
   if (ART_timeInt_ != nullptr)

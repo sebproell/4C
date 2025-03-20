@@ -275,10 +275,10 @@ void FLD::TimIntHDGWeakComp::gen_alpha_intermediate_values()
 *-----------------------------------------------------------------------*/
 void FLD::TimIntHDGWeakComp::set_state_tim_int()
 {
-  discret_->set_state(0, "velaf", velaf_);
-  discret_->set_state(1, "intvelaf", intvelaf_);
-  discret_->set_state(1, "intaccam", intaccam_);
-  discret_->set_state(1, "intvelnp", intvelnp_);
+  discret_->set_state(0, "velaf", *velaf_);
+  discret_->set_state(1, "intvelaf", *intvelaf_);
+  discret_->set_state(1, "intaccam", *intaccam_);
+  discret_->set_state(1, "intvelnp", *intvelnp_);
 }
 
 /*----------------------------------------------------------------------*
@@ -337,7 +337,7 @@ void FLD::TimIntHDGWeakComp::iter_update(
 
   // set state
   set_state_tim_int();
-  discret_->set_state(0, "globaltraceinc", increment);
+  discret_->set_state(0, "globaltraceinc", *increment);
 
   for (int el = 0; el < discret_->num_my_col_elements(); ++el)
   {
@@ -502,7 +502,7 @@ FLD::TimIntHDGWeakComp::evaluate_error_compared_to_analytical_sol()
     }
     case Inpar::FLUID::byfunct:
     {
-      discret_->set_state(1, "intvelnp", intvelnp_);
+      discret_->set_state(1, "intvelnp", *intvelnp_);
 
       // std::vector containing
       // [0]: absolute L2 mixed variable error
@@ -525,7 +525,7 @@ FLD::TimIntHDGWeakComp::evaluate_error_compared_to_analytical_sol()
       // set scheme-specific element parameters and vector values
       set_state_tim_int();
 
-      if (alefluid_) discret_->set_state(2, "dispnp", dispnp_);
+      if (alefluid_) discret_->set_state(2, "dispnp", *dispnp_);
 
       // get (squared) error values
       // 0: delta mixed variable for L2-error norm
@@ -671,8 +671,8 @@ namespace
     // call element routine for interpolate HDG to elements
     Teuchos::ParameterList params;
     params.set<FLD::Action>("action", FLD::interpolate_hdg_to_node);
-    dis.set_state(1, "intvelnp", interiorValues);
-    dis.set_state(0, "velnp", traceValues);
+    dis.set_state(1, "intvelnp", *interiorValues);
+    dis.set_state(0, "velnp", *traceValues);
     std::vector<int> dummy;
     Core::LinAlg::SerialDenseMatrix dummyMat;
     Core::LinAlg::SerialDenseVector dummyVec;

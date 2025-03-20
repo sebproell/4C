@@ -1162,7 +1162,7 @@ namespace FLD
     // this is a dummy, should be zero is written in the first components of interpolVec
     intvelnp_->put_scalar(0.0);
     // set dummy
-    discret_->set_state(1, "intvelnp", intvelnp_);
+    discret_->set_state(1, "intvelnp", *intvelnp_);
 
     // for 2nd evaluate
     const Epetra_Map* intdofrowmap = discret_->dof_row_map(1);

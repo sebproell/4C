@@ -130,7 +130,7 @@ void ScaTra::ScaTraTimIntLoma::compute_initial_mass()
 {
   // set scalar values needed by elements
   discret_->clear_state();
-  discret_->set_state("phinp", phin_);
+  discret_->set_state("phinp", *phin_);
   // set action for elements
   Teuchos::ParameterList eleparams;
   Core::Utils::add_enum_class_to_parameter_list<ScaTra::Action>(
@@ -172,7 +172,7 @@ void ScaTra::ScaTraTimIntLoma::compute_therm_pressure_from_mass_cons()
 {
   // set scalar values needed by elements
   discret_->clear_state();
-  discret_->set_state("phinp", phinp_);
+  discret_->set_state("phinp", *phinp_);
   // set action for elements
   Teuchos::ParameterList eleparams;
   Core::Utils::add_enum_class_to_parameter_list<ScaTra::Action>(

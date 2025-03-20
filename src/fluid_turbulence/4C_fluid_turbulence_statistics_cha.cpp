@@ -1948,10 +1948,10 @@ void FLD::TurbulenceStatisticsCha::evaluate_integral_mean_values_in_planes()
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state("u and p (n+1,converged)", meanvelnp_);
+  discret_->set_state("u and p (n+1,converged)", *meanvelnp_);
   if (alefluid_)
   {
-    discret_->set_state("dispnp", dispnp_);
+    discret_->set_state("dispnp", *dispnp_);
   }
 
   // call loop over elements
@@ -2181,8 +2181,8 @@ void FLD::TurbulenceStatisticsCha::evaluate_loma_integral_mean_values_in_planes(
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state("u and p (n+1,converged)", meanvelnp_);
-  discret_->set_state("scalar (n+1,converged)", meanscanp_);
+  discret_->set_state("u and p (n+1,converged)", *meanvelnp_);
+  discret_->set_state("scalar (n+1,converged)", *meanscanp_);
 
   // call loop over elements
   discret_->evaluate(eleparams, nullptr, nullptr, nullptr, nullptr, nullptr);
@@ -2397,8 +2397,8 @@ void FLD::TurbulenceStatisticsCha::evaluate_scatra_integral_mean_values_in_plane
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state("u and p (n+1,converged)", meanvelnp_);
-  discret_->set_state("scalar (n+1,converged)", meanscanp_);
+  discret_->set_state("u and p (n+1,converged)", *meanvelnp_);
+  discret_->set_state("scalar (n+1,converged)", *meanscanp_);
 
   // call loop over elements
   discret_->evaluate(eleparams, nullptr, nullptr, nullptr, nullptr, nullptr);
@@ -2848,9 +2848,9 @@ void FLD::TurbulenceStatisticsCha::add_model_params_multifractal(
 
   // set state vectors for element call
   discret_->clear_state();
-  discret_->set_state("velnp", velnp);
+  discret_->set_state("velnp", *velnp);
   if (fsvelnp == nullptr) FOUR_C_THROW("Haven't got fine-scale velocity!");
-  discret_->set_state("fsvelnp", fsvelnp);
+  discret_->set_state("fsvelnp", *fsvelnp);
 
   // call loop over elements to compute means
   discret_->evaluate(paramsele, nullptr, nullptr, nullptr, nullptr, nullptr);
@@ -3074,7 +3074,7 @@ void FLD::TurbulenceStatisticsCha::evaluate_residuals(
              statevecs.begin();
         state != statevecs.end(); ++state)
     {
-      discret_->set_state(state->first, state->second);
+      discret_->set_state(state->first, *state->second);
     }
 
     if (myxwall_ != nullptr) myxwall_->set_x_wall_params(eleparams_);
@@ -3119,7 +3119,7 @@ void FLD::TurbulenceStatisticsCha::evaluate_residuals(
                scatrastatevecs.begin();
           state != scatrastatevecs.end(); ++state)
       {
-        scatradiscret_->set_state(state->first, state->second);
+        scatradiscret_->set_state(state->first, *state->second);
       }
 
       // call loop over elements to compute means

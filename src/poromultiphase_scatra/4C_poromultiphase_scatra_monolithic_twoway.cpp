@@ -603,9 +603,9 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::apply_scatra_st
 
     scatra_algo()->scatra_field()->discretization()->clear_state();
     scatra_algo()->scatra_field()->discretization()->set_state(
-        0, "hist", scatra_algo()->scatra_field()->hist());
+        0, "hist", *scatra_algo()->scatra_field()->hist());
     scatra_algo()->scatra_field()->discretization()->set_state(
-        0, "phinp", scatra_algo()->scatra_field()->phinp());
+        0, "phinp", *scatra_algo()->scatra_field()->phinp());
 
     // build specific assemble strategy for mechanical-fluid system matrix
     // from the point of view of structure_field:
@@ -649,9 +649,9 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::
 
   scatra_algo()->scatra_field()->discretization()->clear_state();
   scatra_algo()->scatra_field()->discretization()->set_state(
-      0, "hist", scatra_algo()->scatra_field()->hist());
+      0, "hist", *scatra_algo()->scatra_field()->hist());
   scatra_algo()->scatra_field()->discretization()->set_state(
-      0, "phinp", scatra_algo()->scatra_field()->phinp());
+      0, "phinp", *scatra_algo()->scatra_field()->phinp());
 
 
   // build specific assemble strategy for mechanical-fluid system matrix
@@ -1623,11 +1623,11 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWayArteryCoupling::
 
   scatramsht_->art_scatra_field()->discretization()->clear_state();
   scatramsht_->art_scatra_field()->discretization()->set_state(
-      0, "phinp", scatramsht_->art_scatra_field()->phinp());
+      0, "phinp", *scatramsht_->art_scatra_field()->phinp());
   scatramsht_->art_scatra_field()->discretization()->set_state(
-      0, "hist", scatramsht_->art_scatra_field()->hist());
+      0, "hist", *scatramsht_->art_scatra_field()->hist());
   scatramsht_->art_scatra_field()->discretization()->set_state(
-      2, "one_d_artery_pressure", poro_field()->fluid_field()->art_net_tim_int()->pressurenp());
+      2, "one_d_artery_pressure", *poro_field()->fluid_field()->art_net_tim_int()->pressurenp());
 
   // build specific assemble strategy for mechanical-fluid system matrix
   Core::FE::AssembleStrategy artscatrastrategy_artery(0,  // scatradofset for row

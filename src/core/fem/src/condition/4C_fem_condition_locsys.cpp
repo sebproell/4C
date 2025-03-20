@@ -562,8 +562,8 @@ void Core::Conditions::LocsysManager::calc_rotation_vector_for_normal_system(
   // Take care for "negative times", where no information about dispnp_ is available
   if (time < 0.0)
   {
-    std::shared_ptr<Core::LinAlg::Vector<double>> zeroVector =
-        Core::LinAlg::create_vector(*discret().dof_row_map(), true);
+    // TODO is the memory management still working?
+    LinAlg::Vector<double> zeroVector(*discret().dof_row_map(), true);
     discret_.set_state("dispnp", zeroVector);
   }
 

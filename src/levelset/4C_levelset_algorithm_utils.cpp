@@ -77,9 +77,9 @@ void ScaTra::LevelSetAlgorithm::add_problem_specific_parameters_and_vectors(
     if (reinitaction_ == Inpar::ScaTra::reinitaction_sussman)
     {
       // set initial phi, i.e., solution of level-set equation
-      discret_->set_state("phizero", initialphireinit_);
+      discret_->set_state("phizero", *initialphireinit_);
       // TODO: RM if not needed
-      discret_->set_state("phin", phin_);
+      discret_->set_state("phin", *phin_);
 
 #ifndef USE_PHIN_FOR_VEL
       if (useprojectedreinitvel_ == Inpar::ScaTra::vel_reinit_node_based)
@@ -268,8 +268,8 @@ void ScaTra::LevelSetAlgorithm::evaluate_error_compared_to_analytical_sol()
 
         // set vector values needed by elements
         discret_->clear_state();
-        discret_->set_state("phinp", phinp_);
-        discret_->set_state("phiref", phiref);
+        discret_->set_state("phinp", *phinp_);
+        discret_->set_state("phiref", *phiref);
 
         // get error and volume
         std::shared_ptr<Core::LinAlg::SerialDenseVector> errors =
@@ -453,8 +453,8 @@ void ScaTra::LevelSetAlgorithm::apply_contact_point_boundary_condition()
   }
 
   // update velocity vectors
-  discret_->set_state(nds_vel(), "convective velocity field", convel_new);
-  discret_->set_state(nds_vel(), "velocity field", convel_new);
+  discret_->set_state(nds_vel(), "convective velocity field", *convel_new);
+  discret_->set_state(nds_vel(), "velocity field", *convel_new);
 
   return;
 }
@@ -896,8 +896,8 @@ void ScaTra::LevelSetAlgorithm::manipulate_fluid_field_for_gfunc()
   }
 
   // update velocity vectors
-  discret_->set_state(nds_vel(), "convective velocity field", conveltmp);
-  discret_->set_state(nds_vel(), "velocity field", conveltmp);
+  discret_->set_state(nds_vel(), "convective velocity field", *conveltmp);
+  discret_->set_state(nds_vel(), "velocity field", *conveltmp);
 
 
   return;
@@ -911,7 +911,7 @@ void ScaTra::LevelSetAlgorithm::mass_center_using_smoothing()
 {
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state("phinp", phinp_);
+  discret_->set_state("phinp", *phinp_);
 
   // create the parameters for the error calculation
   Teuchos::ParameterList eleparams;

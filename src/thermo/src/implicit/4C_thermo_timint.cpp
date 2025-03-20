@@ -210,8 +210,8 @@ void Thermo::TimInt::determine_capa_consist_temp_rate()
     // set vector values needed by elements
     discret_->clear_state();
     // set_state(0,...) in case of multiple dofsets (e.g. TSI)
-    discret_->set_state(0, "residual temperature", zeros_);
-    discret_->set_state(0, "temperature", (*temp_)(0));
+    discret_->set_state(0, "residual temperature", *zeros_);
+    discret_->set_state(0, "temperature", *(*temp_)(0));
 
     // calculate the capacity matrix onto tang_, instead of buildung 2 matrices
     discret_->evaluate(p, nullptr, tang_, fint, nullptr, nullptr);
@@ -416,7 +416,7 @@ void Thermo::TimInt::write_runtime_output()
       p.set<Thermo::Action>("action", Thermo::calc_thermo_energy);
 
       discret_->clear_state();
-      discret_->set_state(0, "temperature", (*temp_)(0));
+      discret_->set_state(0, "temperature", *(*temp_)(0));
 
       std::shared_ptr<Core::LinAlg::SerialDenseVector> energies =
           std::make_shared<Core::LinAlg::SerialDenseVector>(1);
@@ -592,8 +592,8 @@ void Thermo::TimInt::output_heatflux_tempgrad(bool& datawritten)
   // set vector values needed by elements
   discret_->clear_state();
   // set_state(0,...) in case of multiple dofsets (e.g. TSI)
-  discret_->set_state(0, "residual temperature", zeros_);
-  discret_->set_state(0, "temperature", (*temp_)(0));
+  discret_->set_state(0, "residual temperature", *zeros_);
+  discret_->set_state(0, "temperature", *(*temp_)(0));
 
   auto heatflux = std::make_shared<Core::LinAlg::Vector<double>>(*discret_->dof_row_map(), true);
 
@@ -680,7 +680,7 @@ void Thermo::TimInt::apply_force_external(const double time,   //!< evaluation t
   // set vector values needed by elements
   discret_->clear_state();
   // set_state(0,...) in case of multiple dofsets (e.g. TSI)
-  discret_->set_state(0, "temperature", temp);
+  discret_->set_state(0, "temperature", *temp);
   // get load vector
   discret_->evaluate_neumann(p, fext);
   discret_->clear_state();
@@ -721,8 +721,8 @@ void Thermo::TimInt::apply_force_external_conv(Teuchos::ParameterList& p,
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state(0, "old temperature", tempn);  // T_n (*temp_)(0)
-  discret_->set_state(0, "temperature", temp);       // T_{n+1} tempn_
+  discret_->set_state(0, "old temperature", *tempn);  // T_n (*temp_)(0)
+  discret_->set_state(0, "temperature", *temp);       // T_{n+1} tempn_
 
   // get load vector
   // use general version of evaluate_condition()
@@ -758,8 +758,8 @@ void Thermo::TimInt::apply_force_tang_internal(
   // set vector values needed by elements
   discret_->clear_state();
   // set_state(0,...) in case of multiple dofsets (e.g. TSI)
-  discret_->set_state(0, "residual temperature", tempi);
-  discret_->set_state(0, "temperature", temp);
+  discret_->set_state(0, "residual temperature", *tempi);
+  discret_->set_state(0, "temperature", *temp);
 
   discret_->evaluate(p, tang, nullptr, fint, nullptr, nullptr);
 
@@ -795,10 +795,10 @@ void Thermo::TimInt::apply_force_tang_internal(
   // set vector values needed by elements
   discret_->clear_state();
   // set_state(0,...) in case of multiple dofsets (e.g. TSI)
-  discret_->set_state(0, "residual temperature", tempi);
-  discret_->set_state(0, "temperature", temp);
+  discret_->set_state(0, "residual temperature", *tempi);
+  discret_->set_state(0, "temperature", *temp);
   // required for linearization of T-dependent capacity
-  discret_->set_state(0, "last temperature", (*temp_)(0));
+  discret_->set_state(0, "last temperature", *(*temp_)(0));
 
   // in case of genalpha extract midpoint temperature rate R_{n+alpha_m}
   // extract it after ClearState() is called.
@@ -806,7 +806,7 @@ void Thermo::TimInt::apply_force_tang_internal(
   {
     std::shared_ptr<const Core::LinAlg::Vector<double>> ratem =
         p.get<std::shared_ptr<const Core::LinAlg::Vector<double>>>("mid-temprate");
-    if (ratem != nullptr) discret_->set_state(0, "mid-temprate", ratem);
+    if (ratem != nullptr) discret_->set_state(0, "mid-temprate", *ratem);
   }
 
   // call the element evaluate()
@@ -841,8 +841,8 @@ void Thermo::TimInt::apply_force_internal(
   // set vector values needed by elements
   discret_->clear_state();
   // set_state(0,...) in case of multiple dofsets (e.g. TSI)
-  discret_->set_state(0, "residual temperature", tempi);
-  discret_->set_state(0, "temperature", temp);
+  discret_->set_state(0, "residual temperature", *tempi);
+  discret_->set_state(0, "temperature", *temp);
 
   // call the element evaluate()
   discret_->evaluate(p, nullptr, nullptr, fint, nullptr, nullptr);
@@ -952,7 +952,7 @@ std::shared_ptr<std::vector<double>> Thermo::TimInt::evaluate_error_compared_to_
       eleparams.set<Thermo::CalcError>("calculate error", calcerror_);
       eleparams.set<int>("error function number", errorfunctno_);
 
-      discret_->set_state("temperature", tempn_);
+      discret_->set_state("temperature", *tempn_);
 
       // get (squared) error values
       // 0: delta temperature for L2-error norm

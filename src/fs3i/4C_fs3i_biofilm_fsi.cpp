@@ -453,7 +453,7 @@ void FS3I::BiofilmFSI::inner_timeloop()
     Teuchos::ParameterList eleparams;
     eleparams.set("action", "calc_cur_nodal_normals");
     strudis->clear_state();
-    strudis->set_state("displacement", fsi_->structure_field()->dispnp());
+    strudis->set_state("displacement", *fsi_->structure_field()->dispnp());
     strudis->evaluate_condition(
         eleparams, nullptr, nullptr, nodalnormals, nullptr, nullptr, "FSICoupling");
     strudis->clear_state();

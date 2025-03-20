@@ -204,7 +204,7 @@ void SSI::ScatraStructureOffDiagCoupling::evaluate_off_diag_block_structure_scat
   structure_->discretization()->clear_state();
 
   // set the current displacement state vector
-  structure_->discretization()->set_state("displacement", structure_->dispnp());
+  structure_->discretization()->set_state("displacement", *structure_->dispnp());
 
   // create strategy for assembly of structure-scatra matrix block
   Core::FE::AssembleStrategy strategystructurescatra(

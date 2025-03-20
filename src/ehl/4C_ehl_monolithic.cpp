@@ -1236,7 +1236,7 @@ void EHL::Monolithic::apply_lubrication_coupl_matrix(
   lubrication_->lubrication_field()->discretization()->clear_state(true);
   // set the variables that are needed by the elements
   lubrication_->lubrication_field()->discretization()->set_state(
-      0, "prenp", lubrication_->lubrication_field()->prenp());
+      0, "prenp", *lubrication_->lubrication_field()->prenp());
 
   set_struct_solution(structure_->dispnp());
 

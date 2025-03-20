@@ -132,7 +132,7 @@ void CONSTRAINTS::ConstrManager::setup(
     // We will always use the third systemvector for this purpose
     p.set("OffsetID", offset_id_);
     p.set("total time", time);
-    actdisc_->set_state("displacement", disp);
+    actdisc_->set_state("displacement", *disp);
     volconstr3d_->initialize(p, *refbaseredundant);
     areaconstr3d_->initialize(p, *refbaseredundant);
     areaconstr2d_->initialize(p, *refbaseredundant);
@@ -162,7 +162,7 @@ void CONSTRAINTS::ConstrManager::setup(
   }
   //----------------------------------------------------------------------------
   //---------------------------------------------------------Monitor Conditions!
-  actdisc_->set_state("displacement", disp);
+  actdisc_->set_state("displacement", *disp);
   min_monitor_id_ = 10000;
   int maxMonitorID = 0;
   volmonitor3d_ =
@@ -257,7 +257,7 @@ void CONSTRAINTS::ConstrManager::evaluate_force_stiff(const double time,
       std::make_shared<Core::LinAlg::Vector<double>>(*redconstrmap_);
 
   actdisc_->clear_state();
-  actdisc_->set_state("displacement", disp);
+  actdisc_->set_state("displacement", *disp);
   volconstr3d_->evaluate(p, stiff, constr_matrix_, fint, refbaseredundant, actredundant);
   areaconstr3d_->evaluate(p, stiff, constr_matrix_, fint, refbaseredundant, actredundant);
   areaconstr2d_->evaluate(p, stiff, constr_matrix_, fint, refbaseredundant, actredundant);
@@ -306,7 +306,7 @@ void CONSTRAINTS::ConstrManager::compute_error(
   std::vector<Core::Conditions::Condition*> constrcond(0);
   Teuchos::ParameterList p;
   p.set("total time", time);
-  actdisc_->set_state("displacement", disp);
+  actdisc_->set_state("displacement", *disp);
 
   std::shared_ptr<Core::LinAlg::Vector<double>> actredundant =
       std::make_shared<Core::LinAlg::Vector<double>>(*redconstrmap_);
@@ -404,7 +404,7 @@ void CONSTRAINTS::ConstrManager::compute_monitor_values(
   std::vector<Core::Conditions::Condition*> monitcond(0);
   monitorvalues_->put_scalar(0.0);
   Teuchos::ParameterList p;
-  actdisc_->set_state("displacement", disp);
+  actdisc_->set_state("displacement", *disp);
 
   Core::LinAlg::Vector<double> actmonredundant(*redmonmap_);
   p.set("OffsetID", min_monitor_id_);
@@ -434,10 +434,10 @@ void CONSTRAINTS::ConstrManager::compute_monitor_values(
     Core::LinAlg::MapExtractor conmerger;
     conmerger.setup(
         *largemap, Core::Utils::shared_ptr_from_ref(*actdisc_->dof_row_map()), constrmap_);
-    actdisc_->set_state("displacement", conmerger.extract_cond_vector(*disp));
+    actdisc_->set_state("displacement", *conmerger.extract_cond_vector(*disp));
   }
   else
-    actdisc_->set_state("displacement", disp);
+    actdisc_->set_state("displacement", *disp);
 
   Core::LinAlg::Vector<double> actmonredundant(*redmonmap_);
   p.set("OffsetID", min_monitor_id_);

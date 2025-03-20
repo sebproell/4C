@@ -701,10 +701,10 @@ void LowMach::Algorithm::evaluate_loma_od_block_mat_fluid(
 
   // set general vector values needed by elements
   fluid_field()->discretization()->clear_state();
-  fluid_field()->discretization()->set_state(0, "hist", fluid_field()->hist());
-  fluid_field()->discretization()->set_state(0, "accam", fluid_field()->accam());
-  fluid_field()->discretization()->set_state(0, "scaaf", fluid_field()->scaaf());
-  fluid_field()->discretization()->set_state(0, "scaam", fluid_field()->scaam());
+  fluid_field()->discretization()->set_state(0, "hist", *fluid_field()->hist());
+  fluid_field()->discretization()->set_state(0, "accam", *fluid_field()->accam());
+  fluid_field()->discretization()->set_state(0, "scaaf", *fluid_field()->scaaf());
+  fluid_field()->discretization()->set_state(0, "scaam", *fluid_field()->scaam());
 
   // set time-integration-scheme-specific element parameters and vector values
   if (fluid_field()->tim_int_scheme() == Inpar::FLUID::timeint_afgenalpha)
@@ -720,7 +720,7 @@ void LowMach::Algorithm::evaluate_loma_od_block_mat_fluid(
         std::dynamic_pointer_cast<ScaTra::ScaTraTimIntLoma>(scatra_field())->therm_press_dt_am());
 
     // set velocity vector
-    fluid_field()->discretization()->set_state(0, "velaf", fluid_field()->velaf());
+    fluid_field()->discretization()->set_state(0, "velaf", *fluid_field()->velaf());
   }
   else if (fluid_field()->tim_int_scheme() == Inpar::FLUID::timeint_one_step_theta)
   {
@@ -735,7 +735,7 @@ void LowMach::Algorithm::evaluate_loma_od_block_mat_fluid(
         std::dynamic_pointer_cast<ScaTra::ScaTraTimIntLoma>(scatra_field())->therm_press_dt_np());
 
     // set velocity vector
-    fluid_field()->discretization()->set_state(0, "velaf", fluid_field()->velnp());
+    fluid_field()->discretization()->set_state(0, "velaf", *fluid_field()->velnp());
   }
   else
     FOUR_C_THROW("Time integration scheme not supported");

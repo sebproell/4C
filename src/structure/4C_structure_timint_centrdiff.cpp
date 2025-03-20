@@ -276,7 +276,7 @@ void Solid::TimIntCentrDiff::update_step_element()
 
   // Add displacements
   discret_->clear_state();
-  discret_->set_state("displacement", (*dis_)(0));
+  discret_->set_state("displacement", *(*dis_)(0));
   // go to elements
   discret_->evaluate(p, nullptr, nullptr, nullptr, nullptr, nullptr);
 }

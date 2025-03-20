@@ -427,7 +427,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase::set_scatra_solution()
   poromulti_->set_scatra_solution(ndsporofluid_scatra_, scatra_->scatra_field()->phinp());
   if (artery_coupl_)
     poromulti_->fluid_field()->art_net_tim_int()->discretization()->set_state(
-        2, "one_d_artery_phinp", scatramsht_->art_scatra_field()->phinp());
+        2, "one_d_artery_phinp", *scatramsht_->art_scatra_field()->phinp());
 }
 
 /*------------------------------------------------------------------------*

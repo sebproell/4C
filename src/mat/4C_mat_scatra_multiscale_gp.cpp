@@ -336,7 +336,7 @@ double Mat::ScatraMultiScaleGP::evaluate_mean_concentration() const
 
   // set micro-scale state vector
   discret.clear_state();
-  discret.set_state("phinp", phinp_);
+  discret.set_state("phinp", *phinp_);
 
   // set parameters for micro-scale elements
   Teuchos::ParameterList eleparams;
@@ -370,7 +370,7 @@ double Mat::ScatraMultiScaleGP::evaluate_mean_concentration_time_derivative() co
 
   // set micro-scale state vector
   discret.clear_state();
-  discret.set_state("phidtnp", phidtnp_);
+  discret.set_state("phidtnp", *phidtnp_);
 
   // set parameters for micro-scale elements
   Teuchos::ParameterList eleparams;

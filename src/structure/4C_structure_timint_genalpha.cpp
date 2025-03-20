@@ -784,7 +784,7 @@ void Solid::TimIntGenAlpha::update_step_element()
 
   // go to elements
   discret_->clear_state();
-  discret_->set_state("displacement", (*dis_)(0));
+  discret_->set_state("displacement", *(*dis_)(0));
 
   if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
   {
@@ -798,8 +798,8 @@ void Solid::TimIntGenAlpha::update_step_element()
      * rule has to be implemented in the element, otherwise displacements,
      * velocities and accelerations remain unchanged.
      */
-    discret_->set_state("velocity", (*vel_)(0));
-    discret_->set_state("acceleration", (*acc_)(0));
+    discret_->set_state("velocity", *(*vel_)(0));
+    discret_->set_state("acceleration", *(*acc_)(0));
 
     std::shared_ptr<Core::LinAlg::Vector<double>> update_disp;
     update_disp = Core::LinAlg::create_vector(*dof_row_map_view(), true);

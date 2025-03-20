@@ -225,7 +225,7 @@ void Arteries::ArtNetImplStationary::solve_scatra()
     FOUR_C_THROW("this type of coupling is only available for explicit time integration");
 
   // provide scatra discretization with fluid primary variable field
-  scatra_->scatra_field()->discretization()->set_state(1, "one_d_artery_pressure", pressurenp_);
+  scatra_->scatra_field()->discretization()->set_state(1, "one_d_artery_pressure", *pressurenp_);
   scatra_->scatra_field()->prepare_time_step();
 
   // -------------------------------------------------------------------
@@ -280,7 +280,7 @@ void Arteries::ArtNetImplStationary::assemble_mat_and_rhs()
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state(0, "pressurenp", pressurenp_);
+  discret_->set_state(0, "pressurenp", *pressurenp_);
 
   // call standard loop over all elements
   discret_->evaluate(eleparams, sysmat_, rhs_);
@@ -582,7 +582,7 @@ void Arteries::ArtNetImplStationary::reconstruct_flow()
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state(0, "pressurenp", pressurenp_);
+  discret_->set_state(0, "pressurenp", *pressurenp_);
 
   // enough to loop over row nodes since element-based quantity
   for (int i = 0; i < discret_->num_my_row_elements(); ++i)

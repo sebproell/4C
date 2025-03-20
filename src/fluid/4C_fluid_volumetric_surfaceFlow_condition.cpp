@@ -1869,7 +1869,7 @@ void FLD::Utils::TotalTractionCorrector::evaluate_velocities(
     {
       Teuchos::ParameterList eleparams;
 
-      discret_->set_state("velaf", velocities);
+      discret_->set_state("velaf", *velocities);
 
       flowrate = mapiter->second->FluidVolumetricSurfaceFlowBc::flow_rate_calculation(
           eleparams, time, "TotalTractionCorrectionCond", FLD::calc_flowrate, mapiter->first);
@@ -1952,7 +1952,7 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::export_and_set_boundary_values(
   // check if the exporting was successful
   if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
   // Set state
-  discret_->set_state(name, target);
+  discret_->set_state(name, *target);
 }
 
 /*----------------------------------------------------------------------*
@@ -1969,7 +1969,7 @@ void FLD::Utils::TotalTractionCorrector::export_and_set_boundary_values(
   // check if the exporting was successful
   if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
   // Set state
-  discret_->set_state(name, target);
+  discret_->set_state(name, *target);
 }
 
 FOUR_C_NAMESPACE_CLOSE

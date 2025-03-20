@@ -107,7 +107,7 @@ void FLD::TimIntBDF2::set_old_part_of_righthandside()
 *-----------------------------------------------------------------------*/
 void FLD::TimIntBDF2::set_state_tim_int()
 {
-  discret_->set_state("velaf", velnp_);
+  discret_->set_state("velaf", *velnp_);
 
   return;
 }

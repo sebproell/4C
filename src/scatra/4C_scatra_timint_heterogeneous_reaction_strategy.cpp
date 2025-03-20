@@ -50,22 +50,22 @@ void ScaTra::HeterogeneousReactionStrategy::evaluate_meshtying()
       "action", ScaTra::Action::calc_heteroreac_mat_and_rhs, condparams);
 
   // set global state vectors according to time-integration scheme
-  discret_->set_state("phinp", scatratimint_->phiafnp());
-  discret_->set_state("hist", scatratimint_->hist());
+  discret_->set_state("phinp", *scatratimint_->phiafnp());
+  discret_->set_state("hist", *scatratimint_->hist());
 
   // provide scatra discretization with convective velocity
   discret_->set_state(scatratimint_->nds_vel(), "convective velocity field",
-      scatratimint_->discretization()->get_state(
+      *scatratimint_->discretization()->get_state(
           scatratimint_->nds_vel(), "convective velocity field"));
 
   // provide scatra discretization with velocity
   discret_->set_state(scatratimint_->nds_vel(), "velocity field",
-      scatratimint_->discretization()->get_state(scatratimint_->nds_vel(), "velocity field"));
+      *scatratimint_->discretization()->get_state(scatratimint_->nds_vel(), "velocity field"));
 
   if (scatratimint_->is_ale())
   {
     discret_->set_state(scatratimint_->nds_disp(), "dispnp",
-        scatratimint_->discretization()->get_state(scatratimint_->nds_disp(), "dispnp"));
+        *scatratimint_->discretization()->get_state(scatratimint_->nds_disp(), "dispnp"));
   }
 
   discret_->evaluate(condparams, scatratimint_->system_matrix(), scatratimint_->residual());
@@ -209,7 +209,7 @@ void ScaTra::HeterogeneousReactionStrategy::evaluate_condition(Teuchos::Paramete
 void ScaTra::HeterogeneousReactionStrategy::set_state(unsigned nds, const std::string& name,
     std::shared_ptr<const Core::LinAlg::Vector<double>> state)
 {
-  discret_->set_state(nds, name, state);
+  discret_->set_state(nds, name, *state);
   return;
 }
 

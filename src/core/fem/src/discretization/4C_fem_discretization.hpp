@@ -1499,8 +1499,7 @@ namespace Core::FE
 
     \note This class will not take ownership or in any way modify the solution vector.
     */
-    void set_state(
-        const std::string& name, std::shared_ptr<const Core::LinAlg::Vector<double>> state)
+    void set_state(const std::string& name, const LinAlg::Vector<double>& state)
     {
       set_state(0, name, state);
     }
@@ -1524,8 +1523,7 @@ namespace Core::FE
 
     \note This class will not take ownership or in any way modify the solution vector.
     */
-    void set_state(unsigned nds, const std::string& name,
-        std::shared_ptr<const Core::LinAlg::Vector<double>> state);
+    void set_state(unsigned nds, const std::string& name, const LinAlg::Vector<double>& state);
 
     /*!
     \brief Get a reference to a data vector at the default dofset (0)

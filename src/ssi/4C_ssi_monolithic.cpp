@@ -1675,6 +1675,6 @@ void SSI::SsiMono::set_scatra_manifold_solution(const Core::LinAlg::Vector<doubl
     auto manifold_on_scatra_cond = coup->coupling_adapter()->slave_to_master(*manifold_cond);
     coup->scatra_map_extractor()->insert_cond_vector(*manifold_on_scatra_cond, *manifold_on_scatra);
   }
-  scatra_field()->discretization()->set_state(0, "manifold_on_scatra", manifold_on_scatra);
+  scatra_field()->discretization()->set_state(0, "manifold_on_scatra", *manifold_on_scatra);
 }
 FOUR_C_NAMESPACE_CLOSE

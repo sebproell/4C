@@ -375,10 +375,10 @@ void PoroElast::MonolithicSplitNoPenetration::apply_fluid_coupl_matrix(
     params.set<Inpar::FLUID::PhysicalType>("Physical Type", fluid_field()->physical_type());
 
     fluid_field()->discretization()->clear_state();
-    fluid_field()->discretization()->set_state(0, "dispnp", fluid_field()->dispnp());
-    fluid_field()->discretization()->set_state(0, "gridv", fluid_field()->grid_vel());
-    fluid_field()->discretization()->set_state(0, "velnp", fluid_field()->velnp());
-    fluid_field()->discretization()->set_state(0, "scaaf", fluid_field()->scaaf());
+    fluid_field()->discretization()->set_state(0, "dispnp", *fluid_field()->dispnp());
+    fluid_field()->discretization()->set_state(0, "gridv", *fluid_field()->grid_vel());
+    fluid_field()->discretization()->set_state(0, "velnp", *fluid_field()->velnp());
+    fluid_field()->discretization()->set_state(0, "scaaf", *fluid_field()->scaaf());
 
     // fluid_field()->discretization()->set_state(0,"lambda",
     //    fluid_field()->Interface()->insert_fsi_cond_vector(structure_to_fluid_at_interface(lambdanp_)));
@@ -413,13 +413,13 @@ void PoroElast::MonolithicSplitNoPenetration::apply_fluid_coupl_matrix(
     params.set<Inpar::FLUID::PhysicalType>("Physical Type", fluid_field()->physical_type());
 
     fluid_field()->discretization()->clear_state();
-    fluid_field()->discretization()->set_state(0, "dispnp", fluid_field()->dispnp());
-    fluid_field()->discretization()->set_state(0, "gridv", fluid_field()->grid_vel());
-    fluid_field()->discretization()->set_state(0, "velnp", fluid_field()->velnp());
-    fluid_field()->discretization()->set_state(0, "scaaf", fluid_field()->scaaf());
+    fluid_field()->discretization()->set_state(0, "dispnp", *fluid_field()->dispnp());
+    fluid_field()->discretization()->set_state(0, "gridv", *fluid_field()->grid_vel());
+    fluid_field()->discretization()->set_state(0, "velnp", *fluid_field()->velnp());
+    fluid_field()->discretization()->set_state(0, "scaaf", *fluid_field()->scaaf());
 
     fluid_field()->discretization()->set_state(0, "lambda",
-        fluid_field()->interface()->insert_fsi_cond_vector(
+        *fluid_field()->interface()->insert_fsi_cond_vector(
             *structure_to_fluid_at_interface(*lambdanp_)));
 
     // build specific assemble strategy for the fluid-mechanical system matrix
@@ -446,9 +446,9 @@ void PoroElast::MonolithicSplitNoPenetration::apply_fluid_coupl_matrix(
     params.set<Inpar::FLUID::PhysicalType>("Physical Type", fluid_field()->physical_type());
 
     fluid_field()->discretization()->clear_state();
-    fluid_field()->discretization()->set_state(0, "dispnp", fluid_field()->dispnp());
-    fluid_field()->discretization()->set_state(0, "gridv", fluid_field()->grid_vel());
-    fluid_field()->discretization()->set_state(0, "velnp", fluid_field()->velnp());
+    fluid_field()->discretization()->set_state(0, "dispnp", *fluid_field()->dispnp());
+    fluid_field()->discretization()->set_state(0, "gridv", *fluid_field()->grid_vel());
+    fluid_field()->discretization()->set_state(0, "velnp", *fluid_field()->velnp());
     //  fluid_field()->discretization()->set_state(0,"scaaf",fluid_field()->Scaaf());
 
     // build specific assemble strategy for the fluid-mechanical system matrix
@@ -475,9 +475,9 @@ void PoroElast::MonolithicSplitNoPenetration::apply_fluid_coupl_matrix(
     params.set<Inpar::FLUID::PhysicalType>("Physical Type", fluid_field()->physical_type());
 
     fluid_field()->discretization()->clear_state();
-    fluid_field()->discretization()->set_state(0, "dispnp", fluid_field()->dispnp());
-    fluid_field()->discretization()->set_state(0, "gridv", fluid_field()->grid_vel());
-    fluid_field()->discretization()->set_state(0, "velnp", fluid_field()->velnp());
+    fluid_field()->discretization()->set_state(0, "dispnp", *fluid_field()->dispnp());
+    fluid_field()->discretization()->set_state(0, "gridv", *fluid_field()->grid_vel());
+    fluid_field()->discretization()->set_state(0, "velnp", *fluid_field()->velnp());
 
     // build specific assemble strategy for the fluid-mechanical system matrix
     // from the point of view of fluid_field:

@@ -140,13 +140,12 @@ void FLD::TimIntStationaryHDG::set_old_part_of_righthandside()
 void FLD::TimIntStationaryHDG::set_state_tim_int()
 {
   const Epetra_Map* intdofrowmap = discret_->dof_row_map(1);
-  std::shared_ptr<Core::LinAlg::Vector<double>> zerovec =
-      Core::LinAlg::create_vector(*intdofrowmap, true);
+  Core::LinAlg::Vector<double> zerovec(*intdofrowmap, true);
 
-  discret_->set_state(0, "velaf", velnp_);
-  discret_->set_state(1, "intvelaf", intvelnp_);  // TODO also fill in intvelnp_!
-  discret_->set_state(1, "intaccam", zerovec);
-  discret_->set_state(1, "intvelnp", intvelnp_);
+  discret_->set_state(0, "velaf", *velnp_);
+  discret_->set_state(1, "intvelaf", *intvelnp_);  // TODO also fill in intvelnp_!
+  discret_->set_state(1, "intaccam", zerovec);     // TODO memory management working?
+  discret_->set_state(1, "intvelnp", *intvelnp_);
 }
 
 /*----------------------------------------------------------------------*

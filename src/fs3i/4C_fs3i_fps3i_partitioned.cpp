@@ -605,7 +605,7 @@ void FS3I::PartFPS3I::set_fpsi_solution()
 void FS3I::PartFPS3I::set_struct_scatra_solution()
 {
   fpsi_->poro_field()->structure_field()->discretization()->set_state(
-      1, "scalarfield", (scatravec_[1])->scatra_field()->phinp());
+      1, "scalarfield", *(scatravec_[1])->scatra_field()->phinp());
 }
 
 

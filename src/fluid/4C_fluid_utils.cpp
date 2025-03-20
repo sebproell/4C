@@ -276,7 +276,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::Utils::StressManager::integra
   discret_->clear_state();
   if (alefluid_)
   {
-    discret_->set_state("dispnp", dispnp_);
+    discret_->set_state("dispnp", *dispnp_);
   }
   discret_->evaluate_condition(eleparams, integratedshapefunc, condname);
   discret_->clear_state();
@@ -312,7 +312,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::Utils::StressManager::calc_wa
   discret_->clear_state();  // TODO: (Thon) Do we really have to to this in here?
   if (alefluid_)
   {
-    discret_->set_state("dispnp", dispnp_);
+    discret_->set_state("dispnp", *dispnp_);
   }
   // evaluate the normals of the surface
   discret_->evaluate_condition(eleparams, ndnorm0, "FluidStressCalc");
@@ -844,9 +844,9 @@ std::map<int, double> FLD::Utils::compute_flow_rates(Core::FE::Discretization& d
     // call loop over elements
     dis.clear_state();
 
-    dis.set_state("velaf", velnp);
-    if (dispnp != nullptr) dis.set_state("dispnp", dispnp);
-    if (gridv != nullptr) dis.set_state("gridv", gridv);
+    dis.set_state("velaf", *velnp);
+    if (dispnp != nullptr) dis.set_state("dispnp", *dispnp);
+    if (gridv != nullptr) dis.set_state("gridv", *gridv);
 
     dis.evaluate_condition(eleparams, flowrates, condstring, condID);
     dis.clear_state();
@@ -888,9 +888,9 @@ std::map<int, double> FLD::Utils::compute_volume(Core::FE::Discretization& dis,
 
   // call loop over elements
   dis.clear_state();
-  dis.set_state("velnp", velnp);
-  if (dispnp != nullptr) dis.set_state("dispnp", dispnp);
-  if (gridv != nullptr) dis.set_state("gridv", gridv);
+  dis.set_state("velnp", *velnp);
+  if (dispnp != nullptr) dis.set_state("dispnp", *dispnp);
+  if (gridv != nullptr) dis.set_state("gridv", *gridv);
 
   std::shared_ptr<Core::LinAlg::SerialDenseVector> volumes =
       std::make_shared<Core::LinAlg::SerialDenseVector>(1);
@@ -1025,7 +1025,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> FLD::Utils::project_gradient(
 
       // set given state for element evaluation
       discret.clear_state();
-      discret.set_state("vel", vel);
+      discret.set_state("vel", *vel);
 
       // project velocity gradient of fluid to nodal level via L2 projection
       projected_velgrad = Core::FE::compute_nodal_l2_projection(discret, "vel", numvec, params,
