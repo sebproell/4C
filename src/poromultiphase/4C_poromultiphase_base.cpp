@@ -181,7 +181,7 @@ void POROMULTIPHASE::PoroMultiPhaseBase::prepare_time_step()
 {
   increment_time_and_step();
 
-  structure_field()->discretization()->set_state(1, "porofluid", fluid_field()->phinp());
+  structure_field()->discretization()->set_state(1, "porofluid", *fluid_field()->phinp());
 
   if (solve_structure_)
   {

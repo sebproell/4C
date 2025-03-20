@@ -2042,7 +2042,7 @@ void Mortar::Interface::set_state(
       Core::LinAlg::export_to(vec, *global);
 
       // set displacements in interface discretization
-      idiscret_->set_state(state_type_to_string(statetype), global);
+      idiscret_->set_state(state_type_to_string(statetype), *global);
 
       // loop over all nodes to set current displacement
       // (use fully overlapping column map)
@@ -2101,7 +2101,7 @@ void Mortar::Interface::set_state(
       Core::LinAlg::export_to(vec, *global);
 
       // set displacements in interface discretization
-      idiscret_->set_state(state_type_to_string(statetype), global);
+      idiscret_->set_state(state_type_to_string(statetype), *global);
 
       // loop over all nodes to set current displacement
       // (use fully overlapping column map)
@@ -4194,7 +4194,7 @@ void Mortar::Interface::create_volume_ghosting(
         Core::LinAlg::export_to(*statevec, *statevecrowmap);
 
         // now set the state again
-        structure_dis->set_state(1, "scalarfield", statevecrowmap);
+        structure_dis->set_state(1, "scalarfield", *statevecrowmap);
       }
 
       break;

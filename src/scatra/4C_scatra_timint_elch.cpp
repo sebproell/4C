@@ -564,7 +564,7 @@ void ScaTra::ScaTraTimIntElch::add_problem_specific_parameters_and_vectors(
     Teuchos::ParameterList& params  //!< parameter list
 )
 {
-  discret_->set_state("dctoggle", dctoggle_);
+  discret_->set_state("dctoggle", *dctoggle_);
 }
 
 /*----------------------------------------------------------------------*
@@ -699,7 +699,7 @@ void ScaTra::ScaTraTimIntElch::evaluate_error_compared_to_analytical_sol()
       eleparams.set<Inpar::ScaTra::CalcError>("calcerrorflag", calcerror_);
 
       // set vector values needed by elements
-      discret_->set_state("phinp", phinp_);
+      discret_->set_state("phinp", *phinp_);
 
       // get (squared) error values
       std::shared_ptr<Core::LinAlg::SerialDenseVector> errors =
@@ -747,7 +747,7 @@ void ScaTra::ScaTraTimIntElch::evaluate_error_compared_to_analytical_sol()
       eleparams.set<Inpar::ScaTra::CalcError>("calcerrorflag", calcerror_);
 
       // set vector values needed by elements
-      discret_->set_state("phinp", phinp_);
+      discret_->set_state("phinp", *phinp_);
 
       // get (squared) error values
       std::shared_ptr<Core::LinAlg::SerialDenseVector> errors =
@@ -779,7 +779,7 @@ void ScaTra::ScaTraTimIntElch::evaluate_error_compared_to_analytical_sol()
       eleparams.set<Inpar::ScaTra::CalcError>("calcerrorflag", calcerror_);
 
       // set vector values needed by elements
-      discret_->set_state("phinp", phinp_);
+      discret_->set_state("phinp", *phinp_);
 
       // get (squared) error values
       std::shared_ptr<Core::LinAlg::SerialDenseVector> errors =
@@ -987,9 +987,9 @@ ScaTra::ScaTraTimIntElch::evaluate_single_electrode_info(
     const int condid, const std::string& condstring)
 {
   // set vector values needed by elements
-  discret_->set_state("phinp", phinp_);
+  discret_->set_state("phinp", *phinp_);
   // needed for double-layer capacity!
-  discret_->set_state("phidtnp", phidtnp_);
+  discret_->set_state("phidtnp", *phidtnp_);
 
   // create parameter list
   Teuchos::ParameterList eleparams;
@@ -1042,8 +1042,8 @@ ScaTra::ScaTraTimIntElch::evaluate_single_electrode_info_point(
     std::shared_ptr<Core::Conditions::Condition> condition)
 {
   // add state vectors to discretization
-  discret_->set_state("phinp", phinp_);
-  discret_->set_state("phidtnp", phidtnp_);  // needed for double layer capacity
+  discret_->set_state("phinp", *phinp_);
+  discret_->set_state("phidtnp", *phidtnp_);  // needed for double layer capacity
 
   // add state vectors according to time integration scheme
   add_time_integration_specific_vectors();
@@ -1359,8 +1359,8 @@ void ScaTra::ScaTraTimIntElch::evaluate_electrode_info_interior()
       const int condid = condition->parameters().get<int>("ConditionID");
 
       // add state vectors to discretization
-      discret_->set_state("phinp", phinp_);
-      discret_->set_state("phidtnp", phidtnp_);
+      discret_->set_state("phinp", *phinp_);
+      discret_->set_state("phidtnp", *phidtnp_);
 
       // create parameter list
       Teuchos::ParameterList condparams;
@@ -1482,7 +1482,7 @@ void ScaTra::ScaTraTimIntElch::evaluate_cell_voltage()
       if (conditionspoint.empty())
       {
         // add state vector to discretization
-        discret_->set_state("phinp", phinp_);
+        discret_->set_state("phinp", *phinp_);
 
         // create parameter list
         Teuchos::ParameterList condparams;
@@ -1664,7 +1664,7 @@ void ScaTra::ScaTraTimIntElch::setup_nat_conv()
   if (num_scal() < 1) FOUR_C_THROW("Error since numscal = {}. Not allowed since < 1", num_scal());
   c0_.resize(num_scal());
 
-  discret_->set_state("phinp", phinp_);
+  discret_->set_state("phinp", *phinp_);
 
   // set action for elements
   Teuchos::ParameterList eleparams;
@@ -2769,7 +2769,7 @@ void ScaTra::ScaTraTimIntElch::linearization_nernst_condition()
 
   // add element parameters and set state vectors according to time-integration scheme
   // we need here concentration at t+np
-  discret_->set_state("phinp", phinp_);
+  discret_->set_state("phinp", *phinp_);
 
   std::string condstring("ElchBoundaryKinetics");
   // evaluate ElchBoundaryKinetics conditions at time t_{n+1} or t_{n+alpha_F}

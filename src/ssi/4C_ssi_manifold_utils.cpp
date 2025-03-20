@@ -385,7 +385,7 @@ void SSI::ScaTraManifoldScaTraFluxEvaluator::evaluate_bulk_side(
   // First: Set parameters to elements
   pre_evaluate(scatra_manifold_coupling);
 
-  scatra_->scatra_field()->discretization()->set_state("phinp", scatra_->scatra_field()->phinp());
+  scatra_->scatra_field()->discretization()->set_state("phinp", *scatra_->scatra_field()->phinp());
 
   // Second: Evaluate condition
   {
@@ -611,7 +611,7 @@ void SSI::ScaTraManifoldScaTraFluxEvaluator::evaluate_scatra_manifold_inflow()
   inflow_.clear();
   domainintegral_.clear();
 
-  scatra_->scatra_field()->discretization()->set_state("phinp", scatra_->scatra_field()->phinp());
+  scatra_->scatra_field()->discretization()->set_state("phinp", *scatra_->scatra_field()->phinp());
 
   for (const auto& scatra_manifold_coupling : scatra_manifold_couplings_)
   {

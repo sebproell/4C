@@ -338,7 +338,7 @@ void ScaTra::ScaTraTimIntElchSCL::add_problem_specific_parameters_and_vectors(
 {
   ScaTra::ScaTraTimIntElch::add_problem_specific_parameters_and_vectors(params);
 
-  discret_->set_state("phinp", phinp());
+  discret_->set_state("phinp", *phinp());
 }
 
 /*----------------------------------------------------------------------------*

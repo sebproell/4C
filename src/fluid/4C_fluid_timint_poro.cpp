@@ -192,10 +192,10 @@ void FLD::TimIntPoro::set_custom_ele_params_assemble_mat_and_rhs(Teuchos::Parame
   eleparams.set<Inpar::FLUID::PhysicalType>("Physical Type", physicaltype_);
 
   // just for poroelasticity
-  discret_->set_state("dispn", dispn_);
-  discret_->set_state("accnp", accnp_);
-  discret_->set_state("accn", accn_);
-  discret_->set_state("gridvn", gridvn_);
+  discret_->set_state("dispn", *dispn_);
+  discret_->set_state("accnp", *accnp_);
+  discret_->set_state("accn", *accn_);
+  discret_->set_state("gridvn", *gridvn_);
 
   eleparams.set("total time", time_);
   eleparams.set("delta time", dta_);
@@ -220,10 +220,10 @@ void FLD::TimIntPoro::poro_int_update()
     eleparams.set<Inpar::FLUID::PhysicalType>("Physical Type", physicaltype_);
 
     discret_->clear_state();
-    discret_->set_state("dispnp", dispnp_);
-    discret_->set_state("gridv", gridv_);
-    discret_->set_state("velnp", velnp_);
-    discret_->set_state("scaaf", scaaf_);
+    discret_->set_state("dispnp", *dispnp_);
+    discret_->set_state("gridv", *gridv_);
+    discret_->set_state("velnp", *velnp_);
+    discret_->set_state("scaaf", *scaaf_);
     discret_->evaluate_condition(
         eleparams, sysmat_, nullptr, residual_, nullptr, nullptr, condname);
     discret_->clear_state();
@@ -242,9 +242,9 @@ void FLD::TimIntPoro::poro_int_update()
     eleparams.set<Inpar::FLUID::PhysicalType>("Physical Type", physicaltype_);
 
     discret_->clear_state();
-    discret_->set_state("dispnp", dispnp_);
-    discret_->set_state("gridv", gridv_);
-    discret_->set_state("velnp", velnp_);
+    discret_->set_state("dispnp", *dispnp_);
+    discret_->set_state("gridv", *gridv_);
+    discret_->set_state("velnp", *velnp_);
     discret_->evaluate_condition(
         eleparams, sysmat_, nullptr, residual_, nullptr, nullptr, condname);
     discret_->clear_state();

@@ -316,7 +316,7 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::do_fluid_step()
 void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::set_relaxed_fluid_solution()
 {
   // set fluid solution on structure
-  structure_field()->discretization()->set_state(1, "porofluid", fluidphinp_);
+  structure_field()->discretization()->set_state(1, "porofluid", *fluidphinp_);
 
   return;
 }

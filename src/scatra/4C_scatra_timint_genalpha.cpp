@@ -248,7 +248,7 @@ void ScaTra::TimIntGenAlpha::avm3_separation()
     fsphiaf_->put_scalar(0.01);
 
   // set fine-scale vector
-  discret_->set_state("fsphinp", fsphiaf_);
+  discret_->set_state("fsphinp", *fsphiaf_);
 }
 
 
@@ -296,14 +296,14 @@ void ScaTra::TimIntGenAlpha::add_time_integration_specific_vectors(bool forcedin
   // call base class routine
   ScaTraTimIntImpl::add_time_integration_specific_vectors(forcedincrementalsolver);
 
-  discret_->set_state("phinp", phiaf_);
+  discret_->set_state("phinp", *phiaf_);
 
   if (incremental_ or forcedincrementalsolver)
-    discret_->set_state("hist", phidtam_);
+    discret_->set_state("hist", *phidtam_);
   else
   {
-    discret_->set_state("hist", hist_);
-    discret_->set_state("phin", phin_);
+    discret_->set_state("hist", *hist_);
+    discret_->set_state("phin", *phin_);
   }
 }
 

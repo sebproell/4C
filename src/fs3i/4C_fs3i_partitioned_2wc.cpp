@@ -304,7 +304,7 @@ void FS3I::PartFS3I2Wc::set_scatra_values_in_fsi()
   // (Note potential inconsistencies related to this call in case of generalized-alpha time
   // integration!)
   fsi_->structure_field()->discretization()->set_state(
-      1, "scalarfield", structure_scalar_to_structure(scatravec_[1]->scatra_field()->phinp()));
+      1, "scalarfield", *structure_scalar_to_structure(scatravec_[1]->scatra_field()->phinp()));
 }
 
 

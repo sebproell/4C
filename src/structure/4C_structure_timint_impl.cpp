@@ -832,9 +832,9 @@ void Solid::TimIntImpl::apply_force_stiff_external(const double time,  //!< eval
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state(0, "displacement", dis);
+  discret_->set_state(0, "displacement", *dis);
 
-  if (damping_ == Inpar::Solid::damp_material) discret_->set_state(0, "velocity", vel);
+  if (damping_ == Inpar::Solid::damp_material) discret_->set_state(0, "velocity", *vel);
   // get load vector
   const Teuchos::ParameterList& sdyn = Global::Problem::instance()->structural_dynamic_params();
   bool loadlin = (sdyn.get<bool>("LOADLIN"));
@@ -843,7 +843,7 @@ void Solid::TimIntImpl::apply_force_stiff_external(const double time,  //!< eval
     discret_->evaluate_neumann(p, fext);
   else
   {
-    discret_->set_state(0, "displacement new", disn);
+    discret_->set_state(0, "displacement new", *disn);
     discret_->evaluate_neumann(p, fext, fextlin.get());
   }
 
@@ -876,9 +876,9 @@ void Solid::TimIntImpl::apply_force_stiff_internal(const double time, const doub
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state(0, "residual displacement", disi);
-  discret_->set_state(0, "displacement", dis);
-  if (damping_ == Inpar::Solid::damp_material) discret_->set_state(0, "velocity", vel);
+  discret_->set_state(0, "residual displacement", *disi);
+  discret_->set_state(0, "displacement", *dis);
+  if (damping_ == Inpar::Solid::damp_material) discret_->set_state(0, "velocity", *vel);
   // fintn_->PutScalar(0.0);  // initialise internal force vector
 
   /* Additionally we hand in "fint_str_"
@@ -930,10 +930,10 @@ void Solid::TimIntImpl::apply_force_stiff_internal_and_inertial(const double tim
   }
 
   discret_->clear_state();
-  discret_->set_state(0, "residual displacement", disi);
-  discret_->set_state(0, "displacement", dis);
-  discret_->set_state(0, "velocity", vel);
-  discret_->set_state(0, "acceleration", acc);
+  discret_->set_state(0, "residual displacement", *disi);
+  discret_->set_state(0, "displacement", *dis);
+  discret_->set_state(0, "velocity", *vel);
+  discret_->set_state(0, "acceleration", *acc);
 
   /* Additionally we hand in "fint_str_"
    * This is usually nullptr unless we do line search in
@@ -4166,11 +4166,11 @@ void Solid::TimIntImpl::use_block_matrix(
     if (pressure_ != nullptr) p.set("volume", 0.0);
     // set vector values needed by elements
     discret_->clear_state();
-    discret_->set_state("residual displacement", zeros_);
-    discret_->set_state("displacement", (*dis_)(0));
-    discret_->set_state(0, "velocity", (*vel_)(0));
-    discret_->set_state(0, "acceleration", (*acc_)(0));
-    if (damping_ == Inpar::Solid::damp_material) discret_->set_state("velocity", (*vel_)(0));
+    discret_->set_state("residual displacement", *zeros_);
+    discret_->set_state("displacement", *(*dis_)(0));
+    discret_->set_state(0, "velocity", *(*vel_)(0));
+    discret_->set_state(0, "acceleration", *(*acc_)(0));
+    if (damping_ == Inpar::Solid::damp_material) discret_->set_state("velocity", *(*vel_)(0));
 
     discret_->evaluate(p, stiff_, mass_, fint, finert, nullptr);
     discret_->clear_state();

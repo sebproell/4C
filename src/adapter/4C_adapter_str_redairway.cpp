@@ -81,7 +81,7 @@ void Adapter::StructureRedAirway::calc_vol(std::map<int, double>& V)
 
   // set displacements
   discretization()->clear_state();
-  discretization()->set_state("displacement", dispnp());
+  discretization()->set_state("displacement", *dispnp());
 
   //----------------------------------------------------------------------
   // loop through conditions and evaluate them if they match the criterion

@@ -1008,10 +1008,9 @@ void FLD::XWall::calc_tau_w(
   {
     // necessary to set right state (the maps of the state vector and discretization have to be
     // equal)
-    std::shared_ptr<Core::LinAlg::Vector<double>> statevel =
-        std::make_shared<Core::LinAlg::Vector<double>>(*(xwdiscret_->dof_row_map()), true);
+    Core::LinAlg::Vector<double> statevel(*(xwdiscret_->dof_row_map()), true);
     Core::LinAlg::Vector<double> newtauwxwdis(*(xwdiscret_->node_row_map()), true);
-    Core::LinAlg::export_to(velnp, *statevel);
+    Core::LinAlg::export_to(velnp, statevel);
 
     xwdiscret_->set_state("vel", statevel);
 
@@ -1159,9 +1158,9 @@ void FLD::XWall::l2_project_vector(Core::LinAlg::Vector<double>& veln,
   else
     numberofrhs = 3;
 
-  xwdiscret_->set_state("veln", stateveln_);
-  if (accn != nullptr) xwdiscret_->set_state("accn", stateaccn_);
-  if (velnp != nullptr) xwdiscret_->set_state("velnp", statevelnp_);
+  xwdiscret_->set_state("veln", *stateveln_);
+  if (accn != nullptr) xwdiscret_->set_state("accn", *stateaccn_);
+  if (velnp != nullptr) xwdiscret_->set_state("velnp", *statevelnp_);
 
   // set action in order to project nodal enriched values to new shape functions
   Teuchos::ParameterList params;
@@ -1700,12 +1699,10 @@ void FLD::XWallAleFSI::set_x_wall_params_xw_dis(Teuchos::ParameterList& eleparam
   XWall::set_x_wall_params_xw_dis(eleparams);
   // params required for the shape functions
   eleparams.set("incwalldist", incwdistxwdis_);
-  std::shared_ptr<Core::LinAlg::Vector<double>> xwdisdispnp =
-      Core::LinAlg::create_vector(*(xwdiscret_->dof_row_map()), true);
-  Core::LinAlg::export_to(*mydispnp_, *xwdisdispnp);
-  std::shared_ptr<Core::LinAlg::Vector<double>> xwdisgridv =
-      Core::LinAlg::create_vector(*(xwdiscret_->dof_row_map()), true);
-  Core::LinAlg::export_to(*mygridv_, *xwdisgridv);
+  Core::LinAlg::Vector<double> xwdisdispnp(*(xwdiscret_->dof_row_map()), true);
+  Core::LinAlg::export_to(*mydispnp_, xwdisdispnp);
+  Core::LinAlg::Vector<double> xwdisgridv(*(xwdiscret_->dof_row_map()), true);
+  Core::LinAlg::export_to(*mygridv_, xwdisgridv);
 
   xwdiscret_->set_state("dispnp", xwdisdispnp);
   xwdiscret_->set_state("gridv", xwdisgridv);

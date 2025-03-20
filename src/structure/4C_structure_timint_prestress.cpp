@@ -73,7 +73,7 @@ void Solid::TimIntPrestress::update_step_element()
       // action for elements
       p.set("action", "calc_struct_prestress_update");
       discret_->clear_state();
-      discret_->set_state(0, "residual displacement", zeros_);
+      discret_->set_state(0, "residual displacement", *zeros_);
     }
     else
     {
@@ -88,7 +88,7 @@ void Solid::TimIntPrestress::update_step_element()
   p.set("delta time", (*dt_)[0]);
 
   // go to elements
-  discret_->set_state("displacement", (*dis_)(0));
+  discret_->set_state("displacement", *(*dis_)(0));
   discret_->evaluate(p, nullptr, nullptr, nullptr, nullptr, nullptr);
 
 

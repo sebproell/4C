@@ -392,12 +392,12 @@ void PoroElast::PoroBase::set_fluid_solution()
 {
   if (matchinggrid_)
   {
-    structure_field()->discretization()->set_state(1, "fluidvel", fluid_field()->velnp());
+    structure_field()->discretization()->set_state(1, "fluidvel", *fluid_field()->velnp());
   }
   else
   {
     structure_field()->discretization()->set_state(
-        1, "fluidvel", volcoupl_->apply_vector_mapping12(*fluid_field()->velnp()));
+        1, "fluidvel", *volcoupl_->apply_vector_mapping12(*fluid_field()->velnp()));
   }
 }
 

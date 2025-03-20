@@ -308,11 +308,9 @@ void FLD::TimIntGenAlpha::gen_alpha_intermediate_values(
 *-----------------------------------------------------------------------*/
 void FLD::TimIntGenAlpha::set_state_tim_int()
 {
-  discret_->set_state("velaf", velaf_);
-  discret_->set_state("velam", velam_);
-  if (timealgo_ == Inpar::FLUID::timeint_npgenalpha) discret_->set_state("velnp", velnp_);
-
-  return;
+  discret_->set_state("velaf", *velaf_);
+  discret_->set_state("velam", *velam_);
+  if (timealgo_ == Inpar::FLUID::timeint_npgenalpha) discret_->set_state("velnp", *velnp_);
 }
 
 /*----------------------------------------------------------------------*|

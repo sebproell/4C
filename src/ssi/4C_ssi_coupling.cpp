@@ -123,7 +123,7 @@ void SSI::SSICouplingMatchingVolume::set_mechanical_stress_state(
     Core::FE::Discretization& scatradis,
     std::shared_ptr<const Core::LinAlg::Vector<double>> stress_state, unsigned nds)
 {
-  scatradis.set_state(nds, "mechanicalStressState", stress_state);
+  scatradis.set_state(nds, "mechanicalStressState", *stress_state);
 }
 
 /*----------------------------------------------------------------------*/
@@ -154,7 +154,7 @@ void SSI::SSICouplingMatchingVolume::set_velocity_fields(
 void SSI::SSICouplingMatchingVolume::set_scalar_field(Core::FE::Discretization& dis,
     std::shared_ptr<const Core::LinAlg::Vector<double>> phi, unsigned nds)
 {
-  dis.set_state(nds, "scalarfield", phi);
+  dis.set_state(nds, "scalarfield", *phi);
 }
 
 /*----------------------------------------------------------------------*/
@@ -162,7 +162,7 @@ void SSI::SSICouplingMatchingVolume::set_scalar_field(Core::FE::Discretization& 
 void SSI::SSICouplingMatchingVolume::set_scalar_field_micro(Core::FE::Discretization& dis,
     std::shared_ptr<const Core::LinAlg::Vector<double>> phi, unsigned nds)
 {
-  dis.set_state(nds, "MicroCon", phi);
+  dis.set_state(nds, "MicroCon", *phi);
 }
 
 /*----------------------------------------------------------------------*/
@@ -170,7 +170,7 @@ void SSI::SSICouplingMatchingVolume::set_scalar_field_micro(Core::FE::Discretiza
 void SSI::SSICouplingMatchingVolume::set_temperature_field(
     Core::FE::Discretization& structdis, std::shared_ptr<const Core::LinAlg::Vector<double>> temp)
 {
-  structdis.set_state(2, "temperature", temp);
+  structdis.set_state(2, "temperature", *temp);
 }
 
 /*----------------------------------------------------------------------*/
@@ -178,7 +178,7 @@ void SSI::SSICouplingMatchingVolume::set_temperature_field(
 void SSI::SSICouplingMatchingVolumeAndBoundary::set_temperature_field(
     Core::FE::Discretization& structdis, std::shared_ptr<const Core::LinAlg::Vector<double>> temp)
 {
-  structdis.set_state(2, "temperature", temp);
+  structdis.set_state(2, "temperature", *temp);
 }
 
 /*----------------------------------------------------------------------*/
@@ -429,7 +429,7 @@ void SSI::SSICouplingNonMatchingVolume::set_velocity_fields(
 void SSI::SSICouplingNonMatchingVolume::set_scalar_field(Core::FE::Discretization& dis,
     std::shared_ptr<const Core::LinAlg::Vector<double>> phi, unsigned nds)
 {
-  dis.set_state(nds, "scalarfield", volcoupl_structurescatra_->apply_vector_mapping12(*phi));
+  dis.set_state(nds, "scalarfield", *volcoupl_structurescatra_->apply_vector_mapping12(*phi));
 }
 
 /*----------------------------------------------------------------------*/
@@ -629,7 +629,7 @@ void SSI::SSICouplingMatchingVolumeAndBoundary::set_velocity_fields(
 void SSI::SSICouplingMatchingVolumeAndBoundary::set_scalar_field(Core::FE::Discretization& dis,
     std::shared_ptr<const Core::LinAlg::Vector<double>> phi, unsigned nds)
 {
-  dis.set_state(nds, "scalarfield", phi);
+  dis.set_state(nds, "scalarfield", *phi);
 }
 
 /*----------------------------------------------------------------------*/

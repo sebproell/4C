@@ -650,7 +650,7 @@ void Solid::TimIntOneStepTheta::update_step_element()
   p.set("action", "calc_struct_update_istep");
   // go to elements
   discret_->clear_state();
-  discret_->set_state("displacement", (*dis_)(0));
+  discret_->set_state("displacement", *(*dis_)(0));
 
   if (have_nonlinear_mass() == Inpar::Solid::MassLin::ml_none)
   {
@@ -662,8 +662,8 @@ void Solid::TimIntOneStepTheta::update_step_element()
     // and accelerations at the end of time step (currently only necessary for Kirchhoff beams)
     // An corresponding update rule has to be implemented in the element, otherwise
     // displacements, velocities and accelerations remain unchange.
-    discret_->set_state("velocity", (*vel_)(0));
-    discret_->set_state("acceleration", (*acc_)(0));
+    discret_->set_state("velocity", *(*vel_)(0));
+    discret_->set_state("acceleration", *(*acc_)(0));
 
     std::shared_ptr<Core::LinAlg::Vector<double>> update_disp;
     update_disp = Core::LinAlg::create_vector(*dof_row_map_view(), true);

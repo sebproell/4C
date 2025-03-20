@@ -66,9 +66,9 @@ void ScaTra::TimIntCardiacMonodomainHDG::element_material_time_update()
   Core::Utils::add_enum_class_to_parameter_list<ScaTra::Action>(
       "action", ScaTra::Action::time_update_material, eleparams);
 
-  discret_->set_state("phiaf", phinp_);
-  discret_->set_state(nds_intvar_, "intphin", intphin_);
-  discret_->set_state(0, "phin", phin_);
+  discret_->set_state("phiaf", *phinp_);
+  discret_->set_state(nds_intvar_, "intphin", *intphin_);
+  discret_->set_state(0, "phin", *phin_);
 
 
   Core::LinAlg::SerialDenseMatrix dummyMat;

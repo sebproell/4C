@@ -160,8 +160,8 @@ void SSTI::SSTIAlgorithm::setup()
 
   // pass initial scalar field to structural discretization to correctly compute initial
   // accelerations
-  problem->get_dis("structure")->set_state(1, "scalarfield", scatra_->scatra_field()->phinp());
-  problem->get_dis("structure")->set_state(2, "temperature", thermo_->scatra_field()->phinp());
+  problem->get_dis("structure")->set_state(1, "scalarfield", *scatra_->scatra_field()->phinp());
+  problem->get_dis("structure")->set_state(2, "temperature", *thermo_->scatra_field()->phinp());
 
   // set up structural base algorithm
   struct_adapterbase_ptr_->setup();
@@ -289,8 +289,8 @@ void SSTI::SSTIAlgorithm::distribute_structure_solution()
 void SSTI::SSTIAlgorithm::distribute_scatra_solution()
 {
   structure_field()->discretization()->set_state(
-      1, "scalarfield", scatra_->scatra_field()->phinp());
-  thermo_field()->discretization()->set_state(2, "scatra", scatra_->scatra_field()->phinp());
+      1, "scalarfield", *scatra_->scatra_field()->phinp());
+  thermo_field()->discretization()->set_state(2, "scatra", *scatra_->scatra_field()->phinp());
 
   if (interfacemeshtying_)
   {
@@ -302,7 +302,7 @@ void SSTI::SSTIAlgorithm::distribute_scatra_solution()
             *meshtying_strategy_scatra_->interface_maps()->extract_vector(
                 *scatra_field()->phinp(), 2)),
         1, *imasterphinp);
-    thermo_field()->discretization()->set_state(2, "imasterscatra", imasterphinp);
+    thermo_field()->discretization()->set_state(2, "imasterscatra", *imasterphinp);
   }
 }
 
@@ -311,9 +311,9 @@ void SSTI::SSTIAlgorithm::distribute_scatra_solution()
 void SSTI::SSTIAlgorithm::distribute_thermo_solution()
 {
   structure_field()->discretization()->set_state(
-      2, "temperature", thermo_->scatra_field()->phinp());
+      2, "temperature", *thermo_->scatra_field()->phinp());
 
-  scatra_field()->discretization()->set_state(2, "thermo", thermo_->scatra_field()->phinp());
+  scatra_field()->discretization()->set_state(2, "thermo", *thermo_->scatra_field()->phinp());
 
   if (interfacemeshtying_)
   {
@@ -334,11 +334,11 @@ void SSTI::SSTIAlgorithm::distribute_thermo_solution()
         1, *islavetempnp);
 
     // set master side temperature to thermo discretization
-    thermo_field()->discretization()->set_state(3, "imastertemp", imastertempnp);
+    thermo_field()->discretization()->set_state(3, "imastertemp", *imastertempnp);
 
     // set master and slave side temperature to scatra discretization
-    scatra_field()->discretization()->set_state(2, "islavetemp", islavetempnp);
-    scatra_field()->discretization()->set_state(2, "imastertemp", imastertempnp);
+    scatra_field()->discretization()->set_state(2, "islavetemp", *islavetempnp);
+    scatra_field()->discretization()->set_state(2, "imastertemp", *imastertempnp);
   }
 }
 

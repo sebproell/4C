@@ -96,7 +96,7 @@ void Lubrication::TimIntStationary::add_neumann_to_residual()
 void Lubrication::TimIntStationary::add_time_integration_specific_vectors(
     bool forcedincrementalsolver)
 {
-  discret_->set_state("prenp", prenp_);
+  discret_->set_state("prenp", *prenp_);
 }
 
 

@@ -98,13 +98,13 @@ void XFEM::XfsCouplingManager::set_coupling_states()
   if (mcfsi_->get_averaging_strategy() != Inpar::XFEM::Xfluid_Sided)
   {
     // Set Dispnp (used to calc local coord of gausspoints)
-    struct_->discretization()->set_state("dispnp", struct_->dispnp());
+    struct_->discretization()->set_state("dispnp", *struct_->dispnp());
     // Set Velnp (used for interface integration)
     std::shared_ptr<Core::LinAlg::Vector<double>> fullvelnp =
         std::make_shared<Core::LinAlg::Vector<double>>(struct_->velnp()->get_map(), true);
     fullvelnp->update(1.0, *struct_->dispnp(), -1.0, *struct_->dispn(), 0.0);
     fullvelnp->update(-(dt - 1 / scaling_FSI) * scaling_FSI, *struct_->veln(), scaling_FSI);
-    struct_->discretization()->set_state("velaf", fullvelnp);
+    struct_->discretization()->set_state("velaf", *fullvelnp);
   }
 }
 

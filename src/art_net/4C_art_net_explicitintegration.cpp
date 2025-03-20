@@ -164,7 +164,7 @@ void Arteries::ArtNetExplicitTimeInt::init(const Teuchos::ParameterList& globalt
   // ---------------------------------------------------------------------------------------
   Teuchos::ParameterList eleparams;
   discret_->clear_state();
-  discret_->set_state("qanp", qanp_);
+  discret_->set_state("qanp", *qanp_);
 
   // loop all elements on this proc (including ghosted ones)
 
@@ -298,7 +298,7 @@ void Arteries::ArtNetExplicitTimeInt::solve(
 
     // set vector values needed by elements
     discret_->clear_state();
-    discret_->set_state("qanp", qanp_);
+    discret_->set_state("qanp", *qanp_);
 
 
     // call standard loop over all elements
@@ -322,7 +322,7 @@ void Arteries::ArtNetExplicitTimeInt::solve(
 
     // set vector values needed by elements
     discret_->clear_state();
-    discret_->set_state("qanp", qanp_);
+    discret_->set_state("qanp", *qanp_);
 
     eleparams.set("time step size", dta_);
     eleparams.set("Wfnp", Wfnp_);
@@ -351,7 +351,7 @@ void Arteries::ArtNetExplicitTimeInt::solve(
 
     // set vector values needed by elements
     discret_->clear_state();
-    discret_->set_state("qanp", qanp_);
+    discret_->set_state("qanp", *qanp_);
 
     eleparams.set("time step size", dta_);
     eleparams.set("total time", time_);
@@ -417,7 +417,7 @@ void Arteries::ArtNetExplicitTimeInt::solve(
 
     // set vector values needed by elements
     discret_->clear_state();
-    discret_->set_state("qanp", qanp_);
+    discret_->set_state("qanp", *qanp_);
 
     eleparams.set("time step size", dta_);
     eleparams.set("total time", time_);
@@ -465,7 +465,7 @@ void Arteries::ArtNetExplicitTimeInt::solve_scatra()
 
     // set vector values needed by elements
     discret_->clear_state();
-    discret_->set_state("qanp", qanp_);
+    discret_->set_state("qanp", *qanp_);
 
     eleparams.set("time step size", dta_);
     eleparams.set("time", time_);
@@ -799,12 +799,7 @@ void Arteries::ArtNetExplicitTimeInt::calc_postprocessing_values()
 
   // set vector values needed by elements
   discret_->clear_state();
-  //  std::cout<<"On proc("<<myrank_<<"): "<<"postpro setting qanp"<<std::endl;
-  discret_->set_state("qanp", qanp_);
-  //  std::cout<<"On proc("<<myrank_<<"): "<<"postpro setting wfnp"<<std::endl;
-  //  discret_->set_state("Wfnp",Wfnp_);
-  //  std::cout<<"On proc("<<myrank_<<"): "<<"postpro setting wbnp"<<std::endl;
-  //  discret_->set_state("Wbnp",Wbnp_);
+  discret_->set_state("qanp", *qanp_);
 
   eleparams.set("time step size", dta_);
   eleparams.set("total time", time_);

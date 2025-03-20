@@ -292,8 +292,8 @@ bool Solid::ModelEvaluator::Structure::initialize_inertia_and_damping()
   // set vector values needed by elements
   // --> initially zero !!!
   discret().clear_state();
-  discret().set_state(0, "residual displacement", zeros);
-  discret().set_state(0, "displacement", zeros);
+  discret().set_state(0, "residual displacement", *zeros);
+  discret().set_state(0, "displacement", *zeros);
 
   // set action type and evaluation matrix and vector pointers
   static_contributions(eval_mat.data(), eval_vec.data());
@@ -325,9 +325,9 @@ bool Solid::ModelEvaluator::Structure::apply_force_internal()
 
   // set vector values needed by elements
   discret().clear_state();
-  discret().set_state(0, "residual displacement", dis_incr_ptr_);
-  discret().set_state(0, "displacement", global_state().get_dis_np());
-  discret().set_state(0, "velocity", global_state().get_vel_np());
+  discret().set_state(0, "residual displacement", *dis_incr_ptr_);
+  discret().set_state(0, "displacement", *global_state().get_dis_np());
+  discret().set_state(0, "velocity", *global_state().get_vel_np());
 
   // set action type and evaluation matrix and vector pointers
   static_contributions(eval_vec.data());
@@ -354,10 +354,10 @@ bool Solid::ModelEvaluator::Structure::apply_force_external()
   eval_data().set_action_type(Core::Elements::none);
   // set vector values needed by elements
   discret().clear_state();
-  discret().set_state(0, "displacement", global_state().get_dis_n());
+  discret().set_state(0, "displacement", *global_state().get_dis_n());
   if (eval_data().get_damping_type() == Inpar::Solid::damp_material)
-    discret().set_state(0, "velocity", global_state().get_vel_n());
-  discret().set_state(0, "displacement new", global_state().get_dis_np());
+    discret().set_state(0, "velocity", *global_state().get_vel_n());
+  discret().set_state(0, "displacement new", *global_state().get_dis_np());
   evaluate_neumann(*global_state().get_fext_np(), nullptr);
 
   return eval_error_check();
@@ -373,17 +373,18 @@ bool Solid::ModelEvaluator::Structure::apply_force_stiff_external()
 
   // set vector values needed by elements
   discret().clear_state();
-  discret().set_state(0, "displacement", global_state().get_dis_n());
+  discret().set_state(0, "displacement", *global_state().get_dis_n());
 
   if (eval_data().get_damping_type() == Inpar::Solid::damp_material)
-    discret().set_state(0, "velocity", global_state().get_vel_n());
+    discret().set_state(0, "velocity", *global_state().get_vel_n());
 
   // get load vector
   if (!tim_int().get_data_sdyn().get_load_lin())
     evaluate_neumann(*global_state().get_fext_np(), nullptr);
   else
   {
-    discret().set_state(0, "displacement new", global_state().get_dis_np());
+    discret().set_state(0, "displacement new", *global_state().get_dis_np());
+
     /* Add the linearization of the external force to the stiffness
      * matrix. */
     evaluate_neumann(*global_state().get_fext_np(), Core::Utils::shared_ptr_from_ref(*stiff_ptr_));
@@ -417,9 +418,9 @@ bool Solid::ModelEvaluator::Structure::apply_force_stiff_internal()
 
   // set vector values needed by elements
   discret().clear_state();
-  discret().set_state(0, "residual displacement", dis_incr_ptr_);
-  discret().set_state(0, "displacement", global_state().get_dis_np());
-  discret().set_state(0, "velocity", global_state().get_vel_np());
+  discret().set_state(0, "residual displacement", *dis_incr_ptr_);
+  discret().set_state(0, "displacement", *global_state().get_dis_np());
+  discret().set_state(0, "velocity", *global_state().get_vel_np());
 
   // set action types and evaluate matrices/vectors
   static_contributions(eval_mat.data(), eval_vec.data());
@@ -475,7 +476,7 @@ void Solid::ModelEvaluator::Structure::material_damping_contributions(
   // (reset the action type to be independent of the calling order)
   eval_data().set_action_type(Core::Elements::struct_calc_nlnstiff);
   // set the discretization state
-  discret().set_state(0, "velocity", global_state().get_vel_np());
+  discret().set_state(0, "velocity", *global_state().get_vel_np());
   // reset damping matrix
   damp().zero();
   // add the stiffness matrix as well (also for the apply_force case!)
@@ -501,8 +502,8 @@ void Solid::ModelEvaluator::Structure::inertial_contributions(
     eval_data().set_action_type(Core::Elements::struct_calc_nlnstiffmass);
 
   // set the discretization state
-  discret().set_state(0, "velocity", global_state().get_vel_np());
-  discret().set_state(0, "acceleration", global_state().get_acc_np());
+  discret().set_state(0, "velocity", *global_state().get_vel_np());
+  discret().set_state(0, "acceleration", *global_state().get_acc_np());
   // reset the mass matrix
   mass().zero();
   // set mass matrix
@@ -525,8 +526,8 @@ void Solid::ModelEvaluator::Structure::inertial_contributions(
   // overwrite element action
   eval_data().set_action_type(Core::Elements::struct_calc_internalinertiaforce);
   // set the discretization state
-  discret().set_state(0, "velocity", global_state().get_vel_np());
-  discret().set_state(0, "acceleration", global_state().get_acc_np());
+  discret().set_state(0, "velocity", *global_state().get_vel_np());
+  discret().set_state(0, "acceleration", *global_state().get_acc_np());
 
   // set inertial vector if necessary
   eval_vec[1] = get_inertial_force();
@@ -876,7 +877,7 @@ void Solid::ModelEvaluator::Structure::evaluate_analytical_error()
   {
     // Set vector values needed by elements
     discret().clear_state();
-    discret().set_state(0, "displacement", global_state().get_dis_np());
+    discret().set_state(0, "displacement", *global_state().get_dis_np());
 
     // Call the error evaluator
     Teuchos::ParameterList evaluation_parameters;
@@ -992,8 +993,8 @@ void Solid::ModelEvaluator::Structure::output_runtime_structure_postprocess_stre
 
     // Set vector values needed by elements.
     discret().clear_state();
-    discret().set_state(0, "displacement", global_state().get_dis_np());
-    discret().set_state(0, "residual displacement", dis_incr_ptr_);
+    discret().set_state(0, "displacement", *global_state().get_dis_np());
+    discret().set_state(0, "residual displacement", *dis_incr_ptr_);
 
     // global_state().get_dis_np()->print(std::cout);
 
@@ -1121,8 +1122,8 @@ void Solid::ModelEvaluator::Structure::output_runtime_structure_gauss_point_data
         *discret().node_col_map(), *discret().element_row_map());
 
     discret().clear_state();
-    discret().set_state(0, "displacement", global_state().get_dis_np());
-    discret().set_state(0, "residual displacement", dis_incr_ptr_);
+    discret().set_state(0, "displacement", *global_state().get_dis_np());
+    discret().set_state(0, "residual displacement", *dis_incr_ptr_);
 
     std::array<std::shared_ptr<Core::LinAlg::Vector<double>>, 3> eval_vec = {
         nullptr, nullptr, nullptr};
@@ -1438,8 +1439,8 @@ void Solid::ModelEvaluator::Structure::run_recover()
 {
   // set vector values needed by elements
   discret().clear_state();
-  discret().set_state(0, "residual displacement", dis_incr_ptr_);
-  discret().set_state(0, "displacement", global_state().get_dis_np());
+  discret().set_state(0, "residual displacement", *dis_incr_ptr_);
+  discret().set_state(0, "displacement", *global_state().get_dis_np());
   // set the element action
   eval_data().set_action_type(Core::Elements::struct_calc_recover);
   // set the matrix and vector pointers to nullptr
@@ -1537,7 +1538,7 @@ void Solid::ModelEvaluator::Structure::evaluate_jacobian_contributions_from_elem
 
   // set vector values needed by elements
   discret().clear_state();
-  discret().set_state(0, "displacement", global_state().get_dis_np());
+  discret().set_state(0, "displacement", *global_state().get_dis_np());
 
   eval_mat[0] = Core::Utils::shared_ptr_from_ref(*stiff_ptc_ptr_);
 
@@ -1584,7 +1585,7 @@ void Solid::ModelEvaluator::Structure::update_step_element()
 
   // go to elements
   discret().clear_state();
-  discret().set_state("displacement", global_state().get_dis_n());
+  discret().set_state("displacement", *global_state().get_dis_n());
 
   // set dummy evaluation vectors and matrices
   std::array<std::shared_ptr<Core::LinAlg::Vector<double>>, 3> eval_vec = {
@@ -1624,8 +1625,8 @@ void Solid::ModelEvaluator::Structure::determine_stress_strain()
 
   // set vector values needed by elements
   discret().clear_state();
-  discret().set_state(0, "displacement", global_state().get_dis_np());
-  discret().set_state(0, "residual displacement", dis_incr_ptr_);
+  discret().set_state(0, "displacement", *global_state().get_dis_np());
+  discret().set_state(0, "residual displacement", *dis_incr_ptr_);
 
   // set dummy evaluation vectors and matrices
   std::array<std::shared_ptr<Core::LinAlg::Vector<double>>, 3> eval_vec = {
@@ -1650,8 +1651,8 @@ void Solid::ModelEvaluator::Structure::determine_strain_energy(
 
   // set state vector values needed by elements
   discret().clear_state();
-  discret().set_state(0, "displacement", Core::Utils::shared_ptr_from_ref(disnp));
-  discret().set_state(0, "residual displacement", dis_incr_ptr_);
+  discret().set_state(0, "displacement", disnp);
+  discret().set_state(0, "residual displacement", *dis_incr_ptr_);
 
   // set dummy evaluation vectors and matrices
   std::array<std::shared_ptr<Core::LinAlg::Vector<double>>, 3> eval_vec = {
@@ -1712,7 +1713,7 @@ void Solid::ModelEvaluator::Structure::determine_energy(const Core::LinAlg::Vect
   }
 }
 
-/*----------------------------------------------------------------------------*
+/*----------------------------------------------------------------------------*ö
  *----------------------------------------------------------------------------*/
 void Solid::ModelEvaluator::Structure::output_step_state(
     Core::IO::DiscretizationWriter& iowriter) const
@@ -2121,10 +2122,10 @@ void Solid::ModelEvaluator::Structure::create_backup_state(const Core::LinAlg::V
 
   // set vector values needed by elements
   discret().clear_state();
-  discret().set_state(0, "displacement", global_state().get_dis_np());
+  discret().set_state(0, "displacement", *global_state().get_dis_np());
   std::shared_ptr<const Core::LinAlg::Vector<double>> dir_displ =
       global_state().extract_displ_entries(dir);
-  discret().set_state(0, "residual displacement", dir_displ);
+  discret().set_state(0, "residual displacement", *dir_displ);
 
   // set dummy evaluation vectors and matrices
   std::array<std::shared_ptr<Core::LinAlg::Vector<double>>, 3> eval_vec = {

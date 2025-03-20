@@ -89,7 +89,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
   // centers (for linear elements the centers are the superconvergent sampling points!)
   dis.clear_state();
   // Set ALE displacements here
-  dis.set_state(statename, Core::Utils::shared_ptr_from_ref(state));
+  dis.set_state(statename, state);
 
   const Epetra_Map* elementrowmap = dis.element_row_map();
   Core::LinAlg::MultiVector<double> elevec_toberecovered(*elementrowmap, numvec, true);

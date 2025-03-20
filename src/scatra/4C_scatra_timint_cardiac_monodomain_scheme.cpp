@@ -109,7 +109,7 @@ void ScaTra::TimIntCardiacMonodomainOST::add_time_integration_specific_vectors(
 {
   // Call function from baseclass
   TimIntOneStepTheta::add_time_integration_specific_vectors(forcedincrementalsolver);
-  discret_->set_state("phin", phin_);
+  discret_->set_state("phin", *phin_);
 
   return;
 }
@@ -294,7 +294,7 @@ void ScaTra::TimIntCardiacMonodomainGenAlpha::add_time_integration_specific_vect
   // Call function from baseclass
   TimIntGenAlpha::add_time_integration_specific_vectors(forcedincrementalsolver);
 
-  if (incremental_ or forcedincrementalsolver) discret_->set_state("phin", phin_);
+  if (incremental_ or forcedincrementalsolver) discret_->set_state("phin", *phin_);
 
   return;
 }

@@ -1263,7 +1263,7 @@ namespace FLD
       if (forcing_type_ == Inpar::FLUID::linear_compensation_from_intermediate_spectrum or
           (forcing_type_ == Inpar::FLUID::fixed_power_input and (not is_genalpha_)))
       {
-        discret_->set_state(1, "intvelnp", velnp_);
+        discret_->set_state(1, "intvelnp", *velnp_);
       }
       else
         FOUR_C_THROW(
@@ -1703,7 +1703,7 @@ namespace FLD
       Teuchos::ParameterList params;
       params.set<FLD::Action>("action", FLD::interpolate_hdg_for_hit);
 
-      discret_->set_state(1, "intvelnp", velnp_);
+      discret_->set_state(1, "intvelnp", *velnp_);
 
       std::vector<int> dummy;
       Core::LinAlg::SerialDenseMatrix dummyMat;
@@ -1873,10 +1873,10 @@ namespace FLD
       // this is a dummy, forcing_ should be zero is written in the first components of interpolVec
       discret_->clear_state(true);
 
-      discret_->set_state(1, "intvelnp", velnp_);
+      discret_->set_state(1, "intvelnp", *velnp_);
 
       // this is the real value
-      discret_->set_state(1, "forcing", forcing_);
+      discret_->set_state(1, "forcing", *forcing_);
 
       // for 2nd evaluate
       const Epetra_Map* intdofrowmap = discret_->dof_row_map(1);
@@ -2020,7 +2020,7 @@ namespace FLD
 
     eleparams.set<double>("length", length_);
 
-    discret_->set_state("velnp", velnp_);
+    discret_->set_state("velnp", *velnp_);
 
     const Epetra_Map* elementrowmap = discret_->element_row_map();
     Core::LinAlg::MultiVector<double> massflvec(*elementrowmap, 1, true);

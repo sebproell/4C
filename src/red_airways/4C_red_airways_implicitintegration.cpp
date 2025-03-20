@@ -850,10 +850,10 @@ void Airway::RedAirwayImplicitTimeInt::solve(
 
     // Set vector values needed by elements
     discret_->clear_state();
-    discret_->set_state("pnp", pnp_);
-    discret_->set_state("on", on_);
-    discret_->set_state("pnm", pnm_);
-    discret_->set_state("intr_ac_link", n_intr_ac_ln_);
+    discret_->set_state("pnp", *pnp_);
+    discret_->set_state("on", *on_);
+    discret_->set_state("pnm", *pnm_);
+    discret_->set_state("intr_ac_link", *n_intr_ac_ln_);
 
     // note: We use an RCP because ParameterList wants something printable and comparable
     Discret::ReducedLung::EvaluationData& evaluation_data =
@@ -936,9 +936,9 @@ void Airway::RedAirwayImplicitTimeInt::solve(
 
     // Set vector values needed by elements
     discret_->clear_state();
-    discret_->set_state("pnp", pnp_);
-    discret_->set_state("on", on_);
-    discret_->set_state("pnm", pnm_);
+    discret_->set_state("pnp", *pnp_);
+    discret_->set_state("on", *on_);
+    discret_->set_state("pnm", *pnm_);
 
     // note: We use an RCP because ParameterList wants something printable and comparable
     Discret::ReducedLung::EvaluationData& evaluation_data =
@@ -1056,10 +1056,10 @@ void Airway::RedAirwayImplicitTimeInt::solve(
 
     // Set vector values needed by elements
     discret_->clear_state();
-    discret_->set_state("pnp", pnp_);
-    discret_->set_state("on", on_);
-    discret_->set_state("pnm", pnm_);
-    discret_->set_state("intr_ac_link", n_intr_ac_ln_);
+    discret_->set_state("pnp", *pnp_);
+    discret_->set_state("on", *on_);
+    discret_->set_state("pnm", *pnm_);
+    discret_->set_state("intr_ac_link", *n_intr_ac_ln_);
 
     // note: We use an RCP because ParameterList wants something printable and comparable
     Discret::ReducedLung::EvaluationData& evaluation_data =
@@ -1140,7 +1140,7 @@ void Airway::RedAirwayImplicitTimeInt::solve(
 
     // set vector values needed by elements
     discret_->clear_state();
-    discret_->set_state("pnp", pnp_);
+    discret_->set_state("pnp", *pnp_);
 
     // note: We use an RCP because ParameterList wants something printable and comparable
     Discret::ReducedLung::EvaluationData& evaluation_data =
@@ -1664,10 +1664,10 @@ void Airway::RedAirwayImplicitTimeInt::eval_residual(
 
     // set vector values needed by elements
     discret_->clear_state();
-    discret_->set_state("pnp", pnp_);
-    discret_->set_state("on", on_);
-    discret_->set_state("pnm", pnm_);
-    discret_->set_state("intr_ac_link", n_intr_ac_ln_);
+    discret_->set_state("pnp", *pnp_);
+    discret_->set_state("on", *on_);
+    discret_->set_state("pnm", *pnm_);
+    discret_->set_state("intr_ac_link", *n_intr_ac_ln_);
 
     // note: We use an RCP because ParameterList wants something printable and comparable
     Discret::ReducedLung::EvaluationData& evaluation_data =
@@ -1746,9 +1746,9 @@ void Airway::RedAirwayImplicitTimeInt::eval_residual(
 
     // set vector values needed by elements
     discret_->clear_state();
-    discret_->set_state("pnp", pnp_);
-    discret_->set_state("on", on_);
-    discret_->set_state("pnm", pnm_);
+    discret_->set_state("pnp", *pnp_);
+    discret_->set_state("on", *on_);
+    discret_->set_state("pnm", *pnm_);
     //    discret_->set_state("qcnp",qcnp_);
     //    discret_->set_state("qcn" ,qcn_ );
     //    discret_->set_state("qcnm",qcnm_);

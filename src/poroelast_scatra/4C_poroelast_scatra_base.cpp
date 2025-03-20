@@ -142,8 +142,8 @@ void PoroElastScaTra::PoroScatraBase::set_scatra_solution()
   }
 
   // porous structure
-  poro_->structure_field()->discretization()->set_state(2, "scalar", phinp_s);
-  poro_->structure_field()->discretization()->set_state(2, "scalarn", phin_s);
+  poro_->structure_field()->discretization()->set_state(2, "scalar", *phinp_s);
+  poro_->structure_field()->discretization()->set_state(2, "scalarn", *phin_s);
 
   // porous fluid
   poro_->fluid_field()->set_iter_scalar_fields(phinp_f, phin_f, phidtnp,
@@ -207,7 +207,7 @@ void PoroElastScaTra::PoroScatraBase::set_mesh_disp()
     sdispnp = volcoupl_structurescatra_->apply_vector_mapping21(*structure_field()->dispnp());
   }
 
-  scatra_->scatra_field()->discretization()->set_state(1, "displacement", sdispnp);
+  scatra_->scatra_field()->discretization()->set_state(1, "displacement", *sdispnp);
 }
 
 /*----------------------------------------------------------------------*

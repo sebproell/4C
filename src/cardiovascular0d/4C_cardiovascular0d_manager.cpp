@@ -275,7 +275,7 @@ Utils::Cardiovascular0DManager::Cardiovascular0DManager(
     p.set("NumberofID", num_cardiovascular0_did_);
     p.set("scale_timint", sc_timint);
     p.set("time_step_size", ts_size);
-    actdisc_->set_state("displacement", disp);
+    actdisc_->set_state("displacement", *disp);
 
     std::shared_ptr<Core::LinAlg::Vector<double>> v_n_red =
         std::make_shared<Core::LinAlg::Vector<double>>(*redcardiovascular0dmap_);
@@ -377,7 +377,7 @@ void Utils::Cardiovascular0DManager::evaluate_force_stiff(const double time,
       std::make_shared<Core::LinAlg::Vector<double>>(*redcardiovascular0dmap_);
 
   actdisc_->clear_state();
-  actdisc_->set_state("displacement", disp);
+  actdisc_->set_state("displacement", *disp);
 
   // evaluate current 3D volume only
   cardvasc0d_model_->evaluate(
@@ -653,7 +653,7 @@ void Utils::Cardiovascular0DManager::evaluate_neumann_cardiovascular0_d_coupling
 
     std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
         params.get<std::shared_ptr<const Core::LinAlg::Vector<double>>>("new disp");
-    actdisc_->set_state("displacement new", disp);
+    actdisc_->set_state("displacement new", *disp);
 
     Core::LinAlg::SerialDenseVector elevector;
     Core::LinAlg::SerialDenseMatrix elematrix;

@@ -219,9 +219,9 @@ void XFEM::MeshCoupling::set_state()
   // set general vector values of cutterdis needed by background element evaluate routine
   clear_state();
 
-  cutter_dis_->set_state("ivelnp", ivelnp_);
-  cutter_dis_->set_state("iveln", iveln_);
-  cutter_dis_->set_state("idispnp", idispnp_);
+  cutter_dis_->set_state("ivelnp", *ivelnp_);
+  cutter_dis_->set_state("iveln", *iveln_);
+  cutter_dis_->set_state("idispnp", *idispnp_);
 }
 
 /*--------------------------------------------------------------------------*
@@ -231,9 +231,9 @@ void XFEM::MeshCoupling::set_state_displacement()
   // set general vector values of cutterdis needed by background element evaluate routine
   clear_state();
 
-  cutter_dis_->set_state("idispnp", idispnp_);
-  cutter_dis_->set_state("idispn", idispn_);
-  cutter_dis_->set_state("idispnpi", idispnpi_);
+  cutter_dis_->set_state("idispnp", *idispnp_);
+  cutter_dis_->set_state("idispn", *idispn_);
+  cutter_dis_->set_state("idispnpi", *idispnpi_);
 }
 
 /*--------------------------------------------------------------------------*

@@ -743,16 +743,16 @@ void FLD::XFluid::assemble_mat_and_rhs(int itnum)
   // set general vector values needed by elements
   discret_->clear_state();
 
-  discret_->set_state("hist", state_->hist_);
-  discret_->set_state("veln", state_->veln_);
-  discret_->set_state("accam", state_->accam_);
-  discret_->set_state("scaaf", state_->scaaf_);
-  discret_->set_state("scaam", state_->scaam_);
+  discret_->set_state("hist", *state_->hist_);
+  discret_->set_state("veln", *state_->veln_);
+  discret_->set_state("accam", *state_->accam_);
+  discret_->set_state("scaaf", *state_->scaaf_);
+  discret_->set_state("scaam", *state_->scaam_);
 
   if (alefluid_)
   {
-    discret_->set_state("dispnp", state_->dispnp_);
-    discret_->set_state("gridv", state_->gridvnp_);
+    discret_->set_state("dispnp", *state_->dispnp_);
+    discret_->set_state("gridv", *state_->gridvnp_);
   }
 
   set_state_tim_int();
@@ -1553,12 +1553,12 @@ void FLD::XFluid::assemble_mat_and_rhs_gradient_penalty(
     // FOUR_C_THROW("which vectors have to be set for gradient penalty for timeintegration in
     // alefluid?!"); In principle we would not need gridv, as tau is anyway set to 1.0 at the end
     // ...
-    discret_->set_state("dispnp", state_->dispnp_);
-    discret_->set_state("gridv", state_->gridvnp_);
+    discret_->set_state("dispnp", *state_->dispnp_);
+    discret_->set_state("gridv", *state_->gridvnp_);
   }
 
   // set scheme-specific element parameters and vector values
-  discret_->set_state("velaf", vec);
+  discret_->set_state("velaf", *vec);
 
 
 
@@ -1939,7 +1939,7 @@ void FLD::XFluid::compute_error_norms(Core::LinAlg::SerialDenseVector& glob_dom_
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state("u and p at time n+1 (converged)", state_->velnp_);
+  discret_->set_state("u and p at time n+1 (converged)", *state_->velnp_);
 
   condition_manager_->set_state();
 
@@ -2857,7 +2857,7 @@ void FLD::XFluid::update_krylov_space_projection()
 
       if (alefluid_)
       {
-        discret_->set_state("dispnp", state_->dispnp_);
+        discret_->set_state("dispnp", *state_->dispnp_);
       }
 
       /*
@@ -4783,7 +4783,7 @@ void FLD::XFluid::set_dirichlet_neumann_bc()
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state("velaf", state_->velnp_);
+  discret_->set_state("velaf", *state_->velnp_);
   // predicted dirichlet values
   // velnp then also holds prescribed new dirichlet values
   discret_->evaluate_dirichlet(
@@ -4793,14 +4793,14 @@ void FLD::XFluid::set_dirichlet_neumann_bc()
 
   if (alefluid_)
   {
-    discret_->set_state("dispnp", state_->dispnp_);
+    discret_->set_state("dispnp", *state_->dispnp_);
   }
 
   // set thermodynamic pressure
   eleparams.set("thermodynamic pressure", thermpressaf_);
 
   state_->neumann_loads_->put_scalar(0.0);
-  discret_->set_state("scaaf", state_->scaaf_);
+  discret_->set_state("scaaf", *state_->scaaf_);
 
   XFEM::evaluate_neumann(eleparams, discret_, *state_->neumann_loads_);
 
@@ -4990,7 +4990,7 @@ void FLD::XFluid::predict_tang_vel_consist_acc()
   // get Dirichlet values at t_{n+1}
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state("velnp", state_->velnp_);
+  discret_->set_state("velnp", *state_->velnp_);
 
   // predicted Dirichlet values
   // velnp_ then also holds prescribed new dirichlet values
@@ -5435,9 +5435,9 @@ void FLD::XFluid::set_state_tim_int()
 {
   // set scheme-specific element parameters and vector values
   if (timealgo_ == Inpar::FLUID::timeint_afgenalpha)
-    discret_->set_state("velaf", state_->velaf_);
+    discret_->set_state("velaf", *state_->velaf_);
   else
-    discret_->set_state("velaf", state_->velnp_);
+    discret_->set_state("velaf", *state_->velnp_);
 }
 
 /*----------------------------------------------------------------------*

@@ -692,7 +692,7 @@ void ScaTra::ScaTraTimIntImpl::setup_nat_conv()
   if (num_scal() < 1) FOUR_C_THROW("Error since numscal = {}. Not allowed since < 1", num_scal());
   c0_.resize(num_scal());
 
-  discret_->set_state("phinp", phinp_);
+  discret_->set_state("phinp", *phinp_);
 
   // set action for elements
   Teuchos::ParameterList eleparams;
@@ -1298,10 +1298,10 @@ void ScaTra::ScaTraTimIntImpl::set_velocity_field()
   }
 
   // provide scatra discretization with convective velocity
-  discret_->set_state(nds_vel(), "convective velocity field", convel);
+  discret_->set_state(nds_vel(), "convective velocity field", *convel);
 
   // provide scatra discretization with velocity
-  discret_->set_state(nds_vel(), "velocity field", vel);
+  discret_->set_state(nds_vel(), "velocity field", *vel);
 }
 
 /*----------------------------------------------------------------------*
@@ -1363,9 +1363,9 @@ void ScaTra::ScaTraTimIntImpl::set_external_force()
     }
   }
 
-  discret_->set_state(nds_vel(), "external_force", external_force);
-  discret_->set_state(nds_vel(), "intrinsic_mobility", intrinsic_mobility);
-  discret_->set_state(nds_vel(), "force_velocity", force_velocity);
+  discret_->set_state(nds_vel(), "external_force", *external_force);
+  discret_->set_state(nds_vel(), "intrinsic_mobility", *intrinsic_mobility);
+  discret_->set_state(nds_vel(), "force_velocity", *force_velocity);
 }
 
 /*----------------------------------------------------------------------*
@@ -1386,7 +1386,7 @@ void ScaTra::ScaTraTimIntImpl::set_wall_shear_stresses(
     FOUR_C_THROW("Maps are NOT identical. Emergency!");
 #endif
 
-  discret_->set_state(nds_wall_shear_stress(), "WallShearStress", wss);
+  discret_->set_state(nds_wall_shear_stress(), "WallShearStress", *wss);
 }
 
 /*----------------------------------------------------------------------*
@@ -1415,7 +1415,7 @@ void ScaTra::ScaTraTimIntImpl::set_pressure_field(
     FOUR_C_THROW("Maps are NOT identical. Emergency!");
 #endif
 
-  discret_->set_state(nds_pressure(), "Pressure", pressure);
+  discret_->set_state(nds_pressure(), "Pressure", *pressure);
 }
 
 /*----------------------------------------------------------------------*
@@ -1509,23 +1509,23 @@ void ScaTra::ScaTraTimIntImpl::set_velocity_field(
     fsvelswitch = false;
 
   // provide scatra discretization with convective velocity
-  discret_->set_state(nds_vel(), "convective velocity field", convvel);
+  discret_->set_state(nds_vel(), "convective velocity field", *convvel);
 
   // provide scatra discretization with velocity
   if (vel != nullptr)
-    discret_->set_state(nds_vel(), "velocity field", vel);
+    discret_->set_state(nds_vel(), "velocity field", *vel);
   else
   {
     // if velocity vector is not provided by the respective algorithm, we
     // assume that it equals the given convective velocity:
-    discret_->set_state(nds_vel(), "velocity field", convvel);
+    discret_->set_state(nds_vel(), "velocity field", *convvel);
   }
 
   // provide scatra discretization with acceleration field if required
-  if (acc != nullptr) discret_->set_state(nds_vel(), "acceleration field", acc);
+  if (acc != nullptr) discret_->set_state(nds_vel(), "acceleration field", *acc);
 
   // provide scatra discretization with fine-scale convective velocity if required
-  if (fsvelswitch) discret_->set_state(nds_vel(), "fine-scale velocity field", fsvel);
+  if (fsvelswitch) discret_->set_state(nds_vel(), "fine-scale velocity field", *fsvel);
 }
 
 /*----------------------------------------------------------------------*
@@ -1663,7 +1663,7 @@ void ScaTra::ScaTraTimIntImpl::apply_mesh_movement(
     if (dispnp == nullptr) FOUR_C_THROW("Got null pointer for displacements!");
 
     // provide scatra discretization with displacement field
-    discret_->set_state(nds_disp(), "dispnp", dispnp);
+    discret_->set_state(nds_disp(), "dispnp", *dispnp);
   }  // if (isale_)
 }
 
@@ -2772,7 +2772,7 @@ void ScaTra::ScaTraTimIntImpl::assemble_mat_and_rhs()
   // set external volume force (required, e.g., for forced homogeneous isotropic turbulence)
   if (homisoturb_forcing_ != nullptr) homisoturb_forcing_->update_forcing(step_);
 
-  if (forcing_ != nullptr) discret_->set_state("forcing", forcing_);
+  if (forcing_ != nullptr) discret_->set_state("forcing", *forcing_);
 
   // add problem specific time-integration parameters
   add_problem_specific_parameters_and_vectors(eleparams);
@@ -3767,7 +3767,7 @@ void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
 
   if (nds_micro() < 0) FOUR_C_THROW("must set number of dofset for micro scale concentrations");
 
-  discret_->set_state("phinp", phinp_);
+  discret_->set_state("phinp", *phinp_);
 
   Teuchos::ParameterList eleparams;
 

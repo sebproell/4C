@@ -95,7 +95,7 @@ void ScaTra::ScaTraTimIntPoroMulti::set_l2_flux_of_multi_fluid(
     }
 
     // provide scatra discretization with convective velocity
-    discret_->set_state(nds_vel(), statename.str(), phaseflux);
+    discret_->set_state(nds_vel(), statename.str(), *phaseflux);
   }
 }  // ScaTraTimIntImpl::SetSolutionFields
 
@@ -110,8 +110,8 @@ void ScaTra::ScaTraTimIntPoroMulti::set_solution_field_of_multi_fluid(
     FOUR_C_THROW("Too few dofsets on scatra discretization!");
 
   // provide scatra discretization with fluid primary variable field
-  discret_->set_state(nds_pressure(), "phinp_fluid", phinp_fluid);
-  discret_->set_state(nds_pressure(), "phin_fluid", phin_fluid);
+  discret_->set_state(nds_pressure(), "phinp_fluid", *phinp_fluid);
+  discret_->set_state(nds_pressure(), "phin_fluid", *phin_fluid);
 }
 
 /*----------------------------------------------------------------------*

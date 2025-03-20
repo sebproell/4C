@@ -254,27 +254,27 @@ void FPSI::FpsiCoupling::evaluate_coupling_matrixes_rhs()
     poro_field()->fluid_field()->discretization()->clear_state();
 
     poro_field()->fluid_field()->discretization()->set_state(
-        0, "dispnp", poro_field()->fluid_field()->dispnp());
+        0, "dispnp", *poro_field()->fluid_field()->dispnp());
 
     poro_field()->fluid_field()->discretization()->set_state(
-        0, "gridv", poro_field()->fluid_field()->grid_vel());
+        0, "gridv", *poro_field()->fluid_field()->grid_vel());
     poro_field()->fluid_field()->discretization()->set_state(
-        0, "dispn", poro_field()->fluid_field()->dispn());
+        0, "dispn", *poro_field()->fluid_field()->dispn());
     poro_field()->fluid_field()->discretization()->set_state(
-        0, "veln", poro_field()->fluid_field()->veln());
+        0, "veln", *poro_field()->fluid_field()->veln());
     poro_field()->fluid_field()->discretization()->set_state(
-        0, "velaf", poro_field()->fluid_field()->velnp());
+        0, "velaf", *poro_field()->fluid_field()->velnp());
     poro_field()->fluid_field()->discretization()->set_state(
-        0, "velnp", poro_field()->fluid_field()->velnp());
+        0, "velnp", *poro_field()->fluid_field()->velnp());
 
     fluid_field()->discretization()->clear_state();
 
-    fluid_field()->discretization()->set_state(0, "dispnp", fluid_field()->dispnp());
-    fluid_field()->discretization()->set_state(0, "gridv", fluid_field()->grid_vel());
-    fluid_field()->discretization()->set_state(0, "dispn", fluid_field()->dispn());
-    fluid_field()->discretization()->set_state(0, "veln", fluid_field()->veln());
-    fluid_field()->discretization()->set_state(0, "velaf", fluid_field()->velnp());
-    fluid_field()->discretization()->set_state(0, "velnp", fluid_field()->velnp());
+    fluid_field()->discretization()->set_state(0, "dispnp", *fluid_field()->dispnp());
+    fluid_field()->discretization()->set_state(0, "gridv", *fluid_field()->grid_vel());
+    fluid_field()->discretization()->set_state(0, "dispn", *fluid_field()->dispn());
+    fluid_field()->discretization()->set_state(0, "veln", *fluid_field()->veln());
+    fluid_field()->discretization()->set_state(0, "velaf", *fluid_field()->velnp());
+    fluid_field()->discretization()->set_state(0, "velnp", *fluid_field()->velnp());
 
     // create the parameters for the discretization
     Teuchos::ParameterList fparams;

@@ -362,7 +362,7 @@ void ScaTra::LevelSetAlgorithm::calc_node_based_reinit_vel()
 
       discret_->clear_state();  // TODO Caution if called from nonlinear_solve
       // set initial phi, i.e., solution of level-set equation
-      discret_->set_state("phizero", initialphireinit_);
+      discret_->set_state("phizero", *initialphireinit_);
 
       switch (reinitaction_)
       {
@@ -371,7 +371,7 @@ void ScaTra::LevelSetAlgorithm::calc_node_based_reinit_vel()
           // set phin as phi used for velocity
           // note:read as phinp in sysmat_nodal_vel()
 #ifdef USE_PHIN_FOR_VEL
-          discret_->set_state("phinp", phin_);
+          discret_->set_state("phinp", *phin_);
 #else
           discret_->set_state("phinp", phinp_);
 #endif
@@ -379,7 +379,7 @@ void ScaTra::LevelSetAlgorithm::calc_node_based_reinit_vel()
         }
         case Inpar::ScaTra::reinitaction_ellipticeq:
         {
-          discret_->set_state("phinp", phinp_);
+          discret_->set_state("phinp", *phinp_);
           break;
         }
         default:
@@ -464,8 +464,8 @@ void ScaTra::LevelSetAlgorithm::correction_reinit()
 
   // set state vectors
   discret_->clear_state();
-  discret_->set_state("phizero", initialphireinit_);
-  discret_->set_state("phinp", phinp_);
+  discret_->set_state("phizero", *initialphireinit_);
+  discret_->set_state("phinp", *phinp_);
 
 
   // call loop over elements

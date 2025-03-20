@@ -155,11 +155,7 @@ void FLD::TimIntStationary::solve_stationary_problem()
 /*----------------------------------------------------------------------*
 | set integration-scheme-specific state                        bk 12/13 |
 *-----------------------------------------------------------------------*/
-void FLD::TimIntStationary::set_state_tim_int()
-{
-  discret_->set_state("velaf", velnp_);
-  return;
-}
+void FLD::TimIntStationary::set_state_tim_int() { discret_->set_state("velaf", *velnp_); }
 
 /*----------------------------------------------------------------------*
 | calculate acceleration                                       bk 12/13 |

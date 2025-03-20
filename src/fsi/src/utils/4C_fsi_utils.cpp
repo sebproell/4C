@@ -317,12 +317,10 @@ std::vector<double> FSI::Utils::SlideAleUtils::centerdisp(
 
   const int dim = Global::Problem::instance()->n_dim();
   // get structure and fluid discretizations  and set stated for element evaluation
-  const std::shared_ptr<Core::LinAlg::Vector<double>> idisptotalcol =
-      Core::LinAlg::create_vector(*structdis->dof_col_map(), true);
-  Core::LinAlg::export_to(*idisptotal, *idisptotalcol);
-  const std::shared_ptr<Core::LinAlg::Vector<double>> idispstepcol =
-      Core::LinAlg::create_vector(*structdis->dof_col_map(), true);
-  Core::LinAlg::export_to(*idispstep, *idispstepcol);
+  Core::LinAlg::Vector<double> idisptotalcol(*structdis->dof_col_map(), true);
+  export_to(*idisptotal, idisptotalcol);
+  Core::LinAlg::Vector<double> idispstepcol(*structdis->dof_col_map(), true);
+  export_to(*idispstep, idispstepcol);
 
   structdis->set_state("displacementtotal", idisptotalcol);
   structdis->set_state("displacementincr", idispstepcol);
@@ -685,12 +683,10 @@ void FSI::Utils::SlideAleUtils::rotation(
   idispstep->update(1.0, idispale, -1.0, *iprojhist_, 0.0);
 
   // get structure and fluid discretizations  and set state for element evaluation
-  const std::shared_ptr<Core::LinAlg::Vector<double>> idispstepcol =
-      Core::LinAlg::create_vector(*mtrdis.dof_col_map(), false);
-  Core::LinAlg::export_to(*idispstep, *idispstepcol);
-  const std::shared_ptr<Core::LinAlg::Vector<double>> idispnpcol =
-      Core::LinAlg::create_vector(*mtrdis.dof_col_map(), false);
-  Core::LinAlg::export_to(idispale, *idispnpcol);
+  Core::LinAlg::Vector<double> idispstepcol(*mtrdis.dof_col_map(), false);
+  export_to(*idispstep, idispstepcol);
+  Core::LinAlg::Vector<double> idispnpcol(*mtrdis.dof_col_map(), false);
+  Core::LinAlg::export_to(idispale, idispnpcol);
 
   mtrdis.set_state("displacementnp", idispnpcol);
   mtrdis.set_state("displacementincr", idispstepcol);

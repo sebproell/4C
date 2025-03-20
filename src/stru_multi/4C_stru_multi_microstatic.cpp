@@ -199,8 +199,8 @@ MultiScale::MicroStatic::MicroStatic(const int microdisnum, const double V0)
     p.set("delta time", dt_);
     // set vector values needed by elements
     discret_->clear_state();
-    discret_->set_state("residual displacement", zeros_);
-    discret_->set_state("displacement", dis_);
+    discret_->set_state("residual displacement", *zeros_);
+    discret_->set_state("displacement", *dis_);
 
     discret_->evaluate(p, stiff_, nullptr, fintn_, nullptr, nullptr);
     discret_->clear_state();
@@ -228,7 +228,7 @@ MultiScale::MicroStatic::MicroStatic(const int microdisnum, const double V0)
   double my_micro_discretization_density_integration = 0.0;
 
   // create the parameters for the discretization
-  discret_->set_state("displacement", dis_);
+  discret_->set_state("displacement", *dis_);
   Core::Elements::LocationArray la(discret_->num_dof_sets());
   for (const auto* ele : discret_->my_row_element_range())
   {
@@ -313,8 +313,8 @@ void MultiScale::MicroStatic::predict_const_dis(Core::LinAlg::Matrix<3, 3>* defg
     // set vector values needed by elements
     discret_->clear_state();
     disi_->put_scalar(0.0);
-    discret_->set_state("residual displacement", disi_);
-    discret_->set_state("displacement", disn_);
+    discret_->set_state("residual displacement", *disi_);
+    discret_->set_state("displacement", *disn_);
     fintn_->put_scalar(0.0);  // initialise internal force vector
 
     discret_->evaluate(p, stiff_, nullptr, fintn_, nullptr, nullptr);
@@ -395,8 +395,8 @@ void MultiScale::MicroStatic::predict_tang_dis(Core::LinAlg::Matrix<3, 3>* defgr
     // set vector values needed by elements
     discret_->clear_state();
     disi_->put_scalar(0.0);
-    discret_->set_state("residual displacement", disi_);
-    discret_->set_state("displacement", disn_);
+    discret_->set_state("residual displacement", *disi_);
+    discret_->set_state("displacement", *disn_);
     fintn_->put_scalar(0.0);  // initialise internal force vector
 
     discret_->evaluate(p, stiff_, nullptr, fintn_, nullptr, nullptr);
@@ -480,8 +480,8 @@ void MultiScale::MicroStatic::predict_tang_dis(Core::LinAlg::Matrix<3, 3>* defgr
     // set vector values needed by elements
     discret_->clear_state();
     disi_->put_scalar(0.0);
-    discret_->set_state("residual displacement", disi_);
-    discret_->set_state("displacement", disn_);
+    discret_->set_state("residual displacement", *disi_);
+    discret_->set_state("displacement", *disn_);
     fintn_->put_scalar(0.0);  // initialise internal force vector
 
     discret_->evaluate(p, stiff_, nullptr, fintn_, nullptr, nullptr);
@@ -571,8 +571,8 @@ void MultiScale::MicroStatic::full_newton()
       // everything on the microscale "lives" at the pseudo generalized midpoint
       // -> we solve our quasi-static problem there and only update data to the "end"
       // of the time step after having finished a macroscopic dt
-      discret_->set_state("residual displacement", disi_);
-      discret_->set_state("displacement", disn_);
+      discret_->set_state("residual displacement", *disi_);
+      discret_->set_state("displacement", *disn_);
       fintn_->put_scalar(0.0);  // initialise internal force vector
 
       discret_->evaluate(p, stiff_, nullptr, fintn_, nullptr, nullptr);
@@ -638,8 +638,8 @@ void MultiScale::MicroStatic::prepare_output()
     p.set<Inpar::Solid::StrainType>("ioplstrain", ioplstrain_);
     // set vector values needed by elements
     discret_->clear_state();
-    discret_->set_state("residual displacement", zeros_);
-    discret_->set_state("displacement", disn_);
+    discret_->set_state("residual displacement", *zeros_);
+    discret_->set_state("displacement", *disn_);
     discret_->evaluate(p, nullptr, nullptr, nullptr, nullptr, nullptr);
     discret_->clear_state();
   }

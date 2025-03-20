@@ -168,7 +168,7 @@ void SSTI::ThermoStructureOffDiagCoupling::evaluate_off_diag_block_structure_the
 
   structure_->discretization()->clear_state();
 
-  structure_->discretization()->set_state("displacement", structure_->dispnp());
+  structure_->discretization()->set_state("displacement", *structure_->dispnp());
 
   // create strategy for assembly of structure-thermo matrix block
   Core::FE::AssembleStrategy strategystructurescatra(

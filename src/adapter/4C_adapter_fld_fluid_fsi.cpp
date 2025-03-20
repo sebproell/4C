@@ -416,7 +416,7 @@ void Adapter::FluidFSI::proj_vel_to_div_zero()
   Core::LinAlg::SerialDenseVector elevector3;
 
   discretization()->clear_state();
-  discretization()->set_state("dispnp", dispnp());
+  discretization()->set_state("dispnp", *dispnp());
 
   // loop over all fluid elements
   for (int lid = 0; lid < discretization()->num_my_col_elements(); lid++)

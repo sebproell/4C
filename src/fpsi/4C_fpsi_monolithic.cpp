@@ -429,7 +429,7 @@ void FPSI::Monolithic::evaluate(std::shared_ptr<const Core::LinAlg::Vector<doubl
   {
     fluid_field()->discretization()->clear_state();
     linesearch_counter = 0.;
-    fluid_field()->discretization()->set_state(0, "dispnp", fluid_field()->dispnp());
+    fluid_field()->discretization()->set_state(0, "dispnp", *fluid_field()->dispnp());
     meshdispold_ = ale_to_fluid(ale_field()->dispnp());
     porointerfacedisplacementsold_ = fpsi_coupl()->i_porostruct_to_ale(
         *poro_field()->structure_field()->extract_interface_dispnp(true));
@@ -1515,26 +1515,26 @@ void FPSI::Monolithic::fpsifd_check()
   poro_field()->fluid_field()->discretization()->clear_state();
 
   poro_field()->fluid_field()->discretization()->set_state(
-      0, "dispnp", poro_field()->fluid_field()->dispnp());
+      0, "dispnp", *poro_field()->fluid_field()->dispnp());
   poro_field()->fluid_field()->discretization()->set_state(
-      0, "gridv", poro_field()->fluid_field()->grid_vel());
+      0, "gridv", *poro_field()->fluid_field()->grid_vel());
   poro_field()->fluid_field()->discretization()->set_state(
-      0, "dispn", poro_field()->fluid_field()->dispn());
+      0, "dispn", *poro_field()->fluid_field()->dispn());
   poro_field()->fluid_field()->discretization()->set_state(
-      0, "veln", poro_field()->fluid_field()->veln());
+      0, "veln", *poro_field()->fluid_field()->veln());
   poro_field()->fluid_field()->discretization()->set_state(
-      0, "velaf", poro_field()->fluid_field()->velnp());
+      0, "velaf", *poro_field()->fluid_field()->velnp());
   poro_field()->fluid_field()->discretization()->set_state(
-      0, "velnp", poro_field()->fluid_field()->velnp());
+      0, "velnp", *poro_field()->fluid_field()->velnp());
 
   fluid_field()->discretization()->clear_state();
 
-  fluid_field()->discretization()->set_state(0, "dispnp", fluid_field()->dispnp());
-  fluid_field()->discretization()->set_state(0, "gridv", fluid_field()->grid_vel());
-  fluid_field()->discretization()->set_state(0, "dispn", fluid_field()->dispn());
-  fluid_field()->discretization()->set_state(0, "veln", fluid_field()->veln());
-  fluid_field()->discretization()->set_state(0, "velaf", fluid_field()->velnp());
-  fluid_field()->discretization()->set_state(0, "velnp", fluid_field()->velnp());
+  fluid_field()->discretization()->set_state(0, "dispnp", *fluid_field()->dispnp());
+  fluid_field()->discretization()->set_state(0, "gridv", *fluid_field()->grid_vel());
+  fluid_field()->discretization()->set_state(0, "dispn", *fluid_field()->dispn());
+  fluid_field()->discretization()->set_state(0, "veln", *fluid_field()->veln());
+  fluid_field()->discretization()->set_state(0, "velaf", *fluid_field()->velnp());
+  fluid_field()->discretization()->set_state(0, "velnp", *fluid_field()->velnp());
 
   // define and set toggle parameter delta
   const double delta = 1e-8;

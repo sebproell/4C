@@ -975,7 +975,7 @@ void Solid::TimInt::determine_mass_damp_consist_accel()
   {
     // compute new inner radius
     discret_->clear_state();
-    discret_->set_state(0, "displacement", (*dis_)(0));
+    discret_->set_state(0, "displacement", *(*dis_)(0));
 
     // create the parameters for the discretization
     Teuchos::ParameterList p;
@@ -998,16 +998,16 @@ void Solid::TimInt::determine_mass_damp_consist_accel()
     // set vector values needed by elements
     discret_->clear_state();
     // extended set_state(0,...) in case of multiple dofsets (e.g. TSI)
-    discret_->set_state(0, "residual displacement", zeros_);
-    discret_->set_state(0, "displacement", (*dis_)(0));
-    discret_->set_state(0, "velocity", (*vel_)(0));
+    discret_->set_state(0, "residual displacement", *zeros_);
+    discret_->set_state(0, "displacement", *(*dis_)(0));
+    discret_->set_state(0, "velocity", *(*vel_)(0));
 
     // The acceleration is only used as a dummy here and should not be applied inside an element,
     // since this is not the consistent initial acceleration vector which will be determined later
     // on
-    discret_->set_state(0, "acceleration", acc_aux);
+    discret_->set_state(0, "acceleration", *acc_aux);
 
-    if (damping_ == Inpar::Solid::damp_material) discret_->set_state(0, "velocity", (*vel_)(0));
+    if (damping_ == Inpar::Solid::damp_material) discret_->set_state(0, "velocity", *(*vel_)(0));
 
     discret_->evaluate(p, stiff_, mass_, fint, nullptr, fintn_str_);
     discret_->clear_state();
@@ -2292,8 +2292,8 @@ void Solid::TimInt::determine_stress_strain()
     // set vector values needed by elements
     discret_->clear_state();
     // extended set_state(0,...) in case of multiple dofsets (e.g. TSI)
-    discret_->set_state(0, "residual displacement", zeros_);
-    discret_->set_state(0, "displacement", disn_);
+    discret_->set_state(0, "residual displacement", *zeros_);
+    discret_->set_state(0, "displacement", *disn_);
 
     std::shared_ptr<Core::LinAlg::SparseOperator> system_matrix = nullptr;
     std::shared_ptr<Core::LinAlg::Vector<double>> system_vector = nullptr;
@@ -2318,7 +2318,7 @@ void Solid::TimInt::determine_energy()
 
       // set vector values needed by elements
       discret_->clear_state();
-      discret_->set_state("displacement", disn_);
+      discret_->set_state("displacement", *disn_);
       // get energies
       std::shared_ptr<Core::LinAlg::SerialDenseVector> energies =
           std::make_shared<Core::LinAlg::SerialDenseVector>(1);
@@ -2494,10 +2494,10 @@ void Solid::TimInt::apply_force_external(const double time,
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state(0, "displacement", dis);
-  discret_->set_state(0, "displacement new", disn);
+  discret_->set_state(0, "displacement", *dis);
+  discret_->set_state(0, "displacement new", *disn);
 
-  if (damping_ == Inpar::Solid::damp_material) discret_->set_state(0, "velocity", vel);
+  if (damping_ == Inpar::Solid::damp_material) discret_->set_state(0, "velocity", *vel);
 
   discret_->evaluate_neumann(p, fext);
 }
@@ -2595,10 +2595,10 @@ void Solid::TimInt::apply_force_internal(const double time, const double dt,
   if (pressure_ != nullptr) p.set("volume", 0.0);
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state("residual displacement", disi);  // these are incremental
-  discret_->set_state("displacement", dis);
+  discret_->set_state("residual displacement", *disi);  // these are incremental
+  discret_->set_state("displacement", *dis);
 
-  if (damping_ == Inpar::Solid::damp_material) discret_->set_state("velocity", vel);
+  if (damping_ == Inpar::Solid::damp_material) discret_->set_state("velocity", *vel);
   // fintn_->PutScalar(0.0);  // initialise internal force vector
   discret_->evaluate(p, nullptr, nullptr, fint, nullptr, nullptr);
 

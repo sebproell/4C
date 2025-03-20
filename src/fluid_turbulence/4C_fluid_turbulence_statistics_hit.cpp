@@ -1849,7 +1849,7 @@ namespace FLD
     Teuchos::ParameterList params;
     params.set<FLD::Action>("action", FLD::interpolate_hdg_for_hit);
 
-    discret_->set_state(1, "intvelnp", velnp);
+    discret_->set_state(1, "intvelnp", *velnp);
 
     std::vector<int> dummy;
     Core::LinAlg::SerialDenseMatrix dummyMat;

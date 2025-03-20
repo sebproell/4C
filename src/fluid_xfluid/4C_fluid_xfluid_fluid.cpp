@@ -242,7 +242,7 @@ void FLD::XFluidFluid::evaluate(std::shared_ptr<const Core::LinAlg::Vector<doubl
   {
     mc_xff_->reset_evaluated_trace_estimates();
     if (ale_embfluid_)
-      embedded_fluid_->discretization()->set_state("dispnp", embedded_fluid_->dispnp());
+      embedded_fluid_->discretization()->set_state("dispnp", *embedded_fluid_->dispnp());
   }
 
   // evaluation of background fluid (new cut for full Newton approach)
@@ -372,11 +372,11 @@ void FLD::XFluidFluid::assemble_mat_and_rhs(int itnum  ///< iteration number
     mc_xff_->get_coupling_dis()->clear_state();
     // set velocity and displacement state for embedded fluid
     embedded_fluid_->set_state_tim_int();
-    mc_xff_->get_coupling_dis()->set_state("veln", embedded_fluid_->veln());
+    mc_xff_->get_coupling_dis()->set_state("veln", *embedded_fluid_->veln());
 
     if (ale_embfluid_)
     {
-      mc_xff_->get_coupling_dis()->set_state("dispnp", embedded_fluid_->dispnp());
+      mc_xff_->get_coupling_dis()->set_state("dispnp", *embedded_fluid_->dispnp());
     }
   }
 
@@ -490,7 +490,7 @@ void FLD::XFluidFluid::update_by_increment()
 void FLD::XFluidFluid::add_eos_pres_stab_to_emb_layer()
 {
   if (ale_embfluid_)
-    embedded_fluid_->discretization()->set_state("gridv", embedded_fluid_->grid_vel());
+    embedded_fluid_->discretization()->set_state("gridv", *embedded_fluid_->grid_vel());
 
   Teuchos::ParameterList faceparams;
 
@@ -802,10 +802,10 @@ std::shared_ptr<std::vector<double>> FLD::XFluidFluid::evaluate_error_compared_t
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state("u and p at time n+1 (converged)", state_->velnp_);
+  discret_->set_state("u and p at time n+1 (converged)", *state_->velnp_);
 
   mc_xff_->get_cond_dis()->clear_state();
-  mc_xff_->get_cond_dis()->set_state("velaf", embedded_fluid_->velnp());
+  mc_xff_->get_cond_dis()->set_state("velaf", *embedded_fluid_->velnp());
   // mc_xff_->GetCondDis()->set_state("dispnp", embedded_fluid_->Dispnp());
 
   mc_xff_->set_state();
@@ -819,7 +819,7 @@ std::shared_ptr<std::vector<double>> FLD::XFluidFluid::evaluate_error_compared_t
   //---------------------------------------------
   // set vector values needed by elements
   mc_xff_->get_cond_dis()->clear_state();
-  mc_xff_->get_cond_dis()->set_state("u and p at time n+1 (converged)", embedded_fluid_->velnp());
+  mc_xff_->get_cond_dis()->set_state("u and p at time n+1 (converged)", *embedded_fluid_->velnp());
 
   // evaluate domain error norms and interface/boundary error norms at XFEM-interface
   // loop row elements

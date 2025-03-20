@@ -575,12 +575,12 @@ void FLD::TurbulenceStatisticsCcy::evaluate_pointwise_mean_values_in_planes()
 
   if (nurbsdis == nullptr) FOUR_C_THROW("Oops. Your discretization is not a NurbsDiscretization.");
 
-  nurbsdis->set_state("velnp", meanvelnp_);
+  nurbsdis->set_state("velnp", *meanvelnp_);
 
   Core::FE::Nurbs::NurbsDiscretization* scatranurbsdis(nullptr);
   if (withscatra_)
   {
-    nurbsdis->set_state("scanp", meanscanp_);
+    nurbsdis->set_state("scanp", *meanscanp_);
 
     scatranurbsdis = dynamic_cast<Core::FE::Nurbs::NurbsDiscretization*>(&(*scatradis_));
     if (scatranurbsdis == nullptr)
@@ -589,7 +589,7 @@ void FLD::TurbulenceStatisticsCcy::evaluate_pointwise_mean_values_in_planes()
     if (meanfullphinp_ == nullptr)
       FOUR_C_THROW("std::shared_ptr is nullptr");
     else
-      scatranurbsdis->set_state("phinp_for_statistics", meanfullphinp_);
+      scatranurbsdis->set_state("phinp_for_statistics", *meanfullphinp_);
 
     if (not(scatranurbsdis->dof_row_map())->SameAs(meanfullphinp_->get_map()))
     {

@@ -356,7 +356,7 @@ void ScaTra::MeshtyingStrategyArtery::prepare_time_step() const
  *--------------------------------------------------------------------------*/
 void ScaTra::MeshtyingStrategyArtery::set_artery_pressure() const
 {
-  artscatradis_->set_state(2, "one_d_artery_pressure", arttimint_->pressurenp());
+  artscatradis_->set_state(2, "one_d_artery_pressure", *arttimint_->pressurenp());
   return;
 }
 

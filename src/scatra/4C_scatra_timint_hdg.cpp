@@ -221,10 +221,10 @@ void ScaTra::TimIntHDG::set_theta()
 void ScaTra::TimIntHDG::add_time_integration_specific_vectors(bool forcedincrementalsolver)
 {
   // set hdg vector and interior variables vector
-  discret_->set_state(0, "phin", phin_);
-  discret_->set_state(0, "phiaf", phinp_);
-  discret_->set_state(nds_intvar_, "intphinp", intphinp_);
-  discret_->set_state(nds_intvar_, "intphin", intphin_);
+  discret_->set_state(0, "phin", *phin_);
+  discret_->set_state(0, "phiaf", *phinp_);
+  discret_->set_state(nds_intvar_, "intphinp", *intphinp_);
+  discret_->set_state(nds_intvar_, "intphin", *intphin_);
 }  // add_time_integration_specific_vectors
 
 /*----------------------------------------------------------------------*
@@ -302,8 +302,8 @@ namespace
     Teuchos::ParameterList eleparams;
     Core::Utils::add_enum_class_to_parameter_list<ScaTra::Action>(
         "action", ScaTra::Action::interpolate_hdg_to_node, eleparams);
-    dis.set_state(0, "phiaf", traceValues);
-    dis.set_state(nds_intvar_, "intphinp", interiorValues);
+    dis.set_state(0, "phiaf", *traceValues);
+    dis.set_state(nds_intvar_, "intphinp", *interiorValues);
     Core::Elements::LocationArray la(ndofs);
     Core::LinAlg::SerialDenseMatrix dummyMat;
     Core::LinAlg::SerialDenseVector dummyVec;
@@ -521,10 +521,10 @@ void ScaTra::TimIntHDG::set_initial_field(
           "action", ScaTra::Action::set_initial_field, eleparams);
       eleparams.set<int>("funct", startfuncno);
 
-      discret_->set_state("phiaf", phinp_);
-      discret_->set_state("phin", phin_);
-      discret_->set_state(nds_intvar_, "intphin", intphin_);
-      discret_->set_state(nds_intvar_, "intphinp", intphinp_);
+      discret_->set_state("phiaf", *phinp_);
+      discret_->set_state("phin", *phin_);
+      discret_->set_state(nds_intvar_, "intphin", *intphin_);
+      discret_->set_state(nds_intvar_, "intphinp", *intphinp_);
 
       Core::LinAlg::SerialDenseMatrix dummyMat;
       Core::LinAlg::SerialDenseVector updateVec1, updateVec2, dummyVec;
@@ -647,10 +647,10 @@ void ScaTra::TimIntHDG::update_interior_variables(
   Teuchos::ParameterList eleparams;
   Core::Utils::add_enum_class_to_parameter_list<ScaTra::Action>(
       "action", ScaTra::Action::update_interior_variables, eleparams);
-  discret_->set_state("phiaf", phinp_);
-  discret_->set_state("phin", phin_);
-  discret_->set_state(nds_intvar_, "intphin", intphin_);
-  discret_->set_state(nds_intvar_, "intphinp", intphinp_);
+  discret_->set_state("phiaf", *phinp_);
+  discret_->set_state("phin", *phin_);
+  discret_->set_state(nds_intvar_, "intphin", *intphin_);
+  discret_->set_state(nds_intvar_, "intphinp", *intphinp_);
 
   Core::LinAlg::SerialDenseMatrix dummyMat;
   Core::LinAlg::SerialDenseVector dummyVec;
@@ -720,10 +720,10 @@ void ScaTra::TimIntHDG::fd_check()
   update_interior_variables(intphitemp);
 
   discret_->clear_state(true);
-  discret_->set_state("phiaf", phinp_);
-  discret_->set_state(nds_intvar_, "intphin", intphin_);
-  discret_->set_state(0, "phin", phin_);
-  discret_->set_state(nds_intvar_, "intphinp", intphitemp);
+  discret_->set_state("phiaf", *phinp_);
+  discret_->set_state(nds_intvar_, "intphin", *intphin_);
+  discret_->set_state(0, "phin", *phin_);
+  discret_->set_state(nds_intvar_, "intphinp", *intphitemp);
   Teuchos::ParameterList eleparams;
   Core::Utils::add_enum_class_to_parameter_list<ScaTra::Action>(
       "action", ScaTra::Action::calc_mat_and_rhs, eleparams);
@@ -792,10 +792,10 @@ void ScaTra::TimIntHDG::fd_check()
 
       discret_->clear_state(true);
 
-      discret_->set_state("phiaf", phinp_);
-      discret_->set_state(nds_intvar_, "intphin", intphin_);
-      discret_->set_state(0, "phin", phin_);
-      discret_->set_state(nds_intvar_, "intphinp", intphitemp);
+      discret_->set_state("phiaf", *phinp_);
+      discret_->set_state(nds_intvar_, "intphin", *intphin_);
+      discret_->set_state(0, "phin", *phin_);
+      discret_->set_state(nds_intvar_, "intphinp", *intphitemp);
 
       Teuchos::ParameterList eleparams;
       Core::Utils::add_enum_class_to_parameter_list<ScaTra::Action>(
@@ -964,8 +964,8 @@ std::shared_ptr<Core::LinAlg::SerialDenseVector> ScaTra::TimIntHDG::compute_erro
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state("phiaf", phinp_);
-  discret_->set_state(nds_intvar_, "intphinp", intphinp_);
+  discret_->set_state("phiaf", *phinp_);
+  discret_->set_state(nds_intvar_, "intphinp", *intphinp_);
   // get (squared) error values
   // The error is computed for the transported scalar and its gradient. Notice that so far only
   // the L2 error is computed, feel free to extend the calculations to any error measure needed
@@ -1007,10 +1007,10 @@ void ScaTra::TimIntHDG::calc_mat_initial()
   Core::Utils::add_enum_class_to_parameter_list<ScaTra::Action>(
       "action", ScaTra::Action::calc_mat_initial, eleparams);
 
-  discret_->set_state("phiaf", phinp_);
-  discret_->set_state("phin", phin_);
-  discret_->set_state(nds_intvar_, "intphin", intphin_);
-  discret_->set_state(nds_intvar_, "intphinp", intphinp_);
+  discret_->set_state("phiaf", *phinp_);
+  discret_->set_state("phin", *phin_);
+  discret_->set_state(nds_intvar_, "intphin", *intphin_);
+  discret_->set_state(nds_intvar_, "intphinp", *intphinp_);
 
   std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1, systemmatrix2;
   std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1, systemvector2, systemvector3;
@@ -1097,8 +1097,8 @@ void ScaTra::TimIntHDG::adapt_degree()
   Core::LinAlg::SerialDenseMatrix dummyMat;
   Core::LinAlg::SerialDenseVector dummyVec;
 
-  discret_->set_state("phiaf", phinp_);
-  discret_->set_state(nds_intvar_, "intphinp", intphinp_);
+  discret_->set_state("phiaf", *phinp_);
+  discret_->set_state(nds_intvar_, "intphinp", *intphinp_);
 
   // get cpu time
   //  const double tccalcerr = Teuchos::Time::wallTime();

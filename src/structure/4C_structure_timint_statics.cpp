@@ -430,7 +430,7 @@ void Solid::TimIntStatics::update_step_element()
   p.set("action", "calc_struct_update_istep");
   // go to elements
   discret_->clear_state();
-  discret_->set_state("displacement", (*dis_)(0));
+  discret_->set_state("displacement", *(*dis_)(0));
 
   discret_->evaluate(p, nullptr, nullptr, nullptr, nullptr, nullptr);
   discret_->clear_state();

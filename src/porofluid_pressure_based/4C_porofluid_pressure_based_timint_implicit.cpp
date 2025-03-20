@@ -1835,7 +1835,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::evaluate_error_compared_to_analytical_sol(
 
   // set vector values needed by elements
   discret_->clear_state();
-  discret_->set_state("phinp_fluid", phinp_);
+  discret_->set_state("phinp_fluid", *phinp_);
 
   // get (squared) error values
   std::shared_ptr<Core::LinAlg::SerialDenseVector> errors =
@@ -1997,7 +1997,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::set_state(unsigned nds, const std::string&
     std::shared_ptr<const Core::LinAlg::Vector<double>> state)
 {
   // provide discretization with velocity
-  discret_->set_state(nds, name, state);
+  discret_->set_state(nds, name, *state);
 }
 
 
