@@ -25,33 +25,42 @@ void Inpar::STI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   Core::Utils::SectionSpecs stidyn{"STI DYNAMIC"};
 
   // type of scalar transport time integration
-  Core::Utils::string_to_integral_parameter<ScaTraTimIntType>("SCATRATIMINTTYPE", "Standard",
-      "scalar transport time integration type is needed to instantiate correct scalar transport "
-      "time integration scheme for scatra-thermo interaction problems",
-      tuple<std::string>("Standard", "Elch"),
-      tuple<ScaTraTimIntType>(ScaTraTimIntType::standard, ScaTraTimIntType::elch), stidyn);
+  stidyn.specs.emplace_back(deprecated_selection<ScaTraTimIntType>("SCATRATIMINTTYPE",
+      {
+          {"Standard", ScaTraTimIntType::standard},
+          {"Elch", ScaTraTimIntType::elch},
+      },
+      {.description =
+              "scalar transport time integration type is needed to instantiate correct scalar "
+              "transport time integration scheme for scatra-thermo interaction problems",
+          .default_value = ScaTraTimIntType::standard}));
 
   // type of coupling between scatra and thermo fields
-  Core::Utils::string_to_integral_parameter<CouplingType>("COUPLINGTYPE", "Undefined",
-      "type of coupling between scatra and thermo fields",
-      tuple<std::string>("Undefined", "Monolithic", "OneWay_ScatraToThermo",
-          "OneWay_ThermoToScatra", "TwoWay_ScatraToThermo", "TwoWay_ScatraToThermo_Aitken",
-          "TwoWay_ScatraToThermo_Aitken_Dofsplit", "TwoWay_ThermoToScatra",
-          "TwoWay_ThermoToScatra_Aitken"),
-      tuple<CouplingType>(CouplingType::undefined, CouplingType::monolithic,
-          CouplingType::oneway_scatratothermo, CouplingType::oneway_thermotoscatra,
-          CouplingType::twoway_scatratothermo, CouplingType::twoway_scatratothermo_aitken,
-          CouplingType::twoway_scatratothermo_aitken_dofsplit, CouplingType::twoway_thermotoscatra,
-          CouplingType::twoway_thermotoscatra_aitken),
-      stidyn);
+  stidyn.specs.emplace_back(deprecated_selection<CouplingType>("COUPLINGTYPE",
+      {
+          {"Undefined", CouplingType::undefined},
+          {"Monolithic", CouplingType::monolithic},
+          {"OneWay_ScatraToThermo", CouplingType::oneway_scatratothermo},
+          {"OneWay_ThermoToScatra", CouplingType::oneway_thermotoscatra},
+          {"TwoWay_ScatraToThermo", CouplingType::twoway_scatratothermo},
+          {"TwoWay_ScatraToThermo_Aitken", CouplingType::twoway_scatratothermo_aitken},
+          {"TwoWay_ScatraToThermo_Aitken_Dofsplit",
+              CouplingType::twoway_scatratothermo_aitken_dofsplit},
+          {"TwoWay_ThermoToScatra", CouplingType::twoway_thermotoscatra},
+          {"TwoWay_ThermoToScatra_Aitken", CouplingType::twoway_thermotoscatra_aitken},
+      },
+      {.description = "type of coupling between scatra and thermo fields",
+          .default_value = CouplingType::undefined}));
 
   // specification of initial temperature field
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::InitialField>("THERMO_INITIALFIELD",
-      "zero_field", "initial temperature field for scatra-thermo interaction problems",
-      tuple<std::string>("zero_field", "field_by_function", "field_by_condition"),
-      tuple<Inpar::ScaTra::InitialField>(Inpar::ScaTra::initfield_zero_field,
-          Inpar::ScaTra::initfield_field_by_function, Inpar::ScaTra::initfield_field_by_condition),
-      stidyn);
+  stidyn.specs.emplace_back(deprecated_selection<Inpar::ScaTra::InitialField>("THERMO_INITIALFIELD",
+      {
+          {"zero_field", Inpar::ScaTra::initfield_zero_field},
+          {"field_by_function", Inpar::ScaTra::initfield_field_by_function},
+          {"field_by_condition", Inpar::ScaTra::initfield_field_by_condition},
+      },
+      {.description = "initial temperature field for scatra-thermo interaction problems",
+          .default_value = Inpar::ScaTra::initfield_zero_field}));
 
   // function number for initial temperature field
   stidyn.specs.emplace_back(parameter<int>(
@@ -80,12 +89,13 @@ void Inpar::STI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       {.description = "ID of linear solver for global system of equations", .default_value = -1}));
 
   // type of global system matrix in global system of equations
-  Core::Utils::string_to_integral_parameter<Core::LinAlg::MatrixType>("MATRIXTYPE", "block",
-      "type of global system matrix in global system of equations",
-      tuple<std::string>("block", "sparse"),
-      tuple<Core::LinAlg::MatrixType>(
-          Core::LinAlg::MatrixType::block_condition, Core::LinAlg::MatrixType::sparse),
-      stidyn_monolithic);
+  stidyn_monolithic.specs.emplace_back(deprecated_selection<Core::LinAlg::MatrixType>("MATRIXTYPE",
+      {
+          {"block", Core::LinAlg::MatrixType::block_condition},
+          {"sparse", Core::LinAlg::MatrixType::sparse},
+      },
+      {.description = "type of global system matrix in global system of equations",
+          .default_value = Core::LinAlg::MatrixType::block_condition}));
 
   stidyn_monolithic.move_into_collection(list);
 

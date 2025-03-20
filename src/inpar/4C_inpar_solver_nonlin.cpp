@@ -149,14 +149,15 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
         "Method", method_valid_input, {.description = "", .default_value = "Full Step"}));
 
 
-    Teuchos::Array<std::string> checktypes =
-        Teuchos::tuple<std::string>("Complete", "Minimal", "None");
-    Core::Utils::string_to_integral_parameter<::NOX::StatusTest::CheckType>(
-        "Inner Status Test Check Type", "Minimal",
-        "Specify the check type for the inner status tests.", checktypes,
-        Teuchos::tuple<::NOX::StatusTest::CheckType>(
-            ::NOX::StatusTest::Complete, ::NOX::StatusTest::Minimal, ::NOX::StatusTest::None),
-        linesearch);
+    linesearch.specs.emplace_back(
+        deprecated_selection<::NOX::StatusTest::CheckType>("Inner Status Test Check Type",
+            {
+                {"Complete", ::NOX::StatusTest::Complete},
+                {"Minimal", ::NOX::StatusTest::Minimal},
+                {"None", ::NOX::StatusTest::None},
+            },
+            {.description = "Specify the check type for the inner status tests.",
+                .default_value = ::NOX::StatusTest::Minimal}));
   }
   linesearch.move_into_collection(list);
 
@@ -387,12 +388,12 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   Core::Utils::SectionSpecs solverOptions{snox, "Solver Options"};
 
   {
-    Teuchos::Array<std::string> meritFct = Teuchos::tuple<std::string>("Sum of Squares");
-    Core::Utils::string_to_integral_parameter<NOX::Nln::MeritFunction::MeritFctName>(
-        "Merit Function", "Sum of Squares", "", meritFct,
-        Teuchos::tuple<NOX::Nln::MeritFunction::MeritFctName>(
-            NOX::Nln::MeritFunction::mrtfct_sum_of_squares),
-        solverOptions);
+    solverOptions.specs.emplace_back(
+        deprecated_selection<NOX::Nln::MeritFunction::MeritFctName>("Merit Function",
+            {
+                {"Sum of Squares", NOX::Nln::MeritFunction::mrtfct_sum_of_squares},
+            },
+            {.description = "", .default_value = NOX::Nln::MeritFunction::mrtfct_sum_of_squares}));
 
     std::vector<std::string> status_test_check_type_valid_input = {"Complete", "Minimal", "None"};
     solverOptions.specs.emplace_back(deprecated_selection<std::string>("Status Test Check Type",

@@ -31,11 +31,13 @@ void Inpar::FS3I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "RESULTSEVERY", {.description = "Increment for writing solution", .default_value = 1}));
   fs3idyn.specs.emplace_back(parameter<int>(
       "RESTARTEVERY", {.description = "Increment for writing restart", .default_value = 1}));
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::SolverType>("SCATRA_SOLVERTYPE",
-      "nonlinear", "type of scalar transport solver", tuple<std::string>("linear", "nonlinear"),
-      tuple<Inpar::ScaTra::SolverType>(
-          Inpar::ScaTra::solvertype_linear_incremental, Inpar::ScaTra::solvertype_nonlinear),
-      fs3idyn);
+  fs3idyn.specs.emplace_back(deprecated_selection<Inpar::ScaTra::SolverType>("SCATRA_SOLVERTYPE",
+      {
+          {"linear", Inpar::ScaTra::solvertype_linear_incremental},
+          {"nonlinear", Inpar::ScaTra::solvertype_nonlinear},
+      },
+      {.description = "type of scalar transport solver",
+          .default_value = Inpar::ScaTra::solvertype_nonlinear}));
   fs3idyn.specs.emplace_back(parameter<bool>(
       "INF_PERM", {.description = "Flag for infinite permeability", .default_value = true}));
   std::vector<std::string> consthermpress_valid_input = {"No_energy", "No_mass", "Yes"};
@@ -51,45 +53,57 @@ void Inpar::FS3I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   fs3idyn.specs.emplace_back(parameter<int>("LINEAR_SOLVER2",
       {.description = "number of linear solver used for structural problem", .default_value = -1}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::ConvForm>("STRUCTSCAL_CONVFORM",
-      "conservative", "form of convective term of structure scalar",
-      tuple<std::string>("convective", "conservative"),
-      tuple<Inpar::ScaTra::ConvForm>(
-          Inpar::ScaTra::convform_convective, Inpar::ScaTra::convform_conservative),
-      fs3idyn);
+  fs3idyn.specs.emplace_back(deprecated_selection<Inpar::ScaTra::ConvForm>("STRUCTSCAL_CONVFORM",
+      {
+          {"convective", Inpar::ScaTra::convform_convective},
+          {"conservative", Inpar::ScaTra::convform_conservative},
+      },
+      {.description = "form of convective term of structure scalar",
+          .default_value = Inpar::ScaTra::convform_conservative}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::InitialField>("STRUCTSCAL_INITIALFIELD",
-      "zero_field", "Initial Field for structure scalar transport problem",
-      tuple<std::string>("zero_field", "field_by_function"),
-      tuple<Inpar::ScaTra::InitialField>(
-          Inpar::ScaTra::initfield_zero_field, Inpar::ScaTra::initfield_field_by_function),
-      fs3idyn);
+  fs3idyn.specs.emplace_back(
+      deprecated_selection<Inpar::ScaTra::InitialField>("STRUCTSCAL_INITIALFIELD",
+          {
+              {"zero_field", Inpar::ScaTra::initfield_zero_field},
+              {"field_by_function", Inpar::ScaTra::initfield_field_by_function},
+          },
+          {.description = "Initial Field for structure scalar transport problem",
+              .default_value = Inpar::ScaTra::initfield_zero_field}));
 
   fs3idyn.specs.emplace_back(parameter<int>("STRUCTSCAL_INITFUNCNO",
       {.description = "function number for structure scalar transport initial field",
           .default_value = -1}));
 
   // Type of coupling strategy between structure and structure-scalar field
-  Core::Utils::string_to_integral_parameter<VolumeCoupling>("STRUCTSCAL_FIELDCOUPLING",
-      "volume_matching", "Type of coupling strategy between structure and structure-scalar field",
-      tuple<std::string>("volume_matching", "volume_nonmatching"),
-      tuple<VolumeCoupling>(coupling_match, coupling_nonmatch), fs3idyn);
+  fs3idyn.specs.emplace_back(deprecated_selection<VolumeCoupling>("STRUCTSCAL_FIELDCOUPLING",
+      {
+          {"volume_matching", coupling_match},
+          {"volume_nonmatching", coupling_nonmatch},
+      },
+      {.description = "Type of coupling strategy between structure and structure-scalar field",
+          .default_value = coupling_match}));
 
   // Type of coupling strategy between fluid and fluid-scalar field
-  Core::Utils::string_to_integral_parameter<VolumeCoupling>("FLUIDSCAL_FIELDCOUPLING",
-      "volume_matching", "Type of coupling strategy between fluid and fluid-scalar field",
-      tuple<std::string>("volume_matching", "volume_nonmatching"),
-      tuple<VolumeCoupling>(coupling_match, coupling_nonmatch), fs3idyn);
+  fs3idyn.specs.emplace_back(deprecated_selection<VolumeCoupling>("FLUIDSCAL_FIELDCOUPLING",
+      {
+          {"volume_matching", coupling_match},
+          {"volume_nonmatching", coupling_nonmatch},
+      },
+      {.description = "Type of coupling strategy between fluid and fluid-scalar field",
+          .default_value = coupling_match}));
 
   // type of scalar transport
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::ImplType>("FLUIDSCAL_SCATRATYPE",
-      "ConvectionDiffusion", "Type of scalar transport problem",
-      tuple<std::string>("Undefined", "ConvectionDiffusion", "Loma", "Advanced_Reaction",
-          "Chemotaxis", "Chemo_Reac"),
-      tuple<Inpar::ScaTra::ImplType>(Inpar::ScaTra::impltype_undefined, Inpar::ScaTra::impltype_std,
-          Inpar::ScaTra::impltype_loma, Inpar::ScaTra::impltype_advreac,
-          Inpar::ScaTra::impltype_chemo, Inpar::ScaTra::impltype_chemoreac),
-      fs3idyn);
+  fs3idyn.specs.emplace_back(deprecated_selection<Inpar::ScaTra::ImplType>("FLUIDSCAL_SCATRATYPE",
+      {
+          {"Undefined", Inpar::ScaTra::impltype_undefined},
+          {"ConvectionDiffusion", Inpar::ScaTra::impltype_std},
+          {"Loma", Inpar::ScaTra::impltype_loma},
+          {"Advanced_Reaction", Inpar::ScaTra::impltype_advreac},
+          {"Chemotaxis", Inpar::ScaTra::impltype_chemo},
+          {"Chemo_Reac", Inpar::ScaTra::impltype_chemoreac},
+      },
+      {.description = "Type of scalar transport problem",
+          .default_value = Inpar::ScaTra::impltype_std}));
 
   // Restart from FSI instead of FS3I
   fs3idyn.specs.emplace_back(parameter<bool>(
@@ -105,10 +119,8 @@ void Inpar::FS3I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   Core::Utils::SectionSpecs fs3idynpart{fs3idyn, "PARTITIONED"};
 
   // Coupling strategy for partitioned FS3I
-  Core::Utils::string_to_integral_parameter<SolutionSchemeOverFields>("COUPALGO", "fs3i_IterStagg",
-      "Coupling strategies for FS3I solvers",
-      tuple<std::string>("fs3i_SequStagg", "fs3i_IterStagg"),
-      tuple<SolutionSchemeOverFields>(fs3i_SequStagg, fs3i_IterStagg), fs3idynpart);
+  fs3idynpart.specs.emplace_back(parameter<SolutionSchemeOverFields>("COUPALGO",
+      {.description = "Coupling strategies for FS3I solvers", .default_value = fs3i_IterStagg}));
 
   // convergence tolerance of outer iteration loop
   fs3idynpart.specs.emplace_back(parameter<double>("CONVTOL",

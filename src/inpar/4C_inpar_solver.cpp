@@ -22,43 +22,44 @@ namespace Inpar::SOLVER
     Core::Utils::SectionSpecs list{"dummy"};
     // Solver options
     {
-      Core::Utils::string_to_integral_parameter<Core::LinearSolver::SolverType>("SOLVER",
-          "undefined",
-          "The solver to attack the system of linear equations arising of FE approach with.",
-          Teuchos::tuple<std::string>("UMFPACK", "Superlu", "Belos", "undefined"),
-          Teuchos::tuple<Core::LinearSolver::SolverType>(Core::LinearSolver::SolverType::umfpack,
-              Core::LinearSolver::SolverType::superlu, Core::LinearSolver::SolverType::belos,
-              Core::LinearSolver::SolverType::undefined),
-          list);
+      list.specs.emplace_back(deprecated_selection<Core::LinearSolver::SolverType>("SOLVER",
+          {
+              {"UMFPACK", Core::LinearSolver::SolverType::umfpack},
+              {"Superlu", Core::LinearSolver::SolverType::superlu},
+              {"Belos", Core::LinearSolver::SolverType::belos},
+              {"undefined", Core::LinearSolver::SolverType::undefined},
+          },
+          {.description = "The solver to attack the system of linear equations arising of FE "
+                          "approach with.",
+              .default_value = Core::LinearSolver::SolverType::undefined}));
     }
 
     // Iterative solver options
     {
-      Core::Utils::string_to_integral_parameter<Core::LinearSolver::IterativeSolverType>("AZSOLVE",
-          "GMRES", "Type of linear solver algorithm to use.",
-          Teuchos::tuple<std::string>("CG", "GMRES", "BiCGSTAB"),
-          Teuchos::tuple<Core::LinearSolver::IterativeSolverType>(
-              Core::LinearSolver::IterativeSolverType::cg,
-              Core::LinearSolver::IterativeSolverType::gmres,
-              Core::LinearSolver::IterativeSolverType::bicgstab),
-          list);
+      list.specs.emplace_back(
+          deprecated_selection<Core::LinearSolver::IterativeSolverType>("AZSOLVE",
+              {
+                  {"CG", Core::LinearSolver::IterativeSolverType::cg},
+                  {"GMRES", Core::LinearSolver::IterativeSolverType::gmres},
+                  {"BiCGSTAB", Core::LinearSolver::IterativeSolverType::bicgstab},
+              },
+              {.description = "Type of linear solver algorithm to use.",
+                  .default_value = Core::LinearSolver::IterativeSolverType::gmres}));
     }
 
     // Preconditioner options
     {
-      Core::Utils::string_to_integral_parameter<Core::LinearSolver::PreconditionerType>("AZPREC",
-          "ILU",
-          "Type of internal preconditioner to use.\n"
-          "Note! this preconditioner will only be used if the input operator\n"
-          "supports the Epetra_RowMatrix interface and the client does not pass\n"
-          "in an external preconditioner!",
-          Teuchos::tuple<std::string>("ILU", "MueLu", "AMGnxn", "Teko"),
-          Teuchos::tuple<Core::LinearSolver::PreconditionerType>(
-              Core::LinearSolver::PreconditionerType::ilu,
-              Core::LinearSolver::PreconditionerType::multigrid_muelu,
-              Core::LinearSolver::PreconditionerType::multigrid_nxn,
-              Core::LinearSolver::PreconditionerType::block_teko),
-          list);
+      list.specs.emplace_back(deprecated_selection<Core::LinearSolver::PreconditionerType>("AZPREC",
+          {
+              {"ILU", Core::LinearSolver::PreconditionerType::ilu},
+              {"MueLu", Core::LinearSolver::PreconditionerType::multigrid_muelu},
+              {"AMGnxn", Core::LinearSolver::PreconditionerType::multigrid_nxn},
+              {"Teko", Core::LinearSolver::PreconditionerType::block_teko},
+          },
+          {.description = "Type of internal preconditioner to use.\nNote! this preconditioner will "
+                          "only be used if the input operator\nsupports the Epetra_RowMatrix "
+                          "interface and the client does not pass\nin an external preconditioner!",
+              .default_value = Core::LinearSolver::PreconditionerType::ilu}));
     }
 
     // Ifpack options
@@ -89,11 +90,14 @@ namespace Inpar::SOLVER
                   "The level the residual norms must reach to decide about successful convergence",
               .default_value = 1e-8}));
 
-      Core::Utils::string_to_integral_parameter<Belos::ScaleType>("AZCONV", "AZ_r0",
-          "The implicit residual norm scaling type to use for terminating the iterative solver.",
-          Teuchos::tuple<std::string>("AZ_r0", "AZ_noscaled"),
-          Teuchos::tuple<Belos::ScaleType>(Belos::ScaleType::NormOfInitRes, Belos::ScaleType::None),
-          list);
+      list.specs.emplace_back(deprecated_selection<Belos::ScaleType>("AZCONV",
+          {
+              {"AZ_r0", Belos::ScaleType::NormOfInitRes},
+              {"AZ_noscaled", Belos::ScaleType::None},
+          },
+          {.description = "The implicit residual norm scaling type to use for terminating the "
+                          "iterative solver.",
+              .default_value = Belos::ScaleType::NormOfInitRes}));
 
       list.specs.emplace_back(parameter<int>(
           "AZOUTPUT", {.description = "The number of iterations between each output of the "

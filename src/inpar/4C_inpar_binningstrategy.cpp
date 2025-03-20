@@ -44,12 +44,9 @@ void Inpar::BINSTRATEGY::set_valid_parameters(std::map<std::string, Core::IO::In
                                .default_value = "1e12 1e12 1e12 1e12 1e12 1e12"}));
 
 
-  Core::Utils::string_to_integral_parameter<Core::Binstrategy::WriteBins>("WRITEBINS", "none",
-      "Write none, row or column bins for visualization",
-      tuple<std::string>("none", "rows", "cols"),
-      tuple<Core::Binstrategy::WriteBins>(Core::Binstrategy::WriteBins::none,
-          Core::Binstrategy::WriteBins::rows, Core::Binstrategy::WriteBins::cols),
-      binningstrategy);
+  binningstrategy.specs.emplace_back(parameter<Core::Binstrategy::WriteBins>(
+      "WRITEBINS", {.description = "Write none, row or column bins for visualization",
+                       .default_value = Core::Binstrategy::WriteBins::none}));
 
   binningstrategy.move_into_collection(list);
 }

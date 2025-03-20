@@ -23,35 +23,14 @@ void Inpar::PROBLEMTYPE::set_valid_parameters(std::map<std::string, Core::IO::In
   /*----------------------------------------------------------------------*/
   Core::Utils::SectionSpecs type{"PROBLEM TYPE"};
 
-  {
-    using IntegerType = Core::ProblemType;
-    Teuchos::Array<std::string> name;
-    Teuchos::Array<IntegerType> label;
+  type.specs.emplace_back(
+      deprecated_selection<Core::ProblemType>("PROBLEMTYPE", string_to_problem_type_map(),
+          {.description = "Type of the problem", .default_value = Core::ProblemType::fsi}));
 
-    for (const auto& [prb_name, prb_enum] : string_to_problem_type_map())
-    {
-      name.push_back(prb_name);
-      label.push_back(prb_enum);
-    }
-
-    Core::Utils::string_to_integral_parameter<IntegerType>(
-        "PROBLEMTYPE", "Fluid_Structure_Interaction", "", name, label, type);
-  }
-
-  {
-    using IntegerType = Core::FE::ShapeFunctionType;
-    Teuchos::Array<std::string> name;
-    Teuchos::Array<IntegerType> label;
-
-    for (const auto& [prb_name, prb_enum] : Core::FE::string_to_shape_function_type_map())
-    {
-      name.push_back(prb_name);
-      label.push_back(prb_enum);
-    }
-
-    Core::Utils::string_to_integral_parameter<IntegerType>("SHAPEFCT", "Polynomial",
-        "Defines the function spaces for the spatial approximation", name, label, type);
-  }
+  type.specs.emplace_back(deprecated_selection<Core::FE::ShapeFunctionType>("SHAPEFCT",
+      Core::FE::string_to_shape_function_type_map(),
+      {.description = "Defines the function spaces for the spatial approximation",
+          .default_value = Core::FE::ShapeFunctionType::polynomial}));
 
   type.specs.emplace_back(parameter<int>("RESTART", {.description = "", .default_value = 0}));
   type.specs.emplace_back(parameter<int>("RANDSEED",

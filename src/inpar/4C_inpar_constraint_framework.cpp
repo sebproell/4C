@@ -22,30 +22,20 @@ void Inpar::CONSTRAINTS::set_valid_parameters(std::map<std::string, Core::IO::In
 
   Core::Utils::SectionSpecs embeddedmeshcoupling{"EMBEDDED MESH COUPLING"};
   {
-    Core::Utils::string_to_integral_parameter<EmbeddedMeshCouplingStrategy>("COUPLING_STRATEGY",
-        "none", "Strategy to couple background and overlapping mesh",
-        tuple<std::string>("none", "mortar"),
-        tuple<EmbeddedMeshCouplingStrategy>(
-            EmbeddedMeshCouplingStrategy::none, EmbeddedMeshCouplingStrategy::mortar),
-        embeddedmeshcoupling);
+    embeddedmeshcoupling.specs.emplace_back(parameter<EmbeddedMeshCouplingStrategy>(
+        "COUPLING_STRATEGY", {.description = "Strategy to couple background and overlapping mesh",
+                                 .default_value = EmbeddedMeshCouplingStrategy::none}));
 
-    Core::Utils::string_to_integral_parameter<SolidToSolidMortarShapefunctions>(
-        "MORTAR_SHAPE_FUNCTION", "none",
-        "Shape functions that should be use in case of coupling using the Mortar/Lagrange "
-        "Multiplier method",
-        tuple<std::string>("none", "quad4", "quad9", "nurbs9"),
-        tuple<SolidToSolidMortarShapefunctions>(SolidToSolidMortarShapefunctions::none,
-            SolidToSolidMortarShapefunctions::quad4, SolidToSolidMortarShapefunctions::quad9,
-            SolidToSolidMortarShapefunctions::nurbs9),
-        embeddedmeshcoupling);
+    embeddedmeshcoupling.specs.emplace_back(
+        parameter<SolidToSolidMortarShapefunctions>("MORTAR_SHAPE_FUNCTION",
+            {.description = "Shape functions that should be use in case of coupling using the "
+                            "Mortar/Lagrange  Multiplier method ",
+                .default_value = SolidToSolidMortarShapefunctions::none}));
 
-    Core::Utils::string_to_integral_parameter<EmbeddedMeshConstraintEnforcement>(
-        "CONSTRAINT_ENFORCEMENT", "none",
-        "Apply a constraint enforcement in the embedded mesh coupling strategy",
-        tuple<std::string>("none", "penalty"),
-        tuple<EmbeddedMeshConstraintEnforcement>(
-            EmbeddedMeshConstraintEnforcement::none, EmbeddedMeshConstraintEnforcement::penalty),
-        embeddedmeshcoupling);
+    embeddedmeshcoupling.specs.emplace_back(
+        parameter<EmbeddedMeshConstraintEnforcement>("CONSTRAINT_ENFORCEMENT",
+            {.description = "Apply a constraint enforcement in the embedded mesh coupling strategy",
+                .default_value = EmbeddedMeshConstraintEnforcement::none}));
 
     embeddedmeshcoupling.specs.emplace_back(parameter<double>("CONSTRAINT_ENFORCEMENT_PENALTYPARAM",
         {.description =

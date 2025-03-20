@@ -26,17 +26,22 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
 
   // physical type of fluid flow (incompressible, varying density, loma, Boussinesq approximation,
   // temperature-dependent water)
-  Core::Utils::string_to_integral_parameter<Inpar::FLUID::PhysicalType>("PHYSICAL_TYPE",
-      "Incompressible", "Physical Type",
-      tuple<std::string>("Incompressible", "Weakly_compressible", "Weakly_compressible_stokes",
-          "Weakly_compressible_dens_mom", "Weakly_compressible_stokes_dens_mom",
-          "Artificial_compressibility", "Varying_density", "Loma", "Temp_dep_water", "Boussinesq",
-          "Stokes", "Oseen"),
-      tuple<Inpar::FLUID::PhysicalType>(incompressible, weakly_compressible,
-          weakly_compressible_stokes, weakly_compressible_dens_mom,
-          weakly_compressible_stokes_dens_mom, artcomp, varying_density, loma, tempdepwater,
-          boussinesq, stokes, oseen),
-      fdyn);
+  fdyn.specs.emplace_back(deprecated_selection<Inpar::FLUID::PhysicalType>("PHYSICAL_TYPE",
+      {
+          {"Incompressible", incompressible},
+          {"Weakly_compressible", weakly_compressible},
+          {"Weakly_compressible_stokes", weakly_compressible_stokes},
+          {"Weakly_compressible_dens_mom", weakly_compressible_dens_mom},
+          {"Weakly_compressible_stokes_dens_mom", weakly_compressible_stokes_dens_mom},
+          {"Artificial_compressibility", artcomp},
+          {"Varying_density", varying_density},
+          {"Loma", loma},
+          {"Temp_dep_water", tempdepwater},
+          {"Boussinesq", boussinesq},
+          {"Stokes", stokes},
+          {"Oseen", oseen},
+      },
+      {.description = "Physical Type", .default_value = incompressible}));
 
   // number of linear solver used for fluid problem
   fdyn.specs.emplace_back(parameter<int>("LINEAR_SOLVER",
@@ -51,10 +56,14 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
                             .default_value = -1}));
 
   // Flag to define the way of calculating stresses and wss
-  Core::Utils::string_to_integral_parameter<Inpar::FLUID::WSSType>("WSS_TYPE", "Standard",
-      "which type of stresses and wall shear stress",
-      tuple<std::string>("Standard", "Aggregation", "Mean"),
-      tuple<Inpar::FLUID::WSSType>(wss_standard, wss_aggregation, wss_mean), fdyn);
+  fdyn.specs.emplace_back(deprecated_selection<Inpar::FLUID::WSSType>("WSS_TYPE",
+      {
+          {"Standard", wss_standard},
+          {"Aggregation", wss_aggregation},
+          {"Mean", wss_mean},
+      },
+      {.description = "which type of stresses and wall shear stress",
+          .default_value = wss_standard}));
 
   // Set ML-solver number for smoothing of residual-based calculated wallshearstress via plain
   // aggregation.
@@ -63,32 +72,31 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
                       "wallshearstress via plain aggregation.",
           .default_value = -1}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::FLUID::TimeIntegrationScheme>("TIMEINTEGR",
-      "One_Step_Theta", "Time Integration Scheme",
-      tuple<std::string>("Stationary", "Np_Gen_Alpha", "Af_Gen_Alpha", "One_Step_Theta", "BDF2"),
-      tuple<Inpar::FLUID::TimeIntegrationScheme>(timeint_stationary, timeint_npgenalpha,
-          timeint_afgenalpha, timeint_one_step_theta, timeint_bdf2),
-      fdyn);
+  fdyn.specs.emplace_back(deprecated_selection<Inpar::FLUID::TimeIntegrationScheme>("TIMEINTEGR",
+      {
+          {"Stationary", timeint_stationary},
+          {"Np_Gen_Alpha", timeint_npgenalpha},
+          {"Af_Gen_Alpha", timeint_afgenalpha},
+          {"One_Step_Theta", timeint_one_step_theta},
+          {"BDF2", timeint_bdf2},
+      },
+      {.description = "Time Integration Scheme", .default_value = timeint_one_step_theta}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::FLUID::OstContAndPress>("OST_CONT_PRESS",
-      "Cont_normal_Press_normal",
-      "One step theta option for time discretization of continuity eq. and pressure",
-      tuple<std::string>(
-          "Cont_normal_Press_normal", "Cont_impl_Press_normal", "Cont_impl_Press_impl"),
-      tuple<Inpar::FLUID::OstContAndPress>(
-          Cont_normal_Press_normal, Cont_impl_Press_normal, Cont_impl_Press_impl),
-      fdyn);
+  fdyn.specs.emplace_back(parameter<Inpar::FLUID::OstContAndPress>("OST_CONT_PRESS",
+      {.description =
+              "One step theta option for time discretization of continuity eq. and pressure",
+          .default_value = Cont_normal_Press_normal}));
 
-  Core::Utils::string_to_integral_parameter<Core::IO::GeometryType>("GEOMETRY", "full",
-      "How the geometry is specified", tuple<std::string>("full", "box", "file"),
-      tuple<Core::IO::GeometryType>(
-          Core::IO::geometry_full, Core::IO::geometry_box, Core::IO::geometry_file),
-      fdyn);
+  fdyn.specs.emplace_back(deprecated_selection<Core::IO::GeometryType>("GEOMETRY",
+      {
+          {"full", Core::IO::geometry_full},
+          {"box", Core::IO::geometry_box},
+          {"file", Core::IO::geometry_file},
+      },
+      {.description = "How the geometry is specified", .default_value = Core::IO::geometry_full}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::FLUID::LinearisationAction>("NONLINITER",
-      "fixed_point_like", "Nonlinear iteration scheme",
-      tuple<std::string>("fixed_point_like", "Newton"),
-      tuple<Inpar::FLUID::LinearisationAction>(fixed_point_like, Newton), fdyn);
+  fdyn.specs.emplace_back(parameter<Inpar::FLUID::LinearisationAction>("NONLINITER",
+      {.description = "Nonlinear iteration scheme", .default_value = fixed_point_like}));
 
   std::vector<std::string> predictor_valid_input = {"steady_state", "zero_acceleration",
       "constant_acceleration", "constant_increment", "explicit_second_order_midpoint", "TangVel"};
@@ -97,43 +105,35 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
           .default_value = "steady_state"}));
 
 
-  Core::Utils::string_to_integral_parameter<Inpar::FLUID::ItNorm>("CONVCHECK", "L_2_norm",
-      "Norm for convergence check (relative increments and absolute residuals)",
-      tuple<std::string>("L_2_norm"), tuple<Inpar::FLUID::ItNorm>(fncc_L2), fdyn);
+  fdyn.specs.emplace_back(deprecated_selection<Inpar::FLUID::ItNorm>("CONVCHECK",
+      {
+          {"L_2_norm", fncc_L2},
+      },
+      {.description = "Norm for convergence check (relative increments and absolute residuals)",
+          .default_value = fncc_L2}));
 
   fdyn.specs.emplace_back(parameter<bool>("INCONSISTENT_RESIDUAL",
       {.description = "do not evaluate residual after solution has converged (->faster)",
           .default_value = false}));
 
   {
-    // a standard Teuchos::tuple can have at maximum 10 entries! We have to circumvent this here.
-    Teuchos::Tuple<std::string, 11> name;
-    Teuchos::Tuple<Inpar::FLUID::InitialField, 11> label;
-    name[0] = "zero_field";
-    label[0] = initfield_zero_field;
-    name[1] = "field_by_function";
-    label[1] = initfield_field_by_function;
-    name[2] = "disturbed_field_from_function";
-    label[2] = initfield_disturbed_field_from_function;
-    name[3] = "FLAME_VORTEX_INTERACTION";
-    label[3] = initfield_flame_vortex_interaction;
-    name[4] = "BELTRAMI-FLOW";
-    label[4] = initfield_beltrami_flow;
-    name[5] = "KIM-MOIN-FLOW";
-    label[5] = initfield_kim_moin_flow;
-    name[6] = "hit_comte_bellot_corrsin_initial_field";
-    label[6] = initfield_hit_comte_bellot_corrsin;
-    name[7] = "forced_hit_simple_algebraic_spectrum";
-    label[7] = initfield_forced_hit_simple_algebraic_spectrum;
-    name[8] = "forced_hit_numeric_spectrum";
-    label[8] = initfield_forced_hit_numeric_spectrum;
-    name[9] = "forced_hit_passive";
-    label[9] = initfield_passive_hit_const_input;
-    name[10] = "channel_weakly_compressible";
-    label[10] = initfield_channel_weakly_compressible;
+    std::map<std::string, InitialField> map{
+        {"zero_field", initfield_zero_field},
+        {"field_by_function", initfield_field_by_function},
+        {"disturbed_field_from_function", initfield_disturbed_field_from_function},
+        {"FLAME_VORTEX_INTERACTION", initfield_flame_vortex_interaction},
+        {"BELTRAMI-FLOW", initfield_beltrami_flow},
+        {"KIM-MOIN-FLOW", initfield_kim_moin_flow},
+        {"hit_comte_bellot_corrsin_initial_field", initfield_hit_comte_bellot_corrsin},
+        {"forced_hit_simple_algebraic_spectrum", initfield_forced_hit_simple_algebraic_spectrum},
+        {"forced_hit_numeric_spectrum", initfield_forced_hit_numeric_spectrum},
+        {"forced_hit_passive", initfield_passive_hit_const_input},
+        {"channel_weakly_compressible", initfield_channel_weakly_compressible},
+    };
 
-    Core::Utils::string_to_integral_parameter<Inpar::FLUID::InitialField>(
-        "INITIALFIELD", "zero_field", "Initial field for fluid problem", name, label, fdyn);
+    fdyn.specs.emplace_back(deprecated_selection<Inpar::FLUID::InitialField>("INITIALFIELD", map,
+        {.description = "Initial Field for transport problem",
+            .default_value = initfield_zero_field}));
   }
 
   fdyn.specs.emplace_back(parameter<int>("OSEENFIELDFUNCNO",
@@ -151,60 +151,24 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
       {.description = "Flag to activate check for potential nonlinear boundary conditions",
           .default_value = false}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::FLUID::MeshTying>("MESHTYING", "no",
-      "Flag to (de)activate mesh tying algorithm",
-      tuple<std::string>("no", "Condensed_Smat", "Condensed_Bmat", "Condensed_Bmat_merged"),
-      tuple<Inpar::FLUID::MeshTying>(
-          no_meshtying, condensed_smat, condensed_bmat, condensed_bmat_merged),
-      fdyn);
+  fdyn.specs.emplace_back(deprecated_selection<Inpar::FLUID::MeshTying>("MESHTYING",
+      {
+          {"no", no_meshtying},
+          {"Condensed_Smat", condensed_smat},
+          {"Condensed_Bmat", condensed_bmat},
+          {"Condensed_Bmat_merged", condensed_bmat_merged},
+      },
+      {.description = "Flag to (de)activate mesh tying algorithm", .default_value = no_meshtying}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::FLUID::Gridvel>("GRIDVEL", "BE",
-      "scheme for determination of gridvelocity from displacements",
-      tuple<std::string>("BE", "BDF2", "OST"), tuple<Inpar::FLUID::Gridvel>(BE, BDF2, OST), fdyn);
+  fdyn.specs.emplace_back(parameter<Inpar::FLUID::Gridvel>(
+      "GRIDVEL", {.description = "scheme for determination of gridvelocity from displacements",
+                     .default_value = BE}));
 
   fdyn.specs.emplace_back(parameter<bool>("ALLDOFCOUPLED",
       {.description = "all dof (incl. pressure) are coupled", .default_value = true}));
 
-  {
-    Teuchos::Tuple<std::string, 16> name;
-    Teuchos::Tuple<Inpar::FLUID::CalcError, 16> label;
-
-    name[0] = "no";
-    label[0] = no_error_calculation;
-    name[1] = "beltrami_flow";
-    label[1] = beltrami_flow;
-    name[2] = "channel2D";
-    label[2] = channel2D;
-    name[3] = "gravitation";
-    label[3] = gravitation;
-    name[4] = "shear_flow";
-    label[4] = shear_flow;
-    name[5] = "byfunct";
-    label[5] = byfunct;
-    name[6] = "beltrami_stat_stokes";
-    label[6] = beltrami_stat_stokes;
-    name[7] = "beltrami_stat_navier_stokes";
-    label[7] = beltrami_stat_navier_stokes;
-    name[8] = "beltrami_instat_stokes";
-    label[8] = beltrami_instat_stokes;
-    name[9] = "beltrami_instat_navier_stokes";
-    label[9] = beltrami_instat_navier_stokes;
-    name[10] = "kimmoin_stat_stokes";
-    label[10] = kimmoin_stat_stokes;
-    name[11] = "kimmoin_stat_navier_stokes";
-    label[11] = kimmoin_stat_navier_stokes;
-    name[12] = "kimmoin_instat_stokes";
-    label[12] = kimmoin_instat_stokes;
-    name[13] = "kimmoin_instat_navier_stokes";
-    label[13] = kimmoin_instat_navier_stokes;
-    name[14] = "fsi_fluid_pusher";
-    label[14] = fsi_fluid_pusher;
-    name[15] = "channel_weakly_compressible";
-    label[15] = channel_weakly_compressible;
-
-    Core::Utils::string_to_integral_parameter<Inpar::FLUID::CalcError>(
-        "CALCERROR", "no", "Flag to (de)activate error calculations", name, label, fdyn);
-  }
+  fdyn.specs.emplace_back(parameter<CalcError>("CALCERROR",
+      {.description = "Flag to (de)activate error calculations", .default_value = no}));
   fdyn.specs.emplace_back(parameter<int>(
       "CALCERRORFUNCNO", {.description = "Function for Error Calculation", .default_value = -1}));
 
@@ -309,15 +273,15 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   fdyn.specs.emplace_back(parameter<int>("VELGRAD_PROJ_SOLVER",
       {.description = "Number of linear solver used for L2 projection", .default_value = -1}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::FLUID::GradientReconstructionMethod>(
-      "VELGRAD_PROJ_METHOD", "none", "Flag to (de)activate gradient reconstruction.",
-      tuple<std::string>("none", "superconvergent_patch_recovery", "L2_projection"),
-      tuple<Inpar::FLUID::GradientReconstructionMethod>(
-          gradreco_none,  // no convective streamline edge-based stabilization
-          gradreco_spr,   // convective streamline edge-based stabilization on the entire domain
-          gradreco_l2     // pressure edge-based stabilization as ghost penalty around cut elements
-          ),
-      fdyn);
+  fdyn.specs.emplace_back(
+      deprecated_selection<Inpar::FLUID::GradientReconstructionMethod>("VELGRAD_PROJ_METHOD",
+          {
+              {"none", gradreco_none},
+              {"superconvergent_patch_recovery", gradreco_spr},
+              {"L2_projection", gradreco_l2},
+          },
+          {.description = "Flag to (de)activate gradient reconstruction.",
+              .default_value = gradreco_none}));
 
   fdyn.specs.emplace_back(parameter<bool>(
       "OFF_PROC_ASSEMBLY", {.description = "Do not evaluate ghosted elements but communicate them "
@@ -350,19 +314,20 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   /*----------------------------------------------------------------------*/
   Core::Utils::SectionSpecs fdyn_stab{fdyn, "RESIDUAL-BASED STABILIZATION"};
   // this parameter defines various stabilized methods
-  Core::Utils::string_to_integral_parameter<Inpar::FLUID::StabType>("STABTYPE", "residual_based",
-      "Apply (un)stabilized fluid formulation. No stabilization is only possible for inf-sup "
-      "stable elements."
-      "Use a residual-based stabilization or, more generally, a stabilization \nbased on the "
-      "concept of the residual-based variational multiscale method...\nExpecting additional "
-      "input. "
-      "Use an edge-based stabilization, especially for XFEM. "
-      "Alternative: Element/cell based polynomial pressure projection, see Dohrmann/Bochev 2004, "
-      "IJNMF",
-      tuple<std::string>("no_stabilization", "residual_based", "edge_based", "pressure_projection"),
-      tuple<Inpar::FLUID::StabType>(
-          stabtype_nostab, stabtype_residualbased, stabtype_edgebased, stabtype_pressureprojection),
-      fdyn_stab);
+  fdyn_stab.specs.emplace_back(deprecated_selection<Inpar::FLUID::StabType>("STABTYPE",
+      {
+          {"no_stabilization", stabtype_nostab},
+          {"residual_based", stabtype_residualbased},
+          {"edge_based", stabtype_edgebased},
+          {"pressure_projection", stabtype_pressureprojection},
+      },
+      {.description = "Apply (un)stabilized fluid formulation. No stabilization is only possible "
+                      "for inf-sup stable elements.Use a residual-based stabilization or, more "
+                      "generally, a stabilization \nbased on the concept of the residual-based "
+                      "variational multiscale method...\nExpecting additional input. Use an "
+                      "edge-based stabilization, especially for XFEM. Alternative: Element/cell "
+                      "based polynomial pressure projection, see Dohrmann/Bochev 2004, IJNMF",
+          .default_value = stabtype_residualbased}));
 
   fdyn_stab.specs.emplace_back(parameter<bool>(
       "INCONSISTENT", {.description = "residual based without second derivatives (i.e. only "
@@ -375,18 +340,25 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
           .default_value = false}));
 
   // the following parameters are necessary only if a residual based stabilized method is applied
-  Core::Utils::string_to_integral_parameter<SubscalesTD>("TDS", "quasistatic",
-      "Flag to allow time dependency of subscales for residual-based stabilization.",
-      tuple<std::string>("quasistatic", "time_dependent"),
-      tuple<SubscalesTD>(subscales_quasistatic, subscales_time_dependent), fdyn_stab);
+  fdyn_stab.specs.emplace_back(deprecated_selection<SubscalesTD>("TDS",
+      {
+          {"quasistatic", subscales_quasistatic},
+          {"time_dependent", subscales_time_dependent},
+      },
+      {.description =
+              "Flag to allow time dependency of subscales for residual-based stabilization.",
+          .default_value = subscales_quasistatic}));
 
-  Core::Utils::string_to_integral_parameter<Transient>("TRANSIENT", "no_transient",
-      "Specify how to treat the transient term. "
-      "Use transient term (recommended for time dependent subscales) or "
-      "use transient term including a linearisation of 1/tau",
-      tuple<std::string>("no_transient", "yes_transient", "transient_complete"),
-      tuple<Transient>(inertia_stab_drop, inertia_stab_keep, inertia_stab_keep_complete),
-      fdyn_stab);
+  fdyn_stab.specs.emplace_back(deprecated_selection<Transient>("TRANSIENT",
+      {
+          {"no_transient", inertia_stab_drop},
+          {"yes_transient", inertia_stab_keep},
+          {"transient_complete", inertia_stab_keep_complete},
+      },
+      {.description =
+              "Specify how to treat the transient term. Use transient term (recommended for time "
+              "dependent subscales) or use transient term including a linearisation of 1/tau",
+          .default_value = inertia_stab_drop}));
 
   fdyn_stab.specs.emplace_back(parameter<bool>(
       "PSPG", {.description = "Flag to (de)activate PSPG stabilization.", .default_value = true}));
@@ -395,98 +367,100 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   fdyn_stab.specs.emplace_back(parameter<bool>(
       "GRAD_DIV", {.description = "Flag to (de)activate grad-div term.", .default_value = true}));
 
-  Core::Utils::string_to_integral_parameter<VStab>("VSTAB", "no_vstab",
-      "Flag to (de)activate viscous term in residual-based stabilization. Options: "
-      "No viscous term in stabilization, or, "
-      "Viscous stabilization of GLS type, or, "
-      "Viscous stabilization of GLS type, included only on the right hand side, or, "
-      "Viscous stabilization of USFEM type, or, "
-      "Viscous stabilization of USFEM type, included only on the right hand side",
-      tuple<std::string>(
-          "no_vstab", "vstab_gls", "vstab_gls_rhs", "vstab_usfem", "vstab_usfem_rhs"),
-      tuple<VStab>(viscous_stab_none, viscous_stab_gls, viscous_stab_gls_only_rhs,
-          viscous_stab_usfem, viscous_stab_usfem_only_rhs),
-      fdyn_stab);
+  fdyn_stab.specs.emplace_back(deprecated_selection<VStab>("VSTAB",
+      {
+          {"no_vstab", viscous_stab_none},
+          {"vstab_gls", viscous_stab_gls},
+          {"vstab_gls_rhs", viscous_stab_gls_only_rhs},
+          {"vstab_usfem", viscous_stab_usfem},
+          {"vstab_usfem_rhs", viscous_stab_usfem_only_rhs},
+      },
+      {.description = "Flag to (de)activate viscous term in residual-based stabilization. Options: "
+                      "No viscous term in stabilization, or, Viscous stabilization of GLS type, "
+                      "or, Viscous stabilization of GLS type, included only on the right hand "
+                      "side, or, Viscous stabilization of USFEM type, or, Viscous stabilization of "
+                      "USFEM type, included only on the right hand side",
+          .default_value = viscous_stab_none}));
 
-  Core::Utils::string_to_integral_parameter<RStab>("RSTAB", "no_rstab",
-      "Flag to (de)activate reactive term in residual-based stabilization.",
-      tuple<std::string>("no_rstab", "rstab_gls", "rstab_usfem"),
-      tuple<RStab>(reactive_stab_none, reactive_stab_gls, reactive_stab_usfem), fdyn_stab);
+  fdyn_stab.specs.emplace_back(deprecated_selection<RStab>("RSTAB",
+      {
+          {"no_rstab", reactive_stab_none},
+          {"rstab_gls", reactive_stab_gls},
+          {"rstab_usfem", reactive_stab_usfem},
+      },
+      {.description = "Flag to (de)activate reactive term in residual-based stabilization.",
+          .default_value = reactive_stab_none}));
 
-  Core::Utils::string_to_integral_parameter<CrossStress>("CROSS-STRESS", "no_cross",
-      "Flag to (de)activate cross-stress term -> residual-based VMM. Options:"
-      "No cross-stress term, or,"
-      "Include the cross-stress term with a linearization of the convective part, or, "
-      "Include cross-stress term, but only explicitly on right hand side",
-      tuple<std::string>("no_cross", "yes_cross", "cross_rhs"),
-      tuple<CrossStress>(cross_stress_stab_none, cross_stress_stab, cross_stress_stab_only_rhs),
-      fdyn_stab);
+  fdyn_stab.specs.emplace_back(deprecated_selection<CrossStress>("CROSS-STRESS",
+      {
+          {"no_cross", cross_stress_stab_none},
+          {"yes_cross", cross_stress_stab},
+          {"cross_rhs", cross_stress_stab_only_rhs},
+      },
+      {.description = "Flag to (de)activate cross-stress term -> residual-based VMM. Options:No "
+                      "cross-stress term, or,Include the cross-stress term with a linearization of "
+                      "the convective part, or, Include cross-stress term, but only explicitly on "
+                      "right hand side",
+          .default_value = cross_stress_stab_none}));
 
-  Core::Utils::string_to_integral_parameter<ReynoldsStress>("REYNOLDS-STRESS", "no_reynolds",
-      "Flag to (de)activate Reynolds-stress term -> residual-based VMM.",
-      tuple<std::string>("no_reynolds", "yes_reynolds", "reynolds_rhs"),
-      tuple<ReynoldsStress>(
-          reynolds_stress_stab_none, reynolds_stress_stab, reynolds_stress_stab_only_rhs),
-      fdyn_stab);
+  fdyn_stab.specs.emplace_back(deprecated_selection<ReynoldsStress>("REYNOLDS-STRESS",
+      {
+          {"no_reynolds", reynolds_stress_stab_none},
+          {"yes_reynolds", reynolds_stress_stab},
+          {"reynolds_rhs", reynolds_stress_stab_only_rhs},
+      },
+      {.description = "Flag to (de)activate Reynolds-stress term -> residual-based VMM.",
+          .default_value = reynolds_stress_stab_none}));
 
   {
-    // this parameter selects the tau definition applied
-    // a standard Teuchos::tuple can have at maximum 10 entries! We have to circumvent this here.
-    Teuchos::Tuple<std::string, 16> name;
-    Teuchos::Tuple<TauType, 16> label;
-    name[0] = "Taylor_Hughes_Zarins";
-    label[0] = tau_taylor_hughes_zarins;
-    name[1] = "Taylor_Hughes_Zarins_wo_dt";
-    label[1] = tau_taylor_hughes_zarins_wo_dt;
-    name[2] = "Taylor_Hughes_Zarins_Whiting_Jansen";
-    label[2] = tau_taylor_hughes_zarins_whiting_jansen;
-    name[3] = "Taylor_Hughes_Zarins_Whiting_Jansen_wo_dt";
-    label[3] = tau_taylor_hughes_zarins_whiting_jansen_wo_dt;
-    name[4] = "Taylor_Hughes_Zarins_scaled";
-    label[4] = tau_taylor_hughes_zarins_scaled;
-    name[5] = "Taylor_Hughes_Zarins_scaled_wo_dt";
-    label[5] = tau_taylor_hughes_zarins_scaled_wo_dt;
-    name[6] = "Franca_Barrenechea_Valentin_Frey_Wall";
-    label[6] = tau_franca_barrenechea_valentin_frey_wall;
-    name[7] = "Franca_Barrenechea_Valentin_Frey_Wall_wo_dt";
-    label[7] = tau_franca_barrenechea_valentin_frey_wall_wo_dt;
-    name[8] = "Shakib_Hughes_Codina";
-    label[8] = tau_shakib_hughes_codina;
-    name[9] = "Shakib_Hughes_Codina_wo_dt";
-    label[9] = tau_shakib_hughes_codina_wo_dt;
-    name[10] = "Codina";
-    label[10] = tau_codina;
-    name[11] = "Codina_wo_dt";
-    label[11] = tau_codina_wo_dt;
-    name[12] = "Codina_convscaled";
-    label[12] = tau_codina_convscaled;
-    name[13] = "Franca_Madureira_Valentin_Badia_Codina";
-    label[13] = tau_franca_madureira_valentin_badia_codina;
-    name[14] = "Franca_Madureira_Valentin_Badia_Codina_wo_dt";
-    label[14] = tau_franca_madureira_valentin_badia_codina_wo_dt;
-    name[15] = "Hughes_Franca_Balestra_wo_dt";
-    label[15] = tau_hughes_franca_balestra_wo_dt;
+    std::map<std::string, TauType> map{
+        {"Taylor_Hughes_Zarins", tau_taylor_hughes_zarins},
+        {"Taylor_Hughes_Zarins_wo_dt", tau_taylor_hughes_zarins_wo_dt},
+        {"Taylor_Hughes_Zarins_Whiting_Jansen", tau_taylor_hughes_zarins_whiting_jansen},
+        {"Taylor_Hughes_Zarins_Whiting_Jansen_wo_dt",
+            tau_taylor_hughes_zarins_whiting_jansen_wo_dt},
+        {"Taylor_Hughes_Zarins_scaled", tau_taylor_hughes_zarins_scaled},
+        {"Taylor_Hughes_Zarins_scaled_wo_dt", tau_taylor_hughes_zarins_scaled_wo_dt},
+        {"Franca_Barrenechea_Valentin_Frey_Wall", tau_franca_barrenechea_valentin_frey_wall},
+        {"Franca_Barrenechea_Valentin_Frey_Wall_wo_dt",
+            tau_franca_barrenechea_valentin_frey_wall_wo_dt},
+        {"Shakib_Hughes_Codina", tau_shakib_hughes_codina},
+        {"Shakib_Hughes_Codina_wo_dt", tau_shakib_hughes_codina_wo_dt},
+        {"Codina", tau_codina},
+        {"Codina_wo_dt", tau_codina_wo_dt},
+        {"Codina_convscaled", tau_codina_convscaled},
+        {"Franca_Madureira_Valentin_Badia_Codina", tau_franca_madureira_valentin_badia_codina},
+        {"Franca_Madureira_Valentin_Badia_Codina_wo_dt",
+            tau_franca_madureira_valentin_badia_codina_wo_dt},
+        {"Hughes_Franca_Balestra_wo_dt", tau_hughes_franca_balestra_wo_dt},
+    };
 
-    Core::Utils::string_to_integral_parameter<TauType>("DEFINITION_TAU",
-        "Franca_Barrenechea_Valentin_Frey_Wall", "Definition of tau_M and Tau_C", name, label,
-        fdyn_stab);
+    fdyn_stab.specs.emplace_back(deprecated_selection<TauType>("DEFINITION_TAU", map,
+        {.description = "Definition of tau",
+            .default_value = tau_franca_barrenechea_valentin_frey_wall}));
   }
 
   // this parameter selects the characteristic element length for tau_Mu for all
   // stabilization parameter definitions requiring such a length
-  Core::Utils::string_to_integral_parameter<CharEleLengthU>("CHARELELENGTH_U", "streamlength",
-      "Characteristic element length for tau_Mu",
-      tuple<std::string>("streamlength", "volume_equivalent_diameter", "root_of_volume"),
-      tuple<CharEleLengthU>(streamlength_u, volume_equivalent_diameter_u, root_of_volume_u),
-      fdyn_stab);
+  fdyn_stab.specs.emplace_back(deprecated_selection<CharEleLengthU>("CHARELELENGTH_U",
+      {
+          {"streamlength", streamlength_u},
+          {"volume_equivalent_diameter", volume_equivalent_diameter_u},
+          {"root_of_volume", root_of_volume_u},
+      },
+      {.description = "Characteristic element length for tau_Mu",
+          .default_value = streamlength_u}));
 
   // this parameter selects the characteristic element length for tau_Mp and tau_C for
   // all stabilization parameter definitions requiring such a length
-  Core::Utils::string_to_integral_parameter<CharEleLengthPC>("CHARELELENGTH_PC",
-      "volume_equivalent_diameter", "Characteristic element length for tau_Mp/tau_C",
-      tuple<std::string>("streamlength", "volume_equivalent_diameter", "root_of_volume"),
-      tuple<CharEleLengthPC>(streamlength_pc, volume_equivalent_diameter_pc, root_of_volume_pc),
-      fdyn_stab);
+  fdyn_stab.specs.emplace_back(deprecated_selection<CharEleLengthPC>("CHARELELENGTH_PC",
+      {
+          {"streamlength", streamlength_pc},
+          {"volume_equivalent_diameter", volume_equivalent_diameter_pc},
+          {"root_of_volume", root_of_volume_pc},
+      },
+      {.description = "Characteristic element length for tau_Mp/tau_C",
+          .default_value = volume_equivalent_diameter_pc}));
 
   // this parameter selects the location where tau is evaluated
 
@@ -510,19 +484,25 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
       {.description = "Flag to (de)activate SUPG stabilization in loma continuity equation.",
           .default_value = false}));
 
-  Core::Utils::string_to_integral_parameter<CrossStress>("LOMA_CONTI_CROSS_STRESS", "no_cross",
-      "Flag to (de)activate cross-stress term loma continuity equation-> residual-based VMM.",
-      tuple<std::string>("no_cross", "yes_cross", "cross_rhs"),
-      tuple<CrossStress>(cross_stress_stab_none, cross_stress_stab, cross_stress_stab_only_rhs),
-      fdyn_stab);
+  fdyn_stab.specs.emplace_back(deprecated_selection<CrossStress>("LOMA_CONTI_CROSS_STRESS",
+      {
+          {"no_cross", cross_stress_stab_none},
+          {"yes_cross", cross_stress_stab},
+          {"cross_rhs", cross_stress_stab_only_rhs},
+      },
+      {.description = "Flag to (de)activate cross-stress term loma continuity equation-> "
+                      "residual-based VMM.",
+          .default_value = cross_stress_stab_none}));
 
-  Core::Utils::string_to_integral_parameter<ReynoldsStress>("LOMA_CONTI_REYNOLDS_STRESS",
-      "no_reynolds",
-      "Flag to (de)activate Reynolds-stress term loma continuity equation-> residual-based VMM.",
-      tuple<std::string>("no_reynolds", "yes_reynolds", "reynolds_rhs"),
-      tuple<ReynoldsStress>(
-          reynolds_stress_stab_none, reynolds_stress_stab, reynolds_stress_stab_only_rhs),
-      fdyn_stab);
+  fdyn_stab.specs.emplace_back(deprecated_selection<ReynoldsStress>("LOMA_CONTI_REYNOLDS_STRESS",
+      {
+          {"no_reynolds", reynolds_stress_stab_none},
+          {"yes_reynolds", reynolds_stress_stab},
+          {"reynolds_rhs", reynolds_stress_stab_only_rhs},
+      },
+      {.description = "Flag to (de)activate Reynolds-stress term loma continuity equation-> "
+                      "residual-based VMM.",
+          .default_value = reynolds_stress_stab_none}));
 
   fdyn_stab.move_into_collection(list);
 
@@ -530,73 +510,65 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   Core::Utils::SectionSpecs fdyn_edge_based_stab{fdyn, "EDGE-BASED STABILIZATION"};
 
   //! Flag to (de)activate edge-based (EOS) pressure stabilization
-  Core::Utils::string_to_integral_parameter<EosPres>("EOS_PRES", "none",
-      "Flag to (de)activate pressure edge-based stabilization. Options: "
-      "do not use pressure edge-based stabilization, or, "
-      "use pressure edge-based stabilization as standard edge-based stabilization on the "
-      "entire domain, or, "
-      "use pressure edge-based stabilization as xfem ghost-penalty stabilization just around "
-      "cut elements",
-      tuple<std::string>("none", "std_eos", "xfem_gp"),
-      tuple<EosPres>(EOS_PRES_none,  // no pressure edge-based stabilization
-          EOS_PRES_std_eos,          // pressure edge-based stabilization on the entire domain
-          EOS_PRES_xfem_gp  // pressure edge-based stabilization as ghost penalty around cut
-                            // elements
-          ),
-      fdyn_edge_based_stab);
+  fdyn_edge_based_stab.specs.emplace_back(deprecated_selection<EosPres>("EOS_PRES",
+      {
+          {"none", EOS_PRES_none},
+          {"std_eos", EOS_PRES_std_eos},
+          {"xfem_gp", EOS_PRES_xfem_gp},
+      },
+      {.description =
+              "Flag to (de)activate pressure edge-based stabilization. Options: do not use "
+              "pressure edge-based stabilization, or, use pressure edge-based stabilization as "
+              "standard edge-based stabilization on the entire domain, or, use pressure edge-based "
+              "stabilization as xfem ghost-penalty stabilization just around cut elements",
+          .default_value = EOS_PRES_none}));
 
   //! Flag to (de)activate edge-based (EOS) convective streamline stabilization
-  Core::Utils::string_to_integral_parameter<EosConvStream>("EOS_CONV_STREAM", "none",
-      "Flag to (de)activate convective streamline edge-based stabilization. Options: "
-      "do not use convective streamline edge-based stabilization, or, "
-      "use convective streamline edge-based stabilization as standard edge-based stabilization "
-      "on the entire domain, or, "
-      "use convective streamline edge-based stabilization as xfem ghost-penalty stabilization "
-      "just around cut elements",
-      tuple<std::string>("none", "std_eos", "xfem_gp"),
-      tuple<EosConvStream>(
-          EOS_CONV_STREAM_none,     // no convective streamline edge-based stabilization
-          EOS_CONV_STREAM_std_eos,  // convective streamline edge-based stabilization on the entire
-                                    // domain
-          EOS_CONV_STREAM_xfem_gp   // pressure edge-based stabilization as ghost penalty around cut
-                                    // elements
-          ),
-      fdyn_edge_based_stab);
+  fdyn_edge_based_stab.specs.emplace_back(deprecated_selection<EosConvStream>("EOS_CONV_STREAM",
+      {
+          {"none", EOS_CONV_STREAM_none},
+          {"std_eos", EOS_CONV_STREAM_std_eos},
+          {"xfem_gp", EOS_CONV_STREAM_xfem_gp},
+      },
+      {.description =
+              "Flag to (de)activate convective streamline edge-based stabilization. Options: do "
+              "not use convective streamline edge-based stabilization, or, use convective "
+              "streamline edge-based stabilization as standard edge-based stabilization on the "
+              "entire domain, or, use convective streamline edge-based stabilization as xfem "
+              "ghost-penalty stabilization just around cut elements",
+          .default_value = EOS_CONV_STREAM_none}));
 
   //! Flag to (de)activate edge-based (EOS) convective crosswind stabilization
-  Core::Utils::string_to_integral_parameter<EosConvCross>("EOS_CONV_CROSS", "none",
-      "Flag to (de)activate convective crosswind edge-based stabilization. Options:"
-      "do not use convective crosswind edge-based stabilization, or, "
-      "use convective crosswind edge-based stabilization as standard edge-based stabilization "
-      "on the entire domain, or, "
-      "use convective crosswind edge-based stabilization as xfem ghost-penalty stabilization "
-      "just around cut elements",
-      tuple<std::string>("none", "std_eos", "xfem_gp"),
-      tuple<EosConvCross>(EOS_CONV_CROSS_none,  // no convective crosswind edge-based stabilization
-          EOS_CONV_CROSS_std_eos,  // convective crosswind edge-based stabilization on the entire
-                                   // domain
-          EOS_CONV_CROSS_xfem_gp   // convective crosswind edge-based stabilization as ghost penalty
-                                   // around cut elements
-          ),
-      fdyn_edge_based_stab);
+  fdyn_edge_based_stab.specs.emplace_back(deprecated_selection<EosConvCross>("EOS_CONV_CROSS",
+      {
+          {"none", EOS_CONV_CROSS_none},
+          {"std_eos", EOS_CONV_CROSS_std_eos},
+          {"xfem_gp", EOS_CONV_CROSS_xfem_gp},
+      },
+      {.description = "Flag to (de)activate convective crosswind edge-based stabilization. "
+                      "Options:do not use convective crosswind edge-based stabilization, or, use "
+                      "convective crosswind edge-based stabilization as standard edge-based "
+                      "stabilization on the entire domain, or, use convective crosswind edge-based "
+                      "stabilization as xfem ghost-penalty stabilization just around cut elements",
+          .default_value = EOS_CONV_CROSS_none}));
 
   //! Flag to (de)activate edge-based (EOS) divergence stabilization
-  Core::Utils::string_to_integral_parameter<EosDiv>("EOS_DIV", "none",
-      "Flag to (de)activate divergence edge-based stabilization. Options: "
-      "do not use divergence edge-based stabilization, or, "
-      "divergence edge-based stabilization based on velocity jump on the entire domain, or, "
-      "divergence edge-based stabilization based on divergence jump just around cut elements, or, "
-      "divergence edge-based stabilization based on velocity jump on the entire domain, or, "
-      "divergence edge-based stabilization based on divergence jump just around cut elements",
-      tuple<std::string>(
-          "none", "vel_jump_std_eos", "vel_jump_xfem_gp", "div_jump_std_eos", "div_jump_xfem_gp"),
-      tuple<EosDiv>(EOS_DIV_none,    // no convective edge-based stabilization
-          EOS_DIV_vel_jump_std_eos,  // streamline convective edge-based stabilization
-          EOS_DIV_vel_jump_xfem_gp,  // streamline convective edge-based stabilization
-          EOS_DIV_div_jump_std_eos,  // crosswind convective edge-based stabilization
-          EOS_DIV_div_jump_xfem_gp   // crosswind convective edge-based stabilization
-          ),
-      fdyn_edge_based_stab);
+  fdyn_edge_based_stab.specs.emplace_back(deprecated_selection<EosDiv>("EOS_DIV",
+      {
+          {"none", EOS_DIV_none},
+          {"vel_jump_std_eos", EOS_DIV_vel_jump_std_eos},
+          {"vel_jump_xfem_gp", EOS_DIV_vel_jump_xfem_gp},
+          {"div_jump_std_eos", EOS_DIV_div_jump_std_eos},
+          {"div_jump_xfem_gp", EOS_DIV_div_jump_xfem_gp},
+      },
+      {.description =
+              "Flag to (de)activate divergence edge-based stabilization. Options: do not use "
+              "divergence edge-based stabilization, or, divergence edge-based stabilization based "
+              "on velocity jump on the entire domain, or, divergence edge-based stabilization "
+              "based on divergence jump just around cut elements, or, divergence edge-based "
+              "stabilization based on velocity jump on the entire domain, or, divergence "
+              "edge-based stabilization based on divergence jump just around cut elements",
+          .default_value = EOS_DIV_none}));
 
   //! special least-squares condition for pseudo 2D examples where pressure level is determined via
   //! Krylov-projection
@@ -606,49 +578,42 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
                              .default_value = false}));
 
   //! this parameter selects the definition of Edge-based stabilization parameter
-  Core::Utils::string_to_integral_parameter<EosTauType>("EOS_DEFINITION_TAU",
-      "Burman_Hansbo_DAngelo_Zunino",
-      "Definition of stabilization parameter for edge-based stabilization",
-      tuple<std::string>("Burman_Fernandez_Hansbo", "Burman_Fernandez_Hansbo_wo_dt",
-          "Braack_Burman_John_Lube", "Braack_Burman_John_Lube_wo_divjump",
-          "Franca_Barrenechea_Valentin_Wall", "Burman_Fernandez", "Burman_Hansbo_DAngelo_Zunino",
-          "Burman_Hansbo_DAngelo_Zunino_wo_dt", "Schott_Massing_Burman_DAngelo_Zunino",
-          "Schott_Massing_Burman_DAngelo_Zunino_wo_dt", "Burman",
-          "Taylor_Hughes_Zarins_Whiting_Jansen_Codina_scaling", "tau_not_defined"),
-      tuple<EosTauType>(Inpar::FLUID::EOS_tau_burman_fernandez_hansbo,
-          Inpar::FLUID::EOS_tau_burman_fernandez_hansbo_wo_dt,
-          Inpar::FLUID::EOS_tau_braack_burman_john_lube,
-          Inpar::FLUID::EOS_tau_braack_burman_john_lube_wo_divjump,
-          Inpar::FLUID::EOS_tau_franca_barrenechea_valentin_wall,
-          Inpar::FLUID::EOS_tau_burman_fernandez,
-          Inpar::FLUID::EOS_tau_burman_hansbo_dangelo_zunino,
-          Inpar::FLUID::EOS_tau_burman_hansbo_dangelo_zunino_wo_dt,
-          Inpar::FLUID::EOS_tau_schott_massing_burman_dangelo_zunino,
-          Inpar::FLUID::EOS_tau_schott_massing_burman_dangelo_zunino_wo_dt,
-          Inpar::FLUID::EOS_tau_burman,
-          Inpar::FLUID::EOS_tau_Taylor_Hughes_Zarins_Whiting_Jansen_Codina_scaling,
-          Inpar::FLUID::EOS_tau_not_defined),
-      fdyn_edge_based_stab);
+  fdyn_edge_based_stab.specs.emplace_back(deprecated_selection<EosTauType>("EOS_DEFINITION_TAU",
+      {
+          {"Burman_Fernandez_Hansbo", Inpar::FLUID::EOS_tau_burman_fernandez_hansbo},
+          {"Burman_Fernandez_Hansbo_wo_dt", Inpar::FLUID::EOS_tau_burman_fernandez_hansbo_wo_dt},
+          {"Braack_Burman_John_Lube", Inpar::FLUID::EOS_tau_braack_burman_john_lube},
+          {"Braack_Burman_John_Lube_wo_divjump",
+              Inpar::FLUID::EOS_tau_braack_burman_john_lube_wo_divjump},
+          {"Franca_Barrenechea_Valentin_Wall",
+              Inpar::FLUID::EOS_tau_franca_barrenechea_valentin_wall},
+          {"Burman_Fernandez", Inpar::FLUID::EOS_tau_burman_fernandez},
+          {"Burman_Hansbo_DAngelo_Zunino", Inpar::FLUID::EOS_tau_burman_hansbo_dangelo_zunino},
+          {"Burman_Hansbo_DAngelo_Zunino_wo_dt",
+              Inpar::FLUID::EOS_tau_burman_hansbo_dangelo_zunino_wo_dt},
+          {"Schott_Massing_Burman_DAngelo_Zunino",
+              Inpar::FLUID::EOS_tau_schott_massing_burman_dangelo_zunino},
+          {"Schott_Massing_Burman_DAngelo_Zunino_wo_dt",
+              Inpar::FLUID::EOS_tau_schott_massing_burman_dangelo_zunino_wo_dt},
+          {"Burman", Inpar::FLUID::EOS_tau_burman},
+          {"Taylor_Hughes_Zarins_Whiting_Jansen_Codina_scaling",
+              Inpar::FLUID::EOS_tau_Taylor_Hughes_Zarins_Whiting_Jansen_Codina_scaling},
+          {"tau_not_defined", Inpar::FLUID::EOS_tau_not_defined},
+      },
+      {.description = "Definition of stabilization parameter for edge-based stabilization",
+          .default_value = Inpar::FLUID::EOS_tau_burman_hansbo_dangelo_zunino}));
 
   //! this parameter selects how the element length of Edge-based stabilization is defined
-  Core::Utils::string_to_integral_parameter<EosElementLength>("EOS_H_DEFINITION",
-      "EOS_he_max_diameter_to_opp_surf",
-      "Definition of element length for edge-based stabilization. Options:"
-      "take the maximal (nsd-1)D diameter of faces that connect the internal "
-      "face to its opposite faces, or, "
-      "take the maximal 1D distance along 1D edge to opposite surface for both parent elements, "
-      "or, "
-      "take the maximal (nsd-1)D face diameter of all faces for both parent elements, or, "
-      "maximal nD diameter of the neighboring elements, or, "
-      "maximal (n-1)D diameter of the internal face/edge, or, "
-      "take the maximal volume equivalent diameter of adjacent elements",
-      tuple<std::string>("EOS_he_max_diameter_to_opp_surf", "EOS_he_max_dist_to_opp_surf",
-          "EOS_he_surf_with_max_diameter", "EOS_hk_max_diameter", "EOS_he_surf_diameter",
-          "EOS_he_vol_eq_diameter"),
-      tuple<EosElementLength>(EOS_he_max_diameter_to_opp_surf, EOS_he_max_dist_to_opp_surf,
-          EOS_he_surf_with_max_diameter, EOS_hk_max_diameter, EOS_he_surf_diameter,
-          EOS_he_vol_eq_diameter),
-      fdyn_edge_based_stab);
+  fdyn_edge_based_stab.specs.emplace_back(parameter<EosElementLength>("EOS_H_DEFINITION",
+      {.description =
+              "Definition of element length for edge-based stabilization. Options:take the maximal "
+              "(nsd-1)D diameter of faces that connect the internal face to its opposite faces, "
+              "or, take the maximal 1D distance along 1D edge to opposite surface for both parent "
+              "elements, or, take the maximal (nsd-1)D face diameter of all faces for both parent "
+              "elements, or, maximal nD diameter of the neighboring elements, or, maximal (n-1)D "
+              "diameter of the internal face/edge, or, take the maximal volume equivalent diameter "
+              "of adjacent elements",
+          .default_value = EOS_he_max_diameter_to_opp_surf}));
 
   fdyn_edge_based_stab.move_into_collection(list);
 
@@ -663,16 +628,18 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
           .default_value = 1.0}));
 
   // this parameter defines various stabilized methods
-  Core::Utils::string_to_integral_parameter<Inpar::FLUID::StabType>("STABTYPE", "residual_based",
-      "Apply (un)stabilized fluid formulation. No stabilization is only possible for inf-sup "
-      "stable elements. "
-      "Use a residual-based stabilization or, more generally, a stabilization \nbased on the "
-      "concept of the residual-based variational multiscale method...\nExpecting additional "
-      "input"
-      "Use an edge-based stabilization, especially for XFEM",
-      tuple<std::string>("no_stabilization", "residual_based", "edge_based"),
-      tuple<Inpar::FLUID::StabType>(stabtype_nostab, stabtype_residualbased, stabtype_edgebased),
-      fdyn_porostab);
+  fdyn_porostab.specs.emplace_back(deprecated_selection<Inpar::FLUID::StabType>("STABTYPE",
+      {
+          {"no_stabilization", stabtype_nostab},
+          {"residual_based", stabtype_residualbased},
+          {"edge_based", stabtype_edgebased},
+      },
+      {.description = "Apply (un)stabilized fluid formulation. No stabilization is only possible "
+                      "for inf-sup stable elements. Use a residual-based stabilization or, more "
+                      "generally, a stabilization \nbased on the concept of the residual-based "
+                      "variational multiscale method...\nExpecting additional inputUse an "
+                      "edge-based stabilization, especially for XFEM",
+          .default_value = stabtype_residualbased}));
 
   fdyn_porostab.specs.emplace_back(parameter<bool>(
       "INCONSISTENT", {.description = "residual based without second derivatives (i.e. only "
@@ -685,16 +652,23 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
           .default_value = false}));
 
   // the following parameters are necessary only if a residual based stabilized method is applied
-  Core::Utils::string_to_integral_parameter<SubscalesTD>("TDS", "quasistatic",
-      "Flag to allow time dependency of subscales for residual-based stabilization.",
-      tuple<std::string>("quasistatic", "time_dependent"),
-      tuple<SubscalesTD>(subscales_quasistatic, subscales_time_dependent), fdyn_porostab);
+  fdyn_porostab.specs.emplace_back(deprecated_selection<SubscalesTD>("TDS",
+      {
+          {"quasistatic", subscales_quasistatic},
+          {"time_dependent", subscales_time_dependent},
+      },
+      {.description =
+              "Flag to allow time dependency of subscales for residual-based stabilization.",
+          .default_value = subscales_quasistatic}));
 
-  Core::Utils::string_to_integral_parameter<Transient>("TRANSIENT", "no_transient",
-      "Specify how to treat the transient term.",
-      tuple<std::string>("no_transient", "yes_transient", "transient_complete"),
-      tuple<Transient>(inertia_stab_drop, inertia_stab_keep, inertia_stab_keep_complete),
-      fdyn_porostab);
+  fdyn_porostab.specs.emplace_back(deprecated_selection<Transient>("TRANSIENT",
+      {
+          {"no_transient", inertia_stab_drop},
+          {"yes_transient", inertia_stab_keep},
+          {"transient_complete", inertia_stab_keep_complete},
+      },
+      {.description = "Specify how to treat the transient term.",
+          .default_value = inertia_stab_drop}));
 
   fdyn_porostab.specs.emplace_back(parameter<bool>(
       "PSPG", {.description = "Flag to (de)activate PSPG stabilization.", .default_value = true}));
@@ -703,66 +677,89 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   fdyn_porostab.specs.emplace_back(parameter<bool>(
       "GRAD_DIV", {.description = "Flag to (de)activate grad-div term.", .default_value = true}));
 
-  Core::Utils::string_to_integral_parameter<VStab>("VSTAB", "no_vstab",
-      "Flag to (de)activate viscous term in residual-based stabilization.",
-      tuple<std::string>(
-          "no_vstab", "vstab_gls", "vstab_gls_rhs", "vstab_usfem", "vstab_usfem_rhs"),
-      tuple<VStab>(viscous_stab_none, viscous_stab_gls, viscous_stab_gls_only_rhs,
-          viscous_stab_usfem, viscous_stab_usfem_only_rhs),
-      fdyn_porostab);
+  fdyn_porostab.specs.emplace_back(deprecated_selection<VStab>("VSTAB",
+      {
+          {"no_vstab", viscous_stab_none},
+          {"vstab_gls", viscous_stab_gls},
+          {"vstab_gls_rhs", viscous_stab_gls_only_rhs},
+          {"vstab_usfem", viscous_stab_usfem},
+          {"vstab_usfem_rhs", viscous_stab_usfem_only_rhs},
+      },
+      {.description = "Flag to (de)activate viscous term in residual-based stabilization.",
+          .default_value = viscous_stab_none}));
 
-  Core::Utils::string_to_integral_parameter<RStab>("RSTAB", "no_rstab",
-      "Flag to (de)activate reactive term in residual-based stabilization.",
-      tuple<std::string>("no_rstab", "rstab_gls", "rstab_usfem"),
-      tuple<RStab>(reactive_stab_none, reactive_stab_gls, reactive_stab_usfem), fdyn_porostab);
+  fdyn_porostab.specs.emplace_back(deprecated_selection<RStab>("RSTAB",
+      {
+          {"no_rstab", reactive_stab_none},
+          {"rstab_gls", reactive_stab_gls},
+          {"rstab_usfem", reactive_stab_usfem},
+      },
+      {.description = "Flag to (de)activate reactive term in residual-based stabilization.",
+          .default_value = reactive_stab_none}));
 
-  Core::Utils::string_to_integral_parameter<CrossStress>("CROSS-STRESS", "no_cross",
-      "Flag to (de)activate cross-stress term -> residual-based VMM.",
-      tuple<std::string>("no_cross", "yes_cross", "cross_rhs"),
-      tuple<CrossStress>(cross_stress_stab_none, cross_stress_stab, cross_stress_stab_only_rhs),
-      fdyn_porostab);
+  fdyn_porostab.specs.emplace_back(deprecated_selection<CrossStress>("CROSS-STRESS",
+      {
+          {"no_cross", cross_stress_stab_none},
+          {"yes_cross", cross_stress_stab},
+          {"cross_rhs", cross_stress_stab_only_rhs},
+      },
+      {.description = "Flag to (de)activate cross-stress term -> residual-based VMM.",
+          .default_value = cross_stress_stab_none}));
 
-  Core::Utils::string_to_integral_parameter<ReynoldsStress>("REYNOLDS-STRESS", "no_reynolds",
-      "Flag to (de)activate Reynolds-stress term -> residual-based VMM.",
-      tuple<std::string>("no_reynolds", "yes_reynolds", "reynolds_rhs"),
-      tuple<ReynoldsStress>(
-          reynolds_stress_stab_none, reynolds_stress_stab, reynolds_stress_stab_only_rhs),
-      fdyn_porostab);
+  fdyn_porostab.specs.emplace_back(deprecated_selection<ReynoldsStress>("REYNOLDS-STRESS",
+      {
+          {"no_reynolds", reynolds_stress_stab_none},
+          {"yes_reynolds", reynolds_stress_stab},
+          {"reynolds_rhs", reynolds_stress_stab_only_rhs},
+      },
+      {.description = "Flag to (de)activate Reynolds-stress term -> residual-based VMM.",
+          .default_value = reynolds_stress_stab_none}));
 
   // this parameter selects the tau definition applied
-  Core::Utils::string_to_integral_parameter<TauType>("DEFINITION_TAU",
-      "Franca_Barrenechea_Valentin_Frey_Wall", "Definition of tau_M and Tau_C",
-      tuple<std::string>("Taylor_Hughes_Zarins", "Taylor_Hughes_Zarins_wo_dt",
-          "Taylor_Hughes_Zarins_Whiting_Jansen", "Taylor_Hughes_Zarins_Whiting_Jansen_wo_dt",
-          "Taylor_Hughes_Zarins_scaled", "Taylor_Hughes_Zarins_scaled_wo_dt",
-          "Franca_Barrenechea_Valentin_Frey_Wall", "Franca_Barrenechea_Valentin_Frey_Wall_wo_dt",
-          "Shakib_Hughes_Codina", "Shakib_Hughes_Codina_wo_dt", "Codina", "Codina_wo_dt",
-          "Franca_Madureira_Valentin_Badia_Codina", "Franca_Madureira_Valentin_Badia_Codina_wo_dt"),
-      tuple<TauType>(tau_taylor_hughes_zarins, tau_taylor_hughes_zarins_wo_dt,
-          tau_taylor_hughes_zarins_whiting_jansen, tau_taylor_hughes_zarins_whiting_jansen_wo_dt,
-          tau_taylor_hughes_zarins_scaled, tau_taylor_hughes_zarins_scaled_wo_dt,
-          tau_franca_barrenechea_valentin_frey_wall,
-          tau_franca_barrenechea_valentin_frey_wall_wo_dt, tau_shakib_hughes_codina,
-          tau_shakib_hughes_codina_wo_dt, tau_codina, tau_codina_wo_dt,
-          tau_franca_madureira_valentin_badia_codina,
-          tau_franca_madureira_valentin_badia_codina_wo_dt),
-      fdyn_porostab);
+  fdyn_porostab.specs.emplace_back(deprecated_selection<TauType>("DEFINITION_TAU",
+      {
+          {"Taylor_Hughes_Zarins", tau_taylor_hughes_zarins},
+          {"Taylor_Hughes_Zarins_wo_dt", tau_taylor_hughes_zarins_wo_dt},
+          {"Taylor_Hughes_Zarins_Whiting_Jansen", tau_taylor_hughes_zarins_whiting_jansen},
+          {"Taylor_Hughes_Zarins_Whiting_Jansen_wo_dt",
+              tau_taylor_hughes_zarins_whiting_jansen_wo_dt},
+          {"Taylor_Hughes_Zarins_scaled", tau_taylor_hughes_zarins_scaled},
+          {"Taylor_Hughes_Zarins_scaled_wo_dt", tau_taylor_hughes_zarins_scaled_wo_dt},
+          {"Franca_Barrenechea_Valentin_Frey_Wall", tau_franca_barrenechea_valentin_frey_wall},
+          {"Franca_Barrenechea_Valentin_Frey_Wall_wo_dt",
+              tau_franca_barrenechea_valentin_frey_wall_wo_dt},
+          {"Shakib_Hughes_Codina", tau_shakib_hughes_codina},
+          {"Shakib_Hughes_Codina_wo_dt", tau_shakib_hughes_codina_wo_dt},
+          {"Codina", tau_codina},
+          {"Codina_wo_dt", tau_codina_wo_dt},
+          {"Franca_Madureira_Valentin_Badia_Codina", tau_franca_madureira_valentin_badia_codina},
+          {"Franca_Madureira_Valentin_Badia_Codina_wo_dt",
+              tau_franca_madureira_valentin_badia_codina_wo_dt},
+      },
+      {.description = "Definition of tau_M and Tau_C",
+          .default_value = tau_franca_barrenechea_valentin_frey_wall}));
 
   // this parameter selects the characteristic element length for tau_Mu for all
   // stabilization parameter definitions requiring such a length
-  Core::Utils::string_to_integral_parameter<CharEleLengthU>("CHARELELENGTH_U", "streamlength",
-      "Characteristic element length for tau_Mu",
-      tuple<std::string>("streamlength", "volume_equivalent_diameter", "root_of_volume"),
-      tuple<CharEleLengthU>(streamlength_u, volume_equivalent_diameter_u, root_of_volume_u),
-      fdyn_porostab);
+  fdyn_porostab.specs.emplace_back(deprecated_selection<CharEleLengthU>("CHARELELENGTH_U",
+      {
+          {"streamlength", streamlength_u},
+          {"volume_equivalent_diameter", volume_equivalent_diameter_u},
+          {"root_of_volume", root_of_volume_u},
+      },
+      {.description = "Characteristic element length for tau_Mu",
+          .default_value = streamlength_u}));
 
   // this parameter selects the characteristic element length for tau_Mp and tau_C for
   // all stabilization parameter definitions requiring such a length
-  Core::Utils::string_to_integral_parameter<CharEleLengthPC>("CHARELELENGTH_PC",
-      "volume_equivalent_diameter", "Characteristic element length for tau_Mp/tau_C",
-      tuple<std::string>("streamlength", "volume_equivalent_diameter", "root_of_volume"),
-      tuple<CharEleLengthPC>(streamlength_pc, volume_equivalent_diameter_pc, root_of_volume_pc),
-      fdyn_porostab);
+  fdyn_porostab.specs.emplace_back(deprecated_selection<CharEleLengthPC>("CHARELELENGTH_PC",
+      {
+          {"streamlength", streamlength_pc},
+          {"volume_equivalent_diameter", volume_equivalent_diameter_pc},
+          {"root_of_volume", root_of_volume_pc},
+      },
+      {.description = "Characteristic element length for tau_Mp/tau_C",
+          .default_value = volume_equivalent_diameter_pc}));
 
   // this parameter selects the location where tau is evaluated
   evaluation_tau_valid_input = {"element_center", "integration_point"};
@@ -785,19 +782,26 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
       {.description = "Flag to (de)activate SUPG stabilization in loma continuity equation.",
           .default_value = false}));
 
-  Core::Utils::string_to_integral_parameter<CrossStress>("LOMA_CONTI_CROSS_STRESS", "no_cross",
-      "Flag to (de)activate cross-stress term loma continuity equation-> residual-based VMM.",
-      tuple<std::string>("no_cross", "yes_cross", "cross_rhs"),
-      tuple<CrossStress>(cross_stress_stab_none, cross_stress_stab, cross_stress_stab_only_rhs),
-      fdyn_porostab);
+  fdyn_porostab.specs.emplace_back(deprecated_selection<CrossStress>("LOMA_CONTI_CROSS_STRESS",
+      {
+          {"no_cross", cross_stress_stab_none},
+          {"yes_cross", cross_stress_stab},
+          {"cross_rhs", cross_stress_stab_only_rhs},
+      },
+      {.description = "Flag to (de)activate cross-stress term loma continuity equation-> "
+                      "residual-based VMM.",
+          .default_value = cross_stress_stab_none}));
 
-  Core::Utils::string_to_integral_parameter<ReynoldsStress>("LOMA_CONTI_REYNOLDS_STRESS",
-      "no_reynolds",
-      "Flag to (de)activate Reynolds-stress term loma continuity equation-> residual-based VMM.",
-      tuple<std::string>("no_reynolds", "yes_reynolds", "reynolds_rhs"),
-      tuple<ReynoldsStress>(
-          reynolds_stress_stab_none, reynolds_stress_stab, reynolds_stress_stab_only_rhs),
-      fdyn_porostab);
+  fdyn_porostab.specs.emplace_back(
+      deprecated_selection<ReynoldsStress>("LOMA_CONTI_REYNOLDS_STRESS",
+          {
+              {"no_reynolds", reynolds_stress_stab_none},
+              {"yes_reynolds", reynolds_stress_stab},
+              {"reynolds_rhs", reynolds_stress_stab_only_rhs},
+          },
+          {.description = "Flag to (de)activate Reynolds-stress term loma continuity equation-> "
+                          "residual-based VMM.",
+              .default_value = reynolds_stress_stab_none}));
 
   fdyn_porostab.move_into_collection(list);
 
@@ -836,11 +840,13 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
       deprecated_selection<std::string>("PHYSICAL_MODEL", physical_model_valid_input,
           {.description = physical_model_doc_string, .default_value = "no_model"}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::FLUID::FineSubgridVisc>("FSSUGRVISC", "No",
-      "fine-scale subgrid viscosity",
-      tuple<std::string>("No", "Smagorinsky_all", "Smagorinsky_small"),
-      tuple<Inpar::FLUID::FineSubgridVisc>(no_fssgv, smagorinsky_all, smagorinsky_small),
-      fdyn_turbu);
+  fdyn_turbu.specs.emplace_back(deprecated_selection<Inpar::FLUID::FineSubgridVisc>("FSSUGRVISC",
+      {
+          {"No", no_fssgv},
+          {"Smagorinsky_all", smagorinsky_all},
+          {"Smagorinsky_small", smagorinsky_small},
+      },
+      {.description = "fine-scale subgrid viscosity", .default_value = no_fssgv}));
 
   //----------------------------------------------------------------------
   // turbulence specific output and statistics
@@ -960,11 +966,9 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
                                              "of the initial value in mean flow direction.",
                                  .default_value = 0.1}));
 
-  Core::Utils::string_to_integral_parameter<ForcingType>("FORCING_TYPE",
-      "linear_compensation_from_intermediate_spectrum", "forcing strategy",
-      tuple<std::string>("linear_compensation_from_intermediate_spectrum", "fixed_power_input"),
-      tuple<ForcingType>(linear_compensation_from_intermediate_spectrum, fixed_power_input),
-      fdyn_turbu);
+  fdyn_turbu.specs.emplace_back(parameter<ForcingType>(
+      "FORCING_TYPE", {.description = "forcing strategy",
+                          .default_value = linear_compensation_from_intermediate_spectrum}));
 
   fdyn_turbu.specs.emplace_back(parameter<int>("CHA_NUMSUBDIVISIONS",
       {.description = "Number of homogeneous sampling planes in element", .default_value = 5}));
@@ -1044,10 +1048,13 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
               "(Constant) turbulent Prandtl number for the Smagorinsky model in scalar transport.",
           .default_value = 1.0}));
 
-  Core::Utils::string_to_integral_parameter<VremanFiMethod>("FILTER_WIDTH", "CubeRootVol",
-      "The Vreman model requires a filter width.",
-      tuple<std::string>("CubeRootVol", "Direction_dependent", "Minimum_length"),
-      tuple<VremanFiMethod>(cuberootvol, dir_dep, min_len), fdyn_turbsgv);
+  fdyn_turbsgv.specs.emplace_back(deprecated_selection<VremanFiMethod>("FILTER_WIDTH",
+      {
+          {"CubeRootVol", cuberootvol},
+          {"Direction_dependent", dir_dep},
+          {"Minimum_length", min_len},
+      },
+      {.description = "The Vreman model requires a filter width.", .default_value = cuberootvol}));
 
   fdyn_turbsgv.move_into_collection(list);
 
@@ -1252,12 +1259,13 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
       {.description = "Flag to (de)activate potential separate turbulent inflow section",
           .default_value = false}));
 
-  Core::Utils::string_to_integral_parameter<InitialField>("INITIALINFLOWFIELD", "zero_field",
-      "Initial field for inflow section",
-      tuple<std::string>("zero_field", "field_by_function", "disturbed_field_from_function"),
-      tuple<InitialField>(initfield_zero_field, initfield_field_by_function,
-          initfield_disturbed_field_from_function),
-      fdyn_turbinf);
+  fdyn_turbinf.specs.emplace_back(deprecated_selection<InitialField>("INITIALINFLOWFIELD",
+      {
+          {"zero_field", initfield_zero_field},
+          {"field_by_function", initfield_field_by_function},
+          {"disturbed_field_from_function", initfield_disturbed_field_from_function},
+      },
+      {.description = "Initial field for inflow section", .default_value = initfield_zero_field}));
 
   fdyn_turbinf.specs.emplace_back(parameter<int>(
       "INFLOWFUNC", {.description = "Function number for initial flow field in inflow section",
@@ -1327,11 +1335,15 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
   /*----------------------------------------------------------------------*/
   // sublist with additional input parameters for time adaptivity in fluid/ coupled problems
   Core::Utils::SectionSpecs fdyn_timintada{fdyn, "TIMEADAPTIVITY"};
-  Core::Utils::string_to_integral_parameter<AdaptiveTimeStepEstimator>(
-      "ADAPTIVE_TIME_STEP_ESTIMATOR", "none", "Method used to determine adaptive time step size.",
-      tuple<std::string>("none", "cfl_number", "only_print_cfl_number"),
-      tuple<AdaptiveTimeStepEstimator>(const_dt, cfl_number, only_print_cfl_number),
-      fdyn_timintada);
+  fdyn_timintada.specs.emplace_back(
+      deprecated_selection<AdaptiveTimeStepEstimator>("ADAPTIVE_TIME_STEP_ESTIMATOR",
+          {
+              {"none", const_dt},
+              {"cfl_number", cfl_number},
+              {"only_print_cfl_number", only_print_cfl_number},
+          },
+          {.description = "Method used to determine adaptive time step size.",
+              .default_value = const_dt}));
 
   fdyn_timintada.specs.emplace_back(parameter<double>(
       "CFL_NUMBER", {.description = "CFL number for adaptive time step", .default_value = -1.0}));

@@ -29,13 +29,8 @@ void ALE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
   adyn.specs.emplace_back(
       parameter<double>("MAXTIME", {.description = "max simulation time", .default_value = 4.0}));
 
-  Core::Utils::string_to_integral_parameter<ALE::AleDynamic>("ALE_TYPE", "solid",
-      "ale mesh movement algorithm",
-      tuple<std::string>("solid", "solid_linear", "laplace_material", "laplace_spatial",
-          "springs_material", "springs_spatial"),
-      tuple<ALE::AleDynamic>(solid, solid_linear, laplace_material, laplace_spatial,
-          springs_material, springs_spatial),
-      adyn);
+  adyn.specs.emplace_back(parameter<ALE::AleDynamic>(
+      "ALE_TYPE", {.description = "ale mesh movement algorithm", .default_value = solid}));
 
   adyn.specs.emplace_back(parameter<bool>("ASSESSMESHQUALITY",
       {.description = "Evaluate element quality measure according to [Oddy et al. 1988]",
@@ -60,20 +55,31 @@ void ALE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
       {.description = "write restart data every RESTARTEVERY steps", .default_value = 1}));
   adyn.specs.emplace_back(parameter<int>("RESULTSEVERY",
       {.description = "write results every RESULTSTEVERY steps", .default_value = 0}));
-  Core::Utils::string_to_integral_parameter<ALE::DivContAct>("DIVERCONT", "continue",
-      "What to do if nonlinear solver does not converge?", tuple<std::string>("stop", "continue"),
-      tuple<ALE::DivContAct>(divcont_stop, divcont_continue), adyn);
+  adyn.specs.emplace_back(deprecated_selection<ALE::DivContAct>("DIVERCONT",
+      {
+          {"stop", divcont_stop},
+          {"continue", divcont_continue},
+      },
+      {.description = "What to do if nonlinear solver does not converge?",
+          .default_value = divcont_continue}));
 
-  Core::Utils::string_to_integral_parameter<ALE::MeshTying>("MESHTYING", "no",
-      "Flag to (de)activate mesh tying and mesh sliding algorithm",
-      tuple<std::string>("no", "meshtying", "meshsliding"),
-      tuple<ALE::MeshTying>(no_meshtying, meshtying, meshsliding), adyn);
+  adyn.specs.emplace_back(deprecated_selection<ALE::MeshTying>("MESHTYING",
+      {
+          {"no", no_meshtying},
+          {"meshtying", meshtying},
+          {"meshsliding", meshsliding},
+      },
+      {.description = "Flag to (de)activate mesh tying and mesh sliding algorithm",
+          .default_value = no_meshtying}));
 
   // Initial displacement
-  Core::Utils::string_to_integral_parameter<ALE::InitialDisp>("INITIALDISP", "zero_displacement",
-      "Initial displacement for structure problem",
-      tuple<std::string>("zero_displacement", "displacement_by_function"),
-      tuple<ALE::InitialDisp>(initdisp_zero_disp, initdisp_disp_by_function), adyn);
+  adyn.specs.emplace_back(deprecated_selection<ALE::InitialDisp>("INITIALDISP",
+      {
+          {"zero_displacement", initdisp_zero_disp},
+          {"displacement_by_function", initdisp_disp_by_function},
+      },
+      {.description = "Initial displacement for structure problem",
+          .default_value = initdisp_zero_disp}));
 
   // Function to evaluate initial displacement
   adyn.specs.emplace_back(parameter<int>(

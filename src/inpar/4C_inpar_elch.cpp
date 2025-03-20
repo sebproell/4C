@@ -42,12 +42,14 @@ void Inpar::ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       {.description = "(universal) gas constant (in unit system as chosen in input file)",
           .default_value = 8.314472}));
   // parameter for possible types of ELCH algorithms for deforming meshes
-  Core::Utils::string_to_integral_parameter<Inpar::ElCh::ElchMovingBoundary>("MOVINGBOUNDARY", "No",
-      "ELCH algorithm for deforming meshes",
-      tuple<std::string>("No", "pseudo-transient", "fully-transient"),
-      tuple<Inpar::ElCh::ElchMovingBoundary>(
-          elch_mov_bndry_no, elch_mov_bndry_pseudo_transient, elch_mov_bndry_fully_transient),
-      elchcontrol);
+  elchcontrol.specs.emplace_back(deprecated_selection<Inpar::ElCh::ElchMovingBoundary>(
+      "MOVINGBOUNDARY",
+      {
+          {"No", elch_mov_bndry_no},
+          {"pseudo-transient", elch_mov_bndry_pseudo_transient},
+          {"fully-transient", elch_mov_bndry_fully_transient},
+      },
+      {.description = "ELCH algorithm for deforming meshes", .default_value = elch_mov_bndry_no}));
   elchcontrol.specs.emplace_back(parameter<double>(
       "MOLARVOLUME", {.description = "Molar volume for electrode shape change computations",
                          .default_value = 0.0}));
@@ -56,13 +58,15 @@ void Inpar::ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
           .default_value = 0.0}));
   elchcontrol.specs.emplace_back(parameter<bool>(
       "GALVANOSTATIC", {.description = "flag for galvanostatic mode", .default_value = false}));
-  Core::Utils::string_to_integral_parameter<Inpar::ElCh::ApproxElectResist>(
-      "GSTAT_APPROX_ELECT_RESIST", "relation_pot_cur", "relation of potential and current flow",
-      tuple<std::string>("relation_pot_cur", "effective_length_with_initial_cond",
-          "effective_length_with_integrated_cond"),
-      tuple<Inpar::ElCh::ApproxElectResist>(approxelctresist_relpotcur,
-          approxelctresist_effleninitcond, approxelctresist_efflenintegcond),
-      elchcontrol);
+  elchcontrol.specs.emplace_back(
+      deprecated_selection<Inpar::ElCh::ApproxElectResist>("GSTAT_APPROX_ELECT_RESIST",
+          {
+              {"relation_pot_cur", approxelctresist_relpotcur},
+              {"effective_length_with_initial_cond", approxelctresist_effleninitcond},
+              {"effective_length_with_integrated_cond", approxelctresist_efflenintegcond},
+          },
+          {.description = "relation of potential and current flow",
+              .default_value = approxelctresist_relpotcur}));
   elchcontrol.specs.emplace_back(parameter<int>("GSTATCONDID_CATHODE",
       {.description = "condition id of electrode kinetics for cathode", .default_value = 0}));
   elchcontrol.specs.emplace_back(parameter<int>("GSTATCONDID_ANODE",
@@ -79,13 +83,18 @@ void Inpar::ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   elchcontrol.specs.emplace_back(parameter<double>("GSTAT_LENGTH_CURRENTPATH",
       {.description = "average length of the current path", .default_value = 0.0}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::ElCh::EquPot>("EQUPOT", "Undefined",
-      "type of closing equation for electric potential",
-      tuple<std::string>(
-          "Undefined", "ENC", "ENC_PDE", "ENC_PDE_ELIM", "Poisson", "Laplace", "divi"),
-      tuple<Inpar::ElCh::EquPot>(equpot_undefined, equpot_enc, equpot_enc_pde, equpot_enc_pde_elim,
-          equpot_poisson, equpot_laplace, equpot_divi),
-      elchcontrol);
+  elchcontrol.specs.emplace_back(deprecated_selection<Inpar::ElCh::EquPot>("EQUPOT",
+      {
+          {"Undefined", equpot_undefined},
+          {"ENC", equpot_enc},
+          {"ENC_PDE", equpot_enc_pde},
+          {"ENC_PDE_ELIM", equpot_enc_pde_elim},
+          {"Poisson", equpot_poisson},
+          {"Laplace", equpot_laplace},
+          {"divi", equpot_divi},
+      },
+      {.description = "type of closing equation for electric potential",
+          .default_value = equpot_undefined}));
   elchcontrol.specs.emplace_back(parameter<bool>("DIFFCOND_FORMULATION",
       {.description = "Activation of diffusion-conduction formulation", .default_value = false}));
   elchcontrol.specs.emplace_back(parameter<bool>(
@@ -155,12 +164,14 @@ void Inpar::ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       {.description = "calculate initial potential field?", .default_value = false}));
   sclcontrol.specs.emplace_back(parameter<int>(
       "SOLVER", {.description = "solver for coupled SCL problem", .default_value = -1}));
-  Core::Utils::string_to_integral_parameter<Core::LinAlg::MatrixType>("MATRIXTYPE", "undefined",
-      "type of global system matrix in global system of equations",
-      tuple<std::string>("undefined", "block", "sparse"),
-      tuple<Core::LinAlg::MatrixType>(Core::LinAlg::MatrixType::undefined,
-          Core::LinAlg::MatrixType::block_field, Core::LinAlg::MatrixType::sparse),
-      sclcontrol);
+  sclcontrol.specs.emplace_back(deprecated_selection<Core::LinAlg::MatrixType>("MATRIXTYPE",
+      {
+          {"undefined", Core::LinAlg::MatrixType::undefined},
+          {"block", Core::LinAlg::MatrixType::block_field},
+          {"sparse", Core::LinAlg::MatrixType::sparse},
+      },
+      {.description = "type of global system matrix in global system of equations",
+          .default_value = Core::LinAlg::MatrixType::undefined}));
   sclcontrol.specs.emplace_back(parameter<int>("ADAPT_TIME_STEP",
       {.description =
               "time step when time step size should be updated to 'ADAPTED_TIME_STEP_SIZE'.",
@@ -168,12 +179,14 @@ void Inpar::ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   sclcontrol.specs.emplace_back(parameter<double>(
       "ADAPTED_TIME_STEP_SIZE", {.description = "new time step size.", .default_value = -1.0}));
 
-  Core::Utils::string_to_integral_parameter<ScaTra::InitialField>("INITIALFIELD", "zero_field",
-      "Initial Field for scalar transport problem",
-      tuple<std::string>("zero_field", "field_by_function", "field_by_condition"),
-      tuple<ScaTra::InitialField>(ScaTra::initfield_zero_field, ScaTra::initfield_field_by_function,
-          ScaTra::initfield_field_by_condition),
-      sclcontrol);
+  sclcontrol.specs.emplace_back(deprecated_selection<ScaTra::InitialField>("INITIALFIELD",
+      {
+          {"zero_field", ScaTra::initfield_zero_field},
+          {"field_by_function", ScaTra::initfield_field_by_function},
+          {"field_by_condition", ScaTra::initfield_field_by_condition},
+      },
+      {.description = "Initial Field for scalar transport problem",
+          .default_value = ScaTra::initfield_zero_field}));
 
   sclcontrol.specs.emplace_back(parameter<int>("INITFUNCNO",
       {.description = "function number for scalar transport initial field", .default_value = -1}));

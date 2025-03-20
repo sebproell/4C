@@ -22,30 +22,40 @@ void Inpar::PoroElast::set_valid_parameters(std::map<std::string, Core::IO::Inpu
   Core::Utils::SectionSpecs poroelastdyn{"POROELASTICITY DYNAMIC"};
 
   // Coupling strategy for (monolithic) porous media solvers
-  Core::Utils::string_to_integral_parameter<Inpar::PoroElast::SolutionSchemeOverFields>("COUPALGO",
-      "poro_monolithic", "Coupling strategies for poroelasticity solvers",
-      tuple<std::string>("poro_partitioned", "poro_monolithic", "poro_monolithicstructuresplit",
-          "poro_monolithicfluidsplit", "poro_monolithicnopenetrationsplit",
-          "poro_monolithicmeshtying"),
-      tuple<Inpar::PoroElast::SolutionSchemeOverFields>(Partitioned, Monolithic,
-          Monolithic_structuresplit, Monolithic_fluidsplit, Monolithic_nopenetrationsplit,
-          Monolithic_meshtying),
-      poroelastdyn);
+  poroelastdyn.specs.emplace_back(
+      deprecated_selection<Inpar::PoroElast::SolutionSchemeOverFields>("COUPALGO",
+          {
+              {"poro_partitioned", Partitioned},
+              {"poro_monolithic", Monolithic},
+              {"poro_monolithicstructuresplit", Monolithic_structuresplit},
+              {"poro_monolithicfluidsplit", Monolithic_fluidsplit},
+              {"poro_monolithicnopenetrationsplit", Monolithic_nopenetrationsplit},
+              {"poro_monolithicmeshtying", Monolithic_meshtying},
+          },
+          {.description = "Coupling strategies for poroelasticity solvers",
+              .default_value = Monolithic}));
 
   // physical type of poro fluid flow (incompressible, varying density, loma, Boussinesq
   // approximation)
-  Core::Utils::string_to_integral_parameter<Inpar::FLUID::PhysicalType>("PHYSICAL_TYPE", "Poro",
-      "Physical Type of Porofluid", tuple<std::string>("Poro", "Poro_P1"),
-      tuple<Inpar::FLUID::PhysicalType>(Inpar::FLUID::poro, Inpar::FLUID::poro_p1), poroelastdyn);
+  poroelastdyn.specs.emplace_back(deprecated_selection<Inpar::FLUID::PhysicalType>("PHYSICAL_TYPE",
+      {
+          {"Poro", Inpar::FLUID::poro},
+          {"Poro_P1", Inpar::FLUID::poro_p1},
+      },
+      {.description = "Physical Type of Porofluid", .default_value = Inpar::FLUID::poro}));
 
   // physical type of poro fluid flow (incompressible, varying density, loma, Boussinesq
   // approximation)
-  Core::Utils::string_to_integral_parameter<Inpar::PoroElast::TransientEquationsOfPoroFluid>(
-      "TRANSIENT_TERMS", "all", "which equation includes transient terms",
-      tuple<std::string>("none", "momentum", "continuity", "all"),
-      tuple<Inpar::PoroElast::TransientEquationsOfPoroFluid>(
-          transient_none, transient_momentum_only, transient_continuity_only, transient_all),
-      poroelastdyn);
+  poroelastdyn.specs.emplace_back(
+      deprecated_selection<Inpar::PoroElast::TransientEquationsOfPoroFluid>("TRANSIENT_TERMS",
+          {
+              {"none", transient_none},
+              {"momentum", transient_momentum_only},
+              {"continuity", transient_continuity_only},
+              {"all", transient_all},
+          },
+          {.description = "which equation includes transient terms",
+              .default_value = transient_all}));
 
   // Output type
   poroelastdyn.specs.emplace_back(parameter<int>("RESTARTEVERY",
@@ -100,34 +110,52 @@ void Inpar::PoroElast::set_valid_parameters(std::map<std::string, Core::IO::Inpu
       "TOLRES_NCOUP", {.description = "tolerance in the residual norm for the Newton iteration",
                           .default_value = 1e-8}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::PoroElast::ConvNorm>("NORM_INC",
-      "AbsSingleFields", "type of norm for primary variables convergence check",
-      tuple<std::string>("AbsGlobal", "AbsSingleFields"),
-      tuple<Inpar::PoroElast::ConvNorm>(convnorm_abs_global, convnorm_abs_singlefields),
-      poroelastdyn);
+  poroelastdyn.specs.emplace_back(deprecated_selection<Inpar::PoroElast::ConvNorm>("NORM_INC",
+      {
+          {"AbsGlobal", convnorm_abs_global},
+          {"AbsSingleFields", convnorm_abs_singlefields},
+      },
+      {.description = "type of norm for primary variables convergence check",
+          .default_value = convnorm_abs_singlefields}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::PoroElast::ConvNorm>("NORM_RESF",
-      "AbsSingleFields", "type of norm for residual convergence check",
-      tuple<std::string>("AbsGlobal", "AbsSingleFields"),
-      tuple<Inpar::PoroElast::ConvNorm>(convnorm_abs_global, convnorm_abs_singlefields),
-      poroelastdyn);
+  poroelastdyn.specs.emplace_back(deprecated_selection<Inpar::PoroElast::ConvNorm>("NORM_RESF",
+      {
+          {"AbsGlobal", convnorm_abs_global},
+          {"AbsSingleFields", convnorm_abs_singlefields},
+      },
+      {.description = "type of norm for residual convergence check",
+          .default_value = convnorm_abs_singlefields}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::PoroElast::BinaryOp>("NORMCOMBI_RESFINC", "And",
-      "binary operator to combine primary variables and residual force values",
-      tuple<std::string>("And", "Or"), tuple<Inpar::PoroElast::BinaryOp>(bop_and, bop_or),
-      poroelastdyn);
+  poroelastdyn.specs.emplace_back(
+      deprecated_selection<Inpar::PoroElast::BinaryOp>("NORMCOMBI_RESFINC",
+          {
+              {"And", bop_and},
+              {"Or", bop_or},
+          },
+          {.description = "binary operator to combine primary variables and residual force values",
+              .default_value = bop_and}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::PoroElast::VectorNorm>("VECTORNORM_RESF", "L2",
-      "type of norm to be applied to residuals",
-      tuple<std::string>("L1", "L1_Scaled", "L2", "Rms", "Inf"),
-      tuple<Inpar::PoroElast::VectorNorm>(norm_l1, norm_l1_scaled, norm_l2, norm_rms, norm_inf),
-      poroelastdyn);
+  poroelastdyn.specs.emplace_back(
+      deprecated_selection<Inpar::PoroElast::VectorNorm>("VECTORNORM_RESF",
+          {
+              {"L1", norm_l1},
+              {"L1_Scaled", norm_l1_scaled},
+              {"L2", norm_l2},
+              {"Rms", norm_rms},
+              {"Inf", norm_inf},
+          },
+          {.description = "type of norm to be applied to residuals", .default_value = norm_l2}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::PoroElast::VectorNorm>("VECTORNORM_INC", "L2",
-      "type of norm to be applied to residuals",
-      tuple<std::string>("L1", "L1_Scaled", "L2", "Rms", "Inf"),
-      tuple<Inpar::PoroElast::VectorNorm>(norm_l1, norm_l1_scaled, norm_l2, norm_rms, norm_inf),
-      poroelastdyn);
+  poroelastdyn.specs.emplace_back(
+      deprecated_selection<Inpar::PoroElast::VectorNorm>("VECTORNORM_INC",
+          {
+              {"L1", norm_l1},
+              {"L1_Scaled", norm_l1_scaled},
+              {"L2", norm_l2},
+              {"Rms", norm_rms},
+              {"Inf", norm_inf},
+          },
+          {.description = "type of norm to be applied to residuals", .default_value = norm_l2}));
 
   poroelastdyn.specs.emplace_back(parameter<bool>("SECONDORDER",
       {.description = "Second order coupling at the interface.", .default_value = true}));
@@ -153,18 +181,9 @@ void Inpar::PoroElast::set_valid_parameters(std::map<std::string, Core::IO::Inpu
                            .default_value = -1}));
 
   // flag for equilibration of global system of equations
-  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
-      "none", "flag for equilibration of global system of equations",
-      tuple<std::string>("none", "rows_full", "rows_maindiag", "columns_full", "columns_maindiag",
-          "rowsandcolumns_full", "rowsandcolumns_maindiag"),
-      tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,
-          Core::LinAlg::EquilibrationMethod::rows_full,
-          Core::LinAlg::EquilibrationMethod::rows_maindiag,
-          Core::LinAlg::EquilibrationMethod::columns_full,
-          Core::LinAlg::EquilibrationMethod::columns_maindiag,
-          Core::LinAlg::EquilibrationMethod::rowsandcolumns_full,
-          Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag),
-      poroelastdyn);
+  poroelastdyn.specs.emplace_back(parameter<Core::LinAlg::EquilibrationMethod>(
+      "EQUILIBRATION", {.description = "flag for equilibration of global system of equations",
+                           .default_value = Core::LinAlg::EquilibrationMethod::none}));
 
   poroelastdyn.move_into_collection(list);
 }

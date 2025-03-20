@@ -48,13 +48,19 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   sstidyn.specs.emplace_back(parameter<std::string>(
       "SCATRA_FILENAME", {.description = "Control-file name for reading scatra results in SSTI",
                              .default_value = "nil"}));
-  Core::Utils::string_to_integral_parameter<SolutionScheme>("COUPALGO", "ssti_Monolithic",
-      "Coupling strategies for SSTI solvers", tuple<std::string>("ssti_Monolithic"),
-      tuple<Inpar::SSTI::SolutionScheme>(SolutionScheme::monolithic), sstidyn);
-  Core::Utils::string_to_integral_parameter<ScaTraTimIntType>("SCATRATIMINTTYPE", "Elch",
-      "scalar transport time integration type is needed to instantiate correct scalar transport "
-      "time integration scheme for ssi problems",
-      tuple<std::string>("Elch"), tuple<ScaTraTimIntType>(ScaTraTimIntType::elch), sstidyn);
+  sstidyn.specs.emplace_back(deprecated_selection<SolutionScheme>("COUPALGO",
+      {
+          {"ssti_Monolithic", SolutionScheme::monolithic},
+      },
+      {.description = "Coupling strategies for SSTI solvers",
+          .default_value = SolutionScheme::monolithic}));
+  sstidyn.specs.emplace_back(deprecated_selection<ScaTraTimIntType>("SCATRATIMINTTYPE",
+      {
+          {"Elch", ScaTraTimIntType::elch},
+      },
+      {.description = "scalar transport time integration type is needed to instantiate correct "
+                      "scalar transport time integration scheme for ssi problems",
+          .default_value = ScaTraTimIntType::elch}));
   sstidyn.specs.emplace_back(parameter<bool>("ADAPTIVE_TIMESTEPPING",
       {.description = "flag for adaptive time stepping", .default_value = false}));
 
@@ -74,53 +80,26 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
           .default_value = 1.0e-6}));
   sstidynmono.specs.emplace_back(parameter<int>("LINEAR_SOLVER",
       {.description = "ID of linear solver for global system of equations", .default_value = -1}));
-  Core::Utils::string_to_integral_parameter<Core::LinAlg::MatrixType>("MATRIXTYPE", "undefined",
-      "type of global system matrix in global system of equations",
-      tuple<std::string>("undefined", "block", "sparse"),
-      tuple<Core::LinAlg::MatrixType>(Core::LinAlg::MatrixType::undefined,
-          Core::LinAlg::MatrixType::block_field, Core::LinAlg::MatrixType::sparse),
-      sstidynmono);
-  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
-      "none", "flag for equilibration of global system of equations",
-      tuple<std::string>("none", "rows_full", "rows_maindiag", "rowsandcolumns_full",
-          "rowsandcolumns_maindiag", "local"),
-      tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,
-          Core::LinAlg::EquilibrationMethod::rows_full,
-          Core::LinAlg::EquilibrationMethod::rows_maindiag,
-          Core::LinAlg::EquilibrationMethod::rowsandcolumns_full,
-          Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag,
-          Core::LinAlg::EquilibrationMethod::local),
-      sstidynmono);
-  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>(
-      "EQUILIBRATION_STRUCTURE", "none", "flag for equilibration of structural equations",
-      tuple<std::string>(
-          "none", "rows_maindiag", "columns_maindiag", "rowsandcolumns_maindiag", "symmetry"),
-      tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,
-          Core::LinAlg::EquilibrationMethod::rows_maindiag,
-          Core::LinAlg::EquilibrationMethod::columns_maindiag,
-          Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag,
-          Core::LinAlg::EquilibrationMethod::symmetry),
-      sstidynmono);
-  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>(
-      "EQUILIBRATION_SCATRA", "none", "flag for equilibration of scatra equations",
-      tuple<std::string>(
-          "none", "rows_maindiag", "columns_maindiag", "rowsandcolumns_maindiag", "symmetry"),
-      tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,
-          Core::LinAlg::EquilibrationMethod::rows_maindiag,
-          Core::LinAlg::EquilibrationMethod::columns_maindiag,
-          Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag,
-          Core::LinAlg::EquilibrationMethod::symmetry),
-      sstidynmono);
-  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>(
-      "EQUILIBRATION_THERMO", "none", "flag for equilibration of scatra equations",
-      tuple<std::string>(
-          "none", "rows_maindiag", "columns_maindiag", "rowsandcolumns_maindiag", "symmetry"),
-      tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,
-          Core::LinAlg::EquilibrationMethod::rows_maindiag,
-          Core::LinAlg::EquilibrationMethod::columns_maindiag,
-          Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag,
-          Core::LinAlg::EquilibrationMethod::symmetry),
-      sstidynmono);
+  sstidynmono.specs.emplace_back(deprecated_selection<Core::LinAlg::MatrixType>("MATRIXTYPE",
+      {
+          {"undefined", Core::LinAlg::MatrixType::undefined},
+          {"block", Core::LinAlg::MatrixType::block_field},
+          {"sparse", Core::LinAlg::MatrixType::sparse},
+      },
+      {.description = "type of global system matrix in global system of equations",
+          .default_value = Core::LinAlg::MatrixType::undefined}));
+  sstidynmono.specs.emplace_back(parameter<Core::LinAlg::EquilibrationMethod>(
+      "EQUILIBRATION", {.description = "flag for equilibration of global system of equations",
+                           .default_value = Core::LinAlg::EquilibrationMethod::none}));
+  sstidynmono.specs.emplace_back(parameter<Core::LinAlg::EquilibrationMethod>(
+      "EQUILIBRATION_STRUCTURE", {.description = "flag for equilibration of structural equations",
+                                     .default_value = Core::LinAlg::EquilibrationMethod::none}));
+  sstidynmono.specs.emplace_back(parameter<Core::LinAlg::EquilibrationMethod>(
+      "EQUILIBRATION_SCATRA", {.description = "flag for equilibration of scatra equations",
+                                  .default_value = Core::LinAlg::EquilibrationMethod::none}));
+  sstidynmono.specs.emplace_back(parameter<Core::LinAlg::EquilibrationMethod>(
+      "EQUILIBRATION_THERMO", {.description = "flag for equilibration of scatra equations",
+                                  .default_value = Core::LinAlg::EquilibrationMethod::none}));
   sstidynmono.specs.emplace_back(parameter<bool>("EQUILIBRATION_INIT_SCATRA",
       {.description =
               "use equilibration method of ScaTra to equilibrate initial calculation of potential",
@@ -136,12 +115,13 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       {.description = "initial function for thermo field", .default_value = -1}));
   thermodyn.specs.emplace_back(parameter<int>(
       "LINEAR_SOLVER", {.description = "linear solver for thermo field", .default_value = -1}));
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::InitialField>("INITIALFIELD",
-      "field_by_function", "defines, how to set the initial field",
-      tuple<std::string>("field_by_function", "field_by_condition"),
-      tuple<Inpar::ScaTra::InitialField>(Inpar::ScaTra::InitialField::initfield_field_by_function,
-          Inpar::ScaTra::InitialField::initfield_field_by_condition),
-      thermodyn);
+  thermodyn.specs.emplace_back(deprecated_selection<Inpar::ScaTra::InitialField>("INITIALFIELD",
+      {
+          {"field_by_function", Inpar::ScaTra::InitialField::initfield_field_by_function},
+          {"field_by_condition", Inpar::ScaTra::InitialField::initfield_field_by_condition},
+      },
+      {.description = "defines, how to set the initial field",
+          .default_value = Inpar::ScaTra::InitialField::initfield_field_by_function}));
 
   thermodyn.move_into_collection(list);
 }

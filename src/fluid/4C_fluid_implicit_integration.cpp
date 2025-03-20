@@ -4722,7 +4722,7 @@ FLD::FluidImplicitTimeInt::evaluate_error_compared_to_analytical_sol()
 
   switch (calcerr)
   {
-    case Inpar::FLUID::no_error_calculation:
+    case Inpar::FLUID::no:
     {
       // do nothing --- no analytical solution available
       return nullptr;

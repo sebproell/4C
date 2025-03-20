@@ -22,13 +22,17 @@ void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   Core::Utils::SectionSpecs tsidyn{"TSI DYNAMIC"};
 
   // coupling strategy for (partitioned and monolithic) TSI solvers
-  Core::Utils::string_to_integral_parameter<SolutionSchemeOverFields>("COUPALGO", "tsi_monolithic",
-      "Coupling strategies for TSI solvers",
-      tuple<std::string>("tsi_oneway", "tsi_sequstagg", "tsi_iterstagg", "tsi_iterstagg_aitken",
-          "tsi_iterstagg_aitkenirons", "tsi_iterstagg_fixedrelax", "tsi_monolithic"),
-      tuple<SolutionSchemeOverFields>(OneWay, SequStagg, IterStagg, IterStaggAitken,
-          IterStaggAitkenIrons, IterStaggFixedRel, Monolithic),
-      tsidyn);
+  tsidyn.specs.emplace_back(deprecated_selection<SolutionSchemeOverFields>("COUPALGO",
+      {
+          {"tsi_oneway", OneWay},
+          {"tsi_sequstagg", SequStagg},
+          {"tsi_iterstagg", IterStagg},
+          {"tsi_iterstagg_aitken", IterStaggAitken},
+          {"tsi_iterstagg_aitkenirons", IterStaggAitkenIrons},
+          {"tsi_iterstagg_fixedrelax", IterStaggFixedRel},
+          {"tsi_monolithic", Monolithic},
+      },
+      {.description = "Coupling strategies for TSI solvers", .default_value = Monolithic}));
 
   tsidyn.specs.emplace_back(
       parameter<bool>("MATCHINGGRID", {.description = "is matching grid", .default_value = true}));
@@ -51,10 +55,14 @@ void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   tsidyn.specs.emplace_back(parameter<int>(
       "RESULTSEVERY", {.description = "increment for writing solution", .default_value = 1}));
 
-  Core::Utils::string_to_integral_parameter<ConvNorm>("NORM_INC", "Abs",
-      "type of norm for convergence check of primary variables in TSI",
-      tuple<std::string>("Abs", "Rel", "Mix"),
-      tuple<ConvNorm>(convnorm_abs, convnorm_rel, convnorm_mix), tsidyn);
+  tsidyn.specs.emplace_back(deprecated_selection<ConvNorm>("NORM_INC",
+      {
+          {"Abs", convnorm_abs},
+          {"Rel", convnorm_rel},
+          {"Mix", convnorm_mix},
+      },
+      {.description = "type of norm for convergence check of primary variables in TSI",
+          .default_value = convnorm_abs}));
 
   tsidyn.move_into_collection(list);
 
@@ -70,26 +78,43 @@ void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       {.description = "tolerance for convergence check of TSI-increment in monolithic TSI",
           .default_value = 1.0e-6}));
 
-  Core::Utils::string_to_integral_parameter<ConvNorm>("NORM_RESF", "Abs",
-      "type of norm for residual convergence check", tuple<std::string>("Abs", "Rel", "Mix"),
-      tuple<ConvNorm>(convnorm_abs, convnorm_rel, convnorm_mix), tsidynmono);
+  tsidynmono.specs.emplace_back(deprecated_selection<ConvNorm>("NORM_RESF",
+      {
+          {"Abs", convnorm_abs},
+          {"Rel", convnorm_rel},
+          {"Mix", convnorm_mix},
+      },
+      {.description = "type of norm for residual convergence check",
+          .default_value = convnorm_abs}));
 
-  Core::Utils::string_to_integral_parameter<BinaryOp>("NORMCOMBI_RESFINC", "Coupl_And_Single",
-      "binary operator to combine primary variables and residual force values",
-      tuple<std::string>(
-          "And", "Or", "Coupl_Or_Single", "Coupl_And_Single", "And_Single", "Or_Single"),
-      tuple<BinaryOp>(bop_and, bop_or, bop_coupl_or_single, bop_coupl_and_single, bop_and_single,
-          bop_or_single),
-      tsidynmono);
+  tsidynmono.specs.emplace_back(deprecated_selection<BinaryOp>("NORMCOMBI_RESFINC",
+      {
+          {"And", bop_and},
+          {"Or", bop_or},
+          {"Coupl_Or_Single", bop_coupl_or_single},
+          {"Coupl_And_Single", bop_coupl_and_single},
+          {"And_Single", bop_and_single},
+          {"Or_Single", bop_or_single},
+      },
+      {.description = "binary operator to combine primary variables and residual force values",
+          .default_value = bop_coupl_and_single}));
 
-  Core::Utils::string_to_integral_parameter<VectorNorm>("ITERNORM", "Rms",
-      "type of norm to be applied to residuals",
-      tuple<std::string>("L1", "L1_Scaled", "L2", "Rms", "Inf"),
-      tuple<VectorNorm>(norm_l1, norm_l1_scaled, norm_l2, norm_rms, norm_inf), tsidynmono);
+  tsidynmono.specs.emplace_back(deprecated_selection<VectorNorm>("ITERNORM",
+      {
+          {"L1", norm_l1},
+          {"L1_Scaled", norm_l1_scaled},
+          {"L2", norm_l2},
+          {"Rms", norm_rms},
+          {"Inf", norm_inf},
+      },
+      {.description = "type of norm to be applied to residuals", .default_value = norm_rms}));
 
-  Core::Utils::string_to_integral_parameter<NlnSolTech>("NLNSOL", "fullnewton",
-      "Nonlinear solution technique", tuple<std::string>("fullnewton", "ptc"),
-      tuple<NlnSolTech>(soltech_newtonfull, soltech_ptc), tsidynmono);
+  tsidynmono.specs.emplace_back(deprecated_selection<NlnSolTech>("NLNSOL",
+      {
+          {"fullnewton", soltech_newtonfull},
+          {"ptc", soltech_ptc},
+      },
+      {.description = "Nonlinear solution technique", .default_value = soltech_newtonfull}));
 
   tsidynmono.specs.emplace_back(
       parameter<double>("PTCDT", {.description = "pseudo time step for pseudo-transient "
@@ -126,9 +151,15 @@ void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       {.description = "Calculate nodal values for evaluation and validation of necking",
           .default_value = false}));
 
-  Core::Utils::string_to_integral_parameter<LineSearch>("TSI_LINE_SEARCH", "none",
-      "line-search strategy", tuple<std::string>("none", "structure", "thermo", "and", "or"),
-      tuple<LineSearch>(LS_none, LS_structure, LS_thermo, LS_and, LS_or), tsidynmono);
+  tsidynmono.specs.emplace_back(deprecated_selection<LineSearch>("TSI_LINE_SEARCH",
+      {
+          {"none", LS_none},
+          {"structure", LS_structure},
+          {"thermo", LS_thermo},
+          {"and", LS_and},
+          {"or", LS_or},
+      },
+      {.description = "line-search strategy", .default_value = LS_none}));
 
   tsidynmono.move_into_collection(list);
 
@@ -179,13 +210,9 @@ void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "NITSCHE_THETA_TSI", {.description = "+1: symmetric, 0: non-symmetric, -1: skew-symmetric",
                                .default_value = 0.0}));
 
-  Core::Utils::string_to_integral_parameter<CONTACT::NitscheWeighting>("NITSCHE_WEIGHTING_TSI",
-      "harmonic", "how to weight consistency terms in Nitsche contact formulation",
-      tuple<std::string>("slave", "master", "harmonic", "physical"),
-      tuple<CONTACT::NitscheWeighting>(CONTACT::NitscheWeighting::slave,
-          CONTACT::NitscheWeighting::master, CONTACT::NitscheWeighting::harmonic,
-          CONTACT::NitscheWeighting::physical),
-      tsic);
+  tsic.specs.emplace_back(parameter<CONTACT::NitscheWeighting>("NITSCHE_WEIGHTING_TSI",
+      {.description = "how to weight consistency terms in Nitsche contact formulation",
+          .default_value = CONTACT::NitscheWeighting::harmonic}));
 
   tsic.specs.emplace_back(parameter<bool>("NITSCHE_PENALTY_ADAPTIVE_TSI",
       {.description = "adapt penalty parameter after each converged time step",

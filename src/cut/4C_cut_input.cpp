@@ -24,45 +24,64 @@ void Cut::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
   Core::Utils::SectionSpecs cut_general{"CUT GENERAL"};
 
   // intersection precision (double or cln)
-  Core::Utils::string_to_integral_parameter<FourC::Cut::CutFloatType>(
-      "KERNEL_INTERSECTION_FLOATTYPE", "double",
-      "The floattype of the cut surface-edge intersection", tuple<std::string>("cln", "double"),
-      tuple<FourC::Cut::CutFloatType>(floattype_cln, floattype_double), cut_general);
+  cut_general.specs.emplace_back(
+      deprecated_selection<FourC::Cut::CutFloatType>("KERNEL_INTERSECTION_FLOATTYPE",
+          {
+              {"cln", floattype_cln},
+              {"double", floattype_double},
+          },
+          {.description = "The floattype of the cut surface-edge intersection",
+              .default_value = floattype_double}));
 
   // Computing disctance surface to point precision (double or cln)
-  Core::Utils::string_to_integral_parameter<FourC::Cut::CutFloatType>("KERNEL_DISTANCE_FLOATTYPE",
-      "double", "The floattype of the cut distance computation",
-      tuple<std::string>("cln", "double"),
-      tuple<FourC::Cut::CutFloatType>(floattype_cln, floattype_double), cut_general);
+  cut_general.specs.emplace_back(
+      deprecated_selection<FourC::Cut::CutFloatType>("KERNEL_DISTANCE_FLOATTYPE",
+          {
+              {"cln", floattype_cln},
+              {"double", floattype_double},
+          },
+          {.description = "The floattype of the cut distance computation",
+              .default_value = floattype_double}));
 
   // A general floattype for Cut::Position for Embedded Elements (compute_distance)
   // If specified this floattype is used for all computations of Cut::Position with
   // embedded elements
-  Core::Utils::string_to_integral_parameter<FourC::Cut::CutFloatType>(
-      "GENERAL_POSITION_DISTANCE_FLOATTYPE", "none",
-      "A general floattype for Cut::Position for Embedded Elements (compute_distance)",
-      tuple<std::string>("none", "cln", "double"),
-      tuple<FourC::Cut::CutFloatType>(floattype_none, floattype_cln, floattype_double),
-      cut_general);
+  cut_general.specs.emplace_back(
+      deprecated_selection<FourC::Cut::CutFloatType>("GENERAL_POSITION_DISTANCE_FLOATTYPE",
+          {
+              {"none", floattype_none},
+              {"cln", floattype_cln},
+              {"double", floattype_double},
+          },
+          {.description =
+                  "A general floattype for Cut::Position for Embedded Elements (compute_distance)",
+              .default_value = floattype_none}));
 
   // A general floattype for Cut::Position for Elements (ComputePosition)
   // If specified this floattype is used for all computations of Cut::Position
-  Core::Utils::string_to_integral_parameter<FourC::Cut::CutFloatType>(
-      "GENERAL_POSITION_POSITION_FLOATTYPE", "none",
-      "A general floattype for Cut::Position Elements (ComputePosition)",
-      tuple<std::string>("none", "cln", "double"),
-      tuple<FourC::Cut::CutFloatType>(floattype_none, floattype_cln, floattype_double),
-      cut_general);
+  cut_general.specs.emplace_back(
+      deprecated_selection<FourC::Cut::CutFloatType>("GENERAL_POSITION_POSITION_FLOATTYPE",
+          {
+              {"none", floattype_none},
+              {"cln", floattype_cln},
+              {"double", floattype_double},
+          },
+          {.description = "A general floattype for Cut::Position Elements (ComputePosition)",
+              .default_value = floattype_none}));
 
   // Specify which Referenceplanes are used in DirectDivergence
-  Core::Utils::string_to_integral_parameter<FourC::Cut::CutDirectDivergenceRefplane>(
-      "DIRECT_DIVERGENCE_REFPLANE", "all",
-      "Specify which Referenceplanes are used in DirectDivergence",
-      tuple<std::string>("all", "diagonal_side", "facet", "diagonal", "side", "none"),
-      tuple<FourC::Cut::CutDirectDivergenceRefplane>(DirDiv_refplane_all,
-          DirDiv_refplane_diagonal_side, DirDiv_refplane_facet, DirDiv_refplane_diagonal,
-          DirDiv_refplane_side, DirDiv_refplane_none),
-      cut_general);
+  cut_general.specs.emplace_back(
+      deprecated_selection<FourC::Cut::CutDirectDivergenceRefplane>("DIRECT_DIVERGENCE_REFPLANE",
+          {
+              {"all", DirDiv_refplane_all},
+              {"diagonal_side", DirDiv_refplane_diagonal_side},
+              {"facet", DirDiv_refplane_facet},
+              {"diagonal", DirDiv_refplane_diagonal},
+              {"side", DirDiv_refplane_side},
+              {"none", DirDiv_refplane_none},
+          },
+          {.description = "Specify which Referenceplanes are used in DirectDivergence",
+              .default_value = DirDiv_refplane_all}));
 
   // Specify is Cutsides are triangulated
   cut_general.specs.emplace_back(parameter<bool>("SPLIT_CUTSIDES",

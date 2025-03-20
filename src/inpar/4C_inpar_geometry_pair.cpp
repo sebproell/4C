@@ -22,29 +22,19 @@ void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(Core::Utils::SectionSp
   // Add the input parameters for line to 3D coupling.
 
   // Segmentation strategy.
-  Core::Utils::string_to_integral_parameter<LineTo3DStrategy>("GEOMETRY_PAIR_STRATEGY",
-      "segmentation", "Type of employed segmentation strategy",
-      Teuchos::tuple<std::string>("none", "segmentation",
-          "gauss_point_projection_without_boundary_segmentation",
-          "gauss_point_projection_boundary_segmentation", "gauss_point_projection_cross_section"),
-      Teuchos::tuple<LineTo3DStrategy>(LineTo3DStrategy::none, LineTo3DStrategy::segmentation,
-          LineTo3DStrategy::gauss_point_projection_without_boundary_segmentation,
-          LineTo3DStrategy::gauss_point_projection_boundary_segmentation,
-          LineTo3DStrategy::gauss_point_projection_cross_section),
-      list);
+  list.specs.emplace_back(parameter<LineTo3DStrategy>(
+      "GEOMETRY_PAIR_STRATEGY", {.description = "Type of employed segmentation strategy",
+                                    .default_value = LineTo3DStrategy::segmentation}));
 
   // Number of search points for segmentation.
   list.specs.emplace_back(parameter<int>("GEOMETRY_PAIR_SEGMENTATION_SEARCH_POINTS",
       {.description = "Number of search points for segmentation", .default_value = 6}));
 
   // What to do if not all Gauss points of a segment project valid
-  Core::Utils::string_to_integral_parameter<NotAllGaussPointsProjectValidAction>(
-      "GEOMETRY_PAIR_SEGMENTATION_NOT_ALL_GAUSS_POINTS_PROJECT_VALID_ACTION", "fail",
-      "What to do if not all Gauss points of a segment project valid",
-      Teuchos::tuple<std::string>("fail", "warning"),
-      Teuchos::tuple<NotAllGaussPointsProjectValidAction>(
-          NotAllGaussPointsProjectValidAction::fail, NotAllGaussPointsProjectValidAction::warning),
-      list);
+  list.specs.emplace_back(parameter<NotAllGaussPointsProjectValidAction>(
+      "GEOMETRY_PAIR_SEGMENTATION_NOT_ALL_GAUSS_POINTS_PROJECT_VALID_ACTION",
+      {.description = "What to do if not all Gauss points of a segment project valid",
+          .default_value = NotAllGaussPointsProjectValidAction::fail}));
 
   // Number of integration points on the line.
   list.specs.emplace_back(parameter<int>("GAUSS_POINTS",
@@ -67,12 +57,10 @@ void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to_surface(Core::Utils::Sect
   // Add the input parameters for line to surface coupling.
 
   // Add the surface normal option.
-  Core::Utils::string_to_integral_parameter<GEOMETRYPAIR::SurfaceNormals>(
-      "GEOMETRY_PAIR_SURFACE_NORMALS", "standard", "How the surface normals are evaluated",
-      Teuchos::tuple<std::string>("standard", "extended_volume"),
-      Teuchos::tuple<GEOMETRYPAIR::SurfaceNormals>(
-          GEOMETRYPAIR::SurfaceNormals::standard, GEOMETRYPAIR::SurfaceNormals::extended_volume),
-      list);
+  list.specs.emplace_back(Core::IO::InputSpecBuilders::parameter<GEOMETRYPAIR::SurfaceNormals>(
+      "GEOMETRY_PAIR_SURFACE_NORMALS",
+      {.description = "How the surface normals are evaluated",
+          .default_value = GEOMETRYPAIR::SurfaceNormals::standard}));
 }
 
 /**

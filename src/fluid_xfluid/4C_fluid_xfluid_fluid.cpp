@@ -90,7 +90,7 @@ void FLD::XFluidFluid::create_initial_state()
   XFluid::create_initial_state();
 
   if (Teuchos::getIntegralValue<Inpar::FLUID::CalcError>(*params_, "calculate error") !=
-      Inpar::FLUID::no_error_calculation)
+      Inpar::FLUID::no)
   {
     mc_xff_->redistribute_for_error_calculation();
   }
@@ -98,7 +98,7 @@ void FLD::XFluidFluid::create_initial_state()
   // recreate internal faces of DiscretizationFaces (as the distribution of the embedded
   // discretization may have changed)
   if (Teuchos::getIntegralValue<Inpar::FLUID::CalcError>(*params_, "calculate error") !=
-          Inpar::FLUID::no_error_calculation ||
+          Inpar::FLUID::no ||
       mc_xff_->get_averaging_strategy() == Inpar::XFEM::Embedded_Sided ||
       mc_xff_->get_averaging_strategy() == Inpar::XFEM::Mean)
   {
@@ -691,7 +691,7 @@ std::shared_ptr<std::vector<double>> FLD::XFluidFluid::evaluate_error_compared_t
   const auto calcerr =
       Teuchos::getIntegralValue<Inpar::FLUID::CalcError>(*params_, "calculate error");
 
-  if (calcerr == Inpar::FLUID::no_error_calculation) return nullptr;
+  if (calcerr == Inpar::FLUID::no) return nullptr;
   // set the time to evaluate errors
   //
 

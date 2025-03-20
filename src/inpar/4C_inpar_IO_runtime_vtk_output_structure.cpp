@@ -74,24 +74,20 @@ namespace Inpar
                 .default_value = false}));
 
         // mode to write gauss point data
-        Core::Utils::string_to_integral_parameter<Inpar::Solid::GaussPointDataOutputType>(
-            "GAUSS_POINT_DATA_OUTPUT_TYPE", "none",
-            "Where to write gauss point data. (none, projected to nodes, projected to element "
-            "center, raw at gauss points)",
-            tuple<std::string>("none", "nodes", "element_center", "gauss_points"),
-            tuple<Inpar::Solid::GaussPointDataOutputType>(
-                Inpar::Solid::GaussPointDataOutputType::none,
-                Inpar::Solid::GaussPointDataOutputType::nodes,
-                Inpar::Solid::GaussPointDataOutputType::element_center,
-                Inpar::Solid::GaussPointDataOutputType::gauss_points),
-            sublist_IO_VTK_structure);
+        sublist_IO_VTK_structure.specs.emplace_back(
+            parameter<Inpar::Solid::GaussPointDataOutputType>("GAUSS_POINT_DATA_OUTPUT_TYPE",
+                {.description = "Where to write gauss point data. (none, projected to nodes, "
+                                "projected to element center, raw at gauss points)",
+                    .default_value = Inpar::Solid::GaussPointDataOutputType::none}));
 
-        Core::Utils::string_to_integral_parameter<Inpar::Solid::OptQuantityType>(
-            "OPTIONAL_QUANTITY", "No", "Output of an optional quantity",
-            tuple<std::string>("No", "membranethickness"),
-            tuple<Inpar::Solid::OptQuantityType>(
-                Inpar::Solid::optquantity_none, Inpar::Solid::optquantity_membranethickness),
-            sublist_IO_VTK_structure);
+        sublist_IO_VTK_structure.specs.emplace_back(
+            deprecated_selection<Inpar::Solid::OptQuantityType>("OPTIONAL_QUANTITY",
+                {
+                    {"No", Inpar::Solid::optquantity_none},
+                    {"membranethickness", Inpar::Solid::optquantity_membranethickness},
+                },
+                {.description = "Output of an optional quantity",
+                    .default_value = Inpar::Solid::optquantity_none}));
 
         sublist_IO_VTK_structure.move_into_collection(list);
       }

@@ -23,28 +23,40 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   /* parameters for mortar coupling */
   Core::Utils::SectionSpecs mortar{"MORTAR COUPLING"};
 
-  Core::Utils::string_to_integral_parameter<Inpar::Mortar::ShapeFcn>("LM_SHAPEFCN", "Dual",
-      "Type of employed set of shape functions",
-      tuple<std::string>(
-          "Dual", "dual", "Standard", "standard", "std", "PetrovGalerkin", "petrovgalerkin", "pg"),
-      tuple<Inpar::Mortar::ShapeFcn>(shape_dual, shape_dual, shape_standard, shape_standard,
-          shape_standard, shape_petrovgalerkin, shape_petrovgalerkin, shape_petrovgalerkin),
-      mortar);
+  mortar.specs.emplace_back(deprecated_selection<Inpar::Mortar::ShapeFcn>("LM_SHAPEFCN",
+      {
+          {"Dual", shape_dual},
+          {"dual", shape_dual},
+          {"Standard", shape_standard},
+          {"standard", shape_standard},
+          {"std", shape_standard},
+          {"PetrovGalerkin", shape_petrovgalerkin},
+          {"petrovgalerkin", shape_petrovgalerkin},
+          {"pg", shape_petrovgalerkin},
+      },
+      {.description = "Type of employed set of shape functions", .default_value = shape_dual}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::Mortar::SearchAlgorithm>("SEARCH_ALGORITHM",
-      "Binarytree", "Type of contact search",
-      tuple<std::string>("BruteForce", "bruteforce", "BruteForceEleBased", "bruteforceelebased",
-          "BinaryTree", "Binarytree", "binarytree"),
-      tuple<Inpar::Mortar::SearchAlgorithm>(search_bfele, search_bfele, search_bfele, search_bfele,
-          search_binarytree, search_binarytree, search_binarytree),
-      mortar);
+  mortar.specs.emplace_back(deprecated_selection<Inpar::Mortar::SearchAlgorithm>("SEARCH_ALGORITHM",
+      {
+          {"BruteForce", search_bfele},
+          {"bruteforce", search_bfele},
+          {"BruteForceEleBased", search_bfele},
+          {"bruteforceelebased", search_bfele},
+          {"BinaryTree", search_binarytree},
+          {"Binarytree", search_binarytree},
+          {"binarytree", search_binarytree},
+      },
+      {.description = "Type of contact search", .default_value = search_binarytree}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::Mortar::BinaryTreeUpdateType>(
-      "BINARYTREE_UPDATETYPE", "BottomUp",
-      "Type of binary tree update, which is either a bottom up or a top down approach.",
-      tuple<std::string>("BottomUp", "TopDown"),
-      tuple<Inpar::Mortar::BinaryTreeUpdateType>(binarytree_bottom_up, binarytree_top_down),
-      mortar);
+  mortar.specs.emplace_back(
+      deprecated_selection<Inpar::Mortar::BinaryTreeUpdateType>("BINARYTREE_UPDATETYPE",
+          {
+              {"BottomUp", binarytree_bottom_up},
+              {"TopDown", binarytree_top_down},
+          },
+          {.description =
+                  "Type of binary tree update, which is either a bottom up or a top down approach.",
+              .default_value = binarytree_bottom_up}));
 
   mortar.specs.emplace_back(parameter<double>(
       "SEARCH_PARAM", {.description = "Radius / Bounding volume inflation for contact search",
@@ -54,59 +66,83 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       {.description = "If chosen auxiliary position is used for computing dops",
           .default_value = true}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::Mortar::LagMultQuad>("LM_QUAD", "undefined",
-      "Type of LM interpolation for quadratic FE",
-      tuple<std::string>(
-          "undefined", "quad", "quadratic", "pwlin", "piecewiselinear", "lin", "linear", "const"),
-      tuple<Inpar::Mortar::LagMultQuad>(lagmult_undefined, lagmult_quad, lagmult_quad,
-          lagmult_pwlin, lagmult_pwlin, lagmult_lin, lagmult_lin, lagmult_const),
-      mortar);
+  mortar.specs.emplace_back(deprecated_selection<Inpar::Mortar::LagMultQuad>("LM_QUAD",
+      {
+          {"undefined", lagmult_undefined},
+          {"quad", lagmult_quad},
+          {"quadratic", lagmult_quad},
+          {"pwlin", lagmult_pwlin},
+          {"piecewiselinear", lagmult_pwlin},
+          {"lin", lagmult_lin},
+          {"linear", lagmult_lin},
+          {"const", lagmult_const},
+      },
+      {.description = "Type of LM interpolation for quadratic FE",
+          .default_value = lagmult_undefined}));
 
   mortar.specs.emplace_back(parameter<bool>("CROSSPOINTS",
       {.description = "If chosen, multipliers are removed from crosspoints / edge nodes",
           .default_value = false}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::Mortar::ConsistentDualType>("LM_DUAL_CONSISTENT",
-      "boundary",
-      "For which elements should the dual basis be calculated on EXACTLY the same GPs as the "
-      "contact terms",
-      tuple<std::string>("none", "boundary", "all"),
-      tuple<Inpar::Mortar::ConsistentDualType>(
-          consistent_none, consistent_boundary, consistent_all),
-      mortar);
+  mortar.specs.emplace_back(
+      deprecated_selection<Inpar::Mortar::ConsistentDualType>("LM_DUAL_CONSISTENT",
+          {
+              {"none", consistent_none},
+              {"boundary", consistent_boundary},
+              {"all", consistent_all},
+          },
+          {.description = "For which elements should the dual basis be calculated on EXACTLY the "
+                          "same GPs as the contact terms",
+              .default_value = consistent_boundary}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::Mortar::MeshRelocation>("MESH_RELOCATION",
-      "Initial", "Type of mesh relocation", tuple<std::string>("Initial", "Every_Timestep", "None"),
-      tuple<Inpar::Mortar::MeshRelocation>(
-          relocation_initial, relocation_timestep, relocation_none),
-      mortar);
+  mortar.specs.emplace_back(deprecated_selection<Inpar::Mortar::MeshRelocation>("MESH_RELOCATION",
+      {
+          {"Initial", relocation_initial},
+          {"Every_Timestep", relocation_timestep},
+          {"None", relocation_none},
+      },
+      {.description = "Type of mesh relocation", .default_value = relocation_initial}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::Mortar::AlgorithmType>("ALGORITHM", "Mortar",
-      "Type of meshtying/contact algorithm",
-      tuple<std::string>("mortar", "Mortar", "nts", "NTS", "gpts", "GPTS", "lts", "LTS", "ltl",
-          "LTL", "stl", "STL"),
-      tuple<Inpar::Mortar::AlgorithmType>(algorithm_mortar, algorithm_mortar, algorithm_nts,
-          algorithm_nts, algorithm_gpts, algorithm_gpts, algorithm_lts, algorithm_lts,
-          algorithm_ltl, algorithm_ltl, algorithm_stl, algorithm_stl),
-      mortar);
+  mortar.specs.emplace_back(deprecated_selection<Inpar::Mortar::AlgorithmType>("ALGORITHM",
+      {
+          {"mortar", algorithm_mortar},
+          {"Mortar", algorithm_mortar},
+          {"nts", algorithm_nts},
+          {"NTS", algorithm_nts},
+          {"gpts", algorithm_gpts},
+          {"GPTS", algorithm_gpts},
+          {"lts", algorithm_lts},
+          {"LTS", algorithm_lts},
+          {"ltl", algorithm_ltl},
+          {"LTL", algorithm_ltl},
+          {"stl", algorithm_stl},
+          {"STL", algorithm_stl},
+      },
+      {.description = "Type of meshtying/contact algorithm", .default_value = algorithm_mortar}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::Mortar::IntType>("INTTYPE", "Segments",
-      "Type of numerical integration scheme",
-      tuple<std::string>(
-          "Segments", "segments", "Elements", "elements", "Elements_BS", "elements_BS"),
-      tuple<Inpar::Mortar::IntType>(inttype_segments, inttype_segments, inttype_elements,
-          inttype_elements, inttype_elements_BS, inttype_elements_BS),
-      mortar);
+  mortar.specs.emplace_back(deprecated_selection<Inpar::Mortar::IntType>("INTTYPE",
+      {
+          {"Segments", inttype_segments},
+          {"segments", inttype_segments},
+          {"Elements", inttype_elements},
+          {"elements", inttype_elements},
+          {"Elements_BS", inttype_elements_BS},
+          {"elements_BS", inttype_elements_BS},
+      },
+      {.description = "Type of numerical integration scheme", .default_value = inttype_segments}));
 
   mortar.specs.emplace_back(parameter<int>("NUMGP_PER_DIM",
       {.description = "Number of employed integration points per dimension", .default_value = 0}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::Mortar::Triangulation>("TRIANGULATION",
-      "Delaunay", "Type of triangulation for segment-based integration",
-      tuple<std::string>("Delaunay", "delaunay", "Center", "center"),
-      tuple<Inpar::Mortar::Triangulation>(triangulation_delaunay, triangulation_delaunay,
-          triangulation_center, triangulation_center),
-      mortar);
+  mortar.specs.emplace_back(deprecated_selection<Inpar::Mortar::Triangulation>("TRIANGULATION",
+      {
+          {"Delaunay", triangulation_delaunay},
+          {"delaunay", triangulation_delaunay},
+          {"Center", triangulation_center},
+          {"center", triangulation_center},
+      },
+      {.description = "Type of triangulation for segment-based integration",
+          .default_value = triangulation_delaunay}));
 
   mortar.specs.emplace_back(parameter<bool>("RESTART_WITH_MESHTYING",
       {.description =
@@ -131,12 +167,15 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
               "non-close parts and redistribute them independently. [Contact only]",
           .default_value = true}));
 
-  Core::Utils::string_to_integral_parameter<ExtendGhosting>("GHOSTING_STRATEGY", "redundant_master",
-      "Type of interface ghosting and ghosting extension algorithm",
-      tuple<std::string>("redundant_all", "redundant_master", "round_robin", "binning"),
-      tuple<ExtendGhosting>(ExtendGhosting::redundant_all, ExtendGhosting::redundant_master,
-          ExtendGhosting::roundrobin, ExtendGhosting::binning),
-      parallelRedist);
+  parallelRedist.specs.emplace_back(deprecated_selection<ExtendGhosting>("GHOSTING_STRATEGY",
+      {
+          {"redundant_all", ExtendGhosting::redundant_all},
+          {"redundant_master", ExtendGhosting::redundant_master},
+          {"round_robin", ExtendGhosting::roundrobin},
+          {"binning", ExtendGhosting::binning},
+      },
+      {.description = "Type of interface ghosting and ghosting extension algorithm",
+          .default_value = ExtendGhosting::redundant_master}));
 
   parallelRedist.specs.emplace_back(parameter<double>("IMBALANCE_TOL",
       {.description = "Max. relative imbalance of subdomain size after redistribution",
@@ -156,11 +195,14 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       {.description = "Minimum no. of elements per processor for parallel redistribution",
           .default_value = 0}));
 
-  Core::Utils::string_to_integral_parameter<ParallelRedist>("PARALLEL_REDIST", "Static",
-      "Type of redistribution algorithm", tuple<std::string>("None", "Static", "Dynamic"),
-      tuple<ParallelRedist>(ParallelRedist::redist_none, ParallelRedist::redist_static,
-          ParallelRedist::redist_dynamic),
-      parallelRedist);
+  parallelRedist.specs.emplace_back(deprecated_selection<ParallelRedist>("PARALLEL_REDIST",
+      {
+          {"None", ParallelRedist::redist_none},
+          {"Static", ParallelRedist::redist_static},
+          {"Dynamic", ParallelRedist::redist_dynamic},
+      },
+      {.description = "Type of redistribution algorithm",
+          .default_value = ParallelRedist::redist_static}));
 
   parallelRedist.specs.emplace_back(parameter<bool>(
       "PRINT_DISTRIBUTION", {.description = "Print details of the parallel distribution, i.e. "

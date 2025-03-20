@@ -279,7 +279,7 @@ namespace Inpar
     /// initial field
     enum CalcError
     {
-      no_error_calculation,
+      no,
       beltrami_flow,
       channel2D,
       gravitation,

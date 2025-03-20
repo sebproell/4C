@@ -45,53 +45,82 @@ void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>&
       "STRUCT_ELE", {.description = "Output of element properties", .default_value = true}));
   io.specs.emplace_back(parameter<bool>(
       "STRUCT_DISP", {.description = "Output of displacements", .default_value = true}));
-  Core::Utils::string_to_integral_parameter<Inpar::Solid::StressType>("STRUCT_STRESS", "No",
-      "Output of stress",
-      tuple<std::string>("No", "no", "NO", "Yes", "yes", "YES", "Cauchy", "cauchy", "2PK", "2pk"),
-      tuple<Inpar::Solid::StressType>(Inpar::Solid::stress_none, Inpar::Solid::stress_none,
-          Inpar::Solid::stress_none, Inpar::Solid::stress_2pk, Inpar::Solid::stress_2pk,
-          Inpar::Solid::stress_2pk, Inpar::Solid::stress_cauchy, Inpar::Solid::stress_cauchy,
-          Inpar::Solid::stress_2pk, Inpar::Solid::stress_2pk),
-      io);
+  io.specs.emplace_back(deprecated_selection<Inpar::Solid::StressType>("STRUCT_STRESS",
+      {
+          {"No", Inpar::Solid::stress_none},
+          {"no", Inpar::Solid::stress_none},
+          {"NO", Inpar::Solid::stress_none},
+          {"Yes", Inpar::Solid::stress_2pk},
+          {"yes", Inpar::Solid::stress_2pk},
+          {"YES", Inpar::Solid::stress_2pk},
+          {"Cauchy", Inpar::Solid::stress_cauchy},
+          {"cauchy", Inpar::Solid::stress_cauchy},
+          {"2PK", Inpar::Solid::stress_2pk},
+          {"2pk", Inpar::Solid::stress_2pk},
+      },
+      {.description = "Output of stress", .default_value = Inpar::Solid::stress_none}));
   // in case of a coupled problem (e.g. TSI) the additional stresses are
   // (TSI: thermal stresses) are printed here
-  Core::Utils::string_to_integral_parameter<Inpar::Solid::StressType>("STRUCT_COUPLING_STRESS",
-      "No", "",
-      tuple<std::string>("No", "no", "NO", "Yes", "yes", "YES", "Cauchy", "cauchy", "2PK", "2pk"),
-      tuple<Inpar::Solid::StressType>(Inpar::Solid::stress_none, Inpar::Solid::stress_none,
-          Inpar::Solid::stress_none, Inpar::Solid::stress_2pk, Inpar::Solid::stress_2pk,
-          Inpar::Solid::stress_2pk, Inpar::Solid::stress_cauchy, Inpar::Solid::stress_cauchy,
-          Inpar::Solid::stress_2pk, Inpar::Solid::stress_2pk),
-      io);
-  Core::Utils::string_to_integral_parameter<Inpar::Solid::StrainType>("STRUCT_STRAIN", "No",
-      "Output of strains",
-      tuple<std::string>(
-          "No", "no", "NO", "Yes", "yes", "YES", "EA", "ea", "GL", "gl", "LOG", "log"),
-      tuple<Inpar::Solid::StrainType>(Inpar::Solid::strain_none, Inpar::Solid::strain_none,
-          Inpar::Solid::strain_none, Inpar::Solid::strain_gl, Inpar::Solid::strain_gl,
-          Inpar::Solid::strain_gl, Inpar::Solid::strain_ea, Inpar::Solid::strain_ea,
-          Inpar::Solid::strain_gl, Inpar::Solid::strain_gl, Inpar::Solid::strain_log,
-          Inpar::Solid::strain_log),
-      io);
-  Core::Utils::string_to_integral_parameter<Inpar::Solid::StrainType>("STRUCT_PLASTIC_STRAIN", "No",
-      "", tuple<std::string>("No", "no", "NO", "Yes", "yes", "YES", "EA", "ea", "GL", "gl"),
-      tuple<Inpar::Solid::StrainType>(Inpar::Solid::strain_none, Inpar::Solid::strain_none,
-          Inpar::Solid::strain_none, Inpar::Solid::strain_gl, Inpar::Solid::strain_gl,
-          Inpar::Solid::strain_gl, Inpar::Solid::strain_ea, Inpar::Solid::strain_ea,
-          Inpar::Solid::strain_gl, Inpar::Solid::strain_gl),
-      io);
+  io.specs.emplace_back(deprecated_selection<Inpar::Solid::StressType>("STRUCT_COUPLING_STRESS",
+      {
+          {"No", Inpar::Solid::stress_none},
+          {"no", Inpar::Solid::stress_none},
+          {"NO", Inpar::Solid::stress_none},
+          {"Yes", Inpar::Solid::stress_2pk},
+          {"yes", Inpar::Solid::stress_2pk},
+          {"YES", Inpar::Solid::stress_2pk},
+          {"Cauchy", Inpar::Solid::stress_cauchy},
+          {"cauchy", Inpar::Solid::stress_cauchy},
+          {"2PK", Inpar::Solid::stress_2pk},
+          {"2pk", Inpar::Solid::stress_2pk},
+      },
+      {.description = "", .default_value = Inpar::Solid::stress_none}));
+  io.specs.emplace_back(deprecated_selection<Inpar::Solid::StrainType>("STRUCT_STRAIN",
+      {
+          {"No", Inpar::Solid::strain_none},
+          {"no", Inpar::Solid::strain_none},
+          {"NO", Inpar::Solid::strain_none},
+          {"Yes", Inpar::Solid::strain_gl},
+          {"yes", Inpar::Solid::strain_gl},
+          {"YES", Inpar::Solid::strain_gl},
+          {"EA", Inpar::Solid::strain_ea},
+          {"ea", Inpar::Solid::strain_ea},
+          {"GL", Inpar::Solid::strain_gl},
+          {"gl", Inpar::Solid::strain_gl},
+          {"LOG", Inpar::Solid::strain_log},
+          {"log", Inpar::Solid::strain_log},
+      },
+      {.description = "Output of strains", .default_value = Inpar::Solid::strain_none}));
+  io.specs.emplace_back(deprecated_selection<Inpar::Solid::StrainType>("STRUCT_PLASTIC_STRAIN",
+      {
+          {"No", Inpar::Solid::strain_none},
+          {"no", Inpar::Solid::strain_none},
+          {"NO", Inpar::Solid::strain_none},
+          {"Yes", Inpar::Solid::strain_gl},
+          {"yes", Inpar::Solid::strain_gl},
+          {"YES", Inpar::Solid::strain_gl},
+          {"EA", Inpar::Solid::strain_ea},
+          {"ea", Inpar::Solid::strain_ea},
+          {"GL", Inpar::Solid::strain_gl},
+          {"gl", Inpar::Solid::strain_gl},
+      },
+      {.description = "", .default_value = Inpar::Solid::strain_none}));
   io.specs.emplace_back(
       parameter<bool>("STRUCT_SURFACTANT", {.description = "", .default_value = false}));
   io.specs.emplace_back(
       parameter<bool>("STRUCT_JACOBIAN_MATLAB", {.description = "", .default_value = false}));
-  Core::Utils::string_to_integral_parameter<Inpar::Solid::ConditionNumber>(
-      "STRUCT_CONDITION_NUMBER", "none",
-      "Compute the condition number of the structural system matrix and write it to a text file.",
-      tuple<std::string>("gmres_estimate", "max_min_ev_ratio", "one-norm", "inf-norm", "none"),
-      tuple<Inpar::Solid::ConditionNumber>(Inpar::Solid::ConditionNumber::gmres_estimate,
-          Inpar::Solid::ConditionNumber::max_min_ev_ratio, Inpar::Solid::ConditionNumber::one_norm,
-          Inpar::Solid::ConditionNumber::inf_norm, Inpar::Solid::ConditionNumber::none),
-      io);
+  io.specs.emplace_back(
+      deprecated_selection<Inpar::Solid::ConditionNumber>("STRUCT_CONDITION_NUMBER",
+          {
+              {"gmres_estimate", Inpar::Solid::ConditionNumber::gmres_estimate},
+              {"max_min_ev_ratio", Inpar::Solid::ConditionNumber::max_min_ev_ratio},
+              {"one-norm", Inpar::Solid::ConditionNumber::one_norm},
+              {"inf-norm", Inpar::Solid::ConditionNumber::inf_norm},
+              {"none", Inpar::Solid::ConditionNumber::none},
+          },
+          {.description = "Compute the condition number of the structural system matrix and write "
+                          "it to a text file.",
+              .default_value = Inpar::Solid::ConditionNumber::none}));
   io.specs.emplace_back(
       parameter<bool>("FLUID_STRESS", {.description = "", .default_value = false}));
   io.specs.emplace_back(
@@ -102,18 +131,26 @@ void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>&
       parameter<bool>("FLUID_NODEDATA_FIRST_STEP", {.description = "", .default_value = false}));
   io.specs.emplace_back(
       parameter<bool>("THERM_TEMPERATURE", {.description = "", .default_value = false}));
-  Core::Utils::string_to_integral_parameter<Thermo::HeatFluxType>("THERM_HEATFLUX", "None", "",
-      tuple<std::string>("None", "No", "NO", "no", "Current", "Initial"),
-      tuple<Thermo::HeatFluxType>(Thermo::heatflux_none, Thermo::heatflux_none,
-          Thermo::heatflux_none, Thermo::heatflux_none, Thermo::heatflux_current,
-          Thermo::heatflux_initial),
-      io);
-  Core::Utils::string_to_integral_parameter<Thermo::TempGradType>("THERM_TEMPGRAD", "None", "",
-      tuple<std::string>("None", "No", "NO", "no", "Current", "Initial"),
-      tuple<Thermo::TempGradType>(Thermo::tempgrad_none, Thermo::tempgrad_none,
-          Thermo::tempgrad_none, Thermo::tempgrad_none, Thermo::tempgrad_current,
-          Thermo::tempgrad_initial),
-      io);
+  io.specs.emplace_back(deprecated_selection<Thermo::HeatFluxType>("THERM_HEATFLUX",
+      {
+          {"None", Thermo::heatflux_none},
+          {"No", Thermo::heatflux_none},
+          {"NO", Thermo::heatflux_none},
+          {"no", Thermo::heatflux_none},
+          {"Current", Thermo::heatflux_current},
+          {"Initial", Thermo::heatflux_initial},
+      },
+      {.description = "", .default_value = Thermo::heatflux_none}));
+  io.specs.emplace_back(deprecated_selection<Thermo::TempGradType>("THERM_TEMPGRAD",
+      {
+          {"None", Thermo::tempgrad_none},
+          {"No", Thermo::tempgrad_none},
+          {"NO", Thermo::tempgrad_none},
+          {"no", Thermo::tempgrad_none},
+          {"Current", Thermo::tempgrad_current},
+          {"Initial", Thermo::tempgrad_initial},
+      },
+      {.description = "", .default_value = Thermo::tempgrad_none}));
 
   io.specs.emplace_back(parameter<int>(
       "FILESTEPS", {.description = "Amount of timesteps written to a single result file",
@@ -137,14 +174,18 @@ void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>&
       {.description = "Put a <GroupID>: in front of every line", .default_value = false}));
   io.specs.emplace_back(parameter<int>("LIMIT_OUTP_TO_PROC",
       {.description = "Only the specified procs will write output", .default_value = -1}));
-  Core::Utils::string_to_integral_parameter<FourC::Core::IO::Verbositylevel>("VERBOSITY", "verbose",
-      "",
-      tuple<std::string>(
-          "minimal", "Minimal", "standard", "Standard", "verbose", "Verbose", "debug", "Debug"),
-      tuple<FourC::Core::IO::Verbositylevel>(FourC::Core::IO::minimal, FourC::Core::IO::minimal,
-          FourC::Core::IO::standard, FourC::Core::IO::standard, FourC::Core::IO::verbose,
-          FourC::Core::IO::verbose, FourC::Core::IO::debug, FourC::Core::IO::debug),
-      io);
+  io.specs.emplace_back(deprecated_selection<FourC::Core::IO::Verbositylevel>("VERBOSITY",
+      {
+          {"minimal", FourC::Core::IO::minimal},
+          {"Minimal", FourC::Core::IO::minimal},
+          {"standard", FourC::Core::IO::standard},
+          {"Standard", FourC::Core::IO::standard},
+          {"verbose", FourC::Core::IO::verbose},
+          {"Verbose", FourC::Core::IO::verbose},
+          {"debug", FourC::Core::IO::debug},
+          {"Debug", FourC::Core::IO::debug},
+      },
+      {.description = "", .default_value = FourC::Core::IO::verbose}));
 
   io.specs.emplace_back(parameter<double>("RESTARTWALLTIMEINTERVAL",
       {.description =
