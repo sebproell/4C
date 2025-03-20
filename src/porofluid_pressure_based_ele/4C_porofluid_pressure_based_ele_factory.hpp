@@ -5,8 +5,8 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_POROFLUIDMULTIPHASE_ELE_BOUNDARY_FACTORY_HPP
-#define FOUR_C_POROFLUIDMULTIPHASE_ELE_BOUNDARY_FACTORY_HPP
+#ifndef FOUR_C_POROFLUID_PRESSURE_BASED_ELE_FACTORY_HPP
+#define FOUR_C_POROFLUID_PRESSURE_BASED_ELE_FACTORY_HPP
 
 
 #include "4C_config.hpp"
@@ -22,27 +22,31 @@ namespace Discret
     // forward declaration
     class PoroFluidMultiPhaseEleInterface;
 
-    class PoroFluidMultiPhaseBoundaryFactory
+    class PoroFluidMultiPhaseFactory
     {
      public:
       //! ctor
-      PoroFluidMultiPhaseBoundaryFactory() { return; };
+      PoroFluidMultiPhaseFactory() { return; }
 
       //! dtor
-      virtual ~PoroFluidMultiPhaseBoundaryFactory() = default;
-
+      virtual ~PoroFluidMultiPhaseFactory() = default;
       //! ProvideImpl
       static PoroFluidMultiPhaseEleInterface* provide_impl(
-          const Core::Elements::Element* ele, const int numdofpernode, const std::string& disname);
+          Core::FE::CellType distype, const int numdofpernode, const std::string& disname);
 
      private:
-      //! return instance of element evaluation class depending on implementation type
+      //! define PoroFluidMultiPhaseEle instances dependent on problem
       template <Core::FE::CellType distype>
       static PoroFluidMultiPhaseEleInterface* define_problem_type(
           const int numdofpernode, const std::string& disname);
-    };  // class PoroFluidMultiPhaseBoundaryFactory
+
+
+    };  // end class PoroFluidMultiPhaseFactory
+
   }  // namespace Elements
+
 }  // namespace Discret
+
 
 
 FOUR_C_NAMESPACE_CLOSE

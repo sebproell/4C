@@ -17,7 +17,7 @@ set(_dependencies
     mat
     poroelast
     porofluid_pressure_based
-    porofluidmultiphase_ele
+    porofluid_pressure_based_ele
     )
 
 four_c_add_dependency(${AUTO_DEFINED_MODULE_NAME} ${_dependencies})

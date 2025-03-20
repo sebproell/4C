@@ -27,7 +27,7 @@ set(_dependencies
     module_registry
     mortar
     particle_engine
-    porofluidmultiphase_ele
+    porofluid_pressure_based_ele
     poromultiphase_scatra
     red_airways
     rigidsphere

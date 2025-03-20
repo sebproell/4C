@@ -8,10 +8,10 @@
 #include "4C_fem_condition.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_general_element.hpp"
-#include "4C_porofluidmultiphase_ele.hpp"
-#include "4C_porofluidmultiphase_ele_action.hpp"
-#include "4C_porofluidmultiphase_ele_boundary_factory.hpp"
-#include "4C_porofluidmultiphase_ele_interface.hpp"
+#include "4C_porofluid_pressure_based_ele.hpp"
+#include "4C_porofluid_pressure_based_ele_action.hpp"
+#include "4C_porofluid_pressure_based_ele_boundary_factory.hpp"
+#include "4C_porofluid_pressure_based_ele_interface.hpp"
 
 #include <Teuchos_ParameterList.hpp>
 

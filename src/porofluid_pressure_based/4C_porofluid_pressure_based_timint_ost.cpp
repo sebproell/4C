@@ -9,7 +9,7 @@
 
 #include "4C_global_data.hpp"
 #include "4C_io.hpp"
-#include "4C_porofluidmultiphase_ele_action.hpp"
+#include "4C_porofluid_pressure_based_ele_action.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

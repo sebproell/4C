@@ -5,14 +5,14 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_porofluidmultiphase_ele_boundary_calc.hpp"
+#include "4C_porofluid_pressure_based_ele_boundary_calc.hpp"
 
 #include "4C_fem_condition.hpp"
 #include "4C_fem_general_extract_values.hpp"
 #include "4C_fem_general_utils_boundary_integration.hpp"
 #include "4C_global_data.hpp"  // for curves and functions
-#include "4C_porofluidmultiphase_ele_action.hpp"
-#include "4C_porofluidmultiphase_ele_parameter.hpp"
+#include "4C_porofluid_pressure_based_ele_action.hpp"
+#include "4C_porofluid_pressure_based_ele_parameter.hpp"
 #include "4C_utils_function.hpp"
 #include "4C_utils_parameter_list.hpp"
 #include "4C_utils_singleton_owner.hpp"

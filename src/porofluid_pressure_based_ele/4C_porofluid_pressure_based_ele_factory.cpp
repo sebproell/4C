@@ -5,10 +5,10 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_porofluidmultiphase_ele_factory.hpp"
+#include "4C_porofluid_pressure_based_ele_factory.hpp"
 
 #include "4C_global_data.hpp"
-#include "4C_porofluidmultiphase_ele_calc.hpp"
+#include "4C_porofluid_pressure_based_ele_calc.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 

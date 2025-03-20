@@ -5,8 +5,8 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_POROFLUIDMULTIPHASE_ELE_PHASEMANAGER_HPP
-#define FOUR_C_POROFLUIDMULTIPHASE_ELE_PHASEMANAGER_HPP
+#ifndef FOUR_C_POROFLUID_PRESSURE_BASED_ELE_PHASEMANAGER_HPP
+#define FOUR_C_POROFLUID_PRESSURE_BASED_ELE_PHASEMANAGER_HPP
 
 #include "4C_config.hpp"
 
@@ -14,7 +14,7 @@
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_mat_scatra_multiporo.hpp"
-#include "4C_porofluidmultiphase_ele_action.hpp"
+#include "4C_porofluid_pressure_based_ele_action.hpp"
 #include "4C_utils_exceptions.hpp"
 
 #include <memory>

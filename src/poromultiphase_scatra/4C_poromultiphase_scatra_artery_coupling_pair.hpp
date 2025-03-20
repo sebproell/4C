@@ -16,8 +16,8 @@
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_linalg_vector.hpp"
-#include "4C_porofluidmultiphase_ele_phasemanager.hpp"
-#include "4C_porofluidmultiphase_ele_variablemanager.hpp"
+#include "4C_porofluid_pressure_based_ele_phasemanager.hpp"
+#include "4C_porofluid_pressure_based_ele_variablemanager.hpp"
 
 #include <Sacado.hpp>
 

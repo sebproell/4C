@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_porofluidmultiphase_ele_phasemanager.hpp"
+#include "4C_porofluid_pressure_based_ele_phasemanager.hpp"
 
 #include "4C_linalg_utils_densematrix_multiply.hpp"
 #include "4C_mat_fluidporo_multiphase.hpp"
@@ -14,8 +14,8 @@
 #include "4C_mat_fluidporo_singlephase.hpp"
 #include "4C_mat_scatra_multiporo.hpp"
 #include "4C_mat_structporo.hpp"
-#include "4C_porofluidmultiphase_ele_calc_utils.hpp"
-#include "4C_porofluidmultiphase_ele_variablemanager.hpp"
+#include "4C_porofluid_pressure_based_ele_calc_utils.hpp"
+#include "4C_porofluid_pressure_based_ele_variablemanager.hpp"
 
 #include <Teuchos_ParameterList.hpp>
 #include <Teuchos_SerialDenseSolver.hpp>
