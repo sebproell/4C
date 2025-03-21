@@ -10,7 +10,7 @@
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_general_node.hpp"
 #include "4C_io.hpp"
-#include "4C_poromultiphase_scatra_utils.hpp"
+#include "4C_porofluid_pressure_based_elast_scatra_utils.hpp"
 #include "4C_scatra_ele_action.hpp"
 
 FOUR_C_NAMESPACE_OPEN

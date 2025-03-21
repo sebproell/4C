@@ -18,7 +18,7 @@ set(_dependencies
     inpar
     mat
     mortar
-    poromultiphase_scatra
+    porofluid_pressure_based_elast_scatra
     scatra_ele
     )
 

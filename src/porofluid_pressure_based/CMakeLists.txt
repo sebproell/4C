@@ -16,8 +16,8 @@ set(_dependencies
     global_data
     inpar
     mat
+    porofluid_pressure_based_elast_scatra
     porofluid_pressure_based_ele
-    poromultiphase_scatra
     )
 
 four_c_add_dependency(${AUTO_DEFINED_MODULE_NAME} ${_dependencies})

@@ -16,9 +16,9 @@
 #include "4C_linear_solver_method.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_linear_solver_method_parameters.hpp"
+#include "4C_porofluid_pressure_based_elast_scatra_artery_coupling_base.hpp"
+#include "4C_porofluid_pressure_based_elast_scatra_utils.hpp"
 #include "4C_porofluid_pressure_based_utils.hpp"
-#include "4C_poromultiphase_scatra_artery_coupling_base.hpp"
-#include "4C_poromultiphase_scatra_utils.hpp"
 
 #include <Teuchos_TimeMonitor.hpp>
 
