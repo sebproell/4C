@@ -186,7 +186,7 @@ namespace Coupling::VolMortar
 
      */
     virtual void build_maps(std::shared_ptr<Core::FE::Discretization>& dis,
-        std::shared_ptr<const Epetra_Map>& dofmap, const std::vector<int>* coupleddof,
+        std::shared_ptr<const Core::LinAlg::Map>& dofmap, const std::vector<int>* coupleddof,
         const int* nodes, int numnode, int dofset);
 
     /*!
@@ -472,17 +472,17 @@ namespace Coupling::VolMortar
     //@}
 
     //! @name maps
-    std::shared_ptr<const Epetra_Map>
+    std::shared_ptr<const Core::LinAlg::Map>
         p12_dofrowmap_;  /// row map of projection matrix P Omega_2 -> Omega_1
-    std::shared_ptr<const Epetra_Map>
+    std::shared_ptr<const Core::LinAlg::Map>
         p12_dofdomainmap_;  /// domain map of projection matrix P Omega_2 -> Omega_1
-    std::shared_ptr<const Epetra_Map>
+    std::shared_ptr<const Core::LinAlg::Map>
         p21_dofrowmap_;  /// row map of projection matrix P Omega_1 -> Omega_2
-    std::shared_ptr<const Epetra_Map>
+    std::shared_ptr<const Core::LinAlg::Map>
         p21_dofdomainmap_;  /// domain map of projection matrix P Omega_1 -> Omega_2
-    std::shared_ptr<const Epetra_Map>
+    std::shared_ptr<const Core::LinAlg::Map>
         p12_dofcolmap_;  /// column map of projection matrix P Omega_2 -> Omega_1
-    std::shared_ptr<const Epetra_Map>
+    std::shared_ptr<const Core::LinAlg::Map>
         p21_dofcolmap_;  /// column map of projection matrix P Omega_1 -> Omega_2
     //@}
 
@@ -511,9 +511,9 @@ namespace Coupling::VolMortar
     //! @name mesh initialization
 
     // maps for mesh init
-    std::shared_ptr<Epetra_Map> xa_;
-    std::shared_ptr<Epetra_Map> xb_;
-    std::shared_ptr<Epetra_Map> mergedmap_;
+    std::shared_ptr<Core::LinAlg::Map> xa_;
+    std::shared_ptr<Core::LinAlg::Map> xb_;
+    std::shared_ptr<Core::LinAlg::Map> mergedmap_;
 
     // mortar matrices for mesh init
     std::shared_ptr<Core::LinAlg::SparseMatrix> dmatrix_xa_;  /// global Mortar matrix D for field A

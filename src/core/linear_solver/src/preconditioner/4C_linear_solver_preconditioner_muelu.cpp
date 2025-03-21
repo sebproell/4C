@@ -179,9 +179,9 @@ void Core::LinearSolver::MueLuPreconditioner::setup(bool create, Epetra_Operator
 
       if (muelulist_.sublist("Belos Parameters").isParameter("contact slaveDofMap"))
       {
-        Teuchos::RCP<Epetra_Map> ep_slave_dof_map =
+        Teuchos::RCP<Core::LinAlg::Map> ep_slave_dof_map =
             muelulist_.sublist("Belos Parameters")
-                .get<Teuchos::RCP<Epetra_Map>>("contact slaveDofMap");
+                .get<Teuchos::RCP<Core::LinAlg::Map>>("contact slaveDofMap");
 
         if (ep_slave_dof_map.is_null()) FOUR_C_THROW("Interface contact map is not available!");
 

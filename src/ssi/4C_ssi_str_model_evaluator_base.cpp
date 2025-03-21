@@ -85,7 +85,8 @@ void Solid::ModelEvaluator::BaseSSI::determine_stress_strain()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> Solid::ModelEvaluator::BaseSSI::get_block_dof_row_map_ptr() const
+std::shared_ptr<const Core::LinAlg::Map> Solid::ModelEvaluator::BaseSSI::get_block_dof_row_map_ptr()
+    const
 {
   check_init_setup();
   return global_state().dof_row_map();

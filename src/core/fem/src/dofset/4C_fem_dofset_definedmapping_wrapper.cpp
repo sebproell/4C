@@ -141,10 +141,10 @@ int Core::DOFSets::DofSetDefinedMappingWrapper::assign_degrees_of_freedom(
   }
 
   // Epetra maps
-  Epetra_Map targetnodemap(-1, patchedtargetnodes.size(), patchedtargetnodes.data(), 0,
+  Core::LinAlg::Map targetnodemap(-1, patchedtargetnodes.size(), patchedtargetnodes.data(), 0,
       Core::Communication::as_epetra_comm(com));
 
-  Epetra_Map permsourcenodemap(-1, permsourcenodes.size(), permsourcenodes.data(), 0,
+  Core::LinAlg::Map permsourcenodemap(-1, permsourcenodes.size(), permsourcenodes.data(), 0,
       Core::Communication::as_epetra_comm(com));
 
   // we expect to get maps of exactly the same shape

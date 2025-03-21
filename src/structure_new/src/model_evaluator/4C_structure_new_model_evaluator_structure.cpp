@@ -1316,7 +1316,7 @@ void Solid::ModelEvaluator::Structure::evaluate_internal(Teuchos::ParameterList&
 void Solid::ModelEvaluator::Structure::evaluate_internal_specified_elements(
     std::shared_ptr<Core::LinAlg::SparseOperator>* eval_mat,
     std::shared_ptr<Core::LinAlg::Vector<double>>* eval_vec,
-    const Epetra_Map* ele_map_to_be_evaluated)
+    const Core::LinAlg::Map* ele_map_to_be_evaluated)
 {
   pre_evaluate_internal();
 
@@ -1331,7 +1331,7 @@ void Solid::ModelEvaluator::Structure::evaluate_internal_specified_elements(
 void Solid::ModelEvaluator::Structure::evaluate_internal_specified_elements(
     Teuchos::ParameterList& p, std::shared_ptr<Core::LinAlg::SparseOperator>* eval_mat,
     std::shared_ptr<Core::LinAlg::Vector<double>>* eval_vec,
-    const Epetra_Map* ele_map_to_be_evaluated)
+    const Core::LinAlg::Map* ele_map_to_be_evaluated)
 {
   if (p.numParams() > 1)
   {
@@ -1786,8 +1786,8 @@ void Solid::ModelEvaluator::Structure::reset_step_state()
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> Solid::ModelEvaluator::Structure::get_block_dof_row_map_ptr()
-    const
+std::shared_ptr<const Core::LinAlg::Map>
+Solid::ModelEvaluator::Structure::get_block_dof_row_map_ptr() const
 {
   check_init_setup();
   return global_state().dof_row_map();

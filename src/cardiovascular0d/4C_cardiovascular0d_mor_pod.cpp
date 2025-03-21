@@ -20,7 +20,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 Cardiovascular0D::ProperOrthogonalDecomposition::ProperOrthogonalDecomposition(
-    std::shared_ptr<const Epetra_Map> full_model_dof_row_map,
+    std::shared_ptr<const Core::LinAlg::Map> full_model_dof_row_map,
     const std::string& pod_matrix_file_name, const std::string& absolute_path_to_input_file)
     : full_model_dof_row_map_(full_model_dof_row_map)
 {
@@ -72,9 +72,9 @@ Cardiovascular0D::ProperOrthogonalDecomposition::ProperOrthogonalDecomposition(
     FOUR_C_THROW("Projection matrix is not orthogonal.");
 
   // maps for reduced system
-  structmapr_ =
-      std::make_shared<Epetra_Map>(projmatrix_->NumVectors(), 0, full_model_dof_row_map_->Comm());
-  redstructmapr_ = std::make_shared<Epetra_Map>(
+  structmapr_ = std::make_shared<Core::LinAlg::Map>(
+      projmatrix_->NumVectors(), 0, full_model_dof_row_map_->Comm());
+  redstructmapr_ = std::make_shared<Core::LinAlg::Map>(
       projmatrix_->NumVectors(), projmatrix_->NumVectors(), 0, full_model_dof_row_map_->Comm());
   // Core::LinAlg::allreduce_e_map cant't be used here, because NumGlobalElements will be chosen
   // wrong
@@ -123,7 +123,7 @@ Cardiovascular0D::ProperOrthogonalDecomposition::reduce_off_diagonal(Core::LinAl
   if (err) FOUR_C_THROW("Multiplication V^T * M failed.");
 
   // convert Core::LinAlg::MultiVector<double> to Core::LinAlg::SparseMatrix
-  std::shared_ptr<Epetra_Map> rangemap = std::make_shared<Epetra_Map>(M.domain_map());
+  std::shared_ptr<Core::LinAlg::Map> rangemap = std::make_shared<Core::LinAlg::Map>(M.domain_map());
   std::shared_ptr<Core::LinAlg::SparseMatrix> M_red =
       std::make_shared<Core::LinAlg::SparseMatrix>(*rangemap, 0, false, true);
   epetra_multi_vector_to_linalg_sparse_matrix(*M_tmp, *rangemap, structmapr_, *M_red);
@@ -179,7 +179,7 @@ Cardiovascular0D::ProperOrthogonalDecomposition::extend_solution(
  *----------------------------------------------------------------------*/
 void Cardiovascular0D::ProperOrthogonalDecomposition::multiply_epetra_multi_vectors(
     Core::LinAlg::MultiVector<double>& multivect1, char multivect1Trans,
-    Core::LinAlg::MultiVector<double>& multivect2, char multivect2Trans, Epetra_Map& redmap,
+    Core::LinAlg::MultiVector<double>& multivect2, char multivect2Trans, Core::LinAlg::Map& redmap,
     Epetra_Import& impo, Core::LinAlg::MultiVector<double>& result)
 {
   // initialize temporary Core::LinAlg::MultiVector<double> (redmap: all procs hold all
@@ -201,8 +201,8 @@ void Cardiovascular0D::ProperOrthogonalDecomposition::multiply_epetra_multi_vect
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Cardiovascular0D::ProperOrthogonalDecomposition::epetra_multi_vector_to_linalg_sparse_matrix(
-    Core::LinAlg::MultiVector<double>& multivect, Epetra_Map& rangemap,
-    std::shared_ptr<Epetra_Map> domainmap, Core::LinAlg::SparseMatrix& sparsemat)
+    Core::LinAlg::MultiVector<double>& multivect, Core::LinAlg::Map& rangemap,
+    std::shared_ptr<Core::LinAlg::Map> domainmap, Core::LinAlg::SparseMatrix& sparsemat)
 {
   // pointer to values of the Core::LinAlg::MultiVector<double>
   double* Values;
@@ -283,8 +283,8 @@ void Cardiovascular0D::ProperOrthogonalDecomposition::read_pod_basis_vectors_fro
   delete[] sizeblock;
 
   // allocate multivector according to matrix size:
-  std::shared_ptr<Epetra_Map> mymap =
-      std::make_shared<Epetra_Map>(NumRows.ValueAsInt, 0, full_model_dof_row_map_->Comm());
+  std::shared_ptr<Core::LinAlg::Map> mymap =
+      std::make_shared<Core::LinAlg::Map>(NumRows.ValueAsInt, 0, full_model_dof_row_map_->Comm());
   projmatrix = std::make_shared<Core::LinAlg::MultiVector<double>>(*mymap, NumCols.ValueAsInt);
 
 
@@ -375,7 +375,7 @@ bool Cardiovascular0D::ProperOrthogonalDecomposition::is_pod_basis_orthogonal(
   const int n = M.NumVectors();
 
   // calculate V^T * V (should be an nxn identity matrix)
-  Epetra_Map map = Epetra_Map(n, n, 0, full_model_dof_row_map_->Comm());
+  Core::LinAlg::Map map = Core::LinAlg::Map(n, n, 0, full_model_dof_row_map_->Comm());
   Core::LinAlg::MultiVector<double> identity = Core::LinAlg::MultiVector<double>(map, n, true);
   identity.Multiply('T', 'N', 1.0, M, M, 0.0);
 

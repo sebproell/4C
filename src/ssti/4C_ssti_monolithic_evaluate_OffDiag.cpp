@@ -31,8 +31,8 @@ FOUR_C_NAMESPACE_OPEN
 SSTI::ThermoStructureOffDiagCoupling::ThermoStructureOffDiagCoupling(
     std::shared_ptr<const Core::LinAlg::MultiMapExtractor> blockmapstructure,
     std::shared_ptr<const Core::LinAlg::MultiMapExtractor> blockmapthermo,
-    std::shared_ptr<const Epetra_Map> full_map_structure,
-    std::shared_ptr<const Epetra_Map> full_map_thermo,
+    std::shared_ptr<const Core::LinAlg::Map> full_map_structure,
+    std::shared_ptr<const Core::LinAlg::Map> full_map_thermo,
     std::shared_ptr<const SSI::Utils::SSIMeshTying> ssti_structure_meshtying,
     std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_thermo,
     std::shared_ptr<Adapter::SSIStructureWrapper> structure,

@@ -160,7 +160,7 @@ void XFEM::DiscretizationXFEM::export_activeto_initial_vector(
 /*----------------------------------------------------------------------*
  |  get dof row map (public)                                 ager 11/14 |
  *----------------------------------------------------------------------*/
-const Epetra_Map* XFEM::DiscretizationXFEM::initial_dof_row_map(unsigned nds) const
+const Core::LinAlg::Map* XFEM::DiscretizationXFEM::initial_dof_row_map(unsigned nds) const
 {
   initialized();
   FOUR_C_ASSERT(nds < initialdofsets_.size(), "undefined initial dof set");
@@ -172,7 +172,7 @@ const Epetra_Map* XFEM::DiscretizationXFEM::initial_dof_row_map(unsigned nds) co
 /*----------------------------------------------------------------------*
  |  get dof column map (public)                              ager 11/14 |
  *----------------------------------------------------------------------*/
-const Epetra_Map* XFEM::DiscretizationXFEM::initial_dof_col_map(unsigned nds) const
+const Core::LinAlg::Map* XFEM::DiscretizationXFEM::initial_dof_col_map(unsigned nds) const
 {
   initialized();
   FOUR_C_ASSERT(nds < initialdofsets_.size(), "undefined initial dof set");
@@ -184,8 +184,8 @@ const Epetra_Map* XFEM::DiscretizationXFEM::initial_dof_col_map(unsigned nds) co
  * Takes dof_row_map with just one xfem-Dofset and duplicates                  |
  * the dof gids for export to active dofs                          ager 11/14|
  *---------------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> XFEM::DiscretizationXFEM::extend_map(
-    const Epetra_Map* srcmap, int numdofspernodedofset, int numdofsets, bool uniquenumbering)
+std::shared_ptr<Core::LinAlg::Map> XFEM::DiscretizationXFEM::extend_map(
+    const Core::LinAlg::Map* srcmap, int numdofspernodedofset, int numdofsets, bool uniquenumbering)
 {
   int numsrcelements = srcmap->NumMyElements();
   const int* srcgids = srcmap->MyGlobalElements();
@@ -202,7 +202,7 @@ std::shared_ptr<Epetra_Map> XFEM::DiscretizationXFEM::extend_map(
     }
   }
 
-  return std::make_shared<Epetra_Map>(-1, dstgids.size(), dstgids.data(), 0, srcmap->Comm());
+  return std::make_shared<Core::LinAlg::Map>(-1, dstgids.size(), dstgids.data(), 0, srcmap->Comm());
 }
 
 /*----------------------------------------------------------------------*
@@ -214,7 +214,7 @@ void XFEM::DiscretizationXFEM::set_initial_state(unsigned nds, const std::string
   TEUCHOS_FUNC_TIME_MONITOR("XFEM::DiscretizationXFEM::SetInitialState");
 
   if (!have_dofs()) FOUR_C_THROW("fill_complete() was not called");
-  const Epetra_Map* colmap = initial_dof_col_map(nds);
+  const Core::LinAlg::Map* colmap = initial_dof_col_map(nds);
   const Epetra_BlockMap& vecmap = state->get_block_map();
 
   if (state_.size() <= nds) state_.resize(nds + 1);

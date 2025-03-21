@@ -158,7 +158,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase::init(
   }
 
   std::vector<int> mydirichdofs(0);
-  add_dirichmaps_volfrac_spec_ = std::make_shared<Epetra_Map>(-1, 0, mydirichdofs.data(), 0,
+  add_dirichmaps_volfrac_spec_ = std::make_shared<Core::LinAlg::Map>(-1, 0, mydirichdofs.data(), 0,
       Core::Communication::as_epetra_comm(
           scatra_algo()->scatra_field()->discretization()->get_comm()));
 
@@ -317,7 +317,8 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase::apply_additional_dbc_for_vo
   std::vector<int> mydirichdofs(0);
 
   // get map and validdof-vector
-  const Epetra_Map* elecolmap = scatra_algo()->scatra_field()->discretization()->element_col_map();
+  const Core::LinAlg::Map* elecolmap =
+      scatra_algo()->scatra_field()->discretization()->element_col_map();
   std::shared_ptr<const Core::LinAlg::Vector<double>> valid_volfracspec_dofs =
       poro_field()->fluid_field()->valid_vol_frac_spec_dofs();
 
@@ -410,7 +411,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase::apply_additional_dbc_for_vo
   // build map
   int nummydirichvals = mydirichdofs.size();
   add_dirichmaps_volfrac_spec_ =
-      std::make_shared<Epetra_Map>(-1, nummydirichvals, mydirichdofs.data(), 0,
+      std::make_shared<Core::LinAlg::Map>(-1, nummydirichvals, mydirichdofs.data(), 0,
           Core::Communication::as_epetra_comm(
               scatra_algo()->scatra_field()->discretization()->get_comm()));
 
@@ -432,7 +433,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase::set_scatra_solution()
 
 /*------------------------------------------------------------------------*
  *------------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map>
+std::shared_ptr<const Core::LinAlg::Map>
 PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase::scatra_dof_row_map() const
 {
   return scatra_->scatra_field()->dof_row_map();

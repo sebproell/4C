@@ -16,6 +16,7 @@
 #include "4C_global_data.hpp"
 #include "4C_inpar_fsi.hpp"
 #include "4C_io_control.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_mapextractor.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
@@ -23,7 +24,6 @@
 #include "4C_linalg_vector.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 
-#include <Epetra_Map.h>
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 
 #include <memory>
@@ -121,10 +121,10 @@ void Adapter::FluidFSI::init()
     //----------------------------------------------------------------------------
     // Create intersection of fluid DOFs that hold a Dirichlet boundary condition
     // and are located at the FSI interface.
-    std::vector<std::shared_ptr<const Epetra_Map>> intersectionmaps;
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> intersectionmaps;
     intersectionmaps.push_back(get_dbc_map_extractor()->cond_map());
     intersectionmaps.push_back(interface()->fsi_cond_map());
-    std::shared_ptr<Epetra_Map> intersectionmap =
+    std::shared_ptr<Core::LinAlg::Map> intersectionmap =
         Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
     // store number of interface DOFs subject to Dirichlet BCs on structure and fluid side of the
@@ -135,14 +135,14 @@ void Adapter::FluidFSI::init()
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> Adapter::FluidFSI::dof_row_map() { return dof_row_map(0); }
+std::shared_ptr<const Core::LinAlg::Map> Adapter::FluidFSI::dof_row_map() { return dof_row_map(0); }
 
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> Adapter::FluidFSI::dof_row_map(unsigned nds)
+std::shared_ptr<const Core::LinAlg::Map> Adapter::FluidFSI::dof_row_map(unsigned nds)
 {
-  const Epetra_Map* dofrowmap = dis_->dof_row_map(nds);
+  const Core::LinAlg::Map* dofrowmap = dis_->dof_row_map(nds);
   return Core::Utils::shared_ptr_from_ref(*dofrowmap);
 }
 
@@ -180,7 +180,7 @@ void Adapter::FluidFSI::update()
 std::shared_ptr<Core::LinAlg::Vector<double>> Adapter::FluidFSI::relaxation_solve(
     std::shared_ptr<Core::LinAlg::Vector<double>> ivel)
 {
-  const Epetra_Map* dofrowmap = discretization()->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discretization()->dof_row_map();
   std::shared_ptr<Core::LinAlg::Vector<double>> relax =
       Core::LinAlg::create_vector(*dofrowmap, true);
   interface()->insert_fsi_cond_vector(*ivel, *relax);
@@ -190,7 +190,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Adapter::FluidFSI::relaxation_solv
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> Adapter::FluidFSI::inner_velocity_row_map()
+std::shared_ptr<const Core::LinAlg::Map> Adapter::FluidFSI::inner_velocity_row_map()
 {
   return innervelmap_;
 }
@@ -287,7 +287,8 @@ void Adapter::FluidFSI::apply_mesh_velocity(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void Adapter::FluidFSI::set_mesh_map(std::shared_ptr<const Epetra_Map> mm, const int nds_master)
+void Adapter::FluidFSI::set_mesh_map(
+    std::shared_ptr<const Core::LinAlg::Map> mm, const int nds_master)
 {
   meshmap_->setup(*dis_->dof_row_map(nds_master), mm,
       Core::LinAlg::split_map(*dis_->dof_row_map(nds_master), *mm));
@@ -380,26 +381,28 @@ void Adapter::FluidFSI::proj_vel_to_div_zero()
   // we are not sure yet whether it is worth the effort.
 
   //   get maps with Dirichlet DOFs and fsi interface DOFs
-  std::vector<std::shared_ptr<const Epetra_Map>> dbcfsimaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> dbcfsimaps;
   dbcfsimaps.push_back(get_dbc_map_extractor()->cond_map());
   dbcfsimaps.push_back(interface()->fsi_cond_map());
 
   // create a map with all DOFs that have either a Dirichlet boundary condition
   // or are located on the fsi interface
-  std::shared_ptr<Epetra_Map> dbcfsimap = Core::LinAlg::MultiMapExtractor::merge_maps(dbcfsimaps);
+  std::shared_ptr<Core::LinAlg::Map> dbcfsimap =
+      Core::LinAlg::MultiMapExtractor::merge_maps(dbcfsimaps);
 
   // create an element map with offset
   const int numallele = discretization()->num_global_elements();
   const int mapoffset =
       dbcfsimap->MaxAllGID() + discretization()->element_row_map()->MinAllGID() + 1;
-  std::shared_ptr<Epetra_Map> elemap = std::make_shared<Epetra_Map>(
+  std::shared_ptr<Core::LinAlg::Map> elemap = std::make_shared<Core::LinAlg::Map>(
       numallele, mapoffset, Core::Communication::as_epetra_comm(discretization()->get_comm()));
 
   // create the combination of dbcfsimap and elemap
-  std::vector<std::shared_ptr<const Epetra_Map>> domainmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> domainmaps;
   domainmaps.push_back(dbcfsimap);
   domainmaps.push_back(elemap);
-  std::shared_ptr<Epetra_Map> domainmap = Core::LinAlg::MultiMapExtractor::merge_maps(domainmaps);
+  std::shared_ptr<Core::LinAlg::Map> domainmap =
+      Core::LinAlg::MultiMapExtractor::merge_maps(domainmaps);
 
   // build the corresponding map extractor
   Core::LinAlg::MapExtractor domainmapex(*domainmap, dbcfsimap);
@@ -816,7 +819,7 @@ void Adapter::FluidFSI::setup_interface(const int nds_master)
  *----------------------------------------------------------------------*/
 void Adapter::FluidFSI::build_inner_vel_map()
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> maps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
   maps.push_back(FluidWrapper::velocity_row_map());
   maps.push_back(interface()->other_map());
   maps.push_back(get_dbc_map_extractor()->other_map());

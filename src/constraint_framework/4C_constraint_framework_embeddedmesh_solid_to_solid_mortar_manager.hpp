@@ -17,7 +17,7 @@
 #include <memory>
 
 // Forward declarations.
-class Epetra_Map;
+class Core::LinAlg::Map;
 class Epetra_FEVector;
 
 FOUR_C_NAMESPACE_OPEN
@@ -244,16 +244,16 @@ namespace CONSTRAINTS::EMBEDDEDMESH
     unsigned int n_lambda_node_ = 0;
 
     //! Row map of the additional Lagrange multiplier DOFs.
-    std::shared_ptr<Epetra_Map> lambda_dof_rowmap_;
+    std::shared_ptr<Core::LinAlg::Map> lambda_dof_rowmap_;
 
     //! Column map of the additional Lagrange multiplier DOFs.
-    std::shared_ptr<Epetra_Map> lambda_dof_colmap_;
+    std::shared_ptr<Core::LinAlg::Map> lambda_dof_colmap_;
 
     //! Row map of the solid boundary layer DOFs.
-    std::shared_ptr<Epetra_Map> boundary_layer_interface_dof_rowmap_;
+    std::shared_ptr<Core::LinAlg::Map> boundary_layer_interface_dof_rowmap_;
 
     //! Row map of the solid background DOFs.
-    std::shared_ptr<Epetra_Map> background_dof_rowmap_;
+    std::shared_ptr<Core::LinAlg::Map> background_dof_rowmap_;
 
     //! Multivector that connects the global node IDs with the Lagrange multiplier DOF IDs.
     //! The global row ID of the multi vector is the global ID of the node that a Lagrange

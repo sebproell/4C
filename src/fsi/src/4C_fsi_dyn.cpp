@@ -303,9 +303,9 @@ void fsi_immersed_drt()
   // redistribute discr. with help of binning strategy
   if (presort_strategy == FBI::BeamToFluidPreSortStrategy::binning)
   {
-    std::vector<std::shared_ptr<Epetra_Map>> stdelecolmap;
-    std::vector<std::shared_ptr<Epetra_Map>> stdnodecolmap;
-    std::shared_ptr<Epetra_Map> rowbins =
+    std::vector<std::shared_ptr<Core::LinAlg::Map>> stdelecolmap;
+    std::vector<std::shared_ptr<Core::LinAlg::Map>> stdnodecolmap;
+    std::shared_ptr<Core::LinAlg::Map> rowbins =
         binningstrategy
             ->do_weighted_partitioning_of_bins_and_extend_ghosting_of_discret_to_one_bin_layer(
                 dis, stdelecolmap, stdnodecolmap);
@@ -451,8 +451,8 @@ void fsi_ale_drt()
       dis.push_back(fluiddis);
       dis.push_back(aledis);
 
-      std::vector<std::shared_ptr<Epetra_Map>> stdelecolmap;
-      std::vector<std::shared_ptr<Epetra_Map>> stdnodecolmap;
+      std::vector<std::shared_ptr<Core::LinAlg::Map>> stdelecolmap;
+      std::vector<std::shared_ptr<Core::LinAlg::Map>> stdnodecolmap;
 
       // redistribute discr. with help of binning strategy
       if (Core::Communication::num_mpi_ranks(structdis->get_comm()) > 1)

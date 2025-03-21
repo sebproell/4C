@@ -60,7 +60,7 @@ namespace Core::Binstrategy::Utils
    * @param[in] doboundaryconditions do boundary conditions, enters fill_complete call
    */
   void extend_discretization_ghosting(Core::FE::Discretization& discret,
-      Epetra_Map& extendedelecolmap, bool assigndegreesoffreedom, bool initelements,
+      Core::LinAlg::Map& extendedelecolmap, bool assigndegreesoffreedom, bool initelements,
       bool doboundaryconditions);
 
   /*!

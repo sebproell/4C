@@ -44,7 +44,7 @@ namespace ScaTra
     explicit MeshtyingStrategyFluid(ScaTra::ScaTraTimIntImpl* scatratimint);
 
     //! return global map of degrees of freedom
-    const Epetra_Map& dof_row_map() const override;
+    const Core::LinAlg::Map& dof_row_map() const override;
 
     //! compute meshtying residual terms and their linearizations
     void evaluate_meshtying() override;

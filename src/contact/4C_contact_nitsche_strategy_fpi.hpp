@@ -32,7 +32,7 @@ namespace CONTACT
   {
    public:
     //! Standard constructor
-    NitscheStrategyFpi(const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap,
+    NitscheStrategyFpi(const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
         Teuchos::ParameterList params, std::vector<std::shared_ptr<CONTACT::Interface>> interface,
         int dim, MPI_Comm comm, double alphaf, int maxdof)
         : NitscheStrategyPoro(
@@ -48,9 +48,9 @@ namespace CONTACT
 
     //! Shared data constructor
     NitscheStrategyFpi(const std::shared_ptr<CONTACT::AbstractStrategyDataContainer>& data_ptr,
-        const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
-        std::vector<std::shared_ptr<CONTACT::Interface>> interface, int dim, MPI_Comm comm,
-        double alphaf, int maxdof)
+        const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
+        Teuchos::ParameterList params, std::vector<std::shared_ptr<CONTACT::Interface>> interface,
+        int dim, MPI_Comm comm, double alphaf, int maxdof)
         : NitscheStrategyPoro(data_ptr, dof_row_map, NodeRowMap, params, std::move(interface), dim,
               comm, alphaf, maxdof),
           pen_n_(params.get<double>("PENALTYPARAM")),

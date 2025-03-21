@@ -228,7 +228,7 @@ namespace TSI
     //! @name Access methods for subclasses
 
     //! full monolithic dof row map
-    std::shared_ptr<const Epetra_Map> dof_row_map() const;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() const;
 
     //! set full monolithic dof row map
     /*!
@@ -240,7 +240,7 @@ namespace TSI
 
     //! combined DBC map
     //! unique map of all dofs that should be constrained with DBC
-    std::shared_ptr<Epetra_Map> combined_dbc_map();
+    std::shared_ptr<Core::LinAlg::Map> combined_dbc_map();
 
     //! extractor to communicate between full monolithic map and block maps
     std::shared_ptr<Core::LinAlg::MultiMapExtractor> extractor() const { return blockrowdofmap_; }

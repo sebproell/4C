@@ -89,7 +89,7 @@ Airway::RedAirwayImplicitTimeInt::RedAirwayImplicitTimeInt(
     // to be filled with additional elements to be ghosted (needs to be done before
     // making discret fully overlapping)
     std::set<int> elecolset;
-    const Epetra_Map* elecolmap = discret_->element_col_map();
+    const Core::LinAlg::Map* elecolmap = discret_->element_col_map();
     for (int lid = 0; lid < elecolmap->NumMyElements(); ++lid)
     {
       int gid = elecolmap->GID(lid);
@@ -98,7 +98,7 @@ Airway::RedAirwayImplicitTimeInt::RedAirwayImplicitTimeInt(
 
     // to be filled with additional nodes to be ghosted
     std::set<int> nodecolset;
-    const Epetra_Map* nodecolmap = discret_->node_col_map();
+    const Core::LinAlg::Map* nodecolmap = discret_->node_col_map();
     for (int lid = 0; lid < nodecolmap->NumMyElements(); ++lid)
     {
       int gid = nodecolmap->GID(lid);
@@ -115,14 +115,14 @@ Airway::RedAirwayImplicitTimeInt::RedAirwayImplicitTimeInt(
 
     // extended ghosting for elements (also revert fully overlapping here)
     std::vector<int> coleles(elecolset.begin(), elecolset.end());
-    const Epetra_Map extendedelecolmap(-1, coleles.size(), coleles.data(), 0,
+    const Core::LinAlg::Map extendedelecolmap(-1, coleles.size(), coleles.data(), 0,
         Core::Communication::as_epetra_comm(discret_->get_comm()));
 
     discret_->export_column_elements(extendedelecolmap);
 
     // extended ghosting for nodes
     std::vector<int> colnodes(nodecolset.begin(), nodecolset.end());
-    const Epetra_Map extendednodecolmap(-1, colnodes.size(), colnodes.data(), 0,
+    const Core::LinAlg::Map extendednodecolmap(-1, colnodes.size(), colnodes.data(), 0,
         Core::Communication::as_epetra_comm(discret_->get_comm()));
 
     discret_->export_column_nodes(extendednodecolmap);
@@ -141,10 +141,10 @@ Airway::RedAirwayImplicitTimeInt::RedAirwayImplicitTimeInt(
   // vectors and matrices
   //                 local <-> global dof numbering
   // -------------------------------------------------------------------
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
-  const Epetra_Map* dofcolmap = discret_->dof_col_map();
-  const Epetra_Map* elementcolmap = discret_->element_col_map();
-  const Epetra_Map* elementrowmap = discret_->element_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofcolmap = discret_->dof_col_map();
+  const Core::LinAlg::Map* elementcolmap = discret_->element_col_map();
+  const Core::LinAlg::Map* elementrowmap = discret_->element_row_map();
 
   // -------------------------------------------------------------------
   // get a vector layout from the discretization for a vector which only
@@ -1232,10 +1232,10 @@ void Airway::RedAirwayImplicitTimeInt::time_update()
 void Airway::RedAirwayImplicitTimeInt::init_save_state()
 {
   // Get discretizations DOF row map
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // Get discretizations element row map
-  const Epetra_Map* elementcolmap = discret_->element_col_map();
+  const Core::LinAlg::Map* elementcolmap = discret_->element_col_map();
 
   // saving vector for pressure
   saved_pnm_ = Core::LinAlg::create_vector(*dofrowmap, true);
@@ -1850,7 +1850,7 @@ void Airway::RedAirwayImplicitTimeInt::setup_for_coupling()
   }
   unsigned int numcond = tmp.size();
   if (numcond == 0) FOUR_C_THROW("no coupling conditions found");
-  coupmap_ = std::make_shared<Epetra_Map>(tmp.size(), tmp.size(), tmp.data(), 0,
+  coupmap_ = std::make_shared<Core::LinAlg::Map>(tmp.size(), tmp.size(), tmp.data(), 0,
       Core::Communication::as_epetra_comm(discret_->get_comm()));
 }
 
@@ -1895,9 +1895,8 @@ bool Airway::RedAirwayImplicitTimeInt::sum_all_col_elem_val(
     Core::LinAlg::Vector<double>& vec, Core::LinAlg::Vector<double>& sumCond, double& sum)
 {
   // Check if the vector is a ColElement vector
-  const Epetra_Map* elementcolmap = discret_->element_col_map();
-  if (!vec.get_block_map().SameAs(*elementcolmap) &&
-      !sumCond.get_block_map().SameAs(*elementcolmap))
+  const Core::LinAlg::Map* elementcolmap = discret_->element_col_map();
+  if (!vec.get_map().SameAs(*elementcolmap) && !sumCond.get_map().SameAs(*elementcolmap))
   {
     return true;
   }

@@ -42,7 +42,7 @@ void BeamInteraction::BeamCrosslinkerHandler::setup()
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void BeamInteraction::BeamCrosslinkerHandler::distribute_linker_to_bins(
-    std::shared_ptr<Epetra_Map> const& linkerrowmap)
+    std::shared_ptr<Core::LinAlg::Map> const& linkerrowmap)
 {
   std::list<std::shared_ptr<Core::Nodes::Node>> homelesslinker;
   for (int lid = 0; lid < linkerrowmap->NumMyElements(); ++lid)

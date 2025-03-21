@@ -190,7 +190,7 @@ void FLD::Boxfilter::apply_box_filter(
 
   // ---------------------------------------------------------------
   // get a vector layout from the discretization to construct
-  const Epetra_Map* noderowmap = discret_->node_row_map();
+  const Core::LinAlg::Map* noderowmap = discret_->node_row_map();
 
   // alloc an additional vector to store/add up the patch volume
   Core::LinAlg::Vector<double> patchvol(*noderowmap, true);
@@ -605,7 +605,7 @@ void FLD::Boxfilter::apply_box_filter(
 
   {
     // get a rowmap for the dofs
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
     // loop all nodes on the processor
     for (int lnodeid = 0; lnodeid < discret_->num_my_row_nodes(); ++lnodeid)
@@ -901,7 +901,7 @@ void FLD::Boxfilter::apply_box_filter(
   // the communication part: Export from row to column map
 
   // get the column map in order to communicate the result to all ghosted nodes
-  const Epetra_Map* nodecolmap = discret_->node_col_map();
+  const Core::LinAlg::Map* nodecolmap = discret_->node_col_map();
 
   // allocate distributed vectors in col map format to have the filtered
   // quantities available on ghosted nodes
@@ -989,7 +989,7 @@ void FLD::Boxfilter::apply_box_filter_scatra(
 
   // ---------------------------------------------------------------
   // get a vector layout from the discretization to construct
-  const Epetra_Map* noderowmap = scatradiscret_->node_row_map();
+  const Core::LinAlg::Map* noderowmap = scatradiscret_->node_row_map();
 
   // alloc an additional vector to store/add up the patch volume
   Core::LinAlg::Vector<double> patchvol(*noderowmap, true);
@@ -1327,7 +1327,7 @@ void FLD::Boxfilter::apply_box_filter_scatra(
   // replace values at dirichlet nodes
   {
     // get a rowmap for the dofs
-    const Epetra_Map* dofrowmap = scatradiscret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = scatradiscret_->dof_row_map();
 
     // as we want to identify nodes at walls,
     // we have to be sure that fluid and scatra are still matching
@@ -1547,7 +1547,7 @@ void FLD::Boxfilter::apply_box_filter_scatra(
   // the communication part: Export from row to column map
 
   // get the column map in order to communicate the result to all ghosted nodes
-  const Epetra_Map* nodecolmap = scatradiscret_->node_col_map();
+  const Core::LinAlg::Map* nodecolmap = scatradiscret_->node_col_map();
 
   // allocate distributed vectors in col map format to have the filtered
   // quantities available on ghosted nodes

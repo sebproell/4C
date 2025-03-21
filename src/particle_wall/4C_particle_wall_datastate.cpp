@@ -36,7 +36,7 @@ void PARTICLEWALL::WallDataState::init(
   const bool isloaded = params_.get<bool>("PARTICLE_WALL_LOADED");
 
   // set current dof row and column map
-  curr_dof_row_map_ = std::make_shared<Epetra_Map>(*walldiscretization_->dof_row_map());
+  curr_dof_row_map_ = std::make_shared<Core::LinAlg::Map>(*walldiscretization_->dof_row_map());
 
   // create states needed for moving walls
   if (ismoving)
@@ -141,7 +141,7 @@ void PARTICLEWALL::WallDataState::update_maps_of_state_vectors()
   }
 
   // set new dof row map
-  curr_dof_row_map_ = std::make_shared<Epetra_Map>(*walldiscretization_->dof_row_map());
+  curr_dof_row_map_ = std::make_shared<Core::LinAlg::Map>(*walldiscretization_->dof_row_map());
 }
 
 FOUR_C_NAMESPACE_CLOSE

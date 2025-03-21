@@ -126,7 +126,7 @@ namespace ScaTra
         const bool calcinittimederiv = false) const {};
 
     //! return global map of degrees of freedom
-    virtual const Epetra_Map& dof_row_map() const = 0;
+    virtual const Core::LinAlg::Map& dof_row_map() const = 0;
 
     /*!
     \brief Evaluate a given condition

@@ -142,7 +142,7 @@ void PoroElastScaTra::Utils::create_volume_ghosting(Core::FE::Discretization& id
   voldis.push_back(problem->get_dis("porofluid"));
   voldis.push_back(problem->get_dis("scatra"));
 
-  const Epetra_Map* ielecolmap = idiscret.element_col_map();
+  const Core::LinAlg::Map* ielecolmap = idiscret.element_col_map();
 
   for (auto& voldi : voldis)
   {
@@ -151,8 +151,8 @@ void PoroElastScaTra::Utils::create_volume_ghosting(Core::FE::Discretization& id
 
     // Fill rdata with existing colmap
 
-    const Epetra_Map* elecolmap = voldi->element_col_map();
-    const std::shared_ptr<Epetra_Map> allredelecolmap =
+    const Core::LinAlg::Map* elecolmap = voldi->element_col_map();
+    const std::shared_ptr<Core::LinAlg::Map> allredelecolmap =
         Core::LinAlg::allreduce_e_map(*voldi->element_row_map());
 
     for (int i = 0; i < elecolmap->NumMyElements(); ++i)
@@ -184,7 +184,7 @@ void PoroElastScaTra::Utils::create_volume_ghosting(Core::FE::Discretization& id
     }
 
     // re-build element column map
-    Epetra_Map newelecolmap(-1, static_cast<int>(rdata.size()), rdata.data(), 0,
+    Core::LinAlg::Map newelecolmap(-1, static_cast<int>(rdata.size()), rdata.data(), 0,
         Core::Communication::as_epetra_comm(voldi->get_comm()));
     rdata.clear();
 

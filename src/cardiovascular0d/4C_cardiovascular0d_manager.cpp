@@ -206,8 +206,9 @@ Utils::Cardiovascular0DManager::Cardiovascular0DManager(
     offset_id_ = cardiovascular0ddofset_->first_gid();
 
     cardiovascular0dmap_full_ =
-        std::make_shared<Epetra_Map>(*(cardiovascular0ddofset_full_->dof_row_map()));
-    cardiovascular0dmap_ = std::make_shared<Epetra_Map>(*(cardiovascular0ddofset_->dof_row_map()));
+        std::make_shared<Core::LinAlg::Map>(*(cardiovascular0ddofset_full_->dof_row_map()));
+    cardiovascular0dmap_ =
+        std::make_shared<Core::LinAlg::Map>(*(cardiovascular0ddofset_->dof_row_map()));
     redcardiovascular0dmap_ = Core::LinAlg::allreduce_e_map(*cardiovascular0dmap_);
     cardvasc0dimpo_ =
         std::make_shared<Epetra_Export>(*redcardiovascular0dmap_, *cardiovascular0dmap_);
@@ -349,7 +350,7 @@ void Utils::Cardiovascular0DManager::evaluate_force_stiff(const double time,
 
   // create the parameters for the discretization
   Teuchos::ParameterList p;
-  const Epetra_Map* dofrowmap = actdisc_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = actdisc_->dof_row_map();
 
   cardiovascular0dstiffness_->zero();
   mat_dcardvasc0d_dd_->zero();
@@ -544,7 +545,7 @@ void Utils::Cardiovascular0DManager::read_restart(
 
   if (!restartwithcardiovascular0d)
   {
-    std::shared_ptr<Epetra_Map> cardvasc0d = get_cardiovascular0_d_map();
+    std::shared_ptr<Core::LinAlg::Map> cardvasc0d = get_cardiovascular0_d_map();
     std::shared_ptr<Core::LinAlg::Vector<double>> tempvec =
         Core::LinAlg::create_vector(*cardvasc0d, true);
     // old rhs contributions
@@ -943,9 +944,10 @@ int Utils::Cardiovascular0DManager::solve(Core::LinAlg::SparseMatrix& mat_struct
   mat_dstruct_dcv0ddof->apply_dirichlet(*(dbcmaps_->cond_map()), false);
 
   // define maps of standard dofs and additional pressures
-  std::shared_ptr<Epetra_Map> standrowmap = std::make_shared<Epetra_Map>(mat_structstiff.row_map());
-  std::shared_ptr<Epetra_Map> cardvasc0drowmap =
-      std::make_shared<Epetra_Map>(*cardiovascular0dmap_full_);
+  std::shared_ptr<Core::LinAlg::Map> standrowmap =
+      std::make_shared<Core::LinAlg::Map>(mat_structstiff.row_map());
+  std::shared_ptr<Core::LinAlg::Map> cardvasc0drowmap =
+      std::make_shared<Core::LinAlg::Map>(*cardiovascular0dmap_full_);
 
 
   if (ptc_3d0d_)
@@ -962,12 +964,12 @@ int Utils::Cardiovascular0DManager::solve(Core::LinAlg::SparseMatrix& mat_struct
   }
 
   // merge maps to one large map
-  std::shared_ptr<Epetra_Map> mergedmap =
+  std::shared_ptr<Core::LinAlg::Map> mergedmap =
       Core::LinAlg::merge_map(standrowmap, cardvasc0drowmap, false);
   // define MapExtractor
   // Core::LinAlg::MapExtractor mapext(*mergedmap,standrowmap,cardvasc0drowmap);
 
-  std::vector<std::shared_ptr<const Epetra_Map>> myMaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> myMaps;
   myMaps.push_back(standrowmap);
   myMaps.push_back(cardvasc0drowmap);
   Core::LinAlg::MultiMapExtractor mapext(*mergedmap, myMaps);
@@ -992,17 +994,18 @@ int Utils::Cardiovascular0DManager::solve(Core::LinAlg::SparseMatrix& mat_struct
     std::shared_ptr<Core::LinAlg::MultiVector<double>> rhsstruct_R = mor_->reduce_rhs(rhsstruct);
 
     // define maps of reduced standard dofs and additional pressures
-    Epetra_Map structmap_R(
+    Core::LinAlg::Map structmap_R(
         mor_->get_red_dim(), 0, Core::Communication::as_epetra_comm(actdisc_->get_comm()));
-    std::shared_ptr<Epetra_Map> standrowmap_R = std::make_shared<Epetra_Map>(structmap_R);
-    std::shared_ptr<Epetra_Map> cardvasc0drowmap_R =
-        std::make_shared<Epetra_Map>(mat_cardvasc0dstiff->row_map());
+    std::shared_ptr<Core::LinAlg::Map> standrowmap_R =
+        std::make_shared<Core::LinAlg::Map>(structmap_R);
+    std::shared_ptr<Core::LinAlg::Map> cardvasc0drowmap_R =
+        std::make_shared<Core::LinAlg::Map>(mat_cardvasc0dstiff->row_map());
 
     // merge maps of reduced standard dofs and additional pressures to one large map
-    std::shared_ptr<Epetra_Map> mergedmap_R =
+    std::shared_ptr<Core::LinAlg::Map> mergedmap_R =
         Core::LinAlg::merge_map(standrowmap_R, cardvasc0drowmap_R, false);
 
-    std::vector<std::shared_ptr<const Epetra_Map>> myMaps_R;
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> myMaps_R;
     myMaps_R.push_back(standrowmap_R);
     myMaps_R.push_back(cardvasc0drowmap_R);
     mapext_R.setup(*mergedmap_R, myMaps_R);

@@ -10,7 +10,8 @@
 
 #include "4C_config.hpp"
 
-#include <Epetra_Map.h>
+#include "4C_linalg_map.hpp"
+
 #include <mpi.h>
 
 #include <memory>
@@ -109,7 +110,7 @@ namespace Core::IO
     std::shared_ptr<Core::FE::Discretization> get_dis() const { return dis_; }
 
     /// Return the list of row elements
-    std::shared_ptr<Epetra_Map> get_row_elements() const { return roweles_; }
+    std::shared_ptr<Core::LinAlg::Map> get_row_elements() const { return roweles_; }
 
     /*! Read elements and partition the node graph
 
@@ -176,16 +177,16 @@ namespace Core::IO
     std::shared_ptr<Core::FE::Discretization> dis_;
 
     /// node row map
-    std::shared_ptr<Epetra_Map> rownodes_;
+    std::shared_ptr<Core::LinAlg::Map> rownodes_;
 
     /// node col map
-    std::shared_ptr<Epetra_Map> colnodes_;
+    std::shared_ptr<Core::LinAlg::Map> colnodes_;
 
     /// element row map
-    std::shared_ptr<Epetra_Map> roweles_;
+    std::shared_ptr<Core::LinAlg::Map> roweles_;
 
     /// element col map
-    std::shared_ptr<Epetra_Map> coleles_;
+    std::shared_ptr<Core::LinAlg::Map> coleles_;
 
     /// element type names to read
     std::set<std::string> elementtypes_;

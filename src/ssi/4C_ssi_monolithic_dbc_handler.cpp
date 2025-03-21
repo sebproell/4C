@@ -133,7 +133,7 @@ void SSI::DBCHandlerBase::apply_structure_dbc_to_system_matrix(
  *-------------------------------------------------------------------------*/
 void SSI::DBCHandlerSparse::apply_structure_dbc_with_loc_sys_rotation_to_system_matrix(
     std::shared_ptr<Core::LinAlg::SparseOperator> system_matrix,
-    const std::shared_ptr<const Epetra_Map>& dbcmap_structure,
+    const std::shared_ptr<const Core::LinAlg::Map>& dbcmap_structure,
     std::shared_ptr<const Core::Conditions::LocsysManager> locsysmanager_structure)
 
 {
@@ -163,7 +163,7 @@ void SSI::DBCHandlerSparse::apply_structure_dbc_with_loc_sys_rotation_to_system_
  *-------------------------------------------------------------------------*/
 void SSI::DBCHandlerBlock::apply_structure_dbc_with_loc_sys_rotation_to_system_matrix(
     std::shared_ptr<Core::LinAlg::SparseOperator> system_matrix,
-    const std::shared_ptr<const Epetra_Map>& dbcmap_structure,
+    const std::shared_ptr<const Core::LinAlg::Map>& dbcmap_structure,
     std::shared_ptr<const Core::Conditions::LocsysManager> locsysmanager_structure)
 {
   auto systemmatrix_block =

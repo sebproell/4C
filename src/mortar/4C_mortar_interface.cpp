@@ -13,6 +13,7 @@
 #include "4C_fem_nurbs_discretization.hpp"
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
@@ -34,7 +35,6 @@
 #include "4C_rebalance_graph_based.hpp"
 #include "4C_utils_parameter_list.hpp"
 
-#include <Epetra_Map.h>
 #include <Teuchos_Time.hpp>
 #include <Teuchos_TimeMonitor.hpp>
 
@@ -579,9 +579,9 @@ void Mortar::Interface::fill_complete(
   // later we might export node and element column map to extended or even FULL overlap,
   // thus store the standard column maps first
   // get standard nodal column map (overlap=1)
-  oldnodecolmap_ = std::make_shared<Epetra_Map>(*(discret().node_col_map()));
+  oldnodecolmap_ = std::make_shared<Core::LinAlg::Map>(*(discret().node_col_map()));
   // get standard element column map (overlap=1)
-  oldelecolmap_ = std::make_shared<Epetra_Map>(*(discret().element_col_map()));
+  oldelecolmap_ = std::make_shared<Core::LinAlg::Map>(*(discret().element_col_map()));
 
   extend_interface_ghosting(isFinalParallelDistribution, meanVelocity, binning_params,
       output_control, spatial_approximation_type);
@@ -918,7 +918,7 @@ void Mortar::Interface::initialize_data_container()
   if (interface_data_
           ->is_poro())  // as velocities of structure and fluid exist also on master nodes!!!
   {
-    const std::shared_ptr<Epetra_Map> masternodes =
+    const std::shared_ptr<Core::LinAlg::Map> masternodes =
         Core::LinAlg::allreduce_e_map(*(master_row_nodes()));
     // initialize poro node data container for master nodes!!!
     for (int i = 0; i < masternodes->NumMyElements(); ++i)
@@ -1118,8 +1118,8 @@ void Mortar::Interface::redistribute()
   for (int i = 0; i < numproc; ++i) allproc[i] = i;
 
   // we need an arbitrary preliminary element row map
-  Epetra_Map sroweles(*slave_row_elements());
-  Epetra_Map mroweles(*master_row_elements());
+  Core::LinAlg::Map sroweles(*slave_row_elements());
+  Core::LinAlg::Map mroweles(*master_row_elements());
 
   //**********************************************************************
   // (1) PREPARATIONS decide how many procs are used
@@ -1155,8 +1155,8 @@ void Mortar::Interface::redistribute()
   //**********************************************************************
   // (2) SLAVE redistribution
   //**********************************************************************
-  std::shared_ptr<Epetra_Map> srownodes = nullptr;
-  std::shared_ptr<Epetra_Map> scolnodes = nullptr;
+  std::shared_ptr<Core::LinAlg::Map> srownodes = nullptr;
+  std::shared_ptr<Core::LinAlg::Map> scolnodes = nullptr;
 
   {
     std::stringstream ss_slave;
@@ -1177,8 +1177,8 @@ void Mortar::Interface::redistribute()
   //**********************************************************************
   // (3) MASTER redistribution
   //**********************************************************************
-  std::shared_ptr<Epetra_Map> mrownodes = nullptr;
-  std::shared_ptr<Epetra_Map> mcolnodes = nullptr;
+  std::shared_ptr<Core::LinAlg::Map> mrownodes = nullptr;
+  std::shared_ptr<Core::LinAlg::Map> mcolnodes = nullptr;
 
   {
     std::stringstream ss_master;
@@ -1192,8 +1192,10 @@ void Mortar::Interface::redistribute()
   // (4) Merge global interface node row and column map
   //**********************************************************************
   // merge node maps from slave and master parts
-  std::shared_ptr<Epetra_Map> rownodes = Core::LinAlg::merge_map(srownodes, mrownodes, false);
-  std::shared_ptr<Epetra_Map> colnodes = Core::LinAlg::merge_map(scolnodes, mcolnodes, false);
+  std::shared_ptr<Core::LinAlg::Map> rownodes =
+      Core::LinAlg::merge_map(srownodes, mrownodes, false);
+  std::shared_ptr<Core::LinAlg::Map> colnodes =
+      Core::LinAlg::merge_map(scolnodes, mcolnodes, false);
 
   //**********************************************************************
   // (5) Get partitioning information into discretization
@@ -1219,9 +1221,9 @@ void Mortar::Interface::redistribute()
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void Mortar::Interface::redistribute_master_side(std::shared_ptr<Epetra_Map>& rownodes,
-    std::shared_ptr<Epetra_Map>& colnodes, Epetra_Map& roweles, MPI_Comm comm, const int parts,
-    const double imbalance) const
+void Mortar::Interface::redistribute_master_side(std::shared_ptr<Core::LinAlg::Map>& rownodes,
+    std::shared_ptr<Core::LinAlg::Map>& colnodes, Core::LinAlg::Map& roweles, MPI_Comm comm,
+    const int parts, const double imbalance) const
 {
   // call parallel redistribution
   std::shared_ptr<const Core::LinAlg::Graph> nodegraph =
@@ -1288,7 +1290,7 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
     for (int i = 0; i < Core::Communication::num_mpi_ranks(get_comm()); ++i) allproc[i] = i;
 
     // fill my own row node ids
-    const Epetra_Map* noderowmap = discret().node_row_map();
+    const Core::LinAlg::Map* noderowmap = discret().node_row_map();
     std::vector<int> sdata(noderowmap->NumMyElements());
     for (int i = 0; i < noderowmap->NumMyElements(); ++i) sdata[i] = noderowmap->GID(i);
 
@@ -1297,13 +1299,13 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
     Core::LinAlg::gather<int>(sdata, rdata, (int)allproc.size(), allproc.data(), get_comm());
 
     // build completely overlapping map of nodes (on ALL processors)
-    Epetra_Map newnodecolmap(
+    Core::LinAlg::Map newnodecolmap(
         -1, (int)rdata.size(), rdata.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
     sdata.clear();
     rdata.clear();
 
     // fill my own row element ids
-    const Epetra_Map* elerowmap = discret().element_row_map();
+    const Core::LinAlg::Map* elerowmap = discret().element_row_map();
     sdata.resize(elerowmap->NumMyElements());
     for (int i = 0; i < elerowmap->NumMyElements(); ++i) sdata[i] = elerowmap->GID(i);
 
@@ -1312,7 +1314,7 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
     Core::LinAlg::gather<int>(sdata, rdata, (int)allproc.size(), allproc.data(), get_comm());
 
     // build complete overlapping map of elements (on ALL processors)
-    Epetra_Map newelecolmap(
+    Core::LinAlg::Map newelecolmap(
         -1, (int)rdata.size(), rdata.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
     sdata.clear();
     rdata.clear();
@@ -1357,7 +1359,7 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
     for (int i = 0; i < Core::Communication::num_mpi_ranks(get_comm()); ++i) allproc[i] = i;
 
     // fill my own master row node ids
-    const Epetra_Map* noderowmap = discret().node_row_map();
+    const Core::LinAlg::Map* noderowmap = discret().node_row_map();
     std::vector<int> sdata;
     for (int i = 0; i < noderowmap->NumMyElements(); ++i)
     {
@@ -1373,7 +1375,7 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
     Core::LinAlg::gather<int>(sdata, rdata, (int)allproc.size(), allproc.data(), get_comm());
 
     // add my own slave column node ids (non-redundant, standard overlap)
-    const Epetra_Map* nodecolmap = discret().node_col_map();
+    const Core::LinAlg::Map* nodecolmap = discret().node_col_map();
     for (int i = 0; i < nodecolmap->NumMyElements(); ++i)
     {
       int gid = nodecolmap->GID(i);
@@ -1384,13 +1386,13 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
     }
 
     // build new node column map (on ALL processors)
-    Epetra_Map newnodecolmap(
+    Core::LinAlg::Map newnodecolmap(
         -1, (int)rdata.size(), rdata.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
     sdata.clear();
     rdata.clear();
 
     // fill my own master row element ids
-    const Epetra_Map* elerowmap = discret().element_row_map();
+    const Core::LinAlg::Map* elerowmap = discret().element_row_map();
     sdata.resize(0);
     for (int i = 0; i < elerowmap->NumMyElements(); ++i)
     {
@@ -1406,7 +1408,7 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
     Core::LinAlg::gather<int>(sdata, rdata, (int)allproc.size(), allproc.data(), get_comm());
 
     // add my own slave column node ids (non-redundant, standard overlap)
-    const Epetra_Map* elecolmap = discret().element_col_map();
+    const Core::LinAlg::Map* elecolmap = discret().element_col_map();
     for (int i = 0; i < elecolmap->NumMyElements(); ++i)
     {
       int gid = elecolmap->GID(i);
@@ -1417,7 +1419,7 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
     }
 
     // build new element column map (on ALL processors)
-    Epetra_Map newelecolmap(
+    Core::LinAlg::Map newelecolmap(
         -1, (int)rdata.size(), rdata.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
     sdata.clear();
     rdata.clear();
@@ -1461,7 +1463,7 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
     std::vector<int> rdata;
 
     // fill my own slave and master column node ids (non-redundant)
-    const Epetra_Map* nodecolmap = discret().node_col_map();
+    const Core::LinAlg::Map* nodecolmap = discret().node_col_map();
     for (int i = 0; i < nodecolmap->NumMyElements(); ++i)
     {
       int gid = nodecolmap->GID(i);
@@ -1469,12 +1471,12 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
     }
 
     // re-build node column map (now formally on ALL processors)
-    Epetra_Map newnodecolmap(
+    Core::LinAlg::Map newnodecolmap(
         -1, (int)rdata.size(), rdata.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
     rdata.clear();
 
     // fill my own slave and master column element ids (non-redundant)
-    const Epetra_Map* elecolmap = discret().element_col_map();
+    const Core::LinAlg::Map* elecolmap = discret().element_col_map();
     for (int i = 0; i < elecolmap->NumMyElements(); ++i)
     {
       int gid = elecolmap->GID(i);
@@ -1482,7 +1484,7 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
     }
 
     // re-build element column map (now formally on ALL processors)
-    std::shared_ptr<Epetra_Map> newelecolmap = std::make_shared<Epetra_Map>(
+    std::shared_ptr<Core::LinAlg::Map> newelecolmap = std::make_shared<Core::LinAlg::Map>(
         -1, (int)rdata.size(), rdata.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
     rdata.clear();
 
@@ -1527,7 +1529,7 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
 
       // Extend ghosting of the master elements
       std::map<int, std::set<int>> ext_bin_to_ele_map;
-      std::shared_ptr<const Epetra_Map> extendedmastercolmap =
+      std::shared_ptr<const Core::LinAlg::Map> extendedmastercolmap =
           binningstrategy->extend_element_col_map(slavebinelemap, masterbinelemap,
               ext_bin_to_ele_map, nullptr, nullptr, newelecolmap.get());
 
@@ -1546,7 +1548,7 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
       }
 
       std::vector<int> colnodes(nodes.begin(), nodes.end());
-      Epetra_Map nodecolmap(-1, (int)colnodes.size(), colnodes.data(), 0,
+      Core::LinAlg::Map nodecolmap(-1, (int)colnodes.size(), colnodes.data(), 0,
           Core::Communication::as_epetra_comm(get_comm()));
 
       // now ghost the nodes
@@ -1579,7 +1581,7 @@ void Mortar::Interface::create_search_tree()
     auto updatetype = Teuchos::getIntegralValue<Inpar::Mortar::BinaryTreeUpdateType>(
         interface_params(), "BINARYTREE_UPDATETYPE");
 
-    std::shared_ptr<Epetra_Map> melefullmap = nullptr;
+    std::shared_ptr<Core::LinAlg::Map> melefullmap = nullptr;
     switch (strategy)
     {
       case Inpar::Mortar::ExtendGhosting::roundrobin:
@@ -1653,13 +1655,13 @@ void Mortar::Interface::update_master_slave_dof_maps()
     }
   }
 
-  sdofrowmap_ = std::make_shared<Epetra_Map>(
+  sdofrowmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, (int)sr.size(), sr.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  sdofcolmap_ = std::make_shared<Epetra_Map>(
+  sdofcolmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, (int)sc.size(), sc.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  mdofrowmap_ = std::make_shared<Epetra_Map>(
+  mdofrowmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, (int)mr.size(), mr.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  mdofcolmap_ = std::make_shared<Epetra_Map>(
+  mdofcolmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, (int)mc.size(), mc.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
 }
 
@@ -1673,7 +1675,7 @@ void Mortar::Interface::update_master_slave_element_maps()
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Mortar::Interface::update_master_slave_element_maps(
-    const Epetra_Map& elementRowMap, const Epetra_Map& elementColumnMap)
+    const Core::LinAlg::Map& elementRowMap, const Core::LinAlg::Map& elementColumnMap)
 {
   // Vectors to collect GIDs to build maps
   std::vector<int> sc;  // slave column map
@@ -1701,13 +1703,13 @@ void Mortar::Interface::update_master_slave_element_maps(
     }
   }
 
-  selerowmap_ = std::make_shared<Epetra_Map>(
+  selerowmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, (int)sr.size(), sr.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  selecolmap_ = std::make_shared<Epetra_Map>(
+  selecolmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, (int)sc.size(), sc.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  melerowmap_ = std::make_shared<Epetra_Map>(
+  melerowmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, (int)mr.size(), mr.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  melecolmap_ = std::make_shared<Epetra_Map>(
+  melecolmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, (int)mc.size(), mc.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
 }
 
@@ -1721,7 +1723,7 @@ void Mortar::Interface::update_master_slave_node_maps()
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Mortar::Interface::update_master_slave_node_maps(
-    const Epetra_Map& nodeRowMap, const Epetra_Map& nodeColumnMap)
+    const Core::LinAlg::Map& nodeRowMap, const Core::LinAlg::Map& nodeColumnMap)
 {
   // Vectors to collect GIDs to build maps
   std::vector<int> sc;   // slave column map
@@ -1762,22 +1764,22 @@ void Mortar::Interface::update_master_slave_node_maps(
     }
   }
 
-  snoderowmap_ = std::make_shared<Epetra_Map>(
+  snoderowmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, (int)sr.size(), sr.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  snodecolmap_ = std::make_shared<Epetra_Map>(
+  snodecolmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, (int)sc.size(), sc.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  mnoderowmap_ = std::make_shared<Epetra_Map>(
+  mnoderowmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, (int)mr.size(), mr.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  mnodecolmap_ = std::make_shared<Epetra_Map>(
+  mnodecolmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, (int)mc.size(), mc.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
 
-  snoderowmapbound_ = std::make_shared<Epetra_Map>(
+  snoderowmapbound_ = std::make_shared<Core::LinAlg::Map>(
       -1, (int)srb.size(), srb.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  snodecolmapbound_ = std::make_shared<Epetra_Map>(
+  snodecolmapbound_ = std::make_shared<Core::LinAlg::Map>(
       -1, (int)scb.size(), scb.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  mnoderowmapnobound_ = std::make_shared<Epetra_Map>(
+  mnoderowmapnobound_ = std::make_shared<Core::LinAlg::Map>(
       -1, (int)mrb.size(), mrb.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  mnodecolmapnobound_ = std::make_shared<Epetra_Map>(
+  mnodecolmapnobound_ = std::make_shared<Core::LinAlg::Map>(
       -1, (int)mcb.size(), mcb.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
 
   // build exporter
@@ -1810,9 +1812,9 @@ void Mortar::Interface::restrict_slave_sets()
       if (istied && snoderowmap_->MyGID(gid)) sr.push_back(gid);
     }
 
-    snoderowmap_ = std::make_shared<Epetra_Map>(
+    snoderowmap_ = std::make_shared<Core::LinAlg::Map>(
         -1, (int)sr.size(), sr.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-    snodecolmap_ = std::make_shared<Epetra_Map>(
+    snodecolmap_ = std::make_shared<Core::LinAlg::Map>(
         -1, (int)sc.size(), sc.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
   }
 
@@ -1848,9 +1850,9 @@ void Mortar::Interface::restrict_slave_sets()
         for (int j = 0; j < numdof; ++j) sr.push_back(mrtrnode->dofs()[j]);
     }
 
-    sdofrowmap_ = std::make_shared<Epetra_Map>(
+    sdofrowmap_ = std::make_shared<Core::LinAlg::Map>(
         -1, (int)sr.size(), sr.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-    sdofcolmap_ = std::make_shared<Epetra_Map>(
+    sdofcolmap_ = std::make_shared<Core::LinAlg::Map>(
         -1, (int)sc.size(), sc.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
   }
 }
@@ -1858,8 +1860,8 @@ void Mortar::Interface::restrict_slave_sets()
 /*----------------------------------------------------------------------*
  |  update Lagrange multiplier set (dofs)                     popp 08/10|
  *----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> Mortar::Interface::update_lag_mult_sets(
-    int offset_if, const bool& redistributed, const Epetra_Map& ref_map) const
+std::shared_ptr<Core::LinAlg::Map> Mortar::Interface::update_lag_mult_sets(
+    int offset_if, const bool& redistributed, const Core::LinAlg::Map& ref_map) const
 {
   if (redistributed)
   {
@@ -1902,7 +1904,7 @@ std::shared_ptr<Epetra_Map> Mortar::Interface::update_lag_mult_sets(
   // create interface LM map
   // (if maxdofglobal_ == 0, we do not want / need this)
   if (max_dof_global() > 0)
-    return std::make_shared<Epetra_Map>(
+    return std::make_shared<Core::LinAlg::Map>(
         -1, (int)lmdof.size(), lmdof.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
 
   return nullptr;
@@ -1912,17 +1914,20 @@ std::shared_ptr<Epetra_Map> Mortar::Interface::update_lag_mult_sets(
  *----------------------------------------------------------------------*/
 void Mortar::Interface::store_unredistributed_maps()
 {
-  psdofrowmap_ = std::make_shared<Epetra_Map>(*sdofrowmap_);
-  interface_data_->non_redist_master_dof_row_map() = std::make_shared<Epetra_Map>(*mdofrowmap_);
-  plmdofmap_ = std::make_shared<Epetra_Map>(*lmdofmap_);
+  psdofrowmap_ = std::make_shared<Core::LinAlg::Map>(*sdofrowmap_);
+  interface_data_->non_redist_master_dof_row_map() =
+      std::make_shared<Core::LinAlg::Map>(*mdofrowmap_);
+  plmdofmap_ = std::make_shared<Core::LinAlg::Map>(*lmdofmap_);
 
-  interface_data_->non_redist_slave_node_row_map() = std::make_shared<Epetra_Map>(*snoderowmap_);
-  interface_data_->non_redist_master_node_row_map() = std::make_shared<Epetra_Map>(*mnoderowmap_);
+  interface_data_->non_redist_slave_node_row_map() =
+      std::make_shared<Core::LinAlg::Map>(*snoderowmap_);
+  interface_data_->non_redist_master_node_row_map() =
+      std::make_shared<Core::LinAlg::Map>(*mnoderowmap_);
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> Mortar::Interface::redistribute_lag_mult_sets() const
+std::shared_ptr<Core::LinAlg::Map> Mortar::Interface::redistribute_lag_mult_sets() const
 {
   if (!plmdofmap_) FOUR_C_THROW("The plmdofmap_ is not yet initialized!");
   if (!psdofrowmap_) FOUR_C_THROW("The psdofrowmap_ is not yet initialized!");
@@ -1975,7 +1980,7 @@ std::shared_ptr<Epetra_Map> Mortar::Interface::redistribute_lag_mult_sets() cons
   }
 
   // create deterministic interface LM map
-  return std::make_shared<Epetra_Map>(
+  return std::make_shared<Core::LinAlg::Map>(
       -1, (int)lmdof.size(), lmdof.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
 }
 
@@ -2295,8 +2300,9 @@ void Mortar::Interface::evaluate(int rriter, const int& step, const int& iter,
 /*----------------------------------------------------------------------*
  |  protected evaluate routine                               farah 02/16|
  *----------------------------------------------------------------------*/
-void Mortar::Interface::evaluate_coupling(const Epetra_Map& selecolmap,
-    const Epetra_Map* snoderowmap, const std::shared_ptr<Mortar::ParamsInterface>& mparams_ptr)
+void Mortar::Interface::evaluate_coupling(const Core::LinAlg::Map& selecolmap,
+    const Core::LinAlg::Map* snoderowmap,
+    const std::shared_ptr<Mortar::ParamsInterface>& mparams_ptr)
 {
   // decide which type of coupling should be evaluated
   auto algo = Teuchos::getIntegralValue<Inpar::Mortar::AlgorithmType>(imortar_, "ALGORITHM");
@@ -2399,8 +2405,8 @@ void Mortar::Interface::evaluate_coupling(const Epetra_Map& selecolmap,
 /*----------------------------------------------------------------------*
  |  evaluate coupling type segment-to-segment coupl          farah 02/16|
  *----------------------------------------------------------------------*/
-void Mortar::Interface::evaluate_sts(
-    const Epetra_Map& selecolmap, const std::shared_ptr<Mortar::ParamsInterface>& mparams_ptr)
+void Mortar::Interface::evaluate_sts(const Core::LinAlg::Map& selecolmap,
+    const std::shared_ptr<Mortar::ParamsInterface>& mparams_ptr)
 {
   TEUCHOS_FUNC_TIME_MONITOR("Mortar::Interface::EvaluateSTS");
 
@@ -2738,7 +2744,7 @@ void Mortar::Interface::evaluate_search_brute_force(const double& eps)
   // like the slave elements --> melecolmap_
   auto strategy = Teuchos::getIntegralValue<Inpar::Mortar::ExtendGhosting>(
       interface_params().sublist("PARALLEL REDISTRIBUTION"), "GHOSTING_STRATEGY");
-  std::shared_ptr<Epetra_Map> melefullmap = nullptr;
+  std::shared_ptr<Core::LinAlg::Map> melefullmap = nullptr;
 
   switch (strategy)
   {
@@ -4372,7 +4378,7 @@ void Mortar::Interface::postprocess_quantities(const Teuchos::ParameterList& out
     Core::LinAlg::Vector<double> masterVec(*mnoderowmap_);
     masterVec.put_scalar(1.0);
 
-    std::shared_ptr<const Epetra_Map> nodeRowMap =
+    std::shared_ptr<const Core::LinAlg::Map> nodeRowMap =
         Core::LinAlg::merge_map(snoderowmap_, mnoderowmap_, false);
     std::shared_ptr<Core::LinAlg::Vector<double>> masterSlaveVec =
         Core::LinAlg::create_vector(*nodeRowMap, true);
@@ -4386,7 +4392,7 @@ void Mortar::Interface::postprocess_quantities(const Teuchos::ParameterList& out
     Core::LinAlg::Vector<double> masterVec(*melerowmap_);
     masterVec.put_scalar(1.0);
 
-    std::shared_ptr<const Epetra_Map> eleRowMap =
+    std::shared_ptr<const Core::LinAlg::Map> eleRowMap =
         Core::LinAlg::merge_map(selerowmap_, melerowmap_, false);
     std::shared_ptr<Core::LinAlg::Vector<double>> masterSlaveVec =
         Core::LinAlg::create_vector(*eleRowMap, true);
@@ -4398,7 +4404,7 @@ void Mortar::Interface::postprocess_quantities(const Teuchos::ParameterList& out
 
   // Write element owners
   {
-    std::shared_ptr<const Epetra_Map> eleRowMap =
+    std::shared_ptr<const Core::LinAlg::Map> eleRowMap =
         Core::LinAlg::merge_map(selerowmap_, melerowmap_, false);
     std::shared_ptr<Core::LinAlg::Vector<double>> owner = Core::LinAlg::create_vector(*eleRowMap);
 

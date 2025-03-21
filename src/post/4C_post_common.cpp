@@ -894,7 +894,7 @@ PostResult::read_result_serialdensematrix(const std::string name)
   if (columns != 1)
     FOUR_C_THROW("got multivector with name '{}', std::vector<char> expected", name.c_str());
 
-  std::shared_ptr<Epetra_Map> elemap;
+  std::shared_ptr<Core::LinAlg::Map> elemap;
   std::shared_ptr<std::vector<char>> data =
       file_.read_result_data_vec_char(id_path, value_path, columns, comm, elemap);
 
@@ -910,7 +910,7 @@ PostResult::read_result_serialdensematrix(const std::string name)
     (*mapdata)[elemap->GID(i)] = gpstress;
   }
 
-  const Epetra_Map& elecolmap = *field_->discretization()->element_col_map();
+  const Core::LinAlg::Map& elecolmap = *field_->discretization()->element_col_map();
   Core::Communication::Exporter ex(*elemap, elecolmap, comm);
   ex.do_export(*mapdata);
 

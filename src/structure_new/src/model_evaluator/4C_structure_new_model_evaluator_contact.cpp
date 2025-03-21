@@ -491,7 +491,7 @@ void Solid::ModelEvaluator::Contact::output_step_state(
   }
 
   // export to problem node row map
-  std::shared_ptr<const Epetra_Map> problemnodes = strategy().problem_nodes();
+  std::shared_ptr<const Core::LinAlg::Map> problemnodes = strategy().problem_nodes();
   std::shared_ptr<Core::LinAlg::Vector<double>> activesetexp =
       std::make_shared<Core::LinAlg::Vector<double>>(*problemnodes);
   Core::LinAlg::export_to(activeset, *activesetexp);
@@ -518,7 +518,7 @@ void Solid::ModelEvaluator::Contact::output_step_state(
   // *********************************************************************
 
   // export to problem dof row map
-  std::shared_ptr<const Epetra_Map> problemdofs = strategy().problem_dofs();
+  std::shared_ptr<const Core::LinAlg::Map> problemdofs = strategy().problem_dofs();
 
   // normal direction
   std::shared_ptr<const Core::LinAlg::Vector<double>> normalstresses =
@@ -623,7 +623,8 @@ const CONTACT::AbstractStrategy& Solid::ModelEvaluator::Contact::strategy() cons
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> Solid::ModelEvaluator::Contact::get_block_dof_row_map_ptr() const
+std::shared_ptr<const Core::LinAlg::Map> Solid::ModelEvaluator::Contact::get_block_dof_row_map_ptr()
+    const
 {
   Global::Problem* problem = Global::Problem::instance();
 

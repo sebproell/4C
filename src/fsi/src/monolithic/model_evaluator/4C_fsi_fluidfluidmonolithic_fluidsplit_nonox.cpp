@@ -37,7 +37,7 @@ FSI::FluidFluidMonolithicFluidSplitNoNOX::FluidFluidMonolithicFluidSplitNoNOX(
 {
   // Determine fluid (=slave) DOF on the FSI interface, for which a Dirichlet boundary
   // condition (DBC) has been prescribed
-  std::vector<std::shared_ptr<const Epetra_Map>> intersectionmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> intersectionmaps;
 
   // Fluid DBC-DOFs
   intersectionmaps.push_back(fluid_field()->get_dbc_map_extractor()->cond_map());
@@ -45,7 +45,7 @@ FSI::FluidFluidMonolithicFluidSplitNoNOX::FluidFluidMonolithicFluidSplitNoNOX(
   intersectionmaps.push_back(fluid_field()->interface()->fsi_cond_map());
 
   // intersect
-  std::shared_ptr<Epetra_Map> intersectionmap =
+  std::shared_ptr<Core::LinAlg::Map> intersectionmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
   // It is not allowed, that slave DOFs at the interface hold a Dirichlet
@@ -570,25 +570,26 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::initial_guess(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> FSI::FluidFluidMonolithicFluidSplitNoNOX::combined_dbc_map()
+std::shared_ptr<Core::LinAlg::Map> FSI::FluidFluidMonolithicFluidSplitNoNOX::combined_dbc_map()
 {
   // Create a combined map vector with the 3 field DBC maps
-  std::vector<std::shared_ptr<const Epetra_Map>> alldbcmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> alldbcmaps;
 
   // structure DBC
   alldbcmaps.push_back(structure_field()->get_dbc_map_extractor()->cond_map());
   // fluid DBC
   alldbcmaps.push_back(fluid_field()->get_dbc_map_extractor()->cond_map());
   // ALE-DBC
-  std::vector<std::shared_ptr<const Epetra_Map>> aleintersectionmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> aleintersectionmaps;
   aleintersectionmaps.push_back(ale_field()->get_dbc_map_extractor()->cond_map());
   aleintersectionmaps.push_back(ale_field()->interface()->other_map());
-  std::shared_ptr<Epetra_Map> aleintersectionmap =
+  std::shared_ptr<Core::LinAlg::Map> aleintersectionmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(aleintersectionmaps);
   alldbcmaps.push_back(aleintersectionmap);
 
   // Merge the maps
-  std::shared_ptr<Epetra_Map> alldbcmap = Core::LinAlg::MultiMapExtractor::merge_maps(alldbcmaps);
+  std::shared_ptr<Core::LinAlg::Map> alldbcmap =
+      Core::LinAlg::MultiMapExtractor::merge_maps(alldbcmaps);
 
   return alldbcmap;
 }
@@ -792,7 +793,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::output()
 void FSI::FluidFluidMonolithicFluidSplitNoNOX::create_combined_dof_row_map()
 {
   // Create a combined map for Structure/Fluid/ALE-DOFs all in one
-  std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
 
   // Append the structural DOF map
   vecSpaces.push_back(structure_field()->dof_row_map());
@@ -891,11 +892,11 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::build_convergence_norms()
   alerhs->norm_2(&normalerhsL2_);
 
   // Norm of fluid velocity residual
-  // This requires an Epetra_Map of the inner fluid velocity DOFs first!
-  std::shared_ptr<const Epetra_Map> innerfluidvel = fluid_field()->inner_velocity_row_map();
+  // This requires an Core::LinAlg::Map of the inner fluid velocity DOFs first!
+  std::shared_ptr<const Core::LinAlg::Map> innerfluidvel = fluid_field()->inner_velocity_row_map();
 
   // Merged FSI-free fluid maps
-  std::shared_ptr<const Epetra_Map> fluidmaps = fluid_field()->interface()->other_map();
+  std::shared_ptr<const Core::LinAlg::Map> fluidmaps = fluid_field()->interface()->other_map();
   // Create a MapExtractor to access the velocity DOFs from the FSI-free fluid map
   std::shared_ptr<Core::LinAlg::MapExtractor> fluidvelextract =
       std::make_shared<Core::LinAlg::MapExtractor>(*fluidmaps, innerfluidvel, true);
@@ -905,7 +906,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::build_convergence_norms()
   fluidvelextract->extract_cond_vector(*innerfluidfluidrhs)->norm_inf(&normflvelrhsInf_);
 
   // Norm of fluid pressure residual
-  // This requires an Epetra_Map of the fluid pressure DOFs
+  // This requires an Core::LinAlg::Map of the fluid pressure DOFs
   if (fluid_field()->pressure_row_map() == nullptr) FOUR_C_THROW("Empty pressure row map!");
 
   // Finally, compute the fluid pressure RHS-norm
@@ -1076,14 +1077,14 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::recover_lagrange_multiplier()
     // Hence, the missing pressure DOFs have to be appended.
     Core::LinAlg::Vector<double> fmgiddia(fmgiprev_->range_map(), true);
 
-    std::vector<std::shared_ptr<const Epetra_Map>> fluidpresmaps;
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> fluidpresmaps;
     // Merged fluid pressure DOF map
     fluidpresmaps.push_back(fluid_field()->pressure_row_map());
     // Embedded fluid DOF map
     fluidpresmaps.push_back(fluid_field()->x_fluid_fluid_map_extractor()->fluid_map());
 
     // Embedded fluid pressure map
-    std::shared_ptr<const Epetra_Map> innerfluidpresmap =
+    std::shared_ptr<const Core::LinAlg::Map> innerfluidpresmap =
         Core::LinAlg::MultiMapExtractor::intersect_maps(fluidpresmaps);
 
     // To keep merged fluid velocity and pressure DOF apart

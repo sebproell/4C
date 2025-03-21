@@ -11,11 +11,10 @@
 
 #include "4C_config.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_result_test.hpp"
-
-#include <Epetra_Map.h>
 
 #include <memory>
 
@@ -66,10 +65,10 @@ namespace Adapter
     virtual void read_restart(int restart) = 0;
 
     /// access dof row map
-    virtual std::shared_ptr<const Epetra_Map> dof_row_map(unsigned nds = 0) const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> dof_row_map(unsigned nds = 0) const = 0;
 
     /// access dof row map of artery discretization
-    virtual std::shared_ptr<const Epetra_Map> artery_dof_row_map() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> artery_dof_row_map() const = 0;
 
     /// direct access to discretization
     virtual std::shared_ptr<Core::FE::Discretization> discretization() const = 0;

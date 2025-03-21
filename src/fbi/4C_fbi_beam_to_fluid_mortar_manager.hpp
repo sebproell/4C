@@ -248,16 +248,16 @@ namespace BeamInteraction
     std::shared_ptr<const FBI::BeamToFluidMeshtyingParams> beam_contact_parameters_ptr_;
 
     //! Row map of the additional Lagrange multiplier DOFs.
-    std::shared_ptr<Epetra_Map> lambda_dof_rowmap_;
+    std::shared_ptr<Core::LinAlg::Map> lambda_dof_rowmap_;
 
     //! Column map of the additional Lagrange multiplier DOFs.
-    std::shared_ptr<Epetra_Map> lambda_dof_colmap_;
+    std::shared_ptr<Core::LinAlg::Map> lambda_dof_colmap_;
 
     //! Row map of the beam DOFs.
-    std::shared_ptr<Epetra_Map> beam_dof_rowmap_;
+    std::shared_ptr<Core::LinAlg::Map> beam_dof_rowmap_;
 
     //! Row map of the fluid DOFs.
-    std::shared_ptr<Epetra_Map> fluid_dof_rowmap_;
+    std::shared_ptr<Core::LinAlg::Map> fluid_dof_rowmap_;
 
     //! Multivector that connects the global node IDs with the Lagrange multiplier DOF IDs.
     //! The global row ID of the multi vector is the global ID of the node that a Lagrange

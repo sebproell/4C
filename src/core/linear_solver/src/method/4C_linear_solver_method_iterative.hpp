@@ -113,7 +113,7 @@ namespace Core::LinearSolver
      *
      * \sa check_reuse_status_of_active_set()
      */
-    std::shared_ptr<Epetra_Map> active_dof_map_;
+    std::shared_ptr<Core::LinAlg::Map> active_dof_map_;
 
     //!@}
   };

@@ -45,7 +45,7 @@ namespace CONTACT
     \param[in] alphaf Mid-point for Generalized-alpha time integration
     \param[in] maxdof Highest DOF number in global problem
     */
-    PenaltyStrategy(const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap,
+    PenaltyStrategy(const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
         Teuchos::ParameterList params, std::vector<std::shared_ptr<CONTACT::Interface>> interface,
         const int spatialDim, const MPI_Comm& comm, const double alphaf, const int maxdof);
 
@@ -63,9 +63,9 @@ namespace CONTACT
     \param[in] maxdof Highest DOF number in global problem
     */
     PenaltyStrategy(const std::shared_ptr<CONTACT::AbstractStrategyDataContainer>& data_ptr,
-        const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
-        std::vector<std::shared_ptr<CONTACT::Interface>> interface, const int spatialDim,
-        const MPI_Comm& comm, const double alphaf, const int maxdof);
+        const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
+        Teuchos::ParameterList params, std::vector<std::shared_ptr<CONTACT::Interface>> interface,
+        const int spatialDim, const MPI_Comm& comm, const double alphaf, const int maxdof);
 
     //! @name Access methods
 
@@ -258,8 +258,14 @@ namespace CONTACT
 
     // All these functions only have functionality in Lagrange contact simulations,
     // thus they are defined empty here in the case of Penalty contact.
-    std::shared_ptr<const Epetra_Map> get_old_active_row_nodes() const override { return nullptr; };
-    std::shared_ptr<const Epetra_Map> get_old_slip_row_nodes() const override { return nullptr; };
+    std::shared_ptr<const Core::LinAlg::Map> get_old_active_row_nodes() const override
+    {
+      return nullptr;
+    };
+    std::shared_ptr<const Core::LinAlg::Map> get_old_slip_row_nodes() const override
+    {
+      return nullptr;
+    };
     bool active_set_converged() const override { return true; }
     int active_set_steps() const override { return 0; }
     void reset_active_set() override {}
@@ -321,7 +327,7 @@ namespace CONTACT
     std::shared_ptr<const Core::LinAlg::Vector<double>> lagrange_multiplier_np(
         const bool& redist) const override;
     std::shared_ptr<const Core::LinAlg::Vector<double>> lagrange_multiplier_old() const override;
-    std::shared_ptr<const Epetra_Map> lm_dof_row_map_ptr(const bool& redist) const override;
+    std::shared_ptr<const Core::LinAlg::Map> lm_dof_row_map_ptr(const bool& redist) const override;
 
    protected:
     //! derived

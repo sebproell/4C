@@ -647,8 +647,8 @@ void FSI::MonolithicXFEM::initial_guess(Core::LinAlg::Vector<double>& ig)
 /*----------------------------------------------------------------------*/
 void FSI::MonolithicXFEM::create_combined_dof_row_map()
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces;
-  std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces_mergedporo;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces_mergedporo;
 
   // Append the structural DOF map
   vecSpaces.push_back(structure_poro()->structure_field()->dof_row_map());
@@ -668,8 +668,8 @@ void FSI::MonolithicXFEM::create_combined_dof_row_map()
   if (structure_poro()->is_poro())
   {
     vecSpaces.push_back(structure_poro()->fluid_field()->dof_row_map());
-    std::shared_ptr<const Epetra_Map> empty_map =
-        std::make_shared<Epetra_Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
+    std::shared_ptr<const Core::LinAlg::Map> empty_map =
+        std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
     vecSpaces_mergedporo.push_back(empty_map);
     // porofluid maps empty??
     if (vecSpaces[fluidp_block_]->NumGlobalElements() == 0)
@@ -697,10 +697,10 @@ void FSI::MonolithicXFEM::create_combined_dof_row_map()
 // set full monolithic dof row map
 /*----------------------------------------------------------------------*/
 void FSI::MonolithicXFEM::set_dof_row_maps(
-    const std::vector<std::shared_ptr<const Epetra_Map>>& maps,
-    const std::vector<std::shared_ptr<const Epetra_Map>>& maps_mergedporo)
+    const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps,
+    const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps_mergedporo)
 {
-  std::shared_ptr<Epetra_Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
+  std::shared_ptr<Core::LinAlg::Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
   blockrowdofmap_.setup(*fullmap, maps);
   blockrowdofmap_mergedporo_.setup(*fullmap, maps_mergedporo);
 }
@@ -1326,7 +1326,7 @@ void FSI::MonolithicXFEM::build_convergence_norms()
   TEUCHOS_FUNC_TIME_MONITOR("FSI::MonolithicXFEM::build_convergence_norms()");
 
   // build map extractors for velocity and pressure dofs
-  std::vector<std::shared_ptr<const Epetra_Map>> fluidvelpres;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> fluidvelpres;
   fluidvelpres.push_back(fluid_field()->velocity_row_map());
   fluidvelpres.push_back(fluid_field()->pressure_row_map());
   Core::LinAlg::MultiMapExtractor fluidvelpresextract(
@@ -2427,13 +2427,13 @@ void FSI::MonolithicXFEM::unscale_solution(Core::LinAlg::BlockSparseMatrixBase& 
  | create combined Dirichlet boundary condition map,                    |
  | map containing the dofs with Dirichlet BC                            |
  *----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> FSI::MonolithicXFEM::combined_dbc_map()
+std::shared_ptr<Core::LinAlg::Map> FSI::MonolithicXFEM::combined_dbc_map()
 {
-  std::shared_ptr<const Epetra_Map> scondmap = structure_poro()->combined_dbc_map();
-  const std::shared_ptr<const Epetra_Map> fcondmap =
+  std::shared_ptr<const Core::LinAlg::Map> scondmap = structure_poro()->combined_dbc_map();
+  const std::shared_ptr<const Core::LinAlg::Map> fcondmap =
       fluid_field()->get_dbc_map_extractor()->cond_map();
 
-  std::shared_ptr<Epetra_Map> condmap = Core::LinAlg::merge_map(scondmap, fcondmap, false);
+  std::shared_ptr<Core::LinAlg::Map> condmap = Core::LinAlg::merge_map(scondmap, fcondmap, false);
 
   return condmap;
 }
@@ -2691,7 +2691,7 @@ void FSI::MonolithicXFEM::apply_newton_damping()
     else if (nd_max_incnorm_[0] > 0 || nd_max_incnorm_[3] > 0 || nd_max_incnorm_[4] > 0)
     {
       // build map extractors for velocity and pressure dofs
-      std::vector<std::shared_ptr<const Epetra_Map>> fluidvelpres;
+      std::vector<std::shared_ptr<const Core::LinAlg::Map>> fluidvelpres;
       fluidvelpres.push_back(structure_poro()->fluid_field()->velocity_row_map());
       fluidvelpres.push_back(structure_poro()->fluid_field()->pressure_row_map());
       Core::LinAlg::MultiMapExtractor fluidvelpresextract(
@@ -2705,7 +2705,7 @@ void FSI::MonolithicXFEM::apply_newton_damping()
     if (nd_max_incnorm_[1] > 0 || nd_max_incnorm_[2] > 0)
     {
       // build map extractors for velocity and pressure dofs
-      std::vector<std::shared_ptr<const Epetra_Map>> fluidvelpres;
+      std::vector<std::shared_ptr<const Core::LinAlg::Map>> fluidvelpres;
       fluidvelpres.push_back(fluid_field()->velocity_row_map());
       fluidvelpres.push_back(fluid_field()->pressure_row_map());
       Core::LinAlg::MultiMapExtractor fluidvelpresextract(

@@ -70,8 +70,8 @@ namespace PoroElast
 
         // if one discretization is a subset of the other, they will differ in node number (and
         // element number) we assume matching grids for the overlapping part here
-        const Epetra_Map* structnodecolmap = structdis->node_col_map();
-        const Epetra_Map* fluidnodecolmap = fluiddis->node_col_map();
+        const Core::LinAlg::Map* structnodecolmap = structdis->node_col_map();
+        const Core::LinAlg::Map* fluidnodecolmap = fluiddis->node_col_map();
 
         const int numglobalstructnodes = structnodecolmap->NumGlobalElements();
         const int numglobalfluidnodes = fluidnodecolmap->NumGlobalElements();

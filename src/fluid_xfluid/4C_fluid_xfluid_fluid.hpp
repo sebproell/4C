@@ -122,7 +122,7 @@ namespace FLD
      * \return coupled fluid-fluid block system matrix
      */
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> block_system_matrix(
-        std::shared_ptr<Epetra_Map> innermap, std::shared_ptr<Epetra_Map> condmap);
+        std::shared_ptr<Core::LinAlg::Map> innermap, std::shared_ptr<Core::LinAlg::Map> condmap);
 
     std::shared_ptr<const Core::LinAlg::Vector<double>> rhs() override
     {
@@ -148,7 +148,7 @@ namespace FLD
     }
 
     /// get merged fluid dofmap
-    std::shared_ptr<const Epetra_Map> dof_row_map() override
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() override
     {
       //    return Teuchos::rcp((xff_state_->xffluiddofrowmap_).get(), false); // TODO: does not
       //    work at the moment, no nox structure split gives segfault!
@@ -162,9 +162,9 @@ namespace FLD
     }
 
     // get merged pressure dof-map
-    std::shared_ptr<const Epetra_Map> pressure_row_map() override;
+    std::shared_ptr<const Core::LinAlg::Map> pressure_row_map() override;
     // get merged velocity dof-map
-    std::shared_ptr<const Epetra_Map> velocity_row_map() override;
+    std::shared_ptr<const Core::LinAlg::Map> velocity_row_map() override;
 
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> extended_shape_derivatives()
     {
@@ -201,7 +201,8 @@ namespace FLD
     std::shared_ptr<FLD::XFluidState> get_new_state() override;
 
     /// solve fluid field after ALE-mesh relaxation
-    void update_monolithic_fluid_solution(const std::shared_ptr<const Epetra_Map>& fsidofmap);
+    void update_monolithic_fluid_solution(
+        const std::shared_ptr<const Core::LinAlg::Map>& fsidofmap);
 
     /// interpolate embedded fluid state vectors from previous mesh displacement state
     void interpolate_embedded_state_vectors();

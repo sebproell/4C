@@ -19,7 +19,7 @@
 #include <set>
 
 // forward declarations
-class Epetra_Map;
+class Core::LinAlg::Map;
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -176,7 +176,7 @@ namespace XFEM
     Core::Nodes::Node* g_i_node(const int& gid) const;
 
     /// access the interface node row map
-    const Epetra_Map* i_node_row_map() const;
+    const Core::LinAlg::Map* i_node_row_map() const;
 
     /** \brief get the number of DoF's of the given interface node
      *
@@ -206,7 +206,7 @@ namespace XFEM
       return sl_map_extractor(slave_id(field), map_dofs);
     }
 
-    std::shared_ptr<const Epetra_Map> node_row_map(
+    std::shared_ptr<const Core::LinAlg::Map> node_row_map(
         enum FieldName field, enum MultiField::BlockType block) const;
 
     /** \brief return TRUE if the given global node id corresponds to an
@@ -216,7 +216,8 @@ namespace XFEM
     bool is_interface_node(const int& ngid) const;
 
     /// Access the full maps
-    const std::shared_ptr<const Epetra_Map>& full_map(enum MapType map_type = map_dofs) const;
+    const std::shared_ptr<const Core::LinAlg::Map>& full_map(
+        enum MapType map_type = map_dofs) const;
 
     /// @name Extract vector routines
     /// @{
@@ -398,11 +399,11 @@ namespace XFEM
      *  \param dis_id (in): entry of the slave discretization vector
      *
      */
-    inline const Epetra_Map& master_interface_node_row_map(enum FieldName field) const
+    inline const Core::LinAlg::Map& master_interface_node_row_map(enum FieldName field) const
     {
       return master_interface_node_row_map(slave_id(field));
     }
-    const Epetra_Map& master_interface_node_row_map(unsigned dis_id) const
+    const Core::LinAlg::Map& master_interface_node_row_map(unsigned dis_id) const
     {
       check_init();
 
@@ -438,12 +439,13 @@ namespace XFEM
      *  \param btype  (in): choose between interface and non-interface nodes
      *
      */
-    inline const Epetra_Map& slave_node_row_map(
+    inline const Core::LinAlg::Map& slave_node_row_map(
         enum XFEM::FieldName field, enum MultiField::BlockType btype) const
     {
       return slave_node_row_map(slave_id(field), btype);
     }
-    const Epetra_Map& slave_node_row_map(unsigned dis_id, enum MultiField::BlockType btype) const;
+    const Core::LinAlg::Map& slave_node_row_map(
+        unsigned dis_id, enum MultiField::BlockType btype) const;
 
     const Core::LinAlg::MultiMapExtractor& sl_map_extractor(
         unsigned dis_id, enum MapType map_type) const
@@ -670,7 +672,7 @@ namespace XFEM
      * (containing the same information on all proc's) */
     std::set<int> g_interface_node_gid_set_;
 
-    std::vector<std::shared_ptr<const Epetra_Map>> master_interface_node_maps_;
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> master_interface_node_maps_;
 
     std::vector<std::vector<std::shared_ptr<Core::LinAlg::MultiMapExtractor>>>
         slave_map_extractors_;

@@ -247,17 +247,20 @@ namespace FLD
     // @}
 
 
-    std::shared_ptr<const Epetra_Map> dof_row_map() override { return state_->xfluiddofrowmap_; }
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() override
+    {
+      return state_->xfluiddofrowmap_;
+    }
 
     std::shared_ptr<Core::LinAlg::MapExtractor> vel_pres_splitter() override
     {
       return state_->velpressplitter_;
     }
-    std::shared_ptr<const Epetra_Map> velocity_row_map() override
+    std::shared_ptr<const Core::LinAlg::Map> velocity_row_map() override
     {
       return state_->velpressplitter_->other_map();
     }
-    std::shared_ptr<const Epetra_Map> pressure_row_map() override
+    std::shared_ptr<const Core::LinAlg::Map> pressure_row_map() override
     {
       return state_->velpressplitter_->cond_map();
     }
@@ -521,15 +524,15 @@ namespace FLD
 
     /// create DBC and free map and return their common extractor
     std::shared_ptr<Core::LinAlg::MapExtractor> create_dbc_map_extractor(
-        const std::set<int>& dbcgids,  ///< dbc global dof ids
-        const Epetra_Map* dofrowmap    ///< dofrowmap
+        const std::set<int>& dbcgids,       ///< dbc global dof ids
+        const Core::LinAlg::Map* dofrowmap  ///< dofrowmap
     );
 
     /// create new dbc maps for ghost penalty reconstruction and reconstruct value which are not
     /// fixed by DBCs
     void x_timint_ghost_penalty(std::vector<std::shared_ptr<Core::LinAlg::Vector<double>>>&
                                     rowVectors,  ///< vectors to be reconstructed
-        const Epetra_Map* dofrowmap,             ///< dofrowmap
+        const Core::LinAlg::Map* dofrowmap,      ///< dofrowmap
         const std::set<int>& dbcgids,            ///< dbc global ids
         const bool screen_out                    ///< screen output?
     );
@@ -545,15 +548,15 @@ namespace FLD
     /// reconstruct standard values using semi-Lagrangean method
     void x_timint_semi_lagrangean(std::vector<std::shared_ptr<Core::LinAlg::Vector<double>>>&
                                       newRowStateVectors,  ///< vectors to be reconstructed
-        const Epetra_Map* newdofrowmap,  ///< dofrowmap at current interface position
+        const Core::LinAlg::Map* newdofrowmap,  ///< dofrowmap at current interface position
         std::vector<std::shared_ptr<const Core::LinAlg::Vector<double>>>&
             oldRowStateVectors,  ///< vectors from which we reconstruct values (same order of
                                  ///< vectors as in newRowStateVectors)
         std::shared_ptr<Core::LinAlg::Vector<double>>
             dispn,  ///< displacement col - vector timestep n
         std::shared_ptr<Core::LinAlg::Vector<double>>
-            dispnp,                      ///< displacement col - vector timestep n+1
-        const Epetra_Map* olddofcolmap,  ///< dofcolmap at time and interface position t^n
+            dispnp,                             ///< displacement col - vector timestep n+1
+        const Core::LinAlg::Map* olddofcolmap,  ///< dofcolmap at time and interface position t^n
         std::map<int, std::vector<Inpar::XFEM::XFluidTimeInt>>&
             node_to_reconstr_method,  ///< reconstruction map for nodes and its dofsets
         const bool screen_out         ///< screen output?
@@ -836,7 +839,7 @@ namespace FLD
     std::shared_ptr<Cut::CutWizard> wizard_Intn_;    //!< cut wizard from last time-step t^n
     std::shared_ptr<XFEM::XFEMDofSet> dofset_Intn_;  //!< dofset from last time-step t^n
 
-    std::shared_ptr<Epetra_Map> dofcolmap_Intn_;
+    std::shared_ptr<Core::LinAlg::Map> dofcolmap_Intn_;
     //@}
 
 

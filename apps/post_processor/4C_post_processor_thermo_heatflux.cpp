@@ -126,7 +126,7 @@ struct WriteNodalHeatfluxStep : SpecialFieldInterface
 
     // change the dis from a dof_row_map to a NodeRowMap, because Paraview can only visualize
     // nodebased date
-    const Epetra_Map* nodemap = dis->node_row_map();
+    const Core::LinAlg::Map* nodemap = dis->node_row_map();
     std::shared_ptr<Core::LinAlg::MultiVector<double>> nodal_heatfluxes =
         std::make_shared<Core::LinAlg::MultiVector<double>>(*nodemap, numdf);
 

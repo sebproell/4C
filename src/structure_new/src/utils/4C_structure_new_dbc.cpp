@@ -460,23 +460,25 @@ const Solid::TimeInt::BaseDataGlobalState& Solid::Dbc::g_state() const
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void Solid::Dbc::add_dirich_dofs(const std::shared_ptr<const Epetra_Map> maptoadd)
+void Solid::Dbc::add_dirich_dofs(const std::shared_ptr<const Core::LinAlg::Map> maptoadd)
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> condmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> condmaps;
   condmaps.push_back(maptoadd);
   condmaps.push_back(dbcmap_ptr_->cond_map());
-  std::shared_ptr<Epetra_Map> condmerged = Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
+  std::shared_ptr<Core::LinAlg::Map> condmerged =
+      Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
   *dbcmap_ptr_ = Core::LinAlg::MapExtractor(*(discret_ptr_->dof_row_map()), condmerged);
 }
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void Solid::Dbc::remove_dirich_dofs(const std::shared_ptr<const Epetra_Map> maptoremove)
+void Solid::Dbc::remove_dirich_dofs(const std::shared_ptr<const Core::LinAlg::Map> maptoremove)
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> othermaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> othermaps;
   othermaps.push_back(maptoremove);
   othermaps.push_back(dbcmap_ptr_->other_map());
-  std::shared_ptr<Epetra_Map> othermerged = Core::LinAlg::MultiMapExtractor::merge_maps(othermaps);
+  std::shared_ptr<Core::LinAlg::Map> othermerged =
+      Core::LinAlg::MultiMapExtractor::merge_maps(othermaps);
   *dbcmap_ptr_ = Core::LinAlg::MapExtractor(*(discret_ptr_->dof_row_map()), othermerged, false);
 }
 

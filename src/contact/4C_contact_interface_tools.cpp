@@ -30,8 +30,8 @@ FOUR_C_NAMESPACE_OPEN
 void CONTACT::Interface::fd_check_normal_deriv()
 {
   // FD checks only for serial case
-  std::shared_ptr<Epetra_Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
-  std::shared_ptr<Epetra_Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
   if (Core::Communication::num_mpi_ranks(get_comm()) > 1)
     FOUR_C_THROW("FD checks only for serial case");
 
@@ -296,8 +296,8 @@ void CONTACT::Interface::fd_check_normal_deriv()
 void CONTACT::Interface::fd_check_normal_cpp_deriv()
 {
   // FD checks only for serial case
-  std::shared_ptr<Epetra_Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
-  std::shared_ptr<Epetra_Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
   if (Core::Communication::num_mpi_ranks(get_comm()) > 1)
     FOUR_C_THROW("FD checks only for serial case");
 
@@ -786,8 +786,8 @@ void CONTACT::Interface::fd_check_normal_cpp_deriv()
 void CONTACT::Interface::fd_check_mortar_d_deriv()
 {
   // FD checks only for serial case
-  std::shared_ptr<Epetra_Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
-  std::shared_ptr<Epetra_Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
   if (Core::Communication::num_mpi_ranks(get_comm()) > 1)
     FOUR_C_THROW("FD checks only for serial case");
 
@@ -1057,8 +1057,8 @@ void CONTACT::Interface::fd_check_mortar_d_deriv()
 void CONTACT::Interface::fd_check_mortar_m_deriv()
 {
   // FD checks only for serial case
-  std::shared_ptr<Epetra_Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
-  std::shared_ptr<Epetra_Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
   if (Core::Communication::num_mpi_ranks(get_comm()) > 1)
     FOUR_C_THROW("FD checks only for serial case");
 
@@ -1326,8 +1326,8 @@ void CONTACT::Interface::fd_check_mortar_m_deriv()
 void CONTACT::Interface::fd_check_slip_incr_deriv_txi()
 {
   // FD checks only for serial case
-  std::shared_ptr<Epetra_Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
-  std::shared_ptr<Epetra_Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
   if (Core::Communication::num_mpi_ranks(get_comm()) > 1)
     FOUR_C_THROW("FD checks only for serial case");
 
@@ -1560,8 +1560,8 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_txi()
 void CONTACT::Interface::fd_check_slip_incr_deriv_teta()
 {
   // FD checks only for serial case
-  std::shared_ptr<Epetra_Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
-  std::shared_ptr<Epetra_Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
   if (Core::Communication::num_mpi_ranks(get_comm()) > 1)
     FOUR_C_THROW("FD checks only for serial case");
 
@@ -1795,8 +1795,8 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_teta()
 void CONTACT::Interface::fd_check_alpha_deriv()
 {
   // FD checks only for serial case
-  std::shared_ptr<Epetra_Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
-  std::shared_ptr<Epetra_Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
   if (Core::Communication::num_mpi_ranks(get_comm()) > 1)
     FOUR_C_THROW("FD checks only for serial case");
 
@@ -2169,8 +2169,8 @@ void CONTACT::Interface::fd_check_alpha_deriv()
 void CONTACT::Interface::fd_check_gap_deriv_ltl()
 {
   // FD checks only for serial case
-  std::shared_ptr<Epetra_Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
-  std::shared_ptr<Epetra_Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
   if (Core::Communication::num_mpi_ranks(get_comm()) > 1)
     FOUR_C_THROW("FD checks only for serial case");
 
@@ -2552,8 +2552,8 @@ void CONTACT::Interface::fd_check_gap_deriv_ltl()
 void CONTACT::Interface::fd_check_jump_deriv_ltl()
 {
   // FD checks only for serial case
-  std::shared_ptr<Epetra_Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
-  std::shared_ptr<Epetra_Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
   if (Core::Communication::num_mpi_ranks(get_comm()) > 1)
     FOUR_C_THROW("FD checks only for serial case");
 
@@ -2934,8 +2934,8 @@ void CONTACT::Interface::fd_check_jump_deriv_ltl()
 void CONTACT::Interface::fd_check_gap_deriv()
 {
   // FD checks only for serial case
-  std::shared_ptr<Epetra_Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
-  std::shared_ptr<Epetra_Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
   if (Core::Communication::num_mpi_ranks(get_comm()) > 1)
     FOUR_C_THROW("FD checks only for serial case");
 
@@ -3305,8 +3305,8 @@ void CONTACT::Interface::fd_check_gap_deriv()
 void CONTACT::Interface::fd_check_tang_lm_deriv()
 {
   // FD checks only for serial case
-  std::shared_ptr<Epetra_Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
-  std::shared_ptr<Epetra_Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
   if (Core::Communication::num_mpi_ranks(get_comm()) > 1)
     FOUR_C_THROW("FD checks only for serial case");
 
@@ -3876,8 +3876,8 @@ void CONTACT::Interface::fd_check_stick_deriv(
   std::ostringstream oss;
 
   // FD checks only for serial case
-  std::shared_ptr<Epetra_Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
-  std::shared_ptr<Epetra_Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
   if (Core::Communication::num_mpi_ranks(get_comm()) > 1)
     FOUR_C_THROW("FD checks only for serial case");
 
@@ -4408,8 +4408,8 @@ void CONTACT::Interface::fd_check_slip_deriv(
     Core::LinAlg::SparseMatrix& linslipLMglobal, Core::LinAlg::SparseMatrix& linslipDISglobal)
 {
   // FD checks only for serial case
-  std::shared_ptr<Epetra_Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
-  std::shared_ptr<Epetra_Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
   if (Core::Communication::num_mpi_ranks(get_comm()) > 1)
     FOUR_C_THROW("FD checks only for serial case");
 
@@ -5245,8 +5245,8 @@ void CONTACT::Interface::fd_check_slip_deriv(
 void CONTACT::Interface::fd_check_penalty_trac_nor()
 {
   // FD checks only for serial case
-  std::shared_ptr<Epetra_Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
-  std::shared_ptr<Epetra_Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
   if (Core::Communication::num_mpi_ranks(get_comm()) > 1)
     FOUR_C_THROW("FD checks only for serial case");
 
@@ -5532,8 +5532,8 @@ void CONTACT::Interface::fd_check_penalty_trac_nor()
 void CONTACT::Interface::fd_check_penalty_trac_fric()
 {
   // FD checks only for serial case
-  std::shared_ptr<Epetra_Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
-  std::shared_ptr<Epetra_Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> snodefullmap = Core::LinAlg::allreduce_e_map(*snoderowmap_);
+  std::shared_ptr<Core::LinAlg::Map> mnodefullmap = Core::LinAlg::allreduce_e_map(*mnoderowmap_);
   if (Core::Communication::num_mpi_ranks(get_comm()) > 1)
     FOUR_C_THROW("FD checks only for serial case");
 
@@ -6114,7 +6114,7 @@ void CONTACT::Interface::fd_check_penalty_trac_fric()
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void CONTACT::Interface::write_nodal_coordinates_to_file(
-    const int interfacel_id, const Epetra_Map& nodal_map, const std::string& full_path) const
+    const int interfacel_id, const Core::LinAlg::Map& nodal_map, const std::string& full_path) const
 {
   // only processor zero writes header
   if (Core::Communication::my_mpi_rank(get_comm()) == 0 and interfacel_id == 0)

@@ -260,8 +260,8 @@ template <Core::FE::CellType distype_s>
 void Coupling::VolMortar::VolMortarIntegratorEleBased<distype_s>::integrate_ele_based_3d(
     Core::Elements::Element& sele, std::vector<int>& foundeles, Core::LinAlg::SparseMatrix& D,
     Core::LinAlg::SparseMatrix& M, const Core::FE::Discretization& Adis,
-    const Core::FE::Discretization& Bdis, int dofseta, int dofsetb, const Epetra_Map& PAB_dofrowmap,
-    const Epetra_Map& PAB_dofcolmap)
+    const Core::FE::Discretization& Bdis, int dofseta, int dofsetb,
+    const Core::LinAlg::Map& PAB_dofrowmap, const Core::LinAlg::Map& PAB_dofcolmap)
 {
   //**********************************************************************
   // loop over all Gauss points for integration
@@ -443,7 +443,7 @@ bool Coupling::VolMortar::vol_mortar_ele_based_gp(Core::Elements::Element& sele,
     double& wgt, double& gpdist, double* Axi, double* AuxXi, double* globgp, DualQuad& dq,
     Shapefcn& shape, Core::LinAlg::SparseMatrix& D, Core::LinAlg::SparseMatrix& M,
     const Core::FE::Discretization& Adis, const Core::FE::Discretization& Bdis, int dofseta,
-    int dofsetb, const Epetra_Map& PAB_dofrowmap, const Epetra_Map& PAB_dofcolmap)
+    int dofsetb, const Core::LinAlg::Map& PAB_dofrowmap, const Core::LinAlg::Map& PAB_dofcolmap)
 {
   //! ns_: number of slave element nodes
   static const int ns_ = Core::FE::num_nodes<distype_s>;
@@ -1958,7 +1958,8 @@ Coupling::VolMortar::ConsInterpolator::ConsInterpolator()
 void Coupling::VolMortar::ConsInterpolator::interpolate(Core::Nodes::Node* node,
     Core::LinAlg::SparseMatrix& pmatrix, const Core::FE::Discretization& nodediscret,
     const Core::FE::Discretization& elediscret, std::vector<int>& foundeles,
-    std::pair<int, int>& dofset, const Epetra_Map& P_dofrowmap, const Epetra_Map& P_dofcolmap)
+    std::pair<int, int>& dofset, const Core::LinAlg::Map& P_dofrowmap,
+    const Core::LinAlg::Map& P_dofcolmap)
 {
   // check ownership
   if (node->owner() != Core::Communication::my_mpi_rank(nodediscret.get_comm())) return;
@@ -2086,8 +2087,8 @@ bool Coupling::VolMortar::cons_interpolator_eval(Core::Nodes::Node* node,
     Core::Elements::Element* ele, Core::LinAlg::SparseMatrix& pmatrix,
     const Core::FE::Discretization& nodediscret, const Core::FE::Discretization& elediscret,
     std::vector<int>& foundeles, int& found, int& eleid, double& dist, double* AuxXi,
-    double* nodepos, std::pair<int, int>& dofset, const Epetra_Map& P_dofrowmap,
-    const Epetra_Map& P_dofcolmap)
+    double* nodepos, std::pair<int, int>& dofset, const Core::LinAlg::Map& P_dofrowmap,
+    const Core::LinAlg::Map& P_dofcolmap)
 {
   //! ns_: number of slave element nodes
   static const int n_ = Core::FE::num_nodes<distype>;

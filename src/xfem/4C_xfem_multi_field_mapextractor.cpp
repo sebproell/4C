@@ -407,7 +407,7 @@ void XFEM::MultiFieldMapExtractor::setup()
 void XFEM::MultiFieldMapExtractor::build_slave_node_map_extractors()
 {
   XDisVec::const_iterator cit_dis;
-  std::vector<std::shared_ptr<const Epetra_Map>> partial_maps(2, nullptr);
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> partial_maps(2, nullptr);
 
   // ------------------------------------------------------------------------
   /* build the interface row node GID maps of each slave discretization
@@ -436,12 +436,12 @@ void XFEM::MultiFieldMapExtractor::build_slave_node_map_extractors()
     // slave sided interface node maps
     partial_maps[MultiField::block_interface] = nullptr;
     partial_maps[MultiField::block_interface] =
-        std::make_shared<Epetra_Map>(-1, static_cast<int>(my_interface_row_node_gids.size()),
+        std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(my_interface_row_node_gids.size()),
             my_interface_row_node_gids.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
 
     // slave sided non-interface node maps
     partial_maps[MultiField::block_non_interface] = nullptr;
-    partial_maps[MultiField::block_non_interface] = std::make_shared<Epetra_Map>(-1,
+    partial_maps[MultiField::block_non_interface] = std::make_shared<Core::LinAlg::Map>(-1,
         static_cast<int>(my_non_interface_row_node_gids.size()),
         my_non_interface_row_node_gids.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
 
@@ -458,7 +458,7 @@ void XFEM::MultiFieldMapExtractor::build_slave_dof_map_extractors()
   std::vector<int> my_sl_interface_dofs(0);
   std::vector<int> my_sl_non_interface_dofs(0);
 
-  std::vector<std::shared_ptr<const Epetra_Map>> partial_maps(2, nullptr);
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> partial_maps(2, nullptr);
 
   // loop over all slave discretizations
   XDisVec::const_iterator cit_dis;
@@ -497,13 +497,13 @@ void XFEM::MultiFieldMapExtractor::build_slave_dof_map_extractors()
     // create slave interface dof row map
     partial_maps[MultiField::block_interface] = nullptr;
     partial_maps[MultiField::block_interface] =
-        std::make_shared<Epetra_Map>(-1, static_cast<int>(my_sl_interface_dofs.size()),
+        std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(my_sl_interface_dofs.size()),
             my_sl_interface_dofs.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
 
     // create slave non-interface dof row map
     partial_maps[MultiField::block_non_interface] = nullptr;
     partial_maps[MultiField::block_non_interface] =
-        std::make_shared<Epetra_Map>(-1, static_cast<int>(my_sl_non_interface_dofs.size()),
+        std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(my_sl_non_interface_dofs.size()),
             my_sl_non_interface_dofs.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
 
     // setup dof map extractor
@@ -524,8 +524,8 @@ void XFEM::MultiFieldMapExtractor::build_interface_coupling_dof_set()
   int g_num_std_dof = -1;
   for (unsigned i = 0; i < num_sl_dis(); ++i)
   {
-    const Epetra_Map& sl_inodemap = slave_node_row_map(i, MultiField::block_interface);
-    const Epetra_Map& ma_inodemap = master_interface_node_row_map(i);
+    const Core::LinAlg::Map& sl_inodemap = slave_node_row_map(i, MultiField::block_interface);
+    const Core::LinAlg::Map& ma_inodemap = master_interface_node_row_map(i);
 
     int nnodes = sl_inodemap.NumMyElements();
     int* ngids = sl_inodemap.MyGlobalElements();
@@ -595,8 +595,8 @@ void XFEM::MultiFieldMapExtractor::build_interface_coupling_dof_set()
  *----------------------------------------------------------------------------*/
 void XFEM::MultiFieldMapExtractor::build_master_node_map_extractor()
 {
-  std::shared_ptr<Epetra_Map> fullmap = nullptr;
-  std::vector<std::shared_ptr<const Epetra_Map>> partial_maps(2 * num_sl_dis(), nullptr);
+  std::shared_ptr<Core::LinAlg::Map> fullmap = nullptr;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> partial_maps(2 * num_sl_dis(), nullptr);
 
   // --------------------------------------------------------------------------
   // interface DoF's
@@ -615,7 +615,7 @@ void XFEM::MultiFieldMapExtractor::build_master_node_map_extractor()
   // --------------------------------------------------------------------------
   fullmap = nullptr;
   // add interface nodes
-  fullmap = std::make_shared<Epetra_Map>(*i_discret().node_row_map());
+  fullmap = std::make_shared<Core::LinAlg::Map>(*i_discret().node_row_map());
 
   // merge non-interface nodes into the full map
   for (unsigned i = num_sl_dis(); i < partial_maps.size(); ++i)
@@ -634,8 +634,8 @@ void XFEM::MultiFieldMapExtractor::build_master_dof_map_extractor()
   /* the 1-st num_dis partial maps are the master interface dof maps,
    * the 2-nd num_dis partial maps are the master non-interface dof maps
    * (which correspond to the slave_non_interface_dof_row_maps) */
-  std::shared_ptr<Epetra_Map> fullmap = nullptr;
-  std::vector<std::shared_ptr<const Epetra_Map>> partial_maps(2 * num_sl_dis(), nullptr);
+  std::shared_ptr<Core::LinAlg::Map> fullmap = nullptr;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> partial_maps(2 * num_sl_dis(), nullptr);
 
   // --------------------------------------------------------------------------
   // interface DoF's
@@ -656,8 +656,8 @@ void XFEM::MultiFieldMapExtractor::build_master_dof_map_extractor()
       for (unsigned j = 0; j < numdof; ++j)
         my_ma_interface_dofs.push_back(i_discret().dof(inode, j));
     }
-    partial_maps.at(i) = std::shared_ptr<const Epetra_Map>(
-        new Epetra_Map(-1, static_cast<int>(my_ma_interface_dofs.size()),
+    partial_maps.at(i) = std::shared_ptr<const Core::LinAlg::Map>(
+        new Core::LinAlg::Map(-1, static_cast<int>(my_ma_interface_dofs.size()),
             my_ma_interface_dofs.data(), 0, Core::Communication::as_epetra_comm(get_comm())));
   }
 
@@ -674,7 +674,7 @@ void XFEM::MultiFieldMapExtractor::build_master_dof_map_extractor()
   fullmap = nullptr;
 
   // add interface DoF's
-  fullmap = std::make_shared<Epetra_Map>(*i_discret().dof_row_map());
+  fullmap = std::make_shared<Core::LinAlg::Map>(*i_discret().dof_row_map());
 
   // merge non-interface DoF's into the full map
   for (unsigned i = num_sl_dis(); i < partial_maps.size(); ++i)
@@ -717,8 +717,8 @@ void XFEM::MultiFieldMapExtractor::build_element_map_extractor()
 {
   check_init();
 
-  std::shared_ptr<Epetra_Map> fullmap = nullptr;
-  std::vector<std::shared_ptr<const Epetra_Map>> partial_maps(num_sl_dis(), nullptr);
+  std::shared_ptr<Core::LinAlg::Map> fullmap = nullptr;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> partial_maps(num_sl_dis(), nullptr);
   unsigned d = 0;
   XDisVec::const_iterator cit;
   for (cit = sl_dis_vec().begin(); cit != sl_dis_vec().end(); ++cit)
@@ -745,7 +745,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> XFEM::MultiFieldMapExtractor::extr
 
   /* the partial map is equivalent to the full map (of desired type) from
    * the field slave map extractor */
-  const std::shared_ptr<const Epetra_Map>& sl_full_map =
+  const std::shared_ptr<const Core::LinAlg::Map>& sl_full_map =
       sl_map_extractor(dis_id, map_type).full_map();
 
   if (!sl_full_map) FOUR_C_THROW("null full map for field {}", field);
@@ -770,7 +770,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> XFEM::MultiFieldMapExtractor:
 
   /* the partial map is equivalent to the full map (of desired type) from
    * the field slave map extractor */
-  const std::shared_ptr<const Epetra_Map>& sl_full_map =
+  const std::shared_ptr<const Core::LinAlg::Map>& sl_full_map =
       sl_map_extractor(dis_id, map_type).full_map();
 
   if (!sl_full_map) FOUR_C_THROW("null full map for field {}", field);
@@ -1052,29 +1052,29 @@ void XFEM::MultiFieldMapExtractor::build_master_interface_node_maps(
 {
   for (unsigned i = 0; i < my_master_interface_node_gids.size(); ++i)
   {
-    master_interface_node_maps_.push_back(
-        std::make_shared<Epetra_Map>(-1, static_cast<int>(my_master_interface_node_gids[i].size()),
-            my_master_interface_node_gids[i].data(), 0,
-            Core::Communication::as_epetra_comm(get_comm())));
+    master_interface_node_maps_.push_back(std::make_shared<Core::LinAlg::Map>(-1,
+        static_cast<int>(my_master_interface_node_gids[i].size()),
+        my_master_interface_node_gids[i].data(), 0,
+        Core::Communication::as_epetra_comm(get_comm())));
   }
 }
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> XFEM::MultiFieldMapExtractor::node_row_map(
+std::shared_ptr<const Core::LinAlg::Map> XFEM::MultiFieldMapExtractor::node_row_map(
     enum FieldName field, enum MultiField::BlockType block) const
 {
   switch (block)
   {
     case MultiField::block_interface:
     {
-      return Core::Utils::shared_ptr_from_ref<const Epetra_Map>(
+      return Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(
           master_interface_node_row_map(field));
       break;
     }
     case MultiField::block_non_interface:
     {
-      return Core::Utils::shared_ptr_from_ref<const Epetra_Map>(
+      return Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(
           slave_node_row_map(field, MultiField::block_non_interface));
       break;
     }
@@ -1148,7 +1148,7 @@ void XFEM::MultiFieldMapExtractor::add_matrix(
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-const std::shared_ptr<const Epetra_Map>& XFEM::MultiFieldMapExtractor::full_map(
+const std::shared_ptr<const Core::LinAlg::Map>& XFEM::MultiFieldMapExtractor::full_map(
     enum MapType map_type) const
 {
   return ma_map_extractor(map_type).full_map();
@@ -1163,7 +1163,7 @@ Core::Nodes::Node* XFEM::MultiFieldMapExtractor::g_i_node(const int& gid) const
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-const Epetra_Map* XFEM::MultiFieldMapExtractor::i_node_row_map() const
+const Core::LinAlg::Map* XFEM::MultiFieldMapExtractor::i_node_row_map() const
 {
   return i_discret().node_row_map();
 }
@@ -1207,7 +1207,7 @@ void XFEM::MultiFieldMapExtractor::i_dof(std::vector<int>& dof, Core::Nodes::Nod
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-const Epetra_Map& XFEM::MultiFieldMapExtractor::slave_node_row_map(
+const Core::LinAlg::Map& XFEM::MultiFieldMapExtractor::slave_node_row_map(
     unsigned dis_id, enum MultiField::BlockType btype) const
 {
   check_init();

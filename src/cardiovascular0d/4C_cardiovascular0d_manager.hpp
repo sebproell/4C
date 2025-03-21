@@ -160,7 +160,7 @@ namespace Utils
      \brief Return EpetraMap that determined distribution of Cardiovascular0D functions and
      pressures over processors
     */
-    std::shared_ptr<Epetra_Map> get_cardiovascular0_d_map() const
+    std::shared_ptr<Core::LinAlg::Map> get_cardiovascular0_d_map() const
     {
       return cardiovascular0dmap_full_;
     };
@@ -345,11 +345,11 @@ namespace Utils
         cardiovascular0ddofset_full_;  ///< degrees of freedom of pressures
     std::shared_ptr<Cardiovascular0DDofSet>
         cardiovascular0ddofset_;  ///< (reduced) degrees of freedom of pressures
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         cardiovascular0dmap_full_;  ///< unique map of Cardiovascular0D values
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         cardiovascular0dmap_;  ///< unique map of (reduced) Cardiovascular0D values
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         redcardiovascular0dmap_;  ///< fully redundant map of Cardiovascular0D values
     std::shared_ptr<Epetra_Export>
         cardvasc0dimpo_;  ///< importer for fully redundant Cardiovascular0D

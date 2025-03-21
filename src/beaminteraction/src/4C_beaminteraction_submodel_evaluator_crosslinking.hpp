@@ -528,16 +528,16 @@ namespace BeamInteraction
       double half_interaction_distance_;
 
       //! store node row map before current redistribution
-      std::shared_ptr<Epetra_Map> cl_noderowmap_prior_redistr_;
+      std::shared_ptr<Core::LinAlg::Map> cl_noderowmap_prior_redistr_;
 
       //! store node row map before current redistribution
-      std::shared_ptr<Epetra_Map> cl_nodecolmap_prior_redistr_;
+      std::shared_ptr<Core::LinAlg::Map> cl_nodecolmap_prior_redistr_;
 
       //! store node row map before current redistribution
-      std::shared_ptr<Epetra_Map> beam_elerowmap_prior_redistr_;
+      std::shared_ptr<Core::LinAlg::Map> beam_elerowmap_prior_redistr_;
 
       //! store node row map before current redistribution
-      std::shared_ptr<Epetra_Map> beam_elecolmap_prior_redistr_;
+      std::shared_ptr<Core::LinAlg::Map> beam_elecolmap_prior_redistr_;
 
       //! @}
     };

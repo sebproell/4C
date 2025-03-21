@@ -49,8 +49,8 @@ namespace SSTI
     explicit ThermoStructureOffDiagCoupling(
         std::shared_ptr<const Core::LinAlg::MultiMapExtractor> blockmapstructure,
         std::shared_ptr<const Core::LinAlg::MultiMapExtractor> blockmapthermo,
-        std::shared_ptr<const Epetra_Map> full_map_structure,
-        std::shared_ptr<const Epetra_Map> full_map_thermo,
+        std::shared_ptr<const Core::LinAlg::Map> full_map_structure,
+        std::shared_ptr<const Core::LinAlg::Map> full_map_thermo,
         std::shared_ptr<const SSI::Utils::SSIMeshTying> ssti_structure_meshtying,
         std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_thermo,
         std::shared_ptr<Adapter::SSIStructureWrapper> structure,
@@ -82,10 +82,10 @@ namespace SSTI
     std::shared_ptr<const Core::LinAlg::MultiMapExtractor> blockmapthermo_;
 
     //! map extractor associated with all degrees of freedom inside structural field
-    std::shared_ptr<const Epetra_Map> full_map_structure_;
+    std::shared_ptr<const Core::LinAlg::Map> full_map_structure_;
 
     //! map extractor associated with all degrees of freedom inside thermo field
-    std::shared_ptr<const Epetra_Map> full_map_thermo_;
+    std::shared_ptr<const Core::LinAlg::Map> full_map_thermo_;
 
     //! meshtying strategy for scatra-scatra interface coupling on scatra discretization
     std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_thermo_;

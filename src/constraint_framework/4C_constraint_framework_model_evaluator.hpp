@@ -109,7 +109,7 @@ namespace Solid
 
       void runtime_output_step_state() const override;
 
-      std::shared_ptr<const Epetra_Map> get_block_dof_row_map_ptr() const override;
+      std::shared_ptr<const Core::LinAlg::Map> get_block_dof_row_map_ptr() const override;
 
       std::shared_ptr<const Core::LinAlg::Vector<double>> get_current_solution_ptr() const override;
 

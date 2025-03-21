@@ -17,10 +17,9 @@
 #include "4C_fem_discretization.hpp"
 #include "4C_inpar_porofluid_pressure_based.hpp"
 #include "4C_io_discretization_visualization_writer_mesh.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
-
-#include <Epetra_Map.h>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -190,10 +189,10 @@ namespace POROFLUIDMULTIPHASE
     std::shared_ptr<Core::FE::Discretization> discretization() const override { return discret_; }
 
     //! access dof row map
-    std::shared_ptr<const Epetra_Map> dof_row_map(unsigned nds) const override;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map(unsigned nds) const override;
 
     //! access dof row map
-    std::shared_ptr<const Epetra_Map> artery_dof_row_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> artery_dof_row_map() const override;
 
     //! direct access to block system matrix of artery poro problem
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> artery_porofluid_sysmat() const override;

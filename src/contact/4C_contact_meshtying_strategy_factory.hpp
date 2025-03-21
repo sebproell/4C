@@ -109,8 +109,8 @@ namespace Mortar
           const CONTACT::SolvingStrategy stype, const Teuchos::ParameterList& params,
           const bool& poroslave, const bool& poromaster, const int& dof_offset,
           std::vector<std::shared_ptr<Mortar::Interface>>& interfaces,
-          const Epetra_Map* dof_row_map, const Epetra_Map* node_row_map, const int dim,
-          const MPI_Comm& comm_ptr, Mortar::StrategyDataContainer& data_ptr);
+          const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* node_row_map,
+          const int dim, const MPI_Comm& comm_ptr, Mortar::StrategyDataContainer& data_ptr);
 
      protected:
      private:

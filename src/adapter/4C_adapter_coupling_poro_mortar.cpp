@@ -373,9 +373,9 @@ void Adapter::CouplingPoroMortar::complete_interface(
   // interface->create_volume_ghosting(*masterdis);
 
   // store old row maps (before parallel redistribution)
-  slavedofrowmap_ = std::make_shared<Epetra_Map>(*interface->slave_row_dofs());
-  masterdofrowmap_ = std::make_shared<Epetra_Map>(*interface->master_row_dofs());
-  slavenoderowmap_ = std::make_shared<Epetra_Map>(*interface->slave_row_nodes());
+  slavedofrowmap_ = std::make_shared<Core::LinAlg::Map>(*interface->slave_row_dofs());
+  masterdofrowmap_ = std::make_shared<Core::LinAlg::Map>(*interface->master_row_dofs());
+  slavenoderowmap_ = std::make_shared<Core::LinAlg::Map>(*interface->slave_row_nodes());
 
   // print parallel distribution
   interface->print_parallel_distribution();
@@ -402,7 +402,7 @@ void Adapter::CouplingPoroMortar::evaluate_poro_mt(
     std::shared_ptr<Core::LinAlg::SparseMatrix>& f,
     std::shared_ptr<Core::LinAlg::SparseMatrix>& k_fs,
     std::shared_ptr<Core::LinAlg::Vector<double>>& frhs, Coupling::Adapter::Coupling& coupfs,
-    std::shared_ptr<const Epetra_Map> fdofrowmap)
+    std::shared_ptr<const Core::LinAlg::Map> fdofrowmap)
 {
   // safety check
   check_setup();

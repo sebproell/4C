@@ -42,9 +42,9 @@ namespace CONTACT
     \param[in] maxdof Highest DOF number in global problem
     */
     LagrangeStrategy(const std::shared_ptr<CONTACT::AbstractStrategyDataContainer>& data_ptr,
-        const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
-        std::vector<std::shared_ptr<CONTACT::Interface>> interface, const int spatialDim,
-        MPI_Comm comm, const double alphaf, const int maxdof);
+        const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
+        Teuchos::ParameterList params, std::vector<std::shared_ptr<CONTACT::Interface>> interface,
+        const int spatialDim, MPI_Comm comm, const double alphaf, const int maxdof);
 
     /*!
     \brief Return convergence status of fixed-point active set search
@@ -173,7 +173,7 @@ namespace CONTACT
     //! Assemble all contact contributions (frictional contact)
     virtual void assemble_all_contact_terms_friction();
 
-    const Epetra_Map& slave_n_dof_row_map(const bool& redist) const override
+    const Core::LinAlg::Map& slave_n_dof_row_map(const bool& redist) const override
     {
       if ((not redist) and parallel_redistribution_status())
         FOUR_C_THROW("The original / not redistributed slave normal row map is not available!");
@@ -182,13 +182,13 @@ namespace CONTACT
     }
 
     //! Get the active node row map of the previous Newton step
-    std::shared_ptr<const Epetra_Map> get_old_active_row_nodes() const override
+    std::shared_ptr<const Core::LinAlg::Map> get_old_active_row_nodes() const override
     {
       return gOldActiveSlaveNodes_;
     };
 
     //! Get the slip node row map of the previous Newton step
-    std::shared_ptr<const Epetra_Map> get_old_slip_row_nodes() const override
+    std::shared_ptr<const Core::LinAlg::Map> get_old_slip_row_nodes() const override
     {
       return gOldslipnodes_;
     };
@@ -542,14 +542,17 @@ namespace CONTACT
     std::shared_ptr<Core::LinAlg::Vector<double>>
         linstickRHS_;  //< r.h.s vector for friction stick condition
 
-    std::shared_ptr<Epetra_Map> zigzagone_;    //< active node set of last active set try
-    std::shared_ptr<Epetra_Map> zigzagtwo_;    //< active node set of second-last active set try
-    std::shared_ptr<Epetra_Map> zigzagthree_;  //< active node set of third-last active set try
+    std::shared_ptr<Core::LinAlg::Map> zigzagone_;  //< active node set of last active set try
+    std::shared_ptr<Core::LinAlg::Map>
+        zigzagtwo_;  //< active node set of second-last active set try
+    std::shared_ptr<Core::LinAlg::Map>
+        zigzagthree_;  //< active node set of third-last active set try
 
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         gOldActiveSlaveNodes_;  // active slave nodes from previous newton step
 
-    std::shared_ptr<Epetra_Map> gOldslipnodes_;  // active slave nodes from previous newton step
+    std::shared_ptr<Core::LinAlg::Map>
+        gOldslipnodes_;  // active slave nodes from previous newton step
 
     std::shared_ptr<Core::LinAlg::Vector<double>> fLTLOld_;  //< old line to line forces
     std::shared_ptr<Core::LinAlg::Vector<double>> fLTL_;   //< current line to line forces combined

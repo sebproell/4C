@@ -10,10 +10,10 @@
 
 #include "4C_config.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 
 #include <Epetra_Import.h>
-#include <Epetra_Map.h>
 
 #include <algorithm>
 #include <map>
@@ -51,16 +51,16 @@ namespace Core::LinAlg
     virtual ~MultiMapExtractor() = default;
 
     /// create an extractor from fullmap to the given set of maps
-    MultiMapExtractor(
-        const Epetra_Map& fullmap, const std::vector<std::shared_ptr<const Epetra_Map>>& maps);
+    MultiMapExtractor(const Core::LinAlg::Map& fullmap,
+        const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps);
 
     /// setup of an empty extractor
     /*!
       \warning The fullmap has to be nonoverlapping. The list of maps has to
       be nonoverlapping as well and its sum has to equal the fullmap.
      */
-    void setup(
-        const Epetra_Map& fullmap, const std::vector<std::shared_ptr<const Epetra_Map>>& maps);
+    void setup(const Core::LinAlg::Map& fullmap,
+        const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps);
 
     /// debug helper
     /*!
@@ -78,22 +78,22 @@ namespace Core::LinAlg
       \warning There must be no overlap in these maps.
                The order of the GIDs is destroyed
      */
-    static std::shared_ptr<Epetra_Map> merge_maps(
-        const std::vector<std::shared_ptr<const Epetra_Map>>& maps);
+    static std::shared_ptr<Core::LinAlg::Map> merge_maps(
+        const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps);
 
     /// merge set of unique maps
     /*!
       \warning There must be no overlap in these maps.
     */
-    static std::shared_ptr<Epetra_Map> merge_maps_keep_order(
-        const std::vector<std::shared_ptr<const Epetra_Map>>& maps);
+    static std::shared_ptr<Core::LinAlg::Map> merge_maps_keep_order(
+        const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps);
 
     /// intersect set of unique maps
     /*!
       \warning There must be no overlap in these maps.
      */
-    static std::shared_ptr<Epetra_Map> intersect_maps(
-        const std::vector<std::shared_ptr<const Epetra_Map>>& maps);
+    static std::shared_ptr<Core::LinAlg::Map> intersect_maps(
+        const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps);
 
     /** \name Maps */
     //@{
@@ -102,10 +102,10 @@ namespace Core::LinAlg
     int num_maps() const { return maps_.size(); }
 
     /// get the map
-    const std::shared_ptr<const Epetra_Map>& Map(int i) const { return maps_[i]; }
+    const std::shared_ptr<const Core::LinAlg::Map>& Map(int i) const { return maps_[i]; }
 
     /// the full map
-    const std::shared_ptr<const Epetra_Map>& full_map() const { return fullmap_; }
+    const std::shared_ptr<const Core::LinAlg::Map>& full_map() const { return fullmap_; }
 
     //@}
 
@@ -216,10 +216,10 @@ namespace Core::LinAlg
 
    protected:
     /// the full row map
-    std::shared_ptr<const Epetra_Map> fullmap_;
+    std::shared_ptr<const Core::LinAlg::Map> fullmap_;
 
     /// the list of nonoverlapping partial row maps that sums up to the full map
-    std::vector<std::shared_ptr<const Epetra_Map>> maps_;
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps_;
 
     /// communication between condition dof map and full row dof map
     std::vector<std::shared_ptr<Epetra_Import>> importer_;
@@ -264,7 +264,7 @@ namespace Core::LinAlg
     add_vector(cond, pos, full, scale);                                                   \
   }                                                                                       \
                                                                                           \
-  const std::shared_ptr<const Epetra_Map>& name##_map() const { return Map(pos); }        \
+  const std::shared_ptr<const Core::LinAlg::Map>& name##_map() const { return Map(pos); } \
                                                                                           \
   bool name##_relevant() const { return name##_map()->NumGlobalElements() != 0; }         \
                                                                                           \
@@ -314,30 +314,32 @@ namespace Core::LinAlg
     /** \brief  constructor
      *
      *  Calls setup() from known maps */
-    MapExtractor(const Epetra_Map& fullmap, std::shared_ptr<const Epetra_Map> condmap,
-        std::shared_ptr<const Epetra_Map> othermap);
+    MapExtractor(const Core::LinAlg::Map& fullmap, std::shared_ptr<const Core::LinAlg::Map> condmap,
+        std::shared_ptr<const Core::LinAlg::Map> othermap);
 
     /** \brief constructor
      *
      *  Calls setup() to create non-overlapping othermap/condmap which is complementary
      *  to condmap/othermap with respect to fullmap depending on boolean 'iscondmap'  */
-    MapExtractor(const Epetra_Map& fullmap,            //< full map
-        std::shared_ptr<const Epetra_Map> partialmap,  //< partial map, ie condition or other map
-        bool iscondmap = true                          //< true, if partialmap is condition map
+    MapExtractor(const Core::LinAlg::Map& fullmap,  //< full map
+        std::shared_ptr<const Core::LinAlg::Map>
+            partialmap,        //< partial map, ie condition or other map
+        bool iscondmap = true  //< true, if partialmap is condition map
     );
 
     /** \name Setup */
     //@{
 
     /// setup from known maps
-    void setup(const Epetra_Map& fullmap, const std::shared_ptr<const Epetra_Map>& condmap,
-        const std::shared_ptr<const Epetra_Map>& othermap);
+    void setup(const Core::LinAlg::Map& fullmap,
+        const std::shared_ptr<const Core::LinAlg::Map>& condmap,
+        const std::shared_ptr<const Core::LinAlg::Map>& othermap);
 
     /// setup creates non-overlapping othermap/condmap which is complementary to condmap/othermap
     /// with respect to fullmap depending on boolean 'iscondmap'
 
-    void setup(const Epetra_Map& fullmap, const std::shared_ptr<const Epetra_Map>& partialmap,
-        bool iscondmap = true);
+    void setup(const Core::LinAlg::Map& fullmap,
+        const std::shared_ptr<const Core::LinAlg::Map>& partialmap, bool iscondmap = true);
 
     //@}
 

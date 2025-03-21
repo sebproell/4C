@@ -24,9 +24,10 @@ namespace CONTACT
     \brief Standard Constructor
 
     */
-    PoroMtLagrangeStrategy(const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap,
-        Teuchos::ParameterList params, std::vector<std::shared_ptr<Mortar::Interface>> interface,
-        int dim, MPI_Comm comm, double alphaf, int maxdof);
+    PoroMtLagrangeStrategy(const Core::LinAlg::Map* dof_row_map,
+        const Core::LinAlg::Map* NodeRowMap, Teuchos::ParameterList params,
+        std::vector<std::shared_ptr<Mortar::Interface>> interface, int dim, MPI_Comm comm,
+        double alphaf, int maxdof);
 
 
     /*!
@@ -51,7 +52,7 @@ namespace CONTACT
 
     std::shared_ptr<Core::LinAlg::SparseMatrix> cs_;  // slave matrix block row (needed for LM)
 
-    std::shared_ptr<Epetra_Map> fvelrow_;  // fluid row map (needed for splitting)
+    std::shared_ptr<Core::LinAlg::Map> fvelrow_;  // fluid row map (needed for splitting)
 
   };  // class POROLagrangeStrategy
 }  // namespace CONTACT

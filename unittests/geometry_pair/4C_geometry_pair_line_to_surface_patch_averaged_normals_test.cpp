@@ -146,7 +146,7 @@ namespace
     }
 
     // Set the state in the face element, here also the FAD variables for each patch are set.
-    Epetra_Map gid_map(discret_->num_global_nodes() * 3, discret_->num_global_nodes() * 3, 0,
+    Core::LinAlg::Map gid_map(discret_->num_global_nodes() * 3, discret_->num_global_nodes() * 3, 0,
         Core::Communication::as_epetra_comm(discret_->get_comm()));
     auto displacement_vector = std::make_shared<Core::LinAlg::Vector<double>>(gid_map);
     for (int i = 0; i < displacement_vector->global_length(); i++)

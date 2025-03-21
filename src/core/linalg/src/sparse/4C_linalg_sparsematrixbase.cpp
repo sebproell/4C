@@ -54,7 +54,7 @@ const Epetra_Comm& Core::LinAlg::SparseMatrixBase::Comm() const { return sysmat_
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Epetra_Map& Core::LinAlg::SparseMatrixBase::OperatorDomainMap() const
+const Core::LinAlg::Map& Core::LinAlg::SparseMatrixBase::OperatorDomainMap() const
 {
   return sysmat_->OperatorDomainMap();
 }
@@ -62,7 +62,7 @@ const Epetra_Map& Core::LinAlg::SparseMatrixBase::OperatorDomainMap() const
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Epetra_Map& Core::LinAlg::SparseMatrixBase::OperatorRangeMap() const
+const Core::LinAlg::Map& Core::LinAlg::SparseMatrixBase::OperatorRangeMap() const
 {
   return sysmat_->OperatorRangeMap();
 }
@@ -184,8 +184,8 @@ void Core::LinAlg::SparseMatrixBase::add_other(Core::LinAlg::BlockSparseMatrixBa
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-bool Core::LinAlg::SparseMatrixBase::is_dbc_applied(
-    const Epetra_Map& dbcmap, bool diagonalblock, const Core::LinAlg::SparseMatrix* trafo) const
+bool Core::LinAlg::SparseMatrixBase::is_dbc_applied(const Core::LinAlg::Map& dbcmap,
+    bool diagonalblock, const Core::LinAlg::SparseMatrix* trafo) const
 {
   if (not filled()) FOUR_C_THROW("The matrix must be filled!");
 

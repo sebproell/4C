@@ -68,7 +68,7 @@ namespace FSI
         Core::LinAlg::Vector<double>& x, Core::LinAlg::Vector<double>& b);
 
     /// create merged map with Dirichlet-constrained DOF from all fields
-    std::shared_ptr<Epetra_Map> combined_dbc_map() override;
+    std::shared_ptr<Core::LinAlg::Map> combined_dbc_map() override;
 
     //! Extract the three field vectors from a given composed vector
     //!

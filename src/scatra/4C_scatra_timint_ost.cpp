@@ -56,7 +56,7 @@ void ScaTra::TimIntOneStepTheta::setup()
   // vectors and matrices
   //                 local <-> global dof numbering
   // -------------------------------------------------------------------
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // fine-scale vector at time n+1
   if (fssgd_ != Inpar::ScaTra::fssugrdiff_no or

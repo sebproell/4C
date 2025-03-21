@@ -12,10 +12,9 @@
 
 #include "4C_adapter_fld_wrapper.hpp"
 #include "4C_inpar_fsi.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
-
-#include <Epetra_Map.h>
 
 #include <memory>
 
@@ -60,9 +59,9 @@ namespace Adapter
     /// initialize algorithm
     void init() override;
 
-    std::shared_ptr<const Epetra_Map> dof_row_map() override;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() override;
 
-    std::shared_ptr<const Epetra_Map> dof_row_map(unsigned nds) override;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map(unsigned nds) override;
 
     /// Velocity-displacement conversion at the fsi interface
     double time_scaling() const override;
@@ -85,7 +84,7 @@ namespace Adapter
     /// update slave dofs for multifield simulations with fluid mesh tying
     virtual void update_slave_dof(std::shared_ptr<Core::LinAlg::Vector<double>>& f);
 
-    std::shared_ptr<const Epetra_Map> inner_velocity_row_map() override;
+    std::shared_ptr<const Core::LinAlg::Map> inner_velocity_row_map() override;
 
     std::shared_ptr<Core::LinAlg::Vector<double>> extract_interface_forces() override;
 
@@ -115,7 +114,8 @@ namespace Adapter
 
     void apply_mesh_velocity(std::shared_ptr<const Core::LinAlg::Vector<double>> gridvel) override;
 
-    void set_mesh_map(std::shared_ptr<const Epetra_Map> mm, const int nds_master = 0) override;
+    void set_mesh_map(
+        std::shared_ptr<const Core::LinAlg::Map> mm, const int nds_master = 0) override;
 
     //! @name Conversion between displacement and velocity at interface
 
@@ -247,7 +247,7 @@ namespace Adapter
     std::shared_ptr<Core::LinAlg::MapExtractor> meshmap_;
 
     /// all velocity dofs not at the interface
-    std::shared_ptr<Epetra_Map> innervelmap_;
+    std::shared_ptr<Core::LinAlg::Map> innervelmap_;
 
    private:
     //! Time step size adaptivity in monolithic FSI

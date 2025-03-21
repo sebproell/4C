@@ -24,7 +24,7 @@ CONTACT::NoxInterface::NoxInterface()
     : isinit_(false),
       issetup_(false),
       strategy_ptr_(nullptr),
-      cycling_maps_(std::vector<std::shared_ptr<Epetra_Map>>(0))
+      cycling_maps_(std::vector<std::shared_ptr<Core::LinAlg::Map>>(0))
 {
   // should stay empty
 }
@@ -315,7 +315,7 @@ enum ::NOX::StatusTest::StatusType CONTACT::NoxInterface::get_active_set_info(
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-Teuchos::RCP<const Epetra_Map> CONTACT::NoxInterface::get_current_active_set_map(
+Teuchos::RCP<const Core::LinAlg::Map> CONTACT::NoxInterface::get_current_active_set_map(
     enum NOX::Nln::StatusTest::QuantityType checkQuantity) const
 {
   switch (checkQuantity)
@@ -342,7 +342,7 @@ Teuchos::RCP<const Epetra_Map> CONTACT::NoxInterface::get_current_active_set_map
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-Teuchos::RCP<const Epetra_Map> CONTACT::NoxInterface::get_old_active_set_map(
+Teuchos::RCP<const Core::LinAlg::Map> CONTACT::NoxInterface::get_old_active_set_map(
     enum NOX::Nln::StatusTest::QuantityType checkQuantity) const
 {
   switch (checkQuantity)

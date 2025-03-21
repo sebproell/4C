@@ -27,9 +27,9 @@ namespace CONTACT
 
     */
     LagrangeStrategyPoro(const std::shared_ptr<CONTACT::AbstractStrategyDataContainer>& data_ptr,
-        const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
-        std::vector<std::shared_ptr<CONTACT::Interface>> interface, int dim, MPI_Comm comm,
-        double alphaf, int maxdof, bool poroslave, bool poromaster);
+        const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
+        Teuchos::ParameterList params, std::vector<std::shared_ptr<CONTACT::Interface>> interface,
+        int dim, MPI_Comm comm, double alphaf, int maxdof, bool poroslave, bool poromaster);
 
 
     //! @name Access methods
@@ -66,8 +66,8 @@ namespace CONTACT
     //Todo to be updated the global derivative matrices S and P and Tresca friction matrix L +
     vector r.
     */
-    void poro_initialize(
-        Coupling::Adapter::Coupling& coupfs, const Epetra_Map& fluiddofs, bool fullinit = true);
+    void poro_initialize(Coupling::Adapter::Coupling& coupfs, const Core::LinAlg::Map& fluiddofs,
+        bool fullinit = true);
 
     /*!
     \brief as D and M Matrices are initialized here
@@ -172,8 +172,8 @@ namespace CONTACT
     std::shared_ptr<const Core::LinAlg::Vector<double>> lambda_no_pen() const { return lambda_; }
 
     // Return all active fluid slave dofs
-    std::shared_ptr<Epetra_Map>& fluid_active_n_dof_map() { return fgactiven_; };
-    std::shared_ptr<const Epetra_Map> fluid_active_n_dof_map() const { return fgactiven_; };
+    std::shared_ptr<Core::LinAlg::Map>& fluid_active_n_dof_map() { return fgactiven_; };
+    std::shared_ptr<const Core::LinAlg::Map> fluid_active_n_dof_map() const { return fgactiven_; };
 
    protected:
     // don't want = operator and cctor
@@ -226,14 +226,14 @@ namespace CONTACT
         fmoldtransp_;  // global transposed Mortar matrix M (last end-point t_n)
 
 
-    std::shared_ptr<Epetra_Map> fgsdofrowmap_;   // fluid slave dofs
-    std::shared_ptr<Epetra_Map> fgmdofrowmap_;   // fluid master dofs
-    std::shared_ptr<Epetra_Map> fgsmdofrowmap_;  // fluid slave + master dofs
-    std::shared_ptr<Epetra_Map> fgndofrowmap_;   // fluid other dofs
-    std::shared_ptr<Epetra_Map> fgactivedofs_;   // fluid active slave dofs
-    std::shared_ptr<Epetra_Map> falldofrowmap_;  // all fluid dofs
-    std::shared_ptr<Epetra_Map> fgactiven_;      // active normal fluid dofs
-    std::shared_ptr<Epetra_Map> fgactivet_;      // active tangential fluid dofs
+    std::shared_ptr<Core::LinAlg::Map> fgsdofrowmap_;   // fluid slave dofs
+    std::shared_ptr<Core::LinAlg::Map> fgmdofrowmap_;   // fluid master dofs
+    std::shared_ptr<Core::LinAlg::Map> fgsmdofrowmap_;  // fluid slave + master dofs
+    std::shared_ptr<Core::LinAlg::Map> fgndofrowmap_;   // fluid other dofs
+    std::shared_ptr<Core::LinAlg::Map> fgactivedofs_;   // fluid active slave dofs
+    std::shared_ptr<Core::LinAlg::Map> falldofrowmap_;  // all fluid dofs
+    std::shared_ptr<Core::LinAlg::Map> fgactiven_;      // active normal fluid dofs
+    std::shared_ptr<Core::LinAlg::Map> fgactivet_;      // active tangential fluid dofs
 
     /// @name matrix transformation
     //! transform object for linearized ncoup matrix \f$linncoup\f$

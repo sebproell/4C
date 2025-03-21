@@ -14,12 +14,12 @@
 #include "4C_inpar_poroelast.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_graph.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 #include "4C_utils_result_test.hpp"
 
-#include <Epetra_Map.h>
 #include <Epetra_Operator.h>
 
 #include <memory>
@@ -186,10 +186,10 @@ namespace Adapter
     //! @name Misc
 
     /// dof map of vector of unknowns
-    virtual std::shared_ptr<const Epetra_Map> dof_row_map() = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> dof_row_map() = 0;
 
     /// dof map of vector of unknowns for multiple dofsets
-    virtual std::shared_ptr<const Epetra_Map> dof_row_map(unsigned nds) = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> dof_row_map(unsigned nds) = 0;
 
     /// direct access to system matrix
     virtual std::shared_ptr<Core::LinAlg::SparseMatrix> system_matrix() = 0;
@@ -229,10 +229,10 @@ namespace Adapter
         const std::shared_ptr<const Core::LinAlg::Vector<double>> contributing_vector) = 0;
 
     /// expand dirichlet dbc set by provided map containing dofs to add
-    virtual void add_dirich_cond(const std::shared_ptr<const Epetra_Map> maptoadd) = 0;
+    virtual void add_dirich_cond(const std::shared_ptr<const Core::LinAlg::Map> maptoadd) = 0;
 
     /// contract dirichlet set by provided map containing dofs to remove
-    virtual void remove_dirich_cond(const std::shared_ptr<const Epetra_Map> maptoremove) = 0;
+    virtual void remove_dirich_cond(const std::shared_ptr<const Core::LinAlg::Map> maptoremove) = 0;
 
     ///  set scalar fields within outer iteration loop
     virtual void set_iter_scalar_fields(
@@ -441,16 +441,17 @@ namespace Adapter
     //@}
 
     /// Map of all velocity dofs that are not Dirichlet-constrained
-    virtual std::shared_ptr<const Epetra_Map> inner_velocity_row_map() = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> inner_velocity_row_map() = 0;
 
     /// Map of all velocity dofs
-    virtual std::shared_ptr<const Epetra_Map> velocity_row_map() = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> velocity_row_map() = 0;
 
     /// Map of all pressure dofs
-    virtual std::shared_ptr<const Epetra_Map> pressure_row_map() = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> pressure_row_map() = 0;
 
     /// the mesh map contains all velocity dofs that are covered by an ALE node
-    virtual void set_mesh_map(std::shared_ptr<const Epetra_Map> mm, const int nds_master = 0) = 0;
+    virtual void set_mesh_map(
+        std::shared_ptr<const Core::LinAlg::Map> mm, const int nds_master = 0) = 0;
 
     /// Use residual_scaling() to convert the implemented fluid residual to an actual force with
     /// unit Newton [N]

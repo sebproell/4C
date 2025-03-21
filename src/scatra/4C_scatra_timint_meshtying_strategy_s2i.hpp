@@ -117,7 +117,7 @@ namespace ScaTra
     const Inpar::S2I::CouplingType& coupling_type() const { return couplingtype_; }
 
     //! return global map of degrees of freedom
-    const Epetra_Map& dof_row_map() const override;
+    const Core::LinAlg::Map& dof_row_map() const override;
 
     //! compute meshtying residual terms and their linearizations
     void evaluate_meshtying() override;
@@ -138,7 +138,7 @@ namespace ScaTra
     //! extract selected rows from a sparse matrix
     static void extract_matrix_rows(const Core::LinAlg::SparseMatrix& matrix,  //!< source matrix
         Core::LinAlg::SparseMatrix& rows,  //!< destination matrix
-        const Epetra_Map& rowmap           //!< map of matrix rows to be extracted
+        const Core::LinAlg::Map& rowmap    //!< map of matrix rows to be extracted
     );
 
     /*!
@@ -326,10 +326,10 @@ namespace ScaTra
     const bool imortarredistribution_;
 
     //! map of all slave-side degrees of freedom before parallel redistribution
-    std::shared_ptr<Epetra_Map> islavemap_;
+    std::shared_ptr<Core::LinAlg::Map> islavemap_;
 
     //! map of all master-side degrees of freedom before parallel redistribution
-    std::shared_ptr<Epetra_Map> imastermap_;
+    std::shared_ptr<Core::LinAlg::Map> imastermap_;
 
     //! vectors for node-to-segment connectivity, i.e., for pairings between slave nodes and master
     //! elements
@@ -692,7 +692,7 @@ namespace ScaTra
      * @param systemvector2      system vector 2
      * @param vector2_side       interface side associated with system vector 2
      */
-    void evaluate_mortar_elements(const Epetra_Map& ielecolmap,
+    void evaluate_mortar_elements(const Core::LinAlg::Map& ielecolmap,
         const Core::LinAlg::Vector<int>& ieleimpltypes, const Core::FE::Discretization& idiscret,
         const Teuchos::ParameterList& params,
         const std::shared_ptr<Core::LinAlg::SparseOperator>& systemmatrix1,

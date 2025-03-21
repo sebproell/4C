@@ -63,7 +63,7 @@ void FLD::Vreman::apply_filter_for_dynamic_computation_of_cv(
     const std::shared_ptr<const Core::LinAlg::Vector<double>> scalar, const double thermpress,
     const std::shared_ptr<const Core::LinAlg::Vector<double>> dirichtoggle)
 {
-  const Epetra_Map* nodecolmap = discret_->node_col_map();
+  const Core::LinAlg::Map* nodecolmap = discret_->node_col_map();
 
 
   col_filtered_strainrate_ =
@@ -93,7 +93,7 @@ void FLD::Vreman::apply_filter_for_dynamic_computation_of_dt(
     const std::shared_ptr<const Core::LinAlg::Vector<double>> dirichtoggle,
     Teuchos::ParameterList& extraparams, const int ndsvel)
 {
-  const Epetra_Map* nodecolmap = scatradiscret_->node_col_map();
+  const Core::LinAlg::Map* nodecolmap = scatradiscret_->node_col_map();
 
   col_filtered_phi_ = std::make_shared<Core::LinAlg::MultiVector<double>>(*nodecolmap, 3, true);
   col_filtered_phi2_ = std::make_shared<Core::LinAlg::Vector<double>>(*nodecolmap, true);

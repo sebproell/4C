@@ -12,8 +12,7 @@
 
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_comm_utils_factory.hpp"
-
-#include <Epetra_Map.h>
+#include "4C_linalg_map.hpp"
 
 #include <map>
 #include <memory>
@@ -59,7 +58,7 @@ namespace Core::Communication
     \param tomap   (in): The target map data shall be exported to
     \param comm    (in): Communicator that shall be used in exports
     */
-    Exporter(const Epetra_Map& frommap, const Epetra_Map& tomap, MPI_Comm comm);
+    Exporter(const Core::LinAlg::Map& frommap, const Core::LinAlg::Map& tomap, MPI_Comm comm);
 
     /*!
     \brief Copy Constructor (default)
@@ -83,12 +82,12 @@ namespace Core::Communication
     /*!
     \brief Get source map
     */
-    inline const Epetra_Map& source_map() const { return frommap_; }
+    inline const Core::LinAlg::Map& source_map() const { return frommap_; }
 
     /*!
     \brief Get target map
     */
-    inline const Epetra_Map& target_map() const { return tomap_; }
+    inline const Core::LinAlg::Map& target_map() const { return tomap_; }
 
     //@}
 
@@ -459,11 +458,11 @@ namespace Core::Communication
 
    private:
     //! dummy map in case of empty exporter
-    Epetra_Map dummymap_;
+    Core::LinAlg::Map dummymap_;
     //! source layout
-    const Epetra_Map& frommap_;
+    const Core::LinAlg::Map& frommap_;
     //! target map
-    const Epetra_Map& tomap_;
+    const Core::LinAlg::Map& tomap_;
     //! communicator
     MPI_Comm comm_;
     //! PID

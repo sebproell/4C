@@ -52,7 +52,10 @@ namespace Adapter
     //@{
 
     /// dof map of vector of unknowns
-    std::shared_ptr<const Epetra_Map> dof_row_map() override { return field_->dof_row_map(); }
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() override
+    {
+      return field_->dof_row_map();
+    }
 
     /// direct access to system matrix
     std::shared_ptr<Core::LinAlg::SparseMatrix> system_matrix() override

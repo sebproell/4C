@@ -264,13 +264,13 @@ namespace SSI
     std::map<int, double> domainintegral_;
 
     //! map of all scatra manifold dofs
-    std::shared_ptr<const Epetra_Map> full_map_manifold_;
+    std::shared_ptr<const Core::LinAlg::Map> full_map_manifold_;
 
     //! map extractor associated with all degrees of freedom inside scatra field
-    std::shared_ptr<const Epetra_Map> full_map_scatra_;
+    std::shared_ptr<const Core::LinAlg::Map> full_map_scatra_;
 
     //! map extractor associated with all degrees of freedom inside structural field
-    std::shared_ptr<const Epetra_Map> full_map_structure_;
+    std::shared_ptr<const Core::LinAlg::Map> full_map_structure_;
 
     //! integrated flux for each scalar into manifold
     std::map<int, std::vector<double>> inflow_;
@@ -327,7 +327,7 @@ namespace SSI
   //! MultiMapExtractor splitting slave dofs into blocks
   using meshtying_block_handler_type =
       std::pair<std::vector<std::shared_ptr<Coupling::Adapter::Coupling>>,
-          std::vector<std::shared_ptr<const Epetra_Map>>>;
+          std::vector<std::shared_ptr<const Core::LinAlg::Map>>>;
 
   //! Base class to handle mesh tying between manifold fields
   class ManifoldMeshTyingStrategyBase
@@ -378,7 +378,7 @@ namespace SSI
     const bool is_manifold_meshtying_;
 
     //! all interior and master dofs
-    std::shared_ptr<const Epetra_Map> condensed_dof_map_;
+    std::shared_ptr<const Core::LinAlg::Map> condensed_dof_map_;
 
     //! this object holds all maps relevant to monolithic scalar transport - structure interaction
     std::shared_ptr<SSI::Utils::SSIMaps> ssi_maps_;
@@ -450,9 +450,10 @@ namespace SSI
     //! intersects @p block_map with @p intersecting_map. Extracts also dofs from @p perm_map if the
     //! corresponding dof in @p intersecting map intersects with @p block_map. Returns both in a
     //! tuple.
-    std::tuple<std::shared_ptr<const Epetra_Map>, std::shared_ptr<const Epetra_Map>>
-    intersect_coupling_maps_block_map(const Epetra_Map& block_map,
-        const Epetra_Map& intersecting_map, const Epetra_Map& permuted_map, MPI_Comm comm);
+    std::tuple<std::shared_ptr<const Core::LinAlg::Map>, std::shared_ptr<const Core::LinAlg::Map>>
+    intersect_coupling_maps_block_map(const Core::LinAlg::Map& block_map,
+        const Core::LinAlg::Map& intersecting_map, const Core::LinAlg::Map& permuted_map,
+        MPI_Comm comm);
 
     //! all interior and master dofs split into blocks
     std::shared_ptr<Core::LinAlg::MultiMapExtractor> condensed_block_dof_map_;

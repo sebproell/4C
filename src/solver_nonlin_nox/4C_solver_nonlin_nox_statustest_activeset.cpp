@@ -7,10 +7,10 @@
 
 #include "4C_solver_nonlin_nox_statustest_activeset.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_solver_nonlin_nox_constraint_group.hpp"
 #include "4C_utils_exceptions.hpp"
 
-#include <Epetra_Map.h>
 #include <NOX_Solver_Generic.H>
 
 FOUR_C_NAMESPACE_OPEN
@@ -61,12 +61,13 @@ NOX::Nln::StatusTest::ActiveSet::ActiveSet(
       // do the actual active set check
       status_ = cnlngrp->get_active_set_info(qtype_, activesetsize_);
       // check for cycling of the active set
-      /* NOTE: This is just working, if you use Epetra_Map s to store your
+      /* NOTE: This is just working, if you use Core::LinAlg::Map s to store your
        * active set information! */
       if (max_cycle_size_ > 0)
       {
         // get the current active set
-        Teuchos::RCP<const Epetra_Map> activeset = cnlngrp->get_current_active_set_map(qtype_);
+        Teuchos::RCP<const Core::LinAlg::Map> activeset =
+            cnlngrp->get_current_active_set_map(qtype_);
         // add a new map a the beginning of the deque
         cycling_maps_.push_front(cnlngrp->get_old_active_set_map(qtype_));
         // remove the last entry of the deque, if the max_cycle_size_ is exceeded
@@ -77,7 +78,7 @@ NOX::Nln::StatusTest::ActiveSet::ActiveSet(
         cycle_size_ = 0;
         if (status_ != ::NOX::StatusTest::Converged)
         {
-          std::deque<Teuchos::RCP<const Epetra_Map>>::const_iterator citer;
+          std::deque<Teuchos::RCP<const Core::LinAlg::Map>>::const_iterator citer;
           int count = 1;
           // reset the detected cycle size
           for (citer = cycling_maps_.begin(); citer != cycling_maps_.end(); ++citer)

@@ -403,7 +403,7 @@ void CONTACT::SelfDualEdge::calculate_costs()
  |  ctor SelfBinaryTree (public)                              popp 11/09|
  *----------------------------------------------------------------------*/
 CONTACT::SelfBinaryTree::SelfBinaryTree(Core::FE::Discretization& discret,
-    const Teuchos::ParameterList& iparams, std::shared_ptr<Epetra_Map> elements, int dim,
+    const Teuchos::ParameterList& iparams, std::shared_ptr<Core::LinAlg::Map> elements, int dim,
     double eps)
     : Mortar::BaseBinaryTree(discret, dim, eps),
       elements_(elements),
@@ -1562,9 +1562,9 @@ void CONTACT::SelfBinaryTree::search_contact()
     int gid = elements_->GID(i);
     if (contactpairs_.find(gid) != contactpairs_.end()) locdata.push_back(gid);
   }
-  Epetra_Map mymap(
+  Core::LinAlg::Map mymap(
       -1, (int)locdata.size(), locdata.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  std::shared_ptr<Epetra_Map> redmap = Core::LinAlg::allreduce_e_map(mymap);
+  std::shared_ptr<Core::LinAlg::Map> redmap = Core::LinAlg::allreduce_e_map(mymap);
   Core::Communication::Exporter ex(mymap, *redmap, get_comm());
   ex.do_export(contactpairs_);
 

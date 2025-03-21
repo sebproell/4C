@@ -101,7 +101,7 @@ namespace PoroElast
 
     //! Set the slave and master elements of the face element
     void set_slave_and_master(const Core::FE::Discretization& voldiscret,
-        const Core::FE::Discretization* voldiscret2, const Epetra_Map* elecolmap,
+        const Core::FE::Discretization* voldiscret2, const Core::LinAlg::Map* elecolmap,
         Core::Elements::FaceElement* faceele);
 
     //! strategy for material assignment for non matching meshes with poro

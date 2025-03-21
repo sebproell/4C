@@ -531,9 +531,9 @@ void Adapter::CouplingNonLinMortar::complete_interface(
   interface->create_search_tree();
 
   // store old row maps (before parallel redistribution)
-  pslavedofrowmap_ = std::make_shared<Epetra_Map>(*interface->slave_row_dofs());
-  pmasterdofrowmap_ = std::make_shared<Epetra_Map>(*interface->master_row_dofs());
-  pslavenoderowmap_ = std::make_shared<Epetra_Map>(*interface->slave_row_nodes());
+  pslavedofrowmap_ = std::make_shared<Core::LinAlg::Map>(*interface->slave_row_dofs());
+  pmasterdofrowmap_ = std::make_shared<Core::LinAlg::Map>(*interface->master_row_dofs());
+  pslavenoderowmap_ = std::make_shared<Core::LinAlg::Map>(*interface->slave_row_nodes());
   psmdofrowmap_ = Core::LinAlg::merge_map(pslavedofrowmap_, pmasterdofrowmap_, false);
 
   // print parallel distribution
@@ -562,9 +562,9 @@ void Adapter::CouplingNonLinMortar::complete_interface(
   }
 
   // store row maps (after parallel redistribution)
-  slavedofrowmap_ = std::make_shared<Epetra_Map>(*interface->slave_row_dofs());
-  masterdofrowmap_ = std::make_shared<Epetra_Map>(*interface->master_row_dofs());
-  slavenoderowmap_ = std::make_shared<Epetra_Map>(*interface->slave_row_nodes());
+  slavedofrowmap_ = std::make_shared<Core::LinAlg::Map>(*interface->slave_row_dofs());
+  masterdofrowmap_ = std::make_shared<Core::LinAlg::Map>(*interface->master_row_dofs());
+  slavenoderowmap_ = std::make_shared<Core::LinAlg::Map>(*interface->slave_row_nodes());
   smdofrowmap_ = Core::LinAlg::merge_map(slavedofrowmap_, masterdofrowmap_, false);
 
   // store interface
@@ -743,8 +743,8 @@ void Adapter::CouplingNonLinMortar::setup_spring_dashpot(
   }
 
   // store old row maps (before parallel redistribution)
-  slavedofrowmap_ = std::make_shared<Epetra_Map>(*interface->slave_row_dofs());
-  masterdofrowmap_ = std::make_shared<Epetra_Map>(*interface->master_row_dofs());
+  slavedofrowmap_ = std::make_shared<Core::LinAlg::Map>(*interface->slave_row_dofs());
+  masterdofrowmap_ = std::make_shared<Core::LinAlg::Map>(*interface->master_row_dofs());
 
   // store interface
   interface_ = interface;
@@ -753,7 +753,7 @@ void Adapter::CouplingNonLinMortar::setup_spring_dashpot(
   interface_->create_search_tree();
 
   // interface displacement (=0) has to be merged from slave and master discretization
-  std::shared_ptr<Epetra_Map> dofrowmap =
+  std::shared_ptr<Core::LinAlg::Map> dofrowmap =
       Core::LinAlg::merge_map(masterdofrowmap_, slavedofrowmap_, false);
   std::shared_ptr<Core::LinAlg::Vector<double>> dispn =
       Core::LinAlg::create_vector(*dofrowmap, true);

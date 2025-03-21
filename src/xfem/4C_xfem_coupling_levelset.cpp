@@ -114,8 +114,8 @@ bool XFEM::LevelSetCoupling::have_matching_nodes(
     Core::FE::Discretization& dis_A, Core::FE::Discretization& dis_B)
 {
   // check for equal node row maps
-  const Epetra_Map* noderowmap_A = dis_A.node_row_map();
-  const Epetra_Map* noderowmap_B = dis_B.node_row_map();
+  const Core::LinAlg::Map* noderowmap_A = dis_A.node_row_map();
+  const Core::LinAlg::Map* noderowmap_B = dis_B.node_row_map();
 
   if (!(noderowmap_A->SameAs(*noderowmap_B))) return false;
 
@@ -160,7 +160,7 @@ void XFEM::LevelSetCoupling::init_state_vectors()
 void XFEM::LevelSetCoupling::init_state_vectors_bg()
 {
   // background-dis (fluid) related state vectors
-  const Epetra_Map* bg_dofrowmap = bg_dis_->dof_row_map(bg_nds_phi_);
+  const Core::LinAlg::Map* bg_dofrowmap = bg_dis_->dof_row_map(bg_nds_phi_);
 
   phinp_ = Core::LinAlg::create_vector(*bg_dofrowmap, true);
 }
@@ -173,9 +173,9 @@ void XFEM::LevelSetCoupling::init_state_vectors_bg()
 void XFEM::LevelSetCoupling::init_state_vectors_cutter()
 {
   // cutter-dis related state vectors
-  const Epetra_Map* cutter_dofrowmap =
+  const Core::LinAlg::Map* cutter_dofrowmap =
       cutter_dis_->dof_row_map(cutter_nds_phi_);  // used for level set field and its derivatives
-  const Epetra_Map* cutter_dofcolmap =
+  const Core::LinAlg::Map* cutter_dofcolmap =
       cutter_dis_->dof_col_map(cutter_nds_phi_);  // used for level set field and its derivatives
 
   cutter_phinp_ = Core::LinAlg::create_vector(*cutter_dofrowmap, true);
@@ -448,7 +448,7 @@ bool XFEM::LevelSetCoupling::set_level_set_field(const double time)
 
       // To get phi nodal values into pressure dofs in the fluid discretization!!! - any idea for
       // nice implementation?
-      const Epetra_Map* modphinp_dofrowmap =
+      const Core::LinAlg::Map* modphinp_dofrowmap =
           std::dynamic_pointer_cast<XFEM::DiscretizationXFEM>(cutter_dis_)->initial_dof_row_map();
       std::shared_ptr<Core::LinAlg::Vector<double>> modphinp =
           std::make_shared<Core::LinAlg::Vector<double>>(*modphinp_dofrowmap, true);

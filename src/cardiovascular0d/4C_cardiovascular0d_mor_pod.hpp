@@ -34,7 +34,7 @@ namespace Cardiovascular0D
     /*!
         \brief Constructor
      */
-    ProperOrthogonalDecomposition(std::shared_ptr<const Epetra_Map> full_model_dof_row_map_,
+    ProperOrthogonalDecomposition(std::shared_ptr<const Core::LinAlg::Map> full_model_dof_row_map_,
         const std::string& pod_matrix_file_name, const std::string& absolute_path_to_input_file);
 
     //! M_red = V^T * M * V
@@ -71,19 +71,19 @@ namespace Cardiovascular0D
 
     //! Multiply two Epetra MultiVectors
     void multiply_epetra_multi_vectors(Core::LinAlg::MultiVector<double>&, char,
-        Core::LinAlg::MultiVector<double>&, char, Epetra_Map&, Epetra_Import&,
+        Core::LinAlg::MultiVector<double>&, char, Core::LinAlg::Map&, Epetra_Import&,
         Core::LinAlg::MultiVector<double>&);
 
     //! Core::LinAlg::MultiVector<double> to Core::LinAlg::SparseMatrix
     void epetra_multi_vector_to_linalg_sparse_matrix(Core::LinAlg::MultiVector<double>& multivect,
-        Epetra_Map& rangemap, std::shared_ptr<Epetra_Map> domainmap,
+        Core::LinAlg::Map& rangemap, std::shared_ptr<Core::LinAlg::Map> domainmap,
         Core::LinAlg::SparseMatrix& sparsemat);
 
     //! Check orthogonality of POD basis vectors with M^T * M - I == 0
     bool is_pod_basis_orthogonal(const Core::LinAlg::MultiVector<double>& M);
 
     /// DOF row map of the full model, i.e. map of POD basis vectors
-    std::shared_ptr<const Epetra_Map> full_model_dof_row_map_;
+    std::shared_ptr<const Core::LinAlg::Map> full_model_dof_row_map_;
 
     //! Flag to indicate usage of model order reduction
     bool havemor_ = false;
@@ -92,10 +92,10 @@ namespace Cardiovascular0D
     std::shared_ptr<Core::LinAlg::MultiVector<double>> projmatrix_;
 
     //! Unique map of structure dofs after POD-MOR
-    std::shared_ptr<Epetra_Map> structmapr_;
+    std::shared_ptr<Core::LinAlg::Map> structmapr_;
 
     //! Full redundant map of structure dofs after POD-MOR
-    std::shared_ptr<Epetra_Map> redstructmapr_;
+    std::shared_ptr<Core::LinAlg::Map> redstructmapr_;
 
     //! Importer for fully redundant map of structure dofs after POD-MOR into distributed one
     std::shared_ptr<Epetra_Import> structrimpo_;

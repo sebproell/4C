@@ -296,23 +296,23 @@ namespace Solid
       ///@{
 
       /// dof map of vector of unknowns
-      virtual std::shared_ptr<const Epetra_Map> dof_row_map() const;
+      virtual std::shared_ptr<const Core::LinAlg::Map> dof_row_map() const;
 
       /// dof map of vector of unknowns
       /// method for multiple dofsets
-      virtual std::shared_ptr<const Epetra_Map> dof_row_map(unsigned nds) const;
+      virtual std::shared_ptr<const Core::LinAlg::Map> dof_row_map(unsigned nds) const;
 
       /// view of dof map of vector of unknowns
-      virtual const Epetra_Map* dof_row_map_view() const;
+      virtual const Core::LinAlg::Map* dof_row_map_view() const;
 
       /// view of dof map of vector of additive unknowns
       /* in case we have non-additve DoFs in the structure discretization
        * (e.g. rotation vector DoFs of beams), this method is overloaded */
-      const Epetra_Map* additive_dof_row_map_view() const;
+      const Core::LinAlg::Map* additive_dof_row_map_view() const;
 
       /// view of dof map of vector of rotation vector unknowns
       /* (e.g. rotation vector DoFs of beams), this method is overloaded */
-      const Epetra_Map* rot_vec_dof_row_map_view() const;
+      const Core::LinAlg::Map* rot_vec_dof_row_map_view() const;
 
       ///@}
 
@@ -575,18 +575,19 @@ namespace Solid
       /// @name Access saddle-point system information
       /// @{
 
-      /** \brief Returns Epetra_Map pointer of the given model
+      /** \brief Returns Core::LinAlg::Map pointer of the given model
        *
        *  If the given model is not found, nullptr is returned. */
-      std::shared_ptr<const Epetra_Map> block_map_ptr(const Inpar::Solid::ModelType& mt) const
+      std::shared_ptr<const Core::LinAlg::Map> block_map_ptr(
+          const Inpar::Solid::ModelType& mt) const
       {
         if (model_maps_.find(mt) != model_maps_.end()) return model_maps_.at(mt);
 
         return nullptr;
       };
 
-      /// Returns Epetra_Map of the given model
-      Epetra_Map block_map(const Inpar::Solid::ModelType& mt) const
+      /// Returns Core::LinAlg::Map of the given model
+      Core::LinAlg::Map block_map(const Inpar::Solid::ModelType& mt) const
       {
         if (model_maps_.find(mt) == model_maps_.end())
           FOUR_C_THROW(
@@ -615,13 +616,13 @@ namespace Solid
       };
 
       /// Returns global problem map pointer
-      std::shared_ptr<const Epetra_Map> global_problem_map_ptr() const
+      std::shared_ptr<const Core::LinAlg::Map> global_problem_map_ptr() const
       {
         return gproblem_map_ptr_;
       };
 
       /// Returns global problem map
-      const Epetra_Map& global_problem_map() const
+      const Core::LinAlg::Map& global_problem_map() const
       {
         FOUR_C_ASSERT(gproblem_map_ptr_, "The global problem map is not defined!");
         return *gproblem_map_ptr_;
@@ -898,7 +899,7 @@ namespace Solid
 
      protected:
       /// mutable access to the global problem map
-      std::shared_ptr<Epetra_Map>& global_problem_map_ptr() { return gproblem_map_ptr_; }
+      std::shared_ptr<Core::LinAlg::Map>& global_problem_map_ptr() { return gproblem_map_ptr_; }
 
       /** \brief mutable access to the structural stiffness member variable [PROTECTED ONLY]
        *
@@ -1068,8 +1069,8 @@ namespace Solid
       /// @name variables to create a saddle-point system
       /// @{
 
-      /// Epetra_Map s of the different models
-      std::map<Inpar::Solid::ModelType, std::shared_ptr<const Epetra_Map>> model_maps_;
+      /// Core::LinAlg::Map s of the different models
+      std::map<Inpar::Solid::ModelType, std::shared_ptr<const Core::LinAlg::Map>> model_maps_;
 
       /// block information for the different models
       std::map<Inpar::Solid::ModelType, int> model_block_id_;
@@ -1077,7 +1078,7 @@ namespace Solid
       int max_block_num_;
 
       /// global problem map
-      std::shared_ptr<Epetra_Map> gproblem_map_ptr_;
+      std::shared_ptr<Core::LinAlg::Map> gproblem_map_ptr_;
 
       /// multi map extractor
       Core::LinAlg::MultiMapExtractor blockextractor_;

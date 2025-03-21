@@ -157,7 +157,7 @@ namespace NOX
        *
        *  \param rbid  row block id
        *  \param cbid  column block id */
-      const Epetra_Map& get_jacobian_range_map(unsigned rbid, unsigned cbid) const;
+      const Core::LinAlg::Map& get_jacobian_range_map(unsigned rbid, unsigned cbid) const;
 
       /** \brief access the Jacobian block
        *
@@ -291,8 +291,8 @@ namespace NOX
 
       /// convert sparse matrix to dense matrix
       void convert_sparse_to_dense_matrix(const Core::LinAlg::SparseMatrix& sparse,
-          Core::LinAlg::SerialDenseMatrix& dense, const Epetra_Map& full_rangemap,
-          const Epetra_Map& full_domainmap) const;
+          Core::LinAlg::SerialDenseMatrix& dense, const Core::LinAlg::Map& full_rangemap,
+          const Core::LinAlg::Map& full_domainmap) const;
 
       /// prepare the dense matrix in case of a block sparse matrix
       void prepare_block_dense_matrix(const Core::LinAlg::BlockSparseMatrixBase& block_sparse,

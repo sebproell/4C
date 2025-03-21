@@ -26,7 +26,7 @@ Core::Communication::Exporter::Exporter(MPI_Comm comm)
 }
 
 Core::Communication::Exporter::Exporter(
-    const Epetra_Map& frommap, const Epetra_Map& tomap, MPI_Comm comm)
+    const Core::LinAlg::Map& frommap, const Core::LinAlg::Map& tomap, MPI_Comm comm)
     : dummymap_(0, 0, Core::Communication::as_epetra_comm(comm)),
       frommap_(frommap),
       tomap_(tomap),

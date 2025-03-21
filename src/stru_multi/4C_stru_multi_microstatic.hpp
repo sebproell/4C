@@ -16,10 +16,10 @@
 #include "4C_comm_parobjectfactory.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_vector.hpp"
 
-#include <Epetra_Map.h>
 #include <Teuchos_Time.hpp>
 
 #include <memory>
@@ -333,8 +333,8 @@ namespace MultiScale
     int np_;                                            //!< number of boundary dofs
     std::shared_ptr<Core::LinAlg::Vector<double>> Xp_;  //!< vector containing material
                                                         //!< coordinates of boundary nodes
-    std::shared_ptr<Epetra_Map> pdof_;                  //!< prescribed dofs
-    std::shared_ptr<Epetra_Map> fdof_;                  //!< free dofs
+    std::shared_ptr<Core::LinAlg::Map> pdof_;           //!< prescribed dofs
+    std::shared_ptr<Core::LinAlg::Map> fdof_;           //!< free dofs
     std::shared_ptr<Epetra_Import> importp_;
     std::shared_ptr<Epetra_Import> importf_;
   };

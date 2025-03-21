@@ -48,7 +48,7 @@ void ScaTra::TimIntBDF2::setup()
   // vectors and matrices
   //                 local <-> global dof numbering
   // -------------------------------------------------------------------
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // state vector for solution at time t_{n-1}
   phinm_ = Core::LinAlg::create_vector(*dofrowmap, true);

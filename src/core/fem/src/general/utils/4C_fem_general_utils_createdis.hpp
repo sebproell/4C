@@ -127,7 +127,7 @@ namespace Core::FE
     {
       MPI_Comm com = sourcedis.get_comm();
       const int myrank = Core::Communication::my_mpi_rank(com);
-      const Epetra_Map* sourcenoderowmap = sourcedis.node_row_map();
+      const Core::LinAlg::Map* sourcenoderowmap = sourcedis.node_row_map();
 
       std::shared_ptr<Core::FE::Discretization> targetdis;
 
@@ -254,8 +254,8 @@ namespace Core::FE
         Core::FE::Discretization& targetdis, const std::set<int>& rownodeset,
         const std::set<int>& colnodeset, const bool isnurbsdis) const;
 
-    //! construct and return Epetra_Map
-    std::shared_ptr<Epetra_Map> create_map(
+    //! construct and return Core::LinAlg::Map
+    std::shared_ptr<Core::LinAlg::Map> create_map(
         std::set<int>& gidset, const Core::FE::Discretization& targetdis) const;
 
     //! do some checks
@@ -278,13 +278,13 @@ namespace Core::FE
     //! vector for holding each (desired) element type std::string
     std::vector<std::string> eletype_;
     //! map containing gids of owned nodes
-    std::shared_ptr<Epetra_Map> targetnoderowmap_;
+    std::shared_ptr<Core::LinAlg::Map> targetnoderowmap_;
     //! map containing gids of owned + ghosted nodes
-    std::shared_ptr<Epetra_Map> targetnodecolmap_;
+    std::shared_ptr<Core::LinAlg::Map> targetnodecolmap_;
     //! map containing gids of owned elements
-    std::shared_ptr<Epetra_Map> targetelerowmap_;
+    std::shared_ptr<Core::LinAlg::Map> targetelerowmap_;
     //! map containing gids of owned + ghosted elements
-    std::shared_ptr<Epetra_Map> targetelecolmap_;
+    std::shared_ptr<Core::LinAlg::Map> targetelecolmap_;
     //! local number of skipped elements during cloning
     int numeleskips_;
 
@@ -487,7 +487,7 @@ namespace Core::FE
         std::set<int>& rownodeset, std::set<int>& colnodeset, std::set<int>& roweleset,
         std::set<int>& coleleset)
     {
-      const Epetra_Map* noderowmap = sourcedis.node_row_map();
+      const Core::LinAlg::Map* noderowmap = sourcedis.node_row_map();
 
       // We need to test for all elements (including ghosted ones) to
       // catch all nodes attached to the elements of the source discretization
@@ -533,8 +533,8 @@ namespace Core::FE
         std::set<int>& roweleset, std::set<int>& coleleset)
     {
       const int myrank = Core::Communication::my_mpi_rank(sourcedis.get_comm());
-      const Epetra_Map* sourcenoderowmap = sourcedis.node_row_map();
-      const Epetra_Map* sourcenodecolmap = sourcedis.node_col_map();
+      const Core::LinAlg::Map* sourcenoderowmap = sourcedis.node_row_map();
+      const Core::LinAlg::Map* sourcenodecolmap = sourcedis.node_col_map();
 
       // construct new elements
       std::map<int, std::shared_ptr<Core::Elements::Element>>::const_iterator sourceele_iter;

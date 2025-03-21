@@ -71,7 +71,7 @@ namespace Core::LinAlg
      *  rows.
      *
      *  */
-    bool is_dbc_applied(const Epetra_Map& dbcmap, bool diagonalblock = true,
+    bool is_dbc_applied(const Core::LinAlg::Map& dbcmap, bool diagonalblock = true,
         const Core::LinAlg::SparseMatrix* trafo = nullptr) const override;
 
     //@}
@@ -102,18 +102,18 @@ namespace Core::LinAlg
     /// Returns the maximum number of nonzero entries across all rows on this processor.
     int max_num_entries() const;
 
-    /// Returns the Epetra_Map object associated with the rows of this matrix.
-    const Epetra_Map& row_map() const { return sysmat_->RowMap(); }
+    /// Returns the Core::LinAlg::Map object associated with the rows of this matrix.
+    const Core::LinAlg::Map& row_map() const { return sysmat_->RowMap(); }
 
-    /// Returns the Epetra_Map object that describes the set of column-indices that appear in each
-    /// processor's locally owned matrix rows.
-    const Epetra_Map& col_map() const { return sysmat_->ColMap(); }
+    /// Returns the Core::LinAlg::Map object that describes the set of column-indices that appear in
+    /// each processor's locally owned matrix rows.
+    const Core::LinAlg::Map& col_map() const { return sysmat_->ColMap(); }
 
-    /// Returns the Epetra_Map object associated with the domain of this matrix operator.
-    const Epetra_Map& domain_map() const override { return sysmat_->DomainMap(); }
+    /// Returns the Core::LinAlg::Map object associated with the domain of this matrix operator.
+    const Core::LinAlg::Map& domain_map() const override { return sysmat_->DomainMap(); }
 
-    /// Returns the Epetra_Map object associated with the range of this matrix operator.
-    const Epetra_Map& range_map() const { return sysmat_->RangeMap(); }
+    /// Returns the Core::LinAlg::Map object associated with the range of this matrix operator.
+    const Core::LinAlg::Map& range_map() const { return sysmat_->RangeMap(); }
 
     /// Returns the current UseTranspose setting.
     bool UseTranspose() const override;
@@ -124,11 +124,11 @@ namespace Core::LinAlg
     /// Returns a pointer to the Epetra_Comm communicator associated with this operator.
     const Epetra_Comm& Comm() const override;
 
-    /// Returns the Epetra_Map object associated with the domain of this operator.
-    const Epetra_Map& OperatorDomainMap() const override;
+    /// Returns the Core::LinAlg::Map object associated with the domain of this operator.
+    const Core::LinAlg::Map& OperatorDomainMap() const override;
 
-    /// Returns the Epetra_Map object associated with the range of this operator.
-    const Epetra_Map& OperatorRangeMap() const override;
+    /// Returns the Core::LinAlg::Map object associated with the range of this operator.
+    const Core::LinAlg::Map& OperatorRangeMap() const override;
 
     //@}
 

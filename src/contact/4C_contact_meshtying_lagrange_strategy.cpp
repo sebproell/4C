@@ -30,8 +30,8 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | ctor (public)                                              popp 05/09|
  *----------------------------------------------------------------------*/
-CONTACT::MtLagrangeStrategy::MtLagrangeStrategy(const Epetra_Map* dof_row_map,
-    const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
+CONTACT::MtLagrangeStrategy::MtLagrangeStrategy(const Core::LinAlg::Map* dof_row_map,
+    const Core::LinAlg::Map* NodeRowMap, Teuchos::ParameterList params,
     std::vector<std::shared_ptr<Mortar::Interface>> interface, const int spatialDim,
     const MPI_Comm& comm, const double alphaf, const int maxdof)
     : MtAbstractStrategy(
@@ -385,7 +385,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
     std::shared_ptr<Core::LinAlg::SparseMatrix> ksmsm, ksmn, knsm;
 
     // some temporary std::shared_ptrs
-    std::shared_ptr<Epetra_Map> tempmap;
+    std::shared_ptr<Core::LinAlg::Map> tempmap;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx2;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx3;
@@ -766,7 +766,7 @@ void CONTACT::MtLagrangeStrategy::build_saddle_point_system(
       std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(kdd);
 
   // initialize merged system (matrix, rhs, sol)
-  std::shared_ptr<Epetra_Map> mergedmap =
+  std::shared_ptr<Core::LinAlg::Map> mergedmap =
       Core::LinAlg::merge_map(problem_dofs(), glmdofrowmap_, false);
   std::shared_ptr<Core::LinAlg::Vector<double>> mergedrhs = Core::LinAlg::create_vector(*mergedmap);
   std::shared_ptr<Core::LinAlg::Vector<double>> mergedsol = Core::LinAlg::create_vector(*mergedmap);
@@ -856,7 +856,7 @@ void CONTACT::MtLagrangeStrategy::update_displacements_and_l_mincrements(
   // extract results for displacement and LM increments
   //**********************************************************************
   Core::LinAlg::Vector<double> sollm(*glmdofrowmap_);
-  std::shared_ptr<Epetra_Map> mergedmap =
+  std::shared_ptr<Core::LinAlg::Map> mergedmap =
       Core::LinAlg::merge_map(problem_dofs(), glmdofrowmap_, false);
   Core::LinAlg::MapExtractor mapext(*mergedmap, problem_dofs(), glmdofrowmap_);
   mapext.extract_cond_vector(*blocksol, *sold);

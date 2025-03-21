@@ -97,7 +97,7 @@ namespace POROFLUIDMULTIPHASE
     }
 
     //! access dof row map
-    virtual std::shared_ptr<const Epetra_Map> artery_dof_row_map() const
+    virtual std::shared_ptr<const Core::LinAlg::Map> artery_dof_row_map() const
     {
       FOUR_C_THROW("ArteryDofRowMap() not implemented in base class, wrong mesh tying object?");
       return nullptr;

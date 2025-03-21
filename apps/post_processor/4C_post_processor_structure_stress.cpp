@@ -113,7 +113,7 @@ struct WriteNodalStressStep : public SpecialFieldInterface
         result.read_result_serialdensematrix(groupname);
 
     const std::shared_ptr<Core::FE::Discretization> dis = result.field()->discretization();
-    const Epetra_Map* noderowmap = dis->node_row_map();
+    const Core::LinAlg::Map* noderowmap = dis->node_row_map();
 
     Teuchos::ParameterList p;
     Core::LinAlg::MultiVector<double> nodal_stress(*noderowmap, 6, true);
@@ -332,7 +332,7 @@ struct WriteNodalEigenStressStep : public SpecialFieldInterface
         result.read_result_serialdensematrix(groupname);
 
     const std::shared_ptr<Core::FE::Discretization> dis = result.field()->discretization();
-    const Epetra_Map* noderowmap = dis->node_row_map();
+    const Core::LinAlg::Map* noderowmap = dis->node_row_map();
 
     Core::LinAlg::MultiVector<double> nodal_stress(*noderowmap, 6, true);
 

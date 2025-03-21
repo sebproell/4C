@@ -13,9 +13,9 @@
 #include "4C_coupling_adapter_base.hpp"
 #include "4C_fem_general_shape_function_type.hpp"
 #include "4C_io_control.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_utils_exceptions.hpp"
 
-#include <Epetra_Map.h>
 #include <Teuchos_ParameterList.hpp>
 
 #include <memory>
@@ -255,10 +255,16 @@ namespace Coupling::Adapter
     //@{
 
     /// Get the interface dof row map of the master side
-    std::shared_ptr<const Epetra_Map> master_dof_map() const override { return pmasterdofrowmap_; }
+    std::shared_ptr<const Core::LinAlg::Map> master_dof_map() const override
+    {
+      return pmasterdofrowmap_;
+    }
 
     /// Get the interface dof row map of the slave side
-    std::shared_ptr<const Epetra_Map> slave_dof_map() const override { return pslavedofrowmap_; }
+    std::shared_ptr<const Core::LinAlg::Map> slave_dof_map() const override
+    {
+      return pslavedofrowmap_;
+    }
 
     //@}
 
@@ -313,9 +319,9 @@ namespace Coupling::Adapter
     /// perform mesh relocation
     void mesh_relocation(Core::FE::Discretization& slavedis,  ///< [in] Slave discretization
         std::shared_ptr<Core::FE::Discretization> aledis,     ///< [in] ALE discretization
-        std::shared_ptr<const Epetra_Map>
+        std::shared_ptr<const Core::LinAlg::Map>
             masterdofrowmap,  ///< [in] DOF row map of master discretization
-        std::shared_ptr<const Epetra_Map>
+        std::shared_ptr<const Core::LinAlg::Map>
             slavedofrowmap,  ///< [in] DOF row map of slave discretization
         std::shared_ptr<Core::LinAlg::Vector<double>>& idisp,  ///< [in] ALE displacements
         MPI_Comm comm,                                         ///< [in] Communicator
@@ -341,16 +347,16 @@ namespace Coupling::Adapter
     std::shared_ptr<Mortar::Interface> interface_;
 
     /// Map of master row dofs (after parallel redist.)
-    std::shared_ptr<const Epetra_Map> masterdofrowmap_;
+    std::shared_ptr<const Core::LinAlg::Map> masterdofrowmap_;
 
     /// Map of slave row dofs  (after parallel redist.)
-    std::shared_ptr<const Epetra_Map> slavedofrowmap_;
+    std::shared_ptr<const Core::LinAlg::Map> slavedofrowmap_;
 
     /// Map of master row dofs (before parallel redist.)
-    std::shared_ptr<const Epetra_Map> pmasterdofrowmap_;
+    std::shared_ptr<const Core::LinAlg::Map> pmasterdofrowmap_;
 
     /// Map of slave row dofs  (before parallel redist.)
-    std::shared_ptr<const Epetra_Map> pslavedofrowmap_;
+    std::shared_ptr<const Core::LinAlg::Map> pslavedofrowmap_;
 
     /// Slave side mortar matrix \f$D\f$
     std::shared_ptr<Core::LinAlg::SparseMatrix> D_;

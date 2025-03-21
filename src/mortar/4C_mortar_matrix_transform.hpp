@@ -11,11 +11,11 @@
 #include "4C_config.hpp"
 
 #include "4C_contact_utils.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_pairedvector.hpp"
 
 #include <Epetra_Export.h>
-#include <Epetra_Map.h>
 
 #include <memory>
 
@@ -33,7 +33,7 @@ namespace Mortar
         plain_block_export_pairs;
 
    public:
-    typedef Core::Gen::Pairedvector<CONTACT::MatBlockType, std::shared_ptr<Epetra_Map>*>
+    typedef Core::Gen::Pairedvector<CONTACT::MatBlockType, std::shared_ptr<Core::LinAlg::Map>*>
         plain_block_map_pairs;
 
    public:

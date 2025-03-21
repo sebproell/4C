@@ -146,7 +146,7 @@ namespace FLD
     \brief Clear all statistics vectors based on fluid maps collected in the current period
 
     */
-    void time_reset_fluid_avg_vectors(const Epetra_Map& dofrowmap);
+    void time_reset_fluid_avg_vectors(const Core::LinAlg::Map& dofrowmap);
 
     /*!
     \brief Clear all statistics collected up to now
@@ -158,7 +158,7 @@ namespace FLD
     \brief Clear statistics vectors based on fluid maps
 
     */
-    void reset_fluid_avg_vectors(const Epetra_Map& dofrowmap);
+    void reset_fluid_avg_vectors(const Core::LinAlg::Map& dofrowmap);
 
     /*!
     \brief Redistribute all statistics vectors

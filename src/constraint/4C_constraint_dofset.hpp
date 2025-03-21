@@ -13,8 +13,7 @@
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_dofset.hpp"
-
-#include <Epetra_Map.h>
+#include "4C_linalg_map.hpp"
 
 #include <list>
 #include <memory>

@@ -95,7 +95,7 @@ namespace POROMULTIPHASE
         unsigned nds, std::shared_ptr<const Core::LinAlg::Vector<double>> scalars) = 0;
 
     /// dof map of vector of unknowns
-    virtual std::shared_ptr<const Epetra_Map> struct_dof_row_map() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> struct_dof_row_map() const = 0;
 
     /// unknown displacements at \f$t_{n+1}\f$
     virtual std::shared_ptr<const Core::LinAlg::Vector<double>> struct_dispnp() const = 0;
@@ -104,10 +104,10 @@ namespace POROMULTIPHASE
     virtual std::shared_ptr<const Core::LinAlg::Vector<double>> struct_velnp() const = 0;
 
     /// dof map of vector of unknowns
-    virtual std::shared_ptr<const Epetra_Map> fluid_dof_row_map() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> fluid_dof_row_map() const = 0;
 
     /// dof map of vector of unknowns of artery field
-    virtual std::shared_ptr<const Epetra_Map> artery_dof_row_map() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> artery_dof_row_map() const = 0;
 
     /// return fluid flux
     virtual std::shared_ptr<const Core::LinAlg::MultiVector<double>> fluid_flux() const = 0;
@@ -125,7 +125,7 @@ namespace POROMULTIPHASE
     virtual std::shared_ptr<const Core::LinAlg::Vector<double>> solid_pressure() const = 0;
 
     //! unique map of all dofs that should be constrained with DBC
-    virtual std::shared_ptr<const Epetra_Map> combined_dbc_map() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> combined_dbc_map() const = 0;
 
     //! evaluate all fields at x^n+1 with x^n+1 = x_n + stepinc
     virtual void evaluate(std::shared_ptr<const Core::LinAlg::Vector<double>> sx,

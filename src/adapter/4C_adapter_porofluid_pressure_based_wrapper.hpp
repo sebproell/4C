@@ -55,10 +55,10 @@ namespace Adapter
     void read_restart(int restart) override;
 
     /// access dof row map
-    std::shared_ptr<const Epetra_Map> dof_row_map(unsigned nds = 0) const override;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map(unsigned nds = 0) const override;
 
     /// access dof row map
-    std::shared_ptr<const Epetra_Map> artery_dof_row_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> artery_dof_row_map() const override;
 
     /// access coupled system matrix
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> artery_porofluid_sysmat() const override;

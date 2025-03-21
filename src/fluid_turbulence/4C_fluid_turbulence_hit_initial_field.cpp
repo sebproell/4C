@@ -1165,7 +1165,7 @@ namespace FLD
     discret_->set_state(1, "intvelnp", *intvelnp_);
 
     // for 2nd evaluate
-    const Epetra_Map* intdofrowmap = discret_->dof_row_map(1);
+    const Core::LinAlg::Map* intdofrowmap = discret_->dof_row_map(1);
     Core::LinAlg::SerialDenseVector elevec1, elevec3;
     Core::LinAlg::SerialDenseMatrix elemat1, elemat2;
     Teuchos::ParameterList initParams;

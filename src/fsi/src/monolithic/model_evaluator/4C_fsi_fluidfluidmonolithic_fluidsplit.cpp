@@ -87,21 +87,22 @@ void FSI::FluidFluidMonolithicFluidSplit::prepare_time_step()
 void FSI::FluidFluidMonolithicFluidSplit::setup_dbc_map_extractor()
 {
   // merge Dirichlet maps of structure, fluid and ALE to global FSI Dirichlet map
-  std::vector<std::shared_ptr<const Epetra_Map>> dbcmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> dbcmaps;
 
   // structure DBC
   dbcmaps.push_back(structure_field()->get_dbc_map_extractor()->cond_map());
   // fluid DBC (including background & embedded discretization)
   dbcmaps.push_back(fluid_field()->get_dbc_map_extractor()->cond_map());
   // ALE-DBC-maps, free of FSI DOF
-  std::vector<std::shared_ptr<const Epetra_Map>> aleintersectionmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> aleintersectionmaps;
   aleintersectionmaps.push_back(ale_field()->get_dbc_map_extractor()->cond_map());
   aleintersectionmaps.push_back(ale_field()->interface()->other_map());
-  std::shared_ptr<Epetra_Map> aleintersectionmap =
+  std::shared_ptr<Core::LinAlg::Map> aleintersectionmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(aleintersectionmaps);
   dbcmaps.push_back(aleintersectionmap);
 
-  std::shared_ptr<const Epetra_Map> dbcmap = Core::LinAlg::MultiMapExtractor::merge_maps(dbcmaps);
+  std::shared_ptr<const Core::LinAlg::Map> dbcmap =
+      Core::LinAlg::MultiMapExtractor::merge_maps(dbcmaps);
 
   // finally, create the global FSI Dirichlet map extractor
   dbcmaps_ = std::make_shared<Core::LinAlg::MapExtractor>(*dof_row_map(), dbcmap, true);

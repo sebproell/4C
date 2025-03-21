@@ -78,7 +78,7 @@ namespace FLD
 
 
       void evaluate_dirichlet(
-          Core::LinAlg::Vector<double>& velnp, const Epetra_Map& condmap, double time);
+          Core::LinAlg::Vector<double>& velnp, const Core::LinAlg::Map& condmap, double time);
 
       /*!
       \brief Wrapper for FluidCouplingWrapper::write_restart
@@ -242,7 +242,7 @@ namespace FLD
 
 
       void evaluate_dirichlet(
-          Core::LinAlg::Vector<double>& velnp, const Epetra_Map& condmap, double time);
+          Core::LinAlg::Vector<double>& velnp, const Core::LinAlg::Map& condmap, double time);
 
       /*!
       \brief compute TimeUpdate

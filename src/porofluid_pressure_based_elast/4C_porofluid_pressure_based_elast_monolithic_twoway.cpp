@@ -158,7 +158,7 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::setup_system()
  *----------------------------------------------------------------------*/
 void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::setup_maps()
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
 
   vecSpaces.push_back(struct_dof_row_map());
 
@@ -234,9 +234,9 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::time_step()
 void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::build_combined_dbc_map()
 {
   // get structure and fluid dbc maps
-  const std::shared_ptr<const Epetra_Map> scondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> scondmap =
       structure_field()->get_dbc_map_extractor()->cond_map();
-  const std::shared_ptr<const Epetra_Map> fcondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> fcondmap =
       fluid_field()->get_dbc_map_extractor()->cond_map();
   // merge them
   combinedDBCMap_ = Core::LinAlg::merge_map(scondmap, fcondmap, false);
@@ -930,7 +930,8 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::linear_solve()
 /*----------------------------------------------------------------------*
  | get the dof row map                                 kremheller 03/17 |
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::dof_row_map()
+std::shared_ptr<const Core::LinAlg::Map>
+POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::dof_row_map()
 {
   return blockrowdofmap_->full_map();
 }
@@ -1295,7 +1296,7 @@ POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWayArteryCoupling::
  *----------------------------------------------------------------------*/
 void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWayArteryCoupling::setup_maps()
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
 
   vecSpaces.push_back(struct_dof_row_map());
 
@@ -1425,7 +1426,7 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWayArteryCoupling::build_combine
 {
   PoroMultiPhaseMonolithicTwoWay::build_combined_dbc_map();
 
-  const std::shared_ptr<const Epetra_Map> artcondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> artcondmap =
       fluid_field()->art_net_tim_int()->get_dbc_map_extractor()->cond_map();
 
   // merge them

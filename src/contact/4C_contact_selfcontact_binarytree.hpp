@@ -11,10 +11,9 @@
 #include "4C_config.hpp"
 
 #include "4C_fem_general_element.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_mortar_base_binarytree.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
-
-#include <Epetra_Map.h>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -508,7 +507,7 @@ namespace CONTACT
 
     */
     SelfBinaryTree(Core::FE::Discretization& discret, const Teuchos::ParameterList& iparams,
-        std::shared_ptr<Epetra_Map> elements, int dim, double eps);
+        std::shared_ptr<Core::LinAlg::Map> elements, int dim, double eps);
 
 
     //! @name Evaluation methods
@@ -811,7 +810,7 @@ namespace CONTACT
     SelfBinaryTree(const SelfBinaryTree& old) = delete;
 
     //! All contact elements on surface (full map)
-    std::shared_ptr<Epetra_Map> elements_;
+    std::shared_ptr<Core::LinAlg::Map> elements_;
 
     //! Interface-specific parameter list
     const Teuchos::ParameterList& iparams_;

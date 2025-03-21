@@ -176,7 +176,8 @@ namespace ScaTra
     virtual void setup_context_vector();
 
     //! Initialization of turbulence models
-    void init_turbulence_model(const Epetra_Map* dofrowmap, const Epetra_Map* noderowmap);
+    void init_turbulence_model(
+        const Core::LinAlg::Map* dofrowmap, const Core::LinAlg::Map* noderowmap);
 
     /*========================================================================*/
     //! @name general framework
@@ -545,16 +546,16 @@ namespace ScaTra
     std::shared_ptr<const Core::LinAlg::MapExtractor> dirich_maps() { return dbcmaps_; }
 
     //! add dirichlet dofs to dbcmaps_
-    void add_dirich_cond(const std::shared_ptr<const Epetra_Map> maptoadd);
+    void add_dirich_cond(const std::shared_ptr<const Core::LinAlg::Map> maptoadd);
 
     //! remove dirichlet dofs from dbcmaps_
-    void remove_dirich_cond(const std::shared_ptr<const Epetra_Map> maptoremove);
+    void remove_dirich_cond(const std::shared_ptr<const Core::LinAlg::Map> maptoremove);
 
     //! return pointer to const dofrowmap
-    std::shared_ptr<const Epetra_Map> dof_row_map();
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map();
 
     //! return pointer to const dofrowmap of specified dofset
-    std::shared_ptr<const Epetra_Map> dof_row_map(int nds);
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map(int nds);
 
     //! return discretization
     std::shared_ptr<Core::FE::Discretization> discretization() const override { return discret_; }
@@ -698,7 +699,7 @@ namespace ScaTra
      */
     virtual void build_block_maps(
         const std::vector<std::shared_ptr<Core::Conditions::Condition>>& partitioningconditions,
-        std::vector<std::shared_ptr<const Epetra_Map>>& blockmaps) const;
+        std::vector<std::shared_ptr<const Core::LinAlg::Map>>& blockmaps) const;
 
     //! build null spaces associated with blocks of global system matrix. Hand in solver to access
     //! parameter list and initial number of block (e.g. for coupled problems)

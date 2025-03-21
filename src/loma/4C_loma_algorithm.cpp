@@ -144,12 +144,12 @@ void LowMach::Algorithm::setup()
       FOUR_C_THROW("Incorrect number of dof sets in fluid field!");
 
     // create combined map for loma problem
-    std::vector<std::shared_ptr<const Epetra_Map>> dofrowmaps;
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> dofrowmaps;
 
     // insert actual (zeroth) map of the discretization: first fluid, then scatra
     {
       dofrowmaps.push_back(fluid_field()->dof_row_map(0));
-      const Epetra_Map* dofrowmapscatra = (scatra_field()->discretization())->dof_row_map(0);
+      const Core::LinAlg::Map* dofrowmapscatra = (scatra_field()->discretization())->dof_row_map(0);
       dofrowmaps.push_back(Core::Utils::shared_ptr_from_ref(*dofrowmapscatra));
     }
 
@@ -157,7 +157,8 @@ void LowMach::Algorithm::setup()
     if (dofrowmaps[0]->NumGlobalElements() == 0) FOUR_C_THROW("No fluid elements!");
     if (dofrowmaps[1]->NumGlobalElements() == 0) FOUR_C_THROW("No scatra elements!");
 
-    std::shared_ptr<Epetra_Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(dofrowmaps);
+    std::shared_ptr<Core::LinAlg::Map> fullmap =
+        Core::LinAlg::MultiMapExtractor::merge_maps(dofrowmaps);
 
     // full loma block dofrowmap
     lomablockdofrowmap_.setup(*fullmap, dofrowmaps);
@@ -249,9 +250,10 @@ void LowMach::Algorithm::setup()
     zeros_ = std::make_shared<Core::LinAlg::Vector<double>>(*lomablockdofrowmap_.full_map(), true);
 
     // create combined Dirichlet boundary condition map
-    const std::shared_ptr<const Epetra_Map> fdbcmap =
+    const std::shared_ptr<const Core::LinAlg::Map> fdbcmap =
         fluid_field()->get_dbc_map_extractor()->cond_map();
-    const std::shared_ptr<const Epetra_Map> sdbcmap = scatra_field()->dirich_maps()->cond_map();
+    const std::shared_ptr<const Core::LinAlg::Map> sdbcmap =
+        scatra_field()->dirich_maps()->cond_map();
     lomadbcmap_ = Core::LinAlg::merge_map(fdbcmap, sdbcmap, false);
   }
 

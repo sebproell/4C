@@ -66,7 +66,7 @@ FLD::TurbulenceStatisticsSqc::TurbulenceStatisticsSqc(
 
   //----------------------------------------------------------------------
   // allocate some (toggle) vectors
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   squaredvelnp_ = Core::LinAlg::create_vector(*dofrowmap, true);
 

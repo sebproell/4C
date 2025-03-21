@@ -252,10 +252,13 @@ void CONSTRAINTS::ConstraintSolver::solve_direct(Core::LinAlg::SparseMatrix& sti
     Core::LinAlg::Vector<double>& rhsstand, Core::LinAlg::Vector<double>& rhsconstr)
 {
   // define maps of standard dofs and additional lagrange multipliers
-  std::shared_ptr<Epetra_Map> standrowmap = std::make_shared<Epetra_Map>(stiff.row_map());
-  std::shared_ptr<Epetra_Map> conrowmap = std::make_shared<Epetra_Map>(constr.domain_map());
+  std::shared_ptr<Core::LinAlg::Map> standrowmap =
+      std::make_shared<Core::LinAlg::Map>(stiff.row_map());
+  std::shared_ptr<Core::LinAlg::Map> conrowmap =
+      std::make_shared<Core::LinAlg::Map>(constr.domain_map());
   // merge maps to one large map
-  std::shared_ptr<Epetra_Map> mergedmap = Core::LinAlg::merge_map(standrowmap, conrowmap, false);
+  std::shared_ptr<Core::LinAlg::Map> mergedmap =
+      Core::LinAlg::merge_map(standrowmap, conrowmap, false);
   // define MapExtractor
   Core::LinAlg::MapExtractor mapext(*mergedmap, standrowmap, conrowmap);
 
@@ -300,15 +303,21 @@ void CONSTRAINTS::ConstraintSolver::solve_simple(Core::LinAlg::SparseMatrix& sti
     Core::LinAlg::Vector<double>& rhsstand, Core::LinAlg::Vector<double>& rhsconstr)
 {
   // row maps (assumed to equal to range map) and extractor
-  std::shared_ptr<Epetra_Map> standrowmap = std::make_shared<Epetra_Map>(stiff.row_map());
-  std::shared_ptr<Epetra_Map> conrowmap = std::make_shared<Epetra_Map>(constr.domain_map());
-  std::shared_ptr<Epetra_Map> mergedrowmap = Core::LinAlg::merge_map(standrowmap, conrowmap, false);
+  std::shared_ptr<Core::LinAlg::Map> standrowmap =
+      std::make_shared<Core::LinAlg::Map>(stiff.row_map());
+  std::shared_ptr<Core::LinAlg::Map> conrowmap =
+      std::make_shared<Core::LinAlg::Map>(constr.domain_map());
+  std::shared_ptr<Core::LinAlg::Map> mergedrowmap =
+      Core::LinAlg::merge_map(standrowmap, conrowmap, false);
   Core::LinAlg::MapExtractor rowmapext(*mergedrowmap, conrowmap, standrowmap);
 
   // domain maps and extractor
-  std::shared_ptr<Epetra_Map> standdommap = std::make_shared<Epetra_Map>(stiff.domain_map());
-  std::shared_ptr<Epetra_Map> condommap = std::make_shared<Epetra_Map>(constr.domain_map());
-  std::shared_ptr<Epetra_Map> mergeddommap = Core::LinAlg::merge_map(standdommap, condommap, false);
+  std::shared_ptr<Core::LinAlg::Map> standdommap =
+      std::make_shared<Core::LinAlg::Map>(stiff.domain_map());
+  std::shared_ptr<Core::LinAlg::Map> condommap =
+      std::make_shared<Core::LinAlg::Map>(constr.domain_map());
+  std::shared_ptr<Core::LinAlg::Map> mergeddommap =
+      Core::LinAlg::merge_map(standdommap, condommap, false);
   Core::LinAlg::MapExtractor dommapext(*mergeddommap, condommap, standdommap);
 
   // cast constraint operators to matrices and save transpose of constraint matrix

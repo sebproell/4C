@@ -496,8 +496,8 @@ void Solid::Utils::Shell::Director::export_director_map_from_row_to_col_map(
     std::map<int, std::vector<double>>& director_map)
 {
   // export this map from nodal row map to nodal col map
-  const Epetra_Map* noderowmap = dis.node_row_map();
-  const Epetra_Map* nodecolmap = dis.node_col_map();
+  const Core::LinAlg::Map* noderowmap = dis.node_row_map();
+  const Core::LinAlg::Map* nodecolmap = dis.node_col_map();
   Core::Communication::Exporter exporter(*noderowmap, *nodecolmap, dis.get_comm());
   exporter.do_export(director_map);
 

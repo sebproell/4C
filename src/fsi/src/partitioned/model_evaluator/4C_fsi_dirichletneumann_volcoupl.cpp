@@ -494,7 +494,7 @@ void FSI::VolCorrector::setup(const int dim, std::shared_ptr<Adapter::FluidAle> 
     fluidaleelemap_[gid] = search(*aleele, CurrentDOPs);
   }  // end node loop
 
-  std::shared_ptr<Epetra_Map> FSIfluidnodes = Core::Conditions::condition_node_col_map(
+  std::shared_ptr<Core::LinAlg::Map> FSIfluidnodes = Core::Conditions::condition_node_col_map(
       *fluidale->fluid_field()->discretization(), "FSICoupling");
 
   std::set<int> globalnodeids;

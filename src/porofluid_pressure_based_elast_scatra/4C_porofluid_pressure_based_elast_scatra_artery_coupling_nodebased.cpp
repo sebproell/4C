@@ -93,7 +93,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::init()
       artex_->Map(1), condname_, coupleddofs_cont_, coupleddofs_art_);
 
   // full map of continuous field and uncoupled dofs of artery
-  std::vector<std::shared_ptr<const Epetra_Map>> maps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
   maps.push_back(contfieldex_->full_map());
   maps.push_back(artex_->Map(0));
 
@@ -124,7 +124,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup_map_extr
     Core::LinAlg::MultiMapExtractor& mapextractor, Core::FE::Discretization& dis,
     const std::vector<int>& coupleddofs)
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> partialmaps_coupled;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> partialmaps_coupled;
 
   // build coupled maps for all coupled dofs
   for (int idof = 0; idof < num_coupled_dofs_; idof++)
@@ -139,15 +139,16 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup_map_extr
     partialmaps_coupled.push_back(dummy.Map(1));
   }
   // fullmap coupled -> all coupled dofs
-  std::shared_ptr<Epetra_Map> fullmap_coupled =
+  std::shared_ptr<Core::LinAlg::Map> fullmap_coupled =
       Core::LinAlg::MultiMapExtractor::merge_maps(partialmaps_coupled);
 
   // fullmap uncoupled -> all uncoupled dofs
   Core::LinAlg::MapExtractor temp(*dis.dof_row_map(), fullmap_coupled, false);
-  std::shared_ptr<Epetra_Map> fullmap_uncoupled = std::make_shared<Epetra_Map>(*temp.cond_map());
+  std::shared_ptr<Core::LinAlg::Map> fullmap_uncoupled =
+      std::make_shared<Core::LinAlg::Map>(*temp.cond_map());
 
   // vector for setup of extractor
-  std::vector<std::shared_ptr<const Epetra_Map>> fullmap_vector;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> fullmap_vector;
   fullmap_vector.push_back(fullmap_uncoupled);
   fullmap_vector.push_back(fullmap_coupled);
 
@@ -278,7 +279,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::extract_single
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::check_dbc_on_coupled_dofs(
-    Core::FE::Discretization& dis, const std::shared_ptr<const Epetra_Map>& coupleddofmap)
+    Core::FE::Discretization& dis, const std::shared_ptr<const Core::LinAlg::Map>& coupleddofmap)
 {
   // object holds maps/subsets for DOFs subjected to Dirichlet BCs and otherwise
   std::shared_ptr<Core::LinAlg::MapExtractor> dbcmaps =
@@ -294,10 +295,10 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::check_dbc_on_c
     dis.evaluate_dirichlet(eleparams, zeros, nullptr, nullptr, nullptr, dbcmaps);
   }
   // intersect DBC maps and coupled dof map to check if coupling and DBC are applied on same dofs
-  std::vector<std::shared_ptr<const Epetra_Map>> dummy;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> dummy;
   dummy.push_back(dbcmaps->cond_map());
   dummy.push_back(coupleddofmap);
-  std::shared_ptr<Epetra_Map> intersect_dbc_coupled =
+  std::shared_ptr<Core::LinAlg::Map> intersect_dbc_coupled =
       Core::LinAlg::MultiMapExtractor::intersect_maps(dummy);
 
   if (intersect_dbc_coupled->NumGlobalElements() > 0)
@@ -349,7 +350,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::check_initial_
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map>
+std::shared_ptr<const Core::LinAlg::Map>
 PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::artery_dof_row_map() const
 {
   return artex_->Map(0);
@@ -357,7 +358,7 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::artery_dof_row_map(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map>
+std::shared_ptr<const Core::LinAlg::Map>
 PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::dof_row_map() const
 {
   return fullmap_;

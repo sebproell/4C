@@ -69,7 +69,7 @@ namespace ALE
     void split_mortar_matrix(std::shared_ptr<Core::LinAlg::SparseMatrix>& MortarMatrix,
         std::shared_ptr<Core::LinAlg::SparseMatrix>& MasterMatrix,
         std::shared_ptr<Core::LinAlg::SparseMatrix>& SlaveMatrix,
-        std::shared_ptr<const Epetra_Map>& dofrowmap);
+        std::shared_ptr<const Core::LinAlg::Map>& dofrowmap);
 
     //! Compute and update the increments of the slave node (do nothing in the mesh sliding case)
     void update_slave_dof(std::shared_ptr<Core::LinAlg::Vector<double>>& inc,

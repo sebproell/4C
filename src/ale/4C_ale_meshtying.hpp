@@ -82,7 +82,8 @@ namespace ALE
     std::shared_ptr<Core::LinAlg::SparseOperator> msht_split();
 
     //! Check weather Dirichlet BC are defined on the master
-    void dirichlet_on_master(std::shared_ptr<const Epetra_Map> bmaps  ///> map of boundary condition
+    void dirichlet_on_master(
+        std::shared_ptr<const Core::LinAlg::Map> bmaps  ///> map of boundary condition
     );
 
     //! Prepare matrix and residual for meshtying
@@ -154,16 +155,16 @@ namespace ALE
     Core::LinAlg::Solver& solver_;  // standard solver object
 
     //! dof row map of the complete system
-    const Epetra_Map* dofrowmap_;
+    const Core::LinAlg::Map* dofrowmap_;
 
     //! slave dof rowmap
-    std::shared_ptr<const Epetra_Map> gsdofrowmap_;
+    std::shared_ptr<const Core::LinAlg::Map> gsdofrowmap_;
 
     //! master dof rowmap
-    std::shared_ptr<const Epetra_Map> gmdofrowmap_;
+    std::shared_ptr<const Core::LinAlg::Map> gmdofrowmap_;
 
     //! merged map for saddle point system and 2x2 block matrix
-    std::shared_ptr<Epetra_Map> mergedmap_;
+    std::shared_ptr<Core::LinAlg::Map> mergedmap_;
 
    private:
     //! Split vector and save parts in a std::vector<std::shared_ptr<Core::LinAlg::Vector<double>> >
@@ -184,13 +185,13 @@ namespace ALE
     const Utils::MapExtractor* surfacesplitter_;
 
     //! dof row map of the complete system
-    std::shared_ptr<Epetra_Map> problemrowmap_;
+    std::shared_ptr<Core::LinAlg::Map> problemrowmap_;
 
     //! dof rowmap of all nodes, which are not on the interface
-    std::shared_ptr<Epetra_Map> gndofrowmap_;
+    std::shared_ptr<Core::LinAlg::Map> gndofrowmap_;
 
     //! slave & master dof rowmap
-    std::shared_ptr<Epetra_Map> gsmdofrowmap_;
+    std::shared_ptr<Core::LinAlg::Map> gsmdofrowmap_;
 
     //! vector containing time-depending values of the dirichlet condition
     /// valuesdc_ = (dispnp after applying DC) - (dispn)

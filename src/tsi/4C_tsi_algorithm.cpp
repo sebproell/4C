@@ -338,7 +338,7 @@ void TSI::Algorithm::output_deformation_in_thermo(
   int err(0);
 
   // get dofrowmap of structural discretisation
-  const Epetra_Map* structdofrowmap = structdis.dof_row_map(0);
+  const Core::LinAlg::Map* structdofrowmap = structdis.dof_row_map(0);
 
   // loop over all local nodes of thermal discretisation
   for (int lnodeid = 0; lnodeid < (thermo_field()->discretization()->num_my_row_nodes()); lnodeid++)

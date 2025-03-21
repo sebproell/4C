@@ -105,15 +105,15 @@ namespace NOX
         //! @name Handle active set strategies
         //! @{
         //! Returns the current active set map (only needed for inequality constraint problems)
-        Teuchos::RCP<const Epetra_Map> get_current_active_set_map(
+        Teuchos::RCP<const Core::LinAlg::Map> get_current_active_set_map(
             const enum NOX::Nln::StatusTest::QuantityType& qtype) const;
 
         //! Returns the active set map of the previous Newton step (only needed for inequality
         //! constraint problems)
-        Teuchos::RCP<const Epetra_Map> get_old_active_set_map(
+        Teuchos::RCP<const Core::LinAlg::Map> get_old_active_set_map(
             const enum NOX::Nln::StatusTest::QuantityType& qtype) const;
 
-        //! Returns basic information about the active set status (no Epetra_Maps needed!)
+        //! Returns basic information about the active set status (no Core::LinAlg::Maps needed!)
         enum ::NOX::StatusTest::StatusType get_active_set_info(
             const enum NOX::Nln::StatusTest::QuantityType& qtype, int& activeset_size) const;
 

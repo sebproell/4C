@@ -52,11 +52,11 @@ std::shared_ptr<FLD::XFluidState> FLD::XFluidStateCreator::create(
   //--------------------------------------------------------------------------------------
   // Create the XFluidState object
 
-  std::shared_ptr<const Epetra_Map> xfluiddofrowmap =
-      std::make_shared<Epetra_Map>(*xdiscret->dof_row_map());
+  std::shared_ptr<const Core::LinAlg::Map> xfluiddofrowmap =
+      std::make_shared<Core::LinAlg::Map>(*xdiscret->dof_row_map());
 
-  std::shared_ptr<const Epetra_Map> xfluiddofcolmap =
-      std::make_shared<Epetra_Map>(*xdiscret->dof_col_map());
+  std::shared_ptr<const Core::LinAlg::Map> xfluiddofcolmap =
+      std::make_shared<Core::LinAlg::Map>(*xdiscret->dof_col_map());
 
   std::shared_ptr<XFluidState> state = std::make_shared<FLD::XFluidState>(
       condition_manager_, wizard, dofset, xfluiddofrowmap, xfluiddofcolmap);
@@ -97,14 +97,14 @@ std::shared_ptr<FLD::XFluidFluidState> FLD::XFluidStateCreator::create(
   //--------------------------------------------------------------------------------------
   // Create the XFluidFluidState object
 
-  std::shared_ptr<const Epetra_Map> xfluiddofrowmap =
-      std::make_shared<Epetra_Map>(*xdiscret->dof_row_map());
+  std::shared_ptr<const Core::LinAlg::Map> xfluiddofrowmap =
+      std::make_shared<Core::LinAlg::Map>(*xdiscret->dof_row_map());
 
-  std::shared_ptr<const Epetra_Map> xfluiddofcolmap =
-      std::make_shared<Epetra_Map>(*xdiscret->dof_col_map());
+  std::shared_ptr<const Core::LinAlg::Map> xfluiddofcolmap =
+      std::make_shared<Core::LinAlg::Map>(*xdiscret->dof_col_map());
 
-  std::shared_ptr<const Epetra_Map> embfluiddofrowmap =
-      std::make_shared<Epetra_Map>(*embfluiddiscret->dof_row_map());
+  std::shared_ptr<const Core::LinAlg::Map> embfluiddofrowmap =
+      std::make_shared<Core::LinAlg::Map>(*embfluiddiscret->dof_row_map());
 
   std::shared_ptr<FLD::XFluidFluidState> state = std::make_shared<FLD::XFluidFluidState>(
       condition_manager_, wizard, dofset, xfluiddofrowmap, xfluiddofcolmap, embfluiddofrowmap);

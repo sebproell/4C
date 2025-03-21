@@ -53,7 +53,7 @@ void Adapter::StructurePoroWrapper::setup()
 }
 
 //! unique map of all dofs that should be constrained with DBC
-std::shared_ptr<const Epetra_Map> Adapter::StructurePoroWrapper::combined_dbc_map()
+std::shared_ptr<const Core::LinAlg::Map> Adapter::StructurePoroWrapper::combined_dbc_map()
 {
   switch (type_)
   {

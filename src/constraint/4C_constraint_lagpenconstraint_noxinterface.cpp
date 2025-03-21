@@ -237,7 +237,7 @@ bool LAGPENCONSTRAINT::NoxInterfacePrec::is_condensed_system() const
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void LAGPENCONSTRAINT::NoxInterfacePrec::fill_maps_for_preconditioner(
-    std::vector<Teuchos::RCP<Epetra_Map>>& maps) const
+    std::vector<Teuchos::RCP<Core::LinAlg::Map>>& maps) const
 {
 }
 

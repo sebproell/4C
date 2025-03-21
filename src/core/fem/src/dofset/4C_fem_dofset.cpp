@@ -533,16 +533,16 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
     std::copy(dofs.begin(), dofs.end(), std::back_inserter(localcoldofs));
   }
 
-  dofrowmap_ = std::make_shared<Epetra_Map>(-1, localrowdofs.size(), localrowdofs.data(), 0,
+  dofrowmap_ = std::make_shared<Core::LinAlg::Map>(-1, localrowdofs.size(), localrowdofs.data(), 0,
       Core::Communication::as_epetra_comm(dis.get_comm()));
   if (!dofrowmap_->UniqueGIDs()) FOUR_C_THROW("Dof row map is not unique");
-  dofcolmap_ = std::make_shared<Epetra_Map>(-1, localcoldofs.size(), localcoldofs.data(), 0,
+  dofcolmap_ = std::make_shared<Core::LinAlg::Map>(-1, localcoldofs.size(), localcoldofs.data(), 0,
       Core::Communication::as_epetra_comm(dis.get_comm()));
 
   // **********************************************************************
   // **********************************************************************
   // build map of all (non-unique) column DoFs
-  dofscolnodes_ = std::make_shared<Epetra_Map>(-1, allnodelocalcoldofs.size(),
+  dofscolnodes_ = std::make_shared<Core::LinAlg::Map>(-1, allnodelocalcoldofs.size(),
       allnodelocalcoldofs.data(), 0, Core::Communication::as_epetra_comm(dis.get_comm()));
 
   // build shift vector
@@ -586,7 +586,7 @@ bool Core::DOFSets::DofSet::initialized() const
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Epetra_Map* Core::DOFSets::DofSet::dof_row_map() const
+const Core::LinAlg::Map* Core::DOFSets::DofSet::dof_row_map() const
 {
   if (dofrowmap_ == nullptr)
     FOUR_C_THROW("Core::DOFSets::DofSet::dof_row_map(): dofrowmap_ not initialized, yet");
@@ -596,7 +596,7 @@ const Epetra_Map* Core::DOFSets::DofSet::dof_row_map() const
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Epetra_Map* Core::DOFSets::DofSet::dof_col_map() const
+const Core::LinAlg::Map* Core::DOFSets::DofSet::dof_col_map() const
 {
   if (dofcolmap_ == nullptr)
     FOUR_C_THROW("Core::DOFSets::DofSet::DofColMap(): dofcolmap_ not initialized, yet");

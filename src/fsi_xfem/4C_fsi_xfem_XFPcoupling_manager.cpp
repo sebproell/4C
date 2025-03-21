@@ -95,12 +95,12 @@ void XFEM::XfpCouplingManager::set_coupling_states()
       CouplingCommManager::full_to_partial);
 
   // As interfaces embedded into the background mesh are fully ghosted, we don't know which
-  std::shared_ptr<Epetra_Map> sfulldofmap =
+  std::shared_ptr<Core::LinAlg::Map> sfulldofmap =
       Core::LinAlg::allreduce_e_map(*poro_->structure_field()->discretization()->dof_row_map());
   std::shared_ptr<Core::LinAlg::Vector<double>> dispnp_col =
       std::make_shared<Core::LinAlg::Vector<double>>(*sfulldofmap, true);
   Core::LinAlg::export_to(*poro_->structure_field()->dispnp(), *dispnp_col);
-  std::shared_ptr<Epetra_Map> ffulldofmap =
+  std::shared_ptr<Core::LinAlg::Map> ffulldofmap =
       Core::LinAlg::allreduce_e_map(*poro_->fluid_field()->discretization()->dof_row_map());
   std::shared_ptr<Core::LinAlg::Vector<double>> velnp_col =
       std::make_shared<Core::LinAlg::Vector<double>>(*ffulldofmap, true);

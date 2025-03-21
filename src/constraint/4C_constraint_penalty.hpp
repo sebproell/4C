@@ -85,9 +85,9 @@ namespace CONSTRAINTS
     std::shared_ptr<Epetra_Export>
         errorexport_;  ///< exporter for redundant and non-overlapping maps
     std::shared_ptr<Epetra_Import>
-        errorimport_;                          ///< importer for redundant and non-overlapping maps
-    std::shared_ptr<Epetra_Map> rederrormap_;  ///< redundant map of errors
-    std::shared_ptr<Epetra_Map> errormap_;     ///< non-overlapping map of errors
+        errorimport_;  ///< importer for redundant and non-overlapping maps
+    std::shared_ptr<Core::LinAlg::Map> rederrormap_;           ///< redundant map of errors
+    std::shared_ptr<Core::LinAlg::Map> errormap_;              ///< non-overlapping map of errors
     std::shared_ptr<Core::LinAlg::Vector<double>> initerror_;  ///< initial value of bc
     std::shared_ptr<Core::LinAlg::Vector<double>> acterror_;   ///< current value of bc
     std::shared_ptr<Core::LinAlg::Vector<double>>

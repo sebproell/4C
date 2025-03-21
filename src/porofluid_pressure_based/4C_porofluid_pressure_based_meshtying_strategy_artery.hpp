@@ -74,7 +74,7 @@ namespace POROFLUIDMULTIPHASE
     std::shared_ptr<Adapter::ArtNet> art_net_tim_int() override { return artnettimint_; }
 
     //! access dof row map
-    std::shared_ptr<const Epetra_Map> artery_dof_row_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> artery_dof_row_map() const override;
 
     //! right-hand side alias the dynamic force residual for coupled system
     std::shared_ptr<const Core::LinAlg::Vector<double>> artery_porofluid_rhs() const override;

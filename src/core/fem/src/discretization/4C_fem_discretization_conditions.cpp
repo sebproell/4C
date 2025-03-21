@@ -567,7 +567,7 @@ bool Core::FE::Discretization::build_volumesin_condition(
   if (!nodeids) FOUR_C_THROW("Cannot find array 'Node Ids' in condition");
 
   // extract colnodes on this proc from condition
-  const Epetra_Map* colmap = node_col_map();
+  const Core::LinAlg::Map* colmap = node_col_map();
   std::set<int> mynodes;
 
   std::remove_copy_if(nodeids->begin(), nodeids->end(), std::inserter(mynodes, mynodes.begin()),
@@ -627,7 +627,7 @@ void Core::FE::Discretization::find_associated_ele_ids(
       if (!nodeids) FOUR_C_THROW("Cannot find array 'Node Ids' in condition");
 
       // extract colnodes on this proc from condition
-      const Epetra_Map* colmap = node_col_map();
+      const Core::LinAlg::Map* colmap = node_col_map();
       std::set<int> mynodes;
 
       std::remove_copy_if(nodeids->begin(), nodeids->end(), std::inserter(mynodes, mynodes.begin()),

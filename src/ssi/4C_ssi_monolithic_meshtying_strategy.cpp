@@ -12,12 +12,11 @@
 #include "4C_coupling_adapter_converter.hpp"
 #include "4C_fem_condition_locsys.hpp"
 #include "4C_linalg_blocksparsematrix.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 #include "4C_scatra_timint_meshtying_strategy_s2i.hpp"
 #include "4C_ssi_monolithic.hpp"
 #include "4C_ssi_utils.hpp"
-
-#include <Epetra_Map.h>
 
 FOUR_C_NAMESPACE_OPEN
 

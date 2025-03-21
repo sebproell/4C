@@ -78,7 +78,7 @@ void Adapter::FluidFluidFSI::prepare_time_step()
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> Adapter::FluidFluidFSI::dof_row_map()
+std::shared_ptr<const Core::LinAlg::Map> Adapter::FluidFluidFSI::dof_row_map()
 {
   return xfluidfluid_->dof_row_map();
 }
@@ -158,10 +158,10 @@ std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> Adapter::FluidFluidFSI::blo
 
   // Create a local copy of the inner & conditioned map
   // Reason: the matrix splitting method from Core::LINALG expects non-const maps
-  std::shared_ptr<Epetra_Map> innermap =
-      std::make_shared<Epetra_Map>(*mergedfluidinterface_->other_map());
-  std::shared_ptr<Epetra_Map> condmap =
-      std::make_shared<Epetra_Map>(*mergedfluidinterface_->fsi_cond_map());
+  std::shared_ptr<Core::LinAlg::Map> innermap =
+      std::make_shared<Core::LinAlg::Map>(*mergedfluidinterface_->other_map());
+  std::shared_ptr<Core::LinAlg::Map> condmap =
+      std::make_shared<Core::LinAlg::Map>(*mergedfluidinterface_->fsi_cond_map());
   return xfluidfluid_->block_system_matrix(innermap, condmap);
 }
 
@@ -230,16 +230,16 @@ const std::shared_ptr<Core::FE::Discretization>& Adapter::FluidFluidFSI::discret
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> Adapter::FluidFluidFSI::velocity_row_map()
+std::shared_ptr<const Core::LinAlg::Map> Adapter::FluidFluidFSI::velocity_row_map()
 {
   // in case of fsi with fluidsplit, return the embedded velocity DOF
   // (to understand the motivation behind this, have a look at the recovery of the
   // Lagrange multiplier in standard ALE-FSI class (fluidsplit) in case of active
   // shape derivatives)
-  std::vector<std::shared_ptr<const Epetra_Map>> maps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
   maps.push_back(xfluidfluid_->x_fluid_fluid_map_extractor()->fluid_map());
   maps.push_back(xfluidfluid_->velocity_row_map());
-  std::shared_ptr<const Epetra_Map> innervelocitymap =
+  std::shared_ptr<const Core::LinAlg::Map> innervelocitymap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(maps);
   return innervelocitymap;
 }
@@ -282,7 +282,7 @@ void Adapter::FluidFluidFSI::setup_interface(const int nds_master)
   FluidFSI::setup_interface();
 
   // get background fluid map
-  std::shared_ptr<const Epetra_Map> xfluidmap =
+  std::shared_ptr<const Core::LinAlg::Map> xfluidmap =
       xfluidfluid_->x_fluid_fluid_map_extractor()->x_fluid_map();
   // do the setup
   mergedfluidinterface_->setup(xfluidmap, *FluidFSI::interface());

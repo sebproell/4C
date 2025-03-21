@@ -156,7 +156,7 @@ void FPSI::MonolithicPlain::setup_system()
   FPSI::Monolithic::setup_system();
 
   // create combined map
-  std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
 
   vecSpaces.push_back(poro_field()->extractor()->Map(0));
 
@@ -198,7 +198,7 @@ void FPSI::MonolithicPlain::setup_system()
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void FPSI::MonolithicPlain::set_dof_row_maps(
-    const std::vector<std::shared_ptr<const Epetra_Map>>& maps)
+    const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps)
 {
   fullmap_ = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
 
@@ -1089,7 +1089,7 @@ void FPSI::MonolithicPlain::recover_lagrange_multiplier()
        */
 
       // extract inner velocity DOFs after calling AleToFluid()
-      std::shared_ptr<Epetra_Map> velothermap = Core::LinAlg::split_map(
+      std::shared_ptr<Core::LinAlg::Map> velothermap = Core::LinAlg::split_map(
           *fluid_field()->velocity_row_map(), *interface_fluid_ale_coupling_fsi().master_dof_map());
       Core::LinAlg::MapExtractor velothermapext =
           Core::LinAlg::MapExtractor(*fluid_field()->velocity_row_map(), velothermap, false);

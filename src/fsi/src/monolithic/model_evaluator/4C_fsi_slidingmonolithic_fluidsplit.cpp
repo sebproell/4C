@@ -49,10 +49,10 @@ FSI::SlidingMonolithicFluidSplit::SlidingMonolithicFluidSplit(
   // ---------------------------------------------------------------------------
   // Create intersection of slave DOFs that hold a Dirichlet boundary condition
   // and are located at the FSI interface
-  std::vector<std::shared_ptr<const Epetra_Map>> intersectionmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> intersectionmaps;
   intersectionmaps.push_back(fluid_field()->get_dbc_map_extractor()->cond_map());
   intersectionmaps.push_back(fluid_field()->interface()->fsi_cond_map());
-  std::shared_ptr<Epetra_Map> intersectionmap =
+  std::shared_ptr<Core::LinAlg::Map> intersectionmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
   // Check whether the intersection is empty
@@ -262,8 +262,8 @@ void FSI::SlidingMonolithicFluidSplit::setup_system()
     Coupling::Adapter::Coupling& coupfa = fluid_ale_coupling();
 
     // the fluid-ale coupling always matches
-    const Epetra_Map* fluidnodemap = fluid_field()->discretization()->node_row_map();
-    const Epetra_Map* alenodemap = ale_field()->discretization()->node_row_map();
+    const Core::LinAlg::Map* fluidnodemap = fluid_field()->discretization()->node_row_map();
+    const Core::LinAlg::Map* alenodemap = ale_field()->discretization()->node_row_map();
 
     coupfa.setup_coupling(*fluid_field()->discretization(), *ale_field()->discretization(),
         *fluidnodemap, *alenodemap, ndim);
@@ -314,7 +314,7 @@ void FSI::SlidingMonolithicFluidSplit::setup_system()
 /*----------------------------------------------------------------------------*/
 void FSI::SlidingMonolithicFluidSplit::create_combined_dof_row_map()
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
   vecSpaces.push_back(structure_field()->dof_row_map());
   vecSpaces.push_back(fluid_field()->dof_row_map());
   vecSpaces.push_back(fsi_ale_field()->fsi_interface()->other_map());
@@ -336,18 +336,19 @@ void FSI::SlidingMonolithicFluidSplit::setup_dbc_map_extractor()
    * DOFs are not part of the final system of equations. Hence, we just need the
    * intersection of inner ALE DOFs with Dirichlet ALE DOFs.
    */
-  std::vector<std::shared_ptr<const Epetra_Map>> aleintersectionmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> aleintersectionmaps;
   aleintersectionmaps.push_back(ale_field()->get_dbc_map_extractor()->cond_map());
   aleintersectionmaps.push_back(fsi_ale_field()->fsi_interface()->other_map());
-  std::shared_ptr<Epetra_Map> aleintersectionmap =
+  std::shared_ptr<Core::LinAlg::Map> aleintersectionmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(aleintersectionmaps);
 
   // Merge Dirichlet maps of structure, fluid and ALE to global FSI Dirichlet map
-  std::vector<std::shared_ptr<const Epetra_Map>> dbcmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> dbcmaps;
   dbcmaps.push_back(structure_field()->get_dbc_map_extractor()->cond_map());
   dbcmaps.push_back(fluid_field()->get_dbc_map_extractor()->cond_map());
   dbcmaps.push_back(aleintersectionmap);
-  std::shared_ptr<const Epetra_Map> dbcmap = Core::LinAlg::MultiMapExtractor::merge_maps(dbcmaps);
+  std::shared_ptr<const Core::LinAlg::Map> dbcmap =
+      Core::LinAlg::MultiMapExtractor::merge_maps(dbcmaps);
 
   // Finally, create the global FSI Dirichlet map extractor
   dbcmaps_ = std::make_shared<Core::LinAlg::MapExtractor>(*dof_row_map(), dbcmap, true);
@@ -1205,7 +1206,7 @@ Teuchos::RCP<::NOX::StatusTest::Combo> FSI::SlidingMonolithicFluidSplit::create_
   // setup tests for interface
   // ---------------------------------------------------------------------------
   // build mapextractor
-  std::vector<std::shared_ptr<const Epetra_Map>> interface;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> interface;
   interface.push_back(structure_field()->interface()->fsi_cond_map());
   interface.push_back(nullptr);
   Core::LinAlg::MultiMapExtractor interfaceextract(*dof_row_map(), interface);
@@ -1248,7 +1249,7 @@ Teuchos::RCP<::NOX::StatusTest::Combo> FSI::SlidingMonolithicFluidSplit::create_
   // setup tests for fluid velocity field
   // ---------------------------------------------------------------------------
   // build mapextractor
-  std::vector<std::shared_ptr<const Epetra_Map>> fluidvel;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> fluidvel;
   fluidvel.push_back(fluid_field()->inner_velocity_row_map());
   fluidvel.push_back(nullptr);
   Core::LinAlg::MultiMapExtractor fluidvelextract(*dof_row_map(), fluidvel);
@@ -1291,7 +1292,7 @@ Teuchos::RCP<::NOX::StatusTest::Combo> FSI::SlidingMonolithicFluidSplit::create_
   // setup tests for fluid pressure field
   // ---------------------------------------------------------------------------
   // build mapextractor
-  std::vector<std::shared_ptr<const Epetra_Map>> fluidpress;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> fluidpress;
   fluidpress.push_back(fluid_field()->pressure_row_map());
   fluidpress.push_back(nullptr);
   Core::LinAlg::MultiMapExtractor fluidpressextract(*dof_row_map(), fluidpress);
@@ -1708,7 +1709,7 @@ void FSI::SlidingMonolithicFluidSplit::recover_lagrange_multiplier()
      */
 
     // extract inner velocity DOFs after calling AleToFluid()
-    std::shared_ptr<Epetra_Map> velothermap = Core::LinAlg::split_map(
+    std::shared_ptr<Core::LinAlg::Map> velothermap = Core::LinAlg::split_map(
         *fluid_field()->velocity_row_map(), *interface_fluid_ale_coupling().master_dof_map());
     Core::LinAlg::MapExtractor velothermapext =
         Core::LinAlg::MapExtractor(*fluid_field()->velocity_row_map(), velothermap, false);

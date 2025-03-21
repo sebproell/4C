@@ -16,7 +16,7 @@
 #include "4C_inpar_xfem.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 
-class Epetra_Map;
+class Core::LinAlg::Map;
 
 FOUR_C_NAMESPACE_OPEN
 

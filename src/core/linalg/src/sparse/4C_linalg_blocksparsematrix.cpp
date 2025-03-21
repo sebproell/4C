@@ -132,7 +132,7 @@ void Core::LinAlg::BlockSparseMatrixBase::complete(bool enforce_complete)
     }
   }
 
-  fullrowmap_ = std::make_shared<Epetra_Map>(*(rangemaps_.full_map()));
+  fullrowmap_ = std::make_shared<Core::LinAlg::Map>(*(rangemaps_.full_map()));
 
   if (fullcolmap_ == nullptr)
   {
@@ -142,7 +142,7 @@ void Core::LinAlg::BlockSparseMatrixBase::complete(bool enforce_complete)
     {
       for (int r = 0; r < rows(); ++r)
       {
-        const Epetra_Map& colmap = matrix(r, c).col_map();
+        const Core::LinAlg::Map& colmap = matrix(r, c).col_map();
         colmapentries.insert(colmapentries.end(), colmap.MyGlobalElements(),
             colmap.MyGlobalElements() + colmap.NumMyElements());
       }
@@ -150,8 +150,8 @@ void Core::LinAlg::BlockSparseMatrixBase::complete(bool enforce_complete)
     std::sort(colmapentries.begin(), colmapentries.end());
     colmapentries.erase(
         std::unique(colmapentries.begin(), colmapentries.end()), colmapentries.end());
-    fullcolmap_ =
-        std::make_shared<Epetra_Map>(-1, colmapentries.size(), colmapentries.data(), 0, Comm());
+    fullcolmap_ = std::make_shared<Core::LinAlg::Map>(
+        -1, colmapentries.size(), colmapentries.data(), 0, Comm());
   }
 }
 
@@ -159,7 +159,7 @@ void Core::LinAlg::BlockSparseMatrixBase::complete(bool enforce_complete)
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Core::LinAlg::BlockSparseMatrixBase::complete(
-    const Epetra_Map& domainmap, const Epetra_Map& rangemap, bool enforce_complete)
+    const Core::LinAlg::Map& domainmap, const Core::LinAlg::Map& rangemap, bool enforce_complete)
 {
   FOUR_C_THROW("Complete with arguments not supported for block matrices");
 }
@@ -203,7 +203,7 @@ void Core::LinAlg::BlockSparseMatrixBase::apply_dirichlet(
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Core::LinAlg::BlockSparseMatrixBase::apply_dirichlet(
-    const Epetra_Map& dbcmap, bool diagonalblock)
+    const Core::LinAlg::Map& dbcmap, bool diagonalblock)
 {
   for (int rblock = 0; rblock < rows(); ++rblock)
   {
@@ -217,8 +217,8 @@ void Core::LinAlg::BlockSparseMatrixBase::apply_dirichlet(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-bool Core::LinAlg::BlockSparseMatrixBase::is_dbc_applied(
-    const Epetra_Map& dbcmap, bool diagonalblock, const Core::LinAlg::SparseMatrix* trafo) const
+bool Core::LinAlg::BlockSparseMatrixBase::is_dbc_applied(const Core::LinAlg::Map& dbcmap,
+    bool diagonalblock, const Core::LinAlg::SparseMatrix* trafo) const
 {
   for (int rblock = 0; rblock < rows(); ++rblock)
   {
@@ -413,7 +413,7 @@ const Epetra_Comm& Core::LinAlg::BlockSparseMatrixBase::Comm() const
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Epetra_Map& Core::LinAlg::BlockSparseMatrixBase::OperatorDomainMap() const
+const Core::LinAlg::Map& Core::LinAlg::BlockSparseMatrixBase::OperatorDomainMap() const
 {
   return full_domain_map();
 }
@@ -421,7 +421,7 @@ const Epetra_Map& Core::LinAlg::BlockSparseMatrixBase::OperatorDomainMap() const
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Epetra_Map& Core::LinAlg::BlockSparseMatrixBase::OperatorRangeMap() const
+const Core::LinAlg::Map& Core::LinAlg::BlockSparseMatrixBase::OperatorRangeMap() const
 {
   return full_range_map();
 }
@@ -434,9 +434,9 @@ void Core::LinAlg::BlockSparseMatrixBase::get_partial_extractor(
 {
   const unsigned num_blocks = block_ids.size();
 
-  std::shared_ptr<Epetra_Map> full_map = nullptr;
+  std::shared_ptr<Core::LinAlg::Map> full_map = nullptr;
 
-  std::vector<std::shared_ptr<const Epetra_Map>> p_block_maps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> p_block_maps;
   p_block_maps.reserve(num_blocks);
 
   for (const int id : block_ids)
@@ -461,21 +461,21 @@ Core::LinAlg::block_matrix2x2(Core::LinAlg::SparseMatrix& A00, Core::LinAlg::Spa
 
 
   // generate range map
-  std::vector<std::shared_ptr<const Epetra_Map>> range_maps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> range_maps;
   range_maps.reserve(2);
 
-  range_maps.emplace_back(std::make_shared<Epetra_Map>(A00.range_map()));
-  range_maps.emplace_back(std::make_shared<Epetra_Map>(A10.range_map()));
-  std::shared_ptr<const Epetra_Map> range_map = MultiMapExtractor::merge_maps(range_maps);
+  range_maps.emplace_back(std::make_shared<Core::LinAlg::Map>(A00.range_map()));
+  range_maps.emplace_back(std::make_shared<Core::LinAlg::Map>(A10.range_map()));
+  std::shared_ptr<const Core::LinAlg::Map> range_map = MultiMapExtractor::merge_maps(range_maps);
   MultiMapExtractor rangeMMex(*range_map, range_maps);
 
   // generate domain map
-  std::vector<std::shared_ptr<const Epetra_Map>> domain_maps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> domain_maps;
   domain_maps.reserve(2);
 
-  domain_maps.emplace_back(std::make_shared<Epetra_Map>(A00.domain_map()));
-  domain_maps.emplace_back(std::make_shared<Epetra_Map>(A01.domain_map()));
-  std::shared_ptr<const Epetra_Map> domain_map = MultiMapExtractor::merge_maps(domain_maps);
+  domain_maps.emplace_back(std::make_shared<Core::LinAlg::Map>(A00.domain_map()));
+  domain_maps.emplace_back(std::make_shared<Core::LinAlg::Map>(A01.domain_map()));
+  std::shared_ptr<const Core::LinAlg::Map> domain_map = MultiMapExtractor::merge_maps(domain_maps);
   MultiMapExtractor domainMMex(*domain_map, domain_maps);
 
   // generate result matrix
@@ -528,7 +528,7 @@ void Core::LinAlg::DefaultBlockMatrixStrategy::complete(bool enforce_complete)
   // get the list of all ghost entries gids
   for (int rblock = 0; rblock < rows; ++rblock)
   {
-    const Epetra_Map& rowmap = mat_.range_map(rblock);
+    const Core::LinAlg::Map& rowmap = mat_.range_map(rblock);
 
     for (int rlid = 0; rlid < rowmap.NumMyElements(); ++rlid)
     {
@@ -583,7 +583,7 @@ void Core::LinAlg::DefaultBlockMatrixStrategy::complete(bool enforce_complete)
       for (int cblock = 0; cblock < cols; ++cblock)
       {
         // assume row and range equal domain
-        const Epetra_Map& domainmap = mat_.domain_map(cblock);
+        const Core::LinAlg::Map& domainmap = mat_.domain_map(cblock);
         if (domainmap.MyGID(gid))
         {
           block[proc].push_back(cblock);

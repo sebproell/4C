@@ -32,7 +32,7 @@ namespace CONTACT
   {
    public:
     //! Standard constructor
-    NitscheStrategy(const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap,
+    NitscheStrategy(const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
         const Teuchos::ParameterList& params,
         std::vector<std::shared_ptr<CONTACT::Interface>> interface, int dim, const MPI_Comm& comm,
         double alphaf, int maxdof)
@@ -45,7 +45,7 @@ namespace CONTACT
 
     //! Shared data constructor
     NitscheStrategy(const std::shared_ptr<CONTACT::AbstractStrategyDataContainer>& data_ptr,
-        const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap,
+        const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
         const Teuchos::ParameterList& params,
         std::vector<std::shared_ptr<CONTACT::Interface>> interface, int dim, const MPI_Comm& comm,
         double alphaf, int maxdof)
@@ -142,7 +142,7 @@ namespace CONTACT
     {
       return nullptr;
     }
-    std::shared_ptr<const Epetra_Map> lm_dof_row_map_ptr(const bool& redist) const override
+    std::shared_ptr<const Core::LinAlg::Map> lm_dof_row_map_ptr(const bool& redist) const override
     {
       return nullptr;
     }
@@ -150,8 +150,14 @@ namespace CONTACT
     // thus they are defined empty here in the case of Penalty contact.
 
     //! Get the active node row map of the previous Newton step
-    std::shared_ptr<const Epetra_Map> get_old_active_row_nodes() const override { return nullptr; };
-    std::shared_ptr<const Epetra_Map> get_old_slip_row_nodes() const override { return nullptr; };
+    std::shared_ptr<const Core::LinAlg::Map> get_old_active_row_nodes() const override
+    {
+      return nullptr;
+    };
+    std::shared_ptr<const Core::LinAlg::Map> get_old_slip_row_nodes() const override
+    {
+      return nullptr;
+    };
     bool is_nitsche() const override { return true; }
     void print_active_set() const override {};
     bool active_set_converged() const override { return true; }

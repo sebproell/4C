@@ -151,7 +151,7 @@ void FPSI::FpsiCoupling::setup_interface_coupling()
   }
 
   {
-    std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces;
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
 
     // Split poro_field into:
     //                      --> Structure (inside + FSI-Interface)
@@ -159,7 +159,7 @@ void FPSI::FpsiCoupling::setup_interface_coupling()
     //                      --> PoroFluid (inside + FSI-Interface)
     //                      --> PoroFluid FPSI-Interface
 
-    std::shared_ptr<const Epetra_Map> s_other_map = Core::LinAlg::merge_map(
+    std::shared_ptr<const Core::LinAlg::Map> s_other_map = Core::LinAlg::merge_map(
         poro_field()->structure_field()->interface()->Map(Solid::MapExtractor::cond_other),
         poro_field()->structure_field()->interface()->Map(Solid::MapExtractor::cond_fsi));
     vecSpaces.push_back(s_other_map);  // other map
@@ -168,7 +168,8 @@ void FPSI::FpsiCoupling::setup_interface_coupling()
     vecSpaces.push_back(porofluid_extractor_->other_map());  // other map
     vecSpaces.push_back(porofluid_extractor_->cond_map());   // fpsi_coupling
 
-    std::shared_ptr<Epetra_Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(vecSpaces);
+    std::shared_ptr<Core::LinAlg::Map> fullmap =
+        Core::LinAlg::MultiMapExtractor::merge_maps(vecSpaces);
     // full Poroelasticity-blockmap
     poro_extractor_ = std::make_shared<Core::LinAlg::MultiMapExtractor>();
     poro_extractor_->setup(*fullmap, vecSpaces);

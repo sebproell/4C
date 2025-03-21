@@ -199,7 +199,7 @@ namespace XFEM
     void fill_complete_sele_map();
 
     /// Rowmap of contact elements based on the fluid element owner
-    std::shared_ptr<Epetra_Map>& get_contact_ele_row_map_f_ownerbased()
+    std::shared_ptr<Core::LinAlg::Map>& get_contact_ele_row_map_f_ownerbased()
     {
       return contact_ele_rowmap_fluidownerbased_;
     }
@@ -347,7 +347,7 @@ namespace XFEM
     // all sele which have a row fluid-element on this proc
     std::set<int> my_sele_ids_;
     /// contact ele romap - based on the background fluid element owners
-    std::shared_ptr<Epetra_Map> contact_ele_rowmap_fluidownerbased_;
+    std::shared_ptr<Core::LinAlg::Map> contact_ele_rowmap_fluidownerbased_;
 
     /// The Contact Strategy
     CONTACT::NitscheStrategy& contact_strategy_;

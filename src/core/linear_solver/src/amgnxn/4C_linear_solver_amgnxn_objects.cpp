@@ -192,16 +192,16 @@ Core::LinearSolver::AMGNxN::BlockedMatrix::get_block_sparse_matrix(Core::LinAlg:
         FOUR_C_THROW("The domain map must be the same for all blocks in the same col");
 
   // build the partial and full domain maps
-  std::vector<std::shared_ptr<const Epetra_Map>> domain_maps(cols);
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> domain_maps(cols);
   for (int i = 0; i < cols; i++)
-    domain_maps[i] = std::make_shared<Epetra_Map>(matrices_[0 * cols + i]->domain_map());
+    domain_maps[i] = std::make_shared<Core::LinAlg::Map>(matrices_[0 * cols + i]->domain_map());
   auto fullmap_domain = Core::LinAlg::MultiMapExtractor::merge_maps(domain_maps);
   Core::LinAlg::MultiMapExtractor domainmaps(*fullmap_domain, domain_maps);
 
   // build the partial and full range maps
-  std::vector<std::shared_ptr<const Epetra_Map>> range_maps(rows);
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> range_maps(rows);
   for (int i = 0; i < rows; i++)
-    range_maps[i] = std::make_shared<Epetra_Map>(matrices_[i * cols + 0]->range_map());
+    range_maps[i] = std::make_shared<Core::LinAlg::Map>(matrices_[i * cols + 0]->range_map());
   auto fullmap_range = Core::LinAlg::MultiMapExtractor::merge_maps(range_maps);
   Core::LinAlg::MultiMapExtractor rangemaps(*fullmap_range, range_maps);
 
@@ -411,7 +411,7 @@ Core::LinearSolver::AMGNxN::BlockedMatrix::new_domain_blocked_vector(int NV, boo
   Teuchos::RCP<BlockedVector> out = Teuchos::make_rcp<BlockedVector>(get_num_cols());
   for (int i = 0; i < get_num_cols(); i++)
   {
-    const Epetra_Map& Map = get_matrix(0, i)->domain_map();
+    const Core::LinAlg::Map& Map = get_matrix(0, i)->domain_map();
     Teuchos::RCP<Core::LinAlg::MultiVector<double>> Vi =
         Teuchos::make_rcp<Core::LinAlg::MultiVector<double>>(
             Map, NV, ZeroIt);  // This constructor seems to be buggy inside function
@@ -432,7 +432,7 @@ Core::LinearSolver::AMGNxN::BlockedMatrix::new_range_blocked_vector(int NV, bool
   Teuchos::RCP<BlockedVector> out = Teuchos::make_rcp<BlockedVector>(get_num_rows());
   for (int i = 0; i < get_num_rows(); i++)
   {
-    const Epetra_Map& Map = get_matrix(i, 0)->range_map();
+    const Core::LinAlg::Map& Map = get_matrix(i, 0)->range_map();
     Teuchos::RCP<Core::LinAlg::MultiVector<double>> Vi =
         Teuchos::make_rcp<Core::LinAlg::MultiVector<double>>(Map, NV, ZeroIt);
 
@@ -452,7 +452,7 @@ Core::LinearSolver::AMGNxN::DiagonalBlockedMatrix::new_domain_blocked_vector(
   Teuchos::RCP<BlockedVector> out = Teuchos::make_rcp<BlockedVector>(get_num_cols());
   for (int i = 0; i < get_num_cols(); i++)
   {
-    const Epetra_Map& Map = get_matrix(i, i)->domain_map();
+    const Core::LinAlg::Map& Map = get_matrix(i, i)->domain_map();
     Teuchos::RCP<Core::LinAlg::MultiVector<double>> Vi =
         Teuchos::make_rcp<Core::LinAlg::MultiVector<double>>(Map, NV, ZeroIt);
 
@@ -472,7 +472,7 @@ Core::LinearSolver::AMGNxN::DiagonalBlockedMatrix::new_range_blocked_vector(
   Teuchos::RCP<BlockedVector> out = Teuchos::make_rcp<BlockedVector>(get_num_rows());
   for (int i = 0; i < get_num_rows(); i++)
   {
-    const Epetra_Map& Map = get_matrix(i, i)->range_map();
+    const Core::LinAlg::Map& Map = get_matrix(i, i)->range_map();
     Teuchos::RCP<Core::LinAlg::MultiVector<double>> Vi =
         Teuchos::make_rcp<Core::LinAlg::MultiVector<double>>(Map, NV, ZeroIt);
 

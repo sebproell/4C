@@ -11,8 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_fem_condition.hpp"
-
-#include <Epetra_Map.h>
+#include "4C_linalg_map.hpp"
 
 #include <memory>
 #include <set>
@@ -50,8 +49,8 @@ namespace Core::Conditions
    */
   struct MyGID
   {
-    const Epetra_Map* emap_;
-    MyGID(const Epetra_Map* emap) : emap_(emap) {}
+    const Core::LinAlg::Map* emap_;
+    MyGID(const Core::LinAlg::Map* emap) : emap_(emap) {}
     bool operator()(int gid) const { return emap_->MyGID(gid); }
   };
 
@@ -194,11 +193,11 @@ namespace Core::Conditions
       std::vector<Core::Conditions::Condition*>& condition);
 
   /// row map with nodes from condition
-  std::shared_ptr<Epetra_Map> condition_node_row_map(
+  std::shared_ptr<Core::LinAlg::Map> condition_node_row_map(
       const Core::FE::Discretization& dis, const std::string& condname);
 
   /// col map with nodes from condition
-  std::shared_ptr<Epetra_Map> condition_node_col_map(
+  std::shared_ptr<Core::LinAlg::Map> condition_node_col_map(
       const Core::FE::Discretization& dis, const std::string& condname);
 
   /// create the set of column element gids that have conditioned nodes

@@ -157,7 +157,7 @@ namespace Solid
       void runtime_output_step_state() const override;
 
       //! derived
-      std::shared_ptr<const Epetra_Map> get_block_dof_row_map_ptr() const override;
+      std::shared_ptr<const Core::LinAlg::Map> get_block_dof_row_map_ptr() const override;
 
       //! derived
       std::shared_ptr<const Core::LinAlg::Vector<double>> get_current_solution_ptr() const override;
@@ -253,7 +253,7 @@ namespace Solid
       void evaluate_internal_specified_elements(
           std::shared_ptr<Core::LinAlg::SparseOperator>* eval_mat,
           std::shared_ptr<Core::LinAlg::Vector<double>>* eval_vec,
-          const Epetra_Map* ele_map_to_be_evaluated);
+          const Core::LinAlg::Map* ele_map_to_be_evaluated);
 
       /*! \brief  Check if the given parameter list is valid and call the
        *  Evaluate routine for all elements specified in the element map
@@ -262,7 +262,7 @@ namespace Solid
       void evaluate_internal_specified_elements(Teuchos::ParameterList& p,
           std::shared_ptr<Core::LinAlg::SparseOperator>* eval_mat,
           std::shared_ptr<Core::LinAlg::Vector<double>>* eval_vec,
-          const Epetra_Map* ele_map_to_be_evaluated);
+          const Core::LinAlg::Map* ele_map_to_be_evaluated);
 
       /*! \brief Add static structural internal force and stiffness matrix to the
        *         evaluate call (default)

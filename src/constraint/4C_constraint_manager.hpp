@@ -169,7 +169,7 @@ namespace CONSTRAINTS
      \brief Return EpetraMap that determined distribution of constraints and lagrange
      multiplier over processors
     */
-    std::shared_ptr<Epetra_Map> get_constraint_map() const { return constrmap_; };
+    std::shared_ptr<Core::LinAlg::Map> get_constraint_map() const { return constrmap_; };
 
     //! Return the additional rectangular matrix, constructed for lagrange multiplier evaluation
     std::shared_ptr<Core::LinAlg::SparseOperator> get_constr_matrix()  // const
@@ -293,13 +293,13 @@ namespace CONSTRAINTS
     std::shared_ptr<Core::FE::Discretization>
         actdisc_;  ///< discretization, elements to constraint live in
     std::shared_ptr<ConstraintDofSet>
-        constrdofset_;                          ///< degrees of freedom of lagrange multipliers
-    std::shared_ptr<Epetra_Map> constrmap_;     ///< unique map of constraint values
-    std::shared_ptr<Epetra_Map> redconstrmap_;  ///< fully redundant map of constraint values
+        constrdofset_;                              ///< degrees of freedom of lagrange multipliers
+    std::shared_ptr<Core::LinAlg::Map> constrmap_;  ///< unique map of constraint values
+    std::shared_ptr<Core::LinAlg::Map> redconstrmap_;  ///< fully redundant map of constraint values
     std::shared_ptr<Epetra_Export>
         conimpo_;  ///< importer for fully redundant constraint vector into distributed one
-    std::shared_ptr<Epetra_Map> monitormap_;  ///< unique map of monitor values
-    std::shared_ptr<Epetra_Map> redmonmap_;   ///< fully redundant map of monitor values
+    std::shared_ptr<Core::LinAlg::Map> monitormap_;  ///< unique map of monitor values
+    std::shared_ptr<Core::LinAlg::Map> redmonmap_;   ///< fully redundant map of monitor values
     std::shared_ptr<Epetra_Export>
         monimpo_;  ///< importer for fully redundant monitor vector into distributed one
     std::shared_ptr<Core::LinAlg::Vector<double>>

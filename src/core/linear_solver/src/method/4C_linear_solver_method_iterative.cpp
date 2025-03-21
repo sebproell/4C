@@ -7,6 +7,7 @@
 
 #include "4C_linear_solver_method_iterative.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_linear_solver_amgnxn_preconditioner.hpp"
 #include "4C_linear_solver_preconditioner_ifpack.hpp"
 #include "4C_linear_solver_preconditioner_krylovprojection.hpp"
@@ -22,7 +23,6 @@
 #include <BelosPseudoBlockCGSolMgr.hpp>
 #include <BelosPseudoBlockGmresSolMgr.hpp>
 #include <Epetra_CrsMatrix.h>
-#include <Epetra_Map.h>
 #include <Teuchos_RCPStdSharedPtrConversions.hpp>
 #include <Teuchos_TimeMonitor.hpp>
 #include <Teuchos_XMLParameterListHelpers.hpp>

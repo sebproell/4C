@@ -220,8 +220,8 @@ FLD::FluidDiscretExtractor::FluidDiscretExtractor(std::shared_ptr<Core::FE::Disc
     }
 
     // child discretization needs a full NodeRowMap and a NodeColMap
-    std::shared_ptr<Epetra_Map> newrownodemap;
-    std::shared_ptr<Epetra_Map> newcolnodemap;
+    std::shared_ptr<Core::LinAlg::Map> newrownodemap;
+    std::shared_ptr<Core::LinAlg::Map> newcolnodemap;
 
     {
       std::vector<int> rownodes;
@@ -234,7 +234,7 @@ FLD::FluidDiscretExtractor::FluidDiscretExtractor(std::shared_ptr<Core::FE::Disc
       }
 
       // build noderowmap for new distribution of nodes
-      newrownodemap = std::make_shared<Epetra_Map>(-1, rownodes.size(), rownodes.data(), 0,
+      newrownodemap = std::make_shared<Core::LinAlg::Map>(-1, rownodes.size(), rownodes.data(), 0,
           Core::Communication::as_epetra_comm(childdiscret_->get_comm()));
 
       std::vector<int> colnodes;
@@ -245,7 +245,7 @@ FLD::FluidDiscretExtractor::FluidDiscretExtractor(std::shared_ptr<Core::FE::Disc
         colnodes.push_back(*id);
       }
       // build nodecolmap for new distribution of nodes
-      newcolnodemap = std::make_shared<Epetra_Map>(-1, colnodes.size(), colnodes.data(), 0,
+      newcolnodemap = std::make_shared<Core::LinAlg::Map>(-1, colnodes.size(), colnodes.data(), 0,
           Core::Communication::as_epetra_comm(childdiscret_->get_comm()));
     }
 
@@ -369,7 +369,7 @@ FLD::FluidDiscretExtractor::FluidDiscretExtractor(std::shared_ptr<Core::FE::Disc
     }
 
     // this is the actual redistribution
-    Epetra_Map sepcondelenodesmap(*childdiscret_->element_row_map());
+    Core::LinAlg::Map sepcondelenodesmap(*childdiscret_->element_row_map());
     Teuchos::Time time("", true);
     MPI_Comm comm(parentdiscret_->get_comm());
 

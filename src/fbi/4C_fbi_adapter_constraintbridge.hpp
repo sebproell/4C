@@ -11,10 +11,10 @@
 #include "4C_config.hpp"
 
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 
 #include <Epetra_FEVector.h>
-#include <Epetra_Map.h>
 
 #include <memory>
 #include <vector>
@@ -86,7 +86,7 @@ namespace Adapter
      * \param[in] fluidmatrix system matrix of the fluid matrix in correct from
      * \param[in] fluidmeshtying bool indicating if fluid meshtying is included
      */
-    virtual void setup(const Epetra_Map* beam_map, const Epetra_Map* fluid_map,
+    virtual void setup(const Core::LinAlg::Map* beam_map, const Core::LinAlg::Map* fluid_map,
         std::shared_ptr<Core::LinAlg::SparseOperator> fluidmatrix, bool fluidmeshtying);
 
     /**

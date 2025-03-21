@@ -129,7 +129,7 @@ void Coupling::Adapter::CouplingMortar::setup(
   inputmortar.setParameters(mortar_coupling_params_);
 
   // interface displacement (=0) has to be merged from slave and master discretization
-  std::shared_ptr<Epetra_Map> dofrowmap =
+  std::shared_ptr<Core::LinAlg::Map> dofrowmap =
       Core::LinAlg::merge_map(masterdofrowmap_, slavedofrowmap_, false);
   std::shared_ptr<Core::LinAlg::Vector<double>> dispn =
       Core::LinAlg::create_vector(*dofrowmap, true);
@@ -469,8 +469,8 @@ void Coupling::Adapter::CouplingMortar::setup_interface(
   issetup_ = true;
 
   // store old row maps (before parallel redistribution)
-  pslavedofrowmap_ = std::make_shared<Epetra_Map>(*interface_->slave_row_dofs());
-  pmasterdofrowmap_ = std::make_shared<Epetra_Map>(*interface_->master_row_dofs());
+  pslavedofrowmap_ = std::make_shared<Core::LinAlg::Map>(*interface_->slave_row_dofs());
+  pmasterdofrowmap_ = std::make_shared<Core::LinAlg::Map>(*interface_->master_row_dofs());
 
   // print parallel distribution
   interface_->print_parallel_distribution();
@@ -494,8 +494,8 @@ void Coupling::Adapter::CouplingMortar::setup_interface(
   //**********************************************************************
 
   // store row maps (after parallel redistribution)
-  slavedofrowmap_ = std::make_shared<Epetra_Map>(*interface_->slave_row_dofs());
-  masterdofrowmap_ = std::make_shared<Epetra_Map>(*interface_->master_row_dofs());
+  slavedofrowmap_ = std::make_shared<Core::LinAlg::Map>(*interface_->slave_row_dofs());
+  masterdofrowmap_ = std::make_shared<Core::LinAlg::Map>(*interface_->master_row_dofs());
 
   // create binary search tree
   interface_->create_search_tree();
@@ -508,8 +508,8 @@ void Coupling::Adapter::CouplingMortar::setup_interface(
  *----------------------------------------------------------------------*/
 void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization& slavedis,
     std::shared_ptr<Core::FE::Discretization> aledis,
-    std::shared_ptr<const Epetra_Map> masterdofrowmap,
-    std::shared_ptr<const Epetra_Map> slavedofrowmap,
+    std::shared_ptr<const Core::LinAlg::Map> masterdofrowmap,
+    std::shared_ptr<const Core::LinAlg::Map> slavedofrowmap,
     std::shared_ptr<Core::LinAlg::Vector<double>>& idisp, MPI_Comm comm, bool slavewithale)
 {
   // safety check
@@ -717,9 +717,9 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
   // (3) perform mesh relocation node by node
   //**********************************************************************
   // export Xslavemod to fully overlapping column map for current interface
-  std::shared_ptr<Epetra_Map> fullsdofs =
+  std::shared_ptr<Core::LinAlg::Map> fullsdofs =
       Core::LinAlg::allreduce_e_map(*(interface_->slave_row_dofs()));
-  std::shared_ptr<Epetra_Map> fullsnodes =
+  std::shared_ptr<Core::LinAlg::Map> fullsnodes =
       Core::LinAlg::allreduce_e_map(*(interface_->slave_row_nodes()));
   Core::LinAlg::Vector<double> Xslavemodcol(*fullsdofs, false);
   Core::LinAlg::export_to(*Xslavemod, Xslavemodcol);
@@ -1100,7 +1100,7 @@ void Coupling::Adapter::CouplingMortar::evaluate(
   const Epetra_BlockMap stdmap = idispsl->get_block_map();
   idispsl->replace_map(*slavedofrowmap_);
 
-  std::shared_ptr<Epetra_Map> dofrowmap =
+  std::shared_ptr<Core::LinAlg::Map> dofrowmap =
       Core::LinAlg::merge_map(*pmasterdofrowmap_, *pslavedofrowmap_, false);
   Epetra_Import master_importer(*dofrowmap, *pmasterdofrowmap_);
   Epetra_Import slaveImporter(*dofrowmap, *pslavedofrowmap_);

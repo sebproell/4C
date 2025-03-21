@@ -15,9 +15,8 @@
 #include "4C_fem_general_node.hpp"
 #include "4C_inpar_xfem.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_utils_exceptions.hpp"
-
-#include <Epetra_Map.h>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -354,8 +353,8 @@ namespace XFEM
             oldVectors,  /// vector of col-vectors w.r.t. old interface position
         std::shared_ptr<Core::LinAlg::Vector<double>> dispn,   /// displacement n
         std::shared_ptr<Core::LinAlg::Vector<double>> dispnp,  /// displacement n +1
-        const Epetra_Map& olddofcolmap,  /// dofcolmap w.r.t. old interface position
-        const Epetra_Map& newdofrowmap,  /// dofcolmap w.r.t. new interface position
+        const Core::LinAlg::Map& olddofcolmap,  /// dofcolmap w.r.t. old interface position
+        const Core::LinAlg::Map& newdofrowmap,  /// dofcolmap w.r.t. new interface position
         const std::shared_ptr<std::map<int, std::vector<int>>>
             pbcmap  /// map of periodic boundary conditions
     );
@@ -576,8 +575,8 @@ namespace XFEM
     std::shared_ptr<XFEM::XFEMDofSet> dofset_old_;  //! XFEM dofset w.r.t. old interface position
     std::shared_ptr<XFEM::XFEMDofSet> dofset_new_;  //! XFEM dofset w.r.t. new interface position
 
-    const Epetra_Map olddofcolmap_;  //! dofcolmap w.r.t. old interface position
-    const Epetra_Map newdofrowmap_;  //! dofcolmap w.r.t. new interface position
+    const Core::LinAlg::Map olddofcolmap_;  //! dofcolmap w.r.t. old interface position
+    const Core::LinAlg::Map newdofrowmap_;  //! dofcolmap w.r.t. new interface position
 
     const std::vector<std::shared_ptr<Core::LinAlg::Vector<double>>>
         oldVectors_;  //! vector of col!-vectors w.r.t. old interface position

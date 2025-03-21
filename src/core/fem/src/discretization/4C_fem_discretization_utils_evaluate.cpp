@@ -21,7 +21,7 @@ FOUR_C_NAMESPACE_OPEN
 void Core::FE::Utils::evaluate(Core::FE::Discretization& discret, Teuchos::ParameterList& eparams,
     const std::shared_ptr<Core::LinAlg::SparseOperator>& systemmatrix,
     const std::shared_ptr<Core::LinAlg::Vector<double>>& systemvector,
-    const Epetra_Map* col_ele_map)
+    const Core::LinAlg::Map* col_ele_map)
 {
   std::vector<std::shared_ptr<Core::LinAlg::SparseOperator>> systemmatrices(2, nullptr);
   std::vector<std::shared_ptr<Core::LinAlg::Vector<double>>> systemvectors(3, nullptr);
@@ -37,7 +37,7 @@ void Core::FE::Utils::evaluate(Core::FE::Discretization& discret, Teuchos::Param
 void Core::FE::Utils::evaluate(Core::FE::Discretization& discret, Teuchos::ParameterList& eparams,
     std::vector<std::shared_ptr<Core::LinAlg::SparseOperator>>& systemmatrices,
     std::vector<std::shared_ptr<Core::LinAlg::Vector<double>>>& systemvectors,
-    const Epetra_Map* col_ele_map)
+    const Core::LinAlg::Map* col_ele_map)
 {
   FOUR_C_ASSERT(systemmatrices.size() <= 2,
       "Currently a maximum number of two "
@@ -57,7 +57,7 @@ void Core::FE::Utils::evaluate(Core::FE::Discretization& discret, Teuchos::Param
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void Core::FE::Utils::evaluate(Core::FE::Discretization& discret, Teuchos::ParameterList& eparams,
-    Core::FE::AssembleStrategy& strategy, const Epetra_Map* col_ele_map)
+    Core::FE::AssembleStrategy& strategy, const Core::LinAlg::Map* col_ele_map)
 {
   TEUCHOS_FUNC_TIME_MONITOR("Core::FE::Utils::Evaluate");
 

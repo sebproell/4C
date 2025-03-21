@@ -13,11 +13,10 @@
 #include "4C_adapter_fld_wrapper.hpp"
 #include "4C_fluid_utils_mapextractor.hpp"
 #include "4C_fluid_xfluid.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_mapextractor.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
-
-#include <Epetra_Map.h>
 
 #include <memory>
 
@@ -121,7 +120,8 @@ namespace Adapter
     void apply_mesh_displacement(
         std::shared_ptr<const Core::LinAlg::Vector<double>> fluiddisp) override;
 
-    void set_mesh_map(std::shared_ptr<const Epetra_Map> mm, const int nds_master = 0) override;
+    void set_mesh_map(
+        std::shared_ptr<const Core::LinAlg::Map> mm, const int nds_master = 0) override;
 
     /// return coupling matrix between fluid and structure as sparse matrices
     std::shared_ptr<Core::LinAlg::SparseMatrix> c_struct_fluid_matrix();
@@ -166,8 +166,8 @@ namespace Adapter
 
     /// ALE dof map
     std::shared_ptr<Core::LinAlg::MapExtractor> meshmap_;
-    std::shared_ptr<Epetra_Map> permfluidmap_;
-    std::shared_ptr<Epetra_Map> fullfluidmap_;
+    std::shared_ptr<Core::LinAlg::Map> permfluidmap_;
+    std::shared_ptr<Core::LinAlg::Map> fullfluidmap_;
 
     //! @name local copies of input parameters
     std::string coupling_name_;  /// the name of the XFEM::MeshCoupling object

@@ -12,10 +12,10 @@
 
 #include "4C_fem_geometric_search_params.hpp"
 #include "4C_linalg_graph.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_multi_vector.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
-#include <Epetra_Map.h>
 #include <Teuchos_RCPDecl.hpp>
 
 #include <memory>
@@ -53,8 +53,9 @@ namespace Core::Rebalance
 
   @return Node row map and node column map after rebalancing with weights
   */
-  std::pair<std::shared_ptr<Epetra_Map>, std::shared_ptr<Epetra_Map>> rebalance_node_maps(
-      const Core::LinAlg::Graph& initialGraph, const Teuchos::ParameterList& rebalanceParams,
+  std::pair<std::shared_ptr<Core::LinAlg::Map>, std::shared_ptr<Core::LinAlg::Map>>
+  rebalance_node_maps(const Core::LinAlg::Graph& initialGraph,
+      const Teuchos::ParameterList& rebalanceParams,
       const std::shared_ptr<Core::LinAlg::Vector<double>>& initialNodeWeights = nullptr,
       const std::shared_ptr<Epetra_CrsMatrix>& initialEdgeWeights = nullptr,
       const std::shared_ptr<Core::LinAlg::MultiVector<double>>& initialNodeCoordinates = nullptr);
@@ -122,7 +123,7 @@ namespace Core::Rebalance
   @return Uncompleted node graph of input discretization
   */
   std::shared_ptr<const Core::LinAlg::Graph> build_graph(
-      Core::FE::Discretization& dis, const Epetra_Map& roweles);
+      Core::FE::Discretization& dis, const Core::LinAlg::Map& roweles);
 
   /*!
   \brief Build monolithic node graph of a given discretization

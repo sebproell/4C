@@ -12,9 +12,8 @@
 /* headers */
 #include "4C_config.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
-
-#include <Epetra_Map.h>
 
 #include <memory>
 
@@ -79,10 +78,10 @@ namespace Coupling::Adapter
     //!@{
 
     /// the interface dof map of the master side
-    virtual std::shared_ptr<const Epetra_Map> master_dof_map() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> master_dof_map() const = 0;
 
     /// the interface dof map of the slave side
-    virtual std::shared_ptr<const Epetra_Map> slave_dof_map() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> slave_dof_map() const = 0;
 
     //!@}
   };

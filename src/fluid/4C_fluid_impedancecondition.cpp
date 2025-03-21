@@ -228,7 +228,7 @@ FLD::Utils::FluidImpedanceBc::FluidImpedanceBc(
   // vectors and matrices
   //                 local <-> global dof numbering
   // ---------------------------------------------------------------------
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
   impedancetbc_ = Core::LinAlg::create_vector(*dofrowmap, true);
   impedancetbcsysmat_ = std::make_shared<Core::LinAlg::SparseMatrix>(*dofrowmap, 108, false, true);
   // NOTE: do not call impedancetbcsysmat_->Complete() before it is filled, since
@@ -296,7 +296,7 @@ void FLD::Utils::FluidImpedanceBc::flow_rate_calculation(const int condid)
 
   // get a vector layout from the discretization to construct matching
   // vectors and matrices local <-> global dof numbering
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // create vector (+ initialization with zeros)
   std::shared_ptr<Core::LinAlg::Vector<double>> flowrates =
@@ -400,7 +400,7 @@ void FLD::Utils::FluidImpedanceBc::calculate_impedance_tractions_and_update_resi
   if (not impedancetbcsysmat_->filled())
   {
     // calculate dQ/du = ( \phi o n )_Gamma
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
     std::shared_ptr<Core::LinAlg::Vector<double>> dQdu =
         Core::LinAlg::create_vector(*dofrowmap, true);
 
@@ -411,7 +411,7 @@ void FLD::Utils::FluidImpedanceBc::calculate_impedance_tractions_and_update_resi
     discret_->evaluate_condition(eleparams2, dQdu, "ImpedanceCond", condid);
 
     // now move dQdu to one proc
-    std::shared_ptr<Epetra_Map> dofrowmapred = Core::LinAlg::allreduce_e_map(*dofrowmap);
+    std::shared_ptr<Core::LinAlg::Map> dofrowmapred = Core::LinAlg::allreduce_e_map(*dofrowmap);
     Core::LinAlg::Vector<double> dQdu_full(*dofrowmapred, true);
 
     Core::LinAlg::export_to(*dQdu, dQdu_full);  //!!! add off proc components

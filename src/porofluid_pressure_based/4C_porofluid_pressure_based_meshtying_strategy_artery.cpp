@@ -317,8 +317,8 @@ POROFLUIDMULTIPHASE::MeshtyingStrategyArtery::extract_and_update_iter(
 /*----------------------------------------------------------------------*
  | artery dof row map                                  kremheller 04/18 |
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> POROFLUIDMULTIPHASE::MeshtyingStrategyArtery::artery_dof_row_map()
-    const
+std::shared_ptr<const Core::LinAlg::Map>
+POROFLUIDMULTIPHASE::MeshtyingStrategyArtery::artery_dof_row_map() const
 {
   return arttoporofluidcoupling_->artery_dof_row_map();
 }

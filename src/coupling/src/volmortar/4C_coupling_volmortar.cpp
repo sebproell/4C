@@ -128,8 +128,8 @@ Coupling::VolMortar::VolMortarCoupl::VolMortarCoupl(int dim,
  |  Build maps based on coupling dofs                        farah 03/15|
  *----------------------------------------------------------------------*/
 void Coupling::VolMortar::VolMortarCoupl::build_maps(std::shared_ptr<Core::FE::Discretization>& dis,
-    std::shared_ptr<const Epetra_Map>& dofmap, const std::vector<int>* coupleddof, const int* nodes,
-    int numnode, int dofset)
+    std::shared_ptr<const Core::LinAlg::Map>& dofmap, const std::vector<int>* coupleddof,
+    const int* nodes, int numnode, int dofset)
 {
   std::vector<int> dofmapvec;
   std::map<int, std::vector<int>> dofs;
@@ -164,7 +164,7 @@ void Coupling::VolMortar::VolMortarCoupl::build_maps(std::shared_ptr<Core::FE::D
     }
   }
   // dof map is the original, unpermuted distribution of dofs
-  dofmap = std::make_shared<Epetra_Map>(
+  dofmap = std::make_shared<Core::LinAlg::Map>(
       -1, dofmapvec.size(), dofmapvec.data(), 0, Core::Communication::as_epetra_comm(comm_));
 
   return;
@@ -1403,8 +1403,8 @@ void Coupling::VolMortar::VolMortarCoupl::mesh_init()
         Core::LinAlg::create_vector(*discret2()->dof_row_map(dofsetb));
 
     Core::LinAlg::MapExtractor mapext(*mergedmap_,
-        std::make_shared<Epetra_Map>(*(discret1()->dof_row_map(dofseta))),
-        std::make_shared<Epetra_Map>(*(discret2()->dof_row_map(dofsetb))));
+        std::make_shared<Core::LinAlg::Map>(*(discret1()->dof_row_map(dofseta))),
+        std::make_shared<Core::LinAlg::Map>(*(discret2()->dof_row_map(dofsetb))));
     mapext.extract_cond_vector(*mergedsol, *sola);
     mapext.extract_other_vector(*mergedsol, *solb);
 

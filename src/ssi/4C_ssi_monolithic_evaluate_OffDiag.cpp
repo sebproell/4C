@@ -29,7 +29,7 @@ FOUR_C_NAMESPACE_OPEN
  *----------------------------------------------------------------------*/
 SSI::ScatraStructureOffDiagCoupling::ScatraStructureOffDiagCoupling(
     std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_structure,
-    std::shared_ptr<const Epetra_Map> full_map_structure,
+    std::shared_ptr<const Core::LinAlg::Map> full_map_structure,
     std::shared_ptr<const SSI::Utils::SSIMeshTying> ssi_structure_meshtying,
     std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_s2i,
     std::shared_ptr<ScaTra::ScaTraTimIntImpl> scatra,
@@ -47,7 +47,7 @@ SSI::ScatraStructureOffDiagCoupling::ScatraStructureOffDiagCoupling(
  *----------------------------------------------------------------------*/
 SSI::ScatraManifoldStructureOffDiagCoupling::ScatraManifoldStructureOffDiagCoupling(
     std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_structure,
-    std::shared_ptr<const Epetra_Map> full_map_structure,
+    std::shared_ptr<const Core::LinAlg::Map> full_map_structure,
     std::shared_ptr<const SSI::Utils::SSIMeshTying> ssi_structure_meshtying,
     std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_s2i,
     std::shared_ptr<ScaTra::ScaTraTimIntImpl> scatra,
@@ -725,8 +725,8 @@ void SSI::ScatraStructureOffDiagCoupling::
  *----------------------------------------------------------------------*/
 SSI::ScatraStructureOffDiagCouplingSSTI::ScatraStructureOffDiagCouplingSSTI(
     std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_structure,
-    std::shared_ptr<const Epetra_Map> full_map_scatra,
-    std::shared_ptr<const Epetra_Map> full_map_structure,
+    std::shared_ptr<const Core::LinAlg::Map> full_map_scatra,
+    std::shared_ptr<const Core::LinAlg::Map> full_map_structure,
     std::shared_ptr<const SSI::Utils::SSIMeshTying> ssi_structure_meshtying,
     std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_s2i,
     std::shared_ptr<ScaTra::ScaTraTimIntImpl> scatra,

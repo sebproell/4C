@@ -10,7 +10,8 @@
 
 #include "4C_config.hpp"
 
-#include <Epetra_Map.h>
+#include "4C_linalg_map.hpp"
+
 #include <mpi.h>
 
 #include <memory>
@@ -142,10 +143,10 @@ namespace Core::DOFSets
     virtual int num_global_elements() const = 0;
 
     /// Get degree of freedom row map
-    virtual const Epetra_Map* dof_row_map() const = 0;
+    virtual const Core::LinAlg::Map* dof_row_map() const = 0;
 
     /// Get degree of freedom column map
-    virtual const Epetra_Map* dof_col_map() const = 0;
+    virtual const Core::LinAlg::Map* dof_col_map() const = 0;
 
     /// Get maximum GID of degree of freedom row map
     virtual int max_all_gid() const = 0;

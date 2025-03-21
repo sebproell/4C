@@ -46,7 +46,7 @@ void ScaTra::TimIntStationary::init()
   // vectors and matrices
   //                 local <-> global dof numbering
   // -------------------------------------------------------------------
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // fine-scale vector
   if (fssgd_ != Inpar::ScaTra::fssugrdiff_no)

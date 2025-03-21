@@ -137,12 +137,12 @@ std::shared_ptr<Core::LinAlg::Solver> Solid::SOLVER::Factory::build_structure_li
           actdis.dof(node, solidDofs);
       }
 
-      std::shared_ptr<Epetra_Map> rowmap1(new Epetra_Map(-1, solidDofs.size(), solidDofs.data(), 0,
-          Core::Communication::as_epetra_comm(actdis.get_comm())));
-      std::shared_ptr<Epetra_Map> rowmap2(new Epetra_Map(-1, beamDofs.size(), beamDofs.data(), 0,
-          Core::Communication::as_epetra_comm(actdis.get_comm())));
+      std::shared_ptr<Core::LinAlg::Map> rowmap1(new Core::LinAlg::Map(-1, solidDofs.size(),
+          solidDofs.data(), 0, Core::Communication::as_epetra_comm(actdis.get_comm())));
+      std::shared_ptr<Core::LinAlg::Map> rowmap2(new Core::LinAlg::Map(-1, beamDofs.size(),
+          beamDofs.data(), 0, Core::Communication::as_epetra_comm(actdis.get_comm())));
 
-      std::vector<std::shared_ptr<const Epetra_Map>> maps;
+      std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
       maps.emplace_back(rowmap1);
       maps.emplace_back(rowmap2);
 
@@ -154,7 +154,7 @@ std::shared_ptr<Core::LinAlg::Solver> Solid::SOLVER::Factory::build_structure_li
 
       linsolver->params()
           .sublist("Inverse1")
-          .set<std::shared_ptr<Epetra_Map>>("null space: map", rowmap1);
+          .set<std::shared_ptr<Core::LinAlg::Map>>("null space: map", rowmap1);
       Core::LinearSolver::Parameters::compute_solver_parameters(
           actdis, linsolver->params().sublist("Inverse1"));
 

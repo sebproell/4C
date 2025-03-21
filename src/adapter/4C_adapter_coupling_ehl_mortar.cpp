@@ -276,11 +276,14 @@ void Adapter::CouplingEhlMortar::condense_contact(
   Core::LinAlg::SparseMatrix ktt(sysmat->matrix(1, 1), Core::LinAlg::DataAccess::Copy);
 
   // get some maps
-  std::shared_ptr<Epetra_Map> gdisp_DofRowMap = std::make_shared<Epetra_Map>(kss->row_map());
-  std::shared_ptr<Epetra_Map> gpres_DofRowMap = std::make_shared<Epetra_Map>(ktt.row_map());
-  std::shared_ptr<Epetra_Map> gmdof = std::make_shared<Epetra_Map>(*interface_->master_row_dofs());
-  std::shared_ptr<Epetra_Map> active_dofs =
-      std::make_shared<Epetra_Map>(*interface_->active_dofs());
+  std::shared_ptr<Core::LinAlg::Map> gdisp_DofRowMap =
+      std::make_shared<Core::LinAlg::Map>(kss->row_map());
+  std::shared_ptr<Core::LinAlg::Map> gpres_DofRowMap =
+      std::make_shared<Core::LinAlg::Map>(ktt.row_map());
+  std::shared_ptr<Core::LinAlg::Map> gmdof =
+      std::make_shared<Core::LinAlg::Map>(*interface_->master_row_dofs());
+  std::shared_ptr<Core::LinAlg::Map> active_dofs =
+      std::make_shared<Core::LinAlg::Map>(*interface_->active_dofs());
 
   // split rhs
   Core::LinAlg::Vector<double> rs(kss->row_map(), true);
@@ -304,7 +307,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
 
 
   // map containing the inactive and non-contact structural dofs
-  std::shared_ptr<Epetra_Map> str_gni_dofs = Core::LinAlg::split_map(
+  std::shared_ptr<Core::LinAlg::Map> str_gni_dofs = Core::LinAlg::split_map(
       *Core::LinAlg::split_map(kss->row_map(), *interface_->master_row_dofs()),
       *interface_->active_dofs());
 
@@ -338,7 +341,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
   std::shared_ptr<Core::LinAlg::Vector<double>> tmpv;
 
   // an empty dummy map
-  std::shared_ptr<Epetra_Map> dummy_map1, dummy_map2;
+  std::shared_ptr<Core::LinAlg::Map> dummy_map1, dummy_map2;
 
   // ****************************************************
   // split kss block*************************************

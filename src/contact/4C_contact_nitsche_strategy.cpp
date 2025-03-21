@@ -436,9 +436,9 @@ void CONTACT::NitscheStrategy::reconnect_parent_elements()
 
   for (const auto& contact_interface : contact_interfaces())
   {
-    const Epetra_Map* elecolmap = voldis->element_col_map();
+    const Core::LinAlg::Map* elecolmap = voldis->element_col_map();
 
-    const Epetra_Map* ielecolmap = contact_interface->discret().element_col_map();
+    const Core::LinAlg::Map* ielecolmap = contact_interface->discret().element_col_map();
 
     for (int i = 0; i < ielecolmap->NumMyElements(); ++i)
     {

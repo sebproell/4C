@@ -97,11 +97,11 @@ namespace Core::LinAlg
         std::shared_ptr<Core::LinAlg::MultiMapExtractor> dbcmaps);
 
     /// construction of sparse matrix
-    SparseMatrix(const Epetra_Map& rowmap, const int npr, bool explicitdirichlet = true,
+    SparseMatrix(const Core::LinAlg::Map& rowmap, const int npr, bool explicitdirichlet = true,
         bool savegraph = false, MatrixType matrixtype = CRS_MATRIX);
 
     /// construction of sparse matrix using an individual estimate for number of non-zeros per row
-    SparseMatrix(const Epetra_Map& rowmap, std::vector<int>& numentries,
+    SparseMatrix(const Core::LinAlg::Map& rowmap, std::vector<int>& numentries,
         bool explicitdirichlet = true, bool savegraph = false, MatrixType matrixtype = CRS_MATRIX);
 
     /// construction of sparse matrix
@@ -271,7 +271,7 @@ namespace Core::LinAlg
 
       @param enforce_complete Enforce fill_complete() even though the matrix might already be filled
      */
-    void complete(const Epetra_Map& domainmap, const Epetra_Map& rangemap,
+    void complete(const Core::LinAlg::Map& domainmap, const Core::LinAlg::Map& rangemap,
         bool enforce_complete = false) override;
 
     void un_complete() override;
@@ -288,7 +288,7 @@ namespace Core::LinAlg
     ///  matrix was symmetric. However, the blanking of columns is computationally
     ///  quite expensive, because the matrix is stored in a sparse and distributed
     ///  manner.
-    void apply_dirichlet(const Epetra_Map& dbctoggle, bool diagonalblock = true) override;
+    void apply_dirichlet(const Core::LinAlg::Map& dbctoggle, bool diagonalblock = true) override;
 
     /// Apply dirichlet boundary condition to a matrix using a #trafo matrix
     ///
@@ -298,14 +298,14 @@ namespace Core::LinAlg
     /// The transformation matrix #trafo basically holds rotation matrices
     /// for the DOFs of the nodes.
     void apply_dirichlet_with_trafo(const Core::LinAlg::SparseMatrix& trafo,
-        const Epetra_Map& dbctoggle, bool diagonalblock = true, bool complete = true);
+        const Core::LinAlg::Map& dbctoggle, bool diagonalblock = true, bool complete = true);
 
     /// create matrix that contains all Dirichlet lines from my
     std::shared_ptr<SparseMatrix> extract_dirichlet_rows(
         const Core::LinAlg::Vector<double>& dbctoggle);
 
     /// create matrix that contains all Dirichlet lines from my
-    std::shared_ptr<SparseMatrix> extract_dirichlet_rows(const Epetra_Map& dbctoggle);
+    std::shared_ptr<SparseMatrix> extract_dirichlet_rows(const Core::LinAlg::Map& dbctoggle);
 
     //@}
 

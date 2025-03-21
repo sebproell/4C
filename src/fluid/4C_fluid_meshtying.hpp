@@ -74,7 +74,7 @@ namespace FLD
         int nsd,                                                ///> number space dimensions
         const Utils::MapExtractor* surfacesplitter = nullptr);  ///> surface splitter
 
-    const Epetra_Map* get_merged_map();
+    const Core::LinAlg::Map* get_merged_map();
     virtual ~Meshtying() = default;
 
     //! Set up mesh-tying framework
@@ -84,18 +84,19 @@ namespace FLD
 
     //! Applied Dirichlet values are adapted on the slave side of the internal interface
     //! in order to avoid an over-constraint problem setup
-    void check_overlapping_bc(Epetra_Map& map  ///> map of boundary condition
+    void check_overlapping_bc(Core::LinAlg::Map& map  ///> map of boundary condition
     );
 
     //! Old routine handling Dirichlet conditions on the master side of the internal interface
     /// During prepare_time_step() DC are projected from the master to the slave
     void project_master_to_slave_for_overlapping_bc(
-        Core::LinAlg::Vector<double>& velnp,     ///> solution vector n+1
-        std::shared_ptr<const Epetra_Map> bmaps  ///> map of boundary condition
+        Core::LinAlg::Vector<double>& velnp,            ///> solution vector n+1
+        std::shared_ptr<const Core::LinAlg::Map> bmaps  ///> map of boundary condition
     );
 
     //! Check whether Dirichlet BC are defined on the master
-    void dirichlet_on_master(std::shared_ptr<const Epetra_Map> bmaps  ///> map of boundary condition
+    void dirichlet_on_master(
+        std::shared_ptr<const Core::LinAlg::Map> bmaps  ///> map of boundary condition
     );
 
     //! Preparation for including Dirichlet conditions in the condensation process
@@ -267,25 +268,25 @@ namespace FLD
     const Utils::MapExtractor* surfacesplitter_;
 
     //! dof row map of the complete system
-    const Epetra_Map* dofrowmap_;
+    const Core::LinAlg::Map* dofrowmap_;
 
     //! dof row map of the complete system
-    std::shared_ptr<Epetra_Map> problemrowmap_;
+    std::shared_ptr<Core::LinAlg::Map> problemrowmap_;
 
     //! dof rowmap of all nodes, which are not on the interface
-    std::shared_ptr<Epetra_Map> gndofrowmap_;
+    std::shared_ptr<Core::LinAlg::Map> gndofrowmap_;
 
     //! slave & master dof rowmap
-    std::shared_ptr<Epetra_Map> gsmdofrowmap_;
+    std::shared_ptr<Core::LinAlg::Map> gsmdofrowmap_;
 
     //! slave dof rowmap
-    std::shared_ptr<const Epetra_Map> gsdofrowmap_;
+    std::shared_ptr<const Core::LinAlg::Map> gsdofrowmap_;
 
     //! master dof rowmap
-    std::shared_ptr<const Epetra_Map> gmdofrowmap_;
+    std::shared_ptr<const Core::LinAlg::Map> gmdofrowmap_;
 
     //! merged map for saddle point system and 2x2 block matrix
-    std::shared_ptr<Epetra_Map> mergedmap_;
+    std::shared_ptr<Core::LinAlg::Map> mergedmap_;
 
     //! vector containing time-depending values of the dirichlet condition
     /// valuesdc_ = (velnp after applying DC) - (veln)

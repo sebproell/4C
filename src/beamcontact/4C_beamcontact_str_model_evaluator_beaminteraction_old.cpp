@@ -250,7 +250,7 @@ void Solid::ModelEvaluator::BeamInteractionOld::reset_step_state() { return; }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map>
+std::shared_ptr<const Core::LinAlg::Map>
 Solid::ModelEvaluator::BeamInteractionOld::get_block_dof_row_map_ptr() const
 {
   check_init_setup();

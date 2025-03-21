@@ -131,7 +131,7 @@ MultiScale::MicroStatic::MicroStatic(const int microdisnum, const double V0)
   // vectors and matrices
   // -------------------------------------------------------------------
   if (!discret_->filled()) discret_->fill_complete();
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
   myrank_ = Core::Communication::my_mpi_rank(discret_->get_comm());
 
   // -------------------------------------------------------------------
@@ -967,7 +967,7 @@ void MultiScale::MicroStatic::static_homogenization(Core::LinAlg::Matrix<6, 1>* 
     // strains based on a minimization of averaged incremental energy.
     // Computer Methods in Applied Mechanics and Engineering 192: 559-591, 2003.
 
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
     Core::LinAlg::MultiVector<double> cmatpf(D_->Map(), 9);
 
     // make a copy

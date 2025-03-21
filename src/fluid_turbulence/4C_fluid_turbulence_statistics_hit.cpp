@@ -245,7 +245,7 @@ namespace FLD
     sumvelvel_->resize(3);
 
     // allocate some (toggle) vectors
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
     toggleu_ = Core::LinAlg::create_vector(*dofrowmap, true);
     togglev_ = Core::LinAlg::create_vector(*dofrowmap, true);
     togglew_ = Core::LinAlg::create_vector(*dofrowmap, true);
@@ -643,7 +643,7 @@ namespace FLD
     }
 
     // compute squared values of velocity
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
     std::shared_ptr<Core::LinAlg::Vector<double>> squaredvelnp =
         Core::LinAlg::create_vector(*dofrowmap, true);
     squaredvelnp->multiply(1.0, *velnp, *velnp, 0.0);
@@ -1059,7 +1059,7 @@ namespace FLD
     }
 
     // compute squared values of velocity
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
     std::shared_ptr<Core::LinAlg::Vector<double>> squaredvelnp =
         Core::LinAlg::create_vector(*dofrowmap, true);
     squaredvelnp->multiply(1.0, *velnp, *velnp, 0.0);

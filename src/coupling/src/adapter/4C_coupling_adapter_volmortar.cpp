@@ -416,7 +416,7 @@ void Coupling::Adapter::MortarVolCoupl::slave_to_master(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> Coupling::Adapter::MortarVolCoupl::master_dof_map() const
+std::shared_ptr<const Core::LinAlg::Map> Coupling::Adapter::MortarVolCoupl::master_dof_map() const
 {
   // safety check
   check_setup();
@@ -428,7 +428,7 @@ std::shared_ptr<const Epetra_Map> Coupling::Adapter::MortarVolCoupl::master_dof_
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> Coupling::Adapter::MortarVolCoupl::slave_dof_map() const
+std::shared_ptr<const Core::LinAlg::Map> Coupling::Adapter::MortarVolCoupl::slave_dof_map() const
 {
   // safety check
   check_setup();

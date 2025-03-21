@@ -69,7 +69,7 @@ namespace PoroMultiPhaseScaTra
     }
 
     //! unique map of all dofs that should be constrained with DBC
-    std::shared_ptr<const Epetra_Map> combined_dbc_map() const { return combinedDBCMap_; };
+    std::shared_ptr<const Core::LinAlg::Map> combined_dbc_map() const { return combinedDBCMap_; };
 
 
    protected:
@@ -93,7 +93,7 @@ namespace PoroMultiPhaseScaTra
         const Core::LinearSolver::SolverType solvertype);
 
     //! full monolithic dof row map
-    std::shared_ptr<const Epetra_Map> dof_row_map();
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map();
 
     //! evaluate all fields at x^n+1_i+1 with x^n+1_i+1 = x_n+1_i + iterinc
     virtual void evaluate(std::shared_ptr<const Core::LinAlg::Vector<double>> iterinc);
@@ -200,7 +200,7 @@ namespace PoroMultiPhaseScaTra
     int itnum_;
 
     //! dof row map (not split)
-    std::shared_ptr<Epetra_Map> fullmap_;
+    std::shared_ptr<Core::LinAlg::Map> fullmap_;
 
     //! dof row map split in (field) blocks
     std::shared_ptr<Core::LinAlg::MultiMapExtractor> blockrowdofmap_;
@@ -212,7 +212,7 @@ namespace PoroMultiPhaseScaTra
     Core::LinAlg::EquilibrationMethod equilibration_method_;
 
     //! dirichlet map of monolithic system
-    std::shared_ptr<Epetra_Map> combinedDBCMap_;
+    std::shared_ptr<Core::LinAlg::Map> combinedDBCMap_;
 
     //! @name Global vectors
     std::shared_ptr<Core::LinAlg::Vector<double>> zeros_;  //!< a zero vector of full length
@@ -352,13 +352,13 @@ namespace PoroMultiPhaseScaTra
     void build_convergence_norms() override;
 
     //! dof row map (not split), only artery and porofluid
-    std::shared_ptr<Epetra_Map> fullmap_artporo_;
+    std::shared_ptr<Core::LinAlg::Map> fullmap_artporo_;
 
     //! dof row map split in (field) blocks, only artery and porofluid
     std::shared_ptr<Core::LinAlg::MultiMapExtractor> blockrowdofmap_artporo_;
 
     //! dof row map (not split), only artery and artery-scatra
-    std::shared_ptr<Epetra_Map> fullmap_artscatra_;
+    std::shared_ptr<Core::LinAlg::Map> fullmap_artscatra_;
 
     //! dof row map split in (field) blocks, only artery and artery-scatra
     std::shared_ptr<Core::LinAlg::MultiMapExtractor> blockrowdofmap_artscatra_;

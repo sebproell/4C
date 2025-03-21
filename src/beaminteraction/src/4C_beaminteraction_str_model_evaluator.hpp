@@ -150,7 +150,7 @@ namespace Solid
       void runtime_output_step_state() const override;
 
       //! derived
-      std::shared_ptr<const Epetra_Map> get_block_dof_row_map_ptr() const override;
+      std::shared_ptr<const Core::LinAlg::Map> get_block_dof_row_map_ptr() const override;
 
       //! derived
       std::shared_ptr<const Core::LinAlg::Vector<double>> get_current_solution_ptr() const override;
@@ -294,7 +294,7 @@ namespace Solid
       std::shared_ptr<Core::FE::Discretization> bindis_;
 
       //! elerowmap of bindis
-      std::shared_ptr<Epetra_Map> rowbins_;
+      std::shared_ptr<Core::LinAlg::Map> rowbins_;
 
       //! displacement of nodes since last redistribution
       std::shared_ptr<Core::LinAlg::Vector<double>> dis_at_last_redistr_;

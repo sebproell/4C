@@ -51,7 +51,7 @@ void ScaTra::TimIntCardiacMonodomain::setup()
   // get a vector layout from the discretization to construct matching
   // vectors and matrices: local <-> global dof numbering
   // -------------------------------------------------------------------
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // Activation time at time n+1
   activation_time_np_ = Core::LinAlg::create_vector(*dofrowmap, true);

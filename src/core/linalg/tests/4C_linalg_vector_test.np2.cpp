@@ -13,7 +13,7 @@
 
 
 // Epetra related headers
-#include <Epetra_Map.h>
+#include "4C_linalg_map.hpp"
 
 #include <memory>
 
@@ -25,7 +25,7 @@ namespace
   {
    public:
     MPI_Comm comm_;
-    std::shared_ptr<Epetra_Map> map_;
+    std::shared_ptr<Core::LinAlg::Map> map_;
     int NumGlobalElements = 10;
 
    protected:
@@ -35,7 +35,7 @@ namespace
       comm_ = MPI_COMM_WORLD;
 
       // set up a map
-      map_ = std::make_shared<Epetra_Map>(
+      map_ = std::make_shared<Core::LinAlg::Map>(
           NumGlobalElements, 0, Core::Communication::as_epetra_comm(comm_));
     }
   };
@@ -289,7 +289,7 @@ namespace
       my_elements = {0, 2, 4, 6, 8};
     else
       my_elements = {1, 3, 5, 7, 9};
-    Epetra_Map new_map(
+    Core::LinAlg::Map new_map(
         10, my_elements.size(), my_elements.data(), 0, Core::Communication::as_epetra_comm(comm_));
 
     const Core::LinAlg::MultiVector<double>& b = a;

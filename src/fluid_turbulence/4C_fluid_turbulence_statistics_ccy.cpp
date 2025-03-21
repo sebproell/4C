@@ -44,7 +44,7 @@ FLD::TurbulenceStatisticsCcy::TurbulenceStatisticsCcy(
 
   //----------------------------------------------------------------------
   // allocate some vectors
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   meanvelnp_ = Core::LinAlg::create_vector(*dofrowmap, true);
 
@@ -143,7 +143,7 @@ FLD::TurbulenceStatisticsCcy::TurbulenceStatisticsCcy(
     std::vector<int> shellcoordinates_numnodes((*shellcoordinates_).size(), 0);
 
     // get element map
-    const Epetra_Map* elementmap = nurbsdis->element_row_map();
+    const Core::LinAlg::Map* elementmap = nurbsdis->element_row_map();
 
     // loop all available elements
     for (int iele = 0; iele < elementmap->NumMyElements(); ++iele)
@@ -609,7 +609,7 @@ void FLD::TurbulenceStatisticsCcy::evaluate_pointwise_mean_values_in_planes()
   std::shared_ptr<Core::FE::Nurbs::Knotvector> knots = nurbsdis->get_knot_vector();
 
   // get element map
-  const Epetra_Map* elementmap = nurbsdis->element_row_map();
+  const Core::LinAlg::Map* elementmap = nurbsdis->element_row_map();
 
   // loop all available elements
   for (int iele = 0; iele < elementmap->NumMyElements(); ++iele)

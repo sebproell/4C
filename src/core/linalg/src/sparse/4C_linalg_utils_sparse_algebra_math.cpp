@@ -182,7 +182,7 @@ void Core::LinAlg::add(const Epetra_CrsMatrix& A, const bool transposeA, const d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Core::LinAlg::matrix_put(const Core::LinAlg::SparseMatrix& A, const double scalarA,
-    std::shared_ptr<const Epetra_Map> rowmap, Core::LinAlg::SparseMatrixBase& B)
+    std::shared_ptr<const Core::LinAlg::Map> rowmap, Core::LinAlg::SparseMatrixBase& B)
 {
   // put values onto sysmat
   if (A.get_matrixtype() != Core::LinAlg::SparseMatrix::CRS_MATRIX)
@@ -196,7 +196,7 @@ void Core::LinAlg::matrix_put(const Core::LinAlg::SparseMatrix& A, const double 
 
   // define row map to tackle
   // if #rowmap (a subset of #RowMap()) is provided, a selective replacing is performed
-  const Epetra_Map* tomap = nullptr;
+  const Core::LinAlg::Map* tomap = nullptr;
   if (rowmap != nullptr)
     tomap = &(*rowmap);
   else

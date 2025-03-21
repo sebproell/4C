@@ -13,11 +13,10 @@
 #include "4C_fem_dofset_interface.hpp"
 #include "4C_fem_general_shape_function_type.hpp"
 #include "4C_linalg_graph.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
-
-#include <Epetra_Map.h>
 
 #include <functional>
 #include <ranges>
@@ -119,7 +118,7 @@ namespace Core::FE
   to exactly one processor and may appear as ghosts (guests) on other processors
   as well.
 
-  The parallel distribution is handled via Epetra_Map objects. There are
+  The parallel distribution is handled via Core::LinAlg::Map objects. There are
   row-maps that are unique without any overlap. There are column-maps that
   extend the row-maps with the overlap information. Elements, nodes and dofs are
   managed by using maps. That is all three items have a globally unique id,
@@ -129,7 +128,7 @@ namespace Core::FE
 
   In addition to the gids there are local ids, called lids. These are always
   consecutive numbers starting from 0. Local ids just count local items. See
-  Epetra_Map for details.
+  Core::LinAlg::Map for details.
 
   <h3>Initialization</h3>
 
@@ -687,7 +686,7 @@ namespace Core::FE
     - HaveDofs()==true prerequisite (produced by call to assign_degrees_of_freedom()))
 
     */
-    [[nodiscard]] const Epetra_Map* dof_row_map(unsigned nds = 0) const;
+    [[nodiscard]] const Core::LinAlg::Map* dof_row_map(unsigned nds = 0) const;
 
     /*!
     \brief Get degree of freedom column map (Filled()==true prerequisite)
@@ -699,7 +698,7 @@ namespace Core::FE
     - HaveDofs()==true prerequisite (produced by call to assign_degrees_of_freedom()))
 
     */
-    const Epetra_Map* dof_col_map(unsigned nds = 0) const;
+    const Core::LinAlg::Map* dof_col_map(unsigned nds = 0) const;
 
     //@}
 
@@ -721,7 +720,7 @@ namespace Core::FE
 
     \return nullptr if Filled() is false. A call to fill_complete() is a prerequisite.
     */
-    [[nodiscard]] const Epetra_Map* node_row_map() const;
+    [[nodiscard]] const Core::LinAlg::Map* node_row_map() const;
 
     /*!
     \brief Get map associated with the distribution of nodes including ghosted nodes
@@ -732,7 +731,7 @@ namespace Core::FE
 
     \return nullptr if Filled() is false. A call to fill_complete() is a prerequisite.
     */
-    const Epetra_Map* node_col_map() const;
+    const Core::LinAlg::Map* node_col_map() const;
 
     /*!
     \brief Get map associated with the distribution of the ownership of elements
@@ -743,7 +742,7 @@ namespace Core::FE
 
     \return nullptr if Filled() is false. A call to fill_complete() is a prerequisite.
     */
-    [[nodiscard]] const Epetra_Map* element_row_map() const;
+    [[nodiscard]] const Core::LinAlg::Map* element_row_map() const;
 
     /*!
     \brief Get map associated with the distribution of elements including ghosted elements
@@ -754,7 +753,7 @@ namespace Core::FE
 
     \return nullptr if Filled() is false. A call to fill_complete() is a prerequisite.
     */
-    const Epetra_Map* element_col_map() const;
+    const Core::LinAlg::Map* element_col_map() const;
 
     /*!
     \brief Get global number of elements (true number of total elements)
@@ -1238,7 +1237,7 @@ namespace Core::FE
 
     \note Filled()==true is a prerequisite, Filled()==true on exit
     */
-    void redistribute(const Epetra_Map& noderowmap, const Epetra_Map& nodecolmap,
+    void redistribute(const Core::LinAlg::Map& noderowmap, const Core::LinAlg::Map& nodecolmap,
         OptionsRedistribution options_redistribution = {});
 
     /*!
@@ -1261,8 +1260,8 @@ namespace Core::FE
 
     \note Filled()==true is a prerequisite, Filled()==true on exit
     */
-    void redistribute(const Epetra_Map& noderowmap, const Epetra_Map& nodecolmap,
-        const Epetra_Map& elerowmap, const Epetra_Map& elecolmap,
+    void redistribute(const Core::LinAlg::Map& noderowmap, const Core::LinAlg::Map& nodecolmap,
+        const Core::LinAlg::Map& elerowmap, const Core::LinAlg::Map& elecolmap,
         bool assigndegreesoffreedom = true, bool initelements = true,
         bool doboundaryconditions = true, bool killdofs = true, bool killcond = true);
 
@@ -1278,7 +1277,7 @@ namespace Core::FE
       \param checkghosting (in): additional check can be performed
 
       */
-    void extended_ghosting(const Epetra_Map& elecolmap, bool assigndegreesoffreedom = true,
+    void extended_ghosting(const Core::LinAlg::Map& elecolmap, bool assigndegreesoffreedom = true,
         bool initelements = true, bool doboundaryconditions = true, bool checkghosting = true);
 
     // Setup ghosting if you have a proper distribution of rownodes and elements
@@ -1312,9 +1311,9 @@ namespace Core::FE
     only builds maps!
 
     */
-    std::pair<std::shared_ptr<Epetra_Map>, std::shared_ptr<Epetra_Map>> build_element_row_column(
-        const Epetra_Map& noderowmap, const Epetra_Map& nodecolmap,
-        bool do_extended_ghosting = false) const;
+    std::pair<std::shared_ptr<Core::LinAlg::Map>, std::shared_ptr<Core::LinAlg::Map>>
+    build_element_row_column(const Core::LinAlg::Map& noderowmap,
+        const Core::LinAlg::Map& nodecolmap, bool do_extended_ghosting = false) const;
 
     /*!
     \brief Export the nodes to a different parallel layout
@@ -1338,7 +1337,8 @@ namespace Core::FE
 
     \note Sets Filled()=false and deletes noderowmap_ and nodecolmap_
     */
-    void export_row_nodes(const Epetra_Map& newmap, bool killdofs = true, bool killcond = true);
+    void export_row_nodes(
+        const Core::LinAlg::Map& newmap, bool killdofs = true, bool killcond = true);
 
 
     /*!
@@ -1366,7 +1366,8 @@ namespace Core::FE
 
     \note Sets Filled()=false and deletes noderowmap_ and nodecolmap_
     */
-    void export_column_nodes(const Epetra_Map& newmap, bool killdofs = true, bool killcond = true);
+    void export_column_nodes(
+        const Core::LinAlg::Map& newmap, bool killdofs = true, bool killcond = true);
 
     /*!
     \brief Export the elements from proc 0 to a different parallel row layout
@@ -1378,7 +1379,7 @@ namespace Core::FE
     \param gidlist (in): list of element gids to be distributed
 
     */
-    void proc_zero_distribute_elements_to_all(Epetra_Map& target, std::vector<int>& gidlist);
+    void proc_zero_distribute_elements_to_all(Core::LinAlg::Map& target, std::vector<int>& gidlist);
 
     /*!
     \brief Export the nodes from proc 0 to a different parallel row layout
@@ -1389,7 +1390,7 @@ namespace Core::FE
     \param target (in): desired distribution of elements
 
     */
-    void proc_zero_distribute_nodes_to_all(Epetra_Map& target);
+    void proc_zero_distribute_nodes_to_all(Core::LinAlg::Map& target);
 
     /*!
     \brief Export the elements to a different parallel row layout
@@ -1411,7 +1412,8 @@ namespace Core::FE
 
     \note Sets Filled()=false and deletes elerowmap_ and elecolmap_
     */
-    void export_row_elements(const Epetra_Map& newmap, bool killdofs = true, bool killcond = true);
+    void export_row_elements(
+        const Core::LinAlg::Map& newmap, bool killdofs = true, bool killcond = true);
 
 
     /*!
@@ -1439,7 +1441,7 @@ namespace Core::FE
     \note Sets Filled()=false and deletes elerowmap_ and elecolmap_
     */
     void export_column_elements(
-        const Epetra_Map& newmap, bool killdofs = true, bool killcond = true);
+        const Core::LinAlg::Map& newmap, bool killdofs = true, bool killcond = true);
 
     /*!
     \brief Build nodal graph of discretization (Filled()==true prerequisite)
@@ -1475,7 +1477,7 @@ namespace Core::FE
     @return Vector containing the coordinates of all nodes which are present in the given noderowmap
      */
     std::shared_ptr<Core::LinAlg::MultiVector<double>> build_node_coordinates(
-        std::shared_ptr<const Epetra_Map> noderowmap = nullptr) const;
+        std::shared_ptr<const Core::LinAlg::Map> noderowmap = nullptr) const;
 
     //@}
 
@@ -2017,7 +2019,7 @@ namespace Core::FE
     \brief Build noderowmap_ (Filled()==true NOT prerequisite)
 
     Build the parallel layout of nodes in this
-    discretization and store it as an Epetra_Map in noderowmap_
+    discretization and store it as an Core::LinAlg::Map in noderowmap_
     noderowmap_ is unique.
     It considers nodes owned by a proc only.
 
@@ -2029,7 +2031,7 @@ namespace Core::FE
     \brief Build nodecolmap_ (Filled()==true NOT prerequisite)
 
     Build the parallel layout of nodes in this
-    discretization and store it as an Epetra_Map in nodecolmap_
+    discretization and store it as an Core::LinAlg::Map in nodecolmap_
     nodecolmap_ is potentially but not necessarily overlapping.
     It considers nodes owned by a proc and its ghosted nodes
 
@@ -2041,7 +2043,7 @@ namespace Core::FE
     \brief Build elerowmap_ (Filled()==true NOT prerequisite)
 
     Build the parallel layout of elements in this
-    discretization and store it as an Epetra_Map in elerowmap_
+    discretization and store it as an Core::LinAlg::Map in elerowmap_
     elerowmap_ is unique.
     It considers elements owned by a proc only
 
@@ -2054,7 +2056,7 @@ namespace Core::FE
     \brief Build elecolmap_ (Filled()==true NOT prerequisite)
 
     Build the potentially overlapping parallel layout of elements in this
-    discretization and store it as an Epetra_Map in elecolmap_
+    discretization and store it as an Core::LinAlg::Map in elecolmap_
     elecolmap_ includes ghosted elements and is potentially overlapping.
 
     \note This is a collective call
@@ -2195,10 +2197,10 @@ namespace Core::FE
     //! @{
 
     //! Unique distribution of element ownerships
-    std::shared_ptr<Epetra_Map> elerowmap_;
+    std::shared_ptr<Core::LinAlg::Map> elerowmap_;
 
     //! Distribution of elements including ghost elements
-    std::shared_ptr<Epetra_Map> elecolmap_;
+    std::shared_ptr<Core::LinAlg::Map> elecolmap_;
 
     //! Vector of pointers to row elements for faster access
     std::vector<Core::Elements::Element*> elerowptr_;
@@ -2215,10 +2217,10 @@ namespace Core::FE
     //! @{
 
     //! Unique distribution of nodal ownerships
-    std::shared_ptr<Epetra_Map> noderowmap_;
+    std::shared_ptr<Core::LinAlg::Map> noderowmap_;
 
     //! Distribution of nodes including ghost nodes
-    std::shared_ptr<Epetra_Map> nodecolmap_;
+    std::shared_ptr<Core::LinAlg::Map> nodecolmap_;
 
     //! Vector of pointers to row nodes for faster access
     std::vector<Core::Nodes::Node*> noderowptr_;

@@ -177,7 +177,8 @@ namespace Coupling::VolMortar
     void integrate_ele_based_3d(Core::Elements::Element& sele, std::vector<int>& foundeles,
         Core::LinAlg::SparseMatrix& dmatrixA, Core::LinAlg::SparseMatrix& mmatrixA,
         const Core::FE::Discretization& Adiscret, const Core::FE::Discretization& Bdiscret,
-        int dofseta, int dofsetb, const Epetra_Map& PAB_dofrowmap, const Epetra_Map& PAB_dofcolmap);
+        int dofseta, int dofsetb, const Core::LinAlg::Map& PAB_dofrowmap,
+        const Core::LinAlg::Map& PAB_dofcolmap);
 
    protected:
     /*!
@@ -360,7 +361,7 @@ namespace Coupling::VolMortar
       double* Axi, double* AuxXi, double* globgp, DualQuad& dq, Shapefcn& shape,
       Core::LinAlg::SparseMatrix& dmatrix_A, Core::LinAlg::SparseMatrix& mmatrix_A,
       const Core::FE::Discretization& Adis, const Core::FE::Discretization& Bdis, int dofseta,
-      int dofsetb, const Epetra_Map& PAB_dofrowmap, const Epetra_Map& PAB_dofcolmap);
+      int dofsetb, const Core::LinAlg::Map& PAB_dofrowmap, const Core::LinAlg::Map& PAB_dofcolmap);
 
   // evaluation of nts approach
   template <Core::FE::CellType distype>
@@ -368,7 +369,7 @@ namespace Coupling::VolMortar
       Core::LinAlg::SparseMatrix& pmatrix, const Core::FE::Discretization& nodediscret,
       const Core::FE::Discretization& elediscret, std::vector<int>& foundeles, int& found,
       int& eleid, double& dist, double* AuxXi, double* nodepos, std::pair<int, int>& dofset,
-      const Epetra_Map& P_dofrowmap, const Epetra_Map& P_dofcolmap);
+      const Core::LinAlg::Map& P_dofrowmap, const Core::LinAlg::Map& P_dofcolmap);
 
   //===================================
   // Alternative to VolMortar coupling:
@@ -387,8 +388,8 @@ namespace Coupling::VolMortar
     */
     void interpolate(Core::Nodes::Node* node, Core::LinAlg::SparseMatrix& pmatrix_,
         const Core::FE::Discretization& nodediscret, const Core::FE::Discretization& elediscret,
-        std::vector<int>& foundeles, std::pair<int, int>& dofset, const Epetra_Map& P_dofrowmap,
-        const Epetra_Map& P_dofcolmap);
+        std::vector<int>& foundeles, std::pair<int, int>& dofset,
+        const Core::LinAlg::Map& P_dofrowmap, const Core::LinAlg::Map& P_dofcolmap);
   };
 
 }  // namespace Coupling::VolMortar

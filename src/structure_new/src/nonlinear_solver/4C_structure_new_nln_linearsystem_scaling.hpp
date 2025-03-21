@@ -11,8 +11,8 @@
 #include "4C_config.hpp"
 
 #include "4C_inpar_structure.hpp"
+#include "4C_linalg_map.hpp"
 
-#include <Epetra_Map.h>
 #include <NOX_Epetra_Scaling.H>
 
 namespace NOX

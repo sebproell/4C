@@ -334,7 +334,7 @@ void ScaTra::LevelSetAlgorithm::calc_node_based_reinit_vel()
   for (int idim = 0; idim < 3; idim++)
   {
     // define vector for velocity component
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
     std::shared_ptr<Core::LinAlg::Vector<double>> velcomp =
         Core::LinAlg::create_vector(*dofrowmap, true);
     velcomp->put_scalar(0.0);
@@ -509,7 +509,7 @@ void ScaTra::LevelSetAlgorithm::reinit_geo(
   // map holding pbc nodes (masters or slaves) <pbc node id, distance to flame front>
   std::map<int, double> pbcnodes;
 
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // determine the number of nodes per element
   int numnodesperele = 0;

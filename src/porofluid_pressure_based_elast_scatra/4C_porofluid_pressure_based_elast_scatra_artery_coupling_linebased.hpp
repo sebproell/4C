@@ -126,7 +126,7 @@ namespace PoroMultiPhaseScaTra
      * @param[in,out]   rhs_art_with_collapsed right hand side of artery subpart
      * @returns dbcmap, also containing additional boundary condition for collapsed eles
      */
-    std::shared_ptr<Epetra_Map> get_additional_dbc_for_collapsed_eles(
+    std::shared_ptr<Core::LinAlg::Map> get_additional_dbc_for_collapsed_eles(
         const Core::LinAlg::MapExtractor& dbcmap_art,
         Core::LinAlg::Vector<double>& rhs_art_with_collapsed);
 

@@ -336,13 +336,13 @@ void PoroElastScaTra::PoroScatraMono::setup_system()
   poro_field()->setup_system();
 
   // create combined map
-  std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
 
   {
     // vecSpaces.push_back(poro_field()->dof_row_map());
     vecSpaces.push_back(poro_field()->dof_row_map_structure());
     vecSpaces.push_back(poro_field()->dof_row_map_fluid());
-    const Epetra_Map* dofrowmapscatra = (scatra_field()->discretization())->dof_row_map(0);
+    const Core::LinAlg::Map* dofrowmapscatra = (scatra_field()->discretization())->dof_row_map(0);
     vecSpaces.push_back(Core::Utils::shared_ptr_from_ref(*dofrowmapscatra));
   }
 
@@ -355,10 +355,10 @@ void PoroElastScaTra::PoroScatraMono::setup_system()
 
   // build dbc map of monolithic system
   {
-    const std::shared_ptr<const Epetra_Map> porocondmap = poro_field()->combined_dbc_map();
-    const std::shared_ptr<const Epetra_Map> scatracondmap =
+    const std::shared_ptr<const Core::LinAlg::Map> porocondmap = poro_field()->combined_dbc_map();
+    const std::shared_ptr<const Core::LinAlg::Map> scatracondmap =
         scatra_field()->dirich_maps()->cond_map();
-    std::shared_ptr<const Epetra_Map> dbcmap =
+    std::shared_ptr<const Core::LinAlg::Map> dbcmap =
         Core::LinAlg::merge_map(porocondmap, scatracondmap, false);
 
     // Finally, create the global FSI Dirichlet map extractor
@@ -372,8 +372,8 @@ void PoroElastScaTra::PoroScatraMono::setup_system()
           *extractor(), *extractor(), 81, false, true);
 
   {
-    std::vector<std::shared_ptr<const Epetra_Map>> scatravecSpaces;
-    const Epetra_Map* dofrowmapscatra = (scatra_field()->discretization())->dof_row_map(0);
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> scatravecSpaces;
+    const Core::LinAlg::Map* dofrowmapscatra = (scatra_field()->discretization())->dof_row_map(0);
     scatravecSpaces.push_back(Core::Utils::shared_ptr_from_ref(*dofrowmapscatra));
     scatrarowdofmap_.setup(*dofrowmapscatra, scatravecSpaces);
   }
@@ -1015,7 +1015,7 @@ void PoroElastScaTra::PoroScatraMono::build_convergence_norms()
 /*----------------------------------------------------------------------*
  |                                                         vuong 08/13  |
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> PoroElastScaTra::PoroScatraMono::dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> PoroElastScaTra::PoroScatraMono::dof_row_map() const
 {
   return blockrowdofmap_->full_map();
 }
@@ -1023,7 +1023,7 @@ std::shared_ptr<const Epetra_Map> PoroElastScaTra::PoroScatraMono::dof_row_map()
 /*----------------------------------------------------------------------*
  |                                                         vuong 08/13  |
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> PoroElastScaTra::PoroScatraMono::combined_dbc_map() const
+std::shared_ptr<const Core::LinAlg::Map> PoroElastScaTra::PoroScatraMono::combined_dbc_map() const
 {
   return dbcmaps_->cond_map();
 }
@@ -1041,9 +1041,9 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> PoroElastScaTra::PoroScatraMono::sys
  | Poroelast_SCATRAicity map together                              vuong 01/12 |
  *----------------------------------------------------------------------*/
 void PoroElastScaTra::PoroScatraMono::set_dof_row_maps(
-    const std::vector<std::shared_ptr<const Epetra_Map>>& maps)
+    const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps)
 {
-  std::shared_ptr<Epetra_Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
+  std::shared_ptr<Core::LinAlg::Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
 
   // full monolithic-blockmap
   blockrowdofmap_->setup(*fullmap, maps);

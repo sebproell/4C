@@ -447,7 +447,8 @@ void Solid::ModelEvaluator::BeamInteraction::partition_problem()
       binstrategy_->weighted_distribution_of_bins_to_procs(discret_vec, disnp, nodesinbin, weight);
 
   // extract noderowmap because it will be called reset() after adding elements
-  std::shared_ptr<Epetra_Map> noderowmap = std::make_shared<Epetra_Map>(*bindis_->node_row_map());
+  std::shared_ptr<Core::LinAlg::Map> noderowmap =
+      std::make_shared<Core::LinAlg::Map>(*bindis_->node_row_map());
   // delete old bins ( in case you partition during your simulation or after a restart)
   bindis_->delete_elements();
   binstrategy_->fill_bins_into_bin_discretization(*rowbins_);
@@ -466,8 +467,8 @@ void Solid::ModelEvaluator::BeamInteraction::partition_problem()
 
   // standard ghosting (if a proc owns a part of nodes (and therefore dofs) of
   // an element, the element and the rest of its nodes and dofs are ghosted
-  std::shared_ptr<Epetra_Map> stdelecolmap;
-  std::shared_ptr<Epetra_Map> stdnodecolmapdummy;
+  std::shared_ptr<Core::LinAlg::Map> stdelecolmap;
+  std::shared_ptr<Core::LinAlg::Map> stdnodecolmapdummy;
   binstrategy_->standard_discretization_ghosting(
       ia_discret_, *rowbins_, ia_state_ptr_->get_dis_np(), stdelecolmap, stdnodecolmapdummy);
 
@@ -562,11 +563,11 @@ void Solid::ModelEvaluator::BeamInteraction::extend_ghosting()
 
   // build auxiliary bin col map
   std::vector<int> auxgids(colbins.begin(), colbins.end());
-  std::shared_ptr<Epetra_Map> auxmap =
-      std::make_shared<Epetra_Map>(-1, static_cast<int>(auxgids.size()), auxgids.data(), 0,
+  std::shared_ptr<Core::LinAlg::Map> auxmap =
+      std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(auxgids.size()), auxgids.data(), 0,
           Core::Communication::as_epetra_comm(bindis_->get_comm()));
 
-  std::shared_ptr<Epetra_Map> ia_elecolmap = binstrategy_->extend_element_col_map(
+  std::shared_ptr<Core::LinAlg::Map> ia_elecolmap = binstrategy_->extend_element_col_map(
       ia_state_ptr_->get_bin_to_row_ele_map(), ia_state_ptr_->get_bin_to_row_ele_map(),
       ia_state_ptr_->get_extended_bin_to_row_ele_map(), auxmap);
 
@@ -1065,7 +1066,7 @@ void Solid::ModelEvaluator::BeamInteraction::runtime_output_step_state() const
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map>
+std::shared_ptr<const Core::LinAlg::Map>
 Solid::ModelEvaluator::BeamInteraction::get_block_dof_row_map_ptr() const
 {
   check_init_setup();

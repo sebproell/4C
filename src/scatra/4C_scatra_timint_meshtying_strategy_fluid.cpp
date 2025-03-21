@@ -29,7 +29,7 @@ ScaTra::MeshtyingStrategyFluid::MeshtyingStrategyFluid(ScaTra::ScaTraTimIntImpl*
 /*-----------------------------------------------------------------------*
  | return global map of degrees of freedom                    fang 02/18 |
  *-----------------------------------------------------------------------*/
-const Epetra_Map& ScaTra::MeshtyingStrategyFluid::dof_row_map() const
+const Core::LinAlg::Map& ScaTra::MeshtyingStrategyFluid::dof_row_map() const
 {
   return *scatratimint_->dof_row_map();
 }

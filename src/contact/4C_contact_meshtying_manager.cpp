@@ -658,7 +658,7 @@ void CONTACT::MtManager::read_restart(Core::IO::DiscretizationReader& reader,
 void CONTACT::MtManager::postprocess_quantities(Core::IO::DiscretizationWriter& output)
 {
   // evaluate interface tractions
-  std::shared_ptr<Epetra_Map> problem = get_strategy().problem_dofs();
+  std::shared_ptr<Core::LinAlg::Map> problem = get_strategy().problem_dofs();
   std::shared_ptr<Core::LinAlg::Vector<double>> traction =
       std::make_shared<Core::LinAlg::Vector<double>>(*(get_strategy().lagrange_multiplier_old()));
   std::shared_ptr<Core::LinAlg::Vector<double>> tractionexp =

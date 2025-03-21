@@ -8,13 +8,12 @@
 #include "4C_adapter_fld_fluid_fluid_xfsi.hpp"
 
 #include "4C_fluid_xfluid_fluid.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_mapextractor.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_xfem_condition_manager.hpp"
 #include "4C_xfem_discretization.hpp"
-
-#include <Epetra_Map.h>
 
 #include <memory>
 #include <set>

@@ -40,7 +40,7 @@ namespace PoroMultiPhaseScaTra
     virtual ~PoroMultiPhaseScaTraArtCouplBase() = default;
 
     //! access to full DOF map
-    const std::shared_ptr<const Epetra_Map>& full_map() const;
+    const std::shared_ptr<const Core::LinAlg::Map>& full_map() const;
 
     //! Recompute the CouplingDOFs for each CouplingNode if ntp-coupling active
     void recompute_coupled_do_fs_for_ntp(
@@ -54,10 +54,10 @@ namespace PoroMultiPhaseScaTra
         std::shared_ptr<const Core::LinAlg::Vector<double>> vec_art) = 0;
 
     //! access artery (1D) dof row map
-    virtual std::shared_ptr<const Epetra_Map> artery_dof_row_map() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> artery_dof_row_map() const = 0;
 
     //! access full dof row map
-    virtual std::shared_ptr<const Epetra_Map> dof_row_map() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> dof_row_map() const = 0;
 
     //! print out the coupling method
     virtual void print_out_coupling_method() const = 0;
@@ -140,7 +140,7 @@ namespace PoroMultiPhaseScaTra
     int num_coupled_dofs_;
 
     //! dof row map (not split)
-    std::shared_ptr<Epetra_Map> fullmap_;
+    std::shared_ptr<Core::LinAlg::Map> fullmap_;
 
     //! global extractor
     std::shared_ptr<Core::LinAlg::MultiMapExtractor> globalex_;

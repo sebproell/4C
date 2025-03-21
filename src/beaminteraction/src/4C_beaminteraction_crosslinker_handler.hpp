@@ -70,13 +70,13 @@ namespace BeamInteraction
     }
 
     /// initial distribution of linker ( more general nodes of bindis_ ) to bins
-    virtual void distribute_linker_to_bins(std::shared_ptr<Epetra_Map> const& linkerrowmap);
+    virtual void distribute_linker_to_bins(std::shared_ptr<Core::LinAlg::Map> const& linkerrowmap);
 
     /// remove all linker
     virtual void remove_all_linker();
 
     /// get bin colume map
-    virtual inline std::shared_ptr<Epetra_Map>& bin_col_map() { return bincolmap_; }
+    virtual inline std::shared_ptr<Core::LinAlg::Map>& bin_col_map() { return bincolmap_; }
 
     /// get myrank
     virtual inline int my_rank() { return myrank_; }
@@ -127,7 +127,7 @@ namespace BeamInteraction
     int myrank_;
 
     /// colmap of bins
-    std::shared_ptr<Epetra_Map> bincolmap_;
+    std::shared_ptr<Core::LinAlg::Map> bincolmap_;
   };
 
 }  // namespace BeamInteraction

@@ -656,7 +656,7 @@ namespace FLD
     /// subjected to Dirichlet boundary conditions. For instance, the method is
     /// called by the staggered FSI in which the velocities on the FSI
     /// interface are prescribed by the other fields.
-    void add_dirich_cond(const std::shared_ptr<const Epetra_Map> maptoadd) override;
+    void add_dirich_cond(const std::shared_ptr<const Core::LinAlg::Map> maptoadd) override;
 
     /// Contract the Dirichlet DOF set
     ///
@@ -667,7 +667,7 @@ namespace FLD
     /// subjected to Dirichlet boundary conditions. This method is
     /// called solely by immersed FSI to remove the Dirichlet values from
     /// the previous solution step before a new set is prescribed.
-    void remove_dirich_cond(const std::shared_ptr<const Epetra_Map> maptoremove) override;
+    void remove_dirich_cond(const std::shared_ptr<const Core::LinAlg::Map> maptoremove) override;
 
     /// Extract the Dirichlet toggle vector based on Dirichlet BC maps
     ///
@@ -716,7 +716,7 @@ namespace FLD
     //! Create mesh displacement at time level t_{n+1}
     virtual std::shared_ptr<Core::LinAlg::Vector<double>> create_dispnp()
     {
-      const Epetra_Map* aledofrowmap = discret_->dof_row_map(ndsale_);
+      const Core::LinAlg::Map* aledofrowmap = discret_->dof_row_map(ndsale_);
       dispnp_ = Core::LinAlg::create_vector(*aledofrowmap, true);
       return dispnp_;
     }
@@ -727,7 +727,7 @@ namespace FLD
     //! Create mesh displacement at time level t_{n}
     virtual std::shared_ptr<Core::LinAlg::Vector<double>> create_dispn()
     {
-      const Epetra_Map* aledofrowmap = discret_->dof_row_map(ndsale_);
+      const Core::LinAlg::Map* aledofrowmap = discret_->dof_row_map(ndsale_);
       dispn_ = Core::LinAlg::create_vector(*aledofrowmap, true);
       return dispn_;
     }
@@ -752,9 +752,9 @@ namespace FLD
     {
       return velpressplitter_;
     };
-    std::shared_ptr<const Epetra_Map> velocity_row_map() override;
-    std::shared_ptr<const Epetra_Map> pressure_row_map() override;
-    //  virtual void SetMeshMap(std::shared_ptr<const Epetra_Map> mm);
+    std::shared_ptr<const Core::LinAlg::Map> velocity_row_map() override;
+    std::shared_ptr<const Core::LinAlg::Map> pressure_row_map() override;
+    //  virtual void SetMeshMap(std::shared_ptr<const Core::LinAlg::Map> mm);
     //  double TimeScaling() const;
 
     /// Use residual_scaling() to convert the implemented fluid residual to an actual force with

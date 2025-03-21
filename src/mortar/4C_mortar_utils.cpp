@@ -149,7 +149,7 @@ void Mortar::sort(double* dlist, int N, int* list2)
  | transform the row map of a matrix (GIDs)                   popp 08/10|
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_transform_gids(
-    const Core::LinAlg::SparseMatrix& inmat, const Epetra_Map& newrowmap)
+    const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap)
 {
   // initialize output matrix
   std::shared_ptr<Core::LinAlg::SparseMatrix> outmat =
@@ -187,7 +187,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_transform_gids(
  | transform the column map of a matrix (GIDs)                popp 08/10|
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_col_transform_gids(
-    const Core::LinAlg::SparseMatrix& inmat, const Epetra_Map& newdomainmap)
+    const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newdomainmap)
 {
   // initialize output matrix
   std::shared_ptr<Core::LinAlg::SparseMatrix> outmat =
@@ -244,7 +244,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_col_transform_gids(
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Mortar::create_new_col_map(const Core::LinAlg::SparseMatrix& mat,
-    const Epetra_Map& newdomainmap, std::shared_ptr<Epetra_Map>& newcolmap)
+    const Core::LinAlg::Map& newdomainmap, std::shared_ptr<Core::LinAlg::Map>& newcolmap)
 {
   if (not mat.filled()) FOUR_C_THROW("Matrix must be filled!");
 
@@ -280,18 +280,18 @@ void Mortar::create_new_col_map(const Core::LinAlg::SparseMatrix& mat,
     my_col_gids[lid] = cit->second;
   }
 
-  newcolmap = std::make_shared<Epetra_Map>(mat.col_map().NumGlobalElements(),
+  newcolmap = std::make_shared<Core::LinAlg::Map>(mat.col_map().NumGlobalElements(),
       static_cast<int>(my_col_gids.size()), my_col_gids.data(), 0, mat.Comm());
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Mortar::replace_column_and_domain_map(Core::LinAlg::SparseMatrix& mat,
-    const Epetra_Map& newdomainmap, std::shared_ptr<Epetra_Map>* const newcolmap_ptr)
+    const Core::LinAlg::Map& newdomainmap, std::shared_ptr<Core::LinAlg::Map>* const newcolmap_ptr)
 {
   if (not mat.filled()) FOUR_C_THROW("Matrix must be filled!");
 
-  std::shared_ptr<Epetra_Map> newcolmap = nullptr;
+  std::shared_ptr<Core::LinAlg::Map> newcolmap = nullptr;
   if (newcolmap_ptr)
   {
     create_new_col_map(mat, newdomainmap, *newcolmap_ptr);
@@ -313,8 +313,8 @@ void Mortar::replace_column_and_domain_map(Core::LinAlg::SparseMatrix& mat,
  | transform the row and column maps of a matrix (GIDs)       popp 08/10|
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform_gids(
-    const Core::LinAlg::SparseMatrix& inmat, const Epetra_Map& newrowmap,
-    const Epetra_Map& newdomainmap)
+    const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap,
+    const Core::LinAlg::Map& newdomainmap)
 {
   // initialize output matrix
   std::shared_ptr<Core::LinAlg::SparseMatrix> outmat =
@@ -372,7 +372,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform_gid
  | transform the row map of a matrix                          popp 08/10|
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_transform(
-    const Core::LinAlg::SparseMatrix& inmat, const Epetra_Map& newrowmap)
+    const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap)
 {
   // redistribute input matrix
   std::shared_ptr<Epetra_CrsMatrix> permmat = redistribute(inmat, newrowmap, inmat.domain_map());
@@ -388,7 +388,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_transform(
  | transform the column map of a matrix                       popp 08/10|
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_col_transform(
-    const Core::LinAlg::SparseMatrix& inmat, const Epetra_Map& newdomainmap)
+    const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newdomainmap)
 {
   // initialize output matrix
   std::shared_ptr<Core::LinAlg::SparseMatrix> outmat =
@@ -405,8 +405,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_col_transform(
  | transform the row and column maps of a matrix              popp 08/10|
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform(
-    const Core::LinAlg::SparseMatrix& inmat, const Epetra_Map& newrowmap,
-    const Epetra_Map& newdomainmap)
+    const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap,
+    const Core::LinAlg::Map& newdomainmap)
 {
   // redistribute input matrix
   std::shared_ptr<Epetra_CrsMatrix> permmat = redistribute(inmat, newrowmap, newdomainmap);
@@ -421,7 +421,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 std::shared_ptr<Epetra_CrsMatrix> Mortar::redistribute(const Core::LinAlg::SparseMatrix& src,
-    const Epetra_Map& permrowmap, const Epetra_Map& permdomainmap)
+    const Core::LinAlg::Map& permrowmap, const Core::LinAlg::Map& permdomainmap)
 {
   Epetra_Export exporter(permrowmap, src.row_map());
 
@@ -724,7 +724,7 @@ void Mortar::Utils::create_volume_ghosting(const Core::FE::Discretization& dis_s
       if (voldis.at(c)->element_row_map()->SameAs(*voldis.at(0)->element_row_map()) == false)
         FOUR_C_THROW("row maps on input do not coincide");
 
-  const Epetra_Map* ielecolmap = dis_src.element_col_map();
+  const Core::LinAlg::Map* ielecolmap = dis_src.element_col_map();
 
   // 1 Ghost all Volume Element + Nodes,for all col elements in dis_src
   for (unsigned disidx = 0; disidx < voldis.size(); ++disidx)
@@ -732,8 +732,8 @@ void Mortar::Utils::create_volume_ghosting(const Core::FE::Discretization& dis_s
     std::vector<int> rdata;
 
     // Fill rdata with existing colmap
-    const Epetra_Map* elecolmap = voldis[disidx]->element_col_map();
-    const std::shared_ptr<Epetra_Map> allredelecolmap =
+    const Core::LinAlg::Map* elecolmap = voldis[disidx]->element_col_map();
+    const std::shared_ptr<Core::LinAlg::Map> allredelecolmap =
         Core::LinAlg::allreduce_e_map(*voldis[disidx]->element_row_map());
 
     for (int i = 0; i < elecolmap->NumMyElements(); ++i)
@@ -760,7 +760,7 @@ void Mortar::Utils::create_volume_ghosting(const Core::FE::Discretization& dis_s
     }
 
     // re-build element column map
-    Epetra_Map newelecolmap(-1, (int)rdata.size(), rdata.data(), 0,
+    Core::LinAlg::Map newelecolmap(-1, (int)rdata.size(), rdata.data(), 0,
         Core::Communication::as_epetra_comm(voldis[disidx]->get_comm()));
     rdata.clear();
 
@@ -771,7 +771,7 @@ void Mortar::Utils::create_volume_ghosting(const Core::FE::Discretization& dis_s
 
   // 2 Reconnect Face Element -- Parent Element Pointers to first dis in dis_tar
   {
-    const Epetra_Map* elecolmap = voldis[0]->element_col_map();
+    const Core::LinAlg::Map* elecolmap = voldis[0]->element_col_map();
 
     for (int i = 0; i < ielecolmap->NumMyElements(); ++i)
     {
@@ -883,19 +883,19 @@ void Mortar::Utils::mortar_matrix_condensation(std::shared_ptr<Core::LinAlg::Spa
     const std::shared_ptr<const Core::LinAlg::SparseMatrix>& p_col)
 {
   // prepare maps
-  std::shared_ptr<Epetra_Map> gsrow = std::const_pointer_cast<Epetra_Map>(
-      Core::Utils::shared_ptr_from_ref<const Epetra_Map>(p_row->range_map()));
-  std::shared_ptr<Epetra_Map> gmrow = std::const_pointer_cast<Epetra_Map>(
-      Core::Utils::shared_ptr_from_ref<const Epetra_Map>(p_row->domain_map()));
-  std::shared_ptr<Epetra_Map> gsmrow = Core::LinAlg::merge_map(gsrow, gmrow, false);
-  std::shared_ptr<Epetra_Map> gnrow = Core::LinAlg::split_map(k->range_map(), *gsmrow);
+  std::shared_ptr<Core::LinAlg::Map> gsrow = std::const_pointer_cast<Core::LinAlg::Map>(
+      Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p_row->range_map()));
+  std::shared_ptr<Core::LinAlg::Map> gmrow = std::const_pointer_cast<Core::LinAlg::Map>(
+      Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p_row->domain_map()));
+  std::shared_ptr<Core::LinAlg::Map> gsmrow = Core::LinAlg::merge_map(gsrow, gmrow, false);
+  std::shared_ptr<Core::LinAlg::Map> gnrow = Core::LinAlg::split_map(k->range_map(), *gsmrow);
 
-  std::shared_ptr<Epetra_Map> gscol = std::const_pointer_cast<Epetra_Map>(
-      Core::Utils::shared_ptr_from_ref<const Epetra_Map>(p_col->range_map()));
-  std::shared_ptr<Epetra_Map> gmcol = std::const_pointer_cast<Epetra_Map>(
-      Core::Utils::shared_ptr_from_ref<const Epetra_Map>(p_col->domain_map()));
-  std::shared_ptr<Epetra_Map> gsmcol = Core::LinAlg::merge_map(gscol, gmcol, false);
-  std::shared_ptr<Epetra_Map> gncol = Core::LinAlg::split_map(k->domain_map(), *gsmcol);
+  std::shared_ptr<Core::LinAlg::Map> gscol = std::const_pointer_cast<Core::LinAlg::Map>(
+      Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p_col->range_map()));
+  std::shared_ptr<Core::LinAlg::Map> gmcol = std::const_pointer_cast<Core::LinAlg::Map>(
+      Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p_col->domain_map()));
+  std::shared_ptr<Core::LinAlg::Map> gsmcol = Core::LinAlg::merge_map(gscol, gmcol, false);
+  std::shared_ptr<Core::LinAlg::Map> gncol = Core::LinAlg::split_map(k->domain_map(), *gsmcol);
 
   /*--------------------------------------------------------------------*/
   /* Split kteff into 3x3 block matrix                                  */
@@ -918,7 +918,7 @@ void Mortar::Utils::mortar_matrix_condensation(std::shared_ptr<Core::LinAlg::Spa
   std::shared_ptr<Core::LinAlg::SparseMatrix> knsm = nullptr;
 
   // some temporary std::shared_ptrs
-  std::shared_ptr<Epetra_Map> tempmap;
+  std::shared_ptr<Core::LinAlg::Map> tempmap;
   std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1 = nullptr;
   std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx2 = nullptr;
 
@@ -965,10 +965,10 @@ void Mortar::Utils::mortar_rhs_condensation(
     Core::LinAlg::Vector<double>& rhs, Core::LinAlg::SparseMatrix& p)
 {
   // prepare maps
-  std::shared_ptr<Epetra_Map> gsdofrowmap = std::const_pointer_cast<Epetra_Map>(
-      Core::Utils::shared_ptr_from_ref<const Epetra_Map>(p.range_map()));
-  std::shared_ptr<Epetra_Map> gmdofrowmap = std::const_pointer_cast<Epetra_Map>(
-      Core::Utils::shared_ptr_from_ref<const Epetra_Map>(p.domain_map()));
+  std::shared_ptr<Core::LinAlg::Map> gsdofrowmap = std::const_pointer_cast<Core::LinAlg::Map>(
+      Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p.range_map()));
+  std::shared_ptr<Core::LinAlg::Map> gmdofrowmap = std::const_pointer_cast<Core::LinAlg::Map>(
+      Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p.domain_map()));
 
   Core::LinAlg::Vector<double> fs(*gsdofrowmap);
   Core::LinAlg::Vector<double> fm_cond(*gmdofrowmap);
@@ -991,10 +991,10 @@ void Mortar::Utils::mortar_rhs_condensation(
 void Mortar::Utils::mortar_recover(Core::LinAlg::Vector<double>& inc, Core::LinAlg::SparseMatrix& p)
 {
   // prepare maps
-  std::shared_ptr<Epetra_Map> gsdofrowmap = std::const_pointer_cast<Epetra_Map>(
-      Core::Utils::shared_ptr_from_ref<const Epetra_Map>(p.range_map()));
-  std::shared_ptr<Epetra_Map> gmdofrowmap = std::const_pointer_cast<Epetra_Map>(
-      Core::Utils::shared_ptr_from_ref<const Epetra_Map>(p.domain_map()));
+  std::shared_ptr<Core::LinAlg::Map> gsdofrowmap = std::const_pointer_cast<Core::LinAlg::Map>(
+      Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p.range_map()));
+  std::shared_ptr<Core::LinAlg::Map> gmdofrowmap = std::const_pointer_cast<Core::LinAlg::Map>(
+      Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p.domain_map()));
 
   Core::LinAlg::Vector<double> m_inc(*gmdofrowmap);
   Core::LinAlg::export_to(inc, m_inc);

@@ -4442,7 +4442,7 @@ namespace Discret
     {
       // TEUCHOS_FUNC_TIME_MONITOR("FluidEleCalcXFEM::assemble_interface_force");
 
-      const Epetra_Map* dofcolmap = cutdis.dof_col_map();
+      const Core::LinAlg::Map* dofcolmap = cutdis.dof_col_map();
 
       for (int idof = 0; idof < (int)(lm.size()); ++idof)
       {

@@ -63,7 +63,7 @@ namespace FSI
     void initial_guess(std::shared_ptr<Core::LinAlg::Vector<double>> ig) override;
 
     /// create merged Dirichlet map from single field maps
-    std::shared_ptr<Epetra_Map> combined_dbc_map() override;
+    std::shared_ptr<Core::LinAlg::Map> combined_dbc_map() override;
 
     /// Newton loop
     void newton() override;

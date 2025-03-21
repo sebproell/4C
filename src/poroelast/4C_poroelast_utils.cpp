@@ -185,7 +185,7 @@ void PoroElast::Utils::create_volume_ghosting(Core::FE::Discretization& idiscret
   voldis.push_back(problem->get_dis("structure"));
   voldis.push_back(problem->get_dis("porofluid"));
 
-  const Epetra_Map* ielecolmap = idiscret.element_col_map();
+  const Core::LinAlg::Map* ielecolmap = idiscret.element_col_map();
 
   for (auto& voldi : voldis)
   {
@@ -194,8 +194,8 @@ void PoroElast::Utils::create_volume_ghosting(Core::FE::Discretization& idiscret
 
     // Fill rdata with existing colmap
 
-    const Epetra_Map* elecolmap = voldi->element_col_map();
-    const std::shared_ptr<Epetra_Map> allredelecolmap =
+    const Core::LinAlg::Map* elecolmap = voldi->element_col_map();
+    const std::shared_ptr<Core::LinAlg::Map> allredelecolmap =
         Core::LinAlg::allreduce_e_map(*voldi->element_row_map());
 
     for (int i = 0; i < elecolmap->NumMyElements(); ++i)
@@ -227,7 +227,7 @@ void PoroElast::Utils::create_volume_ghosting(Core::FE::Discretization& idiscret
     }
 
     // re-build element column map
-    Epetra_Map newelecolmap(-1, static_cast<int>(rdata.size()), rdata.data(), 0,
+    Core::LinAlg::Map newelecolmap(-1, static_cast<int>(rdata.size()), rdata.data(), 0,
         Core::Communication::as_epetra_comm(voldi->get_comm()));
     rdata.clear();
 
@@ -251,8 +251,8 @@ void PoroElast::Utils::create_volume_ghosting(Core::FE::Discretization& idiscret
 void PoroElast::Utils::reconnect_parent_pointers(Core::FE::Discretization& idiscret,
     Core::FE::Discretization& voldiscret, Core::FE::Discretization* voldiscret2)
 {
-  const Epetra_Map* ielecolmap = idiscret.element_col_map();
-  const Epetra_Map* elecolmap = voldiscret.element_col_map();
+  const Core::LinAlg::Map* ielecolmap = idiscret.element_col_map();
+  const Core::LinAlg::Map* elecolmap = voldiscret.element_col_map();
 
   for (int i = 0; i < ielecolmap->NumMyElements(); ++i)
   {
@@ -269,7 +269,7 @@ void PoroElast::Utils::reconnect_parent_pointers(Core::FE::Discretization& idisc
 }
 
 void PoroElast::Utils::set_slave_and_master(const Core::FE::Discretization& voldiscret,
-    const Core::FE::Discretization* voldiscret2, const Epetra_Map* elecolmap,
+    const Core::FE::Discretization* voldiscret2, const Core::LinAlg::Map* elecolmap,
     Core::Elements::FaceElement* faceele)
 {
   int volgid = faceele->parent_element_id();
@@ -283,7 +283,7 @@ void PoroElast::Utils::set_slave_and_master(const Core::FE::Discretization& vold
 
   if (voldiscret2)
   {
-    const Epetra_Map* elecolmap2 = voldiscret2->element_col_map();
+    const Core::LinAlg::Map* elecolmap2 = voldiscret2->element_col_map();
     if (elecolmap2->LID(volgid) == -1)  // Volume discretization has not Element
       faceele->set_parent_slave_element(nullptr, -1);
     else

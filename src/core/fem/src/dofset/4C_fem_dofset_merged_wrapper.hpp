@@ -67,10 +67,10 @@ namespace Core::DOFSets
     //@}
 
     /// Get degree of freedom row map
-    const Epetra_Map* dof_row_map() const override;
+    const Core::LinAlg::Map* dof_row_map() const override;
 
     /// Get degree of freedom column map
-    const Epetra_Map* dof_col_map() const override;
+    const Core::LinAlg::Map* dof_col_map() const override;
 
     //! @name Access methods
 

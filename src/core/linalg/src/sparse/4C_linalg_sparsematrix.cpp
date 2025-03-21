@@ -33,7 +33,7 @@ Core::LinAlg::SparseMatrix::SparseMatrix(std::shared_ptr<Core::LinAlg::Graph> cr
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-Core::LinAlg::SparseMatrix::SparseMatrix(const Epetra_Map& rowmap, const int npr,
+Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Map& rowmap, const int npr,
     bool explicitdirichlet, bool savegraph, MatrixType matrixtype)
     : graph_(nullptr),
       dbcmaps_(nullptr),
@@ -53,8 +53,8 @@ Core::LinAlg::SparseMatrix::SparseMatrix(const Epetra_Map& rowmap, const int npr
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-Core::LinAlg::SparseMatrix::SparseMatrix(const Epetra_Map& rowmap, std::vector<int>& numentries,
-    bool explicitdirichlet, bool savegraph, MatrixType matrixtype)
+Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Map& rowmap,
+    std::vector<int>& numentries, bool explicitdirichlet, bool savegraph, MatrixType matrixtype)
     : graph_(nullptr),
       dbcmaps_(nullptr),
       explicitdirichlet_(explicitdirichlet),
@@ -147,9 +147,9 @@ Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Vector<double>& dia
       savegraph_(savegraph),
       matrixtype_(matrixtype)
 {
-  int length = diag.get_block_map().NumMyElements();
-  Epetra_Map map(-1, length, diag.get_block_map().MyGlobalElements(),
-      diag.get_block_map().IndexBase(), Core::Communication::as_epetra_comm(diag.get_comm()));
+  int length = diag.get_map().NumMyElements();
+  Core::LinAlg::Map map(-1, length, diag.get_map().MyGlobalElements(), diag.get_map().IndexBase(),
+      Core::Communication::as_epetra_comm(diag.get_comm()));
   if (!map.UniqueGIDs()) FOUR_C_THROW("Row map is not unique");
 
   if (matrixtype_ == CRS_MATRIX)
@@ -292,8 +292,8 @@ void Core::LinAlg::SparseMatrix::zero()
   }
   else
   {
-    const Epetra_Map domainmap = sysmat_->DomainMap();
-    const Epetra_Map rangemap = sysmat_->RangeMap();
+    const Core::LinAlg::Map domainmap = sysmat_->DomainMap();
+    const Core::LinAlg::Map rangemap = sysmat_->RangeMap();
     // Remove old matrix before creating a new one so we do not have old and
     // new matrix in memory at the same time!
     sysmat_ = nullptr;
@@ -313,7 +313,7 @@ void Core::LinAlg::SparseMatrix::zero()
  *----------------------------------------------------------------------*/
 void Core::LinAlg::SparseMatrix::reset()
 {
-  const Epetra_Map rowmap = sysmat_->RowMap();
+  const Core::LinAlg::Map rowmap = sysmat_->RowMap();
   std::vector<int> numentries(rowmap.NumMyElements());
 
   auto graph = std::make_shared<Core::LinAlg::Graph>(sysmat_->Graph());
@@ -365,8 +365,8 @@ void Core::LinAlg::SparseMatrix::assemble(int eid, const std::vector<int>& lmstr
 
   const int myrank =
       Core::Communication::my_mpi_rank(Core::Communication::unpack_epetra_comm(sysmat_->Comm()));
-  const Epetra_Map& rowmap = sysmat_->RowMap();
-  const Epetra_Map& colmap = sysmat_->ColMap();
+  const Core::LinAlg::Map& rowmap = sysmat_->RowMap();
+  const Core::LinAlg::Map& colmap = sysmat_->ColMap();
 
   //-----------------------------------------------------------------------------------
   auto& A = (Core::LinAlg::SerialDenseMatrix&)Aele;
@@ -845,8 +845,8 @@ void Core::LinAlg::SparseMatrix::un_complete()
     nonzeros[i] = graph->num_local_indices(i);
   }
 
-  const Epetra_Map& rowmap = sysmat_->RowMap();
-  const Epetra_Map& colmap = sysmat_->ColMap();
+  const Core::LinAlg::Map& rowmap = sysmat_->RowMap();
+  const Core::LinAlg::Map& colmap = sysmat_->ColMap();
   int elements = rowmap.NumMyElements();
 
   std::shared_ptr<Epetra_CrsMatrix> mat = nullptr;
@@ -909,7 +909,7 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet(
     }
 
     // allocate a new matrix and copy all rows that are not dirichlet
-    const Epetra_Map& rowmap = sysmat_->RowMap();
+    const Core::LinAlg::Map& rowmap = sysmat_->RowMap();
     const int nummyrows = sysmat_->NumMyRows();
     const int maxnumentries = sysmat_->MaxNumEntries();
 
@@ -1002,7 +1002,8 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet(
 /*----------------------------------------------------------------------*
  |  Apply dirichlet conditions  (public)                     mwgee 02/07|
  *----------------------------------------------------------------------*/
-void Core::LinAlg::SparseMatrix::apply_dirichlet(const Epetra_Map& dbctoggle, bool diagonalblock)
+void Core::LinAlg::SparseMatrix::apply_dirichlet(
+    const Core::LinAlg::Map& dbctoggle, bool diagonalblock)
 {
   if (not filled()) FOUR_C_THROW("expect filled matrix to apply dirichlet conditions");
 
@@ -1041,7 +1042,7 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet(const Epetra_Map& dbctoggle, bo
     }
 
     // allocate a new matrix and copy all rows that are not dirichlet
-    const Epetra_Map& rowmap = sysmat_->RowMap();
+    const Core::LinAlg::Map& rowmap = sysmat_->RowMap();
     const int nummyrows = sysmat_->NumMyRows();
     const int maxnumentries = sysmat_->MaxNumEntries();
 
@@ -1095,8 +1096,8 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet(const Epetra_Map& dbctoggle, bo
         }
       }
     }
-    Epetra_Map rangemap = sysmat_->RangeMap();
-    Epetra_Map domainmap = sysmat_->DomainMap();
+    Core::LinAlg::Map rangemap = sysmat_->RangeMap();
+    Core::LinAlg::Map domainmap = sysmat_->DomainMap();
     sysmat_ = Anew;
     complete(domainmap, rangemap);
   }
@@ -1140,7 +1141,7 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet(const Epetra_Map& dbctoggle, bo
  |  Apply dirichlet conditions  (public)                     mwgee 02/07|
  *----------------------------------------------------------------------*/
 void Core::LinAlg::SparseMatrix::apply_dirichlet_with_trafo(const Core::LinAlg::SparseMatrix& trafo,
-    const Epetra_Map& dbctoggle, bool diagonalblock, bool complete)
+    const Core::LinAlg::Map& dbctoggle, bool diagonalblock, bool complete)
 {
   if (not filled()) FOUR_C_THROW("expect filled matrix to apply dirichlet conditions");
 
@@ -1161,8 +1162,8 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet_with_trafo(const Core::LinAlg::
     }
 
     // allocate a new matrix and copy all rows that are not dirichlet
-    const Epetra_Map& rowmap = sysmat_->RowMap();
-    const Epetra_Map& colmap = sysmat_->ColMap();
+    const Core::LinAlg::Map& rowmap = sysmat_->RowMap();
+    const Core::LinAlg::Map& colmap = sysmat_->ColMap();
     const int nummyrows = sysmat_->NumMyRows();
     const int maxnumentries = sysmat_->MaxNumEntries();
 
@@ -1307,8 +1308,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::SparseMatrix::extract_
   std::shared_ptr<SparseMatrix> dl = std::make_shared<SparseMatrix>(
       row_map(), max_num_entries(), explicit_dirichlet(), save_graph());
 
-  const Epetra_Map& rowmap = sysmat_->RowMap();
-  const Epetra_Map& colmap = sysmat_->ColMap();
+  const Core::LinAlg::Map& rowmap = sysmat_->RowMap();
+  const Core::LinAlg::Map& colmap = sysmat_->ColMap();
   const int nummyrows = sysmat_->NumMyRows();
 
   const Core::LinAlg::Vector<double>& dbct = dbctoggle;
@@ -1340,7 +1341,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::SparseMatrix::extract_
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::SparseMatrix::extract_dirichlet_rows(
-    const Epetra_Map& dbctoggle)
+    const Core::LinAlg::Map& dbctoggle)
 {
   if (not filled()) FOUR_C_THROW("expect filled matrix to extract dirichlet lines");
   if (not dbctoggle.UniqueGIDs()) FOUR_C_THROW("unique map required");
@@ -1348,8 +1349,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::SparseMatrix::extract_
   std::shared_ptr<SparseMatrix> dl = std::make_shared<SparseMatrix>(
       row_map(), max_num_entries(), explicit_dirichlet(), save_graph());
 
-  const Epetra_Map& rowmap = sysmat_->RowMap();
-  const Epetra_Map& colmap = sysmat_->ColMap();
+  const Core::LinAlg::Map& rowmap = sysmat_->RowMap();
+  const Core::LinAlg::Map& colmap = sysmat_->ColMap();
   // const int nummyrows      = sysmat_->NumMyRows();
 
   std::vector<int> idx(max_num_entries());

@@ -324,7 +324,7 @@ void ScaTra::ScaTraTimIntImpl::setup()
   // get a vector layout from the discretization to construct matching
   // vectors and matrices: local <-> global dof numbering
   // -------------------------------------------------------------------
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // initialize the scalar handler
   if (scalarhandler_ == nullptr)
@@ -510,7 +510,7 @@ void ScaTra::ScaTraTimIntImpl::setup()
   // -------------------------------------------------------------------
   // preparations for turbulence models
   // -------------------------------------------------------------------
-  const Epetra_Map* noderowmap = discret_->node_row_map();
+  const Core::LinAlg::Map* noderowmap = discret_->node_row_map();
   init_turbulence_model(dofrowmap, noderowmap);
 
   // -------------------------------------------------------------------
@@ -759,7 +759,7 @@ void ScaTra::ScaTraTimIntImpl::setup_nat_conv()
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::init_turbulence_model(
-    const Epetra_Map* dofrowmap, const Epetra_Map* noderowmap)
+    const Core::LinAlg::Map* dofrowmap, const Core::LinAlg::Map* noderowmap)
 {
   // get fluid turbulence sublist
   Teuchos::ParameterList* turbparams = &(extraparams_->sublist("TURBULENCE MODEL"));
@@ -1896,7 +1896,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
     case Inpar::ScaTra::initfield_field_by_function:
     case Inpar::ScaTra::initfield_disturbed_field_by_function:
     {
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
       // loop all nodes on the processor
       for (int lnodeid = 0; lnodeid < discret_->num_my_row_nodes(); lnodeid++)
@@ -2030,7 +2030,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
     // discontinuous 0-1 field for progress variable in 1-D
     case Inpar::ScaTra::initfield_discontprogvar_1D:
     {
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
       // loop all nodes on the processor
       for (int lnodeid = 0; lnodeid < discret_->num_my_row_nodes(); lnodeid++)
@@ -2086,7 +2086,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
       const double delta3 = 4.28875;
       const double trans3 = 103.0;
 
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
       // define variable
       double initialval = 0.0;
@@ -2132,7 +2132,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
       const double delta = 0.002;
       const double alpha = 0.001;
 
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
       // loop all nodes on the processor
       for (int lnodeid = 0; lnodeid < discret_->num_my_row_nodes(); lnodeid++)
@@ -2187,7 +2187,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
     // initial field for skew convection of L-shaped domain
     case Inpar::ScaTra::initfield_Lshapeddomain:
     {
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
       // loop all nodes on the processor
       for (int lnodeid = 0; lnodeid < discret_->num_my_row_nodes(); lnodeid++)
@@ -2224,7 +2224,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
     }
     case Inpar::ScaTra::initfield_facing_flame_fronts:
     {
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
       // loop all nodes on the processor
       for (int lnodeid = 0; lnodeid < discret_->num_my_row_nodes(); lnodeid++)
@@ -2262,7 +2262,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
     }
     case Inpar::ScaTra::initfield_oracles_flame:
     {
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
       const double eps = 0.00152;
 
@@ -3220,12 +3220,14 @@ void ScaTra::ScaTraTimIntImpl::compute_time_step_size(double& dt)
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void ScaTra::ScaTraTimIntImpl::add_dirich_cond(const std::shared_ptr<const Epetra_Map> maptoadd)
+void ScaTra::ScaTraTimIntImpl::add_dirich_cond(
+    const std::shared_ptr<const Core::LinAlg::Map> maptoadd)
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> condmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> condmaps;
   condmaps.push_back(maptoadd);
   condmaps.push_back(dbcmaps_->cond_map());
-  std::shared_ptr<Epetra_Map> condmerged = Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
+  std::shared_ptr<Core::LinAlg::Map> condmerged =
+      Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
   *dbcmaps_ = Core::LinAlg::MapExtractor(*(discret_->dof_row_map()), condmerged);
 }
 
@@ -3240,24 +3242,28 @@ void ScaTra::ScaTraTimIntImpl::add_time_integration_specific_vectors(bool forced
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::remove_dirich_cond(
-    const std::shared_ptr<const Epetra_Map> maptoremove)
+    const std::shared_ptr<const Core::LinAlg::Map> maptoremove)
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> othermaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> othermaps;
   othermaps.push_back(maptoremove);
   othermaps.push_back(dbcmaps_->other_map());
-  std::shared_ptr<Epetra_Map> othermerged = Core::LinAlg::MultiMapExtractor::merge_maps(othermaps);
+  std::shared_ptr<Core::LinAlg::Map> othermerged =
+      Core::LinAlg::MultiMapExtractor::merge_maps(othermaps);
   *dbcmaps_ = Core::LinAlg::MapExtractor(*(discret_->dof_row_map()), othermerged, false);
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> ScaTra::ScaTraTimIntImpl::dof_row_map() { return dof_row_map(0); }
+std::shared_ptr<const Core::LinAlg::Map> ScaTra::ScaTraTimIntImpl::dof_row_map()
+{
+  return dof_row_map(0);
+}
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> ScaTra::ScaTraTimIntImpl::dof_row_map(int nds)
+std::shared_ptr<const Core::LinAlg::Map> ScaTra::ScaTraTimIntImpl::dof_row_map(int nds)
 {
-  const Epetra_Map* dofrowmap = discret_->dof_row_map(nds);
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map(nds);
   return Core::Utils::shared_ptr_from_ref(*dofrowmap);
 }
 
@@ -3588,7 +3594,7 @@ void ScaTra::ScaTraTimIntImpl::setup_matrix_block_maps()
     }
 
     // build maps associated with blocks of global system matrix
-    std::vector<std::shared_ptr<const Epetra_Map>> blockmaps;
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> blockmaps;
     build_block_maps(partitioningconditions, blockmaps);
 
     // initialize full map extractor associated with blocks of global system matrix
@@ -3603,7 +3609,7 @@ void ScaTra::ScaTraTimIntImpl::setup_matrix_block_maps()
  *-----------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::build_block_maps(
     const std::vector<std::shared_ptr<Core::Conditions::Condition>>& partitioningconditions,
-    std::vector<std::shared_ptr<const Epetra_Map>>& blockmaps) const
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>>& blockmaps) const
 {
   if (matrixtype_ == Core::LinAlg::MatrixType::block_condition)
   {
@@ -3627,7 +3633,7 @@ void ScaTra::ScaTraTimIntImpl::build_block_maps(
       FOUR_C_ASSERT(dof_set.size() == dofs.size(), "The dofs are not unique");
 #endif
 
-      blockmaps.emplace_back(std::make_shared<Epetra_Map>(-1, static_cast<int>(dofs.size()),
+      blockmaps.emplace_back(std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(dofs.size()),
           dofs.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm())));
     }
   }

@@ -18,7 +18,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Core::FE::Discretization::export_row_nodes(
-    const Epetra_Map& newmap, bool killdofs, bool killcond)
+    const Core::LinAlg::Map& newmap, bool killdofs, bool killcond)
 {
   // test whether newmap is non-overlapping
   if (!newmap.UniqueGIDs()) FOUR_C_THROW("new map not unique");
@@ -36,7 +36,7 @@ void Core::FE::Discretization::export_row_nodes(
 
   // build rowmap of nodes noderowmap_ if it does not exist
   if (noderowmap_ == nullptr) build_node_row_map();
-  const Epetra_Map& oldmap = *noderowmap_;
+  const Core::LinAlg::Map& oldmap = *noderowmap_;
 
   // create an exporter object that will figure out the communication pattern
   Core::Communication::Exporter exporter(oldmap, newmap, get_comm());
@@ -54,7 +54,7 @@ void Core::FE::Discretization::export_row_nodes(
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Core::FE::Discretization::export_column_nodes(
-    const Epetra_Map& newmap, bool killdofs, bool killcond)
+    const Core::LinAlg::Map& newmap, bool killdofs, bool killcond)
 {
   // destroy all ghosted nodes
   const int myrank = Core::Communication::my_mpi_rank(get_comm());
@@ -69,7 +69,7 @@ void Core::FE::Discretization::export_column_nodes(
 
   // build rowmap of nodes noderowmap_ if it does not exist
   if (noderowmap_ == nullptr) build_node_row_map();
-  const Epetra_Map& oldmap = *noderowmap_;
+  const Core::LinAlg::Map& oldmap = *noderowmap_;
 
   // test whether all nodes in oldmap are also in newmap, otherwise
   // this would be a change of owner which is not allowed here
@@ -92,7 +92,7 @@ void Core::FE::Discretization::export_column_nodes(
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Core::FE::Discretization::proc_zero_distribute_elements_to_all(
-    Epetra_Map& target, std::vector<int>& gidlist)
+    Core::LinAlg::Map& target, std::vector<int>& gidlist)
 {
   const int myrank = Core::Communication::my_mpi_rank(get_comm());
 
@@ -187,14 +187,14 @@ void Core::FE::Discretization::proc_zero_distribute_elements_to_all(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void Core::FE::Discretization::proc_zero_distribute_nodes_to_all(Epetra_Map& target)
+void Core::FE::Discretization::proc_zero_distribute_nodes_to_all(Core::LinAlg::Map& target)
 {
   const int myrank = Core::Communication::my_mpi_rank(get_comm());
 
   // proc 0 looks for nodes that are to be distributed
   reset();
   build_node_row_map();
-  const Epetra_Map& oldmap = *noderowmap_;
+  const Core::LinAlg::Map& oldmap = *noderowmap_;
   int size = oldmap.NumMyElements();
   if (myrank) size = 0;
   std::vector<int> pidlist(size, -1);
@@ -291,7 +291,7 @@ void Core::FE::Discretization::proc_zero_distribute_nodes_to_all(Epetra_Map& tar
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Core::FE::Discretization::export_row_elements(
-    const Epetra_Map& newmap, bool killdofs, bool killcond)
+    const Core::LinAlg::Map& newmap, bool killdofs, bool killcond)
 {
   // test whether newmap is non-overlapping
   if (!newmap.UniqueGIDs()) FOUR_C_THROW("new map not unique");
@@ -309,7 +309,7 @@ void Core::FE::Discretization::export_row_elements(
 
   // build map of elements elerowmap_ if it does not exist
   if (elerowmap_ == nullptr) build_element_row_map();
-  const Epetra_Map& oldmap = *elerowmap_;
+  const Core::LinAlg::Map& oldmap = *elerowmap_;
 
   // create an exporter object that will figure out the communication pattern
   Core::Communication::Exporter exporter(oldmap, newmap, get_comm());
@@ -326,7 +326,7 @@ void Core::FE::Discretization::export_row_elements(
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Core::FE::Discretization::export_column_elements(
-    const Epetra_Map& newmap, bool killdofs, bool killcond)
+    const Core::LinAlg::Map& newmap, bool killdofs, bool killcond)
 {
   // destroy all ghosted elements
   const int myrank = Core::Communication::my_mpi_rank(get_comm());
@@ -341,7 +341,7 @@ void Core::FE::Discretization::export_column_elements(
 
   // build map of elements elerowmap_ if it does not exist
   if (elerowmap_ == nullptr) build_element_row_map();
-  const Epetra_Map& oldmap = *elerowmap_;
+  const Core::LinAlg::Map& oldmap = *elerowmap_;
 
   // test whether all elements in oldmap are also in newmap
   // Otherwise, this would be a change of owner which is not allowed here
@@ -367,7 +367,7 @@ std::shared_ptr<Core::LinAlg::Graph> Core::FE::Discretization::build_node_graph(
   if (!filled()) FOUR_C_THROW("fill_complete() was not called on this discretization");
 
   // get nodal row map
-  const Epetra_Map* noderowmap = node_row_map();
+  const Core::LinAlg::Map* noderowmap = node_row_map();
 
   // allocate graph
   std::shared_ptr<Core::LinAlg::Graph> graph =
@@ -406,11 +406,11 @@ std::shared_ptr<Core::LinAlg::Graph> Core::FE::Discretization::build_node_graph(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::Discretization::build_node_coordinates(
-    std::shared_ptr<const Epetra_Map> noderowmap) const
+    std::shared_ptr<const Core::LinAlg::Map> noderowmap) const
 {
   // get nodal row map if not given
   if (noderowmap == nullptr)
-    noderowmap = Core::Utils::shared_ptr_from_ref<const Epetra_Map>(*node_row_map());
+    noderowmap = Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(*node_row_map());
 
   std::shared_ptr<Core::LinAlg::MultiVector<double>> coordinates =
       std::make_shared<Core::LinAlg::MultiVector<double>>(*noderowmap, 3, true);
@@ -427,9 +427,9 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::Discretization::bui
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::pair<std::shared_ptr<Epetra_Map>, std::shared_ptr<Epetra_Map>>
-Core::FE::Discretization::build_element_row_column(
-    const Epetra_Map& noderowmap, const Epetra_Map& nodecolmap, bool do_extended_ghosting) const
+std::pair<std::shared_ptr<Core::LinAlg::Map>, std::shared_ptr<Core::LinAlg::Map>>
+Core::FE::Discretization::build_element_row_column(const Core::LinAlg::Map& noderowmap,
+    const Core::LinAlg::Map& nodecolmap, bool do_extended_ghosting) const
 {
   const int myrank = Core::Communication::my_mpi_rank(get_comm());
   const int numproc = Core::Communication::num_mpi_ranks(get_comm());
@@ -602,7 +602,7 @@ Core::FE::Discretization::build_element_row_column(
   // allreduced nummyele must match the total no. of elements in this
   // discretization, otherwise we lost some
   // build the rowmap of elements
-  std::shared_ptr<Epetra_Map> elerowmap = std::make_shared<Epetra_Map>(
+  std::shared_ptr<Core::LinAlg::Map> elerowmap = std::make_shared<Core::LinAlg::Map>(
       -1, nummyele, myele.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
   if (!elerowmap->UniqueGIDs()) FOUR_C_THROW("Element row map is not unique");
 
@@ -610,16 +610,16 @@ Core::FE::Discretization::build_element_row_column(
   std::vector<int> elecol(nummyele + nummyghostele);
   for (int i = 0; i < nummyele; ++i) elecol[i] = myele[i];
   for (int i = 0; i < nummyghostele; ++i) elecol[nummyele + i] = myghostele[i];
-  std::shared_ptr<Epetra_Map> elecolmap = std::make_shared<Epetra_Map>(-1, nummyghostele + nummyele,
-      elecol.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> elecolmap = std::make_shared<Core::LinAlg::Map>(-1,
+      nummyghostele + nummyele, elecol.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
 
   return {elerowmap, elecolmap};
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void Core::FE::Discretization::redistribute(const Epetra_Map& noderowmap,
-    const Epetra_Map& nodecolmap, OptionsRedistribution options_redistribution)
+void Core::FE::Discretization::redistribute(const Core::LinAlg::Map& noderowmap,
+    const Core::LinAlg::Map& nodecolmap, OptionsRedistribution options_redistribution)
 {
   // build the overlapping and non-overlapping element maps
   const auto& [elerowmap, elecolmap] =
@@ -643,10 +643,10 @@ void Core::FE::Discretization::redistribute(const Epetra_Map& noderowmap,
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void Core::FE::Discretization::redistribute(const Epetra_Map& noderowmap,
-    const Epetra_Map& nodecolmap, const Epetra_Map& elerowmap, const Epetra_Map& elecolmap,
-    bool assigndegreesoffreedom, bool initelements, bool doboundaryconditions, bool killdofs,
-    bool killcond)
+void Core::FE::Discretization::redistribute(const Core::LinAlg::Map& noderowmap,
+    const Core::LinAlg::Map& nodecolmap, const Core::LinAlg::Map& elerowmap,
+    const Core::LinAlg::Map& elecolmap, bool assigndegreesoffreedom, bool initelements,
+    bool doboundaryconditions, bool killdofs, bool killcond)
 {
   // export nodes and elements to the new maps
   export_row_nodes(noderowmap, killdofs, killcond);
@@ -662,13 +662,13 @@ void Core::FE::Discretization::redistribute(const Epetra_Map& noderowmap,
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void Core::FE::Discretization::extended_ghosting(const Epetra_Map& elecolmap,
+void Core::FE::Discretization::extended_ghosting(const Core::LinAlg::Map& elecolmap,
     bool assigndegreesoffreedom, bool initelements, bool doboundaryconditions, bool checkghosting)
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (filled())
   {
-    const Epetra_Map* oldelecolmap = element_col_map();
+    const Core::LinAlg::Map* oldelecolmap = element_col_map();
     // check whether standard ghosting is included in extended ghosting
     for (int i = 0; i < oldelecolmap->NumMyElements(); ++i)
     {
@@ -792,7 +792,7 @@ void Core::FE::Discretization::extended_ghosting(const Epetra_Map& elecolmap,
   if (have_pbc) pbcdofset->set_coupled_nodes(pbcmapvec);
 
   std::vector<int> colnodes(nodes.begin(), nodes.end());
-  Epetra_Map nodecolmap(-1, (int)colnodes.size(), colnodes.data(), 0,
+  Core::LinAlg::Map nodecolmap(-1, (int)colnodes.size(), colnodes.data(), 0,
       Core::Communication::as_epetra_comm(get_comm()));
 
   // now ghost the nodes
@@ -843,7 +843,8 @@ void Core::FE::Discretization::setup_ghosting(
     entriesperrow.push_back(localgraph[i->first].size());
   }
 
-  Epetra_Map rownodes(-1, gids.size(), gids.data(), 0, Core::Communication::as_epetra_comm(comm_));
+  Core::LinAlg::Map rownodes(
+      -1, gids.size(), gids.data(), 0, Core::Communication::as_epetra_comm(comm_));
 
   // Construct FE graph. This graph allows processor off-rows to be inserted
   // as well. The communication issue is solved.
@@ -877,13 +878,13 @@ void Core::FE::Discretization::setup_ghosting(
   if (err) FOUR_C_THROW("graph->GlobalAssemble returned {}", err);
 
   // replace rownodes, colnodes with row and column maps from the graph
-  // do stupid conversion from Epetra_BlockMap to Epetra_Map
+  // do stupid conversion from Epetra_BlockMap to Core::LinAlg::Map
   const Epetra_BlockMap& brow = graph->RowMap();
   const Epetra_BlockMap& bcol = graph->ColMap();
-  Epetra_Map noderowmap(brow.NumGlobalElements(), brow.NumMyElements(), brow.MyGlobalElements(), 0,
-      Core::Communication::as_epetra_comm(comm_));
-  Epetra_Map nodecolmap(bcol.NumGlobalElements(), bcol.NumMyElements(), bcol.MyGlobalElements(), 0,
-      Core::Communication::as_epetra_comm(comm_));
+  Core::LinAlg::Map noderowmap(brow.NumGlobalElements(), brow.NumMyElements(),
+      brow.MyGlobalElements(), 0, Core::Communication::as_epetra_comm(comm_));
+  Core::LinAlg::Map nodecolmap(bcol.NumGlobalElements(), bcol.NumMyElements(),
+      bcol.MyGlobalElements(), 0, Core::Communication::as_epetra_comm(comm_));
 
   graph = nullptr;
 

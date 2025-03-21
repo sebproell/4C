@@ -11,10 +11,10 @@
 #include "4C_config.hpp"
 
 #include "4C_linalg_graph.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 
 #include <Epetra_CrsMatrix.h>
-#include <Epetra_Map.h>
 
 
 FOUR_C_NAMESPACE_OPEN
@@ -44,7 +44,7 @@ namespace Core::LinAlg
   //! Print content of @p map in Matlab format to file @p filename. Create new file or overwrite
   //! existing one if @p newfile is true
   void print_map_in_matlab_format(
-      const std::string& filename, const Epetra_Map& map, const bool newfile = true);
+      const std::string& filename, const Core::LinAlg::Map& map, const bool newfile = true);
 
 }  // namespace Core::LinAlg
 

@@ -38,10 +38,10 @@ Adapter::StructureFSITimIntAda::StructureFSITimIntAda(
   //----------------------------------------------------------------------------
   // Create intersection of fluid DOFs that hold a Dirichlet boundary condition
   // and are located at the FSI interface.
-  std::vector<std::shared_ptr<const Epetra_Map>> intersectionmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> intersectionmaps;
   intersectionmaps.push_back(sti->get_dbc_map_extractor()->cond_map());
   intersectionmaps.push_back(interface()->fsi_cond_map());
-  std::shared_ptr<Epetra_Map> intersectionmap =
+  std::shared_ptr<Core::LinAlg::Map> intersectionmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
   numdbcdofs_ = sti->get_dbc_map_extractor()->cond_map()->NumGlobalElements();

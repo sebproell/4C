@@ -64,8 +64,8 @@ void FLD::XFluidOutputService::output(int step, double time, bool write_restart_
   // create vector according to the initial row map holding all standard fluid unknowns
   outvec_fluid_->put_scalar(0.0);
 
-  const Epetra_Map* dofrowmap = dofset_out_->dof_row_map();  // original fluid unknowns
-  const Epetra_Map* xdofrowmap = discret_->dof_row_map();    // fluid unknown for current cut
+  const Core::LinAlg::Map* dofrowmap = dofset_out_->dof_row_map();  // original fluid unknowns
+  const Core::LinAlg::Map* xdofrowmap = discret_->dof_row_map();    // fluid unknown for current cut
 
   for (int i = 0; i < discret_->num_my_row_nodes(); ++i)
   {

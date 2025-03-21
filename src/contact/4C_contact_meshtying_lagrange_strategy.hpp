@@ -41,7 +41,7 @@ namespace CONTACT
     \param[in] alphaf Mid-point for Generalized-alpha time integration
     \param[in] maxdof Highest DOF number in global problem
     */
-    MtLagrangeStrategy(const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap,
+    MtLagrangeStrategy(const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
         Teuchos::ParameterList params, std::vector<std::shared_ptr<Mortar::Interface>> interface,
         const int spatialDim, const MPI_Comm& comm, const double alphaf, const int maxdof);
 

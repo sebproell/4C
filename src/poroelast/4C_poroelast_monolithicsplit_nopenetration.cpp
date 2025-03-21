@@ -69,7 +69,7 @@ void PoroElast::MonolithicSplitNoPenetration::setup_system()
   // use full maps of both fields. Only Lagrange multipliers are condensed
   {
     // create combined map
-    std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces;
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
 
     vecSpaces.push_back(structure_field()->dof_row_map());
     vecSpaces.push_back(fluid_field()->dof_row_map());

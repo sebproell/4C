@@ -13,11 +13,10 @@
  *---------------------------------------------------------------------------*/
 #include "4C_config.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_particle_engine_typedefs.hpp"
 #include "4C_particle_wall_interface.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
-
-#include <Epetra_Map.h>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -146,8 +145,8 @@ namespace PARTICLEWALL
      * \param[in] binrowmap bin row map
      * \param[in] bincolmap bin column map
      */
-    virtual void update_bin_row_and_col_map(const std::shared_ptr<Epetra_Map> binrowmap,
-        const std::shared_ptr<Epetra_Map> bincolmap) final;
+    virtual void update_bin_row_and_col_map(const std::shared_ptr<Core::LinAlg::Map> binrowmap,
+        const std::shared_ptr<Core::LinAlg::Map> bincolmap) final;
 
     /*!
      * \brief check that wall nodes are located in bounding box
@@ -272,10 +271,10 @@ namespace PARTICLEWALL
     std::shared_ptr<Core::Binstrategy::BinningStrategy> binstrategy_;
 
     //! distribution of row bins
-    std::shared_ptr<Epetra_Map> binrowmap_;
+    std::shared_ptr<Core::LinAlg::Map> binrowmap_;
 
     //! distribution of col bins
-    std::shared_ptr<Epetra_Map> bincolmap_;
+    std::shared_ptr<Core::LinAlg::Map> bincolmap_;
 
     //! wall discretization
     std::shared_ptr<Core::FE::Discretization> walldiscretization_;

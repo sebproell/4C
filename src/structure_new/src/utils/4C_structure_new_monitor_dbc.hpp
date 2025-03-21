@@ -12,8 +12,8 @@
 
 #include "4C_fem_condition.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_map.hpp"
 
-#include <Epetra_Map.h>
 #include <mpi.h>
 
 FOUR_C_NAMESPACE_OPEN
@@ -87,7 +87,8 @@ namespace Solid
         const Core::FE::Discretization& discret) const;
 
     void create_reaction_maps(const Core::FE::Discretization& discret,
-        const Core::Conditions::Condition& rcond, std::shared_ptr<Epetra_Map>* react_maps) const;
+        const Core::Conditions::Condition& rcond,
+        std::shared_ptr<Core::LinAlg::Map>* react_maps) const;
 
     void read_results_prior_restart_step_and_write_to_file(
         const std::vector<std::string>& full_restart_filepaths, int restart_step) const;
@@ -95,10 +96,10 @@ namespace Solid
     void get_area(double area_ref[], const Core::Conditions::Condition* rcond) const;
 
     double get_reaction_force(Core::LinAlg::Matrix<3, 1>& rforce_xyz,
-        const std::shared_ptr<Epetra_Map>* react_maps) const;
+        const std::shared_ptr<Core::LinAlg::Map>* react_maps) const;
 
     double get_reaction_moment(Core::LinAlg::Matrix<3, 1>& rmoment_xyz,
-        const std::shared_ptr<Epetra_Map>* react_maps,
+        const std::shared_ptr<Core::LinAlg::Map>* react_maps,
         const Core::Conditions::Condition* rcond) const;
 
     std::vector<std::string> create_file_paths(
@@ -142,7 +143,7 @@ namespace Solid
     std::vector<std::string> full_filepaths_ = std::vector<std::string>();
 
     /// extract the dofs of the reaction forces which shall be monitored
-    std::map<int, std::vector<std::shared_ptr<Epetra_Map>>> react_maps_;
+    std::map<int, std::vector<std::shared_ptr<Core::LinAlg::Map>>> react_maps_;
     unsigned of_precision_ = -1;
     unsigned os_precision_ = -1;
 

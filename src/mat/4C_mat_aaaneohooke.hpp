@@ -11,13 +11,12 @@
 #include "4C_config.hpp"
 
 #include "4C_comm_parobjectfactory.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_mat_so3_material.hpp"
 #include "4C_material_parameter_base.hpp"
-
-#include <Epetra_Map.h>
 
 #include <memory>
 

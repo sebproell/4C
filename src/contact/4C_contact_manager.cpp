@@ -1246,7 +1246,7 @@ void CONTACT::Manager::postprocess_quantities(Core::IO::DiscretizationWriter& ou
   }
 
   // export to problem node row map
-  std::shared_ptr<Epetra_Map> problemnodes = get_strategy().problem_nodes();
+  std::shared_ptr<Core::LinAlg::Map> problemnodes = get_strategy().problem_nodes();
   std::shared_ptr<Core::LinAlg::Vector<double>> activesetexp =
       std::make_shared<Core::LinAlg::Vector<double>>(*problemnodes);
   Core::LinAlg::export_to(activeset, *activesetexp);
@@ -1272,7 +1272,7 @@ void CONTACT::Manager::postprocess_quantities(Core::IO::DiscretizationWriter& ou
   //  weighted gap
   // *********************************************************************
   // export to problem dof row map
-  std::shared_ptr<Epetra_Map> gapnodes = get_strategy().problem_nodes();
+  std::shared_ptr<Core::LinAlg::Map> gapnodes = get_strategy().problem_nodes();
   std::shared_ptr<const Core::LinAlg::Vector<double>> gaps =
       std::dynamic_pointer_cast<CONTACT::AbstractStrategy>(strategy_)->contact_wgap();
   if (gaps != nullptr)
@@ -1292,7 +1292,7 @@ void CONTACT::Manager::postprocess_quantities(Core::IO::DiscretizationWriter& ou
   get_strategy().compute_contact_stresses();
 
   // export to problem dof row map
-  std::shared_ptr<Epetra_Map> problemdofs = get_strategy().problem_dofs();
+  std::shared_ptr<Core::LinAlg::Map> problemdofs = get_strategy().problem_dofs();
 
   // normal direction
   std::shared_ptr<const Core::LinAlg::Vector<double>> normalstresses =
@@ -1392,13 +1392,13 @@ void CONTACT::Manager::postprocess_quantities_per_interface(
 void CONTACT::Manager::reconnect_parent_elements()
 {
   {
-    const Epetra_Map* elecolmap = discret_.element_col_map();
+    const Core::LinAlg::Map* elecolmap = discret_.element_col_map();
 
     CONTACT::AbstractStrategy& strategy = dynamic_cast<CONTACT::AbstractStrategy&>(get_strategy());
 
     for (auto& interface : strategy.contact_interfaces())
     {
-      const Epetra_Map* ielecolmap = interface->discret().element_col_map();
+      const Core::LinAlg::Map* ielecolmap = interface->discret().element_col_map();
 
       for (int i = 0; i < ielecolmap->NumMyElements(); ++i)
       {

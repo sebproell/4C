@@ -169,7 +169,7 @@ void FLD::TimIntBDF2::sep_multiply()
 void FLD::TimIntBDF2::outputof_filtered_vel(std::shared_ptr<Core::LinAlg::Vector<double>> outvec,
     std::shared_ptr<Core::LinAlg::Vector<double>> fsoutvec)
 {
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
   std::shared_ptr<Core::LinAlg::Vector<double>> row_finescaleveltmp;
   row_finescaleveltmp = std::make_shared<Core::LinAlg::Vector<double>>(*dofrowmap, true);
 

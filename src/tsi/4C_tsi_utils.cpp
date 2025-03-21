@@ -122,8 +122,8 @@ void TSI::Utils::setup_tsi(MPI_Comm comm)
   if (!structdis->filled() or !structdis->have_dofs())
   {
     structdis->fill_complete();
-    Epetra_Map nc = *(structdis->node_col_map());
-    Epetra_Map nr = *(structdis->node_row_map());
+    Core::LinAlg::Map nc = *(structdis->node_col_map());
+    Core::LinAlg::Map nr = *(structdis->node_row_map());
     structdis->redistribute(nr, nc);
   }
 

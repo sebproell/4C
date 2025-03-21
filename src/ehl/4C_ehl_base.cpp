@@ -613,10 +613,11 @@ void EHL::Base::setup_field_coupling(
   mortaradapter_->integrate(idisp, dt());
 
   // Maps of the interface dofs
-  std::shared_ptr<const Epetra_Map> masterdofrowmap =
+  std::shared_ptr<const Core::LinAlg::Map> masterdofrowmap =
       mortaradapter_->interface()->master_row_dofs();
-  std::shared_ptr<const Epetra_Map> slavedofrowmap = mortaradapter_->interface()->slave_row_dofs();
-  std::shared_ptr<Epetra_Map> mergeddofrowmap =
+  std::shared_ptr<const Core::LinAlg::Map> slavedofrowmap =
+      mortaradapter_->interface()->slave_row_dofs();
+  std::shared_ptr<Core::LinAlg::Map> mergeddofrowmap =
       Core::LinAlg::merge_map(masterdofrowmap, slavedofrowmap, false);
 
   // Map extractors with the structure dofs as full maps and local interface maps
@@ -631,8 +632,9 @@ void EHL::Base::setup_field_coupling(
   //----------------------------------------------------------
   // 2. build coupling adapters
   //----------------------------------------------------------
-  std::shared_ptr<const Epetra_Map> strucnodes = mortaradapter_->interface()->slave_row_nodes();
-  const Epetra_Map* lubrinodes = lubricationdis->node_row_map();
+  std::shared_ptr<const Core::LinAlg::Map> strucnodes =
+      mortaradapter_->interface()->slave_row_nodes();
+  const Core::LinAlg::Map* lubrinodes = lubricationdis->node_row_map();
   ada_strDisp_to_lubDisp_ = std::make_shared<Coupling::Adapter::Coupling>();
   ada_strDisp_to_lubDisp_->setup_coupling(
       *structdis, *lubricationdis, *strucnodes, *lubrinodes, ndim, true, 1.e-8, 0, 1);

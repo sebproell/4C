@@ -112,7 +112,7 @@ void Solid::Integrator::set_initial_displacement(
     }
     case Inpar::Solid::initdisp_disp_by_function:
     {
-      const Epetra_Map* dofrowmap = global_state().get_discret()->dof_row_map();
+      const Core::LinAlg::Map* dofrowmap = global_state().get_discret()->dof_row_map();
 
       // loop all nodes on the processor
       for (int lnodeid = 0; lnodeid < global_state().get_discret()->num_my_row_nodes(); lnodeid++)

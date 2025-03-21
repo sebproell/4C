@@ -494,7 +494,10 @@ namespace FSI
     std::shared_ptr<::NOX::Utils> utils() const { return utils_; }
 
     /// full monolithic dof row map
-    std::shared_ptr<const Epetra_Map> dof_row_map() const { return blockrowdofmap_.full_map(); }
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() const
+    {
+      return blockrowdofmap_.full_map();
+    }
 
     /*! \brief set full monolithic dof row map
      *
@@ -502,7 +505,7 @@ namespace FSI
      *  defines the number of blocks, their maps and the block order. The block
      *  maps must be row maps by themselves and must not contain identical GIDs.
      */
-    void set_dof_row_maps(const std::vector<std::shared_ptr<const Epetra_Map>>& maps);
+    void set_dof_row_maps(const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps);
 
     /// extractor to communicate between full monolithic map and block maps of single fields
     const Core::LinAlg::MultiMapExtractor& extractor() const { return blockrowdofmap_; }

@@ -326,7 +326,7 @@ Solid::ModelEvaluator::LagPenConstraint::nox_interface_prec_ptr()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map>
+std::shared_ptr<const Core::LinAlg::Map>
 Solid::ModelEvaluator::LagPenConstraint::get_block_dof_row_map_ptr() const
 {
   check_init_setup();

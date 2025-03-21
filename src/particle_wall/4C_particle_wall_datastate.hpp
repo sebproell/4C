@@ -148,7 +148,7 @@ namespace PARTICLEWALL
     std::shared_ptr<Core::FE::Discretization> walldiscretization_;
 
     //! current dof row map
-    std::shared_ptr<Epetra_Map> curr_dof_row_map_;
+    std::shared_ptr<Core::LinAlg::Map> curr_dof_row_map_;
 
     //! @name stored states
     //! @{

@@ -57,7 +57,7 @@ double Solid::calculate_vector_norm(const enum Inpar::Solid::VectorNorm norm,
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Solid::MapExtractor::setup(
-    const Core::FE::Discretization& dis, const Epetra_Map& fullmap, bool overlapping)
+    const Core::FE::Discretization& dis, const Core::LinAlg::Map& fullmap, bool overlapping)
 {
   const int ndim = Global::Problem::instance()->n_dim();
   Core::Conditions::MultiConditionSelector mcs;

@@ -66,7 +66,7 @@ namespace ScaTra
     //! partitioned into concentration and potential dofs
     void build_block_maps(
         const std::vector<std::shared_ptr<Core::Conditions::Condition>>& partitioningconditions,
-        std::vector<std::shared_ptr<const Epetra_Map>>& blockmaps) const override;
+        std::vector<std::shared_ptr<const Core::LinAlg::Map>>& blockmaps) const override;
 
     void build_block_null_spaces(
         std::shared_ptr<Core::LinAlg::Solver> solver, int init_block_number) const override;

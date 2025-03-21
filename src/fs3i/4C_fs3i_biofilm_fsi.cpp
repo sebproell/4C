@@ -178,8 +178,8 @@ void FS3I::BiofilmFSI::setup()
       (fsi_->fluid_field()->interface()->fsi_cond_map()), *(fsi_->ale_field()->discretization()),
       (fsi_->ale_field()->interface()->fsi_cond_map()), condname, ndim);
   // the fluid-ale coupling always matches
-  const Epetra_Map* fluidnodemap = fsi_->fluid_field()->discretization()->node_row_map();
-  const Epetra_Map* fluidalenodemap = fsi_->ale_field()->discretization()->node_row_map();
+  const Core::LinAlg::Map* fluidnodemap = fsi_->fluid_field()->discretization()->node_row_map();
+  const Core::LinAlg::Map* fluidalenodemap = fsi_->ale_field()->discretization()->node_row_map();
   coupfa_ = std::make_shared<Coupling::Adapter::Coupling>();
   coupfa_->setup_coupling(*(fsi_->fluid_field()->discretization()),
       *(fsi_->ale_field()->discretization()), *fluidnodemap, *fluidalenodemap, ndim);
@@ -190,8 +190,9 @@ void FS3I::BiofilmFSI::setup()
       fsi_->structure_field()->interface()->fsi_cond_map(), *structaledis,
       ale_->interface()->fsi_cond_map(), condname, ndim);
   // the structure-structale coupling always matches
-  const Epetra_Map* structurenodemap = fsi_->structure_field()->discretization()->node_row_map();
-  const Epetra_Map* structalenodemap = structaledis->node_row_map();
+  const Core::LinAlg::Map* structurenodemap =
+      fsi_->structure_field()->discretization()->node_row_map();
+  const Core::LinAlg::Map* structalenodemap = structaledis->node_row_map();
   coupsa_ = std::make_shared<Coupling::Adapter::Coupling>();
   coupsa_->setup_coupling(*(fsi_->structure_field()->discretization()), *structaledis,
       *structurenodemap, *structalenodemap, ndim);
@@ -458,8 +459,8 @@ void FS3I::BiofilmFSI::inner_timeloop()
         eleparams, nullptr, nullptr, nodalnormals, nullptr, nullptr, "FSICoupling");
     strudis->clear_state();
 
-    const Epetra_Map* dofrowmap = strudis->dof_row_map();
-    const Epetra_Map* noderowmap = strudis->node_row_map();
+    const Core::LinAlg::Map* dofrowmap = strudis->dof_row_map();
+    const Core::LinAlg::Map* noderowmap = strudis->node_row_map();
     Core::LinAlg::MultiVector<double> lambdanode(*noderowmap, 3, true);
 
     // lagrange multipliers defined on a nodemap are necessary
@@ -487,7 +488,7 @@ void FS3I::BiofilmFSI::inner_timeloop()
       }
     }
     // loop over all local interface nodes of structure discretization
-    std::shared_ptr<Epetra_Map> condnodemap =
+    std::shared_ptr<Core::LinAlg::Map> condnodemap =
         Core::Conditions::condition_node_row_map(*strudis, "FSICoupling");
     for (int nodei = 0; nodei < condnodemap->NumMyElements(); nodei++)
     {
@@ -612,7 +613,7 @@ void FS3I::BiofilmFSI::inner_timeloop()
     std::shared_ptr<Core::FE::Discretization> strudis = fsi_->structure_field()->discretization();
 
     // loop over all local interface nodes of structure discretization
-    std::shared_ptr<Epetra_Map> condnodemap =
+    std::shared_ptr<Core::LinAlg::Map> condnodemap =
         Core::Conditions::condition_node_row_map(*strudis, "FSICoupling");
     for (int i = 0; i < condnodemap->NumMyElements(); i++)
     {
@@ -667,7 +668,7 @@ void FS3I::BiofilmFSI::compute_interface_vectors(Core::LinAlg::Vector<double>& i
       eleparams, nullptr, nullptr, nodalnormals, nullptr, nullptr, biogrcondname);
 
   // select row map with nodes from condition
-  std::shared_ptr<Epetra_Map> condnodemap =
+  std::shared_ptr<Core::LinAlg::Map> condnodemap =
       Core::Conditions::condition_node_row_map(*strudis, biogrcondname);
 
   // loop all conditioned nodes

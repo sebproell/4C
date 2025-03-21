@@ -272,7 +272,8 @@ void POROMULTIPHASE::PoroMultiPhaseBase::update_and_output()
 /*------------------------------------------------------------------------*
  | dof map of vector of unknowns of structure field           vuong 08/16  |
  *------------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> POROMULTIPHASE::PoroMultiPhaseBase::struct_dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> POROMULTIPHASE::PoroMultiPhaseBase::struct_dof_row_map()
+    const
 {
   return structure_->dof_row_map();
 }
@@ -280,7 +281,8 @@ std::shared_ptr<const Epetra_Map> POROMULTIPHASE::PoroMultiPhaseBase::struct_dof
 /*------------------------------------------------------------------------*
  | dof map of vector of unknowns of fluid field           vuong 08/16  |
  *------------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> POROMULTIPHASE::PoroMultiPhaseBase::fluid_dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> POROMULTIPHASE::PoroMultiPhaseBase::fluid_dof_row_map()
+    const
 {
   return fluid_->dof_row_map();
 }
@@ -297,7 +299,8 @@ POROMULTIPHASE::PoroMultiPhaseBase::artery_porofluid_sysmat() const
 /*------------------------------------------------------------------------*
  | dof map of vector of unknowns of artery field         kremheller 05/18 |
  *------------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> POROMULTIPHASE::PoroMultiPhaseBase::artery_dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> POROMULTIPHASE::PoroMultiPhaseBase::artery_dof_row_map()
+    const
 {
   return fluid_->artery_dof_row_map();
 }

@@ -32,10 +32,10 @@ namespace PoroElast
     void setup_system() override;
 
     //! dof row map of Structure field
-    std::shared_ptr<const Epetra_Map> dof_row_map_structure() override;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map_structure() override;
 
     //! dof row map of Fluid field
-    std::shared_ptr<const Epetra_Map> dof_row_map_fluid() override;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map_fluid() override;
 
    protected:
     //! prepare new time step

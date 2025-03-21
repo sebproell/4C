@@ -16,7 +16,7 @@
 #include <vector>
 
 // NOLINTBEGIN(readability-identifier-naming)
-class Epetra_Map;
+class Core::LinAlg::Map;
 // NOLINTEND(readability-identifier-naming)
 
 FOUR_C_NAMESPACE_OPEN
@@ -70,7 +70,7 @@ namespace Core::LinAlg
   class Equilibration
   {
    public:
-    Equilibration(std::shared_ptr<const Epetra_Map> dofrowmap);
+    Equilibration(std::shared_ptr<const Core::LinAlg::Map> dofrowmap);
 
     virtual ~Equilibration() = default;
 
@@ -170,7 +170,8 @@ namespace Core::LinAlg
   class EquilibrationUniversal : public Equilibration
   {
    public:
-    EquilibrationUniversal(EquilibrationMethod method, std::shared_ptr<const Epetra_Map> dofrowmap);
+    EquilibrationUniversal(
+        EquilibrationMethod method, std::shared_ptr<const Core::LinAlg::Map> dofrowmap);
     //! return equilibration method
     EquilibrationMethod method() const { return method_; }
 
@@ -189,7 +190,8 @@ namespace Core::LinAlg
   class EquilibrationSparse : public EquilibrationUniversal
   {
    public:
-    EquilibrationSparse(EquilibrationMethod method, std::shared_ptr<const Epetra_Map> dofrowmap);
+    EquilibrationSparse(
+        EquilibrationMethod method, std::shared_ptr<const Core::LinAlg::Map> dofrowmap);
     void equilibrate_matrix(std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix,
         std::shared_ptr<const Core::LinAlg::MultiMapExtractor> blockmaps) const override;
 
@@ -207,7 +209,8 @@ namespace Core::LinAlg
   class EquilibrationBlock : public EquilibrationUniversal
   {
    public:
-    EquilibrationBlock(EquilibrationMethod method, std::shared_ptr<const Epetra_Map> dofrowmap);
+    EquilibrationBlock(
+        EquilibrationMethod method, std::shared_ptr<const Core::LinAlg::Map> dofrowmap);
     void equilibrate_matrix(std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix,
         std::shared_ptr<const Core::LinAlg::MultiMapExtractor> blockmaps) const override;
   };
@@ -219,7 +222,7 @@ namespace Core::LinAlg
   {
    public:
     EquilibrationBlockSpecific(const std::vector<EquilibrationMethod>& method,
-        std::shared_ptr<const Epetra_Map> dofrowmap);
+        std::shared_ptr<const Core::LinAlg::Map> dofrowmap);
     void equilibrate_matrix(std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix,
         std::shared_ptr<const Core::LinAlg::MultiMapExtractor> blockmaps) const override;
 
@@ -239,7 +242,9 @@ namespace Core::LinAlg
   class EquilibrationNone : public Equilibration
   {
    public:
-    EquilibrationNone(std::shared_ptr<const Epetra_Map> dofrowmap) : Equilibration(dofrowmap) {}
+    EquilibrationNone(std::shared_ptr<const Core::LinAlg::Map> dofrowmap) : Equilibration(dofrowmap)
+    {
+    }
     void equilibrate_matrix(std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix,
         std::shared_ptr<const Core::LinAlg::MultiMapExtractor> blockmaps) const override
     {
@@ -264,7 +269,8 @@ namespace Core::LinAlg
    * @return equilibration method
    */
   std::shared_ptr<Core::LinAlg::Equilibration> build_equilibration(MatrixType type,
-      const std::vector<EquilibrationMethod>& method, std::shared_ptr<const Epetra_Map> dofrowmap);
+      const std::vector<EquilibrationMethod>& method,
+      std::shared_ptr<const Core::LinAlg::Map> dofrowmap);
 }  // namespace Core::LinAlg
 FOUR_C_NAMESPACE_CLOSE
 

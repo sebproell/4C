@@ -108,10 +108,10 @@ namespace PoroElastScaTra
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs() { return rhs_; };
 
     //! full monolithic dof row map
-    std::shared_ptr<const Epetra_Map> dof_row_map() const;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() const;
 
     //! unique map of all dofs that should be constrained with DBC
-    std::shared_ptr<const Epetra_Map> combined_dbc_map() const;
+    std::shared_ptr<const Core::LinAlg::Map> combined_dbc_map() const;
 
     //@}
 
@@ -131,7 +131,7 @@ namespace PoroElastScaTra
      defines the number of blocks, their maps and the block order. The block
      maps must be row maps by themselves and must not contain identical GIDs.
      */
-    void set_dof_row_maps(const std::vector<std::shared_ptr<const Epetra_Map>>& maps);
+    void set_dof_row_maps(const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps);
 
     //! @name Apply current field state to system
 

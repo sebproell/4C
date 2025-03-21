@@ -82,12 +82,12 @@ void Discret::Elements::FluidHDGType::compute_null_space(
 {
   if (Core::FE::DiscretizationFaces* facedis = dynamic_cast<Core::FE::DiscretizationFaces*>(&dis))
   {
-    const Epetra_Map* rowmap = dis.dof_row_map();
+    const Core::LinAlg::Map* rowmap = dis.dof_row_map();
     const int lrows = rowmap->NumMyElements();
     double* mode[6];
     for (int i = 0; i < dimns; ++i) mode[i] = &(ns[i * lrows]);
 
-    const Epetra_Map* frowmap = facedis->face_row_map();
+    const Core::LinAlg::Map* frowmap = facedis->face_row_map();
     for (int i = 0; i < frowmap->NumMyElements(); ++i)
     {
       std::vector<int> dofs = facedis->dof(0, facedis->l_row_face(i));
@@ -101,7 +101,7 @@ void Discret::Elements::FluidHDGType::compute_null_space(
         mode[i / ndofs][lid] = 1.;
       }
     }
-    const Epetra_Map* erowmap = dis.element_row_map();
+    const Core::LinAlg::Map* erowmap = dis.element_row_map();
     for (int i = 0; i < erowmap->NumMyElements(); ++i)
     {
       std::vector<int> dofs = dis.dof(0, dis.l_row_element(i));

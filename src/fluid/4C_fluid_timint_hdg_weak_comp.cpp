@@ -70,16 +70,18 @@ void FLD::TimIntHDGWeakComp::init()
   dofmapvec_r.reserve(dofset_r.size());
   dofmapvec_r.assign(dofset_r.begin(), dofset_r.end());
   dofset_r.clear();
-  std::shared_ptr<Epetra_Map> dofmap_r = std::make_shared<Epetra_Map>(-1, dofmapvec_r.size(),
-      dofmapvec_r.data(), 0, Core::Communication::as_epetra_comm(hdgdis->get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> dofmap_r =
+      std::make_shared<Core::LinAlg::Map>(-1, dofmapvec_r.size(), dofmapvec_r.data(), 0,
+          Core::Communication::as_epetra_comm(hdgdis->get_comm()));
 
   // define momentum dof map
   std::vector<int> dofmapvec_w;
   dofmapvec_w.reserve(dofset_w.size());
   dofmapvec_w.assign(dofset_w.begin(), dofset_w.end());
   dofset_w.clear();
-  std::shared_ptr<Epetra_Map> dofmap_w = std::make_shared<Epetra_Map>(-1, dofmapvec_w.size(),
-      dofmapvec_w.data(), 0, Core::Communication::as_epetra_comm(hdgdis->get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> dofmap_w =
+      std::make_shared<Core::LinAlg::Map>(-1, dofmapvec_w.size(), dofmapvec_w.data(), 0,
+          Core::Communication::as_epetra_comm(hdgdis->get_comm()));
 
   // build density/momentum (actually velocity/pressure) splitter
   velpressplitter_->setup(*hdgdis->dof_row_map(), dofmap_r, dofmap_w);
@@ -323,7 +325,7 @@ void FLD::TimIntHDGWeakComp::iter_update(
   Core::Elements::LocationArray la(2);
 
   // interior dofs map
-  const Epetra_Map* intdofrowmap = discret_->dof_row_map(1);
+  const Core::LinAlg::Map* intdofrowmap = discret_->dof_row_map(1);
 
   // dummy variables
   Core::LinAlg::SerialDenseMatrix dummyMat;
@@ -427,8 +429,8 @@ void FLD::TimIntHDGWeakComp::update_gridv()
 void FLD::TimIntHDGWeakComp::set_initial_flow_field(
     const Inpar::FLUID::InitialField initfield, const int startfuncno)
 {
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
-  const Epetra_Map* intdofrowmap = discret_->dof_row_map(1);
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* intdofrowmap = discret_->dof_row_map(1);
   Core::LinAlg::SerialDenseVector elevec1, elevec2, elevec3;
   Core::LinAlg::SerialDenseMatrix elemat1, elemat2;
   Teuchos::ParameterList initParams;
@@ -633,7 +635,7 @@ FLD::TimIntHDGWeakComp::evaluate_error_compared_to_analytical_sol()
 void FLD::TimIntHDGWeakComp::reset(bool completeReset, int numsteps, int iter)
 {
   FluidImplicitTimeInt::reset(completeReset, numsteps, iter);
-  const Epetra_Map* intdofrowmap = discret_->dof_row_map(1);
+  const Core::LinAlg::Map* intdofrowmap = discret_->dof_row_map(1);
   intvelnp_ = Core::LinAlg::create_vector(*intdofrowmap, true);
   intvelaf_ = Core::LinAlg::create_vector(*intdofrowmap, true);
   intvelnm_ = Core::LinAlg::create_vector(*intdofrowmap, true);

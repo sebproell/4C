@@ -2042,8 +2042,8 @@ Core::LinearSolver::AMGNxN::SimpleSmootherFactory::create()
   Teuchos::RCP<BlockedMatrix> Ass = get_operator()->get_blocked_matrix_rcp(schur_vec, schur_vec);
 
   //{
-  //  Epetra_Map myRange  = App->OperatorRangeMap();
-  //  Epetra_Map myDomain = App->OperatorDomainMap();
+  //  Core::LinAlg::Map myRange  = App->OperatorRangeMap();
+  //  Core::LinAlg::Map myDomain = App->OperatorDomainMap();
   //  std::cout << "Matrix App" << std::endl;
   //  std::cout << "   Range   MinAllGID = " << myRange.MinAllGID()  << std::endl;
   //  std::cout << "   Range   MaxAllGID = " << myRange.MaxAllGID()  << std::endl;
@@ -2051,8 +2051,8 @@ Core::LinearSolver::AMGNxN::SimpleSmootherFactory::create()
   //  std::cout << "   Domain  MaxAllGID = " << myDomain.MaxAllGID()  << std::endl;
   //}
   //{
-  //  Epetra_Map myRange  = Ass->OperatorRangeMap();
-  //  Epetra_Map myDomain = Ass->OperatorDomainMap();
+  //  Core::LinAlg::Map myRange  = Ass->OperatorRangeMap();
+  //  Core::LinAlg::Map myDomain = Ass->OperatorDomainMap();
   //  std::cout << "Matrix App" << std::endl;
   //  std::cout << "   Range   MinAllGID = " << myRange.MinAllGID()  << std::endl;
   //  std::cout << "   Range   MaxAllGID = " << myRange.MaxAllGID()  << std::endl;

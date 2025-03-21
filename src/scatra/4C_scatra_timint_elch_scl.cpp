@@ -106,7 +106,7 @@ void ScaTra::ScaTraTimIntElchSCL::setup()
 
   // setup maps for coupled problem
   full_map_elch_scl_ = Core::LinAlg::merge_map(dof_row_map(), micro_scatra_field()->dof_row_map());
-  std::vector<std::shared_ptr<const Epetra_Map>> block_map_vec_scl;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> block_map_vec_scl;
   switch (matrixtype_elch_scl_)
   {
     case Core::LinAlg::MatrixType::sparse:
@@ -744,11 +744,11 @@ void ScaTra::ScaTraTimIntElchSCL::setup_coupling()
         glob_macro_micro_coupled_node_gids, glob_macro_slave_node_master_node_gids);
 
   // setup Epetra maps for coupled nodes
-  Epetra_Map master_node_map(-1, static_cast<int>(my_macro_node_gids.size()),
+  Core::LinAlg::Map master_node_map(-1, static_cast<int>(my_macro_node_gids.size()),
       &my_macro_node_gids[0], 0, Core::Communication::as_epetra_comm(comm));
-  Epetra_Map slave_node_map(-1, static_cast<int>(my_micro_node_gids.size()), &my_micro_node_gids[0],
-      0, Core::Communication::as_epetra_comm(comm));
-  Epetra_Map perm_slave_node_map(-1, static_cast<int>(my_micro_permuted_node_gids.size()),
+  Core::LinAlg::Map slave_node_map(-1, static_cast<int>(my_micro_node_gids.size()),
+      &my_micro_node_gids[0], 0, Core::Communication::as_epetra_comm(comm));
+  Core::LinAlg::Map perm_slave_node_map(-1, static_cast<int>(my_micro_permuted_node_gids.size()),
       &my_micro_permuted_node_gids[0], 0, Core::Communication::as_epetra_comm(comm));
 
   // setup coupling adapter between micro (slave) and macro (master) for all dof of the nodes
@@ -796,15 +796,17 @@ void ScaTra::ScaTraTimIntElchSCL::setup_coupling()
     }
   }
 
-  auto slave_dof_map = std::make_shared<Epetra_Map>(-1, static_cast<int>(my_slave_dofs.size()),
-      &my_slave_dofs[0], 0, Core::Communication::as_epetra_comm(comm));
+  auto slave_dof_map =
+      std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(my_slave_dofs.size()),
+          &my_slave_dofs[0], 0, Core::Communication::as_epetra_comm(comm));
   auto perm_slave_dof_map =
-      std::make_shared<Epetra_Map>(-1, static_cast<int>(my_perm_slave_dofs.size()),
+      std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(my_perm_slave_dofs.size()),
           &my_perm_slave_dofs[0], 0, Core::Communication::as_epetra_comm(comm));
-  auto master_dof_map = std::make_shared<Epetra_Map>(-1, static_cast<int>(my_master_dofs.size()),
-      &my_master_dofs[0], 0, Core::Communication::as_epetra_comm(comm));
+  auto master_dof_map =
+      std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(my_master_dofs.size()),
+          &my_master_dofs[0], 0, Core::Communication::as_epetra_comm(comm));
   auto perm_master_dof_map =
-      std::make_shared<Epetra_Map>(-1, static_cast<int>(my_perm_master_dofs.size()),
+      std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(my_perm_master_dofs.size()),
           &my_perm_master_dofs[0], 0, Core::Communication::as_epetra_comm(comm));
 
 
@@ -1069,10 +1071,10 @@ void ScaTra::ScaTraTimIntElchSCL::redistribute_micro_discretization()
   if (myPID > 0) my_col_nodes.emplace_back(my_row_nodes[0] - 1);
   if (myPID < num_proc - 1) my_col_nodes.emplace_back(my_row_nodes.back() + 1);
 
-  Epetra_Map new_node_row_map(num_nodes, static_cast<int>(my_row_nodes.size()), &my_row_nodes[0], 0,
-      Core::Communication::as_epetra_comm(micro_dis->get_comm()));
+  Core::LinAlg::Map new_node_row_map(num_nodes, static_cast<int>(my_row_nodes.size()),
+      &my_row_nodes[0], 0, Core::Communication::as_epetra_comm(micro_dis->get_comm()));
 
-  Epetra_Map new_node_col_map(-1, static_cast<int>(my_col_nodes.size()), &my_col_nodes[0], 0,
+  Core::LinAlg::Map new_node_col_map(-1, static_cast<int>(my_col_nodes.size()), &my_col_nodes[0], 0,
       Core::Communication::as_epetra_comm(micro_dis->get_comm()));
 
   micro_dis->redistribute(new_node_row_map, new_node_col_map);

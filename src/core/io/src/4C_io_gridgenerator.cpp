@@ -57,10 +57,10 @@ namespace Core::IO::GridGenerator
         FOUR_C_THROW("intervals in domain reader must be greater than zero");
     }
 
-    std::shared_ptr<Epetra_Map> nodeRowMap;
-    std::shared_ptr<Epetra_Map> nodeColMap;
-    std::shared_ptr<Epetra_Map> elementRowMap;
-    std::shared_ptr<Epetra_Map> elementColMap;
+    std::shared_ptr<Core::LinAlg::Map> nodeRowMap;
+    std::shared_ptr<Core::LinAlg::Map> nodeColMap;
+    std::shared_ptr<Core::LinAlg::Map> elementRowMap;
+    std::shared_ptr<Core::LinAlg::Map> elementColMap;
 
     // Create initial (or final) map of row elements
     Core::FE::CellType distype_enum = Core::FE::string_to_cell_type(inputData.distype_);
@@ -72,7 +72,7 @@ namespace Core::IO::GridGenerator
       {
         scale = 2;
       }
-      elementRowMap = std::make_shared<Epetra_Map>(
+      elementRowMap = std::make_shared<Core::LinAlg::Map>(
           scale * numnewele, 0, Core::Communication::as_epetra_comm(comm));
     }
     else  // fancy final box map
@@ -149,7 +149,7 @@ namespace Core::IO::GridGenerator
           for (size_t ix = xranges[mysection[0]]; ix < xranges[mysection[0] + 1]; ++ix)
             mynewele[idx++] = (iz * inputData.interval_[1] + it) * inputData.interval_[0] + ix;
 
-      elementRowMap = std::make_shared<Epetra_Map>(
+      elementRowMap = std::make_shared<Core::LinAlg::Map>(
           -1, nummynewele, mynewele.data(), 0, Core::Communication::as_epetra_comm(comm));
     }
 
@@ -231,9 +231,9 @@ namespace Core::IO::GridGenerator
     {
       std::shared_ptr<const Core::LinAlg::Graph> graph =
           Core::Rebalance::build_graph(dis, *elementRowMap);
-      nodeRowMap = std::make_shared<Epetra_Map>(-1, graph->row_map().NumMyElements(),
+      nodeRowMap = std::make_shared<Core::LinAlg::Map>(-1, graph->row_map().NumMyElements(),
           graph->row_map().MyGlobalElements(), 0, Core::Communication::as_epetra_comm(comm));
-      nodeColMap = std::make_shared<Epetra_Map>(-1, graph->col_map().NumMyElements(),
+      nodeColMap = std::make_shared<Core::LinAlg::Map>(-1, graph->col_map().NumMyElements(),
           graph->col_map().MyGlobalElements(), 0, Core::Communication::as_epetra_comm(comm));
     }
 

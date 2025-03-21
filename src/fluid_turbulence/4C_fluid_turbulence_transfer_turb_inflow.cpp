@@ -203,7 +203,7 @@ void FLD::TransferTurbulentInflowCondition::transfer(
     const std::shared_ptr<Core::LinAlg::Vector<double>> veln,
     std::shared_ptr<Core::LinAlg::Vector<double>> velnp, const double time)
 {
-  const Epetra_Map* dofrowmap = dis_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = dis_->dof_row_map();
 
   std::vector<int> mymasters;
   std::vector<std::vector<double>> mymasters_vel(numveldof_);
@@ -619,7 +619,7 @@ void FLD::TransferTurbulentInflowCondition::set_values_available_on_this_proc(
     std::vector<int>& mymasters, std::vector<std::vector<double>>& mymasters_vel,
     std::shared_ptr<Core::LinAlg::Vector<double>> velnp)
 {
-  const std::shared_ptr<const Epetra_Map> activedbcdofs = dbcmaps_->cond_map();
+  const std::shared_ptr<const Core::LinAlg::Map> activedbcdofs = dbcmaps_->cond_map();
 
   for (unsigned nn = 0; nn < mymasters.size(); ++nn)
   {
@@ -705,7 +705,7 @@ void FLD::TransferTurbulentInflowConditionXW::transfer(
     const std::shared_ptr<Core::LinAlg::Vector<double>> veln,
     std::shared_ptr<Core::LinAlg::Vector<double>> velnp, const double time)
 {
-  const Epetra_Map* dofrowmap = dis_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = dis_->dof_row_map();
 
   std::vector<int> mymasters;
   // there can be up to 6 velocity dofs per node (3 +3 virtual dofs)
@@ -839,7 +839,7 @@ void FLD::TransferTurbulentInflowConditionXW::set_values_available_on_this_proc(
     std::vector<int>& mymasters, std::vector<std::vector<double>>& mymasters_vel,
     std::shared_ptr<Core::LinAlg::Vector<double>> velnp)
 {
-  const std::shared_ptr<const Epetra_Map> activedbcdofs = dbcmaps_->cond_map();
+  const std::shared_ptr<const Core::LinAlg::Map> activedbcdofs = dbcmaps_->cond_map();
 
   for (unsigned nn = 0; nn < mymasters.size(); ++nn)
   {

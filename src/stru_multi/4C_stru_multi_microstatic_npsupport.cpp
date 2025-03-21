@@ -76,8 +76,8 @@ void MultiScale::np_support_drt()
       {
         // receive data from the master proc
         int tag = 0;
-        Epetra_Map oldmap(1, 0, &tag, 0, Core::Communication::as_epetra_comm(subcomm));
-        Epetra_Map newmap(1, 1, &tag, 0, Core::Communication::as_epetra_comm(subcomm));
+        Core::LinAlg::Map oldmap(1, 0, &tag, 0, Core::Communication::as_epetra_comm(subcomm));
+        Core::LinAlg::Map newmap(1, 1, &tag, 0, Core::Communication::as_epetra_comm(subcomm));
         // create an exporter object that will figure out the communication pattern
         Core::Communication::Exporter exporter(oldmap, newmap, subcomm);
         std::map<int, std::shared_ptr<MultiScale::MicroStaticParObject>> condnamemap;
@@ -132,8 +132,8 @@ void MultiScale::np_support_drt()
       {
         // receive data from the master proc for restart
         int tag = 0;
-        Epetra_Map oldmap(1, 0, &tag, 0, Core::Communication::as_epetra_comm(subcomm));
-        Epetra_Map newmap(1, 1, &tag, 0, Core::Communication::as_epetra_comm(subcomm));
+        Core::LinAlg::Map oldmap(1, 0, &tag, 0, Core::Communication::as_epetra_comm(subcomm));
+        Core::LinAlg::Map newmap(1, 1, &tag, 0, Core::Communication::as_epetra_comm(subcomm));
         // create an exporter object that will figure out the communication pattern
         Core::Communication::Exporter exporter(oldmap, newmap, subcomm);
         std::map<int, std::shared_ptr<MultiScale::MicroStaticParObject>> condnamemap;

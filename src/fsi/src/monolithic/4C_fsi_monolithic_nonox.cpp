@@ -116,8 +116,8 @@ void FSI::MonolithicNoNOX::setup_system()
     FOUR_C_THROW("No nodes in matching FSI interface. Empty FSI coupling condition?");
 
   // the fluid-ale coupling always matches
-  const Epetra_Map* fluidnodemap = fluid_field()->discretization()->node_row_map();
-  const Epetra_Map* alenodemap = ale_field()->discretization()->node_row_map();
+  const Core::LinAlg::Map* fluidnodemap = fluid_field()->discretization()->node_row_map();
+  const Core::LinAlg::Map* alenodemap = ale_field()->discretization()->node_row_map();
 
   coupfa.setup_coupling(*fluid_field()->discretization(), *ale_field()->discretization(),
       *fluidnodemap, *alenodemap, ndim);
@@ -380,9 +380,9 @@ void FSI::MonolithicNoNOX::evaluate(const Core::LinAlg::Vector<double>& step_inc
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void FSI::MonolithicNoNOX::set_dof_row_maps(
-    const std::vector<std::shared_ptr<const Epetra_Map>>& maps)
+    const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps)
 {
-  std::shared_ptr<Epetra_Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
+  std::shared_ptr<Core::LinAlg::Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
   blockrowdofmap_.setup(*fullmap, maps);
 }
 

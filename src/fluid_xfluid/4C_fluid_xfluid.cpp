@@ -1576,7 +1576,7 @@ void FLD::XFluid::assemble_mat_and_rhs_gradient_penalty(
   // for which not ghost-penalty term has been assembled
   // for these rows we later have to assemble ones, as we solve for the whole vector
 
-  const Epetra_Map& dbctoggle = *(ghost_penaly_dbcmaps.cond_map());
+  const Core::LinAlg::Map& dbctoggle = *(ghost_penaly_dbcmaps.cond_map());
 
   bool diagonalblock = true;
 
@@ -3380,7 +3380,7 @@ void FLD::XFluid::x_timint_store_old_state_data(const bool firstcall_in_timestep
     dofset_Intn_ = state_->dof_set();
 
     // safe the old dofmap
-    dofcolmap_Intn_ = std::make_shared<Epetra_Map>(*discret_->dof_col_map());
+    dofcolmap_Intn_ = std::make_shared<Core::LinAlg::Map>(*discret_->dof_col_map());
   }
 
   //------------------------------------------
@@ -3513,7 +3513,7 @@ void FLD::XFluid::x_timint_do_time_step_transfer(const bool screen_out)
     FOUR_C_THROW("check which vectors have to be reconstructed for non-OST scheme");
 
   //---------------------------------------------------------------
-  const Epetra_Map* newdofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* newdofrowmap = discret_->dof_row_map();
 
   // all vectors that have to be transferred from old dofset at t^n to new dofset at t^(n+1=
   std::vector<std::shared_ptr<const Core::LinAlg::Vector<double>>> oldRowStateVectors;
@@ -3726,7 +3726,7 @@ bool FLD::XFluid::x_timint_do_increment_step_transfer(
 
 
   //---------------------------------------------------------------
-  const Epetra_Map* newdofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* newdofrowmap = discret_->dof_row_map();
 
   // all vectors that have to be transferred from old dofset to new dofset
   // vec_n+1(Gamma_n+1,i) -> vec_n+1(Gamma_n+1,i+1)
@@ -4046,8 +4046,8 @@ void FLD::XFluid::x_timint_get_reconstruct_status(
  |                                                         schott 08/14 |
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::MapExtractor> FLD::XFluid::create_dbc_map_extractor(
-    const std::set<int>& dbcgids,  ///< dbc global dof ids
-    const Epetra_Map* dofrowmap    ///< dofrowmap
+    const std::set<int>& dbcgids,       ///< dbc global dof ids
+    const Core::LinAlg::Map* dofrowmap  ///< dofrowmap
 )
 {
   // create DBC and free map and build their common extractor
@@ -4063,7 +4063,7 @@ std::shared_ptr<Core::LinAlg::MapExtractor> FLD::XFluid::create_dbc_map_extracto
     nummyelements = dbcgidsv.size();
     myglobalelements = dbcgidsv.data();
   }
-  std::shared_ptr<Epetra_Map> dbcmap = std::make_shared<Epetra_Map>(
+  std::shared_ptr<Core::LinAlg::Map> dbcmap = std::make_shared<Core::LinAlg::Map>(
       -1, nummyelements, myglobalelements, dofrowmap->IndexBase(), dofrowmap->Comm());
 
   // build the map extractor of Dirichlet-conditioned and free DOFs
@@ -4078,7 +4078,7 @@ std::shared_ptr<Core::LinAlg::MapExtractor> FLD::XFluid::create_dbc_map_extracto
  *----------------------------------------------------------------------*/
 void FLD::XFluid::x_timint_ghost_penalty(std::vector<std::shared_ptr<Core::LinAlg::Vector<double>>>&
                                              rowVectors,  ///< vectors to be reconstructed
-    const Epetra_Map* dofrowmap,                          ///< dofrowmap
+    const Core::LinAlg::Map* dofrowmap,                   ///< dofrowmap
     const std::set<int>& dbcgids,                         ///< dbc global ids
     const bool screen_out                                 ///< screen output?
 )
@@ -4152,8 +4152,8 @@ void FLD::XFluid::x_timint_reconstruct_ghost_values(
 
   std::vector<int> numentries(state_->xfluiddofrowmap_->NumMyElements());
 
-  const Epetra_Map& rowmap = *state_->xfluiddofrowmap_;
-  const Epetra_Map& condmap = *(ghost_penaly_dbcmaps.cond_map());
+  const Core::LinAlg::Map& rowmap = *state_->xfluiddofrowmap_;
+  const Core::LinAlg::Map& condmap = *(ghost_penaly_dbcmaps.cond_map());
 
   for (unsigned i = 0; i < numentries.size(); ++i)
   {
@@ -4267,8 +4267,8 @@ void FLD::XFluid::x_timint_reconstruct_ghost_values(
  *----------------------------------------------------------------------*/
 void FLD::XFluid::x_timint_semi_lagrangean(
     std::vector<std::shared_ptr<Core::LinAlg::Vector<double>>>&
-        newRowStateVectors,          ///< vectors to be reconstructed
-    const Epetra_Map* newdofrowmap,  ///< dofrowmap at current interface position
+        newRowStateVectors,                 ///< vectors to be reconstructed
+    const Core::LinAlg::Map* newdofrowmap,  ///< dofrowmap at current interface position
     std::vector<std::shared_ptr<const Core::LinAlg::Vector<double>>>&
         oldRowStateVectors,  ///< vectors from which we reconstruct values (same order of vectors as
                              ///< in newRowStateVectors)
@@ -4276,9 +4276,9 @@ void FLD::XFluid::x_timint_semi_lagrangean(
         dispn,  ///< displacement initial col - vector timestep n
                 ///< //set to nullptr if no ale displacements
     std::shared_ptr<Core::LinAlg::Vector<double>>
-        dispnp,                      ///< displacement initial col - vector timestep n+1
-                                     ///< //if nullptr ... --> no ale displacements
-    const Epetra_Map* olddofcolmap,  ///< dofcolmap at time and interface position t^n
+        dispnp,                             ///< displacement initial col - vector timestep n+1
+                                            ///< //if nullptr ... --> no ale displacements
+    const Core::LinAlg::Map* olddofcolmap,  ///< dofcolmap at time and interface position t^n
     std::map<int, std::vector<Inpar::XFEM::XFluidTimeInt>>&
         node_to_reconstr_method,  ///< reconstruction map for nodes and its dofsets
     const bool screen_out         ///< screen output?
@@ -4492,7 +4492,7 @@ void FLD::XFluid::set_initial_flow_field(
   // special initial function: Beltrami flow (3-D)
   else if (initfield == Inpar::FLUID::initfield_beltrami_flow)
   {
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
     int err = 0;
 
@@ -4590,7 +4590,7 @@ void FLD::XFluid::set_initial_flow_field(
 
     const std::shared_ptr<Cut::CutWizard>& wizard = state_->wizard();
     const std::shared_ptr<XFEM::XFEMDofSet>& dofset = state_->dof_set();
-    const Epetra_Map* dofrowmap = dofset->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = dofset->dof_row_map();
 
     //------------------------
     // get material parameters

@@ -224,9 +224,9 @@ namespace FPSI
 
     /// Extract specific columns from Sparse Matrix
     void extract_columnsfrom_sparse(Epetra_CrsMatrix& src,  ///< source Matrix
-        const Epetra_Map& colmap,  ///< map with column gids to be extracted! (gid which are not in
-                                   ///< the source Matrix will be ignored!)
-        Epetra_CrsMatrix& dst);    ///< destination Matrix (will be filled!)
+        const Core::LinAlg::Map& colmap,  ///< map with column gids to be extracted! (gid which are
+                                          ///< not in the source Matrix will be ignored!)
+        Epetra_CrsMatrix& dst);           ///< destination Matrix (will be filled!)
 
     //! Evaluate all fields at x^n+1 with x^n+1 = x_n + stepinc
     virtual void evaluate(std::shared_ptr<const Core::LinAlg::Vector<double>>
@@ -263,10 +263,13 @@ namespace FPSI
     bool converged();
 
     //! full monolithic dof row map
-    std::shared_ptr<const Epetra_Map> dof_row_map() const { return blockrowdofmap_.full_map(); }
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() const
+    {
+      return blockrowdofmap_.full_map();
+    }
 
     //! map of all dofs on Dirichlet-Boundary
-    virtual std::shared_ptr<Epetra_Map> combined_dbc_map();
+    virtual std::shared_ptr<Core::LinAlg::Map> combined_dbc_map();
 
     //! extractor to communicate between full monolithic map and block maps
     const Core::LinAlg::MultiMapExtractor& extractor() const { return blockrowdofmap_; }
@@ -286,7 +289,7 @@ namespace FPSI
     //! dof row map split in (field) blocks
     Core::LinAlg::MultiMapExtractor blockrowdofmap_;
     //! dof row map (not split)
-    std::shared_ptr<Epetra_Map> fullmap_;
+    std::shared_ptr<Core::LinAlg::Map> fullmap_;
     //! increment between Newton steps k and k+1
     std::shared_ptr<Core::LinAlg::Vector<double>> iterinc_;
     std::shared_ptr<Core::LinAlg::Vector<double>> iterincold_;

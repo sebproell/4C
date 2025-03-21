@@ -68,7 +68,7 @@ namespace XFEM
       fullpres_ = pres;
     }
 
-    void initialize_struct_pres_map(const Epetra_Map& pfmap, const Epetra_Map& psmap)
+    void initialize_struct_pres_map(const Core::LinAlg::Map& pfmap, const Core::LinAlg::Map& psmap)
     {
       // We need to identify cutter dis dofs and pressure dofs on all processors for the whole
       // cutter_dis, as long as we don't have another ghosting strategy for the cutter_dis ...
@@ -78,8 +78,8 @@ namespace XFEM
             "initialize_struct_pres_map: (pfmap->NumGlobalElements() != "
             "psmap->NumGlobalElements())!");
 
-      std::shared_ptr<Epetra_Map> fullpfmap = Core::LinAlg::allreduce_e_map(pfmap);
-      std::shared_ptr<Epetra_Map> fullpsmap = Core::LinAlg::allreduce_e_map(psmap);
+      std::shared_ptr<Core::LinAlg::Map> fullpfmap = Core::LinAlg::allreduce_e_map(pfmap);
+      std::shared_ptr<Core::LinAlg::Map> fullpsmap = Core::LinAlg::allreduce_e_map(psmap);
 
       if (fullpfmap->NumMyElements() != fullpsmap->NumMyElements())
         FOUR_C_THROW(

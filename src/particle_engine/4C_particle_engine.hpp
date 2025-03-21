@@ -13,11 +13,10 @@
  *---------------------------------------------------------------------------*/
 #include "4C_config.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_particle_engine_interface.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
-
-#include <Epetra_Map.h>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -300,7 +299,7 @@ namespace PARTICLEENGINE
      *
      * \return bin row map
      */
-    std::shared_ptr<Epetra_Map> get_bin_row_map() const { return binrowmap_; };
+    std::shared_ptr<Core::LinAlg::Map> get_bin_row_map() const { return binrowmap_; };
 
     /*!
      * \brief get bin column map
@@ -308,7 +307,7 @@ namespace PARTICLEENGINE
      *
      * \return bin column map
      */
-    std::shared_ptr<Epetra_Map> get_bin_col_map() const { return bincolmap_; };
+    std::shared_ptr<Core::LinAlg::Map> get_bin_col_map() const { return bincolmap_; };
 
     ParticleContainerBundleShrdPtr get_particle_container_bundle() const override
     {
@@ -720,10 +719,10 @@ namespace PARTICLEENGINE
     std::shared_ptr<Core::Binstrategy::BinningStrategy> binstrategy_;
 
     //! distribution of row bins
-    std::shared_ptr<Epetra_Map> binrowmap_;
+    std::shared_ptr<Core::LinAlg::Map> binrowmap_;
 
     //! distribution of column bins
-    std::shared_ptr<Epetra_Map> bincolmap_;
+    std::shared_ptr<Core::LinAlg::Map> bincolmap_;
 
     //! minimum relevant bin size
     double minbinsize_;

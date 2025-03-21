@@ -156,7 +156,7 @@ namespace FLD
     std::shared_ptr<Utils::FluidVolumetricSurfaceFlowWrapper> vol_surf_flow_bc_;
 
     /// maps for womersley flow profile which is applied as a Dirichlet condition
-    std::shared_ptr<Epetra_Map> vol_surf_flow_bc_maps_;
+    std::shared_ptr<Core::LinAlg::Map> vol_surf_flow_bc_maps_;
 
     /// maps for extracting Dirichlet and free DOF sets
     std::shared_ptr<FLD::Utils::VolumetricFlowMapExtractor> vol_flow_rates_bc_extractor_;

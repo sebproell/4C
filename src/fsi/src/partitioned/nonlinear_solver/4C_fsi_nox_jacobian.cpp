@@ -7,9 +7,9 @@
 
 #include "4C_fsi_nox_jacobian.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 
-#include <Epetra_Map.h>
 #include <Epetra_RowMatrix.h>
 #include <NOX_Abstract_Group.H>
 #include <NOX_Epetra_Interface_Required.H>
@@ -35,14 +35,14 @@ NOX::FSI::FSIMatrixFree::FSIMatrixFree(Teuchos::ParameterList& printParams,
   perturbX.init(0.0);
   perturbY.init(0.0);
 
-  // Epetra_Operators require Epetra_Maps, so anyone using block maps
+  // Epetra_Operators require Core::LinAlg::Maps, so anyone using block maps
   // (Epetra_BlockMap) won't be able to directly use the AztecOO solver.
-  // We get around this by creating an Epetra_Map from the Epetra_BlockMap.
-  const Epetra_Map* testMap = nullptr;
-  testMap = dynamic_cast<const Epetra_Map*>(&currentX.getEpetraVector().Map());
+  // We get around this by creating an Core::LinAlg::Map from the Epetra_BlockMap.
+  const Core::LinAlg::Map* testMap = nullptr;
+  testMap = dynamic_cast<const Core::LinAlg::Map*>(&currentX.getEpetraVector().Map());
   if (testMap != nullptr)
   {
-    epetraMap = std::make_shared<Epetra_Map>(*testMap);
+    epetraMap = std::make_shared<Core::LinAlg::Map>(*testMap);
   }
   else
   {
@@ -50,7 +50,7 @@ NOX::FSI::FSIMatrixFree::FSIMatrixFree(Teuchos::ParameterList& printParams,
     int mySize = currentX.getEpetraVector().Map().NumMyPoints();
     int indexBase = currentX.getEpetraVector().Map().IndexBase();
     const auto& comm = currentX.getEpetraVector().Map().Comm();
-    epetraMap = std::make_shared<Epetra_Map>(size, mySize, indexBase, comm);
+    epetraMap = std::make_shared<Core::LinAlg::Map>(size, mySize, indexBase, comm);
   }
 }
 
@@ -162,10 +162,10 @@ const Epetra_Comm& NOX::FSI::FSIMatrixFree::Comm() const
 }
 
 
-const Epetra_Map& NOX::FSI::FSIMatrixFree::OperatorDomainMap() const { return *epetraMap; }
+const Core::LinAlg::Map& NOX::FSI::FSIMatrixFree::OperatorDomainMap() const { return *epetraMap; }
 
 
-const Epetra_Map& NOX::FSI::FSIMatrixFree::OperatorRangeMap() const { return *epetraMap; }
+const Core::LinAlg::Map& NOX::FSI::FSIMatrixFree::OperatorRangeMap() const { return *epetraMap; }
 
 
 bool NOX::FSI::FSIMatrixFree::computeJacobian(const Epetra_Vector& x, Epetra_Operator& Jac)

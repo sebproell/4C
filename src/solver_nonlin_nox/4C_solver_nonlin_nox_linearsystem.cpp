@@ -201,8 +201,8 @@ bool NOX::Nln::LinearSystem::apply_jacobian_block(const ::NOX::Epetra::Vector& i
 {
   const Core::LinAlg::SparseMatrix& blockc = get_jacobian_block(rbid, cbid);
   Core::LinAlg::SparseMatrix& block = const_cast<Core::LinAlg::SparseMatrix&>(blockc);
-  const Epetra_Map& domainmap = block.domain_map();
-  const Epetra_Map& rangemap = block.range_map();
+  const Core::LinAlg::Map& domainmap = block.domain_map();
+  const Core::LinAlg::Map& rangemap = block.range_map();
 
   Core::LinAlg::Vector<double> input_v = Core::LinAlg::Vector<double>(input.getEpetraVector());
   std::shared_ptr<const Core::LinAlg::Vector<double>> input_apply = nullptr;
@@ -702,7 +702,8 @@ const Core::LinAlg::SparseMatrix& NOX::Nln::LinearSystem::get_jacobian_block(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Epetra_Map& NOX::Nln::LinearSystem::get_jacobian_range_map(unsigned rbid, unsigned cbid) const
+const Core::LinAlg::Map& NOX::Nln::LinearSystem::get_jacobian_range_map(
+    unsigned rbid, unsigned cbid) const
 {
   return get_jacobian_block(rbid, cbid).range_map();
 }
@@ -713,7 +714,7 @@ Teuchos::RCP<Core::LinAlg::Vector<double>> NOX::Nln::LinearSystem::get_diagonal_
     unsigned diag_bid) const
 {
   const Core::LinAlg::SparseMatrix& diag_block = get_jacobian_block(diag_bid, diag_bid);
-  const Epetra_Map& rmap = diag_block.range_map();
+  const Core::LinAlg::Map& rmap = diag_block.range_map();
 
   Teuchos::RCP<Core::LinAlg::Vector<double>> diag_copy =
       Teuchos::make_rcp<Core::LinAlg::Vector<double>>(rmap, true);
@@ -852,8 +853,8 @@ void NOX::Nln::LinearSystem::convert_jacobian_to_dense_matrix(
       const linalg_blocksparsematrix& block_sparse =
           dynamic_cast<const linalg_blocksparsematrix&>(jacobian());
 
-      const Epetra_Map& full_rangemap = block_sparse.full_range_map();
-      const Epetra_Map& full_domainmap = block_sparse.full_domain_map();
+      const Core::LinAlg::Map& full_rangemap = block_sparse.full_range_map();
+      const Core::LinAlg::Map& full_domainmap = block_sparse.full_domain_map();
 
       prepare_block_dense_matrix(block_sparse, dense_jac);
 
@@ -889,7 +890,7 @@ void NOX::Nln::LinearSystem::convert_jacobian_to_dense_matrix(
  *----------------------------------------------------------------------*/
 void NOX::Nln::LinearSystem::convert_sparse_to_dense_matrix(
     const Core::LinAlg::SparseMatrix& sparse, Core::LinAlg::SerialDenseMatrix& dense,
-    const Epetra_Map& full_rangemap, const Epetra_Map& full_domainmap) const
+    const Core::LinAlg::Map& full_rangemap, const Core::LinAlg::Map& full_domainmap) const
 {
   if (not sparse.filled()) FOUR_C_THROW("The sparse matrix must be filled!");
   auto crs_mat = sparse.epetra_matrix();

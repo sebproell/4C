@@ -48,13 +48,13 @@ namespace Coupling::Adapter
     virtual std::shared_ptr<Core::LinAlg::Vector<double>> dst_to_src(
         std::shared_ptr<const Core::LinAlg::Vector<double>> d) const = 0;
 
-    virtual std::shared_ptr<const Epetra_Map> src_map() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> src_map() const = 0;
 
-    virtual std::shared_ptr<const Epetra_Map> dst_map() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> dst_map() const = 0;
 
-    virtual std::shared_ptr<const Epetra_Map> perm_src_map() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> perm_src_map() const = 0;
 
-    virtual std::shared_ptr<const Epetra_Map> perm_dst_map() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> perm_dst_map() const = 0;
 
     virtual void fill_src_to_dst_map(std::map<int, int>& rowmap) const = 0;
   };
@@ -71,13 +71,13 @@ namespace Coupling::Adapter
     std::shared_ptr<Core::LinAlg::Vector<double>> dst_to_src(
         std::shared_ptr<const Core::LinAlg::Vector<double>> d) const override;
 
-    std::shared_ptr<const Epetra_Map> src_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> src_map() const override;
 
-    std::shared_ptr<const Epetra_Map> dst_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> dst_map() const override;
 
-    std::shared_ptr<const Epetra_Map> perm_src_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> perm_src_map() const override;
 
-    std::shared_ptr<const Epetra_Map> perm_dst_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> perm_dst_map() const override;
 
     void fill_src_to_dst_map(std::map<int, int>& rowmap) const override;
 
@@ -97,13 +97,13 @@ namespace Coupling::Adapter
     std::shared_ptr<Core::LinAlg::Vector<double>> dst_to_src(
         std::shared_ptr<const Core::LinAlg::Vector<double>> d) const override;
 
-    std::shared_ptr<const Epetra_Map> src_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> src_map() const override;
 
-    std::shared_ptr<const Epetra_Map> dst_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> dst_map() const override;
 
-    std::shared_ptr<const Epetra_Map> perm_src_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> perm_src_map() const override;
 
-    std::shared_ptr<const Epetra_Map> perm_dst_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> perm_dst_map() const override;
 
     void fill_src_to_dst_map(std::map<int, int>& rowmap) const override;
 
@@ -168,42 +168,45 @@ namespace Coupling::Adapter
       exactmatch     (i) do not drop any source values if true \param addmatrix      (i) remove
       current dst values if false
      */
-    bool operator()(const Core::LinAlg::SparseMatrix& src, const Epetra_Map& logical_range_map,
-        const Epetra_Map& logical_domain_map, const double scale,
-        const CouplingConverter* row_converter, const CouplingConverter* col_converter,
-        Core::LinAlg::SparseMatrix& dst, bool exactmatch = true, bool addmatrix = false);
+    bool operator()(const Core::LinAlg::SparseMatrix& src,
+        const Core::LinAlg::Map& logical_range_map, const Core::LinAlg::Map& logical_domain_map,
+        const double scale, const CouplingConverter* row_converter,
+        const CouplingConverter* col_converter, Core::LinAlg::SparseMatrix& dst,
+        bool exactmatch = true, bool addmatrix = false);
 
    private:
     /// setup column map matching between source and destination gids
     /*!
       Internal method.
      */
-    void setup_gid_map(const Epetra_Map& rowmap, const Epetra_Map& colmap,
+    void setup_gid_map(const Core::LinAlg::Map& rowmap, const Core::LinAlg::Map& colmap,
         const CouplingConverter* converter, MPI_Comm comm);
 
     /// copy values from source to destination matrix
     /*!
       Internal method.
      */
-    void internal_add(Epetra_CrsMatrix& esrc, const Epetra_Map& logical_range_map,
-        const Epetra_Map& logical_domain_map, const Epetra_Map& matching_dst_rows,
+    void internal_add(Epetra_CrsMatrix& esrc, const Core::LinAlg::Map& logical_range_map,
+        const Core::LinAlg::Map& logical_domain_map, const Core::LinAlg::Map& matching_dst_rows,
         Epetra_CrsMatrix& edst, bool exactmatch, double scale);
 
     /// fast method that adds into filled matrices
     /*!
       Internal method called by internal_add.
      */
-    void add_into_filled(Epetra_CrsMatrix& esrc, const Epetra_Map& logical_range_map,
-        const Epetra_Map& logical_domain_map, const Core::LinAlg::Vector<double>& selector,
-        const Epetra_Map& matching_dst_rows, Epetra_CrsMatrix& edst, bool exactmatch, double scale);
+    void add_into_filled(Epetra_CrsMatrix& esrc, const Core::LinAlg::Map& logical_range_map,
+        const Core::LinAlg::Map& logical_domain_map, const Core::LinAlg::Vector<double>& selector,
+        const Core::LinAlg::Map& matching_dst_rows, Epetra_CrsMatrix& edst, bool exactmatch,
+        double scale);
 
     /// slow method that adds into unfilled matrices
     /*!
       Internal method called by internal_add.
      */
-    void add_into_unfilled(Epetra_CrsMatrix& esrc, const Epetra_Map& logical_range_map,
-        const Epetra_Map& logical_domain_map, const Core::LinAlg::Vector<double>& selector,
-        const Epetra_Map& matching_dst_rows, Epetra_CrsMatrix& edst, bool exactmatch, double scale);
+    void add_into_unfilled(Epetra_CrsMatrix& esrc, const Core::LinAlg::Map& logical_range_map,
+        const Core::LinAlg::Map& logical_domain_map, const Core::LinAlg::Vector<double>& selector,
+        const Core::LinAlg::Map& matching_dst_rows, Epetra_CrsMatrix& edst, bool exactmatch,
+        double scale);
 
     /// source and destination gid matching
     std::map<int, int> gidmap_;
@@ -322,7 +325,7 @@ namespace Coupling::Adapter
       \param exactmatch (i) do not drop any source values if true
       \param addmatrix (i) remove current dst values if false
      */
-    bool operator()(const Epetra_Map& rowmap, const Epetra_Map& colmap,
+    bool operator()(const Core::LinAlg::Map& rowmap, const Core::LinAlg::Map& colmap,
         const Core::LinAlg::SparseMatrix& src, double scale, const CouplingConverter& converter,
         Core::LinAlg::SparseMatrix& dst, bool exactmatch = true, bool addmatrix = false);
 

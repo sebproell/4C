@@ -127,8 +127,8 @@ void Mat::MicroMaterial::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
 
   // maps are created and data is broadcast to the supporting procs
   int tag = 0;
-  Epetra_Map oldmap(1, 1, &tag, 0, Core::Communication::as_epetra_comm(subcomm));
-  Epetra_Map newmap(1, 1, &tag, 0, Core::Communication::as_epetra_comm(subcomm));
+  Core::LinAlg::Map oldmap(1, 1, &tag, 0, Core::Communication::as_epetra_comm(subcomm));
+  Core::LinAlg::Map newmap(1, 1, &tag, 0, Core::Communication::as_epetra_comm(subcomm));
   Core::Communication::Exporter exporter(oldmap, newmap, subcomm);
   exporter.do_export<MultiScale::MicroStaticParObject>(condnamemap);
 
@@ -314,8 +314,8 @@ void Mat::MicroMaterial::read_restart(const int gp, const int eleID, const bool 
 
   // maps are created and data is broadcast to the supporting procs
   int tag = 0;
-  Epetra_Map oldmap(1, 1, &tag, 0, Core::Communication::as_epetra_comm(subcomm));
-  Epetra_Map newmap(1, 1, &tag, 0, Core::Communication::as_epetra_comm(subcomm));
+  Core::LinAlg::Map oldmap(1, 1, &tag, 0, Core::Communication::as_epetra_comm(subcomm));
+  Core::LinAlg::Map newmap(1, 1, &tag, 0, Core::Communication::as_epetra_comm(subcomm));
   Core::Communication::Exporter exporter(oldmap, newmap, subcomm);
   exporter.do_export<MultiScale::MicroStaticParObject>(condnamemap);
 

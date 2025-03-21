@@ -15,7 +15,7 @@
 // NOLINTBEGIN(readability-identifier-naming)
 
 class Epetra_BlockMap;
-class Epetra_Map;
+class Core::LinAlg::Map;
 class Epetra_Operator;
 class Epetra_RowMatrix;
 class Epetra_LinearProblem;

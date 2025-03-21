@@ -428,8 +428,8 @@ void PoroElast::PoroBase::setup_coupling()
 
   // if one discretization is a subset of the other, they will differ in node number (and element
   // number) we assume matching grids for the overlapping part here
-  const Epetra_Map* structnoderowmap = structdis->node_row_map();
-  const Epetra_Map* fluidnoderowmap = fluiddis->node_row_map();
+  const Core::LinAlg::Map* structnoderowmap = structdis->node_row_map();
+  const Core::LinAlg::Map* fluidnoderowmap = fluiddis->node_row_map();
 
   const int numglobalstructnodes = structnoderowmap->NumGlobalElements();
   const int numglobalfluidnodes = fluidnoderowmap->NumGlobalElements();
@@ -557,7 +557,7 @@ void PoroElast::PoroBase::check_for_poro_conditions()
 }
 
 void PoroElast::NoPenetrationConditionHandle::build_no_penetration_map(
-    MPI_Comm comm, std::shared_ptr<const Epetra_Map> dofRowMap)
+    MPI_Comm comm, std::shared_ptr<const Core::LinAlg::Map> dofRowMap)
 {
   std::vector<int> condIDs;
   std::set<int>::iterator it;
@@ -565,7 +565,7 @@ void PoroElast::NoPenetrationConditionHandle::build_no_penetration_map(
   {
     condIDs.push_back(*it);
   }
-  std::shared_ptr<Epetra_Map> nopendofmap = std::make_shared<Epetra_Map>(
+  std::shared_ptr<Core::LinAlg::Map> nopendofmap = std::make_shared<Core::LinAlg::Map>(
       -1, int(condIDs.size()), condIDs.data(), 0, Core::Communication::as_epetra_comm(comm));
 
   nopenetration_ = std::make_shared<Core::LinAlg::MapExtractor>(*dofRowMap, nopendofmap);
@@ -576,7 +576,7 @@ void PoroElast::NoPenetrationConditionHandle::apply_cond_rhs(
 {
   if (has_cond_)
   {
-    const std::shared_ptr<const Epetra_Map>& nopenetrationmap = nopenetration_->Map(1);
+    const std::shared_ptr<const Core::LinAlg::Map>& nopenetrationmap = nopenetration_->Map(1);
     Core::LinAlg::apply_dirichlet_to_system(iterinc, rhs, *cond_rhs_, *nopenetrationmap);
   }
 }
@@ -608,7 +608,7 @@ void PoroElast::NoPenetrationConditionHandle::clear(PoroElast::Coupltype couplty
 }
 
 void PoroElast::NoPenetrationConditionHandle::setup(
-    const Epetra_Map& dofRowMap, const Epetra_Map* dofRowMapFluid)
+    const Core::LinAlg::Map& dofRowMap, const Core::LinAlg::Map* dofRowMapFluid)
 {
   if (has_cond_)
   {

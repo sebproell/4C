@@ -47,8 +47,8 @@ namespace Solid
     };
 
     /// setup the whole thing
-    void setup(
-        const Core::FE::Discretization& dis, const Epetra_Map& fullmap, bool overlapping = false);
+    void setup(const Core::FE::Discretization& dis, const Core::LinAlg::Map& fullmap,
+        bool overlapping = false);
 
     /// get all element gids those nodes are touched by any condition
     std::shared_ptr<std::set<int>> conditioned_element_map(

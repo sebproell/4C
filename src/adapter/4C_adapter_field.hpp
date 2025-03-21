@@ -11,9 +11,8 @@
 // includes
 #include "4C_config.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
-
-#include <Epetra_Map.h>
 
 #include <memory>
 
@@ -59,7 +58,7 @@ namespace Adapter
     //@{
 
     /// dof map of vector of unknowns
-    virtual std::shared_ptr<const Epetra_Map> dof_row_map() = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> dof_row_map() = 0;
 
     /// direct access to system matrix
     virtual std::shared_ptr<Core::LinAlg::SparseMatrix> system_matrix() = 0;

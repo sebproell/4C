@@ -33,7 +33,7 @@ namespace Core::FE
       */
   std::shared_ptr<Core::LinAlg::MultiVector<double>> compute_null_space(
       const Core::FE::Discretization& dis, const int numdf, const int dimns,
-      const Epetra_Map& dofmap);
+      const Core::LinAlg::Map& dofmap);
 }  // namespace Core::FE
 
 FOUR_C_NAMESPACE_CLOSE

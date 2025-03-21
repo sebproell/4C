@@ -97,8 +97,8 @@ namespace CONTACT
           const CONTACT::SolvingStrategy stype, const Teuchos::ParameterList& params,
           const bool& poroslave, const bool& poromaster, const int& dof_offset,
           std::vector<std::shared_ptr<CONTACT::Interface>>& interfaces,
-          const Epetra_Map* dof_row_map, const Epetra_Map* node_row_map, const int dim,
-          const MPI_Comm& comm_ptr,
+          const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* node_row_map,
+          const int dim, const MPI_Comm& comm_ptr,
           std::shared_ptr<CONTACT::AbstractStrategyDataContainer> data_ptr,
           CONTACT::ParamsInterface* cparams_interface = nullptr);
 
@@ -143,7 +143,7 @@ namespace CONTACT
       void fully_overlapping_interfaces(
           std::vector<std::shared_ptr<CONTACT::Interface>>& interfaces) const;
 
-      int identify_full_subset(const Epetra_Map& map_0, const Epetra_Map& map_1,
+      int identify_full_subset(const Core::LinAlg::Map& map_0, const Core::LinAlg::Map& map_1,
           bool throw_if_partial_subset_on_proc = true) const;
 
       /*!

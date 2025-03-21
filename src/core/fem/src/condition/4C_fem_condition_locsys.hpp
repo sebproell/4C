@@ -280,7 +280,7 @@ namespace Core::Conditions
     std::shared_ptr<Core::LinAlg::Vector<double>> locsystoggle_;
 
     /// maps containing the DOFs affected by locsys
-    std::shared_ptr<Epetra_Map> locsysdofmap_;
+    std::shared_ptr<Core::LinAlg::Map> locsysdofmap_;
 
     /// Transformation matrix which maps globally oriented components
     /// into locally oriented components (dubbed 'forward' transformation)

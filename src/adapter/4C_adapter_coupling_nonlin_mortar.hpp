@@ -15,10 +15,10 @@
 
 #include "4C_coupling_adapter_mortar.hpp"
 #include "4C_fem_condition.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_exceptions.hpp"
 
-#include <Epetra_Map.h>
 #include <Teuchos_ParameterListAcceptorDefaultBase.hpp>
 
 #include <memory>
@@ -215,13 +215,13 @@ namespace Adapter
     MPI_Comm comm_;  ///< communicator
     int myrank_;     ///< my proc id
 
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         slavenoderowmap_;  ///< map of slave row nodes (after parallel redist.)
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         pslavenoderowmap_;  ///< map of slave row nodes (before parallel redist.)
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         smdofrowmap_;  ///< map of sm merged row dofs (after parallel redist.)
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         psmdofrowmap_;  ///< map of sm merged row dofs (before parallel redist.)
 
     std::shared_ptr<Core::LinAlg::SparseMatrix> DLin_;  ///< linearization of D matrix

@@ -956,7 +956,7 @@ void Core::FE::DiscretizationFaces::build_face_row_map()
       ++count;
     }
   if (count != nummyeles) FOUR_C_THROW("Mismatch in no. of internal faces");
-  facerowmap_ = std::make_shared<Epetra_Map>(
+  facerowmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, nummyeles, eleids.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
   return;
 }
@@ -980,7 +980,7 @@ void Core::FE::DiscretizationFaces::build_face_col_map()
     ++count;
   }
   if (count != nummyeles) FOUR_C_THROW("Mismatch in no. of elements");
-  facecolmap_ = std::make_shared<Epetra_Map>(
+  facecolmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, nummyeles, eleids.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
   return;
 }
@@ -989,7 +989,7 @@ void Core::FE::DiscretizationFaces::build_face_col_map()
 /*----------------------------------------------------------------------*
  |  get internal faces row map (public)                     schott 03/12|
  *----------------------------------------------------------------------*/
-const Epetra_Map* Core::FE::DiscretizationFaces::face_row_map() const
+const Core::LinAlg::Map* Core::FE::DiscretizationFaces::face_row_map() const
 {
   FOUR_C_ASSERT(filled(), "fill_complete() must be called before call to FaceRowMap()");
   return facerowmap_.get();
@@ -999,7 +999,7 @@ const Epetra_Map* Core::FE::DiscretizationFaces::face_row_map() const
 /*----------------------------------------------------------------------*
  |  get internal faces col map (public)                     schott 03/12|
  *----------------------------------------------------------------------*/
-const Epetra_Map* Core::FE::DiscretizationFaces::face_col_map() const
+const Core::LinAlg::Map* Core::FE::DiscretizationFaces::face_col_map() const
 {
   FOUR_C_ASSERT(filled(), "fill_complete() must be called before call to FaceColMap()");
   return facecolmap_.get();

@@ -55,8 +55,8 @@ Adapter::FluidAle::FluidAle(const Teuchos::ParameterList& prbdyn, std::string co
   if (Global::Problem::instance()->fsi_dynamic_params().get<bool>("MATCHGRID_FLUIDALE"))
   {
     // the fluid-ale coupling matches
-    const Epetra_Map* fluidnodemap = fluid_field()->discretization()->node_row_map();
-    const Epetra_Map* alenodemap = ale_field()->discretization()->node_row_map();
+    const Core::LinAlg::Map* fluidnodemap = fluid_field()->discretization()->node_row_map();
+    const Core::LinAlg::Map* alenodemap = ale_field()->discretization()->node_row_map();
 
     /* Setup coupling adapter
      *

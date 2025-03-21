@@ -82,7 +82,7 @@ namespace FPSI
     defines the number of blocks, their maps and the block order. The block
     maps must be row maps by themselves and must not contain identical GIDs.
     */
-    void set_dof_row_maps(const std::vector<std::shared_ptr<const Epetra_Map>>& maps);
+    void set_dof_row_maps(const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps);
 
     /// extract the three field vectors from a given composed vector
     void extract_field_vectors(std::shared_ptr<const Core::LinAlg::Vector<double>>

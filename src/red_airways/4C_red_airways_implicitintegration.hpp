@@ -458,7 +458,7 @@ namespace Airway
     std::map<int, Core::Conditions::Condition*> coupcond_;
 
     /// map of coupling IDs
-    std::shared_ptr<Epetra_Map> coupmap_;
+    std::shared_ptr<Core::LinAlg::Map> coupmap_;
 
     std::map<int, double> pres_;
 

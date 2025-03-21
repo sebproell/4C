@@ -872,10 +872,10 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
   bt_sol_discret().fill_complete(false, false, false);
 
   // store the node and element row and column maps into this manager
-  noderowmap_ = std::make_shared<Epetra_Map>(*(bt_sol_discret().node_row_map()));
-  elerowmap_ = std::make_shared<Epetra_Map>(*(bt_sol_discret().element_row_map()));
-  nodecolmap_ = std::make_shared<Epetra_Map>(*(bt_sol_discret().node_col_map()));
-  elecolmap_ = std::make_shared<Epetra_Map>(*(bt_sol_discret().element_col_map()));
+  noderowmap_ = std::make_shared<Core::LinAlg::Map>(*(bt_sol_discret().node_row_map()));
+  elerowmap_ = std::make_shared<Core::LinAlg::Map>(*(bt_sol_discret().element_row_map()));
+  nodecolmap_ = std::make_shared<Core::LinAlg::Map>(*(bt_sol_discret().node_col_map()));
+  elecolmap_ = std::make_shared<Core::LinAlg::Map>(*(bt_sol_discret().element_col_map()));
 
   // build fully overlapping node and element maps
   // fill my own row node ids into vector (e)sdata
@@ -923,23 +923,25 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
       esdata, erdata, (int)ertproc.size(), ertproc.data(), bt_sol_discret().get_comm());
 
   // build completely overlapping node map (on participating processors)
-  std::shared_ptr<Epetra_Map> newnodecolmap = std::make_shared<Epetra_Map>(-1, (int)rdata.size(),
-      rdata.data(), 0, Core::Communication::as_epetra_comm(bt_sol_discret().get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> newnodecolmap =
+      std::make_shared<Core::LinAlg::Map>(-1, (int)rdata.size(), rdata.data(), 0,
+          Core::Communication::as_epetra_comm(bt_sol_discret().get_comm()));
   sdata.clear();
   stproc.clear();
   rdata.clear();
   allproc.clear();
 
   // build completely overlapping element map (on participating processors)
-  std::shared_ptr<Epetra_Map> newelecolmap = std::make_shared<Epetra_Map>(-1, (int)erdata.size(),
-      erdata.data(), 0, Core::Communication::as_epetra_comm(bt_sol_discret().get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> newelecolmap =
+      std::make_shared<Core::LinAlg::Map>(-1, (int)erdata.size(), erdata.data(), 0,
+          Core::Communication::as_epetra_comm(bt_sol_discret().get_comm()));
   esdata.clear();
   estproc.clear();
   erdata.clear();
 
   // store the fully overlapping node and element maps
-  nodefullmap_ = std::make_shared<Epetra_Map>(*newnodecolmap);
-  elefullmap_ = std::make_shared<Epetra_Map>(*newelecolmap);
+  nodefullmap_ = std::make_shared<Core::LinAlg::Map>(*newnodecolmap);
+  elefullmap_ = std::make_shared<Core::LinAlg::Map>(*newelecolmap);
 
   // pass new fully overlapping node and element maps to beam contact discretization
   bt_sol_discret().export_column_nodes(*newnodecolmap);

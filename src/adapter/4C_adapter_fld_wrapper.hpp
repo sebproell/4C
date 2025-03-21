@@ -105,8 +105,11 @@ namespace Adapter
       FOUR_C_THROW("not implemented");
       return nullptr;
     };
-    std::shared_ptr<const Epetra_Map> dof_row_map() override { return fluid_->dof_row_map(); }
-    std::shared_ptr<const Epetra_Map> dof_row_map(unsigned nds) override
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() override
+    {
+      return fluid_->dof_row_map();
+    }
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map(unsigned nds) override
     {
       return fluid_->dof_row_map(nds);
     };
@@ -154,11 +157,11 @@ namespace Adapter
     {
       return fluid_->add_contribution_to_external_loads(contributing_vector);
     };
-    void add_dirich_cond(const std::shared_ptr<const Epetra_Map> maptoadd) override
+    void add_dirich_cond(const std::shared_ptr<const Core::LinAlg::Map> maptoadd) override
     {
       return fluid_->add_dirich_cond(maptoadd);
     };
-    void remove_dirich_cond(const std::shared_ptr<const Epetra_Map> maptoremove) override
+    void remove_dirich_cond(const std::shared_ptr<const Core::LinAlg::Map> maptoremove) override
     {
       return fluid_->remove_dirich_cond(maptoremove);
     };
@@ -339,19 +342,20 @@ namespace Adapter
       return fluid_->linear_solver();
     }
     void calc_intermediate_solution() override { return fluid_->calc_intermediate_solution(); }
-    std::shared_ptr<const Epetra_Map> inner_velocity_row_map() override
+    std::shared_ptr<const Core::LinAlg::Map> inner_velocity_row_map() override
     {
       return fluid_->inner_velocity_row_map();
     }
-    std::shared_ptr<const Epetra_Map> velocity_row_map() override
+    std::shared_ptr<const Core::LinAlg::Map> velocity_row_map() override
     {
       return fluid_->velocity_row_map();
     }
-    std::shared_ptr<const Epetra_Map> pressure_row_map() override
+    std::shared_ptr<const Core::LinAlg::Map> pressure_row_map() override
     {
       return fluid_->pressure_row_map();
     }
-    void set_mesh_map(std::shared_ptr<const Epetra_Map> mm, const int nds_master = 0) override
+    void set_mesh_map(
+        std::shared_ptr<const Core::LinAlg::Map> mm, const int nds_master = 0) override
     {
       FOUR_C_THROW("Not implemented in the base class, may be overridden by a subclass.");
     }

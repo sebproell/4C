@@ -182,11 +182,12 @@ void XFEM::XFieldField::Coupling::slave_to_master(const Core::LinAlg::MultiVecto
  *----------------------------------------------------------------------------*/
 void XFEM::XFieldField::Coupling::build_dof_maps(const Core::FE::Discretization& masterdis,
     const Core::FE::Discretization& slavedis,
-    const std::shared_ptr<const Epetra_Map>& masternodemap,
-    const std::shared_ptr<const Epetra_Map>& slavenodemap,
-    const std::shared_ptr<const Epetra_Map>& permmasternodemap,
-    const std::shared_ptr<const Epetra_Map>& permslavenodemap, const std::vector<int>& masterdofs,
-    const std::vector<int>& slavedofs, const int nds_master, const int nds_slave)
+    const std::shared_ptr<const Core::LinAlg::Map>& masternodemap,
+    const std::shared_ptr<const Core::LinAlg::Map>& slavenodemap,
+    const std::shared_ptr<const Core::LinAlg::Map>& permmasternodemap,
+    const std::shared_ptr<const Core::LinAlg::Map>& permslavenodemap,
+    const std::vector<int>& masterdofs, const std::vector<int>& slavedofs, const int nds_master,
+    const int nds_slave)
 {
   save_node_maps(masternodemap, slavenodemap, permmasternodemap, permslavenodemap);
 
@@ -237,10 +238,10 @@ void XFEM::XFieldField::Coupling::build_dof_maps(const Core::FE::Discretization&
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void XFEM::XFieldField::Coupling::save_node_maps(
-    const std::shared_ptr<const Epetra_Map>& masternodemap,
-    const std::shared_ptr<const Epetra_Map>& slavenodemap,
-    const std::shared_ptr<const Epetra_Map>& permmasternodemap,
-    const std::shared_ptr<const Epetra_Map>& permslavenodemap)
+    const std::shared_ptr<const Core::LinAlg::Map>& masternodemap,
+    const std::shared_ptr<const Core::LinAlg::Map>& slavenodemap,
+    const std::shared_ptr<const Core::LinAlg::Map>& permmasternodemap,
+    const std::shared_ptr<const Core::LinAlg::Map>& permslavenodemap)
 {
   masternodemap_ = masternodemap;
   slavenodemap_ = slavenodemap;
@@ -254,10 +255,11 @@ void XFEM::XFieldField::Coupling::save_node_maps(
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void XFEM::XFieldField::Coupling::build_min_dof_maps(const Core::FE::Discretization& min_dis,
-    const Epetra_Map& min_nodemap, const Epetra_Map& min_permnodemap,
-    std::shared_ptr<const Epetra_Map>& min_dofmap,
-    std::shared_ptr<const Epetra_Map>& min_permdofmap, std::shared_ptr<Epetra_Export>& min_exporter,
-    const Epetra_Map& max_nodemap, std::map<int, unsigned>& my_mindofpernode) const
+    const Core::LinAlg::Map& min_nodemap, const Core::LinAlg::Map& min_permnodemap,
+    std::shared_ptr<const Core::LinAlg::Map>& min_dofmap,
+    std::shared_ptr<const Core::LinAlg::Map>& min_permdofmap,
+    std::shared_ptr<Epetra_Export>& min_exporter, const Core::LinAlg::Map& max_nodemap,
+    std::map<int, unsigned>& my_mindofpernode) const
 {
   std::vector<int> dofmapvec;
   std::map<int, std::vector<int>> dofs;
@@ -279,7 +281,7 @@ void XFEM::XFieldField::Coupling::build_min_dof_maps(const Core::FE::Discretizat
   if (pos != dofmapvec.end() and *pos < 0) FOUR_C_THROW("Illegal DoF number {}", *pos);
 
   // dof map is the original, unpermuted distribution of dofs
-  min_dofmap = std::make_shared<Epetra_Map>(-1, dofmapvec.size(), dofmapvec.data(), 0,
+  min_dofmap = std::make_shared<Core::LinAlg::Map>(-1, dofmapvec.size(), dofmapvec.data(), 0,
       Core::Communication::as_epetra_comm(min_dis.get_comm()));
 
   dofmapvec.clear();
@@ -310,7 +312,7 @@ void XFEM::XFieldField::Coupling::build_min_dof_maps(const Core::FE::Discretizat
   dofs.clear();
 
   // permuted dof map according to a given permuted node map
-  min_permdofmap = std::make_shared<Epetra_Map>(-1, dofmapvec.size(), dofmapvec.data(), 0,
+  min_permdofmap = std::make_shared<Core::LinAlg::Map>(-1, dofmapvec.size(), dofmapvec.data(), 0,
       Core::Communication::as_epetra_comm(min_dis.get_comm()));
 
   /* prepare communication plan to create a dofmap out of a permuted
@@ -321,9 +323,10 @@ void XFEM::XFieldField::Coupling::build_min_dof_maps(const Core::FE::Discretizat
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void XFEM::XFieldField::Coupling::build_max_dof_maps(const Core::FE::Discretization& max_dis,
-    const Epetra_Map& max_nodemap, const Epetra_Map& max_permnodemap,
-    std::shared_ptr<const Epetra_Map>& max_dofmap,
-    std::shared_ptr<const Epetra_Map>& max_permdofmap, std::shared_ptr<Epetra_Export>& max_exporter,
+    const Core::LinAlg::Map& max_nodemap, const Core::LinAlg::Map& max_permnodemap,
+    std::shared_ptr<const Core::LinAlg::Map>& max_dofmap,
+    std::shared_ptr<const Core::LinAlg::Map>& max_permdofmap,
+    std::shared_ptr<Epetra_Export>& max_exporter,
     const std::map<int, unsigned>& my_mindofpernode) const
 {
   std::vector<int> dofmapvec;
@@ -357,7 +360,7 @@ void XFEM::XFieldField::Coupling::build_max_dof_maps(const Core::FE::Discretizat
   if (pos != dofmapvec.end() and *pos < 0) FOUR_C_THROW("Illegal DoF number {}", *pos);
 
   // dof map is the original, unpermuted distribution of dofs
-  max_dofmap = std::make_shared<Epetra_Map>(-1, dofmapvec.size(), dofmapvec.data(), 0,
+  max_dofmap = std::make_shared<Core::LinAlg::Map>(-1, dofmapvec.size(), dofmapvec.data(), 0,
       Core::Communication::as_epetra_comm(max_dis.get_comm()));
 
   dofmapvec.clear();
@@ -377,7 +380,7 @@ void XFEM::XFieldField::Coupling::build_max_dof_maps(const Core::FE::Discretizat
   dofs.clear();
 
   // permuted dof map according to a given permuted node map
-  max_permdofmap = std::make_shared<Epetra_Map>(-1, dofmapvec.size(), dofmapvec.data(), 0,
+  max_permdofmap = std::make_shared<Core::LinAlg::Map>(-1, dofmapvec.size(), dofmapvec.data(), 0,
       Core::Communication::as_epetra_comm(max_dis.get_comm()));
 
   /* prepare communication plan to create a dofmap out of a permuted

@@ -373,7 +373,7 @@ namespace BeamInteraction
       std::vector<int> colgids(coleleset.begin(), coleleset.end());
 
       // create new ele col map
-      Epetra_Map newelecolmap(-1, static_cast<int>(colgids.size()), colgids.data(), 0,
+      Core::LinAlg::Map newelecolmap(-1, static_cast<int>(colgids.size()), colgids.data(), 0,
           Core::Communication::as_epetra_comm(discret.get_comm()));
 
       // temporarily extend ghosting
@@ -1245,12 +1245,12 @@ namespace BeamInteraction
         }
       }
 
-      std::vector<std::shared_ptr<const Epetra_Map>> maps(eletypeset.size());
+      std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps(eletypeset.size());
       for (int i = 0; i < static_cast<int>(eletypeset.size()); ++i)
       {
         std::vector<int> mapvec(eletypeset[i].begin(), eletypeset[i].end());
         eletypeset[i].clear();
-        maps[i] = std::make_shared<Epetra_Map>(-1, mapvec.size(), mapvec.data(), 0,
+        maps[i] = std::make_shared<Core::LinAlg::Map>(-1, mapvec.size(), mapvec.data(), 0,
             Core::Communication::as_epetra_comm(discret->get_comm()));
       }
 

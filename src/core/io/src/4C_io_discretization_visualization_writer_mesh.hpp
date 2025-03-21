@@ -198,8 +198,8 @@ namespace Core::IO
     std::function<bool(const Core::Elements::Element* element)> element_filter_;
 
     //! Node row and col maps the geometry of visualization writer is based on
-    std::shared_ptr<Epetra_Map> noderowmap_last_geometry_set_;
-    std::shared_ptr<Epetra_Map> nodecolmap_last_geometry_set_;
+    std::shared_ptr<Core::LinAlg::Map> noderowmap_last_geometry_set_;
+    std::shared_ptr<Core::LinAlg::Map> nodecolmap_last_geometry_set_;
   };
 
   /**

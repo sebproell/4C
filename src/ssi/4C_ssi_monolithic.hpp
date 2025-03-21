@@ -71,7 +71,7 @@ namespace SSI
     );
 
     //! return global map of degrees of freedom
-    const std::shared_ptr<const Epetra_Map>& dof_row_map() const;
+    const std::shared_ptr<const Core::LinAlg::Map>& dof_row_map() const;
 
     void init(MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams,
         const Teuchos::ParameterList& scatraparams, const Teuchos::ParameterList& structparams,

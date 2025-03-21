@@ -41,7 +41,7 @@ void Core::FE::DiscretizationCreatorBase::create_nodes(const Core::FE::Discretiz
 {
   // prepare some variables we need
   int myrank = Core::Communication::my_mpi_rank(targetdis.get_comm());
-  const Epetra_Map* sourcenoderowmap = sourcedis.node_row_map();
+  const Core::LinAlg::Map* sourcenoderowmap = sourcedis.node_row_map();
 
   // construct nodes / control points in the new discretization
   if (isnurbsdis == false)
@@ -79,15 +79,16 @@ void Core::FE::DiscretizationCreatorBase::create_nodes(const Core::FE::Discretiz
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> Core::FE::DiscretizationCreatorBase::create_map(
+std::shared_ptr<Core::LinAlg::Map> Core::FE::DiscretizationCreatorBase::create_map(
     std::set<int>& gidset, const Core::FE::Discretization& targetdis) const
 {
   // we get the node maps almost for free
   std::vector<int> targetgidvec(gidset.begin(), gidset.end());
   gidset.clear();
 
-  std::shared_ptr<Epetra_Map> map = std::make_shared<Epetra_Map>(-1, targetgidvec.size(),
-      targetgidvec.data(), 0, Core::Communication::as_epetra_comm(targetdis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> map =
+      std::make_shared<Core::LinAlg::Map>(-1, targetgidvec.size(), targetgidvec.data(), 0,
+          Core::Communication::as_epetra_comm(targetdis.get_comm()));
   targetgidvec.clear();
 
   return map;

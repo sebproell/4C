@@ -346,13 +346,13 @@ namespace Core::Communication
       return false;
     }
 
-    // do stupid conversion from Epetra_BlockMap to Epetra_Map
+    // do stupid conversion from Epetra_BlockMap to Core::LinAlg::Map
     const Epetra_BlockMap& vecblockmap = vec.Map();
-    Epetra_Map vecmap(vecblockmap.NumGlobalElements(), vecblockmap.NumMyElements(),
+    Core::LinAlg::Map vecmap(vecblockmap.NumGlobalElements(), vecblockmap.NumMyElements(),
         vecblockmap.MyGlobalElements(), 0, Core::Communication::as_epetra_comm(vec.Comm()));
 
     // gather data of vector to compare on gcomm proc 0 and last gcomm proc
-    std::shared_ptr<Epetra_Map> proc0map;
+    std::shared_ptr<Core::LinAlg::Map> proc0map;
     if (Core::Communication::my_mpi_rank(lcomm) == Core::Communication::my_mpi_rank(gcomm))
       proc0map = Core::LinAlg::allreduce_overlapping_e_map(vecmap, 0);
     else
@@ -489,18 +489,18 @@ namespace Core::Communication
       return false;
     }
 
-    const Epetra_Map& rowmap = matrix.RowMap();
-    const Epetra_Map& domainmap = matrix.DomainMap();
+    const Core::LinAlg::Map& rowmap = matrix.RowMap();
+    const Core::LinAlg::Map& domainmap = matrix.DomainMap();
 
     // gather data of vector to compare on gcomm proc 0 and last gcomm proc
-    std::shared_ptr<Epetra_Map> serialrowmap;
+    std::shared_ptr<Core::LinAlg::Map> serialrowmap;
     if (Core::Communication::my_mpi_rank(lcomm) == Core::Communication::my_mpi_rank(gcomm))
       serialrowmap = Core::LinAlg::allreduce_overlapping_e_map(rowmap, 0);
     else
       serialrowmap = Core::LinAlg::allreduce_overlapping_e_map(
           rowmap, Core::Communication::num_mpi_ranks(lcomm) - 1);
 
-    std::shared_ptr<Epetra_Map> serialdomainmap;
+    std::shared_ptr<Core::LinAlg::Map> serialdomainmap;
     if (Core::Communication::my_mpi_rank(lcomm) == Core::Communication::my_mpi_rank(gcomm))
       serialdomainmap = Core::LinAlg::allreduce_overlapping_e_map(domainmap, 0);
     else
