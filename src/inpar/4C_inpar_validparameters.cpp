@@ -43,7 +43,7 @@
 #include "4C_inpar_poroelast.hpp"
 #include "4C_inpar_porofluid_pressure_based.hpp"
 #include "4C_inpar_porofluid_pressure_based_elast.hpp"
-#include "4C_inpar_poromultiphase_scatra.hpp"
+#include "4C_inpar_porofluid_pressure_based_elast_scatra.hpp"
 #include "4C_inpar_poroscatra.hpp"
 #include "4C_inpar_problemtype.hpp"
 #include "4C_inpar_rebalance.hpp"

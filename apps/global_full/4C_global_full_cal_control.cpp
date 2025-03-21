@@ -23,7 +23,7 @@
 #include "4C_poroelast_scatra_dyn.hpp"
 #include "4C_porofluid_pressure_based_dyn.hpp"
 #include "4C_porofluid_pressure_based_elast_dyn.hpp"
-#include "4C_poromultiphase_scatra_dyn.hpp"
+#include "4C_porofluid_pressure_based_elast_scatra_dyn.hpp"
 #include "4C_red_airways_dyn_drt.hpp"
 #include "4C_reduced_lung_main.hpp"
 #include "4C_scatra_cardiac_monodomain_dyn.hpp"

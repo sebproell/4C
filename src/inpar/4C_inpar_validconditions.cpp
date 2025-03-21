@@ -23,7 +23,7 @@
 #include "4C_inpar_mortar.hpp"
 #include "4C_inpar_mpc_rve.hpp"
 #include "4C_inpar_particle.hpp"
-#include "4C_inpar_poromultiphase_scatra.hpp"
+#include "4C_inpar_porofluid_pressure_based_elast_scatra.hpp"
 #include "4C_inpar_s2i.hpp"
 #include "4C_inpar_scatra.hpp"
 #include "4C_inpar_ssi.hpp"
