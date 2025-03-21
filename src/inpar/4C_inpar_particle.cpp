@@ -27,19 +27,23 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
   Core::Utils::SectionSpecs particledyn{"PARTICLE DYNAMIC"};
 
   // type of particle time integration
-  Core::Utils::string_to_integral_parameter<DynamicType>("DYNAMICTYPE", "VelocityVerlet",
-      "type of particle time integration",
-      tuple<std::string>("SemiImplicitEuler", "VelocityVerlet"),
-      tuple<DynamicType>(
-          Inpar::PARTICLE::dyna_semiimpliciteuler, Inpar::PARTICLE::dyna_velocityverlet),
-      particledyn);
+  particledyn.specs.emplace_back(deprecated_selection<DynamicType>("DYNAMICTYPE",
+      {
+          {"SemiImplicitEuler", Inpar::PARTICLE::dyna_semiimpliciteuler},
+          {"VelocityVerlet", Inpar::PARTICLE::dyna_velocityverlet},
+      },
+      {.description = "type of particle time integration",
+          .default_value = Inpar::PARTICLE::dyna_velocityverlet}));
 
   // type of particle interaction
-  Core::Utils::string_to_integral_parameter<InteractionType>("INTERACTION", "None",
-      "type of particle interaction", tuple<std::string>("None", "SPH", "DEM"),
-      tuple<InteractionType>(Inpar::PARTICLE::interaction_none, Inpar::PARTICLE::interaction_sph,
-          Inpar::PARTICLE::interaction_dem),
-      particledyn);
+  particledyn.specs.emplace_back(deprecated_selection<InteractionType>("INTERACTION",
+      {
+          {"None", Inpar::PARTICLE::interaction_none},
+          {"SPH", Inpar::PARTICLE::interaction_sph},
+          {"DEM", Inpar::PARTICLE::interaction_dem},
+      },
+      {.description = "type of particle interaction",
+          .default_value = Inpar::PARTICLE::interaction_none}));
 
   // output type
   particledyn.specs.emplace_back(parameter<int>(
@@ -90,12 +94,14 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
           .default_value = "0.0 0.0 0.0"}));
 
   // type of particle wall source
-  Core::Utils::string_to_integral_parameter<ParticleWallSource>("PARTICLE_WALL_SOURCE",
-      "NoParticleWall", "type of particle wall source",
-      tuple<std::string>("NoParticleWall", "DiscretCondition", "BoundingBox"),
-      tuple<ParticleWallSource>(Inpar::PARTICLE::NoParticleWall, Inpar::PARTICLE::DiscretCondition,
-          Inpar::PARTICLE::BoundingBox),
-      particledyn);
+  particledyn.specs.emplace_back(deprecated_selection<ParticleWallSource>("PARTICLE_WALL_SOURCE",
+      {
+          {"NoParticleWall", Inpar::PARTICLE::NoParticleWall},
+          {"DiscretCondition", Inpar::PARTICLE::DiscretCondition},
+          {"BoundingBox", Inpar::PARTICLE::BoundingBox},
+      },
+      {.description = "type of particle wall source",
+          .default_value = Inpar::PARTICLE::NoParticleWall}));
 
   // material id for particle wall from bounding box source
   particledyn.specs.emplace_back(parameter<int>(
@@ -180,110 +186,130 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       {.description = "write particle-wall interaction output", .default_value = false}));
 
   // type of smoothed particle hydrodynamics kernel
-  Core::Utils::string_to_integral_parameter<KernelType>("KERNEL", "CubicSpline",
-      "type of smoothed particle hydrodynamics kernel",
-      tuple<std::string>("CubicSpline", "QuinticSpline"),
-      tuple<KernelType>(Inpar::PARTICLE::CubicSpline, Inpar::PARTICLE::QuinticSpline),
-      particledynsph);
+  particledynsph.specs.emplace_back(deprecated_selection<KernelType>("KERNEL",
+      {
+          {"CubicSpline", Inpar::PARTICLE::CubicSpline},
+          {"QuinticSpline", Inpar::PARTICLE::QuinticSpline},
+      },
+      {.description = "type of smoothed particle hydrodynamics kernel",
+          .default_value = Inpar::PARTICLE::CubicSpline}));
 
   // kernel space dimension number
-  Core::Utils::string_to_integral_parameter<KernelSpaceDimension>("KERNEL_SPACE_DIM", "Kernel3D",
-      "kernel space dimension number", tuple<std::string>("Kernel1D", "Kernel2D", "Kernel3D"),
-      tuple<KernelSpaceDimension>(
-          Inpar::PARTICLE::Kernel1D, Inpar::PARTICLE::Kernel2D, Inpar::PARTICLE::Kernel3D),
-      particledynsph);
+  particledynsph.specs.emplace_back(deprecated_selection<KernelSpaceDimension>("KERNEL_SPACE_DIM",
+      {
+          {"Kernel1D", Inpar::PARTICLE::Kernel1D},
+          {"Kernel2D", Inpar::PARTICLE::Kernel2D},
+          {"Kernel3D", Inpar::PARTICLE::Kernel3D},
+      },
+      {.description = "kernel space dimension number",
+          .default_value = Inpar::PARTICLE::Kernel3D}));
 
   particledynsph.specs.emplace_back(parameter<double>("INITIALPARTICLESPACING",
       {.description = "initial spacing of particles", .default_value = 0.0}));
 
   // type of smoothed particle hydrodynamics equation of state
-  Core::Utils::string_to_integral_parameter<EquationOfStateType>("EQUATIONOFSTATE", "GenTait",
-      "type of smoothed particle hydrodynamics equation of state",
-      tuple<std::string>("GenTait", "IdealGas"),
-      tuple<EquationOfStateType>(Inpar::PARTICLE::GenTait, Inpar::PARTICLE::IdealGas),
-      particledynsph);
+  particledynsph.specs.emplace_back(deprecated_selection<EquationOfStateType>("EQUATIONOFSTATE",
+      {
+          {"GenTait", Inpar::PARTICLE::GenTait},
+          {"IdealGas", Inpar::PARTICLE::IdealGas},
+      },
+      {.description = "type of smoothed particle hydrodynamics equation of state",
+          .default_value = Inpar::PARTICLE::GenTait}));
 
   // type of smoothed particle hydrodynamics momentum formulation
-  Core::Utils::string_to_integral_parameter<MomentumFormulationType>("MOMENTUMFORMULATION",
-      "AdamiMomentumFormulation", "type of smoothed particle hydrodynamics momentum formulation",
-      tuple<std::string>("AdamiMomentumFormulation", "MonaghanMomentumFormulation"),
-      tuple<MomentumFormulationType>(
-          Inpar::PARTICLE::AdamiMomentumFormulation, Inpar::PARTICLE::MonaghanMomentumFormulation),
-      particledynsph);
+  particledynsph.specs.emplace_back(
+      deprecated_selection<MomentumFormulationType>("MOMENTUMFORMULATION",
+          {
+              {"AdamiMomentumFormulation", Inpar::PARTICLE::AdamiMomentumFormulation},
+              {"MonaghanMomentumFormulation", Inpar::PARTICLE::MonaghanMomentumFormulation},
+          },
+          {.description = "type of smoothed particle hydrodynamics momentum formulation",
+              .default_value = Inpar::PARTICLE::AdamiMomentumFormulation}));
 
   // type of density evaluation scheme
-  Core::Utils::string_to_integral_parameter<DensityEvaluationScheme>("DENSITYEVALUATION",
-      "DensitySummation", "type of density evaluation scheme",
-      tuple<std::string>("DensitySummation", "DensityIntegration", "DensityPredictCorrect"),
-      tuple<DensityEvaluationScheme>(Inpar::PARTICLE::DensitySummation,
-          Inpar::PARTICLE::DensityIntegration, Inpar::PARTICLE::DensityPredictCorrect),
-      particledynsph);
+  particledynsph.specs.emplace_back(
+      deprecated_selection<DensityEvaluationScheme>("DENSITYEVALUATION",
+          {
+              {"DensitySummation", Inpar::PARTICLE::DensitySummation},
+              {"DensityIntegration", Inpar::PARTICLE::DensityIntegration},
+              {"DensityPredictCorrect", Inpar::PARTICLE::DensityPredictCorrect},
+          },
+          {.description = "type of density evaluation scheme",
+              .default_value = Inpar::PARTICLE::DensitySummation}));
 
   // type of density correction scheme
-  Core::Utils::string_to_integral_parameter<DensityCorrectionScheme>("DENSITYCORRECTION",
-      "NoCorrection", "type of density correction scheme",
-      tuple<std::string>(
-          "NoCorrection", "InteriorCorrection", "NormalizedCorrection", "RandlesCorrection"),
-      tuple<DensityCorrectionScheme>(Inpar::PARTICLE::NoCorrection,
-          Inpar::PARTICLE::InteriorCorrection, Inpar::PARTICLE::NormalizedCorrection,
-          Inpar::PARTICLE::RandlesCorrection),
-      particledynsph);
+  particledynsph.specs.emplace_back(
+      deprecated_selection<DensityCorrectionScheme>("DENSITYCORRECTION",
+          {
+              {"NoCorrection", Inpar::PARTICLE::NoCorrection},
+              {"InteriorCorrection", Inpar::PARTICLE::InteriorCorrection},
+              {"NormalizedCorrection", Inpar::PARTICLE::NormalizedCorrection},
+              {"RandlesCorrection", Inpar::PARTICLE::RandlesCorrection},
+          },
+          {.description = "type of density correction scheme",
+              .default_value = Inpar::PARTICLE::NoCorrection}));
 
   // type of boundary particle formulation
-  Core::Utils::string_to_integral_parameter<BoundaryParticleFormulationType>(
-      "BOUNDARYPARTICLEFORMULATION", "NoBoundaryFormulation",
-      "type of boundary particle formulation",
-      tuple<std::string>("NoBoundaryFormulation", "AdamiBoundaryFormulation"),
-      tuple<BoundaryParticleFormulationType>(
-          Inpar::PARTICLE::NoBoundaryFormulation, Inpar::PARTICLE::AdamiBoundaryFormulation),
-      particledynsph);
+  particledynsph.specs.emplace_back(
+      deprecated_selection<BoundaryParticleFormulationType>("BOUNDARYPARTICLEFORMULATION",
+          {
+              {"NoBoundaryFormulation", Inpar::PARTICLE::NoBoundaryFormulation},
+              {"AdamiBoundaryFormulation", Inpar::PARTICLE::AdamiBoundaryFormulation},
+          },
+          {.description = "type of boundary particle formulation",
+              .default_value = Inpar::PARTICLE::NoBoundaryFormulation}));
 
   // type of boundary particle interaction
-  Core::Utils::string_to_integral_parameter<BoundaryParticleInteraction>(
-      "BOUNDARYPARTICLEINTERACTION", "NoSlipBoundaryParticle",
-      "type of boundary particle interaction",
-      tuple<std::string>("NoSlipBoundaryParticle", "FreeSlipBoundaryParticle"),
-      tuple<BoundaryParticleInteraction>(
-          Inpar::PARTICLE::NoSlipBoundaryParticle, Inpar::PARTICLE::FreeSlipBoundaryParticle),
-      particledynsph);
+  particledynsph.specs.emplace_back(
+      deprecated_selection<BoundaryParticleInteraction>("BOUNDARYPARTICLEINTERACTION",
+          {
+              {"NoSlipBoundaryParticle", Inpar::PARTICLE::NoSlipBoundaryParticle},
+              {"FreeSlipBoundaryParticle", Inpar::PARTICLE::FreeSlipBoundaryParticle},
+          },
+          {.description = "type of boundary particle interaction",
+              .default_value = Inpar::PARTICLE::NoSlipBoundaryParticle}));
 
   // type of wall formulation
-  Core::Utils::string_to_integral_parameter<WallFormulationType>("WALLFORMULATION",
-      "NoWallFormulation", "type of wall formulation",
-      tuple<std::string>("NoWallFormulation", "VirtualParticleWallFormulation"),
-      tuple<WallFormulationType>(
-          Inpar::PARTICLE::NoWallFormulation, Inpar::PARTICLE::VirtualParticleWallFormulation),
-      particledynsph);
+  particledynsph.specs.emplace_back(deprecated_selection<WallFormulationType>("WALLFORMULATION",
+      {
+          {"NoWallFormulation", Inpar::PARTICLE::NoWallFormulation},
+          {"VirtualParticleWallFormulation", Inpar::PARTICLE::VirtualParticleWallFormulation},
+      },
+      {.description = "type of wall formulation",
+          .default_value = Inpar::PARTICLE::NoWallFormulation}));
 
   // type of transport velocity formulation
-  Core::Utils::string_to_integral_parameter<TransportVelocityFormulation>(
-      "TRANSPORTVELOCITYFORMULATION", "NoTransportVelocity",
-      "type of transport velocity formulation",
-      tuple<std::string>(
-          "NoTransportVelocity", "StandardTransportVelocity", "GeneralizedTransportVelocity"),
-      tuple<TransportVelocityFormulation>(Inpar::PARTICLE::NoTransportVelocity,
-          Inpar::PARTICLE::StandardTransportVelocity,
-          Inpar::PARTICLE::GeneralizedTransportVelocity),
-      particledynsph);
+  particledynsph.specs.emplace_back(
+      deprecated_selection<TransportVelocityFormulation>("TRANSPORTVELOCITYFORMULATION",
+          {
+              {"NoTransportVelocity", Inpar::PARTICLE::NoTransportVelocity},
+              {"StandardTransportVelocity", Inpar::PARTICLE::StandardTransportVelocity},
+              {"GeneralizedTransportVelocity", Inpar::PARTICLE::GeneralizedTransportVelocity},
+          },
+          {.description = "type of transport velocity formulation",
+              .default_value = Inpar::PARTICLE::NoTransportVelocity}));
 
   // type of temperature evaluation scheme
-  Core::Utils::string_to_integral_parameter<TemperatureEvaluationScheme>("TEMPERATUREEVALUATION",
-      "NoTemperatureEvaluation", "type of temperature evaluation scheme",
-      tuple<std::string>("NoTemperatureEvaluation", "TemperatureIntegration"),
-      tuple<TemperatureEvaluationScheme>(
-          Inpar::PARTICLE::NoTemperatureEvaluation, Inpar::PARTICLE::TemperatureIntegration),
-      particledynsph);
+  particledynsph.specs.emplace_back(
+      deprecated_selection<TemperatureEvaluationScheme>("TEMPERATUREEVALUATION",
+          {
+              {"NoTemperatureEvaluation", Inpar::PARTICLE::NoTemperatureEvaluation},
+              {"TemperatureIntegration", Inpar::PARTICLE::TemperatureIntegration},
+          },
+          {.description = "type of temperature evaluation scheme",
+              .default_value = Inpar::PARTICLE::NoTemperatureEvaluation}));
 
   particledynsph.specs.emplace_back(parameter<bool>("TEMPERATUREGRADIENT",
       {.description = "evaluate temperature gradient", .default_value = false}));
 
   // type of heat source
-  Core::Utils::string_to_integral_parameter<HeatSourceType>("HEATSOURCETYPE", "NoHeatSource",
-      "type of heat source",
-      tuple<std::string>("NoHeatSource", "VolumeHeatSource", "SurfaceHeatSource"),
-      tuple<HeatSourceType>(Inpar::PARTICLE::NoHeatSource, Inpar::PARTICLE::VolumeHeatSource,
-          Inpar::PARTICLE::SurfaceHeatSource),
-      particledynsph);
+  particledynsph.specs.emplace_back(deprecated_selection<HeatSourceType>("HEATSOURCETYPE",
+      {
+          {"NoHeatSource", Inpar::PARTICLE::NoHeatSource},
+          {"VolumeHeatSource", Inpar::PARTICLE::VolumeHeatSource},
+          {"SurfaceHeatSource", Inpar::PARTICLE::SurfaceHeatSource},
+      },
+      {.description = "type of heat source", .default_value = Inpar::PARTICLE::NoHeatSource}));
 
   particledynsph.specs.emplace_back(parameter<int>("HEATSOURCE_FUNCT",
       {.description = "number of function governing heat source", .default_value = -1}));
@@ -315,12 +341,14 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       {.description = "temperature factor in recoil pressure formula", .default_value = 0.0}));
 
   // type of surface tension formulation
-  Core::Utils::string_to_integral_parameter<SurfaceTensionFormulation>("SURFACETENSIONFORMULATION",
-      "NoSurfaceTension", "type of surface tension formulation",
-      tuple<std::string>("NoSurfaceTension", "ContinuumSurfaceForce"),
-      tuple<SurfaceTensionFormulation>(
-          Inpar::PARTICLE::NoSurfaceTension, Inpar::PARTICLE::ContinuumSurfaceForce),
-      particledynsph);
+  particledynsph.specs.emplace_back(
+      deprecated_selection<SurfaceTensionFormulation>("SURFACETENSIONFORMULATION",
+          {
+              {"NoSurfaceTension", Inpar::PARTICLE::NoSurfaceTension},
+              {"ContinuumSurfaceForce", Inpar::PARTICLE::ContinuumSurfaceForce},
+          },
+          {.description = "type of surface tension formulation",
+              .default_value = Inpar::PARTICLE::NoSurfaceTension}));
 
   particledynsph.specs.emplace_back(parameter<int>("SURFACETENSION_RAMP_FUNCT",
       {.description = "number of function governing surface tension ramp", .default_value = -1}));
@@ -394,12 +422,14 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
           .default_value = 0.0}));
 
   // type of dirichlet open boundary
-  Core::Utils::string_to_integral_parameter<DirichletOpenBoundaryType>("DIRICHLETBOUNDARYTYPE",
-      "NoDirichletOpenBoundary", "type of dirichlet open boundary",
-      tuple<std::string>("NoDirichletOpenBoundary", "DirichletNormalToPlane"),
-      tuple<DirichletOpenBoundaryType>(
-          Inpar::PARTICLE::NoDirichletOpenBoundary, Inpar::PARTICLE::DirichletNormalToPlane),
-      particledynsph);
+  particledynsph.specs.emplace_back(
+      deprecated_selection<DirichletOpenBoundaryType>("DIRICHLETBOUNDARYTYPE",
+          {
+              {"NoDirichletOpenBoundary", Inpar::PARTICLE::NoDirichletOpenBoundary},
+              {"DirichletNormalToPlane", Inpar::PARTICLE::DirichletNormalToPlane},
+          },
+          {.description = "type of dirichlet open boundary",
+              .default_value = Inpar::PARTICLE::NoDirichletOpenBoundary}));
 
   particledynsph.specs.emplace_back(parameter<int>("DIRICHLET_FUNCT",
       {.description = "number of function governing velocity condition on dirichlet open boundary",
@@ -412,12 +442,14 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       {.description = "point on dirichlet open boundary plane", .default_value = "0.0 0.0 0.0"}));
 
   // type of neumann open boundary
-  Core::Utils::string_to_integral_parameter<NeumannOpenBoundaryType>("NEUMANNBOUNDARYTYPE",
-      "NoNeumannOpenBoundary", "type of neumann open boundary",
-      tuple<std::string>("NoNeumannOpenBoundary", "NeumannNormalToPlane"),
-      tuple<NeumannOpenBoundaryType>(
-          Inpar::PARTICLE::NoNeumannOpenBoundary, Inpar::PARTICLE::NeumannNormalToPlane),
-      particledynsph);
+  particledynsph.specs.emplace_back(
+      deprecated_selection<NeumannOpenBoundaryType>("NEUMANNBOUNDARYTYPE",
+          {
+              {"NoNeumannOpenBoundary", Inpar::PARTICLE::NoNeumannOpenBoundary},
+              {"NeumannNormalToPlane", Inpar::PARTICLE::NeumannNormalToPlane},
+          },
+          {.description = "type of neumann open boundary",
+              .default_value = Inpar::PARTICLE::NoNeumannOpenBoundary}));
 
   particledynsph.specs.emplace_back(parameter<int>("NEUMANN_FUNCT",
       {.description = "number of function governing pressure condition on neumann open boundary",
@@ -430,27 +462,30 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       {.description = "point on neumann open boundary plane", .default_value = "0.0 0.0 0.0"}));
 
   // type of phase change
-  Core::Utils::string_to_integral_parameter<PhaseChangeType>("PHASECHANGETYPE", "NoPhaseChange",
-      "type of phase change",
-      tuple<std::string>("NoPhaseChange", "OneWayScalarBelowToAbovePhaseChange",
-          "OneWayScalarAboveToBelowPhaseChange", "TwoWayScalarPhaseChange"),
-      tuple<PhaseChangeType>(Inpar::PARTICLE::NoPhaseChange,
-          Inpar::PARTICLE::OneWayScalarBelowToAbovePhaseChange,
-          Inpar::PARTICLE::OneWayScalarAboveToBelowPhaseChange,
-          Inpar::PARTICLE::TwoWayScalarPhaseChange),
-      particledynsph);
+  particledynsph.specs.emplace_back(deprecated_selection<PhaseChangeType>("PHASECHANGETYPE",
+      {
+          {"NoPhaseChange", Inpar::PARTICLE::NoPhaseChange},
+          {"OneWayScalarBelowToAbovePhaseChange",
+              Inpar::PARTICLE::OneWayScalarBelowToAbovePhaseChange},
+          {"OneWayScalarAboveToBelowPhaseChange",
+              Inpar::PARTICLE::OneWayScalarAboveToBelowPhaseChange},
+          {"TwoWayScalarPhaseChange", Inpar::PARTICLE::TwoWayScalarPhaseChange},
+      },
+      {.description = "type of phase change", .default_value = Inpar::PARTICLE::NoPhaseChange}));
 
   // definition of phase change
   particledynsph.specs.emplace_back(parameter<std::string>("PHASECHANGEDEFINITION",
       {.description = "phase change definition", .default_value = "none"}));
 
   // type of rigid particle contact
-  Core::Utils::string_to_integral_parameter<RigidParticleContactType>("RIGIDPARTICLECONTACTTYPE",
-      "NoRigidParticleContact", "type of rigid particle contact",
-      tuple<std::string>("NoRigidParticleContact", "ElasticRigidParticleContact"),
-      tuple<RigidParticleContactType>(
-          Inpar::PARTICLE::NoRigidParticleContact, Inpar::PARTICLE::ElasticRigidParticleContact),
-      particledynsph);
+  particledynsph.specs.emplace_back(
+      deprecated_selection<RigidParticleContactType>("RIGIDPARTICLECONTACTTYPE",
+          {
+              {"NoRigidParticleContact", Inpar::PARTICLE::NoRigidParticleContact},
+              {"ElasticRigidParticleContact", Inpar::PARTICLE::ElasticRigidParticleContact},
+          },
+          {.description = "type of rigid particle contact",
+              .default_value = Inpar::PARTICLE::NoRigidParticleContact}));
 
   particledynsph.specs.emplace_back(parameter<double>("RIGIDPARTICLECONTACTSTIFF",
       {.description = "rigid particle contact stiffness", .default_value = -1.0}));
@@ -473,49 +508,58 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       {.description = "write particle-wall interaction output", .default_value = false}));
 
   // type of normal contact law
-  Core::Utils::string_to_integral_parameter<NormalContact>("NORMALCONTACTLAW", "NormalLinearSpring",
-      "normal contact law for particles",
-      tuple<std::string>("NormalLinearSpring", "NormalLinearSpringDamp", "NormalHertz",
-          "NormalLeeHerrmann", "NormalKuwabaraKono", "NormalTsuji"),
-      tuple<NormalContact>(Inpar::PARTICLE::NormalLinSpring, Inpar::PARTICLE::NormalLinSpringDamp,
-          Inpar::PARTICLE::NormalHertz, Inpar::PARTICLE::NormalLeeHerrmann,
-          Inpar::PARTICLE::NormalKuwabaraKono, Inpar::PARTICLE::NormalTsuji),
-      particledyndem);
+  particledyndem.specs.emplace_back(deprecated_selection<NormalContact>("NORMALCONTACTLAW",
+      {
+          {"NormalLinearSpring", Inpar::PARTICLE::NormalLinSpring},
+          {"NormalLinearSpringDamp", Inpar::PARTICLE::NormalLinSpringDamp},
+          {"NormalHertz", Inpar::PARTICLE::NormalHertz},
+          {"NormalLeeHerrmann", Inpar::PARTICLE::NormalLeeHerrmann},
+          {"NormalKuwabaraKono", Inpar::PARTICLE::NormalKuwabaraKono},
+          {"NormalTsuji", Inpar::PARTICLE::NormalTsuji},
+      },
+      {.description = "normal contact law for particles",
+          .default_value = Inpar::PARTICLE::NormalLinSpring}));
 
   // type of tangential contact law
-  Core::Utils::string_to_integral_parameter<TangentialContact>("TANGENTIALCONTACTLAW",
-      "NoTangentialContact", "tangential contact law for particles",
-      tuple<std::string>("NoTangentialContact", "TangentialLinSpringDamp"),
-      tuple<TangentialContact>(
-          Inpar::PARTICLE::NoTangentialContact, Inpar::PARTICLE::TangentialLinSpringDamp),
-      particledyndem);
+  particledyndem.specs.emplace_back(deprecated_selection<TangentialContact>("TANGENTIALCONTACTLAW",
+      {
+          {"NoTangentialContact", Inpar::PARTICLE::NoTangentialContact},
+          {"TangentialLinSpringDamp", Inpar::PARTICLE::TangentialLinSpringDamp},
+      },
+      {.description = "tangential contact law for particles",
+          .default_value = Inpar::PARTICLE::NoTangentialContact}));
 
   // type of rolling contact law
-  Core::Utils::string_to_integral_parameter<RollingContact>("ROLLINGCONTACTLAW", "NoRollingContact",
-      "rolling contact law for particles",
-      tuple<std::string>("NoRollingContact", "RollingViscous", "RollingCoulomb"),
-      tuple<RollingContact>(Inpar::PARTICLE::NoRollingContact, Inpar::PARTICLE::RollingViscous,
-          Inpar::PARTICLE::RollingCoulomb),
-      particledyndem);
+  particledyndem.specs.emplace_back(deprecated_selection<RollingContact>("ROLLINGCONTACTLAW",
+      {
+          {"NoRollingContact", Inpar::PARTICLE::NoRollingContact},
+          {"RollingViscous", Inpar::PARTICLE::RollingViscous},
+          {"RollingCoulomb", Inpar::PARTICLE::RollingCoulomb},
+      },
+      {.description = "rolling contact law for particles",
+          .default_value = Inpar::PARTICLE::NoRollingContact}));
 
   // type of normal adhesion law
-  Core::Utils::string_to_integral_parameter<AdhesionLaw>("ADHESIONLAW", "NoAdhesion",
-      "type of adhesion law for particles",
-      tuple<std::string>("NoAdhesion", "AdhesionVdWDMT", "AdhesionRegDMT"),
-      tuple<AdhesionLaw>(Inpar::PARTICLE::NoAdhesion, Inpar::PARTICLE::AdhesionVdWDMT,
-          Inpar::PARTICLE::AdhesionRegDMT),
-      particledyndem);
+  particledyndem.specs.emplace_back(deprecated_selection<AdhesionLaw>("ADHESIONLAW",
+      {
+          {"NoAdhesion", Inpar::PARTICLE::NoAdhesion},
+          {"AdhesionVdWDMT", Inpar::PARTICLE::AdhesionVdWDMT},
+          {"AdhesionRegDMT", Inpar::PARTICLE::AdhesionRegDMT},
+      },
+      {.description = "type of adhesion law for particles",
+          .default_value = Inpar::PARTICLE::NoAdhesion}));
 
   // type of (random) surface energy distribution
-  Core::Utils::string_to_integral_parameter<SurfaceEnergyDistribution>(
-      "ADHESION_SURFACE_ENERGY_DISTRIBUTION", "ConstantSurfaceEnergy",
-      "type of (random) surface energy distribution",
-      tuple<std::string>("ConstantSurfaceEnergy", "NormalSurfaceEnergyDistribution",
-          "LogNormalSurfaceEnergyDistribution"),
-      tuple<SurfaceEnergyDistribution>(Inpar::PARTICLE::ConstantSurfaceEnergy,
-          Inpar::PARTICLE::NormalSurfaceEnergyDistribution,
-          Inpar::PARTICLE::LogNormalSurfaceEnergyDistribution),
-      particledyndem);
+  particledyndem.specs.emplace_back(
+      deprecated_selection<SurfaceEnergyDistribution>("ADHESION_SURFACE_ENERGY_DISTRIBUTION",
+          {
+              {"ConstantSurfaceEnergy", Inpar::PARTICLE::ConstantSurfaceEnergy},
+              {"NormalSurfaceEnergyDistribution", Inpar::PARTICLE::NormalSurfaceEnergyDistribution},
+              {"LogNormalSurfaceEnergyDistribution",
+                  Inpar::PARTICLE::LogNormalSurfaceEnergyDistribution},
+          },
+          {.description = "type of (random) surface energy distribution",
+              .default_value = Inpar::PARTICLE::ConstantSurfaceEnergy}));
 
   particledyndem.specs.emplace_back(parameter<double>(
       "MIN_RADIUS", {.description = "minimum allowed particle radius", .default_value = 0.0}));
@@ -525,14 +569,15 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
       {.description = "maximum expected particle velocity", .default_value = -1.0}));
 
   // type of initial particle radius assignment
-  Core::Utils::string_to_integral_parameter<InitialRadiusAssignment>("INITIAL_RADIUS",
-      "RadiusFromParticleMaterial", "type of initial particle radius assignment",
-      tuple<std::string>("RadiusFromParticleMaterial", "RadiusFromParticleInput",
-          "NormalRadiusDistribution", "LogNormalRadiusDistribution"),
-      tuple<InitialRadiusAssignment>(Inpar::PARTICLE::RadiusFromParticleMaterial,
-          Inpar::PARTICLE::RadiusFromParticleInput, Inpar::PARTICLE::NormalRadiusDistribution,
-          Inpar::PARTICLE::LogNormalRadiusDistribution),
-      particledyndem);
+  particledyndem.specs.emplace_back(deprecated_selection<InitialRadiusAssignment>("INITIAL_RADIUS",
+      {
+          {"RadiusFromParticleMaterial", Inpar::PARTICLE::RadiusFromParticleMaterial},
+          {"RadiusFromParticleInput", Inpar::PARTICLE::RadiusFromParticleInput},
+          {"NormalRadiusDistribution", Inpar::PARTICLE::NormalRadiusDistribution},
+          {"LogNormalRadiusDistribution", Inpar::PARTICLE::LogNormalRadiusDistribution},
+      },
+      {.description = "type of initial particle radius assignment",
+          .default_value = Inpar::PARTICLE::RadiusFromParticleMaterial}));
 
   particledyndem.specs.emplace_back(parameter<double>("RADIUSDISTRIBUTION_SIGMA",
       {.description = "sigma of random particle radius distribution", .default_value = -1.0}));

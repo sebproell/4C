@@ -30,16 +30,17 @@ void CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& l
       {.description = "Must be chosen if a non-contact simulation is to be restarted with contact",
           .default_value = false}));
 
-  Core::Utils::string_to_integral_parameter<CONTACT::AdhesionType>("ADHESION", "none",
-      "Type of adhesion law", tuple<std::string>("none", "bounded"),
-      tuple<CONTACT::AdhesionType>(CONTACT::AdhesionType::none, CONTACT::AdhesionType::bounded),
-      scontact);
+  scontact.specs.emplace_back(parameter<CONTACT::AdhesionType>("ADHESION",
+      {.description = "Type of adhesion law", .default_value = CONTACT::AdhesionType::none}));
 
-  Core::Utils::string_to_integral_parameter<CONTACT::FrictionType>("FRICTION", "None",
-      "Type of friction law", tuple<std::string>("None", "Stick", "Tresca", "Coulomb"),
-      tuple<CONTACT::FrictionType>(CONTACT::FrictionType::none, CONTACT::FrictionType::stick,
-          CONTACT::FrictionType::tresca, CONTACT::FrictionType::coulomb),
-      scontact);
+  scontact.specs.emplace_back(deprecated_selection<CONTACT::FrictionType>("FRICTION",
+      {
+          {"None", CONTACT::FrictionType::none},
+          {"Stick", CONTACT::FrictionType::stick},
+          {"Tresca", CONTACT::FrictionType::tresca},
+          {"Coulomb", CONTACT::FrictionType::coulomb},
+      },
+      {.description = "Type of friction law", .default_value = CONTACT::FrictionType::none}));
 
   scontact.specs.emplace_back(parameter<bool>(
       "FRLESS_FIRST", {.description = "If chosen the first time step of a newly in contact slave "
@@ -52,28 +53,37 @@ void CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& l
               "quantity, but this would be consistent to wear and tsi calculations.",
           .default_value = false}));
 
-  Core::Utils::string_to_integral_parameter<CONTACT::SolvingStrategy>("STRATEGY",
-      "LagrangianMultipliers", "Type of employed solving strategy",
-      tuple<std::string>("LagrangianMultipliers", "lagrange", "Lagrange", "penalty", "Penalty",
-          "Uzawa", "Nitsche", "Ehl", "MultiScale"),
-      tuple<CONTACT::SolvingStrategy>(CONTACT::SolvingStrategy::lagmult,
-          CONTACT::SolvingStrategy::lagmult, CONTACT::SolvingStrategy::lagmult,
-          CONTACT::SolvingStrategy::penalty, CONTACT::SolvingStrategy::penalty,
-          CONTACT::SolvingStrategy::uzawa, CONTACT::SolvingStrategy::nitsche,
-          CONTACT::SolvingStrategy::ehl, CONTACT::SolvingStrategy::multiscale),
-      scontact);
+  scontact.specs.emplace_back(deprecated_selection<CONTACT::SolvingStrategy>("STRATEGY",
+      {
+          {"LagrangianMultipliers", CONTACT::SolvingStrategy::lagmult},
+          {"lagrange", CONTACT::SolvingStrategy::lagmult},
+          {"Lagrange", CONTACT::SolvingStrategy::lagmult},
+          {"penalty", CONTACT::SolvingStrategy::penalty},
+          {"Penalty", CONTACT::SolvingStrategy::penalty},
+          {"Uzawa", CONTACT::SolvingStrategy::uzawa},
+          {"Nitsche", CONTACT::SolvingStrategy::nitsche},
+          {"Ehl", CONTACT::SolvingStrategy::ehl},
+          {"MultiScale", CONTACT::SolvingStrategy::multiscale},
+      },
+      {.description = "Type of employed solving strategy",
+          .default_value = CONTACT::SolvingStrategy::lagmult}));
 
-  Core::Utils::string_to_integral_parameter<CONTACT::SystemType>("SYSTEM", "Condensed",
-      "Type of linear system setup / solution",
-      tuple<std::string>("Condensed", "condensed", "cond", "Condensedlagmult", "condensedlagmult",
-          "condlm", "SaddlePoint", "Saddlepoint", "saddlepoint", "sp", "none"),
-      tuple<CONTACT::SystemType>(CONTACT::SystemType::condensed, CONTACT::SystemType::condensed,
-          CONTACT::SystemType::condensed, CONTACT::SystemType::condensed_lagmult,
-          CONTACT::SystemType::condensed_lagmult, CONTACT::SystemType::condensed_lagmult,
-          CONTACT::SystemType::saddlepoint, CONTACT::SystemType::saddlepoint,
-          CONTACT::SystemType::saddlepoint, CONTACT::SystemType::saddlepoint,
-          CONTACT::SystemType::none),
-      scontact);
+  scontact.specs.emplace_back(deprecated_selection<CONTACT::SystemType>("SYSTEM",
+      {
+          {"Condensed", CONTACT::SystemType::condensed},
+          {"condensed", CONTACT::SystemType::condensed},
+          {"cond", CONTACT::SystemType::condensed},
+          {"Condensedlagmult", CONTACT::SystemType::condensed_lagmult},
+          {"condensedlagmult", CONTACT::SystemType::condensed_lagmult},
+          {"condlm", CONTACT::SystemType::condensed_lagmult},
+          {"SaddlePoint", CONTACT::SystemType::saddlepoint},
+          {"Saddlepoint", CONTACT::SystemType::saddlepoint},
+          {"saddlepoint", CONTACT::SystemType::saddlepoint},
+          {"sp", CONTACT::SystemType::saddlepoint},
+          {"none", CONTACT::SystemType::none},
+      },
+      {.description = "Type of linear system setup / solution",
+          .default_value = CONTACT::SystemType::condensed}));
 
   scontact.specs.emplace_back(parameter<double>("PENALTYPARAM",
       {.description = "Penalty parameter for penalty / Uzawa augmented solution strategy",
@@ -113,15 +123,23 @@ void CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& l
           .default_value = 0.0}));
 
   // solver convergence test parameters for contact/meshtying in saddlepoint formulation
-  Core::Utils::string_to_integral_parameter<Inpar::Solid::BinaryOp>("NORMCOMBI_RESFCONTCONSTR",
-      "And", "binary operator to combine contact constraints and residual force values",
-      tuple<std::string>("And", "Or"),
-      tuple<Inpar::Solid::BinaryOp>(Inpar::Solid::bop_and, Inpar::Solid::bop_or), scontact);
+  scontact.specs.emplace_back(deprecated_selection<Inpar::Solid::BinaryOp>(
+      "NORMCOMBI_RESFCONTCONSTR",
+      {
+          {"And", Inpar::Solid::bop_and},
+          {"Or", Inpar::Solid::bop_or},
+      },
+      {.description = "binary operator to combine contact constraints and residual force values",
+          .default_value = Inpar::Solid::bop_and}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::Solid::BinaryOp>("NORMCOMBI_DISPLAGR", "And",
-      "binary operator to combine displacement increments and Lagrange multiplier increment values",
-      tuple<std::string>("And", "Or"),
-      tuple<Inpar::Solid::BinaryOp>(Inpar::Solid::bop_and, Inpar::Solid::bop_or), scontact);
+  scontact.specs.emplace_back(deprecated_selection<Inpar::Solid::BinaryOp>("NORMCOMBI_DISPLAGR",
+      {
+          {"And", Inpar::Solid::bop_and},
+          {"Or", Inpar::Solid::bop_or},
+      },
+      {.description = "binary operator to combine displacement increments and Lagrange multiplier "
+                      "increment values",
+          .default_value = Inpar::Solid::bop_and}));
 
   scontact.specs.emplace_back(parameter<double>(
       "TOLCONTCONSTR", {.description = "tolerance in the contact constraint norm for the newton "
@@ -132,12 +150,9 @@ void CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& l
               "tolerance in the LM norm for the newton iteration (saddlepoint formulation only)",
           .default_value = 1.0E-6}));
 
-  Core::Utils::string_to_integral_parameter<CONTACT::ConstraintDirection>("CONSTRAINT_DIRECTIONS",
-      "ntt", "formulation of constraints in normal/tangential or xyz-direction",
-      tuple<std::string>("ntt", "xyz"),
-      tuple<CONTACT::ConstraintDirection>(
-          CONTACT::ConstraintDirection::ntt, CONTACT::ConstraintDirection::xyz),
-      scontact);
+  scontact.specs.emplace_back(parameter<CONTACT::ConstraintDirection>("CONSTRAINT_DIRECTIONS",
+      {.description = "formulation of constraints in normal/tangential or xyz-direction",
+          .default_value = CONTACT::ConstraintDirection::ntt}));
 
   scontact.specs.emplace_back(parameter<bool>("NONSMOOTH_GEOMETRIES",
       {.description = "If chosen the contact algorithm combines mortar and nts formulations. This "
@@ -178,12 +193,9 @@ void CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& l
       {.description = "+1: Chouly-type, 0: Burman penalty-free (only with theta=-1)",
           .default_value = 1.0}));
 
-  Core::Utils::string_to_integral_parameter<CONTACT::NitscheWeighting>("NITSCHE_WEIGHTING",
-      "harmonic", "how to weight consistency terms in Nitsche contact formulation",
-      tuple<std::string>("slave", "master", "harmonic"),
-      tuple<CONTACT::NitscheWeighting>(CONTACT::NitscheWeighting::slave,
-          CONTACT::NitscheWeighting::master, CONTACT::NitscheWeighting::harmonic),
-      scontact);
+  scontact.specs.emplace_back(parameter<CONTACT::NitscheWeighting>("NITSCHE_WEIGHTING",
+      {.description = "how to weight consistency terms in Nitsche contact formulation",
+          .default_value = CONTACT::NitscheWeighting::harmonic}));
 
   scontact.specs.emplace_back(parameter<bool>("NITSCHE_PENALTY_ADAPTIVE",
       {.description = "adapt penalty parameter after each converged time step",

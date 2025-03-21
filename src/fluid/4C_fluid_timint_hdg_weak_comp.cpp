@@ -495,7 +495,7 @@ FLD::TimIntHDGWeakComp::evaluate_error_compared_to_analytical_sol()
 
   switch (calcerr)
   {
-    case Inpar::FLUID::no_error_calculation:
+    case Inpar::FLUID::no:
     {
       return nullptr;
       break;

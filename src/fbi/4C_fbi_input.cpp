@@ -23,23 +23,22 @@ void FBI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
   /*----------------------------------------------------------------------*/
   /* parameters for beam to fluid meshtying */
 
-  Core::Utils::string_to_integral_parameter<BeamToFluidCoupling>("COUPLING", "two-way",
-      "Type of FBI coupling", tuple<std::string>("two-way", "fluid", "solid"),
-      tuple<BeamToFluidCoupling>(
-          BeamToFluidCoupling::twoway, BeamToFluidCoupling::fluid, BeamToFluidCoupling::solid),
-      fbi);
+  fbi.specs.emplace_back(deprecated_selection<BeamToFluidCoupling>("COUPLING",
+      {
+          {"two-way", BeamToFluidCoupling::twoway},
+          {"fluid", BeamToFluidCoupling::fluid},
+          {"solid", BeamToFluidCoupling::solid},
+      },
+      {.description = "Type of FBI coupling", .default_value = BeamToFluidCoupling::twoway}));
 
   fbi.specs.emplace_back(parameter<int>(
       "STARTSTEP", {.description = "Time Step at which to begin the fluid beam coupling. Usually "
                                    "this will be the first step.",
                        .default_value = 0}));
 
-  Core::Utils::string_to_integral_parameter<BeamToFluidPreSortStrategy>("PRESORT_STRATEGY",
-      "bruteforce", "Presort strategy for the beam elements",
-      tuple<std::string>("bruteforce", "binning"),
-      tuple<BeamToFluidPreSortStrategy>(
-          BeamToFluidPreSortStrategy::bruteforce, BeamToFluidPreSortStrategy::binning),
-      fbi);
+  fbi.specs.emplace_back(parameter<BeamToFluidPreSortStrategy>(
+      "PRESORT_STRATEGY", {.description = "Presort strategy for the beam elements",
+                              .default_value = BeamToFluidPreSortStrategy::bruteforce}));
 
   fbi.move_into_collection(list);
 
@@ -47,19 +46,13 @@ void FBI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 
   Core::Utils::SectionSpecs beam_to_fluid_meshtying{fbi, "BEAM TO FLUID MESHTYING"};
 
-  Core::Utils::string_to_integral_parameter<BeamToFluidDiscretization>("MESHTYING_DISCRETIZATION",
-      "none", "Type of employed meshtying discretization",
-      tuple<std::string>("none", "gauss_point_to_segment", "mortar"),
-      tuple<FBI::BeamToFluidDiscretization>(BeamToFluidDiscretization::none,
-          BeamToFluidDiscretization::gauss_point_to_segment, BeamToFluidDiscretization::mortar),
-      beam_to_fluid_meshtying);
+  beam_to_fluid_meshtying.specs.emplace_back(parameter<BeamToFluidDiscretization>(
+      "MESHTYING_DISCRETIZATION", {.description = "Type of employed meshtying discretization",
+                                      .default_value = BeamToFluidDiscretization::none}));
 
-  Core::Utils::string_to_integral_parameter<BeamToFluidConstraintEnforcement>("CONSTRAINT_STRATEGY",
-      "none", "Type of employed constraint enforcement strategy",
-      tuple<std::string>("none", "penalty"),
-      tuple<BeamToFluidConstraintEnforcement>(
-          BeamToFluidConstraintEnforcement::none, BeamToFluidConstraintEnforcement::penalty),
-      beam_to_fluid_meshtying);
+  beam_to_fluid_meshtying.specs.emplace_back(parameter<BeamToFluidConstraintEnforcement>(
+      "CONSTRAINT_STRATEGY", {.description = "Type of employed constraint enforcement strategy",
+                                 .default_value = BeamToFluidConstraintEnforcement::none}));
 
   beam_to_fluid_meshtying.specs.emplace_back(parameter<double>(
       "PENALTY_PARAMETER", {.description = "Penalty parameter for beam-to-Fluid volume meshtying",
@@ -70,15 +63,10 @@ void FBI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
                       "to not blow up memory demand but to still find all interaction pairs!",
           .default_value = 1000.0}));
 
-  Core::Utils::string_to_integral_parameter<FBI::BeamToFluidMeshtingMortarShapefunctions>(
-      "MORTAR_SHAPE_FUNCTION", "none", "Shape function for the mortar Lagrange-multipliers",
-      tuple<std::string>("none", "line2", "line3", "line4"),
-      tuple<FBI::BeamToFluidMeshtingMortarShapefunctions>(
-          FBI::BeamToFluidMeshtingMortarShapefunctions::none,
-          FBI::BeamToFluidMeshtingMortarShapefunctions::line2,
-          FBI::BeamToFluidMeshtingMortarShapefunctions::line3,
-          FBI::BeamToFluidMeshtingMortarShapefunctions::line4),
-      beam_to_fluid_meshtying);
+  beam_to_fluid_meshtying.specs.emplace_back(
+      parameter<FBI::BeamToFluidMeshtingMortarShapefunctions>("MORTAR_SHAPE_FUNCTION",
+          {.description = "Shape function for the mortar Lagrange-multipliers",
+              .default_value = FBI::BeamToFluidMeshtingMortarShapefunctions::none}));
 
   // Add the geometry pair input parameters.
   Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(beam_to_fluid_meshtying);

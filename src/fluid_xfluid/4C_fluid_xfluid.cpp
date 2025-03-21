@@ -1650,7 +1650,7 @@ std::shared_ptr<std::vector<double>> FLD::XFluid::evaluate_error_compared_to_ana
   const auto calcerr =
       Teuchos::getIntegralValue<Inpar::FLUID::CalcError>(*params_, "calculate error");
 
-  if (calcerr != Inpar::FLUID::no_error_calculation)
+  if (calcerr != Inpar::FLUID::no)
   {
     // define the norms that have to be computed
 

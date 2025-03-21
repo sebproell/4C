@@ -34,14 +34,20 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
   porofluidmultiphasedyn.specs.emplace_back(parameter<double>(
       "THETA", {.description = "One-step-theta time integration factor", .default_value = 0.5}));
 
-  Core::Utils::string_to_integral_parameter<TimeIntegrationScheme>("TIMEINTEGR", "One_Step_Theta",
-      "Time Integration Scheme", tuple<std::string>("One_Step_Theta"),
-      tuple<TimeIntegrationScheme>(timeint_one_step_theta), porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(
+      deprecated_selection<TimeIntegrationScheme>("TIMEINTEGR",
+          {
+              {"One_Step_Theta", timeint_one_step_theta},
+          },
+          {.description = "Time Integration Scheme", .default_value = timeint_one_step_theta}));
 
-  Core::Utils::string_to_integral_parameter<CalcError>("CALCERROR", "No",
-      "compute error compared to analytical solution",
-      tuple<std::string>("No", "error_by_function"),
-      tuple<CalcError>(calcerror_no, calcerror_byfunction), porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(deprecated_selection<CalcError>("CALCERROR",
+      {
+          {"No", calcerror_no},
+          {"error_by_function", calcerror_byfunction},
+      },
+      {.description = "compute error compared to analytical solution",
+          .default_value = calcerror_no}));
 
   porofluidmultiphasedyn.specs.emplace_back(parameter<int>(
       "CALCERRORNO", {.description = "function number for porofluidmultiphase error computation",
@@ -69,11 +75,13 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
           .default_value = 0.1}));
 
   // parameters for finite difference check
-  Core::Utils::string_to_integral_parameter<FdCheck>("FDCHECK", "none",
-      "flag for finite difference check: none, local, or global",
-      tuple<std::string>("none",
-          "global"),  // perform finite difference check on time integrator level
-      tuple<FdCheck>(fdcheck_none, fdcheck_global), porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(deprecated_selection<FdCheck>("FDCHECK",
+      {
+          {"none", fdcheck_none},
+          {"global", fdcheck_global},
+      },
+      {.description = "flag for finite difference check: none, local, or global",
+          .default_value = fdcheck_none}));
   porofluidmultiphasedyn.specs.emplace_back(parameter<double>(
       "FDCHECKEPS", {.description = "dof perturbation magnitude for finite difference check (1.e-6 "
                                     "seems to work very well, whereas smaller values don't)",
@@ -103,21 +111,27 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
               "Scaling factor for stabilization parameter for biot stabilization of porous flow.",
           .default_value = 1.0}));
 
-  Core::Utils::string_to_integral_parameter<VectorNorm>("VECTORNORM_RESF", "L2",
-      "type of norm to be applied to residuals",
-      tuple<std::string>("L1", "L1_Scaled", "L2", "Rms", "Inf"),
-      tuple<VectorNorm>(Inpar::POROFLUIDMULTIPHASE::norm_l1,
-          Inpar::POROFLUIDMULTIPHASE::norm_l1_scaled, Inpar::POROFLUIDMULTIPHASE::norm_l2,
-          Inpar::POROFLUIDMULTIPHASE::norm_rms, Inpar::POROFLUIDMULTIPHASE::norm_inf),
-      porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(deprecated_selection<VectorNorm>("VECTORNORM_RESF",
+      {
+          {"L1", Inpar::POROFLUIDMULTIPHASE::norm_l1},
+          {"L1_Scaled", Inpar::POROFLUIDMULTIPHASE::norm_l1_scaled},
+          {"L2", Inpar::POROFLUIDMULTIPHASE::norm_l2},
+          {"Rms", Inpar::POROFLUIDMULTIPHASE::norm_rms},
+          {"Inf", Inpar::POROFLUIDMULTIPHASE::norm_inf},
+      },
+      {.description = "type of norm to be applied to residuals",
+          .default_value = Inpar::POROFLUIDMULTIPHASE::norm_l2}));
 
-  Core::Utils::string_to_integral_parameter<VectorNorm>("VECTORNORM_INC", "L2",
-      "type of norm to be applied to residuals",
-      tuple<std::string>("L1", "L1_Scaled", "L2", "Rms", "Inf"),
-      tuple<VectorNorm>(Inpar::POROFLUIDMULTIPHASE::norm_l1,
-          Inpar::POROFLUIDMULTIPHASE::norm_l1_scaled, Inpar::POROFLUIDMULTIPHASE::norm_l2,
-          Inpar::POROFLUIDMULTIPHASE::norm_rms, Inpar::POROFLUIDMULTIPHASE::norm_inf),
-      porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(deprecated_selection<VectorNorm>("VECTORNORM_INC",
+      {
+          {"L1", Inpar::POROFLUIDMULTIPHASE::norm_l1},
+          {"L1_Scaled", Inpar::POROFLUIDMULTIPHASE::norm_l1_scaled},
+          {"L2", Inpar::POROFLUIDMULTIPHASE::norm_l2},
+          {"Rms", Inpar::POROFLUIDMULTIPHASE::norm_rms},
+          {"Inf", Inpar::POROFLUIDMULTIPHASE::norm_inf},
+      },
+      {.description = "type of norm to be applied to residuals",
+          .default_value = Inpar::POROFLUIDMULTIPHASE::norm_l2}));
 
   // Iterationparameters
   porofluidmultiphasedyn.specs.emplace_back(parameter<double>(
@@ -127,31 +141,37 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
       "TOLINC", {.description = "tolerance in the increment norm for the Newton iteration",
                     .default_value = 1e-6}));
 
-  Core::Utils::string_to_integral_parameter<InitialField>("INITIALFIELD", "zero_field",
-      "Initial Field for transport problem",
-      tuple<std::string>("zero_field", "field_by_function", "field_by_condition"),
-      tuple<InitialField>(
-          initfield_zero_field, initfield_field_by_function, initfield_field_by_condition),
-      porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(deprecated_selection<InitialField>("INITIALFIELD",
+      {
+          {"zero_field", initfield_zero_field},
+          {"field_by_function", initfield_field_by_function},
+          {"field_by_condition", initfield_field_by_condition},
+      },
+      {.description = "Initial Field for transport problem",
+          .default_value = initfield_zero_field}));
 
   porofluidmultiphasedyn.specs.emplace_back(parameter<int>("INITFUNCNO",
       {.description = "function number for scalar transport initial field", .default_value = -1}));
 
-  Core::Utils::string_to_integral_parameter<DivContAct>("DIVERCONT", "stop",
-      "What to do with time integration when Newton-Raphson iteration failed",
-      tuple<std::string>("stop", "continue"), tuple<DivContAct>(divcont_stop, divcont_continue),
-      porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(deprecated_selection<DivContAct>("DIVERCONT",
+      {
+          {"stop", divcont_stop},
+          {"continue", divcont_continue},
+      },
+      {.description = "What to do with time integration when Newton-Raphson iteration failed",
+          .default_value = divcont_stop}));
 
   porofluidmultiphasedyn.specs.emplace_back(parameter<int>("FLUX_PROJ_SOLVER",
       {.description = "Number of linear solver used for L2 projection", .default_value = -1}));
 
-  Core::Utils::string_to_integral_parameter<FluxReconstructionMethod>("FLUX_PROJ_METHOD", "none",
-      "Flag to (de)activate flux reconstruction.", tuple<std::string>("none", "L2_projection"),
-      tuple<FluxReconstructionMethod>(
-          gradreco_none,  // no convective streamline edge-based stabilization
-          gradreco_l2     // pressure edge-based stabilization as ghost penalty around cut elements
-          ),
-      porofluidmultiphasedyn);
+  porofluidmultiphasedyn.specs.emplace_back(
+      deprecated_selection<FluxReconstructionMethod>("FLUX_PROJ_METHOD",
+          {
+              {"none", gradreco_none},
+              {"L2_projection", gradreco_l2},
+          },
+          {.description = "Flag to (de)activate flux reconstruction.",
+              .default_value = gradreco_none}));
 
   // functions used for domain integrals
   porofluidmultiphasedyn.specs.emplace_back(parameter<std::string>("DOMAININT_FUNCT",
@@ -185,20 +205,19 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
   porofluidmultiphasemshtdyn.specs.emplace_back(parameter<double>("PENALTY",
       {.description = "Penalty parameter for line-based coupling", .default_value = 1000.0}));
 
-  Core::Utils::string_to_integral_parameter<
-      Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod>("ARTERY_COUPLING_METHOD",
-      "None", "Coupling method for artery coupling.",
-      tuple<std::string>("None", "Nodal", "GPTS", "MP", "NTP"),
-      tuple<Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod>(
-          Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::none,   // none
-          Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::nodal,  // Nodal Coupling
-          Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::
-              gpts,  // Gauss-Point-To-Segment
-          Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::mp,  // Mortar Penalty
-          Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::ntp  // 1Dnode-to-point in
-                                                                               // 2D/3D
-          ),
-      porofluidmultiphasemshtdyn);
+  porofluidmultiphasemshtdyn.specs.emplace_back(
+      deprecated_selection<Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod>(
+          "ARTERY_COUPLING_METHOD",
+          {
+              {"None", Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::none},
+              {"Nodal", Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::nodal},
+              {"GPTS", Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::gpts},
+              {"MP", Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::mp},
+              {"NTP", Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::ntp},
+          },
+          {.description = "Coupling method for artery coupling.",
+              .default_value =
+                  Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::none}));
 
   // coupled artery dofs for mesh tying
   porofluidmultiphasemshtdyn.specs.emplace_back(parameter<std::string>("COUPLEDDOFS_ART",

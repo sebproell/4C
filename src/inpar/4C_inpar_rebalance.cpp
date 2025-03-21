@@ -19,15 +19,10 @@ void Inpar::Rebalance::set_valid_parameters(std::map<std::string, Core::IO::Inpu
 
   Core::Utils::SectionSpecs meshpartitioning{"MESH PARTITIONING"};
 
-  Core::Utils::string_to_integral_parameter<Core::Rebalance::RebalanceType>("METHOD", "hypergraph",
-      "Type of rebalance/partition algorithm to be used for decomposing the entire mesh into "
-      "subdomains for parallel computing.",
-      tuple<std::string>("none", "hypergraph", "recursive_coordinate_bisection", "monolithic"),
-      tuple<Core::Rebalance::RebalanceType>(Core::Rebalance::RebalanceType::none,
-          Core::Rebalance::RebalanceType::hypergraph,
-          Core::Rebalance::RebalanceType::recursive_coordinate_bisection,
-          Core::Rebalance::RebalanceType::monolithic),
-      meshpartitioning);
+  meshpartitioning.specs.emplace_back(parameter<Core::Rebalance::RebalanceType>(
+      "METHOD", {.description = "Type of rebalance/partition algorithm to be used for decomposing "
+                                "the entire mesh into subdomains for parallel computing.",
+                    .default_value = Core::Rebalance::RebalanceType::hypergraph}));
 
   meshpartitioning.specs.emplace_back(parameter<double>("IMBALANCE_TOL",
       {.description = "Tolerance for relative imbalance of subdomain sizes for graph partitioning "

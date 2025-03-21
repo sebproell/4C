@@ -32,11 +32,14 @@ void Inpar::LevelSet::set_valid_parameters(std::map<std::string, Core::IO::Input
   levelsetcontrol.specs.emplace_back(parameter<int>(
       "RESTARTEVERY", {.description = "Increment for writing restart", .default_value = 1}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::CalcErrorLevelSet>("CALCERROR", "No",
-      "compute error compared to analytical solution", tuple<std::string>("No", "InitialField"),
-      tuple<Inpar::ScaTra::CalcErrorLevelSet>(
-          Inpar::ScaTra::calcerror_no_ls, Inpar::ScaTra::calcerror_initial_field),
-      levelsetcontrol);
+  levelsetcontrol.specs.emplace_back(
+      deprecated_selection<Inpar::ScaTra::CalcErrorLevelSet>("CALCERROR",
+          {
+              {"No", Inpar::ScaTra::calcerror_no_ls},
+              {"InitialField", Inpar::ScaTra::calcerror_initial_field},
+          },
+          {.description = "compute error compared to analytical solution",
+              .default_value = Inpar::ScaTra::calcerror_no_ls}));
 
   levelsetcontrol.specs.emplace_back(parameter<bool>("EXTRACT_INTERFACE_VEL",
       {.description = "replace computed velocity at nodes of given distance of interface by "
@@ -53,13 +56,16 @@ void Inpar::LevelSet::set_valid_parameters(std::map<std::string, Core::IO::Input
   /*----------------------------------------------------------------------*/
   Core::Utils::SectionSpecs ls_reinit{levelsetcontrol, "REINITIALIZATION"};
 
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::ReInitialAction>("REINITIALIZATION",
-      "None", "Type of reinitialization strategy for level set function",
-      tuple<std::string>("None", "Signed_Distance_Function", "Sussman", "EllipticEq"),
-      tuple<Inpar::ScaTra::ReInitialAction>(Inpar::ScaTra::reinitaction_none,
-          Inpar::ScaTra::reinitaction_signeddistancefunction, Inpar::ScaTra::reinitaction_sussman,
-          Inpar::ScaTra::reinitaction_ellipticeq),
-      ls_reinit);
+  ls_reinit.specs.emplace_back(
+      deprecated_selection<Inpar::ScaTra::ReInitialAction>("REINITIALIZATION",
+          {
+              {"None", Inpar::ScaTra::reinitaction_none},
+              {"Signed_Distance_Function", Inpar::ScaTra::reinitaction_signeddistancefunction},
+              {"Sussman", Inpar::ScaTra::reinitaction_sussman},
+              {"EllipticEq", Inpar::ScaTra::reinitaction_ellipticeq},
+          },
+          {.description = "Type of reinitialization strategy for level set function",
+              .default_value = Inpar::ScaTra::reinitaction_none}));
 
   ls_reinit.specs.emplace_back(parameter<bool>("REINIT_INITIAL",
       {.description = "Has level set field to be reinitialized before first time step?",
@@ -85,76 +91,95 @@ void Inpar::LevelSet::set_valid_parameters(std::map<std::string, Core::IO::Input
   ls_reinit.specs.emplace_back(parameter<double>(
       "THETAREINIT", {.description = "theta for time discretization of reinitialization equation",
                          .default_value = 1.0}));
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::StabType>("STABTYPEREINIT", "SUPG",
-      "Type of stabilization (if any). No stabilization is only reasonable for low-Peclet-number.",
-      tuple<std::string>("no_stabilization", "SUPG", "GLS", "USFEM"),
-      tuple<Inpar::ScaTra::StabType>(Inpar::ScaTra::stabtype_no_stabilization,
-          Inpar::ScaTra::stabtype_SUPG, Inpar::ScaTra::stabtype_GLS, Inpar::ScaTra::stabtype_USFEM),
-      ls_reinit);
+  ls_reinit.specs.emplace_back(deprecated_selection<Inpar::ScaTra::StabType>("STABTYPEREINIT",
+      {
+          {"no_stabilization", Inpar::ScaTra::stabtype_no_stabilization},
+          {"SUPG", Inpar::ScaTra::stabtype_SUPG},
+          {"GLS", Inpar::ScaTra::stabtype_GLS},
+          {"USFEM", Inpar::ScaTra::stabtype_USFEM},
+      },
+      {.description = "Type of stabilization (if any). No stabilization is only reasonable for "
+                      "low-Peclet-number.",
+          .default_value = Inpar::ScaTra::stabtype_SUPG}));
   // this parameter selects the tau definition applied
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::TauType>("DEFINITION_TAU_REINIT",
-      "Taylor_Hughes_Zarins", "Definition of tau",
-      tuple<std::string>("Taylor_Hughes_Zarins", "Taylor_Hughes_Zarins_wo_dt", "Franca_Valentin",
-          "Franca_Valentin_wo_dt", "Shakib_Hughes_Codina", "Shakib_Hughes_Codina_wo_dt", "Codina",
-          "Codina_wo_dt", "Exact_1D", "Zero"),
-      tuple<Inpar::ScaTra::TauType>(Inpar::ScaTra::tau_taylor_hughes_zarins,
-          Inpar::ScaTra::tau_taylor_hughes_zarins_wo_dt, Inpar::ScaTra::tau_franca_valentin,
-          Inpar::ScaTra::tau_franca_valentin_wo_dt, Inpar::ScaTra::tau_shakib_hughes_codina,
-          Inpar::ScaTra::tau_shakib_hughes_codina_wo_dt, Inpar::ScaTra::tau_codina,
-          Inpar::ScaTra::tau_codina_wo_dt, Inpar::ScaTra::tau_exact_1d, Inpar::ScaTra::tau_zero),
-      ls_reinit);
+  ls_reinit.specs.emplace_back(deprecated_selection<Inpar::ScaTra::TauType>("DEFINITION_TAU_REINIT",
+      {
+          {"Taylor_Hughes_Zarins", Inpar::ScaTra::tau_taylor_hughes_zarins},
+          {"Taylor_Hughes_Zarins_wo_dt", Inpar::ScaTra::tau_taylor_hughes_zarins_wo_dt},
+          {"Franca_Valentin", Inpar::ScaTra::tau_franca_valentin},
+          {"Franca_Valentin_wo_dt", Inpar::ScaTra::tau_franca_valentin_wo_dt},
+          {"Shakib_Hughes_Codina", Inpar::ScaTra::tau_shakib_hughes_codina},
+          {"Shakib_Hughes_Codina_wo_dt", Inpar::ScaTra::tau_shakib_hughes_codina_wo_dt},
+          {"Codina", Inpar::ScaTra::tau_codina},
+          {"Codina_wo_dt", Inpar::ScaTra::tau_codina_wo_dt},
+          {"Exact_1D", Inpar::ScaTra::tau_exact_1d},
+          {"Zero", Inpar::ScaTra::tau_zero},
+      },
+      {.description = "Definition of tau",
+          .default_value = Inpar::ScaTra::tau_taylor_hughes_zarins}));
   // this parameter governs whether all-scale subgrid diffusivity is included
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::ArtDiff>("ARTDIFFREINIT", "no",
-      "potential incorporation of all-scale subgrid diffusivity (a.k.a. discontinuity-capturing) "
-      "term",
-      tuple<std::string>("no", "isotropic", "crosswind"),
-      tuple<Inpar::ScaTra::ArtDiff>(Inpar::ScaTra::artdiff_none, Inpar::ScaTra::artdiff_isotropic,
-          Inpar::ScaTra::artdiff_crosswind),
-      ls_reinit);
+  ls_reinit.specs.emplace_back(deprecated_selection<Inpar::ScaTra::ArtDiff>("ARTDIFFREINIT",
+      {
+          {"no", Inpar::ScaTra::artdiff_none},
+          {"isotropic", Inpar::ScaTra::artdiff_isotropic},
+          {"crosswind", Inpar::ScaTra::artdiff_crosswind},
+      },
+      {.description = "potential incorporation of all-scale subgrid diffusivity (a.k.a. "
+                      "discontinuity-capturing) term",
+          .default_value = Inpar::ScaTra::artdiff_none}));
   // this parameter selects the all-scale subgrid-diffusivity definition applied
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::AssgdType>("DEFINITION_ARTDIFFREINIT",
-      "artificial_linear", "Definition of (all-scale) subgrid diffusivity",
-      tuple<std::string>("artificial_linear", "artificial_linear_reinit",
-          "Hughes_etal_86_nonlinear", "Tezduyar_Park_86_nonlinear",
-          "Tezduyar_Park_86_nonlinear_wo_phizero", "doCarmo_Galeao_91_nonlinear",
-          "Almeida_Silva_97_nonlinear", "YZbeta_nonlinear", "Codina_nonlinear"),
-      tuple<Inpar::ScaTra::AssgdType>(Inpar::ScaTra::assgd_artificial,
-          Inpar::ScaTra::assgd_lin_reinit, Inpar::ScaTra::assgd_hughes,
-          Inpar::ScaTra::assgd_tezduyar, Inpar::ScaTra::assgd_tezduyar_wo_phizero,
-          Inpar::ScaTra::assgd_docarmo, Inpar::ScaTra::assgd_almeida, Inpar::ScaTra::assgd_yzbeta,
-          Inpar::ScaTra::assgd_codina),
-      ls_reinit);
+  ls_reinit.specs.emplace_back(
+      deprecated_selection<Inpar::ScaTra::AssgdType>("DEFINITION_ARTDIFFREINIT",
+          {
+              {"artificial_linear", Inpar::ScaTra::assgd_artificial},
+              {"artificial_linear_reinit", Inpar::ScaTra::assgd_lin_reinit},
+              {"Hughes_etal_86_nonlinear", Inpar::ScaTra::assgd_hughes},
+              {"Tezduyar_Park_86_nonlinear", Inpar::ScaTra::assgd_tezduyar},
+              {"Tezduyar_Park_86_nonlinear_wo_phizero", Inpar::ScaTra::assgd_tezduyar_wo_phizero},
+              {"doCarmo_Galeao_91_nonlinear", Inpar::ScaTra::assgd_docarmo},
+              {"Almeida_Silva_97_nonlinear", Inpar::ScaTra::assgd_almeida},
+              {"YZbeta_nonlinear", Inpar::ScaTra::assgd_yzbeta},
+              {"Codina_nonlinear", Inpar::ScaTra::assgd_codina},
+          },
+          {.description = "Definition of (all-scale) subgrid diffusivity",
+              .default_value = Inpar::ScaTra::assgd_artificial}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::SmoothedSignType>("SMOOTHED_SIGN_TYPE",
-      "SussmanSmerekaOsher1994", "sign function for reinitialization equation",
-      tuple<std::string>("NonSmoothed",
-          "SussmanFatemi1999",  // smeared-out Heaviside function
-          "SussmanSmerekaOsher1994", "PengEtAl1999"),
-      tuple<Inpar::ScaTra::SmoothedSignType>(Inpar::ScaTra::signtype_nonsmoothed,
-          Inpar::ScaTra::signtype_SussmanFatemi1999,
-          Inpar::ScaTra::signtype_SussmanSmerekaOsher1994, Inpar::ScaTra::signtype_PengEtAl1999),
-      ls_reinit);
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::CharEleLengthReinit>(
-      "CHARELELENGTHREINIT", "root_of_volume", "characteristic element length for sign function",
-      tuple<std::string>("root_of_volume", "streamlength"),
-      tuple<Inpar::ScaTra::CharEleLengthReinit>(
-          Inpar::ScaTra::root_of_volume_reinit, Inpar::ScaTra::streamlength_reinit),
-      ls_reinit);
+  ls_reinit.specs.emplace_back(
+      deprecated_selection<Inpar::ScaTra::SmoothedSignType>("SMOOTHED_SIGN_TYPE",
+          {
+              {"NonSmoothed", Inpar::ScaTra::signtype_nonsmoothed},
+              {"SussmanFatemi1999", Inpar::ScaTra::signtype_SussmanFatemi1999},
+              {"SussmanSmerekaOsher1994", Inpar::ScaTra::signtype_SussmanSmerekaOsher1994},
+              {"PengEtAl1999", Inpar::ScaTra::signtype_PengEtAl1999},
+          },
+          {.description = "sign function for reinitialization equation",
+              .default_value = Inpar::ScaTra::signtype_SussmanSmerekaOsher1994}));
+  ls_reinit.specs.emplace_back(
+      deprecated_selection<Inpar::ScaTra::CharEleLengthReinit>("CHARELELENGTHREINIT",
+          {
+              {"root_of_volume", Inpar::ScaTra::root_of_volume_reinit},
+              {"streamlength", Inpar::ScaTra::streamlength_reinit},
+          },
+          {.description = "characteristic element length for sign function",
+              .default_value = Inpar::ScaTra::root_of_volume_reinit}));
   ls_reinit.specs.emplace_back(parameter<double>("INTERFACE_THICKNESS",
       {.description = "factor for interface thickness (multiplied by element length)",
           .default_value = 1.0}));
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::VelReinit>("VELREINIT",
-      "integration_point_based",
-      "evaluate velocity at integration point or compute node-based velocity",
-      tuple<std::string>("integration_point_based", "node_based"),
-      tuple<Inpar::ScaTra::VelReinit>(
-          Inpar::ScaTra::vel_reinit_integration_point_based, Inpar::ScaTra::vel_reinit_node_based),
-      ls_reinit);
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::LinReinit>("LINEARIZATIONREINIT",
-      "newton", "linearization scheme for nonlinear convective term of reinitialization equation",
-      tuple<std::string>("newton", "fixed_point"),
-      tuple<Inpar::ScaTra::LinReinit>(Inpar::ScaTra::newton, Inpar::ScaTra::fixed_point),
-      ls_reinit);
+  ls_reinit.specs.emplace_back(deprecated_selection<Inpar::ScaTra::VelReinit>("VELREINIT",
+      {
+          {"integration_point_based", Inpar::ScaTra::vel_reinit_integration_point_based},
+          {"node_based", Inpar::ScaTra::vel_reinit_node_based},
+      },
+      {.description = "evaluate velocity at integration point or compute node-based velocity",
+          .default_value = Inpar::ScaTra::vel_reinit_integration_point_based}));
+  ls_reinit.specs.emplace_back(deprecated_selection<Inpar::ScaTra::LinReinit>("LINEARIZATIONREINIT",
+      {
+          {"newton", Inpar::ScaTra::newton},
+          {"fixed_point", Inpar::ScaTra::fixed_point},
+      },
+      {.description =
+              "linearization scheme for nonlinear convective term of reinitialization equation",
+          .default_value = Inpar::ScaTra::newton}));
   ls_reinit.specs.emplace_back(parameter<bool>(
       "CORRECTOR_STEP", {.description = "correction of interface position via volume constraint "
                                         "according to Sussman & Fatemi",
@@ -170,12 +195,16 @@ void Inpar::LevelSet::set_valid_parameters(std::map<std::string, Core::IO::Input
   ls_reinit.specs.emplace_back(parameter<double>("PENALTY_PARA",
       {.description = "penalty parameter for elliptic reinitialization", .default_value = -1.0}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::LSDim>("DIMENSION", "3D",
-      "number of space dimensions for handling of quasi-2D problems with 3D elements",
-      tuple<std::string>("3D", "2Dx", "2Dy", "2Dz"),
-      tuple<Inpar::ScaTra::LSDim>(Inpar::ScaTra::ls_3D, Inpar::ScaTra::ls_2Dx,
-          Inpar::ScaTra::ls_2Dy, Inpar::ScaTra::ls_2Dz),
-      ls_reinit);
+  ls_reinit.specs.emplace_back(deprecated_selection<Inpar::ScaTra::LSDim>("DIMENSION",
+      {
+          {"3D", Inpar::ScaTra::ls_3D},
+          {"2Dx", Inpar::ScaTra::ls_2Dx},
+          {"2Dy", Inpar::ScaTra::ls_2Dy},
+          {"2Dz", Inpar::ScaTra::ls_2Dz},
+      },
+      {.description =
+              "number of space dimensions for handling of quasi-2D problems with 3D elements",
+          .default_value = Inpar::ScaTra::ls_3D}));
 
   ls_reinit.specs.emplace_back(parameter<bool>(
       "PROJECTION", {.description = "use L2-projection for grad phi and related quantities",
@@ -185,14 +214,14 @@ void Inpar::LevelSet::set_valid_parameters(std::map<std::string, Core::IO::Input
   ls_reinit.specs.emplace_back(parameter<bool>("LUMPING",
       {.description = "use lumped mass matrix for L2-projection", .default_value = false}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::DiffFunc>("DIFF_FUNC", "hyperbolic",
-      "function for diffusivity",
-      tuple<std::string>("hyperbolic", "hyperbolic_smoothed_positive", "hyperbolic_clipped_05",
-          "hyperbolic_clipped_1"),
-      tuple<Inpar::ScaTra::DiffFunc>(Inpar::ScaTra::hyperbolic,
-          Inpar::ScaTra::hyperbolic_smoothed_positive, Inpar::ScaTra::hyperbolic_clipped_05,
-          Inpar::ScaTra::hyperbolic_clipped_1),
-      ls_reinit);
+  ls_reinit.specs.emplace_back(deprecated_selection<Inpar::ScaTra::DiffFunc>("DIFF_FUNC",
+      {
+          {"hyperbolic", Inpar::ScaTra::hyperbolic},
+          {"hyperbolic_smoothed_positive", Inpar::ScaTra::hyperbolic_smoothed_positive},
+          {"hyperbolic_clipped_05", Inpar::ScaTra::hyperbolic_clipped_05},
+          {"hyperbolic_clipped_1", Inpar::ScaTra::hyperbolic_clipped_1},
+      },
+      {.description = "function for diffusivity", .default_value = Inpar::ScaTra::hyperbolic}));
 
   ls_reinit.move_into_collection(list);
 }

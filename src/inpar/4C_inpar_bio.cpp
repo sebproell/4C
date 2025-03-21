@@ -21,10 +21,12 @@ void Inpar::ArtDyn::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   using namespace Core::IO::InputSpecBuilders;
   Core::Utils::SectionSpecs andyn{"ARTERIAL DYNAMIC"};
 
-  Core::Utils::string_to_integral_parameter<TimeIntegrationScheme>("DYNAMICTYPE",
-      "ExpTaylorGalerkin", "Explicit Taylor Galerkin Scheme",
-      tuple<std::string>("ExpTaylorGalerkin", "Stationary"),
-      tuple<TimeIntegrationScheme>(tay_gal, stationary), andyn);
+  andyn.specs.emplace_back(deprecated_selection<TimeIntegrationScheme>("DYNAMICTYPE",
+      {
+          {"ExpTaylorGalerkin", tay_gal},
+          {"Stationary", stationary},
+      },
+      {.description = "Explicit Taylor Galerkin Scheme", .default_value = tay_gal}));
 
   andyn.specs.emplace_back(
       parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.01}));
@@ -50,12 +52,13 @@ void Inpar::ArtDyn::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       {.description = "function number for artery initial field", .default_value = -1}));
 
   // type of initial field
-  Core::Utils::string_to_integral_parameter<InitialField>("INITIALFIELD", "zero_field",
-      "Initial Field for artery problem",
-      tuple<std::string>("zero_field", "field_by_function", "field_by_condition"),
-      tuple<InitialField>(
-          initfield_zero_field, initfield_field_by_function, initfield_field_by_condition),
-      andyn);
+  andyn.specs.emplace_back(deprecated_selection<InitialField>("INITIALFIELD",
+      {
+          {"zero_field", initfield_zero_field},
+          {"field_by_function", initfield_field_by_function},
+          {"field_by_condition", initfield_field_by_condition},
+      },
+      {.description = "Initial Field for artery problem", .default_value = initfield_zero_field}));
 
   andyn.move_into_collection(list);
 }
@@ -76,10 +79,8 @@ void Inpar::ArteryNetwork::set_valid_parameters(std::map<std::string, Core::IO::
                        .default_value = 1E-6}));
   redtisdyn.specs.emplace_back(parameter<int>(
       "MAXITER", {.description = "Maximum coupling iterations", .default_value = 5}));
-  Core::Utils::string_to_integral_parameter<Relaxtype3D0D>("RELAXTYPE", "norelaxation",
-      "Dynamic Relaxation Type",
-      tuple<std::string>("norelaxation", "fixedrelaxation", "Aitken", "SD"),
-      tuple<Relaxtype3D0D>(norelaxation, fixedrelaxation, Aitken, SD), redtisdyn);
+  redtisdyn.specs.emplace_back(parameter<Relaxtype3D0D>(
+      "RELAXTYPE", {.description = "Dynamic Relaxation Type", .default_value = norelaxation}));
   redtisdyn.specs.emplace_back(
       parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.01}));
   redtisdyn.specs.emplace_back(
@@ -283,13 +284,18 @@ void Inpar::ReducedLung::set_valid_parameters(std::map<std::string, Core::IO::In
 
   Core::Utils::SectionSpecs redawdyn{"REDUCED DIMENSIONAL AIRWAYS DYNAMIC"};
 
-  Core::Utils::string_to_integral_parameter<RedAirwaysDyntype>("DYNAMICTYPE", "OneStepTheta",
-      "OneStepTheta Scheme", tuple<std::string>("OneStepTheta"),
-      tuple<RedAirwaysDyntype>(one_step_theta), redawdyn);
+  redawdyn.specs.emplace_back(deprecated_selection<RedAirwaysDyntype>("DYNAMICTYPE",
+      {
+          {"OneStepTheta", one_step_theta},
+      },
+      {.description = "OneStepTheta Scheme", .default_value = one_step_theta}));
 
-  Core::Utils::string_to_integral_parameter<RedAirwaysDyntype>("SOLVERTYPE", "Linear",
-      "Solver type", tuple<std::string>("Linear", "Nonlinear"),
-      tuple<RedAirwaysDyntype>(linear, nonlinear), redawdyn);
+  redawdyn.specs.emplace_back(deprecated_selection<RedAirwaysDyntype>("SOLVERTYPE",
+      {
+          {"Linear", linear},
+          {"Nonlinear", nonlinear},
+      },
+      {.description = "Solver type", .default_value = linear}));
 
   redawdyn.specs.emplace_back(
       parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.01}));

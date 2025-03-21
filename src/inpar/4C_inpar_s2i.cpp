@@ -24,22 +24,27 @@ void Inpar::S2I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   Core::Utils::SectionSpecs s2icoupling{"SCALAR TRANSPORT DYNAMIC/S2I COUPLING"};
 
   // type of mortar meshtying
-  Core::Utils::string_to_integral_parameter<CouplingType>("COUPLINGTYPE", "Undefined",
-      "type of mortar meshtying",
-      tuple<std::string>("Undefined", "MatchingNodes", "StandardMortar", "SaddlePointMortar_Petrov",
-          "SaddlePointMortar_Bubnov", "CondensedMortar_Petrov", "CondensedMortar_Bubnov",
-          "StandardNodeToSegment"),
-      tuple<CouplingType>(coupling_undefined, coupling_matching_nodes, coupling_mortar_standard,
-          coupling_mortar_saddlepoint_petrov, coupling_mortar_saddlepoint_bubnov,
-          coupling_mortar_condensed_petrov, coupling_mortar_condensed_bubnov,
-          coupling_nts_standard),
-      s2icoupling);
+  s2icoupling.specs.emplace_back(deprecated_selection<CouplingType>("COUPLINGTYPE",
+      {
+          {"Undefined", coupling_undefined},
+          {"MatchingNodes", coupling_matching_nodes},
+          {"StandardMortar", coupling_mortar_standard},
+          {"SaddlePointMortar_Petrov", coupling_mortar_saddlepoint_petrov},
+          {"SaddlePointMortar_Bubnov", coupling_mortar_saddlepoint_bubnov},
+          {"CondensedMortar_Petrov", coupling_mortar_condensed_petrov},
+          {"CondensedMortar_Bubnov", coupling_mortar_condensed_bubnov},
+          {"StandardNodeToSegment", coupling_nts_standard},
+      },
+      {.description = "type of mortar meshtying", .default_value = coupling_undefined}));
 
   // flag for interface side underlying Lagrange multiplier definition
-  Core::Utils::string_to_integral_parameter<InterfaceSides>("LMSIDE", "slave",
-      "flag for interface side underlying Lagrange multiplier definition",
-      tuple<std::string>("slave", "master"), tuple<InterfaceSides>(side_slave, side_master),
-      s2icoupling);
+  s2icoupling.specs.emplace_back(deprecated_selection<InterfaceSides>("LMSIDE",
+      {
+          {"slave", side_slave},
+          {"master", side_master},
+      },
+      {.description = "flag for interface side underlying Lagrange multiplier definition",
+          .default_value = side_slave}));
 
   // flag for evaluation of interface linearizations and residuals on slave side only
   s2icoupling.specs.emplace_back(parameter<bool>("SLAVEONLY",
@@ -52,12 +57,15 @@ void Inpar::S2I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       "NTSPROJTOL", {.description = "node-to-segment projection tolerance", .default_value = 0.0}));
 
   // flag for evaluation of scatra-scatra interface coupling involving interface layer growth
-  Core::Utils::string_to_integral_parameter<GrowthEvaluation>("INTLAYERGROWTH_EVALUATION", "none",
-      "flag for evaluation of scatra-scatra interface coupling involving interface layer growth",
-      tuple<std::string>("none", "monolithic", "semi-implicit"),
-      tuple<GrowthEvaluation>(
-          growth_evaluation_none, growth_evaluation_monolithic, growth_evaluation_semi_implicit),
-      s2icoupling);
+  s2icoupling.specs.emplace_back(deprecated_selection<GrowthEvaluation>("INTLAYERGROWTH_EVALUATION",
+      {
+          {"none", growth_evaluation_none},
+          {"monolithic", growth_evaluation_monolithic},
+          {"semi-implicit", growth_evaluation_semi_implicit},
+      },
+      {.description = "flag for evaluation of scatra-scatra interface coupling involving interface "
+                      "layer growth",
+          .default_value = growth_evaluation_none}));
 
   // local Newton-Raphson convergence tolerance for scatra-scatra interface coupling involving
   // interface layer growth

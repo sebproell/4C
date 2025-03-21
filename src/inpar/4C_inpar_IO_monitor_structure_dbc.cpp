@@ -44,14 +44,18 @@ namespace Inpar
           {.description = "precision for written screen output", .default_value = 5}));
 
       // type of written output file
-      Core::Utils::string_to_integral_parameter<Inpar::IOMonitorStructureDBC::FileType>("FILE_TYPE",
-          "csv", "type of written output file",
-          tuple<std::string>("csv", "CSV", "Csv", "data", "Data", "DATA"),
-          tuple<Inpar::IOMonitorStructureDBC::FileType>(Inpar::IOMonitorStructureDBC::csv,
-              Inpar::IOMonitorStructureDBC::csv, Inpar::IOMonitorStructureDBC::csv,
-              Inpar::IOMonitorStructureDBC::data, Inpar::IOMonitorStructureDBC::data,
-              Inpar::IOMonitorStructureDBC::data),
-          sublist_IO_monitor_structure_dbc);
+      sublist_IO_monitor_structure_dbc.specs.emplace_back(
+          deprecated_selection<Inpar::IOMonitorStructureDBC::FileType>("FILE_TYPE",
+              {
+                  {"csv", Inpar::IOMonitorStructureDBC::csv},
+                  {"CSV", Inpar::IOMonitorStructureDBC::csv},
+                  {"Csv", Inpar::IOMonitorStructureDBC::csv},
+                  {"data", Inpar::IOMonitorStructureDBC::data},
+                  {"Data", Inpar::IOMonitorStructureDBC::data},
+                  {"DATA", Inpar::IOMonitorStructureDBC::data},
+              },
+              {.description = "type of written output file",
+                  .default_value = Inpar::IOMonitorStructureDBC::csv}));
 
       // whether to write output in every iteration of the nonlinear solver
       sublist_IO_monitor_structure_dbc.specs.emplace_back(parameter<bool>("WRITE_HEADER",

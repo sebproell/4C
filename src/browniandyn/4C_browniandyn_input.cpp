@@ -43,15 +43,16 @@ void BrownianDynamics::set_valid_parameters(std::map<std::string, Core::IO::Inpu
           .default_value = -1.0}));
 
   // the way how damping coefficient values for beams are specified
-  Core::Utils::string_to_integral_parameter<BeamDampingCoefficientSpecificationType>(
-      "BEAMS_DAMPING_COEFF_SPECIFIED_VIA", "cylinder_geometry_approx",
-      "In which way are damping coefficient values for beams specified?",
-      tuple<std::string>(
-          "cylinder_geometry_approx", "Cylinder_geometry_approx", "input_file", "Input_file"),
-      tuple<BeamDampingCoefficientSpecificationType>(BrownianDynamics::cylinder_geometry_approx,
-          BrownianDynamics::cylinder_geometry_approx, BrownianDynamics::input_file,
-          BrownianDynamics::input_file),
-      browniandyn_list);
+  browniandyn_list.specs.emplace_back(deprecated_selection<BeamDampingCoefficientSpecificationType>(
+      "BEAMS_DAMPING_COEFF_SPECIFIED_VIA",
+      {
+          {"cylinder_geometry_approx", BrownianDynamics::cylinder_geometry_approx},
+          {"Cylinder_geometry_approx", BrownianDynamics::cylinder_geometry_approx},
+          {"input_file", BrownianDynamics::input_file},
+          {"Input_file", BrownianDynamics::input_file},
+      },
+      {.description = "In which way are damping coefficient values for beams specified?",
+          .default_value = BrownianDynamics::cylinder_geometry_approx}));
 
   // values for damping coefficients of beams if they are specified via input file
   // (per unit length, NOT yet multiplied by fluid viscosity)

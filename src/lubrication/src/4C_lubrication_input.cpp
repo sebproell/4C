@@ -31,27 +31,38 @@ void Lubrication::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       "RESTARTEVERY", {.description = "Increment for writing restart", .default_value = 1}));
 
 
-  Core::Utils::string_to_integral_parameter<Lubrication::CalcError>("CALCERROR", "No",
-      "compute error compared to analytical solution",
-      tuple<std::string>("No", "error_by_function"),
-      tuple<Lubrication::CalcError>(calcerror_no, calcerror_byfunction), lubricationdyn);
+  lubricationdyn.specs.emplace_back(deprecated_selection<Lubrication::CalcError>("CALCERROR",
+      {
+          {"No", calcerror_no},
+          {"error_by_function", calcerror_byfunction},
+      },
+      {.description = "compute error compared to analytical solution",
+          .default_value = calcerror_no}));
 
   lubricationdyn.specs.emplace_back(parameter<int>("CALCERRORNO",
       {.description = "function number for lubrication error computation", .default_value = -1}));
 
-  Core::Utils::string_to_integral_parameter<Lubrication::VelocityField>("VELOCITYFIELD", "zero",
-      "type of velocity field used for lubrication problems",
-      tuple<std::string>("zero", "function", "EHL"),
-      tuple<Lubrication::VelocityField>(velocity_zero, velocity_function, velocity_EHL),
-      lubricationdyn);
+  lubricationdyn.specs.emplace_back(
+      deprecated_selection<Lubrication::VelocityField>("VELOCITYFIELD",
+          {
+              {"zero", velocity_zero},
+              {"function", velocity_function},
+              {"EHL", velocity_EHL},
+          },
+          {.description = "type of velocity field used for lubrication problems",
+              .default_value = velocity_zero}));
 
   lubricationdyn.specs.emplace_back(parameter<int>("VELFUNCNO",
       {.description = "function number for lubrication velocity field", .default_value = -1}));
 
-  Core::Utils::string_to_integral_parameter<Lubrication::HeightField>("HEIGHTFEILD", "zero",
-      "type of height field used for lubrication problems",
-      tuple<std::string>("zero", "function", "EHL"),
-      tuple<Lubrication::HeightField>(height_zero, height_function, height_EHL), lubricationdyn);
+  lubricationdyn.specs.emplace_back(deprecated_selection<Lubrication::HeightField>("HEIGHTFEILD",
+      {
+          {"zero", height_zero},
+          {"function", height_function},
+          {"EHL", height_EHL},
+      },
+      {.description = "type of height field used for lubrication problems",
+          .default_value = height_zero}));
 
   lubricationdyn.specs.emplace_back(parameter<int>("HFUNCNO",
       {.description = "function number for lubrication height field", .default_value = -1}));
@@ -90,17 +101,32 @@ void Lubrication::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
                       "residual in the nonlinear convergence limit",
           .default_value = 0.1}));
 
-  Core::Utils::string_to_integral_parameter<ConvNorm>("NORM_PRE", "Abs",
-      "type of norm for temperature convergence check", tuple<std::string>("Abs", "Rel", "Mix"),
-      tuple<ConvNorm>(convnorm_abs, convnorm_rel, convnorm_mix), lubricationdyn);
+  lubricationdyn.specs.emplace_back(deprecated_selection<ConvNorm>("NORM_PRE",
+      {
+          {"Abs", convnorm_abs},
+          {"Rel", convnorm_rel},
+          {"Mix", convnorm_mix},
+      },
+      {.description = "type of norm for temperature convergence check",
+          .default_value = convnorm_abs}));
 
-  Core::Utils::string_to_integral_parameter<ConvNorm>("NORM_RESF", "Abs",
-      "type of norm for residual convergence check", tuple<std::string>("Abs", "Rel", "Mix"),
-      tuple<ConvNorm>(convnorm_abs, convnorm_rel, convnorm_mix), lubricationdyn);
+  lubricationdyn.specs.emplace_back(deprecated_selection<ConvNorm>("NORM_RESF",
+      {
+          {"Abs", convnorm_abs},
+          {"Rel", convnorm_rel},
+          {"Mix", convnorm_mix},
+      },
+      {.description = "type of norm for residual convergence check",
+          .default_value = convnorm_abs}));
 
-  Core::Utils::string_to_integral_parameter<VectorNorm>("ITERNORM", "L2",
-      "type of norm to be applied to residuals", tuple<std::string>("L1", "L2", "Rms", "Inf"),
-      tuple<VectorNorm>(norm_l1, norm_l2, norm_rms, norm_inf), lubricationdyn);
+  lubricationdyn.specs.emplace_back(deprecated_selection<VectorNorm>("ITERNORM",
+      {
+          {"L1", norm_l1},
+          {"L2", norm_l2},
+          {"Rms", norm_rms},
+          {"Inf", norm_inf},
+      },
+      {.description = "type of norm to be applied to residuals", .default_value = norm_l2}));
 
   /// Iterationparameters
   lubricationdyn.specs.emplace_back(parameter<double>(

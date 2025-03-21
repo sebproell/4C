@@ -53,43 +53,31 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
                              .default_value = "nil"}));
 
   // Type of coupling strategy between the two fields
-  Core::Utils::string_to_integral_parameter<FieldCoupling>("FIELDCOUPLING", "volume_matching",
-      "Type of coupling strategy between fields",
-      tuple<std::string>("volume_matching", "volume_nonmatching", "boundary_nonmatching",
-          "volumeboundary_matching"),
-      tuple<FieldCoupling>(FieldCoupling::volume_match, FieldCoupling::volume_nonmatch,
-          FieldCoupling::boundary_nonmatch, FieldCoupling::volumeboundary_match),
-      ssidyn);
+  ssidyn.specs.emplace_back(deprecated_selection<FieldCoupling>("FIELDCOUPLING",
+      {
+          {"volume_matching", FieldCoupling::volume_match},
+          {"volume_nonmatching", FieldCoupling::volume_nonmatch},
+          {"boundary_nonmatching", FieldCoupling::boundary_nonmatch},
+          {"volumeboundary_matching", FieldCoupling::volumeboundary_match},
+      },
+      {.description = "Type of coupling strategy between fields",
+          .default_value = FieldCoupling::volume_match}));
 
   // Coupling strategy for SSI solvers
-  Core::Utils::string_to_integral_parameter<SolutionSchemeOverFields>("COUPALGO", "ssi_IterStagg",
-      "Coupling strategies for SSI solvers",
-      tuple<std::string>("ssi_OneWay_ScatraToSolid", "ssi_OneWay_SolidToScatra",
-          //                                "ssi_SequStagg_ScatraToSolid",
-          //                                "ssi_SequStagg_SolidToScatra",
-          "ssi_IterStagg", "ssi_IterStaggFixedRel_ScatraToSolid",
-          "ssi_IterStaggFixedRel_SolidToScatra", "ssi_IterStaggAitken_ScatraToSolid",
-          "ssi_IterStaggAitken_SolidToScatra", "ssi_Monolithic"),
-      tuple<SolutionSchemeOverFields>(SolutionSchemeOverFields::ssi_OneWay_ScatraToSolid,
-          SolutionSchemeOverFields::ssi_OneWay_SolidToScatra,
-          //                                ssi_SequStagg_ScatraToSolid,
-          //                                ssi_SequStagg_SolidToScatra,
-          SolutionSchemeOverFields::ssi_IterStagg,
-          SolutionSchemeOverFields::ssi_IterStaggFixedRel_ScatraToSolid,
-          SolutionSchemeOverFields::ssi_IterStaggFixedRel_SolidToScatra,
-          SolutionSchemeOverFields::ssi_IterStaggAitken_ScatraToSolid,
-          SolutionSchemeOverFields::ssi_IterStaggAitken_SolidToScatra,
-          SolutionSchemeOverFields::ssi_Monolithic),
-      ssidyn);
+  ssidyn.specs.emplace_back(parameter<SolutionSchemeOverFields>(
+      "COUPALGO", {.description = "Coupling strategies for SSI solvers",
+                      .default_value = SolutionSchemeOverFields::ssi_IterStagg}));
 
   // type of scalar transport time integration
-  Core::Utils::string_to_integral_parameter<ScaTraTimIntType>("SCATRATIMINTTYPE", "Standard",
-      "scalar transport time integration type is needed to instantiate correct scalar transport "
-      "time integration scheme for ssi problems",
-      tuple<std::string>("Standard", "Cardiac_Monodomain", "Elch"),
-      tuple<ScaTraTimIntType>(
-          ScaTraTimIntType::standard, ScaTraTimIntType::cardiac_monodomain, ScaTraTimIntType::elch),
-      ssidyn);
+  ssidyn.specs.emplace_back(deprecated_selection<ScaTraTimIntType>("SCATRATIMINTTYPE",
+      {
+          {"Standard", ScaTraTimIntType::standard},
+          {"Cardiac_Monodomain", ScaTraTimIntType::cardiac_monodomain},
+          {"Elch", ScaTraTimIntType::elch},
+      },
+      {.description = "scalar transport time integration type is needed to instantiate correct "
+                      "scalar transport time integration scheme for ssi problems",
+          .default_value = ScaTraTimIntType::standard}));
 
   // Restart from Structure problem instead of SSI
   ssidyn.specs.emplace_back(parameter<bool>("RESTART_FROM_STRUCTURE",
@@ -149,48 +137,26 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       {.description = "ID of linear solver for global system of equations", .default_value = -1}));
 
   // type of global system matrix in global system of equations
-  Core::Utils::string_to_integral_parameter<Core::LinAlg::MatrixType>("MATRIXTYPE", "undefined",
-      "type of global system matrix in global system of equations",
-      tuple<std::string>("undefined", "block", "sparse"),
-      tuple<Core::LinAlg::MatrixType>(Core::LinAlg::MatrixType::undefined,
-          Core::LinAlg::MatrixType::block_field, Core::LinAlg::MatrixType::sparse),
-      ssidynmono);
+  ssidynmono.specs.emplace_back(deprecated_selection<Core::LinAlg::MatrixType>("MATRIXTYPE",
+      {
+          {"undefined", Core::LinAlg::MatrixType::undefined},
+          {"block", Core::LinAlg::MatrixType::block_field},
+          {"sparse", Core::LinAlg::MatrixType::sparse},
+      },
+      {.description = "type of global system matrix in global system of equations",
+          .default_value = Core::LinAlg::MatrixType::undefined}));
 
-  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
-      "none", "flag for equilibration of global system of equations",
-      tuple<std::string>("none", "rows_full", "rows_maindiag", "columns_full", "columns_maindiag",
-          "rowsandcolumns_full", "rowsandcolumns_maindiag", "local"),
-      tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,
-          Core::LinAlg::EquilibrationMethod::rows_full,
-          Core::LinAlg::EquilibrationMethod::rows_maindiag,
-          Core::LinAlg::EquilibrationMethod::columns_full,
-          Core::LinAlg::EquilibrationMethod::columns_maindiag,
-          Core::LinAlg::EquilibrationMethod::rowsandcolumns_full,
-          Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag,
-          Core::LinAlg::EquilibrationMethod::local),
-      ssidynmono);
+  ssidynmono.specs.emplace_back(parameter<Core::LinAlg::EquilibrationMethod>(
+      "EQUILIBRATION", {.description = "flag for equilibration of global system of equations",
+                           .default_value = Core::LinAlg::EquilibrationMethod::none}));
 
-  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>(
-      "EQUILIBRATION_STRUCTURE", "none", "flag for equilibration of structural equations",
-      tuple<std::string>(
-          "none", "rows_maindiag", "columns_maindiag", "rowsandcolumns_maindiag", "symmetry"),
-      tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,
-          Core::LinAlg::EquilibrationMethod::rows_maindiag,
-          Core::LinAlg::EquilibrationMethod::columns_maindiag,
-          Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag,
-          Core::LinAlg::EquilibrationMethod::symmetry),
-      ssidynmono);
+  ssidynmono.specs.emplace_back(parameter<Core::LinAlg::EquilibrationMethod>(
+      "EQUILIBRATION_STRUCTURE", {.description = "flag for equilibration of structural equations",
+                                     .default_value = Core::LinAlg::EquilibrationMethod::none}));
 
-  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>(
-      "EQUILIBRATION_SCATRA", "none", "flag for equilibration of scatra equations",
-      tuple<std::string>(
-          "none", "rows_maindiag", "columns_maindiag", "rowsandcolumns_maindiag", "symmetry"),
-      tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,
-          Core::LinAlg::EquilibrationMethod::rows_maindiag,
-          Core::LinAlg::EquilibrationMethod::columns_maindiag,
-          Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag,
-          Core::LinAlg::EquilibrationMethod::symmetry),
-      ssidynmono);
+  ssidynmono.specs.emplace_back(parameter<Core::LinAlg::EquilibrationMethod>(
+      "EQUILIBRATION_SCATRA", {.description = "flag for equilibration of scatra equations",
+                                  .default_value = Core::LinAlg::EquilibrationMethod::none}));
 
   ssidynmono.specs.emplace_back(parameter<bool>("PRINT_MAT_RHS_MAP_MATLAB",
       {.description = "print system matrix, rhs vector, and full map to matlab readable file after "
@@ -222,12 +188,15 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       {.description = "activate meshtying between all manifold fields in case they intersect?",
           .default_value = false}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::ScaTra::InitialField>("INITIALFIELD",
-      "zero_field", "Initial field for scalar transport on manifold",
-      tuple<std::string>("zero_field", "field_by_function", "field_by_condition"),
-      tuple<Inpar::ScaTra::InitialField>(Inpar::ScaTra::initfield_zero_field,
-          Inpar::ScaTra::initfield_field_by_function, Inpar::ScaTra::initfield_field_by_condition),
-      ssidynmanifold);
+  ssidynmanifold.specs.emplace_back(
+      deprecated_selection<Inpar::ScaTra::InitialField>("INITIALFIELD",
+          {
+              {"zero_field", Inpar::ScaTra::initfield_zero_field},
+              {"field_by_function", Inpar::ScaTra::initfield_field_by_function},
+              {"field_by_condition", Inpar::ScaTra::initfield_field_by_condition},
+          },
+          {.description = "Initial field for scalar transport on manifold",
+              .default_value = Inpar::ScaTra::initfield_zero_field}));
 
   ssidynmanifold.specs.emplace_back(parameter<int>("INITFUNCNO",
       {.description = "function number for scalar transport on manifold initial field",

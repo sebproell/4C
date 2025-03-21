@@ -45,11 +45,13 @@ void Inpar::POROMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO:
 
 
   // Coupling strategy for solvers
-  Core::Utils::string_to_integral_parameter<SolutionSchemeOverFields>("COUPALGO",
-      "twoway_partitioned", "Coupling strategies for poro multiphase solvers",
-      tuple<std::string>("twoway_partitioned", "twoway_monolithic"),
-      tuple<SolutionSchemeOverFields>(solscheme_twoway_partitioned, solscheme_twoway_monolithic),
-      poromultiphasedyn);
+  poromultiphasedyn.specs.emplace_back(deprecated_selection<SolutionSchemeOverFields>("COUPALGO",
+      {
+          {"twoway_partitioned", solscheme_twoway_partitioned},
+          {"twoway_monolithic", solscheme_twoway_monolithic},
+      },
+      {.description = "Coupling strategies for poro multiphase solvers",
+          .default_value = solscheme_twoway_partitioned}));
 
   // coupling with 1D artery network active
   poromultiphasedyn.specs.emplace_back(parameter<bool>("ARTERY_COUPLING",
@@ -75,41 +77,40 @@ void Inpar::POROMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO:
                            .default_value = -1}));
 
   // parameters for finite difference check
-  Core::Utils::string_to_integral_parameter<FdCheck>("FDCHECK", "none",
-      "flag for finite difference check: none or global",
-      tuple<std::string>("none",
-          "global"),  // perform finite difference check on time integrator level
-      tuple<FdCheck>(fdcheck_none, fdcheck_global), poromultiphasedynmono);
+  poromultiphasedynmono.specs.emplace_back(deprecated_selection<FdCheck>("FDCHECK",
+      {
+          {"none", fdcheck_none},
+          {"global", fdcheck_global},
+      },
+      {.description = "flag for finite difference check: none or global",
+          .default_value = fdcheck_none}));
 
-  Core::Utils::string_to_integral_parameter<VectorNorm>("VECTORNORM_RESF", "L2",
-      "type of norm to be applied to residuals",
-      tuple<std::string>("L1", "L1_Scaled", "L2", "Rms", "Inf"),
-      tuple<VectorNorm>(Inpar::POROMULTIPHASE::norm_l1, Inpar::POROMULTIPHASE::norm_l1_scaled,
-          Inpar::POROMULTIPHASE::norm_l2, Inpar::POROMULTIPHASE::norm_rms,
-          Inpar::POROMULTIPHASE::norm_inf),
-      poromultiphasedynmono);
+  poromultiphasedynmono.specs.emplace_back(deprecated_selection<VectorNorm>("VECTORNORM_RESF",
+      {
+          {"L1", Inpar::POROMULTIPHASE::norm_l1},
+          {"L1_Scaled", Inpar::POROMULTIPHASE::norm_l1_scaled},
+          {"L2", Inpar::POROMULTIPHASE::norm_l2},
+          {"Rms", Inpar::POROMULTIPHASE::norm_rms},
+          {"Inf", Inpar::POROMULTIPHASE::norm_inf},
+      },
+      {.description = "type of norm to be applied to residuals",
+          .default_value = Inpar::POROMULTIPHASE::norm_l2}));
 
-  Core::Utils::string_to_integral_parameter<VectorNorm>("VECTORNORM_INC", "L2",
-      "type of norm to be applied to residuals",
-      tuple<std::string>("L1", "L1_Scaled", "L2", "Rms", "Inf"),
-      tuple<VectorNorm>(Inpar::POROMULTIPHASE::norm_l1, Inpar::POROMULTIPHASE::norm_l1_scaled,
-          Inpar::POROMULTIPHASE::norm_l2, Inpar::POROMULTIPHASE::norm_rms,
-          Inpar::POROMULTIPHASE::norm_inf),
-      poromultiphasedynmono);
+  poromultiphasedynmono.specs.emplace_back(deprecated_selection<VectorNorm>("VECTORNORM_INC",
+      {
+          {"L1", Inpar::POROMULTIPHASE::norm_l1},
+          {"L1_Scaled", Inpar::POROMULTIPHASE::norm_l1_scaled},
+          {"L2", Inpar::POROMULTIPHASE::norm_l2},
+          {"Rms", Inpar::POROMULTIPHASE::norm_rms},
+          {"Inf", Inpar::POROMULTIPHASE::norm_inf},
+      },
+      {.description = "type of norm to be applied to residuals",
+          .default_value = Inpar::POROMULTIPHASE::norm_l2}));
 
   // flag for equilibration of global system of equations
-  Core::Utils::string_to_integral_parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
-      "none", "flag for equilibration of global system of equations",
-      tuple<std::string>("none", "rows_full", "rows_maindiag", "columns_full", "columns_maindiag",
-          "rowsandcolumns_full", "rowsandcolumns_maindiag"),
-      tuple<Core::LinAlg::EquilibrationMethod>(Core::LinAlg::EquilibrationMethod::none,
-          Core::LinAlg::EquilibrationMethod::rows_full,
-          Core::LinAlg::EquilibrationMethod::rows_maindiag,
-          Core::LinAlg::EquilibrationMethod::columns_full,
-          Core::LinAlg::EquilibrationMethod::columns_maindiag,
-          Core::LinAlg::EquilibrationMethod::rowsandcolumns_full,
-          Core::LinAlg::EquilibrationMethod::rowsandcolumns_maindiag),
-      poromultiphasedynmono);
+  poromultiphasedynmono.specs.emplace_back(parameter<Core::LinAlg::EquilibrationMethod>(
+      "EQUILIBRATION", {.description = "flag for equilibration of global system of equations",
+                           .default_value = Core::LinAlg::EquilibrationMethod::none}));
 
   // convergence criteria adaptivity --> note ADAPTCONV_BETTER set pretty small
   poromultiphasedynmono.specs.emplace_back(parameter<bool>("ADAPTCONV",
@@ -133,10 +134,14 @@ void Inpar::POROMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO:
                      .default_value = 1e-6}));
 
   // flag for relaxation of partitioned scheme
-  Core::Utils::string_to_integral_parameter<RelaxationMethods>("RELAXATION", "none",
-      "flag for relaxation of partitioned scheme", tuple<std::string>("none", "Constant", "Aitken"),
-      tuple<RelaxationMethods>(relaxation_none, relaxation_constant, relaxation_aitken),
-      poromultiphasedynpart);
+  poromultiphasedynpart.specs.emplace_back(deprecated_selection<RelaxationMethods>("RELAXATION",
+      {
+          {"none", relaxation_none},
+          {"Constant", relaxation_constant},
+          {"Aitken", relaxation_aitken},
+      },
+      {.description = "flag for relaxation of partitioned scheme",
+          .default_value = relaxation_none}));
 
   // parameters for relaxation of partitioned coupling
   poromultiphasedynpart.specs.emplace_back(parameter<double>(

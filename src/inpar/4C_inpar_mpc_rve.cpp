@@ -20,15 +20,17 @@ void Inpar::RveMpc::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   using namespace Core::IO::InputSpecBuilders;
   Core::Utils::SectionSpecs mpc{"MULTI POINT CONSTRAINTS"};
 
-  Core::Utils::string_to_integral_parameter<Inpar::RveMpc::RveReferenceDeformationDefinition>(
-      "RVE_REFERENCE_POINTS", "automatic", "Method of definition of the reference points of an RVE",
-      Teuchos::tuple<std::string>("automatic", "manual"),
-      Teuchos::tuple<Inpar::RveMpc::RveReferenceDeformationDefinition>(automatic, manual), mpc);
+  mpc.specs.emplace_back(
+      parameter<Inpar::RveMpc::RveReferenceDeformationDefinition>("RVE_REFERENCE_POINTS",
+          {.description = "Method of definition of the reference points of an RVE",
+              .default_value = automatic}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::RveMpc::EnforcementStrategy>("ENFORCEMENT",
-      "penalty_method", "Method to enforce the multi point constraint",
-      Teuchos::tuple<std::string>("penalty_method", "lagrange_multiplier_method"),
-      Teuchos::tuple<Inpar::RveMpc::EnforcementStrategy>(penalty, lagrangeMultiplier), mpc);
+  mpc.specs.emplace_back(deprecated_selection<Inpar::RveMpc::EnforcementStrategy>("ENFORCEMENT",
+      {
+          {"penalty_method", penalty},
+          {"lagrange_multiplier_method", lagrangeMultiplier},
+      },
+      {.description = "Method to enforce the multi point constraint", .default_value = penalty}));
 
   mpc.specs.emplace_back(parameter<double>(
       "PENALTY_PARAM", {.description = "Value of the penalty parameter", .default_value = 1e5}));

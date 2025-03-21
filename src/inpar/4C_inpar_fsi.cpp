@@ -21,55 +21,37 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
 
   Core::Utils::SectionSpecs fsidyn{"FSI DYNAMIC"};
 
-  Teuchos::Tuple<std::string, 21> name;
-  Teuchos::Tuple<FsiCoupling, 21> label;
-
-  name[0] = "basic_sequ_stagg";
-  label[0] = fsi_basic_sequ_stagg;
-  name[1] = "iter_stagg_fixed_rel_param";
-  label[1] = fsi_iter_stagg_fixed_rel_param;
-  name[2] = "iter_stagg_AITKEN_rel_param";
-  label[2] = fsi_iter_stagg_AITKEN_rel_param;
-  name[3] = "iter_stagg_steep_desc";
-  label[3] = fsi_iter_stagg_steep_desc;
-  name[4] = "iter_stagg_NLCG";
-  label[4] = fsi_iter_stagg_NLCG;
-  name[5] = "iter_stagg_MFNK_FD";
-  label[5] = fsi_iter_stagg_MFNK_FD;
-  name[6] = "iter_stagg_MFNK_FSI";
-  label[6] = fsi_iter_stagg_MFNK_FSI;
-  name[7] = "iter_stagg_MPE";
-  label[7] = fsi_iter_stagg_MPE;
-  name[8] = "iter_stagg_RRE";
-  label[8] = fsi_iter_stagg_RRE;
-  name[9] = "iter_monolithicfluidsplit";
-  label[9] = fsi_iter_monolithicfluidsplit;
-  name[10] = "iter_monolithicstructuresplit";
-  label[10] = fsi_iter_monolithicstructuresplit;
-  name[11] = "iter_xfem_monolithic";
-  label[11] = fsi_iter_xfem_monolithic;
-  name[12] = "iter_mortar_monolithicstructuresplit";
-  label[12] = fsi_iter_mortar_monolithicstructuresplit;
-  name[13] = "iter_mortar_monolithicfluidsplit";
-  label[13] = fsi_iter_mortar_monolithicfluidsplit;
-  name[14] = "iter_fluidfluid_monolithicstructuresplit";
-  label[14] = fsi_iter_fluidfluid_monolithicstructuresplit;
-  name[15] = "iter_fluidfluid_monolithicfluidsplit";
-  label[15] = fsi_iter_fluidfluid_monolithicfluidsplit;
-  name[16] = "iter_fluidfluid_monolithicstructuresplit_nonox";
-  label[16] = fsi_iter_fluidfluid_monolithicstructuresplit_nonox;
-  name[17] = "iter_fluidfluid_monolithicfluidsplit_nonox";
-  label[17] = fsi_iter_fluidfluid_monolithicfluidsplit_nonox;
-  name[18] = "iter_sliding_monolithicfluidsplit";
-  label[18] = fsi_iter_sliding_monolithicfluidsplit;
-  name[19] = "iter_sliding_monolithicstructuresplit";
-  label[19] = fsi_iter_sliding_monolithicstructuresplit;
-  name[20] = "iter_mortar_monolithicfluidsplit_saddlepoint";
-  label[20] = fsi_iter_mortar_monolithicfluidsplit_saddlepoint;
+  std::map<std::string, FsiCoupling> map{
+      {"basic_sequ_stagg", fsi_basic_sequ_stagg},
+      {"iter_stagg_fixed_rel_param", fsi_iter_stagg_fixed_rel_param},
+      {"iter_stagg_AITKEN_rel_param", fsi_iter_stagg_AITKEN_rel_param},
+      {"iter_stagg_steep_desc", fsi_iter_stagg_steep_desc},
+      {"iter_stagg_NLCG", fsi_iter_stagg_NLCG},
+      {"iter_stagg_MFNK_FD", fsi_iter_stagg_MFNK_FD},
+      {"iter_stagg_MFNK_FSI", fsi_iter_stagg_MFNK_FSI},
+      {"iter_stagg_MPE", fsi_iter_stagg_MPE},
+      {"iter_stagg_RRE", fsi_iter_stagg_RRE},
+      {"iter_monolithicfluidsplit", fsi_iter_monolithicfluidsplit},
+      {"iter_monolithicstructuresplit", fsi_iter_monolithicstructuresplit},
+      {"iter_xfem_monolithic", fsi_iter_xfem_monolithic},
+      {"iter_mortar_monolithicstructuresplit", fsi_iter_mortar_monolithicstructuresplit},
+      {"iter_mortar_monolithicfluidsplit", fsi_iter_mortar_monolithicfluidsplit},
+      {"iter_fluidfluid_monolithicstructuresplit", fsi_iter_fluidfluid_monolithicstructuresplit},
+      {"iter_fluidfluid_monolithicfluidsplit", fsi_iter_fluidfluid_monolithicfluidsplit},
+      {"iter_fluidfluid_monolithicstructuresplit_nonox",
+          fsi_iter_fluidfluid_monolithicstructuresplit_nonox},
+      {"iter_fluidfluid_monolithicfluidsplit_nonox",
+          fsi_iter_fluidfluid_monolithicfluidsplit_nonox},
+      {"iter_sliding_monolithicfluidsplit", fsi_iter_sliding_monolithicfluidsplit},
+      {"iter_sliding_monolithicstructuresplit", fsi_iter_sliding_monolithicstructuresplit},
+      {"iter_mortar_monolithicfluidsplit_saddlepoint",
+          fsi_iter_mortar_monolithicfluidsplit_saddlepoint},
+  };
 
 
-  Core::Utils::string_to_integral_parameter<FsiCoupling>("COUPALGO", "iter_stagg_AITKEN_rel_param",
-      "Iteration Scheme over the fields", name, label, fsidyn);
+  fsidyn.specs.emplace_back(deprecated_selection<FsiCoupling>("COUPALGO", map,
+      {.description = "Iteration Scheme over the fields",
+          .default_value = fsi_iter_stagg_AITKEN_rel_param}));
 
   std::string debugoutput_doc =
       "Output of unconverged interface values during FSI iteration. There will be a new control "
@@ -103,13 +85,16 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       {.description = "Second order displacement-velocity conversion at the interface.",
           .default_value = false}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::FSI::SlideALEProj>("SLIDEALEPROJ", "None",
-      "Projection method to use for sliding FSI.",
-      tuple<std::string>("None", "Curr", "Ref", "RotZ", "RotZSphere"),
-      tuple<Inpar::FSI::SlideALEProj>(Inpar::FSI::ALEprojection_none,
-          Inpar::FSI::ALEprojection_curr, Inpar::FSI::ALEprojection_ref,
-          Inpar::FSI::ALEprojection_rot_z, Inpar::FSI::ALEprojection_rot_zsphere),
-      fsidyn);
+  fsidyn.specs.emplace_back(deprecated_selection<Inpar::FSI::SlideALEProj>("SLIDEALEPROJ",
+      {
+          {"None", Inpar::FSI::ALEprojection_none},
+          {"Curr", Inpar::FSI::ALEprojection_curr},
+          {"Ref", Inpar::FSI::ALEprojection_ref},
+          {"RotZ", Inpar::FSI::ALEprojection_rot_z},
+          {"RotZSphere", Inpar::FSI::ALEprojection_rot_zsphere},
+      },
+      {.description = "Projection method to use for sliding FSI.",
+          .default_value = Inpar::FSI::ALEprojection_none}));
 
   fsidyn.specs.emplace_back(
       parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.1}));
@@ -117,11 +102,15 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   fsidyn.specs.emplace_back(parameter<int>(
       "RESULTSEVERY", {.description = "Increment for writing solution", .default_value = 1}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::FSI::Verbosity>("VERBOSITY", "full",
-      "Verbosity of the FSI problem.", tuple<std::string>("full", "medium", "low", "subproblem"),
-      tuple<Inpar::FSI::Verbosity>(Inpar::FSI::verbosity_full, Inpar::FSI::verbosity_medium,
-          Inpar::FSI::verbosity_low, Inpar::FSI::verbosity_subproblem),
-      fsidyn);
+  fsidyn.specs.emplace_back(deprecated_selection<Inpar::FSI::Verbosity>("VERBOSITY",
+      {
+          {"full", Inpar::FSI::verbosity_full},
+          {"medium", Inpar::FSI::verbosity_medium},
+          {"low", Inpar::FSI::verbosity_low},
+          {"subproblem", Inpar::FSI::verbosity_subproblem},
+      },
+      {.description = "Verbosity of the FSI problem.",
+          .default_value = Inpar::FSI::verbosity_full}));
 
   fsidyn.move_into_collection(list);
 
@@ -134,12 +123,14 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
                       "time step size (>0)",
           .default_value = 5}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::FSI::FluidMethod>("AUXINTEGRATORFLUID", "AB2",
-      "Method for error estimation in the fluid field",
-      tuple<std::string>("None", "ExplicitEuler", "AB2"),
-      tuple<Inpar::FSI::FluidMethod>(Inpar::FSI::timada_fld_none, Inpar::FSI::timada_fld_expleuler,
-          Inpar::FSI::timada_fld_adamsbashforth2),
-      fsiadapt);
+  fsiadapt.specs.emplace_back(deprecated_selection<Inpar::FSI::FluidMethod>("AUXINTEGRATORFLUID",
+      {
+          {"None", Inpar::FSI::timada_fld_none},
+          {"ExplicitEuler", Inpar::FSI::timada_fld_expleuler},
+          {"AB2", Inpar::FSI::timada_fld_adamsbashforth2},
+      },
+      {.description = "Method for error estimation in the fluid field",
+          .default_value = Inpar::FSI::timada_fld_adamsbashforth2}));
 
   fsiadapt.specs.emplace_back(parameter<std::string>("AVERAGINGDT",
       {.description = "Averaging of time step sizes in case of increasing time step "
@@ -149,12 +140,15 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           .default_value = "0.3 0.7"}));
 
 
-  Core::Utils::string_to_integral_parameter<Inpar::FSI::DivContAct>("DIVERCONT", "stop",
-      "What to do if nonlinear solver does not converge?",
-      tuple<std::string>("stop", "continue", "halve_step", "revert_dt"),
-      tuple<Inpar::FSI::DivContAct>(Inpar::FSI::divcont_stop, Inpar::FSI::divcont_continue,
-          Inpar::FSI::divcont_halve_step, Inpar::FSI::divcont_revert_dt),
-      fsiadapt);
+  fsiadapt.specs.emplace_back(deprecated_selection<Inpar::FSI::DivContAct>("DIVERCONT",
+      {
+          {"stop", Inpar::FSI::divcont_stop},
+          {"continue", Inpar::FSI::divcont_continue},
+          {"halve_step", Inpar::FSI::divcont_halve_step},
+          {"revert_dt", Inpar::FSI::divcont_revert_dt},
+      },
+      {.description = "What to do if nonlinear solver does not converge?",
+          .default_value = Inpar::FSI::divcont_stop}));
 
   fsiadapt.specs.emplace_back(parameter<double>("DTMAX",
       {.description = "Limit maximally permitted time step size (>0)", .default_value = 0.1}));
@@ -231,12 +225,14 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   fsimono.specs.emplace_back(parameter<int>(
       "KRYLOV_SIZE", {.description = "Size of Krylov Subspace.", .default_value = 50}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::FSI::LinearBlockSolver>("LINEARBLOCKSOLVER",
-      "PreconditionedKrylov", "Linear block preconditioner for block system in monolithic FSI.",
-      tuple<std::string>("PreconditionedKrylov", "LinalgSolver"),
-      tuple<Inpar::FSI::LinearBlockSolver>(
-          Inpar::FSI::PreconditionedKrylov, Inpar::FSI::LinalgSolver),
-      fsimono);
+  fsimono.specs.emplace_back(
+      deprecated_selection<Inpar::FSI::LinearBlockSolver>("LINEARBLOCKSOLVER",
+          {
+              {"PreconditionedKrylov", Inpar::FSI::PreconditionedKrylov},
+              {"LinalgSolver", Inpar::FSI::LinalgSolver},
+          },
+          {.description = "Linear block preconditioner for block system in monolithic FSI.",
+              .default_value = Inpar::FSI::PreconditionedKrylov}));
 
   fsimono.specs.emplace_back(parameter<int>("LINEAR_SOLVER",
       {.description = "Number of SOLVER block describing the linear solver and preconditioner",
@@ -244,24 +240,32 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
 
   // Iteration parameters for convergence check of newton loop
   // for implementations without NOX
-  Core::Utils::string_to_integral_parameter<Inpar::FSI::ConvNorm>("NORM_INC", "Rel",
-      "type of norm for primary variables convergence check",
-      tuple<std::string>("Abs", "Rel", "Mix"),
-      tuple<Inpar::FSI::ConvNorm>(
-          Inpar::FSI::convnorm_abs, Inpar::FSI::convnorm_rel, Inpar::FSI::convnorm_mix),
-      fsimono);
+  fsimono.specs.emplace_back(deprecated_selection<Inpar::FSI::ConvNorm>("NORM_INC",
+      {
+          {"Abs", Inpar::FSI::convnorm_abs},
+          {"Rel", Inpar::FSI::convnorm_rel},
+          {"Mix", Inpar::FSI::convnorm_mix},
+      },
+      {.description = "type of norm for primary variables convergence check",
+          .default_value = Inpar::FSI::convnorm_rel}));
 
   // for implementations without NOX
-  Core::Utils::string_to_integral_parameter<Inpar::FSI::ConvNorm>("NORM_RESF", "Rel",
-      "type of norm for residual convergence check", tuple<std::string>("Abs", "Rel", "Mix"),
-      tuple<Inpar::FSI::ConvNorm>(
-          Inpar::FSI::convnorm_abs, Inpar::FSI::convnorm_rel, Inpar::FSI::convnorm_mix),
-      fsimono);
+  fsimono.specs.emplace_back(deprecated_selection<Inpar::FSI::ConvNorm>("NORM_RESF",
+      {
+          {"Abs", Inpar::FSI::convnorm_abs},
+          {"Rel", Inpar::FSI::convnorm_rel},
+          {"Mix", Inpar::FSI::convnorm_mix},
+      },
+      {.description = "type of norm for residual convergence check",
+          .default_value = Inpar::FSI::convnorm_rel}));
 
   // for implementations without NOX
-  Core::Utils::string_to_integral_parameter<Inpar::FSI::BinaryOp>("NORMCOMBI_RESFINC", "And",
-      "binary operator to combine primary variables and residual force values",
-      tuple<std::string>("And"), tuple<Inpar::FSI::BinaryOp>(Inpar::FSI::bop_and), fsimono);
+  fsimono.specs.emplace_back(deprecated_selection<Inpar::FSI::BinaryOp>("NORMCOMBI_RESFINC",
+      {
+          {"And", Inpar::FSI::bop_and},
+      },
+      {.description = "binary operator to combine primary variables and residual force values",
+          .default_value = Inpar::FSI::bop_and}));
 
   fsimono.specs.emplace_back(parameter<int>(
       "PRECONDREUSE", {.description = "Number of iterations in one time step reusing the "
@@ -410,11 +414,14 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
       {.description = "Coupling Method mortar or conforming nodes at interface",
           .default_value = "conforming"}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::FSI::CoupVarPart>("COUPVARIABLE", "Displacement",
-      "Coupling variable at the interface", tuple<std::string>("Displacement", "Force", "Velocity"),
-      tuple<Inpar::FSI::CoupVarPart>(Inpar::FSI::CoupVarPart::disp, Inpar::FSI::CoupVarPart::force,
-          Inpar::FSI::CoupVarPart::vel),
-      fsipart);
+  fsipart.specs.emplace_back(deprecated_selection<Inpar::FSI::CoupVarPart>("COUPVARIABLE",
+      {
+          {"Displacement", Inpar::FSI::CoupVarPart::disp},
+          {"Force", Inpar::FSI::CoupVarPart::force},
+          {"Velocity", Inpar::FSI::CoupVarPart::vel},
+      },
+      {.description = "Coupling variable at the interface",
+          .default_value = Inpar::FSI::CoupVarPart::disp}));
 
   fsipart.specs.emplace_back(parameter<bool>("DIVPROJECTION",
       {.description = "Project velocity into divergence-free subspace for partitioned fsi",
@@ -432,13 +439,15 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
                       .default_value = -1.0}));
 
 
-  Core::Utils::string_to_integral_parameter<Inpar::FSI::PartitionedCouplingMethod>("PARTITIONED",
-      "DirichletNeumann", "Coupling strategies for partitioned FSI solvers.",
-      tuple<std::string>(
-          "DirichletNeumann", "DirichletNeumannSlideALE", "DirichletNeumannVolCoupl"),
-      tuple<Inpar::FSI::PartitionedCouplingMethod>(Inpar::FSI::DirichletNeumann,
-          Inpar::FSI::DirichletNeumannSlideale, Inpar::FSI::DirichletNeumannVolCoupl),
-      fsipart);
+  fsipart.specs.emplace_back(
+      deprecated_selection<Inpar::FSI::PartitionedCouplingMethod>("PARTITIONED",
+          {
+              {"DirichletNeumann", Inpar::FSI::DirichletNeumann},
+              {"DirichletNeumannSlideALE", Inpar::FSI::DirichletNeumannSlideale},
+              {"DirichletNeumannVolCoupl", Inpar::FSI::DirichletNeumannVolCoupl},
+          },
+          {.description = "Coupling strategies for partitioned FSI solvers.",
+              .default_value = Inpar::FSI::DirichletNeumann}));
 
   std::vector<std::string> predictor_valid_input = {
       "d(n)", "d(n)+dt*(1.5*v(n)-0.5*v(n-1))", "d(n)+dt*v(n)", "d(n)+dt*v(n)+0.5*dt^2*a(n)"};
@@ -455,9 +464,12 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   /* ----------------------------------------------------------------------- */
   Core::Utils::SectionSpecs constrfsi{fsidyn, "CONSTRAINT"};
 
-  Core::Utils::string_to_integral_parameter<Inpar::FSI::PrecConstr>("PRECONDITIONER", "Simple",
-      "preconditioner to use", tuple<std::string>("Simple", "Simplec"),
-      tuple<Inpar::FSI::PrecConstr>(Inpar::FSI::Simple, Inpar::FSI::Simplec), constrfsi);
+  constrfsi.specs.emplace_back(deprecated_selection<Inpar::FSI::PrecConstr>("PRECONDITIONER",
+      {
+          {"Simple", Inpar::FSI::Simple},
+          {"Simplec", Inpar::FSI::Simplec},
+      },
+      {.description = "preconditioner to use", .default_value = Inpar::FSI::Simple}));
   constrfsi.specs.emplace_back(parameter<int>(
       "SIMPLEITER", {.description = "Number of iterations for simple pc", .default_value = 2}));
   constrfsi.specs.emplace_back(parameter<double>(

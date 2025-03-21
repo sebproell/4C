@@ -34,12 +34,13 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
       {.description = "write restart possibility every RESTARTEVERY steps", .default_value = 1}));
 
 
-  Core::Utils::string_to_integral_parameter<InitialField>("INITIALFIELD", "zero_field",
-      "Initial Field for thermal problem",
-      tuple<std::string>("zero_field", "field_by_function", "field_by_condition"),
-      tuple<InitialField>(
-          initfield_zero_field, initfield_field_by_function, initfield_field_by_condition),
-      tdyn);
+  tdyn.specs.emplace_back(deprecated_selection<InitialField>("INITIALFIELD",
+      {
+          {"zero_field", initfield_zero_field},
+          {"field_by_function", initfield_field_by_function},
+          {"field_by_condition", initfield_field_by_condition},
+      },
+      {.description = "Initial Field for thermal problem", .default_value = initfield_zero_field}));
 
   tdyn.specs.emplace_back(parameter<int>("INITFUNCNO",
       {.description = "function number for thermal initial field", .default_value = -1}));
@@ -57,21 +58,35 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
       "TOLTEMP", {.description = "tolerance in the temperature norm of the Newton iteration",
                      .default_value = 1.0E-10}));
 
-  Core::Utils::string_to_integral_parameter<ConvNorm>("NORM_TEMP", "Abs",
-      "type of norm for temperature convergence check", tuple<std::string>("Abs", "Rel", "Mix"),
-      tuple<ConvNorm>(convnorm_abs, convnorm_rel, convnorm_mix), tdyn);
+  tdyn.specs.emplace_back(deprecated_selection<ConvNorm>("NORM_TEMP",
+      {
+          {"Abs", convnorm_abs},
+          {"Rel", convnorm_rel},
+          {"Mix", convnorm_mix},
+      },
+      {.description = "type of norm for temperature convergence check",
+          .default_value = convnorm_abs}));
 
   tdyn.specs.emplace_back(parameter<double>(
       "TOLRES", {.description = "tolerance in the residual norm for the Newton iteration",
                     .default_value = 1.0E-08}));
 
-  Core::Utils::string_to_integral_parameter<ConvNorm>("NORM_RESF", "Abs",
-      "type of norm for residual convergence check", tuple<std::string>("Abs", "Rel", "Mix"),
-      tuple<ConvNorm>(convnorm_abs, convnorm_rel, convnorm_mix), tdyn);
+  tdyn.specs.emplace_back(deprecated_selection<ConvNorm>("NORM_RESF",
+      {
+          {"Abs", convnorm_abs},
+          {"Rel", convnorm_rel},
+          {"Mix", convnorm_mix},
+      },
+      {.description = "type of norm for residual convergence check",
+          .default_value = convnorm_abs}));
 
-  Core::Utils::string_to_integral_parameter<BinaryOp>("NORMCOMBI_RESFTEMP", "And",
-      "binary operator to combine temperature and residual force values",
-      tuple<std::string>("And", "Or"), tuple<BinaryOp>(bop_and, bop_or), tdyn);
+  tdyn.specs.emplace_back(deprecated_selection<BinaryOp>("NORMCOMBI_RESFTEMP",
+      {
+          {"And", bop_and},
+          {"Or", bop_or},
+      },
+      {.description = "binary operator to combine temperature and residual force values",
+          .default_value = bop_and}));
 
   tdyn.specs.emplace_back(parameter<int>("MAXITER",
       {.description =
@@ -82,29 +97,46 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
       {.description = "minimum number of iterations to be done within Newton-Raphson loop",
           .default_value = 0}));
 
-  Core::Utils::string_to_integral_parameter<VectorNorm>("ITERNORM", "L2",
-      "type of norm to be applied to residuals", tuple<std::string>("L1", "L2", "Rms", "Inf"),
-      tuple<VectorNorm>(norm_l1, norm_l2, norm_rms, norm_inf), tdyn);
+  tdyn.specs.emplace_back(deprecated_selection<VectorNorm>("ITERNORM",
+      {
+          {"L1", norm_l1},
+          {"L2", norm_l2},
+          {"Rms", norm_rms},
+          {"Inf", norm_inf},
+      },
+      {.description = "type of norm to be applied to residuals", .default_value = norm_l2}));
 
-  Core::Utils::string_to_integral_parameter<DivContAct>("DIVERCONT", "stop",
-      "What to do with time integration when Newton-Raphson iteration failed",
-      tuple<std::string>("stop", "continue", "halve_step", "repeat_step", "repeat_simulation"),
-      tuple<DivContAct>(divcont_stop, divcont_continue, divcont_halve_step, divcont_repeat_step,
-          divcont_repeat_simulation),
-      tdyn);
+  tdyn.specs.emplace_back(deprecated_selection<DivContAct>("DIVERCONT",
+      {
+          {"stop", divcont_stop},
+          {"continue", divcont_continue},
+          {"halve_step", divcont_halve_step},
+          {"repeat_step", divcont_repeat_step},
+          {"repeat_simulation", divcont_repeat_simulation},
+      },
+      {.description = "What to do with time integration when Newton-Raphson iteration failed",
+          .default_value = divcont_stop}));
 
   tdyn.specs.emplace_back(parameter<int>("MAXDIVCONREFINEMENTLEVEL",
       {.description = "number of times timestep is halved in case nonlinear solver diverges",
           .default_value = 10}));
 
-  Core::Utils::string_to_integral_parameter<NonlinSolTech>("NLNSOL", "fullnewton",
-      "Nonlinear solution technique", tuple<std::string>("vague", "fullnewton"),
-      tuple<NonlinSolTech>(soltech_vague, soltech_newtonfull), tdyn);
+  tdyn.specs.emplace_back(deprecated_selection<NonlinSolTech>("NLNSOL",
+      {
+          {"vague", soltech_vague},
+          {"fullnewton", soltech_newtonfull},
+      },
+      {.description = "Nonlinear solution technique", .default_value = soltech_newtonfull}));
 
-  Core::Utils::string_to_integral_parameter<PredEnum>("PREDICT", "ConstTemp",
-      "Predictor of iterative solution techniques",
-      tuple<std::string>("Vague", "ConstTemp", "ConstTempRate", "TangTemp"),
-      tuple<PredEnum>(pred_vague, pred_consttemp, pred_consttemprate, pred_tangtemp), tdyn);
+  tdyn.specs.emplace_back(deprecated_selection<PredEnum>("PREDICT",
+      {
+          {"Vague", pred_vague},
+          {"ConstTemp", pred_consttemp},
+          {"ConstTempRate", pred_consttemprate},
+          {"TangTemp", pred_tangtemp},
+      },
+      {.description = "Predictor of iterative solution techniques",
+          .default_value = pred_consttemp}));
 
   // convergence criteria solver adaptivity
   tdyn.specs.emplace_back(parameter<bool>("ADAPTCONV",
@@ -125,15 +157,21 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
       {.description = "number of linear solver used for thermal problems", .default_value = -1}));
 
   // where the geometry comes from
-  Core::Utils::string_to_integral_parameter<Core::IO::GeometryType>("GEOMETRY", "full",
-      "How the geometry is specified", tuple<std::string>("full", "box", "file"),
-      tuple<Core::IO::GeometryType>(
-          Core::IO::geometry_full, Core::IO::geometry_box, Core::IO::geometry_file),
-      tdyn);
+  tdyn.specs.emplace_back(deprecated_selection<Core::IO::GeometryType>("GEOMETRY",
+      {
+          {"full", Core::IO::geometry_full},
+          {"box", Core::IO::geometry_box},
+          {"file", Core::IO::geometry_file},
+      },
+      {.description = "How the geometry is specified", .default_value = Core::IO::geometry_full}));
 
-  Core::Utils::string_to_integral_parameter<CalcError>("CALCERROR", "No",
-      "compute error compared to analytical solution", tuple<std::string>("No", "byfunct"),
-      tuple<CalcError>(no_error_calculation, calcerror_byfunct), tdyn);
+  tdyn.specs.emplace_back(deprecated_selection<CalcError>("CALCERROR",
+      {
+          {"No", no_error_calculation},
+          {"byfunct", calcerror_byfunct},
+      },
+      {.description = "compute error compared to analytical solution",
+          .default_value = no_error_calculation}));
   tdyn.specs.emplace_back(parameter<int>(
       "CALCERRORFUNCNO", {.description = "Function for Error Calculation", .default_value = -1}));
 
@@ -143,9 +181,13 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
   /* parameters for generalised-alpha thermal integrator */
   Core::Utils::SectionSpecs tgenalpha{tdyn, "GENALPHA"};
 
-  Core::Utils::string_to_integral_parameter<MidAverageEnum>("GENAVG", "TrLike",
-      "mid-average type of internal forces", tuple<std::string>("Vague", "ImrLike", "TrLike"),
-      tuple<MidAverageEnum>(midavg_vague, midavg_imrlike, midavg_trlike), tgenalpha);
+  tgenalpha.specs.emplace_back(deprecated_selection<MidAverageEnum>("GENAVG",
+      {
+          {"Vague", midavg_vague},
+          {"ImrLike", midavg_imrlike},
+          {"TrLike", midavg_trlike},
+      },
+      {.description = "mid-average type of internal forces", .default_value = midavg_trlike}));
 
   // default values correspond to midpoint-rule
   tgenalpha.specs.emplace_back(parameter<double>(

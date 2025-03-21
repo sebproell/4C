@@ -407,8 +407,7 @@ namespace Cut
           istatus_(intersect_unevaluated),
           scale_(1.0),
           shift_(0.0)
-    {
-      /* intentionally left blank */
+    { /* intentionally left blank */
     }
 
     // No public access to these methods! Use the base class accessors, instead.

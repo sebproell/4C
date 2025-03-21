@@ -45,11 +45,12 @@ void Inpar::Cardiovascular0D::set_valid_parameters(std::map<std::string, Core::I
       {.description = "number of linear solver used for cardiovascular 0D-structural problems",
           .default_value = -1}));
 
-  Core::Utils::string_to_integral_parameter<Cardvasc0DSolveAlgo>("SOLALGORITHM", "direct", "",
-      tuple<std::string>("block", "direct"),
-      tuple<Cardvasc0DSolveAlgo>(Inpar::Cardiovascular0D::cardvasc0dsolve_block,
-          Inpar::Cardiovascular0D::cardvasc0dsolve_direct),
-      cardvasc0dstruct);
+  cardvasc0dstruct.specs.emplace_back(deprecated_selection<Cardvasc0DSolveAlgo>("SOLALGORITHM",
+      {
+          {"block", Inpar::Cardiovascular0D::cardvasc0dsolve_block},
+          {"direct", Inpar::Cardiovascular0D::cardvasc0dsolve_direct},
+      },
+      {.description = "", .default_value = Inpar::Cardiovascular0D::cardvasc0dsolve_direct}));
 
   cardvasc0dstruct.specs.emplace_back(
       parameter<double>("T_PERIOD", {.description = "periodic time", .default_value = -1.0}));
@@ -91,11 +92,14 @@ void Inpar::Cardiovascular0D::set_valid_parameters(std::map<std::string, Core::I
       "R_atvalve_min_r", {.description = "minimal right atrial (atrioventricular) valve resistance",
                              .default_value = 0.0}));
 
-  Core::Utils::string_to_integral_parameter<Cardvasc0DAtriumModel>("ATRIUM_MODEL", "0D", "",
-      tuple<std::string>("0D", "3D", "prescribed"),
-      tuple<Cardvasc0DAtriumModel>(Inpar::Cardiovascular0D::atr_elastance_0d,
-          Inpar::Cardiovascular0D::atr_structure_3d, Inpar::Cardiovascular0D::atr_prescribed),
-      cardvasc0dsyspulcirc);
+  cardvasc0dsyspulcirc.specs.emplace_back(
+      deprecated_selection<Cardvasc0DAtriumModel>("ATRIUM_MODEL",
+          {
+              {"0D", Inpar::Cardiovascular0D::atr_elastance_0d},
+              {"3D", Inpar::Cardiovascular0D::atr_structure_3d},
+              {"prescribed", Inpar::Cardiovascular0D::atr_prescribed},
+          },
+          {.description = "", .default_value = Inpar::Cardiovascular0D::atr_elastance_0d}));
   cardvasc0dsyspulcirc.specs.emplace_back(parameter<int>("Atrium_act_curve_l",
       {.description = "left atrial activation curve (ONLY for ATRIUM_MODEL '0D'!)",
           .default_value = -1}));
@@ -119,11 +123,14 @@ void Inpar::Cardiovascular0D::set_valid_parameters(std::map<std::string, Core::I
   cardvasc0dsyspulcirc.specs.emplace_back(parameter<double>(
       "E_at_min_r", {.description = "0D baseline right atrial elastance", .default_value = 0.0}));
 
-  Core::Utils::string_to_integral_parameter<Cardvasc0DVentricleModel>("VENTRICLE_MODEL", "3D", "",
-      tuple<std::string>("3D", "0D", "prescribed"),
-      tuple<Cardvasc0DVentricleModel>(Inpar::Cardiovascular0D::ventr_structure_3d,
-          Inpar::Cardiovascular0D::ventr_elastance_0d, Inpar::Cardiovascular0D::ventr_prescribed),
-      cardvasc0dsyspulcirc);
+  cardvasc0dsyspulcirc.specs.emplace_back(
+      deprecated_selection<Cardvasc0DVentricleModel>("VENTRICLE_MODEL",
+          {
+              {"3D", Inpar::Cardiovascular0D::ventr_structure_3d},
+              {"0D", Inpar::Cardiovascular0D::ventr_elastance_0d},
+              {"prescribed", Inpar::Cardiovascular0D::ventr_prescribed},
+          },
+          {.description = "", .default_value = Inpar::Cardiovascular0D::ventr_structure_3d}));
   cardvasc0dsyspulcirc.specs.emplace_back(parameter<int>("Ventricle_act_curve_l",
       {.description = "left ventricular activation curve (ONLY for VENTRICLE_MODEL '0D'!)",
           .default_value = -1}));
@@ -359,11 +366,13 @@ void Inpar::Cardiovascular0D::set_valid_parameters(std::map<std::string, Core::I
 
   Core::Utils::SectionSpecs cardvascrespir0d{cardvasc0dstruct, "RESPIRATORY PARAMETERS"};
 
-  Core::Utils::string_to_integral_parameter<Cardvasc0DRespiratoryModel>("RESPIRATORY_MODEL", "None",
-      "", tuple<std::string>("None", "Standard"),
-      tuple<Cardvasc0DRespiratoryModel>(
-          Inpar::Cardiovascular0D::resp_none, Inpar::Cardiovascular0D::resp_standard),
-      cardvascrespir0d);
+  cardvascrespir0d.specs.emplace_back(
+      deprecated_selection<Cardvasc0DRespiratoryModel>("RESPIRATORY_MODEL",
+          {
+              {"None", Inpar::Cardiovascular0D::resp_none},
+              {"Standard", Inpar::Cardiovascular0D::resp_standard},
+          },
+          {.description = "", .default_value = Inpar::Cardiovascular0D::resp_none}));
 
 
   cardvascrespir0d.specs.emplace_back(

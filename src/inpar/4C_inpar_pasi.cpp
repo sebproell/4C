@@ -34,14 +34,9 @@ void Inpar::PaSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       parameter<double>("MAXTIME", {.description = "Total simulation time", .default_value = 1.0}));
 
   // type of partitioned coupling
-  Core::Utils::string_to_integral_parameter<PartitionedCouplingType>("COUPLING",
-      "partitioned_onewaycoup",
-      "partitioned coupling strategies for particle structure interaction",
-      tuple<std::string>("partitioned_onewaycoup", "partitioned_twowaycoup",
-          "partitioned_twowaycoup_disprelax", "partitioned_twowaycoup_disprelaxaitken"),
-      tuple<PartitionedCouplingType>(partitioned_onewaycoup, partitioned_twowaycoup,
-          partitioned_twowaycoup_disprelax, partitioned_twowaycoup_disprelaxaitken),
-      pasidyn);
+  pasidyn.specs.emplace_back(parameter<PartitionedCouplingType>("COUPLING",
+      {.description = "partitioned coupling strategies for particle structure interaction",
+          .default_value = partitioned_onewaycoup}));
 
   // partitioned iteration dependent parameters
   pasidyn.specs.emplace_back(parameter<int>(

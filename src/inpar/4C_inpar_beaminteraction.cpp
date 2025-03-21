@@ -33,19 +33,20 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
 
   Core::Utils::SectionSpecs beaminteraction{"BEAM INTERACTION"};
 
-  Core::Utils::string_to_integral_parameter<Inpar::BeamInteraction::RepartitionStrategy>(
-      "REPARTITIONSTRATEGY", "Adaptive", "Type of employed repartitioning strategy",
-      tuple<std::string>("Adaptive", "adaptive", "Everydt", "everydt"),
-      tuple<Inpar::BeamInteraction::RepartitionStrategy>(
-          repstr_adaptive, repstr_adaptive, repstr_everydt, repstr_everydt),
-      beaminteraction);
+  beaminteraction.specs.emplace_back(
+      deprecated_selection<Inpar::BeamInteraction::RepartitionStrategy>("REPARTITIONSTRATEGY",
+          {
+              {"Adaptive", repstr_adaptive},
+              {"adaptive", repstr_adaptive},
+              {"Everydt", repstr_everydt},
+              {"everydt", repstr_everydt},
+          },
+          {.description = "Type of employed repartitioning strategy",
+              .default_value = repstr_adaptive}));
 
-  Core::Utils::string_to_integral_parameter<SearchStrategy>("SEARCH_STRATEGY",
-      "bruteforce_with_binning", "Type of search strategy used for finding coupling pairs",
-      tuple<std::string>("bruteforce_with_binning", "bounding_volume_hierarchy"),
-      tuple<SearchStrategy>(
-          SearchStrategy::bruteforce_with_binning, SearchStrategy::bounding_volume_hierarchy),
-      beaminteraction);
+  beaminteraction.specs.emplace_back(parameter<SearchStrategy>(
+      "SEARCH_STRATEGY", {.description = "Type of search strategy used for finding coupling pairs",
+                             .default_value = SearchStrategy::bruteforce_with_binning}));
 
   beaminteraction.move_into_collection(list);
 
@@ -161,10 +162,15 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
 
   Core::Utils::SectionSpecs beamtobeamcontact{beaminteraction, "BEAM TO BEAM CONTACT"};
 
-  Core::Utils::string_to_integral_parameter<Inpar::BeamInteraction::Strategy>("STRATEGY", "None",
-      "Type of employed solving strategy", tuple<std::string>("None", "none", "Penalty", "penalty"),
-      tuple<Inpar::BeamInteraction::Strategy>(bstr_none, bstr_none, bstr_penalty, bstr_penalty),
-      beamtobeamcontact);
+  beamtobeamcontact.specs.emplace_back(
+      deprecated_selection<Inpar::BeamInteraction::Strategy>("STRATEGY",
+          {
+              {"None", bstr_none},
+              {"none", bstr_none},
+              {"Penalty", bstr_penalty},
+              {"penalty", bstr_penalty},
+          },
+          {.description = "Type of employed solving strategy", .default_value = bstr_none}));
 
   beamtobeamcontact.move_into_collection(list);
 
@@ -175,10 +181,15 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
 
   Core::Utils::SectionSpecs beamtospherecontact{beaminteraction, "BEAM TO SPHERE CONTACT"};
 
-  Core::Utils::string_to_integral_parameter<Inpar::BeamInteraction::Strategy>("STRATEGY", "None",
-      "Type of employed solving strategy", tuple<std::string>("None", "none", "Penalty", "penalty"),
-      tuple<Inpar::BeamInteraction::Strategy>(bstr_none, bstr_none, bstr_penalty, bstr_penalty),
-      beamtospherecontact);
+  beamtospherecontact.specs.emplace_back(
+      deprecated_selection<Inpar::BeamInteraction::Strategy>("STRATEGY",
+          {
+              {"None", bstr_none},
+              {"none", bstr_none},
+              {"Penalty", bstr_penalty},
+              {"penalty", bstr_penalty},
+          },
+          {.description = "Type of employed solving strategy", .default_value = bstr_none}));
 
   beamtospherecontact.specs.emplace_back(parameter<double>("PENALTY_PARAMETER",
       {.description = "Penalty parameter for beam-to-rigidsphere contact", .default_value = 0.0}));

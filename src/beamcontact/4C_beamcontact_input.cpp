@@ -22,17 +22,25 @@ void BeamContact::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
 
   Core::Utils::SectionSpecs beamcontact{"BEAM CONTACT"};
 
-  Core::Utils::string_to_integral_parameter<BeamContact::Strategy>("BEAMS_STRATEGY", "None",
-      "Type of employed solving strategy",
-      tuple<std::string>("None", "none", "Penalty", "penalty", "Gmshonly", "gmshonly"),
-      tuple<BeamContact::Strategy>(
-          bstr_none, bstr_none, bstr_penalty, bstr_penalty, bstr_gmshonly, bstr_gmshonly),
-      beamcontact);
+  beamcontact.specs.emplace_back(deprecated_selection<BeamContact::Strategy>("BEAMS_STRATEGY",
+      {
+          {"None", bstr_none},
+          {"none", bstr_none},
+          {"Penalty", bstr_penalty},
+          {"penalty", bstr_penalty},
+          {"Gmshonly", bstr_gmshonly},
+          {"gmshonly", bstr_gmshonly},
+      },
+      {.description = "Type of employed solving strategy", .default_value = bstr_none}));
 
-  Core::Utils::string_to_integral_parameter<BeamContact::Modelevaluator>("MODELEVALUATOR", "old",
-      "Type of model evaluator", tuple<std::string>("Old", "old", "Standard", "standard"),
-      tuple<BeamContact::Modelevaluator>(bstr_old, bstr_old, bstr_standard, bstr_standard),
-      beamcontact);
+  beamcontact.specs.emplace_back(deprecated_selection<BeamContact::Modelevaluator>("MODELEVALUATOR",
+      {
+          {"Old", bstr_old},
+          {"old", bstr_old},
+          {"Standard", bstr_standard},
+          {"standard", bstr_standard},
+      },
+      {.description = "Type of model evaluator", .default_value = bstr_old}));
 
   beamcontact.specs.emplace_back(parameter<bool>("BEAMS_NEWGAP",
       {.description = "choose between original or enhanced gapfunction", .default_value = false}));
@@ -59,9 +67,14 @@ void BeamContact::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       {.description = "Additional consideration of endpoint-line and endpoint-endpoint contacts",
           .default_value = false}));
 
-  Core::Utils::string_to_integral_parameter<BeamContact::Smoothing>("BEAMS_SMOOTHING", "None",
-      "Application of smoothed tangent field", tuple<std::string>("None", "none", "Cpp", "cpp"),
-      tuple<BeamContact::Smoothing>(bsm_none, bsm_none, bsm_cpp, bsm_cpp), beamcontact);
+  beamcontact.specs.emplace_back(deprecated_selection<BeamContact::Smoothing>("BEAMS_SMOOTHING",
+      {
+          {"None", bsm_none},
+          {"none", bsm_none},
+          {"Cpp", bsm_cpp},
+          {"cpp", bsm_cpp},
+      },
+      {.description = "Application of smoothed tangent field", .default_value = bsm_none}));
 
   beamcontact.specs.emplace_back(parameter<bool>("BEAMS_DAMPING",
       {.description = "Application of a contact damping force", .default_value = false}));
@@ -109,12 +122,17 @@ void BeamContact::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   beamcontact.specs.emplace_back(parameter<int>("BEAMS_NUMINTEGRATIONINTERVAL",
       {.description = "Number of integration intervals per element", .default_value = 1}));
 
-  Core::Utils::string_to_integral_parameter<BeamContact::PenaltyLaw>("BEAMS_PENALTYLAW", "LinPen",
-      "Applied Penalty Law",
-      tuple<std::string>("LinPen", "QuadPen", "LinNegQuadPen", "LinPosQuadPen", "LinPosCubPen",
-          "LinPosDoubleQuadPen", "LinPosExpPen"),
-      tuple<BeamContact::PenaltyLaw>(pl_lp, pl_qp, pl_lnqp, pl_lpqp, pl_lpcp, pl_lpdqp, pl_lpep),
-      beamcontact);
+  beamcontact.specs.emplace_back(deprecated_selection<BeamContact::PenaltyLaw>("BEAMS_PENALTYLAW",
+      {
+          {"LinPen", pl_lp},
+          {"QuadPen", pl_qp},
+          {"LinNegQuadPen", pl_lnqp},
+          {"LinPosQuadPen", pl_lpqp},
+          {"LinPosCubPen", pl_lpcp},
+          {"LinPosDoubleQuadPen", pl_lpdqp},
+          {"LinPosExpPen", pl_lpep},
+      },
+      {.description = "Applied Penalty Law", .default_value = pl_lp}));
 
   beamcontact.specs.emplace_back(parameter<double>("BEAMS_PENREGPARAM_G0",
       {.description =
@@ -137,12 +155,16 @@ void BeamContact::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
 
   // enable octree search and determine type of bounding box (aabb = axis aligned, cobb =
   // cylindrical oriented)
-  Core::Utils::string_to_integral_parameter<BeamContact::OctreeType>("BEAMS_OCTREE", "None",
-      "octree and bounding box type for octree search routine",
-      tuple<std::string>(
-          "None", "none", "octree_axisaligned", "octree_cylorient", "octree_spherical"),
-      tuple<BeamContact::OctreeType>(boct_none, boct_none, boct_aabb, boct_cobb, boct_spbb),
-      beamcontact);
+  beamcontact.specs.emplace_back(deprecated_selection<BeamContact::OctreeType>("BEAMS_OCTREE",
+      {
+          {"None", boct_none},
+          {"none", boct_none},
+          {"octree_axisaligned", boct_aabb},
+          {"octree_cylorient", boct_cobb},
+          {"octree_spherical", boct_spbb},
+      },
+      {.description = "octree and bounding box type for octree search routine",
+          .default_value = boct_none}));
 
   beamcontact.specs.emplace_back(parameter<bool>(
       "BEAMS_ADDITEXT", {.description = "Switch between No==multiplicative extrusion factor and "

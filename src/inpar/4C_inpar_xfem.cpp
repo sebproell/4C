@@ -51,28 +51,36 @@ void Inpar::XFEM::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   xfem_general.specs.emplace_back(parameter<int>("MAX_NUM_DOFSETS",
       {.description = "Maximum number of volumecells in the XFEM element", .default_value = 3}));
 
-  Core::Utils::string_to_integral_parameter<Cut::NodalDofSetStrategy>("NODAL_DOFSET_STRATEGY",
-      "full", "Strategy used for the nodal dofset management per node",
-      tuple<std::string>(
-          "OneDofset_PerNodeAndPosition", "ConnectGhostDofsets_PerNodeAndPosition", "full"),
-      tuple<Cut::NodalDofSetStrategy>(Cut::NDS_Strategy_OneDofset_PerNodeAndPosition,
-          Cut::NDS_Strategy_ConnectGhostDofsets_PerNodeAndPosition, Cut::NDS_Strategy_full),
-      xfem_general);
+  xfem_general.specs.emplace_back(
+      deprecated_selection<Cut::NodalDofSetStrategy>("NODAL_DOFSET_STRATEGY",
+          {
+              {"OneDofset_PerNodeAndPosition", Cut::NDS_Strategy_OneDofset_PerNodeAndPosition},
+              {"ConnectGhostDofsets_PerNodeAndPosition",
+                  Cut::NDS_Strategy_ConnectGhostDofsets_PerNodeAndPosition},
+              {"full", Cut::NDS_Strategy_full},
+          },
+          {.description = "Strategy used for the nodal dofset management per node",
+              .default_value = Cut::NDS_Strategy_full}));
 
   // Integration options
-  Core::Utils::string_to_integral_parameter<Cut::VCellGaussPts>("VOLUME_GAUSS_POINTS_BY",
-      "Tessellation", "Method for finding Gauss Points for the cut volumes",
-      tuple<std::string>("Tessellation", "MomentFitting", "DirectDivergence"),
-      tuple<Cut::VCellGaussPts>(Cut::VCellGaussPts_Tessellation, Cut::VCellGaussPts_MomentFitting,
-          Cut::VCellGaussPts_DirectDivergence),
-      xfem_general);
+  xfem_general.specs.emplace_back(deprecated_selection<Cut::VCellGaussPts>("VOLUME_GAUSS_POINTS_BY",
+      {
+          {"Tessellation", Cut::VCellGaussPts_Tessellation},
+          {"MomentFitting", Cut::VCellGaussPts_MomentFitting},
+          {"DirectDivergence", Cut::VCellGaussPts_DirectDivergence},
+      },
+      {.description = "Method for finding Gauss Points for the cut volumes",
+          .default_value = Cut::VCellGaussPts_Tessellation}));
 
-  Core::Utils::string_to_integral_parameter<Cut::BCellGaussPts>("BOUNDARY_GAUSS_POINTS_BY",
-      "Tessellation", "Method for finding Gauss Points for the boundary cells",
-      tuple<std::string>("Tessellation", "MomentFitting", "DirectDivergence"),
-      tuple<Cut::BCellGaussPts>(Cut::BCellGaussPts_Tessellation, Cut::BCellGaussPts_MomentFitting,
-          Cut::BCellGaussPts_DirectDivergence),
-      xfem_general);
+  xfem_general.specs.emplace_back(
+      deprecated_selection<Cut::BCellGaussPts>("BOUNDARY_GAUSS_POINTS_BY",
+          {
+              {"Tessellation", Cut::BCellGaussPts_Tessellation},
+              {"MomentFitting", Cut::BCellGaussPts_MomentFitting},
+              {"DirectDivergence", Cut::BCellGaussPts_DirectDivergence},
+          },
+          {.description = "Method for finding Gauss Points for the boundary cells",
+              .default_value = Cut::BCellGaussPts_Tessellation}));
 
   xfem_general.move_into_collection(list);
 
@@ -98,71 +106,54 @@ void Inpar::XFEM::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       {.description = "Radius of the search tree", .default_value = 1.0}));
 
   // xfluidfluid-fsi-monolithic approach
-  Core::Utils::string_to_integral_parameter<MonolithicXffsiApproach>("MONOLITHIC_XFFSI_APPROACH",
-      "xffsi_fixedALE_partitioned", "The monolithic approach for xfluidfluid-fsi",
-      tuple<std::string>(
-          "xffsi_full_newton", "xffsi_fixedALE_interpolation", "xffsi_fixedALE_partitioned"),
-      tuple<MonolithicXffsiApproach>(
-          Inpar::XFEM::XFFSI_Full_Newton,             // xffsi with no fixed xfem-coupling
-          Inpar::XFEM::XFFSI_FixedALE_Interpolation,  // xffsi with fixed xfem-coupling in every
-                                                      // newtonstep and interpolations for
-                                                      // embedded-dis afterwards
-          Inpar::XFEM::XFFSI_FixedALE_Partitioned     // xffsi with fixed xfem-coupling in every
-                                                      // newtonstep and solving fluid-field again
-          ),
-      xfluid_general);
+  xfluid_general.specs.emplace_back(
+      deprecated_selection<MonolithicXffsiApproach>("MONOLITHIC_XFFSI_APPROACH",
+          {
+              {"xffsi_full_newton", Inpar::XFEM::XFFSI_Full_Newton},
+              {"xffsi_fixedALE_interpolation", Inpar::XFEM::XFFSI_FixedALE_Interpolation},
+              {"xffsi_fixedALE_partitioned", Inpar::XFEM::XFFSI_FixedALE_Partitioned},
+          },
+          {.description = "The monolithic approach for xfluidfluid-fsi",
+              .default_value = Inpar::XFEM::XFFSI_FixedALE_Partitioned}));
 
   // xfluidfluid time integration approach
-  Core::Utils::string_to_integral_parameter<XFluidFluidTimeInt>("XFLUIDFLUID_TIMEINT",
-      "Xff_TimeInt_FullProj", "The xfluidfluid-timeintegration approach",
-      tuple<std::string>("Xff_TimeInt_FullProj", "Xff_TimeInt_ProjIfMoved",
-          "Xff_TimeInt_KeepGhostValues", "Xff_TimeInt_IncompProj"),
-      tuple<XFluidFluidTimeInt>(Inpar::XFEM::Xff_TimeInt_FullProj,  // always project nodes from
-                                                                    // embedded to background nodes
-          Inpar::XFEM::Xff_TimeInt_ProjIfMoved,  // project nodes just if the status of background
-                                                 // nodes changed
-          Inpar::XFEM::Xff_TimeInt_KeepGhostValues,  // always keep the ghost values of the
-                                                     // background discretization
-          Inpar::XFEM::Xff_TimeInt_IncompProj  // after projecting nodes do a incompressibility
-                                               // projection
-          ),
-      xfluid_general);
+  xfluid_general.specs.emplace_back(deprecated_selection<XFluidFluidTimeInt>("XFLUIDFLUID_TIMEINT",
+      {
+          {"Xff_TimeInt_FullProj", Inpar::XFEM::Xff_TimeInt_FullProj},
+          {"Xff_TimeInt_ProjIfMoved", Inpar::XFEM::Xff_TimeInt_ProjIfMoved},
+          {"Xff_TimeInt_KeepGhostValues", Inpar::XFEM::Xff_TimeInt_KeepGhostValues},
+          {"Xff_TimeInt_IncompProj", Inpar::XFEM::Xff_TimeInt_IncompProj},
+      },
+      {.description = "The xfluidfluid-timeintegration approach",
+          .default_value = Inpar::XFEM::Xff_TimeInt_FullProj}));
 
-  Core::Utils::string_to_integral_parameter<XFluidTimeIntScheme>("XFLUID_TIMEINT",
-      "STD=COPY/SL_and_GHOST=COPY/GP", "The xfluid time integration approach",
-      tuple<std::string>("STD=COPY_and_GHOST=COPY/GP", "STD=COPY/SL_and_GHOST=COPY/GP",
-          "STD=SL(boundary-zone)_and_GHOST=GP", "STD=COPY/PROJ_and_GHOST=COPY/PROJ/GP"),
-      tuple<XFluidTimeIntScheme>(
-          Inpar::XFEM::Xf_TimeIntScheme_STD_by_Copy_AND_GHOST_by_Copy_or_GP,  // STD= only copy,
-                                                                              // GHOST= copy or
-                                                                              // ghost penalty
-                                                                              // reconstruction
-          Inpar::XFEM::
-              Xf_TimeIntScheme_STD_by_Copy_or_SL_AND_GHOST_by_Copy_or_GP,  // STD= copy or SL,
-                                                                           // GHOST= copy or ghost
-                                                                           // penalty reconstruction
-          Inpar::XFEM::Xf_TimeIntScheme_STD_by_SL_cut_zone_AND_GHOST_by_GP,  // STD= only SL on
-                                                                             // whole boundary zone,
-                                                                             // GHOST= ghost penalty
-                                                                             // reconstruction
-          Inpar::XFEM::Xf_TimeIntScheme_STD_by_Copy_or_Proj_AND_GHOST_by_Proj_or_Copy_or_GP),
-      xfluid_general);
+  xfluid_general.specs.emplace_back(deprecated_selection<XFluidTimeIntScheme>("XFLUID_TIMEINT",
+      {
+          {"STD=COPY_and_GHOST=COPY/GP",
+              Inpar::XFEM::Xf_TimeIntScheme_STD_by_Copy_AND_GHOST_by_Copy_or_GP},
+          {"STD=COPY/SL_and_GHOST=COPY/GP",
+              Inpar::XFEM::Xf_TimeIntScheme_STD_by_Copy_or_SL_AND_GHOST_by_Copy_or_GP},
+          {"STD=SL(boundary-zone)_and_GHOST=GP",
+              Inpar::XFEM::Xf_TimeIntScheme_STD_by_SL_cut_zone_AND_GHOST_by_GP},
+          {"STD=COPY/PROJ_and_GHOST=COPY/PROJ/GP",
+              Inpar::XFEM::Xf_TimeIntScheme_STD_by_Copy_or_Proj_AND_GHOST_by_Proj_or_Copy_or_GP},
+      },
+      {.description = "The xfluid time integration approach",
+          .default_value =
+              Inpar::XFEM::Xf_TimeIntScheme_STD_by_Copy_or_SL_AND_GHOST_by_Copy_or_GP}));
 
   xfluid_general.specs.emplace_back(parameter<bool>(
       "ALE_XFluid", {.description = "XFluid is Ale Fluid?", .default_value = false}));
 
   // for new OST-implementation: which interface terms to be evaluated for previous time step
-  Core::Utils::string_to_integral_parameter<InterfaceTermsPreviousState>(
-      "INTERFACE_TERMS_PREVIOUS_STATE", "PreviousState_only_consistency",
-      "how to treat interface terms from previous time step (new OST)",
-      tuple<std::string>("PreviousState_only_consistency", "PreviousState_full"),
-      tuple<InterfaceTermsPreviousState>(
-          Inpar::XFEM::PreviousState_only_consistency,  /// evaluate only consistency terms
-                                                        /// for previous time step
-          Inpar::XFEM::PreviousState_full  /// evaluate consistency, adjoint consistency and penalty
-                                           /// terms or previous time step
-          ),
-      xfluid_general);
+  xfluid_general.specs.emplace_back(
+      deprecated_selection<InterfaceTermsPreviousState>("INTERFACE_TERMS_PREVIOUS_STATE",
+          {
+              {"PreviousState_only_consistency", Inpar::XFEM::PreviousState_only_consistency},
+              {"PreviousState_full", Inpar::XFEM::PreviousState_full},
+          },
+          {.description = "how to treat interface terms from previous time step (new OST)",
+              .default_value = Inpar::XFEM::PreviousState_only_consistency}));
 
   xfluid_general.specs.emplace_back(parameter<bool>("XFLUID_TIMEINT_CHECK_INTERFACETIPS",
       {.description = "Xfluid TimeIntegration Special Check if node has changed the side!",
@@ -178,32 +169,35 @@ void Inpar::XFEM::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   Core::Utils::SectionSpecs xfluid_stab{xfluid_dyn, "STABILIZATION"};
 
   // Boundary-Coupling options
-  Core::Utils::string_to_integral_parameter<CouplingMethod>("COUPLING_METHOD", "Nitsche",
-      "method how to enforce embedded boundary/coupling conditions at the interface",
-      tuple<std::string>("Hybrid_LM_Cauchy_stress", "Hybrid_LM_viscous_stress", "Nitsche"),
-      tuple<CouplingMethod>(
-          Inpar::XFEM::Hybrid_LM_Cauchy_stress,   // Cauchy stress-based mixed/hybrid formulation
-          Inpar::XFEM::Hybrid_LM_viscous_stress,  // viscous stress-based mixed/hybrid formulation
-          Inpar::XFEM::Nitsche                    // Nitsche's formulation
-          ),
-      xfluid_stab);
+  xfluid_stab.specs.emplace_back(deprecated_selection<CouplingMethod>("COUPLING_METHOD",
+      {
+          {"Hybrid_LM_Cauchy_stress", Inpar::XFEM::Hybrid_LM_Cauchy_stress},
+          {"Hybrid_LM_viscous_stress", Inpar::XFEM::Hybrid_LM_viscous_stress},
+          {"Nitsche", Inpar::XFEM::Nitsche},
+      },
+      {.description =
+              "method how to enforce embedded boundary/coupling conditions at the interface",
+          .default_value = Inpar::XFEM::Nitsche}));
 
-  Core::Utils::string_to_integral_parameter<HybridLmL2Proj>("HYBRID_LM_L2_PROJ", "part_ele_proj",
-      "perform the L2 projection between stress fields on whole element or on fluid part?",
-      tuple<std::string>("full_ele_proj", "part_ele_proj"),
-      tuple<HybridLmL2Proj>(
-          Inpar::XFEM::Hybrid_LM_L2_Proj_full,  // L2 stress projection on whole fluid element
-          Inpar::XFEM::Hybrid_LM_L2_Proj_part   // L2 stress projection on partial fluid element
-                                                // volume
-          ),
-      xfluid_stab);
+  xfluid_stab.specs.emplace_back(deprecated_selection<HybridLmL2Proj>("HYBRID_LM_L2_PROJ",
+      {
+          {"full_ele_proj", Inpar::XFEM::Hybrid_LM_L2_Proj_full},
+          {"part_ele_proj", Inpar::XFEM::Hybrid_LM_L2_Proj_part},
+      },
+      {.description =
+              "perform the L2 projection between stress fields on whole element or on fluid part?",
+          .default_value = Inpar::XFEM::Hybrid_LM_L2_Proj_part}));
 
-  Core::Utils::string_to_integral_parameter<AdjointScaling>("VISC_ADJOINT_SYMMETRY", "yes",
-      "viscous and adjoint viscous interface terms with matching sign?",
-      tuple<std::string>("yes", "no", "sym", "skew", "none"),
-      tuple<AdjointScaling>(Inpar::XFEM::adj_sym, Inpar::XFEM::adj_skew, Inpar::XFEM::adj_sym,
-          Inpar::XFEM::adj_skew, Inpar::XFEM::adj_none),
-      xfluid_stab);
+  xfluid_stab.specs.emplace_back(deprecated_selection<AdjointScaling>("VISC_ADJOINT_SYMMETRY",
+      {
+          {"yes", Inpar::XFEM::adj_sym},
+          {"no", Inpar::XFEM::adj_skew},
+          {"sym", Inpar::XFEM::adj_sym},
+          {"skew", Inpar::XFEM::adj_skew},
+          {"none", Inpar::XFEM::adj_none},
+      },
+      {.description = "viscous and adjoint viscous interface terms with matching sign?",
+          .default_value = Inpar::XFEM::adj_sym}));
 
   // viscous and convective Nitsche/MSH stabilization parameter
   xfluid_stab.specs.emplace_back(parameter<double>(
@@ -213,99 +207,75 @@ void Inpar::XFEM::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
       {.description = " ( stabilization parameter for Nitsche's penalty tangential term",
           .default_value = 35.0}));
 
-  Core::Utils::string_to_integral_parameter<ViscStabTraceEstimate>("VISC_STAB_TRACE_ESTIMATE",
-      "CT_div_by_hk", "how to estimate the scaling from the trace inequality in Nitsche's method",
-      tuple<std::string>("CT_div_by_hk", "eigenvalue"),
-      tuple<ViscStabTraceEstimate>(
-          Inpar::XFEM::ViscStab_TraceEstimate_CT_div_by_hk,  // estimate the trace inequality by a
-                                                             // trace-constant CT and hk: CT/hk
-          Inpar::XFEM::ViscStab_TraceEstimate_eigenvalue     // estimate the trace inequality by
-                                                          // solving a local element-wise eigenvalue
-                                                          // problem
-          ),
-      xfluid_stab);
+  xfluid_stab.specs.emplace_back(deprecated_selection<ViscStabTraceEstimate>(
+      "VISC_STAB_TRACE_ESTIMATE",
+      {
+          {"CT_div_by_hk", Inpar::XFEM::ViscStab_TraceEstimate_CT_div_by_hk},
+          {"eigenvalue", Inpar::XFEM::ViscStab_TraceEstimate_eigenvalue},
+      },
+      {.description = "how to estimate the scaling from the trace inequality in Nitsche's method",
+          .default_value = Inpar::XFEM::ViscStab_TraceEstimate_CT_div_by_hk}));
 
-  Core::Utils::string_to_integral_parameter<TraceEstimateEigenvalueUpdate>(
-      "UPDATE_EIGENVALUE_TRACE_ESTIMATE", "every_iter",
-      "how often should the local eigenvalue problem be updated",
-      tuple<std::string>("every_iter", "every_timestep", "once"),
-      tuple<TraceEstimateEigenvalueUpdate>(Inpar::XFEM::Eigenvalue_update_every_iter,
-          Inpar::XFEM::Eigenvalue_update_every_timestep, Inpar::XFEM::Eigenvalue_update_once),
-      xfluid_stab);
+  xfluid_stab.specs.emplace_back(
+      deprecated_selection<TraceEstimateEigenvalueUpdate>("UPDATE_EIGENVALUE_TRACE_ESTIMATE",
+          {
+              {"every_iter", Inpar::XFEM::Eigenvalue_update_every_iter},
+              {"every_timestep", Inpar::XFEM::Eigenvalue_update_every_timestep},
+              {"once", Inpar::XFEM::Eigenvalue_update_once},
+          },
+          {.description = "how often should the local eigenvalue problem be updated",
+              .default_value = Inpar::XFEM::Eigenvalue_update_every_iter}));
 
-  Core::Utils::string_to_integral_parameter<ViscStabHk>("VISC_STAB_HK",
-      "ele_vol_div_by_max_ele_surf",
-      "how to define the characteristic element length in cut elements",
-      tuple<std::string>("vol_equivalent", "cut_vol_div_by_cut_surf", "ele_vol_div_by_cut_surf",
-          "ele_vol_div_by_ele_surf", "ele_vol_div_by_max_ele_surf"),
-      tuple<ViscStabHk>(
-          Inpar::XFEM::ViscStab_hk_vol_equivalent,           /// volume equivalent element diameter
-          Inpar::XFEM::ViscStab_hk_cut_vol_div_by_cut_surf,  /// physical partial/cut volume divided
-                                                             /// by physical partial/cut surface
-                                                             /// measure ( used to estimate the
-                                                             /// cut-dependent inverse estimate on
-                                                             /// cut elements, not useful for sliver
-                                                             /// and/or dotted cut situations)
-          Inpar::XFEM::ViscStab_hk_ele_vol_div_by_cut_surf,  /// full element volume divided by
-                                                             /// physical partial/cut surface
-                                                             /// measure ( used to estimate the
-                                                             /// cut-dependent inverse estimate on
-                                                             /// cut elements, however, avoids
-                                                             /// problems with sliver cuts, not
-                                                             /// useful for dotted cuts)
-          Inpar::XFEM::ViscStab_hk_ele_vol_div_by_ele_surf,  /// full element volume divided by
-                                                             /// surface measure ( used for uncut
-                                                             /// situations, standard weak Dirichlet
-                                                             /// boundary/coupling conditions)
-          Inpar::XFEM::
-              ViscStab_hk_ele_vol_div_by_max_ele_surf  /// default: full element volume divided by
-                                                       /// maximal element surface measure ( used to
-                                                       /// estimate the trace inequality for
-                                                       /// stretched elements in combination with
-                                                       /// ghost-penalties)
-          ),
-      xfluid_stab);
+  xfluid_stab.specs.emplace_back(deprecated_selection<ViscStabHk>("VISC_STAB_HK",
+      {
+          {"vol_equivalent", Inpar::XFEM::ViscStab_hk_vol_equivalent},
+          {"cut_vol_div_by_cut_surf", Inpar::XFEM::ViscStab_hk_cut_vol_div_by_cut_surf},
+          {"ele_vol_div_by_cut_surf", Inpar::XFEM::ViscStab_hk_ele_vol_div_by_cut_surf},
+          {"ele_vol_div_by_ele_surf", Inpar::XFEM::ViscStab_hk_ele_vol_div_by_ele_surf},
+          {"ele_vol_div_by_max_ele_surf", Inpar::XFEM::ViscStab_hk_ele_vol_div_by_max_ele_surf},
+      },
+      {.description = "how to define the characteristic element length in cut elements",
+          .default_value = Inpar::XFEM::ViscStab_hk_ele_vol_div_by_max_ele_surf}));
 
 
-  Core::Utils::string_to_integral_parameter<ConvStabScaling>("CONV_STAB_SCALING", "none",
-      "scaling factor for viscous interface stabilization (Nitsche, MSH)",
-      tuple<std::string>("inflow", "abs_inflow", "none"),
-      tuple<ConvStabScaling>(Inpar::XFEM::ConvStabScaling_inflow,  // scaling with max(0,-u*n)
-          Inpar::XFEM::ConvStabScaling_abs_inflow,                 // scaling with |u*n|
-          Inpar::XFEM::ConvStabScaling_none                        // no convective stabilization
-          ),
-      xfluid_stab);
+  xfluid_stab.specs.emplace_back(deprecated_selection<ConvStabScaling>("CONV_STAB_SCALING",
+      {
+          {"inflow", Inpar::XFEM::ConvStabScaling_inflow},
+          {"abs_inflow", Inpar::XFEM::ConvStabScaling_abs_inflow},
+          {"none", Inpar::XFEM::ConvStabScaling_none},
+      },
+      {.description = "scaling factor for viscous interface stabilization (Nitsche, MSH)",
+          .default_value = Inpar::XFEM::ConvStabScaling_none}));
 
-  Core::Utils::string_to_integral_parameter<XffConvStabScaling>("XFF_CONV_STAB_SCALING", "none",
-      "scaling factor for convective interface stabilization of fluid-fluid Coupling",
-      tuple<std::string>("inflow", "averaged", "none"),
-      tuple<XffConvStabScaling>(
-          Inpar::XFEM::XFF_ConvStabScaling_upwinding,      // one-sided inflow stabilization
-          Inpar::XFEM::XFF_ConvStabScaling_only_averaged,  // averaged inflow stabilization
-          Inpar::XFEM::XFF_ConvStabScaling_none            // no convective stabilization
-          ),
-      xfluid_stab);
+  xfluid_stab.specs.emplace_back(deprecated_selection<XffConvStabScaling>("XFF_CONV_STAB_SCALING",
+      {
+          {"inflow", Inpar::XFEM::XFF_ConvStabScaling_upwinding},
+          {"averaged", Inpar::XFEM::XFF_ConvStabScaling_only_averaged},
+          {"none", Inpar::XFEM::XFF_ConvStabScaling_none},
+      },
+      {.description =
+              "scaling factor for convective interface stabilization of fluid-fluid Coupling",
+          .default_value = Inpar::XFEM::XFF_ConvStabScaling_none}));
 
-  Core::Utils::string_to_integral_parameter<MassConservationCombination>("MASS_CONSERVATION_COMBO",
-      "max", "choose the maximum from viscous and convective contributions or just sum both up",
-      tuple<std::string>("max", "sum"),
-      tuple<MassConservationCombination>(
-          Inpar::XFEM::MassConservationCombination_max,  /// use the maximum contribution
-          Inpar::XFEM::MassConservationCombination_sum  /// sum viscous and convective contributions
-          ),
-      xfluid_stab);
+  xfluid_stab.specs.emplace_back(deprecated_selection<MassConservationCombination>(
+      "MASS_CONSERVATION_COMBO",
+      {
+          {"max", Inpar::XFEM::MassConservationCombination_max},
+          {"sum", Inpar::XFEM::MassConservationCombination_sum},
+      },
+      {.description =
+              "choose the maximum from viscous and convective contributions or just sum both up",
+          .default_value = Inpar::XFEM::MassConservationCombination_max}));
 
-  Core::Utils::string_to_integral_parameter<MassConservationScaling>("MASS_CONSERVATION_SCALING",
-      "only_visc",
-      "apply additional scaling of penalty term to enforce mass conservation for "
-      "convection-dominated flow",
-      tuple<std::string>("full", "only_visc"),
-      tuple<MassConservationScaling>(
-          Inpar::XFEM::MassConservationScaling_full,  /// apply mass-conserving convective scaling
-                                                      /// additionally
-          Inpar::XFEM::MassConservationScaling_only_visc  /// use only the viscous scaling
-          ),
-      xfluid_stab);
+  xfluid_stab.specs.emplace_back(
+      deprecated_selection<MassConservationScaling>("MASS_CONSERVATION_SCALING",
+          {
+              {"full", Inpar::XFEM::MassConservationScaling_full},
+              {"only_visc", Inpar::XFEM::MassConservationScaling_only_visc},
+          },
+          {.description = "apply additional scaling of penalty term to enforce mass conservation "
+                          "for convection-dominated flow",
+              .default_value = Inpar::XFEM::MassConservationScaling_only_visc}));
 
   xfluid_stab.specs.emplace_back(parameter<bool>(
       "GHOST_PENALTY_STAB", {.description = "switch on/off ghost penalty interface stabilization",

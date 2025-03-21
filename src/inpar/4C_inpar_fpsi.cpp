@@ -22,15 +22,8 @@ void Inpar::FPSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
 
   Core::Utils::SectionSpecs fpsidyn{"FPSI DYNAMIC"};
 
-  Teuchos::Tuple<std::string, 1> fpsiname;
-  Teuchos::Tuple<int, 1> fpsilabel;
-
-  Teuchos::Array<std::string> name(1);
-  Teuchos::Array<FpsiCouplingType> label(1);
-  name[0] = "fpsi_monolithic_plain";
-  label[0] = fpsi_monolithic_plain;
-  Core::Utils::string_to_integral_parameter<FpsiCouplingType>("COUPALGO", "fpsi_monolithic_plain",
-      "Iteration Scheme over the fields", name, label, fpsidyn);
+  fpsidyn.specs.emplace_back(parameter<FpsiCouplingType>("COUPALGO",
+      {.description = "Iteration Scheme over the fields", .default_value = fpsi_monolithic_plain}));
 
   fpsidyn.specs.emplace_back(parameter<bool>("SHAPEDERIVATIVES",
       {.description = "Include linearization with respect to mesh movement in Navier Stokes "
@@ -42,10 +35,9 @@ void Inpar::FPSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
                       "to stiffness matrix.\nSupported in monolithic FPSI for now.",
           .default_value = false}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::FPSI::PartitionedCouplingMethod>("PARTITIONED",
-      "RobinNeumann", "Coupling strategies for partitioned FPSI solvers.",
-      tuple<std::string>("RobinNeumann", "monolithic", "nocoupling"),
-      tuple<Inpar::FPSI::PartitionedCouplingMethod>(RobinNeumann, monolithic, nocoupling), fpsidyn);
+  fpsidyn.specs.emplace_back(parameter<Inpar::FPSI::PartitionedCouplingMethod>(
+      "PARTITIONED", {.description = "Coupling strategies for partitioned FPSI solvers.",
+                         .default_value = RobinNeumann}));
 
   fpsidyn.specs.emplace_back(parameter<bool>("SECONDORDER",
       {.description = "Second order coupling at the interface.", .default_value = false}));
@@ -65,27 +57,37 @@ void Inpar::FPSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
                                 "porostructure, fluidvelocity, fluidpressure, ale",
                     .default_value = "1e-8 1e-8 1e-8 1e-8 1e-8 1e-8"}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::FPSI::ConvergenceNorm>("NORM_INC", "Abs",
-      "Type of norm for primary variables convergence check.  \n"
-      "Abs: absolute values, Abs_sys_split: absolute values with correction of systemsize for "
-      "every field separate, Rel_sys: relative values with correction of systemsize.",
-      tuple<std::string>("Abs", "Abs_sys_split", "Rel_sys"),
-      tuple<Inpar::FPSI::ConvergenceNorm>(
-          absoluteconvergencenorm, absoluteconvergencenorm_sys_split, relativconvergencenorm_sys),
-      fpsidyn);
+  fpsidyn.specs.emplace_back(deprecated_selection<Inpar::FPSI::ConvergenceNorm>("NORM_INC",
+      {
+          {"Abs", absoluteconvergencenorm},
+          {"Abs_sys_split", absoluteconvergencenorm_sys_split},
+          {"Rel_sys", relativconvergencenorm_sys},
+      },
+      {.description =
+              "Type of norm for primary variables convergence check.  \nAbs: absolute values, "
+              "Abs_sys_split: absolute values with correction of systemsize for every field "
+              "separate, Rel_sys: relative values with correction of systemsize.",
+          .default_value = absoluteconvergencenorm}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::FPSI::ConvergenceNorm>("NORM_RESF", "Abs",
-      "Type of norm for primary variables convergence check. \n"
-      "Abs: absolute values, Abs_sys_split: absolute values with correction of systemsize for "
-      "every field separate, Rel_sys: relative values with correction of systemsize.",
-      tuple<std::string>("Abs", "Abs_sys_split", "Rel_sys"),
-      tuple<Inpar::FPSI::ConvergenceNorm>(
-          absoluteconvergencenorm, absoluteconvergencenorm_sys_split, relativconvergencenorm_sys),
-      fpsidyn);
+  fpsidyn.specs.emplace_back(deprecated_selection<Inpar::FPSI::ConvergenceNorm>("NORM_RESF",
+      {
+          {"Abs", absoluteconvergencenorm},
+          {"Abs_sys_split", absoluteconvergencenorm_sys_split},
+          {"Rel_sys", relativconvergencenorm_sys},
+      },
+      {.description =
+              "Type of norm for primary variables convergence check. \nAbs: absolute values, "
+              "Abs_sys_split: absolute values with correction of systemsize for every field "
+              "separate, Rel_sys: relative values with correction of systemsize.",
+          .default_value = absoluteconvergencenorm}));
 
-  Core::Utils::string_to_integral_parameter<Inpar::FPSI::BinaryOp>("NORMCOMBI_RESFINC", "And",
-      "binary operator to combine primary variables and residual force values",
-      tuple<std::string>("And", "Or"), tuple<Inpar::FPSI::BinaryOp>(bop_and, bop_or), fpsidyn);
+  fpsidyn.specs.emplace_back(deprecated_selection<Inpar::FPSI::BinaryOp>("NORMCOMBI_RESFINC",
+      {
+          {"And", bop_and},
+          {"Or", bop_or},
+      },
+      {.description = "binary operator to combine primary variables and residual force values",
+          .default_value = bop_and}));
 
   fpsidyn.specs.emplace_back(
       parameter<bool>("LineSearch", {.description = "adapt increment in case of non-monotonic "
