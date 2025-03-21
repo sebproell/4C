@@ -33,7 +33,7 @@ BeamInteraction::BeamPotentialParams::BeamPotentialParams()
       num_integration_segments_(-1),
       num_gp_s_(-1),
       use_fad_(false),
-      choice_master_slave_(BeamPotential::MasterSlaveChoice::choice_master_slave_vague),
+      choice_master_slave_(BeamPotential::MasterSlaveChoice::vague),
       visualization_output_(false),
       params_runtime_visualization_output_btb_potential_(nullptr),
       potential_reduction_length_(0.0)
@@ -166,7 +166,7 @@ void BeamInteraction::BeamPotentialParams::init(const double restart_time)
   choice_master_slave_ = Teuchos::getIntegralValue<BeamPotential::MasterSlaveChoice>(
       beam_potential_params_list, "CHOICE_MASTER_SLAVE");
 
-  if (choice_master_slave_ == BeamPotential::MasterSlaveChoice::choice_master_slave_vague)
+  if (choice_master_slave_ == BeamPotential::MasterSlaveChoice::vague)
   {
     FOUR_C_THROW("Invalid choice of master and slave!");
   }

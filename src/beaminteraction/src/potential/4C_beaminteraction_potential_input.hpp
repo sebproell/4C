@@ -63,7 +63,7 @@ namespace BeamPotential
   {
     smaller_eleGID_is_slave,
     higher_eleGID_is_slave,
-    choice_master_slave_vague
+    vague
   };
 
   /// set the beam potential parameters
