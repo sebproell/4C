@@ -26,7 +26,7 @@ BeamInteraction::BeamPotentialParams::BeamPotentialParams()
       pot_law_exponents_(nullptr),
       pot_law_prefactors_(nullptr),
       potential_type_(BeamPotential::Type::vague),
-      strategy_(BeamPotential::strategy_vague),
+      strategy_(BeamPotential::Strategy::vague),
       cutoff_radius_(0.0),
       regularization_type_(BeamPotential::RegularizationType::none),
       regularization_separation_(0.0),
@@ -99,10 +99,10 @@ void BeamInteraction::BeamPotentialParams::init(const double restart_time)
   }
 
   /****************************************************************************/
-  strategy_ = Teuchos::getIntegralValue<BeamPotential::BeamPotentialStrategy>(
-      beam_potential_params_list, "STRATEGY");
+  strategy_ =
+      Teuchos::getIntegralValue<BeamPotential::Strategy>(beam_potential_params_list, "STRATEGY");
 
-  if (strategy_ == BeamPotential::strategy_vague)
+  if (strategy_ == BeamPotential::Strategy::vague)
     FOUR_C_THROW("You must specify a strategy to be used to evaluate beam interaction potential!");
 
   /****************************************************************************/
@@ -113,7 +113,7 @@ void BeamInteraction::BeamPotentialParams::init(const double restart_time)
     FOUR_C_THROW("You must specify the type of the specified beam interaction potential!");
 
   if (potential_type_ == BeamPotential::Type::surface and
-      strategy_ != BeamPotential::strategy_doublelengthspec_largesepapprox)
+      strategy_ != BeamPotential::Strategy::double_length_specific_large_separations)
   {
     FOUR_C_THROW("Surface interaction is not implemented for this strategy yet!");
   }
@@ -129,9 +129,9 @@ void BeamInteraction::BeamPotentialParams::init(const double restart_time)
       beam_potential_params_list, "REGULARIZATION_TYPE");
 
   if ((regularization_type_ != BeamPotential::RegularizationType::none and
-          strategy_ == BeamPotential::strategy_doublelengthspec_largesepapprox) or
+          strategy_ == BeamPotential::Strategy::double_length_specific_large_separations) or
       (regularization_type_ == BeamPotential::RegularizationType::constant and
-          strategy_ == BeamPotential::strategy_singlelengthspec_smallsepapprox))
+          strategy_ == BeamPotential::Strategy::single_length_specific_small_separations))
   {
     FOUR_C_THROW(
         "This kind of regularization of the force law is not implemented for this strategy yet!");

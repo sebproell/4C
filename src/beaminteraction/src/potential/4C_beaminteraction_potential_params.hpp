@@ -68,7 +68,7 @@ namespace BeamInteraction
       return potential_type_;
     }
 
-    inline enum BeamPotential::BeamPotentialStrategy strategy() const
+    inline enum BeamPotential::Strategy strategy() const
     {
       throw_error_if_not_init_and_setup();
       return strategy_;
@@ -157,7 +157,7 @@ namespace BeamInteraction
     enum BeamPotential::Type potential_type_;
 
     //! strategy to evaluate interaction potential
-    enum BeamPotential::BeamPotentialStrategy strategy_;
+    enum BeamPotential::Strategy strategy_;
 
     //! neglect all contributions at separation larger than this cutoff radius
     double cutoff_radius_;

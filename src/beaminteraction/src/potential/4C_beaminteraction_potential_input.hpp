@@ -34,21 +34,21 @@ namespace BeamPotential
   };
 
   /// available strategies/methods to evaluate potential interaction
-  /// (this enum represents the input file parameter STRATEGY)
-  enum BeamPotentialStrategy
+  enum class Strategy
   {
-    strategy_doublelengthspec_largesepapprox,         ///< double length specific potential, large
+    double_length_specific_large_separations,         ///< double length specific potential, large
                                                       ///< separations
-    strategy_doublelengthspec_smallsepapprox,         ///< double length specific potential, small
+    double_length_specific_small_separations,         ///< double length specific potential, small
                                                       ///< separations
-    strategy_singlelengthspec_smallsepapprox,         ///< single length specific potential, small
+    single_length_specific_small_separations,         ///< single length specific potential, small
                                                       ///< separations
-    strategy_singlelengthspec_smallsepapprox_simple,  ///< reduced variant of the previous one
-    strategy_vague
+    single_length_specific_small_separations_simple,  ///< single length specific potential, small
+                                                      ///< separations, reduced variant
+    vague
   };
 
-  /// available types to regularize the force law for separations smaller than
-  /// the specified regularization separation
+  /// available types to regularize the force law for separations smaller than the specified
+  /// regularization separation
   enum class RegularizationType
   {
     linear,    ///< linear extrapolation
@@ -56,9 +56,7 @@ namespace BeamPotential
     none       ///< no regularization
   };
 
-  /**
-   * \brief rule for how to assign the role of slave and master to beam elements
-   */
+  /// rule for how to assign the role of slave and master to beam elements
   enum class MasterSlaveChoice
   {
     smaller_eleGID_is_slave,

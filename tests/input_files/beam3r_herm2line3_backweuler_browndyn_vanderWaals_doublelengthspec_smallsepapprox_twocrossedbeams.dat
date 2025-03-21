@@ -65,7 +65,7 @@ REPARTITIONSTRATEGY             Everydt
 POT_LAW_PREFACTOR               -3e-5
 POT_LAW_EXPONENT                6.0
 TYPE                            volume
-STRATEGY                        DoubleLengthSpecific_SmallSepApprox
+STRATEGY                        double_length_specific_small_separations
 NUM_GAUSSPOINTS                 32
 AUTOMATIC_DIFFERENTIATION       no
 ----------------------------------BEAM POTENTIAL/RUNTIME VTK OUTPUT

@@ -39,18 +39,10 @@ void BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       {.description = "Type of potential interaction: surface (default) or volume potential",
           .default_value = BeamPotential::Type::surface}));
 
-  beampotential.specs.emplace_back(
-      deprecated_selection<BeamPotential::BeamPotentialStrategy>("STRATEGY",
-          {
-              {"DoubleLengthSpecific_LargeSepApprox", strategy_doublelengthspec_largesepapprox},
-              {"DoubleLengthSpecific_SmallSepApprox", strategy_doublelengthspec_smallsepapprox},
-              {"SingleLengthSpecific_SmallSepApprox", strategy_singlelengthspec_smallsepapprox},
-              {"SingleLengthSpecific_SmallSepApprox_Simple",
-                  strategy_singlelengthspec_smallsepapprox_simple},
-          },
-          {.description = "strategy to evaluate interaction potential: double/single length "
-                          "specific, small/large separation approximation, ...",
-              .default_value = strategy_doublelengthspec_largesepapprox}));
+  beampotential.specs.emplace_back(parameter<BeamPotential::Strategy>("STRATEGY",
+      {.description = "strategy to evaluate interaction potential: double/single length specific, "
+                      "small/large separation approximation, ...",
+          .default_value = BeamPotential::Strategy::double_length_specific_large_separations}));
 
   beampotential.specs.emplace_back(parameter<double>("CUTOFF_RADIUS",
       {.description =

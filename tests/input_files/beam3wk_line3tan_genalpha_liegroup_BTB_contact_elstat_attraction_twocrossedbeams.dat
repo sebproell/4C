@@ -85,7 +85,7 @@ E 3 COUPLING_ID 1
 POT_LAW_PREFACTOR               0.3 0.1
 POT_LAW_EXPONENT                1.0 1.0
 TYPE                            surface
-STRATEGY                        DoubleLengthSpecific_LargeSepApprox
+STRATEGY                        double_length_specific_large_separations
 --------------------------------------------------------------------BINNING STRATEGY
 BIN_SIZE_LOWER_BOUND            3
 DOMAINBOUNDINGBOX               -0.5 -0.5 -0.5 5.5 5.5 5.5

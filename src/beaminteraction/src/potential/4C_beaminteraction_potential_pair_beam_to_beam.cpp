@@ -145,22 +145,22 @@ bool BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::eval
   // compute the values for element residual vectors ('force') and linearizations ('stiff')
   switch (params()->strategy())
   {
-    case BeamPotential::strategy_doublelengthspec_largesepapprox:
+    case BeamPotential::Strategy::double_length_specific_large_separations:
     {
       evaluate_fpotand_stiffpot_large_sep_approx(
           force_pot1, force_pot2, stiffmat11, stiffmat12, stiffmat21, stiffmat22);
       break;
     }
 
-    case BeamPotential::strategy_doublelengthspec_smallsepapprox:
+    case BeamPotential::Strategy::double_length_specific_small_separations:
     {
       evaluate_fpotand_stiffpot_double_length_specific_small_sep_approx(
           force_pot1, force_pot2, stiffmat11, stiffmat12, stiffmat21, stiffmat22);
       break;
     }
 
-    case BeamPotential::strategy_singlelengthspec_smallsepapprox:
-    case BeamPotential::strategy_singlelengthspec_smallsepapprox_simple:
+    case BeamPotential::Strategy::single_length_specific_small_separations:
+    case BeamPotential::Strategy::single_length_specific_small_separations_simple:
     {
       evaluate_fpotand_stiffpot_single_length_specific_small_sep_approx(
           force_pot1, force_pot2, stiffmat11, stiffmat12, stiffmat21, stiffmat22);
@@ -1058,14 +1058,14 @@ void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
         m_);
 
   if (not params()->use_fad() and
-      params()->strategy() == BeamPotential::strategy_singlelengthspec_smallsepapprox)
+      params()->strategy() == BeamPotential::Strategy::single_length_specific_small_separations)
   {
     FOUR_C_THROW(
         "The strategy 'SingleLengthSpecific_SmallSepApprox' to evaluate the interaction "
         "potential requires automatic differentiation via FAD!");
   }
 
-  if (params()->strategy() == BeamPotential::strategy_singlelengthspec_smallsepapprox &&
+  if (params()->strategy() == BeamPotential::Strategy::single_length_specific_small_separations &&
       params()->potential_reduction_length() != -1.0)
   {
     FOUR_C_THROW(
@@ -1391,7 +1391,7 @@ void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
       // evaluate all quantities which depend on the applied disk-cylinder potential law
 
       // 'full' disk-cylinder interaction potential
-      if (params()->strategy() == BeamPotential::strategy_singlelengthspec_smallsepapprox)
+      if (params()->strategy() == BeamPotential::Strategy::single_length_specific_small_separations)
       {
         if (not evaluate_full_disk_cylinder_potential(interaction_potential_GP, force_pot_slave_GP,
                 force_pot_master_GP, r_slave, r_xi_slave, t_slave, r_master, r_xi_master,
@@ -1405,7 +1405,7 @@ void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
       }
       // reduced, simpler variant of the disk-cylinder interaction potential
       else if (params()->strategy() ==
-               BeamPotential::strategy_singlelengthspec_smallsepapprox_simple)
+               BeamPotential::Strategy::single_length_specific_small_separations_simple)
       {
         if (not evaluate_simple_disk_cylinder_potential(dist_ul, norm_dist_ul, alpha, cos_alpha,
                 r_slave, r_xi_slave, norm_r_xi_slave, t_slave, r_master, r_xi_master,

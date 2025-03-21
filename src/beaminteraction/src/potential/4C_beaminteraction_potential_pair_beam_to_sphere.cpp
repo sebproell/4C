@@ -152,7 +152,7 @@ bool BeamInteraction::BeamToSpherePotentialPair<numnodes, numnodalvalues>::evalu
   // Todo allow for independent choice of strategy for beam-to-sphere potentials
   switch (params()->strategy())
   {
-    case BeamPotential::strategy_doublelengthspec_largesepapprox:
+    case BeamPotential::Strategy::double_length_specific_large_separations:
     {
       evaluate_fpotand_stiffpot_large_sep_approx();
       break;
