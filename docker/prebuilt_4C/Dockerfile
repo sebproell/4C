@@ -5,7 +5,7 @@
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
-FROM ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:latest
+FROM ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:main
 LABEL org.opencontainers.image.description="Image containing the built 4C code"
 LABEL org.4c-multiphysics.project=4C
 
