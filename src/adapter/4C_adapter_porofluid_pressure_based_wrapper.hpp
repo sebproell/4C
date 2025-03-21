@@ -5,12 +5,12 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_ADAPTER_POROFLUIDMULTIPHASE_WRAPPER_HPP
-#define FOUR_C_ADAPTER_POROFLUIDMULTIPHASE_WRAPPER_HPP
+#ifndef FOUR_C_ADAPTER_POROFLUID_PRESSURE_BASED_WRAPPER_HPP
+#define FOUR_C_ADAPTER_POROFLUID_PRESSURE_BASED_WRAPPER_HPP
 
 #include "4C_config.hpp"
 
-#include "4C_adapter_porofluidmultiphase.hpp"
+#include "4C_adapter_porofluid_pressure_based.hpp"
 
 #include <memory>
 

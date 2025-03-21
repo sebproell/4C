@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_adapter_porofluidmultiphase_wrapper.hpp"
+#include "4C_adapter_porofluid_pressure_based_wrapper.hpp"
 
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"

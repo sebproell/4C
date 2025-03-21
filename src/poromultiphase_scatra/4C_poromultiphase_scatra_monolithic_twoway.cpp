@@ -8,7 +8,7 @@
 #include "4C_poromultiphase_scatra_monolithic_twoway.hpp"
 
 #include "4C_adapter_art_net.hpp"
-#include "4C_adapter_porofluidmultiphase_wrapper.hpp"
+#include "4C_adapter_porofluid_pressure_based_wrapper.hpp"
 #include "4C_adapter_scatra_base_algorithm.hpp"
 #include "4C_adapter_str_structure.hpp"
 #include "4C_fem_discretization.hpp"
@@ -20,7 +20,7 @@
 #include "4C_linear_solver_method.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_linear_solver_method_parameters.hpp"
-#include "4C_poromultiphase_base.hpp"
+#include "4C_porofluid_pressure_based_elast_base.hpp"
 #include "4C_scatra_ele_action.hpp"
 #include "4C_scatra_timint_implicit.hpp"
 #include "4C_scatra_timint_meshtying_strategy_artery.hpp"

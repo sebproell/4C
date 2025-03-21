@@ -19,8 +19,8 @@ set(_dependencies
     poroelast
     poroelast_scatra
     porofluid_pressure_based
+    porofluid_pressure_based_elast
     porofluid_pressure_based_ele
-    poromultiphase
     scatra
     scatra_ele
     )

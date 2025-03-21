@@ -5,13 +5,13 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_POROMULTIPHASE_MONOLITHIC_TWOWAY_HPP
-#define FOUR_C_POROMULTIPHASE_MONOLITHIC_TWOWAY_HPP
+#ifndef FOUR_C_POROFLUID_PRESSURE_BASED_ELAST_MONOLITHIC_TWOWAY_HPP
+#define FOUR_C_POROFLUID_PRESSURE_BASED_ELAST_MONOLITHIC_TWOWAY_HPP
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_poromultiphase.hpp"
-#include "4C_poromultiphase_monolithic.hpp"
+#include "4C_inpar_porofluid_pressure_based_elast.hpp"
+#include "4C_porofluid_pressure_based_elast_monolithic.hpp"
 
 #include <Teuchos_Time.hpp>
 

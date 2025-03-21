@@ -13,8 +13,8 @@
 #include "4C_adapter_algorithmbase.hpp"
 #include "4C_inpar_poromultiphase_scatra.hpp"
 #include "4C_linalg_vector.hpp"
+#include "4C_porofluid_pressure_based_elast_adapter.hpp"
 #include "4C_porofluid_pressure_based_utils.hpp"
-#include "4C_poromultiphase_adapter.hpp"
 
 #include <Teuchos_Time.hpp>
 

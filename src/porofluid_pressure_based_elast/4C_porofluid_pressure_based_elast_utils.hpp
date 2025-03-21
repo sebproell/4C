@@ -5,14 +5,14 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_POROMULTIPHASE_UTILS_HPP
-#define FOUR_C_POROMULTIPHASE_UTILS_HPP
+#ifndef FOUR_C_POROFLUID_PRESSURE_BASED_ELAST_UTILS_HPP
+#define FOUR_C_POROFLUID_PRESSURE_BASED_ELAST_UTILS_HPP
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_poromultiphase.hpp"
+#include "4C_inpar_porofluid_pressure_based_elast.hpp"
 #include "4C_linalg_vector.hpp"
-#include "4C_poromultiphase_adapter.hpp"
+#include "4C_porofluid_pressure_based_elast_adapter.hpp"
 
 #include <memory>
 #include <set>

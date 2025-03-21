@@ -5,13 +5,13 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_POROMULTIPHASE_PARTITIONED_TWOWAY_HPP
-#define FOUR_C_POROMULTIPHASE_PARTITIONED_TWOWAY_HPP
+#ifndef FOUR_C_POROFLUID_PRESSURE_BASED_ELAST_PARTITIONED_TWOWAY_HPP
+#define FOUR_C_POROFLUID_PRESSURE_BASED_ELAST_PARTITIONED_TWOWAY_HPP
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_poromultiphase.hpp"
-#include "4C_poromultiphase_partitioned.hpp"
+#include "4C_inpar_porofluid_pressure_based_elast.hpp"
+#include "4C_porofluid_pressure_based_elast_partitioned.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
