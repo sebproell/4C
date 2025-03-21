@@ -176,21 +176,21 @@ bool XFEM::CouplingCommManager::insert_matrix(int transform_id, int idxA,
     case CouplingCommManager::col:
     {
       return get_transform(transform_id)
-          ->operator()(matA, matA.range_map(), matA.domain_map(), scale, nullptr,
+          ->operator()(matA, matA.range_map(), matA.domain_map_not_epetra(), scale, nullptr,
               get_coupling_converter(idxA, idxB).get(), matB, exactmatch, addmatrix);
       break;
     }
     case CouplingCommManager::row:
     {
       return get_transform(transform_id)
-          ->operator()(matA, matA.range_map(), matA.domain_map(), scale,
+          ->operator()(matA, matA.range_map(), matA.domain_map_not_epetra(), scale,
               get_coupling_converter(idxA, idxB).get(), nullptr, matB, true, addmatrix);
       break;
     }
     case CouplingCommManager::row_and_col:
     {
       return get_transform(transform_id)
-          ->operator()(matA, matA.range_map(), matA.domain_map(), scale,
+          ->operator()(matA, matA.range_map(), matA.domain_map_not_epetra(), scale,
               get_coupling_converter(idxA, idxB).get(), get_coupling_converter(idxA, idxB).get(),
               matB, exactmatch, addmatrix);
       break;

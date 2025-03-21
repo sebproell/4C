@@ -15,7 +15,7 @@
 #include <memory>
 
 // forward declarations
-class Core::LinAlg::Map;
+class Map;
 namespace NOX
 {
   namespace Solver
@@ -31,7 +31,8 @@ namespace Core::LinAlg
 {
   template <typename T>
   class Vector;
-}
+  class Map;
+}  // namespace Core::LinAlg
 
 namespace NOX
 {

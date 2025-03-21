@@ -23,6 +23,7 @@
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_mortar_utils.hpp"
+#include "4C_structure_new_timint_base.hpp"
 
 #include <Epetra_FEVector.h>
 #include <Teuchos_Time.hpp>
@@ -545,8 +546,8 @@ void Wear::LagrangeStrategyWear::initialize()
           *gmslipn_, 100, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
       // w - rhs
-      inactive_wear_rhs_m_ = std::make_shared<Epetra_FEVector>(*gwminact_);
-      wear_cond_rhs_m_ = std::make_shared<Epetra_FEVector>(*gmslipn_);
+      inactive_wear_rhs_m_ = std::make_shared<Epetra_FEVector>(gwminact_->get_epetra_map());
+      wear_cond_rhs_m_ = std::make_shared<Epetra_FEVector>(gmslipn_->get_epetra_map());
     }
   }
 
@@ -2092,7 +2093,7 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
         Core::LinAlg::matrix_multiply(*dhat, true, *kan, false, false, false, true);
     kinmod->add(*kinadd, false, -1.0, 1.0);
   }
-  kinmod->complete(kin->domain_map(), kin->row_map());
+  kinmod->complete(Core::LinAlg::Map(kin->domain_map()), kin->row_map());
 
   // kim: subtract T(dhat)*kam
   std::shared_ptr<Core::LinAlg::SparseMatrix> kimmod =
@@ -2104,7 +2105,7 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
         Core::LinAlg::matrix_multiply(*dhat, true, *kam, false, false, false, true);
     kimmod->add(*kimadd, false, -1.0, 1.0);
   }
-  kimmod->complete(kim->domain_map(), kim->row_map());
+  kimmod->complete(Core::LinAlg::Map(kim->domain_map()), kim->row_map());
 
   // kii: subtract T(dhat)*kai
   std::shared_ptr<Core::LinAlg::SparseMatrix> kiimod;
@@ -2118,7 +2119,7 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
           Core::LinAlg::matrix_multiply(*dhat, true, *kai, false, false, false, true);
       kiimod->add(*kiiadd, false, -1.0, 1.0);
     }
-    kiimod->complete(kii->domain_map(), kii->row_map());
+    kiimod->complete(Core::LinAlg::Map(kii->domain_map()), kii->row_map());
   }
 
   // kia: subtract T(dhat)*kaa
@@ -2130,7 +2131,7 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
     std::shared_ptr<Core::LinAlg::SparseMatrix> kiaadd =
         Core::LinAlg::matrix_multiply(*dhat, true, *kaa, false, false, false, true);
     kiamod->add(*kiaadd, false, -1.0, 1.0);
-    kiamod->complete(kia->domain_map(), kia->row_map());
+    kiamod->complete(Core::LinAlg::Map(kia->domain_map()), kia->row_map());
   }
 
   //--------------------------------------------------------- FOURTH LINE

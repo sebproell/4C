@@ -323,7 +323,7 @@ void CONSTRAINTS::ConstraintSolver::solve_simple(Core::LinAlg::SparseMatrix& sti
   // cast constraint operators to matrices and save transpose of constraint matrix
   Core::LinAlg::SparseMatrix constrTrans(*conrowmap, 81, false, true);
   constrTrans.add(constrT, true, 1.0, 0.0);
-  constrTrans.complete(constrT.range_map(), constrT.domain_map());
+  constrTrans.complete(constrT.range_map(), constrT.domain_map_not_epetra());
 
   // ONLY compatibility
   // dirichtoggle_ changed and we need to rebuild associated DBC maps

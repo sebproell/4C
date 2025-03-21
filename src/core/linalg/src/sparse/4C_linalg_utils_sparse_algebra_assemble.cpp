@@ -27,7 +27,7 @@ void Core::LinAlg::assemble(Epetra_CrsMatrix& A, const Core::LinAlg::SerialDense
 
   const int myrank =
       Core::Communication::my_mpi_rank(Core::Communication::unpack_epetra_comm(A.Comm()));
-  const Core::LinAlg::Map& rowmap = A.RowMap();
+  const Core::LinAlg::Map& rowmap = Map(A.RowMap());
 
   // this 'Assemble' is not implemented for a Filled() matrix A
   if (A.Filled())

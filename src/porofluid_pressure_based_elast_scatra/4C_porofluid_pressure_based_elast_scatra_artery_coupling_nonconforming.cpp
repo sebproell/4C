@@ -93,7 +93,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::init()
       *(arterydis_->dof_row_map()), 27, false, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
   m_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *(arterydis_->dof_row_map()), 27, false, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
-  kappa_inv_ = std::make_shared<Epetra_FEVector>(*arterydis_->dof_row_map(), true);
+  kappa_inv_ = std::make_shared<Epetra_FEVector>(arterydis_->dof_row_map()->get_epetra_map(), true);
 
   // full map of continuous and artery dofs
   std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
@@ -108,7 +108,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::init()
   FEmat_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *fullmap_, 81, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
-  fe_rhs_ = std::make_shared<Epetra_FEVector>(*fullmap_);
+  fe_rhs_ = std::make_shared<Epetra_FEVector>(fullmap_->get_epetra_map());
 
   // check global map extractor
   globalex_->check_for_valid_map_extractor();

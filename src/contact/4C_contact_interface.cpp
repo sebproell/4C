@@ -1022,7 +1022,7 @@ void CONTACT::Interface::redistribute()
   // create the output graph (with new slave node row map) and export to it
   std::shared_ptr<Core::LinAlg::Graph> outgraph =
       std::make_shared<Core::LinAlg::Graph>(Copy, *srownodes, 108, false);
-  Epetra_Export exporter(graph->row_map(), *srownodes);
+  Epetra_Export exporter(graph->row_map(), srownodes->get_epetra_map());
   int err = outgraph->export_to(graph->get_epetra_crs_graph(), exporter, Add);
   if (err < 0) FOUR_C_THROW("Graph export returned err={}", err);
 

@@ -1188,7 +1188,7 @@ void Solid::ModelEvaluator::BeamInteraction::update_maps()
   ia_force_beaminteraction_ =
       std::make_shared<Core::LinAlg::Vector<double>>(*ia_discret_->dof_row_map(), true);
   ia_state_ptr_->get_force_np() =
-      std::make_shared<Epetra_FEVector>(*ia_discret_->dof_row_map(), true);
+      std::make_shared<Epetra_FEVector>(ia_discret_->dof_row_map()->get_epetra_map(), true);
 
   // stiff
   ia_state_ptr_->get_stiff() = std::make_shared<Core::LinAlg::SparseMatrix>(

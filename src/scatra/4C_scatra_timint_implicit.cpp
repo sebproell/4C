@@ -1382,7 +1382,7 @@ void ScaTra::ScaTraTimIntImpl::set_wall_shear_stresses(
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  if (not wss->get_block_map().SameAs(*discret_->dof_row_map(nds_wall_shear_stress())))
+  if (not wss->get_map().SameAs(*discret_->dof_row_map(nds_wall_shear_stress())))
     FOUR_C_THROW("Maps are NOT identical. Emergency!");
 #endif
 
@@ -1411,7 +1411,7 @@ void ScaTra::ScaTraTimIntImpl::set_pressure_field(
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  if (not pressure->get_block_map().SameAs(*discret_->dof_row_map(nds_pressure())))
+  if (not pressure->get_map().SameAs(*discret_->dof_row_map(nds_pressure())))
     FOUR_C_THROW("Maps are NOT identical. Emergency!");
 #endif
 
@@ -1432,7 +1432,7 @@ void ScaTra::ScaTraTimIntImpl::set_membrane_concentration(
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  if (not MembraneConc->get_block_map().SameAs(*discret_->dof_row_map(0)))
+  if (not MembraneConc->get_map().SameAs(*discret_->dof_row_map(0)))
     FOUR_C_THROW("Maps are NOT identical. Emergency!");
 #endif
 
@@ -1456,7 +1456,7 @@ void ScaTra::ScaTraTimIntImpl::set_mean_concentration(
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  if (not MeanConc->get_block_map().SameAs(*discret_->dof_row_map(0)))
+  if (not MeanConc->get_map().SameAs(*discret_->dof_row_map(0)))
     FOUR_C_THROW("Maps are NOT identical. Emergency!");
 #endif
 
@@ -2376,7 +2376,7 @@ void ScaTra::ScaTraTimIntImpl::setup_krylov_space_projection(Core::Conditions::C
 
   // create the projector
   projector_ = std::make_shared<Core::LinAlg::KrylovProjector>(
-      activemodeids, weighttype, discret_->dof_row_map());
+      activemodeids, weighttype, &discret_->dof_row_map()->get_epetra_map());
 
   // update the projector
   update_krylov_space_projection();

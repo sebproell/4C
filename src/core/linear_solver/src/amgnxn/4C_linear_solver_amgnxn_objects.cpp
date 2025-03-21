@@ -411,7 +411,7 @@ Core::LinearSolver::AMGNxN::BlockedMatrix::new_domain_blocked_vector(int NV, boo
   Teuchos::RCP<BlockedVector> out = Teuchos::make_rcp<BlockedVector>(get_num_cols());
   for (int i = 0; i < get_num_cols(); i++)
   {
-    const Core::LinAlg::Map& Map = get_matrix(0, i)->domain_map();
+    const Core::LinAlg::Map& Map = get_matrix(0, i)->domain_map_not_epetra();
     Teuchos::RCP<Core::LinAlg::MultiVector<double>> Vi =
         Teuchos::make_rcp<Core::LinAlg::MultiVector<double>>(
             Map, NV, ZeroIt);  // This constructor seems to be buggy inside function
@@ -452,7 +452,7 @@ Core::LinearSolver::AMGNxN::DiagonalBlockedMatrix::new_domain_blocked_vector(
   Teuchos::RCP<BlockedVector> out = Teuchos::make_rcp<BlockedVector>(get_num_cols());
   for (int i = 0; i < get_num_cols(); i++)
   {
-    const Core::LinAlg::Map& Map = get_matrix(i, i)->domain_map();
+    const Core::LinAlg::Map& Map = get_matrix(i, i)->domain_map_not_epetra();
     Teuchos::RCP<Core::LinAlg::MultiVector<double>> Vi =
         Teuchos::make_rcp<Core::LinAlg::MultiVector<double>>(Map, NV, ZeroIt);
 

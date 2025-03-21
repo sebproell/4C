@@ -995,7 +995,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::pre_update_step_element(b
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   // safety check
-  if (not dis_at_last_redistr_->get_block_map().SameAs(*bin_discret().dof_row_map()))
+  if (not dis_at_last_redistr_->get_map().SameAs(*bin_discret().dof_row_map()))
     FOUR_C_THROW(
         "current linker dof map and map of disp vector after last redistribution are\n "
         "are not the same. Something went wrong");

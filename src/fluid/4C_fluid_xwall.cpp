@@ -1134,7 +1134,7 @@ void FLD::XWall::l2_project_vector(Core::LinAlg::Vector<double>& veln,
     std::shared_ptr<Core::LinAlg::Vector<double>> velnp,
     std::shared_ptr<Core::LinAlg::Vector<double>> accn)
 {
-  if (not veln.get_block_map().SameAs(*discret_->dof_row_map()))
+  if (not veln.get_map().SameAs(*discret_->dof_row_map()))
     FOUR_C_THROW("input map is not the dof row map of the fluid discretization");
 
   massmatrix_->zero();

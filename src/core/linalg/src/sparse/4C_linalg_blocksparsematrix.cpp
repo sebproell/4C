@@ -413,17 +413,17 @@ const Epetra_Comm& Core::LinAlg::BlockSparseMatrixBase::Comm() const
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Core::LinAlg::Map& Core::LinAlg::BlockSparseMatrixBase::OperatorDomainMap() const
+const Epetra_Map& Core::LinAlg::BlockSparseMatrixBase::OperatorDomainMap() const
 {
-  return full_domain_map();
+  return full_domain_map().get_epetra_map();
 }
 
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Core::LinAlg::Map& Core::LinAlg::BlockSparseMatrixBase::OperatorRangeMap() const
+const Epetra_Map& Core::LinAlg::BlockSparseMatrixBase::OperatorRangeMap() const
 {
-  return full_range_map();
+  return full_range_map().get_epetra_map();
 }
 
 /*----------------------------------------------------------------------*

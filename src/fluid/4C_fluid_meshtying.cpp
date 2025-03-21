@@ -202,7 +202,8 @@ void FLD::Meshtying::setup_meshtying(const std::vector<int>& coupleddof, const b
           {
             std::string inv = "Inverse1";
             const Core::LinAlg::Map& oldmap = *(dofrowmap_);
-            const Core::LinAlg::Map& newmap = matsolve->matrix(0, 0).epetra_matrix()->RowMap();
+            const Core::LinAlg::Map& newmap =
+                Core::LinAlg::Map(matsolve->matrix(0, 0).epetra_matrix()->RowMap());
             Core::LinearSolver::Parameters::fix_null_space(
                 inv.data(), oldmap, newmap, solver_.params().sublist("Inverse1"));
             std::cout << std::endl;
@@ -211,7 +212,8 @@ void FLD::Meshtying::setup_meshtying(const std::vector<int>& coupleddof, const b
           {
             std::string inv = "Inverse2";
             const Core::LinAlg::Map& oldmap = *(dofrowmap_);
-            const Core::LinAlg::Map& newmap = matsolve->matrix(1, 1).epetra_matrix()->RowMap();
+            const Core::LinAlg::Map& newmap =
+                Core::LinAlg::Map(matsolve->matrix(1, 1).epetra_matrix()->RowMap());
             Core::LinearSolver::Parameters::fix_null_space(
                 inv.data(), oldmap, newmap, solver_.params().sublist("Inverse2"));
             std::cout << std::endl;

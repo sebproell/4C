@@ -39,6 +39,7 @@ namespace Core::LinAlg
   class BlockSparseMatrixBase;
   class MapExtractor;
   class MultiMapExtractor;
+  class Map;
 }  // namespace Core::LinAlg
 
 namespace Core::Conditions

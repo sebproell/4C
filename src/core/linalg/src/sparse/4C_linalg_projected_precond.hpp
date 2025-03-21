@@ -85,15 +85,9 @@ namespace Core::LinAlg
 
     const Epetra_Comm& Comm() const override { return (precond_->Comm()); }
 
-    const Core::LinAlg::Map& OperatorDomainMap() const override
-    {
-      return (precond_->OperatorDomainMap());
-    }
+    const Epetra_Map& OperatorDomainMap() const override { return (precond_->OperatorDomainMap()); }
 
-    const Core::LinAlg::Map& OperatorRangeMap() const override
-    {
-      return (precond_->OperatorRangeMap());
-    }
+    const Epetra_Map& OperatorRangeMap() const override { return (precond_->OperatorRangeMap()); }
 
     //! @}
 

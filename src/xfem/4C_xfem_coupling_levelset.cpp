@@ -478,7 +478,7 @@ bool XFEM::LevelSetCoupling::set_level_set_field(const double time)
 
       // SAFETY check
       // dependent on the desired projection, just remove this line
-      if (not modphinp->get_block_map().SameAs(
+      if (not modphinp->get_map().SameAs(
               *std::dynamic_pointer_cast<XFEM::DiscretizationXFEM>(cutter_dis_)
                   ->initial_dof_row_map()))
         FOUR_C_THROW("input map is not a dof row map of the fluid");

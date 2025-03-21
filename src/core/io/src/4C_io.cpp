@@ -1009,7 +1009,7 @@ void Core::IO::DiscretizationWriter::write_vector(const std::string name,
       /* Make a copy of the map. This is a std::shared_ptr copy internally. We
        * just make sure here the map stays alive as long as we keep our cache.
        * Otherwise subtle errors could occur. */
-      mapstack_.push_back(elemap);
+      mapstack_.push_back(elemap.get_epetra_map());
       /* BUT: If a problem relies on fill_complete()-calls in every time step,
        * new maps are created in every time step. Storing all old maps in
        * mapstack_ leads to an unbounded increase in memory consumption which

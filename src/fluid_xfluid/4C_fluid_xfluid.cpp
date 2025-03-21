@@ -2790,7 +2790,7 @@ void FLD::XFluid::setup_krylov_space_projection(Core::Conditions::Condition* ksp
   if (alefluid_ and (*weighttype == "integration")) updateprojection_ = true;
 
   projector_ = std::make_shared<Core::LinAlg::KrylovProjector>(
-      activemodeids, weighttype, discret_->dof_row_map());
+      activemodeids, weighttype, &discret_->dof_row_map()->get_epetra_map());
 
   // update the projector
   update_krylov_space_projection();

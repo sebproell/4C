@@ -54,7 +54,7 @@ const Epetra_Comm& Core::LinAlg::SparseMatrixBase::Comm() const { return sysmat_
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Core::LinAlg::Map& Core::LinAlg::SparseMatrixBase::OperatorDomainMap() const
+const Epetra_Map& Core::LinAlg::SparseMatrixBase::OperatorDomainMap() const
 {
   return sysmat_->OperatorDomainMap();
 }
@@ -62,7 +62,7 @@ const Core::LinAlg::Map& Core::LinAlg::SparseMatrixBase::OperatorDomainMap() con
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Core::LinAlg::Map& Core::LinAlg::SparseMatrixBase::OperatorRangeMap() const
+const Epetra_Map& Core::LinAlg::SparseMatrixBase::OperatorRangeMap() const
 {
   return sysmat_->OperatorRangeMap();
 }

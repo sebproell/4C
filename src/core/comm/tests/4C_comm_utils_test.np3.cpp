@@ -96,7 +96,7 @@ namespace
               Core::Communication::as_epetra_comm(communicators_->local_comm()));
       int approximateNumberOfNonZeroesPerRow = 3;
       epetraCrsMatrix_ = std::make_shared<Epetra_CrsMatrix>(
-          ::Copy, *rowmap, approximateNumberOfNonZeroesPerRow, false);
+          ::Copy, rowmap->get_epetra_map(), approximateNumberOfNonZeroesPerRow, false);
 
       // fill tri-diagonal Epetra_CrsMatrix
       double* values = new double[3];
@@ -167,7 +167,7 @@ namespace
           Core::Communication::as_epetra_comm(communicators_->local_comm()));
       int approximateNumberOfNonZeroesPerRow = 6;
       epetraCrsMatrix_ = std::make_shared<Epetra_CrsMatrix>(
-          ::Copy, *rowmap, approximateNumberOfNonZeroesPerRow, false);
+          ::Copy, rowmap->get_epetra_map(), approximateNumberOfNonZeroesPerRow, false);
 
       // fill rectangular Epetra_CrsMatrix
       double* values = new double[6];
@@ -214,7 +214,7 @@ namespace
           epetraCrsMatrix_->InsertGlobalValues(rowgid, 6, values, columnIndices);
         }
       }
-      epetraCrsMatrix_->FillComplete(colmap, *rowmap);
+      epetraCrsMatrix_->FillComplete(colmap.get_epetra_map(), rowmap->get_epetra_map());
     }
 
     void TearDown() override { Core::IO::cout.close(); }

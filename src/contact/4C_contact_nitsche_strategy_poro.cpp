@@ -133,7 +133,7 @@ std::shared_ptr<Epetra_FEVector> CONTACT::NitscheStrategyPoro::setup_rhs_block_v
   {
     case CONTACT::VecBlockType::porofluid:
       return std::make_shared<Epetra_FEVector>(
-          *Global::Problem::instance()->get_dis("porofluid")->dof_row_map());
+          Global::Problem::instance()->get_dis("porofluid")->dof_row_map()->get_epetra_map());
     default:
       return CONTACT::NitscheStrategy::setup_rhs_block_vec(bt);
   }
@@ -180,17 +180,27 @@ void CONTACT::NitscheStrategyPoro::complete_matrix_block_ptr(
   {
     case CONTACT::MatBlockType::displ_porofluid:
       if (dynamic_cast<Epetra_FECrsMatrix&>(*kc->epetra_matrix())
-              .GlobalAssemble(
-                  *Global::Problem::instance()->get_dis("porofluid")->dof_row_map(),  // col map
-                  *Global::Problem::instance()->get_dis("structure")->dof_row_map(),  // row map
+              .GlobalAssemble(Global::Problem::instance()
+                                  ->get_dis("porofluid")
+                                  ->dof_row_map()
+                                  ->get_epetra_map(),  // col map
+                  Global::Problem::instance()
+                      ->get_dis("structure")
+                      ->dof_row_map()
+                      ->get_epetra_map(),  // row map
                   true, Add))
         FOUR_C_THROW("GlobalAssemble(...) failed");
       break;
     case CONTACT::MatBlockType::porofluid_displ:
       if (dynamic_cast<Epetra_FECrsMatrix&>(*kc->epetra_matrix())
-              .GlobalAssemble(
-                  *Global::Problem::instance()->get_dis("structure")->dof_row_map(),  // col map
-                  *Global::Problem::instance()->get_dis("porofluid")->dof_row_map(),  // row map
+              .GlobalAssemble(Global::Problem::instance()
+                                  ->get_dis("structure")
+                                  ->dof_row_map()
+                                  ->get_epetra_map(),  // col map
+                  Global::Problem::instance()
+                      ->get_dis("porofluid")
+                      ->dof_row_map()
+                      ->get_epetra_map(),  // row map
                   true, Add))
         FOUR_C_THROW("GlobalAssemble(...) failed");
       break;

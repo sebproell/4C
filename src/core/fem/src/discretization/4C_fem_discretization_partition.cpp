@@ -849,8 +849,8 @@ void Core::FE::Discretization::setup_ghosting(
   // Construct FE graph. This graph allows processor off-rows to be inserted
   // as well. The communication issue is solved.
 
-  std::shared_ptr<Epetra_FECrsGraph> graph =
-      std::make_shared<Epetra_FECrsGraph>(Copy, rownodes, entriesperrow.data(), false);
+  std::shared_ptr<Epetra_FECrsGraph> graph = std::make_shared<Epetra_FECrsGraph>(
+      Copy, rownodes.get_epetra_map(), entriesperrow.data(), false);
 
   gids.clear();
   entriesperrow.clear();
@@ -874,7 +874,7 @@ void Core::FE::Discretization::setup_ghosting(
   // Finalize construction of this graph. Here the communication
   // happens. The ghosting problem is solved at this point.
 
-  int err = graph->GlobalAssemble(rownodes, rownodes);
+  int err = graph->GlobalAssemble(rownodes.get_epetra_map(), rownodes.get_epetra_map());
   if (err) FOUR_C_THROW("graph->GlobalAssemble returned {}", err);
 
   // replace rownodes, colnodes with row and column maps from the graph

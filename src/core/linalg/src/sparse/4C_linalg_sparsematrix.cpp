@@ -33,7 +33,7 @@ Core::LinAlg::SparseMatrix::SparseMatrix(std::shared_ptr<Core::LinAlg::Graph> cr
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Map& rowmap, const int npr,
+Core::LinAlg::SparseMatrix::SparseMatrix(const Epetra_Map& rowmap, const int npr,
     bool explicitdirichlet, bool savegraph, MatrixType matrixtype)
     : graph_(nullptr),
       dbcmaps_(nullptr),
@@ -50,11 +50,51 @@ Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Map& rowmap, const 
   else
     FOUR_C_THROW("matrix type is not correct");
 }
+Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Map& rowmap, const int npr,
+    bool explicitdirichlet, bool savegraph, MatrixType matrixtype)
+    : graph_(nullptr),
+      dbcmaps_(nullptr),
+      explicitdirichlet_(explicitdirichlet),
+      savegraph_(savegraph),
+      matrixtype_(matrixtype)
+{
+  if (!rowmap.UniqueGIDs()) FOUR_C_THROW("Row map is not unique");
 
+  if (matrixtype_ == CRS_MATRIX)
+    sysmat_ = std::make_shared<Epetra_CrsMatrix>(::Copy, rowmap.get_epetra_map(), npr, false);
+  else if (matrixtype_ == FE_MATRIX)
+    sysmat_ = std::make_shared<Epetra_FECrsMatrix>(::Copy, rowmap.get_epetra_map(), npr, false);
+  else
+    FOUR_C_THROW("matrix type is not correct");
+}
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Map& rowmap,
     std::vector<int>& numentries, bool explicitdirichlet, bool savegraph, MatrixType matrixtype)
+    : graph_(nullptr),
+      dbcmaps_(nullptr),
+      explicitdirichlet_(explicitdirichlet),
+      savegraph_(savegraph),
+      matrixtype_(matrixtype)
+{
+  if (!rowmap.UniqueGIDs()) FOUR_C_THROW("Row map is not unique");
+
+  if ((int)(numentries.size()) != rowmap.NumMyElements())
+    FOUR_C_THROW("estimate for non zero entries per row does not match the size of row map");
+
+  if (matrixtype_ == CRS_MATRIX)
+    sysmat_ = std::make_shared<Epetra_CrsMatrix>(
+        ::Copy, rowmap.get_epetra_map(), numentries.data(), false);
+  else if (matrixtype_ == FE_MATRIX)
+    sysmat_ = std::make_shared<Epetra_FECrsMatrix>(
+        ::Copy, rowmap.get_epetra_map(), numentries.data(), false);
+  else
+    FOUR_C_THROW("matrix type is not correct");
+}
+
+
+Core::LinAlg::SparseMatrix::SparseMatrix(const Epetra_Map& rowmap, std::vector<int>& numentries,
+    bool explicitdirichlet, bool savegraph, MatrixType matrixtype)
     : graph_(nullptr),
       dbcmaps_(nullptr),
       explicitdirichlet_(explicitdirichlet),
@@ -147,15 +187,17 @@ Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Vector<double>& dia
       savegraph_(savegraph),
       matrixtype_(matrixtype)
 {
-  int length = diag.get_map().NumMyElements();
-  Core::LinAlg::Map map(-1, length, diag.get_map().MyGlobalElements(), diag.get_map().IndexBase(),
-      Core::Communication::as_epetra_comm(diag.get_comm()));
+  int length = diag.get_block_map().NumMyElements();
+  Core::LinAlg::Map map(-1, length, diag.get_block_map().MyGlobalElements(),
+      diag.get_block_map().IndexBase(), Core::Communication::as_epetra_comm(diag.get_comm()));
   if (!map.UniqueGIDs()) FOUR_C_THROW("Row map is not unique");
 
   if (matrixtype_ == CRS_MATRIX)
-    sysmat_ = std::make_shared<Epetra_CrsMatrix>(::Copy, map, map, 1, false);
+    sysmat_ = std::make_shared<Epetra_CrsMatrix>(
+        ::Copy, map.get_epetra_map(), map.get_epetra_map(), 1, false);
   else if (matrixtype_ == FE_MATRIX)
-    sysmat_ = std::make_shared<Epetra_FECrsMatrix>(::Copy, map, map, 1, false);
+    sysmat_ = std::make_shared<Epetra_FECrsMatrix>(
+        ::Copy, map.get_epetra_map(), map.get_epetra_map(), 1, false);
   else
     FOUR_C_THROW("matrix type is not correct");
 
@@ -242,9 +284,11 @@ Core::LinAlg::SparseMatrix& Core::LinAlg::SparseMatrix::operator=(const SparseMa
   else
   {
     if (matrixtype_ == CRS_MATRIX)
-      sysmat_ = std::make_shared<Epetra_CrsMatrix>(::Copy, mat.row_map(), 0, false);
+      sysmat_ =
+          std::make_shared<Epetra_CrsMatrix>(::Copy, mat.row_map().get_epetra_map(), 0, false);
     else if (matrixtype_ == FE_MATRIX)
-      sysmat_ = std::make_shared<Epetra_FECrsMatrix>(::Copy, mat.row_map(), 0, false);
+      sysmat_ =
+          std::make_shared<Epetra_FECrsMatrix>(::Copy, mat.row_map().get_epetra_map(), 0, false);
     else
       FOUR_C_THROW("matrix type is not correct");
   }
@@ -292,8 +336,8 @@ void Core::LinAlg::SparseMatrix::zero()
   }
   else
   {
-    const Core::LinAlg::Map domainmap = sysmat_->DomainMap();
-    const Core::LinAlg::Map rangemap = sysmat_->RangeMap();
+    const Core::LinAlg::Map domainmap = Map(sysmat_->DomainMap());
+    const Core::LinAlg::Map rangemap = Map(sysmat_->RangeMap());
     // Remove old matrix before creating a new one so we do not have old and
     // new matrix in memory at the same time!
     sysmat_ = nullptr;
@@ -304,7 +348,7 @@ void Core::LinAlg::SparseMatrix::zero()
     else
       FOUR_C_THROW("matrix type is not correct");
 
-    sysmat_->FillComplete(domainmap, rangemap);
+    sysmat_->FillComplete(domainmap.get_epetra_map(), rangemap.get_epetra_map());
   }
 }
 
@@ -313,7 +357,7 @@ void Core::LinAlg::SparseMatrix::zero()
  *----------------------------------------------------------------------*/
 void Core::LinAlg::SparseMatrix::reset()
 {
-  const Core::LinAlg::Map rowmap = sysmat_->RowMap();
+  const Core::LinAlg::Map rowmap = Map(sysmat_->RowMap());
   std::vector<int> numentries(rowmap.NumMyElements());
 
   auto graph = std::make_shared<Core::LinAlg::Graph>(sysmat_->Graph());
@@ -340,9 +384,11 @@ void Core::LinAlg::SparseMatrix::reset()
   // new matrix in memory at the same time!
   sysmat_ = nullptr;
   if (matrixtype_ == CRS_MATRIX)
-    sysmat_ = std::make_shared<Epetra_CrsMatrix>(::Copy, rowmap, numentries.data(), false);
+    sysmat_ = std::make_shared<Epetra_CrsMatrix>(
+        ::Copy, rowmap.get_epetra_map(), numentries.data(), false);
   else if (matrixtype_ == FE_MATRIX)
-    sysmat_ = std::make_shared<Epetra_FECrsMatrix>(::Copy, rowmap, numentries.data(), false);
+    sysmat_ = std::make_shared<Epetra_FECrsMatrix>(
+        ::Copy, rowmap.get_epetra_map(), numentries.data(), false);
   else
     FOUR_C_THROW("matrix type is not correct");
 
@@ -365,8 +411,8 @@ void Core::LinAlg::SparseMatrix::assemble(int eid, const std::vector<int>& lmstr
 
   const int myrank =
       Core::Communication::my_mpi_rank(Core::Communication::unpack_epetra_comm(sysmat_->Comm()));
-  const Core::LinAlg::Map& rowmap = sysmat_->RowMap();
-  const Core::LinAlg::Map& colmap = sysmat_->ColMap();
+  const Core::LinAlg::Map& rowmap = Map(sysmat_->RowMap());
+  const Core::LinAlg::Map& colmap = Map(sysmat_->ColMap());
 
   //-----------------------------------------------------------------------------------
   auto& A = (Core::LinAlg::SerialDenseMatrix&)Aele;
@@ -555,8 +601,8 @@ void Core::LinAlg::SparseMatrix::assemble(int eid, const Core::LinAlg::SerialDen
 
   const int myrank =
       Core::Communication::my_mpi_rank(Core::Communication::unpack_epetra_comm(sysmat_->Comm()));
-  const Epetra_Map& rowmap = sysmat_->RowMap();
-  const Epetra_Map& colmap = sysmat_->ColMap();
+  const Core::LinAlg::Map& rowmap = Map(sysmat_->RowMap());
+  const Core::LinAlg::Map& colmap = Map(sysmat_->ColMap());
 
   if (sysmat_->Filled())
   {
@@ -798,7 +844,7 @@ void Core::LinAlg::SparseMatrix::complete(bool enforce_complete)
  |  fill_complete a matrix  (public)                          mwgee 01/08|
  *----------------------------------------------------------------------*/
 void Core::LinAlg::SparseMatrix::complete(
-    const Epetra_Map& domainmap, const Epetra_Map& rangemap, bool enforce_complete)
+    const Core::LinAlg::Map& domainmap, const Core::LinAlg::Map& rangemap, bool enforce_complete)
 {
   TEUCHOS_FUNC_TIME_MONITOR("Core::LinAlg::SparseMatrix::Complete(domain,range)");
 
@@ -807,7 +853,7 @@ void Core::LinAlg::SparseMatrix::complete(
   {
     // false indicates here that fill_complete() is not called within GlobalAssemble()
     int err = (std::dynamic_pointer_cast<Epetra_FECrsMatrix>(sysmat_))
-                  ->GlobalAssemble(domainmap, rangemap, false);
+                  ->GlobalAssemble(domainmap.get_epetra_map(), rangemap.get_epetra_map(), false);
     if (err) FOUR_C_THROW("Epetra_FECrsMatrix::GlobalAssemble() returned err={}", err);
   }
 
@@ -815,9 +861,9 @@ void Core::LinAlg::SparseMatrix::complete(
 
   int err = 1;
   if (enforce_complete and sysmat_->Filled())
-    err = sysmat_->ExpertStaticFillComplete(domainmap, rangemap);
+    err = sysmat_->ExpertStaticFillComplete(domainmap.get_epetra_map(), rangemap.get_epetra_map());
   else
-    err = sysmat_->FillComplete(domainmap, rangemap, true);
+    err = sysmat_->FillComplete(domainmap.get_epetra_map(), rangemap.get_epetra_map(), true);
 
   if (err) FOUR_C_THROW("Epetra_CrsMatrix::fill_complete(domain,range) returned err={}", err);
 
@@ -828,6 +874,23 @@ void Core::LinAlg::SparseMatrix::complete(
   }
 }
 
+void Core::LinAlg::SparseMatrix::complete(
+    const Epetra_Map& domainmap, const Epetra_Map& rangemap, bool enforce_complete)
+{
+  this->complete(Map(domainmap), Map(rangemap), enforce_complete);
+}
+
+void Core::LinAlg::SparseMatrix::complete(
+    const Map& domainmap, const Epetra_Map& rangemap, bool enforce_complete)
+{
+  this->complete(domainmap, Map(rangemap), enforce_complete);
+}
+
+void Core::LinAlg::SparseMatrix::complete(
+    const Epetra_Map& domainmap, const Map& rangemap, bool enforce_complete)
+{
+  this->complete(Map(domainmap), rangemap, enforce_complete);
+}
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
@@ -845,15 +908,17 @@ void Core::LinAlg::SparseMatrix::un_complete()
     nonzeros[i] = graph->num_local_indices(i);
   }
 
-  const Core::LinAlg::Map& rowmap = sysmat_->RowMap();
-  const Core::LinAlg::Map& colmap = sysmat_->ColMap();
+  const Core::LinAlg::Map& rowmap = Map(sysmat_->RowMap());
+  const Core::LinAlg::Map& colmap = Map(sysmat_->ColMap());
   int elements = rowmap.NumMyElements();
 
   std::shared_ptr<Epetra_CrsMatrix> mat = nullptr;
   if (matrixtype_ == CRS_MATRIX)
-    mat = std::make_shared<Epetra_CrsMatrix>(::Copy, rowmap, nonzeros.data(), false);
+    mat =
+        std::make_shared<Epetra_CrsMatrix>(::Copy, rowmap.get_epetra_map(), nonzeros.data(), false);
   else if (matrixtype_ == FE_MATRIX)
-    mat = std::make_shared<Epetra_FECrsMatrix>(::Copy, rowmap, nonzeros.data(), false);
+    mat = std::make_shared<Epetra_FECrsMatrix>(
+        ::Copy, rowmap.get_epetra_map(), nonzeros.data(), false);
   else
     FOUR_C_THROW("matrix type is not correct");
 
@@ -909,15 +974,17 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet(
     }
 
     // allocate a new matrix and copy all rows that are not dirichlet
-    const Core::LinAlg::Map& rowmap = sysmat_->RowMap();
+    const Core::LinAlg::Map& rowmap = Map(sysmat_->RowMap());
     const int nummyrows = sysmat_->NumMyRows();
     const int maxnumentries = sysmat_->MaxNumEntries();
 
     std::shared_ptr<Epetra_CrsMatrix> Anew = nullptr;
     if (matrixtype_ == CRS_MATRIX)
-      Anew = std::make_shared<Epetra_CrsMatrix>(::Copy, rowmap, maxnumentries, false);
+      Anew =
+          std::make_shared<Epetra_CrsMatrix>(::Copy, rowmap.get_epetra_map(), maxnumentries, false);
     else if (matrixtype_ == FE_MATRIX)
-      Anew = std::make_shared<Epetra_FECrsMatrix>(::Copy, rowmap, maxnumentries, false);
+      Anew = std::make_shared<Epetra_FECrsMatrix>(
+          ::Copy, rowmap.get_epetra_map(), maxnumentries, false);
     else
       FOUR_C_THROW("matrix type is not correct");
 
@@ -1042,7 +1109,7 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet(
     }
 
     // allocate a new matrix and copy all rows that are not dirichlet
-    const Core::LinAlg::Map& rowmap = sysmat_->RowMap();
+    const Core::LinAlg::Map& rowmap = Map(sysmat_->RowMap());
     const int nummyrows = sysmat_->NumMyRows();
     const int maxnumentries = sysmat_->MaxNumEntries();
 
@@ -1051,9 +1118,11 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet(
 
     std::shared_ptr<Epetra_CrsMatrix> Anew = nullptr;
     if (matrixtype_ == CRS_MATRIX)
-      Anew = std::make_shared<Epetra_CrsMatrix>(::Copy, rowmap, maxnumentries, false);
+      Anew =
+          std::make_shared<Epetra_CrsMatrix>(::Copy, rowmap.get_epetra_map(), maxnumentries, false);
     else if (matrixtype_ == FE_MATRIX)
-      Anew = std::make_shared<Epetra_FECrsMatrix>(::Copy, rowmap, maxnumentries, false);
+      Anew = std::make_shared<Epetra_FECrsMatrix>(
+          ::Copy, rowmap.get_epetra_map(), maxnumentries, false);
     else
       FOUR_C_THROW("matrix type is not correct");
 
@@ -1096,8 +1165,8 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet(
         }
       }
     }
-    Core::LinAlg::Map rangemap = sysmat_->RangeMap();
-    Core::LinAlg::Map domainmap = sysmat_->DomainMap();
+    Core::LinAlg::Map rangemap = Map(sysmat_->RangeMap());
+    Core::LinAlg::Map domainmap = Map(sysmat_->DomainMap());
     sysmat_ = Anew;
     complete(domainmap, rangemap);
   }
@@ -1162,8 +1231,8 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet_with_trafo(const Core::LinAlg::
     }
 
     // allocate a new matrix and copy all rows that are not dirichlet
-    const Core::LinAlg::Map& rowmap = sysmat_->RowMap();
-    const Core::LinAlg::Map& colmap = sysmat_->ColMap();
+    const Core::LinAlg::Map& rowmap = Map(sysmat_->RowMap());
+    const Core::LinAlg::Map& colmap = Map(sysmat_->ColMap());
     const int nummyrows = sysmat_->NumMyRows();
     const int maxnumentries = sysmat_->MaxNumEntries();
 
@@ -1175,8 +1244,8 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet_with_trafo(const Core::LinAlg::
 
     // initialise matrix Anew with general size (rowmap x colmap)
     // in case of coupled problem (e.g. TSI) transform the rectangular off-diagonal block k_Td
-    std::shared_ptr<Epetra_CrsMatrix> Anew =
-        std::make_shared<Epetra_CrsMatrix>(::Copy, rowmap, colmap, maxnumentries, false);
+    std::shared_ptr<Epetra_CrsMatrix> Anew = std::make_shared<Epetra_CrsMatrix>(
+        ::Copy, rowmap.get_epetra_map(), colmap.get_epetra_map(), maxnumentries, false);
     std::vector<int> indices(maxnumentries, 0);
     std::vector<double> values(maxnumentries, 0.0);
     for (int i = 0; i < nummyrows; ++i)
@@ -1308,8 +1377,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::SparseMatrix::extract_
   std::shared_ptr<SparseMatrix> dl = std::make_shared<SparseMatrix>(
       row_map(), max_num_entries(), explicit_dirichlet(), save_graph());
 
-  const Core::LinAlg::Map& rowmap = sysmat_->RowMap();
-  const Core::LinAlg::Map& colmap = sysmat_->ColMap();
+  const Core::LinAlg::Map& rowmap = Map(sysmat_->RowMap());
+  const Core::LinAlg::Map& colmap = Map(sysmat_->ColMap());
   const int nummyrows = sysmat_->NumMyRows();
 
   const Core::LinAlg::Vector<double>& dbct = dbctoggle;
@@ -1333,7 +1402,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::SparseMatrix::extract_
     }
   }
 
-  dl->complete(sysmat_->DomainMap(), range_map());
+  dl->complete(Map(sysmat_->DomainMap()), range_map());
   return dl;
 }
 
@@ -1349,8 +1418,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::SparseMatrix::extract_
   std::shared_ptr<SparseMatrix> dl = std::make_shared<SparseMatrix>(
       row_map(), max_num_entries(), explicit_dirichlet(), save_graph());
 
-  const Core::LinAlg::Map& rowmap = sysmat_->RowMap();
-  const Core::LinAlg::Map& colmap = sysmat_->ColMap();
+  const Core::LinAlg::Map& rowmap = Map(sysmat_->RowMap());
+  const Core::LinAlg::Map& colmap = Map(sysmat_->ColMap());
   // const int nummyrows      = sysmat_->NumMyRows();
 
   std::vector<int> idx(max_num_entries());
@@ -1376,7 +1445,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::SparseMatrix::extract_
     if (err) FOUR_C_THROW("InsertGlobalValues: err={}", err);
   }
 
-  dl->complete(sysmat_->DomainMap(), range_map());
+  dl->complete(Map(sysmat_->DomainMap()), range_map());
   return dl;
 }
 

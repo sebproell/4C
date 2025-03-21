@@ -1092,9 +1092,9 @@ void Coupling::Adapter::CouplingMortar::evaluate(
 {
   // safety checks
   check_setup();
-  FOUR_C_ASSERT(idispma->get_block_map().PointSameAs(*pmasterdofrowmap_),
+  FOUR_C_ASSERT(idispma->get_map().PointSameAs(*pmasterdofrowmap_),
       "Map of incoming master vector does not match the stored master dof row map.");
-  FOUR_C_ASSERT(idispsl->get_block_map().PointSameAs(*pslavedofrowmap_),
+  FOUR_C_ASSERT(idispsl->get_map().PointSameAs(*pslavedofrowmap_),
       "Map of incoming slave vector does not match the stored slave dof row map.");
 
   const Epetra_BlockMap stdmap = idispsl->get_block_map();
@@ -1102,8 +1102,8 @@ void Coupling::Adapter::CouplingMortar::evaluate(
 
   std::shared_ptr<Core::LinAlg::Map> dofrowmap =
       Core::LinAlg::merge_map(*pmasterdofrowmap_, *pslavedofrowmap_, false);
-  Epetra_Import master_importer(*dofrowmap, *pmasterdofrowmap_);
-  Epetra_Import slaveImporter(*dofrowmap, *pslavedofrowmap_);
+  Epetra_Import master_importer(dofrowmap->get_epetra_map(), pmasterdofrowmap_->get_epetra_map());
+  Epetra_Import slaveImporter(dofrowmap->get_epetra_map(), pslavedofrowmap_->get_epetra_map());
 
   // Import master and slave displacements into a single vector
   int err = 0;
@@ -1287,7 +1287,8 @@ Coupling::Adapter::CouplingMortar::master_to_slave(
   // safety check
   check_setup();
 
-  FOUR_C_ASSERT(masterdofrowmap_->SameAs(mv.Map()), "Vector with master dof map expected");
+  FOUR_C_ASSERT(
+      masterdofrowmap_->SameAs(Core::LinAlg::Map(mv.Map())), "Vector with master dof map expected");
 
   Core::LinAlg::MultiVector<double> tmp =
       Core::LinAlg::MultiVector<double>(M_->row_map(), mv.NumVectors());
@@ -1332,8 +1333,10 @@ void Coupling::Adapter::CouplingMortar::master_to_slave(
     const Core::LinAlg::MultiVector<double>& mv, Core::LinAlg::MultiVector<double>& sv) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not mv.Map().PointSameAs(P_->col_map())) FOUR_C_THROW("master dof map vector expected");
-  if (not sv.Map().PointSameAs(D_->col_map())) FOUR_C_THROW("slave dof map vector expected");
+  if (not mv.Map().PointSameAs(P_->col_map().get_epetra_map()))
+    FOUR_C_THROW("master dof map vector expected");
+  if (not sv.Map().PointSameAs(D_->col_map().get_epetra_map()))
+    FOUR_C_THROW("slave dof map vector expected");
 #endif
 
   // safety check
@@ -1361,8 +1364,10 @@ void Coupling::Adapter::CouplingMortar::slave_to_master(
     const Core::LinAlg::MultiVector<double>& sv, Core::LinAlg::MultiVector<double>& mv) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not mv.Map().PointSameAs(P_->col_map())) FOUR_C_THROW("master dof map vector expected");
-  if (not sv.Map().PointSameAs(D_->col_map())) FOUR_C_THROW("slave dof map vector expected");
+  if (not mv.Map().PointSameAs(P_->col_map().get_epetra_map()))
+    FOUR_C_THROW("master dof map vector expected");
+  if (not sv.Map().PointSameAs(D_->col_map().get_epetra_map()))
+    FOUR_C_THROW("slave dof map vector expected");
 #endif
 
   // safety check

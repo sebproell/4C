@@ -146,7 +146,8 @@ void SSI::DBCHandlerSparse::apply_structure_dbc_with_loc_sys_rotation_to_system_
   const auto systemmatrix_structure =
       std::make_shared<Core::LinAlg::SparseMatrix>(*dofrowmap_structure, 27, false, true);
   Coupling::Adapter::MatrixLogicalSplitAndTransform()(*systemmatrix_sparse, *dofrowmap_structure,
-      system_matrix->domain_map(), 1.0, nullptr, nullptr, *systemmatrix_structure);
+      Core::LinAlg::Map(system_matrix->domain_map()), 1.0, nullptr, nullptr,
+      *systemmatrix_structure);
   systemmatrix_structure->complete(system_matrix->domain_map(), *dofrowmap_structure);
 
   // apply structure Dirichlet conditions

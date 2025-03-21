@@ -190,7 +190,7 @@ void CONTACT::MonoCoupledLagrangeStrategy::evaluate_off_diag_contact(
           Core::LinAlg::matrix_multiply(*mhataam_, true, *ka, false, false, false, true);
       kmmod.add(*kmadd, false, 1.0, 1.0);
     }
-    kmmod.complete(kteff->domain_map(), km->row_map());
+    kmmod.complete(Core::LinAlg::Map(kteff->domain_map()), km->row_map());
 
     //----------------------------------------------------------- THIRD LINE
     //------------------- FOR 3D QUADRATIC CASE ----------------------------
@@ -207,7 +207,7 @@ void CONTACT::MonoCoupledLagrangeStrategy::evaluate_off_diag_contact(
           Core::LinAlg::matrix_multiply(*dhat_, true, *ka, false, false, false, true);
       kimod.add(*kiadd, false, -1.0, 1.0);
     }
-    kimod.complete(kteff->domain_map(), ki->row_map());
+    kimod.complete(Core::LinAlg::Map(kteff->domain_map()), ki->row_map());
 
     //---------------------------------------------------------- FOURTH LINE
     // nothing to do

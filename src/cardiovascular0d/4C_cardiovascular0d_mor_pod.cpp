@@ -57,9 +57,9 @@ Cardiovascular0D::ProperOrthogonalDecomposition::ProperOrthogonalDecomposition(
   }
 
   // build an importer
-  Epetra_Import dofrowimporter(*full_model_dof_row_map_, (reduced_basis->Map()));
+  Epetra_Import dofrowimporter(full_model_dof_row_map_->get_epetra_map(), (reduced_basis->Map()));
   projmatrix_ = std::make_shared<Core::LinAlg::MultiVector<double>>(
-      *full_model_dof_row_map_, reduced_basis->NumVectors(), true);
+      full_model_dof_row_map_->get_epetra_map(), reduced_basis->NumVectors(), true);
   int err = projmatrix_->Import(*reduced_basis, dofrowimporter, Insert, nullptr);
   if (err != 0) FOUR_C_THROW("POD projection matrix could not be mapped onto the dof map");
 
@@ -80,8 +80,10 @@ Cardiovascular0D::ProperOrthogonalDecomposition::ProperOrthogonalDecomposition(
   // wrong
 
   // importers for reduced system
-  structrimpo_ = std::make_shared<Epetra_Import>(*structmapr_, *redstructmapr_);
-  structrinvimpo_ = std::make_shared<Epetra_Import>(*redstructmapr_, *structmapr_);
+  structrimpo_ = std::make_shared<Epetra_Import>(
+      structmapr_->get_epetra_map(), redstructmapr_->get_epetra_map());
+  structrinvimpo_ = std::make_shared<Epetra_Import>(
+      redstructmapr_->get_epetra_map(), structmapr_->get_epetra_map());
 
   return;
 }

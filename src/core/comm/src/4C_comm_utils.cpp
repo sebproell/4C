@@ -8,11 +8,14 @@
 #include "4C_comm_utils.hpp"
 
 #include "4C_io_pstream.hpp"
+#include "4C_linalg_multi_vector.hpp"
+#include "4C_linalg_sparsematrix.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 
 #include <Epetra_CrsMatrix.h>
 #include <Epetra_Import.h>
+#include <Epetra_Map.h>
 
 #include <iomanip>
 #include <sstream>
@@ -360,7 +363,7 @@ namespace Core::Communication
           vecmap, Core::Communication::num_mpi_ranks(lcomm) - 1);
 
     // export full vectors to the two desired processors
-    Core::LinAlg::MultiVector<double> fullvec(*proc0map, vec.NumVectors(), true);
+    Core::LinAlg::MultiVector<double> fullvec(proc0map->get_epetra_map(), vec.NumVectors(), true);
     Core::LinAlg::export_to(vec, fullvec);
 
     const int myglobalrank = Core::Communication::my_mpi_rank(gcomm);
@@ -489,8 +492,8 @@ namespace Core::Communication
       return false;
     }
 
-    const Core::LinAlg::Map& rowmap = matrix.RowMap();
-    const Core::LinAlg::Map& domainmap = matrix.DomainMap();
+    const Core::LinAlg::Map& rowmap = Core::LinAlg::Map(matrix.RowMap());
+    const Core::LinAlg::Map& domainmap = Core::LinAlg::Map(matrix.DomainMap());
 
     // gather data of vector to compare on gcomm proc 0 and last gcomm proc
     std::shared_ptr<Core::LinAlg::Map> serialrowmap;
@@ -508,10 +511,10 @@ namespace Core::Communication
           domainmap, Core::Communication::num_mpi_ranks(lcomm) - 1);
 
     // export full matrices to the two desired processors
-    Epetra_Import serialimporter(*serialrowmap, rowmap);
-    Epetra_CrsMatrix serialCrsMatrix(Copy, *serialrowmap, 0);
+    Epetra_Import serialimporter(serialrowmap->get_epetra_map(), rowmap.get_epetra_map());
+    Epetra_CrsMatrix serialCrsMatrix(Copy, serialrowmap->get_epetra_map(), 0);
     serialCrsMatrix.Import(matrix, serialimporter, Insert);
-    serialCrsMatrix.FillComplete(*serialdomainmap, *serialrowmap);
+    serialCrsMatrix.FillComplete(serialdomainmap->get_epetra_map(), serialrowmap->get_epetra_map());
 
     // fill data of matrices to container which can be easily communicated via MPI
     std::vector<int> data_indices;

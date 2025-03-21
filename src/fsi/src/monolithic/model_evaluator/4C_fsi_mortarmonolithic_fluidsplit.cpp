@@ -783,11 +783,11 @@ void FSI::MortarMonolithicFluidSplit::setup_system_matrix(Core::LinAlg::BlockSpa
   }
 
   // some checks whether maps for matrix-matrix-multiplication do really match
-  if (!f->matrix(0, 1).domain_map().PointSameAs(mortarp->range_map()))
+  if (!f->matrix(0, 1).domain_map_not_epetra().PointSameAs(mortarp->range_map()))
     FOUR_C_THROW("Maps do not match.");
   if (!f->matrix(1, 0).range_map().PointSameAs(mortarp->range_map()))
     FOUR_C_THROW("Maps do not match.");
-  if (!f->matrix(1, 1).domain_map().PointSameAs(mortarp->range_map()))
+  if (!f->matrix(1, 1).domain_map_not_epetra().PointSameAs(mortarp->range_map()))
     FOUR_C_THROW("Maps do not match.");
 #endif
 
@@ -1728,8 +1728,9 @@ void FSI::MortarMonolithicFluidSplit::recover_lagrange_multiplier()
 
     // add pressure DOFs
     Core::LinAlg::MapExtractor velotherpressuremapext =
-        Core::LinAlg::MapExtractor(fmgiprev_->domain_map(), velothermap);
-    auxauxvec = std::make_shared<Core::LinAlg::Vector<double>>(fmgiprev_->domain_map(), true);
+        Core::LinAlg::MapExtractor(fmgiprev_->domain_map_not_epetra(), velothermap);
+    auxauxvec =
+        std::make_shared<Core::LinAlg::Vector<double>>(fmgiprev_->domain_map_not_epetra(), true);
     velotherpressuremapext.insert_cond_vector(*auxvec, *auxauxvec);
 
     // prepare vector to store result of matrix-vector-product

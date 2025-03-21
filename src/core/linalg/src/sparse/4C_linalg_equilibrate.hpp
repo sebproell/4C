@@ -16,7 +16,7 @@
 #include <vector>
 
 // NOLINTBEGIN(readability-identifier-naming)
-class Core::LinAlg::Map;
+class Map;
 // NOLINTEND(readability-identifier-naming)
 
 FOUR_C_NAMESPACE_OPEN

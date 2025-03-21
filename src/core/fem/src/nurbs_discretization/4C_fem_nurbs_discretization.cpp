@@ -136,7 +136,7 @@ void Core::FE::Utils::DbcNurbs::evaluate(const Teuchos::ParameterList& params,
   if (not discret_nurbs) FOUR_C_THROW("Dynamic cast failed!");
 
   // build dummy column toggle vector and auxiliary vectors
-  Core::FE::Utils::Dbc::DbcInfo info_col(*discret_nurbs->dof_col_map());
+  Core::FE::Utils::Dbc::DbcInfo info_col(discret_nurbs->dof_col_map()->get_epetra_map());
   read_dirichlet_condition(params, discret, conds, time, info_col, dbcgids_nurbs);
 
   // --------------------------- Step 4 ---------------------------------------

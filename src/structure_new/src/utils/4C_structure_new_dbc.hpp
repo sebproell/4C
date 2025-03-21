@@ -17,7 +17,7 @@
 #include <memory>
 
 // forward declarations
-class Core::LinAlg::Map;
+class Map;
 
 #include "4C_utils_parameter_list.fwd.hpp"
 

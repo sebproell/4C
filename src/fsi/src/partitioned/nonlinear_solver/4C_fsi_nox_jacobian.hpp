@@ -23,7 +23,7 @@
 #include <memory>
 
 // Forward Declarations
-class Core::LinAlg::Map;
+class Map;
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -96,10 +96,10 @@ namespace NOX
       const Epetra_Comm& Comm() const override;
 
       //! Returns the Epetra_BlockMap object associated with the domain of this matrix operator.
-      const Core::LinAlg::Map& OperatorDomainMap() const override;
+      const Epetra_Map& OperatorDomainMap() const override;
 
       //! Returns the Epetra_BlockMap object associated with the range of this matrix operator.
-      const Core::LinAlg::Map& OperatorRangeMap() const override;
+      const Epetra_Map& OperatorRangeMap() const override;
 
       //! Compute Jacobian given the specified input vector, x.  Returns true if computation was
       //! successful.
@@ -131,7 +131,7 @@ namespace NOX
        * equivalent Core::LinAlg::Map from the Epetra_BlockMap that can be used as the return object
        * of the OperatorDomainMap() and OperatorRangeMap() methods.
        */
-      std::shared_ptr<const Core::LinAlg::Map> epetraMap;
+      std::shared_ptr<const Epetra_Map> epetraMap;
 
       //! Flag to enables the use of a group instead of the interface for the computeF() calls in
       //! the directional difference calculation.

@@ -138,7 +138,15 @@ namespace Core::LinAlg
 
     /// total matrix domain map with all blocks (this is needed for
     /// consistency with Core::LinAlg::SparseMatrix)
-    const Core::LinAlg::Map& domain_map() const override { return *domainmaps_.full_map(); }
+    const Epetra_Map& domain_map() const override
+    {
+      return domainmaps_.full_map()->get_epetra_map();
+    }
+
+    const Core::LinAlg::Map& domain_map_not_epetra() const override
+    {
+      return *domainmaps_.full_map();
+    }
 
     /// total matrix row map with all blocks
     /*!
@@ -215,10 +223,10 @@ namespace Core::LinAlg
     const Epetra_Comm& Comm() const override;
 
     /// Returns the Core::LinAlg::Map object associated with the domain of this operator.
-    const Core::LinAlg::Map& OperatorDomainMap() const override;
+    const Epetra_Map& OperatorDomainMap() const override;
 
     /// Returns the Core::LinAlg::Map object associated with the range of this operator.
-    const Core::LinAlg::Map& OperatorRangeMap() const override;
+    const Epetra_Map& OperatorRangeMap() const override;
 
     //@}
 

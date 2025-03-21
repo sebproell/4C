@@ -175,7 +175,7 @@ void CONSTRAINTS::EMBEDDEDMESH::SolidToSolidMortarManager::setup(
   set_global_maps();
 
   // Create the global coupling matrices.
-  global_constraint_ = std::make_shared<Epetra_FEVector>(*lambda_dof_rowmap_);
+  global_constraint_ = std::make_shared<Epetra_FEVector>(lambda_dof_rowmap_->get_epetra_map());
   global_g_bl_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *lambda_dof_rowmap_, 30, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
   global_g_bg_ = std::make_shared<Core::LinAlg::SparseMatrix>(
@@ -184,8 +184,8 @@ void CONSTRAINTS::EMBEDDEDMESH::SolidToSolidMortarManager::setup(
       *boundary_layer_interface_dof_rowmap_, 30, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
   global_fbg_l_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *background_dof_rowmap_, 100, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
-  global_kappa_ = std::make_shared<Epetra_FEVector>(*lambda_dof_rowmap_);
-  global_active_lambda_ = std::make_shared<Epetra_FEVector>(*lambda_dof_rowmap_);
+  global_kappa_ = std::make_shared<Epetra_FEVector>(lambda_dof_rowmap_->get_epetra_map());
+  global_active_lambda_ = std::make_shared<Epetra_FEVector>(lambda_dof_rowmap_->get_epetra_map());
 
   // Set flag for successful setup.
   is_setup_ = true;

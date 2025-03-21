@@ -1175,7 +1175,8 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::handle_fluid_dof_map_change_in_ne
 bool FSI::FluidFluidMonolithicFluidSplitNoNOX::has_fluid_dof_map_changed(
     const Epetra_BlockMap& fluidincrementmap)
 {
-  bool isoldmap = fluidincrementmap.SameAs(*fluid_field()->interface()->other_map());
+  bool isoldmap =
+      fluidincrementmap.SameAs(fluid_field()->interface()->other_map()->get_epetra_map());
   return !isoldmap;
 }
 

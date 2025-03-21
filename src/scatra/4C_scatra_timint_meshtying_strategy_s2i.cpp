@@ -2528,7 +2528,8 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
             *interfacemaps_->Map(2), 81, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
         // initialize auxiliary residual vector for master side
-        imasterresidual_ = std::make_shared<Epetra_FEVector>(*interfacemaps_->Map(2));
+        imasterresidual_ =
+            std::make_shared<Epetra_FEVector>(interfacemaps_->Map(2)->get_epetra_map());
       }
 
       switch (couplingtype_)

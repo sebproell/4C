@@ -82,7 +82,7 @@ void CONSTRAINTS::SUBMODELEVALUATOR::ConstraintBase::evaluate_coupling_terms(
 
   // Complete
   Q_dd_->complete();
-  Q_Ld_->complete(stiff_ptr_->domain_map(), *n_condition_map_);
-  Q_dL_->complete(*n_condition_map_, stiff_ptr_->domain_map());
+  Q_Ld_->complete(stiff_ptr_->domain_map_not_epetra(), *n_condition_map_);
+  Q_dL_->complete(*n_condition_map_, stiff_ptr_->domain_map_not_epetra());
 }
 FOUR_C_NAMESPACE_CLOSE

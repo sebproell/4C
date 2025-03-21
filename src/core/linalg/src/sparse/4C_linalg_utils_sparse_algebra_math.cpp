@@ -196,11 +196,11 @@ void Core::LinAlg::matrix_put(const Core::LinAlg::SparseMatrix& A, const double 
 
   // define row map to tackle
   // if #rowmap (a subset of #RowMap()) is provided, a selective replacing is performed
-  const Core::LinAlg::Map* tomap = nullptr;
+  std::shared_ptr<const Map> tomap = nullptr;
   if (rowmap != nullptr)
-    tomap = &(*rowmap);
+    tomap = rowmap;
   else
-    tomap = &(B.row_map());
+    tomap = std::make_shared<const Map>(B.row_map());
 
   // working variables
   int NumEntries;
@@ -236,7 +236,7 @@ std::unique_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::matrix_multiply(
   const int nnz = std::max(A.max_num_entries(), B.max_num_entries());
 
   // now create resultmatrix C with correct rowmap
-  auto map = transA ? A.domain_map() : A.range_map();
+  auto map = transA ? A.domain_map_not_epetra() : A.range_map();
   auto C = std::make_unique<SparseMatrix>(map, nnz, A.explicit_dirichlet(), A.save_graph());
 
   EpetraExt::RowMatrix_Transpose transposer;
@@ -284,7 +284,7 @@ std::unique_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::matrix_multiply(const 
   const int nnz = std::max(A.max_num_entries(), B.max_num_entries());
 
   // now create resultmatrix C with correct rowmap
-  auto map = transA ? A.domain_map() : A.range_map();
+  auto map = transA ? Map(A.domain_map()) : A.range_map();
   auto C = std::make_unique<SparseMatrix>(map, nnz, explicitdirichlet, savegraph);
 
   EpetraExt::RowMatrix_Transpose transposer;

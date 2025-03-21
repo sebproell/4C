@@ -7,6 +7,7 @@
 
 #include "4C_structure_new_timint_base.hpp"
 
+#include "4C_adapter_str_pasiwrapper.hpp"
 #include "4C_beaminteraction_str_model_evaluator.hpp"
 #include "4C_comm_utils.hpp"
 #include "4C_contact_input.hpp"
@@ -178,7 +179,7 @@ void Solid::TimeInt::Base::set_restart(int stepn, double timen,
 const Core::LinAlg::Map& Solid::TimeInt::Base::get_mass_domain_map() const
 {
   check_init_setup();
-  return dataglobalstate_->get_mass_matrix()->domain_map();
+  return dataglobalstate_->get_mass_matrix()->domain_map_not_epetra();
 }
 
 /*----------------------------------------------------------------------------*

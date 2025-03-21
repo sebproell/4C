@@ -689,7 +689,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmnadd =
         Core::LinAlg::matrix_multiply(*mhataam, true, *kan, false, false, false, true);
     kmnmod->add(*kmnadd, false, 1.0, 1.0);
-    kmnmod->complete(kmn->domain_map(), kmn->row_map());
+    kmnmod->complete(kmn->domain_map_not_epetra(), kmn->row_map());
 
     // kmm: add T(mhataam)*kam
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmmmod =
@@ -698,7 +698,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmmadd =
         Core::LinAlg::matrix_multiply(*mhataam, true, *kam, false, false, false, true);
     kmmmod->add(*kmmadd, false, 1.0, 1.0);
-    kmmmod->complete(kmm->domain_map(), kmm->row_map());
+    kmmmod->complete(kmm->domain_map_not_epetra(), kmm->row_map());
 
     // kmi: add T(mhataam)*kai
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmimod;
@@ -1709,8 +1709,8 @@ void CONTACT::LagrangeStrategy::add_master_contributions(Core::LinAlg::SparseOpe
 
   // create new contact stiffness matric for LTL contact
   std::shared_ptr<Core::LinAlg::SparseMatrix> kc = std::make_shared<Core::LinAlg::SparseMatrix>(
-      (dynamic_cast<Epetra_CrsMatrix*>(&(*kteff.epetra_operator())))->RowMap(), 100, true, false,
-      Core::LinAlg::SparseMatrix::FE_MATRIX);
+      Core::LinAlg::Map((dynamic_cast<Epetra_CrsMatrix*>(&(*kteff.epetra_operator())))->RowMap()),
+      100, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
   // loop over interface and assemble force and stiffness
   for (int i = 0; i < (int)interface_.size(); ++i)
@@ -1765,8 +1765,8 @@ void CONTACT::LagrangeStrategy::add_line_to_lin_contributions(Core::LinAlg::Spar
 
   // create new contact stiffness matric for LTL contact
   std::shared_ptr<Core::LinAlg::SparseMatrix> kc = std::make_shared<Core::LinAlg::SparseMatrix>(
-      (dynamic_cast<Epetra_CrsMatrix*>(&(*kteff.epetra_operator())))->RowMap(), 100, true, false,
-      Core::LinAlg::SparseMatrix::FE_MATRIX);
+      Core::LinAlg::Map((dynamic_cast<Epetra_CrsMatrix*>(&(*kteff.epetra_operator())))->RowMap()),
+      100, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
   // loop over interface and assemble force and stiffness
   for (int i = 0; i < (int)interface_.size(); ++i)

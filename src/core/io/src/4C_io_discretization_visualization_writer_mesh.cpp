@@ -494,7 +494,8 @@ namespace Core::IO
     const int my_proc = Core::Communication::my_mpi_rank(comm);
 
     // Create Vectors to store the ghosting information.
-    Epetra_FEVector ghosting_information(*discretization.element_row_map(), n_proc);
+    Epetra_FEVector ghosting_information(
+        discretization.element_row_map()->get_epetra_map(), n_proc);
 
     // Get elements ghosted by this rank.
     std::vector<int> my_ghost_elements;

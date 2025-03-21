@@ -17,7 +17,7 @@
 #include <memory>
 
 // Forward declarations.
-class Core::LinAlg::Map;
+class Map;
 class Epetra_FEVector;
 
 FOUR_C_NAMESPACE_OPEN

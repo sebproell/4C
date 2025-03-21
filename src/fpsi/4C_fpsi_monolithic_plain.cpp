@@ -1099,7 +1099,7 @@ void FPSI::MonolithicPlain::recover_lagrange_multiplier()
 
       // add pressure DOFs
       Core::LinAlg::MapExtractor velotherpressuremapext =
-          Core::LinAlg::MapExtractor(fmgiprev_->domain_map(), velothermap);
+          Core::LinAlg::MapExtractor(fmgiprev_->domain_map_not_epetra(), velothermap);
       auxauxvec = std::make_shared<Core::LinAlg::Vector<double>>(fmgiprev_->domain_map(), true);
       velotherpressuremapext.insert_cond_vector(*auxvec, *auxauxvec);
 

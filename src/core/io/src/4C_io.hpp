@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-class Core::LinAlg::Map;
+class Map;
 class Epetra_BlockMap;
 
 FOUR_C_NAMESPACE_OPEN

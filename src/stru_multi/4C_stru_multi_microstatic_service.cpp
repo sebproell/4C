@@ -95,8 +95,10 @@ void MultiScale::MicroStatic::set_up_homogenization()
       -1, ndof_ - np_, fdof.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
 
   // create importer
-  importp_ = std::make_shared<Epetra_Import>(*pdof_, *(discret_->dof_row_map()));
-  importf_ = std::make_shared<Epetra_Import>(*fdof_, *(discret_->dof_row_map()));
+  importp_ = std::make_shared<Epetra_Import>(
+      pdof_->get_epetra_map(), (discret_->dof_row_map())->get_epetra_map());
+  importf_ = std::make_shared<Epetra_Import>(
+      fdof_->get_epetra_map(), (discret_->dof_row_map())->get_epetra_map());
 
   // create vector containing material coordinates of prescribed nodes
   Core::LinAlg::Vector<double> Xp_temp(*pdof_);

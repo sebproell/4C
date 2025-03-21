@@ -24,7 +24,8 @@ FOUR_C_NAMESPACE_OPEN
 namespace Core::LinAlg
 {
   class Solver;
-}
+  class Map;
+}  // namespace Core::LinAlg
 
 namespace NOX
 {

@@ -92,14 +92,14 @@ namespace FLD
           if (!doit) return;
 
           // get the maps
-          const Core::LinAlg::Map& colmap00 = mat_.matrix(0, 0).col_map();
-          const Core::LinAlg::Map& colmap01 = mat_.matrix(0, 1).col_map();
-          const Core::LinAlg::Map& colmap10 = mat_.matrix(1, 0).col_map();
-          const Core::LinAlg::Map& colmap11 = mat_.matrix(1, 1).col_map();
-          const Core::LinAlg::Map& rowmap00 = mat_.matrix(0, 0).row_map();
-          const Core::LinAlg::Map& rowmap01 = mat_.matrix(0, 1).row_map();
-          const Core::LinAlg::Map& rowmap10 = mat_.matrix(1, 0).row_map();
-          const Core::LinAlg::Map& rowmap11 = mat_.matrix(1, 1).row_map();
+          const Core::LinAlg::Map& colmap00 = Core::LinAlg::Map(mat_.matrix(0, 0).col_map());
+          const Core::LinAlg::Map& colmap01 = Core::LinAlg::Map(mat_.matrix(0, 1).col_map());
+          const Core::LinAlg::Map& colmap10 = Core::LinAlg::Map(mat_.matrix(1, 0).col_map());
+          const Core::LinAlg::Map& colmap11 = Core::LinAlg::Map(mat_.matrix(1, 1).col_map());
+          const Core::LinAlg::Map& rowmap00 = Core::LinAlg::Map(mat_.matrix(0, 0).row_map());
+          const Core::LinAlg::Map& rowmap01 = Core::LinAlg::Map(mat_.matrix(0, 1).row_map());
+          const Core::LinAlg::Map& rowmap10 = Core::LinAlg::Map(mat_.matrix(1, 0).row_map());
+          const Core::LinAlg::Map& rowmap11 = Core::LinAlg::Map(mat_.matrix(1, 1).row_map());
 
           // prepare vectors for holding column local ids and the values to be assembled
           const int nnode = lcoldim / numdofpernode_;

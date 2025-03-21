@@ -23,7 +23,12 @@ Core::LinAlg::MultiVector<T>::MultiVector(const Epetra_BlockMap& Map, int num_co
     : vector_(std::make_shared<Epetra_MultiVector>(Map, num_columns, zeroOut))
 {
 }
-
+template <typename T>
+Core::LinAlg::MultiVector<T>::MultiVector(
+    const Core::LinAlg::Map& Map, int num_columns, bool zeroOut)
+    : vector_(std::make_shared<Epetra_MultiVector>(Map.get_epetra_map(), num_columns, zeroOut))
+{
+}
 
 template <typename T>
 Core::LinAlg::MultiVector<T>::MultiVector(const Epetra_MultiVector& source)

@@ -16,7 +16,7 @@
 #include <map>
 
 // forward declaration
-class Core::LinAlg::Map;
+class Map;
 #include "4C_utils_parameter_list.fwd.hpp"
 
 FOUR_C_NAMESPACE_OPEN

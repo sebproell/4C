@@ -59,13 +59,13 @@ XFEM::XfpCouplingManager::XfpCouplingManager(std::shared_ptr<XFEM::ConditionMana
       *poro_->fluid_structure_coupling().perm_master_dof_map());
 
   // safety check
-  if (!mcfpi_ps_ps_->i_dispnp()->get_block_map().SameAs(*get_map_extractor(0)->Map(1)))
+  if (!mcfpi_ps_ps_->i_dispnp()->get_map().SameAs(*get_map_extractor(0)->Map(1)))
     FOUR_C_THROW("XFPCoupling_Manager: Maps of Condition and Mesh Coupling do not fit (psps)!");
-  if (!mcfpi_ps_pf_->i_dispnp()->get_block_map().SameAs(*get_map_extractor(0)->Map(1)))
+  if (!mcfpi_ps_pf_->i_dispnp()->get_map().SameAs(*get_map_extractor(0)->Map(1)))
     FOUR_C_THROW("XFPCoupling_Manager: Maps of Condition and Mesh Coupling do not fit (pspf)!");
-  if (!mcfpi_pf_ps_->i_dispnp()->get_block_map().SameAs(*get_map_extractor(0)->Map(1)))
+  if (!mcfpi_pf_ps_->i_dispnp()->get_map().SameAs(*get_map_extractor(0)->Map(1)))
     FOUR_C_THROW("XFPCoupling_Manager: Maps of Condition and Mesh Coupling do not fit (pfps)!");
-  if (!mcfpi_pf_pf_->i_dispnp()->get_block_map().SameAs(*get_map_extractor(0)->Map(1)))
+  if (!mcfpi_pf_pf_->i_dispnp()->get_map().SameAs(*get_map_extractor(0)->Map(1)))
     FOUR_C_THROW("XFPCoupling_Manager: Maps of Condition and Mesh Coupling do not fit (pfpf)!");
 
   // storage of the resulting Robin-type structural forces from the old timestep

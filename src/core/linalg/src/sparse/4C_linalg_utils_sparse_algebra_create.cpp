@@ -33,7 +33,7 @@ std::shared_ptr<Epetra_CrsMatrix> Core::LinAlg::create_matrix(
     const Core::LinAlg::Map& rowmap, const int npr)
 {
   if (!rowmap.UniqueGIDs()) FOUR_C_THROW("Row map is not unique");
-  return std::make_shared<Epetra_CrsMatrix>(::Copy, rowmap, npr, false);
+  return std::make_shared<Epetra_CrsMatrix>(::Copy, rowmap.get_epetra_map(), npr, false);
 }
 
 /*----------------------------------------------------------------------*
@@ -148,10 +148,24 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Core::LinAlg::create_vector(
   return std::make_shared<Core::LinAlg::Vector<double>>(rowmap, init);
 }
 
+
+std::shared_ptr<Core::LinAlg::Vector<double>> Core::LinAlg::create_vector(
+    const Map& rowmap, const bool init)
+{
+  return std::make_shared<Core::LinAlg::Vector<double>>(rowmap, init);
+}
+
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::LinAlg::create_multi_vector(
     const Epetra_BlockMap& rowmap, const int numrows, const bool init)
+{
+  return std::make_shared<Core::LinAlg::MultiVector<double>>(rowmap, numrows, init);
+}
+
+
+std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::LinAlg::create_multi_vector(
+    const Map& rowmap, const int numrows, const bool init)
 {
   return std::make_shared<Core::LinAlg::MultiVector<double>>(rowmap, numrows, init);
 }

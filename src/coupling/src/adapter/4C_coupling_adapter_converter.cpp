@@ -123,7 +123,7 @@ bool Coupling::Adapter::MatrixLogicalSplitAndTransform::operator()(
     // check if the permuted map is simply a subset of the current rowmap (no communication)
     int subset = 1;
     for (int i = 0; i < permsrcmap.NumMyElements(); ++i)
-      if (!src.row_map().MyGID(permsrcmap.GID(i)))
+      if (!src.row_map().MyGID(permsrcmap.get_epetra_map().GID(i)))
       {
         subset = 0;
         break;
@@ -138,15 +138,16 @@ bool Coupling::Adapter::MatrixLogicalSplitAndTransform::operator()(
     {
       if (exporter_ == nullptr)
       {
-        exporter_ = std::make_shared<Epetra_Export>(permsrcmap, src.row_map());
+        exporter_ = std::make_shared<Epetra_Export>(
+            permsrcmap.get_epetra_map(), src.row_map().get_epetra_map());
       }
 
       std::shared_ptr<Epetra_CrsMatrix> permsrc =
-          std::make_shared<Epetra_CrsMatrix>(::Copy, permsrcmap, 0);
+          std::make_shared<Epetra_CrsMatrix>(::Copy, permsrcmap.get_epetra_map(), 0);
       int err = permsrc->Import(*src.epetra_matrix(), *exporter_, Insert);
       if (err) FOUR_C_THROW("Import failed with err={}", err);
 
-      permsrc->FillComplete(src.domain_map(), permsrcmap);
+      permsrc->FillComplete(src.domain_map(), permsrcmap.get_epetra_map());
       esrc = permsrc;
     }
 
@@ -154,8 +155,9 @@ bool Coupling::Adapter::MatrixLogicalSplitAndTransform::operator()(
     matching_dst_rows = row_converter->dst_map().get();
   }
 
-  setup_gid_map(col_converter ? *col_converter->src_map() : esrc->RowMap(), esrc->ColMap(),
-      col_converter, Core::Communication::unpack_epetra_comm(src.Comm()));
+  setup_gid_map(col_converter ? *col_converter->src_map() : Core::LinAlg::Map(esrc->RowMap()),
+      Core::LinAlg::Map(esrc->ColMap()), col_converter,
+      Core::Communication::unpack_epetra_comm(src.Comm()));
 
   if (!addmatrix) dst.zero();
 
@@ -228,8 +230,8 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::add_into_filled(Epetra_C
     const Core::LinAlg::Vector<double>& selector, const Core::LinAlg::Map& matching_dst_rows,
     Epetra_CrsMatrix& edst, bool exactmatch, double scale)
 {
-  const Core::LinAlg::Map& srccolmap = esrc.ColMap();
-  const Core::LinAlg::Map& dstrowmap = edst.RowMap();
+  const Core::LinAlg::Map& srccolmap = Core::LinAlg::Map(esrc.ColMap());
+  const Core::LinAlg::Map& dstrowmap = Core::LinAlg::Map(edst.RowMap());
 
   // If the destination matrix is filled, we can add in local indices. This code is similar
   // to what is done in Core::LinAlg::Add(SparseMatrix, SparseMatrix) for the filled case.
@@ -315,7 +317,7 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::add_into_unfilled(Epetra
     const Core::LinAlg::Vector<double>& selector, const Core::LinAlg::Map& matching_dst_rows,
     Epetra_CrsMatrix& edst, bool exactmatch, double scale)
 {
-  const Core::LinAlg::Map& srccolmap = esrc.ColMap();
+  const Core::LinAlg::Map& srccolmap = Core::LinAlg::Map(esrc.ColMap());
 
   // standard code for the unfilled case
   std::vector<int> idx;
@@ -388,8 +390,8 @@ bool Coupling::Adapter::MatrixRowTransform::operator()(const Core::LinAlg::Spars
     double scale, const CouplingConverter& converter, Core::LinAlg::SparseMatrix& dst,
     bool addmatrix)
 {
-  return transformer_(
-      src, src.range_map(), src.domain_map(), scale, &converter, nullptr, dst, false, addmatrix);
+  return transformer_(src, src.range_map(), src.domain_map_not_epetra(), scale, &converter, nullptr,
+      dst, false, addmatrix);
 }
 
 
@@ -399,8 +401,8 @@ bool Coupling::Adapter::MatrixColTransform::operator()(const Core::LinAlg::Map&,
     const CouplingConverter& converter, Core::LinAlg::SparseMatrix& dst, bool exactmatch,
     bool addmatrix)
 {
-  return transformer_(src, src.range_map(), src.domain_map(), scale, nullptr, &converter, dst,
-      exactmatch, addmatrix);
+  return transformer_(src, src.range_map(), src.domain_map_not_epetra(), scale, nullptr, &converter,
+      dst, exactmatch, addmatrix);
 }
 
 
@@ -409,8 +411,8 @@ bool Coupling::Adapter::MatrixRowColTransform::operator()(const Core::LinAlg::Sp
     double scale, const CouplingConverter& rowconverter, const CouplingConverter& colconverter,
     Core::LinAlg::SparseMatrix& dst, bool exactmatch, bool addmatrix)
 {
-  return transformer_(src, src.range_map(), src.domain_map(), scale, &rowconverter, &colconverter,
-      dst, exactmatch, addmatrix);
+  return transformer_(src, src.range_map(), src.domain_map_not_epetra(), scale, &rowconverter,
+      &colconverter, dst, exactmatch, addmatrix);
 }
 
 FOUR_C_NAMESPACE_CLOSE

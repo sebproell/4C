@@ -16,7 +16,7 @@
 #include "4C_sti_algorithm.hpp"
 
 // forward declarations
-class Core::LinAlg::Map;
+class Map;
 
 FOUR_C_NAMESPACE_OPEN
 

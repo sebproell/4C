@@ -100,8 +100,18 @@ namespace Core::LinAlg
     SparseMatrix(const Core::LinAlg::Map& rowmap, const int npr, bool explicitdirichlet = true,
         bool savegraph = false, MatrixType matrixtype = CRS_MATRIX);
 
+
+
     /// construction of sparse matrix using an individual estimate for number of non-zeros per row
     SparseMatrix(const Core::LinAlg::Map& rowmap, std::vector<int>& numentries,
+        bool explicitdirichlet = true, bool savegraph = false, MatrixType matrixtype = CRS_MATRIX);
+
+    // TODO remove Epetra_Map here
+    SparseMatrix(const Epetra_Map& rowmap, const int npr, bool explicitdirichlet = true,
+        bool savegraph = false, MatrixType matrixtype = CRS_MATRIX);
+
+    // TODO remove Epetra_Map here
+    SparseMatrix(const Epetra_Map& rowmap, std::vector<int>& numentries,
         bool explicitdirichlet = true, bool savegraph = false, MatrixType matrixtype = CRS_MATRIX);
 
     /// construction of sparse matrix
@@ -273,6 +283,16 @@ namespace Core::LinAlg
      */
     void complete(const Core::LinAlg::Map& domainmap, const Core::LinAlg::Map& rangemap,
         bool enforce_complete = false) override;
+
+    // The following three interfaces needs so be merged into one.
+    void complete(const Core::LinAlg::Map& domainmap, const Epetra_Map& rangemap,
+        bool enforce_complete = false);
+
+    void complete(const Epetra_Map& domainmap, const Core::LinAlg::Map& rangemap,
+        bool enforce_complete = false);
+
+    void complete(
+        const Epetra_Map& domainmap, const Epetra_Map& rangemap, bool enforce_complete = false);
 
     void un_complete() override;
 

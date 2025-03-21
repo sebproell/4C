@@ -481,7 +481,8 @@ namespace ReducedLung
     // Right hand side vector with residuals of the system equations.
     auto rhs = Core::LinAlg::Vector<double>(row_map, true);
     // Jacobian of the system equations.
-    auto sysmat = Epetra_CrsMatrix(Copy, row_map, locally_relevant_dof_map, 3);
+    auto sysmat = Epetra_CrsMatrix(
+        Copy, row_map.get_epetra_map(), locally_relevant_dof_map.get_epetra_map(), 3);
 
     // Time integration parameters.
     const double dt = rawdyn.get<double>("TIMESTEP");

@@ -16,6 +16,7 @@
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
+#include "4C_structure_new_timint_base.hpp"
 #include "4C_utils_exceptions.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -178,7 +179,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_transform_gids(
   }
 
   // complete output matrix
-  outmat->complete(inmat.domain_map(), newrowmap);
+  outmat->complete(inmat.domain_map_not_epetra(), newrowmap);
 
   return outmat;
 }
@@ -195,8 +196,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_col_transform_gids(
 
   // mapping of column gids
   std::map<int, int> gidmap;
-  Core::Communication::Exporter ex(
-      inmat.domain_map(), inmat.col_map(), Core::Communication::unpack_epetra_comm(inmat.Comm()));
+  Core::Communication::Exporter ex(inmat.domain_map_not_epetra(), inmat.col_map(),
+      Core::Communication::unpack_epetra_comm(inmat.Comm()));
   for (int i = 0; i < inmat.domain_map().NumMyElements(); ++i)
     gidmap[inmat.domain_map().GID(i)] = newdomainmap.GID(i);
   ex.do_export(gidmap);
@@ -255,8 +256,8 @@ void Mortar::create_new_col_map(const Core::LinAlg::SparseMatrix& mat,
 
   // mapping of column gids
   std::map<int, int> gidmap;
-  Core::Communication::Exporter exDomain2Col(
-      mat.domain_map(), mat.col_map(), Core::Communication::unpack_epetra_comm(mat.Comm()));
+  Core::Communication::Exporter exDomain2Col(mat.domain_map_not_epetra(), mat.col_map(),
+      Core::Communication::unpack_epetra_comm(mat.Comm()));
 
   const int nummyelements = mat.domain_map().NumMyElements();
   if (nummyelements != newdomainmap.NumMyElements())
@@ -300,12 +301,12 @@ void Mortar::replace_column_and_domain_map(Core::LinAlg::SparseMatrix& mat,
   else
     create_new_col_map(mat, newdomainmap, newcolmap);
 
-  int err = mat.epetra_matrix()->ReplaceColMap(*newcolmap);
+  int err = mat.epetra_matrix()->ReplaceColMap(newcolmap->get_epetra_map());
   if (err) FOUR_C_THROW("ReplaceColMap failed! ( err = {} )", err);
 
-  Epetra_Import importer(*newcolmap, newdomainmap);
+  Epetra_Import importer(newcolmap->get_epetra_map(), newdomainmap.get_epetra_map());
 
-  err = mat.epetra_matrix()->ReplaceDomainMapAndImporter(newdomainmap, &importer);
+  err = mat.epetra_matrix()->ReplaceDomainMapAndImporter(newdomainmap.get_epetra_map(), &importer);
   if (err) FOUR_C_THROW("ReplaceDomainMapAndImporter failed! ( err = {} )", err);
 }
 
@@ -322,8 +323,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform_gid
 
   // mapping of column gids
   std::map<int, int> gidmap;
-  Core::Communication::Exporter ex(
-      inmat.domain_map(), inmat.col_map(), Core::Communication::unpack_epetra_comm(inmat.Comm()));
+  Core::Communication::Exporter ex(inmat.domain_map_not_epetra(), inmat.col_map(),
+      Core::Communication::unpack_epetra_comm(inmat.Comm()));
   for (int i = 0; i < inmat.domain_map().NumMyElements(); ++i)
     gidmap[inmat.domain_map().GID(i)] = newdomainmap.GID(i);
   ex.do_export(gidmap);
@@ -375,7 +376,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_transform(
     const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap)
 {
   // redistribute input matrix
-  std::shared_ptr<Epetra_CrsMatrix> permmat = redistribute(inmat, newrowmap, inmat.domain_map());
+  std::shared_ptr<Epetra_CrsMatrix> permmat =
+      redistribute(inmat, newrowmap, inmat.domain_map_not_epetra());
 
   // output matrix
   std::shared_ptr<Core::LinAlg::SparseMatrix> outmat =
@@ -423,14 +425,14 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform(
 std::shared_ptr<Epetra_CrsMatrix> Mortar::redistribute(const Core::LinAlg::SparseMatrix& src,
     const Core::LinAlg::Map& permrowmap, const Core::LinAlg::Map& permdomainmap)
 {
-  Epetra_Export exporter(permrowmap, src.row_map());
+  Epetra_Export exporter(permrowmap.get_epetra_map(), src.row_map().get_epetra_map());
 
   std::shared_ptr<Epetra_CrsMatrix> permsrc =
-      std::make_shared<Epetra_CrsMatrix>(Copy, permrowmap, src.max_num_entries());
+      std::make_shared<Epetra_CrsMatrix>(Copy, permrowmap.get_epetra_map(), src.max_num_entries());
   int err = permsrc->Import(*src.epetra_matrix(), exporter, Insert);
   if (err) FOUR_C_THROW("Import failed with err={}", err);
 
-  permsrc->FillComplete(permdomainmap, permrowmap);
+  permsrc->FillComplete(permdomainmap.get_epetra_map(), permrowmap.get_epetra_map());
   return permsrc;
 }
 
@@ -882,20 +884,18 @@ void Mortar::Utils::mortar_matrix_condensation(std::shared_ptr<Core::LinAlg::Spa
     const std::shared_ptr<const Core::LinAlg::SparseMatrix>& p_row,
     const std::shared_ptr<const Core::LinAlg::SparseMatrix>& p_col)
 {
-  // prepare maps
-  std::shared_ptr<Core::LinAlg::Map> gsrow = std::const_pointer_cast<Core::LinAlg::Map>(
-      Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p_row->range_map()));
-  std::shared_ptr<Core::LinAlg::Map> gmrow = std::const_pointer_cast<Core::LinAlg::Map>(
-      Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p_row->domain_map()));
+  // prepare maps by making a deep copy of the map and wrap it in a shared_ptr
+  auto gsrow = std::make_shared<Core::LinAlg::Map>(p_row->range_map());
+  auto gmrow = std::make_shared<Core::LinAlg::Map>(p_row->domain_map_not_epetra());
+  auto gscol = std::make_shared<Core::LinAlg::Map>(p_col->range_map());
+  auto gmcol = std::make_shared<Core::LinAlg::Map>(p_col->domain_map_not_epetra());
+
   std::shared_ptr<Core::LinAlg::Map> gsmrow = Core::LinAlg::merge_map(gsrow, gmrow, false);
   std::shared_ptr<Core::LinAlg::Map> gnrow = Core::LinAlg::split_map(k->range_map(), *gsmrow);
 
-  std::shared_ptr<Core::LinAlg::Map> gscol = std::const_pointer_cast<Core::LinAlg::Map>(
-      Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p_col->range_map()));
-  std::shared_ptr<Core::LinAlg::Map> gmcol = std::const_pointer_cast<Core::LinAlg::Map>(
-      Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p_col->domain_map()));
   std::shared_ptr<Core::LinAlg::Map> gsmcol = Core::LinAlg::merge_map(gscol, gmcol, false);
-  std::shared_ptr<Core::LinAlg::Map> gncol = Core::LinAlg::split_map(k->domain_map(), *gsmcol);
+  std::shared_ptr<Core::LinAlg::Map> gncol =
+      Core::LinAlg::split_map(k->domain_map_not_epetra(), *gsmcol);
 
   /*--------------------------------------------------------------------*/
   /* Split kteff into 3x3 block matrix                                  */
@@ -968,7 +968,7 @@ void Mortar::Utils::mortar_rhs_condensation(
   std::shared_ptr<Core::LinAlg::Map> gsdofrowmap = std::const_pointer_cast<Core::LinAlg::Map>(
       Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p.range_map()));
   std::shared_ptr<Core::LinAlg::Map> gmdofrowmap = std::const_pointer_cast<Core::LinAlg::Map>(
-      Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p.domain_map()));
+      Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p.domain_map_not_epetra()));
 
   Core::LinAlg::Vector<double> fs(*gsdofrowmap);
   Core::LinAlg::Vector<double> fm_cond(*gmdofrowmap);
@@ -994,7 +994,7 @@ void Mortar::Utils::mortar_recover(Core::LinAlg::Vector<double>& inc, Core::LinA
   std::shared_ptr<Core::LinAlg::Map> gsdofrowmap = std::const_pointer_cast<Core::LinAlg::Map>(
       Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p.range_map()));
   std::shared_ptr<Core::LinAlg::Map> gmdofrowmap = std::const_pointer_cast<Core::LinAlg::Map>(
-      Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p.domain_map()));
+      Core::Utils::shared_ptr_from_ref<const Core::LinAlg::Map>(p.domain_map_not_epetra()));
 
   Core::LinAlg::Vector<double> m_inc(*gmdofrowmap);
   Core::LinAlg::export_to(inc, m_inc);

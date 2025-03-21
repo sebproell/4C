@@ -1132,7 +1132,8 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
     Core::LinAlg::Graph nodegraph(Copy, *newrownodemap, 108, false);
 
     {
-      Epetra_Export exporter(*discret_->node_row_map(), *newrownodemap);
+      Epetra_Export exporter(
+          discret_->node_row_map()->get_epetra_map(), newrownodemap->get_epetra_map());
       int err = nodegraph.export_to(oldnodegraph->get_epetra_crs_graph(), exporter, Add);
       if (err < 0) FOUR_C_THROW("Graph export returned err={}", err);
     }
@@ -1511,7 +1512,8 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
           nodegraph->get_comm());
 
       // set standard value of edge weight to 1.0
-      auto edge_weights = std::make_shared<Epetra_CrsMatrix>(Copy, graph_rowmap, 15);
+      auto edge_weights =
+          std::make_shared<Epetra_CrsMatrix>(Copy, graph_rowmap.get_epetra_map(), 15);
       for (int i = 0; i < nodegraph->num_local_rows(); ++i)
       {
         const int grow = nodegraph->row_map().GID(i);

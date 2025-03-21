@@ -1055,7 +1055,7 @@ void FLD::FluidImplicitTimeInt::assemble_mat_and_rhs()
   if (forcing_ != nullptr)
   {
     eleparams.set("forcing", true);
-    if (forcing_->get_block_map().SameAs(*discret_->dof_row_map()))
+    if (forcing_->get_map().SameAs(*discret_->dof_row_map()))
       discret_->set_state("forcing", *forcing_);
     else
       discret_->set_state(1, "forcing", *forcing_);
@@ -1893,13 +1893,12 @@ void FLD::FluidImplicitTimeInt::evaluate_fluid_edge_based(
   std::shared_ptr<Core::LinAlg::Vector<double>> residual_col =
       Core::LinAlg::create_vector(*(facediscret_->dof_col_map()), true);
 
-  const Core::LinAlg::Map* rmap = nullptr;
 
   std::shared_ptr<Epetra_FECrsMatrix> sysmat_FE;
   if (systemmatrix1 != nullptr)
   {
-    rmap = &(systemmatrix1->OperatorRangeMap());
-    sysmat_FE = std::make_shared<Epetra_FECrsMatrix>(::Copy, *rmap, 256, false);
+    sysmat_FE =
+        std::make_shared<Epetra_FECrsMatrix>(::Copy, systemmatrix1->OperatorRangeMap(), 256, false);
   }
   else
     FOUR_C_THROW("sysmat is nullptr!");
@@ -2116,8 +2115,8 @@ void FLD::FluidImplicitTimeInt::setup_krylov_space_projection(Core::Conditions::
   // set flag for projection update true only if ALE and integral weights
   if (alefluid_ and (*weighttype == "integration")) updateprojection_ = true;
 
-  projector_ = std::make_shared<Core::LinAlg::KrylovProjector>(
-      activemodeids, weighttype, discret_->dof_row_map());
+  auto map = discret_->dof_row_map()->get_epetra_map();
+  projector_ = std::make_shared<Core::LinAlg::KrylovProjector>(activemodeids, weighttype, &map);
 
   // update the projector
   update_krylov_space_projection();
@@ -2221,8 +2220,8 @@ void FLD::FluidImplicitTimeInt::update_krylov_space_projection()
       c0_update = meshtying_->adapt_krylov_projector(Core::Utils::shared_ptr_from_ref(c0));
       if (msht_ == Inpar::FLUID::condensed_bmat || msht_ == Inpar::FLUID::condensed_bmat_merged)
       {
-        const Epetra_BlockMap* mergedmap = meshtying_->get_merged_map();
-        projector_->set_cw(*c0_update, *w0_update, mergedmap);
+        auto mergedmap = meshtying_->get_merged_map()->get_epetra_map();
+        projector_->set_cw(*c0_update, *w0_update, &mergedmap);
       }
       else
       {

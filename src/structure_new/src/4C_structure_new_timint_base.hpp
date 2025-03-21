@@ -21,8 +21,9 @@ namespace Core::LinAlg
 {
   template <typename T>
   class Vector;
-}
-class Core::LinAlg::Map;
+  class Map;
+}  // namespace Core::LinAlg
+
 
 #include "4C_utils_parameter_list.fwd.hpp"
 

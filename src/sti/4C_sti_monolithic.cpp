@@ -570,10 +570,11 @@ void STI::Monolithic::output_matrix_to_file(
       rowgids.size() ? rowgids.data() : nullptr, 0, Core::Communication::as_epetra_comm(comm));
 
   // import matrix to processor with ID 0
-  Epetra_CrsMatrix crsmatrix(Copy, fullrowmap, 0);
+  Epetra_CrsMatrix crsmatrix(Copy, fullrowmap.get_epetra_map(), 0);
   if (sparsematrix != nullptr)
   {
-    if (crsmatrix.Import(*sparsematrix->epetra_matrix(), Epetra_Import(fullrowmap, rowmap), Insert))
+    if (crsmatrix.Import(*sparsematrix->epetra_matrix(),
+            Epetra_Import(fullrowmap.get_epetra_map(), rowmap.get_epetra_map()), Insert))
       FOUR_C_THROW("Matrix import failed!");
   }
   else
@@ -583,7 +584,9 @@ void STI::Monolithic::output_matrix_to_file(
       for (int j = 0; j < blocksparsematrix->cols(); ++j)
       {
         if (crsmatrix.Import(*blocksparsematrix->matrix(i, j).epetra_matrix(),
-                Epetra_Import(fullrowmap, blocksparsematrix->range_map(i)), Insert))
+                Epetra_Import(
+                    fullrowmap.get_epetra_map(), blocksparsematrix->range_map(i).get_epetra_map()),
+                Insert))
           FOUR_C_THROW("Matrix import failed!");
       }
     }
@@ -857,7 +860,7 @@ void STI::Monolithic::assemble_mat_and_rhs()
                       thermoscatra_domain_interface)
                       ->matrix(0, iblock);
               Coupling::Adapter::MatrixLogicalSplitAndTransform()(thermoscatrablock, *maps_->Map(1),
-                  thermoscatrablock.domain_map(), 1.0, nullptr, nullptr,
+                  thermoscatrablock.domain_map_not_epetra(), 1.0, nullptr, nullptr,
                   blocksystemmatrix->matrix(nblockmapsscatra, iblock));
             }
 
@@ -954,8 +957,8 @@ void STI::Monolithic::assemble_mat_and_rhs()
             Coupling::Adapter::MatrixLogicalSplitAndTransform()(
                 *std::dynamic_pointer_cast<const Core::LinAlg::SparseMatrix>(
                     thermoscatra_domain_interface),
-                *maps_->Map(1), thermoscatra_domain_interface->domain_map(), 1.0, nullptr, nullptr,
-                blocksystemmatrix->matrix(1, 0));
+                *maps_->Map(1), Core::LinAlg::Map(thermoscatra_domain_interface->domain_map()), 1.0,
+                nullptr, nullptr, blocksystemmatrix->matrix(1, 0));
 
             Coupling::Adapter::MatrixLogicalSplitAndTransform()(*thermo_field()->system_matrix(),
                 *maps_->Map(1), *maps_->Map(1), 1.0, nullptr, nullptr,
@@ -1082,8 +1085,8 @@ void STI::Monolithic::assemble_mat_and_rhs()
         Coupling::Adapter::MatrixLogicalSplitAndTransform()(
             *std::dynamic_pointer_cast<const Core::LinAlg::SparseMatrix>(
                 thermoscatra_domain_interface),
-            *maps_->Map(1), thermoscatra_domain_interface->domain_map(), 1.0, nullptr, nullptr,
-            *systemmatrix, true, true);
+            *maps_->Map(1), Core::LinAlg::Map(thermoscatra_domain_interface->domain_map()), 1.0,
+            nullptr, nullptr, *systemmatrix, true, true);
 
         Coupling::Adapter::MatrixLogicalSplitAndTransform()(*thermo_field()->system_matrix(),
             *maps_->Map(1), *maps_->Map(1), 1.0, nullptr, nullptr, *systemmatrix, true, true);

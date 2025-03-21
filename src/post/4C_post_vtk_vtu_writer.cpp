@@ -245,7 +245,7 @@ void PostVtuWriter::write_dof_result_step(std::ofstream& file,
 
   // For parallel computations, we need to access all dofs on the elements, including the
   // nodes owned by other processors. Therefore, we need to import that data here.
-  const Epetra_BlockMap& vecmap = data->get_map();
+  const Epetra_BlockMap& vecmap = data->get_block_map();
   const Core::LinAlg::Map* colmap = dis->dof_col_map(0);
 
   int offset = vecmap.MinAllGID() - dis->dof_row_map()->MinAllGID();

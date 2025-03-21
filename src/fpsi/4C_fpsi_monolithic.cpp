@@ -706,8 +706,8 @@ void FPSI::Monolithic::create_linear_solver()
     std::string inv = "Inverse1";
     const Core::LinAlg::Map& oldmap =
         *(Global::Problem::instance()->get_dis("structure")->dof_row_map());
-    const Core::LinAlg::Map& newmap =
-        systemmatrix_->matrix(structure_block_, structure_block_).epetra_matrix()->RowMap();
+    const Core::LinAlg::Map& newmap = Core::LinAlg::Map(
+        systemmatrix_->matrix(structure_block_, structure_block_).epetra_matrix()->RowMap());
     Core::LinearSolver::Parameters::fix_null_space(
         inv.data(), oldmap, newmap, solver_->params().sublist("Inverse1"));
   }
@@ -715,8 +715,8 @@ void FPSI::Monolithic::create_linear_solver()
   {
     std::string inv = "Inverse2";
     const Core::LinAlg::Map& oldmap = *(poro_field()->fluid_field()->dof_row_map());
-    const Core::LinAlg::Map& newmap =
-        systemmatrix_->matrix(porofluid_block_, porofluid_block_).epetra_matrix()->RowMap();
+    const Core::LinAlg::Map& newmap = Core::LinAlg::Map(
+        systemmatrix_->matrix(porofluid_block_, porofluid_block_).epetra_matrix()->RowMap());
     Core::LinearSolver::Parameters::fix_null_space(
         inv.data(), oldmap, newmap, solver_->params().sublist("Inverse2"));
   }
@@ -724,8 +724,8 @@ void FPSI::Monolithic::create_linear_solver()
   {
     std::string inv = "Inverse3";
     const Core::LinAlg::Map& oldmap = *(fluid_field()->dof_row_map());
-    const Core::LinAlg::Map& newmap =
-        systemmatrix_->matrix(fluid_block_, fluid_block_).epetra_matrix()->RowMap();
+    const Core::LinAlg::Map& newmap = Core::LinAlg::Map(
+        systemmatrix_->matrix(fluid_block_, fluid_block_).epetra_matrix()->RowMap());
     Core::LinearSolver::Parameters::fix_null_space(
         inv.data(), oldmap, newmap, solver_->params().sublist("Inverse3"));
   }
@@ -733,8 +733,8 @@ void FPSI::Monolithic::create_linear_solver()
   {
     std::string inv = "Inverse4";
     const Core::LinAlg::Map& oldmap = *(ale_field()->dof_row_map());
-    const Core::LinAlg::Map& newmap =
-        systemmatrix_->matrix(ale_i_block_, ale_i_block_).epetra_matrix()->RowMap();
+    const Core::LinAlg::Map& newmap = Core::LinAlg::Map(
+        systemmatrix_->matrix(ale_i_block_, ale_i_block_).epetra_matrix()->RowMap());
     Core::LinearSolver::Parameters::fix_null_space(
         inv.data(), oldmap, newmap, solver_->params().sublist("Inverse4"));
   }

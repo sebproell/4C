@@ -184,8 +184,8 @@ void BeamInteraction::BeamToFluidMortarManager::setup()
       *lambda_dof_rowmap_, 30, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
   global_m_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *lambda_dof_rowmap_, 100, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
-  global_kappa_ = std::make_shared<Epetra_FEVector>(*lambda_dof_rowmap_);
-  global_active_lambda_ = std::make_shared<Epetra_FEVector>(*lambda_dof_rowmap_);
+  global_kappa_ = std::make_shared<Epetra_FEVector>(lambda_dof_rowmap_->get_epetra_map());
+  global_active_lambda_ = std::make_shared<Epetra_FEVector>(lambda_dof_rowmap_->get_epetra_map());
 
   // Create the maps for beam and solid DOFs.
   set_global_maps();

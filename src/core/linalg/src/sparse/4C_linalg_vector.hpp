@@ -11,6 +11,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_multi_vector.hpp"
 #include "4C_linalg_view.hpp"
 
@@ -35,6 +36,8 @@ namespace Core::LinAlg
    public:
     /// Basic vector constructor to create vector based on a map and initialize memory with zeros
     explicit Vector(const Epetra_BlockMap& Map, bool zeroOut = true);
+
+    explicit Vector(const Map& Map, bool zeroOut = true);
 
     /// Copy constructor from epetra to vector
     explicit Vector(const Epetra_Vector& Source);
@@ -149,6 +152,9 @@ namespace Core::LinAlg
     //! Returns the address of the Epetra_BlockMap for this multi-vector.
     const Epetra_BlockMap& get_block_map() const { return (vector_->Map()); };
 
+    //! Returns the address of the Map for this multi-vector.
+    Map get_map() const { return Map(vector_->Map()); };
+
     //! Returns the MPI_Comm for this multi-vector.
     MPI_Comm get_comm() const;
 
@@ -194,6 +200,8 @@ namespace Core::LinAlg
         return 0 if map is replaced, -1 if not.
      */
     int replace_map(const Epetra_BlockMap& map);
+
+    int replace_map(const Map& map);
 
     int replace_global_value(int GlobalRow, int VectorIndex, double ScalarValue)
     {
@@ -352,7 +360,11 @@ namespace Core::LinAlg
    public:
     explicit Vector(const Epetra_BlockMap& map, bool zeroOut = true);
 
+    explicit Vector(const Map& map, bool zeroOut = true);
+
     Vector(const Epetra_BlockMap& map, int* values);
+
+    Vector(const Map& map, int* values);
 
     Vector(const Vector& other);
     Vector& operator=(const Vector& other);
@@ -377,7 +389,8 @@ namespace Core::LinAlg
 
     void print(std::ostream& os) const;
 
-    const Epetra_BlockMap& get_block_map() const { return (vector_->Map()); };
+    Map get_map() { return Map(vector_->Map()); };
+    const Epetra_BlockMap& get_block_map() const { return vector_->Map(); };
 
     //! Imports an Epetra_DistObject using the Epetra_Import object.
     int import(const Vector& A, const Epetra_Import& Importer, Epetra_CombineMode CombineMode,

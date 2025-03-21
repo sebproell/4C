@@ -87,11 +87,13 @@ void Mortar::MatrixRowColTransformer::setup()
 
     std::shared_ptr<Epetra_Export>& slave_to_master = slave_to_master_[bt];
     slave_to_master = nullptr;
-    slave_to_master = std::make_shared<Epetra_Export>(**master_row_[bt], **slave_row_[bt]);
+    slave_to_master = std::make_shared<Epetra_Export>(
+        (**master_row_[bt]).get_epetra_map(), (**slave_row_[bt]).get_epetra_map());
 
     std::shared_ptr<Epetra_Export>& master_to_slave = master_to_slave_[bt];
     master_to_slave = nullptr;
-    master_to_slave = std::make_shared<Epetra_Export>(**slave_row_[bt], **master_row_[bt]);
+    master_to_slave = std::make_shared<Epetra_Export>(
+        (**slave_row_[bt]).get_epetra_map(), (**master_row_[bt]).get_epetra_map());
   }
 
   issetup_ = true;

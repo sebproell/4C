@@ -11,6 +11,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_view.hpp"
 
 #include <Epetra_FEVector.h>
@@ -40,6 +41,8 @@ namespace Core::LinAlg
     /// Basic multi-vector constructor to create vector based on a map and initialize memory with
     /// zeros.
     explicit MultiVector(const Epetra_BlockMap& Map, int num_columns, bool zeroOut = true);
+
+    explicit MultiVector(const Map& Map, int num_columns, bool zeroOut = true);
 
     explicit MultiVector(const Epetra_MultiVector& source);
 

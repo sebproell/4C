@@ -308,7 +308,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
 
   // map containing the inactive and non-contact structural dofs
   std::shared_ptr<Core::LinAlg::Map> str_gni_dofs = Core::LinAlg::split_map(
-      *Core::LinAlg::split_map(kss->row_map(), *interface_->master_row_dofs()),
+      *Core::LinAlg::split_map(Core::LinAlg::Map(kss->row_map()), *interface_->master_row_dofs()),
       *interface_->active_dofs());
 
   // add to kss

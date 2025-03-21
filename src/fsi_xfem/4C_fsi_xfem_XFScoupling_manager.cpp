@@ -45,7 +45,7 @@ XFEM::XfsCouplingManager::XfsCouplingManager(std::shared_ptr<ConditionManager> c
   mcfsi_->set_time_fac(1. / get_interface_timefac());
 
   // safety check
-  if (!mcfsi_->i_dispnp()->get_block_map().SameAs(*get_map_extractor(0)->Map(1)))
+  if (!mcfsi_->i_dispnp()->get_map().SameAs(*get_map_extractor(0)->Map(1)))
     FOUR_C_THROW("XFSCoupling_Manager: Maps of Condition and Mesh Coupling do not fit!");
 
   // storage of the resulting Robin-type structural forces from the old timestep

@@ -550,13 +550,13 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> Core::Rebalance::get_col_ver
 
   if (!dis.have_dofs()) FOUR_C_THROW("fill_complete() was not called");
   const Core::LinAlg::Map* colmap = dis.dof_col_map(nds);
-  const Epetra_BlockMap& vecmap = state->get_map();
+  const Epetra_BlockMap& vecmap = state->get_block_map();
 
   // if it's already in column map just set a reference
   // This is a rought test, but it might be ok at this place. It is an
   // error anyway to hand in a vector that is not related to our dof
   // maps.
-  if (vecmap.PointSameAs(*colmap)) return state;
+  if (vecmap.PointSameAs(colmap->get_epetra_map())) return state;
   // if it's not in column map export and allocate
   else
   {
