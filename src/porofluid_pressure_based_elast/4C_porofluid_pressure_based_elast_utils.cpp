@@ -5,19 +5,19 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_poromultiphase_utils.hpp"
+#include "4C_porofluid_pressure_based_elast_utils.hpp"
 
 #include "4C_fem_dofset_predefineddofnumber.hpp"
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_bio.hpp"
 #include "4C_poroelast_utils.hpp"
+#include "4C_porofluid_pressure_based_elast_adapter.hpp"
+#include "4C_porofluid_pressure_based_elast_monolithic_twoway.hpp"
+#include "4C_porofluid_pressure_based_elast_partitioned_twoway.hpp"
+#include "4C_porofluid_pressure_based_elast_utils_clonestrategy.hpp"
 #include "4C_porofluid_pressure_based_ele.hpp"
 #include "4C_porofluid_pressure_based_utils.hpp"
-#include "4C_poromultiphase_adapter.hpp"
-#include "4C_poromultiphase_monolithic_twoway.hpp"
-#include "4C_poromultiphase_partitioned_twoway.hpp"
-#include "4C_poromultiphase_utils_clonestrategy.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 

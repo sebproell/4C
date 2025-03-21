@@ -13,7 +13,7 @@
 #include "4C_config.hpp"
 
 #include "4C_adapter_art_net.hpp"
-#include "4C_adapter_porofluidmultiphase.hpp"
+#include "4C_adapter_porofluid_pressure_based.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_inpar_porofluid_pressure_based.hpp"
 #include "4C_io_discretization_visualization_writer_mesh.hpp"

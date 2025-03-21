@@ -7,7 +7,7 @@
 
 #include "4C_porofluid_pressure_based_utils.hpp"
 
-#include "4C_adapter_porofluidmultiphase.hpp"
+#include "4C_adapter_porofluid_pressure_based.hpp"
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_fem_geometry_intersection_service.hpp"
 #include "4C_fem_geometry_intersection_service.templates.hpp"

@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_poromultiphase.hpp"
+#include "4C_inpar_porofluid_pressure_based_elast.hpp"
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_linalg_equilibrate.hpp"

@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_poromultiphase_monolithic.hpp"
+#include "4C_porofluid_pressure_based_elast_partitioned.hpp"
 
 #include "4C_global_data.hpp"
 
@@ -13,7 +13,7 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-POROMULTIPHASE::PoroMultiPhaseMonolithic::PoroMultiPhaseMonolithic(
+POROMULTIPHASE::PoroMultiPhasePartitioned::PoroMultiPhasePartitioned(
     MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams)
     : PoroMultiPhaseBase(comm, globaltimeparams)
 {
