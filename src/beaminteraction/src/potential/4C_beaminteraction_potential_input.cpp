@@ -71,33 +71,6 @@ void BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::InputSp
                                              "slave be assigned to beam elements?",
                                  .default_value = MasterSlaveChoice::smaller_eleGID_is_slave}));
 
-  beampotential.specs.emplace_back(parameter<bool>("BEAMPOT_BTSOL",
-      {.description =
-              "decide, whether potential-based interaction between beams and solids is considered",
-          .default_value = false}));
-
-  beampotential.specs.emplace_back(parameter<bool>("BEAMPOT_BTSPH",
-      {.description =
-              "decide, whether potential-based interaction between beams and spheres is considered",
-          .default_value = false}));
-
-  // enable octree search and determine type of bounding box (aabb = axis aligned, spbb = spherical)
-  beampotential.specs.emplace_back(deprecated_selection<BeamContact::OctreeType>("BEAMPOT_OCTREE",
-      {
-          {"None", BeamContact::boct_none},
-          {"none", BeamContact::boct_none},
-          {"octree_axisaligned", BeamContact::boct_aabb},
-          {"octree_cylorient", BeamContact::boct_cobb},
-          {"octree_spherical", BeamContact::boct_spbb},
-      },
-      {.description = "octree and bounding box type for octree search routine",
-          .default_value = BeamContact::boct_none}));
-
-  beampotential.specs.emplace_back(parameter<int>(
-      "BEAMPOT_TREEDEPTH", {.description = "max. tree depth of the octree", .default_value = 6}));
-  beampotential.specs.emplace_back(parameter<int>("BEAMPOT_BOXESINOCT",
-      {.description = "max number of bounding boxes in any leaf octant", .default_value = 8}));
-
   beampotential.specs.emplace_back(parameter<double>("POTENTIAL_REDUCTION_LENGTH",
       {.description = "Within this length of the master beam end point the potential is smoothly "
                       "reduced to one half to account for infinitely long master beam surrogates.",

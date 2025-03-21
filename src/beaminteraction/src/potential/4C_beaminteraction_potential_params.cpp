@@ -194,26 +194,6 @@ void BeamInteraction::BeamPotentialParams::init(const double restart_time)
   if (potential_reduction_length_ != -1.0 and potential_reduction_length_ <= 0.0)
     FOUR_C_THROW("Invalid potential reduction length! Must be positive value or -1 to deactivate.");
 
-  /****************************************************************************/
-  // safety checks for currently unsupported parameter settings
-  /****************************************************************************/
-
-  // outdated: octtree for search of potential-based interaction pairs
-  if (Teuchos::getIntegralValue<BeamContact::OctreeType>(
-          beam_potential_params_list, "BEAMPOT_OCTREE") != BeamContact::boct_none)
-  {
-    FOUR_C_THROW("Octree-based search for potential-based beam interactions is deprecated!");
-  }
-
-  // outdated: flags to indicate, if beam-to-solid or beam-to-sphere potential-based interaction is
-  // applied
-  if (beam_potential_params_list.get<bool>("BEAMPOT_BTSOL"))
-  {
-    FOUR_C_THROW(
-        "The flag BEAMPOT_BTSOL is outdated! remove them as soon"
-        "as old beamcontact_manager is gone!");
-  }
-
   isinit_ = true;
 }
 
