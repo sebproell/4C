@@ -48,12 +48,12 @@ namespace BeamPotential
   };
 
   /// available types to regularize the force law for separations smaller than
-  /// the specified regularization parameter
-  enum BeamPotentialRegularizationType
+  /// the specified regularization separation
+  enum class RegularizationType
   {
-    regularization_linear,    ///< linear extrapolation
-    regularization_constant,  ///< constant extrapolation, i.e. f(r)=f(r_reg) for all r<r_reg
-    regularization_none       ///< no regularization
+    linear,    ///< linear extrapolation
+    constant,  ///< constant extrapolation, i.e. f(r)=f(r_reg) for all r<r_reg
+    none       ///< no regularization
   };
 
   /**

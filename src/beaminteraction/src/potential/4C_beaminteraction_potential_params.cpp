@@ -8,6 +8,7 @@
 #include "4C_beaminteraction_potential_params.hpp"
 
 #include "4C_beamcontact_input.hpp"
+#include "4C_beaminteraction_potential_input.hpp"
 #include "4C_beaminteraction_potential_runtime_visualization_output_params.hpp"
 #include "4C_global_data.hpp"
 #include "4C_io_value_parser.hpp"
@@ -27,7 +28,7 @@ BeamInteraction::BeamPotentialParams::BeamPotentialParams()
       potential_type_(BeamPotential::Type::vague),
       strategy_(BeamPotential::strategy_vague),
       cutoff_radius_(0.0),
-      regularization_type_(BeamPotential::regularization_none),
+      regularization_type_(BeamPotential::RegularizationType::none),
       regularization_separation_(0.0),
       num_integration_segments_(-1),
       num_gp_s_(-1),
@@ -124,12 +125,12 @@ void BeamInteraction::BeamPotentialParams::init(const double restart_time)
     FOUR_C_THROW("Invalid cutoff radius! Must be positive value or -1 to deactivate.");
 
   /****************************************************************************/
-  regularization_type_ = Teuchos::getIntegralValue<BeamPotential::BeamPotentialRegularizationType>(
+  regularization_type_ = Teuchos::getIntegralValue<BeamPotential::RegularizationType>(
       beam_potential_params_list, "REGULARIZATION_TYPE");
 
-  if ((regularization_type_ != BeamPotential::regularization_none and
+  if ((regularization_type_ != BeamPotential::RegularizationType::none and
           strategy_ == BeamPotential::strategy_doublelengthspec_largesepapprox) or
-      (regularization_type_ == BeamPotential::regularization_constant and
+      (regularization_type_ == BeamPotential::RegularizationType::constant and
           strategy_ == BeamPotential::strategy_singlelengthspec_smallsepapprox))
   {
     FOUR_C_THROW(
@@ -139,7 +140,7 @@ void BeamInteraction::BeamPotentialParams::init(const double restart_time)
   /****************************************************************************/
   regularization_separation_ = beam_potential_params_list.get<double>("REGULARIZATION_SEPARATION");
 
-  if (regularization_type_ != BeamPotential::regularization_none and
+  if (regularization_type_ != BeamPotential::RegularizationType::none and
       regularization_separation_ <= 0.0)
   {
     FOUR_C_THROW(

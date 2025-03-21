@@ -80,7 +80,7 @@ namespace BeamInteraction
       return cutoff_radius_;
     }
 
-    inline enum BeamPotential::BeamPotentialRegularizationType regularization_type() const
+    inline enum BeamPotential::RegularizationType regularization_type() const
     {
       throw_error_if_not_init_and_setup();
       return regularization_type_;
@@ -163,7 +163,7 @@ namespace BeamInteraction
     double cutoff_radius_;
 
     //! type of regularization to use for force law at separations below specified separation
-    enum BeamPotential::BeamPotentialRegularizationType regularization_type_;
+    enum BeamPotential::RegularizationType regularization_type_;
 
     //! use specified regularization type for separations smaller than this value
     double regularization_separation_;

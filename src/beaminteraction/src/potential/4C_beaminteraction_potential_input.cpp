@@ -57,16 +57,9 @@ void BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::InputSp
               "Neglect all potential contributions at separation largerthan this cutoff radius",
           .default_value = -1.0}));
 
-  beampotential.specs.emplace_back(
-      deprecated_selection<BeamPotential::BeamPotentialRegularizationType>("REGULARIZATION_TYPE",
-          {
-              {"linear_extrapolation", regularization_linear},
-              {"constant_extrapolation", regularization_constant},
-              {"None", regularization_none},
-              {"none", regularization_none},
-          },
-          {.description = "Type of regularization applied to the force law",
-              .default_value = regularization_none}));
+  beampotential.specs.emplace_back(parameter<BeamPotential::RegularizationType>(
+      "REGULARIZATION_TYPE", {.description = "Type of regularization applied to the force law",
+                                 .default_value = BeamPotential::RegularizationType::none}));
 
   beampotential.specs.emplace_back(parameter<double>("REGULARIZATION_SEPARATION",
       {.description = "Use regularization of force law at separations smaller than this separation",

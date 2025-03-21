@@ -63,7 +63,7 @@ POT_LAW_PREFACTOR               -2.356194490192345e-7 1.8948417228819560e-24
 POT_LAW_EXPONENT                6.0 12.0
 TYPE                            volume
 STRATEGY                        SingleLengthSpecific_SmallSepApprox_Simple
-REGULARIZATION_TYPE             linear_extrapolation
+REGULARIZATION_TYPE             linear
 REGULARIZATION_SEPARATION       8.0e-4
 NUM_INTEGRATION_SEGMENTS        10
 NUM_GAUSSPOINTS                 50
