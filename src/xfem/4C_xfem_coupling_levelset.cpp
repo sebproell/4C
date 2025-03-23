@@ -377,7 +377,7 @@ bool XFEM::LevelSetCoupling::set_level_set_field(const double time)
   // make a copy of last time step
 
   std::shared_ptr<Core::LinAlg::Vector<double>> delta_phi =
-      Core::LinAlg::create_vector(cutter_phinp_->get_map(), true);
+      Core::LinAlg::create_vector(cutter_phinp_->get_block_map(), true);
   delta_phi->update(1.0, *cutter_phinp_, 0.0);
 
   // initializations
@@ -413,7 +413,7 @@ bool XFEM::LevelSetCoupling::set_level_set_field(const double time)
     if (lm.size() != 1) FOUR_C_THROW("assume 1 dof in cutterdis-Dofset for phi vector");
 
     const int gid = lm[0];
-    const int lid = cutter_phinp_->get_map().LID(gid);
+    const int lid = cutter_phinp_->get_block_map().LID(gid);
     err = cutter_phinp_->replace_local_values(1, &value, &lid);
     if (err) FOUR_C_THROW("could not replace values for phi vector");
   }
@@ -478,7 +478,7 @@ bool XFEM::LevelSetCoupling::set_level_set_field(const double time)
 
       // SAFETY check
       // dependent on the desired projection, just remove this line
-      if (not modphinp->get_map().SameAs(
+      if (not modphinp->get_block_map().SameAs(
               *std::dynamic_pointer_cast<XFEM::DiscretizationXFEM>(cutter_dis_)
                   ->initial_dof_row_map()))
         FOUR_C_THROW("input map is not a dof row map of the fluid");
@@ -565,7 +565,7 @@ void XFEM::LevelSetCoupling::map_cutter_to_bg_vector(Core::FE::Discretization& s
       std::vector<double> val_source = Core::FE::extract_values(source_vec_dofbased, lm_source);
 
       // set to a dofrowmap based vector!
-      const int lid_target = target_vec_dofbased.get_map().LID(lm_target[0]);
+      const int lid_target = target_vec_dofbased.get_block_map().LID(lm_target[0]);
       const int err = target_vec_dofbased.replace_local_values(1, val_source.data(), &lid_target);
       if (err) FOUR_C_THROW("could not replace values for convective velocity");
     }

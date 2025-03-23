@@ -135,7 +135,7 @@ void XFEM::DiscretizationXFEM::export_initialto_active_vector(
     }
     else
     {
-      Epetra_Import importer(fullvec.get_map(), initialvec.get_map());
+      Epetra_Import importer(fullvec.get_block_map(), initialvec.get_block_map());
       int err = fullvec.import(initialvec, importer, Insert);
       if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
     }
@@ -215,7 +215,7 @@ void XFEM::DiscretizationXFEM::set_initial_state(unsigned nds, const std::string
 
   if (!have_dofs()) FOUR_C_THROW("fill_complete() was not called");
   const Epetra_Map* colmap = initial_dof_col_map(nds);
-  const Epetra_BlockMap& vecmap = state->get_map();
+  const Epetra_BlockMap& vecmap = state->get_block_map();
 
   if (state_.size() <= nds) state_.resize(nds + 1);
 
@@ -230,7 +230,7 @@ void XFEM::DiscretizationXFEM::set_initial_state(unsigned nds, const std::string
   else  // if it's not in column map export and allocate
   {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-    if (not initial_dof_row_map(nds)->SameAs(state->get_map()))
+    if (not initial_dof_row_map(nds)->SameAs(state->get_block_map()))
     {
       FOUR_C_THROW(
           "row map of discretization and state vector {} are different. This is a fatal bug!",

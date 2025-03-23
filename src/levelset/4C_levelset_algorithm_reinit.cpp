@@ -1397,7 +1397,7 @@ void ScaTra::LevelSetAlgorithm::correct_volume()
   // called after a reinitialization.
   const double thickness = -voldelta / surface;
 
-  Core::LinAlg::Vector<double> one(phin_->get_map());
+  Core::LinAlg::Vector<double> one(phin_->get_block_map());
   one.put_scalar(1.0);
 
   // update phi

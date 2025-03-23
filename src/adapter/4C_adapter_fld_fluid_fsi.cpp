@@ -303,7 +303,7 @@ void Adapter::FluidFSI::displacement_to_velocity(std::shared_ptr<Core::LinAlg::V
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   // check, whether maps are the same
-  if (!fcx->get_map().PointSameAs(veln_vector->get_map()))
+  if (!fcx->get_block_map().PointSameAs(veln_vector->get_block_map()))
   {
     FOUR_C_THROW("Maps do not match, but they have to.");
   }
@@ -330,7 +330,7 @@ void Adapter::FluidFSI::velocity_to_displacement(std::shared_ptr<Core::LinAlg::V
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   // check, whether maps are the same
-  if (!fcx->get_map().PointSameAs(veln_vector->get_map()))
+  if (!fcx->get_block_map().PointSameAs(veln_vector->get_block_map()))
   {
     FOUR_C_THROW("Maps do not match, but they have to.");
   }
@@ -513,7 +513,7 @@ void Adapter::FluidFSI::proj_vel_to_div_zero()
   solver->solve(BTB->epetra_operator(), x, BTvR, solver_params);
 
   std::shared_ptr<Core::LinAlg::Vector<double>> vmod =
-      std::make_shared<Core::LinAlg::Vector<double>>(velnp()->get_map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(velnp()->get_block_map(), true);
   B->Apply(*x, *vmod);
   write_access_velnp()->update(-1.0, *vmod, 1.0);
 }
@@ -637,13 +637,13 @@ void Adapter::FluidFSI::indicate_error_norms(double& err, double& errcond, doubl
   }
 
   // set '0' on all pressure DOFs
-  auto zeros = std::make_shared<Core::LinAlg::Vector<double>>(locerrvelnp_->get_map(), true);
+  auto zeros = std::make_shared<Core::LinAlg::Vector<double>>(locerrvelnp_->get_block_map(), true);
   Core::LinAlg::apply_dirichlet_to_system(*locerrvelnp_, *zeros, *pressure_row_map());
   // TODO: Do not misuse apply_dirichlet_to_system()...works for this purpose here: writes zeros
   // into all pressure DoFs
 
   // set '0' on Dirichlet DOFs
-  zeros = std::make_shared<Core::LinAlg::Vector<double>>(locerrvelnp_->get_map(), true);
+  zeros = std::make_shared<Core::LinAlg::Vector<double>>(locerrvelnp_->get_block_map(), true);
   Core::LinAlg::apply_dirichlet_to_system(
       *locerrvelnp_, *zeros, *(get_dbc_map_extractor()->cond_map()));
 

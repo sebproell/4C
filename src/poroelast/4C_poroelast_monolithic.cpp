@@ -1827,7 +1827,7 @@ void PoroElast::Monolithic::set_poro_contact_states()
               std::make_shared<Core::LinAlg::Vector<double>>(
                   *fluid_field()->velocity_row_map(), true);
 
-          int* mygids = fpres->get_map().MyGlobalElements();
+          int* mygids = fpres->get_block_map().MyGlobalElements();
           double* val = fpres->get_values();
           const int ndim = Global::Problem::instance()->n_dim();
           for (int i = 0; i < fpres->local_length(); ++i)

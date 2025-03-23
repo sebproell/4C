@@ -164,7 +164,7 @@ void CONTACT::PoroMtLagrangeStrategy::recover_coupling_matrix_partof_lmp(
     Core::LinAlg::Vector<double>& veli)
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> zfluid =
-      std::make_shared<Core::LinAlg::Vector<double>>(z_->get_map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(z_->get_block_map(), true);
 
   Core::LinAlg::Vector<double> mod(*gsdofrowmap_);
 

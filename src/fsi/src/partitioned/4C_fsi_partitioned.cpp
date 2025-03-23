@@ -906,7 +906,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FSI::Partitioned::fluid_to_struct(
     // Translate consistent nodal forces to interface loads
     const std::shared_ptr<Core::LinAlg::Vector<double>> ishape =
         mb_fluid_field()->integrate_interface_shape();
-    Core::LinAlg::Vector<double> iforce(iv->get_map());
+    Core::LinAlg::Vector<double> iforce(iv->get_block_map());
 
     if (iforce.reciprocal_multiply(1.0, *ishape, *iv, 0.0))
       FOUR_C_THROW("ReciprocalMultiply failed");

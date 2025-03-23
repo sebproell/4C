@@ -28,7 +28,7 @@ void Core::FE::extract_my_values(const Core::LinAlg::Vector<double>& global,
   local.size(ldim);
   for (size_t i = 0; i < ldim; ++i)
   {
-    const int lid = global.get_map().LID(lm[i]);
+    const int lid = global.get_block_map().LID(lm[i]);
     if (lid < 0)
       FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
           Core::Communication::my_mpi_rank(global.get_comm()), lm[i]);

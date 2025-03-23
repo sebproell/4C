@@ -34,7 +34,7 @@ void CONTACT::NitscheStrategy::apply_force_stiff_cmt(
   set_state(Mortar::state_new_displacement, *dis);
 
   // just a Nitsche-version
-  std::shared_ptr<Epetra_FEVector> fc = std::make_shared<Epetra_FEVector>(f->get_map());
+  std::shared_ptr<Epetra_FEVector> fc = std::make_shared<Epetra_FEVector>(f->get_block_map());
   std::shared_ptr<Core::LinAlg::SparseMatrix> kc = std::make_shared<Core::LinAlg::SparseMatrix>(
       (dynamic_cast<Epetra_CrsMatrix*>(&(*kt->epetra_operator())))->RowMap(), 100, true, false,
       Core::LinAlg::SparseMatrix::FE_MATRIX);

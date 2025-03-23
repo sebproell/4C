@@ -521,7 +521,7 @@ void Core::FE::Discretization::set_state(
   FOUR_C_ASSERT_ALWAYS(
       have_dofs(), "fill_complete() was not called for discretization {}!", name_.c_str());
   const Epetra_Map* colmap = dof_col_map(nds);
-  const Epetra_BlockMap& vecmap = state.get_map();
+  const Epetra_BlockMap& vecmap = state.get_block_map();
 
   if (state_.size() <= nds) state_.resize(nds + 1);
 
@@ -541,7 +541,7 @@ void Core::FE::Discretization::set_state(
   }
   else  // if it's not in column map export and allocate
   {
-    FOUR_C_ASSERT(dof_row_map(nds)->SameAs(state.get_map()),
+    FOUR_C_ASSERT(dof_row_map(nds)->SameAs(state.get_block_map()),
         "row map of discretization {} and state vector {} are different. This is a fatal bug!",
         name_.c_str(), name.c_str());
     std::shared_ptr<Core::LinAlg::Vector<double>> tmp = Core::LinAlg::create_vector(*colmap, false);
@@ -554,10 +554,10 @@ void Core::FE::Discretization::set_state(
     }
     // (re)build importer if necessary
     if (stateimporter_[nds] == nullptr or
-        not stateimporter_[nds]->SourceMap().SameAs(state.get_map()) or
+        not stateimporter_[nds]->SourceMap().SameAs(state.get_block_map()) or
         not stateimporter_[nds]->TargetMap().SameAs(*colmap))
     {
-      stateimporter_[nds] = std::make_shared<Epetra_Import>(*colmap, state.get_map());
+      stateimporter_[nds] = std::make_shared<Epetra_Import>(*colmap, state.get_block_map());
     }
 
     // transfer data

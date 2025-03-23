@@ -107,7 +107,7 @@ void FLD::Utils::DbcHdgFluid::read_dirichlet_condition(const Teuchos::ParameterL
         // get global id
         const int gid = dofs[j];
         // get corresponding local id
-        const int lid = info.toggle.get_map().LID(gid);
+        const int lid = info.toggle.get_block_map().LID(gid);
         if (lid < 0)
           FOUR_C_THROW("Global id {} not on this proc {} in system vector", dofs[j],
               Core::Communication::my_mpi_rank(discret.get_comm()));
@@ -355,7 +355,7 @@ void FLD::Utils::DbcHdgFluid::do_dirichlet_condition(const Teuchos::ParameterLis
         // get global id
         const int gid = dofs[j];
         // get corresponding local id
-        const int lid = toggle.get_map().LID(gid);
+        const int lid = toggle.get_block_map().LID(gid);
         if (lid < 0)
           FOUR_C_THROW("Global id {} not on this proc {} in system vector", dofs[j],
               Core::Communication::my_mpi_rank(discret.get_comm()));

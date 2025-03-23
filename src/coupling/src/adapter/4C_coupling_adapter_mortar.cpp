@@ -559,7 +559,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
       for (int k = 0; k < dim; ++k)
       {
-        val[k] += (*idisp)[(idisp->get_map()).LID(gdofs[k])];
+        val[k] += (*idisp)[(idisp->get_block_map()).LID(gdofs[k])];
       }
     }
 
@@ -598,7 +598,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
       for (int k = 0; k < dim; ++k)
       {
-        val[k] += (*idisp)[(idisp->get_map()).LID(gdofs[k])];
+        val[k] += (*idisp)[(idisp->get_block_map()).LID(gdofs[k])];
       }
     }
 
@@ -693,11 +693,12 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
     for (int k = 0; k < dim; ++k)
     {
       int dof = mtnode->dofs()[k];
-      (*Xmaster)[(Xmaster->get_map()).LID(dof)] = mtnode->x()[k];
+      (*Xmaster)[(Xmaster->get_block_map()).LID(dof)] = mtnode->x()[k];
 
       // add ALE displacements, if required
       if (idisp != nullptr)
-        (*Xmaster)[(Xmaster->get_map()).LID(dof)] += (*idisp)[(idisp->get_map()).LID(dof)];
+        (*Xmaster)[(Xmaster->get_block_map()).LID(dof)] +=
+            (*idisp)[(idisp->get_block_map()).LID(dof)];
     }
   }
 
@@ -792,12 +793,12 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
         for (int k = 0; k < numdim; ++k)
         {
-          locindex[k] = (Xslavemodcol.get_map()).LID(mtnode->dofs()[k]);
+          locindex[k] = (Xslavemodcol.get_block_map()).LID(mtnode->dofs()[k]);
           if (locindex[k] < 0) FOUR_C_THROW("Did not find dof in map");
           Xnew[k] = Xslavemodcol[locindex[k]];
           Xold[k] = mtnode->x()[k];
           if (idisp != nullptr)
-            Xold[k] += (*idisp)[(idisp->get_map()).LID(interface_->discret().dof(node)[k])];
+            Xold[k] += (*idisp)[(idisp->get_block_map()).LID(interface_->discret().dof(node)[k])];
         }
 
         // check is mesh distortion is still OK
@@ -872,7 +873,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
           for (int k = 0; k < dim; ++k)
           {
             // get global ID of degree of freedom for this spatial direction
-            int dofgid = (idisp->get_map()).LID(gdofs[k]);
+            int dofgid = (idisp->get_block_map()).LID(gdofs[k]);
             // get new coordinate value for this spatial direction
             const double value = Xnewglobal[k] - node->x()[k];
             // replace respective value in displacement vector
@@ -923,7 +924,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
       for (int k = 0; k < dim; ++k)
       {
-        val[k] += (*idisp)[(idisp->get_map()).LID(gdofs[k])];
+        val[k] += (*idisp)[(idisp->get_block_map()).LID(gdofs[k])];
       }
     }
 
@@ -959,7 +960,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
       for (int k = 0; k < dim; ++k)
       {
-        val[k] += (*idisp)[(idisp->get_map()).LID(gdofs[k])];
+        val[k] += (*idisp)[(idisp->get_block_map()).LID(gdofs[k])];
       }
     }
 
@@ -1091,12 +1092,12 @@ void Coupling::Adapter::CouplingMortar::evaluate(
 {
   // safety checks
   check_setup();
-  FOUR_C_ASSERT(idispma->get_map().PointSameAs(*pmasterdofrowmap_),
+  FOUR_C_ASSERT(idispma->get_block_map().PointSameAs(*pmasterdofrowmap_),
       "Map of incoming master vector does not match the stored master dof row map.");
-  FOUR_C_ASSERT(idispsl->get_map().PointSameAs(*pslavedofrowmap_),
+  FOUR_C_ASSERT(idispsl->get_block_map().PointSameAs(*pslavedofrowmap_),
       "Map of incoming slave vector does not match the stored slave dof row map.");
 
-  const Epetra_BlockMap stdmap = idispsl->get_map();
+  const Epetra_BlockMap stdmap = idispsl->get_block_map();
   idispsl->replace_map(*slavedofrowmap_);
 
   std::shared_ptr<Epetra_Map> dofrowmap =
@@ -1309,7 +1310,8 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Coupling::Adapter::CouplingMortar:
   // safety check
   check_setup();
 
-  FOUR_C_ASSERT(masterdofrowmap_->SameAs(mv.get_map()), "Vector with master dof map expected");
+  FOUR_C_ASSERT(
+      masterdofrowmap_->SameAs(mv.get_block_map()), "Vector with master dof map expected");
 
   Core::LinAlg::Vector<double> tmp = Core::LinAlg::Vector<double>(M_->row_map());
 

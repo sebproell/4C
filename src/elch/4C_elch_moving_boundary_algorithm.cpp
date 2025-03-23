@@ -335,7 +335,7 @@ void ElCh::MovingBoundaryAlgorithm::compute_interface_vectors(
   // id of the reacting species
   int reactingspeciesid = 0;
 
-  const Epetra_BlockMap& ivelmap = iveln.get_map();
+  const Epetra_BlockMap& ivelmap = iveln.get_block_map();
 
   // loop over all local nodes of fluid discretization
   for (int lnodeid = 0; lnodeid < fluiddis->num_my_row_nodes(); lnodeid++)

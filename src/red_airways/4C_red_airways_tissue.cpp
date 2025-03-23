@@ -278,7 +278,7 @@ void Airway::RedAirwayTissue::relax_pressure(int iter)
         omega_np_->reciprocal_multiply(1.0, denominator, *omega_np_, 0.0);
 
         // Safety check for \omega_i+1
-        for (int i = 0; i < couppres_ip_->get_map().NumMyElements(); ++i)
+        for (int i = 0; i < couppres_ip_->get_block_map().NumMyElements(); ++i)
         {
           if ((*omega_np_)[i] < 0.0)
             (*omega_np_)[i] = 0.0;
@@ -289,7 +289,7 @@ void Airway::RedAirwayTissue::relax_pressure(int iter)
 
       // Aitken Relaxation formula (35)
       // p^{n+1}_{i+1} = \omega_i \tilde{p}^{n+1}_{i+1} + (1-\omega_i) p^{n+1}_{i}
-      for (int i = 0; i < couppres_ip_->get_map().NumMyElements(); ++i)
+      for (int i = 0; i < couppres_ip_->get_block_map().NumMyElements(); ++i)
       {
         (*couppres_ip_)[i] =
             (*omega_np_)[i] * (*couppres_ip_tilde_)[i] + (1 - (*omega_np_)[i]) * (*couppres_im_)[i];
@@ -299,7 +299,7 @@ void Airway::RedAirwayTissue::relax_pressure(int iter)
       if (Core::Communication::my_mpi_rank(couppres_ip_->get_comm()) == 0)
       {
         printf("Aitken Relaxation: \n");
-        for (int i = 0; i < couppres_ip_->get_map().NumMyElements(); ++i)
+        for (int i = 0; i < couppres_ip_->get_block_map().NumMyElements(); ++i)
           std::cout << "omega_np_[" << i << "]: " << (*omega_np_)[i] << std::endl;
         std::cout << std::endl;
       }
@@ -357,7 +357,7 @@ bool Airway::RedAirwayTissue::not_converged(int iter)
   Core::LinAlg::Vector<double> scaled_flux_inc(*coupflux_ip_);
 
   // Calculate Pressure Norm
-  for (int i = 0; i < couppres_ip_->get_map().NumMyElements(); ++i)
+  for (int i = 0; i < couppres_ip_->get_block_map().NumMyElements(); ++i)
   {
     // Calculate pressure increment
     (pres_inc)[i] = abs((*couppres_ip_)[i] - (*couppres_im_)[i]);
@@ -370,7 +370,7 @@ bool Airway::RedAirwayTissue::not_converged(int iter)
   }
 
   // Calculate Flux Norm
-  for (int i = 0; i < coupflux_ip_->get_map().NumMyElements(); ++i)
+  for (int i = 0; i < coupflux_ip_->get_block_map().NumMyElements(); ++i)
   {
     // Calculate flux increment
     (flux_inc)[i] = abs((*coupflux_ip_)[i] - (*coupflux_im_)[i]);
@@ -419,11 +419,12 @@ void Airway::RedAirwayTissue::output_iteration(Core::LinAlg::Vector<double>& pre
     printf(
         " Volume ID      Vol            P             Q            dP            dQ           "
         "dP_scal       dQ_scal\n");
-    for (int i = 0; i < couppres_ip_->get_map().NumMyElements(); ++i)
+    for (int i = 0; i < couppres_ip_->get_block_map().NumMyElements(); ++i)
     {
       printf("     %d       %4.3e     %4.3e     %4.3e     %4.3e     %4.3e     %4.3e     %4.3e\n",
-          couppres_ip_->get_map().GID(i), (*coupvol_ip_)[i], (*couppres_ip_)[i], (*coupflux_ip_)[i],
-          (pres_inc)[i], (flux_inc)[i], (scaled_pres_inc)[i], (scaled_flux_inc)[i]);
+          couppres_ip_->get_block_map().GID(i), (*coupvol_ip_)[i], (*couppres_ip_)[i],
+          (*coupflux_ip_)[i], (pres_inc)[i], (flux_inc)[i], (scaled_pres_inc)[i],
+          (scaled_flux_inc)[i]);
     }
     printf(
         "------------------------------------------------------------------------------------------"

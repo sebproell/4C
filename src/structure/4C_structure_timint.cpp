@@ -907,7 +907,7 @@ void Solid::TimInt::apply_mesh_initialization(
     // create new position vector
     for (int i = 0; i < numdim; ++i)
     {
-      const int lid = gvector.get_map().LID(nodedofs[i]);
+      const int lid = gvector.get_block_map().LID(nodedofs[i]);
 
       if (lid < 0)
         FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",

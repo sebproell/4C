@@ -571,7 +571,7 @@ double Solid::MonitorDbc::get_reaction_moment(Core::LinAlg::Matrix<DIM, 1>& rmom
     {
       if (onoff[i] == 1)
       {
-        const int lid = complete_freact.get_map().LID(node_gid[i]);
+        const int lid = complete_freact.get_block_map().LID(node_gid[i]);
         if (lid < 0)
           FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
               Core::Communication::my_mpi_rank(complete_freact.get_comm()), node_gid[i]);

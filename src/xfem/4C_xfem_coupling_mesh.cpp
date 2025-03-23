@@ -813,7 +813,7 @@ void XFEM::MeshCouplingBC::compute_interface_velocity_from_displacement(
   for (int dof = 0; dof < numdof; ++dof)
   {
     int gid = nodedofset[dof];
-    int lid = idispnp_->get_map().LID(gid);
+    int lid = idispnp_->get_block_map().LID(gid);
 
     const double dispnp = (*idispnp_)[lid];
     const double dispn = (*idispn_)[lid];
@@ -1636,8 +1636,8 @@ void XFEM::MeshCouplingFSI::complete_state_vectors()
   // finalize itrueresidual vector
 
   // need to export the interface forces
-  Core::LinAlg::Vector<double> iforce_tmp(itrueresidual_->get_map(), true);
-  Epetra_Export exporter_iforce(iforcecol_->get_map(), iforce_tmp.get_map());
+  Core::LinAlg::Vector<double> iforce_tmp(itrueresidual_->get_block_map(), true);
+  Epetra_Export exporter_iforce(iforcecol_->get_block_map(), iforce_tmp.get_block_map());
   int err1 = iforce_tmp.export_to(*iforcecol_, exporter_iforce, Add);
   if (err1) FOUR_C_THROW("Export using exporter returned err={}", err1);
 
@@ -1682,15 +1682,15 @@ void XFEM::MeshCouplingFSI::read_restart(const int step)
   boundaryreader.read_vector(idispnp_, "idispnp_res");
   boundaryreader.read_vector(idispnpi_, "idispnpi_res");
 
-  if (not(cutter_dis_->dof_row_map())->SameAs(ivelnp_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(ivelnp_->get_block_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(iveln_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(iveln_->get_block_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispnp_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(idispnp_->get_block_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispn_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(idispn_->get_block_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispnpi_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(idispnpi_->get_block_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
 }
 
@@ -2664,15 +2664,15 @@ void XFEM::MeshCouplingFluidFluid::read_restart(const int step)
   boundaryreader.read_vector(idispnp_, "idispnp_res");
   boundaryreader.read_vector(idispnpi_, "idispnpi_res");
 
-  if (not(cutter_dis_->dof_row_map())->SameAs(ivelnp_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(ivelnp_->get_block_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(iveln_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(iveln_->get_block_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispnp_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(idispnp_->get_block_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispn_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(idispn_->get_block_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispnpi_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->SameAs(idispnpi_->get_block_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
 }
 

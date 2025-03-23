@@ -140,7 +140,7 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> Adapter::StructureConstrMerg
   // get last converged state from structure and constraintmanager
   std::shared_ptr<const Core::LinAlg::Vector<double>> strudis = structure_->veln();
   const Core::LinAlg::Vector<double> lagrmult(
-      structure_->get_constraint_manager()->get_lagr_mult_vector_old()->get_map(), true);
+      structure_->get_constraint_manager()->get_lagr_mult_vector_old()->get_block_map(), true);
 
   // merge stuff together
   std::shared_ptr<Core::LinAlg::Vector<double>> mergedstat =
@@ -158,7 +158,7 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> Adapter::StructureConstrMerg
   // get last converged state from structure and constraintmanager
   std::shared_ptr<const Core::LinAlg::Vector<double>> strudis = structure_->accn();
   const Core::LinAlg::Vector<double> lagrmult(
-      structure_->get_constraint_manager()->get_lagr_mult_vector_old()->get_map(), true);
+      structure_->get_constraint_manager()->get_lagr_mult_vector_old()->get_block_map(), true);
 
   // merge stuff together
   std::shared_ptr<Core::LinAlg::Vector<double>> mergedstat =

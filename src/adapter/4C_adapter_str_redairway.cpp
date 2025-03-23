@@ -58,7 +58,7 @@ Adapter::StructureRedAirway::StructureRedAirway(std::shared_ptr<Structure> stru)
 /*======================================================================*/
 void Adapter::StructureRedAirway::set_pressure(Core::LinAlg::Vector<double>& couppres)
 {
-  const Epetra_BlockMap& condmap = couppres.get_map();
+  const Epetra_BlockMap& condmap = couppres.get_block_map();
 
   for (int i = 0; i < condmap.NumMyElements(); ++i)
   {
@@ -160,7 +160,7 @@ void Adapter::StructureRedAirway::calc_flux(
   for (int i = 0; i < coupmap_->NumMyElements(); ++i)
   {
     int coupID = coupmap_->GID(i);
-    int lid = coupflux.get_map().LID(coupID);
+    int lid = coupflux.get_block_map().LID(coupID);
     (coupflux)[lid] = (vnp_[coupID] - vn_[coupID]) / dt;
     (coupvol)[lid] = vnp_[coupID];
   }

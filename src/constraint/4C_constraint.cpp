@@ -253,7 +253,7 @@ void CONSTRAINTS::Constraint::evaluate_constraint(Teuchos::ParameterList& params
       // global and local ID of this bc in the redundant vectors
       const int offsetID = params.get<int>("OffsetID");
       int gindex = condID - offsetID;
-      const int lindex = (systemvector3->get_map()).LID(gindex);
+      const int lindex = (systemvector3->get_block_map()).LID(gindex);
 
       // store loadcurve values
       std::shared_ptr<Core::LinAlg::Vector<double>> timefact =

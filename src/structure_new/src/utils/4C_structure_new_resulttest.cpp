@@ -231,7 +231,7 @@ int Solid::ResultTest::get_nodal_result(
   // test displacements or pressure
   if (disn_ != nullptr)
   {
-    const Epetra_BlockMap& disnpmap = disn_->get_map();
+    const Epetra_BlockMap& disnpmap = disn_->get_block_map();
     int idx = -1;
     if (position == "dispx")
       idx = 0;
@@ -256,7 +256,7 @@ int Solid::ResultTest::get_nodal_result(
   // test velocities
   if (veln_ != nullptr)
   {
-    const Epetra_BlockMap& velnpmap = veln_->get_map();
+    const Epetra_BlockMap& velnpmap = veln_->get_block_map();
     int idx = -1;
     if (position == "velx")
       idx = 0;
@@ -279,7 +279,7 @@ int Solid::ResultTest::get_nodal_result(
   // test accelerations
   if (accn_ != nullptr)
   {
-    const Epetra_BlockMap& accnpmap = accn_->get_map();
+    const Epetra_BlockMap& accnpmap = accn_->get_block_map();
     int idx = -1;
     if (position == "accx")
       idx = 0;
@@ -344,7 +344,7 @@ int Solid::ResultTest::get_nodal_result(
   // test reaction
   if (reactn_ != nullptr)
   {
-    const Epetra_BlockMap& reactmap = reactn_->get_map();
+    const Epetra_BlockMap& reactmap = reactn_->get_block_map();
     int idx = -1;
     if (position == "reactx")
       idx = 0;

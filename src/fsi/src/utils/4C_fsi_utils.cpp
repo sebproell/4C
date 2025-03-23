@@ -295,7 +295,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FSI::Utils::SlideAleUtils::interpo
     const Core::LinAlg::Vector<double>& uold)
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> unew = coupff_->master_to_slave(uold);
-  unew->replace_map(uold.get_map());
+  unew->replace_map(uold.get_block_map());
 
   return unew;
 }

@@ -57,7 +57,7 @@ void Core::FE::assemble_nodal_element_count(
 {
   for (int n = 0; n < ele.num_node(); ++n)
   {
-    const int lid = global_count.get_map().LID(ele.node_ids()[n]);
+    const int lid = global_count.get_block_map().LID(ele.node_ids()[n]);
 
     if (lid != -1)
     {

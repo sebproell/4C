@@ -1359,7 +1359,7 @@ void CONTACT::LagrangeStrategyPoro::set_state(
 
               fpres = node->dofs()[0];  // here get ids of first component of node
 
-              myfpres = global.get_values()[global.get_map().LID(fpres)];
+              myfpres = global.get_values()[global.get_block_map().LID(fpres)];
 
               *node->poro_data().fpres() = myfpres;
             }

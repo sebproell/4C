@@ -298,8 +298,8 @@ namespace
     // A change of the map is reflected to all views
     a.replace_map(new_map);
 
-    EXPECT_TRUE(a.get_map().SameAs(b.Map()));
-    EXPECT_TRUE(a.get_map().SameAs(c.get_map()));
+    EXPECT_TRUE(a.get_block_map().SameAs(b.Map()));
+    EXPECT_TRUE(a.get_block_map().SameAs(c.get_block_map()));
   }
 
 }  // namespace

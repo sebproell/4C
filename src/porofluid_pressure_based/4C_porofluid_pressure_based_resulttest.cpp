@@ -133,7 +133,7 @@ double POROFLUIDMULTIPHASE::ResultTest::result_node(
   double result(0.);
 
   // extract row map from solution vector
-  const Epetra_BlockMap& phinpmap = porotimint_.phinp()->get_map();
+  const Epetra_BlockMap& phinpmap = porotimint_.phinp()->get_block_map();
 
   // test result value of phi field
   if (quantity == "phi")

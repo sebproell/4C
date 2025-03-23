@@ -1812,8 +1812,8 @@ void Beam3ContactOctTree::communicate_vector(Core::LinAlg::Vector<double>& InVec
    * on all processors. */
 
   // first, export the values of OutVec on Proc 0 to InVecs of all participating processors
-  Epetra_Export exporter(OutVec.get_map(), InVec.get_map());
-  Epetra_Import importer(OutVec.get_map(), InVec.get_map());
+  Epetra_Export exporter(OutVec.get_block_map(), InVec.get_block_map());
+  Epetra_Import importer(OutVec.get_block_map(), InVec.get_block_map());
   if (doexport)
   {
     // zero out all vectors which are not Proc 0. Then, export Proc 0 data to InVec map.

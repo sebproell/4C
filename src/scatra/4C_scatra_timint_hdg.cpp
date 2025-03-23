@@ -295,7 +295,7 @@ namespace
     dis.clear_state(true);
 
     // create dofsets for concentration at nodes
-    tracephi = std::make_shared<Core::LinAlg::Vector<double>>(phi->get_map());
+    tracephi = std::make_shared<Core::LinAlg::Vector<double>>(phi->get_block_map());
     gradphi = std::make_shared<Core::LinAlg::MultiVector<double>>(*dis.node_row_map(), ndim);
 
     // call element routine to interpolate HDG to elements
@@ -782,7 +782,7 @@ void ScaTra::TimIntHDG::fd_check()
       phinp_->update(1., phinp_original, 0.);
 
       // impose perturbation and update interior variables
-      if (phinp_->get_map().MyGID(colgid))
+      if (phinp_->get_block_map().MyGID(colgid))
       {
         if (phinp_->sum_into_global_value(colgid, 0, eps))
           FOUR_C_THROW(

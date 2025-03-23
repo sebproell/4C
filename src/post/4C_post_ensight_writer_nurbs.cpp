@@ -1908,7 +1908,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
   Core::LinAlg::Vector<double> coldata(*fulldofmap, true);
 
   // create an importer and import the data
-  Epetra_Import importer((coldata).get_map(), (data).get_map());
+  Epetra_Import importer((coldata).get_block_map(), (data).get_block_map());
   int imerr = (coldata).import((data), importer, Insert);
   if (imerr)
   {
@@ -1989,7 +1989,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
         for (int rr = 0; rr < dim; ++rr)
         {
           my_data[dim * inode + rr] =
-              (coldata)[(coldata).get_map().LID(lm[inode * (dim + 1) + rr] + offset)];
+              (coldata)[(coldata).get_block_map().LID(lm[inode * (dim + 1) + rr] + offset)];
         }
       }
     }
@@ -2002,7 +2002,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
         for (int rr = 0; rr < dim; ++rr)
         {
           my_data[dim * inode + rr] =
-              (coldata)[(coldata).get_map().LID(lm[inode * dim + rr] + offset)];
+              (coldata)[(coldata).get_block_map().LID(lm[inode * dim + rr] + offset)];
         }
       }
     }
@@ -2014,7 +2014,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
       {
         // offset should be equal to dim for pressure case!
         my_data[inode] =
-            (coldata)[(coldata).get_map().LID(lm[inode * (dim + 1) + dim] + offset - dim)];
+            (coldata)[(coldata).get_block_map().LID(lm[inode * (dim + 1) + dim] + offset - dim)];
       }
     }
     else if (name == "averaged_scalar_field")
@@ -2024,7 +2024,8 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
       for (int inode = 0; inode < numnp; ++inode)
       {
         // offset should be equal to dim for pressure case!
-        my_data[inode] = (coldata)[(coldata).get_map().LID(lm[inode * (dim + 1) + dim] + offset)];
+        my_data[inode] =
+            (coldata)[(coldata).get_block_map().LID(lm[inode * (dim + 1) + dim] + offset)];
       }
     }
     else if ((name == "phi") or (name == "averaged_phi"))
@@ -2036,9 +2037,10 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
         Core::Nodes::Node* n = nurbsdis->l_row_node(inode);
         int numdofpernode = actele->num_dof_per_node(*n);
         if (numdofpernode == 1)  // one passive scalar (Scalar_Transport problem)
-          my_data[inode] = (coldata)[(coldata).get_map().LID(lm[inode * numdofpernode] + offset)];
+          my_data[inode] =
+              (coldata)[(coldata).get_block_map().LID(lm[inode * numdofpernode] + offset)];
         else  // result for electric potential (ELCH problem)
-          my_data[inode] = (coldata)[(coldata).get_map().LID(
+          my_data[inode] = (coldata)[(coldata).get_block_map().LID(
               lm[inode * numdofpernode + (numdofpernode - 1)] + offset)];
       }
     }
@@ -2063,7 +2065,8 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
       {
         Core::Nodes::Node* n = nurbsdis->l_row_node(inode);
         int numdofpernode = actele->num_dof_per_node(*n);
-        my_data[inode] = (coldata)[(coldata).get_map().LID(lm[inode * numdofpernode + k] + offset)];
+        my_data[inode] =
+            (coldata)[(coldata).get_block_map().LID(lm[inode * numdofpernode + k] + offset)];
       }
     }
     else if (name == "normalflux")
@@ -2074,7 +2077,8 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
       {
         // Core::Nodes::Node* n = nurbsdis->lRowNode(inode);
         int numdofpernode = 1;  // actele->NumDofPerNode(*n);
-        my_data[inode] = (coldata)[(coldata).get_map().LID(lm[inode * numdofpernode] + offset)];
+        my_data[inode] =
+            (coldata)[(coldata).get_block_map().LID(lm[inode * numdofpernode] + offset)];
       }
     }
     //---------------------------------------------------
@@ -2092,14 +2096,14 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
         for (int rr = 0; rr < dim; ++rr)
         {
           my_data[dim * inode + rr] =
-              (coldata)[(coldata).get_map().LID(lm[inode * dim + rr] + offset)];
+              (coldata)[(coldata).get_block_map().LID(lm[inode * dim + rr] + offset)];
         }
       }
     }
     else if (name == "temperature")
     {
       for (int inode = 0; inode < numnp; ++inode)
-        my_data[inode] = (coldata)[(coldata).get_map().LID(lm[inode] + offset)];
+        my_data[inode] = (coldata)[(coldata).get_block_map().LID(lm[inode] + offset)];
     }
     else
     {
