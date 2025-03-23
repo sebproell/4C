@@ -67,7 +67,8 @@ void Core::LinearSolver::TekoPreconditioner::setup(bool create, Epetra_Operator*
 
         auto crsA =
             std::dynamic_pointer_cast<Epetra_CrsMatrix>(Core::Utils::shared_ptr_from_ref(*matrix));
-        Core::LinAlg::SparseMatrix sparseA = Core::LinAlg::SparseMatrix(crsA, LinAlg::View);
+        Core::LinAlg::SparseMatrix sparseA =
+            Core::LinAlg::SparseMatrix(crsA, LinAlg::DataAccess::View);
 
         A = Core::LinAlg::split_matrix<Core::LinAlg::DefaultBlockMatrixStrategy>(
             sparseA, *extractor, *extractor);
@@ -223,7 +224,7 @@ void Core::LinearSolver::LU2x2SpaiStrategy::initialize_state(
     auto A_crs = Teuchos::rcp_dynamic_cast<const Epetra_CrsMatrix>(A_op->epetra_op(), true);
     const Core::LinAlg::SparseMatrix A_sparse(
         Core::Utils::shared_ptr_from_ref(*Teuchos::rcp_const_cast<Epetra_CrsMatrix>(A_crs)),
-        Core::LinAlg::Copy);
+        Core::LinAlg::DataAccess::Copy);
 
     // sparse inverse calculation
     std::shared_ptr<Core::LinAlg::SparseMatrix> A_thresh =

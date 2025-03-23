@@ -1564,7 +1564,7 @@ void FPSI::Monolithic::fpsifd_check()
 
   std::shared_ptr<Core::LinAlg::SparseMatrix> sparse = systemmatrix_->merge();
 
-  Core::LinAlg::SparseMatrix sparse_copy(*sparse, Core::LinAlg::Copy);
+  Core::LinAlg::SparseMatrix sparse_copy(*sparse, Core::LinAlg::DataAccess::Copy);
 
 
   std::cout << "\n****************** FPSI finite difference check ******************" << std::endl;
@@ -1643,7 +1643,7 @@ void FPSI::Monolithic::fpsifd_check()
   int err = stiff_approx->FillComplete();
   if (err) FOUR_C_THROW("FD_Check: FillComplete failed with err-code: {}", err);
 
-  Core::LinAlg::SparseMatrix temp(stiff_approx, Core::LinAlg::Copy);
+  Core::LinAlg::SparseMatrix temp(stiff_approx, Core::LinAlg::DataAccess::Copy);
 
   std::shared_ptr<Epetra_CrsMatrix> stiff_approx_sparse = temp.epetra_matrix();
 

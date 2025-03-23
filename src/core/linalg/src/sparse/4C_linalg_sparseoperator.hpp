@@ -32,8 +32,8 @@ namespace Core::LinAlg
   /*! \enum Core::LinAlg::DataAccess
    *  \brief Handling of data access (Copy or View)
    *
-   *  If set to Core::LinAlg::Copy, user data will be copied at construction.
-   *  If set to Core::LinAlg::View, user data will be encapsulated and used throughout
+   *  If set to Core::LinAlg::DataAccess::Copy, user data will be copied at construction.
+   *  If set to Core::LinAlg::DataAccess::View, user data will be encapsulated and used throughout
    *  the life of the object.
    *
    *  \note A separate Core::LinAlg::DataAccess is necessary in order to resolve
@@ -43,7 +43,7 @@ namespace Core::LinAlg
    *  Use plain 'Copy' or 'View' for construction of any Epetra matrix object.
    *
    */
-  enum DataAccess
+  enum class DataAccess
   {
     Copy,  ///< deep copy
     View   ///< reference to original data

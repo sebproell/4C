@@ -85,7 +85,7 @@ Core::LinAlg::SparseMatrix::SparseMatrix(std::shared_ptr<Epetra_CrsMatrix> matri
       savegraph_(savegraph),
       matrixtype_(matrixtype)
 {
-  if (access == Copy)
+  if (access == DataAccess::Copy)
   {
     if (matrixtype_ == CRS_MATRIX)
       sysmat_ = std::make_shared<Epetra_CrsMatrix>(*matrix);
@@ -122,7 +122,7 @@ Core::LinAlg::SparseMatrix::SparseMatrix(const SparseMatrix& mat, DataAccess acc
       savegraph_(mat.savegraph_),
       matrixtype_(mat.matrixtype_)
 {
-  if (access == Copy)
+  if (access == DataAccess::Copy)
   {
     // We do not care for exception proved code, so this is ok.
     *this = mat;
@@ -262,7 +262,7 @@ Core::LinAlg::SparseMatrix& Core::LinAlg::SparseMatrix::operator=(const SparseMa
  *----------------------------------------------------------------------*/
 void Core::LinAlg::SparseMatrix::assign(DataAccess access, const SparseMatrix& mat)
 {
-  if (access == Copy)
+  if (access == DataAccess::Copy)
   {
     // We do not care for exception proved code, so this is ok.
     *this = mat;

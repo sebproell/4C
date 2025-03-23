@@ -329,7 +329,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::matrix_transpose(const
 
   Epetra_CrsMatrix* a_prime = &(dynamic_cast<Epetra_CrsMatrix&>(transposer(*A.epetra_matrix())));
   matrix = std::make_shared<SparseMatrix>(Core::Utils::shared_ptr_from_ref(*a_prime),
-      Core::LinAlg::Copy, A.explicit_dirichlet(), A.save_graph());
+      Core::LinAlg::DataAccess::Copy, A.explicit_dirichlet(), A.save_graph());
 
   return matrix;
 }

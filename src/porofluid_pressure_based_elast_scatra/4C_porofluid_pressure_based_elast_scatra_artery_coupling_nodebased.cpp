@@ -226,7 +226,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup_matrix(
   blockartery->complete();
 
   // inner artery dofs
-  sysmat->assign(1, 1, Core::LinAlg::View, blockartery->matrix(0, 0));
+  sysmat->assign(1, 1, Core::LinAlg::DataAccess::View, blockartery->matrix(0, 0));
 
   (*sibtransform_)(blockartery->full_row_map(), blockartery->full_col_map(),
       blockartery->matrix(0, 1), 1.0, Coupling::Adapter::CouplingSlaveConverter(*artcontfieldcoup_),
@@ -240,7 +240,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup_matrix(
       Coupling::Adapter::CouplingSlaveConverter(*artcontfieldcoup_), *sysmat_cont, true, true);
 
   // continuous field
-  sysmat->assign(0, 0, Core::LinAlg::View, *sysmat_cont);
+  sysmat->assign(0, 0, Core::LinAlg::DataAccess::View, *sysmat_cont);
   // complete
   sysmat->complete();
 }

@@ -436,13 +436,13 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::setup_system_matrix(
   k_ff->un_complete();
 
   // assign structure part to the Poroelasticity matrix
-  mat.assign(0, 0, Core::LinAlg::View, *k_ss);
+  mat.assign(0, 0, Core::LinAlg::DataAccess::View, *k_ss);
   // assign coupling part to the Poroelasticity matrix
-  mat.assign(0, 1, Core::LinAlg::View, *k_sf);
+  mat.assign(0, 1, Core::LinAlg::DataAccess::View, *k_sf);
   // assign fluid part to the poroelasticity matrix
-  mat.assign(1, 1, Core::LinAlg::View, *k_ff);
+  mat.assign(1, 1, Core::LinAlg::DataAccess::View, *k_ff);
   // assign coupling part to the Poroelasticity matrix
-  mat.assign(1, 0, Core::LinAlg::View, *k_fs);
+  mat.assign(1, 0, Core::LinAlg::DataAccess::View, *k_fs);
 
   /*----------------------------------------------------------------------*/
   // done. make sure all blocks are filled.
@@ -1058,7 +1058,7 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::poro_fd_check()
   Core::LinAlg::Vector<double> rhs_copy(*dof_row_map(), true);
 
   std::shared_ptr<Core::LinAlg::SparseMatrix> sparse = systemmatrix_->merge();
-  Core::LinAlg::SparseMatrix sparse_copy(sparse->epetra_matrix(), Core::LinAlg::Copy);
+  Core::LinAlg::SparseMatrix sparse_copy(sparse->epetra_matrix(), Core::LinAlg::DataAccess::Copy);
 
 
   const int zeilennr = -1;
@@ -1147,7 +1147,7 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::poro_fd_check()
 
   std::shared_ptr<Core::LinAlg::SparseMatrix> stiff_approx_sparse = nullptr;
   stiff_approx_sparse =
-      std::make_shared<Core::LinAlg::SparseMatrix>(stiff_approx, Core::LinAlg::Copy);
+      std::make_shared<Core::LinAlg::SparseMatrix>(stiff_approx, Core::LinAlg::DataAccess::Copy);
 
   stiff_approx_sparse->add(sparse_copy, false, -1.0, 1.0);
 
@@ -1385,11 +1385,11 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWayArteryCoupling::setup_system_
   PoroMultiPhaseMonolithicTwoWay::setup_system_matrix(mat);
 
   // pure artery part
-  mat.assign(2, 2, Core::LinAlg::View, artery_porofluid_sysmat()->matrix(1, 1));
+  mat.assign(2, 2, Core::LinAlg::DataAccess::View, artery_porofluid_sysmat()->matrix(1, 1));
   // artery-porofluid part
-  mat.assign(2, 1, Core::LinAlg::View, artery_porofluid_sysmat()->matrix(1, 0));
+  mat.assign(2, 1, Core::LinAlg::DataAccess::View, artery_porofluid_sysmat()->matrix(1, 0));
   // porofluid-artery part
-  mat.assign(1, 2, Core::LinAlg::View, artery_porofluid_sysmat()->matrix(0, 1));
+  mat.assign(1, 2, Core::LinAlg::DataAccess::View, artery_porofluid_sysmat()->matrix(0, 1));
 
   return;
 }

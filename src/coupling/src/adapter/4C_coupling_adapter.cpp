@@ -824,7 +824,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Coupling::Adapter::Coupling::master_
 
   // create a SparseMatrix that wraps the new CrsMatrix.
   return std::make_shared<Core::LinAlg::SparseMatrix>(
-      permsm, Core::LinAlg::View, sm.explicit_dirichlet(), sm.save_graph());
+      permsm, Core::LinAlg::DataAccess::View, sm.explicit_dirichlet(), sm.save_graph());
 }
 
 
@@ -853,7 +853,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Coupling::Adapter::Coupling::slave_t
 
   // create a SparseMatrix that wraps the new CrsMatrix.
   return std::make_shared<Core::LinAlg::SparseMatrix>(
-      permsm, Core::LinAlg::View, sm.explicit_dirichlet(), sm.save_graph());
+      permsm, Core::LinAlg::DataAccess::View, sm.explicit_dirichlet(), sm.save_graph());
 }
 
 

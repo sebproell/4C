@@ -710,10 +710,10 @@ void FSI::MonolithicFluidSplit::setup_system_matrix(Core::LinAlg::BlockSparseMat
       laig = Core::LinAlg::matrix_multiply(*laig, false, *stcmat, false, false, false, true);
     }
 
-    mat.assign(2, 0, Core::LinAlg::View, *laig);
+    mat.assign(2, 0, Core::LinAlg::DataAccess::View, *laig);
   }
 
-  mat.assign(2, 2, Core::LinAlg::View, aii);
+  mat.assign(2, 2, Core::LinAlg::DataAccess::View, aii);
 
   /*----------------------------------------------------------------------*/
   // add optional fluid linearization with respect to mesh motion block
@@ -792,7 +792,7 @@ void FSI::MonolithicFluidSplit::setup_system_matrix(Core::LinAlg::BlockSparseMat
   }
 
   // finally assign structure block
-  mat.matrix(0, 0).assign(Core::LinAlg::View, *s);
+  mat.matrix(0, 0).assign(Core::LinAlg::DataAccess::View, *s);
 
   // done. make sure all blocks are filled.
   mat.complete();

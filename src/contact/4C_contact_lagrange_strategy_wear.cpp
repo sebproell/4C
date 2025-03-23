@@ -3851,10 +3851,10 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
         trkdz->un_complete();
         trkdz->complete(*gmap, *problem_dofs());
 
-        mat->assign(0, 0, Core::LinAlg::View, *stiffmt);
-        mat->assign(0, 1, Core::LinAlg::View, *trkdz);
-        mat->assign(1, 0, Core::LinAlg::View, *trkgd);
-        mat->assign(1, 1, Core::LinAlg::View, *trkgg);
+        mat->assign(0, 0, Core::LinAlg::DataAccess::View, *stiffmt);
+        mat->assign(0, 1, Core::LinAlg::DataAccess::View, *trkdz);
+        mat->assign(1, 0, Core::LinAlg::DataAccess::View, *trkgd);
+        mat->assign(1, 1, Core::LinAlg::DataAccess::View, *trkgg);
         mat->complete();
       }
       // BOTH_SIDED DISCRETE WEAR
@@ -3899,10 +3899,10 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
         trkdz->un_complete();
         trkdz->complete(*gmap, *problem_dofs());
 
-        mat->assign(0, 0, Core::LinAlg::View, *stiffmt);
-        mat->assign(0, 1, Core::LinAlg::View, *trkdz);
-        mat->assign(1, 0, Core::LinAlg::View, *trkgd);
-        mat->assign(1, 1, Core::LinAlg::View, *trkgg);
+        mat->assign(0, 0, Core::LinAlg::DataAccess::View, *stiffmt);
+        mat->assign(0, 1, Core::LinAlg::DataAccess::View, *trkdz);
+        mat->assign(1, 0, Core::LinAlg::DataAccess::View, *trkgd);
+        mat->assign(1, 1, Core::LinAlg::DataAccess::View, *trkgg);
         mat->complete();
       }
     }
@@ -3920,10 +3920,10 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
       std::shared_ptr<Core::LinAlg::BlockSparseMatrix<Core::LinAlg::DefaultBlockMatrixStrategy>>
           mat = std::dynamic_pointer_cast<
               Core::LinAlg::BlockSparseMatrix<Core::LinAlg::DefaultBlockMatrixStrategy>>(blockMat);
-      mat->assign(0, 0, Core::LinAlg::View, *stiffmt);
-      mat->assign(0, 1, Core::LinAlg::View, *trkdz);
-      mat->assign(1, 0, Core::LinAlg::View, *trkzd);
-      mat->assign(1, 1, Core::LinAlg::View, *trkzz);
+      mat->assign(0, 0, Core::LinAlg::DataAccess::View, *stiffmt);
+      mat->assign(0, 1, Core::LinAlg::DataAccess::View, *trkdz);
+      mat->assign(1, 0, Core::LinAlg::DataAccess::View, *trkzd);
+      mat->assign(1, 1, Core::LinAlg::DataAccess::View, *trkzz);
       mat->complete();
     }
 

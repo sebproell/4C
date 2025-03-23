@@ -549,13 +549,13 @@ void PoroElast::Monolithic::setup_system_matrix(Core::LinAlg::BlockSparseMatrixB
   }
 
   // assign structure part to the Poroelasticity matrix
-  mat.assign(0, 0, Core::LinAlg::View, *k_ss);
+  mat.assign(0, 0, Core::LinAlg::DataAccess::View, *k_ss);
   // assign coupling part to the Poroelasticity matrix
-  mat.assign(0, 1, Core::LinAlg::View, *k_sf);
+  mat.assign(0, 1, Core::LinAlg::DataAccess::View, *k_sf);
   // assign fluid part to the poroelasticity matrix
-  mat.assign(1, 1, Core::LinAlg::View, *k_ff);
+  mat.assign(1, 1, Core::LinAlg::DataAccess::View, *k_ff);
   // assign coupling part to the Poroelasticity matrix
-  mat.assign(1, 0, Core::LinAlg::View, *k_fs);
+  mat.assign(1, 0, Core::LinAlg::DataAccess::View, *k_fs);
 
   /*----------------------------------------------------------------------*/
   // done. make sure all blocks are filled.
@@ -1183,7 +1183,7 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
   Core::LinAlg::Vector<double> rhs_copy(*dof_row_map(), true);
 
   std::shared_ptr<Core::LinAlg::SparseMatrix> sparse = systemmatrix_->merge();
-  Core::LinAlg::SparseMatrix sparse_copy(sparse->epetra_matrix(), Core::LinAlg::Copy);
+  Core::LinAlg::SparseMatrix sparse_copy(sparse->epetra_matrix(), Core::LinAlg::DataAccess::Copy);
 
   bool output = false;
   if (output)
@@ -1287,7 +1287,7 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
 
   std::shared_ptr<Core::LinAlg::SparseMatrix> stiff_approx_sparse = nullptr;
   stiff_approx_sparse =
-      std::make_shared<Core::LinAlg::SparseMatrix>(stiff_approx, Core::LinAlg::Copy);
+      std::make_shared<Core::LinAlg::SparseMatrix>(stiff_approx, Core::LinAlg::DataAccess::Copy);
 
   stiff_approx_sparse->add(sparse_copy, false, -1.0, 1.0);
 
@@ -1911,9 +1911,9 @@ void PoroElast::Monolithic::eval_poro_mortar()
               structure_field()->write_access_dispnp(), k_ss, k_sf, rhs_s, step(), iter_, false);
 
           // Assign modified matrixes & vectors
-          systemmatrix_->assign(0, 0, Core::LinAlg::Copy,
+          systemmatrix_->assign(0, 0, Core::LinAlg::DataAccess::Copy,
               *std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(k_ss));
-          systemmatrix_->assign(0, 1, Core::LinAlg::Copy,
+          systemmatrix_->assign(0, 1, Core::LinAlg::DataAccess::Copy,
               *std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(k_sf));
           extractor()->insert_vector(*rhs_s, 0, *rhs_);
 
@@ -1936,8 +1936,8 @@ void PoroElast::Monolithic::eval_poro_mortar()
             costrategy.evaluate_poro_no_pen_contact(k_fs, f, frhs);
 
             // Assign modified matrixes & vectors
-            systemmatrix_->assign(1, 1, Core::LinAlg::Copy, *f);
-            systemmatrix_->assign(1, 0, Core::LinAlg::Copy, *k_fs);
+            systemmatrix_->assign(1, 1, Core::LinAlg::DataAccess::Copy, *f);
+            systemmatrix_->assign(1, 0, Core::LinAlg::DataAccess::Copy, *k_fs);
 
             extractor()->insert_vector(*frhs, 1, *rhs_);
           }
@@ -1983,7 +1983,7 @@ void PoroElast::Monolithic::eval_poro_mortar()
         costrategy.evaluate_meshtying_poro_off_diag(k_sf);
 
         // Assign modified matrix
-        systemmatrix_->assign(0, 1, Core::LinAlg::Copy, *k_sf);
+        systemmatrix_->assign(0, 1, Core::LinAlg::DataAccess::Copy, *k_sf);
       }
     }
   }

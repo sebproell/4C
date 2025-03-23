@@ -289,7 +289,7 @@ void PoroElast::MonolithicSplitNoPenetration::setup_system_matrix(
 
   /*----------------------------------------------------------------------*/
   // pure structural part
-  mat.assign(0, 0, Core::LinAlg::View, *s);
+  mat.assign(0, 0, Core::LinAlg::DataAccess::View, *s);
 
   // structure coupling part
   mat.matrix(0, 1).add(k_sf->matrix(sidx_other, fidx_other), false, 1.0, 0.0);
@@ -501,7 +501,7 @@ void PoroElast::MonolithicSplitNoPenetration::apply_fluid_coupl_matrix(
   //------------------------------invert D Matrix!-----------------------------------------------
   tmp_k_D->complete();
   std::shared_ptr<Core::LinAlg::SparseMatrix> invd =
-      std::make_shared<Core::LinAlg::SparseMatrix>(*tmp_k_D, Core::LinAlg::Copy);
+      std::make_shared<Core::LinAlg::SparseMatrix>(*tmp_k_D, Core::LinAlg::DataAccess::Copy);
   // invd->Complete();
 
   std::shared_ptr<Core::LinAlg::Vector<double>> diag =
@@ -588,7 +588,7 @@ void PoroElast::MonolithicSplitNoPenetration::update()
 
   // copy D matrix from current time step to old D matrix
   k_dn_ = std::make_shared<Core::LinAlg::SparseMatrix>(
-      *k_d_, Core::LinAlg::Copy);  // store D-Matrix from last timestep
+      *k_d_, Core::LinAlg::DataAccess::Copy);  // store D-Matrix from last timestep
 }
 
 void PoroElast::MonolithicSplitNoPenetration::output(bool forced_writerestart)
@@ -687,7 +687,7 @@ void PoroElast::MonolithicSplitNoPenetration::read_restart(const int step)
 
     // copy D matrix from current time step to old D matrix
     k_dn_ = std::make_shared<Core::LinAlg::SparseMatrix>(
-        *k_d_, Core::LinAlg::Copy);  // store D-Matrix from last timestep
+        *k_d_, Core::LinAlg::DataAccess::Copy);  // store D-Matrix from last timestep
   }
 }
 

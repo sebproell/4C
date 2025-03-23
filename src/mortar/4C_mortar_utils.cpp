@@ -379,7 +379,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_transform(
 
   // output matrix
   std::shared_ptr<Core::LinAlg::SparseMatrix> outmat =
-      std::make_shared<Core::LinAlg::SparseMatrix>(permmat, Core::LinAlg::Copy, true);
+      std::make_shared<Core::LinAlg::SparseMatrix>(permmat, Core::LinAlg::DataAccess::Copy, true);
 
   return outmat;
 }
@@ -413,7 +413,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform(
 
   // output matrix
   std::shared_ptr<Core::LinAlg::SparseMatrix> outmat =
-      std::make_shared<Core::LinAlg::SparseMatrix>(permmat, Core::LinAlg::Copy, false);
+      std::make_shared<Core::LinAlg::SparseMatrix>(permmat, Core::LinAlg::DataAccess::Copy, false);
 
   return outmat;
 }
@@ -1024,7 +1024,7 @@ void Mortar::Utils::mortar_matrix_condensation(
       std::shared_ptr<Core::LinAlg::SparseMatrix> new_matrix =
           std::make_shared<Core::LinAlg::SparseMatrix>(k->matrix(row, col));
       mortar_matrix_condensation(new_matrix, p.at(row), p.at(col) /*,row!=col*/);
-      cond_mat->assign(row, col, Core::LinAlg::Copy, *new_matrix);
+      cond_mat->assign(row, col, Core::LinAlg::DataAccess::Copy, *new_matrix);
     }
 
   cond_mat->complete();

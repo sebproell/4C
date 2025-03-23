@@ -120,7 +120,7 @@ void XFEM::XfaCouplingManager::add_coupling_matrix(
   // ALE Condensation
   Core::LinAlg::SparseMatrix& aii = a->matrix(aidx_other, aidx_other);
 
-  systemmatrix.assign(idx_[1], idx_[1], Core::LinAlg::View, aii);
+  systemmatrix.assign(idx_[1], idx_[1], Core::LinAlg::DataAccess::View, aii);
 
   if (ale_struct_coupling_ != nullptr)
   {

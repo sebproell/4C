@@ -212,7 +212,7 @@ namespace Solid
           const Core::LinAlg::SparseMatrix& matrix, const Inpar::Solid::ModelType& mt,
           const MatBlockType& bt) const
       {
-        assign_model_block(jac, matrix, mt, bt, Core::LinAlg::View);
+        assign_model_block(jac, matrix, mt, bt, Core::LinAlg::DataAccess::View);
       };
       void assign_model_block(Core::LinAlg::SparseOperator& jac,
           const Core::LinAlg::SparseMatrix& matrix, const Inpar::Solid::ModelType& mt,

@@ -247,8 +247,8 @@ void Core::LinearSolver::AMGNxN::Hierarchies::setup()
           myA = this_level->Get<Teuchos::RCP<Matrix>>("A");
           myAcrs = MueLuUtils::Op2NonConstEpetraCrs(myA);
           myAspa = Teuchos::make_rcp<Core::LinAlg::SparseMatrix>(
-              Core::Utils::shared_ptr_from_ref(*myAcrs), Core::LinAlg::Copy, explicitdirichlet,
-              savegraph);
+              Core::Utils::shared_ptr_from_ref(*myAcrs), Core::LinAlg::DataAccess::Copy,
+              explicitdirichlet, savegraph);
           A_level[level] = myAspa;
         }
         else
@@ -282,8 +282,8 @@ void Core::LinearSolver::AMGNxN::Hierarchies::setup()
             myA = this_level->Get<Teuchos::RCP<Matrix>>("P");
             myAcrs = MueLuUtils::Op2NonConstEpetraCrs(myA);
             myAspa = Teuchos::make_rcp<Core::LinAlg::SparseMatrix>(
-                Core::Utils::shared_ptr_from_ref(*myAcrs), Core::LinAlg::Copy, explicitdirichlet,
-                savegraph);
+                Core::Utils::shared_ptr_from_ref(*myAcrs), Core::LinAlg::DataAccess::Copy,
+                explicitdirichlet, savegraph);
             P_level[level - 1] = myAspa;
           }
           else
@@ -294,8 +294,8 @@ void Core::LinearSolver::AMGNxN::Hierarchies::setup()
             myA = this_level->Get<Teuchos::RCP<Matrix>>("R");
             myAcrs = MueLuUtils::Op2NonConstEpetraCrs(myA);
             myAspa = Teuchos::make_rcp<Core::LinAlg::SparseMatrix>(
-                Core::Utils::shared_ptr_from_ref(*myAcrs), Core::LinAlg::Copy, explicitdirichlet,
-                savegraph);
+                Core::Utils::shared_ptr_from_ref(*myAcrs), Core::LinAlg::DataAccess::Copy,
+                explicitdirichlet, savegraph);
             R_level[level - 1] = myAspa;
           }
           else
