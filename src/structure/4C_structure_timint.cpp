@@ -1034,7 +1034,8 @@ void Solid::TimInt::determine_mass_damp_consist_accel()
   // constant matrix mass_ later on. This is necessary since we need the original mass matrix mass_
   // (without blanked rows) on the Dirichlet DoFs in order to calculate correct reaction forces
   // (Christoph Meier)
-  mass = std::make_shared<Core::LinAlg::SparseMatrix>(*mass_matrix(), Core::LinAlg::Copy);
+  mass =
+      std::make_shared<Core::LinAlg::SparseMatrix>(*mass_matrix(), Core::LinAlg::DataAccess::Copy);
 
   /* calculate consistent initial accelerations
    * WE MISS:

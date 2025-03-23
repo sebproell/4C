@@ -43,7 +43,7 @@ namespace
         Core::Communication::as_epetra_comm(comm_), A);
     if (err != 0) FOUR_C_THROW("Matrix read failed.");
     std::shared_ptr<Epetra_CrsMatrix> A_crs = Core::Utils::shared_ptr_from_ref(*A);
-    Core::LinAlg::SparseMatrix A_sparse(A_crs, Core::LinAlg::Copy);
+    Core::LinAlg::SparseMatrix A_sparse(A_crs, Core::LinAlg::DataAccess::Copy);
 
     std::shared_ptr<Core::LinAlg::SparseMatrix> A_inverse = Core::LinAlg::matrix_sparse_inverse(
         A_sparse, std::make_shared<Core::LinAlg::Graph>(A->Graph()));
@@ -82,7 +82,7 @@ namespace
         Core::Communication::as_epetra_comm(comm_), A);
     if (err != 0) FOUR_C_THROW("Matrix read failed.");
     std::shared_ptr<Epetra_CrsMatrix> A_crs = Core::Utils::shared_ptr_from_ref(*A);
-    Core::LinAlg::SparseMatrix A_sparse(A_crs, Core::LinAlg::Copy);
+    Core::LinAlg::SparseMatrix A_sparse(A_crs, Core::LinAlg::DataAccess::Copy);
 
     std::shared_ptr<Core::LinAlg::SparseMatrix> A_inverse = Core::LinAlg::matrix_sparse_inverse(
         A_sparse, std::make_shared<Core::LinAlg::Graph>(A->Graph()));
@@ -133,7 +133,7 @@ namespace
         Core::Communication::as_epetra_comm(comm_), A);
     if (err != 0) FOUR_C_THROW("Matrix read failed.");
     std::shared_ptr<Epetra_CrsMatrix> A_crs = Core::Utils::shared_ptr_from_ref(*A);
-    Core::LinAlg::SparseMatrix A_sparse(A_crs, Core::LinAlg::Copy);
+    Core::LinAlg::SparseMatrix A_sparse(A_crs, Core::LinAlg::DataAccess::Copy);
 
     {
       const double tol = 1e-8;

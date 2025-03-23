@@ -631,7 +631,7 @@ void LowMach::Algorithm::setup_mono_loma_matrix()
   mat_ff->un_complete();
 
   // assign matrix block
-  lomasystemmatrix_->assign(0, 0, Core::LinAlg::View, *mat_ff);
+  lomasystemmatrix_->assign(0, 0, Core::LinAlg::DataAccess::View, *mat_ff);
 
   //----------------------------------------------------------------------
   // 2nd diagonal block (lower right): scatra weighting - scatra solution
@@ -643,7 +643,7 @@ void LowMach::Algorithm::setup_mono_loma_matrix()
   mat_ss->un_complete();
 
   // assign matrix block
-  lomasystemmatrix_->assign(1, 1, Core::LinAlg::View, *mat_ss);
+  lomasystemmatrix_->assign(1, 1, Core::LinAlg::DataAccess::View, *mat_ss);
 
   // complete loma block matrix
   lomasystemmatrix_->complete();
@@ -663,7 +663,7 @@ void LowMach::Algorithm::setup_mono_loma_matrix()
   mat_fs->un_complete();
 
   // assign matrix block
-  lomasystemmatrix_->assign(0, 1, Core::LinAlg::View, *mat_fs);
+  lomasystemmatrix_->assign(0, 1, Core::LinAlg::DataAccess::View, *mat_fs);
 
   //----------------------------------------------------------------------
   // 2nd off-diagonal block (lower left): scatra weighting - fluid solution
@@ -681,7 +681,7 @@ void LowMach::Algorithm::setup_mono_loma_matrix()
   mat_sf->un_complete();
 
   // assign matrix block
-  lomasystemmatrix_->assign(1, 0, Core::LinAlg::View, *mat_sf);
+  lomasystemmatrix_->assign(1, 0, Core::LinAlg::DataAccess::View, *mat_sf);
 
   // complete loma block matrix
   lomasystemmatrix_->complete();

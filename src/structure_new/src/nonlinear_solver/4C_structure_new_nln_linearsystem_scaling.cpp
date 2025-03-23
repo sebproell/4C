@@ -276,7 +276,7 @@ void Solid::Nln::LinSystem::StcScaling::scaleLinearSystem(Epetra_LinearProblem& 
   Epetra_CrsMatrix* stiffmat = dynamic_cast<Epetra_CrsMatrix*>(problem.GetMatrix());
   std::shared_ptr<Epetra_CrsMatrix> stiff_epetra = Core::Utils::shared_ptr_from_ref(*stiffmat);
   std::shared_ptr<Core::LinAlg::SparseMatrix> stiff_linalg =
-      std::make_shared<Core::LinAlg::SparseMatrix>(stiff_epetra, Core::LinAlg::View);
+      std::make_shared<Core::LinAlg::SparseMatrix>(stiff_epetra, Core::LinAlg::DataAccess::View);
 
   // get rhs
   Core::LinAlg::VectorView rhs_view(*dynamic_cast<Epetra_Vector*>(problem.GetRHS()));

@@ -139,7 +139,7 @@ namespace Core::LinAlg
       \param mat matrix to assign from
       \param access how to treat this assignment: Copy or View
      */
-    SparseMatrix(const SparseMatrix& mat, DataAccess access = Copy);
+    SparseMatrix(const SparseMatrix& mat, DataAccess access = DataAccess::Copy);
 
     /// Assignment operator. Makes a deep copy.
     SparseMatrix& operator=(const SparseMatrix& mat);

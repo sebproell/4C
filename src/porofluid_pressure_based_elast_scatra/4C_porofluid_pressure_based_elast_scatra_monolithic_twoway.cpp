@@ -435,11 +435,12 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::setup_system_ma
   // assign matrix block
   if (solve_structure_)
   {
-    systemmatrix_->assign(0, 0, Core::LinAlg::View, mat_pp->matrix(0, 0));
-    systemmatrix_->assign(0, 1, Core::LinAlg::View, mat_pp->matrix(0, 1));
-    systemmatrix_->assign(1, 0, Core::LinAlg::View, mat_pp->matrix(1, 0));
+    systemmatrix_->assign(0, 0, Core::LinAlg::DataAccess::View, mat_pp->matrix(0, 0));
+    systemmatrix_->assign(0, 1, Core::LinAlg::DataAccess::View, mat_pp->matrix(0, 1));
+    systemmatrix_->assign(1, 0, Core::LinAlg::DataAccess::View, mat_pp->matrix(1, 0));
   }
-  systemmatrix_->assign(struct_offset_, struct_offset_, Core::LinAlg::View, mat_pp->matrix(1, 1));
+  systemmatrix_->assign(
+      struct_offset_, struct_offset_, Core::LinAlg::DataAccess::View, mat_pp->matrix(1, 1));
 
   //----------------------------------------------------------------------
   // 2nd diagonal block (lower right): scatra weighting - scatra solution
@@ -453,7 +454,8 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::setup_system_ma
   mat_ss->un_complete();
 
   // assign matrix block
-  systemmatrix_->assign(struct_offset_ + 1, struct_offset_ + 1, Core::LinAlg::View, *mat_ss);
+  systemmatrix_->assign(
+      struct_offset_ + 1, struct_offset_ + 1, Core::LinAlg::DataAccess::View, *mat_ss);
 
   // complete scatra block matrix
   systemmatrix_->complete();
@@ -480,8 +482,9 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::setup_system_ma
   k_pfs->un_complete();
 
   // assign matrix block
-  // systemmatrix_->Assign(0,2,Core::LinAlg::View,*(k_pss_)); --> zero
-  systemmatrix_->assign(struct_offset_, struct_offset_ + 1, Core::LinAlg::View, *(k_pfs));
+  // systemmatrix_->Assign(0,2,Core::LinAlg::DataAccess::View,*(k_pss_)); --> zero
+  systemmatrix_->assign(
+      struct_offset_, struct_offset_ + 1, Core::LinAlg::DataAccess::View, *(k_pfs));
 
   //----------------------------------------------------------------------
   // 2nd off-diagonal block k_sp (lower left): scatra weighting - poro solution
@@ -513,8 +516,9 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::setup_system_ma
   k_spf->un_complete();
 
   // assign matrix block
-  if (solve_structure_) systemmatrix_->assign(2, 0, Core::LinAlg::View, *(k_sps));
-  systemmatrix_->assign(struct_offset_ + 1, struct_offset_, Core::LinAlg::View, *(k_spf));
+  if (solve_structure_) systemmatrix_->assign(2, 0, Core::LinAlg::DataAccess::View, *(k_sps));
+  systemmatrix_->assign(
+      struct_offset_ + 1, struct_offset_, Core::LinAlg::DataAccess::View, *(k_spf));
 
   // complete block matrix
   systemmatrix_->complete();
@@ -1093,7 +1097,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::poro_multi_phas
   Core::LinAlg::Vector<double> rhs_copy(*dof_row_map(), true);
 
   std::shared_ptr<Core::LinAlg::SparseMatrix> sparse = systemmatrix_->merge();
-  Core::LinAlg::SparseMatrix sparse_copy(*sparse, Core::LinAlg::Copy);
+  Core::LinAlg::SparseMatrix sparse_copy(*sparse, Core::LinAlg::DataAccess::Copy);
 
 
   const int zeilennr = -1;
@@ -1180,7 +1184,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::poro_multi_phas
 
   std::shared_ptr<Core::LinAlg::SparseMatrix> stiff_approx_sparse = nullptr;
   stiff_approx_sparse =
-      std::make_shared<Core::LinAlg::SparseMatrix>(stiff_approx, Core::LinAlg::Copy);
+      std::make_shared<Core::LinAlg::SparseMatrix>(stiff_approx, Core::LinAlg::DataAccess::Copy);
 
   stiff_approx_sparse->add(sparse_copy, false, -1.0, 1.0);
 
@@ -1471,23 +1475,23 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWayArteryCoupling::s
 
   // artery part
   systemmatrix_->assign(
-      struct_offset_ + 2, struct_offset_ + 2, Core::LinAlg::View, mat_pp->matrix(2, 2));
+      struct_offset_ + 2, struct_offset_ + 2, Core::LinAlg::DataAccess::View, mat_pp->matrix(2, 2));
   // artery-porofluid part
   systemmatrix_->assign(
-      struct_offset_ + 2, struct_offset_, Core::LinAlg::View, mat_pp->matrix(2, 1));
+      struct_offset_ + 2, struct_offset_, Core::LinAlg::DataAccess::View, mat_pp->matrix(2, 1));
   // porofluid-artery part
   systemmatrix_->assign(
-      struct_offset_, struct_offset_ + 2, Core::LinAlg::View, mat_pp->matrix(1, 2));
+      struct_offset_, struct_offset_ + 2, Core::LinAlg::DataAccess::View, mat_pp->matrix(1, 2));
 
   // -------------------------------------------------------------------------arteryscatra-scatra
   // arteryscatra part
-  systemmatrix_->assign(struct_offset_ + 3, struct_offset_ + 3, Core::LinAlg::View,
+  systemmatrix_->assign(struct_offset_ + 3, struct_offset_ + 3, Core::LinAlg::DataAccess::View,
       scatramsht_->combined_system_matrix()->matrix(1, 1));
   // scatra-arteryscatra part
-  systemmatrix_->assign(struct_offset_ + 1, struct_offset_ + 3, Core::LinAlg::View,
+  systemmatrix_->assign(struct_offset_ + 1, struct_offset_ + 3, Core::LinAlg::DataAccess::View,
       scatramsht_->combined_system_matrix()->matrix(0, 1));
   // arteryscatra-scatra part
-  systemmatrix_->assign(struct_offset_ + 3, struct_offset_ + 1, Core::LinAlg::View,
+  systemmatrix_->assign(struct_offset_ + 3, struct_offset_ + 1, Core::LinAlg::DataAccess::View,
       scatramsht_->combined_system_matrix()->matrix(1, 0));
 
   if (nodal_coupl_inactive_)
@@ -1504,7 +1508,8 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWayArteryCoupling::s
     k_asa->apply_dirichlet(*scatramsht_->art_scatra_field()->dirich_maps()->cond_map(), false);
 
     // arteryscatra-scatra part
-    systemmatrix_->assign(struct_offset_ + 3, struct_offset_ + 2, Core::LinAlg::View, *k_asa);
+    systemmatrix_->assign(
+        struct_offset_ + 3, struct_offset_ + 2, Core::LinAlg::DataAccess::View, *k_asa);
   }
 
   systemmatrix_->complete();

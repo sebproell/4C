@@ -58,7 +58,7 @@ void Core::LinearSolver::DirectSolver<MatrixType, VectorType>::setup(
   projector_ = projector;
   if (projector_ != nullptr)
   {
-    Core::LinAlg::SparseMatrix A_view(crsA, Core::LinAlg::View);
+    Core::LinAlg::SparseMatrix A_view(crsA, Core::LinAlg::DataAccess::View);
     std::shared_ptr<Core::LinAlg::SparseMatrix> A2 = projector_->project(A_view);
 
     crsA = A2->epetra_matrix();

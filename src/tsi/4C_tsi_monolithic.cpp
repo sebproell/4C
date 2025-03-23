@@ -1110,7 +1110,7 @@ void TSI::Monolithic::setup_system_matrix()
   std::shared_ptr<Core::LinAlg::SparseMatrix> k_ss = structure_field()->system_matrix();
 
   // assign structure part to the TSI matrix
-  systemmatrix_->assign(0, 0, Core::LinAlg::View, *k_ss);
+  systemmatrix_->assign(0, 0, Core::LinAlg::DataAccess::View, *k_ss);
 
   /*----------------------------------------------------------------------*/
   // structural block k_st (3nxn)
@@ -1130,7 +1130,7 @@ void TSI::Monolithic::setup_system_matrix()
   k_st_->un_complete();
 
   // assign thermo part to the TSI matrix
-  systemmatrix_->assign(0, 1, Core::LinAlg::View, *(k_st_));
+  systemmatrix_->assign(0, 1, Core::LinAlg::DataAccess::View, *(k_st_));
 
   /*----------------------------------------------------------------------*/
   // pure thermo part k_tt (nxn)
@@ -1143,7 +1143,7 @@ void TSI::Monolithic::setup_system_matrix()
   std::shared_ptr<Core::LinAlg::SparseMatrix> k_tt = thermo_field()->system_matrix();
 
   // assign thermo part to the TSI matrix
-  systemmatrix_->assign(1, 1, Core::LinAlg::View, *(k_tt));
+  systemmatrix_->assign(1, 1, Core::LinAlg::DataAccess::View, *(k_tt));
 
   /*----------------------------------------------------------------------*/
   // thermo part k_ts (nx3n)
@@ -1162,7 +1162,7 @@ void TSI::Monolithic::setup_system_matrix()
 
   if (!matchinggrid_) k_ts_ = volcoupl_->apply_matrix_mapping21(*k_ts_);
 
-  systemmatrix_->assign(1, 0, Core::LinAlg::View, *k_ts_);
+  systemmatrix_->assign(1, 0, Core::LinAlg::DataAccess::View, *k_ts_);
 
   /*----------------------------------------------------------------------*/
   // done. make sure all blocks are filled.
@@ -2836,7 +2836,7 @@ void TSI::Monolithic::apply_dbc()
 {
   std::shared_ptr<Core::LinAlg::SparseMatrix> k_ss =
       std::make_shared<Core::LinAlg::SparseMatrix>(systemmatrix_->matrix(0, 0).epetra_matrix(),
-          Core::LinAlg::Copy, true, false, Core::LinAlg::SparseMatrix::CRS_MATRIX);
+          Core::LinAlg::DataAccess::Copy, true, false, Core::LinAlg::SparseMatrix::CRS_MATRIX);
   std::shared_ptr<Core::LinAlg::SparseMatrix> k_st =
       std::make_shared<Core::LinAlg::SparseMatrix>(systemmatrix_->matrix(0, 1));
   std::shared_ptr<Core::LinAlg::SparseMatrix> k_ts =
@@ -2868,10 +2868,10 @@ void TSI::Monolithic::apply_dbc()
 
 
   systemmatrix_->un_complete();
-  systemmatrix_->assign(0, 0, Core::LinAlg::View, *k_ss);
-  systemmatrix_->assign(0, 1, Core::LinAlg::View, *k_st);
-  systemmatrix_->assign(1, 0, Core::LinAlg::View, *k_ts);
-  systemmatrix_->assign(1, 1, Core::LinAlg::View, *k_tt);
+  systemmatrix_->assign(0, 0, Core::LinAlg::DataAccess::View, *k_ss);
+  systemmatrix_->assign(0, 1, Core::LinAlg::DataAccess::View, *k_st);
+  systemmatrix_->assign(1, 0, Core::LinAlg::DataAccess::View, *k_ts);
+  systemmatrix_->assign(1, 1, Core::LinAlg::DataAccess::View, *k_tt);
   systemmatrix_->complete();
 
 

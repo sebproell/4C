@@ -80,7 +80,7 @@ void Core::LinearSolver::AmGnxnPreconditioner::setup(
 
   // Create own copy of the system matrix in order to allow reusing the preconditioner
   a_ = A;
-  a_ = a_->clone(Core::LinAlg::Copy);
+  a_ = a_->clone(Core::LinAlg::DataAccess::Copy);
   a_->complete();
 
   // Determine number of blocks
@@ -382,8 +382,8 @@ void Core::LinearSolver::AmGnxnOperator::setup()
   {
     for (int j = 0; j < NumBlocks; j++)
     {
-      Teuchos::RCP<Core::LinAlg::SparseMatrix> Aij =
-          Teuchos::make_rcp<Core::LinAlg::SparseMatrix>(a_->matrix(i, j), Core::LinAlg::View);
+      Teuchos::RCP<Core::LinAlg::SparseMatrix> Aij = Teuchos::make_rcp<Core::LinAlg::SparseMatrix>(
+          a_->matrix(i, j), Core::LinAlg::DataAccess::View);
       Able->set_matrix(Aij, i, j);
     }
   }
@@ -523,8 +523,8 @@ void Core::LinearSolver::BlockSmootherOperator::setup()
   {
     for (int j = 0; j < NumBlocks; j++)
     {
-      Teuchos::RCP<Core::LinAlg::SparseMatrix> Aij =
-          Teuchos::make_rcp<Core::LinAlg::SparseMatrix>(a_->matrix(i, j), Core::LinAlg::View);
+      Teuchos::RCP<Core::LinAlg::SparseMatrix> Aij = Teuchos::make_rcp<Core::LinAlg::SparseMatrix>(
+          a_->matrix(i, j), Core::LinAlg::DataAccess::View);
       Able->set_matrix(Aij, i, j);
     }
   }

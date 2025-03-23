@@ -43,7 +43,7 @@ namespace
         Core::Communication::as_epetra_comm(comm_), A);
     if (err != 0) FOUR_C_THROW("Matrix read failed.");
     std::shared_ptr<Epetra_CrsMatrix> A_crs = Core::Utils::shared_ptr_from_ref(*A);
-    Core::LinAlg::SparseMatrix A_sparse(A_crs, Core::LinAlg::Copy);
+    Core::LinAlg::SparseMatrix A_sparse(A_crs, Core::LinAlg::DataAccess::Copy);
 
     const double tol = 1.1;
     std::shared_ptr<Core::LinAlg::SparseMatrix> A_thresh =
@@ -70,7 +70,7 @@ namespace
         Core::Communication::as_epetra_comm(comm_), A);
     if (err != 0) FOUR_C_THROW("Matrix read failed.");
     std::shared_ptr<Epetra_CrsMatrix> A_crs = Core::Utils::shared_ptr_from_ref(*A);
-    Core::LinAlg::SparseMatrix A_sparse(A_crs, Core::LinAlg::Copy);
+    Core::LinAlg::SparseMatrix A_sparse(A_crs, Core::LinAlg::DataAccess::Copy);
 
     const double tol = 1e-5;
     std::shared_ptr<Core::LinAlg::SparseMatrix> A_thresh =
@@ -97,7 +97,7 @@ namespace
         Core::Communication::as_epetra_comm(comm_), A);
     if (err != 0) FOUR_C_THROW("Matrix read failed.");
     std::shared_ptr<Epetra_CrsMatrix> A_crs = Core::Utils::shared_ptr_from_ref(*A);
-    Core::LinAlg::SparseMatrix A_sparse(A_crs, Core::LinAlg::Copy);
+    Core::LinAlg::SparseMatrix A_sparse(A_crs, Core::LinAlg::DataAccess::Copy);
 
     const double tol = 1e-5;
     std::shared_ptr<Core::LinAlg::Graph> G = Core::LinAlg::threshold_matrix_graph(A_sparse, tol);
@@ -122,7 +122,7 @@ namespace
         Core::Communication::as_epetra_comm(comm_), A);
     if (err != 0) FOUR_C_THROW("Matrix read failed.");
     std::shared_ptr<Epetra_CrsMatrix> A_crs = Core::Utils::shared_ptr_from_ref(*A);
-    Core::LinAlg::SparseMatrix A_sparse(A_crs, Core::LinAlg::Copy);
+    Core::LinAlg::SparseMatrix A_sparse(A_crs, Core::LinAlg::DataAccess::Copy);
 
     {
       const int power = 0;
@@ -188,7 +188,7 @@ namespace
         Core::Communication::as_epetra_comm(comm_), A);
     if (err != 0) FOUR_C_THROW("Matrix read failed.");
     std::shared_ptr<Epetra_CrsMatrix> A_crs = Core::Utils::shared_ptr_from_ref(*A);
-    Core::LinAlg::SparseMatrix A_sparse(A_crs, Core::LinAlg::Copy);
+    Core::LinAlg::SparseMatrix A_sparse(A_crs, Core::LinAlg::DataAccess::Copy);
 
     {
       const int power = 3;

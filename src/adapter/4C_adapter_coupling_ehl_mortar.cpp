@@ -268,12 +268,12 @@ void Adapter::CouplingEhlMortar::condense_contact(
 
   // get the separate blocks of the 2x2 TSI block system
   // View mode!!! Since we actually want to add things there
-  std::shared_ptr<Core::LinAlg::SparseMatrix> kss =
-      std::make_shared<Core::LinAlg::SparseMatrix>(sysmat->matrix(0, 0), Core::LinAlg::Copy);
-  std::shared_ptr<Core::LinAlg::SparseMatrix> kst =
-      std::make_shared<Core::LinAlg::SparseMatrix>(sysmat->matrix(0, 1), Core::LinAlg::Copy);
-  Core::LinAlg::SparseMatrix kts(sysmat->matrix(1, 0), Core::LinAlg::Copy);
-  Core::LinAlg::SparseMatrix ktt(sysmat->matrix(1, 1), Core::LinAlg::Copy);
+  std::shared_ptr<Core::LinAlg::SparseMatrix> kss = std::make_shared<Core::LinAlg::SparseMatrix>(
+      sysmat->matrix(0, 0), Core::LinAlg::DataAccess::Copy);
+  std::shared_ptr<Core::LinAlg::SparseMatrix> kst = std::make_shared<Core::LinAlg::SparseMatrix>(
+      sysmat->matrix(0, 1), Core::LinAlg::DataAccess::Copy);
+  Core::LinAlg::SparseMatrix kts(sysmat->matrix(1, 0), Core::LinAlg::DataAccess::Copy);
+  Core::LinAlg::SparseMatrix ktt(sysmat->matrix(1, 1), Core::LinAlg::DataAccess::Copy);
 
   // get some maps
   std::shared_ptr<Epetra_Map> gdisp_DofRowMap = std::make_shared<Epetra_Map>(kss->row_map());
@@ -322,10 +322,10 @@ void Adapter::CouplingEhlMortar::condense_contact(
   if (interface_->active_nodes()->NumGlobalElements() == 0)
   {
     sysmat->reset();
-    sysmat->assign(0, 0, Core::LinAlg::Copy, *kss);
-    sysmat->assign(0, 1, Core::LinAlg::Copy, *kst);
-    sysmat->assign(1, 0, Core::LinAlg::Copy, kts);
-    sysmat->assign(1, 1, Core::LinAlg::Copy, ktt);
+    sysmat->assign(0, 0, Core::LinAlg::DataAccess::Copy, *kss);
+    sysmat->assign(0, 1, Core::LinAlg::DataAccess::Copy, *kst);
+    sysmat->assign(1, 0, Core::LinAlg::DataAccess::Copy, kts);
+    sysmat->assign(1, 1, Core::LinAlg::DataAccess::Copy, ktt);
     return;
   }
 
@@ -506,7 +506,7 @@ void Adapter::CouplingEhlMortar::condense_contact(
   // to be able to apply dirichlet values for contact symmetry condition
   Core::LinAlg::SparseMatrix tmpkss(
       *gdisp_DofRowMap, 100, false, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
-  sysmat->assign(0, 0, Core::LinAlg::Copy, tmpkss);
+  sysmat->assign(0, 0, Core::LinAlg::DataAccess::Copy, tmpkss);
 
   // get references to the blocks (just for convenience)
   Core::LinAlg::SparseMatrix& kss_new = sysmat->matrix(0, 0);

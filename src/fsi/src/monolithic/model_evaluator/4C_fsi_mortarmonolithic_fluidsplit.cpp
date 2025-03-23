@@ -875,10 +875,10 @@ void FSI::MortarMonolithicFluidSplit::setup_system_matrix(Core::LinAlg::BlockSpa
     laig = Core::LinAlg::matrix_multiply(*laig, false, *stcmat, false, false, false, true);
   }
 
-  mat.assign(2, 0, Core::LinAlg::View, *laig);
+  mat.assign(2, 0, Core::LinAlg::DataAccess::View, *laig);
 
   // ---------Addressing contribution to block (4,4)
-  mat.assign(2, 2, Core::LinAlg::View, aii);
+  mat.assign(2, 2, Core::LinAlg::DataAccess::View, aii);
 
   /*--------------------------------------------------------------------------*/
   // add optional fluid linearization with respect to mesh motion block
@@ -940,7 +940,7 @@ void FSI::MortarMonolithicFluidSplit::setup_system_matrix(Core::LinAlg::BlockSpa
     if (stcalgo == Inpar::Solid::stc_currsym)
       lfmgi = Core::LinAlg::matrix_multiply(*stcmat, true, *lfmgi, false, true, true, false);
     lfmgi->scale((1. - stiparam) / (1. - ftiparam));
-    mat.assign(0, 2, Core::LinAlg::View, *lfmgi);
+    mat.assign(0, 2, Core::LinAlg::DataAccess::View, *lfmgi);
   }
 
   if (stcalgo != Inpar::Solid::stc_inactive)
@@ -952,7 +952,7 @@ void FSI::MortarMonolithicFluidSplit::setup_system_matrix(Core::LinAlg::BlockSpa
   }
 
   // finally assign structure matrix to block (0,0)
-  mat.assign(0, 0, Core::LinAlg::View, *s);
+  mat.assign(0, 0, Core::LinAlg::DataAccess::View, *s);
 
   // done. make sure all blocks are filled.
   mat.complete();

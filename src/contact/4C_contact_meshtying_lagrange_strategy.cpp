@@ -811,9 +811,9 @@ void CONTACT::MtLagrangeStrategy::build_saddle_point_system(
         std::dynamic_pointer_cast<
             Core::LinAlg::BlockSparseMatrix<Core::LinAlg::DefaultBlockMatrixStrategy>>(blockMat);
 
-    mat->assign(0, 0, Core::LinAlg::View, *stiffmt);
-    mat->assign(0, 1, Core::LinAlg::View, *constrmt);
-    mat->assign(1, 0, Core::LinAlg::View, trconstrmt);
+    mat->assign(0, 0, Core::LinAlg::DataAccess::View, *stiffmt);
+    mat->assign(0, 1, Core::LinAlg::DataAccess::View, *constrmt);
+    mat->assign(1, 0, Core::LinAlg::DataAccess::View, trconstrmt);
     mat->complete();
 
     // we also need merged rhs here

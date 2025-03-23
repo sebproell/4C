@@ -225,7 +225,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::setup_syst
   sysmat.matrix(1, 1).apply_dirichlet((dbcmap_art_with_collapsed), true);
   // Assign view to 3D system matrix (such that it now includes also contributions from coupling)
   // this is important! Monolithic algorithms use this matrix
-  sysmat_cont.assign(Core::LinAlg::View, sysmat.matrix(0, 0));
+  sysmat_cont.assign(Core::LinAlg::DataAccess::View, sysmat.matrix(0, 0));
 }
 
 /*----------------------------------------------------------------------*

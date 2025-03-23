@@ -669,7 +669,7 @@ void FS3I::FS3IBase::setup_coupled_scatra_matrix()
             *scatra2, *(scatrafieldexvec_[1]), *(scatrafieldexvec_[1]));
     blockscatra2->complete();
 
-    scatrasystemmatrix_->assign(1, 1, Core::LinAlg::View, blockscatra2->matrix(0, 0));
+    scatrasystemmatrix_->assign(1, 1, Core::LinAlg::DataAccess::View, blockscatra2->matrix(0, 0));
 
     (*sibtransform_)(blockscatra2->full_row_map(), blockscatra2->full_col_map(),
         blockscatra2->matrix(0, 1), 1.0, Coupling::Adapter::CouplingSlaveConverter(*scatracoup_),
@@ -681,13 +681,13 @@ void FS3I::FS3IBase::setup_coupled_scatra_matrix()
         Coupling::Adapter::CouplingSlaveConverter(*scatracoup_), *scatra1, true, true);
 
     // fluid scatra
-    scatrasystemmatrix_->assign(0, 0, Core::LinAlg::View, *scatra1);
+    scatrasystemmatrix_->assign(0, 0, Core::LinAlg::DataAccess::View, *scatra1);
   }
   else
   {
     // conventional contributions
-    scatrasystemmatrix_->assign(0, 0, Core::LinAlg::View, *scatra1);
-    scatrasystemmatrix_->assign(1, 1, Core::LinAlg::View, *scatra2);
+    scatrasystemmatrix_->assign(0, 0, Core::LinAlg::DataAccess::View, *scatra1);
+    scatrasystemmatrix_->assign(1, 1, Core::LinAlg::DataAccess::View, *scatra2);
 
     // additional contributions due to interface permeability (-> coupling terms)
     // contribution of the same field

@@ -481,18 +481,18 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::setup_system_matrix()
 
   lfgi->complete(fgi.domain_map(), s->range_map());
 
-  systemmatrix_->assign(0, 1, Core::LinAlg::View, *lfgi);
+  systemmatrix_->assign(0, 1, Core::LinAlg::DataAccess::View, *lfgi);
 
   Core::LinAlg::SparseMatrix lfig(fig.row_map(), 81, false);
   (*figtransform_)(f->full_row_map(), f->full_col_map(), fig, timescale,
       Coupling::Adapter::CouplingSlaveConverter(coupsf), systemmatrix_->matrix(1, 0));
 
-  systemmatrix_->assign(1, 1, Core::LinAlg::View, fii);
+  systemmatrix_->assign(1, 1, Core::LinAlg::DataAccess::View, fii);
 
   (*aigtransform_)(a->full_row_map(), a->full_col_map(), aig, 1.,
       Coupling::Adapter::CouplingSlaveConverter(coupsa), systemmatrix_->matrix(2, 0));
 
-  systemmatrix_->assign(2, 2, Core::LinAlg::View, aii);
+  systemmatrix_->assign(2, 2, Core::LinAlg::DataAccess::View, aii);
 
   /*----------------------------------------------------------------------*/
   // add optional blocks from fluid linearization with respect to mesh motion
@@ -529,12 +529,12 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::setup_system_matrix()
 
       lfmgi.complete(aii.domain_map(), s->range_map());
 
-      systemmatrix_->assign(0, 2, Core::LinAlg::View, lfmgi);
+      systemmatrix_->assign(0, 2, Core::LinAlg::DataAccess::View, lfmgi);
     }
   }
 
   // finally assign structure block
-  systemmatrix_->matrix(0, 0).assign(Core::LinAlg::View, *s);
+  systemmatrix_->matrix(0, 0).assign(Core::LinAlg::DataAccess::View, *s);
 
   // done. make sure all blocks are filled.
   systemmatrix_->complete();

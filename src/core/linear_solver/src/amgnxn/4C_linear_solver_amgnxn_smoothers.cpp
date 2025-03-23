@@ -183,7 +183,7 @@ void Core::LinearSolver::AMGNxN::MergeAndSolve::setup(BlockedMatrix matrix)
   }
 
   // Set matrix
-  block_sparse_matrix_ = matrix.get_block_sparse_matrix(Core::LinAlg::View);
+  block_sparse_matrix_ = matrix.get_block_sparse_matrix(Core::LinAlg::DataAccess::View);
   sparse_matrix_ = block_sparse_matrix_->merge();
   a_ = std::dynamic_pointer_cast<Epetra_Operator>(sparse_matrix_->epetra_matrix());
   auto crsA = std::dynamic_pointer_cast<Epetra_CrsMatrix>(a_);
@@ -594,7 +594,7 @@ void Core::LinearSolver::AMGNxN::SingleFieldAMG::setup()
       myAcrs = MueLuUtils::Op2NonConstEpetraCrs(myA);
       myAspa =
           Teuchos::make_rcp<Core::LinAlg::SparseMatrix>(Core::Utils::shared_ptr_from_ref(*myAcrs),
-              Core::LinAlg::Copy, explicitdirichlet, savegraph);
+              Core::LinAlg::DataAccess::Copy, explicitdirichlet, savegraph);
       Avec[level] = myAspa;
     }
     else
@@ -610,7 +610,7 @@ void Core::LinearSolver::AMGNxN::SingleFieldAMG::setup()
         myAcrs = MueLuUtils::Op2NonConstEpetraCrs(myA);
         myAspa =
             Teuchos::make_rcp<Core::LinAlg::SparseMatrix>(Core::Utils::shared_ptr_from_ref(*myAcrs),
-                Core::LinAlg::Copy, explicitdirichlet, savegraph);
+                Core::LinAlg::DataAccess::Copy, explicitdirichlet, savegraph);
         Pvec[level - 1] = myAspa;
       }
       else
@@ -624,7 +624,7 @@ void Core::LinearSolver::AMGNxN::SingleFieldAMG::setup()
         myAcrs = MueLuUtils::Op2NonConstEpetraCrs(myA);
         myAspa =
             Teuchos::make_rcp<Core::LinAlg::SparseMatrix>(Core::Utils::shared_ptr_from_ref(*myAcrs),
-                Core::LinAlg::Copy, explicitdirichlet, savegraph);
+                Core::LinAlg::DataAccess::Copy, explicitdirichlet, savegraph);
         Rvec[level - 1] = myAspa;
       }
       else

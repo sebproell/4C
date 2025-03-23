@@ -441,10 +441,10 @@ void PoroElastScaTra::PoroScatraMono::setup_system_matrix()
   mat_pp->un_complete();
 
   // assign matrix block
-  systemmatrix_->assign(0, 0, Core::LinAlg::View, mat_pp->matrix(0, 0));
-  systemmatrix_->assign(0, 1, Core::LinAlg::View, mat_pp->matrix(0, 1));
-  systemmatrix_->assign(1, 0, Core::LinAlg::View, mat_pp->matrix(1, 0));
-  systemmatrix_->assign(1, 1, Core::LinAlg::View, mat_pp->matrix(1, 1));
+  systemmatrix_->assign(0, 0, Core::LinAlg::DataAccess::View, mat_pp->matrix(0, 0));
+  systemmatrix_->assign(0, 1, Core::LinAlg::DataAccess::View, mat_pp->matrix(0, 1));
+  systemmatrix_->assign(1, 0, Core::LinAlg::DataAccess::View, mat_pp->matrix(1, 0));
+  systemmatrix_->assign(1, 1, Core::LinAlg::DataAccess::View, mat_pp->matrix(1, 1));
 
   //----------------------------------------------------------------------
   // 2nd diagonal block (lower right): scatra weighting - scatra solution
@@ -456,7 +456,7 @@ void PoroElastScaTra::PoroScatraMono::setup_system_matrix()
   mat_ss->un_complete();
 
   // assign matrix block
-  systemmatrix_->assign(2, 2, Core::LinAlg::View, *mat_ss);
+  systemmatrix_->assign(2, 2, Core::LinAlg::DataAccess::View, *mat_ss);
 
   // complete scatra block matrix
   systemmatrix_->complete();
@@ -479,8 +479,8 @@ void PoroElastScaTra::PoroScatraMono::setup_system_matrix()
   k_pfs_->un_complete();
 
   // assign matrix block
-  systemmatrix_->assign(0, 2, Core::LinAlg::View, *(k_pss_));
-  systemmatrix_->assign(1, 2, Core::LinAlg::View, *(k_pfs_));
+  systemmatrix_->assign(0, 2, Core::LinAlg::DataAccess::View, *(k_pss_));
+  systemmatrix_->assign(1, 2, Core::LinAlg::DataAccess::View, *(k_pfs_));
 
   //----------------------------------------------------------------------
   // 2nd off-diagonal block (lower left): scatra weighting - poro solution
@@ -499,8 +499,8 @@ void PoroElastScaTra::PoroScatraMono::setup_system_matrix()
   k_spf_->un_complete();
 
   // assign matrix block
-  systemmatrix_->assign(2, 0, Core::LinAlg::View, *(k_sps_));
-  systemmatrix_->assign(2, 1, Core::LinAlg::View, *(k_spf_));
+  systemmatrix_->assign(2, 0, Core::LinAlg::DataAccess::View, *(k_sps_));
+  systemmatrix_->assign(2, 1, Core::LinAlg::DataAccess::View, *(k_spf_));
 
   // complete block matrix
   systemmatrix_->complete();
@@ -1244,7 +1244,7 @@ void PoroElastScaTra::PoroScatraMono::fd_check()
   Core::LinAlg::Vector<double> rhs_copy(*dof_row_map(), true);
 
   std::shared_ptr<Core::LinAlg::SparseMatrix> sparse = systemmatrix_->merge();
-  Core::LinAlg::SparseMatrix sparse_copy(*sparse, Core::LinAlg::Copy);
+  Core::LinAlg::SparseMatrix sparse_copy(*sparse, Core::LinAlg::DataAccess::Copy);
 
 
   const int zeilennr = -1;
@@ -1332,7 +1332,7 @@ void PoroElastScaTra::PoroScatraMono::fd_check()
 
   std::shared_ptr<Core::LinAlg::SparseMatrix> stiff_approx_sparse = nullptr;
   stiff_approx_sparse =
-      std::make_shared<Core::LinAlg::SparseMatrix>(stiff_approx, Core::LinAlg::Copy);
+      std::make_shared<Core::LinAlg::SparseMatrix>(stiff_approx, Core::LinAlg::DataAccess::Copy);
 
   stiff_approx_sparse->add(sparse_copy, false, -1.0, 1.0);
 

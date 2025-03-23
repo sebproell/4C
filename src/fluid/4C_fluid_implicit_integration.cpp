@@ -1906,8 +1906,8 @@ void FLD::FluidImplicitTimeInt::evaluate_fluid_edge_based(
 
   std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat_linalg =
       std::make_shared<Core::LinAlg::SparseMatrix>(
-          std::static_pointer_cast<Epetra_CrsMatrix>(sysmat_FE), Core::LinAlg::View, true, false,
-          Core::LinAlg::SparseMatrix::FE_MATRIX);
+          std::static_pointer_cast<Epetra_CrsMatrix>(sysmat_FE), Core::LinAlg::DataAccess::View,
+          true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
   const int numrowintfaces = facediscret_->num_my_row_faces();
 

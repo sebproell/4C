@@ -306,28 +306,34 @@ void FPSI::MonolithicPlain::setup_system_matrix(Core::LinAlg::BlockSparseMatrixB
   // build block matrix
   /*----------------------------------------------------------------------*/
   // insert poro
-  mat.assign(structure_block_, structure_block_, Core::LinAlg::View, p->matrix(0, 0));
-  mat.assign(structure_block_, porofluid_block_, Core::LinAlg::View, p->matrix(0, 1));
-  mat.assign(porofluid_block_, porofluid_block_, Core::LinAlg::View, p->matrix(1, 1));
-  mat.assign(porofluid_block_, structure_block_, Core::LinAlg::View, p->matrix(1, 0));
+  mat.assign(structure_block_, structure_block_, Core::LinAlg::DataAccess::View, p->matrix(0, 0));
+  mat.assign(structure_block_, porofluid_block_, Core::LinAlg::DataAccess::View, p->matrix(0, 1));
+  mat.assign(porofluid_block_, porofluid_block_, Core::LinAlg::DataAccess::View, p->matrix(1, 1));
+  mat.assign(porofluid_block_, structure_block_, Core::LinAlg::DataAccess::View, p->matrix(1, 0));
 
   // Assign fii + Coupling Parts
-  mat.assign(fluid_block_, fluid_block_, Core::LinAlg::View, *f);
+  mat.assign(fluid_block_, fluid_block_, Core::LinAlg::DataAccess::View, *f);
 
   // Assign C_fp
-  mat.assign(fluid_block_, structure_block_, Core::LinAlg::View, fpsi_coupl()->c_fp().matrix(0, 0));
-  mat.assign(fluid_block_, porofluid_block_, Core::LinAlg::View, fpsi_coupl()->c_fp().matrix(0, 1));
+  mat.assign(fluid_block_, structure_block_, Core::LinAlg::DataAccess::View,
+      fpsi_coupl()->c_fp().matrix(0, 0));
+  mat.assign(fluid_block_, porofluid_block_, Core::LinAlg::DataAccess::View,
+      fpsi_coupl()->c_fp().matrix(0, 1));
 
   // Assign C_pf
-  mat.assign(structure_block_, fluid_block_, Core::LinAlg::View, fpsi_coupl()->c_pf().matrix(0, 0));
-  mat.assign(porofluid_block_, fluid_block_, Core::LinAlg::View, fpsi_coupl()->c_pf().matrix(1, 0));
+  mat.assign(structure_block_, fluid_block_, Core::LinAlg::DataAccess::View,
+      fpsi_coupl()->c_pf().matrix(0, 0));
+  mat.assign(porofluid_block_, fluid_block_, Core::LinAlg::DataAccess::View,
+      fpsi_coupl()->c_pf().matrix(1, 0));
 
   // Assign C_pa
-  mat.assign(structure_block_, ale_i_block_, Core::LinAlg::View, fpsi_coupl()->c_pa().matrix(0, 0));
-  mat.assign(porofluid_block_, ale_i_block_, Core::LinAlg::View, fpsi_coupl()->c_pa().matrix(1, 0));
+  mat.assign(structure_block_, ale_i_block_, Core::LinAlg::DataAccess::View,
+      fpsi_coupl()->c_pa().matrix(0, 0));
+  mat.assign(porofluid_block_, ale_i_block_, Core::LinAlg::DataAccess::View,
+      fpsi_coupl()->c_pa().matrix(1, 0));
 
   // Assign C_fa
-  mat.assign(fluid_block_, ale_i_block_, Core::LinAlg::View, fpsi_coupl()->c_fa());
+  mat.assign(fluid_block_, ale_i_block_, Core::LinAlg::DataAccess::View, fpsi_coupl()->c_fa());
 
   // ALE Condensation
   Core::LinAlg::SparseMatrix& aii = a->matrix(aidx_other, aidx_other);
@@ -339,7 +345,7 @@ void FPSI::MonolithicPlain::setup_system_matrix(Core::LinAlg::BlockSparseMatrixB
       mat.matrix(ale_i_block_, structure_block_), true,
       false);  // Add
 
-  mat.assign(ale_i_block_, ale_i_block_, Core::LinAlg::View, aii);
+  mat.assign(ale_i_block_, ale_i_block_, Core::LinAlg::DataAccess::View, aii);
 
   // Insert condensed Fluid Blocks: Fgg and Fgi (+ Fg_gFPSI) --> g is on the FSI-Interface
   if (FSI_Interface_exists_)

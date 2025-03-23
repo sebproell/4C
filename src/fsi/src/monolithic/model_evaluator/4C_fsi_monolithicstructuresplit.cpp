@@ -651,7 +651,7 @@ void FSI::MonolithicStructureSplit::setup_system_matrix(Core::LinAlg::BlockSpars
   // interface meshes.
   f->un_complete();
 
-  mat.assign(0, 0, Core::LinAlg::View, s->matrix(0, 0));
+  mat.assign(0, 0, Core::LinAlg::DataAccess::View, s->matrix(0, 0));
 
   (*sigtransform_)(s->full_row_map(), s->full_col_map(), s->matrix(0, 1), 1. / timescale,
       Coupling::Adapter::CouplingMasterConverter(coupsf), mat.matrix(0, 1));
@@ -666,11 +666,11 @@ void FSI::MonolithicStructureSplit::setup_system_matrix(Core::LinAlg::BlockSpars
 
   lsgi->complete(s->matrix(1, 0).domain_map(), f->range_map());
 
-  mat.assign(1, 0, Core::LinAlg::View, *lsgi);
+  mat.assign(1, 0, Core::LinAlg::DataAccess::View, *lsgi);
 
   (*aigtransform_)(a->full_row_map(), a->full_col_map(), aig, 1. / timescale,
       Coupling::Adapter::CouplingSlaveConverter(icoupfa), mat.matrix(2, 1));
-  mat.assign(2, 2, Core::LinAlg::View, aii);
+  mat.assign(2, 2, Core::LinAlg::DataAccess::View, aii);
 
   /*----------------------------------------------------------------------*/
   // add optional fluid linearization with respect to mesh motion block
@@ -695,13 +695,13 @@ void FSI::MonolithicStructureSplit::setup_system_matrix(Core::LinAlg::BlockSpars
 
     lfmgi.complete(aii.domain_map(), f->range_map());
 
-    mat.assign(1, 2, Core::LinAlg::View, lfmgi);
+    mat.assign(1, 2, Core::LinAlg::DataAccess::View, lfmgi);
   }
 
   f->complete();
 
   // finally assign fluid block
-  mat.assign(1, 1, Core::LinAlg::View, *f);
+  mat.assign(1, 1, Core::LinAlg::DataAccess::View, *f);
 
   // done. make sure all blocks are filled.
   mat.complete();
