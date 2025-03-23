@@ -985,7 +985,7 @@ void FLD::XWall::calc_tau_w(
         if (!node) FOUR_C_THROW("ERROR: Cannot find off wall node with gid %", gid);
 
         int firstglobaldofid = discret_->dof(0, node, 0);
-        int firstlocaldofid = wss.get_map().LID(firstglobaldofid);
+        int firstlocaldofid = wss.get_block_map().LID(firstglobaldofid);
 
         if (firstlocaldofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
         double forcex = (wss)[firstlocaldofid];
@@ -1134,7 +1134,7 @@ void FLD::XWall::l2_project_vector(Core::LinAlg::Vector<double>& veln,
     std::shared_ptr<Core::LinAlg::Vector<double>> velnp,
     std::shared_ptr<Core::LinAlg::Vector<double>> accn)
 {
-  if (not veln.get_map().SameAs(*discret_->dof_row_map()))
+  if (not veln.get_block_map().SameAs(*discret_->dof_row_map()))
     FOUR_C_THROW("input map is not the dof row map of the fluid discretization");
 
   massmatrix_->zero();

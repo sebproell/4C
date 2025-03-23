@@ -207,7 +207,7 @@ bool NOX::Nln::LinearSystem::apply_jacobian_block(const ::NOX::Epetra::Vector& i
   Core::LinAlg::Vector<double> input_v = Core::LinAlg::Vector<double>(input.getEpetraVector());
   std::shared_ptr<const Core::LinAlg::Vector<double>> input_apply = nullptr;
 
-  if (not input_v.get_map().SameAs(domainmap))
+  if (not input_v.get_block_map().SameAs(domainmap))
   {
     input_apply = Core::LinAlg::extract_my_vector(input_v, domainmap);
   }

@@ -1074,7 +1074,7 @@ void FSI::MortarMonolithicFluidSplitSaddlePoint::unscale_solution(
       FOUR_C_THROW("ale scaling failed");
   }
 
-  Core::LinAlg::Vector<double> r(b.get_map());
+  Core::LinAlg::Vector<double> r(b.get_block_map());
   mat.Apply(x, r);
   r.update(1., b, 1.);
 

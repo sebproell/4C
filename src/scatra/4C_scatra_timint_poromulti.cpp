@@ -84,7 +84,7 @@ void ScaTra::ScaTraTimIntPoroMulti::set_l2_flux_of_multi_fluid(
       {
         // get global and local dof IDs
         const int gid = nodedofs[index];
-        const int lid = phaseflux->get_map().LID(gid);
+        const int lid = phaseflux->get_block_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
 
         const double value = ((*multiflux)(curphase * nsd_ + index))[lnodeid];
@@ -148,7 +148,7 @@ void ScaTra::ScaTraTimIntPoroMulti::collect_runtime_output_data()
       Core::Nodes::Node* node = discret_->l_row_node(inode);
       for (int idim = 0; idim < nsd_; ++idim)
         (dispnp_multi)(idim)[inode] =
-            (*dispnp)[dispnp->get_map().LID(discret_->dof(nds_disp(), node, idim))];
+            (*dispnp)[dispnp->get_block_map().LID(discret_->dof(nds_disp(), node, idim))];
     }
 
     std::vector<std::optional<std::string>> context(nsd_, "ale-displacement");

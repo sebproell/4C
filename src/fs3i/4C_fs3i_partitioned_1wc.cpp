@@ -187,7 +187,7 @@ bool FS3I::PartFS3I1Wc::scatra_convergence_check(const int itnum)
 
       double connorm(0.0);
       // set up vector of absolute concentrations
-      Core::LinAlg::Vector<double> con(scatraincrement_->get_map());
+      Core::LinAlg::Vector<double> con(scatraincrement_->get_block_map());
       std::shared_ptr<const Core::LinAlg::Vector<double>> scatra1 =
           scatravec_[0]->scatra_field()->phinp();
       std::shared_ptr<const Core::LinAlg::Vector<double>> scatra2 =

@@ -267,7 +267,7 @@ void FSI::VolCorrector::correct_vol_displacements_para_space(
     std::shared_ptr<Core::LinAlg::Vector<double>> disp_fluid,
     std::shared_ptr<FLD::Utils::MapExtractor> const& finterface)
 {
-  Core::LinAlg::Vector<double> correction(disp_fluid->get_map(), true);
+  Core::LinAlg::Vector<double> correction(disp_fluid->get_block_map(), true);
   Core::LinAlg::Vector<double> DofColMapDummy(
       *fluidale->fluid_field()->discretization()->dof_col_map(), true);
   Core::LinAlg::export_to(*deltadisp, DofColMapDummy);
@@ -397,7 +397,7 @@ void FSI::VolCorrector::correct_vol_displacements_phys_space(
     std::shared_ptr<Core::LinAlg::Vector<double>> disp_fluid,
     std::shared_ptr<FLD::Utils::MapExtractor> const& finterface)
 {
-  Core::LinAlg::Vector<double> correction(disp_fluid->get_map(), true);
+  Core::LinAlg::Vector<double> correction(disp_fluid->get_block_map(), true);
   Core::LinAlg::Vector<double> DofColMapDummy(
       *fluidale->fluid_field()->discretization()->dof_col_map(), true);
   Core::LinAlg::export_to(*deltadisp, DofColMapDummy);

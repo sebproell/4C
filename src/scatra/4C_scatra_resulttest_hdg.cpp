@@ -37,7 +37,7 @@ double ScaTra::HDGResultTest::result_node(
   double result(0.);
 
   // extract row map from solution vector
-  const Epetra_BlockMap& phinpmap = scatratiminthdg_->interpolated_phinp()->get_map();
+  const Epetra_BlockMap& phinpmap = scatratiminthdg_->interpolated_phinp()->get_block_map();
 
   // test result value of single scalar field (averaged value on element node is tested)
   if (quantity == "phi")

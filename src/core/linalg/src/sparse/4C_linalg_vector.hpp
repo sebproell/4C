@@ -149,7 +149,7 @@ namespace Core::LinAlg
     double operator[](int const index) const { return (*vector_)[index]; }
 
     //! Returns the address of the Epetra_BlockMap for this multi-vector.
-    const Epetra_BlockMap& get_map() const { return (vector_->Map()); };
+    const Epetra_BlockMap& get_block_map() const { return (vector_->Map()); };
 
     //! Returns the MPI_Comm for this multi-vector.
     MPI_Comm get_comm() const;
@@ -373,7 +373,7 @@ namespace Core::LinAlg
 
     void print(std::ostream& os) const;
 
-    const Epetra_BlockMap& get_map() const { return (vector_->Map()); };
+    const Epetra_BlockMap& get_block_map() const { return (vector_->Map()); };
 
     //! Imports an Epetra_DistObject using the Epetra_Import object.
     int import(const Vector& A, const Epetra_Import& Importer, Epetra_CombineMode CombineMode,

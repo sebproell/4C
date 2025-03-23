@@ -444,7 +444,7 @@ void ScaTra::LevelSetAlgorithm::apply_contact_point_boundary_condition()
     {
       // get global and local dof IDs
       const int gid = nodedofs[index];
-      const int lid = convel_new->get_map().LID(gid);
+      const int lid = convel_new->get_block_map().LID(gid);
       if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
       const double convelocity = myvel[index];
       int err = convel_new->replace_local_value(lid, 0, convelocity);
@@ -588,7 +588,7 @@ void ScaTra::LevelSetAlgorithm::manipulate_fluid_field_for_gfunc()
           const int nodegid = nodeids[inode];
           Core::Nodes::Node* node = discret_->g_node(nodegid);
           const int dofgid = discret_->dof(0, node, 0);
-          const int doflid = phinpcol.get_map().LID(dofgid);
+          const int doflid = phinpcol.get_block_map().LID(dofgid);
           if (doflid < 0)
             FOUR_C_THROW(
                 "Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>", myrank_, dofgid);
@@ -734,7 +734,7 @@ void ScaTra::LevelSetAlgorithm::manipulate_fluid_field_for_gfunc()
       {
         // get global and local dof IDs
         const int gid = nodedofs[i];
-        const int lid = convel.get_map().LID(gid);
+        const int lid = convel.get_block_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
         coordandvel(i, 0) = coord[i];
         coordandvel(i, 1) = (convel)[lid];
@@ -768,7 +768,7 @@ void ScaTra::LevelSetAlgorithm::manipulate_fluid_field_for_gfunc()
     {
       // get global and local dof IDs
       const int gid = nodedofs[i];
-      const int lid = convel.get_map().LID(gid);
+      const int lid = convel.get_block_map().LID(gid);
       if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
 
       fluidvel(i) = (convel)[lid];
@@ -873,7 +873,7 @@ void ScaTra::LevelSetAlgorithm::manipulate_fluid_field_for_gfunc()
       {
         // get global and local dof IDs
         const int gid = nodedofs[icomp];
-        const int lid = convel.get_map().LID(gid);
+        const int lid = convel.get_block_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
 
         int err = conveltmp->replace_local_value(lid, 0, closestnodedata(icomp, 1));
@@ -886,7 +886,7 @@ void ScaTra::LevelSetAlgorithm::manipulate_fluid_field_for_gfunc()
       {
         // get global and local dof IDs
         const int gid = nodedofs[icomp];
-        const int lid = convel.get_map().LID(gid);
+        const int lid = convel.get_block_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
 
         int err = conveltmp->replace_local_value(lid, 0, fluidvel(icomp));

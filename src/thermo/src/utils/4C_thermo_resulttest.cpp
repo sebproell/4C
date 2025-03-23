@@ -63,7 +63,7 @@ void Thermo::ResultTest::test_node(
       // test temperature
       if (temp_ != nullptr)
       {
-        const Epetra_BlockMap& tempmap = temp_->get_map();
+        const Epetra_BlockMap& tempmap = temp_->get_block_map();
 
         if (position == "temp")
         {
@@ -75,7 +75,7 @@ void Thermo::ResultTest::test_node(
       // test temperature rates
       if (rate_ != nullptr)
       {
-        const Epetra_BlockMap& ratemap = rate_->get_map();
+        const Epetra_BlockMap& ratemap = rate_->get_block_map();
 
         if (position == "rate")
         {
@@ -87,7 +87,7 @@ void Thermo::ResultTest::test_node(
       // test thermal flux
       if (flux_ != nullptr)
       {
-        const Epetra_BlockMap& fluxmap = flux_->get_map();
+        const Epetra_BlockMap& fluxmap = flux_->get_block_map();
 
         if (position == "flux")
         {

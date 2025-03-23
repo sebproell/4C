@@ -83,7 +83,7 @@ void Solid::ModelEvaluator::Structure::setup()
   }
   // setup new variables
   {
-    dis_incr_ptr_ = std::make_shared<Core::LinAlg::Vector<double>>(dis_np().get_map(), true);
+    dis_incr_ptr_ = std::make_shared<Core::LinAlg::Vector<double>>(dis_np().get_block_map(), true);
   }
 
   // setup output writers

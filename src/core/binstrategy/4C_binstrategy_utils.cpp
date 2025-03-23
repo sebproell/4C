@@ -248,7 +248,7 @@ namespace Core::Binstrategy::Utils
     if (disnp != nullptr)
     {
       const int gid = discret.dof(node, 0);
-      const int lid = disnp->get_map().LID(gid);
+      const int lid = disnp->get_block_map().LID(gid);
       if (lid < 0)
         FOUR_C_THROW(
             "Your displacement is incomplete (need to be based on a column map"

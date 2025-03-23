@@ -1033,7 +1033,7 @@ void FSI::Monolithic::setup_rhs(Core::LinAlg::Vector<double>& f, bool firstcall)
   {
     // Finally, we take care of Dirichlet boundary conditions
     Core::LinAlg::Vector<double> rhs(f);
-    const Core::LinAlg::Vector<double> zeros(f.get_map(), true);
+    const Core::LinAlg::Vector<double> zeros(f.get_block_map(), true);
     Core::LinAlg::apply_dirichlet_to_system(rhs, zeros, *(dbcmaps_->cond_map()));
     f.update(1.0, rhs, 0.0);
   }

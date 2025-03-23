@@ -115,8 +115,8 @@ void CONSTRAINTS::ConstraintSolver::solve_uzawa(Core::LinAlg::SparseMatrix& stif
 
   const double computol = 1E-8;
 
-  Core::LinAlg::Vector<double> constrTLagrInc(rhsstand.get_map());
-  Core::LinAlg::Vector<double> constrTDispInc(rhsconstr.get_map());
+  Core::LinAlg::Vector<double> constrTLagrInc(rhsstand.get_block_map());
+  Core::LinAlg::Vector<double> constrTDispInc(rhsconstr.get_block_map());
   // Core::LinAlg::SparseMatrix constrT =
   // *(std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(constr));
 
@@ -125,7 +125,7 @@ void CONSTRAINTS::ConstraintSolver::solve_uzawa(Core::LinAlg::SparseMatrix& stif
   if (dirichtoggle_ != nullptr)
     dbcmaps_ = Core::LinAlg::convert_dirichlet_toggle_vector_to_maps(*dirichtoggle_);
 
-  Core::LinAlg::Vector<double> zeros(rhsstand.get_map(), true);
+  Core::LinAlg::Vector<double> zeros(rhsstand.get_block_map(), true);
   std::shared_ptr<Core::LinAlg::Vector<double>> dirichzeros = dbcmaps_->extract_cond_vector(zeros);
 
   // Compute residual of the uzawa algorithm
@@ -139,7 +139,7 @@ void CONSTRAINTS::ConstraintSolver::solve_uzawa(Core::LinAlg::SparseMatrix& stif
   dbcmaps_->insert_cond_vector(*dirichzeros, uzawa_res);
 
   uzawa_res.norm_2(&norm_uzawa);
-  Core::LinAlg::Vector<double> constr_res(lagrinc.get_map());
+  Core::LinAlg::Vector<double> constr_res(lagrinc.get_block_map());
 
   constr_res.update(1.0, (rhsconstr), 0.0);
   constr_res.norm_2(&norm_constr_uzawa);
@@ -182,7 +182,7 @@ void CONSTRAINTS::ConstraintSolver::solve_uzawa(Core::LinAlg::SparseMatrix& stif
     dbcmaps_->insert_cond_vector(*dirichzeros, uzawa_res);
     norm_uzawa_old = norm_uzawa;
     uzawa_res.norm_2(&norm_uzawa);
-    Core::LinAlg::Vector<double> constr_res(lagrinc.get_map());
+    Core::LinAlg::Vector<double> constr_res(lagrinc.get_block_map());
 
     constr_res.update(1.0, constrTDispInc, 1.0, rhsconstr, 0.0);
     constr_res.norm_2(&norm_constr_uzawa);
@@ -322,7 +322,7 @@ void CONSTRAINTS::ConstraintSolver::solve_simple(Core::LinAlg::SparseMatrix& sti
     dbcmaps_ = Core::LinAlg::convert_dirichlet_toggle_vector_to_maps(*dirichtoggle_);
 
   // stuff needed for Dirichlet BCs
-  Core::LinAlg::Vector<double> zeros(rhsstand.get_map(), true);
+  Core::LinAlg::Vector<double> zeros(rhsstand.get_block_map(), true);
   std::shared_ptr<Core::LinAlg::Vector<double>> dirichzeros = dbcmaps_->extract_cond_vector(zeros);
   Core::LinAlg::Vector<double> rhscopy(rhsstand);
 

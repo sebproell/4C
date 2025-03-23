@@ -58,7 +58,7 @@ void XFEM::XffCouplingManager::set_coupling_states()
   Core::LinAlg::export_to(*fluid_->veln(), *mcffi_->i_veln());
 
   std::shared_ptr<Core::LinAlg::Vector<double>> tmp_diff =
-      std::make_shared<Core::LinAlg::Vector<double>>((*mcffi_->i_dispnp()).get_map());
+      std::make_shared<Core::LinAlg::Vector<double>>((*mcffi_->i_dispnp()).get_block_map());
   tmp_diff->update(1.0, *mcffi_->i_dispnp(), -1.0, *mcffi_->i_dispnpi(), 0.0);
 
   double norm = 0.0;

@@ -129,7 +129,8 @@ void Solid::ModelEvaluator::Meshtying::setup()
               std::make_shared<Core::LinAlg::Vector<double>>(
                   *(strategy_ptr_->non_redist_slave_row_dofs()), true);
 
-          Epetra_Export exporter(Xslavemod->get_map(), *strategy_ptr_->non_redist_slave_row_dofs());
+          Epetra_Export exporter(
+              Xslavemod->get_block_map(), *strategy_ptr_->non_redist_slave_row_dofs());
 
           int err = original_vec->export_to(*Xslavemod, exporter, Insert);
           if (err) FOUR_C_THROW("Import failed with err={}", err);
@@ -148,9 +149,9 @@ void Solid::ModelEvaluator::Meshtying::setup()
             int dof = gdiscret->dof(node, d);
             if (strategy_ptr_->non_redist_slave_row_dofs()->LID(dof) != -1)
             {
-              mesh_relocation_->operator[](mesh_relocation_->get_map().LID(dof)) =
+              mesh_relocation_->operator[](mesh_relocation_->get_block_map().LID(dof)) =
                   node->x()[d] -
-                  Xslavemod_noredist->operator[](Xslavemod_noredist->get_map().LID(dof));
+                  Xslavemod_noredist->operator[](Xslavemod_noredist->get_block_map().LID(dof));
             }
           }
         }
@@ -440,7 +441,7 @@ void Solid::ModelEvaluator::Meshtying::apply_mesh_initialization(
     // create new position vector
     for (int i = 0; i < numdim; ++i)
     {
-      const int lid = gvector.get_map().LID(nodedofs[i]);
+      const int lid = gvector.get_block_map().LID(nodedofs[i]);
 
       if (lid < 0)
         FOUR_C_THROW("ERROR: Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",

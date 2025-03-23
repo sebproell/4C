@@ -932,7 +932,7 @@ void FSI::MonolithicFluidSplit::unscale_solution(Core::LinAlg::BlockSparseMatrix
 
   // very simple hack just to see the linear solution
 
-  Core::LinAlg::Vector<double> r(b.get_map());
+  Core::LinAlg::Vector<double> r(b.get_block_map());
   mat.Apply(x, r);
   r.update(1., b, 1.);
 
@@ -1522,7 +1522,7 @@ void FSI::MonolithicFluidSplit::calculate_interface_energy_increment()
 
   // interface traction weighted by time integration factors
   std::shared_ptr<Core::LinAlg::Vector<double>> tractionfluid =
-      std::make_shared<Core::LinAlg::Vector<double>>(lambda_->get_map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(lambda_->get_block_map(), true);
   tractionfluid->update(stiparam - ftiparam, *lambdaold_, ftiparam - stiparam, *lambda_, 0.0);
   std::shared_ptr<Core::LinAlg::Vector<double>> tractionstructure = fluid_to_struct(tractionfluid);
 

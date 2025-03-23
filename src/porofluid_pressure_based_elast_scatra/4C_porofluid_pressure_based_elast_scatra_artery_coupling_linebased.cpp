@@ -868,7 +868,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::depth_first_se
     std::vector<int>& this_connected_comp)
 {
   // mark this node visited and add it to this connected component
-  const int lid = visited->get_map().LID(actnode->id());
+  const int lid = visited->get_block_map().LID(actnode->id());
   (*visited)[lid] = 1;
   this_connected_comp.push_back(actnode->id());
 

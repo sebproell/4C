@@ -1362,7 +1362,7 @@ void FLD::Boxfilter::apply_box_filter_scatra(
         {
           // get global and local dof IDs
           const int gid = nodedofs[idim];
-          const int lid = convel->get_map().LID(gid);
+          const int lid = convel->get_block_map().LID(gid);
           if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
 
           double vel_i = (*convel)[lid];
@@ -1425,7 +1425,7 @@ void FLD::Boxfilter::apply_box_filter_scatra(
           {
             // get global and local dof IDs
             const int gid = nodedofs[idim];
-            const int lid = convel->get_map().LID(gid);
+            const int lid = convel->get_block_map().LID(gid);
             if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
 
             double valvel_i = (*convel)[lid];

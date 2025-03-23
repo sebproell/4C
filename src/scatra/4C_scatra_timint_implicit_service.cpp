@@ -718,7 +718,7 @@ void ScaTra::ScaTraTimIntImpl::compute_density()
 
       // global and local dof ID
       const int globaldofid = nodedofs[k];
-      const int localdofid = phiafnp()->get_map().LID(globaldofid);
+      const int localdofid = phiafnp()->get_block_map().LID(globaldofid);
       if (localdofid < 0) FOUR_C_THROW("Local dof ID not found in dof map!");
 
       // add contribution of scalar k to nodal density value
@@ -731,7 +731,7 @@ void ScaTra::ScaTraTimIntImpl::compute_density()
     // position of the last dof this way, all nodal density values will be correctly extracted in
     // the fluid algorithm
     const int globaldofid = nodedofs[numdof - 1];
-    const int localdofid = phiafnp()->get_map().LID(globaldofid);
+    const int localdofid = phiafnp()->get_block_map().LID(globaldofid);
     if (localdofid < 0) FOUR_C_THROW("Local dof ID not found in dof map!");
 
     int err = densafnp_->replace_local_value(localdofid, 0, density);
@@ -1294,7 +1294,7 @@ void ScaTra::ScaTraTimIntImpl::output_integr_reac(const int num)
     std::vector<double> intreacterm(num_scal(), 0.0);
     for (int k = 0; k < num_scal(); ++k)
       Core::Communication::sum_all(&((*myreacnp)[k]), &intreacterm[k], 1,
-          Core::Communication::unpack_epetra_comm(phinp_->get_map().Comm()));
+          Core::Communication::unpack_epetra_comm(phinp_->get_block_map().Comm()));
 
     // print out values
     if (myrank_ == 0)
@@ -1724,7 +1724,7 @@ ScaTra::ScaTraTimIntImpl::compute_superconvergent_patch_recovery(
   // Warning, this is only tested so far for 1 scalar field!!!
 
   // dependent on the desired projection, just remove this line
-  if (not state->get_map().SameAs(*discret_->dof_row_map()))
+  if (not state->get_block_map().SameAs(*discret_->dof_row_map()))
     FOUR_C_THROW("input map is not a dof row map of the fluid");
 
   // set given state for element evaluation
@@ -1934,7 +1934,7 @@ void ScaTra::ScaTraTimIntImpl::fd_check()
     phinp_->update(1., phinp_original, 0.);
 
     // impose perturbation
-    if (phinp_->get_map().MyGID(colgid))
+    if (phinp_->get_block_map().MyGID(colgid))
       if (phinp_->sum_into_global_value(colgid, 0, fdcheckeps_))
         FOUR_C_THROW(
             "Perturbation could not be imposed on state vector for finite difference check!");

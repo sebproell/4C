@@ -82,7 +82,7 @@ double Lubrication::ResultTest::result_node(
   double result(0.);
 
   // extract row map from solution vector
-  const Epetra_BlockMap& prenpmap = mysol_->get_map();
+  const Epetra_BlockMap& prenpmap = mysol_->get_block_map();
 
   // test result value of pressure field
   if (quantity == "pre") result = (*mysol_)[prenpmap.LID(dis_->dof(0, node, 0))];

@@ -84,8 +84,9 @@ void Core::LinAlg::assemble(Core::LinAlg::Vector<double>& V,
   {
     if (lmowner[lrow] != myrank) continue;
     int rgid = lm[lrow];
-    if (!V.get_map().MyGID(rgid)) FOUR_C_THROW("Sparse vector V does not have global row {}", rgid);
-    int rlid = V.get_map().LID(rgid);
+    if (!V.get_block_map().MyGID(rgid))
+      FOUR_C_THROW("Sparse vector V does not have global row {}", rgid);
+    int rlid = V.get_block_map().LID(rgid);
     V[rlid] += Vele[lrow];
   }  // for (int lrow=0; lrow<ldim; ++lrow)
 }
@@ -95,10 +96,10 @@ void Core::LinAlg::assemble(Core::LinAlg::Vector<double>& V,
 void Core::LinAlg::assemble_my_vector(double scalar_target, Core::LinAlg::Vector<double>& target,
     double scalar_source, const Core::LinAlg::Vector<double>& source)
 {
-  for (int slid = 0; slid < source.get_map().NumMyElements(); ++slid)
+  for (int slid = 0; slid < source.get_block_map().NumMyElements(); ++slid)
   {
-    const int sgid = source.get_map().GID(slid);
-    const int tlid = target.get_map().LID(sgid);
+    const int sgid = source.get_block_map().GID(slid);
+    const int tlid = target.get_block_map().LID(sgid);
     if (tlid == -1)
       FOUR_C_THROW(
           "The target vector has no global row {}"
@@ -148,8 +149,8 @@ void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::Vector<double>& x,
 
   // We use two maps since we want to allow dbcv and X to be independent of
   // each other. So we are slow and flexible...
-  const Epetra_BlockMap& xmap = x.get_map();
-  const Epetra_BlockMap& dbcvmap = dbcval.get_map();
+  const Epetra_BlockMap& xmap = x.get_block_map();
+  const Epetra_BlockMap& dbcvmap = dbcval.get_block_map();
 
   const int mylength = dbcmap.NumMyElements();
   const int* mygids = dbcmap.MyGlobalElements();
@@ -181,9 +182,9 @@ void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::Vector<double>& b,
   {
     const int gid = mygids[i];
 
-    const int dbcvlid = dbcval.get_map().LID(gid);
+    const int dbcvlid = dbcval.get_block_map().LID(gid);
 
-    const int blid = b.get_map().LID(gid);
+    const int blid = b.get_block_map().LID(gid);
     // Note:
     // if gid is not found in vector b, just continue
     // b might only be a subset of a larger field vector
@@ -233,7 +234,7 @@ void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::SparseMatrix& A,
 std::shared_ptr<Core::LinAlg::MapExtractor> Core::LinAlg::convert_dirichlet_toggle_vector_to_maps(
     const Core::LinAlg::Vector<double>& dbctoggle)
 {
-  const Epetra_BlockMap& fullblockmap = dbctoggle.get_map();
+  const Epetra_BlockMap& fullblockmap = dbctoggle.get_block_map();
   // this copy is needed because the constructor of Core::LinAlg::MapExtractor
   // accepts only Epetra_Map and not Epetra_BlockMap
   const Epetra_Map fullmap =

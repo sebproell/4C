@@ -187,7 +187,7 @@ void Adapter::XFluidFSI::displacement_to_velocity(
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   // check, whether maps are the same
-  if (!fcx->get_map().PointSameAs(veln->get_map()))
+  if (!fcx->get_block_map().PointSameAs(veln->get_block_map()))
   {
     FOUR_C_THROW("Maps do not match, but they have to.");
   }

@@ -104,7 +104,7 @@ void Core::LinAlg::Equilibration::compute_inv_symmetry(
       Core::LinAlg::create_vector(matrix.range_map(), true);
   matrix.extract_diagonal_copy(*diag);
 
-  for (int my_row = 0; my_row < diag->get_map().NumMyElements(); ++my_row)
+  for (int my_row = 0; my_row < diag->get_block_map().NumMyElements(); ++my_row)
   {
     (invsymmetry)[my_row] = 1.0 / std::sqrt((*diag)[my_row]);
   }

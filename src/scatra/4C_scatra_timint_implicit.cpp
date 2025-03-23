@@ -1277,7 +1277,7 @@ void ScaTra::ScaTraTimIntImpl::set_velocity_field()
 
           // get global and local dof IDs
           const int gid = nodedofs[index];
-          const int lid = convel->get_map().LID(gid);
+          const int lid = convel->get_block_map().LID(gid);
 
           if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
           err = convel->replace_local_value(lid, 0, value);
@@ -1343,7 +1343,7 @@ void ScaTra::ScaTraTimIntImpl::set_external_force()
       const double force_velocity_value = external_force_value * intrinsic_mobility_value;
 
       const int gid = nodedofs[spatial_dimension];
-      const int lid = force_velocity->get_map().LID(gid);
+      const int lid = force_velocity->get_block_map().LID(gid);
 
       if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
       const int error_force_velocity =
@@ -1382,7 +1382,7 @@ void ScaTra::ScaTraTimIntImpl::set_wall_shear_stresses(
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  if (not wss->get_map().SameAs(*discret_->dof_row_map(nds_wall_shear_stress())))
+  if (not wss->get_block_map().SameAs(*discret_->dof_row_map(nds_wall_shear_stress())))
     FOUR_C_THROW("Maps are NOT identical. Emergency!");
 #endif
 
@@ -1411,7 +1411,7 @@ void ScaTra::ScaTraTimIntImpl::set_pressure_field(
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  if (not pressure->get_map().SameAs(*discret_->dof_row_map(nds_pressure())))
+  if (not pressure->get_block_map().SameAs(*discret_->dof_row_map(nds_pressure())))
     FOUR_C_THROW("Maps are NOT identical. Emergency!");
 #endif
 
@@ -1432,7 +1432,7 @@ void ScaTra::ScaTraTimIntImpl::set_membrane_concentration(
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  if (not MembraneConc->get_map().SameAs(*discret_->dof_row_map(0)))
+  if (not MembraneConc->get_block_map().SameAs(*discret_->dof_row_map(0)))
     FOUR_C_THROW("Maps are NOT identical. Emergency!");
 #endif
 
@@ -1456,7 +1456,7 @@ void ScaTra::ScaTraTimIntImpl::set_mean_concentration(
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  if (not MeanConc->get_map().SameAs(*discret_->dof_row_map(0)))
+  if (not MeanConc->get_block_map().SameAs(*discret_->dof_row_map(0)))
     FOUR_C_THROW("Maps are NOT identical. Emergency!");
 #endif
 
@@ -1775,7 +1775,7 @@ void ScaTra::ScaTraTimIntImpl::collect_runtime_output_data()
       Core::Nodes::Node* node = discret_->l_row_node(inode);
       for (int idim = 0; idim < nsd_; ++idim)
         (convel_multi)(idim)[inode] =
-            (*convel)[convel->get_map().LID(discret_->dof(nds_vel(), node, idim))];
+            (*convel)[convel->get_block_map().LID(discret_->dof(nds_vel(), node, idim))];
     }
 
     std::vector<std::optional<std::string>> context(nsd_, "convec_velocity");
@@ -1797,7 +1797,7 @@ void ScaTra::ScaTraTimIntImpl::collect_runtime_output_data()
       Core::Nodes::Node* node = discret_->l_row_node(inode);
       for (int idim = 0; idim < nsd_; ++idim)
         (dispnp_multi)(idim)[inode] =
-            (*dispnp)[dispnp->get_map().LID(discret_->dof(nds_disp(), node, idim))];
+            (*dispnp)[dispnp->get_block_map().LID(discret_->dof(nds_disp(), node, idim))];
     }
 
     std::vector<std::optional<std::string>> context(nsd_, "ale-displacement");
@@ -3162,7 +3162,7 @@ ScaTra::ScaTraTimIntImpl::convert_dof_vector_to_componentwise_node_vector(
     Core::Nodes::Node* node = discret_->l_row_node(inode);
     for (int idim = 0; idim < nsd_; ++idim)
       (*componentwise_node_vector)(idim)[inode] =
-          (dof_vector)[dof_vector.get_map().LID(discret_->dof(nds, node, idim))];
+          (dof_vector)[dof_vector.get_block_map().LID(discret_->dof(nds, node, idim))];
   }
   return componentwise_node_vector;
 }
@@ -3796,8 +3796,8 @@ void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
       int dof_macro = discret_->dof(0, node)[0];
       int dof_micro = discret_->dof(nds_micro(), node)[0];
 
-      const int dof_lid_micro = phinp_micro_->get_map().LID(dof_micro);
-      const int dof_lid_macro = phinp_->get_map().LID(dof_macro);
+      const int dof_lid_micro = phinp_micro_->get_block_map().LID(dof_micro);
+      const int dof_lid_macro = phinp_->get_block_map().LID(dof_macro);
 
       // only if owned by this proc
       if (dof_lid_micro != -1 and dof_lid_macro != -1)
@@ -3820,7 +3820,7 @@ void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
     if (dofs.size() != 1) FOUR_C_THROW("Only one dof expected.");
 
     const int dof_gid = dofs[0];
-    const int dof_lid = phinp_micro_->get_map().LID(dof_gid);
+    const int dof_lid = phinp_micro_->get_block_map().LID(dof_gid);
 
     // only if this dof is part of the phinp_micro_ vector/map
     if (dof_lid != -1)
@@ -3897,7 +3897,7 @@ void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
   // correct values on hybrid dofs (value on node with 2 dofs is artificially set to 0.0)
   for (int hybrid_dof : hybrid_dofs)
   {
-    const int lid = phinp_micro_->get_map().LID(hybrid_dof);
+    const int lid = phinp_micro_->get_block_map().LID(hybrid_dof);
     if (lid != -1)
     {
       const double value = (*phinp_micro_)[lid];

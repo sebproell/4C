@@ -376,7 +376,7 @@ void STI::Monolithic::fd_check()
     statenp->update(1., *statenp_original, 0.);
 
     // impose perturbation
-    if (statenp->get_map().MyGID(colgid))
+    if (statenp->get_block_map().MyGID(colgid))
       if (statenp->sum_into_global_value(colgid, 0, scatra_field()->fd_check_eps()))
         FOUR_C_THROW(
             "Perturbation could not be imposed on state vector for finite difference check!");
@@ -1573,7 +1573,7 @@ void STI::Monolithic::solve()
     // output performance statistics associated with linear solver into text file if applicable
     if (fieldparameters_->get<bool>("OUTPUTLINSOLVERSTATS"))
       scatra_field()->output_lin_solver_stats(*solver_, dtsolve_, step(), static_cast<int>(iter_),
-          residual_->get_map().NumGlobalElements());
+          residual_->get_block_map().NumGlobalElements());
 
     // update scatra field
     scatra_field()->update_iter(*maps_->extract_vector(*increment_, 0));

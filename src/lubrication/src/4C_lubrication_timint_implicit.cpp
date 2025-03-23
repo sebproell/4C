@@ -296,7 +296,7 @@ void Lubrication::TimIntImpl::set_height_field_pure_lub(const int nds)
 
       // get global and local dof IDs
       const int gid = nodedofs[index];
-      const int lid = height->get_map().LID(gid);
+      const int lid = height->get_block_map().LID(gid);
 
       if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
       err = height->replace_local_value(lid, 0, heightfuncvalue);
@@ -340,7 +340,7 @@ void Lubrication::TimIntImpl::set_average_velocity_field_pure_lub(const int nds)
 
       // get global and local dof IDs
       const int gid = nodedofs[index];
-      const int lid = vel->get_map().LID(gid);
+      const int lid = vel->get_block_map().LID(gid);
 
       if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
       err = vel->replace_local_value(lid, 0, velfuncvalue);
@@ -1012,7 +1012,7 @@ void Lubrication::TimIntImpl::output_state()
       Core::Nodes::Node* node = discret_->l_row_node(inode);
       for (int idim = 0; idim < nsd_; ++idim)
         (dispnp_multi)(idim)[discret_->node_row_map()->LID(node->id())] =
-            (*dispnp)[dispnp->get_map().LID(discret_->dof(nds_disp_, node, idim))];
+            (*dispnp)[dispnp->get_block_map().LID(discret_->dof(nds_disp_, node, idim))];
     }
 
     output_->write_multi_vector("dispnp", dispnp_multi, Core::IO::nodevector);

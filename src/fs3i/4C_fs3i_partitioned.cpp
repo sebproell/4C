@@ -747,7 +747,7 @@ void FS3I::PartFS3I::extract_vel(
   vel.push_back(velocity);
   // structure ScaTra: velocity and grid velocity are identical!
   std::shared_ptr<Core::LinAlg::Vector<double>> zeros =
-      std::make_shared<Core::LinAlg::Vector<double>>(velocity->get_map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(velocity->get_block_map(), true);
   convel.push_back(zeros);
 }
 

@@ -144,7 +144,7 @@ void PostVtiWriter::write_dof_result_step(std::ofstream& file,
   // Here is the only thing we need to do for parallel computations: We need read access to all dofs
   // on the row elements, so need to get the DofColMap to have this access
   const Epetra_Map* colmap = dis->dof_col_map(0);
-  const Epetra_BlockMap& vecmap = data->get_map();
+  const Epetra_BlockMap& vecmap = data->get_block_map();
 
   // TODO: wic, once the vtu pressure writer is fixed, apply the same solution here.
   const int offset = (fillzeros) ? 0 : vecmap.MinAllGID() - dis->dof_row_map(0)->MinAllGID();
@@ -189,7 +189,7 @@ void PostVtiWriter::write_dof_result_step(std::ofstream& file,
 
       for (int d = 0; d < numdf; ++d)
       {
-        const int lid = ghostedData->get_map().LID(nodedofs[d + from] + offset);
+        const int lid = ghostedData->get_block_map().LID(nodedofs[d + from] + offset);
         if (lid > -1)
         {
           solution[inpos + d] = (*ghostedData)[lid];

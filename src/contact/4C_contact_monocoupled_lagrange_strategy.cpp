@@ -373,7 +373,7 @@ void CONTACT::MonoCoupledLagrangeStrategy::recover_coupled(
       }
       else
       {
-        Core::LinAlg::Vector<double> zfluid(z_->get_map(), true);
+        Core::LinAlg::Vector<double> zfluid(z_->get_block_map(), true);
 
         Core::LinAlg::Vector<double> mod(*gsdofrowmap_);
         matiter->second->multiply(false, *inciter->second, mod);

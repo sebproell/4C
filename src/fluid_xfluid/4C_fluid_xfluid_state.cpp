@@ -89,8 +89,8 @@ void FLD::XFluidState::CouplingState::complete_coupling_matrices_and_rhs(
   //  C_ss_->EpetraMatrix()->MaxNumEntries() << std::endl;
   //-------------------------------------------------------------------------------
   // export the rhs coupling vector to a row vector
-  Core::LinAlg::Vector<double> rhC_s_tmp(rhC_s_->get_map(), true);
-  Epetra_Export exporter_rhC_s_col(rhC_s_col_->get_map(), rhC_s_tmp.get_map());
+  Core::LinAlg::Vector<double> rhC_s_tmp(rhC_s_->get_block_map(), true);
+  Epetra_Export exporter_rhC_s_col(rhC_s_col_->get_block_map(), rhC_s_tmp.get_block_map());
   int err = rhC_s_tmp.export_to(*rhC_s_col_, exporter_rhC_s_col, Add);
   if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
 

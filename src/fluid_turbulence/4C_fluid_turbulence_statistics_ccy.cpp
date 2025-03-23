@@ -591,10 +591,10 @@ void FLD::TurbulenceStatisticsCcy::evaluate_pointwise_mean_values_in_planes()
     else
       scatranurbsdis->set_state("phinp_for_statistics", *meanfullphinp_);
 
-    if (not(scatranurbsdis->dof_row_map())->SameAs(meanfullphinp_->get_map()))
+    if (not(scatranurbsdis->dof_row_map())->SameAs(meanfullphinp_->get_block_map()))
     {
       scatranurbsdis->dof_row_map()->Print(std::cout);
-      meanfullphinp_->get_map().Print(std::cout);
+      meanfullphinp_->get_block_map().Print(std::cout);
       FOUR_C_THROW("Global dof numbering in maps does not match");
     }
   }

@@ -147,9 +147,9 @@ Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Vector<double>& dia
       savegraph_(savegraph),
       matrixtype_(matrixtype)
 {
-  int length = diag.get_map().NumMyElements();
-  Epetra_Map map(-1, length, diag.get_map().MyGlobalElements(), diag.get_map().IndexBase(),
-      Core::Communication::as_epetra_comm(diag.get_comm()));
+  int length = diag.get_block_map().NumMyElements();
+  Epetra_Map map(-1, length, diag.get_block_map().MyGlobalElements(),
+      diag.get_block_map().IndexBase(), Core::Communication::as_epetra_comm(diag.get_comm()));
   if (!map.UniqueGIDs()) FOUR_C_THROW("Row map is not unique");
 
   if (matrixtype_ == CRS_MATRIX)

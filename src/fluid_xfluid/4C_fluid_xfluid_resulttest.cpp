@@ -83,7 +83,7 @@ void FLD::XFluidResultTest::test_node(const Core::IO::InputParameterContainer& c
 
       double result = 0.;
 
-      const Epetra_BlockMap& velnpmap = velnp.get_map();
+      const Epetra_BlockMap& velnpmap = velnp.get_block_map();
 
       std::string position = container.get<std::string>("QUANTITY");
       if (position == "velx")

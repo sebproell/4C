@@ -200,7 +200,7 @@ void FLD::TimIntGenAlpha::gen_alpha_update_acceleration()
     std::shared_ptr<Core::LinAlg::Vector<double>> onlyvelnp =
         velpressplitter_->extract_other_vector(*velnp_);
 
-    Core::LinAlg::Vector<double> onlyaccnp(onlyaccn->get_map());
+    Core::LinAlg::Vector<double> onlyaccnp(onlyaccn->get_block_map());
 
     onlyaccnp.update(fact2, *onlyaccn, 0.0);
     onlyaccnp.update(fact1, *onlyvelnp, -fact1, *onlyveln, 1.0);
@@ -242,7 +242,7 @@ void FLD::TimIntGenAlpha::gen_alpha_intermediate_values()
     std::shared_ptr<Core::LinAlg::Vector<double>> onlyaccnp =
         velpressplitter_->extract_other_vector(*accnp_);
 
-    Core::LinAlg::Vector<double> onlyaccam(onlyaccnp->get_map());
+    Core::LinAlg::Vector<double> onlyaccam(onlyaccnp->get_block_map());
 
     onlyaccam.update((alphaM_), *onlyaccnp, (1.0 - alphaM_), *onlyaccn, 0.0);
 
@@ -286,8 +286,9 @@ void FLD::TimIntGenAlpha::gen_alpha_intermediate_values(
   //    vec         = alpha_F * vecnp     + (1-alpha_F) *  vecn
 
   // do stupid conversion into Epetra map
-  Epetra_Map vecmap(vecnp->get_map().NumGlobalElements(), vecnp->get_map().NumMyElements(),
-      vecnp->get_map().MyGlobalElements(), 0, vecnp->get_map().Comm());
+  Epetra_Map vecmap(vecnp->get_block_map().NumGlobalElements(),
+      vecnp->get_block_map().NumMyElements(), vecnp->get_block_map().MyGlobalElements(), 0,
+      vecnp->get_block_map().Comm());
 
   std::shared_ptr<Core::LinAlg::Vector<double>> vecam = Core::LinAlg::create_vector(vecmap, true);
   vecam->update((alphaM_), *vecnp, (1.0 - alphaM_), *vecn, 0.0);

@@ -130,7 +130,8 @@ namespace Mat
         else
         {
           // calculate LID here, instead of before each call
-          return (*matparams_[parametername])[matparams_[parametername]->get_map().LID(EleId)];
+          return (
+              *matparams_[parametername])[matparams_[parametername]->get_block_map().LID(EleId)];
         }
       }
 

@@ -829,7 +829,7 @@ void MultiScale::MicroStatic::evaluate_micro_bc(
       {
         const int gid = dofs[l];
 
-        const int lid = disp.get_map().LID(gid);
+        const int lid = disp.get_block_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
         (disp)[lid] = disp_prescribed[l];
       }

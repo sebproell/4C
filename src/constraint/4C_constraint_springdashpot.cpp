@@ -1003,7 +1003,7 @@ void CONSTRAINTS::SpringDashpot::output_gap_normal(Core::LinAlg::Vector<double>&
   for (const auto& i : gap_)
   {
     // global id -> local id
-    const int lid = gap.get_map().LID(i.first);
+    const int lid = gap.get_block_map().LID(i.first);
     // local id on processor
     if (lid >= 0) (gap)[lid] += i.second;
   }

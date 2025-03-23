@@ -119,7 +119,7 @@ void Core::FE::Utils::DbcNurbs::evaluate(const Teuchos::ParameterList& params,
     std::copy(curr_conds.begin(), curr_conds.end(), std::back_inserter(conds));
   }
 
-  Core::FE::Utils::Dbc::DbcInfo info2(info.toggle.get_map());
+  Core::FE::Utils::Dbc::DbcInfo info2(info.toggle.get_block_map());
   read_dirichlet_condition(params, discret, conds, time, info2, dbcgids);
 
   // --------------------------- Step 3 ---------------------------------------
