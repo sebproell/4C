@@ -299,8 +299,8 @@ bool NOX::Nln::LinearSystem::applyJacobianInverse(Teuchos::ParameterList& linear
   Epetra_LinearProblem linProblem;
   int linsol_status;
   {
-    Core::LinAlg::VectorView result_view(result.getEpetraVector());
-    Core::LinAlg::VectorView nonConstInput_view(nonConstInput.getEpetraVector());
+    Core::LinAlg::View result_view(result.getEpetraVector());
+    Core::LinAlg::View nonConstInput_view(nonConstInput.getEpetraVector());
     set_linear_problem_for_solve(linProblem, jacobian(), result_view, nonConstInput_view);
 
     // ************* Begin linear system scaling *****************
@@ -331,11 +331,11 @@ bool NOX::Nln::LinearSystem::applyJacobianInverse(Teuchos::ParameterList& linear
 
     auto matrix = Core::Utils::shared_ptr_from_ref(*linProblem.GetOperator());
 
-    Core::LinAlg::VectorView x(*linProblem.GetLHS());
-    Core::LinAlg::VectorView b(*linProblem.GetRHS());
+    Core::LinAlg::View x(*linProblem.GetLHS());
+    Core::LinAlg::View b(*linProblem.GetRHS());
 
-    linsol_status = currSolver->solve_with_multi_vector(
-        matrix, x.get_non_owning_rcp_ref(), b.get_non_owning_rcp_ref(), solver_params);
+    linsol_status = currSolver->solve_with_multi_vector(matrix, x.get_non_owning_shared_ptr_ref(),
+        b.get_non_owning_shared_ptr_ref(), solver_params);
 
     if (linsol_status)
     {
@@ -390,7 +390,7 @@ bool NOX::Nln::LinearSystem::compute_f_and_jacobian(
     const ::NOX::Epetra::Vector& x, ::NOX::Epetra::Vector& rhs)
 {
   {
-    Core::LinAlg::VectorView rhs_view(rhs.getEpetraVector());
+    Core::LinAlg::View rhs_view(rhs.getEpetraVector());
     prePostOperatorPtr_->run_pre_compute_f_and_jacobian(
         rhs_view, jacobian(), Core::LinAlg::Vector<double>(x.getEpetraVector()), *this);
   }
@@ -400,7 +400,7 @@ bool NOX::Nln::LinearSystem::compute_f_and_jacobian(
           ->compute_f_and_jacobian(x.getEpetraVector(), rhs.getEpetraVector(), jacobian());
 
   {
-    Core::LinAlg::VectorView rhs_view(rhs.getEpetraVector());
+    Core::LinAlg::View rhs_view(rhs.getEpetraVector());
     prePostOperatorPtr_->run_post_compute_f_and_jacobian(
         rhs_view, jacobian(), Core::LinAlg::Vector<double>(x.getEpetraVector()), *this);
   }
@@ -413,7 +413,7 @@ bool NOX::Nln::LinearSystem::compute_correction_system(const enum CorrectionType
     const ::NOX::Abstract::Group& grp, const ::NOX::Epetra::Vector& x, ::NOX::Epetra::Vector& rhs)
 {
   {
-    Core::LinAlg::VectorView rhs_view(rhs.getEpetraVector());
+    Core::LinAlg::View rhs_view(rhs.getEpetraVector());
     prePostOperatorPtr_->run_pre_compute_f_and_jacobian(
         rhs_view, jacobian(), Core::LinAlg::Vector<double>(x.getEpetraVector()), *this);
   }
@@ -424,7 +424,7 @@ bool NOX::Nln::LinearSystem::compute_correction_system(const enum CorrectionType
               type, grp, x.getEpetraVector(), rhs.getEpetraVector(), jacobian());
 
   {
-    Core::LinAlg::VectorView rhs_view(rhs.getEpetraVector());
+    Core::LinAlg::View rhs_view(rhs.getEpetraVector());
     prePostOperatorPtr_->run_post_compute_f_and_jacobian(
         rhs_view, jacobian(), Core::LinAlg::Vector<double>(x.getEpetraVector()), *this);
   }

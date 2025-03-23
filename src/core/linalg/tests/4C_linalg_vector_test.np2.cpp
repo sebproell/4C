@@ -157,7 +157,7 @@ namespace
     a.PutScalar(1.0);
     // Scope in which a is modified by the view
     {
-      Core::LinAlg::VectorView a_view(a);
+      Core::LinAlg::View a_view(a);
 
       double norm = 0.0;
       ((Core::LinAlg::Vector<double>&)a_view).norm_2(&norm);
@@ -166,7 +166,7 @@ namespace
       ((Core::LinAlg::Vector<double>&)a_view).put_scalar(2.0);
     }
     const Epetra_Vector& a_const = a;
-    Core::LinAlg::VectorView a_view_const(a_const);
+    Core::LinAlg::View a_view_const(a_const);
     // Change must be reflected in a
     double norm = 0.0;
     static_cast<const Core::LinAlg::Vector<double>&>(a_view_const).norm_2(&norm);
@@ -272,7 +272,7 @@ namespace
     {
       const auto put_scalar = [](Core::LinAlg::MultiVector<double>& v, double s)
       { v.PutScalar(s); };
-      Core::LinAlg::VectorView view_mv2((Epetra_MultiVector&)mv2);
+      Core::LinAlg::View view_mv2((Epetra_MultiVector&)mv2);
       put_scalar(view_mv2, 4.0);
     }
     EXPECT_EQ(means_multi_vector(mv), (std::vector{1., 4., 1.}));

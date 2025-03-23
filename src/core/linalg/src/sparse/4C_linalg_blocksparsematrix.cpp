@@ -269,7 +269,7 @@ int Core::LinAlg::BlockSparseMatrixBase::Apply(
               "failed to apply vector to matrix block ({},{}): err={}", rblock, cblock, err);
         rowresult->Update(1.0, *rowy, 1.0);
       }
-      VectorView Y_view(Y);
+      View Y_view(Y);
       rangemaps_.insert_vector(*rowresult, rblock, Y_view);
     }
   }
@@ -290,7 +290,7 @@ int Core::LinAlg::BlockSparseMatrixBase::Apply(
         if (err != 0) FOUR_C_THROW("failed to apply vector to matrix: err={}", err);
         rowresult->Update(1.0, *rowy, 1.0);
       }
-      VectorView Y_view(Y);
+      View Y_view(Y);
       rangemaps_.insert_vector(*rowresult, rblock, Y_view);
     }
   }

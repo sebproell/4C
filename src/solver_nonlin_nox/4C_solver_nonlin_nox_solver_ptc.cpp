@@ -928,7 +928,7 @@ NOX::Nln::GROUP::PrePostOp::PseudoTransient::eval_pseudo_transient_f_update(
     }
     case NOX::Nln::Solver::PseudoTransient::scale_op_element_based:
     {
-      Core::LinAlg::VectorView xUpdate_view(xUpdate->getEpetraVector());
+      Core::LinAlg::View xUpdate_view(xUpdate->getEpetraVector());
       scaling_matrix_op_ptr_->multiply(false, xUpdate_view, xUpdate_view);
       xUpdate->scale(ptcsolver_.get_inverse_pseudo_time_step());
 

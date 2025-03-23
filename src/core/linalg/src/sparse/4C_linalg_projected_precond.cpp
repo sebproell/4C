@@ -43,7 +43,7 @@ int Core::LinAlg::LinalgPrecondOperator::ApplyInverse(
   // of problem
   if (project_)
   {
-    VectorView Y_view(Y);
+    View Y_view(Y);
     projector_->apply_p(Y_view);
   }
 

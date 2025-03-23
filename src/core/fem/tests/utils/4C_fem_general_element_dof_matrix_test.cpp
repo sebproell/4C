@@ -45,7 +45,7 @@ namespace
     expect_dof_matrix_equal(dof_matrix);
   }
 
-  TEST(ElementDofMatrixTest, TestVectorView)
+  TEST(ElementDofMatrixTest, TestView)
   {
     const auto vec = get_dof_array<std::vector<double>>();
     const Core::LinAlg::Matrix<2, 4> dof_matrix =
@@ -98,7 +98,7 @@ namespace
     }
   }
 
-  TEST(ElementDofMatrixTest, GetVectorView)
+  TEST(ElementDofMatrixTest, GetView)
   {
     const auto arr = get_dof_array<std::array<double, 8>>();
     const Core::LinAlg::Matrix<2, 4> dof_matrix =

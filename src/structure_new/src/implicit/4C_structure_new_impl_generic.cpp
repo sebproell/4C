@@ -243,7 +243,7 @@ void NOX::Nln::PrePostOp::IMPLICIT::Generic::run_pre_apply_jacobian_inverse(
     const ::NOX::Abstract::Vector& rhs, ::NOX::Abstract::Vector& result,
     const ::NOX::Abstract::Vector& xold, const NOX::Nln::Group& grp)
 {
-  Core::LinAlg::VectorView result_view(extract_epetra_vector(result));
+  Core::LinAlg::View result_view(extract_epetra_vector(result));
 
   // Some inherited classes break const-correctness. Thus, we need to provide something
   // that may be safely const_casted. fixme
@@ -261,7 +261,7 @@ void NOX::Nln::PrePostOp::IMPLICIT::Generic::run_post_apply_jacobian_inverse(
     const ::NOX::Abstract::Vector& rhs, ::NOX::Abstract::Vector& result,
     const ::NOX::Abstract::Vector& xold, const NOX::Nln::Group& grp)
 {
-  Core::LinAlg::VectorView result_view(extract_epetra_vector(result));
+  Core::LinAlg::View result_view(extract_epetra_vector(result));
   impl_.model_eval().run_post_apply_jacobian_inverse(
       copy_to_our_vector(rhs), result_view, copy_to_our_vector(xold), grp);
 

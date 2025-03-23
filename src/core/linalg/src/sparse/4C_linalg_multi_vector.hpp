@@ -11,8 +11,10 @@
 
 #include "4C_config.hpp"
 
+#include "4C_linalg_view.hpp"
+
+#include <Epetra_FEVector.h>
 #include <Epetra_MultiVector.h>
-#include <Epetra_Vector.h>
 #include <mpi.h>
 
 #include <memory>
@@ -28,9 +30,6 @@ namespace Core::LinAlg
 {
   template <typename T>
   class Vector;
-
-  template <typename VectorType>
-  class VectorView;
 
   template <typename T>
   class MultiVector
@@ -229,6 +228,26 @@ namespace Core::LinAlg
 
     const Core::LinAlg::Vector<double>& operator()(int i) const;
 
+    /**
+     * View a given Epetra_MultiVector under our own MultiVector wrapper.
+     */
+    [[nodiscard]] static std::shared_ptr<MultiVector<T>> create_view(Epetra_MultiVector& view)
+    {
+      std::shared_ptr<MultiVector<T>> ret(new MultiVector<T>);
+      ret->vector_ =
+          std::make_shared<Epetra_MultiVector>(Epetra_DataAccess::View, view, 0, view.NumVectors());
+      return ret;
+    }
+
+    [[nodiscard]] static std::shared_ptr<const MultiVector<T>> create_view(
+        const Epetra_MultiVector& view)
+    {
+      std::shared_ptr<MultiVector<T>> ret(new MultiVector<T>);
+      ret->vector_ =
+          std::make_shared<Epetra_MultiVector>(Epetra_DataAccess::View, view, 0, view.NumVectors());
+      return ret;
+    }
+
    private:
     MultiVector() = default;
 
@@ -240,18 +259,6 @@ namespace Core::LinAlg
      */
     void sync_view() const;
 
-    /**
-     * Special constructor useful for converting our Vector to our MultiVector.
-     * @param view The internals that this MultiVector should view.
-     */
-    [[nodiscard]] static std::shared_ptr<MultiVector<T>> create_view(const Epetra_MultiVector& view)
-    {
-      std::shared_ptr<MultiVector<T>> ret(new MultiVector<T>);
-      ret->vector_ =
-          std::make_shared<Epetra_MultiVector>(Epetra_DataAccess::View, view, 0, view.NumVectors());
-      return ret;
-    }
-
     //! The actual vector.
     std::shared_ptr<Epetra_MultiVector> vector_;
 
@@ -260,8 +267,18 @@ namespace Core::LinAlg
     mutable std::vector<std::shared_ptr<Vector<T>>> column_vector_view_;
 
     friend class Vector<T>;
-    friend class VectorView<MultiVector<T>>;
-    friend class VectorView<const MultiVector<T>>;
+  };
+
+  template <>
+  struct WrapperFor<Epetra_MultiVector>
+  {
+    using type = MultiVector<double>;
+  };
+
+  template <>
+  struct WrapperFor<Epetra_FEVector>
+  {
+    using type = MultiVector<double>;
   };
 
 }  // namespace Core::LinAlg
