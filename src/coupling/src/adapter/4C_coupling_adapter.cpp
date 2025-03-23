@@ -618,8 +618,8 @@ std::shared_ptr<Epetra_FEVector> Coupling::Adapter::Coupling::master_to_slave(
   std::shared_ptr<Epetra_FEVector> sv =
       std::make_shared<Epetra_FEVector>(*slavedofmap_, mv.NumVectors());
 
-  Core::LinAlg::VectorView sv_view(*sv);
-  Core::LinAlg::VectorView mv_view(mv);
+  Core::LinAlg::View sv_view(*sv);
+  Core::LinAlg::View mv_view(mv);
   master_to_slave(mv_view, sv_view);
 
   return sv;
@@ -634,8 +634,8 @@ std::shared_ptr<Epetra_FEVector> Coupling::Adapter::Coupling::slave_to_master(
   std::shared_ptr<Epetra_FEVector> mv =
       std::make_shared<Epetra_FEVector>(*masterdofmap_, sv.NumVectors());
 
-  Core::LinAlg::VectorView sv_view(sv);
-  Core::LinAlg::VectorView mv_view(*mv);
+  Core::LinAlg::View sv_view(sv);
+  Core::LinAlg::View mv_view(*mv);
   slave_to_master(sv_view, mv_view);
 
   return mv;

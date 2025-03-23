@@ -279,7 +279,7 @@ void Solid::Nln::LinSystem::StcScaling::scaleLinearSystem(Epetra_LinearProblem& 
       std::make_shared<Core::LinAlg::SparseMatrix>(stiff_epetra, Core::LinAlg::DataAccess::View);
 
   // get rhs
-  Core::LinAlg::VectorView rhs_view(*dynamic_cast<Epetra_Vector*>(problem.GetRHS()));
+  Core::LinAlg::View rhs_view(*dynamic_cast<Epetra_Vector*>(problem.GetRHS()));
   Core::LinAlg::Vector<double>& rhs(rhs_view);
 
   // right multiplication of stiffness matrix
@@ -310,7 +310,7 @@ void Solid::Nln::LinSystem::StcScaling::unscaleLinearSystem(Epetra_LinearProblem
       Core::LinAlg::create_vector(problem.GetLHS()->Map(), true);
   Epetra_MultiVector* disi = problem.GetLHS();
 
-  Core::LinAlg::VectorView disi_view(*disi);
+  Core::LinAlg::View disi_view(*disi);
   stcmat_->multiply(false, disi_view, *disisdc);
   disi->Update(1.0, *disisdc, 0.0);
 }

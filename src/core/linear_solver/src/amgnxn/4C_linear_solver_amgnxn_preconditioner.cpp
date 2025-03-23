@@ -357,7 +357,7 @@ int Core::LinearSolver::AmGnxnOperator::ApplyInverse(
 
   v_->solve(Xbl, Ybl, true);
 
-  Core::LinAlg::VectorView Y_view(Y);
+  Core::LinAlg::View Y_view(Y);
   for (int i = 0; i < NumBlocks; i++) domain_ex.insert_vector(*(Ybl.get_vector(i)), i, Y_view);
 
   return 0;
@@ -475,7 +475,7 @@ int Core::LinearSolver::BlockSmootherOperator::ApplyInverse(
 
   s_->solve(Xbl, Ybl, true);
 
-  Core::LinAlg::VectorView Y_view(Y);
+  Core::LinAlg::View Y_view(Y);
   for (int i = 0; i < NumBlocks; i++) domain_ex.insert_vector(*(Ybl.get_vector(i)), i, Y_view);
 
 

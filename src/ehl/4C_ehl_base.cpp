@@ -533,7 +533,7 @@ void EHL::Base::setup_unprojectable_dbc()
 
   std::shared_ptr<Core::LinAlg::Vector<double>> exp =
       std::make_shared<Core::LinAlg::Vector<double>>(*ada_strDisp_to_lubPres_->master_dof_map());
-  Core::LinAlg::VectorView inf_gap_toggle_view(inf_gap_toggle);
+  Core::LinAlg::View inf_gap_toggle_view(inf_gap_toggle);
   Core::LinAlg::export_to(inf_gap_toggle_view, *exp);
   inf_gap_toggle_lub_ = ada_strDisp_to_lubPres_->master_to_slave(*exp);
 

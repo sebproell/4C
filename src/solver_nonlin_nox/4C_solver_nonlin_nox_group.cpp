@@ -113,7 +113,7 @@ void NOX::Nln::Group::computeX(
   skipUpdateX_ = false;
 
   // Some call further down will perform a const-cast on d. fixme
-  Core::LinAlg::VectorView d_view(const_cast<Epetra_Vector&>(d.getEpetraVector()));
+  Core::LinAlg::View d_view(const_cast<Epetra_Vector&>(d.getEpetraVector()));
   prePostOperatorPtr_->run_pre_compute_x(grp, d_view, step, *this);
 
 
@@ -154,7 +154,7 @@ void NOX::Nln::Group::set_skip_update_x(bool skipUpdateX) { skipUpdateX_ = skipU
 ::NOX::Abstract::Group::ReturnType NOX::Nln::Group::computeF()
 {
   {
-    Core::LinAlg::VectorView rhs_view(RHSVector.getEpetraVector());
+    Core::LinAlg::View rhs_view(RHSVector.getEpetraVector());
     prePostOperatorPtr_->run_pre_compute_f(rhs_view, *this);
   }
 
@@ -171,7 +171,7 @@ void NOX::Nln::Group::set_skip_update_x(bool skipUpdateX) { skipUpdateX_ = skipU
   isValidRHS = true;
 
   {
-    Core::LinAlg::VectorView rhs_view(RHSVector.getEpetraVector());
+    Core::LinAlg::View rhs_view(RHSVector.getEpetraVector());
     prePostOperatorPtr_->run_post_compute_f(rhs_view, *this);
   }
   return ::NOX::Abstract::Group::Ok;
@@ -194,7 +194,7 @@ void NOX::Nln::Group::set_skip_update_x(bool skipUpdateX) { skipUpdateX_ = skipU
   {
     isValidRHS = false;
     {
-      Core::LinAlg::VectorView rhs_view(RHSVector.getEpetraVector());
+      Core::LinAlg::View rhs_view(RHSVector.getEpetraVector());
       prePostOperatorPtr_->run_pre_compute_f(rhs_view, *this);
     }
     bool status = false;
@@ -212,7 +212,7 @@ void NOX::Nln::Group::set_skip_update_x(bool skipUpdateX) { skipUpdateX_ = skipU
 
     ret = ::NOX::Abstract::Group::Ok;
     {
-      Core::LinAlg::VectorView rhs_view(RHSVector.getEpetraVector());
+      Core::LinAlg::View rhs_view(RHSVector.getEpetraVector());
       prePostOperatorPtr_->run_post_compute_f(rhs_view, *this);
     }
   }
@@ -220,7 +220,7 @@ void NOX::Nln::Group::set_skip_update_x(bool skipUpdateX) { skipUpdateX_ = skipU
   else
   {
     {
-      Core::LinAlg::VectorView rhs_view(RHSVector.getEpetraVector());
+      Core::LinAlg::View rhs_view(RHSVector.getEpetraVector());
       prePostOperatorPtr_->run_pre_compute_f(rhs_view, *this);
     }
     ret = ::NOX::Abstract::Group::Ok;

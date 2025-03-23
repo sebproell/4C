@@ -828,7 +828,7 @@ Solid::ModelEvaluator::Contact::assemble_force_of_models(
 {
   std::shared_ptr<::NOX::Epetra::Vector> force_nox = global_state().create_global_vector();
   {
-    Core::LinAlg::VectorView force_view(force_nox->getEpetraVector());
+    Core::LinAlg::View force_view(force_nox->getEpetraVector());
     integrator().assemble_force(force_view, without_these_models);
   }
 

@@ -123,7 +123,7 @@ bool NOX::FSI::LinearSystem::applyJacobianInverse(
 
   std::shared_ptr<Core::LinAlg::Vector<double>> fres =
       std::make_shared<Core::LinAlg::Vector<double>>(input.getEpetraVector());
-  Core::LinAlg::VectorView disi = Core::LinAlg::VectorView(result.getEpetraVector());
+  Core::LinAlg::View disi = Core::LinAlg::View(result.getEpetraVector());
 
   // get the hopefully adaptive linear solver convergence tolerance
   solver_->params()
@@ -133,7 +133,7 @@ bool NOX::FSI::LinearSystem::applyJacobianInverse(
   Core::LinAlg::SolverParams solver_params;
   solver_params.refactor = true;
   solver_params.reset = callcount_ == 0;
-  solver_->solve(jac_ptr_, disi.get_non_owning_rcp_ref(), fres, solver_params);
+  solver_->solve(jac_ptr_, disi.get_non_owning_shared_ptr_ref(), fres, solver_params);
 
   callcount_ += 1;
 

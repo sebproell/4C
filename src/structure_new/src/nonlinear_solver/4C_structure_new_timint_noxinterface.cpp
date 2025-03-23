@@ -89,7 +89,7 @@ bool Solid::TimeInt::NoxInterface::computeF(
 {
   check_init_setup();
 
-  Core::LinAlg::VectorView F_view(F);
+  Core::LinAlg::View F_view(F);
   if (not int_ptr_->apply_force(Core::LinAlg::Vector<double>(x), F_view)) return false;
 
   /* Apply the DBC on the right hand side, since we need the Dirichlet free
@@ -128,7 +128,7 @@ bool Solid::TimeInt::NoxInterface::compute_f_and_jacobian(
   Core::LinAlg::SparseOperator* jac_ptr = dynamic_cast<Core::LinAlg::SparseOperator*>(&jac);
   FOUR_C_ASSERT(jac_ptr != nullptr, "Dynamic cast failed!");
 
-  Core::LinAlg::VectorView rhs_view(rhs);
+  Core::LinAlg::View rhs_view(rhs);
   if (not int_ptr_->apply_force_stiff(Core::LinAlg::Vector<double>(x), rhs_view, *jac_ptr))
     return false;
 
@@ -158,7 +158,7 @@ bool Solid::TimeInt::NoxInterface::compute_correction_system(
   std::vector<Inpar::Solid::ModelType> constraint_models;
   find_constraint_models(&grp, constraint_models);
 
-  Core::LinAlg::VectorView rhs_view(rhs);
+  Core::LinAlg::View rhs_view(rhs);
   if (not int_ptr_->apply_correction_system(
           type, constraint_models, Core::LinAlg::Vector<double>(x), rhs_view, *jac_ptr))
     return false;

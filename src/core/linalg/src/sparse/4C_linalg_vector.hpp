@@ -12,6 +12,7 @@
 #include "4C_config.hpp"
 
 #include "4C_linalg_multi_vector.hpp"
+#include "4C_linalg_view.hpp"
 
 #include <Epetra_FEVector.h>
 #include <Epetra_IntVector.h>
@@ -20,13 +21,10 @@
 #include <memory>
 
 
-
 FOUR_C_NAMESPACE_OPEN
 
 namespace Core::LinAlg
 {
-  template <typename T>
-  class VectorView;
 
   // Sparse Vector which will replace the Epetra_Vector
   template <typename T>
@@ -304,6 +302,24 @@ namespace Core::LinAlg
       return vector_->SumIntoMyValues(NumEntries, Values, Indices);
     }
 
+    /**
+     * View a given Epetra_Vector object under our own Vector wrapper.
+     */
+    [[nodiscard]] static std::shared_ptr<Vector<T>> create_view(Epetra_Vector& view)
+    {
+      std::shared_ptr<Vector<T>> ret(new Vector<T>);
+      ret->vector_ = std::make_shared<Epetra_Vector>(Epetra_DataAccess::View, view, 0);
+      return ret;
+    }
+
+    [[nodiscard]] static std::shared_ptr<const Vector<T>> create_view(const Epetra_Vector& view)
+    {
+      std::shared_ptr<Vector<T>> ret(new Vector<T>);
+      ret->vector_ = std::make_shared<Epetra_Vector>(Epetra_DataAccess::View, view, 0);
+      return ret;
+    }
+
+
    private:
     Vector() = default;
 
@@ -315,24 +331,12 @@ namespace Core::LinAlg
      */
     void sync_view() const;
 
-    /**
-     * Special constructor useful for converting a column of our MultiVector to our Vector.
-     * @param view The internals that this Vector should view.
-     */
-    [[nodiscard]] static std::shared_ptr<Vector<T>> create_view(const Epetra_Vector& view)
-    {
-      std::shared_ptr<Vector<T>> ret(new Vector<T>);
-      ret->vector_ = std::make_shared<Epetra_Vector>(Epetra_DataAccess::View, view, 0);
-      return ret;
-    }
 
     //! The actual Epetra_Vector object.
     std::shared_ptr<Epetra_Vector> vector_;
     //! MultiVector view of the Vector. This is used to allow implicit conversion to MultiVector.
     mutable std::shared_ptr<MultiVector<T>> multi_vector_view_;
 
-    friend class VectorView<Vector<T>>;
-    friend class VectorView<const Vector<T>>;
     friend class MultiVector<T>;
   };
 
@@ -407,50 +411,12 @@ namespace Core::LinAlg
     std::shared_ptr<Epetra_IntVector> vector_;
   };
 
-  /**
-   * Temporary helper class for migration. View one of the Trilinos vector types as one of ours.
-   * Make sure that the viewed vector lives longer than the view.
-   */
-  template <typename VectorType>
-  class VectorView
+
+  template <>
+  struct WrapperFor<Epetra_Vector>
   {
-   public:
-    template <typename EpetraVectorType>
-    VectorView(EpetraVectorType& vector) : view_vector_(VectorType::create_view(vector))
-    {
-    }
-
-    // Make the class hard to misuse and disallow copy and move.
-    VectorView(const VectorView& other) = delete;
-    VectorView& operator=(const VectorView& other) = delete;
-    VectorView(VectorView&& other) = delete;
-    VectorView& operator=(VectorView&& other) = delete;
-    ~VectorView() = default;
-
-    //! Allow implicit conversion to Vector for use in new interfaces.
-    operator VectorType&() { return *view_vector_; }
-
-    //! Allow implicit conversion to RCP<Vector> for use in new interfaces.
-    std::shared_ptr<VectorType>& get_non_owning_rcp_ref() { return view_vector_; }
-
-   private:
-    //! Store inside an RCP because our interfaces frequently take references to RCPs.
-    std::shared_ptr<VectorType> view_vector_;
+    using type = Vector<double>;
   };
-
-
-  // Template deduction guide for view of Epetra_Vector
-  VectorView(Epetra_Vector&) -> VectorView<Vector<double>>;
-  VectorView(const Epetra_Vector&) -> VectorView<const Vector<double>>;
-
-  // Template deduction guide for view of Epetra_MultiVector
-  VectorView(Epetra_MultiVector&) -> VectorView<MultiVector<double>>;
-  VectorView(const Epetra_MultiVector&) -> VectorView<const MultiVector<double>>;
-
-  // Template deduction guide for view of Epetra_FEVector
-  VectorView(Epetra_FEVector&) -> VectorView<MultiVector<double>>;
-  VectorView(const Epetra_FEVector&) -> VectorView<const MultiVector<double>>;
-
 }  // namespace Core::LinAlg
 
 
