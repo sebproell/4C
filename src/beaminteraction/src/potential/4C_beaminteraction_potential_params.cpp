@@ -27,7 +27,7 @@ BeamInteraction::BeamPotentialParams::BeamPotentialParams()
       pot_law_prefactors_(nullptr),
       potential_type_(BeamPotential::Type::vague),
       strategy_(BeamPotential::Strategy::vague),
-      cutoff_radius_(0.0),
+      cutoff_radius_(std::nullopt),
       regularization_type_(BeamPotential::RegularizationType::none),
       regularization_separation_(0.0),
       num_integration_segments_(-1),
@@ -119,10 +119,10 @@ void BeamInteraction::BeamPotentialParams::init(const double restart_time)
   }
 
   /****************************************************************************/
-  cutoff_radius_ = beam_potential_params_list.get<double>("CUTOFF_RADIUS");
+  cutoff_radius_ = beam_potential_params_list.get<std::optional<double>>("CUTOFF_RADIUS");
 
-  if (cutoff_radius_ != -1.0 and cutoff_radius_ <= 0.0)
-    FOUR_C_THROW("Invalid cutoff radius! Must be positive value or -1 to deactivate.");
+  if (cutoff_radius_.has_value() && cutoff_radius_.value() <= 0.0)
+    FOUR_C_THROW("Invalid cutoff radius! Must be positive value or null to deactivate.");
 
   /****************************************************************************/
   regularization_type_ = Teuchos::getIntegralValue<BeamPotential::RegularizationType>(

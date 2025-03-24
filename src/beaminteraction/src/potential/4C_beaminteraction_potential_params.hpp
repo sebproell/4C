@@ -74,7 +74,7 @@ namespace BeamInteraction
       return strategy_;
     }
 
-    inline double cutoff_radius() const
+    inline std::optional<double> cutoff_radius() const
     {
       throw_error_if_not_init_and_setup();
       return cutoff_radius_;
@@ -160,7 +160,7 @@ namespace BeamInteraction
     enum BeamPotential::Strategy strategy_;
 
     //! neglect all contributions at separation larger than this cutoff radius
-    double cutoff_radius_;
+    std::optional<double> cutoff_radius_;
 
     //! type of regularization to use for force law at separations below specified separation
     enum BeamPotential::RegularizationType regularization_type_;

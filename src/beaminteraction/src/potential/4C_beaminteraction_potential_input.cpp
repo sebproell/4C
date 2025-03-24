@@ -35,20 +35,22 @@ void BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       {.description = "prefactor(s) $k_i$ of potential law $\\Phi(r) = \\sum_i (k_i * r^{-m_i})$.",
           .default_value = "0.0"}));
 
+  // TODO remove default value
   beampotential.specs.emplace_back(parameter<BeamPotential::Type>("TYPE",
       {.description = "Type of potential interaction: surface (default) or volume potential",
           .default_value = BeamPotential::Type::surface}));
 
+  // TODO remove default value
   beampotential.specs.emplace_back(parameter<BeamPotential::Strategy>("STRATEGY",
       {.description = "strategy to evaluate interaction potential: double/single length specific, "
                       "small/large separation approximation, ...",
           .default_value = BeamPotential::Strategy::double_length_specific_large_separations}));
 
-  beampotential.specs.emplace_back(parameter<double>("CUTOFF_RADIUS",
+  beampotential.specs.emplace_back(parameter<std::optional<double>>("CUTOFF_RADIUS",
       {.description =
-              "Neglect all potential contributions at separation largerthan this cutoff radius",
-          .default_value = -1.0}));
+              "Neglect all potential contributions at separation largerthan this cutoff radius"}));
 
+  // TODO subgroup regularization
   beampotential.specs.emplace_back(parameter<BeamPotential::RegularizationType>(
       "REGULARIZATION_TYPE", {.description = "Type of regularization applied to the force law",
                                  .default_value = BeamPotential::RegularizationType::none}));
@@ -71,6 +73,7 @@ void BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::InputSp
                                              "slave be assigned to beam elements?",
                                  .default_value = MasterSlaveChoice::smaller_eleGID_is_slave}));
 
+  // TODO add None as default value
   beampotential.specs.emplace_back(parameter<double>("POTENTIAL_REDUCTION_LENGTH",
       {.description = "Within this length of the master beam end point the potential is smoothly "
                       "reduced to one half to account for infinitely long master beam surrogates.",

@@ -102,7 +102,7 @@ bool BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::eval
     const std::vector<Core::Conditions::Condition*> linechargeconds, const double k, const double m)
 {
   // no need to evaluate this pair in case of separation by far larger than cutoff or prefactor zero
-  if ((params()->cutoff_radius() != -1.0 and
+  if ((params()->cutoff_radius().has_value() and
           are_elements_much_more_separated_than_cutoff_distance()) or
       k == 0.0)
     return false;
@@ -203,7 +203,7 @@ void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
   set_automatic_differentiation_variables_if_required(ele1pos_, ele2pos_);
 
   // get cutoff radius
-  const double cutoff_radius = params()->cutoff_radius();
+  const std::optional<double> cutoff_radius = params()->cutoff_radius();
 
   // number of integration segments per element
   const unsigned int num_integration_segments = params()->number_integration_segments();
@@ -354,7 +354,8 @@ void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
           norm_dist = Core::FADUtils::vector_norm(dist);
 
           // check cutoff criterion: if specified, contributions are neglected at larger separation
-          if (cutoff_radius != -1.0 and Core::FADUtils::cast_to_double(norm_dist) > cutoff_radius)
+          if (cutoff_radius.has_value() and
+              Core::FADUtils::cast_to_double(norm_dist) > cutoff_radius.value())
             continue;
 
           // auxiliary variables to store pre-calculated common terms
@@ -575,7 +576,7 @@ void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
   set_automatic_differentiation_variables_if_required(ele1pos_, ele2pos_);
 
   // get cutoff radius
-  const double cutoff_radius = params()->cutoff_radius();
+  const std::optional<double> cutoff_radius = params()->cutoff_radius();
 
   // get regularization type and separation
   const BeamPotential::RegularizationType regularization_type = params()->regularization_type();
@@ -775,7 +776,8 @@ void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
           }
 
           // check cutoff criterion: if specified, contributions are neglected at larger separation
-          if (cutoff_radius != -1.0 and Core::FADUtils::cast_to_double(norm_dist) > cutoff_radius)
+          if (cutoff_radius.has_value() and
+              Core::FADUtils::cast_to_double(norm_dist) > cutoff_radius.value())
             continue;
 
           gap = norm_dist - radius1_ - radius2_;
@@ -1079,7 +1081,7 @@ void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
         "potential requires the beam radii to be identical!");
 
   // get cutoff radius
-  const double cutoff_radius = params()->cutoff_radius();
+  const std::optional<double> cutoff_radius = params()->cutoff_radius();
 
   // get potential reduction length
   const double potential_reduction_length = params()->potential_reduction_length();
@@ -1358,7 +1360,8 @@ void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
       }
 
       // check cutoff criterion: if specified, contributions are neglected at larger separation
-      if (cutoff_radius != -1.0 and Core::FADUtils::cast_to_double(norm_dist_ul) > cutoff_radius)
+      if (cutoff_radius.has_value() and
+          Core::FADUtils::cast_to_double(norm_dist_ul) > cutoff_radius.value())
       {
         continue;
       }
@@ -3800,10 +3803,8 @@ bool BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues,
                                                    element2_spherical_box_radius;
 
 
-  if (estimated_minimal_centerline_separation > safety_factor * params()->cutoff_radius())
-    return true;
-  else
-    return false;
+  return (
+      estimated_minimal_centerline_separation > safety_factor * params()->cutoff_radius().value());
 }
 
 // explicit template instantiations

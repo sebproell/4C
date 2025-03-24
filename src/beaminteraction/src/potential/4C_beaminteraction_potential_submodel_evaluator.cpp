@@ -647,9 +647,9 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::get_half_interaction_dis
 {
   check_init_setup();
 
-  if (beam_potential_params().cutoff_radius() > 0.0)
+  if (beam_potential_params().cutoff_radius().has_value())
   {
-    half_interaction_distance = 0.5 * beam_potential_params().cutoff_radius();
+    half_interaction_distance = 0.5 * beam_potential_params().cutoff_radius().value();
 
     if (g_state().get_my_rank() == 0)
       Core::IO::cout(Core::IO::verbose) << " beam potential half interaction distance "
