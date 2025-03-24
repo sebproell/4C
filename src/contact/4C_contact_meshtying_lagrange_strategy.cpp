@@ -30,8 +30,8 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | ctor (public)                                              popp 05/09|
  *----------------------------------------------------------------------*/
-CONTACT::MtLagrangeStrategy::MtLagrangeStrategy(const Epetra_Map* dof_row_map,
-    const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
+CONTACT::MtLagrangeStrategy::MtLagrangeStrategy(const Core::LinAlg::Map* dof_row_map,
+    const Core::LinAlg::Map* NodeRowMap, Teuchos::ParameterList params,
     std::vector<std::shared_ptr<Mortar::Interface>> interface, const int spatialDim,
     const MPI_Comm& comm, const double alphaf, const int maxdof)
     : MtAbstractStrategy(
@@ -385,7 +385,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
     std::shared_ptr<Core::LinAlg::SparseMatrix> ksmsm, ksmn, knsm;
 
     // some temporary std::shared_ptrs
-    std::shared_ptr<Epetra_Map> tempmap;
+    std::shared_ptr<Core::LinAlg::Map> tempmap;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx2;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx3;
@@ -498,7 +498,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
       std::shared_ptr<Core::LinAlg::SparseMatrix> knmadd =
           Core::LinAlg::matrix_multiply(*kns, false, *mhatmatrix_, false, false, false, true);
       knmmod->add(*knmadd, false, 1.0, 1.0);
-      knmmod->complete(knm->domain_map(), knm->row_map());
+      knmmod->complete(knm->domain_map_not_epetra(), knm->row_map());
     }
 
     // kmn: add T(mbar)*ksn
@@ -508,7 +508,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmnadd =
         Core::LinAlg::matrix_multiply(*mhatmatrix_, true, *ksn, false, false, false, true);
     kmnmod->add(*kmnadd, false, 1.0, 1.0);
-    kmnmod->complete(kmn->domain_map(), kmn->row_map());
+    kmnmod->complete(kmn->domain_map_not_epetra(), kmn->row_map());
 
     // kmm: add T(mbar)*ksm
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmmmod =
@@ -529,7 +529,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
           Core::LinAlg::matrix_multiply(*mhatmatrix_, true, *kmmtemp, false, false, false, true);
       kmmmod->add(*kmmadd3, false, 1.0, 1.0);
     }
-    kmmmod->complete(kmm->domain_map(), kmm->row_map());
+    kmmmod->complete(kmm->domain_map_not_epetra(), kmm->row_map());
 
     // some modifications for kns, kms, (,ksn) ksm, kss if slave displacement increment is not
     // condensed
@@ -545,7 +545,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
       std::shared_ptr<Core::LinAlg::SparseMatrix> kmsadd =
           Core::LinAlg::matrix_multiply(*mhatmatrix_, true, *kss, false, false, false, true);
       kmsmod->add(*kmsadd, false, 1.0, 1.0);
-      kmsmod->complete(kms->domain_map(), kms->row_map());
+      kmsmod->complete(kms->domain_map_not_epetra(), kms->row_map());
     }
 
     // (ksn: do nothing as block is supposed to remain zero)
@@ -556,7 +556,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
     {
       ksmmod = std::make_shared<Core::LinAlg::SparseMatrix>(*gsdofrowmap_, 100);
       ksmmod->add(*mmatrix_, false, -1.0, 1.0);  //<---- causes problems in parallel
-      ksmmod->complete(ksm->domain_map(), ksm->row_map());
+      ksmmod->complete(ksm->domain_map_not_epetra(), ksm->row_map());
     }
 
     // kss: add dmatrix
@@ -565,7 +565,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
     {
       kssmod = std::make_shared<Core::LinAlg::SparseMatrix>(*gsdofrowmap_, 100);
       kssmod->add(*dmatrix_, false, 1.0, 1.0);  //<---- causes problems in parallel
-      kssmod->complete(kss->domain_map(), kss->row_map());
+      kssmod->complete(kss->domain_map_not_epetra(), kss->row_map());
     }
 
     // fn: subtract kns*inv(D)*g
@@ -766,7 +766,7 @@ void CONTACT::MtLagrangeStrategy::build_saddle_point_system(
       std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(kdd);
 
   // initialize merged system (matrix, rhs, sol)
-  std::shared_ptr<Epetra_Map> mergedmap =
+  std::shared_ptr<Core::LinAlg::Map> mergedmap =
       Core::LinAlg::merge_map(problem_dofs(), glmdofrowmap_, false);
   std::shared_ptr<Core::LinAlg::Vector<double>> mergedrhs = Core::LinAlg::create_vector(*mergedmap);
   std::shared_ptr<Core::LinAlg::Vector<double>> mergedsol = Core::LinAlg::create_vector(*mergedmap);
@@ -856,7 +856,7 @@ void CONTACT::MtLagrangeStrategy::update_displacements_and_l_mincrements(
   // extract results for displacement and LM increments
   //**********************************************************************
   Core::LinAlg::Vector<double> sollm(*glmdofrowmap_);
-  std::shared_ptr<Epetra_Map> mergedmap =
+  std::shared_ptr<Core::LinAlg::Map> mergedmap =
       Core::LinAlg::merge_map(problem_dofs(), glmdofrowmap_, false);
   Core::LinAlg::MapExtractor mapext(*mergedmap, problem_dofs(), glmdofrowmap_);
   mapext.extract_cond_vector(*blocksol, *sold);

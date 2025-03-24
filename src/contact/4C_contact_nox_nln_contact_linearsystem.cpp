@@ -119,12 +119,16 @@ Core::LinAlg::SolverParams NOX::Nln::CONTACT::LinearSystem::set_solver_options(
       // (1) slaveDofMap
       // (2) innerDofMap
       // (3) activeDofMap
-      std::vector<Teuchos::RCP<Epetra_Map>> prec_maps(4, Teuchos::null);
+      std::vector<Teuchos::RCP<Core::LinAlg::Map>> prec_maps(4, Teuchos::null);
       i_constr_prec_.begin()->second->fill_maps_for_preconditioner(prec_maps);
-      mueluParams.set<Teuchos::RCP<Epetra_Map>>("contact masterDofMap", prec_maps[0]);
-      mueluParams.set<Teuchos::RCP<Epetra_Map>>("contact slaveDofMap", prec_maps[1]);
-      mueluParams.set<Teuchos::RCP<Epetra_Map>>("contact innerDofMap", prec_maps[2]);
-      mueluParams.set<Teuchos::RCP<Epetra_Map>>("contact activeDofMap", prec_maps[3]);
+      mueluParams.set<Teuchos::RCP<Epetra_Map>>(
+          "contact masterDofMap", Teuchos::rcpFromRef(prec_maps[0]->get_epetra_map()));
+      mueluParams.set<Teuchos::RCP<Epetra_Map>>(
+          "contact slaveDofMap", Teuchos::rcpFromRef(prec_maps[1]->get_epetra_map()));
+      mueluParams.set<Teuchos::RCP<Epetra_Map>>(
+          "contact innerDofMap", Teuchos::rcpFromRef(prec_maps[2]->get_epetra_map()));
+      mueluParams.set<Teuchos::RCP<Epetra_Map>>(
+          "contact activeDofMap", Teuchos::rcpFromRef(prec_maps[3]->get_epetra_map()));
       // contact or contact/meshtying
       if (i_constr_prec_.begin()->first == NOX::Nln::sol_contact)
         mueluParams.set<std::string>("Core::ProblemType", "contact");
@@ -389,7 +393,8 @@ void NOX::Nln::CONTACT::LinearSystem::LinearSubProblem::extract_active_blocks(
       p_rhs_ = Teuchos::rcp(
           Core::LinAlg::extract_my_vector(rhs, active_sparse_mat->range_map()).release());
       p_lhs_ = Teuchos::rcp(
-          Core::LinAlg::extract_my_vector(lhs, active_sparse_mat->domain_map()).release());
+          Core::LinAlg::extract_my_vector(lhs, active_sparse_mat->domain_map_not_epetra())
+              .release());
 
       break;
     }

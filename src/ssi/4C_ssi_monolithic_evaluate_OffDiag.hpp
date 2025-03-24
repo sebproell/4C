@@ -44,7 +44,7 @@ namespace SSI
    public:
     explicit ScatraStructureOffDiagCoupling(
         std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_structure,
-        std::shared_ptr<const Epetra_Map> full_map_structure,
+        std::shared_ptr<const Core::LinAlg::Map> full_map_structure,
         std::shared_ptr<const SSI::Utils::SSIMeshTying> ssi_structure_meshtying,
         std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_s2i,
         std::shared_ptr<ScaTra::ScaTraTimIntImpl> scatra,
@@ -88,7 +88,10 @@ namespace SSI
         std::shared_ptr<Core::LinAlg::SparseOperator> mastermatrix);
 
     //! map extractor associated with all degrees of freedom inside structural field
-    std::shared_ptr<const Epetra_Map> full_map_structure() const { return full_map_structure_; }
+    std::shared_ptr<const Core::LinAlg::Map> full_map_structure() const
+    {
+      return full_map_structure_;
+    }
 
     //! scatra discretization
     std::shared_ptr<ScaTra::ScaTraTimIntImpl> scatra_field() const { return scatra_; }
@@ -98,7 +101,7 @@ namespace SSI
     std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_structure_;
 
     //! map extractor associated with all degrees of freedom inside structural field
-    std::shared_ptr<const Epetra_Map> full_map_structure_;
+    std::shared_ptr<const Core::LinAlg::Map> full_map_structure_;
 
     //! meshtying strategy for scatra-scatra interface coupling on scatra discretization
     std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_s2i_;
@@ -118,7 +121,7 @@ namespace SSI
    public:
     explicit ScatraManifoldStructureOffDiagCoupling(
         std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_structure,
-        std::shared_ptr<const Epetra_Map> full_map_structure,
+        std::shared_ptr<const Core::LinAlg::Map> full_map_structure,
         std::shared_ptr<const SSI::Utils::SSIMeshTying> ssi_structure_meshtying,
         std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_s2i,
         std::shared_ptr<ScaTra::ScaTraTimIntImpl> scatra,
@@ -144,8 +147,8 @@ namespace SSI
    public:
     explicit ScatraStructureOffDiagCouplingSSTI(
         std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_structure,
-        std::shared_ptr<const Epetra_Map> full_map_scatra,
-        std::shared_ptr<const Epetra_Map> full_map_structure,
+        std::shared_ptr<const Core::LinAlg::Map> full_map_scatra,
+        std::shared_ptr<const Core::LinAlg::Map> full_map_structure,
         std::shared_ptr<const SSI::Utils::SSIMeshTying> ssi_structure_meshtying,
         std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_s2i,
         std::shared_ptr<ScaTra::ScaTraTimIntImpl> scatra,
@@ -156,7 +159,7 @@ namespace SSI
 
    private:
     //! map extractor associated with all degrees of freedom inside scatra field
-    std::shared_ptr<const Epetra_Map> full_map_scatra_;
+    std::shared_ptr<const Core::LinAlg::Map> full_map_scatra_;
   };
 }  // namespace SSI
 FOUR_C_NAMESPACE_CLOSE

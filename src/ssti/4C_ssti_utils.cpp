@@ -9,6 +9,7 @@
 
 #include "4C_adapter_str_ssiwrapper.hpp"
 #include "4C_global_data.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_material_parameter_base.hpp"
@@ -17,8 +18,6 @@
 #include "4C_scatra_timint_meshtying_strategy_s2i.hpp"
 #include "4C_ssi_utils.hpp"
 #include "4C_ssti_monolithic.hpp"
-
-#include <Epetra_Map.h>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -33,16 +32,16 @@ SSTI::SSTIMaps::SSTIMaps(const SSTI::SSTIMono& ssti_mono_algorithm)
       maps_subproblems_(nullptr)
 {
   // setup maps containing dofs of subproblems
-  std::vector<std::shared_ptr<const Epetra_Map>> partial_maps(3, nullptr);
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> partial_maps(3, nullptr);
   partial_maps[ssti_mono_algorithm.get_problem_position(Subproblem::scalar_transport)] =
-      std::make_shared<Epetra_Map>(*ssti_mono_algorithm.scatra_field()->dof_row_map());
+      std::make_shared<Core::LinAlg::Map>(*ssti_mono_algorithm.scatra_field()->dof_row_map());
   partial_maps[ssti_mono_algorithm.get_problem_position(Subproblem::structure)] =
-      std::make_shared<Epetra_Map>(*ssti_mono_algorithm.structure_field()->dof_row_map());
+      std::make_shared<Core::LinAlg::Map>(*ssti_mono_algorithm.structure_field()->dof_row_map());
   partial_maps[ssti_mono_algorithm.get_problem_position(Subproblem::thermo)] =
-      std::make_shared<Epetra_Map>(*ssti_mono_algorithm.thermo_field()->dof_row_map());
-  std::shared_ptr<const Epetra_Map> temp_map =
+      std::make_shared<Core::LinAlg::Map>(*ssti_mono_algorithm.thermo_field()->dof_row_map());
+  std::shared_ptr<const Core::LinAlg::Map> temp_map =
       Core::LinAlg::merge_map(partial_maps[0], partial_maps[1], false);
-  std::shared_ptr<const Epetra_Map> merged_map =
+  std::shared_ptr<const Core::LinAlg::Map> merged_map =
       Core::LinAlg::merge_map(temp_map, partial_maps[2], false);
   // initialize global map extractor
   maps_subproblems_ = std::make_shared<Core::LinAlg::MultiMapExtractor>(*merged_map, partial_maps);
@@ -52,7 +51,7 @@ SSTI::SSTIMaps::SSTIMaps(const SSTI::SSTIMono& ssti_mono_algorithm)
   // initialize map extractors associated with blocks of subproblems
   block_map_structure_ = std::make_shared<Core::LinAlg::MultiMapExtractor>(
       *ssti_mono_algorithm.structure_field()->dof_row_map(),
-      std::vector<std::shared_ptr<const Epetra_Map>>(
+      std::vector<std::shared_ptr<const Core::LinAlg::Map>>(
           1, ssti_mono_algorithm.structure_field()->dof_row_map()));
   switch (ssti_mono_algorithm.scatra_field()->matrix_type())
   {
@@ -60,11 +59,11 @@ SSTI::SSTIMaps::SSTIMaps(const SSTI::SSTIMono& ssti_mono_algorithm)
     {
       block_map_scatra_ = std::make_shared<Core::LinAlg::MultiMapExtractor>(
           *ssti_mono_algorithm.scatra_field()->dof_row_map(),
-          std::vector<std::shared_ptr<const Epetra_Map>>(
+          std::vector<std::shared_ptr<const Core::LinAlg::Map>>(
               1, ssti_mono_algorithm.scatra_field()->dof_row_map()));
       block_map_thermo_ = std::make_shared<Core::LinAlg::MultiMapExtractor>(
           *ssti_mono_algorithm.thermo_field()->dof_row_map(),
-          std::vector<std::shared_ptr<const Epetra_Map>>(
+          std::vector<std::shared_ptr<const Core::LinAlg::Map>>(
               1, ssti_mono_algorithm.thermo_field()->dof_row_map()));
       break;
     }
@@ -88,7 +87,7 @@ SSTI::SSTIMaps::SSTIMaps(const SSTI::SSTIMono& ssti_mono_algorithm)
 
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> SSTI::SSTIMaps::map_interface(
+std::shared_ptr<Core::LinAlg::Map> SSTI::SSTIMaps::map_interface(
     std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtyingstrategy) const
 {
   auto mergedInterfaceMap = Core::LinAlg::MultiMapExtractor::merge_maps(
@@ -107,19 +106,20 @@ std::shared_ptr<Core::LinAlg::MultiMapExtractor> SSTI::SSTIMaps::maps_interface_
 {
   std::shared_ptr<Core::LinAlg::MultiMapExtractor> blockmapinterface(nullptr);
 
-  std::shared_ptr<Epetra_Map> interfacemap = map_interface(meshtyingstrategy);
+  std::shared_ptr<Core::LinAlg::Map> interfacemap = map_interface(meshtyingstrategy);
 
   switch (scatramatrixtype)
   {
     case Core::LinAlg::MatrixType::sparse:
     {
       blockmapinterface = std::make_shared<Core::LinAlg::MultiMapExtractor>(
-          *interfacemap, std::vector<std::shared_ptr<const Epetra_Map>>(1, interfacemap));
+          *interfacemap, std::vector<std::shared_ptr<const Core::LinAlg::Map>>(1, interfacemap));
       break;
     }
     case Core::LinAlg::MatrixType::block_condition:
     {
-      std::vector<std::shared_ptr<const Epetra_Map>> partial_blockmapinterface(nummaps, nullptr);
+      std::vector<std::shared_ptr<const Core::LinAlg::Map>> partial_blockmapinterface(
+          nummaps, nullptr);
       for (int iblockmap = 0; iblockmap < static_cast<int>(nummaps); ++iblockmap)
       {
         partial_blockmapinterface[iblockmap] = Core::LinAlg::MultiMapExtractor::merge_maps(
@@ -156,7 +156,7 @@ std::shared_ptr<Core::LinAlg::MultiMapExtractor> SSTI::SSTIMaps::maps_interface_
     {
       const auto slavedofmap = meshtyingstrategy.coupling_adapter()->slave_dof_map();
       blockmapinterfaceslave = std::make_shared<Core::LinAlg::MultiMapExtractor>(
-          *slavedofmap, std::vector<std::shared_ptr<const Epetra_Map>>(1, slavedofmap));
+          *slavedofmap, std::vector<std::shared_ptr<const Core::LinAlg::Map>>(1, slavedofmap));
       break;
     }
     case Core::LinAlg::MatrixType::block_condition:
@@ -200,7 +200,7 @@ SSTI::SSTIMapsMono::SSTIMapsMono(const SSTI::SSTIMono& ssti_mono_algorithm)
           ssti_mono_algorithm.get_block_positions(Subproblem::structure);
       auto block_positions_thermo = ssti_mono_algorithm.get_block_positions(Subproblem::thermo);
 
-      std::vector<std::shared_ptr<const Epetra_Map>> maps_systemmatrix(
+      std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps_systemmatrix(
           block_positions_scatra.size() + block_positions_structure.size() +
           block_positions_thermo.size());
       for (int imap = 0; imap < static_cast<int>(block_positions_scatra.size()); ++imap)
@@ -455,7 +455,7 @@ std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> SSTI::SSTIMatrices::setup_b
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix> SSTI::SSTIMatrices::setup_sparse_matrix(
-    const Epetra_Map& row_map)
+    const Core::LinAlg::Map& row_map)
 {
   const int expected_entries_per_row = 27;
   const bool explicitdirichlet = false;

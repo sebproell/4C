@@ -98,7 +98,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase::recompute_coupled_d
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const std::shared_ptr<const Epetra_Map>&
+const std::shared_ptr<const Core::LinAlg::Map>&
 PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase::full_map() const
 {
   return globalex_->full_map();

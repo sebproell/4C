@@ -236,7 +236,7 @@ void ScaTra::LevelSetAlgorithm::evaluate_error_compared_to_analytical_sol()
         eleparams.set<Inpar::ScaTra::CalcErrorLevelSet>("calcerrorflag", calcerr);
 
         // get initial field
-        const Epetra_Map* dofrowmap = discret_->dof_row_map();
+        const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
         std::shared_ptr<Core::LinAlg::Vector<double>> phiref =
             std::make_shared<Core::LinAlg::Vector<double>>(*dofrowmap, true);
 
@@ -429,7 +429,7 @@ void ScaTra::LevelSetAlgorithm::apply_contact_point_boundary_condition()
   }  // end loop conditions
 
   // replace values in velocity vector
-  const Epetra_Map* noderowmap = discret_->node_row_map();
+  const Core::LinAlg::Map* noderowmap = discret_->node_row_map();
   for (std::map<int, std::vector<double>>::iterator iter = nodal_correction.begin();
       iter != nodal_correction.end(); iter++)
   {
@@ -1001,7 +1001,7 @@ void ScaTra::LevelSetAlgorithm::redistribute(Core::LinAlg::Graph& nodegraph)
   // get a vector layout from the discretization to construct matching
   // vectors and matrices: local <-> global dof numbering
   // -------------------------------------------------------------------
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // initialize standard (stabilized) system matrix (and save its graph!)
   // in standard case, but do not save the graph if fine-scale subgrid

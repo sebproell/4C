@@ -998,7 +998,7 @@ void PARTICLEENGINE::ParticleEngine::setup_bin_ghosting()
 
   // copy bin gids to a vector and create bincolmap
   std::vector<int> bincolmapvec(bins.begin(), bins.end());
-  bincolmap_ = std::make_shared<Epetra_Map>(-1, static_cast<int>(bincolmapvec.size()),
+  bincolmap_ = std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(bincolmapvec.size()),
       bincolmapvec.data(), 0, Core::Communication::as_epetra_comm(comm_));
 
   if (bincolmap_->NumGlobalElements() == 1 && Core::Communication::num_mpi_ranks(comm_) > 1)

@@ -306,7 +306,7 @@ Teuchos::RCP<std::vector<double>> NOX::Nln::CONSTRAINT::Group::get_solution_upda
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-Teuchos::RCP<const Epetra_Map> NOX::Nln::CONSTRAINT::Group::get_current_active_set_map(
+Teuchos::RCP<const Core::LinAlg::Map> NOX::Nln::CONSTRAINT::Group::get_current_active_set_map(
     const enum NOX::Nln::StatusTest::QuantityType& qt) const
 {
   enum NOX::Nln::SolutionType soltype = NOX::Nln::Aux::convert_quantity_type_to_solution_type(qt);
@@ -316,7 +316,7 @@ Teuchos::RCP<const Epetra_Map> NOX::Nln::CONSTRAINT::Group::get_current_active_s
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-Teuchos::RCP<const Epetra_Map> NOX::Nln::CONSTRAINT::Group::get_old_active_set_map(
+Teuchos::RCP<const Core::LinAlg::Map> NOX::Nln::CONSTRAINT::Group::get_old_active_set_map(
     const enum NOX::Nln::StatusTest::QuantityType& qtype) const
 {
   enum NOX::Nln::SolutionType soltype =

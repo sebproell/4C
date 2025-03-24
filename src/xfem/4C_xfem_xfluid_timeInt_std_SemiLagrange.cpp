@@ -939,7 +939,7 @@ void XFEM::XfluidSemiLagrange::new_iteration_nodal_data(
 
   for (size_t index = 0; index < newRowVectors.size(); index++)
   {
-    const Epetra_Map* newdofcolmap = discret_->dof_col_map();
+    const Core::LinAlg::Map* newdofcolmap = discret_->dof_col_map();
 
     std::shared_ptr<Core::LinAlg::Vector<double>> tmpColVector =
         std::make_shared<Core::LinAlg::Vector<double>>(*newdofcolmap, true);

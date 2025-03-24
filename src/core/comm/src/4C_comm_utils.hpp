@@ -13,7 +13,7 @@
 
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_linalg_multi_vector.hpp"
-#include "4C_utils_exceptions.hpp"
+#include "4C_linalg_sparsematrix.hpp"
 
 #include <Teuchos_DefaultMpiComm.hpp>
 

@@ -376,8 +376,8 @@ void Mortar::BinaryTreeNode::print_type()
  |  ctor BinaryTree(public)                                   popp 10/08|
  *----------------------------------------------------------------------*/
 Mortar::BinaryTree::BinaryTree(Core::FE::Discretization& discret,
-    std::shared_ptr<Epetra_Map> selements, std::shared_ptr<Epetra_Map> melements, int dim,
-    double eps, Inpar::Mortar::BinaryTreeUpdateType updatetype, bool useauxpos)
+    std::shared_ptr<Core::LinAlg::Map> selements, std::shared_ptr<Core::LinAlg::Map> melements,
+    int dim, double eps, Inpar::Mortar::BinaryTreeUpdateType updatetype, bool useauxpos)
     : Mortar::BaseBinaryTree(discret, dim, eps),
       selements_(selements),
       melements_(melements),

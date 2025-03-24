@@ -11,8 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_fem_condition.hpp"
-
-#include <Epetra_Map.h>
+#include "4C_linalg_map.hpp"
 
 #include <memory>
 #include <set>
@@ -156,7 +155,7 @@ namespace Core::Conditions
     void add_selector(std::shared_ptr<ConditionSelector> s) { selectors_.push_back(s); }
 
     /// Do the setup
-    void setup_extractor(const Core::FE::Discretization& dis, const Epetra_Map& fullmap,
+    void setup_extractor(const Core::FE::Discretization& dis, const Core::LinAlg::Map& fullmap,
         Core::LinAlg::MultiMapExtractor& extractor);
 
     /// Activate overlapping

@@ -323,7 +323,7 @@ void Solid::ModelEvaluator::Cardiovascular0D::reset_step_state()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map>
+std::shared_ptr<const Core::LinAlg::Map>
 Solid::ModelEvaluator::Cardiovascular0D::get_block_dof_row_map_ptr() const
 {
   check_init_setup();

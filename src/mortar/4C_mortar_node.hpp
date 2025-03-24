@@ -600,7 +600,7 @@ namespace Mortar
      \brief Find closest node from given node set and return pointer
 
      This method will compute the distance of the active node to all
-     nodes of the given Epetra_Map on the given Core::FE::Discretization
+     nodes of the given Core::LinAlg::Map on the given Core::FE::Discretization
 
      \param intdis (in):         Master Node to project
      \param nodesearchmap (in):  Slave Celement to project on
@@ -608,7 +608,7 @@ namespace Mortar
 
      */
     virtual Mortar::Node* find_closest_node(const std::shared_ptr<Core::FE::Discretization> intdis,
-        const std::shared_ptr<Epetra_Map> nodesearchmap, double& mindist);
+        const std::shared_ptr<Core::LinAlg::Map> nodesearchmap, double& mindist);
 
     /*!
      \brief Check if mesh re-initialization for this node was feasible

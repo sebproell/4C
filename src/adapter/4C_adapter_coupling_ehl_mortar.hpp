@@ -14,10 +14,9 @@
 #include "4C_config.hpp"
 
 #include "4C_adapter_coupling_nonlin_mortar.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_exceptions.hpp"
-
-#include <Epetra_Map.h>
 
 #include <memory>
 
@@ -152,7 +151,7 @@ namespace Adapter
     /// surfrace gradient operator
     virtual std::shared_ptr<Core::LinAlg::SparseMatrix> surf_grad_matrix() { return SurfGrad_; }
     /// slave+master dof map
-    virtual std::shared_ptr<const Epetra_Map> s_mdof_map() { return smdofrowmap_; }
+    virtual std::shared_ptr<const Core::LinAlg::Map> s_mdof_map() { return smdofrowmap_; }
     //@}
 
    private:

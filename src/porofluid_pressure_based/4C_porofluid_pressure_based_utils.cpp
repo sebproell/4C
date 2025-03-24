@@ -214,7 +214,7 @@ std::map<int, std::set<int>> POROFLUIDMULTIPHASE::Utils::extended_ghosting_arter
 
   // to be filled with additional elements to be ghosted
   std::set<int> elecolset;
-  const Epetra_Map* elecolmap = artdis->element_col_map();
+  const Core::LinAlg::Map* elecolmap = artdis->element_col_map();
   for (int lid = 0; lid < elecolmap->NumMyElements(); ++lid)
   {
     int gid = elecolmap->GID(lid);
@@ -223,7 +223,7 @@ std::map<int, std::set<int>> POROFLUIDMULTIPHASE::Utils::extended_ghosting_arter
 
   // to be filled with additional nodes to be ghosted
   std::set<int> nodecolset;
-  const Epetra_Map* nodecolmap = artdis->node_col_map();
+  const Core::LinAlg::Map* nodecolmap = artdis->node_col_map();
   for (int lid = 0; lid < nodecolmap->NumMyElements(); ++lid)
   {
     int gid = nodecolmap->GID(lid);
@@ -256,14 +256,14 @@ std::map<int, std::set<int>> POROFLUIDMULTIPHASE::Utils::extended_ghosting_arter
 
   // extended ghosting for elements
   std::vector<int> coleles(elecolset.begin(), elecolset.end());
-  const Epetra_Map extendedelecolmap(-1, coleles.size(), coleles.data(), 0,
+  const Core::LinAlg::Map extendedelecolmap(-1, coleles.size(), coleles.data(), 0,
       Core::Communication::as_epetra_comm(contdis.get_comm()));
 
   artdis->export_column_elements(extendedelecolmap);
 
   // extended ghosting for nodes
   std::vector<int> colnodes(nodecolset.begin(), nodecolset.end());
-  const Epetra_Map extendednodecolmap(-1, colnodes.size(), colnodes.data(), 0,
+  const Core::LinAlg::Map extendednodecolmap(-1, colnodes.size(), colnodes.data(), 0,
       Core::Communication::as_epetra_comm(contdis.get_comm()));
 
   artdis->export_column_nodes(extendednodecolmap);
@@ -433,7 +433,7 @@ Core::LinAlg::Matrix<3, 2> POROFLUIDMULTIPHASE::Utils::get_aabb(Core::Elements::
  | get nodal positions                                 kremheller 10/19 |
  *----------------------------------------------------------------------*/
 std::map<int, Core::LinAlg::Matrix<3, 1>> POROFLUIDMULTIPHASE::Utils::get_nodal_positions(
-    Core::FE::Discretization& dis, const Epetra_Map* nodemap)
+    Core::FE::Discretization& dis, const Core::LinAlg::Map* nodemap)
 {
   std::map<int, Core::LinAlg::Matrix<3, 1>> positions;
   for (int lid = 0; lid < nodemap->NumMyElements(); ++lid)

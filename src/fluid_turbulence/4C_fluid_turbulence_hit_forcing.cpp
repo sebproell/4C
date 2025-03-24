@@ -1879,7 +1879,7 @@ namespace FLD
       discret_->set_state(1, "forcing", *forcing_);
 
       // for 2nd evaluate
-      const Epetra_Map* intdofrowmap = discret_->dof_row_map(1);
+      const Core::LinAlg::Map* intdofrowmap = discret_->dof_row_map(1);
       Core::LinAlg::SerialDenseVector elevec1, elevec3;
       Core::LinAlg::SerialDenseMatrix elemat1, elemat2;
       Teuchos::ParameterList initParams;
@@ -2022,7 +2022,7 @@ namespace FLD
 
     discret_->set_state("velnp", *velnp_);
 
-    const Epetra_Map* elementrowmap = discret_->element_row_map();
+    const Core::LinAlg::Map* elementrowmap = discret_->element_row_map();
     Core::LinAlg::MultiVector<double> massflvec(*elementrowmap, 1, true);
 
     // optional: elementwise defined div u may be written to standard output file (not implemented

@@ -83,7 +83,7 @@ void Core::DOFSets::TransparentDofSet::transfer_degrees_of_freedom(
     dofrowvec.push_back(*idof);
   }
 
-  dofrowmap_ = std::make_shared<Epetra_Map>(-1, dofrowvec.size(), dofrowvec.data(), 0,
+  dofrowmap_ = std::make_shared<Core::LinAlg::Map>(-1, dofrowvec.size(), dofrowvec.data(), 0,
       Core::Communication::as_epetra_comm(newdis.get_comm()));
 
   // build dofcolvec
@@ -123,7 +123,7 @@ void Core::DOFSets::TransparentDofSet::transfer_degrees_of_freedom(
     dofcolvec.push_back(*idof);
   }
 
-  dofcolmap_ = std::make_shared<Epetra_Map>(-1, dofcolvec.size(), dofcolvec.data(), 0,
+  dofcolmap_ = std::make_shared<Core::LinAlg::Map>(-1, dofcolvec.size(), dofcolvec.data(), 0,
       Core::Communication::as_epetra_comm(newdis.get_comm()));
 }
 
@@ -284,7 +284,7 @@ void Core::DOFSets::TransparentDofSet::parallel_transfer_degrees_of_freedom(
     dofrowvec.push_back(*idof);
   }
 
-  dofrowmap_ = std::make_shared<Epetra_Map>(-1, dofrowvec.size(), dofrowvec.data(), 0,
+  dofrowmap_ = std::make_shared<Core::LinAlg::Map>(-1, dofrowvec.size(), dofrowvec.data(), 0,
       Core::Communication::as_epetra_comm(newdis.get_comm()));
 
   // build dofcolvec
@@ -318,7 +318,7 @@ void Core::DOFSets::TransparentDofSet::parallel_transfer_degrees_of_freedom(
     dofcolvec.push_back(*idof);
   }
 
-  dofcolmap_ = std::make_shared<Epetra_Map>(-1, dofcolvec.size(), dofcolvec.data(), 0,
+  dofcolmap_ = std::make_shared<Core::LinAlg::Map>(-1, dofcolvec.size(), dofcolvec.data(), 0,
       Core::Communication::as_epetra_comm(newdis.get_comm()));
 
 

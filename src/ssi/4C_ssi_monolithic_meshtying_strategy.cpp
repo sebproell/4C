@@ -12,12 +12,11 @@
 #include "4C_coupling_adapter_converter.hpp"
 #include "4C_fem_condition_locsys.hpp"
 #include "4C_linalg_blocksparsematrix.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 #include "4C_scatra_timint_meshtying_strategy_s2i.hpp"
 #include "4C_ssi_monolithic.hpp"
 #include "4C_ssi_utils.hpp"
-
-#include <Epetra_Map.h>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -375,12 +374,12 @@ void SSI::MeshtyingStrategyBase::apply_meshtying_to_structure_xxx(
 
   // assemble derivatives of structure interior dofs w.r.t. scatra dofs
   Coupling::Adapter::MatrixLogicalSplitAndTransform()(structure_xxx_matrix, *map_structure_interior,
-      structure_xxx_matrix.domain_map(), 1.0, nullptr, nullptr, ssi_structure_xxx_matrix, true,
-      true);
+      structure_xxx_matrix.domain_map_not_epetra(), 1.0, nullptr, nullptr, ssi_structure_xxx_matrix,
+      true, true);
   // assemble derivatives of structure master dofs w.r.t. scatra dofs
   Coupling::Adapter::MatrixLogicalSplitAndTransform()(structure_xxx_matrix, *master_dof_map,
-      structure_xxx_matrix.domain_map(), 1.0, nullptr, nullptr, ssi_structure_xxx_matrix, true,
-      true);
+      structure_xxx_matrix.domain_map_not_epetra(), 1.0, nullptr, nullptr, ssi_structure_xxx_matrix,
+      true, true);
 
   for (const auto& meshtying : ssi_structure_meshtying_->mesh_tying_handlers())
   {
@@ -389,8 +388,8 @@ void SSI::MeshtyingStrategyBase::apply_meshtying_to_structure_xxx(
 
     // assemble derivatives of structure slave dofs & interior dofs w.r.t. scatra dofs
     Coupling::Adapter::MatrixLogicalSplitAndTransform()(structure_xxx_matrix, *cond_slave_dof_map,
-        structure_xxx_matrix.domain_map(), 1.0, &(*converter), nullptr, ssi_structure_xxx_matrix,
-        true, true);
+        structure_xxx_matrix.domain_map_not_epetra(), 1.0, &(*converter), nullptr,
+        ssi_structure_xxx_matrix, true, true);
   }
 }
 

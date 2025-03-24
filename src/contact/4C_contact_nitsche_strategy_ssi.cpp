@@ -149,7 +149,7 @@ std::shared_ptr<Epetra_FEVector> CONTACT::NitscheStrategySsi::setup_rhs_block_ve
     case CONTACT::VecBlockType::elch:
     case CONTACT::VecBlockType::scatra:
       return std::make_shared<Epetra_FEVector>(
-          *Global::Problem::instance()->get_dis("scatra")->dof_row_map());
+          Global::Problem::instance()->get_dis("scatra")->dof_row_map()->get_epetra_map());
     default:
       return CONTACT::NitscheStrategy::setup_rhs_block_vec(bt);
   }
@@ -210,18 +210,28 @@ void CONTACT::NitscheStrategySsi::complete_matrix_block_ptr(
     case CONTACT::MatBlockType::displ_elch:
     case CONTACT::MatBlockType::displ_scatra:
       if (dynamic_cast<Epetra_FECrsMatrix&>(*kc->epetra_matrix())
-              .GlobalAssemble(
-                  *Global::Problem::instance()->get_dis("scatra")->dof_row_map(),     // col map
-                  *Global::Problem::instance()->get_dis("structure")->dof_row_map(),  // row map
+              .GlobalAssemble(Global::Problem::instance()
+                                  ->get_dis("scatra")
+                                  ->dof_row_map()
+                                  ->get_epetra_map(),  // col map
+                  Global::Problem::instance()
+                      ->get_dis("structure")
+                      ->dof_row_map()
+                      ->get_epetra_map(),  // row map
                   true, Add))
         FOUR_C_THROW("GlobalAssemble(...) failed");
       break;
     case CONTACT::MatBlockType::elch_displ:
     case CONTACT::MatBlockType::scatra_displ:
       if (dynamic_cast<Epetra_FECrsMatrix&>(*kc->epetra_matrix())
-              .GlobalAssemble(
-                  *Global::Problem::instance()->get_dis("structure")->dof_row_map(),  // col map
-                  *Global::Problem::instance()->get_dis("scatra")->dof_row_map(),     // row map
+              .GlobalAssemble(Global::Problem::instance()
+                                  ->get_dis("structure")
+                                  ->dof_row_map()
+                                  ->get_epetra_map(),  // col map
+                  Global::Problem::instance()
+                      ->get_dis("scatra")
+                      ->dof_row_map()
+                      ->get_epetra_map(),  // row map
                   true, Add))
         FOUR_C_THROW("GlobalAssemble(...) failed");
       break;

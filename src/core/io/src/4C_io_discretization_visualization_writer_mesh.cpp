@@ -103,8 +103,10 @@ namespace Core::IO
         "Expected {} cell offset values, but got {}.", num_row_elements, cell_offsets.size());
 
     // store node row and col maps (needed to check for changed parallel distribution)
-    noderowmap_last_geometry_set_ = std::make_shared<Epetra_Map>(*discretization_->node_row_map());
-    nodecolmap_last_geometry_set_ = std::make_shared<Epetra_Map>(*discretization_->node_col_map());
+    noderowmap_last_geometry_set_ =
+        std::make_shared<Core::LinAlg::Map>(*discretization_->node_row_map());
+    nodecolmap_last_geometry_set_ =
+        std::make_shared<Core::LinAlg::Map>(*discretization_->node_col_map());
   }
 
   /*-----------------------------------------------------------------------------------------------*
@@ -492,7 +494,8 @@ namespace Core::IO
     const int my_proc = Core::Communication::my_mpi_rank(comm);
 
     // Create Vectors to store the ghosting information.
-    Epetra_FEVector ghosting_information(*discretization.element_row_map(), n_proc);
+    Epetra_FEVector ghosting_information(
+        discretization.element_row_map()->get_epetra_map(), n_proc);
 
     // Get elements ghosted by this rank.
     std::vector<int> my_ghost_elements;

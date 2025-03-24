@@ -769,7 +769,7 @@ void Solid::TimIntImpl::setup_krylov_space_projection(Core::Conditions::Conditio
 
   // create the projector
   projector_ = std::make_shared<Core::LinAlg::KrylovProjector>(
-      activemodeids, weighttype, discret_->dof_row_map());
+      activemodeids, weighttype, &discret_->dof_row_map()->get_epetra_map());
 
   // update the projector
   update_krylov_space_projection();
@@ -793,7 +793,7 @@ void Solid::TimIntImpl::update_krylov_space_projection()
   // get number of modes and their ids
   std::vector<int> modeids = projector_->modes();
 
-  Epetra_Map nullspaceMap(*discret_->dof_row_map());
+  Core::LinAlg::Map nullspaceMap(*discret_->dof_row_map());
   std::shared_ptr<Core::LinAlg::MultiVector<double>> nullspace =
       Core::FE::compute_null_space(*discret_, 3, 6, nullspaceMap);
   if (nullspace == nullptr) FOUR_C_THROW("nullspace not successfully computed");
@@ -3066,10 +3066,10 @@ void Solid::TimIntImpl::cmt_linear_solve()
   {
     // TODO: maps for merged meshtying and contact problem !!!
 
-    std::shared_ptr<Epetra_Map> masterDofMap;
-    std::shared_ptr<Epetra_Map> slaveDofMap;
-    std::shared_ptr<Epetra_Map> innerDofMap;
-    std::shared_ptr<Epetra_Map> activeDofMap;
+    std::shared_ptr<Core::LinAlg::Map> masterDofMap;
+    std::shared_ptr<Core::LinAlg::Map> slaveDofMap;
+    std::shared_ptr<Core::LinAlg::Map> innerDofMap;
+    std::shared_ptr<Core::LinAlg::Map> activeDofMap;
     std::shared_ptr<Mortar::StrategyBase> strategy =
         Core::Utils::shared_ptr_from_ref(cmtbridge_->get_strategy());
     strategy->collect_maps_for_preconditioner(masterDofMap, slaveDofMap, innerDofMap, activeDofMap);
@@ -3078,10 +3078,14 @@ void Solid::TimIntImpl::cmt_linear_solve()
     if (contactsolver_->params().isSublist("Belos Parameters"))
     {
       Teuchos::ParameterList& mueluParams = contactsolver_->params().sublist("Belos Parameters");
-      mueluParams.set<Teuchos::RCP<Epetra_Map>>("contact masterDofMap", Teuchos::rcp(masterDofMap));
-      mueluParams.set<Teuchos::RCP<Epetra_Map>>("contact slaveDofMap", Teuchos::rcp(slaveDofMap));
-      mueluParams.set<Teuchos::RCP<Epetra_Map>>("contact innerDofMap", Teuchos::rcp(innerDofMap));
-      mueluParams.set<Teuchos::RCP<Epetra_Map>>("contact activeDofMap", Teuchos::rcp(activeDofMap));
+      mueluParams.set<Teuchos::RCP<Epetra_Map>>(
+          "contact masterDofMap", Teuchos::rcpFromRef(masterDofMap->get_epetra_map()));
+      mueluParams.set<Teuchos::RCP<Epetra_Map>>(
+          "contact slaveDofMap", Teuchos::rcpFromRef(slaveDofMap->get_epetra_map()));
+      mueluParams.set<Teuchos::RCP<Epetra_Map>>(
+          "contact innerDofMap", Teuchos::rcpFromRef(innerDofMap->get_epetra_map()));
+      mueluParams.set<Teuchos::RCP<Epetra_Map>>(
+          "contact activeDofMap", Teuchos::rcpFromRef(activeDofMap->get_epetra_map()));
       std::shared_ptr<CONTACT::AbstractStrategy> costrat =
           std::dynamic_pointer_cast<CONTACT::AbstractStrategy>(strategy);
       if (costrat != nullptr)
@@ -3142,7 +3146,7 @@ void Solid::TimIntImpl::cmt_linear_solve()
               std::dynamic_pointer_cast<Core::LinAlg::BlockSparseMatrixBase>(
                   Core::Utils::shared_ptr_from_ref(*raw_block_mat));
           auto mat11 = block_mat_blocked_operator->matrix(1, 1);
-          const Epetra_Map& dofmap = mat11.domain_map();
+          const Core::LinAlg::Map& dofmap = mat11.domain_map_not_epetra();
 
           // set the nullspace
           std::shared_ptr<Core::LinAlg::MultiVector<double>> nullspace =
@@ -4363,10 +4367,10 @@ int Solid::TimIntImpl::cmt_windk_constr_linear_solve(const double k_ptc)
   // feed solver/preconditioner with additional information about the contact/meshtying problem
   //**********************************************************************
   {
-    std::shared_ptr<Epetra_Map> masterDofMap;
-    std::shared_ptr<Epetra_Map> slaveDofMap;
-    std::shared_ptr<Epetra_Map> innerDofMap;
-    std::shared_ptr<Epetra_Map> activeDofMap;
+    std::shared_ptr<Core::LinAlg::Map> masterDofMap;
+    std::shared_ptr<Core::LinAlg::Map> slaveDofMap;
+    std::shared_ptr<Core::LinAlg::Map> innerDofMap;
+    std::shared_ptr<Core::LinAlg::Map> activeDofMap;
     std::shared_ptr<Mortar::StrategyBase> strategy =
         Core::Utils::shared_ptr_from_ref(cmtbridge_->get_strategy());
     strategy->collect_maps_for_preconditioner(masterDofMap, slaveDofMap, innerDofMap, activeDofMap);
@@ -4378,10 +4382,14 @@ int Solid::TimIntImpl::cmt_windk_constr_linear_solve(const double k_ptc)
       // Teuchos::ParameterList& mueluParams = contactsolver_->Params().sublist("Belos Parameters");
       Teuchos::ParameterList& mueluParams =
           cardvasc0dman_->get_solver()->params().sublist("Belos Parameters");
-      mueluParams.set<Teuchos::RCP<Epetra_Map>>("contact masterDofMap", Teuchos::rcp(masterDofMap));
-      mueluParams.set<Teuchos::RCP<Epetra_Map>>("contact slaveDofMap", Teuchos::rcp(slaveDofMap));
-      mueluParams.set<Teuchos::RCP<Epetra_Map>>("contact innerDofMap", Teuchos::rcp(innerDofMap));
-      mueluParams.set<Teuchos::RCP<Epetra_Map>>("contact activeDofMap", Teuchos::rcp(activeDofMap));
+      mueluParams.set<Teuchos::RCP<Epetra_Map>>(
+          "contact masterDofMap", Teuchos::rcpFromRef(masterDofMap->get_epetra_map()));
+      mueluParams.set<Teuchos::RCP<Epetra_Map>>(
+          "contact slaveDofMap", Teuchos::rcpFromRef(slaveDofMap->get_epetra_map()));
+      mueluParams.set<Teuchos::RCP<Epetra_Map>>(
+          "contact innerDofMap", Teuchos::rcpFromRef(innerDofMap->get_epetra_map()));
+      mueluParams.set<Teuchos::RCP<Epetra_Map>>(
+          "contact activeDofMap", Teuchos::rcpFromRef(activeDofMap->get_epetra_map()));
       std::shared_ptr<CONTACT::AbstractStrategy> costrat =
           std::dynamic_pointer_cast<CONTACT::AbstractStrategy>(strategy);
       if (costrat != nullptr)

@@ -155,7 +155,7 @@ namespace SSI
        * @return pointer to sparse matrix
        */
       static std::shared_ptr<Core::LinAlg::SparseMatrix> setup_sparse_matrix(
-          const Epetra_Map& row_map);
+          const Core::LinAlg::Map& row_map);
 
      private:
       /*!
@@ -188,13 +188,13 @@ namespace SSI
       const Core::LinAlg::MatrixType scatra_matrixtype_;
 
       //! the scalar transport dof row map
-      std::shared_ptr<const Epetra_Map> scatra_dofrowmap_;
+      std::shared_ptr<const Core::LinAlg::Map> scatra_dofrowmap_;
 
       //! the scalar transport manifold dof row map
-      std::shared_ptr<const Epetra_Map> scatramanifold_dofrowmap_;
+      std::shared_ptr<const Core::LinAlg::Map> scatramanifold_dofrowmap_;
 
       //! the structure dof row map
-      std::shared_ptr<const Epetra_Map> structure_dofrowmap_;
+      std::shared_ptr<const Core::LinAlg::Map> structure_dofrowmap_;
 
       //! system matrix
       std::shared_ptr<Core::LinAlg::SparseOperator> system_matrix_;
@@ -302,7 +302,10 @@ namespace SSI
       }
 
       //! all dofs of the SSI algorithm
-      std::shared_ptr<const Epetra_Map> map_system_matrix() const { return map_system_matrix_; }
+      std::shared_ptr<const Core::LinAlg::Map> map_system_matrix() const
+      {
+        return map_system_matrix_;
+      }
 
       /*!
        * @brief global map extractor
@@ -314,13 +317,13 @@ namespace SSI
       }
 
       //! the scalar transport dof row map
-      std::shared_ptr<const Epetra_Map> scatra_dof_row_map() const;
+      std::shared_ptr<const Core::LinAlg::Map> scatra_dof_row_map() const;
 
       //! the scalar transport on manifolds dof row map
-      std::shared_ptr<const Epetra_Map> scatra_manifold_dof_row_map() const;
+      std::shared_ptr<const Core::LinAlg::Map> scatra_manifold_dof_row_map() const;
 
       //! the structure dof row map
-      std::shared_ptr<const Epetra_Map> structure_dof_row_map() const;
+      std::shared_ptr<const Core::LinAlg::Map> structure_dof_row_map() const;
 
      private:
       //! create and check the block maps of all sub problems
@@ -334,7 +337,7 @@ namespace SSI
       std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_system_matrix_;
 
       //! all dofs of the SSI algorithm
-      std::shared_ptr<const Epetra_Map> map_system_matrix_;
+      std::shared_ptr<const Core::LinAlg::Map> map_system_matrix_;
 
       /*!
        * @brief global map extractor
@@ -407,19 +410,22 @@ namespace SSI
 
       //! check if one dof has slave side conditions and Dirichlet conditions
       void check_slave_side_has_dirichlet_conditions(
-          std::shared_ptr<const Epetra_Map> struct_dbc_map) const;
+          std::shared_ptr<const Core::LinAlg::Map> struct_dbc_map) const;
 
       //! all master side dofs
-      std::shared_ptr<const Epetra_Map> full_master_side_map() const
+      std::shared_ptr<const Core::LinAlg::Map> full_master_side_map() const
       {
         return full_master_side_map_;
       }
 
       //! all slave side dofs
-      std::shared_ptr<const Epetra_Map> full_slave_side_map() const { return full_slave_side_map_; }
+      std::shared_ptr<const Core::LinAlg::Map> full_slave_side_map() const
+      {
+        return full_slave_side_map_;
+      }
 
       //! all interior dofs
-      std::shared_ptr<const Epetra_Map> interior_map() const { return interior_map_; }
+      std::shared_ptr<const Core::LinAlg::Map> interior_map() const { return interior_map_; }
 
       //! vector of all mesh tying handlers
       std::vector<std::shared_ptr<SSIMeshTyingHandler>> mesh_tying_handlers() const
@@ -508,13 +514,13 @@ namespace SSI
       const bool do_print_;
 
       //! all master side dofs
-      std::shared_ptr<const Epetra_Map> full_master_side_map_;
+      std::shared_ptr<const Core::LinAlg::Map> full_master_side_map_;
 
       //! all slave side dofs
-      std::shared_ptr<const Epetra_Map> full_slave_side_map_;
+      std::shared_ptr<const Core::LinAlg::Map> full_slave_side_map_;
 
       //! all interior dofs
-      std::shared_ptr<const Epetra_Map> interior_map_;
+      std::shared_ptr<const Core::LinAlg::Map> interior_map_;
 
       //! all mesh tying handlers
       std::vector<std::shared_ptr<SSIMeshTyingHandler>> meshtying_handlers_;

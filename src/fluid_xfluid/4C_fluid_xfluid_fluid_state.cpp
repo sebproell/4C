@@ -25,9 +25,9 @@ FOUR_C_NAMESPACE_OPEN
 FLD::XFluidFluidState::XFluidFluidState(
     const std::shared_ptr<XFEM::ConditionManager>& condition_manager,
     const std::shared_ptr<Cut::CutWizard>& wizard, const std::shared_ptr<XFEM::XFEMDofSet>& dofset,
-    const std::shared_ptr<const Epetra_Map>& xfluiddofrowmap,
-    const std::shared_ptr<const Epetra_Map>& xfluiddofcolmap,
-    const std::shared_ptr<const Epetra_Map>& embfluiddofrowmap)
+    const std::shared_ptr<const Core::LinAlg::Map>& xfluiddofrowmap,
+    const std::shared_ptr<const Core::LinAlg::Map>& xfluiddofcolmap,
+    const std::shared_ptr<const Core::LinAlg::Map>& embfluiddofrowmap)
     : XFluidState(condition_manager, wizard, dofset, xfluiddofrowmap, xfluiddofcolmap),
       xffluiddofrowmap_(Core::LinAlg::merge_map(xfluiddofrowmap, embfluiddofrowmap, false)),
       xffluidsplitter_(std::make_shared<FLD::Utils::XFluidFluidMapExtractor>()),
@@ -100,17 +100,17 @@ void FLD::XFluidFluidState::create_merged_dbc_map_extractor(
     const Core::LinAlg::MapExtractor& embfluiddbcmaps)
 {
   // create merged dbc map from both fluids
-  std::vector<std::shared_ptr<const Epetra_Map>> dbcmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> dbcmaps;
   dbcmaps.push_back(XFluidState::dbcmaps_->cond_map());
   dbcmaps.push_back(embfluiddbcmaps.cond_map());
 
-  std::shared_ptr<const Epetra_Map> xffluiddbcmap =
+  std::shared_ptr<const Core::LinAlg::Map> xffluiddbcmap =
       Core::LinAlg::MultiMapExtractor::merge_maps(dbcmaps);
 
-  std::vector<std::shared_ptr<const Epetra_Map>> othermaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> othermaps;
   othermaps.push_back(XFluidState::dbcmaps_->other_map());
   othermaps.push_back(embfluiddbcmaps.other_map());
-  std::shared_ptr<const Epetra_Map> xffluidothermap =
+  std::shared_ptr<const Core::LinAlg::Map> xffluidothermap =
       Core::LinAlg::MultiMapExtractor::merge_maps(othermaps);
 
   xffluiddbcmaps_ = std::make_shared<Core::LinAlg::MapExtractor>(

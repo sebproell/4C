@@ -95,7 +95,7 @@ Airway::RedAirwayTissue::RedAirwayTissue(MPI_Comm comm, const Teuchos::Parameter
   }
 
 
-  Epetra_Map redundantmap(
+  Core::LinAlg::Map redundantmap(
       tmp.size(), tmp.size(), tmp.data(), 0, Core::Communication::as_epetra_comm(comm));
   couppres_ip_ = std::make_shared<Core::LinAlg::Vector<double>>(redundantmap, true);
   couppres_ip_tilde_ = std::make_shared<Core::LinAlg::Vector<double>>(redundantmap, true);

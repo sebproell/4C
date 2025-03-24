@@ -26,6 +26,13 @@ Core::LinAlg::Graph::Graph(Epetra_DataAccess CV, const Epetra_BlockMap& RowMap,
 {
 }
 
+Core::LinAlg::Graph::Graph(
+    Epetra_DataAccess CV, const Map& RowMap, const int* NumIndicesPerRow, bool StaticProfile)
+    : graph_(std::make_unique<Epetra_CrsGraph>(
+          CV, RowMap.get_epetra_map(), NumIndicesPerRow, StaticProfile))
+{
+}
+
 Core::LinAlg::Graph::Graph(const Graph& other)
     : graph_(std::make_unique<Epetra_CrsGraph>(other.get_epetra_crs_graph()))
 {
@@ -41,6 +48,13 @@ Core::LinAlg::Graph& Core::LinAlg::Graph::operator=(const Graph& other)
 Core::LinAlg::Graph::Graph(
     Epetra_DataAccess CV, const Epetra_BlockMap& RowMap, int NumIndicesPerRow, bool StaticProfile)
     : graph_(std::make_unique<Epetra_CrsGraph>(CV, RowMap, NumIndicesPerRow, StaticProfile))
+{
+}
+
+Core::LinAlg::Graph::Graph(
+    Epetra_DataAccess CV, const Map& RowMap, int NumIndicesPerRow, bool StaticProfile)
+    : graph_(std::make_unique<Epetra_CrsGraph>(
+          CV, RowMap.get_epetra_map(), NumIndicesPerRow, StaticProfile))
 {
 }
 

@@ -177,7 +177,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::init(bool isale, int nds_disp, int nds_vel
   // get a vector layout from the discretization to construct matching
   // vectors and matrices: local <-> global dof numbering
   // -------------------------------------------------------------------
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // -------------------------------------------------------------------
   // create empty system matrix (27 adjacent nodes as 'good' guess)
@@ -670,7 +670,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::collect_runtime_output_data()
     const int dim = Global::Problem::instance()->n_dim();
     const int numdof = discret_->num_dof(0, discret_->l_row_node(0));
     // get the noderowmap
-    const Epetra_Map* noderowmap = discret_->node_row_map();
+    const Core::LinAlg::Map* noderowmap = discret_->node_row_map();
     for (int k = 0; k < numdof; k++)
     {
       Core::LinAlg::MultiVector<double> flux_k(*noderowmap, 3, true);
@@ -699,7 +699,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::collect_runtime_output_data()
     const int num_dim = Global::Problem::instance()->n_dim();
     const int num_poro_dof = discret_->num_dof(0, discret_->l_row_node(0));
 
-    const Epetra_Map* element_row_map = discret_->element_row_map();
+    const Core::LinAlg::Map* element_row_map = discret_->element_row_map();
 
     for (int k = 0; k < num_poro_dof; k++)
     {
@@ -788,7 +788,8 @@ void POROFLUIDMULTIPHASE::TimIntImpl::output_restart()
 /*----------------------------------------------------------------------*
  | output of solution vector to BINIO                       vuong 08/16 |
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> POROFLUIDMULTIPHASE::TimIntImpl::dof_row_map(unsigned nds) const
+std::shared_ptr<const Core::LinAlg::Map> POROFLUIDMULTIPHASE::TimIntImpl::dof_row_map(
+    unsigned nds) const
 {
   return Core::Utils::shared_ptr_from_ref(*discret_->dof_row_map(nds));
 }
@@ -796,7 +797,7 @@ std::shared_ptr<const Epetra_Map> POROFLUIDMULTIPHASE::TimIntImpl::dof_row_map(u
 /*----------------------------------------------------------------------*
  | output of solution vector to BINIO                       vuong 08/16 |
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> POROFLUIDMULTIPHASE::TimIntImpl::artery_dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> POROFLUIDMULTIPHASE::TimIntImpl::artery_dof_row_map() const
 {
   return strategy_->artery_dof_row_map();
 }
@@ -992,7 +993,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::evaluate_valid_volume_frac_press_and_spec(
  *------------------------------------------------------------------------------*/
 void POROFLUIDMULTIPHASE::TimIntImpl::apply_additional_dbc_for_vol_frac_press()
 {
-  const Epetra_Map* elecolmap = discret_->element_col_map();
+  const Core::LinAlg::Map* elecolmap = discret_->element_col_map();
   std::vector<int> mydirichdofs(0);
 
   // we identify the volume fraction pressure dofs which do not have a physical meaning and set
@@ -1049,16 +1050,18 @@ void POROFLUIDMULTIPHASE::TimIntImpl::apply_additional_dbc_for_vol_frac_press()
 
   // build map
   int nummydirichvals = mydirichdofs.size();
-  std::shared_ptr<Epetra_Map> dirichmap = std::make_shared<Epetra_Map>(-1, nummydirichvals,
-      mydirichdofs.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> dirichmap =
+      std::make_shared<Core::LinAlg::Map>(-1, nummydirichvals, mydirichdofs.data(), 0,
+          Core::Communication::as_epetra_comm(discret_->get_comm()));
 
   // build vector of maps
-  std::vector<std::shared_ptr<const Epetra_Map>> condmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> condmaps;
   condmaps.push_back(dirichmap);
   condmaps.push_back(dbcmaps_->cond_map());
 
   // combined map
-  std::shared_ptr<Epetra_Map> condmerged = Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
+  std::shared_ptr<Core::LinAlg::Map> condmerged =
+      Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
   *dbcmaps_with_volfracpress_ = Core::LinAlg::MapExtractor(*(discret_->dof_row_map()), condmerged);
 
   return;
@@ -1108,15 +1111,15 @@ void POROFLUIDMULTIPHASE::TimIntImpl::apply_starting_dbc()
   }
 
   // build combined DBC map
-  std::shared_ptr<Epetra_Map> additional_map =
-      std::make_shared<Epetra_Map>(-1, dirichlet_dofs.size(), dirichlet_dofs.data(), 0,
+  std::shared_ptr<Core::LinAlg::Map> additional_map =
+      std::make_shared<Core::LinAlg::Map>(-1, dirichlet_dofs.size(), dirichlet_dofs.data(), 0,
           Core::Communication::as_epetra_comm(discret_->get_comm()));
 
-  std::vector<std::shared_ptr<const Epetra_Map>> condition_maps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> condition_maps;
   condition_maps.emplace_back(additional_map);
   condition_maps.push_back(dbcmaps_with_volfracpress_->cond_map());
 
-  std::shared_ptr<Epetra_Map> combined_map =
+  std::shared_ptr<Core::LinAlg::Map> combined_map =
       Core::LinAlg::MultiMapExtractor::merge_maps(condition_maps);
   *dbcmaps_starting_condition_ =
       Core::LinAlg::MapExtractor(*(discret_->dof_row_map()), combined_map);
@@ -1977,7 +1980,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::set_velocity_field(
   if (nds_vel_ >= discret_->num_dof_sets())
     FOUR_C_THROW("Too few dofsets on poro fluid discretization!");
 
-  if (not vel->get_block_map().SameAs(*discret_->dof_row_map(nds_vel_)))
+  if (not vel->get_block_map().SameAs(discret_->dof_row_map(nds_vel_)->get_epetra_map()))
     FOUR_C_THROW(
         "Map of given velocity and associated dof row map in poro fluid discretization"
         " do not match!");
@@ -2017,7 +2020,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::set_initial_field(
     }
     case Inpar::POROFLUIDMULTIPHASE::initfield_field_by_function:
     {
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
       // loop all nodes on the processor
       for (int lnodeid = 0; lnodeid < discret_->num_my_row_nodes(); lnodeid++)
@@ -2249,7 +2252,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::fd_check()
     phinp_->update(1., phinp_original, 0.);
 
     // impose perturbation
-    if (phinp_->get_block_map().MyGID(colgid))
+    if (phinp_->get_map().MyGID(colgid))
       if (phinp_->sum_into_global_value(colgid, 0, fdcheckeps_))
         FOUR_C_THROW(
             "Perturbation could not be imposed on state vector for finite difference check!");

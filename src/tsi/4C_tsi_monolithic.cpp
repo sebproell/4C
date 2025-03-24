@@ -1016,7 +1016,7 @@ void TSI::Monolithic::extract_field_vectors(std::shared_ptr<Core::LinAlg::Vector
 /*----------------------------------------------------------------------*
  | full monolithic dof row map                               dano 05/12 |
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> TSI::Monolithic::dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> TSI::Monolithic::dof_row_map() const
 {
   return extractor()->full_map();
 }  // dof_row_map()
@@ -1070,7 +1070,7 @@ void TSI::Monolithic::setup_system()
 void TSI::Monolithic::set_dof_row_maps()
 {
   // create combined map
-  std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
 
   // use its own dof_row_map, that is the 0th map of the discretization
   vecSpaces.push_back(structure_field()->dof_row_map(0));
@@ -1079,7 +1079,8 @@ void TSI::Monolithic::set_dof_row_maps()
   if (vecSpaces[0]->NumGlobalElements() == 0) FOUR_C_THROW("No structure equation. Panic.");
   if (vecSpaces[1]->NumGlobalElements() == 0) FOUR_C_THROW("No temperature equation. Panic.");
 
-  std::shared_ptr<Epetra_Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(vecSpaces);
+  std::shared_ptr<Core::LinAlg::Map> fullmap =
+      Core::LinAlg::MultiMapExtractor::merge_maps(vecSpaces);
 
   // full TSI-blockmap
   extractor()->setup(*fullmap, vecSpaces);
@@ -2131,13 +2132,13 @@ void TSI::Monolithic::apply_thermo_coupl_matrix_conv_bc(
 /*----------------------------------------------------------------------*
  | map containing the dofs with Dirichlet BC                 dano 03/11 |
  *----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> TSI::Monolithic::combined_dbc_map()
+std::shared_ptr<Core::LinAlg::Map> TSI::Monolithic::combined_dbc_map()
 {
-  const std::shared_ptr<const Epetra_Map> scondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> scondmap =
       structure_field()->get_dbc_map_extractor()->cond_map();
-  const std::shared_ptr<const Epetra_Map> tcondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> tcondmap =
       thermo_field()->get_dbc_map_extractor()->cond_map();
-  std::shared_ptr<Epetra_Map> condmap = Core::LinAlg::merge_map(scondmap, tcondmap, false);
+  std::shared_ptr<Core::LinAlg::Map> condmap = Core::LinAlg::merge_map(scondmap, tcondmap, false);
   return condmap;
 
 }  // combined_dbc_map()
@@ -2558,7 +2559,7 @@ void TSI::Monolithic::calculate_necking_tsi_results()
   }  // loop over all STRUCTURAL DBC conditions
 
   // map containing all z-displacement DOFs which have a DBC
-  Epetra_Map newdofmap(-1, (int)sdata.size(), sdata.data(), 0,
+  Core::LinAlg::Map newdofmap(-1, (int)sdata.size(), sdata.data(), 0,
       Core::Communication::as_epetra_comm(structure_field()->discretization()->get_comm()));
 
   //---------------------------------------------------------------------------

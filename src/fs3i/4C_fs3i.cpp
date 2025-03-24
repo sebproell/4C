@@ -82,14 +82,14 @@ void FS3I::FS3IBase::check_interface_dirichlet_bc()
   std::shared_ptr<Core::FE::Discretization> slavedis =
       scatravec_[1]->scatra_field()->discretization();
 
-  std::shared_ptr<const Epetra_Map> mastermap = scatracoup_->master_dof_map();
-  std::shared_ptr<const Epetra_Map> permmastermap = scatracoup_->perm_master_dof_map();
-  std::shared_ptr<const Epetra_Map> slavemap = scatracoup_->slave_dof_map();
-  std::shared_ptr<const Epetra_Map> permslavemap = scatracoup_->perm_slave_dof_map();
+  std::shared_ptr<const Core::LinAlg::Map> mastermap = scatracoup_->master_dof_map();
+  std::shared_ptr<const Core::LinAlg::Map> permmastermap = scatracoup_->perm_master_dof_map();
+  std::shared_ptr<const Core::LinAlg::Map> slavemap = scatracoup_->slave_dof_map();
+  std::shared_ptr<const Core::LinAlg::Map> permslavemap = scatracoup_->perm_slave_dof_map();
 
   const std::shared_ptr<const Core::LinAlg::MapExtractor> masterdirichmapex =
       scatravec_[0]->scatra_field()->dirich_maps();
-  const std::shared_ptr<const Epetra_Map> masterdirichmap = masterdirichmapex->cond_map();
+  const std::shared_ptr<const Core::LinAlg::Map> masterdirichmap = masterdirichmapex->cond_map();
 
   // filter out master dirichlet dofs associated with the interface
   Core::LinAlg::Vector<double> masterifdirich(*mastermap, true);
@@ -106,7 +106,7 @@ void FS3I::FS3IBase::check_interface_dirichlet_bc()
 
   const std::shared_ptr<const Core::LinAlg::MapExtractor> slavedirichmapex =
       scatravec_[1]->scatra_field()->dirich_maps();
-  const std::shared_ptr<const Epetra_Map> slavedirichmap = slavedirichmapex->cond_map();
+  const std::shared_ptr<const Core::LinAlg::Map> slavedirichmap = slavedirichmapex->cond_map();
 
   // filter out slave dirichlet dofs associated with the interface
   Core::LinAlg::Vector<double> slaveifdirich(*slavemap, true);
@@ -464,7 +464,7 @@ void FS3I::FS3IBase::evaluate_scatra_fields()
       // apply Dirichlet boundary conditions to coupling matrix and vector
       std::shared_ptr<Core::LinAlg::Vector<double>> zeros = scatrazeros_[i];
       const std::shared_ptr<const Core::LinAlg::MapExtractor> dbcmapex = scatra->dirich_maps();
-      const std::shared_ptr<const Epetra_Map> dbcmap = dbcmapex->cond_map();
+      const std::shared_ptr<const Core::LinAlg::Map> dbcmap = dbcmapex->cond_map();
       coupmat->apply_dirichlet(*dbcmap, false);
       Core::LinAlg::apply_dirichlet_to_system(*coupforce, *zeros, *dbcmap);
     }

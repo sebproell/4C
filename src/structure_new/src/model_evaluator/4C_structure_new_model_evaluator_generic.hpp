@@ -15,7 +15,7 @@
 #include <memory>
 
 // forward declarations
-class Epetra_Map;
+class Map;
 namespace NOX
 {
   namespace Solver
@@ -31,7 +31,8 @@ namespace Core::LinAlg
 {
   template <typename T>
   class Vector;
-}
+  class Map;
+}  // namespace Core::LinAlg
 
 namespace NOX
 {
@@ -433,7 +434,7 @@ namespace Solid
       //! @name Accessors to model specific things
       //! @{
       //! Returns a pointer to the model specific dof row map
-      virtual std::shared_ptr<const Epetra_Map> get_block_dof_row_map_ptr() const = 0;
+      virtual std::shared_ptr<const Core::LinAlg::Map> get_block_dof_row_map_ptr() const = 0;
 
       /*! Returns a pointer to the current model solution vector (usually the
        *  Lagrange multiplier vector) */

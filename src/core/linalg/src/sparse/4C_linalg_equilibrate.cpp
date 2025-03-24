@@ -15,14 +15,14 @@ FOUR_C_NAMESPACE_OPEN
 
 /*-------------------------------------------------------------------------*
  *-------------------------------------------------------------------------*/
-Core::LinAlg::Equilibration::Equilibration(std::shared_ptr<const Epetra_Map> dofrowmap)
+Core::LinAlg::Equilibration::Equilibration(std::shared_ptr<const Core::LinAlg::Map> dofrowmap)
     : invcolsums_(Core::LinAlg::create_vector(*dofrowmap, false)),
       invrowsums_(Core::LinAlg::create_vector(*dofrowmap, false))
 {
 }
 
 Core::LinAlg::EquilibrationUniversal::EquilibrationUniversal(
-    EquilibrationMethod method, std::shared_ptr<const Epetra_Map> dofrowmap)
+    EquilibrationMethod method, std::shared_ptr<const Core::LinAlg::Map> dofrowmap)
     : Equilibration(dofrowmap), method_(method)
 {
 }
@@ -30,7 +30,7 @@ Core::LinAlg::EquilibrationUniversal::EquilibrationUniversal(
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 Core::LinAlg::EquilibrationSparse::EquilibrationSparse(
-    EquilibrationMethod method, std::shared_ptr<const Epetra_Map> dofrowmap)
+    EquilibrationMethod method, std::shared_ptr<const Core::LinAlg::Map> dofrowmap)
     : EquilibrationUniversal(method, dofrowmap)
 {
   if (method == EquilibrationMethod::symmetry)
@@ -40,7 +40,7 @@ Core::LinAlg::EquilibrationSparse::EquilibrationSparse(
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 Core::LinAlg::EquilibrationBlock::EquilibrationBlock(
-    EquilibrationMethod method, std::shared_ptr<const Epetra_Map> dofrowmap)
+    EquilibrationMethod method, std::shared_ptr<const Core::LinAlg::Map> dofrowmap)
     : EquilibrationUniversal(method, dofrowmap)
 {
   if (method == EquilibrationMethod::symmetry)
@@ -50,7 +50,8 @@ Core::LinAlg::EquilibrationBlock::EquilibrationBlock(
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 Core::LinAlg::EquilibrationBlockSpecific::EquilibrationBlockSpecific(
-    const std::vector<EquilibrationMethod>& method, std::shared_ptr<const Epetra_Map> dofrowmap)
+    const std::vector<EquilibrationMethod>& method,
+    std::shared_ptr<const Core::LinAlg::Map> dofrowmap)
     : Equilibration(dofrowmap), method_blocks_(method)
 {
   for (const auto& method_block : method_blocks_)
@@ -455,7 +456,8 @@ void Core::LinAlg::EquilibrationBlockSpecific::equilibrate_matrix(
 /*-------------------------------------------------------------------------*
  *-------------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::Equilibration> Core::LinAlg::build_equilibration(MatrixType type,
-    const std::vector<EquilibrationMethod>& method, std::shared_ptr<const Epetra_Map> dofrowmap)
+    const std::vector<EquilibrationMethod>& method,
+    std::shared_ptr<const Core::LinAlg::Map> dofrowmap)
 {
   std::shared_ptr<Core::LinAlg::Equilibration> equilibration = nullptr;
 

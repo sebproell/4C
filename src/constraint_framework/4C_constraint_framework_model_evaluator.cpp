@@ -295,8 +295,8 @@ void Solid::ModelEvaluator::Constraints::runtime_output_step_state() const
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> Solid::ModelEvaluator::Constraints::get_block_dof_row_map_ptr()
-    const
+std::shared_ptr<const Core::LinAlg::Map>
+Solid::ModelEvaluator::Constraints::get_block_dof_row_map_ptr() const
 {
   return global_state().dof_row_map();
 }

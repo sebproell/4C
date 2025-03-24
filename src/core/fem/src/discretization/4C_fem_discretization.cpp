@@ -146,7 +146,7 @@ bool Core::FE::Discretization::clear_discret()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Epetra_Map* Core::FE::Discretization::node_row_map() const
+const Core::LinAlg::Map* Core::FE::Discretization::node_row_map() const
 {
   FOUR_C_ASSERT(
       filled(), "fill_complete() must be called before for discretization {}!", name_.c_str());
@@ -155,7 +155,7 @@ const Epetra_Map* Core::FE::Discretization::node_row_map() const
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Epetra_Map* Core::FE::Discretization::node_col_map() const
+const Core::LinAlg::Map* Core::FE::Discretization::node_col_map() const
 {
   FOUR_C_ASSERT(
       filled(), "fill_complete() must be called before for discretization {}!", name_.c_str());
@@ -164,7 +164,7 @@ const Epetra_Map* Core::FE::Discretization::node_col_map() const
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Epetra_Map* Core::FE::Discretization::element_row_map() const
+const Core::LinAlg::Map* Core::FE::Discretization::element_row_map() const
 {
   FOUR_C_ASSERT(
       filled(), "fill_complete() must be called before for discretization {}!", name_.c_str());
@@ -173,7 +173,7 @@ const Epetra_Map* Core::FE::Discretization::element_row_map() const
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Epetra_Map* Core::FE::Discretization::element_col_map() const
+const Core::LinAlg::Map* Core::FE::Discretization::element_col_map() const
 {
   FOUR_C_ASSERT(
       filled(), "fill_complete() must be called before for discretization {}!", name_.c_str());
@@ -391,7 +391,7 @@ void Core::FE::Discretization::print(std::ostream& os) const
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Epetra_Map* Core::FE::Discretization::dof_row_map(const unsigned nds) const
+const Core::LinAlg::Map* Core::FE::Discretization::dof_row_map(const unsigned nds) const
 {
   FOUR_C_ASSERT(
       nds < dofsets_.size(), "undefined dof set found in discretization {}!", name_.c_str());
@@ -406,7 +406,7 @@ const Epetra_Map* Core::FE::Discretization::dof_row_map(const unsigned nds) cons
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-const Epetra_Map* Core::FE::Discretization::dof_col_map(const unsigned nds) const
+const Core::LinAlg::Map* Core::FE::Discretization::dof_col_map(const unsigned nds) const
 {
   FOUR_C_ASSERT(
       nds < dofsets_.size(), "undefined dof set found in discretization {}!", name_.c_str());
@@ -520,7 +520,7 @@ void Core::FE::Discretization::set_state(
 
   FOUR_C_ASSERT_ALWAYS(
       have_dofs(), "fill_complete() was not called for discretization {}!", name_.c_str());
-  const Epetra_Map* colmap = dof_col_map(nds);
+  const Core::LinAlg::Map* colmap = dof_col_map(nds);
   const Epetra_BlockMap& vecmap = state.get_block_map();
 
   if (state_.size() <= nds) state_.resize(nds + 1);
@@ -529,7 +529,7 @@ void Core::FE::Discretization::set_state(
   // This is a rough test, but it might be ok at this place. It is an
   // error anyway to hand in a vector that is not related to our dof
   // maps.
-  if (vecmap.PointSameAs(*colmap))
+  if (vecmap.PointSameAs(colmap->get_epetra_map()))
   {
     FOUR_C_ASSERT(colmap->SameAs(vecmap),
         "col map of discretization {} and state vector {} are different. This is a fatal bug!",
@@ -555,9 +555,10 @@ void Core::FE::Discretization::set_state(
     // (re)build importer if necessary
     if (stateimporter_[nds] == nullptr or
         not stateimporter_[nds]->SourceMap().SameAs(state.get_block_map()) or
-        not stateimporter_[nds]->TargetMap().SameAs(*colmap))
+        not stateimporter_[nds]->TargetMap().SameAs(colmap->get_epetra_map()))
     {
-      stateimporter_[nds] = std::make_shared<Epetra_Import>(*colmap, state.get_block_map());
+      stateimporter_[nds] =
+          std::make_shared<Epetra_Import>(colmap->get_epetra_map(), state.get_block_map());
     }
 
     // transfer data
@@ -815,12 +816,12 @@ void Core::FE::Discretization::add_multi_vector_to_parameter_list(Teuchos::Param
   // set_state cannot be used since this multi-vector is nodebased and not dofbased!
   if (vec != nullptr)
   {
-    const Epetra_Map* nodecolmap = node_col_map();
+    const Core::LinAlg::Map* nodecolmap = node_col_map();
     const int numcol = vec->NumVectors();
 
     // if it's already in column map just copy it
     // This is a rough test, but it might be ok at this place.
-    if (vec->Map().PointSameAs(*nodecolmap))
+    if (vec->Map().PointSameAs(nodecolmap->get_epetra_map()))
     {
       // make a copy as in parallel such that no additional RCP points to the state vector
       std::shared_ptr<Core::LinAlg::MultiVector<double>> tmp =

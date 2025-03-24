@@ -601,7 +601,7 @@ namespace Solid
     }
 
     //! Access to dofrowmap of discretization via const raw pointer
-    const Epetra_Map* dof_row_map_view() override;
+    const Core::LinAlg::Map* dof_row_map_view() override;
 
     //! Access solver, one of these have to be removed (see below)
     std::shared_ptr<Core::LinAlg::Solver> solver() { return solver_; }
@@ -747,11 +747,11 @@ namespace Solid
     // std::shared_ptr<std::vector<char> > ElementData() {return discret_->PackMyElements();}
 
     //! dof map of vector of unknowns
-    std::shared_ptr<const Epetra_Map> dof_row_map() override;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() override;
 
     //! dof map of vector of unknowns
     // new method for multiple dofsets
-    std::shared_ptr<const Epetra_Map> dof_row_map(unsigned nds) override;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map(unsigned nds) override;
 
     //! Return stiffness,
     //! i.e. force residual differentiated by displacements
@@ -769,7 +769,7 @@ namespace Solid
     std::shared_ptr<Core::LinAlg::SparseMatrix> mass_matrix();
 
     //! domain map of system matrix
-    const Epetra_Map& domain_map() const override;
+    const Core::LinAlg::Map& domain_map() const override;
 
     //! are there any algebraic constraints?
     bool have_constraint() override = 0;
@@ -990,11 +990,11 @@ namespace Solid
     //@}
 
    protected:
-    /// Expand the dbc map by dofs provided in Epetra_Map maptoadd
-    void add_dirich_dofs(const std::shared_ptr<const Epetra_Map> maptoadd) override;
+    /// Expand the dbc map by dofs provided in Core::LinAlg::Map maptoadd
+    void add_dirich_dofs(const std::shared_ptr<const Core::LinAlg::Map> maptoadd) override;
 
-    /// Contract the dbc map by dofs provided in Epetra_Map maptoremove
-    void remove_dirich_dofs(const std::shared_ptr<const Epetra_Map> maptoremove) override;
+    /// Contract the dbc map by dofs provided in Core::LinAlg::Map maptoremove
+    void remove_dirich_dofs(const std::shared_ptr<const Core::LinAlg::Map> maptoremove) override;
 
     //! @name General purpose algorithm members
     //@{

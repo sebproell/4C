@@ -134,8 +134,8 @@ void Core::Conditions::PeriodicBoundaryConditions::update_dofs_for_periodic_boun
     }
 
     {
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
-      const Epetra_Map* noderowmap = discret_->node_row_map();
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
+      const Core::LinAlg::Map* noderowmap = discret_->node_row_map();
 
       int mypid = Core::Communication::my_mpi_rank(discret_->get_comm());
       int numprocs = Core::Communication::num_mpi_ranks(discret_->get_comm());
@@ -671,7 +671,7 @@ void Core::Conditions::PeriodicBoundaryConditions::add_connectivity(
   inversenodecoupling = std::make_shared<std::map<int, std::vector<int>>>();
 
   // Teuchos::rcp to the constructed rowmap
-  std::shared_ptr<Epetra_Map> newrownodemap;
+  std::shared_ptr<Core::LinAlg::Map> newrownodemap;
 
   //----------------------------------------------------------------------
   //  ADD THE CONNECTIVITY FROM THIS CONDITION TO THE CONNECTIVITY OF
@@ -922,7 +922,7 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
   inversenodecoupling = std::make_shared<std::map<int, std::vector<int>>>();
 
   // Teuchos::rcp to the constructed rowmap
-  std::shared_ptr<Epetra_Map> newrownodemap;
+  std::shared_ptr<Core::LinAlg::Map> newrownodemap;
 
   {
     // time measurement --- start TimeMonitor tm6
@@ -1122,7 +1122,7 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
     //--------------------------------------------------
     // build noderowmap for new distribution of nodes
     newrownodemap =
-        std::make_shared<Epetra_Map>(discret_->num_global_nodes(), nodesonthisproc.size(),
+        std::make_shared<Core::LinAlg::Map>(discret_->num_global_nodes(), nodesonthisproc.size(),
             nodesonthisproc.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
 
     // create nodal graph of problem, according to old RowNodeMap
@@ -1132,7 +1132,8 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
     Core::LinAlg::Graph nodegraph(Copy, *newrownodemap, 108, false);
 
     {
-      Epetra_Export exporter(*discret_->node_row_map(), *newrownodemap);
+      Epetra_Export exporter(
+          discret_->node_row_map()->get_epetra_map(), newrownodemap->get_epetra_map());
       int err = nodegraph.export_to(oldnodegraph->get_epetra_crs_graph(), exporter, Add);
       if (err < 0) FOUR_C_THROW("Graph export returned err={}", err);
     }
@@ -1142,9 +1143,9 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
     // build nodecolmap for new distribution of nodes
     const Epetra_BlockMap cntmp = nodegraph.col_map();
 
-    std::shared_ptr<Epetra_Map> newcolnodemap;
+    std::shared_ptr<Core::LinAlg::Map> newcolnodemap;
 
-    newcolnodemap = std::make_shared<Epetra_Map>(-1, cntmp.NumMyElements(),
+    newcolnodemap = std::make_shared<Core::LinAlg::Map>(-1, cntmp.NumMyElements(),
         cntmp.MyGlobalElements(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
 
     // time measurement --- this causes the TimeMonitor tm6 to stop here
@@ -1220,8 +1221,8 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
       // that might have been added in the previous loop over the inversenodecoupling
       {
         // now reconstruct the extended colmap
-        newcolnodemap = std::make_shared<Epetra_Map>(-1, mycolnodes.size(), mycolnodes.data(), 0,
-            Core::Communication::as_epetra_comm(discret_->get_comm()));
+        newcolnodemap = std::make_shared<Core::LinAlg::Map>(-1, mycolnodes.size(),
+            mycolnodes.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
 
         *allcoupledcolnodes_ = (*allcoupledrownodes_);
 
@@ -1261,8 +1262,8 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
       }
 
       // now reconstruct the extended colmap
-      newcolnodemap = std::make_shared<Epetra_Map>(-1, mycolnodes.size(), mycolnodes.data(), 0,
-          Core::Communication::as_epetra_comm(discret_->get_comm()));
+      newcolnodemap = std::make_shared<Core::LinAlg::Map>(-1, mycolnodes.size(), mycolnodes.data(),
+          0, Core::Communication::as_epetra_comm(discret_->get_comm()));
 
       *allcoupledcolnodes_ = (*allcoupledrownodes_);
 
@@ -1354,7 +1355,7 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
 {
   if (Core::Communication::num_mpi_ranks(discret_->get_comm()) > 1)
   {
-    const Epetra_Map* noderowmap = discret_->node_row_map();
+    const Core::LinAlg::Map* noderowmap = discret_->node_row_map();
 
     // weights for graph partition
     auto node_weights = Core::LinAlg::create_vector(*noderowmap, true);
@@ -1506,12 +1507,13 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
     {
       // get rowmap of the graph  (from blockmap -> map)
       const Epetra_BlockMap& graph_row_map = nodegraph->row_map();
-      const Epetra_Map graph_rowmap(graph_row_map.NumGlobalElements(),
+      const Core::LinAlg::Map graph_rowmap(graph_row_map.NumGlobalElements(),
           graph_row_map.NumMyElements(), graph_row_map.MyGlobalElements(), 0,
           nodegraph->get_comm());
 
       // set standard value of edge weight to 1.0
-      auto edge_weights = std::make_shared<Epetra_CrsMatrix>(Copy, graph_rowmap, 15);
+      auto edge_weights =
+          std::make_shared<Epetra_CrsMatrix>(Copy, graph_rowmap.get_epetra_map(), 15);
       for (int i = 0; i < nodegraph->num_local_rows(); ++i)
       {
         const int grow = nodegraph->row_map().GID(i);
@@ -1571,12 +1573,12 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
       newnodegraph->optimize_storage();
 
       // the rowmap will become the new distribution of nodes
-      const Epetra_Map newnoderowmap(-1, newnodegraph->row_map().NumMyElements(),
+      const Core::LinAlg::Map newnoderowmap(-1, newnodegraph->row_map().NumMyElements(),
           newnodegraph->row_map().MyGlobalElements(), 0,
           Core::Communication::as_epetra_comm(discret_->get_comm()));
 
       // the column map will become the new ghosted distribution of nodes
-      const Epetra_Map newnodecolmap(-1, newnodegraph->col_map().NumMyElements(),
+      const Core::LinAlg::Map newnodecolmap(-1, newnodegraph->col_map().NumMyElements(),
           newnodegraph->col_map().MyGlobalElements(), 0,
           Core::Communication::as_epetra_comm(discret_->get_comm()));
 

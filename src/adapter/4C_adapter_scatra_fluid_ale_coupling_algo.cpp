@@ -60,8 +60,8 @@ void Adapter::ScaTraFluidAleCouplingAlgorithm::setup()
       ale_field()->interface()->fsi_cond_map(), condname_, ndim);
 
   // the fluid-ale coupling always matches
-  const Epetra_Map* fluidnodemap = fluid_field()->discretization()->node_row_map();
-  const Epetra_Map* alenodemap = ale_field()->discretization()->node_row_map();
+  const Core::LinAlg::Map* fluidnodemap = fluid_field()->discretization()->node_row_map();
+  const Core::LinAlg::Map* alenodemap = ale_field()->discretization()->node_row_map();
 
   coupfa_ = std::make_shared<Coupling::Adapter::Coupling>();
   coupfa_->setup_coupling(*fluid_field()->discretization(), *ale_field()->discretization(),

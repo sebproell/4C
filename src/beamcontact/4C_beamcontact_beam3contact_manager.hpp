@@ -105,12 +105,12 @@ namespace CONTACT
     \brief Get different node or element maps
 
     */
-    inline std::shared_ptr<Epetra_Map> row_nodes() const { return noderowmap_; }
-    inline std::shared_ptr<Epetra_Map> col_nodes() const { return nodecolmap_; }
-    inline std::shared_ptr<Epetra_Map> full_nodes() const { return nodefullmap_; }
-    inline std::shared_ptr<Epetra_Map> row_elements() const { return elerowmap_; }
-    inline std::shared_ptr<Epetra_Map> col_elements() const { return elecolmap_; }
-    inline std::shared_ptr<Epetra_Map> full_elements() const { return elefullmap_; }
+    inline std::shared_ptr<Core::LinAlg::Map> row_nodes() const { return noderowmap_; }
+    inline std::shared_ptr<Core::LinAlg::Map> col_nodes() const { return nodecolmap_; }
+    inline std::shared_ptr<Core::LinAlg::Map> full_nodes() const { return nodefullmap_; }
+    inline std::shared_ptr<Core::LinAlg::Map> row_elements() const { return elerowmap_; }
+    inline std::shared_ptr<Core::LinAlg::Map> col_elements() const { return elecolmap_; }
+    inline std::shared_ptr<Core::LinAlg::Map> full_elements() const { return elefullmap_; }
     // template<int numnodes, int numnodalvalues>
     inline const std::vector<std::shared_ptr<Beam3contactinterface>>& pairs() const
     {
@@ -278,12 +278,12 @@ namespace CONTACT
     std::map<int, int> dofoffsetmap_;
 
     //! node and element maps
-    std::shared_ptr<Epetra_Map> noderowmap_;
-    std::shared_ptr<Epetra_Map> nodecolmap_;
-    std::shared_ptr<Epetra_Map> nodefullmap_;
-    std::shared_ptr<Epetra_Map> elerowmap_;
-    std::shared_ptr<Epetra_Map> elecolmap_;
-    std::shared_ptr<Epetra_Map> elefullmap_;
+    std::shared_ptr<Core::LinAlg::Map> noderowmap_;
+    std::shared_ptr<Core::LinAlg::Map> nodecolmap_;
+    std::shared_ptr<Core::LinAlg::Map> nodefullmap_;
+    std::shared_ptr<Core::LinAlg::Map> elerowmap_;
+    std::shared_ptr<Core::LinAlg::Map> elecolmap_;
+    std::shared_ptr<Core::LinAlg::Map> elefullmap_;
 
     //! occtree for contact search
     std::shared_ptr<Beam3ContactOctTree> tree_;

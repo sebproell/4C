@@ -112,7 +112,7 @@ namespace Adapter
     }
 
     //! unique map of all dofs that should be constrained with DBC
-    virtual std::shared_ptr<const Epetra_Map> combined_dbc_map();
+    virtual std::shared_ptr<const Core::LinAlg::Map> combined_dbc_map();
 
     //! perform result test
     void test_results(Global::Problem* problem);

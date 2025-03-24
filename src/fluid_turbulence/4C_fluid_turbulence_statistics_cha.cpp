@@ -199,7 +199,7 @@ FLD::TurbulenceStatisticsCha::TurbulenceStatisticsCha(
 
   //----------------------------------------------------------------------
   // allocate some (toggle) vectors
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   meanvelnp_ = Core::LinAlg::create_vector(*dofrowmap, true);
   // this vector is only necessary for low-Mach-number flow or
@@ -439,7 +439,7 @@ FLD::TurbulenceStatisticsCha::TurbulenceStatisticsCha(
     }
 
     // get element map
-    const Epetra_Map* elementmap = nurbsdis->element_row_map();
+    const Core::LinAlg::Map* elementmap = nurbsdis->element_row_map();
 
     // loop all available elements
     for (int iele = 0; iele < elementmap->NumMyElements(); ++iele)

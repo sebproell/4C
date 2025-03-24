@@ -144,7 +144,7 @@ void Core::IO::DiscretizationReader::read_serial_dense_matrix(
   if (columns != 1)
     FOUR_C_THROW("got multivector with name '{}', std::vector<char> expected", name.c_str());
 
-  std::shared_ptr<Epetra_Map> elemap;
+  std::shared_ptr<Core::LinAlg::Map> elemap;
   std::shared_ptr<std::vector<char>> data =
       reader_->read_result_data_vec_char(id_path, value_path, columns, get_comm(), elemap);
 
@@ -223,12 +223,12 @@ void Core::IO::DiscretizationReader::read_history_data(int step)
       Core::Communication::num_mpi_ranks(get_comm()), Core::Communication::my_mpi_rank(get_comm()));
 
   // before we unpack nodes/elements we store a copy of the nodal row/col map
-  Epetra_Map noderowmap(*dis_->node_row_map());
-  Epetra_Map nodecolmap(*dis_->node_col_map());
+  Core::LinAlg::Map noderowmap(*dis_->node_row_map());
+  Core::LinAlg::Map nodecolmap(*dis_->node_col_map());
 
   // before we unpack nodes/elements we store a copy of the nodal row/col map
-  Epetra_Map elerowmap(*dis_->element_row_map());
-  Epetra_Map elecolmap(*dis_->element_col_map());
+  Core::LinAlg::Map elerowmap(*dis_->element_row_map());
+  Core::LinAlg::Map elecolmap(*dis_->element_col_map());
 
   // unpack nodes and elements and redistributed to current layout
 
@@ -949,7 +949,7 @@ void Core::IO::DiscretizationWriter::write_multi_vector(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Core::IO::DiscretizationWriter::write_vector(const std::string name,
-    const std::vector<char>& vec, const Epetra_Map& elemap, IO::VectorType vt)
+    const std::vector<char>& vec, const Core::LinAlg::Map& elemap, IO::VectorType vt)
 {
   if (binio_)
   {
@@ -1009,7 +1009,7 @@ void Core::IO::DiscretizationWriter::write_vector(const std::string name,
       /* Make a copy of the map. This is a std::shared_ptr copy internally. We
        * just make sure here the map stays alive as long as we keep our cache.
        * Otherwise subtle errors could occur. */
-      mapstack_.push_back(elemap);
+      mapstack_.push_back(elemap.get_epetra_map());
       /* BUT: If a problem relies on fill_complete()-calls in every time step,
        * new maps are created in every time step. Storing all old maps in
        * mapstack_ leads to an unbounded increase in memory consumption which
@@ -1368,7 +1368,7 @@ void Core::IO::DiscretizationWriter::write_node_data(bool writeowner)
     std::map<std::string, int> names;  // contains name and dimension of data
 
     // loop over all nodes and build map of data names and dimensions
-    const Epetra_Map* noderowmap = dis_->node_row_map();
+    const Core::LinAlg::Map* noderowmap = dis_->node_row_map();
     if (writeowner == true)
     {
       for (int i = 0; i < noderowmap->NumMyElements(); ++i)

@@ -96,7 +96,7 @@ void SSI::SSIPart1WC::do_scatra_step()
         std::shared_ptr<Core::LinAlg::MultiVector<double>> phinptemp = reader.read_vector("phinp");
 
         // replace old scatra map with new map since ssi map has more dofs
-        int err = phinptemp->ReplaceMap(*scatra_field()->dof_row_map());
+        int err = phinptemp->ReplaceMap(scatra_field()->dof_row_map()->get_epetra_map());
         if (err) FOUR_C_THROW("Replacing old scatra map with new scatra map in ssi failed!");
 
         // update phinp

@@ -43,9 +43,9 @@ namespace FLD
     explicit XFluidFluidState(const std::shared_ptr<XFEM::ConditionManager>& condition_manager,
         const std::shared_ptr<Cut::CutWizard>& wizard,
         const std::shared_ptr<XFEM::XFEMDofSet>& dofset,
-        const std::shared_ptr<const Epetra_Map>& xfluiddofrowmap,
-        const std::shared_ptr<const Epetra_Map>& xfluiddofcolmap,
-        const std::shared_ptr<const Epetra_Map>& embfluiddofrowmap);
+        const std::shared_ptr<const Core::LinAlg::Map>& xfluiddofrowmap,
+        const std::shared_ptr<const Core::LinAlg::Map>& xfluiddofcolmap,
+        const std::shared_ptr<const Core::LinAlg::Map>& embfluiddofrowmap);
 
     /// setup map extractors for dirichlet maps & velocity/pressure maps
     void setup_map_extractors(const std::shared_ptr<Core::FE::Discretization>& xfluiddiscret,
@@ -81,7 +81,7 @@ namespace FLD
     //@name Map of the merged system
     //@{
     /// combined background and embedded fluid dof-map
-    std::shared_ptr<Epetra_Map> xffluiddofrowmap_;
+    std::shared_ptr<Core::LinAlg::Map> xffluiddofrowmap_;
     //@}
 
     //@name Map extractors of the merged system
@@ -123,7 +123,7 @@ namespace FLD
     void init_system_matrix();
 
     /// embedded fluid dof-map
-    std::shared_ptr<const Epetra_Map> embfluiddofrowmap_;
+    std::shared_ptr<const Core::LinAlg::Map> embfluiddofrowmap_;
   };
 
 }  // namespace FLD

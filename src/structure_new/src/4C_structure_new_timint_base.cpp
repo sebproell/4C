@@ -7,6 +7,7 @@
 
 #include "4C_structure_new_timint_base.hpp"
 
+#include "4C_adapter_str_pasiwrapper.hpp"
 #include "4C_beaminteraction_str_model_evaluator.hpp"
 #include "4C_comm_utils.hpp"
 #include "4C_contact_input.hpp"
@@ -16,6 +17,7 @@
 #include "4C_io_gmsh.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_linalg_blocksparsematrix.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_structure_new_dbc.hpp"
 #include "4C_structure_new_enum_lists.hpp"
@@ -28,7 +30,6 @@
 #include "4C_structure_new_timint_basedataio_runtime_vtk_output.hpp"
 #include "4C_structure_new_timint_basedataio_runtime_vtp_output.hpp"
 
-#include <Epetra_Map.h>
 #include <Teuchos_ParameterList.hpp>
 
 FOUR_C_NAMESPACE_OPEN
@@ -175,10 +176,10 @@ void Solid::TimeInt::Base::set_restart(int stepn, double timen,
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-const Epetra_Map& Solid::TimeInt::Base::get_mass_domain_map() const
+const Core::LinAlg::Map& Solid::TimeInt::Base::get_mass_domain_map() const
 {
   check_init_setup();
-  return dataglobalstate_->get_mass_matrix()->domain_map();
+  return dataglobalstate_->get_mass_matrix()->domain_map_not_epetra();
 }
 
 /*----------------------------------------------------------------------------*
@@ -242,7 +243,7 @@ void Solid::TimeInt::Base::resize_m_step_tim_ada()
 
   // resize state vectors, AB2 is a 2-step method, thus we need two
   // past steps at t_{n} and t_{n-1}
-  const Epetra_Map* dofrowmap_ptr = dataglobalstate_->dof_row_map_view();
+  const Core::LinAlg::Map* dofrowmap_ptr = dataglobalstate_->dof_row_map_view();
   dataglobalstate_->get_multi_dis()->resize(-1, 0, dofrowmap_ptr, true);
   dataglobalstate_->get_multi_vel()->resize(-1, 0, dofrowmap_ptr, true);
   dataglobalstate_->get_multi_acc()->resize(-1, 0, dofrowmap_ptr, true);

@@ -203,7 +203,7 @@ void XFEM::XFluidTimeInt::transfer_dofs_to_new_map(
 {
   //------------------------------------------------------------
   // loop background fluid row nodes
-  const Epetra_Map* noderowmap = dis_->node_row_map();
+  const Core::LinAlg::Map* noderowmap = dis_->node_row_map();
   const int numrownode = noderowmap->NumMyPoints();
 
   for (int lid = 0; lid < numrownode; ++lid)

@@ -61,8 +61,8 @@ void Core::Rebalance::rebalance_discretizations_by_binning(
           << "+---------------------------------------------------------------" << Core::IO::endl;
     }
 
-    std::vector<std::shared_ptr<Epetra_Map>> stdelecolmap;
-    std::vector<std::shared_ptr<Epetra_Map>> stdnodecolmap;
+    std::vector<std::shared_ptr<Core::LinAlg::Map>> stdelecolmap;
+    std::vector<std::shared_ptr<Core::LinAlg::Map>> stdnodecolmap;
 
     // binning strategy is created and parallel redistribution is performed
     Binstrategy::BinningStrategy binningstrategy(binning_params, output_control,
@@ -107,7 +107,7 @@ void Core::Rebalance::ghost_discretization_on_all_procs(Core::FE::Discretization
   for (int i = 0; i < Core::Communication::num_mpi_ranks(com); ++i) allproc[i] = i;
 
   // fill my own row node ids
-  const Epetra_Map* noderowmap = distobeghosted.node_row_map();
+  const Core::LinAlg::Map* noderowmap = distobeghosted.node_row_map();
   std::vector<int> sdata;
   for (int lid = 0; lid < noderowmap->NumMyElements(); ++lid)
   {
@@ -120,13 +120,13 @@ void Core::Rebalance::ghost_discretization_on_all_procs(Core::FE::Discretization
   Core::LinAlg::gather<int>(sdata, rdata, (int)allproc.size(), allproc.data(), com);
 
   // build new node column map (on ALL processors)
-  Epetra_Map newnodecolmap(
+  Core::LinAlg::Map newnodecolmap(
       -1, (int)rdata.size(), rdata.data(), 0, Core::Communication::as_epetra_comm(com));
   sdata.clear();
   rdata.clear();
 
   // fill my own row element ids
-  const Epetra_Map* elerowmap = distobeghosted.element_row_map();
+  const Core::LinAlg::Map* elerowmap = distobeghosted.element_row_map();
   sdata.resize(0);
   for (int i = 0; i < elerowmap->NumMyElements(); ++i)
   {
@@ -139,7 +139,7 @@ void Core::Rebalance::ghost_discretization_on_all_procs(Core::FE::Discretization
   Core::LinAlg::gather<int>(sdata, rdata, (int)allproc.size(), allproc.data(), com);
 
   // build new element column map (on ALL processors)
-  Epetra_Map newelecolmap(
+  Core::LinAlg::Map newelecolmap(
       -1, (int)rdata.size(), rdata.data(), 0, Core::Communication::as_epetra_comm(com));
   sdata.clear();
   rdata.clear();
@@ -203,11 +203,11 @@ void Core::Rebalance::match_element_distribution_of_matching_discretizations(
         dis_template, dis_to_rebalance, rebalance_rowelegid_vec, rebalance_colelegid_vec);
 
     // construct rebalanced element row map
-    Epetra_Map rebalanced_elerowmap(-1, rebalance_rowelegid_vec.size(),
+    Core::LinAlg::Map rebalanced_elerowmap(-1, rebalance_rowelegid_vec.size(),
         rebalance_rowelegid_vec.data(), 0, Core::Communication::as_epetra_comm(com));
 
     // construct rebalanced element col map
-    Epetra_Map rebalanced_elecolmap(-1, rebalance_colelegid_vec.size(),
+    Core::LinAlg::Map rebalanced_elecolmap(-1, rebalance_colelegid_vec.size(),
         rebalance_colelegid_vec.data(), 0, Core::Communication::as_epetra_comm(com));
 
     ////////////////////////////////////////
@@ -222,11 +222,11 @@ void Core::Rebalance::match_element_distribution_of_matching_discretizations(
         dis_template, dis_to_rebalance, rebalance_nodegid_vec, rebalance_colnodegid_vec);
 
     // construct rebalanced node row map
-    Epetra_Map rebalanced_noderowmap(-1, rebalance_nodegid_vec.size(), rebalance_nodegid_vec.data(),
-        0, Core::Communication::as_epetra_comm(com));
+    Core::LinAlg::Map rebalanced_noderowmap(-1, rebalance_nodegid_vec.size(),
+        rebalance_nodegid_vec.data(), 0, Core::Communication::as_epetra_comm(com));
 
     // construct rebalanced node col map
-    Epetra_Map rebalanced_nodecolmap(-1, rebalance_colnodegid_vec.size(),
+    Core::LinAlg::Map rebalanced_nodecolmap(-1, rebalance_colnodegid_vec.size(),
         rebalance_colnodegid_vec.data(), 0, Core::Communication::as_epetra_comm(com));
 
     ////////////////////////////////////////
@@ -312,9 +312,10 @@ void Core::Rebalance::match_element_distribution_of_matching_conditioned_element
     );
 
     // get element col map of conditioned template dis
-    const Epetra_Map* template_cond_dis_elecolmap = dis_from_template_condition->element_col_map();
+    const Core::LinAlg::Map* template_cond_dis_elecolmap =
+        dis_from_template_condition->element_col_map();
     // get element row map of dis to be rebalanced
-    const Epetra_Map* rebalance_elerowmap = dis_to_rebalance.element_row_map();
+    const Core::LinAlg::Map* rebalance_elerowmap = dis_to_rebalance.element_row_map();
 
 
     ////////////////////////////////////////
@@ -406,11 +407,11 @@ void Core::Rebalance::match_element_distribution_of_matching_conditioned_element
 
 
     // construct rebalanced element row map
-    Epetra_Map rebalanced_elerowmap(-1, rebalance_rowelegid_vec.size(),
+    Core::LinAlg::Map rebalanced_elerowmap(-1, rebalance_rowelegid_vec.size(),
         rebalance_rowelegid_vec.data(), 0, Core::Communication::as_epetra_comm(com));
 
     // construct rebalanced element col map
-    Epetra_Map rebalanced_elecolmap(-1, rebalance_colelegid_vec.size(),
+    Core::LinAlg::Map rebalanced_elecolmap(-1, rebalance_colelegid_vec.size(),
         rebalance_colelegid_vec.data(), 0, Core::Communication::as_epetra_comm(com));
 
 
@@ -504,11 +505,11 @@ void Core::Rebalance::match_element_distribution_of_matching_conditioned_element
     }
 
     // construct rebalanced node row map
-    Epetra_Map rebalanced_noderowmap(-1, rebalance_rownodegid_vec.size(),
+    Core::LinAlg::Map rebalanced_noderowmap(-1, rebalance_rownodegid_vec.size(),
         rebalance_rownodegid_vec.data(), 0, Core::Communication::as_epetra_comm(com));
 
     // construct rebalanced node col map
-    Epetra_Map rebalanced_nodecolmap(-1, rebalance_colnodegid_vec.size(),
+    Core::LinAlg::Map rebalanced_nodecolmap(-1, rebalance_colnodegid_vec.size(),
         rebalance_colnodegid_vec.data(), 0, Core::Communication::as_epetra_comm(com));
 
 
@@ -548,14 +549,14 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> Core::Rebalance::get_col_ver
   // class
 
   if (!dis.have_dofs()) FOUR_C_THROW("fill_complete() was not called");
-  const Epetra_Map* colmap = dis.dof_col_map(nds);
+  const Core::LinAlg::Map* colmap = dis.dof_col_map(nds);
   const Epetra_BlockMap& vecmap = state->get_block_map();
 
   // if it's already in column map just set a reference
   // This is a rought test, but it might be ok at this place. It is an
   // error anyway to hand in a vector that is not related to our dof
   // maps.
-  if (vecmap.PointSameAs(*colmap)) return state;
+  if (vecmap.PointSameAs(colmap->get_epetra_map())) return state;
   // if it's not in column map export and allocate
   else
   {
@@ -570,12 +571,12 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> Core::Rebalance::get_col_ver
  |recompute nodecolmap of standard discretization to include all        |
  |nodes as of subdicretization                                          |
  *----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> Core::Rebalance::compute_node_col_map(
+std::shared_ptr<Core::LinAlg::Map> Core::Rebalance::compute_node_col_map(
     const Core::FE::Discretization& sourcedis,  ///< standard discretization we want to rebalance
     const Core::FE::Discretization& subdis      ///< subdiscretization prescribing ghosting
 )
 {
-  const Epetra_Map* oldcolnodemap = sourcedis.node_col_map();
+  const Core::LinAlg::Map* oldcolnodemap = sourcedis.node_col_map();
 
   std::vector<int> mycolnodes(oldcolnodemap->NumMyElements());
   oldcolnodemap->MyGlobalElements(mycolnodes.data());
@@ -590,8 +591,9 @@ std::shared_ptr<Epetra_Map> Core::Rebalance::compute_node_col_map(
   }
 
   // now reconstruct the extended colmap
-  std::shared_ptr<Epetra_Map> newcolnodemap = std::make_shared<Epetra_Map>(-1, mycolnodes.size(),
-      mycolnodes.data(), 0, Core::Communication::as_epetra_comm(sourcedis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> newcolnodemap =
+      std::make_shared<Core::LinAlg::Map>(-1, mycolnodes.size(), mycolnodes.data(), 0,
+          Core::Communication::as_epetra_comm(sourcedis.get_comm()));
   return newcolnodemap;
 }  // Core::Rebalance::ComputeNodeColMap
 
@@ -603,8 +605,8 @@ void Core::Rebalance::match_element_row_col_distribution(
     std::vector<int>& row_id_vec_to_fill, std::vector<int>& col_id_vec_to_fill)
 {
   // preliminary work
-  const Epetra_Map* rebalance_elerowmap = dis_to_rebalance.element_row_map();
-  const Epetra_Map* template_elecolmap = dis_template.element_col_map();
+  const Core::LinAlg::Map* rebalance_elerowmap = dis_to_rebalance.element_row_map();
+  const Core::LinAlg::Map* template_elecolmap = dis_template.element_col_map();
   std::vector<int> my_template_elegid_vec(template_elecolmap->NumMyElements());
   std::vector<int> my_rebalance_elegid_vec(0);
 
@@ -660,8 +662,8 @@ void Core::Rebalance::match_nodal_row_col_distribution(const Core::FE::Discretiz
   for (int& col_id_to_fill : col_id_vec_to_fill) tempcolset.insert(col_id_to_fill);
 
   // preliminary work
-  const Epetra_Map* rebalance_noderowmap = dis_to_rebalance.node_row_map();
-  const Epetra_Map* template_nodecolmap = dis_template.node_col_map();
+  const Core::LinAlg::Map* rebalance_noderowmap = dis_to_rebalance.node_row_map();
+  const Core::LinAlg::Map* template_nodecolmap = dis_template.node_col_map();
   std::vector<int> my_template_nodegid_vec(template_nodecolmap->NumMyElements());
   std::vector<int> my_rebalance_nodegid_vec(0);
 

@@ -190,7 +190,7 @@ namespace Core::FE
 
     \return nullptr if Filled() is false. A call to fill_complete() is a prerequisite.
     */
-    const Epetra_Map* face_row_map() const;
+    const Core::LinAlg::Map* face_row_map() const;
 
     /*!
     \brief Get map associated with the distribution of elements including ghosted faces
@@ -201,7 +201,7 @@ namespace Core::FE
 
     \return nullptr if Filled() is false. A call to fill_complete() is a prerequisite.
     */
-    const Epetra_Map* face_col_map() const;
+    const Core::LinAlg::Map* face_col_map() const;
 
     /*!
     \brief Get global number of internal faces (true number of total elements)
@@ -271,7 +271,7 @@ namespace Core::FE
     \brief Build intfacerowmap_ (Filled()==true NOT prerequisite)
 
     Build the parallel layout of internal faces in this
-    discretization and store it as an Epetra_Map in intfacerowmap_
+    discretization and store it as an Core::LinAlg::Map in intfacerowmap_
     intfacerowmap_ is unique.
     It considers internal faces owned by a proc only
 
@@ -284,7 +284,7 @@ namespace Core::FE
     \brief Build intfacecolmap_ (Filled()==true NOT prerequisite)
 
     Build the potentially overlapping parallel layout of internal faces in this
-    discretization and store it as an Epetra_Map in intfacecolmap_
+    discretization and store it as an Core::LinAlg::Map in intfacecolmap_
     intfacecolmap_ includes ghosted internal faces and is potentially overlapping.
 
     \note This is a collective call
@@ -305,8 +305,9 @@ namespace Core::FE
     bool extension_filled_;  ///< flag indicating whether faces extension has been filled
     bool doboundaryfaces_;   ///< flag set to true by derived HDG class for boundary face elements
 
-    std::shared_ptr<Epetra_Map> facerowmap_;  ///< unique distribution of element ownerships
-    std::shared_ptr<Epetra_Map> facecolmap_;  ///< distribution of elements including ghost elements
+    std::shared_ptr<Core::LinAlg::Map> facerowmap_;  ///< unique distribution of element ownerships
+    std::shared_ptr<Core::LinAlg::Map>
+        facecolmap_;  ///< distribution of elements including ghost elements
     std::vector<Core::Elements::Element*>
         facerowptr_;  ///< vector of pointers to row elements for faster access
     std::vector<Core::Elements::Element*>

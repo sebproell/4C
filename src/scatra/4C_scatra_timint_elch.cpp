@@ -359,9 +359,9 @@ void ScaTra::ScaTraTimIntElch::setup_conc_pot_split()
     }
   }
 
-  auto concdofmap = std::make_shared<Epetra_Map>(-1, static_cast<int>(conc_dofs.size()),
+  auto concdofmap = std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(conc_dofs.size()),
       conc_dofs.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
-  auto potdofmap = std::make_shared<Epetra_Map>(-1, static_cast<int>(pot_dofs.size()),
+  auto potdofmap = std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(pot_dofs.size()),
       pot_dofs.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
 
   // set up concentration-potential splitter
@@ -395,12 +395,12 @@ void ScaTra::ScaTraTimIntElch::setup_conc_pot_pot_split()
   }
 
   // transform sets to maps
-  std::vector<std::shared_ptr<const Epetra_Map>> maps(3, nullptr);
-  maps[0] = std::make_shared<Epetra_Map>(-1, static_cast<int>(conc_dofs.size()), conc_dofs.data(),
-      0, Core::Communication::as_epetra_comm(discret_->get_comm()));
-  maps[1] = std::make_shared<Epetra_Map>(-1, static_cast<int>(pot_el_dofs.size()),
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps(3, nullptr);
+  maps[0] = std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(conc_dofs.size()),
+      conc_dofs.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
+  maps[1] = std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(pot_el_dofs.size()),
       pot_el_dofs.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
-  maps[2] = std::make_shared<Epetra_Map>(-1, static_cast<int>(pot_ed_dofs.size()),
+  maps[2] = std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(pot_ed_dofs.size()),
       pot_ed_dofs.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
 
   // set up concentration-potential-potential splitter
@@ -2931,7 +2931,7 @@ void ScaTra::ScaTraTimIntElch::apply_dirichlet_bc(const double time,
 
       // transform set into vector and then into Epetra map
       std::vector<int> dbcgidsvec(dbcgids.begin(), dbcgids.end());
-      auto dbcmap = std::make_shared<Epetra_Map>(-1, static_cast<int>(dbcgids.size()),
+      auto dbcmap = std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(dbcgids.size()),
           dbcgidsvec.data(), dof_row_map()->IndexBase(), dof_row_map()->Comm());
 
       // merge map with existing map for Dirichlet boundary conditions
@@ -3162,7 +3162,7 @@ int ScaTra::ScalarHandlerElch::num_scal_in_condition(const Core::Conditions::Con
  *-----------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntElch::build_block_maps(
     const std::vector<std::shared_ptr<Core::Conditions::Condition>>& partitioningconditions,
-    std::vector<std::shared_ptr<const Epetra_Map>>& blockmaps) const
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>>& blockmaps) const
 {
   if (matrix_type() == Core::LinAlg::MatrixType::block_condition_dof)
   {
@@ -3200,8 +3200,9 @@ void ScaTra::ScaTraTimIntElch::build_block_maps(
         std::unordered_set<int> dof_set(dofs.begin(), dofs.end());
         FOUR_C_ASSERT(dof_set.size() == dofs.size(), "The dofs are not unique");
 #endif
-        blockmaps.emplace_back(std::make_shared<Epetra_Map>(-1, static_cast<int>(dofs.size()),
-            dofs.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm())));
+        blockmaps.emplace_back(
+            std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(dofs.size()), dofs.data(), 0,
+                Core::Communication::as_epetra_comm(discret_->get_comm())));
       }
     }
   }

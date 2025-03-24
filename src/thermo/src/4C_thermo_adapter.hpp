@@ -10,12 +10,11 @@
 
 #include "4C_config.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_thermo_input.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 #include "4C_utils_result_test.hpp"
-
-#include <Epetra_Map.h>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -99,10 +98,10 @@ namespace Thermo
     //@{
 
     /// DOF map of vector of unknowns
-    virtual std::shared_ptr<const Epetra_Map> dof_row_map() = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> dof_row_map() = 0;
 
     /// DOF map of vector of unknowns for multiple dofsets
-    virtual std::shared_ptr<const Epetra_Map> dof_row_map(unsigned nds) = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> dof_row_map(unsigned nds) = 0;
 
     /// direct access to system matrix
     virtual std::shared_ptr<Core::LinAlg::SparseMatrix> system_matrix() = 0;

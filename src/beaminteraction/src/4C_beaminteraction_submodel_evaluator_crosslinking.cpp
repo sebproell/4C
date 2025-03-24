@@ -86,11 +86,11 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::setup()
   if (g_in_output().get_runtime_vtp_output_params() != nullptr) init_output_runtime_structure();
 
   // store old maps prior to redistribution
-  cl_noderowmap_prior_redistr_ = std::make_shared<Epetra_Map>(*bin_discret().node_row_map());
-  cl_nodecolmap_prior_redistr_ = std::make_shared<Epetra_Map>(*bin_discret().node_col_map());
+  cl_noderowmap_prior_redistr_ = std::make_shared<Core::LinAlg::Map>(*bin_discret().node_row_map());
+  cl_nodecolmap_prior_redistr_ = std::make_shared<Core::LinAlg::Map>(*bin_discret().node_col_map());
   beam_elerowmap_prior_redistr_ =
-      std::make_shared<Epetra_Map>(*ele_type_map_extractor().beam_map());
-  beam_elecolmap_prior_redistr_ = std::make_shared<Epetra_Map>(*discret().element_col_map());
+      std::make_shared<Core::LinAlg::Map>(*ele_type_map_extractor().beam_map());
+  beam_elecolmap_prior_redistr_ = std::make_shared<Core::LinAlg::Map>(*discret().element_col_map());
 
   // set flag
   issetup_ = true;
@@ -995,7 +995,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::pre_update_step_element(b
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   // safety check
-  if (not dis_at_last_redistr_->get_block_map().SameAs(*bin_discret().dof_row_map()))
+  if (not dis_at_last_redistr_->get_map().SameAs(*bin_discret().dof_row_map()))
     FOUR_C_THROW(
         "current linker dof map and map of disp vector after last redistribution are\n "
         "are not the same. Something went wrong");
@@ -1462,7 +1462,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::read_restart(
   }
 
   // build dummy map according to read data on myrank
-  Epetra_Map dummy_cl_map(-1, read_node_ids.size(), read_node_ids.data(), 0,
+  Core::LinAlg::Map dummy_cl_map(-1, read_node_ids.size(), read_node_ids.data(), 0,
       Core::Communication::as_epetra_comm(bin_discret().get_comm()));
 
   // build exporter object
@@ -1513,8 +1513,9 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::read_restart(
   }
 
   // build dummy map according to read data on myrank
-  std::shared_ptr<Epetra_Map> dummy_beam_map = std::make_shared<Epetra_Map>(-1, read_ele_ids.size(),
-      read_ele_ids.data(), 0, Core::Communication::as_epetra_comm(discret().get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> dummy_beam_map =
+      std::make_shared<Core::LinAlg::Map>(-1, read_ele_ids.size(), read_ele_ids.data(), 0,
+          Core::Communication::as_epetra_comm(discret().get_comm()));
 
   // build exporter object
   exporter = std::make_shared<Core::Communication::Exporter>(

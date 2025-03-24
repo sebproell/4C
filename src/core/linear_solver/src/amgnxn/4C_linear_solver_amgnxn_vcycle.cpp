@@ -307,12 +307,12 @@ void Core::LinearSolver::AMGNxN::VcycleSingle::do_vcycle(const Core::LinAlg::Mul
     DX.Update(1.0, X, -1.0);
 
     //  Create coarser representation of the residual
-    const Epetra_Map& Map = rvec_[level]->range_map();
+    const Core::LinAlg::Map& Map = rvec_[level]->range_map();
     Core::LinAlg::MultiVector<double> DXcoarse(Map, NV, false);
     rvec_[level]->Apply(DX, DXcoarse);
 
     // Damp error with coarser levels
-    const Epetra_Map& Map2 = pvec_[level]->domain_map();
+    const Core::LinAlg::Map& Map2 = pvec_[level]->domain_map_not_epetra();
     Core::LinAlg::MultiVector<double> DYcoarse(Map2, NV, false);
     do_vcycle(DXcoarse, DYcoarse, level + 1, true);
 

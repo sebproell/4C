@@ -60,7 +60,7 @@ namespace Core::FE
     void evaluate(Core::FE::Discretization& discret, Teuchos::ParameterList& eparams,
         const std::shared_ptr<Core::LinAlg::SparseOperator>& systemmatrix,
         const std::shared_ptr<Core::LinAlg::Vector<double>>& systemvector,
-        const Epetra_Map* col_ele_map = nullptr);
+        const Core::LinAlg::Map* col_ele_map = nullptr);
 
     /** \brief Evaluate the elements of the given discretization and fill the
      *         system matrices and vectors
@@ -80,7 +80,7 @@ namespace Core::FE
     void evaluate(Core::FE::Discretization& discret, Teuchos::ParameterList& eparams,
         std::vector<std::shared_ptr<Core::LinAlg::SparseOperator>>& systemmatrices,
         std::vector<std::shared_ptr<Core::LinAlg::Vector<double>>>& systemvector,
-        const Epetra_Map* col_ele_map = nullptr);
+        const Core::LinAlg::Map* col_ele_map = nullptr);
 
     /** \brief Evaluate the elements of the given discretization and fill the
      *         system matrices and vectors
@@ -98,7 +98,7 @@ namespace Core::FE
      *                              discretization column map ( optional )
      */
     void evaluate(Core::FE::Discretization& discret, Teuchos::ParameterList& eparams,
-        Core::FE::AssembleStrategy& strategy, const Epetra_Map* col_ele_map = nullptr);
+        Core::FE::AssembleStrategy& strategy, const Core::LinAlg::Map* col_ele_map = nullptr);
 
     /** \brief Evaluate Dirichlet boundary conditions
      *

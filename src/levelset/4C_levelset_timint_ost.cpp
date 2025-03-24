@@ -234,7 +234,7 @@ void ScaTra::LevelSetTimIntOneStepTheta::redistribute(Core::LinAlg::Graph& nodeg
   LevelSetAlgorithm::redistribute(nodegraph);
 
   // now do all the ost specific steps
-  const Epetra_Map* newdofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* newdofrowmap = discret_->dof_row_map();
   std::shared_ptr<Core::LinAlg::Vector<double>> old;
 
   if (fsphinp_ != nullptr)
@@ -267,7 +267,7 @@ void ScaTra::LevelSetTimIntOneStepTheta::read_restart(
 std::shared_ptr<Core::LinAlg::Vector<double>> ScaTra::LevelSetTimIntOneStepTheta::phinptheta(
     const double theta_inter)
 {
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
   std::shared_ptr<Core::LinAlg::Vector<double>> phi_tmp =
       std::make_shared<Core::LinAlg::Vector<double>>(*dofrowmap, true);
   phi_tmp->update((1.0 - theta_inter), *phin_, theta_inter, *phinp_, 0.0);
@@ -281,7 +281,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> ScaTra::LevelSetTimIntOneStepTheta
 std::shared_ptr<Core::LinAlg::Vector<double>> ScaTra::LevelSetTimIntOneStepTheta::phidtnptheta(
     const double theta_inter)
 {
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
   std::shared_ptr<Core::LinAlg::Vector<double>> phidt_tmp =
       std::make_shared<Core::LinAlg::Vector<double>>(*dofrowmap, true);
   phidt_tmp->update((1.0 - theta_inter), *phidtn_, theta_inter, *phidtnp_, 0.0);

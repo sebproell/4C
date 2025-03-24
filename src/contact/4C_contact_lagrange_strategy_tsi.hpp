@@ -56,9 +56,9 @@ namespace CONTACT
 
      */
     LagrangeStrategyTsi(const std::shared_ptr<CONTACT::AbstractStrategyDataContainer>& data_ptr,
-        const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
-        std::vector<std::shared_ptr<CONTACT::Interface>> interface, int dim, MPI_Comm comm,
-        double alphaf, int maxdof);
+        const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
+        Teuchos::ParameterList params, std::vector<std::shared_ptr<CONTACT::Interface>> interface,
+        int dim, MPI_Comm comm, double alphaf, int maxdof);
 
 
     //! @name Access methods
@@ -193,8 +193,8 @@ namespace CONTACT
 
     std::shared_ptr<Core::LinAlg::Vector<double>>
         z_thermo_;  // current vector of Thermo-Lagrange multipliers at t_n+1
-    std::shared_ptr<Epetra_Map> thermo_act_dofs_;  // active thermo dofs
-    std::shared_ptr<Epetra_Map> thermo_s_dofs_;    // slave thermo dofs
+    std::shared_ptr<Core::LinAlg::Map> thermo_act_dofs_;  // active thermo dofs
+    std::shared_ptr<Core::LinAlg::Map> thermo_s_dofs_;    // slave thermo dofs
 
     std::shared_ptr<Core::LinAlg::SparseMatrix>
         dinvA_;  // dinv on active displacement dofs (for recovery)

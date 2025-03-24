@@ -219,7 +219,7 @@ void Discret::Elements::FluidEleCalcHDG<distype>::update_secondary_solution(
   // clearing the state when used in parallel)
   Core::LinAlg::Vector<double>& secondary =
       const_cast<Core::LinAlg::Vector<double>&>(*matrix_state);
-  const Epetra_Map* intdofcolmap = discretization.dof_col_map(1);
+  const Core::LinAlg::Map* intdofcolmap = discretization.dof_col_map(1);
 
   double valfac;
   double accfac;

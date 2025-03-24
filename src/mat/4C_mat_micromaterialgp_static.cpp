@@ -313,7 +313,7 @@ void Mat::MicroMaterialGP::update()
 
   Global::Problem* microproblem = Global::Problem::instance(microdisnum_);
   std::shared_ptr<Core::FE::Discretization> microdis = microproblem->get_dis("structure");
-  const Epetra_Map* elemap = microdis->element_row_map();
+  const Core::LinAlg::Map* elemap = microdis->element_row_map();
 
   for (int i = 0; i < elemap->NumMyElements(); ++i) (*lastalpha_)[i] = (*oldalpha_)[i];
 

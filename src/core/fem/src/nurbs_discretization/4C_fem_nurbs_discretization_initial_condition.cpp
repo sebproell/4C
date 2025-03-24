@@ -101,7 +101,7 @@ namespace
     // vectors and matrices
     //                 local <-> global dof numbering
     // -------------------------------------------------------------------
-    const Epetra_Map* dofrowmap = dis.dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = dis.dof_row_map();
 
     // -------------------------------------------------------------------
     // create empty mass matrix

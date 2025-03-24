@@ -492,8 +492,8 @@ void XFEM::ConditionManager::update_level_set_field()
   Core::LinAlg::export_to(node_lsc_coup_idx, node_lsc_coup_idx_col);
 
   // set the levelset coupling index for all row elements
-  const Epetra_Map* elerowmap = bg_dis_->element_row_map();
-  const Epetra_Map* nodecolmap = bg_dis_->node_col_map();
+  const Core::LinAlg::Map* elerowmap = bg_dis_->element_row_map();
+  const Core::LinAlg::Map* nodecolmap = bg_dis_->node_col_map();
 
   // loop all row elements on the processor
   for (int leleid = 0; leleid < bg_dis_->num_my_row_elements(); ++leleid)

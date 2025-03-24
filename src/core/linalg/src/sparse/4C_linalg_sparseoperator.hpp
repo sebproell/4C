@@ -10,11 +10,11 @@
 
 #include "4C_config.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_shared_ptr_from_ref.hpp"
 
-#include <Epetra_Map.h>
 #include <Epetra_Operator.h>
 
 #include <memory>
@@ -192,8 +192,8 @@ namespace Core::LinAlg
     virtual void complete(bool enforce_complete = false) = 0;
 
     /// Call fill_complete on a matrix (for rectangular and square matrices)
-    virtual void complete(
-        const Epetra_Map& domainmap, const Epetra_Map& rangemap, bool enforce_complete = false) = 0;
+    virtual void complete(const Core::LinAlg::Map& domainmap, const Core::LinAlg::Map& rangemap,
+        bool enforce_complete = false) = 0;
 
     /// Undo a previous Complete() call
     virtual void un_complete() = 0;
@@ -211,7 +211,7 @@ namespace Core::LinAlg
     ///  matrix was symmetric. However, the blanking of columns is computationally
     ///  quite expensive, because the matrix is stored in a sparse and distributed
     ///  manner.
-    virtual void apply_dirichlet(const Epetra_Map& dbcmap, bool diagonalblock = true) = 0;
+    virtual void apply_dirichlet(const Core::LinAlg::Map& dbcmap, bool diagonalblock = true) = 0;
 
     /** \brief Return TRUE if all Dirichlet boundary conditions have been applied
      *  to this matrix
@@ -222,11 +222,13 @@ namespace Core::LinAlg
      *  \param (in) trafo: pointer to an optional trafo matrix (see LocSys).
      *
      *  */
-    virtual bool is_dbc_applied(const Epetra_Map& dbcmap, bool diagonalblock = true,
+    virtual bool is_dbc_applied(const Core::LinAlg::Map& dbcmap, bool diagonalblock = true,
         const Core::LinAlg::SparseMatrix* trafo = nullptr) const = 0;
 
     /// Returns the Epetra_Map object associated with the (full) domain of this operator.
     virtual const Epetra_Map& domain_map() const = 0;
+
+    virtual const Map& domain_map_not_epetra() const = 0;
 
     /// Add one operator to another
     virtual void add(const Core::LinAlg::SparseOperator& A, const bool transposeA,

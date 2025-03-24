@@ -320,17 +320,20 @@ void ALE::Meshsliding::split_mortar_matrix(
     std::shared_ptr<Core::LinAlg::SparseMatrix>& MortarMatrix,
     std::shared_ptr<Core::LinAlg::SparseMatrix>& MasterMatrix,
     std::shared_ptr<Core::LinAlg::SparseMatrix>& SlaveMatrix,
-    std::shared_ptr<const Epetra_Map>& dofrowmapconst)
+    std::shared_ptr<const Core::LinAlg::Map>& dofrowmapconst)
 {
   // dummy Matrices for second row and dummy map
   std::shared_ptr<Core::LinAlg::SparseMatrix> temp21;
   std::shared_ptr<Core::LinAlg::SparseMatrix> temp22;
-  std::shared_ptr<Epetra_Map> dummy;
+  std::shared_ptr<Core::LinAlg::Map> dummy;
 
   // const casts
-  std::shared_ptr<Epetra_Map> gmdofrowmap = std::const_pointer_cast<Epetra_Map>(gmdofrowmap_);
-  std::shared_ptr<Epetra_Map> gsdofrowmap = std::const_pointer_cast<Epetra_Map>(gsdofrowmap_);
-  std::shared_ptr<Epetra_Map> dofrowmap = std::const_pointer_cast<Epetra_Map>(dofrowmapconst);
+  std::shared_ptr<Core::LinAlg::Map> gmdofrowmap =
+      std::const_pointer_cast<Core::LinAlg::Map>(gmdofrowmap_);
+  std::shared_ptr<Core::LinAlg::Map> gsdofrowmap =
+      std::const_pointer_cast<Core::LinAlg::Map>(gsdofrowmap_);
+  std::shared_ptr<Core::LinAlg::Map> dofrowmap =
+      std::const_pointer_cast<Core::LinAlg::Map>(dofrowmapconst);
 
   // split matrix operation
   bool suc = Core::LinAlg::split_matrix2x2(MortarMatrix, dofrowmap, dummy, gmdofrowmap, gsdofrowmap,

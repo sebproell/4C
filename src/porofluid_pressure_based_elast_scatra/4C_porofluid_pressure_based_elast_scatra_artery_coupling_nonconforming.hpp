@@ -51,8 +51,8 @@ namespace PoroMultiPhaseScaTra
         Core::LinAlg::SparseMatrix& sysmat_art,
         std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_cont,
         std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_art,
-        const Core::LinAlg::MapExtractor& dbcmap_cont, const Epetra_Map& dbcmap_art,
-        const Epetra_Map& dbcmap_art_with_collapsed);
+        const Core::LinAlg::MapExtractor& dbcmap_cont, const Core::LinAlg::Map& dbcmap_art,
+        const Core::LinAlg::Map& dbcmap_art_with_collapsed);
 
     //! setup the strategy
     void setup() override;
@@ -124,10 +124,10 @@ namespace PoroMultiPhaseScaTra
         std::shared_ptr<const Core::LinAlg::Vector<double>> vec_art) override {};
 
     //! access artery (1D) dof row map
-    std::shared_ptr<const Epetra_Map> artery_dof_row_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> artery_dof_row_map() const override;
 
     //! access full dof row map
-    std::shared_ptr<const Epetra_Map> dof_row_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() const override;
 
     //! Setup global vector
     void setup_vector(std::shared_ptr<Core::LinAlg::Vector<double>> vec,

@@ -10,10 +10,15 @@
 #include "4C_linalg_vector.hpp"
 
 #include "4C_comm_mpi_utils.hpp"
+#include "4C_linalg_multi_vector.hpp"
+#include "4C_linalg_sparsematrix.hpp"
+
+#include <Epetra_Map.h>
+
 
 
 // Epetra related headers
-#include <Epetra_Map.h>
+#include "4C_linalg_map.hpp"
 
 #include <memory>
 
@@ -25,7 +30,7 @@ namespace
   {
    public:
     MPI_Comm comm_;
-    std::shared_ptr<Epetra_Map> map_;
+    std::shared_ptr<Core::LinAlg::Map> map_;
     int NumGlobalElements = 10;
 
    protected:
@@ -35,7 +40,7 @@ namespace
       comm_ = MPI_COMM_WORLD;
 
       // set up a map
-      map_ = std::make_shared<Epetra_Map>(
+      map_ = std::make_shared<Core::LinAlg::Map>(
           NumGlobalElements, 0, Core::Communication::as_epetra_comm(comm_));
     }
   };
@@ -43,7 +48,7 @@ namespace
   TEST_F(VectorTest, ConstructorsAndNorms)
   {
     // create an epetra vector
-    Epetra_Vector my_epetra_vector = Epetra_Vector(*map_, true);
+    Epetra_Vector my_epetra_vector = Epetra_Vector(map_->get_epetra_map(), true);
 
     // try to copy zero vector into wrapper
     Core::LinAlg::Vector<double> epetra_based_test_vector =
@@ -153,7 +158,7 @@ namespace
 
   TEST_F(VectorTest, View)
   {
-    Epetra_Vector a(*map_, true);
+    Epetra_Vector a(map_->get_epetra_map(), true);
     a.PutScalar(1.0);
     // Scope in which a is modified by the view
     {
@@ -289,7 +294,7 @@ namespace
       my_elements = {0, 2, 4, 6, 8};
     else
       my_elements = {1, 3, 5, 7, 9};
-    Epetra_Map new_map(
+    Core::LinAlg::Map new_map(
         10, my_elements.size(), my_elements.data(), 0, Core::Communication::as_epetra_comm(comm_));
 
     const Core::LinAlg::MultiVector<double>& b = a;

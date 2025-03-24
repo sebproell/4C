@@ -86,7 +86,10 @@ namespace POROMULTIPHASE
     }
 
     //! unique map of all dofs that should be constrained with DBC
-    std::shared_ptr<const Epetra_Map> combined_dbc_map() const override { return combinedDBCMap_; };
+    std::shared_ptr<const Core::LinAlg::Map> combined_dbc_map() const override
+    {
+      return combinedDBCMap_;
+    };
 
    protected:
     //! Newton output to screen
@@ -99,7 +102,7 @@ namespace POROMULTIPHASE
     virtual void build_combined_dbc_map();
 
     //! full monolithic dof row map
-    std::shared_ptr<const Epetra_Map> dof_row_map();
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map();
 
     virtual void setup_rhs();
 
@@ -235,7 +238,7 @@ namespace POROMULTIPHASE
     //@}
 
     //! dof row map (not split)
-    std::shared_ptr<Epetra_Map> fullmap_;
+    std::shared_ptr<Core::LinAlg::Map> fullmap_;
 
     //! dof row map split in (field) blocks
     std::shared_ptr<Core::LinAlg::MultiMapExtractor> blockrowdofmap_;
@@ -247,7 +250,7 @@ namespace POROMULTIPHASE
     Core::LinAlg::EquilibrationMethod equilibration_method_;
 
     //! dirichlet map of monolithic system
-    std::shared_ptr<Epetra_Map> combinedDBCMap_;
+    std::shared_ptr<Core::LinAlg::Map> combinedDBCMap_;
 
     double tolinc_;   //!< tolerance residual increment
     double tolfres_;  //!< tolerance force residual
@@ -332,7 +335,7 @@ namespace POROMULTIPHASE
         std::shared_ptr<Core::LinAlg::Solver>& solver, const int& arteryblocknum) override;
 
     //! dof row map (not split)
-    std::shared_ptr<Epetra_Map> fullmap_artporo_;
+    std::shared_ptr<Core::LinAlg::Map> fullmap_artporo_;
 
     //! dof row map split in (field) blocks
     std::shared_ptr<Core::LinAlg::MultiMapExtractor> blockrowdofmap_artporo_;

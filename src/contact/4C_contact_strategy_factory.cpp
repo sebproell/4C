@@ -1136,15 +1136,15 @@ void CONTACT::STRATEGY::Factory::fully_overlapping_interfaces(
   {
     Interface& interface = **it;
 
-    const Epetra_Map& srownodes_i = *interface.slave_row_nodes();
-    const Epetra_Map& mrownodes_i = *interface.master_row_nodes();
+    const Core::LinAlg::Map& srownodes_i = *interface.slave_row_nodes();
+    const Core::LinAlg::Map& mrownodes_i = *interface.master_row_nodes();
 
     for (auto it2 = (it + 1); it2 != interfaces.end(); ++it2)
     {
       Interface& iinterface = **it2;
 
-      const Epetra_Map& srownodes_ii = *iinterface.slave_row_nodes();
-      const Epetra_Map& mrownodes_ii = *iinterface.master_row_nodes();
+      const Core::LinAlg::Map& srownodes_ii = *iinterface.slave_row_nodes();
+      const Core::LinAlg::Map& mrownodes_ii = *iinterface.master_row_nodes();
 
       const int sl_fullsubset_id = identify_full_subset(srownodes_i, srownodes_ii);
       if (sl_fullsubset_id != -1)
@@ -1202,11 +1202,11 @@ void CONTACT::STRATEGY::Factory::fully_overlapping_interfaces(
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-int CONTACT::STRATEGY::Factory::identify_full_subset(
-    const Epetra_Map& map_0, const Epetra_Map& map_1, bool throw_if_partial_subset_on_proc) const
+int CONTACT::STRATEGY::Factory::identify_full_subset(const Core::LinAlg::Map& map_0,
+    const Core::LinAlg::Map& map_1, bool throw_if_partial_subset_on_proc) const
 {
-  const Epetra_Map* ref_map = nullptr;
-  const Epetra_Map* sub_map = nullptr;
+  const Core::LinAlg::Map* ref_map = nullptr;
+  const Core::LinAlg::Map* sub_map = nullptr;
 
   int sub_id = -1;
 
@@ -1519,9 +1519,9 @@ std::shared_ptr<CONTACT::AbstractStrategy> CONTACT::STRATEGY::Factory::build_str
 std::shared_ptr<CONTACT::AbstractStrategy> CONTACT::STRATEGY::Factory::build_strategy(
     const CONTACT::SolvingStrategy stype, const Teuchos::ParameterList& params,
     const bool& poroslave, const bool& poromaster, const int& dof_offset,
-    std::vector<std::shared_ptr<CONTACT::Interface>>& interfaces, const Epetra_Map* dof_row_map,
-    const Epetra_Map* node_row_map, const int dim, const MPI_Comm& comm_ptr,
-    std::shared_ptr<CONTACT::AbstractStrategyDataContainer> data_ptr,
+    std::vector<std::shared_ptr<CONTACT::Interface>>& interfaces,
+    const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* node_row_map, const int dim,
+    const MPI_Comm& comm_ptr, std::shared_ptr<CONTACT::AbstractStrategyDataContainer> data_ptr,
     CONTACT::ParamsInterface* cparams_interface)
 {
   if (Core::Communication::my_mpi_rank(comm_ptr) == 0)

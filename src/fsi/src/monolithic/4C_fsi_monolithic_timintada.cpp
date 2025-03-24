@@ -136,10 +136,10 @@ void FSI::Monolithic::init_tim_int_ada(const Teuchos::ParameterList& fsidyn)
   //----------------------------------------------------------------------------
   // Create intersection of fluid DOFs that hold a Dirichlet boundary condition
   // and are located at the FSI interface.
-  std::vector<std::shared_ptr<const Epetra_Map>> intersectionmapsfluid;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> intersectionmapsfluid;
   intersectionmapsfluid.push_back(fluid_field()->get_dbc_map_extractor()->cond_map());
   intersectionmapsfluid.push_back(fluid_field()->interface()->fsi_cond_map());
-  std::shared_ptr<Epetra_Map> intersectionmapfluid =
+  std::shared_ptr<Core::LinAlg::Map> intersectionmapfluid =
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmapsfluid);
 
   // store number of interface DOFs subject to Dirichlet BCs on structure and fluid side of the

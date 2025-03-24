@@ -46,7 +46,7 @@ namespace Adapter
     /**
      * \brief Initializes all members of the class     *
      */
-    void setup(const Epetra_Map* beam_map, const Epetra_Map* fluid_map,
+    void setup(const Core::LinAlg::Map* beam_map, const Core::LinAlg::Map* fluid_map,
         std::shared_ptr<Core::LinAlg::SparseOperator> fluidmatrix, bool fluidmeshtying) override;
 
     /**

@@ -83,7 +83,7 @@ std::shared_ptr<Core::LinAlg::SparseOperator> ALE::Meshtying::setup(
   // std::cout << "number of s dof   " << gsdofrowmap_->NumGlobalElements() << std::endl;
 
   // generate map for blockmatrix
-  std::vector<std::shared_ptr<const Epetra_Map>> alemaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> alemaps;
   alemaps.push_back(gndofrowmap_);
   alemaps.push_back(gmdofrowmap_);
   alemaps.push_back(gsdofrowmap_);
@@ -140,7 +140,7 @@ std::shared_ptr<Core::LinAlg::SparseOperator> ALE::Meshtying::setup(
 std::shared_ptr<Core::LinAlg::SparseOperator> ALE::Meshtying::msht_split()
 {
   // generate map for blockmatrix
-  std::vector<std::shared_ptr<const Epetra_Map>> alemaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> alemaps;
   alemaps.push_back(gndofrowmap_);
   alemaps.push_back(gmdofrowmap_);
   alemaps.push_back(gsdofrowmap_);
@@ -175,7 +175,7 @@ std::shared_ptr<Core::LinAlg::SparseOperator> ALE::Meshtying::msht_split()
 /*------------------------------------------------------------------------------*/
 /*  Check if Dirichlet BC are defined on the master                 wirtz 01/16 */
 /*------------------------------------------------------------------------------*/
-void ALE::Meshtying::dirichlet_on_master(std::shared_ptr<const Epetra_Map> bmaps)
+void ALE::Meshtying::dirichlet_on_master(std::shared_ptr<const Core::LinAlg::Map> bmaps)
 {
   // This method checks if Dirichlet or Dirichlet-like boundary conditions are defined
   // on the master side of the internal interface.
@@ -192,11 +192,11 @@ void ALE::Meshtying::dirichlet_on_master(std::shared_ptr<const Epetra_Map> bmaps
   //
   // (c)  DC are included in the condensation process (-> actual strategy)
 
-  std::vector<std::shared_ptr<const Epetra_Map>> intersectionmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> intersectionmaps;
   intersectionmaps.push_back(bmaps);
-  std::shared_ptr<const Epetra_Map> gmdofrowmap = gmdofrowmap_;
+  std::shared_ptr<const Core::LinAlg::Map> gmdofrowmap = gmdofrowmap_;
   intersectionmaps.push_back(gmdofrowmap);
-  std::shared_ptr<Epetra_Map> intersectionmap =
+  std::shared_ptr<Core::LinAlg::Map> intersectionmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
   if (intersectionmap->NumGlobalElements() != 0)
@@ -311,7 +311,7 @@ void ALE::Meshtying::msht_split(std::shared_ptr<Core::LinAlg::SparseOperator>& s
   if (is_multifield_)
   {
     // generate map for blockmatrix
-    std::vector<std::shared_ptr<const Epetra_Map>> alemaps;
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> alemaps;
     alemaps.push_back(gndofrowmap_);
     alemaps.push_back(gmdofrowmap_);
     alemaps.push_back(gsdofrowmap_);
@@ -606,7 +606,7 @@ void ALE::Meshtying::update_slave_dof(std::shared_ptr<Core::LinAlg::Vector<doubl
   TEUCHOS_FUNC_TIME_MONITOR("Meshtying:  3.4)   - Update slave DOF");
 
   // get dof row map
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // split incremental and displacement vector
   std::vector<std::shared_ptr<Core::LinAlg::Vector<double>>> splitinc(3);

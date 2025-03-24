@@ -75,7 +75,8 @@ void Arteries::ArtNetExplicitTimeInt::init(const Teuchos::ParameterList& globalt
   // and only one cpu
   // -------------------------------------------------------------------
   // reduce the node row map into processor 0
-  const Epetra_Map noderowmap_1_proc = *Core::LinAlg::allreduce_e_map(*discret_->node_row_map(), 0);
+  const Core::LinAlg::Map noderowmap_1_proc =
+      *Core::LinAlg::allreduce_e_map(*discret_->node_row_map(), 0);
   // update the discetization by redistributing the new row map
   discret_->redistribute(noderowmap_1_proc, noderowmap_1_proc);
 
@@ -84,16 +85,16 @@ void Arteries::ArtNetExplicitTimeInt::init(const Teuchos::ParameterList& globalt
   // vectors and matrices
   //                 local <-> global dof numbering
   // -------------------------------------------------------------------
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
-  //  const Epetra_Map* dofcolmap  = discret_->DofColMap();
+  //  const Core::LinAlg::Map* dofcolmap  = discret_->DofColMap();
 
   // -------------------------------------------------------------------
   // get a vector layout from the discretization to construct matching
   // vectors and matrices
   //                 local <-> global node numbering
   // -------------------------------------------------------------------
-  const Epetra_Map* noderowmap = discret_->node_row_map();
+  const Core::LinAlg::Map* noderowmap = discret_->node_row_map();
 
 
   // -------------------------------------------------------------------
@@ -516,7 +517,7 @@ void Arteries::ArtNetExplicitTimeInt::time_update()
 void Arteries::ArtNetExplicitTimeInt::init_save_state()
 {
   // get the discretizations DOF row map
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // Volumetric Flow rate/Cross-sectional area of this step become most recent
   saved_qanp_ = Core::LinAlg::create_vector(*dofrowmap, true);

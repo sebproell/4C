@@ -11,12 +11,12 @@
 #include "4C_config.hpp"
 
 #include "4C_contact_input.hpp"  // for the CONTACT enums
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_mortar_interface.hpp"                                       // for the enum state type
 #include "4C_solver_nonlin_nox_constraint_interface_preconditioner.hpp"  // interface specifications
 #include "4C_utils_parameter_list.fwd.hpp"
 
-#include <Epetra_Map.h>
 #include <Epetra_Operator.h>
 
 #include <memory>
@@ -68,12 +68,12 @@ namespace Mortar
     virtual ~StrategyDataContainer() = default;
 
     //! Return underlying problem dof row map (not only interfaces)
-    std::shared_ptr<Epetra_Map>& prob_dofs_ptr() { return probdofs_; }
-    std::shared_ptr<const Epetra_Map> prob_dofs_ptr() const { return probdofs_; }
+    std::shared_ptr<Core::LinAlg::Map>& prob_dofs_ptr() { return probdofs_; }
+    std::shared_ptr<const Core::LinAlg::Map> prob_dofs_ptr() const { return probdofs_; }
 
     //! Return underlying problem node row map (not only interfaces)
-    std::shared_ptr<Epetra_Map>& prob_nodes_ptr() { return probnodes_; }
-    std::shared_ptr<const Epetra_Map> prob_nodes_ptr() const { return probnodes_; }
+    std::shared_ptr<Core::LinAlg::Map>& prob_nodes_ptr() { return probnodes_; }
+    std::shared_ptr<const Core::LinAlg::Map> prob_nodes_ptr() const { return probnodes_; }
 
     //! Return communicator
     MPI_Comm& comm_ptr() { return comm_; }
@@ -117,10 +117,10 @@ namespace Mortar
 
    private:
     //! Underlying problem dof row map (not only interfaces)
-    std::shared_ptr<Epetra_Map> probdofs_;
+    std::shared_ptr<Core::LinAlg::Map> probdofs_;
 
     //! Underlying problem node row map (not only interfaces)
-    std::shared_ptr<Epetra_Map> probnodes_;
+    std::shared_ptr<Core::LinAlg::Map> probnodes_;
 
     //! Communicator
     MPI_Comm comm_;
@@ -202,7 +202,7 @@ namespace Mortar
 
     */
     StrategyBase(const std::shared_ptr<Mortar::StrategyDataContainer>& data_ptr,
-        const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap,
+        const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
         const Teuchos::ParameterList& params, const int spatialDim, const MPI_Comm& comm,
         const double alphaf, const int maxdof);
 
@@ -222,12 +222,12 @@ namespace Mortar
     MPI_Comm get_comm() const { return comm_; }
 
     //! Get the underlying problem dof row map
-    const std::shared_ptr<Epetra_Map>& problem_dofs() { return probdofs_; }
-    std::shared_ptr<const Epetra_Map> problem_dofs() const { return probdofs_; }
+    const std::shared_ptr<Core::LinAlg::Map>& problem_dofs() { return probdofs_; }
+    std::shared_ptr<const Core::LinAlg::Map> problem_dofs() const { return probdofs_; }
 
     //! Get the underlying problem node row map
-    const std::shared_ptr<Epetra_Map>& problem_nodes() { return probnodes_; }
-    std::shared_ptr<const Epetra_Map> problem_nodes() const { return probnodes_; }
+    const std::shared_ptr<Core::LinAlg::Map>& problem_nodes() { return probnodes_; }
+    std::shared_ptr<const Core::LinAlg::Map> problem_nodes() const { return probnodes_; }
 
     //@}
 
@@ -241,20 +241,21 @@ namespace Mortar
     // As the base class Mortar::StrategyBase is always called from the control routine
     // (time integrator), these functions need to be defined purely virtual here.
 
-    virtual std::shared_ptr<const Epetra_Map> slave_row_nodes_ptr() const = 0;
-    virtual std::shared_ptr<const Epetra_Map> active_row_nodes() const = 0;
-    virtual std::shared_ptr<const Epetra_Map> active_row_dofs() const = 0;
-    virtual std::shared_ptr<const Epetra_Map> non_redist_slave_row_dofs() const = 0;
-    virtual std::shared_ptr<const Epetra_Map> non_redist_master_row_dofs() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> slave_row_nodes_ptr() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> active_row_nodes() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> active_row_dofs() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> non_redist_slave_row_dofs() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> non_redist_master_row_dofs() const = 0;
     virtual bool active_set_converged() const = 0;
     virtual void apply_force_stiff_cmt(std::shared_ptr<Core::LinAlg::Vector<double>> dis,
         std::shared_ptr<Core::LinAlg::SparseOperator>& kt,
         std::shared_ptr<Core::LinAlg::Vector<double>>& f, const int step, const int iter,
         bool predictor = false) = 0;
     virtual void assemble_mortar() = 0;
-    virtual void collect_maps_for_preconditioner(std::shared_ptr<Epetra_Map>& MasterDofMap,
-        std::shared_ptr<Epetra_Map>& SlaveDofMap, std::shared_ptr<Epetra_Map>& InnerDofMap,
-        std::shared_ptr<Epetra_Map>& ActiveDofMap) const = 0;
+    virtual void collect_maps_for_preconditioner(std::shared_ptr<Core::LinAlg::Map>& MasterDofMap,
+        std::shared_ptr<Core::LinAlg::Map>& SlaveDofMap,
+        std::shared_ptr<Core::LinAlg::Map>& InnerDofMap,
+        std::shared_ptr<Core::LinAlg::Map>& ActiveDofMap) const = 0;
     virtual double constraint_norm() const = 0;
     virtual std::shared_ptr<const Core::LinAlg::Vector<double>> contact_normal_stress() const = 0;
     virtual std::shared_ptr<const Core::LinAlg::Vector<double>> contact_tangential_stress()
@@ -335,7 +336,7 @@ namespace Mortar
     virtual void save_reference_state(std::shared_ptr<const Core::LinAlg::Vector<double>> dis) = 0;
     virtual void set_state(
         const enum Mortar::StateType& statename, const Core::LinAlg::Vector<double>& vec) = 0;
-    virtual std::shared_ptr<const Epetra_Map> slip_row_nodes() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> slip_row_nodes() const = 0;
     virtual void store_dirichlet_status(
         std::shared_ptr<const Core::LinAlg::MapExtractor> dbcmaps) = 0;
     virtual void store_nodal_quantities(Mortar::StrategyBase::QuantityType type) = 0;
@@ -375,15 +376,15 @@ namespace Mortar
     }
     virtual void reset_wear() {}
     virtual void output_wear() {}
-    virtual std::shared_ptr<const Epetra_Map> master_slip_nodes() const { return nullptr; }
-    virtual std::shared_ptr<const Epetra_Map> master_active_nodes() const { return nullptr; }
+    virtual std::shared_ptr<const Core::LinAlg::Map> master_slip_nodes() const { return nullptr; }
+    virtual std::shared_ptr<const Core::LinAlg::Map> master_active_nodes() const { return nullptr; }
 
     // constraint preconditioner functions
     bool is_saddle_point_system() const override = 0;
     bool is_condensed_system() const override = 0;
     virtual bool is_penalty() const = 0;
     void fill_maps_for_preconditioner(
-        std::vector<Teuchos::RCP<Epetra_Map>>& maps) const override = 0;
+        std::vector<Teuchos::RCP<Core::LinAlg::Map>>& maps) const override = 0;
     //@}
 
    private:
@@ -413,9 +414,9 @@ namespace Mortar
      *  If you have any questions concerning this, do not hesitate and ask me.
      *                                                          hiermeier 05/16 */
     //! @{
-    std::shared_ptr<Epetra_Map>&
+    std::shared_ptr<Core::LinAlg::Map>&
         probdofs_;  //!< ref. to underlying problem dof row map (not only interfaces)
-    std::shared_ptr<Epetra_Map>&
+    std::shared_ptr<Core::LinAlg::Map>&
         probnodes_;  //!< ref. to underlying problem node row map (not only interfaces)
 
     MPI_Comm& comm_;                    //!< ref. to communicator

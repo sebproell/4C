@@ -176,21 +176,21 @@ bool XFEM::CouplingCommManager::insert_matrix(int transform_id, int idxA,
     case CouplingCommManager::col:
     {
       return get_transform(transform_id)
-          ->operator()(matA, matA.range_map(), matA.domain_map(), scale, nullptr,
+          ->operator()(matA, matA.range_map(), matA.domain_map_not_epetra(), scale, nullptr,
               get_coupling_converter(idxA, idxB).get(), matB, exactmatch, addmatrix);
       break;
     }
     case CouplingCommManager::row:
     {
       return get_transform(transform_id)
-          ->operator()(matA, matA.range_map(), matA.domain_map(), scale,
+          ->operator()(matA, matA.range_map(), matA.domain_map_not_epetra(), scale,
               get_coupling_converter(idxA, idxB).get(), nullptr, matB, true, addmatrix);
       break;
     }
     case CouplingCommManager::row_and_col:
     {
       return get_transform(transform_id)
-          ->operator()(matA, matA.range_map(), matA.domain_map(), scale,
+          ->operator()(matA, matA.range_map(), matA.domain_map_not_epetra(), scale,
               get_coupling_converter(idxA, idxB).get(), get_coupling_converter(idxA, idxB).get(),
               matB, exactmatch, addmatrix);
       break;
@@ -352,14 +352,14 @@ void XFEM::CouplingCommManager::setup_full_extractor(
 {
   if (dis.size() < 2) return;
 
-  std::vector<std::shared_ptr<const Epetra_Map>> maps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
   for (std::map<int, std::shared_ptr<const Core::FE::Discretization>>::iterator dit = dis.begin();
       dit != dis.end(); ++dit)
   {
-    maps.push_back(std::make_shared<Epetra_Map>(*(*dit).second->dof_row_map()));
+    maps.push_back(std::make_shared<Core::LinAlg::Map>(*(*dit).second->dof_row_map()));
   }
 
-  std::shared_ptr<Epetra_Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
+  std::shared_ptr<Core::LinAlg::Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
   fullextractor_ = std::make_shared<Core::LinAlg::MultiMapExtractor>(*fullmap, maps);
 }
 

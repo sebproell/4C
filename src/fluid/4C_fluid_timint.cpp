@@ -14,10 +14,10 @@
 #include "4C_inpar_fluid.hpp"
 #include "4C_io_discretization_visualization_writer_mesh.hpp"
 #include "4C_io_visualization_parameters.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_utils_parameter_list.hpp"
 #include "4C_utils_shared_ptr_from_ref.hpp"
 
-#include <Epetra_Map.h>
 #include <Teuchos_ParameterList.hpp>
 
 #include <memory>
@@ -74,7 +74,7 @@ FLD::TimInt::TimInt(const std::shared_ptr<Core::FE::Discretization>& discret,
   }
 }
 
-std::shared_ptr<const Epetra_Map> FLD::TimInt::dof_row_map(unsigned nds)
+std::shared_ptr<const Core::LinAlg::Map> FLD::TimInt::dof_row_map(unsigned nds)
 {
   return Core::Utils::shared_ptr_from_ref(*discretization()->dof_row_map(nds));
 }

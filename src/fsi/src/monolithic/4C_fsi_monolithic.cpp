@@ -407,8 +407,8 @@ void FSI::Monolithic::setup_system()
     FOUR_C_THROW("No nodes in matching FSI interface. Empty FSI coupling condition?");
 
   // the fluid-ale coupling always matches
-  const Epetra_Map* fluidnodemap = fluid_field()->discretization()->node_row_map();
-  const Epetra_Map* alenodemap = ale_field()->discretization()->node_row_map();
+  const Core::LinAlg::Map* fluidnodemap = fluid_field()->discretization()->node_row_map();
+  const Core::LinAlg::Map* alenodemap = ale_field()->discretization()->node_row_map();
 
   coupfa.setup_coupling(*fluid_field()->discretization(), *ale_field()->discretization(),
       *fluidnodemap, *alenodemap, ndim);
@@ -880,9 +880,10 @@ void FSI::Monolithic::evaluate(std::shared_ptr<const Core::LinAlg::Vector<double
 
 /*----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*/
-void FSI::Monolithic::set_dof_row_maps(const std::vector<std::shared_ptr<const Epetra_Map>>& maps)
+void FSI::Monolithic::set_dof_row_maps(
+    const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps)
 {
-  std::shared_ptr<Epetra_Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
+  std::shared_ptr<Core::LinAlg::Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
   blockrowdofmap_.setup(*fullmap, maps);
 }
 
@@ -1204,7 +1205,7 @@ std::shared_ptr<::NOX::Epetra::LinearSystem> FSI::BlockMonolithic::create_linear
           solver->params().sublist("Inverse1"));
       Core::LinearSolver::Parameters::fix_null_space("Structure",
           *structure_field()->discretization()->dof_row_map(),
-          system_matrix()->matrix(0, 0).epetra_matrix()->RowMap(),
+          Core::LinAlg::Map(system_matrix()->matrix(0, 0).epetra_matrix()->RowMap()),
           solver->params().sublist("Inverse1"));
 
       solver->put_solver_params_to_sub_params("Inverse2", fsisolverparams,
@@ -1215,7 +1216,7 @@ std::shared_ptr<::NOX::Epetra::LinearSystem> FSI::BlockMonolithic::create_linear
           solver->params().sublist("Inverse2"));
       Core::LinearSolver::Parameters::fix_null_space("Fluid",
           *fluid_field()->discretization()->dof_row_map(),
-          system_matrix()->matrix(1, 1).epetra_matrix()->RowMap(),
+          Core::LinAlg::Map(system_matrix()->matrix(1, 1).epetra_matrix()->RowMap()),
           solver->params().sublist("Inverse2"));
 
       solver->put_solver_params_to_sub_params("Inverse3", fsisolverparams,
@@ -1226,7 +1227,7 @@ std::shared_ptr<::NOX::Epetra::LinearSystem> FSI::BlockMonolithic::create_linear
           .compute_null_space_if_necessary(solver->params().sublist("Inverse3"));
       Core::LinearSolver::Parameters::fix_null_space("Ale",
           *ale_field()->discretization()->dof_row_map(),
-          system_matrix()->matrix(2, 2).epetra_matrix()->RowMap(),
+          Core::LinAlg::Map(system_matrix()->matrix(2, 2).epetra_matrix()->RowMap()),
           solver->params().sublist("Inverse3"));
 
       break;

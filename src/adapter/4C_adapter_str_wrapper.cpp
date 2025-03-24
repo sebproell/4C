@@ -7,6 +7,7 @@
 
 #include "4C_adapter_str_wrapper.hpp"
 
+
 FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*/

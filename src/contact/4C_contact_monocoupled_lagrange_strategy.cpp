@@ -18,9 +18,9 @@ FOUR_C_NAMESPACE_OPEN
  *----------------------------------------------------------------------*/
 CONTACT::MonoCoupledLagrangeStrategy::MonoCoupledLagrangeStrategy(
     const std::shared_ptr<CONTACT::AbstractStrategyDataContainer>& data_ptr,
-    const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
-    std::vector<std::shared_ptr<CONTACT::Interface>> interface, int dim, MPI_Comm comm,
-    double alphaf, int maxdof)
+    const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
+    Teuchos::ParameterList params, std::vector<std::shared_ptr<CONTACT::Interface>> interface,
+    int dim, MPI_Comm comm, double alphaf, int maxdof)
     : LagrangeStrategy(
           data_ptr, dof_row_map, NodeRowMap, params, interface, dim, comm, alphaf, maxdof),
       has_to_evaluate_(false),
@@ -89,7 +89,8 @@ void CONTACT::MonoCoupledLagrangeStrategy::evaluate_off_diag_contact(
   // (this is a prerequisite for the Split2x2 methods to be called later)
   kteff->complete();
 
-  std::shared_ptr<Epetra_Map> domainmap = std::make_shared<Epetra_Map>(kteff->domain_map());
+  std::shared_ptr<Core::LinAlg::Map> domainmap =
+      std::make_shared<Core::LinAlg::Map>(kteff->domain_map());
 
   // system type
   auto systype = Teuchos::getIntegralValue<CONTACT::SystemType>(params(), "SYSTEM");
@@ -121,9 +122,9 @@ void CONTACT::MonoCoupledLagrangeStrategy::evaluate_off_diag_contact(
     std::shared_ptr<Core::LinAlg::SparseMatrix> ksm, ksm0, kn0, km0, ks0;
 
     // some temporary std::shared_ptrs
-    std::shared_ptr<Epetra_Map> tempmap0;
-    std::shared_ptr<Epetra_Map> tempmap1;
-    std::shared_ptr<Epetra_Map> ftempmap;
+    std::shared_ptr<Core::LinAlg::Map> tempmap0;
+    std::shared_ptr<Core::LinAlg::Map> tempmap1;
+    std::shared_ptr<Core::LinAlg::Map> ftempmap;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx2;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx3;
@@ -162,8 +163,8 @@ void CONTACT::MonoCoupledLagrangeStrategy::evaluate_off_diag_contact(
     std::shared_ptr<Core::LinAlg::SparseMatrix> kan, kin, kam, kim, kma, kmi;
 
     // we will get the i rowmap as a by-product
-    std::shared_ptr<Epetra_Map> gidofs;
-    std::shared_ptr<Epetra_Map> fgidofs;
+    std::shared_ptr<Core::LinAlg::Map> gidofs;
+    std::shared_ptr<Core::LinAlg::Map> fgidofs;
 
     // do the splitting
     Core::LinAlg::split_matrix2x2(ks, gactivedofs_, gidofs, domainmap, tempmap1, ka, ka0, ki, ki0);
@@ -189,7 +190,7 @@ void CONTACT::MonoCoupledLagrangeStrategy::evaluate_off_diag_contact(
           Core::LinAlg::matrix_multiply(*mhataam_, true, *ka, false, false, false, true);
       kmmod.add(*kmadd, false, 1.0, 1.0);
     }
-    kmmod.complete(kteff->domain_map(), km->row_map());
+    kmmod.complete(Core::LinAlg::Map(kteff->domain_map()), km->row_map());
 
     //----------------------------------------------------------- THIRD LINE
     //------------------- FOR 3D QUADRATIC CASE ----------------------------
@@ -206,7 +207,7 @@ void CONTACT::MonoCoupledLagrangeStrategy::evaluate_off_diag_contact(
           Core::LinAlg::matrix_multiply(*dhat_, true, *ka, false, false, false, true);
       kimod.add(*kiadd, false, -1.0, 1.0);
     }
-    kimod.complete(kteff->domain_map(), ki->row_map());
+    kimod.complete(Core::LinAlg::Map(kteff->domain_map()), ki->row_map());
 
     //---------------------------------------------------------- FOURTH LINE
     // nothing to do
@@ -315,7 +316,7 @@ void CONTACT::MonoCoupledLagrangeStrategy::recover_coupled(
     // only contains the active diagonal block
     // (this automatically renders the inactive LM to be zero)
     std::shared_ptr<Core::LinAlg::SparseMatrix> invda;
-    std::shared_ptr<Epetra_Map> tempmap;
+    std::shared_ptr<Core::LinAlg::Map> tempmap;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1, tempmtx2, tempmtx3;
     Core::LinAlg::split_matrix2x2(
         invd_, gactivedofs_, tempmap, gactivedofs_, tempmap, invda, tempmtx1, tempmtx2, tempmtx3);

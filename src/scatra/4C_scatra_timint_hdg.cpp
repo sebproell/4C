@@ -79,7 +79,7 @@ void ScaTra::TimIntHDG::setup()
   discret_->fill_complete();
 
   // HDG vectors passed to the element
-  const Epetra_Map* intdofrowmap = discret_->dof_row_map(nds_intvar_);
+  const Core::LinAlg::Map* intdofrowmap = discret_->dof_row_map(nds_intvar_);
   intphinp_ = Core::LinAlg::create_vector(*intdofrowmap, true);
   intphin_ = Core::LinAlg::create_vector(*intdofrowmap, true);
 
@@ -414,8 +414,8 @@ void ScaTra::TimIntHDG::read_restart(const int step, std::shared_ptr<Core::IO::I
       // binning strategy for parallel redistribution
       std::shared_ptr<Core::Binstrategy::BinningStrategy> binningstrategy;
 
-      std::vector<std::shared_ptr<Epetra_Map>> stdelecolmap;
-      std::vector<std::shared_ptr<Epetra_Map>> stdnodecolmap;
+      std::vector<std::shared_ptr<Core::LinAlg::Map>> stdelecolmap;
+      std::vector<std::shared_ptr<Core::LinAlg::Map>> stdnodecolmap;
 
       // binning strategy is created and parallel redistribution is performed
       Teuchos::ParameterList binning_params =
@@ -530,8 +530,8 @@ void ScaTra::TimIntHDG::set_initial_field(
       Core::LinAlg::SerialDenseVector updateVec1, updateVec2, dummyVec;
       Core::Elements::LocationArray la(discret_->num_dof_sets());
 
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
-      const Epetra_Map* intdofrowmap = discret_->dof_row_map(nds_intvar_);
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
+      const Core::LinAlg::Map* intdofrowmap = discret_->dof_row_map(nds_intvar_);
       double error = 0;
 
       for (int iele = 0; iele < discret_->num_my_col_elements(); ++iele)
@@ -656,7 +656,7 @@ void ScaTra::TimIntHDG::update_interior_variables(
   Core::LinAlg::SerialDenseVector dummyVec;
   Core::LinAlg::SerialDenseVector updateVec;
   Core::Elements::LocationArray la(discret_->num_dof_sets());
-  const Epetra_Map* intdofrowmap = discret_->dof_row_map(nds_intvar_);
+  const Core::LinAlg::Map* intdofrowmap = discret_->dof_row_map(nds_intvar_);
 
   for (int iele = 0; iele < discret_->num_my_col_elements(); ++iele)
   {
@@ -692,8 +692,8 @@ void ScaTra::TimIntHDG::fd_check()
 
   discret_->clear_state(true);
 
-  const Epetra_Map* dofrowmap = discret_->dof_row_map(0);
-  const Epetra_Map* intdofrowmap = discret_->dof_row_map(nds_intvar_);
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map(0);
+  const Core::LinAlg::Map* intdofrowmap = discret_->dof_row_map(nds_intvar_);
 
   std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1, systemmatrix2;
   std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1, systemvector2, systemvector3;
@@ -1086,8 +1086,8 @@ void ScaTra::TimIntHDG::adapt_degree()
   std::vector<Core::Elements::LocationArray> la_old;
 
   // copy the old face dof map and the old interior element dof map
-  Epetra_Map facedofs_old(*discret_->dof_col_map(0));
-  Epetra_Map eledofs_old(*discret_->dof_col_map(nds_intvar_));
+  Core::LinAlg::Map facedofs_old(*discret_->dof_col_map(0));
+  Core::LinAlg::Map eledofs_old(*discret_->dof_col_map(nds_intvar_));
 
   // set action
   Teuchos::ParameterList eleparams;
@@ -1294,8 +1294,8 @@ void ScaTra::TimIntHDG::adapt_variable_vector(std::shared_ptr<Core::LinAlg::Vect
   eleparams.set<int>("nds_intvar_old", nds_intvar_old);
 
   // dof row map for adapted dofset
-  const Epetra_Map* intdofrowmap = discret_->dof_row_map(nds_intvar_);
-  const Epetra_Map* dofrowmap = discret_->dof_row_map(0);
+  const Core::LinAlg::Map* intdofrowmap = discret_->dof_row_map(nds_intvar_);
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map(0);
 
 
   // set old state vector on parameter list

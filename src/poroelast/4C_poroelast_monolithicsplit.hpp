@@ -63,7 +63,7 @@ namespace PoroElast
     void build_combined_dbc_map() override;
 
     //! map containing the dofs with Dirichlet BC and FSI Coupling Condition on structure side
-    std::shared_ptr<Epetra_Map> fsidbc_map();
+    std::shared_ptr<Core::LinAlg::Map> fsidbc_map();
 
     //! setup of coupling object and systemmatrixes
     virtual void setup_coupling_and_matrices();
@@ -76,7 +76,7 @@ namespace PoroElast
     bool evaluateinterface_;
 
     //! map containing DOFs with both fsi- and DBC conditions
-    std::shared_ptr<Epetra_Map> fsibcmap_;
+    std::shared_ptr<Core::LinAlg::Map> fsibcmap_;
 
     //! map extractor DOFs with both fsi- and DBC conditions
     std::shared_ptr<Core::LinAlg::MapExtractor> fsibcextractor_;

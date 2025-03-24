@@ -62,7 +62,7 @@ void CONSTRAINTS::SUBMODELEVALUATOR::ConstraintBase::evaluate_coupling_terms(
   for (const auto& mpc : listMPCs_) ncon_ += mpc->get_number_of_mp_cs();
 
   // ToDo: Add an offset to the constraint dof map.
-  n_condition_map_ = std::make_shared<Epetra_Map>(ncon_, 0, stiff_ptr_->Comm());
+  n_condition_map_ = std::make_shared<Core::LinAlg::Map>(ncon_, 0, stiff_ptr_->Comm());
 
   // initialise all global coupling objects
   constraint_vector_ = std::make_shared<Core::LinAlg::Vector<double>>(*n_condition_map_, true);
@@ -82,7 +82,7 @@ void CONSTRAINTS::SUBMODELEVALUATOR::ConstraintBase::evaluate_coupling_terms(
 
   // Complete
   Q_dd_->complete();
-  Q_Ld_->complete(stiff_ptr_->domain_map(), *n_condition_map_);
-  Q_dL_->complete(*n_condition_map_, stiff_ptr_->domain_map());
+  Q_Ld_->complete(stiff_ptr_->domain_map_not_epetra(), *n_condition_map_);
+  Q_dL_->complete(*n_condition_map_, stiff_ptr_->domain_map_not_epetra());
 }
 FOUR_C_NAMESPACE_CLOSE

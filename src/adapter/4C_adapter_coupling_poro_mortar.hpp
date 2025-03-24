@@ -16,9 +16,8 @@
 #include "4C_adapter_coupling_nonlin_mortar.hpp"
 #include "4C_contact_lagrange_strategy_poro.hpp"
 #include "4C_coupling_adapter.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
-
-#include <Epetra_Map.h>
 
 #include <memory>
 
@@ -63,7 +62,7 @@ namespace Adapter
         std::shared_ptr<Core::LinAlg::SparseMatrix>& f,
         std::shared_ptr<Core::LinAlg::SparseMatrix>& k_fs,
         std::shared_ptr<Core::LinAlg::Vector<double>>& frhs, Coupling::Adapter::Coupling& coupfs,
-        std::shared_ptr<const Epetra_Map> fdofrowmap);
+        std::shared_ptr<const Core::LinAlg::Map> fdofrowmap);
 
     void update_poro_mt();
 

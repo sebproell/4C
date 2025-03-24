@@ -107,16 +107,19 @@ namespace PoroElast
     }
 
     //! full monolithic dof row map
-    std::shared_ptr<const Epetra_Map> dof_row_map() override;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() override;
 
     //! dof row map of Structure field
-    std::shared_ptr<const Epetra_Map> dof_row_map_structure() override;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map_structure() override;
 
     //! dof row map of Fluid field
-    std::shared_ptr<const Epetra_Map> dof_row_map_fluid() override;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map_fluid() override;
 
     //! unique map of all dofs that should be constrained with DBC
-    std::shared_ptr<const Epetra_Map> combined_dbc_map() const override { return combinedDBCMap_; }
+    std::shared_ptr<const Core::LinAlg::Map> combined_dbc_map() const override
+    {
+      return combinedDBCMap_;
+    }
 
     //! right hand side vector
     std::shared_ptr<const Core::LinAlg::Vector<double>> rhs() override { return rhs_; }
@@ -131,13 +134,13 @@ namespace PoroElast
     void increment_poro_iter();
 
     //! fluid_field()->system_matrix()->RangeMap()
-    const Epetra_Map& fluid_range_map();
+    const Core::LinAlg::Map& fluid_range_map();
 
     //! fluid_field()->system_matrix()->DomainMap()
-    const Epetra_Map& fluid_domain_map();
+    const Core::LinAlg::Map& fluid_domain_map();
 
     //! structure_field()->system_matrix()->DomainMap()
-    const Epetra_Map& structure_domain_map();
+    const Core::LinAlg::Map& structure_domain_map();
 
     //!@}
 
@@ -313,13 +316,13 @@ namespace PoroElast
     //!@}
 
     //! dof row map (not split)
-    std::shared_ptr<Epetra_Map> fullmap_;
+    std::shared_ptr<Core::LinAlg::Map> fullmap_;
 
     //! dof row map split in (field) blocks
     std::shared_ptr<Core::LinAlg::MultiMapExtractor> blockrowdofmap_;
 
     //! dirichlet map of monolithic system
-    std::shared_ptr<Epetra_Map> combinedDBCMap_;
+    std::shared_ptr<Core::LinAlg::Map> combinedDBCMap_;
 
     //! return structure fluid coupling sparse matrix
     std::shared_ptr<Core::LinAlg::SparseMatrix> struct_fluid_coupling_matrix();

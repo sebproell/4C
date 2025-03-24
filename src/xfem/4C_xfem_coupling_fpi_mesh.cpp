@@ -80,8 +80,8 @@ void XFEM::MeshCouplingFPI::init_state_vectors()
 {
   XFEM::MeshCoupling::init_state_vectors();
 
-  const Epetra_Map* cutterdofrowmap = cutter_dis_->dof_row_map();
-  const Epetra_Map* cutterdofcolmap = cutter_dis_->dof_col_map();
+  const Core::LinAlg::Map* cutterdofrowmap = cutter_dis_->dof_row_map();
+  const Core::LinAlg::Map* cutterdofcolmap = cutter_dis_->dof_col_map();
 
   itrueresidual_ = Core::LinAlg::create_vector(*cutterdofrowmap, true);
   iforcecol_ = Core::LinAlg::create_vector(*cutterdofcolmap, true);
@@ -754,7 +754,7 @@ void XFEM::MeshCouplingFPI::lift_drag(const int step, const double time) const
   {
     // compute force components
     const int nsd = 3;
-    const Epetra_Map* dofcolmap = cutter_dis_->dof_col_map();
+    const Core::LinAlg::Map* dofcolmap = cutter_dis_->dof_col_map();
     Core::LinAlg::Matrix<3, 1> c(true);
     for (int inode = 0; inode < cutter_dis_->num_my_col_nodes(); ++inode)
     {

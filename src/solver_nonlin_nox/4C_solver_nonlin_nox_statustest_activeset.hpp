@@ -56,7 +56,7 @@ namespace NOX
         //! size of the active set
         int activesetsize_;
 
-        std::deque<Teuchos::RCP<const Epetra_Map>> cycling_maps_;
+        std::deque<Teuchos::RCP<const Core::LinAlg::Map>> cycling_maps_;
       };  // class ActiveSet
     }  // namespace StatusTest
   }  // namespace Nln

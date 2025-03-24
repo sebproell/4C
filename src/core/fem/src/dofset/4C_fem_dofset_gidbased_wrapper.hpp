@@ -14,8 +14,7 @@
 #include "4C_fem_dofset_base.hpp"
 #include "4C_fem_general_element.hpp"
 #include "4C_fem_general_node.hpp"
-
-#include <Epetra_Map.h>
+#include "4C_linalg_map.hpp"
 
 #include <memory>
 
@@ -216,14 +215,14 @@ namespace Core::DOFSets
     };
 
     /// Get degree of freedom row map
-    const Epetra_Map* dof_row_map() const override
+    const Core::LinAlg::Map* dof_row_map() const override
     {
       check_is_assigned();
       return sourcedofset_->dof_row_map();
     };
 
     /// Get degree of freedom column map
-    const Epetra_Map* dof_col_map() const override
+    const Core::LinAlg::Map* dof_col_map() const override
     {
       check_is_assigned();
       return sourcedofset_->dof_col_map();

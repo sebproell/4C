@@ -23,6 +23,7 @@
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_mortar_utils.hpp"
+#include "4C_structure_new_timint_base.hpp"
 
 #include <Epetra_FEVector.h>
 #include <Teuchos_Time.hpp>
@@ -33,9 +34,9 @@ FOUR_C_NAMESPACE_OPEN
  *----------------------------------------------------------------------*/
 Wear::LagrangeStrategyWear::LagrangeStrategyWear(
     const std::shared_ptr<CONTACT::AbstractStrategyDataContainer>& data_ptr,
-    const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
-    std::vector<std::shared_ptr<CONTACT::Interface>> interfaces, int dim, MPI_Comm comm,
-    double alphaf, int maxdof)
+    const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
+    Teuchos::ParameterList params, std::vector<std::shared_ptr<CONTACT::Interface>> interfaces,
+    int dim, MPI_Comm comm, double alphaf, int maxdof)
     : LagrangeStrategy(
           data_ptr, dof_row_map, NodeRowMap, params, interfaces, dim, comm, alphaf, maxdof),
       weightedwear_(false),
@@ -107,7 +108,7 @@ void Wear::LagrangeStrategyWear::setup_wear(bool redistributed, bool init)
   maxdofwear_ = maxdof_ + glmdofrowmap_->NumGlobalElements();
 
   // ------------------------------------------------------------------------
-  // setup global accessible Epetra_Maps
+  // setup global accessible Core::LinAlg::Maps
   // ------------------------------------------------------------------------
 
   // make sure to remove all existing maps first
@@ -545,8 +546,8 @@ void Wear::LagrangeStrategyWear::initialize()
           *gmslipn_, 100, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
       // w - rhs
-      inactive_wear_rhs_m_ = std::make_shared<Epetra_FEVector>(*gwminact_);
-      wear_cond_rhs_m_ = std::make_shared<Epetra_FEVector>(*gmslipn_);
+      inactive_wear_rhs_m_ = std::make_shared<Epetra_FEVector>(gwminact_->get_epetra_map());
+      wear_cond_rhs_m_ = std::make_shared<Epetra_FEVector>(gmslipn_->get_epetra_map());
     }
   }
 
@@ -568,7 +569,7 @@ void Wear::LagrangeStrategyWear::condense_wear_impl_expl(
     FOUR_C_THROW("Condensation only for dual LM");
 
   // get stick map
-  std::shared_ptr<Epetra_Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
+  std::shared_ptr<Core::LinAlg::Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
 
   /********************************************************************/
   /* (1) Multiply Mortar matrices: m^ = inv(d) * m                    */
@@ -625,7 +626,7 @@ void Wear::LagrangeStrategyWear::condense_wear_impl_expl(
   std::shared_ptr<Core::LinAlg::SparseMatrix> ksmsm, ksmn, knsm;
 
   // some temporary std::shared_ptrs
-  std::shared_ptr<Epetra_Map> tempmap;
+  std::shared_ptr<Core::LinAlg::Map> tempmap;
   std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1;
   std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx2;
   std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx3;
@@ -734,7 +735,7 @@ void Wear::LagrangeStrategyWear::condense_wear_impl_expl(
   std::shared_ptr<Core::LinAlg::SparseMatrix> kan, kin, kam, kim, kma, kmi;
 
   // we will get the i rowmap as a by-product
-  std::shared_ptr<Epetra_Map> gidofs;
+  std::shared_ptr<Core::LinAlg::Map> gidofs;
 
   // do the splitting
   Core::LinAlg::split_matrix2x2(
@@ -753,11 +754,11 @@ void Wear::LagrangeStrategyWear::condense_wear_impl_expl(
   std::shared_ptr<Core::LinAlg::SparseMatrix> ksln, kstn, kslm, kstm, ksli, ksti;
 
   // some temporary std::shared_ptrs
-  std::shared_ptr<Epetra_Map> temp1map;
+  std::shared_ptr<Core::LinAlg::Map> temp1map;
   std::shared_ptr<Core::LinAlg::SparseMatrix> temp1mtx4, temp1mtx5;
 
   // we will get the stick rowmap as a by-product
-  std::shared_ptr<Epetra_Map> gstdofs;
+  std::shared_ptr<Core::LinAlg::Map> gstdofs;
 
   Core::LinAlg::split_matrix2x2(
       kaa, gactivedofs_, gidofs, gstdofs, gslipdofs_, kast, kasl, temp1mtx4, temp1mtx5);
@@ -1222,7 +1223,7 @@ void Wear::LagrangeStrategyWear::condense_wear_impl_expl(
     }
   }
   //--------------------------------------------------------- FIFTH LINE
-  std::shared_ptr<Epetra_Map> gstickdofs =
+  std::shared_ptr<Core::LinAlg::Map> gstickdofs =
       Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);  // get global stick dofs
 
   // split the lagrange multiplier vector in stick and slip part
@@ -1573,7 +1574,7 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
   if (wearshapefcn != Inpar::Wear::wear_shape_dual) FOUR_C_THROW("Condensation only for dual wear");
 
   // get stick map
-  std::shared_ptr<Epetra_Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
+  std::shared_ptr<Core::LinAlg::Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
 
   /********************************************************************/
   /* (1a) Multiply Mortar matrices: m^ = inv(d) * m                    */
@@ -1629,7 +1630,7 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
   std::shared_ptr<Core::LinAlg::SparseMatrix> ksmsm, ksmn, knsm;
 
   // some temporary std::shared_ptrs
-  std::shared_ptr<Epetra_Map> tempmap;
+  std::shared_ptr<Core::LinAlg::Map> tempmap;
   std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1;
   std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx2;
   std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx3;
@@ -1738,7 +1739,7 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
   std::shared_ptr<Core::LinAlg::SparseMatrix> kan, kin, kam, kim, kma, kmi;
 
   // we will get the i rowmap as a by-product
-  std::shared_ptr<Epetra_Map> gidofs;
+  std::shared_ptr<Core::LinAlg::Map> gidofs;
 
   // do the splitting
   Core::LinAlg::split_matrix2x2(
@@ -1757,11 +1758,11 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
   std::shared_ptr<Core::LinAlg::SparseMatrix> ksln, kstn, kslm, kstm, ksli, ksti;
 
   // some temporary std::shared_ptrs
-  std::shared_ptr<Epetra_Map> temp1map;
+  std::shared_ptr<Core::LinAlg::Map> temp1map;
   std::shared_ptr<Core::LinAlg::SparseMatrix> temp1mtx4, temp1mtx5;
 
   // we will get the stick rowmap as a by-product
-  std::shared_ptr<Epetra_Map> gstdofs;
+  std::shared_ptr<Core::LinAlg::Map> gstdofs;
 
   Core::LinAlg::split_matrix2x2(
       kaa, gactivedofs_, gidofs, gstdofs, gslipdofs_, kast, kasl, temp1mtx4, temp1mtx5);
@@ -2092,7 +2093,7 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
         Core::LinAlg::matrix_multiply(*dhat, true, *kan, false, false, false, true);
     kinmod->add(*kinadd, false, -1.0, 1.0);
   }
-  kinmod->complete(kin->domain_map(), kin->row_map());
+  kinmod->complete(Core::LinAlg::Map(kin->domain_map()), kin->row_map());
 
   // kim: subtract T(dhat)*kam
   std::shared_ptr<Core::LinAlg::SparseMatrix> kimmod =
@@ -2104,7 +2105,7 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
         Core::LinAlg::matrix_multiply(*dhat, true, *kam, false, false, false, true);
     kimmod->add(*kimadd, false, -1.0, 1.0);
   }
-  kimmod->complete(kim->domain_map(), kim->row_map());
+  kimmod->complete(Core::LinAlg::Map(kim->domain_map()), kim->row_map());
 
   // kii: subtract T(dhat)*kai
   std::shared_ptr<Core::LinAlg::SparseMatrix> kiimod;
@@ -2118,7 +2119,7 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
           Core::LinAlg::matrix_multiply(*dhat, true, *kai, false, false, false, true);
       kiimod->add(*kiiadd, false, -1.0, 1.0);
     }
-    kiimod->complete(kii->domain_map(), kii->row_map());
+    kiimod->complete(Core::LinAlg::Map(kii->domain_map()), kii->row_map());
   }
 
   // kia: subtract T(dhat)*kaa
@@ -2130,7 +2131,7 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
     std::shared_ptr<Core::LinAlg::SparseMatrix> kiaadd =
         Core::LinAlg::matrix_multiply(*dhat, true, *kaa, false, false, false, true);
     kiamod->add(*kiaadd, false, -1.0, 1.0);
-    kiamod->complete(kia->domain_map(), kia->row_map());
+    kiamod->complete(Core::LinAlg::Map(kia->domain_map()), kia->row_map());
   }
 
   //--------------------------------------------------------- FOURTH LINE
@@ -2337,7 +2338,7 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
   if (aset && (iset || stickset)) smatrixW_i->multiply(false, *inactive_wear_rhs_, fwi_g);
 
   //--------------------------------------------------------- FIFTH LINE
-  std::shared_ptr<Epetra_Map> gstickdofs =
+  std::shared_ptr<Core::LinAlg::Map> gstickdofs =
       Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);  // get global stick dofs
 
   // split the lagrange multiplier vector in stick and slip part
@@ -2761,8 +2762,9 @@ void Wear::LagrangeStrategyWear::evaluate_friction(
   linmmatrix_->complete(*gsmdofrowmap_, *gmdofrowmap_);
 
   // fill_complete global Matrix linstickLM_, linstickDIS_
-  std::shared_ptr<Epetra_Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
-  std::shared_ptr<Epetra_Map> gstickdofs = Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);
+  std::shared_ptr<Core::LinAlg::Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
+  std::shared_ptr<Core::LinAlg::Map> gstickdofs =
+      Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);
   linstickLM_->complete(*gstickdofs, *gstickt);
   linstickDIS_->complete(*gsmdofrowmap_, *gstickt);
 
@@ -3187,18 +3189,18 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
       std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(kdd);
 
   // initialize merged system (matrix, rhs, sol);
-  std::shared_ptr<Epetra_Map> mergedmap = nullptr;
+  std::shared_ptr<Core::LinAlg::Map> mergedmap = nullptr;
   if (!wearprimvar_)
     mergedmap = Core::LinAlg::merge_map(problem_dofs(), glmdofrowmap_, false);
   else if (wearprimvar_ and !wearbothpv_)
   {
-    std::shared_ptr<Epetra_Map> map_dummy =
+    std::shared_ptr<Core::LinAlg::Map> map_dummy =
         Core::LinAlg::merge_map(problem_dofs(), glmdofrowmap_, false);
     mergedmap = Core::LinAlg::merge_map(map_dummy, gwdofrowmap_, false);
   }
   else
   {
-    std::shared_ptr<Epetra_Map> map_dummy =
+    std::shared_ptr<Core::LinAlg::Map> map_dummy =
         Core::LinAlg::merge_map(problem_dofs(), glmdofrowmap_, false);
     mergedmap = Core::LinAlg::merge_map(map_dummy, gwdofrowmap_, false);
     mergedmap = Core::LinAlg::merge_map(mergedmap, gwmdofrowmap_, false);  // slave + master wear
@@ -3248,7 +3250,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
   else if (!wearprimvar_)
   {
     // global stick dof map
-    std::shared_ptr<Epetra_Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
+    std::shared_ptr<Core::LinAlg::Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
 
     // build constraint matrix kdz
     Core::LinAlg::SparseMatrix kdz(*gdisprowmap_, 100, false, true);
@@ -3280,7 +3282,8 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
       trkzd = Mortar::matrix_col_transform(*trkzd, *problem_dofs());
 
     // build unity matrix for inactive dofs
-    std::shared_ptr<Epetra_Map> gidofs = Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
+    std::shared_ptr<Core::LinAlg::Map> gidofs =
+        Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
     Core::LinAlg::Vector<double> ones(*gidofs);
     ones.put_scalar(1.0);
     Core::LinAlg::SparseMatrix onesdiag(ones);
@@ -3357,7 +3360,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
   else if (wearprimvar_ and !wearbothpv_)
   {
     // global stick dof map
-    std::shared_ptr<Epetra_Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
+    std::shared_ptr<Core::LinAlg::Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
 
     // build constraint matrix kdz
     Core::LinAlg::SparseMatrix kdz(*gdisprowmap_, 100, false, true);
@@ -3389,7 +3392,8 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
       trkzd = Mortar::matrix_col_transform(*trkzd, *problem_dofs());
 
     // build unity matrix for inactive dofs
-    std::shared_ptr<Epetra_Map> gidofs = Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
+    std::shared_ptr<Core::LinAlg::Map> gidofs =
+        Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
     Core::LinAlg::Vector<double> ones(*gidofs);
     ones.put_scalar(1.0);
     Core::LinAlg::SparseMatrix onesdiag(ones);
@@ -3553,7 +3557,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
   else if (wearprimvar_ and wearbothpv_)
   {
     // global stick dof map
-    std::shared_ptr<Epetra_Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
+    std::shared_ptr<Core::LinAlg::Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
 
     // build constraint matrix kdz
     Core::LinAlg::SparseMatrix kdz(*gdisprowmap_, 100, false, true);
@@ -3585,7 +3589,8 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
       trkzd = Mortar::matrix_col_transform(*trkzd, *problem_dofs());
 
     // build unity matrix for inactive dofs
-    std::shared_ptr<Epetra_Map> gidofs = Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
+    std::shared_ptr<Core::LinAlg::Map> gidofs =
+        Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
     Core::LinAlg::Vector<double> ones(*gidofs);
     ones.put_scalar(1.0);
     Core::LinAlg::SparseMatrix onesdiag(ones);
@@ -3796,7 +3801,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     trkdz->apply_dirichlet(dirichtoggle, false);
 
     // row map (equals domain map) extractor
-    std::vector<std::shared_ptr<const Epetra_Map>> mapvec;
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> mapvec;
     mapvec.push_back(problem_dofs());
     mapvec.push_back(glmdofrowmap_);
     if (wearprimvar_)
@@ -3818,7 +3823,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
       if (!wearbothpv_)
       {
         // merged map ws + wm + z
-        std::shared_ptr<Epetra_Map> gmap = nullptr;
+        std::shared_ptr<Core::LinAlg::Map> gmap = nullptr;
         gmap = Core::LinAlg::merge_map(gwdofrowmap_, glmdofrowmap_, false);
 
         // row map (equals domain map) extractor
@@ -3861,8 +3866,8 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
       else
       {
         // merged map ws + wm + z
-        std::shared_ptr<Epetra_Map> gmap = nullptr;
-        std::shared_ptr<Epetra_Map> map_dummyg =
+        std::shared_ptr<Core::LinAlg::Map> gmap = nullptr;
+        std::shared_ptr<Core::LinAlg::Map> map_dummyg =
             Core::LinAlg::merge_map(gwdofrowmap_, gwmdofrowmap_, false);
         gmap = Core::LinAlg::merge_map(map_dummyg, glmdofrowmap_, false);
 
@@ -3988,20 +3993,20 @@ void Wear::LagrangeStrategyWear::update_displacements_and_l_mincrements(
   if (wearbothpv_) solwm = std::make_shared<Core::LinAlg::Vector<double>>(*gwmdofrowmap_);
 
   // initialize merged system (matrix, rhs, sol);
-  std::shared_ptr<Epetra_Map> mergedmap = nullptr;
+  std::shared_ptr<Core::LinAlg::Map> mergedmap = nullptr;
   if (!wearprimvar_)
   {
     mergedmap = Core::LinAlg::merge_map(problem_dofs(), glmdofrowmap_, false);
   }
   else if (wearprimvar_ and !wearbothpv_)
   {
-    std::shared_ptr<Epetra_Map> map_dummy =
+    std::shared_ptr<Core::LinAlg::Map> map_dummy =
         Core::LinAlg::merge_map(problem_dofs(), glmdofrowmap_, false);
     mergedmap = Core::LinAlg::merge_map(map_dummy, gwdofrowmap_, false);
   }
   else
   {
-    std::shared_ptr<Epetra_Map> map_dummy =
+    std::shared_ptr<Core::LinAlg::Map> map_dummy =
         Core::LinAlg::merge_map(problem_dofs(), glmdofrowmap_, false);
     mergedmap = Core::LinAlg::merge_map(map_dummy, gwdofrowmap_, false);
     mergedmap = Core::LinAlg::merge_map(mergedmap, gwmdofrowmap_, false);  // slave + master wear
@@ -4130,7 +4135,7 @@ void Wear::LagrangeStrategyWear::output_wear()
     // extract active parts of D matrix
     // matrices, maps
     std::shared_ptr<Core::LinAlg::SparseMatrix> data, dai, dia, dii;
-    std::shared_ptr<Epetra_Map> gidofs;
+    std::shared_ptr<Core::LinAlg::Map> gidofs;
 
     // ****************************************************************
     // split the matrix
@@ -4208,7 +4213,7 @@ void Wear::LagrangeStrategyWear::output_wear()
       // extract involved parts of d2 matrix
       // matrices, maps - i: involved ; n: non-involved
       std::shared_ptr<Core::LinAlg::SparseMatrix> d2ii, d2in, d2ni, d2nn;
-      std::shared_ptr<Epetra_Map> gndofs;  // non-involved dofs
+      std::shared_ptr<Core::LinAlg::Map> gndofs;  // non-involved dofs
 
       Core::LinAlg::split_matrix2x2(
           d2matrix_, gminvolveddofs_, gndofs, gminvolveddofs_, gndofs, d2ii, d2in, d2ni, d2nn);
@@ -4373,7 +4378,7 @@ void Wear::LagrangeStrategyWear::recover(std::shared_ptr<Core::LinAlg::Vector<do
     // only contains the active diagonal block
     // (this automatically renders the inactive LM to be zero)
     std::shared_ptr<Core::LinAlg::SparseMatrix> invda;
-    std::shared_ptr<Epetra_Map> tempmap;
+    std::shared_ptr<Core::LinAlg::Map> tempmap;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1, tempmtx2, tempmtx3;
     Core::LinAlg::split_matrix2x2(
         invd_, gactivedofs_, tempmap, gactivedofs_, tempmap, invda, tempmtx1, tempmtx2, tempmtx3);
@@ -4485,7 +4490,7 @@ void Wear::LagrangeStrategyWear::recover(std::shared_ptr<Core::LinAlg::Vector<do
     // only contains the active diagonal block
     // (this automatically renders the inactive LM to be zero)
     std::shared_ptr<Core::LinAlg::SparseMatrix> invda;
-    std::shared_ptr<Epetra_Map> tempmap;
+    std::shared_ptr<Core::LinAlg::Map> tempmap;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1, tempmtx2, tempmtx3;
     Core::LinAlg::split_matrix2x2(
         invd_, gactivedofs_, tempmap, gactivedofs_, tempmap, invda, tempmtx1, tempmtx2, tempmtx3);
@@ -4870,7 +4875,7 @@ void Wear::LagrangeStrategyWear::do_read_restart(
     store_to_old(Mortar::StrategyBase::dm);
   }
 
-  // (re)setup active global Epetra_Maps
+  // (re)setup active global Core::LinAlg::Maps
   gactivenodes_ = nullptr;
   gactivedofs_ = nullptr;
   gactiven_ = nullptr;
@@ -5006,7 +5011,7 @@ void Wear::LagrangeStrategyWear::update_wear_discret_iterate(bool store)
       }
       if (wearbothpv_)
       {
-        const std::shared_ptr<Epetra_Map> masternodes =
+        const std::shared_ptr<Core::LinAlg::Map> masternodes =
             Core::LinAlg::allreduce_e_map(*(interface_[i]->master_row_nodes()));
 
         for (int j = 0; j < (int)masternodes->NumMyElements(); ++j)
@@ -5092,7 +5097,7 @@ void Wear::LagrangeStrategyWear::store_nodal_quantities(Mortar::StrategyBase::Qu
     // slave dof and node map of the interface
     // columnmap for current or updated LM
     // rowmap for remaining cases
-    std::shared_ptr<const Epetra_Map> sdofmap, snodemap;
+    std::shared_ptr<const Core::LinAlg::Map> sdofmap, snodemap;
     if (type == Mortar::StrategyBase::wupdate or type == Mortar::StrategyBase::wold or
         type == Mortar::StrategyBase::wupdateT)
     {
@@ -5110,7 +5115,7 @@ void Wear::LagrangeStrategyWear::store_nodal_quantities(Mortar::StrategyBase::Qu
     if (type == Mortar::StrategyBase::wmupdate or type == Mortar::StrategyBase::wmold)
     {
       // export global quantity to current interface slave dof map (column or row)
-      const std::shared_ptr<Epetra_Map> masterdofs =
+      const std::shared_ptr<Core::LinAlg::Map> masterdofs =
           Core::LinAlg::allreduce_e_map(*(interface_[i]->master_row_dofs()));
       vectorinterface = std::make_shared<Core::LinAlg::Vector<double>>(*masterdofs);
 
@@ -5127,7 +5132,7 @@ void Wear::LagrangeStrategyWear::store_nodal_quantities(Mortar::StrategyBase::Qu
     }
 
     // master specific
-    const std::shared_ptr<Epetra_Map> masternodes =
+    const std::shared_ptr<Core::LinAlg::Map> masternodes =
         Core::LinAlg::allreduce_e_map(*(interface_[i]->master_row_nodes()));
     if (type == Mortar::StrategyBase::wmupdate)
     {

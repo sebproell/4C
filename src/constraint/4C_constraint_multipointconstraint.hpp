@@ -133,7 +133,7 @@ namespace CONSTRAINTS
 
 
     //    /// find col node map so that we can evaluate the constraint elements
-    //    std::shared_ptr<Epetra_Map> ComputeNodeColMap(
+    //    std::shared_ptr<Core::LinAlg::Map> ComputeNodeColMap(
     //             const std::shared_ptr<Core::FE::Discretization> sourcedis,  ///< standard
     //             discretization we want to redistribute const
     //             std::shared_ptr<Core::FE::Discretization> constraintdis

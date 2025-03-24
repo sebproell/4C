@@ -131,7 +131,7 @@ namespace POROFLUIDMULTIPHASE
      * @return             nodal position as a std::map<int, Core::LinAlg::Matrix<3, 1>>
      */
     std::map<int, Core::LinAlg::Matrix<3, 1>> get_nodal_positions(
-        Core::FE::Discretization& dis, const Epetra_Map* nodemap);
+        Core::FE::Discretization& dis, const Core::LinAlg::Map* nodemap);
 
     //! Determine norm of vector
     double calculate_vector_norm(

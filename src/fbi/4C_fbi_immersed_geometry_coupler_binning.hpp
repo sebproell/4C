@@ -13,9 +13,8 @@
 #include "4C_binstrategy.hpp"
 #include "4C_fbi_immersed_geometry_coupler.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
-
-#include <Epetra_Map.h>
 
 #include <map>
 #include <memory>
@@ -134,7 +133,7 @@ namespace FBI
     std::map<int, std::set<int>> bintoelemap_;
 
     /// Row map of the bin discretization
-    std::shared_ptr<Epetra_Map> binrowmap_;
+    std::shared_ptr<Core::LinAlg::Map> binrowmap_;
   };
 }  // namespace FBI
 

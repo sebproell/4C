@@ -38,23 +38,23 @@ void FLD::Utils::MapExtractor::setup(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void FLD::Utils::MapExtractor::setup(std::shared_ptr<const Epetra_Map>& additionalothermap,
+void FLD::Utils::MapExtractor::setup(std::shared_ptr<const Core::LinAlg::Map>& additionalothermap,
     const FLD::Utils::MapExtractor& extractor)
 {
   // build the new othermap
-  std::vector<std::shared_ptr<const Epetra_Map>> othermaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> othermaps;
   othermaps.push_back(additionalothermap);
   othermaps.push_back(extractor.other_map());
 
   if (Core::LinAlg::MultiMapExtractor::intersect_maps(othermaps)->NumGlobalElements() > 0)
     FOUR_C_THROW("Failed to add dofmap of foreign discretization to other_map. Detected overlap.");
 
-  std::shared_ptr<const Epetra_Map> mergedothermap =
+  std::shared_ptr<const Core::LinAlg::Map> mergedothermap =
       Core::LinAlg::MultiMapExtractor::merge_maps(othermaps);
 
   // the vector of maps for the new map extractor consists of othermap at position 0
   // followed by the maps of conditioned DOF
-  std::vector<std::shared_ptr<const Epetra_Map>> maps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
   // append the merged other map at first position
   maps.push_back(mergedothermap);
 
@@ -62,7 +62,8 @@ void FLD::Utils::MapExtractor::setup(std::shared_ptr<const Epetra_Map>& addition
   for (int i = 1; i < extractor.num_maps(); ++i) maps.push_back(extractor.Map(i));
 
   // merge
-  std::shared_ptr<const Epetra_Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
+  std::shared_ptr<const Core::LinAlg::Map> fullmap =
+      Core::LinAlg::MultiMapExtractor::merge_maps(maps);
 
   Core::LinAlg::MultiMapExtractor::setup(*fullmap, maps);
 }
@@ -146,23 +147,24 @@ void FLD::Utils::FsiMapExtractor::setup(const Core::FE::Discretization& dis)
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void FLD::Utils::FsiMapExtractor::setup(std::shared_ptr<const Epetra_Map>& additionalothermap,
+void FLD::Utils::FsiMapExtractor::setup(
+    std::shared_ptr<const Core::LinAlg::Map>& additionalothermap,
     const FLD::Utils::FsiMapExtractor& extractor)
 {
   // build the new othermap
-  std::vector<std::shared_ptr<const Epetra_Map>> othermaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> othermaps;
   othermaps.push_back(additionalothermap);
   othermaps.push_back(extractor.other_map());
 
   if (Core::LinAlg::MultiMapExtractor::intersect_maps(othermaps)->NumGlobalElements() > 0)
     FOUR_C_THROW("Failed to add dofmap of foreign discretization to other_map. Detected overlap.");
 
-  std::shared_ptr<const Epetra_Map> mergedothermap =
+  std::shared_ptr<const Core::LinAlg::Map> mergedothermap =
       Core::LinAlg::MultiMapExtractor::merge_maps(othermaps);
 
   // the vector of maps for the new map extractor consists of othermap at position 0
   // followed by the maps of conditioned DOF
-  std::vector<std::shared_ptr<const Epetra_Map>> maps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
   // append the merged other map at first position
   maps.push_back(mergedothermap);
 
@@ -170,17 +172,19 @@ void FLD::Utils::FsiMapExtractor::setup(std::shared_ptr<const Epetra_Map>& addit
   for (int i = 1; i < extractor.num_maps(); ++i) maps.push_back(extractor.Map(i));
 
   // merge
-  std::shared_ptr<const Epetra_Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
+  std::shared_ptr<const Core::LinAlg::Map> fullmap =
+      Core::LinAlg::MultiMapExtractor::merge_maps(maps);
 
   Core::LinAlg::MultiMapExtractor::setup(*fullmap, maps);
 }
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void FLD::Utils::XFluidFluidMapExtractor::setup(const Epetra_Map& fullmap,
-    std::shared_ptr<const Epetra_Map> fluidmap, std::shared_ptr<const Epetra_Map> xfluidmap)
+void FLD::Utils::XFluidFluidMapExtractor::setup(const Core::LinAlg::Map& fullmap,
+    std::shared_ptr<const Core::LinAlg::Map> fluidmap,
+    std::shared_ptr<const Core::LinAlg::Map> xfluidmap)
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> maps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
   maps.push_back(fluidmap);
   maps.push_back(xfluidmap);
   MultiMapExtractor::setup(fullmap, maps);

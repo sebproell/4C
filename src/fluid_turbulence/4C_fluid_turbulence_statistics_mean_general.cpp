@@ -188,7 +188,7 @@ void FLD::TurbulenceStatisticsGeneralMean::space_average_in_one_direction(const 
   MPI_Comm avgcomm = discret_->get_comm();
 
   // get rowmap for dofs
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // get a tolerance
   const double eps = 1e-7;
@@ -1089,12 +1089,12 @@ void FLD::TurbulenceStatisticsGeneralMean::time_reset()
 {
   if (standarddofset_ != nullptr)  // XFEM case
   {
-    const Epetra_Map* dofrowmap = standarddofset_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = standarddofset_->dof_row_map();
     time_reset_fluid_avg_vectors(*dofrowmap);
   }
   else  // standard fluid case
   {
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
     time_reset_fluid_avg_vectors(*dofrowmap);
   }
 
@@ -1102,7 +1102,7 @@ void FLD::TurbulenceStatisticsGeneralMean::time_reset()
   {
     if (scatradis_ != nullptr)
     {
-      const Epetra_Map* scatradofrowmap = scatradis_->dof_row_map();
+      const Core::LinAlg::Map* scatradofrowmap = scatradis_->dof_row_map();
       curr_avg_scatra_ = nullptr;
       curr_avg_scatra_ = Core::LinAlg::create_vector(*scatradofrowmap, true);
     }
@@ -1117,7 +1117,8 @@ void FLD::TurbulenceStatisticsGeneralMean::time_reset()
 //     Clear all statistics vectors based on fluid maps collected in the current period
 //
 //----------------------------------------------------------------------
-void FLD::TurbulenceStatisticsGeneralMean::time_reset_fluid_avg_vectors(const Epetra_Map& dofrowmap)
+void FLD::TurbulenceStatisticsGeneralMean::time_reset_fluid_avg_vectors(
+    const Core::LinAlg::Map& dofrowmap)
 {
   curr_avg_ = nullptr;
   curr_avg_ = Core::LinAlg::create_vector(dofrowmap, true);
@@ -1137,12 +1138,12 @@ void FLD::TurbulenceStatisticsGeneralMean::reset_complete()
 {
   if (standarddofset_ != nullptr)  // XFEM case
   {
-    const Epetra_Map* dofrowmap = standarddofset_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = standarddofset_->dof_row_map();
     reset_fluid_avg_vectors(*dofrowmap);
   }
   else  // standard fluid case
   {
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
     reset_fluid_avg_vectors(*dofrowmap);
   }
 
@@ -1150,7 +1151,7 @@ void FLD::TurbulenceStatisticsGeneralMean::reset_complete()
   {
     if (scatradis_ != nullptr)
     {
-      const Epetra_Map* scatradofrowmap = scatradis_->dof_row_map();
+      const Core::LinAlg::Map* scatradofrowmap = scatradis_->dof_row_map();
       curr_avg_scatra_ = nullptr;
       curr_avg_scatra_ = Core::LinAlg::create_vector(*scatradofrowmap, true);
       prev_avg_scatra_ = nullptr;
@@ -1165,7 +1166,8 @@ void FLD::TurbulenceStatisticsGeneralMean::reset_complete()
 //          Clear all statistics vectors based on fluid maps
 //
 //----------------------------------------------------------------------
-void FLD::TurbulenceStatisticsGeneralMean::reset_fluid_avg_vectors(const Epetra_Map& dofrowmap)
+void FLD::TurbulenceStatisticsGeneralMean::reset_fluid_avg_vectors(
+    const Core::LinAlg::Map& dofrowmap)
 {
   curr_avg_ = nullptr;
   curr_avg_ = Core::LinAlg::create_vector(dofrowmap, true);
@@ -1198,7 +1200,7 @@ void FLD::TurbulenceStatisticsGeneralMean::redistribute(
 {
   standarddofset_ = nullptr;
   standarddofset_ = standarddofset;
-  const Epetra_Map* dofrowmap = standarddofset_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = standarddofset_->dof_row_map();
 
   // split based on complete fluid field
   Core::LinAlg::create_map_extractor_from_discretization(
@@ -1238,7 +1240,7 @@ void FLD::TurbulenceStatisticsGeneralMean::redistribute(
 
     if (scatradis_ != nullptr)
     {
-      const Epetra_Map* scatradofrowmap = scatradis_->dof_row_map();
+      const Core::LinAlg::Map* scatradofrowmap = scatradis_->dof_row_map();
 
       if (curr_avg_scatra_ != nullptr)
       {

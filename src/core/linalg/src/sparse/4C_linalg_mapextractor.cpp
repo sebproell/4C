@@ -23,8 +23,8 @@ Core::LinAlg::MultiMapExtractor::MultiMapExtractor() {}
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-Core::LinAlg::MultiMapExtractor::MultiMapExtractor(
-    const Epetra_Map& fullmap, const std::vector<std::shared_ptr<const Epetra_Map>>& maps)
+Core::LinAlg::MultiMapExtractor::MultiMapExtractor(const Core::LinAlg::Map& fullmap,
+    const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps)
 {
   setup(fullmap, maps);
 }
@@ -32,10 +32,10 @@ Core::LinAlg::MultiMapExtractor::MultiMapExtractor(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Core::LinAlg::MultiMapExtractor::setup(
-    const Epetra_Map& fullmap, const std::vector<std::shared_ptr<const Epetra_Map>>& maps)
+void Core::LinAlg::MultiMapExtractor::setup(const Core::LinAlg::Map& fullmap,
+    const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps)
 {
-  fullmap_ = std::make_shared<Epetra_Map>(fullmap);
+  fullmap_ = std::make_shared<Core::LinAlg::Map>(fullmap);
   maps_ = maps;
 
   importer_.resize(maps_.size());
@@ -43,7 +43,8 @@ void Core::LinAlg::MultiMapExtractor::setup(
   {
     if (maps_[i] != nullptr)
     {
-      importer_[i] = std::make_shared<Epetra_Import>(*maps_[i], *fullmap_);
+      importer_[i] =
+          std::make_shared<Epetra_Import>(maps_[i]->get_epetra_map(), fullmap_->get_epetra_map());
     }
   }
 }
@@ -79,8 +80,8 @@ void Core::LinAlg::MultiMapExtractor::check_for_valid_map_extractor() const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> Core::LinAlg::MultiMapExtractor::merge_maps(
-    const std::vector<std::shared_ptr<const Epetra_Map>>& maps)
+std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::MultiMapExtractor::merge_maps(
+    const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps)
 {
   if (maps.size() == 0) FOUR_C_THROW("no maps to merge");
   for (unsigned i = 0; i < maps.size(); ++i)
@@ -91,7 +92,7 @@ std::shared_ptr<Epetra_Map> Core::LinAlg::MultiMapExtractor::merge_maps(
   std::set<int> mapentries;
   for (unsigned i = 0; i < maps.size(); ++i)
   {
-    const Epetra_Map& map = *maps[i];
+    const Core::LinAlg::Map& map = *maps[i];
     std::copy(map.MyGlobalElements(), map.MyGlobalElements() + map.NumMyElements(),
         std::inserter(mapentries, mapentries.begin()));
   }
@@ -102,8 +103,8 @@ std::shared_ptr<Epetra_Map> Core::LinAlg::MultiMapExtractor::merge_maps(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> Core::LinAlg::MultiMapExtractor::merge_maps_keep_order(
-    const std::vector<std::shared_ptr<const Epetra_Map>>& maps)
+std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::MultiMapExtractor::merge_maps_keep_order(
+    const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps)
 {
   if (maps.empty()) FOUR_C_THROW("no maps to merge");
 
@@ -118,21 +119,21 @@ std::shared_ptr<Epetra_Map> Core::LinAlg::MultiMapExtractor::merge_maps_keep_ord
   std::vector<int> gids;
   for (std::size_t i = 0; i < maps.size(); ++i)
   {
-    const Epetra_Map& map = *maps[i];
+    const Core::LinAlg::Map& map = *maps[i];
     for (int j = 0; j < map.NumMyElements(); ++j) gids.push_back(map.GID(j));
   }
 
   // build combined map
-  std::shared_ptr<Epetra_Map> fullmap =
-      std::make_shared<Epetra_Map>(-1, gids.size(), gids.data(), 0, maps[0]->Comm());
+  std::shared_ptr<Core::LinAlg::Map> fullmap =
+      std::make_shared<Core::LinAlg::Map>(-1, gids.size(), gids.data(), 0, maps[0]->Comm());
   return fullmap;
 }
 
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> Core::LinAlg::MultiMapExtractor::intersect_maps(
-    const std::vector<std::shared_ptr<const Epetra_Map>>& maps)
+std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::MultiMapExtractor::intersect_maps(
+    const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps)
 {
   if (maps.size() == 0) FOUR_C_THROW("no maps to intersect");
   for (unsigned i = 0; i < maps.size(); ++i)
@@ -144,7 +145,7 @@ std::shared_ptr<Epetra_Map> Core::LinAlg::MultiMapExtractor::intersect_maps(
       maps[0]->MyGlobalElements(), maps[0]->MyGlobalElements() + maps[0]->NumMyElements());
   for (unsigned i = 1; i < maps.size(); ++i)
   {
-    const Epetra_Map& map = *maps[i];
+    const Core::LinAlg::Map& map = *maps[i];
     std::set<int> newset;
     int numele = map.NumMyElements();
     int* ele = map.MyGlobalElements();
@@ -252,8 +253,8 @@ void Core::LinAlg::MultiMapExtractor::add_vector(const Core::LinAlg::MultiVector
 void Core::LinAlg::MultiMapExtractor::put_scalar(
     Core::LinAlg::Vector<double>& full, int block, double scalar) const
 {
-  const Epetra_Map& bm = *Map(block);
-  const Epetra_Map& fm = *full_map();
+  const Core::LinAlg::Map& bm = *Map(block);
+  const Core::LinAlg::Map& fm = *full_map();
 
   int numv = bm.NumMyElements();
   int* v = bm.MyGlobalElements();
@@ -272,8 +273,8 @@ void Core::LinAlg::MultiMapExtractor::put_scalar(
 double Core::LinAlg::MultiMapExtractor::norm2(
     const Core::LinAlg::Vector<double>& full, int block) const
 {
-  const Epetra_Map& bm = *Map(block);
-  const Epetra_Map& fm = *full_map();
+  const Core::LinAlg::Map& bm = *Map(block);
+  const Core::LinAlg::Map& fm = *full_map();
 
   int numv = bm.NumMyElements();
   int* v = bm.MyGlobalElements();
@@ -301,8 +302,8 @@ double Core::LinAlg::MultiMapExtractor::norm2(
 void Core::LinAlg::MultiMapExtractor::scale(
     Core::LinAlg::Vector<double>& full, int block, double scalar) const
 {
-  const Epetra_Map& bm = *Map(block);
-  const Epetra_Map& fm = *full_map();
+  const Core::LinAlg::Map& bm = *Map(block);
+  const Core::LinAlg::Map& fm = *full_map();
 
   int numv = bm.NumMyElements();
   int* v = bm.MyGlobalElements();
@@ -333,16 +334,17 @@ Core::LinAlg::MapExtractor::MapExtractor() {}
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-Core::LinAlg::MapExtractor::MapExtractor(const Epetra_Map& fullmap,
-    std::shared_ptr<const Epetra_Map> condmap, std::shared_ptr<const Epetra_Map> othermap)
+Core::LinAlg::MapExtractor::MapExtractor(const Core::LinAlg::Map& fullmap,
+    std::shared_ptr<const Core::LinAlg::Map> condmap,
+    std::shared_ptr<const Core::LinAlg::Map> othermap)
 {
   setup(fullmap, condmap, othermap);
 }
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-Core::LinAlg::MapExtractor::MapExtractor(
-    const Epetra_Map& fullmap, std::shared_ptr<const Epetra_Map> partialmap, bool iscondmap)
+Core::LinAlg::MapExtractor::MapExtractor(const Core::LinAlg::Map& fullmap,
+    std::shared_ptr<const Core::LinAlg::Map> partialmap, bool iscondmap)
 {
   // initialise other DOFs by inserting all DOFs of full map
   std::set<int> othergids;
@@ -357,7 +359,7 @@ Core::LinAlg::MapExtractor::MapExtractor(
   }
 
   // create (non-overlapping) othermap for non-condmap DOFs
-  std::shared_ptr<Epetra_Map> othermap =
+  std::shared_ptr<Core::LinAlg::Map> othermap =
       Core::LinAlg::create_map(othergids, Core::Communication::unpack_epetra_comm(fullmap.Comm()));
 
   // create the extractor based on choice 'iscondmap'
@@ -370,11 +372,11 @@ Core::LinAlg::MapExtractor::MapExtractor(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Core::LinAlg::MapExtractor::setup(const Epetra_Map& fullmap,
-    const std::shared_ptr<const Epetra_Map>& condmap,
-    const std::shared_ptr<const Epetra_Map>& othermap)
+void Core::LinAlg::MapExtractor::setup(const Core::LinAlg::Map& fullmap,
+    const std::shared_ptr<const Core::LinAlg::Map>& condmap,
+    const std::shared_ptr<const Core::LinAlg::Map>& othermap)
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> maps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
   maps.push_back(othermap);
   maps.push_back(condmap);
   MultiMapExtractor::setup(fullmap, maps);
@@ -382,8 +384,8 @@ void Core::LinAlg::MapExtractor::setup(const Epetra_Map& fullmap,
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Core::LinAlg::MapExtractor::setup(
-    const Epetra_Map& fullmap, const std::shared_ptr<const Epetra_Map>& partialmap, bool iscondmap)
+void Core::LinAlg::MapExtractor::setup(const Core::LinAlg::Map& fullmap,
+    const std::shared_ptr<const Core::LinAlg::Map>& partialmap, bool iscondmap)
 {
   // initialise other DOFs by inserting all DOFs of full map
   std::set<int> othergids;
@@ -398,7 +400,7 @@ void Core::LinAlg::MapExtractor::setup(
   }
 
   // create (non-overlapping) othermap for non-condmap DOFs
-  std::shared_ptr<Epetra_Map> othermap =
+  std::shared_ptr<Core::LinAlg::Map> othermap =
       Core::LinAlg::create_map(othergids, Core::Communication::unpack_epetra_comm(fullmap.Comm()));
 
   // create the extractor based on choice 'iscondmap'

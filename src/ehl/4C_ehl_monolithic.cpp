@@ -366,7 +366,7 @@ void EHL::Monolithic::extract_field_vectors(std::shared_ptr<Core::LinAlg::Vector
 /*----------------------------------------------------------------------*
  | full monolithic dof row map                              wirtz 01/16 |
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> EHL::Monolithic::dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> EHL::Monolithic::dof_row_map() const
 {
   return extractor()->full_map();
 }  // dof_row_map()
@@ -381,7 +381,7 @@ void EHL::Monolithic::setup_system()
   set_default_parameters();
 
   // create combined map
-  std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
 
   // use its own dof_row_map, that is the 0th map of the discretization
   vecSpaces.push_back(structure_field()->dof_row_map(0));
@@ -412,9 +412,10 @@ void EHL::Monolithic::setup_system()
 /*----------------------------------------------------------------------*
  | put the single maps to one full EHL map together         wirtz 01/16 |
  *----------------------------------------------------------------------*/
-void EHL::Monolithic::set_dof_row_maps(const std::vector<std::shared_ptr<const Epetra_Map>>& maps)
+void EHL::Monolithic::set_dof_row_maps(
+    const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps)
 {
-  std::shared_ptr<Epetra_Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
+  std::shared_ptr<Core::LinAlg::Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
 
   // full EHL-blockmap
   extractor()->setup(*fullmap, maps);
@@ -1266,13 +1267,13 @@ void EHL::Monolithic::apply_lubrication_coupl_matrix(
 /*----------------------------------------------------------------------*
  | map containing the dofs with Dirichlet BC                wirtz 01/16 |
  *----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> EHL::Monolithic::combined_dbc_map()
+std::shared_ptr<Core::LinAlg::Map> EHL::Monolithic::combined_dbc_map()
 {
-  const std::shared_ptr<const Epetra_Map> scondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> scondmap =
       structure_field()->get_dbc_map_extractor()->cond_map();
-  const std::shared_ptr<const Epetra_Map> lcondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> lcondmap =
       lubrication_->lubrication_field()->get_dbc_map_extractor()->cond_map();
-  std::shared_ptr<Epetra_Map> condmap = Core::LinAlg::merge_map(scondmap, lcondmap, false);
+  std::shared_ptr<Core::LinAlg::Map> condmap = Core::LinAlg::merge_map(scondmap, lcondmap, false);
   return condmap;
 
 }  // combined_dbc_map()
@@ -1775,8 +1776,8 @@ void EHL::Monolithic::lin_poiseuille_force_pres(
   m.scale(-.5);
 
   {
-    std::shared_ptr<const Epetra_Map> r = mortaradapter_->slave_dof_map();
-    std::shared_ptr<const Epetra_Map> d = lubrication_->lubrication_field()->dof_row_map(0);
+    std::shared_ptr<const Core::LinAlg::Map> r = mortaradapter_->slave_dof_map();
+    std::shared_ptr<const Core::LinAlg::Map> d = lubrication_->lubrication_field()->dof_row_map(0);
     std::shared_ptr<Core::LinAlg::SparseMatrix> a = Core::LinAlg::matrix_multiply(
         *mortaradapter_->get_mortar_matrix_d(), true, m, false, true, false, true);
 
@@ -1792,8 +1793,8 @@ void EHL::Monolithic::lin_poiseuille_force_pres(
   }
 
   {
-    std::shared_ptr<const Epetra_Map> r = mortaradapter_->master_dof_map();
-    std::shared_ptr<const Epetra_Map> d = lubrication_->lubrication_field()->dof_row_map(0);
+    std::shared_ptr<const Core::LinAlg::Map> r = mortaradapter_->master_dof_map();
+    std::shared_ptr<const Core::LinAlg::Map> d = lubrication_->lubrication_field()->dof_row_map(0);
     std::shared_ptr<Core::LinAlg::SparseMatrix> a = Core::LinAlg::matrix_multiply(
         *mortaradapter_->get_mortar_matrix_m(), true, m, false, true, false, true);
 
@@ -1856,8 +1857,8 @@ void EHL::Monolithic::lin_couette_force_pres(
   dVisc_str_dp->left_scale(hinv_relV);
 
   {
-    std::shared_ptr<const Epetra_Map> r = mortaradapter_->slave_dof_map();
-    std::shared_ptr<const Epetra_Map> d = lubrication_->lubrication_field()->dof_row_map(0);
+    std::shared_ptr<const Core::LinAlg::Map> r = mortaradapter_->slave_dof_map();
+    std::shared_ptr<const Core::LinAlg::Map> d = lubrication_->lubrication_field()->dof_row_map(0);
 
     ds_dp.un_complete();
     ds_dp.add(*Core::LinAlg::matrix_multiply(*mortaradapter_->get_mortar_matrix_d(), true,
@@ -1867,8 +1868,8 @@ void EHL::Monolithic::lin_couette_force_pres(
   }
 
   {
-    std::shared_ptr<const Epetra_Map> r = mortaradapter_->master_dof_map();
-    std::shared_ptr<const Epetra_Map> d = lubrication_->lubrication_field()->dof_row_map(0);
+    std::shared_ptr<const Core::LinAlg::Map> r = mortaradapter_->master_dof_map();
+    std::shared_ptr<const Core::LinAlg::Map> d = lubrication_->lubrication_field()->dof_row_map(0);
 
     dm_dp.un_complete();
     dm_dp.add(*Core::LinAlg::matrix_multiply(*mortaradapter_->get_mortar_matrix_m(), true,

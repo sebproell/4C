@@ -22,7 +22,7 @@ namespace Core::Binstrategy::Utils
   /*-----------------------------------------------------------------------------*
    *-----------------------------------------------------------------------------*/
   void extend_discretization_ghosting(Core::FE::Discretization& discret,
-      Epetra_Map& extendedelecolmap, bool assigndegreesoffreedom, bool initelements,
+      Core::LinAlg::Map& extendedelecolmap, bool assigndegreesoffreedom, bool initelements,
       bool doboundaryconditions)
   {
     // make sure that all procs are either filled or unfilled
@@ -44,7 +44,7 @@ namespace Core::Binstrategy::Utils
     }
 
     std::vector<int> colnodes(nodes.begin(), nodes.end());
-    Epetra_Map nodecolmap(-1, (int)colnodes.size(), colnodes.data(), 0,
+    Core::LinAlg::Map nodecolmap(-1, (int)colnodes.size(), colnodes.data(), 0,
         Core::Communication::as_epetra_comm(discret.get_comm()));
 
     // now ghost the nodes

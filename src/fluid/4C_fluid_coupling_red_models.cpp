@@ -562,7 +562,7 @@ void FLD::Utils::FluidCouplingWrapperBase::update_residual(Core::LinAlg::Vector<
 //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>//
 //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>//
 void FLD::Utils::FluidCouplingWrapperBase::evaluate_dirichlet(
-    Core::LinAlg::Vector<double>& velnp, const Epetra_Map& condmap, double time)
+    Core::LinAlg::Vector<double>& velnp, const Core::LinAlg::Map& condmap, double time)
 {
   std::map<const int, std::shared_ptr<class FluidCouplingBc>>::iterator mapiter;
 
@@ -727,7 +727,7 @@ FLD::Utils::FluidCouplingBc::FluidCouplingBc(std::shared_ptr<Core::FE::Discretiz
   // vectors and matrices
   //                 local <-> global dof numbering
   // ---------------------------------------------------------------------
-  const Epetra_Map* dofrowmap = discret_3d_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_3d_->dof_row_map();
   couplingbc_ = Core::LinAlg::create_vector(*dofrowmap, true);
 
   flowrate_ = 0.0;
@@ -939,7 +939,7 @@ double FLD::Utils::FluidCouplingBc::flow_rate_calculation(double time, double dt
   // get a vector layout from the discretization to construct matching
   // vectors and matrices
   //                 local <-> global dof numbering
-  const Epetra_Map* dofrowmap = discret_3d_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_3d_->dof_row_map();
 
   // create vector (+ initialization with zeros)
   std::shared_ptr<Core::LinAlg::Vector<double>> flowrates =
@@ -996,7 +996,7 @@ double FLD::Utils::FluidCouplingBc::pressure_calculation(double time, double dta
   // get a vector layout from the discretization to construct matching
   // vectors and matrices
   //                 local <-> global dof numbering
-  const Epetra_Map* dofrowmap = discret_3d_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_3d_->dof_row_map();
 
   // get elemental flowrates ...
   std::shared_ptr<Core::LinAlg::Vector<double>> myStoredPressures =
@@ -1133,7 +1133,7 @@ void FLD::Utils::FluidCouplingBc::update_residual(Core::LinAlg::Vector<double>& 
 /*!
  */
 void FLD::Utils::FluidCouplingBc::evaluate_dirichlet(
-    Core::LinAlg::Vector<double>& velnp, const Epetra_Map& condmap, double time)
+    Core::LinAlg::Vector<double>& velnp, const Core::LinAlg::Map& condmap, double time)
 {
   return;
   std::cout << "Evaluating Dirich!" << std::endl;

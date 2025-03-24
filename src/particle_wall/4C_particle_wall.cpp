@@ -139,7 +139,8 @@ void PARTICLEWALL::WallHandlerBase::write_wall_runtime_output(
 }
 
 void PARTICLEWALL::WallHandlerBase::update_bin_row_and_col_map(
-    const std::shared_ptr<Epetra_Map> binrowmap, const std::shared_ptr<Epetra_Map> bincolmap)
+    const std::shared_ptr<Core::LinAlg::Map> binrowmap,
+    const std::shared_ptr<Core::LinAlg::Map> bincolmap)
 {
   binrowmap_ = binrowmap;
   bincolmap_ = bincolmap;
@@ -472,8 +473,8 @@ void PARTICLEWALL::WallHandlerDiscretCondition::distribute_wall_elements_and_nod
   validwallneighbors_ = false;
 
   // distribute wall elements to bins with standard ghosting
-  std::shared_ptr<Epetra_Map> stdelecolmap;
-  std::shared_ptr<Epetra_Map> stdnodecolmapdummy;
+  std::shared_ptr<Core::LinAlg::Map> stdelecolmap;
+  std::shared_ptr<Core::LinAlg::Map> stdnodecolmapdummy;
   binstrategy_->standard_discretization_ghosting(walldiscretization_, *binrowmap_,
       walldatastate_->get_ref_disp_row(), stdelecolmap, stdnodecolmapdummy);
 
@@ -525,7 +526,7 @@ void PARTICLEWALL::WallHandlerDiscretCondition::extend_wall_element_ghosting(
     std::map<int, std::set<int>>& bintorowelemap)
 {
   std::map<int, std::set<int>> colbintoelemap;
-  std::shared_ptr<Epetra_Map> extendedelecolmap = binstrategy_->extend_element_col_map(
+  std::shared_ptr<Core::LinAlg::Map> extendedelecolmap = binstrategy_->extend_element_col_map(
       bintorowelemap, bintorowelemap, colbintoelemap, bincolmap_);
 
   Core::Binstrategy::Utils::extend_discretization_ghosting(
@@ -736,18 +737,20 @@ void PARTICLEWALL::WallHandlerBoundingBox::init_wall_discretization()
   }
 
   // node row map of wall elements
-  std::shared_ptr<Epetra_Map> noderowmap = std::make_shared<Epetra_Map>(-1, nodeids.size(),
-      nodeids.data(), 0, Core::Communication::as_epetra_comm(walldiscretization_->get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> noderowmap =
+      std::make_shared<Core::LinAlg::Map>(-1, nodeids.size(), nodeids.data(), 0,
+          Core::Communication::as_epetra_comm(walldiscretization_->get_comm()));
 
   // fully overlapping node column map
-  std::shared_ptr<Epetra_Map> nodecolmap = Core::LinAlg::allreduce_e_map(*noderowmap);
+  std::shared_ptr<Core::LinAlg::Map> nodecolmap = Core::LinAlg::allreduce_e_map(*noderowmap);
 
   // element row map of wall elements
-  std::shared_ptr<Epetra_Map> elerowmap = std::make_shared<Epetra_Map>(-1, eleids.size(),
-      eleids.data(), 0, Core::Communication::as_epetra_comm(walldiscretization_->get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> elerowmap =
+      std::make_shared<Core::LinAlg::Map>(-1, eleids.size(), eleids.data(), 0,
+          Core::Communication::as_epetra_comm(walldiscretization_->get_comm()));
 
   // fully overlapping element column map
-  std::shared_ptr<Epetra_Map> elecolmap = Core::LinAlg::allreduce_e_map(*elerowmap);
+  std::shared_ptr<Core::LinAlg::Map> elecolmap = Core::LinAlg::allreduce_e_map(*elerowmap);
 
   // fully overlapping ghosting of the wall elements to have everything redundant
   walldiscretization_->export_column_nodes(*nodecolmap);

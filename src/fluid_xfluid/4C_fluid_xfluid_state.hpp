@@ -13,10 +13,9 @@
 #include "4C_cut_input.hpp"
 #include "4C_inpar_fluid.hpp"
 #include "4C_inpar_xfem.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_exceptions.hpp"
-
-#include <Epetra_Map.h>
 
 #include <map>
 #include <memory>
@@ -104,7 +103,7 @@ namespace FLD
       }
 
       //! ctor  Initialize coupling matrices
-      CouplingState(const std::shared_ptr<const Epetra_Map>& xfluiddofrowmap,
+      CouplingState(const std::shared_ptr<const Core::LinAlg::Map>& xfluiddofrowmap,
           const std::shared_ptr<Core::FE::Discretization>& slavediscret_mat,
           const std::shared_ptr<Core::FE::Discretization>& slavediscret_rhs);
 
@@ -113,7 +112,7 @@ namespace FLD
 
       //! complete coupling matrices and rhs vectors
       void complete_coupling_matrices_and_rhs(
-          const Epetra_Map& xfluiddofrowmap, const Epetra_Map& slavedofrowmap);
+          const Core::LinAlg::Map& xfluiddofrowmap, const Core::LinAlg::Map& slavedofrowmap);
 
       //! destroy the coupling objects and it's content
       void destroy(bool throw_exception = true);
@@ -138,8 +137,8 @@ namespace FLD
     explicit XFluidState(const std::shared_ptr<XFEM::ConditionManager>& condition_manager,
         const std::shared_ptr<Cut::CutWizard>& wizard,
         const std::shared_ptr<XFEM::XFEMDofSet>& dofset,
-        const std::shared_ptr<const Epetra_Map>& xfluiddofrowmap,
-        const std::shared_ptr<const Epetra_Map>& xfluiddofcolmap);
+        const std::shared_ptr<const Core::LinAlg::Map>& xfluiddofrowmap,
+        const std::shared_ptr<const Core::LinAlg::Map>& xfluiddofcolmap);
 
     /// dtor
     virtual ~XFluidState() = default;
@@ -195,10 +194,10 @@ namespace FLD
     //@}
 
     /// dof-rowmap of intersected fluid
-    std::shared_ptr<const Epetra_Map> xfluiddofrowmap_;
+    std::shared_ptr<const Core::LinAlg::Map> xfluiddofrowmap_;
 
     /// dof-colmap of intersected fluid
-    std::shared_ptr<const Epetra_Map> xfluiddofcolmap_;
+    std::shared_ptr<const Core::LinAlg::Map> xfluiddofcolmap_;
 
     /// system matrix (internally EpetraFECrs)
     std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat_;
@@ -284,7 +283,7 @@ namespace FLD
     void init_coupling_matrices_and_rhs();
 
     /// Complete coupling matrices and rhs vectors
-    void complete_coupling_matrices_and_rhs(const Epetra_Map& fluiddofrowmap);
+    void complete_coupling_matrices_and_rhs(const Core::LinAlg::Map& fluiddofrowmap);
 
 
    public:

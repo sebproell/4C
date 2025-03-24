@@ -12,9 +12,8 @@
 
 #include "4C_fem_general_element.hpp"  // due to DiscretizationType
 #include "4C_fem_nurbs_discretization.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_post_writer_base.hpp"  // base class PostWriterBase
-
-#include <Epetra_Map.h>
 
 #include <cstdio>
 #include <fstream>
@@ -171,7 +170,7 @@ class EnsightWriter : public PostWriterBase
       std::map<std::string, std::vector<std::ofstream::pos_type>>& resultfilepos,
       const std::string name);
 
-  std::shared_ptr<Epetra_Map> write_coordinates(
+  std::shared_ptr<Core::LinAlg::Map> write_coordinates(
       std::ofstream& geofile,        ///< filestream for the geometry
       Core::FE::Discretization& dis  ///< discretization where the nodal positions are take from
   );
@@ -181,8 +180,8 @@ class EnsightWriter : public PostWriterBase
       nodes of elements displayed in paraview) are just the node
       coordinates of the nodes in the discretization.
     */
-  void write_coordinates_for_polynomial_shapefunctions(
-      std::ofstream& geofile, Core::FE::Discretization& dis, std::shared_ptr<Epetra_Map>& proc0map);
+  void write_coordinates_for_polynomial_shapefunctions(std::ofstream& geofile,
+      Core::FE::Discretization& dis, std::shared_ptr<Core::LinAlg::Map>& proc0map);
 
   /*! \brief Write the coordinates for a Nurbs discretization
     The coordinates of the visualisation points (i.e. the corner
@@ -190,13 +189,13 @@ class EnsightWriter : public PostWriterBase
     coordinates of the nodes in the discretization but the points the
     knot values are mapped to.
   */
-  void write_coordinates_for_nurbs_shapefunctions(
-      std::ofstream& geofile, Core::FE::Discretization& dis, std::shared_ptr<Epetra_Map>& proc0map);
+  void write_coordinates_for_nurbs_shapefunctions(std::ofstream& geofile,
+      Core::FE::Discretization& dis, std::shared_ptr<Core::LinAlg::Map>& proc0map);
 
   virtual void write_cells(std::ofstream& geofile,  ///< filestream for the geometry
       const std::shared_ptr<Core::FE::Discretization>
           dis,  ///< discretization where the nodal positions are take from
-      const std::shared_ptr<Epetra_Map>&
+      const std::shared_ptr<Core::LinAlg::Map>&
           proc0map  ///< current proc0 node map, created by WriteCoordinatesPar
   ) const;
 
@@ -212,11 +211,12 @@ class EnsightWriter : public PostWriterBase
     \param std::ofstream                    (used for o) direct print to file
     \param std::vector<int>                 (o)          remember node values for parallel IO
     \param std::shared_ptr<Core::FE::Discretization> (i)          the discretisation holding
-    knots etc \param std::shared_ptr<Epetra_Map>          (i)          an allreduced nodemap
+    knots etc \param std::shared_ptr<Core::LinAlg::Map>          (i)          an allreduced nodemap
 
   */
   void write_nurbs_cell(const Core::FE::CellType distype, const int gid, std::ofstream& geofile,
-      std::vector<int>& nodevector, Core::FE::Discretization& dis, Epetra_Map& proc0map) const;
+      std::vector<int>& nodevector, Core::FE::Discretization& dis,
+      Core::LinAlg::Map& proc0map) const;
 
   /*! \brief Quadratic nurbs split one nurbs27 element
     in knot space into eight(3d) cells. The global
@@ -263,7 +263,7 @@ class EnsightWriter : public PostWriterBase
 
 
   void write_node_connectivity_par(std::ofstream& geofile, Core::FE::Discretization& dis,
-      const std::vector<int>& nodevector, Epetra_Map& proc0map) const;
+      const std::vector<int>& nodevector, Core::LinAlg::Map& proc0map) const;
   void write_dof_result_step(std::ofstream& file, PostResult& result,
       std::map<std::string, std::vector<std::ofstream::pos_type>>& resultfilepos,
       const std::string& groupname, const std::string& name, const int numdf, const int from,
@@ -408,10 +408,10 @@ class EnsightWriter : public PostWriterBase
   EleGidPerDisType
       eleGidPerDisType_;  ///< global ids of corresponding elements per element discretization type
 
-  std::shared_ptr<Epetra_Map>
+  std::shared_ptr<Core::LinAlg::Map>
       proc0map_;  ///< allreduced node row map for proc 0, empty on other procs
 
-  std::shared_ptr<Epetra_Map> vispointmap_;  ///< map for all visualisation points
+  std::shared_ptr<Core::LinAlg::Map> vispointmap_;  ///< map for all visualisation points
 
   std::map<std::string, std::vector<int>> filesetmap_;
   std::map<std::string, std::vector<double>> timesetmap_;

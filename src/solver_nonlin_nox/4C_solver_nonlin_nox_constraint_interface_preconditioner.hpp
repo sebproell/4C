@@ -24,7 +24,8 @@ FOUR_C_NAMESPACE_OPEN
 namespace Core::LinAlg
 {
   class Solver;
-}
+  class Map;
+}  // namespace Core::LinAlg
 
 namespace NOX
 {
@@ -71,7 +72,7 @@ namespace NOX
 
           //! Get necessary maps for the preconditioner.
           virtual void fill_maps_for_preconditioner(
-              std::vector<Teuchos::RCP<Epetra_Map>>& maps) const = 0;
+              std::vector<Teuchos::RCP<Core::LinAlg::Map>>& maps) const = 0;
 
           //! Get the corresponding linear solver (optional)
           virtual Core::LinAlg::Solver* get_linear_solver() const { return nullptr; };

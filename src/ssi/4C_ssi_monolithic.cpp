@@ -469,7 +469,7 @@ void SSI::SsiMono::complete_subproblem_matrices()
 
 /*--------------------------------------------------------------------------*
  *--------------------------------------------------------------------------*/
-const std::shared_ptr<const Epetra_Map>& SSI::SsiMono::dof_row_map() const
+const std::shared_ptr<const Core::LinAlg::Map>& SSI::SsiMono::dof_row_map() const
 {
   return maps_sub_problems()->full_map();
 }
@@ -1219,7 +1219,7 @@ void SSI::SsiMono::calc_initial_potential_field()
 
     // apply artificial Dirichlet boundary conditions to system of equations (on concentration
     // dofs and on structure dofs)
-    std::shared_ptr<Epetra_Map> pseudo_dbc_map;
+    std::shared_ptr<Core::LinAlg::Map> pseudo_dbc_map;
     if (is_scatra_manifold())
     {
       auto conc_map = Core::LinAlg::merge_map(
@@ -1500,7 +1500,7 @@ void SSI::SsiMono::calc_initial_time_derivative()
 
   // apply artificial Dirichlet boundary conditions to system of equations to non-transported
   // scalars and structure
-  std::shared_ptr<Epetra_Map> pseudo_dbc_map;
+  std::shared_ptr<Core::LinAlg::Map> pseudo_dbc_map;
   if (is_scatra_manifold() and is_elch)
   {
     auto conc_map = Core::LinAlg::merge_map(
@@ -1513,7 +1513,7 @@ void SSI::SsiMono::calc_initial_time_derivative()
         Core::LinAlg::merge_map(scatra_elch_splitter->cond_map(), structure_field()->dof_row_map());
   }
   else
-    pseudo_dbc_map = std::make_shared<Epetra_Map>(*structure_field()->dof_row_map());
+    pseudo_dbc_map = std::make_shared<Core::LinAlg::Map>(*structure_field()->dof_row_map());
 
   Core::LinAlg::Vector<double> dbc_zeros(*pseudo_dbc_map, true);
 

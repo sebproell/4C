@@ -868,7 +868,7 @@ void Thermo::TimInt::set_initial_field(const Thermo::InitialField init, const in
 
     case Thermo::initfield_field_by_function:
     {
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
       // loop all nodes on the processor
       for (int lnodeid = 0; lnodeid < discret_->num_my_row_nodes(); lnodeid++)

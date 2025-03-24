@@ -10,11 +10,11 @@
 #include "4C_comm_utils.hpp"
 
 #include "4C_io_pstream.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_exceptions.hpp"
 
 #include <Epetra_CrsMatrix.h>
-#include <Epetra_Map.h>
 
 #include <memory>
 #include <stdexcept>
@@ -49,8 +49,9 @@ namespace
           false, false, false, Core::IO::standard, communicators_->local_comm(), 0, 0, "dummy");
 
       // create arbitrary distributed map within each group
-      std::shared_ptr<Epetra_Map> map = std::make_shared<Epetra_Map>(numberOfElementsToDistribute_,
-          0, Core::Communication::as_epetra_comm(communicators_->local_comm()));
+      std::shared_ptr<Core::LinAlg::Map> map =
+          std::make_shared<Core::LinAlg::Map>(numberOfElementsToDistribute_, 0,
+              Core::Communication::as_epetra_comm(communicators_->local_comm()));
       epetraVector_ = std::make_shared<Core::LinAlg::Vector<double>>(*map, false);
 
       // fill test Core::LinAlg::Vector<double> with entry equals gid
@@ -90,12 +91,12 @@ namespace
           false, false, false, Core::IO::standard, communicators_->local_comm(), 0, 0, "dummy");
 
       // create arbitrary distributed map within each group
-      std::shared_ptr<Epetra_Map> rowmap =
-          std::make_shared<Epetra_Map>(numberOfElementsToDistribute_, 0,
+      std::shared_ptr<Core::LinAlg::Map> rowmap =
+          std::make_shared<Core::LinAlg::Map>(numberOfElementsToDistribute_, 0,
               Core::Communication::as_epetra_comm(communicators_->local_comm()));
       int approximateNumberOfNonZeroesPerRow = 3;
       epetraCrsMatrix_ = std::make_shared<Epetra_CrsMatrix>(
-          ::Copy, *rowmap, approximateNumberOfNonZeroesPerRow, false);
+          ::Copy, rowmap->get_epetra_map(), approximateNumberOfNonZeroesPerRow, false);
 
       // fill tri-diagonal Epetra_CrsMatrix
       double* values = new double[3];
@@ -159,14 +160,14 @@ namespace
           false, false, false, Core::IO::standard, communicators_->local_comm(), 0, 0, "dummy");
 
       // create arbitrary distributed map within each group
-      std::shared_ptr<Epetra_Map> rowmap =
-          std::make_shared<Epetra_Map>(numberOfElementsToDistribute_, 0,
+      std::shared_ptr<Core::LinAlg::Map> rowmap =
+          std::make_shared<Core::LinAlg::Map>(numberOfElementsToDistribute_, 0,
               Core::Communication::as_epetra_comm(communicators_->local_comm()));
-      Epetra_Map colmap(2 * numberOfElementsToDistribute_, 0,
+      Core::LinAlg::Map colmap(2 * numberOfElementsToDistribute_, 0,
           Core::Communication::as_epetra_comm(communicators_->local_comm()));
       int approximateNumberOfNonZeroesPerRow = 6;
       epetraCrsMatrix_ = std::make_shared<Epetra_CrsMatrix>(
-          ::Copy, *rowmap, approximateNumberOfNonZeroesPerRow, false);
+          ::Copy, rowmap->get_epetra_map(), approximateNumberOfNonZeroesPerRow, false);
 
       // fill rectangular Epetra_CrsMatrix
       double* values = new double[6];
@@ -213,7 +214,7 @@ namespace
           epetraCrsMatrix_->InsertGlobalValues(rowgid, 6, values, columnIndices);
         }
       }
-      epetraCrsMatrix_->FillComplete(colmap, *rowmap);
+      epetraCrsMatrix_->FillComplete(colmap.get_epetra_map(), rowmap->get_epetra_map());
     }
 
     void TearDown() override { Core::IO::cout.close(); }

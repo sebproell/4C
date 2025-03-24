@@ -117,7 +117,7 @@ namespace ScaTra
     std::shared_ptr<Core::LinAlg::MultiMapExtractor> full_block_map_elch_scl_;
 
     //! map of coupled ELCH-SCL problem
-    std::shared_ptr<const Epetra_Map> full_map_elch_scl_;
+    std::shared_ptr<const Core::LinAlg::Map> full_map_elch_scl_;
 
     //! increment of coupled ELCH-SCL problem
     std::shared_ptr<Core::LinAlg::Vector<double>> increment_elch_scl_;

@@ -50,7 +50,7 @@ CONSTRAINTS::MPConstraint3::MPConstraint3(std::shared_ptr<Core::FE::Discretizati
     for (discriter = constraintdis_.begin(); discriter != constraintdis_.end(); discriter++)
     {
       // ReplaceNumDof(actdisc_,discriter->second);
-      std::shared_ptr<Epetra_Map> newcolnodemap =
+      std::shared_ptr<Core::LinAlg::Map> newcolnodemap =
           Core::Rebalance::compute_node_col_map(*actdisc_, *discriter->second);
       actdisc_->redistribute(*(actdisc_->node_row_map()), *newcolnodemap);
       std::shared_ptr<Core::DOFSets::DofSet> newdofset =
@@ -221,7 +221,7 @@ CONSTRAINTS::MPConstraint3::create_discretization_from_condition(
     const int myrank = Core::Communication::my_mpi_rank(newdis->get_comm());
     std::set<int> rownodeset;
     std::set<int> colnodeset;
-    const Epetra_Map* actnoderowmap = actdisc->node_row_map();
+    const Core::LinAlg::Map* actnoderowmap = actdisc->node_row_map();
     // get node IDs, this vector will only contain FREE nodes in the end
     std::vector<int> ngid = *((*conditer)->get_nodes());
     std::vector<int> defnv;
@@ -308,15 +308,15 @@ CONSTRAINTS::MPConstraint3::create_discretization_from_condition(
     // build unique node row map
     std::vector<int> boundarynoderowvec(rownodeset.begin(), rownodeset.end());
     rownodeset.clear();
-    Epetra_Map constraintnoderowmap(-1, boundarynoderowvec.size(), boundarynoderowvec.data(), 0,
-        Core::Communication::as_epetra_comm(newdis->get_comm()));
+    Core::LinAlg::Map constraintnoderowmap(-1, boundarynoderowvec.size(), boundarynoderowvec.data(),
+        0, Core::Communication::as_epetra_comm(newdis->get_comm()));
     boundarynoderowvec.clear();
 
     // build overlapping node column map
     std::vector<int> constraintnodecolvec(colnodeset.begin(), colnodeset.end());
     colnodeset.clear();
-    Epetra_Map constraintnodecolmap(-1, constraintnodecolvec.size(), constraintnodecolvec.data(), 0,
-        Core::Communication::as_epetra_comm(newdis->get_comm()));
+    Core::LinAlg::Map constraintnodecolmap(-1, constraintnodecolvec.size(),
+        constraintnodecolvec.data(), 0, Core::Communication::as_epetra_comm(newdis->get_comm()));
 
     constraintnodecolvec.clear();
     newdis->redistribute(constraintnoderowmap, constraintnodecolmap);

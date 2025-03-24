@@ -152,22 +152,22 @@ namespace FLD
     int myrank_;
 
     //! map including all wall nodes, redundant map
-    std::shared_ptr<Epetra_Map> dircolnodemap_;
+    std::shared_ptr<Core::LinAlg::Map> dircolnodemap_;
 
     //! xwall node row map
-    std::shared_ptr<Epetra_Map> xwallrownodemap_;
+    std::shared_ptr<Core::LinAlg::Map> xwallrownodemap_;
 
     //! xwall node col map
-    std::shared_ptr<Epetra_Map> xwallcolnodemap_;
+    std::shared_ptr<Core::LinAlg::Map> xwallcolnodemap_;
 
     //! map including the enriched dofs, row map
-    std::shared_ptr<Epetra_Map> enrdofrowmap_;
+    std::shared_ptr<Core::LinAlg::Map> enrdofrowmap_;
 
     //! map including the unused pressure dofs, row map
-    std::shared_ptr<Epetra_Map> lagrdofrowmap_;
+    std::shared_ptr<Core::LinAlg::Map> lagrdofrowmap_;
 
     //! map including all enriched dofs plus unused pressure dofs
-    std::shared_ptr<Epetra_Map> mergedmap_;
+    std::shared_ptr<Core::LinAlg::Map> mergedmap_;
 
     //! wall distance, local vector
     std::shared_ptr<Core::LinAlg::Vector<double>> walldist_;

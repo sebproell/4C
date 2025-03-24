@@ -162,7 +162,7 @@ void FLD::FluidImplicitTimeInt::init()
   // vectors and matrices
   //                 local <-> global dof numbering
   // -------------------------------------------------------------------
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // -------------------------------------------------------------------
   // get a vector layout from the discretization for a vector which only
@@ -1055,7 +1055,7 @@ void FLD::FluidImplicitTimeInt::assemble_mat_and_rhs()
   if (forcing_ != nullptr)
   {
     eleparams.set("forcing", true);
-    if (forcing_->get_block_map().SameAs(*discret_->dof_row_map()))
+    if (forcing_->get_map().SameAs(*discret_->dof_row_map()))
       discret_->set_state("forcing", *forcing_);
     else
       discret_->set_state(1, "forcing", *forcing_);
@@ -1126,7 +1126,7 @@ void FLD::FluidImplicitTimeInt::evaluate_mat_and_rhs(Teuchos::ParameterList& ele
   {
     if (shapederivatives_ != nullptr)
       FOUR_C_THROW("The shape derivative cannot be assembled off-proc currently");
-    const Epetra_Map* dofcolmap = discret_->dof_col_map();
+    const Core::LinAlg::Map* dofcolmap = discret_->dof_col_map();
     std::shared_ptr<Core::LinAlg::Vector<double>> residual_col =
         Core::LinAlg::create_vector(*dofcolmap, true);
     std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat =
@@ -1329,7 +1329,7 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
   {
     // get a vector layout from the discretization to construct matching
     // vectors and matrices local <-> global dof numbering
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
     // decide on whether it is a line or a surface condition and
     // set condition name accordingly
@@ -1694,7 +1694,7 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
   {
     // get a vector layout from the discretization to construct matching
     // vectors and matrices local <-> global dof numbering
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
     // initialize global slip bc normal traction variable
     slip_bc_normal_tractions_ = Core::LinAlg::create_vector(*dofrowmap, true);
@@ -1893,13 +1893,12 @@ void FLD::FluidImplicitTimeInt::evaluate_fluid_edge_based(
   std::shared_ptr<Core::LinAlg::Vector<double>> residual_col =
       Core::LinAlg::create_vector(*(facediscret_->dof_col_map()), true);
 
-  const Epetra_Map* rmap = nullptr;
 
   std::shared_ptr<Epetra_FECrsMatrix> sysmat_FE;
   if (systemmatrix1 != nullptr)
   {
-    rmap = &(systemmatrix1->OperatorRangeMap());
-    sysmat_FE = std::make_shared<Epetra_FECrsMatrix>(::Copy, *rmap, 256, false);
+    sysmat_FE =
+        std::make_shared<Epetra_FECrsMatrix>(::Copy, systemmatrix1->OperatorRangeMap(), 256, false);
   }
   else
     FOUR_C_THROW("sysmat is nullptr!");
@@ -1986,10 +1985,10 @@ void FLD::FluidImplicitTimeInt::evaluate_fluid_edge_based(
     if (block_sysmat == nullptr)
       FOUR_C_THROW("Expected fluid system matrix as BlockSparseMatrix. Failed to cast to it.");
     std::shared_ptr<Core::LinAlg::SparseMatrix> f00, f01, f10, f11;
-    std::shared_ptr<Epetra_Map> domainmap_00 =
-        std::make_shared<Epetra_Map>(block_sysmat->domain_map(0));
-    std::shared_ptr<Epetra_Map> domainmap_11 =
-        std::make_shared<Epetra_Map>(block_sysmat->domain_map(1));
+    std::shared_ptr<Core::LinAlg::Map> domainmap_00 =
+        std::make_shared<Core::LinAlg::Map>(block_sysmat->domain_map(0));
+    std::shared_ptr<Core::LinAlg::Map> domainmap_11 =
+        std::make_shared<Core::LinAlg::Map>(block_sysmat->domain_map(1));
 
     // Split sparse system matrix into blocks according to the given maps
     Core::LinAlg::split_matrix2x2(
@@ -2116,8 +2115,8 @@ void FLD::FluidImplicitTimeInt::setup_krylov_space_projection(Core::Conditions::
   // set flag for projection update true only if ALE and integral weights
   if (alefluid_ and (*weighttype == "integration")) updateprojection_ = true;
 
-  projector_ = std::make_shared<Core::LinAlg::KrylovProjector>(
-      activemodeids, weighttype, discret_->dof_row_map());
+  auto map = discret_->dof_row_map()->get_epetra_map();
+  projector_ = std::make_shared<Core::LinAlg::KrylovProjector>(activemodeids, weighttype, &map);
 
   // update the projector
   update_krylov_space_projection();
@@ -2221,8 +2220,8 @@ void FLD::FluidImplicitTimeInt::update_krylov_space_projection()
       c0_update = meshtying_->adapt_krylov_projector(Core::Utils::shared_ptr_from_ref(c0));
       if (msht_ == Inpar::FLUID::condensed_bmat || msht_ == Inpar::FLUID::condensed_bmat_merged)
       {
-        const Epetra_BlockMap* mergedmap = meshtying_->get_merged_map();
-        projector_->set_cw(*c0_update, *w0_update, mergedmap);
+        auto mergedmap = meshtying_->get_merged_map()->get_epetra_map();
+        projector_->set_cw(*c0_update, *w0_update, &mergedmap);
       }
       else
       {
@@ -2514,7 +2513,7 @@ void FLD::FluidImplicitTimeInt::ale_update(std::string condName)
     // Get a vector layout from the discretization to construct matching
     // vectors and matrices
     //                 local <-> global dof numbering
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
     // Obtain the global IDs of the condition's nodes for the current processor
     std::vector<int> gIdNodes;
@@ -3271,7 +3270,7 @@ void FLD::FluidImplicitTimeInt::calc_intermediate_solution()
       forcing_interface_->activate_forcing(false);
 
       // temporary store velnp_ since it will be modified in Solve()
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
       std::shared_ptr<Core::LinAlg::Vector<double>> tmp =
           Core::LinAlg::create_vector(*dofrowmap, true);
       tmp->update(1.0, *velnp_, 0.0);
@@ -4178,7 +4177,7 @@ void FLD::FluidImplicitTimeInt::set_initial_flow_field(
     // add random perturbation of certain percentage to function
     if (initfield == Inpar::FLUID::initfield_disturbed_field_from_function)
     {
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
       int err = 0;
 
@@ -4275,7 +4274,7 @@ void FLD::FluidImplicitTimeInt::set_initial_flow_field(
   // for flame-vortex interaction problem
   else if (initfield == Inpar::FLUID::initfield_flame_vortex_interaction)
   {
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
     int err = 0;
 
@@ -4396,7 +4395,7 @@ void FLD::FluidImplicitTimeInt::set_initial_flow_field(
   // special initial function: Beltrami flow (3-D)
   else if (initfield == Inpar::FLUID::initfield_beltrami_flow)
   {
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
     int err = 0;
 
@@ -4899,7 +4898,7 @@ std::shared_ptr<double> FLD::FluidImplicitTimeInt::evaluate_div_u()
     // continuity equation in np-genalpha is also evaluated at time n+1
     set_state_tim_int();
 
-    const Epetra_Map* elementrowmap = discret_->element_row_map();
+    const Core::LinAlg::Map* elementrowmap = discret_->element_row_map();
     Core::LinAlg::MultiVector<double> divu(*elementrowmap, 1, true);
 
     // optional: elementwise defined div u may be written to standard output file (not implemented
@@ -4980,7 +4979,7 @@ double FLD::FluidImplicitTimeInt::evaluate_dt_via_cfl_if_applicable()
       discret_->set_state(ndsale_, "gridv", *gridv_);
     }
 
-    const Epetra_Map* elementrowmap = discret_->element_row_map();
+    const Core::LinAlg::Map* elementrowmap = discret_->element_row_map();
     Core::LinAlg::MultiVector<double> h_u(*elementrowmap, 1, true);
 
     // optional: elementwise defined h_u may be written to standard output file (not implemented
@@ -5132,7 +5131,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::FluidImplicitTimeInt::integra
   // get a vector layout from the discretization to construct matching
   // vectors and matrices
   //                 local <-> global dof numbering
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // create vector (+ initialization with zeros)
   std::shared_ptr<Core::LinAlg::Vector<double>> integratedshapefunc =
@@ -5251,7 +5250,7 @@ void FLD::FluidImplicitTimeInt::linear_relaxation_solve(
     // We use these matrices for several solves in Jacobian-free Newton-Krylov
     // solves of the FSI interface equations.
 
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
     std::shared_ptr<Core::LinAlg::Vector<double>> griddisp =
         Core::LinAlg::create_vector(*dofrowmap, false);
 
@@ -5372,24 +5371,27 @@ void FLD::FluidImplicitTimeInt::linear_relaxation_solve(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void FLD::FluidImplicitTimeInt::add_dirich_cond(const std::shared_ptr<const Epetra_Map> maptoadd)
+void FLD::FluidImplicitTimeInt::add_dirich_cond(
+    const std::shared_ptr<const Core::LinAlg::Map> maptoadd)
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> condmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> condmaps;
   condmaps.push_back(maptoadd);
   condmaps.push_back(dbcmaps_->cond_map());
-  std::shared_ptr<Epetra_Map> condmerged = Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
+  std::shared_ptr<Core::LinAlg::Map> condmerged =
+      Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
   *dbcmaps_ = Core::LinAlg::MapExtractor(*(discret_->dof_row_map()), condmerged);
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void FLD::FluidImplicitTimeInt::remove_dirich_cond(
-    const std::shared_ptr<const Epetra_Map> maptoremove)
+    const std::shared_ptr<const Core::LinAlg::Map> maptoremove)
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> othermaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> othermaps;
   othermaps.push_back(maptoremove);
   othermaps.push_back(dbcmaps_->other_map());
-  std::shared_ptr<Epetra_Map> othermerged = Core::LinAlg::MultiMapExtractor::merge_maps(othermaps);
+  std::shared_ptr<Core::LinAlg::Map> othermerged =
+      Core::LinAlg::MultiMapExtractor::merge_maps(othermaps);
   *dbcmaps_ = Core::LinAlg::MapExtractor(*(discret_->dof_row_map()), othermerged, false);
 }
 
@@ -5423,14 +5425,14 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> FLD::FluidImplicitTimeInt::i
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> FLD::FluidImplicitTimeInt::velocity_row_map()
+std::shared_ptr<const Core::LinAlg::Map> FLD::FluidImplicitTimeInt::velocity_row_map()
 {
   return velpressplitter_->other_map();
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> FLD::FluidImplicitTimeInt::pressure_row_map()
+std::shared_ptr<const Core::LinAlg::Map> FLD::FluidImplicitTimeInt::pressure_row_map()
 {
   return velpressplitter_->cond_map();
 }
@@ -6213,7 +6215,7 @@ void FLD::FluidImplicitTimeInt::reset(bool completeReset, int numsteps, int iter
   }
   else
   {
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
     // Vectors passed to the element
     // -----------------------------
@@ -6246,7 +6248,7 @@ void FLD::FluidImplicitTimeInt::reset(bool completeReset, int numsteps, int iter
 
     if (alefluid_)
     {
-      const Epetra_Map* aledofrowmap = discret_->dof_row_map(ndsale_);
+      const Core::LinAlg::Map* aledofrowmap = discret_->dof_row_map(ndsale_);
 
       if (!dispnp_) dispnp_ = Core::LinAlg::create_vector(*aledofrowmap, true);
       if (!dispn_) dispn_ = Core::LinAlg::create_vector(*aledofrowmap, true);

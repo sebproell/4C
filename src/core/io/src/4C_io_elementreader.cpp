@@ -76,7 +76,7 @@ void Core::IO::ElementReader::read_and_distribute()
     if (numele == 0)
     {
       // If the element section is empty, we create an empty input and return
-      coleles_ = roweles_ = colnodes_ = rownodes_ = std::make_shared<Epetra_Map>(
+      coleles_ = roweles_ = colnodes_ = rownodes_ = std::make_shared<Core::LinAlg::Map>(
           -1, 0, nullptr, 0, Core::Communication::as_epetra_comm(comm_));
 
       return;
@@ -92,7 +92,7 @@ void Core::IO::ElementReader::read_and_distribute()
     if (myrank == numproc - 1) mysize = numele - (numproc - 1) * bsize;
 
     // construct the map
-    roweles_ = std::make_shared<Epetra_Map>(
+    roweles_ = std::make_shared<Core::LinAlg::Map>(
         -1, mysize, &eids[myrank * bsize], 0, Core::Communication::as_epetra_comm(comm_));
   }
 

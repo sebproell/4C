@@ -27,7 +27,7 @@ Core::Conditions::LocsysManager::LocsysManager(Core::FE::Discretization& discret
   if (dim != 2 && dim != 3) FOUR_C_THROW("Locsys problem must be 2D or 3D");
 
   // get node row layout of discretization
-  const Epetra_Map* noderowmap = discret_.node_row_map();
+  const Core::LinAlg::Map* noderowmap = discret_.node_row_map();
 
   // create locsys vector and initialize to -1
   locsystoggle_ = Core::LinAlg::create_vector(*noderowmap, false);
@@ -77,10 +77,10 @@ void Core::Conditions::LocsysManager::update(const double time,
   if (time >= 0.0 and !locsysfunct_) return;
 
   // get dof row map of discretization
-  const Epetra_Map* dofrowmap = discret_.dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_.dof_row_map();
 
   // get node row layout of discretization
-  const Epetra_Map* noderowmap = discret_.node_row_map();
+  const Core::LinAlg::Map* noderowmap = discret_.node_row_map();
 
   // Since also time dependent conditions are possible we clear all local systems in the beginning
   nodalrotvectors_.clear();
@@ -390,7 +390,7 @@ void Core::Conditions::LocsysManager::update(const double time,
     nummyentries = static_cast<int>(locsysdofs.size());
     myglobalentries = locsysdofs.data();
   }
-  locsysdofmap_ = std::make_shared<Epetra_Map>(-1, nummyentries, myglobalentries,
+  locsysdofmap_ = std::make_shared<Core::LinAlg::Map>(-1, nummyentries, myglobalentries,
       discret_.dof_row_map()->IndexBase(),
       Core::Communication::as_epetra_comm(discret_.get_comm()));
   if (locsysdofmap_ == nullptr) FOUR_C_THROW("Creation failed.");

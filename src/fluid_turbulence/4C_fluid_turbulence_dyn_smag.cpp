@@ -149,7 +149,7 @@ void FLD::DynSmagFilter::apply_filter_for_dynamic_computation_of_cs(
     const std::shared_ptr<const Core::LinAlg::Vector<double>> scalar, const double thermpress,
     const std::shared_ptr<const Core::LinAlg::Vector<double>> dirichtoggle)
 {
-  const Epetra_Map* nodecolmap = discret_->node_col_map();
+  const Core::LinAlg::Map* nodecolmap = discret_->node_col_map();
 
 
   // perform filtering
@@ -219,7 +219,7 @@ void FLD::DynSmagFilter::apply_filter_for_dynamic_computation_of_prt(
     const std::shared_ptr<const Core::LinAlg::Vector<double>> dirichtoggle,
     Teuchos::ParameterList& extraparams, const int ndsvel)
 {
-  const Epetra_Map* nodecolmap = scatradiscret_->node_col_map();
+  const Core::LinAlg::Map* nodecolmap = scatradiscret_->node_col_map();
 
   // perform filtering
   boxfsc_->apply_filter_scatra(scalar, thermpress, dirichtoggle, ndsvel);
@@ -321,7 +321,7 @@ void FLD::DynSmagFilter::dyn_smag_compute_cs()
   std::vector<double> local_ele_sum_CI_denominator;
 
   // final constants (Cs*delta)^2 and (Ci*delta)^2 (loma only)
-  const Epetra_Map* elerowmap = discret_->element_row_map();
+  const Core::LinAlg::Map* elerowmap = discret_->element_row_map();
   Core::LinAlg::Vector<double> Cs_delta_sq(*elerowmap, true);
   Core::LinAlg::Vector<double> Ci_delta_sq(*elerowmap, true);
 
@@ -588,7 +588,7 @@ void FLD::DynSmagFilter::dyn_smag_compute_cs()
   }  // end loop over elements
 
   // export from row to column map
-  const Epetra_Map* elecolmap = discret_->element_col_map();
+  const Core::LinAlg::Map* elecolmap = discret_->element_col_map();
   std::shared_ptr<Core::LinAlg::Vector<double>> col_Cs_delta_sq =
       std::make_shared<Core::LinAlg::Vector<double>>(*elecolmap, true);
   col_Cs_delta_sq->put_scalar(0.0);
@@ -706,7 +706,7 @@ void FLD::DynSmagFilter::dyn_smag_compute_prt(
 {
   TEUCHOS_FUNC_TIME_MONITOR("ComputePrt");
 
-  const Epetra_Map* elerowmap = scatradiscret_->element_row_map();
+  const Core::LinAlg::Map* elerowmap = scatradiscret_->element_row_map();
   Core::LinAlg::Vector<double> Prt(*elerowmap, true);
 
   // for special flows, LijMij and MijMij averaged in each
@@ -959,7 +959,7 @@ void FLD::DynSmagFilter::dyn_smag_compute_prt(
   }  // end loop over elements
 
   // export from row to column map
-  const Epetra_Map* elecolmap = scatradiscret_->element_col_map();
+  const Core::LinAlg::Map* elecolmap = scatradiscret_->element_col_map();
   std::shared_ptr<Core::LinAlg::Vector<double>> col_Prt =
       std::make_shared<Core::LinAlg::Vector<double>>(*elecolmap, true);
   col_Prt->put_scalar(0.0);

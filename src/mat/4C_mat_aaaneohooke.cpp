@@ -24,7 +24,7 @@ FOUR_C_NAMESPACE_OPEN
 Mat::PAR::AAAneohooke::AAAneohooke(const Core::Mat::PAR::Parameter::Data& matdata)
     : Parameter(matdata)
 {
-  Epetra_Map dummy_map(1, 1, 0,
+  Core::LinAlg::Map dummy_map(1, 1, 0,
       Core::Communication::as_epetra_comm(
           (Global::Problem::instance()->get_communicators()->local_comm())));
   for (int i = first; i <= last; i++)

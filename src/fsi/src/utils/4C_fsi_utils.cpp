@@ -51,15 +51,16 @@ bool FSI::Utils::fluid_ale_nodes_disjoint(
   else  // do a more sophisticated check
   {
     // get node row maps
-    std::shared_ptr<const Epetra_Map> fluidmap =
-        std::make_shared<Epetra_Map>(*fluiddis.node_row_map());
-    std::shared_ptr<const Epetra_Map> alemap = std::make_shared<Epetra_Map>(*aledis.node_row_map());
+    std::shared_ptr<const Core::LinAlg::Map> fluidmap =
+        std::make_shared<Core::LinAlg::Map>(*fluiddis.node_row_map());
+    std::shared_ptr<const Core::LinAlg::Map> alemap =
+        std::make_shared<Core::LinAlg::Map>(*aledis.node_row_map());
 
     // Create intersection of fluid and ALE map
-    std::vector<std::shared_ptr<const Epetra_Map>> intersectionmaps;
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> intersectionmaps;
     intersectionmaps.push_back(fluidmap);
     intersectionmaps.push_back(alemap);
-    std::shared_ptr<Epetra_Map> intersectionmap =
+    std::shared_ptr<Core::LinAlg::Map> intersectionmap =
         Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
     if (intersectionmap->NumGlobalElements() == 0) isdisjoint = true;
@@ -167,8 +168,8 @@ FSI::Utils::SlideAleUtils::SlideAleUtils(std::shared_ptr<Core::FE::Discretizatio
     if (!err) FOUR_C_THROW("Non sliding interface has to be a subset of FSI-interface or empty");
   }
 
-  std::shared_ptr<Epetra_Map> structdofrowmap;
-  std::shared_ptr<Epetra_Map> fluiddofrowmap;
+  std::shared_ptr<Core::LinAlg::Map> structdofrowmap;
+  std::shared_ptr<Core::LinAlg::Map> fluiddofrowmap;
 
 
   // useful displacement vectors
@@ -183,7 +184,7 @@ FSI::Utils::SlideAleUtils::SlideAleUtils(std::shared_ptr<Core::FE::Discretizatio
     fluiddofrowmap_ = coupsf.master_dof_map();
   }
 
-  std::shared_ptr<Epetra_Map> dofrowmap =
+  std::shared_ptr<Core::LinAlg::Map> dofrowmap =
       Core::LinAlg::merge_map(*structdofrowmap_, *fluiddofrowmap_, true);
   idispms_ = Core::LinAlg::create_vector(*dofrowmap, true);
 
@@ -246,10 +247,10 @@ void FSI::Utils::SlideAleUtils::remeshing(Adapter::FSIStructureWrapper& structur
   // merge displacement values of interface nodes (struct+fluid) into idispms_ for mortar
   idispms_->put_scalar(0.0);
 
-  std::shared_ptr<Epetra_Map> dofrowmap =
+  std::shared_ptr<Core::LinAlg::Map> dofrowmap =
       Core::LinAlg::merge_map(*structdofrowmap_, *fluiddofrowmap_, true);
-  Epetra_Import msimpo(*dofrowmap, *structdofrowmap_);
-  Epetra_Import slimpo(*dofrowmap, *fluiddofrowmap_);
+  Epetra_Import msimpo(dofrowmap->get_epetra_map(), structdofrowmap_->get_epetra_map());
+  Epetra_Import slimpo(dofrowmap->get_epetra_map(), fluiddofrowmap_->get_epetra_map());
 
   idispms_->import(*idisptotal, msimpo, Add);
   idispms_->import(iprojdispale, slimpo, Add);
@@ -267,10 +268,10 @@ void FSI::Utils::SlideAleUtils::evaluate_mortar(Core::LinAlg::Vector<double>& id
   // merge displacement values of interface nodes (struct+fluid) into idispms_ for mortar
   idispms_->put_scalar(0.0);
 
-  std::shared_ptr<Epetra_Map> dofrowmap =
+  std::shared_ptr<Core::LinAlg::Map> dofrowmap =
       Core::LinAlg::merge_map(*structdofrowmap_, *fluiddofrowmap_, true);
-  Epetra_Import master_importer(*dofrowmap, *structdofrowmap_);
-  Epetra_Import slave_importer(*dofrowmap, *fluiddofrowmap_);
+  Epetra_Import master_importer(dofrowmap->get_epetra_map(), structdofrowmap_->get_epetra_map());
+  Epetra_Import slave_importer(dofrowmap->get_epetra_map(), fluiddofrowmap_->get_epetra_map());
 
   if (idispms_->import(idispstruct, master_importer, Add)) FOUR_C_THROW("Import operation failed.");
   if (idispms_->import(idispfluid, slave_importer, Add)) FOUR_C_THROW("Import operation failed.");
@@ -443,7 +444,7 @@ void FSI::Utils::SlideAleUtils::slide_projection(
   std::shared_ptr<Core::LinAlg::Vector<double>> idispnp = structure.extract_interface_dispnp();
 
   // Redistribute displacement of structnodes on the interface to all processors.
-  Epetra_Import interimpo(*structfullnodemap_, *structdofrowmap_);
+  Epetra_Import interimpo(structfullnodemap_->get_epetra_map(), structdofrowmap_->get_epetra_map());
   std::shared_ptr<Core::LinAlg::Vector<double>> reddisp =
       Core::LinAlg::create_vector(*structfullnodemap_, true);
   reddisp->import(*idispnp, interimpo, Add);
@@ -621,10 +622,10 @@ void FSI::Utils::SlideAleUtils::redundant_elements(
 
     Core::Communication::sum_all(&partsum, &globsum, 1, comm);
     // map with ele ids
-    Epetra_Map mstruslideleids(globsum, vstruslideleids.size(), vstruslideleids.data(), 0,
+    Core::LinAlg::Map mstruslideleids(globsum, vstruslideleids.size(), vstruslideleids.data(), 0,
         Core::Communication::as_epetra_comm(comm));
     // redundant version of it
-    Epetra_Map redmstruslideleids(*Core::LinAlg::allreduce_e_map(mstruslideleids));
+    Core::LinAlg::Map redmstruslideleids(*Core::LinAlg::allreduce_e_map(mstruslideleids));
 
     for (int eleind = 0; eleind < redmstruslideleids.NumMyElements(); eleind++)
     {

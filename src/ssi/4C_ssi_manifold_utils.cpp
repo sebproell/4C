@@ -846,15 +846,15 @@ SSI::ManifoldMeshTyingStrategyBase::ManifoldMeshTyingStrategyBase(
     }
 
     // merge slave dof maps from all mesh tying conditions
-    std::shared_ptr<Epetra_Map> slave_dof_map = nullptr;
+    std::shared_ptr<Core::LinAlg::Map> slave_dof_map = nullptr;
     for (const auto& meshtying : ssi_meshtying_->mesh_tying_handlers())
     {
       auto coupling_adapter = meshtying->slave_master_coupling();
       if (slave_dof_map == nullptr)
-        slave_dof_map = std::make_shared<Epetra_Map>(*coupling_adapter->slave_dof_map());
+        slave_dof_map = std::make_shared<Core::LinAlg::Map>(*coupling_adapter->slave_dof_map());
       else
       {
-        auto slave_dof_map_old = std::make_shared<Epetra_Map>(*slave_dof_map);
+        auto slave_dof_map_old = std::make_shared<Core::LinAlg::Map>(*slave_dof_map);
         slave_dof_map =
             Core::LinAlg::merge_map(slave_dof_map_old, coupling_adapter->slave_dof_map());
       }
@@ -888,7 +888,7 @@ SSI::ManifoldMeshTyingStrategyBlock::ManifoldMeshTyingStrategyBlock(
       meshtying_block_handler_()
 {
   // split condensed_dof_map into blocks
-  std::vector<std::shared_ptr<const Epetra_Map>> partial_maps_condensed_block_dof_map;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> partial_maps_condensed_block_dof_map;
   for (int i = 0; i < ssi_maps_->block_map_scatra_manifold()->num_maps(); ++i)
   {
     partial_maps_condensed_block_dof_map.emplace_back(Core::LinAlg::intersect_map(
@@ -910,7 +910,7 @@ SSI::ManifoldMeshTyingStrategyBlock::ManifoldMeshTyingStrategyBlock(
       auto perm_master_dof_map = coupling_adapter->perm_master_dof_map();
 
       // split maps according to split of matrix blocks, i.e. block maps
-      std::vector<std::shared_ptr<const Epetra_Map>> partial_maps_slave_block_dof_map;
+      std::vector<std::shared_ptr<const Core::LinAlg::Map>> partial_maps_slave_block_dof_map;
       std::vector<std::shared_ptr<Coupling::Adapter::Coupling>> partial_block_adapters;
       for (int i = 0; i < ssi_maps_->block_map_scatra_manifold()->num_maps(); ++i)
       {
@@ -938,9 +938,10 @@ SSI::ManifoldMeshTyingStrategyBlock::ManifoldMeshTyingStrategyBlock(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::tuple<std::shared_ptr<const Epetra_Map>, std::shared_ptr<const Epetra_Map>>
-SSI::ManifoldMeshTyingStrategyBlock::intersect_coupling_maps_block_map(const Epetra_Map& block_map,
-    const Epetra_Map& intersecting_map, const Epetra_Map& permuted_map, MPI_Comm comm)
+std::tuple<std::shared_ptr<const Core::LinAlg::Map>, std::shared_ptr<const Core::LinAlg::Map>>
+SSI::ManifoldMeshTyingStrategyBlock::intersect_coupling_maps_block_map(
+    const Core::LinAlg::Map& block_map, const Core::LinAlg::Map& intersecting_map,
+    const Core::LinAlg::Map& permuted_map, MPI_Comm comm)
 {
   std::vector<int> intersecting_map_vec, permuted_intersecting_map_vec;
   for (int slave_lid = 0; slave_lid < intersecting_map.NumMyElements(); ++slave_lid)
@@ -954,12 +955,12 @@ SSI::ManifoldMeshTyingStrategyBlock::intersect_coupling_maps_block_map(const Epe
   }
 
   auto intersected_map =
-      std::make_shared<Epetra_Map>(-1, static_cast<int>(intersecting_map_vec.size()),
+      std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(intersecting_map_vec.size()),
           intersecting_map_vec.data(), 0, Core::Communication::as_epetra_comm(comm));
 
-  auto permuted_intersected_map =
-      std::make_shared<Epetra_Map>(-1, static_cast<int>(permuted_intersecting_map_vec.size()),
-          permuted_intersecting_map_vec.data(), 0, Core::Communication::as_epetra_comm(comm));
+  auto permuted_intersected_map = std::make_shared<Core::LinAlg::Map>(-1,
+      static_cast<int>(permuted_intersecting_map_vec.size()), permuted_intersecting_map_vec.data(),
+      0, Core::Communication::as_epetra_comm(comm));
 
   return {intersected_map, permuted_intersected_map};
 }

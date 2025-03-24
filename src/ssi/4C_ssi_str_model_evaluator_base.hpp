@@ -42,7 +42,8 @@ namespace Solid::ModelEvaluator
 
     bool evaluate_stiff() override { return true; }
 
-    [[nodiscard]] std::shared_ptr<const Epetra_Map> get_block_dof_row_map_ptr() const override;
+    [[nodiscard]] std::shared_ptr<const Core::LinAlg::Map> get_block_dof_row_map_ptr()
+        const override;
 
     [[nodiscard]] std::shared_ptr<const Core::LinAlg::Vector<double>> get_current_solution_ptr()
         const override

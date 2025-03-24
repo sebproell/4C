@@ -509,7 +509,7 @@ std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> SSI::Utils::SSIMatrices::se
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix> SSI::Utils::SSIMatrices::setup_sparse_matrix(
-    const Epetra_Map& row_map)
+    const Core::LinAlg::Map& row_map)
 {
   const int expected_entries_per_row = 27;
   const bool explicitdirichlet = false;
@@ -529,18 +529,18 @@ SSI::Utils::SSIMaps::SSIMaps(const SSI::SsiMono& ssi_mono_algorithm)
                                       : Core::LinAlg::MatrixType::undefined),
       ssi_matrixtype_(ssi_mono_algorithm.matrix_type())
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> partial_maps(
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> partial_maps(
       ssi_mono_algorithm.is_scatra_manifold() ? 3 : 2, nullptr);
-  std::shared_ptr<const Epetra_Map> merged_map;
+  std::shared_ptr<const Core::LinAlg::Map> merged_map;
 
   partial_maps[get_problem_position(Subproblem::scalar_transport)] =
-      std::make_shared<Epetra_Map>(*ssi_mono_algorithm.scatra_field()->dof_row_map());
+      std::make_shared<Core::LinAlg::Map>(*ssi_mono_algorithm.scatra_field()->dof_row_map());
   partial_maps[get_problem_position(Subproblem::structure)] =
-      std::make_shared<Epetra_Map>(*ssi_mono_algorithm.structure_field()->dof_row_map());
+      std::make_shared<Core::LinAlg::Map>(*ssi_mono_algorithm.structure_field()->dof_row_map());
   if (ssi_mono_algorithm.is_scatra_manifold())
   {
     partial_maps[get_problem_position(Subproblem::manifold)] =
-        std::make_shared<Epetra_Map>(*ssi_mono_algorithm.scatra_manifold()->dof_row_map());
+        std::make_shared<Core::LinAlg::Map>(*ssi_mono_algorithm.scatra_manifold()->dof_row_map());
     auto temp_map = Core::LinAlg::merge_map(partial_maps[0], partial_maps[1], false);
     merged_map = Core::LinAlg::merge_map(temp_map, partial_maps[2], false);
   }
@@ -557,7 +557,7 @@ SSI::Utils::SSIMaps::SSIMaps(const SSI::SsiMono& ssi_mono_algorithm)
     {
       auto block_map_structure = std::make_shared<Core::LinAlg::MultiMapExtractor>(
           *ssi_mono_algorithm.structure_field()->discretization()->dof_row_map(),
-          std::vector<std::shared_ptr<const Epetra_Map>>(
+          std::vector<std::shared_ptr<const Core::LinAlg::Map>>(
               1, ssi_mono_algorithm.structure_field()->dof_row_map()));
 
       block_map_structure->check_for_valid_map_extractor();
@@ -570,7 +570,7 @@ SSI::Utils::SSIMaps::SSIMaps(const SSI::SsiMono& ssi_mono_algorithm)
         {
           auto block_map_scatra = std::make_shared<Core::LinAlg::MultiMapExtractor>(
               *ssi_mono_algorithm.scatra_field()->discretization()->dof_row_map(),
-              std::vector<std::shared_ptr<const Epetra_Map>>(
+              std::vector<std::shared_ptr<const Core::LinAlg::Map>>(
                   1, ssi_mono_algorithm.scatra_field()->dof_row_map()));
 
           block_map_scatra->check_for_valid_map_extractor();
@@ -582,7 +582,7 @@ SSI::Utils::SSIMaps::SSIMaps(const SSI::SsiMono& ssi_mono_algorithm)
           {
             auto block_map_scatra_manifold = std::make_shared<Core::LinAlg::MultiMapExtractor>(
                 *ssi_mono_algorithm.scatra_manifold()->discretization()->dof_row_map(),
-                std::vector<std::shared_ptr<const Epetra_Map>>(
+                std::vector<std::shared_ptr<const Core::LinAlg::Map>>(
                     1, ssi_mono_algorithm.scatra_manifold()->dof_row_map()));
 
             block_map_scatra_manifold->check_for_valid_map_extractor();
@@ -734,7 +734,7 @@ void SSI::Utils::SSIMaps::create_and_check_block_maps_sub_problems(
       block_map_scatra()->num_maps() + block_map_structure()->num_maps() +
       (ssi_mono_algorithm.is_scatra_manifold() ? block_map_scatra_manifold()->num_maps() : 0);
 
-  std::vector<std::shared_ptr<const Epetra_Map>> partial_maps_system_matrix(
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> partial_maps_system_matrix(
       num_blocks_systemmatrix, nullptr);
 
   for (int i = 0; i < block_map_scatra()->num_maps(); ++i)
@@ -788,21 +788,21 @@ std::shared_ptr<const Core::LinAlg::MultiMapExtractor> SSI::Utils::SSIMaps::bloc
 
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> SSI::Utils::SSIMaps::scatra_dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> SSI::Utils::SSIMaps::scatra_dof_row_map() const
 {
   return maps_sub_problems()->Map(SSIMaps::get_problem_position(Subproblem::scalar_transport));
 }
 
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> SSI::Utils::SSIMaps::scatra_manifold_dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> SSI::Utils::SSIMaps::scatra_manifold_dof_row_map() const
 {
   return maps_sub_problems()->Map(SSIMaps::get_problem_position(Subproblem::manifold));
 }
 
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> SSI::Utils::SSIMaps::structure_dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> SSI::Utils::SSIMaps::structure_dof_row_map() const
 {
   return maps_sub_problems()->Map(SSIMaps::get_problem_position(Subproblem::structure));
 }
@@ -911,8 +911,8 @@ SSI::Utils::SSIMeshTying::SSIMeshTying(const std::string& conditionname_coupling
       dis, conditionname_coupling, build_slave_slave_transformation, check_over_constrained);
 
   // construct full slave, master, and interior maps
-  std::vector<std::shared_ptr<const Epetra_Map>> slave_maps;
-  std::vector<std::shared_ptr<const Epetra_Map>> master_maps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> slave_maps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> master_maps;
   for (const auto& meshtying : meshtying_handlers_)
   {
     slave_maps.emplace_back(meshtying->slave_master_coupling()->slave_dof_map());
@@ -1013,7 +1013,7 @@ void SSI::Utils::SSIMeshTying::setup_mesh_tying_handlers(
     auto interior_map = Core::LinAlg::split_map(
         *dis->dof_row_map(), *Core::LinAlg::merge_map(slave_map, master_map));
 
-    std::vector<std::shared_ptr<const Epetra_Map>> maps(0, nullptr);
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps(0, nullptr);
     maps.emplace_back(interior_map);
     maps.emplace_back(slave_map);
     maps.emplace_back(master_map);
@@ -1372,10 +1372,10 @@ void SSI::Utils::SSIMeshTying::find_slave_slave_transformation_nodes(Core::FE::D
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
 void SSI::Utils::SSIMeshTying::check_slave_side_has_dirichlet_conditions(
-    std::shared_ptr<const Epetra_Map> struct_dbc_map) const
+    std::shared_ptr<const Core::LinAlg::Map> struct_dbc_map) const
 {
   // check if slave side dofs are part of DBC maps
-  std::vector<std::shared_ptr<const Epetra_Map>> maps(2, nullptr);
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps(2, nullptr);
   maps[0] = struct_dbc_map;
   for (const auto& meshtying : meshtying_handlers_)
   {

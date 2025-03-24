@@ -21,8 +21,9 @@ namespace Core::LinAlg
 {
   template <typename T>
   class Vector;
-}
-class Epetra_Map;
+  class Map;
+}  // namespace Core::LinAlg
+
 
 #include "4C_utils_parameter_list.fwd.hpp"
 
@@ -97,14 +98,14 @@ namespace Solid
       std::shared_ptr<Core::FE::Discretization> discretization() override;
 
       /// Access to pointer to DoF row map of the discretization (structure only)
-      const Epetra_Map* dof_row_map_view() override
+      const Core::LinAlg::Map* dof_row_map_view() override
       {
         check_init();
         return dataglobalstate_->dof_row_map_view();
       }
 
       /// DoF map of structural vector of unknowns
-      std::shared_ptr<const Epetra_Map> dof_row_map() override
+      std::shared_ptr<const Core::LinAlg::Map> dof_row_map() override
       {
         check_init();
         return dataglobalstate_->dof_row_map();
@@ -112,7 +113,7 @@ namespace Solid
 
       //! DoF map of vector of unknowns
       //! Alternative method capable of multiple DoF sets
-      std::shared_ptr<const Epetra_Map> dof_row_map(unsigned nds) override
+      std::shared_ptr<const Core::LinAlg::Map> dof_row_map(unsigned nds) override
       {
         check_init();
         return dataglobalstate_->dof_row_map(nds);
@@ -142,7 +143,7 @@ namespace Solid
       ///@}
 
       /// Return domain map of the mass matrix (implicit and explicit)
-      [[nodiscard]] const Epetra_Map& get_mass_domain_map() const override;
+      [[nodiscard]] const Core::LinAlg::Map& get_mass_domain_map() const override;
 
       /// @name Coupled problem routines
       /// @{

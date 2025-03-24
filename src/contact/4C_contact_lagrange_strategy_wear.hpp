@@ -33,9 +33,9 @@ namespace Wear
 
     */
     LagrangeStrategyWear(const std::shared_ptr<CONTACT::AbstractStrategyDataContainer>& data_ptr,
-        const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
-        std::vector<std::shared_ptr<CONTACT::Interface>> interfaces, int dim, MPI_Comm comm,
-        double alphaf, int maxdof);
+        const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
+        Teuchos::ParameterList params, std::vector<std::shared_ptr<CONTACT::Interface>> interfaces,
+        int dim, MPI_Comm comm, double alphaf, int maxdof);
 
 
     /*!
@@ -233,13 +233,16 @@ namespace Wear
     \brief Return master map for both sided wear (slip), mapped from slave side
 
     */
-    std::shared_ptr<const Epetra_Map> master_slip_nodes() const override { return gmslipnodes_; };
+    std::shared_ptr<const Core::LinAlg::Map> master_slip_nodes() const override
+    {
+      return gmslipnodes_;
+    };
 
     /*!
     \brief Return master map for both sided wear (active), mapped from slave side
 
     */
-    std::shared_ptr<const Epetra_Map> master_active_nodes() const override
+    std::shared_ptr<const Core::LinAlg::Map> master_active_nodes() const override
     {
       return gmactivenodes_;
     };
@@ -392,31 +395,32 @@ namespace Wear
     // both-sided wear weak dirich cond
     std::shared_ptr<Core::LinAlg::SparseMatrix> d2matrix_;  // global Mortar matrix D2
 
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         gminvolvednodes_;  // global involved master node row map (of all interfaces)
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         gminvolveddofs_;  // global involved master dof row map (of all interfaces)
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         gslipn_;  // global row map of matrix N for slip dofs (of all interfaces)
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         gwinact_;  // global row map of matrix N for slip dofs (of all interfaces)
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         gmslipn_;  // global row map of matrix N for slip dofs (of all interfaces)
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         gwminact_;  // global row map of matrix N for slip dofs (of all interfaces)
 
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         gwmdofrowmap_;  // global master wear dof row map (of all interfaces) -active
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         gwdofrowmap_;  // global slave wear dof row map (of all interfaces) -active
-    std::shared_ptr<Epetra_Map> gsdofnrowmap_;  // global slave wear dof row map (of all interfaces)
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
+        gsdofnrowmap_;  // global slave wear dof row map (of all interfaces)
+    std::shared_ptr<Core::LinAlg::Map>
         gmdofnrowmap_;  // global master wear dof row map (of all interfaces)
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
         galldofnrowmap_;  // global master wear dof row map (of all interfaces)
-    std::shared_ptr<Epetra_Map> gwalldofrowmap_;  // all
-    std::shared_ptr<Epetra_Map> gmslipnodes_;     // global master slip nodes
-    std::shared_ptr<Epetra_Map> gmactivenodes_;   // global master active nodes
+    std::shared_ptr<Core::LinAlg::Map> gwalldofrowmap_;  // all
+    std::shared_ptr<Core::LinAlg::Map> gmslipnodes_;     // global master slip nodes
+    std::shared_ptr<Core::LinAlg::Map> gmactivenodes_;   // global master active nodes
 
     std::shared_ptr<Core::LinAlg::Vector<double>>
         wearoutput_;  // vector of unweighted wear at t_n+1  -- slave
@@ -463,7 +467,7 @@ namespace Wear
     std::shared_ptr<Core::LinAlg::SparseMatrix> dablock_;
     std::shared_ptr<Core::LinAlg::Vector<double>> fw_;
 
-    std::shared_ptr<Epetra_Map> gidofs_;
+    std::shared_ptr<Core::LinAlg::Map> gidofs_;
 
   };  // class
 

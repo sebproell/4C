@@ -23,7 +23,7 @@
 #include <memory>
 
 // Forward Declarations
-class Epetra_Map;
+class Map;
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -126,10 +126,10 @@ namespace NOX
       //! Perturbed solution vector
       mutable ::NOX::Epetra::Vector perturbY;
 
-      //! Epetra_Map object used in the returns of the Epetra_Operator derived methods.
+      //! Core::LinAlg::Map object used in the returns of the Epetra_Operator derived methods.
       /*! If the user is using Epetra_BlockMaps, then ::NOX::Epetra::MatrixFree must create an
-       * equivalent Epetra_Map from the Epetra_BlockMap that can be used as the return object of the
-       * OperatorDomainMap() and OperatorRangeMap() methods.
+       * equivalent Core::LinAlg::Map from the Epetra_BlockMap that can be used as the return object
+       * of the OperatorDomainMap() and OperatorRangeMap() methods.
        */
       std::shared_ptr<const Epetra_Map> epetraMap;
 

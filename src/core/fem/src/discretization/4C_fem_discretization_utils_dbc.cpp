@@ -585,7 +585,7 @@ void Core::FE::Utils::Dbc::build_dbc_map_extractor(const Core::FE::Discretizatio
     nummyelements = dbcgidsv.size();
     myglobalelements = dbcgidsv.data();
   }
-  std::shared_ptr<Epetra_Map> dbcmap = std::make_shared<Epetra_Map>(-1, nummyelements,
+  std::shared_ptr<Core::LinAlg::Map> dbcmap = std::make_shared<Core::LinAlg::Map>(-1, nummyelements,
       myglobalelements, discret.dof_row_map()->IndexBase(), discret.dof_row_map()->Comm());
   // build the map extractor of Dirichlet-conditioned and free DOFs
   dbcmapextractor->setup(*(discret.dof_row_map()), dbcmap);

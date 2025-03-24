@@ -157,10 +157,10 @@ namespace Core::DOFSets
     //! @name Access methods
 
     /// Get degree of freedom row map
-    const Epetra_Map* dof_row_map() const override { return sourcedofset_->dof_row_map(); };
+    const Core::LinAlg::Map* dof_row_map() const override { return sourcedofset_->dof_row_map(); };
 
     /// Get degree of freedom column map
-    const Epetra_Map* dof_col_map() const override { return sourcedofset_->dof_col_map(); };
+    const Core::LinAlg::Map* dof_col_map() const override { return sourcedofset_->dof_col_map(); };
 
     /// Get number of dofs for given node
     int num_dof(

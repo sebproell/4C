@@ -311,7 +311,7 @@ void FLD::XWall::init_x_wall_maps()
       if (enriched) rowvec.push_back(xwallgid);
     }
 
-    xwallrownodemap_ = std::make_shared<Epetra_Map>(-1, (int)rowvec.size(), rowvec.data(), 0,
+    xwallrownodemap_ = std::make_shared<Core::LinAlg::Map>(-1, (int)rowvec.size(), rowvec.data(), 0,
         Core::Communication::as_epetra_comm(discret_->get_comm()));
   }
 
@@ -337,7 +337,7 @@ void FLD::XWall::init_x_wall_maps()
 
     int gcount;
     Core::Communication::sum_all(&count, &gcount, 1, (discret_->get_comm()));
-    dircolnodemap_ = std::make_shared<Epetra_Map>(gcount, count, testcollect.data(), 0,
+    dircolnodemap_ = std::make_shared<Core::LinAlg::Map>(gcount, count, testcollect.data(), 0,
         Core::Communication::as_epetra_comm(discret_->get_comm()));
   }  // end loop this conditions
   else
@@ -393,7 +393,7 @@ void FLD::XWall::init_wall_dist()
     commondis->add_element(newnode);
   }
 
-  std::shared_ptr<Epetra_Map> testrednodecolmap =
+  std::shared_ptr<Core::LinAlg::Map> testrednodecolmap =
       Core::LinAlg::allreduce_e_map(*(discret_->node_row_map()));
   commondis->export_column_nodes(*testrednodecolmap);
 
@@ -424,7 +424,7 @@ void FLD::XWall::init_wall_dist()
   }
   int count = (int)colvec.size();
 
-  xwallcolnodemap_ = std::make_shared<Epetra_Map>(
+  xwallcolnodemap_ = std::make_shared<Core::LinAlg::Map>(
       count, count, colvec.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
 
   for (int j = 0; j < xwallcolnodemap_->NumMyElements(); ++j)
@@ -637,7 +637,7 @@ void FLD::XWall::setup_x_wall_dis()
   if (parallel)
   {
     // redistribute
-    Epetra_Map elemap(*xwdiscret_->element_row_map());
+    Core::LinAlg::Map elemap(*xwdiscret_->element_row_map());
     MPI_Comm comm(discret_->get_comm());
 
     std::shared_ptr<const Core::LinAlg::Graph> nodegraph =
@@ -710,7 +710,7 @@ void FLD::XWall::setup_l2_projection()
       }
     }
 
-    enrdofrowmap_ = std::make_shared<Epetra_Map>(-1, (int)enrdf.size(), enrdf.data(), 0,
+    enrdofrowmap_ = std::make_shared<Core::LinAlg::Map>(-1, (int)enrdf.size(), enrdf.data(), 0,
         Core::Communication::as_epetra_comm(xwdiscret_->get_comm()));
 
     massmatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(*enrdofrowmap_, 108, false, true);
@@ -1134,7 +1134,7 @@ void FLD::XWall::l2_project_vector(Core::LinAlg::Vector<double>& veln,
     std::shared_ptr<Core::LinAlg::Vector<double>> velnp,
     std::shared_ptr<Core::LinAlg::Vector<double>> accn)
 {
-  if (not veln.get_block_map().SameAs(*discret_->dof_row_map()))
+  if (not veln.get_map().SameAs(*discret_->dof_row_map()))
     FOUR_C_THROW("input map is not the dof row map of the fluid discretization");
 
   massmatrix_->zero();

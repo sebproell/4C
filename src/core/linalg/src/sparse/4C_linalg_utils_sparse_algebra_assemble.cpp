@@ -27,7 +27,7 @@ void Core::LinAlg::assemble(Epetra_CrsMatrix& A, const Core::LinAlg::SerialDense
 
   const int myrank =
       Core::Communication::my_mpi_rank(Core::Communication::unpack_epetra_comm(A.Comm()));
-  const Epetra_Map& rowmap = A.RowMap();
+  const Core::LinAlg::Map& rowmap = Map(A.RowMap());
 
   // this 'Assemble' is not implemented for a Filled() matrix A
   if (A.Filled())
@@ -143,7 +143,7 @@ void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::Vector<double>& x,
  *----------------------------------------------------------------------*/
 void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::Vector<double>& x,
     Core::LinAlg::Vector<double>& b, const Core::LinAlg::Vector<double>& dbcval,
-    const Epetra_Map& dbcmap)
+    const Core::LinAlg::Map& dbcmap)
 {
   if (not dbcmap.UniqueGIDs()) FOUR_C_THROW("unique map required");
 
@@ -172,7 +172,7 @@ void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::Vector<double>& x,
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::Vector<double>& b,
-    const Core::LinAlg::Vector<double>& dbcval, const Epetra_Map& dbcmap)
+    const Core::LinAlg::Vector<double>& dbcval, const Core::LinAlg::Map& dbcmap)
 {
   if (not dbcmap.UniqueGIDs()) FOUR_C_THROW("unique map required");
 
@@ -212,7 +212,7 @@ void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::SparseOperator& A,
  *----------------------------------------------------------------------*/
 void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::SparseOperator& A,
     Core::LinAlg::Vector<double>& x, Core::LinAlg::Vector<double>& b,
-    const Core::LinAlg::Vector<double>& dbcval, const Epetra_Map& dbcmap)
+    const Core::LinAlg::Vector<double>& dbcval, const Core::LinAlg::Map& dbcmap)
 {
   A.apply_dirichlet(dbcmap);
   apply_dirichlet_to_system(x, b, dbcval, dbcmap);
@@ -223,7 +223,7 @@ void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::SparseOperator& A,
 void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::SparseMatrix& A,
     Core::LinAlg::Vector<double>& x, Core::LinAlg::Vector<double>& b,
     const Core::LinAlg::SparseMatrix& trafo, const Core::LinAlg::Vector<double>& dbcval,
-    const Epetra_Map& dbcmap)
+    const Core::LinAlg::Map& dbcmap)
 {
   A.apply_dirichlet_with_trafo(trafo, dbcmap);
   apply_dirichlet_to_system(x, b, dbcval, dbcmap);
@@ -236,9 +236,9 @@ std::shared_ptr<Core::LinAlg::MapExtractor> Core::LinAlg::convert_dirichlet_togg
 {
   const Epetra_BlockMap& fullblockmap = dbctoggle.get_block_map();
   // this copy is needed because the constructor of Core::LinAlg::MapExtractor
-  // accepts only Epetra_Map and not Epetra_BlockMap
-  const Epetra_Map fullmap =
-      Epetra_Map(fullblockmap.NumGlobalElements(), fullblockmap.NumMyElements(),
+  // accepts only Core::LinAlg::Map and not Epetra_BlockMap
+  const Core::LinAlg::Map fullmap =
+      Core::LinAlg::Map(fullblockmap.NumGlobalElements(), fullblockmap.NumMyElements(),
           fullblockmap.MyGlobalElements(), fullblockmap.IndexBase(), fullblockmap.Comm());
   const int mylength = dbctoggle.local_length();
   const int* fullgids = fullmap.MyGlobalElements();
@@ -257,7 +257,7 @@ std::shared_ptr<Core::LinAlg::MapExtractor> Core::LinAlg::convert_dirichlet_togg
       FOUR_C_THROW("Unexpected component {}. It is neither 1.0 nor 0.0.", (dbctoggle)[i]);
   }
   // build map of Dirichlet DOFs
-  std::shared_ptr<Epetra_Map> dbcmap = nullptr;
+  std::shared_ptr<Core::LinAlg::Map> dbcmap = nullptr;
   {
     int nummyelements = 0;
     int* myglobalelements = nullptr;
@@ -266,11 +266,11 @@ std::shared_ptr<Core::LinAlg::MapExtractor> Core::LinAlg::convert_dirichlet_togg
       nummyelements = dbcgids.size();
       myglobalelements = dbcgids.data();
     }
-    dbcmap = std::make_shared<Epetra_Map>(
+    dbcmap = std::make_shared<Core::LinAlg::Map>(
         -1, nummyelements, myglobalelements, fullmap.IndexBase(), fullmap.Comm());
   }
   // build map of free DOFs
-  std::shared_ptr<Epetra_Map> freemap = nullptr;
+  std::shared_ptr<Core::LinAlg::Map> freemap = nullptr;
   {
     int nummyelements = 0;
     int* myglobalelements = nullptr;
@@ -279,7 +279,7 @@ std::shared_ptr<Core::LinAlg::MapExtractor> Core::LinAlg::convert_dirichlet_togg
       nummyelements = freegids.size();
       myglobalelements = freegids.data();
     }
-    freemap = std::make_shared<Epetra_Map>(
+    freemap = std::make_shared<Core::LinAlg::Map>(
         -1, nummyelements, myglobalelements, fullmap.IndexBase(), fullmap.Comm());
   }
 

@@ -12,11 +12,10 @@
 /* headers */
 #include "4C_config.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_shared_ptr_from_ref.hpp"
-
-#include <Epetra_Map.h>
 
 #include <memory>
 #include <vector>
@@ -290,10 +289,10 @@ namespace TimeStepping
     TimIntMStep() : MStepBase::TimIntMStepBase() { ; }
 
     //! Constructor
-    TimIntMStep(const int steppast,   //!< lower index bound
-        const int stepfuture,         //!< higher index bound, >= lower bound
-        const Epetra_Map* dofrowmap,  //!< vector layout from discretization
-        const bool inittozero         //!< initialise to zero, if true
+    TimIntMStep(const int steppast,          //!< lower index bound
+        const int stepfuture,                //!< higher index bound, >= lower bound
+        const Core::LinAlg::Map* dofrowmap,  //!< vector layout from discretization
+        const bool inittozero                //!< initialise to zero, if true
         )
         : MStepBase(steppast, stepfuture)
     {
@@ -311,10 +310,10 @@ namespace TimeStepping
      *  State vectors are added and placed according to their
      *  indices #steppast to #stepfuture
      */
-    void resize(const int steppast,   //!< lower index bound
-        const int stepfuture,         //!< higher index bound, >= lower bound
-        const Epetra_Map* dofrowmap,  //!< vector layout from discretization
-        const bool inittozero         //!< initialise to zero, if true
+    void resize(const int steppast,          //!< lower index bound
+        const int stepfuture,                //!< higher index bound, >= lower bound
+        const Core::LinAlg::Map* dofrowmap,  //!< vector layout from discretization
+        const bool inittozero                //!< initialise to zero, if true
     )
     {
       // check this
@@ -343,7 +342,7 @@ namespace TimeStepping
      *  State vectors cleared and rebuild with given map
      *  take care that underlying discret_ contains the same maps
      */
-    void replace_maps(const Epetra_Map* dofrowmap  //!< new vector layout
+    void replace_maps(const Core::LinAlg::Map* dofrowmap  //!< new vector layout
     )
     {
       state_.clear();

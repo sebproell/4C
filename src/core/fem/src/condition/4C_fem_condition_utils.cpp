@@ -24,7 +24,7 @@ FOUR_C_NAMESPACE_OPEN
 namespace
 {
   template <typename Range>
-  std::shared_ptr<Epetra_Map> fill_condition_map(
+  std::shared_ptr<Core::LinAlg::Map> fill_condition_map(
       const Core::FE::Discretization& dis, const Range& nodeRange, const std::string& condname)
   {
     std::set<int> condnodeset;
@@ -39,7 +39,8 @@ namespace
       }
     }
 
-    std::shared_ptr<Epetra_Map> condnodemap = Core::LinAlg::create_map(condnodeset, dis.get_comm());
+    std::shared_ptr<Core::LinAlg::Map> condnodemap =
+        Core::LinAlg::create_map(condnodeset, dis.get_comm());
     return condnodemap;
   }
 }  // namespace
@@ -430,7 +431,7 @@ void Core::Conditions::find_element_conditions(const Core::Elements::Element* el
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> Core::Conditions::condition_node_row_map(
+std::shared_ptr<Core::LinAlg::Map> Core::Conditions::condition_node_row_map(
     const Core::FE::Discretization& dis, const std::string& condname)
 {
   return fill_condition_map(dis, dis.my_row_node_range(), condname);
@@ -439,7 +440,7 @@ std::shared_ptr<Epetra_Map> Core::Conditions::condition_node_row_map(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> Core::Conditions::condition_node_col_map(
+std::shared_ptr<Core::LinAlg::Map> Core::Conditions::condition_node_col_map(
     const Core::FE::Discretization& dis, const std::string& condname)
 {
   return fill_condition_map(dis, dis.my_col_node_range(), condname);

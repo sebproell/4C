@@ -115,19 +115,25 @@ namespace Adapter
     //@{
 
     /// dof map of vector of unknowns
-    std::shared_ptr<const Epetra_Map> dof_row_map() override { return structure_->dof_row_map(); }
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() override
+    {
+      return structure_->dof_row_map();
+    }
 
     /// dof map of vector of unknowns for multiple dof sets
-    std::shared_ptr<const Epetra_Map> dof_row_map(unsigned nds) override
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map(unsigned nds) override
     {
       return structure_->dof_row_map(nds);
     }
 
     /// view of dof map of vector of vector of unknowns
-    const Epetra_Map* dof_row_map_view() override { return structure_->dof_row_map_view(); }
+    const Core::LinAlg::Map* dof_row_map_view() override { return structure_->dof_row_map_view(); }
 
     /// domain map of system matrix
-    [[nodiscard]] const Epetra_Map& domain_map() const override { return structure_->domain_map(); }
+    [[nodiscard]] const Core::LinAlg::Map& domain_map() const override
+    {
+      return structure_->domain_map();
+    }
 
     /// direct access to system matrix
     std::shared_ptr<Core::LinAlg::SparseMatrix> system_matrix() override
@@ -206,13 +212,13 @@ namespace Adapter
     }
 
     /// expand dirichlet bc map
-    void add_dirich_dofs(const std::shared_ptr<const Epetra_Map> maptoadd) override
+    void add_dirich_dofs(const std::shared_ptr<const Core::LinAlg::Map> maptoadd) override
     {
       structure_->add_dirich_dofs(maptoadd);
     };
 
     /// contract dirichlet bc map
-    void remove_dirich_dofs(const std::shared_ptr<const Epetra_Map> maptoremove) override
+    void remove_dirich_dofs(const std::shared_ptr<const Core::LinAlg::Map> maptoremove) override
     {
       structure_->remove_dirich_dofs(maptoremove);
     };

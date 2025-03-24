@@ -62,11 +62,11 @@ namespace CONTACT
         enum NOX::Nln::StatusTest::QuantityType checkQuantity, int& activesetsize) const override;
 
     /// Returns the current active set map
-    Teuchos::RCP<const Epetra_Map> get_current_active_set_map(
+    Teuchos::RCP<const Core::LinAlg::Map> get_current_active_set_map(
         enum NOX::Nln::StatusTest::QuantityType checkQuantity) const override;
 
     /// Returns the old active set map of the previous Newton step
-    Teuchos::RCP<const Epetra_Map> get_old_active_set_map(
+    Teuchos::RCP<const Core::LinAlg::Map> get_old_active_set_map(
         enum NOX::Nln::StatusTest::QuantityType checkQuantity) const override;
     /// @}
 
@@ -118,7 +118,7 @@ namespace CONTACT
    private:
     std::shared_ptr<CONTACT::AbstractStrategy> strategy_ptr_;
 
-    std::vector<std::shared_ptr<Epetra_Map>> cycling_maps_;
+    std::vector<std::shared_ptr<Core::LinAlg::Map>> cycling_maps_;
   };
 }  // namespace CONTACT
 

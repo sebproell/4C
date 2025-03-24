@@ -11,10 +11,9 @@
 #include "4C_config.hpp"
 
 #include "4C_binstrategy_utils.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
-
-#include <Epetra_Map.h>
 
 #include <functional>
 #include <memory>
@@ -109,7 +108,7 @@ namespace Core::Rebalance
 
 
   /// recompute nodecolmap of standard discretization to include all nodes as of subdicretization
-  std::shared_ptr<Epetra_Map> compute_node_col_map(
+  std::shared_ptr<Core::LinAlg::Map> compute_node_col_map(
       const Core::FE::Discretization& sourcedis,  ///< standard discretization we want to rebalance
       const Core::FE::Discretization& subdis      ///< subdiscretization prescribing ghosting
   );

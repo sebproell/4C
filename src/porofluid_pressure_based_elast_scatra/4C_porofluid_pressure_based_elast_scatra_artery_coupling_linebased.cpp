@@ -91,7 +91,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::setup_system(
   // copy vector
   std::shared_ptr<Core::LinAlg::Vector<double>> rhs_art_with_collapsed =
       std::make_shared<Core::LinAlg::Vector<double>>(*rhs_art);
-  std::shared_ptr<Epetra_Map> dbcmap_art_with_collapsed =
+  std::shared_ptr<Core::LinAlg::Map> dbcmap_art_with_collapsed =
       get_additional_dbc_for_collapsed_eles(*dbcmap_art, *rhs_art_with_collapsed);
 
   // call base class
@@ -100,7 +100,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::setup_system(
       *dbcmap_art->cond_map(), *dbcmap_art_with_collapsed);
 }
 
-std::shared_ptr<Epetra_Map>
+std::shared_ptr<Core::LinAlg::Map>
 PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::get_additional_dbc_for_collapsed_eles(
     const Core::LinAlg::MapExtractor& dbcmap_art,
     Core::LinAlg::Vector<double>& rhs_art_with_collapsed)
@@ -117,7 +117,7 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::get_additional_dbc_
   std::vector<int> mydirichdofs(0);
 
   const int numrownodes = arterydis_->num_my_row_nodes();
-  const Epetra_Map* dofrowmap = arterydis_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = arterydis_->dof_row_map();
 
   for (int inode = 0; inode < numrownodes; ++inode)
   {
@@ -152,16 +152,18 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::get_additional_dbc_
 
   // build map
   int nummydirichvals = mydirichdofs.size();
-  std::shared_ptr<Epetra_Map> dirichmap = std::make_shared<Epetra_Map>(-1, nummydirichvals,
-      mydirichdofs.data(), 0, Core::Communication::as_epetra_comm(arterydis_->get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> dirichmap =
+      std::make_shared<Core::LinAlg::Map>(-1, nummydirichvals, mydirichdofs.data(), 0,
+          Core::Communication::as_epetra_comm(arterydis_->get_comm()));
 
   // build vector of maps
-  std::vector<std::shared_ptr<const Epetra_Map>> condmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> condmaps;
   condmaps.push_back(dirichmap);
   condmaps.push_back(dbcmap_art.cond_map());
 
   // combined map
-  std::shared_ptr<Epetra_Map> condmerged = Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
+  std::shared_ptr<Core::LinAlg::Map> condmerged =
+      Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
 
   return condmerged;
 }
@@ -332,8 +334,9 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffecte
 
   // initialize the unaffected and current lengths
   unaffected_seg_lengths_artery_ =
-      std::make_shared<Epetra_FEVector>(*arterydis_->dof_row_map(1), true);
-  current_seg_lengths_artery_ = std::make_shared<Epetra_FEVector>(*arterydis_->dof_row_map(1));
+      std::make_shared<Epetra_FEVector>(arterydis_->dof_row_map(1)->get_epetra_map(), true);
+  current_seg_lengths_artery_ =
+      std::make_shared<Epetra_FEVector>(arterydis_->dof_row_map(1)->get_epetra_map());
 
   // set segment ID on coupling pairs and fill the unaffected artery length
   for (int iele = 0; iele < arterydis_->element_col_map()->NumMyElements(); ++iele)
@@ -402,7 +405,8 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffecte
  *----------------------------------------------------------------------*/
 void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffected_integrated_diam()
 {
-  Epetra_FEVector unaffected_diams_artery_row(*arterydis_->element_row_map(), true);
+  Epetra_FEVector unaffected_diams_artery_row(
+      arterydis_->element_row_map()->get_epetra_map(), true);
 
   for (int i = 0; i < arterydis_->element_row_map()->NumMyElements(); ++i)
   {
@@ -506,7 +510,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased::set_varying_di
   if (has_varying_diam_)
   {
     integrated_diams_artery_row_ =
-        std::make_shared<Epetra_FEVector>(*arterydis_->element_row_map(), true);
+        std::make_shared<Epetra_FEVector>(arterydis_->element_row_map()->get_epetra_map(), true);
     unaffected_integrated_diams_artery_col_ =
         std::make_shared<Core::LinAlg::Vector<double>>(*arterydis_->element_col_map(), true);
     integrated_diams_artery_col_ =

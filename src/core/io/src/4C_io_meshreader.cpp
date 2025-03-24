@@ -155,7 +155,7 @@ void Core::IO::MeshReader::rebalance()
     if (!Core::Communication::my_mpi_rank(comm_))
       std::cout << "\nNumber of procs used for redistribution: " << num_procs << "\n";
 
-    std::shared_ptr<Epetra_Map> rowmap, colmap;
+    std::shared_ptr<Core::LinAlg::Map> rowmap, colmap;
 
     if (graph_[i])
     {
@@ -188,10 +188,10 @@ void Core::IO::MeshReader::rebalance()
           // here we can reuse the graph, which was calculated before, this saves us some time and
           // in addition calculate geometric information based on the coordinates of the
           // discretization
-          rowmap = std::make_shared<Epetra_Map>(-1, graph_[i]->row_map().NumMyElements(),
+          rowmap = std::make_shared<Core::LinAlg::Map>(-1, graph_[i]->row_map().NumMyElements(),
               graph_[i]->row_map().MyGlobalElements(), 0,
               Core::Communication::as_epetra_comm(comm_));
-          colmap = std::make_shared<Epetra_Map>(-1, graph_[i]->col_map().NumMyElements(),
+          colmap = std::make_shared<Core::LinAlg::Map>(-1, graph_[i]->col_map().NumMyElements(),
               graph_[i]->col_map().MyGlobalElements(), 0,
               Core::Communication::as_epetra_comm(comm_));
 
@@ -217,10 +217,10 @@ void Core::IO::MeshReader::rebalance()
 
           rebalanceParams.set("partitioning method", "HYPERGRAPH");
 
-          rowmap = std::make_shared<Epetra_Map>(-1, graph_[i]->row_map().NumMyElements(),
+          rowmap = std::make_shared<Core::LinAlg::Map>(-1, graph_[i]->row_map().NumMyElements(),
               graph_[i]->row_map().MyGlobalElements(), 0,
               Core::Communication::as_epetra_comm(comm_));
-          colmap = std::make_shared<Epetra_Map>(-1, graph_[i]->col_map().NumMyElements(),
+          colmap = std::make_shared<Core::LinAlg::Map>(-1, graph_[i]->col_map().NumMyElements(),
               graph_[i]->col_map().MyGlobalElements(), 0,
               Core::Communication::as_epetra_comm(comm_));
 
@@ -242,7 +242,7 @@ void Core::IO::MeshReader::rebalance()
     }
     else
     {
-      rowmap = colmap = std::make_shared<Epetra_Map>(
+      rowmap = colmap = std::make_shared<Core::LinAlg::Map>(
           -1, 0, nullptr, 0, Core::Communication::as_epetra_comm(comm_));
     }
 

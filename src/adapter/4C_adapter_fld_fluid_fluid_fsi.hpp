@@ -12,10 +12,9 @@
 
 #include "4C_adapter_fld_fluid_fsi.hpp"
 #include "4C_inpar_xfem.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
-
-#include <Epetra_Map.h>
 
 #include <memory>
 
@@ -82,7 +81,7 @@ namespace Adapter
     //@{
 
     // get merged xfluid-fluid dof row map
-    std::shared_ptr<const Epetra_Map> dof_row_map() override;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() override;
 
     /// communication object at the interface
     std::shared_ptr<FLD::Utils::MapExtractor> const& interface() const override
@@ -98,7 +97,7 @@ namespace Adapter
     std::shared_ptr<const Core::LinAlg::Vector<double>> dispn() override;
 
     /// get the velocity row map of the embedded fluid
-    std::shared_ptr<const Epetra_Map> velocity_row_map() override;
+    std::shared_ptr<const Core::LinAlg::Map> velocity_row_map() override;
 
     /// get block system matrix
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> block_system_matrix() override;

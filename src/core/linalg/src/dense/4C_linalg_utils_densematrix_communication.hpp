@@ -13,8 +13,7 @@
 #include "4C_comm_exporter.hpp"
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_linalg_blocksparsematrix.hpp"
-
-#include <Epetra_Map.h>
+#include "4C_linalg_map.hpp"
 
 #include <memory>
 
@@ -62,7 +61,7 @@ namespace Core::LinAlg
     std::map<int, std::vector<T>> datamap;
     datamap[myrank] = sdata;
     // build a source map
-    Epetra_Map source(numproc, 1, &myrank, 0, Core::Communication::as_epetra_comm(comm));
+    Core::LinAlg::Map source(numproc, 1, &myrank, 0, Core::Communication::as_epetra_comm(comm));
     // build a target map which is redundant on all target procs and zero everywhere else
     bool iamtarget = false;
     for (int i = 0; i < ntargetprocs; ++i)
@@ -78,7 +77,7 @@ namespace Core::LinAlg
       for (int i = 0; i < numproc; ++i) targetvec[i] = i;
     }
     const int tnummyelements = (int)targetvec.size();
-    Epetra_Map target(
+    Core::LinAlg::Map target(
         -1, tnummyelements, targetvec.data(), 0, Core::Communication::as_epetra_comm(comm));
     // build an exporter and export data
     Core::Communication::Exporter exporter(source, target, comm);
@@ -138,7 +137,7 @@ namespace Core::LinAlg
     std::map<int, std::set<T>> datamap;
     datamap[myrank] = sdata;
     // build a source map
-    Epetra_Map source(numproc, 1, &myrank, 0, Core::Communication::as_epetra_comm(comm));
+    Core::LinAlg::Map source(numproc, 1, &myrank, 0, Core::Communication::as_epetra_comm(comm));
     // build a target map which is redundant on all target procs and zero everywhere else
     bool iamtarget = false;
     for (int i = 0; i < ntargetprocs; ++i)
@@ -154,7 +153,7 @@ namespace Core::LinAlg
       for (int i = 0; i < numproc; ++i) targetvec[i] = i;
     }
     const int tnummyelements = (int)targetvec.size();
-    Epetra_Map target(
+    Core::LinAlg::Map target(
         -1, tnummyelements, targetvec.data(), 0, Core::Communication::as_epetra_comm(comm));
     // build an exporter and export data
     Core::Communication::Exporter exporter(source, target, comm);
@@ -214,7 +213,7 @@ namespace Core::LinAlg
     std::map<int, std::map<int, std::set<T>>> datamap;
     datamap[myrank] = sdata;
     // build a source map
-    Epetra_Map source(numproc, 1, &myrank, 0, Core::Communication::as_epetra_comm(comm));
+    Core::LinAlg::Map source(numproc, 1, &myrank, 0, Core::Communication::as_epetra_comm(comm));
     // build a target map which is redundant on all target procs and zero everywhere else
     bool iamtarget = false;
     for (int i = 0; i < ntargetprocs; ++i)
@@ -230,7 +229,7 @@ namespace Core::LinAlg
       for (int i = 0; i < numproc; ++i) targetvec[i] = i;
     }
     const int tnummyelements = (int)targetvec.size();
-    Epetra_Map target(
+    Core::LinAlg::Map target(
         -1, tnummyelements, targetvec.data(), 0, Core::Communication::as_epetra_comm(comm));
     // build an exporter and export data
     Core::Communication::Exporter exporter(source, target, comm);
@@ -290,7 +289,7 @@ namespace Core::LinAlg
     std::map<int, std::map<int, std::vector<T>>> datamap;
     datamap[myrank] = sdata;
     // build a source map
-    Epetra_Map source(numproc, 1, &myrank, 0, Core::Communication::as_epetra_comm(comm));
+    Core::LinAlg::Map source(numproc, 1, &myrank, 0, Core::Communication::as_epetra_comm(comm));
     // build a target map which is redundant on all target procs and zero everywhere else
     bool iamtarget = false;
     for (int i = 0; i < ntargetprocs; ++i)
@@ -306,7 +305,7 @@ namespace Core::LinAlg
       for (int i = 0; i < numproc; ++i) targetvec[i] = i;
     }
     const int tnummyelements = (int)targetvec.size();
-    Epetra_Map target(
+    Core::LinAlg::Map target(
         -1, tnummyelements, targetvec.data(), 0, Core::Communication::as_epetra_comm(comm));
     // build an exporter and export data
     Core::Communication::Exporter exporter(source, target, comm);
@@ -369,7 +368,7 @@ namespace Core::LinAlg
     datamap[myrank] = sdata;
 
     // build a source map
-    Epetra_Map source(numproc, 1, &myrank, 0, Core::Communication::as_epetra_comm(comm));
+    Core::LinAlg::Map source(numproc, 1, &myrank, 0, Core::Communication::as_epetra_comm(comm));
     // build a target map which is redundant on all target procs and zero everywhere else
     bool iamtarget = false;
     for (int i = 0; i < ntargetprocs; ++i)
@@ -385,7 +384,7 @@ namespace Core::LinAlg
       for (int i = 0; i < numproc; ++i) targetvec[i] = i;
     }
     const int tnummyelements = (int)targetvec.size();
-    Epetra_Map target(
+    Core::LinAlg::Map target(
         -1, tnummyelements, targetvec.data(), 0, Core::Communication::as_epetra_comm(comm));
     // build an exporter and export data
     Core::Communication::Exporter exporter(source, target, comm);
@@ -514,24 +513,24 @@ namespace Core::LinAlg
   }
 
   /*!
-   \brief Create an allreduced vector of gids from the given Epetra_Map
+   \brief Create an allreduced vector of gids from the given Core::LinAlg::Map
 
    We have nodes and elements arbitrary global ids. On rare occasions, however,
    we need to allreduce a particular map to one or more processors.
    This is a building block for such occasions. We allreduce the gids
-   of the given Epetra_Map into a vector ordered by processor number.
+   of the given Core::LinAlg::Map into a vector ordered by processor number.
 
    \note You are not supposed to use redundant vectors in normal
    situations. If you happen to need this method you are probably
    about to do something illegal.
 
    \param rredundant (o) redundant vector of global ids
-   \param emap (i) unique distributed Epetra_Map
+   \param emap (i) unique distributed Core::LinAlg::Map
 
    */
-  void allreduce_e_map(std::vector<int>& rredundant, const Epetra_Map& emap);
+  void allreduce_e_map(std::vector<int>& rredundant, const Core::LinAlg::Map& emap);
 
-  /// Create an allreduced gid to index map from the given Epetra_Map
+  /// Create an allreduced gid to index map from the given Core::LinAlg::Map
   /*!
    We have nodes and elements with unique but otherwise arbitrary
    global ids. But unfortunately we need an allreduced vector of dof
@@ -544,13 +543,13 @@ namespace Core::LinAlg
    about to do something illegal.
 
    \param idxmap (o) map from global ids to (redundant) vector indexes
-   \param emap (i) unique distributed Epetra_Map
+   \param emap (i) unique distributed Core::LinAlg::Map
 
    */
-  void allreduce_e_map(std::map<int, int>& idxmap, const Epetra_Map& emap);
+  void allreduce_e_map(std::map<int, int>& idxmap, const Core::LinAlg::Map& emap);
 
   /*!
-   \brief Create an allreduced gid to index map from the given Epetra_Map
+   \brief Create an allreduced gid to index map from the given Core::LinAlg::Map
           on a distinct processor, all other procs create empty maps instead.
 
    This method is currently used within the parallel post_ensight
@@ -559,15 +558,15 @@ namespace Core::LinAlg
 
    \note see also documentation for the usual allreduce_e_map methods
 
-   \param emap (i) any distributed Epetra_Map
+   \param emap (i) any distributed Core::LinAlg::Map
    \param pid (i)  processor id where you want to have the allreduced map
    exclusively
 
    */
-  std::shared_ptr<Epetra_Map> allreduce_e_map(const Epetra_Map& emap, const int pid);
+  std::shared_ptr<Core::LinAlg::Map> allreduce_e_map(const Core::LinAlg::Map& emap, const int pid);
 
   /*!
-   \brief Create an allreduced Epetra_Map from the given Epetra_Map
+   \brief Create an allreduced Core::LinAlg::Map from the given Core::LinAlg::Map
           and give it to all processors.
 
    This method is currently used within the constraint management, since
@@ -579,30 +578,31 @@ namespace Core::LinAlg
    situations. If you happen to need this method you are probably
    about to do something illegal.
 
-   \param emap (i) any distributed Epetra_Map
+   \param emap (i) any distributed Core::LinAlg::Map
 
    */
-  std::shared_ptr<Epetra_Map> allreduce_e_map(const Epetra_Map& emap);
+  std::shared_ptr<Core::LinAlg::Map> allreduce_e_map(const Core::LinAlg::Map& emap);
 
   /*!
-   \brief Create an allreduced Epetra_Map from the given Epetra_Map
+   \brief Create an allreduced Core::LinAlg::Map from the given Core::LinAlg::Map
           and give it to all processors.
 
    Here, we have a overlapping source map and still want to have a fully
    redundant map on all processors without duplicated entries.
 
    */
-  std::shared_ptr<Epetra_Map> allreduce_overlapping_e_map(const Epetra_Map& emap);
+  std::shared_ptr<Core::LinAlg::Map> allreduce_overlapping_e_map(const Core::LinAlg::Map& emap);
 
   /*!
-   \brief Create an allreduced Epetra_Map from the given Epetra_Map
+   \brief Create an allreduced Core::LinAlg::Map from the given Core::LinAlg::Map
           on a distinct processor, all other procs create empty maps instead.
 
-   \param emap (i) any distributed overlapping Epetra_Map
+   \param emap (i) any distributed overlapping Core::LinAlg::Map
    \param pid (i)  processor id where you want to have the allreduced and sorted map exclusively
 
    */
-  std::shared_ptr<Epetra_Map> allreduce_overlapping_e_map(const Epetra_Map& emap, const int pid);
+  std::shared_ptr<Core::LinAlg::Map> allreduce_overlapping_e_map(
+      const Core::LinAlg::Map& emap, const int pid);
 
   /*!
    \brief Find position of my map elements in a consecutive vector

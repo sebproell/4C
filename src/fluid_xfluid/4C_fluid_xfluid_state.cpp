@@ -26,7 +26,7 @@ FOUR_C_NAMESPACE_OPEN
  |  ctor  Initialize coupling matrices                     schott 01/15 |
  *----------------------------------------------------------------------*/
 FLD::XFluidState::CouplingState::CouplingState(
-    const std::shared_ptr<const Epetra_Map>& xfluiddofrowmap,
+    const std::shared_ptr<const Core::LinAlg::Map>& xfluiddofrowmap,
     const std::shared_ptr<Core::FE::Discretization>& slavediscret_mat,
     const std::shared_ptr<Core::FE::Discretization>& slavediscret_rhs)
     : is_active_(true)
@@ -73,7 +73,7 @@ void FLD::XFluidState::CouplingState::zero_coupling_matrices_and_rhs()
  |  complete coupling matrices and rhs vectors             schott 01/15 |
  *----------------------------------------------------------------------*/
 void FLD::XFluidState::CouplingState::complete_coupling_matrices_and_rhs(
-    const Epetra_Map& xfluiddofrowmap, const Epetra_Map& slavedofrowmap)
+    const Core::LinAlg::Map& xfluiddofrowmap, const Core::LinAlg::Map& slavedofrowmap)
 {
   if (!is_active_) return;
 
@@ -121,8 +121,8 @@ void FLD::XFluidState::CouplingState::destroy(bool throw_exception)
  *----------------------------------------------------------------------*/
 FLD::XFluidState::XFluidState(const std::shared_ptr<XFEM::ConditionManager>& condition_manager,
     const std::shared_ptr<Cut::CutWizard>& wizard, const std::shared_ptr<XFEM::XFEMDofSet>& dofset,
-    const std::shared_ptr<const Epetra_Map>& xfluiddofrowmap,
-    const std::shared_ptr<const Epetra_Map>& xfluiddofcolmap)
+    const std::shared_ptr<const Core::LinAlg::Map>& xfluiddofrowmap,
+    const std::shared_ptr<const Core::LinAlg::Map>& xfluiddofcolmap)
     : xfluiddofrowmap_(xfluiddofrowmap),
       xfluiddofcolmap_(xfluiddofcolmap),
       dofset_(dofset),
@@ -310,7 +310,7 @@ void FLD::XFluidState::complete_coupling_matrices_and_rhs()
  |  Complete coupling matrices and rhs vectors             schott 12/14 |
  *----------------------------------------------------------------------*/
 void FLD::XFluidState::complete_coupling_matrices_and_rhs(
-    const Epetra_Map& fluiddofrowmap  ///< fluid dof row map used for complete
+    const Core::LinAlg::Map& fluiddofrowmap  ///< fluid dof row map used for complete
 )
 {
   // loop all coupling objects

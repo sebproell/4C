@@ -126,13 +126,13 @@ namespace NOX
             return ::NOX::StatusTest::Unevaluated;
           }
 
-          virtual Teuchos::RCP<const Epetra_Map> get_current_active_set_map(
+          virtual Teuchos::RCP<const Core::LinAlg::Map> get_current_active_set_map(
               enum NOX::Nln::StatusTest::QuantityType qt) const
           {
             return Teuchos::null;
           };
 
-          virtual Teuchos::RCP<const Epetra_Map> get_old_active_set_map(
+          virtual Teuchos::RCP<const Core::LinAlg::Map> get_old_active_set_map(
               enum NOX::Nln::StatusTest::QuantityType qt) const
           {
             return Teuchos::null;

@@ -16,9 +16,8 @@
 #include "4C_fluid_utils.hpp"
 #include "4C_fluid_utils_mapextractor.hpp"
 #include "4C_io.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
-
-#include <Epetra_Map.h>
 
 #include <memory>
 
@@ -201,14 +200,14 @@ namespace FLD
       */
       void build_condition_node_row_map(std::shared_ptr<Core::FE::Discretization> dis,
           std::string condname, int condid, int condnum,
-          std::shared_ptr<Epetra_Map>& cond_noderowmap);
+          std::shared_ptr<Core::LinAlg::Map>& cond_noderowmap);
 
       /*!
       \brief get the dof row map of the womersley condition
       */
       void build_condition_dof_row_map(std::shared_ptr<Core::FE::Discretization> dis,
           const std::string condname, int condid, int condnum,
-          std::shared_ptr<Epetra_Map>& cond_dofrowmap);
+          std::shared_ptr<Core::LinAlg::Map>& cond_dofrowmap);
 
       /*!
       \brief Evaluate velocities
@@ -232,7 +231,7 @@ namespace FLD
       \brief Evaluate velocities
       */
       void velocities(Core::FE::Discretization& disc, Core::LinAlg::Vector<double>& bcdof,
-          Epetra_Map& cond_noderowmap, Core::LinAlg::Vector<double>& local_radii,
+          Core::LinAlg::Map& cond_noderowmap, Core::LinAlg::Vector<double>& local_radii,
           Core::LinAlg::Vector<double>& border_radii, std::vector<double>& normal,
           Teuchos::ParameterList& params);
 
@@ -378,13 +377,13 @@ namespace FLD
       std::shared_ptr<std::vector<double>> vnormal_;
 
       //! a Node row map of the nodes that belong to the current condition
-      std::shared_ptr<Epetra_Map> cond_surfnoderowmap_;
+      std::shared_ptr<Core::LinAlg::Map> cond_surfnoderowmap_;
 
       //! a Node row map of the nodes that belong to border of the current condition
-      std::shared_ptr<Epetra_Map> cond_linenoderowmap_;
+      std::shared_ptr<Core::LinAlg::Map> cond_linenoderowmap_;
 
       //! a Dof row map of the degrees of freedom that belong to the current condition
-      std::shared_ptr<Epetra_Map> cond_dofrowmap_;
+      std::shared_ptr<Core::LinAlg::Map> cond_dofrowmap_;
 
       //! A map of the local radii
       std::shared_ptr<Core::LinAlg::Vector<double>> local_radii_;

@@ -171,7 +171,7 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> Adapter::StructureConstrMerg
 
 /*----------------------------------------------------------------------*/
 /* non-overlapping DOF map */
-std::shared_ptr<const Epetra_Map> Adapter::StructureConstrMerged::dof_row_map()
+std::shared_ptr<const Core::LinAlg::Map> Adapter::StructureConstrMerged::dof_row_map()
 {
   return dofrowmap_;
 }
@@ -240,7 +240,7 @@ void Adapter::StructureConstrMerged::evaluate(
 
 /*----------------------------------------------------------------------*/
 /* domain map */
-const Epetra_Map& Adapter::StructureConstrMerged::domain_map() const
+const Core::LinAlg::Map& Adapter::StructureConstrMerged::domain_map() const
 {
   return *(Core::LinAlg::merge_map(structure_->domain_map(),
       *(structure_->get_constraint_manager()->get_constraint_map()), false));

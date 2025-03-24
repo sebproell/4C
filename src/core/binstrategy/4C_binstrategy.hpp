@@ -379,7 +379,7 @@ namespace Core::Binstrategy
      * \param[out] bincenters centers of all row bins
      */
     void get_all_bin_centers(
-        Epetra_Map& binrowmap, Core::LinAlg::MultiVector<double>& bincenters) const;
+        Core::LinAlg::Map& binrowmap, Core::LinAlg::MultiVector<double>& bincenters) const;
 
     /*!
      * \brief centroid position for given bin id
@@ -426,7 +426,7 @@ namespace Core::Binstrategy
      *
      * \return linear map linear map based on bin ids
      */
-    std::shared_ptr<Epetra_Map> create_linear_map_for_numbin(MPI_Comm comm) const;
+    std::shared_ptr<Core::LinAlg::Map> create_linear_map_for_numbin(MPI_Comm comm) const;
 
     /*!
      * \brief write binning domain and its parallel distribution as output
@@ -445,7 +445,7 @@ namespace Core::Binstrategy
      * \param[in] bincenters positions of centers of bins
      * \param[in] binweights weights that is assigned to each bin
      */
-    void distribute_bins_recurs_coord_bisection(std::shared_ptr<Epetra_Map>& binrowmap,
+    void distribute_bins_recurs_coord_bisection(std::shared_ptr<Core::LinAlg::Map>& binrowmap,
         std::shared_ptr<Core::LinAlg::MultiVector<double>>& bincenters,
         std::shared_ptr<Core::LinAlg::MultiVector<double>>& binweights) const;
 
@@ -454,7 +454,7 @@ namespace Core::Binstrategy
      *
      * \param[in] rowbins row bins distribution
      */
-    void fill_bins_into_bin_discretization(Epetra_Map& rowbins);
+    void fill_bins_into_bin_discretization(Core::LinAlg::Map& rowbins);
 
     //! \}
 
@@ -563,11 +563,11 @@ namespace Core::Binstrategy
      *
      * \return row bin distribution
      */
-    std::shared_ptr<Epetra_Map>
+    std::shared_ptr<Core::LinAlg::Map>
     do_weighted_partitioning_of_bins_and_extend_ghosting_of_discret_to_one_bin_layer(
         std::vector<std::shared_ptr<Core::FE::Discretization>> discret,
-        std::vector<std::shared_ptr<Epetra_Map>>& stdelecolmap,
-        std::vector<std::shared_ptr<Epetra_Map>>& stdnodecolmap);
+        std::vector<std::shared_ptr<Core::LinAlg::Map>>& stdelecolmap,
+        std::vector<std::shared_ptr<Core::LinAlg::Map>>& stdnodecolmap);
 
     /*!
      * \brief weighted distribution of bins to procs according to number of nodes they contain
@@ -580,7 +580,7 @@ namespace Core::Binstrategy
      *
      * \return new row bin distribution
      */
-    std::shared_ptr<Epetra_Map> weighted_distribution_of_bins_to_procs(
+    std::shared_ptr<Core::LinAlg::Map> weighted_distribution_of_bins_to_procs(
         std::vector<std::shared_ptr<Core::FE::Discretization>>& discret,
         std::vector<std::shared_ptr<const Core::LinAlg::Vector<double>>>& disnp,
         std::vector<std::map<int, std::vector<int>>>& row_nodes_to_bin_map, double const& weight,
@@ -604,13 +604,13 @@ namespace Core::Binstrategy
      *
      * \return extended element column map
      */
-    std::shared_ptr<Epetra_Map> extend_element_col_map(
+    std::shared_ptr<Core::LinAlg::Map> extend_element_col_map(
         std::map<int, std::set<int>> const& bin_to_row_ele_map,
         std::map<int, std::set<int>>& bin_to_row_ele_map_to_lookup_requests,
         std::map<int, std::set<int>>& ext_bin_to_ele_map,
-        std::shared_ptr<Epetra_Map> bin_colmap = nullptr,
-        std::shared_ptr<Epetra_Map> bin_rowmap = nullptr,
-        const Epetra_Map* ele_colmap_from_standardghosting = nullptr) const;
+        std::shared_ptr<Core::LinAlg::Map> bin_colmap = nullptr,
+        std::shared_ptr<Core::LinAlg::Map> bin_rowmap = nullptr,
+        const Core::LinAlg::Map* ele_colmap_from_standardghosting = nullptr) const;
 
     /*!
      * \brief extend ghosting of binning discretization
@@ -620,8 +620,8 @@ namespace Core::Binstrategy
      * \param[in] assigndegreesoffreedom flag indicating if degrees of freedom should be assigned
      *
      */
-    void extend_ghosting_of_binning_discretization(
-        Epetra_Map& rowbins, std::set<int> const& colbins, bool assigndegreesoffreedom = true);
+    void extend_ghosting_of_binning_discretization(Core::LinAlg::Map& rowbins,
+        std::set<int> const& colbins, bool assigndegreesoffreedom = true);
 
     /*!
      * \brief do standard ghosting for input discretization
@@ -633,9 +633,9 @@ namespace Core::Binstrategy
      * \param[out] stdnodecolmap standard node column map
      */
     void standard_discretization_ghosting(std::shared_ptr<Core::FE::Discretization>& discret,
-        Epetra_Map& rowbins, std::shared_ptr<Core::LinAlg::Vector<double>>& disnp,
-        std::shared_ptr<Epetra_Map>& stdelecolmap,
-        std::shared_ptr<Epetra_Map>& stdnodecolmap) const;
+        Core::LinAlg::Map& rowbins, std::shared_ptr<Core::LinAlg::Vector<double>>& disnp,
+        std::shared_ptr<Core::LinAlg::Map>& stdelecolmap,
+        std::shared_ptr<Core::LinAlg::Map>& stdnodecolmap) const;
 
     /*!
      * \brief collect information about content of bins from other procs via round robin loop
@@ -645,7 +645,7 @@ namespace Core::Binstrategy
      * \param[out] allnodesinmybins all nodes in my row bins
      */
     void collect_information_about_content_of_bins_from_other_procs_via_round_robin(
-        Epetra_Map& rowbins, std::map<int, std::vector<int>>& mynodesinbins,
+        Core::LinAlg::Map& rowbins, std::map<int, std::vector<int>>& mynodesinbins,
         std::map<int, std::vector<int>>& allnodesinmybins) const;
 
     /*!
@@ -656,8 +656,8 @@ namespace Core::Binstrategy
      * \param[in] stdnodecolmap node column map based on standard ghosting
      */
     void revert_extended_ghosting(std::vector<std::shared_ptr<Core::FE::Discretization>> dis,
-        std::vector<std::shared_ptr<Epetra_Map>>& stdelecolmap,
-        std::vector<std::shared_ptr<Epetra_Map>>& stdnodecolmap) const;
+        std::vector<std::shared_ptr<Core::LinAlg::Map>>& stdelecolmap,
+        std::vector<std::shared_ptr<Core::LinAlg::Map>>& stdnodecolmap) const;
 
     /*!
      * \brief create axis aligned binning domain for discrets and compute lower bound for bin size

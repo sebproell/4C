@@ -36,7 +36,7 @@ void Solid::ModelEvaluator::PartitionedPASI::setup()
   issetup_ = true;
 }
 
-std::shared_ptr<const Epetra_Map>
+std::shared_ptr<const Core::LinAlg::Map>
 Solid::ModelEvaluator::PartitionedPASI::get_block_dof_row_map_ptr() const
 {
   check_init_setup();

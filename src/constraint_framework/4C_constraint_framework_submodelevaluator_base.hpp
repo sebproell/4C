@@ -61,7 +61,7 @@ namespace CONSTRAINTS::SUBMODELEVALUATOR
 
    private:
     //! Column Map
-    std::shared_ptr<Epetra_Map> n_condition_map_;
+    std::shared_ptr<Core::LinAlg::Map> n_condition_map_;
 
     //! Penalty parameter
     double penalty_parameter_;

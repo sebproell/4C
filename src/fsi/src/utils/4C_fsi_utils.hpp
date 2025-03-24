@@ -162,8 +162,8 @@ namespace FSI
           istructdispnodes_;  ///< struct nodes in the interface used for centerdisp calculation
       std::map<int, std::shared_ptr<Core::Elements::Element>>
           istructdispeles_;  ///< struct elements in the interface used for centerdisp calc
-      //      std::map<int, std::shared_ptr<Epetra_Map> >  slideeleredmap_;      ///< redundant
-      //      version of sliding struct elements
+      //      std::map<int, std::shared_ptr<Core::LinAlg::Map> >  slideeleredmap_;      ///<
+      //      redundant version of sliding struct elements
       std::map<int, std::map<int, Core::Nodes::Node*>>
           ifluidslidnodes_;  ///< sliding fluid nodes in the interface
       std::map<int, Core::Nodes::Node*>
@@ -174,12 +174,12 @@ namespace FSI
 
       std::map<int, std::map<int, std::shared_ptr<Core::Elements::Element>>> structreduelements_;
 
-      std::shared_ptr<const Epetra_Map> structdofrowmap_;
-      std::shared_ptr<const Epetra_Map> fluiddofrowmap_;
-      std::shared_ptr<Epetra_Map> structfullnodemap_;
-      std::shared_ptr<Epetra_Map> structfullelemap_;
-      std::shared_ptr<Epetra_Map> fluidfullnodemap_;
-      std::shared_ptr<Epetra_Map> fluidfullelemap_;
+      std::shared_ptr<const Core::LinAlg::Map> structdofrowmap_;
+      std::shared_ptr<const Core::LinAlg::Map> fluiddofrowmap_;
+      std::shared_ptr<Core::LinAlg::Map> structfullnodemap_;
+      std::shared_ptr<Core::LinAlg::Map> structfullelemap_;
+      std::shared_ptr<Core::LinAlg::Map> fluidfullnodemap_;
+      std::shared_ptr<Core::LinAlg::Map> fluidfullelemap_;
 
       int maxid_;
 

@@ -94,7 +94,7 @@ void Arteries::ArtNetImplStationary::init(const Teuchos::ParameterList& globalti
   // get a vector layout from the discretization to construct matching
   // vectors and matrices: local <-> global dof numbering
   // -------------------------------------------------------------------
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // -------------------------------------------------------------------
   // create empty system matrix (6 adjacent nodes as 'good' guess)
@@ -700,7 +700,7 @@ void Arteries::ArtNetImplStationary::set_initial_field(
     }
     case Inpar::ArtDyn::initfield_field_by_function:
     {
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
       // loop all nodes on the processor
       for (int lnodeid = 0; lnodeid < discret_->num_my_row_nodes(); lnodeid++)

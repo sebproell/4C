@@ -143,7 +143,7 @@ void Solid::MonitorDbc::setup()
   {
     Core::Conditions::Condition& rcond = *rcond_ptr;
     auto ipair = react_maps_.insert(
-        std::make_pair(rcond.id(), std::vector<std::shared_ptr<Epetra_Map>>(3, nullptr)));
+        std::make_pair(rcond.id(), std::vector<std::shared_ptr<Core::LinAlg::Map>>(3, nullptr)));
 
     if (not ipair.second)
       FOUR_C_THROW("The reaction condition id #{} seems to be non-unique!", rcond.id());
@@ -185,7 +185,7 @@ void Solid::MonitorDbc::setup()
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void Solid::MonitorDbc::create_reaction_maps(const Core::FE::Discretization& discret,
-    const Core::Conditions::Condition& rcond, std::shared_ptr<Epetra_Map>* react_maps) const
+    const Core::Conditions::Condition& rcond, std::shared_ptr<Core::LinAlg::Map>* react_maps) const
 {
   const auto onoff = rcond.parameters().get<std::vector<int>>("ONOFF");
   const auto* nids = rcond.get_nodes();
@@ -208,7 +208,7 @@ void Solid::MonitorDbc::create_reaction_maps(const Core::FE::Discretization& dis
   }
 
   for (unsigned i = 0; i < DIM; ++i)
-    react_maps[i] = std::make_shared<Epetra_Map>(
+    react_maps[i] = std::make_shared<Core::LinAlg::Map>(
         -1, my_dofs[i].size(), my_dofs[i].data(), 0, Core::Communication::as_epetra_comm(comm));
 }
 
@@ -505,8 +505,8 @@ void Solid::MonitorDbc::get_area(double area[], const Core::Conditions::Conditio
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-double Solid::MonitorDbc::get_reaction_force(
-    Core::LinAlg::Matrix<DIM, 1>& rforce_xyz, const std::shared_ptr<Epetra_Map>* react_maps) const
+double Solid::MonitorDbc::get_reaction_force(Core::LinAlg::Matrix<DIM, 1>& rforce_xyz,
+    const std::shared_ptr<Core::LinAlg::Map>* react_maps) const
 {
   Core::LinAlg::Vector<double> complete_freact(*gstate_ptr_->get_freact_np());
   dbc_ptr_->rotate_global_to_local(complete_freact);
@@ -530,7 +530,8 @@ double Solid::MonitorDbc::get_reaction_force(
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 double Solid::MonitorDbc::get_reaction_moment(Core::LinAlg::Matrix<DIM, 1>& rmoment_xyz,
-    const std::shared_ptr<Epetra_Map>* react_maps, const Core::Conditions::Condition* rcond) const
+    const std::shared_ptr<Core::LinAlg::Map>* react_maps,
+    const Core::Conditions::Condition* rcond) const
 {
   std::shared_ptr<const Core::LinAlg::Vector<double>> dispn = gstate_ptr_->get_dis_np();
 

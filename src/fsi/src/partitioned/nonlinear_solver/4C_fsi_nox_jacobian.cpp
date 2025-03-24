@@ -7,9 +7,9 @@
 
 #include "4C_fsi_nox_jacobian.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 
-#include <Epetra_Map.h>
 #include <Epetra_RowMatrix.h>
 #include <NOX_Abstract_Group.H>
 #include <NOX_Epetra_Interface_Required.H>

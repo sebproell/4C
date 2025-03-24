@@ -70,7 +70,7 @@ ALE::Ale::Ale(std::shared_ptr<Core::FE::Discretization> actdis,
       initialdisp_(Teuchos::getIntegralValue<ALE::InitialDisp>(*params, "INITIALDISP")),
       startfuncno_(params->get<int>("STARTFUNCNO"))
 {
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   dispn_ = Core::LinAlg::create_vector(*dofrowmap, true);
   dispnp_ = Core::LinAlg::create_vector(*dofrowmap, true);
@@ -138,7 +138,7 @@ void ALE::Ale::set_initial_displacement(const ALE::InitialDisp init, const int s
     }
     case ALE::initdisp_disp_by_function:
     {
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
       // loop all nodes on the processor
       for (int lnodeid = 0; lnodeid < discret_->num_my_row_nodes(); lnodeid++)
@@ -194,7 +194,7 @@ void ALE::Ale::create_system_matrix(std::shared_ptr<const ALE::Utils::MapExtract
   }
   else if (interface == nullptr)
   {
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
     sysmat_ = std::make_shared<Core::LinAlg::SparseMatrix>(*dofrowmap, 81, false, true);
   }
   else
@@ -392,7 +392,7 @@ std::string ALE::Ale::element_action_string(const enum ALE::AleDynamic name)
 
 /*----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> ALE::Ale::dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> ALE::Ale::dof_row_map() const
 {
   return Core::Utils::shared_ptr_from_ref(*discret_->dof_row_map());
 }
@@ -632,10 +632,10 @@ void ALE::Ale::setup_dbc_map_ex(ALE::Utils::MapExtractor::AleDBCSetType dbc_type
       break;
     case ALE::Utils::MapExtractor::dbc_set_x_ff:
     {
-      std::vector<std::shared_ptr<const Epetra_Map>> condmaps;
+      std::vector<std::shared_ptr<const Core::LinAlg::Map>> condmaps;
       condmaps.push_back(xff_interface->xfluid_fluid_cond_map());
       condmaps.push_back(dbcmaps_[ALE::Utils::MapExtractor::dbc_set_std]->cond_map());
-      std::shared_ptr<Epetra_Map> condmerged =
+      std::shared_ptr<Core::LinAlg::Map> condmerged =
           Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
 
       dbcmaps_[ALE::Utils::MapExtractor::dbc_set_x_ff] =
@@ -646,10 +646,10 @@ void ALE::Ale::setup_dbc_map_ex(ALE::Utils::MapExtractor::AleDBCSetType dbc_type
     case ALE::Utils::MapExtractor::dbc_set_biofilm:
     case ALE::Utils::MapExtractor::dbc_set_part_fsi:
     {
-      std::vector<std::shared_ptr<const Epetra_Map>> condmaps;
+      std::vector<std::shared_ptr<const Core::LinAlg::Map>> condmaps;
       condmaps.push_back(interface->fsi_cond_map());
       condmaps.push_back(dbcmaps_[ALE::Utils::MapExtractor::dbc_set_std]->cond_map());
-      std::shared_ptr<Epetra_Map> condmerged =
+      std::shared_ptr<Core::LinAlg::Map> condmerged =
           Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
 
       dbcmaps_[dbc_type] =
@@ -658,11 +658,11 @@ void ALE::Ale::setup_dbc_map_ex(ALE::Utils::MapExtractor::AleDBCSetType dbc_type
     }
     case ALE::Utils::MapExtractor::dbc_set_wear:
     {
-      std::vector<std::shared_ptr<const Epetra_Map>> condmaps;
+      std::vector<std::shared_ptr<const Core::LinAlg::Map>> condmaps;
       condmaps.push_back(interface->ale_wear_cond_map());
       condmaps.push_back(dbcmaps_[ALE::Utils::MapExtractor::dbc_set_std]->cond_map());
 
-      std::shared_ptr<Epetra_Map> condmerged =
+      std::shared_ptr<Core::LinAlg::Map> condmerged =
           Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
       dbcmaps_[ALE::Utils::MapExtractor::dbc_set_wear] =
           std::make_shared<Core::LinAlg::MapExtractor>(*(discret_->dof_row_map()), condmerged);
@@ -730,7 +730,7 @@ void ALE::Ale::apply_dirichlet_bc(Teuchos::ParameterList& params,
 /*----------------------------------------------------------------------------*/
 void ALE::Ale::reset()
 {
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   dispnp_ = Core::LinAlg::create_vector(*dofrowmap, true);
   dispn_ = Core::LinAlg::create_vector(*dofrowmap, true);

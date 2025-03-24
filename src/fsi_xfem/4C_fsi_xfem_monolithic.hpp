@@ -127,7 +127,7 @@ namespace FSI
     //! @name dof_row_map access methods
 
     //! full monolithic dof row map
-    std::shared_ptr<const Epetra_Map> dof_row_map() const { return extractor().full_map(); }
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() const { return extractor().full_map(); }
 
     //! extractor to communicate between full monolithic map and block maps of single fields
     const Core::LinAlg::MultiMapExtractor& extractor() const { return blockrowdofmap_; }
@@ -167,8 +167,8 @@ namespace FSI
 
     //! set full monolithic dof row map
     //! The block maps must be row maps by themselves and must not contain identical GIDs.
-    void set_dof_row_maps(const std::vector<std::shared_ptr<const Epetra_Map>>& maps,
-        const std::vector<std::shared_ptr<const Epetra_Map>>& maps_mergedporo);
+    void set_dof_row_maps(const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps,
+        const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps_mergedporo);
 
     //! Put two field vectors together to a monolithic vector
     //!
@@ -262,7 +262,7 @@ namespace FSI
         Core::LinAlg::Vector<double>& b);
 
     //! create combined Dirichlet boundary condition map, map containing the dofs with Dirichlet BC
-    std::shared_ptr<Epetra_Map> combined_dbc_map();
+    std::shared_ptr<Core::LinAlg::Map> combined_dbc_map();
 
     //@}
 

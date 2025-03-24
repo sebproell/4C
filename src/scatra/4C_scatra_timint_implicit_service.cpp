@@ -99,7 +99,7 @@ void ScaTra::ScaTraTimIntImpl::calc_flux(const bool writetofile)
 std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::calc_flux_in_domain()
 {
   // extract dofrowmap from discretization
-  const Epetra_Map& dofrowmap = *discret_->dof_row_map();
+  const Core::LinAlg::Map& dofrowmap = *discret_->dof_row_map();
 
   // initialize global flux vectors
   std::shared_ptr<Core::LinAlg::MultiVector<double>> flux =
@@ -340,7 +340,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::cal
   for (int icond = 0; icond < static_cast<int>(cond.size()); ++icond)
   {
     // extract dofrowmap associated with current boundary segment
-    const Epetra_Map& dofrowmap = *flux_boundary_maps_->Map(icond + 1);
+    const Core::LinAlg::Map& dofrowmap = *flux_boundary_maps_->Map(icond + 1);
 
     // extract part of true residual vector associated with current boundary segment
     const std::shared_ptr<Core::LinAlg::Vector<double>> trueresidual_boundary =
@@ -898,7 +898,7 @@ void ScaTra::ScaTraTimIntImpl::add_flux_approx_to_parameter_list(Teuchos::Parame
   // for now, I create single vectors that can be handled by the filters
 
   // get the noderowmap
-  const Epetra_Map* noderowmap = discret_->node_row_map();
+  const Core::LinAlg::Map* noderowmap = discret_->node_row_map();
   std::shared_ptr<Core::LinAlg::MultiVector<double>> fluxk =
       std::make_shared<Core::LinAlg::MultiVector<double>>(*noderowmap, 3, true);
   for (int k = 0; k < num_scal(); ++k)
@@ -927,7 +927,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::com
 {
   // create vectors for x,y and z component of average normal vector field
   // get noderowmap of discretization
-  const Epetra_Map* noderowmap = discret_->node_row_map();
+  const Core::LinAlg::Map* noderowmap = discret_->node_row_map();
   std::shared_ptr<Core::LinAlg::MultiVector<double>> normal =
       std::make_shared<Core::LinAlg::MultiVector<double>>(*noderowmap, 3, true);
 
@@ -1227,7 +1227,7 @@ void ScaTra::ScaTraTimIntImpl::collect_output_flux_data(
   }
 
   // get the noderowmap
-  const Epetra_Map* noderowmap = discret_->node_row_map();
+  const Core::LinAlg::Map* noderowmap = discret_->node_row_map();
   auto fluxk = Core::LinAlg::MultiVector<double>(*noderowmap, 3, true);
   for (int writefluxid : *writefluxids_)
   {
@@ -1657,7 +1657,7 @@ void ScaTra::ScaTraTimIntImpl::calc_intermediate_solution()
       homisoturb_forcing_->activate_forcing(false);
 
       // temporary store velnp_ since it will be modified in nonlinear_solve()
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
       std::shared_ptr<Core::LinAlg::Vector<double>> tmp =
           Core::LinAlg::create_vector(*dofrowmap, true);
       tmp->update(1.0, *phinp_, 0.0);
@@ -1724,7 +1724,7 @@ ScaTra::ScaTraTimIntImpl::compute_superconvergent_patch_recovery(
   // Warning, this is only tested so far for 1 scalar field!!!
 
   // dependent on the desired projection, just remove this line
-  if (not state->get_block_map().SameAs(*discret_->dof_row_map()))
+  if (not state->get_map().SameAs(*discret_->dof_row_map()))
     FOUR_C_THROW("input map is not a dof row map of the fluid");
 
   // set given state for element evaluation

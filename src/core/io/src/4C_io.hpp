@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-class Epetra_Map;
+class Map;
 class Epetra_BlockMap;
 
 FOUR_C_NAMESPACE_OPEN
@@ -302,7 +302,7 @@ namespace Core::IO
       \param vt   : vector type
     */
     void write_vector(const std::string name, const std::vector<char>& vec,
-        const Epetra_Map& elemap, VectorType vt = dofvector);
+        const Core::LinAlg::Map& elemap, VectorType vt = dofvector);
 
     //! write new mesh and result file next time it is possible
     void create_new_result_and_mesh_file()

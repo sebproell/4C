@@ -20,7 +20,7 @@ FOUR_C_NAMESPACE_OPEN
 namespace ReducedLung
 {
 
-  Epetra_Map create_domain_map(const Epetra_Comm& comm, const std::vector<Airway>& airways,
+  Core::LinAlg::Map create_domain_map(const Epetra_Comm& comm, const std::vector<Airway>& airways,
       const std::vector<TerminalUnit>& terminal_units)
   {
     std::vector<int> locally_owned_dof_indices;
@@ -34,13 +34,13 @@ namespace ReducedLung
       locally_owned_dof_indices.insert(locally_owned_dof_indices.end(),
           terminal_unit.global_dof_ids.begin(), terminal_unit.global_dof_ids.end());
     }
-    const Epetra_Map domain_map(
+    const Core::LinAlg::Map domain_map(
         -1, locally_owned_dof_indices.size(), locally_owned_dof_indices.data(), 0, comm);
 
     return domain_map;
   }
 
-  Epetra_Map create_row_map(const Epetra_Comm& comm, const std::vector<Airway>& airways,
+  Core::LinAlg::Map create_row_map(const Epetra_Comm& comm, const std::vector<Airway>& airways,
       const std::vector<TerminalUnit>& terminal_units, const std::vector<Connection>& connections,
       const std::vector<Bifurcation>& bifurcations,
       const std::vector<BoundaryCondition>& boundary_conditions)
@@ -55,10 +55,10 @@ namespace ReducedLung
       n_local_state_equations += terminal_unit.n_state_equations;
     }
     // Intermediate maps for the different equation types
-    const Epetra_Map state_equations(-1, n_local_state_equations, 0, comm);
-    const Epetra_Map couplings(-1, connections.size() * 2 + bifurcations.size() * 3,
+    const Core::LinAlg::Map state_equations(-1, n_local_state_equations, 0, comm);
+    const Core::LinAlg::Map couplings(-1, connections.size() * 2 + bifurcations.size() * 3,
         state_equations.NumGlobalElements(), comm);
-    const Epetra_Map boundaries(-1, boundary_conditions.size(),
+    const Core::LinAlg::Map boundaries(-1, boundary_conditions.size(),
         couplings.NumGlobalElements() + state_equations.NumGlobalElements(), comm);
 
     //  Merge all maps to the full local matrix row map
@@ -73,12 +73,12 @@ namespace ReducedLung
     global_row_indices.insert(global_row_indices.end(), boundaries.MyGlobalElements(),
         boundaries.MyGlobalElements() + boundaries.NumMyElements());
 
-    const Epetra_Map row_map(-1, n_local_indices, global_row_indices.data(), 0, comm);
+    const Core::LinAlg::Map row_map(-1, n_local_indices, global_row_indices.data(), 0, comm);
 
     return row_map;
   }
 
-  Epetra_Map create_column_map(const Epetra_Comm& comm, const std::vector<Airway>& airways,
+  Core::LinAlg::Map create_column_map(const Epetra_Comm& comm, const std::vector<Airway>& airways,
       const std::vector<TerminalUnit>& terminal_units, const std::map<int, int>& global_dof_per_ele,
       const std::map<int, int>& first_global_dof_of_ele, const std::vector<Connection>& connections,
       const std::vector<Bifurcation>& bifurcations,
@@ -171,7 +171,7 @@ namespace ReducedLung
         std::unique(locally_relevant_dof_indices.begin(), locally_relevant_dof_indices.end()),
         locally_relevant_dof_indices.end());
 
-    const Epetra_Map column_map(
+    const Core::LinAlg::Map column_map(
         -1, locally_relevant_dof_indices.size(), locally_relevant_dof_indices.data(), 0, comm);
 
     return column_map;

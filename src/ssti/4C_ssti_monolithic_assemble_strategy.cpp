@@ -712,13 +712,13 @@ void SSTI::AssembleStrategyBase::assemble_structure_xxx_meshtying(
 
   // assemble derivs. of structural interior dofs w.r.t. scatra dofs
   Coupling::Adapter::MatrixLogicalSplitAndTransform()(structures_x_matrix, *map_structure_interior,
-      structures_x_matrix.domain_map(), 1.0, nullptr, nullptr, systemmatrix_structure_x, true,
-      true);
+      structures_x_matrix.domain_map_not_epetra(), 1.0, nullptr, nullptr, systemmatrix_structure_x,
+      true, true);
 
   // assemble derivs. of structural master dofs w.r.t. scatra dofs
   Coupling::Adapter::MatrixLogicalSplitAndTransform()(structures_x_matrix, *master_dof_map,
-      structures_x_matrix.domain_map(), 1.0, nullptr, nullptr, systemmatrix_structure_x, true,
-      true);
+      structures_x_matrix.domain_map_not_epetra(), 1.0, nullptr, nullptr, systemmatrix_structure_x,
+      true, true);
 
   for (const auto& meshtying : ssti_structure_meshtying()->mesh_tying_handlers())
   {
@@ -727,8 +727,8 @@ void SSTI::AssembleStrategyBase::assemble_structure_xxx_meshtying(
 
     // assemble derivs. of structural surface slave dofs w.r.t. scatra dofs
     Coupling::Adapter::MatrixLogicalSplitAndTransform()(structures_x_matrix, *cond_slave_dof_map,
-        structures_x_matrix.domain_map(), 1.0, &(*converter), nullptr, systemmatrix_structure_x,
-        true, true);
+        structures_x_matrix.domain_map_not_epetra(), 1.0, &(*converter), nullptr,
+        systemmatrix_structure_x, true, true);
   }
 }
 /*----------------------------------------------------------------------*
@@ -839,8 +839,8 @@ void SSTI::AssembleStrategyBlockBlock::assemble_thermo_scatra_interface(
 
       Coupling::Adapter::MatrixLogicalSplitAndTransform()(thermoscatrainterface_subblock,
           *meshtying_thermo()->coupling_adapter()->master_dof_map(),
-          thermoscatrainterface_subblock.domain_map(), -1.0, &thermo_converter, nullptr, masterflux,
-          true, true);
+          thermoscatrainterface_subblock.domain_map_not_epetra(), -1.0, &thermo_converter, nullptr,
+          masterflux, true, true);
     }
   }
 
@@ -891,7 +891,8 @@ void SSTI::AssembleStrategyBlockSparse::assemble_thermo_scatra_interface(
 
   Coupling::Adapter::MatrixLogicalSplitAndTransform()(*thermoscatrainterface_sparse,
       *meshtying_thermo()->coupling_adapter()->master_dof_map(),
-      thermoscatrainterface_sparse->domain_map(), -1.0, &thermo_converter, nullptr,
+      Core::LinAlg::Map(thermoscatrainterface_sparse->domain_map()), -1.0, &thermo_converter,
+      nullptr,
       systemmatrix_block->matrix(block_position_thermo().at(0), block_position_scatra().at(0)),
       true, true);
 }
@@ -917,8 +918,8 @@ void SSTI::AssembleStrategySparse::assemble_thermo_scatra_interface(
 
   Coupling::Adapter::MatrixLogicalSplitAndTransform()(*thermoscatrainterface_sparse,
       *meshtying_thermo()->coupling_adapter()->master_dof_map(),
-      thermoscatrainterface_sparse->domain_map(), -1.0, &thermo_converter, nullptr,
-      *systemmatrix_sparse, true, true);
+      Core::LinAlg::Map(thermoscatrainterface_sparse->domain_map()), -1.0, &thermo_converter,
+      nullptr, *systemmatrix_sparse, true, true);
 }
 
 /*----------------------------------------------------------------------*
@@ -1234,7 +1235,8 @@ void SSTI::AssembleStrategySparse::apply_structural_dbc_system_matrix(
     auto systemmatrix_structure =
         std::make_shared<Core::LinAlg::SparseMatrix>(*dofrowmap_structure, 27, false, true);
     Coupling::Adapter::MatrixLogicalSplitAndTransform()(*systemmatrix_sparse, *dofrowmap_structure,
-        systemmatrix->domain_map(), 1.0, nullptr, nullptr, *systemmatrix_structure);
+        Core::LinAlg::Map(systemmatrix->domain_map()), 1.0, nullptr, nullptr,
+        *systemmatrix_structure);
     systemmatrix_structure->complete(systemmatrix->domain_map(), *dofrowmap_structure);
 
     // apply structural Dirichlet conditions

@@ -13,10 +13,10 @@
 #include "4C_config.hpp"
 
 #include "4C_coupling_adapter_base.hpp"
+#include "4C_linalg_map.hpp"
 
 #include <Epetra_CrsMatrix.h>
 #include <Epetra_FEVector.h>
-#include <Epetra_Map.h>
 
 #include <map>
 #include <memory>
@@ -99,13 +99,15 @@ namespace Coupling::Adapter
 
      */
     void setup_condition_coupling(const Core::FE::Discretization& masterdis,
-        std::shared_ptr<const Epetra_Map> mastercondmap, const Core::FE::Discretization& slavedis,
-        std::shared_ptr<const Epetra_Map> slavecondmap, const std::string& condname,
+        std::shared_ptr<const Core::LinAlg::Map> mastercondmap,
+        const Core::FE::Discretization& slavedis,
+        std::shared_ptr<const Core::LinAlg::Map> slavecondmap, const std::string& condname,
         const int numdof, bool matchall = true, const int nds_master = 0, const int nds_slave = 0);
 
     void setup_condition_coupling(const Core::FE::Discretization& masterdis,
-        std::shared_ptr<const Epetra_Map> mastercondmap, const Core::FE::Discretization& slavedis,
-        std::shared_ptr<const Epetra_Map> slavecondmap, const std::string& condname,
+        std::shared_ptr<const Core::LinAlg::Map> mastercondmap,
+        const Core::FE::Discretization& slavedis,
+        std::shared_ptr<const Core::LinAlg::Map> slavecondmap, const std::string& condname,
         const std::vector<int>& masterdofs, const std::vector<int>& slavedofs, bool matchall = true,
         const int nds_master = 0, const int nds_slave = 0);
 
@@ -118,14 +120,15 @@ namespace Coupling::Adapter
      */
     void setup_constrained_condition_coupling(
         const Core::FE::Discretization& masterdis,  ///< discretization of master side
-        std::shared_ptr<const Epetra_Map>
-            mastercondmap,                               ///< map with condition DOFs of master side
-        const Core::FE::Discretization& slavedis,        ///< discretization of slave side
-        std::shared_ptr<const Epetra_Map> slavecondmap,  ///< map with condition DOFs of slave side
-        const std::string& condname1,                    ///< condition name
-        const std::string& condname2,                    ///< condition name
-        const int numdof,     ///< number of DOFs to be coupled at each node
-        bool matchall = true  ///< Do all nodes need to match exactly?
+        std::shared_ptr<const Core::LinAlg::Map>
+            mastercondmap,                         ///< map with condition DOFs of master side
+        const Core::FE::Discretization& slavedis,  ///< discretization of slave side
+        std::shared_ptr<const Core::LinAlg::Map>
+            slavecondmap,              ///< map with condition DOFs of slave side
+        const std::string& condname1,  ///< condition name
+        const std::string& condname2,  ///< condition name
+        const int numdof,              ///< number of DOFs to be coupled at each node
+        bool matchall = true           ///< Do all nodes need to match exactly?
     );
 
     /*! \brief Setup coupling of given nodes
@@ -194,8 +197,8 @@ namespace Coupling::Adapter
      *  \param tolerance   (i) tolerance for octree for node matching
      */
     void setup_coupling(const Core::FE::Discretization& masterdis,
-        const Core::FE::Discretization& slavedis, const Epetra_Map& masternodes,
-        const Epetra_Map& slavenodes, const int numdof, const bool matchall = true,
+        const Core::FE::Discretization& slavedis, const Core::LinAlg::Map& masternodes,
+        const Core::LinAlg::Map& slavenodes, const int numdof, const bool matchall = true,
         const double tolerance = 1.e-3, const int nds_master = 0, const int nds_slave = 0);
 
     /*! \brief Setup coupling of given nodes and node maps
@@ -219,8 +222,9 @@ namespace Coupling::Adapter
      *  \param numdof            (i) number of dofs per node to be coupled
      */
     void setup_coupling(const Core::FE::Discretization& masterdis,
-        const Core::FE::Discretization& slavedis, const Epetra_Map& masternodemap,
-        const Epetra_Map& slavenodemap, const Epetra_Map& permslavenodemap, const int numdof);
+        const Core::FE::Discretization& slavedis, const Core::LinAlg::Map& masternodemap,
+        const Core::LinAlg::Map& slavenodemap, const Core::LinAlg::Map& permslavenodemap,
+        const int numdof);
 
     /*! \brief Setup coupling of given master and slave discretization
      *
@@ -275,10 +279,10 @@ namespace Coupling::Adapter
      * \param masterdofmap      (i) master side dof map
      * \param permmasterdofmap  (i) permuted dofs on master side to match dofs on slave side
      */
-    void setup_coupling(std::shared_ptr<const Epetra_Map> slavedofmap,
-        std::shared_ptr<const Epetra_Map> permslavedofmap,
-        std::shared_ptr<const Epetra_Map> masterdofmap,
-        std::shared_ptr<const Epetra_Map> permmasterdofmap);
+    void setup_coupling(std::shared_ptr<const Core::LinAlg::Map> slavedofmap,
+        std::shared_ptr<const Core::LinAlg::Map> permslavedofmap,
+        std::shared_ptr<const Core::LinAlg::Map> masterdofmap,
+        std::shared_ptr<const Core::LinAlg::Map> permmasterdofmap);
     //@}
 
     /** \name Conversion between master and slave */
@@ -361,16 +365,22 @@ namespace Coupling::Adapter
     //@{
 
     /// the interface dof map of the master side
-    std::shared_ptr<const Epetra_Map> master_dof_map() const override { return masterdofmap_; }
+    std::shared_ptr<const Core::LinAlg::Map> master_dof_map() const override
+    {
+      return masterdofmap_;
+    }
 
     /// the interface dof map of the slave side
-    std::shared_ptr<const Epetra_Map> slave_dof_map() const override { return slavedofmap_; }
+    std::shared_ptr<const Core::LinAlg::Map> slave_dof_map() const override { return slavedofmap_; }
 
     /// the permuted interface dof map of the master side
-    std::shared_ptr<const Epetra_Map> perm_master_dof_map() const { return permmasterdofmap_; }
+    std::shared_ptr<const Core::LinAlg::Map> perm_master_dof_map() const
+    {
+      return permmasterdofmap_;
+    }
 
     /// the permuted interface dof map of the slave side
-    std::shared_ptr<const Epetra_Map> perm_slave_dof_map() const { return permslavedofmap_; }
+    std::shared_ptr<const Core::LinAlg::Map> perm_slave_dof_map() const { return permslavedofmap_; }
 
     //@}
 
@@ -384,10 +394,10 @@ namespace Coupling::Adapter
     void fill_slave_to_master_map(std::map<int, int>& rowmap) const;
 
     /// fill partial mastermap with gid of partial slavemap
-    std::shared_ptr<Epetra_Map> slave_to_master_map(Epetra_Map& slave);
+    std::shared_ptr<Core::LinAlg::Map> slave_to_master_map(Core::LinAlg::Map& slave);
 
     /// fill partial slavemap with gid of partial mastermap
-    std::shared_ptr<Epetra_Map> master_to_slave_map(Epetra_Map& master);
+    std::shared_ptr<Core::LinAlg::Map> master_to_slave_map(Core::LinAlg::Map& master);
 
     /// redistribute crsmatrix from master row map to permuted master row map
     std::shared_ptr<Core::LinAlg::SparseMatrix> master_to_perm_master(
@@ -402,8 +412,8 @@ namespace Coupling::Adapter
     /// \name Lagrangian coupling helpers
 
     /// create coupling matrices for Lagrangian coupling conditions
-    void setup_coupling_matrices(const Epetra_Map& shiftedmastermap,
-        const Epetra_Map& masterdomainmap, const Epetra_Map& slavedomainmap);
+    void setup_coupling_matrices(const Core::LinAlg::Map& shiftedmastermap,
+        const Core::LinAlg::Map& masterdomainmap, const Core::LinAlg::Map& slavedomainmap);
 
     std::shared_ptr<Epetra_CrsMatrix> master_to_master_mat() const { return matmm_; }
     std::shared_ptr<Epetra_CrsMatrix> slave_to_master_mat() const { return matsm_; }
@@ -415,10 +425,10 @@ namespace Coupling::Adapter
    protected:
     virtual void build_dof_maps(const Core::FE::Discretization& masterdis,
         const Core::FE::Discretization& slavedis,
-        const std::shared_ptr<const Epetra_Map>& masternodemap,
-        const std::shared_ptr<const Epetra_Map>& slavenodemap,
-        const std::shared_ptr<const Epetra_Map>& permmasternodemap,
-        const std::shared_ptr<const Epetra_Map>& permslavenodemap,
+        const std::shared_ptr<const Core::LinAlg::Map>& masternodemap,
+        const std::shared_ptr<const Core::LinAlg::Map>& slavenodemap,
+        const std::shared_ptr<const Core::LinAlg::Map>& permmasternodemap,
+        const std::shared_ptr<const Core::LinAlg::Map>& permslavenodemap,
         const std::vector<int>& masterdofs, const std::vector<int>& slavedofs,
         const int nds_master = 0, const int nds_slave = 0);
 
@@ -452,40 +462,41 @@ namespace Coupling::Adapter
 
     /// build slave to master permutation and dof all maps
     void finish_coupling(const Core::FE::Discretization& masterdis,
-        const Core::FE::Discretization& slavedis, std::shared_ptr<Epetra_Map> masternodemap,
-        std::shared_ptr<Epetra_Map> slavenodemap, std::shared_ptr<Epetra_Map> permslavenodemap,
-        const std::vector<int>& masterdofs, const std::vector<int>& slavedofs,
-        const int nds_master = 0, const int nds_slave = 0);
+        const Core::FE::Discretization& slavedis, std::shared_ptr<Core::LinAlg::Map> masternodemap,
+        std::shared_ptr<Core::LinAlg::Map> slavenodemap,
+        std::shared_ptr<Core::LinAlg::Map> permslavenodemap, const std::vector<int>& masterdofs,
+        const std::vector<int>& slavedofs, const int nds_master = 0, const int nds_slave = 0);
 
     /// build dof maps from node maps
     /*!
       \note It is assumed that the first numdof dofs of each
       node as specified in vector coupled_dofs are of interest.
      */
-    void build_dof_maps(const Core::FE::Discretization& dis, const Epetra_Map& nodemap,
-        const Epetra_Map& permnodemap, std::shared_ptr<const Epetra_Map>& dofmap,
-        std::shared_ptr<const Epetra_Map>& permdofmap, std::shared_ptr<Epetra_Export>& exporter,
-        const std::vector<int>& coupled_dofs, const int nds = 0) const;
+    void build_dof_maps(const Core::FE::Discretization& dis, const Core::LinAlg::Map& nodemap,
+        const Core::LinAlg::Map& permnodemap, std::shared_ptr<const Core::LinAlg::Map>& dofmap,
+        std::shared_ptr<const Core::LinAlg::Map>& permdofmap,
+        std::shared_ptr<Epetra_Export>& exporter, const std::vector<int>& coupled_dofs,
+        const int nds = 0) const;
 
    protected:
     /// @name accessors to the private class members for derived classes
     /// @{
 
     /// access the interface DoF map of the master side
-    std::shared_ptr<const Epetra_Map>& ma_dof_map_ptr();
-    const Epetra_Map& ma_dof_map() const;
+    std::shared_ptr<const Core::LinAlg::Map>& ma_dof_map_ptr();
+    const Core::LinAlg::Map& ma_dof_map() const;
 
     /// access the permuted interface DoF map of the master side
-    std::shared_ptr<const Epetra_Map>& permuted_ma_dof_map_ptr();
-    const Epetra_Map& permuted_ma_dof_map() const;
+    std::shared_ptr<const Core::LinAlg::Map>& permuted_ma_dof_map_ptr();
+    const Core::LinAlg::Map& permuted_ma_dof_map() const;
 
     /// access the interface DoF map of the slave side
-    std::shared_ptr<const Epetra_Map>& sl_dof_map_ptr();
-    const Epetra_Map& sl_dof_map() const;
+    std::shared_ptr<const Core::LinAlg::Map>& sl_dof_map_ptr();
+    const Core::LinAlg::Map& sl_dof_map() const;
 
     /// access the permuted interface DoF map of the slave side
-    std::shared_ptr<const Epetra_Map>& permuted_sl_dof_map_ptr();
-    const Epetra_Map& permuted_sl_dof_map() const;
+    std::shared_ptr<const Core::LinAlg::Map>& permuted_sl_dof_map_ptr();
+    const Core::LinAlg::Map& permuted_sl_dof_map() const;
 
     /// access the permuted master dof map to master dof map exporter
     std::shared_ptr<Epetra_Export>& ma_exporter_ptr();
@@ -507,16 +518,16 @@ namespace Coupling::Adapter
     //@{
 
     //! the interface dof map of the master side
-    std::shared_ptr<const Epetra_Map> masterdofmap_;
+    std::shared_ptr<const Core::LinAlg::Map> masterdofmap_;
 
     //! the permuted interface dof map of the master side
-    std::shared_ptr<const Epetra_Map> permmasterdofmap_;
+    std::shared_ptr<const Core::LinAlg::Map> permmasterdofmap_;
 
     //! the interface dof map of the slave side
-    std::shared_ptr<const Epetra_Map> slavedofmap_;
+    std::shared_ptr<const Core::LinAlg::Map> slavedofmap_;
 
     //! the permuted interface dof map of the slave side
-    std::shared_ptr<const Epetra_Map> permslavedofmap_;
+    std::shared_ptr<const Core::LinAlg::Map> permslavedofmap_;
 
     //@}
 

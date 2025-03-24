@@ -25,8 +25,8 @@ FOUR_C_NAMESPACE_OPEN
     knot values are mapped to.
 */
 /*----------------------------------------------------------------------*/
-void EnsightWriter::write_coordinates_for_nurbs_shapefunctions(
-    std::ofstream& geofile, Core::FE::Discretization& dis, std::shared_ptr<Epetra_Map>& proc0map)
+void EnsightWriter::write_coordinates_for_nurbs_shapefunctions(std::ofstream& geofile,
+    Core::FE::Discretization& dis, std::shared_ptr<Core::LinAlg::Map>& proc0map)
 {
   using namespace FourC;
 
@@ -83,7 +83,7 @@ void EnsightWriter::write_coordinates_for_nurbs_shapefunctions(
   }
 
   // get element map
-  const Epetra_Map* elementmap = nurbsdis->element_row_map();
+  const Core::LinAlg::Map* elementmap = nurbsdis->element_row_map();
 
   // loop all available elements
   for (int iele = 0; iele < elementmap->NumMyElements(); ++iele)
@@ -1340,7 +1340,7 @@ void EnsightWriter::write_coordinates_for_nurbs_shapefunctions(
     numvispoints += numvisp;
   }
 
-  vispointmap_ = std::make_shared<Epetra_Map>(numvispoints, local_vis_point_ids.size(),
+  vispointmap_ = std::make_shared<Core::LinAlg::Map>(numvispoints, local_vis_point_ids.size(),
       local_vis_point_ids.data(), 0, Core::Communication::as_epetra_comm(nurbsdis->get_comm()));
 
   // allocate the coordinates of the visualisation points
@@ -1360,7 +1360,7 @@ void EnsightWriter::write_coordinates_for_nurbs_shapefunctions(
   proc0map = Core::LinAlg::allreduce_e_map(*vispointmap_, 0);
 
   // import my new values (proc0 gets everything, other procs empty)
-  Epetra_Import proc0importer(*proc0map, *vispointmap_);
+  Epetra_Import proc0importer(proc0map->get_epetra_map(), vispointmap_->get_epetra_map());
   Core::LinAlg::MultiVector<double> allnodecoords(*proc0map, 3);
   int err = allnodecoords.Import(*nodecoords, proc0importer, Insert);
   if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
@@ -1403,7 +1403,7 @@ void EnsightWriter::write_coordinates_for_nurbs_shapefunctions(
 ----------------------------------------------------------------------*/
 void EnsightWriter::write_nurbs_cell(const Core::FE::CellType distype, const int gid,
     std::ofstream& geofile, std::vector<int>& nodevector, Core::FE::Discretization& dis,
-    Epetra_Map& proc0map) const
+    Core::LinAlg::Map& proc0map) const
 {
   using namespace FourC;
 
@@ -1778,7 +1778,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
   }
 
   // get element map
-  const Epetra_Map* elementmap = nurbsdis->element_row_map();
+  const Core::LinAlg::Map* elementmap = nurbsdis->element_row_map();
 
   // construct a colmap for data to have it available at
   // all elements (the critical ones are the ones at the
@@ -1900,11 +1900,11 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
   coldofmapvec.reserve(coldofset.size());
   coldofmapvec.assign(coldofset.begin(), coldofset.end());
   coldofset.clear();
-  Epetra_Map coldofmap(-1, coldofmapvec.size(), coldofmapvec.data(), 0,
+  Core::LinAlg::Map coldofmap(-1, coldofmapvec.size(), coldofmapvec.data(), 0,
       Core::Communication::as_epetra_comm(nurbsdis->get_comm()));
   coldofmapvec.clear();
 
-  const Epetra_Map* fulldofmap = &(coldofmap);
+  const Core::LinAlg::Map* fulldofmap = &(coldofmap);
   Core::LinAlg::Vector<double> coldata(*fulldofmap, true);
 
   // create an importer and import the data
@@ -2116,7 +2116,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
   }  // loop over available elements
 
   // import my new values (proc0 gets everything, other procs empty)
-  Epetra_Import proc0importer(*proc0map_, *vispointmap_);
+  Epetra_Import proc0importer(proc0map_->get_epetra_map(), vispointmap_->get_epetra_map());
   Core::LinAlg::MultiVector<double> allsols(*proc0map_, numdf);
   int err = allsols.Import(*idata, proc0importer, Insert);
   if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
@@ -3396,7 +3396,7 @@ void EnsightWriter::write_nodal_result_step_for_nurbs(std::ofstream& file, const
   }
 
   // get element map
-  const Epetra_Map* elementmap = nurbsdis->element_row_map();
+  const Core::LinAlg::Map* elementmap = nurbsdis->element_row_map();
 
   // construct a colmap for nodal data to have it available at
   // all elements (the critical ones are the ones at the
@@ -3426,11 +3426,11 @@ void EnsightWriter::write_nodal_result_step_for_nurbs(std::ofstream& file, const
   colnodemapvec.reserve(colnodeset.size());
   colnodemapvec.assign(colnodeset.begin(), colnodeset.end());
   colnodeset.clear();
-  Epetra_Map colnodemap(-1, colnodemapvec.size(), colnodemapvec.data(), 0,
+  Core::LinAlg::Map colnodemap(-1, colnodemapvec.size(), colnodemapvec.data(), 0,
       Core::Communication::as_epetra_comm(nurbsdis->get_comm()));
   colnodemapvec.clear();
 
-  const Epetra_Map* fullnodemap = &(colnodemap);
+  const Core::LinAlg::Map* fullnodemap = &(colnodemap);
   Core::LinAlg::MultiVector<double> coldata(*fullnodemap, numdf, true);  // numdf important!!!
 
   // create an importer and import the data
@@ -3516,7 +3516,7 @@ void EnsightWriter::write_nodal_result_step_for_nurbs(std::ofstream& file, const
   }  // loop over available elements
 
   // import my new values (proc0 gets everything, other procs empty)
-  Epetra_Import proc0importer(*proc0map_, *vispointmap_);
+  Epetra_Import proc0importer(proc0map_->get_epetra_map(), vispointmap_->get_epetra_map());
   Core::LinAlg::MultiVector<double> allsols(*proc0map_, numdf);
   int err = allsols.Import(*idata, proc0importer, Insert);
   if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);

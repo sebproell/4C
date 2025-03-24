@@ -1582,8 +1582,10 @@ void CONTACT::Interface::assemble_inactiverhs(Core::LinAlg::Vector<double>& inac
   // node set, i.e. nodes, which were active in the last iteration, are considered. Since you know,
   // that the lagrange multipliers of former inactive nodes are still equal zero.
 
-  std::shared_ptr<Epetra_Map> inactivenodes = Core::LinAlg::split_map(*snoderowmap_, *activenodes_);
-  std::shared_ptr<Epetra_Map> inactivedofs = Core::LinAlg::split_map(*sdofrowmap_, *activedofs_);
+  std::shared_ptr<Core::LinAlg::Map> inactivenodes =
+      Core::LinAlg::split_map(*snoderowmap_, *activenodes_);
+  std::shared_ptr<Core::LinAlg::Map> inactivedofs =
+      Core::LinAlg::split_map(*sdofrowmap_, *activedofs_);
 
   static std::vector<int> lm_gid(Interface::n_dim());
   static std::vector<int> lm_owner(Interface::n_dim());
@@ -1731,8 +1733,9 @@ void CONTACT::Interface::assemble_lin_stick(Core::LinAlg::SparseMatrix& linstick
   // code is commented after the algorithm.
 
   // create map of stick nodes
-  std::shared_ptr<Epetra_Map> sticknodes = Core::LinAlg::split_map(*activenodes_, *slipnodes_);
-  std::shared_ptr<Epetra_Map> stickt = Core::LinAlg::split_map(*activet_, *slipt_);
+  std::shared_ptr<Core::LinAlg::Map> sticknodes =
+      Core::LinAlg::split_map(*activenodes_, *slipnodes_);
+  std::shared_ptr<Core::LinAlg::Map> stickt = Core::LinAlg::split_map(*activet_, *slipt_);
 
   // nothing to do if no stick nodes
   if (sticknodes->NumMyElements() == 0) return;
@@ -5166,8 +5169,8 @@ void CONTACT::Interface::assemble_normal_coupling_linearisation(Core::LinAlg::Sp
   // nothing to do if no active nodes
   if (activenodes_ == nullptr) return;
 
-  std::shared_ptr<const Epetra_Map> MasterDofMap_full;
-  std::shared_ptr<const Epetra_Map> PermSlaveDofMap_full;
+  std::shared_ptr<const Core::LinAlg::Map> MasterDofMap_full;
+  std::shared_ptr<const Core::LinAlg::Map> PermSlaveDofMap_full;
 
   if (AssembleVelocityLin)
   {

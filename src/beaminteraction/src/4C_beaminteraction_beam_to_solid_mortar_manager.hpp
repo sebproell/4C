@@ -291,22 +291,22 @@ namespace BeamInteraction
     std::shared_ptr<const BeamInteraction::BeamToSolidParamsBase> beam_to_solid_params_;
 
     //! Row map of the additional Lagrange multiplier DOFs for translations.
-    std::shared_ptr<Epetra_Map> lambda_dof_rowmap_translations_;
+    std::shared_ptr<Core::LinAlg::Map> lambda_dof_rowmap_translations_;
 
     //! Row map of the additional Lagrange multiplier DOFs for rotations.
-    std::shared_ptr<Epetra_Map> lambda_dof_rowmap_rotations_;
+    std::shared_ptr<Core::LinAlg::Map> lambda_dof_rowmap_rotations_;
 
     //! Row map of the additional Lagrange multiplier DOFs.
-    std::shared_ptr<Epetra_Map> lambda_dof_rowmap_;
+    std::shared_ptr<Core::LinAlg::Map> lambda_dof_rowmap_;
 
     //! Column map of the additional Lagrange multiplier DOFs.
-    std::shared_ptr<Epetra_Map> lambda_dof_colmap_;
+    std::shared_ptr<Core::LinAlg::Map> lambda_dof_colmap_;
 
     //! Row map of the beam DOFs.
-    std::shared_ptr<Epetra_Map> beam_dof_rowmap_;
+    std::shared_ptr<Core::LinAlg::Map> beam_dof_rowmap_;
 
     //! Row map of the solid DOFs.
-    std::shared_ptr<Epetra_Map> solid_dof_rowmap_;
+    std::shared_ptr<Core::LinAlg::Map> solid_dof_rowmap_;
 
     //! Multivector that connects the global node IDs with the Lagrange multiplier DOF IDs.
     //! The global row ID of the multi vector is the global ID of the node that a Lagrange

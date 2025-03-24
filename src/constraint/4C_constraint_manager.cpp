@@ -113,17 +113,18 @@ void CONSTRAINTS::ConstrManager::setup(
     Teuchos::ParameterList p;
     uzawaparam_ = params.get<double>("uzawa parameter", 1);
     double time = params.get<double>("total time", 0.0);
-    const Epetra_Map* dofrowmap = actdisc_->dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = actdisc_->dof_row_map();
     // initialize constrMatrix
     constr_matrix_ =
         std::make_shared<Core::LinAlg::SparseMatrix>(*dofrowmap, num_constr_id_, false, true);
-    // build Epetra_Map used as domainmap for constrMatrix and rowmap for result vectors
-    constrmap_ = std::make_shared<Epetra_Map>(*(constrdofset_->dof_row_map()));
+    // build Core::LinAlg::Map used as domainmap for constrMatrix and rowmap for result vectors
+    constrmap_ = std::make_shared<Core::LinAlg::Map>(*(constrdofset_->dof_row_map()));
     // build an all reduced version of the constraintmap, since sometimes all processors
     // have to know all values of the constraints and Lagrange multipliers
     redconstrmap_ = Core::LinAlg::allreduce_e_map(*constrmap_);
     // importer
-    conimpo_ = std::make_shared<Epetra_Export>(*redconstrmap_, *constrmap_);
+    conimpo_ = std::make_shared<Epetra_Export>(
+        redconstrmap_->get_epetra_map(), constrmap_->get_epetra_map());
     // sum up initial values
     refbasevalues_ = std::make_shared<Core::LinAlg::Vector<double>>(*constrmap_);
     std::shared_ptr<Core::LinAlg::Vector<double>> refbaseredundant =
@@ -187,10 +188,11 @@ void CONSTRAINTS::ConstrManager::setup(
       nummyele = num_monitor_id_;
     }
     // initialize maps and importer
-    monitormap_ = std::make_shared<Epetra_Map>(
+    monitormap_ = std::make_shared<Core::LinAlg::Map>(
         num_monitor_id_, nummyele, 0, Core::Communication::as_epetra_comm(actdisc_->get_comm()));
     redmonmap_ = Core::LinAlg::allreduce_e_map(*monitormap_);
-    monimpo_ = std::make_shared<Epetra_Export>(*redmonmap_, *monitormap_);
+    monimpo_ = std::make_shared<Epetra_Export>(
+        redmonmap_->get_epetra_map(), monitormap_->get_epetra_map());
     monitorvalues_ = std::make_shared<Core::LinAlg::Vector<double>>(*monitormap_);
     initialmonvalues_ = std::make_shared<Core::LinAlg::Vector<double>>(*monitormap_);
 
@@ -227,7 +229,7 @@ void CONSTRAINTS::ConstrManager::evaluate_force_stiff(const double time,
   // create the parameters for the discretization
   Teuchos::ParameterList p;
   std::vector<Core::Conditions::Condition*> constrcond(0);
-  const Epetra_Map* dofrowmap = actdisc_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = actdisc_->dof_row_map();
   constr_matrix_->reset();  //=Teuchos::rcp(new
                             // Core::LinAlg::SparseMatrix(*dofrowmap,numConstrID_,false,true));
 
@@ -339,7 +341,7 @@ void CONSTRAINTS::ConstrManager::read_restart(
 {
   //  double uzawatemp = reader.ReadDouble("uzawaparameter");
   //  consolv_->SetUzawaParameter(uzawatemp);
-  std::shared_ptr<Epetra_Map> constrmap = get_constraint_map();
+  std::shared_ptr<Core::LinAlg::Map> constrmap = get_constraint_map();
   std::shared_ptr<Core::LinAlg::Vector<double>> tempvec =
       Core::LinAlg::create_vector(*constrmap, true);
   reader.read_vector(tempvec, "lagrmultiplier");
@@ -413,7 +415,7 @@ void CONSTRAINTS::ConstrManager::compute_monitor_values(
   areamonitor3d_->evaluate(p, actmonredundant);
   areamonitor2d_->evaluate(p, actmonredundant);
 
-  Epetra_Import monimpo(*monitormap_, *redmonmap_);
+  Epetra_Import monimpo(monitormap_->get_epetra_map(), redmonmap_->get_epetra_map());
   monitorvalues_->export_to(actmonredundant, *monimpo_, Add);
 }
 
@@ -428,7 +430,7 @@ void CONSTRAINTS::ConstrManager::compute_monitor_values(
   if (not actdisc_->dof_row_map()->SameAs(disp->get_block_map()))
   {
     // build merged dof row map
-    std::shared_ptr<Epetra_Map> largemap =
+    std::shared_ptr<Core::LinAlg::Map> largemap =
         Core::LinAlg::merge_map(*actdisc_->dof_row_map(), *constrmap_, false);
 
     Core::LinAlg::MapExtractor conmerger;
@@ -446,7 +448,7 @@ void CONSTRAINTS::ConstrManager::compute_monitor_values(
   areamonitor3d_->evaluate(p, actmonredundant);
   areamonitor2d_->evaluate(p, actmonredundant);
 
-  Epetra_Import monimpo(*monitormap_, *redmonmap_);
+  Epetra_Import monimpo(monitormap_->get_epetra_map(), redmonmap_->get_epetra_map());
   monitorvalues_->export_to(actmonredundant, *monimpo_, Add);
 }
 

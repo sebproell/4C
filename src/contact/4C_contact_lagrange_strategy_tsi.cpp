@@ -31,9 +31,9 @@ FOUR_C_NAMESPACE_OPEN
  *----------------------------------------------------------------------*/
 CONTACT::LagrangeStrategyTsi::LagrangeStrategyTsi(
     const std::shared_ptr<CONTACT::AbstractStrategyDataContainer>& data_ptr,
-    const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
-    std::vector<std::shared_ptr<CONTACT::Interface>> interface, int dim, MPI_Comm comm,
-    double alphaf, int maxdof)
+    const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
+    Teuchos::ParameterList params, std::vector<std::shared_ptr<CONTACT::Interface>> interface,
+    int dim, MPI_Comm comm, double alphaf, int maxdof)
     : LagrangeStrategy(
           data_ptr, dof_row_map, NodeRowMap, params, interface, dim, comm, alphaf, maxdof),
       tsi_alpha_(1.)
@@ -137,13 +137,15 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
   initialize();
 
   // get the necessary maps on the thermo dofs
-  std::shared_ptr<Epetra_Map> gactive_themo_dofs = coupST->master_to_slave_map(*gactivedofs_);
-  std::shared_ptr<Epetra_Map> master_thermo_dofs = coupST->master_to_slave_map(*gmdofrowmap_);
-  std::shared_ptr<Epetra_Map> thermo_act_dofs = coupST->master_to_slave_map(*gactivedofs_);
-  std::shared_ptr<Epetra_Map> thermo_m_dofs = coupST->master_to_slave_map(*gmdofrowmap_);
-  std::shared_ptr<Epetra_Map> thermo_sm_dofs = coupST->master_to_slave_map(*gsmdofrowmap_);
-  std::shared_ptr<Epetra_Map> thermo_all_dofs =
-      std::make_shared<Epetra_Map>(*coupST->slave_dof_map());
+  std::shared_ptr<Core::LinAlg::Map> gactive_themo_dofs =
+      coupST->master_to_slave_map(*gactivedofs_);
+  std::shared_ptr<Core::LinAlg::Map> master_thermo_dofs =
+      coupST->master_to_slave_map(*gmdofrowmap_);
+  std::shared_ptr<Core::LinAlg::Map> thermo_act_dofs = coupST->master_to_slave_map(*gactivedofs_);
+  std::shared_ptr<Core::LinAlg::Map> thermo_m_dofs = coupST->master_to_slave_map(*gmdofrowmap_);
+  std::shared_ptr<Core::LinAlg::Map> thermo_sm_dofs = coupST->master_to_slave_map(*gsmdofrowmap_);
+  std::shared_ptr<Core::LinAlg::Map> thermo_all_dofs =
+      std::make_shared<Core::LinAlg::Map>(*coupST->slave_dof_map());
 
   // assemble the constraint lines for the active contact nodes
   std::shared_ptr<Core::LinAlg::SparseMatrix> dcsdd = std::make_shared<Core::LinAlg::SparseMatrix>(
@@ -318,10 +320,10 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
   }
 
   // map containing the inactive and non-contact structural dofs
-  std::shared_ptr<Epetra_Map> str_gni_dofs = Core::LinAlg::split_map(
+  std::shared_ptr<Core::LinAlg::Map> str_gni_dofs = Core::LinAlg::split_map(
       *Core::LinAlg::split_map(*gdisprowmap_, *gmdofrowmap_), *gactivedofs_);
   // map containing the inactive and non-contact thermal dofs
-  std::shared_ptr<Epetra_Map> thermo_gni_dofs = coupST->master_to_slave_map(*str_gni_dofs);
+  std::shared_ptr<Core::LinAlg::Map> thermo_gni_dofs = coupST->master_to_slave_map(*str_gni_dofs);
 
   // add to kss
   kss->add(linDcontactLM, false, 1. - alphaf_, 1.);
@@ -357,7 +359,7 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
   std::shared_ptr<Core::LinAlg::Vector<double>> tmpv;
 
   // an empty dummy map
-  std::shared_ptr<Epetra_Map> dummy_map1, dummy_map2;
+  std::shared_ptr<Core::LinAlg::Map> dummy_map1, dummy_map2;
 
   // ****************************************************
   // split kss block*************************************
@@ -904,7 +906,7 @@ void CONTACT::LagrangeStrategyTsi::store_nodal_quantities(
       Core::LinAlg::export_to(*z_thermo_, tmp);
       vectorglobal = z_thermo_;
       vectorglobal = coupST.slave_to_master(tmp);
-      std::shared_ptr<const Epetra_Map> sdofmap, snodemap;
+      std::shared_ptr<const Core::LinAlg::Map> sdofmap, snodemap;
       // loop over all interfaces
       for (int i = 0; i < (int)interface_.size(); ++i)
       {

@@ -171,9 +171,9 @@ void Core::Geo::MeshFree::BoundingBox::setup_bounding_box_discretization(
     if (boxdiscret_->filled() == false) boxdiscret_->fill_complete(true, false, false);
 
     // create fully overlapping boundingbox discret
-    std::shared_ptr<Epetra_Map> rednodecolmap =
+    std::shared_ptr<Core::LinAlg::Map> rednodecolmap =
         Core::LinAlg::allreduce_e_map(*boxdiscret_->node_row_map());
-    std::shared_ptr<Epetra_Map> redelecolmap =
+    std::shared_ptr<Core::LinAlg::Map> redelecolmap =
         Core::LinAlg::allreduce_e_map(*boxdiscret_->element_row_map());
 
     // do the fully overlapping ghosting of the bounding box element to have everything redundant

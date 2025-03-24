@@ -93,12 +93,12 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::init()
       *(arterydis_->dof_row_map()), 27, false, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
   m_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *(arterydis_->dof_row_map()), 27, false, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
-  kappa_inv_ = std::make_shared<Epetra_FEVector>(*arterydis_->dof_row_map(), true);
+  kappa_inv_ = std::make_shared<Epetra_FEVector>(arterydis_->dof_row_map()->get_epetra_map(), true);
 
   // full map of continuous and artery dofs
-  std::vector<std::shared_ptr<const Epetra_Map>> maps;
-  maps.push_back(std::make_shared<Epetra_Map>(*contdis_->dof_row_map()));
-  maps.push_back(std::make_shared<Epetra_Map>(*arterydis_->dof_row_map()));
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
+  maps.push_back(std::make_shared<Core::LinAlg::Map>(*contdis_->dof_row_map()));
+  maps.push_back(std::make_shared<Core::LinAlg::Map>(*arterydis_->dof_row_map()));
 
   fullmap_ = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
   /// dof row map of coupled problem split in (field) blocks
@@ -108,7 +108,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::init()
   FEmat_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *fullmap_, 81, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
-  fe_rhs_ = std::make_shared<Epetra_FEVector>(*fullmap_);
+  fe_rhs_ = std::make_shared<Epetra_FEVector>(fullmap_->get_epetra_map());
 
   // check global map extractor
   globalex_->check_for_valid_map_extractor();
@@ -198,8 +198,8 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::setup_syst
     Core::LinAlg::SparseMatrix& sysmat_cont, Core::LinAlg::SparseMatrix& sysmat_art,
     std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_cont,
     std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_art,
-    const Core::LinAlg::MapExtractor& dbcmap_cont, const Epetra_Map& dbcmap_art,
-    const Epetra_Map& dbcmap_art_with_collapsed)
+    const Core::LinAlg::MapExtractor& dbcmap_cont, const Core::LinAlg::Map& dbcmap_art,
+    const Core::LinAlg::Map& dbcmap_art_with_collapsed)
 {
   // add normal part to rhs
   rhs->update(1.0, *globalex_->insert_vector(*rhs_cont, 0), 1.0);
@@ -782,7 +782,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::extract_si
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map>
+std::shared_ptr<const Core::LinAlg::Map>
 PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::artery_dof_row_map() const
 {
   return globalex_->Map(1);
@@ -790,7 +790,7 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::artery_dof_row_
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map>
+std::shared_ptr<const Core::LinAlg::Map>
 PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::dof_row_map() const
 {
   return fullmap_;

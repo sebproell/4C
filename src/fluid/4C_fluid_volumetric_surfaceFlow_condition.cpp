@@ -174,7 +174,7 @@ FLD::Utils::FluidVolumetricSurfaceFlowBc::FluidVolumetricSurfaceFlowBc(
   // -------------------------------------------------------------------
   // get dof row map
   // -------------------------------------------------------------------
-  const Epetra_Map* dofrowmap = actdis->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = actdis->dof_row_map();
 
   // -------------------------------------------------------------------
   // get condition
@@ -322,7 +322,7 @@ FLD::Utils::FluidVolumetricSurfaceFlowBc::FluidVolumetricSurfaceFlowBc(
   // -------------------------------------------------------------------
   // evaluate the surface dof row map
   this->build_condition_dof_row_map(discret_, ds_condname, condid_, condnum_s_, cond_dofrowmap_);
-  const Epetra_Map* drt_dofrowMap = discret_->dof_row_map();
+  const Core::LinAlg::Map* drt_dofrowMap = discret_->dof_row_map();
 
   // -------------------------------------------------------------------
   // calculate the normalized  of mass of the surface condition
@@ -682,7 +682,7 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::eval_local_normalized_radii(
  *----------------------------------------------------------------------*/
 void FLD::Utils::FluidVolumetricSurfaceFlowBc::build_condition_node_row_map(
     std::shared_ptr<Core::FE::Discretization> dis, const std::string condname, int condid,
-    int condnum, std::shared_ptr<Epetra_Map>& cond_noderowmap)
+    int condnum, std::shared_ptr<Core::LinAlg::Map>& cond_noderowmap)
 {
   //--------------------------------------------------------------------
   // get the processor rank
@@ -722,7 +722,7 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::build_condition_node_row_map(
   //--------------------------------------------------------------------
   // create the node row map of the nodes on the current proc
   //--------------------------------------------------------------------
-  cond_noderowmap = std::make_shared<Epetra_Map>(
+  cond_noderowmap = std::make_shared<Core::LinAlg::Map>(
       -1, nodeids.size(), nodeids.data(), 0, Core::Communication::as_epetra_comm(dis->get_comm()));
 
 }  // build_condition_node_row_map
@@ -732,7 +732,7 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::build_condition_node_row_map(
  *----------------------------------------------------------------------*/
 void FLD::Utils::FluidVolumetricSurfaceFlowBc::build_condition_dof_row_map(
     std::shared_ptr<Core::FE::Discretization> dis, const std::string condname, int condid,
-    int condnum, std::shared_ptr<Epetra_Map>& cond_dofrowmap)
+    int condnum, std::shared_ptr<Core::LinAlg::Map>& cond_dofrowmap)
 {
   //--------------------------------------------------------------------
   // get the processor rank
@@ -776,7 +776,7 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::build_condition_dof_row_map(
   //--------------------------------------------------------------------
   // create the node row map of the nodes on the current proc
   //--------------------------------------------------------------------
-  cond_dofrowmap = std::make_shared<Epetra_Map>(
+  cond_dofrowmap = std::make_shared<Core::LinAlg::Map>(
       -1, dofids.size(), dofids.data(), 0, Core::Communication::as_epetra_comm(dis->get_comm()));
 
 }  // FluidVolumetricSurfaceFlowBc::build_condition_dof_row_map
@@ -987,7 +987,7 @@ double FLD::Utils::FluidVolumetricSurfaceFlowBc::evaluate_flowrate(
  |  Evaluates the Velocities (public)                       ismail 10/10|
  *----------------------------------------------------------------------*/
 void FLD::Utils::FluidVolumetricSurfaceFlowBc::velocities(Core::FE::Discretization& disc,
-    Core::LinAlg::Vector<double>& bcdof, Epetra_Map& cond_noderowmap,
+    Core::LinAlg::Vector<double>& bcdof, Core::LinAlg::Map& cond_noderowmap,
     Core::LinAlg::Vector<double>& local_radii, Core::LinAlg::Vector<double>& border_radii,
     std::vector<double>& normal, Teuchos::ParameterList& params)
 
@@ -1337,7 +1337,7 @@ double FLD::Utils::FluidVolumetricSurfaceFlowBc::flow_rate_calculation(
 
   // get a vector layout from the discretization to construct matching
   // vectors and matrices local <-> global dof numbering
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // create vector (+ initialization with zeros)
   std::shared_ptr<Core::LinAlg::Vector<double>> flowrates =
@@ -1375,7 +1375,7 @@ double FLD::Utils::FluidVolumetricSurfaceFlowBc::pressure_calculation(
 
   // get a vector layout from the discretization to construct matching
   // vectors and matrices local <-> global dof numbering
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // create vector (+ initialization with zeros)
   std::shared_ptr<Core::LinAlg::Vector<double>> flowrates =

@@ -34,9 +34,9 @@ namespace CONTACT
     */
     MonoCoupledLagrangeStrategy(
         const std::shared_ptr<CONTACT::AbstractStrategyDataContainer>& data_ptr,
-        const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
-        std::vector<std::shared_ptr<CONTACT::Interface>> interface, int dim, MPI_Comm comm,
-        double alphaf, int maxdof);
+        const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
+        Teuchos::ParameterList params, std::vector<std::shared_ptr<CONTACT::Interface>> interface,
+        int dim, MPI_Comm comm, double alphaf, int maxdof);
 
 
     // Overload CONTACT::AbstractStrategy::apply_force_stiff_cmt as this is called in the structure

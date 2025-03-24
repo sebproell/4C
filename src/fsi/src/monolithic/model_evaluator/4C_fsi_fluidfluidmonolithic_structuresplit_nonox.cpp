@@ -38,10 +38,10 @@ FSI::FluidFluidMonolithicStructureSplitNoNOX::FluidFluidMonolithicStructureSplit
     : MonolithicNoNOX(comm, timeparams)
 {
   // Throw an error if there are DBCs on structural interface DOFs.
-  std::vector<std::shared_ptr<const Epetra_Map>> intersectionmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> intersectionmaps;
   intersectionmaps.push_back(structure_field()->get_dbc_map_extractor()->cond_map());
   intersectionmaps.push_back(structure_field()->interface()->fsi_cond_map());
-  std::shared_ptr<Epetra_Map> intersectionmap =
+  std::shared_ptr<Core::LinAlg::Map> intersectionmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
   if (intersectionmap->NumGlobalElements() != 0)
@@ -488,25 +488,26 @@ void FSI::FluidFluidMonolithicStructureSplitNoNOX::scale_system(
 /*----------------------------------------------------------------------*
  |  map containing the dofs with Dirichlet BC
  *----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> FSI::FluidFluidMonolithicStructureSplitNoNOX::combined_dbc_map()
+std::shared_ptr<Core::LinAlg::Map> FSI::FluidFluidMonolithicStructureSplitNoNOX::combined_dbc_map()
 {
   // Create a combined map vector with the 3 field DBC maps
-  std::vector<std::shared_ptr<const Epetra_Map>> alldbcmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> alldbcmaps;
 
   // structure DBC
   alldbcmaps.push_back(structure_field()->get_dbc_map_extractor()->cond_map());
   // fluid DBC
   alldbcmaps.push_back(fluid_field()->get_dbc_map_extractor()->cond_map());
   // ALE-DBC
-  std::vector<std::shared_ptr<const Epetra_Map>> aleintersectionmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> aleintersectionmaps;
   aleintersectionmaps.push_back(ale_field()->get_dbc_map_extractor()->cond_map());
   aleintersectionmaps.push_back(ale_field()->interface()->other_map());
-  std::shared_ptr<Epetra_Map> aleintersectionmap =
+  std::shared_ptr<Core::LinAlg::Map> aleintersectionmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(aleintersectionmaps);
   alldbcmaps.push_back(aleintersectionmap);
 
   // Merge the maps
-  std::shared_ptr<Epetra_Map> alldbcmap = Core::LinAlg::MultiMapExtractor::merge_maps(alldbcmaps);
+  std::shared_ptr<Core::LinAlg::Map> alldbcmap =
+      Core::LinAlg::MultiMapExtractor::merge_maps(alldbcmaps);
 
   return alldbcmap;
 }
@@ -754,7 +755,7 @@ void FSI::FluidFluidMonolithicStructureSplitNoNOX::create_combined_dof_row_map()
   TEUCHOS_FUNC_TIME_MONITOR("FSI::FluidFluidMonolithicStructureSplitNoNOX::SetupNewSystem()");
 
   // create combined map
-  std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
   vecSpaces.push_back(structure_field()->interface()->other_map());
   vecSpaces.push_back(fluid_field()->dof_row_map());
   vecSpaces.push_back(ale_field()->interface()->other_map());
@@ -792,7 +793,7 @@ void FSI::FluidFluidMonolithicStructureSplitNoNOX::build_convergence_norms()
   fluid_field()->interface()->extract_fsi_cond_vector(*rhs)->norm_inf(&norminterfacerhsInf_);
 
   // inner fluid velocity Dofs: inner velocity dofs without db-condition
-  std::vector<std::shared_ptr<const Epetra_Map>> innerfluidvel;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> innerfluidvel;
   innerfluidvel.push_back(fluid_field()->inner_velocity_row_map());
   innerfluidvel.push_back(nullptr);
   Core::LinAlg::MultiMapExtractor fluidvelextract(*(fluid_field()->dof_row_map()), innerfluidvel);
@@ -800,7 +801,7 @@ void FSI::FluidFluidMonolithicStructureSplitNoNOX::build_convergence_norms()
   fluidvelextract.extract_vector(*fluid_field()->rhs(), 0)->norm_inf(&normflvelrhsInf_);
 
   // fluid pressure Dofs: pressure dofs (at interface and inner) without db-condition
-  std::vector<std::shared_ptr<const Epetra_Map>> fluidpres;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> fluidpres;
   fluidpres.push_back(fluid_field()->pressure_row_map());
   fluidpres.push_back(nullptr);
   Core::LinAlg::MultiMapExtractor fluidpresextract(*(fluid_field()->dof_row_map()), fluidpres);

@@ -13,12 +13,12 @@
 #include "4C_linalg_blocksparsematrix.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_graph.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 
 #include <Epetra_CrsMatrix.h>
 #include <Epetra_Export.h>
 #include <Epetra_Import.h>
-#include <Epetra_Map.h>
 
 #include <memory>
 
@@ -95,7 +95,7 @@ namespace Core::LinAlg
   \param B          (in/out) : Matrix to be added to (must have Filled()==false)
   */
   void matrix_put(const Core::LinAlg::SparseMatrix& A, const double scalarA,
-      std::shared_ptr<const Epetra_Map> rowmap, Core::LinAlg::SparseMatrixBase& B);
+      std::shared_ptr<const Core::LinAlg::Map> rowmap, Core::LinAlg::SparseMatrixBase& B);
 
   /*!
    \brief Multiply a (transposed) sparse matrix with another (transposed): C = A(^T)*B(^T)

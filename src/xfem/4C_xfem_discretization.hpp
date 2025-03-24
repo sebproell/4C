@@ -181,7 +181,7 @@ namespace XFEM
     - Initialized()==true prerequisite
 
     */
-    const Epetra_Map* initial_dof_row_map(unsigned nds = 0) const;
+    const Core::LinAlg::Map* initial_dof_row_map(unsigned nds = 0) const;
 
     /*!
     \brief Get initial degree of freedom column map (Initialized()==true prerequisite)
@@ -192,7 +192,7 @@ namespace XFEM
     - Initialized()==true prerequisite
 
     */
-    const Epetra_Map* initial_dof_col_map(unsigned nds = 0) const;
+    const Core::LinAlg::Map* initial_dof_col_map(unsigned nds = 0) const;
 
     /// checks if discretization is initialized
     bool initialized() const;
@@ -251,8 +251,8 @@ namespace XFEM
     \param uniquenumbering (in) : Assign unique number to additional dofsets
 
     */
-    std::shared_ptr<Epetra_Map> extend_map(
-        const Epetra_Map* srcmap, int numdofspernodedofset, int numdofsets, bool uniquenumbering);
+    std::shared_ptr<Core::LinAlg::Map> extend_map(const Core::LinAlg::Map* srcmap,
+        int numdofspernodedofset, int numdofsets, bool uniquenumbering);
 
     /// initial set of dofsets
     std::vector<std::shared_ptr<Core::DOFSets::DofSetInterface>> initialdofsets_;
@@ -261,11 +261,11 @@ namespace XFEM
     bool initialized_;
 
     /// full (with all reserved dofs) dof row map of initial state
-    std::shared_ptr<Epetra_Map> initialfulldofrowmap_;
+    std::shared_ptr<Core::LinAlg::Map> initialfulldofrowmap_;
 
     /// permuted (with duplicated gids of first dofset - to all other dofsets) dof row map of
     /// initial state
-    std::shared_ptr<Epetra_Map> initialpermdofrowmap_;
+    std::shared_ptr<Core::LinAlg::Map> initialpermdofrowmap_;
 
 
   };  // class DiscretizationXFEM

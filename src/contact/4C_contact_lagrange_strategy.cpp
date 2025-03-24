@@ -36,9 +36,9 @@ FOUR_C_NAMESPACE_OPEN
  *----------------------------------------------------------------------*/
 CONTACT::LagrangeStrategy::LagrangeStrategy(
     const std::shared_ptr<CONTACT::AbstractStrategyDataContainer>& data_ptr,
-    const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
-    std::vector<std::shared_ptr<CONTACT::Interface>> interface, const int spatialDim, MPI_Comm comm,
-    const double alphaf, const int maxdof)
+    const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
+    Teuchos::ParameterList params, std::vector<std::shared_ptr<CONTACT::Interface>> interface,
+    const int spatialDim, MPI_Comm comm, const double alphaf, const int maxdof)
     : AbstractStrategy(data_ptr, dof_row_map, NodeRowMap, params, spatialDim, comm, alphaf, maxdof),
       interface_(interface),
       evalForceCalled_(false),
@@ -76,7 +76,8 @@ void CONTACT::LagrangeStrategy::initialize()
     smatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gactivedofs_, 3);
 
     // inactive rhs for the saddle point problem
-    std::shared_ptr<Epetra_Map> gidofs = Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
+    std::shared_ptr<Core::LinAlg::Map> gidofs =
+        Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
     inactiverhs_ = Core::LinAlg::create_vector(*gidofs, true);
 
     // further terms depend on friction case
@@ -91,7 +92,8 @@ void CONTACT::LagrangeStrategy::initialize()
     else
     {
       // here the calculation of gstickt is necessary
-      std::shared_ptr<Epetra_Map> gstickdofs = Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);
+      std::shared_ptr<Core::LinAlg::Map> gstickdofs =
+          Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);
       linstickLM_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gstickdofs, 3);
       linstickDIS_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gstickdofs, 3);
       linstickRHS_ = Core::LinAlg::create_vector(*gstickdofs, true);
@@ -111,7 +113,8 @@ void CONTACT::LagrangeStrategy::initialize()
     smatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gactiven_, 3);
 
     // inactive rhs for the saddle point problem
-    std::shared_ptr<Epetra_Map> gidofs = Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
+    std::shared_ptr<Core::LinAlg::Map> gidofs =
+        Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
     inactiverhs_ = Core::LinAlg::create_vector(*gidofs, true);
 
     // further terms depend on friction case
@@ -126,7 +129,7 @@ void CONTACT::LagrangeStrategy::initialize()
     else
     {
       // here the calculation of gstickt is necessary
-      std::shared_ptr<Epetra_Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
+      std::shared_ptr<Core::LinAlg::Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
       linstickLM_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gstickt, 3);
       linstickDIS_ = std::make_shared<Core::LinAlg::SparseMatrix>(*gstickt, 3);
       linstickRHS_ = Core::LinAlg::create_vector(*gstickt, true);
@@ -223,8 +226,9 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
   linmmatrix_->complete(*gsmdofrowmap_, *gmdofrowmap_);
 
   // fill_complete global Matrix linstickLM_, linstickDIS_
-  std::shared_ptr<Epetra_Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
-  std::shared_ptr<Epetra_Map> gstickdofs = Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);
+  std::shared_ptr<Core::LinAlg::Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
+  std::shared_ptr<Core::LinAlg::Map> gstickdofs =
+      Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);
 
   if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
@@ -284,14 +288,14 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     {
       // 1. split d matrix in vertex edge and surf part
       std::shared_ptr<Core::LinAlg::SparseMatrix> dss, dsev, devs, devev;
-      std::shared_ptr<Epetra_Map> gEVdofs;  // merged edge and vertex dofs
+      std::shared_ptr<Core::LinAlg::Map> gEVdofs;  // merged edge and vertex dofs
 
       // get dss
       Core::LinAlg::split_matrix2x2(
           dmatrix_, gsdofSurf_, gEVdofs, gsdofSurf_, gEVdofs, dss, dsev, devs, devev);
 
       // get dse and dsv
-      std::shared_ptr<Epetra_Map> temp;
+      std::shared_ptr<Core::LinAlg::Map> temp;
       std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1, tempmtx2;
       std::shared_ptr<Core::LinAlg::SparseMatrix> dse, dsv;
 
@@ -455,7 +459,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     std::shared_ptr<Core::LinAlg::SparseMatrix> ksmsm, ksmn, knsm;
 
     // some temporary std::shared_ptrs
-    std::shared_ptr<Epetra_Map> tempmap;
+    std::shared_ptr<Core::LinAlg::Map> tempmap;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx2;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx3;
@@ -564,7 +568,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     std::shared_ptr<Core::LinAlg::SparseMatrix> kan, kin, kam, kim, kma, kmi;
 
     // we will get the i rowmap as a by-product
-    std::shared_ptr<Epetra_Map> gidofs;
+    std::shared_ptr<Core::LinAlg::Map> gidofs;
 
     // do the splitting
     Core::LinAlg::split_matrix2x2(
@@ -583,11 +587,11 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     std::shared_ptr<Core::LinAlg::SparseMatrix> ksln, kstn, kslm, kstm, ksli, ksti;
 
     // some temporary std::shared_ptrs
-    std::shared_ptr<Epetra_Map> temp1map;
+    std::shared_ptr<Core::LinAlg::Map> temp1map;
     std::shared_ptr<Core::LinAlg::SparseMatrix> temp1mtx4, temp1mtx5;
 
     // we will get the stick rowmap as a by-product
-    std::shared_ptr<Epetra_Map> gstdofs;
+    std::shared_ptr<Core::LinAlg::Map> gstdofs;
 
     Core::LinAlg::split_matrix2x2(
         kaa, gactivedofs_, gidofs, gstdofs, gslipdofs_, kast, kasl, temp1mtx4, temp1mtx5);
@@ -685,7 +689,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmnadd =
         Core::LinAlg::matrix_multiply(*mhataam, true, *kan, false, false, false, true);
     kmnmod->add(*kmnadd, false, 1.0, 1.0);
-    kmnmod->complete(kmn->domain_map(), kmn->row_map());
+    kmnmod->complete(kmn->domain_map_not_epetra(), kmn->row_map());
 
     // kmm: add T(mhataam)*kam
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmmmod =
@@ -694,7 +698,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmmadd =
         Core::LinAlg::matrix_multiply(*mhataam, true, *kam, false, false, false, true);
     kmmmod->add(*kmmadd, false, 1.0, 1.0);
-    kmmmod->complete(kmm->domain_map(), kmm->row_map());
+    kmmmod->complete(kmm->domain_map_not_epetra(), kmm->row_map());
 
     // kmi: add T(mhataam)*kai
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmimod;
@@ -948,7 +952,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     //-------------------------------------------------------- FOURTH LINE
 
     //--------------------------------------------------------- FIFTH LINE
-    std::shared_ptr<Epetra_Map> gstickdofs =
+    std::shared_ptr<Core::LinAlg::Map> gstickdofs =
         Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);  // get global stick dofs
 
     // split the lagrange multiplier vector in stick and slip part
@@ -1705,8 +1709,8 @@ void CONTACT::LagrangeStrategy::add_master_contributions(Core::LinAlg::SparseOpe
 
   // create new contact stiffness matric for LTL contact
   std::shared_ptr<Core::LinAlg::SparseMatrix> kc = std::make_shared<Core::LinAlg::SparseMatrix>(
-      (dynamic_cast<Epetra_CrsMatrix*>(&(*kteff.epetra_operator())))->RowMap(), 100, true, false,
-      Core::LinAlg::SparseMatrix::FE_MATRIX);
+      Core::LinAlg::Map((dynamic_cast<Epetra_CrsMatrix*>(&(*kteff.epetra_operator())))->RowMap()),
+      100, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
   // loop over interface and assemble force and stiffness
   for (int i = 0; i < (int)interface_.size(); ++i)
@@ -1761,8 +1765,8 @@ void CONTACT::LagrangeStrategy::add_line_to_lin_contributions(Core::LinAlg::Spar
 
   // create new contact stiffness matric for LTL contact
   std::shared_ptr<Core::LinAlg::SparseMatrix> kc = std::make_shared<Core::LinAlg::SparseMatrix>(
-      (dynamic_cast<Epetra_CrsMatrix*>(&(*kteff.epetra_operator())))->RowMap(), 100, true, false,
-      Core::LinAlg::SparseMatrix::FE_MATRIX);
+      Core::LinAlg::Map((dynamic_cast<Epetra_CrsMatrix*>(&(*kteff.epetra_operator())))->RowMap()),
+      100, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
   // loop over interface and assemble force and stiffness
   for (int i = 0; i < (int)interface_.size(); ++i)
@@ -2054,14 +2058,14 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
     {
       // 1. split d matrix in vertex edge and surf part
       std::shared_ptr<Core::LinAlg::SparseMatrix> dss, dsev, devs, devev;
-      std::shared_ptr<Epetra_Map> gEVdofs;  // merged edge and vertex dofs
+      std::shared_ptr<Core::LinAlg::Map> gEVdofs;  // merged edge and vertex dofs
 
       // get dss
       Core::LinAlg::split_matrix2x2(
           dmatrix_, gsdofSurf_, gEVdofs, gsdofSurf_, gEVdofs, dss, dsev, devs, devev);
 
       // get dse and dsv
-      std::shared_ptr<Epetra_Map> temp;
+      std::shared_ptr<Core::LinAlg::Map> temp;
       std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1, tempmtx2;
       std::shared_ptr<Core::LinAlg::SparseMatrix> dse, dsv;
 
@@ -2247,7 +2251,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
     std::shared_ptr<Core::LinAlg::SparseMatrix> ksmsm, ksmn, knsm;
 
     // some temporary std::shared_ptrs
-    std::shared_ptr<Epetra_Map> tempmap;
+    std::shared_ptr<Core::LinAlg::Map> tempmap;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx2;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx3;
@@ -2353,7 +2357,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
     std::shared_ptr<Core::LinAlg::SparseMatrix> kan, kin, kam, kim, kma, kmi;
 
     // we will get the i rowmap as a by-product
-    std::shared_ptr<Epetra_Map> gidofs;
+    std::shared_ptr<Core::LinAlg::Map> gidofs;
 
     // do the splitting
     Core::LinAlg::split_matrix2x2(
@@ -3006,7 +3010,8 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
     kzd.complete(*gdisprowmap_, *gsdofrowmap_);
 
     // build unity matrix for inactive dofs
-    std::shared_ptr<Epetra_Map> gidofs = Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
+    std::shared_ptr<Core::LinAlg::Map> gidofs =
+        Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
     Core::LinAlg::Vector<double> ones(*gidofs);
     ones.put_scalar(1.0);
     Core::LinAlg::SparseMatrix onesdiag(ones);
@@ -3025,8 +3030,9 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
   else
   {
     // global stick dof map
-    std::shared_ptr<Epetra_Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
-    std::shared_ptr<Epetra_Map> gstickdofs = Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);
+    std::shared_ptr<Core::LinAlg::Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
+    std::shared_ptr<Core::LinAlg::Map> gstickdofs =
+        Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);
 
     // build constraint matrix kzd
     if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
@@ -3044,7 +3050,8 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
     kzd.complete(*gdisprowmap_, *gsdofrowmap_);
 
     // build unity matrix for inactive dofs
-    std::shared_ptr<Epetra_Map> gidofs = Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
+    std::shared_ptr<Core::LinAlg::Map> gidofs =
+        Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
     Core::LinAlg::Vector<double> ones(*gidofs);
     ones.put_scalar(1.0);
     Core::LinAlg::SparseMatrix onesdiag(ones);
@@ -3103,7 +3110,7 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
         std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(kdd);
 
     // Initialize merged system (matrix, rhs, sol)
-    std::shared_ptr<Epetra_Map> mergedmap = nullptr;
+    std::shared_ptr<Core::LinAlg::Map> mergedmap = nullptr;
     if (parallel_redistribution_status())
       mergedmap = Core::LinAlg::merge_map(problem_dofs(), non_redist_glmdofrowmap_, false);
     else
@@ -3210,7 +3217,7 @@ void CONTACT::LagrangeStrategy::update_displacements_and_l_mincrements(
   if (parallel_redistribution_status())
   {
     Core::LinAlg::Vector<double> sollmOrig(*non_redist_glmdofrowmap_);
-    std::shared_ptr<Epetra_Map> mergedmapOrig =
+    std::shared_ptr<Core::LinAlg::Map> mergedmapOrig =
         Core::LinAlg::merge_map(problem_dofs(), non_redist_glmdofrowmap_, false);
     Core::LinAlg::MapExtractor mapext(*mergedmapOrig, problem_dofs(), non_redist_glmdofrowmap_);
     mapext.extract_cond_vector(*blocksol, *sold);
@@ -3223,7 +3230,7 @@ void CONTACT::LagrangeStrategy::update_displacements_and_l_mincrements(
   else
   {
     sollm = std::make_shared<Core::LinAlg::Vector<double>>(*glmdofrowmap_);
-    std::shared_ptr<Epetra_Map> mergedmap =
+    std::shared_ptr<Core::LinAlg::Map> mergedmap =
         Core::LinAlg::merge_map(problem_dofs(), glmdofrowmap_, false);
     Core::LinAlg::MapExtractor mapext(*mergedmap, problem_dofs(), glmdofrowmap_);
     mapext.extract_cond_vector(*blocksol, *sold);
@@ -3498,8 +3505,9 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_friction()
   linmmatrix_->complete(*gsmdofrowmap_, *gmdofrowmap_);
 
   // fill_complete global Matrix linstickLM_, linstickDIS_
-  std::shared_ptr<Epetra_Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
-  std::shared_ptr<Epetra_Map> gstickdofs = Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);
+  std::shared_ptr<Core::LinAlg::Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
+  std::shared_ptr<Core::LinAlg::Map> gstickdofs =
+      Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);
 
   if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
   {
@@ -3548,14 +3556,14 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_friction()
     {
       // 1. split d matrix in vertex edge and surf part
       std::shared_ptr<Core::LinAlg::SparseMatrix> dss, dsev, devs, devev;
-      std::shared_ptr<Epetra_Map> gEVdofs;  // merged edge and vertex dofs
+      std::shared_ptr<Core::LinAlg::Map> gEVdofs;  // merged edge and vertex dofs
 
       // get dss
       Core::LinAlg::split_matrix2x2(
           dmatrix_, gsdofSurf_, gEVdofs, gsdofSurf_, gEVdofs, dss, dsev, devs, devev);
 
       // get dse and dsv
-      std::shared_ptr<Epetra_Map> temp;
+      std::shared_ptr<Core::LinAlg::Map> temp;
       std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1, tempmtx2;
       std::shared_ptr<Core::LinAlg::SparseMatrix> dse, dsv;
 
@@ -3810,14 +3818,14 @@ void CONTACT::LagrangeStrategy::assemble_all_contact_terms_frictionless()
     {
       // 1. split d matrix in vertex edge and surf part
       std::shared_ptr<Core::LinAlg::SparseMatrix> dss, dsev, devs, devev;
-      std::shared_ptr<Epetra_Map> gEVdofs;  // merged edge and vertex dofs
+      std::shared_ptr<Core::LinAlg::Map> gEVdofs;  // merged edge and vertex dofs
 
       // get dss
       Core::LinAlg::split_matrix2x2(
           dmatrix_, gsdofSurf_, gEVdofs, gsdofSurf_, gEVdofs, dss, dsev, devs, devev);
 
       // get dse and dsv
-      std::shared_ptr<Epetra_Map> temp;
+      std::shared_ptr<Core::LinAlg::Map> temp;
       std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1, tempmtx2;
       std::shared_ptr<Core::LinAlg::SparseMatrix> dse, dsv;
 
@@ -4226,7 +4234,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> CONTACT::LagrangeStrategy::get_matri
         kzz_ptr = std::make_shared<Core::LinAlg::SparseMatrix>(
             global_self_contact_ref_map(), 100, false, true);
 
-        std::shared_ptr<Epetra_Map> unused_lmdofs =
+        std::shared_ptr<Core::LinAlg::Map> unused_lmdofs =
             Core::LinAlg::split_map(global_self_contact_ref_map(), *gsdofrowmap_);
         Core::LinAlg::Vector<double> ones = Core::LinAlg::Vector<double>(*unused_lmdofs, false);
         ones.put_scalar(1.0);
@@ -4240,7 +4248,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> CONTACT::LagrangeStrategy::get_matri
       }
 
       // build unity matrix for inactive dofs
-      std::shared_ptr<Epetra_Map> gidofs = Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
+      std::shared_ptr<Core::LinAlg::Map> gidofs =
+          Core::LinAlg::split_map(*gsdofrowmap_, *gactivedofs_);
       Core::LinAlg::Vector<double> ones(*gidofs);
       ones.put_scalar(1.0);
       Core::LinAlg::SparseMatrix onesdiag(ones);
@@ -4456,7 +4465,7 @@ void CONTACT::LagrangeStrategy::recover(std::shared_ptr<Core::LinAlg::Vector<dou
     // only contains the active diagonal block
     // (this automatically renders the inactive LM to be zero)
     std::shared_ptr<Core::LinAlg::SparseMatrix> invda;
-    std::shared_ptr<Epetra_Map> tempmap;
+    std::shared_ptr<Core::LinAlg::Map> tempmap;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1, tempmtx2, tempmtx3;
     Core::LinAlg::split_matrix2x2(
         invd_, gactivedofs_, tempmap, gactivedofs_, tempmap, invda, tempmtx1, tempmtx2, tempmtx3);
@@ -4750,11 +4759,11 @@ void CONTACT::LagrangeStrategy::update_active_set()
   }
 
   // update zig-zagging history (shift by one)
-  if (zigzagtwo_ != nullptr) zigzagthree_ = std::make_shared<Epetra_Map>(*zigzagtwo_);
-  if (zigzagone_ != nullptr) zigzagtwo_ = std::make_shared<Epetra_Map>(*zigzagone_);
-  if (gactivenodes_ != nullptr) zigzagone_ = std::make_shared<Epetra_Map>(*gactivenodes_);
+  if (zigzagtwo_ != nullptr) zigzagthree_ = std::make_shared<Core::LinAlg::Map>(*zigzagtwo_);
+  if (zigzagone_ != nullptr) zigzagtwo_ = std::make_shared<Core::LinAlg::Map>(*zigzagone_);
+  if (gactivenodes_ != nullptr) zigzagone_ = std::make_shared<Core::LinAlg::Map>(*gactivenodes_);
 
-  // (re)setup active global Epetra_Maps
+  // (re)setup active global Core::LinAlg::Maps
   gactivenodes_ = nullptr;
   gactivedofs_ = nullptr;
   ginactivenodes_ = nullptr;
@@ -4952,27 +4961,27 @@ void CONTACT::LagrangeStrategy::update_active_set_semi_smooth(const bool firstSt
   // store the previous active set
   if (gactivenodes_ != nullptr)
   {
-    gOldActiveSlaveNodes_ = std::make_shared<Epetra_Map>(*gactivenodes_);
-    if (friction_) gOldslipnodes_ = std::make_shared<Epetra_Map>(*gslipnodes_);
+    gOldActiveSlaveNodes_ = std::make_shared<Core::LinAlg::Map>(*gactivenodes_);
+    if (friction_) gOldslipnodes_ = std::make_shared<Core::LinAlg::Map>(*gslipnodes_);
   }
   else
   {
     gOldActiveSlaveNodes_ =
-        std::make_shared<Epetra_Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
+        std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
     if (friction_)
-      gOldslipnodes_ =
-          std::make_shared<Epetra_Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
+      gOldslipnodes_ = std::make_shared<Core::LinAlg::Map>(
+          0, 0, Core::Communication::as_epetra_comm(get_comm()));
   }
 
   // also update special flag for semi-smooth Newton convergence
   activesetssconv_ = activesetconv_;
 
   // update zig-zagging history (shift by one)
-  if (zigzagtwo_ != nullptr) zigzagthree_ = std::make_shared<Epetra_Map>(*zigzagtwo_);
-  if (zigzagone_ != nullptr) zigzagtwo_ = std::make_shared<Epetra_Map>(*zigzagone_);
-  if (gactivenodes_ != nullptr) zigzagone_ = std::make_shared<Epetra_Map>(*gactivenodes_);
+  if (zigzagtwo_ != nullptr) zigzagthree_ = std::make_shared<Core::LinAlg::Map>(*zigzagtwo_);
+  if (zigzagone_ != nullptr) zigzagtwo_ = std::make_shared<Core::LinAlg::Map>(*zigzagone_);
+  if (gactivenodes_ != nullptr) zigzagone_ = std::make_shared<Core::LinAlg::Map>(*gactivenodes_);
 
-  // (re)setup active global Epetra_Maps
+  // (re)setup active global Core::LinAlg::Maps
   gactivenodes_ = nullptr;
   gactivedofs_ = nullptr;
   ginactivenodes_ = nullptr;
@@ -5239,8 +5248,9 @@ void CONTACT::LagrangeStrategy::condense_friction(
   }
 
   // fill_complete global Matrix linstickLM_, linstickDIS_
-  std::shared_ptr<Epetra_Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
-  std::shared_ptr<Epetra_Map> gstickdofs = Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);
+  std::shared_ptr<Core::LinAlg::Map> gstickt = Core::LinAlg::split_map(*gactivet_, *gslipt_);
+  std::shared_ptr<Core::LinAlg::Map> gstickdofs =
+      Core::LinAlg::split_map(*gactivedofs_, *gslipdofs_);
 
   // shape function
   auto shapefcn = Teuchos::getIntegralValue<Inpar::Mortar::ShapeFcn>(params(), "LM_SHAPEFCN");
@@ -5270,7 +5280,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
   std::shared_ptr<Core::LinAlg::SparseMatrix> ksmsm, ksmn, knsm;
 
   // some temporary std::shared_ptrs
-  std::shared_ptr<Epetra_Map> tempmap;
+  std::shared_ptr<Core::LinAlg::Map> tempmap;
   std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1;
   std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx2;
   std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx3;
@@ -5356,7 +5366,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
   std::shared_ptr<Core::LinAlg::SparseMatrix> kan, kin, kam, kim, kma, kmi;
 
   // we will get the i rowmap as a by-product
-  std::shared_ptr<Epetra_Map> gidofs;
+  std::shared_ptr<Core::LinAlg::Map> gidofs;
 
   // do the splitting
   Core::LinAlg::split_matrix2x2(
@@ -5375,11 +5385,11 @@ void CONTACT::LagrangeStrategy::condense_friction(
   std::shared_ptr<Core::LinAlg::SparseMatrix> ksln, kstn, kslm, kstm, ksli, ksti;
 
   // some temporary std::shared_ptrs
-  std::shared_ptr<Epetra_Map> temp1map;
+  std::shared_ptr<Core::LinAlg::Map> temp1map;
   std::shared_ptr<Core::LinAlg::SparseMatrix> temp1mtx4, temp1mtx5;
 
   // we will get the stick rowmap as a by-product
-  std::shared_ptr<Epetra_Map> gstdofs;
+  std::shared_ptr<Core::LinAlg::Map> gstdofs;
 
   Core::LinAlg::split_matrix2x2(
       kaa, gactivedofs_, gidofs, gstdofs, gslipdofs_, kast, kasl, temp1mtx4, temp1mtx5);
@@ -6115,7 +6125,7 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
   std::shared_ptr<Core::LinAlg::SparseMatrix> ksmsm, ksmn, knsm;
 
   // some temporary std::shared_ptrs
-  std::shared_ptr<Epetra_Map> tempmap;
+  std::shared_ptr<Core::LinAlg::Map> tempmap;
   std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1;
   std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx2;
   std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx3;
@@ -6198,7 +6208,7 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
   std::shared_ptr<Core::LinAlg::SparseMatrix> kan, kin, kam, kim, kma, kmi;
 
   // we will get the i rowmap as a by-product
-  std::shared_ptr<Epetra_Map> gidofs;
+  std::shared_ptr<Core::LinAlg::Map> gidofs;
 
   // do the splitting
   Core::LinAlg::split_matrix2x2(
@@ -6688,7 +6698,7 @@ void CONTACT::LagrangeStrategy::run_post_apply_jacobian_inverse(
     // only contains the active diagonal block
     // (this automatically renders the inactive LM to be zero)
     std::shared_ptr<Core::LinAlg::SparseMatrix> invda;
-    std::shared_ptr<Epetra_Map> tempmap;
+    std::shared_ptr<Core::LinAlg::Map> tempmap;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1, tempmtx2, tempmtx3;
     Core::LinAlg::split_matrix2x2(
         invd_, gactivedofs_, tempmap, gactivedofs_, tempmap, invda, tempmtx1, tempmtx2, tempmtx3);

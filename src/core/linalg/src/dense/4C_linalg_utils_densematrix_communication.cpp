@@ -54,7 +54,7 @@ void Core::LinAlg::allreduce_vector(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Core::LinAlg::allreduce_e_map(std::vector<int>& rredundant, const Epetra_Map& emap)
+void Core::LinAlg::allreduce_e_map(std::vector<int>& rredundant, const Core::LinAlg::Map& emap)
 {
   const int mynodepos =
       find_my_pos(emap.NumMyElements(), Core::Communication::unpack_epetra_comm(emap.Comm()));
@@ -71,10 +71,10 @@ void Core::LinAlg::allreduce_e_map(std::vector<int>& rredundant, const Epetra_Ma
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Core::LinAlg::allreduce_e_map(std::map<int, int>& idxmap, const Epetra_Map& emap)
+void Core::LinAlg::allreduce_e_map(std::map<int, int>& idxmap, const Core::LinAlg::Map& emap)
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not emap.UniqueGIDs()) FOUR_C_THROW("works only for unique Epetra_Maps");
+  if (not emap.UniqueGIDs()) FOUR_C_THROW("works only for unique Core::LinAlg::Maps");
 #endif
 
   idxmap.clear();
@@ -91,18 +91,19 @@ void Core::LinAlg::allreduce_e_map(std::map<int, int>& idxmap, const Epetra_Map&
 /*----------------------------------------------------------------------*
  |  create an allreduced map on a distinct processor (public)  gjb 12/07|
  *----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> Core::LinAlg::allreduce_e_map(const Epetra_Map& emap, const int pid)
+std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::allreduce_e_map(
+    const Core::LinAlg::Map& emap, const int pid)
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not emap.UniqueGIDs()) FOUR_C_THROW("works only for unique Epetra_Maps");
+  if (not emap.UniqueGIDs()) FOUR_C_THROW("works only for unique Core::LinAlg::Maps");
 #endif
   std::vector<int> rv;
   allreduce_e_map(rv, emap);
-  std::shared_ptr<Epetra_Map> rmap;
+  std::shared_ptr<Core::LinAlg::Map> rmap;
 
   if (Core::Communication::my_mpi_rank(Core::Communication::unpack_epetra_comm(emap.Comm())) == pid)
   {
-    rmap = std::make_shared<Epetra_Map>(-1, rv.size(), rv.data(), 0, emap.Comm());
+    rmap = std::make_shared<Core::LinAlg::Map>(-1, rv.size(), rv.data(), 0, emap.Comm());
     // check the map
     FOUR_C_ASSERT(rmap->NumMyElements() == rmap->NumGlobalElements(),
         "Processor with pid does not get all map elements");
@@ -110,7 +111,7 @@ std::shared_ptr<Epetra_Map> Core::LinAlg::allreduce_e_map(const Epetra_Map& emap
   else
   {
     rv.clear();
-    rmap = std::make_shared<Epetra_Map>(-1, 0, nullptr, 0, emap.Comm());
+    rmap = std::make_shared<Core::LinAlg::Map>(-1, 0, nullptr, 0, emap.Comm());
     // check the map
     FOUR_C_ASSERT(rmap->NumMyElements() == 0, "At least one proc will keep a map element");
   }
@@ -120,16 +121,16 @@ std::shared_ptr<Epetra_Map> Core::LinAlg::allreduce_e_map(const Epetra_Map& emap
 /*----------------------------------------------------------------------*
  |  create an allreduced map on EVERY processor (public)        tk 12/07|
  *----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> Core::LinAlg::allreduce_e_map(const Epetra_Map& emap)
+std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::allreduce_e_map(const Core::LinAlg::Map& emap)
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not emap.UniqueGIDs()) FOUR_C_THROW("works only for unique Epetra_Maps");
+  if (not emap.UniqueGIDs()) FOUR_C_THROW("works only for unique Core::LinAlg::Maps");
 #endif
   std::vector<int> rv;
   allreduce_e_map(rv, emap);
-  std::shared_ptr<Epetra_Map> rmap;
+  std::shared_ptr<Core::LinAlg::Map> rmap;
 
-  rmap = std::make_shared<Epetra_Map>(-1, rv.size(), rv.data(), 0, emap.Comm());
+  rmap = std::make_shared<Core::LinAlg::Map>(-1, rv.size(), rv.data(), 0, emap.Comm());
 
   return rmap;
 }
@@ -137,7 +138,8 @@ std::shared_ptr<Epetra_Map> Core::LinAlg::allreduce_e_map(const Epetra_Map& emap
 /*----------------------------------------------------------------------*
 |  create an allreduced map on EVERY processor (public)                 |
  *----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> Core::LinAlg::allreduce_overlapping_e_map(const Epetra_Map& emap)
+std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::allreduce_overlapping_e_map(
+    const Core::LinAlg::Map& emap)
 {
   std::vector<int> rv;
   allreduce_e_map(rv, emap);
@@ -146,18 +148,18 @@ std::shared_ptr<Epetra_Map> Core::LinAlg::allreduce_overlapping_e_map(const Epet
   std::set<int> rs(rv.begin(), rv.end());
   rv.assign(rs.begin(), rs.end());
 
-  return std::make_shared<Epetra_Map>(-1, rv.size(), rv.data(), 0, emap.Comm());
+  return std::make_shared<Core::LinAlg::Map>(-1, rv.size(), rv.data(), 0, emap.Comm());
 }
 
 /*----------------------------------------------------------------------*
 | create an allreduced map on a distinct processor (public)  ghamm 10/14|
  *----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> Core::LinAlg::allreduce_overlapping_e_map(
-    const Epetra_Map& emap, const int pid)
+std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::allreduce_overlapping_e_map(
+    const Core::LinAlg::Map& emap, const int pid)
 {
   std::vector<int> rv;
   allreduce_e_map(rv, emap);
-  std::shared_ptr<Epetra_Map> rmap;
+  std::shared_ptr<Core::LinAlg::Map> rmap;
 
   if (Core::Communication::my_mpi_rank(Core::Communication::unpack_epetra_comm(emap.Comm())) == pid)
   {
@@ -165,7 +167,7 @@ std::shared_ptr<Epetra_Map> Core::LinAlg::allreduce_overlapping_e_map(
     std::set<int> rs(rv.begin(), rv.end());
     rv.assign(rs.begin(), rs.end());
 
-    rmap = std::make_shared<Epetra_Map>(-1, rv.size(), rv.data(), 0, emap.Comm());
+    rmap = std::make_shared<Core::LinAlg::Map>(-1, rv.size(), rv.data(), 0, emap.Comm());
     // check the map
     FOUR_C_ASSERT(rmap->NumMyElements() == rmap->NumGlobalElements(),
         "Processor with pid does not get all map elements");
@@ -173,7 +175,7 @@ std::shared_ptr<Epetra_Map> Core::LinAlg::allreduce_overlapping_e_map(
   else
   {
     rv.clear();
-    rmap = std::make_shared<Epetra_Map>(-1, 0, nullptr, 0, emap.Comm());
+    rmap = std::make_shared<Core::LinAlg::Map>(-1, 0, nullptr, 0, emap.Comm());
     // check the map
     FOUR_C_ASSERT(rmap->NumMyElements() == 0, "At least one proc will keep a map element");
   }

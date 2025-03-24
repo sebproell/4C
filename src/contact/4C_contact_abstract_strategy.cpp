@@ -39,7 +39,7 @@ FOUR_C_NAMESPACE_OPEN
 
 CONTACT::AbstractStrategy::AbstractStrategy(
     const std::shared_ptr<CONTACT::AbstractStrategyDataContainer>& data_ptr,
-    const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap,
+    const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
     const Teuchos::ParameterList& params_in, const int spatialDim, const MPI_Comm& comm,
     const double alphaf, const int maxdof)
     : Mortar::StrategyBase(
@@ -450,7 +450,7 @@ void CONTACT::AbstractStrategy::setup(bool redistributed, bool init)
   }
 
   // ------------------------------------------------------------------------
-  // setup global accessible Epetra_Maps
+  // setup global accessible Core::LinAlg::Maps
   // ------------------------------------------------------------------------
 
   // make sure to remove all existing maps first
@@ -499,18 +499,18 @@ void CONTACT::AbstractStrategy::setup(bool redistributed, bool init)
       if (redistributed) FOUR_C_THROW("SELF-CONTACT: Parallel redistribution is not supported!");
 
       Interface& inter = *interfaces()[i];
-      std::shared_ptr<const Epetra_Map> refdofrowmap = nullptr;
+      std::shared_ptr<const Core::LinAlg::Map> refdofrowmap = nullptr;
       if (inter.self_contact())
         refdofrowmap = Core::LinAlg::merge_map(inter.slave_row_dofs(), inter.master_row_dofs());
       else
         refdofrowmap = inter.slave_row_dofs();
 
-      std::shared_ptr<Epetra_Map> selfcontact_lmmap =
+      std::shared_ptr<Core::LinAlg::Map> selfcontact_lmmap =
           interfaces()[i]->update_lag_mult_sets(offset_if, redistributed, *refdofrowmap);
 
-      std::shared_ptr<Epetra_Map>& gsc_refdofmap_ptr =
+      std::shared_ptr<Core::LinAlg::Map>& gsc_refdofmap_ptr =
           data().global_self_contact_ref_dof_row_map_ptr();
-      std::shared_ptr<Epetra_Map>& gsc_lmdofmap_ptr =
+      std::shared_ptr<Core::LinAlg::Map>& gsc_lmdofmap_ptr =
           data().global_self_contact_lm_dof_row_map_ptr();
       gsc_lmdofmap_ptr = Core::LinAlg::merge_map(selfcontact_lmmap, gsc_lmdofmap_ptr);
       gsc_refdofmap_ptr = Core::LinAlg::merge_map(refdofrowmap, gsc_refdofmap_ptr);
@@ -550,7 +550,7 @@ void CONTACT::AbstractStrategy::setup(bool redistributed, bool init)
 
     // store initial element col map for binning strategy
     initial_elecolmap_.push_back(
-        std::make_shared<Epetra_Map>(*interfaces()[i]->discret().element_col_map()));
+        std::make_shared<Core::LinAlg::Map>(*interfaces()[i]->discret().element_col_map()));
 
     // ****************************************************
     // friction
@@ -771,10 +771,10 @@ void CONTACT::AbstractStrategy::setup(bool redistributed, bool init)
       for (std::size_t i = 0; i < interfaces().size(); ++i)
         interfaces()[i]->store_unredistributed_maps();
       if (lm_dof_row_map_ptr(true) != nullptr)
-        non_redist_glmdofrowmap_ = std::make_shared<Epetra_Map>(lm_dof_row_map(true));
-      non_redist_gsdofrowmap_ = std::make_shared<Epetra_Map>(slave_dof_row_map(true));
-      non_redist_gmdofrowmap_ = std::make_shared<Epetra_Map>(*gmdofrowmap_);
-      non_redist_gsmdofrowmap_ = std::make_shared<Epetra_Map>(*gsmdofrowmap_);
+        non_redist_glmdofrowmap_ = std::make_shared<Core::LinAlg::Map>(lm_dof_row_map(true));
+      non_redist_gsdofrowmap_ = std::make_shared<Core::LinAlg::Map>(slave_dof_row_map(true));
+      non_redist_gmdofrowmap_ = std::make_shared<Core::LinAlg::Map>(*gmdofrowmap_);
+      non_redist_gsmdofrowmap_ = std::make_shared<Core::LinAlg::Map>(*gsmdofrowmap_);
     }
   }
 
@@ -783,8 +783,8 @@ void CONTACT::AbstractStrategy::setup(bool redistributed, bool init)
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> CONTACT::AbstractStrategy::create_deterministic_lm_dof_row_map(
-    const Epetra_Map& gsdofrowmap) const
+std::shared_ptr<Core::LinAlg::Map> CONTACT::AbstractStrategy::create_deterministic_lm_dof_row_map(
+    const Core::LinAlg::Map& gsdofrowmap) const
 {
   const unsigned num_my_sdofs = gsdofrowmap.NumMyElements();
   const int* my_sdof_gids = gsdofrowmap.MyGlobalElements();
@@ -801,7 +801,7 @@ std::shared_ptr<Epetra_Map> CONTACT::AbstractStrategy::create_deterministic_lm_d
     for (auto cit = interfaces().begin(); cit != interfaces().end(); ++cit, ++interface_id)
     {
       const Interface& interface = **cit;
-      std::shared_ptr<const Epetra_Map> sdof_map = interface.slave_row_dofs();
+      std::shared_ptr<const Core::LinAlg::Map> sdof_map = interface.slave_row_dofs();
 
       interface_slid = sdof_map->LID(sgid);
       if (interface_slid != -1) break;
@@ -823,8 +823,8 @@ std::shared_ptr<Epetra_Map> CONTACT::AbstractStrategy::create_deterministic_lm_d
 
     my_lm_gids[slid] = interface_lmgid;
   }
-  return std::make_shared<Epetra_Map>(-1, static_cast<int>(my_lm_gids.size()), my_lm_gids.data(), 0,
-      Core::Communication::as_epetra_comm(get_comm()));
+  return std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(my_lm_gids.size()),
+      my_lm_gids.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
 }
 
 
@@ -981,18 +981,18 @@ void CONTACT::AbstractStrategy::update_global_self_contact_state()
 
   // reset global slave / master Epetra Maps
   gsnoderowmap_ =
-      std::make_shared<Epetra_Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
+      std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
   gsdofrowmap_ =
-      std::make_shared<Epetra_Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
+      std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
   gmdofrowmap_ =
-      std::make_shared<Epetra_Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
+      std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
   glmdofrowmap_ =
-      std::make_shared<Epetra_Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
+      std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
 
   // make numbering of LM dofs consecutive and unique across N interfaces
   int offset_if = 0;
 
-  // setup global slave / master Epetra_Maps
+  // setup global slave / master Core::LinAlg::Maps
   // (this is done by looping over all interfaces and merging)
   for (int i = 0; i < (int)interfaces().size(); ++i)
   {
@@ -1493,7 +1493,8 @@ void CONTACT::AbstractStrategy::evaluate_relative_movement()
   // ATTENTION: for evaluate_relative_movement() we need the vector xsmod in
   // fully overlapping layout. Thus, export here. First, allreduce
   // slave dof row map to obtain fully overlapping slave dof map.
-  std::shared_ptr<Epetra_Map> fullsdofs = Core::LinAlg::allreduce_e_map(slave_dof_row_map(true));
+  std::shared_ptr<Core::LinAlg::Map> fullsdofs =
+      Core::LinAlg::allreduce_e_map(slave_dof_row_map(true));
   std::shared_ptr<Core::LinAlg::Vector<double>> xsmodfull =
       std::make_shared<Core::LinAlg::Vector<double>>(*fullsdofs);
   Core::LinAlg::export_to(*xsmod, *xsmodfull);
@@ -1592,7 +1593,7 @@ void CONTACT::AbstractStrategy::store_nodal_quantities(Mortar::StrategyBase::Qua
     // slave dof and node map of the interface
     // columnmap for current or updated LM
     // rowmap for remaining cases
-    std::shared_ptr<const Epetra_Map> sdofmap, snodemap;
+    std::shared_ptr<const Core::LinAlg::Map> sdofmap, snodemap;
     if (type == Mortar::StrategyBase::lmupdate or type == Mortar::StrategyBase::lmcurrent)
     {
       sdofmap = interfaces()[i]->slave_col_dofs();
@@ -2066,7 +2067,7 @@ void CONTACT::AbstractStrategy::do_read_restart(Core::IO::DiscretizationReader& 
     store_to_old(Mortar::StrategyBase::dm);
   }
 
-  // (re)setup active global Epetra_Maps
+  // (re)setup active global Core::LinAlg::Maps
   gactivenodes_ = nullptr;
   gactivedofs_ = nullptr;
   gactiven_ = nullptr;
@@ -2493,8 +2494,10 @@ void CONTACT::AbstractStrategy::print_active_set() const
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void CONTACT::AbstractStrategy::collect_maps_for_preconditioner(
-    std::shared_ptr<Epetra_Map>& MasterDofMap, std::shared_ptr<Epetra_Map>& SlaveDofMap,
-    std::shared_ptr<Epetra_Map>& InnerDofMap, std::shared_ptr<Epetra_Map>& ActiveDofMap) const
+    std::shared_ptr<Core::LinAlg::Map>& MasterDofMap,
+    std::shared_ptr<Core::LinAlg::Map>& SlaveDofMap,
+    std::shared_ptr<Core::LinAlg::Map>& InnerDofMap,
+    std::shared_ptr<Core::LinAlg::Map>& ActiveDofMap) const
 {
   InnerDofMap = gndofrowmap_;   // global internal dof row map
   ActiveDofMap = gactivedofs_;  // global active slave dof row map
@@ -2848,7 +2851,7 @@ bool CONTACT::AbstractStrategy::is_condensed_system() const
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void CONTACT::AbstractStrategy::fill_maps_for_preconditioner(
-    std::vector<Teuchos::RCP<Epetra_Map>>& maps) const
+    std::vector<Teuchos::RCP<Core::LinAlg::Map>>& maps) const
 {
   /* FixMe This function replaces the deprecated collect_maps_for_preconditioner(),
    * the old version can be deleted, as soon as the contact uses the new

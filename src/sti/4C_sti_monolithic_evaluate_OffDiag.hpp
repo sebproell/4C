@@ -44,10 +44,10 @@ namespace STI
     explicit ScatraThermoOffDiagCoupling(
         std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_thermo,
         std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_thermo_interface,
-        std::shared_ptr<const Epetra_Map> full_map_scatra,
-        std::shared_ptr<const Epetra_Map> full_map_thermo,
-        std::shared_ptr<const Epetra_Map> interface_map_scatra,
-        std::shared_ptr<const Epetra_Map> interface_map_thermo, bool isale,
+        std::shared_ptr<const Core::LinAlg::Map> full_map_scatra,
+        std::shared_ptr<const Core::LinAlg::Map> full_map_thermo,
+        std::shared_ptr<const Core::LinAlg::Map> interface_map_scatra,
+        std::shared_ptr<const Core::LinAlg::Map> interface_map_thermo, bool isale,
         std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_scatra,
         std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_thermo,
         std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,
@@ -86,16 +86,22 @@ namespace STI
     }
 
     //! map extractor associated with all degrees of freedom inside scatra field
-    std::shared_ptr<const Epetra_Map> full_map_scatra() const { return full_map_scatra_; }
+    std::shared_ptr<const Core::LinAlg::Map> full_map_scatra() const { return full_map_scatra_; }
 
     //! map extractor associated with all degrees of freedom inside thermo field
-    std::shared_ptr<const Epetra_Map> full_map_thermo() const { return full_map_thermo_; }
+    std::shared_ptr<const Core::LinAlg::Map> full_map_thermo() const { return full_map_thermo_; }
 
     //! map associated with all degrees of freedom on thermo interface
-    std::shared_ptr<const Epetra_Map> interface_map_scatra() const { return interface_map_scatra_; }
+    std::shared_ptr<const Core::LinAlg::Map> interface_map_scatra() const
+    {
+      return interface_map_scatra_;
+    }
 
     //! map associated with all degrees of freedom on scatra interface
-    std::shared_ptr<const Epetra_Map> interface_map_thermo() const { return interface_map_thermo_; }
+    std::shared_ptr<const Core::LinAlg::Map> interface_map_thermo() const
+    {
+      return interface_map_thermo_;
+    }
 
     //! problem with deforming mesh
     bool is_ale() const { return isale_; }
@@ -126,16 +132,16 @@ namespace STI
     std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_thermo_interface_;
 
     //! map extractor associated with all degrees of freedom inside scatra field
-    std::shared_ptr<const Epetra_Map> full_map_scatra_;
+    std::shared_ptr<const Core::LinAlg::Map> full_map_scatra_;
 
     //! map extractor associated with all degrees of freedom inside thermo field
-    std::shared_ptr<const Epetra_Map> full_map_thermo_;
+    std::shared_ptr<const Core::LinAlg::Map> full_map_thermo_;
 
     //! map associated with all degrees of freedom on thermo interface
-    std::shared_ptr<const Epetra_Map> interface_map_scatra_;
+    std::shared_ptr<const Core::LinAlg::Map> interface_map_scatra_;
 
     //! map associated with all degrees of freedom on scatra interface
-    std::shared_ptr<const Epetra_Map> interface_map_thermo_;
+    std::shared_ptr<const Core::LinAlg::Map> interface_map_thermo_;
 
     //! flag, if mesh deforms
     const bool isale_;
@@ -162,10 +168,10 @@ namespace STI
         std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_thermo,
         std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_thermo_interface,
         std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_thermo_interface_slave,
-        std::shared_ptr<const Epetra_Map> full_map_scatra,
-        std::shared_ptr<const Epetra_Map> full_map_thermo,
-        std::shared_ptr<const Epetra_Map> interface_map_scatra,
-        std::shared_ptr<const Epetra_Map> interface_map_thermo, bool isale,
+        std::shared_ptr<const Core::LinAlg::Map> full_map_scatra,
+        std::shared_ptr<const Core::LinAlg::Map> full_map_thermo,
+        std::shared_ptr<const Core::LinAlg::Map> interface_map_scatra,
+        std::shared_ptr<const Core::LinAlg::Map> interface_map_thermo, bool isale,
         std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_scatra,
         std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_thermo,
         std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,
@@ -211,10 +217,10 @@ namespace STI
     explicit ScatraThermoOffDiagCouplingMortarStandard(
         std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_thermo,
         std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_thermo_interface,
-        std::shared_ptr<const Epetra_Map> full_map_scatra,
-        std::shared_ptr<const Epetra_Map> full_map_thermo,
-        std::shared_ptr<const Epetra_Map> interface_map_scatra,
-        std::shared_ptr<const Epetra_Map> interface_map_thermo, bool isale,
+        std::shared_ptr<const Core::LinAlg::Map> full_map_scatra,
+        std::shared_ptr<const Core::LinAlg::Map> full_map_thermo,
+        std::shared_ptr<const Core::LinAlg::Map> interface_map_scatra,
+        std::shared_ptr<const Core::LinAlg::Map> interface_map_thermo, bool isale,
         std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_scatra,
         std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_thermo,
         std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,
@@ -235,10 +241,10 @@ namespace STI
       std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_thermo,
       std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_thermo_interface,
       std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_thermo_interface_slave,
-      std::shared_ptr<const Epetra_Map> full_map_scatra,
-      std::shared_ptr<const Epetra_Map> full_map_thermo,
-      std::shared_ptr<const Epetra_Map> interface_map_scatra,
-      std::shared_ptr<const Epetra_Map> interface_map_thermo, bool isale,
+      std::shared_ptr<const Core::LinAlg::Map> full_map_scatra,
+      std::shared_ptr<const Core::LinAlg::Map> full_map_thermo,
+      std::shared_ptr<const Core::LinAlg::Map> interface_map_scatra,
+      std::shared_ptr<const Core::LinAlg::Map> interface_map_thermo, bool isale,
       std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_scatra,
       std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_thermo,
       std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,

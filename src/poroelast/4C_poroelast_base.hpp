@@ -97,17 +97,17 @@ namespace PoroElast
     }
 
     //! full monolithic dof row map
-    std::shared_ptr<const Epetra_Map> dof_row_map() override
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() override
     {
       FOUR_C_THROW("dof_row_map() only available for monolithic schemes!");
       return nullptr;
     }
 
     //! dof row map of Structure field
-    virtual std::shared_ptr<const Epetra_Map> dof_row_map_structure() = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> dof_row_map_structure() = 0;
 
     //! dof row map of Fluid field
-    virtual std::shared_ptr<const Epetra_Map> dof_row_map_fluid() = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> dof_row_map_fluid() = 0;
 
     //! extractor to communicate between full monolithic map and block maps
     virtual std::shared_ptr<const Core::LinAlg::MultiMapExtractor> extractor() const
@@ -117,7 +117,7 @@ namespace PoroElast
     }
 
     //! unique map of all dofs that should be constrained with DBC
-    virtual std::shared_ptr<const Epetra_Map> combined_dbc_map() const
+    virtual std::shared_ptr<const Core::LinAlg::Map> combined_dbc_map() const
     {
       FOUR_C_THROW("combined_dbc_map() only available for monolithic schemes!");
       return nullptr;
@@ -316,7 +316,8 @@ namespace PoroElast
     }
 
     //! build map containing dofs with no penetration condition (fluid)
-    void build_no_penetration_map(MPI_Comm comm, std::shared_ptr<const Epetra_Map> dofRowMap);
+    void build_no_penetration_map(
+        MPI_Comm comm, std::shared_ptr<const Core::LinAlg::Map> dofRowMap);
 
     //! apply rhs terms of no penetration condition to global rhs vector
     void apply_cond_rhs(Core::LinAlg::Vector<double>& iterinc, Core::LinAlg::Vector<double>& rhs);
@@ -340,7 +341,7 @@ namespace PoroElast
     void clear(PoroElast::Coupltype coupltype = PoroElast::undefined);
 
     //! setup coupling matrixes and vectors
-    void setup(const Epetra_Map& dofRowMap, const Epetra_Map* dofRowMapFluid);
+    void setup(const Core::LinAlg::Map& dofRowMap, const Core::LinAlg::Map* dofRowMapFluid);
 
     //! return constraint matrix, that fits to coupling type
     std::shared_ptr<Core::LinAlg::SparseMatrix> constraint_matrix(PoroElast::Coupltype coupltype);

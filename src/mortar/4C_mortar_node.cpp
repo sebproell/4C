@@ -465,12 +465,12 @@ void Mortar::Node::build_averaged_normal()
  *----------------------------------------------------------------------*/
 Mortar::Node* Mortar::Node::find_closest_node(
     const std::shared_ptr<Core::FE::Discretization> intdis,
-    const std::shared_ptr<Epetra_Map> nodesearchmap, double& mindist)
+    const std::shared_ptr<Core::LinAlg::Map> nodesearchmap, double& mindist)
 {
   Node* closestnode = nullptr;
 
   // loop over all nodes of the Core::FE::Discretization that are
-  // included in the given Epetra_Map ("brute force" search)
+  // included in the given Core::LinAlg::Map ("brute force" search)
   for (int i = 0; i < nodesearchmap->NumMyElements(); ++i)
   {
     int gid = nodesearchmap->GID(i);

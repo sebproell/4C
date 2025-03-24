@@ -136,7 +136,7 @@ void FBI::FBIGeometryCoupler::extend_beam_ghosting(Core::FE::Discretization& dis
     allproc[i] = i;
 
   // fill my own row node ids
-  const Epetra_Map* noderowmap = discretization.node_row_map();
+  const Core::LinAlg::Map* noderowmap = discretization.node_row_map();
   std::vector<int> sdata(noderowmap->NumMyElements());
   for (int i = 0; i < noderowmap->NumMyElements(); ++i) sdata[i] = noderowmap->GID(i);
 
@@ -146,13 +146,13 @@ void FBI::FBIGeometryCoupler::extend_beam_ghosting(Core::FE::Discretization& dis
       sdata, rdata, (int)allproc.size(), allproc.data(), discretization.get_comm());
 
   // build completely overlapping map of nodes (on ALL processors)
-  Epetra_Map newnodecolmap(-1, (int)rdata.size(), rdata.data(), 0,
+  Core::LinAlg::Map newnodecolmap(-1, (int)rdata.size(), rdata.data(), 0,
       Core::Communication::as_epetra_comm(discretization.get_comm()));
   sdata.clear();
   rdata.clear();
 
   // fill my own row element ids
-  const Epetra_Map* elerowmap = discretization.element_row_map();
+  const Core::LinAlg::Map* elerowmap = discretization.element_row_map();
   sdata.resize(elerowmap->NumMyElements());
   for (int i = 0; i < elerowmap->NumMyElements(); ++i) sdata[i] = elerowmap->GID(i);
 
@@ -162,7 +162,7 @@ void FBI::FBIGeometryCoupler::extend_beam_ghosting(Core::FE::Discretization& dis
       sdata, rdata, (int)allproc.size(), allproc.data(), discretization.get_comm());
 
   // build complete overlapping map of elements (on ALL processors)
-  Epetra_Map newelecolmap(-1, (int)rdata.size(), rdata.data(), 0,
+  Core::LinAlg::Map newelecolmap(-1, (int)rdata.size(), rdata.data(), 0,
       Core::Communication::as_epetra_comm(discretization.get_comm()));
   sdata.clear();
   rdata.clear();
@@ -242,7 +242,7 @@ void FBI::FBIGeometryCoupler::prepare_pair_creation(
 
 
   // Add my current column elements to the set for the map
-  const Epetra_Map* elecolmap = discretizations[1]->element_col_map();
+  const Core::LinAlg::Map* elecolmap = discretizations[1]->element_col_map();
   for (int i = 0; i < elecolmap->NumMyElements(); ++i)
   {
     int gid = elecolmap->GID(i);
@@ -252,7 +252,7 @@ void FBI::FBIGeometryCoupler::prepare_pair_creation(
   }
 
   // build overlapping column map of the elements
-  Epetra_Map newelecolmap(-1, (int)element_recvdata.size(), element_recvdata.data(), 0,
+  Core::LinAlg::Map newelecolmap(-1, (int)element_recvdata.size(), element_recvdata.data(), 0,
       Core::Communication::as_epetra_comm(discretizations[1]->get_comm()));
 
 
@@ -278,7 +278,7 @@ void FBI::FBIGeometryCoupler::prepare_pair_creation(
         discretizations[0]->get_comm(), node_senddata, node_recvdata);
 
     // add new node gids to overlapping column map
-    const Epetra_Map* nodecolmap = discretizations[1]->node_col_map();
+    const Core::LinAlg::Map* nodecolmap = discretizations[1]->node_col_map();
     for (int i = 0; i < nodecolmap->NumMyElements(); ++i)
     {
       int gid = nodecolmap->GID(i);
@@ -288,7 +288,7 @@ void FBI::FBIGeometryCoupler::prepare_pair_creation(
     }
 
     // build complete overlapping map of elements (on ALL processors)
-    Epetra_Map newnodecolmap(-1, (int)node_recvdata.size(), node_recvdata.data(), 0,
+    Core::LinAlg::Map newnodecolmap(-1, (int)node_recvdata.size(), node_recvdata.data(), 0,
         Core::Communication::as_epetra_comm(discretizations[1]->get_comm()));
 
     // export nodes and elements

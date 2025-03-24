@@ -24,7 +24,7 @@ CONTACT::NoxInterface::NoxInterface()
     : isinit_(false),
       issetup_(false),
       strategy_ptr_(nullptr),
-      cycling_maps_(std::vector<std::shared_ptr<Epetra_Map>>(0))
+      cycling_maps_(std::vector<std::shared_ptr<Core::LinAlg::Map>>(0))
 {
   // should stay empty
 }
@@ -71,7 +71,7 @@ double CONTACT::NoxInterface::get_constraint_rhs_norms(const Core::LinAlg::Vecto
   std::shared_ptr<Core::LinAlg::Vector<double>> constrRhs_red = nullptr;
   // Note: PointSameAs is faster than SameAs and should do the job right here,
   // since we replace the map afterwards anyway.               hiermeier 08/17
-  if (not constrRhs->get_block_map().PointSameAs(strategy().lm_dof_row_map(true)))
+  if (not constrRhs->get_block_map().PointSameAs(strategy().lm_dof_row_map(true).get_epetra_map()))
   {
     constrRhs_red = std::make_shared<Core::LinAlg::Vector<double>>(strategy().lm_dof_row_map(true));
     Core::LinAlg::export_to(*constrRhs, *constrRhs_red);
@@ -315,7 +315,7 @@ enum ::NOX::StatusTest::StatusType CONTACT::NoxInterface::get_active_set_info(
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-Teuchos::RCP<const Epetra_Map> CONTACT::NoxInterface::get_current_active_set_map(
+Teuchos::RCP<const Core::LinAlg::Map> CONTACT::NoxInterface::get_current_active_set_map(
     enum NOX::Nln::StatusTest::QuantityType checkQuantity) const
 {
   switch (checkQuantity)
@@ -342,7 +342,7 @@ Teuchos::RCP<const Epetra_Map> CONTACT::NoxInterface::get_current_active_set_map
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-Teuchos::RCP<const Epetra_Map> CONTACT::NoxInterface::get_old_active_set_map(
+Teuchos::RCP<const Core::LinAlg::Map> CONTACT::NoxInterface::get_old_active_set_map(
     enum NOX::Nln::StatusTest::QuantityType checkQuantity) const
 {
   switch (checkQuantity)

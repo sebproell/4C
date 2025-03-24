@@ -44,8 +44,8 @@ XFEM::XfluidTimeintBase::XfluidTimeintBase(
         oldVectors,  /// vector of col-vectors w.r.t. old interface position
     std::shared_ptr<Core::LinAlg::Vector<double>> dispn,   /// old col displacement vector
     std::shared_ptr<Core::LinAlg::Vector<double>> dispnp,  /// col displacement n +1
-    const Epetra_Map& olddofcolmap,  /// dofcolmap w.r.t. old interface position
-    const Epetra_Map& newdofrowmap,  /// dofcolmap w.r.t. new interface position
+    const Core::LinAlg::Map& olddofcolmap,  /// dofcolmap w.r.t. old interface position
+    const Core::LinAlg::Map& newdofrowmap,  /// dofcolmap w.r.t. new interface position
     const std::shared_ptr<std::map<int, std::vector<int>>>
         pbcmap  /// map of periodic boundary conditions
     )
@@ -996,7 +996,7 @@ void XFEM::XfluidStd::compute(
 //    const std::shared_ptr<Core::FE::Discretization> discret,
 //    const std::shared_ptr<XFEM::DofManager> newdofman,
 //    const std::shared_ptr<COMBUST::FlameFront> flamefront,
-//    const Epetra_Map& newdofrowmap,
+//    const Core::LinAlg::Map& newdofrowmap,
 //    const std::map<DofKey, DofGID>& newNodalDofRowDistrib)
 //{
 //  discret_ = discret;

@@ -185,7 +185,7 @@ void XFEM::Utils::XFEMDiscretizationBuilder::setup_xfem_discretization(
 
   if (!xdis->filled()) xdis->fill_complete();
 
-  const Epetra_Map* noderowmap = xdis->node_row_map();
+  const Core::LinAlg::Map* noderowmap = xdis->node_row_map();
   if (noderowmap == nullptr) FOUR_C_THROW("we expect a fill-complete call before!");
 
   // now we can reserve dofs for xfem discretization
@@ -451,14 +451,14 @@ void XFEM::Utils::XFEMDiscretizationBuilder::redistribute(
 
   MPI_Comm comm(dis.get_comm());
 
-  std::shared_ptr<Epetra_Map> noderowmap = std::make_shared<Epetra_Map>(
+  std::shared_ptr<Core::LinAlg::Map> noderowmap = std::make_shared<Core::LinAlg::Map>(
       -1, noderowvec.size(), noderowvec.data(), 0, Core::Communication::as_epetra_comm(comm));
 
-  std::shared_ptr<Epetra_Map> nodecolmap = std::make_shared<Epetra_Map>(
+  std::shared_ptr<Core::LinAlg::Map> nodecolmap = std::make_shared<Core::LinAlg::Map>(
       -1, nodecolvec.size(), nodecolvec.data(), 0, Core::Communication::as_epetra_comm(comm));
   if (!dis.filled()) dis.redistribute(*noderowmap, *nodecolmap);
 
-  Epetra_Map elerowmap(*dis.element_row_map());
+  Core::LinAlg::Map elerowmap(*dis.element_row_map());
   std::shared_ptr<const Core::LinAlg::Graph> nodegraph =
       Core::Rebalance::build_graph(dis, elerowmap);
 

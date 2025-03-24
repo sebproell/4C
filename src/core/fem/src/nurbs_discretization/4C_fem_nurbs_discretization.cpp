@@ -136,7 +136,7 @@ void Core::FE::Utils::DbcNurbs::evaluate(const Teuchos::ParameterList& params,
   if (not discret_nurbs) FOUR_C_THROW("Dynamic cast failed!");
 
   // build dummy column toggle vector and auxiliary vectors
-  Core::FE::Utils::Dbc::DbcInfo info_col(*discret_nurbs->dof_col_map());
+  Core::FE::Utils::Dbc::DbcInfo info_col(discret_nurbs->dof_col_map()->get_epetra_map());
   read_dirichlet_condition(params, discret, conds, time, info_col, dbcgids_nurbs);
 
   // --------------------------- Step 4 ---------------------------------------
@@ -182,14 +182,15 @@ void Core::FE::Utils::DbcNurbs::do_dirichlet_condition(const Teuchos::ParameterL
       nummyelements = dbcgidsv.size();
       myglobalelements = dbcgidsv.data();
     }
-    std::shared_ptr<Epetra_Map> dbcmap = std::make_shared<Epetra_Map>(-1, nummyelements,
-        myglobalelements, discret.dof_row_map()->IndexBase(), discret.dof_row_map()->Comm());
+    std::shared_ptr<Core::LinAlg::Map> dbcmap =
+        std::make_shared<Core::LinAlg::Map>(-1, nummyelements, myglobalelements,
+            discret.dof_row_map()->IndexBase(), discret.dof_row_map()->Comm());
     // build the map extractor of Dirichlet-conditioned and free DOFs
     auxdbcmapextractor = Core::LinAlg::MapExtractor(*(discret.dof_row_map()), dbcmap);
   }
 
   // column map of all DOFs subjected to a least squares Dirichlet condition
-  std::shared_ptr<Epetra_Map> dbccolmap = nullptr;
+  std::shared_ptr<Core::LinAlg::Map> dbccolmap = nullptr;
   {
     // build map of Dirichlet DOFs
     int nummyelements = 0;
@@ -202,7 +203,7 @@ void Core::FE::Utils::DbcNurbs::do_dirichlet_condition(const Teuchos::ParameterL
       nummyelements = dbcgidsv.size();
       myglobalelements = dbcgidsv.data();
     }
-    dbccolmap = std::make_shared<Epetra_Map>(-1, nummyelements, myglobalelements,
+    dbccolmap = std::make_shared<Core::LinAlg::Map>(-1, nummyelements, myglobalelements,
         nurbs_dis.dof_col_map()->IndexBase(), discret.dof_row_map()->Comm());
   }
 
@@ -211,7 +212,7 @@ void Core::FE::Utils::DbcNurbs::do_dirichlet_condition(const Teuchos::ParameterL
   // vectors and matrices
   //                 local <-> global dof numbering
   // -------------------------------------------------------------------
-  const std::shared_ptr<const Epetra_Map> dofrowmap = auxdbcmapextractor.cond_map();
+  const std::shared_ptr<const Core::LinAlg::Map> dofrowmap = auxdbcmapextractor.cond_map();
 
   if (dofrowmap->NumGlobalElements() == 0) return;  // no dbc gids ->leave
 

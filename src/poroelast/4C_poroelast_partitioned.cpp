@@ -221,12 +221,12 @@ bool PoroElast::Partitioned::convergence_check(int itnum)
   return stopnonliniter;
 }
 
-std::shared_ptr<const Epetra_Map> PoroElast::Partitioned::dof_row_map_structure()
+std::shared_ptr<const Core::LinAlg::Map> PoroElast::Partitioned::dof_row_map_structure()
 {
   return structure_field()->dof_row_map();
 }
 
-std::shared_ptr<const Epetra_Map> PoroElast::Partitioned::dof_row_map_fluid()
+std::shared_ptr<const Core::LinAlg::Map> PoroElast::Partitioned::dof_row_map_fluid()
 {
   return fluid_field()->dof_row_map();
 }

@@ -36,7 +36,8 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
     FOUR_C_THROW("action type for element is missing");
 
   // decide whether a dof or an element based map is given
-  FOUR_C_ASSERT(state.get_block_map().PointSameAs(*dis.dof_row_map()), "Only works for same maps.");
+  FOUR_C_ASSERT(state.get_block_map().PointSameAs(dis.dof_row_map()->get_epetra_map()),
+      "Only works for same maps.");
 
   // handle pbcs if existing
   // build inverse map from slave to master nodes
@@ -57,8 +58,8 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
   // set up reduced node row map of fluid field
   std::vector<int> reducednoderowmap;
   std::vector<int> reducednodecolmap;
-  const Epetra_Map* fullnoderowmap = dis.node_row_map();
-  const Epetra_Map* fullnodecolmap = dis.node_col_map();
+  const Core::LinAlg::Map* fullnoderowmap = dis.node_row_map();
+  const Core::LinAlg::Map* fullnodecolmap = dis.node_col_map();
 
   // a little more memory than necessary is possibly reserved here
   reducednoderowmap.reserve(fullnoderowmap->NumMyElements());
@@ -78,10 +79,10 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
   }
 
   // build node row map which does not include slave pbc nodes
-  Epetra_Map noderowmap(
+  Core::LinAlg::Map noderowmap(
       -1, (int)reducednoderowmap.size(), reducednoderowmap.data(), 0, fullnoderowmap->Comm());
   // build node col map which does not include slave pbc nodes
-  Epetra_Map nodecolmap(
+  Core::LinAlg::Map nodecolmap(
       -1, (int)reducednodecolmap.size(), reducednodecolmap.data(), 0, fullnodecolmap->Comm());
 
 
@@ -91,7 +92,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
   // Set ALE displacements here
   dis.set_state(statename, state);
 
-  const Epetra_Map* elementrowmap = dis.element_row_map();
+  const Core::LinAlg::Map* elementrowmap = dis.element_row_map();
   Core::LinAlg::MultiVector<double> elevec_toberecovered(*elementrowmap, numvec, true);
   Core::LinAlg::MultiVector<double> centercoords(*elementrowmap, dim, true);
 
@@ -152,7 +153,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
 
   // step 2: use precalculated (velocity) gradient for patch-recovery of gradient
   // solution vector based on reduced node row map
-  Epetra_FEVector nodevec(noderowmap, numvec);
+  Epetra_FEVector nodevec(noderowmap.get_epetra_map(), numvec);
 
   std::vector<Core::Conditions::Condition*> conds;
   dis.get_condition("SPRboundary", conds);

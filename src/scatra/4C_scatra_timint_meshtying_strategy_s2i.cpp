@@ -284,7 +284,7 @@ void ScaTra::MeshtyingStrategyS2I::condense_mat_and_rhs(
 
 /*-----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-const Epetra_Map& ScaTra::MeshtyingStrategyS2I::dof_row_map() const
+const Core::LinAlg::Map& ScaTra::MeshtyingStrategyS2I::dof_row_map() const
 {
   return extendedmaps_ != nullptr ? *extendedmaps_->full_map() : *scatratimint_->dof_row_map();
 }
@@ -1002,10 +1002,12 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
         if (intlayergrowth_evaluation_ == Inpar::S2I::growth_evaluation_monolithic)
         {
           // extract map associated with scalar transport degrees of freedom
-          const Epetra_Map& dofrowmap_scatra = *scatratimint_->discretization()->dof_row_map();
+          const Core::LinAlg::Map& dofrowmap_scatra =
+              *scatratimint_->discretization()->dof_row_map();
 
           // extract map associated with scatra-scatra interface layer thicknesses
-          const Epetra_Map& dofrowmap_growth = *scatratimint_->discretization()->dof_row_map(2);
+          const Core::LinAlg::Map& dofrowmap_growth =
+              *scatratimint_->discretization()->dof_row_map(2);
 
           // extract ID of boundary condition for scatra-scatra interface layer growth
           // the corresponding boundary condition for scatra-scatra interface coupling is expected
@@ -1727,7 +1729,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_nts(
 
 /*--------------------------------------------------------------------------------------*
  *--------------------------------------------------------------------------------------*/
-void ScaTra::MeshtyingStrategyS2I::evaluate_mortar_elements(const Epetra_Map& ielecolmap,
+void ScaTra::MeshtyingStrategyS2I::evaluate_mortar_elements(const Core::LinAlg::Map& ielecolmap,
     const Core::LinAlg::Vector<int>& ieleimpltypes, const Core::FE::Discretization& idiscret,
     const Teuchos::ParameterList& params,
     const std::shared_ptr<Core::LinAlg::SparseOperator>& systemmatrix1,
@@ -2126,7 +2128,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
 
       // generate interior and interface maps
       auto ifullmap = Core::LinAlg::merge_map(icoup_->slave_dof_map(), icoup_->master_dof_map());
-      std::vector<std::shared_ptr<const Epetra_Map>> imaps;
+      std::vector<std::shared_ptr<const Core::LinAlg::Map>> imaps;
       imaps.emplace_back(
           Core::LinAlg::split_map(*(scatratimint_->discretization()->dof_row_map()), *ifullmap));
       imaps.emplace_back(icoup_->slave_dof_map());
@@ -2190,17 +2192,17 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
       }
 
       // initialize empty interface maps
-      std::shared_ptr<Epetra_Map> imastermap = std::make_shared<Epetra_Map>(
+      std::shared_ptr<Core::LinAlg::Map> imastermap = std::make_shared<Core::LinAlg::Map>(
           0, 0, Core::Communication::as_epetra_comm(scatratimint_->discretization()->get_comm()));
-      std::shared_ptr<Epetra_Map> islavemap = std::make_shared<Epetra_Map>(
+      std::shared_ptr<Core::LinAlg::Map> islavemap = std::make_shared<Core::LinAlg::Map>(
           0, 0, Core::Communication::as_epetra_comm(scatratimint_->discretization()->get_comm()));
-      std::shared_ptr<Epetra_Map> ifullmap = std::make_shared<Epetra_Map>(
+      std::shared_ptr<Core::LinAlg::Map> ifullmap = std::make_shared<Core::LinAlg::Map>(
           0, 0, Core::Communication::as_epetra_comm(scatratimint_->discretization()->get_comm()));
       if (imortarredistribution_)
       {
-        imastermap_ = std::make_shared<Epetra_Map>(
+        imastermap_ = std::make_shared<Core::LinAlg::Map>(
             0, 0, Core::Communication::as_epetra_comm(scatratimint_->discretization()->get_comm()));
-        islavemap_ = std::make_shared<Epetra_Map>(
+        islavemap_ = std::make_shared<Core::LinAlg::Map>(
             0, 0, Core::Communication::as_epetra_comm(scatratimint_->discretization()->get_comm()));
       }
 
@@ -2351,7 +2353,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
           interface.evaluate_nodal_normals();
 
           // extract slave-side noderowmap
-          const Epetra_Map& noderowmap_slave = *interface.slave_row_nodes();
+          const Core::LinAlg::Map& noderowmap_slave = *interface.slave_row_nodes();
 
           // initialize vector for node-to-segment connectivity, i.e., for pairings between slave
           // nodes and master elements
@@ -2433,7 +2435,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
           }
 
           // extract slave-side elerowmap
-          const Epetra_Map& elecolmap_slave = *interface.slave_col_elements();
+          const Core::LinAlg::Map& elecolmap_slave = *interface.slave_col_elements();
 
           // initialize vector for physical implementation types of slave-side elements
           Core::LinAlg::Vector<int> islaveelementsimpltypes(elecolmap_slave, false);
@@ -2458,7 +2460,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
               "action", Inpar::S2I::evaluate_nodal_area_fractions);
 
           // compute vector for lumped interface area fractions associated with slave-side nodes
-          const Epetra_Map& dofrowmap_slave = *interface.slave_row_dofs();
+          const Core::LinAlg::Map& dofrowmap_slave = *interface.slave_row_dofs();
           std::shared_ptr<Core::LinAlg::Vector<double>> islavenodeslumpedareas_dofvector =
               Core::LinAlg::create_vector(dofrowmap_slave);
           evaluate_mortar_elements(elecolmap_slave, islaveelementsimpltypes, idiscret, eleparams,
@@ -2497,7 +2499,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
       }
 
       // generate interior and interface maps
-      std::vector<std::shared_ptr<const Epetra_Map>> imaps;
+      std::vector<std::shared_ptr<const Core::LinAlg::Map>> imaps;
       imaps.emplace_back(
           Core::LinAlg::split_map(*(scatratimint_->discretization()->dof_row_map()), *ifullmap));
       imaps.emplace_back(islavemap);
@@ -2526,7 +2528,8 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
             *interfacemaps_->Map(2), 81, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
         // initialize auxiliary residual vector for master side
-        imasterresidual_ = std::make_shared<Epetra_FEVector>(*interfacemaps_->Map(2));
+        imasterresidual_ =
+            std::make_shared<Epetra_FEVector>(interfacemaps_->Map(2)->get_epetra_map());
       }
 
       switch (couplingtype_)
@@ -2668,9 +2671,9 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
                     scatratimint_->dof_row_map()->MaxAllGID() + 1 + offset + lmdoflid;
 
               // build Lagrange multiplier dofrowmap
-              const std::shared_ptr<Epetra_Map> lmdofrowmap =
-                  std::make_shared<Epetra_Map>(-1, (int)lmdofgids.size(), lmdofgids.data(), 0,
-                      Core::Communication::as_epetra_comm(comm));
+              const std::shared_ptr<Core::LinAlg::Map> lmdofrowmap =
+                  std::make_shared<Core::LinAlg::Map>(-1, (int)lmdofgids.size(), lmdofgids.data(),
+                      0, Core::Communication::as_epetra_comm(comm));
 
               // initialize vectors associated with Lagrange multiplier dofs
               lm_ = std::make_shared<Core::LinAlg::Vector<double>>(*lmdofrowmap);
@@ -2678,7 +2681,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
               lmincrement_ = std::make_shared<Core::LinAlg::Vector<double>>(*lmdofrowmap);
 
               // initialize extended map extractor
-              std::shared_ptr<Epetra_Map> extendedmap = Core::LinAlg::merge_map(
+              std::shared_ptr<Core::LinAlg::Map> extendedmap = Core::LinAlg::merge_map(
                   *(scatratimint_->discretization()->dof_row_map()), *lmdofrowmap, false);
               extendedmaps_ = std::make_shared<Core::LinAlg::MapExtractor>(
                   *extendedmap, lmdofrowmap, scatratimint_->discretization()->dof_row_map());
@@ -2777,7 +2780,8 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
       case Inpar::S2I::growth_evaluation_semi_implicit:
       {
         // extract map associated with scatra-scatra interface layer thicknesses
-        const std::shared_ptr<const Epetra_Map>& dofrowmap_growth = scatratimint_->dof_row_map(2);
+        const std::shared_ptr<const Core::LinAlg::Map>& dofrowmap_growth =
+            scatratimint_->dof_row_map(2);
 
         // initialize state vector of discrete scatra-scatra interface layer thicknesses at time n
         growthn_ = std::make_shared<Core::LinAlg::Vector<double>>(*dofrowmap_growth, true);
@@ -2786,7 +2790,8 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
         if (intlayergrowth_evaluation_ == Inpar::S2I::growth_evaluation_monolithic)
         {
           // initialize extended map extractor
-          const Epetra_Map* const dofrowmap_scatra = scatratimint_->discretization()->dof_row_map();
+          const Core::LinAlg::Map* const dofrowmap_scatra =
+              scatratimint_->discretization()->dof_row_map();
           extendedmaps_ = std::make_shared<Core::LinAlg::MapExtractor>(
               *Core::LinAlg::merge_map(*dofrowmap_scatra, *dofrowmap_growth, false),
               scatratimint_->dof_row_map(2), dofrowmap_scatra);
@@ -2828,12 +2833,12 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
               // initialize map extractor associated with all degrees of freedom for scatra-scatra
               // interface layer growth
               blockmapgrowth_ = std::make_shared<Core::LinAlg::MultiMapExtractor>(*dofrowmap_growth,
-                  std::vector<std::shared_ptr<const Epetra_Map>>(1, dofrowmap_growth));
+                  std::vector<std::shared_ptr<const Core::LinAlg::Map>>(1, dofrowmap_growth));
               blockmapgrowth_->check_for_valid_map_extractor();
 
               // initialize extended map extractor associated with blocks of global system matrix
               const unsigned nblockmaps = scatratimint_->block_maps()->num_maps();
-              std::vector<std::shared_ptr<const Epetra_Map>> extendedblockmaps(
+              std::vector<std::shared_ptr<const Core::LinAlg::Map>> extendedblockmaps(
                   nblockmaps + 1, nullptr);
               for (int iblockmap = 0; iblockmap < static_cast<int>(nblockmaps); ++iblockmap)
                 extendedblockmaps[iblockmap] = scatratimint_->block_maps()->Map(iblockmap);
@@ -2943,7 +2948,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
   equilibration_ = Core::LinAlg::build_equilibration(matrixtype_, equilibration_method,
       (intlayergrowth_evaluation_ == Inpar::S2I::growth_evaluation_monolithic
               ? extendedmaps_->full_map()
-              : std::make_shared<const Epetra_Map>(
+              : std::make_shared<const Core::LinAlg::Map>(
                     *scatratimint_->discretization()->dof_row_map())));
 }  // ScaTra::meshtying_strategy_s2_i::setup_meshtying
 
@@ -3401,7 +3406,7 @@ void ScaTra::MeshtyingStrategyS2I::explicit_predictor() const
 void ScaTra::MeshtyingStrategyS2I::extract_matrix_rows(
     const Core::LinAlg::SparseMatrix& matrix,  //!< source matrix
     Core::LinAlg::SparseMatrix& rows,          //!< destination matrix
-    const Epetra_Map& rowmap                   //!< map of matrix rows to be extracted
+    const Core::LinAlg::Map& rowmap            //!< map of matrix rows to be extracted
 )
 {
   // safety check
@@ -3618,19 +3623,19 @@ void ScaTra::MeshtyingStrategyS2I::build_block_map_extractors()
   {
     // initialize reduced interface map extractors associated with blocks of global system matrix
     const int nblocks = scatratimint_->block_maps()->num_maps();
-    std::vector<std::shared_ptr<const Epetra_Map>> blockmaps_slave(nblocks);
-    std::vector<std::shared_ptr<const Epetra_Map>> blockmaps_master(nblocks);
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> blockmaps_slave(nblocks);
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> blockmaps_master(nblocks);
     for (int iblock = 0; iblock < nblocks; ++iblock)
     {
-      std::vector<std::shared_ptr<const Epetra_Map>> maps(2);
+      std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps(2);
       maps[0] = scatratimint_->block_maps()->Map(iblock);
       maps[1] = not imortarredistribution_
                     ? interfacemaps_->Map(1)
-                    : std::dynamic_pointer_cast<const Epetra_Map>(islavemap_);
+                    : std::dynamic_pointer_cast<const Core::LinAlg::Map>(islavemap_);
       blockmaps_slave[iblock] = Core::LinAlg::MultiMapExtractor::intersect_maps(maps);
       maps[1] = not imortarredistribution_
                     ? interfacemaps_->Map(2)
-                    : std::dynamic_pointer_cast<const Epetra_Map>(imastermap_);
+                    : std::dynamic_pointer_cast<const Core::LinAlg::Map>(imastermap_);
       blockmaps_master[iblock] = Core::LinAlg::MultiMapExtractor::intersect_maps(maps);
     }
     blockmaps_slave_ =

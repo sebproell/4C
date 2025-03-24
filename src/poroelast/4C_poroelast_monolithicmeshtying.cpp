@@ -203,9 +203,9 @@ void PoroElast::MonolithicMeshtying::build_convergence_norms()
 void PoroElast::MonolithicMeshtying::setup_extractor()
 {
   // some maps and vectors
-  std::shared_ptr<Epetra_Map> factivenmap;
-  std::shared_ptr<Epetra_Map> factivenmapcomplement;
-  std::vector<std::shared_ptr<const Epetra_Map>> fluidveldofmapvec;
+  std::shared_ptr<Core::LinAlg::Map> factivenmap;
+  std::shared_ptr<Core::LinAlg::Map> factivenmapcomplement;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> fluidveldofmapvec;
 
   // get activemap from poro lagrange strategy of the adapter
   factivenmap = mortar_adapter_->get_poro_strategy()->fluid_active_n_dof_map();

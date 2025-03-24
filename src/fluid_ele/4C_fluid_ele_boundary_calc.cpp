@@ -1910,8 +1910,8 @@ void Discret::Elements::FluidBoundaryImpl<distype>::calc_traction_velocity_compo
 
   std::shared_ptr<Core::LinAlg::Vector<double>> cond_velocities =
       params.get<std::shared_ptr<Core::LinAlg::Vector<double>>>("condition velocities");
-  std::shared_ptr<Epetra_Map> cond_dofrowmap =
-      params.get<std::shared_ptr<Epetra_Map>>("condition dofrowmap");
+  std::shared_ptr<Core::LinAlg::Map> cond_dofrowmap =
+      params.get<std::shared_ptr<Core::LinAlg::Map>>("condition dofrowmap");
 
   double density = 0.0;  // inverse density of my parent element
 

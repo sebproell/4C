@@ -70,13 +70,13 @@ namespace POROMULTIPHASE
     void update_and_output() override;
 
     /// dof map of vector of unknowns of structure field
-    std::shared_ptr<const Epetra_Map> struct_dof_row_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> struct_dof_row_map() const override;
 
     /// dof map of vector of unknowns of fluid field
-    std::shared_ptr<const Epetra_Map> fluid_dof_row_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> fluid_dof_row_map() const override;
 
     /// dof map of vector of unknowns of artery field
-    std::shared_ptr<const Epetra_Map> artery_dof_row_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> artery_dof_row_map() const override;
 
     /// system matrix of coupled artery porofluid problem
     virtual std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> artery_porofluid_sysmat() const;
@@ -137,7 +137,7 @@ namespace POROMULTIPHASE
     std::shared_ptr<const Core::LinAlg::Vector<double>> solid_pressure() const override;
 
     //! unique map of all dofs that should be constrained with DBC
-    std::shared_ptr<const Epetra_Map> combined_dbc_map() const override
+    std::shared_ptr<const Core::LinAlg::Map> combined_dbc_map() const override
     {
       FOUR_C_THROW("combined_dbc_map() only available for monolithic schemes!");
       return nullptr;

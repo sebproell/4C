@@ -31,8 +31,8 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | ctor (public)                                              popp 05/09|
  *----------------------------------------------------------------------*/
-CONTACT::PenaltyStrategy::PenaltyStrategy(const Epetra_Map* dof_row_map,
-    const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
+CONTACT::PenaltyStrategy::PenaltyStrategy(const Core::LinAlg::Map* dof_row_map,
+    const Core::LinAlg::Map* NodeRowMap, Teuchos::ParameterList params,
     std::vector<std::shared_ptr<CONTACT::Interface>> interface, const int spatialDim,
     const MPI_Comm& comm, const double alphaf, const int maxdof)
     : AbstractStrategy(std::make_shared<CONTACT::AbstractStrategyDataContainer>(), dof_row_map,
@@ -50,9 +50,9 @@ CONTACT::PenaltyStrategy::PenaltyStrategy(const Epetra_Map* dof_row_map,
  *----------------------------------------------------------------------*/
 CONTACT::PenaltyStrategy::PenaltyStrategy(
     const std::shared_ptr<CONTACT::AbstractStrategyDataContainer>& data_ptr,
-    const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
-    std::vector<std::shared_ptr<CONTACT::Interface>> interface, const int spatialDim,
-    const MPI_Comm& comm, const double alphaf, const int maxdof)
+    const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
+    Teuchos::ParameterList params, std::vector<std::shared_ptr<CONTACT::Interface>> interface,
+    const int spatialDim, const MPI_Comm& comm, const double alphaf, const int maxdof)
     : AbstractStrategy(data_ptr, dof_row_map, NodeRowMap, params, spatialDim, comm, alphaf, maxdof),
       interface_(interface),
       constrnorm_(0.0),
@@ -210,7 +210,7 @@ void CONTACT::PenaltyStrategy::evaluate_contact(
   if ((Core::Communication::my_mpi_rank(get_comm()) == 0) && (globalchange >= 1))
     std::cout << "ACTIVE CONTACT SET HAS CHANGED..." << std::endl;
 
-  // (re)setup active global Epetra_Maps
+  // (re)setup active global Core::LinAlg::Maps
   // the map of global active nodes is needed for the penalty case, too.
   // this is due to the fact that we want to monitor the constraint norm
   // of the active nodes
@@ -802,7 +802,7 @@ void CONTACT::PenaltyStrategy::assemble()
   if ((Core::Communication::my_mpi_rank(get_comm()) == 0) && (globalchange >= 1))
     std::cout << "ACTIVE CONTACT SET HAS CHANGED..." << std::endl;
 
-  // (re)setup active global Epetra_Maps
+  // (re)setup active global Core::LinAlg::Maps
   // the map of global active nodes is needed for the penalty case, too.
   // this is due to the fact that we want to monitor the constraint norm
   // of the active nodes
@@ -1106,7 +1106,7 @@ CONTACT::PenaltyStrategy::lagrange_multiplier_old() const
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> CONTACT::PenaltyStrategy::lm_dof_row_map_ptr(
+std::shared_ptr<const Core::LinAlg::Map> CONTACT::PenaltyStrategy::lm_dof_row_map_ptr(
     const bool& redist) const
 {
   auto& dyn_params = Global::Problem::instance()->structural_dynamic_params();

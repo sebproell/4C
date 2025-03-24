@@ -20,14 +20,14 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-void Adapter::FBIConstraintBridgePenalty::setup(const Epetra_Map* beam_map,
-    const Epetra_Map* fluid_map, std::shared_ptr<Core::LinAlg::SparseOperator> fluidmatrix,
+void Adapter::FBIConstraintBridgePenalty::setup(const Core::LinAlg::Map* beam_map,
+    const Core::LinAlg::Map* fluid_map, std::shared_ptr<Core::LinAlg::SparseOperator> fluidmatrix,
     bool fluidmeshtying)
 {
   // Initialize all necessary vectors and matrices
   FBIConstraintBridge::setup(beam_map, fluid_map, fluidmatrix, fluidmeshtying);
-  fs_ = std::make_shared<Epetra_FEVector>(*beam_map);
-  ff_ = std::make_shared<Epetra_FEVector>(*fluid_map);
+  fs_ = std::make_shared<Epetra_FEVector>(beam_map->get_epetra_map());
+  ff_ = std::make_shared<Epetra_FEVector>(fluid_map->get_epetra_map());
   cff_ = fluidmatrix;
 }
 /*----------------------------------------------------------------------*/

@@ -140,8 +140,8 @@ void scatra_cardiac_monodomain_dyn(int restart)
           // binning strategy for parallel redistribution
           std::shared_ptr<Core::Binstrategy::BinningStrategy> binningstrategy;
 
-          std::vector<std::shared_ptr<Epetra_Map>> stdelecolmap;
-          std::vector<std::shared_ptr<Epetra_Map>> stdnodecolmap;
+          std::vector<std::shared_ptr<Core::LinAlg::Map>> stdelecolmap;
+          std::vector<std::shared_ptr<Core::LinAlg::Map>> stdnodecolmap;
 
           // binning strategy is created and parallel redistribution is performed
           Teuchos::ParameterList binning_params =

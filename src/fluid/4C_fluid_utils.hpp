@@ -92,14 +92,14 @@ namespace FLD
           if (!doit) return;
 
           // get the maps
-          const Epetra_Map& colmap00 = mat_.matrix(0, 0).col_map();
-          const Epetra_Map& colmap01 = mat_.matrix(0, 1).col_map();
-          const Epetra_Map& colmap10 = mat_.matrix(1, 0).col_map();
-          const Epetra_Map& colmap11 = mat_.matrix(1, 1).col_map();
-          const Epetra_Map& rowmap00 = mat_.matrix(0, 0).row_map();
-          const Epetra_Map& rowmap01 = mat_.matrix(0, 1).row_map();
-          const Epetra_Map& rowmap10 = mat_.matrix(1, 0).row_map();
-          const Epetra_Map& rowmap11 = mat_.matrix(1, 1).row_map();
+          const Core::LinAlg::Map& colmap00 = Core::LinAlg::Map(mat_.matrix(0, 0).col_map());
+          const Core::LinAlg::Map& colmap01 = Core::LinAlg::Map(mat_.matrix(0, 1).col_map());
+          const Core::LinAlg::Map& colmap10 = Core::LinAlg::Map(mat_.matrix(1, 0).col_map());
+          const Core::LinAlg::Map& colmap11 = Core::LinAlg::Map(mat_.matrix(1, 1).col_map());
+          const Core::LinAlg::Map& rowmap00 = Core::LinAlg::Map(mat_.matrix(0, 0).row_map());
+          const Core::LinAlg::Map& rowmap01 = Core::LinAlg::Map(mat_.matrix(0, 1).row_map());
+          const Core::LinAlg::Map& rowmap10 = Core::LinAlg::Map(mat_.matrix(1, 0).row_map());
+          const Core::LinAlg::Map& rowmap11 = Core::LinAlg::Map(mat_.matrix(1, 1).row_map());
 
           // prepare vectors for holding column local ids and the values to be assembled
           const int nnode = lcoldim / numdofpernode_;
@@ -410,7 +410,7 @@ namespace FLD
 
     void setup_fluid_fluid_vel_pres_split(const Core::FE::Discretization& fluiddis, int ndim,
         const Core::FE::Discretization& alefluiddis, Core::LinAlg::MapExtractor& extractor,
-        std::shared_ptr<Epetra_Map> fullmap);
+        std::shared_ptr<Core::LinAlg::Map> fullmap);
 
     /**
      * \brief Calculate lift and drag forces, and angular momenta.

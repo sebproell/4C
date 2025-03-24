@@ -190,8 +190,8 @@ void FLD::Meshtying::setup_meshtying(const std::vector<int>& coupleddof, const b
         if (msht_ == Inpar::FLUID::condensed_bmat_merged)
         {
           std::string inv = "BMatMerged";
-          const Epetra_Map& oldmap = *(dofrowmap_);
-          const Epetra_Map& newmap = *(mergedmap_);
+          const Core::LinAlg::Map& oldmap = *(dofrowmap_);
+          const Core::LinAlg::Map& newmap = *(mergedmap_);
           Core::LinearSolver::Parameters::fix_null_space(
               inv.data(), oldmap, newmap, solver_.params());
           std::cout << std::endl;
@@ -201,8 +201,9 @@ void FLD::Meshtying::setup_meshtying(const std::vector<int>& coupleddof, const b
           // fixing length of Inverse1 nullspace (solver/preconditioner ML)
           {
             std::string inv = "Inverse1";
-            const Epetra_Map& oldmap = *(dofrowmap_);
-            const Epetra_Map& newmap = matsolve->matrix(0, 0).epetra_matrix()->RowMap();
+            const Core::LinAlg::Map& oldmap = *(dofrowmap_);
+            const Core::LinAlg::Map& newmap =
+                Core::LinAlg::Map(matsolve->matrix(0, 0).epetra_matrix()->RowMap());
             Core::LinearSolver::Parameters::fix_null_space(
                 inv.data(), oldmap, newmap, solver_.params().sublist("Inverse1"));
             std::cout << std::endl;
@@ -210,8 +211,9 @@ void FLD::Meshtying::setup_meshtying(const std::vector<int>& coupleddof, const b
           // fixing length of Inverse2 nullspace (solver/preconditioner ML)
           {
             std::string inv = "Inverse2";
-            const Epetra_Map& oldmap = *(dofrowmap_);
-            const Epetra_Map& newmap = matsolve->matrix(1, 1).epetra_matrix()->RowMap();
+            const Core::LinAlg::Map& oldmap = *(dofrowmap_);
+            const Core::LinAlg::Map& newmap =
+                Core::LinAlg::Map(matsolve->matrix(1, 1).epetra_matrix()->RowMap());
             Core::LinearSolver::Parameters::fix_null_space(
                 inv.data(), oldmap, newmap, solver_.params().sublist("Inverse2"));
             std::cout << std::endl;
@@ -272,7 +274,7 @@ std::shared_ptr<Core::LinAlg::SparseOperator> FLD::Meshtying::init_system_matrix
     case Inpar::FLUID::condensed_bmat_merged:
     {
       // generate map for blockmatrix
-      std::vector<std::shared_ptr<const Epetra_Map>> fluidmaps;
+      std::vector<std::shared_ptr<const Core::LinAlg::Map>> fluidmaps;
       fluidmaps.push_back(gndofrowmap_);
       fluidmaps.push_back(gmdofrowmap_);
       fluidmaps.push_back(gsdofrowmap_);
@@ -316,9 +318,9 @@ std::shared_ptr<Core::LinAlg::SparseOperator> FLD::Meshtying::init_system_matrix
   return nullptr;
 }
 
-const Epetra_Map* FLD::Meshtying::get_merged_map()
+const Core::LinAlg::Map* FLD::Meshtying::get_merged_map()
 {
-  const Epetra_Map& newmap = *(mergedmap_);
+  const Core::LinAlg::Map& newmap = *(mergedmap_);
 
   return &newmap;
 }
@@ -326,7 +328,7 @@ const Epetra_Map* FLD::Meshtying::get_merged_map()
 /*-----------------------------------------------------*/
 /*  Check if there are overlapping BCs    ehrl (08/13) */
 /*-----------------------------------------------------*/
-void FLD::Meshtying::check_overlapping_bc(Epetra_Map& map)
+void FLD::Meshtying::check_overlapping_bc(Core::LinAlg::Map& map)
 {
   bool overlap = false;
 
@@ -369,13 +371,13 @@ void FLD::Meshtying::check_overlapping_bc(Epetra_Map& map)
 /*  Correct slave Dirichlet value       ehrl (12/12) */
 /*---------------------------------------------------*/
 void FLD::Meshtying::project_master_to_slave_for_overlapping_bc(
-    Core::LinAlg::Vector<double>& velnp, std::shared_ptr<const Epetra_Map> bmaps)
+    Core::LinAlg::Vector<double>& velnp, std::shared_ptr<const Core::LinAlg::Map> bmaps)
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> intersectionmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> intersectionmaps;
   intersectionmaps.push_back(bmaps);
-  std::shared_ptr<const Epetra_Map> gmdofrowmap = gmdofrowmap_;
+  std::shared_ptr<const Core::LinAlg::Map> gmdofrowmap = gmdofrowmap_;
   intersectionmaps.push_back(gmdofrowmap);
-  std::shared_ptr<Epetra_Map> intersectionmap =
+  std::shared_ptr<Core::LinAlg::Map> intersectionmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
   if (intersectionmap->NumGlobalElements() != 0)
@@ -407,7 +409,7 @@ void FLD::Meshtying::project_master_to_slave_for_overlapping_bc(
 /*------------------------------------------------------------------------------*/
 /*  Check if Dirichlet BC are defined on the master                ehrl (08/13) */
 /*------------------------------------------------------------------------------*/
-void FLD::Meshtying::dirichlet_on_master(std::shared_ptr<const Epetra_Map> bmaps)
+void FLD::Meshtying::dirichlet_on_master(std::shared_ptr<const Core::LinAlg::Map> bmaps)
 {
   // This method checks if Dirichlet or Dirichlet-like boundary conditions are defined
   // on the master side of the internal interface.
@@ -424,11 +426,11 @@ void FLD::Meshtying::dirichlet_on_master(std::shared_ptr<const Epetra_Map> bmaps
   //
   // (c)  DC are included in the condensation process (-> actual strategy)
 
-  std::vector<std::shared_ptr<const Epetra_Map>> intersectionmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> intersectionmaps;
   intersectionmaps.push_back(bmaps);
-  std::shared_ptr<const Epetra_Map> gmdofrowmap = gmdofrowmap_;
+  std::shared_ptr<const Core::LinAlg::Map> gmdofrowmap = gmdofrowmap_;
   intersectionmaps.push_back(gmdofrowmap);
-  std::shared_ptr<Epetra_Map> intersectionmap =
+  std::shared_ptr<Core::LinAlg::Map> intersectionmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
   if (intersectionmap->NumGlobalElements() != 0)
@@ -770,7 +772,7 @@ void FLD::Meshtying::split_matrix(
   TEUCHOS_FUNC_TIME_MONITOR("Meshtying:  2.1)   - Split Matrix");
 
   // initialize map extractor for matrix splitting
-  std::vector<std::shared_ptr<const Epetra_Map>> fluidmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> fluidmaps;
   fluidmaps.push_back(gndofrowmap_);
   fluidmaps.push_back(gmdofrowmap_);
   fluidmaps.push_back(gsdofrowmap_);
@@ -1362,7 +1364,7 @@ void FLD::Meshtying::update_slave_dof(
   TEUCHOS_FUNC_TIME_MONITOR("Meshtying:  3.4)   - Update slave DOF");
 
   // get dof row map
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // split incremental and velocity-pressure vector
   std::vector<std::shared_ptr<Core::LinAlg::Vector<double>>> splitinc(3);
@@ -1564,7 +1566,7 @@ void FLD::Meshtying::msht_split(std::shared_ptr<Core::LinAlg::SparseOperator>& s
   if (is_multifield_)
   {
     // generate map for blockmatrix
-    std::vector<std::shared_ptr<const Epetra_Map>> fluidmaps;
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> fluidmaps;
     fluidmaps.push_back(gndofrowmap_);
     fluidmaps.push_back(gmdofrowmap_);
     fluidmaps.push_back(gsdofrowmap_);
@@ -1607,7 +1609,7 @@ void FLD::Meshtying::msht_split_shape(
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase>& shapederivatives)
 {
   // generate map for blockmatrix
-  std::vector<std::shared_ptr<const Epetra_Map>> fluidmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> fluidmaps;
   fluidmaps.push_back(gndofrowmap_);
   fluidmaps.push_back(gmdofrowmap_);
   fluidmaps.push_back(gsdofrowmap_);

@@ -12,11 +12,11 @@
 
 #include "4C_ale_input.hpp"
 #include "4C_ale_utils_mapextractor.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 #include "4C_utils_result_test.hpp"
 
-#include <Epetra_Map.h>
 #include <Epetra_Operator.h>
 
 #include <memory>
@@ -92,7 +92,7 @@ namespace Adapter
     //! @name Misc
 
     //! dof map of vector of unknowns
-    virtual std::shared_ptr<const Epetra_Map> dof_row_map() const = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> dof_row_map() const = 0;
 
     //! direct access to system matrix
     virtual std::shared_ptr<Core::LinAlg::SparseMatrix> system_matrix() = 0;

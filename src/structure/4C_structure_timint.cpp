@@ -876,9 +876,9 @@ void Solid::TimInt::apply_mesh_initialization(
   if (Xslavemod == nullptr) return;
 
   // create fully overlapping slave node map
-  std::shared_ptr<const Epetra_Map> slavemap =
+  std::shared_ptr<const Core::LinAlg::Map> slavemap =
       cmtbridge_->mt_manager()->get_strategy().slave_row_nodes_ptr();
-  std::shared_ptr<Epetra_Map> allreduceslavemap = Core::LinAlg::allreduce_e_map(*slavemap);
+  std::shared_ptr<Core::LinAlg::Map> allreduceslavemap = Core::LinAlg::allreduce_e_map(*slavemap);
 
   // export modified node positions to column map of problem discretization
   std::shared_ptr<Core::LinAlg::Vector<double>> Xslavemodcol =
@@ -1286,16 +1286,16 @@ void Solid::TimInt::update_step_contact_vum()
       double R4 = beta * (alpham - 1) / pow(gamma, 2);
 
       // maps
-      const Epetra_Map* dofmap = discret_->dof_row_map();
-      std::shared_ptr<Epetra_Map> activenodemap =
-          std::make_shared<Epetra_Map>(*cmtbridge_->get_strategy().active_row_nodes());
-      std::shared_ptr<const Epetra_Map> slavenodemap =
+      const Core::LinAlg::Map* dofmap = discret_->dof_row_map();
+      std::shared_ptr<Core::LinAlg::Map> activenodemap =
+          std::make_shared<Core::LinAlg::Map>(*cmtbridge_->get_strategy().active_row_nodes());
+      std::shared_ptr<const Core::LinAlg::Map> slavenodemap =
           cmtbridge_->get_strategy().slave_row_nodes_ptr();
-      std::shared_ptr<const Epetra_Map> notredistslavedofmap =
+      std::shared_ptr<const Core::LinAlg::Map> notredistslavedofmap =
           cmtbridge_->get_strategy().non_redist_slave_row_dofs();
-      std::shared_ptr<const Epetra_Map> notredistmasterdofmap =
+      std::shared_ptr<const Core::LinAlg::Map> notredistmasterdofmap =
           cmtbridge_->get_strategy().non_redist_master_row_dofs();
-      std::shared_ptr<Epetra_Map> notactivenodemap =
+      std::shared_ptr<Core::LinAlg::Map> notactivenodemap =
           Core::LinAlg::split_map(*slavenodemap, *activenodemap);
 
       // the lumped mass matrix and its inverse
@@ -1326,7 +1326,7 @@ void Solid::TimInt::update_step_contact_vum()
           cmtbridge_->get_strategy().m_matrix();
       std::shared_ptr<const Core::LinAlg::SparseMatrix> Dmat =
           cmtbridge_->get_strategy().d_matrix();
-      Epetra_Map slavedofmap(Dmat->range_map());
+      Core::LinAlg::Map slavedofmap(Dmat->range_map());
       Core::LinAlg::SparseMatrix Bc(*dofmap, 10);
       std::shared_ptr<const Core::LinAlg::SparseMatrix> M =
           std::make_shared<Core::LinAlg::SparseMatrix>(slavedofmap, 10);
@@ -1786,8 +1786,8 @@ void Solid::TimInt::set_restart_state(std::shared_ptr<Core::LinAlg::Vector<doubl
 
   // the following is copied from read_mesh()
   // before we unpack nodes/elements we store a copy of the nodal row/col map
-  Epetra_Map noderowmap(*discret_->node_row_map());
-  Epetra_Map nodecolmap(*discret_->node_col_map());
+  Core::LinAlg::Map noderowmap(*discret_->node_row_map());
+  Core::LinAlg::Map nodecolmap(*discret_->node_col_map());
 
   // unpack nodes and elements
   // so everything should be OK
@@ -2897,7 +2897,10 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Solid::TimInt::mass_matrix()
 
 /*----------------------------------------------------------------------*/
 /* Return domain map of mass matrix                                     */
-const Epetra_Map& Solid::TimInt::domain_map() const { return mass_->domain_map(); }
+const Core::LinAlg::Map& Solid::TimInt::domain_map() const
+{
+  return mass_->domain_map_not_epetra();
+}
 
 /*----------------------------------------------------------------------*/
 /* Creates the field test                                               */
@@ -2908,24 +2911,24 @@ std::shared_ptr<Core::Utils::ResultTest> Solid::TimInt::create_field_test()
 
 /*----------------------------------------------------------------------*/
 /* dof map of vector of unknowns                                        */
-std::shared_ptr<const Epetra_Map> Solid::TimInt::dof_row_map()
+std::shared_ptr<const Core::LinAlg::Map> Solid::TimInt::dof_row_map()
 {
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
-  return std::make_shared<Epetra_Map>(*dofrowmap);
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
+  return std::make_shared<Core::LinAlg::Map>(*dofrowmap);
 }
 
 /*----------------------------------------------------------------------*/
 /* dof map of vector of unknowns                                        */
 /* new method for multiple dofsets                                      */
-std::shared_ptr<const Epetra_Map> Solid::TimInt::dof_row_map(unsigned nds)
+std::shared_ptr<const Core::LinAlg::Map> Solid::TimInt::dof_row_map(unsigned nds)
 {
-  const Epetra_Map* dofrowmap = discret_->dof_row_map(nds);
-  return std::make_shared<Epetra_Map>(*dofrowmap);
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map(nds);
+  return std::make_shared<Core::LinAlg::Map>(*dofrowmap);
 }
 
 /*----------------------------------------------------------------------*/
 /* view of dof map of vector of unknowns                                */
-const Epetra_Map* Solid::TimInt::dof_row_map_view() { return discret_->dof_row_map(); }
+const Core::LinAlg::Map* Solid::TimInt::dof_row_map_view() { return discret_->dof_row_map(); }
 
 /*----------------------------------------------------------------------*/
 /* reset everything (needed for biofilm simulations)                    */
@@ -2982,24 +2985,26 @@ void Solid::TimInt::resize_m_step_tim_ada()
 }
 
 /*----------------------------------------------------------------------*/
-/* Expand the dbc map by dofs provided in Epetra_Map maptoadd.          */
-void Solid::TimInt::add_dirich_dofs(const std::shared_ptr<const Epetra_Map> maptoadd)
+/* Expand the dbc map by dofs provided in Core::LinAlg::Map maptoadd.          */
+void Solid::TimInt::add_dirich_dofs(const std::shared_ptr<const Core::LinAlg::Map> maptoadd)
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> condmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> condmaps;
   condmaps.push_back(maptoadd);
   condmaps.push_back(get_dbc_map_extractor()->cond_map());
-  std::shared_ptr<Epetra_Map> condmerged = Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
+  std::shared_ptr<Core::LinAlg::Map> condmerged =
+      Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
   *dbcmaps_ = Core::LinAlg::MapExtractor(*(discret_->dof_row_map()), condmerged);
 }
 
 /*----------------------------------------------------------------------*/
-/* Contract the dbc map by dofs provided in Epetra_Map maptoremove.     */
-void Solid::TimInt::remove_dirich_dofs(const std::shared_ptr<const Epetra_Map> maptoremove)
+/* Contract the dbc map by dofs provided in Core::LinAlg::Map maptoremove.     */
+void Solid::TimInt::remove_dirich_dofs(const std::shared_ptr<const Core::LinAlg::Map> maptoremove)
 {
-  std::vector<std::shared_ptr<const Epetra_Map>> othermaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> othermaps;
   othermaps.push_back(maptoremove);
   othermaps.push_back(get_dbc_map_extractor()->other_map());
-  std::shared_ptr<Epetra_Map> othermerged = Core::LinAlg::MultiMapExtractor::merge_maps(othermaps);
+  std::shared_ptr<Core::LinAlg::Map> othermerged =
+      Core::LinAlg::MultiMapExtractor::merge_maps(othermaps);
   *dbcmaps_ = Core::LinAlg::MapExtractor(*(discret_->dof_row_map()), othermerged, false);
 }
 

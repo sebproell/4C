@@ -11,10 +11,9 @@
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_comm_utils.hpp"
 #include "4C_global_data.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_structure_new_model_evaluator_manager.hpp"
-
-#include <Epetra_Map.h>
 
 
 FOUR_C_NAMESPACE_OPEN
@@ -80,7 +79,7 @@ void Solid::ModelEvaluator::GaussPointDataOutputManager::add_element_number_of_g
 }
 
 void Solid::ModelEvaluator::GaussPointDataOutputManager::prepare_data(
-    const Epetra_Map& node_col_map, const Epetra_Map& element_row_map)
+    const Core::LinAlg::Map& node_col_map, const Core::LinAlg::Map& element_row_map)
 {
   switch (output_type_)
   {
@@ -101,7 +100,7 @@ void Solid::ModelEvaluator::GaussPointDataOutputManager::prepare_data(
 }
 
 void Solid::ModelEvaluator::GaussPointDataOutputManager::prepare_nodal_data_vectors(
-    const Epetra_Map& node_col_map)
+    const Core::LinAlg::Map& node_col_map)
 {
   for (const auto& name_and_size : quantities_)
   {
@@ -115,7 +114,7 @@ void Solid::ModelEvaluator::GaussPointDataOutputManager::prepare_nodal_data_vect
 }
 
 void Solid::ModelEvaluator::GaussPointDataOutputManager::prepare_element_center_data_vectors(
-    const Epetra_Map& element_col_map)
+    const Core::LinAlg::Map& element_col_map)
 {
   for (const auto& name_and_size : quantities_)
   {
@@ -128,7 +127,7 @@ void Solid::ModelEvaluator::GaussPointDataOutputManager::prepare_element_center_
 }
 
 void Solid::ModelEvaluator::GaussPointDataOutputManager::prepare_gauss_point_data_vectors(
-    const Epetra_Map& element_col_map)
+    const Core::LinAlg::Map& element_col_map)
 {
   for (const auto& name_and_size : quantities_)
   {

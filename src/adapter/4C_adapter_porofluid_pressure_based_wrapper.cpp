@@ -56,7 +56,7 @@ std::shared_ptr<Core::Utils::ResultTest> Adapter::PoroFluidMultiphaseWrapper::cr
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> Adapter::PoroFluidMultiphaseWrapper::dof_row_map(
+std::shared_ptr<const Core::LinAlg::Map> Adapter::PoroFluidMultiphaseWrapper::dof_row_map(
     unsigned nds) const
 {
   return porofluid_->dof_row_map(nds);
@@ -64,7 +64,8 @@ std::shared_ptr<const Epetra_Map> Adapter::PoroFluidMultiphaseWrapper::dof_row_m
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> Adapter::PoroFluidMultiphaseWrapper::artery_dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> Adapter::PoroFluidMultiphaseWrapper::artery_dof_row_map()
+    const
 {
   return porofluid_->artery_dof_row_map();
 }

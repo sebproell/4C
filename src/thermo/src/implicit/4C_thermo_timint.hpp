@@ -270,17 +270,17 @@ namespace Thermo
     std::shared_ptr<Core::FE::Discretization> discretization() override { return discret_; }
 
     //! non-overlapping DOF map for multiple dofsets
-    std::shared_ptr<const Epetra_Map> dof_row_map(unsigned nds) override
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map(unsigned nds) override
     {
-      const Epetra_Map* dofrowmap = discret_->dof_row_map(nds);
-      return std::make_shared<Epetra_Map>(*dofrowmap);
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map(nds);
+      return std::make_shared<Core::LinAlg::Map>(*dofrowmap);
     }
 
     //! non-overlapping DOF map
-    std::shared_ptr<const Epetra_Map> dof_row_map() override
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() override
     {
-      const Epetra_Map* dofrowmap = discret_->dof_row_map();
-      return std::make_shared<Epetra_Map>(*dofrowmap);
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
+      return std::make_shared<Core::LinAlg::Map>(*dofrowmap);
     }
 
     //! Access output object

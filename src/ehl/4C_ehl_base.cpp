@@ -500,7 +500,7 @@ void EHL::Base::setup_unprojectable_dbc()
   if (not Global::Problem::instance()->elasto_hydro_dynamic_params().get<bool>("UNPROJ_ZERO_DBC"))
     return;
 
-  Epetra_FEVector inf_gap_toggle(*mortaradapter_->slave_dof_map(), true);
+  Epetra_FEVector inf_gap_toggle(mortaradapter_->slave_dof_map()->get_epetra_map(), true);
   for (int i = 0; i < mortaradapter_->interface()->slave_row_nodes()->NumMyElements(); ++i)
   {
     Core::Nodes::Node* node = mortaradapter_->interface()->discret().g_node(
@@ -613,10 +613,11 @@ void EHL::Base::setup_field_coupling(
   mortaradapter_->integrate(idisp, dt());
 
   // Maps of the interface dofs
-  std::shared_ptr<const Epetra_Map> masterdofrowmap =
+  std::shared_ptr<const Core::LinAlg::Map> masterdofrowmap =
       mortaradapter_->interface()->master_row_dofs();
-  std::shared_ptr<const Epetra_Map> slavedofrowmap = mortaradapter_->interface()->slave_row_dofs();
-  std::shared_ptr<Epetra_Map> mergeddofrowmap =
+  std::shared_ptr<const Core::LinAlg::Map> slavedofrowmap =
+      mortaradapter_->interface()->slave_row_dofs();
+  std::shared_ptr<Core::LinAlg::Map> mergeddofrowmap =
       Core::LinAlg::merge_map(masterdofrowmap, slavedofrowmap, false);
 
   // Map extractors with the structure dofs as full maps and local interface maps
@@ -631,8 +632,9 @@ void EHL::Base::setup_field_coupling(
   //----------------------------------------------------------
   // 2. build coupling adapters
   //----------------------------------------------------------
-  std::shared_ptr<const Epetra_Map> strucnodes = mortaradapter_->interface()->slave_row_nodes();
-  const Epetra_Map* lubrinodes = lubricationdis->node_row_map();
+  std::shared_ptr<const Core::LinAlg::Map> strucnodes =
+      mortaradapter_->interface()->slave_row_nodes();
+  const Core::LinAlg::Map* lubrinodes = lubricationdis->node_row_map();
   ada_strDisp_to_lubDisp_ = std::make_shared<Coupling::Adapter::Coupling>();
   ada_strDisp_to_lubDisp_->setup_coupling(
       *structdis, *lubricationdis, *strucnodes, *lubrinodes, ndim, true, 1.e-8, 0, 1);

@@ -229,7 +229,7 @@ void ScaTra::HeterogeneousReactionStrategy::heterogeneous_reaction_sanity_check(
   Core::Conditions::Condition* slave_cond =
       scatratimint_->discretization()->get_condition("ScatraHeteroReactionSlave");
 
-  const Epetra_Map* element_row_map = scatratimint_->discretization()->element_row_map();
+  const Core::LinAlg::Map* element_row_map = scatratimint_->discretization()->element_row_map();
 
   // loop over row elements
   for (int lid = 0; lid < element_row_map->NumMyElements(); lid++)

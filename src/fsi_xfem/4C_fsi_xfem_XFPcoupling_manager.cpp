@@ -59,13 +59,13 @@ XFEM::XfpCouplingManager::XfpCouplingManager(std::shared_ptr<XFEM::ConditionMana
       *poro_->fluid_structure_coupling().perm_master_dof_map());
 
   // safety check
-  if (!mcfpi_ps_ps_->i_dispnp()->get_block_map().SameAs(*get_map_extractor(0)->Map(1)))
+  if (!mcfpi_ps_ps_->i_dispnp()->get_map().SameAs(*get_map_extractor(0)->Map(1)))
     FOUR_C_THROW("XFPCoupling_Manager: Maps of Condition and Mesh Coupling do not fit (psps)!");
-  if (!mcfpi_ps_pf_->i_dispnp()->get_block_map().SameAs(*get_map_extractor(0)->Map(1)))
+  if (!mcfpi_ps_pf_->i_dispnp()->get_map().SameAs(*get_map_extractor(0)->Map(1)))
     FOUR_C_THROW("XFPCoupling_Manager: Maps of Condition and Mesh Coupling do not fit (pspf)!");
-  if (!mcfpi_pf_ps_->i_dispnp()->get_block_map().SameAs(*get_map_extractor(0)->Map(1)))
+  if (!mcfpi_pf_ps_->i_dispnp()->get_map().SameAs(*get_map_extractor(0)->Map(1)))
     FOUR_C_THROW("XFPCoupling_Manager: Maps of Condition and Mesh Coupling do not fit (pfps)!");
-  if (!mcfpi_pf_pf_->i_dispnp()->get_block_map().SameAs(*get_map_extractor(0)->Map(1)))
+  if (!mcfpi_pf_pf_->i_dispnp()->get_map().SameAs(*get_map_extractor(0)->Map(1)))
     FOUR_C_THROW("XFPCoupling_Manager: Maps of Condition and Mesh Coupling do not fit (pfpf)!");
 
   // storage of the resulting Robin-type structural forces from the old timestep
@@ -95,12 +95,12 @@ void XFEM::XfpCouplingManager::set_coupling_states()
       CouplingCommManager::full_to_partial);
 
   // As interfaces embedded into the background mesh are fully ghosted, we don't know which
-  std::shared_ptr<Epetra_Map> sfulldofmap =
+  std::shared_ptr<Core::LinAlg::Map> sfulldofmap =
       Core::LinAlg::allreduce_e_map(*poro_->structure_field()->discretization()->dof_row_map());
   std::shared_ptr<Core::LinAlg::Vector<double>> dispnp_col =
       std::make_shared<Core::LinAlg::Vector<double>>(*sfulldofmap, true);
   Core::LinAlg::export_to(*poro_->structure_field()->dispnp(), *dispnp_col);
-  std::shared_ptr<Epetra_Map> ffulldofmap =
+  std::shared_ptr<Core::LinAlg::Map> ffulldofmap =
       Core::LinAlg::allreduce_e_map(*poro_->fluid_field()->discretization()->dof_row_map());
   std::shared_ptr<Core::LinAlg::Vector<double>> velnp_col =
       std::make_shared<Core::LinAlg::Vector<double>>(*ffulldofmap, true);

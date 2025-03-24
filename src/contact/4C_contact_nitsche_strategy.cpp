@@ -36,8 +36,8 @@ void CONTACT::NitscheStrategy::apply_force_stiff_cmt(
   // just a Nitsche-version
   std::shared_ptr<Epetra_FEVector> fc = std::make_shared<Epetra_FEVector>(f->get_block_map());
   std::shared_ptr<Core::LinAlg::SparseMatrix> kc = std::make_shared<Core::LinAlg::SparseMatrix>(
-      (dynamic_cast<Epetra_CrsMatrix*>(&(*kt->epetra_operator())))->RowMap(), 100, true, false,
-      Core::LinAlg::SparseMatrix::FE_MATRIX);
+      Core::LinAlg::Map(dynamic_cast<Epetra_CrsMatrix*>(&(*kt->epetra_operator()))->RowMap()), 100,
+      true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
   // Evaluation for all interfaces
   for (const auto& interface : interface_)
@@ -250,7 +250,7 @@ std::shared_ptr<Epetra_FEVector> CONTACT::NitscheStrategy::setup_rhs_block_vec(
   {
     case CONTACT::VecBlockType::displ:
       return std::make_shared<Epetra_FEVector>(
-          *Global::Problem::instance()->get_dis("structure")->dof_row_map());
+          Global::Problem::instance()->get_dis("structure")->dof_row_map()->get_epetra_map());
     default:
       FOUR_C_THROW("you should not be here");
       break;
@@ -436,9 +436,9 @@ void CONTACT::NitscheStrategy::reconnect_parent_elements()
 
   for (const auto& contact_interface : contact_interfaces())
   {
-    const Epetra_Map* elecolmap = voldis->element_col_map();
+    const Core::LinAlg::Map* elecolmap = voldis->element_col_map();
 
-    const Epetra_Map* ielecolmap = contact_interface->discret().element_col_map();
+    const Core::LinAlg::Map* ielecolmap = contact_interface->discret().element_col_map();
 
     for (int i = 0; i < ielecolmap->NumMyElements(); ++i)
     {

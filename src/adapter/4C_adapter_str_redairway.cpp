@@ -50,7 +50,7 @@ Adapter::StructureRedAirway::StructureRedAirway(std::shared_ptr<Structure> stru)
   }
   unsigned int numcond = tmp.size();
   if (numcond == 0) FOUR_C_THROW("no coupling conditions found");
-  coupmap_ = std::make_shared<Epetra_Map>(tmp.size(), tmp.size(), tmp.data(), 0,
+  coupmap_ = std::make_shared<Core::LinAlg::Map>(tmp.size(), tmp.size(), tmp.data(), 0,
       Core::Communication::as_epetra_comm(discretization()->get_comm()));
 }
 

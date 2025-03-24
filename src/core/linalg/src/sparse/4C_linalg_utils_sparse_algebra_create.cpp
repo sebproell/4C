@@ -30,16 +30,16 @@ using NO = Node;
  |  create a Epetra_CrsMatrix                                mwgee 12/06|
  *----------------------------------------------------------------------*/
 std::shared_ptr<Epetra_CrsMatrix> Core::LinAlg::create_matrix(
-    const Epetra_Map& rowmap, const int npr)
+    const Core::LinAlg::Map& rowmap, const int npr)
 {
   if (!rowmap.UniqueGIDs()) FOUR_C_THROW("Row map is not unique");
-  return std::make_shared<Epetra_CrsMatrix>(::Copy, rowmap, npr, false);
+  return std::make_shared<Epetra_CrsMatrix>(::Copy, rowmap.get_epetra_map(), npr, false);
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::create_identity_matrix(
-    const Epetra_Map& map)
+    const Core::LinAlg::Map& map)
 {
   std::shared_ptr<Core::LinAlg::SparseMatrix> eye = std::make_shared<SparseMatrix>(map, 1);
   fill_identity_matrix(*eye);
@@ -148,6 +148,13 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Core::LinAlg::create_vector(
   return std::make_shared<Core::LinAlg::Vector<double>>(rowmap, init);
 }
 
+
+std::shared_ptr<Core::LinAlg::Vector<double>> Core::LinAlg::create_vector(
+    const Map& rowmap, const bool init)
+{
+  return std::make_shared<Core::LinAlg::Vector<double>>(rowmap, init);
+}
+
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::LinAlg::create_multi_vector(
@@ -156,31 +163,40 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::LinAlg::create_multi_ve
   return std::make_shared<Core::LinAlg::MultiVector<double>>(rowmap, numrows, init);
 }
 
+
+std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::LinAlg::create_multi_vector(
+    const Map& rowmap, const int numrows, const bool init)
+{
+  return std::make_shared<Core::LinAlg::MultiVector<double>>(rowmap, numrows, init);
+}
+
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> Core::LinAlg::create_map(const std::set<int>& gids, MPI_Comm comm)
+std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::create_map(
+    const std::set<int>& gids, MPI_Comm comm)
 {
   std::vector<int> mapvec;
   mapvec.reserve(gids.size());
   mapvec.assign(gids.begin(), gids.end());
-  std::shared_ptr<Epetra_Map> map = std::make_shared<Epetra_Map>(
+  std::shared_ptr<Core::LinAlg::Map> map = std::make_shared<Core::LinAlg::Map>(
       -1, mapvec.size(), mapvec.data(), 0, Core::Communication::as_epetra_comm(comm));
   mapvec.clear();
   return map;
 }
 
 /*----------------------------------------------------------------------*
- | create epetra_map with out-of-bound check                 farah 06/14|
+ | create Core::LinAlg::Map with out-of-bound check                 farah 06/14|
  *----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> Core::LinAlg::create_map(const std::vector<int>& gids, MPI_Comm comm)
+std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::create_map(
+    const std::vector<int>& gids, MPI_Comm comm)
 {
-  std::shared_ptr<Epetra_Map> map;
+  std::shared_ptr<Core::LinAlg::Map> map;
 
   if ((int)gids.size() > 0)
-    map = std::make_shared<Epetra_Map>(
+    map = std::make_shared<Core::LinAlg::Map>(
         -1, gids.size(), gids.data(), 0, Core::Communication::as_epetra_comm(comm));
   else
-    map = std::make_shared<Epetra_Map>(
+    map = std::make_shared<Core::LinAlg::Map>(
         -1, gids.size(), nullptr, 0, Core::Communication::as_epetra_comm(comm));
 
   return map;
@@ -218,19 +234,21 @@ void Core::LinAlg::create_map_extractor_from_discretization(
   conddofmapvec.reserve(conddofset.size());
   conddofmapvec.assign(conddofset.begin(), conddofset.end());
   conddofset.clear();
-  std::shared_ptr<Epetra_Map> conddofmap = std::make_shared<Epetra_Map>(-1, conddofmapvec.size(),
-      conddofmapvec.data(), 0, Core::Communication::as_epetra_comm(dis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> conddofmap =
+      std::make_shared<Core::LinAlg::Map>(-1, conddofmapvec.size(), conddofmapvec.data(), 0,
+          Core::Communication::as_epetra_comm(dis.get_comm()));
   conddofmapvec.clear();
 
   std::vector<int> otherdofmapvec;
   otherdofmapvec.reserve(otherdofset.size());
   otherdofmapvec.assign(otherdofset.begin(), otherdofset.end());
   otherdofset.clear();
-  std::shared_ptr<Epetra_Map> otherdofmap = std::make_shared<Epetra_Map>(-1, otherdofmapvec.size(),
-      otherdofmapvec.data(), 0, Core::Communication::as_epetra_comm(dis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> otherdofmap =
+      std::make_shared<Core::LinAlg::Map>(-1, otherdofmapvec.size(), otherdofmapvec.data(), 0,
+          Core::Communication::as_epetra_comm(dis.get_comm()));
   otherdofmapvec.clear();
 
-  std::vector<std::shared_ptr<const Epetra_Map>> maps(2);
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps(2);
   maps[0] = otherdofmap;
   maps[1] = conddofmap;
   extractor.setup(*dis.dof_row_map(), maps);
@@ -268,16 +286,18 @@ void Core::LinAlg::create_map_extractor_from_discretization(const Core::FE::Disc
   conddofmapvec.reserve(conddofset.size());
   conddofmapvec.assign(conddofset.begin(), conddofset.end());
   conddofset.clear();
-  std::shared_ptr<Epetra_Map> conddofmap = std::make_shared<Epetra_Map>(-1, conddofmapvec.size(),
-      conddofmapvec.data(), 0, Core::Communication::as_epetra_comm(dis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> conddofmap =
+      std::make_shared<Core::LinAlg::Map>(-1, conddofmapvec.size(), conddofmapvec.data(), 0,
+          Core::Communication::as_epetra_comm(dis.get_comm()));
   conddofmapvec.clear();
 
   std::vector<int> otherdofmapvec;
   otherdofmapvec.reserve(otherdofset.size());
   otherdofmapvec.assign(otherdofset.begin(), otherdofset.end());
   otherdofset.clear();
-  std::shared_ptr<Epetra_Map> otherdofmap = std::make_shared<Epetra_Map>(-1, otherdofmapvec.size(),
-      otherdofmapvec.data(), 0, Core::Communication::as_epetra_comm(dis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> otherdofmap =
+      std::make_shared<Core::LinAlg::Map>(-1, otherdofmapvec.size(), otherdofmapvec.data(), 0,
+          Core::Communication::as_epetra_comm(dis.get_comm()));
   otherdofmapvec.clear();
 
   extractor.setup(*dofset.dof_row_map(), conddofmap, otherdofmap);
@@ -323,19 +343,21 @@ void Core::LinAlg::create_map_extractor_from_discretization(const Core::FE::Disc
   conddofmapvec.reserve(conddofset.size());
   conddofmapvec.assign(conddofset.begin(), conddofset.end());
   conddofset.clear();
-  std::shared_ptr<Epetra_Map> conddofmap = std::make_shared<Epetra_Map>(-1, conddofmapvec.size(),
-      conddofmapvec.data(), 0, Core::Communication::as_epetra_comm(dis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> conddofmap =
+      std::make_shared<Core::LinAlg::Map>(-1, conddofmapvec.size(), conddofmapvec.data(), 0,
+          Core::Communication::as_epetra_comm(dis.get_comm()));
   conddofmapvec.clear();
 
   std::vector<int> otherdofmapvec;
   otherdofmapvec.reserve(otherdofset.size());
   otherdofmapvec.assign(otherdofset.begin(), otherdofset.end());
   otherdofset.clear();
-  std::shared_ptr<Epetra_Map> otherdofmap = std::make_shared<Epetra_Map>(-1, otherdofmapvec.size(),
-      otherdofmapvec.data(), 0, Core::Communication::as_epetra_comm(dis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> otherdofmap =
+      std::make_shared<Core::LinAlg::Map>(-1, otherdofmapvec.size(), otherdofmapvec.data(), 0,
+          Core::Communication::as_epetra_comm(dis.get_comm()));
   otherdofmapvec.clear();
 
-  std::vector<std::shared_ptr<const Epetra_Map>> maps(2);
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps(2);
   maps[0] = otherdofmap;
   maps[1] = conddofmap;
   extractor.setup(*dis.dof_row_map(), maps);

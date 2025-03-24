@@ -266,7 +266,7 @@ int Solid::TimeInt::BaseDataGlobalState::setup_block_information(
 {
   check_init();
   Global::Problem* problem = Global::Problem::instance();
-  std::shared_ptr<const Epetra_Map> me_map_ptr = me.get_block_dof_row_map_ptr();
+  std::shared_ptr<const Core::LinAlg::Map> me_map_ptr = me.get_block_dof_row_map_ptr();
 
   model_maps_[mt] = me_map_ptr;
 
@@ -427,7 +427,7 @@ void Solid::TimeInt::BaseDataGlobalState::setup_multi_map_extractor()
   check_init();
   /* copy the std::map into a std::vector and keep the numbering of the model-id
    * map */
-  std::vector<std::shared_ptr<const Epetra_Map>> maps_vec(max_block_number(), nullptr);
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps_vec(max_block_number(), nullptr);
   // Make sure, that the block ids and the vector entry ids coincide!
   std::map<Inpar::Solid::ModelType, int>::const_iterator ci;
   for (ci = model_block_id_.begin(); ci != model_block_id_.end(); ++ci)
@@ -545,20 +545,21 @@ void Solid::TimeInt::BaseDataGlobalState::setup_rot_vec_map_extractor(
   additdofmapvec.reserve(additdofset.size());
   additdofmapvec.assign(additdofset.begin(), additdofset.end());
   additdofset.clear();
-  std::shared_ptr<Epetra_Map> additdofmap = std::make_shared<Epetra_Map>(-1, additdofmapvec.size(),
-      additdofmapvec.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> additdofmap =
+      std::make_shared<Core::LinAlg::Map>(-1, additdofmapvec.size(), additdofmapvec.data(), 0,
+          Core::Communication::as_epetra_comm(discret_->get_comm()));
   additdofmapvec.clear();
 
   std::vector<int> rotvecdofmapvec;
   rotvecdofmapvec.reserve(rotvecdofset.size());
   rotvecdofmapvec.assign(rotvecdofset.begin(), rotvecdofset.end());
   rotvecdofset.clear();
-  std::shared_ptr<Epetra_Map> rotvecdofmap =
-      std::make_shared<Epetra_Map>(-1, rotvecdofmapvec.size(), rotvecdofmapvec.data(), 0,
+  std::shared_ptr<Core::LinAlg::Map> rotvecdofmap =
+      std::make_shared<Core::LinAlg::Map>(-1, rotvecdofmapvec.size(), rotvecdofmapvec.data(), 0,
           Core::Communication::as_epetra_comm(discret_->get_comm()));
   rotvecdofmapvec.clear();
 
-  std::vector<std::shared_ptr<const Epetra_Map>> maps(2);
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps(2);
   maps[0] = additdofmap;
   maps[1] = rotvecdofmap;
 
@@ -691,10 +692,10 @@ Solid::TimeInt::BaseDataGlobalState::create_aux_jacobian() const
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> Solid::TimeInt::BaseDataGlobalState::dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> Solid::TimeInt::BaseDataGlobalState::dof_row_map() const
 {
   check_init();
-  const Epetra_Map* dofrowmap_ptr = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap_ptr = discret_->dof_row_map();
   // since it's const, we do not need to copy the map
   return Core::Utils::shared_ptr_from_ref(*dofrowmap_ptr);
 }
@@ -702,11 +703,11 @@ std::shared_ptr<const Epetra_Map> Solid::TimeInt::BaseDataGlobalState::dof_row_m
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> Solid::TimeInt::BaseDataGlobalState::dof_row_map(
+std::shared_ptr<const Core::LinAlg::Map> Solid::TimeInt::BaseDataGlobalState::dof_row_map(
     unsigned nds) const
 {
   check_init();
-  const Epetra_Map* dofrowmap_ptr = discret_->dof_row_map(nds);
+  const Core::LinAlg::Map* dofrowmap_ptr = discret_->dof_row_map(nds);
   // since it's const, we do not need to copy the map
   return Core::Utils::shared_ptr_from_ref(*dofrowmap_ptr);
 }
@@ -714,7 +715,7 @@ std::shared_ptr<const Epetra_Map> Solid::TimeInt::BaseDataGlobalState::dof_row_m
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-const Epetra_Map* Solid::TimeInt::BaseDataGlobalState::dof_row_map_view() const
+const Core::LinAlg::Map* Solid::TimeInt::BaseDataGlobalState::dof_row_map_view() const
 {
   check_init();
   return discret_->dof_row_map();
@@ -722,7 +723,7 @@ const Epetra_Map* Solid::TimeInt::BaseDataGlobalState::dof_row_map_view() const
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-const Epetra_Map* Solid::TimeInt::BaseDataGlobalState::additive_dof_row_map_view() const
+const Core::LinAlg::Map* Solid::TimeInt::BaseDataGlobalState::additive_dof_row_map_view() const
 {
   check_init();
   return get_element_technology_map_extractor(Inpar::Solid::EleTech::rotvec).Map(0).get();
@@ -730,7 +731,7 @@ const Epetra_Map* Solid::TimeInt::BaseDataGlobalState::additive_dof_row_map_view
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-const Epetra_Map* Solid::TimeInt::BaseDataGlobalState::rot_vec_dof_row_map_view() const
+const Core::LinAlg::Map* Solid::TimeInt::BaseDataGlobalState::rot_vec_dof_row_map_view() const
 {
   check_init();
   return get_element_technology_map_extractor(Inpar::Solid::EleTech::rotvec).Map(1).get();

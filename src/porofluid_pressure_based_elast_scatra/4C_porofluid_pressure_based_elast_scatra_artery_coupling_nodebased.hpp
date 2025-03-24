@@ -78,10 +78,10 @@ namespace PoroMultiPhaseScaTra
         std::shared_ptr<const Core::LinAlg::Vector<double>> vec_art) override;
 
     //! access artery (1D) dof row map
-    std::shared_ptr<const Epetra_Map> artery_dof_row_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> artery_dof_row_map() const override;
 
     //! access full dof row map
-    std::shared_ptr<const Epetra_Map> dof_row_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() const override;
 
     //! init the strategy
     void init() override;
@@ -129,8 +129,8 @@ namespace PoroMultiPhaseScaTra
      * @param[in]   dis discretizatiom
      * @param[in]   coupleddofmap map with coupled DOFs
      */
-    void check_dbc_on_coupled_dofs(
-        Core::FE::Discretization& dis, const std::shared_ptr<const Epetra_Map>& coupleddofmap);
+    void check_dbc_on_coupled_dofs(Core::FE::Discretization& dis,
+        const std::shared_ptr<const Core::LinAlg::Map>& coupleddofmap);
 
     //! name of the condition
     const std::string condname_;

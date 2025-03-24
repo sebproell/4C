@@ -92,7 +92,7 @@ namespace BeamInteraction
     std::shared_ptr<const Core::FE::Discretization> discret_;
 
     //! Map for nodal GID of discretization.
-    std::shared_ptr<Epetra_Map> node_gid_map_;
+    std::shared_ptr<Core::LinAlg::Map> node_gid_map_;
   };
 
 }  // namespace BeamInteraction

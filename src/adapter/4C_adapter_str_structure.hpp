@@ -39,6 +39,7 @@ namespace Core::LinAlg
   class BlockSparseMatrixBase;
   class MapExtractor;
   class MultiMapExtractor;
+  class Map;
 }  // namespace Core::LinAlg
 
 namespace Core::Conditions
@@ -183,16 +184,16 @@ namespace Adapter
     //! @name Misc
 
     /// dof map of vector of unknowns
-    std::shared_ptr<const Epetra_Map> dof_row_map() override = 0;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() override = 0;
 
     /// DOF map of vector of unknowns for multiple dofsets
-    virtual std::shared_ptr<const Epetra_Map> dof_row_map(unsigned nds) = 0;
+    virtual std::shared_ptr<const Core::LinAlg::Map> dof_row_map(unsigned nds) = 0;
 
     /// DOF map view of vector of unknowns
-    virtual const Epetra_Map* dof_row_map_view() = 0;
+    virtual const Core::LinAlg::Map* dof_row_map_view() = 0;
 
     /// domain map of system matrix (do we really need this?)
-    [[nodiscard]] virtual const Epetra_Map& domain_map() const = 0;
+    [[nodiscard]] virtual const Core::LinAlg::Map& domain_map() const = 0;
 
     /// direct access to system matrix
     std::shared_ptr<Core::LinAlg::SparseMatrix> system_matrix() override = 0;
@@ -245,14 +246,14 @@ namespace Adapter
     virtual std::shared_ptr<const Core::LinAlg::MapExtractor> get_dbc_map_extractor() = 0;
 
     /// expand dirichlet bc map
-    virtual void add_dirich_dofs(const std::shared_ptr<const Epetra_Map> maptoadd) {
+    virtual void add_dirich_dofs(const std::shared_ptr<const Core::LinAlg::Map> maptoadd) {
       /* This is only needed for the old structural time integration.
          For the new structural time integration this is already
          implemented in str_dbc.cpp and str_dbc.H ! rauch 02/17 */
     };
 
     /// contract dirichlet bc map
-    virtual void remove_dirich_dofs(const std::shared_ptr<const Epetra_Map> maptoremove) {
+    virtual void remove_dirich_dofs(const std::shared_ptr<const Core::LinAlg::Map> maptoremove) {
       /* This is only needed for the old structural time integration.
          For the new structural time integration this is already
          implemented in str_dbc.cpp and str_dbc.H ! rauch 02/17 */

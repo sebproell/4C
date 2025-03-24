@@ -11,11 +11,10 @@
 #include "4C_config.hpp"
 
 #include "4C_fem_discretization.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_lubrication_input.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
-
-#include <Epetra_Map.h>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -182,10 +181,10 @@ namespace Lubrication
     void evaluate();
 
     //! non-overlapping DOF map for multiple dofsets
-    std::shared_ptr<const Epetra_Map> dof_row_map(unsigned nds = 0)
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map(unsigned nds = 0)
     {
-      const Epetra_Map* dofrowmap = discret_->dof_row_map(nds);
-      return std::make_shared<Epetra_Map>(*dofrowmap);
+      const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map(nds);
+      return std::make_shared<Core::LinAlg::Map>(*dofrowmap);
     }
 
     //! Return MapExtractor for Dirichlet boundary conditions

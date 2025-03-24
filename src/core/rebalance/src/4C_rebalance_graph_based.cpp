@@ -31,7 +31,7 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::pair<std::shared_ptr<Epetra_Map>, std::shared_ptr<Epetra_Map>>
+std::pair<std::shared_ptr<Core::LinAlg::Map>, std::shared_ptr<Core::LinAlg::Map>>
 Core::Rebalance::rebalance_node_maps(const Core::LinAlg::Graph& initialGraph,
     const Teuchos::ParameterList& rebalanceParams,
     const std::shared_ptr<Core::LinAlg::Vector<double>>& initialNodeWeights,
@@ -45,11 +45,11 @@ Core::Rebalance::rebalance_node_maps(const Core::LinAlg::Graph& initialGraph,
       initialNodeWeights, initialEdgeWeights, initialNodeCoordinates);
 
   // extract repartitioned maps
-  std::shared_ptr<Epetra_Map> rownodes =
-      std::make_shared<Epetra_Map>(-1, balanced_graph->row_map().NumMyElements(),
+  std::shared_ptr<Core::LinAlg::Map> rownodes =
+      std::make_shared<Core::LinAlg::Map>(-1, balanced_graph->row_map().NumMyElements(),
           balanced_graph->row_map().MyGlobalElements(), 0, initialGraph.get_comm());
-  std::shared_ptr<Epetra_Map> colnodes =
-      std::make_shared<Epetra_Map>(-1, balanced_graph->col_map().NumMyElements(),
+  std::shared_ptr<Core::LinAlg::Map> colnodes =
+      std::make_shared<Core::LinAlg::Map>(-1, balanced_graph->col_map().NumMyElements(),
           balanced_graph->col_map().MyGlobalElements(), 0, initialGraph.get_comm());
 
   return {rownodes, colnodes};
@@ -120,10 +120,10 @@ Core::Rebalance::rebalance_coordinates(const Core::LinAlg::MultiVector<double>& 
 std::pair<std::shared_ptr<Core::LinAlg::Vector<double>>, std::shared_ptr<Epetra_CrsMatrix>>
 Core::Rebalance::build_weights(const Core::FE::Discretization& dis)
 {
-  const Epetra_Map* noderowmap = dis.node_row_map();
+  const Core::LinAlg::Map* noderowmap = dis.node_row_map();
 
   std::shared_ptr<Epetra_CrsMatrix> crs_ge_weights =
-      std::make_shared<Epetra_CrsMatrix>(Copy, *noderowmap, 15);
+      std::make_shared<Epetra_CrsMatrix>(Copy, noderowmap->get_epetra_map(), 15);
   std::shared_ptr<Core::LinAlg::Vector<double>> vweights =
       Core::LinAlg::create_vector(*noderowmap, true);
 
@@ -158,7 +158,7 @@ Core::Rebalance::build_weights(const Core::FE::Discretization& dis)
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_graph(
-    Core::FE::Discretization& dis, const Epetra_Map& roweles)
+    Core::FE::Discretization& dis, const Core::LinAlg::Map& roweles)
 {
   const int myrank = Core::Communication::my_mpi_rank(dis.get_comm());
   const int numproc = Core::Communication::num_mpi_ranks(dis.get_comm());
@@ -202,7 +202,7 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_graph(
     Core::Communication::barrier(dis.get_comm());
   }
 
-  std::shared_ptr<Epetra_Map> rownodes = nullptr;
+  std::shared_ptr<Core::LinAlg::Map> rownodes = nullptr;
   // copy the set to a vector
   {
     std::vector<int> nodes;
@@ -210,7 +210,7 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_graph(
     for (fool = mynodes.begin(); fool != mynodes.end(); ++fool) nodes.push_back(*fool);
     mynodes.clear();
     // create a non-overlapping row map
-    rownodes = std::make_shared<Epetra_Map>(
+    rownodes = std::make_shared<Core::LinAlg::Map>(
         -1, (int)nodes.size(), &nodes[0], 0, Core::Communication::as_epetra_comm(dis.get_comm()));
   }
 
@@ -382,9 +382,10 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_monolithic_nod
   }
   std::vector<int> my_colliding_primitives_vec(
       my_colliding_primitives.begin(), my_colliding_primitives.end());
-  Epetra_Map my_colliding_primitives_map(-1, my_colliding_primitives_vec.size(),
+  Core::LinAlg::Map my_colliding_primitives_map(-1, my_colliding_primitives_vec.size(),
       my_colliding_primitives_vec.data(), 0, Core::Communication::as_epetra_comm(dis.get_comm()));
-  Epetra_Import importer(my_colliding_primitives_map, *dis.element_row_map());
+  Epetra_Import importer(
+      my_colliding_primitives_map.get_epetra_map(), dis.element_row_map()->get_epetra_map());
   Core::LinAlg::Graph my_colliding_primitives_connectivity(
       Copy, my_colliding_primitives_map, n_nodes_per_element_max, false);
   err = my_colliding_primitives_connectivity.import_from(
@@ -392,7 +393,8 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_monolithic_nod
   if (err != 0) FOUR_C_THROW("Core::LinAlg::Graph::Import returned {}", err);
 
   // 4. Build and fill the graph with element internal connectivities
-  auto my_graph = std::make_shared<Epetra_FECrsGraph>(Copy, *(dis.node_row_map()), 40, false);
+  auto my_graph =
+      std::make_shared<Epetra_FECrsGraph>(Copy, (dis.node_row_map()->get_epetra_map()), 40, false);
 
   for (const auto* element : dis.my_row_element_range())
   {

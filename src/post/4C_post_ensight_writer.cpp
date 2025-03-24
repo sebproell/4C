@@ -35,7 +35,7 @@ EnsightWriter::EnsightWriter(PostField* field, const std::string& filename)
 
   // initialize proc0map_ correctly
   const std::shared_ptr<Core::FE::Discretization> dis = field_->discretization();
-  const Epetra_Map* noderowmap = dis->node_row_map();
+  const Core::LinAlg::Map* noderowmap = dis->node_row_map();
   proc0map_ = Core::LinAlg::allreduce_e_map(*noderowmap, 0);
 
   // sort proc0map_ so that we can loop it and get nodes in ascending order.
@@ -45,7 +45,7 @@ EnsightWriter::EnsightWriter(PostField* field, const std::string& filename)
       proc0map_->MyGlobalElements(), proc0map_->MyGlobalElements() + proc0map_->NumMyElements());
   std::sort(sortmap.begin(), sortmap.end());
   proc0map_ =
-      std::make_shared<Epetra_Map>(-1, sortmap.size(), sortmap.data(), 0, proc0map_->Comm());
+      std::make_shared<Core::LinAlg::Map>(-1, sortmap.size(), sortmap.data(), 0, proc0map_->Comm());
 
   // get the number of elements for each distype (global numbers)
   numElePerDisType_ = get_num_ele_per_dis_type(*dis);
@@ -321,7 +321,7 @@ void EnsightWriter::write_geo_file_one_time_step(std::ofstream& file,
   }
 
   // write the grid information
-  std::shared_ptr<Epetra_Map> proc0map = write_coordinates(file, *field_->discretization());
+  std::shared_ptr<Core::LinAlg::Map> proc0map = write_coordinates(file, *field_->discretization());
   proc0map_ = proc0map;  // update the internal map
   write_cells(file, field_->discretization(), proc0map);
 
@@ -332,7 +332,7 @@ void EnsightWriter::write_geo_file_one_time_step(std::ofstream& file,
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> EnsightWriter::write_coordinates(
+std::shared_ptr<Core::LinAlg::Map> EnsightWriter::write_coordinates(
     std::ofstream& geofile, Core::FE::Discretization& dis)
 {
   using namespace FourC;
@@ -347,7 +347,7 @@ std::shared_ptr<Epetra_Map> EnsightWriter::write_coordinates(
 
   // map for all visualisation points after they have been
   // communicated to proc 0
-  std::shared_ptr<Epetra_Map> proc0map;
+  std::shared_ptr<Core::LinAlg::Map> proc0map;
 
   switch (distype)
   {
@@ -381,11 +381,11 @@ std::shared_ptr<Epetra_Map> EnsightWriter::write_coordinates(
   *----------------------------------------------------------------------*/
 void EnsightWriter::write_cells(std::ofstream& geofile,
     const std::shared_ptr<Core::FE::Discretization> dis,
-    const std::shared_ptr<Epetra_Map>& proc0map) const
+    const std::shared_ptr<Core::LinAlg::Map>& proc0map) const
 {
   using namespace FourC;
 
-  const Epetra_Map* elementmap = dis->element_row_map();
+  const Core::LinAlg::Map* elementmap = dis->element_row_map();
 
   std::vector<int> nodevector;
   if (myrank_ > 0)
@@ -589,7 +589,8 @@ void EnsightWriter::write_cells(std::ofstream& geofile,
 
 */
 void EnsightWriter::write_node_connectivity_par(std::ofstream& geofile,
-    Core::FE::Discretization& dis, const std::vector<int>& nodevector, Epetra_Map& proc0map) const
+    Core::FE::Discretization& dis, const std::vector<int>& nodevector,
+    Core::LinAlg::Map& proc0map) const
 {
   using namespace FourC;
 
@@ -680,7 +681,7 @@ EnsightWriter::NumElePerDisType EnsightWriter::get_num_ele_per_dis_type(
 {
   using namespace FourC;
 
-  const Epetra_Map* elementmap = dis.element_row_map();
+  const Core::LinAlg::Map* elementmap = dis.element_row_map();
 
   NumElePerDisType numElePerDisType;
   for (int iele = 0; iele < elementmap->NumMyElements(); ++iele)
@@ -773,7 +774,7 @@ EnsightWriter::EleGidPerDisType EnsightWriter::get_ele_gid_per_dis_type(
 {
   using namespace FourC;
 
-  const Epetra_Map* elementmap = dis.element_row_map();
+  const Core::LinAlg::Map* elementmap = dis.element_row_map();
 
   EleGidPerDisType eleGidPerDisType;
 
@@ -963,7 +964,7 @@ void EnsightWriter::write_result(const std::string groupname, const std::string 
       // store information for later case file creation
       variableresulttypemap_[name] = "node";
 
-      // const Epetra_Map* nodemap = field_->discretization()->NodeRowMap();
+      // const Core::LinAlg::Map* nodemap = field_->discretization()->NodeRowMap();
       // const int numnp = nodemap->NumGlobalElements();
       // int effnumdf = numdf;
       // if (numdf==2) effnumdf=3; // in 2D we still have to write a 3D vector with zero
@@ -1163,7 +1164,7 @@ void EnsightWriter::write_result_one_time_step(PostResult& result, const std::st
       // store information for later case file creation
       variableresulttypemap_[name] = "node";
 
-      //    const Epetra_Map* nodemap = field_->discretization()->NodeRowMap();
+      //    const Core::LinAlg::Map* nodemap = field_->discretization()->NodeRowMap();
       //    const int numnp = nodemap->NumGlobalElements();
       //    int effnumdf = numdf;
       //    if (numdf==2) effnumdf=3; // in 2D we still have to write a 3D vector with zero
@@ -1500,16 +1501,16 @@ void EnsightWriter::write_dof_result_step(std::ofstream& file, PostResult& resul
   write(file, "coordinates");
 
   const std::shared_ptr<Core::FE::Discretization> dis = field_->discretization();
-  const Epetra_Map* nodemap = dis->node_row_map();  // local node row map
+  const Core::LinAlg::Map* nodemap = dis->node_row_map();  // local node row map
   const int numnp = nodemap->NumGlobalElements();
 
   const std::shared_ptr<Core::LinAlg::Vector<double>> data = result.read_result(groupname);
   const Epetra_BlockMap& datamap = data->get_block_map();
 
   // do stupid conversion into Epetra map
-  std::shared_ptr<Epetra_Map> epetradatamap;
-  epetradatamap = std::make_shared<Epetra_Map>(datamap.NumGlobalElements(), datamap.NumMyElements(),
-      datamap.MyGlobalElements(), 0, datamap.Comm());
+  std::shared_ptr<Core::LinAlg::Map> epetradatamap;
+  epetradatamap = std::make_shared<Core::LinAlg::Map>(datamap.NumGlobalElements(),
+      datamap.NumMyElements(), datamap.MyGlobalElements(), 0, datamap.Comm());
 
   // determine offset of dofs in case of multiple discretizations in
   // separate files (e.g. multi-scale problems). during calculation,
@@ -1526,8 +1527,8 @@ void EnsightWriter::write_dof_result_step(std::ofstream& file, PostResult& resul
   // get min. value on this proc or set to max. value of integers if this proc has no elements
   int min_gid_my_epetradatamap =
       num_my_epetradatamap > 0 ? epetradatamap->MinMyGID() : std::numeric_limits<int>::max();
-  int min_gid_my_dofrowmap =
-      num_my_dofrowmap > 0 ? dis->dof_row_map()->MinMyGID() : std::numeric_limits<int>::max();
+  int min_gid_my_dofrowmap = num_my_dofrowmap > 0 ? dis->dof_row_map()->get_epetra_map().MinMyGID()
+                                                  : std::numeric_limits<int>::max();
 
   // find min. GID over all procs
   int min_gid_glob_epetradatamap = std::numeric_limits<int>::max();
@@ -1556,11 +1557,12 @@ void EnsightWriter::write_dof_result_step(std::ofstream& file, PostResult& resul
     // each processor provides its result values for proc 0
     //------------------------------------------------------
 
-    std::shared_ptr<Epetra_Map> proc0datamap;
+    std::shared_ptr<Core::LinAlg::Map> proc0datamap;
     proc0datamap = Core::LinAlg::allreduce_e_map(*epetradatamap, 0);
 
     // contract result values on proc0 (proc0 gets everything, other procs empty)
-    Epetra_Import proc0dataimporter(*proc0datamap, *epetradatamap);
+    Epetra_Import proc0dataimporter(
+        proc0datamap->get_epetra_map(), epetradatamap->get_epetra_map());
     Core::LinAlg::Vector<double> proc0data(*proc0datamap);
     int err = proc0data.import(*data, proc0dataimporter, Insert);
     if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
@@ -1598,7 +1600,7 @@ void EnsightWriter::write_dof_result_step(std::ofstream& file, PostResult& resul
     // contract Core::LinAlg::MultiVector<double> on proc0 (proc0 gets everything, other procs
     // empty)
     Core::LinAlg::MultiVector<double> dofgidpernodelid_proc0(*proc0map_, numdf);
-    Epetra_Import proc0dofimporter(*proc0map_, *nodemap);
+    Epetra_Import proc0dofimporter(proc0map_->get_epetra_map(), nodemap->get_epetra_map());
     err = dofgidpernodelid_proc0.Import(dofgidpernodelid, proc0dofimporter, Insert);
     if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
 
@@ -1734,7 +1736,7 @@ void EnsightWriter::write_nodal_result_step(std::ofstream& file,
     // contract Core::LinAlg::MultiVector<double> on proc0 (proc0 gets everything, other procs
     // empty)
     Core::LinAlg::MultiVector<double> data_proc0(*proc0map_, numdf);
-    Epetra_Import proc0dofimporter(*proc0map_, datamap);
+    Epetra_Import proc0dofimporter(proc0map_->get_epetra_map(), datamap);
     int err = data_proc0.Import(*data, proc0dofimporter, Insert);
     if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
 
@@ -1811,25 +1813,25 @@ void EnsightWriter::write_element_dof_result_step(std::ofstream& file, PostResul
   write(file, field_->field_pos() + 1);
 
   const std::shared_ptr<Core::FE::Discretization> dis = field_->discretization();
-  const Epetra_Map* elementmap = dis->element_row_map();  // local node row map
+  const Core::LinAlg::Map* elementmap = dis->element_row_map();  // local node row map
 
   const std::shared_ptr<Core::LinAlg::Vector<double>> data = result.read_result(groupname);
   const Epetra_BlockMap& datamap = data->get_block_map();
 
   // do stupid conversion into Epetra map
-  std::shared_ptr<Epetra_Map> epetradatamap;
-  epetradatamap = std::make_shared<Epetra_Map>(datamap.NumGlobalElements(), datamap.NumMyElements(),
-      datamap.MyGlobalElements(), 0, datamap.Comm());
+  std::shared_ptr<Core::LinAlg::Map> epetradatamap;
+  epetradatamap = std::make_shared<Core::LinAlg::Map>(datamap.NumGlobalElements(),
+      datamap.NumMyElements(), datamap.MyGlobalElements(), 0, datamap.Comm());
 
   //------------------------------------------------------
   // each processor provides its result values for proc 0
   //------------------------------------------------------
 
-  std::shared_ptr<Epetra_Map> proc0datamap;
+  std::shared_ptr<Core::LinAlg::Map> proc0datamap;
   proc0datamap = Core::LinAlg::allreduce_e_map(*epetradatamap, 0);
 
   // contract result values on proc0 (proc0 gets everything, other procs empty)
-  Epetra_Import proc0dataimporter(*proc0datamap, *epetradatamap);
+  Epetra_Import proc0dataimporter(proc0datamap->get_epetra_map(), epetradatamap->get_epetra_map());
   Core::LinAlg::Vector<double> proc0data(*proc0datamap);
   int err = proc0data.import(*data, proc0dataimporter, Insert);
   if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
@@ -1863,7 +1865,7 @@ void EnsightWriter::write_element_dof_result_step(std::ofstream& file, PostResul
 
   // contract Core::LinAlg::MultiVector<double> on proc0 (proc0 gets everything, other procs empty)
   Core::LinAlg::MultiVector<double> dofgidperelementlid_proc0(*proc0map_, numdof);
-  Epetra_Import proc0dofimporter(*proc0map_, *elementmap);
+  Epetra_Import proc0dofimporter(proc0map_->get_epetra_map(), elementmap->get_epetra_map());
   err = dofgidperelementlid_proc0.Import(dofgidperelementlid, proc0dofimporter, Insert);
   if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
 
@@ -1983,19 +1985,19 @@ void EnsightWriter::write_element_result_step(std::ofstream& file,
   const int numcol = data->NumVectors();
 
   // do stupid conversion into Epetra map
-  std::shared_ptr<Epetra_Map> epetradatamap;
-  epetradatamap = std::make_shared<Epetra_Map>(datamap.NumGlobalElements(), datamap.NumMyElements(),
-      datamap.MyGlobalElements(), 0, datamap.Comm());
+  std::shared_ptr<Core::LinAlg::Map> epetradatamap;
+  epetradatamap = std::make_shared<Core::LinAlg::Map>(datamap.NumGlobalElements(),
+      datamap.NumMyElements(), datamap.MyGlobalElements(), 0, datamap.Comm());
 
   //------------------------------------------------------
   // each processor provides its result values for proc 0
   //------------------------------------------------------
 
-  std::shared_ptr<Epetra_Map> proc0datamap;
+  std::shared_ptr<Core::LinAlg::Map> proc0datamap;
   proc0datamap = Core::LinAlg::allreduce_e_map(*epetradatamap, 0);
 
   // contract result values on proc0 (proc0 gets everything, other procs empty)
-  Epetra_Import proc0dataimporter(*proc0datamap, *epetradatamap);
+  Epetra_Import proc0dataimporter(proc0datamap->get_epetra_map(), epetradatamap->get_epetra_map());
   Core::LinAlg::MultiVector<double> proc0data(*proc0datamap, numcol);
   int err = proc0data.Import(*data, proc0dataimporter, Insert);
   if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);
@@ -2328,8 +2330,8 @@ std::string EnsightWriter::get_file_section_string_from_filesets(
     coordinates of the nodes in the discretization.
 */
 /*----------------------------------------------------------------------*/
-void EnsightWriter::write_coordinates_for_polynomial_shapefunctions(
-    std::ofstream& geofile, Core::FE::Discretization& dis, std::shared_ptr<Epetra_Map>& proc0map)
+void EnsightWriter::write_coordinates_for_polynomial_shapefunctions(std::ofstream& geofile,
+    Core::FE::Discretization& dis, std::shared_ptr<Core::LinAlg::Map>& proc0map)
 {
   using namespace FourC;
 
@@ -2339,7 +2341,7 @@ void EnsightWriter::write_coordinates_for_polynomial_shapefunctions(
 
   const int NSD = 3;  // number of space dimensions
 
-  const Epetra_Map* nodemap = dis.node_row_map();
+  const Core::LinAlg::Map* nodemap = dis.node_row_map();
   const int numnp = nodemap->NumMyElements();
   nodecoords = std::make_shared<Core::LinAlg::MultiVector<double>>(*nodemap, 3);
 
@@ -2359,7 +2361,7 @@ void EnsightWriter::write_coordinates_for_polynomial_shapefunctions(
   proc0map = Core::LinAlg::allreduce_e_map(*nodemap, 0);
 
   // import my new values (proc0 gets everything, other procs empty)
-  Epetra_Import proc0importer(*proc0map, *nodemap);
+  Epetra_Import proc0importer(proc0map->get_epetra_map(), nodemap->get_epetra_map());
   Core::LinAlg::MultiVector<double> allnodecoords(*proc0map, 3);
   int err = allnodecoords.Import(*nodecoords, proc0importer, Insert);
   if (err > 0) FOUR_C_THROW("Importing everything to proc 0 went wrong. Import returns {}", err);

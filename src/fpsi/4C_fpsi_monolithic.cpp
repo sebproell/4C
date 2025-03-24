@@ -260,8 +260,8 @@ void FPSI::Monolithic::setup_system()
 
   Coupling::Adapter::Coupling& coupfa = fluid_ale_coupling();
 
-  const Epetra_Map* fluidnodemap = fluid_field()->discretization()->node_row_map();
-  const Epetra_Map* alenodemap = ale_field()->discretization()->node_row_map();
+  const Core::LinAlg::Map* fluidnodemap = fluid_field()->discretization()->node_row_map();
+  const Core::LinAlg::Map* alenodemap = ale_field()->discretization()->node_row_map();
 
   coupfa.setup_coupling(*fluid_field()->discretization(), *ale_field()->discretization(),
       *fluidnodemap, *alenodemap, ndim, false);
@@ -704,36 +704,37 @@ void FPSI::Monolithic::create_linear_solver()
   // fixing length of Inverse1 nullspace (solver/preconditioner ML)
   {
     std::string inv = "Inverse1";
-    const Epetra_Map& oldmap = *(Global::Problem::instance()->get_dis("structure")->dof_row_map());
-    const Epetra_Map& newmap =
-        systemmatrix_->matrix(structure_block_, structure_block_).epetra_matrix()->RowMap();
+    const Core::LinAlg::Map& oldmap =
+        *(Global::Problem::instance()->get_dis("structure")->dof_row_map());
+    const Core::LinAlg::Map& newmap = Core::LinAlg::Map(
+        systemmatrix_->matrix(structure_block_, structure_block_).epetra_matrix()->RowMap());
     Core::LinearSolver::Parameters::fix_null_space(
         inv.data(), oldmap, newmap, solver_->params().sublist("Inverse1"));
   }
   // fixing length of Inverse2 nullspace (solver/preconditioner ML)
   {
     std::string inv = "Inverse2";
-    const Epetra_Map& oldmap = *(poro_field()->fluid_field()->dof_row_map());
-    const Epetra_Map& newmap =
-        systemmatrix_->matrix(porofluid_block_, porofluid_block_).epetra_matrix()->RowMap();
+    const Core::LinAlg::Map& oldmap = *(poro_field()->fluid_field()->dof_row_map());
+    const Core::LinAlg::Map& newmap = Core::LinAlg::Map(
+        systemmatrix_->matrix(porofluid_block_, porofluid_block_).epetra_matrix()->RowMap());
     Core::LinearSolver::Parameters::fix_null_space(
         inv.data(), oldmap, newmap, solver_->params().sublist("Inverse2"));
   }
   // fixing length of Inverse3 nullspace (solver/preconditioner ML)
   {
     std::string inv = "Inverse3";
-    const Epetra_Map& oldmap = *(fluid_field()->dof_row_map());
-    const Epetra_Map& newmap =
-        systemmatrix_->matrix(fluid_block_, fluid_block_).epetra_matrix()->RowMap();
+    const Core::LinAlg::Map& oldmap = *(fluid_field()->dof_row_map());
+    const Core::LinAlg::Map& newmap = Core::LinAlg::Map(
+        systemmatrix_->matrix(fluid_block_, fluid_block_).epetra_matrix()->RowMap());
     Core::LinearSolver::Parameters::fix_null_space(
         inv.data(), oldmap, newmap, solver_->params().sublist("Inverse3"));
   }
   // fixing length of Inverse4 nullspace (solver/preconditioner ML)
   {
     std::string inv = "Inverse4";
-    const Epetra_Map& oldmap = *(ale_field()->dof_row_map());
-    const Epetra_Map& newmap =
-        systemmatrix_->matrix(ale_i_block_, ale_i_block_).epetra_matrix()->RowMap();
+    const Core::LinAlg::Map& oldmap = *(ale_field()->dof_row_map());
+    const Core::LinAlg::Map& newmap = Core::LinAlg::Map(
+        systemmatrix_->matrix(ale_i_block_, ale_i_block_).epetra_matrix()->RowMap());
     Core::LinearSolver::Parameters::fix_null_space(
         inv.data(), oldmap, newmap, solver_->params().sublist("Inverse4"));
   }
@@ -947,19 +948,19 @@ void FPSI::Monolithic::line_search(Core::LinAlg::SparseMatrix& sparse)
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Map> FPSI::Monolithic::combined_dbc_map()
+std::shared_ptr<Core::LinAlg::Map> FPSI::Monolithic::combined_dbc_map()
 {
-  const std::shared_ptr<const Epetra_Map> scondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> scondmap =
       poro_field()->structure_field()->get_dbc_map_extractor()->cond_map();
-  const std::shared_ptr<const Epetra_Map> pfcondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> pfcondmap =
       poro_field()->fluid_field()->get_dbc_map_extractor()->cond_map();
-  const std::shared_ptr<const Epetra_Map> fcondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> fcondmap =
       fluid_field()->get_dbc_map_extractor()->cond_map();
-  const std::shared_ptr<const Epetra_Map> acondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> acondmap =
       ale_field()->get_dbc_map_extractor()->cond_map();
-  std::shared_ptr<Epetra_Map> tempmap = Core::LinAlg::merge_map(scondmap, pfcondmap, false);
-  std::shared_ptr<Epetra_Map> condmap_0 = Core::LinAlg::merge_map(tempmap, fcondmap, false);
-  std::shared_ptr<Epetra_Map> condmap = Core::LinAlg::merge_map(condmap_0, acondmap, false);
+  std::shared_ptr<Core::LinAlg::Map> tempmap = Core::LinAlg::merge_map(scondmap, pfcondmap, false);
+  std::shared_ptr<Core::LinAlg::Map> condmap_0 = Core::LinAlg::merge_map(tempmap, fcondmap, false);
+  std::shared_ptr<Core::LinAlg::Map> condmap = Core::LinAlg::merge_map(condmap_0, acondmap, false);
 
   return condmap;
 }  // combined_dbc_map()
@@ -1792,7 +1793,7 @@ void FPSI::Monolithic::fpsifd_check()
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void FPSI::Monolithic::extract_columnsfrom_sparse(
-    Epetra_CrsMatrix& src, const Epetra_Map& colmap, Epetra_CrsMatrix& dst)
+    Epetra_CrsMatrix& src, const Core::LinAlg::Map& colmap, Epetra_CrsMatrix& dst)
 {
   dst.PutScalar(0.0);  // clear matrix
   int rows = src.NumGlobalRows();

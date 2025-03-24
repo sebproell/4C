@@ -111,29 +111,29 @@ PoroElast::MonolithicSplit::fluid_to_structure_at_interface(
   return icoupfs_->slave_to_master(iv);
 }
 
-std::shared_ptr<Epetra_Map> PoroElast::MonolithicSplit::fsidbc_map()
+std::shared_ptr<Core::LinAlg::Map> PoroElast::MonolithicSplit::fsidbc_map()
 {
   TEUCHOS_FUNC_TIME_MONITOR("PoroElast::MonolithicSplit::FSIDBCMap");
 
   // get interface map and DBC map of fluid
-  std::vector<std::shared_ptr<const Epetra_Map>> fluidmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> fluidmaps;
   fluidmaps.push_back(fluid_field()->interface()->fsi_cond_map());
   fluidmaps.push_back(fluid_field()->get_dbc_map_extractor()->cond_map());
 
   // build vector of dbc and fsi coupling of fluid field
-  std::shared_ptr<Epetra_Map> fluidfsibcmap =
+  std::shared_ptr<Core::LinAlg::Map> fluidfsibcmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(fluidmaps);
 
   if (fluidfsibcmap->NumMyElements())
     FOUR_C_THROW("Dirichlet boundary conditions on fluid and FSI interface not supported!!");
 
   // get interface map and DBC map of structure
-  std::vector<std::shared_ptr<const Epetra_Map>> structmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> structmaps;
   structmaps.push_back(structure_field()->interface()->fsi_cond_map());
   structmaps.push_back(structure_field()->get_dbc_map_extractor()->cond_map());
 
   // vector of dbc and fsi coupling of structure field
-  std::shared_ptr<Epetra_Map> structfsibcmap =
+  std::shared_ptr<Core::LinAlg::Map> structfsibcmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(structmaps);
 
   std::shared_ptr<Core::LinAlg::Vector<double>> gidmarker_struct =
@@ -167,9 +167,9 @@ std::shared_ptr<Epetra_Map> PoroElast::MonolithicSplit::fsidbc_map()
     if (val == 1.0) structfsidbcvector.push_back(fluidmap[i]);
   }
 
-  std::shared_ptr<Epetra_Map> structfsidbcmap =
-      std::make_shared<Epetra_Map>(-1, structfsidbcvector.size(), structfsidbcvector.data(), 0,
-          Core::Communication::as_epetra_comm(get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> structfsidbcmap =
+      std::make_shared<Core::LinAlg::Map>(-1, structfsidbcvector.size(), structfsidbcvector.data(),
+          0, Core::Communication::as_epetra_comm(get_comm()));
   // FOUR_C_ASSERT(fluidfsidbcmap->UniqueGIDs(),"fsidbcmap is not unique!");
 
   return structfsidbcmap;
@@ -223,22 +223,22 @@ void PoroElast::MonolithicSplit::build_combined_dbc_map()
   TEUCHOS_FUNC_TIME_MONITOR("PoroElast::MonolithicSplit::combined_dbc_map");
 
   // first, get DBC-maps from structure and fluid field and merge them to one map
-  const std::shared_ptr<const Epetra_Map> scondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> scondmap =
       structure_field()->get_dbc_map_extractor()->cond_map();
-  const std::shared_ptr<const Epetra_Map> fcondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> fcondmap =
       fluid_field()->get_dbc_map_extractor()->cond_map();
 
-  std::vector<std::shared_ptr<const Epetra_Map>> vectoroverallfsimaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> vectoroverallfsimaps;
   vectoroverallfsimaps.push_back(scondmap);
   vectoroverallfsimaps.push_back(fcondmap);
 
-  std::shared_ptr<Epetra_Map> overallfsidbcmaps =
+  std::shared_ptr<Core::LinAlg::Map> overallfsidbcmaps =
       Core::LinAlg::MultiMapExtractor::merge_maps(vectoroverallfsimaps);
 
   // now we intersect the global dof map with the DBC map to get all dofs with DBS applied, which
   // are in the global
   // system, i.e. are not condensed
-  std::vector<std::shared_ptr<const Epetra_Map>> vectordbcmaps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> vectordbcmaps;
   vectordbcmaps.emplace_back(overallfsidbcmaps);
   vectordbcmaps.emplace_back(fullmap_);
 

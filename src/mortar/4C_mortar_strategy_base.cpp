@@ -43,7 +43,7 @@ Mortar::StrategyDataContainer::StrategyDataContainer()
  | ctor (public)                                             popp 01/10 |
  *----------------------------------------------------------------------*/
 Mortar::StrategyBase::StrategyBase(const std::shared_ptr<Mortar::StrategyDataContainer>& data_ptr,
-    const Epetra_Map* dof_row_map, const Epetra_Map* NodeRowMap,
+    const Core::LinAlg::Map* dof_row_map, const Core::LinAlg::Map* NodeRowMap,
     const Teuchos::ParameterList& params, const int spatialDim, const MPI_Comm& comm,
     const double alphaf, const int maxdof)
     : probdofs_(data_ptr->prob_dofs_ptr()),
@@ -58,8 +58,8 @@ Mortar::StrategyBase::StrategyBase(const std::shared_ptr<Mortar::StrategyDataCon
       data_ptr_(data_ptr)
 {
   // *** set data container variables
-  data().prob_dofs_ptr() = std::make_shared<Epetra_Map>(*(dof_row_map));
-  data().prob_nodes_ptr() = std::make_shared<Epetra_Map>(*(NodeRowMap));
+  data().prob_dofs_ptr() = std::make_shared<Core::LinAlg::Map>(*(dof_row_map));
+  data().prob_nodes_ptr() = std::make_shared<Core::LinAlg::Map>(*(NodeRowMap));
   data().comm_ptr() = comm;
   data().s_contact() = params;
   data().n_dim() = spatialDim;

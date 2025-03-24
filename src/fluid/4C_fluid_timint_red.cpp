@@ -59,7 +59,7 @@ void FLD::TimIntRedModels::init()
   // evaluate the map of the womersley bcs
   vol_flow_rates_bc_extractor_ = std::make_shared<FLD::Utils::VolumetricFlowMapExtractor>();
   vol_flow_rates_bc_extractor_->setup(*discret_);
-  vol_surf_flow_bc_maps_ = std::make_shared<Epetra_Map>(
+  vol_surf_flow_bc_maps_ = std::make_shared<Core::LinAlg::Map>(
       *(vol_flow_rates_bc_extractor_->volumetric_surface_flow_cond_map()));
 
   // -------------------------------------------------------------------

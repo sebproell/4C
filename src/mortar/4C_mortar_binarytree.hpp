@@ -11,9 +11,9 @@
 #include "4C_config.hpp"
 
 #include "4C_inpar_mortar.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_mortar_base_binarytree.hpp"
 
-#include <Epetra_Map.h>
 #include <mpi.h>
 
 FOUR_C_NAMESPACE_OPEN
@@ -189,8 +189,8 @@ namespace Mortar
     \param useauxpos (in):   flag indicating usage of auxiliary position for calculation of slabs
 
     */
-    BinaryTree(Core::FE::Discretization& discret, std::shared_ptr<Epetra_Map> selements,
-        std::shared_ptr<Epetra_Map> melements, int dim, double eps,
+    BinaryTree(Core::FE::Discretization& discret, std::shared_ptr<Core::LinAlg::Map> selements,
+        std::shared_ptr<Core::LinAlg::Map> melements, int dim, double eps,
         Inpar::Mortar::BinaryTreeUpdateType updatetype, bool useauxpos);
 
 
@@ -336,9 +336,9 @@ namespace Mortar
     BinaryTree(const BinaryTree& old);
 
     //! all slave elements on surface (column map)
-    std::shared_ptr<Epetra_Map> selements_;
+    std::shared_ptr<Core::LinAlg::Map> selements_;
     //! all master elements on surface (full map)
-    std::shared_ptr<Epetra_Map> melements_;
+    std::shared_ptr<Core::LinAlg::Map> melements_;
     //! map of all slave tree nodes, sorted by layers
     std::vector<std::vector<std::shared_ptr<BinaryTreeNode>>> streenodesmap_;
     //! map of all master tree nodes, sorted by layers

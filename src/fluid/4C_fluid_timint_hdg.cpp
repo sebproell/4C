@@ -76,14 +76,16 @@ void FLD::TimIntHDG::init()
   conddofmapvec.reserve(conddofset.size());
   conddofmapvec.assign(conddofset.begin(), conddofset.end());
   conddofset.clear();
-  std::shared_ptr<Epetra_Map> conddofmap = std::make_shared<Epetra_Map>(-1, conddofmapvec.size(),
-      conddofmapvec.data(), 0, Core::Communication::as_epetra_comm(hdgdis->get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> conddofmap =
+      std::make_shared<Core::LinAlg::Map>(-1, conddofmapvec.size(), conddofmapvec.data(), 0,
+          Core::Communication::as_epetra_comm(hdgdis->get_comm()));
   std::vector<int> otherdofmapvec;
   otherdofmapvec.reserve(otherdofset.size());
   otherdofmapvec.assign(otherdofset.begin(), otherdofset.end());
   otherdofset.clear();
-  std::shared_ptr<Epetra_Map> otherdofmap = std::make_shared<Epetra_Map>(-1, otherdofmapvec.size(),
-      otherdofmapvec.data(), 0, Core::Communication::as_epetra_comm(hdgdis->get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> otherdofmap =
+      std::make_shared<Core::LinAlg::Map>(-1, otherdofmapvec.size(), otherdofmapvec.data(), 0,
+          Core::Communication::as_epetra_comm(hdgdis->get_comm()));
   velpressplitter_->setup(*hdgdis->dof_row_map(), conddofmap, otherdofmap);
 
   // implement ost and bdf2 through gen-alpha facilities
@@ -350,8 +352,8 @@ void FLD::TimIntHDG::set_initial_flow_field(
   }
   else
   {
-    const Epetra_Map* dofrowmap = discret_->dof_row_map();
-    const Epetra_Map* intdofrowmap = discret_->dof_row_map(1);
+    const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
+    const Core::LinAlg::Map* intdofrowmap = discret_->dof_row_map(1);
     Core::LinAlg::SerialDenseVector elevec1, elevec2, elevec3;
     Core::LinAlg::SerialDenseMatrix elemat1, elemat2;
     Teuchos::ParameterList initParams;
@@ -440,7 +442,7 @@ std::shared_ptr<std::vector<double>> FLD::TimIntHDG::evaluate_error_compared_to_
 void FLD::TimIntHDG::reset(bool completeReset, int numsteps, int iter)
 {
   FluidImplicitTimeInt::reset(completeReset, numsteps, iter);
-  const Epetra_Map* intdofrowmap = discret_->dof_row_map(1);
+  const Core::LinAlg::Map* intdofrowmap = discret_->dof_row_map(1);
   intvelnp_ = Core::LinAlg::create_vector(*intdofrowmap, true);
   intvelaf_ = Core::LinAlg::create_vector(*intdofrowmap, true);
   intvelnm_ = Core::LinAlg::create_vector(*intdofrowmap, true);

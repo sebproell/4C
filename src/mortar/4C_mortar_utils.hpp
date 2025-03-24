@@ -10,13 +10,13 @@
 
 #include "4C_config.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_mortar_coupling3d_classes.hpp"
 
 #include <Epetra_CrsMatrix.h>
 #include <Epetra_Export.h>
 #include <Epetra_Import.h>
-#include <Epetra_Map.h>
 
 #include <memory>
 
@@ -58,7 +58,7 @@ namespace Mortar
   \post Output matrix will be fill_complete()
   */
   std::shared_ptr<Core::LinAlg::SparseMatrix> matrix_row_transform_gids(
-      const Core::LinAlg::SparseMatrix& inmat, const Epetra_Map& newrowmap);
+      const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap);
 
   /*!
   \brief Transform the column map of a matrix (only GIDs)
@@ -76,7 +76,7 @@ namespace Mortar
   \post Output matrix will be fill_complete()
   */
   std::shared_ptr<Core::LinAlg::SparseMatrix> matrix_col_transform_gids(
-      const Core::LinAlg::SparseMatrix& inmat, const Epetra_Map& newdomainmap);
+      const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newdomainmap);
 
   /*! \brief Replace the column and domain map of a filled matrix
    *
@@ -98,7 +98,8 @@ namespace Mortar
    *
    *  */
   void replace_column_and_domain_map(Core::LinAlg::SparseMatrix& mat,
-      const Epetra_Map& newdomainmap, std::shared_ptr<Epetra_Map>* const newcolmap_ptr = nullptr);
+      const Core::LinAlg::Map& newdomainmap,
+      std::shared_ptr<Core::LinAlg::Map>* const newcolmap_ptr = nullptr);
 
   /*! \brief Create a new column map
    *
@@ -108,8 +109,8 @@ namespace Mortar
    *  \param newcolmap    (out): new column map
    *
    *  */
-  void create_new_col_map(const Core::LinAlg::SparseMatrix& mat, const Epetra_Map& newdomainmap,
-      std::shared_ptr<Epetra_Map>& newcolmap);
+  void create_new_col_map(const Core::LinAlg::SparseMatrix& mat,
+      const Core::LinAlg::Map& newdomainmap, std::shared_ptr<Core::LinAlg::Map>& newcolmap);
 
   /*!
   \brief Transform the row and column maps of a matrix (only GIDs)
@@ -128,8 +129,8 @@ namespace Mortar
   \post Output matrix will be fill_complete()
   */
   std::shared_ptr<Core::LinAlg::SparseMatrix> matrix_row_col_transform_gids(
-      const Core::LinAlg::SparseMatrix& inmat, const Epetra_Map& newrowmap,
-      const Epetra_Map& newdomainmap);
+      const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap,
+      const Core::LinAlg::Map& newdomainmap);
 
   /*!
   \brief Transform the row map of a matrix (parallel distribution)
@@ -139,7 +140,7 @@ namespace Mortar
 
   */
   std::shared_ptr<Core::LinAlg::SparseMatrix> matrix_row_transform(
-      const Core::LinAlg::SparseMatrix& inmat, const Epetra_Map& newrowmap);
+      const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap);
 
   /*!
   \brief Transform the column map of a matrix (parallel distribution)
@@ -150,7 +151,7 @@ namespace Mortar
 
   */
   std::shared_ptr<Core::LinAlg::SparseMatrix> matrix_col_transform(
-      const Core::LinAlg::SparseMatrix& inmat, const Epetra_Map& newdomainmap);
+      const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newdomainmap);
 
   /*!
   \brief Transform the row and column maps of a matrix (parallel distribution)
@@ -161,8 +162,8 @@ namespace Mortar
 
   */
   std::shared_ptr<Core::LinAlg::SparseMatrix> matrix_row_col_transform(
-      const Core::LinAlg::SparseMatrix& inmat, const Epetra_Map& newrowmap,
-      const Epetra_Map& newdomainmap);
+      const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap,
+      const Core::LinAlg::Map& newdomainmap);
 
   /*!
   \brief Parallel redistribution of a sparse matrix
@@ -171,7 +172,7 @@ namespace Mortar
 
   */
   std::shared_ptr<Epetra_CrsMatrix> redistribute(const Core::LinAlg::SparseMatrix& src,
-      const Epetra_Map& permrowmap, const Epetra_Map& permdomainmap);
+      const Core::LinAlg::Map& permrowmap, const Core::LinAlg::Map& permdomainmap);
 
   /*!
   \brief Convex hull points are sorted in order to obtain final clip polygon

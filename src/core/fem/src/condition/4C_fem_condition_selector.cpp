@@ -85,7 +85,7 @@ Core::Conditions::MultiConditionSelector::MultiConditionSelector() : overlapping
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Core::Conditions::MultiConditionSelector::setup_extractor(const Core::FE::Discretization& dis,
-    const Epetra_Map& fullmap, Core::LinAlg::MultiMapExtractor& extractor)
+    const Core::LinAlg::Map& fullmap, Core::LinAlg::MultiMapExtractor& extractor)
 {
   setup_cond_dof_sets(dis);
 
@@ -105,7 +105,7 @@ void Core::Conditions::MultiConditionSelector::setup_extractor(const Core::FE::D
   // Setup all maps. The "other" map goes first so it becomes the zeroth map
   // of the MultiMapExtractor.
 
-  std::vector<std::shared_ptr<const Epetra_Map>> maps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
   maps.reserve(conddofset_.size() + 1);
 
   maps.emplace_back(Core::LinAlg::create_map(otherdofset, dis.get_comm()));

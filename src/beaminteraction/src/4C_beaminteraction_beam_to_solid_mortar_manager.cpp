@@ -163,11 +163,11 @@ void BeamInteraction::BeamToSolidMortarManager::setup()
   }
 
   // Rowmap for the additional GIDs used by the mortar contact discretization.
-  lambda_dof_rowmap_translations_ = std::make_shared<Epetra_Map>(-1,
+  lambda_dof_rowmap_translations_ = std::make_shared<Core::LinAlg::Map>(-1,
       my_lambda_gid_translational.size(), my_lambda_gid_translational.data(), 0,
       Core::Communication::as_epetra_comm(discret_->get_comm()));
-  lambda_dof_rowmap_rotations_ = std::make_shared<Epetra_Map>(-1, my_lambda_gid_rotational.size(),
-      my_lambda_gid_rotational.data(), 0,
+  lambda_dof_rowmap_rotations_ = std::make_shared<Core::LinAlg::Map>(-1,
+      my_lambda_gid_rotational.size(), my_lambda_gid_rotational.data(), 0,
       Core::Communication::as_epetra_comm(discret_->get_comm()));
   lambda_dof_rowmap_ =
       Core::LinAlg::merge_map(lambda_dof_rowmap_translations_, lambda_dof_rowmap_rotations_, false);
@@ -175,9 +175,9 @@ void BeamInteraction::BeamToSolidMortarManager::setup()
   // We need to be able to get the global ids for a Lagrange multiplier DOF from the global id
   // of a node or element. To do so, we 'abuse' the Core::LinAlg::MultiVector<double> as map between
   // the global node / element ids and the global Lagrange multiplier DOF ids.
-  Epetra_Map node_gid_rowmap(-1, n_nodes, my_nodes_gid.data(), 0,
+  Core::LinAlg::Map node_gid_rowmap(-1, n_nodes, my_nodes_gid.data(), 0,
       Core::Communication::as_epetra_comm(discret_->get_comm()));
-  Epetra_Map element_gid_rowmap(-1, n_element, my_elements_gid.data(), 0,
+  Core::LinAlg::Map element_gid_rowmap(-1, n_element, my_elements_gid.data(), 0,
       Core::Communication::as_epetra_comm(discret_->get_comm()));
 
   // Map from global node / element ids to global lagrange multiplier ids. Only create the
@@ -226,7 +226,7 @@ void BeamInteraction::BeamToSolidMortarManager::setup()
   set_global_maps();
 
   // Create the global coupling matrices.
-  constraint_ = std::make_shared<Epetra_FEVector>(*lambda_dof_rowmap_);
+  constraint_ = std::make_shared<Epetra_FEVector>(lambda_dof_rowmap_->get_epetra_map());
   constraint_lin_beam_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *lambda_dof_rowmap_, 30, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
   constraint_lin_solid_ = std::make_shared<Core::LinAlg::SparseMatrix>(
@@ -235,12 +235,12 @@ void BeamInteraction::BeamToSolidMortarManager::setup()
       *beam_dof_rowmap_, 30, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
   force_solid_lin_lambda_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *solid_dof_rowmap_, 100, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
-  kappa_ = std::make_shared<Epetra_FEVector>(*lambda_dof_rowmap_);
+  kappa_ = std::make_shared<Epetra_FEVector>(lambda_dof_rowmap_->get_epetra_map());
   kappa_lin_beam_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *lambda_dof_rowmap_, 30, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
   kappa_lin_solid_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *lambda_dof_rowmap_, 100, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
-  lambda_active_ = std::make_shared<Epetra_FEVector>(*lambda_dof_rowmap_);
+  lambda_active_ = std::make_shared<Epetra_FEVector>(lambda_dof_rowmap_->get_epetra_map());
 
   // Set flag for successful setup.
   is_setup_ = true;
@@ -265,10 +265,10 @@ void BeamInteraction::BeamToSolidMortarManager::set_global_maps()
   }
 
   // Create the beam and solid maps.
-  beam_dof_rowmap_ = std::make_shared<Epetra_Map>(-1, beam_dofs.size(), beam_dofs.data(), 0,
+  beam_dof_rowmap_ = std::make_shared<Core::LinAlg::Map>(-1, beam_dofs.size(), beam_dofs.data(), 0,
       Core::Communication::as_epetra_comm(discret_->get_comm()));
-  solid_dof_rowmap_ = std::make_shared<Epetra_Map>(-1, solid_dofs.size(), solid_dofs.data(), 0,
-      Core::Communication::as_epetra_comm(discret_->get_comm()));
+  solid_dof_rowmap_ = std::make_shared<Core::LinAlg::Map>(-1, solid_dofs.size(), solid_dofs.data(),
+      0, Core::Communication::as_epetra_comm(discret_->get_comm()));
 
   // Reset the local maps.
   node_gid_to_lambda_gid_map_.clear();
@@ -330,10 +330,10 @@ void BeamInteraction::BeamToSolidMortarManager::set_local_maps(
   element_gid_needed.resize(std::distance(element_gid_needed.begin(), it));
 
   // Create the maps for the extraction of the values.
-  Epetra_Map node_gid_needed_rowmap(-1, node_gid_needed.size(), node_gid_needed.data(), 0,
+  Core::LinAlg::Map node_gid_needed_rowmap(-1, node_gid_needed.size(), node_gid_needed.data(), 0,
       Core::Communication::as_epetra_comm(discret_->get_comm()));
-  Epetra_Map element_gid_needed_rowmap(-1, element_gid_needed.size(), element_gid_needed.data(), 0,
-      Core::Communication::as_epetra_comm(discret_->get_comm()));
+  Core::LinAlg::Map element_gid_needed_rowmap(-1, element_gid_needed.size(),
+      element_gid_needed.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
 
   // Create the Multivectors that will be filled with all values needed on this rank.
   std::shared_ptr<Core::LinAlg::MultiVector<double>> node_gid_to_lambda_gid_copy = nullptr;
@@ -382,7 +382,7 @@ void BeamInteraction::BeamToSolidMortarManager::set_local_maps(
   }
 
   // Create the global lambda col map.
-  lambda_dof_colmap_ = std::make_shared<Epetra_Map>(-1, lambda_gid_for_col_map.size(),
+  lambda_dof_colmap_ = std::make_shared<Core::LinAlg::Map>(-1, lambda_gid_for_col_map.size(),
       lambda_gid_for_col_map.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
 
   // Set flags for local maps.

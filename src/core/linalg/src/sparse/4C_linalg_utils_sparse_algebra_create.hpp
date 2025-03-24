@@ -13,13 +13,13 @@
 #include "4C_fem_dofset_interface.hpp"
 #include "4C_linalg_blocksparsematrix.hpp"
 #include "4C_linalg_graph.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
 #include <Epetra_CrsMatrix.h>
 #include <Epetra_Export.h>
 #include <Epetra_Import.h>
-#include <Epetra_Map.h>
 
 #include <memory>
 
@@ -34,14 +34,14 @@ namespace Core::LinAlg
    \param npr (in): estimated number of entries per row.
    (need not be exact, better should be too big rather then too small)
    */
-  std::shared_ptr<Epetra_CrsMatrix> create_matrix(const Epetra_Map& rowmap, const int npr);
+  std::shared_ptr<Epetra_CrsMatrix> create_matrix(const Core::LinAlg::Map& rowmap, const int npr);
 
   /*!
    \brief Create a new sparse identity matrix and return RefcountPtr to it
 
    \param rowmap (in): row map of matrix
    */
-  std::shared_ptr<Core::LinAlg::SparseMatrix> create_identity_matrix(const Epetra_Map& map);
+  std::shared_ptr<Core::LinAlg::SparseMatrix> create_identity_matrix(const Core::LinAlg::Map& map);
 
   /**
    * Same as create_identity_matrix() but fills an existing matrix @p mat.
@@ -66,6 +66,14 @@ namespace Core::LinAlg
    */
   std::shared_ptr<Core::LinAlg::Vector<double>> create_vector(
       const Epetra_BlockMap& rowmap, const bool init = true);
+  /*!
+ \brief Create a new Core::LinAlg::Vector<double> and return RefcountPtr to it
+
+ \param rowmap (in): row map of vector
+ \param init (in): initialize vector to zero upon construction
+ */
+  std::shared_ptr<Core::LinAlg::Vector<double>> create_vector(
+      const Map& rowmap, const bool init = true);
 
   /*!
    \brief Create a new Core::LinAlg::MultiVector<double> and return RefcountPtr to it
@@ -78,24 +86,34 @@ namespace Core::LinAlg
       const Epetra_BlockMap& rowmap, const int numrows, const bool init = true);
 
   /*!
-   \brief Create an Epetra_Map from a set of gids
+  \brief Create a new Core::LinAlg::MultiVector<double> and return RefcountPtr to it
 
-   This is one of the basic operations that is needed every so often.
-
-   \param gids The local gids of this map
-   \param comm The map's communicator
-   */
-  std::shared_ptr<Epetra_Map> create_map(const std::set<int>& gids, MPI_Comm comm);
+  \param rowmap (in): row map of vector
+  \param rowmap (in): number of vectors
+  \param init (in): initialize vector to zero upon construction
+  */
+  std::shared_ptr<Core::LinAlg::MultiVector<double>> create_multi_vector(
+      const Map& rowmap, const int numrows, const bool init = true);
 
   /*!
-   \brief Create an Epetra_Map from a vector of gids
+   \brief Create an Core::LinAlg::Map from a set of gids
 
    This is one of the basic operations that is needed every so often.
 
    \param gids The local gids of this map
    \param comm The map's communicator
    */
-  std::shared_ptr<Epetra_Map> create_map(const std::vector<int>& gids, MPI_Comm comm);
+  std::shared_ptr<Core::LinAlg::Map> create_map(const std::set<int>& gids, MPI_Comm comm);
+
+  /*!
+   \brief Create an Core::LinAlg::Map from a vector of gids
+
+   This is one of the basic operations that is needed every so often.
+
+   \param gids The local gids of this map
+   \param comm The map's communicator
+   */
+  std::shared_ptr<Core::LinAlg::Map> create_map(const std::vector<int>& gids, MPI_Comm comm);
 
   /*!
       \brief Creates MultiMapExtractor to split dofs at certain position

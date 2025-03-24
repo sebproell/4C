@@ -103,7 +103,7 @@ namespace PoroMultiPhaseScaTra
     const std::shared_ptr<Adapter::ScaTraBaseAlgorithm>& scatra_algo() { return scatra_; }
 
     //! dof map of vector of unknowns of scatra field
-    virtual std::shared_ptr<const Epetra_Map> scatra_dof_row_map() const;
+    virtual std::shared_ptr<const Core::LinAlg::Map> scatra_dof_row_map() const;
 
     //! handle divergence of solver
     void handle_divergence() const;
@@ -132,7 +132,7 @@ namespace PoroMultiPhaseScaTra
     const bool artery_coupl_;
 
     //! additional volume-fraction species Dirichlet conditions
-    std::shared_ptr<Epetra_Map> add_dirichmaps_volfrac_spec_;
+    std::shared_ptr<Core::LinAlg::Map> add_dirichmaps_volfrac_spec_;
 
     std::shared_ptr<ScaTra::MeshtyingStrategyArtery> scatramsht_;
 

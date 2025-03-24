@@ -27,8 +27,9 @@ Adapter::FBIConstraintBridge::FBIConstraintBridge()
       geometry_evaluation_data_(nullptr) {};
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Adapter::FBIConstraintBridge::setup(const Epetra_Map* beam_map, const Epetra_Map* fluid_map,
-    std::shared_ptr<Core::LinAlg::SparseOperator> fluidmatrix, bool fluidmeshtying)
+void Adapter::FBIConstraintBridge::setup(const Core::LinAlg::Map* beam_map,
+    const Core::LinAlg::Map* fluid_map, std::shared_ptr<Core::LinAlg::SparseOperator> fluidmatrix,
+    bool fluidmeshtying)
 {
   // Create the beaminteraction data container and set the parameters
   beam_interaction_params_ = std::make_shared<FBI::BeamToFluidMeshtyingParams>();

@@ -15,6 +15,8 @@
 #include <Epetra_CrsMatrix.h>
 #include <Epetra_FECrsMatrix.h>
 
+#include <optional>
+
 FOUR_C_NAMESPACE_OPEN
 
 namespace Core::LinAlg
@@ -71,7 +73,7 @@ namespace Core::LinAlg
      *  rows.
      *
      *  */
-    bool is_dbc_applied(const Epetra_Map& dbcmap, bool diagonalblock = true,
+    bool is_dbc_applied(const Core::LinAlg::Map& dbcmap, bool diagonalblock = true,
         const Core::LinAlg::SparseMatrix* trafo = nullptr) const override;
 
     //@}
@@ -103,17 +105,49 @@ namespace Core::LinAlg
     int max_num_entries() const;
 
     /// Returns the Epetra_Map object associated with the rows of this matrix.
-    const Epetra_Map& row_map() const { return sysmat_->RowMap(); }
+    const Core::LinAlg::Map& row_map() const
+    {
+      if (!row_map_)
+      {  // check if view is uninitialized
+        row_map_ = Core::LinAlg::Map(sysmat_->RowMap());
+      }
+      return *row_map_;
+    }
 
-    /// Returns the Epetra_Map object that describes the set of column-indices that appear in each
-    /// processor's locally owned matrix rows.
-    const Epetra_Map& col_map() const { return sysmat_->ColMap(); }
+    /// Returns the  Epetra_Mapobject that describes the set of column-indices that appear in
+    /// each processor's locally owned matrix rows.
+    const Core::LinAlg::Map& col_map() const
+    {
+      if (!column_map_)
+      {  // check if view is uninitialized
+        column_map_ = Core::LinAlg::Map(sysmat_->ColMap());
+      }
+      return *column_map_;
+    }
 
     /// Returns the Epetra_Map object associated with the domain of this matrix operator.
     const Epetra_Map& domain_map() const override { return sysmat_->DomainMap(); }
 
+    /// This is stupid: domain_map must be inherited, therefore we need rename the domain map
+    const Core::LinAlg::Map& domain_map_not_epetra() const override
+    {
+      if (!domain_map_)
+      {  // check if view is uninitialized
+        domain_map_ = Core::LinAlg::Map(sysmat_->DomainMap());
+      }
+      return *domain_map_;
+    }
+
     /// Returns the Epetra_Map object associated with the range of this matrix operator.
-    const Epetra_Map& range_map() const { return sysmat_->RangeMap(); }
+    const Core::LinAlg::Map& range_map() const
+    {
+      if (!range_map_)
+      {  // check if view is uninitialized
+        range_map_ = Core::LinAlg::Map(sysmat_->RangeMap());
+      }
+      return *range_map_;
+    }
+
 
     /// Returns the current UseTranspose setting.
     bool UseTranspose() const override;
@@ -189,6 +223,11 @@ namespace Core::LinAlg
    protected:
     /// internal epetra matrix (Epetra_CrsMatrix or Epetra_FECrsMatrix)
     std::shared_ptr<Epetra_CrsMatrix> sysmat_;
+
+    mutable std::optional<Core::LinAlg::Map> range_map_;
+    mutable std::optional<Core::LinAlg::Map> row_map_;
+    mutable std::optional<Core::LinAlg::Map> domain_map_;
+    mutable std::optional<Core::LinAlg::Map> column_map_;
   };
 
 }  // namespace Core::LinAlg

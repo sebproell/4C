@@ -286,7 +286,7 @@ void FLD::TimIntGenAlpha::gen_alpha_intermediate_values(
   //    vec         = alpha_F * vecnp     + (1-alpha_F) *  vecn
 
   // do stupid conversion into Epetra map
-  Epetra_Map vecmap(vecnp->get_block_map().NumGlobalElements(),
+  Core::LinAlg::Map vecmap(vecnp->get_block_map().NumGlobalElements(),
       vecnp->get_block_map().NumMyElements(), vecnp->get_block_map().MyGlobalElements(), 0,
       vecnp->get_block_map().Comm());
 
@@ -385,7 +385,7 @@ void FLD::TimIntGenAlpha::outputof_filtered_vel(
     std::shared_ptr<Core::LinAlg::Vector<double>> outvec,
     std::shared_ptr<Core::LinAlg::Vector<double>> fsoutvec)
 {
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
   std::shared_ptr<Core::LinAlg::Vector<double>> row_finescaleveltmp;
   row_finescaleveltmp = std::make_shared<Core::LinAlg::Vector<double>>(*dofrowmap, true);
 

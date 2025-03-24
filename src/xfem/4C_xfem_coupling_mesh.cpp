@@ -197,7 +197,7 @@ void XFEM::MeshCoupling::init_state_vectors()
 {
   // move state vectors to extra container class!
 
-  const Epetra_Map* cutterdofrowmap = cutter_dis_->dof_row_map();
+  const Core::LinAlg::Map* cutterdofrowmap = cutter_dis_->dof_row_map();
 
   ivelnp_ = Core::LinAlg::create_vector(*cutterdofrowmap, true);
   iveln_ = Core::LinAlg::create_vector(*cutterdofrowmap, true);
@@ -421,9 +421,9 @@ void XFEM::MeshVolCoupling::redistribute_embedded_discretization()
     std::vector<int> full_nodes(full_ele_nodes_col.begin(), full_ele_nodes_col.end());
     std::vector<int> full_eles(full_eles_col.begin(), full_eles_col.end());
 
-    const Epetra_Map full_nodecolmap(-1, full_nodes.size(), full_nodes.data(), 0,
+    const Core::LinAlg::Map full_nodecolmap(-1, full_nodes.size(), full_nodes.data(), 0,
         Core::Communication::as_epetra_comm(cond_dis_->get_comm()));
-    const Epetra_Map full_elecolmap(-1, full_eles.size(), full_eles.data(), 0,
+    const Core::LinAlg::Map full_elecolmap(-1, full_eles.size(), full_eles.data(), 0,
         Core::Communication::as_epetra_comm(cond_dis_->get_comm()));
 
     // redistribute nodes and elements to column (ghost) map
@@ -573,21 +573,21 @@ void XFEM::MeshVolCoupling::create_auxiliary_discretization()
   }
 
   // build nodal row & col maps to redistribute the discretization
-  std::shared_ptr<Epetra_Map> newnoderowmap;
-  std::shared_ptr<Epetra_Map> newnodecolmap;
+  std::shared_ptr<Core::LinAlg::Map> newnoderowmap;
+  std::shared_ptr<Core::LinAlg::Map> newnodecolmap;
 
   {
     // copy row/col node gids to std::vector
-    // (expected by Epetra_Map ctor)
+    // (expected by Core::LinAlg::Map ctor)
     std::vector<int> rownodes(adjacent_row.begin(), adjacent_row.end());
     // build noderowmap for new distribution of nodes
-    newnoderowmap = std::make_shared<Epetra_Map>(-1, rownodes.size(), rownodes.data(), 0,
+    newnoderowmap = std::make_shared<Core::LinAlg::Map>(-1, rownodes.size(), rownodes.data(), 0,
         Core::Communication::as_epetra_comm(aux_coup_dis_->get_comm()));
 
     std::vector<int> colnodes(adjacent_col.begin(), adjacent_col.end());
 
     // build nodecolmap for new distribution of nodes
-    newnodecolmap = std::make_shared<Epetra_Map>(-1, colnodes.size(), colnodes.data(), 0,
+    newnodecolmap = std::make_shared<Core::LinAlg::Map>(-1, colnodes.size(), colnodes.data(), 0,
         Core::Communication::as_epetra_comm(aux_coup_dis_->get_comm()));
 
     aux_coup_dis_->redistribute(*newnoderowmap, *newnodecolmap,
@@ -1622,8 +1622,8 @@ void XFEM::MeshCouplingFSI::init_state_vectors()
 {
   XFEM::MeshCoupling::init_state_vectors();
 
-  const Epetra_Map* cutterdofrowmap = cutter_dis_->dof_row_map();
-  const Epetra_Map* cutterdofcolmap = cutter_dis_->dof_col_map();
+  const Core::LinAlg::Map* cutterdofrowmap = cutter_dis_->dof_row_map();
+  const Core::LinAlg::Map* cutterdofcolmap = cutter_dis_->dof_col_map();
 
   itrueresidual_ = Core::LinAlg::create_vector(*cutterdofrowmap, true);
   iforcecol_ = Core::LinAlg::create_vector(*cutterdofcolmap, true);
@@ -1909,7 +1909,7 @@ void XFEM::MeshCouplingFSI::lift_drag(const int step, const double time) const
   {
     // compute force components
     const int nsd = 3;
-    const Epetra_Map* dofcolmap = cutter_dis_->dof_col_map();
+    const Core::LinAlg::Map* dofcolmap = cutter_dis_->dof_col_map();
     Core::LinAlg::Matrix<3, 1> c(true);
     for (int inode = 0; inode < cutter_dis_->num_my_col_nodes(); ++inode)
     {

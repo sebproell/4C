@@ -237,7 +237,7 @@ namespace FSI
     std::shared_ptr<Core::LinAlg::Vector<double>> aleresidual_;
 
     //! DOF map of Lagrange multiplier unknowns
-    std::shared_ptr<const Epetra_Map> lag_mult_dof_map_;
+    std::shared_ptr<const Core::LinAlg::Map> lag_mult_dof_map_;
 
     //! Lagrange multiplier
     std::shared_ptr<Core::LinAlg::Vector<double>> lag_mult_;

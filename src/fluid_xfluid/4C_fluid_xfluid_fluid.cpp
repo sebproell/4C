@@ -272,7 +272,7 @@ void FLD::XFluidFluid::time_update()
 }
 
 std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> FLD::XFluidFluid::block_system_matrix(
-    std::shared_ptr<Epetra_Map> innermap, std::shared_ptr<Epetra_Map> condmap)
+    std::shared_ptr<Core::LinAlg::Map> innermap, std::shared_ptr<Core::LinAlg::Map> condmap)
 {
   // Map of fluid FSI DOFs: condmap
   // Map of inner fluid DOFs: innermap
@@ -294,12 +294,12 @@ std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> FLD::XFluidFluid::block_sys
   return blockmat;
 }
 
-std::shared_ptr<const Epetra_Map> FLD::XFluidFluid::pressure_row_map()
+std::shared_ptr<const Core::LinAlg::Map> FLD::XFluidFluid::pressure_row_map()
 {
   return xff_state_->xffluidvelpressplitter_->cond_map();
 }
 
-std::shared_ptr<const Epetra_Map> FLD::XFluidFluid::velocity_row_map()
+std::shared_ptr<const Core::LinAlg::Map> FLD::XFluidFluid::velocity_row_map()
 {
   return xff_state_->xffluidvelpressplitter_->other_map();
 }
@@ -505,14 +505,13 @@ void FLD::XFluidFluid::add_eos_pres_stab_to_emb_layer()
       Core::LinAlg::create_vector(*xdiscret->dof_col_map(), true);
 
   //------------------------------------------------------------
-  const Epetra_Map* rmap = nullptr;
 
   // TODO: do not create a new matrix all the time, why not creating an epetraFE matrix in
   // fluidimplicit directly?
   std::shared_ptr<Epetra_FECrsMatrix> sysmat_FE;
 
-  rmap = &(embedded_fluid_->system_matrix()->OperatorRangeMap());
-  sysmat_FE = std::make_shared<Epetra_FECrsMatrix>(::Copy, *rmap, 256, false);
+  auto rmap = Core::LinAlg::Map(embedded_fluid_->system_matrix()->OperatorRangeMap());
+  sysmat_FE = std::make_shared<Epetra_FECrsMatrix>(::Copy, rmap.get_epetra_map(), 256, false);
 
   // TODO: think about the dirichlet and savegraph flags when ApplyDirichlet or Zero is called
   std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat_linalg =
@@ -623,14 +622,16 @@ void FLD::XFluidFluid::output()
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void FLD::XFluidFluid::update_monolithic_fluid_solution(
-    const std::shared_ptr<const Epetra_Map>& fsidofmap)
+    const std::shared_ptr<const Core::LinAlg::Map>& fsidofmap)
 {
   // manipulate the dbc map extractor
-  std::shared_ptr<const Epetra_Map> dbcmap = embedded_fluid_->get_dbc_map_extractor()->cond_map();
-  std::vector<std::shared_ptr<const Epetra_Map>> condmaps;
+  std::shared_ptr<const Core::LinAlg::Map> dbcmap =
+      embedded_fluid_->get_dbc_map_extractor()->cond_map();
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> condmaps;
   condmaps.push_back(dbcmap);
   condmaps.push_back(fsidofmap);
-  std::shared_ptr<Epetra_Map> condmerged = Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
+  std::shared_ptr<Core::LinAlg::Map> condmerged =
+      Core::LinAlg::MultiMapExtractor::merge_maps(condmaps);
 
   Core::LinAlg::MapExtractor fsidbcmapex(*(embedded_fluid_->dof_row_map()), condmerged);
 

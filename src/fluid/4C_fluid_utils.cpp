@@ -266,7 +266,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::Utils::StressManager::integra
   // get a vector layout from the discretization to construct matching
   // vectors and matrices
   //                 local <-> global dof numbering
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // create vector (+ initialization with zeros)
   std::shared_ptr<Core::LinAlg::Vector<double>> integratedshapefunc =
@@ -302,7 +302,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::Utils::StressManager::calc_wa
   // get a vector layout from the discretization to construct matching
   // vectors and matrices
   //                 local <-> global dof numbering
-  const Epetra_Map* dofrowmap = discret_->dof_row_map();
+  const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
   // vector ndnorm0 with pressure-entries is needed for evaluate_condition
   std::shared_ptr<Core::LinAlg::Vector<double>> ndnorm0 =
@@ -466,7 +466,7 @@ void FLD::Utils::StressManager::calc_sep_enr(std::shared_ptr<Core::LinAlg::Spars
 //----------------------------------------------------------------------*/
 void FLD::Utils::setup_fluid_fluid_vel_pres_split(const Core::FE::Discretization& fluiddis,
     int ndim, const Core::FE::Discretization& alefluiddis, Core::LinAlg::MapExtractor& extractor,
-    std::shared_ptr<Epetra_Map> fullmap)
+    std::shared_ptr<Core::LinAlg::Map> fullmap)
 {
   std::set<int> veldofset;
   std::set<int> presdofset;
@@ -517,16 +517,18 @@ void FLD::Utils::setup_fluid_fluid_vel_pres_split(const Core::FE::Discretization
   veldofmapvec.reserve(veldofset.size());
   veldofmapvec.assign(veldofset.begin(), veldofset.end());
   veldofset.clear();
-  std::shared_ptr<Epetra_Map> velrowmap = std::make_shared<Epetra_Map>(-1, veldofmapvec.size(),
-      veldofmapvec.data(), 0, Core::Communication::as_epetra_comm(fluiddis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> velrowmap =
+      std::make_shared<Core::LinAlg::Map>(-1, veldofmapvec.size(), veldofmapvec.data(), 0,
+          Core::Communication::as_epetra_comm(fluiddis.get_comm()));
   veldofmapvec.clear();
 
   std::vector<int> presdofmapvec;
   presdofmapvec.reserve(presdofset.size());
   presdofmapvec.assign(presdofset.begin(), presdofset.end());
   presdofset.clear();
-  std::shared_ptr<Epetra_Map> presrowmap = std::make_shared<Epetra_Map>(-1, presdofmapvec.size(),
-      presdofmapvec.data(), 0, Core::Communication::as_epetra_comm(alefluiddis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> presrowmap =
+      std::make_shared<Core::LinAlg::Map>(-1, presdofmapvec.size(), presdofmapvec.data(), 0,
+          Core::Communication::as_epetra_comm(alefluiddis.get_comm()));
   extractor.setup(*fullmap, presrowmap, velrowmap);
 }
 
@@ -835,7 +837,7 @@ std::map<int, double> FLD::Utils::compute_flow_rates(Core::FE::Discretization& d
 
     // get a vector layout from the discretization to construct matching
     // vectors and matrices local <-> global dof numbering
-    const Epetra_Map* dofrowmap = dis.dof_row_map();
+    const Core::LinAlg::Map* dofrowmap = dis.dof_row_map();
 
     // create vector (+ initialization with zeros)
     std::shared_ptr<Core::LinAlg::Vector<double>> flowrates =
@@ -976,7 +978,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> FLD::Utils::project_gradient(
   std::shared_ptr<Core::LinAlg::MultiVector<double>> projected_velgrad = nullptr;
 
   // dependent on the desired projection, just remove this line
-  if (not vel->get_block_map().SameAs(*discret.dof_row_map()))
+  if (not vel->get_map().SameAs(*discret.dof_row_map()))
     FOUR_C_THROW("input map is not a dof row map of the fluid");
 
   switch (recomethod)

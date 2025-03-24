@@ -174,7 +174,7 @@ void Core::LinAlg::print_vector_in_matlab_format(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Core::LinAlg::print_map_in_matlab_format(
-    const std::string& filename, const Epetra_Map& map, const bool newfile)
+    const std::string& filename, const Core::LinAlg::Map& map, const bool newfile)
 {
   const auto& comm = Core::Communication::unpack_epetra_comm(map.Comm());
 

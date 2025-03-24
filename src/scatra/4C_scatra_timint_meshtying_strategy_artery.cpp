@@ -182,7 +182,7 @@ void ScaTra::MeshtyingStrategyArtery::initialize_linear_solver(
 /*-----------------------------------------------------------------------*
  | return global map of degrees of freedom              kremheller 04/18 |
  *-----------------------------------------------------------------------*/
-const Epetra_Map& ScaTra::MeshtyingStrategyArtery::dof_row_map() const
+const Core::LinAlg::Map& ScaTra::MeshtyingStrategyArtery::dof_row_map() const
 {
   return *arttoscatracoupling_->full_map();
 }
@@ -190,7 +190,8 @@ const Epetra_Map& ScaTra::MeshtyingStrategyArtery::dof_row_map() const
 /*-----------------------------------------------------------------------*
  | return global map of degrees of freedom              kremheller 04/18 |
  *-----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map> ScaTra::MeshtyingStrategyArtery::art_scatra_dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> ScaTra::MeshtyingStrategyArtery::art_scatra_dof_row_map()
+    const
 {
   return arttoscatracoupling_->artery_dof_row_map();
 }

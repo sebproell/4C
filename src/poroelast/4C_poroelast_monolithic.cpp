@@ -423,7 +423,7 @@ void PoroElast::Monolithic::setup_system()
 
   {
     // -------------------------------------------------------------create combined map
-    std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces;
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
 
     // Note:
     // when using constraints applied via Lagrange-Multipliers there is a
@@ -1444,8 +1444,9 @@ void PoroElast::Monolithic::evaluate_condition(
         fluid_field()->system_matrix()->range_map());
   }
 
-  const std::shared_ptr<const Epetra_Map>& nopenetrationmap = nopen_handle_->extractor()->Map(1);
-  const std::shared_ptr<const Epetra_Map>& othermap = nopen_handle_->extractor()->Map(0);
+  const std::shared_ptr<const Core::LinAlg::Map>& nopenetrationmap =
+      nopen_handle_->extractor()->Map(1);
+  const std::shared_ptr<const Core::LinAlg::Map>& othermap = nopen_handle_->extractor()->Map(0);
   ConstraintMatrix->apply_dirichlet(*othermap, false);
   Sysmat.apply_dirichlet(*nopenetrationmap, false);
   Sysmat.un_complete();
@@ -1720,32 +1721,32 @@ void PoroElast::Monolithic::aitken()
   mu_ = 0.0;
 }
 
-const Epetra_Map& PoroElast::Monolithic::fluid_range_map()
+const Core::LinAlg::Map& PoroElast::Monolithic::fluid_range_map()
 {
   return fluid_field()->system_matrix()->range_map();
 }
 
-const Epetra_Map& PoroElast::Monolithic::fluid_domain_map()
+const Core::LinAlg::Map& PoroElast::Monolithic::fluid_domain_map()
 {
-  return fluid_field()->system_matrix()->domain_map();
+  return fluid_field()->system_matrix()->domain_map_not_epetra();
 }
 
-const Epetra_Map& PoroElast::Monolithic::structure_domain_map()
+const Core::LinAlg::Map& PoroElast::Monolithic::structure_domain_map()
 {
   return structure_field()->domain_map();
 }
 
-std::shared_ptr<const Epetra_Map> PoroElast::Monolithic::dof_row_map()
+std::shared_ptr<const Core::LinAlg::Map> PoroElast::Monolithic::dof_row_map()
 {
   return blockrowdofmap_->full_map();
 }
 
-std::shared_ptr<const Epetra_Map> PoroElast::Monolithic::dof_row_map_structure()
+std::shared_ptr<const Core::LinAlg::Map> PoroElast::Monolithic::dof_row_map_structure()
 {
   return blockrowdofmap_->Map(0);
 }
 
-std::shared_ptr<const Epetra_Map> PoroElast::Monolithic::dof_row_map_fluid()
+std::shared_ptr<const Core::LinAlg::Map> PoroElast::Monolithic::dof_row_map_fluid()
 {
   return blockrowdofmap_->Map(1);
 }
@@ -2019,9 +2020,9 @@ void PoroElast::Monolithic::eval_poro_mortar()
 
 void PoroElast::Monolithic::build_combined_dbc_map()
 {
-  const std::shared_ptr<const Epetra_Map> scondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> scondmap =
       structure_field()->get_dbc_map_extractor()->cond_map();
-  const std::shared_ptr<const Epetra_Map> fcondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> fcondmap =
       fluid_field()->get_dbc_map_extractor()->cond_map();
   combinedDBCMap_ = Core::LinAlg::merge_map(scondmap, fcondmap, false);
 }

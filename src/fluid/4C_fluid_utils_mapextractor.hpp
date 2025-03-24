@@ -51,7 +51,7 @@ namespace FLD
        * \param (in) extractor : extractor, from which the conditions are cloned
 
        */
-      void setup(std::shared_ptr<const Epetra_Map>& additionalothermap,
+      void setup(std::shared_ptr<const Core::LinAlg::Map>& additionalothermap,
           const FLD::Utils::MapExtractor& extractor);
 
       /// get all element gids those nodes are touched by any condition
@@ -128,7 +128,7 @@ namespace FLD
       /// setup the whole thing
       void setup(const Core::FE::Discretization& dis);
 
-      void setup(std::shared_ptr<const Epetra_Map>& additionalothermap,
+      void setup(std::shared_ptr<const Core::LinAlg::Map>& additionalothermap,
           const FLD::Utils::FsiMapExtractor& extractor);
 
       MAP_EXTRACTOR_VECTOR_METHODS(other, cond_other)
@@ -146,8 +146,9 @@ namespace FLD
       };
 
       /// setup the whole thing
-      void setup(const Epetra_Map& fullmap, std::shared_ptr<const Epetra_Map> fluidmap,
-          std::shared_ptr<const Epetra_Map> xfluidmap);
+      void setup(const Core::LinAlg::Map& fullmap,
+          std::shared_ptr<const Core::LinAlg::Map> fluidmap,
+          std::shared_ptr<const Core::LinAlg::Map> xfluidmap);
 
       MAP_EXTRACTOR_VECTOR_METHODS(fluid, cond_fluid)
       MAP_EXTRACTOR_VECTOR_METHODS(x_fluid, cond_xfluid)

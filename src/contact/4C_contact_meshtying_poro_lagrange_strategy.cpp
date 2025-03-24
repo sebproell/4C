@@ -17,8 +17,8 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | ctor (public)                                      h.Willmann    2015|
  *----------------------------------------------------------------------*/
-CONTACT::PoroMtLagrangeStrategy::PoroMtLagrangeStrategy(const Epetra_Map* dof_row_map,
-    const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
+CONTACT::PoroMtLagrangeStrategy::PoroMtLagrangeStrategy(const Core::LinAlg::Map* dof_row_map,
+    const Core::LinAlg::Map* NodeRowMap, Teuchos::ParameterList params,
     std::vector<std::shared_ptr<Mortar::Interface>> interface, int dim, MPI_Comm comm,
     double alphaf, int maxdof)
     : MtLagrangeStrategy(dof_row_map, NodeRowMap, params, interface, dim, comm, alphaf, maxdof)
@@ -36,7 +36,7 @@ void CONTACT::PoroMtLagrangeStrategy::initialize_poro_mt(
   std::shared_ptr<Core::LinAlg::SparseMatrix> kteffmatrix =
       std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(kteffoffdiag);
 
-  fvelrow_ = std::make_shared<Epetra_Map>(kteffmatrix->OperatorDomainMap());
+  fvelrow_ = std::make_shared<Core::LinAlg::Map>(kteffmatrix->OperatorDomainMap());
 }
 
 
@@ -82,8 +82,8 @@ void CONTACT::PoroMtLagrangeStrategy::evaluate_meshtying_poro_off_diag(
 
 
     // some temporary std::shared_ptrs
-    std::shared_ptr<Epetra_Map> tempmap1;
-    std::shared_ptr<Epetra_Map> tempmap2;
+    std::shared_ptr<Core::LinAlg::Map> tempmap1;
+    std::shared_ptr<Core::LinAlg::Map> tempmap2;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx1;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx2;
     std::shared_ptr<Core::LinAlg::SparseMatrix> tempmtx3;

@@ -83,7 +83,7 @@ namespace SSTI
     }
 
     //! return map with dofs on both sides of interface
-    std::shared_ptr<Epetra_Map> map_interface(
+    std::shared_ptr<Core::LinAlg::Map> map_interface(
         std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtyingstrategy) const;
 
     //! return block map with dofs on both sides of interface
@@ -199,7 +199,8 @@ namespace SSTI
         const Core::LinAlg::MultiMapExtractor& row_map,
         const Core::LinAlg::MultiMapExtractor& col_map);
 
-    std::shared_ptr<Core::LinAlg::SparseMatrix> setup_sparse_matrix(const Epetra_Map& row_map);
+    std::shared_ptr<Core::LinAlg::SparseMatrix> setup_sparse_matrix(
+        const Core::LinAlg::Map& row_map);
 
     //! scalar transport matrix type
     const Core::LinAlg::MatrixType matrixtype_scatra_;

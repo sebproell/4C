@@ -7,6 +7,7 @@
 
 #include "4C_linalg_krylov_projector.hpp"
 
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_linalg_sparsematrix.hpp"
@@ -17,7 +18,6 @@
 #include "4C_utils_exceptions.hpp"
 
 #include <Epetra_Import.h>
-#include <Epetra_Map.h>
 #include <Epetra_Operator.h>
 #include <Teuchos_SerialDenseSolver.hpp>
 
@@ -514,7 +514,7 @@ Core::LinAlg::KrylovProjector::multiply_multi_vector_multi_vector(
   Core::Communication::sum_all(&numnonzero, &glob_numnonzero, 1, prod.get_comm());
 
   // do stupid conversion into Epetra map
-  Epetra_Map mv1map(mv1->Map().NumGlobalElements(), mv1->Map().NumMyElements(),
+  Core::LinAlg::Map mv1map(mv1->Map().NumGlobalElements(), mv1->Map().NumMyElements(),
       mv1->Map().MyGlobalElements(), 0, mv1->Map().Comm());
   // initialization of mat with map of mv1
   std::shared_ptr<Core::LinAlg::SparseMatrix> mat =
@@ -528,15 +528,15 @@ Core::LinAlg::KrylovProjector::multiply_multi_vector_multi_vector(
   const int numvals = mv2->GlobalLength();
 
   // do stupid conversion into Epetra map
-  Epetra_Map mv2map(mv2->Map().NumGlobalElements(), mv2->Map().NumMyElements(),
+  Core::LinAlg::Map mv2map(mv2->Map().NumGlobalElements(), mv2->Map().NumMyElements(),
       mv2->Map().MyGlobalElements(), 0, mv2->Map().Comm());
 
   // fully redundant/overlapping map
-  std::shared_ptr<Epetra_Map> redundant_map = Core::LinAlg::allreduce_e_map(mv2map);
+  std::shared_ptr<Core::LinAlg::Map> redundant_map = Core::LinAlg::allreduce_e_map(mv2map);
   // initialize global mv2 without setting to 0
   Core::LinAlg::MultiVector<double> mv2glob(*redundant_map, nsdim_);
   // create importer with redundant target map and distributed source map
-  Epetra_Import importer(*redundant_map, mv2->Map());
+  Epetra_Import importer(redundant_map->get_epetra_map(), mv2->Map());
   // import values to global mv2
   mv2glob.Import(*mv2, importer, Insert);
 

@@ -10,7 +10,8 @@
 
 #include "4C_config.hpp"
 
-#include <Epetra_Map.h>
+#include "4C_linalg_map.hpp"
+
 #include <MueLu_UseDefaultTypes.hpp>
 #include <Teuchos_ParameterListAcceptor.hpp>
 #include <Xpetra_MultiVector.hpp>
@@ -48,8 +49,8 @@ namespace Core::LinearSolver
      * \param newmap (in): row map of nullspace upon exit
      * \param solveparams (in): parameterlist including nullspace vector
      */
-    static void fix_null_space(std::string field, const Epetra_Map& oldmap,
-        const Epetra_Map& newmap, Teuchos::ParameterList& solveparams);
+    static void fix_null_space(std::string field, const Core::LinAlg::Map& oldmap,
+        const Core::LinAlg::Map& newmap, Teuchos::ParameterList& solveparams);
 
     /*!
      * \brief Extract nullspace from parameter list and convert to Xpetra::MultiVector

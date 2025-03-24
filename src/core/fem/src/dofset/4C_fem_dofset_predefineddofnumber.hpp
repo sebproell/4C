@@ -111,7 +111,7 @@ namespace Core::DOFSets
     {
       // redistribute internal vectors if necessary
       if (numdofpernodenodewise_ != nullptr and
-          not numdofpernodenodewise_->get_block_map().SameAs(*dis.node_col_map()))
+          not numdofpernodenodewise_->get_map().SameAs(*dis.node_col_map()))
       {
         Core::LinAlg::Vector<int> numdofpernodenodewise_rowmap(*dis.node_row_map());
         Core::LinAlg::export_to(*numdofpernodenodewise_, numdofpernodenodewise_rowmap);
@@ -119,7 +119,7 @@ namespace Core::DOFSets
         Core::LinAlg::export_to(numdofpernodenodewise_rowmap, *numdofpernodenodewise_);
       }
       if (numdofperelementelewise_ != nullptr and
-          not numdofperelementelewise_->get_block_map().SameAs(*dis.element_col_map()))
+          not numdofperelementelewise_->get_map().SameAs(*dis.element_col_map()))
       {
         Core::LinAlg::Vector<int> numdofperelementelewise_rowmap(*dis.element_row_map());
         Core::LinAlg::export_to(*numdofperelementelewise_, numdofperelementelewise_rowmap);

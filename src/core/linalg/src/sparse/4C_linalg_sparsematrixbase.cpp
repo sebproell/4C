@@ -184,8 +184,8 @@ void Core::LinAlg::SparseMatrixBase::add_other(Core::LinAlg::BlockSparseMatrixBa
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-bool Core::LinAlg::SparseMatrixBase::is_dbc_applied(
-    const Epetra_Map& dbcmap, bool diagonalblock, const Core::LinAlg::SparseMatrix* trafo) const
+bool Core::LinAlg::SparseMatrixBase::is_dbc_applied(const Core::LinAlg::Map& dbcmap,
+    bool diagonalblock, const Core::LinAlg::SparseMatrix* trafo) const
 {
   if (not filled()) FOUR_C_THROW("The matrix must be filled!");
 

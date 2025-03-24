@@ -44,7 +44,7 @@ void PoroElast::MonolithicFluidSplit::setup_system()
 {
   {
     // create combined map
-    std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces;
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
 
     vecSpaces.push_back(structure_field()->dof_row_map());
 #ifdef FLUIDSPLITAMG

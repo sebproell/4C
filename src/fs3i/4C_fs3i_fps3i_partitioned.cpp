@@ -438,7 +438,7 @@ void FS3I::PartFPS3I::setup_system()
 
   // create map extractor for coupled scatra fields
   // the second field is always split
-  std::vector<std::shared_ptr<const Epetra_Map>> maps;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
 
   // In the limiting case of an infinite permeability of the interface between
   // different scatra fields, the concentrations on both sides of the interface are
@@ -457,7 +457,7 @@ void FS3I::PartFPS3I::setup_system()
     maps.push_back(scatrafieldexvec_[0]->full_map());
     maps.push_back(scatrafieldexvec_[1]->full_map());
   }
-  std::shared_ptr<Epetra_Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
+  std::shared_ptr<Core::LinAlg::Map> fullmap = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
   scatraglobalex_->setup(*fullmap, maps);
 
   // create coupling vectors and matrices (only needed for finite surface permeabilities)
@@ -473,7 +473,8 @@ void FS3I::PartFPS3I::setup_system()
           std::make_shared<Core::LinAlg::SparseMatrix>(*(scatraglobalex_->Map(i)), 27, false, true);
       scatracoupmat_.push_back(scatracoupmat);
 
-      const Epetra_Map* dofrowmap = scatravec_[i]->scatra_field()->discretization()->dof_row_map();
+      const Core::LinAlg::Map* dofrowmap =
+          scatravec_[i]->scatra_field()->discretization()->dof_row_map();
       std::shared_ptr<Core::LinAlg::Vector<double>> zeros =
           Core::LinAlg::create_vector(*dofrowmap, true);
       scatrazeros_.push_back(zeros);
@@ -720,7 +721,7 @@ void FS3I::PartFPS3I::evaluate_scatra_fields()
       scatra->kedem_katchalsky(coupmat, coupforce);
 
       // apply Dirichlet boundary conditions to coupling matrix and vector
-      const std::shared_ptr<const Epetra_Map> dbcmap = scatra->dirich_maps()->cond_map();
+      const std::shared_ptr<const Core::LinAlg::Map> dbcmap = scatra->dirich_maps()->cond_map();
       coupmat->apply_dirichlet(*dbcmap, false);
       Core::LinAlg::apply_dirichlet_to_system(*coupforce, *scatrazeros_[i], *dbcmap);
     }

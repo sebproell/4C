@@ -33,8 +33,8 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | ctor (public)                                             popp 05/09 |
  *----------------------------------------------------------------------*/
-CONTACT::MtAbstractStrategy::MtAbstractStrategy(const Epetra_Map* dof_row_map,
-    const Epetra_Map* NodeRowMap, Teuchos::ParameterList params,
+CONTACT::MtAbstractStrategy::MtAbstractStrategy(const Core::LinAlg::Map* dof_row_map,
+    const Core::LinAlg::Map* NodeRowMap, Teuchos::ParameterList params,
     std::vector<std::shared_ptr<Mortar::Interface>> interface, const int spatialDim,
     const MPI_Comm& comm, const double alphaf, const int maxdof)
     : Mortar::StrategyBase(std::make_shared<Mortar::StrategyDataContainer>(), dof_row_map,
@@ -48,10 +48,10 @@ CONTACT::MtAbstractStrategy::MtAbstractStrategy(const Epetra_Map* dof_row_map,
   // store interface maps with parallel distribution of underlying
   // problem discretization (i.e. interface maps before parallel
   // redistribution of slave and master sides)
-  non_redist_glmdofrowmap_ = std::make_shared<Epetra_Map>(*glmdofrowmap_);
-  non_redist_gsdofrowmap_ = std::make_shared<Epetra_Map>(*gsdofrowmap_);
-  non_redist_gmdofrowmap_ = std::make_shared<Epetra_Map>(*gmdofrowmap_);
-  non_redist_gsmdofrowmap_ = std::make_shared<Epetra_Map>(*gsmdofrowmap_);
+  non_redist_glmdofrowmap_ = std::make_shared<Core::LinAlg::Map>(*glmdofrowmap_);
+  non_redist_gsdofrowmap_ = std::make_shared<Core::LinAlg::Map>(*gsdofrowmap_);
+  non_redist_gmdofrowmap_ = std::make_shared<Core::LinAlg::Map>(*gmdofrowmap_);
+  non_redist_gsmdofrowmap_ = std::make_shared<Core::LinAlg::Map>(*gsmdofrowmap_);
 
   // build the NOX::Nln::CONSTRAINT::Interface::Required object
   noxinterface_ptr_ = std::make_shared<CONTACT::MtNoxInterface>();
@@ -130,7 +130,7 @@ void CONTACT::MtAbstractStrategy::redistribute_meshtying()
 void CONTACT::MtAbstractStrategy::setup(bool redistributed)
 {
   // ------------------------------------------------------------------------
-  // setup global accessible Epetra_Maps
+  // setup global accessible Core::LinAlg::Maps
   // ------------------------------------------------------------------------
 
   // make sure to remove all existing maps first
@@ -172,7 +172,7 @@ void CONTACT::MtAbstractStrategy::setup(bool redistributed)
 
     // store initial element col map for binning strategy
     initial_elecolmap_.push_back(
-        std::make_shared<Epetra_Map>(*interface_[i]->discret().element_col_map()));
+        std::make_shared<Core::LinAlg::Map>(*interface_[i]->discret().element_col_map()));
   }
 
   // setup global non-slave-or-master dof map
@@ -417,7 +417,7 @@ void CONTACT::MtAbstractStrategy::restrict_meshtying_zone()
   if (par_redist())
   {
     // allreduce restricted slave dof row map in new distribution
-    std::shared_ptr<Epetra_Map> fullsdofs = Core::LinAlg::allreduce_e_map(*gsdofrowmap_);
+    std::shared_ptr<Core::LinAlg::Map> fullsdofs = Core::LinAlg::allreduce_e_map(*gsdofrowmap_);
 
     // map data to be filled
     std::vector<int> data;
@@ -436,7 +436,7 @@ void CONTACT::MtAbstractStrategy::restrict_meshtying_zone()
     }
 
     // re-setup old slave dof row map (with restriction now)
-    non_redist_gsdofrowmap_ = std::make_shared<Epetra_Map>(
+    non_redist_gsdofrowmap_ = std::make_shared<Core::LinAlg::Map>(
         -1, (int)data.size(), data.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
   }
 
@@ -637,7 +637,7 @@ void CONTACT::MtAbstractStrategy::store_nodal_quantities(Mortar::StrategyBase::Q
     }  // switch
 
     // export global quantity to current interface slave dof row map
-    std::shared_ptr<const Epetra_Map> sdofrowmap = interface_[i]->slave_row_dofs();
+    std::shared_ptr<const Core::LinAlg::Map> sdofrowmap = interface_[i]->slave_row_dofs();
     Core::LinAlg::Vector<double> vectorinterface(*sdofrowmap);
 
     if (vectorglobal != nullptr)
@@ -841,7 +841,7 @@ void CONTACT::MtAbstractStrategy::assemble_coords(
   // entries in the Core::LinAlg::Vector<double> instead of using Assemble().
 
   // decide which side (slave or master)
-  std::shared_ptr<Epetra_Map> sidemap = nullptr;
+  std::shared_ptr<Core::LinAlg::Map> sidemap = nullptr;
   if (sidename == "slave")
     sidemap = gsnoderowmap_;
   else if (sidename == "master")
@@ -895,8 +895,10 @@ void CONTACT::MtAbstractStrategy::assemble_coords(
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void CONTACT::MtAbstractStrategy::collect_maps_for_preconditioner(
-    std::shared_ptr<Epetra_Map>& MasterDofMap, std::shared_ptr<Epetra_Map>& SlaveDofMap,
-    std::shared_ptr<Epetra_Map>& InnerDofMap, std::shared_ptr<Epetra_Map>& ActiveDofMap) const
+    std::shared_ptr<Core::LinAlg::Map>& MasterDofMap,
+    std::shared_ptr<Core::LinAlg::Map>& SlaveDofMap,
+    std::shared_ptr<Core::LinAlg::Map>& InnerDofMap,
+    std::shared_ptr<Core::LinAlg::Map>& ActiveDofMap) const
 {
   InnerDofMap = gndofrowmap_;  // global internal dof row map
 
@@ -942,7 +944,7 @@ bool CONTACT::MtAbstractStrategy::is_condensed_system() const
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void CONTACT::MtAbstractStrategy::fill_maps_for_preconditioner(
-    std::vector<Teuchos::RCP<Epetra_Map>>& maps) const
+    std::vector<Teuchos::RCP<Core::LinAlg::Map>>& maps) const
 {
   /* FixMe This function replaces the deprecated collect_maps_for_preconditioner(),
    * the old version can be deleted, as soon as the contact uses the new

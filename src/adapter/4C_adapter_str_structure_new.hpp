@@ -413,18 +413,21 @@ namespace Adapter
     /// @name Misc
     ///@{
     /// dof map of vector of unknowns
-    std::shared_ptr<const Epetra_Map> dof_row_map() override = 0;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() override = 0;
 
     /// DOF map of vector of unknowns for multiple dofsets
-    std::shared_ptr<const Epetra_Map> dof_row_map(unsigned nds) override = 0;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map(unsigned nds) override = 0;
 
     /// DOF map view of vector of unknowns
-    const Epetra_Map* dof_row_map_view() override = 0;
+    const Core::LinAlg::Map* dof_row_map_view() override = 0;
 
     /// domain map of system matrix (do we really need this?)
     /// ToDo Replace the deprecated version with the new version
-    [[nodiscard]] virtual const Epetra_Map& get_mass_domain_map() const = 0;
-    [[nodiscard]] const Epetra_Map& domain_map() const override { return get_mass_domain_map(); }
+    [[nodiscard]] virtual const Core::LinAlg::Map& get_mass_domain_map() const = 0;
+    [[nodiscard]] const Core::LinAlg::Map& domain_map() const override
+    {
+      return get_mass_domain_map();
+    }
 
     /// direct access to system matrix
     std::shared_ptr<Core::LinAlg::SparseMatrix> system_matrix() override = 0;

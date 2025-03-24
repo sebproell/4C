@@ -20,7 +20,7 @@ namespace Core::FE
 {
   std::shared_ptr<Core::LinAlg::MultiVector<double>> compute_null_space(
       const Core::FE::Discretization& dis, const int numdf, const int dimns,
-      const Epetra_Map& dofmap)
+      const Core::LinAlg::Map& dofmap)
   {
     if (dimns > 10) FOUR_C_THROW("Nullspace size only up to 10 supported!");
 

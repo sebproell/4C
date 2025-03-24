@@ -39,7 +39,7 @@ namespace CONTACT
 
     */
     UnbiasedSelfBinaryTree(Core::FE::Discretization& discret, const Teuchos::ParameterList& iparams,
-        std::shared_ptr<Epetra_Map> elements, int dim, double eps);
+        std::shared_ptr<Core::LinAlg::Map> elements, int dim, double eps);
 
 
     /*!

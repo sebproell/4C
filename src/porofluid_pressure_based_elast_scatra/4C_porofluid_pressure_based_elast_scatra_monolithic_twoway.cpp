@@ -166,13 +166,13 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::setup_system()
 void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::setup_maps()
 {
   // create combined map
-  std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
 
   if (solve_structure_)
   {
     vecSpaces.push_back(poro_field()->struct_dof_row_map());
     vecSpaces.push_back(poro_field()->fluid_dof_row_map());
-    const Epetra_Map* dofrowmapscatra =
+    const Core::LinAlg::Map* dofrowmapscatra =
         (scatra_algo()->scatra_field()->discretization())->dof_row_map(0);
     vecSpaces.push_back(Core::Utils::shared_ptr_from_ref(*dofrowmapscatra));
 
@@ -183,7 +183,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::setup_maps()
   else
   {
     vecSpaces.push_back(poro_field()->fluid_dof_row_map());
-    const Epetra_Map* dofrowmapscatra =
+    const Core::LinAlg::Map* dofrowmapscatra =
         (scatra_algo()->scatra_field()->discretization())->dof_row_map(0);
     vecSpaces.push_back(Core::Utils::shared_ptr_from_ref(*dofrowmapscatra));
 
@@ -208,8 +208,8 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::setup_maps()
 void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::build_combined_dbc_map()
 {
   // Combined DBC map of poromultielast-problem
-  const std::shared_ptr<const Epetra_Map> porocondmap = poro_field()->combined_dbc_map();
-  const std::shared_ptr<const Epetra_Map> scatracondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> porocondmap = poro_field()->combined_dbc_map();
+  const std::shared_ptr<const Core::LinAlg::Map> scatracondmap =
       scatra_algo()->scatra_field()->dirich_maps()->cond_map();
   combinedDBCMap_ = Core::LinAlg::merge_map(porocondmap, scatracondmap, false);
 
@@ -1008,7 +1008,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::newton_error_ch
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Epetra_Map>
+std::shared_ptr<const Core::LinAlg::Map>
 PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::dof_row_map()
 {
   return blockrowdofmap_->full_map();
@@ -1349,13 +1349,13 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWayArteryCoupling::s
 void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWayArteryCoupling::setup_maps()
 {
   // create combined map
-  std::vector<std::shared_ptr<const Epetra_Map>> vecSpaces;
+  std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
 
   if (solve_structure_)
   {
     vecSpaces.push_back(poro_field()->struct_dof_row_map());
     vecSpaces.push_back(poro_field()->fluid_dof_row_map());
-    const Epetra_Map* dofrowmapscatra =
+    const Core::LinAlg::Map* dofrowmapscatra =
         (scatra_algo()->scatra_field()->discretization())->dof_row_map(0);
     vecSpaces.push_back(Core::Utils::shared_ptr_from_ref(*dofrowmapscatra));
     vecSpaces.push_back(poro_field()->artery_dof_row_map());
@@ -1369,7 +1369,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWayArteryCoupling::s
   else
   {
     vecSpaces.push_back(poro_field()->fluid_dof_row_map());
-    const Epetra_Map* dofrowmapscatra =
+    const Core::LinAlg::Map* dofrowmapscatra =
         (scatra_algo()->scatra_field()->discretization())->dof_row_map(0);
     vecSpaces.push_back(Core::Utils::shared_ptr_from_ref(*dofrowmapscatra));
     vecSpaces.push_back(poro_field()->artery_dof_row_map());
@@ -1590,7 +1590,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWayArteryCoupling::
 {
   PoroMultiPhaseScaTraMonolithicTwoWay::build_combined_dbc_map();
 
-  const std::shared_ptr<const Epetra_Map> artscatracondmap =
+  const std::shared_ptr<const Core::LinAlg::Map> artscatracondmap =
       scatramsht_->art_scatra_field()->dirich_maps()->cond_map();
 
   combinedDBCMap_ = Core::LinAlg::merge_map(combinedDBCMap_, artscatracondmap, false);

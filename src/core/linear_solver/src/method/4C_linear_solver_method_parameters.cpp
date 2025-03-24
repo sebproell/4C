@@ -23,8 +23,8 @@ FOUR_C_NAMESPACE_OPEN
 void Core::LinearSolver::Parameters::compute_solver_parameters(
     Core::FE::Discretization& dis, Teuchos::ParameterList& solverlist)
 {
-  std::shared_ptr<Epetra_Map> nullspaceMap =
-      solverlist.get<std::shared_ptr<Epetra_Map>>("null space: map", nullptr);
+  std::shared_ptr<Core::LinAlg::Map> nullspaceMap =
+      solverlist.get<std::shared_ptr<Core::LinAlg::Map>>("null space: map", nullptr);
 
   int numdf = 1;
   int dimns = 1;
@@ -90,7 +90,7 @@ void Core::LinearSolver::Parameters::compute_solver_parameters(
     {
       // if no map is given, we calculate the nullspace on the map describing the
       // whole discretization
-      nullspaceMap = std::make_shared<Epetra_Map>(*dis.dof_row_map());
+      nullspaceMap = std::make_shared<Core::LinAlg::Map>(*dis.dof_row_map());
     }
 
     auto nullspace = Core::FE::compute_null_space(dis, numdf, dimns, *nullspaceMap);
@@ -103,8 +103,9 @@ void Core::LinearSolver::Parameters::compute_solver_parameters(
 
 //----------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------
-void Core::LinearSolver::Parameters::fix_null_space(std::string field, const Epetra_Map& oldmap,
-    const Epetra_Map& newmap, Teuchos::ParameterList& solveparams)
+void Core::LinearSolver::Parameters::fix_null_space(std::string field,
+    const Core::LinAlg::Map& oldmap, const Core::LinAlg::Map& newmap,
+    Teuchos::ParameterList& solveparams)
 {
   if (!Core::Communication::my_mpi_rank(Core::Communication::unpack_epetra_comm(oldmap.Comm())))
     printf("Fixing %s Nullspace\n", field.c_str());

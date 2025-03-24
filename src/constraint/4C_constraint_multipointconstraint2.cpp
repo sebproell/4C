@@ -35,7 +35,7 @@ CONSTRAINTS::MPConstraint2::MPConstraint2(std::shared_ptr<Core::FE::Discretizati
     // create constraint discretization and store it with label 0, within the map
     constraintdis_ = create_discretization_from_condition(
         actdisc_, constrcond_, "ConstrDisc", "CONSTRELE2", dummy);
-    std::shared_ptr<Epetra_Map> newcolnodemap =
+    std::shared_ptr<Core::LinAlg::Map> newcolnodemap =
         Core::Rebalance::compute_node_col_map(*actdisc_, *constraintdis_.find(0)->second);
     actdisc_->redistribute(*(actdisc_->node_row_map()), *newcolnodemap);
     std::shared_ptr<Core::DOFSets::DofSet> newdofset =
@@ -167,7 +167,7 @@ CONSTRAINTS::MPConstraint2::create_discretization_from_condition(
 
   std::set<int> rownodeset;
   std::set<int> colnodeset;
-  const Epetra_Map* actnoderowmap = actdisc->node_row_map();
+  const Core::LinAlg::Map* actnoderowmap = actdisc->node_row_map();
 
   // Loop all conditions in constrcondvec
   for (unsigned int j = 0; j < constrcondvec.size(); j++)
@@ -210,15 +210,15 @@ CONSTRAINTS::MPConstraint2::create_discretization_from_condition(
   // build unique node row map
   std::vector<int> boundarynoderowvec(rownodeset.begin(), rownodeset.end());
   rownodeset.clear();
-  Epetra_Map constraintnoderowmap(-1, boundarynoderowvec.size(), boundarynoderowvec.data(), 0,
-      Core::Communication::as_epetra_comm(newdis->get_comm()));
+  Core::LinAlg::Map constraintnoderowmap(-1, boundarynoderowvec.size(), boundarynoderowvec.data(),
+      0, Core::Communication::as_epetra_comm(newdis->get_comm()));
   boundarynoderowvec.clear();
 
   // build overlapping node column map
   std::vector<int> constraintnodecolvec(colnodeset.begin(), colnodeset.end());
   colnodeset.clear();
-  Epetra_Map constraintnodecolmap(-1, constraintnodecolvec.size(), constraintnodecolvec.data(), 0,
-      Core::Communication::as_epetra_comm(newdis->get_comm()));
+  Core::LinAlg::Map constraintnodecolmap(-1, constraintnodecolvec.size(),
+      constraintnodecolvec.data(), 0, Core::Communication::as_epetra_comm(newdis->get_comm()));
 
   constraintnodecolvec.clear();
 

@@ -11,6 +11,8 @@
 
 #include "4C_config.hpp"
 
+#include "4C_linalg_map.hpp"
+
 #include <Epetra_CrsGraph.h>
 #include <Epetra_Export.h>
 #include <Epetra_FECrsGraph.h>
@@ -32,6 +34,12 @@ namespace Core::LinAlg
         bool StaticProfile = false);
 
     Graph(Epetra_DataAccess CV, const Epetra_BlockMap& RowMap, int NumIndicesPerRow,
+        bool StaticProfile = false);
+
+    Graph(Epetra_DataAccess CV, const Core::LinAlg::Map& RowMap, const int* NumIndicesPerRow,
+        bool StaticProfile = false);
+
+    Graph(Epetra_DataAccess CV, const Core::LinAlg::Map& RowMap, int NumIndicesPerRow,
         bool StaticProfile = false);
 
     Graph(const Graph& other);

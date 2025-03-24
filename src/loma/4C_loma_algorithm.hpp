@@ -139,7 +139,7 @@ namespace LowMach
 
     /// combined Dirichlet boundary condition map for monolithic solver
     /// (unique map of all dofs with Dirichlet boundary conditions)
-    std::shared_ptr<Epetra_Map> lomadbcmap_;
+    std::shared_ptr<Core::LinAlg::Map> lomadbcmap_;
 
     /// incremental vector for monolithic solver
     std::shared_ptr<Core::LinAlg::Vector<double>> lomaincrement_;

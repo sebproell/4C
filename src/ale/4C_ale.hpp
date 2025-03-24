@@ -16,8 +16,6 @@
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
-#include <Epetra_Map.h>
-
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN
@@ -262,7 +260,7 @@ namespace ALE
     //! @name Misc
 
     /// dof map of vector of unknowns
-    std::shared_ptr<const Epetra_Map> dof_row_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> dof_row_map() const override;
 
     /// direct access to system matrix
     std::shared_ptr<Core::LinAlg::SparseMatrix> system_matrix() override;
