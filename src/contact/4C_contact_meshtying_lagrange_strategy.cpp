@@ -498,7 +498,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
       std::shared_ptr<Core::LinAlg::SparseMatrix> knmadd =
           Core::LinAlg::matrix_multiply(*kns, false, *mhatmatrix_, false, false, false, true);
       knmmod->add(*knmadd, false, 1.0, 1.0);
-      knmmod->complete(knm->domain_map_not_epetra(), knm->row_map());
+      knmmod->complete(knm->domain_map(), knm->row_map());
     }
 
     // kmn: add T(mbar)*ksn
@@ -508,7 +508,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmnadd =
         Core::LinAlg::matrix_multiply(*mhatmatrix_, true, *ksn, false, false, false, true);
     kmnmod->add(*kmnadd, false, 1.0, 1.0);
-    kmnmod->complete(kmn->domain_map_not_epetra(), kmn->row_map());
+    kmnmod->complete(kmn->domain_map(), kmn->row_map());
 
     // kmm: add T(mbar)*ksm
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmmmod =
@@ -529,7 +529,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
           Core::LinAlg::matrix_multiply(*mhatmatrix_, true, *kmmtemp, false, false, false, true);
       kmmmod->add(*kmmadd3, false, 1.0, 1.0);
     }
-    kmmmod->complete(kmm->domain_map_not_epetra(), kmm->row_map());
+    kmmmod->complete(kmm->domain_map(), kmm->row_map());
 
     // some modifications for kns, kms, (,ksn) ksm, kss if slave displacement increment is not
     // condensed
@@ -545,7 +545,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
       std::shared_ptr<Core::LinAlg::SparseMatrix> kmsadd =
           Core::LinAlg::matrix_multiply(*mhatmatrix_, true, *kss, false, false, false, true);
       kmsmod->add(*kmsadd, false, 1.0, 1.0);
-      kmsmod->complete(kms->domain_map_not_epetra(), kms->row_map());
+      kmsmod->complete(kms->domain_map(), kms->row_map());
     }
 
     // (ksn: do nothing as block is supposed to remain zero)
@@ -556,7 +556,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
     {
       ksmmod = std::make_shared<Core::LinAlg::SparseMatrix>(*gsdofrowmap_, 100);
       ksmmod->add(*mmatrix_, false, -1.0, 1.0);  //<---- causes problems in parallel
-      ksmmod->complete(ksm->domain_map_not_epetra(), ksm->row_map());
+      ksmmod->complete(ksm->domain_map(), ksm->row_map());
     }
 
     // kss: add dmatrix
@@ -565,7 +565,7 @@ void CONTACT::MtLagrangeStrategy::evaluate_meshtying(
     {
       kssmod = std::make_shared<Core::LinAlg::SparseMatrix>(*gsdofrowmap_, 100);
       kssmod->add(*dmatrix_, false, 1.0, 1.0);  //<---- causes problems in parallel
-      kssmod->complete(kss->domain_map_not_epetra(), kss->row_map());
+      kssmod->complete(kss->domain_map(), kss->row_map());
     }
 
     // fn: subtract kns*inv(D)*g

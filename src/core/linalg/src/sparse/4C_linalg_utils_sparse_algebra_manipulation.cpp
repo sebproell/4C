@@ -363,9 +363,9 @@ bool Core::LinAlg::split_matrix2x2(std::shared_ptr<Core::LinAlg::SparseMatrix> A
 
   // check and complete input domain maps
   if (A11domainmap == nullptr && A22domainmap != nullptr)
-    A11domainmap = Core::LinAlg::split_map(A->domain_map_not_epetra(), *A22domainmap);
+    A11domainmap = Core::LinAlg::split_map(A->domain_map(), *A22domainmap);
   else if (A11domainmap != nullptr && A22domainmap == nullptr)
-    A22domainmap = Core::LinAlg::split_map(A->domain_map_not_epetra(), *A11domainmap);
+    A22domainmap = Core::LinAlg::split_map(A->domain_map(), *A11domainmap);
   else if (A11rowmap == nullptr && A22rowmap == nullptr)
     FOUR_C_THROW("Both A11domainmap and A22domainmap == null on entry");
 
@@ -377,7 +377,7 @@ bool Core::LinAlg::split_matrix2x2(std::shared_ptr<Core::LinAlg::SparseMatrix> A
   domainmaps[0] = std::make_shared<Core::LinAlg::Map>(*A11domainmap);
   domainmaps[1] = std::make_shared<Core::LinAlg::Map>(*A22domainmap);
   Core::LinAlg::MultiMapExtractor range(A->range_map(), rangemaps);
-  Core::LinAlg::MultiMapExtractor domain(A->domain_map_not_epetra(), domainmaps);
+  Core::LinAlg::MultiMapExtractor domain(A->domain_map(), domainmaps);
 
   std::shared_ptr<BlockSparseMatrix<DefaultBlockMatrixStrategy>> Ablock =
       Core::LinAlg::split_matrix<DefaultBlockMatrixStrategy>(*A, domain, range);
@@ -514,8 +514,7 @@ void Core::LinAlg::split_matrixmxn(
     const int colgid = ASparse.domain_map().GID(collid);
     if (colgid < 0) FOUR_C_THROW("Couldn't find local column ID {} in domain map!", collid);
 
-    int n(0);
-    for (n = 0; n < N; ++n)
+    for (int n = 0; n < N; ++n)
     {
       if (ABlock.domain_map(n).MyGID(colgid))
       {
@@ -523,7 +522,6 @@ void Core::LinAlg::split_matrixmxn(
         break;
       }
     }
-    if (n == N) FOUR_C_THROW("Matrix column was not found in BlockSparseMatrixBase!");
   }
   Core::LinAlg::Vector<double> selector(A.ColMap());
   Core::LinAlg::export_to(dselector, selector);

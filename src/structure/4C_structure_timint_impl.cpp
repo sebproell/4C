@@ -3146,7 +3146,7 @@ void Solid::TimIntImpl::cmt_linear_solve()
               std::dynamic_pointer_cast<Core::LinAlg::BlockSparseMatrixBase>(
                   Core::Utils::shared_ptr_from_ref(*raw_block_mat));
           auto mat11 = block_mat_blocked_operator->matrix(1, 1);
-          const Core::LinAlg::Map& dofmap = mat11.domain_map_not_epetra();
+          const Core::LinAlg::Map& dofmap = mat11.domain_map();
 
           // set the nullspace
           std::shared_ptr<Core::LinAlg::MultiVector<double>> nullspace =

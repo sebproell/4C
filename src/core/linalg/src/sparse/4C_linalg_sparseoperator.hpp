@@ -226,9 +226,7 @@ namespace Core::LinAlg
         const Core::LinAlg::SparseMatrix* trafo = nullptr) const = 0;
 
     /// Returns the Epetra_Map object associated with the (full) domain of this operator.
-    virtual const Epetra_Map& domain_map() const = 0;
-
-    virtual const Map& domain_map_not_epetra() const = 0;
+    virtual const Map& domain_map() const = 0;
 
     /// Add one operator to another
     virtual void add(const Core::LinAlg::SparseOperator& A, const bool transposeA,

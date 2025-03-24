@@ -2897,10 +2897,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Solid::TimInt::mass_matrix()
 
 /*----------------------------------------------------------------------*/
 /* Return domain map of mass matrix                                     */
-const Core::LinAlg::Map& Solid::TimInt::domain_map() const
-{
-  return mass_->domain_map_not_epetra();
-}
+const Core::LinAlg::Map& Solid::TimInt::domain_map() const { return mass_->domain_map(); }
 
 /*----------------------------------------------------------------------*/
 /* Creates the field test                                               */

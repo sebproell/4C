@@ -689,7 +689,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmnadd =
         Core::LinAlg::matrix_multiply(*mhataam, true, *kan, false, false, false, true);
     kmnmod->add(*kmnadd, false, 1.0, 1.0);
-    kmnmod->complete(kmn->domain_map_not_epetra(), kmn->row_map());
+    kmnmod->complete(kmn->domain_map(), kmn->row_map());
 
     // kmm: add T(mhataam)*kam
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmmmod =
@@ -698,7 +698,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmmadd =
         Core::LinAlg::matrix_multiply(*mhataam, true, *kam, false, false, false, true);
     kmmmod->add(*kmmadd, false, 1.0, 1.0);
-    kmmmod->complete(kmm->domain_map_not_epetra(), kmm->row_map());
+    kmmmod->complete(kmm->domain_map(), kmm->row_map());
 
     // kmi: add T(mhataam)*kai
     std::shared_ptr<Core::LinAlg::SparseMatrix> kmimod;

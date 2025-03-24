@@ -236,7 +236,7 @@ std::unique_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::matrix_multiply(
   const int nnz = std::max(A.max_num_entries(), B.max_num_entries());
 
   // now create resultmatrix C with correct rowmap
-  auto map = transA ? A.domain_map_not_epetra() : A.range_map();
+  auto map = transA ? A.domain_map() : A.range_map();
   auto C = std::make_unique<SparseMatrix>(map, nnz, A.explicit_dirichlet(), A.save_graph());
 
   EpetraExt::RowMatrix_Transpose transposer;

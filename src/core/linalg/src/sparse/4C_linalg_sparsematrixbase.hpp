@@ -126,10 +126,7 @@ namespace Core::LinAlg
     }
 
     /// Returns the Epetra_Map object associated with the domain of this matrix operator.
-    const Epetra_Map& domain_map() const override { return sysmat_->DomainMap(); }
-
-    /// This is stupid: domain_map must be inherited, therefore we need rename the domain map
-    const Core::LinAlg::Map& domain_map_not_epetra() const override
+    const Map& domain_map() const override
     {
       if (!domain_map_)
       {  // check if view is uninitialized
@@ -137,6 +134,7 @@ namespace Core::LinAlg
       }
       return *domain_map_;
     }
+
 
     /// Returns the Epetra_Map object associated with the range of this matrix operator.
     const Core::LinAlg::Map& range_map() const
