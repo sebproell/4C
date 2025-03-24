@@ -1068,7 +1068,7 @@ void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
   }
 
   if (params()->strategy() == BeamPotential::Strategy::single_length_specific_small_separations &&
-      params()->potential_reduction_length() != -1.0)
+      params()->potential_reduction_length().has_value())
   {
     FOUR_C_THROW(
         "The potential reduction strategy is currently not implemented for the beam interaction "
@@ -1084,20 +1084,20 @@ void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
   const std::optional<double> cutoff_radius = params()->cutoff_radius();
 
   // get potential reduction length
-  const double potential_reduction_length = params()->potential_reduction_length();
+  const std::optional<double> potential_reduction_length = params()->potential_reduction_length();
 
   // get length from current master beam element to beam edge
   double length_prior_left = 0.0;
   double length_prior_right = 0.0;
 
-  if (potential_reduction_length > 0.0)
+  if (potential_reduction_length.has_value())
   {
     std::tie(length_prior_left, length_prior_right) =
         params()->ele_gid_prior_length_map_.at(element2()->id());
 
     if ((length_prior_left >= 0.0) && (length_prior_right >= 0.0) &&
-        ((ele2length_ - 2 * potential_reduction_length + length_prior_left + length_prior_right) <
-            0.0))
+        ((ele2length_ - 2 * potential_reduction_length.value() + length_prior_left +
+             length_prior_right) < 0.0))
     {
       FOUR_C_THROW(
           "ERROR: Master beam endpoint reduction strategy would interfere on current master beam "
@@ -3029,8 +3029,8 @@ bool BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues,
     Core::LinAlg::Matrix<1, 3, T> const& xi_master_partial_r_slave,
     Core::LinAlg::Matrix<1, 3, T> const& xi_master_partial_r_master,
     Core::LinAlg::Matrix<1, 3, T> const& xi_master_partial_r_xi_master,
-    double potential_reduction_length, double length_prior_right, double length_prior_left,
-    T& interaction_potential_GP,
+    std::optional<double> potential_reduction_length, double length_prior_right,
+    double length_prior_left, T& interaction_potential_GP,
     Core::LinAlg::Matrix<1, numnodes * numnodalvalues, double> const& N_i_slave,
     Core::LinAlg::Matrix<1, numnodes * numnodalvalues, double> const& N_i_xi_slave,
     Core::LinAlg::Matrix<1, numnodes * numnodalvalues, T> const& N_i_master,
@@ -3227,7 +3227,7 @@ bool BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues,
   }
 
   // determine potential reduction factor for master beam endpoint strategy
-  if (potential_reduction_length > 0.0)
+  if (potential_reduction_length.has_value())
   {
     T left_length_to_edge = length_prior_left + ele2length_ * 0.5 * (1 + xi_master);
     T right_length_to_edge = length_prior_right + ele2length_ * 0.5 * (1 - xi_master);
@@ -3235,27 +3235,29 @@ bool BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues,
     bool right_node = false;
 
     // determine potential reduction factor (master beam can only consist of one element!)
-    if (left_length_to_edge < potential_reduction_length)
+    if (left_length_to_edge < potential_reduction_length.value())
     {
       potential_reduction_factor_GP =
-          0.5 - 0.5 * std::cos(M_PI * left_length_to_edge / potential_reduction_length);
+          0.5 - 0.5 * std::cos(M_PI * left_length_to_edge / potential_reduction_length.value());
       length_to_edge = left_length_to_edge;
     }
-    else if (right_length_to_edge < potential_reduction_length)
+    else if (right_length_to_edge < potential_reduction_length.value())
     {
       potential_reduction_factor_GP =
-          0.5 - 0.5 * std::cos(M_PI * right_length_to_edge / potential_reduction_length);
+          0.5 - 0.5 * std::cos(M_PI * right_length_to_edge / potential_reduction_length.value());
       length_to_edge = right_length_to_edge;
       right_node = true;
     }
 
-    if ((length_to_edge < potential_reduction_length) && (length_to_edge != -1.0))
+    if ((length_to_edge < potential_reduction_length.value()) && (length_to_edge != -1.0))
     {
-      pot_red_fac_deriv_l_edge = 0.5 * M_PI / potential_reduction_length *
-                                 std::sin(M_PI * length_to_edge / potential_reduction_length);
-      pot_red_fac_2ndderiv_l_edge = 0.5 * M_PI * M_PI /
-                                    (potential_reduction_length * potential_reduction_length) *
-                                    std::cos(M_PI * length_to_edge / potential_reduction_length);
+      pot_red_fac_deriv_l_edge =
+          0.5 * M_PI / potential_reduction_length.value() *
+          std::sin(M_PI * length_to_edge / potential_reduction_length.value());
+      pot_red_fac_2ndderiv_l_edge =
+          0.5 * M_PI * M_PI /
+          (potential_reduction_length.value() * potential_reduction_length.value()) *
+          std::cos(M_PI * length_to_edge / potential_reduction_length.value());
     }
 
     l_edge_deriv_xi_master = 0.5 * ele2length_;

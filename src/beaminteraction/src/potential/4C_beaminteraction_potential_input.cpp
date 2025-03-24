@@ -73,11 +73,10 @@ void BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::InputSp
                                              "slave be assigned to beam elements?",
                                  .default_value = MasterSlaveChoice::smaller_eleGID_is_slave}));
 
-  // TODO add None as default value
-  beampotential.specs.emplace_back(parameter<double>("POTENTIAL_REDUCTION_LENGTH",
-      {.description = "Within this length of the master beam end point the potential is smoothly "
-                      "reduced to one half to account for infinitely long master beam surrogates.",
-          .default_value = -1.0}));
+  beampotential.specs.emplace_back(parameter<std::optional<double>>("POTENTIAL_REDUCTION_LENGTH",
+      {.description =
+              "Within this length of the master beam end point the potential is smoothly "
+              "reduced to one half to account for infinitely long master beam surrogates."}));
 
   beampotential.move_into_collection(list);
 

@@ -143,7 +143,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::post_setup()
 {
   check_init_setup();
 
-  if (beam_potential_params().potential_reduction_length() != -1.0)
+  if (beam_potential_params().potential_reduction_length().has_value())
     setup_potential_reduction_strategy();
 
   nearby_elements_map_.clear();
@@ -599,7 +599,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::post_read_restart()
 {
   check_init_setup();
 
-  if (beam_potential_params().potential_reduction_length() != -1.0)
+  if (beam_potential_params().potential_reduction_length().has_value())
     setup_potential_reduction_strategy();
 
   nearby_elements_map_.clear();

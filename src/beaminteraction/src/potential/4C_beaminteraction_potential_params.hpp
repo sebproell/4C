@@ -131,7 +131,7 @@ namespace BeamInteraction
       return params_runtime_visualization_output_btb_potential_;
     }
 
-    inline double potential_reduction_length() const
+    inline std::optional<double> potential_reduction_length() const
     {
       throw_error_if_not_init_and_setup();
       return potential_reduction_length_;
@@ -191,7 +191,7 @@ namespace BeamInteraction
     //! within this length starting from the master beam end point the potential is smoothly
     //! reduced to zero to account for infinitely long master beam surrogates and enable an
     //! axial pull-off force.
-    double potential_reduction_length_;
+    std::optional<double> potential_reduction_length_;
   };
 
 }  // namespace BeamInteraction

@@ -36,7 +36,7 @@ BeamInteraction::BeamPotentialParams::BeamPotentialParams()
       choice_master_slave_(BeamPotential::MasterSlaveChoice::vague),
       visualization_output_(false),
       params_runtime_visualization_output_btb_potential_(nullptr),
-      potential_reduction_length_(0.0)
+      potential_reduction_length_(std::nullopt)
 {
   // empty constructor
 }
@@ -121,7 +121,7 @@ void BeamInteraction::BeamPotentialParams::init(const double restart_time)
   /****************************************************************************/
   cutoff_radius_ = beam_potential_params_list.get<std::optional<double>>("CUTOFF_RADIUS");
 
-  if (cutoff_radius_.has_value() && cutoff_radius_.value() <= 0.0)
+  if (cutoff_radius_.has_value() and cutoff_radius_.value() <= 0.0)
     FOUR_C_THROW("Invalid cutoff radius! Must be positive value or null to deactivate.");
 
   /****************************************************************************/
@@ -189,10 +189,11 @@ void BeamInteraction::BeamPotentialParams::init(const double restart_time)
 
   /****************************************************************************/
   potential_reduction_length_ =
-      beam_potential_params_list.get<double>("POTENTIAL_REDUCTION_LENGTH");
+      beam_potential_params_list.get<std::optional<double>>("POTENTIAL_REDUCTION_LENGTH");
 
-  if (potential_reduction_length_ != -1.0 and potential_reduction_length_ <= 0.0)
-    FOUR_C_THROW("Invalid potential reduction length! Must be positive value or -1 to deactivate.");
+  if (potential_reduction_length_.has_value() and potential_reduction_length_.value() <= 0.0)
+    FOUR_C_THROW(
+        "Invalid potential reduction length! Must be positive value or none to deactivate.");
 
   isinit_ = true;
 }
