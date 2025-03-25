@@ -32,11 +32,11 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase::PoroMultiPhaseScaTraBase(
     : AlgorithmBase(comm, globaltimeparams),
       poromulti_(nullptr),
       scatra_(nullptr),
-      fluxreconmethod_(Inpar::POROFLUIDMULTIPHASE::gradreco_none),
+      fluxreconmethod_(POROFLUIDMULTIPHASE::gradreco_none),
       ndsporofluid_scatra_(-1),
       timertimestep_("PoroMultiPhaseScaTraBase", true),
       dttimestep_(0.0),
-      divcontype_(Teuchos::getIntegralValue<Inpar::PoroMultiPhaseScaTra::DivContAct>(
+      divcontype_(Teuchos::getIntegralValue<PoroMultiPhaseScaTra::DivContAct>(
           globaltimeparams, "DIVERCONT")),
       artery_coupl_(globaltimeparams.get<bool>("ARTERY_COUPLING"))
 {
@@ -66,17 +66,16 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase::init(
   // coupling scheme
   // -------------------------------------------------------------------
   // first of all check for possible couplings
-  auto solschemeporo = Teuchos::getIntegralValue<Inpar::POROMULTIPHASE::SolutionSchemeOverFields>(
-      poroparams, "COUPALGO");
+  auto solschemeporo =
+      Teuchos::getIntegralValue<POROMULTIPHASE::SolutionSchemeOverFields>(poroparams, "COUPALGO");
   auto solschemescatraporo =
-      Teuchos::getIntegralValue<Inpar::PoroMultiPhaseScaTra::SolutionSchemeOverFields>(
+      Teuchos::getIntegralValue<PoroMultiPhaseScaTra::SolutionSchemeOverFields>(
           algoparams, "COUPALGO");
 
   // partitioned -- monolithic not possible --> error
-  if (solschemeporo !=
-          Inpar::POROMULTIPHASE::SolutionSchemeOverFields::solscheme_twoway_monolithic &&
+  if (solschemeporo != POROMULTIPHASE::SolutionSchemeOverFields::solscheme_twoway_monolithic &&
       solschemescatraporo ==
-          Inpar::PoroMultiPhaseScaTra::SolutionSchemeOverFields::solscheme_twoway_monolithic)
+          PoroMultiPhaseScaTra::SolutionSchemeOverFields::solscheme_twoway_monolithic)
     FOUR_C_THROW(
         "Your requested coupling is not available: possible couplings are:\n"
         "(STRUCTURE <--> FLUID) <--> SCATRA: partitioned -- partitioned_nested\n"
@@ -85,10 +84,9 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase::init(
         "YOUR CHOICE                       : partitioned -- monolithic");
 
   // monolithic -- partitioned sequential not possible
-  if (solschemeporo ==
-          Inpar::POROMULTIPHASE::SolutionSchemeOverFields::solscheme_twoway_monolithic &&
-      solschemescatraporo == Inpar::PoroMultiPhaseScaTra::SolutionSchemeOverFields::
-                                 solscheme_twoway_partitioned_sequential)
+  if (solschemeporo == POROMULTIPHASE::SolutionSchemeOverFields::solscheme_twoway_monolithic &&
+      solschemescatraporo ==
+          PoroMultiPhaseScaTra::SolutionSchemeOverFields::solscheme_twoway_partitioned_sequential)
     FOUR_C_THROW(
         "Your requested coupling is not available: possible couplings are:\n"
         "(STRUCTURE <--> FLUID) <--> SCATRA: partitioned -- partitioned_nested\n"
@@ -96,13 +94,12 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase::init(
         "                                    monolithic  -- monolithic\n"
         "YOUR CHOICE                       : monolithic  -- partitioned_sequential");
 
-  fluxreconmethod_ =
-      Teuchos::getIntegralValue<Inpar::POROFLUIDMULTIPHASE::FluxReconstructionMethod>(
-          fluidparams, "FLUX_PROJ_METHOD");
+  fluxreconmethod_ = Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::FluxReconstructionMethod>(
+      fluidparams, "FLUX_PROJ_METHOD");
 
   if (solschemescatraporo ==
-          Inpar::PoroMultiPhaseScaTra::SolutionSchemeOverFields::solscheme_twoway_monolithic &&
-      fluxreconmethod_ == Inpar::POROFLUIDMULTIPHASE::FluxReconstructionMethod::gradreco_l2)
+          PoroMultiPhaseScaTra::SolutionSchemeOverFields::solscheme_twoway_monolithic &&
+      fluxreconmethod_ == POROFLUIDMULTIPHASE::FluxReconstructionMethod::gradreco_l2)
   {
     FOUR_C_THROW(
         "Monolithic porofluidmultiphase-scatra coupling does not work with L2-projection!\n"
@@ -297,7 +294,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase::set_poro_solution()
       poromulti_->relaxed_fluid_phinp(), poromulti_->fluid_field()->phin());
 
   // additionally, set nodal flux if L2-projection is desired
-  if (fluxreconmethod_ == Inpar::POROFLUIDMULTIPHASE::FluxReconstructionMethod::gradreco_l2)
+  if (fluxreconmethod_ == POROFLUIDMULTIPHASE::FluxReconstructionMethod::gradreco_l2)
     poroscatra->set_l2_flux_of_multi_fluid(poromulti_->fluid_flux());
 
   if (artery_coupl_)
@@ -445,7 +442,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase::handle_divergence() const
 {
   switch (divcontype_)
   {
-    case Inpar::PoroMultiPhaseScaTra::divcont_continue:
+    case PoroMultiPhaseScaTra::divcont_continue:
     {
       // warn if itemax is reached without convergence, but proceed to
       // next timestep...
@@ -461,7 +458,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase::handle_divergence() const
       }
       break;
     }
-    case Inpar::PoroMultiPhaseScaTra::divcont_stop:
+    case PoroMultiPhaseScaTra::divcont_stop:
     {
       FOUR_C_THROW("POROMULTIPHASESCATRA nonlinear solver not converged in ITEMAX steps!");
       break;

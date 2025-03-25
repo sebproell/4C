@@ -281,15 +281,15 @@ namespace PoroMultiPhaseScaTra
     double maxinc_;  //!< maximum increment
     double maxres_;  //!< maximum residual
 
-    enum Inpar::PoroMultiPhaseScaTra::VectorNorm vectornormfres_;  //!< type of norm for residual
-    enum Inpar::PoroMultiPhaseScaTra::VectorNorm vectornorminc_;   //!< type of norm for increments
+    enum PoroMultiPhaseScaTra::VectorNorm vectornormfres_;  //!< type of norm for residual
+    enum PoroMultiPhaseScaTra::VectorNorm vectornorminc_;   //!< type of norm for increments
 
     Teuchos::Time timernewton_;  //!< timer for measurement of solution time of newton iterations
     double dtsolve_;             //!< linear solver time
     double dtele_;               //!< time for element evaluation + build-up of system matrix
 
     //! flag for finite difference check
-    Inpar::PoroMultiPhaseScaTra::FdCheck fdcheck_;
+    PoroMultiPhaseScaTra::FdCheck fdcheck_;
 
 
   };  // PoroMultiPhaseScatraMonolithic

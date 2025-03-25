@@ -159,7 +159,7 @@ POROFLUIDMULTIPHASE::Utils::convert_dof_vector_to_node_based_multi_vector(
  | create algorithm                                                      |
  *----------------------------------------------------------------------*/
 std::shared_ptr<Adapter::PoroFluidMultiphase> POROFLUIDMULTIPHASE::Utils::create_algorithm(
-    Inpar::POROFLUIDMULTIPHASE::TimeIntegrationScheme timintscheme,
+    POROFLUIDMULTIPHASE::TimeIntegrationScheme timintscheme,
     std::shared_ptr<Core::FE::Discretization> dis, const int linsolvernumber,
     const Teuchos::ParameterList& probparams, const Teuchos::ParameterList& poroparams,
     std::shared_ptr<Core::IO::DiscretizationWriter> output)
@@ -174,7 +174,7 @@ std::shared_ptr<Adapter::PoroFluidMultiphase> POROFLUIDMULTIPHASE::Utils::create
 
   switch (timintscheme)
   {
-    case Inpar::POROFLUIDMULTIPHASE::timeint_one_step_theta:
+    case POROFLUIDMULTIPHASE::timeint_one_step_theta:
     {
       // create algorithm
       algo = std::make_shared<POROFLUIDMULTIPHASE::TimIntOneStepTheta>(
@@ -494,12 +494,11 @@ double POROFLUIDMULTIPHASE::Utils::get_max_nodal_distance(
  | calculate vector norm                             kremheller 12/17   |
  *----------------------------------------------------------------------*/
 double POROFLUIDMULTIPHASE::Utils::calculate_vector_norm(
-    const enum Inpar::POROFLUIDMULTIPHASE::VectorNorm norm,
-    const Core::LinAlg::Vector<double>& vect)
+    const enum POROFLUIDMULTIPHASE::VectorNorm norm, const Core::LinAlg::Vector<double>& vect)
 {
   // L1 norm
   // norm = sum_0^i vect[i]
-  if (norm == Inpar::POROFLUIDMULTIPHASE::norm_l1)
+  if (norm == POROFLUIDMULTIPHASE::norm_l1)
   {
     double vectnorm;
     vect.norm_1(&vectnorm);
@@ -507,7 +506,7 @@ double POROFLUIDMULTIPHASE::Utils::calculate_vector_norm(
   }
   // L2/Euclidian norm
   // norm = sqrt{sum_0^i vect[i]^2 }
-  else if (norm == Inpar::POROFLUIDMULTIPHASE::norm_l2)
+  else if (norm == POROFLUIDMULTIPHASE::norm_l2)
   {
     double vectnorm;
     vect.norm_2(&vectnorm);
@@ -515,7 +514,7 @@ double POROFLUIDMULTIPHASE::Utils::calculate_vector_norm(
   }
   // RMS norm
   // norm = sqrt{sum_0^i vect[i]^2 }/ sqrt{length_vect}
-  else if (norm == Inpar::POROFLUIDMULTIPHASE::norm_rms)
+  else if (norm == POROFLUIDMULTIPHASE::norm_rms)
   {
     double vectnorm;
     vect.norm_2(&vectnorm);
@@ -523,14 +522,14 @@ double POROFLUIDMULTIPHASE::Utils::calculate_vector_norm(
   }
   // infinity/maximum norm
   // norm = max( vect[i] )
-  else if (norm == Inpar::POROFLUIDMULTIPHASE::norm_inf)
+  else if (norm == POROFLUIDMULTIPHASE::norm_inf)
   {
     double vectnorm;
     vect.norm_inf(&vectnorm);
     return vectnorm;
   }
   // norm = sum_0^i vect[i]/length_vect
-  else if (norm == Inpar::POROFLUIDMULTIPHASE::norm_l1_scaled)
+  else if (norm == POROFLUIDMULTIPHASE::norm_l1_scaled)
   {
     double vectnorm;
     vect.norm_1(&vectnorm);

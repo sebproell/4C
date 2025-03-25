@@ -12,10 +12,10 @@
 #include "4C_adapter_str_structure_new.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_porofluid_pressure_based.hpp"
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
+#include "4C_porofluid_pressure_based_input.hpp"
 #include "4C_porofluid_pressure_based_utils.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
@@ -90,7 +90,7 @@ void POROMULTIPHASE::PoroMultiPhaseBase::init(const Teuchos::ParameterList& glob
   // algorithm construction depending on
   // time-integration (or stationary) scheme
   // -------------------------------------------------------------------
-  auto timintscheme = Teuchos::getIntegralValue<Inpar::POROFLUIDMULTIPHASE::TimeIntegrationScheme>(
+  auto timintscheme = Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::TimeIntegrationScheme>(
       fluidparams, "TIMEINTEGR");
 
   // build poro fluid time integrator

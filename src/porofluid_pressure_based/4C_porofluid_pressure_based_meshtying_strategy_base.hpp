@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_porofluid_pressure_based.hpp"
+#include "4C_porofluid_pressure_based_input.hpp"
 #include "4C_porofluid_pressure_based_timint_implicit.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
@@ -38,9 +38,9 @@ namespace POROFLUIDMULTIPHASE
         : porofluidmultitimint_(porofluidmultitimint),
           params_(probparams),
           poroparams_(poroparams),
-          vectornormfres_(Teuchos::getIntegralValue<Inpar::POROFLUIDMULTIPHASE::VectorNorm>(
+          vectornormfres_(Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::VectorNorm>(
               poroparams_, "VECTORNORM_RESF")),
-          vectornorminc_(Teuchos::getIntegralValue<Inpar::POROFLUIDMULTIPHASE::VectorNorm>(
+          vectornorminc_(Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::VectorNorm>(
               poroparams_, "VECTORNORM_INC"))
     {
       return;
@@ -154,10 +154,10 @@ namespace POROFLUIDMULTIPHASE
     const Teuchos::ParameterList& poroparams_;
 
     // vector norm for residuals
-    enum Inpar::POROFLUIDMULTIPHASE::VectorNorm vectornormfres_;
+    enum POROFLUIDMULTIPHASE::VectorNorm vectornormfres_;
 
     // vector norm for increments
-    enum Inpar::POROFLUIDMULTIPHASE::VectorNorm vectornorminc_;
+    enum POROFLUIDMULTIPHASE::VectorNorm vectornorminc_;
   };
 
 }  // namespace POROFLUIDMULTIPHASE

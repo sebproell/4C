@@ -119,8 +119,8 @@ void porofluidmultiphase_dyn(int restart)
   // algorithm construction depending on
   // time-integration (or stationary) scheme
   // -------------------------------------------------------------------
-  auto timintscheme = Teuchos::getIntegralValue<Inpar::POROFLUIDMULTIPHASE::TimeIntegrationScheme>(
-      porodyn, "TIMEINTEGR");
+  auto timintscheme =
+      Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::TimeIntegrationScheme>(porodyn, "TIMEINTEGR");
 
   // build poro fluid time integrator
   std::shared_ptr<Adapter::PoroFluidMultiphase> algo = POROFLUIDMULTIPHASE::Utils::create_algorithm(

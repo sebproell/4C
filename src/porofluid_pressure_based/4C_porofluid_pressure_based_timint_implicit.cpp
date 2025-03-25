@@ -62,15 +62,13 @@ POROFLUIDMULTIPHASE::TimIntImpl::TimIntImpl(std::shared_ptr<Core::FE::Discretiza
       stab_biot_(poroparams_.get<bool>("STAB_BIOT")),
       domainint_funct_(std::vector<int>()),
       num_domainint_funct_(0),
-      calcerr_(Teuchos::getIntegralValue<Inpar::POROFLUIDMULTIPHASE::CalcError>(
-          poroparams_, "CALCERROR")),
-      fluxrecon_(Teuchos::getIntegralValue<Inpar::POROFLUIDMULTIPHASE::FluxReconstructionMethod>(
+      calcerr_(Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::CalcError>(poroparams_, "CALCERROR")),
+      fluxrecon_(Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::FluxReconstructionMethod>(
           poroparams_, "FLUX_PROJ_METHOD")),
       fluxreconsolvernum_(poroparams_.get<int>("FLUX_PROJ_SOLVER")),
-      divcontype_(Teuchos::getIntegralValue<Inpar::POROFLUIDMULTIPHASE::DivContAct>(
-          poroparams_, "DIVERCONT")),
-      fdcheck_(
-          Teuchos::getIntegralValue<Inpar::POROFLUIDMULTIPHASE::FdCheck>(poroparams_, "FDCHECK")),
+      divcontype_(
+          Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::DivContAct>(poroparams_, "DIVERCONT")),
+      fdcheck_(Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::FdCheck>(poroparams_, "FDCHECK")),
       fdcheckeps_(poroparams_.get<double>("FDCHECKEPS")),
       fdchecktol_(poroparams_.get<double>("FDCHECKTOL")),
       stab_biot_scaling_(poroparams_.get<double>("STAB_BIOT_SCALING")),
@@ -85,9 +83,9 @@ POROFLUIDMULTIPHASE::TimIntImpl::TimIntImpl(std::shared_ptr<Core::FE::Discretiza
       itemax_(poroparams_.get<int>("ITEMAX")),
       upres_(params_.get<int>("RESULTSEVERY")),
       uprestart_(params_.get<int>("RESTARTEVERY")),
-      vectornormfres_(Teuchos::getIntegralValue<Inpar::POROFLUIDMULTIPHASE::VectorNorm>(
+      vectornormfres_(Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::VectorNorm>(
           poroparams_, "VECTORNORM_RESF")),
-      vectornorminc_(Teuchos::getIntegralValue<Inpar::POROFLUIDMULTIPHASE::VectorNorm>(
+      vectornorminc_(Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::VectorNorm>(
           poroparams_, "VECTORNORM_INC")),
       ittolres_(poroparams_.get<double>("TOLRES")),
       ittolinc_(poroparams_.get<double>("TOLINC")),
@@ -276,8 +274,8 @@ void POROFLUIDMULTIPHASE::TimIntImpl::init(bool isale, int nds_disp, int nds_vel
   // -------------------------------------------------------------------
   // set initial field
   // -------------------------------------------------------------------
-  set_initial_field(Teuchos::getIntegralValue<Inpar::POROFLUIDMULTIPHASE::InitialField>(
-                        poroparams_, "INITIALFIELD"),
+  set_initial_field(
+      Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::InitialField>(poroparams_, "INITIALFIELD"),
       poroparams_.get<int>("INITFUNCNO"));
 
   // -------------------------------------------------------------------
@@ -503,8 +501,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::time_loop()
     // -------------------------------------------------------------------
     // evaluate error for problems with analytical solution
     // -------------------------------------------------------------------
-    if (calcerr_ != Inpar::POROFLUIDMULTIPHASE::calcerror_no)
-      evaluate_error_compared_to_analytical_sol();
+    if (calcerr_ != POROFLUIDMULTIPHASE::calcerror_no) evaluate_error_compared_to_analytical_sol();
 
     // -------------------------------------------------------------------
     //                         output of solution
@@ -1364,7 +1361,7 @@ bool POROFLUIDMULTIPHASE::TimIntImpl::abort_nonlin_iter(
   {
     switch (divcontype_)
     {
-      case Inpar::POROFLUIDMULTIPHASE::divcont_continue:
+      case POROFLUIDMULTIPHASE::divcont_continue:
       {
         // warn if itemax is reached without convergence, but proceed to
         // next timestep...
@@ -1380,7 +1377,7 @@ bool POROFLUIDMULTIPHASE::TimIntImpl::abort_nonlin_iter(
         }
         break;
       }
-      case Inpar::POROFLUIDMULTIPHASE::divcont_stop:
+      case POROFLUIDMULTIPHASE::divcont_stop:
       {
         FOUR_C_THROW("Porofluid multiphase solver not converged in itemax steps!");
         break;
@@ -1516,7 +1513,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_solid_pressures()
  *--------------------------------------------------------------------------*/
 void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_flux()
 {
-  if (fluxrecon_ == Inpar::POROFLUIDMULTIPHASE::gradreco_none) return;
+  if (fluxrecon_ == POROFLUIDMULTIPHASE::gradreco_none) return;
 
   // create the parameters for the discretization
   Teuchos::ParameterList eleparams;
@@ -1534,7 +1531,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_flux()
 
   switch (fluxrecon_)
   {
-    case Inpar::POROFLUIDMULTIPHASE::gradreco_l2:
+    case POROFLUIDMULTIPHASE::gradreco_l2:
     {
       const auto& solverparams = Global::Problem::instance()->solver_params(fluxreconsolvernum_);
       flux_ = Core::FE::compute_nodal_l2_projection(*discret_, "phinp_fluid", numvec, eleparams,
@@ -1811,18 +1808,18 @@ inline void POROFLUIDMULTIPHASE::TimIntImpl::increment_time_and_step()
  *----------------------------------------------------------------------*/
 void POROFLUIDMULTIPHASE::TimIntImpl::evaluate_error_compared_to_analytical_sol()
 {
-  if (calcerr_ == Inpar::POROFLUIDMULTIPHASE::calcerror_no) return;
+  if (calcerr_ == POROFLUIDMULTIPHASE::calcerror_no) return;
   FOUR_C_THROW("Error calculation not yet implemented! Element evaluation is missing.");
 
   // create the parameters for the error calculation
   Teuchos::ParameterList eleparams;
   eleparams.set<POROFLUIDMULTIPHASE::Action>("action", POROFLUIDMULTIPHASE::calc_error);
   eleparams.set("total time", time_);
-  eleparams.set<Inpar::POROFLUIDMULTIPHASE::CalcError>("calcerrorflag", calcerr_);
+  eleparams.set<POROFLUIDMULTIPHASE::CalcError>("calcerrorflag", calcerr_);
 
   switch (calcerr_)
   {
-    case Inpar::POROFLUIDMULTIPHASE::calcerror_byfunction:
+    case POROFLUIDMULTIPHASE::calcerror_byfunction:
     {
       const int errorfunctnumber = poroparams_.get<int>("CALCERRORNO");
       if (errorfunctnumber < 1)
@@ -1905,7 +1902,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::evaluate()
   assemble_mat_and_rhs();
 
   // perform finite difference check on time integrator level
-  if (fdcheck_ == Inpar::POROFLUIDMULTIPHASE::fdcheck_global) fd_check();
+  if (fdcheck_ == POROFLUIDMULTIPHASE::fdcheck_global) fd_check();
 
   // Apply Dirichlet Boundary Condition
   prepare_system_for_newton_solve();
@@ -2008,17 +2005,17 @@ void POROFLUIDMULTIPHASE::TimIntImpl::set_state(unsigned nds, const std::string&
  |  set initial field for phi                                 vuong 08/16 |
  *----------------------------------------------------------------------*/
 void POROFLUIDMULTIPHASE::TimIntImpl::set_initial_field(
-    const Inpar::POROFLUIDMULTIPHASE::InitialField init, const int startfuncno)
+    const POROFLUIDMULTIPHASE::InitialField init, const int startfuncno)
 {
   switch (init)
   {
-    case Inpar::POROFLUIDMULTIPHASE::initfield_zero_field:
+    case POROFLUIDMULTIPHASE::initfield_zero_field:
     {
       phin_->put_scalar(0.0);
       phinp_->put_scalar(0.0);
       break;
     }
-    case Inpar::POROFLUIDMULTIPHASE::initfield_field_by_function:
+    case POROFLUIDMULTIPHASE::initfield_field_by_function:
     {
       const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
@@ -2050,7 +2047,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::set_initial_field(
 
       break;
     }
-    case Inpar::POROFLUIDMULTIPHASE::initfield_field_by_condition:
+    case POROFLUIDMULTIPHASE::initfield_field_by_condition:
     {
       // set initial field for ALL existing scatra fields in condition
       const std::string field = "PoroMultiFluid";

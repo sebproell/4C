@@ -32,7 +32,7 @@ FOUR_C_NAMESPACE_OPEN
  *----------------------------------------------------------------------*/
 std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase>
 PoroMultiPhaseScaTra::Utils::create_poro_multi_phase_scatra_algorithm(
-    Inpar::PoroMultiPhaseScaTra::SolutionSchemeOverFields solscheme,
+    PoroMultiPhaseScaTra::SolutionSchemeOverFields solscheme,
     const Teuchos::ParameterList& timeparams, MPI_Comm comm)
 {
   // Creation of Coupled Problem algorithm.
@@ -40,14 +40,14 @@ PoroMultiPhaseScaTra::Utils::create_poro_multi_phase_scatra_algorithm(
 
   switch (solscheme)
   {
-    case Inpar::PoroMultiPhaseScaTra::solscheme_twoway_partitioned_nested:
+    case PoroMultiPhaseScaTra::solscheme_twoway_partitioned_nested:
     {
       // call constructor
       algo = std::make_shared<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraPartitionedTwoWayNested>(
           comm, timeparams);
       break;
     }
-    case Inpar::PoroMultiPhaseScaTra::solscheme_twoway_partitioned_sequential:
+    case PoroMultiPhaseScaTra::solscheme_twoway_partitioned_sequential:
     {
       // call constructor
       algo =
@@ -55,7 +55,7 @@ PoroMultiPhaseScaTra::Utils::create_poro_multi_phase_scatra_algorithm(
               comm, timeparams);
       break;
     }
-    case Inpar::PoroMultiPhaseScaTra::solscheme_twoway_monolithic:
+    case PoroMultiPhaseScaTra::solscheme_twoway_monolithic:
     {
       const bool artery_coupl = timeparams.get<bool>("ARTERY_COUPLING");
       if (!artery_coupl)
@@ -261,12 +261,11 @@ void PoroMultiPhaseScaTra::Utils::assign_material_pointers(const std::string& st
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 double PoroMultiPhaseScaTra::Utils::calculate_vector_norm(
-    const enum Inpar::PoroMultiPhaseScaTra::VectorNorm norm,
-    const Core::LinAlg::Vector<double>& vect)
+    const enum PoroMultiPhaseScaTra::VectorNorm norm, const Core::LinAlg::Vector<double>& vect)
 {
   // L1 norm
   // norm = sum_0^i vect[i]
-  if (norm == Inpar::PoroMultiPhaseScaTra::norm_l1)
+  if (norm == PoroMultiPhaseScaTra::norm_l1)
   {
     double vectnorm;
     vect.norm_1(&vectnorm);
@@ -274,7 +273,7 @@ double PoroMultiPhaseScaTra::Utils::calculate_vector_norm(
   }
   // L2/Euclidian norm
   // norm = sqrt{sum_0^i vect[i]^2 }
-  else if (norm == Inpar::PoroMultiPhaseScaTra::norm_l2)
+  else if (norm == PoroMultiPhaseScaTra::norm_l2)
   {
     double vectnorm;
     vect.norm_2(&vectnorm);
@@ -282,7 +281,7 @@ double PoroMultiPhaseScaTra::Utils::calculate_vector_norm(
   }
   // RMS norm
   // norm = sqrt{sum_0^i vect[i]^2 }/ sqrt{length_vect}
-  else if (norm == Inpar::PoroMultiPhaseScaTra::norm_rms)
+  else if (norm == PoroMultiPhaseScaTra::norm_rms)
   {
     double vectnorm;
     vect.norm_2(&vectnorm);
@@ -290,14 +289,14 @@ double PoroMultiPhaseScaTra::Utils::calculate_vector_norm(
   }
   // infinity/maximum norm
   // norm = max( vect[i] )
-  else if (norm == Inpar::PoroMultiPhaseScaTra::norm_inf)
+  else if (norm == PoroMultiPhaseScaTra::norm_inf)
   {
     double vectnorm;
     vect.norm_inf(&vectnorm);
     return vectnorm;
   }
   // norm = sum_0^i vect[i]/length_vect
-  else if (norm == Inpar::PoroMultiPhaseScaTra::norm_l1_scaled)
+  else if (norm == PoroMultiPhaseScaTra::norm_l1_scaled)
   {
     double vectnorm;
     vect.norm_1(&vectnorm);

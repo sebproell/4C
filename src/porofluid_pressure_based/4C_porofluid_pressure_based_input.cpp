@@ -5,15 +5,14 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_porofluid_pressure_based.hpp"
+#include "4C_porofluid_pressure_based_input.hpp"
 
 #include "4C_inpar_bio.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
-void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
-    std::map<std::string, Core::IO::InputSpec>& list)
+void POROFLUIDMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
@@ -113,25 +112,25 @@ void Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(
 
   porofluidmultiphasedyn.specs.emplace_back(deprecated_selection<VectorNorm>("VECTORNORM_RESF",
       {
-          {"L1", Inpar::POROFLUIDMULTIPHASE::norm_l1},
-          {"L1_Scaled", Inpar::POROFLUIDMULTIPHASE::norm_l1_scaled},
-          {"L2", Inpar::POROFLUIDMULTIPHASE::norm_l2},
-          {"Rms", Inpar::POROFLUIDMULTIPHASE::norm_rms},
-          {"Inf", Inpar::POROFLUIDMULTIPHASE::norm_inf},
+          {"L1", POROFLUIDMULTIPHASE::norm_l1},
+          {"L1_Scaled", POROFLUIDMULTIPHASE::norm_l1_scaled},
+          {"L2", POROFLUIDMULTIPHASE::norm_l2},
+          {"Rms", POROFLUIDMULTIPHASE::norm_rms},
+          {"Inf", POROFLUIDMULTIPHASE::norm_inf},
       },
       {.description = "type of norm to be applied to residuals",
-          .default_value = Inpar::POROFLUIDMULTIPHASE::norm_l2}));
+          .default_value = POROFLUIDMULTIPHASE::norm_l2}));
 
   porofluidmultiphasedyn.specs.emplace_back(deprecated_selection<VectorNorm>("VECTORNORM_INC",
       {
-          {"L1", Inpar::POROFLUIDMULTIPHASE::norm_l1},
-          {"L1_Scaled", Inpar::POROFLUIDMULTIPHASE::norm_l1_scaled},
-          {"L2", Inpar::POROFLUIDMULTIPHASE::norm_l2},
-          {"Rms", Inpar::POROFLUIDMULTIPHASE::norm_rms},
-          {"Inf", Inpar::POROFLUIDMULTIPHASE::norm_inf},
+          {"L1", POROFLUIDMULTIPHASE::norm_l1},
+          {"L1_Scaled", POROFLUIDMULTIPHASE::norm_l1_scaled},
+          {"L2", POROFLUIDMULTIPHASE::norm_l2},
+          {"Rms", POROFLUIDMULTIPHASE::norm_rms},
+          {"Inf", POROFLUIDMULTIPHASE::norm_inf},
       },
       {.description = "type of norm to be applied to residuals",
-          .default_value = Inpar::POROFLUIDMULTIPHASE::norm_l2}));
+          .default_value = POROFLUIDMULTIPHASE::norm_l2}));
 
   // Iterationparameters
   porofluidmultiphasedyn.specs.emplace_back(parameter<double>(

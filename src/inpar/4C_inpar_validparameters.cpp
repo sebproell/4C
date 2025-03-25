@@ -41,9 +41,6 @@
 #include "4C_inpar_pasi.hpp"
 #include "4C_inpar_plasticity.hpp"
 #include "4C_inpar_poroelast.hpp"
-#include "4C_inpar_porofluid_pressure_based.hpp"
-#include "4C_inpar_porofluid_pressure_based_elast.hpp"
-#include "4C_inpar_porofluid_pressure_based_elast_scatra.hpp"
 #include "4C_inpar_poroscatra.hpp"
 #include "4C_inpar_problemtype.hpp"
 #include "4C_inpar_rebalance.hpp"
@@ -63,6 +60,9 @@
 #include "4C_io_input_file_utils.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_lubrication_input.hpp"
+#include "4C_porofluid_pressure_based_elast_input.hpp"
+#include "4C_porofluid_pressure_based_elast_scatra_input.hpp"
+#include "4C_porofluid_pressure_based_input.hpp"
 #include "4C_thermo_input.hpp"
 #include "4C_utils_parameter_list.hpp"
 
@@ -194,9 +194,9 @@ std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
   Inpar::FS3I::set_valid_parameters(list);
   Inpar::PoroElast::set_valid_parameters(list);
   Inpar::PoroScaTra::set_valid_parameters(list);
-  Inpar::POROMULTIPHASE::set_valid_parameters(list);
-  Inpar::PoroMultiPhaseScaTra::set_valid_parameters(list);
-  Inpar::POROFLUIDMULTIPHASE::set_valid_parameters(list);
+  POROMULTIPHASE::set_valid_parameters(list);
+  PoroMultiPhaseScaTra::set_valid_parameters(list);
+  POROFLUIDMULTIPHASE::set_valid_parameters(list);
   EHL::set_valid_parameters(list);
   Inpar::SSI::set_valid_parameters(list);
   Inpar::SSTI::set_valid_parameters(list);

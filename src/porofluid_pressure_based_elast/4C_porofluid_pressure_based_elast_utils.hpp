@@ -10,9 +10,9 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_porofluid_pressure_based_elast.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_porofluid_pressure_based_elast_adapter.hpp"
+#include "4C_porofluid_pressure_based_elast_input.hpp"
 
 #include <memory>
 #include <set>
@@ -39,16 +39,14 @@ namespace POROMULTIPHASE
 
     /// create solution algorithm depending on input file
     std::shared_ptr<POROMULTIPHASE::PoroMultiPhase> create_poro_multi_phase_algorithm(
-        Inpar::POROMULTIPHASE::SolutionSchemeOverFields
-            solscheme,                             //!< solution scheme to build (i)
-        const Teuchos::ParameterList& timeparams,  //!< problem parameters (i)
-        MPI_Comm comm                              //!< communicator(i)
+        POROMULTIPHASE::SolutionSchemeOverFields solscheme,  //!< solution scheme to build (i)
+        const Teuchos::ParameterList& timeparams,            //!< problem parameters (i)
+        MPI_Comm comm                                        //!< communicator(i)
     );
 
     //! Determine norm of vector
-    double calculate_vector_norm(
-        const enum Inpar::POROMULTIPHASE::VectorNorm norm,  //!< norm to use
-        const Core::LinAlg::Vector<double>& vect            //!< the vector of interest
+    double calculate_vector_norm(const enum POROMULTIPHASE::VectorNorm norm,  //!< norm to use
+        const Core::LinAlg::Vector<double>& vect  //!< the vector of interest
     );
 
   }  // namespace Utils

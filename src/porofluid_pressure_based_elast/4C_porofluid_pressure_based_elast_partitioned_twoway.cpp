@@ -39,7 +39,7 @@ POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::PoroMultiPhasePartitionedTwoWay
       itnum_(0),
       writerestartevery_(-1),
       artery_coupling_active_(false),
-      relaxationmethod_(Inpar::POROMULTIPHASE::RelaxationMethods::relaxation_none)
+      relaxationmethod_(POROMULTIPHASE::RelaxationMethods::relaxation_none)
 {
 }
 
@@ -87,7 +87,7 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::init(
   omegamin_ = algoparams.sublist("PARTITIONED").get<double>("MINOMEGA");
   omegamax_ = algoparams.sublist("PARTITIONED").get<double>("MAXOMEGA");
 
-  relaxationmethod_ = Teuchos::getIntegralValue<Inpar::POROMULTIPHASE::RelaxationMethods>(
+  relaxationmethod_ = Teuchos::getIntegralValue<POROMULTIPHASE::RelaxationMethods>(
       algoparams.sublist("PARTITIONED"), "RELAXATION");
 }
 
@@ -333,14 +333,14 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::perform_relaxation(
   // perform relaxation
   switch (relaxationmethod_)
   {
-    case Inpar::POROMULTIPHASE::RelaxationMethods::relaxation_none:
+    case POROMULTIPHASE::RelaxationMethods::relaxation_none:
     {
       // no relaxation
       omega_ = 1.0;
       break;
     }
 
-    case Inpar::POROMULTIPHASE::RelaxationMethods::relaxation_constant:
+    case POROMULTIPHASE::RelaxationMethods::relaxation_constant:
     {
       // constant relaxation parameter omega
       omega_ = startomega_;
@@ -349,7 +349,7 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::perform_relaxation(
       break;
     }
 
-    case Inpar::POROMULTIPHASE::RelaxationMethods::relaxation_aitken:
+    case POROMULTIPHASE::RelaxationMethods::relaxation_aitken:
     {
       // Aitken
       aitken_relaxation(omega_, itnum);
