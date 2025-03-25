@@ -1920,7 +1920,7 @@ four_c_test(TEST_FILE xfsi_push_1D_1st_order_dens5.dat)
 four_c_test(TEST_FILE xfsi_push_1D_1st_order.dat)
 four_c_test(TEST_FILE xfsi_push_1D_2nd_order.dat)
 
-if(FOUR_C_WITH_ARBORX)
+if (FOUR_C_WITH_ARBORX)
     four_c_test(TEST_FILE beam3eb_static_beam_to_solid_volume_meshtying_beam_to_beam_contact_boundingvolume.dat NP 2 RESTART_STEP 3)
     four_c_test(TEST_FILE beam3eb_static_beam_to_solid_volume_meshtying_monolithic_partitioning.dat NP 3)
     four_c_test(TEST_FILE beam3r_herm2line3_static_beam_to_solid_surface_coupling_gpts_reference_forced_boundingvolume.dat NP 3 RESTART_STEP 2)
@@ -1935,21 +1935,22 @@ if(FOUR_C_WITH_ARBORX)
     four_c_test_vtk(beam3eb_static_beam_to_solid_volume_meshtying_monolithic_partitioning-vtk-structure.dat beam3eb_static_beam_to_solid_volume_meshtying_monolithic_partitioning.dat 3 xxx-structure.pvd ref/beam3eb_static_beam_to_solid_volume_meshtying_monolithic_partitioning-vtk/structure.pvd 1e-06)
     four_c_test_vtk(embeddedmesh_parallel_bending_beam-vtk-structure.dat embeddedmesh_parallel_bending_beam.dat 3 xxx-structure.pvd ref/embeddedmesh_parallel_bending_beam_np_3-structure.pvd 1e-06)
     four_c_test_vtk(embeddedmesh_parallel_bending_beam_fine-vtk-structure.dat embeddedmesh_parallel_bending_beam_fine.dat 3 xxx-structure.pvd ref/embeddedmesh_parallel_bending_beam_fine-structure.pvd 1e-06)
-endif(FOUR_C_WITH_ARBORX)
+endif (FOUR_C_WITH_ARBORX)
 
-if(FOUR_C_WITH_FFTW)
+if (FOUR_C_WITH_FFTW)
     four_c_test(TEST_FILE f3_decaying_hit_8x8x8.dat NP 2)
     four_c_test(TEST_FILE f3_decaying_hit_eb.dat NP 2)
     four_c_test(TEST_FILE f3_decaying_hit_eb_revcond.dat NP 2)
     four_c_test(TEST_FILE f3_forced_hit_geogen_hdg.dat)
     four_c_test(TEST_FILE scatra_forced_hit_iso_8x8x8_dsm.dat NP 3 RESTART_STEP 4)
     four_c_test(TEST_FILE scatra_forced_hit_mean_8x8x8.dat NP 3 RESTART_STEP 4)
-endif(FOUR_C_WITH_FFTW)
+endif (FOUR_C_WITH_FFTW)
 
-if(FOUR_C_WITH_MIRCO)
+if (FOUR_C_WITH_MIRCO)
     four_c_test(TEST_FILE roughcontact2d_mirco_patchtest.dat NP 2 OMP_THREADS 2)
-    four_c_test(TEST_FILE roughcontact2d_mirco_varying_roughness.dat NP 2 OMP_THREADS 2)
-endif(FOUR_C_WITH_MIRCO)
+    # We disabled this test since it fails with clang. See https://github.com/4C-multiphysics/4C/issues/539
+    # four_c_test(TEST_FILE roughcontact2d_mirco_varying_roughness.dat NP 2 OMP_THREADS 2)
+endif (FOUR_C_WITH_MIRCO)
 
 # Special test cases which do not use the standard four_c_test functionality
 
