@@ -59,10 +59,10 @@ void BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       {.description = "Use regularization of force law at separations smaller than this separation",
           .default_value = -1.0}));
 
-  beampotential.specs.emplace_back(parameter<int>("NUM_INTEGRATION_SEGMENTS",
+  beampotential.specs.emplace_back(parameter<int>("N_INTEGRATION_SEGMENTS",
       {.description = "Number of integration segments used per beam element", .default_value = 1}));
 
-  beampotential.specs.emplace_back(parameter<int>("NUM_GAUSSPOINTS",
+  beampotential.specs.emplace_back(parameter<int>("N_GAUSS_POINTS",
       {.description = "Number of Gauss points used per integration segment", .default_value = 10}));
 
   beampotential.specs.emplace_back(parameter<bool>("AUTOMATIC_DIFFERENTIATION",
