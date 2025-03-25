@@ -587,16 +587,7 @@ namespace Solid
       };
 
       /// Returns Core::LinAlg::Map of the given model
-      Core::LinAlg::Map block_map(const Inpar::Solid::ModelType& mt) const
-      {
-        if (model_maps_.find(mt) == model_maps_.end())
-          FOUR_C_THROW(
-              "There is no block map for the given "
-              "modeltype \"{}\".",
-              Inpar::Solid::model_type_string(mt).c_str());
-
-        return *(model_maps_.at(mt));
-      };
+      Core::LinAlg::Map block_map(const Inpar::Solid::ModelType& mt) const;
 
       /** \brief Returns the Block id of the given model type.
        *
