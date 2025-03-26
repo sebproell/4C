@@ -846,7 +846,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Coupling::Adapter::Coupling::master_
 
   if (err) FOUR_C_THROW("Import failed with err={}", err);
 
-  permsm->FillComplete(sm.domain_map(), permmasterdofmap_->get_epetra_map());
+  permsm->FillComplete(sm.domain_map().get_epetra_map(), permmasterdofmap_->get_epetra_map());
 
   // create a SparseMatrix that wraps the new CrsMatrix.
   return std::make_shared<Core::LinAlg::SparseMatrix>(
@@ -875,7 +875,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Coupling::Adapter::Coupling::slave_t
 
   if (err) FOUR_C_THROW("Import failed with err={}", err);
 
-  permsm->FillComplete(sm.domain_map(), permslavedofmap_->get_epetra_map());
+  permsm->FillComplete(sm.domain_map().get_epetra_map(), permslavedofmap_->get_epetra_map());
 
   // create a SparseMatrix that wraps the new CrsMatrix.
   return std::make_shared<Core::LinAlg::SparseMatrix>(

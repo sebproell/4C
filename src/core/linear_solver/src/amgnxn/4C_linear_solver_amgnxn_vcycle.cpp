@@ -312,7 +312,7 @@ void Core::LinearSolver::AMGNxN::VcycleSingle::do_vcycle(const Core::LinAlg::Mul
     rvec_[level]->Apply(DX, DXcoarse);
 
     // Damp error with coarser levels
-    const Core::LinAlg::Map& Map2 = pvec_[level]->domain_map_not_epetra();
+    const Core::LinAlg::Map& Map2 = pvec_[level]->domain_map();
     Core::LinAlg::MultiVector<double> DYcoarse(Map2, NV, false);
     do_vcycle(DXcoarse, DYcoarse, level + 1, true);
 

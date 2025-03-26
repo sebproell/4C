@@ -201,7 +201,7 @@ bool NOX::Nln::LinearSystem::apply_jacobian_block(const ::NOX::Epetra::Vector& i
 {
   const Core::LinAlg::SparseMatrix& blockc = get_jacobian_block(rbid, cbid);
   Core::LinAlg::SparseMatrix& block = const_cast<Core::LinAlg::SparseMatrix&>(blockc);
-  const Core::LinAlg::Map& domainmap = block.domain_map_not_epetra();
+  const Core::LinAlg::Map& domainmap = block.domain_map();
   const Core::LinAlg::Map& rangemap = block.range_map();
 
   Core::LinAlg::Vector<double> input_v = Core::LinAlg::Vector<double>(input.getEpetraVector());
@@ -874,7 +874,7 @@ void NOX::Nln::LinearSystem::convert_jacobian_to_dense_matrix(
       const Core::LinAlg::SparseMatrix& jac =
           dynamic_cast<const Core::LinAlg::SparseMatrix&>(jacobian());
 
-      convert_sparse_to_dense_matrix(jac, dense_jac, jac.range_map(), jac.domain_map_not_epetra());
+      convert_sparse_to_dense_matrix(jac, dense_jac, jac.range_map(), jac.domain_map());
 
       break;
     }

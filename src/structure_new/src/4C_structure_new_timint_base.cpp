@@ -178,7 +178,7 @@ void Solid::TimeInt::Base::set_restart(int stepn, double timen,
 const Core::LinAlg::Map& Solid::TimeInt::Base::get_mass_domain_map() const
 {
   check_init_setup();
-  return dataglobalstate_->get_mass_matrix()->domain_map_not_epetra();
+  return dataglobalstate_->get_mass_matrix()->domain_map();
 }
 
 /*----------------------------------------------------------------------------*

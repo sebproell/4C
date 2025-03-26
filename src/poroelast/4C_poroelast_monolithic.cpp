@@ -1729,7 +1729,7 @@ const Core::LinAlg::Map& PoroElast::Monolithic::fluid_range_map()
 
 const Core::LinAlg::Map& PoroElast::Monolithic::fluid_domain_map()
 {
-  return fluid_field()->system_matrix()->domain_map_not_epetra();
+  return fluid_field()->system_matrix()->domain_map();
 }
 
 const Core::LinAlg::Map& PoroElast::Monolithic::structure_domain_map()

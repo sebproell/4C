@@ -697,11 +697,11 @@ void FSI::SlidingMonolithicStructureSplit::setup_system_matrix(
   }
 
   // some checks whether maps for matrix-matrix-multiplication do really match
-  if (!s->matrix(0, 1).domain_map_not_epetra().PointSameAs(mortarp->range_map()))
+  if (!s->matrix(0, 1).domain_map().PointSameAs(mortarp->range_map()))
     FOUR_C_THROW("Maps do not match.");
   if (!s->matrix(1, 0).range_map().PointSameAs(mortarp->range_map()))
     FOUR_C_THROW("Maps do not match.");
-  if (!s->matrix(1, 1).domain_map_not_epetra().PointSameAs(mortarp->range_map()))
+  if (!s->matrix(1, 1).domain_map().PointSameAs(mortarp->range_map()))
     FOUR_C_THROW("Maps do not match.");
 #endif
 

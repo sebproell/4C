@@ -860,7 +860,7 @@ void STI::Monolithic::assemble_mat_and_rhs()
                       thermoscatra_domain_interface)
                       ->matrix(0, iblock);
               Coupling::Adapter::MatrixLogicalSplitAndTransform()(thermoscatrablock, *maps_->Map(1),
-                  thermoscatrablock.domain_map_not_epetra(), 1.0, nullptr, nullptr,
+                  thermoscatrablock.domain_map(), 1.0, nullptr, nullptr,
                   blocksystemmatrix->matrix(nblockmapsscatra, iblock));
             }
 

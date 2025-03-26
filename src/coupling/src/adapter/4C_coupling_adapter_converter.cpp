@@ -147,7 +147,7 @@ bool Coupling::Adapter::MatrixLogicalSplitAndTransform::operator()(
       int err = permsrc->Import(*src.epetra_matrix(), *exporter_, Insert);
       if (err) FOUR_C_THROW("Import failed with err={}", err);
 
-      permsrc->FillComplete(src.domain_map(), permsrcmap.get_epetra_map());
+      permsrc->FillComplete(src.domain_map().get_epetra_map(), permsrcmap.get_epetra_map());
       esrc = permsrc;
     }
 
@@ -390,8 +390,8 @@ bool Coupling::Adapter::MatrixRowTransform::operator()(const Core::LinAlg::Spars
     double scale, const CouplingConverter& converter, Core::LinAlg::SparseMatrix& dst,
     bool addmatrix)
 {
-  return transformer_(src, src.range_map(), src.domain_map_not_epetra(), scale, &converter, nullptr,
-      dst, false, addmatrix);
+  return transformer_(
+      src, src.range_map(), src.domain_map(), scale, &converter, nullptr, dst, false, addmatrix);
 }
 
 
@@ -401,8 +401,8 @@ bool Coupling::Adapter::MatrixColTransform::operator()(const Core::LinAlg::Map&,
     const CouplingConverter& converter, Core::LinAlg::SparseMatrix& dst, bool exactmatch,
     bool addmatrix)
 {
-  return transformer_(src, src.range_map(), src.domain_map_not_epetra(), scale, nullptr, &converter,
-      dst, exactmatch, addmatrix);
+  return transformer_(src, src.range_map(), src.domain_map(), scale, nullptr, &converter, dst,
+      exactmatch, addmatrix);
 }
 
 
@@ -411,8 +411,8 @@ bool Coupling::Adapter::MatrixRowColTransform::operator()(const Core::LinAlg::Sp
     double scale, const CouplingConverter& rowconverter, const CouplingConverter& colconverter,
     Core::LinAlg::SparseMatrix& dst, bool exactmatch, bool addmatrix)
 {
-  return transformer_(src, src.range_map(), src.domain_map_not_epetra(), scale, &rowconverter,
-      &colconverter, dst, exactmatch, addmatrix);
+  return transformer_(src, src.range_map(), src.domain_map(), scale, &rowconverter, &colconverter,
+      dst, exactmatch, addmatrix);
 }
 
 FOUR_C_NAMESPACE_CLOSE

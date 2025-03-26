@@ -393,8 +393,7 @@ void NOX::Nln::CONTACT::LinearSystem::LinearSubProblem::extract_active_blocks(
       p_rhs_ = Teuchos::rcp(
           Core::LinAlg::extract_my_vector(rhs, active_sparse_mat->range_map()).release());
       p_lhs_ = Teuchos::rcp(
-          Core::LinAlg::extract_my_vector(lhs, active_sparse_mat->domain_map_not_epetra())
-              .release());
+          Core::LinAlg::extract_my_vector(lhs, active_sparse_mat->domain_map()).release());
 
       break;
     }
