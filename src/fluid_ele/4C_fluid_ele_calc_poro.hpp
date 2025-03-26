@@ -900,14 +900,6 @@ namespace Discret
           const Core::LinAlg::Matrix<nsd_, nen_ * nsd_>& lin_resM_Dus_gridvel,
           Core::LinAlg::Matrix<nen_, nen_ * nsd_>& ecoupl_p);
 
-      //! do some evaluation before actual element matrix assembly
-      void pre_evaluate(
-          Teuchos::ParameterList&
-              params,  //!< ParameterList for communication between control routine and elements
-          Discret::Elements::Fluid* ele,            //!< fluid element
-          Core::FE::Discretization& discretization  //!< pointer to discretization for de-assembly
-      );
-
       //! computation of material derivatives
       double setup_material_derivatives();
 

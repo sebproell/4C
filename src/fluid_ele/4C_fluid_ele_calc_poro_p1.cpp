@@ -188,8 +188,6 @@ int Discret::Elements::FluidEleCalcPoroP1<distype>::evaluate(Discret::Elements::
   Core::LinAlg::Matrix<(nsd_ + 1) * nen_, 1> elevec1(elevec1_epetra, true);
   // elemat2 and elevec2+3 are currently not in use
 
-  Base::pre_evaluate(params, ele, discretization);
-
   // call inner evaluate (does not know about element or discretization object)
   int result = Base::evaluate(params, ebofoaf, elemat1, elevec1, evelaf, epreaf, evelnp, eveln,
       eprenp, epren, emhist, echist, epressnp_timederiv, epressam_timederiv, epressn_timederiv,
@@ -408,8 +406,6 @@ int Discret::Elements::FluidEleCalcPoroP1<distype>::evaluate_od(Discret::Element
   // get node coordinates and number of elements per node
   Core::Geo::fill_initial_position_array<distype, nsd_, Core::LinAlg::Matrix<nsd_, nen_>>(
       ele, Base::xyze_);
-
-  Base::pre_evaluate(params, ele, discretization);
 
   // call inner evaluate (does not know about element or discretization object)
   int result = evaluate_od(params, ebofoaf, elemat1, elevec1, evelaf, epreaf, evelnp, eveln, eprenp,
