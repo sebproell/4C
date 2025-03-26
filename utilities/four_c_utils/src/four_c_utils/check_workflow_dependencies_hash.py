@@ -54,27 +54,6 @@ def main():
                 print(f" * {job_name}")
         sys.exit(1)
 
-    # also verify dependencies hash of the legacy gitlab-ci.yml file
-    with open("./tests/testconfig/.gitlab-ci.yml", "r") as f:
-        gitlab_ci = yaml.safe_load(f)
-
-        if (
-            "variables" not in gitlab_ci
-            or "FOUR_C_DOCKER_DEPENDENCIES_HASH" not in gitlab_ci["variables"]
-        ):
-            raise RuntimeError(
-                "You might have moved the gitlab-ci dependencies hash. In that case, you need to also update this script."
-            )
-
-        if (
-            gitlab_ci["variables"]["FOUR_C_DOCKER_DEPENDENCIES_HASH"]
-            != dependencies_hash
-        ):
-            print(
-                f"Expecting FOUR_C_DOCKER_DEPENDENCIES_HASH to be {dependencies_hash} in .gitlab-ci.yml"
-            )
-            sys.exit(1)
-
 
 if __name__ == "__main__":
     main()
