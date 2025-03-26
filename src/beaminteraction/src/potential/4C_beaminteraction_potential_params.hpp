@@ -11,7 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_beaminteraction_potential_input.hpp"
-#include "4C_beaminteraction_potential_runtime_visualization_output_params.hpp"
+#include "4C_io_visualization_parameters.hpp"
 
 #include <unordered_map>
 
@@ -19,6 +19,24 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace BeamInteraction
 {
+
+  struct BeamPotentialRuntimeOutputParams
+  {
+    //! global visualization parameters
+    Core::IO::VisualizationParameters visualization_parameters;
+
+    int output_interval = false;
+
+    bool write_all_iterations = false;
+
+    bool write_forces = false;
+
+    bool write_moments = false;
+
+    bool write_forces_moments_per_pair = false;
+
+    bool write_uids = false;
+  };
 
   struct BeamPotentialParams
   {
@@ -55,9 +73,7 @@ namespace BeamInteraction
     //! visualization output
     bool write_visualization_output;
 
-    BeamInteraction::BeamToBeamPotentialRuntimeOutputParams
-        params_runtime_visualization_output_btb_potential =
-            BeamToBeamPotentialRuntimeOutputParams(0.0);
+    BeamInteraction::BeamPotentialRuntimeOutputParams runtime_output_params;
 
     //! data container for prior element lengths for potential reduction strategy
     //! first entry is left prior length and second entry is right prior length
@@ -65,8 +81,13 @@ namespace BeamInteraction
     std::unordered_map<int, std::pair<double, double>> ele_gid_prior_length_map;
   };
 
+
   void initialize_validate_beam_potential_params(
       BeamPotentialParams& beam_potential_params, const double restart_time);
+
+  void initialize_validate_beam_potential_runtime_output_params(
+      BeamPotentialRuntimeOutputParams& beam_potential_runtime_output_params,
+      const Teuchos::ParameterList& sublist);
 
 }  // namespace BeamInteraction
 

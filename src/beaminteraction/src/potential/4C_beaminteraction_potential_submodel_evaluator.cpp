@@ -13,7 +13,6 @@
 #include "4C_beaminteraction_crosslinker_handler.hpp"
 #include "4C_beaminteraction_potential_pair_base.hpp"
 #include "4C_beaminteraction_potential_params.hpp"
-#include "4C_beaminteraction_potential_runtime_visualization_output_params.hpp"
 #include "4C_beaminteraction_str_model_evaluator_datastate.hpp"
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_comm_utils_gid_vector.hpp"
@@ -498,10 +497,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::BeamPotential::pre_update_step_element(
    * move this to runtime_output_step_state as soon as we keep element pairs
    * from previous time step */
   if (visualization_manager_ != nullptr and
-      g_state().get_step_n() %
-              beam_potential_params()
-                  .params_runtime_visualization_output_btb_potential.output_interval_in_steps() ==
-          0)
+      g_state().get_step_n() % beam_potential_params().runtime_output_params.output_interval == 0)
   {
     write_time_step_output_runtime_beam_potential();
   }
@@ -614,8 +610,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::run_post_iterate(
   check_init_setup();
 
   if (visualization_manager_ != nullptr and
-      beam_potential_params()
-          .params_runtime_visualization_output_btb_potential.output_every_iteration())
+      beam_potential_params().runtime_output_params.write_all_iterations)
   {
     write_iteration_output_runtime_beam_potential(solver.getNumIterations());
   }
@@ -1005,9 +1000,8 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::init_output_runtime_beam
   check_init();
 
   visualization_manager_ = std::make_shared<Core::IO::VisualizationManager>(
-      beam_potential_params()
-          .params_runtime_visualization_output_btb_potential.get_visualization_parameters(),
-      discret().get_comm(), "beam-potential");
+      beam_potential_params().runtime_output_params.visualization_parameters, discret().get_comm(),
+      "beam-potential");
 }
 
 /*-----------------------------------------------------------------------------------------------*
@@ -1018,8 +1012,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::
   check_init_setup();
 
   auto [output_time, output_step] = Core::IO::get_time_and_time_step_index_for_output(
-      beam_potential_params()
-          .params_runtime_visualization_output_btb_potential.get_visualization_parameters(),
+      beam_potential_params().runtime_output_params.visualization_parameters,
       g_state().get_time_n(), g_state().get_step_n());
   write_output_runtime_beam_potential(output_step, output_time);
 }
@@ -1032,8 +1025,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::
   check_init_setup();
 
   auto [output_time, output_step] = Core::IO::get_time_and_time_step_index_for_output(
-      beam_potential_params()
-          .params_runtime_visualization_output_btb_potential.get_visualization_parameters(),
+      beam_potential_params().runtime_output_params.visualization_parameters,
       g_state().get_time_n(), g_state().get_step_n(), iteration_number);
   write_output_runtime_beam_potential(output_step, output_time);
 }
@@ -1050,9 +1042,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::write_output_runtime_bea
   // estimate for number of interacting Gauss points = number of row points for writer object
   unsigned int num_row_points = 0;
 
-  if (beam_potential_params()
-          .params_runtime_visualization_output_btb_potential
-          .is_write_forces_moments_per_element_pair())
+  if (beam_potential_params().runtime_output_params.write_forces_moments_per_pair)
   {
     num_row_points = 2 * beam_potential_element_pairs_.size() *
                      beam_potential_params().n_integration_segments *
@@ -1155,9 +1145,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::write_output_runtime_bea
 
 
       // this is easier, since data is computed and stored in this 'element-pairwise' format
-      if (beam_potential_params()
-              .params_runtime_visualization_output_btb_potential
-              .is_write_forces_moments_per_element_pair())
+      if (beam_potential_params().runtime_output_params.write_forces_moments_per_pair)
       {
         uid_0_beam_1_gid.push_back((*pair_iter)->element1()->id());
         uid_1_beam_2_gid.push_back((*pair_iter)->element2()->id());
@@ -1305,19 +1293,19 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::write_output_runtime_bea
 
   // append all desired output data to the writer object's storage
 
-  if (beam_potential_params().params_runtime_visualization_output_btb_potential.is_write_forces())
+  if (beam_potential_params().runtime_output_params.write_forces)
   {
     visualization_manager_->get_visualization_data().set_point_data_vector(
         "force", potential_force_vector, num_spatial_dimensions);
   }
 
-  if (beam_potential_params().params_runtime_visualization_output_btb_potential.is_write_moments())
+  if (beam_potential_params().runtime_output_params.write_moments)
   {
     visualization_manager_->get_visualization_data().set_point_data_vector(
         "moment", potential_moment_vector, num_spatial_dimensions);
   }
 
-  if (beam_potential_params().params_runtime_visualization_output_btb_potential.is_write_uids())
+  if (beam_potential_params().runtime_output_params.write_uids)
   {
     visualization_manager_->get_visualization_data().set_point_data_vector(
         "uid_0_beam_1_gid", uid_0_beam_1_gid, 1);

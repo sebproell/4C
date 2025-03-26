@@ -9,7 +9,6 @@
 
 #include "4C_beamcontact_input.hpp"
 #include "4C_beaminteraction_potential_input.hpp"
-#include "4C_beaminteraction_potential_runtime_visualization_output_params.hpp"
 #include "4C_global_data.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_utils_exceptions.hpp"
@@ -158,13 +157,33 @@ namespace BeamInteraction
     // create and initialize parameter container object for runtime output
     if (params.write_visualization_output)
     {
-      params.params_runtime_visualization_output_btb_potential =
-          BeamInteraction::BeamToBeamPotentialRuntimeOutputParams(restart_time);
+      params.runtime_output_params = {
+          .visualization_parameters = Core::IO::visualization_parameters_factory(
+              Global::Problem::instance()->io_params().sublist("RUNTIME VTK OUTPUT"),
+              *Global::Problem::instance()->output_control_file(), restart_time)};
 
-      params.params_runtime_visualization_output_btb_potential.init(
-          beam_potential_params_list.sublist("RUNTIME VTK OUTPUT"));
-      params.params_runtime_visualization_output_btb_potential.setup();
+      initialize_validate_beam_potential_runtime_output_params(
+          params.runtime_output_params, beam_potential_params_list.sublist("RUNTIME VTK OUTPUT"));
     }
+  }
+
+  void initialize_validate_beam_potential_runtime_output_params(
+      BeamPotentialRuntimeOutputParams& params, Teuchos::ParameterList const& sublist)
+  {
+    params.output_interval = sublist.get<int>("INTERVAL_STEPS");
+
+    params.write_all_iterations = sublist.get<bool>("EVERY_ITERATION");
+
+    params.write_forces = sublist.get<bool>("FORCES");
+
+    params.write_moments = sublist.get<bool>("MOMENTS");
+
+    params.write_forces_moments_per_pair = sublist.get<bool>("WRITE_FORCE_MOMENT_PER_ELEMENTPAIR");
+
+    params.write_uids = sublist.get<bool>("WRITE_UIDS");
+
+    // overwrite global option to write visualization output of every iteration
+    params.visualization_parameters.every_iteration_ = params.write_all_iterations;
   }
 }  // namespace BeamInteraction
 FOUR_C_NAMESPACE_CLOSE
