@@ -89,7 +89,8 @@ namespace Core::FE
   void assemble_averaged_element_values(Core::LinAlg::MultiVector<double>& global_data,
       const T& gp_data, const Core::Elements::Element& ele)
   {
-    const Epetra_BlockMap& elemap = global_data.Map();
+    const Core::LinAlg::Map& elemap = global_data.get_map();
+
     int lid = elemap.LID(ele.id());
     if (lid != -1)
     {

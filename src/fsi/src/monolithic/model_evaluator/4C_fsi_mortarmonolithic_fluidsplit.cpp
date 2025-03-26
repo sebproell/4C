@@ -692,7 +692,7 @@ void FSI::MortarMonolithicFluidSplit::setup_rhs_firstiter(Core::LinAlg::Vector<d
 
       rhs = structure_field()->interface()->insert_fsi_cond_vector(tmprhs);
 
-      auto zeros = std::make_shared<Core::LinAlg::Vector<double>>(rhs->get_block_map(), true);
+      auto zeros = std::make_shared<Core::LinAlg::Vector<double>>(rhs->get_map(), true);
       Core::LinAlg::apply_dirichlet_to_system(
           *rhs, *zeros, *(structure_field()->get_dbc_map_extractor()->cond_map()));
 
@@ -711,7 +711,7 @@ void FSI::MortarMonolithicFluidSplit::setup_rhs_firstiter(Core::LinAlg::Vector<d
 
       rhs = fluid_field()->interface()->insert_other_vector(*rhs);
 
-      zeros = std::make_shared<Core::LinAlg::Vector<double>>(rhs->get_block_map(), true);
+      zeros = std::make_shared<Core::LinAlg::Vector<double>>(rhs->get_map(), true);
       Core::LinAlg::apply_dirichlet_to_system(
           *rhs, *zeros, *(structure_field()->get_dbc_map_extractor()->cond_map()));
 
@@ -1084,7 +1084,7 @@ void FSI::MortarMonolithicFluidSplit::unscale_solution(Core::LinAlg::BlockSparse
 
   // very simple hack just to see the linear solution
 
-  Core::LinAlg::Vector<double> r(b.get_block_map());
+  Core::LinAlg::Vector<double> r(b.get_map());
   mat.Apply(x, r);
   r.update(1., b, 1.);
 
@@ -1439,7 +1439,7 @@ void FSI::MortarMonolithicFluidSplit::update()
 
     std::shared_ptr<Core::LinAlg::Vector<double>> temp =
         std::make_shared<Core::LinAlg::Vector<double>>(*iprojdisp_);
-    temp->replace_map(idispale->get_block_map());
+    temp->replace_map(idispale->get_map());
     std::shared_ptr<Core::LinAlg::Vector<double>> acx = fluid_to_ale_interface(temp);
     ale_field()->apply_interface_displacements(acx);
     fluid_field()->apply_mesh_displacement(ale_to_fluid(ale_field()->dispnp()));
@@ -1688,8 +1688,8 @@ void FSI::MortarMonolithicFluidSplit::recover_lagrange_multiplier()
      * to the fluid map using AleToFluid(). This results in a map that contains
      * all velocity but no pressure DOFs.
      *
-     * We have to circumvent some trouble with Epetra_BlockMaps since we cannot
-     * split an Epetra_BlockMap into inner and interface DOFs.
+     * We have to circumvent some trouble with Core::LinAlg::Maps since we cannot
+     * split an Core::LinAlg::Map into inner and interface DOFs.
      *
      * We create a map extractor 'velothermap' in order to extract the inner
      * velocity DOFs after calling AleToFluid(). Afterwards, a second map
@@ -1764,7 +1764,7 @@ void FSI::MortarMonolithicFluidSplit::calculate_interface_energy_increment()
   const std::shared_ptr<Core::LinAlg::SparseMatrix> mortarm = coupsfm_->get_mortar_matrix_m();
 
   // interface traction weighted by time integration factors
-  Core::LinAlg::Vector<double> tractionfluid(lambda_->get_block_map(), true);
+  Core::LinAlg::Vector<double> tractionfluid(lambda_->get_map(), true);
   std::shared_ptr<Core::LinAlg::Vector<double>> tractionstructure =
       std::make_shared<Core::LinAlg::Vector<double>>(
           *structure_field()->interface()->fsi_cond_map(), true);

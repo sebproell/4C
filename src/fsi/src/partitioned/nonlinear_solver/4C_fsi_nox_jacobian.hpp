@@ -92,10 +92,10 @@ namespace NOX
       //! Returns a reference to the Epetra_Comm communicator associated with this operator.
       const Epetra_Comm& Comm() const override;
 
-      //! Returns the Epetra_BlockMap object associated with the domain of this matrix operator.
+      //! Returns the Core::LinAlg::Map object associated with the domain of this matrix operator.
       const Epetra_Map& OperatorDomainMap() const override;
 
-      //! Returns the Epetra_BlockMap object associated with the range of this matrix operator.
+      //! Returns the Core::LinAlg::Map object associated with the range of this matrix operator.
       const Epetra_Map& OperatorRangeMap() const override;
 
       //! Compute Jacobian given the specified input vector, x.  Returns true if computation was
@@ -124,9 +124,9 @@ namespace NOX
       mutable ::NOX::Epetra::Vector perturbY;
 
       //! Core::LinAlg::Map object used in the returns of the Epetra_Operator derived methods.
-      /*! If the user is using Epetra_BlockMaps, then ::NOX::Epetra::MatrixFree must create an
-       * equivalent Core::LinAlg::Map from the Epetra_BlockMap that can be used as the return object
-       * of the OperatorDomainMap() and OperatorRangeMap() methods.
+      /*! If the user is using Core::LinAlg::Maps, then ::NOX::Epetra::MatrixFree must create an
+       * equivalent Core::LinAlg::Map from the Core::LinAlg::Map that can be used as the return
+       * object of the OperatorDomainMap() and OperatorRangeMap() methods.
        */
       std::shared_ptr<const Epetra_Map> epetraMap;
 

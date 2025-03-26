@@ -26,7 +26,7 @@ void Core::FE::extract_my_values(const Core::LinAlg::Vector<double>& global,
   local.size(ldim);
   for (size_t i = 0; i < ldim; ++i)
   {
-    const int lid = global.get_block_map().LID(lm[i]);
+    const int lid = global.get_map().LID(lm[i]);
     if (lid < 0)
       FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
           Core::Communication::my_mpi_rank(global.get_comm()), lm[i]);
@@ -49,7 +49,7 @@ void Core::FE::extract_my_node_based_values(const Core::Elements::Element* ele,
   for (int i = 0; i < numnode; ++i)
   {
     const int nodegid = (ele->nodes()[i])->id();
-    const int lid = global.Map().LID(nodegid);
+    const int lid = global.get_map().LID(nodegid);
     if (lid < 0)
       FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
           Core::Communication::my_mpi_rank(global.Comm()), nodegid);
@@ -82,7 +82,7 @@ void Core::FE::extract_my_node_based_values(const Core::Elements::Element* ele,
     for (int j = 0; j < iel; j++)
     {
       const int nodegid = (ele->nodes()[j])->id();
-      const int lid = global.Map().LID(nodegid);
+      const int lid = global.get_map().LID(nodegid);
       if (lid < 0)
         FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::MultiVector<double>",
             Core::Communication::my_mpi_rank(global.Comm()), nodegid);

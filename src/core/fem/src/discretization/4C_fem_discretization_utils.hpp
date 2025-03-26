@@ -164,9 +164,9 @@ namespace Core::FE
          */
         DbcInfo(const Core::LinAlg::Vector<int>& toggle_input)
             : toggle(toggle_input),
-              hierarchy(Core::LinAlg::Vector<int>(toggle_input.get_block_map())),
-              condition(Core::LinAlg::Vector<int>(toggle_input.get_block_map())),
-              values(Core::LinAlg::Vector<double>(toggle_input.get_block_map(), true))
+              hierarchy(Core::LinAlg::Vector<int>(toggle_input.get_map())),
+              condition(Core::LinAlg::Vector<int>(toggle_input.get_map())),
+              values(Core::LinAlg::Vector<double>(toggle_input.get_map(), true))
         {
           hierarchy.put_value(std::numeric_limits<int>::max());
           condition.put_value(-1);
@@ -176,7 +176,7 @@ namespace Core::FE
          * \brief constructor using the vector map as input
          * \note all the vectors use the same map
          */
-        DbcInfo(const Epetra_BlockMap& toggle_map)
+        DbcInfo(const Core::LinAlg::Map& toggle_map)
             : toggle(Core::LinAlg::Vector<int>(toggle_map)),
               hierarchy(Core::LinAlg::Vector<int>(toggle_map)),
               condition(Core::LinAlg::Vector<int>(toggle_map)),

@@ -114,7 +114,7 @@ void FLD::TimIntLoma::set_loma_iter_scalar_fields(
     // find out the global dof id of the last(!) dof at the scatra node
     const int numscatradof = scatradis->num_dof(0, lscatranode);
     const int globalscatradofid = scatradis->dof(0, lscatranode, numscatradof - 1);
-    const int localscatradofid = scalaraf->get_block_map().LID(globalscatradofid);
+    const int localscatradofid = scalaraf->get_map().LID(globalscatradofid);
     if (localscatradofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
     // get the processor's local fluid node
@@ -124,7 +124,7 @@ void FLD::TimIntLoma::set_loma_iter_scalar_fields(
     // get global and processor's local pressure dof id (using the map!)
     const int numdof = discret_->num_dof(0, lnode);
     const int globaldofid = discret_->dof(0, lnode, numdof - 1);
-    const int localdofid = scaam_->get_block_map().LID(globaldofid);
+    const int localdofid = scaam_->get_map().LID(globaldofid);
     if (localdofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
     // now copy the values

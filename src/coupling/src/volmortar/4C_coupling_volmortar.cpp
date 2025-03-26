@@ -1422,7 +1422,7 @@ void Coupling::VolMortar::VolMortarCoupl::mesh_init()
         // loop over slave dofs
         for (int jdof = 0; jdof < nsdof; ++jdof)
         {
-          const int lid = sola->get_block_map().LID(discret1()->dof(dofseta, cnode, jdof));
+          const int lid = sola->get_map().LID(discret1()->dof(dofseta, cnode, jdof));
           nvector[jdof] = (*sola)[lid] - cnode->x()[jdof];
         }
         cnode->change_pos(nvector);
@@ -1441,7 +1441,7 @@ void Coupling::VolMortar::VolMortarCoupl::mesh_init()
         // loop over slave dofs
         for (int jdof = 0; jdof < nsdof; ++jdof)
         {
-          const int lid = solb->get_block_map().LID(discret2()->dof(dofsetb, cnode, jdof));
+          const int lid = solb->get_map().LID(discret2()->dof(dofsetb, cnode, jdof));
           nvector[jdof] = (*solb)[lid] - cnode->x()[jdof];
         }
         cnode->change_pos(nvector);

@@ -985,7 +985,7 @@ void FLD::XWall::calc_tau_w(
         if (!node) FOUR_C_THROW("ERROR: Cannot find off wall node with gid %", gid);
 
         int firstglobaldofid = discret_->dof(0, node, 0);
-        int firstlocaldofid = wss.get_block_map().LID(firstglobaldofid);
+        int firstlocaldofid = wss.get_map().LID(firstglobaldofid);
 
         if (firstlocaldofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
         double forcex = (wss)[firstlocaldofid];

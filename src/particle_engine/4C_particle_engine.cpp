@@ -982,7 +982,7 @@ void PARTICLEENGINE::ParticleEngine::setup_bin_ghosting()
     const int size = static_cast<int>(ghostbins.size());
     std::vector<int> pidlist(size);
     const int err = binrowmap_->RemoteIDList(size, ghostbins_vec.data(), pidlist.data(), nullptr);
-    if (err < 0) FOUR_C_THROW("Epetra_BlockMap::RemoteIDList returned err={}", err);
+    if (err < 0) FOUR_C_THROW("Core::LinAlg::Map::RemoteIDList returned err={}", err);
 
     for (int i = 0; i < size; ++i)
     {

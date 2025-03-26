@@ -523,7 +523,7 @@ void FluidMonWriter::write_result(
 {
   // get actual result vector
   auto resvec = result.read_result("velnp");
-  const Epetra_BlockMap& velmap = resvec->get_block_map();
+  const Core::LinAlg::Map& velmap = resvec->get_map();
   // do output of general time step data
   outfile << std::right << std::setw(20) << result.step();
   outfile << std::right << std::setw(20) << std::scientific << result.time();
@@ -576,7 +576,7 @@ void RedAirwayMonWriter::write_result(
 {
   // get actual result vector
   auto resvec = result.read_result("PO2");
-  const Epetra_BlockMap& pmap = resvec->get_block_map();
+  const Core::LinAlg::Map& pmap = resvec->get_map();
   // do output of general time step data
   outfile << std::right << std::setw(20) << result.step();
   outfile << std::right << std::setw(20) << std::scientific << result.time();
@@ -674,7 +674,7 @@ void StructMonWriter::write_result(
 
   // get actual result vector displacement
   auto resvec = result.read_result("displacement");
-  const Epetra_BlockMap& dispmap = resvec->get_block_map();
+  const Core::LinAlg::Map& dispmap = resvec->get_map();
 
   // compute second part of offset
   int offset2 = dispmap.MinAllGID();
@@ -692,7 +692,7 @@ void StructMonWriter::write_result(
   {
     // get actual result vector displacement/pressure
     resvec = result.read_result("displacement");
-    const Epetra_BlockMap& pressmap = resvec->get_block_map();
+    const Core::LinAlg::Map& pressmap = resvec->get_map();
 
     // compute second part of offset
     offset2 = pressmap.MinAllGID();
@@ -892,7 +892,7 @@ void AleMonWriter::write_result(
 {
   // get actual result vector for displacement
   auto resvec = result.read_result("displacement");
-  const Epetra_BlockMap& dispmap = resvec->get_block_map();
+  const Core::LinAlg::Map& dispmap = resvec->get_map();
   // do output of general time step data
   outfile << std::right << std::setw(10) << result.step();
   outfile << std::right << std::setw(16) << std::scientific << result.time();
@@ -968,7 +968,7 @@ void FsiFluidMonWriter::write_result(
 {
   // get actual result vector for displacement
   std::shared_ptr<Core::LinAlg::Vector<double>> resvec = result.read_result("dispnp");
-  const Epetra_BlockMap& dispmap = resvec->get_block_map();
+  const Core::LinAlg::Map& dispmap = resvec->get_map();
   // do output of general time step data
   outfile << std::right << std::setw(10) << result.step();
   outfile << std::right << std::setw(16) << std::scientific << result.time();
@@ -985,7 +985,7 @@ void FsiFluidMonWriter::write_result(
 
   // get actual result vector for velocity
   resvec = result.read_result("velnp");
-  const Epetra_BlockMap& velmap = resvec->get_block_map();
+  const Core::LinAlg::Map& velmap = resvec->get_map();
 
   // compute second part of offset
   offset2 = velmap.MinAllGID();
@@ -1003,7 +1003,7 @@ void FsiFluidMonWriter::write_result(
   {
     // get actual result vector for fsilambda
     resvec = result.read_result("fsilambda");
-    const Epetra_BlockMap& lambdamap = resvec->get_block_map();
+    const Core::LinAlg::Map& lambdamap = resvec->get_map();
 
     // compute second part of offset
     offset2 = lambdamap.MinAllGID();
@@ -1102,7 +1102,7 @@ void FsiStructMonWriter::write_result(
 
   // get actual result vector displacement
   std::shared_ptr<Core::LinAlg::Vector<double>> resvec = result.read_result("displacement");
-  const Epetra_BlockMap& dispmap = resvec->get_block_map();
+  const Core::LinAlg::Map& dispmap = resvec->get_map();
 
   // compute second part of offset
   int offset2 = dispmap.MinAllGID();
@@ -1121,7 +1121,7 @@ void FsiStructMonWriter::write_result(
   {
     // get actual result vector displacement/pressure
     resvec = result.read_result("displacement");
-    const Epetra_BlockMap& pressmap = resvec->get_block_map();
+    const Core::LinAlg::Map& pressmap = resvec->get_map();
 
     // compute second part of offset
     offset2 = pressmap.MinAllGID();
@@ -1144,7 +1144,7 @@ void FsiStructMonWriter::write_result(
   {
     // get actual result vector for fsilambda
     resvec = result.read_result("fsilambda");
-    const Epetra_BlockMap& lambdamap = resvec->get_block_map();
+    const Core::LinAlg::Map& lambdamap = resvec->get_map();
 
     // compute second part of offset
     offset2 = lambdamap.MinAllGID();
@@ -1239,7 +1239,7 @@ void ScatraMonWriter::write_result(
   // get actual result vector for displacement
   std::shared_ptr<Core::LinAlg::Vector<double>> resvec = result.read_result("phinp");
 
-  const Epetra_BlockMap& dispmap = resvec->get_block_map();
+  const Core::LinAlg::Map& dispmap = resvec->get_map();
   // do output of general time step data
   outfile << std::right << std::setw(10) << result.step();
   outfile << std::right << std::setw(20) << std::scientific << result.time();
@@ -1301,7 +1301,7 @@ void ThermoMonWriter::write_result(
 
   // get actual result vector temperature
   std::shared_ptr<Core::LinAlg::Vector<double>> resvec = result.read_result("temperature");
-  const Epetra_BlockMap& dispmap = resvec->get_block_map();
+  const Core::LinAlg::Map& dispmap = resvec->get_map();
 
   // compute second part of offset
   int offset2 = dispmap.MinAllGID();
@@ -1318,7 +1318,7 @@ void ThermoMonWriter::write_result(
 
   // get actual result vector temperature rate
   resvec = result.read_result("rate");
-  const Epetra_BlockMap& ratemap = resvec->get_block_map();
+  const Core::LinAlg::Map& ratemap = resvec->get_map();
 
   // compute second part of offset
   offset2 = ratemap.MinAllGID();
@@ -1577,9 +1577,9 @@ void PoroFluidMultiMonWriter::write_result(
   std::shared_ptr<Core::LinAlg::Vector<double>> resvec_sat = result.read_result("saturation");
   std::shared_ptr<Core::LinAlg::Vector<double>> resvec_press = result.read_result("pressure");
 
-  const Epetra_BlockMap& phimap = resvec->get_block_map();
-  const Epetra_BlockMap& satmap = resvec_sat->get_block_map();
-  const Epetra_BlockMap& pressmap = resvec_press->get_block_map();
+  const Core::LinAlg::Map& phimap = resvec->get_map();
+  const Core::LinAlg::Map& satmap = resvec_sat->get_map();
+  const Core::LinAlg::Map& pressmap = resvec_press->get_map();
 
   // do output of general time step data
   outfile << std::right << std::setw(10) << result.step();

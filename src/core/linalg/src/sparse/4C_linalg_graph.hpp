@@ -18,7 +18,7 @@
 #include <Epetra_FECrsGraph.h>
 
 #include <memory>
-
+#include <optional>
 
 
 FOUR_C_NAMESPACE_OPEN
@@ -65,9 +65,6 @@ namespace Core::LinAlg
     const Epetra_CrsGraph& get_epetra_crs_graph() const { return *graph_; }
 
     Epetra_CrsGraph& get_epetra_crs_graph() { return *graph_; }
-
-    //! Returns the Column Map associated with this graph.
-    const Epetra_BlockMap& col_map() const { return (graph_->ColMap()); }
 
     //! Returns a pointer to the Epetra_Comm communicator associated with this graph.
     const Epetra_Comm& get_comm() const { return (graph_->Comm()); }
@@ -168,13 +165,34 @@ namespace Core::LinAlg
     //! Remove a list of elements from a specified global row of the graph.
     int remove_global_indices(int GlobalRow, int NumIndices, int* Indices);
 
-    const Epetra_BlockMap& row_map() const { return graph_->RowMap(); }
+    //! Returns the Row Map associated with this graph.
+    const Map& row_map() const
+    {
+      if (!row_map_)
+      {  // check if view is uninitialized
+        row_map_ = Core::LinAlg::Map(graph_->RowMap());
+      }
+      return *row_map_;
+    }
+
+    //! Returns the Column Map associated with this graph.
+    const Map& col_map() const
+    {
+      if (!col_map_)
+      {  // check if view is uninitialized
+        col_map_ = Core::LinAlg::Map(graph_->ColMap());
+      }
+      return *col_map_;
+    }
 
    private:
     GraphType graphtype_;
 
     //! The actual Epetra_CrsGraph object.
     std::unique_ptr<Epetra_CrsGraph> graph_;
+
+    mutable std::optional<Map> row_map_;
+    mutable std::optional<Map> col_map_;
   };
 }  // namespace Core::LinAlg
 FOUR_C_NAMESPACE_CLOSE

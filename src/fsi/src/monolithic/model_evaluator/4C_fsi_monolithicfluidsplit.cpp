@@ -917,7 +917,7 @@ void FSI::MonolithicFluidSplit::unscale_solution(Core::LinAlg::BlockSparseMatrix
 
   // very simple hack just to see the linear solution
 
-  Core::LinAlg::Vector<double> r(b.get_block_map());
+  Core::LinAlg::Vector<double> r(b.get_map());
   mat.Apply(x, r);
   r.update(1., b, 1.);
 
@@ -1440,8 +1440,8 @@ void FSI::MonolithicFluidSplit::recover_lagrange_multiplier()
      * The inner ale displacement increment is converted to the fluid map using AleToFluid().
      * This results in a map that contains all velocity but no pressure DOFs.
      *
-     * We have to circumvent some trouble with Epetra_BlockMaps since we cannot split
-     * an Epetra_BlockMap into inner and interface DOFs.
+     * We have to circumvent some trouble with Core::LinAlg::Maps since we cannot split
+     * an Core::LinAlg::Map into inner and interface DOFs.
      *
      * We create a map extractor 'velothermap' in order to extract the inner velocity
      * DOFs after calling AleToFluid(). Afterwards, a second map extractor 'velotherpressuremapext'
@@ -1507,7 +1507,7 @@ void FSI::MonolithicFluidSplit::calculate_interface_energy_increment()
 
   // interface traction weighted by time integration factors
   std::shared_ptr<Core::LinAlg::Vector<double>> tractionfluid =
-      std::make_shared<Core::LinAlg::Vector<double>>(lambda_->get_block_map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(lambda_->get_map(), true);
   tractionfluid->update(stiparam - ftiparam, *lambdaold_, ftiparam - stiparam, *lambda_, 0.0);
   std::shared_ptr<Core::LinAlg::Vector<double>> tractionstructure = fluid_to_struct(tractionfluid);
 

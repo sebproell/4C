@@ -352,17 +352,16 @@ void CONTACT::Interface::set_cn_ct_values(const int& iter)
 
     if (cnode->is_on_edge())
     {
-      get_cn_ref()[get_cn_ref().get_block_map().LID(cnode->id())] = cn * (length * length);
-      if (friction_)
-        get_ct_ref()[get_ct_ref().get_block_map().LID(cnode->id())] = ct * (length * length);
+      get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())] = cn * (length * length);
+      if (friction_) get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())] = ct * (length * length);
     }
 
     if (cnode->is_on_corner())
     {
-      get_cn_ref()[get_cn_ref().get_block_map().LID(cnode->id())] =
+      get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())] =
           cn * (length * length * length * length);
       if (friction_)
-        get_ct_ref()[get_ct_ref().get_block_map().LID(cnode->id())] =
+        get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())] =
             ct * (length * length * length * length);
     }
   }
@@ -1018,7 +1017,7 @@ void CONTACT::Interface::redistribute()
   // create the output graph (with new slave node row map) and export to it
   std::shared_ptr<Core::LinAlg::Graph> outgraph =
       std::make_shared<Core::LinAlg::Graph>(Copy, *srownodes, 108, false);
-  Epetra_Export exporter(graph->row_map(), srownodes->get_epetra_map());
+  Epetra_Export exporter(graph->row_map().get_epetra_map(), srownodes->get_epetra_map());
   int err = outgraph->export_to(graph->get_epetra_crs_graph(), exporter, Add);
   if (err < 0) FOUR_C_THROW("Graph export returned err={}", err);
 
@@ -1030,8 +1029,7 @@ void CONTACT::Interface::redistribute()
   outgraph->optimize_storage();
 
   // get column map from the graph -> build slave node column map
-  // (do stupid conversion from Epetra_BlockMap to Core::LinAlg::Map)
-  const Epetra_BlockMap& bcol = outgraph->col_map();
+  const Core::LinAlg::Map& bcol = outgraph->col_map();
   std::shared_ptr<Core::LinAlg::Map> scolnodes =
       std::make_shared<Core::LinAlg::Map>(bcol.NumGlobalElements(), bcol.NumMyElements(),
           bcol.MyGlobalElements(), 0, Interface::get_comm());
@@ -6266,7 +6264,7 @@ void CONTACT::Interface::evaluate_relative_movement(
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* cnode = dynamic_cast<FriNode*>(node);
-    double cn = get_cn_ref()[get_cn_ref().get_block_map().LID(cnode->id())];
+    double cn = get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())];
 
     // get some information form the node
     double gap = cnode->data().getg();
@@ -6357,7 +6355,7 @@ void CONTACT::Interface::evaluate_relative_movement(
 
         for (int dim = 0; dim < csnode->num_dof(); ++dim)
         {
-          int locid = (xsmod->get_block_map()).LID(csnode->dofs()[dim]);
+          int locid = (xsmod->get_map()).LID(csnode->dofs()[dim]);
           jump[dim] -= (dik - dikold) * (*xsmod)[locid];
         }
       }  //  loop over adjacent slave nodes
@@ -6549,7 +6547,7 @@ void CONTACT::Interface::evaluate_relative_movement(
           // loop over dimensions
           for (int dim = 0; dim < cnode->num_dof(); ++dim)
           {
-            int locid = (xsmod->get_block_map()).LID(csnode->dofs()[dim]);
+            int locid = (xsmod->get_map()).LID(csnode->dofs()[dim]);
             double val = -colcurr->second * (*xsmod)[locid];
             if (abs(val) > 1e-14) cnode->add_deriv_jump_value(dim, col, val);
           }
@@ -7005,8 +7003,8 @@ bool CONTACT::Interface::update_active_set_semi_smooth()
 
     Node* cnode = dynamic_cast<Node*>(node);
 
-    cn = get_cn_ref()[get_cn_ref().get_block_map().LID(cnode->id())];
-    if (friction_) ct = get_ct_ref()[get_ct_ref().get_block_map().LID(cnode->id())];
+    cn = get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())];
+    if (friction_) ct = get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())];
 
     // get weighted gap
     double wgap = cnode->data().getg();

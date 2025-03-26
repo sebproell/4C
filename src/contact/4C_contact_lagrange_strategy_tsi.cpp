@@ -809,12 +809,12 @@ void CONTACT::Utils::add_vector(
   if (src.global_length() == 0) return;
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  for (int i = 0; i < src.get_block_map().NumMyElements(); ++i)
-    if ((dst.get_block_map().LID(src.get_block_map().GID(i))) < 0)
+  for (int i = 0; i < src.get_map().NumMyElements(); ++i)
+    if ((dst.get_map().LID(src.get_map().GID(i))) < 0)
       FOUR_C_THROW("src is not a vector on a sub-map of dst");
 #endif
 
-  Core::LinAlg::Vector<double> tmp = Core::LinAlg::Vector<double>(dst.get_block_map(), true);
+  Core::LinAlg::Vector<double> tmp = Core::LinAlg::Vector<double>(dst.get_map(), true);
   Core::LinAlg::export_to(src, tmp);
   if (dst.update(1., tmp, 1.)) FOUR_C_THROW("vector update went wrong");
   return;
@@ -926,7 +926,7 @@ void CONTACT::LagrangeStrategyTsi::store_nodal_quantities(
           Node* cnode = dynamic_cast<Node*>(node);
 
           cnode->tsi_data().thermo_lm() =
-              (*vectorinterface)[(vectorinterface->get_block_map()).LID(cnode->dofs()[0])];
+              (*vectorinterface)[(vectorinterface->get_map()).LID(cnode->dofs()[0])];
         }
       }
       break;

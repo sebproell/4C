@@ -98,7 +98,7 @@ void Core::FE::Discretization::proc_zero_distribute_elements_to_all(
   int size = (int)gidlist.size();
   std::vector<int> pidlist(size);  // gids on proc 0
   int err = target.RemoteIDList(size, gidlist.data(), pidlist.data(), nullptr);
-  if (err < 0) FOUR_C_THROW("Epetra_BlockMap::RemoteIDList returned err={}", err);
+  if (err < 0) FOUR_C_THROW("Core::LinAlg::Map::RemoteIDList returned err={}", err);
 
   std::map<int, std::vector<char>> sendmap;  // proc to send a set of elements to
   if (!myrank)
@@ -198,7 +198,7 @@ void Core::FE::Discretization::proc_zero_distribute_nodes_to_all(Core::LinAlg::M
   std::vector<int> pidlist(size, -1);
   {
     int err = target.RemoteIDList(size, oldmap.MyGlobalElements(), pidlist.data(), nullptr);
-    if (err) FOUR_C_THROW("Epetra_BlockMap::RemoteIDLis returned err={}", err);
+    if (err) FOUR_C_THROW("Core::LinAlg::Map::RemoteIDLis returned err={}", err);
   }
 
   std::map<int, std::vector<char>> sendmap;
@@ -443,7 +443,7 @@ Core::FE::Discretization::build_element_row_column(const Core::LinAlg::Map& node
   std::vector<int> cnodeowner(ncnode);
   int err =
       noderowmap.RemoteIDList(ncnode, nodecolmap.MyGlobalElements(), cnodeowner.data(), nullptr);
-  if (err) FOUR_C_THROW("Epetra_BlockMap::RemoteIDLis returned err={}", err);
+  if (err) FOUR_C_THROW("Core::LinAlg::Map::RemoteIDLis returned err={}", err);
 
   // build connectivity of elements
   // storing :  element gid
@@ -874,9 +874,8 @@ void Core::FE::Discretization::setup_ghosting(
   if (err) FOUR_C_THROW("graph->GlobalAssemble returned {}", err);
 
   // replace rownodes, colnodes with row and column maps from the graph
-  // do stupid conversion from Epetra_BlockMap to Core::LinAlg::Map
-  const Epetra_BlockMap& brow = graph->row_map();
-  const Epetra_BlockMap& bcol = graph->col_map();
+  const Core::LinAlg::Map& brow = graph->row_map();
+  const Core::LinAlg::Map& bcol = graph->col_map();
   Core::LinAlg::Map noderowmap(
       brow.NumGlobalElements(), brow.NumMyElements(), brow.MyGlobalElements(), 0, comm_);
   Core::LinAlg::Map nodecolmap(

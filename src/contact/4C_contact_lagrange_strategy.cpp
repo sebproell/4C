@@ -1453,7 +1453,7 @@ void CONTACT::LagrangeStrategy::compute_contact_stresses()
 
         for (int dof = 0; dof < n_dim(); ++dof)
         {
-          locindex[dof] = (forcenormal.get_block_map()).LID(cnode->dofs()[dof]);
+          locindex[dof] = (forcenormal.get_map()).LID(cnode->dofs()[dof]);
 
           if (cnode->mo_data().get_dscale() < 1e-8 and cnode->active())
           {
@@ -1706,7 +1706,7 @@ void CONTACT::LagrangeStrategy::add_master_contributions(Core::LinAlg::SparseOpe
     Core::LinAlg::Vector<double>& feff, bool add_time_integration)
 {
   // create new contact force vector for LTL contact
-  auto fc = std::make_shared<Epetra_FEVector>(feff.get_block_map());
+  auto fc = std::make_shared<Epetra_FEVector>(feff.get_map().get_epetra_map());
 
   // create new contact stiffness matric for LTL contact
   auto kc = std::make_shared<Core::LinAlg::SparseMatrix>(
@@ -1760,9 +1760,9 @@ void CONTACT::LagrangeStrategy::add_line_to_lin_contributions(Core::LinAlg::Spar
     std::shared_ptr<Core::LinAlg::Vector<double>>& feff, bool add_time_integration)
 {
   // create new contact force vector for LTL contact
-  auto fc = std::make_shared<Epetra_FEVector>(feff->get_block_map());
+  auto fc = std::make_shared<Epetra_FEVector>(feff->get_map().get_epetra_map());
 
-  fconservation_ = std::make_shared<Core::LinAlg::Vector<double>>(feff->get_block_map());
+  fconservation_ = std::make_shared<Core::LinAlg::Vector<double>>(feff->get_map().get_epetra_map());
 
   // create new contact stiffness matric for LTL contact
   auto kc = std::make_shared<Core::LinAlg::SparseMatrix>(
@@ -1815,9 +1815,9 @@ void CONTACT::LagrangeStrategy::add_line_to_lin_contributions_friction(
     bool add_time_integration)
 {
   // create new contact force vector for LTL contact
-  auto fc = std::make_shared<Epetra_FEVector>(feff->get_block_map());
+  auto fc = std::make_shared<Epetra_FEVector>(feff->get_map().get_epetra_map());
 
-  fconservation_ = std::make_shared<Core::LinAlg::Vector<double>>(feff->get_block_map());
+  fconservation_ = std::make_shared<Core::LinAlg::Vector<double>>(feff->get_map().get_epetra_map());
 
   // create new contact stiffness matric for LTL contact
   auto kc = std::make_shared<Core::LinAlg::SparseMatrix>(
@@ -4320,7 +4320,7 @@ void CONTACT::LagrangeStrategy::run_post_compute_x(const CONTACT::ParamsInterfac
       // store the SCALED Lagrange multiplier increment in the contact
       // strategy
       // ---------------------------------------------------------------------
-      zdir_ptr.replace_map(zincr_->get_block_map());
+      zdir_ptr.replace_map(zincr_->get_map());
       zincr_->scale(stepLength, zdir_ptr);
     }
   }
@@ -4408,7 +4408,7 @@ void CONTACT::LagrangeStrategy::reset_lagrange_multipliers(
     // ---------------------------------------------------------------------
     // Update the current lagrange multiplier
     // ---------------------------------------------------------------------
-    znew_ptr.replace_map(z_->get_block_map());
+    znew_ptr.replace_map(z_->get_map());
 
     z_->scale(1.0, znew_ptr);
 
@@ -4605,7 +4605,7 @@ void CONTACT::LagrangeStrategy::update_active_set()
       Node* cnode = dynamic_cast<Node*>(node);
 
       // compute weighted gap
-      double wgap = (*wgap_)[wgap_->get_block_map().LID(gid)];
+      double wgap = (*wgap_)[wgap_->get_map().LID(gid)];
 
       // compute normal part of Lagrange multiplier
       double nz = 0.0;
@@ -4671,7 +4671,7 @@ void CONTACT::LagrangeStrategy::update_active_set()
           {
             FriNode* frinode = dynamic_cast<FriNode*>(cnode);
             const Core::LinAlg::Vector<double>& ct_ref = interface_[i]->ct_ref();
-            double ct = ct_ref[ct_ref.get_block_map().LID(frinode->id())];
+            double ct = ct_ref[ct_ref.get_map().LID(frinode->id())];
 
             // CAREFUL: friction bound is now interface-local (popp 08/2012)
             double frbound = interface_[i]->interface_params().get<double>("FRBOUND");
@@ -4709,7 +4709,7 @@ void CONTACT::LagrangeStrategy::update_active_set()
           {
             FriNode* frinode = dynamic_cast<FriNode*>(cnode);
             const Core::LinAlg::Vector<double>& ct_ref = interface_[i]->ct_ref();
-            double ct = ct_ref[ct_ref.get_block_map().LID(frinode->id())];
+            double ct = ct_ref[ct_ref.get_map().LID(frinode->id())];
 
             // CAREFUL: friction coefficient is now interface-local (popp 08/2012)
             double frcoeff = interface_[i]->interface_params().get<double>("FRCOEFF");
@@ -5107,7 +5107,7 @@ void CONTACT::LagrangeStrategy::update(std::shared_ptr<const Core::LinAlg::Vecto
   if (fLTL_ != nullptr)
   {
     // store fLTL values for time integration
-    fLTLOld_ = std::make_shared<Core::LinAlg::Vector<double>>(fLTL_->get_block_map());
+    fLTLOld_ = std::make_shared<Core::LinAlg::Vector<double>>(fLTL_->get_map());
     if (fLTLOld_->update(1.0, *fLTL_, 0.0)) FOUR_C_THROW("Update went wrong");
   }
 
@@ -6639,8 +6639,8 @@ void CONTACT::LagrangeStrategy::run_pre_apply_jacobian_inverse(
     Core::LinAlg::Vector<double> rhs_str2(*problem_dofs());
     Core::LinAlg::export_to(rhs, rhs_str);
     if (systrafo_->multiply(true, rhs_str, rhs_str2)) FOUR_C_THROW("multiply failed");
-    for (int i = 0; i < rhs_str2.get_block_map().NumMyElements(); ++i)
-      rhs[rhs.get_block_map().LID(rhs_str2.get_block_map().GID(i))] = rhs_str2[i];
+    for (int i = 0; i < rhs_str2.get_map().NumMyElements(); ++i)
+      rhs[rhs.get_map().LID(rhs_str2.get_map().GID(i))] = rhs_str2[i];
   }
 
 

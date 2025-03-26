@@ -14,8 +14,6 @@
 #include "4C_linalg_multi_vector.hpp"
 #include "4C_linalg_sparsematrix.hpp"
 
-#include <Epetra_Map.h>
-
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN
@@ -297,8 +295,8 @@ namespace
     // A change of the map is reflected to all views
     a.replace_map(new_map);
 
-    EXPECT_TRUE(a.get_block_map().SameAs(b.Map()));
-    EXPECT_TRUE(a.get_block_map().SameAs(c.get_block_map()));
+    EXPECT_TRUE(a.get_map().SameAs(b.get_map()));
+    EXPECT_TRUE(a.get_map().SameAs(c.get_map()));
   }
 
 }  // namespace

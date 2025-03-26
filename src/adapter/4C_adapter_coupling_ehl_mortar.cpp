@@ -643,7 +643,7 @@ void Adapter::CouplingEhlMortar::recover_coupled(std::shared_ptr<Core::LinAlg::V
   {
     CONTACT::Node* cnode = dynamic_cast<CONTACT::Node*>(interface_->discret().l_row_node(i));
     for (int dof = 0; dof < interface_->n_dim(); ++dof)
-      cnode->mo_data().lm()[dof] = z_->operator[](z_->get_block_map().LID(cnode->dofs()[dof]));
+      cnode->mo_data().lm()[dof] = z_->operator[](z_->get_map().LID(cnode->dofs()[dof]));
   }
 
   return;
@@ -809,7 +809,7 @@ void Adapter::CouplingEhlMortar::assemble_real_gap()
 
   static const double offset =
       Global::Problem::instance()->lubrication_dynamic_params().get<double>("GAP_OFFSET");
-  for (int i = 0; i < nodal_gap_->get_block_map().NumMyElements(); ++i)
+  for (int i = 0; i < nodal_gap_->get_map().NumMyElements(); ++i)
     nodal_gap_->operator[](i) += offset;
 }
 
@@ -1033,7 +1033,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Adapter::CouplingEhlMortar::assemble
       const int col = p->first;
       for (auto q = p->second.begin(); q != p->second.end(); ++q)
       {
-        const int lid = x.get_block_map().LID(q->first);
+        const int lid = x.get_map().LID(q->first);
         if (lid < 0) FOUR_C_THROW("not my gid");
         const double x_val = x.operator[](lid);
         for (int d = 0; d < interface()->n_dim(); ++d)
@@ -1056,7 +1056,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Adapter::CouplingEhlMortar::assemble
           {
             const int row = cnode->dofs()[d];
             const int x_gid = q->first;
-            const int x_lid = x.get_block_map().LID(x_gid);
+            const int x_lid = x.get_map().LID(x_gid);
             if (x_lid < 0) FOUR_C_THROW("not my gid");
             double x_val = x.operator[](x_lid);
             const double val = -x_val * q->second(d) / (dval * dval) * p->second;
@@ -1088,8 +1088,8 @@ void Adapter::CouplingEhlMortar::create_force_vec(std::shared_ptr<Core::LinAlg::
     lmt.update(-1., lmn, 1.);
     for (int d = 0; d < 3; ++d)
     {
-      n->operator[](n->get_block_map().LID(cnode->dofs()[d])) = lmn(d);
-      t->operator[](t->get_block_map().LID(cnode->dofs()[d])) = lmt(d);
+      n->operator[](n->get_map().LID(cnode->dofs()[d])) = lmn(d);
+      t->operator[](t->get_map().LID(cnode->dofs()[d])) = lmt(d);
     }
   }
 }
@@ -1166,7 +1166,7 @@ void Adapter::CouplingEhlMortar::read_restart(Core::IO::DiscretizationReader& re
     cnode->fri_data().slip() = slip_toggle->operator[](i);
     cnode->data().active_old() = active_old_toggle->operator[](i);
     for (int d = 0; d < interface_->n_dim(); ++d)
-      cnode->mo_data().lm()[d] = z_->operator[](z_->get_block_map().LID(cnode->dofs()[d]));
+      cnode->mo_data().lm()[d] = z_->operator[](z_->get_map().LID(cnode->dofs()[d]));
   }
 }
 

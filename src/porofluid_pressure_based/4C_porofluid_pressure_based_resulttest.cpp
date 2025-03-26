@@ -135,7 +135,7 @@ double PoroPressureBased::ResultTest::result_node(
   double result(0.);
 
   // extract row map from solution vector
-  const Epetra_BlockMap& phinpmap = porofluid_algorithm_.phinp()->get_block_map();
+  const Core::LinAlg::Map& phinpmap = porofluid_algorithm_.phinp()->get_map();
 
   // test result value of phi field
   if (quantity == "phi")

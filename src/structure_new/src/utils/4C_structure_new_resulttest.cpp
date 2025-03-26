@@ -63,7 +63,7 @@ namespace
   {
     const Core::LinAlg::MultiVector<double>& data = *all_data.at(name_and_component.name);
 
-    int local_id = data.Map().LID(node_id);
+    int local_id = data.get_map().LID(node_id);
 
     if (local_id < 0)
     {
@@ -120,7 +120,7 @@ namespace
           label.c_str(), prefix.c_str(), prefix.c_str());
     }
 
-    int local_id = nodal_data.Map().LID(node_id);
+    int local_id = nodal_data.get_map().LID(node_id);
 
     if (local_id < 0)
     {
@@ -231,7 +231,7 @@ int Solid::ResultTest::get_nodal_result(
   // test displacements or pressure
   if (disn_ != nullptr)
   {
-    const Epetra_BlockMap& disnpmap = disn_->get_block_map();
+    const Core::LinAlg::Map& disnpmap = disn_->get_map();
     int idx = -1;
     if (position == "dispx")
       idx = 0;
@@ -256,7 +256,7 @@ int Solid::ResultTest::get_nodal_result(
   // test velocities
   if (veln_ != nullptr)
   {
-    const Epetra_BlockMap& velnpmap = veln_->get_block_map();
+    const Core::LinAlg::Map& velnpmap = veln_->get_map();
     int idx = -1;
     if (position == "velx")
       idx = 0;
@@ -279,7 +279,7 @@ int Solid::ResultTest::get_nodal_result(
   // test accelerations
   if (accn_ != nullptr)
   {
-    const Epetra_BlockMap& accnpmap = accn_->get_block_map();
+    const Core::LinAlg::Map& accnpmap = accn_->get_map();
     int idx = -1;
     if (position == "accx")
       idx = 0;
@@ -344,7 +344,7 @@ int Solid::ResultTest::get_nodal_result(
   // test reaction
   if (reactn_ != nullptr)
   {
-    const Epetra_BlockMap& reactmap = reactn_->get_block_map();
+    const Core::LinAlg::Map& reactmap = reactn_->get_map();
     int idx = -1;
     if (position == "reactx")
       idx = 0;

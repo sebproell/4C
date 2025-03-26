@@ -317,8 +317,8 @@ void FSI::MonolithicNoNOX::evaluate(const Core::LinAlg::Vector<double>& step_inc
 
   // Save the inner fluid map that includes the background fluid DOF in order to
   // determine a change.
-  const Epetra_BlockMap fluidincrementmap =
-      extractor().extract_vector(step_increment, 1)->get_block_map();
+  const Core::LinAlg::Map fluidincrementmap =
+      extractor().extract_vector(step_increment, 1)->get_map();
 
   if (not firstcall_)
   {

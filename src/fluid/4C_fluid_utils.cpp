@@ -646,7 +646,7 @@ void FLD::Utils::lift_drag(const std::shared_ptr<const Core::FE::Discretization>
       {
         const Core::LinAlg::Matrix<3, 1> x(
             (*actnode)->x().data(), false);  // pointer to nodal coordinates
-        const Epetra_BlockMap& rowdofmap = trueresidual.get_block_map();
+        const Core::LinAlg::Map& rowdofmap = trueresidual.get_map();
         const std::vector<int> dof = dis->dof(*actnode);
 
         // get nodal forces

@@ -198,7 +198,7 @@ struct WriteElementCenterRotation : public SpecialFieldInterface
         {
           const Core::LinAlg::SerialDenseMatrix& elecenterrot = *data->at(ele.id());
 
-          const Epetra_BlockMap& elemap = elerotation.Map();
+          const Core::LinAlg::Map& elemap = elerotation.get_map();
           int lid = elemap.LID(ele.id());
           if (lid != -1)
             for (int i = 0; i < elecenterrot.numRows(); ++i)

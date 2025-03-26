@@ -862,7 +862,7 @@ void Core::IO::DiscretizationWriter::write_multi_vector(
 
     valuename = groupname.str() + valuename;
 
-    const Epetra_BlockMapData* mapdata = vec.Map().DataPtr();
+    const Epetra_BlockMapData* mapdata = vec.get_map().DataPtr();
     std::map<const Epetra_BlockMapData*, std::string>::const_iterator m = mapcache_.find(mapdata);
     if (m != mapcache_.end())
     {
@@ -873,7 +873,7 @@ void Core::IO::DiscretizationWriter::write_multi_vector(
     {
       const hsize_t mapsize = vec.MyLength();
       idname = name + ".ids";
-      int* ids = vec.Map().MyGlobalElements();
+      int* ids = vec.get_map().MyGlobalElements();
       if (size != 0)
       {
         const herr_t make_status =
@@ -895,7 +895,7 @@ void Core::IO::DiscretizationWriter::write_multi_vector(
       /* Make a copy of the map. This is a std::shared_ptr copy internally. We
        * just make sure here the map stays alive as long as we keep our cache.
        * Otherwise subtle errors could occur. */
-      mapstack_.push_back(vec.Map());
+      mapstack_.push_back(vec.get_map());
       /* BUT: If a problem relies on fill_complete()-calls in every time step,
        * new maps are created in every time step. Storing all old maps in
        * mapstack_ leads to an unbounded increase in memory consumption which
@@ -1009,7 +1009,7 @@ void Core::IO::DiscretizationWriter::write_vector(const std::string name,
       /* Make a copy of the map. This is a std::shared_ptr copy internally. We
        * just make sure here the map stays alive as long as we keep our cache.
        * Otherwise subtle errors could occur. */
-      mapstack_.push_back(elemap.get_epetra_map());
+      mapstack_.push_back(elemap);
       /* BUT: If a problem relies on fill_complete()-calls in every time step,
        * new maps are created in every time step. Storing all old maps in
        * mapstack_ leads to an unbounded increase in memory consumption which

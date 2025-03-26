@@ -160,7 +160,7 @@ std::shared_ptr<Core::LinAlg::Map> PoroElast::MonolithicSplit::fsidbc_map()
   std::vector<int> structfsidbcvector;
   const int numgids = gidmarker_fluid->local_length();  // on each processor (lids)
   double* mygids_fluid = gidmarker_fluid->get_values();
-  const int* fluidmap = gidmarker_fluid->get_block_map().MyGlobalElements();
+  const int* fluidmap = gidmarker_fluid->get_map().MyGlobalElements();
   for (int i = 0; i < numgids; ++i)
   {
     double val = mygids_fluid[i];
@@ -199,7 +199,7 @@ void PoroElast::MonolithicSplit::setup_coupling_and_matrices()
 
     std::shared_ptr<const Core::LinAlg::Vector<double>> idispnp =
         structure_field()->interface()->extract_fsi_cond_vector(*structure_field()->dispnp());
-    ddi_ = std::make_shared<Core::LinAlg::Vector<double>>(idispnp->get_block_map(), true);
+    ddi_ = std::make_shared<Core::LinAlg::Vector<double>>(idispnp->get_map(), true);
   }
 
   // initialize Poroelasticity-systemmatrix_

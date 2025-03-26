@@ -427,7 +427,7 @@ void Constraints::ConstrManager::compute_monitor_values(
   std::vector<const Core::Conditions::Condition*> monitcond;
   monitorvalues_->put_scalar(0.0);
   Teuchos::ParameterList p;
-  if (not actdisc_->dof_row_map()->SameAs(disp->get_block_map()))
+  if (not actdisc_->dof_row_map()->SameAs(disp->get_map()))
   {
     // build merged dof row map
     std::shared_ptr<Core::LinAlg::Map> largemap =

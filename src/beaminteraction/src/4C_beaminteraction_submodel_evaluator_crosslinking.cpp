@@ -218,7 +218,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::post_setup()
       // loop over all dofs
       for (unsigned int dim = 0; dim < 3; ++dim)
       {
-        int doflid = dis_at_last_redistr_->get_block_map().LID(dofnode[dim]);
+        int doflid = dis_at_last_redistr_->get_map().LID(dofnode[dim]);
         (*dis_at_last_redistr_)[doflid] = crosslinker_i->x()[dim];
       }
     }
@@ -1024,7 +1024,7 @@ bool BeamInteraction::SubmodelEvaluator::Crosslinking::pre_update_step_element(b
 
     for (int dim = 0; dim < 3; ++dim)
     {
-      doflid[dim] = dis_at_last_redistr_->get_block_map().LID(dofnode[dim]);
+      doflid[dim] = dis_at_last_redistr_->get_map().LID(dofnode[dim]);
       d(dim) = (*dis_at_last_redistr_)[doflid[dim]];
       (*linker_disnp_)[doflid[dim]] = ref(dim) = node->x()[dim];
     }
@@ -1307,7 +1307,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::fill_state_data_vectors_f
     // loop over all dofs
     for (unsigned int dim = 0; dim < num_spatial_dim; ++dim)
     {
-      int doflid = displacement.get_block_map().LID(dofnode[dim]);
+      int doflid = displacement.get_map().LID(dofnode[dim]);
       (displacement)[doflid] = crosslinker_i->x()[dim];
 
       if (numbonds == 2)
@@ -1561,7 +1561,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::post_read_restart()
     // loop over all dofs
     for (unsigned int dim = 0; dim < 3; ++dim)
     {
-      int doflid = dis_at_last_redistr_->get_block_map().LID(dofnode[dim]);
+      int doflid = dis_at_last_redistr_->get_map().LID(dofnode[dim]);
       (*dis_at_last_redistr_)[doflid] = crosslinker_i->x()[dim];
     }
   }
@@ -3487,7 +3487,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::update_my_double_bonds_re
   // find new host procs for double bonded crosslinker by communication
   int err = bin_discret_ptr()->node_row_map()->RemoteIDList(
       size, unique_clgidlist.data(), unique_pidlist.data(), nullptr);
-  if (err < 0) FOUR_C_THROW("Epetra_BlockMap::RemoteIDList returned err={}", err);
+  if (err < 0) FOUR_C_THROW("Core::LinAlg::Map::RemoteIDList returned err={}", err);
 
   std::map<int, std::vector<std::shared_ptr<BeamInteraction::BeamLink>>> dbcltosend;
   for (unsigned int i = 0; i < static_cast<unsigned int>(unique_clgidlist.size()); ++i)

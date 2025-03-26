@@ -192,7 +192,7 @@ namespace FSI
      * and inner fluid DOF map after evaluation
 
      */
-    virtual bool has_fluid_dof_map_changed(const Epetra_BlockMap& fluidincrementmap) = 0;
+    virtual bool has_fluid_dof_map_changed(const Core::LinAlg::Map& fluidincrementmap) = 0;
 
     /// access type-cast pointer to problem-specific ALE-wrapper
     const std::shared_ptr<Adapter::AleXFFsiWrapper>& ale_field() { return ale_; }

@@ -977,7 +977,7 @@ void Constraints::SpringDashpot::set_restart_old(Core::LinAlg::MultiVector<doubl
         for (auto& i : offset_prestr_)
         {
           // global id -> local id
-          const int lid = vec.Map().LID(i.first);
+          const int lid = vec.get_map().LID(i.first);
           // local id on processor
           if (lid >= 0)
           {
@@ -1003,7 +1003,7 @@ void Constraints::SpringDashpot::output_gap_normal(Core::LinAlg::Vector<double>&
   for (const auto& i : gap_)
   {
     // global id -> local id
-    const int lid = gap.get_block_map().LID(i.first);
+    const int lid = gap.get_map().LID(i.first);
     // local id on processor
     if (lid >= 0) (gap)[lid] += i.second;
   }
@@ -1012,7 +1012,7 @@ void Constraints::SpringDashpot::output_gap_normal(Core::LinAlg::Vector<double>&
   for (const auto& normal : normals_)
   {
     // global id -> local id
-    const int lid = normals.Map().LID(normal.first);
+    const int lid = normals.get_map().LID(normal.first);
     // local id on processor
     if (lid >= 0)
     {
@@ -1027,7 +1027,7 @@ void Constraints::SpringDashpot::output_gap_normal(Core::LinAlg::Vector<double>&
   for (const auto& i : springstress_)
   {
     // global id -> local id
-    const int lid = stress.Map().LID(i.first);
+    const int lid = stress.get_map().LID(i.first);
     // local id on processor
     if (lid >= 0)
     {
@@ -1058,7 +1058,7 @@ void Constraints::SpringDashpot::output_prestr_offset_old(
   for (const auto& i : offset_prestr_)
   {
     // global id -> local id
-    const int lid = springprestroffset.Map().LID(i.first);
+    const int lid = springprestroffset.get_map().LID(i.first);
     // local id on processor
     if (lid >= 0)
     {

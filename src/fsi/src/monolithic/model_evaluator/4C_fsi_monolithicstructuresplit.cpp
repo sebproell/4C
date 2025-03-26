@@ -808,7 +808,7 @@ void FSI::MonolithicStructureSplit::unscale_solution(Core::LinAlg::BlockSparseMa
 
   // very simple hack just to see the linear solution
 
-  Core::LinAlg::Vector<double> r(b.get_block_map());
+  Core::LinAlg::Vector<double> r(b.get_map());
   mat.Apply(x, r);
   r.update(1., b, 1.);
 
@@ -1318,7 +1318,7 @@ void FSI::MonolithicStructureSplit::calculate_interface_energy_increment()
 
   // interface traction weighted by time integration factors
   std::shared_ptr<Core::LinAlg::Vector<double>> tractionstructure =
-      std::make_shared<Core::LinAlg::Vector<double>>(lambda_->get_block_map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(lambda_->get_map(), true);
   tractionstructure->update(stiparam - ftiparam, *lambdaold_, ftiparam - stiparam, *lambda_, 0.0);
 
   // displacement increment of this time step

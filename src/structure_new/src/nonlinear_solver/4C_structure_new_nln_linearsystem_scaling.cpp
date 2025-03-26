@@ -293,7 +293,7 @@ void Solid::Nln::LinSystem::StcScaling::scaleLinearSystem(Epetra_LinearProblem& 
         Core::LinAlg::matrix_multiply(*stcmat_, true, *stiff_scaled_, false, true, false, true);
 
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs_scaled =
-        Core::LinAlg::create_vector(problem.GetRHS()->Map(), true);
+        std::make_shared<Core::LinAlg::Vector<double>>(problem.GetRHS()->Map(), true);
     stcmat_->multiply(true, rhs, *rhs_scaled);
     rhs.update(1.0, *rhs_scaled, 0.0);
   }
@@ -307,7 +307,7 @@ void Solid::Nln::LinSystem::StcScaling::scaleLinearSystem(Epetra_LinearProblem& 
 void Solid::Nln::LinSystem::StcScaling::unscaleLinearSystem(Epetra_LinearProblem& problem)
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> disisdc =
-      Core::LinAlg::create_vector(problem.GetLHS()->Map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(problem.GetLHS()->Map(), true);
   Epetra_MultiVector* disi = problem.GetLHS();
 
   Core::LinAlg::View disi_view(*disi);

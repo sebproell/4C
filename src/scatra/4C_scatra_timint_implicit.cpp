@@ -1260,7 +1260,7 @@ void ScaTra::ScaTraTimIntImpl::set_velocity_field_from_function()
 
           // get global and local dof IDs
           const int gid = nodedofs[index];
-          const int lid = convel->get_block_map().LID(gid);
+          const int lid = convel->get_map().LID(gid);
 
           if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
           err = convel->replace_local_value(lid, 0, value);
@@ -1331,7 +1331,7 @@ void ScaTra::ScaTraTimIntImpl::set_external_force() const
       const double force_velocity_value = external_force_value * intrinsic_mobility_value;
 
       const int gid = nodedofs[spatial_dimension];
-      const int lid = force_velocity->get_block_map().LID(gid);
+      const int lid = force_velocity->get_map().LID(gid);
 
       if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
       const int error_force_velocity =
@@ -1771,7 +1771,7 @@ void ScaTra::ScaTraTimIntImpl::collect_runtime_output_data()
       Core::Nodes::Node* node = discret_->l_row_node(inode);
       for (int idim = 0; idim < nsd_; ++idim)
         (convel_multi)(idim)[inode] =
-            (*convel)[convel->get_block_map().LID(discret_->dof(nds_vel(), node, idim))];
+            (*convel)[convel->get_map().LID(discret_->dof(nds_vel(), node, idim))];
     }
 
     std::vector<std::optional<std::string>> context(nsd_, "convec_velocity");
@@ -1792,8 +1792,8 @@ void ScaTra::ScaTraTimIntImpl::collect_runtime_output_data()
       {
         const Core::Nodes::Node* node = discret_->l_row_node(inode);
         for (int idim = 0; idim < nsd_; ++idim)
-          (multi_vector)(idim)[inode] = (*state_vector)[state_vector->get_block_map().LID(
-              discret_->dof(nds_vel(), node, idim))];
+          (multi_vector)(idim)[inode] =
+              (*state_vector)[state_vector->get_map().LID(discret_->dof(nds_vel(), node, idim))];
       }
       const std::vector<std::optional<std::string>> context(nsd_, field_name);
       visualization_writer_->append_result_data_vector_with_context(
@@ -1819,7 +1819,7 @@ void ScaTra::ScaTraTimIntImpl::collect_runtime_output_data()
       Core::Nodes::Node* node = discret_->l_row_node(inode);
       for (int idim = 0; idim < nsd_; ++idim)
         (dispnp_multi)(idim)[inode] =
-            (*dispnp)[dispnp->get_block_map().LID(discret_->dof(nds_disp(), node, idim))];
+            (*dispnp)[dispnp->get_map().LID(discret_->dof(nds_disp(), node, idim))];
     }
 
     std::vector<std::optional<std::string>> context(nsd_, "ale-displacement");
@@ -2399,7 +2399,7 @@ void ScaTra::ScaTraTimIntImpl::setup_krylov_space_projection(
 
   // create the projector
   projector_ = std::make_shared<Core::LinAlg::KrylovProjector>(
-      activemodeids, weighttype, &discret_->dof_row_map()->get_epetra_map());
+      activemodeids, weighttype, discret_->dof_row_map());
 
   // update the projector
   update_krylov_space_projection();
@@ -3185,7 +3185,7 @@ ScaTra::ScaTraTimIntImpl::convert_dof_vector_to_componentwise_node_vector(
     Core::Nodes::Node* node = discret_->l_row_node(inode);
     for (int idim = 0; idim < nsd_; ++idim)
       (*componentwise_node_vector)(idim)[inode] =
-          (dof_vector)[dof_vector.get_block_map().LID(discret_->dof(nds, node, idim))];
+          (dof_vector)[dof_vector.get_map().LID(discret_->dof(nds, node, idim))];
   }
   return componentwise_node_vector;
 }
@@ -3825,8 +3825,8 @@ void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
       int dof_macro = discret_->dof(0, node)[0];
       int dof_micro = discret_->dof(nds_micro(), node)[0];
 
-      const int dof_lid_micro = phinp_micro_->get_block_map().LID(dof_micro);
-      const int dof_lid_macro = phinp_->get_block_map().LID(dof_macro);
+      const int dof_lid_micro = phinp_micro_->get_map().LID(dof_micro);
+      const int dof_lid_macro = phinp_->get_map().LID(dof_macro);
 
       // only if owned by this proc
       if (dof_lid_micro != -1 and dof_lid_macro != -1)
@@ -3849,7 +3849,7 @@ void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
     if (dofs.size() != 1) FOUR_C_THROW("Only one dof expected.");
 
     const int dof_gid = dofs[0];
-    const int dof_lid = phinp_micro_->get_block_map().LID(dof_gid);
+    const int dof_lid = phinp_micro_->get_map().LID(dof_gid);
 
     // only if this dof is part of the phinp_micro_ vector/map
     if (dof_lid != -1)
@@ -3926,7 +3926,7 @@ void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
   // correct values on hybrid dofs (value on node with 2 dofs is artificially set to 0.0)
   for (int hybrid_dof : hybrid_dofs)
   {
-    const int lid = phinp_micro_->get_block_map().LID(hybrid_dof);
+    const int lid = phinp_micro_->get_map().LID(hybrid_dof);
     if (lid != -1)
     {
       const double value = (*phinp_micro_)[lid];

@@ -618,7 +618,7 @@ void Core::Conditions::LocsysManager::calc_rotation_vector_for_normal_system(
     double length = 0.0;
     for (int jdim = 0; jdim < dim_; jdim++)
     {
-      const int localId = massConsistentNodeNormals->get_block_map().LID(nodeGIDs[jdim]);
+      const int localId = massConsistentNodeNormals->get_map().LID(nodeGIDs[jdim]);
       nodeNormal(jdim, 0) = (*massConsistentNodeNormals)[localId];
       length += nodeNormal(jdim, 0) * nodeNormal(jdim, 0);
     }

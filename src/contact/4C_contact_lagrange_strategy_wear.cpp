@@ -4127,7 +4127,7 @@ void Wear::LagrangeStrategyWear::output_wear()
 
         for (int dof = 0; dof < dim; ++dof)
         {
-          locindex[dof] = (wear_vector.get_block_map()).LID(frinode->dofs()[dof]);
+          locindex[dof] = (wear_vector.get_map()).LID(frinode->dofs()[dof]);
           (wear_vector)[locindex[dof]] = wear * nn[dof];
         }
       }
@@ -4190,8 +4190,8 @@ void Wear::LagrangeStrategyWear::output_wear()
     for (int i = 0; i < (int)gsdofrowmap_->NumMyElements(); ++i)
     {
       const int gid = gsdofrowmap_->MyGlobalElements()[i];
-      const double tmp = (real_wear)[real_wear.get_block_map().LID(gid)];
-      (*wearoutput_)[wearoutput_->get_block_map().LID(gid)] = tmp * fac;
+      const double tmp = (real_wear)[real_wear.get_map().LID(gid)];
+      (*wearoutput_)[wearoutput_->get_map().LID(gid)] = tmp * fac;
     }
 
     /**********************************************************************
@@ -4261,8 +4261,8 @@ void Wear::LagrangeStrategyWear::output_wear()
       for (int i = 0; i < (int)gmdofrowmap_->NumMyElements(); ++i)
       {
         int gid = gmdofrowmap_->MyGlobalElements()[i];
-        double tmp = (real_wear2)[real_wear2.get_block_map().LID(gid)];
-        (*wearoutput2_)[wearoutput2_->get_block_map().LID(gid)] =
+        double tmp = (real_wear2)[real_wear2.get_map().LID(gid)];
+        (*wearoutput2_)[wearoutput2_->get_map().LID(gid)] =
             -(tmp * fac);  // negative sign because on other interface side
         //--> this Wear-vector (defined on master side) is along slave-side normal field!
       }
@@ -4313,7 +4313,7 @@ void Wear::LagrangeStrategyWear::do_write_restart(
       Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       CONTACT::Node* cnode = dynamic_cast<CONTACT::Node*>(node);
-      int dof = (activetoggle->get_block_map()).LID(gid);
+      int dof = (activetoggle->get_map()).LID(gid);
 
       // set value active / inactive in toggle vector
       if (cnode->active()) (*activetoggle)[dof] = 1;
@@ -4814,7 +4814,7 @@ void Wear::LagrangeStrategyWear::do_read_restart(
     for (int j = 0; j < (interface_[i]->slave_row_nodes())->NumMyElements(); ++j)
     {
       int gid = (interface_[i]->slave_row_nodes())->GID(j);
-      int dof = (activetoggle->get_block_map()).LID(gid);
+      int dof = (activetoggle->get_map()).LID(gid);
 
       if ((*activetoggle)[dof] == 1)
       {
@@ -5146,7 +5146,7 @@ void Wear::LagrangeStrategyWear::store_nodal_quantities(Mortar::StrategyBase::Qu
 
         // store updated wcurr into node
         fnode->wear_data().wcurr()[0] =
-            (*vectorinterface)[vectorinterface->get_block_map().LID(fnode->dofs()[0])];
+            (*vectorinterface)[vectorinterface->get_map().LID(fnode->dofs()[0])];
       }
     }
     else if (type == Mortar::StrategyBase::wmold)
@@ -5160,7 +5160,7 @@ void Wear::LagrangeStrategyWear::store_nodal_quantities(Mortar::StrategyBase::Qu
 
         // store updated wcurr into node
         fnode->wear_data().wold()[0] +=
-            (*vectorinterface)[vectorinterface->get_block_map().LID(fnode->dofs()[0])];
+            (*vectorinterface)[vectorinterface->get_map().LID(fnode->dofs()[0])];
       }
     }
     else
@@ -5184,7 +5184,7 @@ void Wear::LagrangeStrategyWear::store_nodal_quantities(Mortar::StrategyBase::Qu
 
         for (int dof = 0; dof < dim; ++dof)
         {
-          locindex[dof] = (vectorinterface->get_block_map()).LID(cnode->dofs()[dof]);
+          locindex[dof] = (vectorinterface->get_map()).LID(cnode->dofs()[dof]);
           if (locindex[dof] < 0) FOUR_C_THROW("StoreNodalQuantities: Did not find dof in map");
 
           switch (type)
@@ -5231,7 +5231,7 @@ void Wear::LagrangeStrategyWear::store_nodal_quantities(Mortar::StrategyBase::Qu
               // store updated wcurr into node
               CONTACT::FriNode* fnode = dynamic_cast<CONTACT::FriNode*>(cnode);
               fnode->wear_data().wold()[0] +=
-                  (*vectorinterface)[vectorinterface->get_block_map().LID(fnode->dofs()[0])];
+                  (*vectorinterface)[vectorinterface->get_map().LID(fnode->dofs()[0])];
               dof = dof + n_dim() - 1;
 
               break;

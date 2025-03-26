@@ -507,7 +507,7 @@ void Core::FE::Discretization::set_state(
 
   FOUR_C_ASSERT_ALWAYS(have_dofs(), "fill_complete() was not called for discretization {}!", name_);
   const Core::LinAlg::Map* colmap = dof_col_map(nds);
-  const Epetra_BlockMap& vecmap = state.get_block_map();
+  const Core::LinAlg::Map& vecmap = state.get_map();
 
   if (state_.size() <= nds) state_.resize(nds + 1);
 
@@ -527,7 +527,7 @@ void Core::FE::Discretization::set_state(
   }
   else  // if it's not in column map export and allocate
   {
-    FOUR_C_ASSERT(dof_row_map(nds)->SameAs(state.get_block_map()),
+    FOUR_C_ASSERT(dof_row_map(nds)->SameAs(state.get_map()),
         "row map of discretization {} and state vector {} are different. This is a fatal bug!",
         name_.c_str(), name.c_str());
     std::shared_ptr<Core::LinAlg::Vector<double>> tmp = Core::LinAlg::create_vector(*colmap, false);
@@ -540,11 +540,11 @@ void Core::FE::Discretization::set_state(
     }
     // (re)build importer if necessary
     if (stateimporter_[nds] == nullptr or
-        not stateimporter_[nds]->SourceMap().SameAs(state.get_block_map()) or
+        not stateimporter_[nds]->SourceMap().SameAs(state.get_map().get_epetra_map()) or
         not stateimporter_[nds]->TargetMap().SameAs(colmap->get_epetra_map()))
     {
-      stateimporter_[nds] =
-          std::make_shared<Epetra_Import>(colmap->get_epetra_map(), state.get_block_map());
+      stateimporter_[nds] = std::make_shared<Epetra_Import>(
+          colmap->get_epetra_map(), state.get_map().get_epetra_map());
     }
 
     // transfer data
@@ -785,7 +785,7 @@ void Core::FE::Discretization::add_multi_vector_to_parameter_list(Teuchos::Param
 
     // if it's already in column map just copy it
     // This is a rough test, but it might be ok at this place.
-    if (vec->Map().PointSameAs(nodecolmap->get_epetra_map()))
+    if (vec->get_map().PointSameAs(nodecolmap->get_epetra_map()))
     {
       // make a copy as in parallel such that no additional RCP points to the state vector
       std::shared_ptr<Core::LinAlg::MultiVector<double>> tmp =

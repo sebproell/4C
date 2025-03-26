@@ -258,7 +258,7 @@ void PostVtuWriterNode::write_dof_result_step(std::ofstream& file,
 
   // For parallel computations, we need to access all dofs on the elements, including the
   // nodes owned by other processors. Therefore, we need to import that data here.
-  const Epetra_BlockMap& vecmap = data->get_block_map();
+  const Core::LinAlg::Map& vecmap = data->get_map();
   const Core::LinAlg::Map* colmap = dis->dof_col_map(0);
 
   int offset = vecmap.MinAllGID() - dis->dof_row_map()->MinAllGID();
@@ -276,8 +276,8 @@ void PostVtuWriterNode::write_dof_result_step(std::ofstream& file,
     std::vector<int> gids(vecmap.NumMyElements());
     for (int i = 0; i < vecmap.NumMyElements(); ++i)
       gids[i] = vecmap.MyGlobalElements()[i] - offset;
-    Core::LinAlg::Map rowmap(vecmap.NumGlobalElements(), vecmap.NumMyElements(), gids.data(), 0,
-        Core::Communication::unpack_epetra_comm(vecmap.Comm()));
+    Core::LinAlg::Map rowmap(
+        vecmap.NumGlobalElements(), vecmap.NumMyElements(), gids.data(), 0, vecmap.Comm());
     std::shared_ptr<Core::LinAlg::Vector<double>> dofvec =
         Core::LinAlg::create_vector(rowmap, false);
     for (int i = 0; i < vecmap.NumMyElements(); ++i) (*dofvec)[i] = (*data)[i];
@@ -305,7 +305,7 @@ void PostVtuWriterNode::write_dof_result_step(std::ofstream& file,
     dis->dof(dis->l_row_node(i), nodedofs);
     for (int d = 0; d < numdf; ++d)
     {
-      const int lid = ghostedData->get_block_map().LID(nodedofs[d + from]);
+      const int lid = ghostedData->get_map().LID(nodedofs[d + from]);
       if (lid > -1)
         solution.push_back((*ghostedData)[lid]);
       else
@@ -357,7 +357,7 @@ void PostVtuWriterNode::write_nodal_result_step(std::ofstream& file,
   // Here is the only thing we need to do for parallel computations: We need read access to all dofs
   // on the row elements, so need to get the NodeColMap to have this access
   const Core::LinAlg::Map* colmap = dis->node_col_map();
-  const Epetra_BlockMap& vecmap = data->Map();
+  const Core::LinAlg::Map& vecmap = data->get_map();
 
   FOUR_C_ASSERT(
       colmap->MaxAllGID() == vecmap.MaxAllGID() && colmap->MinAllGID() == vecmap.MinAllGID(),

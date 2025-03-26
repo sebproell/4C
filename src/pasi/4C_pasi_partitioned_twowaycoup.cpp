@@ -312,8 +312,8 @@ void PaSI::PasiPartTwoWayCoup::get_interface_forces()
   intfforcenp_->put_scalar(0.0);
 
   // assemble interface forces
-  Epetra_Export exporter(
-      walldatastate->get_force_col()->get_block_map(), intfforcenp_->get_block_map());
+  Epetra_Export exporter(walldatastate->get_force_col()->get_map().get_epetra_map(),
+      intfforcenp_->get_map().get_epetra_map());
   int err = intfforcenp_->export_to(*walldatastate->get_force_col(), exporter, Add);
   if (err) FOUR_C_THROW("export of interface forces failed with err={}", err);
 }

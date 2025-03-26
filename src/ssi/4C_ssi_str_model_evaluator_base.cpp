@@ -69,7 +69,7 @@ void Solid::ModelEvaluator::BaseSSI::determine_stress_strain()
 
     // extract dof lid of first degree of freedom associated with current node in second nodeset
     const int dofgid = discret().dof(2, node, 0);
-    const int doflid = mechanical_stress_state_np_->get_block_map().LID(dofgid);
+    const int doflid = mechanical_stress_state_np_->get_map().LID(dofgid);
     if (doflid < 0) FOUR_C_THROW("Local ID not found in vector!");
 
     (*mechanical_stress_state_np_)[doflid] = (nodal_stresses_source(0))[nodelid];

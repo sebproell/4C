@@ -42,7 +42,7 @@ void MultiScale::MicroStatic::determine_toggle()
       {
         const int gid = dofs[j];
 
-        const int lid = disn_->get_block_map().LID(gid);
+        const int lid = disn_->get_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
 
         if ((*dirichtoggle_)[lid] != 1.0)  // be careful not to count dofs more
@@ -124,7 +124,7 @@ void MultiScale::MicroStatic::set_up_homogenization()
       {
         const int gid = dofs[k];
 
-        const int lid = disn_->get_block_map().LID(gid);
+        const int lid = disn_->get_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
 
         for (int l = 0; l < np_; ++l)

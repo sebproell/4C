@@ -73,6 +73,9 @@ namespace Core::LinAlg
     //! Index base for this map.
     int IndexBase() const { return map_->IndexBase(); }
 
+    //! Same as FirstPointInElementList() except it fills the user array that is passed in.
+    int FirstPointInElementList(int* LID) const { return map_->FirstPointInElementList(LID); }
+
     //! Returns true if map is defined across more than one processor.
     bool DistributedGlobal() const { return map_->DistributedGlobal(); }
 
@@ -151,6 +154,10 @@ namespace Core::LinAlg
 
     [[nodiscard]] static std::unique_ptr<const Map> create_view(const Epetra_Map& view);
 
+    [[nodiscard]] static std::unique_ptr<Map> create_view(Epetra_BlockMap& view);
+
+    [[nodiscard]] static std::unique_ptr<const Map> create_view(const Epetra_BlockMap& view);
+
    private:
     Map() = default;
 
@@ -166,6 +173,12 @@ namespace Core::LinAlg
 
   template <>
   struct EnableViewFor<Epetra_Map>
+  {
+    using type = Map;
+  };
+
+  template <>
+  struct EnableViewFor<Epetra_BlockMap>
   {
     using type = Map;
   };

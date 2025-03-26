@@ -279,7 +279,7 @@ void Solid::TimAda::evaluate_local_error_dis()
 
   // blank Dirichlet DOFs since they always carry the exact solution
   std::shared_ptr<Core::LinAlg::Vector<double>> zeros =
-      std::make_shared<Core::LinAlg::Vector<double>>(locerrdisn_->get_block_map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(locerrdisn_->get_map(), true);
   Core::LinAlg::apply_dirichlet_to_system(
       *locerrdisn_, *zeros, *(sti_->get_dbc_map_extractor()->cond_map()));
 }

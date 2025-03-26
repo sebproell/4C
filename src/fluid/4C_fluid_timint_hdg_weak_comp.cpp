@@ -301,8 +301,7 @@ void FLD::TimIntHDGWeakComp::clear_state_assemble_mat_and_rhs()
     // data back before it disappears when clearing the state (at least for nproc>1)
     const Core::LinAlg::Vector<double>& intvelnpGhosted = *discret_->get_state(1, "intvelnp");
     for (int i = 0; i < intvelnp_->local_length(); ++i)
-      (*intvelnp_)[i] =
-          intvelnpGhosted[intvelnpGhosted.get_block_map().LID(intvelnp_->get_block_map().GID(i))];
+      (*intvelnp_)[i] = intvelnpGhosted[intvelnpGhosted.get_map().LID(intvelnp_->get_map().GID(i))];
   }
   first_assembly_ = false;
   FluidImplicitTimeInt::clear_state_assemble_mat_and_rhs();
@@ -667,7 +666,7 @@ namespace
       mixedvar = std::make_shared<Core::LinAlg::MultiVector<double>>(*dis.node_row_map(), msd);
       density = std::make_shared<Core::LinAlg::Vector<double>>(*dis.node_row_map());
     }
-    traceden = std::make_shared<Core::LinAlg::Vector<double>>(density->get_block_map());
+    traceden = std::make_shared<Core::LinAlg::Vector<double>>(density->get_map());
 
     // call element routine for interpolate HDG to elements
     Teuchos::ParameterList params;
@@ -750,7 +749,7 @@ void FLD::TimIntHDGWeakComp::output()
     std::shared_ptr<Core::LinAlg::MultiVector<double>> interpolatedVelocity;
     std::shared_ptr<Core::LinAlg::Vector<double>> interpolatedPressure;
     interpolatedPressure =
-        std::make_shared<Core::LinAlg::Vector<double>>(interpolatedDensity_->get_block_map());
+        std::make_shared<Core::LinAlg::Vector<double>>(interpolatedDensity_->get_map());
     for (int i = 0; i < interpolatedDensity_->local_length(); ++i)
     {
       (*interpolatedPressure)[i] =

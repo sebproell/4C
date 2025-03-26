@@ -400,12 +400,12 @@ void FLD::XFluidFluid::assemble_mat_and_rhs(int itnum  ///< iteration number
     // adding rhC_s_ (coupling contribution) to residual of embedded fluid
     for (int iter = 0; iter < coup_state->rhC_s_->local_length(); ++iter)
     {
-      const int rhsgid = coup_state->rhC_s_->get_block_map().GID(iter);
-      if (coup_state->rhC_s_->get_block_map().MyGID(rhsgid) == false)
+      const int rhsgid = coup_state->rhC_s_->get_map().GID(iter);
+      if (coup_state->rhC_s_->get_map().MyGID(rhsgid) == false)
         FOUR_C_THROW("rhC_s_ should be on all processors");
-      if (embedded_fluid_->residual()->get_block_map().MyGID(rhsgid))
-        (*embedded_fluid_->residual())[embedded_fluid_->residual()->get_block_map().LID(rhsgid)] +=
-            (*coup_state->rhC_s_)[coup_state->rhC_s_->get_block_map().LID(rhsgid)];
+      if (embedded_fluid_->residual()->get_map().MyGID(rhsgid))
+        (*embedded_fluid_->residual())[embedded_fluid_->residual()->get_map().LID(rhsgid)] +=
+            (*coup_state->rhC_s_)[coup_state->rhC_s_->get_map().LID(rhsgid)];
       else
         FOUR_C_THROW("Interface dof {} does not belong to embedded discretization!", rhsgid);
     }
@@ -533,8 +533,9 @@ void FLD::XFluidFluid::add_eos_pres_stab_to_emb_layer()
   //------------------------------------------------------------
   // need to export residual_col to embedded fluid residual
   {
-    Core::LinAlg::Vector<double> res_tmp(embedded_fluid_->residual()->get_block_map(), true);
-    Epetra_Export exporter(residual_col->get_block_map(), res_tmp.get_block_map());
+    Core::LinAlg::Vector<double> res_tmp(embedded_fluid_->residual()->get_map(), true);
+    Epetra_Export exporter(
+        residual_col->get_map().get_epetra_map(), res_tmp.get_map().get_epetra_map());
     int err = res_tmp.export_to(*residual_col, exporter, Add);
     if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
     embedded_fluid_->residual()->update(1.0, res_tmp, 1.0);

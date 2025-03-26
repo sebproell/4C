@@ -66,6 +66,39 @@ std::unique_ptr<const Core::LinAlg::Map> Core::LinAlg::Map::create_view(const Ep
   ret->map_ = Utils::make_view<Epetra_Map>(const_cast<Epetra_Map*>(&view));
   return ret;
 }
+std::unique_ptr<Core::LinAlg::Map> Core::LinAlg::Map::create_view(Epetra_BlockMap& view)
+{
+  // Cast the Epetra_BlockMap to Epetra_Map and ensure that cast is valid.
+  Epetra_Map* epetra_map_ptr = dynamic_cast<Epetra_Map*>(&view);
+
+  if (epetra_map_ptr == nullptr)
+  {
+    FOUR_C_THROW(
+        "You are trying to view an Epetra_BlockMap as a LinAlg::Map. This only works if the map "
+        "you are viewing is of the derived type Epetra_Map. This is not true for the map you "
+        "passed to this function.");
+  }
+
+  // We may safely cast away const here, since the returned object is const and we use a
+  // OwnerOrView to ensure that we only ever access the viewed map through
+  // const methods.
+  std::unique_ptr<Map> ret(new Map);
+  ret->map_ = Utils::make_view<Epetra_Map>(epetra_map_ptr);
+  return ret;
+}
+
+std::unique_ptr<const Core::LinAlg::Map> Core::LinAlg::Map::create_view(const Epetra_BlockMap& view)
+{
+  // cast the Epetra_BlockMap to Epetra_Map, this cast can go wrong.
+  const Epetra_Map* epetra_map_ptr = static_cast<const Epetra_Map*>(&view);
+
+  // We may safely cast away const here, since the returned object is const and we use a
+  // OwnerOrView to ensure that we only ever access the viewed map through
+  // const methods.
+  std::unique_ptr<Map> ret(new Map);
+  ret->map_ = Utils::make_view<Epetra_Map>(const_cast<Epetra_Map*>(epetra_map_ptr));
+  return ret;
+}
 
 Core::LinAlg::Map::Map(const Epetra_Map& Source) : map_(std::make_unique<Epetra_Map>(Source)) {}
 

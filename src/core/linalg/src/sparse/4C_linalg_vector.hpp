@@ -149,11 +149,8 @@ namespace Core::LinAlg
 
     double operator[](int const index) const { return (*vector_)[index]; }
 
-    //! Returns the address of the Epetra_BlockMap for this multi-vector.
-    const Epetra_BlockMap& get_block_map() const { return (vector_->Map()); };
-
-    //! Returns the address of the Map for this multi-vector.
-    Map get_map() const { return Map(vector_->Map()); };
+    //! Returns the address of the Core::LinAlg::Map for this multi-vector.
+    const Map& get_map() const;
 
     //! Returns the MPI_Comm for this multi-vector.
     MPI_Comm get_comm() const;
@@ -199,7 +196,7 @@ namespace Core::LinAlg
     /** Replace map, only if new map has same point-structure as current map.
         return 0 if map is replaced, -1 if not.
      */
-    int replace_map(const Epetra_BlockMap& map);
+    // int replace_map(const Epetra_BlockMap& map);
 
     int replace_map(const Map& map);
 
@@ -342,6 +339,10 @@ namespace Core::LinAlg
 
     //! The actual Epetra_Vector object.
     std::shared_ptr<Epetra_Vector> vector_;
+
+    //! Map from Epetra_Vector
+    mutable View<const Map> map_;
+
     //! MultiVector view of the Vector. This is used to allow implicit conversion to MultiVector.
     mutable std::shared_ptr<MultiVector<T>> multi_vector_view_;
 
@@ -362,7 +363,7 @@ namespace Core::LinAlg
 
     explicit Vector(const Map& map, bool zeroOut = true);
 
-    Vector(const Epetra_BlockMap& map, int* values);
+    // Vector(const Epetra_BlockMap& map, int* values);
 
     Vector(const Map& map, int* values);
 
@@ -389,8 +390,9 @@ namespace Core::LinAlg
 
     void print(std::ostream& os) const;
 
-    Map get_map() { return Map(vector_->Map()); };
-    const Epetra_BlockMap& get_block_map() const { return vector_->Map(); };
+    //! Returns the address of the Map for this multi-vector.
+    const Map& get_map() const { return map_.sync(vector_->Map()); };
+
 
     //! Imports an Epetra_DistObject using the Epetra_Import object.
     int import(const Vector& A, const Epetra_Import& Importer, Epetra_CombineMode CombineMode,
@@ -422,6 +424,9 @@ namespace Core::LinAlg
 
    private:
     std::shared_ptr<Epetra_IntVector> vector_;
+
+    //! Map from Epetra_Vector
+    mutable View<const Map> map_;
   };
 
 

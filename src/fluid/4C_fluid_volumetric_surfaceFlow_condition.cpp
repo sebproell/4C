@@ -1262,10 +1262,10 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::correct_flow_rate(
     double correction = 0.0;
     for (int lid = 0; lid < correction_velnp->local_length(); lid++)
     {
-      int gid = correction_velnp->get_block_map().GID(lid);
+      int gid = correction_velnp->get_map().GID(lid);
       correction = correction_factor * (*correction_velnp)[lid];
 
-      int bc_lid = cond_velocities_->get_block_map().LID(gid);
+      int bc_lid = cond_velocities_->get_map().LID(gid);
       (*cond_velocities_)[bc_lid] += correction;
     }
   }
@@ -1276,10 +1276,10 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::correct_flow_rate(
     double correction = 0.0;
     for (int lid = 0; lid < correction_velnp->local_length(); lid++)
     {
-      int gid = correction_velnp->get_block_map().GID(lid);
+      int gid = correction_velnp->get_map().GID(lid);
       correction = correction_factor * (*correction_velnp)[lid];
 
-      int bc_lid = cond_velocities_->get_block_map().LID(gid);
+      int bc_lid = cond_velocities_->get_map().LID(gid);
       (*cond_velocities_)[bc_lid] = correction;
     }
   }
@@ -1294,7 +1294,7 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::set_velocities(
 {
   for (int lid = 0; lid < cond_velocities_->local_length(); lid++)
   {
-    int gid = cond_velocities_->get_block_map().GID(lid);
+    int gid = cond_velocities_->get_map().GID(lid);
     double val = (*cond_velocities_)[lid];
 
     velocities.replace_global_values(1, &val, &gid);
@@ -1935,7 +1935,7 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::export_and_set_boundary_values(
     std::string name)
 {
   // define the exporter
-  Epetra_Export exporter(source.get_block_map(), target->get_block_map());
+  Epetra_Export exporter(source.get_map().get_epetra_map(), target->get_map().get_epetra_map());
   // Export source vector to target vector
   int err = target->export_to(source, exporter, Zero);
   // check if the exporting was successful
@@ -1952,7 +1952,7 @@ void FLD::Utils::TotalTractionCorrector::export_and_set_boundary_values(
     std::string name)
 {
   // define the exporter
-  Epetra_Export exporter(source.get_block_map(), target->get_block_map());
+  Epetra_Export exporter(source.get_map().get_epetra_map(), target->get_map().get_epetra_map());
   // Export source vector to target vector
   int err = target->export_to(source, exporter, Zero);
   // check if the exporting was successful

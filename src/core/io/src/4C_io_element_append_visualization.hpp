@@ -205,8 +205,8 @@ namespace Core::IO
         // Since this is not supported by vtu, we add a NaN in this case, see else branch
         if (nodedofs.size() > read_result_data_from_dofindex + idof)
         {
-          const int lid = result_data_dofbased.get_block_map().LID(
-              nodedofs[idof + read_result_data_from_dofindex]);
+          const int lid =
+              result_data_dofbased.get_map().LID(nodedofs[idof + read_result_data_from_dofindex]);
           vtu_point_result_data.push_back((result_data_dofbased)[lid]);
         }
         else

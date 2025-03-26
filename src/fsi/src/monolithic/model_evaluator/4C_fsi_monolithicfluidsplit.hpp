@@ -210,7 +210,7 @@ namespace FSI
     virtual void set_lambda(std::shared_ptr<Core::LinAlg::Vector<double>> lambdanew)
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-      if (lambdanew == nullptr || !lambdanew->get_block_map().PointSameAs(lambda_->get_block_map()))
+      if (lambdanew == nullptr || !lambdanew->get_map().PointSameAs(lambda_->get_map()))
         FOUR_C_THROW("Map failure! Attempting to assign invalid vector to lambda_.");
 #endif
       lambda_ = lambdanew;

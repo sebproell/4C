@@ -203,11 +203,11 @@ namespace Core::IO
 
     auto convert_to_col_map_if_necessary = [&](const Core::LinAlg::Vector<double>& vector)
     {
-      if (discretization_->dof_col_map()->SameAs(vector.get_block_map()))
+      if (discretization_->dof_col_map()->SameAs(vector.get_map()))
       {
         return vector;
       }
-      else if (discretization_->dof_row_map()->SameAs(vector.get_block_map()))
+      else if (discretization_->dof_row_map()->SameAs(vector.get_map()))
       {
         auto vector_col_map = Core::LinAlg::Vector<double>(*discretization_->dof_col_map(), true);
         Core::LinAlg::export_to(vector, vector_col_map);
@@ -219,8 +219,7 @@ namespace Core::IO
     auto result_data_dofbased_col_map = convert_to_col_map_if_necessary(result_data_dofbased);
 
     // safety checks
-    FOUR_C_ASSERT(
-        discretization_->dof_col_map()->SameAs(result_data_dofbased_col_map.get_block_map()),
+    FOUR_C_ASSERT(discretization_->dof_col_map()->SameAs(result_data_dofbased_col_map.get_map()),
         "Received map of dof-based result data vector does not match the discretization's dof "
         "col map.");
 
@@ -267,11 +266,11 @@ namespace Core::IO
 
     auto convert_to_col_map_if_necessary = [&](const Core::LinAlg::MultiVector<double>& vector)
     {
-      if (discretization_->node_col_map()->SameAs(vector.Map()))
+      if (discretization_->node_col_map()->SameAs(vector.get_map()))
       {
         return vector;
       }
-      else if (discretization_->node_row_map()->SameAs(vector.Map()))
+      else if (discretization_->node_row_map()->SameAs(vector.get_map()))
       {
         auto vector_col_map = Core::LinAlg::MultiVector<double>(
             *discretization_->node_col_map(), result_num_components_per_node, true);
@@ -289,7 +288,7 @@ namespace Core::IO
         "Expected Core::LinAlg::MultiVector<double> with {} columns but got {}.",
         result_num_components_per_node, result_data_nodebased_col_map.NumVectors());
 
-    FOUR_C_ASSERT(discretization_->node_col_map()->SameAs(result_data_nodebased_col_map.Map()),
+    FOUR_C_ASSERT(discretization_->node_col_map()->SameAs(result_data_nodebased_col_map.get_map()),
         "Received map of node-based result data vector does not match the discretization's node "
         "col map.");
 
@@ -339,7 +338,7 @@ namespace Core::IO
         "Expected Core::LinAlg::MultiVector<double> with {} columns but got {}.",
         result_num_components_per_element, result_data_elementbased.NumVectors());
 
-    FOUR_C_ASSERT(discretization_->element_row_map()->SameAs(result_data_elementbased.Map()),
+    FOUR_C_ASSERT(discretization_->element_row_map()->SameAs(result_data_elementbased.get_map()),
         "Received map of element-based result data vector does not match the discretization's "
         "element row map.");
 

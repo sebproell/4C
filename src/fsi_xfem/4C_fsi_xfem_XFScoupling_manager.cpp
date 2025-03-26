@@ -81,7 +81,7 @@ void XFEM::XfsCouplingManager::set_coupling_states()
 
   // get interface velocity at t(n)
   std::shared_ptr<Core::LinAlg::Vector<double>> velnp =
-      std::make_shared<Core::LinAlg::Vector<double>>(mcfsi_->i_velnp()->get_block_map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(mcfsi_->i_velnp()->get_map(), true);
   velnp->update(1.0, *mcfsi_->i_dispnp(), -1.0, *mcfsi_->i_dispn(), 0.0);
 
   // inverse of FSI (1st order, 2nd order) scaling
@@ -101,7 +101,7 @@ void XFEM::XfsCouplingManager::set_coupling_states()
     struct_->discretization()->set_state("dispnp", *struct_->dispnp());
     // Set Velnp (used for interface integration)
     std::shared_ptr<Core::LinAlg::Vector<double>> fullvelnp =
-        std::make_shared<Core::LinAlg::Vector<double>>(struct_->velnp()->get_block_map(), true);
+        std::make_shared<Core::LinAlg::Vector<double>>(struct_->velnp()->get_map(), true);
     fullvelnp->update(1.0, *struct_->dispnp(), -1.0, *struct_->dispn(), 0.0);
     fullvelnp->update(-(dt - 1 / scaling_FSI) * scaling_FSI, *struct_->veln(), scaling_FSI);
     struct_->discretization()->set_state("velaf", *fullvelnp);

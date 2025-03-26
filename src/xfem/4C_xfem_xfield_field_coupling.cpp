@@ -132,9 +132,9 @@ void XFEM::XFieldField::Coupling::master_to_slave(const Core::LinAlg::MultiVecto
     case XFEM::map_nodes:
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-      if (not mv.Map().PointSameAs(masternodemap_->get_epetra_map()))
+      if (not mv.get_map().PointSameAs(masternodemap_->get_epetra_map()))
         FOUR_C_THROW("master node map vector expected");
-      if (not sv.Map().PointSameAs(slavenodemap_->get_epetra_map()))
+      if (not sv.get_map().PointSameAs(slavenodemap_->get_epetra_map()))
         FOUR_C_THROW("slave node map vector expected");
       if (sv.NumVectors() != mv.NumVectors())
         FOUR_C_THROW("column number mismatch {}!={}", sv.NumVectors(), mv.NumVectors());
@@ -164,9 +164,9 @@ void XFEM::XFieldField::Coupling::slave_to_master(const Core::LinAlg::MultiVecto
     case XFEM::map_nodes:
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-      if (not mv.Map().PointSameAs(masternodemap_->get_epetra_map()))
+      if (not mv.get_map().PointSameAs(masternodemap_->get_epetra_map()))
         FOUR_C_THROW("master node map vector expected");
-      if (not sv.Map().PointSameAs(slavenodemap_->get_epetra_map()))
+      if (not sv.get_map().PointSameAs(slavenodemap_->get_epetra_map()))
         FOUR_C_THROW("slave node map vector expected");
       if (sv.NumVectors() != mv.NumVectors())
         FOUR_C_THROW("column number mismatch {}!={}", sv.NumVectors(), mv.NumVectors());

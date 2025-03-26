@@ -63,7 +63,7 @@ Core::LinearSolver::AMGNxN::BlockedVector::new_rcp(bool ZeroIt) const
   Teuchos::RCP<BlockedVector> out = Teuchos::make_rcp<BlockedVector>(this->get_num_blocks());
   for (int i = 0; i < get_num_blocks(); i++)
   {
-    // const Epetra_BlockMap&  Map = this->GetVector(i)->Map();
+    // const Core::LinAlg::Map&  Map = this->GetVector(i)->Map();
     // int NV = this->GetNumBlocks();
     // out->SetVector(Teuchos::rcp( new Core::LinAlg::MultiVector<double>(Map,NV,ZeroIt)),i); //This
     // is buggy
@@ -149,7 +149,7 @@ void Core::LinearSolver::AMGNxN::BlockedMatrix::apply(
 
     Teuchos::RCP<Core::LinAlg::MultiVector<double>> Yi = out.get_vector(i);
     Yi->PutScalar(0.0);
-    Core::LinAlg::MultiVector<double> Yitmp(Yi->Map(), Yi->NumVectors(), true);
+    Core::LinAlg::MultiVector<double> Yitmp(Yi->get_map(), Yi->NumVectors(), true);
 
     for (int j = 0; j < get_num_cols(); j++)
     {

@@ -14,7 +14,6 @@
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 
 #include <Epetra_Import.h>
-#include <Epetra_Map.h>
 
 #include <iomanip>
 #include <sstream>
@@ -348,8 +347,8 @@ namespace Core::Communication
       return false;
     }
 
-    // do stupid conversion from Epetra_BlockMap to Core::LinAlg::Map
-    const Epetra_BlockMap& vecblockmap = vec.Map();
+    // do stupid conversion from Core::LinAlg::Map to Core::LinAlg::Map
+    const Core::LinAlg::Map& vecblockmap = vec.get_map();
     Core::LinAlg::Map vecmap(vecblockmap.NumGlobalElements(), vecblockmap.NumMyElements(),
         vecblockmap.MyGlobalElements(), 0, vec.Comm());
 
@@ -423,7 +422,7 @@ namespace Core::Communication
           std::stringstream diff;
           diff << std::scientific << std::setprecision(16) << maxdiff;
           std::cout << "vectors " << name << " do not match, difference in row "
-                    << fullvec.Map().GID(i) << " between entries is: " << diff.str().c_str()
+                    << fullvec.get_map().GID(i) << " between entries is: " << diff.str().c_str()
                     << std::endl;
         }
         maxdiff = std::max(maxdiff, difference);

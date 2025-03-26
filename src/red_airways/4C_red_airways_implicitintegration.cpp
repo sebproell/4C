@@ -1432,31 +1432,36 @@ void Airway::RedAirwayImplicitTimeInt::output(
     output_.write_vector("elemRadius_current", qexp_);
 
     {
-      Epetra_Export exporter(acini_e_volumenm_->get_block_map(), qexp_->get_block_map());
+      Epetra_Export exporter(
+          acini_e_volumenm_->get_map().get_epetra_map(), qexp_->get_map().get_epetra_map());
       int err = qexp_->export_to(*acini_e_volumenm_, exporter, Zero);
       if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       output_.write_vector("acini_vnm", qexp_);
     }
     {
-      Epetra_Export exporter(acini_e_volumen_->get_block_map(), qexp_->get_block_map());
+      Epetra_Export exporter(
+          acini_e_volumen_->get_map().get_epetra_map(), qexp_->get_map().get_epetra_map());
       int err = qexp_->export_to(*acini_e_volumen_, exporter, Zero);
       if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       output_.write_vector("acini_vn", qexp_);
     }
     {
-      Epetra_Export exporter(acini_e_volumenp_->get_block_map(), qexp_->get_block_map());
+      Epetra_Export exporter(
+          acini_e_volumenp_->get_map().get_epetra_map(), qexp_->get_map().get_epetra_map());
       int err = qexp_->export_to(*acini_e_volumenp_, exporter, Zero);
       if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       output_.write_vector("acini_vnp", qexp_);
     }
     {
-      Epetra_Export exporter(acini_e_volume_strain_->get_block_map(), qexp_->get_block_map());
+      Epetra_Export exporter(
+          acini_e_volume_strain_->get_map().get_epetra_map(), qexp_->get_map().get_epetra_map());
       int err = qexp_->export_to(*acini_e_volume_strain_, exporter, Zero);
       if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       output_.write_vector("acini_volumetric_strain", qexp_);
     }
     {
-      Epetra_Export exporter(acini_e_volume0_->get_block_map(), qexp_->get_block_map());
+      Epetra_Export exporter(
+          acini_e_volume0_->get_map().get_epetra_map(), qexp_->get_map().get_epetra_map());
       int err = qexp_->export_to(*acini_e_volume0_, exporter, Zero);
       if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       output_.write_vector("acini_v0", qexp_);
@@ -1827,12 +1832,12 @@ bool Airway::RedAirwayImplicitTimeInt::sum_all_col_elem_val(
   // it to a RowMap and eliminate the ghosted values
   {
     // define epetra exporter
-    Epetra_Export exporter(vec.get_block_map(), qexp_->get_block_map());
+    Epetra_Export exporter(vec.get_map().get_epetra_map(), qexp_->get_map().get_epetra_map());
     // export from ColMap to RowMap
     int err = qexp_->export_to(vec, exporter, Zero);
     if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
 
-    Epetra_Export exporter2(sumCond.get_block_map(), qexp2_->get_block_map());
+    Epetra_Export exporter2(sumCond.get_map().get_epetra_map(), qexp2_->get_map().get_epetra_map());
     // export from ColMap to RowMap
     err = qexp2_->export_to(sumCond, exporter2, Zero);
     if (err) FOUR_C_THROW("Export using exporter returned err={}", err);

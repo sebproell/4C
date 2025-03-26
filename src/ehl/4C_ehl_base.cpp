@@ -234,11 +234,10 @@ std::shared_ptr<Core::LinAlg::Vector<double>> EHL::Base::evaluate_fluid_force(
 {
   // safety: unprojectable nodes to zero pressure
   if (inf_gap_toggle_lub_ != nullptr)
-    for (int i = 0; i < lubrication_->lubrication_field()->prenp()->get_block_map().NumMyElements();
-        ++i)
+    for (int i = 0; i < lubrication_->lubrication_field()->prenp()->get_map().NumMyElements(); ++i)
     {
-      if (abs(inf_gap_toggle_lub_->operator[](inf_gap_toggle_lub_->get_block_map().LID(
-                  lubrication_->lubrication_field()->prenp()->get_block_map().GID(i))) -
+      if (abs(inf_gap_toggle_lub_->operator[](inf_gap_toggle_lub_->get_map().LID(
+                  lubrication_->lubrication_field()->prenp()->get_map().GID(i))) -
               1) < 1.e-2)
         lubrication_->lubrication_field()->prenp()->operator[](i) = 0.;
     }
@@ -375,7 +374,7 @@ void EHL::Base::add_couette_force(
     Core::Nodes::Node* lnode = lub_dis.l_row_node(i);
     if (!lnode) FOUR_C_THROW("node not found");
     const double p = lubrication_->lubrication_field()->prenp()->operator[](
-        lubrication_->lubrication_field()->prenp()->get_block_map().LID(lub_dis.dof(0, lnode, 0)));
+        lubrication_->lubrication_field()->prenp()->get_map().LID(lub_dis.dof(0, lnode, 0)));
 
     std::shared_ptr<Core::Mat::Material> mat = lnode->elements()[0]->material(0);
     if (!mat) FOUR_C_THROW("null pointer");
@@ -541,7 +540,7 @@ void EHL::Base::setup_unprojectable_dbc()
   static std::shared_ptr<Core::LinAlg::Vector<double>> old_toggle = nullptr;
   if (old_toggle != nullptr)
   {
-    for (int i = 0; i < inf_gap_toggle_lub_->get_block_map().NumMyElements(); ++i)
+    for (int i = 0; i < inf_gap_toggle_lub_->get_map().NumMyElements(); ++i)
       if (abs(inf_gap_toggle_lub_->operator[](i) - old_toggle->operator[](i)) > 1.e-12)
       {
         if (!Core::Communication::my_mpi_rank(get_comm()))
@@ -723,7 +722,7 @@ void EHL::Base::output(bool forced_writerestart)
   {
     std::shared_ptr<Core::LinAlg::Vector<double>> active_toggle, slip_toggle;
     mortaradapter_->create_active_slip_toggle(&active_toggle, &slip_toggle);
-    for (int i = 0; i < active_toggle->get_block_map().NumMyElements(); ++i)
+    for (int i = 0; i < active_toggle->get_map().NumMyElements(); ++i)
       slip_toggle->operator[](i) += active_toggle->operator[](i);
     std::shared_ptr<Core::LinAlg::Vector<double>> active =
         std::make_shared<Core::LinAlg::Vector<double>>(
@@ -799,7 +798,7 @@ void EHL::Base::output(bool forced_writerestart)
       Core::Nodes::Node* lnode = lubrication_->lubrication_field()->discretization()->l_row_node(i);
       if (!lnode) FOUR_C_THROW("node not found");
       const double p = lubrication_->lubrication_field()->prenp()->operator[](
-          lubrication_->lubrication_field()->prenp()->get_block_map().LID(
+          lubrication_->lubrication_field()->prenp()->get_map().LID(
               lubrication_->lubrication_field()->discretization()->dof(0, lnode, 0)));
       std::shared_ptr<Core::Mat::Material> mat = lnode->elements()[0]->material(0);
       if (!mat) FOUR_C_THROW("null pointer");

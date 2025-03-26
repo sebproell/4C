@@ -1299,7 +1299,7 @@ void SSTI::AssembleStrategyBase::assemble_rhs(std::shared_ptr<Core::LinAlg::Vect
 
     // apply pseudo Dirichlet conditions to transformed slave-side part of structural right-hand
     // side vector
-    Core::LinAlg::Vector<double> zeros(residual_structure.get_block_map());
+    Core::LinAlg::Vector<double> zeros(residual_structure.get_map());
 
     if (locsysmanager_structure != nullptr)
       locsysmanager_structure->rotate_global_to_local(*rhs_structure_master);

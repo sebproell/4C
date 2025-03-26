@@ -19,6 +19,7 @@
 #include <mpi.h>
 
 #include <memory>
+#include <optional>
 
 // Do not lint the file for identifier names, since the naming of the Wrapper functions follow the
 // naming of the Core::LinAlg::MultiVector<double>
@@ -107,8 +108,8 @@ namespace Core::LinAlg
     //! Initialize all values in a multi-vector with const value.
     int PutScalar(double ScalarConstant);
 
-    //! Returns the address of the Epetra_BlockMap for this multi-vector.
-    const Epetra_BlockMap& Map() const { return (vector_->Map()); };
+    //! Returns a view of the EpetraMap as type Map for this multi-vector.
+    const Map& get_map() const { return map_.sync(vector_->Map()); };
 
     //! Returns the MPI_Comm for this multi-vector.
     [[nodiscard]] MPI_Comm Comm() const;
@@ -138,7 +139,7 @@ namespace Core::LinAlg
     /** Replace map, only if new map has same point-structure as current map.
         return 0 if map is replaced, -1 if not.
      */
-    int ReplaceMap(const Epetra_BlockMap& map);
+    int ReplaceMap(const Map& map);
 
     int ReplaceGlobalValue(int GlobalRow, int VectorIndex, double ScalarValue)
     {
@@ -268,6 +269,8 @@ namespace Core::LinAlg
     //! Vector view of the single columns stored inside the vector. This is used to allow
     //! access to the single columns of the MultiVector.
     mutable std::vector<std::unique_ptr<Vector<T>>> column_vector_view_;
+
+    mutable View<const Map> map_;
 
     friend class Vector<T>;
   };

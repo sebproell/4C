@@ -53,7 +53,7 @@ void ALE::AleResultTest::test_node(
 
       double result = 0.;
 
-      const Epetra_BlockMap& dispnpmap = dispnp_->get_block_map();
+      const Core::LinAlg::Map& dispnpmap = dispnp_->get_map();
 
       std::string position = container.get<std::string>("QUANTITY");
       if (position == "dispx")

@@ -794,8 +794,9 @@ void FLD::XFluid::assemble_mat_and_rhs(int itnum)
     //-------------------------------------------------------------------------------
     // finalize residual vector
     // need to export residual_col to state_->residual_ (row)
-    Core::LinAlg::Vector<double> res_tmp(state_->residual_->get_block_map(), true);
-    Epetra_Export exporter(state_->residual_col_->get_block_map(), res_tmp.get_block_map());
+    Core::LinAlg::Vector<double> res_tmp(state_->residual_->get_map(), true);
+    Epetra_Export exporter(
+        state_->residual_col_->get_map().get_epetra_map(), res_tmp.get_map().get_epetra_map());
     int err2 = res_tmp.export_to(*state_->residual_col_, exporter, Add);
     if (err2) FOUR_C_THROW("Export using exporter returned err={}", err2);
 
@@ -1505,8 +1506,9 @@ void FLD::XFluid::integrate_shape_function(Teuchos::ParameterList& eleparams,
 
   //-------------------------------------------------------------------------------
   // need to export residual_col to systemvector1 (residual_)
-  Core::LinAlg::Vector<double> vec_tmp(vec.get_block_map(), false);
-  Epetra_Export exporter(strategy.systemvector1()->get_block_map(), vec_tmp.get_block_map());
+  Core::LinAlg::Vector<double> vec_tmp(vec.get_map(), false);
+  Epetra_Export exporter(
+      strategy.systemvector1()->get_map().get_epetra_map(), vec_tmp.get_map().get_epetra_map());
   int err2 = vec_tmp.export_to(*strategy.systemvector1(), exporter, Add);
   if (err2) FOUR_C_THROW("Export using exporter returned err={}", err2);
   vec.scale(1.0, vec_tmp);
@@ -1592,8 +1594,9 @@ void FLD::XFluid::assemble_mat_and_rhs_gradient_penalty(
 
   //-------------------------------------------------------------------------------
   // need to export residual_col to systemvector1 (residual_)
-  Core::LinAlg::Vector<double> res_tmp(residual_gp.get_block_map(), false);
-  Epetra_Export exporter(residual_gp_col->get_block_map(), res_tmp.get_block_map());
+  Core::LinAlg::Vector<double> res_tmp(residual_gp.get_map(), false);
+  Epetra_Export exporter(
+      residual_gp_col->get_map().get_epetra_map(), res_tmp.get_map().get_epetra_map());
   int err2 = res_tmp.export_to(*residual_gp_col, exporter, Add);
   if (err2) FOUR_C_THROW("Export using exporter returned err={}", err2);
   residual_gp.update(1.0, res_tmp, 1.0);
@@ -2779,7 +2782,7 @@ void FLD::XFluid::setup_krylov_space_projection(const Core::Conditions::Conditio
   if (alefluid_ and (*weighttype == "integration")) updateprojection_ = true;
 
   projector_ = std::make_shared<Core::LinAlg::KrylovProjector>(
-      activemodeids, weighttype, &discret_->dof_row_map()->get_epetra_map());
+      activemodeids, weighttype, discret_->dof_row_map());
 
   // update the projector
   update_krylov_space_projection();
@@ -2899,7 +2902,7 @@ void FLD::XFluid::check_matrix_nullspace()
     int nsdim = c->NumVectors();
     if (nsdim != 1) FOUR_C_THROW("Only one mode, namely the constant pressure mode, expected.");
 
-    Core::LinAlg::Vector<double> result(c->Map(), false);
+    Core::LinAlg::Vector<double> result(c->get_map(), false);
 
     state_->sysmat_->Apply(*c, result);
 
@@ -5139,11 +5142,11 @@ void FLD::XFluid::read_restart(int step)
   // that was used when the restart data was written. Especially
   // in case of multiphysics problems & periodic boundary conditions
   // it is better to check the consistency of the maps here:
-  if (not(discret_->dof_row_map())->SameAs(state_->velnp_->get_block_map()))
+  if (not(discret_->dof_row_map())->SameAs(state_->velnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(discret_->dof_row_map())->SameAs(state_->veln_->get_block_map()))
+  if (not(discret_->dof_row_map())->SameAs(state_->veln_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(discret_->dof_row_map())->SameAs(state_->accn_->get_block_map()))
+  if (not(discret_->dof_row_map())->SameAs(state_->accn_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
 
 
@@ -5218,7 +5221,7 @@ void FLD::XFluid::gen_alpha_intermediate_values()
     std::shared_ptr<Core::LinAlg::Vector<double>> onlyaccnp =
         state_->velpressplitter_->extract_other_vector(*state_->accnp_);
 
-    Core::LinAlg::Vector<double> onlyaccam(onlyaccnp->get_block_map());
+    Core::LinAlg::Vector<double> onlyaccam(onlyaccnp->get_map());
 
     onlyaccam.update((alphaM_), *onlyaccnp, (1.0 - alphaM_), *onlyaccn, 0.0);
 
@@ -5263,7 +5266,7 @@ void FLD::XFluid::gen_alpha_update_acceleration()
   std::shared_ptr<Core::LinAlg::Vector<double>> onlyvelnp =
       state_->velpressplitter_->extract_other_vector(*state_->velnp_);
 
-  Core::LinAlg::Vector<double> onlyaccnp(onlyaccn->get_block_map());
+  Core::LinAlg::Vector<double> onlyaccnp(onlyaccn->get_map());
 
   const double fact1 = 1.0 / (gamma_ * dta_);
   const double fact2 = 1.0 - (1.0 / gamma_);
@@ -5285,7 +5288,7 @@ void FLD::XFluid::update_gridv()
       Global::Problem::instance()->fluid_dynamic_params();
   const auto order = Teuchos::getIntegralValue<Inpar::FLUID::Gridvel>(fluiddynparams, "GRIDVEL");
 
-  Core::LinAlg::Vector<double> gridv(dispnp_->get_block_map(), true);
+  Core::LinAlg::Vector<double> gridv(dispnp_->get_map(), true);
 
   switch (order)
   {

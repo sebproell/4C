@@ -151,7 +151,7 @@ Adapter::FSIStructureWrapper::predict_interface_dispnp()
 std::shared_ptr<Core::LinAlg::Vector<double>>
 Adapter::FSIStructureWrapper::extract_interface_dispn()
 {
-  FOUR_C_ASSERT(interface_->full_map()->PointSameAs(dispn()->get_block_map()),
+  FOUR_C_ASSERT(interface_->full_map()->PointSameAs(dispn()->get_map()),
       "Full map of map extractor and Dispn() do not match.");
 
   // prestressing business
@@ -171,7 +171,7 @@ Adapter::FSIStructureWrapper::extract_interface_dispn()
 std::shared_ptr<Core::LinAlg::Vector<double>>
 Adapter::FSIStructureWrapper::extract_interface_dispnp()
 {
-  FOUR_C_ASSERT(interface_->full_map()->PointSameAs(dispnp()->get_block_map()),
+  FOUR_C_ASSERT(interface_->full_map()->PointSameAs(dispnp()->get_map()),
       "Full map of map extractor and Dispnp() do not match.");
 
   // prestressing business

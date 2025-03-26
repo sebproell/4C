@@ -140,7 +140,7 @@ PoroPressureBased::convert_dof_vector_to_node_based_multi_vector(
       std::make_shared<Core::LinAlg::MultiVector<double>>(*dis.node_row_map(), numdofpernode, true);
 
   // get maps
-  const Epetra_BlockMap& vectormap = vector.get_block_map();
+  const Core::LinAlg::Map& vectormap = vector.get_map();
 
   // loop over nodes of the discretization
   for (int inode = 0; inode < dis.num_my_row_nodes(); ++inode)

@@ -589,7 +589,7 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::calc_normal_vec
   for (int j = 0; j < nen_; j++)
   {
     const int nodegid = (ele->nodes()[j])->id();
-    if (normals->Map().MyGID(nodegid))
+    if (normals->get_map().MyGID(nodegid))
     {
       // scaling to a unit vector is performed on the global level after
       // assembly of nodal contributions since we have no reliable information

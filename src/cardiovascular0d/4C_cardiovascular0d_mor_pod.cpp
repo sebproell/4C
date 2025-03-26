@@ -57,7 +57,8 @@ Cardiovascular0D::ProperOrthogonalDecomposition::ProperOrthogonalDecomposition(
   }
 
   // build an importer
-  Epetra_Import dofrowimporter(full_model_dof_row_map_->get_epetra_map(), (reduced_basis->Map()));
+  Epetra_Import dofrowimporter(
+      full_model_dof_row_map_->get_epetra_map(), reduced_basis->get_map().get_epetra_map());
   projmatrix_ = std::make_shared<Core::LinAlg::MultiVector<double>>(
       full_model_dof_row_map_->get_epetra_map(), reduced_basis->NumVectors(), true);
   int err = projmatrix_->Import(*reduced_basis, dofrowimporter, Insert, nullptr);

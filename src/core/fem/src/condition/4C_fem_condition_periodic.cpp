@@ -1134,7 +1134,7 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
     nodegraph.optimize_storage();
 
     // build nodecolmap for new distribution of nodes
-    const Epetra_BlockMap cntmp = nodegraph.col_map();
+    const Core::LinAlg::Map cntmp = nodegraph.col_map();
 
     std::shared_ptr<Core::LinAlg::Map> newcolnodemap;
 
@@ -1499,7 +1499,7 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
     if (numproc > 1)
     {
       // get rowmap of the graph  (from blockmap -> map)
-      const Epetra_BlockMap& graph_row_map = nodegraph->row_map();
+      const Core::LinAlg::Map& graph_row_map = nodegraph->row_map();
       const Core::LinAlg::Map graph_rowmap(graph_row_map.NumGlobalElements(),
           graph_row_map.NumMyElements(), graph_row_map.MyGlobalElements(), 0,
           Core::Communication::unpack_epetra_comm(nodegraph->get_comm()));

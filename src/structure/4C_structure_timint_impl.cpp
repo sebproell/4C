@@ -769,7 +769,7 @@ void Solid::TimIntImpl::setup_krylov_space_projection(const Core::Conditions::Co
 
   // create the projector
   projector_ = std::make_shared<Core::LinAlg::KrylovProjector>(
-      activemodeids, weighttype, &discret_->dof_row_map()->get_epetra_map());
+      activemodeids, weighttype, discret_->dof_row_map());
 
   // update the projector
   update_krylov_space_projection();

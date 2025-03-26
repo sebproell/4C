@@ -176,18 +176,18 @@ void FLD::XFluidOutputService::output(int step, double time, bool write_restart_
     // write ale displacement for t^{n+1}
     std::shared_ptr<Core::LinAlg::Vector<double>> dispnprm =
         std::make_shared<Core::LinAlg::Vector<double>>(*dispnp);
-    dispnprm->replace_map(outvec_fluid_->get_block_map());  // to get dofs starting by 0 ...
+    dispnprm->replace_map(outvec_fluid_->get_map());  // to get dofs starting by 0 ...
     discret_->writer()->write_vector("dispnp", dispnprm);
 
     // write grid velocity for t^{n+1}
     std::shared_ptr<Core::LinAlg::Vector<double>> gridvnprm =
         std::make_shared<Core::LinAlg::Vector<double>>(*gridvnp);
-    gridvnprm->replace_map(outvec_fluid_->get_block_map());  // to get dofs starting by 0 ...
+    gridvnprm->replace_map(outvec_fluid_->get_map());  // to get dofs starting by 0 ...
     discret_->writer()->write_vector("gridv", gridvnprm);
 
     // write convective velocity for t^{n+1}
     std::shared_ptr<Core::LinAlg::Vector<double>> convvel =
-        std::make_shared<Core::LinAlg::Vector<double>>(outvec_fluid_->get_block_map(), true);
+        std::make_shared<Core::LinAlg::Vector<double>>(outvec_fluid_->get_map(), true);
     convvel->update(1.0, *outvec_fluid_, -1.0, *gridvnprm, 0.0);
     discret_->writer()->write_vector("convel", convvel);
   }

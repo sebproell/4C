@@ -985,7 +985,7 @@ void FSI::FluidFluidMonolithicStructureSplitNoNOX::handle_fluid_dof_map_change_i
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 bool FSI::FluidFluidMonolithicStructureSplitNoNOX::has_fluid_dof_map_changed(
-    const Epetra_BlockMap& fluidincrementmap)
+    const Core::LinAlg::Map& fluidincrementmap)
 {
   return !fluid_field()->dof_row_map()->SameAs(fluidincrementmap);
 }
